@@ -22,6 +22,8 @@ mod cleanup;
 mod insert_tests;
 mod load_llm;
 
-pub use builders::{save_assistant_msg, save_tool_call_msg, save_tool_result_msg, save_user_msg};
+pub use builders::{
+    save_assistant_msg, save_system_msg, save_tool_call_msg, save_tool_result_msg, save_user_msg,
+};
 pub use cleanup::{clear_messages, delete_last_user_turn, truncate_messages_after};
 pub use load_llm::load_llm_history;

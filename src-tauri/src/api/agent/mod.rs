@@ -628,6 +628,14 @@ pub fn create_routes() -> Router {
             post(test::workspace::test_session_aggregate_list_filter),
         )
         .route(
+            "/test/session/llm-history",
+            post(test::workspace::test_session_llm_history),
+        )
+        .route(
+            "/test/session/seed-compacted-history",
+            post(test::workspace::test_session_seed_compacted_history),
+        )
+        .route(
             "/test/session/parse-exec-mode",
             post(test::workspace::test_parse_exec_mode),
         )

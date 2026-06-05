@@ -74,6 +74,27 @@ import {
   assertE2ERepoFixture,
 } from "../../support/core/agentOrgUiDriver.mjs";
 
+const E2E_BASE_URL = `http://127.0.0.1:${process.env.E2E_IDE_SERVER_PORT ?? "13847"}`;
+
+async function postJson(pathname, body = {}, timeoutMs = 15_000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${E2E_BASE_URL}${pathname}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const json = await response.json();
+    if (!response.ok || json?.ok !== true) {
+      throw new Error(`${pathname} failed: ${JSON.stringify(json)}`);
+    }
+    return json;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 describe("Agent Org pause, resume, and sidebar rendered UI", () => {
   before(async () => {
@@ -741,6 +762,34 @@ describe("Agent Org pause, resume, and sidebar rendered UI", () => {
       await invokeE2E("agentOrgSimulateAppRestart"),
       "agentOrgSimulateAppRestart"
     );
+
+    const aggregateListAfterRestart = await postJson(
+      "/agent/test/session/aggregate-list-via-cmd",
+      {
+        session_id: sessionId,
+        category: "agent",
+        limit: 200,
+        sortBy: "updated_at",
+        sortOrder: "desc",
+      },
+      60_000
+    );
+    const aggregateSession = aggregateListAfterRestart.target_session ?? null;
+    if (!aggregateSession) {
+      throw new Error(
+        `Restart sidebar test could not find coordinator root in session_aggregate_list: ${JSON.stringify(aggregateListAfterRestart)}`
+      );
+    }
+    if (
+      aggregateSession.agentOrgId !== org.id ||
+      aggregateSession.agentOrgName !== orgName ||
+      aggregateSession.orgMemberId !== AGENT_ORG_COORDINATOR_MEMBER_ID ||
+      aggregateSession.parentSessionId
+    ) {
+      throw new Error(
+        `Restart sidebar aggregate row lost Agent Org root identity: ${JSON.stringify(aggregateSession)}`
+      );
+    }
 
     // If the restart paused the run, confirm it's paused. If it was already
     // terminal (completed quickly) the run stays terminal — both are valid.

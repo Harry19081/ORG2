@@ -13,6 +13,7 @@ import {
   selectPreferredModel,
   selectRenderedDefaultAgentOrg,
   selectRenderedExecMode,
+  sendRenderedChatPrompt,
   sendFromRenderedCreator,
   unwrap,
   waitForAgentOrgRunViewByOrg,
@@ -28,6 +29,7 @@ import {
 const RUN_ID = Date.now();
 const BUILTIN_OS_AGENT_ID = "builtin:os";
 const RENDER_TIMEOUT_MS = 30_000;
+const E2E_BASE_URL = `http://127.0.0.1:${process.env.E2E_IDE_SERVER_PORT ?? "13847"}`;
 const SCENARIO_FILTER = (process.env.E2E_LAUNCH_WIRING_SCENARIOS ?? "")
   .split(",")
   .map((value) => value.trim())
@@ -41,6 +43,26 @@ function createTempWorkspaceDir(label) {
   return fs.mkdtempSync(
     path.join(os.tmpdir(), `orgii-e2e-${label}-${RUN_ID}-`)
   );
+}
+
+async function postJson(pathname, body = {}, timeoutMs = 10_000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${E2E_BASE_URL}${pathname}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const json = await response.json();
+    if (!response.ok || json?.ok !== true) {
+      throw new Error(`${pathname} failed: ${JSON.stringify(json)}`);
+    }
+    return json;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function execJS(script) {
@@ -755,6 +777,215 @@ describe("Session launch wiring rendered UI invariants", function () {
     if (renderedState.chatState.activeSession?.agentExecMode !== "plan") {
       throw new Error(
         `Rendered Agent Org selector did not persist plan mode: ${JSON.stringify({ runState, renderedState })}`
+      );
+    }
+  });
+
+  it("reopens and resumes multiple Rust Agent sessions after simulated restart", async function () {
+    if (!shouldRunScenario("rust-restart-multi-resume")) {
+      this.skip();
+      return;
+    }
+
+    const sessionIds = [];
+    for (let index = 0; index < 3; index += 1) {
+      const result = unwrap(
+        await invokeE2E("launchSession", {
+          category: "rust_agent",
+          content: "",
+          workspacePath: E2E_REPO_PATH,
+          keySource: "own_key",
+          accountId: account.id,
+          model,
+          agentDefinitionId: BUILTIN_SDE_AGENT_ID,
+          mode: "ask",
+          background: false,
+        }),
+        `launchSession(rust-restart-multi-resume-${index})`
+      ).result;
+      const sessionId = result?.sessionId ?? result?.session_id;
+      if (!sessionId) {
+        throw new Error(
+          `Rust restart multi resume launch ${index} did not create a session: ${JSON.stringify(result)}`
+        );
+      }
+      sessionIds.push(sessionId);
+      await postJson("/agent/test/session/seed-compacted-history", {
+        session_id: sessionId,
+        old_marker: `E2E_OLD_FULL_HISTORY_SHOULD_NOT_REAPPEAR_${RUN_ID}_${index}`,
+        summary: `E2E durable compact summary ${RUN_ID} session ${index}`,
+        recent_user: `E2E compact recent user ${RUN_ID} session ${index}`,
+        recent_assistant: `E2E compact recent assistant ${RUN_ID} session ${index}`,
+      });
+      const seededHistory = await postJson("/agent/test/session/llm-history", {
+        session_id: sessionId,
+      });
+      if (seededHistory.compactBoundaryCount !== 1) {
+        throw new Error(
+          `Seeded compact history did not contain exactly one compact boundary for ${sessionId}: ${JSON.stringify(seededHistory)}`
+        );
+      }
+      if (JSON.stringify(seededHistory).includes("E2E_OLD_FULL_HISTORY_SHOULD_NOT_REAPPEAR")) {
+        throw new Error(
+          `Seeded compact history still contains old full history for ${sessionId}: ${JSON.stringify(seededHistory)}`
+        );
+      }
+      await waitForSessionAggregateRow(
+        sessionId,
+        (session) =>
+          session.category === "rust_agent" &&
+          session.agentDefinitionId === BUILTIN_SDE_AGENT_ID &&
+          session.agentExecMode === "ask",
+        `rust restart multi resume ${index} aggregate row`
+      );
+    }
+
+    for (const sessionId of sessionIds) {
+      await postJson("/agent/test/session/update-status-via-cmd", {
+        session_id: sessionId,
+        status: "running",
+      });
+    }
+
+    const restartResult = unwrap(
+      await invokeE2E("agentOrgSimulateAppRestart"),
+      "agentOrgSimulateAppRestart(rust multi resume)"
+    );
+    if ((restartResult.sessionsAbandoned ?? restartResult.sessions_abandoned ?? 0) < sessionIds.length) {
+      throw new Error(
+        `Simulated restart did not abandon all forced-running Rust sessions: ${JSON.stringify({ restartResult, sessionIds })}`
+      );
+    }
+
+    for (const sessionId of sessionIds) {
+      await postJson("/agent/test/session/update-status-via-cmd", {
+        session_id: sessionId,
+        status: "idle",
+      });
+    }
+
+    const aggregateStartedAt = Date.now();
+    await postJson(
+      "/agent/test/session/aggregate-list-via-cmd",
+      { category: "agent", limit: 20, sortBy: "updated_at", sortOrder: "desc" },
+      10_000
+    );
+    console.log(
+      `[rust-restart-resume] aggregate-list-after-restart-ms=${Date.now() - aggregateStartedAt}`
+    );
+
+    for (const [index, sessionId] of sessionIds.entries()) {
+      unwrap(
+        await invokeE2E("navigateTo", "/orgii/workstation/code"),
+        `navigateTo workstation code before resume ${index}`
+      );
+      unwrap(
+        await invokeE2E("openSession", sessionId),
+        `openSession(rust restart multi resume ${index})`
+      );
+      await waitForRenderedSession(
+        sessionId,
+        `rust-restart-multi-resume-${index}`
+      );
+      const baselineState = unwrap(
+        await invokeE2E("inspectChatState"),
+        `inspectChatState(rust restart multi resume baseline ${index})`
+      );
+      const baselineEventIds = new Set(
+        (baselineState.rawEvents ?? []).map((event) => event.id)
+      );
+      const inputReady = await execJS(`
+        const input = document.querySelector('[data-testid="chat-input"] [contenteditable="true"]');
+        return Boolean(input);
+      `);
+      if (!inputReady) {
+        const pageState = await execJS(`
+          return {
+            url: location.href,
+            bodyText: (document.body.innerText || '').slice(0, 2000),
+            hasChatPanel: Boolean(document.querySelector('[data-testid="chat-panel"]')),
+            hasMessageList: Boolean(document.querySelector('[data-testid="chat-message-list"]')),
+            hasChatInputShell: Boolean(document.querySelector('[data-testid="chat-input"]')),
+          };
+        `);
+        throw new Error(
+          `Rust restart resume opened ${sessionId} without composer: page=${JSON.stringify(pageState)} chat=${JSON.stringify(baselineState)}`
+        );
+      }
+      const followUp = `E2E rust restart multi resume follow-up ${RUN_ID} session ${index}`;
+      const sendStartedAt = Date.now();
+      await sendRenderedChatPrompt(followUp);
+      let latestState = null;
+      await browser.waitUntil(
+        async () => {
+          latestState = unwrap(
+            await invokeE2E("inspectChatState"),
+            `inspectChatState(rust restart multi resume visible ${index})`
+          );
+          const text = JSON.stringify(latestState);
+          return latestState.activeSessionId === sessionId && text.includes(followUp);
+        },
+        {
+          timeout: RENDER_TIMEOUT_MS,
+          interval: 500,
+          timeoutMsg: `Rust restart follow-up did not stay visible for ${sessionId}`,
+        }
+      );
+      console.log(
+        `[rust-restart-resume] session=${sessionId} user-visible-ms=${Date.now() - sendStartedAt}`
+      );
+
+      const resumeHistory = await postJson("/agent/test/session/llm-history", {
+        session_id: sessionId,
+      });
+      const resumeHistoryText = JSON.stringify(resumeHistory);
+      if (resumeHistory.compactBoundaryCount !== 1) {
+        throw new Error(
+          `Resume LLM history should retain one durable compact boundary for ${sessionId}: ${resumeHistoryText}`
+        );
+      }
+      if (resumeHistoryText.includes("E2E_OLD_FULL_HISTORY_SHOULD_NOT_REAPPEAR")) {
+        throw new Error(
+          `Resume LLM history regressed to old full history for ${sessionId}: ${resumeHistoryText}`
+        );
+      }
+      if (!resumeHistoryText.includes(followUp)) {
+        throw new Error(
+          `Resume LLM history did not include follow-up user message for ${sessionId}: ${resumeHistoryText}`
+        );
+      }
+
+      let firstAgentActivityMs = null;
+      await browser.waitUntil(
+        async () => {
+          latestState = unwrap(
+            await invokeE2E("inspectChatState"),
+            `inspectChatState(rust restart multi resume agent activity ${index})`
+          );
+          if ((latestState.streamingDelta?.length ?? 0) > 0) {
+            firstAgentActivityMs = Date.now() - sendStartedAt;
+            return true;
+          }
+          const newAgentEvent = (latestState.rawEvents ?? []).find(
+            (event) =>
+              !baselineEventIds.has(event.id) &&
+              event.source !== "user" &&
+              (event.displayText || event.actionType || event.uiCanonical)
+          );
+          if (newAgentEvent) {
+            firstAgentActivityMs = Date.now() - sendStartedAt;
+            return true;
+          }
+          return false;
+        },
+        {
+          timeout: 30_000,
+          interval: 1_000,
+          timeoutMsg: `Rust restart follow-up produced no agent activity within 30s for ${sessionId}: latest=${JSON.stringify(latestState)}`,
+        }
+      );
+      console.log(
+        `[rust-restart-resume] session=${sessionId} first-agent-activity-ms=${firstAgentActivityMs}`
       );
     }
   });

@@ -229,19 +229,24 @@ pub async fn attempt_fork(inputs: ForkInputs<'_>) -> ForkOutcome {
         }
     }
 
-    // 5. Persist compacted transcript under new session id. Reuses
-    // `save_subagent_transcript` because its row-by-row JSON shape
-    // matches what the compactor produces (serde_json::Value).
+    // 5. Persist compacted transcript under new session id. This must retain
+    // the compact summary `system` row; `save_subagent_transcript` intentionally
+    // skips system prompts and would lose the durable compact boundary.
     let persist_messages = compacted_messages.to_vec();
     let persist_result = tokio::task::spawn_blocking({
         let sid = new_session_id.clone();
-        move || unified_persistence::save_subagent_transcript(&sid, &persist_messages)
+        move || {
+            unified_persistence::replace_messages_with_compacted_history(&sid, &persist_messages)
+        }
     })
     .await;
     match persist_result {
         Ok(Ok(())) => {}
         Ok(Err(err)) => {
-            let reason = format!("save_subagent_transcript({}): {}", new_session_id, err);
+            let reason = format!(
+                "replace_messages_with_compacted_history({}): {}",
+                new_session_id, err
+            );
             warn!(
                 "[compact_fork] {} — old session still active; falling back to in-place",
                 reason
@@ -254,7 +259,10 @@ pub async fn attempt_fork(inputs: ForkInputs<'_>) -> ForkOutcome {
             return ForkOutcome::Failed(reason);
         }
         Err(err) => {
-            let reason = format!("save_subagent_transcript join error: {}", err);
+            let reason = format!(
+                "replace_messages_with_compacted_history join error: {}",
+                err
+            );
             warn!("[compact_fork] {}", reason);
             return ForkOutcome::Failed(reason);
         }

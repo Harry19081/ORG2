@@ -23,6 +23,7 @@ const MSG_RETRY_BASE_MS: u64 = 50;
 // ============================================
 
 pub mod message_role {
+    pub const SYSTEM: &str = "system";
     pub const USER: &str = "user";
     pub const ASSISTANT: &str = "assistant";
     pub const TOOL_CALL: &str = "tool_call";

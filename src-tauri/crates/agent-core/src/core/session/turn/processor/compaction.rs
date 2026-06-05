@@ -25,10 +25,53 @@ use tracing::{info, warn};
 
 use super::super::streaming::broadcast_agent_warning;
 use super::UnifiedMessageProcessor;
+use crate::core::session::prompt::cache::ORGII_SYSTEM_CACHE_SCOPE_KEY;
 use crate::core::session::types::ProcessingResult;
 use crate::model_context::compaction::{CompactionOutcome, ContextCompactor};
 use crate::model_context::microcompact::ReplacementState;
 use crate::model_context::session_memory;
+use crate::model_context::session_memory::SessionMemoryState;
+use crate::session::persistence as unified_persistence;
+
+fn message_role(message: &Value) -> Option<&str> {
+    message.get("role").and_then(Value::as_str)
+}
+
+fn has_runtime_system_scope(message: &Value) -> bool {
+    message
+        .get("content")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .any(|part| part.get(ORGII_SYSTEM_CACHE_SCOPE_KEY).is_some())
+}
+
+fn leading_runtime_system_prefix_len(messages: &[Value]) -> usize {
+    messages
+        .iter()
+        .take_while(|message| {
+            message_role(message) == Some("system") && has_runtime_system_scope(message)
+        })
+        .count()
+}
+
+fn append_compacted_tail(prefix: &[Value], tail: Vec<Value>) -> Vec<Value> {
+    let mut rebuilt = Vec::with_capacity(prefix.len() + tail.len());
+    rebuilt.extend_from_slice(prefix);
+    rebuilt.extend(tail);
+    rebuilt
+}
+
+fn adjust_sm_state_for_compactable_tail(
+    state: &SessionMemoryState,
+    prefix_len: usize,
+) -> SessionMemoryState {
+    let mut adjusted = state.clone();
+    adjusted.last_summarized_msg_idx = state
+        .last_summarized_msg_idx
+        .and_then(|idx| idx.checked_sub(prefix_len));
+    adjusted
+}
 
 /// Outcome of [`UnifiedMessageProcessor::run_pre_turn_compaction`].
 pub(super) enum CompactionPhaseOutcome {
@@ -86,10 +129,13 @@ impl UnifiedMessageProcessor {
         } else {
             crate::providers::model_hints::context_window_hint(&self.runtime.model)
         };
+        let prefix_len = leading_runtime_system_prefix_len(messages);
+        let prefix = messages[..prefix_len].to_vec();
+        let mut compactable_tail = messages[prefix_len..].to_vec();
 
         if !(self.runtime.resolved.compaction.enabled
             && ContextCompactor::needs_compaction(
-                messages,
+                &compactable_tail,
                 context_window,
                 &self.runtime.resolved.compaction,
             ))
@@ -98,9 +144,10 @@ impl UnifiedMessageProcessor {
         }
 
         info!(
-            "[unified_processor] Compacting context for session {} ({} messages, window={})",
+            "[unified_processor] Compacting context for session {} (prefix={}, tail={}, window={})",
             session_id,
-            messages.len(),
+            prefix_len,
+            compactable_tail.len(),
             context_window
         );
 
@@ -110,9 +157,10 @@ impl UnifiedMessageProcessor {
         let sm_compacted = {
             let sm_state = self.sm_state.lock().await;
             if self.sm_config.enabled {
+                let adjusted_sm_state = adjust_sm_state_for_compactable_tail(&sm_state, prefix_len);
                 session_memory::try_sm_compact(
-                    messages,
-                    &sm_state,
+                    &compactable_tail,
+                    &adjusted_sm_state,
                     &self.sm_compact_config,
                     context_window,
                 )
@@ -124,28 +172,31 @@ impl UnifiedMessageProcessor {
         let mut need_llm_compact = true;
 
         if let Some(compacted) = sm_compacted {
-            let cleaned = crate::model_context::cleanup::post_compact_cleanup(compacted);
+            let cleaned_tail = crate::model_context::cleanup::post_compact_cleanup(compacted);
+            let rebuilt = append_compacted_tail(&prefix, cleaned_tail.clone());
 
             if ContextCompactor::needs_compaction(
-                &cleaned,
+                &cleaned_tail,
                 context_window,
                 &self.runtime.resolved.compaction,
             ) {
                 warn!(
-                    "[unified_processor] SM-compact still over budget for session {} ({} messages, ~{} tokens), falling back to LLM compaction",
+                    "[unified_processor] SM-compact still over budget for session {} ({} tail messages, ~{} tokens), falling back to LLM compaction",
                     session_id,
-                    cleaned.len(),
-                    ContextCompactor::estimate_messages_tokens(&cleaned),
+                    cleaned_tail.len(),
+                    ContextCompactor::estimate_messages_tokens(&cleaned_tail),
                 );
-                *messages = cleaned;
+                *messages = rebuilt;
+                compactable_tail = cleaned_tail;
             } else {
                 info!(
-                    "[unified_processor] SM-compact succeeded for session {} ({} → {} messages)",
+                    "[unified_processor] SM-compact succeeded for session {} (tail {} → {}, prefix={})",
                     session_id,
-                    messages.len(),
-                    cleaned.len()
+                    messages.len().saturating_sub(prefix_len),
+                    cleaned_tail.len(),
+                    prefix_len
                 );
-                *messages = cleaned;
+                *messages = rebuilt;
                 need_llm_compact = false;
 
                 let mut sm_state = self.sm_state.lock().await;
@@ -156,7 +207,7 @@ impl UnifiedMessageProcessor {
         if need_llm_compact {
             let mut state = self.compaction_state.lock().await;
             let (compacted, outcome) = ContextCompactor::compact(
-                messages,
+                &compactable_tail,
                 context_window,
                 &self.runtime.resolved.compaction,
                 &mut state,
@@ -164,13 +215,14 @@ impl UnifiedMessageProcessor {
                 &self.runtime.model,
             )
             .await;
-            *messages = crate::model_context::cleanup::post_compact_cleanup(compacted);
+            let cleaned_tail = crate::model_context::cleanup::post_compact_cleanup(compacted);
+            *messages = append_compacted_tail(&prefix, cleaned_tail);
 
             if let CompactionOutcome::Truncated { messages_dropped } = outcome {
                 broadcast_agent_warning(
                     session_id,
                     &format!(
-                        "Context compaction fell back to truncation ({} messages dropped without summary)",
+                        "Context compaction fell back to truncation ({} conversation messages dropped without summary)",
                         messages_dropped
                     ),
                     "compaction",
@@ -186,6 +238,8 @@ impl UnifiedMessageProcessor {
             &pre_compact_messages,
             messages,
         );
+
+        let durable_compacted_messages = messages[prefix_len.min(messages.len())..].to_vec();
 
         // 6b. Compact-fork — for channel-attached sessions only, persist the
         // compacted transcript as a new session id and return `fork_redirect`
@@ -204,7 +258,7 @@ impl UnifiedMessageProcessor {
             let outcome = super::super::super::compaction::fork::attempt_fork(
                 super::super::super::compaction::fork::ForkInputs {
                     state: state.inner(),
-                    compacted_messages: messages,
+                    compacted_messages: &durable_compacted_messages,
                     old_session_id: session_id,
                     reset_policy: &reset_policy,
                 },
@@ -212,6 +266,12 @@ impl UnifiedMessageProcessor {
             .await;
             match outcome {
                 super::super::super::compaction::fork::ForkOutcome::Forked { new_session_id } => {
+                    if let Err(err) = unified_persistence::clear_session_memory_state(session_id) {
+                        warn!(
+                            "[unified_processor] Failed to clear old SM state after compact-fork for session {}: {}",
+                            session_id, err
+                        );
+                    }
                     info!(
                         "[unified_processor] Compact-fork: redirecting session {} → {}",
                         session_id, new_session_id
@@ -241,6 +301,122 @@ impl UnifiedMessageProcessor {
             }
         }
 
+        let persist_messages = durable_compacted_messages.clone();
+        let persist_result = tokio::task::spawn_blocking({
+            let sid = session_id.to_string();
+            move || {
+                unified_persistence::replace_messages_with_compacted_history(
+                    &sid,
+                    &persist_messages,
+                )
+            }
+        })
+        .await;
+        match persist_result {
+            Ok(Ok(())) => {
+                if let Err(err) = unified_persistence::clear_session_memory_state(session_id) {
+                    warn!(
+                        "[unified_processor] Failed to clear persisted SM state after compact for session {}: {}",
+                        session_id, err
+                    );
+                }
+                let mut sm_state = self.sm_state.lock().await;
+                sm_state.content = None;
+                sm_state.last_summarized_msg_idx = None;
+                sm_state.initialized = false;
+                sm_state.tokens_at_last_extraction = 0;
+                sm_state.tool_calls_since_extraction = 0;
+                info!(
+                    "[unified_processor] Persisted compacted transcript for session {} ({} durable messages)",
+                    session_id,
+                    durable_compacted_messages.len()
+                );
+            }
+            Ok(Err(err)) => warn!(
+                "[unified_processor] Failed to persist compacted transcript for session {}: {}",
+                session_id, err
+            ),
+            Err(err) => warn!(
+                "[unified_processor] Failed to join compacted transcript persistence for session {}: {}",
+                session_id, err
+            ),
+        }
+
         CompactionPhaseOutcome::Continue
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn leading_runtime_system_prefix_counts_only_scoped_front_system_messages() {
+        let messages = vec![
+            json!({"role": "system", "content": [{"type": "text", "text": "stable", ORGII_SYSTEM_CACHE_SCOPE_KEY: "session"}]}),
+            json!({"role": "system", "content": [{"type": "text", "text": "dynamic", ORGII_SYSTEM_CACHE_SCOPE_KEY: "volatile"}]}),
+            json!({"role": "system", "content": "persisted compact summary"}),
+            json!({"role": "user", "content": "hello"}),
+        ];
+
+        assert_eq!(leading_runtime_system_prefix_len(&messages), 2);
+    }
+
+    #[test]
+    fn persisted_compact_summary_is_part_of_compactable_tail() {
+        let messages = vec![
+            json!({"role": "system", "content": "persisted compact summary"}),
+            json!({"role": "user", "content": "recent"}),
+        ];
+
+        assert_eq!(leading_runtime_system_prefix_len(&messages), 0);
+    }
+
+    #[test]
+    fn append_compacted_tail_preserves_system_prefix_order() {
+        let prefix = vec![
+            json!({"role": "system", "content": "stable"}),
+            json!({"role": "system", "content": "dynamic"}),
+        ];
+        let tail = vec![
+            json!({"role": "system", "content": "summary"}),
+            json!({"role": "user", "content": "recent"}),
+        ];
+
+        let rebuilt = append_compacted_tail(&prefix, tail);
+
+        assert_eq!(rebuilt.len(), 4);
+        assert_eq!(rebuilt[0]["content"], "stable");
+        assert_eq!(rebuilt[1]["content"], "dynamic");
+        assert_eq!(rebuilt[2]["content"], "summary");
+        assert_eq!(rebuilt[3]["content"], "recent");
+    }
+
+    #[test]
+    fn sm_boundary_is_shifted_from_provider_messages_to_tail_messages() {
+        let state = SessionMemoryState {
+            content: Some("summary".to_string()),
+            last_summarized_msg_idx: Some(7),
+            ..SessionMemoryState::default()
+        };
+
+        let adjusted = adjust_sm_state_for_compactable_tail(&state, 2);
+
+        assert_eq!(adjusted.last_summarized_msg_idx, Some(5));
+        assert_eq!(adjusted.content.as_deref(), Some("summary"));
+    }
+
+    #[test]
+    fn sm_boundary_before_system_prefix_is_not_reused_for_tail() {
+        let state = SessionMemoryState {
+            content: Some("summary".to_string()),
+            last_summarized_msg_idx: Some(1),
+            ..SessionMemoryState::default()
+        };
+
+        let adjusted = adjust_sm_state_for_compactable_tail(&state, 2);
+
+        assert_eq!(adjusted.last_summarized_msg_idx, None);
     }
 }

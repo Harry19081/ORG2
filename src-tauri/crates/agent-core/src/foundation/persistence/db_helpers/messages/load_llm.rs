@@ -155,6 +155,17 @@ fn reconstruct(messages: &[AgentMessageRow]) -> Vec<serde_json::Value> {
 
     for msg in messages {
         match msg.role.as_str() {
+            message_role::SYSTEM => {
+                flush_pending(
+                    &mut result,
+                    &mut pending_tool_calls,
+                    &mut pending_tool_results,
+                );
+                result.push(serde_json::json!({
+                    "role": message_role::SYSTEM,
+                    "content": msg.content,
+                }));
+            }
             message_role::USER => {
                 flush_pending(
                     &mut result,
@@ -308,6 +319,24 @@ mod tests {
     }
 
     #[test]
+    fn reconstruct_preserves_persisted_compact_summary_system_rows() {
+        let history = reconstruct_llm_history(vec![
+            make_system_msg(1, "Previous conversation summary: compacted old turns"),
+            make_user_msg(2, "recent follow-up"),
+            make_assistant_msg(3, "recent answer"),
+        ]);
+
+        assert_eq!(history.len(), 3);
+        assert_eq!(history[0]["role"], message_role::SYSTEM);
+        assert_eq!(
+            history[0]["content"],
+            "Previous conversation summary: compacted old turns"
+        );
+        assert_eq!(history[1]["content"], "recent follow-up");
+        assert_eq!(history[2]["content"], "recent answer");
+    }
+
+    #[test]
     fn load_llm_history_missing_table_returns_err() {
         let _sandbox = test_env::sandbox();
 
@@ -325,6 +354,23 @@ mod tests {
     /// a thin alias over `super::reconstruct` for readability.
     fn reconstruct_llm_history(messages: Vec<AgentMessageRow>) -> Vec<serde_json::Value> {
         reconstruct(&messages)
+    }
+
+    fn make_system_msg(seq: i64, content: &str) -> AgentMessageRow {
+        AgentMessageRow {
+            id: format!("msg-{}", seq),
+            session_id: "test-session".to_string(),
+            role: message_role::SYSTEM.to_string(),
+            content: content.to_string(),
+            tool_name: None,
+            tool_call_id: None,
+            tool_input: None,
+            tool_output: None,
+            model: None,
+            sequence: seq,
+            created_at: "2024-01-01T00:00:00Z".to_string(),
+            images: None,
+        }
     }
 
     fn make_user_msg(seq: i64, content: &str) -> AgentMessageRow {

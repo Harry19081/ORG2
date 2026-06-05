@@ -27,55 +27,68 @@ use super::types::{
 // Core Aggregation
 // ============================================================================
 
-/// Load all sessions from all three sources and compute statistics.
+/// Load sessions from the requested sources and compute statistics.
 pub fn list_all_sessions(filter: Option<&SessionFilter>) -> Result<SessionListResponse, String> {
-    // Load from all three sources
-    let cli_sessions = cli_session_persistence::list_sessions()
-        .map_err(|err| format!("Failed to load CLI sessions: {}", err))?;
-
-    let sde_filter = agent_core::session::SessionListFilter {
-        type_name: Some(session_type::CODING.to_string()),
-        ..Default::default()
+    let category_filter = filter.and_then(|filter| filter.category.as_deref());
+    let wants_category = |category: &str| -> bool {
+        category_filter
+            .map(|raw| raw.split(',').map(str::trim).any(|value| value == category))
+            .unwrap_or(true)
     };
-    let sde_sessions = session_persistence::list_sessions(&sde_filter)
-        .map_err(|err| format!("Failed to load SDE Agent sessions: {}", err))?;
 
-    let org_member_filter = agent_core::session::SessionListFilter {
-        type_name: Some(session_type::ORG_MEMBER.to_string()),
-        ..Default::default()
-    };
-    let org_member_sessions = session_persistence::list_sessions(&org_member_filter)
-        .map_err(|err| format!("Failed to load Agent Org member sessions: {}", err))?;
+    let load_cli = wants_category("cli");
+    let load_agent = wants_category("agent");
+    let load_os = wants_category("os");
 
-    let os_filter = agent_core::session::SessionListFilter {
-        type_name: Some(session_type::DESKTOP.to_string()),
-        ..Default::default()
-    };
-    let os_sessions = session_persistence::list_sessions(&os_filter)
-        .map_err(|err| format!("Failed to load OS Agent sessions: {}", err))?;
+    let mut all_sessions: Vec<SessionAggregateRecord> = Vec::new();
 
-    // Convert each backend row into SessionAggregateRecord
-    let mut all_sessions: Vec<SessionAggregateRecord> = Vec::with_capacity(
-        cli_sessions.len() + sde_sessions.len() + org_member_sessions.len() + os_sessions.len(),
-    );
-
-    for session in cli_sessions {
-        all_sessions.push(cli_session_to_aggregate_record(session));
+    if load_cli {
+        let cli_sessions = cli_session_persistence::list_sessions()
+            .map_err(|err| format!("Failed to load CLI sessions: {}", err))?;
+        all_sessions.reserve(cli_sessions.len());
+        for session in cli_sessions {
+            all_sessions.push(cli_session_to_aggregate_record(session));
+        }
     }
 
-    for session in sde_sessions {
-        all_sessions.push(sde_session_to_aggregate_record(session));
+    if load_agent {
+        let sde_filter = agent_core::session::SessionListFilter {
+            type_name: Some(session_type::CODING.to_string()),
+            ..Default::default()
+        };
+        let sde_sessions = session_persistence::list_sessions(&sde_filter)
+            .map_err(|err| format!("Failed to load SDE Agent sessions: {}", err))?;
+        all_sessions.reserve(sde_sessions.len());
+        for session in sde_sessions {
+            all_sessions.push(sde_session_to_aggregate_record(session));
+        }
+
+        let org_member_filter = agent_core::session::SessionListFilter {
+            type_name: Some(session_type::ORG_MEMBER.to_string()),
+            ..Default::default()
+        };
+        let org_member_sessions = session_persistence::list_sessions(&org_member_filter)
+            .map_err(|err| format!("Failed to load Agent Org member sessions: {}", err))?;
+        all_sessions.reserve(org_member_sessions.len());
+        for session in org_member_sessions {
+            all_sessions.push(sde_session_to_aggregate_record(session));
+        }
+
+        annotate_agent_org_root_rows(&mut all_sessions)?;
     }
 
-    for session in org_member_sessions {
-        all_sessions.push(sde_session_to_aggregate_record(session));
+    if load_os {
+        let os_filter = agent_core::session::SessionListFilter {
+            type_name: Some(session_type::DESKTOP.to_string()),
+            ..Default::default()
+        };
+        let os_sessions = session_persistence::list_sessions(&os_filter)
+            .map_err(|err| format!("Failed to load OS Agent sessions: {}", err))?;
+        all_sessions.reserve(os_sessions.len());
+        for session in os_sessions {
+            all_sessions.push(os_session_to_aggregate_record(session));
+        }
     }
-
-    for session in os_sessions {
-        all_sessions.push(os_session_to_aggregate_record(session));
-    }
-
-    annotate_agent_org_root_rows(&mut all_sessions)?;
 
     // Apply filters
     if let Some(filter) = filter {
