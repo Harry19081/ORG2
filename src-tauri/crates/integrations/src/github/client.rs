@@ -65,6 +65,11 @@ impl GitHubClient {
         self.request(Method::POST, path, Some(body)).await
     }
 
+    /// PATCH request to the GitHub REST API with a JSON body.
+    pub async fn patch(&self, path: &str, body: Value) -> Result<Value, String> {
+        self.request(Method::PATCH, path, Some(body)).await
+    }
+
     /// POST a GraphQL query to GitHub's GraphQL endpoint.
     pub async fn graphql(&self, query: &str, variables: Value) -> Result<Value, String> {
         log::info!("[GitHub][GraphQL] Executing query");

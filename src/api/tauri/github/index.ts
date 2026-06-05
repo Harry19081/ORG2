@@ -133,6 +133,202 @@ export interface StoreTokenResult {
   username: string;
 }
 
+export interface GitHubIssueLabel {
+  id: number;
+  name: string;
+  color: string;
+  description: string | null;
+}
+
+export interface GitHubIssueUser {
+  login: string;
+  avatar_url: string;
+}
+
+export interface GitHubIssue {
+  number: number;
+  title: string;
+  body: string | null;
+  state: "open" | "closed";
+  state_reason: "completed" | "not_planned" | null;
+  html_url: string;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+  user: GitHubIssueUser;
+  labels: GitHubIssueLabel[];
+  assignees: GitHubIssueUser[];
+  comments: number;
+  milestone: string | null;
+}
+
+export interface GitHubIssueComment {
+  id: number;
+  body: string;
+  user: GitHubIssueUser;
+  created_at: string;
+  updated_at: string;
+  html_url: string;
+}
+
+export interface GitHubIssueListResponse {
+  issues: GitHubIssue[];
+  total_count: number;
+  has_more: boolean;
+}
+
+// ============================================
+// GitHub Issues API Functions
+// ============================================
+
+/**
+ * List issues for a repository.
+ */
+export async function listIssuesLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  opts?: { state?: "open" | "closed" | "all"; labels?: string; page?: number }
+): Promise<GitHubIssueListResponse> {
+  return invokeWithAuth<GitHubIssueListResponse>("github_list_issues", {
+    ...baseParams(userId, token),
+    repoFullName,
+    state: opts?.state ?? "open",
+    labels: opts?.labels ?? null,
+    page: opts?.page ?? 1,
+  });
+}
+
+/**
+ * Fetch a single issue by number.
+ */
+export async function getIssueLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  issueNumber: number
+): Promise<GitHubIssue> {
+  return invokeWithAuth<GitHubIssue>("github_get_issue", {
+    ...baseParams(userId, token),
+    repoFullName,
+    issueNumber,
+  });
+}
+
+/**
+ * Create a new issue.
+ */
+export async function createIssueLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  title: string,
+  body?: string,
+  labels?: string[],
+  assignees?: string[]
+): Promise<GitHubIssue> {
+  return invokeWithAuth<GitHubIssue>("github_create_issue", {
+    ...baseParams(userId, token),
+    repoFullName,
+    title,
+    body: body ?? null,
+    labels: labels ?? null,
+    assignees: assignees ?? null,
+  });
+}
+
+/**
+ * Update an existing issue (title, body, state).
+ */
+export async function updateIssueLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  issueNumber: number,
+  updates: {
+    title?: string;
+    body?: string;
+    state?: "open" | "closed";
+    stateReason?: "completed" | "not_planned";
+    labels?: string[];
+    assignees?: string[];
+  }
+): Promise<GitHubIssue> {
+  return invokeWithAuth<GitHubIssue>("github_update_issue", {
+    ...baseParams(userId, token),
+    repoFullName,
+    issueNumber,
+    title: updates.title ?? null,
+    body: updates.body ?? null,
+    state: updates.state ?? null,
+    stateReason: updates.stateReason ?? null,
+    labels: updates.labels ?? null,
+    assignees: updates.assignees ?? null,
+  });
+}
+
+/**
+ * List comments on an issue.
+ */
+export async function listIssueCommentsLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  issueNumber: number
+): Promise<GitHubIssueComment[]> {
+  return invokeWithAuth<GitHubIssueComment[]>("github_list_issue_comments", {
+    ...baseParams(userId, token),
+    repoFullName,
+    issueNumber,
+  });
+}
+
+/**
+ * Post a new comment on an issue.
+ */
+export async function createIssueCommentLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  issueNumber: number,
+  body: string
+): Promise<GitHubIssueComment> {
+  return invokeWithAuth<GitHubIssueComment>("github_create_issue_comment", {
+    ...baseParams(userId, token),
+    repoFullName,
+    issueNumber,
+    body,
+  });
+}
+
+/**
+ * List labels for a repository.
+ */
+export async function listRepoLabelsLocal(
+  userId: string,
+  token: string,
+  repoFullName: string
+): Promise<GitHubIssueLabel[]> {
+  return invokeWithAuth<GitHubIssueLabel[]>("github_list_repo_labels", {
+    ...baseParams(userId, token),
+    repoFullName,
+  });
+}
+
+/**
+ * List collaborators for a repository.
+ */
+export async function listRepoCollaboratorsLocal(
+  userId: string,
+  token: string,
+  repoFullName: string
+): Promise<GitHubIssueUser[]> {
+  return invokeWithAuth<GitHubIssueUser[]>("github_list_repo_collaborators", {
+    ...baseParams(userId, token),
+    repoFullName,
+  });
+}
+
 // ============================================
 // API Functions
 // ============================================

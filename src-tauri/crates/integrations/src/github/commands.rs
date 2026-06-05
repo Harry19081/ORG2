@@ -18,6 +18,55 @@ use super::token_store;
 // Types
 // ============================================
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct IssueLabel {
+    pub id: u64,
+    pub name: String,
+    pub color: String,
+    pub description: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct IssueUser {
+    pub login: String,
+    pub avatar_url: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GitHubIssue {
+    pub number: u64,
+    pub title: String,
+    pub body: Option<String>,
+    pub state: String,
+    pub state_reason: Option<String>,
+    pub html_url: String,
+    pub created_at: String,
+    pub updated_at: String,
+    pub closed_at: Option<String>,
+    pub user: IssueUser,
+    pub labels: Vec<IssueLabel>,
+    pub assignees: Vec<IssueUser>,
+    pub comments: u64,
+    pub milestone: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GitHubIssueComment {
+    pub id: u64,
+    pub body: String,
+    pub user: IssueUser,
+    pub created_at: String,
+    pub updated_at: String,
+    pub html_url: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct GitHubIssueListResponse {
+    pub issues: Vec<GitHubIssue>,
+    pub total_count: u64,
+    pub has_more: bool,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Repo {
     pub id: u64,
@@ -101,6 +150,58 @@ fn parse_branch(v: &Value) -> Branch {
         name: v["name"].as_str().unwrap_or("").to_string(),
         sha: v["commit"]["sha"].as_str().unwrap_or("").to_string(),
         protected: v["protected"].as_bool().unwrap_or(false),
+    }
+}
+
+fn parse_issue_user(v: &Value) -> IssueUser {
+    IssueUser {
+        login: v["login"].as_str().unwrap_or("").to_string(),
+        avatar_url: v["avatar_url"].as_str().unwrap_or("").to_string(),
+    }
+}
+
+fn parse_issue_label(v: &Value) -> IssueLabel {
+    IssueLabel {
+        id: v["id"].as_u64().unwrap_or(0),
+        name: v["name"].as_str().unwrap_or("").to_string(),
+        color: v["color"].as_str().unwrap_or("").to_string(),
+        description: v["description"].as_str().map(|s| s.to_string()),
+    }
+}
+
+fn parse_issue(v: &Value) -> GitHubIssue {
+    GitHubIssue {
+        number: v["number"].as_u64().unwrap_or(0),
+        title: v["title"].as_str().unwrap_or("").to_string(),
+        body: v["body"].as_str().map(|s| s.to_string()),
+        state: v["state"].as_str().unwrap_or("open").to_string(),
+        state_reason: v["state_reason"].as_str().map(|s| s.to_string()),
+        html_url: v["html_url"].as_str().unwrap_or("").to_string(),
+        created_at: v["created_at"].as_str().unwrap_or("").to_string(),
+        updated_at: v["updated_at"].as_str().unwrap_or("").to_string(),
+        closed_at: v["closed_at"].as_str().map(|s| s.to_string()),
+        user: parse_issue_user(&v["user"]),
+        labels: v["labels"]
+            .as_array()
+            .map(|arr| arr.iter().map(parse_issue_label).collect())
+            .unwrap_or_default(),
+        assignees: v["assignees"]
+            .as_array()
+            .map(|arr| arr.iter().map(parse_issue_user).collect())
+            .unwrap_or_default(),
+        comments: v["comments"].as_u64().unwrap_or(0),
+        milestone: v["milestone"]["title"].as_str().map(|s| s.to_string()),
+    }
+}
+
+fn parse_issue_comment(v: &Value) -> GitHubIssueComment {
+    GitHubIssueComment {
+        id: v["id"].as_u64().unwrap_or(0),
+        body: v["body"].as_str().unwrap_or("").to_string(),
+        user: parse_issue_user(&v["user"]),
+        created_at: v["created_at"].as_str().unwrap_or("").to_string(),
+        updated_at: v["updated_at"].as_str().unwrap_or("").to_string(),
+        html_url: v["html_url"].as_str().unwrap_or("").to_string(),
     }
 }
 
@@ -595,6 +696,274 @@ pub async fn github_clear_token(user_id: String) -> Result<(), String> {
     token_store::clear(&user_id)?;
     log::info!("[GitHub] Token cleared for user {}", user_id);
     Ok(())
+}
+
+// ============================================
+// Issues
+// ============================================
+
+#[tauri::command]
+#[allow(clippy::too_many_arguments)]
+pub async fn github_list_issues(
+    user_id: String,
+    repo_full_name: String,
+    state: Option<String>,
+    labels: Option<String>,
+    assignee: Option<String>,
+    page: Option<u32>,
+    per_page: Option<u32>,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<GitHubIssueListResponse, String> {
+    log::info!(
+        "[GitHub][Cmd] list_issues repo={} state={:?}",
+        repo_full_name,
+        state
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let per_page = per_page.unwrap_or(30);
+    let page = page.unwrap_or(1);
+    let state_str = state.as_deref().unwrap_or("open");
+    let mut url = format!(
+        "/repos/{}/issues?state={}&per_page={}&page={}&filter=all",
+        repo_full_name, state_str, per_page, page
+    );
+    if let Some(l) = &labels {
+        url.push_str(&format!("&labels={}", l));
+    }
+    if let Some(a) = &assignee {
+        url.push_str(&format!("&assignee={}", a));
+    }
+    let result = client.get(&url).await.map_err(|e| e.to_string())?;
+    let issues: Vec<GitHubIssue> = result
+        .as_array()
+        .map(|arr| {
+            arr.iter()
+                // GitHub issues API returns PRs too — filter them out
+                .filter(|v| v["pull_request"].is_null())
+                .map(parse_issue)
+                .collect()
+        })
+        .unwrap_or_default();
+    let has_more = issues.len() >= per_page as usize;
+    Ok(GitHubIssueListResponse {
+        total_count: issues.len() as u64,
+        issues,
+        has_more,
+    })
+}
+
+#[tauri::command]
+pub async fn github_get_issue(
+    user_id: String,
+    repo_full_name: String,
+    issue_number: u64,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<GitHubIssue, String> {
+    log::info!(
+        "[GitHub][Cmd] get_issue repo={} issue={}",
+        repo_full_name,
+        issue_number
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let result = client
+        .get(&format!(
+            "/repos/{}/issues/{}",
+            repo_full_name, issue_number
+        ))
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(parse_issue(&result))
+}
+
+#[tauri::command]
+#[allow(clippy::too_many_arguments)]
+pub async fn github_create_issue(
+    user_id: String,
+    repo_full_name: String,
+    title: String,
+    body: Option<String>,
+    labels: Option<Vec<String>>,
+    assignees: Option<Vec<String>>,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<GitHubIssue, String> {
+    log::info!(
+        "[GitHub][Cmd] create_issue repo={} title={}",
+        repo_full_name,
+        title
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let mut payload = serde_json::json!({ "title": title });
+    if let Some(b) = body {
+        payload["body"] = serde_json::json!(b);
+    }
+    if let Some(l) = labels {
+        payload["labels"] = serde_json::json!(l);
+    }
+    if let Some(a) = assignees {
+        payload["assignees"] = serde_json::json!(a);
+    }
+    let result = client
+        .post(&format!("/repos/{}/issues", repo_full_name), payload)
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(parse_issue(&result))
+}
+
+#[tauri::command]
+#[allow(clippy::too_many_arguments)]
+pub async fn github_update_issue(
+    user_id: String,
+    repo_full_name: String,
+    issue_number: u64,
+    title: Option<String>,
+    body: Option<String>,
+    state: Option<String>,
+    state_reason: Option<String>,
+    labels: Option<Vec<String>>,
+    assignees: Option<Vec<String>>,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<GitHubIssue, String> {
+    log::info!(
+        "[GitHub][Cmd] update_issue repo={} issue={}",
+        repo_full_name,
+        issue_number
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let mut payload = serde_json::json!({});
+    if let Some(t) = title {
+        payload["title"] = serde_json::json!(t);
+    }
+    if let Some(b) = body {
+        payload["body"] = serde_json::json!(b);
+    }
+    if let Some(s) = state {
+        payload["state"] = serde_json::json!(s);
+    }
+    if let Some(sr) = state_reason {
+        payload["state_reason"] = serde_json::json!(sr);
+    }
+    if let Some(l) = labels {
+        payload["labels"] = serde_json::json!(l);
+    }
+    if let Some(a) = assignees {
+        payload["assignees"] = serde_json::json!(a);
+    }
+    let result = client
+        .patch(
+            &format!("/repos/{}/issues/{}", repo_full_name, issue_number),
+            payload,
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(parse_issue(&result))
+}
+
+#[tauri::command]
+pub async fn github_list_issue_comments(
+    user_id: String,
+    repo_full_name: String,
+    issue_number: u64,
+    page: Option<u32>,
+    per_page: Option<u32>,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<Vec<GitHubIssueComment>, String> {
+    log::info!(
+        "[GitHub][Cmd] list_issue_comments repo={} issue={}",
+        repo_full_name,
+        issue_number
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let per_page = per_page.unwrap_or(50);
+    let page = page.unwrap_or(1);
+    let result = client
+        .get(&format!(
+            "/repos/{}/issues/{}/comments?per_page={}&page={}",
+            repo_full_name, issue_number, per_page, page
+        ))
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(result
+        .as_array()
+        .map(|arr| arr.iter().map(parse_issue_comment).collect())
+        .unwrap_or_default())
+}
+
+#[tauri::command]
+pub async fn github_create_issue_comment(
+    user_id: String,
+    repo_full_name: String,
+    issue_number: u64,
+    body: String,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<GitHubIssueComment, String> {
+    log::info!(
+        "[GitHub][Cmd] create_issue_comment repo={} issue={}",
+        repo_full_name,
+        issue_number
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let payload = serde_json::json!({ "body": body });
+    let result = client
+        .post(
+            &format!(
+                "/repos/{}/issues/{}/comments",
+                repo_full_name, issue_number
+            ),
+            payload,
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(parse_issue_comment(&result))
+}
+
+#[tauri::command]
+pub async fn github_list_repo_labels(
+    user_id: String,
+    repo_full_name: String,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<Vec<IssueLabel>, String> {
+    log::info!("[GitHub][Cmd] list_repo_labels repo={}", repo_full_name);
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let result = client
+        .get(&format!("/repos/{}/labels?per_page=100", repo_full_name))
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(result
+        .as_array()
+        .map(|arr| arr.iter().map(parse_issue_label).collect())
+        .unwrap_or_default())
+}
+
+#[tauri::command]
+pub async fn github_list_repo_collaborators(
+    user_id: String,
+    repo_full_name: String,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<Vec<IssueUser>, String> {
+    log::info!(
+        "[GitHub][Cmd] list_repo_collaborators repo={}",
+        repo_full_name
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    let result = client
+        .get(&format!(
+            "/repos/{}/collaborators?per_page=100",
+            repo_full_name
+        ))
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(result
+        .as_array()
+        .map(|arr| arr.iter().map(|v| parse_issue_user(v)).collect())
+        .unwrap_or_default())
 }
 
 #[cfg(test)]

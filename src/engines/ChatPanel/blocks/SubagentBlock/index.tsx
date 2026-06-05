@@ -109,10 +109,17 @@ const SubagentBlock: React.FC<SubagentBlockProps> = memo(
     const hasErrorMessage = Boolean(
       errorMessage && errorMessage.trim().length > 0
     );
+    // `success === false` alone is not a reliable failure signal: the Rust
+    // extractor defaults `success` to false whenever the parent tool_call's
+    // result is still empty (running, or the brief window between
+    // displayStatus flipping to Completed and `recompute_extracted` seeing
+    // the merged result). Only treat the run as failed when status is
+    // explicitly terminal, or when the extractor also surfaced an
+    // errorMessage (which it only populates on confirmed failure).
     const isFailure =
       status === "failed" ||
       status === "cancelled" ||
-      (status !== "running" && success === false);
+      (success === false && hasErrorMessage);
 
     const canExpand =
       hasNestedSession || hasContent || hasErrorMessage || hasPrompt;

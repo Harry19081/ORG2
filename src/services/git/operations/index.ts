@@ -16,3 +16,14 @@ export type {
   CreatePullRequestParams,
   CreatePullRequestResult,
 } from "./createPullRequest";
+
+export {
+  fetchIssues,
+  fetchIssue,
+  createIssue,
+  closeIssue,
+  reopenIssue,
+  addIssueComment,
+  fetchIssueComments,
+} from "./githubIssues";
+export type { IssueResult } from "./githubIssues";
