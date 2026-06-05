@@ -12,6 +12,7 @@ import type {
 
 import type { ComposerInputRef as TiptapInputRef } from "@src/components/ComposerInput";
 import type { AgentExecMode } from "@src/config/sessionCreatorConfig";
+import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
 import type { SlashItem } from "@src/types/extensions/types";
 
 // ============================================
@@ -228,6 +229,7 @@ export interface UseInputAreaReturn {
   isSessionTerminal: boolean;
 
   // Drag & drop
+  dropTargetId: string;
   handleDragOver: (e: DragEvent<HTMLDivElement>) => void;
   handleDragLeave: (e: DragEvent<HTMLDivElement>) => void;
   handleDrop: (e: DragEvent<HTMLDivElement>) => void;
@@ -244,6 +246,7 @@ export interface UseInputAreaReturn {
   currentRepoPath: string | undefined;
 
   // Image attachments
+  attachedImages: ChatImageAttachment[];
   handleImagePaste: (files: File[]) => void;
   hasImages: boolean;
 }

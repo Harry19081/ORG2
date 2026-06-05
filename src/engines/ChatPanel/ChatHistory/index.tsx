@@ -521,6 +521,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       turnCollapseInteractionAtRef,
       isContentOverflowingRef,
       activeSessionId: activeId,
+      staticScrollerRef,
     });
 
   // Subagent panes pass `disableTailCollapse` because every paginated page

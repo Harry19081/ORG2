@@ -20,7 +20,7 @@
  * } = useInputArea();
  */
 import { useAtomValue } from "jotai";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef } from "react";
 
 import { useChatContext } from "@src/contexts/workspace/ChatContext";
 import { useDataContext } from "@src/contexts/workspace/DataContext";
@@ -154,6 +154,8 @@ export function useInputArea(
   // ============================================
 
   const refs = useInputAreaRefs();
+  const reactDropTargetId = useId();
+  const dropTargetId = `chat-drop-${reactDropTargetId.replace(/:/g, "")}`;
   const state = useInputAreaState();
   const { isDark } = useCurrentTheme();
   const citeCode = useCiteCode();
@@ -228,7 +230,7 @@ export function useInputArea(
     setSlashQuery: state.setSlashQuery,
   });
 
-  const imageAttachment = useImageAttachment();
+  const imageAttachment = useImageAttachment(dropTargetId);
 
   // Pull stable function references out of the imageAttachment object so the
   // effects below only re-run when draftSessionId changes, not on every render
@@ -285,6 +287,7 @@ export function useInputArea(
 
   useInputAreaEffects({
     tiptapRef: refs.tiptapRef,
+    dropTargetId,
     atDropdownRef: refs.atDropdownRef,
     hasContentRef: refs.hasContentRef,
     showContextMenu: state.showContextMenu,
@@ -507,6 +510,7 @@ export function useInputArea(
     isSessionTerminal,
 
     // Drag & drop
+    dropTargetId,
     handleDragOver: dragDrop.handleDragOver,
     handleDragLeave: dragDrop.handleDragLeave,
     handleDrop: dragDrop.handleDrop,
@@ -523,6 +527,7 @@ export function useInputArea(
     currentRepoPath,
 
     // Image attachments
+    attachedImages: imageAttachment.images,
     handleImagePaste: imageAttachment.handleImagePaste,
     hasImages: imageAttachment.hasImages,
   };

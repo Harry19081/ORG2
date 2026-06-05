@@ -9,6 +9,7 @@ import { Square } from "lucide-react";
 import React, {
   memo,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -103,11 +104,20 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
       handleHeaderMouseEnter,
       handleHeaderMouseLeave,
       handleLocate,
+      setIsCollapsed,
     } = useBlockHeader({
       defaultCollapsed: effectiveDefaultCollapsed,
       eventId,
       collapseAllValue: true,
     });
+
+    const wasStillRunningRef = useRef(isStillRunning);
+    useEffect(() => {
+      if (wasStillRunningRef.current && !isStillRunning && !isErrorExit) {
+        setIsCollapsed(true);
+      }
+      wasStillRunningRef.current = isStillRunning;
+    }, [isStillRunning, isErrorExit, setIsCollapsed]);
 
     const { t } = useTranslation("sessions");
     const { t: tCommon } = useTranslation();

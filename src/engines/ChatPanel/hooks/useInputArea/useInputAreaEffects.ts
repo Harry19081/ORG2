@@ -29,6 +29,7 @@ import { useImageAttachment } from "./useImageAttachment";
 interface UseInputAreaEffectsOptions {
   // Refs
   tiptapRef: RefObject<TiptapInputRef>;
+  dropTargetId: string;
   atDropdownRef: RefObject<HTMLDivElement>;
   hasContentRef: MutableRefObject<boolean>;
 
@@ -51,6 +52,7 @@ interface UseInputAreaEffectsOptions {
 export function useInputAreaEffects(options: UseInputAreaEffectsOptions): void {
   const {
     tiptapRef,
+    dropTargetId,
     atDropdownRef,
     hasContentRef,
     showContextMenu,
@@ -70,7 +72,8 @@ export function useInputAreaEffects(options: UseInputAreaEffectsOptions): void {
   // Image attachments — unified entry point for paste / upload / drag-drop
   // images. `handleImagePath` reads bytes from a filesystem path and routes
   // them through the same optimize pipeline as `handleImagePaste`.
-  const { handleImagePaste, handleImagePath } = useImageAttachment();
+  const { handleImagePaste, handleImagePath } =
+    useImageAttachment(dropTargetId);
 
   // Restore-to-input signal set by the cancel-restore path after a
   // user-initiated cancel. We push the message back into the editor so
@@ -276,17 +279,22 @@ export function useInputAreaEffects(options: UseInputAreaEffectsOptions): void {
   useEffect(() => {
     if (droppedFiles.length === 0) return;
 
+    const filesForThisTarget = droppedFiles.filter(
+      (file) => !file.dropTargetId || file.dropTargetId === dropTargetId
+    );
+    if (filesForThisTarget.length === 0) return;
+
     // Track retry timers for cleanup if Tiptap isn't mounted yet.
     const retryTimers: ReturnType<typeof setTimeout>[] = [];
     let cancelled = false;
 
     // Folders can never be images, even if they happen to match an extension.
-    const imageFiles = droppedFiles.filter(
+    const imageFiles = filesForThisTarget.filter(
       (file) =>
         file.type !== "folder" &&
         (file.browserFile?.type.startsWith("image/") || isImageName(file.name))
     );
-    const otherFiles = droppedFiles.filter(
+    const otherFiles = filesForThisTarget.filter(
       (file) => file.type === "folder" || !imageFiles.includes(file)
     );
 
@@ -343,6 +351,7 @@ export function useInputAreaEffects(options: UseInputAreaEffectsOptions): void {
     };
   }, [
     droppedFiles,
+    dropTargetId,
     clearDroppedFiles,
     tiptapRef,
     hasContentRef,

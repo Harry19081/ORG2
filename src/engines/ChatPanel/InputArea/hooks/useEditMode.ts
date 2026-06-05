@@ -26,7 +26,9 @@ interface UseEditModeOptions {
   /** Initial text to pre-fill */
   initialContent?: string;
   /** Callback when edit is submitted */
-  onEditSubmit?: (text: string) => void;
+  onEditSubmit?: (text: string, imageDataUrls?: string[]) => void;
+  /** Images newly attached while editing */
+  attachedImageDataUrls?: string[];
   /** Callback when edit is cancelled */
   onEditCancel?: () => void;
   /** Ref to the TipTap editor handle */
@@ -53,6 +55,7 @@ export function useEditMode({
   isEditMode,
   initialContent,
   onEditSubmit,
+  attachedImageDataUrls = [],
   onEditCancel,
   tiptapRef,
 }: UseEditModeOptions): UseEditModeReturn {
@@ -116,10 +119,13 @@ export function useEditMode({
       // Use getTextWithPills to preserve pill serialization format
       const text = tiptapRef.current.getTextWithPills().trim();
       if (text) {
-        onEditSubmit(text);
+        onEditSubmit(
+          text,
+          attachedImageDataUrls.length > 0 ? attachedImageDataUrls : undefined
+        );
       }
     }
-  }, [onEditSubmit, tiptapRef]);
+  }, [attachedImageDataUrls, onEditSubmit, tiptapRef]);
 
   // Handle edit mode cancel (Escape key)
   const handleEditKeyDown = useCallback(

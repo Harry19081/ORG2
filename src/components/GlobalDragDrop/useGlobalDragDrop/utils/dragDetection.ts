@@ -136,6 +136,18 @@ function getDropTargetElement(
   return document.elementFromPoint(eventOrPosition.x, eventOrPosition.y);
 }
 
+export function getChatDropTargetId(
+  eventOrPosition: Event | { x: number; y: number }
+): string | undefined {
+  const targetElement = getDropTargetElement(eventOrPosition);
+  const directTarget = targetElement?.closest(CHAT_DROP_TARGET_SELECTOR);
+  if (directTarget instanceof HTMLElement) {
+    return directTarget.dataset.chatDropTargetId;
+  }
+
+  return undefined;
+}
+
 export function isDropInsideChatDropTarget(
   eventOrPosition: Event | { x: number; y: number }
 ): boolean {

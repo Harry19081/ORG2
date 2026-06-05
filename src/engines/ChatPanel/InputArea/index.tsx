@@ -63,9 +63,9 @@ interface InputAreaProps {
   /** Initial content for edit mode */
   initialContent?: string;
   /** Callback when edit is submitted */
-  onEditSubmit?: (text: string) => void;
+  onEditSubmit?: (text: string, imageDataUrls?: string[]) => void;
   /** Callback when edit is submitted and immediately sent */
-  onEditSendNow?: (text: string) => void;
+  onEditSendNow?: (text: string, imageDataUrls?: string[]) => void;
   /** Callback when edit is cancelled */
   onEditCancel?: () => void;
   /** Label shown in the edit-mode header bar (e.g. "Editing queued message") */
@@ -206,6 +206,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
       isSessionTerminal,
 
       // Drag & drop
+      dropTargetId,
       handleDragOver,
       handleDragLeave,
       handleDrop,
@@ -216,6 +217,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
       currentRepoPath,
 
       // Image attachments
+      attachedImages,
       handleImagePaste,
       hasImages,
     } = useInputArea({
@@ -265,20 +267,23 @@ const InputArea: React.FC<InputAreaProps> = memo(
     // Edit Mode (extracted hook)
     // ============================================
 
+    const attachedImageDataUrls = attachedImages.map((image) => image.dataUrl);
+
     const { editContainerRef, handleEditSubmit, handleEditKeyDown } =
       useEditMode({
         effectiveEditMode: isEditMode,
         isEditMode,
         initialContent,
         onEditSubmit,
+        attachedImageDataUrls,
         onEditCancel,
         tiptapRef,
       });
     const handleEditSendNow = useCallback(() => {
       if (!tiptapRef.current || !onEditSendNow) return;
       const text = tiptapRef.current.getTextWithPills().trim();
-      if (text) onEditSendNow(text);
-    }, [onEditSendNow, tiptapRef]);
+      if (text) onEditSendNow(text, attachedImageDataUrls);
+    }, [attachedImageDataUrls, onEditSendNow, tiptapRef]);
 
     // ============================================
     // Container Drag (extracted hook)
@@ -563,6 +568,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
           <ComposerShell
             ref={isEditMode ? editContainerRef : undefined}
             data-chat-drop-target
+            data-chat-drop-target-id={dropTargetId}
             variant={
               compactShell
                 ? "pill"
@@ -594,26 +600,32 @@ const InputArea: React.FC<InputAreaProps> = memo(
               />
             )}
 
-            {/* Image Attachment Preview (new images) or edit-mode images (read-only) */}
-            {isEditMode && editImages && editImages.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {editImages.map((dataUrl, idx) => (
-                  <EditModeImageThumbnail
-                    key={idx}
-                    dataUrl={dataUrl}
-                    alt={`Attached image ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            ) : isEditMode ? (
-              <ImageAttachmentPreview />
+            {/* Image Attachment Preview (new images) and edit-mode images (read-only) */}
+            {isEditMode ? (
+              <>
+                {editImages && editImages.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 px-6">
+                    {editImages.map((dataUrl, idx) => (
+                      <EditModeImageThumbnail
+                        key={idx}
+                        dataUrl={dataUrl}
+                        alt={`Attached image ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+                <ImageAttachmentPreview
+                  ownerId={dropTargetId}
+                  className="px-6 pb-0.5"
+                />
+              </>
             ) : null}
 
             {isEditMode ? (
               editComposerBar
             ) : (
               <div className="flex min-h-0 w-full flex-col">
-                <ImageAttachmentPreview />
+                <ImageAttachmentPreview ownerId={dropTargetId} />
                 <ComposerBar
                   onAddContent={handleOpenContextMenu}
                   onUpload={handleUploadClick}
