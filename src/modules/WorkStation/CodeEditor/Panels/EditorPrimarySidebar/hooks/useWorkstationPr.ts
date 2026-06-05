@@ -5,21 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 import { fetchRustApi, gitRepoUrl } from "@src/api/http/git/client";
 import { getGitRemotes } from "@src/api/http/git/remotes";
-import {
-  LOCAL_GITHUB_TOKEN_USER_ID,
-  findPullRequestLocal,
-  getGitHubGitCredentialForRemote,
-} from "@src/api/tauri/github";
+import { findPullRequestLocal } from "@src/api/tauri/github";
 import { Message } from "@src/components/Message";
 import { buildIntegrationsPath } from "@src/config/mainAppPaths/integrations";
-import {
-  SERVICE_AUTH_STORAGE_KEYS,
-  getHostedToken,
-} from "@src/config/serviceAuth";
 import { createLogger } from "@src/hooks/logger";
 import {
   createPullRequest,
   parseGithubRepoFullName,
+  resolveGitHubAuth,
 } from "@src/services/git/operations/createPullRequest";
 import { gitAutoCreatePrAtom } from "@src/store/ui/editorSettingsAtom";
 import {
@@ -138,33 +131,9 @@ export function useWorkstationPr(options: UseWorkstationPrOptions) {
         );
         if (!originRemote?.url) return;
 
-        const hostedToken = getHostedToken();
-        const hostedUserId = localStorage.getItem(
-          SERVICE_AUTH_STORAGE_KEYS.userId
-        );
-
-        let userId: string | null = null;
-        let token: string | null = null;
-
-        if (hostedToken && hostedUserId) {
-          userId = hostedUserId;
-          token = hostedToken;
-        } else {
-          try {
-            const credential = await getGitHubGitCredentialForRemote(
-              LOCAL_GITHUB_TOKEN_USER_ID,
-              originRemote.url
-            );
-            if (credential) {
-              userId = LOCAL_GITHUB_TOKEN_USER_ID;
-              token = credential.token;
-            }
-          } catch {
-            // no local credential available
-          }
-        }
-
-        if (!userId || !token) return;
+        const auth = await resolveGitHubAuth(originRemote.url);
+        if (!auth) return;
+        const { userId, token } = auth;
 
         const repoFullName = parseGithubRepoFullName(originRemote.url);
         if (!repoFullName) return;
@@ -306,9 +275,26 @@ export function useWorkstationPr(options: UseWorkstationPrOptions) {
     }
   }, [readyToCreate]);
 
+  const isDefaultBranch = !!branchName && branchName === defaultBranch;
+
   useEffect(() => {
-    setWorkstationPrAtom({ readyToCreate, prUrl, isCreating });
-  }, [readyToCreate, prUrl, isCreating, setWorkstationPrAtom]);
+    setWorkstationPrAtom({
+      readyToCreate,
+      prUrl,
+      isCreating,
+      hasUpstream,
+      uncommittedCount,
+      isDefaultBranch,
+    });
+  }, [
+    readyToCreate,
+    prUrl,
+    isCreating,
+    hasUpstream,
+    uncommittedCount,
+    isDefaultBranch,
+    setWorkstationPrAtom,
+  ]);
 
   useEffect(() => {
     setWorkstationPrCallbackAtom({ createPr: handleCreatePr });
@@ -320,6 +306,9 @@ export function useWorkstationPr(options: UseWorkstationPrOptions) {
         readyToCreate: false,
         prUrl: undefined,
         isCreating: false,
+        hasUpstream: false,
+        uncommittedCount: 0,
+        isDefaultBranch: false,
       });
       setWorkstationPrCallbackAtom({ createPr: null });
     };

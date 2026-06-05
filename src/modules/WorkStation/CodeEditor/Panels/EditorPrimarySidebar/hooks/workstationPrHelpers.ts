@@ -17,7 +17,8 @@ export function buildWorkstationPrStorageKey(
   repoPath: string,
   branch: string
 ): string {
-  return `${WORKSTATION_PR_STORAGE_PREFIX}:${repoPath}:${branch}`;
+  const safeRepoPath = repoPath.replace(/\\/g, "/");
+  return `${WORKSTATION_PR_STORAGE_PREFIX}:${safeRepoPath}:${branch}`;
 }
 
 export function getStoredWorkstationPr(

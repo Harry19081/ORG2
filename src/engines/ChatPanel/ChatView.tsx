@@ -383,13 +383,10 @@ const ChatView: React.FC<ChatViewProps> = memo(
       currentPlanApproval && shouldShowCurrentPlanSurface
     );
 
-    const setSelectedApp = useSetAtom(simulatorSelectedAppAtom);
-    const setReplayMode = useSetAtom(replayModeAtom);
-
     const handleFilesExpand = useCallback(() => {
-      setSelectedApp(AppType.DIFF);
-      setReplayMode("replay");
-    }, [setSelectedApp, setReplayMode]);
+      store.set(simulatorSelectedAppAtom, AppType.DIFF);
+      store.set(replayModeAtom, "replay");
+    }, [store]);
 
     const {
       questionCollapsed,

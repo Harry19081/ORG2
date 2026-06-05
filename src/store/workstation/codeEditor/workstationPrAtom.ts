@@ -4,6 +4,14 @@ import { atom } from "jotai";
  * Shared PR state for the active workstation repo.
  * Written by `useWorkstationPr` when eligibility or PR URL changes.
  * Read by `PinnedActionsBar` to show the "Open PR" quick-action pill.
+ *
+ * TODO(multi-panel): This is a single global atom. When multiple workstation
+ * panels are open simultaneously they will share state incorrectly. Fix by
+ * migrating to `atomFamily` keyed by `repoId` (from `jotai-family`), matching
+ * the pattern used in `cursorModeOverrideAtom.ts`. Callers to update:
+ *   - `useWorkstationPr` (useSetAtom → useAtom(workstationPrAtomFamily(repoId)))
+ *   - `PinnedActionsBar` / `workstationPrCallbackAtom` consumer
+ *   - Any other direct reader of `workstationPrAtom`
  */
 export interface WorkstationPrSnapshot {
   /** The branch is eligible for PR creation (not default, pushed, clean) */
@@ -12,12 +20,21 @@ export interface WorkstationPrSnapshot {
   prUrl?: string;
   /** PR is currently being created */
   isCreating: boolean;
+  /** Current branch has an upstream set on origin */
+  hasUpstream: boolean;
+  /** Number of uncommitted changes in the working tree */
+  uncommittedCount: number;
+  /** Current branch equals the repo default branch */
+  isDefaultBranch: boolean;
 }
 
 export const workstationPrAtom = atom<WorkstationPrSnapshot>({
   readyToCreate: false,
   prUrl: undefined,
   isCreating: false,
+  hasUpstream: false,
+  uncommittedCount: 0,
+  isDefaultBranch: false,
 });
 
 /**
