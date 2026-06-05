@@ -128,7 +128,7 @@ export function useSourceControlSetup({
   const handleSourceControlFilterModeChange = useCallback(
     (mode: SourceControlFilterMode) => {
       setSourceControlFilterMode(mode);
-      if (mode === "history" || mode === "pr") return;
+      if (mode === "history" || mode === "pr" || mode === "issues") return;
       setPrimaryPanel((prev: PanelState) => {
         const tabIndex = prev.tabs.findIndex(
           (item) => item.type === "source-control"

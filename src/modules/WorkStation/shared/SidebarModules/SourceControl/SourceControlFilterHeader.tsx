@@ -28,7 +28,8 @@ export type SourceControlFilterMode =
   | "staged"
   | "stashed"
   | "history"
-  | "pr";
+  | "pr"
+  | "issues";
 
 export interface SourceControlFilterCounts {
   uncommitted: number;
@@ -92,7 +93,12 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
 
       const getModeCount = useCallback(
         (modeId: SourceControlFilterMode) => {
-          if (!counts || modeId === "history" || modeId === "pr")
+          if (
+            !counts ||
+            modeId === "history" ||
+            modeId === "pr" ||
+            modeId === "issues"
+          )
             return undefined;
           return counts[modeId];
         },
@@ -142,6 +148,15 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                     </span>
                   ),
                   triggerLabel: t("common:labels.pullRequest", "Pull request"),
+                },
+                {
+                  value: "issues",
+                  label: (
+                    <span className="whitespace-nowrap">
+                      {t("common:labels.issues", "Issues")}
+                    </span>
+                  ),
+                  triggerLabel: t("common:labels.issues", "Issues"),
                 },
               ]
             : []),

@@ -9,12 +9,16 @@ import {
   getIssueLocal,
   listIssueCommentsLocal,
   listIssuesLocal,
+  listRepoCollaboratorsLocal,
+  listRepoLabelsLocal,
   updateIssueLocal,
 } from "@src/api/tauri/github";
 import type {
   GitHubIssue,
   GitHubIssueComment,
+  GitHubIssueLabel,
   GitHubIssueListResponse,
+  GitHubIssueUser,
 } from "@src/api/tauri/github";
 
 import {
@@ -23,7 +27,13 @@ import {
 } from "./createPullRequest";
 
 // Re-export types for consumers
-export type { GitHubIssue, GitHubIssueComment, GitHubIssueListResponse };
+export type {
+  GitHubIssue,
+  GitHubIssueComment,
+  GitHubIssueLabel,
+  GitHubIssueListResponse,
+  GitHubIssueUser,
+};
 
 export type IssueResult<T> =
   | { data: T; error?: never }
@@ -179,6 +189,68 @@ export async function fetchIssueComments(params: {
       ctx.token,
       ctx.repoFullName,
       params.issueNumber
+    );
+    return { data };
+  } catch (e) {
+    return { error: String(e) };
+  }
+}
+
+export async function updateIssue(params: {
+  remoteUrl: string;
+  issueNumber: number;
+  updates: {
+    title?: string;
+    body?: string;
+    state?: "open" | "closed";
+    stateReason?: "completed" | "not_planned";
+    labels?: string[];
+    assignees?: string[];
+  };
+}): Promise<IssueResult<GitHubIssue>> {
+  try {
+    const ctx = await resolveContext(params.remoteUrl);
+    if (!ctx) return { error: "not_authenticated" };
+    const data = await updateIssueLocal(
+      ctx.userId,
+      ctx.token,
+      ctx.repoFullName,
+      params.issueNumber,
+      params.updates
+    );
+    return { data };
+  } catch (e) {
+    return { error: String(e) };
+  }
+}
+
+export async function fetchRepoLabels(
+  remoteUrl: string
+): Promise<IssueResult<GitHubIssueLabel[]>> {
+  try {
+    const ctx = await resolveContext(remoteUrl);
+    if (!ctx) return { error: "not_authenticated" };
+    const data = await listRepoLabelsLocal(
+      ctx.userId,
+      ctx.token,
+      ctx.repoFullName
+    );
+    return { data };
+  } catch (e) {
+    return { error: String(e) };
+  }
+}
+
+export async function fetchRepoCollaborators(
+  remoteUrl: string
+): Promise<IssueResult<GitHubIssueUser[]>> {
+  try {
+    const ctx = await resolveContext(remoteUrl);
+    if (!ctx) return { error: "not_authenticated" };
+    const data = await listRepoCollaboratorsLocal(
+      ctx.userId,
+      ctx.token,
+      ctx.repoFullName
     );
     return { data };
   } catch (e) {

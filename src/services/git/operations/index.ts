@@ -21,9 +21,19 @@ export {
   fetchIssues,
   fetchIssue,
   createIssue,
+  updateIssue,
   closeIssue,
   reopenIssue,
   addIssueComment,
   fetchIssueComments,
+  fetchRepoLabels,
+  fetchRepoCollaborators,
 } from "./githubIssues";
-export type { IssueResult } from "./githubIssues";
+export type {
+  IssueResult,
+  GitHubIssue,
+  GitHubIssueComment,
+  GitHubIssueLabel,
+  GitHubIssueUser,
+  GitHubIssueListResponse,
+} from "./githubIssues";
