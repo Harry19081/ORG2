@@ -8,6 +8,7 @@
  *
  * Repo-agnostic: all state is owned by the caller (`useSourceControlSidebarModule`).
  */
+import { useAtomValue } from "jotai";
 import { Ellipsis, RefreshCw } from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -19,6 +20,7 @@ import type { DropdownOption } from "@src/components/Dropdown/types";
 import Select from "@src/components/Select";
 import { useRefreshSpin } from "@src/hooks/ui";
 import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
+import { workstationPrAtom } from "@src/store/workstation/codeEditor/workstationPrAtom";
 
 export type SourceControlFilterMode =
   | "uncommitted"
@@ -85,6 +87,8 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
       counts,
     }) => {
       const { t } = useTranslation("sessions");
+      const { prUrl, readyToCreate } = useAtomValue(workstationPrAtom);
+      const showPrOption = Boolean(prUrl) || readyToCreate || mode === "pr";
 
       const getModeCount = useCallback(
         (modeId: SourceControlFilterMode) => {
@@ -128,13 +132,21 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
             ),
             triggerLabel: t("common:labels.gitHistory"),
           },
-          {
-            value: "pr",
-            label: <span className="whitespace-nowrap">Pull Request</span>,
-            triggerLabel: "Pull Request",
-          },
+          ...(showPrOption
+            ? [
+                {
+                  value: "pr",
+                  label: (
+                    <span className="whitespace-nowrap">
+                      {t("common:labels.pullRequest", "Pull request")}
+                    </span>
+                  ),
+                  triggerLabel: t("common:labels.pullRequest", "Pull request"),
+                },
+              ]
+            : []),
         ];
-      }, [getCountLabel, getModeCount, t]);
+      }, [getCountLabel, getModeCount, showPrOption, t]);
 
       const [moreMenuVisible, setMoreMenuVisible] = useState(false);
 
