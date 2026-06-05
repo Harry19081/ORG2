@@ -598,6 +598,7 @@ export const SourceControlWithWorktrees = forwardRef<
           const folderName = worktree.path.split("/").pop() || "worktree";
           return (
             <div key={worktree.path} className={FOLDER_HEADER.section}>
+              <div className="mx-2 h-px bg-border-1" aria-hidden />
               <FolderHeaderRow
                 name={folderName}
                 expanded={isExpanded}

@@ -92,6 +92,7 @@ interface InputAreaProps {
   topRowPills?: React.ReactNode;
   /** Status banners that should sit below the top pill row and above composer. */
   statusBanners?: React.ReactNode;
+  composerShellRef?: React.Ref<HTMLDivElement>;
 }
 
 // ============================================
@@ -119,6 +120,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
     customMentionOptions,
     topRowPills,
     statusBanners,
+    composerShellRef,
   }) => {
     const { t } = useTranslation("sessions");
 
@@ -566,7 +568,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
           )}
 
           <ComposerShell
-            ref={isEditMode ? editContainerRef : undefined}
+            ref={isEditMode ? editContainerRef : composerShellRef}
             data-chat-drop-target
             data-chat-drop-target-id={dropTargetId}
             variant={

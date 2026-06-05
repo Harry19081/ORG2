@@ -12,6 +12,7 @@ import {
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
   FOLDER_HEADER,
+  HEADER_BUTTON,
   PRIMARY_SIDEBAR_HOVER,
 } from "@src/modules/WorkStation/shared/tokens";
 
@@ -52,14 +53,18 @@ export const WorktreeActionsMenu: React.FC<WorktreeActionsMenuProps> = memo(
         <button
           ref={triggerRef}
           type="button"
-          className={FOLDER_HEADER.action}
+          className={isOpen ? HEADER_BUTTON.active : FOLDER_HEADER.action}
+          data-state={isOpen ? "open" : "closed"}
           title={t("sourceControl.worktreeActions")}
           onClick={(event) => {
             event.stopPropagation();
             toggle();
           }}
         >
-          <Ellipsis size={14} className="text-text-3" />
+          <Ellipsis
+            size={14}
+            className={isOpen ? "text-primary-6" : "text-text-3"}
+          />
         </button>
 
         {isOpen &&

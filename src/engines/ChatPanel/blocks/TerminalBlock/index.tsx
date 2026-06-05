@@ -344,6 +344,7 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
                 eventId={eventId}
                 payloadRef={payloadRef}
                 collapsedMaxHeight={TERMINAL_INLINE_PREVIEW_MAX_HEIGHT}
+                defaultScrollToBottom
               />
             )}
           </div>
