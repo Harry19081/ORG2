@@ -40,6 +40,12 @@ const ACCESS_TOKEN_URL: &str = "https://github.com/login/oauth/access_token";
 const DEVICE_GRANT_TYPE: &str = "urn:ietf:params:oauth:grant-type:device_code";
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 const USER_AGENT: &str = concat!("orgii-sync-oauth/", env!("CARGO_PKG_VERSION"));
+/// Public GitHub OAuth App client id for ORGII's device-flow client.
+/// Device-flow apps have no client secret, so this id is safe to ship
+/// in an open-source desktop binary. `ORGII_GITHUB_OAUTH_CLIENT_ID`
+/// remains available for development builds that point at a different
+/// GitHub OAuth App (e.g. staging / a fork).
+const DEFAULT_CLIENT_ID: &str = "Ov23liGsB3lDighTSmmO";
 /// Default poll interval if the device-code response somehow omits one;
 /// GitHub always returns an interval, but the spec allows it to be
 /// missing so we pick a conservative default.
@@ -55,16 +61,16 @@ struct DeviceCodeResponse {
     expires_in: i64,
 }
 
-/// Compile-time GitHub OAuth client id. Set at build time via the
-/// `ORGII_GITHUB_OAUTH_CLIENT_ID` env variable; missing values surface a
-/// typed error from [`start_device_flow`] rather than panicking. Public
-/// device-flow clients have no client secret.
+/// GitHub OAuth client id. The public [`DEFAULT_CLIENT_ID`] identifies
+/// ORGII's device-flow OAuth App and is safe to ship in an open-source
+/// desktop binary (device-flow apps have no client secret).
+/// `ORGII_GITHUB_OAUTH_CLIENT_ID` remains available for development
+/// builds that need to point at a different GitHub OAuth App.
 pub fn configured_client_id() -> Option<&'static str> {
-    let raw = option_env!("ORGII_GITHUB_OAUTH_CLIENT_ID")?;
-    if raw.is_empty() {
-        return None;
+    match option_env!("ORGII_GITHUB_OAUTH_CLIENT_ID") {
+        Some(raw) if !raw.is_empty() => Some(raw),
+        _ => Some(DEFAULT_CLIENT_ID),
     }
-    Some(raw)
 }
 
 /// Process-local override for [`configured_client_id`], only present

@@ -495,9 +495,10 @@ pub async fn start_oauth_flow_inner(
         "github_issues" => {
             // Use `effective_client_id` so debug builds can install a
             // synthetic id via `set_test_client_id`. In release builds
-            // this collapses to `configured_client_id` (env-only).
+            // this collapses to `configured_client_id`, which always
+            // returns a value (public default or env override).
             let client_id = oauth::github::effective_client_id().ok_or_else(|| {
-                "GitHub OAuth client id not configured (build with ORGII_GITHUB_OAUTH_CLIENT_ID)"
+                "GitHub OAuth client id not configured (override with ORGII_GITHUB_OAUTH_CLIENT_ID)"
                     .to_string()
             })?;
             let descriptor = oauth::github::start_device_flow(&client_id).await?;
