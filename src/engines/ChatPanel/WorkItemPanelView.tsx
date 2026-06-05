@@ -10,6 +10,7 @@ import {
   enrichedWorkItemToUI,
   projectApi,
 } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import { PropertyDropdownField } from "@src/components/PropertyField/PropertyDropdownField";
 import { createLogger } from "@src/hooks/logger";
 import {
@@ -151,7 +152,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
   selectedWorkItem,
   onUpdateWorkItem,
 }) => {
-  const { t } = useTranslation("projects");
+  const { t } = useTranslation(["projects", "common"]);
   const setSelectedWorkItem = useSetAtom(chatPanelSelectedWorkItemAtom);
   const setActiveSessionId = useSetAtom(activeSessionIdAtom);
   const [floatingSessionId, setFloatingSessionId] = useState<string | null>(
@@ -325,7 +326,7 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
                   {floatingSession?.result_preview ||
                     floatingSession?.sub_agent_name ||
                     floatingSession?.agent_role ||
-                    floatingSessionId}
+                    t("common:terminology.session")}
                 </div>
                 <div className="truncate text-[11px] text-text-4">
                   {floatingSession?.status
@@ -334,15 +335,16 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
                 </div>
               </div>
             </div>
-            <button
-              type="button"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+            <Button
+              variant="tertiary"
+              appearance="ghost"
+              shape="circle"
+              size="small"
               onClick={handleCloseFloatingSession}
               aria-label="Close linked session chat"
               data-testid="work-item-floating-session-chat-close"
-            >
-              <X size={15} />
-            </button>
+              icon={<X size={15} />}
+            />
           </div>
           <div className="min-h-0 flex-1 overflow-hidden">
             <ChatView

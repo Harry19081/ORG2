@@ -247,6 +247,14 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       }
 
       if (!restoreQueueHead) {
+        // Force-send (Send Now) path: the queued message is about to become the
+        // next turn immediately, so we must always unblock the queue dispatcher
+        // regardless of whether the interrupt succeeded or threw.  Resetting
+        // isPendingCancel / runtimeStatus / streamRetryStatus unconditionally in
+        // `finally` is intentional here — unlike the user-stop path (below),
+        // there is no `agent:complete` event coming that would do the reset for
+        // us, because the Rust side treats FORCE_SEND as a tear-down-and-replace
+        // operation rather than a graceful stop.
         setUserInitiatedCancel(false);
         setPendingCancel(true);
         try {

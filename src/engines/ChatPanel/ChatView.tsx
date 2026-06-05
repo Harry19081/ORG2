@@ -320,10 +320,15 @@ const ChatView: React.FC<ChatViewProps> = memo(
         if (!message) return;
         promoteQueuedMessage(messageId);
         void (async () => {
-          if (isSessionActive) {
-            await interruptSession({ restoreQueueHead: false });
+          try {
+            if (isSessionActive) {
+              await interruptSession({ restoreQueueHead: false });
+            }
+          } catch (err) {
+            console.error("[handleSendNow] interrupt failed:", err);
+          } finally {
+            setQueueFlushRequest((requestId) => requestId + 1);
           }
-          setQueueFlushRequest((requestId) => requestId + 1);
         })();
       },
       [
