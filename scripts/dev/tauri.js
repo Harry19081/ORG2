@@ -185,7 +185,7 @@ function routeLine(line) {
     return;
   }
 
-  if (clean.startsWith("Running `/") && clean.endsWith("/app`")) {
+  if (clean.startsWith("Running `/") && clean.endsWith("/orgii`")) {
     if (!appLaunchPrinted) {
       appLaunchPrinted = true;
       printLog("🖥️  Tauri app launched");

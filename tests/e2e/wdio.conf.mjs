@@ -16,7 +16,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..");
-const appBinary = resolve(repoRoot, "src-tauri/target/debug/app");
+const appBinary = resolve(repoRoot, "src-tauri/target/debug/orgii");
 
 // Load tests/e2e/.env so specs can read OPENAI_API_KEY etc. via process.env.
 // Quiet failure is fine — the .env is optional; without it, tests fall back to
@@ -462,7 +462,7 @@ ensureE2EWorkspaceRepo();
 const WDIO_PRE_FLIGHT_PORTS = [webDriverPort, frontendPort, ideServerPort];
 const WDIO_PRE_FLIGHT_PROCESS_PATTERNS = [
   "tauri-wd",
-  "src-tauri/target/debug/app",
+  "src-tauri/target/debug/orgii",
 ];
 let frontendServerProcess = null;
 let tauriWebDriverProcess = null;

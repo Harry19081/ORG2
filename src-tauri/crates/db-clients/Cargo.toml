@@ -14,9 +14,9 @@ edition = "2021"
 # Lives in its own crate so the entire `sqlx` tree (sqlx-core,
 # sqlx-postgres, sqlx-mysql + their MySQL/Postgres binary protocol
 # stacks — three of the top-15 fattest crates in the workspace) doesn't
-# get pulled into `cargo check -p app`. Editing anywhere in `agent_core`
+# get pulled into `cargo check -p orgii`. Editing anywhere in `agent_core`
 # no longer triggers sqlx recompilation, and rust-analyzer's index for
-# `app` shrinks accordingly.
+# `orgii` shrinks accordingly.
 #
 # Naming carefully: the workspace already has TWO unrelated database
 # things to disambiguate from:
