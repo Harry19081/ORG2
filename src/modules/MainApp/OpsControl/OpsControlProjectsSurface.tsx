@@ -38,6 +38,7 @@ import {
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelStickyNotesOpenAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
@@ -124,6 +125,9 @@ const OpsControlProjectsSurface: React.FC<OpsControlProjectsSurfaceProps> =
       const setChatPanelCreateTarget = useSetAtom(chatPanelCreateTargetAtom);
       const setChatPanelSelectedWorkItem = useSetAtom(
         chatPanelSelectedWorkItemAtom
+      );
+      const setChatPanelStickyNotesOpen = useSetAtom(
+        chatPanelStickyNotesOpenAtom
       );
 
       const selectedProjectId = view.kind === "project" ? view.projectId : null;
@@ -279,6 +283,7 @@ const OpsControlProjectsSurface: React.FC<OpsControlProjectsSurfaceProps> =
 
       const handleCreateProject = useCallback(() => {
         setChatPanelSelectedWorkItem(null);
+        setChatPanelStickyNotesOpen(false);
         setChatPanelCreateProjectContext({
           orgId: activeProjectOrg?.orgId ?? STORY_PERSONAL_ORG_FILTER_ID,
           scopeBreadcrumbLabel:
@@ -294,6 +299,7 @@ const OpsControlProjectsSurface: React.FC<OpsControlProjectsSurfaceProps> =
         setChatPanelCreateProjectContext,
         setChatPanelCreateTarget,
         setChatPanelSelectedWorkItem,
+        setChatPanelStickyNotesOpen,
         setStationChatVisible,
         setStationMode,
         t,
@@ -301,6 +307,7 @@ const OpsControlProjectsSurface: React.FC<OpsControlProjectsSurfaceProps> =
 
       const handleCreateWorkItem = useCallback(() => {
         setChatPanelSelectedWorkItem(null);
+        setChatPanelStickyNotesOpen(false);
         setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.WORK_ITEM);
         setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
         setStationMode("my-station");
@@ -309,6 +316,7 @@ const OpsControlProjectsSurface: React.FC<OpsControlProjectsSurfaceProps> =
         setChatPanelContentMode,
         setChatPanelCreateTarget,
         setChatPanelSelectedWorkItem,
+        setChatPanelStickyNotesOpen,
         setStationChatVisible,
         setStationMode,
       ]);

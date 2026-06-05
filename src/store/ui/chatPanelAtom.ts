@@ -280,6 +280,15 @@ export const chatPanelSelectedProjectAtom =
   atom<ChatPanelSelectedProject | null>(null);
 chatPanelSelectedProjectAtom.debugLabel = "chatPanelSelectedProjectAtom";
 
+/**
+ * Whether the chat-panel slot is rendering the full-page Sticky Notes
+ * board. Mutually exclusive with WorkItem/Project at the render layer
+ * (precedence enforced in ChatPanel/index.tsx) — entry points must
+ * clear sibling atoms when flipping this on.
+ */
+export const chatPanelStickyNotesOpenAtom = atom<boolean>(false);
+chatPanelStickyNotesOpenAtom.debugLabel = "chatPanelStickyNotesOpenAtom";
+
 export interface ChatPanelCreateProjectContext {
   orgId: string;
   scopeBreadcrumbLabel?: string;

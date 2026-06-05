@@ -21,6 +21,7 @@ import {
   CHAT_PANEL_CONTENT_MODE,
   chatPanelContentModeAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelStickyNotesOpenAtom,
 } from "@src/store/ui/chatPanelAtom";
 
 // ============================================
@@ -68,6 +69,7 @@ export function useSessionView(): UseSessionViewReturn {
   const setChatPanelSelectedWorkItem = useSetAtom(
     chatPanelSelectedWorkItemAtom
   );
+  const setChatPanelStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
   const closeSessionAction = useSetAtom(closeSessionAtom);
   const updateMetadataAction = useSetAtom(updateSessionMetadataAtom);
 
@@ -77,6 +79,7 @@ export function useSessionView(): UseSessionViewReturn {
       // payload form so we don't double-flush sessionViewAtom.
       setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.SESSION);
       setChatPanelSelectedWorkItem(null);
+      setChatPanelStickyNotesOpen(false);
       jumpToSession({ sessionId, sessionName, repoPath });
       navigate(ROUTES.workStation.base.path);
     },
@@ -85,13 +88,15 @@ export function useSessionView(): UseSessionViewReturn {
       navigate,
       setChatPanelContentMode,
       setChatPanelSelectedWorkItem,
+      setChatPanelStickyNotesOpen,
     ]
   );
 
   const closeSession = useCallback((): void => {
+    setChatPanelStickyNotesOpen(false);
     closeSessionAction();
     navigate(ROUTES.workStation.base.path);
-  }, [closeSessionAction, navigate]);
+  }, [closeSessionAction, navigate, setChatPanelStickyNotesOpen]);
 
   const updateMetadata = useCallback(
     (updates: { sessionName?: string; repoPath?: string }): void => {

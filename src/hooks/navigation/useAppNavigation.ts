@@ -56,6 +56,7 @@ import {
   CHAT_PANEL_CONTENT_MODE,
   chatPanelContentModeAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelStickyNotesOpenAtom,
 } from "@src/store/ui/chatPanelAtom";
 
 // ============================================
@@ -151,6 +152,7 @@ export function useAppNavigation(): UseAppNavigationReturn {
   const setChatPanelSelectedWorkItem = useSetAtom(
     chatPanelSelectedWorkItemAtom
   );
+  const setChatPanelStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
   const startNewSessionCreatorDraft = useSetAtom(
     startNewSessionCreatorDraftAtom
   );
@@ -303,6 +305,7 @@ export function useAppNavigation(): UseAppNavigationReturn {
       dispatchClearSession();
       setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.SESSION);
       setChatPanelSelectedWorkItem(null);
+      setChatPanelStickyNotesOpen(false);
       // Starting a session changes chat identity, not the WorkStation layout.
       setActiveSessionId(null);
       setWorkstationActiveSessionId(null);
@@ -335,6 +338,7 @@ export function useAppNavigation(): UseAppNavigationReturn {
       setActiveSessionId,
       setChatPanelContentMode,
       setChatPanelSelectedWorkItem,
+      setChatPanelStickyNotesOpen,
       setWorkstationActiveSessionId,
       promoteActiveSessionCreatorDraft,
       selectSessionCreatorDraft,

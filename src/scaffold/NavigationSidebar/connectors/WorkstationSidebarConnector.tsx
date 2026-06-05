@@ -48,6 +48,7 @@ import {
   chatPanelCreateTargetAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelStickyNotesOpenAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { type StationMode, stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { spotlightOpenAtom } from "@src/store/ui/uiAtom";
@@ -62,9 +63,9 @@ import { SessionFilterButton } from "./SessionFilterButton";
 import { SessionImportExportModal } from "./SessionImportExportModal";
 import {
   CURSOR_IDE_REFRESH_INTERVAL_MS,
-  NEW_SESSION_MENU_ITEM_ID,
   PROJECTS_NEW_PROJECT_MENU_ITEM_ID,
   PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID,
+  STICKY_NOTES_MENU_ITEM_ID,
 } from "./sidebarConnectorUtils";
 import {
   projectsSidebarGroupByAtom,
@@ -151,6 +152,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const chatPanelCreateTarget = useAtomValue(chatPanelCreateTargetAtom);
   const chatPanelSelectedWorkItem = useAtomValue(chatPanelSelectedWorkItemAtom);
   const chatPanelSelectedProject = useAtomValue(chatPanelSelectedProjectAtom);
+  const chatPanelStickyNotesOpen = useAtomValue(chatPanelStickyNotesOpenAtom);
   const setChatPanelContentMode = useSetAtom(chatPanelContentModeAtom);
   const setChatPanelCreateProjectContext = useSetAtom(
     chatPanelCreateProjectContextAtom
@@ -160,6 +162,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const setChatPanelSelectedWorkItem = useSetAtom(
     chatPanelSelectedWorkItemAtom
   );
+  const setChatPanelStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
   const setStationChatVisible = useSetAtom(activeStationChatVisibleAtom);
   const setStationMode = useSetAtom(stationModeAtom);
   const setOpsControlPeekHost = useSetAtom(opsControlPeekHostAtom);
@@ -251,6 +254,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const createProjectLabel = tProjects("projects.createProject");
   const createWorkItemLabel = tProjects("workItems.createWorkItem");
   const homeLabel = t("sidebar.tabs.build");
+  const stickyNotesLabel = t("stickyNotes.sidebarButton");
 
   const { menuItems, sessionMap, isLoadMoreId, getLoadMoreGroupId } =
     useSessionMenuItems({
@@ -285,10 +289,12 @@ export const WorkstationSidebarConnector: React.FC = () => {
     () =>
       buildPinnedMenuItems({
         newSessionLabel,
+        newSessionShortcut: getShortcutKeys("new_session"),
         kanbanLabel: t("routes.kanban"),
         kanbanRoutePath: ROUTES.workStation.kanban.path,
+        stickyNotesLabel,
       }),
-    [newSessionLabel, t]
+    [newSessionLabel, stickyNotesLabel, t]
   );
 
   const projectsPinnedMenuItems = useMemo<NavigationMenuItem[]>(
@@ -359,10 +365,11 @@ export const WorkstationSidebarConnector: React.FC = () => {
     chatPanelContentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION ||
     Boolean(chatPanelSelectedWorkItem) ||
     Boolean(chatPanelSelectedProject);
-  const sessionSelectedMenuItemId =
-    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.PROJECT ||
-    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM ||
-    isChatPanelProjectsContentSelected
+  const sessionSelectedMenuItemId = chatPanelStickyNotesOpen
+    ? STICKY_NOTES_MENU_ITEM_ID
+    : chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.PROJECT ||
+        chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM ||
+        isChatPanelProjectsContentSelected
       ? ""
       : getSelectedMenuItemId({
           selectedPinnedMenuItemId,
@@ -414,6 +421,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     (options?: GoToNewSessionOptions) => {
       setChatPanelSelectedWorkItem(null);
       setChatPanelSelectedProject(null);
+      setChatPanelStickyNotesOpen(false);
       setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.AGENT_SESSION);
       goToNewSession(options);
     },
@@ -422,8 +430,33 @@ export const WorkstationSidebarConnector: React.FC = () => {
       setChatPanelCreateTarget,
       setChatPanelSelectedProject,
       setChatPanelSelectedWorkItem,
+      setChatPanelStickyNotesOpen,
     ]
   );
+
+  const handleOpenStickyNotes = useCallback(() => {
+    resetOpsControlStateForProjectsContent();
+    setChatPanelSelectedWorkItem(null);
+    setChatPanelSelectedProject(null);
+    setChatPanelCreateProjectContext(null);
+    setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.AGENT_SESSION);
+    setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+    setChatPanelStickyNotesOpen(true);
+    const targetRoute = ROUTES.workStation.code.path;
+    if (location.pathname !== targetRoute) {
+      navigate(targetRoute);
+    }
+  }, [
+    location.pathname,
+    navigate,
+    resetOpsControlStateForProjectsContent,
+    setChatPanelContentMode,
+    setChatPanelCreateProjectContext,
+    setChatPanelCreateTarget,
+    setChatPanelSelectedProject,
+    setChatPanelSelectedWorkItem,
+    setChatPanelStickyNotesOpen,
+  ]);
 
   const {
     handleDeleteSession,
@@ -464,6 +497,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         setProjectsSelectedMenuItemId(PROJECTS_NEW_PROJECT_MENU_ITEM_ID);
         setChatPanelSelectedWorkItem(null);
         setChatPanelSelectedProject(null);
+        setChatPanelStickyNotesOpen(false);
         setChatPanelCreateProjectContext(null);
         setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.PROJECT);
         setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
@@ -475,6 +509,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         setProjectsSelectedMenuItemId(PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID);
         setChatPanelSelectedWorkItem(null);
         setChatPanelSelectedProject(null);
+        setChatPanelStickyNotesOpen(false);
         setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.WORK_ITEM);
         setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
         return;
@@ -486,6 +521,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         setProjectsSelectedMenuItemId(item.id);
         setChatPanelSelectedWorkItem(null);
         setChatPanelSelectedProject(null);
+        setChatPanelStickyNotesOpen(false);
         setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.WORK_ITEM);
         setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
         return;
@@ -518,6 +554,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.AGENT_SESSION);
         setChatPanelSelectedWorkItem(null);
         setChatPanelSelectedProject(toChatPanelProject(project));
+        setChatPanelStickyNotesOpen(false);
         setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
         return;
       }
@@ -529,6 +566,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         setProjectsSelectedMenuItemId(item.id);
         setChatPanelSelectedWorkItem(null);
         setChatPanelSelectedProject(null);
+        setChatPanelStickyNotesOpen(false);
         openProjectsLinearWorkItem(linearWorkItem);
         return;
       }
@@ -543,6 +581,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.AGENT_SESSION);
       setChatPanelSelectedProject(null);
       setChatPanelSelectedWorkItem(chatPanelWorkItem);
+      setChatPanelStickyNotesOpen(false);
       setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
     },
     [
@@ -559,6 +598,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       setChatPanelCreateTarget,
       setChatPanelSelectedProject,
       setChatPanelSelectedWorkItem,
+      setChatPanelStickyNotesOpen,
       toChatPanelProject,
       toChatPanelWorkItem,
     ]
@@ -597,24 +637,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
 
   const renderSessionMenuItemWrapper = useCallback(
     (item: NavigationMenuItem, node: React.ReactElement) => {
-      if (item.id === NEW_SESSION_MENU_ITEM_ID) {
-        return (
-          <Tooltip
-            key={item.key}
-            content={
-              <KeyboardShortcutTooltipContent
-                label={newSessionLabel}
-                shortcut={getShortcutKeys("new_session")}
-              />
-            }
-            position="right"
-            mouseEnterDelay={200}
-            framedPanel
-          >
-            {node}
-          </Tooltip>
-        );
-      }
       if (!sessionMap.has(item.id)) return node;
       return (
         <SessionHoverCard
@@ -628,7 +650,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         </SessionHoverCard>
       );
     },
-    [newSessionLabel, sessionMap]
+    [sessionMap]
   );
 
   const renderProjectsMenuItemWrapper = useCallback(
@@ -667,10 +689,20 @@ export const WorkstationSidebarConnector: React.FC = () => {
     },
     [projectsLinearWorkItemMap, projectsWorkItemMap]
   );
+  const workstationMenuItemClick = useCallback(
+    (key: string, item: NavigationMenuItem) => {
+      if (item.id === STICKY_NOTES_MENU_ITEM_ID) {
+        handleOpenStickyNotes();
+        return;
+      }
+      handleMenuItemClick(key, item);
+    },
+    [handleMenuItemClick, handleOpenStickyNotes]
+  );
   const resolvedMenuItemClick =
     activeSidebarKey === "projects"
       ? handleProjectsMenuItemClick
-      : handleMenuItemClick;
+      : workstationMenuItemClick;
   const resolvedMenuItemContextMenu =
     activeSidebarKey === "projects" ? undefined : handleMenuItemContextMenu;
   const resolvedRenderMenuItemWrapper =
@@ -780,9 +812,11 @@ export const WorkstationSidebarConnector: React.FC = () => {
         onCollapseAll={handleCollapseAll}
         onMarkAllRead={handleMarkAllRead}
         onRefreshSessions={handleRefreshSessions}
-        onExportSessionJson={handleOpenExportSessionJson}
-        onImportSessionJson={handleOpenImportSessionJson}
-        canExportSessionJson={Boolean(activeSession)}
+        // Session JSON import/export is temporarily hidden from the sidebar
+        // menu. Re-pass `onExportSessionJson={handleOpenExportSessionJson}` and
+        // `onImportSessionJson={handleOpenImportSessionJson}` (plus
+        // `canExportSessionJson`) to bring it back; the handlers and modal
+        // wiring below are intentionally left in place.
       />
     );
 

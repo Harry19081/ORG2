@@ -22,6 +22,7 @@ import {
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelStickyNotesOpenAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationAtom";
@@ -114,6 +115,7 @@ export function useProjectTabActions({
   const setChatPanelSelectedWorkItem = useSetAtom(
     chatPanelSelectedWorkItemAtom
   );
+  const setChatPanelStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
   const setLayout = useSetAtom(workstationLayoutAtom);
 
   /**
@@ -218,6 +220,7 @@ export function useProjectTabActions({
 
   const handleCreateProject = useCallback(() => {
     setChatPanelSelectedWorkItem(null);
+    setChatPanelStickyNotesOpen(false);
     setChatPanelCreateProjectContext({
       orgId: activeProjectOrg?.orgId ?? STORY_PERSONAL_ORG_FILTER_ID,
       scopeBreadcrumbLabel:
@@ -234,6 +237,7 @@ export function useProjectTabActions({
     setChatPanelCreateProjectContext,
     setChatPanelCreateTarget,
     setChatPanelSelectedWorkItem,
+    setChatPanelStickyNotesOpen,
     setStationChatVisible,
     stationMode,
     t,
@@ -242,6 +246,7 @@ export function useProjectTabActions({
   const handleCreateWorkItem = useCallback(
     (_projectId?: string, _projectName?: string, _projectSlug?: string) => {
       setChatPanelSelectedWorkItem(null);
+      setChatPanelStickyNotesOpen(false);
       setChatPanelCreateTarget(CHAT_PANEL_CREATE_TARGET.WORK_ITEM);
       setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.NON_SESSION);
       if (stationMode === "my-station" || stationMode === "agent-station") {
@@ -252,6 +257,7 @@ export function useProjectTabActions({
       setChatPanelContentMode,
       setChatPanelCreateTarget,
       setChatPanelSelectedWorkItem,
+      setChatPanelStickyNotesOpen,
       setStationChatVisible,
       stationMode,
     ]
