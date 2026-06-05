@@ -49,6 +49,8 @@ const HistoryRefreshIcon = ICON_CONFIG.refresh;
 export interface UseSourceControlSidebarModuleOptions {
   repoPath: string;
   repoId: string;
+  /** Current branch name, forwarded to PullRequestContent for display. */
+  branchName?: string;
   /** Optional callback when a git file is clicked — opens diff tab in caller. */
   onGitFileSelect?: (file: GitFile) => void;
   /** Optional callback when a history node is selected for inline display. */
@@ -79,6 +81,7 @@ export interface UseSourceControlSidebarModuleResult {
 export function useSourceControlSidebarModule({
   repoPath,
   repoId,
+  branchName,
   onGitFileSelect,
   onGitHistorySelectionChange,
   onGitFilesChange,
@@ -234,11 +237,12 @@ export function useSourceControlSidebarModule({
     () => (
       <div className="flex h-full min-h-0 flex-col">
         <PullRequestContent
+          branchName={branchName}
           onHistorySelectionChange={onGitHistorySelectionChange}
         />
       </div>
     ),
-    [onGitHistorySelectionChange]
+    [branchName, onGitHistorySelectionChange]
   );
 
   const tab = useSourceControlTabConfig({

@@ -13,6 +13,8 @@
  */
 import { useCallback, useState } from "react";
 
+import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
+
 import { PrimarySidebarLayoutWithSections } from "../../PrimarySidebarLayout";
 import {
   type TabSidebarComponent,
@@ -40,9 +42,11 @@ const SourceControlTabSidebar: TabSidebarComponent = ({
   const sourceControlContext = getSourceControlSidebarContext(
     context.surface?.sourceControl
   );
+  const { currentBranch } = useRepoSelection({ autoLoad: false });
   const { tab } = useSourceControlSidebarModule({
     repoPath: context.repoPath,
     repoId: context.repoId,
+    branchName: currentBranch,
     onGitFileSelect: context.git?.onFileSelect,
     onGitHistorySelectionChange: context.git?.onHistorySelectionChange,
     onGitFilesChange: context.git?.onFilesChange,

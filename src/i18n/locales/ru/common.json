@@ -302,6 +302,7 @@
     "execution": "Выполнение",
     "gitHistory": "История Git",
     "noPullRequest": "Нет пул-реквеста",
+    "pullRequest": "Пул-реквест",
     "operationLog": "Журнал операций",
     "gitDashboard": "Панель",
     "changedFiles": "Изменённые файлы",

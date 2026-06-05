@@ -302,6 +302,7 @@
     "execution": "実行",
     "gitHistory": "Git 履歴",
     "noPullRequest": "プルリクエストがありません",
+    "pullRequest": "プルリクエスト",
     "operationLog": "操作ログ",
     "gitDashboard": "ダッシュボード",
     "changedFiles": "変更されたファイル",

@@ -1,6 +1,8 @@
 import { useAtom, useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useMemo } from "react";
 
+import { useGitStatus } from "@src/contexts/git";
+import { useGitFiles } from "@src/hooks/git/sourceControl";
 import type { UseGitDiffStateReturn } from "@src/hooks/workStation/git/useGitDiffState";
 import {
   sourceControlFilterModeAtom,
@@ -19,11 +21,13 @@ import {
   SourceControlFilterHeader,
   type SourceControlFilterMode,
 } from "../shared/SidebarModules";
+import { useWorkstationPr } from "./Panels/EditorPrimarySidebar/hooks/useWorkstationPr";
 import { useStashCount } from "./useStashCount";
 
 interface UseSourceControlSetupParams {
   repoPath: string;
   repoId: string | null;
+  currentBranch: string | undefined;
   gitDiffState: UseGitDiffStateReturn;
   activeTab: WorkStationTab | undefined | null;
   setPrimaryPanel: (updater: (prev: PanelState) => PanelState) => void;
@@ -52,6 +56,7 @@ export interface UseSourceControlSetupReturn {
 export function useSourceControlSetup({
   repoPath,
   repoId,
+  currentBranch,
   gitDiffState,
   activeTab,
   setPrimaryPanel,
@@ -61,6 +66,24 @@ export function useSourceControlSetup({
   const [sourceControlFilterMode, setSourceControlFilterMode] = useAtom(
     sourceControlFilterModeAtom
   );
+
+  // PR lookup — runs at the CodeEditor level so the atom is populated
+  // regardless of which sidebar tab is active (fixes "No pull request" when
+  // Source Control tab has never been mounted).
+  const { currentGitStatus: gitStatus } = useGitStatus();
+  const hasUpstream = !!gitStatus?.current_upstream_branch;
+  const { files: gitFilesForPr } = useGitFiles({
+    selectedRepoId: repoId,
+    repoPath,
+    autoLoad: true,
+  });
+  useWorkstationPr({
+    repoPath,
+    repoId: repoId ?? undefined,
+    branchName: currentBranch,
+    hasUpstream,
+    uncommittedCount: gitFilesForPr.length,
+  });
 
   const { filesByPath: gitFilesByPath } = gitDiffState.state;
   const clearGitDiffFiles = gitDiffState.clearFiles;

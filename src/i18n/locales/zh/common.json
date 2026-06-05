@@ -302,6 +302,7 @@
     "execution": "执行",
     "gitHistory": "Git 历史",
     "noPullRequest": "无 Pull Request",
+    "pullRequest": "Pull Request",
     "operationLog": "操作日志",
     "gitDashboard": "仪表盘",
     "changedFiles": "已更改的文件",

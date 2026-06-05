@@ -302,6 +302,7 @@
     "execution": "실행",
     "gitHistory": "Git 기록",
     "noPullRequest": "풀 리퀘스트 없음",
+    "pullRequest": "풀 리퀘스트",
     "operationLog": "작업 로그",
     "gitDashboard": "대시보드",
     "changedFiles": "변경된 파일",
