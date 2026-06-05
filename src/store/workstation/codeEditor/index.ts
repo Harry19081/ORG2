@@ -37,3 +37,6 @@ export * from "./terminalTargetAtom";
 
 // Git / task output hook refs (set by EditorIntegrations)
 export * from "./outputIntegration";
+
+// GitHub Issues list, detail, and callback atoms
+export * from "./workstationIssueAtom";

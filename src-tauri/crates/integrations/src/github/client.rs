@@ -36,6 +36,11 @@ impl GitHubClient {
         self.request(Method::POST, path, Some(body)).await
     }
 
+    /// PATCH request to the GitHub REST API with a JSON body.
+    pub async fn patch(&self, path: &str, body: Value) -> Result<Value, String> {
+        self.request(Method::PATCH, path, Some(body)).await
+    }
+
     pub async fn graphql(&self, query: &str, variables: Value) -> Result<Value, String> {
         log::info!("[GitHub][GraphQL] Executing query");
         let body = serde_json::json!({ "query": query, "variables": variables });
@@ -61,7 +66,9 @@ impl GitHubClient {
         body: Option<Value>,
     ) -> Result<Value, String> {
         log::info!("[GitHub][API] {} {}", method, path);
-        let resp = self.do_rest_request(method.clone(), path, body.as_ref()).await?;
+        let resp = self
+            .do_rest_request(method.clone(), path, body.as_ref())
+            .await?;
         if resp.status() == StatusCode::UNAUTHORIZED {
             return Err(format!(
                 "GitHubReAuthRequired: {method} {path} returned 401"

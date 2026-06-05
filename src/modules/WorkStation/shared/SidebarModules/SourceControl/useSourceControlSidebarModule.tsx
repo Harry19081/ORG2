@@ -11,7 +11,7 @@
  * `PrimarySidebarLayoutWithSections`.
  */
 import { useAtomValue } from "jotai";
-import { RotateCcw } from "lucide-react";
+import { CircleDot, RotateCcw } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -31,6 +31,7 @@ import {
   PANEL_CONSTANTS,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/config";
 import GitHistoryContent from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/GitHistoryContent";
+import IssuesContent from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/IssuesContent";
 import PullRequestContent from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/PullRequestContent";
 import { useSourceControlActions } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks";
 import {
@@ -38,6 +39,7 @@ import {
   useSourceControlTabConfig,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/tabs/SourceControlTab";
 import type { PrimarySidebarTab } from "@src/modules/WorkStation/shared/PrimarySidebarLayout";
+import { workstationIssueCallbackAtom } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
@@ -104,6 +106,7 @@ export function useSourceControlSidebarModule({
   const filterMode = controlledFilterMode ?? "uncommitted";
   const isHistoryMode = filterMode === "history";
   const isPrMode = filterMode === "pr";
+  const isIssuesMode = filterMode === "issues";
   // Narrow the working-tree section filter (drop stashed/history — those
   // are routed via showOnlyStashes / sourceControlContentOverride).
   const sectionFilter: "uncommitted" | "staged" | "unstaged" =
@@ -207,16 +210,41 @@ export function useSourceControlSidebarModule({
     [pendingCount, isUndoingAll, undoAllAction, sourceControlActions]
   );
 
+  const issueCallbacks = useAtomValue(workstationIssueCallbackAtom);
+  const issueActions = useMemo<SectionHeaderAction[]>(
+    () => [
+      {
+        key: "new-issue",
+        icon: (
+          <CircleDot
+            size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
+            strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
+          />
+        ),
+        tooltip: t("common:git.issues.newIssueTitlePlaceholder", "New issue"),
+        onClick: () => {
+          issueCallbacks.openNewIssueForm?.();
+        },
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [issueCallbacks, t]
+  );
+
   const actions = isHistoryMode
     ? historyActions
     : isPrMode
       ? []
-      : sourceControlActionsWithUndo;
+      : isIssuesMode
+        ? issueActions
+        : sourceControlActionsWithUndo;
   const sectionTitle = isHistoryMode
     ? t("common:labels.gitHistory")
     : isPrMode
       ? t("common:labels.pullRequest", "Pull request")
-      : t("tabs.sourceControl");
+      : isIssuesMode
+        ? t("common:git.issues.title", "Issues")
+        : t("tabs.sourceControl");
 
   const historyContent = useMemo(
     () => (
@@ -245,6 +273,19 @@ export function useSourceControlSidebarModule({
     [branchName, onGitHistorySelectionChange]
   );
 
+  const issuesContent = useMemo(
+    () => (
+      <div className="flex h-full min-h-0 flex-col">
+        <IssuesContent
+          repoPath={repoPath}
+          repoId={repoId}
+          branchName={branchName}
+        />
+      </div>
+    ),
+    [repoPath, repoId, branchName]
+  );
+
   const tab = useSourceControlTabConfig({
     repoPath,
     repoId,
@@ -264,7 +305,9 @@ export function useSourceControlSidebarModule({
       ? prContent
       : isHistoryMode
         ? historyContent
-        : undefined,
+        : isIssuesMode
+          ? issuesContent
+          : undefined,
   });
 
   return useMemo(() => ({ tab, ref: sourceControlRef }), [tab]);

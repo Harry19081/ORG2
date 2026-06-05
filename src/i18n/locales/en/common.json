@@ -121,7 +121,12 @@
     "moreSettings": "More settings",
     "sort": "Sort",
     "openFolder": "Open Folder",
-    "addWorkspace": "Add Workspace"
+    "addWorkspace": "Add Workspace",
+    "newIssue": "New issue",
+    "closeIssue": "Close issue",
+    "reopenIssue": "Reopen issue",
+    "addComment": "Add comment",
+    "editIssue": "Edit issue"
   },
   "refreshToast": {
     "successName": "{{name}} refreshed",
@@ -319,7 +324,14 @@
     "my": "My",
     "nearby": "Nearby",
     "renowned": "Renowned",
-    "dragToReorder": "Drag to reorder message sequence"
+    "dragToReorder": "Drag to reorder message sequence",
+    "issues": "Issues",
+    "noIssues": "No issues",
+    "openIssues": "Open",
+    "closedIssues": "Closed",
+    "issueComments": "{{count}} comment",
+    "issueComments_one": "1 comment",
+    "issueComments_other": "{{count}} comments"
   },
   "searchModes": {
     "keywordLabel": "Keyword",
@@ -1073,6 +1085,34 @@
         "merged": "Merged",
         "closed": "Closed",
         "draft": "Draft"
+      },
+      "authRequired": {
+        "title": "Connect GitHub",
+        "description": "Go to Settings → Integrations → Git to connect your GitHub account."
+      }
+    },
+    "issues": {
+      "title": "Issues",
+      "loading": "Loading issues…",
+      "empty": "No {{state}} issues",
+      "failedToLoad": "Failed to load issues",
+      "failedToCreate": "Failed to create issue",
+      "failedToUpdate": "Failed to update issue",
+      "failedToComment": "Failed to add comment",
+      "filterAll": "All",
+      "filterOpen": "Open",
+      "filterClosed": "Closed",
+      "noGitHubRepo": "Connect a GitHub repository to manage issues",
+      "searchPlaceholder": "Filter by title or label…",
+      "commentPlaceholder": "Leave a comment…",
+      "submitComment": "Comment",
+      "newIssueTitlePlaceholder": "Issue title",
+      "newIssueBodyPlaceholder": "Describe the issue (optional)…",
+      "status": {
+        "open": "Open",
+        "closed": "Closed",
+        "completed": "Completed",
+        "notPlanned": "Not planned"
       },
       "authRequired": {
         "title": "Connect GitHub",
