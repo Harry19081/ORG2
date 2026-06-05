@@ -17,7 +17,7 @@
 //!
 //! - `~/.orgii/projects/projects.db` — the centralized project store:
 //!   projects, work items, labels, milestones, members. Kept separate so
-//!   cross-device sync (Linear / GitHub Issues / ORGII Cloud) and manual
+//!   cross-device sync (Linear / GitHub / ORGII Cloud) and manual
 //!   export/import operate on a self-contained file.
 //!   Entry point: [`get_projects_connection`].
 //!

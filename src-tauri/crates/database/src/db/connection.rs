@@ -8,7 +8,7 @@
 //!   milestones, members. Entry point: `get_projects_connection()`.
 //!
 //! Splitting projects out lets the cross-device sync layer (Linear /
-//! GitHub Issues / ORGII Cloud) treat the project DB as a self-contained
+//! GitHub / ORGII Cloud) treat the project DB as a self-contained
 //! export bundle without touching the much larger and more sensitive
 //! sessions DB. Cross-DB JOINs (e.g. work item ↔ session conversation)
 //! remain possible via `ATTACH DATABASE` on whichever side reads.
