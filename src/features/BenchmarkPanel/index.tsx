@@ -83,11 +83,10 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
                   value="Load benchmark"
                   onChange={() => undefined}
                   readOnly
-                  borderless
-                  bgless
+                  fieldVariant="ghost"
                   size="small"
-                  className="h-7 min-w-0 max-w-full flex-1 cursor-default rounded-lg transition-colors hover:bg-surface-hover [&_.input-inner]:!px-1.5"
-                  inputClassName={`-translate-y-px truncate text-[13px] font-medium text-text-1 ${PROJECT_MANAGER_TEXT_PLACEHOLDER_CLASS}`}
+                  className="flex-1"
+                  inputClassName={PROJECT_MANAGER_TEXT_PLACEHOLDER_CLASS}
                   data-testid="load-benchmark-title-input"
                 />
               }
