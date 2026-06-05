@@ -29,7 +29,7 @@ pub use public::AgentStatusResponse;
 
 #[cfg(debug_assertions)]
 use axum::routing::post;
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 // ============================================
 // Router
@@ -68,6 +68,10 @@ pub fn create_routes() -> Router {
         .route(
             "/test/cli/codex-account-switch",
             post(test::cli::test_codex_cli_account_switch),
+        )
+        .route(
+            "/test/cli/resume-lock-isolation",
+            post(test::cli::test_cli_resume_lock_isolation),
         )
         .route("/test/sde", post(test::sde::test_sde_message))
         .route(

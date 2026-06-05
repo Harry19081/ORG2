@@ -578,15 +578,19 @@ pub async fn cli_agent_resume(session_id: String) -> Result<(), String> {
             .map_err(|err| format!("DB error: {}", err))?
             .or(session.cli_session_id);
 
-    // Guard: prevent duplicate parallel agents — checked BEFORE any mutations.
-    // Hold lock across check + spawn + insert to prevent races (same as cli_agent_run).
-    let mut sessions = session_runner::RUNNING_SESSIONS.lock().await;
-    if let Some(handle) = sessions.get(&session_id) {
-        if !handle.is_finished() {
-            return Err(format!(
-                "Session {} already has a running agent. Cancel it first.",
-                session_id
-            ));
+    // Guard before expensive cleanup. Do not hold the global RUNNING_SESSIONS
+    // mutex across process/proxy/DB awaits: one slow resume cleanup must not
+    // block unrelated CLI sessions or Agent Org members from starting.
+    {
+        let mut sessions = session_runner::RUNNING_SESSIONS.lock().await;
+        if let Some(handle) = sessions.get(&session_id) {
+            if !handle.is_finished() {
+                return Err(format!(
+                    "Session {} already has a running agent. Cancel it first.",
+                    session_id
+                ));
+            }
+            sessions.remove(&session_id);
         }
     }
 
@@ -637,7 +641,20 @@ pub async fn cli_agent_resume(session_id: String) -> Result<(), String> {
         session_runner::RUNNING_SESSIONS.lock().await.remove(&sid);
     });
 
-    sessions.insert(session_id, handle);
+    {
+        let mut sessions = session_runner::RUNNING_SESSIONS.lock().await;
+        if let Some(existing) = sessions.get(&session_id) {
+            if !existing.is_finished() {
+                handle.abort();
+                return Err(format!(
+                    "Session {} already has a running agent. Cancel it first.",
+                    session_id
+                ));
+            }
+            sessions.remove(&session_id);
+        }
+        sessions.insert(session_id, handle);
+    }
 
     Ok(())
 }
