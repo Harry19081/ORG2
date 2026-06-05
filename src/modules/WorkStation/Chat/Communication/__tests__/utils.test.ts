@@ -131,7 +131,7 @@ describe("getMessageSender", () => {
             type: "user",
             agentOrgInboxTranscript: true,
             message: {
-              content: "Reviewed reports from subagents.",
+              content: "Reviewed messages from subagents.",
               role: "user",
             },
           },
