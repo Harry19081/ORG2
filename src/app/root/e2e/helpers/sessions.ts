@@ -36,6 +36,7 @@ import {
   openSessionAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session/viewAtom";
+import { chatImageAttachmentsAtom } from "@src/store/ui/chatImageAtom";
 import {
   CHAT_PANEL_CONTENT_MODE,
   DEFAULT_CHAT_PANEL_CREATE_TARGET,
@@ -47,6 +48,7 @@ import {
   chatWidthAtom,
 } from "@src/store/ui/chatPanelAtom";
 import {
+  forceSendPendingQueueAtom,
   messageQueueAtom,
   queueEditTargetAtom,
   queueFlushRequestAtom,
@@ -206,8 +208,10 @@ export function createSessionHelpers(store: E2EStore) {
       store.set(chatWidthAtom, 560);
       store.set(sessionIdAtom, null);
       store.set(messageQueueAtom, []);
+      store.set(forceSendPendingQueueAtom, []);
       store.set(queueEditTargetAtom, null);
       store.set(queueFlushRequestAtom, 0);
+      store.set(chatImageAttachmentsAtom, []);
       store.set(isPendingCancelAtom, false);
       store.set(userInitiatedCancelAtom, false);
       store.set(sessionRuntimeStatusAtom, "idle");

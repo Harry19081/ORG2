@@ -40,6 +40,9 @@ export interface QueuedMessage {
 export const messageQueueAtom = atom<QueuedMessage[]>([]);
 messageQueueAtom.debugLabel = "messageQueueAtom";
 
+export const forceSendPendingQueueAtom = atom<QueuedMessage[]>([]);
+forceSendPendingQueueAtom.debugLabel = "forceSendPendingQueueAtom";
+
 /** Tracks which queued message is currently being edited in the main input box. */
 export interface QueueEditTarget {
   messageId: string;
@@ -88,13 +91,33 @@ enqueueMessageAtom.debugLabel = "enqueueMessageAtom";
 
 export const dequeueMessageAtom = atom(null, (_get, set, messageId: string) => {
   set(messageQueueAtom, (prev) => prev.filter((msg) => msg.id !== messageId));
+  set(forceSendPendingQueueAtom, (prev) =>
+    prev.filter((msg) => msg.id !== messageId)
+  );
 });
 dequeueMessageAtom.debugLabel = "dequeueMessageAtom";
+
+export const forceSendMessageAtom = atom(
+  null,
+  (get, set, messageId: string) => {
+    const message = get(messageQueueAtom).find((msg) => msg.id === messageId);
+    if (!message) return;
+    set(messageQueueAtom, (prev) => prev.filter((msg) => msg.id !== messageId));
+    set(forceSendPendingQueueAtom, (prev) => {
+      const duplicate = prev.some((msg) => msg.id === messageId);
+      return duplicate ? prev : [message, ...prev];
+    });
+  }
+);
+forceSendMessageAtom.debugLabel = "forceSendMessageAtom";
 
 export const clearSessionQueueAtom = atom(
   null,
   (_get, set, sessionId: string) => {
     set(messageQueueAtom, (prev) =>
+      prev.filter((msg) => msg.sessionId !== sessionId)
+    );
+    set(forceSendPendingQueueAtom, (prev) =>
       prev.filter((msg) => msg.sessionId !== sessionId)
     );
   }
@@ -137,18 +160,6 @@ export const editMessageAtom = atom(
   }
 );
 editMessageAtom.debugLabel = "editMessageAtom";
-
-export const promoteMessageAtom = atom(null, (_get, set, messageId: string) => {
-  set(messageQueueAtom, (prev) => {
-    const idx = prev.findIndex((msg) => msg.id === messageId);
-    if (idx <= 0) return prev;
-    const next = [...prev];
-    const [moved] = next.splice(idx, 1);
-    next.unshift(moved);
-    return next;
-  });
-});
-promoteMessageAtom.debugLabel = "promoteMessageAtom";
 
 /**
  * Bumped to request an immediate queue flush when the session is idle.

@@ -54,6 +54,10 @@ import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefa
 import type { RecentModelEntry } from "@src/store/session/recentModelEntriesAtom";
 import { runningLocationAtom } from "@src/store/session/runningLocationAtom";
 import { selectedWorktreePathAtom } from "@src/store/session/selectedWorktreePathAtom";
+import {
+  type ChatImageAttachment,
+  chatImageAttachmentsAtom,
+} from "@src/store/ui/chatImageAtom";
 import { draftHasContentAtom } from "@src/store/ui/draftAtom";
 import type { SlashItem } from "@src/types/extensions";
 import { getRustAgentType } from "@src/util/session/sessionDispatch";
@@ -198,6 +202,7 @@ export function useSessionCreatorShell({
   // ── Pre-fill editor with restored text ───────────────────────────────────
   const store = useStore();
   const restoreToInput = useAtomValue(restoreToInputAtom);
+  const setImageAttachments = useSetAtom(chatImageAttachmentsAtom);
   const [initialRestoreText] = useState<string>(() => {
     return store.get(restoreToInputAtom)?.displayContent ?? "";
   });
@@ -221,12 +226,28 @@ export function useSessionCreatorShell({
     editor.setContent(restoredText);
     editor.focus();
     handleContentChangeWithTracking(restoredText);
+    if (restoreToInput.imageDataUrls?.length) {
+      const restoredImages: ChatImageAttachment[] =
+        restoreToInput.imageDataUrls.map((dataUrl, idx) => ({
+          id: `restored_${Date.now()}_${idx}`,
+          dataUrl,
+          fileName: `restored-image-${idx + 1}.png`,
+          size: 0,
+          width: 0,
+          height: 0,
+        }));
+      setImageAttachments((prev) => [
+        ...prev.filter((image) => image.ownerId),
+        ...restoredImages,
+      ]);
+    }
     store.set(restoreToInputAtom, null);
     store.set(draftHasContentAtom, restoredText.trim().length > 0);
   }, [
     restoreToInput,
     composerInputRef,
     handleContentChangeWithTracking,
+    setImageAttachments,
     store,
   ]);
 

@@ -302,6 +302,7 @@
     "execution": "Thực thi",
     "gitHistory": "Lịch sử Git",
     "noPullRequest": "Không có pull request",
+    "pullRequest": "Pull request",
     "operationLog": "Nhật ký thao tác",
     "gitDashboard": "Bảng điều khiển",
     "changedFiles": "Tệp đã thay đổi",

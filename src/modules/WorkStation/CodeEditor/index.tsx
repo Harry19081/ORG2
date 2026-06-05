@@ -193,6 +193,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
     } = useSourceControlSetup({
       repoPath,
       repoId: selectedRepoId,
+      currentBranch,
       gitDiffState,
       activeTab,
       setPrimaryPanel,

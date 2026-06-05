@@ -229,6 +229,22 @@ const js = {
     const editor = document.querySelector(${JSON.stringify(CHAT_INPUT_SELECTOR)});
     return editor ? (editor.textContent || "") : null;
   `,
+  imageAttachmentState: `
+    const preview = document.querySelector('[data-testid="chat-image-attachment-preview"]');
+    const thumbnails = Array.from(document.querySelectorAll('[data-testid="chat-image-attachment-thumbnail"]'));
+    const images = Array.from(document.querySelectorAll('[data-testid="chat-image-attachment-img"]')).map((img) => ({
+      src: img.getAttribute('src') || '',
+      alt: img.getAttribute('alt') || '',
+    }));
+    return {
+      preview: !!preview,
+      count: thumbnails.length,
+      dataCount: preview ? preview.getAttribute('data-image-count') : null,
+      fileNames: thumbnails.map((node) => node.getAttribute('data-image-file-name') || ''),
+      images,
+      e2eLast: window.__orgiiE2EImageAttachLast || null,
+    };
+  `,
   mode: `
     const creator = document.querySelector(".session-creator-chat-panel");
     const history = document.querySelector('[data-testid="chat-message-list"]');
@@ -406,6 +422,15 @@ const js = {
         text: node.textContent || '',
       })),
       assistantTexts: Array.from(document.querySelectorAll('[data-testid="chat-message-assistant"]')).map((node) => (node.textContent || "").trim()).slice(-3),
+      imageAttachmentState: (() => {
+        const preview = document.querySelector('[data-testid="chat-image-attachment-preview"]');
+        const thumbnails = Array.from(document.querySelectorAll('[data-testid="chat-image-attachment-thumbnail"]'));
+        return {
+          preview: !!preview,
+          count: thumbnails.length,
+          fileNames: thumbnails.map((node) => node.getAttribute('data-image-file-name') || ''),
+        };
+      })(),
       bodyText: (document.body.innerText || "").slice(0, 4000),
     };
   `,
@@ -499,6 +524,7 @@ function summarizePageDump(dump) {
     assistantTexts: (dump.assistantTexts ?? []).map((text) =>
       truncateDiagnosticText(text)
     ),
+    imageAttachmentState: dump.imageAttachmentState,
     bodyText: truncateDiagnosticText(dump.bodyText, 600),
   };
 }

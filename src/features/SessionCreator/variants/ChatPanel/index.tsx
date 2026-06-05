@@ -67,6 +67,10 @@ import {
 import { restoreToInputAtom } from "@src/store/session/cliSessionStatusAtom";
 import { runningLocationAtom } from "@src/store/session/runningLocationAtom";
 import { selectedWorktreePathAtom } from "@src/store/session/selectedWorktreePathAtom";
+import {
+  type ChatImageAttachment,
+  chatImageAttachmentsAtom,
+} from "@src/store/ui/chatImageAtom";
 import { modelPickerStyleAtom } from "@src/store/ui/chatPanelAtom";
 import { draftHasContentAtom } from "@src/store/ui/draftAtom";
 import { getBigThreeRegionModelTypeForSession } from "@src/util/session/regionAlertModel";
@@ -301,6 +305,7 @@ const SessionCreatorChatPanelSingle = React.forwardRef<
 
     const store = useStore();
     const restoreToInput = useAtomValue(restoreToInputAtom);
+    const setImageAttachments = useSetAtom(chatImageAttachmentsAtom);
     const [initialRestoreText] = useState<string>(() => {
       return store.get(restoreToInputAtom)?.displayContent ?? "";
     });
@@ -325,12 +330,28 @@ const SessionCreatorChatPanelSingle = React.forwardRef<
       editor.setContent(restoredText);
       editor.focus();
       handleContentChangeWithTracking(restoredText);
+      if (restoreToInput.imageDataUrls?.length) {
+        const restoredImages: ChatImageAttachment[] =
+          restoreToInput.imageDataUrls.map((dataUrl, idx) => ({
+            id: `restored_${Date.now()}_${idx}`,
+            dataUrl,
+            fileName: `restored-image-${idx + 1}.png`,
+            size: 0,
+            width: 0,
+            height: 0,
+          }));
+        setImageAttachments((prev) => [
+          ...prev.filter((image) => image.ownerId),
+          ...restoredImages,
+        ]);
+      }
       store.set(restoreToInputAtom, null);
       store.set(draftHasContentAtom, restoredText.trim().length > 0);
     }, [
       restoreToInput,
       composerInputRef,
       handleContentChangeWithTracking,
+      setImageAttachments,
       store,
     ]);
 

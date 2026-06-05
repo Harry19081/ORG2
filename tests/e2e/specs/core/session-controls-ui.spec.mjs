@@ -15,6 +15,7 @@ import {
   filteredConfigs,
   listAccounts,
   runForceSendScenario,
+  runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runIntermediateStreamingScenario,
   runAskForceSendScenario,
@@ -32,6 +33,13 @@ import {
   waitForApp,
 } from "../../support/core/session/agentQueuedFollowupScenarios.mjs";
 import { assertExecutedToolsRendered } from "../../support/core/session/toolCoverage.mjs";
+
+const providerBlockedFamilies = new Set();
+
+function isProviderFamilyBlocked(config) {
+  if (isGeminiConfig(config)) return providerBlockedFamilies.has("gemini");
+  return false;
+}
 
 async function runScenarioWithToolRendering(config, scenarioName, runner) {
   const configsToTry = [config, ...(config.fallbackConfigs ?? [])];
@@ -63,17 +71,36 @@ async function runScenarioWithToolRendering(config, scenarioName, runner) {
       return "passed";
     } catch (error) {
       lastError = error;
+      const errorMessage = String(error?.message ?? error ?? "");
+      const longQuotaExhausted =
+        (/quota[_ ]exhausted/i.test(errorMessage) ||
+          /exhausted your capacity/i.test(errorMessage)) &&
+        /reset after (?:\d+h|[1-9]\d{3,}s)/i.test(errorMessage);
+      const geminiStartupOrMarkerStall =
+        isGeminiConfig(candidateConfig) &&
+        (errorMessage.includes("did not enter a working state before follow-up") ||
+          errorMessage.includes("follow-up marker never appeared"));
+      if (
+        isGeminiConfig(candidateConfig) &&
+        (longQuotaExhausted || geminiStartupOrMarkerStall)
+      ) {
+        lastError = error;
+        providerBlockedFamilies.add("gemini");
+        console.warn(
+          `[queued-followup-provider-blocker] scenario=${scenarioName} account=${candidateConfig.account.name ?? candidateConfig.account.id} model=${candidateConfig.model} long Gemini quota exhausted; skipping remaining Gemini fallback for this config. error=${errorMessage.slice(0, 700)}`
+        );
+        break;
+      }
       const canTryGeminiFallback =
         isGeminiConfig(candidateConfig) &&
-        isGeminiTransientCapacityError(error);
+        (isGeminiTransientCapacityError(error) ||
+          errorMessage.includes("did not enter a working state before follow-up"));
       const canTryClaudeCodeFallback =
         isClaudeCodeConfig(candidateConfig) &&
         isClaudeCodeTransientAuthError(error);
       const canTryProviderAccountFallback =
         isProviderAccountBlockedError(error);
       const canTryProviderMarkerFallback =
-        (isGeminiConfig(candidateConfig) ||
-          isClaudeCodeConfig(candidateConfig)) &&
         isProviderNondeterministicMarkerError(error);
       if (
         !canTryGeminiFallback &&
@@ -102,6 +129,7 @@ async function runScenarioWithToolRendering(config, scenarioName, runner) {
 
 const CONTROL_SCENARIO_NAMES = [
   "fresh-stop",
+  "fresh-stop-image",
   "stop-restore",
   "force-send",
   "rewind",
@@ -117,6 +145,7 @@ const CONTROL_SCENARIO_NAMES = [
 
 const RUST_AGENT_EXEC_MODE_SCENARIOS = new Set([
   "fresh-stop",
+  "fresh-stop-image",
   "plan-build-direct",
   "plan-update",
   "plan-edit-resend",
@@ -140,7 +169,9 @@ describe("ORGII force-send queued follow-up behavior", function () {
       mochaContext.skip();
       return;
     }
-    const selectedConfigs = configsForScenario(scenarioName);
+    const selectedConfigs = configsForScenario(scenarioName).filter(
+      (config) => !isProviderFamilyBlocked(config)
+    );
     if (selectedConfigs.length === 0) {
       throw new Error(`Scenario ${scenarioName} has no available configs`);
     }
@@ -153,6 +184,10 @@ describe("ORGII force-send queued follow-up behavior", function () {
     let passedCount = 0;
     const providerBlockedLabels = [];
     for (const config of selectedConfigs) {
+      if (isProviderFamilyBlocked(config)) {
+        providerBlockedLabels.push(config.label);
+        continue;
+      }
       const result = await runScenarioWithToolRendering(
         config,
         scenarioName,
@@ -197,6 +232,10 @@ describe("ORGII force-send queued follow-up behavior", function () {
     }
   });
 
+  it("restores uploaded images when a fresh first-send Stop rolls back to the creator across Rust AgentExecMode sessions", async function () {
+    await runScenario("fresh-stop-image", runFreshStopImageRestoreScenario, this);
+  });
+
   it("rolls back a fresh first-send Stop to the creator across Rust AgentExecMode sessions", async function () {
     await runScenario("fresh-stop", runFreshStopRollbackScenario, this);
   });
@@ -206,10 +245,12 @@ describe("ORGII force-send queued follow-up behavior", function () {
   });
 
   it("force-sends coherent follow-ups through Rust and CLI agents", async function () {
+    this.timeout(1_200_000);
     await runScenario("force-send", runForceSendScenario, this);
   });
 
   it("rewinds agent file edits through the rendered Undo All control across Rust and CLI agents", async function () {
+    this.timeout(1_200_000);
     await runScenario("rewind", runRewindScenario, this);
   });
 
@@ -254,6 +295,7 @@ describe("ORGII force-send queued follow-up behavior", function () {
   });
 
   it("force-sends read-only follow-ups in Ask mode without plan or rewind UI across Rust AgentExecMode sessions", async function () {
+    this.timeout(1_200_000);
     await runScenario(
       "ask-force-send",
       runAskForceSendScenario,

@@ -1,7 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { assertStationSurfacesConsistent } from "./agentQueuedControlScenarios.mjs";
+import {
+  assertStationSurfacesConsistent,
+  waitForRuntimeIdle,
+} from "./agentQueuedControlScenarios.mjs";
 import {
   configureScenario,
   execJS,
@@ -70,7 +73,7 @@ async function assertCliHistoryMutationIfApplicable(label, reason, minEpoch) {
 }
 
 async function ensureMarkerFileCreated(config, filePath, markerText) {
-  await waitForMarkerFile(config, filePath, markerText, 25_000);
+  await waitForMarkerFile(config, filePath, markerText, 60_000);
 }
 
 async function runRewindScenario(config) {
@@ -87,6 +90,7 @@ async function runRewindScenario(config) {
 
     const filePath = path.join(repoPath, markerFile);
     await ensureMarkerFileCreated(config, filePath, markerText);
+    await waitForRuntimeIdle(`${config.label}-rewind-before-undo`);
     await waitForFileChangesPanel(`${config.label}-rewind`);
 
     await clickUndoAllAndConfirm(`${config.label}-rewind`);

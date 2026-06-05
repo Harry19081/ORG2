@@ -731,7 +731,7 @@ pub async fn es_save_to_cache(
         .collect();
     let count = cached.len();
     let save_sid = session_id.clone();
-    tokio::task::spawn_blocking(move || {
+    let save_result = tokio::task::spawn_blocking(move || {
         save_events_retry(
             "es_save_to_cache",
             &save_sid,
@@ -740,7 +740,15 @@ pub async fn es_save_to_cache(
         )
     })
     .await
-    .map_err(|e| e.to_string())??;
+    .map_err(|e| e.to_string())?;
+
+    if let Err(err) = save_result {
+        tracing::warn!(
+            "[event-pipeline] best-effort es_save_to_cache failed for {session_id}: {err}"
+        );
+        return Ok(0);
+    }
+
     Ok(count)
 }
 

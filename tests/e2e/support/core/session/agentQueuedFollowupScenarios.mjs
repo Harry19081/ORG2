@@ -19,6 +19,7 @@ export {
 } from "./agentQueuedFollowupDriver.mjs";
 export {
   runForceSendScenario,
+  runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runStopRestoresInFlightScenario,
 } from "./agentQueuedControlScenarios.mjs";

@@ -302,6 +302,7 @@
     "execution": "Execução",
     "gitHistory": "Histórico do Git",
     "noPullRequest": "Sem pull request",
+    "pullRequest": "Pull request",
     "operationLog": "Log de operações",
     "gitDashboard": "Painel",
     "changedFiles": "Arquivos alterados",

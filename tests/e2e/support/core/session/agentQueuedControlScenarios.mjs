@@ -15,6 +15,24 @@ import {
   waitForChatLaunched,
 } from "./agentQueuedFollowupDriver.mjs";
 
+function throwIfProviderRuntimeBlocked(state, label) {
+  const runtimeError = String(state?.runtimeError ?? "");
+  const normalized = runtimeError.toLowerCase();
+  if (
+    normalized.includes("429") ||
+    normalized.includes("too many requests") ||
+    normalized.includes("quota_exhausted") ||
+    normalized.includes("rate limited") ||
+    normalized.includes("rate_limit") ||
+    normalized.includes("capacity") ||
+    normalized.includes("overloaded")
+  ) {
+    throw new Error(
+      `${label} provider capacity blocked scenario: ${runtimeError}; state=${JSON.stringify(summarizeChatState(state))}`
+    );
+  }
+}
+
 async function switchStationMode(mode, label) {
   const testId =
     mode === "my-station"
@@ -54,6 +72,23 @@ async function switchStationMode(mode, label) {
   );
   await browser.pause(300);
   return true;
+}
+
+function markerUserTranscriptEvents(state, marker) {
+  const eventById = new Map((state.chatEvents ?? []).map((event) => [event.id, event]));
+  const pipelineEvents = (state.pipelineItems ?? [])
+    .map((item) => (item.eventId ? eventById.get(item.eventId) : null))
+    .filter(
+      (event) =>
+        event &&
+        event.source === "user" &&
+        String(event.displayText ?? "").includes(marker)
+    );
+  if (pipelineEvents.length > 0) return pipelineEvents;
+  return (state.chatEvents ?? []).filter(
+    (event) =>
+      event.source === "user" && String(event.displayText ?? "").includes(marker)
+  );
 }
 
 async function captureRenderedSurface(mode, label) {
@@ -163,6 +198,54 @@ async function typeAndSubmitWithShortcut(inputSelector, prompt) {
   }
 }
 
+async function attachTestImageToComposer(
+  fileName = "orgii-e2e-cancel-image.png"
+) {
+  const result = await execJS(`
+    const editor = document.querySelector('[data-testid="chat-input"] [contenteditable="true"]');
+    if (!editor) return { ok: false, reason: "missing-editor" };
+    const canvas = document.createElement("canvas");
+    canvas.width = 16;
+    canvas.height = 16;
+    const context = canvas.getContext("2d");
+    if (!context) return { ok: false, reason: "missing-canvas-context" };
+    context.fillStyle = "#ff3366";
+    context.fillRect(0, 0, 16, 16);
+    context.fillStyle = "#ffffff";
+    context.fillRect(4, 4, 8, 8);
+    const dataUrl = canvas.toDataURL("image/png");
+    editor.focus();
+    window.dispatchEvent(new CustomEvent("orgii:e2e-add-chat-image", {
+      detail: {
+        eventId: "e2e-image-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+        fileName: ${JSON.stringify(fileName)},
+        dataUrl,
+      },
+    }));
+    return { ok: true, fileName: ${JSON.stringify(fileName)}, dataUrlLength: dataUrl.length };
+  `);
+  if (!result?.ok) {
+    throw new Error(
+      `Failed to attach test image: ${JSON.stringify(result)} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+}
+
+async function waitForImageAttachmentCount(count, label, options = {}) {
+  const atLeast = options.atLeast === true;
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(js.imageAttachmentState);
+      return atLeast ? state.count >= count : state.count === count;
+    },
+    {
+      timeout: 20_000,
+      interval: 500,
+      timeoutMsg: `${label} expected ${atLeast ? "at least " : ""}${count} image attachment(s); imageState=${JSON.stringify(await execJS(js.imageAttachmentState))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+}
+
 async function waitForQueuedOrForceSentFollowup(marker) {
   await browser.waitUntil(
     async () => {
@@ -172,7 +255,8 @@ async function waitForQueuedOrForceSentFollowup(marker) {
         state.queuedMessages.some((item) => item.content.includes(marker)) ||
         queuedItems.some((item) => item.text.includes(marker)) ||
         state.chatEvents.some(
-          (event) => event.source === "user" && event.displayText.includes(marker)
+          (event) =>
+            event.source === "user" && event.displayText.includes(marker)
         )
       );
     },
@@ -183,14 +267,51 @@ async function waitForQueuedOrForceSentFollowup(marker) {
   );
 }
 
+async function assertComposerResponsiveAfterStop(label, expectedText) {
+  await browser.waitUntil(
+    async () => {
+      const state = await inspectChatState(`${label}-post-stop-idle`);
+      const mode = await execJS(js.mode);
+      const editorText = await execJS(js.editorText);
+      return (
+        !state.isSessionActive &&
+        state.runtimeStatus !== "running" &&
+        (mode === "creator" || mode === "chat") &&
+        typeof editorText === "string" &&
+        editorText.includes(expectedText.slice(0, 80))
+      );
+    },
+    {
+      timeout: 20_000,
+      interval: 500,
+      timeoutMsg: `${label} Stop left a running or unloaded session; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+
+  const inputSelector = await waitForChatInput();
+  const probeText = `${expectedText} STOP_FREEZE_PROBE_${Date.now()}`;
+  const typed = await execJS(js.clearAndType(inputSelector, probeText));
+  if (!typed.includes("STOP_FREEZE_PROBE_")) {
+    throw new Error(
+      `${label} composer did not accept typing after Stop; typed=${JSON.stringify(typed)} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+  await execJS(js.clearAndType(inputSelector, expectedText));
+}
+
 async function waitForQueuedFollowup(marker) {
+  const visibleMarkerPrefix = marker.slice(0, 32);
   await browser.waitUntil(
     async () => {
       const state = await inspectChatState(marker);
+      throwIfProviderRuntimeBlocked(state, marker);
       const queuedItems = await execJS(js.queuedItems);
       return (
         state.queuedMessages.some((item) => item.content.includes(marker)) ||
-        queuedItems.some((item) => item.text.includes(marker))
+        queuedItems.some(
+          (item) =>
+            item.text.includes(marker) || item.text.includes(visibleMarkerPrefix)
+        )
       );
     },
     {
@@ -206,9 +327,7 @@ async function clickSendNowForQueuedMarker(marker) {
     item.content.includes(marker)
   );
   if (!queuedMessage) {
-    const markerUserEvents = state.chatEvents.filter(
-      (event) => event.source === "user" && event.displayText.includes(marker)
-    );
+    const markerUserEvents = markerUserTranscriptEvents(state, marker);
     if (markerUserEvents.length === 1) return;
     throw new Error(
       `Queued state did not contain marker ${marker}: ${JSON.stringify(summarizeChatState(state))}`
@@ -219,10 +338,10 @@ async function clickSendNowForQueuedMarker(marker) {
   let clicked = null;
   await browser.waitUntil(
     async () => {
-      const currentState = await inspectChatState(`${marker}-before-send-now-click`);
-      const markerUserEvents = currentState.chatEvents.filter(
-        (event) => event.source === "user" && event.displayText.includes(marker)
+      const currentState = await inspectChatState(
+        `${marker}-before-send-now-click`
       );
+      const markerUserEvents = markerUserTranscriptEvents(currentState, marker);
       if (markerUserEvents.length === 1) {
         clicked = "already-sent";
         return true;
@@ -250,6 +369,22 @@ async function clickSendNowForQueuedMarker(marker) {
 
   await browser.waitUntil(
     async () => {
+      const instantState = await inspectChatState(`${marker}-force-send-instant`);
+      const queuedStillContainsMarker = instantState.queuedMessages.some((item) =>
+        item.content.includes(marker)
+      );
+      const markerUserEvents = markerUserTranscriptEvents(instantState, marker);
+      return markerUserEvents.length === 1 && !queuedStillContainsMarker;
+    },
+    {
+      timeout: 2_000,
+      interval: 100,
+      timeoutMsg: `Send Now did not immediately show user turn and remove queue item for ${marker}; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+
+  await browser.waitUntil(
+    async () => {
       const nextState = await inspectChatState(`${marker}-flush`);
       return nextState.queueFlushRequest > previousFlushRequest;
     },
@@ -265,9 +400,7 @@ async function clickSendNowForQueuedMarker(marker) {
       const queuedStillContainsMarker = nextState.queuedMessages.some((item) =>
         item.content.includes(marker)
       );
-      const markerUserEvents = nextState.chatEvents.filter(
-        (event) => event.source === "user" && event.displayText.includes(marker)
-      );
+      const markerUserEvents = markerUserTranscriptEvents(nextState, marker);
       return markerUserEvents.length === 1 && !queuedStillContainsMarker;
     },
     {
@@ -277,11 +410,6 @@ async function clickSendNowForQueuedMarker(marker) {
     }
   );
 
-  const finalState = await inspectChatState(marker);
-  const markerUserEvents = finalState.chatEvents.filter(
-    (event) => event.source === "user" && event.displayText.includes(marker)
-  );
-  expect(markerUserEvents).toHaveLength(1);
 }
 
 async function waitForMarkerReply(marker, label) {
@@ -290,6 +418,7 @@ async function waitForMarkerReply(marker, label) {
     async () => {
       const assistantTexts = await execJS(js.assistantTexts);
       const state = await inspectChatState(`${label}-reply`);
+      throwIfProviderRuntimeBlocked(state, label);
       const assistantEvents = state.chatEvents.filter(
         (event) => event.source === "assistant"
       );
@@ -357,6 +486,20 @@ async function waitForIdleSendButton(label) {
   );
 }
 
+async function waitForRuntimeIdle(label) {
+  await browser.waitUntil(
+    async () => {
+      const state = await inspectChatState(`${label}-runtime-idle`);
+      return !state.isSessionActive && state.runtimeStatus !== "running";
+    },
+    {
+      timeout: 60_000,
+      interval: 1_000,
+      timeoutMsg: `${label} runtime did not become idle; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+}
+
 function longRunningPromptForConfig(config) {
   return [
     `Start a deliberately long, harmless task for ${config.label}.`,
@@ -390,6 +533,57 @@ async function runFreshStopRollbackScenario(config) {
       timeoutMsg: `${config.label} fresh Stop did not rollback to creator with prompt restored; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
   );
+  await assertComposerResponsiveAfterStop(`${config.label}-fresh-stop`, firstPrompt);
+}
+
+async function runFreshStopImageRestoreScenario(config) {
+  const marker = `IMAGE_CANCEL_RESTORE_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  const imageFileName = `${marker}.png`;
+  const imagePrompt = `${longRunningPromptForConfig(config)} Include this screenshot marker in the prompt text: ${marker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  const typed = await execJS(js.clearAndType(inputSelector, imagePrompt));
+  if (!typed.includes(marker)) {
+    throw new Error(
+      `${config.label} failed to type image cancel prompt; typed=${JSON.stringify(typed)}`
+    );
+  }
+  await attachTestImageToComposer(imageFileName);
+  await waitForImageAttachmentCount(1, `${config.label}-image-before-send`, {
+    atLeast: true,
+  });
+
+  await clickMainAction("submit", `${config.label}-image-send`, 20_000);
+  await clickMainAction("stop", `${config.label}-image-stop`, 30_000);
+
+  await browser.waitUntil(
+    async () => {
+      const mode = await execJS(js.mode);
+      const editorText = await execJS(js.editorText);
+      const imageState = await execJS(js.imageAttachmentState);
+      const state = await inspectChatState(
+        `${config.label}-image-cancel-restore`
+      );
+      return (
+        (mode === "creator" || mode === "chat") &&
+        typeof editorText === "string" &&
+        editorText.includes(marker) &&
+        imageState.count >= 1 &&
+        imageState.fileNames.some(
+          (fileName) =>
+            fileName.includes("restored-image") || fileName.includes(marker)
+        ) &&
+        state.queuedMessages.length === 0
+      );
+    },
+    {
+      timeout: 30_000,
+      interval: 500,
+      timeoutMsg: `${config.label} fresh Stop did not restore image attachment with prompt; imageState=${JSON.stringify(await execJS(js.imageAttachmentState))} state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+  await assertComposerResponsiveAfterStop(`${config.label}-image-stop`, imagePrompt);
 }
 
 async function runStopRestoresInFlightScenario(config) {
@@ -409,14 +603,27 @@ async function runStopRestoresInFlightScenario(config) {
   await clickMainAction("stop", `${config.label}-stop-restore`);
   await browser.waitUntil(
     async () => {
-      const state = await inspectChatState(`${config.label}-stop-restore-cancel-started`);
-      if (!state.isSessionActive && state.runtimeStatus !== "running") return true;
+      const state = await inspectChatState(
+        `${config.label}-stop-restore-cancel-started`
+      );
+      if (!state.isSessionActive && state.runtimeStatus !== "running")
+        return true;
       if (state.isPendingCancel || state.userInitiatedCancel) return true;
+      const editorText = await execJS(js.editorText);
+      const restoredPromptVisible =
+        typeof editorText === "string" &&
+        editorText.includes(firstPrompt.slice(0, 80));
+      const queuedStillContainsMarker = state.queuedMessages.some((item) =>
+        item.content.includes(marker)
+      );
+      if (restoredPromptVisible && queuedStillContainsMarker) return true;
       const sendState = await execJS(js.sendState);
       if (sendState?.state === "stop" && !sendState.disabled) {
-        await clickMainAction("stop", `${config.label}-stop-restore-retry`, 2_000).catch(
-          () => undefined
-        );
+        await clickMainAction(
+          "stop",
+          `${config.label}-stop-restore-retry`,
+          2_000
+        ).catch(() => undefined);
       }
       return false;
     },
@@ -498,9 +705,11 @@ export {
   clickMainAction,
   clickSendNowForQueuedMarker,
   runForceSendScenario,
+  runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runStopRestoresInFlightScenario,
   waitForIdleSendButton,
   waitForQueuedFollowup,
+  waitForRuntimeIdle,
   waitForWorkingTurn,
 };

@@ -302,6 +302,7 @@
     "execution": "Yürütme",
     "gitHistory": "Git Geçmişi",
     "noPullRequest": "Pull request yok",
+    "pullRequest": "Pull request",
     "operationLog": "İşlem Günlüğü",
     "gitDashboard": "Gösterge Paneli",
     "changedFiles": "Değiştirilen Dosyalar",
