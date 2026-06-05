@@ -340,6 +340,7 @@ const UserChatItem = ({
                   <ExpandOverlay
                     isExpanded={false}
                     onToggle={handleToggleTruncation}
+                    collapsedFadeHeightClass="h-8"
                     fadeFrom="from-chat-input"
                   />
                 )}
