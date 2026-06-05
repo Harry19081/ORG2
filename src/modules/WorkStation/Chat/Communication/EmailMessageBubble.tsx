@@ -7,7 +7,7 @@
  *
  *   - `org_send_message`  — inter-agent typed messages inside an Agent Org run
  *   - `send_message`      — outbound chat-channel sends (Telegram/Discord/etc.)
- *   - `send_to_inbox`     — agent → user inbox (notifications / reports)
+ *   - `send_to_inbox`     — agent → user inbox (notifications / messages)
  *
  * Each event has a different args/result shape, so a per-tool builder
  * (`buildEmailMessageView`) normalizes them into a uniform view model.
@@ -35,6 +35,7 @@ import {
   ChatBubbleHeader,
   ChatBubbleLayout,
 } from "@src/components/ChatBubble";
+import { parseTaskAssignedPrompt } from "@src/engines/ChatPanel/ChatHistory/GroupChatView/parseTaskAssignedPrompt";
 import ChatItemWrap from "@src/engines/ChatPanel/ChatHistory/renderers/ChatItemWrap";
 import { parseAgentMessageCard } from "@src/engines/ChatPanel/blocks/ToolCallBlock/helpers/cardParsers";
 import { BlockOutput } from "@src/engines/ChatPanel/blocks/primitives";
@@ -130,13 +131,23 @@ function buildEmailMessageView(
   const result = (event.result as Record<string, unknown>) ?? {};
 
   if (isAgentOrgInboxTranscriptEvent(event)) {
+    const body = extractMessageContent(event).trim();
+    const parsedTask = parseTaskAssignedPrompt(body);
+    if (parsedTask) {
+      return {
+        sender: { value: parsedTask.assignedBy },
+        recipient: { value: agentSenderLabel },
+        subject: truncate(parsedTask.subject, SUBJECT_MAX_CHARS),
+        body: parsedTask.description,
+      };
+    }
     return {
-      sender: { value: t("cards.agentMessage.emailBubble.subagentReports") },
+      sender: { value: t("cards.agentMessage.emailBubble.subagentMessages") },
       recipient: { value: "Coordinator" },
-      subject: t("groupChat.inboxTranscript.readReports", {
-        defaultValue: "Coordinator read reports sent by other agents",
+      subject: t("groupChat.inboxTranscript.readMessages", {
+        defaultValue: "Coordinator read messages sent by other agents",
       }),
-      body: extractMessageContent(event).trim(),
+      body,
     };
   }
 

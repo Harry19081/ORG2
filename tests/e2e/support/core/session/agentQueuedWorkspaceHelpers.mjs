@@ -108,6 +108,24 @@ function isPlanArtifactFile(file) {
   return false;
 }
 
+function throwIfProviderRuntimeBlocked(state, label) {
+  const runtimeError = String(state?.runtimeError ?? "");
+  const normalized = runtimeError.toLowerCase();
+  if (
+    normalized.includes("429") ||
+    normalized.includes("too many requests") ||
+    normalized.includes("quota_exhausted") ||
+    normalized.includes("rate limited") ||
+    normalized.includes("rate_limit") ||
+    normalized.includes("capacity") ||
+    normalized.includes("overloaded")
+  ) {
+    throw new Error(
+      `${label} provider capacity blocked scenario: ${runtimeError}; state=${JSON.stringify(summarizeChatState(state))}`
+    );
+  }
+}
+
 function assertNoImplementationFilesCreated(label, beforeFiles, repoPath) {
   const before = new Set(beforeFiles);
   const after = listWorkspaceFiles(repoPath);
@@ -212,9 +230,14 @@ async function waitForMarkerFile(
   timeoutMs = REPLY_TIMEOUT_MS
 ) {
   await browser.waitUntil(
-    async () =>
-      fs.existsSync(filePath) &&
-      fs.readFileSync(filePath, "utf8").includes(markerText),
+    async () => {
+      const chatState = await invokeE2E("inspectChatState");
+      throwIfProviderRuntimeBlocked(chatState, config.label);
+      return (
+        fs.existsSync(filePath) &&
+        fs.readFileSync(filePath, "utf8").includes(markerText)
+      );
+    },
     {
       timeout: timeoutMs,
       interval: 2_000,

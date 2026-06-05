@@ -101,6 +101,21 @@ export interface TextareaProps extends Omit<
   resize?: "none" | "vertical" | "horizontal" | "both";
 
   /**
+   * Remove the wrapper border and focus ring while preserving layout.
+   */
+  borderless?: boolean;
+
+  /**
+   * Remove the wrapper background while preserving layout.
+   */
+  bgless?: boolean;
+
+  /**
+   * Standard field presentation for inline editable text surfaces.
+   */
+  fieldVariant?: "default" | "ghost";
+
+  /**
    * Additional class name for textarea element
    */
   textareaClassName?: string;
@@ -126,6 +141,9 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       showWordLimit = false,
       autoSize = false,
       resize = "vertical",
+      borderless = false,
+      bgless = false,
+      fieldVariant = "default",
       className = "",
       style,
       textareaClassName = "",
@@ -194,6 +212,10 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       textarea.style.height = `${newHeight}px`;
     }, [currentValue, autoSize]);
 
+    const isGhostField = fieldVariant === "ghost";
+    const resolvedBorderless = borderless || isGhostField;
+    const resolvedBgless = bgless || isGhostField;
+
     const wrapperClasses = [
       "textarea-wrapper",
       `textarea-size-${size}`,
@@ -201,6 +223,9 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       disabled && "textarea-disabled",
       isFocused && "textarea-focused",
       readOnly && "textarea-readonly",
+      resolvedBorderless && "textarea-borderless",
+      resolvedBgless && "textarea-bgless",
+      isGhostField && "textarea-field-ghost",
       isDark && "textarea-dark",
       className,
     ]
@@ -270,9 +295,14 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       resize: autoSize ? "none" : resize,
     };
 
+    const textareaInnerClassName =
+      resolvedBorderless && resolvedBgless
+        ? "textarea-inner"
+        : "textarea-inner rounded-lg border border-solid border-border-2 bg-bg-2";
+
     return (
       <div className={wrapperClasses} style={style}>
-        <div className="textarea-inner rounded-lg border border-solid border-border-2 bg-bg-2">
+        <div className={textareaInnerClassName}>
           <textarea
             ref={setRef}
             value={currentValue}

@@ -12,7 +12,6 @@ import { createLogger } from "@src/hooks/logger";
 import {
   createPullRequest,
   parseGithubRepoFullName,
-  resolveGitHubAuth,
 } from "@src/services/git/operations/createPullRequest";
 import { gitAutoCreatePrAtom } from "@src/store/ui/editorSettingsAtom";
 import {
@@ -131,19 +130,10 @@ export function useWorkstationPr(options: UseWorkstationPrOptions) {
         );
         if (!originRemote?.url) return;
 
-        const auth = await resolveGitHubAuth(originRemote.url);
-        if (!auth) return;
-        const { userId, token } = auth;
-
         const repoFullName = parseGithubRepoFullName(originRemote.url);
         if (!repoFullName) return;
 
-        const existing = await findPullRequestLocal(
-          userId,
-          token,
-          repoFullName,
-          branchName
-        );
+        const existing = await findPullRequestLocal(repoFullName, branchName);
         if (cancelled || !existing?.url) return;
 
         const status = normalizePullRequestStatus(existing.state);

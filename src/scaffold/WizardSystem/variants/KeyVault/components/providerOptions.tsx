@@ -5,16 +5,11 @@
  * They do NOT fetch data themselves — the caller must provide the data.
  */
 import type { TFunction } from "i18next";
-import { KeyRound } from "lucide-react";
+import { Calendar, KeyRound } from "lucide-react";
 import React from "react";
 
-import { CLI_AGENT } from "@src/api/tauri/rpc/schemas/validation";
-import type { ModelType } from "@src/api/types/keys";
 import ModelIcon from "@src/components/ModelIcon";
-import {
-  type IconProvider,
-  getIconProvider,
-} from "@src/components/ModelIcon/config";
+import { type IconProvider } from "@src/components/ModelIcon/config";
 import type { SelectOption } from "@src/components/Select";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import type { SelectionGridOption } from "@src/scaffold/WizardSystem/primitives";
@@ -38,25 +33,10 @@ export function resolveVariantLabel(
   t: TFunction
 ): string {
   if (!provider) return variant.label;
-  if (provider.key === "openai" && variant.modelType === CLI_AGENT.CODEX) {
-    return t("wizard.variantCodex", "Codex");
-  }
   if (variant.mode === "api_key") {
     return t("wizard.variantApiKey", "API Key");
   }
-  return variant.label;
-}
-
-function variantIconElement(variant: UnifiedProviderVariant): React.ReactNode {
-  if (variant.mode === "api_key") {
-    return null;
-  }
-  return (
-    <ModelIcon
-      provider={getIconProvider(variant.modelType as ModelType)}
-      size={20}
-    />
-  );
+  return t("wizard.variantSubscription", "Subscription");
 }
 
 function variantIconNode(
@@ -66,12 +46,7 @@ function variantIconNode(
   if (variant.mode === "api_key") {
     return <KeyRound size={size} className="shrink-0 text-text-3" />;
   }
-  return (
-    <ModelIcon
-      provider={getIconProvider(variant.modelType as ModelType)}
-      size={size}
-    />
-  );
+  return <Calendar size={size} className="shrink-0 text-text-3" />;
 }
 
 export function buildProviderGridOptions(
@@ -117,12 +92,7 @@ export function buildVariantGridOptions(
     return {
       key: variant.modelType,
       label,
-      ...(variant.mode === "api_key"
-        ? { icon: KeyRound }
-        : {
-            iconElement: variantIconElement(variant),
-            iconPreserveColor: true,
-          }),
+      icon: variant.mode === "api_key" ? KeyRound : Calendar,
     };
   });
 }

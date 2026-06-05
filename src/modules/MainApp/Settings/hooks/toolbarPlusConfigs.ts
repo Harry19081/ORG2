@@ -10,6 +10,7 @@ import {
   Database,
   Download,
   FileText,
+  GitBranch,
   Key,
   Settings as SettingsIcon,
   Unplug,
@@ -39,6 +40,8 @@ export function getPlusConfigForCategory(
       return { plusDropdownItems: buildDatabasesDropdownItems(dispatch, t) };
     case "connections":
       return { plusDropdownItems: buildConnectionsDropdownItems(dispatch, t) };
+    case "git":
+      return { plusDropdownItems: buildGitDropdownItems(dispatch, t) };
     case "externalSkillsets":
       return {
         plusDropdownItems: buildExternalSkillsetsDropdownItems(dispatch, t),
@@ -96,6 +99,20 @@ function buildConnectionsDropdownItems(
       label: t("toolbarPlusMenu.addChannelOrService"),
       icon: Unplug,
       onClick: () => dispatch("add-connection"),
+    },
+  ];
+}
+
+function buildGitDropdownItems(
+  dispatch: (action: AddAction) => void,
+  t: TFn
+): ToolbarDropdownItem[] {
+  return [
+    {
+      id: "add-git-connection",
+      label: t("toolbarPlusMenu.addGitConnection"),
+      icon: GitBranch,
+      onClick: () => dispatch("add-git-connection"),
     },
   ];
 }

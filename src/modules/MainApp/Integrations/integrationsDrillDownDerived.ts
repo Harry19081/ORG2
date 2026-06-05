@@ -1,4 +1,8 @@
 import {
+  STORY_SYNC_ADAPTER,
+  type SyncConnection,
+} from "@src/api/http/integrations";
+import {
   type ExternalSkillsetsTab,
   extensionKindForSkillsetTab,
 } from "@src/config/mainAppPaths";
@@ -25,7 +29,7 @@ export interface BuildDrillDownItemsInput {
   mcpServers: readonly { name: string; status: string }[];
   markdownRules: readonly { source: string; name: string; enabled: boolean }[];
   routines: readonly { id: string; name: string; enabled: boolean }[];
-  hasGitHubConnections: boolean;
+  projectConnections: readonly SyncConnection[];
   groupedChannels: ReadonlyMap<string, readonly ChannelInstance[]>;
 }
 
@@ -79,15 +83,15 @@ export function buildIntegrationsDrillDownItems(
       }));
     }
     case "git":
-      return input.hasGitHubConnections
-        ? [
-            {
-              id: "github",
-              name: "GitHub",
-              statusDot: "bg-success-6",
-            },
-          ]
-        : [];
+      return input.projectConnections
+        .filter(
+          (connection) => connection.adapter_id === STORY_SYNC_ADAPTER.GITHUB
+        )
+        .map((connection) => ({
+          id: connection.id,
+          name: connection.label,
+          statusDot: "bg-success-6",
+        }));
     case "connections": {
       const items: DrillDownItem[] = [];
       for (const chType of CHANNEL_TYPES) {

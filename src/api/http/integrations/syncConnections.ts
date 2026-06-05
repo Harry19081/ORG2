@@ -4,12 +4,14 @@ import type { OAuthFlowStart } from "@src/api/http/project/syncTypes";
 
 export const STORY_SYNC_ADAPTER = {
   LINEAR: "linear",
-  GITHUB_ISSUES: "github_issues",
+  GITHUB: "github",
 } as const;
 
 export const STORY_SYNC_AUTH_METHOD = {
   PAT: "pat",
   OAUTH: "oauth",
+  SCAN: "scan",
+  SSH: "ssh",
 } as const;
 
 export type ProjectSyncAdapterType =
@@ -46,6 +48,34 @@ export const syncConnectionsApi = {
       adapterId,
       label,
       token,
+      accountEmail,
+    });
+  },
+
+  createFromScan(
+    adapterId: ProjectSyncAdapterType,
+    label: string,
+    token: string,
+    accountEmail?: string
+  ): Promise<SyncConnection> {
+    return invoke("sync_connection_create_from_scan", {
+      adapterId,
+      label,
+      token,
+      accountEmail,
+    });
+  },
+
+  createFromSsh(
+    adapterId: ProjectSyncAdapterType,
+    label: string,
+    sshKeyPath: string,
+    accountEmail?: string
+  ): Promise<SyncConnection> {
+    return invoke("sync_connection_create_from_ssh", {
+      adapterId,
+      label,
+      sshKeyPath,
       accountEmail,
     });
   },

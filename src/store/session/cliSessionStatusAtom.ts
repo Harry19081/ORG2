@@ -101,10 +101,10 @@ isPendingCancelAtom.debugLabel = "isPendingCancel";
  * Set to `true` alongside `isPendingCancelAtom` when the user presses the stop
  * button (as opposed to a Rust-side failure that incidentally clears pending).
  * The queue flusher consumes this once after the cancel settles: instead of
- * auto-dispatching the queue head, it surfaces the head back to the input
- * box so the user can edit/cancel before re-sending. The rest of the queue
- * stays in place and auto-flushes normally after the user resends (or they
- * can clear it manually).
+ * auto-dispatching queued follow-ups, the active in-flight prompt is restored
+ * to the input box so the user can edit/cancel before re-sending. The queued
+ * follow-ups stay in place and auto-flush normally after the user resends (or
+ * they can clear them manually).
  *
  * Cleared by `useQueueDispatch` after it consumes the restore, or on the next
  * fresh `status_changed -> running` event, whichever comes first.
@@ -113,11 +113,11 @@ export const userInitiatedCancelAtom = atom<boolean>(false);
 userInitiatedCancelAtom.debugLabel = "userInitiatedCancel";
 
 /**
- * Pending "restore queued message to input box" signal.
+ * Pending "restore message to input box" signal.
  *
- * Set by `useQueueDispatch` after a user-initiated cancel completes: it pops
- * the queue head and puts its display text here. `useInputArea` observes this
- * atom and injects the text into the tiptap editor, then clears the signal.
+ * Set when a user-initiated cancel needs to put the active in-flight prompt
+ * back into the composer. `useInputArea` observes this atom and injects the
+ * text into the tiptap editor, then clears the signal.
  *
  * Object shape (not just a string) so we can include imageDataUrls in a
  * follow-up without another atom.

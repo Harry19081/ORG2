@@ -38,6 +38,7 @@ export type AddAction =
   | "add-model"
   | "create-orgii-api-key"
   | "add-connection"
+  | "add-git-connection"
   | "add-database"
   | "add-mcp"
   | "create-skill"

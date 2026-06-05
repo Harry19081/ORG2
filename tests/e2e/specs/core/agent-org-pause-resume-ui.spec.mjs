@@ -892,14 +892,10 @@ describe("Agent Org pause, resume, and sidebar rendered UI", () => {
       "coordinator session was revived after user sent follow-up message"
     );
 
-    const followUpRetained = await execJS(
-      `return document.body.textContent.includes(${JSON.stringify(followUpPrompt)});`
-    );
-    if (!followUpRetained) {
-      throw new Error(
-        "Follow-up prompt was not retained after send-message resume"
-      );
-    }
+    await waitForRenderedGroupChatUserTurn({
+      text: followUpPrompt,
+      label: "send-message resume follow-up retained",
+    });
 
     const presentAfterSendResume = await execJS(
       js.exists(`[data-testid="sidebar-session-item-${sessionId}"]`)

@@ -4,11 +4,29 @@
 //! This module provides functions to convert them into the common `SessionAggregateRecord`.
 
 use crate::agent_sessions::cli::persistence as cli_session_persistence;
+use agent_core::coordination::agent_org_runs::AgentOrgRunStore;
+use agent_core::definitions::orgs::AgentOrgsStore;
 use agent_core::session::persistence as session_persistence;
 
 use super::display::generate_display_label;
 use super::status::is_active_status;
 use super::types::{SessionAggregateRecord, SessionCategory};
+
+fn resolve_root_agent_org_metadata(session_id: &str) -> (Option<String>, Option<String>) {
+    match AgentOrgRunStore::context_for_session_with_parent_walk(session_id, &AgentOrgsStore::new())
+    {
+        Ok(Some(context)) if context.root_session_id.as_deref() == Some(session_id) => {
+            (Some(context.org_id), Some(context.org_name))
+        }
+        Ok(_) => (None, None),
+        Err(err) => {
+            tracing::warn!(
+                "[unified_stats] Failed to resolve Agent Org metadata for aggregate row '{session_id}': {err}"
+            );
+            (None, None)
+        }
+    }
+}
 
 fn resolve_agent_metadata(
     session_id: &str,
@@ -115,6 +133,7 @@ pub fn sde_session_to_aggregate_record(
     let display_label = generate_display_label(&session.name, session.user_input.as_deref());
     let (agent_definition_id, agent_icon_id, agent_display_name) =
         resolve_agent_metadata(&session.session_id, session.agent_definition_id.as_deref());
+    let (agent_org_id, agent_org_name) = resolve_root_agent_org_metadata(&session.session_id);
 
     SessionAggregateRecord {
         session_id: session.session_id,
@@ -143,8 +162,8 @@ pub fn sde_session_to_aggregate_record(
         display_label,
         parent_session_id: session.parent_session_id,
         org_member_id: session.org_member_id,
-        agent_org_id: None,
-        agent_org_name: None,
+        agent_org_id,
+        agent_org_name,
         agent_definition_id,
         agent_icon_id,
         agent_display_name,
@@ -172,6 +191,7 @@ pub fn os_session_to_aggregate_record(
     let display_label = generate_display_label(&session.name, session.user_input.as_deref());
     let (agent_definition_id, agent_icon_id, agent_display_name) =
         resolve_agent_metadata(&session.session_id, session.agent_definition_id.as_deref());
+    let (agent_org_id, agent_org_name) = resolve_root_agent_org_metadata(&session.session_id);
 
     SessionAggregateRecord {
         session_id: session.session_id,
@@ -200,8 +220,8 @@ pub fn os_session_to_aggregate_record(
         display_label,
         parent_session_id: session.parent_session_id,
         org_member_id: session.org_member_id,
-        agent_org_id: None,
-        agent_org_name: None,
+        agent_org_id,
+        agent_org_name,
         agent_definition_id,
         agent_icon_id,
         agent_display_name,

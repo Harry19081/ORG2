@@ -19,7 +19,7 @@
  * cursor is at the live tail (or absent), we pass no override and
  * ChatHistory follows streaming normally.
  *
- * Per-turn user prompt card ("pinned message")
+ * Per-turn user prompt card ("pinned message") — hidden
  *
  * Per-turn collapse — disabled
  *
@@ -32,22 +32,23 @@
  * via `disableTailCollapse` so the active round always renders
  * expanded with the new-event divider visible.
  *
- * Every turn group is rendered with a sticky user-message header at the
- * top (the "Task assigned by Coordinator: …" card in the screenshot —
- * actually `GroupHeaderRenderer` → `<UserChatItem>`). For subagent
- * cells that card is noise — the user already knows what was
- * assigned. We hide it by default by passing `hideGroupUserMessage`
- * through to ChatHistory; the "Agent worked for X" collapse pin
- * (`TurnCollapsePinBar`, same renderer, separate branch) stays visible
- * because it's the only "where am I in this turn" affordance left.
+ * Every turn group is rendered with a sticky user-message header at
+ * the top (the "Task assigned by Coordinator: …" card — actually
+ * `GroupHeaderRenderer` → `<UserChatItem>`). For subagent cells those
+ * cards are noise — the user already knows what was assigned, and the
+ * inline chat replays each turn anyway. We permanently suppress them
+ * via `hideGroupUserMessage`; the "Agent worked for X" collapse pin
+ * (`TurnCollapsePinBar`, same renderer, separate branch) stays
+ * visible because it's the only "where am I in this turn" affordance
+ * left.
  *
- * A trailing message-icon button injected into `TurnPaginationControls`
- * (via `paginationTrailingSlot`) flips local `showGroupUserMessage`
- * state on so the user can re-surface the prompt without leaving the
- * cell. A second collapse-all button next to it calls the same global
- * atom the main ChatPanel header uses.
- * `PlanTodoPinBar` stays permanently hidden via `hidePinnedBars`
- * — it's the parent session's affordance, not the subagent cell's.
+ * A trailing `(i)` Info button injected into `TurnPaginationControls`
+ * (via `paginationTrailingSlot`) opens a popover showing the original
+ * task prompt — see `SubagentPromptToggle`. A collapse-all button
+ * next to it calls the same global atom the main ChatPanel header
+ * uses. `PlanTodoPinBar` stays permanently hidden via
+ * `hidePinnedBars` — it's the parent session's affordance, not the
+ * subagent cell's.
  *
  * "New event" divider
  *
@@ -63,8 +64,8 @@
  * is a separate, deferred concern. The cell stays read-only.
  */
 import { useAtomValue, useSetAtom } from "jotai";
-import { Info, ListChevronsDownUp } from "lucide-react";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import { ListChevronsDownUp } from "lucide-react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -74,6 +75,8 @@ import { ChatHistoryOverrideContext } from "@src/engines/ChatPanel/ChatHistoryOv
 import { ChatSessionContext } from "@src/engines/ChatPanel/ChatSessionContext";
 import { chatEventsForSessionAtomFamily } from "@src/engines/SessionCore/derived/sessionScopedChatEvents";
 import { setAllBlocksCollapsedAtom } from "@src/store/ui/collapseStateAtom";
+
+import { SubagentPromptToggle } from "./SubagentPromptToggle";
 
 interface SubagentChatPaneProps {
   /** Subagent session id — passed to ChatSessionContext so the chat events
@@ -90,12 +93,6 @@ const SubagentChatPaneComponent: React.FC<SubagentChatPaneProps> = ({
   cursorMs = null,
 }) => {
   const { t } = useTranslation("sessions");
-  // Top per-turn user-message header (the "Task assigned by
-  // Coordinator: …" card). Hidden by default so the cell focuses on
-  // the subagent's narration. The toggle lives in the pagination row
-  // (injected via `paginationTrailingSlot`) so it sits with the round
-  // controls rather than the replay footer.
-  const [showGroupUserMessage, setShowGroupUserMessage] = useState(false);
   // Subscribe at this layer so we can slice before passing into ChatHistory.
   // ChatHistory re-reads via `useChatHistory()` and picks up our override.
   const allEvents = useAtomValue(chatEventsForSessionAtomFamily(sessionId));
@@ -168,36 +165,13 @@ const SubagentChatPaneComponent: React.FC<SubagentChatPaneProps> = ({
   // `agentOrgMembers` / `agentName` / overview panel is supplied (none
   // are here), so the row collapses down to just the turn pager.
   //
-  // Trailing slot: an info-icon button placed immediately to the right
-  // of the round-select trigger (the TurnPaginationControls renders a
-  // `|` separator between them). Pressed = each turn's user-message
-  // header ("Task assigned by Coordinator: …") is visible. We tag it
-  // "active" with `bg-surface-hover text-primary-6` so the toggle state
-  // is glanceable even when the card is scrolled offscreen.
-  const groupUserMessageToggle = (
+  // Trailing slot: an `(i)` Info button that opens a popover anchored
+  // to it, showing the original task prompt (the subagent's first
+  // user-source event), and a collapse-all button. The Info button
+  // owns its own popover state — see `SubagentPromptToggle`.
+  const paginationTrailingSlot = (
     <>
-      <Button
-        htmlType="button"
-        variant="tertiary"
-        size="small"
-        iconOnly
-        data-testid="subagent-group-user-message-toggle"
-        aria-pressed={showGroupUserMessage}
-        className={
-          showGroupUserMessage ? "!bg-surface-hover !text-primary-6" : ""
-        }
-        onClick={() => setShowGroupUserMessage((prev) => !prev)}
-        title={
-          showGroupUserMessage
-            ? t("simulator.subagentPane.hideTurnPrompt", {
-                defaultValue: "Hide turn prompt",
-              })
-            : t("simulator.subagentPane.showTurnPrompt", {
-                defaultValue: "Show turn prompt",
-              })
-        }
-        icon={<Info size={16} strokeWidth={1.75} />}
-      />
+      <SubagentPromptToggle sessionId={sessionId} />
       <Button
         htmlType="button"
         variant="tertiary"
@@ -227,8 +201,8 @@ const SubagentChatPaneComponent: React.FC<SubagentChatPaneProps> = ({
                 turnPaginationEnabled
                 hidePinnedBars
                 disableTailCollapse
-                hideGroupUserMessage={!showGroupUserMessage}
-                paginationTrailingSlot={groupUserMessageToggle}
+                hideGroupUserMessage
+                paginationTrailingSlot={paginationTrailingSlot}
                 newEventDividerLabel={newEventDividerLabel}
               />
             </div>

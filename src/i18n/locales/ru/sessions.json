@@ -603,8 +603,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "Ожидание активности…",
-      "hideTurnPrompt": "Скрыть запрос раунда",
-      "showTurnPrompt": "Показать запрос раунда",
+      "viewTaskPrompt": "Показать запрос задачи",
+      "taskPromptTitle": "Запрос задачи",
       "newEventDivider": "Новое событие"
     },
     "dock": {
@@ -653,7 +653,8 @@
       "manage": "Управление закреплёнными действиями",
       "searchPlaceholder": "Искать действия для закрепления…",
       "loading": "Загрузка…",
-      "empty": "Действия не найдены."
+      "empty": "Действия не найдены.",
+      "unpinAll": "Открепить все"
     }
   },
   "listPanel": {
@@ -1012,6 +1013,7 @@
     "categoryList": "Список",
     "subagentFailed": "Sub Agent не удался",
     "subagentDefaultName": "Sub Agent",
+    "assignedTaskToSubagent": "Задача назначена subagent",
     "subagentRunning": "Subagent выполняется",
     "subagentDone": "Subagent завершён",
     "subagentAssigning": "Назначение Subagent",
@@ -2166,7 +2168,7 @@
       "broadcastFailed": "{{sender}} не удалось написать нескольким agents"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator прочитал отчёты, отправленные другими agents"
+      "readMessages": "Coordinator прочитал сообщения, отправленные другими agents"
     },
     "userMessagePending": "{{member}} принимает ваше сообщение",
     "pausedBanner": {
@@ -2275,8 +2277,8 @@
         "collapse": "Скрыть сообщение",
         "userInbox": "Входящие пользователя",
         "currentChannel": "Текущий канал",
-        "subagentReports": "Отчёты subagent",
-        "readReportsFromSubagents": "{{agent}} прочитал отчёты subagent"
+        "subagentMessages": "Сообщения subagent",
+        "readMessagesFromSubagents": "{{agent}} прочитал сообщения subagent"
       }
     },
     "actions": {

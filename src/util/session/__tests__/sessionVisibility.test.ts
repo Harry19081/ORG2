@@ -1,0 +1,33 @@
+import { describe, expect, it } from "vitest";
+
+import { isPrimarySessionListSession } from "@src/util/session/sessionVisibility";
+
+describe("isPrimarySessionListSession", () => {
+  it("keeps Agent Org coordinator root sessions visible", () => {
+    expect(
+      isPrimarySessionListSession({
+        session_id: "sdeagent-root",
+        orgMemberId: "coordinator",
+        agentOrgId: "org-alpha",
+      })
+    ).toBe(true);
+  });
+
+  it("hides Agent Org member child sessions", () => {
+    expect(
+      isPrimarySessionListSession({
+        session_id: "sdeagent-root:subagent:planner",
+        orgMemberId: "planner",
+        parentSessionId: "sdeagent-root",
+      })
+    ).toBe(false);
+  });
+
+  it("hides regular subagent child sessions", () => {
+    expect(
+      isPrimarySessionListSession({
+        session_id: "sdeagent-root:subagent:reviewer",
+      })
+    ).toBe(false);
+  });
+});

@@ -420,7 +420,15 @@ class EventStoreProxyImpl {
 
   /** Save current store events to SQLite cache. Returns count saved. */
   async saveToCache(sessionId: string): Promise<number> {
-    return rpc.sessionCore.eventStore.saveToCache({ sessionId });
+    try {
+      return await rpc.sessionCore.eventStore.saveToCache({ sessionId });
+    } catch (error) {
+      console.warn(
+        `[EventStoreProxy] saveToCache failed for ${sessionId}; continuing with in-memory EventStore`,
+        error
+      );
+      return 0;
+    }
   }
 
   // =========================================================================

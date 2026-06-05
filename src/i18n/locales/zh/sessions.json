@@ -333,7 +333,7 @@
           "hiddenLines": "{{count}} 行已隐藏",
           "editHeader": "编辑 {{index}}",
           "startingAtLine": "（起始于第 {{line}} 行）",
-          "fileEditedSuccess": "✓ 文件已成功编辑",
+          "fileEditedSuccess": "✓ 文件成功编辑",
           "truncatedSuffix": "\n... （已截断）",
           "headerDirectory": "目录",
           "headerSearchPrefix": "搜索: {{query}}",
@@ -527,7 +527,7 @@
           "noCommand": "无命令",
           "todoMoreSuffix": "{{first}}（另 {{count}} 项）",
           "todosCount": "{{count}} 个待办",
-          "todosUpdated": "已更新 {{count}} 个待办",
+          "todosUpdated": "更新 {{count}} 个待办",
           "noQuery": "无查询",
           "activityFallback": "活动",
           "processing": "处理中...",
@@ -553,7 +553,7 @@
     "askUser": {
       "agentQuestion": "Agent 提问",
       "submitResponse": "提交回复",
-      "responseReceived": "已收到回复",
+      "responseReceived": "收到回复",
       "optional": "可选",
       "defaultQuestion": "Agent 有问题要问你",
       "enterField": "输入{{field}}..."
@@ -565,8 +565,8 @@
     "titleBar": {
       "switchToRight": "切换到右侧模式",
       "switchToLeft": "切换到左侧模式",
-      "showSidebar": "显示主侧边栏",
-      "hideSidebar": "隐藏主侧边栏",
+      "showSidebar": "显示侧边栏",
+      "hideSidebar": "隐藏侧边栏",
       "showBottomPanel": "显示底部面板",
       "hideBottomPanel": "隐藏底部面板",
       "showDevTools": "显示 DevTools",
@@ -592,8 +592,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "等待活动…",
-      "hideTurnPrompt": "隐藏轮次提示",
-      "showTurnPrompt": "显示轮次提示",
+      "viewTaskPrompt": "查看任务提示",
+      "taskPromptTitle": "任务提示",
       "newEventDivider": "新事件"
     },
     "dock": {
@@ -604,8 +604,8 @@
   },
   "terminal": {
     "findInTerminal": "在终端中查找",
-    "sentToAgent": "文本已发送给 Agent",
-    "addedToContext": "已添加到 Session 上下文",
+    "sentToAgent": "文本发送给 Agent",
+    "addedToContext": "添加到 Session 上下文",
     "creatingWithContext": "正在使用上下文创建新 Session",
     "creationCooldown": "请稍后再创建新终端。"
   },
@@ -642,7 +642,8 @@
       "manage": "管理固定操作",
       "searchPlaceholder": "搜索要固定的操作…",
       "loading": "正在加载…",
-      "empty": "未找到操作。"
+      "empty": "未找到操作。",
+      "unpinAll": "全部取消固定"
     }
   },
   "listPanel": {
@@ -651,12 +652,12 @@
   },
   "chat": {
     "sessionStarted": "Session 已开始",
-    "contentCopied": "内容已复制！",
+    "contentCopied": "内容复制！",
     "failedToCopyContent": "复制内容失败",
     "regenerate": "重新生成",
     "copyTurn": "复制对话",
     "exportAsMarkdown": "导出为 Markdown",
-    "exportSuccess": "会话已导出！",
+    "exportSuccess": "会话导出！",
     "exportFailed": "导出失败",
     "activities": "活动",
     "findInChat": "在聊天中搜索",
@@ -689,7 +690,7 @@
       "sendFailed": "向 Cursor 发送消息失败。",
       "enableFailed": "启动 Cursor 探针实例失败。",
       "seededAndReady": "Cursor 探针实例已就绪（首次使用已复制登录信息）。",
-      "routeFailed": "无法切换到该 Cursor 会话；消息已发送到当前激活的会话。",
+      "routeFailed": "无法切换到该 Cursor 会话；消息发送到当前激活的会话。",
       "setModelFailed": "设置 Cursor 模型失败。",
       "modelLoading": "正在加载模型…",
       "modelEmpty": "未找到可用模型。",
@@ -709,7 +710,7 @@
     "shrinkToWorkstation": "缩小聊天面板（显示工作站）",
     "collapseAll": "全部折叠",
     "copyEventJson": "复制事件 JSON",
-    "copyEventJsonCopied": "已复制！",
+    "copyEventJsonCopied": "复制！",
     "copyEventJsonFailed": "复制失败",
     "historyTitle": "历史",
     "historyEmpty": "暂无会话",
@@ -738,7 +739,7 @@
     "deny": "拒绝",
     "alwaysAllow": "始终允许",
     "permissionFailed": "权限请求响应失败",
-    "answerSubmitted": "回答已提交",
+    "answerSubmitted": "回答提交",
     "failedToSubmit": "提交失败：{{msg}}",
     "questionExpired": "该问题已超时，无法继续回答",
     "skippedByUser": "[用户已跳过]",
@@ -815,9 +816,9 @@
       "chooseJsonHint": "选择一个 .orgii-session.json 导出文件。",
       "loadingPreview": "正在统计 Session 事件…",
       "noActiveSession": "未选择活动 Session。",
-      "importedName": "已导入 Session：{{name}}",
-      "exportSuccess": "Session JSON 已导出。",
-      "importSuccess": "已导入 {{count}} 个事件。",
+      "importedName": "导入 Session：{{name}}",
+      "exportSuccess": "Session JSON 导出。",
+      "importSuccess": "导入 {{count}} 个事件。",
       "categories": {
         "cli": "CLI Agent",
         "rust": "Rust Agent",
@@ -916,7 +917,7 @@
     "thinkingDone": "思考",
     "noThoughtPreview": "无思考预览可用",
     "message": "消息",
-    "pathCopied": "路径已复制！",
+    "pathCopied": "路径复制！",
     "failedToCopyPath": "复制路径失败",
     "copyFilePath": "复制文件路径",
     "explore": "探索",
@@ -993,10 +994,11 @@
     "categoryList": "列表",
     "subagentFailed": "Sub Agent 失败",
     "subagentDefaultName": "Sub Agent",
+    "assignedTaskToSubagent": "将任务分配给 Subagent",
     "subagentRunning": "Subagent 运行中",
     "subagentDone": "Subagent 完成",
     "subagentAssigning": "正在分配 Subagent",
-    "subagentAssigned": "已分配 Subagent",
+    "subagentAssigned": "分配 Subagent",
     "subagentAssignFailed": "Subagent 分配失败",
     "createPlanRunning": "正在创建计划",
     "createPlanDone": "创建计划",
@@ -1705,7 +1707,7 @@
     "cloneRepo": "克隆仓库",
     "repoCloneHelperText": "仓库将被克隆到临时工作区以供您的 Session 使用。",
     "bonusMessage": "您获得了来自 ORGII 的奖励！",
-    "upgradedToTier": "您已免费升级到 {{tier}} 层级！",
+    "upgradedToTier": "您免费升级到 {{tier}} 层级！",
     "yourPrice": "您的价格",
     "inputPerM": "输入 /M",
     "outputPerM": "输出 /M",
@@ -1884,7 +1886,7 @@
       "replan": "重新规划",
       "viewPlan": "查看计划",
       "saveToWorkspace": "保存到工作区",
-      "savedToWorkspace": "计划已保存到工作区",
+      "savedToWorkspace": "计划保存到工作区",
       "noRepoOpen": "没有打开的仓库",
       "collapse": "收起",
       "expand": "展开"
@@ -2017,7 +2019,7 @@
     "collapse": "折叠"
   },
   "workspace": {
-    "fileBrowserRemoved": "文件浏览器已移除",
+    "fileBrowserRemoved": "文件浏览器移除",
     "useCodeEditorInstead": "请使用代码编辑器或文件资源管理器"
   },
   "errors": {
@@ -2151,7 +2153,7 @@
       "broadcastFailed": "{{sender}} 未能联系多个 Agent"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator 读取了其他 Agent 发送的报告"
+      "readMessages": "Coordinator 读取了其他 Agent 发送的消息"
     },
     "userMessagePending": "{{member}} 正在接收你的消息",
     "pausedBanner": {
@@ -2181,7 +2183,7 @@
     "update": {
       "titleStatus": "更新任务状态",
       "titleDetail": "更新任务详情",
-      "markedAs": "已标记为 {{status}}"
+      "markedAs": "标记为 {{status}}"
     },
     "get": {
       "title": "查看任务详情"
@@ -2223,7 +2225,7 @@
       "title": "为 ORGII 控制重启 Cursor？",
       "message": "ORGII 需要以远程控制模式重启 Cursor，确保 follow-up 发送到同一个 Cursor 对话。这会退出 Cursor，并使用 --remote-debugging-port=9230 以隐藏方式重新打开。",
       "okLabel": "重启 Cursor",
-      "success": "Cursor 已以隐藏方式启用远程控制并重启。正在重试…",
+      "success": "Cursor 以隐藏方式启用远程控制并重启。正在重试…",
       "failed": "重启 Cursor 失败：{{reason}}"
     }
   },
@@ -2260,8 +2262,8 @@
         "collapse": "收起消息",
         "userInbox": "用户收件箱",
         "currentChannel": "当前频道",
-        "subagentReports": "Subagent 报告",
-        "readReportsFromSubagents": "{{agent}} 阅读了 subagent 报告"
+        "subagentMessages": "Subagent 消息",
+        "readMessagesFromSubagents": "{{agent}} 阅读了 subagent 消息"
       }
     },
     "actions": {
@@ -2275,13 +2277,13 @@
     "url": {
       "open": "打开",
       "copyUrl": "复制 URL",
-      "copied": "URL 已复制",
+      "copied": "URL 复制",
       "openExternalFailed": "无法用默认浏览器打开 URL"
     },
     "path": {
       "open": "打开",
       "copyPath": "复制路径",
-      "copied": "路径已复制",
+      "copied": "路径复制",
       "copyFailed": "无法复制路径",
       "openFailed": "无法打开路径",
       "revealFailed": "无法在文件管理器中显示路径",

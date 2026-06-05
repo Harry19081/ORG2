@@ -31,6 +31,10 @@ app_paths = { path = "../app-paths" }
 app_utils = { path = "../app-utils" }
 core_types = { path = "../types" }
 git = { path = "../git" }
+# Source of truth for the centralized connection token store. The
+# `github::commands` layer looks up the active Git credential here
+# instead of keeping its own `~/.orgii/github_tokens.json` file.
+project_management = { path = "../project-management" }
 
 # Tauri
 tauri = { workspace = true }

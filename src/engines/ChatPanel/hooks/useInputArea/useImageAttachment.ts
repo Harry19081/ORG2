@@ -56,7 +56,9 @@ export function useImageAttachment(ownerId?: string) {
 
   const ownerImages = useMemo(
     () =>
-      ownerId ? images.filter((image) => image.ownerId === ownerId) : images,
+      ownerId
+        ? images.filter((image) => image.ownerId === ownerId)
+        : images.filter((image) => !image.ownerId),
     [images, ownerId]
   );
 
@@ -132,6 +134,56 @@ export function useImageAttachment(ownerId?: string) {
     [ingestFiles]
   );
 
+  useEffect(() => {
+    const handleE2EImageAttachment = (event: Event) => {
+      const detail = (
+        event as CustomEvent<{
+          eventId?: string;
+          fileName?: string;
+          dataUrl?: string;
+        }>
+      ).detail;
+      if (!detail?.dataUrl?.startsWith("data:image/")) return;
+
+      const e2eWindow = window as Window & {
+        __orgiiE2EImageAttachLast?: Record<string, unknown>;
+      };
+      const eventId = detail.eventId ?? `${detail.fileName}:${detail.dataUrl}`;
+
+      const [header, base64 = ""] = detail.dataUrl.split(",");
+      const mimeMatch = header.match(/^data:([^;]+);base64$/);
+      const mime = mimeMatch?.[1] ?? "image/png";
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      const file = new File([bytes], detail.fileName ?? "e2e-image.png", {
+        type: mime,
+      });
+      e2eWindow.__orgiiE2EImageAttachLast = {
+        eventId,
+        fileName: detail.fileName,
+        received: true,
+        mime,
+        size: file.size,
+        dispatchedToHandleImagePaste: true,
+      };
+      void handleImagePaste([file]);
+    };
+
+    window.addEventListener(
+      "orgii:e2e-add-chat-image",
+      handleE2EImageAttachment
+    );
+    return () => {
+      window.removeEventListener(
+        "orgii:e2e-add-chat-image",
+        handleE2EImageAttachment
+      );
+    };
+  }, [handleImagePaste]);
+
   /**
    * Add an image by absolute filesystem path.  Used by the Tauri drag-drop
    * path, where we only have a path string (no browser `File`).  Reads bytes
@@ -165,8 +217,12 @@ export function useImageAttachment(ownerId?: string) {
   );
 
   const clearImages = useCallback(() => {
-    setImages([]);
-  }, [setImages]);
+    setImages((prev) =>
+      ownerId
+        ? prev.filter((image) => image.ownerId !== ownerId)
+        : prev.filter((image) => image.ownerId)
+    );
+  }, [setImages, ownerId]);
 
   const removeImage = useCallback(
     (id: string) => {
@@ -187,9 +243,15 @@ export function useImageAttachment(ownerId?: string) {
    */
   const restoreImages = useCallback(
     (snapshot: ChatImageAttachment[]) => {
-      setImages(snapshot);
+      const restored = snapshot.map((image) => ({ ...image, ownerId }));
+      setImages((prev) => {
+        const otherOwners = ownerId
+          ? prev.filter((image) => image.ownerId !== ownerId)
+          : prev.filter((image) => image.ownerId);
+        return [...otherOwners, ...restored];
+      });
     },
-    [setImages]
+    [setImages, ownerId]
   );
 
   return {

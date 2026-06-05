@@ -15,6 +15,7 @@ import {
 import { toggleChannel } from "@src/api/tauri/agent";
 import { WIZARD_IDS } from "@src/config/mainAppPaths";
 import { useWizardParam } from "@src/hooks/navigation";
+import type { WizardCategory } from "@src/scaffold/WizardSystem/variants/Channel/channelWizardTypes";
 import { showChannelActionDialogSafely } from "@src/util/dialogs/channelActionDialog";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
@@ -60,6 +61,11 @@ export interface UseChannelStateOptions {
   channelStatuses?: ChannelStatusEntry[];
 }
 
+interface ChannelWizardInitialSelection {
+  category: WizardCategory;
+  type: string;
+}
+
 export function useChannelState(options: UseChannelStateOptions = {}) {
   const { channelStatuses } = options;
   const { t: tIntegrations } = useTranslation("integrations");
@@ -68,6 +74,8 @@ export function useChannelState(options: UseChannelStateOptions = {}) {
   // ── Selection ──
   const [selectedChannel, setSelectedChannel] =
     useState<ChannelSelection | null>(null);
+  const [channelWizardInitialSelection, setChannelWizardInitialSelection] =
+    useState<ChannelWizardInitialSelection | null>(null);
   const { wizard, openWizard, closeWizard } = useWizardParam();
   const channelWizardMode = wizard === WIZARD_IDS.CHANNEL_ADD;
 
@@ -274,12 +282,17 @@ export function useChannelState(options: UseChannelStateOptions = {}) {
     setSelectedChannel(null);
   }, []);
 
-  const handleChannelAdd = useCallback(() => {
-    setSelectedChannel(null);
-    openWizard(WIZARD_IDS.CHANNEL_ADD);
-  }, [openWizard]);
+  const handleChannelAdd = useCallback(
+    (initialSelection?: ChannelWizardInitialSelection) => {
+      setSelectedChannel(null);
+      setChannelWizardInitialSelection(initialSelection ?? null);
+      openWizard(WIZARD_IDS.CHANNEL_ADD);
+    },
+    [openWizard]
+  );
 
   const handleChannelWizardCancel = useCallback(() => {
+    setChannelWizardInitialSelection(null);
     closeWizard();
   }, [closeWizard]);
 
@@ -291,6 +304,7 @@ export function useChannelState(options: UseChannelStateOptions = {}) {
     ) => {
       const prefix = accountPathPrefix(channelType, accountId);
       update(prefix, configData);
+      setChannelWizardInitialSelection(null);
       closeWizard();
       setSelectedChannel({ type: channelType, accountId });
     },
@@ -304,6 +318,7 @@ export function useChannelState(options: UseChannelStateOptions = {}) {
       };
       const path = configPaths[serviceType];
       update(path, apiKey);
+      setChannelWizardInitialSelection(null);
       closeWizard();
     },
     [update, closeWizard]
@@ -349,6 +364,64 @@ export function useChannelState(options: UseChannelStateOptions = {}) {
     setSelectedChannel(null);
   }, [selectedChannel, selectedChannelPath, config, rawUpdate, tIntegrations]);
 
+  // Inline row-action remove for a channel — same destructive flow as
+  // `handleRemoveChannel` but addresses an arbitrary `(type, accountId)`
+  // rather than the currently-selected one. The connections list uses
+  // this from the trash icon column.
+  const handleRemoveChannelRow = useCallback(
+    async (channelType: string, accountId: string) => {
+      const confirmed = await confirmDestructiveAction({
+        title: tIntegrations("integrations.removeAccountTitle", {
+          name: accountId,
+        }),
+        message: tIntegrations("integrations.removeAccountConfirm"),
+        okLabel: tIntegrations("common:actions.remove"),
+        cancelLabel: tIntegrations("common:actions.cancel"),
+      });
+      if (!confirmed) return;
+
+      const prefix = accountPathPrefix(channelType, accountId);
+      const newConfig = deleteNested(config, prefix);
+      rawUpdate(newConfig);
+      if (
+        selectedChannel?.type === channelType &&
+        selectedChannel?.accountId === accountId
+      ) {
+        setSelectedChannel(null);
+      }
+    },
+    [config, rawUpdate, selectedChannel, tIntegrations]
+  );
+
+  // Trash-icon handler for a project sync connection row. Mirrors the
+  // GitHub-tab "Disconnect" UX: confirm, hit `sync_connection_delete`,
+  // then refetch the list so the row falls out without a manual reload.
+  const handleRemoveProjectConnection = useCallback(
+    async (connectionId: string, label: string) => {
+      const confirmed = await confirmDestructiveAction({
+        title: tIntegrations("integrations.removeAccountTitle", {
+          name: label,
+        }),
+        message: tIntegrations("integrations.removeAccountConfirm"),
+        okLabel: tIntegrations("common:actions.remove"),
+        cancelLabel: tIntegrations("common:actions.cancel"),
+      });
+      if (!confirmed) return;
+
+      try {
+        await syncConnectionsApi.delete(connectionId);
+        await refreshProjectConnections();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        showChannelActionDialogSafely(
+          tIntegrations("channels.toggleFailed", { error: message }),
+          "error"
+        );
+      }
+    },
+    [refreshProjectConnections, tIntegrations]
+  );
+
   return {
     // Config
     config,
@@ -357,6 +430,7 @@ export function useChannelState(options: UseChannelStateOptions = {}) {
     // Selection
     selectedChannel,
     channelWizardMode,
+    channelWizardInitialSelection,
     selectedChannelPath,
     isSelectedChannelEnabled,
     selectedChannelStatus,
@@ -381,6 +455,8 @@ export function useChannelState(options: UseChannelStateOptions = {}) {
     handleServiceSubmit,
     handleProbeChannel,
     handleRemoveChannel,
+    handleRemoveChannelRow,
+    handleRemoveProjectConnection,
     toggleChannelEnabled,
   };
 }

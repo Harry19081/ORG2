@@ -1,6 +1,5 @@
 import React from "react";
 
-import type { GitHubConnection } from "@src/api/http/github/types";
 import type { SyncConnection } from "@src/api/http/integrations";
 import type { RoutineDefinition } from "@src/api/http/project";
 import type { McpConfigScope } from "@src/api/tauri/rpc/schemas/mcp";
@@ -77,14 +76,18 @@ export interface CategoryTableContentProps {
   dbProbeResult?: DatabaseProbeResult | null;
   dbProbing?: boolean;
 
-  hasGitHubConnections: boolean;
-  gitHubConnections: GitHubConnection[];
-  gitHubConnectionsLoading: boolean;
   groupedChannels: Map<string, ChannelInstance[]>;
   projectConnections: SyncConnection[];
   connectionsLoading: boolean;
   onSelectGitProvider: (id: string | null, mode?: DetailMode) => void;
   onSelectChannel: (compositeId: string | null, mode?: DetailMode) => void;
+  /** Trash-icon handler for a channel row. */
+  onRemoveChannel?: (channelType: string, accountId: string) => Promise<void>;
+  /** Trash-icon handler for a project sync (Linear / GitHub) row. */
+  onRemoveProjectConnection?: (
+    connectionId: string,
+    label: string
+  ) => Promise<void>;
 
   mcpServers: McpServerStatus[];
   mcpTools?: McpToolDef[];
@@ -211,13 +214,13 @@ export const CategoryTableContent: React.FC<CategoryTableContentProps> = (
           selectedRowId={props.selectedRowId}
           onSelectChannel={props.onSelectChannel}
           onAdd={() => onAddAction("add-connection")}
+          onRemoveChannel={props.onRemoveChannel}
+          onRemoveProjectConnection={props.onRemoveProjectConnection}
         />
       );
     case "git":
       return (
         <GitTable
-          connections={props.gitHubConnections}
-          loading={props.gitHubConnectionsLoading}
           selectedRowId={props.selectedRowId}
           onSelectProvider={props.onSelectGitProvider}
         />

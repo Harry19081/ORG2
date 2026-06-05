@@ -20,6 +20,7 @@ import {
   CHAT_PANEL_CONTENT_MODE,
   chatPanelContentModeAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelStickyNotesOpenAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { invokeTauri } from "@src/util/platform/tauri/init";
 import { isCliSession } from "@src/util/session/sessionDispatch";
@@ -75,6 +76,7 @@ export function useWorkstationSidebarHandlers({
   const setChatPanelSelectedWorkItem = useSetAtom(
     chatPanelSelectedWorkItemAtom
   );
+  const setChatPanelStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
 
   const handleDeleteSession = useCallback(
     async (sessionId: string) => {
@@ -174,6 +176,7 @@ export function useWorkstationSidebarHandlers({
 
       setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.SESSION);
       setChatPanelSelectedWorkItem(null);
+      setChatPanelStickyNotesOpen(false);
       promoteActiveSessionCreatorDraft();
       openSession(item.id, sessionName, originalSession.repoPath);
     },
@@ -189,6 +192,7 @@ export function useWorkstationSidebarHandlers({
       sessionRouteLabel,
       setChatPanelContentMode,
       setChatPanelSelectedWorkItem,
+      setChatPanelStickyNotesOpen,
       setGroupVisibleCounts,
     ]
   );

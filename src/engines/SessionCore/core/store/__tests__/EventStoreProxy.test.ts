@@ -12,6 +12,7 @@ const { rpcMock } = vi.hoisted(() => ({
         replaceAndRemove: vi.fn().mockResolvedValue(true),
         set: vi.fn().mockResolvedValue(undefined),
         upsert: vi.fn().mockResolvedValue(undefined),
+        saveToCache: vi.fn().mockResolvedValue(1),
       },
     },
   },
@@ -56,6 +57,24 @@ describe("EventStoreProxy session targeting", () => {
       events,
       sessionId: null,
     });
+  });
+
+  it("treats cache save failures as non-fatal best-effort sync", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    rpcMock.sessionCore.eventStore.saveToCache.mockRejectedValueOnce(
+      new Error("database is locked")
+    );
+
+    await expect(eventStoreProxy.saveToCache("session-a")).resolves.toBe(0);
+
+    expect(rpcMock.sessionCore.eventStore.saveToCache).toHaveBeenCalledWith({
+      sessionId: "session-a",
+    });
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("saveToCache failed for session-a"),
+      expect.any(Error)
+    );
+    warnSpy.mockRestore();
   });
 });
 

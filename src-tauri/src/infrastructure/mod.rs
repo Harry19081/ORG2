@@ -10,6 +10,9 @@
 // Frontend log persistence (IPC → ~/.orgii/logs/frontend.log)
 pub mod frontend_log;
 
+// Sticky notes persistence (IPC → ~/.orgii/sticky-notes.json)
+pub mod sticky_notes;
+
 // Disk-usage and storage-management Tauri commands. Path helpers
 // themselves live in the `app_paths` workspace crate; this module just
 // composes them into the Settings → Disk Usage report.

@@ -38,7 +38,7 @@ pub type WebhookHeaders = HashMap<String, String>;
 /// pull cycles.
 #[derive(Debug, Clone)]
 pub struct SyncContext {
-    /// The adapter ID this context targets (e.g. `"linear"`, `"github_issues"`).
+    /// The adapter ID this context targets (e.g. `"linear"`, `"github"`).
     pub adapter_id: String,
     /// Auth token pulled from the connection token store for this
     /// project's bound `sync_connection_id`. `None` for adapters that

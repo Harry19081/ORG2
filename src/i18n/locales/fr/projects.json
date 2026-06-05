@@ -622,7 +622,7 @@
     "sidebarSync": "Synchronisation",
     "sync": {
       "title": "Synchronisation externe",
-      "description": "Reflétez les éléments de travail de ce Project vers un système externe comme Linear ou GitHub Issues.",
+      "description": "Reflétez les éléments de travail de ce Project vers un système externe comme Linear ou GitHub.",
       "adapterPicker": {
         "title": "Adaptateur",
         "notAttached": "Non attaché",

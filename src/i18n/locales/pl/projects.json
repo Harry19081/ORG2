@@ -622,7 +622,7 @@
     "confirmDelete": "Rozumiem, usuń tę historię",
     "sync": {
       "title": "Synchronizacja zewnętrzna",
-      "description": "Lustrzane odbicie zadań tej historii do zewnętrznego systemu, takiego jak Linear lub GitHub Issues.",
+      "description": "Lustrzane odbicie zadań tej historii do zewnętrznego systemu, takiego jak Linear lub GitHub.",
       "adapterPicker": {
         "title": "Adapter",
         "notAttached": "Nie podłączony",

@@ -29,6 +29,7 @@ interface ChannelPreviewPanelProps {
     | "update"
     | "selectedChannel"
     | "channelWizardMode"
+    | "channelWizardInitialSelection"
     | "selectedChannelPath"
     | "isSelectedChannelEnabled"
     | "selectedChannelStatus"
@@ -61,6 +62,7 @@ const ChannelPreviewPanel: React.FC<ChannelPreviewPanelProps> = ({
     update,
     selectedChannel,
     channelWizardMode,
+    channelWizardInitialSelection,
     selectedChannelPath,
     isSelectedChannelEnabled,
     selectedChannelStatus,
@@ -82,6 +84,8 @@ const ChannelPreviewPanel: React.FC<ChannelPreviewPanelProps> = ({
         onSubmit={handleChannelWizardSubmit}
         onCancel={handleChannelWizardCancel}
         existingAccounts={existingAccountsMap}
+        initialCategory={channelWizardInitialSelection?.category}
+        initialType={channelWizardInitialSelection?.type}
         onGitConnected={onGitConnected}
         onProjectsConnected={refreshProjectConnections}
         onServiceSubmit={handleServiceSubmit}

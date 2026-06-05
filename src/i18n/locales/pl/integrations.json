@@ -1031,7 +1031,6 @@
   },
   "projectConnections": {
     "linear": "Linear",
-    "githubIssues": "GitHub Issues",
     "authMethod": "Uwierzytelnianie",
     "authMethodDesc": "Wybierz, jak to konto uwierzytelnia się w trackerze",
     "authPat": "Personal access token",
@@ -1041,9 +1040,12 @@
     "personalAccessTokenPlaceholder": "Wklej token...",
     "tokenRequired": "Personal access token jest wymagany",
     "oauthWaiting": "Oczekiwanie na OAuth",
-    "oauthDeviceDesc": "Otwórz URL weryfikacyjny i wpisz ten kod, aby autoryzować GitHub Issues",
+    "oauthDeviceDesc": "Otwórz URL weryfikacyjny i wpisz ten kod, aby autoryzować GitHub",
     "oauthBrowserDesc": "Dokończ autoryzację w otwartym oknie przeglądarki.",
     "oauthBrowserOpened": "Otwarto okno przeglądarki. Dokończ tam autoryzację, a kreator będzie kontynuował."
+  },
+  "gitConnections": {
+    "github": "GitHub"
   },
   "builtInTools": {
     "title": "Wbudowane narzędzia",
@@ -1096,6 +1098,7 @@
     "addWebAppCommand": "Dodaj polecenie aplikacji webowej",
     "addDatabaseConnection": "Dodaj połączenie z bazą danych",
     "addChannelOrService": "Dodaj kanał lub usługę",
+    "addGitConnection": "Dodaj połączenie Git",
     "createRule": "Utwórz politykę",
     "newTask": "Nowe zadanie",
     "addRoutine": "Dodaj procedurę",
@@ -1315,7 +1318,14 @@
     "accountDisconnected": "Konto GitHub „{{name}}” rozłączono",
     "accountDisconnectFailed": "Nie udało się rozłączyć konta GitHub",
     "connectRepoDesc": "Połącz konto GitHub, aby uzyskać dostęp do Repo",
-    "github": "GitHub"
+    "github": "GitHub",
+    "signInWithGithub": "Zaloguj się przez GitHub",
+    "signInWithGithubDesc": "Autoryzuj ORGII przez GitHub Device Flow. Bez konieczności hostowania serwera.",
+    "oauthWaiting": "Oczekiwanie na autoryzację",
+    "oauthDeviceCodeDesc": "Otwórz URL poniżej i wpisz ten kod",
+    "oauthOpenGithub": "Otwórz GitHub",
+    "oauthCancel": "Anuluj",
+    "oauthFailed": "Autoryzacja nie powiodła się"
   },
   "skillsHub": {
     "title": "Centrum umiejętności",

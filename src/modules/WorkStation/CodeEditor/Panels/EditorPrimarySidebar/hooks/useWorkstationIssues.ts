@@ -10,7 +10,8 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getGitRemotes } from "@src/api/http/git/remotes";
-import { resolveGitHubAuth } from "@src/services/git/operations/createPullRequest";
+import { checkTokenLocal } from "@src/api/tauri/github";
+import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
 import {
   addIssueComment,
   closeIssue,
@@ -109,14 +110,22 @@ export function useWorkstationIssues({
     };
   }, [repoPath, repoId, remoteUrlProp]);
 
-  // Check auth when remote URL resolves
+  // Check auth when remote URL resolves — credentials are resolved Rust-side
+  // We also need to verify the remote is a GitHub URL
   useEffect(() => {
     if (!resolvedRemoteUrl) return;
     let cancelled = false;
     void (async () => {
-      const auth = await resolveGitHubAuth(resolvedRemoteUrl);
-      if (!cancelled) {
-        setHasGitHubAuth(!!auth);
+      const repoFullName = parseGithubRepoFullName(resolvedRemoteUrl);
+      if (!repoFullName) {
+        if (!cancelled) setHasGitHubAuth(false);
+        return;
+      }
+      try {
+        const ok = await checkTokenLocal();
+        if (!cancelled) setHasGitHubAuth(ok);
+      } catch {
+        if (!cancelled) setHasGitHubAuth(false);
       }
     })();
     return () => {

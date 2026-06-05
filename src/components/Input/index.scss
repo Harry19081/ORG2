@@ -183,6 +183,34 @@
       line-height: inherit;
     }
   }
+
+  &.input-field-ghost {
+    height: 28px;
+    min-width: 0;
+    max-width: 100%;
+    cursor: default;
+    border-radius: 8px;
+    transition: background-color 0.1s cubic-bezier(0, 0, 1, 1);
+
+    .input-inner {
+      padding: 0 6px;
+    }
+
+    .input {
+      height: 100%;
+      transform: translateY(-1px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-1);
+    }
+
+    &:hover:not(.input-disabled) {
+      background: var(--color-surface-hover);
+    }
+  }
 }
 
 .input {

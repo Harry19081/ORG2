@@ -574,8 +574,8 @@
     "titleBar": {
       "switchToRight": "오른쪽 모드로 전환",
       "switchToLeft": "왼쪽 모드로 전환",
-      "showSidebar": "기본 사이드바 표시",
-      "hideSidebar": "기본 사이드바 숨기기",
+      "showSidebar": "사이드바 표시",
+      "hideSidebar": "사이드바 숨기기",
       "showBottomPanel": "하단 패널 표시",
       "hideBottomPanel": "하단 패널 숨기기",
       "showDevTools": "DevTools 표시",
@@ -601,8 +601,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "활동 대기 중…",
-      "hideTurnPrompt": "턴 프롬프트 숨기기",
-      "showTurnPrompt": "턴 프롬프트 표시",
+      "viewTaskPrompt": "작업 프롬프트 보기",
+      "taskPromptTitle": "작업 프롬프트",
       "newEventDivider": "새 이벤트"
     },
     "dock": {
@@ -651,7 +651,8 @@
       "manage": "고정된 작업 관리",
       "searchPlaceholder": "고정할 작업 검색…",
       "loading": "로딩 중…",
-      "empty": "작업을 찾을 수 없습니다."
+      "empty": "작업을 찾을 수 없습니다.",
+      "unpinAll": "모두 고정 해제"
     }
   },
   "listPanel": {
@@ -1002,6 +1003,7 @@
     "categoryList": "목록",
     "subagentFailed": "Sub Agent 실패",
     "subagentDefaultName": "Sub Agent",
+    "assignedTaskToSubagent": "작업을 Subagent에 할당함",
     "subagentRunning": "Subagent 실행 중",
     "subagentDone": "Subagent 완료",
     "subagentAssigning": "Subagent 할당 중",
@@ -2160,7 +2162,7 @@
       "broadcastFailed": "{{sender}} couldn't message multiple agents"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator read reports sent by other agents"
+      "readMessages": "Coordinator read messages sent by other agents"
     },
     "userMessagePending": "{{member}} is picking up your message",
     "pausedBanner": {
@@ -2269,8 +2271,8 @@
         "collapse": "메시지 숨기기",
         "userInbox": "사용자 받은편지함",
         "currentChannel": "현재 채널",
-        "subagentReports": "Subagent reports",
-        "readReportsFromSubagents": "{{agent}} read reports from subagents"
+        "subagentMessages": "Subagent messages",
+        "readMessagesFromSubagents": "{{agent}} read messages from subagents"
       }
     },
     "actions": {

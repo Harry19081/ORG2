@@ -2,11 +2,7 @@
  * Remote Operations — push, pull, fetch, publish, sync
  */
 import { gitApi } from "@src/api/http/git";
-import {
-  LOCAL_GITHUB_TOKEN_USER_ID,
-  getGitHubGitCredentialForRemote,
-} from "@src/api/tauri/github";
-import { SERVICE_AUTH_STORAGE_KEYS } from "@src/config/serviceAuth";
+import { getGitHubGitCredentialForRemote } from "@src/api/tauri/github";
 import { showGitErrorAndHandle } from "@src/hooks/git/useGitErrorDialog";
 import { createLogger } from "@src/hooks/logger";
 import { gitPullStrategyAtom } from "@src/store/ui/editorSettingsAtom";
@@ -168,30 +164,18 @@ async function readGitHubConnectionCredential(
   const remoteUrl = await getRemoteUrl(remoteName);
   if (!remoteUrl) return null;
 
-  const candidateUserIds = [
-    localStorage.getItem(SERVICE_AUTH_STORAGE_KEYS.userId),
-    LOCAL_GITHUB_TOKEN_USER_ID,
-  ].filter((userId): userId is string => Boolean(userId));
-
-  for (const userId of candidateUserIds) {
-    try {
-      const credential = await getGitHubGitCredentialForRemote(
-        userId,
-        remoteUrl
-      );
-      if (!credential) continue;
-
-      return {
-        username: credential.username,
-        token: credential.token,
-        shouldStore: false,
-      };
-    } catch (error) {
-      logger.warn("GitHub credential lookup failed:", error);
-    }
+  try {
+    const credential = await getGitHubGitCredentialForRemote(remoteUrl);
+    if (!credential) return null;
+    return {
+      username: credential.username,
+      token: credential.token,
+      shouldStore: false,
+    };
+  } catch (error) {
+    logger.warn("GitHub credential lookup failed:", error);
+    return null;
   }
-
-  return null;
 }
 
 async function requestGitAuthToken(

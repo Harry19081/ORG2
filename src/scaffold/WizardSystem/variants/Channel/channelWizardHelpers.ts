@@ -51,10 +51,3 @@ export function validateAccountName(
   if (isDuplicateName) return { name: messages.duplicate };
   return {};
 }
-
-export function extractHostedUserId(hostedToken: string): string {
-  const payload = JSON.parse(atob(hostedToken.split(".")[1])) as {
-    sub: string;
-  };
-  return payload.sub;
-}

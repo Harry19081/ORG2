@@ -1,6 +1,5 @@
 import { type Dispatch, type SetStateAction, useMemo } from "react";
 
-import type { GitHubConnection } from "@src/api/http/github/types";
 import type { DependencyStatus } from "@src/hooks/dependencies";
 
 import type { useCliAgents } from "./KeyVault/CliClients/hooks/useCliAgents";
@@ -19,9 +18,6 @@ export interface UseIntegrationsCategoryTablePropsParams {
   accountsHook: ReturnType<typeof useKeyVaultPage>;
   handleAccountSelect: (id: string | null, mode?: DetailMode) => void;
   extensions: ReturnType<typeof useExtensionsState>;
-  githubHasConnections: boolean;
-  githubConnections: GitHubConnection[];
-  githubConnectionsLoading: boolean;
   channelState: ReturnType<typeof useChannelState>;
   connections: ReturnType<typeof useConnectionsState>;
   databasesState: ReturnType<typeof useDatabasesState>;
@@ -49,9 +45,6 @@ export function useIntegrationsCategoryTableProps(
     accountsHook,
     handleAccountSelect,
     extensions,
-    githubHasConnections,
-    githubConnections,
-    githubConnectionsLoading,
     channelState,
     connections,
     databasesState,
@@ -82,15 +75,14 @@ export function useIntegrationsCategoryTableProps(
       modelsActiveTab: modelsActiveTab ?? extensions.modelsActiveTab,
       onModelsTabChange: handleModelsTabChange,
       onToggleModel: extensions.handleToggleModel,
-      hasGitHubConnections: githubHasConnections,
-      gitHubConnections: githubConnections,
-      gitHubConnectionsLoading: githubConnectionsLoading,
       groupedChannels: channelState.groupedChannels,
       projectConnections: channelState.projectConnections,
       connectionsLoading:
         !channelState.loaded || channelState.projectConnectionsLoading,
       onSelectGitProvider: connections.handleGitProviderSelect,
       onSelectChannel: connections.handleChannelClick,
+      onRemoveChannel: channelState.handleRemoveChannelRow,
+      onRemoveProjectConnection: channelState.handleRemoveProjectConnection,
       databases: databasesState.databases,
       databasesLoading: databasesState.loading,
       onSelectDatabase: databasesState.handleSelectDatabase,
@@ -148,9 +140,6 @@ export function useIntegrationsCategoryTableProps(
       handleDatabasesTabChange,
       selectedDbClient,
       setSelectedDbClient,
-      githubHasConnections,
-      githubConnections,
-      githubConnectionsLoading,
       channelState,
       connections,
       databasesState,

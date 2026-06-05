@@ -123,7 +123,8 @@ function getDropTargetElement(
   eventOrPosition: Event | { x: number; y: number }
 ): Element | null {
   if (eventOrPosition instanceof Event) {
-    return eventOrPosition.target as Element | null;
+    const target = eventOrPosition.target;
+    return target instanceof Element ? target : null;
   }
 
   const scale = window.devicePixelRatio || 1;

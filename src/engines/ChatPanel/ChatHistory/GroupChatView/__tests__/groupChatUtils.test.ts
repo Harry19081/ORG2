@@ -95,8 +95,8 @@ describe("groupChatUtils", () => {
       sessionId: COORDINATOR_SESSION_ID,
       source: "user",
       args: { agentOrgInboxTranscript: true },
-      displayText: "Reviewed reports from subagents.",
-      result: { type: "user", message: "Reviewed reports from subagents." },
+      displayText: "Reviewed messages from subagents.",
+      result: { type: "user", message: "Reviewed messages from subagents." },
     });
 
     expect(
@@ -191,7 +191,7 @@ describe("groupChatUtils", () => {
     expect(merged.map((candidate) => candidate.id)).toEqual(["user-turn"]);
   });
 
-  it("keeps member inbox transcripts as renderable report records", () => {
+  it("keeps member inbox transcripts as renderable message records", () => {
     const transcript = event({
       id: "member-inbox-transcript",
       source: "user",
@@ -238,6 +238,17 @@ describe("groupChatUtils", () => {
       "user-turn",
       "task-assigned-transcript",
     ]);
+    expect(
+      resolveGroupChatMessageBubble(
+        merged[1],
+        COORDINATOR_SESSION_ID,
+        ORG_MEMBERS
+      )
+    ).toMatchObject({
+      senderName: "Coordinator",
+      recipientName: "SDE planner",
+      kind: "task",
+    });
     expect(resolveGroupChatToolUseSummary(merged[1])).toBeNull();
   });
 
@@ -260,8 +271,8 @@ describe("groupChatUtils", () => {
         uiCanonical: "agent_message",
         actionType: "assistant",
         source: "assistant",
-        displayText: "I reviewed the reports.",
-        result: { message: "I reviewed the reports." },
+        displayText: "I reviewed the messages.",
+        result: { message: "I reviewed the messages." },
       }),
       taskEvent,
     ]);

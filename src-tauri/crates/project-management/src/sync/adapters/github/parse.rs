@@ -14,27 +14,27 @@ use crate::sync::adapter::ExternalChange;
 use crate::sync::types::{EntityType, OutboxEntry, OutboxOp};
 
 /// Connection config persisted in `projects.sync_config_json` for
-/// `github_issues`. The adapter requires both `owner` and `repo` —
+/// `github`. The adapter requires both `owner` and `repo` —
 /// neither has a sensible default. Multi-repo per project is not
 /// supported; future iterations could extend this to a list of repos.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct GithubIssuesConfig {
+pub struct GitHubConfig {
     pub owner: String,
     pub repo: String,
 }
 
-impl GithubIssuesConfig {
+impl GitHubConfig {
     /// Parse `sync_config_json` into the typed config. Returns a
     /// human-readable error so the resulting [`super::super::super::types::SyncError::Permanent`]
     /// surfaces in project sync status with enough context.
     pub fn parse(raw: Option<&str>) -> Result<Self, String> {
         let raw = raw.ok_or_else(|| {
-            "github_issues requires sync_config_json with { owner, repo }".to_string()
+            "github requires sync_config_json with { owner, repo }".to_string()
         })?;
-        let parsed: GithubIssuesConfig = serde_json::from_str(raw)
-            .map_err(|err| format!("github_issues config not valid JSON: {}", err))?;
+        let parsed: GitHubConfig = serde_json::from_str(raw)
+            .map_err(|err| format!("github config not valid JSON: {}", err))?;
         if parsed.owner.is_empty() || parsed.repo.is_empty() {
-            return Err("github_issues config has empty owner/repo".to_string());
+            return Err("github config has empty owner/repo".to_string());
         }
         Ok(parsed)
     }
@@ -186,7 +186,7 @@ pub fn build_issue_create_body(local: &Value) -> Result<Value, String> {
     let title = local
         .get("title")
         .and_then(Value::as_str)
-        .ok_or_else(|| "github_issues create payload missing required title".to_string())?;
+        .ok_or_else(|| "github create payload missing required title".to_string())?;
     // Reuse build_issue_update_body for the optional fields, then
     // patch in `title` so the contract stays in one place.
     let mut body = build_issue_update_body(local);
@@ -206,7 +206,7 @@ pub fn build_issue_close_body() -> Value {
     })
 }
 
-/// Parse a GitHub Issues webhook envelope into [`ExternalChange`]
+/// Parse a GitHub webhook envelope into [`ExternalChange`]
 /// rows.
 ///
 /// GitHub fans the `issues` event over many actions
@@ -220,7 +220,7 @@ pub fn build_issue_close_body() -> Value {
 /// Comment events (`issue_comment`) are silently dropped — comments
 /// don't currently map to local entities. Anything without an `issue`
 /// field is similarly dropped so new event types don't 4xx the listener.
-pub fn parse_github_issues_webhook_payload(
+pub fn parse_github_webhook_payload(
     value: &Value,
     event: &str,
 ) -> Result<Vec<ExternalChange>, String> {
@@ -252,7 +252,7 @@ pub fn payload_value(entry: &OutboxEntry) -> Result<Value, String> {
         .map_err(|err| format!("outbox payload not valid JSON: {}", err))
 }
 
-/// Discriminator used by `GitHubIssuesAdapter::push` to pick the
+/// Discriminator used by `GitHubAdapter::push` to pick the
 /// right HTTP request shape.
 pub fn op_supports_push(op: OutboxOp) -> Result<(), String> {
     match op {
@@ -386,12 +386,12 @@ mod tests {
 
     #[test]
     fn config_parse_requires_both_fields() {
-        assert!(GithubIssuesConfig::parse(None).is_err());
-        assert!(GithubIssuesConfig::parse(Some("{}")).is_err());
-        assert!(GithubIssuesConfig::parse(Some("{ \"owner\": \"\" }")).is_err());
-        assert!(GithubIssuesConfig::parse(Some("not json")).is_err());
+        assert!(GitHubConfig::parse(None).is_err());
+        assert!(GitHubConfig::parse(Some("{}")).is_err());
+        assert!(GitHubConfig::parse(Some("{ \"owner\": \"\" }")).is_err());
+        assert!(GitHubConfig::parse(Some("not json")).is_err());
 
-        let parsed = GithubIssuesConfig::parse(Some("{\"owner\":\"o\",\"repo\":\"r\"}")).unwrap();
+        let parsed = GitHubConfig::parse(Some("{\"owner\":\"o\",\"repo\":\"r\"}")).unwrap();
         assert_eq!(parsed.owner, "o");
         assert_eq!(parsed.repo, "r");
     }
@@ -403,7 +403,7 @@ mod tests {
             "issue": issue_node(),
             "repository": { "full_name": "o/r" },
         });
-        let changes = parse_github_issues_webhook_payload(&envelope, "issues").unwrap();
+        let changes = parse_github_webhook_payload(&envelope, "issues").unwrap();
         assert_eq!(changes.len(), 1);
         assert_eq!(changes[0].external_id, "42");
         assert!(!changes[0].deleted);
@@ -415,7 +415,7 @@ mod tests {
             "action": "deleted",
             "issue": issue_node(),
         });
-        let changes = parse_github_issues_webhook_payload(&envelope, "issues").unwrap();
+        let changes = parse_github_webhook_payload(&envelope, "issues").unwrap();
         assert!(changes[0].deleted);
     }
 
@@ -430,21 +430,21 @@ mod tests {
                 "pull_request": { "url": "..." },
             }
         });
-        let changes = parse_github_issues_webhook_payload(&envelope, "issues").unwrap();
+        let changes = parse_github_webhook_payload(&envelope, "issues").unwrap();
         assert!(changes.is_empty());
     }
 
     #[test]
     fn webhook_non_issues_event_is_dropped() {
         let envelope = json!({ "action": "created", "comment": { "id": 1 } });
-        let changes = parse_github_issues_webhook_payload(&envelope, "issue_comment").unwrap();
+        let changes = parse_github_webhook_payload(&envelope, "issue_comment").unwrap();
         assert!(changes.is_empty());
     }
 
     #[test]
     fn webhook_missing_issue_errors() {
         let envelope = json!({ "action": "opened" });
-        assert!(parse_github_issues_webhook_payload(&envelope, "issues").is_err());
+        assert!(parse_github_webhook_payload(&envelope, "issues").is_err());
     }
 
     #[test]

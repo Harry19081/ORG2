@@ -154,7 +154,7 @@ pub struct SyncMetric {
     pub ts: String,
     /// Project slug the record is scoped to.
     pub slug: String,
-    /// Adapter id (`"linear"`, `"github_issues"`, `"echo"`, …).
+    /// Adapter id (`"linear"`, `"github"`, `"echo"`, …).
     pub adapter_id: String,
     pub kind: MetricKind,
     pub outcome: MetricOutcome,

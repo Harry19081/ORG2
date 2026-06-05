@@ -27,7 +27,6 @@ export interface UseIntegrationsPageDrillDownParams {
   routines: ReturnType<typeof useRoutinesState>;
   connections: ReturnType<typeof useConnectionsState>;
   channelState: ReturnType<typeof useChannelState>;
-  githubHasConnections: boolean;
   tIntegrations: TFunction<"integrations">;
   handleAddAction: (action: AddAction) => void;
 }
@@ -53,7 +52,6 @@ export function useIntegrationsPageDrillDown(
     routines,
     connections,
     channelState,
-    githubHasConnections,
     tIntegrations,
     handleAddAction,
   } = params;
@@ -67,7 +65,7 @@ export function useIntegrationsPageDrillDown(
         mcpServers: extensions.mcpServers.servers,
         markdownRules: policies.markdownRules,
         routines: routines.routines,
-        hasGitHubConnections: githubHasConnections,
+        projectConnections: channelState.projectConnections,
         groupedChannels: channelState.groupedChannels,
       }),
     [
@@ -77,7 +75,7 @@ export function useIntegrationsPageDrillDown(
       extensions.mcpServers.servers,
       policies.markdownRules,
       routines.routines,
-      githubHasConnections,
+      channelState.projectConnections,
       channelState.groupedChannels,
     ]
   );
@@ -167,6 +165,8 @@ export function useIntegrationsPageDrillDown(
         return routines.openNewRoutineWizard;
       case "connections":
         return () => handleAddAction("add-connection");
+      case "git":
+        return () => handleAddAction("add-git-connection");
       default:
         return undefined;
     }

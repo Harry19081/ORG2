@@ -142,6 +142,11 @@ export interface InputProps extends Omit<
   autoHeight?: boolean;
 
   /**
+   * Standard field presentation for inline editable text surfaces.
+   */
+  fieldVariant?: "default" | "ghost";
+
+  /**
    * Additional class name for input element
    */
   inputClassName?: string;
@@ -175,6 +180,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       borderless = false,
       bgless = false,
       autoHeight = false,
+      fieldVariant = "default",
       className = "",
       style,
       inputClassName = "",
@@ -196,6 +202,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const currentValue = isControlled ? value : internalValue;
 
     const hasError = error || !!errorMessage;
+    const isGhostField = fieldVariant === "ghost";
+    const resolvedBorderless = borderless || isGhostField;
+    const resolvedBgless = bgless || isGhostField;
 
     const wrapperClasses = [
       "input-wrapper",
@@ -204,9 +213,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       disabled && "input-disabled",
       isFocused && "input-focused",
       readOnly && "input-readonly",
-      borderless && "input-borderless",
-      bgless && "input-bgless",
+      resolvedBorderless && "input-borderless",
+      resolvedBgless && "input-bgless",
       autoHeight && "input-auto-height",
+      isGhostField && "input-field-ghost",
       isDark && "input-dark",
       className,
     ]
@@ -215,7 +225,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const inputClasses = ["input", inputClassName].filter(Boolean).join(" ");
     const inputInnerClassName =
-      borderless && bgless ? "input-inner" : "input-inner rounded-lg bg-bg-2";
+      resolvedBorderless && resolvedBgless
+        ? "input-inner"
+        : "input-inner rounded-lg bg-bg-2";
 
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {

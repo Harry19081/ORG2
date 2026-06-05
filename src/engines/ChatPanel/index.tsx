@@ -85,6 +85,7 @@ import {
   sessionsAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
+import { addSectionAtom } from "@src/store/stickyNotes/stickyNotesAtom";
 import {
   CHAT_PANEL_CONTENT_MODE,
   CHAT_PANEL_CREATE_TARGET,
@@ -95,6 +96,7 @@ import {
   chatPanelMaximizedAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelStickyNotesOpenAtom,
   chatTurnPaginationEnabledAtom,
   chatWidthAtom,
   toggleChatPanelMaximizedAtom,
@@ -118,6 +120,7 @@ import { useReloadSession } from "./ChatHistory/hooks/useReloadSession";
 import ChatView from "./ChatView";
 import LinkSessionToWorkItemModal from "./LinkSessionToWorkItemModal";
 import ProjectPanelView from "./ProjectPanelView";
+import StickyNotesPanelView from "./StickyNotesPanelView";
 import WorkItemPanelView from "./WorkItemPanelView";
 import { useChatPanelResize } from "./hooks/useChatPanelResize";
 import { usePanelTitle } from "./hooks/usePanelTitle";
@@ -165,7 +168,12 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     position = "right",
     sessionCreatorSlot: SessionCreatorSlot,
   }) => {
-    const { t } = useTranslation(["sessions", "common", "projects"]);
+    const { t } = useTranslation([
+      "sessions",
+      "common",
+      "projects",
+      "navigation",
+    ]);
     const isLeftPosition = position === "left";
     const shouldOffsetHeaderForCollapsedSidebar =
       useShouldOffsetChatPanelHeader({
@@ -198,6 +206,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     );
     const selectedWorkItem = useAtomValue(chatPanelSelectedWorkItemAtom);
     const selectedProject = useAtomValue(chatPanelSelectedProjectAtom);
+    const stickyNotesOpen = useAtomValue(chatPanelStickyNotesOpenAtom);
     const createProjectContext = useAtomValue(
       chatPanelCreateProjectContextAtom
     );
@@ -326,6 +335,8 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     );
     const setSelectedWorkItem = useSetAtom(chatPanelSelectedWorkItemAtom);
     const setSelectedProject = useSetAtom(chatPanelSelectedProjectAtom);
+    const setStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
+    const addStickyNotesSection = useSetAtom(addSectionAtom);
     const dispatchClearSession = useSetAtom(clearSessionAtom);
     const creatorState = useAtomValue(sessionCreatorStateAtom);
     const setCreatorState = useSetAtom(sessionCreatorStateAtom);
@@ -371,6 +382,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       setContentMode(CHAT_PANEL_CONTENT_MODE.SESSION);
       setSelectedWorkItem(null);
       setSelectedProject(null);
+      setStickyNotesOpen(false);
       dispatchClearSession();
       setWorkstationActiveSessionId(null);
       setActiveSessionId(null);
@@ -380,8 +392,13 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       setContentMode,
       setSelectedProject,
       setSelectedWorkItem,
+      setStickyNotesOpen,
       setWorkstationActiveSessionId,
     ]);
+
+    const handleAddStickyNotesSection = useCallback(() => {
+      addStickyNotesSection();
+    }, [addStickyNotesSection]);
 
     const events = useAtomValue(eventsAtom);
     const [copyEventJsonLabel, setCopyEventJsonLabel] = React.useState<
@@ -455,29 +472,45 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const showWorkItemContent = !!selectedWorkItem && !showSessionContent;
     const showProjectContent =
       !!selectedProject && !showSessionContent && !showWorkItemContent;
+    // Sticky-notes board sits at the same precedence rank as project /
+    // work-item — render it only when no session / work-item / project is
+    // active. The atom is mutually exclusive at write time (entry points
+    // null out the sibling atoms), so we just gate read-side here.
+    const showStickyNotesContent =
+      stickyNotesOpen &&
+      !showSessionContent &&
+      !showWorkItemContent &&
+      !showProjectContent;
     const showExplicitNonSessionContent =
       contentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION;
     const showNonSessionContent =
-      !showWorkItemContent && !showProjectContent && !showSessionContent;
+      !showWorkItemContent &&
+      !showProjectContent &&
+      !showStickyNotesContent &&
+      !showSessionContent;
     const showPanelContent =
       active ||
       showWorkItemContent ||
       showProjectContent ||
+      showStickyNotesContent ||
       showExplicitNonSessionContent;
     const showHeader =
+      showStickyNotesContent ||
       showWorkItemContent ||
       showProjectContent ||
       showExplicitNonSessionContent ||
       (active && (showSessionContent || viewMode === "workStation"));
     const workItemTitle = selectedWorkItem?.workItem.name || "Work item";
     const projectTitle = selectedProject?.project.name || t("projects.project");
-    const headerTitle = selectedWorkItem
-      ? currentSessionId
-        ? `${workItemTitle} » ${panelTitle}`
-        : workItemTitle
-      : selectedProject
-        ? projectTitle
-        : panelTitle;
+    const headerTitle = showStickyNotesContent
+      ? t("navigation:stickyNotes.boardTitle")
+      : selectedWorkItem
+        ? currentSessionId
+          ? `${workItemTitle} » ${panelTitle}`
+          : workItemTitle
+        : selectedProject
+          ? projectTitle
+          : panelTitle;
     // The "+" (new session) button is redundant when the session sidebar is
     // visible, so only surface it in the chat header when that sidebar is off.
     const showNewSessionButton =
@@ -491,6 +524,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       !showSessionContent &&
       !selectedWorkItem &&
       !selectedProject &&
+      !showStickyNotesContent &&
       !isBenchmarkTarget &&
       !isProjectTarget &&
       !isWorkItemTarget;
@@ -498,12 +532,14 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       showNonSessionContent &&
       !selectedWorkItem &&
       !selectedProject &&
+      !showStickyNotesContent &&
       isWorkItemTarget &&
       Boolean(SessionCreatorSlot);
     const showProjectAgentSwitchInHeader =
       showNonSessionContent &&
       !selectedWorkItem &&
       !selectedProject &&
+      !showStickyNotesContent &&
       isProjectTarget &&
       Boolean(SessionCreatorSlot);
     const chatFocusLabel = isChatFocus
@@ -527,6 +563,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       !showSessionContent &&
       !selectedWorkItem &&
       !selectedProject &&
+      !showStickyNotesContent &&
       isChatFocus &&
       showChatFocusToggle;
 
@@ -1125,6 +1162,36 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
             </span>
           </Tooltip>
         )}
+        {showStickyNotesContent && (
+          <Tooltip
+            content={
+              <KeyboardShortcutTooltipContent
+                label={t("navigation:stickyNotes.addSection")}
+              />
+            }
+            position="bottom-end"
+            mouseEnterDelay={200}
+            framedPanel
+          >
+            <span className="inline-flex">
+              <Button
+                htmlType="button"
+                variant="tertiary"
+                size="small"
+                iconOnly
+                onClick={handleAddStickyNotesSection}
+                aria-label={t("navigation:stickyNotes.addSection")}
+                data-testid="chat-panel-sticky-notes-add-section"
+                icon={
+                  <Plus
+                    size={CHAT_PANEL_HEADER_PROMINENT_ICON_SIZE}
+                    strokeWidth={2}
+                  />
+                }
+              />
+            </span>
+          </Tooltip>
+        )}
         {showChatFocusToggle && (
           <Tooltip
             content={
@@ -1353,13 +1420,26 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
             )}
           </div>
         )}
-        {showSessionContent || selectedWorkItem || selectedProject ? (
+        {showSessionContent ||
+        selectedWorkItem ||
+        selectedProject ||
+        showStickyNotesContent ? (
           <>
             <div
               className="flex h-9 min-w-0 shrink items-center"
               style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
             >
-              {showSessionContent || (selectedWorkItem && currentSessionId) ? (
+              {showStickyNotesContent ? (
+                <span className="flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover">
+                  <span
+                    className="min-w-0 -translate-y-px truncate"
+                    data-testid="chat-panel-header-title"
+                  >
+                    {headerTitle}
+                  </span>
+                </span>
+              ) : showSessionContent ||
+                (selectedWorkItem && currentSessionId) ? (
                 <SessionHoverCard sessionId={currentSessionId}>
                   <span className="flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover">
                     <span
@@ -1375,11 +1455,8 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
                   type="text"
                   value={headerTitle}
                   onChange={handleProjectTitleChange}
-                  borderless
-                  bgless
+                  fieldVariant="ghost"
                   size="small"
-                  className="h-7 min-w-0 max-w-full cursor-default rounded-lg transition-colors hover:bg-surface-hover [&_.input-inner]:!px-1.5"
-                  inputClassName="-translate-y-px truncate text-[13px] font-medium text-text-1"
                   data-testid="chat-panel-header-title-input"
                 />
               ) : (
@@ -1388,11 +1465,8 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
                   value={headerTitle}
                   onChange={handleWorkItemTitleChange}
                   readOnly={!selectedWorkItem}
-                  borderless
-                  bgless
+                  fieldVariant="ghost"
                   size="small"
-                  className="h-7 min-w-0 max-w-full cursor-default rounded-lg transition-colors hover:bg-surface-hover [&_.input-inner]:!px-1.5"
-                  inputClassName="-translate-y-px truncate text-[13px] font-medium text-text-1"
                   data-testid="chat-panel-header-title-input"
                 />
               )}
@@ -1732,6 +1806,8 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           <WorkItemPanelView selectedWorkItem={selectedWorkItem} />
         ) : showProjectContent && selectedProject ? (
           <ProjectPanelView selectedProject={selectedProject} />
+        ) : showStickyNotesContent ? (
+          <StickyNotesPanelView />
         ) : showSessionContent ? (
           <ChatView
             sessionId={currentSessionId}

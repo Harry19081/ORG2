@@ -29,12 +29,57 @@ import {
   streamRetryStatusAtom,
   userInitiatedCancelAtom,
 } from "@src/store/session/cliSessionStatusAtom";
-import {
-  dequeueMessageAtom,
-  messageQueueAtom,
-} from "@src/store/ui/messageQueueAtom";
+import { messageQueueAtom } from "@src/store/ui/messageQueueAtom";
 
 const logger = createLogger("UseSessionActions");
+
+interface RestorableUserMessage {
+  displayContent: string;
+  imageDataUrls?: string[];
+}
+
+function readImageDataUrls(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const images = value.filter(
+    (item): item is string => typeof item === "string"
+  );
+  return images.length > 0 ? images : undefined;
+}
+
+export function resolveRestorableUserMessage(options: {
+  snapshotDisplayText?: string;
+  snapshotImages?: unknown;
+  lastUserMessage?: RestorableUserMessage | null;
+  pendingDisplayText?: string;
+  pendingImages?: unknown;
+}): RestorableUserMessage | null {
+  const snapshotImages = readImageDataUrls(options.snapshotImages);
+  const pendingImages = readImageDataUrls(options.pendingImages);
+
+  if (options.snapshotDisplayText) {
+    const fallbackImages =
+      options.lastUserMessage?.displayContent === options.snapshotDisplayText
+        ? options.lastUserMessage.imageDataUrls
+        : undefined;
+    return {
+      displayContent: options.snapshotDisplayText,
+      imageDataUrls: snapshotImages ?? fallbackImages,
+    };
+  }
+
+  if (options.lastUserMessage) {
+    return options.lastUserMessage;
+  }
+
+  if (options.pendingDisplayText) {
+    return {
+      displayContent: options.pendingDisplayText,
+      imageDataUrls: pendingImages,
+    };
+  }
+
+  return null;
+}
 
 interface UseSessionActionsOptions {
   getSessionId: () => string | null;
@@ -54,7 +99,6 @@ export function useSessionActions(options: UseSessionActionsOptions) {
   const setWorkstationActiveSessionId = useSetAtom(
     workstationActiveSessionIdAtom
   );
-  const dequeueMessage = useSetAtom(dequeueMessageAtom);
   const setSessionRuntimeStatus = useSetAtom(sessionRuntimeStatusAtom);
   const setStreamRetryStatus = useSetAtom(streamRetryStatusAtom);
 
@@ -96,8 +140,9 @@ export function useSessionActions(options: UseSessionActionsOptions) {
    *   2. No queued messages + agent already produced output
    *      → Interrupt only. History stays intact.
    *
-   *   3. Queue is non-empty and current turn already produced output
-   *      → Pop the head to the input box, keep the tail queued.
+   *   3. Queue is non-empty
+   *      → Restore the active in-flight prompt to the input box and keep queued
+   *        follow-ups queued. Stop should not consume or reorder the queue.
    */
   const interruptSession = useCallback(
     async (options?: { restoreQueueHead?: boolean }) => {
@@ -131,23 +176,18 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       const sessionHasPriorContent =
         lastUserIdx > 0 &&
         chatEvents.slice(0, lastUserIdx).some((ev) => ev.source !== "user");
-      const snapshotUserMessage =
-        lastUserIdx >= 0 && chatEvents[lastUserIdx].displayText
-          ? {
-              displayContent: chatEvents[lastUserIdx].displayText,
-              imageDataUrls: undefined,
-            }
-          : null;
-      const pendingUserMessage =
-        pendingSyntheticEvent?.source === "user" &&
-        pendingSyntheticEvent.displayText
-          ? {
-              displayContent: pendingSyntheticEvent.displayText,
-              imageDataUrls: undefined,
-            }
-          : null;
-      const currentUserMessage =
-        snapshotUserMessage ?? lastUserMessage ?? pendingUserMessage;
+      const snapshotUserEvent =
+        lastUserIdx >= 0 ? chatEvents[lastUserIdx] : null;
+      const currentUserMessage = resolveRestorableUserMessage({
+        snapshotDisplayText: snapshotUserEvent?.displayText,
+        snapshotImages: snapshotUserEvent?.result?.images,
+        lastUserMessage,
+        pendingDisplayText:
+          pendingSyntheticEvent?.source === "user"
+            ? pendingSyntheticEvent.displayText
+            : undefined,
+        pendingImages: pendingSyntheticEvent?.result?.images,
+      });
 
       // Case 1: stopped before any visible agent output with no pending queue
       // AND no prior completed turns — a truly fresh first-send.
@@ -234,15 +274,11 @@ export function useSessionActions(options: UseSessionActionsOptions) {
               );
             }
           })();
-        } else {
-          const head = queue[0];
-          if (head) {
-            dequeueMessage(head.id);
-            setRestoreToInput({
-              displayContent: head.displayContent,
-              imageDataUrls: head.imageDataUrls,
-            });
-          }
+        } else if (currentUserMessage) {
+          setRestoreToInput({
+            displayContent: currentUserMessage.displayContent,
+            imageDataUrls: currentUserMessage.imageDataUrls,
+          });
         }
       }
 
@@ -306,7 +342,6 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       }
     },
     [
-      dequeueMessage,
       dispatchClearSession,
       getSessionId,
       setActiveSessionId,

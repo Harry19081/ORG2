@@ -1,4 +1,4 @@
-import { Box, Plus, Radar, SquarePen } from "lucide-react";
+import { Box, Plus, Radar, SquarePen, StickyNote } from "lucide-react";
 import React from "react";
 
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
@@ -11,14 +11,17 @@ import {
   PROJECTS_NEW_PROJECT_MENU_ITEM_ID,
   PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID,
   QUICKSTART_KANBAN_MENU_ITEM_ID,
+  STICKY_NOTES_MENU_ITEM_ID,
   getDraftMenuItemId,
   getDraftPreviewText,
 } from "./sidebarConnectorUtils";
 
 interface BuildPinnedMenuItemsParams {
   newSessionLabel: string;
+  newSessionShortcut: string;
   kanbanLabel: string;
   kanbanRoutePath: string;
+  stickyNotesLabel: string;
 }
 
 interface BuildProjectsPinnedMenuItemsParams {
@@ -28,8 +31,10 @@ interface BuildProjectsPinnedMenuItemsParams {
 
 export function buildPinnedMenuItems({
   newSessionLabel,
+  newSessionShortcut,
   kanbanLabel,
   kanbanRoutePath,
+  stickyNotesLabel,
 }: BuildPinnedMenuItemsParams): NavigationMenuItem[] {
   return [
     {
@@ -38,6 +43,14 @@ export function buildPinnedMenuItems({
       label: newSessionLabel,
       icon: Plus,
       iconName: "plus",
+      shortcut: newSessionShortcut,
+    },
+    {
+      id: STICKY_NOTES_MENU_ITEM_ID,
+      key: STICKY_NOTES_MENU_ITEM_ID,
+      label: stickyNotesLabel,
+      icon: StickyNote,
+      iconName: "sticky-note",
     },
     {
       id: QUICKSTART_KANBAN_MENU_ITEM_ID,

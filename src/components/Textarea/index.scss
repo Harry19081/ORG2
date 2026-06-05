@@ -122,6 +122,54 @@
       background: var(--color-pane-input);
     }
   }
+
+  &.textarea-borderless {
+    .textarea-inner {
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    &:hover:not(.textarea-disabled):not(.textarea-readonly):not(
+        .textarea-focused
+      ) {
+      .textarea-inner {
+        border-color: transparent;
+      }
+    }
+
+    &.textarea-focused {
+      .textarea-inner {
+        border-color: transparent;
+        box-shadow: none;
+      }
+    }
+  }
+
+  &.textarea-bgless {
+    .textarea-inner {
+      background: transparent;
+      background-color: transparent;
+    }
+  }
+
+  &.textarea-field-ghost {
+    min-width: 0;
+    max-width: 100%;
+    cursor: default;
+    border-radius: 8px;
+    transition: background-color 0.1s cubic-bezier(0, 0, 1, 1);
+
+    .textarea {
+      padding: 6px 8px;
+      font-size: 12px;
+      line-height: 1.375;
+      color: var(--color-text-1);
+    }
+
+    &:hover:not(.textarea-disabled) {
+      background: var(--color-surface-hover);
+    }
+  }
 }
 
 .textarea {

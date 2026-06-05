@@ -6,9 +6,11 @@ use axum::Json;
 use core_types::activity::ActivityChunk;
 use serde::Deserialize;
 use serde_json::json;
+use tokio::process::Command;
 
 use crate::agent_sessions::cli::commands::{
-    cli_agent_chunks, cli_agent_create, cli_agent_message, cli_agent_run, cli_agent_status,
+    cli_agent_chunks, cli_agent_create, cli_agent_message, cli_agent_resume, cli_agent_run,
+    cli_agent_status,
 };
 use crate::agent_sessions::cli::persistence::{self, CreateCodeSessionParams};
 use crate::agent_sessions::cli::session_runner;
@@ -141,7 +143,7 @@ async fn wait_for_terminal_session_after_update(
                         .map(|updated_at| session.updated_at != updated_at)
                         .unwrap_or(true) =>
             {
-                return Ok(session)
+                return Ok(session);
             }
             Ok(_) => {
                 tokio::time::sleep(std::time::Duration::from_millis(POLL_INTERVAL_MS)).await;
@@ -250,7 +252,7 @@ pub async fn test_cursor_cli_runtime(
             return Json(json!({
                 "error": err,
                 "session_id": session_id,
-            }))
+            }));
         }
     };
 
@@ -355,7 +357,7 @@ pub async fn test_gemini_cli_runtime(
             return Json(json!({
                 "error": "session disappeared after run",
                 "session_id": session_id,
-            }))
+            }));
         }
         Err(err) => return Json(json!({ "error": format!("cli_agent_status failed: {err}") })),
     };
@@ -915,7 +917,7 @@ pub async fn test_codex_cli_account_switch(
                 "followup_codex_home": followup_codex_home.to_string_lossy(),
                 "initial_codex_home_exists": initial_env_ready,
                 "followup_codex_home_exists": followup_codex_home.exists(),
-            }))
+            }));
         }
     };
     let followup_session = match wait_for_terminal_session_after_update(
@@ -965,5 +967,141 @@ pub async fn test_codex_cli_account_switch(
         "followup_codex_home": followup_codex_home.to_string_lossy(),
         "followup_codex_home_exists": followup_codex_home.exists(),
         "followup_codex_auth_file_exists": followup_codex_home.join("auth.json").exists(),
+    }))
+}
+
+/// Debug-only regression probe for CLI resume lock isolation.
+///
+/// Reproduces the slow-start class without invoking a provider: a stale running
+/// session points at a real `sleep` PID, so `cli_agent_resume` spends the fixed
+/// SIGTERM grace period in stale-process cleanup. A second unrelated session
+/// start must not wait on that cleanup via the global RUNNING_SESSIONS mutex.
+pub async fn test_cli_resume_lock_isolation() -> Json<serde_json::Value> {
+    let mut stale_child = match Command::new("sleep").arg("30").spawn() {
+        Ok(child) => child,
+        Err(err) => {
+            return Json(json!({
+                "ok": false,
+                "error": format!("failed to spawn stale sleep process: {err}"),
+            }));
+        }
+    };
+    let stale_pid = stale_child.id().unwrap_or_default();
+
+    let create_params = |name: &str| CreateCodeSessionParams {
+        name: Some(name.to_string()),
+        flow: None,
+        runner: None,
+        cli_agent_type: ModelType::ClaudeCode.as_str().to_string(),
+        model: Some("e2e-lock-probe-model".to_string()),
+        tier: None,
+        account_id: Some("e2e-lock-probe-account".to_string()),
+        repo_path: std::env::current_dir()
+            .ok()
+            .map(|path| path.to_string_lossy().to_string()),
+        branch: None,
+        proxy_token: None,
+        proxy_url: None,
+        hosted_token: None,
+        proxy_session_id: None,
+        isolate: Some(false),
+        background: Some(true),
+        key_source: Some(KeySource::OwnKey.as_ref().to_string()),
+        additional_directories: None,
+        parent_session_id: None,
+        org_member_id: None,
+    };
+
+    let stale_session = match cli_agent_create(create_params("E2E stale resume lock probe")).await {
+        Ok(session) => session,
+        Err(err) => {
+            let _ = stale_child.kill().await;
+            return Json(json!({
+                "ok": false,
+                "error": format!("create stale session failed: {err}"),
+            }));
+        }
+    };
+    let peer_session = match cli_agent_create(create_params("E2E peer start lock probe")).await {
+        Ok(session) => session,
+        Err(err) => {
+            let _ = stale_child.kill().await;
+            return Json(json!({
+                "ok": false,
+                "error": format!("create peer session failed: {err}"),
+            }));
+        }
+    };
+
+    let stale_session_id = stale_session.session_id.clone();
+    let peer_session_id = peer_session.session_id.clone();
+
+    let seed_result = tokio::task::spawn_blocking({
+        let sid = stale_session_id.clone();
+        move || {
+            let conn = database::db::get_connection().map_err(|err| err.to_string())?;
+            conn.execute(
+                "UPDATE code_sessions SET status = 'running', user_input = ?2, pid = ?3, updated_at = ?4 WHERE session_id = ?1",
+                rusqlite::params![
+                    sid,
+                    "E2E stale resume lock probe prompt",
+                    stale_pid as i64,
+                    chrono::Utc::now().to_rfc3339(),
+                ],
+            )
+            .map_err(|err| err.to_string())?;
+            Ok::<(), String>(())
+        }
+    })
+    .await;
+
+    if let Err(err) = seed_result
+        .map_err(|err| format!("seed join failed: {err}"))
+        .and_then(|inner| inner)
+    {
+        let _ = stale_child.kill().await;
+        return Json(json!({ "ok": false, "error": err }));
+    }
+
+    let resume_session_id = stale_session_id.clone();
+    let resume_task = tokio::spawn(async move { cli_agent_resume(resume_session_id).await });
+
+    tokio::time::sleep(std::time::Duration::from_millis(150)).await;
+
+    let peer_start = std::time::Instant::now();
+    let peer_result = cli_agent_run(
+        peer_session_id.clone(),
+        "E2E peer start should not wait on unrelated resume cleanup".to_string(),
+        None,
+        None,
+        None,
+        None,
+    )
+    .await;
+    let peer_start_ms = peer_start.elapsed().as_millis() as u64;
+
+    let resume_result =
+        match tokio::time::timeout(std::time::Duration::from_secs(8), resume_task).await {
+            Ok(Ok(result)) => result
+                .map(|_| true)
+                .map_err(|err| format!("resume failed: {err}")),
+            Ok(Err(join_err)) => Err(format!("resume join failed: {join_err}")),
+            Err(_) => Err("resume timed out".to_string()),
+        };
+
+    let _ = session_runner::kill_running_agent(&stale_session_id).await;
+    let _ = session_runner::kill_running_agent(&peer_session_id).await;
+    let _ = stale_child.kill().await;
+    let _ = stale_child.wait().await;
+
+    Json(json!({
+        "ok": peer_result.is_ok() && peer_start_ms < 1500,
+        "peer_start_ms": peer_start_ms,
+        "peer_result_ok": peer_result.is_ok(),
+        "peer_error": peer_result.err(),
+        "resume_result_ok": resume_result.is_ok(),
+        "resume_error": resume_result.err(),
+        "stale_session_id": stale_session_id,
+        "peer_session_id": peer_session_id,
     }))
 }

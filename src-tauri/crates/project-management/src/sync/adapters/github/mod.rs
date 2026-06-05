@@ -1,4 +1,4 @@
-//! GitHub Issues (`https://github.com`) sync adapter.
+//! GitHub (`https://github.com`) sync adapter.
 //!
 //! Implements [`SyncAdapter`] against GitHub's REST v3 Issues API. The
 //! adapter is split across three files mirroring the Linear adapter's
@@ -50,8 +50,8 @@ use subtle::ConstantTimeEq;
 use self::client::{GitHubClient, GitHubResult};
 use self::parse::{
     build_issue_close_body, build_issue_create_body, build_issue_update_body, is_pull_request,
-    op_supports_push, parse_github_issue, parse_github_issues_webhook_payload, payload_value,
-    GithubIssuesConfig,
+    op_supports_push, parse_github_issue, parse_github_webhook_payload, payload_value,
+    GitHubConfig,
 };
 use crate::sync::adapter::{
     AdapterDescriptor, AuthMethod, EntityField, ExternalChange, FieldMap, FieldMapping,
@@ -73,12 +73,12 @@ pub const GITHUB_SIGNATURE_PREFIX: &str = "sha256=";
 /// Adapter unit struct. Stateless — all I/O lives behind the
 /// per-request [`GitHubClient`].
 #[derive(Debug, Default, Clone, Copy)]
-pub struct GitHubIssuesAdapter;
+pub struct GitHubAdapter;
 
 /// Stable registry id. Also stored verbatim in `projects.sync_kind`.
-pub const ADAPTER_ID: &str = "github_issues";
+pub const ADAPTER_ID: &str = "github";
 
-static GITHUB_ISSUES_FIELD_MAP: FieldMap = FieldMap {
+static GITHUB_FIELD_MAP: FieldMap = FieldMap {
     mappings: &[
         FieldMapping {
             local: EntityField::Title,
@@ -118,7 +118,7 @@ static GITHUB_ISSUES_FIELD_MAP: FieldMap = FieldMap {
 };
 
 #[async_trait]
-impl SyncAdapter for GitHubIssuesAdapter {
+impl SyncAdapter for GitHubAdapter {
     fn name(&self) -> &'static str {
         ADAPTER_ID
     }
@@ -137,7 +137,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
             .as_deref()
             .ok_or_else(|| SyncError::AuthFailed("no GitHub token attached".to_string()))?;
         let config =
-            GithubIssuesConfig::parse(ctx.config_json.as_deref()).map_err(SyncError::Permanent)?;
+            GitHubConfig::parse(ctx.config_json.as_deref()).map_err(SyncError::Permanent)?;
         let client = GitHubClient::new()?;
 
         let (method, path, body) = match entry.op {
@@ -227,7 +227,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
             .as_deref()
             .ok_or_else(|| SyncError::AuthFailed("no GitHub token attached".to_string()))?;
         let config =
-            GithubIssuesConfig::parse(ctx.config_json.as_deref()).map_err(SyncError::Permanent)?;
+            GitHubConfig::parse(ctx.config_json.as_deref()).map_err(SyncError::Permanent)?;
         let client = GitHubClient::new()?;
 
         const PER_PAGE: usize = 100;
@@ -282,7 +282,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
                 match parse_github_issue(node) {
                     Ok(change) => out.push(change),
                     Err(err) => {
-                        log::warn!("[sync::github_issues] dropped malformed issue: {}", err)
+                        log::warn!("[sync::github] dropped malformed issue: {}", err)
                     }
                 }
             }
@@ -296,19 +296,19 @@ impl SyncAdapter for GitHubIssuesAdapter {
         }
 
         Err(SyncError::Permanent(format!(
-            "GitHub Issues pull exceeded {} pages without exhausting pagination",
+            "GitHub pull exceeded {} pages without exhausting pagination",
             MAX_PAGES
         )))
     }
 
     fn entity_field_map(&self) -> &'static FieldMap {
-        &GITHUB_ISSUES_FIELD_MAP
+        &GITHUB_FIELD_MAP
     }
 
     fn descriptor(&self) -> AdapterDescriptor {
         AdapterDescriptor {
             id: self.name().to_string(),
-            label: "GitHub Issues".to_string(),
+            label: "GitHub".to_string(),
             requires_auth: true,
             // OAuth (RFC 8628 device flow) is preferred when configured;
             // the personal access token path stays available so users
@@ -328,7 +328,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
         true
     }
 
-    /// Bulk historical import for GitHub Issues.
+    /// Bulk historical import for GitHub.
     ///
     /// Walks `?page=N&per_page=100&state=all&sort=created&direction=asc`
     /// one page at a time. The `page_cursor` is the page number as a
@@ -351,7 +351,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
             .as_deref()
             .ok_or_else(|| SyncError::AuthFailed("no GitHub token attached".to_string()))?;
         let config =
-            GithubIssuesConfig::parse(ctx.config_json.as_deref()).map_err(SyncError::Permanent)?;
+            GitHubConfig::parse(ctx.config_json.as_deref()).map_err(SyncError::Permanent)?;
         let client = GitHubClient::new()?;
 
         const PER_PAGE: usize = 100;
@@ -395,7 +395,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
                 Ok(change) => changes.push(change),
                 Err(err) => {
                     log::warn!(
-                        "[sync::github_issues] import dropped malformed issue: {}",
+                        "[sync::github] import dropped malformed issue: {}",
                         err
                     )
                 }
@@ -456,7 +456,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
         }
     }
 
-    /// Parse a GitHub Issues webhook payload into [`ExternalChange`]
+    /// Parse a GitHub webhook payload into [`ExternalChange`]
     /// rows. The event type is read from `X-GitHub-Event`; only
     /// `issues` events translate into changes. `ping`, `issue_comment`,
     /// and any future event types yield an empty list so the
@@ -474,7 +474,7 @@ impl SyncAdapter for GitHubIssuesAdapter {
         let value: Value = serde_json::from_slice(body).map_err(|err| {
             SyncError::Permanent(format!("GitHub webhook body not JSON: {}", err))
         })?;
-        parse_github_issues_webhook_payload(&value, event).map_err(SyncError::Permanent)
+        parse_github_webhook_payload(&value, event).map_err(SyncError::Permanent)
     }
 }
 
@@ -531,9 +531,9 @@ mod tests {
 
     #[test]
     fn descriptor_advertises_oauth_and_api_key() {
-        let descriptor = GitHubIssuesAdapter.descriptor();
-        assert_eq!(descriptor.id, "github_issues");
-        assert_eq!(descriptor.label, "GitHub Issues");
+        let descriptor = GitHubAdapter.descriptor();
+        assert_eq!(descriptor.id, "github");
+        assert_eq!(descriptor.label, "GitHub");
         assert!(descriptor.requires_auth);
         assert_eq!(
             descriptor.auth_methods,
@@ -543,7 +543,7 @@ mod tests {
 
     #[test]
     fn field_map_marks_writable_fields() {
-        let map = GitHubIssuesAdapter.entity_field_map();
+        let map = GitHubAdapter.entity_field_map();
         let writable: Vec<_> = map
             .mappings
             .iter()
@@ -567,7 +567,7 @@ mod tests {
     #[tokio::test]
     async fn pull_without_token_is_auth_failed() {
         let ctx = ctx_with(None, Some("{\"owner\":\"o\",\"repo\":\"r\"}"), None);
-        let err = GitHubIssuesAdapter
+        let err = GitHubAdapter
             .pull("alpha", &ctx, None)
             .await
             .unwrap_err();
@@ -577,7 +577,7 @@ mod tests {
     #[tokio::test]
     async fn pull_without_config_is_permanent() {
         let ctx = ctx_with(Some("tok"), None, None);
-        let err = GitHubIssuesAdapter
+        let err = GitHubAdapter
             .pull("alpha", &ctx, None)
             .await
             .unwrap_err();
@@ -587,7 +587,7 @@ mod tests {
     #[tokio::test]
     async fn push_without_token_is_auth_failed() {
         let ctx = ctx_with(None, Some("{\"owner\":\"o\",\"repo\":\"r\"}"), None);
-        let err = GitHubIssuesAdapter
+        let err = GitHubAdapter
             .push(&entry(OutboxOp::Update, "1", "{}"), &ctx)
             .await
             .unwrap_err();
@@ -726,7 +726,7 @@ mod tests {
 
     #[test]
     fn supports_webhook_returns_true() {
-        assert!(GitHubIssuesAdapter.supports_webhook());
+        assert!(GitHubAdapter.supports_webhook());
     }
 
     #[test]
@@ -738,7 +738,7 @@ mod tests {
             GITHUB_SIGNATURE_HEADER.to_string(),
             github_signature_for(body, secret),
         );
-        GitHubIssuesAdapter
+        GitHubAdapter
             .verify_webhook(body, &headers, secret)
             .expect("valid signature must verify");
     }
@@ -752,7 +752,7 @@ mod tests {
             GITHUB_SIGNATURE_HEADER.to_string(),
             format!("{}{}", GITHUB_SIGNATURE_PREFIX, "00".repeat(32)),
         );
-        let err = GitHubIssuesAdapter
+        let err = GitHubAdapter
             .verify_webhook(body, &headers, secret)
             .expect_err("bad signature must reject");
         assert!(matches!(err, SyncError::AuthFailed(_)));
@@ -764,7 +764,7 @@ mod tests {
         let secret = "deadbeef";
         let mut headers = WebhookHeaders::new();
         headers.insert(GITHUB_SIGNATURE_HEADER.to_string(), "sha1=ffff".to_string());
-        let err = GitHubIssuesAdapter
+        let err = GitHubAdapter
             .verify_webhook(body, &headers, secret)
             .expect_err("wrong prefix must reject");
         assert!(matches!(err, SyncError::AuthFailed(_)));
@@ -788,7 +788,7 @@ mod tests {
         let mut headers = WebhookHeaders::new();
         headers.insert(GITHUB_EVENT_HEADER.to_string(), "issues".to_string());
         let ctx = ctx_with(Some("tok"), None, None);
-        let changes = GitHubIssuesAdapter
+        let changes = GitHubAdapter
             .handle_webhook(&body, &headers, &ctx)
             .await
             .expect("parse ok");
@@ -803,7 +803,7 @@ mod tests {
         let mut headers = WebhookHeaders::new();
         headers.insert(GITHUB_EVENT_HEADER.to_string(), "ping".to_string());
         let ctx = ctx_with(Some("tok"), None, None);
-        let changes = GitHubIssuesAdapter
+        let changes = GitHubAdapter
             .handle_webhook(&body, &headers, &ctx)
             .await
             .expect("ping must not error");

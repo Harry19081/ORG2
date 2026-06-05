@@ -12,6 +12,7 @@ interface ChannelWizardActionsProps {
   isChannels: boolean;
   isService: boolean;
   isProjects: boolean;
+  isGit: boolean;
   selectedType: string | null;
   accountName: string;
   isDuplicateName: boolean;
@@ -20,12 +21,15 @@ interface ChannelWizardActionsProps {
   projectAuthMethod: ProjectSyncAuthMethod;
   projectToken: string;
   projectSubmitting: boolean;
-  gitDetectReady: boolean;
-  gitStoring: boolean;
+  gitMethod: ProjectSyncAuthMethod | null;
+  gitPat: string;
+  gitSshKeyPath: string;
+  gitScanCandidateSelected: boolean;
+  gitSubmitting: boolean;
   onChannelSubmit: () => void;
   onServiceSubmit: () => void;
   onProjectSubmit: () => void;
-  onGitAdd: () => void;
+  onGitSubmit: () => void;
 }
 
 export const ChannelWizardActions: React.FC<ChannelWizardActionsProps> = ({
@@ -33,6 +37,7 @@ export const ChannelWizardActions: React.FC<ChannelWizardActionsProps> = ({
   isChannels,
   isService,
   isProjects,
+  isGit,
   selectedType,
   accountName,
   isDuplicateName,
@@ -41,12 +46,15 @@ export const ChannelWizardActions: React.FC<ChannelWizardActionsProps> = ({
   projectAuthMethod,
   projectToken,
   projectSubmitting,
-  gitDetectReady,
-  gitStoring,
+  gitMethod,
+  gitPat,
+  gitSshKeyPath,
+  gitScanCandidateSelected,
+  gitSubmitting,
   onChannelSubmit,
   onServiceSubmit,
   onProjectSubmit,
-  onGitAdd,
+  onGitSubmit,
 }) => {
   const { t } = useTranslation("integrations");
 
@@ -104,17 +112,39 @@ export const ChannelWizardActions: React.FC<ChannelWizardActionsProps> = ({
     );
   }
 
-  return (
-    <Button
-      variant="primary"
-      size="small"
-      disabled={!gitDetectReady}
-      loading={gitStoring}
-      onClick={onGitAdd}
-    >
-      {t("common:actions.done")}
-    </Button>
-  );
+  // GitHub uses its own setup form. The OAuth tile fires its own primary
+  // button inside `GitContent`; for the other methods the footer Done
+  // button drives submission.
+  if (isGit) {
+    if (gitMethod === STORY_SYNC_AUTH_METHOD.OAUTH) return null;
+    const hasInput =
+      gitMethod === STORY_SYNC_AUTH_METHOD.SCAN
+        ? gitScanCandidateSelected
+        : gitMethod === STORY_SYNC_AUTH_METHOD.PAT
+          ? !!gitPat.trim()
+          : gitMethod === STORY_SYNC_AUTH_METHOD.SSH
+            ? !!gitSshKeyPath.trim()
+            : false;
+    return (
+      <Button
+        variant="primary"
+        size="small"
+        disabled={
+          !selectedType ||
+          !accountName.trim() ||
+          isDuplicateName ||
+          !gitMethod ||
+          !hasInput
+        }
+        loading={gitSubmitting}
+        onClick={onGitSubmit}
+      >
+        {t("common:actions.done")}
+      </Button>
+    );
+  }
+
+  return null;
 };
 
 interface ChannelWizardFooterStatusProps {

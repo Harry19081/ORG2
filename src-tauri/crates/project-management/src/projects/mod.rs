@@ -2,7 +2,7 @@
 //!
 //! Projects and work items are first-class rows in a centralized SQLite store
 //! rooted at `~/.orgii/`. Cross-device sync flows through the project sync
-//! framework (Linear / GitHub Issues / manual export).
+//! framework (Linear / GitHub / manual export).
 //!
 //! # Storage layout
 //!

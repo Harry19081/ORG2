@@ -316,7 +316,7 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
   const currentStep = !isTokenValid ? 1 : 2;
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col">
+    <div className="flex min-h-0 w-full flex-1 flex-col gap-3">
       {/* Browser Section */}
       {!showBrowser ? (
         <SectionContainer>
@@ -430,7 +430,7 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
       {/* Token Input */}
       {!hideTokenInput && (
         <>
-          <SectionContainer className="mt-3">
+          <SectionContainer>
             <SectionRow
               label={t("keyVault.copilotStepPaste")}
               description={t("keyVault.copilotPasteTokenDesc")}

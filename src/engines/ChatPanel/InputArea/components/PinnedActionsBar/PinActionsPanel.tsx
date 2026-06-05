@@ -74,6 +74,8 @@ interface PinActionsPanelProps {
   pinnedActions: PinnedAction[];
   /** Called when the user pins or unpins an item. */
   onTogglePin: (action: PinnedAction) => void;
+  /** Called when the user clicks the "Unpin all" footer action. */
+  onUnpinAll: () => void;
   /** Called when the panel should close. */
   onClose: () => void;
   /** Whether items are still loading. */
@@ -84,6 +86,14 @@ interface PinActionsPanelProps {
    * own toggle logic fires without the panel immediately re-opening.
    */
   triggerRef?: React.RefObject<HTMLButtonElement | null>;
+  /**
+   * Horizontal alignment of the panel relative to the trigger button.
+   * Defaults to "right" so the panel right-aligns to the "…" button when
+   * pills sit to its left. When the "…" button is the leftmost element in
+   * the bar (no other pills), callers should pass "left" so the panel
+   * extends rightward from the button instead of floating to its left.
+   */
+  align?: "left" | "right";
 }
 
 const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
@@ -92,9 +102,11 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
     availableItems,
     pinnedActions,
     onTogglePin,
+    onUnpinAll,
     onClose,
     loading,
     triggerRef,
+    align = "right",
   }) => {
     const { t } = useTranslation("sessions");
     const [query, setQuery] = useState("");
@@ -144,7 +156,7 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
         },
         anchorRef: triggerRef,
         placement: "top",
-        align: "right",
+        align,
         gap: DROPDOWN_PANEL.triggerGapTight,
         listNavigation: {
           items: filteredItems,
@@ -243,6 +255,22 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
             );
           })}
         </div>
+
+        {/* Footer */}
+        {pinnedActions.length > 0 && (
+          <div className={DROPDOWN_CLASSES.footerContainer}>
+            <button
+              type="button"
+              onClick={onUnpinAll}
+              className={`${DROPDOWN_CLASSES.menuActionItem} min-w-0`}
+              data-dropdown-keyboard-skip="true"
+            >
+              <span className="truncate text-[12px] font-medium">
+                {t("input.pinnedActions.unpinAll")}
+              </span>
+            </button>
+          </div>
+        )}
       </div>,
       document.body
     );

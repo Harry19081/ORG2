@@ -2,18 +2,18 @@
 //!
 //! - [`echo::EchoAdapter`] — test/manual smoke.
 //! - `linear` — Linear GraphQL.
-//! - `github_issues` — GitHub REST.
+//! - `github` — GitHub REST.
 //!
 //! The registry is a `OnceLock<HashMap<&'static str, Arc<dyn SyncAdapter>>>`
 //! populated at first access; lookups are O(1) and the value lives for
 //! the process lifetime.
 
 pub mod echo;
-pub mod github_issues;
+pub mod github;
 pub mod linear;
 
 pub use echo::EchoAdapter;
-pub use github_issues::GitHubIssuesAdapter;
+pub use github::GitHubAdapter;
 pub use linear::LinearAdapter;
 
 use std::collections::HashMap;
@@ -29,7 +29,7 @@ fn build_registry() -> HashMap<&'static str, Arc<dyn SyncAdapter>> {
     map.insert(echo.name(), echo);
     let linear: Arc<dyn SyncAdapter> = Arc::new(LinearAdapter);
     map.insert(linear.name(), linear);
-    let github: Arc<dyn SyncAdapter> = Arc::new(GitHubIssuesAdapter);
+    let github: Arc<dyn SyncAdapter> = Arc::new(GitHubAdapter);
     map.insert(github.name(), github);
     map
 }
@@ -75,12 +75,12 @@ mod tests {
     }
 
     #[test]
-    fn github_issues_adapter_is_registered() {
-        let adapter = get("github_issues").expect("github_issues missing");
-        assert_eq!(adapter.name(), "github_issues");
+    fn github_adapter_is_registered() {
+        let adapter = get("github").expect("github missing");
+        assert_eq!(adapter.name(), "github");
         let descriptor = adapter.descriptor();
         assert!(descriptor.requires_auth);
-        assert_eq!(descriptor.label, "GitHub Issues");
+        assert_eq!(descriptor.label, "GitHub");
     }
 
     #[test]

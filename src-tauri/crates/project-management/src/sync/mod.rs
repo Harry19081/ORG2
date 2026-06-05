@@ -29,6 +29,7 @@ pub mod conflict_log;
 pub mod connection_store;
 pub mod connection_token_store;
 pub mod events;
+pub mod git_credentials;
 pub mod import;
 pub mod io;
 pub mod linear_native;
@@ -44,7 +45,7 @@ pub use adapter::{
     FieldMap, FieldMapping, ImportPage, SyncAdapter, SyncContext, SyncOutcome, SyncStatusReport,
     WebhookHeaders,
 };
-pub use adapters::{registry, EchoAdapter, GitHubIssuesAdapter, LinearAdapter};
+pub use adapters::{registry, EchoAdapter, GitHubAdapter, LinearAdapter};
 pub use conflict::{resolve, resolve_with_policy, ResolverDecision};
 pub use conflict_log::{
     ConflictFieldDelta, ConflictFieldsPayload, ConflictResolution as ConflictRowResolution,

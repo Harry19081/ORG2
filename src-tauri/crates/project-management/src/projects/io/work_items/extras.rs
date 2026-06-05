@@ -35,8 +35,8 @@ use crate::projects::types::{
 /// [`super::super::super::sync::adapter::ExternalChange::remote_updated_at`].
 ///
 /// `mtime` is unix-epoch milliseconds. `source` is `"local"` for
-/// user-driven mutations and the adapter id (`"linear"`,
-/// `"github_issues"`, …) for inbound merges.
+/// user-driven mutations and the adapter id (`"linear"`, …) for
+/// inbound merges.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FieldRevision {
     pub mtime: i64,

@@ -580,8 +580,8 @@
     "titleBar": {
       "switchToRight": "Alternar para modo direito",
       "switchToLeft": "Alternar para modo esquerdo",
-      "showSidebar": "Mostrar barra lateral primária",
-      "hideSidebar": "Ocultar barra lateral primária",
+      "showSidebar": "Mostrar barra lateral",
+      "hideSidebar": "Ocultar barra lateral",
       "showBottomPanel": "Mostrar painel inferior",
       "hideBottomPanel": "Ocultar painel inferior",
       "showDevTools": "Mostrar DevTools",
@@ -607,8 +607,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "Aguardando atividade…",
-      "hideTurnPrompt": "Ocultar prompt da rodada",
-      "showTurnPrompt": "Mostrar prompt da rodada",
+      "viewTaskPrompt": "Ver prompt da tarefa",
+      "taskPromptTitle": "Prompt da tarefa",
       "newEventDivider": "Novo evento"
     },
     "dock": {
@@ -657,7 +657,8 @@
       "manage": "Gerenciar ações fixadas",
       "searchPlaceholder": "Buscar ações para fixar…",
       "loading": "Carregando…",
-      "empty": "Nenhuma ação encontrada."
+      "empty": "Nenhuma ação encontrada.",
+      "unpinAll": "Desafixar tudo"
     }
   },
   "listPanel": {
@@ -1026,6 +1027,7 @@
     "categoryList": "Listar",
     "subagentFailed": "Falha no subagente",
     "subagentDefaultName": "Subagente",
+    "assignedTaskToSubagent": "Tarefa atribuída ao subagent",
     "subagentRunning": "Subagent em execução",
     "subagentDone": "Subagent concluído",
     "subagentAssigning": "Atribuindo Subagent",
@@ -2158,7 +2160,7 @@
       "broadcastFailed": "{{sender}} não conseguiu escrever para vários agents"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator leu os relatórios enviados por outros agents"
+      "readMessages": "Coordinator leu as mensagens enviadas por outros agents"
     },
     "userMessagePending": "{{member}} está assumindo sua mensagem",
     "pausedBanner": {
@@ -2267,8 +2269,8 @@
         "collapse": "Ocultar mensagem",
         "userInbox": "Caixa do usuário",
         "currentChannel": "Canal atual",
-        "subagentReports": "Relatórios de subagents",
-        "readReportsFromSubagents": "{{agent}} leu relatórios de subagents"
+        "subagentMessages": "Mensagens de subagents",
+        "readMessagesFromSubagents": "{{agent}} leu mensagens de subagents"
       }
     },
     "actions": {

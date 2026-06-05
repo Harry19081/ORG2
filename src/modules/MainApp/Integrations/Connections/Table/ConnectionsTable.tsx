@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -5,6 +6,7 @@ import {
   STORY_SYNC_ADAPTER,
   type SyncConnection,
 } from "@src/api/http/integrations";
+import Button from "@src/components/Button";
 import IntegrationIcon from "@src/components/IntegrationIcon";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -27,11 +29,7 @@ import {
   InlineCardSplit,
 } from "../../KeyVault/shared/InlineCardPrimitives";
 import { ThirdPartyDisclaimer } from "../../Tables/TrademarkDisclaimer";
-import {
-  RowChevron,
-  StatusDot,
-  selectedRowClassName,
-} from "../../Tables/shared";
+import { StatusDot, selectedRowClassName } from "../../Tables/shared";
 import { InfoRow } from "../../shared/InfoRow";
 import type { DetailMode } from "../../types";
 import { CHANNEL_TYPES, type ChannelInstance } from "../Channels";
@@ -46,14 +44,18 @@ interface ConnectionRow {
   statusColor: string;
   statusLabel: string;
   kind: "channel" | "project";
+  // Carries the underlying object identity so the row-action handlers
+  // (trash icon) can dispatch without re-deriving from the composite id.
+  channel?: { type: string; accountId: string };
+  project?: { connectionId: string; label: string };
 }
 
 function getProjectConnectionTypeKey(connection: SyncConnection): string {
   switch (connection.adapter_id) {
     case STORY_SYNC_ADAPTER.LINEAR:
       return "projectConnections.linear";
-    case STORY_SYNC_ADAPTER.GITHUB_ISSUES:
-      return "projectConnections.githubIssues";
+    case STORY_SYNC_ADAPTER.GITHUB:
+      return "gitConnections.github";
   }
 }
 
@@ -61,7 +63,7 @@ function getProjectConnectionIcon(connection: SyncConnection): string {
   switch (connection.adapter_id) {
     case STORY_SYNC_ADAPTER.LINEAR:
       return "linear";
-    case STORY_SYNC_ADAPTER.GITHUB_ISSUES:
+    case STORY_SYNC_ADAPTER.GITHUB:
       return "github";
   }
 }
@@ -73,6 +75,11 @@ interface ConnectionsTableProps {
   selectedRowId?: string | null;
   onSelectChannel: (compositeId: string | null, mode?: DetailMode) => void;
   onAdd: () => void;
+  onRemoveChannel?: (channelType: string, accountId: string) => Promise<void>;
+  onRemoveProjectConnection?: (
+    connectionId: string,
+    label: string
+  ) => Promise<void>;
 }
 
 export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
@@ -82,10 +89,34 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
   selectedRowId,
   onSelectChannel,
   onAdd,
+  onRemoveChannel,
+  onRemoveProjectConnection,
 }) => {
   const { t } = useTranslation("integrations");
+  const { t: tCommon } = useTranslation("common");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+  const [removingRowId, setRemovingRowId] = useState<string | null>(null);
+
+  const handleRemoveRow = useCallback(
+    async (row: ConnectionRow) => {
+      setRemovingRowId(row.id);
+      try {
+        if (row.kind === "channel" && row.channel) {
+          await onRemoveChannel?.(row.channel.type, row.channel.accountId);
+        } else if (row.kind === "project" && row.project) {
+          await onRemoveProjectConnection?.(
+            row.project.connectionId,
+            row.project.label
+          );
+        }
+        setExpandedKeys((current) => current.filter((key) => key !== row.id));
+      } finally {
+        setRemovingRowId(null);
+      }
+    },
+    [onRemoveChannel, onRemoveProjectConnection]
+  );
 
   const rows = useMemo<ConnectionRow[]>(() => {
     const result: ConnectionRow[] = [];
@@ -104,6 +135,7 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
           statusColor,
           statusLabel: instance.connectionStatus,
           kind: "channel",
+          channel: { type: instance.type, accountId: instance.accountId },
         });
       }
     }
@@ -117,6 +149,7 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
         statusColor: "bg-success-6",
         statusLabel: t("status.connected"),
         kind: "project",
+        project: { connectionId: connection.id, label: connection.label },
       });
     }
 
@@ -196,16 +229,30 @@ export const ConnectionsTable: React.FC<ConnectionsTableProps> = ({
       },
       {
         key: "actions",
-        label: "",
-        width: SETTINGS_TABLE_COL.hug,
+        label: <span className="sr-only">{tCommon("actions.remove")}</span>,
+        width: "64px",
         align: "right",
-        renderCell: (row) =>
-          row.kind === "project" ? null : (
-            <RowChevron onClick={() => handleRowClick(row, "full")} />
-          ),
+        renderCell: (row) => (
+          <div className="flex h-full min-w-[44px] items-center justify-end gap-2">
+            <Button
+              variant="secondary"
+              size="small"
+              icon={<Trash2 size={14} className="text-danger-6" />}
+              iconOnly
+              loading={removingRowId === row.id}
+              disabled={removingRowId === row.id}
+              aria-label={tCommon("actions.remove")}
+              title={tCommon("actions.remove")}
+              onClick={(event) => {
+                event.stopPropagation();
+                void handleRemoveRow(row);
+              }}
+            />
+          </div>
+        ),
       },
     ],
-    [t, handleRowClick]
+    [t, tCommon, handleRemoveRow, removingRowId]
   );
 
   return (

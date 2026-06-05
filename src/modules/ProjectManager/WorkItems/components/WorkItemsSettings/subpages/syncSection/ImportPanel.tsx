@@ -1,6 +1,6 @@
 /**
  * ImportPanel — Phase 6 bulk historical import for adapters whose
- * `supports_import` flag is true (Linear, GitHub Issues, Echo).
+ * `supports_import` flag is true (Linear, GitHub, Echo).
  *
  * The first time an import-capable adapter is attached, the Rust
  * worker queues a `import_progress` row in `pending` state and the

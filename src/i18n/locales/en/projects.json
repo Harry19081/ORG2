@@ -621,7 +621,7 @@
     "confirmDelete": "I understand, delete this project",
     "sync": {
       "title": "External Sync",
-      "description": "Mirror this project's work items to an external system like Linear or GitHub Issues.",
+      "description": "Mirror this project's work items to an external system like Linear or GitHub.",
       "adapterPicker": {
         "title": "Adapter",
         "notAttached": "Not attached",

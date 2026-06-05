@@ -163,7 +163,7 @@ const ClaudeCodeSessionSetup: React.FC<ClaudeCodeSessionSetupProps> = ({
 
   return (
     <div
-      className="flex h-full min-h-0 w-full flex-1 flex-col"
+      className="flex h-full min-h-0 w-full flex-1 flex-col gap-3"
       data-testid="claude-code-session-setup"
     >
       {!showBrowser ? (

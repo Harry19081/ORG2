@@ -13,11 +13,41 @@
  * `SubagentBlock` falls back to showing the pinned prompt + error text as
  * its expandable payload.
  */
-import React from "react";
+import { useAtomValue } from "jotai";
+import React, { useMemo } from "react";
 
+import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { chatEventsForSessionAtomFamily } from "@src/engines/SessionCore/derived/sessionScopedChatEvents";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
 
 import SubagentBlock from "../../blocks/SubagentBlock";
+
+const EMPTY_SUBAGENT_SESSION_ID = "__no-subagent-session__";
+
+function nonEmptyString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim().length > 0
+    ? value
+    : undefined;
+}
+
+function firstNonEmptyString(...values: unknown[]): string | undefined {
+  for (const value of values) {
+    const text = nonEmptyString(value);
+    if (text) return text;
+  }
+  return undefined;
+}
+
+function extractPromptFromChildEvents(
+  events: readonly SessionEvent[]
+): string | undefined {
+  for (const event of events) {
+    if (event.source !== "user") continue;
+    const text = nonEmptyString(event.displayText);
+    if (text) return text;
+  }
+  return undefined;
+}
 
 function extractSubagentData(props: UniversalEventProps) {
   const { args, result } = props;
@@ -42,9 +72,13 @@ function extractSubagentData(props: UniversalEventProps) {
       elapsedMs: sub.elapsedMs,
       success: sub.success,
       errorMessage: sub.errorMessage ?? fallbackErrorMessage,
-      prompt:
-        sub.prompt ??
-        (typeof args.prompt === "string" ? args.prompt : undefined),
+      prompt: firstNonEmptyString(
+        sub.prompt,
+        args.prompt,
+        args.instructions,
+        args.task,
+        result.prompt
+      ),
     };
   }
 
@@ -66,7 +100,12 @@ function extractSubagentData(props: UniversalEventProps) {
       ? args.subagentSessionId
       : undefined;
 
-  const prompt = typeof args.prompt === "string" ? args.prompt : undefined;
+  const prompt = firstNonEmptyString(
+    args.prompt,
+    args.instructions,
+    args.task,
+    result.prompt
+  );
 
   const success =
     typeof result.success === "boolean" ? (result.success as boolean) : true;
@@ -86,6 +125,17 @@ function extractSubagentData(props: UniversalEventProps) {
 
 export const SubagentAdapter: React.FC<UniversalEventProps> = (props) => {
   const data = extractSubagentData(props);
+  const childEvents = useAtomValue(
+    chatEventsForSessionAtomFamily(
+      data.subagentSessionId ?? EMPTY_SUBAGENT_SESSION_ID
+    )
+  );
+  const childPrompt = useMemo(
+    () => extractPromptFromChildEvents(childEvents),
+    [childEvents]
+  );
+  const prompt = data.prompt ?? childPrompt;
+
   return (
     <div data-tool-call-event-id={props.eventId} data-tool-call-name="agent">
       <SubagentBlock
@@ -99,7 +149,7 @@ export const SubagentAdapter: React.FC<UniversalEventProps> = (props) => {
         defaultCollapsed={true}
         elapsedMs={data.elapsedMs}
         subagentSessionId={data.subagentSessionId}
-        prompt={data.prompt}
+        prompt={prompt}
         status={props.status}
         success={data.success}
         errorMessage={data.errorMessage}

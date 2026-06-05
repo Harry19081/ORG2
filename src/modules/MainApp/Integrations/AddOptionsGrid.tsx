@@ -79,6 +79,7 @@ function formatDefault(action: AddAction): string {
     "add-model": "Add Account",
     "create-orgii-api-key": "Create API Key",
     "add-connection": "Add",
+    "add-git-connection": "Add Git Connection",
     "add-database": "Add Database",
     "add-mcp": "Add MCP Server",
     "create-skill": "Create Skill",

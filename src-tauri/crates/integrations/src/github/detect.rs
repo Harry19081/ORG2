@@ -12,8 +12,6 @@ use tauri::command;
 
 use git::tokio_git_command;
 
-use super::token_store;
-
 // ============================================
 // Types
 // ============================================
@@ -44,11 +42,6 @@ pub struct DetectedGitHubCredentials {
     pub ssh_keys: Vec<SshKeyInfo>,
     pub credential_helper: Option<CredentialHelperInfo>,
     pub git_credentials_has_github: bool,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StoreTokenResult {
-    pub username: String,
 }
 
 // ============================================
@@ -94,57 +87,6 @@ pub async fn detect_github_credentials() -> Result<DetectedGitHubCredentials, St
     );
 
     Ok(result)
-}
-
-// ============================================
-// Store Detected Token Command
-// ============================================
-
-/// Validate a raw GitHub token via GET /user, then store it locally.
-#[command]
-pub async fn github_store_detected_token(
-    user_id: String,
-    token: String,
-) -> Result<StoreTokenResult, String> {
-    log::info!(
-        "[GitHub][Detect] Validating and storing detected token for user {}",
-        user_id
-    );
-
-    let client = reqwest::Client::new();
-    let resp = client
-        .get("https://api.github.com/user")
-        .header("Authorization", format!("token {}", token))
-        .header("User-Agent", "orgii-app")
-        .header("Accept", "application/vnd.github.v3+json")
-        .send()
-        .await
-        .map_err(|err| format!("GitHub API request failed: {}", err))?;
-
-    if !resp.status().is_success() {
-        let status = resp.status();
-        let body = resp.text().await.unwrap_or_default();
-        return Err(format!(
-            "GitHub token validation failed ({}): {}",
-            status, body
-        ));
-    }
-
-    let data: serde_json::Value = resp
-        .json()
-        .await
-        .map_err(|err| format!("Failed to parse GitHub user response: {}", err))?;
-
-    let username = data["login"].as_str().unwrap_or("unknown").to_string();
-
-    token_store::save(&user_id, &token)?;
-    log::info!(
-        "[GitHub][Detect] Token stored for user {} (GitHub: {})",
-        user_id,
-        username
-    );
-
-    Ok(StoreTokenResult { username })
 }
 
 // ============================================

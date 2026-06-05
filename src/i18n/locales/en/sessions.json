@@ -580,8 +580,8 @@
     "titleBar": {
       "switchToRight": "Switch to right mode",
       "switchToLeft": "Switch to left mode",
-      "showSidebar": "Show primary sidebar",
-      "hideSidebar": "Hide primary sidebar",
+      "showSidebar": "Show sidebar",
+      "hideSidebar": "Hide sidebar",
       "showBottomPanel": "Show bottom panel",
       "hideBottomPanel": "Hide bottom panel",
       "showDevTools": "Show DevTools",
@@ -607,8 +607,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "Waiting for activity…",
-      "hideTurnPrompt": "Hide turn prompt",
-      "showTurnPrompt": "Show turn prompt",
+      "viewTaskPrompt": "View task prompt",
+      "taskPromptTitle": "Task prompt",
       "newEventDivider": "New event"
     },
     "dock": {
@@ -657,7 +657,8 @@
       "manage": "Manage pinned actions",
       "searchPlaceholder": "Search actions to pin…",
       "loading": "Loading…",
-      "empty": "No actions found."
+      "empty": "No actions found.",
+      "unpinAll": "Unpin all"
     }
   },
   "listPanel": {
@@ -1026,6 +1027,7 @@
     "categoryList": "List",
     "subagentFailed": "Subagent failed",
     "subagentDefaultName": "Subagent",
+    "assignedTaskToSubagent": "Assigned task to subagent",
     "subagentRunning": "Running Subagent",
     "subagentDone": "Subagent completed",
     "subagentAssigning": "Assigning Subagent",
@@ -2158,7 +2160,7 @@
       "broadcastFailed": "{{sender}} couldn't message multiple agents"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator read reports sent by other agents"
+      "readMessages": "Coordinator read messages sent by other agents"
     },
     "userMessagePending": "{{member}} is picking up your message",
     "pausedBanner": {
@@ -2268,8 +2270,8 @@
         "collapse": "Hide message",
         "userInbox": "User inbox",
         "currentChannel": "Current channel",
-        "subagentReports": "Subagent reports",
-        "readReportsFromSubagents": "{{agent}} read reports from subagents"
+        "subagentMessages": "Subagent messages",
+        "readMessagesFromSubagents": "{{agent}} read messages from subagents"
       }
     },
     "actions": {

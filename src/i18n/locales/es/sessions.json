@@ -601,8 +601,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "Esperando actividad…",
-      "hideTurnPrompt": "Ocultar mensaje del turno",
-      "showTurnPrompt": "Mostrar mensaje del turno",
+      "viewTaskPrompt": "Ver mensaje de la tarea",
+      "taskPromptTitle": "Mensaje de la tarea",
       "newEventDivider": "Nuevo evento"
     },
     "dock": {
@@ -651,7 +651,8 @@
       "manage": "Gestionar acciones fijadas",
       "searchPlaceholder": "Buscar acciones para fijar…",
       "loading": "Cargando…",
-      "empty": "No se encontraron acciones."
+      "empty": "No se encontraron acciones.",
+      "unpinAll": "Desfijar todo"
     }
   },
   "listPanel": {
@@ -1002,6 +1003,7 @@
     "categoryList": "Listar",
     "subagentFailed": "Sub Agent falló",
     "subagentDefaultName": "Sub Agent",
+    "assignedTaskToSubagent": "Tarea asignada al subagent",
     "subagentRunning": "Subagent en ejecución",
     "subagentDone": "Subagent completado",
     "subagentAssigning": "Asignando Subagent",
@@ -2159,7 +2161,7 @@
       "broadcastFailed": "{{sender}} no pudo escribir a varios agents"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator leyó los informes enviados por otros agents"
+      "readMessages": "Coordinator leyó los mensajes enviados por otros agents"
     },
     "userMessagePending": "{{member}} está atendiendo tu mensaje",
     "pausedBanner": {
@@ -2268,8 +2270,8 @@
         "collapse": "Ocultar mensaje",
         "userInbox": "Bandeja del usuario",
         "currentChannel": "Canal actual",
-        "subagentReports": "Informes de subagents",
-        "readReportsFromSubagents": "{{agent}} leyó informes de subagents"
+        "subagentMessages": "Mensajes de subagents",
+        "readMessagesFromSubagents": "{{agent}} leyó mensajes de subagents"
       }
     },
     "actions": {

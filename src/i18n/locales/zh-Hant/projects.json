@@ -622,7 +622,7 @@
     "sidebarSync": "同步",
     "sync": {
       "title": "外部同步",
-      "description": "將此專案的工作項鏡像到外部系統，例如 Linear 或 GitHub Issues。",
+      "description": "將此專案的工作項鏡像到外部系統，例如 Linear 或 GitHub。",
       "adapterPicker": {
         "title": "適配器",
         "notAttached": "未綁定",

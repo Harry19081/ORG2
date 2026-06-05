@@ -7,7 +7,7 @@
  * @example
  * const { handleSessChatSubmit, loading } = useWorkspaceChat();
  */
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom, useStore } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
@@ -22,6 +22,7 @@ import { useSessionId } from "@src/engines/SessionCore/hooks/session";
 import {
   isPendingCancelAtom,
   isSessionActiveAtom,
+  lastUserMessageAtom,
   sessionRuntimeStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
@@ -95,6 +96,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
   const { sessionId: propSessionId } = options;
   const { t } = useTranslation("sessions");
   const [searchParams] = useSearchParams();
+  const store = useStore();
 
   const isHosted = useMemo(
     () => isHostedFromSearchParams(searchParams),
@@ -105,9 +107,8 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
   // Atoms
   // ============================================
   const isWpGeneWorking = useAtomValue(isSessionActiveAtom);
-  const isPendingCancel = useAtomValue(isPendingCancelAtom);
-  const sessionRuntimeStatus = useAtomValue(sessionRuntimeStatusAtom);
   const setSessionRuntimeStatus = useSetAtom(sessionRuntimeStatusAtom);
+  const setLastUserMessage = useSetAtom(lastUserMessageAtom);
   // SessionCore engine-level session ID — always tracks the currently
   // synced session (set by loadSessionAtom inside useSessionSync).
   const coreSessionId = useAtomValue(sessionIdAtom);
@@ -206,23 +207,28 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       if (!finalInput.trim()) return;
 
       const contentForAgent = agentContent || finalInput;
+      const restoreImageDataUrls =
+        imageDataUrls && imageDataUrls.length > 0 ? imageDataUrls : undefined;
       const sessionId = getSessionId();
       if (!sessionId) {
         Message.error(t("errors.noSessionIdFound"));
         throw new Error("No session ID");
       }
 
+      await enterAgentOrgSessionIntervention(sessionId);
+      const latestSessionRuntimeStatus = store.get(sessionRuntimeStatusAtom);
+      const latestIsSessionActive = store.get(isSessionActiveAtom);
+      const latestIsPendingCancel = store.get(isPendingCancelAtom);
       const runtimeIsWorking =
-        sessionRuntimeStatus === "running" ||
-        sessionRuntimeStatus === "installing" ||
-        sessionRuntimeStatus === "waiting_for_user" ||
-        sessionRuntimeStatus === "waiting_for_funds";
+        latestSessionRuntimeStatus === "running" ||
+        latestSessionRuntimeStatus === "installing" ||
+        latestSessionRuntimeStatus === "waiting_for_user" ||
+        latestSessionRuntimeStatus === "waiting_for_funds";
       const supportsQueuedFollowups =
         runtimeIsWorking ||
         isAgentSession(sessionId) ||
         isCliSession(sessionId) ||
         isCursorIdeSession(sessionId);
-      await enterAgentOrgSessionIntervention(sessionId);
       const submitPayloadKey = buildSubmitPayloadKey(
         sessionId,
         finalInput,
@@ -245,10 +251,10 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       if (
         !options.forceDispatch &&
         supportsQueuedFollowups &&
-        (isWpGeneWorking ||
+        (latestIsSessionActive ||
           runtimeIsWorking ||
           _sharedSubmitGuard.current ||
-          isPendingCancel)
+          latestIsPendingCancel)
       ) {
         setSessChatInput("");
 
@@ -297,6 +303,15 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
         return;
       }
 
+      // Capture the user-visible payload before any async append/dispatch work.
+      // Stop can be clicked immediately after the composer clears, before the
+      // optimistic EventStore append finishes, so cancel-restore needs this
+      // synchronous source of truth for text and images.
+      setLastUserMessage({
+        displayContent: finalInput,
+        imageDataUrls: restoreImageDataUrls,
+      });
+
       // Mark running BEFORE appending the user message event.
       // usePlanningIndicator's cold-start path records `activationVersion`
       // synchronously on the same render where isSessionActive flips true.
@@ -342,8 +357,6 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
     [
       sessChatInput,
       isWpGeneWorking,
-      isPendingCancel,
-      sessionRuntimeStatus,
       addUserMessage,
       enqueueMessage,
       sessionMap,
@@ -351,6 +364,8 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       creatorDefaultMode,
       dispatchMessageBySessionType,
       getSessionId,
+      setLastUserMessage,
+      store,
       setSessionRuntimeStatus,
       t,
     ]

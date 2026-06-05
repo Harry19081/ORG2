@@ -1,12 +1,10 @@
 /**
  * useGitHubConnections — OSS stub.
  *
- * The remote GitHub-App OAuth flow is not part of the OSS build. Users
- * authenticate to GitHub locally via PAT or SSH — see `useGitHubLocalDetect`
- * and the manual "Add Connection" UI under `Integrations > Connections >
- * Git`. This stub keeps the import surface stable: it always reports zero
- * connections and a no-op `startConnect` that points the user at the local
- * PAT/SSH flow.
+ * Git credentials live in the Connections wizard (`Integrations >
+ * Connections`) under the Git adapter; rows are listed in
+ * `Integrations > Git`. This stub keeps the import surface stable: it
+ * always reports zero connections and a no-op `startConnect`.
  */
 import { useCallback } from "react";
 
@@ -15,6 +13,9 @@ import type {
   GitHubConnection,
   GitHubRepo,
 } from "@src/api/http/github/types";
+import { createLogger } from "@src/hooks/logger";
+
+const logger = createLogger("useGitHubConnections");
 
 const EMPTY_REPOS: GitHubRepo[] = [];
 const EMPTY_BRANCHES: GitHubBranch[] = [];
@@ -53,9 +54,8 @@ export function useGitHubConnections(
   }, []);
 
   const startConnect = useCallback(async () => {
-    console.warn(
-      "[useGitHubConnections] GitHub App OAuth flow is disabled. " +
-        "Use a local PAT/SSH credential via Integrations > Connections > Git."
+    logger.warn(
+      "GitHub App OAuth flow is disabled; use Integrations > Connections > Git."
     );
   }, []);
 

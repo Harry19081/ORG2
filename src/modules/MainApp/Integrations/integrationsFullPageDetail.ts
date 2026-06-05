@@ -40,8 +40,9 @@ export function getHasIntegrationsFullPageDetail(
     case "routines":
       return input.hasRoutineSelection;
     case "connections":
-    case "git":
       return input.hasConnectionSelection;
+    case "git":
+      return false;
     default:
       return false;
   }
