@@ -44,6 +44,8 @@ const CREATE_WORK_ITEM_AUTO_EXECUTE_GUARD_UI_SCENARIO =
 const SESSION_LINK_WORK_ITEM_UI_SCENARIO = "session-link-work-item-ui";
 const WORK_ITEM_MANAGER_MULTI_PROJECT_BATCH_SCENARIO =
   "work-item-manager-multi-project-batch";
+const WORK_ITEM_MANAGER_AUTO_CREATE_PROJECT_EXECUTE_SCENARIO =
+  "work-item-manager-auto-create-project-execute";
 const WORK_ITEM_RERUN_UI_LLM_SCENARIO = "work-item-rerun-ui-llm-execution";
 const ROUTINE_CREATE_WORK_ITEM_UI_LLM_SCENARIO =
   "routine-create-work-item-ui-llm-execution";
@@ -783,8 +785,8 @@ async function waitForWorkItemByTitle(projectSlug, title, label) {
         ) ?? null;
       return Boolean(
         matchedItem?.shortId ||
-          matchedItem?.short_id ||
-          matchedItem?.frontmatter?.short_id
+        matchedItem?.short_id ||
+        matchedItem?.frontmatter?.short_id
       );
     },
     {
@@ -1649,45 +1651,54 @@ describe("Work Item durable object runtime invariants", function () {
     const projectBTitle = `E2E manager project B ${RUN_ID}`;
 
     const debugBatch = unwrap(
-      await invokeE2E("debugSessionExecuteTool", sessionId, "manage_work_item", {
-        action: "batch",
-        agent_role: "orchestrator",
-        items: [
-          {
-            action: "create",
-            title: standaloneTitle,
-            description: "Standalone Work Item created by Work Item Manager batch.",
-            status: "planned",
-            priority: "medium",
-            labels: ["e2e", "manager", "standalone"],
-          },
-          {
-            action: "create",
-            project_slug: projectASlug,
-            title: projectATitleOne,
-            description: "First Project A Work Item created by Work Item Manager batch.",
-            status: "planned",
-            priority: "high",
-            labels: ["e2e", "manager", "project-a"],
-          },
-          {
-            action: "create",
-            project_slug: projectASlug,
-            title: projectATitleTwo,
-            description: "Second Project A Work Item created by Work Item Manager batch.",
-            status: "backlog",
-            priority: "low",
-          },
-          {
-            action: "create",
-            project_slug: projectBSlug,
-            title: projectBTitle,
-            description: "Project B Work Item created by Work Item Manager multi-project batch.",
-            status: "planned",
-            priority: "medium",
-          },
-        ],
-      }),
+      await invokeE2E(
+        "debugSessionExecuteTool",
+        sessionId,
+        "manage_work_item",
+        {
+          action: "batch",
+          agent_role: "orchestrator",
+          items: [
+            {
+              action: "create",
+              title: standaloneTitle,
+              description:
+                "Standalone Work Item created by Work Item Manager batch.",
+              status: "planned",
+              priority: "medium",
+              labels: ["e2e", "manager", "standalone"],
+            },
+            {
+              action: "create",
+              project_slug: projectASlug,
+              title: projectATitleOne,
+              description:
+                "First Project A Work Item created by Work Item Manager batch.",
+              status: "planned",
+              priority: "high",
+              labels: ["e2e", "manager", "project-a"],
+            },
+            {
+              action: "create",
+              project_slug: projectASlug,
+              title: projectATitleTwo,
+              description:
+                "Second Project A Work Item created by Work Item Manager batch.",
+              status: "backlog",
+              priority: "low",
+            },
+            {
+              action: "create",
+              project_slug: projectBSlug,
+              title: projectBTitle,
+              description:
+                "Project B Work Item created by Work Item Manager multi-project batch.",
+              status: "planned",
+              priority: "medium",
+            },
+          ],
+        }
+      ),
       "debugSessionExecuteTool(manage_work_item batch)"
     ).result;
     if (debugBatch.ok !== true) {
@@ -1745,7 +1756,10 @@ describe("Work Item durable object runtime invariants", function () {
       immediateProjectAItems,
       projectATitleTwo
     );
-    const projectBItem = findImmediateItem(immediateProjectBItems, projectBTitle);
+    const projectBItem = findImmediateItem(
+      immediateProjectBItems,
+      projectBTitle
+    );
     if (!projectAItemOne || !projectAItemTwo || !projectBItem) {
       throw new Error(
         `Work Item Manager batch readback missed created items. output=${batchText} projectA=${JSON.stringify(immediateProjectAItems)} projectB=${JSON.stringify(immediateProjectBItems)}`
@@ -1776,6 +1790,278 @@ describe("Work Item durable object runtime invariants", function () {
         `Work Item Manager project isolation failed: projectACount=${projectACount} projectBLeakCount=${projectBLeakCount}`
       );
     }
+  });
+
+  it("auto-creates Projects, breaks work into multiple Project scopes, and starts execution through manage_project", async function () {
+    if (
+      !shouldRunScenario(WORK_ITEM_MANAGER_AUTO_CREATE_PROJECT_EXECUTE_SCENARIO)
+    ) {
+      this.skip();
+      return;
+    }
+
+    const accounts = unwrap(
+      await invokeE2E("listAccounts"),
+      "listAccounts(work item manager auto-create project execute)"
+    ).accounts;
+    const account = selectRustAgentAccount(accounts);
+    if (!account) {
+      if (
+        isScenarioExplicitlyRequested(
+          WORK_ITEM_MANAGER_AUTO_CREATE_PROJECT_EXECUTE_SCENARIO
+        )
+      ) {
+        throw new Error(
+          `No enabled Rust-agent account matched agentType=${API_AGENT_TYPE} model=${PREFERRED_API_MODEL_ID} account=${API_ACCOUNT_NAME ?? "<any>"}`
+        );
+      }
+      this.skip();
+      return;
+    }
+
+    const repo = unwrap(
+      await invokeE2E("ensureRepoSelected", { repoPath: E2E_REPO_PATH }),
+      "ensureRepoSelected(work item manager auto-create project execute)"
+    );
+    const projectAName = `E2E Auto Alpha ${RUN_ID}`;
+    const projectBName = `E2E Auto Beta ${RUN_ID}`;
+    const projectASlug = `e2e-auto-alpha-${RUN_ID}`;
+    const projectBSlug = `e2e-auto-beta-${RUN_ID}`;
+    await invokeE2E("deleteProject", projectASlug);
+    await invokeE2E("deleteProject", projectBSlug);
+
+    const launched = unwrap(
+      await invokeE2E("launchSession", {
+        category: "rust_agent",
+        content:
+          "E2E Work Item Manager auto-create project probe. Use project tools only; tests execute tools directly.",
+        prompt:
+          "E2E Work Item Manager auto-create project probe. Use project tools only; tests execute tools directly.",
+        accountId: account.id,
+        model: PREFERRED_API_MODEL_ID,
+        workspacePath: repo.path,
+        agentDefinitionId: "builtin:work-item-manager",
+        agentExecMode: "ask",
+        agentRole: "orchestrator",
+      }),
+      "launchSession(work item manager auto-create project execute)"
+    ).result;
+    const sessionId = launched.sessionId ?? launched.session_id;
+    if (!sessionId) {
+      throw new Error(
+        `Work Item Manager auto-create launch did not return session id: ${JSON.stringify(launched)}`
+      );
+    }
+    await waitForSessionAggregateRow(
+      sessionId,
+      (session) => session.sessionId === sessionId,
+      "Work Item Manager auto-create aggregate row"
+    );
+
+    const createAlpha = unwrap(
+      await invokeE2E("debugSessionExecuteTool", sessionId, "manage_project", {
+        action: "create",
+        name: projectAName,
+        description:
+          "Auto-created Project Alpha for multi-project Work Item breakdown E2E.",
+        status: "planned",
+        priority: "high",
+        linked_repos: [repo.path],
+      }),
+      "debugSessionExecuteTool(manage_project create alpha)"
+    ).result;
+    const createBeta = unwrap(
+      await invokeE2E("debugSessionExecuteTool", sessionId, "manage_project", {
+        action: "create",
+        name: projectBName,
+        description:
+          "Auto-created Project Beta for multi-project Work Item breakdown E2E.",
+        status: "planned",
+        priority: "medium",
+        linked_repos: [repo.path],
+      }),
+      "debugSessionExecuteTool(manage_project create beta)"
+    ).result;
+    for (const [label, result, slug] of [
+      ["alpha", createAlpha, projectASlug],
+      ["beta", createBeta, projectBSlug],
+    ]) {
+      const text = String(result?.text ?? result ?? "");
+      if (!text.includes(`slug: ${slug}`) || text.includes("ERROR:")) {
+        throw new Error(
+          `manage_project create ${label} did not create expected slug ${slug}: ${text}`
+        );
+      }
+    }
+
+    const alphaUiTitle = `E2E auto alpha UI ${RUN_ID}`;
+    const alphaApiTitle = `E2E auto alpha API ${RUN_ID}`;
+    const betaOpsTitle = `E2E auto beta ops ${RUN_ID}`;
+    const createItems = [
+      {
+        slug: projectASlug,
+        title: alphaUiTitle,
+        description:
+          "Implement the visible UI slice for the auto-created Alpha project. Reply briefly and do not modify files.",
+        priority: "high",
+      },
+      {
+        slug: projectASlug,
+        title: alphaApiTitle,
+        description:
+          "Implement the API slice for the auto-created Alpha project.",
+        priority: "medium",
+      },
+      {
+        slug: projectBSlug,
+        title: betaOpsTitle,
+        description:
+          "Implement the operations slice for the auto-created Beta project.",
+        priority: "medium",
+      },
+    ];
+    for (const item of createItems) {
+      const result = unwrap(
+        await invokeE2E(
+          "debugSessionExecuteTool",
+          sessionId,
+          "manage_project",
+          {
+            action: "create_item",
+            slug: item.slug,
+            title: item.title,
+            description: item.description,
+            status: "planned",
+            priority: item.priority,
+            labels: ["e2e", "auto-breakdown"],
+            selected_account_id: account.id,
+            selected_model_id: PREFERRED_API_MODEL_ID,
+            agent_definition_id: "builtin:sde",
+            agent_mode: "ask",
+          }
+        ),
+        `debugSessionExecuteTool(manage_project create_item ${item.title})`
+      ).result;
+      const text = String(result?.text ?? result ?? "");
+      if (!text.includes("Created work item") || text.includes("ERROR:")) {
+        throw new Error(
+          `manage_project create_item failed for ${item.title}: ${text}`
+        );
+      }
+    }
+
+    const alphaUiItem = await waitForWorkItemByTitle(
+      projectASlug,
+      alphaUiTitle,
+      "auto-created alpha UI item"
+    );
+    const alphaApiItem = await waitForWorkItemByTitle(
+      projectASlug,
+      alphaApiTitle,
+      "auto-created alpha API item"
+    );
+    const betaOpsItem = await waitForWorkItemByTitle(
+      projectBSlug,
+      betaOpsTitle,
+      "auto-created beta ops item"
+    );
+    const alphaItems = unwrap(
+      await invokeE2E("readWorkItemsEnriched", projectASlug),
+      "readWorkItemsEnriched(auto-created alpha project)"
+    ).items;
+    const betaItems = unwrap(
+      await invokeE2E("readWorkItemsEnriched", projectBSlug),
+      "readWorkItemsEnriched(auto-created beta project)"
+    ).items;
+    if (
+      alphaItems.some(
+        (item) => (item.title ?? item.frontmatter?.title) === betaOpsTitle
+      ) ||
+      betaItems.some(
+        (item) => (item.title ?? item.frontmatter?.title) === alphaUiTitle
+      )
+    ) {
+      throw new Error(
+        `Auto-created multi-project breakdown leaked items across projects: alpha=${JSON.stringify(alphaItems)} beta=${JSON.stringify(betaItems)}`
+      );
+    }
+
+    for (const [label, item, slug] of [
+      ["alpha UI", alphaUiItem, projectASlug],
+      ["alpha API", alphaApiItem, projectASlug],
+      ["beta ops", betaOpsItem, projectBSlug],
+    ]) {
+      const actualProject =
+        item.project?.id ?? item.project ?? item.frontmatter?.project;
+      if (actualProject !== slug && actualProject !== `project-${slug}`) {
+        throw new Error(
+          `Auto-created ${label} Work Item has wrong project scope: expected=${slug} item=${JSON.stringify(item)}`
+        );
+      }
+    }
+
+    const startShortId =
+      alphaUiItem.shortId ??
+      alphaUiItem.short_id ??
+      alphaUiItem.frontmatter?.short_id;
+    if (!startShortId) {
+      throw new Error(
+        `Auto-created alpha UI Work Item had no short id: ${JSON.stringify(alphaUiItem)}`
+      );
+    }
+    const startResult = unwrap(
+      await invokeE2E("debugSessionExecuteTool", sessionId, "manage_project", {
+        action: "start_item",
+        slug: projectASlug,
+        short_id: startShortId,
+      }),
+      "debugSessionExecuteTool(manage_project start_item)"
+    ).result;
+    const startText = String(startResult?.text ?? startResult ?? "");
+    if (startText.includes("ERROR:")) {
+      throw new Error(
+        `manage_project start_item reported an error: ${startText}`
+      );
+    }
+
+    const startedItem = await waitForWorkItemLock(
+      projectASlug,
+      startShortId,
+      "manage_project start_item auto-created Work Item"
+    );
+    const activeSessionId =
+      startedItem.frontmatter?.execution_lock?.activeSessionId;
+    if (!activeSessionId || activeSessionId === PENDING_SESSION_ID) {
+      throw new Error(
+        `manage_project start_item did not persist an active execution lock: ${JSON.stringify(startedItem.frontmatter?.execution_lock)}`
+      );
+    }
+    await waitForSessionAggregateRow(
+      activeSessionId,
+      (session) =>
+        session.sessionId === activeSessionId &&
+        session.category === "rust_agent" &&
+        session.workItemId === startShortId &&
+        session.projectSlug === projectASlug &&
+        session.accountId === account.id &&
+        session.model === PREFERRED_API_MODEL_ID,
+      "manage_project start_item session aggregate linkage"
+    );
+
+    unwrap(
+      await invokeE2E(
+        "openProjectWorkItemsTab",
+        projectASlug,
+        projectAName,
+        projectASlug
+      ),
+      "openProjectWorkItemsTab(auto-created project alpha)"
+    );
+    await waitForVisibleSelector(
+      `[data-testid="work-item-row-${startShortId}"]`,
+      "auto-created started Work Item row",
+      MOUNT_TIMEOUT_MS
+    );
   });
 
   it("renders standalone Work Items in the aggregate UI and opens their detail view", async function () {

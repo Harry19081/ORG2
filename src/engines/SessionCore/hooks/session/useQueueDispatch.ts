@@ -11,12 +11,12 @@
  * Uses the dispatch registry so all session types (rust_agent, cli_agent)
  * are handled uniformly.
  *
- * NOTE on cancel-restore: the "pop head / restore last user message to input"
- * flow happens SYNCHRONOUSLY inside `useSessionActions.interruptSession`
- * at click time. This hook is only responsible for auto-flushing the queue
- * once the session truly goes idle (either natural completion or a
- * non-user-initiated cancel). The `userCancelRef` guard below stops us from
- * double-dispatching a message that the user already moved to the input.
+ * NOTE on cancel-restore: restoring the active in-flight user message happens
+ * SYNCHRONOUSLY inside `useSessionActions.interruptSession` at click time.
+ * This hook is only responsible for auto-flushing queued follow-ups once the
+ * session truly goes idle (either natural completion or a non-user-initiated
+ * cancel). The `userCancelRef` guard below stops Stop from immediately
+ * dispatching preserved queued follow-ups.
  */
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
@@ -44,6 +44,7 @@ import { sessionMapAtom } from "@src/store/session/sessionAtom";
 import {
   type QueuedMessage,
   dequeueMessageAtom,
+  forceSendPendingQueueAtom,
   messageQueueAtom,
   queueEditingAtom,
   queueFlushRequestAtom,
@@ -69,6 +70,7 @@ export function useQueueDispatch(): void {
   const setUserInitiatedCancel = useSetAtom(userInitiatedCancelAtom);
   const setLastUserMessage = useSetAtom(lastUserMessageAtom);
   const queue = useAtomValue(messageQueueAtom);
+  const forceSendQueue = useAtomValue(forceSendPendingQueueAtom);
   const activeSessionId = useAtomValue(sessionIdAtom);
   const isQueueEditing = useAtomValue(queueEditingAtom);
   const flushRequest = useAtomValue(queueFlushRequestAtom);
@@ -84,6 +86,11 @@ export function useQueueDispatch(): void {
   useEffect(() => {
     queueRef.current = queue;
   }, [queue]);
+
+  const forceSendQueueRef = useRef(forceSendQueue);
+  useEffect(() => {
+    forceSendQueueRef.current = forceSendQueue;
+  }, [forceSendQueue]);
 
   const activeSessionIdRef = useRef(activeSessionId);
   useEffect(() => {
@@ -175,7 +182,9 @@ export function useQueueDispatch(): void {
 
       void (async () => {
         try {
-          await addUserMessage(displayContent, sessionId, imageDataUrls);
+          if (!optimisticVisibleQueueIdsRef.current.has(msg.id)) {
+            await addUserMessage(displayContent, sessionId, imageDataUrls);
+          }
           // Pass displayContent as displayText when it differs from content
           // (i.e. skill pills were expanded) so the persisted event stores
           // the pill format and re-editing shows the pill, not the YAML.
@@ -225,6 +234,21 @@ export function useQueueDispatch(): void {
     ]
   );
 
+  const optimisticVisibleQueueIdsRef = useRef<Set<string>>(new Set());
+
+  const showQueuedMessageOptimistically = useCallback(
+    (msg: QueuedMessage) => {
+      if (optimisticVisibleQueueIdsRef.current.has(msg.id)) return;
+      optimisticVisibleQueueIdsRef.current.add(msg.id);
+      setLastUserMessage({
+        displayContent: msg.displayContent,
+        imageDataUrls: msg.imageDataUrls,
+      });
+      void addUserMessage(msg.displayContent, msg.sessionId, msg.imageDataUrls);
+    },
+    [addUserMessage, setLastUserMessage]
+  );
+
   const dispatchRef = useRef<typeof dispatchMessage>(dispatchMessage);
   useEffect(() => {
     dispatchRef.current = dispatchMessage;
@@ -268,18 +292,20 @@ export function useQueueDispatch(): void {
       status === "waiting_for_funds";
     if (sessionStillActive) return;
 
-    // Hold off if the most recent cancel was user-initiated. The user's
-    // Scenario A/C restore has already consumed the head (or the last user
-    // message) synchronously in useSessionActions; auto-flushing here would
-    // re-dispatch the tail and break the expected pause semantics.
-    // The flag is cleared when the user sends again, so after they revise
-    // and send, the queue flushes normally.
+    // Hold off if the most recent cancel was user-initiated. Stop restores the
+    // active in-flight user message synchronously in useSessionActions;
+    // auto-flushing here would dispatch preserved follow-ups before the user
+    // has a chance to revise or cancel the restored prompt. The flag is cleared
+    // when the cancel settles, so after the user resends the queue flushes
+    // normally.
     if (userCancelRef.current) return;
 
     const activeSessionId = activeSessionIdRef.current;
-    const nextMsg = queueRef.current.find(
-      (message) => message.sessionId === activeSessionId
-    );
+    const nextMsg =
+      forceSendQueueRef.current.find(
+        (message) => message.sessionId === activeSessionId
+      ) ??
+      queueRef.current.find((message) => message.sessionId === activeSessionId);
 
     if (!nextMsg || editingRef.current) return;
 
@@ -319,6 +345,12 @@ export function useQueueDispatch(): void {
   }, [dequeueMessage, rememberSentQueueId]);
 
   useEffect(() => {
+    for (const msg of forceSendQueue) {
+      showQueuedMessageOptimistically(msg);
+    }
+  }, [forceSendQueue, showQueuedMessageOptimistically]);
+
+  useEffect(() => {
     tryDispatchNextRef.current = tryDispatchNext;
   }, [tryDispatchNext]);
 
@@ -342,12 +374,11 @@ export function useQueueDispatch(): void {
   //
   // User-initiated cancels: the restore has already been done synchronously
   // in useSessionActions.interruptSession, so we just consume the
-  // `userInitiatedCancel` flag so future "natural" queue flushes work again.
-  // If the queue is non-empty at this point it's because the user added more
-  // items AFTER pressing stop — those should auto-flush normally.
+  // `userInitiatedCancel` flag and leave preserved queued follow-ups parked
+  // until the user sends again.
   //
-  // Non-user cancels (e.g. a "send now" promotion that called interrupt with
-  // restoreQueueHead=false): just flush.
+  // Non-user cancels (e.g. a Send Now interrupt with restoreQueueHead=false):
+  // just flush.
   const prevPendingCancelRef = useRef(isPendingCancel);
   useEffect(() => {
     const wasPending = prevPendingCancelRef.current;
@@ -387,6 +418,7 @@ export function useQueueDispatch(): void {
     setUserInitiatedCancel(false);
     userCancelRef.current = false;
     queueRef.current = queue;
+    forceSendQueueRef.current = forceSendQueue;
     editingRef.current = isQueueEditing;
     if (isQueueEditing) return;
     tryDispatchNext();
@@ -398,6 +430,7 @@ export function useQueueDispatch(): void {
     ];
   }, [
     flushRequest,
+    forceSendQueue,
     isQueueEditing,
     queue,
     setUserInitiatedCancel,

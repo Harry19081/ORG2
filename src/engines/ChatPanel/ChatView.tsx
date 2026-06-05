@@ -53,8 +53,8 @@ import {
   dequeueMessageAtom,
   editMessageAtom,
   enqueueCountAtom,
+  forceSendMessageAtom,
   messageQueueAtom,
-  promoteMessageAtom,
   queueFlushRequestAtom,
   reorderQueueAtom,
 } from "@src/store/ui/messageQueueAtom";
@@ -304,7 +304,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
     const editQueuedMessage = useSetAtom(editMessageAtom);
     const reorderQueue = useSetAtom(reorderQueueAtom);
     const isSessionActive = useAtomValue(isSessionActiveAtom);
-    const promoteQueuedMessage = useSetAtom(promoteMessageAtom);
+    const forceSendQueuedMessage = useSetAtom(forceSendMessageAtom);
     const setQueueFlushRequest = useSetAtom(queueFlushRequestAtom);
 
     const getQueueSessionId = useCallback(
@@ -318,7 +318,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       (messageId: string) => {
         const message = messageQueue.find((item) => item.id === messageId);
         if (!message) return;
-        promoteQueuedMessage(messageId);
+        forceSendQueuedMessage(messageId);
         void (async () => {
           try {
             if (isSessionActive) {
@@ -333,7 +333,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       },
       [
         messageQueue,
-        promoteQueuedMessage,
+        forceSendQueuedMessage,
         interruptSession,
         isSessionActive,
         setQueueFlushRequest,
