@@ -439,16 +439,16 @@ mod tests {
             "alpha",
             "AAA-0002",
             HashMap::new(),
-            Some(("github_issues".to_string(), "42".to_string())),
+            Some(("github".to_string(), "42".to_string())),
         )
         .unwrap();
         assert_eq!(
-            find_by_external_ref("alpha", "github_issues", "42")
+            find_by_external_ref("alpha", "github", "42")
                 .unwrap()
                 .as_deref(),
             Some("AAA-0002")
         );
-        assert!(find_by_external_ref("alpha", "github_issues", "999")
+        assert!(find_by_external_ref("alpha", "github", "999")
             .unwrap()
             .is_none());
         assert!(find_by_external_ref("alpha", "linear", "42")

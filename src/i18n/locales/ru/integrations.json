@@ -1034,7 +1034,6 @@
   },
   "projectConnections": {
     "linear": "Linear",
-    "githubIssues": "GitHub Issues",
     "authMethod": "Аутентификация",
     "authMethodDesc": "Выберите способ входа этого аккаунта в трекер",
     "authPat": "Personal access token",
@@ -1044,7 +1043,7 @@
     "personalAccessTokenPlaceholder": "Вставьте token...",
     "tokenRequired": "Personal access token обязателен",
     "oauthWaiting": "Ожидание OAuth",
-    "oauthDeviceDesc": "Откройте URL проверки и введите этот код для авторизации GitHub Issues",
+    "oauthDeviceDesc": "Откройте URL проверки и введите этот код для авторизации GitHub",
     "oauthBrowserDesc": "Завершите авторизацию в открытом окне браузера.",
     "oauthBrowserOpened": "Открыто окно браузера. Завершите авторизацию там, затем мастер продолжит работу."
   },
@@ -1102,6 +1101,7 @@
     "addWebAppCommand": "Добавить команду Web App",
     "addDatabaseConnection": "Добавить подключение к базе данных",
     "addChannelOrService": "Добавить канал или сервис",
+    "addGitConnection": "Добавить подключение Git",
     "addRoutine": "Добавить Routine",
     "newTask": "Новая задача",
     "newRoutine": "Новая Routine",

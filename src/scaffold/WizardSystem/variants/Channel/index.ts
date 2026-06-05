@@ -5,9 +5,9 @@ export type { ChannelSetupStepProps } from "./ChannelSetupStep";
 export { useChannelWizardState } from "./useChannelWizardState";
 export type { ChannelWizardStateOptions } from "./useChannelWizardState";
 export {
+  PROJECT_ADAPTER_TYPES,
   SERVICE_CONFIG,
   SERVICE_TYPES,
-  STORY_SYNC_ADAPTER_TYPES,
   STORY_SYNC_AUTH_METHODS,
 } from "./channelWizardTypes";
 export type {

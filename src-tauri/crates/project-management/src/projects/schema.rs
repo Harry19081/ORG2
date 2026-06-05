@@ -501,7 +501,7 @@ fn ensure_column(
 /// DDL for the sync outbox.
 ///
 /// The outbox is a durable replay log: every local mutation that needs
-/// to reach an external system (Linear, GitHub Issues, …) appends a row
+/// to reach an external system (Linear, GitHub, …) appends a row
 /// here, and the worker loop in `project_management::sync::worker`
 /// drains pending rows by calling the matching `SyncAdapter::push`.
 ///

@@ -1034,7 +1034,6 @@
   },
   "projectConnections": {
     "linear": "Linear",
-    "githubIssues": "GitHub Issues",
     "authMethod": "Authentifizierung",
     "authMethodDesc": "Wählen Sie, wie sich dieses Konto beim Tracker anmeldet",
     "authPat": "Personal access token",
@@ -1044,7 +1043,7 @@
     "personalAccessTokenPlaceholder": "Token einfügen...",
     "tokenRequired": "Personal access token ist erforderlich",
     "oauthWaiting": "Warte auf OAuth",
-    "oauthDeviceDesc": "Öffnen Sie die Verifizierungs-URL und geben Sie diesen Code ein, um GitHub Issues zu autorisieren",
+    "oauthDeviceDesc": "Öffnen Sie die Verifizierungs-URL und geben Sie diesen Code ein, um GitHub zu autorisieren",
     "oauthBrowserDesc": "Schließen Sie die Autorisierung im geöffneten Browserfenster ab.",
     "oauthBrowserOpened": "Ein Browserfenster wurde geöffnet. Schließen Sie dort die Autorisierung ab, danach fährt der Assistent fort."
   },
@@ -1102,6 +1101,7 @@
     "addWebAppCommand": "Web-App-Befehl hinzufügen",
     "addDatabaseConnection": "Datenbankverbindung hinzufügen",
     "addChannelOrService": "Kanal oder Dienst hinzufügen",
+    "addGitConnection": "Git-Verbindung hinzufügen",
     "addRoutine": "Routine hinzufügen",
     "newTask": "Neue Aufgabe",
     "newRoutine": "Neue Routine",

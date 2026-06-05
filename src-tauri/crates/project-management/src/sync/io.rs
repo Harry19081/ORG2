@@ -1368,7 +1368,7 @@ mod tests {
                 (id, name, slug, short_id_prefix, created_at, updated_at,
                  sync_kind, sync_config_json, sync_connection_id)
              VALUES ('p1', 'p1', 'gh', 'XXX', 0, 0,
-                     'github_issues', '{\"owner\":\"o\",\"repo\":\"r\"}', 'connection-gh')",
+                     'github', '{\"owner\":\"o\",\"repo\":\"r\"}', 'connection-gh')",
             [],
         )
         .unwrap();

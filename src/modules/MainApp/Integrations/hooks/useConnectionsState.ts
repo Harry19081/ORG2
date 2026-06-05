@@ -8,10 +8,6 @@ import type { ServiceType } from "../Connections/Channels";
 import type { DetailMode } from "../types";
 import type { useChannelState } from "./useChannelState";
 
-interface GitHubHook {
-  refresh: () => void;
-}
-
 export interface UseConnectionsStateReturn {
   selectedGitProvider: string | null;
   selectedIntegrationKind: "git" | "channel" | "service" | null;
@@ -25,7 +21,6 @@ export interface UseConnectionsStateReturn {
 
 export function useConnectionsState(
   channelState: ReturnType<typeof useChannelState>,
-  github: GitHubHook,
   setDetailMode: (mode: DetailMode) => void
 ): UseConnectionsStateReturn {
   const [selectedGitProvider, setSelectedGitProvider] = useState<string | null>(
@@ -51,8 +46,8 @@ export function useConnectionsState(
   );
 
   const handleGitConnected = useCallback(() => {
-    github.refresh();
-  }, [github]);
+    void channelState.refreshProjectConnections();
+  }, [channelState]);
 
   const handleChannelClick = useCallback(
     (compositeId: string | null, mode?: DetailMode) => {

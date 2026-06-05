@@ -7,9 +7,14 @@ use serde::{Deserialize, Serialize};
 use app_paths as paths;
 
 pub const ADAPTER_LINEAR: &str = "linear";
-pub const ADAPTER_GITHUB_ISSUES: &str = "github_issues";
+pub const ADAPTER_GITHUB: &str = "github";
+
 pub const AUTH_METHOD_PAT: &str = "pat";
 pub const AUTH_METHOD_OAUTH: &str = "oauth";
+/// Credential discovered on the host (gh CLI, credential helper).
+pub const AUTH_METHOD_SCAN: &str = "scan";
+/// SSH keypair reference; stored token is the private key path.
+pub const AUTH_METHOD_SSH: &str = "ssh";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SyncConnection {
@@ -33,14 +38,14 @@ pub struct CreateConnectionRequest {
 
 fn validate_adapter_id(adapter_id: &str) -> Result<(), String> {
     match adapter_id {
-        ADAPTER_LINEAR | ADAPTER_GITHUB_ISSUES => Ok(()),
+        ADAPTER_LINEAR | ADAPTER_GITHUB => Ok(()),
         _ => Err(format!("Unsupported project sync adapter '{adapter_id}'")),
     }
 }
 
 fn validate_auth_method(auth_method: &str) -> Result<(), String> {
     match auth_method {
-        AUTH_METHOD_PAT | AUTH_METHOD_OAUTH => Ok(()),
+        AUTH_METHOD_PAT | AUTH_METHOD_OAUTH | AUTH_METHOD_SCAN | AUTH_METHOD_SSH => Ok(()),
         _ => Err(format!(
             "Unsupported project sync auth method '{auth_method}'"
         )),

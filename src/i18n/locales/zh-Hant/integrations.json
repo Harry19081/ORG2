@@ -1031,7 +1031,6 @@
   },
   "projectConnections": {
     "linear": "Linear",
-    "githubIssues": "GitHub Issues",
     "authMethod": "驗證",
     "authMethodDesc": "選擇此帳戶如何向追蹤器驗證",
     "authPat": "Personal access token",
@@ -1041,7 +1040,7 @@
     "personalAccessTokenPlaceholder": "貼上 token...",
     "tokenRequired": "Personal access token 為必填",
     "oauthWaiting": "正在等待 OAuth",
-    "oauthDeviceDesc": "開啟驗證 URL 並輸入此代碼以授權 GitHub Issues",
+    "oauthDeviceDesc": "開啟驗證 URL 並輸入此代碼以授權 GitHub",
     "oauthBrowserDesc": "在已開啟的瀏覽器視窗中完成授權。",
     "oauthBrowserOpened": "已開啟瀏覽器視窗。請在該處完成授權，然後此精靈會繼續。"
   },
@@ -1099,6 +1098,7 @@
     "addWebAppCommand": "添加 Web 應用命令",
     "addDatabaseConnection": "添加數據庫連接",
     "addChannelOrService": "添加頻道或服務",
+    "addGitConnection": "添加 Git 連接",
     "addRoutine": "添加 Routine",
     "newTask": "新任務",
     "newRoutine": "新 Routine",

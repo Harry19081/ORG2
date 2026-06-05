@@ -51,13 +51,6 @@ pub fn auth_tokens() -> PathBuf {
     orgii_root().join("auth_tokens.json")
 }
 
-/// GitHub OAuth tokens: `~/.orgii/github_tokens.json`.
-///
-/// Used by `integrations::github::token_store`. 0o600 perms.
-pub fn github_tokens() -> PathBuf {
-    orgii_root().join("github_tokens.json")
-}
-
 /// Local MITM proxy directory: `~/.orgii/proxy/`.
 ///
 /// Holds the root CA certificate (`ca.pem` + `ca-key.pem`) generated and
@@ -419,6 +412,16 @@ fn is_executable_file(path: &Path) -> bool {
 /// Global project sync connection account store: `~/.orgii/sync_connections.json`.
 pub fn sync_connections() -> PathBuf {
     orgii_root().join("sync_connections.json")
+}
+
+/// User sticky-notes store: `~/.orgii/sticky-notes.json`.
+///
+/// Sidebar sticky notes (notes grouped under user-defined sections) live in
+/// a single JSON document so users can hand-edit, back up, or sync the file
+/// independently of the rest of the app's state. Read/written exclusively by
+/// the `infrastructure::sticky_notes` Tauri commands.
+pub fn sticky_notes() -> PathBuf {
+    orgii_root().join("sticky-notes.json")
 }
 
 /// Global project sync connection token store: `~/.orgii/sync_connection_tokens.json`.

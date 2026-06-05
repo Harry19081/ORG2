@@ -17,6 +17,8 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use tauri::command;
 
+use project_management::sync::git_credentials::find_https_credential;
+
 use super::client::GitHubClient;
 
 // ============================================
@@ -67,24 +69,16 @@ query($login: String!, $from: DateTime!, $to: DateTime!) {
 /// Fetch full GitHub profile data locally.
 /// Replaces server-side GitHubProfileSource which was the heaviest endpoint.
 #[command]
-pub async fn github_fetch_profile(
-    user_id: String,
-    hosted_service_url: String,
-    hosted_token: String,
-) -> Result<ProfileData, String> {
-    fetch_profile_internal(user_id, hosted_service_url, hosted_token).await
+pub async fn github_fetch_profile() -> Result<ProfileData, String> {
+    fetch_profile_internal().await
 }
 
-async fn fetch_profile_internal(
-    user_id: String,
-    hosted_service_url: String,
-    hosted_token: String,
-) -> Result<ProfileData, String> {
-    log::info!(
-        "[GitHub][Profile] Starting profile fetch for user {}",
-        user_id
-    );
-    let client = GitHubClient::new(user_id, hosted_service_url, hosted_token);
+async fn fetch_profile_internal() -> Result<ProfileData, String> {
+    log::info!("[GitHub][Profile] Starting profile fetch");
+    let token = find_https_credential()?
+        .ok_or_else(|| "GitHubReAuthRequired: no git connection on file".to_string())?
+        .token;
+    let client = GitHubClient::new(token);
 
     // Stage 1: user info + all repos in parallel
     log::info!("[GitHub][Profile] Stage 1: fetching user info + repos");

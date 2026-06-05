@@ -622,7 +622,7 @@
     "sidebarSync": "同期",
     "sync": {
       "title": "外部同期",
-      "description": "このProjectのワークアイテムを Linear や GitHub Issues などの外部システムにミラーリングします。",
+      "description": "このProjectのワークアイテムを Linear や GitHub などの外部システムにミラーリングします。",
       "adapterPicker": {
         "title": "アダプター",
         "notAttached": "未接続",

@@ -622,7 +622,7 @@
     "sidebarSync": "Синхронизация",
     "sync": {
       "title": "Внешняя синхронизация",
-      "description": "Зеркалирует рабочие элементы этого Project во внешнюю систему, например Linear или GitHub Issues.",
+      "description": "Зеркалирует рабочие элементы этого Project во внешнюю систему, например Linear или GitHub.",
       "adapterPicker": {
         "title": "Адаптер",
         "notAttached": "Не подключён",

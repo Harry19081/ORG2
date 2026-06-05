@@ -5,7 +5,6 @@ import { CategoryTableContent } from "../Tables";
 import type { ChannelSlice } from "../types";
 import type { ServiceType } from "./Channels";
 import ChannelPreviewPanel from "./Channels/ChannelPreviewPanel";
-import GitProviderDetailPanel from "./Git/GitProviderDetailPanel";
 import ServicePreviewPanel from "./Services/Preview/ServicePreviewPanel";
 
 export const ConnectionsCategoryView: React.FC<{
@@ -42,15 +41,6 @@ export const ConnectionsCategoryView: React.FC<{
   }
 
   if (fullPage) {
-    if (selectedIntegrationKind === "git") {
-      return (
-        <GitProviderDetailPanel
-          selectedProvider={selectedGitProvider}
-          onBack={onBack}
-          onExpand={onExpand}
-        />
-      );
-    }
     if (selectedIntegrationKind === "service" && selectedServiceType) {
       return (
         <ServicePreviewPanel

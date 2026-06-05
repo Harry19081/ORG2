@@ -1,7 +1,7 @@
 /**
  * SyncSection — External sync adapter configuration for a project.
  *
- * Lets the user attach/detach a sync adapter (Echo, Linear, GitHub Issues, …),
+ * Lets the user attach/detach a sync adapter (Echo, Linear, GitHub, …),
  * choose a global sync connection, watch outbox counts, and trigger
  * force_push / force_pull for the project slug.
  *

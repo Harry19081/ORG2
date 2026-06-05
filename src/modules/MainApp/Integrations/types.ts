@@ -17,6 +17,7 @@ export type ChannelSlice = Pick<
   | "update"
   | "selectedChannel"
   | "channelWizardMode"
+  | "channelWizardInitialSelection"
   | "selectedChannelPath"
   | "isSelectedChannelEnabled"
   | "selectedChannelStatus"

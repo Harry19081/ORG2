@@ -8,6 +8,15 @@ use app_paths as paths;
 pub const SOURCE_PAT: &str = "pat";
 pub const SOURCE_OAUTH_DEVICE: &str = "oauth_device";
 pub const SOURCE_OAUTH_REDIRECT: &str = "oauth_redirect";
+/// Token discovered by scanning the host (gh CLI, credential helper,
+/// `.git-credentials`). The `access_token` field holds a real bearer
+/// — identical in shape to `SOURCE_PAT` — but the provenance is
+/// recorded so the UI can label the row "Detected from gh CLI" etc.
+pub const SOURCE_SCAN: &str = "scan";
+/// SSH keypair reference. The `access_token` field holds an absolute
+/// path to the **private** key (e.g. `/Users/me/.ssh/id_ed25519`).
+/// No HTTP bearer is captured; clone/push uses the SSH transport.
+pub const SOURCE_SSH: &str = "ssh";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ConnectionTokenRecord {

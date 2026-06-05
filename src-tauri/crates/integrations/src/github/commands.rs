@@ -1,7 +1,9 @@
 //! GitHub Tauri Commands
 //!
-//! Exposes GitHub operations to the frontend via `invoke()`.
-//! Replaces the previous HTTP calls to legacy server (port 8001).
+//! Exposes GitHub operations to the frontend via `invoke()`. Credentials
+//! are resolved at command entry from the centralized connection token
+//! store (see `project_management::sync::git_credentials`); the frontend
+//! no longer passes user IDs or hosted-service tokens.
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -10,13 +12,9 @@ use std::path::Path;
 use tauri::command;
 
 use git::git_command;
+use project_management::sync::git_credentials::find_https_credential;
 
 use super::client::GitHubClient;
-use super::token_store;
-
-// ============================================
-// Types
-// ============================================
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Repo {
@@ -69,16 +67,16 @@ pub struct GitHubGitCredential {
     pub repo_full_name: String,
 }
 
-// ============================================
-// Helpers
-// ============================================
+/// Resolve the active HTTPS token, or return the canonical re-auth error.
+fn resolve_token() -> Result<String, String> {
+    match find_https_credential()? {
+        Some(credential) => Ok(credential.token),
+        None => Err("GitHubReAuthRequired: no git connection on file".to_string()),
+    }
+}
 
-fn make_client(user_id: &str, hosted_service_url: &str, hosted_token: &str) -> GitHubClient {
-    GitHubClient::new(
-        user_id.to_string(),
-        hosted_service_url.to_string(),
-        hosted_token.to_string(),
-    )
+fn make_client() -> Result<GitHubClient, String> {
+    Ok(GitHubClient::new(resolve_token()?))
 }
 
 fn parse_repo(v: &Value) -> Repo {
@@ -132,70 +130,20 @@ pub(crate) fn github_repo_full_name_from_remote(remote_url: &str) -> Option<Stri
     None
 }
 
-// ============================================
-// Tauri Commands
-// ============================================
-
-/// Exchange a one-time ticket for a GitHub token and store it locally.
-/// Called by the frontend after OAuth redirect with `?token_ticket=xxx`.
-#[command]
-pub async fn github_store_token(
-    user_id: String,
-    ticket: String,
-    hosted_service_url: String,
-    hosted_token: String,
-) -> Result<(), String> {
-    let client = reqwest::Client::new();
-    let resp = client
-        .post(format!(
-            "{}/github/oauth/exchange-ticket",
-            hosted_service_url
-        ))
-        .bearer_auth(&hosted_token)
-        .json(&json!({ "ticket": ticket }))
-        .send()
-        .await
-        .map_err(|e| format!("Ticket exchange failed: {}", e))?;
-
-    if !resp.status().is_success() {
-        let body = resp.text().await.unwrap_or_default();
-        return Err(format!("Ticket exchange error: {}", body));
-    }
-
-    let data: Value = resp
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse ticket response: {}", e))?;
-
-    let access_token = data["data"]["access_token"]
-        .as_str()
-        .ok_or("No access_token in ticket response")?;
-
-    token_store::save(&user_id, access_token)?;
-    log::info!("[GitHub] Token stored for user {}", user_id);
-    Ok(())
-}
-
-/// List the authenticated user's repositories.
 #[command]
 pub async fn github_list_repos(
-    user_id: String,
     page: Option<u32>,
     per_page: Option<u32>,
-    hosted_service_url: String,
-    hosted_token: String,
 ) -> Result<Vec<Repo>, String> {
-    log::info!("[GitHub][Cmd] list_repos user={} page={:?}", user_id, page);
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    log::info!("[GitHub][Cmd] list_repos page={page:?}");
+    let client = make_client()?;
     let p = page.unwrap_or(1);
     let pp = per_page.unwrap_or(30).min(100);
     let data = client
         .get(&format!(
-            "/user/repos?page={}&per_page={}&sort=updated&affiliation=owner,collaborator",
-            p, pp
+            "/user/repos?page={p}&per_page={pp}&sort=updated&affiliation=owner,collaborator"
         ))
         .await?;
-
     let repos: Vec<Repo> = data
         .as_array()
         .map(|arr| arr.iter().map(parse_repo).collect())
@@ -204,20 +152,13 @@ pub async fn github_list_repos(
     Ok(repos)
 }
 
-/// List branches for a repository.
 #[command]
-pub async fn github_list_branches(
-    user_id: String,
-    repo_full_name: String,
-    hosted_service_url: String,
-    hosted_token: String,
-) -> Result<Vec<Branch>, String> {
-    log::info!("[GitHub][Cmd] list_branches repo={}", repo_full_name);
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+pub async fn github_list_branches(repo_full_name: String) -> Result<Vec<Branch>, String> {
+    log::info!("[GitHub][Cmd] list_branches repo={repo_full_name}");
+    let client = make_client()?;
     let data = client
-        .get(&format!("/repos/{}/branches?per_page=100", repo_full_name))
+        .get(&format!("/repos/{repo_full_name}/branches?per_page=100"))
         .await?;
-
     let branches: Vec<Branch> = data
         .as_array()
         .map(|arr| arr.iter().map(parse_branch).collect())
@@ -229,61 +170,42 @@ pub async fn github_list_branches(
     Ok(branches)
 }
 
-/// Create a new branch from a given SHA.
 #[command]
 pub async fn github_create_branch(
-    user_id: String,
     repo_full_name: String,
     branch_name: String,
     from_sha: String,
-    hosted_service_url: String,
-    hosted_token: String,
 ) -> Result<String, String> {
-    log::info!(
-        "[GitHub][Cmd] create_branch repo={} branch={}",
-        repo_full_name,
-        branch_name
-    );
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    log::info!("[GitHub][Cmd] create_branch repo={repo_full_name} branch={branch_name}");
+    let client = make_client()?;
     let data = client
         .post(
-            &format!("/repos/{}/git/refs", repo_full_name),
+            &format!("/repos/{repo_full_name}/git/refs"),
             json!({
-                "ref": format!("refs/heads/{}", branch_name),
+                "ref": format!("refs/heads/{branch_name}"),
                 "sha": from_sha
             }),
         )
         .await?;
-
     let sha = data["object"]["sha"].as_str().unwrap_or("").to_string();
-    log::info!("[GitHub][Cmd] create_branch done sha={}", sha);
+    log::info!("[GitHub][Cmd] create_branch done sha={sha}");
     Ok(sha)
 }
 
-/// Create a pull request.
 #[command]
-#[allow(clippy::too_many_arguments)]
 pub async fn github_create_pr(
-    user_id: String,
     repo_full_name: String,
     title: String,
     head: String,
     base: String,
     body: Option<String>,
     draft: Option<bool>,
-    hosted_service_url: String,
-    hosted_token: String,
 ) -> Result<PRResponse, String> {
-    log::info!(
-        "[GitHub][Cmd] create_pr repo={} head={} base={}",
-        repo_full_name,
-        head,
-        base
-    );
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    log::info!("[GitHub][Cmd] create_pr repo={repo_full_name} head={head} base={base}");
+    let client = make_client()?;
     let data = client
         .post(
-            &format!("/repos/{}/pulls", repo_full_name),
+            &format!("/repos/{repo_full_name}/pulls"),
             json!({
                 "title": title,
                 "head": head,
@@ -293,7 +215,6 @@ pub async fn github_create_pr(
             }),
         )
         .await?;
-
     let pr = PRResponse {
         number: data["number"].as_u64().unwrap_or(0),
         url: data["html_url"].as_str().unwrap_or("").to_string(),
@@ -302,25 +223,17 @@ pub async fn github_create_pr(
     Ok(pr)
 }
 
-/// Find a pull request for a head branch (open first, then all states).
 #[command]
 pub async fn github_find_pull_request(
-    user_id: String,
     repo_full_name: String,
     head_branch: String,
-    hosted_service_url: String,
-    hosted_token: String,
 ) -> Result<Option<FindPRResponse>, String> {
-    log::info!(
-        "[GitHub][Cmd] find_pull_request repo={} head={}",
-        repo_full_name,
-        head_branch
-    );
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    log::info!("[GitHub][Cmd] find_pull_request repo={repo_full_name} head={head_branch}");
+    let client = make_client()?;
     let owner = repo_full_name
         .split('/')
         .next()
-        .ok_or_else(|| format!("Invalid repo name: {}", repo_full_name))?;
+        .ok_or_else(|| format!("Invalid repo name: {repo_full_name}"))?;
 
     let parse_pr = |data: &Value| -> Option<FindPRResponse> {
         data.as_array()
@@ -332,30 +245,21 @@ pub async fn github_find_pull_request(
             })
     };
 
-    // Check open PRs first (most common path)
     let open_data = client
         .get(&format!(
-            "/repos/{}/pulls?state=open&head={}:{}&per_page=1",
-            repo_full_name, owner, head_branch
+            "/repos/{repo_full_name}/pulls?state=open&head={owner}:{head_branch}&per_page=1"
         ))
         .await?;
-
     if let Some(pr) = parse_pr(&open_data) {
-        log::info!(
-            "[GitHub][Cmd] find_pull_request found open PR #{}",
-            pr.number
-        );
+        log::info!("[GitHub][Cmd] find_pull_request found open PR #{}", pr.number);
         return Ok(Some(pr));
     }
 
-    // Fall back to all states to detect merged / closed PRs
     let all_data = client
         .get(&format!(
-            "/repos/{}/pulls?state=all&head={}:{}&per_page=1",
-            repo_full_name, owner, head_branch
+            "/repos/{repo_full_name}/pulls?state=all&head={owner}:{head_branch}&per_page=1"
         ))
         .await?;
-
     let pr = parse_pr(&all_data);
     log::info!(
         "[GitHub][Cmd] find_pull_request {}",
@@ -367,75 +271,39 @@ pub async fn github_find_pull_request(
     Ok(pr)
 }
 
-// ============================================
-// Pull Request inspection
-// ============================================
-
-/// Get a pull request's metadata (title, body, state, head/base, counts).
-///
-/// Returns the raw GitHub PR JSON so the frontend can pick whatever fields
-/// it wants without forcing a strict struct here.
 #[command]
-pub async fn github_get_pr(
-    user_id: String,
-    repo_full_name: String,
-    pr_number: u64,
-    hosted_service_url: String,
-    hosted_token: String,
-) -> Result<Value, String> {
-    log::info!(
-        "[GitHub][Cmd] get_pr repo={} pr={}",
-        repo_full_name,
-        pr_number
-    );
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+pub async fn github_get_pr(repo_full_name: String, pr_number: u64) -> Result<Value, String> {
+    log::info!("[GitHub][Cmd] get_pr repo={repo_full_name} pr={pr_number}");
+    let client = make_client()?;
     client
-        .get(&format!("/repos/{}/pulls/{}", repo_full_name, pr_number))
+        .get(&format!("/repos/{repo_full_name}/pulls/{pr_number}"))
         .await
 }
 
-/// List the commits in a pull request (oldest first per GitHub default).
 #[command]
 pub async fn github_list_pr_commits(
-    user_id: String,
     repo_full_name: String,
     pr_number: u64,
-    hosted_service_url: String,
-    hosted_token: String,
 ) -> Result<Value, String> {
-    log::info!(
-        "[GitHub][Cmd] list_pr_commits repo={} pr={}",
-        repo_full_name,
-        pr_number
-    );
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    log::info!("[GitHub][Cmd] list_pr_commits repo={repo_full_name} pr={pr_number}");
+    let client = make_client()?;
     client
         .get(&format!(
-            "/repos/{}/pulls/{}/commits?per_page=100",
-            repo_full_name, pr_number
+            "/repos/{repo_full_name}/pulls/{pr_number}/commits?per_page=100"
         ))
         .await
 }
 
-/// List the files changed in a pull request.
 #[command]
 pub async fn github_list_pr_files(
-    user_id: String,
     repo_full_name: String,
     pr_number: u64,
-    hosted_service_url: String,
-    hosted_token: String,
 ) -> Result<Value, String> {
-    log::info!(
-        "[GitHub][Cmd] list_pr_files repo={} pr={}",
-        repo_full_name,
-        pr_number
-    );
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    log::info!("[GitHub][Cmd] list_pr_files repo={repo_full_name} pr={pr_number}");
+    let client = make_client()?;
     client
         .get(&format!(
-            "/repos/{}/pulls/{}/files?per_page=300",
-            repo_full_name, pr_number
+            "/repos/{repo_full_name}/pulls/{pr_number}/files?per_page=300"
         ))
         .await
 }
@@ -455,10 +323,10 @@ pub(crate) fn build_clone_argv(
     target_dir: &Path,
     branch: Option<&str>,
 ) -> Vec<OsString> {
-    let clean_url = format!("https://github.com/{}.git", repo_full_name);
+    let clean_url = format!("https://github.com/{repo_full_name}.git");
     let mut argv: Vec<OsString> = Vec::with_capacity(8);
     argv.push("-c".into());
-    argv.push(format!("http.extraHeader=Authorization: Bearer {}", token).into());
+    argv.push(format!("http.extraHeader=Authorization: Bearer {token}").into());
     argv.push("clone".into());
     argv.push("--depth".into());
     argv.push("1".into());
@@ -478,28 +346,24 @@ pub(crate) fn build_clone_argv(
 pub(crate) fn clean_git_clone_error(token: &str, exit_code: Option<i32>, stderr: &[u8]) -> String {
     let stderr_str = String::from_utf8_lossy(stderr).replace(token, "***");
     format!(
-        "git clone failed (exit {:?}): {}",
-        exit_code,
+        "git clone failed (exit {exit_code:?}): {}",
         stderr_str.trim()
     )
 }
 
 #[command]
 pub async fn github_git_credential_for_remote(
-    user_id: String,
     remote_url: String,
 ) -> Result<Option<GitHubGitCredential>, String> {
     let Some(repo_full_name) = github_repo_full_name_from_remote(&remote_url) else {
         return Ok(None);
     };
-
-    let Some(token) = token_store::get(&user_id)? else {
+    let Some(credential) = find_https_credential()? else {
         return Ok(None);
     };
-
     Ok(Some(GitHubGitCredential {
-        username: "x-access-token".to_string(),
-        token,
+        username: credential.username,
+        token: credential.token,
         repo_full_name,
     }))
 }
@@ -516,30 +380,20 @@ pub async fn github_git_credential_for_remote(
 /// - The OAuth token is passed via `http.extraHeader` instead of being
 ///   embedded in the URL (`https://x-access-token:TOKEN@github.com/…`).
 ///   That keeps the token out of:
-///   * the URL itself (libgit2 used to persist it as the `origin` remote
-///     and we then had to overwrite it),
+///   * the URL itself,
 ///   * `git`'s own log output and any inadvertent re-prints,
-///   * the process command line visible in `ps` (the header is set
-///     in-process via `-c` flags, not exported as an env var that other
-///     subprocesses could read).
+///   * the process command line visible in `ps`.
 /// - `git` CLI auto-honors `~/.gitconfig`, `HTTP_PROXY`, system proxy
 ///   settings — strictly better proxy support than libgit2 had.
 #[command]
 pub async fn github_clone_repo(
-    user_id: String,
     repo_full_name: String,
     target_dir: String,
     branch: Option<String>,
 ) -> Result<String, String> {
-    log::info!(
-        "[GitHub][Cmd] clone_repo repo={} target={}",
-        repo_full_name,
-        target_dir
-    );
-    let token = token_store::get(&user_id)?.ok_or("GitHubReAuthRequired: no token stored")?;
-
+    log::info!("[GitHub][Cmd] clone_repo repo={repo_full_name} target={target_dir}");
+    let token = resolve_token()?;
     let target = target_dir.clone();
-
     tokio::task::spawn_blocking(move || -> Result<String, String> {
         let argv = build_clone_argv(
             &token,
@@ -547,12 +401,10 @@ pub async fn github_clone_repo(
             Path::new(&target),
             branch.as_deref(),
         );
-
         let output = git_command()?
             .args(&argv)
             .output()
-            .map_err(|e| format!("Failed to spawn bundled git clone: {}", e))?;
-
+            .map_err(|err| format!("Failed to spawn bundled git clone: {err}"))?;
         if !output.status.success() {
             return Err(clean_git_clone_error(
                 &token,
@@ -560,41 +412,26 @@ pub async fn github_clone_repo(
                 &output.stderr,
             ));
         }
-
         Ok(target)
     })
     .await
-    .map_err(|e| format!("Clone task panicked: {}", e))?
+    .map_err(|err| format!("Clone task panicked: {err}"))?
 }
 
-/// Check if a GitHub token is stored and valid (GET /user).
+/// Check whether a GitHub token is on file and accepted by `GET /user`.
 #[command]
-pub async fn github_check_token(
-    user_id: String,
-    hosted_service_url: String,
-    hosted_token: String,
-) -> Result<bool, String> {
-    log::info!("[GitHub][Cmd] check_token user={}", user_id);
-    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+pub async fn github_check_token() -> Result<bool, String> {
+    log::info!("[GitHub][Cmd] check_token");
+    let client = match make_client() {
+        Ok(client) => client,
+        Err(err) if err.contains("GitHubReAuthRequired") => return Ok(false),
+        Err(err) => return Err(err),
+    };
     match client.get("/user").await {
-        Ok(_) => {
-            log::info!("[GitHub][Cmd] check_token: valid");
-            Ok(true)
-        }
-        Err(e) if e.contains("GitHubReAuthRequired") => {
-            log::info!("[GitHub][Cmd] check_token: re-auth required");
-            Ok(false)
-        }
-        Err(e) => Err(e),
+        Ok(_) => Ok(true),
+        Err(err) if err.contains("GitHubReAuthRequired") => Ok(false),
+        Err(err) => Err(err),
     }
-}
-
-/// Clear the stored GitHub token (used on disconnect).
-#[command]
-pub async fn github_clear_token(user_id: String) -> Result<(), String> {
-    token_store::clear(&user_id)?;
-    log::info!("[GitHub] Token cleared for user {}", user_id);
-    Ok(())
 }
 
 #[cfg(test)]

@@ -142,6 +142,135 @@ pub async fn sync_connection_create_pat(
     .map_err(|err| format!("Task join error: {}", err))?
 }
 
+/// Create a GitHub connection from a token discovered on the host
+/// machine (gh CLI, credential helper, `.git-credentials`).
+///
+/// Validates the token against `GET https://api.github.com/user` before
+/// persisting so we never store a credential we already know to be
+/// dead. Returns the new connection record on success.
+///
+/// `adapter_id` is always `connection_store::ADAPTER_GITHUB` from the
+/// frontend; we accept it as a parameter (rather than hard-coding it)
+/// so a future GitLab / Bitbucket variant can reuse this command
+/// shape, but for now anything other than `"github"` is rejected.
+#[tauri::command]
+pub async fn sync_connection_create_from_scan(
+    adapter_id: String,
+    label: String,
+    token: String,
+    account_email: Option<String>,
+) -> Result<SyncConnection, String> {
+    if adapter_id != connection_store::ADAPTER_GITHUB {
+        return Err(format!(
+            "sync_connection_create_from_scan only supports adapter '{}', got '{}'",
+            connection_store::ADAPTER_GITHUB,
+            adapter_id
+        ));
+    }
+    let trimmed_token = token.trim().to_string();
+    if trimmed_token.is_empty() {
+        return Err("Discovered token is empty".to_string());
+    }
+
+    // Validate the token by calling GitHub's `/user` endpoint. Catches
+    // expired gh-CLI tokens and stale credential-helper entries before
+    // they poison the store. We do this *before* creating the
+    // connection row so failures leave no detritus.
+    let client = reqwest::Client::new();
+    let resp = client
+        .get("https://api.github.com/user")
+        .header("Authorization", format!("token {}", trimmed_token))
+        .header("User-Agent", "orgii-app")
+        .header("Accept", "application/vnd.github.v3+json")
+        .send()
+        .await
+        .map_err(|err| format!("GitHub API request failed: {}", err))?;
+    if !resp.status().is_success() {
+        return Err(format!(
+            "GitHub token validation failed ({}): {}",
+            resp.status(),
+            resp.text().await.unwrap_or_default()
+        ));
+    }
+    drop(resp);
+
+    task::spawn_blocking(move || {
+        let connection = connection_store::create(CreateConnectionRequest {
+            adapter_id,
+            label,
+            auth_method: connection_store::AUTH_METHOD_SCAN.to_string(),
+            account_email,
+        })?;
+        connection_token_store::save(
+            &connection.id,
+            ConnectionTokenRecord {
+                access_token: trimmed_token,
+                refresh_token: None,
+                expires_at_unix: None,
+                source: connection_token_store::SOURCE_SCAN.to_string(),
+            },
+        )?;
+        Ok(connection)
+    })
+    .await
+    .map_err(|err| format!("Task join error: {}", err))?
+}
+
+/// Create a GitHub connection that authenticates via SSH.
+///
+/// `ssh_key_path` is the absolute path to the **private** key; we
+/// store it as the connection's `access_token` (with
+/// `source = "ssh"`) so clone/push consumers can ask
+/// `connection_token_store` for a single uniform "what credential
+/// does this connection carry?" answer. The file is not opened or
+/// read here — the value is treated as opaque path metadata.
+///
+/// No GitHub API validation is possible for an SSH key; the only
+/// way to know if it works is to attempt `ssh -T git@github.com`,
+/// which we deliberately do not run on the connection-create path
+/// (slow, may prompt, may modify known_hosts). Consumers test it
+/// implicitly when they first clone.
+#[tauri::command]
+pub async fn sync_connection_create_from_ssh(
+    adapter_id: String,
+    label: String,
+    ssh_key_path: String,
+    account_email: Option<String>,
+) -> Result<SyncConnection, String> {
+    if adapter_id != connection_store::ADAPTER_GITHUB {
+        return Err(format!(
+            "sync_connection_create_from_ssh only supports adapter '{}', got '{}'",
+            connection_store::ADAPTER_GITHUB,
+            adapter_id
+        ));
+    }
+    let trimmed_path = ssh_key_path.trim().to_string();
+    if trimmed_path.is_empty() {
+        return Err("SSH key path is required".to_string());
+    }
+
+    task::spawn_blocking(move || {
+        let connection = connection_store::create(CreateConnectionRequest {
+            adapter_id,
+            label,
+            auth_method: connection_store::AUTH_METHOD_SSH.to_string(),
+            account_email,
+        })?;
+        connection_token_store::save(
+            &connection.id,
+            ConnectionTokenRecord {
+                access_token: trimmed_path,
+                refresh_token: None,
+                expires_at_unix: None,
+                source: connection_token_store::SOURCE_SSH.to_string(),
+            },
+        )?;
+        Ok(connection)
+    })
+    .await
+    .map_err(|err| format!("Task join error: {}", err))?
+}
+
 #[tauri::command]
 pub async fn sync_connection_rename(
     connection_id: String,
@@ -492,7 +621,7 @@ pub async fn start_oauth_flow_inner(
     }
 
     let (pending, public, loopback_port) = match adapter_id {
-        "github_issues" => {
+        connection_store::ADAPTER_GITHUB => {
             // Use `effective_client_id` so debug builds can install a
             // synthetic id via `set_test_client_id`. In release builds
             // this collapses to `configured_client_id`, which always
@@ -516,7 +645,7 @@ pub async fn start_oauth_flow_inner(
             };
             (pending, public, None)
         }
-        "linear" => {
+        connection_store::ADAPTER_LINEAR => {
             // Symmetric with the GitHub branch above: prefer the
             // debug override so e2e can drive the start path without
             // the production env var, but production builds collapse
@@ -652,7 +781,7 @@ async fn complete_oauth_flow_for_adapter(
             interval_secs,
             cancel,
         } => match adapter_id {
-            connection_store::ADAPTER_GITHUB_ISSUES => {
+            connection_store::ADAPTER_GITHUB => {
                 Ok(
                     oauth::github::poll_for_token(&client_id, &device_code, interval_secs, cancel)
                         .await,
@@ -1421,7 +1550,7 @@ mod oauth_tests {
     async fn oauth_cancel_is_idempotent_when_nothing_pending() {
         let _sandbox = test_env::sandbox();
         let connection = connection_store::create(CreateConnectionRequest {
-            adapter_id: connection_store::ADAPTER_GITHUB_ISSUES.to_string(),
+            adapter_id: connection_store::ADAPTER_GITHUB.to_string(),
             label: "GitHub".to_string(),
             auth_method: connection_store::AUTH_METHOD_OAUTH.to_string(),
             account_email: None,
@@ -1436,13 +1565,13 @@ mod oauth_tests {
     async fn oauth_cancel_signals_pending_device_token() {
         let _sandbox = test_env::sandbox();
         let connection = connection_store::create(CreateConnectionRequest {
-            adapter_id: connection_store::ADAPTER_GITHUB_ISSUES.to_string(),
+            adapter_id: connection_store::ADAPTER_GITHUB.to_string(),
             label: "GitHub".to_string(),
             auth_method: connection_store::AUTH_METHOD_OAUTH.to_string(),
             account_email: None,
         })
         .unwrap();
-        let token = install_device_pending(&connection.id, "github_issues");
+        let token = install_device_pending(&connection.id, "github");
         assert!(!token.is_cancelled());
         sync_connection_oauth_cancel(connection.id.clone())
             .await
@@ -1451,7 +1580,7 @@ mod oauth_tests {
         assert!(PENDING_FLOWS
             .lock()
             .unwrap()
-            .get(&connection_pending_key(&connection.id, "github_issues"))
+            .get(&connection_pending_key(&connection.id, "github"))
             .is_none());
     }
 
@@ -1482,7 +1611,7 @@ mod oauth_tests {
     async fn oauth_complete_without_pending_errors() {
         let _sandbox = test_env::sandbox();
         let connection = connection_store::create(CreateConnectionRequest {
-            adapter_id: connection_store::ADAPTER_GITHUB_ISSUES.to_string(),
+            adapter_id: connection_store::ADAPTER_GITHUB.to_string(),
             label: "GitHub".to_string(),
             auth_method: connection_store::AUTH_METHOD_OAUTH.to_string(),
             account_email: None,

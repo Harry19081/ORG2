@@ -454,11 +454,11 @@ mod tests {
         let decision = resolve_with_policy(
             &inbound,
             &metadata,
-            "github_issues",
+            "github",
             &STUB_FIELD_MAP,
             |_| ConflictResolution::UseRemote,
         );
         assert_eq!(decision.adopted_fields["title"], "Newer github value");
-        assert_eq!(decision.new_revisions["title"].source, "github_issues");
+        assert_eq!(decision.new_revisions["title"].source, "github");
     }
 }

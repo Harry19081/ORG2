@@ -14,7 +14,11 @@ import { ExternalLink, Loader2, TriangleAlert } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { getPRLocal, listPRCommitsLocal } from "@src/api/tauri/github";
+import {
+  GitHubReAuthError,
+  getPRLocal,
+  listPRCommitsLocal,
+} from "@src/api/tauri/github";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import {
@@ -22,7 +26,6 @@ import {
   TYPOGRAPHY,
 } from "@src/modules/WorkStation/shared/tokens";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { resolveGitHubAuth } from "@src/services/git/operations/createPullRequest";
 import {
   workstationPrAtom,
   workstationPrCallbackAtom,
@@ -115,35 +118,9 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
       setLoading(true);
       setError(null);
       try {
-        const remoteUrl = `https://github.com/${parsedPr.repoFullName}.git`;
-        const auth = await resolveGitHubAuth(remoteUrl);
-        if (!auth) {
-          if (!cancelled) {
-            setError(
-              t(
-                "labels.githubAuthMissing",
-                "Connect a GitHub account to view this pull request."
-              )
-            );
-            setDetail(null);
-            setCommits([]);
-          }
-          return;
-        }
-
         const [prJson, commitJson] = await Promise.all([
-          getPRLocal(
-            auth.userId,
-            auth.token,
-            parsedPr.repoFullName,
-            parsedPr.number
-          ),
-          listPRCommitsLocal(
-            auth.userId,
-            auth.token,
-            parsedPr.repoFullName,
-            parsedPr.number
-          ),
+          getPRLocal(parsedPr.repoFullName, parsedPr.number),
+          listPRCommitsLocal(parsedPr.repoFullName, parsedPr.number),
         ]);
         if (cancelled) return;
 
@@ -176,7 +153,18 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
         );
       } catch (err) {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : String(err));
+        if (err instanceof GitHubReAuthError) {
+          setError(
+            t(
+              "labels.githubAuthMissing",
+              "Connect a GitHub account to view this pull request."
+            )
+          );
+          setDetail(null);
+          setCommits([]);
+        } else {
+          setError(err instanceof Error ? err.message : String(err));
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }

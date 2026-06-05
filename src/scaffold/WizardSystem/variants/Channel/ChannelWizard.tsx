@@ -1,22 +1,18 @@
 /**
  * ChannelWizard Component
  *
- * Single-step wizard for adding a new integration.
- * All categories (Git, Channels, Services) complete in one step.
- * Git browser flows collapse the selectors while the webview is active.
- *
- * Uses SectionContainer + SectionRow for form fields and SelectionGrid for
- * grouped integration choices, inside WizardShell + WizardStepLayout.
+ * Single-step wizard for adding a new integration. Git connections
+ * are created through the same wizard via four methods (scan / OAuth
+ * / PAT / SSH) and stored in `connection_token_store`.
  */
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
+  STORY_SYNC_ADAPTER,
   STORY_SYNC_AUTH_METHOD,
   syncConnectionsApi,
 } from "@src/api/http/integrations";
-import { storeDetectedGitHubToken } from "@src/api/tauri/github";
-import { useServiceAuthState } from "@src/hooks/auth";
 import { WizardShell } from "@src/scaffold/WizardSystem/primitives";
 
 import {
@@ -30,12 +26,12 @@ import {
   ChannelWizardFooterStatus,
 } from "./ChannelWizardActions";
 import IntegrationSelection from "./IntegrationSelection";
-import {
-  buildConfigData,
-  extractHostedUserId,
-  validateAccountName,
-} from "./channelWizardHelpers";
-import type { ProjectSyncAdapterType, ServiceType } from "./channelWizardTypes";
+import { buildConfigData, validateAccountName } from "./channelWizardHelpers";
+import type {
+  ProjectSyncAdapterType,
+  ServiceType,
+  WizardCategory,
+} from "./channelWizardTypes";
 import { useChannelWizardState } from "./useChannelWizardState";
 
 export { SERVICE_TYPES } from "./channelWizardTypes";
@@ -49,6 +45,8 @@ export interface ChannelWizardProps {
   ) => void;
   onCancel: () => void;
   existingAccounts: Map<string, string[]>;
+  initialCategory?: WizardCategory | null;
+  initialType?: string | null;
   onGitConnected?: () => void;
   onProjectsConnected?: () => void | Promise<void>;
   onServiceSubmit?: (serviceType: ServiceType, apiKey: string) => void;
@@ -58,13 +56,18 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
   onSubmit,
   onCancel,
   existingAccounts,
+  initialCategory,
+  initialType,
   onGitConnected,
   onProjectsConnected,
   onServiceSubmit,
 }) => {
   const { t } = useTranslation("integrations");
-  const { token: hostedToken } = useServiceAuthState();
-  const wizardState = useChannelWizardState({ existingAccounts });
+  const wizardState = useChannelWizardState({
+    existingAccounts,
+    initialCategory,
+    initialType,
+  });
 
   const {
     accountName,
@@ -72,13 +75,16 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
     channelConfig,
     channelIsValid,
     errors,
-    gitBrowserOpen,
-    gitDetectReady,
-    gitSelectedToken,
-    gitStoreError,
-    gitStoring,
+    gitMethod,
+    gitOAuthFlow,
+    gitPat,
+    gitScanCandidate,
+    gitSshKeyPath,
+    gitSubmitError,
+    gitSubmitting,
     handleAccountNameChange,
     handleConfigChange,
+    handleGitMethodChange,
     handleProbe,
     handleProjectMethodChange,
     handleSelectType,
@@ -100,11 +106,12 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
     selectedType,
     serviceApiKey,
     setErrors,
-    setGitBrowserOpen,
-    setGitDetectReady,
-    setGitSelectedToken,
-    setGitStoreError,
-    setGitStoring,
+    setGitOAuthFlow,
+    setGitPat,
+    setGitScanCandidate,
+    setGitSshKeyPath,
+    setGitSubmitError,
+    setGitSubmitting,
     setProbeErrorDismissed,
     setProjectOAuthFlow,
     setProjectSubmitError,
@@ -138,38 +145,112 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
     setErrors,
   ]);
 
-  const handleGitConnected = useCallback(() => {
-    onGitConnected?.();
-    onCancel();
-  }, [onGitConnected, onCancel]);
+  // Dispatch the right per-method create command for GitHub. Account-name
+  // validation is shared with the channel / project paths.
+  const handleGitSubmit = useCallback(async () => {
+    if (!gitMethod) return;
 
-  const handleGitAdd = useCallback(async () => {
-    if (!gitSelectedToken || !hostedToken) {
-      handleGitConnected();
+    const validationErrors = validateAccountName(accountName, isDuplicateName, {
+      required: t("keyVault.nameRequired"),
+      duplicate: t("integrations.accountNameDuplicate"),
+    });
+    if (validationErrors.name) {
+      setErrors(validationErrors);
       return;
     }
-    setGitStoring(true);
-    setGitStoreError(null);
+
+    setGitSubmitting(true);
+    setGitSubmitError(null);
     try {
-      const userId = extractHostedUserId(hostedToken);
-      await storeDetectedGitHubToken(userId, gitSelectedToken);
+      const label = accountName.trim();
+      if (gitMethod === STORY_SYNC_AUTH_METHOD.SCAN) {
+        if (!gitScanCandidate) {
+          setGitSubmitError(
+            t(
+              "gitConnections.scanSelectRequired",
+              "Pick a detected credential to import."
+            )
+          );
+          setGitSubmitting(false);
+          return;
+        }
+        if (gitScanCandidate.kind === "ssh_key") {
+          await syncConnectionsApi.createFromSsh(
+            STORY_SYNC_ADAPTER.GITHUB,
+            label,
+            gitScanCandidate.secret,
+            gitScanCandidate.username
+          );
+        } else {
+          await syncConnectionsApi.createFromScan(
+            STORY_SYNC_ADAPTER.GITHUB,
+            label,
+            gitScanCandidate.secret,
+            gitScanCandidate.username
+          );
+        }
+      } else if (gitMethod === STORY_SYNC_AUTH_METHOD.OAUTH) {
+        const started = await syncConnectionsApi.oauthStart(
+          STORY_SYNC_ADAPTER.GITHUB,
+          label
+        );
+        setGitOAuthFlow(started.flow);
+        await syncConnectionsApi.oauthComplete(started.connection.id);
+      } else if (gitMethod === STORY_SYNC_AUTH_METHOD.PAT) {
+        if (!gitPat.trim()) {
+          setGitSubmitError(t("projectConnections.tokenRequired"));
+          setGitSubmitting(false);
+          return;
+        }
+        await syncConnectionsApi.createPat(
+          STORY_SYNC_ADAPTER.GITHUB,
+          label,
+          gitPat.trim()
+        );
+      } else if (gitMethod === STORY_SYNC_AUTH_METHOD.SSH) {
+        if (!gitSshKeyPath.trim()) {
+          setGitSubmitError(
+            t("gitConnections.sshKeyPathRequired", "SSH key path is required.")
+          );
+          setGitSubmitting(false);
+          return;
+        }
+        await syncConnectionsApi.createFromSsh(
+          STORY_SYNC_ADAPTER.GITHUB,
+          label,
+          gitSshKeyPath.trim()
+        );
+      }
+      onGitConnected?.();
+      onCancel();
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error("[GitHub][Detect] Failed to store token:", message);
-      setGitStoreError(message);
-      setGitStoring(false);
-      return;
+      setGitSubmitError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setGitSubmitting(false);
     }
-    setGitStoring(false);
-    onCancel();
   }, [
-    gitSelectedToken,
-    hostedToken,
-    handleGitConnected,
+    gitMethod,
+    gitScanCandidate,
+    gitPat,
+    gitSshKeyPath,
+    accountName,
+    isDuplicateName,
+    t,
+    onGitConnected,
     onCancel,
-    setGitStoreError,
-    setGitStoring,
+    setErrors,
+    setGitOAuthFlow,
+    setGitSubmitError,
+    setGitSubmitting,
   ]);
+
+  // OAuth-only entry point used by the "Sign in with GitHub" button
+  // inside `GitContent`. Distinct from `handleGitSubmit` so the OAuth
+  // button can fire without waiting for the user to click Done in the
+  // footer (matches the project-side `ProjectContent` UX).
+  const handleGitOAuthStart = useCallback(() => {
+    void handleGitSubmit();
+  }, [handleGitSubmit]);
 
   const handleServiceSubmit = useCallback(() => {
     if (!selectedType || !serviceApiKey.trim()) return;
@@ -245,6 +326,7 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
       isChannels={isChannels}
       isService={isService}
       isProjects={isProjects}
+      isGit={isGit}
       selectedType={selectedType}
       accountName={accountName}
       isDuplicateName={isDuplicateName}
@@ -253,12 +335,15 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
       projectAuthMethod={projectAuthMethod}
       projectToken={projectToken}
       projectSubmitting={projectSubmitting}
-      gitDetectReady={gitDetectReady}
-      gitStoring={gitStoring}
+      gitMethod={gitMethod}
+      gitPat={gitPat}
+      gitSshKeyPath={gitSshKeyPath}
+      gitScanCandidateSelected={!!gitScanCandidate}
+      gitSubmitting={gitSubmitting}
       onChannelSubmit={handleSubmit}
       onServiceSubmit={handleServiceSubmit}
       onProjectSubmit={handleProjectSubmit}
-      onGitAdd={handleGitAdd}
+      onGitSubmit={handleGitSubmit}
     />
   );
 
@@ -310,11 +395,20 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
   const gitContent = isGit ? (
     <GitContent
       selectedType={selectedType}
-      gitStoreError={gitStoreError}
-      onConnected={handleGitConnected}
-      onBrowserStateChange={setGitBrowserOpen}
-      onDetectReady={setGitDetectReady}
-      onTokenSelect={setGitSelectedToken}
+      accountName={accountName}
+      isDuplicateName={isDuplicateName}
+      gitMethod={gitMethod}
+      gitPat={gitPat}
+      gitSshKeyPath={gitSshKeyPath}
+      gitScanCandidate={gitScanCandidate}
+      gitOAuthFlow={gitOAuthFlow}
+      gitSubmitting={gitSubmitting}
+      gitSubmitError={gitSubmitError}
+      onGitMethodChange={handleGitMethodChange}
+      onGitPatChange={setGitPat}
+      onGitSshKeyPathChange={setGitSshKeyPath}
+      onGitScanCandidateChange={setGitScanCandidate}
+      onGitOAuthStart={handleGitOAuthStart}
     />
   ) : null;
 
@@ -329,7 +423,6 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
         onAccountNameChange={handleAccountNameChange}
         errors={errors}
         isDuplicateName={isDuplicateName}
-        isGit={isGit}
         totalSteps={1}
         actions={stepActions}
         onCancel={onCancel}
@@ -338,7 +431,6 @@ const ChannelWizard: React.FC<ChannelWizardProps> = ({
         serviceContent={serviceContent}
         projectContent={projectContent}
         gitContent={gitContent}
-        gitBrowserOpen={gitBrowserOpen}
       />
     </WizardShell>
   );

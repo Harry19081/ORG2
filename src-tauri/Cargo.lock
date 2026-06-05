@@ -3813,6 +3813,7 @@ dependencies = [
  "git",
  "libc",
  "log",
+ "project_management",
  "rcgen",
  "reqwest 0.13.2",
  "rustls-pemfile",

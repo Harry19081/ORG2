@@ -12,9 +12,7 @@ import {
   parseExternalSkillsetsTab,
   parseIntegrationsPath,
 } from "@src/config/mainAppPaths";
-import { useServiceAuthState } from "@src/hooks/auth";
 import type { DependencyStatus } from "@src/hooks/dependencies";
-import { useGitHubConnections } from "@src/hooks/git";
 import {
   integrationsAddSignalAtom,
   integrationsToolbarAtom,
@@ -95,13 +93,8 @@ export function useIntegrationsPage() {
     useState<DependencyStatus | null>(null);
   const [accountListSearch, setAccountListSearch] = useState("");
 
-  const { isAuthenticated } = useServiceAuthState();
   const connectionsActive = category === "connections";
-  const gitActive = category === "git";
   const cliAgents = useCliAgents({ enabled: category === "models" });
-  const github = useGitHubConnections({
-    autoFetch: isAuthenticated && (connectionsActive || gitActive),
-  });
   const { gatewayStatus } = useOSAgentGateway(connectionsActive);
   const channelState = useChannelState({
     channelStatuses: gatewayStatus?.channels,
@@ -119,7 +112,7 @@ export function useIntegrationsPage() {
     accountsHook.refresh,
     initialModelsTab
   );
-  const connections = useConnectionsState(channelState, github, setDetailMode);
+  const connections = useConnectionsState(channelState, setDetailMode);
   const databasesState = useDatabasesState(category, setDetailMode);
 
   const handleExternalSkillsetsTabChange = useCallback(
@@ -184,6 +177,14 @@ export function useIntegrationsPage() {
           extensions.clearExtensionState();
           channelState.handleChannelAdd();
           break;
+        case "add-git-connection":
+          navigateToCategory("connections");
+          extensions.clearExtensionState();
+          channelState.handleChannelAdd({
+            category: "projects",
+            type: "github",
+          });
+          break;
         case "add-database":
           navigateToCategory("databases");
           extensions.clearExtensionState();
@@ -247,7 +248,6 @@ export function useIntegrationsPage() {
 
   // Register per-category refresh into toolbar registry
   const setToolbarEntry = useSetAtom(integrationsToolbarAtom);
-  const refreshGitHubConnections = github.refresh;
   const refreshProjectConnections = channelState.refreshProjectConnections;
   const channelConfigLoaded = channelState.loaded;
   const projectConnectionsLoading = channelState.projectConnectionsLoading;
@@ -293,8 +293,10 @@ export function useIntegrationsPage() {
         };
       case "git":
         return {
-          onRefresh: refreshGitHubConnections,
-          loading: github.isLoading,
+          onRefresh: async () => {
+            await refreshProjectConnections();
+          },
+          loading: projectConnectionsLoading,
         };
       case "rulesMemoryEvolution":
         return {
@@ -322,11 +324,9 @@ export function useIntegrationsPage() {
     extensions.mcpServers.loading,
     extensions.skillsHubRaw.refreshInstalled,
     extensions.skillsHubRaw.installedLoading,
-    refreshGitHubConnections,
     channelConfigLoaded,
     refreshProjectConnections,
     projectConnectionsLoading,
-    github.isLoading,
     policies.refreshAll,
     policies.policiesLoading,
     routines.refreshRoutines,
@@ -411,9 +411,6 @@ export function useIntegrationsPage() {
     accountsHook,
     handleAccountSelect,
     extensions,
-    githubHasConnections: github.hasConnections,
-    githubConnections: github.connections,
-    githubConnectionsLoading: github.isLoading,
     channelState,
     connections,
     databasesState,
@@ -444,7 +441,8 @@ export function useIntegrationsPage() {
     hasConnectionSelection:
       category === "git"
         ? !!connections.selectedGitProvider
-        : !!connections.selectedIntegrationKind,
+        : connections.selectedIntegrationKind === "channel" ||
+          connections.selectedIntegrationKind === "service",
   });
 
   const accountListFiltered = useMemo(() => {
@@ -471,7 +469,6 @@ export function useIntegrationsPage() {
     routines,
     connections,
     channelState,
-    githubHasConnections: github.hasConnections,
     tIntegrations,
     handleAddAction,
   });

@@ -622,7 +622,7 @@
     "sidebarSync": "Senkronizasyon",
     "sync": {
       "title": "Harici Senkronizasyon",
-      "description": "Bu Projectnin iş öğelerini Linear veya GitHub Issues gibi harici bir sisteme yansıtın.",
+      "description": "Bu Projectnin iş öğelerini Linear veya GitHub gibi harici bir sisteme yansıtın.",
       "adapterPicker": {
         "title": "Adaptör",
         "notAttached": "Bağlı değil",

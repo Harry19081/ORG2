@@ -95,7 +95,7 @@ pub struct ConflictFieldDelta {
     /// `FieldRevision.source` recorded on the local side.
     /// In practice always `"local"` for fields that produce a conflict
     /// — kept verbatim so a future "cross-adapter rewrite" case
-    /// (`source = "linear"` losing to `"github_issues"`) is debuggable
+    /// (`source = "linear"` losing to `"github"`) is debuggable
     /// from the audit log without further log-spelunking.
     pub local_source: String,
     /// Adapter id of the inbound change.

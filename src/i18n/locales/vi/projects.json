@@ -622,7 +622,7 @@
     "sidebarSync": "Đồng bộ",
     "sync": {
       "title": "Đồng bộ bên ngoài",
-      "description": "Phản chiếu các mục công việc của Project này tới một hệ thống bên ngoài như Linear hoặc GitHub Issues.",
+      "description": "Phản chiếu các mục công việc của Project này tới một hệ thống bên ngoài như Linear hoặc GitHub.",
       "adapterPicker": {
         "title": "Bộ chuyển đổi",
         "notAttached": "Chưa kết nối",

@@ -38,7 +38,7 @@
 //! # Why a separate table (not a column on `projects`)
 //!
 //! Multiple webhook secrets per project are a near-certainty (e.g.
-//! a project bound to GitHub Issues today, attaching a Linear webhook
+//! a project bound to GitHub today, attaching a Linear webhook
 //! tomorrow). The composite key lets us add rows without column churn
 //! and keeps the per-row rotation timestamp scoped correctly.
 
@@ -242,10 +242,10 @@ mod tests {
     fn separate_adapters_keep_separate_rows() {
         let conn = test_db();
         upsert_secret(&conn, "alpha", "linear", "linear-secret", 1000).expect("linear");
-        upsert_secret(&conn, "alpha", "github_issues", "gh-secret", 1000).expect("github");
+        upsert_secret(&conn, "alpha", "github", "gh-secret", 1000).expect("github");
 
         let l = get_secret(&conn, "alpha", "linear").unwrap().unwrap();
-        let g = get_secret(&conn, "alpha", "github_issues")
+        let g = get_secret(&conn, "alpha", "github")
             .unwrap()
             .unwrap();
         assert_eq!(l.secret_hex, "linear-secret");

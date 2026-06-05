@@ -22,16 +22,6 @@ export { useGitAutoFetch } from "./useGitAutoFetch";
 // GitHub connections management
 export { useGitHubConnections } from "./useGitHubConnections";
 
-// GitHub inline connect (embedded webview flow)
-export { useGitHubInlineConnect } from "./useGitHubInlineConnect";
-export type {
-  GitHubConnectResult,
-  GitHubConnectStatus,
-} from "./useGitHubInlineConnect";
-
-// GitHub local credential detection
-export { useGitHubLocalDetect } from "./useGitHubLocalDetect";
-
 // Primary hook for repo/branch selection
 export { useRepoSelection } from "./useRepoSelection";
 

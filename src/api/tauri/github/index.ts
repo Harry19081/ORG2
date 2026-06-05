@@ -1,39 +1,17 @@
 /**
  * GitHub Local API
  *
- * Calls GitHub API directly from Tauri Rust instead of going through
- * the hosted backend (port 8001). Reduces server pressure by
- * running repos, branches, clone, PR, and profile fetching locally.
+ * Calls GitHub API directly from Tauri Rust. Credentials are resolved
+ * inside the Rust commands from `connection_token_store` — the frontend
+ * no longer passes user IDs or hosted-service tokens.
  */
 import { invoke } from "@tauri-apps/api/core";
 
 import { appendPullRequestAttributionFooter } from "@src/services/git/operations/commitAttribution";
 
-import { API_BASE_URLS } from "../../http/client/config";
-
-export const LOCAL_GITHUB_TOKEN_USER_ID = "local_git";
-
-// ============================================
-// Helpers
-// ============================================
-
-interface GitHubInvokeParams {
-  userId: string;
-  hostedServiceUrl: string;
-  hostedToken: string;
-}
-
-function baseParams(userId: string, token: string): GitHubInvokeParams {
-  return {
-    userId,
-    hostedServiceUrl: API_BASE_URLS.hostedService,
-    hostedToken: token,
-  };
-}
-
 /**
- * Wraps a GitHub invoke call with re-auth error detection.
- * Throws a typed error when the user needs to re-authorize.
+ * Thrown when the active Git connection is missing or rejected (401) and
+ * the user must re-authorize via the Connections wizard.
  */
 export class GitHubReAuthError extends Error {
   constructor() {
@@ -58,7 +36,7 @@ async function invokeWithAuth<T>(
 }
 
 // ============================================
-// Types (matching Rust-side structs)
+// Types (mirror Rust-side structs)
 // ============================================
 
 export interface LocalGitHubRepo {
@@ -97,6 +75,14 @@ export interface GitHubGitCredential {
   repo_full_name: string;
 }
 
+/** Generic Git credential resolved from `connection_token_store`. */
+export interface GitCredential {
+  connection_id: string;
+  username: string;
+  token: string;
+  source: string;
+}
+
 export interface ProfileData {
   user: Record<string, unknown>;
   repos: Record<string, unknown>[];
@@ -129,85 +115,41 @@ export interface DetectedGitHubCredentials {
   git_credentials_has_github: boolean;
 }
 
-export interface StoreTokenResult {
-  username: string;
-}
-
 // ============================================
 // API Functions
 // ============================================
 
-/**
- * Exchange a one-time ticket for a GitHub token and store it in keychain.
- * Called after OAuth redirect with `?token_ticket=xxx`.
- */
-export async function storeGitHubToken(
-  userId: string,
-  ticket: string,
-  token: string
-): Promise<void> {
-  await invoke("github_store_token", {
-    userId,
-    ticket,
-    hostedServiceUrl: API_BASE_URLS.hostedService,
-    hostedToken: token,
-  });
-}
-
-/**
- * List the authenticated user's repositories.
- */
 export async function listReposLocal(
-  userId: string,
-  token: string,
   page?: number,
   perPage?: number
 ): Promise<LocalGitHubRepo[]> {
   return invokeWithAuth<LocalGitHubRepo[]>("github_list_repos", {
-    ...baseParams(userId, token),
     page: page ?? null,
     perPage: perPage ?? null,
   });
 }
 
-/**
- * List branches for a repository.
- */
 export async function listBranchesLocal(
-  userId: string,
-  token: string,
   repoFullName: string
 ): Promise<LocalGitHubBranch[]> {
   return invokeWithAuth<LocalGitHubBranch[]>("github_list_branches", {
-    ...baseParams(userId, token),
     repoFullName,
   });
 }
 
-/**
- * Create a new branch from a given SHA.
- */
 export async function createBranchLocal(
-  userId: string,
-  token: string,
   repoFullName: string,
   branchName: string,
   fromSha: string
 ): Promise<string> {
   return invokeWithAuth<string>("github_create_branch", {
-    ...baseParams(userId, token),
     repoFullName,
     branchName,
     fromSha,
   });
 }
 
-/**
- * Create a pull request.
- */
 export async function createPRLocal(
-  userId: string,
-  token: string,
   repoFullName: string,
   title: string,
   head: string,
@@ -216,7 +158,6 @@ export async function createPRLocal(
   draft?: boolean
 ): Promise<LocalPRResponse> {
   return invokeWithAuth<LocalPRResponse>("github_create_pr", {
-    ...baseParams(userId, token),
     repoFullName,
     title,
     head,
@@ -226,152 +167,98 @@ export async function createPRLocal(
   });
 }
 
-/**
- * Find an open pull request for a head branch.
- */
 export async function findPullRequestLocal(
-  userId: string,
-  token: string,
   repoFullName: string,
   headBranch: string
 ): Promise<LocalFindPRResponse | null> {
   return invokeWithAuth<LocalFindPRResponse | null>(
     "github_find_pull_request",
     {
-      ...baseParams(userId, token),
       repoFullName,
       headBranch,
     }
   );
 }
 
-/**
- * Fetch a pull request's metadata. Returns the raw GitHub PR JSON.
- */
 export async function getPRLocal(
-  userId: string,
-  token: string,
   repoFullName: string,
   prNumber: number
 ): Promise<Record<string, unknown>> {
   return invokeWithAuth<Record<string, unknown>>("github_get_pr", {
-    ...baseParams(userId, token),
     repoFullName,
     prNumber,
   });
 }
 
-/**
- * List the commits attached to a pull request.
- */
 export async function listPRCommitsLocal(
-  userId: string,
-  token: string,
   repoFullName: string,
   prNumber: number
 ): Promise<Record<string, unknown>[]> {
   const data = await invokeWithAuth<unknown>("github_list_pr_commits", {
-    ...baseParams(userId, token),
     repoFullName,
     prNumber,
   });
   return Array.isArray(data) ? (data as Record<string, unknown>[]) : [];
 }
 
-/**
- * List the files changed in a pull request.
- */
 export async function listPRFilesLocal(
-  userId: string,
-  token: string,
   repoFullName: string,
   prNumber: number
 ): Promise<Record<string, unknown>[]> {
   const data = await invokeWithAuth<unknown>("github_list_pr_files", {
-    ...baseParams(userId, token),
     repoFullName,
     prNumber,
   });
   return Array.isArray(data) ? (data as Record<string, unknown>[]) : [];
 }
 
-/**
- * Clone a repository via git2 (shallow clone).
- */
 export async function cloneRepoLocal(
-  userId: string,
   repoFullName: string,
   targetDir: string,
   branch?: string
 ): Promise<string> {
-  return invoke<string>("github_clone_repo", {
-    userId,
+  return invokeWithAuth<string>("github_clone_repo", {
     repoFullName,
     targetDir,
     branch: branch ?? null,
   });
 }
 
+/**
+ * GitHub-flavored credential lookup. Returns the active token paired
+ * with the inferred `owner/repo` for the given remote, or `null` when
+ * the remote is not a GitHub URL or no credential is on file.
+ */
 export async function getGitHubGitCredentialForRemote(
-  userId: string,
   remoteUrl: string
 ): Promise<GitHubGitCredential | null> {
   return invoke<GitHubGitCredential | null>(
     "github_git_credential_for_remote",
-    {
-      userId,
-      remoteUrl,
-    }
+    { remoteUrl }
   );
 }
 
 /**
- * Check if a GitHub token is stored and valid.
+ * Generic Git credential lookup against `connection_token_store`. Returns
+ * `null` for SSH-only remotes (handled by the system `git` config) or
+ * when no HTTPS credential is on file.
  */
-export async function checkTokenLocal(
-  userId: string,
-  token: string
-): Promise<boolean> {
-  return invokeWithAuth<boolean>("github_check_token", {
-    ...baseParams(userId, token),
+export async function getGitCredentialForRemote(
+  remoteUrl: string
+): Promise<GitCredential | null> {
+  return invoke<GitCredential | null>("git_credential_for_remote", {
+    remoteUrl,
   });
 }
 
-/**
- * Clear the stored GitHub token (disconnect).
- */
-export async function clearTokenLocal(userId: string): Promise<void> {
-  await invoke("github_clear_token", { userId });
+export async function checkTokenLocal(): Promise<boolean> {
+  return invokeWithAuth<boolean>("github_check_token", {});
 }
 
-/**
- * Fetch full GitHub profile data locally.
- */
-export async function fetchProfileLocal(
-  userId: string,
-  token: string
-): Promise<ProfileData> {
-  return invokeWithAuth<ProfileData>("github_fetch_profile", {
-    ...baseParams(userId, token),
-  });
+export async function fetchProfileLocal(): Promise<ProfileData> {
+  return invokeWithAuth<ProfileData>("github_fetch_profile", {});
 }
 
-/**
- * Detect local GitHub credentials (gh CLI, SSH keys, credential helper).
- */
 export async function detectGitHubCredentials(): Promise<DetectedGitHubCredentials> {
   return invoke<DetectedGitHubCredentials>("detect_github_credentials");
-}
-
-/**
- * Validate a detected GitHub token and store it in keychain.
- */
-export async function storeDetectedGitHubToken(
-  userId: string,
-  token: string
-): Promise<StoreTokenResult> {
-  return invoke<StoreTokenResult>("github_store_detected_token", {
-    userId,
-    token,
-  });
 }

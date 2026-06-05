@@ -1,6 +1,6 @@
 /**
  * WebhookPanel — Phase 5 inbound webhook configuration for adapters
- * whose `supports_webhook` flag is true (Linear, GitHub Issues, Echo).
+ * whose `supports_webhook` flag is true (Linear, GitHub, Echo).
  *
  * Renders three states:
  *

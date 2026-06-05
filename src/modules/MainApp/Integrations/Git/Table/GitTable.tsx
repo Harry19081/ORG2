@@ -2,14 +2,12 @@ import { Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { gitApi } from "@src/api/http/git";
-import { deleteGitHubConnection } from "@src/api/http/github";
-import type { GitHubConnection } from "@src/api/http/github/types";
 import {
-  LOCAL_GITHUB_TOKEN_USER_ID,
-  clearTokenLocal,
-  getGitHubGitCredentialForRemote,
-} from "@src/api/tauri/github";
+  STORY_SYNC_ADAPTER,
+  STORY_SYNC_AUTH_METHOD,
+  type SyncConnection,
+  syncConnectionsApi,
+} from "@src/api/http/integrations/syncConnections";
 import Button from "@src/components/Button";
 import IntegrationIcon from "@src/components/IntegrationIcon";
 import SettingsTable, {
@@ -26,7 +24,6 @@ import {
   InternalHeader,
   ScrollPreservation,
 } from "@src/modules/shared/layouts/blocks";
-import { getRepoContext } from "@src/services/git/operations/types";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import {
@@ -38,13 +35,6 @@ import { StatusDot } from "../../Tables/shared";
 import { InfoRow } from "../../shared";
 import type { DetailMode } from "../../types";
 import GitPreferencesSection from "./GitPreferencesSection";
-import InlineGitConnectionAdd, {
-  LOCAL_GIT_AUTH_KIND_STORAGE_KEY,
-  LOCAL_GIT_AUTH_VALUE_STORAGE_KEY,
-  LOCAL_GIT_HIDDEN_SSH_STORAGE_KEY,
-  type LocalGitAuthKind,
-  maskGitHubToken,
-} from "./InlineGitConnectionAdd";
 
 const logger = createLogger("GitTable");
 
@@ -53,153 +43,90 @@ interface GitRow {
   account: string;
   provider: string;
   access: string;
-  repositories: number;
   statusColor: string;
   statusLabel: string;
-  kind: "hosted" | "local";
-  localAuthKind?: LocalGitAuthKind;
-  localAuthValue?: string;
-  connectionId?: string;
+  authMethod: SyncConnection["auth_method"];
+  accountEmail?: string;
 }
 
 interface GitTableProps {
-  connections: GitHubConnection[];
-  loading: boolean;
+  loading?: boolean;
   selectedRowId?: string | null;
-  onSelectProvider: (id: string | null, mode?: DetailMode) => void;
-  onAfterAddOpen?: () => void | Promise<void>;
+  onSelectProvider?: (id: string | null, mode?: DetailMode) => void;
 }
 
-function isLocalGitAuthKind(value: string | null): value is LocalGitAuthKind {
-  return value === "token" || value === "ssh";
-}
-
-function isGithubSshRemote(remoteUrl: string): boolean {
-  return /^git@github\.com:[^/]+\/[^/]+(?:\.git)?$/i.test(remoteUrl.trim());
+function describeAuthMethod(
+  authMethod: SyncConnection["auth_method"],
+  t: (key: string) => string
+): string {
+  switch (authMethod) {
+    case STORY_SYNC_AUTH_METHOD.PAT:
+      return t("git.localAuthToken");
+    case STORY_SYNC_AUTH_METHOD.SSH:
+      return t("git.localAuthSsh");
+    case STORY_SYNC_AUTH_METHOD.OAUTH:
+      return t("git.githubApp");
+    case STORY_SYNC_AUTH_METHOD.SCAN:
+      return t("git.localProvider");
+    default:
+      return authMethod;
+  }
 }
 
 export const GitTable: React.FC<GitTableProps> = ({
-  connections,
-  loading,
+  loading: externalLoading = false,
   selectedRowId: _selectedRowId,
   onSelectProvider: _onSelectProvider,
-  onAfterAddOpen,
 }) => {
   const { t } = useTranslation("integrations");
   const { t: tCommon } = useTranslation("common");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [removingRowId, setRemovingRowId] = useState<string | null>(null);
-  const [localAuthKind, setLocalAuthKind] = useState<LocalGitAuthKind | null>(
-    () => {
-      const storedKind = localStorage.getItem(LOCAL_GIT_AUTH_KIND_STORAGE_KEY);
-      if (isLocalGitAuthKind(storedKind)) return storedKind;
-      if (storedKind !== null) {
-        localStorage.removeItem(LOCAL_GIT_AUTH_KIND_STORAGE_KEY);
-      }
-      return null;
+  const [connections, setConnections] = useState<SyncConnection[]>([]);
+  const [internalLoading, setInternalLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    setInternalLoading(true);
+    try {
+      const allConnections = await syncConnectionsApi.list();
+      setConnections(
+        allConnections.filter(
+          (connection) => connection.adapter_id === STORY_SYNC_ADAPTER.GITHUB
+        )
+      );
+    } catch (error) {
+      logger.warn("Failed to load Git connections:", error);
+    } finally {
+      setInternalLoading(false);
     }
-  );
-  const [localAuthValue, setLocalAuthValue] = useState<string | null>(() => {
-    const storedValue = localStorage.getItem(LOCAL_GIT_AUTH_VALUE_STORAGE_KEY);
-    return storedValue?.trim() || null;
-  });
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function restoreSshRemoteState() {
-      const repo = getRepoContext();
-      if (!repo) return;
-
-      const remotesData = await gitApi.getGitRemotes({
-        repo_id: repo.repoId,
-        repo_path: repo.repoPath,
-      });
-      const remote = remotesData?.remotes.find(
-        (candidateRemote) => candidateRemote.name === "origin"
-      );
-      const remoteUrl = remote?.push_url ?? remote?.fetch_url ?? remote?.url;
-      if (!remoteUrl || cancelled) return;
-
-      const localCredential = await getGitHubGitCredentialForRemote(
-        LOCAL_GITHUB_TOKEN_USER_ID,
-        remoteUrl
-      );
-      if (localCredential && !cancelled) {
-        const maskedToken = maskGitHubToken(localCredential.token);
-        localStorage.setItem(LOCAL_GIT_AUTH_KIND_STORAGE_KEY, "token");
-        localStorage.setItem(LOCAL_GIT_AUTH_VALUE_STORAGE_KEY, maskedToken);
-        setLocalAuthKind("token");
-        setLocalAuthValue(maskedToken);
-        return;
-      }
-
-      if (!isGithubSshRemote(remoteUrl) || cancelled) return;
-      if (localStorage.getItem(LOCAL_GIT_HIDDEN_SSH_STORAGE_KEY) === "true") {
-        return;
-      }
-
-      localStorage.setItem(LOCAL_GIT_AUTH_KIND_STORAGE_KEY, "ssh");
-      localStorage.setItem(LOCAL_GIT_AUTH_VALUE_STORAGE_KEY, remoteUrl);
-      setLocalAuthKind("ssh");
-      setLocalAuthValue(remoteUrl);
-    }
-
-    void restoreSshRemoteState().catch((error: unknown) => {
-      logger.warn("Failed to restore local Git auth row:", error);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    void refresh();
+  }, [refresh]);
 
   const rows = useMemo<GitRow[]>(() => {
     const allRows: GitRow[] = connections.map((connection) => ({
-      id: `hosted:${connection.id}`,
-      account: connection.account || "GitHub",
+      id: connection.id,
+      account: connection.label || connection.account_email || "GitHub",
       provider: "GitHub",
-      access: t("git.githubApp"),
-      repositories: connection.repos_count ?? 0,
-      statusColor: connection.is_active ? "bg-success-6" : "bg-text-4",
-      statusLabel: connection.is_active
-        ? t("status.connected")
-        : t("status.disconnected"),
-      kind: "hosted",
-      connectionId: connection.id,
+      access: describeAuthMethod(connection.auth_method, t),
+      statusColor: "bg-success-6",
+      statusLabel: t("status.connected"),
+      authMethod: connection.auth_method,
+      accountEmail: connection.account_email,
     }));
-
-    if (localAuthKind) {
-      allRows.push({
-        id: `local:${localAuthKind}`,
-        account: "GitHub",
-        provider: t("git.localProvider"),
-        access:
-          localAuthKind === "ssh"
-            ? t("git.localAuthSsh")
-            : t("git.localAuthToken"),
-        repositories: 0,
-        statusColor: "bg-success-6",
-        statusLabel: t("status.connected"),
-        kind: "local",
-        localAuthKind,
-        localAuthValue: localAuthValue ?? undefined,
-      });
-    }
 
     const query = searchQuery.trim().toLowerCase();
     if (!query) return allRows;
     return allRows.filter(
       (row) =>
         row.account.toLowerCase().includes(query) ||
-        row.provider.toLowerCase().includes(query)
+        row.provider.toLowerCase().includes(query) ||
+        row.access.toLowerCase().includes(query)
     );
-  }, [connections, localAuthKind, localAuthValue, searchQuery, t]);
-
-  const refreshGitConnections = useCallback(async () => {
-    await onAfterAddOpen?.();
-  }, [onAfterAddOpen]);
+  }, [connections, searchQuery, t]);
 
   const handleRemoveRow = useCallback(
     async (row: GitRow) => {
@@ -213,28 +140,16 @@ export const GitTable: React.FC<GitTableProps> = ({
 
       setRemovingRowId(row.id);
       try {
-        if (row.kind === "hosted" && row.connectionId) {
-          await deleteGitHubConnection(row.connectionId);
-        } else if (row.localAuthKind === "token") {
-          await clearTokenLocal(LOCAL_GITHUB_TOKEN_USER_ID);
-          localStorage.removeItem(LOCAL_GIT_AUTH_KIND_STORAGE_KEY);
-          localStorage.removeItem(LOCAL_GIT_AUTH_VALUE_STORAGE_KEY);
-          setLocalAuthKind(null);
-          setLocalAuthValue(null);
-        } else if (row.localAuthKind === "ssh") {
-          localStorage.setItem(LOCAL_GIT_HIDDEN_SSH_STORAGE_KEY, "true");
-          localStorage.removeItem(LOCAL_GIT_AUTH_KIND_STORAGE_KEY);
-          localStorage.removeItem(LOCAL_GIT_AUTH_VALUE_STORAGE_KEY);
-          setLocalAuthKind(null);
-          setLocalAuthValue(null);
-        }
-        await refreshGitConnections();
+        await syncConnectionsApi.delete(row.id);
+        await refresh();
         setExpandedKeys((current) => current.filter((key) => key !== row.id));
+      } catch (error) {
+        logger.warn("Failed to delete Git connection:", error);
       } finally {
         setRemovingRowId(null);
       }
     },
-    [refreshGitConnections, t, tCommon]
+    [refresh, t, tCommon]
   );
 
   const columns = useMemo<SettingsTableColumn<GitRow>[]>(
@@ -336,7 +251,7 @@ export const GitTable: React.FC<GitTableProps> = ({
           <div className="flex flex-col gap-3">
             <SettingsTable<GitRow>
               hover
-              loading={loading}
+              loading={externalLoading || internalLoading}
               columns={columns}
               rows={rows}
               getRowKey={(row) => row.id}
@@ -365,10 +280,10 @@ export const GitTable: React.FC<GitTableProps> = ({
                               label={t("gitPreview.connections")}
                               value={row.access}
                             />
-                            {row.kind === "local" && row.localAuthValue && (
+                            {row.accountEmail && (
                               <InfoRow
-                                label={t("git.credentialValue")}
-                                value={row.localAuthValue}
+                                label={tCommon("labels.email")}
+                                value={row.accountEmail}
                               />
                             )}
                             <InfoRow label={tCommon("labels.status")}>
@@ -381,14 +296,7 @@ export const GitTable: React.FC<GitTableProps> = ({
                           </InlineCardColumnStack>
                         }
                         right={
-                          <InlineCardColumnStack>
-                            {row.kind === "hosted" && (
-                              <InfoRow
-                                label={t("gitPreview.repositories")}
-                                value={String(row.repositories)}
-                              />
-                            )}
-                          </InlineCardColumnStack>
+                          <InlineCardColumnStack>{null}</InlineCardColumnStack>
                         }
                       />
                     </div>
@@ -397,13 +305,6 @@ export const GitTable: React.FC<GitTableProps> = ({
               }}
             />
 
-            <InlineGitConnectionAdd
-              onAfterOpen={refreshGitConnections}
-              onConfigured={(kind, value) => {
-                setLocalAuthKind(kind);
-                setLocalAuthValue(value ?? null);
-              }}
-            />
             <GitPreferencesSection />
             <ThirdPartyDisclaimer />
           </div>

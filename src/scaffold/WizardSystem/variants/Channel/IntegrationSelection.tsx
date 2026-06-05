@@ -26,9 +26,8 @@ import {
 import type { SelectionGridOption } from "@src/scaffold/WizardSystem/primitives";
 
 import {
-  GIT_ADAPTER_TYPES,
+  PROJECT_ADAPTER_TYPES,
   SERVICE_TYPES,
-  STORY_SYNC_ADAPTER_TYPES,
   type WizardCategory,
 } from "./channelWizardTypes";
 
@@ -77,7 +76,6 @@ interface IntegrationSelectionProps {
   errors: { type?: string; name?: string };
   /** Live duplicate-name flag — true while the typed name collides. */
   isDuplicateName?: boolean;
-  isGit: boolean;
   totalSteps: number;
   actions: React.ReactNode;
   /** Cancel handler — forwarded to `WizardStepLayout` to render the
@@ -88,7 +86,6 @@ interface IntegrationSelectionProps {
   serviceContent?: React.ReactNode;
   projectContent?: React.ReactNode;
   gitContent?: React.ReactNode;
-  gitBrowserOpen?: boolean;
 }
 
 const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
@@ -100,7 +97,6 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
   onAccountNameChange,
   errors,
   isDuplicateName = false,
-  isGit,
   totalSteps,
   actions,
   onCancel,
@@ -109,7 +105,6 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
   serviceContent,
   projectContent,
   gitContent,
-  gitBrowserOpen = false,
 }) => {
   const { t } = useTranslation("integrations");
   const [connectionSearch, setConnectionSearch] = useState("");
@@ -136,14 +131,12 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
       label: t(svc.labelKey),
       iconElement: <IntegrationIcon type={svc.type} size={18} />,
     }));
-    const projectOptions = STORY_SYNC_ADAPTER_TYPES.map((adapter) => ({
+    const projectOptions = PROJECT_ADAPTER_TYPES.map((adapter) => ({
       key: adapter.type,
-      label: t(adapter.labelKey),
-      iconElement: <IntegrationIcon type={adapter.type} size={18} />,
-    }));
-    const gitOptions = GIT_ADAPTER_TYPES.map((adapter) => ({
-      key: adapter.type,
-      label: t(adapter.labelKey),
+      label: t(
+        adapter.labelKey,
+        adapter.type === "github" ? "GitHub" : adapter.type
+      ),
       iconElement: <IntegrationIcon type={adapter.type} size={18} />,
     }));
 
@@ -171,16 +164,9 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
       },
       {
         category: "projects",
-        label: t("categories.projects"),
+        label: `${t("categories.git")} & ${t("categories.projects")}`,
         options: projectOptions,
         selectOptions: toSelectOptions(projectOptions),
-        selectable: true,
-      },
-      {
-        category: "git",
-        label: t("categories.git"),
-        options: gitOptions,
-        selectOptions: toSelectOptions(gitOptions),
         selectable: true,
       },
     ];
@@ -229,7 +215,7 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
       : errors.name;
 
   const accountNameContent =
-    !isGit && !isService && selectedType ? (
+    !isService && selectedType ? (
       <SectionContainer>
         <SectionRow
           label={t("keyVault.accountName")}
@@ -262,8 +248,8 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
       {accountNameContent}
       {category === "channels" && channelContent}
       {category === "services" && serviceContent}
-      {category === "projects" && projectContent}
-      {category === "git" && gitContent}
+      {projectContent}
+      {gitContent}
     </div>
   ) : null;
 
@@ -274,93 +260,87 @@ const IntegrationSelection: React.FC<IntegrationSelectionProps> = ({
       footerLeft={footerLeft}
       actions={actions}
       onCancel={onCancel}
-      browserOpen={gitBrowserOpen}
-      noPadding={gitBrowserOpen}
     >
-      {gitBrowserOpen ? (
-        gitContent
-      ) : (
-        <div className={SECTION_GAP_CLASSES}>
-          <SectionContainer>
-            <SectionRow
-              label={t("connectionsTabs.connections")}
-              description={t("keyVault.selectorDesc")}
-              layout={selectedType ? "horizontal" : "vertical"}
-              required
-            >
-              {selectedType ? (
-                <Select
-                  value={selectedType}
-                  options={flatSelectOptions}
-                  allowClear
-                  showSearch
-                  filterOption={filterOptionBySearchText}
-                  onChange={(value) => {
-                    if (!value) return;
-                    const nextType = String(value);
-                    const nextCategory = typeLookup.get(nextType);
-                    if (nextCategory) {
-                      onSelectType(nextCategory, nextType);
-                    }
-                  }}
-                  onClear={onClearSelection}
-                  style={SECTION_CONTROL_STYLE}
+      <div className={SECTION_GAP_CLASSES}>
+        <SectionContainer>
+          <SectionRow
+            label={t("connectionsTabs.connections")}
+            description={t("keyVault.selectorDesc")}
+            layout={selectedType ? "horizontal" : "vertical"}
+            required
+          >
+            {selectedType ? (
+              <Select
+                value={selectedType}
+                options={flatSelectOptions}
+                allowClear
+                showSearch
+                filterOption={filterOptionBySearchText}
+                onChange={(value) => {
+                  if (!value) return;
+                  const nextType = String(value);
+                  const nextCategory = typeLookup.get(nextType);
+                  if (nextCategory) {
+                    onSelectType(nextCategory, nextType);
+                  }
+                }}
+                onClear={onClearSelection}
+                style={SECTION_CONTROL_STYLE}
+              />
+            ) : (
+              <div className="flex flex-col gap-3">
+                <Input
+                  value={connectionSearch}
+                  onChange={setConnectionSearch}
+                  placeholder={t("integrations.searchPlaceholder")}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  prefix={<Search size={14} />}
+                  style={{ width: "100%" }}
                 />
-              ) : (
                 <div className="flex flex-col gap-3">
-                  <Input
-                    value={connectionSearch}
-                    onChange={setConnectionSearch}
-                    placeholder={t("integrations.searchPlaceholder")}
-                    autoComplete="off"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    prefix={<Search size={14} />}
-                    style={{ width: "100%" }}
-                  />
-                  <div className="flex flex-col gap-3">
-                    {filteredTypeGroups.map((group) => (
-                      <div
-                        key={`${group.category}:${group.label}`}
-                        className="flex flex-col gap-2"
-                      >
-                        <div className="text-[12px] font-medium text-text-2">
-                          {group.label}
-                        </div>
-                        <SelectionGrid
-                          options={group.options}
-                          selected={null}
-                          cardVariant="subtle"
-                          onSelect={(type) => {
-                            if (!group.selectable) return;
-                            onSelectType(group.category, type);
-                          }}
-                        />
+                  {filteredTypeGroups.map((group) => (
+                    <div
+                      key={`${group.category}:${group.label}`}
+                      className="flex flex-col gap-2"
+                    >
+                      <div className="text-[12px] font-medium text-text-2">
+                        {group.label}
                       </div>
-                    ))}
-                  </div>
-                  {errors.type && (
-                    <p className="text-[12px] text-danger-6">{errors.type}</p>
-                  )}
+                      <SelectionGrid
+                        options={group.options}
+                        selected={null}
+                        cardVariant="subtle"
+                        onSelect={(type) => {
+                          if (!group.selectable) return;
+                          onSelectType(group.category, type);
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
-              )}
-            </SectionRow>
-          </SectionContainer>
+                {errors.type && (
+                  <p className="text-[12px] text-danger-6">{errors.type}</p>
+                )}
+              </div>
+            )}
+          </SectionRow>
+        </SectionContainer>
 
-          {selectedSetupContent}
+        {selectedSetupContent}
 
-          {showSanctionWarning && (
-            <InlineAlert
-              type="warning"
-              title={t("integrations.sanctionWarning.title")}
-            >
-              {t("integrations.sanctionWarning.message", {
-                services: regionCheck.restrictedServices.join(", "),
-              })}
-            </InlineAlert>
-          )}
-        </div>
-      )}
+        {showSanctionWarning && (
+          <InlineAlert
+            type="warning"
+            title={t("integrations.sanctionWarning.title")}
+          >
+            {t("integrations.sanctionWarning.message", {
+              services: regionCheck.restrictedServices.join(", "),
+            })}
+          </InlineAlert>
+        )}
+      </div>
     </WizardStepLayout>
   );
 };

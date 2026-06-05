@@ -235,14 +235,8 @@ const IntegrationsDetailPanel: React.FC<IntegrationsDetailPanelProps> = ({
     case "git":
       return (
         <GitCategoryView
-          connections={tableProps.gitHubConnections}
-          loading={tableProps.gitHubConnectionsLoading}
           selectedProvider={selectedGitProvider}
-          fullPage={isFullPage}
           onSelectProvider={tableProps.onSelectGitProvider}
-          onAfterAddOpen={onGitConnected}
-          onBack={onExitFullPage}
-          onExpand={onExpand}
         />
       );
 
