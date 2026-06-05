@@ -12,6 +12,9 @@ export const CHAT_RETRY_KIND = {
 export type ChatRetryKind =
   (typeof CHAT_RETRY_KIND)[keyof typeof CHAT_RETRY_KIND];
 
+export const CHAT_STATUS_BAR_CONTAINER_CLASS =
+  "-mb-8 flex min-h-10 w-full items-center rounded-t-[12px] bg-[var(--color-chat-container)] pb-9 pl-1 pt-2 text-[12px] font-medium text-text-1";
+
 export function toChatRetryKind(kind: string): ChatRetryKind {
   return kind === CHAT_RETRY_KIND.RATE_LIMITED
     ? CHAT_RETRY_KIND.RATE_LIMITED
@@ -66,7 +69,7 @@ export function ChatStatusSegmentedBar({
     <div
       {...restProps}
       data-testid={testId}
-      className="-mb-8 flex min-h-10 w-full items-center rounded-t-[12px] bg-[var(--color-chat-container)] pb-8 pl-1 pt-2 text-[12px] font-medium text-text-1"
+      className={CHAT_STATUS_BAR_CONTAINER_CLASS}
     >
       {segments.map((segment, index) => (
         <React.Fragment key={segment.key}>
