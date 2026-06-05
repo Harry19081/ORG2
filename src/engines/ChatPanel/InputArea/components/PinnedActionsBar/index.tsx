@@ -169,6 +169,16 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
       setPanelOpen(false);
     }, []);
 
+    // When the "…" button is the only element in the bar, align the panel's
+    // left edge with the button so it extends rightward from the click target.
+    // Otherwise right-align it to the button so it tucks under the trailing
+    // edge of the pills row.
+    const hasLeadingPills =
+      showPrPill ||
+      (showCanvasPill && !isCanvasTabOpen) ||
+      pinnedActions.length > 0;
+    const panelAlign: "left" | "right" = hasLeadingPills ? "right" : "left";
+
     // ── Pin / unpin ───────────────────────────────────────────────────────────
 
     const handleTogglePin = useCallback(
@@ -183,6 +193,10 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
       },
       [setPinnedActions]
     );
+
+    const handleUnpinAll = useCallback(() => {
+      setPinnedActions([]);
+    }, [setPinnedActions]);
 
     // ── Pill click → dispatch ─────────────────────────────────────────────────
 
@@ -291,9 +305,11 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
           availableItems={availableItems}
           pinnedActions={pinnedActions}
           onTogglePin={handleTogglePin}
+          onUnpinAll={handleUnpinAll}
           onClose={handleClosePanel}
           loading={loadingItems}
           triggerRef={moreButtonRef}
+          align={panelAlign}
         />
       </div>
     );

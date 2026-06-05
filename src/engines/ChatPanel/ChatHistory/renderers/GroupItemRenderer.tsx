@@ -99,7 +99,7 @@ const InboxTranscriptCard: React.FC<{
                 {t("cards.agentMessage.meta.sender")}
               </span>
               <span className="min-w-0 flex-1 truncate text-text-1">
-                {t("cards.agentMessage.emailBubble.subagentReports")}
+                {t("cards.agentMessage.emailBubble.subagentMessages")}
               </span>
             </div>
             <div className="flex min-w-0 items-baseline gap-2">
@@ -237,8 +237,8 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     const inboxTranscriptLabel = useMemo(() => {
       if (!event || simpleMessage) return null;
       if (!isAgentOrgInboxTranscriptEvent(event)) return null;
-      return t("groupChat.inboxTranscript.readReports", {
-        defaultValue: "Coordinator read reports sent by other agents",
+      return t("groupChat.inboxTranscript.readMessages", {
+        defaultValue: "Coordinator read messages sent by other agents",
       });
     }, [event, simpleMessage, t]);
 

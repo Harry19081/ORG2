@@ -582,8 +582,8 @@
     "titleBar": {
       "switchToRight": "Przełącz na tryb prawy",
       "switchToLeft": "Przełącz na tryb lewy",
-      "showSidebar": "Pokaż główny pasek boczny",
-      "hideSidebar": "Ukryj główny pasek boczny",
+      "showSidebar": "Pokaż pasek boczny",
+      "hideSidebar": "Ukryj pasek boczny",
       "showBottomPanel": "Pokaż dolny panel",
       "hideBottomPanel": "Ukryj dolny panel",
       "showDevTools": "Pokaż DevTools",
@@ -609,8 +609,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "Oczekiwanie na aktywność…",
-      "hideTurnPrompt": "Ukryj prompt rundy",
-      "showTurnPrompt": "Pokaż prompt rundy",
+      "viewTaskPrompt": "Pokaż prompt zadania",
+      "taskPromptTitle": "Prompt zadania",
       "newEventDivider": "Nowe zdarzenie"
     },
     "dock": {
@@ -659,7 +659,8 @@
       "manage": "Zarządzaj przypiętymi akcjami",
       "searchPlaceholder": "Szukaj akcji do przypięcia…",
       "loading": "Wczytywanie…",
-      "empty": "Nie znaleziono akcji."
+      "empty": "Nie znaleziono akcji.",
+      "unpinAll": "Odepnij wszystkie"
     }
   },
   "listPanel": {
@@ -1028,6 +1029,7 @@
     "categoryList": "Lista",
     "subagentFailed": "Subagent nieudany",
     "subagentDefaultName": "Subagent",
+    "assignedTaskToSubagent": "Zadanie przypisane do subagenta",
     "subagentRunning": "Subagent działa",
     "subagentDone": "Subagent zakończony",
     "subagentAssigning": "Przypisywanie Subagent",
@@ -2160,7 +2162,7 @@
       "broadcastFailed": "{{sender}} nie udało się napisać do wielu agents"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator przeczytał raporty wysłane przez innych agents"
+      "readMessages": "Coordinator przeczytał wiadomości wysłane przez innych agents"
     },
     "userMessagePending": "{{member}} przejmuje Twoją wiadomość",
     "pausedBanner": {
@@ -2269,8 +2271,8 @@
         "collapse": "Ukryj wiadomość",
         "userInbox": "Skrzynka użytkownika",
         "currentChannel": "Bieżący kanał",
-        "subagentReports": "Raporty subagentów",
-        "readReportsFromSubagents": "{{agent}} przeczytał raporty subagentów"
+        "subagentMessages": "Wiadomości subagentów",
+        "readMessagesFromSubagents": "{{agent}} przeczytał wiadomości subagentów"
       }
     },
     "actions": {

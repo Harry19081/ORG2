@@ -601,8 +601,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "アクティビティを待っています…",
-      "hideTurnPrompt": "ターンプロンプトを非表示",
-      "showTurnPrompt": "ターンプロンプトを表示",
+      "viewTaskPrompt": "タスクプロンプトを表示",
+      "taskPromptTitle": "タスクプロンプト",
       "newEventDivider": "新しいイベント"
     },
     "dock": {
@@ -651,7 +651,8 @@
       "manage": "固定アクションを管理",
       "searchPlaceholder": "固定するアクションを検索…",
       "loading": "読み込み中…",
-      "empty": "アクションが見つかりません。"
+      "empty": "アクションが見つかりません。",
+      "unpinAll": "すべての固定を解除"
     }
   },
   "listPanel": {
@@ -1002,6 +1003,7 @@
     "categoryList": "リスト",
     "subagentFailed": "Sub Agent 失敗",
     "subagentDefaultName": "Sub Agent",
+    "assignedTaskToSubagent": "タスクを Subagent に割り当て済み",
     "subagentRunning": "Subagent 実行中",
     "subagentDone": "Subagent 完了",
     "subagentAssigning": "Subagent を割り当てています",
@@ -2159,7 +2161,7 @@
       "broadcastFailed": "{{sender}} が複数の Agent にメッセージできませんでした"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator が他の Agent から送信されたレポートを読みました"
+      "readMessages": "Coordinator が他の Agent から送信されたメッセージを読みました"
     },
     "userMessagePending": "{{member}} があなたのメッセージを処理しています",
     "pausedBanner": {
@@ -2268,8 +2270,8 @@
         "collapse": "メッセージを隠す",
         "userInbox": "ユーザー受信箱",
         "currentChannel": "現在のチャンネル",
-        "subagentReports": "Subagent レポート",
-        "readReportsFromSubagents": "{{agent}} が subagent レポートを読みました"
+        "subagentMessages": "Subagent メッセージ",
+        "readMessagesFromSubagents": "{{agent}} が subagent メッセージを読みました"
       }
     },
     "actions": {

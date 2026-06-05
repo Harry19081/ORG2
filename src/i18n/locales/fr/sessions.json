@@ -601,8 +601,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "En attente d'activité…",
-      "hideTurnPrompt": "Masquer l'invite du tour",
-      "showTurnPrompt": "Afficher l'invite du tour",
+      "viewTaskPrompt": "Voir l'invite de la tâche",
+      "taskPromptTitle": "Invite de la tâche",
       "newEventDivider": "Nouvel événement"
     },
     "dock": {
@@ -651,7 +651,8 @@
       "manage": "Gérer les actions épinglées",
       "searchPlaceholder": "Rechercher des actions à épingler…",
       "loading": "Chargement…",
-      "empty": "Aucune action trouvée."
+      "empty": "Aucune action trouvée.",
+      "unpinAll": "Tout désépingler"
     }
   },
   "listPanel": {
@@ -1002,6 +1003,7 @@
     "categoryList": "Lister",
     "subagentFailed": "Sub Agent échoué",
     "subagentDefaultName": "Sub Agent",
+    "assignedTaskToSubagent": "Tâche assignée au subagent",
     "subagentRunning": "Subagent en cours",
     "subagentDone": "Subagent terminé",
     "subagentAssigning": "Assignation du Subagent",
@@ -2159,7 +2161,7 @@
       "broadcastFailed": "{{sender}} n'a pas pu contacter plusieurs agents"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator a lu les rapports envoyés par d'autres agents"
+      "readMessages": "Coordinator a lu les messages envoyés par d'autres agents"
     },
     "userMessagePending": "{{member}} prend en charge votre message",
     "pausedBanner": {
@@ -2268,8 +2270,8 @@
         "collapse": "Masquer le message",
         "userInbox": "Boîte de l'utilisateur",
         "currentChannel": "Canal actuel",
-        "subagentReports": "Rapports des subagents",
-        "readReportsFromSubagents": "{{agent}} a lu les rapports des subagents"
+        "subagentMessages": "Messages des subagents",
+        "readMessagesFromSubagents": "{{agent}} a lu les messages des subagents"
       }
     },
     "actions": {

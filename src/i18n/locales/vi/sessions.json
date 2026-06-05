@@ -601,8 +601,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "Đang chờ hoạt động…",
-      "hideTurnPrompt": "Ẩn lời nhắc lượt",
-      "showTurnPrompt": "Hiển thị lời nhắc lượt",
+      "viewTaskPrompt": "Xem lời nhắc tác vụ",
+      "taskPromptTitle": "Lời nhắc tác vụ",
       "newEventDivider": "Sự kiện mới"
     },
     "dock": {
@@ -651,7 +651,8 @@
       "manage": "Quản lý hành động đã ghim",
       "searchPlaceholder": "Tìm hành động để ghim…",
       "loading": "Đang tải…",
-      "empty": "Không tìm thấy hành động."
+      "empty": "Không tìm thấy hành động.",
+      "unpinAll": "Bỏ ghim tất cả"
     }
   },
   "listPanel": {
@@ -1002,6 +1003,7 @@
     "categoryList": "Danh sách",
     "subagentFailed": "Subagent thất bại",
     "subagentDefaultName": "Subagent",
+    "assignedTaskToSubagent": "Đã giao tác vụ cho subagent",
     "subagentRunning": "Subagent đang chạy",
     "subagentDone": "Subagent đã hoàn tất",
     "subagentAssigning": "Đang gán Subagent",
@@ -2159,7 +2161,7 @@
       "broadcastFailed": "{{sender}} không nhắn được nhiều Agent"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator đã đọc báo cáo do agents khác gửi"
+      "readMessages": "Coordinator đã đọc tin nhắn do agents khác gửi"
     },
     "userMessagePending": "{{member}} đang tiếp nhận tin nhắn của bạn",
     "pausedBanner": {
@@ -2268,8 +2270,8 @@
         "collapse": "Ẩn tin nhắn",
         "userInbox": "Hộp thư người dùng",
         "currentChannel": "Kênh hiện tại",
-        "subagentReports": "Báo cáo subagent",
-        "readReportsFromSubagents": "{{agent}} đã đọc báo cáo từ subagent"
+        "subagentMessages": "Tin nhắn subagent",
+        "readMessagesFromSubagents": "{{agent}} đã đọc tin nhắn từ subagent"
       }
     },
     "actions": {

@@ -601,8 +601,8 @@
     },
     "subagentPane": {
       "waitingForActivity": "Etkinlik bekleniyor…",
-      "hideTurnPrompt": "Tur istemini gizle",
-      "showTurnPrompt": "Tur istemini göster",
+      "viewTaskPrompt": "Görev istemini görüntüle",
+      "taskPromptTitle": "Görev istemi",
       "newEventDivider": "Yeni olay"
     },
     "dock": {
@@ -651,7 +651,8 @@
       "manage": "Sabitlenmiş eylemleri yönet",
       "searchPlaceholder": "Sabitlenecek eylemleri ara…",
       "loading": "Yükleniyor…",
-      "empty": "Eylem bulunamadı."
+      "empty": "Eylem bulunamadı.",
+      "unpinAll": "Tümünün sabitlemesini kaldır"
     }
   },
   "listPanel": {
@@ -1006,6 +1007,7 @@
     "categoryList": "Listele",
     "subagentFailed": "Sub Agent başarısız",
     "subagentDefaultName": "Sub Agent",
+    "assignedTaskToSubagent": "Görev subagent'e atandı",
     "subagentRunning": "Subagent çalışıyor",
     "subagentDone": "Subagent tamamlandı",
     "subagentAssigning": "Subagent atanıyor",
@@ -2160,7 +2162,7 @@
       "broadcastFailed": "{{sender}} birden fazla Agent'a yazamadı"
     },
     "inboxTranscript": {
-      "readReports": "Coordinator diğer agents tarafından gönderilen raporları okudu"
+      "readMessages": "Coordinator diğer agents tarafından gönderilen mesajları okudu"
     },
     "userMessagePending": "{{member}} mesajınızı üstleniyor",
     "pausedBanner": {
@@ -2269,8 +2271,8 @@
         "collapse": "Mesajı gizle",
         "userInbox": "Kullanıcı gelen kutusu",
         "currentChannel": "Geçerli kanal",
-        "subagentReports": "Subagent raporları",
-        "readReportsFromSubagents": "{{agent}} subagent raporlarını okudu"
+        "subagentMessages": "Subagent mesajları",
+        "readMessagesFromSubagents": "{{agent}} subagent mesajlarını okudu"
       }
     },
     "actions": {

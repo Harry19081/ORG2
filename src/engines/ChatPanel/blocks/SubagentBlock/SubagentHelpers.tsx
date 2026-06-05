@@ -1,23 +1,12 @@
 /**
- * SubagentBlock — helper functions and sub-components.
- *
- * Extracted from index.tsx to keep the main component under 300 lines.
+ * SubagentBlock — helper functions and prompt preview sub-component.
  */
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 
 import ExpandOverlay from "@src/components/ExpandOverlay";
 import UserMessageContent from "@src/engines/ChatPanel/ChatHistory/components/UserMessageContent";
-import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
-import { SESSION_UI_TOKENS } from "../primitives";
-import SubagentTodoPinBar, { deriveLatestTodos } from "./SubagentTodoPinBar";
+import { EVENT_BLOCK_FADE_FROM } from "../primitives";
 
 // ============================================
 // Helpers
@@ -46,89 +35,24 @@ export function formatElapsedTime(ms: number): string {
   return `${minutes}m ${remainingSeconds}s`;
 }
 
-const MAX_REASONING_LINES = 4;
-
-function tailLines(text: string, maxLines: number): string {
-  const lines = text.split("\n");
-  if (lines.length <= maxLines) return text;
-  return lines.slice(-maxLines).join("\n");
-}
-
-export function derivePeekFromEvents(events: SessionEvent[]): string {
-  for (let idx = events.length - 1; idx >= 0; idx--) {
-    const event = events[idx];
-    if (
-      event.actionType === "assistant" ||
-      event.actionType === "llm_thinking" ||
-      event.displayVariant === "message" ||
-      event.displayVariant === "thinking"
-    ) {
-      const text =
-        (typeof event.result?.content === "string" &&
-          (event.result.content as string)) ||
-        (typeof event.result?.observation === "string" &&
-          (event.result.observation as string)) ||
-        event.displayText ||
-        "";
-      if (text.trim().length > 0) return text;
-    }
-  }
-  for (let idx = events.length - 1; idx >= 0; idx--) {
-    const event = events[idx];
-    if (
-      (event.actionType === "tool_call" ||
-        event.actionType === "tool_result") &&
-      event.displayText
-    ) {
-      return event.displayText;
-    }
-  }
-  return "";
-}
-
 // ============================================
-// Streaming Reasoning Text (collapsed peek)
+// Prompt Preview
 // ============================================
 
-export const StreamingReasoning: React.FC<{ text: string }> = memo(
-  ({ text }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const visible = tailLines(text.trimEnd(), MAX_REASONING_LINES);
+const PROMPT_COLLAPSED_MAX_LINES = 5;
+const PROMPT_COLLAPSED_MAX_CHARS = 560;
+const PROMPT_COLLAPSED_MAX_HEIGHT = 112;
+const PROMPT_EXPANDED_MAX_HEIGHT = "min(320px, 40vh)";
 
-    useEffect(() => {
-      const el = containerRef.current;
-      if (el) el.scrollTop = el.scrollHeight;
-    }, [visible]);
-
-    return (
-      <div
-        ref={containerRef}
-        className={`max-h-[4.5rem] overflow-y-hidden px-3.5 pb-2 ${SESSION_UI_TOKENS.FONT_SIZE_XS} leading-relaxed text-text-3/80`}
-      >
-        <span className="whitespace-pre-wrap break-words">{visible}</span>
-      </div>
-    );
-  }
-);
-StreamingReasoning.displayName = "StreamingReasoning";
-
-// ============================================
-// Pinned Prompt
-// ============================================
-
-const PROMPT_MAX_LINES = 4;
-const PROMPT_MAX_CHARS = 280;
-
-export const PinnedPrompt: React.FC<{
+export const SubagentPromptPreview: React.FC<{
   prompt: string;
-  hasTodosAttached?: boolean;
-}> = memo(({ prompt, hasTodosAttached = false }) => {
+}> = memo(({ prompt }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const needsTruncation = useMemo(() => {
+  const needsExpand = useMemo(() => {
     if (!prompt) return false;
-    if (prompt.split("\n").length > PROMPT_MAX_LINES) return true;
-    return prompt.length > PROMPT_MAX_CHARS;
+    if (prompt.split("\n").length > PROMPT_COLLAPSED_MAX_LINES) return true;
+    return prompt.length > PROMPT_COLLAPSED_MAX_CHARS;
   }, [prompt]);
 
   const handleToggle = useCallback((event: React.SyntheticEvent) => {
@@ -136,70 +60,47 @@ export const PinnedPrompt: React.FC<{
     setIsExpanded((prev) => !prev);
   }, []);
 
-  const borderRadius = hasTodosAttached
-    ? "rounded-t-lg rounded-b-none"
-    : "rounded-lg";
-
   return (
     <div
-      className={`group relative flex min-w-0 max-w-full flex-1 flex-col gap-[6px] ${borderRadius} border border-solid border-border-2 bg-bg-2 px-3 py-2`}
+      className={`allow-select group/expand relative w-full min-w-0 ${needsExpand ? "scrollbar-hide" : ""} ${!isExpanded && needsExpand ? "cursor-pointer" : ""}`}
+      style={
+        needsExpand
+          ? isExpanded
+            ? {
+                maxHeight: PROMPT_EXPANDED_MAX_HEIGHT,
+                overflowY: "auto",
+                overflowX: "hidden",
+              }
+            : {
+                maxHeight: PROMPT_COLLAPSED_MAX_HEIGHT,
+                overflow: "hidden",
+              }
+          : undefined
+      }
+      onClick={!isExpanded && needsExpand ? handleToggle : undefined}
+      onKeyDown={
+        !isExpanded && needsExpand
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handleToggle(event);
+              }
+            }
+          : undefined
+      }
+      role={!isExpanded && needsExpand ? "button" : undefined}
+      tabIndex={!isExpanded && needsExpand ? 0 : undefined}
     >
-      <div className="relative w-full min-w-0 overflow-hidden">
-        <div
-          className={`allow-select ${isExpanded && needsTruncation ? "scrollbar-hide" : ""} ${!isExpanded && needsTruncation ? "cursor-pointer" : ""}`}
-          style={
-            !isExpanded && needsTruncation
-              ? { maxHeight: 92, overflow: "hidden" }
-              : isExpanded && needsTruncation
-                ? {
-                    maxHeight: "50vh",
-                    overflowY: "auto",
-                    overflowX: "hidden",
-                  }
-                : undefined
-          }
-          onClick={!isExpanded && needsTruncation ? handleToggle : undefined}
-          onKeyDown={
-            !isExpanded && needsTruncation
-              ? (event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    handleToggle(event);
-                  }
-                }
-              : undefined
-          }
-          role={!isExpanded && needsTruncation ? "button" : undefined}
-          tabIndex={!isExpanded && needsTruncation ? 0 : undefined}
-        >
-          <UserMessageContent text={prompt} />
+      <UserMessageContent text={prompt} />
 
-          {isExpanded && needsTruncation && (
-            <ExpandOverlay isExpanded onToggle={handleToggle} />
-          )}
-        </div>
-      </div>
+      {needsExpand && (
+        <ExpandOverlay
+          isExpanded={isExpanded}
+          onToggle={handleToggle}
+          fadeFrom={EVENT_BLOCK_FADE_FROM}
+        />
+      )}
     </div>
   );
 });
-PinnedPrompt.displayName = "PinnedPrompt";
-
-// ============================================
-// Prompt + attached todo bar
-// ============================================
-
-export const PromptWithTodos: React.FC<{
-  prompt: string;
-  events: SessionEvent[];
-}> = memo(({ prompt, events }) => {
-  const todos = useMemo(() => deriveLatestTodos(events), [events]);
-  const hasTodos = todos.length > 0;
-
-  return (
-    <div className="px-3.5 pt-2.5">
-      <PinnedPrompt prompt={prompt} hasTodosAttached={hasTodos} />
-      {hasTodos && <SubagentTodoPinBar events={events} attached />}
-    </div>
-  );
-});
-PromptWithTodos.displayName = "PromptWithTodos";
+SubagentPromptPreview.displayName = "SubagentPromptPreview";
