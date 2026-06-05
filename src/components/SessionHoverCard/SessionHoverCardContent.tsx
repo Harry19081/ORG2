@@ -1,7 +1,6 @@
 import { useAtomValue } from "jotai";
 import {
   Clock,
-  Code2,
   Folder,
   GitBranch,
   GitCommitVertical,
@@ -212,14 +211,15 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
             )}
           </div>
         </HoverCardRow>
-        {repoName && (
-          <HoverCardRow icon={<Code2 size={13} strokeWidth={1.75} />}>
-            <div className="truncate text-text-2">{repoName}</div>
-          </HoverCardRow>
-        )}
-        {branchLabel && (
+        {(repoName || branchLabel) && (
           <HoverCardRow icon={<GitBranch size={13} strokeWidth={1.75} />}>
-            <div className="truncate text-text-2">{branchLabel}</div>
+            <div className="truncate text-text-2">
+              {repoName && <span>{repoName}</span>}
+              {repoName && branchLabel && (
+                <span className="mx-1 text-text-4">·</span>
+              )}
+              {branchLabel && <span>{branchLabel}</span>}
+            </div>
           </HoverCardRow>
         )}
         {repoPath && (
