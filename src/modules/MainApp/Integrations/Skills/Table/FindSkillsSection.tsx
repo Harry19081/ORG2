@@ -1,12 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 import { appCacheDir, join } from "@tauri-apps/api/path";
 import { mkdir, writeTextFile } from "@tauri-apps/plugin-fs";
-import { Eye, Search } from "lucide-react";
+import { ChevronsDownUp, ChevronsUpDown, Eye } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import Input from "@src/components/Input";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -50,6 +49,7 @@ async function previewRemoteSkill(result: HubSkillResult): Promise<void> {
 
 const FindSkillsSection: React.FC<FindSkillsSectionProps> = ({ onPreview }) => {
   const { t } = useTranslation("integrations");
+  const [manuallyExpanded, setManuallyExpanded] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<HubSkillResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -57,6 +57,7 @@ const FindSkillsSection: React.FC<FindSkillsSectionProps> = ({ onPreview }) => {
   const [previewingSlug, setPreviewingSlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const expanded = manuallyExpanded;
   const canSearch = query.trim().length >= 2 && !searching;
 
   const handleSearch = useCallback(async () => {
@@ -170,66 +171,90 @@ const FindSkillsSection: React.FC<FindSkillsSectionProps> = ({ onPreview }) => {
   return (
     <SectionContainer>
       <SectionRow label={t("agentOrgs.findSkills.title")}>
-        <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
-          <Input
-            type="search"
-            size="small"
-            className="min-w-0 flex-1 sm:w-72"
-            value={query}
-            onChange={(value) => {
-              setQuery(value);
-              setError(null);
-            }}
-            placeholder={t("agentOrgs.findSkills.placeholder")}
-            prefix={<Search size={14} className="text-text-3" aria-hidden />}
-            allowClear
-            onClear={() => {
-              setQuery("");
-              setResults([]);
-              setHasSearched(false);
-              setError(null);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                void handleSearch();
-              }
-            }}
-          />
-          <Button
-            variant="primary"
-            size="small"
-            loading={searching}
-            disabled={!canSearch}
-            onClick={() => void handleSearch()}
-          >
-            {t("common:actions.search")}
-          </Button>
-        </div>
+        <Button
+          variant="secondary"
+          icon={
+            expanded ? (
+              <ChevronsDownUp size={14} />
+            ) : (
+              <ChevronsUpDown size={14} />
+            )
+          }
+          onClick={() => setManuallyExpanded((current) => !current)}
+        >
+          {t("common:actions.expand")}
+        </Button>
       </SectionRow>
-      <SectionRow showHeader={false} className="pt-0">
-        <div className="flex w-full min-w-0 flex-col gap-2">
-          {error && <span className="text-[12px] text-danger-6">{error}</span>}
-          <SettingsTable<HubSkillResult>
-            hover
-            loading={searching}
-            columns={columns}
-            rows={results}
-            getRowKey={(result) => result.slug}
-            onRowClick={(result) => void handlePreview(result)}
-            headerHeight="compact"
-            emptyTitle={
-              hasSearched
-                ? t("agentOrgs.findSkills.noResults")
-                : t("agentOrgs.findSkills.emptyTitle")
-            }
-            emptySubtitle={
-              hasSearched
-                ? t("agentOrgs.findSkills.noResultsDesc")
-                : t("agentOrgs.findSkills.emptySubtitle")
-            }
-          />
-        </div>
-      </SectionRow>
+
+      {expanded && (
+        <SectionRow showHeader={false} className="pt-0">
+          <div className="flex w-full min-w-0 flex-col gap-3">
+            {error && (
+              <div className="rounded border border-solid border-danger-3 bg-danger-1 px-3 py-2 text-[12px] text-danger-6">
+                {error}
+              </div>
+            )}
+            <form
+              className="min-w-0"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (canSearch) {
+                  void handleSearch();
+                }
+              }}
+            >
+              <SettingsTable<HubSkillResult>
+                hover
+                loading={searching}
+                columns={columns}
+                rows={results}
+                getRowKey={(result) => result.slug}
+                onRowClick={(result) => void handlePreview(result)}
+                headerHeight="tall"
+                searchBar={{
+                  searchValue: query,
+                  onSearchChange: (value) => {
+                    setQuery(value);
+                    setError(null);
+                  },
+                  onSearchClear: () => {
+                    setQuery("");
+                    setResults([]);
+                    setHasSearched(false);
+                    setError(null);
+                  },
+                  searchPlaceholder: t("agentOrgs.findSkills.placeholder"),
+                  allowSearchClear: true,
+                  rightContent: (
+                    <Button
+                      variant="primary"
+                      size="default"
+                      loading={searching}
+                      disabled={!canSearch}
+                      htmlType="submit"
+                    >
+                      {t("common:actions.search")}
+                    </Button>
+                  ),
+                }}
+                emptyTitle={
+                  hasSearched
+                    ? t("agentOrgs.findSkills.noResults")
+                    : t("agentOrgs.findSkills.emptyTitle")
+                }
+                emptySubtitle={
+                  hasSearched
+                    ? t("agentOrgs.findSkills.noResultsDesc")
+                    : t("agentOrgs.findSkills.emptySubtitle")
+                }
+                noPx
+                searchHeaderClassName="-mx-4 w-[calc(100%+2rem)]"
+                className="table-settings-expanded-compact"
+              />
+            </form>
+          </div>
+        </SectionRow>
+      )}
     </SectionContainer>
   );
 };
