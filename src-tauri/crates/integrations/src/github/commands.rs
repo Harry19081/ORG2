@@ -367,6 +367,79 @@ pub async fn github_find_pull_request(
     Ok(pr)
 }
 
+// ============================================
+// Pull Request inspection
+// ============================================
+
+/// Get a pull request's metadata (title, body, state, head/base, counts).
+///
+/// Returns the raw GitHub PR JSON so the frontend can pick whatever fields
+/// it wants without forcing a strict struct here.
+#[command]
+pub async fn github_get_pr(
+    user_id: String,
+    repo_full_name: String,
+    pr_number: u64,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<Value, String> {
+    log::info!(
+        "[GitHub][Cmd] get_pr repo={} pr={}",
+        repo_full_name,
+        pr_number
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    client
+        .get(&format!("/repos/{}/pulls/{}", repo_full_name, pr_number))
+        .await
+}
+
+/// List the commits in a pull request (oldest first per GitHub default).
+#[command]
+pub async fn github_list_pr_commits(
+    user_id: String,
+    repo_full_name: String,
+    pr_number: u64,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<Value, String> {
+    log::info!(
+        "[GitHub][Cmd] list_pr_commits repo={} pr={}",
+        repo_full_name,
+        pr_number
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    client
+        .get(&format!(
+            "/repos/{}/pulls/{}/commits?per_page=100",
+            repo_full_name, pr_number
+        ))
+        .await
+}
+
+/// List the files changed in a pull request.
+#[command]
+pub async fn github_list_pr_files(
+    user_id: String,
+    repo_full_name: String,
+    pr_number: u64,
+    hosted_service_url: String,
+    hosted_token: String,
+) -> Result<Value, String> {
+    log::info!(
+        "[GitHub][Cmd] list_pr_files repo={} pr={}",
+        repo_full_name,
+        pr_number
+    );
+    let client = make_client(&user_id, &hosted_service_url, &hosted_token);
+    client
+        .get(&format!(
+            "/repos/{}/pulls/{}/files?per_page=300",
+            repo_full_name, pr_number
+        ))
+        .await
+}
+
 /// Build the argv that `github_clone_repo` will pass to `git`.
 ///
 /// Pulled out as a pure function so the unit tests below can assert that

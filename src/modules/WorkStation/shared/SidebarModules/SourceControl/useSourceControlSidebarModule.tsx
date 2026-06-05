@@ -31,6 +31,7 @@ import {
   PANEL_CONSTANTS,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/config";
 import GitHistoryContent from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/GitHistoryContent";
+import PullRequestContent from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/PullRequestContent";
 import { useSourceControlActions } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks";
 import {
   type SourceControlTabHandle,
@@ -99,6 +100,7 @@ export function useSourceControlSidebarModule({
   const [viewMode, setViewMode] = useState<"list-tree" | "list">("list-tree");
   const filterMode = controlledFilterMode ?? "uncommitted";
   const isHistoryMode = filterMode === "history";
+  const isPrMode = filterMode === "pr";
   // Narrow the working-tree section filter (drop stashed/history — those
   // are routed via showOnlyStashes / sourceControlContentOverride).
   const sectionFilter: "uncommitted" | "staged" | "unstaged" =
@@ -202,10 +204,16 @@ export function useSourceControlSidebarModule({
     [pendingCount, isUndoingAll, undoAllAction, sourceControlActions]
   );
 
-  const actions = isHistoryMode ? historyActions : sourceControlActionsWithUndo;
+  const actions = isHistoryMode
+    ? historyActions
+    : isPrMode
+      ? []
+      : sourceControlActionsWithUndo;
   const sectionTitle = isHistoryMode
     ? t("common:labels.gitHistory")
-    : t("tabs.sourceControl");
+    : isPrMode
+      ? t("common:labels.pullRequest", "Pull request")
+      : t("tabs.sourceControl");
 
   const historyContent = useMemo(
     () => (
@@ -220,6 +228,17 @@ export function useSourceControlSidebarModule({
       </div>
     ),
     [handleHistoryRefreshReady, onGitHistorySelectionChange, repoPath, repoId]
+  );
+
+  const prContent = useMemo(
+    () => (
+      <div className="flex h-full min-h-0 flex-col">
+        <PullRequestContent
+          onHistorySelectionChange={onGitHistorySelectionChange}
+        />
+      </div>
+    ),
+    [onGitHistorySelectionChange]
   );
 
   const tab = useSourceControlTabConfig({
@@ -237,7 +256,11 @@ export function useSourceControlSidebarModule({
     sectionFilter,
     navigateWithoutSelecting,
     sourceControlTitleOverride: sectionTitle,
-    sourceControlContentOverride: isHistoryMode ? historyContent : undefined,
+    sourceControlContentOverride: isPrMode
+      ? prContent
+      : isHistoryMode
+        ? historyContent
+        : undefined,
   });
 
   return useMemo(() => ({ tab, ref: sourceControlRef }), [tab]);

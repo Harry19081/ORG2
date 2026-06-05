@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { History } from "lucide-react";
+import { GitPullRequest, History } from "lucide-react";
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -36,6 +36,12 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
     setSidebarCollapsed(false);
   }, [filterMode, filterModeHandler, setSidebarCollapsed]);
 
+  const handleTogglePr = useCallback(() => {
+    const nextMode = filterMode === "pr" ? "uncommitted" : "pr";
+    filterModeHandler?.(nextMode);
+    setSidebarCollapsed(false);
+  }, [filterMode, filterModeHandler, setSidebarCollapsed]);
+
   if (
     activeApp !== "code" ||
     activeTab?.type !== "source-control" ||
@@ -44,8 +50,10 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
     return null;
   }
 
-  const active = filterMode === "history";
-  const label = t("labels.gitHistory");
+  const historyActive = filterMode === "history";
+  const prActive = filterMode === "pr";
+  const historyLabel = t("labels.gitHistory");
+  const prLabel = t("labels.pullRequest", "Pull request");
 
   return (
     <>
@@ -58,11 +66,22 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
           variant="tertiary"
           size="small"
           iconOnly
-          className={active ? "!bg-fill-2 !text-primary-6" : ""}
+          className={historyActive ? "!bg-fill-2 !text-primary-6" : ""}
           onClick={handleToggleHistory}
-          title={label}
-          aria-label={label}
+          title={historyLabel}
+          aria-label={historyLabel}
           icon={<History size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+        />
+        <Button
+          htmlType="button"
+          variant="tertiary"
+          size="small"
+          iconOnly
+          className={prActive ? "!bg-fill-2 !text-primary-6" : ""}
+          onClick={handleTogglePr}
+          title={prLabel}
+          aria-label={prLabel}
+          icon={<GitPullRequest size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
         />
       </div>
       <WorkstationHeaderSectionSeparator className="mx-1" />

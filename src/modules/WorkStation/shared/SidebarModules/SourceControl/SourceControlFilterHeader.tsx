@@ -25,7 +25,8 @@ export type SourceControlFilterMode =
   | "unstaged"
   | "staged"
   | "stashed"
-  | "history";
+  | "history"
+  | "pr";
 
 export interface SourceControlFilterCounts {
   uncommitted: number;
@@ -87,7 +88,8 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
 
       const getModeCount = useCallback(
         (modeId: SourceControlFilterMode) => {
-          if (!counts || modeId === "history") return undefined;
+          if (!counts || modeId === "history" || modeId === "pr")
+            return undefined;
           return counts[modeId];
         },
         [counts]

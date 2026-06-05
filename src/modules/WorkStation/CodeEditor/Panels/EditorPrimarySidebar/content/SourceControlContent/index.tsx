@@ -29,7 +29,6 @@ import StashContent from "../StashContent";
 import { CommitSection } from "./components";
 import { SourceControlStickyHeader } from "./components/SourceControlStickyHeader";
 import SourceControlTreeRow from "./components/SourceControlTreeRow";
-import WorkstationPrSection from "./components/WorkstationPrSection";
 import { GIT_LABELS } from "./config";
 import {
   useBulkOperations,
@@ -113,14 +112,6 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
     hasUpstream = true,
     onPublish,
     publishLoading = false,
-    prUrl,
-    prStatus,
-    prCreating = false,
-    prErrorMessage,
-    prReadyToCreate = false,
-    prEligible = false,
-    autoCreatePr = false,
-    onCreatePr,
     // Repo identification
     repoPath,
     // Layout
@@ -434,19 +425,6 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
 
     return (
       <div className={rootClassName}>
-        {/* PR Section — above commit, Cursor-style */}
-        <WorkstationPrSection
-          branchName={branchName}
-          prUrl={prUrl}
-          prStatus={prStatus}
-          isCreating={prCreating}
-          errorMessage={prErrorMessage}
-          readyToCreate={prReadyToCreate}
-          eligible={prEligible}
-          autoCreatePr={autoCreatePr}
-          onCreatePr={onCreatePr}
-        />
-
         {/* Commit Section */}
         <CommitSection
           commitMessage={commitMessage}

@@ -14,7 +14,7 @@ import { createLogger } from "@src/hooks/logger";
 
 const logger = createLogger("createPullRequest");
 
-async function resolveGitHubAuth(
+export async function resolveGitHubAuth(
   remoteUrl: string
 ): Promise<{ userId: string; token: string } | null> {
   const hostedToken = getHostedToken();

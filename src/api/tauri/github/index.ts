@@ -246,6 +246,56 @@ export async function findPullRequestLocal(
 }
 
 /**
+ * Fetch a pull request's metadata. Returns the raw GitHub PR JSON.
+ */
+export async function getPRLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  prNumber: number
+): Promise<Record<string, unknown>> {
+  return invokeWithAuth<Record<string, unknown>>("github_get_pr", {
+    ...baseParams(userId, token),
+    repoFullName,
+    prNumber,
+  });
+}
+
+/**
+ * List the commits attached to a pull request.
+ */
+export async function listPRCommitsLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  prNumber: number
+): Promise<Record<string, unknown>[]> {
+  const data = await invokeWithAuth<unknown>("github_list_pr_commits", {
+    ...baseParams(userId, token),
+    repoFullName,
+    prNumber,
+  });
+  return Array.isArray(data) ? (data as Record<string, unknown>[]) : [];
+}
+
+/**
+ * List the files changed in a pull request.
+ */
+export async function listPRFilesLocal(
+  userId: string,
+  token: string,
+  repoFullName: string,
+  prNumber: number
+): Promise<Record<string, unknown>[]> {
+  const data = await invokeWithAuth<unknown>("github_list_pr_files", {
+    ...baseParams(userId, token),
+    repoFullName,
+    prNumber,
+  });
+  return Array.isArray(data) ? (data as Record<string, unknown>[]) : [];
+}
+
+/**
  * Clone a repository via git2 (shallow clone).
  */
 export async function cloneRepoLocal(
