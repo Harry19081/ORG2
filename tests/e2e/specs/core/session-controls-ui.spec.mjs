@@ -16,6 +16,7 @@ import {
   listAccounts,
   runAskForceSendScenario,
   runAskWriteDeniedScenario,
+  runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
@@ -27,6 +28,7 @@ import {
   runPlanUpdateSupersedesScenario,
   runPlanWriteBeforeBuildDeniedScenario,
   runRewindScenario,
+  runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
   rustAgentConfigs,
   scenarioConfigs,
@@ -137,6 +139,8 @@ const CONTROL_SCENARIO_NAMES = [
   "fresh-stop-image",
   "stop-restore",
   "chaos-control-flow",
+  "burst-queue-send-now-ordering",
+  "stop-double-click-no-resubmit",
   "force-send",
   "rewind",
   "plan-build-direct",
@@ -253,6 +257,23 @@ describe("ORGII force-send queued follow-up behavior", function () {
   it("survives mixed Stop, resend, Send Now, Stop, and double-queue control flow across Rust and CLI agents", async function () {
     this.timeout(1_200_000);
     await runScenario("chaos-control-flow", runChaosControlFlowScenario, this);
+  });
+
+  it("keeps burst queued siblings parked when the user force-sends the middle item then Stops and resends", async function () {
+    this.timeout(1_200_000);
+    await runScenario(
+      "burst-queue-send-now-ordering",
+      runBurstQueueSendNowOrderingScenario,
+      this
+    );
+  });
+
+  it("does not resubmit a restored draft when the user double-clicks Stop", async function () {
+    await runScenario(
+      "stop-double-click-no-resubmit",
+      runStopDoubleClickDoesNotResubmitScenario,
+      this
+    );
   });
 
   it("restores the in-flight prompt on Stop without consuming queued follow-ups across Rust and CLI agents", async function () {

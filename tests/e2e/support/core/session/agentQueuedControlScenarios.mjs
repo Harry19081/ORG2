@@ -265,10 +265,7 @@ async function waitForQueuedOrForceSentFollowup(marker) {
       return (
         state.queuedMessages.some((item) => item.content.includes(marker)) ||
         queuedItems.some((item) => item.text.includes(marker)) ||
-        state.chatEvents.some(
-          (event) =>
-            event.source === "user" && event.displayText.includes(marker)
-        )
+        markerUserTranscriptEvents(state, marker).length > 0
       );
     },
     {
@@ -354,9 +351,8 @@ async function assertComposerImmediatelyUnlockedAfterStop(label, marker) {
   const queuedStillContainsMarker = state.queuedMessages.some((item) =>
     item.content.includes(marker)
   );
-  const markerWasSentAsUserTurn = state.chatEvents.some(
-    (event) => event.source === "user" && event.displayText.includes(marker)
-  );
+  const markerWasSentAsUserTurn =
+    markerUserTranscriptEvents(state, marker).length > 0;
   if (!queuedStillContainsMarker || markerWasSentAsUserTurn) {
     throw new Error(
       `${label} queued follow-up moved after Stop instead of staying queued; queuedStillContainsMarker=${queuedStillContainsMarker} markerWasSentAsUserTurn=${markerWasSentAsUserTurn} state=${JSON.stringify(summarizeChatState(state))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
@@ -798,6 +794,145 @@ async function runStopRestoresInFlightScenario(config) {
   );
 }
 
+async function runBurstQueueSendNowOrderingScenario(config) {
+  const suffix = `${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  const firstPrompt = longRunningPromptForConfig(config);
+  const firstMarker = `BURST_Q1_${suffix}`;
+  const middleMarker = `BURST_Q2_MIDDLE_${suffix}`;
+  const lastMarker = `BURST_Q3_${suffix}`;
+  const draftMarker = `BURST_DRAFT_AFTER_STOP_${suffix}`;
+  const firstQueuedPrompt = `${longRunningPromptForConfig(config)} Keep this first burst queued marker parked: ${firstMarker}`;
+  const middleQueuedPrompt = `${longRunningPromptForConfig(config)} Send Now will target this middle burst queued marker: ${middleMarker}`;
+  const lastQueuedPrompt = `${longRunningPromptForConfig(config)} Keep this last burst queued marker parked: ${lastMarker}`;
+  const draftPrompt = `${longRunningPromptForConfig(config)} This explicit draft after Stop must run before parked siblings: ${draftMarker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForWorkingTurn(`${config.label}-burst-initial`);
+
+  const chatInputSelector = await waitForChatInput();
+  for (const prompt of [
+    firstQueuedPrompt,
+    middleQueuedPrompt,
+    lastQueuedPrompt,
+  ]) {
+    await typeAndSubmitWithShortcut(chatInputSelector, prompt);
+  }
+  for (const marker of [firstMarker, middleMarker, lastMarker]) {
+    await waitForQueuedFollowup(marker);
+    await waitForMarkerState(
+      `${config.label}-${marker}-initially-queued`,
+      marker,
+      {
+        shouldBeQueued: true,
+        shouldBeUserTurn: false,
+      }
+    );
+  }
+
+  await clickSendNowForQueuedMarker(middleMarker);
+  await waitForMarkerState(
+    `${config.label}-burst-middle-force-sent`,
+    middleMarker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    60_000
+  );
+  await waitForMarkerState(
+    `${config.label}-burst-first-after-middle`,
+    firstMarker,
+    {
+      shouldBeQueued: true,
+      shouldBeUserTurn: false,
+    }
+  );
+  await waitForMarkerState(
+    `${config.label}-burst-last-after-middle`,
+    lastMarker,
+    {
+      shouldBeQueued: true,
+      shouldBeUserTurn: false,
+    }
+  );
+
+  await waitForWorkingTurn(`${config.label}-burst-middle-working`);
+  await clickMainAction("stop", `${config.label}-burst-stop-middle`, 30_000);
+  await assertComposerImmediatelyUnlockedAfterStop(
+    `${config.label}-burst-stop-middle`,
+    firstMarker
+  );
+
+  await typeAndSubmitWithShortcut(chatInputSelector, draftPrompt);
+  await waitForMarkerState(
+    `${config.label}-burst-draft-after-stop`,
+    draftMarker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    60_000
+  );
+  await waitForMarkerState(
+    `${config.label}-burst-first-after-draft`,
+    firstMarker,
+    {
+      shouldBeQueued: true,
+      shouldBeUserTurn: false,
+    }
+  );
+  await waitForMarkerState(
+    `${config.label}-burst-last-after-draft`,
+    lastMarker,
+    {
+      shouldBeQueued: true,
+      shouldBeUserTurn: false,
+    }
+  );
+}
+
+async function runStopDoubleClickDoesNotResubmitScenario(config) {
+  const marker = `DOUBLE_STOP_NO_RESUBMIT_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  const firstPrompt = `${longRunningPromptForConfig(config)} Preserve this double-stop marker in the prompt: ${marker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForWorkingTurn(`${config.label}-double-stop-working`);
+
+  const firstClick = await execJS(
+    js.clickWhenState('[data-testid="chat-send-button"]', "stop")
+  );
+  if (firstClick !== "clicked") {
+    throw new Error(
+      `${config.label} first Stop click failed in double-click scenario: ${firstClick}; sendState=${JSON.stringify(await execJS(js.sendState))}`
+    );
+  }
+  await browser.pause(150);
+  const secondClick = await execJS(
+    js.click('[data-testid="chat-send-button"]')
+  );
+  await assertComposerResponsiveAfterStop(
+    `${config.label}-double-stop-first`,
+    firstPrompt
+  );
+
+  const state = await inspectChatState(
+    `${config.label}-double-stop-second-click`
+  );
+  const sendState = await execJS(js.sendState);
+  const editorText = await execJS(js.editorText);
+  const userTurns = markerUserTranscriptEvents(state, marker);
+  if (
+    state.isSessionActive ||
+    state.runtimeStatus === "running" ||
+    userTurns.length > 1 ||
+    !String(editorText ?? "").includes(marker)
+  ) {
+    throw new Error(
+      `${config.label} rapid second Stop click re-submitted restored draft; secondClick=${secondClick} userTurns=${userTurns.length} sendState=${JSON.stringify(sendState)} editorText=${JSON.stringify(String(editorText ?? "").slice(0, 180))} state=${JSON.stringify(summarizeChatState(state))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+}
+
 async function runChaosControlFlowScenario(config) {
   const suffix = `${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
   const firstPrompt = longRunningPromptForConfig(config);
@@ -950,10 +1085,12 @@ export {
   assertStationSurfacesConsistent,
   clickMainAction,
   clickSendNowForQueuedMarker,
+  runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
+  runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
   waitForIdleSendButton,
   waitForQueuedFollowup,
