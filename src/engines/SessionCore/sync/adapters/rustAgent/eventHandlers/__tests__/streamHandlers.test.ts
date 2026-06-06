@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import { dispatchAgentEvent } from "..";
 import {
+  cancelPendingLiveStreamWrites,
   handleMessageDelta,
   handleStreamingComplete,
   handleThinkingDelta,
@@ -32,6 +33,10 @@ vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
 
 function ref<T>(value: T): { current: T } {
   return { current: value };
+}
+
+async function flushLiveUpserts(): Promise<void> {
+  await vi.runOnlyPendingTimersAsync();
 }
 
 function createCtx(): EventHandlerContext {
@@ -101,8 +106,15 @@ function makeThinkingCompleteEvent(): SessionEvent {
 
 describe("Rust Agent stream handlers", () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
     clearSessionStreamingStopped("session-1");
+    cancelPendingLiveStreamWrites("session-1");
+  });
+
+  afterEach(() => {
+    cancelPendingLiveStreamWrites("session-1");
+    vi.useRealTimers();
   });
 
   it("drops stopped-turn live stream events without poisoning the next turn", async () => {
@@ -117,6 +129,7 @@ describe("Rust Agent stream handlers", () => {
       },
       ctx
     );
+    await flushLiveUpserts();
     expect(upsertSpy).toHaveBeenCalledTimes(1);
     vi.clearAllMocks();
 
@@ -162,6 +175,7 @@ describe("Rust Agent stream handlers", () => {
       ctx
     );
 
+    await flushLiveUpserts();
     expect(upsertSpy).not.toHaveBeenCalled();
     expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
     expect(ctx.setStreaming).not.toHaveBeenCalled();
@@ -178,11 +192,12 @@ describe("Rust Agent stream handlers", () => {
       ctx
     );
 
+    await flushLiveUpserts();
     expect(upsertSpy).toHaveBeenCalledTimes(1);
     expect(ctx.setStreaming).toHaveBeenCalledWith(true);
   });
 
-  it("upserts message deltas as live EventStore events", () => {
+  it("upserts message deltas as coalesced live EventStore events", async () => {
     const ctx = createCtx();
 
     handleMessageDelta(
@@ -200,6 +215,8 @@ describe("Rust Agent stream handlers", () => {
       isThinking: false,
       content: "Hello",
     });
+    expect(upsertSpy).not.toHaveBeenCalled();
+    await flushLiveUpserts();
     expect(upsertSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         id: ctx.assistantStreamRef?.current.idRef.current,
@@ -215,7 +232,7 @@ describe("Rust Agent stream handlers", () => {
     expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
   });
 
-  it("normalizes cumulative message delta snapshots without duplicating prefixes", () => {
+  it("normalizes cumulative message delta snapshots without duplicating prefixes", async () => {
     const ctx = createCtx();
 
     handleMessageDelta(
@@ -237,6 +254,9 @@ describe("Rust Agent stream handlers", () => {
       isThinking: false,
       content: "Hello world",
     });
+    expect(upsertSpy).not.toHaveBeenCalled();
+    await flushLiveUpserts();
+    expect(upsertSpy).toHaveBeenCalledTimes(1);
     expect(upsertSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         result: { observation: "Hello world" },
@@ -244,6 +264,30 @@ describe("Rust Agent stream handlers", () => {
       }),
       "session-1"
     );
+  });
+
+  it("drops pending coalesced live writes when stop happens before flush", async () => {
+    const ctx = createCtx();
+
+    for (let idx = 0; idx < 100; idx += 1) {
+      handleMessageDelta(
+        {
+          type: "agent:message_delta",
+          sessionId: "session-1",
+          turnId: "turn-flood",
+          content: `token-${idx} `,
+        },
+        "session-1",
+        ctx
+      );
+    }
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+    markSessionStreamingStopped("session-1");
+    cancelPendingLiveStreamWrites("session-1");
+    await flushLiveUpserts();
+
+    expect(upsertSpy).not.toHaveBeenCalled();
   });
 
   it("removes live message placeholder on backend-authoritative completion", async () => {
@@ -277,7 +321,7 @@ describe("Rust Agent stream handlers", () => {
     );
   });
 
-  it("upserts thinking deltas as live EventStore events", () => {
+  it("upserts thinking deltas as coalesced live EventStore events", async () => {
     const ctx = createCtx();
 
     handleThinkingDelta(
@@ -295,6 +339,8 @@ describe("Rust Agent stream handlers", () => {
       isThinking: true,
       content: "Thinking",
     });
+    expect(upsertSpy).not.toHaveBeenCalled();
+    await flushLiveUpserts();
     expect(upsertSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         id: ctx.thinkingStreamRef?.current.idRef.current,
@@ -310,7 +356,7 @@ describe("Rust Agent stream handlers", () => {
     expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
   });
 
-  it("normalizes cumulative thinking delta snapshots without duplicating prefixes", () => {
+  it("normalizes cumulative thinking delta snapshots without duplicating prefixes", async () => {
     const ctx = createCtx();
 
     handleThinkingDelta(
@@ -332,6 +378,9 @@ describe("Rust Agent stream handlers", () => {
       isThinking: true,
       content: "Thinking through it",
     });
+    expect(upsertSpy).not.toHaveBeenCalled();
+    await flushLiveUpserts();
+    expect(upsertSpy).toHaveBeenCalledTimes(1);
     expect(upsertSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         result: { observation: "Thinking through it" },
@@ -368,7 +417,8 @@ describe("Rust Agent stream handlers", () => {
       isThinking: false,
       content: "",
     });
-    expect(upsertSpy).toHaveBeenCalled();
+    await flushLiveUpserts();
+    expect(upsertSpy).not.toHaveBeenCalled();
     expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
     expect(removeByIdPrefixSpy).toHaveBeenCalledWith(
       liveThinkingId,

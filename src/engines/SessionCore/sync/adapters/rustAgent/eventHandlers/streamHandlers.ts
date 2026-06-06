@@ -5,6 +5,7 @@
  * Also handles agent:streaming_complete from Rust StreamingBuffer.
  */
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
+import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import {
   makeAssistantEvent,
@@ -25,12 +26,77 @@ import {
   clearThinkingStreamRefs,
   getToolCallId,
   getToolName,
+  isSessionStreamingStopped,
   updateStreamingInfo,
 } from "./streamHelpers";
 import type { EventHandlerContext } from "./types";
 
 function toolCallDeltaMessageId(toolCallId: string): string {
   return `tool-call-${toolCallId}`;
+}
+
+interface PendingLiveUpsert {
+  event: SessionEvent;
+  sessionId: string;
+  turnId?: string;
+}
+
+const pendingLiveUpserts = new Map<string, PendingLiveUpsert>();
+let pendingLiveFlushScheduled = false;
+
+function liveUpsertKey(sessionId: string, eventId: string): string {
+  return `${sessionId}:${eventId}`;
+}
+
+function scheduleLiveUpsert(
+  event: PendingLiveUpsert["event"],
+  sessionId: string,
+  turnId?: string
+): void {
+  pendingLiveUpserts.set(liveUpsertKey(sessionId, event.id), {
+    event,
+    sessionId,
+    turnId,
+  });
+
+  if (pendingLiveFlushScheduled) return;
+  pendingLiveFlushScheduled = true;
+  const flush = () => {
+    pendingLiveFlushScheduled = false;
+    const upserts = Array.from(pendingLiveUpserts.values());
+    pendingLiveUpserts.clear();
+    for (const pending of upserts) {
+      if (isSessionStreamingStopped(pending.sessionId, pending.turnId)) {
+        continue;
+      }
+      void eventStoreProxy.upsert(pending.event, pending.sessionId);
+    }
+  };
+
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(flush);
+  } else {
+    globalThis.setTimeout(flush, 16);
+  }
+}
+
+export function cancelPendingLiveStreamWrites(
+  sessionId: string,
+  eventId?: string | null
+): void {
+  if (eventId) {
+    pendingLiveUpserts.delete(liveUpsertKey(sessionId, eventId));
+  } else {
+    for (const [key, pending] of pendingLiveUpserts) {
+      if (pending.sessionId === sessionId) {
+        pendingLiveUpserts.delete(key);
+      }
+    }
+  }
+
+  if (pendingLiveUpserts.size === 0) {
+    pendingLiveFlushScheduled = false;
+  }
 }
 
 function appendLiveStreamDelta(
@@ -79,14 +145,15 @@ export function handleMessageDelta(
   }
 
   if (streamRefs.idRef.current) {
-    eventStoreProxy.upsert(
+    scheduleLiveUpsert(
       makeAssistantEvent(
         streamRefs.idRef.current,
         sessionId,
         rawAccumulated,
         true
       ),
-      sessionId
+      sessionId,
+      event.turnId
     );
   }
 
@@ -119,9 +186,10 @@ export function handleThinkingDelta(
   updateStreamingInfo(ctx, true, true, accumulated);
 
   if (streamRefs.idRef.current) {
-    eventStoreProxy.upsert(
+    scheduleLiveUpsert(
       makeThinkingEvent(streamRefs.idRef.current, sessionId, accumulated, true),
-      sessionId
+      sessionId,
+      event.turnId
     );
   }
 }
@@ -230,7 +298,7 @@ export function handleToolCallDelta(
     toolArgs,
     true
   );
-  eventStoreProxy.upsert(toolCallEvent, sessionId);
+  scheduleLiveUpsert(toolCallEvent, sessionId, event.turnId);
 }
 
 /**
@@ -251,6 +319,7 @@ export async function handleStreamingComplete(
   if (streamType === "message") {
     const liveMessageId = ctx.assistantStreamRef?.current.idRef.current || null;
     if (liveMessageId) {
+      cancelPendingLiveStreamWrites(_sessionId, liveMessageId);
       await eventStoreProxy.removeByIdPrefix(liveMessageId, _sessionId);
     }
     clearMessageStreamRefs(ctx);
@@ -265,6 +334,7 @@ export async function handleStreamingComplete(
   if (streamType === "thinking") {
     const liveThinkingId = ctx.thinkingStreamRef?.current.idRef.current || null;
     if (liveThinkingId) {
+      cancelPendingLiveStreamWrites(_sessionId, liveThinkingId);
       await eventStoreProxy.removeByIdPrefix(liveThinkingId, _sessionId);
     }
     clearThinkingStreamRefs(ctx);

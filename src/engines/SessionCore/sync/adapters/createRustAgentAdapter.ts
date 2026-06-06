@@ -45,6 +45,7 @@ import {
   createEventHandlerContext,
   dispatchAgentEvent,
 } from "./rustAgent/eventHandlers";
+import { cancelPendingLiveStreamWrites } from "./rustAgent/eventHandlers/streamHandlers";
 import {
   clearSessionStreamingStopped,
   isSessionStreamingStopped,
@@ -444,6 +445,12 @@ export function createRustAgentAdapter(
           eventQueuePromise = eventQueuePromise
             .then(() => {
               if (_disposed) return;
+              if (
+                LIVE_STREAM_EVENTS_IGNORED_AFTER_STOP.has(event.type) &&
+                isSessionStreamingStopped(sessionId, event.turnId)
+              ) {
+                return;
+              }
               return dispatchAgentEvent(event, ctx);
             })
             .then(() => {
@@ -575,6 +582,8 @@ export function createRustAgentAdapter(
 
     async stopSession(sessionId: string, reason: CancelReason): Promise<void> {
       markSessionStreamingStopped(sessionId);
+      cancelPendingLiveStreamWrites(sessionId);
+      void eventStoreProxy.setStreaming(false, sessionId);
       await cancel(sessionId, reason);
     },
   };
