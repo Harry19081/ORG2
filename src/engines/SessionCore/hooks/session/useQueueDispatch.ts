@@ -21,6 +21,7 @@
 import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 
+import { CANCEL_REASON } from "@src/api/tauri/agent";
 import { Message } from "@src/components/Message";
 import type { AgentExecMode } from "@src/config/sessionCreatorConfig";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms/metadata";
@@ -53,7 +54,10 @@ import { resolveModelForMessage } from "@src/util/session/resolveModelForMessage
 import { selectionFromSession } from "@src/util/session/selectionFromSession";
 import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
-import { hasQueueTurnSettledAfter } from "./queueTurnGate";
+import {
+  hasQueueTurnSettledAfter,
+  hasQueueTurnWorkedThenSettledAfter,
+} from "./queueTurnGate";
 
 const MAX_SENT_QUEUE_ID_CACHE = 200;
 const MIN_QUEUE_VISIBLE_MS = 1_200;
@@ -71,6 +75,7 @@ export function useQueueDispatch(): void {
   const isPendingCancel = useAtomValue(isPendingCancelAtom);
   const userInitiatedCancel = useAtomValue(userInitiatedCancelAtom);
   const setUserInitiatedCancel = useSetAtom(userInitiatedCancelAtom);
+  const setPendingCancel = useSetAtom(isPendingCancelAtom);
   const setLastUserMessage = useSetAtom(lastUserMessageAtom);
   const queue = useAtomValue(messageQueueAtom);
   const forceSendQueue = useAtomValue(forceSendPendingQueueAtom);
@@ -287,6 +292,10 @@ export function useQueueDispatch(): void {
   }, []);
 
   const flushTimersRef = useRef<number[]>([]);
+  const explicitInterruptSessionRef = useRef<string | null>(null);
+  const explicitDispatchStartedAtBySessionRef = useRef<Map<string, number>>(
+    new Map()
+  );
   const tryDispatchNextRef = useRef<(() => void) | null>(null);
 
   const tryDispatchNext = useCallback(() => {
@@ -306,38 +315,84 @@ export function useQueueDispatch(): void {
     activeSessionIdRef.current = latestActiveSessionId;
     editingRef.current = latestIsEditing;
 
+    const activeSessionId = activeSessionIdRef.current;
+    if (!activeSessionId) return;
+    const forcedMsg = forceSendQueueRef.current.find(
+      (message) => message.sessionId === activeSessionId
+    );
+    const postCancelSendMsg = queueRef.current.find(
+      (message) =>
+        message.sessionId === activeSessionId && message.dispatchAfterUserCancel
+    );
+    const explicitMsg = forcedMsg ?? postCancelSendMsg;
+
     // Hold off while Rust is still winding down a cancelled turn — the
     // sessionHandlers will clear isPendingCancelAtom when agent:complete /
-    // agent:error actually lands, which triggers this watcher again.
-    if (latestPendingCancel) return;
+    // agent:error actually lands, which triggers this watcher again. Explicit
+    // post-Stop sends are the exception: they must be allowed to finish the
+    // old turn with FORCE_SEND semantics, otherwise a Rust-native turn that
+    // accepted Stop but stayed visually running can strand the user's resend.
+    if (latestPendingCancel && !explicitMsg) return;
 
-    if (isRuntimeWorkingStatus(latestRuntimeStatus)) return;
+    const runtimeWorking = isRuntimeWorkingStatus(latestRuntimeStatus);
+    if (runtimeWorking && !explicitMsg) return;
+    if (runtimeWorking && explicitMsg) {
+      if (explicitInterruptSessionRef.current === activeSessionId) return;
+      explicitInterruptSessionRef.current = activeSessionId;
+      void (async () => {
+        try {
+          await SessionService.interrupt({
+            sessionId: activeSessionId,
+            reason: CANCEL_REASON.FORCE_SEND,
+          });
+          await eventStoreProxy.finalizeRunningEventsAsStopped(activeSessionId);
+        } catch (error) {
+          console.error("[useQueueDispatch] explicit interrupt failed:", error);
+        } finally {
+          explicitInterruptSessionRef.current = null;
+          setPendingCancel(false);
+          setSessionRuntimeStatus("idle");
+          window.setTimeout(() => tryDispatchNextRef.current?.(), 0);
+        }
+      })();
+      return;
+    }
 
     // Hold off if the most recent cancel was user-initiated. Stop restores the
     // active in-flight user message synchronously in useSessionActions;
     // auto-flushing here would dispatch preserved follow-ups before the user
-    // has a chance to revise or cancel the restored prompt. The flag is cleared
-    // when the cancel settles, so after the user resends the queue flushes
-    // normally.
-    if (latestUserCancel) return;
+    // has a chance to revise or cancel the restored prompt. The only exception
+    // is when the user explicitly presses Send again while that cancel is
+    // settling; that message becomes the next active prompt once Rust is idle.
+    if (latestUserCancel && !explicitMsg) return;
+    if (latestUserCancel) {
+      setUserInitiatedCancel(false);
+      userCancelRef.current = false;
+    }
 
-    const activeSessionId = activeSessionIdRef.current;
     const nextMsg =
-      forceSendQueueRef.current.find(
-        (message) => message.sessionId === activeSessionId
-      ) ??
+      explicitMsg ??
       queueRef.current.find((message) => message.sessionId === activeSessionId);
 
     if (!nextMsg || editingRef.current) return;
 
     if (nextMsg.requiresRuntimeSettle) {
       const createdAtMs = Date.parse(nextMsg.createdAt);
-      if (
-        Number.isFinite(createdAtMs) &&
-        !hasQueueTurnSettledAfter(nextMsg.sessionId, createdAtMs)
-      ) {
-        return;
-      }
+      const explicitStarts = explicitDispatchStartedAtBySessionRef.current;
+      const explicitDispatchStartedAt =
+        explicitStarts.get(nextMsg.sessionId) ?? 0;
+      const requiredSettleAfter = Math.max(
+        Number.isFinite(createdAtMs) ? createdAtMs : 0,
+        explicitDispatchStartedAt
+      );
+      const hasSettled =
+        explicitDispatchStartedAt > 0
+          ? hasQueueTurnWorkedThenSettledAfter(
+              nextMsg.sessionId,
+              explicitDispatchStartedAt
+            )
+          : hasQueueTurnSettledAfter(nextMsg.sessionId, requiredSettleAfter);
+      if (!hasSettled) return;
     }
 
     const visibleDelayMs = MIN_QUEUE_VISIBLE_MS - queuedMessageAgeMs(nextMsg);
@@ -367,13 +422,27 @@ export function useQueueDispatch(): void {
       return;
     }
     rememberSentQueueId(nextMsg.id);
+    if (explicitMsg && nextMsg.id === explicitMsg.id) {
+      explicitDispatchStartedAtBySessionRef.current.set(
+        nextMsg.sessionId,
+        Date.now()
+      );
+    }
     dispatchLockRef.current = true;
     lockSessionIdRef.current = nextMsg.sessionId;
     dispatchRef.current(nextMsg, () => {
       dispatchLockRef.current = false;
       lockSessionIdRef.current = null;
     });
-  }, [dequeueMessage, isRuntimeWorkingStatus, rememberSentQueueId, store]);
+  }, [
+    dequeueMessage,
+    isRuntimeWorkingStatus,
+    rememberSentQueueId,
+    setPendingCancel,
+    setSessionRuntimeStatus,
+    setUserInitiatedCancel,
+    store,
+  ]);
 
   useEffect(() => {
     for (const msg of forceSendQueue) {
@@ -392,6 +461,19 @@ export function useQueueDispatch(): void {
       lockSessionIdRef.current = null;
     }
   }, [isSessionActive]);
+
+  useEffect(() => {
+    const activeSessionId = activeSessionIdRef.current;
+    const hasExplicitDispatchForActiveSession =
+      forceSendQueue.some((message) => message.sessionId === activeSessionId) ||
+      queue.some(
+        (message) =>
+          message.sessionId === activeSessionId &&
+          message.dispatchAfterUserCancel
+      );
+    if (!hasExplicitDispatchForActiveSession) return;
+    tryDispatchNext();
+  }, [forceSendQueue, queue, tryDispatchNext]);
 
   useEffect(() => {
     const isWorking = isRuntimeWorkingStatus(runtimeStatus);
@@ -429,9 +511,19 @@ export function useQueueDispatch(): void {
     if (!wasPending || isPendingCancel || isSessionActive) return;
 
     if (userCancelRef.current) {
-      setUserInitiatedCancel(false);
-      userCancelRef.current = false;
-      return;
+      const activeSessionId = activeSessionIdRef.current;
+      const hasExplicitPostCancelDispatch =
+        forceSendQueueRef.current.some(
+          (message) => message.sessionId === activeSessionId
+        ) ||
+        queueRef.current.some(
+          (message) =>
+            message.sessionId === activeSessionId &&
+            message.dispatchAfterUserCancel
+        );
+      if (!hasExplicitPostCancelDispatch) {
+        return;
+      }
     }
 
     tryDispatchNext();
@@ -456,7 +548,18 @@ export function useQueueDispatch(): void {
     const prev = prevFlushRef.current;
     prevFlushRef.current = flushRequest;
     if (flushRequest === prev) return;
-    if (store.get(isPendingCancelAtom) || store.get(userInitiatedCancelAtom)) {
+    if (store.get(isPendingCancelAtom)) {
+      return;
+    }
+    const activeSessionId = store.get(sessionIdAtom);
+    const hasExplicitPostCancelDispatch =
+      forceSendQueue.some((message) => message.sessionId === activeSessionId) ||
+      queue.some(
+        (message) =>
+          message.sessionId === activeSessionId &&
+          message.dispatchAfterUserCancel
+      );
+    if (store.get(userInitiatedCancelAtom) && !hasExplicitPostCancelDispatch) {
       return;
     }
 

@@ -16,6 +16,7 @@ import {
   listAccounts,
   runAskForceSendScenario,
   runAskWriteDeniedScenario,
+  runChaosControlFlowScenario,
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
@@ -135,6 +136,7 @@ const CONTROL_SCENARIO_NAMES = [
   "fresh-stop",
   "fresh-stop-image",
   "stop-restore",
+  "chaos-control-flow",
   "force-send",
   "rewind",
   "plan-build-direct",
@@ -246,6 +248,11 @@ describe("ORGII force-send queued follow-up behavior", function () {
 
   it("keeps a fresh first-send prompt visible and restores its draft on Stop across Rust AgentExecMode sessions", async function () {
     await runScenario("fresh-stop", runFreshStopRollbackScenario, this);
+  });
+
+  it("survives mixed Stop, resend, Send Now, Stop, and double-queue control flow across Rust and CLI agents", async function () {
+    this.timeout(1_200_000);
+    await runScenario("chaos-control-flow", runChaosControlFlowScenario, this);
   });
 
   it("restores the in-flight prompt on Stop without consuming queued follow-ups across Rust and CLI agents", async function () {

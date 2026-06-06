@@ -18,6 +18,7 @@ export {
   waitForApp,
 } from "./agentQueuedFollowupDriver.mjs";
 export {
+  runChaosControlFlowScenario,
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,

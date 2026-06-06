@@ -74,23 +74,31 @@ async function switchStationMode(mode, label) {
   return true;
 }
 
+function userEventContainsMarker(event, marker) {
+  if (!event || event.source !== "user") return false;
+  if (String(event.displayText ?? "").includes(marker)) return true;
+  const result = event.result ?? {};
+  const message = result.message ?? {};
+  return String(message.content ?? "").includes(marker);
+}
+
 function markerUserTranscriptEvents(state, marker) {
   const eventById = new Map(
-    (state.chatEvents ?? []).map((event) => [event.id, event])
+    (state.rawEvents ?? state.chatEvents ?? []).map((event) => [
+      event.id,
+      event,
+    ])
   );
   const pipelineEvents = (state.pipelineItems ?? [])
     .map((item) => (item.eventId ? eventById.get(item.eventId) : null))
-    .filter(
-      (event) =>
-        event &&
-        event.source === "user" &&
-        String(event.displayText ?? "").includes(marker)
-    );
+    .filter((event) => userEventContainsMarker(event, marker));
   if (pipelineEvents.length > 0) return pipelineEvents;
-  return (state.chatEvents ?? []).filter(
-    (event) =>
-      event.source === "user" &&
-      String(event.displayText ?? "").includes(marker)
+  const rawEvents = (state.rawEvents ?? []).filter((event) =>
+    userEventContainsMarker(event, marker)
+  );
+  if (rawEvents.length > 0) return rawEvents;
+  return (state.chatEvents ?? []).filter((event) =>
+    userEventContainsMarker(event, marker)
   );
 }
 
@@ -273,15 +281,30 @@ async function waitForQueuedOrForceSentFollowup(marker) {
 async function assertQueuedFollowupRemainsParked(label, marker) {
   await browser.pause(1_500);
   const state = await inspectChatState(`${label}-queue-parked`);
-  const queuedStillContainsMarker = state.queuedMessages.some((item) =>
+  assertQueuedMarkerState(state, label, marker, {
+    shouldBeQueued: true,
+    shouldBeUserTurn: false,
+  });
+}
+
+function assertQueuedMarkerState(
+  state,
+  label,
+  marker,
+  { shouldBeQueued, shouldBeUserTurn }
+) {
+  const queuedCount = state.queuedMessages.filter((item) =>
     item.content.includes(marker)
-  );
-  const markerWasSentAsUserTurn = state.chatEvents.some(
-    (event) => event.source === "user" && event.displayText.includes(marker)
-  );
-  if (!queuedStillContainsMarker || markerWasSentAsUserTurn) {
+  ).length;
+  const userTurnCount = markerUserTranscriptEvents(state, marker).length;
+  if (
+    (shouldBeQueued && queuedCount !== 1) ||
+    (!shouldBeQueued && queuedCount !== 0) ||
+    (shouldBeUserTurn && userTurnCount !== 1) ||
+    (!shouldBeUserTurn && userTurnCount !== 0)
+  ) {
     throw new Error(
-      `${label} queued follow-up was not parked; queuedStillContainsMarker=${queuedStillContainsMarker} markerWasSentAsUserTurn=${markerWasSentAsUserTurn} state=${JSON.stringify(summarizeChatState(state))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+      `${label} marker state mismatch for ${marker}; queuedCount=${queuedCount} userTurnCount=${userTurnCount} expected=${JSON.stringify({ shouldBeQueued, shouldBeUserTurn })} state=${JSON.stringify(summarizeChatState(state))}`
     );
   }
 }
@@ -371,6 +394,25 @@ async function assertComposerResponsiveAfterStop(label, expectedText) {
     );
   }
   await execJS(js.clearAndType(inputSelector, expectedText));
+}
+
+async function waitForMarkerState(label, marker, expected, timeout = 20_000) {
+  await browser.waitUntil(
+    async () => {
+      const state = await inspectChatState(`${label}-marker-state`);
+      try {
+        assertQueuedMarkerState(state, label, marker, expected);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    {
+      timeout,
+      interval: 500,
+      timeoutMsg: `${label} marker ${marker} did not reach expected state ${JSON.stringify(expected)}; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
 }
 
 async function waitForQueuedFollowup(marker) {
@@ -756,6 +798,109 @@ async function runStopRestoresInFlightScenario(config) {
   );
 }
 
+async function runChaosControlFlowScenario(config) {
+  const suffix = `${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  const firstPrompt = longRunningPromptForConfig(config);
+  const queuedOneMarker = `CHAOS_Q1_${suffix}`;
+  const queuedTwoMarker = `CHAOS_Q2_${suffix}`;
+  const resendMarker = `CHAOS_RESEND_${suffix}`;
+  const finalMarker = `CHAOS_FINAL_${suffix}`;
+  const queuedOnePrompt = `${longRunningPromptForConfig(config)} Keep this first queued marker in the prompt: ${queuedOneMarker}`;
+  const queuedTwoPrompt = `${longRunningPromptForConfig(config)} Keep this second queued marker in the prompt: ${queuedTwoMarker}`;
+  const resendPrompt = `${longRunningPromptForConfig(config)} This is the explicit re-send after Stop marker: ${resendMarker}`;
+  const finalPrompt = `${longRunningPromptForConfig(config)} This is the final explicit send after the second Stop marker: ${finalMarker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForWorkingTurn(`${config.label}-chaos-initial`);
+
+  const chatInputSelector = await waitForChatInput();
+  await typeAndSubmitWithShortcut(chatInputSelector, queuedOnePrompt);
+  await waitForQueuedFollowup(queuedOneMarker);
+  await typeAndSubmitWithShortcut(chatInputSelector, queuedTwoPrompt);
+  await waitForQueuedFollowup(queuedTwoMarker);
+  await assertQueuedFollowupRemainsParked(
+    `${config.label}-chaos-q1-before-stop`,
+    queuedOneMarker
+  );
+  await assertQueuedFollowupRemainsParked(
+    `${config.label}-chaos-q2-before-stop`,
+    queuedTwoMarker
+  );
+
+  await clickMainAction("stop", `${config.label}-chaos-first-stop`, 30_000);
+  await assertComposerImmediatelyUnlockedAfterStop(
+    `${config.label}-chaos-first-stop-q1`,
+    queuedOneMarker
+  );
+  await waitForMarkerState(
+    `${config.label}-chaos-q2-after-first-stop`,
+    queuedTwoMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+
+  await typeAndSubmitWithShortcut(chatInputSelector, resendPrompt);
+  await waitForMarkerState(
+    `${config.label}-chaos-resend-user-turn`,
+    resendMarker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    60_000
+  );
+  await waitForMarkerState(
+    `${config.label}-chaos-q1-after-resend`,
+    queuedOneMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+  await waitForMarkerState(
+    `${config.label}-chaos-q2-after-resend`,
+    queuedTwoMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+
+  await clickSendNowForQueuedMarker(queuedOneMarker);
+  await waitForMarkerState(
+    `${config.label}-chaos-q1-force-sent`,
+    queuedOneMarker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    60_000
+  );
+  await waitForMarkerState(
+    `${config.label}-chaos-q2-after-q1-force`,
+    queuedTwoMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+
+  await waitForWorkingTurn(`${config.label}-chaos-q1-working`);
+  await clickMainAction("stop", `${config.label}-chaos-second-stop`, 30_000);
+  await assertComposerImmediatelyUnlockedAfterStop(
+    `${config.label}-chaos-second-stop-q2`,
+    queuedTwoMarker
+  );
+
+  await typeAndSubmitWithShortcut(chatInputSelector, finalPrompt);
+  await waitForMarkerState(
+    `${config.label}-chaos-final-user-turn`,
+    finalMarker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    60_000
+  );
+  await waitForMarkerState(
+    `${config.label}-chaos-q2-after-final`,
+    queuedTwoMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+
+  await clickSendNowForQueuedMarker(queuedTwoMarker);
+  await waitForMarkerState(
+    `${config.label}-chaos-q2-force-sent`,
+    queuedTwoMarker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    60_000
+  );
+}
+
 async function runForceSendScenario(config) {
   const marker = `QUEUE_FORCE_SEND_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
   const firstPrompt = longRunningPromptForConfig(config);
@@ -805,6 +950,7 @@ export {
   assertStationSurfacesConsistent,
   clickMainAction,
   clickSendNowForQueuedMarker,
+  runChaosControlFlowScenario,
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,

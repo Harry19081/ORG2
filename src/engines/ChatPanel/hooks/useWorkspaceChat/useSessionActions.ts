@@ -276,8 +276,14 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       }
 
       void (async () => {
-        let watchdogId: number | null = window.setTimeout(() => {
-          watchdogId = null;
+        window.setTimeout(() => {
+          const latestStatus = store.get(sessionRuntimeStatusAtom);
+          const runtimeStartedAnotherTurn =
+            latestStatus === "running" ||
+            latestStatus === "installing" ||
+            latestStatus === "waiting_for_user" ||
+            latestStatus === "waiting_for_funds";
+          if (runtimeStartedAnotherTurn) return;
           setPendingCancel(false);
           setSessionRuntimeStatus("idle");
           stopVisibleStreaming(sessionId);
@@ -293,24 +299,20 @@ export function useSessionActions(options: UseSessionActionsOptions) {
           });
           await eventStoreProxy.finalizeRunningEventsAsStopped(sessionId);
           // isPendingCancel is intentionally NOT cleared here on the success path.
-          // Rust will emit an agent:complete (or agent:error) event after winding
-          // down the turn; the runtime-status handler that processes that event is
-          // responsible for clearing isPendingCancel. Clearing it here would
-          // create a race: the input area could re-enable and the queue could
-          // flush a follow-up message before Rust has actually stopped.
+          // Rust usually emits agent:complete / agent:error after winding down the
+          // turn, and the runtime-status handler clears isPendingCancel there. The
+          // watchdog above is deliberately left alive as the fallback for Rust-native
+          // turns that accept the interrupt RPC but never emit a terminal event.
         } catch (error) {
           console.error("[useSessionActions] interrupt failed:", error);
           setPendingCancel(false);
-          if (restoreQueueHead) setUserInitiatedCancel(false);
-          // Session is gone (already completed/removed): Rust will never send
-          // agent:complete, so reset the runtime status ourselves to unblock
-          // the input area and queue dispatch.
+          // Keep userInitiatedCancel set for user Stop even if the backend
+          // interrupt races with completion or fails. The visible UI has already
+          // performed Cursor-style Stop/restore; the next explicit Send must
+          // consume that Stop intent instead of becoming a parked follow-up that
+          // waits for a settle edge that may never arrive.
           setSessionRuntimeStatus("idle");
           stopVisibleStreaming(sessionId);
-        } finally {
-          if (watchdogId !== null) {
-            window.clearTimeout(watchdogId);
-          }
         }
       })();
     },

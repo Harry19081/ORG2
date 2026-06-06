@@ -29,6 +29,7 @@ import {
   isSessionActiveAtom,
   lastUserMessageAtom,
   sessionRuntimeStatusAtom,
+  userInitiatedCancelAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
 import {
@@ -242,6 +243,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       const latestSessionRuntimeStatus = store.get(sessionRuntimeStatusAtom);
       const latestIsSessionActive = store.get(isSessionActiveAtom);
       const latestIsPendingCancel = store.get(isPendingCancelAtom);
+      const latestUserInitiatedCancel = store.get(userInitiatedCancelAtom);
       const latestSnapshot =
         eventStoreProxy.getLatestSessionSnapshot(sessionId);
       const snapshotShowsActiveTurn =
@@ -332,7 +334,8 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
           imageDataUrls,
           modelSelection: snapshotSelection,
           agentExecMode: snapshotMode,
-          requiresRuntimeSettle: true,
+          requiresRuntimeSettle: !latestUserInitiatedCancel,
+          dispatchAfterUserCancel: latestUserInitiatedCancel,
           status: "queued",
           createdAt: new Date().toISOString(),
         });
