@@ -57,7 +57,6 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
       refresh,
       repoLabels,
       collaborators,
-      hasGitHubAuth,
     } = useWorkstationIssues({ repoPath, repoId, branchName, remoteUrl });
 
     const [showNewIssueForm, setShowNewIssueForm] = useState(false);
@@ -114,21 +113,6 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
     const isInitialLoading = loading && issues.length === 0;
 
     // ── Render ────────────────────────────────────────────────────────────────
-
-    if (!hasGitHubAuth) {
-      return (
-        <Placeholder
-          variant="empty"
-          placement="sidebar"
-          title={t("git.issues.authRequired.title", "Connect GitHub")}
-          subtitle={t(
-            "git.issues.authRequired.description",
-            "Go to Settings → Integrations → Git to connect your GitHub account."
-          )}
-          fillParentHeight
-        />
-      );
-    }
 
     if (selectedIssue) {
       return (

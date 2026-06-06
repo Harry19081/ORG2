@@ -10,7 +10,6 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getGitRemotes } from "@src/api/http/git/remotes";
-import { checkTokenLocal } from "@src/api/tauri/github";
 import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
 import {
   addIssueComment,
@@ -75,6 +74,10 @@ export function useWorkstationIssues({
   const [resolvedRemoteUrl, setResolvedRemoteUrl] = useState<string | null>(
     null
   );
+  // Optimistic auth flag: true when the remote is a GitHub URL.
+  // Credentials are resolved Rust-side from connection_token_store — no
+  // pre-flight token ping needed. Real auth failures from API calls will
+  // flip this to false, matching the trust model used by the PR panel.
   const [hasGitHubAuth, setHasGitHubAuth] = useState(false);
 
   const [repoLabels, setRepoLabels] = useState<GitHubIssueLabel[]>([]);
@@ -110,27 +113,13 @@ export function useWorkstationIssues({
     };
   }, [repoPath, repoId, remoteUrlProp]);
 
-  // Check auth when remote URL resolves — credentials are resolved Rust-side
-  // We also need to verify the remote is a GitHub URL
+  // Set hasGitHubAuth optimistically when the remote URL resolves.
+  // A valid GitHub URL means credentials should be available via the
+  // connection_token_store — no need for a separate /user ping.
   useEffect(() => {
     if (!resolvedRemoteUrl) return;
-    let cancelled = false;
-    void (async () => {
-      const repoFullName = parseGithubRepoFullName(resolvedRemoteUrl);
-      if (!repoFullName) {
-        if (!cancelled) setHasGitHubAuth(false);
-        return;
-      }
-      try {
-        const ok = await checkTokenLocal();
-        if (!cancelled) setHasGitHubAuth(ok);
-      } catch {
-        if (!cancelled) setHasGitHubAuth(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    const repoFullName = parseGithubRepoFullName(resolvedRemoteUrl);
+    setHasGitHubAuth(!!repoFullName);
   }, [resolvedRemoteUrl]);
 
   // ── Local filter state (search debounce lives here) ───────────────────────
@@ -170,6 +159,16 @@ export function useWorkstationIssues({
       if (!mountedRef.current) return;
 
       if (result.error) {
+        // Real auth rejection from Rust — revoke optimistic auth flag so the
+        // "Connect GitHub" placeholder is shown instead of a generic error.
+        if (
+          result.error.includes("GitHubReAuthRequired") ||
+          result.error.includes("re-authorization required")
+        ) {
+          setHasGitHubAuth(false);
+          setListState((prev) => ({ ...prev, loading: false, error: null }));
+          return;
+        }
         setListState((prev) => ({
           ...prev,
           loading: false,
