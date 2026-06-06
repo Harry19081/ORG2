@@ -750,6 +750,160 @@ pub async fn test_session_llm_history(
     }
 }
 
+/// `POST /agent/test/session/seed-raw-history` — seed un-compacted
+/// user/assistant rows so E2E can trigger auto-compaction through the real turn.
+pub async fn test_session_seed_raw_history(
+    Json(body): Json<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    let session_id = body
+        .get("session_id")
+        .and_then(|value| value.as_str())
+        .unwrap_or("")
+        .to_string();
+    if session_id.trim().is_empty() {
+        return Json(serde_json::json!({
+            "ok": false,
+            "reason": "session_id is required",
+        }));
+    }
+
+    let marker = body
+        .get("marker")
+        .and_then(|value| value.as_str())
+        .unwrap_or("E2E_RAW_HISTORY_MARKER")
+        .to_string();
+    let message_count = body
+        .get("message_count")
+        .and_then(|value| value.as_u64())
+        .unwrap_or(12)
+        .clamp(2, 200) as usize;
+    let chars_per_message = body
+        .get("chars_per_message")
+        .and_then(|value| value.as_u64())
+        .unwrap_or(2_000)
+        .clamp(16, 20_000) as usize;
+    let marker_message_count = body
+        .get("marker_message_count")
+        .and_then(|value| value.as_u64())
+        .unwrap_or(message_count as u64)
+        .min(message_count as u64) as usize;
+    let filler = "x".repeat(chars_per_message);
+
+    let result = tokio::task::spawn_blocking({
+        let sid = session_id.clone();
+        move || -> Result<(), String> {
+            for index in 0..message_count {
+                let prefix = if index < marker_message_count {
+                    format!("{marker} ")
+                } else {
+                    String::new()
+                };
+                if index % 2 == 0 {
+                    agent_core::session::persistence::save_user_msg(
+                        &sid,
+                        &format!("{prefix}user {index}: {filler}"),
+                        None,
+                    )
+                    .map_err(|err| err.to_string())?;
+                } else {
+                    agent_core::session::persistence::save_assistant_msg(
+                        &sid,
+                        &format!("{prefix}assistant {index}: {filler}"),
+                        "e2e",
+                    )
+                    .map_err(|err| err.to_string())?;
+                }
+            }
+            Ok(())
+        }
+    })
+    .await;
+
+    match result {
+        Ok(Ok(())) => Json(serde_json::json!({
+            "ok": true,
+            "sessionId": session_id,
+            "messageCount": message_count,
+        })),
+        Ok(Err(err)) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": err,
+        })),
+        Err(err) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": format!("spawn_blocking join error: {err}"),
+        })),
+    }
+}
+
+/// `POST /agent/test/session/provider-request-capture` — debug-only capture
+/// of the final provider-bound request payload built by `turn_executor`.
+pub async fn test_session_provider_request_capture(
+    Json(body): Json<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    let action = body
+        .get("action")
+        .and_then(|value| value.as_str())
+        .unwrap_or("drain");
+
+    match action {
+        "arm" => {
+            let clear = body
+                .get("clear")
+                .and_then(|value| value.as_bool())
+                .unwrap_or(true);
+            agent_core::turn_executor::provider_request_capture::arm(clear);
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": agent_core::turn_executor::provider_request_capture::is_armed(),
+                "captures": [],
+            }))
+        }
+        "disarm" => {
+            agent_core::turn_executor::provider_request_capture::disarm();
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": false,
+                "captures": [],
+            }))
+        }
+        "clear" => {
+            agent_core::turn_executor::provider_request_capture::clear();
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": agent_core::turn_executor::provider_request_capture::is_armed(),
+                "captures": [],
+            }))
+        }
+        "drain" => {
+            let clear = body
+                .get("clear")
+                .and_then(|value| value.as_bool())
+                .unwrap_or(true);
+            let disarm = body
+                .get("disarm")
+                .and_then(|value| value.as_bool())
+                .unwrap_or(false);
+            let captures = agent_core::turn_executor::provider_request_capture::drain(clear);
+            if disarm {
+                agent_core::turn_executor::provider_request_capture::disarm();
+            }
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": agent_core::turn_executor::provider_request_capture::is_armed(),
+                "captures": captures,
+            }))
+        }
+        other => Json(serde_json::json!({
+            "ok": false,
+            "reason": format!("unknown provider-request-capture action: {other}"),
+            "captures": [],
+        })),
+    }
+}
+
 pub async fn test_parse_exec_mode(Json(body): Json<serde_json::Value>) -> Json<serde_json::Value> {
     let mode = body
         .get("mode")

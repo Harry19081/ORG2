@@ -636,6 +636,14 @@ pub fn create_routes() -> Router {
             post(test::workspace::test_session_seed_compacted_history),
         )
         .route(
+            "/test/session/provider-request-capture",
+            post(test::workspace::test_session_provider_request_capture),
+        )
+        .route(
+            "/test/session/seed-raw-history",
+            post(test::workspace::test_session_seed_raw_history),
+        )
+        .route(
             "/test/session/parse-exec-mode",
             post(test::workspace::test_parse_exec_mode),
         )

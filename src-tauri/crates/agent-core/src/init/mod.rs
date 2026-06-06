@@ -363,14 +363,29 @@ async fn ensure_session_initialized(
             .map_err(|err| format!("Failed to create workspace directory: {}", err))?;
     }
 
-    let account_id = account_id
-        .ok_or_else(|| {
-            format!(
-                "account_id is required for session {} — cannot initialize provider without it",
-                session_id
-            )
-        })?
-        .to_string();
+    let account_id = match account_id {
+        Some(account_id) => account_id.to_string(),
+        None => {
+            #[cfg(debug_assertions)]
+            {
+                if crate::providers::e2e_fake::is_e2e_fake_provider_model(&model) {
+                    "e2e-fake-provider-account".to_string()
+                } else {
+                    return Err(format!(
+                        "account_id is required for session {} — cannot initialize provider without it",
+                        session_id
+                    ));
+                }
+            }
+            #[cfg(not(debug_assertions))]
+            {
+                return Err(format!(
+                    "account_id is required for session {} — cannot initialize provider without it",
+                    session_id
+                ));
+            }
+        }
+    };
 
     info!(
         "[init] Initializing session {} (model={}, workspace_root={})",

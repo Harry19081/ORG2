@@ -7,6 +7,8 @@ mod backoff;
 pub(crate) mod file_tracker;
 pub mod helpers;
 mod length_recovery;
+#[cfg(debug_assertions)]
+pub mod provider_request_capture;
 mod screenshot;
 mod stream_error_recovery;
 pub(crate) mod stream_normalizer;
@@ -212,6 +214,17 @@ pub async fn execute_turn(
         let stream_normalizer_for_cb = stream_normalizer.clone();
 
         provider.set_session_context(session_id);
+
+        #[cfg(debug_assertions)]
+        provider_request_capture::capture(
+            session_id,
+            iteration,
+            &config.model,
+            effective_max_tokens,
+            config.temperature,
+            &llm_messages,
+            &tool_defs,
+        );
 
         let cancel_for_stream = cancel_flag.cloned();
         let cancel_ref = cancel_flag.as_ref().map(|f| f.as_ref());

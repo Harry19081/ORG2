@@ -12,6 +12,8 @@
 pub mod anthropic_native;
 pub mod codex_native;
 pub mod cursor_native;
+#[cfg(debug_assertions)]
+pub mod e2e_fake;
 pub mod factory;
 pub mod gemini_native;
 pub mod model_hints;
