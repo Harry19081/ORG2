@@ -273,6 +273,10 @@ describe("Composer skills menu", () => {
       ]),
       "seedChatEvents context info"
     );
+    unwrap(
+      await invokeE2E("openSession", sessionId),
+      "openSession context info"
+    );
 
     await browser.waitUntil(
       async () =>

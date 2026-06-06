@@ -48,6 +48,20 @@ export type {
   PillIconType,
 } from "./types";
 
+function findInlineAtMention(
+  text: string,
+  caretOffset: number
+): { startOffset: number; query: string } | null {
+  const beforeCaret = text.slice(0, caretOffset).replace(/\u200B/g, "");
+  const atIndex = beforeCaret.lastIndexOf("@");
+  if (atIndex < 0) return null;
+  const previousChar = atIndex > 0 ? beforeCaret[atIndex - 1] : "";
+  if (previousChar && !/\s/.test(previousChar)) return null;
+  const query = beforeCaret.slice(atIndex + 1);
+  if (/\s/.test(query)) return null;
+  return { startOffset: atIndex + 1, query };
+}
+
 const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
   function ComposerInput(props, ref) {
     const {
@@ -165,22 +179,37 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
         updateEmptyState();
         onContentChangeRef.current?.(text);
 
-        if (atMentionRef.current.active) {
+        {
           const range = rangeInsideHost(host);
           const caretOffset = caretTextOffset(host, range);
-          if (caretOffset < atMentionRef.current.startOffset) {
-            atMentionRef.current = { active: false, startOffset: 0 };
-            onAtMentionCloseRef.current?.();
-          } else {
-            const query = text
-              .slice(atMentionRef.current.startOffset, caretOffset)
-              .replace(/\u200B/g, "");
-            if (/\s/.test(query)) {
+          if (!atMentionRef.current.active) {
+            const inlineMention = findInlineAtMention(text, caretOffset);
+            if (inlineMention) {
+              atMentionRef.current = {
+                active: true,
+                startOffset: inlineMention.startOffset,
+                hasAtChar: true,
+              };
+            }
+          }
+          if (atMentionRef.current.active) {
+            if (caretOffset < atMentionRef.current.startOffset) {
               atMentionRef.current = { active: false, startOffset: 0 };
               onAtMentionCloseRef.current?.();
             } else {
-              const rect = range.getBoundingClientRect();
-              onAtMentionRef.current?.(query, { x: rect.left, y: rect.bottom });
+              const query = text
+                .slice(atMentionRef.current.startOffset, caretOffset)
+                .replace(/\u200B/g, "");
+              if (/\s/.test(query)) {
+                atMentionRef.current = { active: false, startOffset: 0 };
+                onAtMentionCloseRef.current?.();
+              } else {
+                const rect = range.getBoundingClientRect();
+                onAtMentionRef.current?.(query, {
+                  x: rect.left,
+                  y: rect.bottom,
+                });
+              }
             }
           }
         }

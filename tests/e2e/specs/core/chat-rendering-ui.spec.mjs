@@ -314,10 +314,12 @@ async function assertBatchRendered(batchIndex, tools) {
     sentinel: event.displayText,
     fallbackTexts:
       event.functionName === "read_file"
-        ? ["Read 1 file", "1 file"]
+        ? ["Read 1 file", "1 file", event.args?.path].filter(Boolean)
         : event.functionName === "query_lsp"
           ? ["1 LSP query", "LSP query"]
-          : undefined,
+          : event.functionName === "render_inline_canvas"
+            ? ["Agent Preview"]
+            : undefined,
   }));
   const assistantText = `Tool render ledger batch ${batchIndex} complete.`;
   const seed = await invokeE2E("seedChatEvents", sessionId, [
@@ -575,13 +577,31 @@ async function assertDedupRenderedOnce() {
 async function assertMultiRepoReadPathRendered() {
   const sessionId = `e2e-render-multirepo-read-${Date.now()}`;
   const baseTime = Date.now();
-  const orgiiPath = "/Users/vinceorz/Projects/ORGII/src/app/root.tsx";
-  const claudePath = "/Users/vinceorz/Projects/claude_code/README.md";
+  const primaryPath = `/tmp/orgii-e2e-multirepo-primary-${RUN_ID}/src/index.tsx`;
+  const secondaryPath = `/tmp/orgii-e2e-multirepo-secondary-${RUN_ID}/src/index.tsx`;
+  const tertiaryPath = `/tmp/orgii-e2e-multirepo-tertiary-${RUN_ID}/README.md`;
   const userEvent = {
     ...withCreatedAt(makeOrderUserEvent("multi-read-user", "Read two files"), baseTime),
     sessionId,
   };
-  const readEvents = [orgiiPath, claudePath].map((targetFile, index) => ({
+  const readPayloads = [
+    {
+      path: primaryPath,
+      args: { targetFile: primaryPath },
+      result: {},
+    },
+    {
+      path: secondaryPath,
+      args: { file_path: secondaryPath },
+      result: {},
+    },
+    {
+      path: tertiaryPath,
+      args: {},
+      result: { success: { filePath: tertiaryPath } },
+    },
+  ];
+  const readEvents = readPayloads.map(({ path: targetPath, args, result }, index) => ({
     id: `multi-read-${index}`,
     chunk_id: `multi-read-${index}`,
     sessionId,
@@ -589,14 +609,15 @@ async function assertMultiRepoReadPathRendered() {
     functionName: "read_file",
     uiCanonical: "read_file",
     actionType: "tool_call",
-    args: { targetFile },
+    args,
     result: {
-      content: `content for ${targetFile}`,
-      observation: `content for ${targetFile}`,
+      ...result,
+      content: `content for ${targetPath}`,
+      observation: `content for ${targetPath}`,
       is_delta: false,
     },
     source: "assistant",
-    displayText: `Read ${targetFile}`,
+    displayText: `Read ${targetPath}`,
     displayStatus: "completed",
     displayVariant: "tool_call",
     activityStatus: "agent",
@@ -630,12 +651,16 @@ async function assertMultiRepoReadPathRendered() {
         return {
           paths,
           body: body.slice(0, 3000),
-          hasOrgii: body.includes(${JSON.stringify(orgiiPath)}) || paths.some((path) => path.includes(${JSON.stringify(orgiiPath)})),
-          hasClaude: body.includes(${JSON.stringify(claudePath)}) || paths.some((path) => path.includes(${JSON.stringify(claudePath)})),
+          expectedPaths: ${JSON.stringify([primaryPath, secondaryPath, tertiaryPath])},
           hasGenericOnly: paths.some((path) => path.trim() === "file"),
         };
       `);
-      return state.hasOrgii && state.hasClaude && !state.hasGenericOnly;
+      return (
+        state.expectedPaths.every((expectedPath) =>
+          state.body.includes(expectedPath) ||
+          state.paths.some((renderedPath) => renderedPath.includes(expectedPath))
+        ) && !state.hasGenericOnly
+      );
     },
     {
       timeout: RENDER_TIMEOUT_MS,

@@ -157,7 +157,8 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
     if (!addTasksPanelOpen || !batchStatus) {
       return;
     }
-    if (batchStatus.benchmarkKind !== BENCHMARK_KIND.SWE_BENCH_PRO) {
+    const status = batchStatus;
+    if (status.benchmarkKind !== BENCHMARK_KIND.SWE_BENCH_PRO) {
       setAddTaskRows([]);
       setAddTasksError(null);
       setAddTasksLoading(false);
@@ -169,13 +170,13 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
       setAddTasksError(null);
       try {
         const rows = await benchmarkApi.listTasks({
-          kind: batchStatus.benchmarkKind,
-          sourcePath: batchStatus.sourcePath,
+          kind: status.benchmarkKind,
+          sourcePath: status.sourcePath,
           limit: BENCHMARK_TASK_LIST_LIMIT,
         });
         if (cancelled) return;
         const existingTaskIds = new Set(
-          batchStatus.items.map((item) => item.taskId)
+          status.items.map((item) => item.taskId)
         );
         setAddTaskRows(rows.filter((row) => !existingTaskIds.has(row.taskId)));
       } catch (error) {

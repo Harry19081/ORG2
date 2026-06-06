@@ -176,13 +176,7 @@ impl SecurityPolicy {
         }
 
         if let Some(substitution) = executable_substitution(command) {
-            return Err(match substitution {
-                ShellSubstitution::Backtick => {
-                    "Backtick subshell operators are not allowed.".into()
-                }
-                ShellSubstitution::Command => "$() subshell operators are not allowed.".into(),
-                ShellSubstitution::Parameter => "${} parameter expansion is not allowed.".into(),
-            });
+            return Err(shell_substitution_denial_reason(substitution));
         }
 
         // If no blocked commands configured, allow all
@@ -403,6 +397,17 @@ enum ShellSubstitution {
     Backtick,
     Command,
     Parameter,
+}
+
+fn shell_substitution_denial_reason(substitution: ShellSubstitution) -> String {
+    let operator = match substitution {
+        ShellSubstitution::Backtick => "Backtick subshell operators",
+        ShellSubstitution::Command => "$() subshell operators",
+        ShellSubstitution::Parameter => "${} parameter expansion",
+    };
+    format!(
+        "{operator} are not allowed in run_shell commands. This is a shell-injection guard, not an agent autonomy/tool permission setting. If you need literal backticks or code fences, put the content in a single-quoted heredoc (for example: <<'EOF') or use edit_file/write_file instead of embedding it in an executable shell command."
+    )
 }
 
 fn executable_substitution(command: &str) -> Option<ShellSubstitution> {
@@ -629,6 +634,22 @@ mod tests {
             policy.validate_command_execution("echo \"`whoami`\"", false),
             ValidationResult::Denied(reason) if reason.contains("Backtick subshell")
         ));
+    }
+
+    #[test]
+    fn shell_substitution_denial_explains_not_autonomy_permission() {
+        let policy = SecurityPolicy::permissive(std::env::temp_dir());
+
+        let result = policy.validate_command_execution("echo `whoami`", false);
+        match result {
+            ValidationResult::Denied(reason) => {
+                assert!(reason.contains("shell-injection guard"));
+                assert!(reason.contains("not an agent autonomy/tool permission"));
+                assert!(reason.contains("single-quoted heredoc"));
+                assert!(reason.contains("edit_file/write_file"));
+            }
+            other => panic!("expected denial, got {other:?}"),
+        }
     }
 
     #[test]

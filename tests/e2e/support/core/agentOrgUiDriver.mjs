@@ -302,6 +302,14 @@ export async function waitForApp() {
       interval: 500,
     }
   );
+  await execJS(`
+    try {
+      window.localStorage.setItem("orgii:auth_skipped", "1");
+      return true;
+    } catch {
+      return false;
+    }
+  `);
   await browser.waitUntil(
     async () => {
       try {
@@ -328,6 +336,37 @@ export async function waitForApp() {
     {
       timeout: 30_000,
       timeoutMsg: "required __e2e helpers never exposed",
+    }
+  );
+  let shellState = null;
+  await browser.waitUntil(
+    async () => {
+      try {
+        shellState = await execJS(`
+          const bodyText = document.body?.innerText || "";
+          return {
+            initializing: bodyText.includes("Initializing"),
+            hasCreator: Boolean(document.querySelector('[data-testid="session-creator-chat-panel"]')),
+            hasChat: Boolean(document.querySelector('[data-testid="chat-panel"]')),
+            hasLogin: Boolean(document.querySelector('.login-page, [data-testid="login-page"]')),
+            hasAppError: bodyText.includes("App error"),
+            bodyText: bodyText.slice(0, 700),
+          };
+        `);
+        return (
+          shellState.hasCreator ||
+          shellState.hasChat ||
+          shellState.hasLogin ||
+          shellState.hasAppError
+        );
+      } catch {
+        return false;
+      }
+    },
+    {
+      timeout: 30_000,
+      interval: 250,
+      timeoutMsg: `app shell never left initializing state: ${JSON.stringify(shellState)}`,
     }
   );
 }

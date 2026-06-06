@@ -1783,10 +1783,25 @@ process.stdin.on("data", (chunk) => {
         ),
         "debugSessionValidateCommand executable backtick"
       ).validation;
+      const executableBacktickReason = String(
+        executableBacktickValidation.reason ?? ""
+      );
       if (executableBacktickValidation.outcome !== "denied") {
         throw new Error(
           `Executable backtick subshell should still be denied: ${JSON.stringify(executableBacktickValidation)}`
         );
+      }
+      for (const expectedReasonPart of [
+        "shell-injection guard",
+        "not an agent autonomy/tool permission",
+        "single-quoted heredoc",
+        "edit_file/write_file",
+      ]) {
+        if (!executableBacktickReason.includes(expectedReasonPart)) {
+          throw new Error(
+            `Executable backtick denial reason was not actionable; missing ${expectedReasonPart}: ${JSON.stringify(executableBacktickValidation)}`
+          );
+        }
       }
 
       const promptDump = unwrap(

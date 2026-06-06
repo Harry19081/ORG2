@@ -225,7 +225,8 @@ impl Tool for ExecTool {
         Kill: set kill_handle to the PID of a backgrounded process to terminate it (SIGTERM → 2s grace → SIGKILL).\n\
         For long-running commands (builds, installs, tests), prefer mode=\"background\" from the start, \
         or set 'wait' to a short duration (e.g. 10-30s) for early feedback in blocking mode. \
-        IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc."
+        IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc. \
+        Do not use executable shell substitutions (`...`, $(...), or ${...}); for literal code fences/backticks, use a single-quoted heredoc such as <<'EOF' or use edit_file/write_file."
     }
 
     fn llm_description(&self) -> Option<String> {
@@ -248,7 +249,8 @@ impl Tool for ExecTool {
             (SIGTERM → 2s grace → SIGKILL).\n\
             For long-running commands (builds, installs, tests), prefer mode=\"background\" from the start, \
             or set 'wait' to a short duration (e.g. 10-30s) for early feedback in blocking mode. \
-            IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc.",
+            IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc. \
+            Do not use executable shell substitutions (`...`, $(...), or ${{...}}); for literal code fences/backticks, use a single-quoted heredoc such as <<'EOF' or use edit_file/write_file.",
             cwd = cwd, timeout = self.timeout_secs
         ))
     }
