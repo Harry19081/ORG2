@@ -26,7 +26,7 @@ function resolveCargoTargetDir() {
 
 const targetDir = resolveCargoTargetDir();
 const appPath = path.join(targetDir, "dev-build/bundle/macos/ORGII.app");
-const binaryPath = path.join(targetDir, "dev-build/app");
+const binaryPath = path.join(targetDir, "dev-build/orgii");
 
 const configOverride = JSON.stringify({
   bundle: {
@@ -34,7 +34,7 @@ const configOverride = JSON.stringify({
   },
 });
 
-spawnSync("pkill", ["-f", `${appPath}/Contents/MacOS/app`], {
+spawnSync("pkill", ["-f", `${appPath}/Contents/MacOS/orgii`], {
   stdio: "ignore",
 });
 fs.rmSync(appPath, { recursive: true, force: true });
@@ -42,7 +42,7 @@ fs.rmSync(binaryPath, { force: true });
 
 const cleanResult = spawnSync(
   "cargo",
-  ["clean", "-p", "app", "--profile", "dev-build"],
+  ["clean", "-p", "orgii", "--profile", "dev-build"],
   {
     stdio: "inherit",
     cwd: path.join(rootDir, "src-tauri"),
