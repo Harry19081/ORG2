@@ -275,11 +275,11 @@ const CompactFileChanges: React.FC<CompactFileChangesProps> = memo(
     // Visibility
     // ============================================
 
-    const isHidden =
-      !canRedo && (allFiles.length === 0 || visibleFiles.length === 0);
+    const visibleStatFiles = hasPendingActions ? visibleFiles : allFiles;
+    const isHidden = !canRedo && visibleStatFiles.length === 0;
     const visibleStats = useMemo<FileChangeVisibleStats>(() => {
       if (isHidden) return { count: 0, additions: 0, deletions: 0 };
-      return visibleFiles.reduce<FileChangeVisibleStats>(
+      return visibleStatFiles.reduce<FileChangeVisibleStats>(
         (stats, file) => ({
           count: stats.count + 1,
           additions: stats.additions + file.additions,
@@ -287,7 +287,7 @@ const CompactFileChanges: React.FC<CompactFileChangesProps> = memo(
         }),
         { count: 0, additions: 0, deletions: 0 }
       );
-    }, [isHidden, visibleFiles]);
+    }, [isHidden, visibleStatFiles]);
 
     useEffect(() => {
       onVisibleStatsChange?.(visibleStats);

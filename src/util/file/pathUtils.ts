@@ -83,6 +83,20 @@ export function getFileName(filePath: string): string {
   return parts[parts.length - 1] || filePath;
 }
 
+export function normalizeDiffFilePath(filePath: string): string {
+  let normalized = filePath.trim().replace(/\\/g, "/");
+  if (normalized.startsWith('"') && normalized.endsWith('"')) {
+    normalized = normalized.slice(1, -1);
+  }
+  while (normalized.startsWith("./")) {
+    normalized = normalized.slice(2);
+  }
+  if (normalized.startsWith("a/") || normalized.startsWith("b/")) {
+    normalized = normalized.slice(2);
+  }
+  return normalized;
+}
+
 /**
  * Get base name (filename without extension) from file path
  * @param filePath - Full file path

@@ -19,7 +19,7 @@ import { getSessionFiles } from "@src/api/tauri/agent";
 import { sortedEventsAtom } from "@src/engines/SessionCore";
 import { createLogger } from "@src/hooks/logger";
 import { resolvedFilePathsAtom } from "@src/store/session/fileReviewAtom";
-import { getFileName } from "@src/util/file/pathUtils";
+import { getFileName, normalizeDiffFilePath } from "@src/util/file/pathUtils";
 
 import {
   BACKEND_FILE_CHANGES_POLL_INTERVAL_MS,
@@ -59,18 +59,6 @@ export function useCompactFileData({
   const [backendFileChanges, setBackendFileChanges] =
     useState<FileChangesResult | null>(null);
 
-  // Clear the backend cache when it is no longer needed (pendingCount dropped
-  // to 0 and there is nothing to redo). We do this via a separate effect so
-  // the reset never fires synchronously inside the data-loading effect body,
-  // which would trip `react-hooks/set-state-in-effect`.
-  const shouldClearCache = pendingCount === 0 && !canRedo && !initialData;
-  useEffect(() => {
-    if (shouldClearCache) {
-      setBackendFileChanges(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldClearCache]);
-
   const hasCompletedFileWriteEvent = useMemo(
     () =>
       events.some(
@@ -84,7 +72,6 @@ export function useCompactFileData({
 
   const eventsBasedFiles = useMemo<FileChangeInfo[]>(() => {
     if (initialData) return initialData.files;
-    if (pendingCount === 0) return [];
 
     const fileMap = new Map<string, FileChangeInfo>();
     for (const event of events) {
@@ -97,32 +84,75 @@ export function useCompactFileData({
       if (event.uiCanonical === "apply_patch") {
         const patchText = event.args?.patch_text as string | undefined;
         if (!patchText) continue;
-        for (const line of patchText.split("\n")) {
-          const trimmed = line.trim();
-          let filePath: string | undefined;
-          let status = "M";
-          if (trimmed.startsWith("*** Add File:")) {
-            filePath = trimmed.slice("*** Add File:".length).trim();
-            status = "A";
-          } else if (trimmed.startsWith("*** Update File:")) {
-            filePath = trimmed.slice("*** Update File:".length).trim();
-            status = "M";
-          } else if (trimmed.startsWith("*** Delete File:")) {
-            filePath = trimmed.slice("*** Delete File:".length).trim();
-            status = "D";
-          }
-          if (!filePath) continue;
-          const fileName = getFileName(filePath);
-          if (!fileMap.has(filePath)) {
-            fileMap.set(filePath, {
-              path: filePath,
-              fileName,
+
+        let currentFilePath: string | null = null;
+        let currentStatus = "M";
+        const ensurePatchFile = (rawFilePath: string, status: string) => {
+          const normalizedFilePath = normalizeDiffFilePath(rawFilePath);
+          const existingFile = fileMap.get(normalizedFilePath);
+          if (existingFile) {
+            fileMap.set(normalizedFilePath, {
+              ...existingFile,
+              status:
+                existingFile.status === "A" ? existingFile.status : status,
+            });
+          } else {
+            fileMap.set(normalizedFilePath, {
+              path: normalizedFilePath,
+              fileName: getFileName(normalizedFilePath),
               status,
               additions: 0,
               deletions: 0,
               lineCount: 0,
             });
           }
+          return normalizedFilePath;
+        };
+
+        for (const line of patchText.split("\n")) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("*** Add File:")) {
+            currentStatus = "A";
+            currentFilePath = ensurePatchFile(
+              trimmed.slice("*** Add File:".length).trim(),
+              currentStatus
+            );
+            continue;
+          }
+          if (trimmed.startsWith("*** Update File:")) {
+            currentStatus = "M";
+            currentFilePath = ensurePatchFile(
+              trimmed.slice("*** Update File:".length).trim(),
+              currentStatus
+            );
+            continue;
+          }
+          if (trimmed.startsWith("*** Delete File:")) {
+            currentStatus = "D";
+            currentFilePath = ensurePatchFile(
+              trimmed.slice("*** Delete File:".length).trim(),
+              currentStatus
+            );
+            continue;
+          }
+          if (trimmed.startsWith("***")) {
+            currentFilePath = null;
+            continue;
+          }
+          if (!currentFilePath) continue;
+          const existingFile = fileMap.get(currentFilePath);
+          if (!existingFile) continue;
+          const isAddition = line.startsWith("+") && !line.startsWith("+++");
+          const isDeletion = line.startsWith("-") && !line.startsWith("---");
+          if (!isAddition && !isDeletion) continue;
+          const additions = isAddition ? 1 : 0;
+          const deletions = isDeletion ? 1 : 0;
+          fileMap.set(currentFilePath, {
+            ...existingFile,
+            additions: existingFile.additions + additions,
+            deletions: existingFile.deletions + deletions,
+            lineCount: existingFile.lineCount + additions + deletions,
+          });
         }
         continue;
       }
@@ -143,7 +173,8 @@ export function useCompactFileData({
         getStringField(success, "path");
       if (!filePath) continue;
 
-      const fileName = getFileName(filePath);
+      const normalizedFilePath = normalizeDiffFilePath(filePath);
+      const fileName = getFileName(normalizedFilePath);
       const hasOld =
         !!getStringField(args, "old_string") ||
         !!getStringField(extracted, "oldContent");
@@ -159,9 +190,17 @@ export function useCompactFileData({
         getNumberField(result, ["lines_removed", "linesRemoved"]) ??
         getNumberField(success, ["lines_removed", "linesRemoved"]) ??
         0;
-      if (!fileMap.has(filePath)) {
-        fileMap.set(filePath, {
-          path: filePath,
+      const existingFile = fileMap.get(normalizedFilePath);
+      if (existingFile) {
+        fileMap.set(normalizedFilePath, {
+          ...existingFile,
+          additions: existingFile.additions + additions,
+          deletions: existingFile.deletions + deletions,
+          lineCount: existingFile.lineCount + additions + deletions,
+        });
+      } else {
+        fileMap.set(normalizedFilePath, {
+          path: normalizedFilePath,
           fileName,
           status,
           additions,
@@ -171,15 +210,10 @@ export function useCompactFileData({
       }
     }
     return Array.from(fileMap.values());
-  }, [events, initialData, pendingCount]);
+  }, [events, initialData]);
 
   useEffect(() => {
-    if (
-      initialData ||
-      (pendingCount === 0 && !canRedo) ||
-      eventsBasedFiles.length > 0 ||
-      !sessionId
-    ) {
+    if (initialData || eventsBasedFiles.length > 0 || !sessionId) {
       return;
     }
 
@@ -230,7 +264,7 @@ export function useCompactFileData({
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [canRedo, eventsBasedFiles.length, initialData, pendingCount, sessionId]);
+  }, [eventsBasedFiles.length, initialData, sessionId]);
 
   const allFiles =
     eventsBasedFiles.length > 0
