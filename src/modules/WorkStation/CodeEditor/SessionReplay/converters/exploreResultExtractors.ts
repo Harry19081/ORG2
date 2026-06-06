@@ -225,7 +225,7 @@ export function extractGlobResults(
   result: Record<string, unknown>
 ): { files: string[]; totalMatches: number } {
   const extracted = event.extracted;
-  if (extracted && extracted.kind === "glob") {
+  if (extracted && extracted.kind === "glob" && extracted.files.length > 0) {
     const total =
       typeof extracted.totalFiles === "number" && extracted.totalFiles > 0
         ? extracted.totalFiles
@@ -234,12 +234,14 @@ export function extractGlobResults(
   }
 
   const standardData = extractStandardSearchResults(result);
+  const files =
+    standardData.files.length > 0
+      ? standardData.files
+      : standardData.results.map((row) => row.file).filter(Boolean);
   return {
-    files: standardData.files,
+    files,
     totalMatches:
-      standardData.totalMatches > 0
-        ? standardData.totalMatches
-        : standardData.files.length,
+      standardData.totalMatches > 0 ? standardData.totalMatches : files.length,
   };
 }
 
@@ -252,7 +254,11 @@ export function extractSearchResults(
   result: Record<string, unknown>
 ): { results: SearchResult[]; files: string[]; totalMatches: number } {
   const extracted = event.extracted;
-  if (extracted && extracted.kind === "search") {
+  if (
+    extracted &&
+    extracted.kind === "search" &&
+    extracted.results.length > 0
+  ) {
     const results = extracted.results.map((hit) => ({
       file: hit.file,
       line: hit.line,
@@ -326,29 +332,6 @@ export function extractStandardSearchResults(result: Record<string, unknown>): {
     totalMatches = results.length;
   }
 
-  const fileSources = [
-    result.files,
-    successData?.files,
-    directSuccess?.files,
-    result.directories,
-    result.matches,
-    result.topFiles,
-    cursorAdditionalData?.topFiles,
-    result.content,
-    result.items,
-    filesFromParsedObservation,
-  ];
-  for (const source of fileSources) {
-    const extracted = extractStringArrayFromSource(source);
-    const extractedFromObjects =
-      extracted.length > 0 ? extracted : extractFilesFromSource(source);
-    if (extractedFromObjects.length > 0) {
-      files = extractedFromObjects;
-      totalMatches = files.length;
-      break;
-    }
-  }
-
   if (results.length === 0) {
     const structuredSources = [
       result.results,
@@ -369,6 +352,31 @@ export function extractStandardSearchResults(result: Record<string, unknown>): {
       if (extractedRows.length > 0) {
         results = extractedRows;
         totalMatches = extractedRows.length;
+        break;
+      }
+    }
+  }
+
+  if (results.length === 0) {
+    const fileSources = [
+      result.files,
+      successData?.files,
+      directSuccess?.files,
+      result.directories,
+      result.matches,
+      result.topFiles,
+      cursorAdditionalData?.topFiles,
+      result.content,
+      result.items,
+      filesFromParsedObservation,
+    ];
+    for (const source of fileSources) {
+      const extracted = extractStringArrayFromSource(source);
+      const extractedFromObjects =
+        extracted.length > 0 ? extracted : extractFilesFromSource(source);
+      if (extractedFromObjects.length > 0) {
+        files = extractedFromObjects;
+        totalMatches = files.length;
         break;
       }
     }

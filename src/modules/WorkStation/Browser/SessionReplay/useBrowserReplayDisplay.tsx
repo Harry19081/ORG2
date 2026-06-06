@@ -274,7 +274,7 @@ export function useBrowserReplayDisplay({
       const domContent = renderNativeBrowserDomContent(activeInternalEntry);
       if (domContent) {
         return (
-          <div className="scrollbar-overlay h-full overflow-y-auto p-4">
+          <div className="scrollbar-overlay h-full overflow-y-auto p-4 pb-[100px]">
             <pre className="whitespace-pre-wrap break-words font-mono text-[12px] leading-relaxed text-text-2">
               {domContent}
             </pre>

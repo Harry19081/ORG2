@@ -224,21 +224,26 @@ export function dedupeExploreOperations(
     groups.set(key, existing);
   }
 
-  // For each group, keep the best one (prefer with results, or current)
+  // For each group, keep the best one (prefer completed data over empty current shells)
   const result: ExploreOperationEntry[] = [];
+  const hasExploreData = (op: ExploreOperationEntry) =>
+    op.results.length > 0 ||
+    (op.files && op.files.length > 0) ||
+    op.totalMatches > 0;
 
   for (const [_key, ops] of groups) {
     if (ops.length === 1) {
       result.push(ops[0]);
     } else {
-      // Find the best one: prefer completed (has results) over running (no results)
-      const currentOp = ops.find((op) => op.isCurrent);
-      const completedOp = ops.find(
-        (op) =>
-          !op.isLoading &&
-          (op.results.length > 0 || (op.files && op.files.length > 0))
+      const currentOpWithData = ops.find(
+        (op) => op.isCurrent && hasExploreData(op)
       );
-      const bestOp = currentOp || completedOp || ops[ops.length - 1];
+      const completedOp = ops.find((op) => !op.isLoading && hasExploreData(op));
+      const bestOp =
+        currentOpWithData ||
+        completedOp ||
+        ops.find((op) => op.isCurrent) ||
+        ops[ops.length - 1];
       result.push(bestOp);
     }
   }

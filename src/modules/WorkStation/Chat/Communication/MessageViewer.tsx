@@ -267,7 +267,7 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
     >
       <div
         ref={scrollContainerRef}
-        className="min-h-0 flex-1 overflow-y-auto px-4 pb-[85px] scrollbar-hide"
+        className="min-h-0 flex-1 overflow-y-auto px-4 pb-[100px] scrollbar-hide"
       >
         <div
           className={

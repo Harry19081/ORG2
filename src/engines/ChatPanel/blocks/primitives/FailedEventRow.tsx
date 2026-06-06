@@ -4,9 +4,8 @@
  * Renders a muted row (icon + label) when a tool event has status "failed".
  * The caller provides a fully-formed, tense-aware label (e.g. "Failed to read file.ts").
  */
+import { X } from "lucide-react";
 import React from "react";
-
-import { getToolIcon } from "@src/config/toolIcons";
 
 import { EventBlockHeaderIcon } from "./EventBlockHeaderIcon";
 import { SESSION_UI_TOKENS } from "./config";
@@ -25,15 +24,12 @@ interface FailedEventRowProps {
 export const FailedEventRow: React.FC<FailedEventRowProps> = ({
   toolName,
   label,
-  action,
   detail,
   eventId,
 }) => {
-  const icon = getToolIcon(toolName, {
-    size: SESSION_UI_TOKENS.ICON.SIZE_SM,
-    action,
-  });
-
+  const icon = (
+    <X size={SESSION_UI_TOKENS.ICON.SIZE_SM} className="text-danger-6" />
+  );
   const trimmedDetail = detail?.trim();
 
   return (
@@ -42,7 +38,7 @@ export const FailedEventRow: React.FC<FailedEventRowProps> = ({
       data-tool-call-event-id={eventId}
       data-tool-call-name={toolName}
     >
-      <EventBlockHeaderIcon icon={icon} isFailed />
+      <EventBlockHeaderIcon icon={icon} hasContent={false} />
       <span className={SESSION_UI_TOKENS.TEXT.TERTIARY}>
         {label}
         {trimmedDetail ? `: ${trimmedDetail}` : ""}

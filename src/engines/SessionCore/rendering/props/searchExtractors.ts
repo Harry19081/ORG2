@@ -6,19 +6,38 @@ import type {
   UniversalEventProps,
 } from "../types/universalProps";
 
+function parseTextSearchResults(textContent: string): Array<{
+  file: string;
+  line: number;
+  content: string;
+}> {
+  return textContent
+    .split("\n")
+    .map((line) => line.match(/^(.+?):(\d+):(.*)$/))
+    .filter((match): match is RegExpMatchArray => Boolean(match))
+    .map((match) => ({
+      file: match[1],
+      line: Number.parseInt(match[2], 10),
+      content: match[3],
+    }));
+}
+
 export function extractSearchData(
   props: UniversalEventProps
 ): ExtractedSearchData {
-  if (props.rustExtracted?.kind === "search") {
-    const s = props.rustExtracted;
+  const { args, result } = props;
+
+  if (
+    props.rustExtracted?.kind === "search" &&
+    props.rustExtracted.results.length > 0
+  ) {
+    const searchData = props.rustExtracted;
     return {
-      query: s.query,
-      results: s.results,
-      totalMatches: s.totalMatches,
+      query: searchData.query,
+      results: searchData.results,
+      totalMatches: searchData.totalMatches,
     };
   }
-
-  const { args, result } = props;
 
   const query =
     (args?.query as string) ||
@@ -34,7 +53,7 @@ export function extractSearchData(
   const rawResults = result?.matches;
   const resultsArray = Array.isArray(rawResults) ? rawResults : [];
 
-  const results = resultsArray.map((match) => {
+  let results = resultsArray.map((match) => {
     const matchObj = match as Record<string, unknown>;
     return {
       file: (matchObj.file as string) || "",
@@ -42,6 +61,10 @@ export function extractSearchData(
       content: (matchObj.content as string) || "",
     };
   });
+
+  if (results.length === 0 && typeof result?.content === "string") {
+    results = parseTextSearchResults(result.content);
+  }
 
   let totalMatches = (result?.total as number) || results.length;
   if (totalMatches === 0 && typeof result?.content === "string") {

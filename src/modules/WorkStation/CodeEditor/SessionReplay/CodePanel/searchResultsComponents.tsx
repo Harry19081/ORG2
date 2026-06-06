@@ -4,7 +4,7 @@
  * Shared UI sub-components for SearchResultsContent.
  * Extracted to keep the main component file under 600 lines.
  */
-import { File, Folder, Search } from "lucide-react";
+import { File, FolderOpen, Search } from "lucide-react";
 import React from "react";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
@@ -24,16 +24,25 @@ import { isFolderLikePath, parseSearchKeywords } from "./searchResultsParsers";
 // Primitive pills
 // ============================================================================
 
-export function ToolPill({
-  children,
+export function HeaderPrimarySegment({
+  icon,
+  label,
 }: {
-  children: React.ReactNode;
+  icon: React.ReactNode;
+  label: React.ReactNode;
 }): React.ReactElement {
   return (
-    <span className="shrink-0 text-[12px] font-medium text-primary-6">
-      {children}
+    <span className="inline-flex w-fit max-w-none flex-none shrink-0 items-center gap-2 whitespace-nowrap text-primary-6">
+      <span className="pointer-events-none inline-flex shrink-0 items-center justify-center leading-none [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:shrink-0">
+        {icon}
+      </span>
+      <span className="text-[12px] font-medium leading-tight">{label}</span>
     </span>
   );
+}
+
+export function HeaderSeparator(): React.ReactElement {
+  return <span className="mx-1 h-4 w-px flex-none shrink-0 bg-border-2" />;
 }
 
 export function CountPill({
@@ -42,7 +51,7 @@ export function CountPill({
   children: React.ReactNode;
 }): React.ReactElement {
   return (
-    <span className="shrink-0 rounded-full bg-fill-3 px-2 py-0.5 text-[12px] font-medium text-text-1">
+    <span className="inline-flex w-fit flex-none shrink-0 whitespace-nowrap rounded-full bg-fill-3 px-2 py-0.5 text-[12px] font-medium text-text-1">
       {children}
     </span>
   );
@@ -61,7 +70,7 @@ export function ResultsSummaryLine({
 }): React.ReactElement {
   return (
     <div className="flex min-w-0 items-center gap-1.5 text-[12px] text-text-3">
-      <span className="shrink-0 pl-1.5 font-medium tabular-nums text-primary-6">
+      <span className="shrink-0 pl-1.5 font-medium tabular-nums text-text-1">
         {countLabel}
       </span>
       {directory ? (
@@ -91,14 +100,14 @@ export function SearchSummaryHeader({
   return (
     <div className="flex w-full min-w-0 flex-col gap-2 border-b border-border-2 px-3 py-2">
       <div className="flex h-9 min-w-0 items-center gap-2 rounded-full border border-border-2 bg-workstation-bg px-3 shadow-sm">
-        <Search size={14} className="shrink-0 text-primary-6" />
-        <ToolPill>{toolLabel}</ToolPill>
+        <HeaderPrimarySegment icon={<Search size={14} />} label={toolLabel} />
+        <HeaderSeparator />
         {keywords.length > 0 ? (
           <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-1.5 overflow-x-auto scrollbar-hide">
             {keywords.map((keyword) => (
               <span
                 key={keyword}
-                className="shrink-0 rounded-full bg-fill-3 px-2 py-0.5 text-[12px] font-medium text-text-1"
+                className="w-fit flex-none shrink-0 whitespace-nowrap rounded-full bg-fill-3 px-2 py-0.5 text-[12px] font-medium text-text-1"
               >
                 {keyword}
               </span>
@@ -126,8 +135,11 @@ export function DirectorySummaryHeader({
   return (
     <div className="flex w-full min-w-0 flex-col gap-2 border-b border-border-2 px-3 py-2">
       <div className="flex h-9 min-w-0 items-center gap-2 rounded-full border border-border-2 bg-workstation-bg px-3 shadow-sm">
-        <Folder size={14} className="shrink-0 text-primary-6" />
-        <ToolPill>List directory</ToolPill>
+        <HeaderPrimarySegment
+          icon={<FolderOpen size={14} />}
+          label="List directory"
+        />
+        <HeaderSeparator />
         <BreadcrumbFileHeader
           filePath={displayDirectory}
           disableNavigation
@@ -154,8 +166,8 @@ export function LspSummaryHeader({
   return (
     <div className="flex w-full min-w-0 flex-col gap-2 border-b border-border-2 px-3 py-2">
       <div className="flex h-9 min-w-0 items-center gap-2 rounded-full border border-border-2 bg-workstation-bg px-3 shadow-sm">
-        <File size={14} className="shrink-0 text-primary-6" />
-        <ToolPill>LSP</ToolPill>
+        <HeaderPrimarySegment icon={<File size={14} />} label="LSP" />
+        <HeaderSeparator />
         {filePath ? (
           <BreadcrumbFileHeader
             filePath={filePath}
@@ -201,6 +213,93 @@ export function DiagnosticRow({
       {line > 0 ? (
         <span className="shrink-0 text-[11px] tabular-nums text-text-4">
           [Ln {line}]
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function renderHighlightedSearchText(
+  text: string,
+  highlightTerms: string[]
+): React.ReactNode {
+  const normalizedTerms = Array.from(
+    new Set(
+      highlightTerms
+        .map((term) => term.trim())
+        .filter(Boolean)
+        .sort((firstTerm, secondTerm) => secondTerm.length - firstTerm.length)
+    )
+  );
+
+  if (normalizedTerms.length === 0) return text;
+
+  const lowerText = text.toLowerCase();
+  const lowerTerms = normalizedTerms.map((term) => term.toLowerCase());
+  const parts: React.ReactNode[] = [];
+  let cursor = 0;
+
+  while (cursor < text.length) {
+    let nextMatchIndex = -1;
+    let nextMatchLength = 0;
+
+    for (const term of lowerTerms) {
+      const candidateIndex = lowerText.indexOf(term, cursor);
+      if (candidateIndex === -1) continue;
+      if (
+        nextMatchIndex === -1 ||
+        candidateIndex < nextMatchIndex ||
+        (candidateIndex === nextMatchIndex && term.length > nextMatchLength)
+      ) {
+        nextMatchIndex = candidateIndex;
+        nextMatchLength = term.length;
+      }
+    }
+
+    if (nextMatchIndex === -1) {
+      parts.push(text.slice(cursor));
+      break;
+    }
+
+    if (nextMatchIndex > cursor) {
+      parts.push(text.slice(cursor, nextMatchIndex));
+    }
+
+    const matchedText = text.slice(
+      nextMatchIndex,
+      nextMatchIndex + nextMatchLength
+    );
+    parts.push(
+      <span key={`${nextMatchIndex}-${matchedText}`} className="text-primary-6">
+        {matchedText}
+      </span>
+    );
+    cursor = nextMatchIndex + nextMatchLength;
+  }
+
+  return parts;
+}
+
+export function SearchMatchRow({
+  message,
+  lineLabel,
+  highlightTerms,
+}: {
+  message: string;
+  lineLabel?: string;
+  highlightTerms?: string[];
+}): React.ReactElement {
+  return (
+    <div className="flex min-w-0 items-center gap-2 rounded px-2 py-1 hover:bg-fill-2">
+      <span
+        className="min-w-0 flex-1 truncate text-[12px] text-text-1"
+        title={message}
+      >
+        {renderHighlightedSearchText(message, highlightTerms ?? [])}
+      </span>
+      {lineLabel ? (
+        <span className="shrink-0 text-[11px] tabular-nums text-text-4">
+          {lineLabel}
         </span>
       ) : null}
     </div>
@@ -266,6 +365,45 @@ export function ExploreResultRow({
           ) : null}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+export interface GroupedExploreResult<T> {
+  filePath: string;
+  items: T[];
+}
+
+export function GroupedExploreResultRows<T>({
+  groups,
+  workspaceDirectoryHint,
+  getCount,
+  renderItem,
+}: {
+  groups: GroupedExploreResult<T>[];
+  workspaceDirectoryHint?: string;
+  getCount?: (group: GroupedExploreResult<T>) => number;
+  renderItem: (item: T, itemIndex: number, filePath: string) => React.ReactNode;
+}): React.ReactElement {
+  return (
+    <div className="flex w-full min-w-0 flex-col p-2">
+      {groups.map((group, groupIndex) => (
+        <div
+          key={`${group.filePath}-${groupIndex}`}
+          className="flex w-full min-w-0 flex-col"
+        >
+          <ExploreResultRow
+            filePath={group.filePath}
+            workspaceDirectoryHint={workspaceDirectoryHint}
+            count={getCount ? getCount(group) : group.items.length}
+          />
+          <div className="flex w-full min-w-0 flex-col pl-6">
+            {group.items.map((item, itemIndex) =>
+              renderItem(item, itemIndex, group.filePath)
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

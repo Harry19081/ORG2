@@ -498,7 +498,7 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
                 />
               </div>
             ) : (
-              <div className="scrollbar-overlay h-full overflow-y-auto p-4">
+              <div className="scrollbar-overlay h-full overflow-y-auto p-4 pb-[100px]">
                 <pre className="whitespace-pre-wrap break-words text-[13px] leading-relaxed text-text-2">
                   {displayData.text}
                 </pre>

@@ -135,7 +135,7 @@ const SessionReplayDatabase: React.FC<SimulatorAppProps> = ({
           showZero
         />
       </div>
-      <div className="scrollbar-overlay flex-1 overflow-y-auto">
+      <div className="scrollbar-overlay flex-1 overflow-y-auto pb-[100px]">
         <div className="flex flex-col gap-0.5 p-1">
           {operations.map((op) => (
             <OperationRow

@@ -1284,6 +1284,32 @@ describe("extractSearchData", () => {
       });
       expect(extractSearchData(props).results).toEqual([]);
     });
+
+    it("falls back to ripgrep text when rustExtracted search is empty", () => {
+      const props = makeUniversalProps({
+        args: { pattern: "require\\('../../src/database" },
+        rustExtracted: {
+          kind: "search",
+          query: "require\\('../../src/database",
+          results: [],
+          totalMatches: 77,
+        },
+        result: {
+          content:
+            "/repo/test/mocks/databasemock.js-128-\n" +
+            "/repo/test/mocks/databasemock.js:129:const db = require('../../src/database');",
+        },
+      });
+      const data = extractSearchData(props);
+      expect(data.results).toEqual([
+        {
+          file: "/repo/test/mocks/databasemock.js",
+          line: 129,
+          content: "const db = require('../../src/database');",
+        },
+      ]);
+      expect(data.totalMatches).toBe(1);
+    });
   });
 
   describe("totalMatches", () => {

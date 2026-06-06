@@ -82,7 +82,7 @@ const SimulatorShellCssOutputComponent: React.FC<
 
   return (
     <div
-      className="simulator-shell-surface min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-2"
+      className="simulator-shell-surface min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 pb-[100px] pt-2"
       style={surfaceTypographyVars}
     >
       {!hideCommandLine ? (

@@ -23,7 +23,7 @@ export const PreviewContent: React.FC<{
   switch (previewType) {
     case "markdown":
       return (
-        <div className="scrollbar-overlay h-full overflow-auto p-4">
+        <div className="scrollbar-overlay h-full overflow-auto p-4 pb-[100px]">
           <Markdown textContent={content} skipPreprocess />
         </div>
       );

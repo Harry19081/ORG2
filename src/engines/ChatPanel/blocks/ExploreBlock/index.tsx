@@ -4,6 +4,7 @@
  * Displays directory contents with tree view
  * Uses file type icons like context menu
  */
+import { X } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -26,6 +27,10 @@ import { useBlockHeader } from "../useBlockLocate";
 const DEFAULT_VISIBLE_ITEMS = 5;
 const ITEM_HEIGHT = 24;
 const CHAT_CODE_FONT_SIZE = "var(--chat-code-font-size, 13px)";
+
+function isDirectoryNotFoundExecutionFailure(message: string): boolean {
+  return /Execution failed:\s*Directory not found/i.test(message);
+}
 
 interface TreeNode {
   absPath?: string;
@@ -91,6 +96,16 @@ const ExploreFlatEntryRow: React.FC<{
   item: DirEntryItem;
   hideIcon?: boolean;
 }> = React.memo(({ item, hideIcon = false }) => {
+  if (isDirectoryNotFoundExecutionFailure(item.name)) {
+    return (
+      <ComposerStackListRow
+        title={item.name}
+        leading={<X size={14} className="shrink-0 text-danger-6" />}
+        primary={item.name}
+      />
+    );
+  }
+
   const isDir = item.kind === "dir";
   const iconName = isDir
     ? item.name.endsWith("/")

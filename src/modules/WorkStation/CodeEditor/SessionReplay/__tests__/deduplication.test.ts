@@ -309,7 +309,7 @@ describe("dedupeExploreOperations", () => {
     expect(out[0].results).toHaveLength(1);
   });
 
-  it("prefers isCurrent over completed when both match same key", () => {
+  it("prefers completed data over an empty current shell when both match same key", () => {
     const input: ExploreOperationEntry[] = [
       baseSearchOp({
         eventId: "done",
@@ -325,6 +325,29 @@ describe("dedupeExploreOperations", () => {
         isCurrent: true,
         results: [],
         totalMatches: 0,
+      }),
+    ];
+    const out = dedupeExploreOperations(input);
+    expect(out).toHaveLength(1);
+    expect(out[0].eventId).toBe("done");
+  });
+
+  it("prefers current operation when it has data", () => {
+    const input: ExploreOperationEntry[] = [
+      baseSearchOp({
+        eventId: "done",
+        query: "bar",
+        exploreType: "glob",
+        files: ["x.ts"],
+        totalMatches: 1,
+      }),
+      baseSearchOp({
+        eventId: "cur",
+        query: "bar",
+        exploreType: "glob",
+        isCurrent: true,
+        files: ["y.ts"],
+        totalMatches: 1,
       }),
     ];
     const out = dedupeExploreOperations(input);
