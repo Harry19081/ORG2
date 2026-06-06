@@ -8,11 +8,8 @@ const QUEUE_RUNTIME_WORKING_STATUSES = new Set<string>([
   "waiting_for_funds",
 ]);
 
-export function isQueueRuntimeStillWorking(
-  runtimeStatus: string,
-  snapshotActive: boolean
-): boolean {
-  return QUEUE_RUNTIME_WORKING_STATUSES.has(runtimeStatus) || snapshotActive;
+export function isQueueRuntimeStillWorking(runtimeStatus: string): boolean {
+  return QUEUE_RUNTIME_WORKING_STATUSES.has(runtimeStatus);
 }
 
 export function markQueueTurnWorking(sessionId: string, at = Date.now()): void {

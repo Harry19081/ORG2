@@ -1,5 +1,4 @@
 import { CANCEL_REASON } from "@src/api/tauri/agent";
-import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import { SessionService } from "@src/engines/SessionCore/services/SessionService";
 import { markSessionStreamingStopped } from "@src/engines/SessionCore/sync/adapters/rustAgent/eventHandlers/streamHelpers";
 import {
@@ -14,6 +13,21 @@ import { streamingDeltaContentAtom } from "../core/atoms";
 
 export type TimelineBoundaryReason = "stop" | "force-send" | "rewind";
 
+const interruptInFlightByBoundary = new Set<string>();
+
+function boundaryKey(
+  sessionId: string,
+  reason: TimelineBoundaryReason
+): string {
+  return `${reason}:${sessionId}`;
+}
+
+function reasonToCancelReason(reason: TimelineBoundaryReason) {
+  return reason === "force-send"
+    ? CANCEL_REASON.FORCE_SEND
+    : CANCEL_REASON.USER_STOP;
+}
+
 export function clearLiveStreamingForSession(sessionId: string): void {
   const store = getInstrumentedStore();
   markSessionStreamingStopped(sessionId);
@@ -23,9 +37,6 @@ export function clearLiveStreamingForSession(sessionId: string): void {
     const next = new Map(prev);
     next.delete(sessionId);
     return next;
-  });
-  void eventStoreProxy.setStreaming(false, sessionId).catch((error) => {
-    console.warn("[sessionTimelineBoundary] setStreaming(false) failed", error);
   });
 }
 
@@ -47,20 +58,38 @@ export function beginTimelineBoundary(
   store.set(isPendingCancelAtom, false);
 }
 
-export async function cancelTurnForTimelineBoundary(
+export function beginStopBoundary(sessionId: string): void {
+  beginTimelineBoundary(sessionId, "stop");
+}
+
+export function isTimelineInterruptInFlight(
   sessionId: string,
   reason: TimelineBoundaryReason
+): boolean {
+  return interruptInFlightByBoundary.has(boundaryKey(sessionId, reason));
+}
+
+export async function cancelTurnForTimelineBoundary(
+  sessionId: string,
+  reason: TimelineBoundaryReason,
+  options: { onError?: (message: string) => void } = {}
 ): Promise<void> {
   beginTimelineBoundary(sessionId, reason);
+  const key = boundaryKey(sessionId, reason);
+  if (interruptInFlightByBoundary.has(key)) return;
+  interruptInFlightByBoundary.add(key);
   try {
     await SessionService.interrupt({
       sessionId,
-      reason:
-        reason === "force-send"
-          ? CANCEL_REASON.FORCE_SEND
-          : CANCEL_REASON.USER_STOP,
+      reason: reasonToCancelReason(reason),
+      onError: options.onError,
     });
   } catch (error) {
     console.warn("[sessionTimelineBoundary] interrupt failed", error);
+    if (options.onError) {
+      options.onError(error instanceof Error ? error.message : String(error));
+    }
+  } finally {
+    interruptInFlightByBoundary.delete(key);
   }
 }

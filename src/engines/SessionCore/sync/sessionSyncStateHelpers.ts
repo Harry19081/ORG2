@@ -5,7 +5,10 @@ import type {
   SessionEvent,
   SessionLoadStatus,
 } from "@src/engines/SessionCore/core/types";
-import { markQueueTurnSettled } from "@src/engines/SessionCore/hooks/session/queueTurnGate";
+import {
+  markQueueTurnSettled,
+  markQueueTurnWorking,
+} from "@src/engines/SessionCore/hooks/session/queueTurnGate";
 import { type SessionStatus, updateSessionStatus } from "@src/store/session";
 import type {
   ContextBreakdown,
@@ -69,36 +72,6 @@ const QUEUE_RELEASING_TERMINAL_STATUSES = new Set<string>([
   "completed",
   "failed",
 ]);
-const QUEUE_SETTLE_SNAPSHOT_RECHECK_LIMIT = 20;
-const QUEUE_SETTLE_SNAPSHOT_RECHECK_MS = 100;
-
-function snapshotShowsActiveTurn(sessionId: string): boolean {
-  const latestSnapshot = eventStoreProxy.getLatestSessionSnapshot(sessionId);
-  return (
-    latestSnapshot?.hasRunningEvent === true ||
-    (latestSnapshot != null &&
-      "streaming" in latestSnapshot &&
-      latestSnapshot.streaming === true)
-  );
-}
-
-function markQueueTurnSettledWhenSnapshotIdle(
-  sessionId: string,
-  attempt = 0
-): void {
-  if (
-    !snapshotShowsActiveTurn(sessionId) ||
-    attempt >= QUEUE_SETTLE_SNAPSHOT_RECHECK_LIMIT
-  ) {
-    markQueueTurnSettled(sessionId);
-    return;
-  }
-
-  globalThis.setTimeout(() => {
-    markQueueTurnSettledWhenSnapshotIdle(sessionId, attempt + 1);
-  }, QUEUE_SETTLE_SNAPSHOT_RECHECK_MS);
-}
-
 export function resetSessionSwitchState(
   actions: SessionSwitchStateActions
 ): void {
@@ -189,13 +162,14 @@ export function createSessionEventHandlerCallbacks(
       }
       if (TERMINAL_HANDLER_STATUSES.has(status)) {
         if (QUEUE_RELEASING_TERMINAL_STATUSES.has(status)) {
-          markQueueTurnSettledWhenSnapshotIdle(sessionId);
+          markQueueTurnSettled(sessionId);
         }
         actions.setPendingCancel(false);
         eventStoreProxy.unpinSession(sessionId);
         updateSessionStatus(sessionId, status as SessionStatus);
       }
       if (status === "running") {
+        markQueueTurnWorking(sessionId);
         actions.setSessionRuntimeError(null);
         eventStoreProxy.pinSession(sessionId);
         actions.setSessionRolledBack(false);

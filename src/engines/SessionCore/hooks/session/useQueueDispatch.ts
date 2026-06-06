@@ -58,6 +58,7 @@ import {
   hasQueueTurnSettledAfter,
   hasQueueTurnWorkedThenSettledAfter,
   isQueueRuntimeStillWorking,
+  markQueueTurnWorking,
 } from "./queueTurnGate";
 
 const MAX_SENT_QUEUE_ID_CACHE = 200;
@@ -67,16 +68,6 @@ function queuedMessageAgeMs(message: QueuedMessage): number {
   const createdAtMs = Date.parse(message.createdAt);
   if (!Number.isFinite(createdAtMs)) return MIN_QUEUE_VISIBLE_MS;
   return Date.now() - createdAtMs;
-}
-
-function snapshotShowsActiveTurn(sessionId: string): boolean {
-  const latestSnapshot = eventStoreProxy.getLatestSessionSnapshot(sessionId);
-  return (
-    latestSnapshot?.hasRunningEvent === true ||
-    (latestSnapshot != null &&
-      "streaming" in latestSnapshot &&
-      latestSnapshot.streaming === true)
-  );
 }
 
 export function useQueueDispatch(): void {
@@ -181,6 +172,7 @@ export function useQueueDispatch(): void {
       // Rust (which can take several seconds). The real status_changed event
       // from Rust will overwrite this when it arrives.
       setSessionRuntimeStatus("running");
+      markQueueTurnWorking(sessionId);
 
       // Both `modelSelection` and `agentExecMode` on QueuedMessage are
       // *snapshots taken at enqueue time*. Honour them strictly here —
@@ -281,7 +273,7 @@ export function useQueueDispatch(): void {
   // session switches and release a stale lock immediately.
   const lockSessionIdRef = useRef<string | null>(null);
   const isRuntimeWorkingStatus = useCallback(
-    (status: string) => isQueueRuntimeStillWorking(status, false),
+    (status: string) => isQueueRuntimeStillWorking(status),
     []
   );
   const prevRuntimeWorkingRef = useRef(isRuntimeWorkingStatus(runtimeStatus));
@@ -341,10 +333,7 @@ export function useQueueDispatch(): void {
     // accepted Stop but stayed visually running can strand the user's resend.
     if (latestPendingCancel && !explicitMsg) return;
 
-    const runtimeWorking = isQueueRuntimeStillWorking(
-      latestRuntimeStatus,
-      snapshotShowsActiveTurn(activeSessionId)
-    );
+    const runtimeWorking = isQueueRuntimeStillWorking(latestRuntimeStatus);
     if (runtimeWorking && !explicitMsg) return;
     if (runtimeWorking && explicitMsg) {
       if (explicitInterruptSessionRef.current === activeSessionId) return;

@@ -312,14 +312,6 @@ pub fn truncate_messages_after(session_id: &str, created_at: &str) -> SqliteResu
     shared::truncate_messages_after(SESSION_TABLE_PREFIX, session_id, created_at)
 }
 
-/// Delete the last user message in this session plus every row that came
-/// after it (assistant / tool_call / tool_result). Used by the Scenario A
-/// cancel-rollback path when the user hits Stop before the agent produced
-/// any output.
-pub fn delete_last_user_turn(session_id: &str) -> SqliteResult<i64> {
-    shared::delete_last_user_turn(SESSION_TABLE_PREFIX, session_id)
-}
-
 /// Save a snapshot record for a session. After inserting the row, enforces
 /// the per-session manifest cap (see
 /// [`file_history::MAX_SNAPSHOTS_PER_SESSION`]): oldest manifests are

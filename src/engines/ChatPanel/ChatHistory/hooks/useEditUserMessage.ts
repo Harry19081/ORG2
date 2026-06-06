@@ -16,8 +16,6 @@ import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
-  CANCEL_REASON,
-  cancelSession,
   checkSnapshotChanges,
   truncateAfterMessage,
 } from "@src/api/tauri/agent";
@@ -115,7 +113,7 @@ export function useEditUserMessage(): (
       if (initiatedSessionId && store.get(isSessionActiveAtom)) {
         try {
           if (isAgentSession(initiatedSessionId)) {
-            await cancelSession(initiatedSessionId, CANCEL_REASON.USER_STOP);
+            await cancelTurnForTimelineBoundary(initiatedSessionId, "rewind");
           } else if (isCliSession(initiatedSessionId)) {
             await invokeTauri<boolean>("cli_agent_cancel", {
               sessionId: initiatedSessionId,

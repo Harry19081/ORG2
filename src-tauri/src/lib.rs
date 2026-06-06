@@ -374,7 +374,7 @@ fn register_lineage_git_bridge() {
 /// slot to the real `cli_agent_create` + `cli_agent_run` adapter in
 /// `agent_sessions::cli::agent_core_bridge`. Paired with
 /// `register_persistence_bridge`, which fills the session_bridge's
-/// token-usage and event-rollback slots from the same wire crate.
+/// token-usage slot from the same wire crate.
 fn register_cli_launch_bridge() {
     crate::agent_sessions::cli::agent_core_bridge::register();
 }

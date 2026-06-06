@@ -456,12 +456,6 @@ class EventStoreProxyImpl {
     });
   }
 
-  async finalizeRunningEventsAsStopped(sessionId: string): Promise<number> {
-    return rpc.sessionCore.eventStore.finalizeRunningAsStopped({
-      sessionId,
-    });
-  }
-
   /** Remove events whose IDs start with a given prefix. Returns count removed. */
   async removeByIdPrefix(prefix: string, sessionId?: string): Promise<number> {
     return rpc.sessionCore.eventStore.removeByIdPrefix({

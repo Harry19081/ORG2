@@ -8,7 +8,7 @@
 //!
 //! Submodules:
 //! - `cleanup`  — image-file cleanup + table-level deletes
-//!   (`clear_messages`, `truncate_messages_after`, `delete_last_user_turn`).
+//!   (`clear_messages`, `truncate_messages_after`).
 //! - `builders` — typed convenience constructors that wrap `insert_message_retry`
 //!   (`save_user_msg`, `save_assistant_msg`, `save_tool_call_msg`,
 //!   `save_tool_result_msg`).
@@ -25,5 +25,5 @@ mod load_llm;
 pub use builders::{
     save_assistant_msg, save_system_msg, save_tool_call_msg, save_tool_result_msg, save_user_msg,
 };
-pub use cleanup::{clear_messages, delete_last_user_turn, truncate_messages_after};
+pub use cleanup::{clear_messages, truncate_messages_after};
 pub use load_llm::load_llm_history;

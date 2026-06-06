@@ -3,8 +3,8 @@
 //!
 //! ## Surface
 //! - `agent_core_bridge::register()` — install concrete impls into
-//!   `agent_core::foundation::{db_bridge, session_bridge}` so memory /
-//!   consolidation / reflection / rollback paths can persist state
+//!   `agent_core::foundation::{db_bridge, session_bridge}` so memory,
+//!   consolidation, reflection, and token-usage paths can persist state
 //!   without taking a back-edge on this crate.
 //! - `commands::*` — ~23 `#[tauri::command]`s, re-registered from
 //!   `app::commands::handler_list.inc` via the bare `session_persistence::…`
@@ -52,9 +52,9 @@ pub use connection::get_connection;
 pub use schema::init_session_tables;
 
 pub use crud::{
-    clear_old_sessions, delete_last_user_event_and_after, delete_session, get_all_sessions,
-    get_cache_stats, get_event, get_session_metadata, load_events, load_session, save_events,
-    save_session, search_all_sessions, search_events, update_session_specs,
+    clear_old_sessions, delete_session, get_all_sessions, get_cache_stats, get_event,
+    get_session_metadata, load_events, load_session, save_events, save_session,
+    search_all_sessions, search_events, update_session_specs,
 };
 pub use editing::{clear_session_history, delete_event, truncate_after_event, update_event};
 pub use file_changes::{aggregate_file_change, get_file_changes};

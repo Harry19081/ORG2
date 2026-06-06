@@ -69,11 +69,11 @@ describe("queueTurnGate", () => {
     expect(hasQueueTurnSettledAfter("session-1", 1_100)).toBe(true);
   });
 
-  it("keeps queue dispatch blocked when EventStore still reports an active turn", () => {
-    expect(isQueueRuntimeStillWorking("completed", true)).toBe(true);
-    expect(isQueueRuntimeStillWorking("idle", true)).toBe(true);
-    expect(isQueueRuntimeStillWorking("completed", false)).toBe(false);
-    expect(isQueueRuntimeStillWorking("running", false)).toBe(true);
+  it("uses runtime status, not EventStore snapshots, as queue working truth", () => {
+    expect(isQueueRuntimeStillWorking("completed")).toBe(false);
+    expect(isQueueRuntimeStillWorking("idle")).toBe(false);
+    expect(isQueueRuntimeStillWorking("running")).toBe(true);
+    expect(isQueueRuntimeStillWorking("waiting_for_user")).toBe(true);
   });
 
   it("does not treat a late settle from the previous turn as settling a new explicit turn", () => {

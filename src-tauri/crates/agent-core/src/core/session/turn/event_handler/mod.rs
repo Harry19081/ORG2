@@ -100,6 +100,10 @@ pub struct EventHandlerConfig {
     /// Stable logical turn id for live stream broadcasts.
     pub turn_id: Option<String>,
 
+    /// Shared cancellation signal for the active turn. Live event emission must
+    /// stop at the Rust boundary once this flag is set; frontend filtering is too late.
+    pub cancel_flag: Option<Arc<AtomicBool>>,
+
     /// Active IDE repository path for multi-root workspace tool rendering.
     pub active_repo_path: Option<String>,
 }
@@ -119,6 +123,13 @@ pub struct UnifiedEventHandler {
 }
 
 impl UnifiedEventHandler {
+    fn is_cancelled(&self) -> bool {
+        self.config
+            .cancel_flag
+            .as_ref()
+            .is_some_and(|flag| flag.load(Ordering::SeqCst))
+    }
+
     /// Creates a new unified event handler.
     pub fn new(config: EventHandlerConfig) -> Self {
         Self {
@@ -135,6 +146,10 @@ impl UnifiedEventHandler {
     /// the parent EventStore (retired in commit 5 in favour of a direct
     /// Rust push, as subagents already do).
     pub fn flush_streaming(&self, session_id: &str) {
+        if self.is_cancelled() {
+            return;
+        }
+
         // Thinking must be flushed before the assistant message so that
         // `push_to_store` assigns a lower `history_sequence` to the thinking
         // event than to the message. SQLite orders by
@@ -185,6 +200,10 @@ impl UnifiedEventHandler {
     /// handler was constructed without an app handle (tests / non-Tauri
     /// callers).
     fn push_to_store(&self, session_id: &str, event: SessionEvent) {
+        if self.is_cancelled() {
+            return;
+        }
+
         let Some(ref handle) = self.config.app_handle else {
             return;
         };
@@ -197,6 +216,10 @@ impl UnifiedEventHandler {
     /// the assistant message — preventing the frontend from rendering a
     /// stale `StreamingCursor` during tool execution.
     fn finalize_streaming_in_store(&self, session_id: &str) {
+        if self.is_cancelled() {
+            return;
+        }
+
         let Some(ref handle) = self.config.app_handle else {
             return;
         };
@@ -207,6 +230,10 @@ impl UnifiedEventHandler {
 #[async_trait]
 impl TurnEventHandler for UnifiedEventHandler {
     fn on_message_delta(&self, session_id: &str, content: &str) {
+        if self.is_cancelled() {
+            return;
+        }
+
         broadcast_event(
             "agent:message_delta",
             serde_json::json!({
@@ -220,6 +247,10 @@ impl TurnEventHandler for UnifiedEventHandler {
     }
 
     fn on_thinking_delta(&self, session_id: &str, thinking: &str) {
+        if self.is_cancelled() {
+            return;
+        }
+
         broadcast_event(
             "agent:thinking_delta",
             serde_json::json!({
@@ -240,6 +271,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         tool_name: Option<&str>,
         arguments_delta: Option<&str>,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         // A tool block starts when the provider emits id+name (Anthropic
         // `content_block_start` for a `tool_use`, OpenAI first delta of a
         // new tool_call). The arguments_delta-only deltas that follow are
@@ -276,6 +311,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         display_name: &str,
         args: &Value,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         self.tool_call_count.fetch_add(1, Ordering::Relaxed);
         if tool_name == tool_names::MANAGE_TODO {
             self.todo_called.store(true, Ordering::Relaxed);
@@ -362,6 +401,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         display_name: &str,
         result: &str,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         if let Err(err) =
             unified_persistence::save_tool_result_msg(session_id, tool_call_id, tool_name, result)
         {
@@ -419,6 +462,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         has_tool_calls: bool,
         model: &str,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         // Persist one `assistant` row per LLM iteration that produced text.
         //
         // Iterations with only tool_calls (no text) are skipped here: the

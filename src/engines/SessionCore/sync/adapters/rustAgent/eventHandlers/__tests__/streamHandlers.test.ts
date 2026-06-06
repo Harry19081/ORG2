@@ -183,6 +183,71 @@ describe("Rust Agent stream handlers", () => {
     expect(ctx.setStreaming).toHaveBeenCalledWith(true);
   });
 
+  it("survives hostile late-stream flood after stop without poisoning the next turn", async () => {
+    const ctx = createCtx();
+
+    markSessionStreamingStopped("session-1");
+
+    for (let idx = 0; idx < 250; idx += 1) {
+      await dispatchAgentEvent(
+        {
+          type: idx % 2 === 0 ? "agent:message_delta" : "agent:thinking_delta",
+          sessionId: "session-1",
+          turnId: "turn-late",
+          content: `late-${idx} `,
+        },
+        ctx
+      );
+    }
+    await dispatchAgentEvent(
+      {
+        type: "agent:streaming_complete",
+        sessionId: "session-1",
+        turnId: "turn-late",
+        streamType: "message",
+        event: makeMessageCompleteEvent(),
+      },
+      ctx
+    );
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
+    expect(ctx.setStreaming).not.toHaveBeenCalled();
+    expect(ctx.onStreamingDeltaRef?.current).not.toHaveBeenCalled();
+
+    clearSessionStreamingStopped("session-1");
+    vi.clearAllMocks();
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:message_delta",
+        sessionId: "session-1",
+        turnId: "turn-late",
+        content: "still late",
+      },
+      ctx
+    );
+    expect(ctx.setStreaming).not.toHaveBeenCalled();
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:message_delta",
+        sessionId: "session-1",
+        turnId: "turn-new",
+        content: "new turn",
+      },
+      ctx
+    );
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(ctx.setStreaming).toHaveBeenCalledWith(true);
+    expect(ctx.onStreamingDeltaRef?.current).toHaveBeenCalledWith({
+      isStreaming: true,
+      isThinking: false,
+      content: "new turn",
+    });
+  });
+
   it("keeps message deltas in ephemeral streaming state", () => {
     const ctx = createCtx();
 

@@ -170,6 +170,7 @@ pub async fn process_message(
         app_handle: app_handle.clone(),
         hook_executor: Some(hook_executor),
         turn_id: None,
+        cancel_flag: Some(Arc::clone(&session.cancel_flag)),
         active_repo_path: input
             .ide_context
             .as_ref()

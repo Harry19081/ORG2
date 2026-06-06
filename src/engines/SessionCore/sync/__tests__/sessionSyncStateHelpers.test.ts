@@ -6,10 +6,6 @@ import type { SessionEventHandlerStateActions } from "@src/engines/SessionCore/s
 
 vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
   eventStoreProxy: {
-    getLatestSessionSnapshot: vi.fn(() => ({
-      hasRunningEvent: false,
-      streaming: false,
-    })),
     pinSession: vi.fn(),
     unpinSession: vi.fn(),
   },
@@ -21,6 +17,7 @@ vi.mock("@src/store/session", () => ({
 
 vi.mock("@src/engines/SessionCore/hooks/session/queueTurnGate", () => ({
   markQueueTurnSettled: vi.fn(),
+  markQueueTurnWorking: vi.fn(),
 }));
 
 function createActions(): SessionEventHandlerStateActions & {
