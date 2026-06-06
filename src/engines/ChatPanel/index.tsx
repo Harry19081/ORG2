@@ -11,6 +11,7 @@ import {
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
+import SessionHoverCard from "@src/components/SessionHoverCard";
 import Tooltip from "@src/components/Tooltip";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { useRouteViewMode } from "@src/config/routeViewModeConfig";
@@ -400,12 +401,12 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     ]);
 
     const benchmarkHeaderSegmentClass =
-      "flex h-7 min-w-0 max-w-full items-center rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors";
+      "flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover";
     const benchmarkHeaderTitleContent = showBenchmarkChildSessionContent ? (
-      <span className="flex min-w-0 items-center gap-1">
+      <span className="flex min-w-0 max-w-full items-center gap-1.5">
         <button
           type="button"
-          className={`${benchmarkHeaderSegmentClass} cursor-pointer hover:bg-surface-hover`}
+          className={`${benchmarkHeaderSegmentClass} cursor-pointer`}
           onClick={(event) => {
             event.stopPropagation();
             handleBenchmarkSessionGroupHeaderClick();
@@ -416,9 +417,21 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           </span>
         </button>
         <span className="shrink-0 text-text-4">&gt;</span>
-        <span className={`${benchmarkHeaderSegmentClass} cursor-default`}>
-          <span className="min-w-0 -translate-y-px truncate">{panelTitle}</span>
-        </span>
+        {currentSessionId ? (
+          <SessionHoverCard sessionId={currentSessionId}>
+            <span className={`${benchmarkHeaderSegmentClass} cursor-default`}>
+              <span className="min-w-0 -translate-y-px truncate">
+                {panelTitle}
+              </span>
+            </span>
+          </SessionHoverCard>
+        ) : (
+          <span className={`${benchmarkHeaderSegmentClass} cursor-default`}>
+            <span className="min-w-0 -translate-y-px truncate">
+              {panelTitle}
+            </span>
+          </span>
+        )}
       </span>
     ) : undefined;
 

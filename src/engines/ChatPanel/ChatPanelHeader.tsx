@@ -540,6 +540,13 @@ export function ChatPanelHeader({
                   {headerTitle}
                 </span>
               </span>
+            ) : headerTitleContent ? (
+              <span
+                className="flex min-w-0 max-w-full items-center"
+                data-testid="chat-panel-header-title"
+              >
+                {headerTitleContent}
+              </span>
             ) : showSessionContent ||
               (selectedWorkItemVisible && currentSessionId) ? (
               <SessionHoverCard sessionId={currentSessionId}>
@@ -548,7 +555,7 @@ export function ChatPanelHeader({
                     className="min-w-0 -translate-y-px truncate"
                     data-testid="chat-panel-header-title"
                   >
-                    {headerTitleContent ?? headerTitle}
+                    {headerTitle}
                   </span>
                 </span>
               </SessionHoverCard>
