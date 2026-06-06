@@ -110,6 +110,11 @@ pub fn create_provider_with_native_harness(
     workspace: Option<SessionWorkspace>,
     code_assist_session_id: Option<&str>,
 ) -> Result<Box<dyn LLMProvider>, ProviderError> {
+    #[cfg(debug_assertions)]
+    if super::e2e_fake::is_e2e_fake_provider_model(model) {
+        return Ok(Box::new(super::e2e_fake::E2eFakeProvider));
+    }
+
     if let Some(harness_type) = native_harness_type {
         return create_native_harness_provider(harness_type, account_id, workspace);
     }

@@ -29,7 +29,7 @@ pub use public::AgentStatusResponse;
 
 #[cfg(debug_assertions)]
 use axum::routing::post;
-use axum::{Router, routing::get};
+use axum::{routing::get, Router};
 
 // ============================================
 // Router
@@ -626,6 +626,22 @@ pub fn create_routes() -> Router {
         .route(
             "/test/session/aggregate-list-filter",
             post(test::workspace::test_session_aggregate_list_filter),
+        )
+        .route(
+            "/test/session/llm-history",
+            post(test::workspace::test_session_llm_history),
+        )
+        .route(
+            "/test/session/seed-compacted-history",
+            post(test::workspace::test_session_seed_compacted_history),
+        )
+        .route(
+            "/test/session/provider-request-capture",
+            post(test::workspace::test_session_provider_request_capture),
+        )
+        .route(
+            "/test/session/seed-raw-history",
+            post(test::workspace::test_session_seed_raw_history),
         )
         .route(
             "/test/session/parse-exec-mode",

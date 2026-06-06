@@ -579,6 +579,96 @@ pub async fn test_session_aggregate_list_filter(
     }
 }
 
+/// `POST /agent/test/session/seed-compacted-history` — seed a session with an
+/// old transcript, then replace it through the production compacted-history
+/// persistence helper. E2E uses this to prove restarts read the durable
+/// compacted view instead of old full history.
+pub async fn test_session_seed_compacted_history(
+    Json(body): Json<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    let session_id = body
+        .get("session_id")
+        .and_then(|value| value.as_str())
+        .unwrap_or("")
+        .to_string();
+    if session_id.trim().is_empty() {
+        return Json(serde_json::json!({
+            "ok": false,
+            "reason": "session_id is required",
+        }));
+    }
+    let old_marker = body
+        .get("old_marker")
+        .and_then(|value| value.as_str())
+        .unwrap_or("E2E_OLD_FULL_HISTORY_MARKER")
+        .to_string();
+    let summary = body
+        .get("summary")
+        .and_then(|value| value.as_str())
+        .unwrap_or("E2E compacted old history")
+        .to_string();
+    let recent_user = body
+        .get("recent_user")
+        .and_then(|value| value.as_str())
+        .unwrap_or("recent user")
+        .to_string();
+    let recent_assistant = body
+        .get("recent_assistant")
+        .and_then(|value| value.as_str())
+        .unwrap_or("recent assistant")
+        .to_string();
+
+    let result = tokio::task::spawn_blocking({
+        let sid = session_id.clone();
+        move || -> Result<(), String> {
+            agent_core::session::persistence::save_user_msg(&sid, &old_marker, None)
+                .map_err(|err| err.to_string())?;
+            agent_core::session::persistence::save_assistant_msg(
+                &sid,
+                &format!("assistant saw {old_marker}"),
+                "e2e",
+            )
+            .map_err(|err| err.to_string())?;
+            agent_core::session::persistence::save_session_memory_state(&sid, "stale sm", Some(99))
+                .map_err(|err| err.to_string())?;
+            let compacted = vec![
+                serde_json::json!({
+                    "role": "system",
+                    "content": format!("[Conversation summary — 2 earlier messages compacted]\n\n{summary}"),
+                }),
+                serde_json::json!({"role": "user", "content": recent_user}),
+                serde_json::json!({"role": "assistant", "content": recent_assistant}),
+            ];
+            agent_core::session::persistence::replace_messages_with_compacted_history(
+                &sid,
+                &compacted,
+            )
+            .map_err(|err| err.to_string())?;
+            agent_core::session::persistence::clear_session_memory_state(&sid)
+                .map_err(|err| err.to_string())?;
+            Ok(())
+        }
+    })
+    .await;
+
+    match result {
+        Ok(Ok(())) => Json(serde_json::json!({
+            "ok": true,
+            "sessionId": session_id,
+        })),
+        Ok(Err(err)) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": err,
+        })),
+        Err(err) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": format!("spawn_blocking join error: {err}"),
+        })),
+    }
+}
+
 /// `POST /agent/test/session/parse-exec-mode` — **symbol-pinning probe**
 /// for `AgentExecMode::parse`. Body shape:
 ///
@@ -592,6 +682,228 @@ pub async fn test_session_aggregate_list_filter(
 /// the same parser, so this probe lets E2E confirm the wire-format
 /// contract without spinning up a full session turn (which would also
 /// hit the real LLM).
+/// `POST /agent/test/session/llm-history` — debug-only projection of the
+/// exact durable history returned by Rust agent `load_llm_history`.
+pub async fn test_session_llm_history(
+    Json(body): Json<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    let session_id = body
+        .get("session_id")
+        .and_then(|value| value.as_str())
+        .unwrap_or("")
+        .to_string();
+    if session_id.trim().is_empty() {
+        return Json(serde_json::json!({
+            "ok": false,
+            "reason": "session_id is required",
+        }));
+    }
+
+    let result = tokio::task::spawn_blocking({
+        let sid = session_id.clone();
+        move || agent_core::session::persistence::load_llm_history(&sid)
+    })
+    .await;
+
+    match result {
+        Ok(Ok(messages)) => {
+            let roles: Vec<_> = messages
+                .iter()
+                .map(|message| {
+                    message
+                        .get("role")
+                        .and_then(|value| value.as_str())
+                        .unwrap_or("")
+                })
+                .collect();
+            let compact_boundary_count = messages
+                .iter()
+                .filter(|message| {
+                    let content = message
+                        .get("content")
+                        .and_then(|value| value.as_str())
+                        .unwrap_or("");
+                    message.get("role").and_then(|value| value.as_str()) == Some("system")
+                        && (content.starts_with("[Conversation summary —")
+                            || content.starts_with("[Session Memory —"))
+                })
+                .count();
+            Json(serde_json::json!({
+                "ok": true,
+                "sessionId": session_id,
+                "messageCount": messages.len(),
+                "roles": roles,
+                "compactBoundaryCount": compact_boundary_count,
+                "messages": messages,
+            }))
+        }
+        Ok(Err(err)) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": err.to_string(),
+        })),
+        Err(err) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": format!("spawn_blocking join error: {err}"),
+        })),
+    }
+}
+
+/// `POST /agent/test/session/seed-raw-history` — seed un-compacted
+/// user/assistant rows so E2E can trigger auto-compaction through the real turn.
+pub async fn test_session_seed_raw_history(
+    Json(body): Json<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    let session_id = body
+        .get("session_id")
+        .and_then(|value| value.as_str())
+        .unwrap_or("")
+        .to_string();
+    if session_id.trim().is_empty() {
+        return Json(serde_json::json!({
+            "ok": false,
+            "reason": "session_id is required",
+        }));
+    }
+
+    let marker = body
+        .get("marker")
+        .and_then(|value| value.as_str())
+        .unwrap_or("E2E_RAW_HISTORY_MARKER")
+        .to_string();
+    let message_count = body
+        .get("message_count")
+        .and_then(|value| value.as_u64())
+        .unwrap_or(12)
+        .clamp(2, 200) as usize;
+    let chars_per_message = body
+        .get("chars_per_message")
+        .and_then(|value| value.as_u64())
+        .unwrap_or(2_000)
+        .clamp(16, 20_000) as usize;
+    let marker_message_count = body
+        .get("marker_message_count")
+        .and_then(|value| value.as_u64())
+        .unwrap_or(message_count as u64)
+        .min(message_count as u64) as usize;
+    let filler = "x".repeat(chars_per_message);
+
+    let result = tokio::task::spawn_blocking({
+        let sid = session_id.clone();
+        move || -> Result<(), String> {
+            for index in 0..message_count {
+                let prefix = if index < marker_message_count {
+                    format!("{marker} ")
+                } else {
+                    String::new()
+                };
+                if index % 2 == 0 {
+                    agent_core::session::persistence::save_user_msg(
+                        &sid,
+                        &format!("{prefix}user {index}: {filler}"),
+                        None,
+                    )
+                    .map_err(|err| err.to_string())?;
+                } else {
+                    agent_core::session::persistence::save_assistant_msg(
+                        &sid,
+                        &format!("{prefix}assistant {index}: {filler}"),
+                        "e2e",
+                    )
+                    .map_err(|err| err.to_string())?;
+                }
+            }
+            Ok(())
+        }
+    })
+    .await;
+
+    match result {
+        Ok(Ok(())) => Json(serde_json::json!({
+            "ok": true,
+            "sessionId": session_id,
+            "messageCount": message_count,
+        })),
+        Ok(Err(err)) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": err,
+        })),
+        Err(err) => Json(serde_json::json!({
+            "ok": false,
+            "sessionId": session_id,
+            "reason": format!("spawn_blocking join error: {err}"),
+        })),
+    }
+}
+
+/// `POST /agent/test/session/provider-request-capture` — debug-only capture
+/// of the final provider-bound request payload built by `turn_executor`.
+pub async fn test_session_provider_request_capture(
+    Json(body): Json<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    let action = body
+        .get("action")
+        .and_then(|value| value.as_str())
+        .unwrap_or("drain");
+
+    match action {
+        "arm" => {
+            let clear = body
+                .get("clear")
+                .and_then(|value| value.as_bool())
+                .unwrap_or(true);
+            agent_core::turn_executor::provider_request_capture::arm(clear);
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": agent_core::turn_executor::provider_request_capture::is_armed(),
+                "captures": [],
+            }))
+        }
+        "disarm" => {
+            agent_core::turn_executor::provider_request_capture::disarm();
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": false,
+                "captures": [],
+            }))
+        }
+        "clear" => {
+            agent_core::turn_executor::provider_request_capture::clear();
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": agent_core::turn_executor::provider_request_capture::is_armed(),
+                "captures": [],
+            }))
+        }
+        "drain" => {
+            let clear = body
+                .get("clear")
+                .and_then(|value| value.as_bool())
+                .unwrap_or(true);
+            let disarm = body
+                .get("disarm")
+                .and_then(|value| value.as_bool())
+                .unwrap_or(false);
+            let captures = agent_core::turn_executor::provider_request_capture::drain(clear);
+            if disarm {
+                agent_core::turn_executor::provider_request_capture::disarm();
+            }
+            Json(serde_json::json!({
+                "ok": true,
+                "armed": agent_core::turn_executor::provider_request_capture::is_armed(),
+                "captures": captures,
+            }))
+        }
+        other => Json(serde_json::json!({
+            "ok": false,
+            "reason": format!("unknown provider-request-capture action: {other}"),
+            "captures": [],
+        })),
+    }
+}
+
 pub async fn test_parse_exec_mode(Json(body): Json<serde_json::Value>) -> Json<serde_json::Value> {
     let mode = body
         .get("mode")
@@ -806,10 +1118,23 @@ pub async fn test_session_aggregate_list_via_cmd(
     // The production command takes `Option<SessionFilter>` deserialized
     // from a JSON object; an empty `{}` body should resolve to `None`
     // so the e2e harness can probe both shapes from one endpoint.
-    let filter: Option<SessionFilter> = if body.as_object().map(|o| o.is_empty()).unwrap_or(true) {
+    let target_session_id = body
+        .get("session_id")
+        .and_then(|value| value.as_str())
+        .map(str::to_string);
+    let mut filter_body = body.clone();
+    if let Some(object) = filter_body.as_object_mut() {
+        object.remove("session_id");
+    }
+
+    let filter: Option<SessionFilter> = if filter_body
+        .as_object()
+        .map(|o| o.is_empty())
+        .unwrap_or(true)
+    {
         None
     } else {
-        match serde_json::from_value::<SessionFilter>(body.clone()) {
+        match serde_json::from_value::<SessionFilter>(filter_body.clone()) {
             Ok(mut f) => {
                 // Cap the result set so this probe never returns megabytes
                 // of session rows from a developer's local DB.
@@ -833,10 +1158,25 @@ pub async fn test_session_aggregate_list_via_cmd(
     .await;
 
     match join {
-        Ok(Ok(response)) => Json(serde_json::json!({
-            "ok": true,
-            "session_count": response.sessions.len(),
-        })),
+        Ok(Ok(response)) => {
+            let target_session = target_session_id.as_deref().and_then(|session_id| {
+                response
+                    .sessions
+                    .iter()
+                    .find(|session| session.session_id == session_id)
+                    .cloned()
+            });
+            Json(serde_json::json!({
+                "ok": true,
+                "session_count": response.sessions.len(),
+                "target_session": target_session,
+                "sessions": if target_session_id.is_some() {
+                    Vec::<crate::agent_sessions::unified_stats::types::SessionAggregateRecord>::new()
+                } else {
+                    response.sessions
+                },
+            }))
+        }
         Ok(Err(reason)) => Json(serde_json::json!({
             "ok": false,
             "reason": reason,

@@ -207,15 +207,6 @@
       },
       "commitsTo": "Commits в {{repo}}",
       "commitsToMultiple": "Commits в {{repos}}"
-    },
-    "list": {
-      "updated": "Обновлено",
-      "timeRange": "Диапазон времени",
-      "started": "Начато",
-      "lastUpdated": "Последнее обновление",
-      "agentModel": "Agent · Модель",
-      "emptyTitle": "Нет сессий, соответствующих этим фильтрам",
-      "emptyDescription": "Попробуйте другой статус, тип Agent или период."
     }
   },
   "changes": {
@@ -1821,7 +1812,7 @@
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
       "phaseLabel": "Task browser",
-      "sourcePath": "Task source",
+      "sourcePath": "Папка Benchmark",
       "evaluationMode": "Evaluation mode",
       "evaluationModes": {
         "patchOnly": "Patch only",
@@ -1871,7 +1862,20 @@
       "targetRepoPathTitle": "Путь к целевому Repo",
       "targetRepoPathPlaceholder": "/Users/you/Documents/GitHub/project-repo",
       "applyInWorktree": "Применить в Worktree",
-      "worktreePathLabel": "Worktree"
+      "worktreePathLabel": "Worktree",
+      "singleRun": "Одиночный запуск",
+      "batchRun": "Пакетный запуск",
+      "sourcePathPlaceholder": "Путь к папке Benchmark",
+      "localPath": "локальный путь",
+      "runType": "Тип запуска",
+      "kindTitle": "Benchmark",
+      "kinds": {
+        "sweBenchPro": "SWE-bench Pro",
+        "terminalBench": "Terminal-Bench"
+      },
+      "selectedTasks": "Выбрано: {{selected}}/{{total}}",
+      "concurrency": "Параллельно",
+      "taskLoadingUnsupported": "Загрузка задач для этого Benchmark пока недоступна; используйте preflight для проверки локального источника."
     },
     "skillsAndTools": "Skills и инструменты"
   },

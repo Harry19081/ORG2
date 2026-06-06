@@ -38,6 +38,8 @@ pub struct SdeTestRequest {
     enable_auto_dream: Option<bool>,
     max_retries: Option<u32>,
     base_backoff_ms: Option<u64>,
+    context_window: Option<u64>,
+    compaction: Option<agent_core::model_context::compaction::CompactionConfig>,
     #[serde(default)]
     restrict_tools: Vec<String>,
     is_resume: Option<bool>,
@@ -221,6 +223,15 @@ pub async fn test_sde_message(Json(request): Json<SdeTestRequest>) -> Json<serde
             if let Some(base_backoff_ms) = request.base_backoff_ms {
                 reliability.base_backoff_ms = base_backoff_ms;
             }
+        }
+        if let Some(context_window) = request.context_window.filter(|value| *value > 0) {
+            definition.context_window = Some(context_window);
+        }
+        if let Some(compaction) = request.compaction.clone() {
+            let session_model = definition
+                .session_model
+                .get_or_insert_with(agent_core::definitions::SessionModel::default);
+            session_model.compaction = Some(compaction);
         }
         if !request.restrict_tools.is_empty() {
             definition.tools.system_restrict_to_tools = Some(request.restrict_tools.clone());

@@ -1,6 +1,8 @@
 //! Message persistence — insertion, loading, truncation, history building.
 
-use rusqlite::Result as SqliteResult;
+use chrono::Utc;
+use rusqlite::{params, Result as SqliteResult};
+use uuid::Uuid;
 
 use crate::persistence::db_helpers as shared;
 use database::db::{get_connection, with_sessions_writer};
@@ -28,6 +30,16 @@ pub fn save_user_msg(
 /// Save an assistant message.
 pub fn save_assistant_msg(session_id: &str, content: &str, model: &str) -> SqliteResult<String> {
     shared::save_assistant_msg(SESSION_TABLE_PREFIX, session_id, content, model)
+}
+
+/// Save a persisted compact summary boundary.
+///
+/// Unlike runtime stable/dynamic system prompts, this row is part of the durable
+/// conversation transcript and should be loaded by `load_llm_history` after
+/// restart. It represents older conversation messages that were replaced by a
+/// summary, mirroring Claude Code's compact boundary + summary view.
+pub fn save_compact_summary_msg(session_id: &str, content: &str) -> SqliteResult<String> {
+    shared::save_system_msg(SESSION_TABLE_PREFIX, session_id, content)
 }
 
 /// Save a tool call message.
@@ -70,6 +82,224 @@ pub fn load_messages(session_id: &str) -> SqliteResult<Vec<shared::AgentMessageR
 /// Load LLM-formatted history for a session.
 pub fn load_llm_history(session_id: &str) -> SqliteResult<Vec<serde_json::Value>> {
     shared::load_llm_history(SESSION_TABLE_PREFIX, session_id)
+}
+
+fn text_content_from_llm_message(msg: &serde_json::Value) -> String {
+    match msg.get("content") {
+        Some(serde_json::Value::String(text)) => text.clone(),
+        Some(serde_json::Value::Array(parts)) => parts
+            .iter()
+            .filter_map(|part| part.get("text").and_then(|value| value.as_str()))
+            .collect::<Vec<_>>()
+            .join("\n"),
+        _ => String::new(),
+    }
+}
+
+fn image_refs_from_llm_message(msg: &serde_json::Value) -> Vec<String> {
+    msg.get("content")
+        .and_then(|content| content.as_array())
+        .into_iter()
+        .flatten()
+        .filter_map(|part| {
+            part.get("image_url")
+                .and_then(|image| image.get("url"))
+                .and_then(|url| url.as_str())
+                .map(str::to_string)
+        })
+        .collect()
+}
+
+fn compacted_history_rows(
+    session_id: &str,
+    compacted_messages: &[serde_json::Value],
+) -> Vec<shared::AgentMessageRow> {
+    let mut rows = Vec::new();
+
+    for msg in compacted_messages {
+        let role = msg
+            .get("role")
+            .and_then(|value| value.as_str())
+            .unwrap_or("");
+        match role {
+            "system" => {
+                let content = text_content_from_llm_message(msg);
+                if !content.trim().is_empty() {
+                    rows.push(message_row(
+                        session_id,
+                        shared::message_role::SYSTEM,
+                        content,
+                        None,
+                    ));
+                }
+            }
+            "user" => {
+                let content = text_content_from_llm_message(msg);
+                let images = image_refs_from_llm_message(msg);
+                let images_json = if images.is_empty() {
+                    None
+                } else {
+                    Some(
+                        serde_json::to_string(&images)
+                            .expect("Vec<String> serialization is infallible"),
+                    )
+                };
+                rows.push(message_row(
+                    session_id,
+                    shared::message_role::USER,
+                    content,
+                    images_json,
+                ));
+            }
+            "assistant" => {
+                let content = text_content_from_llm_message(msg);
+                if msg.get("tool_calls").is_none() || !content.trim().is_empty() {
+                    rows.push(message_row(
+                        session_id,
+                        shared::message_role::ASSISTANT,
+                        content,
+                        None,
+                    ));
+                }
+                if let Some(tool_calls) = msg.get("tool_calls").and_then(|value| value.as_array()) {
+                    for tool_call in tool_calls {
+                        let tool_call_id = tool_call
+                            .get("id")
+                            .and_then(|value| value.as_str())
+                            .unwrap_or("unknown");
+                        let tool_name = tool_call
+                            .get("function")
+                            .and_then(|function| function.get("name"))
+                            .and_then(|value| value.as_str())
+                            .unwrap_or("unknown");
+                        let arguments = tool_call
+                            .get("function")
+                            .and_then(|function| function.get("arguments"))
+                            .and_then(|value| value.as_str())
+                            .unwrap_or("{}");
+                        let mut row = message_row(
+                            session_id,
+                            shared::message_role::TOOL_CALL,
+                            format!("Tool call: {}", tool_name),
+                            None,
+                        );
+                        row.tool_call_id = Some(tool_call_id.to_string());
+                        row.tool_name = Some(tool_name.to_string());
+                        row.tool_input = Some(arguments.to_string());
+                        rows.push(row);
+                    }
+                }
+            }
+            "tool" => {
+                let tool_call_id = msg
+                    .get("tool_call_id")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("unknown");
+                let tool_name = msg
+                    .get("name")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("tool");
+                let content = text_content_from_llm_message(msg);
+                let mut row = message_row(
+                    session_id,
+                    shared::message_role::TOOL_RESULT,
+                    content.chars().take(2000).collect(),
+                    None,
+                );
+                row.tool_call_id = Some(tool_call_id.to_string());
+                row.tool_name = Some(tool_name.to_string());
+                row.tool_output = Some(content);
+                rows.push(row);
+            }
+            _ => {}
+        }
+    }
+
+    rows
+}
+
+fn message_row(
+    session_id: &str,
+    role: &str,
+    content: String,
+    images: Option<String>,
+) -> shared::AgentMessageRow {
+    shared::AgentMessageRow {
+        id: Uuid::new_v4().to_string(),
+        session_id: session_id.to_string(),
+        role: role.to_string(),
+        content,
+        tool_name: None,
+        tool_call_id: None,
+        tool_input: None,
+        tool_output: None,
+        model: None,
+        sequence: 0,
+        created_at: Utc::now().to_rfc3339(),
+        images,
+    }
+}
+
+/// Replace a session's persisted transcript with a compacted LLM history view.
+///
+/// This is the durable equivalent of Claude Code's `messagesForQuery =
+/// postCompactMessages`: after compaction succeeds, future turns and app
+/// restarts read the compacted view instead of reconstructing the full
+/// pre-compact history and summarizing it again.
+pub fn replace_messages_with_compacted_history(
+    session_id: &str,
+    compacted_messages: &[serde_json::Value],
+) -> SqliteResult<()> {
+    let rows = compacted_history_rows(session_id, compacted_messages);
+    with_sessions_writer(|| -> SqliteResult<()> {
+        let conn = get_connection()?;
+        let now = Utc::now().to_rfc3339();
+        conn.execute_batch("BEGIN IMMEDIATE")?;
+        if let Err(err) = conn.execute(
+            "DELETE FROM agent_messages WHERE session_id = ?1",
+            [session_id],
+        ) {
+            let _ = conn.execute_batch("ROLLBACK");
+            return Err(err);
+        }
+
+        for (sequence, row) in rows.iter().enumerate() {
+            let result = conn.execute(
+                "INSERT INTO agent_messages
+                 (id, session_id, role, content, tool_name, tool_call_id, tool_input, tool_output, model, sequence, created_at, images)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
+                params![
+                    row.id,
+                    row.session_id,
+                    row.role,
+                    row.content,
+                    row.tool_name,
+                    row.tool_call_id,
+                    row.tool_input,
+                    row.tool_output,
+                    row.model,
+                    sequence as i64,
+                    row.created_at,
+                    row.images,
+                ],
+            );
+            if let Err(err) = result {
+                let _ = conn.execute_batch("ROLLBACK");
+                return Err(err);
+            }
+        }
+
+        if let Err(err) = conn.execute(
+            "UPDATE agent_sessions SET updated_at = ?2 WHERE session_id = ?1",
+            params![session_id, now],
+        ) {
+            let _ = conn.execute_batch("ROLLBACK");
+            return Err(err);
+        }
+
+        conn.execute_batch("COMMIT")?;
+        Ok(())
+    })
 }
 
 /// Clear all messages for a session.
@@ -276,6 +506,22 @@ pub fn save_session_memory_state(
     })
 }
 
+/// Clear persisted session memory state after the durable transcript has been compacted.
+///
+/// A compacted transcript already contains the durable boundary/summary. Keeping an
+/// old bare message index would make the next process start apply that index to a
+/// shorter, rewritten transcript.
+pub fn clear_session_memory_state(session_id: &str) -> SqliteResult<()> {
+    with_sessions_writer(|| -> SqliteResult<()> {
+        let conn = get_connection()?;
+        conn.execute(
+            "UPDATE agent_sessions SET sm_content = NULL, sm_last_msg_idx = NULL WHERE session_id = ?1",
+            [session_id],
+        )?;
+        Ok(())
+    })
+}
+
 /// Load persisted session memory state from the `agent_sessions` table.
 pub fn load_session_memory_state(session_id: &str) -> SqliteResult<PersistedSessionMemoryState> {
     let conn = get_connection()?;
@@ -303,6 +549,83 @@ pub fn load_session_memory_state(session_id: &str) -> SqliteResult<PersistedSess
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use database::db::get_connection;
+    use test_helpers::test_env;
+
+    fn seed_session_for_message_tests(session_id: &str) {
+        let conn = get_connection().expect("get_connection in seed_session_for_message_tests");
+        conn.execute_batch(
+            "CREATE TABLE IF NOT EXISTS agent_sessions (
+                session_id TEXT PRIMARY KEY,
+                session_type TEXT NOT NULL DEFAULT 'agent',
+                status TEXT NOT NULL DEFAULT 'running',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                sm_content TEXT,
+                sm_last_msg_idx INTEGER
+             );
+             CREATE TABLE IF NOT EXISTS agent_messages (
+                id TEXT PRIMARY KEY,
+                session_id TEXT NOT NULL,
+                role TEXT NOT NULL,
+                content TEXT NOT NULL DEFAULT '',
+                tool_name TEXT,
+                tool_call_id TEXT,
+                tool_input TEXT,
+                tool_output TEXT,
+                model TEXT,
+                sequence INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                images TEXT
+             );",
+        )
+        .expect("create session/message tables");
+        conn.execute(
+            "INSERT OR IGNORE INTO agent_sessions
+             (session_id, session_type, status, created_at, updated_at, sm_content, sm_last_msg_idx)
+             VALUES (?1, 'agent', 'running', datetime('now'), datetime('now'), NULL, NULL)",
+            [session_id],
+        )
+        .expect("seed session row");
+    }
+
+    #[test]
+    fn compacted_history_replaces_full_transcript_and_clears_sm_state() {
+        let _sandbox = test_env::sandbox();
+        let session_id = "compact-replace-test";
+        seed_session_for_message_tests(session_id);
+
+        save_user_msg(session_id, "old user", None).expect("save old user");
+        save_assistant_msg(session_id, "old assistant", "test-model").expect("save old assistant");
+        save_session_memory_state(session_id, "stale sm", Some(99)).expect("save stale sm");
+
+        let compacted = vec![
+            serde_json::json!({"role": "system", "content": "[Conversation summary — 2 earlier messages compacted]\n\nsummary"}),
+            serde_json::json!({"role": "user", "content": "recent user"}),
+            serde_json::json!({"role": "assistant", "content": "recent assistant"}),
+        ];
+
+        replace_messages_with_compacted_history(session_id, &compacted)
+            .expect("replace with compacted transcript");
+        clear_session_memory_state(session_id).expect("clear stale sm");
+
+        let history = load_llm_history(session_id).expect("load compacted history");
+        assert_eq!(history.len(), 3);
+        assert_eq!(history[0]["role"], "system");
+        assert_eq!(history[0]["content"], compacted[0]["content"]);
+        assert_eq!(history[1]["content"], "recent user");
+        assert_eq!(history[2]["content"], "recent assistant");
+        assert!(history.iter().all(|message| message
+            .get("content")
+            .and_then(|value| value.as_str())
+            != Some("old user")));
+
+        let sm_state = load_session_memory_state(session_id).expect("load cleared sm");
+        assert!(sm_state.content.is_none());
+        assert!(sm_state.last_msg_idx.is_none());
+    }
+
     /// Validates the skip-system-message logic used in `save_subagent_transcript`.
     #[test]
     fn transcript_skips_system_message() {

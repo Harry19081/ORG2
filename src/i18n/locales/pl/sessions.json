@@ -207,15 +207,6 @@
       },
       "commitsTo": "Commits do {{repo}}",
       "commitsToMultiple": "Commits do {{repos}}"
-    },
-    "list": {
-      "updated": "Zaktualizowano",
-      "timeRange": "Zakres czasu",
-      "started": "Rozpoczęto",
-      "lastUpdated": "Ostatnia aktualizacja",
-      "agentModel": "Agent · Model",
-      "emptyTitle": "Brak sesji pasujących do tych filtrów",
-      "emptyDescription": "Spróbuj wybrać inny status, typ Agent lub zakres czasu."
     }
   },
   "worktreeCompare": {
@@ -1837,7 +1828,7 @@
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
       "phaseLabel": "Task browser",
-      "sourcePath": "Task source",
+      "sourcePath": "Folder benchmarku",
       "evaluationMode": "Evaluation mode",
       "evaluationModes": {
         "patchOnly": "Patch only",
@@ -1887,7 +1878,20 @@
       "targetRepoPathTitle": "Ścieżka docelowego Repo",
       "targetRepoPathPlaceholder": "/Users/you/Documents/GitHub/project-repo",
       "applyInWorktree": "Zastosuj w Worktree",
-      "worktreePathLabel": "Worktree"
+      "worktreePathLabel": "Worktree",
+      "singleRun": "Pojedyncze uruchomienie",
+      "batchRun": "Uruchomienie zbiorcze",
+      "sourcePathPlaceholder": "Ścieżka do folderu benchmarku",
+      "localPath": "ścieżka lokalna",
+      "runType": "Typ uruchomienia",
+      "kindTitle": "Benchmark",
+      "kinds": {
+        "sweBenchPro": "SWE-bench Pro",
+        "terminalBench": "Terminal-Bench"
+      },
+      "selectedTasks": "Wybrano: {{selected}}/{{total}}",
+      "concurrency": "Równolegle",
+      "taskLoadingUnsupported": "Ładowanie zadań nie jest jeszcze dostępne dla tego benchmarku; użyj preflight, aby sprawdzić lokalne źródło."
     },
     "skillsAndTools": "Skills i narzędzia"
   },

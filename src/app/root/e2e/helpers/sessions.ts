@@ -381,6 +381,42 @@ export function createSessionHelpers(store: E2EStore) {
     }
   };
 
+  const getSessionAggregateRowFromList = async (
+    sessionId: string
+  ): Promise<Result<{ session: Json | null; diagnostics?: Json }>> => {
+    try {
+      if (!sessionId) {
+        return {
+          ok: false,
+          error: "getSessionAggregateRowFromList: `sessionId` is required",
+        };
+      }
+      const listed = await rpc.sessionAggregate.list({
+        filter: {
+          category: "agent",
+          limit: 200,
+          sortBy: "updated_at",
+          sortOrder: "desc",
+        },
+      });
+      const aggregateSession =
+        listed.sessions.find((row) => row.sessionId === sessionId) ?? null;
+      return {
+        ok: true,
+        session: aggregateSession as unknown as Json | null,
+        diagnostics: {
+          source: aggregateSession ? "aggregate" : "missing",
+          aggregateCount: listed.sessions.length,
+          aggregateSampleIds: listed.sessions
+            .slice(0, 10)
+            .map((row) => row.sessionId),
+        } as unknown as Json,
+      };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
   const getSessionAggregateRow = async (
     sessionId: string
   ): Promise<Result<{ session: Json | null; diagnostics?: Json }>> => {
@@ -403,22 +439,7 @@ export function createSessionHelpers(store: E2EStore) {
         };
       }
 
-      const listed = await rpc.sessionAggregate.list({
-        filter: { limit: 5_000 },
-      });
-      const aggregateSession =
-        listed.sessions.find((row) => row.sessionId === sessionId) ?? null;
-      return {
-        ok: true,
-        session: aggregateSession as unknown as Json | null,
-        diagnostics: {
-          source: aggregateSession ? "aggregate" : "missing",
-          aggregateCount: listed.sessions.length,
-          aggregateSampleIds: listed.sessions
-            .slice(0, 10)
-            .map((row) => row.sessionId),
-        } as unknown as Json,
-      };
+      return getSessionAggregateRowFromList(sessionId);
     } catch (err) {
       return asError(err);
     }
@@ -435,6 +456,7 @@ export function createSessionHelpers(store: E2EStore) {
     openSession,
     launchSession,
     getSessionAggregateRow,
+    getSessionAggregateRowFromList,
     seedChatEvents: seeders.seedChatEvents,
     seedModeSwitchSession: seeders.seedModeSwitchSession,
     seedPlanCard: seeders.seedPlanCard,

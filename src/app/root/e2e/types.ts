@@ -493,6 +493,9 @@ export interface E2EHelpers {
   getSessionAggregateRow: (
     sessionId: string
   ) => Promise<Result<{ session: Json | null }>>;
+  getSessionAggregateRowFromList: (
+    sessionId: string
+  ) => Promise<Result<{ session: Json | null; diagnostics?: Json }>>;
   seedChatEvents: (
     sessionId: string,
     events: Json[]

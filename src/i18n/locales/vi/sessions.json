@@ -207,15 +207,6 @@
       },
       "commitsTo": "Commits tới {{repo}}",
       "commitsToMultiple": "Commits tới {{repos}}"
-    },
-    "list": {
-      "updated": "Đã cập nhật",
-      "timeRange": "Khoảng thời gian",
-      "started": "Đã bắt đầu",
-      "lastUpdated": "Cập nhật lần cuối",
-      "agentModel": "Agent · Mô hình",
-      "emptyTitle": "Không có phiên nào khớp với các bộ lọc này",
-      "emptyDescription": "Hãy thử trạng thái, loại Agent hoặc khoảng thời gian khác."
     }
   },
   "changes": {
@@ -1815,7 +1806,7 @@
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
       "phaseLabel": "Task browser",
-      "sourcePath": "Task source",
+      "sourcePath": "Thư mục benchmark",
       "evaluationMode": "Evaluation mode",
       "evaluationModes": {
         "patchOnly": "Patch only",
@@ -1865,7 +1856,20 @@
       "targetRepoPathTitle": "Đường dẫn Repo đích",
       "targetRepoPathPlaceholder": "/Users/you/Documents/GitHub/project-repo",
       "applyInWorktree": "Áp dụng trong Worktree",
-      "worktreePathLabel": "Worktree"
+      "worktreePathLabel": "Worktree",
+      "singleRun": "Chạy đơn",
+      "batchRun": "Chạy hàng loạt",
+      "sourcePathPlaceholder": "Đường dẫn tới thư mục benchmark",
+      "localPath": "đường dẫn cục bộ",
+      "runType": "Kiểu chạy",
+      "kindTitle": "Benchmark",
+      "kinds": {
+        "sweBenchPro": "SWE-bench Pro",
+        "terminalBench": "Terminal-Bench"
+      },
+      "selectedTasks": "Đã chọn {{selected}}/{{total}}",
+      "concurrency": "Song song",
+      "taskLoadingUnsupported": "Chưa thể tải tác vụ cho benchmark này; hãy dùng preflight để kiểm tra nguồn cục bộ."
     },
     "skillsAndTools": "Skills và công cụ"
   },

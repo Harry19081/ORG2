@@ -1,24 +1,36 @@
 import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
 import {
   BENCHMARK_EVALUATION_MODE,
   BENCHMARK_KIND,
+  BENCHMARK_RUN_TYPE,
+  type BenchmarkAgentBatchStatus,
   type BenchmarkEvaluationMode,
+  type BenchmarkKind,
   type BenchmarkPreflightResult,
   type BenchmarkRunPlan,
   type BenchmarkRunStatus,
+  type BenchmarkRunType,
   type BenchmarkTaskDetail,
   type BenchmarkTaskIndexRow,
 } from "@src/api/tauri/benchmark";
 
-export const DEFAULT_SWE_BENCH_PRO_SOURCE =
-  "/Users/laptop-h/Documents/GitHub/SWE-bench_Pro-os/helper_code/sweap_eval_full_v2.jsonl";
+const BENCHMARK_SOURCE_PATH_STORAGE_KEY = "orgii:benchmarkSourcePath";
+
+export const DEFAULT_BENCHMARK_SOURCE_PATH = "";
 export const DEFAULT_SWE_BENCH_TARGET_REPO_PATH = "";
 
 export const BENCHMARK_TASK_LIST_LIMIT = 250;
+export const DEFAULT_BENCHMARK_BATCH_CONCURRENCY = 2;
 
-export const benchmarkKindAtom = atom(BENCHMARK_KIND.SWE_BENCH_PRO);
-export const benchmarkSourcePathAtom = atom(DEFAULT_SWE_BENCH_PRO_SOURCE);
+export const benchmarkKindAtom = atom<BenchmarkKind>(
+  BENCHMARK_KIND.SWE_BENCH_PRO
+);
+export const benchmarkSourcePathAtom = atomWithStorage(
+  BENCHMARK_SOURCE_PATH_STORAGE_KEY,
+  DEFAULT_BENCHMARK_SOURCE_PATH
+);
 export const benchmarkEvaluationModeAtom = atom<BenchmarkEvaluationMode>(
   BENCHMARK_EVALUATION_MODE.LOCAL_DOCKER
 );
@@ -40,3 +52,16 @@ export const benchmarkPreflightAtom = atom<BenchmarkPreflightResult | null>(
 );
 export const benchmarkRunLoadingAtom = atom(false);
 export const benchmarkRunErrorAtom = atom<string | null>(null);
+export const benchmarkRunTypeAtom = atom<BenchmarkRunType>(
+  BENCHMARK_RUN_TYPE.SINGLE
+);
+export const benchmarkBatchSelectedTaskIdsAtom = atom<string[]>([]);
+export const benchmarkBatchConcurrencyAtom = atom(
+  DEFAULT_BENCHMARK_BATCH_CONCURRENCY
+);
+export const benchmarkAgentBatchStatusAtom =
+  atom<BenchmarkAgentBatchStatus | null>(null);
+export const benchmarkAgentBatchLoadingAtom = atom(false);
+export const benchmarkAgentBatchErrorAtom = atom<string | null>(null);
+export const benchmarkActiveBatchIdAtom = atom<string | null>(null);
+export const benchmarkActiveBatchTaskIdAtom = atom<string | null>(null);

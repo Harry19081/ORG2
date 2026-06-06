@@ -13,6 +13,24 @@ use crate::persistence::images;
 
 use super::super::{insert_message_retry, message_role, AgentMessageRow};
 
+pub fn save_system_msg(prefix: &str, session_id: &str, content: &str) -> SqliteResult<String> {
+    let msg = AgentMessageRow {
+        id: Uuid::new_v4().to_string(),
+        session_id: session_id.to_string(),
+        role: message_role::SYSTEM.to_string(),
+        content: content.to_string(),
+        tool_name: None,
+        tool_call_id: None,
+        tool_input: None,
+        tool_output: None,
+        model: None,
+        sequence: 0,
+        created_at: Utc::now().to_rfc3339(),
+        images: None,
+    };
+    insert_message_retry(prefix, &msg)
+}
+
 /// Save a user message, optionally with images.
 ///
 /// Accepts base64 data URLs, persists them to disk via content-hash dedup,
