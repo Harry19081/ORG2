@@ -2,20 +2,25 @@
  * IssuesContent
  *
  * GitHub Issues panel for the workstation primary sidebar.
- * Renders the filter bar, issue list, new-issue form, and detail panel.
+ * Interaction patterns aligned with SourceControlContent:
+ * - "Filter issues…" input (same style as "Filter changes…")
+ * - CollapsibleSection grouping for Open/Closed issues
+ * - State filter as compact header actions on the section header
  */
 import { useSetAtom } from "jotai";
-import { RefreshCw, Search } from "lucide-react";
+import { Filter as FilterIcon, RefreshCw } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import {
+  COUNT_BADGE,
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
-  TYPOGRAPHY,
+  getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
+import { CollapsibleSection } from "@src/modules/WorkStation/shared/PrimarySidebarLayout";
+import { usePrimarySidebarSurface } from "@src/modules/WorkStation/shared/hooks/usePrimarySidebarSurface";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { workstationIssueCallbackAtom } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 
@@ -33,16 +38,11 @@ export interface IssuesContentProps {
   onOpenNewIssueForm?: () => void;
 }
 
-const FILTER_OPTIONS: { value: IssueFilterState; label: string }[] = [
-  { value: "open", label: "Open" },
-  { value: "closed", label: "Closed" },
-  { value: "all", label: "All" },
-];
-
 const IssuesContent: React.FC<IssuesContentProps> = memo(
   ({ repoPath, repoId, branchName, remoteUrl }) => {
     const { t } = useTranslation("common");
     const setCallbackAtom = useSetAtom(workstationIssueCallbackAtom);
+    const { surfaceBgClass } = usePrimarySidebarSurface();
 
     const {
       issues,
@@ -68,6 +68,8 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
 
     const [showNewIssueForm, setShowNewIssueForm] = useState(false);
     const [creatingIssue, setCreatingIssue] = useState(false);
+    const [openCollapsed, setOpenCollapsed] = useState(false);
+    const [closedCollapsed, setClosedCollapsed] = useState(false);
     const listRef = useRef<HTMLDivElement>(null);
 
     const handleOpenNewIssueForm = useCallback(() => {
@@ -136,70 +138,112 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
       );
     }
 
-    const filterBar = (
-      <div className="flex shrink-0 items-center gap-1 border-b border-border-1 px-2 py-1.5">
-        {/* State toggle pills */}
-        <div className="flex rounded-md border border-border-2 bg-fill-1 p-0.5">
-          {FILTER_OPTIONS.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setFilterState(value)}
-              className={`rounded px-2 py-0.5 ${TYPOGRAPHY.secondary} font-medium transition-colors ${
-                filterState === value
-                  ? "bg-primary-6 text-white"
-                  : "text-text-2 hover:text-text-1"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+    const openIssues = issues.filter((i) => i.state === "open");
+    const closedIssues = issues.filter((i) => i.state === "closed");
 
-        {/* Search */}
-        <div className="flex flex-1">
-          <Input
-            value={searchQuery}
-            onChange={(val) => setSearchQuery(val)}
-            placeholder={t(
-              "git.issues.searchPlaceholder",
-              "Filter by title or label…"
-            )}
-            prefix={<Search size={11} strokeWidth={2} />}
-            size="small"
-            className="w-full"
-          />
-        </div>
+    const showOpenSection = filterState === "open" || filterState === "all";
+    const showClosedSection = filterState === "closed" || filterState === "all";
 
-        {/* Refresh */}
-        <button
-          type="button"
-          onClick={refresh}
-          disabled={loading}
-          className={`${HEADER_BUTTON.actionDisabled} shrink-0`}
-          title={t("actions.refresh", "Refresh")}
-        >
-          <RefreshCw
-            size={HEADER_ICON_SIZE.sm}
-            strokeWidth={2}
-            className={loading ? "animate-spin" : undefined}
-          />
-        </button>
+    // State filter compact toggle actions rendered in the section header area
+    const filterActions: { value: IssueFilterState; label: string }[] = [
+      { value: "open", label: "Open" },
+      { value: "closed", label: "Closed" },
+      { value: "all", label: "All" },
+    ];
+
+    const stateFilterNode = (
+      <div className="flex rounded border border-border-2 bg-fill-1">
+        {filterActions.map(({ value, label }) => (
+          <button
+            key={value}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setFilterState(value);
+            }}
+            className={`px-1.5 py-[1px] text-[10px] font-medium transition-colors first:rounded-l last:rounded-r ${
+              filterState === value
+                ? "bg-primary-6 text-white"
+                : "text-text-3 hover:text-text-1"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
     );
 
+    // Count badge for section header (matching SectionHeader style)
+    const openCountBadge = (
+      <span
+        className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(openIssues.length)} ${COUNT_BADGE.primary}`}
+      >
+        {openIssues.length}
+      </span>
+    );
+
+    const closedCountBadge = (
+      <span
+        className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(closedIssues.length)} ${COUNT_BADGE.primary}`}
+      >
+        {closedIssues.length}
+      </span>
+    );
+
+    // Section title with count badge embedded (mimics "STAGED CHANGES (4)" pattern)
+    const openSectionTitle = (
+      <span className="flex min-w-0 items-center gap-1.5">
+        <span className="truncate">Open Issues</span>
+        {openCountBadge}
+      </span>
+    );
+
+    const closedSectionTitle = (
+      <span className="flex min-w-0 items-center gap-1.5">
+        <span className="truncate">Closed Issues</span>
+        {closedCountBadge}
+      </span>
+    );
+
+    // Refresh + state filter as section header actions
+    const issuesSectionActions = [
+      {
+        key: "filter-state",
+        customRender: stateFilterNode,
+      },
+      {
+        key: "refresh",
+        customRender: (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              refresh();
+            }}
+            disabled={loading}
+            className={HEADER_BUTTON.actionDisabled}
+            title={t("actions.refresh", "Refresh")}
+          >
+            <RefreshCw
+              size={HEADER_ICON_SIZE.sm}
+              strokeWidth={2}
+              className={loading ? "animate-spin" : undefined}
+            />
+          </button>
+        ),
+      },
+    ];
+
     let listContent: React.ReactNode;
+
     if (isInitialLoading) {
       listContent = (
-        <div className="flex flex-1 items-center justify-center">
-          <Button
-            variant="tertiary"
-            size="mini"
-            loading
-            iconOnly
-            icon={<span />}
-          />
-        </div>
+        <Placeholder
+          variant="loading"
+          placement="sidebar"
+          title={t("placeholders.loadingChanges", "Loading issues…")}
+          fillParentHeight
+        />
       );
     } else if (error) {
       listContent = (
@@ -226,21 +270,85 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
     } else {
       listContent = (
         <div ref={listRef} className="flex flex-1 flex-col overflow-y-auto">
-          {issues.map((issue) => (
-            <IssueRow
-              key={issue.number}
-              issue={issue}
-              isSelected={false}
-              onClick={() => selectIssue(issue)}
-            />
-          ))}
+          {showOpenSection && (
+            <CollapsibleSection
+              title={openSectionTitle}
+              collapsed={openCollapsed}
+              onCollapseChange={setOpenCollapsed}
+              collapsible
+              resizable={false}
+              isLast={!showClosedSection}
+              autoHeight={!showClosedSection}
+              hideSeparator={!showClosedSection}
+              actions={issuesSectionActions}
+            >
+              {openIssues.length === 0 ? (
+                <Placeholder
+                  variant="empty"
+                  placement="sidebar"
+                  title="No open issues"
+                />
+              ) : (
+                openIssues.map((issue) => (
+                  <IssueRow
+                    key={issue.number}
+                    issue={issue}
+                    isSelected={false}
+                    onClick={() => selectIssue(issue)}
+                  />
+                ))
+              )}
+            </CollapsibleSection>
+          )}
+
+          {showClosedSection && (
+            <CollapsibleSection
+              title={closedSectionTitle}
+              collapsed={closedCollapsed}
+              onCollapseChange={setClosedCollapsed}
+              collapsible
+              resizable={false}
+              isLast
+              autoHeight
+              hideSeparator
+              actions={!showOpenSection ? issuesSectionActions : []}
+            >
+              {closedIssues.length === 0 ? (
+                <Placeholder
+                  variant="empty"
+                  placement="sidebar"
+                  title="No closed issues"
+                />
+              ) : (
+                closedIssues.map((issue) => (
+                  <IssueRow
+                    key={issue.number}
+                    issue={issue}
+                    isSelected={false}
+                    onClick={() => selectIssue(issue)}
+                  />
+                ))
+              )}
+            </CollapsibleSection>
+          )}
         </div>
       );
     }
 
     return (
       <div className="flex h-full min-h-0 flex-col overflow-hidden">
-        {filterBar}
+        {/* Filter input — mirrors "Filter changes…" in SourceControlContent */}
+        <div className={`flex-shrink-0 px-3 pb-2 pt-2 ${surfaceBgClass}`}>
+          <Input
+            prefix={<FilterIcon size={14} strokeWidth={1.75} />}
+            placeholder={t("git.issues.searchPlaceholder", "Filter issues…")}
+            value={searchQuery}
+            onChange={(val) => setSearchQuery(val)}
+            size="small"
+            className="input-pane-surface"
+          />
+        </div>
+
         {showNewIssueForm && (
           <NewIssueForm
             onSubmit={handleSubmitNewIssue}
@@ -250,6 +358,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
             loading={creatingIssue}
           />
         )}
+
         {listContent}
       </div>
     );

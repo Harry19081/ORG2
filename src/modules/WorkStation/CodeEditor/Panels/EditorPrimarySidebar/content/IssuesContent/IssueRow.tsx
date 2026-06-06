@@ -6,10 +6,7 @@ import {
   PRIMARY_SIDEBAR_HOVER,
   TYPOGRAPHY,
 } from "@src/config/workstation/tokens";
-import {
-  formatTimeAgo,
-  getLabelColorStyle,
-} from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
+import { getLabelColorStyle } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
 
 interface IssueRowProps {
   issue: GitHubIssue;
@@ -25,72 +22,63 @@ export const IssueRow: React.FC<IssueRowProps> = memo(
       <button
         type="button"
         onClick={onClick}
-        className={`flex w-full min-w-0 items-start gap-2 px-3 py-2 text-left transition-colors ${
+        className={`group/issue-row flex h-[28px] w-full min-w-0 items-center gap-1.5 pl-8 pr-2 text-left transition-colors ${
           isSelected
-            ? "bg-fill-2 text-text-1"
+            ? `bg-fill-2 text-text-1 ${PRIMARY_SIDEBAR_HOVER.selectedRow}`
             : `text-text-2 ${PRIMARY_SIDEBAR_HOVER.row}`
         }`}
+        title={`#${issue.number} ${issue.title}`}
       >
-        {/* State icon */}
+        {/* State icon — left, like a file type icon */}
         <span
-          className={`mt-0.5 shrink-0 ${isOpen ? "text-success-6" : "text-text-3"}`}
+          className={`shrink-0 ${isOpen ? "text-success-6" : "text-text-3"}`}
         >
           {isOpen ? (
-            <CircleDot size={14} strokeWidth={2} />
+            <CircleDot size={14} strokeWidth={1.75} />
           ) : (
-            <XCircle size={14} strokeWidth={2} />
+            <XCircle size={14} strokeWidth={1.75} />
           )}
         </span>
 
-        {/* Center content */}
-        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          {/* Title row */}
-          <span className="flex min-w-0 items-baseline gap-1.5">
-            <span
-              className={`shrink-0 font-mono ${TYPOGRAPHY.secondary} text-text-3`}
-            >
-              #{issue.number}
-            </span>
-            <span
-              className={`min-w-0 truncate ${TYPOGRAPHY.value} font-medium leading-[1.4] text-text-1`}
-            >
-              {issue.title}
-            </span>
-          </span>
+        {/* Title */}
+        <span
+          className={`min-w-0 flex-1 truncate ${TYPOGRAPHY.value} leading-[1.4] text-text-1`}
+        >
+          {issue.title}
+        </span>
 
-          {/* Labels */}
-          {issue.labels.length > 0 && (
-            <span className="flex flex-wrap gap-1">
-              {issue.labels.slice(0, 4).map((label) => {
-                const style = getLabelColorStyle(label.color);
-                return (
-                  <span
-                    key={label.id}
-                    className={`rounded-full px-1.5 py-[1px] ${TYPOGRAPHY.badge} leading-tight`}
-                    style={style}
-                  >
-                    {label.name}
-                  </span>
-                );
-              })}
+        {/* Right side: labels (up to 2) + issue number badge */}
+        <span className="ml-auto flex shrink-0 items-center gap-1">
+          {issue.labels.slice(0, 2).map((label) => {
+            const style = getLabelColorStyle(label.color);
+            return (
+              <span
+                key={label.id}
+                className={`rounded-full px-1 py-[1px] ${TYPOGRAPHY.badge} leading-tight`}
+                style={style}
+              >
+                {label.name}
+              </span>
+            );
+          })}
+
+          {/* Comment count */}
+          {issue.comments > 0 && (
+            <span
+              className={`flex items-center gap-0.5 ${TYPOGRAPHY.secondary} text-text-3`}
+            >
+              <MessageSquare size={11} strokeWidth={1.75} />
+              <span>{issue.comments}</span>
             </span>
           )}
 
-          {/* Meta */}
-          <span className={`${TYPOGRAPHY.secondary} text-text-3`}>
-            {issue.user.login} · {formatTimeAgo(issue.updated_at)}
-          </span>
-        </span>
-
-        {/* Comment count badge */}
-        {issue.comments > 0 && (
+          {/* Issue number badge — right side, like a file status badge */}
           <span
-            className={`mt-0.5 flex shrink-0 items-center gap-0.5 ${TYPOGRAPHY.secondary} text-text-3`}
+            className={`min-w-[28px] rounded px-1 py-[1px] text-right font-mono ${TYPOGRAPHY.secondary} text-text-3`}
           >
-            <MessageSquare size={11} strokeWidth={1.75} />
-            <span>{issue.comments}</span>
+            #{issue.number}
           </span>
-        )}
+        </span>
       </button>
     );
   }
