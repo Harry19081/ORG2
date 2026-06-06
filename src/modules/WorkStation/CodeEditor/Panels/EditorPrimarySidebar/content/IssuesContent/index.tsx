@@ -5,10 +5,17 @@
  * Renders the filter bar, issue list, new-issue form, and detail panel.
  */
 import { useSetAtom } from "jotai";
-import { Loader2, RefreshCw, Search } from "lucide-react";
+import { RefreshCw, Search } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
+import Input from "@src/components/Input";
+import {
+  HEADER_BUTTON,
+  HEADER_ICON_SIZE,
+  TYPOGRAPHY,
+} from "@src/config/workstation/tokens";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { workstationIssueCallbackAtom } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 
@@ -138,7 +145,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
               key={value}
               type="button"
               onClick={() => setFilterState(value)}
-              className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${
+              className={`rounded px-2 py-0.5 ${TYPOGRAPHY.secondary} font-medium transition-colors ${
                 filterState === value
                   ? "bg-primary-6 text-white"
                   : "text-text-2 hover:text-text-1"
@@ -150,21 +157,17 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
         </div>
 
         {/* Search */}
-        <div className="relative flex flex-1 items-center">
-          <Search
-            size={11}
-            className="absolute left-2 text-text-3"
-            strokeWidth={2}
-          />
-          <input
-            type="text"
+        <div className="flex flex-1">
+          <Input
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(val) => setSearchQuery(val)}
             placeholder={t(
               "git.issues.searchPlaceholder",
               "Filter by title or label…"
             )}
-            className="w-full rounded border border-border-2 bg-fill-1 py-0.5 pl-6 pr-2 text-[11px] text-text-1 placeholder:text-text-3 focus:border-primary-6 focus:outline-none"
+            prefix={<Search size={11} strokeWidth={2} />}
+            size="small"
+            className="w-full"
           />
         </div>
 
@@ -173,11 +176,11 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
           type="button"
           onClick={refresh}
           disabled={loading}
-          className="shrink-0 rounded p-1 text-text-3 hover:bg-fill-2 hover:text-text-1 disabled:opacity-40"
+          className={`${HEADER_BUTTON.actionDisabled} shrink-0`}
           title={t("actions.refresh", "Refresh")}
         >
           <RefreshCw
-            size={12}
+            size={HEADER_ICON_SIZE.sm}
             strokeWidth={2}
             className={loading ? "animate-spin" : undefined}
           />
@@ -188,8 +191,14 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
     let listContent: React.ReactNode;
     if (isInitialLoading) {
       listContent = (
-        <div className="flex flex-1 items-center justify-center text-text-3">
-          <Loader2 size={18} className="animate-spin" />
+        <div className="flex flex-1 items-center justify-center">
+          <Button
+            variant="tertiary"
+            size="mini"
+            loading
+            iconOnly
+            icon={<span />}
+          />
         </div>
       );
     } else if (error) {

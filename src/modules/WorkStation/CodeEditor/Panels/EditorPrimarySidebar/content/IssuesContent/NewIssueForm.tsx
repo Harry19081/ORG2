@@ -1,8 +1,11 @@
-import { Loader2, X } from "lucide-react";
+import { X } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubIssueLabel, GitHubIssueUser } from "@src/api/tauri/github";
+import Button from "@src/components/Button";
+import Input from "@src/components/Input";
+import { TYPOGRAPHY } from "@src/config/workstation/tokens";
 import { getLabelColorStyle } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
 
 interface NewIssueFormProps {
@@ -66,14 +69,13 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
         className="flex flex-col gap-2 border-b border-border-1 px-3 py-3"
       >
         {/* Title */}
-        <input
+        <Input
           ref={titleRef}
-          type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(val) => setTitle(val)}
           placeholder={t("git.issues.newIssueTitlePlaceholder", "Issue title")}
+          size="small"
           required
-          className="w-full rounded border border-border-2 bg-fill-1 px-2 py-1.5 text-[12px] text-text-1 placeholder:text-text-3 focus:border-primary-6 focus:outline-none"
         />
 
         {/* Body */}
@@ -85,13 +87,13 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
             "Describe the issue (optional)…"
           )}
           rows={4}
-          className="w-full resize-y rounded border border-border-2 bg-fill-1 px-2 py-1.5 text-[12px] text-text-1 placeholder:text-text-3 focus:border-primary-6 focus:outline-none"
+          className={`w-full resize-y rounded border border-border-2 bg-fill-1 px-2 py-1.5 ${TYPOGRAPHY.value} text-text-1 placeholder:text-text-3 focus:border-primary-6 focus:outline-none`}
         />
 
         {/* Labels */}
         {repoLabels.length > 0 && (
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-medium uppercase text-text-3">
+            <span className={`${TYPOGRAPHY.badge} uppercase text-text-3`}>
               Labels
             </span>
             <div className="flex flex-wrap gap-1">
@@ -105,7 +107,7 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
                     key={label.id}
                     type="button"
                     onClick={() => handleLabelToggle(label.name)}
-                    className={`rounded-full px-1.5 py-[1px] text-[10px] font-medium leading-tight transition-opacity ${
+                    className={`rounded-full px-1.5 py-[1px] ${TYPOGRAPHY.badge} leading-tight transition-opacity ${
                       isSelected
                         ? "opacity-100"
                         : "border border-border-2 text-text-2 opacity-60 hover:opacity-100"
@@ -123,7 +125,7 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
         {/* Assignees */}
         {collaborators.length > 0 && (
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-medium uppercase text-text-3">
+            <span className={`${TYPOGRAPHY.badge} uppercase text-text-3`}>
               Assignees
             </span>
             <div className="flex flex-wrap gap-1">
@@ -134,7 +136,7 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
                     key={user.login}
                     type="button"
                     onClick={() => handleAssigneeToggle(user.login)}
-                    className={`flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] transition-colors ${
+                    className={`flex items-center gap-1 rounded px-1.5 py-0.5 ${TYPOGRAPHY.secondary} transition-colors ${
                       isSelected
                         ? "bg-primary-1 text-primary-6"
                         : "text-text-2 hover:bg-fill-2"
@@ -155,23 +157,25 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
 
         {/* Actions */}
         <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
+          <Button
+            htmlType="button"
+            variant="tertiary"
+            size="mini"
+            icon={<X size={11} />}
             disabled={loading}
-            className="flex items-center gap-1 rounded px-2.5 py-1 text-[11px] text-text-2 hover:bg-fill-2 disabled:opacity-50"
+            onClick={onCancel}
           >
-            <X size={11} />
             {t("actions.cancel", "Cancel")}
-          </button>
-          <button
-            type="submit"
+          </Button>
+          <Button
+            htmlType="submit"
+            variant="primary"
+            size="mini"
+            loading={loading}
             disabled={!title.trim() || loading}
-            className="flex items-center gap-1 rounded bg-primary-6 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-primary-7 disabled:opacity-50"
           >
-            {loading && <Loader2 size={11} className="animate-spin" />}
             {t("actions.create", "Create")}
-          </button>
+          </Button>
         </div>
       </form>
     );

@@ -1,14 +1,14 @@
-import {
-  ArrowLeft,
-  CircleDot,
-  ExternalLink,
-  Loader2,
-  XCircle,
-} from "lucide-react";
+import { ArrowLeft, CircleDot, ExternalLink, XCircle } from "lucide-react";
 import React, { memo, useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubIssue, GitHubIssueComment } from "@src/api/tauri/github";
+import Button from "@src/components/Button";
+import {
+  HEADER_BUTTON,
+  HEADER_ICON_SIZE,
+  TYPOGRAPHY,
+} from "@src/config/workstation/tokens";
 import {
   formatTimeAgo,
   getLabelColorStyle,
@@ -61,24 +61,28 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
           <button
             type="button"
             onClick={onClose}
-            className="flex shrink-0 items-center justify-center rounded p-1 text-text-3 hover:bg-fill-2 hover:text-text-1"
+            className={HEADER_BUTTON.action}
             title={t("actions.back", "Back")}
           >
-            <ArrowLeft size={14} strokeWidth={2} />
+            <ArrowLeft size={HEADER_ICON_SIZE.sm} strokeWidth={2} />
           </button>
 
           <span
-            className={`shrink-0 ${isOpen ? "text-[#3fb950]" : "text-text-3"}`}
+            className={`shrink-0 ${isOpen ? "text-success-6" : "text-text-3"}`}
           >
             {isOpen ? (
-              <CircleDot size={14} strokeWidth={2} />
+              <CircleDot size={HEADER_ICON_SIZE.sm} strokeWidth={2} />
             ) : (
-              <XCircle size={14} strokeWidth={2} />
+              <XCircle size={HEADER_ICON_SIZE.sm} strokeWidth={2} />
             )}
           </span>
 
-          <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-text-1">
-            <span className="mr-1 font-mono text-[11px] text-text-3">
+          <span
+            className={`min-w-0 flex-1 truncate ${TYPOGRAPHY.value} font-medium text-text-1`}
+          >
+            <span
+              className={`mr-1 font-mono ${TYPOGRAPHY.secondary} text-text-3`}
+            >
               #{issue.number}
             </span>
             {issue.title}
@@ -87,7 +91,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
           <button
             type="button"
             onClick={handleOpenUrl}
-            className="shrink-0 text-text-3 hover:text-text-1"
+            className={HEADER_BUTTON.action}
             title="Open in GitHub"
           >
             <ExternalLink size={12} strokeWidth={2} />
@@ -99,7 +103,9 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
           {/* Meta */}
           <div className="flex flex-col gap-1.5 border-b border-border-1 px-3 py-2">
             {/* Author */}
-            <div className="flex items-center gap-1.5 text-[11px] text-text-3">
+            <div
+              className={`flex items-center gap-1.5 ${TYPOGRAPHY.secondary} text-text-3`}
+            >
               <img
                 src={issue.user.avatar_url}
                 alt={issue.user.login}
@@ -119,7 +125,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
                   return (
                     <span
                       key={label.id}
-                      className="rounded-full px-1.5 py-[1px] text-[10px] font-medium leading-tight"
+                      className={`rounded-full px-1.5 py-[1px] ${TYPOGRAPHY.badge} leading-tight`}
                       style={style}
                     >
                       {label.name}
@@ -131,7 +137,9 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
 
             {/* Assignees */}
             {issue.assignees.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1 text-[11px] text-text-3">
+              <div
+                className={`flex flex-wrap items-center gap-1 ${TYPOGRAPHY.secondary} text-text-3`}
+              >
                 <span>Assigned:</span>
                 {issue.assignees.map((user) => (
                   <span key={user.login} className="flex items-center gap-0.5">
@@ -150,7 +158,9 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
           {/* Body */}
           {issue.body && (
             <div className="border-b border-border-1 px-3 py-2">
-              <p className="whitespace-pre-wrap text-[12px] leading-relaxed text-text-1">
+              <p
+                className={`whitespace-pre-wrap ${TYPOGRAPHY.value} leading-relaxed text-text-1`}
+              >
                 {issue.body}
               </p>
             </div>
@@ -159,29 +169,38 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
           {/* Action row */}
           <div className="border-b border-border-1 px-3 py-2">
             {isOpen ? (
-              <button
-                type="button"
+              <Button
+                htmlType="button"
+                variant="secondary"
+                size="mini"
                 onClick={onCloseIssue}
-                className="rounded border border-border-2 px-2.5 py-1 text-[11px] text-text-2 hover:bg-fill-2"
               >
                 Close issue
-              </button>
+              </Button>
             ) : (
-              <button
-                type="button"
+              <Button
+                htmlType="button"
+                variant="success"
+                appearance="outline"
+                size="mini"
                 onClick={onReopenIssue}
-                className="rounded border border-border-2 px-2.5 py-1 text-[11px] text-[#3fb950] hover:bg-fill-2"
               >
                 Reopen issue
-              </button>
+              </Button>
             )}
           </div>
 
           {/* Comments */}
           <div className="flex flex-1 flex-col">
             {commentsLoading ? (
-              <div className="flex items-center justify-center py-6 text-text-3">
-                <Loader2 size={14} className="animate-spin" />
+              <div className="flex items-center justify-center py-6">
+                <Button
+                  variant="tertiary"
+                  size="mini"
+                  loading
+                  iconOnly
+                  icon={<span />}
+                />
               </div>
             ) : (
               comments.map((comment) => (
@@ -189,7 +208,9 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
                   key={comment.id}
                   className="border-b border-border-1 px-3 py-2"
                 >
-                  <div className="mb-1 flex items-center gap-1.5 text-[11px] text-text-3">
+                  <div
+                    className={`mb-1 flex items-center gap-1.5 ${TYPOGRAPHY.secondary} text-text-3`}
+                  >
                     <img
                       src={comment.user.avatar_url}
                       alt={comment.user.login}
@@ -200,7 +221,9 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
                     </span>
                     <span>{formatTimeAgo(comment.created_at)}</span>
                   </div>
-                  <p className="whitespace-pre-wrap text-[12px] leading-relaxed text-text-1">
+                  <p
+                    className={`whitespace-pre-wrap ${TYPOGRAPHY.value} leading-relaxed text-text-1`}
+                  >
                     {comment.body}
                   </p>
                 </div>
@@ -219,20 +242,19 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
                 "Leave a comment…"
               )}
               rows={3}
-              className="mb-2 w-full resize-none rounded border border-border-2 bg-fill-1 px-2 py-1.5 text-[12px] text-text-1 placeholder:text-text-3 focus:border-primary-6 focus:outline-none"
+              className={`mb-2 w-full resize-none rounded border border-border-2 bg-fill-1 px-2 py-1.5 ${TYPOGRAPHY.value} text-text-1 placeholder:text-text-3 focus:border-primary-6 focus:outline-none`}
             />
             <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => void handleCommentSubmit()}
+              <Button
+                htmlType="button"
+                variant="primary"
+                size="mini"
+                loading={submittingComment}
                 disabled={!commentBody.trim() || submittingComment}
-                className="flex items-center gap-1 rounded bg-primary-6 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-primary-7 disabled:opacity-50"
+                onClick={() => void handleCommentSubmit()}
               >
-                {submittingComment && (
-                  <Loader2 size={11} className="animate-spin" />
-                )}
                 {t("git.issues.submitComment", "Comment")}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
