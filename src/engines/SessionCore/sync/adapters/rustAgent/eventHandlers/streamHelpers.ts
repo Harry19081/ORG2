@@ -3,7 +3,7 @@
  *
  * Helper functions for finalizing streaming content and common event accessors.
  */
-import { resetStreamRefs } from "../../shared/eventBuilders";
+import type { StreamRefs } from "../../shared/types";
 import type { AgentWSEvent } from "../../shared/types";
 import type { EventHandlerContext } from "./types";
 
@@ -12,6 +12,11 @@ const STOPPED_TURNS_PER_SESSION_LIMIT = 20;
 const stoppedStreamingSessions = new Set<string>();
 const activeStreamingTurnBySession = new Map<string, string>();
 const stoppedStreamingTurnsBySession = new Map<string, Set<string>>();
+
+function resetStreamRefs(refs: StreamRefs): void {
+  refs.contentRef.current = "";
+  refs.idRef.current = "";
+}
 
 function stoppedTurnSetForSession(sessionId: string): Set<string> {
   let stoppedTurns = stoppedStreamingTurnsBySession.get(sessionId);

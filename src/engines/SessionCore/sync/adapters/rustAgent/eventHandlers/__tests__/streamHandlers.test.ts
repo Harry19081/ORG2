@@ -27,6 +27,7 @@ vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
     upsert: upsertSpy,
     replaceAndRemove: replaceAndRemoveSpy,
     removeByIdPrefix: removeByIdPrefixSpy,
+    saveToCache: vi.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -273,6 +274,53 @@ describe("Rust Agent stream handlers", () => {
     expect(ctx.onStatusChangeRef.current).toHaveBeenCalledWith("completed");
     expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
     expect(removeByIdPrefixSpy).not.toHaveBeenCalled();
+  });
+
+  it("agent complete releases streaming UI even when turn_summary is still pending", async () => {
+    const ctx = createCtx();
+    handleMessageDelta(
+      { type: "agent:message_delta", content: "Done." },
+      "session-1",
+      ctx
+    );
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:complete",
+        sessionId: "session-1",
+        turnId: "turn-a",
+      },
+      ctx
+    );
+
+    expect(ctx.assistantStreamRef?.current.idRef.current).toBe("");
+    expect(ctx.assistantStreamRef?.current.contentRef.current).toBe("");
+    expect(ctx.streamingInfoRef?.current).toEqual({
+      isStreaming: false,
+      isThinking: false,
+      content: "",
+    });
+    expect(ctx.onStreamingDeltaRef?.current).toHaveBeenLastCalledWith({
+      isStreaming: false,
+      isThinking: false,
+      content: "",
+    });
+    expect(ctx.setStreaming).toHaveBeenCalledWith(false);
+    expect(ctx.onStatusChangeRef.current).toHaveBeenCalledWith("completed");
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:turn_summary",
+        sessionId: "session-1",
+        turnId: "turn-a",
+        createdAt: "2026-05-22T07:02:26.000Z",
+        summary: "Summary after completion",
+      },
+      ctx
+    );
+
+    expect(ctx.setStreaming).toHaveBeenCalledTimes(2);
+    expect(ctx.onStatusChangeRef.current).toHaveBeenCalledTimes(1);
   });
 
   it("keeps thinking deltas in ephemeral streaming state", () => {

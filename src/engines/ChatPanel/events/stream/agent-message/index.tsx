@@ -276,8 +276,14 @@ export const AgentMessageEvent: React.FC<AgentMessageEventProps> = (props) => {
     ? (streamingMap.get(sessionId) ?? null)
     : null;
 
+  const isSyntheticLiveEvent =
+    props.event?.args?.syntheticLive === true ||
+    normalizedProps?.args?.syntheticLive === true;
+
   const rawContent = useMemo(() => {
-    if (props.isStreaming && directStreamContent) return directStreamContent;
+    if (isSyntheticLiveEvent && props.isStreaming && directStreamContent) {
+      return directStreamContent;
+    }
     return (
       props.streamingContent ||
       extractText(normalizedProps?.result?.observation) ||
@@ -296,6 +302,7 @@ export const AgentMessageEvent: React.FC<AgentMessageEventProps> = (props) => {
     props.event?.displayText,
     props.isStreaming,
     directStreamContent,
+    isSyntheticLiveEvent,
   ]);
 
   const content = rawContent ? stripThinkTags(rawContent) : undefined;

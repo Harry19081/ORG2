@@ -76,11 +76,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
       rawEvents: Array<{
         id: string;
         source: string;
+        createdAt: string;
         actionType: string;
         uiCanonical: string;
         functionName: string;
         displayText: string;
+        displayStatus: string;
         activityStatus: string;
+        isDelta: boolean | null;
         resultStatus: string | null;
         planRevisionId: string | null;
         args: Json;
@@ -89,8 +92,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
       chatEvents: Array<{
         id: string;
         source: string;
+        createdAt: string;
+        actionType: string;
+        uiCanonical: string;
+        functionName: string;
         displayText: string;
+        displayStatus: string;
         displayVariant: string;
+        args: Json;
       }>;
       streamingDelta: {
         length: number;
@@ -205,11 +214,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
         rawEvents: events.map((event) => ({
           id: event.id,
           source: event.source,
+          createdAt: event.createdAt,
           actionType: event.actionType,
           uiCanonical: event.uiCanonical,
           functionName: event.functionName,
           displayText: event.displayText,
+          displayStatus: event.displayStatus,
           activityStatus: event.activityStatus,
+          isDelta: event.isDelta ?? null,
           resultStatus:
             typeof event.result?.status === "string"
               ? event.result.status
@@ -226,8 +238,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
         chatEvents: chatEvents.map((event) => ({
           id: event.id,
           source: event.source,
+          createdAt: event.createdAt,
+          actionType: event.actionType,
+          uiCanonical: event.uiCanonical,
+          functionName: event.functionName,
           displayText: event.displayText,
+          displayStatus: event.displayStatus,
           displayVariant: event.displayVariant,
+          args: event.args as unknown as Json,
         })),
         streamingDelta: activeSessionId
           ? {

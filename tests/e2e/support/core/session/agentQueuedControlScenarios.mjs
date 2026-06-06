@@ -1,6 +1,9 @@
 import {
   QUEUE_TIMEOUT_MS,
   REPLY_TIMEOUT_MS,
+  assertLiveAssistantOverlayOrdering,
+  assertNoDurableLiveStreamPlaceholders,
+  assertTurnSummaryOrdering,
   configureScenario,
   execJS,
   inspectChatState,
@@ -424,6 +427,10 @@ async function assertComposerImmediatelyUnlockedAfterStop(label, marker) {
     );
   }
 
+  await assertLiveAssistantOverlayOrdering(`${label}-after-stop-unlock`);
+  await assertTurnSummaryOrdering(`${label}-after-stop-unlock`);
+  await assertNoDurableLiveStreamPlaceholders(`${label}-after-stop-unlock`);
+
   await browser.pause(1_500);
   const state = await inspectChatState(`${label}-queue-after-stop-unlock`);
   const queuedStillContainsMarker = state.queuedMessages.some((item) =>
@@ -458,6 +465,10 @@ async function assertComposerResponsiveAfterStop(label, expectedText) {
       timeoutMsg: `${label} Stop left a running or unloaded session; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
   );
+
+  await assertLiveAssistantOverlayOrdering(`${label}-post-stop-idle`);
+  await assertTurnSummaryOrdering(`${label}-post-stop-idle`);
+  await assertNoDurableLiveStreamPlaceholders(`${label}-post-stop-idle`);
 
   const inputSelector = await waitForChatInput();
   const probeText = `${expectedText} STOP_FREEZE_PROBE_${Date.now()}`;

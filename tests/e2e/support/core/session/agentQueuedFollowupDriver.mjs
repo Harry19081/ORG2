@@ -521,7 +521,12 @@ function summarizeChatState(state) {
     chatEvents: (state.chatEvents ?? []).map((event) => ({
       id: event.id,
       source: event.source,
+      createdAt: event.createdAt,
+      actionType: event.actionType,
+      functionName: event.functionName,
+      displayStatus: event.displayStatus,
       displayVariant: event.displayVariant,
+      args: summarizeDiagnosticJson(event.args),
       displayText: truncateDiagnosticText(event.displayText),
     })),
   };
@@ -567,6 +572,97 @@ function findDuplicateTranscriptEntries(entries) {
     }
   }
   return duplicates;
+}
+
+function findDurableLivePlaceholders(state) {
+  const rawEvents = state.rawEvents ?? [];
+  return rawEvents.filter((event) => {
+    const id = String(event.id ?? "");
+    const args = event.args ?? {};
+    return (
+      id.startsWith("stream-msg-live-") ||
+      id.startsWith("stream-think-live-") ||
+      id.startsWith("live-assistant-") ||
+      args.syntheticLive === true ||
+      (event.displayStatus === "running" && event.isDelta === true)
+    );
+  });
+}
+
+async function assertNoDurableLiveStreamPlaceholders(label) {
+  const state = await inspectChatState(`${label}-durable-live-placeholders`);
+  const leaked = findDurableLivePlaceholders(state);
+  if (leaked.length > 0) {
+    throw new Error(
+      `${label} leaked ephemeral live stream events into durable transcript; leaked=${JSON.stringify(leaked.slice(0, 5))} state=${JSON.stringify(summarizeChatState(state))}`
+    );
+  }
+}
+
+function findTurnSummaryOrderingViolations(chatEvents) {
+  const violations = [];
+  let segmentStart = 0;
+  for (let i = 0; i <= chatEvents.length; i += 1) {
+    if (i < chatEvents.length && chatEvents[i].source !== "user") continue;
+    const segment = chatEvents.slice(segmentStart, i);
+    const summaryIndexes = segment
+      .map((event, index) => ({ event, index }))
+      .filter(({ event }) => event.functionName === "turn_summary" || event.uiCanonical === "turn_summary");
+    for (const { event, index } of summaryIndexes) {
+      const priorTurnOutput = segment
+        .slice(0, index)
+        .some(
+          (candidate) =>
+            candidate.source !== "user" &&
+            candidate.functionName !== "turn_summary" &&
+            candidate.uiCanonical !== "turn_summary"
+        );
+      const outputAfterSummary = segment
+        .slice(index + 1)
+        .find(
+          (candidate) =>
+            candidate.source !== "user" &&
+            candidate.functionName !== "turn_summary" &&
+            candidate.uiCanonical !== "turn_summary"
+        );
+      if (!priorTurnOutput || outputAfterSummary) {
+        violations.push({ summary: event, priorTurnOutput, outputAfterSummary });
+      }
+    }
+    segmentStart = i;
+  }
+  return violations;
+}
+
+async function assertTurnSummaryOrdering(label) {
+  const state = await inspectChatState(`${label}-turn-summary-ordering`);
+  const violations = findTurnSummaryOrderingViolations(state.chatEvents ?? []);
+  if (violations.length > 0) {
+    throw new Error(
+      `${label} turn_summary was not last within its turn segment; violations=${JSON.stringify(violations.slice(0, 3))} state=${JSON.stringify(summarizeChatState(state))}`
+    );
+  }
+}
+
+async function assertLiveAssistantOverlayOrdering(label) {
+  const state = await inspectChatState(`${label}-live-overlay-ordering`);
+  const chatEvents = state.chatEvents ?? [];
+  const liveIndex = chatEvents.findIndex((event) => event.id?.startsWith("live-assistant-"));
+  if (liveIndex < 0) return;
+  const liveEvent = chatEvents[liveIndex];
+  if (liveEvent.args?.syntheticLive !== true) {
+    throw new Error(
+      `${label} live assistant overlay missing synthetic marker; liveEvent=${JSON.stringify(liveEvent)} state=${JSON.stringify(summarizeChatState(state))}`
+    );
+  }
+  const laterThinkingIndex = chatEvents.findIndex(
+    (event, index) => index > liveIndex && event.displayVariant === "thinking"
+  );
+  if (laterThinkingIndex >= 0) {
+    throw new Error(
+      `${label} live assistant overlay rendered before later thinking event; liveIndex=${liveIndex} laterThinkingIndex=${laterThinkingIndex} state=${JSON.stringify(summarizeChatState(state))}`
+    );
+  }
 }
 
 async function assertNoDuplicateTranscriptMessages(label) {
@@ -1451,6 +1547,7 @@ async function assertProgressUiSettledAfterAssistantReply(label, expectedText) {
       timeoutMsg: `${label} send button stayed in stop state after assistant reply; sendState=${JSON.stringify(await execJS(js.sendState))} state=${JSON.stringify(summarizeChatState(await inspectChatState(`${label}-stop-after-reply`)))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
   );
+  await assertTurnSummaryOrdering(label);
   await assertNoDuplicateTranscriptMessages(label);
 }
 
@@ -1460,8 +1557,11 @@ export {
   QUEUE_TIMEOUT_MS,
   REPLY_TIMEOUT_MS,
   assertKnownControlScenarios,
+  assertLiveAssistantOverlayOrdering,
   assertNoDuplicateTranscriptMessages,
+  assertNoDurableLiveStreamPlaceholders,
   assertProgressUiSettledAfterAssistantReply,
+  assertTurnSummaryOrdering,
   assertUniqueConfigLabels,
   clickByTestId,
   configureScenario,

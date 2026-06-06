@@ -8,6 +8,9 @@ import {
 import {
   QUEUE_TIMEOUT_MS,
   REPLY_TIMEOUT_MS,
+  assertLiveAssistantOverlayOrdering,
+  assertNoDurableLiveStreamPlaceholders,
+  assertTurnSummaryOrdering,
   clickByTestId,
   configureScenario,
   execJS,
@@ -689,6 +692,9 @@ async function waitForIntermediateStreamEvents(label, finalText = null) {
       `${label} completed without observable incremental streaming progress, live delta, or running tool feedback; first=${JSON.stringify(firstSnapshot)} latest=${JSON.stringify(latestSnapshot)} state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} ui=${JSON.stringify(await execJS(js.planUi))}`
     );
   }
+  await assertLiveAssistantOverlayOrdering(label);
+  await assertTurnSummaryOrdering(label);
+  await assertNoDurableLiveStreamPlaceholders(label);
 }
 
 async function waitForPlanCardGone(label) {
