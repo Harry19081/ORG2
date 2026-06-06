@@ -872,6 +872,7 @@ const SessionCreatorChatPanelSingle = React.forwardRef<
           type="file"
           multiple
           className="hidden"
+          data-testid="chat-file-upload-input"
           onChange={handleFileUpload}
           accept="*/*"
         />

@@ -186,6 +186,7 @@ export interface UseInputAreaReturn {
   handleSlashCommand: (query: string) => void;
   handleSlashCommandClose: () => void;
   handleSlashSelect: (item: SlashItem) => void;
+  handleSlashAppendSelect: (item: SlashItem) => void;
   handleModeSelect: (mode: AgentExecMode) => void;
   currentMode: AgentExecMode;
   filteredSlashItems: SlashItem[];

@@ -57,6 +57,7 @@ import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 import {
   hasQueueTurnSettledAfter,
   hasQueueTurnWorkedThenSettledAfter,
+  isQueueRuntimeStillWorking,
 } from "./queueTurnGate";
 
 const MAX_SENT_QUEUE_ID_CACHE = 200;
@@ -66,6 +67,16 @@ function queuedMessageAgeMs(message: QueuedMessage): number {
   const createdAtMs = Date.parse(message.createdAt);
   if (!Number.isFinite(createdAtMs)) return MIN_QUEUE_VISIBLE_MS;
   return Date.now() - createdAtMs;
+}
+
+function snapshotShowsActiveTurn(sessionId: string): boolean {
+  const latestSnapshot = eventStoreProxy.getLatestSessionSnapshot(sessionId);
+  return (
+    latestSnapshot?.hasRunningEvent === true ||
+    (latestSnapshot != null &&
+      "streaming" in latestSnapshot &&
+      latestSnapshot.streaming === true)
+  );
 }
 
 export function useQueueDispatch(): void {
@@ -269,14 +280,10 @@ export function useQueueDispatch(): void {
   // Tracks which sessionId currently holds the lock, so we can detect
   // session switches and release a stale lock immediately.
   const lockSessionIdRef = useRef<string | null>(null);
-  const isRuntimeWorkingStatus = useCallback((status: string) => {
-    return (
-      status === "running" ||
-      status === "installing" ||
-      status === "waiting_for_user" ||
-      status === "waiting_for_funds"
-    );
-  }, []);
+  const isRuntimeWorkingStatus = useCallback(
+    (status: string) => isQueueRuntimeStillWorking(status, false),
+    []
+  );
   const prevRuntimeWorkingRef = useRef(isRuntimeWorkingStatus(runtimeStatus));
 
   const rememberSentQueueId = useCallback((messageId: string) => {
@@ -334,7 +341,10 @@ export function useQueueDispatch(): void {
     // accepted Stop but stayed visually running can strand the user's resend.
     if (latestPendingCancel && !explicitMsg) return;
 
-    const runtimeWorking = isRuntimeWorkingStatus(latestRuntimeStatus);
+    const runtimeWorking = isQueueRuntimeStillWorking(
+      latestRuntimeStatus,
+      snapshotShowsActiveTurn(activeSessionId)
+    );
     if (runtimeWorking && !explicitMsg) return;
     if (runtimeWorking && explicitMsg) {
       if (explicitInterruptSessionRef.current === activeSessionId) return;
@@ -436,7 +446,6 @@ export function useQueueDispatch(): void {
     });
   }, [
     dequeueMessage,
-    isRuntimeWorkingStatus,
     rememberSentQueueId,
     setPendingCancel,
     setSessionRuntimeStatus,

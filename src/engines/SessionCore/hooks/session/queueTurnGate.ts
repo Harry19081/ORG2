@@ -3,6 +3,20 @@ const lastObservedSettleAtBySession = new Map<string, number>();
 
 export const SUBMIT_ACTIVE_GRACE_MS = 2_500;
 
+const QUEUE_RUNTIME_WORKING_STATUSES = new Set<string>([
+  "running",
+  "installing",
+  "waiting_for_user",
+  "waiting_for_funds",
+]);
+
+export function isQueueRuntimeStillWorking(
+  runtimeStatus: string,
+  snapshotActive: boolean
+): boolean {
+  return QUEUE_RUNTIME_WORKING_STATUSES.has(runtimeStatus) || snapshotActive;
+}
+
 export function markQueueTurnWorking(sessionId: string, at = Date.now()): void {
   lastObservedWorkingAtBySession.set(sessionId, at);
 }

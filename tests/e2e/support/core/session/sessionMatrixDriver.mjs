@@ -772,7 +772,7 @@ export async function runRenderedToolScenario(config, mochaContext) {
       }
 
       providerBlockedCount += 1;
-      if (candidateConfig.account?.id) {
+      if (!geminiBlocked && candidateConfig.account?.id) {
         blockedAccountIds.add(candidateConfig.account.id);
       }
       const blockerKind = geminiBlocked

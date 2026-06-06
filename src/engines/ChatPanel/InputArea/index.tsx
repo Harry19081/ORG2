@@ -280,6 +280,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
       handleSlashCommand,
       handleSlashCommandClose,
       handleSlashSelect,
+      handleSlashAppendSelect,
       handleModeSelect,
       currentMode,
       filteredSlashItems,
@@ -881,7 +882,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
           searchQuery={plusSlashQuery}
           onClose={handlePlusSlashClose}
           onSelect={(item) => {
-            handleSlashSelect(item);
+            handleSlashAppendSelect(item);
             handlePlusSlashClose();
           }}
           onModeSelect={(mode) => {
@@ -905,6 +906,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
           type="file"
           multiple
           className="hidden"
+          data-testid="chat-file-upload-input"
           onChange={handleFileUpload}
         />
       </div>

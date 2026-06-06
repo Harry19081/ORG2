@@ -493,11 +493,23 @@ fn extract_file(
     let file_path = args
         .and_then(|a| {
             obj_str(a, "file_path")
+                .or_else(|| obj_str(a, "filePath"))
                 .or_else(|| obj_str(a, "target_file"))
+                .or_else(|| obj_str(a, "targetFile"))
                 .or_else(|| obj_str(a, "path"))
         })
-        .or_else(|| obj_str(&success, "path").or_else(|| obj_str(&success, "file_path")))
-        .or_else(|| result.and_then(|r| obj_str(r, "file_path").or_else(|| obj_str(r, "path"))))
+        .or_else(|| {
+            obj_str(&success, "path")
+                .or_else(|| obj_str(&success, "file_path"))
+                .or_else(|| obj_str(&success, "filePath"))
+        })
+        .or_else(|| {
+            result.and_then(|r| {
+                obj_str(r, "file_path")
+                    .or_else(|| obj_str(r, "filePath"))
+                    .or_else(|| obj_str(r, "path"))
+            })
+        })
         .unwrap_or_default();
 
     let file_name = if !file_path.is_empty() {

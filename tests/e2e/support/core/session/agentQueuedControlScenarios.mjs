@@ -209,6 +209,84 @@ async function typeAndSubmitWithShortcut(inputSelector, prompt) {
   }
 }
 
+async function imageUploadPickerState() {
+  return execJS(`
+    return {
+      uploadClickCount: window.__orgiiE2EUploadClickCount || 0,
+      menuOpen: !!document.querySelector('[data-testid="slash-command-menu"]'),
+    };
+  `);
+}
+
+async function assertRealPlusImageUploadPathOpensFilePicker(label) {
+  await browser.waitUntil(
+    async () =>
+      (await execJS(js.exists('[data-testid="composer-skills-tools-button"]'))) &&
+      (await execJS(js.exists('[data-testid="chat-file-upload-input"]'))),
+    {
+      timeout: 30_000,
+      interval: 500,
+      timeoutMsg: `${label} composer upload controls never mounted before + image path; sendState=${JSON.stringify(await execJS(js.sendState))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+
+  const opened = await execJS(
+    js.visibleClick('[data-testid="composer-skills-tools-button"]')
+  );
+  if (opened !== "clicked") {
+    throw new Error(
+      `${label} real + image path did not open Skills & Tools: ${opened}; dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+  await browser.waitUntil(
+    async () =>
+      (await execJS(js.exists('[data-testid="slash-command-image-upload"]'))) &&
+      (await execJS(js.exists('[data-testid="chat-file-upload-input"]'))),
+    {
+      timeout: 5_000,
+      interval: 200,
+      timeoutMsg: `${label} real + image path did not render Image row/input; dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+  const patchResult = await execJS(`
+    const input = document.querySelector('[data-testid="chat-file-upload-input"]');
+    if (!input) return { ok: false, reason: "missing-upload-input" };
+    if (!input.__orgiiE2EOriginalClick) {
+      input.__orgiiE2EOriginalClick = input.click.bind(input);
+    }
+    window.__orgiiE2EUploadClickCount = 0;
+    input.click = () => {
+      window.__orgiiE2EUploadClickCount = (window.__orgiiE2EUploadClickCount || 0) + 1;
+    };
+    return { ok: true };
+  `);
+  if (!patchResult?.ok) {
+    throw new Error(
+      `${label} real + image path could not patch hidden input: ${JSON.stringify(patchResult)}; dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+  const clicked = await execJS(`
+    const row = document.querySelector('[data-testid="slash-command-image-upload"]');
+    if (!row) return "missing";
+    row.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window, button: 0 }));
+    return "clicked";
+  `);
+  if (clicked !== "clicked") {
+    throw new Error(`${label} real + image row click failed: ${clicked}`);
+  }
+  await browser.waitUntil(
+    async () => {
+      const state = await imageUploadPickerState();
+      return state.uploadClickCount === 1 && state.menuOpen === false;
+    },
+    {
+      timeout: 2_000,
+      interval: 100,
+      timeoutMsg: `${label} real + image path did not trigger hidden file input exactly once; state=${JSON.stringify(await imageUploadPickerState())} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+}
+
 async function attachTestImageToComposer(
   fileName = "orgii-e2e-cancel-image.png"
 ) {
@@ -666,6 +744,9 @@ async function runFreshStopImageRestoreScenario(config) {
 
   await configureScenario(config);
   const inputSelector = await waitForChatInput();
+  await assertRealPlusImageUploadPathOpensFilePicker(
+    `${config.label}-image-real-plus-path`
+  );
   const typed = await execJS(js.clearAndType(inputSelector, imagePrompt));
   if (!typed.includes(marker)) {
     throw new Error(
@@ -888,6 +969,65 @@ async function runBurstQueueSendNowOrderingScenario(config) {
   );
 }
 
+async function runQueueDoesNotAutoflushWhileActiveScenario(config) {
+  const suffix = `${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  const firstPrompt = longRunningPromptForConfig(config);
+  const clickMarker = `NO_AUTOFLUSH_CLICK_${suffix}`;
+  const shortcutMarker = `NO_AUTOFLUSH_SHORTCUT_${suffix}`;
+  const clickPrompt = `This click-submitted follow-up must stay queued while the active turn is still running: ${clickMarker}`;
+  const shortcutPrompt = `This shortcut-submitted follow-up must also stay queued while the active turn is still running: ${shortcutMarker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForWorkingTurn(`${config.label}-no-autoflush-working`);
+
+  const chatInputSelector = await waitForChatInput();
+  await typeAndClickSend(chatInputSelector, clickPrompt);
+  await waitForQueuedFollowup(clickMarker);
+  await typeAndSubmitWithShortcut(chatInputSelector, shortcutPrompt);
+  await waitForQueuedFollowup(shortcutMarker);
+
+  await waitForMarkerState(
+    `${config.label}-no-autoflush-click-initial`,
+    clickMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+  await waitForMarkerState(
+    `${config.label}-no-autoflush-shortcut-initial`,
+    shortcutMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+
+  await browser.pause(5_000);
+  const state = await inspectChatState(`${config.label}-no-autoflush-after-5s`);
+  assertQueuedMarkerState(state, `${config.label}-no-autoflush-click-after-5s`, clickMarker, {
+    shouldBeQueued: true,
+    shouldBeUserTurn: false,
+  });
+  assertQueuedMarkerState(state, `${config.label}-no-autoflush-shortcut-after-5s`, shortcutMarker, {
+    shouldBeQueued: true,
+    shouldBeUserTurn: false,
+  });
+  if (!state.isSessionActive && state.runtimeStatus !== "running") {
+    throw new Error(
+      `${config.label} no-autoflush precondition collapsed: active turn ended before parked assertion; state=${JSON.stringify(summarizeChatState(state))}`
+    );
+  }
+
+  await clickMainAction("stop", `${config.label}-no-autoflush-stop`, 30_000);
+  await assertComposerImmediatelyUnlockedAfterStop(
+    `${config.label}-no-autoflush-stop`,
+    clickMarker
+  );
+  await waitForMarkerState(
+    `${config.label}-no-autoflush-shortcut-after-stop`,
+    shortcutMarker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+}
+
 async function runStopDoubleClickDoesNotResubmitScenario(config) {
   const marker = `DOUBLE_STOP_NO_RESUBMIT_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
   const firstPrompt = `${longRunningPromptForConfig(config)} Preserve this double-stop marker in the prompt: ${marker}`;
@@ -1090,6 +1230,7 @@ export {
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
+  runQueueDoesNotAutoflushWhileActiveScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
   waitForIdleSendButton,

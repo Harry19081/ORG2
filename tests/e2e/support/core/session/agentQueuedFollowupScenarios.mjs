@@ -23,6 +23,7 @@ export {
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
+  runQueueDoesNotAutoflushWhileActiveScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
 } from "./agentQueuedControlScenarios.mjs";

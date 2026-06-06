@@ -27,6 +27,7 @@ import {
   runPlanStopScenario,
   runPlanUpdateSupersedesScenario,
   runPlanWriteBeforeBuildDeniedScenario,
+  runQueueDoesNotAutoflushWhileActiveScenario,
   runRewindScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
@@ -140,6 +141,7 @@ const CONTROL_SCENARIO_NAMES = [
   "stop-restore",
   "chaos-control-flow",
   "burst-queue-send-now-ordering",
+  "queue-does-not-autoflush-while-active",
   "stop-double-click-no-resubmit",
   "force-send",
   "rewind",
@@ -257,6 +259,15 @@ describe("ORGII force-send queued follow-up behavior", function () {
   it("survives mixed Stop, resend, Send Now, Stop, and double-queue control flow across Rust and CLI agents", async function () {
     this.timeout(1_200_000);
     await runScenario("chaos-control-flow", runChaosControlFlowScenario, this);
+  });
+
+  it("does not auto-flush queued follow-ups while the active turn is still running", async function () {
+    this.timeout(1_200_000);
+    await runScenario(
+      "queue-does-not-autoflush-while-active",
+      runQueueDoesNotAutoflushWhileActiveScenario,
+      this
+    );
   });
 
   it("keeps burst queued siblings parked when the user force-sends the middle item then Stops and resends", async function () {

@@ -63,6 +63,7 @@ export const ImageRow: React.FC<ImageRowProps> = React.memo(
     return (
       <div
         data-slash-flat
+        data-testid="slash-command-image-upload"
         className={rowClass(isActive)}
         onMouseEnter={onMouseEnter}
         onMouseDown={(e) => {

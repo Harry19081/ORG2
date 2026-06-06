@@ -231,5 +231,6 @@ export function buildSessionFromLaunchResult(options: {
     ...(result.accountId ? { accountId: result.accountId } : {}),
     ...(result.background ? { background: true } : {}),
     ...(result.worktreePath ? { worktreePath: result.worktreePath } : {}),
+    ...(result.workspacePath ? { repoPath: result.workspacePath } : {}),
   };
 }

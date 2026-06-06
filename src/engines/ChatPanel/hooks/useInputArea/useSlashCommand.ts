@@ -39,6 +39,7 @@ export interface SlashCommandHandlers {
   handleSlashCommand: (query: string) => void;
   handleSlashCommandClose: () => void;
   handleSlashSelect: (item: SlashItem) => void;
+  handleSlashAppendSelect: (item: SlashItem) => void;
   handleModeSelect: (mode: AgentExecMode) => void;
   currentMode: AgentExecMode;
   filteredItems: SlashItem[];
@@ -180,6 +181,30 @@ export function useSlashCommand(
     [composerInputRef, setShowSlashMenu, setSlashQuery]
   );
 
+  const handleSlashAppendSelect = useCallback(
+    (item: SlashItem) => {
+      if (!composerInputRef.current) return;
+
+      if (item.category === "skill") {
+        const skillToken = `/${item.skillName ?? item.name}`;
+        composerInputRef.current.appendFilePill(
+          skillToken,
+          false,
+          "skill",
+          item.name
+        );
+        composerInputRef.current.focus();
+        setShowSlashMenu(false);
+        setSlashQuery("");
+        queryRef.current = "";
+        return;
+      }
+
+      handleSlashSelect(item);
+    },
+    [composerInputRef, handleSlashSelect, setShowSlashMenu, setSlashQuery]
+  );
+
   const handleModeSelect = useCallback(
     (mode: AgentExecMode) => {
       setMode(mode);
@@ -197,6 +222,7 @@ export function useSlashCommand(
     handleSlashCommand,
     handleSlashCommandClose,
     handleSlashSelect,
+    handleSlashAppendSelect,
     handleModeSelect,
     currentMode,
     filteredItems,

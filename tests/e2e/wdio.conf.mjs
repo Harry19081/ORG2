@@ -42,6 +42,7 @@ const connectionRetryCount = Number.parseInt(
 const reuseServices = process.env.E2E_REUSE_SERVICES === "1";
 const allowParallel = process.env.E2E_ALLOW_PARALLEL === "1";
 const isolatedRun = process.env.E2E_ISOLATED_RUN === "1";
+const allowPortCleanup = process.env.E2E_ALLOW_PORT_CLEANUP === "1";
 const webDriverPort = Number.parseInt(
   process.env.E2E_WEBDRIVER_PORT ?? "4444",
   10
@@ -55,12 +56,7 @@ const frontendPort = Number.parseInt(
   process.env.E2E_FRONTEND_PORT ?? String(TAURI_DEV_URL_PORT),
   10
 );
-
-if (frontendPort !== TAURI_DEV_URL_PORT) {
-  throw new Error(
-    `E2E_FRONTEND_PORT=${frontendPort} is not supported because src-tauri/tauri.conf.json devUrl points to ${TAURI_DEV_URL_PORT}`
-  );
-}
+const tauriConfigPath = resolve(repoRoot, "src-tauri/tauri.conf.json");
 
 if (allowParallel && !reuseServices) {
   throw new Error(
@@ -604,6 +600,7 @@ function processIdsForPattern(pattern) {
 }
 
 function cleanWebDriverEnvironment() {
+  if (!allowPortCleanup) return;
   const portsToClean =
     allowParallel || isolatedRun
       ? [webDriverPort, frontendPort, ideServerPort]
@@ -614,6 +611,17 @@ function cleanWebDriverEnvironment() {
       ? []
       : WDIO_PRE_FLIGHT_PROCESS_PATTERNS.flatMap(processIdsForPattern);
   killProcessIds([...portProcessIds, ...staleProcessIds]);
+}
+
+function assertManagedPortsAvailable() {
+  if (allowPortCleanup || reuseServices) return;
+  const occupiedPorts = WDIO_PRE_FLIGHT_PORTS.filter(
+    (port) => processIdsForPort(port).length > 0
+  );
+  if (occupiedPorts.length === 0) return;
+  throw new Error(
+    `Refusing to start managed WDIO while port(s) ${occupiedPorts.join(", ")} are in use. Close the running ORGII app first, or set E2E_ALLOW_PORT_CLEANUP=1 to let WDIO terminate stale processes.`
+  );
 }
 
 function waitForPort(port, timeoutMs) {
@@ -640,20 +648,45 @@ function startFrontendServer() {
   waitForPort(frontendPort, 60_000);
 }
 
-function buildWebDriverApp() {
-  execFileSync(
-    "cargo",
-    [
-      "build",
-      "--manifest-path",
-      resolve(repoRoot, "src-tauri/Cargo.toml"),
-      "-p",
-      "orgii",
-      "--features",
-      "webdriver",
-    ],
-    { cwd: repoRoot, stdio: "inherit" }
+function withTauriDevUrlForFrontendPort(callback) {
+  if (frontendPort === TAURI_DEV_URL_PORT) return callback();
+  const originalConfig = readFileSync(tauriConfigPath, "utf8");
+  const config = JSON.parse(originalConfig);
+  const patchedConfig = JSON.stringify(
+    {
+      ...config,
+      build: {
+        ...config.build,
+        devUrl: `http://localhost:${frontendPort}`,
+      },
+    },
+    null,
+    2
   );
+  writeFileSync(tauriConfigPath, `${patchedConfig}\n`);
+  try {
+    return callback();
+  } finally {
+    writeFileSync(tauriConfigPath, originalConfig);
+  }
+}
+
+function buildWebDriverApp() {
+  withTauriDevUrlForFrontendPort(() => {
+    execFileSync(
+      "cargo",
+      [
+        "build",
+        "--manifest-path",
+        resolve(repoRoot, "src-tauri/Cargo.toml"),
+        "-p",
+        "orgii",
+        "--features",
+        "webdriver",
+      ],
+      { cwd: repoRoot, stdio: "inherit" }
+    );
+  });
 }
 
 function startTauriWebDriver() {
@@ -711,6 +744,7 @@ export const config = {
   injectGlobals: true,
   onPrepare() {
     if (reuseServices) return;
+    assertManagedPortsAvailable();
     cleanWebDriverEnvironment();
     startFrontendServer();
     buildWebDriverApp();

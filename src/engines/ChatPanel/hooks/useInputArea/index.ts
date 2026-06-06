@@ -469,6 +469,7 @@ export function useInputArea(
     handleSlashCommand: slashCommand.handleSlashCommand,
     handleSlashCommandClose: slashCommand.handleSlashCommandClose,
     handleSlashSelect: slashCommand.handleSlashSelect,
+    handleSlashAppendSelect: slashCommand.handleSlashAppendSelect,
     handleModeSelect: slashCommand.handleModeSelect,
     currentMode: slashCommand.currentMode,
     filteredSlashItems: slashCommand.filteredItems,
