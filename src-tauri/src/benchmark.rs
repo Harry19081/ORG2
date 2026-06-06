@@ -751,27 +751,45 @@ pub async fn benchmark_evaluate_agent_batch(
             continue;
         }
         if item.session_id.is_none() {
-            item.evaluation_error = Some("Agent session has not launched yet.".to_string());
+            let error = "Agent session has not launched yet.".to_string();
+            item.evaluation_status = Some(BENCHMARK_RUN_STATUS_FAILED.to_string());
+            item.evaluation_error = Some(error.clone());
+            item.logs.push(format!("Evaluation skipped: {error}"));
+            trim_logs(&mut item.logs);
             continue;
         }
-        let submitted_patch_path = item.submitted_patch_path.clone().ok_or_else(|| {
-            format!(
+        let Some(submitted_patch_path) = item.submitted_patch_path.clone() else {
+            let evaluation_error = format!(
                 "Benchmark task {} does not have a patch submission path.",
                 item.task_id
-            )
-        })?;
+            );
+            item.evaluation_status = Some(BENCHMARK_RUN_STATUS_FAILED.to_string());
+            item.evaluation_error = Some(evaluation_error.clone());
+            item.logs
+                .push(format!("Evaluation skipped: {evaluation_error}"));
+            trim_logs(&mut item.logs);
+            continue;
+        };
         let patch = match fs::read_to_string(&submitted_patch_path) {
             Ok(patch) => patch,
             Err(error) => {
-                item.evaluation_error = Some(format!(
-                    "Failed to read submitted patch at {submitted_patch_path}: {error}"
-                ));
+                let evaluation_error =
+                    format!("Failed to read submitted patch at {submitted_patch_path}: {error}");
+                item.evaluation_status = Some(BENCHMARK_RUN_STATUS_FAILED.to_string());
+                item.evaluation_error = Some(evaluation_error.clone());
+                item.logs
+                    .push(format!("Evaluation skipped: {evaluation_error}"));
+                trim_logs(&mut item.logs);
                 continue;
             }
         };
         if patch.trim().is_empty() {
-            item.evaluation_error =
-                Some(format!("Submitted patch is empty: {submitted_patch_path}"));
+            let evaluation_error = format!("Submitted patch is empty: {submitted_patch_path}");
+            item.evaluation_status = Some(BENCHMARK_RUN_STATUS_FAILED.to_string());
+            item.evaluation_error = Some(evaluation_error.clone());
+            item.logs
+                .push(format!("Evaluation skipped: {evaluation_error}"));
+            trim_logs(&mut item.logs);
             continue;
         }
         evaluation_requests.push((item.task_id.clone(), submitted_patch_path, patch));

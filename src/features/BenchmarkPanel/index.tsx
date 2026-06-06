@@ -125,6 +125,7 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
   const { refreshBatchStatus } = useBenchmarkAgentBatchRun();
   const [isEvaluatingBatch, setIsEvaluatingBatch] = useState(false);
   const [evaluationError, setEvaluationError] = useState<string | null>(null);
+  const [evaluationNotice, setEvaluationNotice] = useState<string | null>(null);
   const [addTasksPanelOpen, setAddTasksPanelOpen] = useState(false);
   const [addTasksSearch, setAddTasksSearch] = useState("");
   const [addTaskIds, setAddTaskIds] = useState<string[]>([]);
@@ -411,12 +412,22 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
     if (!batchStatus?.batchId) return;
     setIsEvaluatingBatch(true);
     setEvaluationError(null);
+    setEvaluationNotice(null);
     try {
       const status = await benchmarkApi.evaluateAgentBatch({
         batchId: batchStatus.batchId,
         evaluationMode: BENCHMARK_EVALUATION_MODE.LOCAL_DOCKER,
       });
       setBenchmarkBatchStatus(status);
+      const evaluatedCount = status.items.filter(
+        (item) => item.evaluationStatus
+      ).length;
+      const failedCount = status.items.filter(
+        (item) => item.evaluationStatus === BENCHMARK_RUN_STATUS.FAILED
+      ).length;
+      setEvaluationNotice(
+        `${t("creator.benchmark.evaluateSubmitted")}: ${evaluatedCount}/${status.items.length} · ${t("common:status.failed")}: ${failedCount}`
+      );
     } catch (error) {
       setEvaluationError(
         error instanceof Error ? error.message : String(error)
@@ -424,7 +435,7 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
     } finally {
       setIsEvaluatingBatch(false);
     }
-  }, [batchStatus?.batchId, setBenchmarkBatchStatus]);
+  }, [batchStatus?.batchId, setBenchmarkBatchStatus, t]);
 
   const displayedRunningCount = batchStatus
     ? batchStatus.running + batchStatus.launched
@@ -461,11 +472,17 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
         const statusLabel = item.evaluationStatus
           ? `${displayStatus} · ${item.evaluationStatus}`
           : displayStatus;
+        const evaluationLabel = item.evaluationStatus
+          ? `${t("creator.benchmark.evaluateSubmitted")}: ${item.evaluationStatus}`
+          : undefined;
+        const rowDescription = item.evaluationError
+          ? `${evaluationLabel ?? t("creator.benchmark.evaluateSubmitted")} · ${item.evaluationError}`
+          : (evaluationLabel ?? item.error ?? undefined);
 
         return {
           id: item.taskId,
           title: item.taskId,
-          description: undefined,
+          description: rowDescription,
           statusLabel,
           statusColor: itemStatusColor(displayStatus, item.evaluationStatus),
           agentIcon: session?.cliAgentType ? (
@@ -503,10 +520,12 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
           dataAttributes: {
             "data-benchmark-task-id": item.taskId,
             "data-benchmark-task-status": displayStatus,
+            "data-benchmark-evaluation-status":
+              item.evaluationStatus ?? undefined,
           },
         };
       }) ?? [],
-    [activeTaskId, batchStatus?.items, dateTimeLabelOptions, sessionsById]
+    [activeTaskId, batchStatus?.items, dateTimeLabelOptions, sessionsById, t]
   );
 
   const handleSelectBenchmarkSessionListItem = useCallback(
@@ -615,6 +634,7 @@ export const BenchmarkPanel: React.FC<BenchmarkPanelProps> = ({
   const runListSubtitle =
     batchTaskActionError ??
     evaluationError ??
+    evaluationNotice ??
     t("creator.benchmark.sessionGroupProgress", {
       total: batchStatus?.totalTasks ?? 0,
       queued: batchStatus?.queued ?? 0,

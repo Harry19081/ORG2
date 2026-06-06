@@ -80,7 +80,14 @@ export const SessionTable: React.FC<SessionTableProps> = ({
                     </span>
                   </div>
                   {item.description ? (
-                    <div className="mt-0.5 truncate text-[11px] text-text-3">
+                    <div
+                      className="mt-0.5 truncate text-[11px] text-text-3"
+                      title={
+                        typeof item.description === "string"
+                          ? item.description
+                          : undefined
+                      }
+                    >
                       {item.description}
                     </div>
                   ) : null}
