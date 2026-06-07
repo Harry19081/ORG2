@@ -331,7 +331,7 @@ const SelectRepoPage: React.FC = () => {
   }, []);
 
   // Get list of repositories
-  const { repos, repoLoading, selectRepo } = useRepoSelection({
+  const { repos, repoLoading, selectedRepoId, selectRepo } = useRepoSelection({
     autoLoad: true,
   });
 
@@ -342,6 +342,12 @@ const SelectRepoPage: React.FC = () => {
 
   // Get cached repos for recency ordering
   const cachedRepos = useAtomValue(cachedReposAtom);
+
+  useEffect(() => {
+    if (selectedRepoId && !repoLoading) {
+      navigate("/orgii/app/start-page", { replace: true });
+    }
+  }, [navigate, repoLoading, selectedRepoId]);
 
   // Create recent repos list: cached repos first (in order), then remaining repos
   const recentRepos = React.useMemo(() => {

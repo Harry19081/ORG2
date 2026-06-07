@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getRepos } from "@src/api/tauri/repo";
 import {
+  type CachedRepo,
   REPO_STORAGE_KEYS,
   type Repo,
   cachedReposAtom,
@@ -23,6 +24,56 @@ import {
   setGlobalReposLoaded,
 } from "./singleton";
 import type { UseRepoLoaderReturn } from "./types";
+
+function readStoredRepoId(key: string): string | null {
+  const stored = localStorage.getItem(key);
+  if (!stored) return null;
+
+  try {
+    const parsed = JSON.parse(stored) as unknown;
+    return typeof parsed === "string" && parsed.trim() ? parsed : null;
+  } catch {
+    const trimmed = stored.trim();
+    return trimmed ? trimmed : null;
+  }
+}
+
+function readCachedRepoIds(): string[] {
+  const stored = localStorage.getItem(REPO_STORAGE_KEYS.cachedRepos);
+  if (!stored) return [];
+
+  try {
+    const parsed = JSON.parse(stored) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((repo: unknown) => (repo as Partial<CachedRepo>).id)
+      .filter(
+        (id): id is string => typeof id === "string" && id.trim().length > 0
+      );
+  } catch {
+    return [];
+  }
+}
+
+function resolveStartupRepo(
+  repoList: Repo[],
+  currentSelection: string | null | undefined
+): Repo | undefined {
+  const candidates = [
+    currentSelection,
+    readStoredRepoId(REPO_STORAGE_KEYS.lastUsedRepo),
+    ...readCachedRepoIds(),
+  ].filter(
+    (id): id is string => typeof id === "string" && id.trim().length > 0
+  );
+
+  for (const candidate of candidates) {
+    const repo = repoList.find((item) => item.id === candidate);
+    if (repo) return repo;
+  }
+
+  return repoList[0];
+}
 
 export function useRepoLoader(): UseRepoLoaderReturn {
   const [repos, setRepos] = useAtom(reposAtom);
@@ -126,47 +177,20 @@ export function useRepoLoader(): UseRepoLoaderReturn {
         loadedReposRef.current = true;
         loadSucceeded = true;
 
-        // Single source of truth for repo selection restoration.
-        // Priority: valid session-level selection > lastUsedRepo > first repo.
-        // On page refresh sessionStorage keeps the value; on app restart it's empty
-        // and AuthRedirect may have eagerly set it from lastUsedRepo as a routing hint.
-        const currentSelection = selectedRepoIdRef.current;
-        const currentSelectionValid =
-          !!currentSelection &&
-          repoList.some((repo) => repo.id === currentSelection);
+        const restoredRepo = resolveStartupRepo(
+          repoList,
+          selectedRepoIdRef.current
+        );
 
-        if (currentSelectionValid) {
-          const currentRepo = repoList.find(
-            (repo) => repo.id === currentSelection
-          );
-          if (currentRepo) {
-            setCachedRepos((prev) => updateCachedRepos(prev, currentRepo));
+        if (restoredRepo) {
+          if (restoredRepo.id !== selectedRepoIdRef.current) {
+            setSelectedRepoId(restoredRepo.id);
           }
-        } else {
-          const storedId = localStorage.getItem(REPO_STORAGE_KEYS.lastUsedRepo);
-          let parsedId: string | null = null;
-          if (storedId) {
-            try {
-              parsedId = JSON.parse(storedId);
-            } catch {
-              parsedId = storedId;
-            }
-          }
-
-          const isStoredIdValid =
-            !!parsedId && repoList.some((repo) => repo.id === parsedId);
-
-          if (isStoredIdValid) {
-            setSelectedRepoId(parsedId!);
-            const restoredRepo = repoList.find((repo) => repo.id === parsedId);
-            if (restoredRepo) {
-              setCachedRepos((prev) => updateCachedRepos(prev, restoredRepo));
-            }
-          } else if (repoList.length > 0) {
-            setSelectedRepoId(repoList[0].id);
-            setLastUsedRepo(repoList[0].id);
-            setCachedRepos((prev) => updateCachedRepos(prev, repoList[0]));
-          }
+          setLastUsedRepo(restoredRepo.id);
+          setCachedRepos((prev) => updateCachedRepos(prev, restoredRepo));
+        } else if (selectedRepoIdRef.current) {
+          setSelectedRepoId("");
+          setLastUsedRepo("");
         }
       }
     } catch (error) {
@@ -216,24 +240,15 @@ export function useRepoLoader(): UseRepoLoaderReturn {
     }
   }, [loadRepos, selectedRepoId]);
 
-  // Validate selectedRepoId matches localStorage on hot reload
+  // Validate selectedRepoId matches recoverable startup state on hot reload.
   useEffect(() => {
     if (!isHotReloadRef.current || repos.length === 0) return;
 
-    const storedId = localStorage.getItem(REPO_STORAGE_KEYS.lastUsedRepo);
-    let parsedId: string | null = null;
-    if (storedId) {
-      try {
-        parsedId = JSON.parse(storedId);
-      } catch {
-        parsedId = storedId;
-      }
-    }
-
-    if (parsedId && parsedId !== selectedRepoIdRef.current) {
-      if (repos.some((repo) => repo.id === parsedId)) {
-        setSelectedRepoId(parsedId);
-      }
+    const restoredRepo = resolveStartupRepo(repos, selectedRepoIdRef.current);
+    if (restoredRepo && restoredRepo.id !== selectedRepoIdRef.current) {
+      setSelectedRepoId(restoredRepo.id);
+      setLastUsedRepo(restoredRepo.id);
+      setCachedRepos((prev) => updateCachedRepos(prev, restoredRepo));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repos.length]);
