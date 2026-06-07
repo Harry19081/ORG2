@@ -4,10 +4,8 @@ import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
-import Tooltip from "@src/components/Tooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   PRIMARY_SIDEBAR_TABS,
@@ -83,40 +81,28 @@ const CodeSidebarHeaderActionsComponent: React.FC = () => {
         const Icon = action.icon;
         const active = activeSidebarTab === action.key;
         const label = t(action.labelKey);
-        const button = (
-          <Button
-            key={action.key}
-            htmlType="button"
-            variant="tertiary"
-            size="small"
-            iconOnly
-            className={active ? "!bg-fill-2 !text-primary-6" : ""}
-            onClick={() => handleSelect(action.key)}
-            title={
-              action.key === PRIMARY_SIDEBAR_TABS.SEARCH ? undefined : label
-            }
-            aria-label={label}
-            icon={<Icon size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
-          />
-        );
-
-        if (action.key !== PRIMARY_SIDEBAR_TABS.SEARCH) return button;
+        const shortcutId =
+          action.key === PRIMARY_SIDEBAR_TABS.SEARCH
+            ? "search_files"
+            : undefined;
 
         return (
-          <Tooltip
+          <WorkstationToolbarTooltip
             key={action.key}
-            content={
-              <KeyboardShortcutTooltipContent
-                label={label}
-                shortcut={getShortcutKeys("search_files")}
-              />
-            }
-            position="bottom-end"
-            mouseEnterDelay={200}
-            framedPanel
+            label={label}
+            shortcutId={shortcutId}
           >
-            <span className="inline-flex">{button}</span>
-          </Tooltip>
+            <Button
+              htmlType="button"
+              variant="tertiary"
+              size="small"
+              iconOnly
+              className={active ? "!bg-fill-2 !text-primary-6" : ""}
+              onClick={() => handleSelect(action.key)}
+              aria-label={label}
+              icon={<Icon size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+            />
+          </WorkstationToolbarTooltip>
         );
       })}
     </div>

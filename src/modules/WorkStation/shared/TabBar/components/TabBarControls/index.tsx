@@ -13,6 +13,7 @@ import { TabBarTrailingIconButton } from "../TabBarTrailingIconButton";
 export interface TabBarControlsProps {
   hasTabs: boolean;
   onNewTab?: () => void;
+  onNewTabShortcutId?: string;
   onMoreOptions?: () => void;
   trailingSlot?: React.ReactNode;
 }
@@ -24,6 +25,7 @@ export interface TabBarControlsProps {
 export const TabBarControls: React.FC<TabBarControlsProps> = ({
   hasTabs,
   onNewTab,
+  onNewTabShortcutId,
   onMoreOptions,
   trailingSlot,
 }) => {
@@ -43,6 +45,7 @@ export const TabBarControls: React.FC<TabBarControlsProps> = ({
         <TabBarTrailingIconButton
           data-action="browser.newTab"
           title={t("common:commands.newTab")}
+          shortcutId={onNewTabShortcutId}
           onClick={onNewTab}
         >
           <Plus size={18} strokeWidth={2} />

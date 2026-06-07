@@ -9,13 +9,13 @@ import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import SegmentedIconButton from "@src/components/SegmentedIconButton";
-import Tooltip from "@src/components/Tooltip";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { ROUTES } from "@src/config/routes";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/GeneralLayoutTour";
 import { type StationMode, stationModeAtom } from "@src/store/ui/simulatorAtom";
+
+import { WorkstationToolbarTooltip } from "../WorkstationToolbarTooltip";
 
 const STATION_MODE_SHORTCUT_ID = "toggle_station_mode";
 
@@ -43,16 +43,10 @@ const IconSwitchButton: React.FC<IconSwitchButtonProps> = ({
   const buttonSizeClass = "h-6 w-7";
 
   return (
-    <Tooltip
-      content={
-        <KeyboardShortcutTooltipContent
-          label={tooltipLabel}
-          shortcut={shortcut || undefined}
-        />
-      }
+    <WorkstationToolbarTooltip
+      label={tooltipLabel}
+      shortcut={shortcut || undefined}
       position="bottom"
-      mouseEnterDelay={250}
-      framedPanel
     >
       <span className="inline-flex">
         <SegmentedIconButton
@@ -69,7 +63,7 @@ const IconSwitchButton: React.FC<IconSwitchButtonProps> = ({
           strokeWidth={1.85}
         />
       </span>
-    </Tooltip>
+    </WorkstationToolbarTooltip>
   );
 };
 

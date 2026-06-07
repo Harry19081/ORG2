@@ -15,6 +15,7 @@ import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { ElementInfo } from "@src/modules/WorkStation/Browser/hooks/useWebviewInspector";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { HEADER_BUTTON } from "@src/modules/WorkStation/shared/tokens";
 import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
 
@@ -85,7 +86,7 @@ export const WebInspector: React.FC<WebInspectorProps> = memo(
     position,
     onTogglePosition,
   }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation("sessions");
     // Note: Width and resize are handled by WorkStationShell, not here
     void _width;
     void _onWidthChange;
@@ -95,13 +96,16 @@ export const WebInspector: React.FC<WebInspectorProps> = memo(
     if (isCollapsed) {
       return (
         <div className="station-sidebar-scroll-area flex h-full w-8 shrink-0 flex-col items-center bg-workstation-bg pt-2">
-          <button
-            className={HEADER_BUTTON.actionLg}
-            onClick={onToggleCollapse}
-            title={t("tooltips.showDevTools")}
-          >
-            <PanelRightOpen size={16} />
-          </button>
+          <WorkstationToolbarTooltip label={t("titleBar.showDevTools")}>
+            <button
+              type="button"
+              className={HEADER_BUTTON.actionLg}
+              onClick={onToggleCollapse}
+              aria-label={t("titleBar.showDevTools")}
+            >
+              <PanelRightOpen size={16} />
+            </button>
+          </WorkstationToolbarTooltip>
           {/* Issue indicators */}
           {(errorCount > 0 || warningCount > 0) && (
             <div className="mt-2 flex flex-col items-center gap-1">

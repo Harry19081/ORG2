@@ -53,6 +53,7 @@ import {
 } from "@src/modules/ProjectManager/shared";
 import { PROJECT_MANAGER_TEXT_PLACEHOLDER_CLASS } from "@src/modules/ProjectManager/shared/placeholderTokens";
 import { unresolveImagePathsForStorage } from "@src/modules/ProjectManager/shared/utils/workItemImagePaths";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks";
 import type { WorkItemDraft } from "@src/store/workstation/projectManager";
 import type { Person } from "@src/types/core/shared";
@@ -734,48 +735,53 @@ const CreateWorkItemView: React.FC<CreateWorkItemViewProps> = ({
       headerActions={
         <>
           {showPropertiesAction ? (
-            <Button
-              {...PANEL_HEADER_TOKENS.actionButton}
-              className={
-                resolvedPropertiesOpen
-                  ? CREATE_WORK_ITEM_HEADER_ACTION_ACTIVE_CLASS
-                  : CREATE_WORK_ITEM_HEADER_ACTION_CLASS
-              }
-              icon={
-                <Info
-                  size={PANEL_HEADER_TOKENS.buttonIconSize}
-                  strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
-                />
-              }
-              onClick={handleToggleProperties}
-              title={
+            <WorkstationToolbarTooltip
+              label={
                 resolvedPropertiesOpen
                   ? t("workItems.hideProperties")
                   : t("workItems.showProperties")
               }
-              aria-label={
-                resolvedPropertiesOpen
-                  ? t("workItems.hideProperties")
-                  : t("workItems.showProperties")
-              }
-              aria-pressed={resolvedPropertiesOpen}
-              htmlType="button"
-            />
+            >
+              <Button
+                {...PANEL_HEADER_TOKENS.actionButton}
+                className={
+                  resolvedPropertiesOpen
+                    ? CREATE_WORK_ITEM_HEADER_ACTION_ACTIVE_CLASS
+                    : CREATE_WORK_ITEM_HEADER_ACTION_CLASS
+                }
+                icon={
+                  <Info
+                    size={PANEL_HEADER_TOKENS.buttonIconSize}
+                    strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
+                  />
+                }
+                onClick={handleToggleProperties}
+                aria-label={
+                  resolvedPropertiesOpen
+                    ? t("workItems.hideProperties")
+                    : t("workItems.showProperties")
+                }
+                aria-pressed={resolvedPropertiesOpen}
+                htmlType="button"
+              />
+            </WorkstationToolbarTooltip>
           ) : null}
           {showCloseAction ? (
-            <Button
-              {...PANEL_HEADER_TOKENS.actionButton}
-              className={CREATE_WORK_ITEM_HEADER_ACTION_CLASS}
-              icon={
-                <X
-                  size={PANEL_HEADER_TOKENS.buttonIconSize}
-                  strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
-                />
-              }
-              onClick={onCancel}
-              title={t("common:actions.close")}
-              htmlType="button"
-            />
+            <WorkstationToolbarTooltip label={t("common:actions.close")}>
+              <Button
+                {...PANEL_HEADER_TOKENS.actionButton}
+                className={CREATE_WORK_ITEM_HEADER_ACTION_CLASS}
+                icon={
+                  <X
+                    size={PANEL_HEADER_TOKENS.buttonIconSize}
+                    strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
+                  />
+                }
+                onClick={onCancel}
+                aria-label={t("common:actions.close")}
+                htmlType="button"
+              />
+            </WorkstationToolbarTooltip>
           ) : null}
         </>
       }

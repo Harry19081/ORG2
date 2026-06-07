@@ -544,6 +544,7 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
           <TabBarTrailingIconButton
             data-action="browser.newTab"
             title={tCommon("commands.newTab")}
+            shortcutId="browser_new_tab"
             onClick={handleNewMyTabsSession}
           >
             <Plus size={18} strokeWidth={2} />

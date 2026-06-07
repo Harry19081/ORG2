@@ -60,9 +60,6 @@ import {
   DROPDOWN_SEARCH,
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
-import Tooltip from "@src/components/Tooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import { TabBarTrailingIconButton } from "@src/modules/WorkStation/shared/TabBar/components/TabBarTrailingIconButton";
@@ -232,12 +229,6 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
   }, [menuVisible]);
 
   const triggerLabel = t("workstation.plusMenu.title");
-  const triggerTooltip = (
-    <KeyboardShortcutTooltipContent
-      label={triggerLabel}
-      shortcut={getShortcutKeys("new_tab")}
-    />
-  );
 
   const visibleItems = useMemo(
     () => items.filter((item) => KNOWN_ITEMS.includes(item)),
@@ -333,29 +324,20 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
       getPopupContainer={() => document.body}
       avoidViewportOverflow
     >
-      <Tooltip
-        content={triggerTooltip}
-        position="bottom-end"
-        mouseEnterDelay={200}
-        framedPanel
-        // Suppress the shortcut tooltip while the dropdown is open — the
-        // palette itself is the user's focus, the trigger hint is noise.
-        disabled={menuVisible}
+      <span
+        className="inline-flex"
+        data-tour-target={CODE_EDITOR_TOUR_TARGETS.plusMenu}
       >
-        <span
-          className="inline-flex"
-          data-tour-target={CODE_EDITOR_TOUR_TARGETS.plusMenu}
+        <TabBarTrailingIconButton
+          title={triggerLabel}
+          shortcutId="new_tab"
+          tooltipDisabled={menuVisible}
+          active={menuVisible}
+          className="flex-shrink-0"
         >
-          <TabBarTrailingIconButton
-            title={triggerLabel}
-            nativeTitle={false}
-            active={menuVisible}
-            className="flex-shrink-0"
-          >
-            <Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />
-          </TabBarTrailingIconButton>
-        </span>
-      </Tooltip>
+          <Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />
+        </TabBarTrailingIconButton>
+      </span>
     </Dropdown>
   );
 };

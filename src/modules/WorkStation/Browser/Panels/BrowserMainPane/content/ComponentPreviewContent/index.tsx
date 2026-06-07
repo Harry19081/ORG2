@@ -26,6 +26,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { useDesignTokens } from "@src/modules/WorkStation/Browser/hooks/useDesignTokens";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import {
   HEADER_BUTTON,
   HEADER_CLASSES,
@@ -236,21 +237,27 @@ export const ComponentPreviewPanel = memo<ComponentPreviewPanelProps>(
 
           {/* Actions */}
           {onRefresh && (
-            <button
-              onClick={onRefresh}
-              className={HEADER_BUTTON.action}
-              title={t("tooltips.refreshProps")}
-            >
-              <RefreshCw size={HEADER_ICON_SIZE.sm} />
-            </button>
+            <WorkstationToolbarTooltip label={t("tooltips.refreshProps")}>
+              <button
+                type="button"
+                onClick={onRefresh}
+                className={HEADER_BUTTON.action}
+                aria-label={t("tooltips.refreshProps")}
+              >
+                <RefreshCw size={HEADER_ICON_SIZE.sm} />
+              </button>
+            </WorkstationToolbarTooltip>
           )}
-          <button
-            onClick={handleOpenSource}
-            className={HEADER_BUTTON.action}
-            title={t("tooltips.openSource")}
-          >
-            <ExternalLink size={HEADER_ICON_SIZE.sm} />
-          </button>
+          <WorkstationToolbarTooltip label={t("tooltips.openSource")}>
+            <button
+              type="button"
+              onClick={handleOpenSource}
+              className={HEADER_BUTTON.action}
+              aria-label={t("tooltips.openSource")}
+            >
+              <ExternalLink size={HEADER_ICON_SIZE.sm} />
+            </button>
+          </WorkstationToolbarTooltip>
         </div>
 
         {/* Description */}

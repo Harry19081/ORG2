@@ -11,6 +11,7 @@
 import { useAtomValue } from "jotai";
 import { PanelBottom, PencilRuler } from "lucide-react";
 import React, { memo } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   workStationDevToolsCollapsedAtom,
@@ -42,6 +43,7 @@ export const TabBarBottomPanelToggle: React.FC = memo(() => {
 TabBarBottomPanelToggle.displayName = "TabBarBottomPanelToggle";
 
 export const TabBarDevToolsToggle: React.FC = memo(() => {
+  const { t } = useTranslation("sessions");
   const callbacks = useAtomValue(activeStatusBarCallbacksAtom);
   const devToolsCollapsed = useAtomValue(workStationDevToolsCollapsedAtom);
   const hidden = !callbacks.onToggleDevTools || !devToolsCollapsed;
@@ -49,7 +51,7 @@ export const TabBarDevToolsToggle: React.FC = memo(() => {
 
   return (
     <TabBarTrailingIconButton
-      title="Show DevTools"
+      title={t("titleBar.showDevTools")}
       shortcutId="browser_devtools"
       onClick={() => callbacks.onToggleDevTools?.()}
     >

@@ -9,6 +9,8 @@ export { WorkStationShell } from "./WorkStationShell";
 export type { WorkStationShellProps } from "./WorkStationShell";
 export { WorkstationTabHeaderSlotsView } from "./WorkstationTabHeaderSlotsView";
 export { WorkstationHeaderSectionSeparator } from "./WorkstationHeaderSectionSeparator";
+export { WorkstationToolbarTooltip } from "./WorkstationToolbarTooltip";
+export type { WorkstationToolbarTooltipProps } from "./WorkstationToolbarTooltip";
 
 // Shell configuration
 export {

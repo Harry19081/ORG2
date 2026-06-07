@@ -40,6 +40,7 @@ import {
   type SupportedLanguage,
 } from "@src/i18n";
 import { useAppearanceState } from "@src/modules/MainApp/Settings/sections/useAppearanceState";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { GUI_CONTROL_TOGGLE_SHORTCUT_ID } from "@src/scaffold/GuiControlToggle";
 import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { languageAtom } from "@src/store/ui/languageAtom";
@@ -269,24 +270,32 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
 
   return (
     <>
-      <div ref={triggerRef} title={t("sidebar.bottomBar.settings")}>
-        <button
-          type="button"
-          className={`flex h-[28px] w-[28px] cursor-pointer items-center justify-center rounded-[100px] border-none p-0 transition-colors duration-150 ${
-            isOpen ? "bg-bg-2" : "bg-transparent hover:bg-fill-2"
-          }`}
-          onClick={handleToggle}
-          onMouseEnter={(event) => triggerIconAnimation(event.currentTarget)}
-        >
-          <HoverAnimatedIcon
-            icon={Settings}
-            iconName="settings"
-            size={16}
-            strokeWidth={2}
-            className={settingsButtonClassName}
-          />
-        </button>
-      </div>
+      <WorkstationToolbarTooltip
+        label={t("sidebar.bottomBar.settings")}
+        shortcut={openSettingsShortcut}
+        position="top"
+        disabled={isOpen}
+      >
+        <div ref={triggerRef} className="inline-flex">
+          <button
+            type="button"
+            aria-label={t("sidebar.bottomBar.settings")}
+            className={`flex h-[28px] w-[28px] cursor-pointer items-center justify-center rounded-[100px] border-none p-0 transition-colors duration-150 ${
+              isOpen ? "bg-bg-2" : "bg-transparent hover:bg-fill-2"
+            }`}
+            onClick={handleToggle}
+            onMouseEnter={(event) => triggerIconAnimation(event.currentTarget)}
+          >
+            <HoverAnimatedIcon
+              icon={Settings}
+              iconName="settings"
+              size={16}
+              strokeWidth={2}
+              className={settingsButtonClassName}
+            />
+          </button>
+        </div>
+      </WorkstationToolbarTooltip>
 
       {isOpen &&
         isPositioned &&

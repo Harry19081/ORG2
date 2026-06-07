@@ -9,6 +9,7 @@ import {
 
 import Button from "@src/components/Button";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import type { WorkItem as WorkItemExtended } from "@src/types/core/workItem";
 
 interface WorkItemDetailHeaderProps {
@@ -80,26 +81,30 @@ export function WorkItemDetailHeader({
         )}
       </div>
       <div className="ml-auto flex flex-shrink-0 items-center gap-px">
-        <Button
-          htmlType="button"
-          variant="tertiary"
-          size="small"
-          iconOnly
-          onClick={() => onNavigate("prev")}
-          disabled={!hasPrev}
-          title={t("common:actions.previous")}
-          icon={<ArrowUp size={HEADER_ICON_SIZE.sm} />}
-        />
-        <Button
-          htmlType="button"
-          variant="tertiary"
-          size="small"
-          iconOnly
-          onClick={() => onNavigate("next")}
-          disabled={!hasNext}
-          title={t("common:actions.next")}
-          icon={<ArrowDown size={HEADER_ICON_SIZE.sm} />}
-        />
+        <WorkstationToolbarTooltip label={t("common:actions.previous")}>
+          <Button
+            htmlType="button"
+            variant="tertiary"
+            size="small"
+            iconOnly
+            onClick={() => onNavigate("prev")}
+            disabled={!hasPrev}
+            aria-label={t("common:actions.previous")}
+            icon={<ArrowUp size={HEADER_ICON_SIZE.sm} />}
+          />
+        </WorkstationToolbarTooltip>
+        <WorkstationToolbarTooltip label={t("common:actions.next")}>
+          <Button
+            htmlType="button"
+            variant="tertiary"
+            size="small"
+            iconOnly
+            onClick={() => onNavigate("next")}
+            disabled={!hasNext}
+            aria-label={t("common:actions.next")}
+            icon={<ArrowDown size={HEADER_ICON_SIZE.sm} />}
+          />
+        </WorkstationToolbarTooltip>
         {(onExpandToTab || onDeleteWorkItem || onToggleProperties) && (
           <div
             className="pointer-events-none mx-1.5 h-4 w-px shrink-0 bg-border-2"
@@ -108,44 +113,56 @@ export function WorkItemDetailHeader({
           />
         )}
         {onExpandToTab && (
-          <Button
-            htmlType="button"
-            variant="tertiary"
-            size="small"
-            iconOnly
-            onClick={() => onExpandToTab(pendingUpdates)}
-            title={t("common:actions.openInNewTab")}
-            icon={<ArrowUpRight size={HEADER_ICON_SIZE.md} />}
-          />
+          <WorkstationToolbarTooltip label={t("common:actions.openInNewTab")}>
+            <Button
+              htmlType="button"
+              variant="tertiary"
+              size="small"
+              iconOnly
+              onClick={() => onExpandToTab(pendingUpdates)}
+              aria-label={t("common:actions.openInNewTab")}
+              icon={<ArrowUpRight size={HEADER_ICON_SIZE.md} />}
+            />
+          </WorkstationToolbarTooltip>
         )}
         {onDeleteWorkItem && (
-          <Button
-            htmlType="button"
-            variant="tertiary"
-            size="small"
-            iconOnly
-            onClick={() => onDeleteWorkItem(workItem.session_id)}
-            title={t("workItems.deleteWorkItem")}
-            icon={<Trash2 size={HEADER_ICON_SIZE.sm} />}
-          />
+          <WorkstationToolbarTooltip label={t("workItems.deleteWorkItem")}>
+            <Button
+              htmlType="button"
+              variant="tertiary"
+              size="small"
+              iconOnly
+              onClick={() => onDeleteWorkItem(workItem.session_id)}
+              aria-label={t("workItems.deleteWorkItem")}
+              icon={<Trash2 size={HEADER_ICON_SIZE.sm} />}
+            />
+          </WorkstationToolbarTooltip>
         )}
         {onToggleProperties && (
-          <Button
-            htmlType="button"
-            variant="tertiary"
-            size="small"
-            iconOnly
-            className={
-              propertiesOpen ? "!bg-surface-selected !text-primary-6" : ""
-            }
-            onClick={onToggleProperties}
-            title={
+          <WorkstationToolbarTooltip
+            label={
               propertiesOpen
                 ? t("workItems.hideProperties")
                 : t("workItems.showProperties")
             }
-            icon={<Info size={HEADER_ICON_SIZE.sm} />}
-          />
+          >
+            <Button
+              htmlType="button"
+              variant="tertiary"
+              size="small"
+              iconOnly
+              className={
+                propertiesOpen ? "!bg-surface-selected !text-primary-6" : ""
+              }
+              onClick={onToggleProperties}
+              aria-label={
+                propertiesOpen
+                  ? t("workItems.hideProperties")
+                  : t("workItems.showProperties")
+              }
+              icon={<Info size={HEADER_ICON_SIZE.sm} />}
+            />
+          </WorkstationToolbarTooltip>
         )}
       </div>
     </>

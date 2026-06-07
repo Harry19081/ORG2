@@ -7,6 +7,7 @@ import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 
 export interface WorkstationToolbarTooltipProps {
   label: ReactNode;
+  shortcut?: string;
   shortcutId?: string;
   position?: TooltipProps["position"];
   disabled?: boolean;
@@ -17,24 +18,27 @@ export const WorkstationToolbarTooltip: React.FC<WorkstationToolbarTooltipProps>
   memo(
     ({
       label,
+      shortcut,
       shortcutId,
       position = "bottom",
       disabled = false,
       children,
     }) => {
-      const shortcut = shortcutId ? getShortcutKeys(shortcutId) : "";
-      const content = shortcut ? (
-        <KeyboardShortcutTooltipContent label={label} shortcut={shortcut} />
-      ) : (
-        label
-      );
+      const resolvedShortcut = shortcutId
+        ? getShortcutKeys(shortcutId)
+        : shortcut;
 
       return (
         <Tooltip
-          content={content}
+          content={
+            <KeyboardShortcutTooltipContent
+              label={label}
+              shortcut={resolvedShortcut}
+            />
+          }
           position={position}
           mouseEnterDelay={200}
-          framedPanel={!!shortcut}
+          framedPanel
           disabled={disabled}
           smartPlacement
         >

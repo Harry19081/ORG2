@@ -68,6 +68,9 @@ const WorkstationTabBar: React.FC<WorkstationTabBarProps> = memo(
         repoPath={currentRepo?.path ?? ""}
         leadingSlot={<WorkStationTabBarLeading />}
         trailingSlot={trailingSlot}
+        onNewTabShortcutId={
+          appMode === "browser" ? "browser_new_tab" : undefined
+        }
         surfaceClassName=""
         dataTourTarget={CODE_EDITOR_TOUR_TARGETS.tabBar}
       />

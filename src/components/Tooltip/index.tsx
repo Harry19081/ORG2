@@ -56,6 +56,222 @@ function applyRef<T>(ref: React.Ref<T> | undefined, value: T | null): void {
   (ref as React.MutableRefObject<T | null>).current = value;
 }
 
+type TooltipCoordinates = { top: number; left: number };
+
+type TooltipOverflow = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
+type TooltipPlacementCandidate = {
+  position: TooltipPosition;
+  coordinates: TooltipCoordinates;
+  overflow: TooltipOverflow;
+  overflowScore: number;
+};
+
+type TooltipRectLike = Pick<
+  DOMRect,
+  "top" | "right" | "bottom" | "left" | "width" | "height"
+>;
+
+type TooltipSizeLike = Pick<DOMRect, "width" | "height">;
+
+type TooltipViewport = { width: number; height: number; padding: number };
+
+type TooltipPositionSide = "top" | "right" | "bottom" | "left";
+
+const TOOLTIP_OPPOSITE_SIDE: Record<TooltipPositionSide, TooltipPositionSide> =
+  {
+    top: "bottom",
+    right: "left",
+    bottom: "top",
+    left: "right",
+  };
+
+function getTooltipPositionSide(
+  position: TooltipPosition
+): TooltipPositionSide {
+  return position.split("-")[0] as TooltipPositionSide;
+}
+
+function withTooltipPositionSide(
+  position: TooltipPosition,
+  side: TooltipPositionSide
+): TooltipPosition {
+  const alignment = position.includes("-") ? position.split("-")[1] : "";
+  return alignment ? (`${side}-${alignment}` as TooltipPosition) : side;
+}
+
+function getTooltipFallbackPositions(
+  position: TooltipPosition
+): TooltipPosition[] {
+  const side = getTooltipPositionSide(position);
+  const opposite = withTooltipPositionSide(
+    position,
+    TOOLTIP_OPPOSITE_SIDE[side]
+  );
+  const positions = [position, opposite];
+
+  if (!position.endsWith("-start")) {
+    positions.push(`${side}-start` as TooltipPosition);
+    positions.push(
+      `${getTooltipPositionSide(opposite)}-start` as TooltipPosition
+    );
+  }
+
+  if (!position.endsWith("-end")) {
+    positions.push(`${side}-end` as TooltipPosition);
+    positions.push(
+      `${getTooltipPositionSide(opposite)}-end` as TooltipPosition
+    );
+  }
+
+  return Array.from(new Set(positions));
+}
+
+function getTooltipCoordinates(
+  position: TooltipPosition,
+  triggerRect: TooltipRectLike,
+  tooltipRect: TooltipSizeLike,
+  gap: number
+): TooltipCoordinates {
+  switch (position) {
+    case "top":
+      return {
+        top: triggerRect.top - tooltipRect.height - gap,
+        left: triggerRect.left + (triggerRect.width - tooltipRect.width) / 2,
+      };
+    case "top-start":
+      return {
+        top: triggerRect.top - tooltipRect.height - gap,
+        left: triggerRect.left,
+      };
+    case "top-end":
+      return {
+        top: triggerRect.top - tooltipRect.height - gap,
+        left: triggerRect.right - tooltipRect.width,
+      };
+    case "bottom":
+      return {
+        top: triggerRect.bottom + gap,
+        left: triggerRect.left + (triggerRect.width - tooltipRect.width) / 2,
+      };
+    case "bottom-start":
+      return {
+        top: triggerRect.bottom + gap,
+        left: triggerRect.left,
+      };
+    case "bottom-end":
+      return {
+        top: triggerRect.bottom + gap,
+        left: triggerRect.right - tooltipRect.width,
+      };
+    case "left":
+      return {
+        top: triggerRect.top + (triggerRect.height - tooltipRect.height) / 2,
+        left: triggerRect.left - tooltipRect.width - gap,
+      };
+    case "left-start":
+      return {
+        top: triggerRect.top,
+        left: triggerRect.left - tooltipRect.width - gap,
+      };
+    case "left-end":
+      return {
+        top: triggerRect.bottom - tooltipRect.height,
+        left: triggerRect.left - tooltipRect.width - gap,
+      };
+    case "right":
+      return {
+        top: triggerRect.top + (triggerRect.height - tooltipRect.height) / 2,
+        left: triggerRect.right + gap,
+      };
+    case "right-start":
+      return {
+        top: triggerRect.top,
+        left: triggerRect.right + gap,
+      };
+    case "right-end":
+      return {
+        top: triggerRect.bottom - tooltipRect.height,
+        left: triggerRect.right + gap,
+      };
+  }
+}
+
+function getTooltipOverflow(
+  coordinates: TooltipCoordinates,
+  tooltipRect: TooltipSizeLike,
+  viewport: TooltipViewport
+): TooltipOverflow {
+  return {
+    top: Math.max(0, viewport.padding - coordinates.top),
+    right: Math.max(
+      0,
+      coordinates.left + tooltipRect.width - (viewport.width - viewport.padding)
+    ),
+    bottom: Math.max(
+      0,
+      coordinates.top +
+        tooltipRect.height -
+        (viewport.height - viewport.padding)
+    ),
+    left: Math.max(0, viewport.padding - coordinates.left),
+  };
+}
+
+function getTooltipOverflowScore(overflow: TooltipOverflow): number {
+  return overflow.top + overflow.right + overflow.bottom + overflow.left;
+}
+
+function getBestTooltipCandidate(
+  position: TooltipPosition,
+  triggerRect: TooltipRectLike,
+  tooltipRect: TooltipSizeLike,
+  gap: number,
+  viewport: TooltipViewport,
+  smartPlacement: boolean
+): TooltipPlacementCandidate {
+  const candidates = (
+    smartPlacement ? getTooltipFallbackPositions(position) : [position]
+  ).map((candidatePosition) => {
+    const coordinates = getTooltipCoordinates(
+      candidatePosition,
+      triggerRect,
+      tooltipRect,
+      gap
+    );
+    const overflow = getTooltipOverflow(coordinates, tooltipRect, viewport);
+    return {
+      position: candidatePosition,
+      coordinates,
+      overflow,
+      overflowScore: getTooltipOverflowScore(overflow),
+    };
+  });
+
+  return candidates.reduce((best, candidate) =>
+    candidate.overflowScore < best.overflowScore ? candidate : best
+  );
+}
+
+type TooltipPosition =
+  | "top"
+  | "top-start"
+  | "top-end"
+  | "bottom"
+  | "bottom-start"
+  | "bottom-end"
+  | "left"
+  | "left-start"
+  | "left-end"
+  | "right"
+  | "right-start"
+  | "right-end";
+
 export interface TooltipProps {
   /**
    * Tooltip content
@@ -66,19 +282,7 @@ export interface TooltipProps {
    * Tooltip position
    * @default 'top'
    */
-  position?:
-    | "top"
-    | "top-start"
-    | "top-end"
-    | "bottom"
-    | "bottom-start"
-    | "bottom-end"
-    | "left"
-    | "left-start"
-    | "left-end"
-    | "right"
-    | "right-start"
-    | "right-end";
+  position?: TooltipPosition;
 
   /**
    * Trigger type
@@ -166,6 +370,12 @@ export interface TooltipProps {
    * @default false
    */
   framedPanel?: boolean;
+
+  /**
+   * Pick a nearby placement when the requested placement would overflow.
+   * @default false
+   */
+  smartPlacement?: boolean;
 }
 
 const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
@@ -189,6 +399,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       showArrow = true,
       panelStyle = false,
       framedPanel = false,
+      smartPlacement = false,
     },
     _ref
   ) => {
@@ -218,63 +429,23 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       const gap = framedPanel ? 8 : 12;
 
-      let top = 0;
-      let left = 0;
-
-      // Calculate position based on position prop
-      switch (position) {
-        case "top":
-          top = triggerRect.top - tooltipRect.height - gap;
-          left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
-          break;
-        case "top-start":
-          top = triggerRect.top - tooltipRect.height - gap;
-          left = triggerRect.left;
-          break;
-        case "top-end":
-          top = triggerRect.top - tooltipRect.height - gap;
-          left = triggerRect.right - tooltipRect.width;
-          break;
-        case "bottom":
-          top = triggerRect.bottom + gap;
-          left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
-          break;
-        case "bottom-start":
-          top = triggerRect.bottom + gap;
-          left = triggerRect.left;
-          break;
-        case "bottom-end":
-          top = triggerRect.bottom + gap;
-          left = triggerRect.right - tooltipRect.width;
-          break;
-        case "left":
-          top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
-          left = triggerRect.left - tooltipRect.width - gap;
-          break;
-        case "left-start":
-          top = triggerRect.top;
-          left = triggerRect.left - tooltipRect.width - gap;
-          break;
-        case "left-end":
-          top = triggerRect.bottom - tooltipRect.height;
-          left = triggerRect.left - tooltipRect.width - gap;
-          break;
-        case "right":
-          top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
-          left = triggerRect.right + gap;
-          break;
-        case "right-start":
-          top = triggerRect.top;
-          left = triggerRect.right + gap;
-          break;
-        case "right-end":
-          top = triggerRect.bottom - tooltipRect.height;
-          left = triggerRect.right + gap;
-          break;
-      }
-
-      // Keep tooltip within viewport
       const padding = 8;
+      const viewport: TooltipViewport = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        padding,
+      };
+      const candidate = getBestTooltipCandidate(
+        position,
+        triggerRect,
+        tooltipRect,
+        gap,
+        viewport,
+        smartPlacement
+      );
+      let top = candidate.coordinates.top;
+      let left = candidate.coordinates.left;
+
       top = Math.max(
         padding,
         Math.min(top, window.innerHeight - tooltipRect.height - padding)
@@ -290,20 +461,22 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       let arrowLeftOffset = 0;
       let arrowTopOffset = 0;
 
+      const selectedPosition = candidate.position;
       const isCenteredPosition =
-        position === "top" ||
-        position === "bottom" ||
-        position === "left" ||
-        position === "right";
+        selectedPosition === "top" ||
+        selectedPosition === "bottom" ||
+        selectedPosition === "left" ||
+        selectedPosition === "right";
 
       if (isCenteredPosition) {
-        if (position === "top" || position === "bottom") {
-          // For top/bottom positions, calculate horizontal offset
+        if (selectedPosition === "top" || selectedPosition === "bottom") {
           const triggerCenterX = triggerRect.left + triggerRect.width / 2;
           const tooltipCenterX = left + tooltipRect.width / 2;
           arrowLeftOffset = triggerCenterX - tooltipCenterX;
-        } else if (position === "left" || position === "right") {
-          // For left/right positions, calculate vertical offset
+        } else if (
+          selectedPosition === "left" ||
+          selectedPosition === "right"
+        ) {
           const triggerCenterY = triggerRect.top + triggerRect.height / 2;
           const tooltipCenterY = top + tooltipRect.height / 2;
           arrowTopOffset = triggerCenterY - tooltipCenterY;
@@ -313,7 +486,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       setTooltipPosition({ top, left });
       setArrowOffset({ left: arrowLeftOffset, top: arrowTopOffset });
       setPositionReady(true);
-    }, [framedPanel, position, triggerElement]);
+    }, [framedPanel, position, smartPlacement, triggerElement]);
 
     useEffect(() => {
       if (currentVisible) {

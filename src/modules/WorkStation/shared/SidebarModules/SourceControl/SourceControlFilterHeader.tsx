@@ -19,6 +19,7 @@ import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import type { DropdownOption } from "@src/components/Dropdown/types";
 import Select from "@src/components/Select";
 import { useRefreshSpin } from "@src/hooks/ui";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared/WorkstationToolbarTooltip";
 import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { workstationPrAtom } from "@src/store/workstation/codeEditor/workstationPrAtom";
 
@@ -219,17 +220,23 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
               popupVisible={moreMenuVisible}
               onVisibleChange={setMoreMenuVisible}
             >
-              <Button
-                htmlType="button"
-                variant="tertiary"
-                size="small"
-                iconOnly
-                title={t("common:actions.more")}
-                className={moreMenuVisible ? "!bg-fill-2 !text-primary-6" : ""}
-                icon={
-                  <Ellipsis size={HEADER_ICON_SIZE.sm} strokeWidth={1.75} />
-                }
-              />
+              <WorkstationToolbarTooltip
+                label={t("common:actions.more")}
+                disabled={moreMenuVisible}
+              >
+                <Button
+                  htmlType="button"
+                  variant="tertiary"
+                  size="small"
+                  iconOnly
+                  className={
+                    moreMenuVisible ? "!bg-fill-2 !text-primary-6" : ""
+                  }
+                  icon={
+                    <Ellipsis size={HEADER_ICON_SIZE.sm} strokeWidth={1.75} />
+                  }
+                />
+              </WorkstationToolbarTooltip>
             </Dropdown>
           )}
         </div>

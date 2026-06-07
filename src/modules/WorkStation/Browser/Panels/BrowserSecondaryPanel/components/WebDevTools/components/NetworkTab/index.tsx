@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
@@ -156,13 +157,16 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
           />
 
           {/* Clear button */}
-          <button
-            onClick={onClear}
-            className={HEADER_BUTTON.actionTreeRow}
-            title={t("tooltips.clearNetworkLogs")}
-          >
-            <BrushCleaning size={HEADER_ICON_SIZE.sm} />
-          </button>
+          <WorkstationToolbarTooltip label={t("tooltips.clearNetworkLogs")}>
+            <button
+              type="button"
+              onClick={onClear}
+              className={HEADER_BUTTON.actionTreeRow}
+              aria-label={t("tooltips.clearNetworkLogs")}
+            >
+              <BrushCleaning size={HEADER_ICON_SIZE.sm} />
+            </button>
+          </WorkstationToolbarTooltip>
         </div>
 
         {/* Entries */}

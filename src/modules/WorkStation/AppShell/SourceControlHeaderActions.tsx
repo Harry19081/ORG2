@@ -6,7 +6,10 @@ import { useTranslation } from "react-i18next";
 import Button from "@src/components/Button";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useRepoGitInitialization } from "@src/hooks/git";
-import { WorkstationHeaderSectionSeparator } from "@src/modules/WorkStation/shared";
+import {
+  WorkstationHeaderSectionSeparator,
+  WorkstationToolbarTooltip,
+} from "@src/modules/WorkStation/shared";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
 import { currentRepoAtom } from "@src/store/repo";
 import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationAtom";
@@ -69,39 +72,42 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
         className="flex shrink-0 items-center gap-px"
         data-tour-target={CODE_EDITOR_TOUR_TARGETS.gitHistory}
       >
-        <Button
-          htmlType="button"
-          variant="tertiary"
-          size="small"
-          iconOnly
-          className={historyActive ? "!bg-fill-2 !text-primary-6" : ""}
-          onClick={handleToggleHistory}
-          title={historyLabel}
-          aria-label={historyLabel}
-          icon={<History size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
-        />
-        <Button
-          htmlType="button"
-          variant="tertiary"
-          size="small"
-          iconOnly
-          className={prActive ? "!bg-fill-2 !text-primary-6" : ""}
-          onClick={handleTogglePr}
-          title={prLabel}
-          aria-label={prLabel}
-          icon={<GitPullRequest size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
-        />
-        <Button
-          htmlType="button"
-          variant="tertiary"
-          size="small"
-          iconOnly
-          className={issuesActive ? "!bg-fill-2 !text-primary-6" : ""}
-          onClick={handleToggleIssues}
-          title={issuesLabel}
-          aria-label={issuesLabel}
-          icon={<CircleDot size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
-        />
+        <WorkstationToolbarTooltip label={historyLabel}>
+          <Button
+            htmlType="button"
+            variant="tertiary"
+            size="small"
+            iconOnly
+            className={historyActive ? "!bg-fill-2 !text-primary-6" : ""}
+            onClick={handleToggleHistory}
+            aria-label={historyLabel}
+            icon={<History size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+          />
+        </WorkstationToolbarTooltip>
+        <WorkstationToolbarTooltip label={prLabel}>
+          <Button
+            htmlType="button"
+            variant="tertiary"
+            size="small"
+            iconOnly
+            className={prActive ? "!bg-fill-2 !text-primary-6" : ""}
+            onClick={handleTogglePr}
+            aria-label={prLabel}
+            icon={<GitPullRequest size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+          />
+        </WorkstationToolbarTooltip>
+        <WorkstationToolbarTooltip label={issuesLabel}>
+          <Button
+            htmlType="button"
+            variant="tertiary"
+            size="small"
+            iconOnly
+            className={issuesActive ? "!bg-fill-2 !text-primary-6" : ""}
+            onClick={handleToggleIssues}
+            aria-label={issuesLabel}
+            icon={<CircleDot size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+          />
+        </WorkstationToolbarTooltip>
       </div>
       <WorkstationHeaderSectionSeparator className="mx-1" />
     </>

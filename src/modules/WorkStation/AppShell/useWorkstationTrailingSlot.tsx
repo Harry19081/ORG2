@@ -19,9 +19,6 @@ import { type ReactNode, startTransition, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
-import Tooltip from "@src/components/Tooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import type { AppModeType } from "@src/config/viewModeTypes";
 import ProjectManagerWorkItemsTabBarTrailing from "@src/modules/ProjectManager/ProjectManagerLayout/components/ProjectManagerWorkItemsTabBarTrailing";
 import {
@@ -103,86 +100,45 @@ export function useWorkstationTrailingSlot({
     const chatPanelLabel = isChatPanelVisible
       ? t("sessions:chat.maximizeWorkStation")
       : t("sessions:chat.restoreChatPanel");
-    const chatPanelShortcut = getShortcutKeys("maximize_work_station");
-    const chatPanelTooltip = (
-      <KeyboardShortcutTooltipContent
-        label={chatPanelLabel}
-        shortcut={chatPanelShortcut}
-      />
-    );
-
     const chatPanelControl = isSettingsRoute ? null : (
-      <Tooltip
-        content={chatPanelTooltip}
-        position="bottom-end"
-        mouseEnterDelay={200}
-        framedPanel
+      <TabBarTrailingIconButton
+        title={chatPanelLabel}
+        shortcutId="maximize_work_station"
+        onClick={handleToggleChatPanel}
       >
-        <span className="inline-flex">
-          <TabBarTrailingIconButton
-            title={chatPanelLabel}
-            nativeTitle={false}
-            onClick={handleToggleChatPanel}
-          >
-            {isChatPanelVisible ? (
-              <Maximize2 size={14} strokeWidth={2} />
-            ) : (
-              <MessageCircle size={14} strokeWidth={2} />
-            )}
-          </TabBarTrailingIconButton>
-        </span>
-      </Tooltip>
+        {isChatPanelVisible ? (
+          <Maximize2 size={14} strokeWidth={2} />
+        ) : (
+          <MessageCircle size={14} strokeWidth={2} />
+        )}
+      </TabBarTrailingIconButton>
     );
 
     const hideWorkstationLabel = t("sessions:chat.hideWorkstation");
-    const hideWorkstationTooltip = (
-      <KeyboardShortcutTooltipContent
-        label={hideWorkstationLabel}
-        shortcut={getShortcutKeys("maximize_chat")}
-      />
-    );
     const maximizeChatControl =
       !isSettingsRoute && isChatPanelVisible ? (
-        <Tooltip
-          content={hideWorkstationTooltip}
-          position="bottom-end"
-          mouseEnterDelay={200}
-          framedPanel
+        <TabBarTrailingIconButton
+          title={hideWorkstationLabel}
+          shortcutId="maximize_chat"
+          onClick={handleToggleChatPanelMaximized}
         >
-          <span className="inline-flex">
-            <TabBarTrailingIconButton
-              title={hideWorkstationLabel}
-              nativeTitle={false}
-              onClick={handleToggleChatPanelMaximized}
-            >
-              {workStationChatPosition === "left" ? (
-                <PanelRight size={HEADER_ICON_SIZE.md} strokeWidth={2} />
-              ) : (
-                <X size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
-              )}
-            </TabBarTrailingIconButton>
-          </span>
-        </Tooltip>
+          {workStationChatPosition === "left" ? (
+            <PanelRight size={HEADER_ICON_SIZE.md} strokeWidth={2} />
+          ) : (
+            <X size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
+          )}
+        </TabBarTrailingIconButton>
       ) : null;
 
     const shrinkWorkstationControl = !isSettingsRoute &&
       !isChatPanelVisible && (
-        <Tooltip
-          content={chatPanelTooltip}
-          position="bottom-end"
-          mouseEnterDelay={200}
-          framedPanel
+        <TabBarTrailingIconButton
+          title={chatPanelLabel}
+          shortcutId="maximize_work_station"
+          onClick={handleToggleChatPanel}
         >
-          <span className="inline-flex">
-            <TabBarTrailingIconButton
-              title={chatPanelLabel}
-              nativeTitle={false}
-              onClick={handleToggleChatPanel}
-            >
-              <Minimize2 size={14} strokeWidth={2} />
-            </TabBarTrailingIconButton>
-          </span>
-        </Tooltip>
+          <Minimize2 size={14} strokeWidth={2} />
+        </TabBarTrailingIconButton>
       );
 
     // X close button shown only while the Settings slot is mounted:
@@ -191,29 +147,14 @@ export function useWorkstationTrailingSlot({
     // the opposite side, so dismissing the workstation is reachable from
     // wherever the user's pointer currently is.
     const maximizeSettingsLabel = t("settings:panel.maximizeSettings");
-    const maximizeSettingsTooltip = (
-      <KeyboardShortcutTooltipContent
-        label={maximizeSettingsLabel}
-        shortcut={getShortcutKeys("maximize_chat")}
-      />
-    );
     const closeWorkstationControl = isSettingsRoute ? (
-      <Tooltip
-        content={maximizeSettingsTooltip}
-        position="bottom-end"
-        mouseEnterDelay={200}
-        framedPanel
+      <TabBarTrailingIconButton
+        title={maximizeSettingsLabel}
+        shortcutId="maximize_chat"
+        onClick={handleToggleChatPanelMaximized}
       >
-        <span className="inline-flex">
-          <TabBarTrailingIconButton
-            title={maximizeSettingsLabel}
-            nativeTitle={false}
-            onClick={handleToggleChatPanelMaximized}
-          >
-            <X size={14} strokeWidth={2} />
-          </TabBarTrailingIconButton>
-        </span>
-      </Tooltip>
+        <X size={14} strokeWidth={2} />
+      </TabBarTrailingIconButton>
     ) : null;
 
     if (appMode === "code") {

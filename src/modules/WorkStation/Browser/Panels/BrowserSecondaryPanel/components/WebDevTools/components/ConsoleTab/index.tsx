@@ -11,6 +11,7 @@ import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
@@ -120,21 +121,23 @@ function ConsoleLogEntryRow({
             [{entry.level}]
           </span>
         </div>
-        <Button
-          variant="tertiary"
-          size="mini"
-          icon={
-            copiedId === entry.id ? (
-              <Check size={12} className="text-success-6" />
-            ) : (
-              <Copy size={12} />
-            )
-          }
-          iconOnly
-          onClick={onCopy}
-          title={t("tooltips.copyToClipboard")}
-          className="shrink-0 select-none opacity-0 group-hover:opacity-100"
-        />
+        <WorkstationToolbarTooltip label={t("tooltips.copyToClipboard")}>
+          <Button
+            variant="tertiary"
+            size="mini"
+            icon={
+              copiedId === entry.id ? (
+                <Check size={12} className="text-success-6" />
+              ) : (
+                <Copy size={12} />
+              )
+            }
+            iconOnly
+            onClick={onCopy}
+            aria-label={t("tooltips.copyToClipboard")}
+            className="shrink-0 select-none opacity-0 group-hover:opacity-100"
+          />
+        </WorkstationToolbarTooltip>
       </div>
 
       <div className="mt-0.5 min-w-0 max-w-full">
@@ -328,13 +331,16 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
           )}
 
           {/* Clear button */}
-          <button
-            onClick={onClear}
-            className={HEADER_BUTTON.actionTreeRow}
-            title={t("tooltips.clearConsole")}
-          >
-            <BrushCleaning size={HEADER_ICON_SIZE.sm} />
-          </button>
+          <WorkstationToolbarTooltip label={t("tooltips.clearConsole")}>
+            <button
+              type="button"
+              onClick={onClear}
+              className={HEADER_BUTTON.actionTreeRow}
+              aria-label={t("tooltips.clearConsole")}
+            >
+              <BrushCleaning size={HEADER_ICON_SIZE.sm} />
+            </button>
+          </WorkstationToolbarTooltip>
         </div>
 
         {/* Entries */}
