@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: açık",
+    "disabledLabel": "Agent Control: kapalı",
+    "enableAction": "Agent Control'ü aç",
+    "disableAction": "Agent Control'ü kapat",
+    "inputMode": "Kontrol",
+    "selectionMode": "Yanıt",
+    "toggleMode": "Girdi modunu değiştir",
+    "inputPlaceholder": "Agent'a ne yapacağını söyle...",
+    "selectionPlaceholder": "Seçimi veya yanıtı yaz...",
+    "submit": "Agent Control girdisini gönder",
+    "menuToggle": "Agent Control",
+    "selectModel": "Model seç"
+  },
   "actions": {
     "save": "Kaydet",
     "cancel": "İptal",

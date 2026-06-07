@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: ein",
+    "disabledLabel": "Agent Control: aus",
+    "enableAction": "Agent Control aktivieren",
+    "disableAction": "Agent Control deaktivieren",
+    "inputMode": "Steuerung",
+    "selectionMode": "Antwort",
+    "toggleMode": "Eingabemodus umschalten",
+    "inputPlaceholder": "Sagen Sie dem Agent, was er tun soll...",
+    "selectionPlaceholder": "Auswahl oder Antwort eingeben...",
+    "submit": "Agent Control-Eingabe senden",
+    "menuToggle": "Agent Control",
+    "selectModel": "Modell auswählen"
+  },
   "actions": {
     "save": "Speichern",
     "cancel": "Abbrechen",

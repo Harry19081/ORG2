@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control：开启",
+    "disabledLabel": "Agent Control：关闭",
+    "enableAction": "开启 Agent Control",
+    "disableAction": "关闭 Agent Control",
+    "inputMode": "控制",
+    "selectionMode": "回答",
+    "toggleMode": "切换输入模式",
+    "inputPlaceholder": "告诉 Agent 要做什么...",
+    "selectionPlaceholder": "输入选择项或回答...",
+    "submit": "提交 Agent Control 输入",
+    "menuToggle": "Agent Control",
+    "selectModel": "选择模型"
+  },
   "actions": {
     "save": "保存",
     "cancel": "取消",

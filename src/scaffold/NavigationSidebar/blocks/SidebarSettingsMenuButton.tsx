@@ -1,4 +1,4 @@
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   ChevronRight,
   Contrast,
@@ -7,6 +7,7 @@ import {
   Languages,
   Laptop,
   MessageCircle,
+  MousePointer2,
   Settings,
 } from "lucide-react";
 import React, {
@@ -40,8 +41,13 @@ import {
   type SupportedLanguage,
 } from "@src/i18n";
 import { useAppearanceState } from "@src/modules/MainApp/Settings/sections/useAppearanceState";
+import { GUI_CONTROL_TOGGLE_SHORTCUT_ID } from "@src/scaffold/GuiControlToggle";
 import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { languageAtom } from "@src/store/ui/languageAtom";
+import {
+  guiControlEnabledAtom,
+  toggleGuiControlEnabledAtom,
+} from "@src/store/ui/uiAtom";
 
 import HoverAnimatedIcon, {
   triggerIconAnimation,
@@ -91,6 +97,8 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
   const preserveRamPanelOnMenuCloseRef = useRef(false);
   const dropdownInsideRefs = useMemo(() => [submenuPanelRef], []);
   const setLanguagePreference = useSetAtom(languageAtom);
+  const guiControlEnabled = useAtomValue(guiControlEnabledAtom);
+  const toggleGuiControlEnabled = useSetAtom(toggleGuiControlEnabledAtom);
   const [activeSubmenu, setActiveSubmenu] = useState<SettingsSubmenu | null>(
     null
   );
@@ -137,6 +145,7 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
   } = useAppearanceState();
 
   const openSettingsShortcut = getShortcutKeys("open_settings");
+  const guiControlShortcut = getShortcutKeys(GUI_CONTROL_TOGGLE_SHORTCUT_ID);
   const settingsButtonClassName = isOpen ? "text-primary-6" : "text-text-2";
 
   const languageOptions = useMemo(
@@ -225,6 +234,11 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
     window.dispatchEvent(new CustomEvent(TUTORIALS_OPEN_EVENT));
     closeAll();
   }, [closeAll]);
+
+  const handleToggleGuiControl = useCallback(() => {
+    toggleGuiControlEnabled();
+    closeAll();
+  }, [closeAll, toggleGuiControlEnabled]);
 
   const handleSelectAppearanceMode = useCallback(
     async (mode: AppearanceMode) => {
@@ -410,6 +424,29 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
             }}
           >
             <div className={DROPDOWN_CLASSES.itemsColumn}>
+              <button
+                type="button"
+                className={`${DROPDOWN_CLASSES.menuActionItem} justify-between ${guiControlEnabled ? DROPDOWN_CLASSES.itemSelected : ""}`}
+                onMouseEnter={() => setActiveSubmenu(null)}
+                onFocus={() => setActiveSubmenu(null)}
+                onClick={handleToggleGuiControl}
+                aria-pressed={guiControlEnabled}
+              >
+                <span className="flex min-w-0 items-center gap-2">
+                  <MousePointer2
+                    size={DROPDOWN_ITEM.iconSize}
+                    className={MENU_ICON_CLASS_NAME}
+                  />
+                  <span className="truncate">
+                    {t("common:guiControl.menuToggle")}
+                  </span>
+                </span>
+                <KeyboardShortcut
+                  shortcut={guiControlShortcut}
+                  variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
+                />
+              </button>
+              <div className={DROPDOWN_CLASSES.menuSeparator} />
               <button
                 type="button"
                 className={`${DROPDOWN_CLASSES.menuActionItem} gap-2`}

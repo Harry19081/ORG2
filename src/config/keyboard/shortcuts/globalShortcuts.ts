@@ -42,6 +42,14 @@ export const GLOBAL_SHORTCUTS: ShortcutEntry[] = [
     category: "view",
   },
   {
+    id: "toggle_gui_control",
+    command: "Toggle Agent Control",
+    macKeys: "⌥⌘G",
+    winKeys: "Ctrl+Alt+G",
+    scope: "global",
+    category: "view",
+  },
+  {
     id: "new_session",
     command: "Create new session",
     macKeys: "⌘N",

@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: オン",
+    "disabledLabel": "Agent Control: オフ",
+    "enableAction": "Agent Control を有効化",
+    "disableAction": "Agent Control を無効化",
+    "inputMode": "Control",
+    "selectionMode": "Answer",
+    "toggleMode": "入力モードを切り替え",
+    "inputPlaceholder": "何をするか Agent に伝える...",
+    "selectionPlaceholder": "選択または回答を入力...",
+    "submit": "Agent Control 入力を送信",
+    "menuToggle": "Agent Control",
+    "selectModel": "モデルを選択"
+  },
   "actions": {
     "save": "保存",
     "cancel": "キャンセル",

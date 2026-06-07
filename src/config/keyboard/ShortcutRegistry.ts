@@ -180,6 +180,16 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
     showInMenu: false,
   },
   {
+    id: "toggle_gui_control",
+    description: "Toggle Agent Control",
+    key: "g",
+    modifiers: ["cmd", "alt"],
+    accelerator: "CmdOrCtrl+Alt+G",
+    category: "view",
+    scope: "global",
+    showInMenu: false,
+  },
+  {
     id: "new_session",
     description: "Create new session",
     key: "n",

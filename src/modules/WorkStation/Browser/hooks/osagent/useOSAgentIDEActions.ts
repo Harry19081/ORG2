@@ -1,26 +1,13 @@
 /**
  * useOSAgentIDEActions Hook
  *
- * ⚠️ GUI DISPATCH PARTIALLY DISABLED ⚠️
- * The `control_orgii` / GUI tool is unregistered on the Rust side for now
- * (agent uses native tools + Simulator for observation). However this hook
- * must stay mounted because the `manage_session` Rust tool routes through
- * the ActionBridge for `session.*` zod actions (create / list / intervene).
+ * Bridges global agent GUI-control requests to the frontend ActionSystem.
  *
  * Behaviour today:
  *   - category === "session" → dispatched normally (required for manage_session)
- *   - everything else → rejected with a clear error back to the agent
+ *   - layer === "gui" → dispatched only while global Agent Control is on
+ *   - layer === "action" → rejected when a native backend tool should be used
  *
- * When re-enabling GUI dispatch for cowork / voice mode:
- *   1. Set `GUI_DISPATCH_DISABLED` below to `false`.
- *   2. Re-enable the Rust `control_orgii` / gui tool registration in
- *      `src-tauri/src/agent_core/core/tools/registration/web.rs`.
- *   3. Add a per-agent UI knob for `executionMode` if WorkStation
- *      dispatch needs to be user-toggleable. The Rust
- *      `ResolvedAgent.execution_mode` field is still consumed by
- *      `ActionRouter` even without UI exposure.
- *
- * Original behaviour:
  * Bridges the OS agent's `ide` tool to the frontend ActionSystem.
  * Listens for `agent-ide-action` CustomEvents (dispatched by the OS agent event handlers),
  * executes the requested action via zodActionRegistry, and reports the result
@@ -43,13 +30,10 @@ import {
   zodActionRegistry,
 } from "@src/modules/WorkStation/ActionSystem";
 import { currentRepoAtom } from "@src/store/repo";
+import { guiControlEnabledAtom } from "@src/store/ui/uiAtom";
 
-/**
- * Feature flag: when true, only `session` category zod actions are dispatched.
- * All other IDE action requests return an error so the agent doesn't hang.
- * Flip to `false` to re-enable cowork / voice mode's live GUI control.
- */
-const GUI_DISPATCH_DISABLED = true;
+const GUI_CONTROL_REQUIRED_MESSAGE =
+  "Agent Control is off. Toggle Agent Control on to allow GUI automation actions.";
 
 // ============================================
 // Types
@@ -74,12 +58,18 @@ interface IDEActionDetail {
  */
 export function useOSAgentIDEActions(): void {
   const currentRepo = useAtomValue(currentRepoAtom);
+  const guiControlEnabled = useAtomValue(guiControlEnabledAtom);
   const cleanupRef = useRef<(() => void) | null>(null);
+  const guiControlEnabledRef = useRef(false);
   const repoPathRef = useRef<string>("");
 
   useEffect(() => {
     repoPathRef.current = currentRepo?.path ?? "";
   }, [currentRepo?.path]);
+
+  useEffect(() => {
+    guiControlEnabledRef.current = guiControlEnabled;
+  }, [guiControlEnabled]);
 
   // Register actions and listen for IDE action events
   useEffect(() => {
@@ -128,13 +118,11 @@ export function useOSAgentIDEActions(): void {
         const actionObj = zodActionRegistry.get(action);
         const category = actionObj?.meta.category ?? "";
 
-        // GUI dispatch gate — while disabled, only `session` category actions
-        // (needed by manage_session) are permitted. Everything else fails
-        // loudly so the agent learns not to use GUI dispatch right now.
-        if (GUI_DISPATCH_DISABLED && category !== "session") {
+        // Session actions are backend session control; GUI-layer actions require the explicit global toggle.
+        if (!guiControlEnabledRef.current && category !== "session") {
           await sendIdeActionResult(correlationId, {
             success: false,
-            message: `GUI dispatch is temporarily disabled. Use the corresponding native Rust tool instead. (action="${action}")`,
+            message: `${GUI_CONTROL_REQUIRED_MESSAGE} (action="${action}")`,
           });
           return;
         }

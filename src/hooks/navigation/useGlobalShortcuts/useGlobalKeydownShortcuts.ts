@@ -190,6 +190,12 @@ export function useGlobalKeydownShortcuts(
             handleToggleWorkStationChatFocus();
             return;
           }
+          if (event.code === "KeyG") {
+            event.preventDefault();
+            event.stopPropagation();
+            shortcutRegistry.dispatch("toggle_gui_control");
+            return;
+          }
           if (event.code === "KeyU") {
             event.preventDefault();
             event.stopPropagation();

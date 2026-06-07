@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: bật",
+    "disabledLabel": "Agent Control: tắt",
+    "enableAction": "Bật Agent Control",
+    "disableAction": "Tắt Agent Control",
+    "inputMode": "Điều khiển",
+    "selectionMode": "Trả lời",
+    "toggleMode": "Chuyển chế độ nhập",
+    "inputPlaceholder": "Cho Agent biết cần làm gì...",
+    "selectionPlaceholder": "Nhập lựa chọn hoặc câu trả lời...",
+    "submit": "Gửi nội dung Agent Control",
+    "menuToggle": "Agent Control",
+    "selectModel": "Chọn model"
+  },
   "actions": {
     "save": "Lưu",
     "cancel": "Hủy",

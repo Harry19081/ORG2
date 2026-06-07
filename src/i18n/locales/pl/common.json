@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: wł.",
+    "disabledLabel": "Agent Control: wył.",
+    "enableAction": "Włącz Agent Control",
+    "disableAction": "Wyłącz Agent Control",
+    "inputMode": "Sterowanie",
+    "selectionMode": "Odpowiedź",
+    "toggleMode": "Przełącz tryb wejścia",
+    "inputPlaceholder": "Powiedz Agent, co zrobić...",
+    "selectionPlaceholder": "Wpisz wybór lub odpowiedź...",
+    "submit": "Prześlij wejście Agent Control",
+    "menuToggle": "Agent Control",
+    "selectModel": "Wybierz model"
+  },
   "actions": {
     "all": "Wszystkie",
     "save": "Zapisz",

@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: 켜짐",
+    "disabledLabel": "Agent Control: 꺼짐",
+    "enableAction": "Agent Control 켜기",
+    "disableAction": "Agent Control 끄기",
+    "inputMode": "Control",
+    "selectionMode": "Answer",
+    "toggleMode": "입력 모드 전환",
+    "inputPlaceholder": "수행할 작업을 Agent에게 알려주세요...",
+    "selectionPlaceholder": "선택 항목 또는 답변을 입력하세요...",
+    "submit": "Agent Control 입력 제출",
+    "menuToggle": "Agent Control",
+    "selectModel": "모델 선택"
+  },
   "actions": {
     "save": "저장",
     "cancel": "취소",

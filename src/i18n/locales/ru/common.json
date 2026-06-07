@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: включено",
+    "disabledLabel": "Agent Control: выключено",
+    "enableAction": "Включить Agent Control",
+    "disableAction": "Выключить Agent Control",
+    "inputMode": "Управление",
+    "selectionMode": "Ответ",
+    "toggleMode": "Переключить режим ввода",
+    "inputPlaceholder": "Скажите Agent, что сделать...",
+    "selectionPlaceholder": "Введите выбор или ответ...",
+    "submit": "Отправить ввод Agent Control",
+    "menuToggle": "Agent Control",
+    "selectModel": "Выбрать модель"
+  },
   "actions": {
     "save": "Сохранить",
     "cancel": "Отмена",
