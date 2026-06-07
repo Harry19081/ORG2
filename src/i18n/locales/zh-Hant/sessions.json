@@ -1645,7 +1645,6 @@
       "createAgent": "建立 Agent / Skill",
       "project": "建立專案",
       "workItem": "建立 Work Item",
-      "batchStartBeta": "批量啟動 (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "搜索模型...",
@@ -1796,12 +1795,6 @@
       "cancel": "取消"
     },
     "viewDiff": "查看 Diff",
-    "batchStarterPlaceholder": "描述這個 session starter",
-    "addBatchStarter": "新增 starter",
-    "removeBatchStarter": "移除 starter",
-    "batchSendSuccess": "{{count}} 個 session 建立成功",
-    "batchSendPartial": "{{succeeded}} 個 session 建立成功；{{failed}} 個失敗",
-    "batchSend": "批量傳送",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",

@@ -1645,7 +1645,6 @@
       "createAgent": "Agent / Skill oluştur",
       "project": "Proje oluştur",
       "workItem": "Work Item oluştur",
-      "batchStartBeta": "Toplu başlat (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Model ara...",
@@ -1796,12 +1795,6 @@
       "worktree": "Worktree",
       "lockedHint": "Bu oturum için Worktree kilitli"
     },
-    "batchStarterPlaceholder": "Bu session starter'ı açıklayın",
-    "addBatchStarter": "Starter ekle",
-    "removeBatchStarter": "Starter kaldır",
-    "batchSendSuccess": "{{count}} session başarıyla oluşturuldu",
-    "batchSendPartial": "{{succeeded}} session başarıyla oluşturuldu; {{failed}} başarısız",
-    "batchSend": "Toplu gönder",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",

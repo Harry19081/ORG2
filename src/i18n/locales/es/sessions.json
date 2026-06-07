@@ -1645,7 +1645,6 @@
       "createAgent": "Crear Agent / Skill",
       "project": "Crear proyecto",
       "workItem": "Crear Work Item",
-      "batchStartBeta": "Inicio por lotes (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Buscar modelos...",
@@ -1796,12 +1795,6 @@
       "worktree": "Worktree",
       "lockedHint": "El Worktree está bloqueado para esta sesión"
     },
-    "batchStarterPlaceholder": "Describir este session starter",
-    "addBatchStarter": "Agregar starter",
-    "removeBatchStarter": "Eliminar starter",
-    "batchSendSuccess": "{{count}} sesiones creadas correctamente",
-    "batchSendPartial": "{{succeeded}} sesiones creadas correctamente; {{failed}} fallidas",
-    "batchSend": "Enviar lote",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",

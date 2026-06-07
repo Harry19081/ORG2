@@ -189,7 +189,6 @@ export function ChatPanelEmptyContent({
         centerFullScreenContent
         hidePresenceButton
         onRegionNoticeChange={handleRegionNoticeChange}
-        batchStartMode={createTarget === CHAT_PANEL_CREATE_TARGET.BATCH_START}
       />
     );
   }

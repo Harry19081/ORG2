@@ -65,11 +65,6 @@ export function useChatPanelCreateTarget({
         label: t("creator.createTarget.benchmark"),
         dataTestId: "chat-panel-create-target-benchmark-option",
       },
-      {
-        value: CHAT_PANEL_CREATE_TARGET.BATCH_START,
-        label: t("creator.createTarget.batchStartBeta"),
-        dataTestId: "chat-panel-create-target-batch-start-option",
-      },
     ],
     [t]
   );

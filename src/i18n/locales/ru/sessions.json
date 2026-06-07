@@ -1651,7 +1651,6 @@
       "createAgent": "Создать Agent / Skill",
       "project": "Создать проект",
       "workItem": "Создать Work Item",
-      "batchStartBeta": "Пакетный запуск (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Поиск моделей...",
@@ -1802,12 +1801,6 @@
       "worktree": "Worktree",
       "lockedHint": "Worktree заблокирован для этой сессии"
     },
-    "batchStarterPlaceholder": "Опишите этот session starter",
-    "addBatchStarter": "Добавить starter",
-    "removeBatchStarter": "Удалить starter",
-    "batchSendSuccess": "Успешно создано session: {{count}}",
-    "batchSendPartial": "Успешно создано session: {{succeeded}}; ошибок: {{failed}}",
-    "batchSend": "Отправить пакет",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",

@@ -1645,7 +1645,6 @@
       "createAgent": "Agent / Skill を作成",
       "project": "プロジェクトを作成",
       "workItem": "Work Item を作成",
-      "batchStartBeta": "Batch start (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "モデルを検索...",
@@ -1796,12 +1795,6 @@
       "worktree": "Worktree",
       "lockedHint": "このセッションでは Worktree がロックされています"
     },
-    "batchStarterPlaceholder": "この session starter を説明",
-    "addBatchStarter": "Starter を追加",
-    "removeBatchStarter": "Starter を削除",
-    "batchSendSuccess": "{{count}} 個の session を作成しました",
-    "batchSendPartial": "{{succeeded}} 個の session を作成しました。{{failed}} 個失敗",
-    "batchSend": "Batch send",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",

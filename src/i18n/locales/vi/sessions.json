@@ -1645,7 +1645,6 @@
       "createAgent": "Tạo Agent / Skill",
       "project": "Tạo dự án",
       "workItem": "Tạo Work Item",
-      "batchStartBeta": "Khởi động hàng loạt (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Tìm kiếm mô hình...",
@@ -1796,12 +1795,6 @@
       "worktree": "Worktree",
       "lockedHint": "Worktree đã được khóa cho phiên này"
     },
-    "batchStarterPlaceholder": "Mô tả session starter này",
-    "addBatchStarter": "Thêm starter",
-    "removeBatchStarter": "Xóa starter",
-    "batchSendSuccess": "Đã tạo thành công {{count}} session",
-    "batchSendPartial": "Đã tạo thành công {{succeeded}} session; {{failed}} thất bại",
-    "batchSend": "Gửi hàng loạt",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",

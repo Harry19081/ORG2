@@ -1645,7 +1645,6 @@
       "createAgent": "Agent / Skill 만들기",
       "project": "프로젝트 만들기",
       "workItem": "Work Item 만들기",
-      "batchStartBeta": "Batch start (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "모델 검색...",
@@ -1796,12 +1795,6 @@
       "worktree": "Worktree",
       "lockedHint": "이 세션에서 Worktree가 잠겨 있습니다"
     },
-    "batchStarterPlaceholder": "이 session starter 설명",
-    "addBatchStarter": "Starter 추가",
-    "removeBatchStarter": "Starter 제거",
-    "batchSendSuccess": "{{count}}개 session 생성 성공",
-    "batchSendPartial": "{{succeeded}}개 session 생성 성공; {{failed}}개 실패",
-    "batchSend": "Batch send",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",

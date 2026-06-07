@@ -229,7 +229,6 @@ export const CHAT_PANEL_CREATE_TARGET = {
   CREATE_AGENT: "createAgent",
   PROJECT: "project",
   WORK_ITEM: "workItem",
-  BATCH_START: "batchStart",
   BENCHMARK: "benchmark",
 } as const;
 
