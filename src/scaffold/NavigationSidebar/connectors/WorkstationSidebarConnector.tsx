@@ -1,5 +1,7 @@
 import { RenameModal } from "@/src/scaffold/ModalSystem/variants";
+import { atom } from "jotai";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import {
   Code,
   FolderTree,
@@ -7,7 +9,11 @@ import {
   House,
   ListTodo,
   MessageCircle,
+  MoreHorizontal,
+  Pin,
+  PinOff,
   Search,
+  X,
 } from "lucide-react";
 import React, {
   useCallback,
@@ -33,7 +39,10 @@ import {
 } from "@src/hooks/navigation/useAppNavigation";
 import { SIDEBAR_MEMORY_KIND, useSidebarMemoryEntry } from "@src/hooks/perf";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
-import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
+import type {
+  NavigationMenuItem,
+  NavigationMenuRowAction,
+} from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { benchmarkAgentBatchStatusAtom } from "@src/store/benchmark";
 import {
   type Repo,
@@ -79,6 +88,7 @@ import {
   opsControlPeekHostAtom,
 } from "@src/store/workstation";
 import type { WorkspaceFolder } from "@src/types/workspace";
+import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
 import { SidebarBottomBar } from "../blocks";
 import NavigationSidebar from "../variants/NavigationSidebar";
@@ -88,6 +98,7 @@ import {
   PROJECTS_NEW_PROJECT_MENU_ITEM_ID,
   PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID,
   STICKY_NOTES_MENU_ITEM_ID,
+  getDraftIdFromMenuItemId,
 } from "./sidebarConnectorUtils";
 import {
   projectsSidebarGroupByAtom,
@@ -131,8 +142,36 @@ type WorkstationSidebarKey = "folders" | "workstation" | "projects";
 
 const FOLDERS_WORKSPACES_SECTION_ID = "separator-folders-workspaces";
 const FOLDERS_REPOS_SECTION_ID = "separator-folders-repos";
+const FOLDERS_PINNED_SECTION_ID = "separator-folders-pinned";
 const FOLDERS_WORKSPACE_ITEM_PREFIX = "folders-workspace:";
 const FOLDERS_REPO_ITEM_PREFIX = "folders-repo:";
+const PINNED_FOLDERS_STORAGE_KEY = "orgii:navigationSidebar:pinnedFolders";
+
+interface PinnedFolderTarget {
+  kind: "workspace" | "repo";
+  id: string;
+}
+
+const pinnedFolderTargetsAtom = atomWithStorage<PinnedFolderTarget[]>(
+  PINNED_FOLDERS_STORAGE_KEY,
+  []
+);
+
+const pinnedFolderTargetSetAtom = atom<ReadonlySet<string>>((get) => {
+  return new Set(
+    get(pinnedFolderTargetsAtom).map((target) => `${target.kind}:${target.id}`)
+  );
+});
+
+function getPinnedFolderTargetKey(target: PinnedFolderTarget): string {
+  return `${target.kind}:${target.id}`;
+}
+
+function getFolderItemId(target: PinnedFolderTarget): string {
+  return target.kind === "workspace"
+    ? `${FOLDERS_WORKSPACE_ITEM_PREFIX}${target.id}`
+    : `${FOLDERS_REPO_ITEM_PREFIX}${target.id}`;
+}
 
 function getRepoDisplayName(repo: Repo): string {
   return repo.name || repo.path?.split("/").pop() || "Repo";
@@ -231,6 +270,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const { goToStartPage, goToNewSession, navigateTo } = useAppNavigation();
   const [activeSidebarKey, setActiveSidebarKey] =
     useState<WorkstationSidebarKey>("workstation");
+  const [activeSessionMoreMenuId, setActiveSessionMoreMenuId] = useState("");
   const [projectsSelectedMenuItemId, setProjectsSelectedMenuItemId] =
     useState("");
 
@@ -278,6 +318,10 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
   const savedWorkspaces = useAtomValue(savedWorkspacesAtom);
   const activeWorkspaceId = useAtomValue(activeWorkspaceIdAtom);
+  const [pinnedFolderTargets, setPinnedFolderTargets] = useAtom(
+    pinnedFolderTargetsAtom
+  );
+  const pinnedFolderTargetKeys = useAtomValue(pinnedFolderTargetSetAtom);
   const dispatchSetWorkspaceFolders = useSetAtom(setWorkspaceFoldersAtom);
   const setActiveWorkspaceName = useSetAtom(activeWorkspaceNameAtom);
   const { selectRepo } = useRepoSelection({ autoLoad: false });
@@ -330,6 +374,9 @@ export const WorkstationSidebarConnector: React.FC = () => {
 
   const untitledSession = t("sidebar.defaults.untitledSession");
   const newSessionLabel = t("labels.newSession");
+  const pinnedLabel = tCommon("sessions:chat.historyPinned", "Pinned");
+  const pinFolderLabel = tCommon("sessions:chat.pinSession", "Pin");
+  const unpinFolderLabel = tCommon("sessions:chat.unpinSession", "Unpin");
   const createProjectLabel = tProjects("projects.createProject");
   const createWorkItemLabel = tProjects("workItems.createWorkItem");
   const homeLabel = t("sidebar.tabs.build");
@@ -405,10 +452,104 @@ export const WorkstationSidebarConnector: React.FC = () => {
     [draftMenuItems, menuItems]
   );
 
+  const handleTogglePinnedFolderTarget = useCallback(
+    (target: PinnedFolderTarget) => {
+      const targetKey = getPinnedFolderTargetKey(target);
+      setPinnedFolderTargets((previousTargets) => {
+        if (
+          previousTargets.some(
+            (previousTarget) =>
+              getPinnedFolderTargetKey(previousTarget) === targetKey
+          )
+        ) {
+          return previousTargets.filter(
+            (previousTarget) =>
+              getPinnedFolderTargetKey(previousTarget) !== targetKey
+          );
+        }
+        return [...previousTargets, target];
+      });
+    },
+    [setPinnedFolderTargets]
+  );
+
+  const createFolderMenuItem = useCallback(
+    (target: PinnedFolderTarget): NavigationMenuItem | null => {
+      const itemId = getFolderItemId(target);
+      const isPinned = pinnedFolderTargetKeys.has(
+        getPinnedFolderTargetKey(target)
+      );
+      const rowActionLabel = isPinned ? unpinFolderLabel : pinFolderLabel;
+      if (target.kind === "workspace") {
+        const workspace = savedWorkspaces.find(
+          (candidate) => candidate.workspaceId === target.id
+        );
+        if (!workspace) return null;
+        const folderCount = workspace.folders.length;
+        return {
+          id: itemId,
+          key: itemId,
+          label: workspace.name,
+          icon: FolderTree,
+          iconName: "folder-tree",
+          shortcut: getWorkspaceFolderCountLabel(folderCount),
+          showMoreActions: true,
+          rowActionIcon: isPinned ? PinOff : Pin,
+          rowActionLabel,
+          onRowActionClick: () => handleTogglePinnedFolderTarget(target),
+        };
+      }
+
+      const repo = repos.find((candidate) => candidate.id === target.id);
+      if (!repo) return null;
+      return {
+        id: itemId,
+        key: itemId,
+        label: getRepoDisplayName(repo),
+        icon: Code,
+        iconName: "code",
+        showMoreActions: true,
+        rowActionIcon: isPinned ? PinOff : Pin,
+        rowActionLabel,
+        onRowActionClick: () => handleTogglePinnedFolderTarget(target),
+      };
+    },
+    [
+      handleTogglePinnedFolderTarget,
+      pinFolderLabel,
+      pinnedFolderTargetKeys,
+      repos,
+      savedWorkspaces,
+      unpinFolderLabel,
+    ]
+  );
+
   const foldersSidebarMenuItems = useMemo<NavigationMenuItem[]>(() => {
     const items: NavigationMenuItem[] = [];
+    const pinnedItems = pinnedFolderTargets
+      .map(createFolderMenuItem)
+      .filter((item): item is NavigationMenuItem => Boolean(item));
 
-    if (savedWorkspaces.length > 0) {
+    if (pinnedItems.length > 0) {
+      items.push({
+        id: FOLDERS_PINNED_SECTION_ID,
+        key: FOLDERS_PINNED_SECTION_ID,
+        label: pinnedLabel,
+      });
+      items.push(...pinnedItems);
+    }
+
+    const workspaceItems = savedWorkspaces
+      .filter(
+        (workspace) =>
+          !pinnedFolderTargetKeys.has(`workspace:${workspace.workspaceId}`)
+      )
+      .map((workspace) =>
+        createFolderMenuItem({ kind: "workspace", id: workspace.workspaceId })
+      )
+      .filter((item): item is NavigationMenuItem => Boolean(item));
+
+    if (workspaceItems.length > 0) {
       items.push({
         id: FOLDERS_WORKSPACES_SECTION_ID,
         key: FOLDERS_WORKSPACES_SECTION_ID,
@@ -417,38 +558,31 @@ export const WorkstationSidebarConnector: React.FC = () => {
           "Multi-Repo Workspace"
         ),
       });
-      items.push(
-        ...savedWorkspaces.map((workspace) => {
-          const folderCount = workspace.folders.length;
-          return {
-            id: `${FOLDERS_WORKSPACE_ITEM_PREFIX}${workspace.workspaceId}`,
-            key: `${FOLDERS_WORKSPACE_ITEM_PREFIX}${workspace.workspaceId}`,
-            label: workspace.name,
-            icon: FolderTree,
-            iconName: "folder-tree",
-            shortcut: getWorkspaceFolderCountLabel(folderCount),
-          } satisfies NavigationMenuItem;
-        })
-      );
+      items.push(...workspaceItems);
     }
+
+    const repoItems = repos
+      .filter((repo) => !pinnedFolderTargetKeys.has(`repo:${repo.id}`))
+      .map((repo) => createFolderMenuItem({ kind: "repo", id: repo.id }))
+      .filter((item): item is NavigationMenuItem => Boolean(item));
 
     items.push({
       id: FOLDERS_REPOS_SECTION_ID,
       key: FOLDERS_REPOS_SECTION_ID,
       label: t("common:selectors.spotlight.paramLabels.repo"),
     });
-    items.push(
-      ...repos.map((repo) => ({
-        id: `${FOLDERS_REPO_ITEM_PREFIX}${repo.id}`,
-        key: `${FOLDERS_REPO_ITEM_PREFIX}${repo.id}`,
-        label: getRepoDisplayName(repo),
-        icon: Code,
-        iconName: "code",
-      }))
-    );
+    items.push(...repoItems);
 
     return items;
-  }, [repos, resolveWorkspaceRepoName, savedWorkspaces, t]);
+  }, [
+    createFolderMenuItem,
+    pinnedFolderTargetKeys,
+    pinnedFolderTargets,
+    pinnedLabel,
+    repos,
+    savedWorkspaces,
+    t,
+  ]);
 
   const projectsSidebarMenuItems = projectsWorkItemMenuItems;
 
@@ -480,12 +614,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
       : activeSidebarKey === "folders"
         ? []
         : sessionPinnedMenuItems;
-  const sidebarMenuItems =
-    activeSidebarKey === "projects"
-      ? projectsSidebarMenuItems
-      : activeSidebarKey === "folders"
-        ? foldersSidebarMenuItems
-        : sessionSidebarMenuItems;
 
   const selectedDraftMenuItemId = getSelectedDraftMenuItemId(
     activeSessionCreatorDraftId,
@@ -635,6 +763,82 @@ export const WorkstationSidebarConnector: React.FC = () => {
     tCommon,
   });
 
+  const decorateSessionRowActions = useCallback(
+    (items: readonly NavigationMenuItem[]): NavigationMenuItem[] =>
+      items.map((item) => {
+        const draftId = getDraftIdFromMenuItemId(item.id);
+        if (draftId) {
+          return {
+            ...item,
+            showMoreActions: true,
+            rowActions: [
+              {
+                icon: X,
+                label: tCommon("sessions:sidebar.removeDraft", "Remove draft"),
+                onClick: () => deleteSessionCreatorDraft(draftId),
+              },
+            ],
+          };
+        }
+
+        const session = sessionMap.get(item.id);
+        if (!session) return item;
+        const rowActions: NavigationMenuRowAction[] = [
+          {
+            icon: session.pinned ? PinOff : Pin,
+            label: session.pinned ? unpinFolderLabel : pinFolderLabel,
+            onClick: () => {
+              void handleTogglePin(item.id);
+            },
+          },
+        ];
+        if (!isCursorIdeSession(item.id)) {
+          rowActions.push({
+            icon: MoreHorizontal,
+            label: tCommon("actions.more"),
+            active: activeSessionMoreMenuId === item.id,
+            onClick: (event) => {
+              setActiveSessionMoreMenuId(item.id);
+              void handleMenuItemContextMenu(event, item.key, item).finally(
+                () => {
+                  setActiveSessionMoreMenuId((currentId) =>
+                    currentId === item.id ? "" : currentId
+                  );
+                }
+              );
+            },
+          });
+        }
+        return {
+          ...item,
+          showMoreActions: true,
+          rowActions,
+        };
+      }),
+    [
+      activeSessionMoreMenuId,
+      deleteSessionCreatorDraft,
+      handleMenuItemContextMenu,
+      handleTogglePin,
+      pinFolderLabel,
+      sessionMap,
+      tCommon,
+      unpinFolderLabel,
+    ]
+  );
+
+  const decoratedSessionSidebarMenuItems = useMemo(
+    () => decorateSessionRowActions(sessionSidebarMenuItems),
+    [decorateSessionRowActions, sessionSidebarMenuItems]
+  );
+
+  const sidebarMenuItems =
+    activeSidebarKey === "projects"
+      ? projectsSidebarMenuItems
+      : activeSidebarKey === "folders"
+        ? foldersSidebarMenuItems
+        : decoratedSessionSidebarMenuItems;
+
   const handleFoldersMenuItemClick = useCallback(
     (_key: string, item: NavigationMenuItem) => {
       const workspaceId = item.id.startsWith(FOLDERS_WORKSPACE_ITEM_PREFIX)
@@ -656,7 +860,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         }));
         dispatchSetWorkspaceFolders(folders, workspace.workspaceId);
         setActiveWorkspaceName(workspace.name);
-        goToStartPage();
+        navigate(ROUTES.workStation.code.path);
         return;
       }
 
@@ -667,11 +871,11 @@ export const WorkstationSidebarConnector: React.FC = () => {
       selectRepo(repoId);
       dispatchSetWorkspaceFolders([], null);
       setActiveWorkspaceName(null);
-      goToStartPage();
+      navigate(ROUTES.workStation.code.path);
     },
     [
       dispatchSetWorkspaceFolders,
-      goToStartPage,
+      navigate,
       resolveWorkspaceRepoName,
       savedWorkspaces,
       selectRepo,

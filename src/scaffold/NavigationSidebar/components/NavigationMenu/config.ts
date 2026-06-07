@@ -4,6 +4,13 @@
 import type { LucideIcon } from "lucide-react";
 import type { MouseEvent, ReactNode } from "react";
 
+export interface NavigationMenuRowAction {
+  icon?: LucideIcon;
+  label: string;
+  active?: boolean;
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
+}
+
 /**
  * Navigation menu item configuration
  * Defines structure for menu items used in sidebar navigation
@@ -27,8 +34,9 @@ export interface NavigationMenuItem {
   /** Shows a chevron to indicate the row opens a deeper sidebar level. */
   showDrillDownIndicator?: boolean;
   visualTone?: "default" | "secondary";
-  /** Show a hover-only row action button that opens the item context menu. */
+  /** Show hover-only row action buttons. */
   showMoreActions?: boolean;
+  rowActions?: NavigationMenuRowAction[];
   rowActionIcon?: LucideIcon;
   rowActionLabel?: string;
   onRowActionClick?: (event: MouseEvent<HTMLButtonElement>) => void;

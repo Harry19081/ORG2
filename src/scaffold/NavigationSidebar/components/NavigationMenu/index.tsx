@@ -37,6 +37,81 @@ export interface NavigationMenuProps {
 // ============================================
 // NavigationMenu Component
 // ============================================
+interface NavigationMenuRowActionButtonProps {
+  icon?: NavigationMenuItem["rowActionIcon"];
+  label: string;
+  active?: boolean;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+function NavigationMenuRowActionButton({
+  icon,
+  label,
+  active = false,
+  onClick,
+}: NavigationMenuRowActionButtonProps): React.ReactElement {
+  const RowActionIcon = icon ?? MoreHorizontal;
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded transition-colors duration-150 hover:bg-fill-2 hover:text-text-1 focus:outline-none ${
+        active ? "text-primary-6" : "text-text-3"
+      }`}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClick(event);
+      }}
+    >
+      {React.createElement(RowActionIcon, {
+        size: 14,
+        strokeWidth: icon ? 2 : 1.75,
+      })}
+    </button>
+  );
+}
+
+interface NavigationMenuRowAccessorySlotProps {
+  persistentContent?: React.ReactNode;
+  hoverContent?: React.ReactNode;
+  actionContent?: React.ReactNode;
+}
+
+function NavigationMenuRowAccessorySlot({
+  persistentContent,
+  hoverContent,
+  actionContent,
+}: NavigationMenuRowAccessorySlotProps): React.ReactElement | null {
+  if (!persistentContent && !hoverContent && !actionContent) return null;
+
+  return (
+    <span className="ml-1 grid flex-shrink-0 items-center justify-end leading-none">
+      {persistentContent && (
+        <span className="col-start-1 row-start-1 inline-flex items-center justify-end leading-none transition-opacity duration-150 group-hover:pointer-events-none group-hover:opacity-0">
+          {persistentContent}
+        </span>
+      )}
+      {(hoverContent || actionContent) && (
+        <span className="pointer-events-none col-start-1 row-start-1 inline-flex max-w-0 items-center justify-end gap-1.5 overflow-hidden whitespace-nowrap opacity-0 transition-[max-width,opacity] duration-150 group-hover:pointer-events-auto group-hover:max-w-[11rem] group-hover:opacity-100">
+          {hoverContent && (
+            <span className="inline-flex max-w-[4rem] items-center justify-end overflow-hidden">
+              {hoverContent}
+            </span>
+          )}
+          {actionContent && (
+            <span className="inline-flex items-center justify-end gap-1">
+              {actionContent}
+            </span>
+          )}
+        </span>
+      )}
+    </span>
+  );
+}
+
 const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(
   ({
     items,
@@ -329,11 +404,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(
                 handleRowMouseEnter(e, item.routePath)
               }
             >
-              <div
-                className={`flex min-w-0 flex-1 items-center gap-3 transition-[padding] duration-150 ${
-                  !collapsed && item.showMoreActions ? "group-hover:pr-7" : ""
-                }`}
-              >
+              <div className="flex min-w-0 flex-1 items-center gap-3">
                 {renderIcon(
                   item.icon,
                   item.iconName,
@@ -366,63 +437,63 @@ const NavigationMenu: React.FC<NavigationMenuProps> = React.memo(
                 )}
               </div>
               {!collapsed && item.showMoreActions ? (
-                <>
-                  {item.trailingElement && (
-                    <span className="ml-1 inline-flex flex-shrink-0 items-center leading-none transition-opacity duration-150 group-hover:opacity-0">
-                      {item.trailingElement}
-                    </span>
-                  )}
-                  <span className="pointer-events-none absolute right-1.5 top-1/2 z-10 inline-flex -translate-y-1/2 items-center gap-1.5 opacity-0 transition-opacity duration-150 group-hover:pointer-events-auto group-hover:opacity-100">
-                    {item.shortcut && (
+                <NavigationMenuRowAccessorySlot
+                  persistentContent={item.trailingElement}
+                  hoverContent={
+                    item.shortcut ? (
                       <span className="max-w-[4rem] truncate text-[11px] text-text-2">
                         {item.shortcut}
                       </span>
-                    )}
-                    {(onMenuItemContextMenu || item.onRowActionClick) && (
-                      <button
-                        type="button"
-                        aria-label={item.rowActionLabel ?? t("actions.more")}
-                        title={item.rowActionLabel ?? t("actions.more")}
-                        className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-text-3 transition-colors duration-150 hover:bg-fill-2 hover:text-text-1 focus:outline-none"
-                        onClick={(e) => handleRowActionClick(e, item)}
-                      >
-                        {React.createElement(
-                          item.rowActionIcon ?? MoreHorizontal,
-                          {
-                            size: 14,
-                            strokeWidth: item.rowActionIcon ? 2 : 1.75,
-                          }
-                        )}
-                      </button>
-                    )}
-                  </span>
-                </>
+                    ) : undefined
+                  }
+                  actionContent={
+                    item.rowActions?.length ? (
+                      item.rowActions.map((action) => (
+                        <NavigationMenuRowActionButton
+                          key={action.label}
+                          icon={action.icon}
+                          label={action.label}
+                          active={action.active}
+                          onClick={action.onClick}
+                        />
+                      ))
+                    ) : onMenuItemContextMenu || item.onRowActionClick ? (
+                      <NavigationMenuRowActionButton
+                        icon={item.rowActionIcon}
+                        label={item.rowActionLabel ?? t("actions.more")}
+                        onClick={(event) => handleRowActionClick(event, item)}
+                      />
+                    ) : undefined
+                  }
+                />
               ) : (
                 !collapsed &&
                 (item.shortcut ||
                   item.trailingElement ||
                   item.showDrillDownIndicator) && (
-                  <span className="ml-1 inline-flex flex-shrink-0 items-center gap-1.5 leading-none">
-                    {item.shortcut && (
-                      <span className="max-w-0 overflow-hidden whitespace-nowrap text-[11px] text-text-3 opacity-0 transition-[max-width,opacity] duration-150 group-hover:max-w-[4.5rem] group-hover:opacity-100">
-                        {item.shortcut}
-                      </span>
-                    )}
-                    {item.trailingElement && (
-                      <span className="inline-flex flex-shrink-0 items-center leading-none">
+                  <NavigationMenuRowAccessorySlot
+                    persistentContent={
+                      <>
                         {item.trailingElement}
-                      </span>
-                    )}
-                    {item.showDrillDownIndicator && (
-                      <ChevronRight
-                        size={13}
-                        strokeWidth={2}
-                        className={
-                          isSelected ? "text-primary-6" : "text-text-3"
-                        }
-                      />
-                    )}
-                  </span>
+                        {item.showDrillDownIndicator && (
+                          <ChevronRight
+                            size={13}
+                            strokeWidth={2}
+                            className={
+                              isSelected ? "text-primary-6" : "text-text-3"
+                            }
+                          />
+                        )}
+                      </>
+                    }
+                    hoverContent={
+                      item.shortcut ? (
+                        <span className="max-w-[4.5rem] truncate text-[11px] text-text-3">
+                          {item.shortcut}
+                        </span>
+                      ) : undefined
+                    }
+                  />
                 )
               )}
             </div>
