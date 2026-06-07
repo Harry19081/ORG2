@@ -1100,7 +1100,10 @@
       "selectAccount": "계정 선택"
     },
     "modelProperties": {
-      "options": "옵션"
+      "options": "옵션",
+      "effort": "Effort",
+      "faster": "더 빠르게",
+      "smarter": "더 똑똑하게"
     },
     "repo": {
       "workspaceFolders": "Workspace 폴더",

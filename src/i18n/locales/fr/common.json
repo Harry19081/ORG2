@@ -1099,7 +1099,10 @@
       "selectAccount": "Sélectionner un compte"
     },
     "modelProperties": {
-      "options": "Options"
+      "options": "Options",
+      "effort": "Effort",
+      "faster": "Plus rapide",
+      "smarter": "Plus intelligent"
     },
     "repo": {
       "workspaceFolders": "Dossiers du Workspace",

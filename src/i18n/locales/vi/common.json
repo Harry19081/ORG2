@@ -1100,7 +1100,10 @@
       "selectAccount": "Chọn tài khoản"
     },
     "modelProperties": {
-      "options": "Tùy chọn"
+      "options": "Tùy chọn",
+      "effort": "Effort",
+      "faster": "Nhanh hơn",
+      "smarter": "Thông minh hơn"
     },
     "repo": {
       "workspaceFolders": "Thư mục Workspace",

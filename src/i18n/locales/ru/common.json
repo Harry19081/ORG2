@@ -1099,7 +1099,10 @@
       "selectAccount": "Выберите аккаунт"
     },
     "modelProperties": {
-      "options": "Параметры"
+      "options": "Параметры",
+      "effort": "Усилие",
+      "faster": "Быстрее",
+      "smarter": "Умнее"
     },
     "repo": {
       "workspaceFolders": "Папки Workspace",

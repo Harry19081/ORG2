@@ -19,7 +19,7 @@
  * selection from `value` when it opens, and only calls `onApply` when
  * the user confirms.
  */
-import { Brain, Check, Zap } from "lucide-react";
+import { Brain, Zap } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -30,6 +30,7 @@ import {
   DROPDOWN_ITEM,
   DROPDOWN_PANEL,
 } from "@src/components/Dropdown/exports";
+import Slider from "@src/components/Slider";
 import Switch from "@src/components/Switch";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
@@ -43,7 +44,7 @@ import {
 
 const SIDE_PANEL_GAP = 8;
 const MODEL_PROPERTIES_PANEL_WIDTH = 260;
-const MODEL_PROPERTIES_PANEL_EST_HEIGHT = 316;
+const MODEL_PROPERTIES_PANEL_EST_HEIGHT = 276;
 const VIEWPORT_MARGIN = 12;
 const SIDE_PANEL_ANCHOR_CHANGE_EVENT = "dropdown-side-panel-anchor-change";
 const MODEL_PROPERTIES_CLOSE_EVENT = "model-properties-dropdown-close";
@@ -451,41 +452,16 @@ export const ModelPropertiesDropdown: React.FC<
       onMouseDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
     >
-      {/* Effort / Reasoning section (above Options). Each level is a
-          selectable row indicating the currently-applied effort. The
-          row's `disabled` state is no longer driven by the Thinking
-          switch — Thinking is now a parallel orthogonal toggle below. */}
+      {/* Effort / Reasoning section (above Options). The lightweight
+          slider keeps the same discrete model variants while making the
+          choice feel faster than a menu of rows. */}
       {variantOptions.availableLevels.length > 0 && (
         <div className={DROPDOWN_CLASSES.sectionContainer}>
-          <div className={DROPDOWN_CLASSES.sectionLabel}>Effort</div>
-          {variantOptions.availableLevels.map((level) => {
-            const isSelected = draft.level === level;
-            return (
-              <button
-                key={level}
-                type="button"
-                onClick={() => handleLevelSelect(level)}
-                className={[
-                  DROPDOWN_CLASSES.item,
-                  DROPDOWN_CLASSES.itemHover,
-                  "w-full justify-between text-left",
-                  isSelected && DROPDOWN_CLASSES.itemSelected,
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                <span className="flex-1 truncate">
-                  {formatReasoningLevel(level)}
-                </span>
-                {isSelected && (
-                  <Check
-                    size={DROPDOWN_ITEM.iconSize}
-                    className="shrink-0 text-primary-6"
-                  />
-                )}
-              </button>
-            );
-          })}
+          <EffortSlider
+            levels={variantOptions.availableLevels}
+            value={draft.level}
+            onChange={handleLevelSelect}
+          />
         </div>
       )}
 
@@ -549,6 +525,91 @@ export const ModelPropertiesDropdown: React.FC<
 };
 
 // ============ INTERNAL ============
+
+interface EffortSliderProps {
+  levels: readonly ModelReasoningLevel[];
+  value: ModelReasoningLevel | undefined;
+  onChange: (level: ModelReasoningLevel) => void;
+}
+
+const EffortSlider: React.FC<EffortSliderProps> = ({
+  levels,
+  value,
+  onChange,
+}) => {
+  const { t } = useTranslation();
+  const selectedIndex = levels.findIndex((level) => level === value);
+  const safeSelectedIndex = selectedIndex === -1 ? 0 : selectedIndex;
+  const maxIndex = Math.max(0, levels.length - 1);
+  const selectedLevel = levels[safeSelectedIndex];
+
+  const handleChange = (nextValue: number | [number, number]) => {
+    if (Array.isArray(nextValue)) return;
+    const nextLevel = levels[nextValue];
+    if (nextLevel) {
+      onChange(nextLevel);
+    }
+  };
+
+  return (
+    <div className="px-1.5 py-2.5">
+      <div className="mb-2">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-text-3">
+          {t("selectors.modelProperties.effort", {
+            defaultValue: "Effort",
+          })}
+        </div>
+        <div className="pt-3 text-[13px] font-medium text-primary-6">
+          {selectedLevel ? formatReasoningLevel(selectedLevel) : "—"}
+        </div>
+      </div>
+      <div className="px-2 pb-1 pt-2">
+        <div className="relative">
+          <Slider
+            value={safeSelectedIndex}
+            min={0}
+            max={maxIndex}
+            step={1}
+            showTooltip={false}
+            noPadding
+            handleBordered
+            onChange={handleChange}
+          />
+          <div className="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center justify-between">
+            {levels.map((level, index) => {
+              const isSelected = index === safeSelectedIndex;
+              const isPassed = index < safeSelectedIndex;
+              const dotColor = isSelected
+                ? "bg-primary-6"
+                : isPassed
+                  ? "bg-primary-5"
+                  : "bg-text-4";
+              return (
+                <span
+                  key={level}
+                  className={`h-1.5 w-1.5 rounded-full transition-colors ${dotColor}`}
+                  aria-hidden="true"
+                />
+              );
+            })}
+          </div>
+        </div>
+        <div className="mt-4 flex w-full items-center justify-between text-[13px] text-text-2">
+          <span>
+            {t("selectors.modelProperties.faster", {
+              defaultValue: "Faster",
+            })}
+          </span>
+          <span>
+            {t("selectors.modelProperties.smarter", {
+              defaultValue: "Smarter",
+            })}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface SwitchRowProps {
   icon?: React.ReactNode;

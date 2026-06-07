@@ -1091,7 +1091,10 @@
       "selectAccount": "Selecionar uma conta"
     },
     "modelProperties": {
-      "options": "Opções"
+      "options": "Opções",
+      "effort": "Esforço",
+      "faster": "Mais rápido",
+      "smarter": "Mais inteligente"
     },
     "shared": {
       "repo": "Repo",

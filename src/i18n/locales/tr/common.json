@@ -1100,7 +1100,10 @@
       "selectAccount": "Hesap seç"
     },
     "modelProperties": {
-      "options": "Seçenekler"
+      "options": "Seçenekler",
+      "effort": "Çaba",
+      "faster": "Daha hızlı",
+      "smarter": "Daha akıllı"
     },
     "repo": {
       "workspaceFolders": "Workspace Klasörleri",

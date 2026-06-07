@@ -1099,7 +1099,10 @@
       "selectAccount": "Seleccionar una cuenta"
     },
     "modelProperties": {
-      "options": "Opciones"
+      "options": "Opciones",
+      "effort": "Esfuerzo",
+      "faster": "Más rápido",
+      "smarter": "Más inteligente"
     },
     "repo": {
       "workspaceFolders": "Carpetas del Workspace",
