@@ -1,7 +1,7 @@
 /**
  * SpotlightShellChrome
  *
- * Low-level chrome for SpotlightShell: Glass panel + optional portal +
+ * Low-level chrome for SpotlightShell: simple panel + optional portal +
  * backdrop + viewport-centered positioning + footer slot beneath the panel.
  *
  * This is a direct merge of the previous SelectorContainer + SpotlightPortal
@@ -10,11 +10,9 @@
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
-import Glass from "@src/components/Glass";
-import type { MaterialThickness } from "@src/components/Glass/config";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
 
-import { SPOTLIGHT_CONFIG, SPOTLIGHT_GLASS_PANEL_CLASS } from "../constants";
+import { SPOTLIGHT_CONFIG } from "../constants";
 import { SPOTLIGHT_STYLES } from "../styles";
 
 // ============ TYPES ============
@@ -25,7 +23,6 @@ export interface SpotlightShellChromeProps {
   asPortal: boolean;
   stopPropagation: boolean;
   width: number;
-  material: MaterialThickness;
   footer: React.ReactNode;
   children: React.ReactNode;
 }
@@ -38,7 +35,6 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
   asPortal,
   stopPropagation,
   width,
-  material,
   footer,
   children,
 }) => {
@@ -78,19 +74,16 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
 
   const panel = (
     <div ref={inputHostRef}>
-      <Glass
-        material={material}
-        className={SPOTLIGHT_GLASS_PANEL_CLASS}
+      <div
+        className="overflow-hidden rounded-2xl border border-border-2 bg-bg-2 shadow-xl"
         style={{
           width: "100%",
           maxWidth: `${width}px`,
         }}
-        radius={16}
-        enableSpecular={true}
         onClick={handlePanelClick}
       >
         {children}
-      </Glass>
+      </div>
     </div>
   );
 

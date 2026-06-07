@@ -11,9 +11,8 @@ import React from "react";
  * Shared props every palette accepts.
  *
  * Palettes are pure content — they render inside a SpotlightShell which
- * owns all visual chrome (glass, portal, width, footer). No material /
- * asPortal / width / className surface here on purpose: there is only one
- * shell style.
+ * owns all visual chrome (panel, portal, width, footer). No asPortal /
+ * width / className surface here on purpose: there is only one shell style.
  */
 export interface BasePaletteProps {
   isOpen: boolean;

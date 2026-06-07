@@ -1505,6 +1505,25 @@
     "ramFileTrees": "檔案樹",
     "ramCodeMirrors": "檔案渲染"
   },
+  "spotlightActions": {
+    "switchToLightTheme": "切換到淺色主題",
+    "switchToDarkTheme": "切換到深色主題",
+    "switchToHighContrastTheme": "切換到高對比度主題",
+    "moveMyStationChatLeft": "將我的工作站聊天移到左側",
+    "moveMyStationChatRight": "將我的工作站聊天移到右側",
+    "moveAgentStationChatLeft": "將 Agent 工作站聊天移到左側",
+    "moveAgentStationChatRight": "將 Agent 工作站聊天移到右側",
+    "enableChatPagination": "開啟聊天分頁",
+    "disableChatPagination": "關閉聊天分頁",
+    "useModelPickerSpotlight": "使用 Spotlight 模型選擇器",
+    "useModelPickerDropdown": "使用下拉式模型選擇器",
+    "useCompactWorkstationLayout": "使用緊湊工作站佈局",
+    "useComfortWorkstationLayout": "使用舒適工作站佈局",
+    "moveWorkstationSidebarLeft": "將工作站側邊欄移到左側",
+    "moveWorkstationSidebarRight": "將工作站側邊欄移到右側",
+    "enableDockAutoHide": "自動隱藏工作站 Dock",
+    "disableDockAutoHide": "一律顯示工作站 Dock"
+  },
   "commands": {
     "showBottomPanel": "顯示底部面板",
     "hideBottomPanel": "隱藏底部面板",

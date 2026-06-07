@@ -30,6 +30,15 @@ const CONTROL_CARDS: &[ControlCard] = &[
         ],
     },
     ControlCard {
+        id: "spotlight.destination.*",
+        kind: "actions",
+        summary: "Every page/wizard entry shown in Spotlight is also exposed as a GUI action named spotlight.destination.<destination-id>. Use gui.inspect to discover matching destination actions, then execute the destination action directly.",
+        call: r#"For model/API keys, use gui.inspect({ "query": "api key model provider" }) and execute the matching action, usually control_orgii({ "action": "gui.execute", "params": { "targetKind": "action", "actionId": "spotlight.destination.action-add-key", "params": {} } }). Other examples include spotlight.destination.action-add-mcp, spotlight.destination.action-add-agent, spotlight.destination.nav-int-models, and spotlight.destination.nav-settings-general."#,
+        terms: &[
+            "api key", "api keys", "key", "keys", "model provider", "model providers", "provider", "providers", "model key", "model keys", "add key", "add model", "wizard", "page", "settings page", "integrations", "destination",
+        ],
+    },
+    ControlCard {
         id: "theme.setLight/theme.setDark/theme.setHighContrast",
         kind: "actions",
         summary: "Switch ORGII appearance using discrete theme commands. Prefer these over parameterized theme operations.",

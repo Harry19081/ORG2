@@ -1504,6 +1504,25 @@
     "ramFileTrees": "Dateibäume",
     "ramCodeMirrors": "Datei-Rendering"
   },
+  "spotlightActions": {
+    "switchToLightTheme": "Zum hellen Design wechseln",
+    "switchToDarkTheme": "Zum dunklen Design wechseln",
+    "switchToHighContrastTheme": "Zum kontrastreichen Design wechseln",
+    "moveMyStationChatLeft": "My Station-Chat nach links verschieben",
+    "moveMyStationChatRight": "My Station-Chat nach rechts verschieben",
+    "moveAgentStationChatLeft": "Agent Station-Chat nach links verschieben",
+    "moveAgentStationChatRight": "Agent Station-Chat nach rechts verschieben",
+    "enableChatPagination": "Chat-Paginierung einschalten",
+    "disableChatPagination": "Chat-Paginierung ausschalten",
+    "useModelPickerSpotlight": "Spotlight-Modellauswahl verwenden",
+    "useModelPickerDropdown": "Dropdown-Modellauswahl verwenden",
+    "useCompactWorkstationLayout": "Kompaktes Workstation-Layout verwenden",
+    "useComfortWorkstationLayout": "Komfortables Workstation-Layout verwenden",
+    "moveWorkstationSidebarLeft": "Workstation-Seitenleiste nach links verschieben",
+    "moveWorkstationSidebarRight": "Workstation-Seitenleiste nach rechts verschieben",
+    "enableDockAutoHide": "Workstation-Dock automatisch ausblenden",
+    "disableDockAutoHide": "Workstation-Dock sichtbar halten"
+  },
   "commands": {
     "showBottomPanel": "Unteres Panel anzeigen",
     "hideBottomPanel": "Unteres Panel ausblenden",

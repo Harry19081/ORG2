@@ -115,6 +115,7 @@
     "uiScale": "Escala da interface",
     "timezoneAuto": "Automático (Navegador)",
     "timezoneSearchPlaceholder": "Pesquisar cidades próximas",
+    "language": "Idioma",
     "languageSearchPlaceholder": "Pesquisar idiomas...",
     "languageNames": {
       "en": "Inglês",

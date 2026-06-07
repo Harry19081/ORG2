@@ -115,6 +115,7 @@
     "uiScale": "UI-Skalierung",
     "timezoneAuto": "Automatisch (Browser)",
     "timezoneSearchPlaceholder": "Nächste Städte suchen",
+    "language": "Sprache",
     "languageSearchPlaceholder": "Sprachen suchen...",
     "languageNames": {
       "en": "Englisch",

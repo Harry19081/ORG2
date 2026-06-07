@@ -1499,6 +1499,25 @@
     "ramFileTrees": "Drzewa plików",
     "ramCodeMirrors": "Renderowanie plików"
   },
+  "spotlightActions": {
+    "switchToLightTheme": "Przełącz na jasny motyw",
+    "switchToDarkTheme": "Przełącz na ciemny motyw",
+    "switchToHighContrastTheme": "Przełącz na motyw wysokiego kontrastu",
+    "moveMyStationChatLeft": "Przenieś czat My Station na lewo",
+    "moveMyStationChatRight": "Przenieś czat My Station na prawo",
+    "moveAgentStationChatLeft": "Przenieś czat Agent Station na lewo",
+    "moveAgentStationChatRight": "Przenieś czat Agent Station na prawo",
+    "enableChatPagination": "Włącz stronicowanie czatu",
+    "disableChatPagination": "Wyłącz stronicowanie czatu",
+    "useModelPickerSpotlight": "Użyj wyboru modelu Spotlight",
+    "useModelPickerDropdown": "Użyj rozwijanego wyboru modelu",
+    "useCompactWorkstationLayout": "Użyj kompaktowego układu Workstation",
+    "useComfortWorkstationLayout": "Użyj wygodnego układu Workstation",
+    "moveWorkstationSidebarLeft": "Przenieś pasek boczny Workstation na lewo",
+    "moveWorkstationSidebarRight": "Przenieś pasek boczny Workstation na prawo",
+    "enableDockAutoHide": "Automatycznie ukrywaj Dock Workstation",
+    "disableDockAutoHide": "Zawsze pokazuj Dock Workstation"
+  },
   "commands": {
     "showBottomPanel": "Pokaż dolny panel",
     "hideBottomPanel": "Ukryj dolny panel",

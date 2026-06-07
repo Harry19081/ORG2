@@ -115,6 +115,7 @@
     "uiScale": "UI scale",
     "timezoneAuto": "Auto (Browser)",
     "timezoneSearchPlaceholder": "Search closest cities",
+    "language": "Language",
     "languageSearchPlaceholder": "Search languages...",
     "languageNames": {
       "en": "English",

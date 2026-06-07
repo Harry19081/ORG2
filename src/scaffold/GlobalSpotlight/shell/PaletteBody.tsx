@@ -4,8 +4,8 @@
  * Pure-content body for a palette: search bar + top slot + hint slot +
  * item list + after-list slot.
  *
- * NO chrome. NO Glass, NO portal, NO footer. The enclosing
- * SpotlightShell owns all of those. Palettes render <SpotlightShell>
+ * NO chrome, portal, or footer. The enclosing SpotlightShell owns those
+ * concerns. Palettes render <SpotlightShell>
  * <PaletteBody ... /></SpotlightShell>.
  */
 import React from "react";

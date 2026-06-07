@@ -1500,6 +1500,25 @@
     "ramFileTrees": "Cây tệp",
     "ramCodeMirrors": "File rendering"
   },
+  "spotlightActions": {
+    "switchToLightTheme": "Chuyển sang giao diện sáng",
+    "switchToDarkTheme": "Chuyển sang giao diện tối",
+    "switchToHighContrastTheme": "Chuyển sang giao diện tương phản cao",
+    "moveMyStationChatLeft": "Chuyển chat My Station sang trái",
+    "moveMyStationChatRight": "Chuyển chat My Station sang phải",
+    "moveAgentStationChatLeft": "Chuyển chat Agent Station sang trái",
+    "moveAgentStationChatRight": "Chuyển chat Agent Station sang phải",
+    "enableChatPagination": "Bật phân trang chat",
+    "disableChatPagination": "Tắt phân trang chat",
+    "useModelPickerSpotlight": "Dùng bộ chọn mô hình Spotlight",
+    "useModelPickerDropdown": "Dùng bộ chọn mô hình dạng menu",
+    "useCompactWorkstationLayout": "Dùng bố cục Workstation gọn",
+    "useComfortWorkstationLayout": "Dùng bố cục Workstation thoải mái",
+    "moveWorkstationSidebarLeft": "Chuyển thanh bên Workstation sang trái",
+    "moveWorkstationSidebarRight": "Chuyển thanh bên Workstation sang phải",
+    "enableDockAutoHide": "Tự động ẩn Dock Workstation",
+    "disableDockAutoHide": "Luôn hiển thị Dock Workstation"
+  },
   "commands": {
     "showBottomPanel": "Hiện bảng dưới",
     "hideBottomPanel": "Ẩn bảng dưới",

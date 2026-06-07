@@ -26,6 +26,10 @@ export {
   spotlightActionRegistration,
   spotlightZodActions,
 } from "./spotlightActions.zod";
+export {
+  spotlightNavigationActionRegistration,
+  spotlightNavigationZodActions,
+} from "./spotlightNavigationActions.zod";
 export { themeActionRegistration, themeZodActions } from "./themeActions.zod";
 export {
   appZoomActionRegistration,

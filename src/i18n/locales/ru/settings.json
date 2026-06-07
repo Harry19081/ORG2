@@ -115,6 +115,7 @@
     "uiScale": "Масштаб интерфейса",
     "timezoneAuto": "Авто (браузер)",
     "timezoneSearchPlaceholder": "Поиск ближайших городов",
+    "language": "Язык",
     "languageSearchPlaceholder": "Поиск языков...",
     "languageNames": {
       "en": "Английский",

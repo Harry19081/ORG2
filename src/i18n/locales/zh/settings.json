@@ -115,6 +115,7 @@
     "uiScale": "界面缩放",
     "timezoneAuto": "自动（浏览器）",
     "timezoneSearchPlaceholder": "搜索附近城市",
+    "language": "语言",
     "languageSearchPlaceholder": "搜索语言...",
     "languageNames": {
       "en": "英语",

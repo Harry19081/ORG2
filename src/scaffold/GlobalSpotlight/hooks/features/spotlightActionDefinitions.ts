@@ -218,7 +218,7 @@ export function buildThemeActions(
   if (currentThemeId !== "github-light") {
     actions.push({
       id: "set-light-theme",
-      labelKey: "settings:general.light",
+      labelKey: "common:spotlightActions.switchToLightTheme",
       icon: Sun,
       keywords: ["light theme", "light mode", "theme", "appearance"],
       actionId: ACTION_ID.THEME_SET_LIGHT,
@@ -230,7 +230,7 @@ export function buildThemeActions(
   if (currentThemeId !== "github-dark") {
     actions.push({
       id: "set-dark-theme",
-      labelKey: "settings:general.dark",
+      labelKey: "common:spotlightActions.switchToDarkTheme",
       icon: Moon,
       keywords: ["dark theme", "dark mode", "theme", "appearance"],
       actionId: ACTION_ID.THEME_SET_DARK,
@@ -242,7 +242,7 @@ export function buildThemeActions(
   if (currentThemeId !== "orgii-high-contrast") {
     actions.push({
       id: "set-high-contrast-theme",
-      labelKey: "settings:general.highContrast",
+      labelKey: "common:spotlightActions.switchToHighContrastTheme",
       icon: Contrast,
       keywords: [
         "high contrast",
@@ -286,8 +286,8 @@ export function buildChatPanelSettingsActions({
         : "set-my-station-chat-left",
     labelKey:
       myStationChatPosition === "left"
-        ? "common:layoutSettings.chatRight"
-        : "common:layoutSettings.chatLeft",
+        ? "common:spotlightActions.moveMyStationChatRight"
+        : "common:spotlightActions.moveMyStationChatLeft",
     icon: MessageCircle,
     keywords: [
       "my station chat",
@@ -310,8 +310,8 @@ export function buildChatPanelSettingsActions({
         : "set-agent-station-chat-left",
     labelKey:
       agentStationChatPosition === "left"
-        ? "common:layoutSettings.chatRight"
-        : "common:layoutSettings.chatLeft",
+        ? "common:spotlightActions.moveAgentStationChatRight"
+        : "common:spotlightActions.moveAgentStationChatLeft",
     icon: MessageCircle,
     keywords: [
       "agent station chat",
@@ -330,7 +330,9 @@ export function buildChatPanelSettingsActions({
     id: chatTurnPaginationEnabled
       ? "disable-chat-pagination"
       : "enable-chat-pagination",
-    labelKey: "common:layoutSettings.chatPanelPagination",
+    labelKey: chatTurnPaginationEnabled
+      ? "common:spotlightActions.disableChatPagination"
+      : "common:spotlightActions.enableChatPagination",
     icon: LayoutPanelTop,
     keywords: ["chat pagination", "turn pagination", "chat rounds"],
     actionId: chatTurnPaginationEnabled
@@ -347,8 +349,8 @@ export function buildChatPanelSettingsActions({
         : "use-model-picker-spotlight",
     labelKey:
       modelPickerStyle === "spotlight"
-        ? "common:layoutSettings.modelPickerMenu"
-        : "common:layoutSettings.modelPickerSpotlight",
+        ? "common:spotlightActions.useModelPickerDropdown"
+        : "common:spotlightActions.useModelPickerSpotlight",
     icon: modelPickerStyle === "spotlight" ? Menu : Sparkles,
     keywords: ["model picker", "model menu", "model spotlight", "picker"],
     actionId:
@@ -366,8 +368,8 @@ export function buildChatPanelSettingsActions({
         : "set-comfort-layout",
     labelKey:
       internalLayoutMode === "comfort"
-        ? "common:layoutSettings.compact"
-        : "common:layoutSettings.comfort",
+        ? "common:spotlightActions.useCompactWorkstationLayout"
+        : "common:spotlightActions.useComfortWorkstationLayout",
     icon: LayoutPanelLeft,
     keywords: ["layout mode", "compact layout", "comfort layout", "density"],
     actionId:
@@ -385,8 +387,8 @@ export function buildChatPanelSettingsActions({
         : "set-workstation-sidebar-left",
     labelKey:
       workstationSidebarPosition === "left"
-        ? "common:layoutSettings.right"
-        : "common:layoutSettings.left",
+        ? "common:spotlightActions.moveWorkstationSidebarRight"
+        : "common:spotlightActions.moveWorkstationSidebarLeft",
     icon: PanelLeft,
     keywords: [
       "workstation sidebar",
@@ -404,7 +406,9 @@ export function buildChatPanelSettingsActions({
 
   actions.push({
     id: dockAutoHide ? "disable-dock-auto-hide" : "enable-dock-auto-hide",
-    labelKey: "common:layoutSettings.dockAutoHide",
+    labelKey: dockAutoHide
+      ? "common:spotlightActions.disableDockAutoHide"
+      : "common:spotlightActions.enableDockAutoHide",
     icon: Dock,
     keywords: ["dock auto hide", "dock", "auto hide dock", "keep dock visible"],
     actionId: dockAutoHide

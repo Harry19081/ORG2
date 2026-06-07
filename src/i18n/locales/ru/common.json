@@ -1499,6 +1499,25 @@
     "ramFileTrees": "Деревья файлов",
     "ramCodeMirrors": "File rendering"
   },
+  "spotlightActions": {
+    "switchToLightTheme": "Переключиться на светлую тему",
+    "switchToDarkTheme": "Переключиться на тёмную тему",
+    "switchToHighContrastTheme": "Переключиться на тему высокого контраста",
+    "moveMyStationChatLeft": "Переместить чат My Station влево",
+    "moveMyStationChatRight": "Переместить чат My Station вправо",
+    "moveAgentStationChatLeft": "Переместить чат Agent Station влево",
+    "moveAgentStationChatRight": "Переместить чат Agent Station вправо",
+    "enableChatPagination": "Включить пагинацию чата",
+    "disableChatPagination": "Отключить пагинацию чата",
+    "useModelPickerSpotlight": "Использовать выбор модели через Spotlight",
+    "useModelPickerDropdown": "Использовать выпадающий выбор модели",
+    "useCompactWorkstationLayout": "Использовать компактную компоновку Workstation",
+    "useComfortWorkstationLayout": "Использовать комфортную компоновку Workstation",
+    "moveWorkstationSidebarLeft": "Переместить боковую панель Workstation влево",
+    "moveWorkstationSidebarRight": "Переместить боковую панель Workstation вправо",
+    "enableDockAutoHide": "Автоматически скрывать Dock Workstation",
+    "disableDockAutoHide": "Всегда показывать Dock Workstation"
+  },
   "commands": {
     "showBottomPanel": "Показать нижнюю панель",
     "hideBottomPanel": "Скрыть нижнюю панель",

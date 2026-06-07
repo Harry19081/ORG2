@@ -496,7 +496,7 @@ export function GuiControlToggle(): React.ReactNode {
   if (!open) return null;
 
   const elevatedShadowClass =
-    "!shadow-[0_18px_48px_rgba(0,0,0,0.24)] hover:!shadow-[0_18px_48px_rgba(0,0,0,0.24)] focus-within:!shadow-[0_18px_48px_rgba(0,0,0,0.24)] active:!shadow-[0_18px_48px_rgba(0,0,0,0.24)] dark:!shadow-[0_18px_56px_rgba(0,0,0,0.55)] dark:hover:!shadow-[0_18px_56px_rgba(0,0,0,0.55)] dark:focus-within:!shadow-[0_18px_56px_rgba(0,0,0,0.55)] dark:active:!shadow-[0_18px_56px_rgba(0,0,0,0.55)]";
+    "!shadow-[0_18px_48px_rgba(0,0,0,0.18)] hover:!shadow-[0_18px_48px_rgba(0,0,0,0.18)] focus-within:!shadow-[0_18px_48px_rgba(0,0,0,0.18)] active:!shadow-[0_18px_48px_rgba(0,0,0,0.18)] dark:!shadow-[0_22px_58px_rgba(0,0,0,0.48)] dark:hover:!shadow-[0_22px_58px_rgba(0,0,0,0.48)] dark:focus-within:!shadow-[0_22px_58px_rgba(0,0,0,0.48)] dark:active:!shadow-[0_22px_58px_rgba(0,0,0,0.48)]";
   const controlModelLabel = resolveControlModelLabel(creatorDefaultLastModel);
   const statusLabel =
     runStatus === "sending"
@@ -510,12 +510,9 @@ export function GuiControlToggle(): React.ReactNode {
   return (
     <div
       ref={containerRef}
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex flex-col items-center px-6 pb-6 pt-16"
+      className="fixed inset-x-0 bottom-0 z-[70] flex flex-col items-center px-6 pb-6 pt-16"
     >
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-bg-1/95 via-bg-1/70 to-transparent"
-        aria-hidden
-      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg-1 via-bg-1/70 to-transparent" />
       {showStatusLine && (
         <div
           className="pointer-events-auto z-10 mb-2 rounded-2xl border border-border-2 bg-bg-2 px-3 py-2 text-[12px] text-text-2 shadow-sm backdrop-blur"

@@ -27,6 +27,20 @@ const GUI_CONTROL_SELECTOR = [
 const MAX_DOM_CONTROLS = 160;
 const MAX_ACTIONS = 180;
 const MAX_TEXT_LENGTH = 140;
+const QUERY_STOP_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "bring",
+  "go",
+  "me",
+  "open",
+  "please",
+  "show",
+  "take",
+  "the",
+  "to",
+]);
 
 interface GuiManifestDomControl {
   kind: "dom";
@@ -60,6 +74,24 @@ function truncateText(value: string): string {
   return compact.length > MAX_TEXT_LENGTH
     ? `${compact.slice(0, MAX_TEXT_LENGTH - 1)}…`
     : compact;
+}
+
+function tokenizeQuery(query?: string): string[] {
+  return (query ?? "")
+    .toLowerCase()
+    .split(/[^\p{L}\p{N}]+/u)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 2 && !QUERY_STOP_WORDS.has(token));
+}
+
+function matchesQuery(haystack: string, tokens: string[]): boolean {
+  if (tokens.length === 0) return true;
+  const normalizedHaystack = haystack.toLowerCase();
+  const matchCount = tokens.filter((token) =>
+    normalizedHaystack.includes(token)
+  ).length;
+  const requiredMatches = Math.min(tokens.length, 2);
+  return matchCount >= requiredMatches;
 }
 
 function isElementVisible(element: Element): element is HTMLElement {
@@ -175,13 +207,12 @@ function buildDomControl(
 }
 
 function collectDomControls(query?: string): GuiManifestDomControl[] {
-  const normalizedQuery = query?.trim().toLowerCase() ?? "";
+  const queryTokens = tokenizeQuery(query);
   const elements = Array.from(document.querySelectorAll(GUI_CONTROL_SELECTOR));
   const controls = elements
     .filter(isElementVisible)
     .map(buildDomControl)
     .filter((control) => {
-      if (!normalizedQuery) return true;
       const haystack = [
         control.label,
         control.role,
@@ -190,9 +221,8 @@ function collectDomControls(query?: string): GuiManifestDomControl[] {
         control.tagName,
       ]
         .filter((part): part is string => Boolean(part))
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(normalizedQuery);
+        .join(" ");
+      return matchesQuery(haystack, queryTokens);
     })
     .slice(0, MAX_DOM_CONTROLS);
 
@@ -200,13 +230,12 @@ function collectDomControls(query?: string): GuiManifestDomControl[] {
 }
 
 function collectGuiActions(query?: string): GuiManifest["actions"] {
-  const normalizedQuery = query?.trim().toLowerCase() ?? "";
+  const queryTokens = tokenizeQuery(query);
   return zodActionRegistry
     .getGUIControlManifest()
     .actions.filter((action) => {
       if (action.id === ACTION_ID.GUI_INSPECT) return false;
       if (action.id === ACTION_ID.GUI_EXECUTE) return false;
-      if (!normalizedQuery) return true;
       const haystack = [
         action.id,
         action.category,
@@ -216,9 +245,8 @@ function collectGuiActions(query?: string): GuiManifest["actions"] {
         ...(action.examples ?? []),
       ]
         .filter((part): part is string => Boolean(part))
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(normalizedQuery);
+        .join(" ");
+      return matchesQuery(haystack, queryTokens);
     })
     .slice(0, MAX_ACTIONS);
 }

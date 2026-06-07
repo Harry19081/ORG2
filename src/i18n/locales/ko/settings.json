@@ -115,6 +115,7 @@
     "uiScale": "UI 크기",
     "timezoneAuto": "자동 (브라우저)",
     "timezoneSearchPlaceholder": "가까운 도시 검색",
+    "language": "언어",
     "languageSearchPlaceholder": "언어 검색...",
     "languageNames": {
       "en": "영어",

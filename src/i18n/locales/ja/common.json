@@ -1505,6 +1505,25 @@
     "ramFileTrees": "ファイルツリー",
     "ramCodeMirrors": "ファイルレンダリング"
   },
+  "spotlightActions": {
+    "switchToLightTheme": "ライトテーマに切り替え",
+    "switchToDarkTheme": "ダークテーマに切り替え",
+    "switchToHighContrastTheme": "ハイコントラストテーマに切り替え",
+    "moveMyStationChatLeft": "My Station のチャットを左に移動",
+    "moveMyStationChatRight": "My Station のチャットを右に移動",
+    "moveAgentStationChatLeft": "Agent Station のチャットを左に移動",
+    "moveAgentStationChatRight": "Agent Station のチャットを右に移動",
+    "enableChatPagination": "チャットのページ分割をオンにする",
+    "disableChatPagination": "チャットのページ分割をオフにする",
+    "useModelPickerSpotlight": "Spotlight モデル選択を使う",
+    "useModelPickerDropdown": "ドロップダウンモデル選択を使う",
+    "useCompactWorkstationLayout": "コンパクトな Workstation レイアウトを使う",
+    "useComfortWorkstationLayout": "ゆったりした Workstation レイアウトを使う",
+    "moveWorkstationSidebarLeft": "Workstation サイドバーを左に移動",
+    "moveWorkstationSidebarRight": "Workstation サイドバーを右に移動",
+    "enableDockAutoHide": "Workstation Dock を自動的に隠す",
+    "disableDockAutoHide": "Workstation Dock を常に表示"
+  },
   "commands": {
     "showBottomPanel": "ボトムパネルを表示",
     "hideBottomPanel": "ボトムパネルを非表示",
