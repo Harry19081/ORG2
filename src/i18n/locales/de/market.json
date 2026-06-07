@@ -169,7 +169,7 @@
     "title": "Marktplatz",
     "models": "Modelle",
     "providers": "Anbieter",
-    "startSession": "Session starten",
+    "startSession": "Sitzung starten",
     "insufficientBalance": "Unzureichendes Guthaben",
     "addFundsToStart": "Fügen Sie Guthaben hinzu, um eine Session zu starten",
     "minBalance": "Mindestguthaben erforderlich: ${{amount}}",

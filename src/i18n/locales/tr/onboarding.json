@@ -64,7 +64,7 @@
   "complete": {
     "title": "Hazırsınız!",
     "description": "Çalışma alanınız hazır. Yapay zeka yardımıyla kodlamaya başlamak için yeni bir Session başlatın veya tüm özellikleri keşfetmek için uygulamayı inceleyin.",
-    "startSession": "Yeni Session Başlat"
+    "startSession": "Yeni oturum başlat"
   },
   "navigation": {
     "skipSetup": "Kurulumu Atla",

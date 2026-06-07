@@ -671,8 +671,7 @@
     "singleChoice": "単一選択",
     "multipleChoice": "複数選択",
     "typeYourAnswer": "回答を入力…",
-    "newSession": "新しい Session",
-    "newChat": "新規チャット",
+    "newSession": "新しいセッション",
     "defaultTitle": "チャット",
     "hideChatPanel": "チャットパネルを非表示",
     "replay": {

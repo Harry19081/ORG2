@@ -671,8 +671,7 @@
     "singleChoice": "단일 선택",
     "multipleChoice": "다중 선택",
     "typeYourAnswer": "답변을 입력하세요…",
-    "newSession": "새 Session",
-    "newChat": "새 채팅",
+    "newSession": "새 세션",
     "defaultTitle": "채팅",
     "hideChatPanel": "채팅 패널 숨기기",
     "replay": {

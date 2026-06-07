@@ -244,6 +244,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                 region="sidebar"
                 tabs={tabPillTabs}
                 onChange={onChange}
+                iconOnly
               />
             </div>
           </div>

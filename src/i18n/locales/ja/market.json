@@ -169,7 +169,7 @@
     "title": "マーケットプレイス",
     "models": "モデル",
     "providers": "プロバイダー",
-    "startSession": "Sessionを開始",
+    "startSession": "セッションを開始",
     "insufficientBalance": "残高不足",
     "addFundsToStart": "Sessionを開始するには資金を追加してください",
     "minBalance": "必要な最低残高: ${{amount}}",

@@ -412,17 +412,18 @@ export const WorkstationSidebarConnector: React.FC = () => {
       items.push({
         id: FOLDERS_WORKSPACES_SECTION_ID,
         key: FOLDERS_WORKSPACES_SECTION_ID,
-        label: t("common:selectors.repo.sections.workspace"),
+        label: t(
+          "common:workspaceForm.multiRepoWorkspace",
+          "Multi-Repo Workspace"
+        ),
       });
       items.push(
         ...savedWorkspaces.map((workspace) => {
           const folderCount = workspace.folders.length;
-          const memberNames = workspace.folders.map(resolveWorkspaceRepoName);
           return {
             id: `${FOLDERS_WORKSPACE_ITEM_PREFIX}${workspace.workspaceId}`,
             key: `${FOLDERS_WORKSPACE_ITEM_PREFIX}${workspace.workspaceId}`,
             label: workspace.name,
-            subtitle: memberNames.join(", "),
             icon: FolderTree,
             iconName: "folder-tree",
             shortcut: getWorkspaceFolderCountLabel(folderCount),
@@ -434,14 +435,13 @@ export const WorkstationSidebarConnector: React.FC = () => {
     items.push({
       id: FOLDERS_REPOS_SECTION_ID,
       key: FOLDERS_REPOS_SECTION_ID,
-      label: t("common:selectors.repo.sections.repo"),
+      label: t("common:selectors.spotlight.paramLabels.repo"),
     });
     items.push(
       ...repos.map((repo) => ({
         id: `${FOLDERS_REPO_ITEM_PREFIX}${repo.id}`,
         key: `${FOLDERS_REPO_ITEM_PREFIX}${repo.id}`,
         label: getRepoDisplayName(repo),
-        subtitle: repo.path ?? repo.fs_uri,
         icon: Code,
         iconName: "code",
       }))

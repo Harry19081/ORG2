@@ -671,8 +671,7 @@
     "singleChoice": "Einzelauswahl",
     "multipleChoice": "Mehrfachauswahl",
     "typeYourAnswer": "Geben Sie Ihre Antwort ein…",
-    "newSession": "Neue Session",
-    "newChat": "Neuer Chat",
+    "newSession": "Neue Sitzung",
     "defaultTitle": "Chat",
     "hideChatPanel": "Chat-Panel ausblenden",
     "replay": {

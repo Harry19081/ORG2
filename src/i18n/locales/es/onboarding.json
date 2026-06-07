@@ -64,7 +64,7 @@
   "complete": {
     "title": "?Todo listo!",
     "description": "Tu espacio de trabajo est? listo. Inicia una nueva Session para comenzar a programar con asistencia de IA, o explora la aplicaci?n para descubrir todas las funciones.",
-    "startSession": "Iniciar nueva Session"
+    "startSession": "Iniciar nueva sesión"
   },
   "navigation": {
     "skipSetup": "Omitir configuraci?n",

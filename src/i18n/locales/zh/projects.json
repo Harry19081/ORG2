@@ -519,7 +519,7 @@
     },
     "sessions": {
       "linkedSessions": "已关联 Sessions",
-      "newSession": "新建 Session",
+      "newSession": "新建会话",
       "starting": "正在启动...",
       "emptyOverview": "暂无 Sessions",
       "emptyOverviewHint": "启动 Agent Session 后，可在此跟踪执行。"

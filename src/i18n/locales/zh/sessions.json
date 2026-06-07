@@ -201,7 +201,7 @@
       "emptyTitle": "暂无日记事件",
       "emptySubtitle": "此日期的 Agent 活动会显示在这里。",
       "event": {
-        "started": "开始 Session",
+        "started": "开始会话",
         "completed": "完成 Session",
         "stillWorking": "仍在工作"
       },
@@ -671,8 +671,7 @@
     "singleChoice": "单选",
     "multipleChoice": "多选",
     "typeYourAnswer": "输入您的回答…",
-    "newSession": "新建 Session",
-    "newChat": "新建 Session",
+    "newSession": "新建会话",
     "defaultTitle": "Session",
     "hideChatPanel": "隐藏聊天面板",
     "replay": {

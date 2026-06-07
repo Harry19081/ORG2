@@ -64,7 +64,7 @@
   "complete": {
     "title": "Alles bereit!",
     "description": "Ihr Arbeitsbereich ist fertig. Starten Sie eine neue Session, um mit KI-Unterstützung zu programmieren, oder erkunden Sie die App.",
-    "startSession": "Neue Session starten"
+    "startSession": "Neue Sitzung starten"
   },
   "navigation": {
     "skipSetup": "Einrichtung überspringen",

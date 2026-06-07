@@ -169,7 +169,7 @@
     "title": "Pazar Yeri",
     "models": "Modeller",
     "providers": "Sağlayıcılar",
-    "startSession": "Session Başlat",
+    "startSession": "Oturum başlat",
     "insufficientBalance": "Yetersiz bakiye",
     "addFundsToStart": "Session başlatmak için bakiye ekleyin",
     "minBalance": "Gerekli minimum bakiye: ${{amount}}",

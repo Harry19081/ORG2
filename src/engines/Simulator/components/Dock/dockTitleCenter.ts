@@ -29,7 +29,7 @@ export function getWorkStationStationTitleCenter(
     case "data":
       return { icon: Database, label: t("labels.databaseManager") };
     case "chat":
-      return { icon: Package2, label: t("labels.chat") };
+      return { icon: Package2, label: t("labels.session") };
     case "project":
       return { icon: ListTodo, label: t("labels.projectManager") };
     case "kanban":
@@ -60,7 +60,7 @@ export function getSimulatorDockTitleCenter(
     case AppType.DB_MANAGER:
       return { icon, label: t("labels.databaseManager") };
     case AppType.CHANNELS:
-      return { icon, label: t("labels.chat") };
+      return { icon, label: t("labels.session") };
     case APP_TYPE_PROJECT:
       return { icon: icon ?? ListTodo, label: t("labels.projectManager") };
     case AppType.DIFF:

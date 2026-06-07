@@ -169,7 +169,7 @@
     "title": "Marketplace",
     "models": "Mô hình",
     "providers": "Nhà cung cấp",
-    "startSession": "Bắt đầu Session",
+    "startSession": "Bắt đầu phiên",
     "insufficientBalance": "Số dư không đủ",
     "addFundsToStart": "Nạp tiền để bắt đầu Session",
     "minBalance": "Số dư tối thiểu yêu cầu: ${{amount}}",

@@ -673,8 +673,7 @@
     "singleChoice": "Один вариант",
     "multipleChoice": "Несколько вариантов",
     "typeYourAnswer": "Введите ваш ответ…",
-    "newSession": "Новая Session",
-    "newChat": "Новый чат",
+    "newSession": "Новая сессия",
     "defaultTitle": "Чат",
     "hideChatPanel": "Скрыть панель чата",
     "replay": {

@@ -68,6 +68,7 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = React.memo(
             <TabPill
               activeTab={activeKey || items[0]?.key || ""}
               region="sidebar"
+              iconOnly
               tabs={items.map((tab) => ({
                 key: tab.key,
                 label: tab.label,
