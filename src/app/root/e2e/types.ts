@@ -507,7 +507,20 @@ export interface E2EHelpers {
   ) => Promise<Result<{ session: Json | null; diagnostics?: Json }>>;
   seedChatEvents: (
     sessionId: string,
-    events: Json[]
+    events: Json[],
+    options?: {
+      chatPanelMaximized?: boolean;
+      chatWidth?: number;
+      currentEventId?: string;
+      runtimeStatus?:
+        | "idle"
+        | "running"
+        | "installing"
+        | "waiting_for_user"
+        | "waiting_for_funds";
+      stationMode?: "my-station" | "agent-station";
+      selectedApp?: "CODE_EDITOR";
+    }
   ) => Promise<Result<{ eventCount: number; chatEventCount: number }>>;
   seedModeSwitchSession: (input: {
     sessionId?: string;
@@ -521,6 +534,13 @@ export interface E2EHelpers {
     title?: string;
     content: string;
   }) => Promise<Result<{ planRevisionId: string }>>;
+  seedShellProcess: (input: {
+    sessionId: string;
+    pid: number;
+    command: string;
+    logPath?: string;
+    status?: "running" | "background";
+  }) => Promise<Result<{ sessionId: string; pid: number }>>;
   inspectChatState: () => Promise<
     Result<{
       activeSessionId: string | null;

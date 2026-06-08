@@ -1,7 +1,9 @@
 import { loadSessionAtom, sessionIdAtom } from "@src/engines/SessionCore";
+import { navigateToEventAtom } from "@src/engines/SessionCore/core/atoms";
 import { derivedSnapshotAtom } from "@src/engines/SessionCore/core/atoms/events";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { AppType } from "@src/engines/Simulator/types/appTypes";
 import {
   isPendingCancelAtom,
   sessionRuntimeStatusAtom,
@@ -15,6 +17,7 @@ import {
   sessionsAtom,
   upsertSession,
 } from "@src/store/session/sessionAtom";
+import { updateShellProcessAtom } from "@src/store/session/shellProcessAtom";
 import {
   activeSessionIdAtom,
   openSessionAtom,
@@ -24,7 +27,11 @@ import {
   chatPanelMaximizedAtom,
   chatWidthAtom,
 } from "@src/store/ui/chatPanelAtom";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import {
+  simulatorFollowAppLockAtom,
+  simulatorSelectedAppAtom,
+  stationModeAtom,
+} from "@src/store/ui/simulatorAtom";
 
 import { asError } from "../../result";
 import type { E2EStore, Json, Result } from "../../types";
@@ -33,16 +40,29 @@ import { waitForSessionSurface } from "./waitForSessionSurface";
 export function createSessionSeederHelpers(store: E2EStore) {
   const seedChatEvents = async (
     sessionId: string,
-    events: Json[]
+    events: Json[],
+    options?: {
+      chatPanelMaximized?: boolean;
+      chatWidth?: number;
+      currentEventId?: string;
+      runtimeStatus?:
+        | "idle"
+        | "running"
+        | "installing"
+        | "waiting_for_user"
+        | "waiting_for_funds";
+      stationMode?: "my-station" | "agent-station";
+      selectedApp?: "CODE_EDITOR";
+    }
   ): Promise<Result<{ eventCount: number; chatEventCount: number }>> => {
     try {
       if (!sessionId) {
         return { ok: false, error: "seedChatEvents: `sessionId` is required" };
       }
       const sessionEvents = events as unknown as SessionEvent[];
-      store.set(stationModeAtom, "my-station");
-      store.set(chatPanelMaximizedAtom, true);
-      store.set(chatWidthAtom, 560);
+      store.set(stationModeAtom, options?.stationMode ?? "my-station");
+      store.set(chatPanelMaximizedAtom, options?.chatPanelMaximized ?? true);
+      store.set(chatWidthAtom, options?.chatWidth ?? 560);
       store.set(activeSessionIdAtom, sessionId);
       store.set(workstationActiveSessionIdAtom, sessionId);
       await waitForSessionSurface(sessionId);
@@ -55,6 +75,19 @@ export function createSessionSeederHelpers(store: E2EStore) {
 
       const snapshot = await eventStoreProxy.getSnapshot(sessionId);
       store.set(derivedSnapshotAtom, snapshot);
+      if (options?.runtimeStatus) {
+        store.set(sessionRuntimeStatusAtom, options.runtimeStatus);
+      }
+      if (options?.selectedApp === "CODE_EDITOR") {
+        store.set(simulatorSelectedAppAtom, AppType.CODE_EDITOR);
+        store.set(simulatorFollowAppLockAtom, AppType.CODE_EDITOR);
+      } else {
+        store.set(simulatorSelectedAppAtom, null);
+        store.set(simulatorFollowAppLockAtom, null);
+      }
+      if (options?.currentEventId) {
+        store.set(navigateToEventAtom, options.currentEventId);
+      }
       return {
         ok: true,
         eventCount: snapshot.eventCount,
@@ -226,9 +259,50 @@ export function createSessionSeederHelpers(store: E2EStore) {
     }
   };
 
+  const seedShellProcess = async (input: {
+    sessionId: string;
+    pid: number;
+    command: string;
+    logPath?: string;
+    status?: "running" | "background";
+  }): Promise<Result<{ sessionId: string; pid: number }>> => {
+    try {
+      if (!input.sessionId) {
+        return {
+          ok: false,
+          error: "seedShellProcess: `sessionId` is required",
+        };
+      }
+      if (!Number.isFinite(input.pid) || input.pid <= 0) {
+        return {
+          ok: false,
+          error: "seedShellProcess: positive `pid` is required",
+        };
+      }
+      store.set(updateShellProcessAtom, {
+        type: "start",
+        sessionId: input.sessionId,
+        pid: input.pid,
+        command: input.command,
+        logPath: input.logPath,
+      });
+      if (input.status === "background") {
+        store.set(updateShellProcessAtom, {
+          type: "background",
+          sessionId: input.sessionId,
+          pid: input.pid,
+        });
+      }
+      return { ok: true, sessionId: input.sessionId, pid: input.pid };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
   return {
     seedChatEvents,
     seedModeSwitchSession,
     seedPlanCard,
+    seedShellProcess,
   };
 }

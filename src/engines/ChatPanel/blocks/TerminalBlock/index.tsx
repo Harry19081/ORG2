@@ -165,15 +165,16 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
 
     // Stop button state — reset when process finishes.
     //
-    // `isLoading` flips false the moment `tool_result` arrives, but a
-    // backgrounded process is still very much alive — we must keep the Stop
-    // button reachable in that window. Hence: gate purely on `isProcessActive`,
-    // not on `isLoading`. (Same applies to the streaming/expanded visuals.)
-    const isProcessActive =
-      processStatus === "running" || processStatus === "background";
+    // Gate on `isStillRunning` (= isLoading || isBackground) rather than
+    // `processStatus` alone. A stale `processStatus === "running"` left over
+    // when `shell_process_exited` never landed would otherwise keep the Stop
+    // button visible on a card whose title shows no "running" shimmer — a
+    // state the user reads as "already done". Explicit-background processes
+    // (isLoading=false, processStatus="background") still show Stop because
+    // `isBackground` keeps `isStillRunning` true.
     const [isStopping, setIsStopping] = useState(false);
-    const effectiveIsStopping = isStopping && isProcessActive;
-    const canStop = pid !== undefined && isProcessActive;
+    const effectiveIsStopping = isStopping && isStillRunning;
+    const canStop = pid !== undefined && isStillRunning;
 
     const handleStop = useCallback(
       (event: React.MouseEvent) => {
@@ -257,14 +258,14 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
             isFailed={isError}
           />
           <span
-            className={`min-w-0 shrink truncate font-medium ${isStillRunning ? EVENT_LOADING_SHIMMER_TEXT_CLASSES : isError ? "text-text-3" : "text-text-1"}`}
+            className={`min-w-0 shrink truncate ${isStillRunning ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}` : isError ? "font-medium text-text-3" : "font-medium text-text-1"}`}
             title={displayTitle}
           >
             {displayTitle}
           </span>
           {commandSymbols.length > 0 ? (
             <span
-              className={`shrink-0 ${isStillRunning ? EVENT_LOADING_SHIMMER_TEXT_CLASSES : "text-text-1"}`}
+              className={`shrink-0 ${isStillRunning ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}` : "text-text-1"}`}
               title={commandSymbols.join(", ")}
             >
               {commandSymbols.length <= 2

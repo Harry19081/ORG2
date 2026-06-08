@@ -656,6 +656,73 @@ async function assertMultiRepoGrepTargetsExplicitRepoPath() {
   }
 }
 
+async function assertMultiRepoSearchTargetRendered() {
+  const sessionId = `e2e-render-multirepo-search-target-${Date.now()}`;
+  const baseTime = Date.now();
+  const repoA = `/tmp/orgii-e2e-search-target-a-${RUN_ID}/app`;
+  const repoB = `/tmp/orgii-e2e-search-target-b-${RUN_ID}/app`;
+  const expectedRepoB = `in orgii-e2e-search-target-b-${RUN_ID}/app`;
+  const events = [
+    {
+      ...withCreatedAt(makeOrderUserEvent("multi-search-target-user", "Search sibling repo"), baseTime),
+      sessionId,
+    },
+    {
+      id: "multi-search-target-tool",
+      chunk_id: "multi-search-target-tool",
+      sessionId,
+      createdAt: new Date(baseTime + 1_000).toISOString(),
+      functionName: "code_search",
+      uiCanonical: "code_search",
+      actionType: "tool_call",
+      args: { action: "grep", pattern: "sharedSymbol", repo_path: repoB, path: `${repoA}/src/index.ts` },
+      result: { content: `${repoB}/src/index.ts:1:sharedSymbol`, observation: "matched", is_delta: false },
+      repoPath: repoA,
+      source: "assistant",
+      displayText: "Search sharedSymbol",
+      displayStatus: "completed",
+      displayVariant: "tool_call",
+      activityStatus: "agent",
+      isDelta: false,
+    },
+    {
+      ...withCreatedAt(
+        makeOrderAssistantEvent("multi-search-target-assistant", "message", "Search complete"),
+        baseTime + 2_000
+      ),
+      sessionId,
+    },
+  ];
+
+  const seed = await invokeE2E("seedChatEvents", sessionId, events);
+  if (!seed || seed.ok !== true) {
+    throw new Error(`seedChatEvents failed for multi-repo search target: ${seed?.error ?? "unknown"}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const history = document.querySelector('[data-testid="chat-message-list"]');
+        const body = history ? (history.innerText || "") : (document.body.innerText || "");
+        return {
+          body,
+          hasPattern: body.includes("sharedSymbol"),
+          hasTarget: body.includes(${JSON.stringify(expectedRepoB)}),
+          hasWrongTarget: body.includes(${JSON.stringify(`in orgii-e2e-search-target-a-${RUN_ID}/app`)}),
+          leakedAbsoluteRepo: body.includes(${JSON.stringify(repoB)}),
+        };
+      `);
+      return state.hasPattern && state.hasTarget && !state.hasWrongTarget && !state.leakedAbsoluteRepo;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `multi-repo search target did not render explicit repo_path compactly: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}`,
+    }
+  );
+}
+
 async function assertMultiRepoRenderedPathContext() {
   const sessionId = `e2e-render-multirepo-context-${Date.now()}`;
   const baseTime = Date.now();
@@ -773,6 +840,221 @@ async function assertMultiRepoRenderedPathContext() {
       timeout: RENDER_TIMEOUT_MS,
       timeoutMsg: `multi-repo rendered path context missing: ${JSON.stringify(
         await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}`,
+    }
+  );
+}
+
+async function assertBackgroundProcessPinnedToChatSession() {
+  const sessionId = `e2e-render-bg-process-chat-${Date.now()}`;
+  const command = `sleep 120 # E2E_BG_PROCESS_PIN_${RUN_ID}`;
+  const baseTime = Date.now();
+  const events = [
+    {
+      id: "bg-process-user",
+      chunk_id: "bg-process-user",
+      sessionId,
+      createdAt: new Date(baseTime).toISOString(),
+      functionName: "user_message",
+      uiCanonical: "user_message",
+      actionType: "raw",
+      args: {},
+      result: {
+        type: "user",
+        message: "Start a background process",
+        is_delta: false,
+      },
+      source: "user",
+      displayText: "Start a background process",
+      displayStatus: "completed",
+      displayVariant: "message",
+      activityStatus: "processed",
+      isDelta: false,
+    },
+  ];
+
+  const seed = await invokeE2E("seedChatEvents", sessionId, events, {
+    chatPanelMaximized: true,
+    stationMode: "my-station",
+  });
+  if (!seed || seed.ok !== true) {
+    throw new Error(`seedChatEvents failed for bg process pin: ${seed?.error ?? "unknown"}`);
+  }
+
+  const processSeed = await invokeE2E("seedShellProcess", {
+    sessionId,
+    pid: 90321,
+    command,
+    status: "background",
+  });
+  if (!processSeed || processSeed.ok !== true) {
+    throw new Error(`seedShellProcess failed: ${processSeed?.error ?? "unknown"}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const body = document.body.innerText || "";
+        const pills = Array.from(document.querySelectorAll('[data-testid="composer-section-process"]'))
+          .map((el) => el.textContent || "");
+        return {
+          body,
+          pills,
+          hasProcessPill: pills.some((text) => text.includes("1")),
+        };
+      `);
+      return state.hasProcessPill;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `background process pill did not render: ${JSON.stringify(
+        await execJS(`
+          return {
+            body: (document.body.innerText || "").slice(0, 5000),
+            pills: Array.from(document.querySelectorAll('[data-testid="composer-section-process"]')).map((el) => el.textContent || ""),
+          };
+        `)
+      )}`,
+    }
+  );
+
+  const sendState = await execJS(`
+    const button = document.querySelector('[data-testid="chat-send-button"]');
+    return button ? button.getAttribute("data-state") : null;
+  `);
+  if (sendState !== "submit") {
+    throw new Error(`background process must not keep composer in stop state: ${sendState}`);
+  }
+
+  const clickResult = await execJS(`
+    const pill = document.querySelector('[data-testid="composer-section-process"]');
+    if (!pill) return "missing";
+    pill.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window, button: 0 }));
+    pill.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window, button: 0 }));
+    pill.click();
+    return "clicked";
+  `);
+  if (clickResult !== "clicked") {
+    throw new Error(`failed to click process pill: ${clickResult}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const body = await execJS(`return document.body.innerText || "";`);
+      return body.includes(command);
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `expanded background process command missing: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}`,
+    }
+  );
+}
+
+function makeHiddenRunningEvents(sessionId, baseTime) {
+  return [
+    {
+      id: "hidden-running-user",
+      chunk_id: "hidden-running-user",
+      sessionId,
+      createdAt: new Date(baseTime).toISOString(),
+      functionName: "user_message",
+      uiCanonical: "user_message",
+      actionType: "raw",
+      args: {},
+      result: {
+        type: "user",
+        message: "Keep working",
+        is_delta: false,
+      },
+      source: "user",
+      displayText: "Keep working",
+      displayStatus: "completed",
+      displayVariant: "message",
+      activityStatus: "processed",
+      isDelta: false,
+    },
+    {
+      id: "hidden-running-status",
+      chunk_id: "hidden-running-status",
+      sessionId,
+      createdAt: new Date(baseTime + 1_000).toISOString(),
+      functionName: "hidden_status",
+      uiCanonical: "hidden_status",
+      actionType: "raw",
+      args: {},
+      result: { status: "running", is_delta: false },
+      source: "assistant",
+      displayText: "",
+      displayStatus: "running",
+      displayVariant: "session",
+      activityStatus: "agent",
+      isDelta: false,
+    },
+  ];
+}
+
+async function assertWorkingFooterShownForHiddenRunningEvent() {
+  const sessionId = `e2e-render-working-footer-${Date.now()}`;
+  const baseTime = Date.now();
+  const events = makeHiddenRunningEvents(sessionId, baseTime);
+
+  const seed = await invokeE2E("seedChatEvents", sessionId, events, {
+    chatPanelMaximized: true,
+    runtimeStatus: "running",
+    stationMode: "my-station",
+  });
+  if (!seed || seed.ok !== true) {
+    throw new Error(`seedChatEvents failed for working footer: ${seed?.error ?? "unknown"}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const footer = await execJS(`
+        const el = document.querySelector('[data-testid="planning-footer"]');
+        return el ? el.textContent || "" : "";
+      `);
+      return /Planning next step|Working on|Thinking|working/i.test(footer);
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `working footer did not render for hidden running event: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}; state=${JSON.stringify(await invokeE2E("inspectChatState"))}`,
+    }
+  );
+}
+
+async function assertStaleHiddenRunningEventDoesNotHoldStopButton() {
+  const sessionId = `e2e-render-stale-hidden-running-${Date.now()}`;
+  const baseTime = Date.now();
+  const seed = await invokeE2E("seedChatEvents", sessionId, makeHiddenRunningEvents(sessionId, baseTime), {
+    chatPanelMaximized: true,
+    stationMode: "my-station",
+  });
+  if (!seed || seed.ok !== true) {
+    throw new Error(`seedChatEvents failed for stale hidden running event: ${seed?.error ?? "unknown"}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const sendState = await execJS(`
+        const button = document.querySelector('[data-testid="chat-send-button"]');
+        return button ? button.getAttribute("data-state") : null;
+      `);
+      return sendState === "submit";
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `stale hidden running event kept composer in stop state: ${JSON.stringify(
+        await execJS(`
+          const button = document.querySelector('[data-testid="chat-send-button"]');
+          return {
+            sendState: button ? button.getAttribute("data-state") : null,
+            body: (document.body.innerText || "").slice(0, 5000),
+          };
+        `)
       )}`,
     }
   );
@@ -1025,6 +1307,33 @@ describe("Core chat rendering UI", () => {
     }
   });
 
+  it("pins background shell processes for the rendered chat session", async function () {
+    if (!shouldRunScenario("background-process-pin")) {
+      this.skip();
+      return;
+    }
+
+    await assertBackgroundProcessPinnedToChatSession();
+  });
+
+  it("shows the working footer when running events are hidden from chat", async function () {
+    if (!shouldRunScenario("working-footer-hidden-running")) {
+      this.skip();
+      return;
+    }
+
+    await assertWorkingFooterShownForHiddenRunningEvent();
+  });
+
+  it("does not keep Stop active for stale hidden running events", async function () {
+    if (!shouldRunScenario("stale-hidden-running-stop-state")) {
+      this.skip();
+      return;
+    }
+
+    await assertStaleHiddenRunningEventDoesNotHoldStopButton();
+  });
+
   it("renders multi-repo read file targets as paths instead of generic file labels", async function () {
     if (!shouldRunScenario("multi-repo-read-path")) {
       this.skip();
@@ -1041,6 +1350,15 @@ describe("Core chat rendering UI", () => {
     }
 
     await assertMultiRepoGrepTargetsExplicitRepoPath();
+  });
+
+  it("renders explicit multi-repo search targets with root-qualified labels", async function () {
+    if (!shouldRunScenario("multi-repo-search-target")) {
+      this.skip();
+      return;
+    }
+
+    await assertMultiRepoSearchTargetRendered();
   });
 
   it("renders repo-disambiguated paths for multi-repo tool rows", async function () {

@@ -450,6 +450,7 @@ export const InteractionBubble: React.FC<{
   <AgentFramedBubble
     message={message}
     onClick={onClick}
+    unframed
     orgMembers={orgMembers}
   >
     {children}
