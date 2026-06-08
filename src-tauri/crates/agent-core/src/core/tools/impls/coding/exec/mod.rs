@@ -351,8 +351,11 @@ impl Tool for ExecTool {
             );
         }
 
-        let command = command.ok_or_else(|| ToolError::InvalidParams("Missing required string parameter: command".into()))?;
-        let custom_dir = optional_string(&params, "working_dir").filter(|dir| !dir.trim().is_empty());
+        let command = command.ok_or_else(|| {
+            ToolError::InvalidParams("Missing required string parameter: command".into())
+        })?;
+        let custom_dir =
+            optional_string(&params, "working_dir").filter(|dir| !dir.trim().is_empty());
         let requested_interactive = params
             .get("interactive")
             .and_then(|val| val.as_bool())
@@ -639,7 +642,10 @@ mod tests {
 
         match result {
             Err(ToolError::InvalidParams(msg)) => {
-                assert!(msg.contains("Invalid kill_handle"), "unexpected error: {msg}");
+                assert!(
+                    msg.contains("Invalid kill_handle"),
+                    "unexpected error: {msg}"
+                );
             }
             other => panic!("expected InvalidParams, got {other:?}"),
         }

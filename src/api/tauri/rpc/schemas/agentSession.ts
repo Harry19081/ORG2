@@ -25,6 +25,27 @@ export const SessionRequestIdInput = z.object({
   requestId: z.string(),
 });
 
+/**
+ * Input for `agent_secret_capture_submit` — pairs the request id with the
+ * plaintext value the user typed into `SecretCaptureModal`. The value is
+ * forwarded straight to Rust and never persisted on the FE side.
+ */
+export const SecretCaptureSubmitInput = z.object({
+  sessionId: z.string(),
+  requestId: z.string(),
+  value: z.string(),
+});
+
+/**
+ * Input for `agent_secret_capture_discard` — the agent retired a captured
+ * secret early. We pass the raw token here; the broker also accepts the
+ * templated `{{secret:<token>}}` form but the FE always sends the bare id.
+ */
+export const SecretCaptureDiscardInput = z.object({
+  sessionId: z.string(),
+  token: z.string(),
+});
+
 export const SessionInfoSchema = z.object({
   sessionId: z.string(),
   agentId: z.string(),

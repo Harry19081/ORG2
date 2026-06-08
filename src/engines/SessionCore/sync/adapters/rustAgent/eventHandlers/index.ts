@@ -28,6 +28,7 @@ import {
 import {
   handleFileChange,
   handleHeartbeat,
+  handleSecretRequest,
   handleSetupRepoUpdate,
 } from "./fileChangeHandlers";
 import { handleMcpProgress } from "./mcpHandlers";
@@ -263,6 +264,12 @@ export async function dispatchAgentEvent(
       // Side-channel: setup_repo clone/checkout/install progress. The Rust
       // payload omits `sessionId`, so fall back to the channel's session.
       handleSetupRepoUpdate(event, eventSessionId || sessionId);
+      break;
+    case "agent:secret_request":
+      // Side-channel: `manage_secrets` wants the user to paste a sensitive
+      // value via the secure modal. The plaintext does not flow through
+      // this event — only the request metadata.
+      handleSecretRequest(event, eventSessionId || sessionId);
       break;
     case "agent:heartbeat":
       // Side-channel: long-running automation liveness ping. The Rust

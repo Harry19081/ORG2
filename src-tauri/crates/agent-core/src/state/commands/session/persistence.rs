@@ -123,8 +123,10 @@ pub async fn agent_check_snapshot_changes(
 ) -> Result<bool, String> {
     tokio::task::spawn_blocking(move || {
         for review_session_id in review_session_ids(&session_id) {
-            let has_changes = file_history::has_changes_after_message(&review_session_id, &created_at)
-                .map_err(|e| format!("file-history check failed for {review_session_id}: {e}"))?;
+            let has_changes =
+                file_history::has_changes_after_message(&review_session_id, &created_at).map_err(
+                    |e| format!("file-history check failed for {review_session_id}: {e}"),
+                )?;
             if has_changes {
                 return Ok(true);
             }

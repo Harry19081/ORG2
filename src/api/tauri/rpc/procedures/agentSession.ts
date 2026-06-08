@@ -64,6 +64,18 @@ export const agentSession = {
   rejectQuestion: defineProcedure("agent_question_reject")
     .input(schemas.agentSession.SessionRequestIdInput)
     .build(),
+  // ── Secret capture (out-of-band; plaintext never reaches LLM) ──
+  // Backs the `SecretCaptureModal` ↔ `SecretBroker` round-trip.
+  submitSecret: defineProcedure("agent_secret_capture_submit")
+    .input(schemas.agentSession.SecretCaptureSubmitInput)
+    .build(),
+  cancelSecret: defineProcedure("agent_secret_capture_cancel")
+    .input(schemas.agentSession.SessionRequestIdInput)
+    .build(),
+  discardSecret: defineProcedure("agent_secret_capture_discard")
+    .input(schemas.agentSession.SecretCaptureDiscardInput)
+    .output(z.boolean())
+    .build(),
   respondPermission: defineProcedure("agent_permission_response")
     .input(schemas.agentSession.PermissionResponseInput)
     .build(),

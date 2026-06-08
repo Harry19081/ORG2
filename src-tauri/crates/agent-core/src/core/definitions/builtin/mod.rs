@@ -24,7 +24,7 @@
 //!   tools on OS Agent removes a delegation hop and lets users
 //!   toggle them on/off per agent like any other built-in tool.
 
-mod agent_architect;
+mod ade_manager;
 mod ai_research;
 mod base;
 mod gui_control;
@@ -33,11 +33,10 @@ mod memory_extractor;
 mod os;
 mod sde;
 mod subagents;
-mod terminal;
 mod wingman;
 mod work_item_manager;
 
-pub use agent_architect::*;
+pub use ade_manager::*;
 pub use ai_research::*;
 pub use base::*;
 pub use gui_control::*;
@@ -46,7 +45,6 @@ pub use memory_extractor::*;
 pub use os::*;
 pub use sde::*;
 pub use subagents::*;
-pub use terminal::*;
 pub use wingman::*;
 pub use work_item_manager::*;
 
@@ -104,16 +102,20 @@ pub fn strip_forbidden_sub_agents(agent: &mut super::schema::AgentDefinition) ->
 }
 
 /// Get all built-in agent definitions.
+///
+/// `ade_manager()` is intentionally listed first so it surfaces at the
+/// top of any UI that renders the registry in declaration order. ADE
+/// stands for Agentic Development Environment — the IDE-AI analogue
+/// whose configuration this agent is responsible for.
 pub fn get_builtin_agents() -> Vec<AgentDefinition> {
     vec![
-        // Core agents
+        // Core agents — ADE Manager first by design.
+        ade_manager(),
         base_agent(),
         os_agent(),
         gui_control_agent(),
         sde_agent(),
-        terminal_agent(),
         ai_research_agent(),
-        agent_architect(),
         wingman_agent(),
         work_item_manager_agent(),
         // Subagents (used by the unified `agent` tool)
@@ -137,18 +139,17 @@ mod tests {
     #[test]
     fn test_builtin_agents_count() {
         let agents = get_builtin_agents();
-        assert_eq!(agents.len(), 13); // base, os, gui-control, sde, terminal, ai-research, agent-architect, wingman, work-item-manager + 2 subagents + 2 memory subagents
+        assert_eq!(agents.len(), 12); // ADE Manager, base, os, gui-control, sde, ai-research, wingman, work-item-manager + 2 subagents + 2 memory subagents
     }
 
     #[test]
     fn test_builtin_agent_ids() {
+        assert!(is_builtin_agent(ADE_MANAGER_ID));
         assert!(is_builtin_agent(BASE_AGENT_ID));
         assert!(is_builtin_agent(OS_AGENT_ID));
         assert!(is_builtin_agent(GUI_CONTROL_AGENT_ID));
         assert!(is_builtin_agent(SDE_AGENT_ID));
-        assert!(is_builtin_agent(TERMINAL_AGENT_ID));
         assert!(is_builtin_agent(AI_RESEARCH_AGENT_ID));
-        assert!(is_builtin_agent(AGENT_ARCHITECT_ID));
         assert!(is_builtin_agent(WINGMAN_AGENT_ID));
         assert!(is_builtin_agent(WORK_ITEM_MANAGER_AGENT_ID));
         assert!(is_builtin_agent(EXPLORE_AGENT_ID));

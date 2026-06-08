@@ -14,6 +14,23 @@
     "selectModel": "选择模型",
     "newRound": "新一轮"
   },
+  "secretCapture": {
+    "title": "请输入敏感信息",
+    "safetyNotice": "此处输入的内容会直接写入本地磁盘，绝不会发送给 LLM，也不会出现在聊天或日志中。",
+    "submit": "安全保存",
+    "pasteFromClipboard": "从剪贴板粘贴",
+    "clipboardEmpty": "剪贴板为空。",
+    "clipboardFailed": "无法读取剪贴板。",
+    "submitFailed": "保存敏感信息失败，已通知 Agent。",
+    "inputPlaceholder": "在此粘贴敏感值",
+    "lengthHint": "{{count}} 个字符",
+    "kind": {
+      "api_key": "API Key",
+      "password": "密码",
+      "oauth_token": "OAuth Token",
+      "other": "敏感信息"
+    }
+  },
   "actions": {
     "save": "保存",
     "cancel": "取消",

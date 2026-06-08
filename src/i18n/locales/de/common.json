@@ -14,6 +14,23 @@
     "selectModel": "Modell auswählen",
     "newRound": "Neue Runde"
   },
+  "secretCapture": {
+    "title": "Geheimnis eingeben",
+    "safetyNotice": "Hier eingegebene Werte gehen direkt auf die Festplatte. Sie werden NIEMALS an das LLM gesendet und erscheinen nicht im Chat oder in den Logs.",
+    "submit": "Sicher speichern",
+    "pasteFromClipboard": "Aus Zwischenablage einfügen",
+    "clipboardEmpty": "Zwischenablage ist leer.",
+    "clipboardFailed": "Zwischenablage konnte nicht gelesen werden.",
+    "submitFailed": "Speichern des Geheimnisses fehlgeschlagen. Der Agent wurde benachrichtigt.",
+    "inputPlaceholder": "Fügen Sie Ihren Wert hier ein",
+    "lengthHint": "{{count}} Zeichen",
+    "kind": {
+      "api_key": "API-Schlüssel",
+      "password": "Passwort",
+      "oauth_token": "OAuth-Token",
+      "other": "Geheimnis"
+    }
+  },
   "actions": {
     "save": "Speichern",
     "cancel": "Abbrechen",

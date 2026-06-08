@@ -150,6 +150,7 @@ dependencies = [
  "uuid",
  "which",
  "wiremock",
+ "zeroize",
  "zip 2.4.2",
 ]
 

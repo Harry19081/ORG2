@@ -685,8 +685,8 @@ fn query_session_file_tool_rows(
     if tool_names.is_empty() || !table_exists(conn, table_name)? {
         return Ok(Vec::new());
     }
-    let can_filter_created_at = created_at_or_after.is_some()
-        && column_exists(conn, table_name, "created_at")?;
+    let can_filter_created_at =
+        created_at_or_after.is_some() && column_exists(conn, table_name, "created_at")?;
 
     let placeholders = (0..tool_names.len())
         .map(|idx| format!("?{}", idx + 2))

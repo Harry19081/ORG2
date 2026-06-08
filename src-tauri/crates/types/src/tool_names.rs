@@ -54,6 +54,21 @@ pub const SETUP_REPO: &str = "setup_repo";
 pub const ASK_USER_QUESTIONS: &str = "ask_user_questions";
 pub const ASK_USER_PERMISSIONS: &str = "ask_user_permissions";
 
+/// Out-of-band secret capture. The agent asks the user (via a dedicated
+/// frontend modal) to provide a sensitive value — API key, password, OAuth
+/// token. The plaintext never enters the LLM transcript or tool args; only
+/// the returned opaque `{{secret:...}}` token does. The token is resolved
+/// to plaintext at the moment a privileged tool consumes it (today: only
+/// `write_env_file`).
+pub const MANAGE_SECRETS: &str = "manage_secrets";
+
+/// Write a `.env`-style file to disk. The `content` template may contain
+/// `{{secret:<token>}}` placeholders that were produced by `manage_secrets`;
+/// these are resolved to plaintext at write time and never echoed back to
+/// the LLM. Enforces workspace bounds, refuses to overwrite tracked files,
+/// and sets `0o600` on Unix.
+pub const WRITE_ENV_FILE: &str = "write_env_file";
+
 // ── Project ─────────────────────────────────────────────────────────
 pub const MANAGE_PROJECT: &str = "manage_project";
 pub const MANAGE_WORK_ITEM: &str = "manage_work_item";

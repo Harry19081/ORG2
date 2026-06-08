@@ -35,12 +35,15 @@ pub(super) fn rewind_snapshot_ids(
     let db_snapshot_ids =
         crate::persistence::session_snapshots::get_snapshots_after(session_id, target_created_at)
             .map_err(|err| io::Error::other(format!("DB error fetching snapshots: {}", err)))?;
-    let pre_message_snapshot_id = crate::persistence::session_snapshots::get_latest_snapshot_before_by_tool_call_id(
-        session_id,
-        "__pre_message__",
-        target_created_at,
-    )
-    .map_err(|err| io::Error::other(format!("DB error fetching pre-message snapshot: {}", err)))?;
+    let pre_message_snapshot_id =
+        crate::persistence::session_snapshots::get_latest_snapshot_before_by_tool_call_id(
+            session_id,
+            "__pre_message__",
+            target_created_at,
+        )
+        .map_err(|err| {
+            io::Error::other(format!("DB error fetching pre-message snapshot: {}", err))
+        })?;
     let manifest_anchor_snapshot_id = latest_snapshot_id_before(session_id, target_created_at)?;
     let manifest_snapshot_ids = list_snapshot_ids_at_or_after(session_id, target_created_at)?;
 

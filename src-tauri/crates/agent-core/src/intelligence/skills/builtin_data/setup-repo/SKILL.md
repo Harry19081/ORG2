@@ -72,10 +72,26 @@ read_file .env.example   # if present
 
 If `.env.example` (or similar) exists and `.env` does not:
 
-1. Copy the template: `cp .env.example .env`
-2. Scan for `REQUIRED` or non-empty placeholder values (e.g. `API_KEY=YOUR_KEY_HERE`).
-3. Ask the user to fill in any secrets you cannot infer.
-4. Do **not** commit `.env` — verify it is listed in `.gitignore`.
+1. Read the template to identify every key the user needs to provide.
+2. Classify each key:
+   - **Non-secret** (e.g. `PORT=3000`, `NODE_ENV=development`, `LOG_LEVEL=info`): inferable defaults or values you can ask about in chat.
+   - **Secret** (e.g. `*_API_KEY`, `*_SECRET`, `*_TOKEN`, `DATABASE_URL` with embedded password, `STRIPE_*`, `OPENAI_*`, anything obviously credential-shaped): MUST be captured via the secure flow below.
+3. For every secret key, call `manage_secrets { action: "request", label: "<EXACT_ENV_VAR_NAME>", kind: "api_key" | "password" | "oauth_token" | "other", prompt: "<one-sentence explanation of what this is for>" }`. The user fills it in via a secure modal — the value never enters the chat transcript or the LLM. The tool returns an opaque `{{secret:<token>}}` placeholder.
+4. Compose the full `.env` body with the placeholders inline:
+   ```
+   OPENAI_API_KEY={{secret:secret-<uuid>}}
+   STRIPE_SECRET={{secret:secret-<uuid>}}
+   PORT=3000
+   ```
+5. Write the file with `write_env_file` (NOT `write_file`). It resolves every `{{secret:…}}` at write time, sets `0o600` on Unix, and refuses to overwrite git-tracked files without `acknowledge_overwrite_tracked: true`.
+6. Verify `.env` is listed in `.gitignore`; add it if missing.
+
+**Hard rules — do not violate:**
+
+- Do NOT ask the user to "paste your API key here" in chat. Use `manage_secrets`.
+- Do NOT call `write_file` / `edit_file` for `.env`; only `write_env_file` resolves secret placeholders.
+- Do NOT echo the `{{secret:…}}` placeholder back to the user — it is internal plumbing.
+- If the user pastes a secret into chat anyway, refuse to use it (it is compromised the moment it hits the LLM provider) and request it again via the secure modal.
 
 ### Step 4 — Install Dependencies
 
@@ -220,7 +236,7 @@ Tauri projects require **both** Node and Rust setup:
 - [ ] Working directory confirmed as project root
 - [ ] All toolchains detected
 - [ ] README.md and `.env.example` read before running commands
-- [ ] `.env` created from template; user prompted for any required secrets
+- [ ] `.env` created via `write_env_file`; every secret was captured through `manage_secrets` (never pasted into chat)
 - [ ] All dependency install commands succeeded (or errors surfaced)
 - [ ] Setup scripts run if documented
 - [ ] Smoke-check passed and result reported to user

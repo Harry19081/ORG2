@@ -163,6 +163,7 @@ integrations::auth::secure_is_token_expiring,
 integrations::auth::secure_clear_tokens,
 // GitHub local API commands
 integrations::github::commands::github_list_repos,
+integrations::github::commands::github_search_repos,
 integrations::github::commands::github_list_branches,
 integrations::github::commands::github_create_branch,
 integrations::github::commands::github_create_pr,
@@ -1105,6 +1106,12 @@ agent_core::state::commands::agent_get_pending_questions,
 agent_core::state::commands::agent_mode_switch_response,
 agent_core::state::commands::agent_plan_approval_response,
 agent_core::state::commands::agent_get_pending_plan_approval,
+// Secret capture commands (out-of-band, plaintext never reaches LLM).
+// Backs the `manage_secrets` tool + `SecretCaptureModal` round-trip.
+agent_core::state::commands::agent_secret_capture_submit,
+agent_core::state::commands::agent_secret_capture_cancel,
+agent_core::state::commands::agent_secret_capture_list,
+agent_core::state::commands::agent_secret_capture_discard,
 // Unified Agent SDE-specific wrappers
 agent_core::state::commands::agent_get_session_files,
 agent_core::state::commands::agent_get_snapshots,

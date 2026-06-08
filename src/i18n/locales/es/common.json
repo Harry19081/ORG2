@@ -14,6 +14,23 @@
     "selectModel": "Seleccionar modelo",
     "newRound": "Nueva ronda"
   },
+  "secretCapture": {
+    "title": "Proporcionar un secreto",
+    "safetyNotice": "Los valores introducidos aquí se escriben directamente en disco. NUNCA se envían al LLM ni aparecen en el chat o los registros.",
+    "submit": "Guardar de forma segura",
+    "pasteFromClipboard": "Pegar desde el portapapeles",
+    "clipboardEmpty": "El portapapeles está vacío.",
+    "clipboardFailed": "No se pudo leer el portapapeles.",
+    "submitFailed": "Error al guardar el secreto. Se notificó al agente.",
+    "inputPlaceholder": "Pega tu valor aquí",
+    "lengthHint": "{{count}} caracteres",
+    "kind": {
+      "api_key": "Clave de API",
+      "password": "Contraseña",
+      "oauth_token": "Token OAuth",
+      "other": "Secreto"
+    }
+  },
   "actions": {
     "save": "Guardar",
     "cancel": "Cancelar",

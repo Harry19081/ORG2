@@ -13,6 +13,7 @@ use crate::tools::impls::agent_def::AgentDefinitionTool;
 use crate::tools::impls::comms::send_message::MessageTool;
 use crate::tools::impls::nodes::manage_nodes::NodesTool;
 use crate::tools::impls::orchestration::ask_user_questions::{QuestionTool, QuestionToolContext};
+use crate::tools::impls::orchestration::manage_secrets::{SecretTool, SecretToolContext};
 use crate::tools::impls::orchestration::manage_session::SessionTool;
 use crate::tools::impls::project::manage_project::ProjectTool;
 use crate::tools::impls::project::manage_work_item::WorkItemTool;
@@ -63,6 +64,20 @@ pub fn register(registry: &mut ToolRegistry, deps: &ToolDeps, disabled: &HashSet
         if let Some(ref qm) = deps.question_manager {
             let ctx = Arc::new(QuestionToolContext::new(Arc::clone(qm)));
             register_if_enabled(registry, Box::new(QuestionTool::new(ctx)), disabled);
+        }
+    }
+
+    // ── Secret capture ──
+    // Same gating as the question tool: subagents and non-coordinator org
+    // members cannot mint secrets — only the top-level session that the
+    // user is talking to can pop the secure modal.
+    if should_register_question_tool(
+        deps.agent_org_context.is_some(),
+        deps.agent_org_current_member_id.as_deref(),
+    ) {
+        if let Some(ref broker) = deps.secret_broker {
+            let ctx = Arc::new(SecretToolContext::new(Arc::clone(broker)));
+            register_if_enabled(registry, Box::new(SecretTool::new(ctx)), disabled);
         }
     }
 

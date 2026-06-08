@@ -14,6 +14,23 @@
     "selectModel": "モデルを選択",
     "newRound": "新しいラウンド"
   },
+  "secretCapture": {
+    "title": "シークレットを入力",
+    "safetyNotice": "ここで入力した値は直接ディスクに書き込まれます。LLM には絶対に送信されず、チャットやログにも表示されません。",
+    "submit": "安全に保存",
+    "pasteFromClipboard": "クリップボードから貼り付け",
+    "clipboardEmpty": "クリップボードは空です。",
+    "clipboardFailed": "クリップボードを読み取れませんでした。",
+    "submitFailed": "シークレットの保存に失敗しました。Agent に通知されました。",
+    "inputPlaceholder": "ここに値を貼り付けてください",
+    "lengthHint": "{{count}} 文字",
+    "kind": {
+      "api_key": "API キー",
+      "password": "パスワード",
+      "oauth_token": "OAuth トークン",
+      "other": "シークレット"
+    }
+  },
   "actions": {
     "save": "保存",
     "cancel": "キャンセル",

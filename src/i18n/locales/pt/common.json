@@ -14,6 +14,23 @@
     "selectModel": "Selecionar modelo",
     "newRound": "Nova rodada"
   },
+  "secretCapture": {
+    "title": "Fornecer um segredo",
+    "safetyNotice": "Os valores inseridos aqui vão direto para o disco. NUNCA são enviados ao LLM nem aparecem no chat ou nos logs.",
+    "submit": "Salvar com segurança",
+    "pasteFromClipboard": "Colar da área de transferência",
+    "clipboardEmpty": "Área de transferência vazia.",
+    "clipboardFailed": "Não foi possível ler a área de transferência.",
+    "submitFailed": "Falha ao salvar o segredo. O agente foi notificado.",
+    "inputPlaceholder": "Cole seu valor aqui",
+    "lengthHint": "{{count}} caracteres",
+    "kind": {
+      "api_key": "Chave de API",
+      "password": "Senha",
+      "oauth_token": "Token OAuth",
+      "other": "Segredo"
+    }
+  },
   "actions": {
     "all": "Todos",
     "save": "Salvar",

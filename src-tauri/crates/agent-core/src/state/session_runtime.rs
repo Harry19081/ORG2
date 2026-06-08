@@ -11,6 +11,7 @@ use crate::interaction::mode_switch::ModeSwitchManager;
 use crate::interaction::permission::AgentPermissionManager;
 use crate::interaction::plan_approval::PlanApprovalManager;
 use crate::interaction::question::QuestionManager;
+use crate::interaction::secret_broker::SecretBroker;
 use crate::memory::workspace_memory::auto_dream::AutoDreamState;
 use crate::memory::workspace_memory::extract::ExtractMemoriesState;
 use crate::memory::workspace_memory::surface_state::WorkspaceMemorySurfaceState;
@@ -135,6 +136,12 @@ pub struct AgentSession {
     pub permission_manager: Arc<AgentPermissionManager>,
     /// Question manager for structured user input.
     pub question_manager: Arc<QuestionManager>,
+    /// Secret broker — out-of-band capture of API keys / passwords / OAuth
+    /// tokens. The plaintext never enters the LLM transcript; the agent
+    /// receives only opaque `{{secret:<token>}}` placeholders, which the
+    /// `write_env_file` tool resolves at write time. See
+    /// [`crate::interaction::secret_broker`] for the threat model.
+    pub secret_broker: Arc<SecretBroker>,
     /// Mode switch manager (for agents with coding capability).
     pub mode_switch_manager: Option<Arc<ModeSwitchManager>>,
     /// Plan-approval manager (for agents with coding capability — drives the
@@ -273,6 +280,7 @@ impl AgentSession {
             compaction: tokio::sync::Mutex::new(CompactionState::default()),
             permission_manager,
             question_manager: Arc::new(QuestionManager::with_cancel_flag(Arc::clone(&cancel_flag))),
+            secret_broker: Arc::new(SecretBroker::with_cancel_flag(Arc::clone(&cancel_flag))),
             mode_switch_manager,
             plan_approval_manager,
             plan_slot_cache: PlanSlotCache::new(),

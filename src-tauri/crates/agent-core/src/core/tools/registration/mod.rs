@@ -95,6 +95,12 @@ pub struct ToolDeps {
     // ── Question ──
     pub question_manager: Option<Arc<crate::interaction::question::QuestionManager>>,
 
+    // ── Secret broker ──
+    /// Out-of-band secret capture broker. When present, `manage_secrets`
+    /// and `write_env_file` are registered. The plaintext never enters the
+    /// LLM transcript — see [`crate::interaction::secret_broker`].
+    pub secret_broker: Option<Arc<crate::interaction::secret_broker::SecretBroker>>,
+
     // ── Plan mode ──
     /// Plan-approval manager — when present, `create_plan` submits the plan
     /// for user review (broadcasts `agent:plan_ready_for_approval`) after a

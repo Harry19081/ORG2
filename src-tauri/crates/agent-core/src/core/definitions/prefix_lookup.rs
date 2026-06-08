@@ -16,7 +16,7 @@
 pub use core_types::session::{
     CLI_SESSION_PREFIX, GUI_CONTROL_SESSION_PREFIX, OS_SESSION_PREFIX, PENDING_SESSION_PLACEHOLDER,
     SDE_SESSION_PREFIX, SHADOW_SUBAGENT_SESSION_PREFIX, SUBAGENT_SESSION_PREFIX,
-    TERMINAL_SESSION_PREFIX, WINGMAN_SESSION_PREFIX,
+    WINGMAN_SESSION_PREFIX,
 };
 
 use super::schema::AgentDefinition;
@@ -56,12 +56,6 @@ pub static BUILTIN_PREFIX_REGISTRY: &[BuiltinPrefixEntry] = &[
         prefix: SDE_SESSION_PREFIX,
         agent_id: super::builtin::SDE_AGENT_ID,
         constructor: super::sde_agent,
-        uses_personal_workspace: false,
-    },
-    BuiltinPrefixEntry {
-        prefix: TERMINAL_SESSION_PREFIX,
-        agent_id: super::builtin::TERMINAL_AGENT_ID,
-        constructor: super::builtin::terminal_agent,
         uses_personal_workspace: false,
     },
 ];
@@ -142,10 +136,6 @@ mod tests {
             definition_for_session_id("sdeagent-abc").map(|definition| definition.id),
             Some("builtin:sde".to_string())
         );
-        assert_eq!(
-            definition_for_session_id("terminalagent-abc").map(|definition| definition.id),
-            Some("builtin:terminal".to_string())
-        );
     }
 
     #[test]
@@ -177,7 +167,6 @@ mod tests {
         assert!(uses_personal_workspace("osagent-abc"));
         assert!(uses_personal_workspace("guicontrol-abc"));
         assert!(!uses_personal_workspace("sdeagent-abc"));
-        assert!(!uses_personal_workspace("terminalagent-abc"));
         assert!(!uses_personal_workspace("wingman-abc"));
         assert!(!uses_personal_workspace("unknown-abc"));
     }

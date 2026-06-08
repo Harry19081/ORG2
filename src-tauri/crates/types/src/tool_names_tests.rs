@@ -26,6 +26,8 @@ fn tool_name_constants_are_stable_wire_strings() {
     assert_eq!(SETUP_REPO, "setup_repo");
     assert_eq!(ASK_USER_QUESTIONS, "ask_user_questions");
     assert_eq!(ASK_USER_PERMISSIONS, "ask_user_permissions");
+    assert_eq!(MANAGE_SECRETS, "manage_secrets");
+    assert_eq!(WRITE_ENV_FILE, "write_env_file");
 
     // ── Project ──
     assert_eq!(MANAGE_PROJECT, "manage_project");

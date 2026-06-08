@@ -89,6 +89,14 @@ uuid = { version = "1", features = ["v4"] }
 base64 = { workspace = true }
 sha2 = "0.10"
 
+# Secure in-memory wiping for the secret broker. The `Zeroizing<String>`
+# wrapper guarantees plaintext secrets are overwritten when the broker
+# entry is dropped (token expiry, session shutdown, or process exit). Used
+# only by `core::secret_broker` — kept in lockstep with `rand` (already
+# pulled in by the workspace dep graph) so the workspace cargo unify pass
+# does not pick up a second copy.
+zeroize = { version = "1.8", features = ["derive"] }
+
 # ---------------------------------------------------------------------------
 # Logging / errors
 # ---------------------------------------------------------------------------

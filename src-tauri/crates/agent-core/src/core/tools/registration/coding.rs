@@ -9,7 +9,7 @@ use crate::tools::impls::coding::{
     code_search::SearchTool,
     edit_file::EditTool,
     exec::{await_tool::AwaitTool, ExecTool},
-    files::{DeleteFileTool, ListDirTool, ReadFileTool},
+    files::{DeleteFileTool, ListDirTool, ReadFileTool, WriteEnvFileTool},
     inspect_terminals::InspectTerminalsTool,
     manage_file_history::ManageFileHistoryTool,
     manage_lsp::ManageLspTool,
@@ -153,6 +153,22 @@ pub fn register(registry: &mut ToolRegistry, deps: &ToolDeps, disabled: &HashSet
     }
     edit = edit.with_workspace_state(Arc::clone(&deps.workspace));
     register_if_enabled(registry, Box::new(edit), disabled);
+
+    // ── Write env file (privileged consumer of `manage_secrets` tokens) ──
+    // Only registered when a secret broker is wired in (production sessions
+    // only). Subagent/gateway/test paths that pass `secret_broker: None` get
+    // no env-writer, so a stray token resolution attempt cannot escape.
+    if let Some(ref broker) = deps.secret_broker {
+        register_if_enabled(
+            registry,
+            Box::new(WriteEnvFileTool::new(
+                Some(Arc::clone(&deps.workspace)),
+                deps.scratchpad_dir.clone(),
+                Arc::clone(broker),
+            )),
+            disabled,
+        );
+    }
 
     // ── Delete file ──
     let mut delete_file = DeleteFileTool::new(if deps.restrict_to_workspace {
