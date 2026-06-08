@@ -71,10 +71,21 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
             type="button"
             onClick={onClose}
             className={HEADER_BUTTON.action}
-            title={t("actions.back", "Back")}
+            title="Back"
           >
             <ArrowLeft size={HEADER_ICON_SIZE.sm} strokeWidth={2} />
           </button>
+
+          {/* Status icon */}
+          <span
+            className={`shrink-0 ${isOpen ? "text-success-6" : "text-text-3"}`}
+          >
+            {isOpen ? (
+              <CircleDot size={HEADER_ICON_SIZE.sm} strokeWidth={2} />
+            ) : (
+              <XCircle size={HEADER_ICON_SIZE.sm} strokeWidth={2} />
+            )}
+          </span>
 
           {/* Issue number badge */}
           <span
@@ -91,27 +102,6 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
             {issue.title}
           </span>
 
-          {/* Status action — close / reopen as a very small ghost button */}
-          {isOpen ? (
-            <button
-              type="button"
-              onClick={onCloseIssue}
-              className={`shrink-0 rounded px-1.5 py-[3px] ${TYPOGRAPHY.secondary} text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1`}
-              title="Close issue"
-            >
-              Close
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onReopenIssue}
-              className={`shrink-0 rounded px-1.5 py-[3px] ${TYPOGRAPHY.secondary} text-success-6 transition-colors hover:bg-success-1`}
-              title="Reopen issue"
-            >
-              Reopen
-            </button>
-          )}
-
           <button
             type="button"
             onClick={handleOpenUrl}
@@ -124,34 +114,11 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
 
         {/* ── Scrollable content ──────────────────────────────────────────── */}
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          {/* ── Issue title + status ──────────────────────────────────────── */}
-          <div className="flex flex-col gap-2 px-4 pb-3 pt-4">
-            {/* Status pill + full title */}
-            <div className="flex flex-wrap items-start gap-2">
-              <span
-                className={`mt-px inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-[3px] ${TYPOGRAPHY.badge} ${
-                  isOpen
-                    ? "text-success-7 bg-success-1"
-                    : "bg-fill-2 text-text-3"
-                }`}
-              >
-                {isOpen ? (
-                  <CircleDot size={11} strokeWidth={2} />
-                ) : (
-                  <XCircle size={11} strokeWidth={2} />
-                )}
-                {isOpen ? "Open" : "Closed"}
-              </span>
-              <h2
-                className={`min-w-0 flex-1 ${TYPOGRAPHY.sectionTitle} leading-[1.4] text-text-1`}
-              >
-                {issue.title}
-              </h2>
-            </div>
-
+          {/* ── Meta row: author + date ───────────────────────────────────── */}
+          <div className="flex flex-col gap-2 px-4 pb-2 pt-3">
             {/* Author row */}
             <div
-              className={`flex items-center gap-1.5 ${TYPOGRAPHY.secondary} text-text-3`}
+              className={`flex flex-wrap items-center gap-1.5 ${TYPOGRAPHY.secondary} text-text-3`}
             >
               <Avatar size={16} src={issue.user.avatar_url} />
               <span className="font-medium text-text-2">
@@ -189,7 +156,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
               <div
                 className={`flex flex-wrap items-center gap-1.5 ${TYPOGRAPHY.secondary} text-text-3`}
               >
-                <span className="text-text-3">Assigned to</span>
+                <span>Assigned to</span>
                 <div className="flex items-center gap-1">
                   {issue.assignees.map((user) => (
                     <span
@@ -209,23 +176,44 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
           {issue.body ? (
             <div className="border-t border-border-1 px-4 py-3">
               <p
-                className={`whitespace-pre-wrap ${TYPOGRAPHY.value} leading-relaxed text-text-1`}
+                className={`whitespace-pre-wrap ${TYPOGRAPHY.value} leading-[1.6] text-text-1`}
               >
                 {issue.body}
               </p>
             </div>
           ) : null}
 
+          {/* ── Close / Reopen action row ─────────────────────────────────── */}
+          <div className="border-t border-border-1 px-4 py-2">
+            {isOpen ? (
+              <button
+                type="button"
+                onClick={onCloseIssue}
+                className={`${TYPOGRAPHY.secondary} text-text-3 transition-colors hover:text-text-1`}
+              >
+                Close issue
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onReopenIssue}
+                className={`${TYPOGRAPHY.secondary} hover:text-success-7 text-success-6 transition-colors`}
+              >
+                Reopen issue
+              </button>
+            )}
+          </div>
+
           {/* ── Comments section ──────────────────────────────────────────── */}
           <div className="flex flex-1 flex-col border-t border-border-1">
             {/* Section heading */}
-            <div className="px-4 pb-1 pt-3">
+            <div className="border-b border-border-1 px-4 py-2">
               <span
-                className={`${TYPOGRAPHY.secondary} font-medium uppercase tracking-wide text-text-3`}
+                className={`${TYPOGRAPHY.badge} font-medium uppercase tracking-wider text-text-3`}
               >
                 {commentsLoading
                   ? "Comments"
-                  : `Comments${comments.length > 0 ? ` (${comments.length})` : ""}`}
+                  : `Comments${comments.length > 0 ? ` (${comments.length})` : " (0)"}`}
               </span>
             </div>
 
@@ -235,7 +223,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
               </div>
             ) : comments.length === 0 ? (
               <div
-                className={`px-4 py-2 ${TYPOGRAPHY.secondary} italic text-text-3`}
+                className={`px-4 py-3 ${TYPOGRAPHY.secondary} italic text-text-3`}
               >
                 No comments yet
               </div>
@@ -259,7 +247,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
                         <span>{formatTimeAgo(comment.created_at)}</span>
                       </div>
                       <p
-                        className={`whitespace-pre-wrap ${TYPOGRAPHY.value} leading-relaxed text-text-1`}
+                        className={`whitespace-pre-wrap ${TYPOGRAPHY.value} leading-[1.6] text-text-1`}
                       >
                         {comment.body}
                       </p>
@@ -282,7 +270,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
               rows={3}
               size="mini"
               resize="none"
-              className="mb-2"
+              className="mb-2 min-h-[60px]"
             />
             <div className="flex items-center justify-end gap-2">
               <Button
