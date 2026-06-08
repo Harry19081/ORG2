@@ -101,12 +101,13 @@ export async function clearMessages(sessionId: string): Promise<void> {
 export async function truncateAfterMessage(
   sessionId: string,
   createdAt: string,
-  options?: { revertFiles?: boolean }
+  options?: { revertFiles?: boolean; messageId?: string }
 ): Promise<number> {
   return rpc.agentSession.truncateAfterMessage({
     sessionId,
     createdAt,
     revertFiles: options?.revertFiles ?? true,
+    messageId: options?.messageId,
   });
 }
 

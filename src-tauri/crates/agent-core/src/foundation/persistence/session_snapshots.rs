@@ -295,6 +295,22 @@ pub fn get_snapshots_after(session_id: &str, created_at: &str) -> SqliteResult<V
     Ok(rows)
 }
 
+pub fn get_latest_snapshot_before_by_tool_call_id(
+    session_id: &str,
+    tool_call_id: &str,
+    created_at: &str,
+) -> SqliteResult<Option<String>> {
+    let conn = get_connection()?;
+    shared::query_optional(conn.query_row(
+        "SELECT hash FROM agent_snapshots
+         WHERE session_id = ?1 AND tool_call_id = ?2 AND created_at <= ?3
+         ORDER BY created_at DESC
+         LIMIT 1",
+        params![session_id, tool_call_id, created_at],
+        |row| row.get(0),
+    ))
+}
+
 pub fn get_snapshot_created_at_by_hash(
     session_id: &str,
     snapshot_hash: &str,
@@ -644,6 +660,17 @@ fn table_exists(conn: &Connection, table_name: &str) -> SqliteResult<bool> {
     )
 }
 
+fn column_exists(conn: &Connection, table_name: &str, column_name: &str) -> SqliteResult<bool> {
+    let mut stmt = conn.prepare(&format!("PRAGMA table_info({table_name})"))?;
+    let rows = stmt.query_map([], |row| row.get::<_, String>(1))?;
+    for row in rows {
+        if row? == column_name {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
 fn query_session_file_tool_rows(
     conn: &Connection,
     table_name: &str,
@@ -653,28 +680,41 @@ fn query_session_file_tool_rows(
     order_by: &str,
     session_id: &str,
     tool_names: &[&str],
+    created_at_or_after: Option<&str>,
 ) -> SqliteResult<Vec<SessionFileToolRow>> {
     if tool_names.is_empty() || !table_exists(conn, table_name)? {
         return Ok(Vec::new());
     }
+    let can_filter_created_at = created_at_or_after.is_some()
+        && column_exists(conn, table_name, "created_at")?;
 
     let placeholders = (0..tool_names.len())
         .map(|idx| format!("?{}", idx + 2))
         .collect::<Vec<_>>()
         .join(", ");
+    let created_at_filter = if can_filter_created_at {
+        format!(" AND created_at >= ?{}", tool_names.len() + 2)
+    } else {
+        String::new()
+    };
     let sql = format!(
         "SELECT {tool_column}, {input_column}, {output_column}
          FROM {table_name}
          WHERE session_id = ?1
            AND {tool_column} IN ({placeholders})
-           AND {input_column} IS NOT NULL
+           AND {input_column} IS NOT NULL{created_at_filter}
          ORDER BY {order_by}",
     );
 
-    let mut bound: Vec<Box<dyn rusqlite::ToSql>> = Vec::with_capacity(tool_names.len() + 1);
+    let mut bound: Vec<Box<dyn rusqlite::ToSql>> = Vec::with_capacity(tool_names.len() + 2);
     bound.push(Box::new(session_id.to_string()));
     for tool_name in tool_names {
         bound.push(Box::new((*tool_name).to_string()));
+    }
+    if can_filter_created_at {
+        if let Some(created_at) = created_at_or_after {
+            bound.push(Box::new(created_at.to_string()));
+        }
     }
     let params_ref: Vec<&dyn rusqlite::ToSql> = bound.iter().map(|value| value.as_ref()).collect();
 
@@ -713,6 +753,20 @@ fn accumulate_session_file_change(
 /// tool call arguments stored in Rust-native `agent_messages` and CLI
 /// `code_session_chunks`.
 pub fn get_session_modified_files(session_id: &str) -> SqliteResult<Vec<SessionFileChange>> {
+    get_session_modified_files_since(session_id, None)
+}
+
+pub fn get_session_modified_files_after(
+    session_id: &str,
+    created_at: &str,
+) -> SqliteResult<Vec<SessionFileChange>> {
+    get_session_modified_files_since(session_id, Some(created_at))
+}
+
+fn get_session_modified_files_since(
+    session_id: &str,
+    created_at_or_after: Option<&str>,
+) -> SqliteResult<Vec<SessionFileChange>> {
     let conn = get_connection()?;
 
     let mut file_map: std::collections::HashMap<String, (String, u32)> =
@@ -727,6 +781,7 @@ pub fn get_session_modified_files(session_id: &str) -> SqliteResult<Vec<SessionF
         "sequence ASC",
         session_id,
         SESSION_FILE_MODIFY_TOOLS,
+        created_at_or_after,
     )?;
     for (tool_name, tool_input, tool_output) in agent_message_rows {
         accumulate_session_file_change(
@@ -746,6 +801,7 @@ pub fn get_session_modified_files(session_id: &str) -> SqliteResult<Vec<SessionF
         "sequence ASC",
         session_id,
         SESSION_FILE_MODIFY_TOOLS,
+        created_at_or_after,
     )?;
     for (tool_name, tool_input, tool_output) in cli_chunk_rows {
         accumulate_session_file_change(

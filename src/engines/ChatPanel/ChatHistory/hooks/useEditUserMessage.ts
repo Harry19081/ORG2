@@ -41,6 +41,13 @@ import type { OptimizedChatItem } from "../chatItemPipeline/types";
 import { showRevertConfirm } from "../components/RevertConfirmDialog";
 
 const TRUNCATION_GUARD_CLEAR_DELAY_MS = 500;
+const USER_MESSAGE_EVENT_ID_PREFIX = "user-message-";
+
+function agentMessageIdFromUserEventId(eventId: string): string | undefined {
+  return eventId.startsWith(USER_MESSAGE_EVENT_ID_PREFIX)
+    ? eventId.slice(USER_MESSAGE_EVENT_ID_PREFIX.length)
+    : undefined;
+}
 
 export function useEditUserMessage(): (
   chatItem: OptimizedChatItem,
@@ -150,6 +157,7 @@ export function useEditUserMessage(): (
           if (isAgentSession(initiatedSessionId)) {
             await truncateAfterMessage(initiatedSessionId, createdAt, {
               revertFiles,
+              messageId: agentMessageIdFromUserEventId(eventId),
             });
           } else if (isCliSession(initiatedSessionId)) {
             await invokeTauri<number>("cli_agent_truncate_after_chunk", {

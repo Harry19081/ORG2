@@ -780,6 +780,18 @@ pub fn load_chunks(session_id: &str) -> SqliteResult<Vec<ActivityChunk>> {
 /// Also clears the CLI session ID so the next run starts fresh instead of resuming
 /// from the CLI agent's saved state (which still has the old conversation).
 pub fn truncate_chunks_after(session_id: &str, created_at: &str) -> SqliteResult<i64> {
+    truncate_chunks_after_with_reason(
+        session_id,
+        created_at,
+        session_bridge::CLI_HISTORY_MUTATION_MESSAGE_TRUNCATE,
+    )
+}
+
+pub fn truncate_chunks_after_with_reason(
+    session_id: &str,
+    created_at: &str,
+    mutation_reason: &str,
+) -> SqliteResult<i64> {
     let conn = get_connection()?;
 
     let tx = conn.unchecked_transaction()?;
@@ -794,12 +806,7 @@ pub fn truncate_chunks_after(session_id: &str, created_at: &str) -> SqliteResult
     // the session should float in time-bucketed views (sidebar / Kanban
     // filters). See the invariant note above.
     let updated_at = now_iso();
-    clear_cli_resume_state_with_tx(
-        &tx,
-        session_id,
-        Some(&updated_at),
-        session_bridge::CLI_HISTORY_MUTATION_MESSAGE_TRUNCATE,
-    )?;
+    clear_cli_resume_state_with_tx(&tx, session_id, Some(&updated_at), mutation_reason)?;
     tx.commit()?;
 
     Ok(deleted as i64)

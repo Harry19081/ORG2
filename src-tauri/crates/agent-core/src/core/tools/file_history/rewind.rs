@@ -8,6 +8,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use super::capture::make_tool_snapshot;
+use super::inspect::rewind_snapshot_ids;
 use super::paths::{backup_file, hash_bytes, read_snapshot};
 use super::types::{FileBackup, RestoreOutcome, RewindStats};
 
@@ -35,9 +36,7 @@ pub const REDO_SNAPSHOT_TOOL_CALL_ID: &str = "redo:rewind";
 /// counted as `failed` and skipped; we do NOT abort, since a partial
 /// rewind is still better than nothing.
 pub fn rewind_to_message(session_id: &str, target_created_at: &str) -> io::Result<RewindStats> {
-    let snapshot_ids =
-        crate::persistence::session_snapshots::get_snapshots_after(session_id, target_created_at)
-            .map_err(|err| io::Error::other(format!("DB error fetching snapshots: {}", err)))?;
+    let snapshot_ids = rewind_snapshot_ids(session_id, target_created_at)?;
 
     // Collect the union of all file paths that will be affected by this rewind.
     // We need this before rewinding so we can snapshot the current disk state.
@@ -138,9 +137,7 @@ pub fn rewind_file_to_message(
     target_created_at: &str,
     abs_path: &Path,
 ) -> io::Result<RewindStats> {
-    let snapshot_ids =
-        crate::persistence::session_snapshots::get_snapshots_after(session_id, target_created_at)
-            .map_err(|err| io::Error::other(format!("DB error fetching snapshots: {}", err)))?;
+    let snapshot_ids = rewind_snapshot_ids(session_id, target_created_at)?;
     let mut stats = RewindStats::default();
     for snapshot_id in snapshot_ids.into_iter().rev() {
         match restore_file_from_snapshot(session_id, &snapshot_id, abs_path) {

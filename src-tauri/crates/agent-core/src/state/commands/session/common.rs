@@ -6,8 +6,23 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::session::persistence as session_persistence;
+
 /// Setting key for the maximum concurrent worktree count.
 pub(super) const WORKTREE_MAX_COUNT_SETTING: &str = "git.worktree.maxCount";
+
+pub(super) fn review_session_ids(session_id: &str) -> Vec<String> {
+    let mut session_ids = vec![session_id.to_string()];
+    match session_persistence::get_child_sessions(session_id) {
+        Ok(children) => session_ids.extend(children.into_iter().map(|child| child.session_id)),
+        Err(err) => tracing::warn!(
+            "[agent_review] failed to load child sessions for {}: {}",
+            session_id,
+            err
+        ),
+    }
+    session_ids
+}
 
 /// Read the `git.worktree.maxCount` setting from user config.
 ///

@@ -10,6 +10,8 @@ use crate::state::AgentAppState;
 use crate::tools::file_history;
 use core_types::workflow::{AgentRole, LinkedSession, LinkedSessionStatus, LinkedSessionType};
 
+use super::common::review_session_ids;
+
 /// Load conversation messages for a session.
 #[tauri::command]
 pub async fn agent_load_messages(session_id: String) -> Result<Vec<serde_json::Value>, String> {
@@ -66,6 +68,7 @@ pub async fn agent_truncate_after_message(
     session_id: String,
     created_at: String,
     revert_files: Option<bool>,
+    message_id: Option<String>,
 ) -> Result<i64, String> {
     if let Some(session) = state.get_session(&session_id).await {
         session.scheduler.invalidate_pending();
@@ -76,20 +79,32 @@ pub async fn agent_truncate_after_message(
 
     let should_revert = revert_files.unwrap_or(true);
     tokio::task::spawn_blocking(move || -> Result<i64, String> {
+        let created_at = match message_id.as_deref() {
+            Some(message_id) => session_persistence::message_created_at(&session_id, message_id)
+                .map_err(|err| err.to_string())?
+                .unwrap_or(created_at),
+            None => created_at,
+        };
+        let review_session_ids = review_session_ids(&session_id);
         if should_revert {
-            let stats = file_history::rewind_to_message(&session_id, &created_at)
-                .map_err(|err| format!("file-history rewind failed: {err}"))?;
-            tracing::info!(
-                "[agent_truncate] file-history rewind: restored={} deleted={} skipped={} failed={}",
-                stats.restored,
-                stats.deleted,
-                stats.skipped_unchanged,
-                stats.failed,
-            );
+            for review_session_id in &review_session_ids {
+                let stats = file_history::rewind_to_message(review_session_id, &created_at)
+                    .map_err(|err| format!("file-history rewind failed for {review_session_id}: {err}"))?;
+                tracing::info!(
+                    "[agent_truncate] file-history rewind: session={} restored={} deleted={} skipped={} failed={}",
+                    review_session_id,
+                    stats.restored,
+                    stats.deleted,
+                    stats.skipped_unchanged,
+                    stats.failed,
+                );
+            }
         }
 
-        session_snapshots::truncate_snapshots_after(&session_id, &created_at)
-            .map_err(|err| err.to_string())?;
+        for review_session_id in &review_session_ids {
+            session_snapshots::truncate_snapshots_after(review_session_id, &created_at)
+                .map_err(|err| err.to_string())?;
+        }
         PlanApprovalStore::delete_by_session(&session_id).map_err(|err| err.to_string())?;
         session_persistence::truncate_messages_after(&session_id, &created_at)
             .map_err(|err| err.to_string())
@@ -107,8 +122,22 @@ pub async fn agent_check_snapshot_changes(
     created_at: String,
 ) -> Result<bool, String> {
     tokio::task::spawn_blocking(move || {
-        file_history::has_changes_after_message(&session_id, &created_at)
-            .map_err(|e| format!("file-history check failed: {}", e))
+        for review_session_id in review_session_ids(&session_id) {
+            let has_changes = file_history::has_changes_after_message(&review_session_id, &created_at)
+                .map_err(|e| format!("file-history check failed for {review_session_id}: {e}"))?;
+            if has_changes {
+                return Ok(true);
+            }
+            let modified_files = session_snapshots::get_session_modified_files_after(
+                &review_session_id,
+                &created_at,
+            )
+            .map_err(|e| format!("file-change check failed for {review_session_id}: {e}"))?;
+            if !modified_files.is_empty() {
+                return Ok(true);
+            }
+        }
+        Ok(false)
     })
     .await
     .map_err(|err| format!("Task error: {}", err))?

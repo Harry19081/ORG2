@@ -525,7 +525,8 @@ pub async fn cli_agent_truncate_after_chunk(
     // Clean up CLI config dir so the agent starts fresh
     session_runner::cleanup_cursor_config_dir(&session_id);
 
-    if revert_files.unwrap_or(true) {
+    let should_revert_files = revert_files.unwrap_or(true);
+    if should_revert_files {
         let rewind_sid = session_id.clone();
         let rewind_ts = created_at.clone();
         let stats = tokio::task::spawn_blocking(move || {
@@ -546,8 +547,13 @@ pub async fn cli_agent_truncate_after_chunk(
     }
 
     let sid = session_id.clone();
+    let mutation_reason = if should_revert_files {
+        agent_core::foundation::session_bridge::CLI_HISTORY_MUTATION_FILE_REWIND
+    } else {
+        agent_core::foundation::session_bridge::CLI_HISTORY_MUTATION_MESSAGE_TRUNCATE
+    };
     tokio::task::spawn_blocking(move || {
-        persistence::truncate_chunks_after(&sid, &created_at)
+        persistence::truncate_chunks_after_with_reason(&sid, &created_at, mutation_reason)
             .map_err(|e| format!("DB error: {}", e))
     })
     .await

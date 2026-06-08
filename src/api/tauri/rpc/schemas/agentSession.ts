@@ -80,6 +80,7 @@ export const TruncateAfterMessageInput = z.object({
   sessionId: z.string(),
   createdAt: z.string(),
   revertFiles: z.boolean(),
+  messageId: z.string().optional(),
 });
 
 export const CheckSnapshotChangesInput = z.object({

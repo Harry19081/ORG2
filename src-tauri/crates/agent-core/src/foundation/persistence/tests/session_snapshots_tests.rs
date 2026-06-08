@@ -181,6 +181,7 @@ fn query_session_file_tool_rows_reads_cli_chunks() {
         "sequence ASC",
         "cli-session",
         SESSION_FILE_MODIFY_TOOLS,
+        None,
     )
     .unwrap();
 

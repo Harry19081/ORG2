@@ -81,13 +81,26 @@ const RevertConfirmDialog: React.FC = () => {
       width={440}
       footer={
         <div className="flex items-center justify-end gap-2 px-4 pb-4">
-          <Button size="small" onClick={handleCancel}>
+          <Button
+            size="small"
+            data-testid="rewind-file-changes-cancel"
+            onClick={handleCancel}
+          >
             {t("common:actions.cancel", "Cancel")}
           </Button>
-          <Button size="small" onClick={handleKeep}>
+          <Button
+            size="small"
+            data-testid="rewind-file-changes-keep"
+            onClick={handleKeep}
+          >
             {t("revertConfirm.keepChanges", "Keep changes")}
           </Button>
-          <Button size="small" variant="primary" onClick={handleRevert}>
+          <Button
+            size="small"
+            variant="primary"
+            data-testid="rewind-file-changes-revert"
+            onClick={handleRevert}
+          >
             {t("revertConfirm.revertChanges", "Revert changes")}
           </Button>
         </div>

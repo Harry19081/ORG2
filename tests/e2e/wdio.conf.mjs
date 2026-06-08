@@ -135,6 +135,7 @@ const ORGII_HOME_SEED_EXCLUDED_NAMES = new Set([
   "target",
   "tmp",
 ]);
+const e2eMultiRepoWorkspace = process.env.E2E_MULTI_REPO_WORKSPACE === "1";
 const fixtureRepoPath = resolve(
   process.env.E2E_FIXTURE_REPO_PATH ??
     (process.platform === "win32"
@@ -612,6 +613,44 @@ function createFixtureRepo(repoPath) {
   verifyE2EWorkspaceRepo(repoPath);
 }
 
+function createMultiRepoFixtureWorkspace(rootPath) {
+  rmSync(rootPath, { force: true, recursive: true });
+  const primaryRepoPath = join(rootPath, "primary-repo");
+  const siblingRepoPath = join(rootPath, "sibling-repo");
+  createFixtureRepo(primaryRepoPath);
+  createFixtureRepo(siblingRepoPath);
+  writeFileSync(
+    join(siblingRepoPath, "src", "math.ts"),
+    [
+      "export function addNumbers(first: number, second: number): number {",
+      "  return first - second;",
+      "}",
+      "",
+      "export const SIBLING_ONLY_SENTINEL = 'ORGII_E2E_SIBLING_REPO';",
+      "",
+    ].join("\n")
+  );
+  execFileSync("git", ["-C", siblingRepoPath, "add", "src/math.ts"], {
+    stdio: "ignore",
+  });
+  execFileSync(
+    "git",
+    [
+      "-C",
+      siblingRepoPath,
+      "-c",
+      "user.name=ORGII E2E",
+      "-c",
+      "user.email=e2e@orgii.local",
+      "commit",
+      "-m",
+      "Add sibling sentinel",
+    ],
+    { stdio: "ignore" }
+  );
+  return primaryRepoPath;
+}
+
 function ensureE2EWorkspaceRepo() {
   const explicitRepoPath = process.env.E2E_REPO_PATH;
   if (explicitRepoPath) {
@@ -620,9 +659,14 @@ function ensureE2EWorkspaceRepo() {
     process.env.E2E_REPO_PATH = repoPath;
     return repoPath;
   }
-  createFixtureRepo(fixtureRepoPath);
-  process.env.E2E_REPO_PATH = fixtureRepoPath;
-  return fixtureRepoPath;
+  const repoPath = e2eMultiRepoWorkspace
+    ? createMultiRepoFixtureWorkspace(fixtureRepoPath)
+    : fixtureRepoPath;
+  if (!e2eMultiRepoWorkspace) {
+    createFixtureRepo(repoPath);
+  }
+  process.env.E2E_REPO_PATH = repoPath;
+  return repoPath;
 }
 
 function killProcessIds(processIds) {

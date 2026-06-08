@@ -5,21 +5,9 @@ use std::path::PathBuf;
 use crate::foundation::session_bridge;
 use crate::persistence::db_helpers as shared;
 use crate::persistence::session_snapshots;
-use crate::session::persistence as session_persistence;
 use crate::tools::file_history;
 
-fn review_session_ids(session_id: &str) -> Vec<String> {
-    let mut session_ids = vec![session_id.to_string()];
-    match session_persistence::get_child_sessions(session_id) {
-        Ok(children) => session_ids.extend(children.into_iter().map(|child| child.session_id)),
-        Err(err) => tracing::warn!(
-            "[agent_review] failed to load child sessions for {}: {}",
-            session_id,
-            err
-        ),
-    }
-    session_ids
-}
+use super::common::review_session_ids;
 
 fn invalidate_cli_resume_state_best_effort(session_id: String, mutation_reason: &'static str) {
     std::thread::spawn(move || {
