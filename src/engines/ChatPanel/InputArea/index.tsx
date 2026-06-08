@@ -142,6 +142,9 @@ const InputArea: React.FC<InputAreaProps> = memo(
       clearCiteCode,
       handleDivSubmit,
       isWpGeneWorking,
+      isSessionActive,
+      runtimeStatus,
+      hasComposerStopBlockingWork,
       isPendingCancel,
       interruptSession,
       resumeSession,
@@ -276,7 +279,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
       isCursorIde && sessionId ? (
         <CursorModePill sessionId={sessionId} />
       ) : (
-        <ModePill />
+        <ModePill hideWhenDefault resetToDefaultOnClick />
       );
     const clearReplyInfo = useCallback(
       () => setReplyInfo({ isReply: false }),
@@ -284,12 +287,29 @@ const InputArea: React.FC<InputAreaProps> = memo(
     );
     const submitMessage = useCallback(
       (capturedText?: string) => {
+        const runtimeIsWorking =
+          runtimeStatus === "running" ||
+          runtimeStatus === "installing" ||
+          runtimeStatus === "waiting_for_user" ||
+          runtimeStatus === "waiting_for_funds";
         void handleDivSubmit({
-          forceQueueAsActiveTurn: isWpGeneWorking || isPendingCancel,
+          forceQueueAsActiveTurn:
+            isWpGeneWorking ||
+            isSessionActive ||
+            runtimeIsWorking ||
+            hasComposerStopBlockingWork ||
+            isPendingCancel,
           capturedText,
         });
       },
-      [handleDivSubmit, isPendingCancel, isWpGeneWorking]
+      [
+        handleDivSubmit,
+        hasComposerStopBlockingWork,
+        isPendingCancel,
+        isSessionActive,
+        isWpGeneWorking,
+        runtimeStatus,
+      ]
     );
 
     return (
@@ -321,6 +341,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
 
           <ComposerShell
             ref={isEditMode ? editContainerRef : composerShellRef}
+            data-composer-menu-anchor
             data-chat-drop-target
             data-chat-drop-target-id={dropTargetId}
             data-testid={isEditMode ? "chat-message-edit-composer" : undefined}

@@ -4,6 +4,7 @@
 //! event handlers and persistence strategies.
 
 mod backoff;
+pub(crate) mod context_accounting;
 pub(crate) mod file_tracker;
 pub mod helpers;
 mod length_recovery;
@@ -47,7 +48,7 @@ pub(crate) use backoff::set_test_backoff_override_ms;
 pub(crate) use backoff::MAX_TOOL_OUTPUT_CHARS;
 
 use backoff::{MAX_CONSECUTIVE_ERRORS, MAX_REPEAT_STREAK};
-
+pub(crate) use context_accounting::ContextUsageSnapshot;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -115,6 +116,7 @@ pub async fn execute_turn(
     let mut final_is_stream_error = false;
 
     let mut usage = UsageTotals::default();
+    let mut context_usage_snapshot: Option<ContextUsageSnapshot> = None;
 
     let mut last_tool_signature: Option<String> = None;
     let mut repeat_count: u32 = 0;
@@ -322,6 +324,13 @@ pub async fn execute_turn(
 
         if !response.usage.is_empty() {
             usage.accumulate(&response.usage, session_id);
+            let snapshot = ContextUsageSnapshot::from_payload(
+                &llm_messages,
+                &tool_defs,
+                usage.last_prompt,
+            );
+            handler.on_context_usage(session_id, &snapshot);
+            context_usage_snapshot = Some(snapshot);
         }
 
         // Handle stream interruption.
@@ -696,6 +705,7 @@ pub async fn execute_turn(
         completion_tokens: usage.completion,
         total_tokens: usage.total,
         context_tokens: usage.last_prompt,
+        context_usage_snapshot,
         cache_read_tokens: usage.cache_read,
         cache_write_tokens: usage.cache_write,
     })

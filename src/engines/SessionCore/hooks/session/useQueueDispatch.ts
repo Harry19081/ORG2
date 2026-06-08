@@ -19,6 +19,7 @@
  * queued follow-ups.
  */
 import { useAtomValue, useSetAtom, useStore } from "jotai";
+import type { Atom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 
 import { enterAgentOrgSessionIntervention } from "@src/api/tauri/agent";
@@ -27,7 +28,7 @@ import type { AgentExecMode } from "@src/config/sessionCreatorConfig";
 import { cancelTurnForTimelineBoundary } from "@src/engines/SessionCore/control/sessionTimelineBoundary";
 import { sortedEventsAtom } from "@src/engines/SessionCore/core/atoms/events";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms/metadata";
-import { hasTurnBlockingRunningSessionEvent } from "@src/engines/SessionCore/core/runningEventGate";
+import { sessionHasTurnBlockingRuntimeEvent } from "@src/engines/SessionCore/core/runningEventGate";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import { SessionService } from "@src/engines/SessionCore/services/SessionService";
 import { createSyntheticUserEvent } from "@src/engines/SessionCore/sync/adapters/shared";
@@ -46,6 +47,7 @@ import {
   creatorDefaultModelSelectionAtom,
 } from "@src/store/session/creatorDefaultModelAtom";
 import { sessionMapAtom } from "@src/store/session/sessionAtom";
+import { activeSessionIdAtom } from "@src/store/session/viewAtom";
 import {
   type QueuedMessage,
   dequeueMessageAtom,
@@ -60,25 +62,36 @@ import { selectionFromSession } from "@src/util/session/selectionFromSession";
 import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
 import {
+  getQueueTurnReleaseAtAfter,
   hasQueueTurnSettledAfter,
   hasQueueTurnTerminatedAfter,
   isQueueRuntimeStillWorking,
   markQueueTurnWorking,
+  queueTurnReleaseSignalAtom,
 } from "./queueTurnGate";
 
 const MAX_SENT_QUEUE_ID_CACHE = 200;
 const MIN_QUEUE_VISIBLE_MS = 1_200;
+const QUEUE_TURN_RELEASE_STABILIZATION_MS = 1_000;
 function queuedMessageAgeMs(message: QueuedMessage): number {
   const createdAtMs = Date.parse(message.createdAt);
   if (!Number.isFinite(createdAtMs)) return MIN_QUEUE_VISIBLE_MS;
   return Date.now() - createdAtMs;
 }
 
-function hasTurnBlockingRunningEventForSession(sessionId: string): boolean {
-  return hasTurnBlockingRunningSessionEvent(
+function hasTurnBlockingRuntimeEventForSession(sessionId: string): boolean {
+  return sessionHasTurnBlockingRuntimeEvent(
     getInstrumentedStore().get(sortedEventsAtom),
     sessionId
   );
+}
+
+function isSessionRowRuntimeWorking(
+  sessionMap: Map<string, { status?: string }>,
+  sessionId: string
+): boolean {
+  const status = sessionMap.get(sessionId)?.status;
+  return typeof status === "string" && isQueueRuntimeStillWorking(status);
 }
 
 export function useQueueDispatch(): void {
@@ -93,8 +106,10 @@ export function useQueueDispatch(): void {
   const forceSendQueue = useAtomValue(forceSendPendingQueueAtom);
   const sortedEvents = useAtomValue(sortedEventsAtom);
   const activeSessionId = useAtomValue(sessionIdAtom);
+  const pipelineActiveSessionId = useAtomValue(activeSessionIdAtom);
   const isQueueEditing = useAtomValue(queueEditingAtom);
   const flushRequest = useAtomValue(queueFlushRequestAtom);
+  const queueTurnReleaseSignal = useAtomValue(queueTurnReleaseSignalAtom);
   const dequeueMessage = useSetAtom(dequeueMessageAtom);
   const setSessionRuntimeStatus = useSetAtom(setSessionRuntimeStatusAtom);
   const sessionMap = useAtomValue(sessionMapAtom);
@@ -319,7 +334,9 @@ export function useQueueDispatch(): void {
     const latestIsSessionActive = store.get(isSessionActiveAtom);
     const latestQueue = store.get(messageQueueAtom);
     const latestForceSendQueue = store.get(forceSendPendingQueueAtom);
+    const latestSessionMap = store.get(sessionMapAtom);
     const latestActiveSessionId = store.get(sessionIdAtom);
+    const latestPipelineActiveSessionId = store.get(activeSessionIdAtom);
     const latestIsEditing = store.get(queueEditingAtom);
 
     pendingCancelRef.current = latestPendingCancel;
@@ -332,6 +349,35 @@ export function useQueueDispatch(): void {
 
     const activeSessionIdHint = activeSessionIdRef.current;
     const forcedMsg = forceSendQueueRef.current[0];
+    const naturalMsg = queueRef.current.find((message) => {
+      if (message.dispatchAfterUserCancel) return false;
+      const messageIsVisibleSession =
+        message.sessionId === latestActiveSessionId ||
+        message.sessionId === latestPipelineActiveSessionId;
+      const globalPipelineWorking =
+        latestIsSessionActive ||
+        isQueueRuntimeStillWorking(latestRuntimeStatus);
+      const messageRuntimeWorking =
+        globalPipelineWorking ||
+        (messageIsVisibleSession &&
+          (latestIsSessionActive ||
+            isQueueRuntimeStillWorking(latestRuntimeStatus))) ||
+        isSessionRowRuntimeWorking(latestSessionMap, message.sessionId) ||
+        hasTurnBlockingRuntimeEventForSession(message.sessionId);
+      if (messageRuntimeWorking) return false;
+      if (message.requiresRuntimeSettle) {
+        const createdAtMs = Date.parse(message.createdAt);
+        const requiredSettleAfter = Number.isFinite(createdAtMs)
+          ? createdAtMs
+          : 0;
+        return hasQueueTurnSettledAfter(
+          message.sessionId,
+          requiredSettleAfter,
+          message.releaseAfterTurnId
+        );
+      }
+      return true;
+    });
     const latestFlushRequest = store.get(queueFlushRequestAtom);
     if (latestFlushRequest < handledFlushRequestRef.current) {
       handledFlushRequestRef.current = latestFlushRequest;
@@ -341,7 +387,8 @@ export function useQueueDispatch(): void {
       (message) => message.dispatchAfterUserCancel
     );
     const explicitMsg = forcedMsg ?? postCancelSendMsg;
-    const activeSessionId = explicitMsg?.sessionId ?? activeSessionIdHint;
+    const activeSessionId =
+      explicitMsg?.sessionId ?? naturalMsg?.sessionId ?? activeSessionIdHint;
     if (!activeSessionId) {
       return;
     }
@@ -354,10 +401,17 @@ export function useQueueDispatch(): void {
     // accepted Stop but stayed visually running can strand the user's resend.
     if (latestPendingCancel && !explicitMsg) return;
 
+    const isVisibleSession =
+      activeSessionId === latestActiveSessionId ||
+      activeSessionId === latestPipelineActiveSessionId;
     const runtimeWorking =
       latestIsSessionActive ||
       isQueueRuntimeStillWorking(latestRuntimeStatus) ||
-      hasTurnBlockingRunningEventForSession(activeSessionId);
+      (isVisibleSession &&
+        (latestIsSessionActive ||
+          isQueueRuntimeStillWorking(latestRuntimeStatus))) ||
+      isSessionRowRuntimeWorking(latestSessionMap, activeSessionId) ||
+      hasTurnBlockingRuntimeEventForSession(activeSessionId);
     if (runtimeWorking && !explicitMsg) return;
     if (explicitMsg) {
       const interruptRequestedAt =
@@ -412,6 +466,7 @@ export function useQueueDispatch(): void {
 
     const nextMsg =
       explicitMsg ??
+      naturalMsg ??
       queueRef.current.find((message) => message.sessionId === activeSessionId);
 
     if (!nextMsg || editingRef.current) {
@@ -425,19 +480,32 @@ export function useQueueDispatch(): void {
       const requiredSettleAfter = Number.isFinite(createdAtMs)
         ? createdAtMs
         : 0;
-      const hasSettled = hasQueueTurnSettledAfter(
+      const releasedAt = getQueueTurnReleaseAtAfter(
         nextMsg.sessionId,
         requiredSettleAfter,
         nextMsg.releaseAfterTurnId
       );
-      if (!hasSettled) return;
+      if (releasedAt === undefined) return;
+
+      const releaseStabilizationMs =
+        QUEUE_TURN_RELEASE_STABILIZATION_MS - (Date.now() - releasedAt);
+      if (releaseStabilizationMs > 0) {
+        const timerId = window.setTimeout(() => {
+          tryDispatchNextRef.current?.();
+        }, releaseStabilizationMs);
+        flushTimersRef.current.push(timerId);
+        return;
+      }
 
       if (!explicitMsg) {
         const stillWorking =
-          store.get(isSessionActiveAtom) ||
-          isQueueRuntimeStillWorking(store.get(sessionRuntimeStatusAtom)) ||
-          hasTurnBlockingRunningEventForSession(nextMsg.sessionId);
-        if (stillWorking || store.get(isPendingCancelAtom)) return;
+          isSessionRowRuntimeWorking(latestSessionMap, nextMsg.sessionId) ||
+          hasTurnBlockingRuntimeEventForSession(nextMsg.sessionId);
+        const activeSessionPendingCancel =
+          (nextMsg.sessionId === store.get(sessionIdAtom) ||
+            nextMsg.sessionId === store.get(activeSessionIdAtom)) &&
+          store.get(isPendingCancelAtom);
+        if (stillWorking || activeSessionPendingCancel) return;
       }
     }
 
@@ -471,7 +539,6 @@ export function useQueueDispatch(): void {
       return;
     }
     explicitInterruptRequestedAtByQueueIdRef.current.delete(nextMsg.id);
-    rememberSentQueueId(nextMsg.id);
     if (flushRequested) {
       handledFlushRequestRef.current = latestFlushRequest;
     }
@@ -494,6 +561,20 @@ export function useQueueDispatch(): void {
   }, [tryDispatchNext]);
 
   useEffect(() => {
+    const unsubscribers = [
+      store.sub(messageQueueAtom as Atom<QueuedMessage[]>, tryDispatchNext),
+      store.sub(
+        forceSendPendingQueueAtom as Atom<QueuedMessage[]>,
+        tryDispatchNext
+      ),
+      store.sub(queueFlushRequestAtom as Atom<number>, tryDispatchNext),
+    ];
+    return () => {
+      for (const unsubscribe of unsubscribers) unsubscribe();
+    };
+  }, [store, tryDispatchNext]);
+
+  useEffect(() => {
     if (isSessionActive) {
       // Session became active — release any stale lock from a previous dispatch.
       dispatchLockRef.current = false;
@@ -508,6 +589,19 @@ export function useQueueDispatch(): void {
     if (!hasExplicitDispatch) return;
     tryDispatchNext();
   }, [forceSendQueue, queue, sortedEvents, tryDispatchNext]);
+
+  useEffect(() => {
+    if (queue.length === 0 && forceSendQueue.length === 0) return;
+    tryDispatchNext();
+  }, [
+    activeSessionId,
+    pipelineActiveSessionId,
+    forceSendQueue.length,
+    queue.length,
+    queueTurnReleaseSignal,
+    sessionMap,
+    tryDispatchNext,
+  ]);
 
   useEffect(() => {
     const isWorking = isRuntimeWorkingStatus(runtimeStatus);

@@ -1,3 +1,13 @@
+import { atom } from "jotai";
+
+import {
+  getInstrumentedStore,
+  isStoreInitialized,
+} from "@src/util/core/state/instrumentedStore";
+
+export const queueTurnReleaseSignalAtom = atom(0);
+queueTurnReleaseSignalAtom.debugLabel = "queueTurnReleaseSignalAtom";
+
 const lastObservedWorkingAtBySession = new Map<string, number>();
 const lastObservedSettleAtBySession = new Map<string, number>();
 const lastObservedTerminalAtBySession = new Map<string, number>();
@@ -23,6 +33,14 @@ function isQueueReleasingTurnStatus(status: string): boolean {
   return QUEUE_RELEASING_TURN_STATUSES.has(status);
 }
 
+function bumpQueueReleaseSignal(): void {
+  if (!isStoreInitialized()) return;
+  getInstrumentedStore().set(
+    queueTurnReleaseSignalAtom,
+    (current) => current + 1
+  );
+}
+
 export function isQueueRuntimeStillWorking(runtimeStatus: string): boolean {
   return QUEUE_RUNTIME_WORKING_STATUSES.has(runtimeStatus);
 }
@@ -38,13 +56,17 @@ export function markQueueTurnSettled(
   turnStatus = "completed"
 ): void {
   lastObservedTerminalAtBySession.set(sessionId, at);
-  if (turnId) {
+
+  if (!turnId) {
     const terminalEvents =
       pendingTurnTerminalEventsBySession.get(sessionId) ?? [];
     terminalEvents.push({ at, status: turnStatus });
     while (terminalEvents.length > 50) terminalEvents.shift();
     pendingTurnTerminalEventsBySession.set(sessionId, terminalEvents);
+  }
+  bumpQueueReleaseSignal();
 
+  if (turnId) {
     let terminalTurns = terminalTurnIdsBySession.get(sessionId);
     if (!terminalTurns) {
       terminalTurns = new Map<string, number>();
@@ -54,8 +76,10 @@ export function markQueueTurnSettled(
   }
 
   if (!isQueueReleasingTurnStatus(turnStatus)) return;
-  lastObservedSettleAtBySession.set(sessionId, at);
-  if (!turnId) return;
+  if (!turnId) {
+    lastObservedSettleAtBySession.set(sessionId, at);
+    return;
+  }
   let releasedTurns = releasedTurnIdsBySession.get(sessionId);
   if (!releasedTurns) {
     releasedTurns = new Map<string, number>();
@@ -64,27 +88,35 @@ export function markQueueTurnSettled(
   releasedTurns.set(turnId, at);
 }
 
-export function hasQueueTurnSettledAfter(
+export function getQueueTurnReleaseAtAfter(
   sessionId: string,
   at: number,
   turnId?: string
-): boolean {
+): number | undefined {
   if (turnId === PENDING_RUST_ACTIVE_TURN_ID) {
     const terminalEvent = pendingTurnTerminalEventsBySession
       .get(sessionId)
-      ?.find((event) => event.at > at);
-    return terminalEvent
-      ? isQueueReleasingTurnStatus(terminalEvent.status)
-      : false;
+      ?.find(
+        (event) => event.at > at && isQueueReleasingTurnStatus(event.status)
+      );
+    return terminalEvent?.at;
   }
 
   if (turnId) {
     const releasedAt =
       releasedTurnIdsBySession.get(sessionId)?.get(turnId) ?? 0;
-    return releasedAt > at;
+    return releasedAt > at ? releasedAt : undefined;
   }
   const lastSettleAt = lastObservedSettleAtBySession.get(sessionId) ?? 0;
-  return lastSettleAt > at;
+  return lastSettleAt > at ? lastSettleAt : undefined;
+}
+
+export function hasQueueTurnSettledAfter(
+  sessionId: string,
+  at: number,
+  turnId?: string
+): boolean {
+  return getQueueTurnReleaseAtAfter(sessionId, at, turnId) !== undefined;
 }
 
 export function hasQueueTurnTerminatedAfter(

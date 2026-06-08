@@ -15,6 +15,7 @@
  * - AutoIndexingProvider      — repo indexing scheduler
  * - AppUpdater                — Tauri auto-update poller
  * - APICallPanelProvider      — DevTools API call inspector
+ * - SecretCaptureModal        — out-of-band secret capture overlay
  */
 import React, { useEffect } from "react";
 
@@ -26,6 +27,7 @@ import { useWindowFocusTracking } from "@src/hooks/platform";
 import { useProcessReconciliation } from "@src/hooks/terminal";
 import { APICallPanelProvider } from "@src/modules/shared/DevTools/APICallPanel";
 import { AppUpdater } from "@src/scaffold/AppUpdater";
+import SecretCaptureModal from "@src/scaffold/SecretCaptureModal";
 import {
   flushPendingWrites,
   loadPersistedBuffers,
@@ -89,6 +91,7 @@ export const AppDeferredServices: React.FC<{ ready: boolean }> = ({
       <AutoIndexingProvider />
       <AppUpdater />
       <APICallPanelProvider />
+      <SecretCaptureModal />
     </>
   );
 };

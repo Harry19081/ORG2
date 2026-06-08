@@ -7,10 +7,9 @@
 #[cfg(test)]
 mod tests_extended {
     use crate::core::definitions::builtin::{
-        get_builtin_agent, get_builtin_agents, is_builtin_agent, AGENT_ARCHITECT_ID,
+        get_builtin_agent, get_builtin_agents, is_builtin_agent, ADE_MANAGER_ID,
         AI_RESEARCH_AGENT_ID, BASE_AGENT_ID, BUILTIN_PREFIX, EXPLORE_AGENT_ID, GENERAL_AGENT_ID,
-        MEMORY_CONSOLIDATOR_ID, MEMORY_EXTRACTOR_ID, OS_AGENT_ID, SDE_AGENT_ID, TERMINAL_AGENT_ID,
-        WINGMAN_AGENT_ID,
+        MEMORY_CONSOLIDATOR_ID, MEMORY_EXTRACTOR_ID, OS_AGENT_ID, SDE_AGENT_ID, WINGMAN_AGENT_ID,
     };
     use crate::core::definitions::resolved::{
         ResolveError, ResolvedAgent, ResolvedToolSelection, SkillsParams,
@@ -85,18 +84,13 @@ mod tests_extended {
     }
 
     #[test]
-    fn is_builtin_terminal_returns_true() {
-        assert!(is_builtin_agent(TERMINAL_AGENT_ID));
-    }
-
-    #[test]
     fn is_builtin_ai_research_returns_true() {
         assert!(is_builtin_agent(AI_RESEARCH_AGENT_ID));
     }
 
     #[test]
-    fn is_builtin_agent_architect_returns_true() {
-        assert!(is_builtin_agent(AGENT_ARCHITECT_ID));
+    fn is_builtin_ade_manager_returns_true() {
+        assert!(is_builtin_agent(ADE_MANAGER_ID));
     }
 
     // =========================================================================
@@ -204,18 +198,13 @@ mod tests_extended {
     }
 
     #[test]
-    fn get_builtin_agent_terminal_returns_some() {
-        assert!(get_builtin_agent(TERMINAL_AGENT_ID).is_some());
-    }
-
-    #[test]
     fn get_builtin_agent_ai_research_returns_some() {
         assert!(get_builtin_agent(AI_RESEARCH_AGENT_ID).is_some());
     }
 
     #[test]
-    fn get_builtin_agent_architect_returns_some() {
-        assert!(get_builtin_agent(AGENT_ARCHITECT_ID).is_some());
+    fn get_builtin_ade_manager_returns_some() {
+        assert!(get_builtin_agent(ADE_MANAGER_ID).is_some());
     }
 
     // =========================================================================
@@ -264,11 +253,12 @@ mod tests_extended {
     }
 
     #[test]
-    fn get_builtin_agents_count_is_eleven() {
-        // base, os, sde, terminal, ai-research, agent-architect, wingman,
-        // explore, general, memory-extractor, memory-consolidator
+    fn get_builtin_agents_count_matches_registry() {
+        // ADE Manager, base, os, gui-control, sde, ai-research, wingman,
+        // work-item-manager, explore, general, memory-extractor,
+        // memory-consolidator
         let agents = get_builtin_agents();
-        assert_eq!(agents.len(), 11);
+        assert_eq!(agents.len(), 12);
     }
 
     // =========================================================================

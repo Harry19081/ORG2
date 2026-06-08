@@ -2,9 +2,9 @@
 //! or write a `FileSnapshot` JSON file under
 //! `~/.orgii/file-history/<session_id>/`.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::io;
-use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use app_paths as paths;

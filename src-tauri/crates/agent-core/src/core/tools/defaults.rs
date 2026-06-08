@@ -22,6 +22,11 @@ use crate::definitions::capabilities::{CapabilitySet, RequiredCapability};
 pub const SUBAGENT_FORBIDDEN_TOOLS: &[&str] = &[
     // User-interaction: only parent ↔ user, never subagent ↔ user.
     tool_names::ASK_USER_QUESTIONS,
+    // Secret capture is a parent ↔ user dialog. Subagents have no
+    // access to the per-session `SecretBroker` anyway (`ToolDeps`
+    // is built with `secret_broker: None` for shadow runs), but
+    // keep the explicit deny for defence-in-depth.
+    tool_names::MANAGE_SECRETS,
     tool_names::SUGGEST_MODE_SWITCH,
     tool_names::SEND_MESSAGE,
     // Recursive delegation — a subagent spawning more subagents quickly
@@ -68,6 +73,10 @@ pub const DEFAULT_SUBAGENT_DISABLED: &[&str] = &[
     tool_names::EDIT_FILE,
     tool_names::DELETE_FILE,
     tool_names::SETUP_REPO,
+    // Resolves secret tokens at write time — only meaningful when paired
+    // with the parent session's `SecretBroker`. Subagents never receive
+    // one, so the tool would be unable to register anyway.
+    tool_names::WRITE_ENV_FILE,
     tool_names::MANAGE_WORK_ITEM,
     tool_names::MANAGE_AGENT_DEF,
     tool_names::CONTROL_DESKTOP_WITH_PEEKABOO,

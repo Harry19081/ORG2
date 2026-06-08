@@ -69,6 +69,8 @@ export interface PostLoadResult {
 export interface EventHandlerCallbacks {
   /** Called when the agent completes (streaming ends). */
   onAgentComplete?: (tokenUsage?: AgentTokenUsageInfo) => void;
+  /** Called when live context usage accounting updates. */
+  onContextUsage?: (contextUsage: AgentContextUsageInfo) => void;
   /** Called when a permission request arrives (SDE only). */
   onPermissionRequest?: (event: PermissionRequestInfo) => void;
   /** Called when a question request arrives. */
@@ -201,6 +203,45 @@ export interface SessionAdapter {
 // Shared info types (used by callbacks)
 // ============================================================================
 
+export type AgentContextUsageCategory =
+  | "stable_prompt"
+  | "dynamic_prompt"
+  | "rules"
+  | "skills"
+  | "memory"
+  | "conversation"
+  | "tool_results"
+  | "attachments"
+  | "other"
+  | "unattributed";
+
+export interface AgentContextUsageItemInfo {
+  category: AgentContextUsageCategory;
+  label: string;
+  source: string;
+  estimatedTokens: number;
+  included: boolean;
+  cacheStatus?: string | null;
+  details?: string | null;
+}
+
+export interface AgentContextUsageSectionInfo {
+  category: AgentContextUsageCategory;
+  label: string;
+  estimatedTokens: number;
+  percent: number;
+  items: AgentContextUsageItemInfo[];
+}
+
+export interface AgentContextUsageInfo {
+  usedTokens: number;
+  maxTokens?: number | null;
+  percentUsed?: number | null;
+  updatedAt: string;
+  sections: AgentContextUsageSectionInfo[];
+  warnings: string[];
+}
+
 export interface AgentContextBreakdownInfo {
   systemPromptTokens?: number;
   toolsTokens?: number;
@@ -217,6 +258,7 @@ export interface AgentTokenUsageInfo {
   completionTokens: number;
   totalTokens: number;
   contextTokens: number;
+  contextUsage?: AgentContextUsageInfo;
   contextBreakdown?: AgentContextBreakdownInfo;
 }
 

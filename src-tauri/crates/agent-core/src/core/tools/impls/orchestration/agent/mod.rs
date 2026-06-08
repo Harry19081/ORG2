@@ -386,6 +386,7 @@ impl AgentTool {
             current_account_id: self.config.current_account_id.clone(),
             node_registry: None,
             question_manager: None,
+            secret_broker: None,
             plan_approval_manager: None,
             plan_slot_cache: None,
             agent_org_context: self.config.agent_org_context.as_deref().cloned(),

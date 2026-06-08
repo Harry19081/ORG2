@@ -79,13 +79,50 @@ streamRetryStatusAtom.debugLabel = "streamRetryStatus";
 export const sessionContextTokensAtom = atom<number>(0);
 sessionContextTokensAtom.debugLabel = "sessionContextTokens";
 
+export type ContextUsageCategory =
+  | "stable_prompt"
+  | "dynamic_prompt"
+  | "rules"
+  | "skills"
+  | "memory"
+  | "conversation"
+  | "tool_results"
+  | "attachments"
+  | "other"
+  | "unattributed";
+
+export interface ContextUsageItem {
+  category: ContextUsageCategory;
+  label: string;
+  source: string;
+  estimatedTokens: number;
+  included: boolean;
+  cacheStatus?: string | null;
+  details?: string | null;
+}
+
+export interface ContextUsageSection {
+  category: ContextUsageCategory;
+  label: string;
+  estimatedTokens: number;
+  percent: number;
+  items: ContextUsageItem[];
+}
+
+export interface ContextUsageSnapshot {
+  usedTokens: number;
+  maxTokens?: number | null;
+  percentUsed?: number | null;
+  updatedAt: string;
+  sections: ContextUsageSection[];
+  warnings: string[];
+}
+
+export const sessionContextUsageAtom = atom<ContextUsageSnapshot | null>(null);
+sessionContextUsageAtom.debugLabel = "sessionContextUsage";
+
 /**
- * Per-category context window breakdown.
- *
- * Emitted by Rust inside `agent:complete` once the backend is wired to
- * report per-category token counts. Until then, any field that the Rust side
- * does NOT emit will remain `undefined` and the UI falls back to mock values
- * for that category only.
+ * Deprecated compatibility shape for older agent:complete payloads.
  */
 export interface ContextBreakdown {
   systemPromptTokens?: number;

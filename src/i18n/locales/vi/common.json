@@ -11,7 +11,25 @@
     "selectionPlaceholder": "Đặt bất kỳ câu hỏi nào về ORGII...",
     "submit": "Gửi nội dung Agent Control",
     "menuToggle": "Agent Control",
-    "selectModel": "Chọn model"
+    "selectModel": "Chọn model",
+    "newRound": "Vòng mới"
+  },
+  "secretCapture": {
+    "title": "Cung cấp một bí mật",
+    "safetyNotice": "Giá trị nhập tại đây được ghi thẳng vào ổ đĩa. KHÔNG BAO GIỜ gửi đến LLM và không xuất hiện trong chat hay nhật ký.",
+    "submit": "Lưu an toàn",
+    "pasteFromClipboard": "Dán từ bộ nhớ tạm",
+    "clipboardEmpty": "Bộ nhớ tạm trống.",
+    "clipboardFailed": "Không đọc được bộ nhớ tạm.",
+    "submitFailed": "Lưu bí mật thất bại. Agent đã được thông báo.",
+    "inputPlaceholder": "Dán giá trị của bạn vào đây",
+    "lengthHint": "{{count}} ký tự",
+    "kind": {
+      "api_key": "API Key",
+      "password": "Mật khẩu",
+      "oauth_token": "OAuth Token",
+      "other": "Bí mật"
+    }
   },
   "actions": {
     "save": "Lưu",
@@ -1160,6 +1178,7 @@
         "addByTemplate": "Thêm Workspace bằng {source}"
       },
       "pathImport": {
+        "addLabel": "Thêm",
         "invalidTitle": "Mở thư mục",
         "invalidMessage": "\"{{path}}\" không phải là đường dẫn thư mục hợp lệ."
       },

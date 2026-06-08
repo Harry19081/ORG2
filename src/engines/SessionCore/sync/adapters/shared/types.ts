@@ -111,7 +111,9 @@ export interface AgentWSEvent {
   completionTokens?: number;
   totalTokens?: number;
   contextTokens?: number;
-  /** Per-category context breakdown — emitted by Rust in agent:complete when available. */
+  /** Per-category context usage snapshot — emitted by Rust in agent:complete when available. */
+  contextUsage?: AgentContextUsageSnapshot;
+  /** Legacy per-category context breakdown. */
   contextBreakdown?: AgentContextBreakdown;
   index?: number;
   argumentsDelta?: string;
@@ -333,11 +335,47 @@ export interface ExitPlanModeEvent {
   rejected: boolean;
 }
 
+export type AgentContextUsageCategory =
+  | "stable_prompt"
+  | "dynamic_prompt"
+  | "rules"
+  | "skills"
+  | "memory"
+  | "conversation"
+  | "tool_results"
+  | "attachments"
+  | "other"
+  | "unattributed";
+
+export interface AgentContextUsageItem {
+  category: AgentContextUsageCategory;
+  label: string;
+  source: string;
+  estimatedTokens: number;
+  included: boolean;
+  cacheStatus?: string | null;
+  details?: string | null;
+}
+
+export interface AgentContextUsageSection {
+  category: AgentContextUsageCategory;
+  label: string;
+  estimatedTokens: number;
+  percent: number;
+  items: AgentContextUsageItem[];
+}
+
+export interface AgentContextUsageSnapshot {
+  usedTokens: number;
+  maxTokens?: number | null;
+  percentUsed?: number | null;
+  updatedAt: string;
+  sections: AgentContextUsageSection[];
+  warnings: string[];
+}
+
 /**
- * Per-category context window breakdown.
- * All fields are optional — emitted by Rust only when the backend has been
- * updated to report per-category token counts. Missing fields fall back to
- * mock/estimated values in the UI.
+ * Legacy per-category context window breakdown.
  */
 export interface AgentContextBreakdown {
   systemPromptTokens?: number;
@@ -356,7 +394,9 @@ export interface AgentTokenUsage {
   totalTokens: number;
   /** Prompt tokens from the last LLM call — represents current context window fill level. */
   contextTokens: number;
-  /** Per-category breakdown — present only when Rust emits it inside agent:complete. */
+  /** Context usage snapshot from the final provider request. */
+  contextUsage?: AgentContextUsageSnapshot;
+  /** Legacy per-category breakdown. */
   contextBreakdown?: AgentContextBreakdown;
 }
 

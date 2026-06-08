@@ -28,13 +28,17 @@ import {
   KEY_SOURCE,
   isHostedKey,
 } from "@src/api/tauri/session";
+import Button from "@src/components/Button";
 import ComposerBar from "@src/components/ComposerBar";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
 import ComposerShell from "@src/components/ComposerShell";
+import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Message from "@src/components/Message";
 import ModelSelectorPill from "@src/components/ModelSelectorPill";
+import Tooltip from "@src/components/Tooltip";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
+import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import InputEditor from "@src/engines/ChatPanel/InputArea/components/InputEditor";
 import { useEditorExpansion } from "@src/engines/ChatPanel/InputArea/hooks/useEditorExpansion";
 import { extractArgsSummary } from "@src/engines/ChatPanel/blocks/ToolCallBlock/helpers/argsSummary";
@@ -506,6 +510,7 @@ export function GuiControlToggle(): React.ReactNode {
         : t("status.running");
   const showStatusLine = runStatus !== "idle" || Boolean(controlSessionId);
   const latestActivity = activityItems[0];
+  const closeShortcut = getShortcutKeys(GUI_CONTROL_TOGGLE_SHORTCUT_ID);
 
   return (
     <div
@@ -519,6 +524,49 @@ export function GuiControlToggle(): React.ReactNode {
           borderBottomRightRadius: "var(--border-radius-window)",
         }}
       />
+      <div
+        className="pointer-events-auto z-10 mb-2 flex items-center justify-start gap-1"
+        style={{ width: "min(600px, calc(100vw - 48px))" }}
+      >
+        <Tooltip
+          content={
+            <KeyboardShortcutTooltipContent
+              label={t("actions.close")}
+              shortcut={closeShortcut}
+            />
+          }
+          position="top-start"
+          mouseEnterDelay={200}
+          framedPanel
+        >
+          <span className="inline-flex">
+            <Button
+              variant="tertiary"
+              size="mini"
+              shape="round"
+              htmlType="button"
+              icon={<X size={12} strokeWidth={1.75} />}
+              aria-label={t("actions.close")}
+              className="bg-bg-2/90 px-2.5 shadow-sm backdrop-blur enabled:hover:bg-fill-3 enabled:hover:text-text-1"
+              onClick={handleClose}
+            >
+              {t("actions.close")}
+            </Button>
+          </span>
+        </Tooltip>
+        <Button
+          variant="tertiary"
+          size="mini"
+          shape="round"
+          htmlType="button"
+          icon={<BrushCleaning size={12} strokeWidth={1.75} />}
+          aria-label={t("guiControl.newRound")}
+          className="bg-bg-2/90 px-2.5 shadow-sm backdrop-blur enabled:hover:bg-fill-3 enabled:hover:text-text-1"
+          onClick={handleRefreshSession}
+        >
+          {t("guiControl.newRound")}
+        </Button>
+      </div>
       {showStatusLine && (
         <div
           className="pointer-events-auto z-10 mb-2 rounded-2xl border border-border-2 bg-bg-2 px-3 py-2 text-[12px] text-text-2 shadow-sm backdrop-blur"
@@ -576,31 +624,7 @@ export function GuiControlToggle(): React.ReactNode {
             hideAddButton
             showContextInfo={false}
             leftPrefix={
-              <>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className={`${INPUT_AREA_BUTTONS.iconButtonBase} shrink-0 leading-none`}
-                  style={{ lineHeight: 0 }}
-                  aria-label={t("actions.close")}
-                >
-                  <X size={INPUT_AREA_BUTTONS.iconSize} strokeWidth={1.75} />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleRefreshSession}
-                  className={`${INPUT_AREA_BUTTONS.iconButtonBase} shrink-0 leading-none`}
-                  style={{ lineHeight: 0 }}
-                  aria-label={t("actions.refresh")}
-                  title={t("actions.refresh")}
-                >
-                  <BrushCleaning
-                    size={INPUT_AREA_BUTTONS.iconSize}
-                    strokeWidth={1.75}
-                  />
-                </button>
-                <AgentControlModePill mode={mode} onClick={handleToggleMode} />
-              </>
+              <AgentControlModePill mode={mode} onClick={handleToggleMode} />
             }
             editorSlot={
               <InputEditor

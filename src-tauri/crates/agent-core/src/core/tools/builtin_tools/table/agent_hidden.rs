@@ -31,6 +31,32 @@ pub(super) static TOOLS: &[ToolEntry] = &[
         ..DEFAULT_TOOL_ENTRY
     },
     ToolEntry {
+        name: tool_names::MANAGE_SECRETS,
+        description: "Capture sensitive user input out-of-band (no plaintext in chat).",
+        description_detail: "Out-of-band capture of API keys, passwords, and OAuth tokens via a secure frontend modal. Returns opaque `{{secret:<token>}}` placeholders that downstream tools (today: only `write_env_file`) resolve to plaintext at write time. The plaintext never enters the LLM transcript or the chat history.",
+        category: tool_categories::AGENT,
+        icon_id: "lock",
+        simulator_app: AppChannels,
+        app_subtool: OtherInteractions,
+        chat_block: CbFallback,
+        hidden: true,
+        status_icons: &[("answered", "check-circle-2")],
+        label_running: "tools.manageSecretsRunning",
+        label_done: "tools.manageSecretsDone",
+        label_failed: "tools.manageSecretsFailed",
+        status_labels: &[
+            ("answered", "tools.manageSecretsAnswered"),
+            ("rejected", "tools.manageSecretsRejected"),
+        ],
+        actions: &[
+            action_sub!("request", "Prompt the user via a secure modal for a sensitive value", OtherInteractions, labels: "tools.manageSecretsRequestRunning", "tools.manageSecretsRequestDone", "tools.manageSecretsRequestFailed"),
+            action_sub!("list", "List captured secrets (label/kind/length only)", OtherInteractions, labels: "tools.manageSecretsListRunning", "tools.manageSecretsListDone", "tools.manageSecretsListFailed"),
+            action_sub!("discard", "Drop a captured secret immediately", OtherInteractions, labels: "tools.manageSecretsDiscardRunning", "tools.manageSecretsDiscardDone", "tools.manageSecretsDiscardFailed"),
+        ],
+        required_capability: CapOrch,
+        ..DEFAULT_TOOL_ENTRY
+    },
+    ToolEntry {
         name: tool_names::MANAGE_SESSION,
         description: "Manage agent sessions: create, monitor, and intervene.",
         description_detail: "Full lifecycle management for agent sessions.",

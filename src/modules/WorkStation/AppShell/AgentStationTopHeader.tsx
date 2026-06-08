@@ -2,8 +2,8 @@
  * AgentStationTopHeader
  *
  * Drag-region header bar for the Agent-station variant of AppShell.
- * Contains: station mode chip, optional caption bar, chat panel toggle,
- * caption toggle, and layout settings dropdown.
+ * Contains: station mode chip, chat panel toggle, caption toggle,
+ * layout settings dropdown, and a separate caption row below the top bar.
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
@@ -14,13 +14,7 @@ import {
   PanelRight,
   X,
 } from "lucide-react";
-import React, {
-  memo,
-  startTransition,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import React, { memo, startTransition, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
@@ -57,8 +51,6 @@ const AgentStationTopHeader: React.FC = memo(() => {
   const { t } = useTranslation("sessions");
   const isCompactLayout = useIsCompactLayout();
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
-  const modeChipAreaRef = useRef<HTMLDivElement>(null);
-  const trailingControlsRef = useRef<HTMLDivElement>(null);
   const getStationChatVisible = useAtomValue(activeStationChatVisibleAtom);
   const chatWidth = useAtomValue(chatWidthAtom);
   const sessionChatPosition = useAtomValue(sessionChatPositionAtom);
@@ -110,11 +102,9 @@ const AgentStationTopHeader: React.FC = memo(() => {
   }, [handleToggleCaption]);
 
   const getCaptionPortalBounds = useCallback(() => {
-    const modeRect = modeChipAreaRef.current?.getBoundingClientRect();
-    const trailingRect = trailingControlsRef.current?.getBoundingClientRect();
     return {
-      left: (modeRect?.right ?? 0) + 12,
-      right: (trailingRect?.left ?? window.innerWidth) - 12,
+      left: 12,
+      right: window.innerWidth - 12,
     };
   }, []);
 
@@ -129,7 +119,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
   }, [toggleChatPanelMaximized]);
 
   return (
-    <>
+    <div className="flex shrink-0 flex-col">
       <div
         className={`relative flex shrink-0 items-center ${isCompactLayout ? "h-11 min-h-11 pt-2" : "h-9 min-h-9"}`}
         data-tauri-drag-region
@@ -147,29 +137,12 @@ const AgentStationTopHeader: React.FC = memo(() => {
             <CollapsedSidebarButton />
           </NoDragRegion>
         ) : null}
-        <NoDragRegion
-          ref={modeChipAreaRef}
-          className="flex h-full min-w-0 items-center gap-1 px-2"
-        >
+        <NoDragRegion className="flex h-full min-w-0 items-center gap-1 px-2">
           <StationModeChip />
           <SimulatorAgentChip />
         </NoDragRegion>
-        <NoDragRegion className="flex h-full min-w-0 flex-1 items-center justify-center px-2">
-          {showCaptionBar && captionMessage ? (
-            <div className="min-w-0 max-w-[min(600px,100%)]">
-              <CaptionBar
-                key={captionMessage.eventId}
-                text={captionText ?? captionMessage.text}
-                textTone={showAgentMessageNotice ? "primary" : "default"}
-                getPortalBounds={getCaptionPortalBounds}
-              />
-            </div>
-          ) : null}
-        </NoDragRegion>
-        <NoDragRegion
-          ref={trailingControlsRef}
-          className="ml-auto flex h-full shrink-0 items-center gap-px pl-1 pr-2"
-        >
+        <div className="min-w-0 flex-1" />
+        <NoDragRegion className="ml-auto flex h-full shrink-0 items-center gap-px pl-1 pr-2">
           <TabBarTrailingIconButton
             title={captionToggleLabel}
             shortcutId="toggle_captions"
@@ -216,7 +189,18 @@ const AgentStationTopHeader: React.FC = memo(() => {
           )}
         </NoDragRegion>
       </div>
-    </>
+      {showCaptionBar && captionMessage ? (
+        <NoDragRegion className="flex h-10 min-h-10 shrink-0 items-center justify-start px-3">
+          <div className="w-full min-w-0">
+            <CaptionBar
+              key={captionMessage.eventId}
+              text={captionText ?? captionMessage.text}
+              getPortalBounds={getCaptionPortalBounds}
+            />
+          </div>
+        </NoDragRegion>
+      ) : null}
+    </div>
   );
 });
 

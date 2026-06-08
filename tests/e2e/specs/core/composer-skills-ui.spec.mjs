@@ -80,6 +80,10 @@ const js = {
     const row = document.querySelector('[data-testid="context-info-category-' + CSS.escape(${JSON.stringify(key)}) + '"]');
     return row ? (row.textContent || '') : null;
   `,
+  contextPanelText: () => `
+    const panel = document.querySelector('[data-testid="context-info-panel"]');
+    return panel ? (panel.textContent || '') : null;
+  `,
 };
 
 describe("Composer skills menu", () => {
@@ -251,7 +255,7 @@ describe("Composer skills menu", () => {
     );
   });
 
-  it("shows workspace rules but excludes personal rules in the context popover", async () => {
+  it("renders backend-provided contextUsage sections in the context popover", async () => {
     const sessionId = `e2e-composer-context-${Date.now()}`;
     unwrap(
       await invokeE2E("seedChatEvents", sessionId, [
@@ -277,6 +281,48 @@ describe("Composer skills menu", () => {
       await invokeE2E("openSession", sessionId),
       "openSession context info"
     );
+    unwrap(
+      await invokeE2E("seedSessionContextUsage", {
+        usedTokens: 12000,
+        maxTokens: 24000,
+        percentUsed: 50,
+        updatedAt: new Date().toISOString(),
+        warnings: ["backend context usage warning sentinel"],
+        sections: [
+          {
+            category: "rules",
+            label: "Rules",
+            estimatedTokens: 3000,
+            percent: 25,
+            isEstimated: true,
+            items: [
+              {
+                label: "backend-workspace-rule-sentinel",
+                source: "workspace_rules",
+                estimatedTokens: 3000,
+                details: "from backend snapshot",
+              },
+            ],
+          },
+          {
+            category: "conversation",
+            label: "Conversation",
+            estimatedTokens: 9000,
+            percent: 75,
+            isEstimated: true,
+            items: [
+              {
+                label: "backend-conversation-sentinel",
+                source: "messages",
+                estimatedTokens: 9000,
+                details: "from backend snapshot",
+              },
+            ],
+          },
+        ],
+      }),
+      "seedSessionContextUsage"
+    );
 
     await browser.waitUntil(
       async () =>
@@ -294,33 +340,41 @@ describe("Composer skills menu", () => {
     );
 
     await browser.waitUntil(
-      async () =>
-        execJS(
-          `return !!document.querySelector('[data-testid="context-info-panel"]');`
-        ),
-      {
-        timeout: 10_000,
-        timeoutMsg: "context info panel never opened",
-      }
-    );
-
-    await browser.waitUntil(
       async () => {
-        const names = await execJS(js.contextRuleNames());
-        return Array.isArray(names) && names.includes(WORKSPACE_RULE_NAME);
+        const text = await execJS(js.contextPanelText());
+        return (
+          typeof text === "string" &&
+          text.includes("Rules") &&
+          text.includes("Conversation")
+        );
       },
       {
         timeout: 10_000,
-        timeoutMsg: `workspace rule did not render in context popover; names=${JSON.stringify(await execJS(js.contextRuleNames()))}`,
+        timeoutMsg: `backend context usage did not render in context popover; panel=${JSON.stringify(await execJS(js.contextPanelText()))}`,
       }
     );
 
-    const ruleNames = await execJS(js.contextRuleNames());
-    expect(ruleNames).toContain(WORKSPACE_RULE_NAME);
-    expect(ruleNames).not.toContain(PERSONAL_RULE_NAME);
-
     const rulesRow = await execJS(js.contextCategoryText("rules"));
+    const conversationRow = await execJS(js.contextCategoryText("conversation"));
+    const panelText = await execJS(js.contextPanelText());
+
     expect(rulesRow).toEqual(expect.stringContaining("Rules"));
-    expect(rulesRow).not.toEqual(expect.stringContaining("1.0K"));
+    expect(rulesRow).toEqual(expect.stringContaining("25%"));
+    expect(rulesRow).toEqual(expect.stringContaining("3.0K"));
+    expect(conversationRow).toEqual(expect.stringContaining("Conversation"));
+    expect(conversationRow).toEqual(expect.stringContaining("75%"));
+    expect(conversationRow).toEqual(expect.stringContaining("9.0K"));
+    expect(panelText).toEqual(
+      expect.stringContaining("backend context usage warning sentinel")
+    );
+    expect(panelText).not.toEqual(
+      expect.stringContaining("backend-workspace-rule-sentinel")
+    );
+    expect(panelText).not.toEqual(
+      expect.stringContaining("backend-conversation-sentinel")
+    );
+
+    const ruleNames = await execJS(js.contextRuleNames());
+    expect(ruleNames).toEqual([]);
   });
 });

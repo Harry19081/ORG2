@@ -133,7 +133,7 @@ const CursorModelPillView: React.FC<CursorModelPillViewProps> = ({
         segments={segments}
         className="text-[13px]"
         segmentClassName="h-[28px]"
-        variant="input"
+        variant="default"
       />
       {modelPickerStyle === "dropdown" ? (
         <CursorModelDropdown

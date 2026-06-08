@@ -11,7 +11,25 @@
     "selectionPlaceholder": "向 ORGII 提任何問題...",
     "submit": "提交 Agent Control 輸入",
     "menuToggle": "Agent Control",
-    "selectModel": "選擇模型"
+    "selectModel": "選擇模型",
+    "newRound": "新一輪"
+  },
+  "secretCapture": {
+    "title": "請輸入敏感資訊",
+    "safetyNotice": "此處輸入的內容會直接寫入本地磁碟，絕不會傳送給 LLM，也不會出現在聊天或日誌中。",
+    "submit": "安全儲存",
+    "pasteFromClipboard": "從剪貼簿貼上",
+    "clipboardEmpty": "剪貼簿為空。",
+    "clipboardFailed": "無法讀取剪貼簿。",
+    "submitFailed": "儲存敏感資訊失敗，已通知 Agent。",
+    "inputPlaceholder": "在此貼上敏感值",
+    "lengthHint": "{{count}} 個字元",
+    "kind": {
+      "api_key": "API Key",
+      "password": "密碼",
+      "oauth_token": "OAuth Token",
+      "other": "敏感資訊"
+    }
   },
   "actions": {
     "save": "保存",
@@ -1160,6 +1178,7 @@
         "addByTemplate": "透過 {source} 新增工作區"
       },
       "pathImport": {
+        "addLabel": "新增",
         "invalidTitle": "開啟資料夾",
         "invalidMessage": "「{{path}}」不是有效的資料夾路徑。"
       },

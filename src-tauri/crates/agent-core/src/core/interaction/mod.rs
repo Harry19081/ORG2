@@ -30,6 +30,7 @@ pub mod permission;
 pub mod permission_rules;
 pub mod plan_approval;
 pub mod question;
+pub mod secret_broker;
 
 // No flat re-exports — every caller reaches into the explicit submodule
 // (`interaction::permission::*`, `interaction::mode_switch::*`,

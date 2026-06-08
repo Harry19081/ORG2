@@ -11,7 +11,25 @@
     "selectionPlaceholder": "Zadaj dowolne pytanie o ORGII...",
     "submit": "Prześlij wejście Agent Control",
     "menuToggle": "Agent Control",
-    "selectModel": "Wybierz model"
+    "selectModel": "Wybierz model",
+    "newRound": "Nowa runda"
+  },
+  "secretCapture": {
+    "title": "Podaj sekret",
+    "safetyNotice": "Wartości wpisane tutaj trafiają bezpośrednio na dysk. NIGDY nie są wysyłane do LLM ani nie pojawiają się w czacie czy logach.",
+    "submit": "Zapisz bezpiecznie",
+    "pasteFromClipboard": "Wklej ze schowka",
+    "clipboardEmpty": "Schowek jest pusty.",
+    "clipboardFailed": "Nie udało się odczytać schowka.",
+    "submitFailed": "Nie udało się zapisać sekretu. Agent został powiadomiony.",
+    "inputPlaceholder": "Wklej swoją wartość tutaj",
+    "lengthHint": "{{count}} znaków",
+    "kind": {
+      "api_key": "Klucz API",
+      "password": "Hasło",
+      "oauth_token": "Token OAuth",
+      "other": "Sekret"
+    }
   },
   "actions": {
     "all": "Wszystkie",
@@ -1159,6 +1177,7 @@
         "addByTemplate": "Dodaj workspace przez {source}"
       },
       "pathImport": {
+        "addLabel": "Dodaj",
         "invalidTitle": "Otwórz folder",
         "invalidMessage": "„{{path}}” nie jest prawidłową ścieżką folderu."
       },

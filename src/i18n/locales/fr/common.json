@@ -11,7 +11,25 @@
     "selectionPlaceholder": "Posez n'importe quelle question sur ORGII...",
     "submit": "Envoyer la saisie Agent Control",
     "menuToggle": "Agent Control",
-    "selectModel": "Choisir le modèle"
+    "selectModel": "Choisir le modèle",
+    "newRound": "Nouveau tour"
+  },
+  "secretCapture": {
+    "title": "Fournir un secret",
+    "safetyNotice": "Les valeurs saisies ici sont écrites directement sur disque. Elles ne sont JAMAIS envoyées au LLM et n'apparaissent pas dans le chat ni les journaux.",
+    "submit": "Enregistrer en toute sécurité",
+    "pasteFromClipboard": "Coller depuis le presse-papiers",
+    "clipboardEmpty": "Le presse-papiers est vide.",
+    "clipboardFailed": "Impossible de lire le presse-papiers.",
+    "submitFailed": "Échec de l'enregistrement du secret. L'agent a été notifié.",
+    "inputPlaceholder": "Collez votre valeur ici",
+    "lengthHint": "{{count}} caractères",
+    "kind": {
+      "api_key": "Clé d'API",
+      "password": "Mot de passe",
+      "oauth_token": "Jeton OAuth",
+      "other": "Secret"
+    }
   },
   "actions": {
     "save": "Enregistrer",
@@ -1159,6 +1177,7 @@
         "addByTemplate": "Ajouter un espace de travail par {source}"
       },
       "pathImport": {
+        "addLabel": "Ajouter",
         "invalidTitle": "Ouvrir un dossier",
         "invalidMessage": "\"{{path}}\" n’est pas un chemin de dossier valide."
       },

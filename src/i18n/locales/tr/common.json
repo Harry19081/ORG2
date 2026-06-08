@@ -11,7 +11,25 @@
     "selectionPlaceholder": "ORGII hakkında herhangi bir soru sor...",
     "submit": "Agent Control girdisini gönder",
     "menuToggle": "Agent Control",
-    "selectModel": "Model seç"
+    "selectModel": "Model seç",
+    "newRound": "Yeni tur"
+  },
+  "secretCapture": {
+    "title": "Bir gizli değer girin",
+    "safetyNotice": "Buraya girilen değerler doğrudan diske yazılır. ASLA LLM'e gönderilmez ve sohbet veya kayıtlarda görünmez.",
+    "submit": "Güvenli kaydet",
+    "pasteFromClipboard": "Panodan yapıştır",
+    "clipboardEmpty": "Pano boş.",
+    "clipboardFailed": "Pano okunamadı.",
+    "submitFailed": "Gizli değer kaydedilemedi. Agent bilgilendirildi.",
+    "inputPlaceholder": "Değerinizi buraya yapıştırın",
+    "lengthHint": "{{count}} karakter",
+    "kind": {
+      "api_key": "API anahtarı",
+      "password": "Parola",
+      "oauth_token": "OAuth Token",
+      "other": "Gizli"
+    }
   },
   "actions": {
     "save": "Kaydet",
@@ -1160,6 +1178,7 @@
         "addByTemplate": "{source} ile Workspace ekle"
       },
       "pathImport": {
+        "addLabel": "Ekle",
         "invalidTitle": "Klasör aç",
         "invalidMessage": "\"{{path}}\" geçerli bir klasör yolu değil."
       },
@@ -1471,8 +1490,11 @@
     "dockAutoHide": "Dock otomatik gizle",
     "modelPickerStyle": "Seçici",
     "chatPanelPagination": "Sayfalama",
+    "captionPlacement": "Altyazı satırı",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
+    "above": "Üstte",
+    "below": "Altta",
     "left": "Sol",
     "right": "Sağ",
     "ramSection": "Bellek ve performans",

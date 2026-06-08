@@ -11,7 +11,25 @@
     "selectionPlaceholder": "Ask any questions about ORGII...",
     "submit": "Submit Agent Control input",
     "menuToggle": "Agent Control",
-    "selectModel": "Select model"
+    "selectModel": "Select model",
+    "newRound": "New round"
+  },
+  "secretCapture": {
+    "title": "Provide a secret",
+    "safetyNotice": "Values entered here go straight to disk. They are NEVER sent to the LLM and never appear in chat or logs.",
+    "submit": "Save securely",
+    "pasteFromClipboard": "Paste from clipboard",
+    "clipboardEmpty": "Clipboard is empty.",
+    "clipboardFailed": "Could not read from clipboard.",
+    "submitFailed": "Failed to save secret. The agent has been notified.",
+    "inputPlaceholder": "Paste your value here",
+    "lengthHint": "{{count}} characters",
+    "kind": {
+      "api_key": "API key",
+      "password": "Password",
+      "oauth_token": "OAuth token",
+      "other": "Secret"
+    }
   },
   "actions": {
     "all": "All",
@@ -1224,6 +1242,7 @@
         "addByTemplate": "Add workspace by {source}"
       },
       "pathImport": {
+        "addLabel": "Add",
         "invalidTitle": "Open Folder",
         "invalidMessage": "\"{{path}}\" is not a valid folder path."
       },

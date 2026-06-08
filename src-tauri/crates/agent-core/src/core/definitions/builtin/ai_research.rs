@@ -80,7 +80,7 @@ pub fn ai_research_agent() -> AgentDefinition {
         }),
         selected_account_id: None,
         selected_model_id: None,
-        icon_id: Some("microscope".to_string()),
+        icon_id: Some("sprout".to_string()),
         animate: None,
         execution_mode: None,
         exec_timeout: None,

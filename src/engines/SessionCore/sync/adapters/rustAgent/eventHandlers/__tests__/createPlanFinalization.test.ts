@@ -123,6 +123,7 @@ function createCtx(
     toolCallDeltaBuffersRef: ref(new Map()),
     execOutputBufferRef: ref(""),
     onAgentCompleteRef: ref(undefined),
+    onContextUsageRef: ref(undefined),
     onStatusChangeRef: ref(undefined),
     onQuestionRequestRef: ref(undefined),
     setStreaming: vi.fn(),

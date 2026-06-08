@@ -10,10 +10,12 @@
 mod delete_file;
 mod list_dir;
 mod read_file;
+mod write_env_file;
 
 pub use delete_file::DeleteFileTool;
 pub use list_dir::ListDirTool;
 pub use read_file::ReadFileTool;
+pub use write_env_file::WriteEnvFileTool;
 
 use parking_lot::RwLock;
 use std::path::PathBuf;

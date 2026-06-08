@@ -387,6 +387,25 @@ pub(super) static TOOLS: &[ToolEntry] = &[
         ..DEFAULT_TOOL_ENTRY
     },
     ToolEntry {
+        name: tool_names::WRITE_ENV_FILE,
+        description: "Write `.env`-style files, resolving secret tokens at write time.",
+        description_detail: "Privileged consumer of `manage_secrets` tokens. Resolves any `{{secret:<token>}}` placeholders in the body to plaintext at the moment of write, sets `0o600` on Unix, enforces dotenv-style filenames, and refuses to overwrite git-tracked files without an explicit acknowledgement. The plaintext never enters the LLM transcript or the chat history.",
+        category: tool_categories::CODING,
+        icon_id: "lock",
+        simulator_app: AppCode,
+        app_subtool: FileWrite,
+        chat_block: CbFallback,
+        human_tool_key: Some(HtCode),
+        label_running: "tools.writeEnvFileRunning",
+        label_done: "tools.writeEnvFileDone",
+        label_failed: "tools.writeEnvFileFailed",
+        actions: &[
+            action_sub!("write", "Write a `.env` file, resolving any secret tokens at write time", FileWrite, labels: "tools.writeEnvFileWriteRunning", "tools.writeEnvFileWriteDone", "tools.writeEnvFileWriteFailed"),
+        ],
+        required_capability: CapCoding,
+        ..DEFAULT_TOOL_ENTRY
+    },
+    ToolEntry {
         name: tool_names::SETUP_REPO,
         description: "Report setup status and environment variables to the App Launcher.",
         description_detail: "Surfaces detected runtimes, dependency state, and relevant environment variables to the App Launcher for onboarding and reproducible dev setup.",

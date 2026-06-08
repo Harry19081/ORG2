@@ -52,12 +52,7 @@ export function useKeyboard({
   flyoutHighlightIndex,
   setFlyoutHighlightIndex,
 }: UseKeyboardOptions): void {
-  const hasMovedMainHighlightRef = useRef(false);
   const hasMovedFlyoutHighlightRef = useRef(false);
-
-  useEffect(() => {
-    hasMovedMainHighlightRef.current = false;
-  }, [visible, totalFlat]);
 
   useEffect(() => {
     hasMovedFlyoutHighlightRef.current = false;
@@ -156,16 +151,12 @@ export function useKeyboard({
       switch (event.key) {
         case "ArrowDown":
           setKeyboardNavigated(true);
-          if (hasMovedMainHighlightRef.current) {
-            setHighlightIndex(
-              highlightIndex < totalFlat - 1 ? highlightIndex + 1 : 0
-            );
-          }
-          hasMovedMainHighlightRef.current = true;
+          setHighlightIndex(
+            highlightIndex < totalFlat - 1 ? highlightIndex + 1 : 0
+          );
           return true;
         case "ArrowUp":
           setKeyboardNavigated(true);
-          hasMovedMainHighlightRef.current = true;
           setHighlightIndex(
             highlightIndex > 0 ? highlightIndex - 1 : totalFlat - 1
           );

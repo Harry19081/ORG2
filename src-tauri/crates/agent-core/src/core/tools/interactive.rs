@@ -39,6 +39,10 @@ pub const INTERACTIVE_TOOL_NAMES: &[&str] = &[
     names::ASK_USER_PERMISSIONS,
     names::SUGGEST_MODE_SWITCH,
     names::CREATE_PLAN,
+    // `manage_secrets { action: "request" }` blocks the turn awaiting the
+    // user to submit the secure modal — the broker's `finalize_interaction_event`
+    // call drives the FE's "waiting → answered" transition.
+    names::MANAGE_SECRETS,
 ];
 
 /// Returns `true` if the given tool name is an interactive tool whose

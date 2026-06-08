@@ -24,6 +24,7 @@ pub mod ask_user_questions;
 pub mod channel;
 pub mod context_builders;
 pub mod inbox_wake;
+pub mod manage_secrets;
 pub mod manage_session;
 pub mod member_idle;
 pub mod member_shutdown;

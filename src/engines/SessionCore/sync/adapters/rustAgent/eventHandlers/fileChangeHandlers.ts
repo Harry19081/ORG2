@@ -35,6 +35,8 @@ export const AGENT_SIDE_CHANNEL_EVENTS = {
   SETUP_REPO_UPDATE: "agent-setup-repo-update",
   /** Detail: `{ sessionId, at }`. */
   HEARTBEAT: "agent-heartbeat",
+  /** Detail: `{ sessionId, requestId, toolCallId, label, kind, prompt }`. */
+  SECRET_REQUEST: "agent-secret-request",
 } as const;
 
 export interface AgentFileChangeDetail {
@@ -63,6 +65,27 @@ export interface AgentHeartbeatDetail {
   sessionId: string;
   /** ISO timestamp the heartbeat was observed by the frontend. */
   at: string;
+}
+
+export interface AgentSecretRequestDetail {
+  sessionId: string;
+  requestId: string;
+  toolCallId?: string;
+  /**
+   * Short user-facing identifier the ADE Manager assigned to the secret
+   * (e.g. `"OPENAI_API_KEY"`). Display only; safe to grep transcripts for.
+   */
+  label: string;
+  /**
+   * One of `"api_key" | "password" | "oauth_token" | "other"`. Drives the
+   * modal's icon + input affordances.
+   */
+  kind: string;
+  /**
+   * Free-form instruction the agent provided ("Paste your OpenAI key…").
+   * The modal renders it above the masked input.
+   */
+  prompt: string;
 }
 
 /**
@@ -136,6 +159,41 @@ export function handleSetupRepoUpdate(
  * heartbeat is forwarded so a watchdog can distinguish "still working"
  * from "silently died" without flipping the chat transcript.
  */
+/**
+ * `agent:secret_request` — the `manage_secrets` tool wants the user to
+ * paste a sensitive value via the secure modal. The plaintext never
+ * touches this code path: we only forward the request metadata so the
+ * `SecretCaptureModal` overlay can pop and call
+ * `agent_secret_capture_submit` directly.
+ */
+export function handleSecretRequest(
+  event: AgentWSEvent,
+  eventSessionId: string | undefined
+): void {
+  const rawRequestId = (event as unknown as Record<string, unknown>).requestId;
+  if (!eventSessionId || typeof rawRequestId !== "string") return;
+
+  const raw = event as unknown as Record<string, unknown>;
+  const detail: AgentSecretRequestDetail = {
+    sessionId: eventSessionId,
+    requestId: rawRequestId,
+    toolCallId:
+      typeof raw.toolCallId === "string"
+        ? (raw.toolCallId as string)
+        : undefined,
+    label: typeof raw.label === "string" ? (raw.label as string) : "secret",
+    kind: typeof raw.kind === "string" ? (raw.kind as string) : "other",
+    prompt: typeof raw.prompt === "string" ? (raw.prompt as string) : "",
+  };
+
+  logger.debug(
+    `secret_request: label=${detail.label} kind=${detail.kind} request=${detail.requestId}`
+  );
+  window.dispatchEvent(
+    new CustomEvent(AGENT_SIDE_CHANNEL_EVENTS.SECRET_REQUEST, { detail })
+  );
+}
+
 export function handleHeartbeat(
   event: AgentWSEvent,
   eventSessionId: string | undefined

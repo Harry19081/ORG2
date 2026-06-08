@@ -47,6 +47,90 @@ pub async fn agent_question_reject(
     ))
 }
 
+/// Submit a user-supplied secret value to an in-flight `manage_secrets` request.
+///
+/// The plaintext is moved into the per-session `SecretBroker` and immediately
+/// wrapped in `zeroize::Zeroizing<String>`. The agent is unblocked with the
+/// minted opaque `{{secret:<token>}}` placeholder — the plaintext never enters
+/// the LLM transcript or the chat history.
+///
+/// This command is the only sanctioned ingress path for a secret value; it is
+/// invoked by the `SecretCaptureModal` frontend component in response to an
+/// `agent:secret_request` event. The `value` parameter is consumed by-value
+/// (`String`) so the wire string is dropped at the end of the command.
+#[tauri::command]
+pub async fn agent_secret_capture_submit(
+    state: tauri::State<'_, AgentAppState>,
+    session_id: String,
+    request_id: String,
+    value: String,
+) -> Result<(), String> {
+    let session = state
+        .get_session(&session_id)
+        .await
+        .ok_or_else(|| format!("No session found for secret submit: {}", session_id))?;
+
+    session.secret_broker.submit(&request_id, value).await;
+    Ok(())
+}
+
+/// Cancel an in-flight `manage_secrets` request.
+///
+/// Called when the user dismisses the `SecretCaptureModal` without providing
+/// a value. The agent is unblocked with a `Rejected` outcome.
+#[tauri::command]
+pub async fn agent_secret_capture_cancel(
+    state: tauri::State<'_, AgentAppState>,
+    session_id: String,
+    request_id: String,
+) -> Result<(), String> {
+    let session = state
+        .get_session(&session_id)
+        .await
+        .ok_or_else(|| format!("No session found for secret cancel: {}", session_id))?;
+
+    session.secret_broker.cancel(&request_id).await;
+    Ok(())
+}
+
+/// Inspect captured secrets for a session — labels, kinds, lengths only.
+///
+/// Used by the frontend to render a per-session "secret vault" panel so the
+/// user can see what they have provided and discard entries they no longer
+/// want the agent to be able to resolve. Plaintext is never returned.
+#[tauri::command]
+pub async fn agent_secret_capture_list(
+    state: tauri::State<'_, AgentAppState>,
+    session_id: String,
+) -> Result<serde_json::Value, String> {
+    let session = state.get_session(&session_id).await;
+    let entries = if let Some(session) = session {
+        session.secret_broker.list().await
+    } else {
+        Vec::new()
+    };
+    Ok(serde_json::json!({ "secrets": entries }))
+}
+
+/// Discard a single captured secret immediately.
+///
+/// Resolves the token, drops the `Zeroizing<String>` wrapper (which wipes
+/// memory), and removes the entry from the broker. After discard, any future
+/// `write_env_file` attempt that references the token fails.
+#[tauri::command]
+pub async fn agent_secret_capture_discard(
+    state: tauri::State<'_, AgentAppState>,
+    session_id: String,
+    token: String,
+) -> Result<bool, String> {
+    let session = state
+        .get_session(&session_id)
+        .await
+        .ok_or_else(|| format!("No session found for secret discard: {}", session_id))?;
+
+    Ok(session.secret_broker.discard(&token).await)
+}
+
 /// Respond to a permission request from the agent.
 #[tauri::command]
 pub async fn agent_permission_response(

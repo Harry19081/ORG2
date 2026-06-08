@@ -18,6 +18,7 @@
  *     reads come from the row instead of the global atom.
  */
 import { useAtomValue, useSetAtom } from "jotai";
+import { X } from "lucide-react";
 import React, { memo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -32,6 +33,7 @@ import SelectorPill from "@src/components/SelectorPill";
 import {
   AGENT_EXEC_MODES,
   type AgentExecMode,
+  DEFAULT_AGENT_EXEC_MODE,
   normalizeAgentExecMode,
 } from "@src/config/sessionCreatorConfig";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
@@ -53,10 +55,21 @@ export interface ModePillProps {
   value?: AgentExecMode;
   /** Dropdown placement direction */
   placement?: "top" | "bottom";
+  /** Hide the pill when the selected mode is the default Build mode. */
+  hideWhenDefault?: boolean;
+  /** Reset to Build when clicking a visible non-default pill. */
+  resetToDefaultOnClick?: boolean;
 }
 
 const ModePill: React.FC<ModePillProps> = memo(
-  ({ forceVisible = false, onModeChange, value, placement = "top" }) => {
+  ({
+    forceVisible = false,
+    onModeChange,
+    value,
+    placement = "top",
+    hideWhenDefault = false,
+    resetToDefaultOnClick = false,
+  }) => {
     const { t } = useTranslation("sessions");
     const { sessionId } = useSessionId();
 
@@ -97,7 +110,7 @@ const ModePill: React.FC<ModePillProps> = memo(
       placement,
     });
 
-    const handleSelect = useCallback(
+    const setModeValue = useCallback(
       (selected: AgentExecMode) => {
         if (!isControlled) {
           if (isInSessionMode) {
@@ -113,7 +126,6 @@ const ModePill: React.FC<ModePillProps> = memo(
           }
         }
         onModeChange?.(selected);
-        close();
       },
       [
         isControlled,
@@ -121,14 +133,36 @@ const ModePill: React.FC<ModePillProps> = memo(
         setSessionMode,
         setCreatorDefault,
         onModeChange,
-        close,
       ]
     );
+
+    const handleSelect = useCallback(
+      (selected: AgentExecMode) => {
+        setModeValue(selected);
+        close();
+      },
+      [setModeValue, close]
+    );
+
+    const handleTriggerClick = useCallback(() => {
+      if (resetToDefaultOnClick && mode !== DEFAULT_AGENT_EXEC_MODE) {
+        setModeValue(DEFAULT_AGENT_EXEC_MODE);
+        close();
+        return;
+      }
+      toggle();
+    }, [resetToDefaultOnClick, mode, setModeValue, close, toggle]);
 
     const isVisible =
       forceVisible ||
       (sessionId && (isAgentSession(sessionId) || isCliSession(sessionId)));
-    if (!isVisible || (sessionId && isWingmanSession(sessionId))) return null;
+    if (
+      !isVisible ||
+      (sessionId && isWingmanSession(sessionId)) ||
+      (hideWhenDefault && mode === DEFAULT_AGENT_EXEC_MODE)
+    ) {
+      return null;
+    }
 
     return (
       <div className="relative">
@@ -143,7 +177,12 @@ const ModePill: React.FC<ModePillProps> = memo(
           tooltipPosition="top"
           active={isOpen}
           dataTestId="agent-exec-mode-pill"
-          onClick={toggle}
+          onClick={handleTriggerClick}
+          hoverIcon={
+            resetToDefaultOnClick && mode !== DEFAULT_AGENT_EXEC_MODE ? (
+              <X size={14} strokeWidth={1.75} />
+            ) : undefined
+          }
           className="h-[28px] text-[13px]"
           size="sm"
         />

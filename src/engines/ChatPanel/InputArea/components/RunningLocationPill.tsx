@@ -157,7 +157,7 @@ const RunningLocationPill: React.FC<RunningLocationPillProps> = memo(
           onClick={handleTriggerClick}
           className="h-[28px] text-[13px]"
           size="sm"
-          variant={variant === "ghost" ? "ghost" : "input"}
+          variant={variant === "ghost" ? "ghost" : "default"}
         />
 
         {!isLockedToWorktree &&

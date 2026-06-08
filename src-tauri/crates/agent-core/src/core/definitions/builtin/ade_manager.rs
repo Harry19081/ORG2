@@ -1,12 +1,16 @@
-//! Agent Architect template — designs and maintains the agent workforce.
+//! ADE Manager template — manages the Agentic Development Environment.
 //!
-//! The Agent Architect helps the user create, edit, and retire custom
-//! agents, agent organizations, and skills. Its capability mix is
-//! intentionally narrow: `coding` (for the file tools that author skills
-//! and per-agent SOUL augments) plus `management` (for `manage_agent_def`
-//! CRUD over agents and orgs). It explicitly does NOT get desktop,
-//! browser, data, or gateway — those are out-of-scope and would invite
-//! the agent to drift from its lane.
+//! ADE Manager is the built-in operator for ORGII's Agentic Development
+//! Environment (ADE): the IDE-AI analogue that wires up agents, agent
+//! organizations, skills, rules, tracked workspaces, and repo setup. It
+//! helps the user create, edit, and retire custom agents and orgs, author
+//! skills and rules, and onboard repos as tracked workspaces.
+//!
+//! Capability mix is intentionally narrow: `coding` (for workspace setup
+//! and file tools that author skills and per-agent SOUL augments) plus
+//! `management` (for `manage_agent_def` CRUD over agents and orgs). It
+//! explicitly does NOT get desktop, browser, data, or gateway — those are
+//! out-of-scope and would invite the agent to drift from its lane.
 //!
 //! Skill discovery: the built-in `create-orgii-agent`, `create-skill`, and
 //! `create-rule` skills are always resolvable via the binary-embedded
@@ -22,15 +26,21 @@ use crate::foundation::security::policy::AutonomyLevel;
 use crate::tools::defaults::default_excluded_tools_for_capabilities;
 use crate::tools::impls::orchestration::context_builders::ids as ctx_ids;
 
-/// Builtin Agent Architect definition ID.
-pub const AGENT_ARCHITECT_ID: &str = "builtin:agent-architect";
+/// Builtin ADE Manager definition ID.
+///
+/// The string value `"builtin:agent-architect"` is preserved verbatim for
+/// stability — existing on-disk session records, overlay files, and user
+/// preferences reference this ID. The user-facing name and the Rust
+/// symbols are the only things that change with the ADE rebrand.
+pub const ADE_MANAGER_ID: &str = "builtin:agent-architect";
 
-/// Agent Architect template — agent / org / skill design specialist.
+/// ADE Manager template — Agentic Development Environment specialist.
 ///
 /// Capabilities:
 /// - `coding` without mode-switch (the agent edits SKILL.md / SOUL.md
 ///   files but does not need Build / Plan / Explore / Review modes).
 /// - `management` (`manage_agent_def` for agents and orgs).
+/// - `manage_workspace` through coding tools for tracked repos and folders.
 ///
 /// Session Model:
 /// - Per-session with compaction (CRUD conversations can run long).
@@ -41,7 +51,7 @@ pub const AGENT_ARCHITECT_ID: &str = "builtin:agent-architect";
 /// - Full autonomy.
 /// - Not workspace-restricted: skills can be authored at
 ///   `~/.orgii/skills/` (global) as well as `<repo>/.orgii/skills/`.
-pub fn agent_architect() -> AgentDefinition {
+pub fn ade_manager() -> AgentDefinition {
     let capabilities = CapabilitySet {
         coding: Some(CodingCapability { mode_switch: false }),
         desktop: None,
@@ -53,10 +63,12 @@ pub fn agent_architect() -> AgentDefinition {
     let excluded_tools = default_excluded_tools_for_capabilities(&capabilities);
 
     AgentDefinition {
-        id: AGENT_ARCHITECT_ID.to_string(),
-        name: "Agent Architect".to_string(),
+        id: ADE_MANAGER_ID.to_string(),
+        name: "ADE Manager".to_string(),
         description: Some(
-            "Designs and maintains your agent workforce — creates and updates agents, agent organizations, and skills.".to_string(),
+            "Manages the Agentic Development Environment: agents, orgs, skills, rules, \
+             workspaces, and repo setup."
+                .to_string(),
         ),
         built_in: true,
         tier: AgentTier::Primary,
@@ -87,7 +99,7 @@ pub fn agent_architect() -> AgentDefinition {
             ..Default::default()
         },
 
-        soul_content: Some(include_str!("prompts/agent_architect.md").to_string()),
+        soul_content: Some(include_str!("prompts/ade_manager.md").to_string()),
         sovereign_prompt: false,
 
         delegation_config: Some(DelegationConfig {
@@ -100,7 +112,7 @@ pub fn agent_architect() -> AgentDefinition {
         temperature: Some(0.0),
         // `builtin:explore` and `builtin:general` are delegation primitives
         // (`agent_tool` schema fallback + EXPLORE label) and are always
-        // reachable regardless of this list. The Architect has no genuine
+        // reachable regardless of this list. ADE Manager has no genuine
         // user-facing sub-agent specialists by default.
         sub_agents: Some(vec![]),
         // The three relevant builtin playbooks (`create-orgii-agent`,
@@ -138,67 +150,77 @@ mod tests {
     use crate::tools::names as tool_names;
 
     #[test]
-    fn agent_architect_has_management_capability() {
-        let caps = agent_architect()
+    fn ade_manager_has_management_capability() {
+        let caps = ade_manager()
             .capabilities
-            .expect("Agent Architect declares caps");
+            .expect("ADE Manager declares caps");
         assert!(
             caps.management.is_some(),
-            "Agent Architect must have management capability to use manage_agent_def"
+            "ADE Manager must have management capability to use manage_agent_def"
         );
     }
 
     #[test]
-    fn agent_architect_has_coding_without_mode_switch() {
-        let caps = agent_architect()
+    fn ade_manager_has_coding_without_mode_switch() {
+        let caps = ade_manager()
             .capabilities
-            .expect("Agent Architect declares caps");
+            .expect("ADE Manager declares caps");
         let coding = caps
             .coding
-            .expect("Agent Architect needs coding capability for file tools");
+            .expect("ADE Manager needs coding capability for file tools");
         assert!(
             !coding.mode_switch,
-            "Agent Architect should not expose Build/Plan/Explore mode switching — \
+            "ADE Manager should not expose Build/Plan/Explore mode switching — \
              it is not a coding worker"
         );
     }
 
     #[test]
-    fn agent_architect_excludes_desktop_and_browser_tools() {
-        let excluded = &agent_architect().tools.excluded_tools;
+    fn ade_manager_excludes_desktop_and_browser_tools() {
+        let excluded = &ade_manager().tools.excluded_tools;
         let tool = tool_names::CONTROL_DESKTOP_WITH_PEEKABOO;
         assert!(
             excluded.iter().any(|t| t == tool),
-            "{tool} must be in Agent Architect's default excluded set \
-             (the Architect designs agents, it does not operate the desktop)"
+            "{tool} must be in ADE Manager's default excluded set \
+             (ADE Manager manages the dev environment, it does not operate the desktop)"
         );
     }
 
     #[test]
-    fn agent_architect_subagents_exclude_runtime_primitives() {
-        let subs = agent_architect()
+    fn ade_manager_subagents_exclude_runtime_primitives() {
+        let subs = ade_manager()
             .sub_agents
-            .expect("Agent Architect declares sub_agents");
+            .expect("ADE Manager declares sub_agents");
         for forbidden in super::super::SUBAGENT_FORBIDDEN_IDS {
             assert!(
                 !subs.iter().any(|s| &s.agent_id == forbidden),
-                "Agent Architect must not list runtime primitive {forbidden} as a sub-agent"
+                "ADE Manager must not list runtime primitive {forbidden} as a sub-agent"
             );
         }
     }
 
     #[test]
-    fn agent_architect_is_not_workspace_restricted() {
+    fn ade_manager_is_not_workspace_restricted() {
         // Skills can be authored at the user-global `~/.orgii/skills/`
-        // path, not just inside a workspace, so the Architect must not be
+        // path, not just inside a workspace, so ADE Manager must not be
         // workspace-restricted.
-        let policy = agent_architect()
+        let policy = ade_manager()
             .agent_policy
-            .expect("Agent Architect declares policy");
+            .expect("ADE Manager declares policy");
         assert!(
             !policy.workspace_only,
-            "Agent Architect must be able to write skills to ~/.orgii/skills/ \
+            "ADE Manager must be able to write skills to ~/.orgii/skills/ \
              (global scope), so workspace_only must be false"
         );
+    }
+
+    #[test]
+    fn ade_manager_id_remains_agent_architect_for_stability() {
+        // The string ID is the persistent on-disk handle — renaming the
+        // Rust symbol from ORGII Assistant to ADE Manager must NOT change
+        // the wire/storage ID, or it would orphan every existing session
+        // and overlay that references "builtin:agent-architect".
+        assert_eq!(ADE_MANAGER_ID, "builtin:agent-architect");
+        assert_eq!(ade_manager().id, "builtin:agent-architect");
     }
 }

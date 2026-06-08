@@ -1,3 +1,5 @@
+import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
+
 import {
   hasObservedUnsettledQueueTurn,
   hasQueueTurnSettledAfter,
@@ -6,6 +8,7 @@ import {
   isQueueRuntimeStillWorking,
   markQueueTurnSettled,
   markQueueTurnWorking,
+  queueTurnReleaseSignalAtom,
   resetQueueTurnGateForTests,
   shouldQueueSubmitAsActiveTurn,
 } from "../queueTurnGate";
@@ -54,6 +57,17 @@ describe("queueTurnGate", () => {
     expect(hasObservedUnsettledQueueTurn("session-1")).toBe(false);
   });
 
+  it("does not clear session working truth from turn-scoped intermediate completion", () => {
+    markQueueTurnWorking("session-1", 1_000);
+    markQueueTurnSettled("session-1", 1_300, "assistant-message", "completed");
+
+    expect(hasObservedUnsettledQueueTurn("session-1")).toBe(true);
+    expect(hasQueueTurnSettledAfter("session-1", 1_100)).toBe(false);
+    expect(
+      hasQueueTurnSettledAfter("session-1", 1_100, "assistant-message")
+    ).toBe(true);
+  });
+
   it("does not let another session's settle release this session's queued follow-up", () => {
     markQueueTurnWorking("session-1", 1_000);
     markQueueTurnSettled("session-2", 1_300);
@@ -68,6 +82,15 @@ describe("queueTurnGate", () => {
         now: 1_500,
       })
     ).toBe(true);
+  });
+
+  it("signals dispatchers when a terminal event may release queued work", () => {
+    const store = createInstrumentedStore();
+    const before = store.get(queueTurnReleaseSignalAtom);
+
+    markQueueTurnSettled("session-1", 1_000);
+
+    expect(store.get(queueTurnReleaseSignalAtom)).toBe(before + 1);
   });
 
   it("allows dispatch only after a settle edge newer than the queued message", () => {
@@ -110,7 +133,7 @@ describe("queueTurnGate", () => {
     expect(hasQueueTurnTerminatedAfter("session-1", 1_500)).toBe(false);
   });
 
-  it("binds pending rust turn queues to the first terminal edge after enqueue", () => {
+  it("does not release pending rust queues from turn-scoped terminal edges", () => {
     markQueueTurnSettled("session-1", 1_250, "turn-a", "cancelled");
     markQueueTurnSettled("session-1", 2_000, "turn-b", "completed");
 
@@ -123,6 +146,44 @@ describe("queueTurnGate", () => {
     ).toBe(false);
     expect(
       hasQueueTurnSettledAfter(
+        "session-1",
+        1_500,
+        "__pending_rust_active_turn__"
+      )
+    ).toBe(false);
+    expect(
+      hasQueueTurnTerminatedAfter(
+        "session-1",
+        1_500,
+        "__pending_rust_active_turn__"
+      )
+    ).toBe(false);
+  });
+
+  it("releases pending rust turn queues from session-level terminal events", () => {
+    markQueueTurnSettled("session-1", 2_000, undefined, "completed");
+
+    expect(
+      hasQueueTurnSettledAfter(
+        "session-1",
+        1_500,
+        "__pending_rust_active_turn__"
+      )
+    ).toBe(true);
+  });
+
+  it("does not release pending rust turn queues from session-level cancelled events", () => {
+    markQueueTurnSettled("session-1", 2_000, undefined, "cancelled");
+
+    expect(
+      hasQueueTurnSettledAfter(
+        "session-1",
+        1_500,
+        "__pending_rust_active_turn__"
+      )
+    ).toBe(false);
+    expect(
+      hasQueueTurnTerminatedAfter(
         "session-1",
         1_500,
         "__pending_rust_active_turn__"

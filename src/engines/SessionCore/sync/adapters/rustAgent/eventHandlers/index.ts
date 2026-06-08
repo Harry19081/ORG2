@@ -28,12 +28,14 @@ import {
 import {
   handleFileChange,
   handleHeartbeat,
+  handleSecretRequest,
   handleSetupRepoUpdate,
 } from "./fileChangeHandlers";
 import { handleMcpProgress } from "./mcpHandlers";
 import {
   clearStreamRetryStatus,
   handleComplete,
+  handleContextUsage,
   handleError,
   handleSessionEvicted,
   handleStreamErrorExhausted,
@@ -87,6 +89,7 @@ const STREAM_RETRY_RECOVERY_EVENTS = new Set<string>([
   "agent:streaming_complete",
   "agent:tool_result",
   "agent:interaction_finalized",
+  "agent:context_usage",
   "agent:complete",
   "agent:plan_ready_for_approval",
   "agent:plan_approval_archived",
@@ -196,6 +199,9 @@ export async function dispatchAgentEvent(
     case "agent:interaction_finalized":
       await handleInteractionFinalized(event, sessionId);
       break;
+    case "agent:context_usage":
+      handleContextUsage(event, ctx);
+      break;
     case "agent:complete":
       handleComplete(event, sessionId, ctx);
       break;
@@ -258,6 +264,12 @@ export async function dispatchAgentEvent(
       // Side-channel: setup_repo clone/checkout/install progress. The Rust
       // payload omits `sessionId`, so fall back to the channel's session.
       handleSetupRepoUpdate(event, eventSessionId || sessionId);
+      break;
+    case "agent:secret_request":
+      // Side-channel: `manage_secrets` wants the user to paste a sensitive
+      // value via the secure modal. The plaintext does not flow through
+      // this event — only the request metadata.
+      handleSecretRequest(event, eventSessionId || sessionId);
       break;
     case "agent:heartbeat":
       // Side-channel: long-running automation liveness ping. The Rust

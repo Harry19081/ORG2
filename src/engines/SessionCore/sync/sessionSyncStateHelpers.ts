@@ -12,6 +12,7 @@ import {
 import { type SessionStatus, updateSessionStatus } from "@src/store/session";
 import type {
   ContextBreakdown,
+  ContextUsageSnapshot,
   StreamRetryStatus,
 } from "@src/store/session/cliSessionStatusAtom";
 import type { CliSessionStatus } from "@src/types/session/session";
@@ -33,6 +34,7 @@ export interface SessionSwitchStateActions {
   clearSessionLoadError: () => void;
   setWpReadOnly: (value: boolean) => void;
   setSessionContextTokens: (value: number) => void;
+  setSessionContextUsage: (value: ContextUsageSnapshot | null) => void;
   setSessionContextBreakdown: (value: ContextBreakdown | null) => void;
   setSessionRuntimeStatus: (value: CliSessionStatus) => void;
   setSessionRuntimeError: (value: string | null) => void;
@@ -53,6 +55,7 @@ export interface SessionLoadStateActions {
 
 export interface SessionEventHandlerStateActions {
   setSessionContextTokens: (value: number) => void;
+  setSessionContextUsage: (value: ContextUsageSnapshot | null) => void;
   setSessionContextBreakdown: (value: ContextBreakdown | null) => void;
   setSessionRuntimeStatus: (value: CliSessionStatus) => void;
   setSessionRuntimeError: (value: string | null) => void;
@@ -78,6 +81,7 @@ export function resetSessionSwitchState(
   actions.setPendingCancel(false);
   actions.setStreamRetryStatus(null);
   actions.setSessionContextTokens(0);
+  actions.setSessionContextUsage(null);
   actions.setSessionContextBreakdown(null);
 }
 
@@ -97,6 +101,14 @@ export function applyPostLoadResult(
   }
   if (postResult.runStatus !== undefined) {
     actions.setSessionRuntimeStatus(toCliSessionStatus(postResult.runStatus));
+    if (TERMINAL_HANDLER_STATUSES.has(postResult.runStatus)) {
+      markQueueTurnSettled(
+        sessionId,
+        Date.now(),
+        undefined,
+        postResult.runStatus
+      );
+    }
     updateSessionStatus(sessionId, postResult.runStatus as SessionStatus);
   }
   if (postResult.runError !== undefined) {
@@ -146,9 +158,16 @@ export function createSessionEventHandlerCallbacks(
       if (tokenUsage && tokenUsage.contextTokens > 0) {
         actions.setSessionContextTokens(tokenUsage.contextTokens);
       }
+      if (tokenUsage?.contextUsage) {
+        actions.setSessionContextUsage(tokenUsage.contextUsage);
+      }
       if (tokenUsage?.contextBreakdown) {
         actions.setSessionContextBreakdown(tokenUsage.contextBreakdown);
       }
+    },
+    onContextUsage: (contextUsage) => {
+      actions.setSessionContextTokens(contextUsage.usedTokens);
+      actions.setSessionContextUsage(contextUsage);
     },
     onStatusChange: (status, errorMessage, meta) => {
       logStatusChange(status, errorMessage);

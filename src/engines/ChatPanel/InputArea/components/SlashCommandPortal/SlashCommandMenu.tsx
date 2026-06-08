@@ -67,12 +67,6 @@ const SlashCommandMenu: React.FC<SlashCommandPortalProps> = ({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const tauriSelectAll = useTauriSelectAllShortcut();
 
-  const [highlightIndex, setHighlightIndex] = useState(0);
-  const [keyboardNavigated, setKeyboardNavigated] = useState(!isHeaderMode);
-  const [openFlyout, setOpenFlyout] = useState<OpenFlyoutState | null>(null);
-  const [flyoutHighlightIndex, setFlyoutHighlightIndex] = useState(0);
-  const [panelRight, setPanelRight] = useState(0);
-
   // Build the unified entry list
   const { entries, totalFlat } = useEntries({
     items,
@@ -81,6 +75,12 @@ const SlashCommandMenu: React.FC<SlashCommandPortalProps> = ({
     hasImageUpload: Boolean(onImageUpload),
     showModeRows,
   });
+
+  const [highlightIndex, setHighlightIndex] = useState(0);
+  const [keyboardNavigated, setKeyboardNavigated] = useState(!isHeaderMode);
+  const [openFlyout, setOpenFlyout] = useState<OpenFlyoutState | null>(null);
+  const [flyoutHighlightIndex, setFlyoutHighlightIndex] = useState(0);
+  const [panelRight, setPanelRight] = useState(0);
 
   const placementUpdateKey = `${searchQuery}\0${entries.length}\0${openFlyout?.kind ?? ""}`;
   const { portalPosition, portalMaxHeight, isPositioned } =
@@ -96,7 +96,7 @@ const SlashCommandMenu: React.FC<SlashCommandPortalProps> = ({
       maxHeight: MAX_PANEL_HEIGHT,
     });
 
-  // Reset highlight to 0 when the list shape changes (derived state)
+  // Reset highlight to the first actionable row when the list shape changes.
   const listIdentity = useMemo(
     () =>
       `${items.map((i) => `${i.source}:${i.category}:${i.name}`).join("\0")}\0${searchQuery}`,

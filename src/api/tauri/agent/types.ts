@@ -11,7 +11,6 @@ export const RUST_AGENT_TYPE = {
   GUI_CONTROL: "gui_control",
   SDE: "sde",
   WINGMAN: "wingman",
-  TERMINAL: "terminal",
   CUSTOM: "custom",
 } as const;
 

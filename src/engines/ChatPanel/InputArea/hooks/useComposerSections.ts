@@ -20,9 +20,13 @@ import {
   MessageCircleMore,
   Terminal,
 } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import type { InlineSection } from "../components/CollapsedInlineRow";
+import {
+  type ComposerActiveSection,
+  resolveComposerSectionForSessionSwitch,
+} from "./composerSectionState";
 
 export interface FileChangeStats {
   count: number;
@@ -46,8 +50,6 @@ export interface UseComposerSectionsOptions {
   onFilesExpand?: () => void;
 }
 
-type ActiveSection = "queue" | "process" | "files" | null;
-
 export function useComposerSections({
   sessionId,
   queueCount,
@@ -64,8 +66,14 @@ export function useComposerSections({
   const [modeSwitchCollapsed, setModeSwitchCollapsed] = useState(false);
   const [planCollapsed, setPlanCollapsed] = useState(false);
 
-  // Secondary section — only one card open at a time
-  const [activeSection, setActiveSection] = useState<ActiveSection>(null);
+  // Secondary section — only one card open at a time. Persist this per
+  // session so queued messages stay discoverable when users switch away and
+  // return after the turn has completed.
+  const [activeSection, setActiveSection] =
+    useState<ComposerActiveSection>(null);
+  const activeSectionBySessionRef = useRef(
+    new Map<string, ComposerActiveSection>()
+  );
 
   // Counts reported by child components
   const [processVisibleCount, setProcessVisibleCount] = useState(0);
@@ -86,8 +94,24 @@ export function useComposerSections({
 
   const [prevSessionId, setPrevSessionId] = useState(sessionId);
   if (sessionId !== prevSessionId) {
+    const { activeSection: nextActiveSection, storedSectionForPrevious } =
+      resolveComposerSectionForSessionSwitch({
+        previousSessionId: prevSessionId,
+        nextSessionId: sessionId,
+        currentActiveSection: activeSection,
+        queueCount,
+        previouslyStoredSection: sessionId
+          ? activeSectionBySessionRef.current.get(sessionId)
+          : undefined,
+      });
+    if (prevSessionId && storedSectionForPrevious !== undefined) {
+      activeSectionBySessionRef.current.set(
+        prevSessionId,
+        storedSectionForPrevious
+      );
+    }
     setPrevSessionId(sessionId);
-    setActiveSection(null);
+    setActiveSection(nextActiveSection);
     setProcessVisibleCount(0);
     setFileChangeStats({ count: 0, additions: 0, deletions: 0 });
   }

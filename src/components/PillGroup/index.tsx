@@ -22,14 +22,10 @@
  * Each segment is its own button with its own click/tooltip — they are
  * independent triggers, not two halves of the same control.
  */
-import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { memo, useCallback, useRef, useState } from "react";
 
-import {
-  PILL_SM_HEIGHT_CLASS,
-  PILL_SM_ICON_SIZE,
-} from "@src/components/CompoundPill/config";
-import Tooltip, { type TooltipProps } from "@src/components/Tooltip";
+import SelectorPill from "@src/components/SelectorPill";
+import type { TooltipProps } from "@src/components/Tooltip";
 
 const HOVER_LEAVE_DELAY_MS = 200;
 
@@ -88,7 +84,7 @@ export interface PillGroupSegment {
   forceVisible?: boolean;
 }
 
-export type PillGroupVariant = "default" | "ghost" | "solid" | "input";
+export type PillGroupVariant = "default" | "ghost";
 
 export interface PillGroupProps {
   segments: PillGroupSegment[];
@@ -171,16 +167,6 @@ const PillGroup: React.FC<PillGroupProps> = memo(
           const isHovered = hoveredIndex === index;
           const isActive = !!segment.active;
           const isPillStyled = isHovered || isActive;
-          const labelColor = segment.danger
-            ? "text-primary-6"
-            : isActive
-              ? "text-primary-6"
-              : "text-text-1";
-          const chevronColor = segment.danger
-            ? "text-primary-6"
-            : isActive
-              ? "text-primary-6"
-              : "text-text-1";
 
           // Find the nearest previous *visible* sibling for divider rendering.
           let previousVisibleIndex = -1;
@@ -200,77 +186,46 @@ const PillGroup: React.FC<PillGroupProps> = memo(
           const showLeadingDivider =
             previousVisibleIndex >= 0 && !isPillStyled && !previousIsPilled;
 
+          const handleMouseDown:
+            | React.MouseEventHandler<HTMLButtonElement>
+            | undefined =
+            segment.activateOnMouseDown && segment.onClick
+              ? (event) => {
+                  if (event.button !== 0) return;
+                  event.preventDefault();
+                  segment.onClick?.(event);
+                }
+              : undefined;
+
           const button = (
-            <button
+            <SelectorPill
               ref={segment.buttonRef}
-              type="button"
-              onClick={segment.onClick}
-              onMouseDown={
-                segment.activateOnMouseDown && segment.onClick
-                  ? (event) => {
-                      if (event.button !== 0) return;
-                      event.preventDefault();
-                      segment.onClick?.(event);
-                    }
+              icon={segment.icon}
+              label={segment.label}
+              title={segment.title}
+              active={isActive}
+              danger={segment.danger}
+              disabled={segment.disabled}
+              variant={variant}
+              tooltip={segment.tooltip}
+              tooltipFramed={segment.tooltipFramed}
+              tooltipPosition={segment.tooltipPosition}
+              ariaLabel={segment.ariaLabel}
+              dataTestId={segment.dataTestId}
+              className={segmentClassName ?? ""}
+              labelStyle={
+                segment.maxLabelWidth
+                  ? { maxWidth: segment.maxLabelWidth }
                   : undefined
               }
-              disabled={segment.disabled}
-              aria-label={segment.ariaLabel}
-              data-testid={segment.dataTestId}
-              title={
-                segment.tooltip ? undefined : (segment.title ?? segment.label)
-              }
+              onClick={segment.onClick}
+              onMouseDown={handleMouseDown}
               onMouseEnter={() => handleEnter(index)}
               onMouseLeave={() => handleLeave(index)}
               onFocus={() => handleEnter(index)}
               onBlur={() => handleLeave(index)}
-              className={`group/pill flex items-center gap-2 rounded-full ${variant === "input" ? "px-2" : "px-3"} transition-colors duration-150 focus:outline-none ${PILL_SM_HEIGHT_CLASS} ${
-                isPillStyled
-                  ? variant === "input"
-                    ? "bg-chat-input"
-                    : variant === "ghost"
-                      ? "bg-fill-2"
-                      : variant === "solid"
-                        ? "bg-chat-input"
-                        : "bg-fill-2"
-                  : variant === "input"
-                    ? "bg-chat-input"
-                    : "bg-transparent"
-              } ${segment.disabled ? "cursor-default opacity-60" : "cursor-pointer"} ${segmentClassName ?? ""}`}
-            >
-              <span className="relative inline-flex h-[14px] w-[14px] shrink-0 items-center justify-center">
-                <span
-                  className={
-                    isActive ? "hidden" : isHovered ? "hidden" : "inline-flex"
-                  }
-                >
-                  {segment.icon}
-                </span>
-                {isActive ? (
-                  <ChevronUp
-                    size={PILL_SM_ICON_SIZE}
-                    strokeWidth={1.75}
-                    className={`absolute block ${chevronColor}`}
-                  />
-                ) : (
-                  <ChevronDown
-                    size={PILL_SM_ICON_SIZE}
-                    strokeWidth={1.75}
-                    className={`absolute ${chevronColor} ${isHovered ? "block" : "hidden"}`}
-                  />
-                )}
-              </span>
-              <span
-                className={`truncate leading-[1.2] ${labelColor}`}
-                style={
-                  segment.maxLabelWidth
-                    ? { maxWidth: segment.maxLabelWidth }
-                    : undefined
-                }
-              >
-                {segment.label}
-              </span>
-            </button>
+              size="sm"
+            />
           );
 
           return (
@@ -283,19 +238,7 @@ const PillGroup: React.FC<PillGroupProps> = memo(
                   }`}
                 />
               )}
-              {segment.tooltip ? (
-                <Tooltip
-                  content={segment.tooltip}
-                  position={segment.tooltipPosition ?? "top"}
-                  mouseEnterDelay={400}
-                  disabled={isActive}
-                  framedPanel={segment.tooltipFramed}
-                >
-                  {button}
-                </Tooltip>
-              ) : (
-                button
-              )}
+              {button}
             </React.Fragment>
           );
         })}

@@ -41,7 +41,4 @@ export { default as TurnCollapsePinBar } from "./TurnCollapsePinBar";
 export type { TurnCollapsePinBarProps } from "./TurnCollapsePinBar";
 export { default as UserActionButton } from "./UserActionButton";
 export { formatTokenCount, useContextUsageInfo } from "./useContextUsageInfo";
-export type {
-  ContextUsageInfo,
-  RuleTokenEstimate,
-} from "./useContextUsageInfo";
+export type { ContextUsageInfo } from "./useContextUsageInfo";

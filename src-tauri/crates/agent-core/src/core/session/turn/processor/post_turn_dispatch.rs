@@ -63,6 +63,7 @@ impl UnifiedMessageProcessor {
             completion_tokens: result.completion_tokens,
             total_tokens: result.total_tokens,
             context_tokens: result.context_tokens,
+            context_usage_snapshot: result.context_usage_snapshot.as_ref(),
         });
 
         // 9a. Fire HookEvent::Stop — agent turn concluded.

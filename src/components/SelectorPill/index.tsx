@@ -7,7 +7,7 @@
  * segments separated by `|` until a segment is hovered or active.
  *
  * Pattern: icon + label; on hover (or when active) the icon swaps to
- * ArrowLeftRight to signal the pill is interactive.
+ * a chevron or caller-provided hover icon to signal interactivity.
  *
  * Size tokens for sm/md are sourced from CompoundPill/config to stay in sync
  * with the CompoundPill segment dimensions.
@@ -19,6 +19,7 @@ import {
   PILL_SM_HEIGHT_CLASS,
   PILL_SM_ICON_CONTAINER_CLASS,
   PILL_SM_ICON_SIZE,
+  PILL_SM_LABEL_CLASS,
 } from "@src/components/CompoundPill/config";
 import Tooltip from "@src/components/Tooltip";
 
@@ -57,7 +58,105 @@ const ICON_SIZES = {
 } as const;
 
 export type SelectorPillSize = keyof typeof SIZE_CLASSES;
-export type SelectorPillVariant = "default" | "ghost" | "input";
+export type SelectorPillVariant = "default" | "ghost";
+
+interface SelectorPillContentProps {
+  icon: React.ReactNode;
+  label: string;
+  labelContent?: React.ReactNode;
+  size: SelectorPillSize;
+  active: boolean;
+  trailingChevron: boolean;
+  hoverIcon?: React.ReactNode;
+  iconColor: string;
+  chevronColor: string;
+  labelColor: string;
+  iconSize: number;
+  labelStyle?: React.CSSProperties;
+}
+
+const SelectorPillContent: React.FC<SelectorPillContentProps> = ({
+  icon,
+  label,
+  labelContent,
+  size,
+  active,
+  trailingChevron,
+  hoverIcon,
+  iconColor,
+  chevronColor,
+  labelColor,
+  iconSize,
+  labelStyle,
+}) => {
+  return (
+    <span
+      className={`inline-flex h-full min-w-0 items-center ${label ? GAP_CLASSES[size] : ""}`}
+    >
+      <span
+        className={`relative inline-flex shrink-0 items-center justify-center ${ICON_CONTAINER_CLASSES[size]}`}
+      >
+        {trailingChevron ? (
+          <span
+            className={`inline-flex items-center justify-center ${iconColor}`}
+          >
+            {icon}
+          </span>
+        ) : (
+          <>
+            {icon !== null && (
+              <span
+                className={`${active ? "hidden" : "group-hover/pill:hidden"} inline-flex items-center justify-center ${iconColor}`}
+              >
+                {icon}
+              </span>
+            )}
+            {active ? (
+              <ChevronUp
+                size={iconSize}
+                strokeWidth={1.75}
+                className={`absolute block ${chevronColor}`}
+              />
+            ) : hoverIcon ? (
+              <span
+                className={`absolute hidden items-center justify-center ${chevronColor} group-hover/pill:flex`}
+              >
+                {hoverIcon}
+              </span>
+            ) : (
+              <ChevronDown
+                size={iconSize}
+                strokeWidth={1.75}
+                className={`absolute hidden ${chevronColor} group-hover/pill:block`}
+              />
+            )}
+          </>
+        )}
+      </span>
+
+      {label && (
+        <span
+          className={`${labelContent || size === "xl" ? "" : "truncate"} inline-flex min-w-0 items-center ${PILL_SM_LABEL_CLASS} ${labelColor}`}
+          style={labelStyle}
+        >
+          {labelContent ?? label}
+        </span>
+      )}
+
+      {trailingChevron && (
+        <span
+          className={`inline-flex shrink-0 items-center justify-center ${chevronColor}`}
+        >
+          {active ? (
+            <ChevronUp size={14} strokeWidth={2} />
+          ) : (
+            <ChevronDown size={14} strokeWidth={2} />
+          )}
+        </span>
+      )}
+    </span>
+  );
+};
 
 export interface SelectorPillProps {
   /** Icon shown at rest (before hover). Pass null to show nothing at rest. */
@@ -84,11 +183,17 @@ export interface SelectorPillProps {
   variant?: SelectorPillVariant;
   /** Show a persistent right-side chevron instead of swapping the leading icon on hover */
   trailingChevron?: boolean;
-  onClick?: () => void;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
+  /** Optional leading icon replacement shown on hover when the pill is inactive. */
+  hoverIcon?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseDown?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
+  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   ariaLabel?: string;
   className?: string;
+  labelStyle?: React.CSSProperties;
   dataTestId?: string;
   disabled?: boolean;
 }
@@ -108,11 +213,16 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
       size = "sm",
       variant = "default",
       trailingChevron = false,
+      hoverIcon,
       onClick,
+      onMouseDown,
       onMouseEnter,
       onMouseLeave,
+      onFocus,
+      onBlur,
       ariaLabel,
       className = "",
+      labelStyle,
       dataTestId,
       disabled,
     },
@@ -131,15 +241,13 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
         ? "text-primary-6"
         : "text-text-1";
     const variantClasses =
-      variant === "input"
-        ? "bg-chat-input hover:bg-chat-input"
-        : variant === "ghost"
-          ? active
-            ? "bg-fill-2"
-            : "hover:bg-fill-2"
-          : active
-            ? "bg-fill-2"
-            : "hover:bg-fill-2";
+      variant === "ghost"
+        ? active
+          ? "bg-fill-2"
+          : "hover:bg-fill-2"
+        : active
+          ? "bg-fill-2"
+          : "hover:bg-fill-2";
 
     // Controlled tooltip visibility so that opening the dropdown (active=true)
     // immediately hides the tooltip instead of leaving it covering the panel.
@@ -151,80 +259,40 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
       setHoverIntent(next);
     }, []);
 
-    const buttonSizeClass =
-      label && variant === "input" && size === "sm"
-        ? `${PILL_SM_HEIGHT_CLASS} px-2 text-[12px]`
-        : label
-          ? SIZE_CLASSES[size]
-          : "h-[28px] w-[28px] justify-center px-0";
+    const buttonSizeClass = label
+      ? SIZE_CLASSES[size]
+      : "h-[28px] w-[28px] justify-center px-0";
 
     const button = (
       <button
         ref={ref}
         type="button"
         onClick={onClick}
+        onMouseDown={onMouseDown}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onFocus={onFocus}
+        onBlur={onBlur}
         disabled={disabled}
         aria-label={ariaLabel}
         data-testid={dataTestId}
         title={tooltip ? undefined : (title ?? label)}
-        className={`group/pill flex items-center rounded-full font-medium transition-colors duration-200 focus:outline-none ${label ? GAP_CLASSES[size] : ""} ${buttonSizeClass} ${variantClasses} ${className}`}
+        className={`group/pill flex items-center rounded-full font-medium transition-colors duration-200 focus:outline-none ${buttonSizeClass} ${variantClasses} ${className}`}
       >
-        <span
-          className={`relative inline-flex shrink-0 items-center justify-center ${ICON_CONTAINER_CLASSES[size]}`}
-        >
-          {trailingChevron ? (
-            <span
-              className={`inline-flex items-center justify-center ${iconColor}`}
-            >
-              {icon}
-            </span>
-          ) : (
-            <>
-              {icon !== null && (
-                <span
-                  className={`${active ? "hidden" : "group-hover/pill:hidden"} ${iconColor}`}
-                >
-                  {icon}
-                </span>
-              )}
-              {active ? (
-                <ChevronUp
-                  size={iconSize}
-                  strokeWidth={1.75}
-                  className={`absolute block ${chevronColor}`}
-                />
-              ) : (
-                <ChevronDown
-                  size={iconSize}
-                  strokeWidth={1.75}
-                  className={`absolute hidden ${chevronColor} group-hover/pill:block`}
-                />
-              )}
-            </>
-          )}
-        </span>
-
-        {label && (
-          <span
-            className={`${labelContent || size === "xl" ? "" : "truncate"} flex min-w-0 items-center leading-[16px] ${labelColor}`}
-          >
-            {labelContent ?? label}
-          </span>
-        )}
-
-        {trailingChevron && (
-          <span
-            className={`inline-flex shrink-0 items-center justify-center ${chevronColor}`}
-          >
-            {active ? (
-              <ChevronUp size={14} strokeWidth={2} />
-            ) : (
-              <ChevronDown size={14} strokeWidth={2} />
-            )}
-          </span>
-        )}
+        <SelectorPillContent
+          icon={icon}
+          label={label}
+          labelContent={labelContent}
+          size={size}
+          active={active}
+          trailingChevron={trailingChevron}
+          hoverIcon={hoverIcon}
+          iconColor={iconColor}
+          chevronColor={chevronColor}
+          labelColor={labelColor}
+          iconSize={iconSize}
+          labelStyle={labelStyle}
+        />
       </button>
     );
 

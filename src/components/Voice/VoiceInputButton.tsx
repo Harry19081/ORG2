@@ -95,9 +95,14 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
             endPress();
           }
         }}
-        className={`${INPUT_AREA_BUTTONS.iconButtonBase} ${
-          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-        } leading-none`}
+        className={[
+          "flex items-center justify-center rounded-full bg-transparent text-text-1 transition-colors duration-200 focus:outline-none",
+          INPUT_AREA_BUTTONS.iconButtonSizeClass,
+          disabled
+            ? "cursor-not-allowed opacity-50"
+            : "cursor-pointer hover:bg-fill-2",
+          "leading-none",
+        ].join(" ")}
         style={{ lineHeight: 0 }}
         data-testid="composer-voice-input-button"
         aria-label={t("common:tooltips.startVoiceInput")}

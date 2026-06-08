@@ -518,6 +518,7 @@ async fn ensure_session_initialized(
         current_account_id: Some(state.current_account_id.clone()),
         node_registry,
         question_manager: Some(Arc::clone(&session_handle.question_manager)),
+        secret_broker: Some(Arc::clone(&session_handle.secret_broker)),
         plan_approval_manager: session_handle.plan_approval_manager.clone(),
         plan_slot_cache: Some(session_handle.plan_slot_cache.clone()),
         agent_org_context: agent_org_context.clone(),

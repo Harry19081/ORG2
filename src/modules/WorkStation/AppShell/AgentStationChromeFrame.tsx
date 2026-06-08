@@ -10,6 +10,7 @@ interface AgentStationChromeFrameProps {
    * padding produces a visible inner gutter around the simulator.
    */
   isFullMode: boolean;
+  captionVisible?: boolean;
   children: React.ReactNode;
 }
 
@@ -17,6 +18,7 @@ const AgentStationChromeFrame: React.FC<AgentStationChromeFrameProps> = ({
   enabled,
   illuminated,
   isFullMode,
+  captionVisible = false,
   children,
 }) => {
   if (!enabled) {
@@ -37,10 +39,17 @@ const AgentStationChromeFrame: React.FC<AgentStationChromeFrameProps> = ({
   const innerRadiusClass = isFullMode
     ? "rounded-page"
     : "rounded-[calc(var(--radius-page)-4px)]";
+  const framePaddingClass = isFullMode
+    ? captionVisible
+      ? "px-2 pb-2"
+      : "p-2"
+    : captionVisible
+      ? "px-1 pb-1"
+      : "p-1";
 
   return (
     <div
-      className={`relative flex min-h-0 min-w-0 flex-1 flex-col ${isFullMode ? "p-2" : "p-1"}`}
+      className={`relative flex min-h-0 min-w-0 flex-1 flex-col ${framePaddingClass}`}
     >
       {illuminated && (
         <div

@@ -16,9 +16,12 @@ import {
 } from "@src/engines/SessionCore/storage/cacheAdapter";
 import { reposAtom, selectedRepoIdAtom } from "@src/store/repo/atoms";
 import {
+  type ContextUsageSnapshot,
   isPendingCancelAtom,
   lastUserMessageAtom,
   restoreToInputAtom,
+  sessionContextTokensAtom,
+  sessionContextUsageAtom,
   sessionRolledBackAtom,
   sessionRuntimeStatusAtom,
   streamRetryStatusAtom,
@@ -215,6 +218,8 @@ export function createSessionHelpers(store: E2EStore) {
       store.set(isPendingCancelAtom, false);
       store.set(userInitiatedCancelAtom, false);
       store.set(sessionRuntimeStatusAtom, "idle");
+      store.set(sessionContextTokensAtom, 0);
+      store.set(sessionContextUsageAtom, null);
       store.set(streamRetryStatusAtom, null);
       store.set(restoreToInputAtom, null);
       store.set(lastUserMessageAtom, null);
@@ -453,6 +458,33 @@ export function createSessionHelpers(store: E2EStore) {
     }
   };
 
+  const seedSessionContextUsage = async (
+    usage: Json
+  ): Promise<Result<{ usedTokens: number }>> => {
+    try {
+      const usedTokens =
+        usage &&
+        typeof usage === "object" &&
+        typeof usage.usedTokens === "number"
+          ? usage.usedTokens
+          : null;
+      if (usedTokens === null) {
+        return {
+          ok: false,
+          error: "seedSessionContextUsage: `usedTokens` is required",
+        };
+      }
+      store.set(sessionContextTokensAtom, usedTokens);
+      store.set(
+        sessionContextUsageAtom,
+        usage as unknown as ContextUsageSnapshot
+      );
+      return { ok: true, usedTokens };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
   const seeders = createSessionSeederHelpers(store);
 
   return {
@@ -465,6 +497,7 @@ export function createSessionHelpers(store: E2EStore) {
     launchSession,
     getSessionAggregateRow,
     getSessionAggregateRowFromList,
+    seedSessionContextUsage,
     seedChatEvents: seeders.seedChatEvents,
     seedModeSwitchSession: seeders.seedModeSwitchSession,
     seedPlanCard: seeders.seedPlanCard,

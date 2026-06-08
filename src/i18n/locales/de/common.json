@@ -11,7 +11,25 @@
     "selectionPlaceholder": "Stelle eine beliebige Frage zu ORGII...",
     "submit": "Agent Control-Eingabe senden",
     "menuToggle": "Agent Control",
-    "selectModel": "Modell auswählen"
+    "selectModel": "Modell auswählen",
+    "newRound": "Neue Runde"
+  },
+  "secretCapture": {
+    "title": "Geheimnis eingeben",
+    "safetyNotice": "Hier eingegebene Werte gehen direkt auf die Festplatte. Sie werden NIEMALS an das LLM gesendet und erscheinen nicht im Chat oder in den Logs.",
+    "submit": "Sicher speichern",
+    "pasteFromClipboard": "Aus Zwischenablage einfügen",
+    "clipboardEmpty": "Zwischenablage ist leer.",
+    "clipboardFailed": "Zwischenablage konnte nicht gelesen werden.",
+    "submitFailed": "Speichern des Geheimnisses fehlgeschlagen. Der Agent wurde benachrichtigt.",
+    "inputPlaceholder": "Fügen Sie Ihren Wert hier ein",
+    "lengthHint": "{{count}} Zeichen",
+    "kind": {
+      "api_key": "API-Schlüssel",
+      "password": "Passwort",
+      "oauth_token": "OAuth-Token",
+      "other": "Geheimnis"
+    }
   },
   "actions": {
     "save": "Speichern",
@@ -1159,6 +1177,7 @@
         "addByTemplate": "Workspace hinzufügen über {source}"
       },
       "pathImport": {
+        "addLabel": "Hinzufügen",
         "invalidTitle": "Ordner öffnen",
         "invalidMessage": "\"{{path}}\" ist kein gültiger Ordnerpfad."
       },
@@ -1470,8 +1489,11 @@
     "dockAutoHide": "Dock automatisch ausblenden",
     "modelPickerStyle": "Auswahl",
     "chatPanelPagination": "Paginierung",
+    "captionPlacement": "Beschriftungszeile",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
+    "above": "Oben",
+    "below": "Unten",
     "replaySession": "Replay-Sitzung",
     "captionBar": "Agent-Nachrichtenleiste",
     "location": "Position",

@@ -29,6 +29,26 @@ function settleTerminalRuntime(
   ctx.onStatusChangeRef.current?.(status, errorMessage, meta);
 }
 
+export function handleContextUsage(
+  event: AgentWSEvent,
+  ctx: EventHandlerContext
+): void {
+  if (typeof event.contextTokens === "number" && event.contextTokens > 0) {
+    ctx.onContextUsageRef.current?.(
+      event.contextUsage ?? {
+        usedTokens: event.contextTokens,
+        maxTokens: null,
+        percentUsed: null,
+        updatedAt: new Date().toISOString(),
+        sections: [],
+        warnings: [],
+      }
+    );
+  } else if (event.contextUsage) {
+    ctx.onContextUsageRef.current?.(event.contextUsage);
+  }
+}
+
 export function handleComplete(
   event: AgentWSEvent,
   sessionId: string,
@@ -49,6 +69,7 @@ export function handleComplete(
           completionTokens: event.completionTokens ?? 0,
           totalTokens: event.totalTokens,
           contextTokens: event.contextTokens ?? event.promptTokens ?? 0,
+          ...(event.contextUsage ? { contextUsage: event.contextUsage } : {}),
           ...(event.contextBreakdown
             ? { contextBreakdown: event.contextBreakdown }
             : {}),

@@ -49,6 +49,7 @@ function createCtx(): EventHandlerContext {
     }),
     onStreamingDeltaRef: ref(vi.fn()),
     onAgentCompleteRef: ref(undefined),
+    onContextUsageRef: ref(undefined),
     onStatusChangeRef: ref(vi.fn()),
     onQuestionRequestRef: ref(undefined),
     setStreaming: vi.fn(),

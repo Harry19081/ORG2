@@ -106,18 +106,12 @@ export interface SessionInfoLineProps {
   hideBranch?: boolean;
   /**
    * `PillGroup` visual variant. Use `ghost` for dense factory headers where
-   * the surrounding chrome already provides visual separation; the default
-   * `default` variant draws a border ring on hover/active.
-   *
-   * Ignored when `fullWidth` is true (forces `solid`).
+   * the surrounding chrome already provides visual separation.
    */
   pillVariant?: PillGroupVariant;
   /**
    * When true, the row sits in a full-width SessionCreator surface (e.g. the
-   * fullScreen ChatPanel creator) immediately under the composer input. Each
-   * pill renders with a persistent `bg-chat-input` fill so the segments
-   * align visually with the input above instead of reading as naked text on
-   * a darker strip.
+   * fullScreen ChatPanel creator) immediately under the composer input.
    */
   fullWidth?: boolean;
   /**
@@ -150,9 +144,6 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
   disabled = false,
   hideBranch = false,
 }) => {
-  const effectivePillVariant: PillGroupVariant = fullWidth
-    ? "solid"
-    : pillVariant;
   const { t } = useTranslation();
 
   // ============================================
@@ -489,7 +480,7 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
       <PillGroup
         segments={segments}
         className="flex-wrap"
-        variant={effectivePillVariant}
+        variant={pillVariant}
       />
 
       {/* Repo Selector */}

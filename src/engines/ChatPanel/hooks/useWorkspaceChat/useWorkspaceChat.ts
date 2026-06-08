@@ -19,7 +19,7 @@ import Message from "@src/components/Message";
 import type { AgentExecMode } from "@src/config/sessionCreatorConfig";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
 import { sortedEventsAtom } from "@src/engines/SessionCore/core/atoms/events";
-import { hasComposerBlockingRunningSessionEvent } from "@src/engines/SessionCore/core/runningEventGate";
+import { sessionHasComposerStopBlockingWork } from "@src/engines/SessionCore/core/runningEventGate";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
 import {
   PENDING_RUST_ACTIVE_TURN_ID,
@@ -27,7 +27,6 @@ import {
   markQueueTurnWorking,
   shouldQueueSubmitAsActiveTurn,
 } from "@src/engines/SessionCore/hooks/session/queueTurnGate";
-import { getActiveSessionStreamingTurn } from "@src/engines/SessionCore/sync/adapters/rustAgent/eventHandlers/streamHelpers";
 import {
   isPendingCancelAtom,
   isSessionActiveAtom,
@@ -274,7 +273,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
         latestSessionRuntimeStatus === "installing" ||
         latestSessionRuntimeStatus === "waiting_for_user" ||
         latestSessionRuntimeStatus === "waiting_for_funds" ||
-        hasComposerBlockingRunningSessionEvent(
+        sessionHasComposerStopBlockingWork(
           store.get(sortedEventsAtom),
           sessionId
         );
@@ -390,10 +389,9 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
           requiresRuntimeSettle: !effectiveUserInitiatedCancel,
           releaseAfterTurnId: effectiveUserInitiatedCancel
             ? undefined
-            : (getActiveSessionStreamingTurn(sessionId) ??
-              (isAgentSession(sessionId)
-                ? PENDING_RUST_ACTIVE_TURN_ID
-                : undefined)),
+            : isAgentSession(sessionId)
+              ? PENDING_RUST_ACTIVE_TURN_ID
+              : undefined,
           dispatchAfterUserCancel: effectiveUserInitiatedCancel,
           status: "queued",
           createdAt: new Date().toISOString(),
@@ -420,6 +418,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       // before `activationVersion` is captured, breaking the cold-start
       // condition (`activationVersion === version`) and forcing the indicator
       // to wait the full 1-second warm-path delay instead of appearing instantly.
+      markQueueTurnWorking(sessionId);
       setSessionRuntimeStatus({ status: "running", source: "dispatch" });
       setSessChatInput("");
       setLoading(true);
