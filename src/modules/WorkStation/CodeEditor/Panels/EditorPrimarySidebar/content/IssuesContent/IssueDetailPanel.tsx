@@ -1,9 +1,17 @@
-import { ArrowLeft, CircleDot, ExternalLink, XCircle } from "lucide-react";
-import React, { memo, useCallback, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  CircleDot,
+  ExternalLink,
+  Loader,
+  XCircle,
+} from "lucide-react";
+import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubIssue, GitHubIssueComment } from "@src/api/tauri/github";
+import Avatar from "@src/components/Avatar";
 import Button from "@src/components/Button";
+import Textarea from "@src/components/Textarea";
 import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
@@ -38,7 +46,6 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
   }) => {
     const { t } = useTranslation("common");
     const [commentBody, setCommentBody] = useState("");
-    const commentRef = useRef<HTMLTextAreaElement>(null);
     const isOpen = issue.state === "open";
 
     const handleCommentSubmit = useCallback(async () => {
@@ -106,11 +113,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
             <div
               className={`flex items-center gap-1.5 ${TYPOGRAPHY.secondary} text-text-3`}
             >
-              <img
-                src={issue.user.avatar_url}
-                alt={issue.user.login}
-                className="h-4 w-4 rounded-full"
-              />
+              <Avatar size={16} src={issue.user.avatar_url} />
               <span className="font-medium text-text-2">
                 {issue.user.login}
               </span>
@@ -143,11 +146,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
                 <span>Assigned:</span>
                 {issue.assignees.map((user) => (
                   <span key={user.login} className="flex items-center gap-0.5">
-                    <img
-                      src={user.avatar_url}
-                      alt={user.login}
-                      className="h-3.5 w-3.5 rounded-full"
-                    />
+                    <Avatar size={14} src={user.avatar_url} />
                     <span className="text-text-2">{user.login}</span>
                   </span>
                 ))}
@@ -193,14 +192,8 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
           {/* Comments */}
           <div className="flex flex-1 flex-col">
             {commentsLoading ? (
-              <div className="flex items-center justify-center py-6">
-                <Button
-                  variant="tertiary"
-                  size="mini"
-                  loading
-                  iconOnly
-                  icon={<span />}
-                />
+              <div className="flex items-center justify-center py-6 text-text-3">
+                <Loader size={14} className="animate-spin" />
               </div>
             ) : (
               comments.map((comment) => (
@@ -211,11 +204,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
                   <div
                     className={`mb-1 flex items-center gap-1.5 ${TYPOGRAPHY.secondary} text-text-3`}
                   >
-                    <img
-                      src={comment.user.avatar_url}
-                      alt={comment.user.login}
-                      className="h-4 w-4 rounded-full"
-                    />
+                    <Avatar size={16} src={comment.user.avatar_url} />
                     <span className="font-medium text-text-2">
                       {comment.user.login}
                     </span>
@@ -233,16 +222,17 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
 
           {/* Add comment */}
           <div className="shrink-0 px-3 py-2">
-            <textarea
-              ref={commentRef}
+            <Textarea
               value={commentBody}
-              onChange={(e) => setCommentBody(e.target.value)}
+              onChange={setCommentBody}
               placeholder={t(
                 "git.issues.commentPlaceholder",
                 "Leave a comment…"
               )}
               rows={3}
-              className={`mb-2 w-full resize-none rounded border border-border-2 bg-fill-1 px-2 py-1.5 ${TYPOGRAPHY.value} text-text-1 placeholder:text-text-3 focus:border-primary-6 focus:outline-none`}
+              size="mini"
+              resize="none"
+              className="mb-2"
             />
             <div className="flex justify-end">
               <Button
