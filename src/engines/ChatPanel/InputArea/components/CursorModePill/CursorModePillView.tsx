@@ -147,7 +147,7 @@ const CursorModePillView: React.FC<CursorModePillViewProps> = ({
         segments={segments}
         className="text-[13px]"
         segmentClassName="h-[28px]"
-        variant="input"
+        variant="default"
       />
 
       {isOpen &&

@@ -276,7 +276,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
       isCursorIde && sessionId ? (
         <CursorModePill sessionId={sessionId} />
       ) : (
-        <ModePill />
+        <ModePill hideWhenDefault resetToDefaultOnClick />
       );
     const clearReplyInfo = useCallback(
       () => setReplyInfo({ isReply: false }),

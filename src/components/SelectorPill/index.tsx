@@ -7,7 +7,7 @@
  * segments separated by `|` until a segment is hovered or active.
  *
  * Pattern: icon + label; on hover (or when active) the icon swaps to
- * ArrowLeftRight to signal the pill is interactive.
+ * a chevron or caller-provided hover icon to signal interactivity.
  *
  * Size tokens for sm/md are sourced from CompoundPill/config to stay in sync
  * with the CompoundPill segment dimensions.
@@ -19,6 +19,7 @@ import {
   PILL_SM_HEIGHT_CLASS,
   PILL_SM_ICON_CONTAINER_CLASS,
   PILL_SM_ICON_SIZE,
+  PILL_SM_LABEL_CLASS,
 } from "@src/components/CompoundPill/config";
 import Tooltip from "@src/components/Tooltip";
 
@@ -57,7 +58,7 @@ const ICON_SIZES = {
 } as const;
 
 export type SelectorPillSize = keyof typeof SIZE_CLASSES;
-export type SelectorPillVariant = "default" | "ghost" | "input";
+export type SelectorPillVariant = "default" | "ghost";
 
 export interface SelectorPillProps {
   /** Icon shown at rest (before hover). Pass null to show nothing at rest. */
@@ -84,11 +85,17 @@ export interface SelectorPillProps {
   variant?: SelectorPillVariant;
   /** Show a persistent right-side chevron instead of swapping the leading icon on hover */
   trailingChevron?: boolean;
-  onClick?: () => void;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
+  /** Optional leading icon replacement shown on hover when the pill is inactive. */
+  hoverIcon?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseDown?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
+  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   ariaLabel?: string;
   className?: string;
+  labelStyle?: React.CSSProperties;
   dataTestId?: string;
   disabled?: boolean;
 }
@@ -108,11 +115,16 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
       size = "sm",
       variant = "default",
       trailingChevron = false,
+      hoverIcon,
       onClick,
+      onMouseDown,
       onMouseEnter,
       onMouseLeave,
+      onFocus,
+      onBlur,
       ariaLabel,
       className = "",
+      labelStyle,
       dataTestId,
       disabled,
     },
@@ -131,15 +143,13 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
         ? "text-primary-6"
         : "text-text-1";
     const variantClasses =
-      variant === "input"
-        ? "bg-chat-input hover:bg-chat-input"
-        : variant === "ghost"
-          ? active
-            ? "bg-fill-2"
-            : "hover:bg-fill-2"
-          : active
-            ? "bg-fill-2"
-            : "hover:bg-fill-2";
+      variant === "ghost"
+        ? active
+          ? "bg-fill-2"
+          : "hover:bg-fill-2"
+        : active
+          ? "bg-fill-2"
+          : "hover:bg-fill-2";
 
     // Controlled tooltip visibility so that opening the dropdown (active=true)
     // immediately hides the tooltip instead of leaving it covering the panel.
@@ -151,20 +161,20 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
       setHoverIntent(next);
     }, []);
 
-    const buttonSizeClass =
-      label && variant === "input" && size === "sm"
-        ? `${PILL_SM_HEIGHT_CLASS} px-2 text-[12px]`
-        : label
-          ? SIZE_CLASSES[size]
-          : "h-[28px] w-[28px] justify-center px-0";
+    const buttonSizeClass = label
+      ? SIZE_CLASSES[size]
+      : "h-[28px] w-[28px] justify-center px-0";
 
     const button = (
       <button
         ref={ref}
         type="button"
         onClick={onClick}
+        onMouseDown={onMouseDown}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onFocus={onFocus}
+        onBlur={onBlur}
         disabled={disabled}
         aria-label={ariaLabel}
         data-testid={dataTestId}
@@ -184,7 +194,7 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
             <>
               {icon !== null && (
                 <span
-                  className={`${active ? "hidden" : "group-hover/pill:hidden"} ${iconColor}`}
+                  className={`${active ? "hidden" : "group-hover/pill:hidden"} inline-flex items-center justify-center ${iconColor}`}
                 >
                   {icon}
                 </span>
@@ -195,6 +205,12 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
                   strokeWidth={1.75}
                   className={`absolute block ${chevronColor}`}
                 />
+              ) : hoverIcon ? (
+                <span
+                  className={`absolute hidden items-center justify-center ${chevronColor} group-hover/pill:flex`}
+                >
+                  {hoverIcon}
+                </span>
               ) : (
                 <ChevronDown
                   size={iconSize}
@@ -208,7 +224,8 @@ export const SelectorPill = forwardRef<HTMLButtonElement, SelectorPillProps>(
 
         {label && (
           <span
-            className={`${labelContent || size === "xl" ? "" : "truncate"} flex min-w-0 items-center leading-[16px] ${labelColor}`}
+            className={`${labelContent || size === "xl" ? "" : "truncate"} flex min-w-0 items-center ${PILL_SM_LABEL_CLASS} ${labelColor}`}
+            style={labelStyle}
           >
             {labelContent ?? label}
           </span>

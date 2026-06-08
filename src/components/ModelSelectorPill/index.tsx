@@ -9,7 +9,10 @@ import { Brain, Grip } from "lucide-react";
 import React, { forwardRef, useMemo } from "react";
 
 import { isHostedKey } from "@src/api/tauri/session";
-import { PILL_SM_ICON_SIZE } from "@src/components/CompoundPill/config";
+import {
+  PILL_SM_ICON_SIZE,
+  PILL_SM_LABEL_CLASS,
+} from "@src/components/CompoundPill/config";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelPillTooltipContent from "@src/components/ModelPillTooltipContent";
 import SelectorPill from "@src/components/SelectorPill";
@@ -133,13 +136,15 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
       const accentClass = active ? "text-primary-6" : "text-text-3";
 
       return (
-        <span className="inline-flex min-w-0 items-center gap-1.5 leading-none">
-          <span className="min-w-0 truncate leading-none">
+        <span
+          className={`inline-flex min-w-0 items-center gap-1.5 ${PILL_SM_LABEL_CLASS}`}
+        >
+          <span className={`min-w-0 truncate ${PILL_SM_LABEL_CLASS}`}>
             {displayParts.label}
           </span>
           {displayParts.variantInfo && (
             <span
-              className={`inline-flex shrink-0 items-center text-[12px] font-normal leading-none ${accentClass}`}
+              className={`inline-flex shrink-0 items-center text-[12px] font-normal ${PILL_SM_LABEL_CLASS} ${accentClass}`}
             >
               {displayParts.variantInfo}
             </span>
