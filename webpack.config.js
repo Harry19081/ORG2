@@ -297,6 +297,13 @@ module.exports = (env, argv) => {
         "@common": path.resolve(__dirname, "src/common/"),
         "@page": path.resolve(__dirname, "src/page/"),
         "@assets": path.resolve(__dirname, "src/assets/"),
+        // @a2ui/web_core's package.json exports field does not expose ./src/v0_9,
+        // so webpack blocks the physical deep-path import. Alias it to the actual
+        // built entry so webpack resolves it without going through exports.
+        "@a2ui/web_core/src/v0_9": path.resolve(
+          __dirname,
+          "node_modules/@a2ui/web_core/src/v0_9/index.js"
+        ),
         "@codemirror/commands": path.dirname(
           require.resolve("@codemirror/commands")
         ),
