@@ -47,6 +47,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
     const {
       issues,
       loading,
+      remoteUrlLoading,
       error,
       filterState,
       setFilterState,
@@ -119,7 +120,11 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
       };
     }, [setCallbackAtom, handleOpenNewIssueForm]);
 
-    const isInitialLoading = loading && issues.length === 0;
+    // Show spinner while the remote URL is still being resolved (async) OR
+    // while the first page of issues is loading. Without this guard the panel
+    // would flash "No open issues" before the async fetch even starts.
+    const isInitialLoading =
+      remoteUrlLoading || (loading && issues.length === 0);
 
     // ── Render ────────────────────────────────────────────────────────────────
 

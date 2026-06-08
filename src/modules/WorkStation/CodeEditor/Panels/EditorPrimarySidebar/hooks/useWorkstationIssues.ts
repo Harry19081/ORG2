@@ -79,6 +79,9 @@ export function useWorkstationIssues({
   // pre-flight token ping needed. Real auth failures from API calls will
   // flip this to false, matching the trust model used by the PR panel.
   const [hasGitHubAuth, setHasGitHubAuth] = useState(false);
+  // Track whether we're still waiting for the remote URL to resolve so the
+  // panel shows a spinner instead of the empty-state placeholder.
+  const [remoteUrlLoading, setRemoteUrlLoading] = useState(true);
 
   const [repoLabels, setRepoLabels] = useState<GitHubIssueLabel[]>([]);
   const [collaborators, setCollaborators] = useState<GitHubIssueUser[]>([]);
@@ -89,22 +92,41 @@ export function useWorkstationIssues({
 
     void (async () => {
       if (remoteUrlProp) {
-        if (!cancelled) setResolvedRemoteUrl(remoteUrlProp);
+        console.log("[Issues] remoteUrl from prop:", remoteUrlProp);
+        if (!cancelled) {
+          setResolvedRemoteUrl(remoteUrlProp);
+          setRemoteUrlLoading(false);
+        }
         return;
       }
-      if (!repoPath) return;
+      if (!repoPath) {
+        if (!cancelled) setRemoteUrlLoading(false);
+        return;
+      }
 
+      console.log(
+        "[Issues] fetching remotes for repoPath:",
+        repoPath,
+        "repoId:",
+        repoId
+      );
       try {
         const remotesData = await getGitRemotes({
           repo_id: repoId,
           repo_path: repoPath,
         });
+        console.log("[Issues] getGitRemotes result:", remotesData);
         const origin = remotesData?.remotes?.find((r) => r.name === "origin");
-        if (!cancelled && origin?.url) {
-          setResolvedRemoteUrl(origin.url);
+        console.log("[Issues] origin remote:", origin);
+        if (!cancelled) {
+          if (origin?.url) {
+            setResolvedRemoteUrl(origin.url);
+          }
+          setRemoteUrlLoading(false);
         }
-      } catch {
-        // silent — no remote
+      } catch (err) {
+        console.warn("[Issues] getGitRemotes failed:", err);
+        if (!cancelled) setRemoteUrlLoading(false);
       }
     })();
 
@@ -119,6 +141,12 @@ export function useWorkstationIssues({
   useEffect(() => {
     if (!resolvedRemoteUrl) return;
     const repoFullName = parseGithubRepoFullName(resolvedRemoteUrl);
+    console.log(
+      "[Issues] resolvedRemoteUrl:",
+      resolvedRemoteUrl,
+      "→ repoFullName:",
+      repoFullName
+    );
     setHasGitHubAuth(!!repoFullName);
   }, [resolvedRemoteUrl]);
 
@@ -147,7 +175,18 @@ export function useWorkstationIssues({
 
   const fetchPage = useCallback(
     async (filter: IssueFilterState, page: number) => {
-      if (!resolvedRemoteUrl || !hasGitHubAuth) return;
+      console.log("[Issues] fetchPage called:", {
+        filter,
+        page,
+        resolvedRemoteUrl,
+        hasGitHubAuth,
+      });
+      if (!resolvedRemoteUrl || !hasGitHubAuth) {
+        console.log(
+          "[Issues] fetchPage skipped — resolvedRemoteUrl or hasGitHubAuth missing"
+        );
+        return;
+      }
 
       setListState((prev) => ({ ...prev, loading: true, error: null }));
 
@@ -155,6 +194,7 @@ export function useWorkstationIssues({
         state: filter === "all" ? "all" : filter,
         page,
       });
+      console.log("[Issues] fetchIssues result:", result);
 
       if (!mountedRef.current) return;
 
@@ -441,6 +481,7 @@ export function useWorkstationIssues({
   return {
     issues: filteredIssues,
     loading: listState.loading,
+    remoteUrlLoading,
     error: listState.error,
     filterState,
     setFilterState,
