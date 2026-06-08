@@ -1683,7 +1683,7 @@
     "slashSearchPlaceholder": "Search commands…",
     "slashMenu": {
       "image": "Image",
-      "uploadImage": "Upload Image",
+      "uploadImage": "Upload image",
       "mode": "Mode",
       "models": "Models",
       "skills": "Skills"

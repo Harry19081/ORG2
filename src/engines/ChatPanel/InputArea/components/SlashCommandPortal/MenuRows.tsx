@@ -77,7 +77,7 @@ export const ImageRow: React.FC<ImageRowProps> = React.memo(
           className={iconClass(false)}
         />
         <span className={labelClass(false)}>
-          {t("creator.slashMenu.image", { defaultValue: "Image" })}
+          {t("creator.slashMenu.uploadImage", { defaultValue: "Upload image" })}
         </span>
       </div>
     );
