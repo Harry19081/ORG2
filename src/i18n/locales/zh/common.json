@@ -11,7 +11,8 @@
     "selectionPlaceholder": "向 ORGII 提任何问题...",
     "submit": "提交 Agent Control 输入",
     "menuToggle": "Agent Control",
-    "selectModel": "选择模型"
+    "selectModel": "选择模型",
+    "newRound": "新一轮"
   },
   "actions": {
     "save": "保存",

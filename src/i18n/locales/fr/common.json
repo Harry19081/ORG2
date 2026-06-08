@@ -11,7 +11,8 @@
     "selectionPlaceholder": "Posez n'importe quelle question sur ORGII...",
     "submit": "Envoyer la saisie Agent Control",
     "menuToggle": "Agent Control",
-    "selectModel": "Choisir le modèle"
+    "selectModel": "Choisir le modèle",
+    "newRound": "Nouveau tour"
   },
   "actions": {
     "save": "Enregistrer",

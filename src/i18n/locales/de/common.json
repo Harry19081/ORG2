@@ -11,7 +11,8 @@
     "selectionPlaceholder": "Stelle eine beliebige Frage zu ORGII...",
     "submit": "Agent Control-Eingabe senden",
     "menuToggle": "Agent Control",
-    "selectModel": "Modell auswählen"
+    "selectModel": "Modell auswählen",
+    "newRound": "Neue Runde"
   },
   "actions": {
     "save": "Speichern",

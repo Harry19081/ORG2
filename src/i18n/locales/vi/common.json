@@ -11,7 +11,8 @@
     "selectionPlaceholder": "Đặt bất kỳ câu hỏi nào về ORGII...",
     "submit": "Gửi nội dung Agent Control",
     "menuToggle": "Agent Control",
-    "selectModel": "Chọn model"
+    "selectModel": "Chọn model",
+    "newRound": "Vòng mới"
   },
   "actions": {
     "save": "Lưu",

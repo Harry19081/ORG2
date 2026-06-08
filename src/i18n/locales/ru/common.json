@@ -11,7 +11,8 @@
     "selectionPlaceholder": "Задайте любой вопрос об ORGII...",
     "submit": "Отправить ввод Agent Control",
     "menuToggle": "Agent Control",
-    "selectModel": "Выбрать модель"
+    "selectModel": "Выбрать модель",
+    "newRound": "Новый раунд"
   },
   "actions": {
     "save": "Сохранить",

@@ -11,7 +11,8 @@
     "selectionPlaceholder": "Ask any questions about ORGII...",
     "submit": "Submit Agent Control input",
     "menuToggle": "Agent Control",
-    "selectModel": "Select model"
+    "selectModel": "Select model",
+    "newRound": "New round"
   },
   "actions": {
     "all": "All",

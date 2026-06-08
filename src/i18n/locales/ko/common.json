@@ -11,7 +11,8 @@
     "selectionPlaceholder": "ORGII에 대해 무엇이든 물어보세요...",
     "submit": "Agent Control 입력 제출",
     "menuToggle": "Agent Control",
-    "selectModel": "모델 선택"
+    "selectModel": "모델 선택",
+    "newRound": "새 라운드"
   },
   "actions": {
     "save": "저장",

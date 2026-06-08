@@ -11,7 +11,8 @@
     "selectionPlaceholder": "ORGII について何でも質問する...",
     "submit": "Agent Control 入力を送信",
     "menuToggle": "Agent Control",
-    "selectModel": "モデルを選択"
+    "selectModel": "モデルを選択",
+    "newRound": "新しいラウンド"
   },
   "actions": {
     "save": "保存",

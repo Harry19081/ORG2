@@ -11,7 +11,8 @@
     "selectionPlaceholder": "ORGII hakkında herhangi bir soru sor...",
     "submit": "Agent Control girdisini gönder",
     "menuToggle": "Agent Control",
-    "selectModel": "Model seç"
+    "selectModel": "Model seç",
+    "newRound": "Yeni tur"
   },
   "actions": {
     "save": "Kaydet",
