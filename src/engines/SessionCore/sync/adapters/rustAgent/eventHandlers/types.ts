@@ -7,6 +7,7 @@ import type { createStore } from "jotai";
 import type { MutableRefObject } from "react";
 
 import type {
+  AgentContextUsageSnapshot,
   AgentTokenUsage,
   PermissionRequestEvent,
   QuestionRequestEvent,
@@ -58,6 +59,9 @@ export interface EventHandlerContext {
   onAgentCompleteRef: MutableRefObject<
     ((tokenUsage?: AgentTokenUsage) => void) | undefined
   >;
+  onContextUsageRef: MutableRefObject<
+    ((contextUsage: AgentContextUsageSnapshot) => void) | undefined
+  >;
   onStatusChangeRef: MutableRefObject<
     | ((
         status: string,
@@ -88,6 +92,7 @@ export interface EventHandlerContext {
 
 export interface EventHandlerCallbacksInternal {
   onAgentComplete?: (tokenUsage?: AgentTokenUsage) => void;
+  onContextUsage?: (contextUsage: AgentContextUsageSnapshot) => void;
   onStatusChange?: (status: string, errorMessage?: string) => void;
   onPermissionRequest?: (event: PermissionRequestEvent) => void;
   onQuestionRequest?: (event: QuestionRequestEvent) => void;

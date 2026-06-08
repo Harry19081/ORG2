@@ -44,7 +44,7 @@ const ContextBreakdownBar = memo(
                 opacity,
                 transition: "opacity 0.15s ease",
               }}
-              title={`${cat.key}: ${formatTokenCount(cat.tokens)}`}
+              title={`${cat.label}: ${formatTokenCount(cat.tokens)}`}
             />
           );
         })}

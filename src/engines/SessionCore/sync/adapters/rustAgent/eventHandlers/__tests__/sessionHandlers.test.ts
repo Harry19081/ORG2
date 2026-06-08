@@ -1,17 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { handleTurnCompleted, handleTurnSummary } from "../sessionHandlers";
+import {
+  handleComplete,
+  handleContextUsage,
+  handleTurnCompleted,
+  handleTurnSummary,
+} from "../sessionHandlers";
 import type { EventHandlerContext } from "../types";
 
-const { appendSpy, upsertSpy } = vi.hoisted(() => ({
+const { appendSpy, upsertSpy, saveToCacheSpy } = vi.hoisted(() => ({
   appendSpy: vi.fn().mockResolvedValue(undefined),
   upsertSpy: vi.fn().mockResolvedValue(undefined),
+  saveToCacheSpy: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
   eventStoreProxy: {
     append: appendSpy,
     upsert: upsertSpy,
+    saveToCache: saveToCacheSpy,
   },
 }));
 
@@ -24,6 +31,7 @@ function createCtx(): EventHandlerContext {
     filterSessionIdRef: ref("session-1"),
     execOutputBufferRef: ref(""),
     onAgentCompleteRef: ref(undefined),
+    onContextUsageRef: ref(undefined),
     onStatusChangeRef: ref(vi.fn()),
     onQuestionRequestRef: ref(undefined),
     setStreaming: vi.fn(),
@@ -83,6 +91,83 @@ describe("Rust Agent session handlers", () => {
 
     expect(upsertSpy).not.toHaveBeenCalled();
     expect(appendSpy).not.toHaveBeenCalled();
+  });
+
+  it("passes live contextUsage update callbacks before completion", () => {
+    const onContextUsage = vi.fn();
+    const ctx = {
+      ...createCtx(),
+      onContextUsageRef: ref(onContextUsage),
+    };
+    const contextUsage = {
+      usedTokens: 80,
+      maxTokens: null,
+      percentUsed: null,
+      updatedAt: "2026-06-08T00:00:00Z",
+      warnings: [],
+      sections: [],
+    };
+
+    handleContextUsage(
+      {
+        type: "agent:context_usage",
+        sessionId: "session-1",
+        contextTokens: 80,
+        contextUsage,
+      },
+      ctx
+    );
+
+    expect(onContextUsage).toHaveBeenCalledWith(contextUsage);
+  });
+
+  it("passes contextUsage from agent:complete to completion callbacks", () => {
+    const onAgentComplete = vi.fn();
+    const ctx = {
+      ...createCtx(),
+      onAgentCompleteRef: ref(onAgentComplete),
+    };
+    const contextUsage = {
+      usedTokens: 100,
+      maxTokens: null,
+      percentUsed: null,
+      updatedAt: "2026-06-08T00:00:00Z",
+      warnings: ["estimated by section"],
+      sections: [
+        {
+          category: "stable_prompt" as const,
+          label: "Stable prompt",
+          estimatedTokens: 40,
+          percent: 40,
+          items: [],
+        },
+        {
+          category: "unattributed" as const,
+          label: "Unattributed",
+          estimatedTokens: 60,
+          percent: 60,
+          items: [],
+        },
+      ],
+    };
+
+    handleComplete(
+      {
+        type: "agent:complete",
+        sessionId: "session-1",
+        totalTokens: 120,
+        promptTokens: 100,
+        completionTokens: 20,
+        contextTokens: 100,
+        contextUsage,
+      },
+      "session-1",
+      ctx
+    );
+
+    expect(onAgentComplete).toHaveBeenCalledWith(
+      expect.objectContaining({ contextUsage })
+    );
   });
 
   it("settles agent:turn_completed without writing duplicate transcript events", () => {

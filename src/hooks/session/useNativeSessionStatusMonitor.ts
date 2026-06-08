@@ -17,6 +17,7 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect } from "react";
 
+import { markQueueTurnSettled } from "@src/engines/SessionCore/hooks/session/queueTurnGate";
 import { type SessionStatus, updateSessionStatus } from "@src/store/session";
 
 interface SessionStatusChangedPayload {
@@ -30,6 +31,7 @@ export function useNativeSessionStatusMonitor(): void {
       "session-status-changed",
       (event) => {
         const { sessionId, status } = event.payload;
+        markQueueTurnSettled(sessionId, Date.now(), undefined, status);
         updateSessionStatus(sessionId, status as SessionStatus);
       }
     );

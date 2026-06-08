@@ -522,6 +522,9 @@ export interface E2EHelpers {
       selectedApp?: "CODE_EDITOR";
     }
   ) => Promise<Result<{ eventCount: number; chatEventCount: number }>>;
+  seedSessionContextUsage: (
+    usage: Json
+  ) => Promise<Result<{ usedTokens: number }>>;
   seedModeSwitchSession: (input: {
     sessionId?: string;
     repoPath?: string;

@@ -12,6 +12,7 @@ import { formatTokenCount } from "./useContextUsageInfo";
 export interface ContextCategoryRowProps {
   label: string;
   tokens: number;
+  percent: number;
   hex: string;
   categoryKey?: string;
   isHovered: boolean;
@@ -23,6 +24,7 @@ const ContextCategoryRow = memo(
   ({
     label,
     tokens,
+    percent,
     hex,
     categoryKey,
     isHovered,
@@ -33,21 +35,26 @@ const ContextCategoryRow = memo(
       data-testid={
         categoryKey ? `context-info-category-${categoryKey}` : undefined
       }
-      className="flex cursor-default items-center gap-2.5 rounded-md px-1 py-[3px]"
+      className="cursor-default rounded-md px-1 py-[3px]"
       style={{
         backgroundColor: isHovered ? "rgba(128,128,128,0.08)" : undefined,
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div
-        className="h-[9px] w-[9px] shrink-0 rounded-[3px]"
-        style={{ backgroundColor: hex }}
-      />
-      <span className="flex-1 truncate text-[12px] text-text-1">{label}</span>
-      <span className="shrink-0 text-[12px] tabular-nums text-text-2">
-        {formatTokenCount(tokens)}
-      </span>
+      <div className="flex items-center gap-2.5">
+        <div
+          className="h-[9px] w-[9px] shrink-0 rounded-[3px]"
+          style={{ backgroundColor: hex }}
+        />
+        <span className="flex-1 truncate text-[12px] text-text-1">{label}</span>
+        <span className="shrink-0 text-[11px] tabular-nums text-text-3">
+          {percent}%
+        </span>
+        <span className="shrink-0 text-[12px] tabular-nums text-text-2">
+          {formatTokenCount(tokens)}
+        </span>
+      </div>
     </div>
   )
 );

@@ -22,6 +22,7 @@ import {
   isPendingCancelAtom,
   sessionContextBreakdownAtom,
   sessionContextTokensAtom,
+  sessionContextUsageAtom,
   sessionRolledBackAtom,
   sessionRuntimeErrorAtom,
   setSessionRuntimeStatusAtom,
@@ -68,6 +69,7 @@ export function useSessionSync(
   const setEvents = useSetAtom(eventsAtom);
   const setWpReadOnly = useSetAtom(wpReadOnlyAtom);
   const setSessionContextTokens = useSetAtom(sessionContextTokensAtom);
+  const setSessionContextUsage = useSetAtom(sessionContextUsageAtom);
   const setSessionContextBreakdown = useSetAtom(sessionContextBreakdownAtom);
   const setSessionRuntimeStatusAtomValue = useSetAtom(
     setSessionRuntimeStatusAtom
@@ -114,6 +116,7 @@ export function useSessionSync(
       clearSessionLoadError,
       setWpReadOnly,
       setSessionContextTokens,
+      setSessionContextUsage,
       setSessionContextBreakdown,
       setSessionRuntimeStatus,
       setSessionRuntimeError,
@@ -124,6 +127,7 @@ export function useSessionSync(
       clearSessionLoadError,
       setWpReadOnly,
       setSessionContextTokens,
+      setSessionContextUsage,
       setSessionContextBreakdown,
       setSessionRuntimeStatus,
       setSessionRuntimeError,
@@ -158,6 +162,7 @@ export function useSessionSync(
   const handlerActions = useMemo(
     () => ({
       setSessionContextTokens,
+      setSessionContextUsage,
       setSessionContextBreakdown,
       setSessionRuntimeStatus,
       setSessionRuntimeError,
@@ -167,6 +172,7 @@ export function useSessionSync(
     }),
     [
       setSessionContextTokens,
+      setSessionContextUsage,
       setSessionContextBreakdown,
       setSessionRuntimeStatus,
       setSessionRuntimeError,

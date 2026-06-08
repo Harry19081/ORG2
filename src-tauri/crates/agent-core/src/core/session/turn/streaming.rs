@@ -223,6 +223,8 @@ pub(super) fn is_file_modifying_tool(tool_name: &str) -> bool {
 // Broadcast Functions
 // ============================================
 
+use crate::core::turn_executor::context_accounting::ContextUsageSnapshot;
+
 /// Parameters for broadcasting an agent completion event.
 pub struct AgentCompleteParams<'a> {
     pub session_id: &'a str,
@@ -234,6 +236,7 @@ pub struct AgentCompleteParams<'a> {
     pub completion_tokens: i64,
     pub total_tokens: i64,
     pub context_tokens: i64,
+    pub context_usage_snapshot: Option<&'a ContextUsageSnapshot>,
 }
 
 /// Broadcast an agent complete event.
@@ -250,6 +253,7 @@ pub fn broadcast_agent_complete(params: &AgentCompleteParams<'_>) {
             "completionTokens": params.completion_tokens,
             "totalTokens": params.total_tokens,
             "contextTokens": params.context_tokens,
+            "contextUsage": params.context_usage_snapshot,
         }),
     );
 }

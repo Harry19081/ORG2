@@ -9,6 +9,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use serde_json::Value;
 
+use crate::core::turn_executor::context_accounting::ContextUsageSnapshot;
 use crate::tools::traits::ToolUIMetadata;
 use shared_state::ScreenshotStore;
 
@@ -121,6 +122,8 @@ pub struct TurnResult {
     pub total_tokens: i64,
     /// Prompt tokens from the last LLM call — represents current context window fill level.
     pub context_tokens: i64,
+    /// Estimated context breakdown for the final provider request payload.
+    pub context_usage_snapshot: Option<ContextUsageSnapshot>,
     /// Accumulated cache-read tokens (Anthropic prompt caching).
     pub cache_read_tokens: i64,
     /// Accumulated cache-write tokens (Anthropic prompt caching).
@@ -279,6 +282,9 @@ pub trait TurnEventHandler: Send + Sync {
     ) {
     }
 
+    /// Called when the final provider request payload's context usage estimate is available.
+    fn on_context_usage(&self, _session_id: &str, _usage: &ContextUsageSnapshot) {}
+
     /// Called when a stream error is about to be retried. Low-key observability
     /// signal — handlers can surface this as a footer indicator ("Reconnecting…"),
     /// NOT as a chat bubble. Intentionally distinct from `on_message_delta` so
@@ -332,6 +338,7 @@ mod tests {
             completion_tokens: 50,
             total_tokens: 150,
             context_tokens: 100,
+            context_usage_snapshot: None,
             cache_read_tokens: 0,
             cache_write_tokens: 0,
             messages: vec![],
@@ -349,6 +356,7 @@ mod tests {
             completion_tokens: 200,
             total_tokens: 1200,
             context_tokens: 1000,
+            context_usage_snapshot: None,
             cache_read_tokens: 500,
             cache_write_tokens: 300,
             messages: vec![],

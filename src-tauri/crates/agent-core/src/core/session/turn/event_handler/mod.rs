@@ -47,7 +47,7 @@ use crate::bus::event_pipeline_bridge;
 use crate::foundation::streaming::{StreamType, StreamingBuffer};
 use crate::intelligence::hooks::HookExecutor;
 use crate::tools::names as tool_names;
-use crate::turn_executor::{ToolHookIntervention, TurnEventHandler};
+use crate::turn_executor::{ContextUsageSnapshot, ToolHookIntervention, TurnEventHandler};
 use core_types::session_event::SessionEvent;
 
 use super::super::persistence as unified_persistence;
@@ -316,6 +316,22 @@ impl TurnEventHandler for UnifiedEventHandler {
                 "toolCallId": tool_call_id,
                 "tool": tool_name,
                 "argumentsDelta": arguments_delta,
+            }),
+        );
+    }
+
+    fn on_context_usage(&self, session_id: &str, usage: &ContextUsageSnapshot) {
+        if self.is_cancelled() {
+            return;
+        }
+
+        broadcast_event(
+            "agent:context_usage",
+            serde_json::json!({
+                "sessionId": session_id,
+                "turnId": self.config.turn_id.as_deref(),
+                "contextTokens": usage.used_tokens,
+                "contextUsage": usage,
             }),
         );
     }

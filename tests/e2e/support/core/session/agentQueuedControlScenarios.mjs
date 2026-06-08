@@ -473,17 +473,18 @@ function assertQueuedMarkerState(
     marker
   ).length;
   const userTurnCount = markerUserTranscriptEvents(state, marker).length;
+  const queuedDisplayCount = queuedAtomCount + syntheticPreviewCount;
   const effectiveUserTurnCount = allowSyntheticUserTurn
     ? userTurnCount + syntheticPreviewCount
     : userTurnCount;
   if (
-    (shouldBeQueued && queuedAtomCount === 0) ||
+    (shouldBeQueued && queuedDisplayCount === 0) ||
     (!shouldBeQueued && queuedAtomCount !== 0) ||
     (shouldBeUserTurn && effectiveUserTurnCount !== 1) ||
     (!shouldBeUserTurn && userTurnCount !== 0)
   ) {
     throw new Error(
-      `${label} marker state mismatch for ${marker}; queuedAtomCount=${queuedAtomCount} syntheticPreviewCount=${syntheticPreviewCount} userTurnCount=${userTurnCount} effectiveUserTurnCount=${effectiveUserTurnCount} expected=${JSON.stringify({ shouldBeQueued, shouldBeUserTurn, allowSyntheticUserTurn })} state=${JSON.stringify(summarizeChatState(state))}`
+      `${label} marker state mismatch for ${marker}; queuedAtomCount=${queuedAtomCount} syntheticPreviewCount=${syntheticPreviewCount} queuedDisplayCount=${queuedDisplayCount} userTurnCount=${userTurnCount} effectiveUserTurnCount=${effectiveUserTurnCount} expected=${JSON.stringify({ shouldBeQueued, shouldBeUserTurn, allowSyntheticUserTurn })} state=${JSON.stringify(summarizeChatState(state))}`
     );
   }
 }
@@ -1095,6 +1096,47 @@ async function runBurstQueueSendNowOrderingScenario(config) {
   );
 }
 
+async function runQueueAutodispatchesAfterNaturalCompletionScenario(config) {
+  const suffix = `${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  const firstPrompt = longRunningPromptForConfig(config, 8);
+  const marker = `QUEUE_AUTODISPATCH_AFTER_COMPLETE_${suffix}`;
+  const followupPrompt = `This queued follow-up must auto-dispatch after the active turn naturally completes: ${marker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForWorkingTurn(`${config.label}-autodispatch-working`);
+
+  const chatInputSelector = await waitForChatInput();
+  await typeAndClickSend(chatInputSelector, followupPrompt);
+  await waitForQueuedFollowup(marker);
+  await waitForMarkerState(
+    `${config.label}-autodispatch-initially-queued`,
+    marker,
+    { shouldBeQueued: true, shouldBeUserTurn: false }
+  );
+
+  await browser.waitUntil(
+    async () => {
+      const state = await inspectChatState(`${config.label}-autodispatch`);
+      throwIfProviderRuntimeBlocked(state, `${config.label}-autodispatch`);
+      const queuedStillContainsMarker = state.queuedMessages.some((item) =>
+        item.content.includes(marker)
+      );
+      const markerWasSent =
+        markerUserTranscriptEvents(state, marker).length > 0 ||
+        markerSyntheticPreviewEvents(state, marker).length > 0;
+      return markerWasSent && !queuedStillContainsMarker;
+    },
+    {
+      timeout: REPLY_TIMEOUT_MS,
+      interval: 1_000,
+      timeoutMsg: `${config.label} queued follow-up did not auto-dispatch after natural completion; marker=${marker} state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+}
+
 async function runQueueDoesNotAutoflushWhileActiveScenario(config) {
   const suffix = `${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
   const firstPrompt = longRunningPromptForConfig(config);
@@ -1111,7 +1153,21 @@ async function runQueueDoesNotAutoflushWhileActiveScenario(config) {
 
   const chatInputSelector = await waitForChatInput();
   await typeAndClickSend(chatInputSelector, clickPrompt);
-  await waitForQueuedFollowup(clickMarker);
+  await browser.waitUntil(
+    async () => {
+      const state = await inspectChatState(
+        `${config.label}-no-autoflush-click-after-click-submit`
+      );
+      return state.queuedMessages.some((item) =>
+        item.content.includes(clickMarker)
+      );
+    },
+    {
+      timeout: QUEUE_TIMEOUT_MS,
+      interval: 500,
+      timeoutMsg: `${config.label} click-submitted follow-up did not enter messageQueueAtom; marker=${clickMarker} state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))}`,
+    }
+  );
   await typeAndSubmitWithShortcut(chatInputSelector, shortcutPrompt);
   await waitForQueuedFollowup(shortcutMarker);
 
@@ -1396,6 +1452,7 @@ export {
   runForceSendScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
+  runQueueAutodispatchesAfterNaturalCompletionScenario,
   runQueueDoesNotAutoflushWhileActiveScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
+import { markQueueTurnSettled } from "@src/engines/SessionCore/hooks/session/queueTurnGate";
 import { createSessionEventHandlerCallbacks } from "@src/engines/SessionCore/sync/sessionSyncStateHelpers";
 import type { SessionEventHandlerStateActions } from "@src/engines/SessionCore/sync/sessionSyncStateHelpers";
 
@@ -26,6 +27,7 @@ function createActions(): SessionEventHandlerStateActions & {
   const actions = {
     streamingMap: new Map<string, string>(),
     setSessionContextTokens: vi.fn(),
+    setSessionContextUsage: vi.fn(),
     setSessionContextBreakdown: vi.fn(),
     setSessionRuntimeStatus: vi.fn(),
     setSessionRuntimeError: vi.fn(),
@@ -67,5 +69,26 @@ describe("session sync state callbacks", () => {
     expect(actions.setSessionRuntimeStatus).toHaveBeenCalledWith("completed");
     expect(actions.setPendingCancel).toHaveBeenCalledWith(false);
     expect(eventStoreProxy.unpinSession).toHaveBeenCalledWith("session-1");
+  });
+
+  it("marks terminal status changes as queue release edges", () => {
+    const actions = createActions();
+    const callbacks = createSessionEventHandlerCallbacks(
+      "session-1",
+      actions,
+      vi.fn()
+    );
+
+    callbacks.onStatusChange?.("completed", undefined, {
+      turnId: "turn-1",
+      turnStatus: "completed",
+    });
+
+    expect(markQueueTurnSettled).toHaveBeenCalledWith(
+      "session-1",
+      expect.any(Number),
+      "turn-1",
+      "completed"
+    );
   });
 });

@@ -6,8 +6,9 @@ export type RingTone = "neutral" | "warning" | "danger";
 
 export interface PanelCategory {
   key: string;
-  labelKey: string;
+  label: string;
   tokens: number;
+  percent: number;
   hex: string;
 }
 

@@ -518,6 +518,9 @@ export function useInputArea(
     // Message submission
     handleDivSubmit,
     isWpGeneWorking,
+    isSessionActive,
+    runtimeStatus,
+    hasComposerStopBlockingWork,
     isPendingCancel,
     wpReadOnly,
 

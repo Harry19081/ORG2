@@ -34,6 +34,7 @@ import { handleMcpProgress } from "./mcpHandlers";
 import {
   clearStreamRetryStatus,
   handleComplete,
+  handleContextUsage,
   handleError,
   handleSessionEvicted,
   handleStreamErrorExhausted,
@@ -87,6 +88,7 @@ const STREAM_RETRY_RECOVERY_EVENTS = new Set<string>([
   "agent:streaming_complete",
   "agent:tool_result",
   "agent:interaction_finalized",
+  "agent:context_usage",
   "agent:complete",
   "agent:plan_ready_for_approval",
   "agent:plan_approval_archived",
@@ -195,6 +197,9 @@ export async function dispatchAgentEvent(
       break;
     case "agent:interaction_finalized":
       await handleInteractionFinalized(event, sessionId);
+      break;
+    case "agent:context_usage":
+      handleContextUsage(event, ctx);
       break;
     case "agent:complete":
       handleComplete(event, sessionId, ctx);

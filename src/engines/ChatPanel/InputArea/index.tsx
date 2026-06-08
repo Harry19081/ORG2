@@ -142,6 +142,9 @@ const InputArea: React.FC<InputAreaProps> = memo(
       clearCiteCode,
       handleDivSubmit,
       isWpGeneWorking,
+      isSessionActive,
+      runtimeStatus,
+      hasComposerStopBlockingWork,
       isPendingCancel,
       interruptSession,
       resumeSession,
@@ -284,12 +287,29 @@ const InputArea: React.FC<InputAreaProps> = memo(
     );
     const submitMessage = useCallback(
       (capturedText?: string) => {
+        const runtimeIsWorking =
+          runtimeStatus === "running" ||
+          runtimeStatus === "installing" ||
+          runtimeStatus === "waiting_for_user" ||
+          runtimeStatus === "waiting_for_funds";
         void handleDivSubmit({
-          forceQueueAsActiveTurn: isWpGeneWorking || isPendingCancel,
+          forceQueueAsActiveTurn:
+            isWpGeneWorking ||
+            isSessionActive ||
+            runtimeIsWorking ||
+            hasComposerStopBlockingWork ||
+            isPendingCancel,
           capturedText,
         });
       },
-      [handleDivSubmit, isPendingCancel, isWpGeneWorking]
+      [
+        handleDivSubmit,
+        hasComposerStopBlockingWork,
+        isPendingCancel,
+        isSessionActive,
+        isWpGeneWorking,
+        runtimeStatus,
+      ]
     );
 
     return (

@@ -97,6 +97,7 @@ function toTokenUsageInfo(usage: AgentTokenUsage): AgentTokenUsageInfo {
     completionTokens: usage.completionTokens,
     totalTokens: usage.totalTokens,
     contextTokens: usage.contextTokens,
+    ...(usage.contextUsage ? { contextUsage: usage.contextUsage } : {}),
     ...(usage.contextBreakdown
       ? { contextBreakdown: usage.contextBreakdown }
       : {}),
@@ -264,6 +265,9 @@ export function createRustAgentAdapter(
           callbacks.onAgentComplete?.(
             tokenUsage ? toTokenUsageInfo(tokenUsage) : undefined
           );
+        },
+        onContextUsage: (contextUsage) => {
+          callbacks.onContextUsage?.(contextUsage);
         },
         onStatusChange: (
           status: string,

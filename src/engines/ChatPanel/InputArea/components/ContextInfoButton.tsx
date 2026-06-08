@@ -5,8 +5,8 @@
  * showing context fill, a segmented breakdown bar, and per-category rows.
  *
  * Data strategy:
- *   - `liveBreakdown` arrives from Rust after the first `agent:complete`.
- *   - `rulesTokens` is always live (from `policies_list`).
+ *   - `contextUsage` arrives from Rust after `agent:complete`.
+ *   - Sections come from the final provider request payload only.
  *   - Categories with no live data are hidden — no mock/placeholder values.
  */
 import { Sparkles, X } from "lucide-react";
@@ -25,7 +25,7 @@ import {
   WARNING_THRESHOLD,
 } from "./contextInfoTypes";
 import { useContextPanel } from "./useContextPanel";
-import { formatTokenCount, useContextUsageInfo } from "./useContextUsageInfo";
+import { useContextUsageInfo } from "./useContextUsageInfo";
 
 export interface ContextInfoButtonProps {
   repoPath?: string;
@@ -42,88 +42,44 @@ export interface ContextInfoButtonProps {
 }
 
 const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
-  ({ repoPath, variant = "toolbar", compact = false }) => {
+  ({ variant = "toolbar", compact = false }) => {
     const { t } = useTranslation();
-    const {
-      clampedPercentage,
-      tokenLabel,
-      rules,
-      isPreview,
-      maxTokens,
-      liveBreakdown,
-      rulesTokens,
-    } = useContextUsageInfo(repoPath);
+    const { clampedPercentage, tokenLabel, maxTokens, contextUsage } =
+      useContextUsageInfo();
 
     const { panelPos, triggerRef, panelRef, toggle, close } = useContextPanel();
     const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
-    // Build category list from live Rust data only.
-    // Rules are always live; all other categories only appear after
-    // the first agent:complete populates liveBreakdown.
     const categories: PanelCategory[] = useMemo(() => {
-      const live = liveBreakdown;
-      const all: PanelCategory[] = [
-        {
-          key: "systemPrompt",
-          labelKey: "contextInfo.categories.systemPrompt",
-          tokens: live?.systemPromptTokens ?? 0,
-          hex: "#9ca3af",
-        },
-        {
-          key: "tools",
-          labelKey: "contextInfo.categories.tools",
-          tokens: live?.toolsTokens ?? 0,
-          hex: "#a78bfa",
-        },
-        {
-          key: "rules",
-          labelKey: "contextInfo.categories.rules",
-          tokens: rulesTokens,
-          hex: "#34d399",
-        },
-        {
-          key: "skills",
-          labelKey: "contextInfo.categories.skills",
-          tokens: live?.skillsTokens ?? 0,
-          hex: "#fbbf24",
-        },
-        {
-          key: "mcp",
-          labelKey: "contextInfo.categories.mcp",
-          tokens: live?.mcpTokens ?? 0,
-          hex: "#e879f9",
-        },
-        {
-          key: "subagents",
-          labelKey: "contextInfo.categories.subagents",
-          tokens: live?.subagentTokens ?? 0,
-          hex: "#60a5fa",
-        },
-        {
-          key: "summarized",
-          labelKey: "contextInfo.categories.summarized",
-          tokens: live?.summaryTokens ?? 0,
-          hex: "#f87171",
-        },
-        {
-          key: "conversation",
-          labelKey: "contextInfo.categories.conversation",
-          tokens: live?.conversationTokens ?? 0,
-          hex: "#fb923c",
-        },
-      ];
-      return all.filter((cat) => cat.tokens > 0);
-    }, [liveBreakdown, rulesTokens]);
+      const colors: Record<string, string> = {
+        stable_prompt: "#9ca3af",
+        dynamic_prompt: "#a78bfa",
+        rules: "#34d399",
+        skills: "#fbbf24",
+        memory: "#22c55e",
+        conversation: "#fb923c",
+        tool_results: "#60a5fa",
+        attachments: "#e879f9",
+        other: "#94a3b8",
+        unattributed: "#f87171",
+      };
+      return (contextUsage?.sections ?? [])
+        .filter((section) => section.estimatedTokens > 0)
+        .map((section) => ({
+          key: section.category,
+          label: section.label,
+          tokens: section.estimatedTokens,
+          percent: section.percent,
+          hex: colors[section.category] ?? colors.other,
+        }));
+    }, [contextUsage]);
 
     const isWarning =
       clampedPercentage >= WARNING_THRESHOLD &&
       clampedPercentage < DANGER_THRESHOLD;
     const isDanger = clampedPercentage >= DANGER_THRESHOLD;
-    const showNewSessionCta =
-      !isPreview && clampedPercentage >= WARNING_THRESHOLD;
-    const fillLabel = isPreview
-      ? t("contextInfo.estimatedFill", { pct: clampedPercentage.toFixed(0) })
-      : `${clampedPercentage.toFixed(0)}% ${t("contextInfo.full")}`;
+    const showNewSessionCta = clampedPercentage >= WARNING_THRESHOLD;
+    const fillLabel = `${clampedPercentage.toFixed(0)}% ${t("contextInfo.full")}`;
 
     const handleMouseEnter = useCallback(
       (key: string) => () => setHoveredKey(key),
@@ -226,8 +182,9 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                       <ContextCategoryRow
                         key={cat.key}
                         categoryKey={cat.key}
-                        label={t(cat.labelKey)}
+                        label={cat.label}
                         tokens={cat.tokens}
+                        percent={cat.percent}
                         hex={cat.hex}
                         isHovered={hoveredKey === cat.key}
                         onMouseEnter={handleMouseEnter(cat.key)}
@@ -238,34 +195,13 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                 </div>
               )}
 
-              {/* Rules list */}
-              {rules.length > 0 && (
-                <div className="px-4 py-2.5">
-                  <p className="mb-1.5 text-[11px] font-medium text-text-3">
-                    {t("contextInfo.activeRules")}
+              {contextUsage?.warnings?.length ? (
+                <div className="px-4 py-2">
+                  <p className="text-[10px] text-text-4">
+                    {contextUsage.warnings[0]}
                   </p>
-                  <div className="flex flex-col gap-0.5">
-                    {rules.map((rule) => (
-                      <div
-                        key={rule.name}
-                        data-testid="context-info-rule"
-                        data-rule-name={rule.name}
-                        data-rule-source={rule.source}
-                        className="flex items-center justify-between rounded px-1 py-0.5 hover:bg-fill-2"
-                      >
-                        <span className="truncate text-[11px] text-text-2">
-                          {rule.name}
-                        </span>
-                        {rule.estimatedTokens > 0 && (
-                          <span className="ml-2 shrink-0 text-[11px] tabular-nums text-text-3">
-                            ~{formatTokenCount(rule.estimatedTokens)}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
                 </div>
-              )}
+              ) : null}
 
               {/* New-session CTA when context is filling up */}
               {showNewSessionCta && (
@@ -289,15 +225,6 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                     <Sparkles size={12} />
                     {t("contextInfo.startNewSession")}
                   </button>
-                </div>
-              )}
-
-              {/* Preview note */}
-              {isPreview && (
-                <div className="px-4 py-2">
-                  <p className="text-[10px] text-text-4">
-                    {t("contextInfo.previewNote")}
-                  </p>
                 </div>
               )}
             </div>,
