@@ -83,7 +83,7 @@
 // ==========================================
 
 .table-tbody {
-  background: var(--bg-1);
+  background: var(--color-bg-1);
 }
 
 .table-row,
@@ -603,7 +603,7 @@
 .table-pagination-wrapper {
   padding: 16px;
   border-top: 1px solid var(--border-1);
-  background: var(--bg-1);
+  background: var(--color-bg-1);
   border-radius: 0 0 8px 8px;
 }
 
@@ -626,7 +626,7 @@
   padding: 4px 8px;
   border: 1px solid var(--border-2);
   border-radius: 4px;
-  background: var(--bg-1);
+  background: var(--color-bg-1);
   color: var(--text-1);
   font-size: 13px;
   cursor: pointer;
@@ -666,7 +666,7 @@
     padding: 4px 8px;
     border: 1px solid var(--border-2);
     border-radius: 4px;
-    background: var(--bg-1);
+    background: var(--color-bg-1);
     color: var(--text-1);
     font-size: 13px;
     text-align: center;
@@ -693,7 +693,7 @@
   }
 
   .table-tbody {
-    background: var(--bg-2);
+    background: var(--color-bg-2);
   }
 }
 
