@@ -13,7 +13,6 @@ pub enum CancelReason {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TurnBoundaryEffect {
-    pub rollback_if_no_output: bool,
     pub keep_pre_turn_cancel_when_idle: bool,
     pub clear_pending_approvals: bool,
     pub persist_cancel_marker: bool,
@@ -24,21 +23,18 @@ impl CancelReason {
     pub fn boundary_effect(self) -> TurnBoundaryEffect {
         match self {
             Self::UserStop => TurnBoundaryEffect {
-                rollback_if_no_output: true,
                 keep_pre_turn_cancel_when_idle: true,
                 clear_pending_approvals: true,
                 persist_cancel_marker: true,
                 allow_crash_repair_on_next_turn: false,
             },
             Self::ForceSend => TurnBoundaryEffect {
-                rollback_if_no_output: false,
                 keep_pre_turn_cancel_when_idle: false,
                 clear_pending_approvals: false,
                 persist_cancel_marker: false,
                 allow_crash_repair_on_next_turn: false,
             },
             Self::OrgPause => TurnBoundaryEffect {
-                rollback_if_no_output: false,
                 keep_pre_turn_cancel_when_idle: true,
                 clear_pending_approvals: false,
                 persist_cancel_marker: false,
@@ -46,7 +42,6 @@ impl CancelReason {
             },
             Self::ProgrammaticShutdown | Self::SessionEviction | Self::ModeSwitchAbort => {
                 TurnBoundaryEffect {
-                    rollback_if_no_output: false,
                     keep_pre_turn_cancel_when_idle: false,
                     clear_pending_approvals: true,
                     persist_cancel_marker: false,

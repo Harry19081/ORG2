@@ -181,17 +181,17 @@ export function useBrowserSessions(
   });
 
   // Element inspector - delayed start
-  const { isInspectMode, toggleInspectMode, selectedElement, clearSelection } =
-    useWebviewInspector({
-      webviewLabel: activeWebviewLabel,
-      pollInterval: 300,
-      enabled: effectivePollingEnabled && !!activeWebviewLabel,
-      onElementSelected: (_element) => {
-        if (devToolsCollapsed) {
-          setDevToolsCollapsed(false);
-        }
-      },
-    });
+  const {
+    isInspectMode,
+    toggleInspectMode,
+    disableInspectMode,
+    selectedElement,
+    clearSelection,
+  } = useWebviewInspector({
+    webviewLabel: activeWebviewLabel,
+    pollInterval: 300,
+    enabled: effectivePollingEnabled && !!activeWebviewLabel,
+  });
 
   // Update webview label and session ID when active session changes.
   // When the last tab closes, activeSessionId is empty — must clear IDs so console
@@ -280,10 +280,21 @@ export function useBrowserSessions(
   }, [browserState]);
 
   const handleCloseSession = useCallback(
-    (sessionId: string) => {
+    async (sessionId: string) => {
+      if (sessionId === activeSessionId) {
+        await disableInspectMode();
+      } else if (selectedElement) {
+        await clearSelection();
+      }
       browserState.closeSession(sessionId);
     },
-    [browserState]
+    [
+      activeSessionId,
+      browserState,
+      clearSelection,
+      disableInspectMode,
+      selectedElement,
+    ]
   );
 
   return {

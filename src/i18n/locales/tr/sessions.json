@@ -671,8 +671,7 @@
     "singleChoice": "Tek seçim",
     "multipleChoice": "Çoklu seçim",
     "typeYourAnswer": "Cevabınızı yazın…",
-    "newSession": "Yeni Session",
-    "newChat": "Yeni Sohbet",
+    "newSession": "Yeni oturum",
     "defaultTitle": "Sohbet",
     "hideChatPanel": "Sohbet panelini gizle",
     "replay": {
@@ -1645,7 +1644,6 @@
       "createAgent": "Agent / Skill oluştur",
       "project": "Proje oluştur",
       "workItem": "Work Item oluştur",
-      "batchStartBeta": "Toplu başlat (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Model ara...",
@@ -1796,12 +1794,6 @@
       "worktree": "Worktree",
       "lockedHint": "Bu oturum için Worktree kilitli"
     },
-    "batchStarterPlaceholder": "Bu session starter'ı açıklayın",
-    "addBatchStarter": "Starter ekle",
-    "removeBatchStarter": "Starter kaldır",
-    "batchSendSuccess": "{{count}} session başarıyla oluşturuldu",
-    "batchSendPartial": "{{succeeded}} session başarıyla oluşturuldu; {{failed}} başarısız",
-    "batchSend": "Toplu gönder",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
@@ -1860,6 +1852,8 @@
       "singleRun": "Tek çalıştırma",
       "batchRun": "Toplu çalıştırma",
       "sourcePathPlaceholder": "Benchmark klasörünün yolu",
+      "workingDirectory": "Çalışma dizini",
+      "workingDirectoryPlaceholder": "Agent'ların repoları klonlayacağı veya değiştireceği yol",
       "localPath": "yerel yol",
       "runType": "Çalıştırma türü",
       "kindTitle": "Benchmark",
@@ -1869,7 +1863,18 @@
       },
       "selectedTasks": "{{selected}}/{{total}} seçildi",
       "concurrency": "Paralel",
-      "taskLoadingUnsupported": "Bu benchmark için görev yükleme henüz kullanılamıyor; yerel kaynağı kontrol etmek için preflight kullanın."
+      "taskLoadingUnsupported": "Bu benchmark için görev yükleme henüz kullanılamıyor; yerel kaynağı kontrol etmek için preflight kullanın.",
+      "attemptTitle": "Attempt",
+      "batchProgress": "Toplam {{total}} · {{queued}} kuyrukta · {{running}} çalışıyor · {{launched}} başlatıldı · {{failed}} başarısız · {{cancelled}} iptal edildi",
+      "sessionGroupTitle": "Benchmark sessions",
+      "sessionGroupProgress": "Toplam {{total}} · {{queued}} kuyrukta · {{running}} çalışıyor · {{launched}} başlatıldı · {{failed}} başarısız · {{cancelled}} iptal edildi",
+      "evaluateSubmitted": "Değerlendir",
+      "evaluatingSubmitted": "Yamalar değerlendiriliyor...",
+      "taskActionPlaceholder": "Task IDs for add/remove/stop/restart",
+      "sessionLabel": "Session: {{sessionId}}",
+      "noSessionYet": "Henüz Session yok",
+      "testResultPending": "Test sonucu bekleniyor",
+      "taskBreadcrumb": "{{attempt}} > {{task}}"
     },
     "skillsAndTools": "Skills ve araçlar"
   },

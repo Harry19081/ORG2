@@ -519,7 +519,7 @@
     },
     "sessions": {
       "linkedSessions": "Bağlı Sessions",
-      "newSession": "Yeni Session",
+      "newSession": "Yeni oturum",
       "starting": "Başlatılıyor...",
       "emptyOverview": "Henüz Sessions yok",
       "emptyOverviewHint": "Yürütmeyi burada izlemek için bir Agent Session başlatın."

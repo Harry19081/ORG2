@@ -678,7 +678,6 @@
     "multipleChoice": "Múltipla escolha",
     "typeYourAnswer": "Digite sua resposta…",
     "newSession": "Nova sessão",
-    "newChat": "Novo chat",
     "defaultTitle": "Chat",
     "hideChatPanel": "Ocultar painel de chat",
     "replay": {
@@ -1665,7 +1664,6 @@
       "createAgent": "Criar Agent / Skill",
       "project": "Criar projeto",
       "workItem": "Criar Work Item",
-      "batchStartBeta": "Início em lote (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Buscar modelos...",
@@ -1816,12 +1814,6 @@
       "cancel": "Cancelar"
     },
     "viewDiff": "Ver diff",
-    "batchStarterPlaceholder": "Descrever este session starter",
-    "addBatchStarter": "Adicionar starter",
-    "removeBatchStarter": "Remover starter",
-    "batchSendSuccess": "{{count}} sessões criadas com sucesso",
-    "batchSendPartial": "{{succeeded}} sessões criadas com sucesso; {{failed}} falharam",
-    "batchSend": "Enviar em lote",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
@@ -1880,6 +1872,8 @@
       "singleRun": "Execução única",
       "batchRun": "Execução em lote",
       "sourcePathPlaceholder": "Caminho para a pasta de benchmark",
+      "workingDirectory": "Diretório de trabalho",
+      "workingDirectoryPlaceholder": "Caminho onde os agentes devem clonar ou modificar repositórios",
       "localPath": "caminho local",
       "runType": "Tipo de execução",
       "kindTitle": "Benchmark",
@@ -1889,7 +1883,18 @@
       },
       "selectedTasks": "{{selected}}/{{total}} selecionadas",
       "concurrency": "Paralelo",
-      "taskLoadingUnsupported": "O carregamento de tarefas ainda não está disponível para este benchmark; use o preflight para verificar a fonte local."
+      "taskLoadingUnsupported": "O carregamento de tarefas ainda não está disponível para este benchmark; use o preflight para verificar a fonte local.",
+      "attemptTitle": "Tentativa",
+      "batchProgress": "{{total}} no total · {{queued}} na fila · {{running}} em execução · {{launched}} iniciadas · {{failed}} falharam · {{cancelled}} canceladas",
+      "sessionGroupTitle": "Sessões de benchmark",
+      "sessionGroupProgress": "{{total}} no total · {{queued}} na fila · {{running}} em execução · {{launched}} iniciadas · {{failed}} falharam · {{cancelled}} canceladas",
+      "evaluateSubmitted": "Avaliar",
+      "evaluatingSubmitted": "Avaliando patches...",
+      "taskActionPlaceholder": "Task IDs for add/remove/stop/restart",
+      "sessionLabel": "Session: {{sessionId}}",
+      "noSessionYet": "Ainda sem Session",
+      "testResultPending": "Resultado do teste pendente",
+      "taskBreadcrumb": "{{attempt}} > {{task}}"
     },
     "skillsAndTools": "Skills e ferramentas"
   },

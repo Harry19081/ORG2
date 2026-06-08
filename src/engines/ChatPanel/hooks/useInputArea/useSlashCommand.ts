@@ -39,6 +39,7 @@ export interface SlashCommandHandlers {
   handleSlashCommand: (query: string) => void;
   handleSlashCommandClose: () => void;
   handleSlashSelect: (item: SlashItem) => void;
+  handleSlashAppendSelect: (item: SlashItem) => void;
   handleModeSelect: (mode: AgentExecMode) => void;
   currentMode: AgentExecMode;
   filteredItems: SlashItem[];
@@ -127,31 +128,13 @@ export function useSlashCommand(
       if (!composerInputRef.current) return;
 
       if (item.category === "skill") {
-        // filePath is stored as "/<skillName>" so serializePillNode produces
-        // `name [skill:/<skillName>]` and useSubmitMessage expands it to
-        // `/<skillName>` for the Rust backend's skill expansion.
         const skillToken = `/${item.skillName ?? item.name}`;
-        // When the editor only contains the "/" query trigger (or is empty),
-        // clear first then insert. Otherwise append the pill after existing
-        // content so the user's prior text is preserved.
-        const hasUserContent =
-          !composerInputRef.current.isEmpty() && queryRef.current.length === 0;
-        if (hasUserContent) {
-          composerInputRef.current.appendFilePill(
-            skillToken,
-            false,
-            "skill",
-            item.name
-          );
-        } else {
-          composerInputRef.current.clear();
-          composerInputRef.current.insertFilePill(
-            skillToken,
-            false,
-            "skill",
-            item.name
-          );
-        }
+        composerInputRef.current.insertFilePill(
+          skillToken,
+          false,
+          "skill",
+          item.name
+        );
         composerInputRef.current.focus();
         setShowSlashMenu(false);
         setSlashQuery("");
@@ -180,6 +163,30 @@ export function useSlashCommand(
     [composerInputRef, setShowSlashMenu, setSlashQuery]
   );
 
+  const handleSlashAppendSelect = useCallback(
+    (item: SlashItem) => {
+      if (!composerInputRef.current) return;
+
+      if (item.category === "skill") {
+        const skillToken = `/${item.skillName ?? item.name}`;
+        composerInputRef.current.appendFilePill(
+          skillToken,
+          false,
+          "skill",
+          item.name
+        );
+        composerInputRef.current.focus();
+        setShowSlashMenu(false);
+        setSlashQuery("");
+        queryRef.current = "";
+        return;
+      }
+
+      handleSlashSelect(item);
+    },
+    [composerInputRef, handleSlashSelect, setShowSlashMenu, setSlashQuery]
+  );
+
   const handleModeSelect = useCallback(
     (mode: AgentExecMode) => {
       setMode(mode);
@@ -197,6 +204,7 @@ export function useSlashCommand(
     handleSlashCommand,
     handleSlashCommandClose,
     handleSlashSelect,
+    handleSlashAppendSelect,
     handleModeSelect,
     currentMode,
     filteredItems,

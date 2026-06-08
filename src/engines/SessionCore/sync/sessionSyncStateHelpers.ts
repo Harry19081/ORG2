@@ -5,7 +5,10 @@ import type {
   SessionEvent,
   SessionLoadStatus,
 } from "@src/engines/SessionCore/core/types";
-import { markQueueTurnSettled } from "@src/engines/SessionCore/hooks/session/queueTurnGate";
+import {
+  markQueueTurnSettled,
+  markQueueTurnWorking,
+} from "@src/engines/SessionCore/hooks/session/queueTurnGate";
 import { type SessionStatus, updateSessionStatus } from "@src/store/session";
 import type {
   ContextBreakdown,
@@ -65,11 +68,6 @@ const TERMINAL_HANDLER_STATUSES = new Set<string>([
   "failed",
   "cancelled",
 ]);
-const QUEUE_RELEASING_TERMINAL_STATUSES = new Set<string>([
-  "completed",
-  "failed",
-]);
-
 export function resetSessionSwitchState(
   actions: SessionSwitchStateActions
 ): void {
@@ -152,31 +150,25 @@ export function createSessionEventHandlerCallbacks(
         actions.setSessionContextBreakdown(tokenUsage.contextBreakdown);
       }
     },
-    onStatusChange: (status, errorMessage) => {
+    onStatusChange: (status, errorMessage, meta) => {
       logStatusChange(status, errorMessage);
       actions.setSessionRuntimeStatus(toCliSessionStatus(status));
       if (status === "failed" && errorMessage) {
         actions.setSessionRuntimeError(errorMessage);
       }
       if (TERMINAL_HANDLER_STATUSES.has(status)) {
-        const latestSnapshot =
-          eventStoreProxy.getLatestSessionSnapshot(sessionId);
-        const snapshotStillActive =
-          latestSnapshot?.hasRunningEvent === true ||
-          (latestSnapshot != null &&
-            "streaming" in latestSnapshot &&
-            latestSnapshot.streaming === true);
-        if (
-          QUEUE_RELEASING_TERMINAL_STATUSES.has(status) &&
-          !snapshotStillActive
-        ) {
-          markQueueTurnSettled(sessionId);
-        }
+        markQueueTurnSettled(
+          sessionId,
+          Date.now(),
+          meta?.turnId,
+          meta?.turnStatus ?? status
+        );
         actions.setPendingCancel(false);
         eventStoreProxy.unpinSession(sessionId);
         updateSessionStatus(sessionId, status as SessionStatus);
       }
       if (status === "running") {
+        markQueueTurnWorking(sessionId);
         actions.setSessionRuntimeError(null);
         eventStoreProxy.pinSession(sessionId);
         actions.setSessionRolledBack(false);

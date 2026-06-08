@@ -96,6 +96,20 @@ pub struct EventHandlerConfig {
 
     /// Lifecycle hook executor (loaded from `.orgii/hooks.json`).
     pub hook_executor: Option<Arc<HookExecutor>>,
+
+    /// Stable logical turn id for live stream broadcasts.
+    pub turn_id: Option<String>,
+
+    /// Shared cancellation signal for the active turn. Live event emission must
+    /// stop at the Rust boundary once this flag is set; frontend filtering is too late.
+    pub cancel_flag: Option<Arc<AtomicBool>>,
+
+    /// Synchronous active-turn generation mirror. Durable EventStore writes
+    /// must match this generation when a turn id is bound.
+    pub active_turn_generation: Option<Arc<parking_lot::RwLock<Option<String>>>>,
+
+    /// Active IDE repository path for multi-root workspace tool rendering.
+    pub active_repo_path: Option<String>,
 }
 
 /// Unified event handler for agent turns.
@@ -113,6 +127,26 @@ pub struct UnifiedEventHandler {
 }
 
 impl UnifiedEventHandler {
+    fn is_cancelled(&self) -> bool {
+        self.config
+            .cancel_flag
+            .as_ref()
+            .is_some_and(|flag| flag.load(Ordering::SeqCst))
+    }
+
+    fn is_current_turn_generation(&self) -> bool {
+        let Some(bound_turn_id) = self.config.turn_id.as_deref() else {
+            return true;
+        };
+        let Some(active_turn_generation) = self.config.active_turn_generation.as_ref() else {
+            return true;
+        };
+        active_turn_generation
+            .read()
+            .as_deref()
+            .is_some_and(|active_turn_id| active_turn_id == bound_turn_id)
+    }
+
     /// Creates a new unified event handler.
     pub fn new(config: EventHandlerConfig) -> Self {
         Self {
@@ -129,6 +163,10 @@ impl UnifiedEventHandler {
     /// the parent EventStore (retired in commit 5 in favour of a direct
     /// Rust push, as subagents already do).
     pub fn flush_streaming(&self, session_id: &str) {
+        if self.is_cancelled() {
+            return;
+        }
+
         // Thinking must be flushed before the assistant message so that
         // `push_to_store` assigns a lower `history_sequence` to the thinking
         // event than to the message. SQLite orders by
@@ -140,6 +178,7 @@ impl UnifiedEventHandler {
                 "agent:streaming_complete",
                 serde_json::json!({
                     "sessionId": session_id,
+                    "turnId": self.config.turn_id.as_deref(),
                     "streamType": "thinking",
                     "event": event,
                 }),
@@ -154,6 +193,7 @@ impl UnifiedEventHandler {
                 "agent:streaming_complete",
                 serde_json::json!({
                     "sessionId": session_id,
+                    "turnId": self.config.turn_id.as_deref(),
                     "streamType": "message",
                     "event": event,
                 }),
@@ -177,6 +217,10 @@ impl UnifiedEventHandler {
     /// handler was constructed without an app handle (tests / non-Tauri
     /// callers).
     fn push_to_store(&self, session_id: &str, event: SessionEvent) {
+        if self.is_cancelled() || !self.is_current_turn_generation() {
+            return;
+        }
+
         let Some(ref handle) = self.config.app_handle else {
             return;
         };
@@ -189,6 +233,10 @@ impl UnifiedEventHandler {
     /// the assistant message — preventing the frontend from rendering a
     /// stale `StreamingCursor` during tool execution.
     fn finalize_streaming_in_store(&self, session_id: &str) {
+        if self.is_cancelled() || !self.is_current_turn_generation() {
+            return;
+        }
+
         let Some(ref handle) = self.config.app_handle else {
             return;
         };
@@ -199,10 +247,15 @@ impl UnifiedEventHandler {
 #[async_trait]
 impl TurnEventHandler for UnifiedEventHandler {
     fn on_message_delta(&self, session_id: &str, content: &str) {
+        if self.is_cancelled() {
+            return;
+        }
+
         broadcast_event(
             "agent:message_delta",
             serde_json::json!({
                 "sessionId": session_id,
+                "turnId": self.config.turn_id.as_deref(),
                 "content": content,
             }),
         );
@@ -211,10 +264,15 @@ impl TurnEventHandler for UnifiedEventHandler {
     }
 
     fn on_thinking_delta(&self, session_id: &str, thinking: &str) {
+        if self.is_cancelled() {
+            return;
+        }
+
         broadcast_event(
             "agent:thinking_delta",
             serde_json::json!({
                 "sessionId": session_id,
+                "turnId": self.config.turn_id.as_deref(),
                 "content": thinking,
             }),
         );
@@ -230,6 +288,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         tool_name: Option<&str>,
         arguments_delta: Option<&str>,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         // A tool block starts when the provider emits id+name (Anthropic
         // `content_block_start` for a `tool_use`, OpenAI first delta of a
         // new tool_call). The arguments_delta-only deltas that follow are
@@ -249,6 +311,7 @@ impl TurnEventHandler for UnifiedEventHandler {
             "agent:tool_call_delta",
             serde_json::json!({
                 "sessionId": session_id,
+                "turnId": self.config.turn_id.as_deref(),
                 "index": index,
                 "toolCallId": tool_call_id,
                 "tool": tool_name,
@@ -265,6 +328,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         display_name: &str,
         args: &Value,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         self.tool_call_count.fetch_add(1, Ordering::Relaxed);
         if tool_name == tool_names::MANAGE_TODO {
             self.todo_called.store(true, Ordering::Relaxed);
@@ -307,6 +374,7 @@ impl TurnEventHandler for UnifiedEventHandler {
             tool_name,
             display_name,
             &stored_args,
+            self.config.active_repo_path.as_deref(),
         );
         self.push_to_store(session_id, event);
 
@@ -324,6 +392,10 @@ impl TurnEventHandler for UnifiedEventHandler {
     }
 
     fn on_file_change(&self, session_id: &str, tool_name: &str, file_paths: &[String]) {
+        if self.is_cancelled() {
+            return;
+        }
+
         let workspace_path = self
             .config
             .workspace_path
@@ -357,7 +429,8 @@ impl TurnEventHandler for UnifiedEventHandler {
         }
 
         if super::streaming::is_file_modifying_tool(tool_name) && tool_result_is_error(result) {
-            match crate::tools::file_history::discard_tool_call_snapshots(session_id, tool_call_id) {
+            match crate::tools::file_history::discard_tool_call_snapshots(session_id, tool_call_id)
+            {
                 Ok(stats) if stats.db_rows_removed > 0 || stats.manifests_removed > 0 => warn!(
                     "[unified_handler] discarded failed tool snapshot session={} tool_call_id={} tool={} db_rows={} manifests={}",
                     session_id,
@@ -406,6 +479,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         has_tool_calls: bool,
         model: &str,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         // Persist one `assistant` row per LLM iteration that produced text.
         //
         // Iterations with only tool_calls (no text) are skipped here: the
@@ -457,6 +534,10 @@ impl TurnEventHandler for UnifiedEventHandler {
         tool_name: &str,
         args: &Value,
     ) {
+        if self.is_cancelled() {
+            return;
+        }
+
         snapshots::take_snapshot(
             self.config.workspace_path.as_deref(),
             session_id,
@@ -565,7 +646,34 @@ impl TurnEventHandler for UnifiedEventHandler {
 
 #[cfg(test)]
 mod tests {
-    use super::should_push_assistant_event;
+    use std::sync::Arc;
+
+    use super::{should_push_assistant_event, EventHandlerConfig, UnifiedEventHandler};
+
+    #[test]
+    fn current_turn_generation_rejects_stale_bound_turn() {
+        let active_turn_generation =
+            Arc::new(parking_lot::RwLock::new(Some("turn-new".to_string())));
+        let handler = UnifiedEventHandler::new(EventHandlerConfig {
+            turn_id: Some("turn-old".to_string()),
+            active_turn_generation: Some(active_turn_generation),
+            ..Default::default()
+        });
+
+        assert!(!handler.is_current_turn_generation());
+    }
+
+    #[test]
+    fn current_turn_generation_accepts_matching_bound_turn() {
+        let active_turn_generation = Arc::new(parking_lot::RwLock::new(Some("turn-1".to_string())));
+        let handler = UnifiedEventHandler::new(EventHandlerConfig {
+            turn_id: Some("turn-1".to_string()),
+            active_turn_generation: Some(active_turn_generation),
+            ..Default::default()
+        });
+
+        assert!(handler.is_current_turn_generation());
+    }
 
     #[test]
     fn assistant_event_pushes_for_non_streaming_text_with_tool_calls() {

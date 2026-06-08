@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: bật",
+    "disabledLabel": "Agent Control: tắt",
+    "enableAction": "Bật Agent Control",
+    "disableAction": "Tắt Agent Control",
+    "inputMode": "Điều khiển",
+    "selectionMode": "Trả lời",
+    "toggleMode": "Chuyển chế độ nhập",
+    "inputPlaceholder": "Cho Agent biết cần làm gì...",
+    "selectionPlaceholder": "Nhập lựa chọn hoặc câu trả lời...",
+    "submit": "Gửi nội dung Agent Control",
+    "menuToggle": "Agent Control",
+    "selectModel": "Chọn model"
+  },
   "actions": {
     "save": "Lưu",
     "cancel": "Hủy",
@@ -1086,7 +1100,10 @@
       "selectAccount": "Chọn tài khoản"
     },
     "modelProperties": {
-      "options": "Tùy chọn"
+      "options": "Tùy chọn",
+      "effort": "Effort",
+      "faster": "Nhanh hơn",
+      "smarter": "Thông minh hơn"
     },
     "repo": {
       "workspaceFolders": "Thư mục Workspace",
@@ -1453,6 +1470,7 @@
     "toolLayout": "Trạm làm việc",
     "dockAutoHide": "Tự ẩn Dock",
     "modelPickerStyle": "Bộ chọn",
+    "chatPanelPagination": "Phân trang",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Trái",
@@ -1481,6 +1499,25 @@
     "ramTurnBodies": "Tải lazy lịch sử",
     "ramFileTrees": "Cây tệp",
     "ramCodeMirrors": "File rendering"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "Chuyển sang giao diện sáng",
+    "switchToDarkTheme": "Chuyển sang giao diện tối",
+    "switchToHighContrastTheme": "Chuyển sang giao diện tương phản cao",
+    "moveMyStationChatLeft": "Chuyển chat My Station sang trái",
+    "moveMyStationChatRight": "Chuyển chat My Station sang phải",
+    "moveAgentStationChatLeft": "Chuyển chat Agent Station sang trái",
+    "moveAgentStationChatRight": "Chuyển chat Agent Station sang phải",
+    "enableChatPagination": "Bật phân trang chat",
+    "disableChatPagination": "Tắt phân trang chat",
+    "useModelPickerSpotlight": "Dùng bộ chọn mô hình Spotlight",
+    "useModelPickerDropdown": "Dùng bộ chọn mô hình dạng menu",
+    "useCompactWorkstationLayout": "Dùng bố cục Workstation gọn",
+    "useComfortWorkstationLayout": "Dùng bố cục Workstation thoải mái",
+    "moveWorkstationSidebarLeft": "Chuyển thanh bên Workstation sang trái",
+    "moveWorkstationSidebarRight": "Chuyển thanh bên Workstation sang phải",
+    "enableDockAutoHide": "Tự động ẩn Dock Workstation",
+    "disableDockAutoHide": "Luôn hiển thị Dock Workstation"
   },
   "commands": {
     "showBottomPanel": "Hiện bảng dưới",

@@ -6,7 +6,9 @@ use std::sync::atomic::AtomicBool;
 use async_trait::async_trait;
 use serde_json::Value;
 
-use super::traits::{finish_reason, usage_key, LLMProvider, LLMResponse, ProviderError, StreamDelta};
+use super::traits::{
+    finish_reason, usage_key, LLMProvider, LLMResponse, ProviderError, StreamDelta,
+};
 
 pub const E2E_FAKE_PROVIDER_MODEL_PREFIX: &str = "e2e-fake-provider";
 

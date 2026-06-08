@@ -18,17 +18,22 @@ import { isHostedKey } from "@src/api/tauri/session";
 import Message from "@src/components/Message";
 import type { AgentExecMode } from "@src/config/sessionCreatorConfig";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
-import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
+import { sortedEventsAtom } from "@src/engines/SessionCore/core/atoms/events";
+import { hasRunningSessionEvent } from "@src/engines/SessionCore/core/runningEventGate";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
 import {
+  PENDING_RUST_ACTIVE_TURN_ID,
+  hasObservedUnsettledQueueTurn,
   markQueueTurnWorking,
   shouldQueueSubmitAsActiveTurn,
 } from "@src/engines/SessionCore/hooks/session/queueTurnGate";
+import { getActiveSessionStreamingTurn } from "@src/engines/SessionCore/sync/adapters/rustAgent/eventHandlers/streamHelpers";
 import {
   isPendingCancelAtom,
   isSessionActiveAtom,
   lastUserMessageAtom,
   sessionRuntimeStatusAtom,
+  setSessionRuntimeStatusAtom,
   userInitiatedCancelAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
@@ -41,13 +46,22 @@ import {
   activeSessionIdAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session/viewAtom";
-import { enqueueMessageAtom } from "@src/store/ui/messageQueueAtom";
+import {
+  enqueueMessageAtom,
+  forceSendPendingQueueAtom,
+  messageQueueAtom,
+  queueFlushRequestAtom,
+} from "@src/store/ui/messageQueueAtom";
 import {
   isAgentSession,
   isCliSession,
   isCursorIdeSession,
 } from "@src/util/session/sessionDispatch";
 
+import {
+  consumeRestoredStopDraft,
+  consumeRestoredStopSubmitSuppression,
+} from "./stopSubmitGuard";
 import { useMessageDispatch } from "./useMessageDispatch";
 import { useSessionActions } from "./useSessionActions";
 
@@ -90,12 +104,22 @@ function buildSubmitPayloadKey(
   });
 }
 
+function stableSubmitHash(value: string): string {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(36);
+}
+
 interface UseWorkspaceChatOptions {
   sessionId?: string;
 }
 
 export interface SubmitOptions {
   forceDispatch?: boolean;
+  forceQueueAsActiveTurn?: boolean;
 }
 
 const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
@@ -113,7 +137,8 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
   // Atoms
   // ============================================
   const isWpGeneWorking = useAtomValue(isSessionActiveAtom);
-  const setSessionRuntimeStatus = useSetAtom(sessionRuntimeStatusAtom);
+  const setSessionRuntimeStatus = useSetAtom(setSessionRuntimeStatusAtom);
+  const setUserInitiatedCancel = useSetAtom(userInitiatedCancelAtom);
   const setLastUserMessage = useSetAtom(lastUserMessageAtom);
   // SessionCore engine-level session ID — always tracks the currently
   // synced session (set by loadSessionAtom inside useSessionSync).
@@ -131,6 +156,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
   // Queue Atoms
   // ============================================
   const enqueueMessage = useSetAtom(enqueueMessageAtom);
+  const setQueueFlushRequest = useSetAtom(queueFlushRequestAtom);
   // Per-session source-of-truth: when enqueuing we snapshot the model
   // and exec-mode that the *session row* currently has, so a model or
   // mode swap done while the queue is draining cannot retroactively
@@ -239,42 +265,62 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
         throw new Error("No session ID");
       }
 
-      await enterAgentOrgSessionIntervention(sessionId);
       const latestSessionRuntimeStatus = store.get(sessionRuntimeStatusAtom);
       const latestIsSessionActive = store.get(isSessionActiveAtom);
       const latestIsPendingCancel = store.get(isPendingCancelAtom);
       const latestUserInitiatedCancel = store.get(userInitiatedCancelAtom);
-      const latestSnapshot =
-        eventStoreProxy.getLatestSessionSnapshot(sessionId);
-      const snapshotShowsActiveTurn =
-        latestSnapshot?.hasRunningEvent === true ||
-        (latestSnapshot != null &&
-          "streaming" in latestSnapshot &&
-          latestSnapshot.streaming === true);
       const runtimeIsWorking =
         latestSessionRuntimeStatus === "running" ||
         latestSessionRuntimeStatus === "installing" ||
         latestSessionRuntimeStatus === "waiting_for_user" ||
         latestSessionRuntimeStatus === "waiting_for_funds" ||
-        snapshotShowsActiveTurn;
-      const submitShouldQueueAsActiveTurn = shouldQueueSubmitAsActiveTurn({
-        sessionId,
-        isActive: latestIsSessionActive,
-        runtimeIsWorking,
-        pendingCancel: latestIsPendingCancel,
-        submitGuardActive: _sharedSubmitGuard.current,
-      });
-      const supportsQueuedFollowups =
-        submitShouldQueueAsActiveTurn ||
-        isAgentSession(sessionId) ||
-        isCliSession(sessionId) ||
-        isCursorIdeSession(sessionId);
+        hasRunningSessionEvent(store.get(sortedEventsAtom), sessionId);
       const submitPayloadKey = buildSubmitPayloadKey(
         sessionId,
         finalInput,
         agentContent,
         imageDataUrls
       );
+      const directClientMessageId = `direct:${sessionId}:${stableSubmitHash(
+        submitPayloadKey
+      )}`;
+      if (
+        !options.forceDispatch &&
+        consumeRestoredStopSubmitSuppression({
+          sessionId,
+          displayContent: finalInput,
+          imageDataUrls,
+        })
+      ) {
+        return;
+      }
+      const restoredStopDraftSubmit =
+        !options.forceDispatch && consumeRestoredStopDraft(sessionId);
+      const effectiveUserInitiatedCancel =
+        latestUserInitiatedCancel || restoredStopDraftSubmit;
+      const hasQueuedSibling =
+        store
+          .get(messageQueueAtom)
+          .some((message) => message.sessionId === sessionId) ||
+        store
+          .get(forceSendPendingQueueAtom)
+          .some((message) => message.sessionId === sessionId);
+      const submitShouldQueueAsActiveTurn =
+        options.forceQueueAsActiveTurn ||
+        effectiveUserInitiatedCancel ||
+        hasQueuedSibling ||
+        hasObservedUnsettledQueueTurn(sessionId) ||
+        shouldQueueSubmitAsActiveTurn({
+          sessionId,
+          isActive: latestIsSessionActive,
+          runtimeIsWorking,
+          pendingCancel: latestIsPendingCancel,
+        });
+      const supportsQueuedFollowups =
+        submitShouldQueueAsActiveTurn ||
+        isAgentSession(sessionId) ||
+        isCliSession(sessionId) ||
+        isCursorIdeSession(sessionId);
       if (
         !options.forceDispatch &&
         _sharedSubmitGuard.current &&
@@ -284,10 +330,10 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
         return;
       }
       // Enqueue if the agent is running OR a cancel is mid-flight.
-      // `isPendingCancel` is set by interruptSession() and cleared by the
-      // agent:complete/error handler, covering the window where the user
-      // clicked stop but Rust has not yet wound the turn down. The queue
-      // will auto-flush on the runtime-status falling edge.
+      // Ordinary queued follow-ups stay frontend-owned until a non-cancel
+      // terminal settle explicitly releases them; they must not enter Rust's
+      // scheduler queue early, because Rust will auto-run scheduler entries
+      // immediately after a Stop/cancelled turn.
       if (
         !options.forceDispatch &&
         supportsQueuedFollowups &&
@@ -326,6 +372,10 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
           (session?.agentExecMode as AgentExecMode | undefined) ??
           creatorDefaultMode;
 
+        if (effectiveUserInitiatedCancel) {
+          setUserInitiatedCancel(false);
+        }
+
         enqueueMessage({
           id: `queued-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
           sessionId,
@@ -334,11 +384,20 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
           imageDataUrls,
           modelSelection: snapshotSelection,
           agentExecMode: snapshotMode,
-          requiresRuntimeSettle: !latestUserInitiatedCancel,
-          dispatchAfterUserCancel: latestUserInitiatedCancel,
+          requiresRuntimeSettle: !effectiveUserInitiatedCancel,
+          releaseAfterTurnId: effectiveUserInitiatedCancel
+            ? undefined
+            : (getActiveSessionStreamingTurn(sessionId) ??
+              (isAgentSession(sessionId)
+                ? PENDING_RUST_ACTIVE_TURN_ID
+                : undefined)),
+          dispatchAfterUserCancel: effectiveUserInitiatedCancel,
           status: "queued",
           createdAt: new Date().toISOString(),
         });
+        if (effectiveUserInitiatedCancel) {
+          setQueueFlushRequest((requestId) => requestId + 1);
+        }
         return;
       }
 
@@ -358,7 +417,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       // before `activationVersion` is captured, breaking the cold-start
       // condition (`activationVersion === version`) and forcing the indicator
       // to wait the full 1-second warm-path delay instead of appearing instantly.
-      setSessionRuntimeStatus("running");
+      setSessionRuntimeStatus({ status: "running", source: "dispatch" });
       setSessChatInput("");
       setLoading(true);
       _sharedSubmitGuard.current = true;
@@ -368,6 +427,9 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       try {
         await addUserMessage(finalInput, imageDataUrls);
         userEventAppended = true;
+        void enterAgentOrgSessionIntervention(sessionId).catch((error) => {
+          console.warn("[useWorkspaceChat] intervention failed:", error);
+        });
         // Pass finalInput as displayText so the pill format is preserved in
         // the persisted event. Only needed when the agent content differs
         // (i.e. skill pills were expanded).
@@ -378,14 +440,15 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
           contentForAgent,
           imageDataUrls,
           undefined,
-          displayTextForDispatch
+          displayTextForDispatch,
+          directClientMessageId
         );
       } catch (error) {
         console.error("Error sending message:", error);
         Message.error(t("errors.failedToSendMessage"));
         _sharedSubmitGuard.current = false;
         _sharedSubmitPayload.current = null;
-        setSessionRuntimeStatus("idle");
+        setSessionRuntimeStatus({ status: "idle", source: "dispatch" });
         if (!userEventAppended) throw error;
         // NOT re-thrown after user event append: the message is already visible
         // in chat, so restoring the editor would create a duplicate-send risk.
@@ -404,6 +467,8 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       dispatchMessageBySessionType,
       getSessionId,
       setLastUserMessage,
+      setQueueFlushRequest,
+      setUserInitiatedCancel,
       store,
       setSessionRuntimeStatus,
       t,
@@ -424,8 +489,16 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       setLoading(true);
 
       try {
+        const submitPayloadKey = buildSubmitPayloadKey(sessionId, content);
         await addUserMessage(content);
-        await dispatchMessageBySessionType(sessionId, content);
+        await dispatchMessageBySessionType(
+          sessionId,
+          content,
+          undefined,
+          undefined,
+          undefined,
+          `direct:${sessionId}:${stableSubmitHash(submitPayloadKey)}`
+        );
       } catch (error) {
         console.error("Error sending message:", error);
         Message.error(t("errors.failedToSendMessage"));

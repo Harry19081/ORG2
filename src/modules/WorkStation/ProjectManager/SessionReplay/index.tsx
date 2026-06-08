@@ -392,7 +392,7 @@ function ProjectReplayContent({ view }: { view: ProjectReplayView }) {
     const selectedProjectId = selectedId;
     const projectGroups = groupProjectsByStatus(view.projects);
     return (
-      <div className="scrollbar-overlay flex-1 overflow-y-auto">
+      <div className="scrollbar-overlay flex-1 overflow-y-auto pb-[100px]">
         <div className="flex flex-col pb-3">
           {projectGroups.map((group) => {
             const statusConfig = getProjectStatusConfig(group.status);
@@ -425,7 +425,7 @@ function ProjectReplayContent({ view }: { view: ProjectReplayView }) {
     const selectedWorkItemId = selectedId;
     const workItemGroups = groupWorkItemsByStatus(view.workItems);
     return (
-      <div className="scrollbar-overlay flex-1 overflow-y-auto">
+      <div className="scrollbar-overlay flex-1 overflow-y-auto pb-[100px]">
         <div className="flex flex-col pb-3">
           {workItemGroups.map((group) => (
             <WorkItemSection
@@ -462,7 +462,7 @@ function ProjectReplayContent({ view }: { view: ProjectReplayView }) {
   }
 
   return (
-    <div className="scrollbar-overlay flex-1 overflow-y-auto p-4">
+    <div className="scrollbar-overlay flex-1 overflow-y-auto p-4 pb-[100px]">
       <div className="mb-2 flex items-center gap-2 text-[13px] font-medium text-text-1">
         <FileText size={14} className="text-text-3" />
         {view.title}

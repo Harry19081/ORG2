@@ -2,8 +2,8 @@
  * SpotlightShell Component
  *
  * The ONE and ONLY visual chrome for the spotlight family. Owns:
- *  - Glass panel (material, radius, specular, shadow)
- *  - Portal + backdrop + sidebar-aware centering
+ *  - Simple panel chrome
+ *  - Portal + backdrop + viewport-centered positioning
  *  - Keyboard-hint footer below the panel
  *  - Focus refocus on background click
  *
@@ -11,24 +11,19 @@
  * inside this shell via children, and may inject a right-side footer action
  * pill via ShellFooterAction.
  *
- * All palettes share the same material, width, and portal behavior — no
- * per-palette styling. Callers cannot override these; variation lives only
- * in palette content.
+ * All palettes share the same width and portal behavior — no per-palette
+ * styling. Callers cannot override these; variation lives only in palette
+ * content.
  */
 import React, { useCallback, useMemo, useRef } from "react";
 
 import { SpotlightFooter, type SpotlightFooterActiveChip } from "../components";
-import { SpotlightFooterMaterialContext } from "../components/spotlightFooterMaterialContext";
 import { SPOTLIGHT_CONFIG } from "../constants";
 import { SpotlightShellChrome } from "./SpotlightShellChrome";
 import {
   type FooterActionSlot,
   SpotlightFooterActionContext,
 } from "./footerActionContext";
-
-// Single source of truth for the shared spotlight material. Everything in
-// the spotlight family renders with this — no per-caller overrides.
-const SHELL_MATERIAL = "thin" as const;
 
 // ============ TYPES ============
 
@@ -108,21 +103,18 @@ export const SpotlightShell: React.FC<SpotlightShellProps> = ({
   );
 
   return (
-    <SpotlightFooterMaterialContext.Provider value={SHELL_MATERIAL}>
-      <SpotlightFooterActionContext.Provider value={slot}>
-        <SpotlightShellChrome
-          isOpen={isOpen}
-          onClose={onClose}
-          asPortal={asPortal}
-          stopPropagation={stopPropagation}
-          width={SPOTLIGHT_CONFIG.width}
-          material={SHELL_MATERIAL}
-          footer={footer}
-        >
-          {children}
-        </SpotlightShellChrome>
-      </SpotlightFooterActionContext.Provider>
-    </SpotlightFooterMaterialContext.Provider>
+    <SpotlightFooterActionContext.Provider value={slot}>
+      <SpotlightShellChrome
+        isOpen={isOpen}
+        onClose={onClose}
+        asPortal={asPortal}
+        stopPropagation={stopPropagation}
+        width={SPOTLIGHT_CONFIG.width}
+        footer={footer}
+      >
+        {children}
+      </SpotlightShellChrome>
+    </SpotlightFooterActionContext.Provider>
   );
 };
 

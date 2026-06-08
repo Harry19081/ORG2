@@ -64,7 +64,7 @@
   "complete": {
     "title": "모든 준비 완료!",
     "description": "작업 공간이 준비되었습니다. 새 Session을 시작하여 AI 지원으로 코딩을 시작하거나, 앱을 탐색하여 모든 기능을 발견하세요.",
-    "startSession": "새 Session 시작"
+    "startSession": "새 세션 시작"
   },
   "navigation": {
     "skipSetup": "설정 건너뛰기",

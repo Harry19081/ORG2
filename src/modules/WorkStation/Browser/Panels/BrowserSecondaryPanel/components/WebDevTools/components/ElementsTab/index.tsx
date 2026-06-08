@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import type { ElementInfo } from "@src/modules/WorkStation/Browser/hooks/useWebviewInspector";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { copyText } from "@src/util/data/clipboard";
 
@@ -49,21 +50,23 @@ export const ElementsTab: React.FC<ElementsTabProps> = memo(
     }
 
     const renderCopyButton = (text: string, field: string) => (
-      <Button
-        variant="tertiary"
-        size="mini"
-        icon={
-          copiedField === field ? (
-            <Check size={10} className="text-success-6" />
-          ) : (
-            <Copy size={10} />
-          )
-        }
-        iconOnly
-        onClick={() => handleCopy(text, field)}
-        title={t("tooltips.copy")}
-        className="ml-1"
-      />
+      <WorkstationToolbarTooltip label={t("tooltips.copy")}>
+        <Button
+          variant="tertiary"
+          size="mini"
+          icon={
+            copiedField === field ? (
+              <Check size={10} className="text-success-6" />
+            ) : (
+              <Copy size={10} />
+            )
+          }
+          iconOnly
+          onClick={() => handleCopy(text, field)}
+          aria-label={t("tooltips.copy")}
+          className="ml-1"
+        />
+      </WorkstationToolbarTooltip>
     );
 
     return (
@@ -74,14 +77,16 @@ export const ElementsTab: React.FC<ElementsTabProps> = memo(
             {element.selector}
           </span>
           {onClear && (
-            <Button
-              variant="tertiary"
-              size="mini"
-              icon={<X size={12} />}
-              iconOnly
-              onClick={onClear}
-              title={t("tooltips.clearSelection")}
-            />
+            <WorkstationToolbarTooltip label={t("tooltips.clearSelection")}>
+              <Button
+                variant="tertiary"
+                size="mini"
+                icon={<X size={12} />}
+                iconOnly
+                onClick={onClear}
+                aria-label={t("tooltips.clearSelection")}
+              />
+            </WorkstationToolbarTooltip>
           )}
         </div>
 

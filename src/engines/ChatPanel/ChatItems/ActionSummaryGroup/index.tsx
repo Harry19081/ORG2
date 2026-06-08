@@ -178,6 +178,7 @@ const ActionSummaryGroup: React.FC<ActionSummaryGroupProps> = ({
         groupSummary={groupSummary}
         defaultCollapsed={closedByBoundary}
         collapseWhen={closedByBoundary}
+        eventId={firstEvent?.id}
         renderItem={renderEventBlock}
       />
     </div>

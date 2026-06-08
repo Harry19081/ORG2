@@ -183,7 +183,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
               title={t("tools.failedPlaceholder")}
             />
           ) : (
-            <div className="code-viewer-scroll-container relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="code-viewer-scroll-container relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden pb-[100px]">
               <TerminalContent operation={shellOperation} />
             </div>
           )}
@@ -235,7 +235,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
               title={t("tools.failedPlaceholder")}
             />
           ) : (
-            <div className="code-viewer-scroll-container relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="code-viewer-scroll-container relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden pb-[100px]">
               <SearchResultsContent operation={exploreOperation} />
             </div>
           )}
@@ -302,7 +302,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
         />
 
         <div
-          className={`code-viewer-scroll-container relative min-h-0 flex-1 ${hasMultipleEdits ? "overflow-y-auto overflow-x-hidden" : "overflow-hidden"}`}
+          className={`code-viewer-scroll-container relative min-h-0 flex-1 pb-[100px] ${hasMultipleEdits ? "overflow-y-auto overflow-x-hidden" : "overflow-hidden"}`}
         >
           {type === FILE_OPERATION_TYPE.DELETE ? (
             <Placeholder

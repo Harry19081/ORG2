@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control：開啟",
+    "disabledLabel": "Agent Control：關閉",
+    "enableAction": "開啟 Agent Control",
+    "disableAction": "關閉 Agent Control",
+    "inputMode": "控制",
+    "selectionMode": "回答",
+    "toggleMode": "切換輸入模式",
+    "inputPlaceholder": "告訴 Agent 要做什麼...",
+    "selectionPlaceholder": "輸入選項或回答...",
+    "submit": "提交 Agent Control 輸入",
+    "menuToggle": "Agent Control",
+    "selectModel": "選擇模型"
+  },
   "actions": {
     "save": "保存",
     "cancel": "取消",
@@ -244,7 +258,7 @@
     "preview": "預覽",
     "nothingToPreview": "暫無預覽內容",
     "sourceCode": "源代碼",
-    "raw": "原始內容",
+    "raw": "原始",
     "table": "表格",
     "filter": "篩選",
     "filters": "篩選條件",
@@ -1086,7 +1100,10 @@
       "selectAccount": "選擇帳號"
     },
     "modelProperties": {
-      "options": "選項"
+      "options": "選項",
+      "effort": "Effort",
+      "faster": "更快",
+      "smarter": "更智能"
     },
     "repo": {
       "workspaceFolders": "工作區文件夾",
@@ -1453,6 +1470,7 @@
     "toolLayout": "工作站",
     "dockAutoHide": "程序塢自動隱藏",
     "modelPickerStyle": "選擇器樣式",
+    "chatPanelPagination": "分頁",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "選單",
     "replaySession": "Replay 會話",
@@ -1486,6 +1504,25 @@
     "ramTurnBodies": "歷史懶載入",
     "ramFileTrees": "檔案樹",
     "ramCodeMirrors": "檔案渲染"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "切換到淺色主題",
+    "switchToDarkTheme": "切換到深色主題",
+    "switchToHighContrastTheme": "切換到高對比度主題",
+    "moveMyStationChatLeft": "將我的工作站聊天移到左側",
+    "moveMyStationChatRight": "將我的工作站聊天移到右側",
+    "moveAgentStationChatLeft": "將 Agent 工作站聊天移到左側",
+    "moveAgentStationChatRight": "將 Agent 工作站聊天移到右側",
+    "enableChatPagination": "開啟聊天分頁",
+    "disableChatPagination": "關閉聊天分頁",
+    "useModelPickerSpotlight": "使用 Spotlight 模型選擇器",
+    "useModelPickerDropdown": "使用下拉式模型選擇器",
+    "useCompactWorkstationLayout": "使用緊湊工作站佈局",
+    "useComfortWorkstationLayout": "使用舒適工作站佈局",
+    "moveWorkstationSidebarLeft": "將工作站側邊欄移到左側",
+    "moveWorkstationSidebarRight": "將工作站側邊欄移到右側",
+    "enableDockAutoHide": "自動隱藏工作站 Dock",
+    "disableDockAutoHide": "一律顯示工作站 Dock"
   },
   "commands": {
     "showBottomPanel": "顯示底部面板",

@@ -15,12 +15,14 @@ import { getToolDisplayLabelFromRegistry } from "@src/util/ui/rendering/registry
 import GlobBlock from "../../blocks/GlobBlock";
 
 function extractPattern(props: UniversalEventProps): string {
-  if (props.rustExtracted?.kind === "glob") {
+  const { args } = props;
+  if (props.rustExtracted?.kind === "glob" && props.rustExtracted.pattern) {
     return props.rustExtracted.pattern;
   }
-  const { args } = props;
   return (
     (args?.pattern as string) ||
+    (args?.glob_pattern as string) ||
+    (args?.globPattern as string) ||
     (args?.glob as string) ||
     (args?.query as string) ||
     ""

@@ -41,6 +41,16 @@ export const BENCHMARK_AGENT_BATCH_STATUS = {
 export type BenchmarkAgentBatchStatusValue =
   (typeof BENCHMARK_AGENT_BATCH_STATUS)[keyof typeof BENCHMARK_AGENT_BATCH_STATUS];
 
+export const BENCHMARK_BATCH_TASK_ACTION = {
+  ADD: "add",
+  REMOVE: "remove",
+  CANCEL: "cancel",
+  RESTART: "restart",
+} as const;
+
+export type BenchmarkBatchTaskAction =
+  (typeof BENCHMARK_BATCH_TASK_ACTION)[keyof typeof BENCHMARK_BATCH_TASK_ACTION];
+
 export const BENCHMARK_RUN_TYPE = {
   SINGLE: "single",
   BATCH: "batch",
@@ -58,6 +68,7 @@ export type BenchmarkAgentLaunchSelection = Omit<
   | "ideContext"
   | "workItemId"
   | "agentRole"
+  | "parentSessionId"
 >;
 
 export interface BenchmarkAgentBatchItem {
@@ -69,12 +80,19 @@ export interface BenchmarkAgentBatchItem {
   finishedAt?: string | null;
   error?: string | null;
   logs: string[];
+  submittedPatchPath?: string | null;
+  evaluationRunId?: string | null;
+  evaluationStatus?: BenchmarkRunStatusValue | null;
+  evaluationError?: string | null;
 }
 
 export interface BenchmarkAgentBatchStatus {
   batchId: string;
   benchmarkKind: BenchmarkKind;
   sourcePath: string;
+  launch?: BenchmarkAgentLaunchSelection | null;
+  masterSessionId: string;
+  masterSessionName: string;
   status: BenchmarkAgentBatchStatusValue;
   totalTasks: number;
   queued: number;
@@ -220,6 +238,22 @@ export interface BenchmarkCancelAgentBatchRequest {
   batchId: string;
 }
 
+export interface BenchmarkEvaluateAgentBatchRequest {
+  batchId: string;
+  evaluationMode?: BenchmarkEvaluationMode;
+  taskIds?: string[];
+}
+
+export interface BenchmarkUpdateAgentBatchTasksRequest {
+  batchId: string;
+  action: BenchmarkBatchTaskAction;
+  taskIds: string[];
+}
+
+export interface BenchmarkListAgentBatchHistoriesRequest {
+  limit?: number;
+}
+
 export const benchmarkApi = {
   listTasks(
     request: BenchmarkListTasksRequest
@@ -279,6 +313,33 @@ export const benchmarkApi = {
   ): Promise<BenchmarkAgentBatchStatus> {
     return invokeTauri<BenchmarkAgentBatchStatus>(
       "benchmark_get_agent_batch_status",
+      { request }
+    );
+  },
+
+  listAgentBatchHistories(
+    request: BenchmarkListAgentBatchHistoriesRequest = {}
+  ): Promise<BenchmarkAgentBatchStatus[]> {
+    return invokeTauri<BenchmarkAgentBatchStatus[]>(
+      "benchmark_list_agent_batch_histories",
+      { request }
+    );
+  },
+
+  evaluateAgentBatch(
+    request: BenchmarkEvaluateAgentBatchRequest
+  ): Promise<BenchmarkAgentBatchStatus> {
+    return invokeTauri<BenchmarkAgentBatchStatus>(
+      "benchmark_evaluate_agent_batch",
+      { request }
+    );
+  },
+
+  updateAgentBatchTasks(
+    request: BenchmarkUpdateAgentBatchTasksRequest
+  ): Promise<BenchmarkAgentBatchStatus> {
+    return invokeTauri<BenchmarkAgentBatchStatus>(
+      "benchmark_update_agent_batch_tasks",
       { request }
     );
   },

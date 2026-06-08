@@ -4,11 +4,8 @@
  * Enhanced terminal-style modal header with status indicators
  */
 import { type LucideIcon, X } from "lucide-react";
-import React, { useMemo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
-
-import { getMaterialConfig } from "@src/components/Glass/config";
-import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 interface SpotlightModalHeaderProps {
   icon: LucideIcon | string;
@@ -34,20 +31,6 @@ const SpotlightModalHeader: React.FC<SpotlightModalHeaderProps> = ({
   hideHeader = false,
 }) => {
   const { t } = useTranslation();
-  const { isDark } = useCurrentTheme();
-  const materialConfig = useMemo(
-    () => getMaterialConfig(isDark, "thick"),
-    [isDark]
-  );
-  const iconBoxStyle = useMemo(
-    () => ({
-      backdropFilter: `blur(${materialConfig.blur}px)`,
-      WebkitBackdropFilter: `blur(${materialConfig.blur}px)`,
-      background: materialConfig.background,
-      border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.18)"}`,
-    }),
-    [isDark, materialConfig.blur, materialConfig.background]
-  );
 
   const badgeColorClasses = {
     primary: "border-primary-6/20 bg-primary-6/10 text-primary-6",
@@ -65,10 +48,7 @@ const SpotlightModalHeader: React.FC<SpotlightModalHeaderProps> = ({
   return (
     <div className="flex items-center justify-between px-4 py-3">
       <div className="flex items-center gap-4">
-        <div
-          className="spotlight-icon-box flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
-          style={iconBoxStyle}
-        >
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-border-2 bg-bg-2">
           {IconComponent ? (
             <IconComponent className="text-text-1" size={18} />
           ) : (

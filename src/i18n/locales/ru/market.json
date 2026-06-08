@@ -169,7 +169,7 @@
     "title": "Маркетплейс",
     "models": "Модели",
     "providers": "Провайдеры",
-    "startSession": "Начать Session",
+    "startSession": "Начать сессию",
     "insufficientBalance": "Недостаточный баланс",
     "addFundsToStart": "Пополните баланс для начала Session",
     "minBalance": "Минимальный баланс: ${{amount}}",

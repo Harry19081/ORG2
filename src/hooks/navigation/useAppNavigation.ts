@@ -56,7 +56,9 @@ import {
   CHAT_PANEL_CONTENT_MODE,
   chatPanelContentModeAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelSelectedWorkspaceAtom,
   chatPanelStickyNotesOpenAtom,
+  chatPanelWorkspaceDashboardOpenAtom,
 } from "@src/store/ui/chatPanelAtom";
 
 // ============================================
@@ -123,7 +125,6 @@ export interface UseAppNavigationReturn {
   goToStartPage: () => void;
   goToSettings: () => void;
   goToProjects: () => void;
-  goToInbox: () => void;
   goToMarket: () => void;
   goToIntegrations: (options?: {
     category?: IntegrationsCategorySegment;
@@ -149,8 +150,14 @@ export function useAppNavigation(): UseAppNavigationReturn {
     workstationActiveSessionIdAtom
   );
   const setChatPanelContentMode = useSetAtom(chatPanelContentModeAtom);
+  const setChatPanelWorkspaceDashboardOpen = useSetAtom(
+    chatPanelWorkspaceDashboardOpenAtom
+  );
   const setChatPanelSelectedWorkItem = useSetAtom(
     chatPanelSelectedWorkItemAtom
+  );
+  const setChatPanelSelectedWorkspace = useSetAtom(
+    chatPanelSelectedWorkspaceAtom
   );
   const setChatPanelStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
   const startNewSessionCreatorDraft = useSetAtom(
@@ -230,11 +237,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
     navigate(ROUTES.workStation.project.path);
   }, [navigate, promoteActiveSessionCreatorDraft]);
 
-  const goToInbox = useCallback(() => {
-    promoteActiveSessionCreatorDraft();
-    navigate(ROUTES.app.home.inbox.path);
-  }, [navigate, promoteActiveSessionCreatorDraft]);
-
   const goToMarket = useCallback(() => {
     navigateToMainApp(ROUTES.app.market.tokenMarket.path, {
       title: "Token Market",
@@ -305,6 +307,8 @@ export function useAppNavigation(): UseAppNavigationReturn {
       dispatchClearSession();
       setChatPanelContentMode(CHAT_PANEL_CONTENT_MODE.SESSION);
       setChatPanelSelectedWorkItem(null);
+      setChatPanelWorkspaceDashboardOpen(false);
+      setChatPanelSelectedWorkspace(null);
       setChatPanelStickyNotesOpen(false);
       // Starting a session changes chat identity, not the WorkStation layout.
       setActiveSessionId(null);
@@ -337,6 +341,8 @@ export function useAppNavigation(): UseAppNavigationReturn {
       dispatchClearSession,
       setActiveSessionId,
       setChatPanelContentMode,
+      setChatPanelWorkspaceDashboardOpen,
+      setChatPanelSelectedWorkspace,
       setChatPanelSelectedWorkItem,
       setChatPanelStickyNotesOpen,
       setWorkstationActiveSessionId,
@@ -361,7 +367,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
     goToStartPage,
     goToSettings,
     goToProjects,
-    goToInbox,
     goToMarket,
     goToIntegrations,
     goToAgentOrgs,

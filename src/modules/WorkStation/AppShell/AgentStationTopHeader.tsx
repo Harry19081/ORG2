@@ -24,9 +24,6 @@ import React, {
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
-import Tooltip from "@src/components/Tooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import CaptionBar from "@src/engines/Simulator/components/CaptionBar";
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
@@ -84,32 +81,10 @@ const AgentStationTopHeader: React.FC = memo(() => {
     ? t("simulator.agentSentMessageCaption")
     : captionMessage?.text;
   const captionToggleLabel = t("simulator.captionBarToggleTooltip");
-  const captionToggleShortcut = getShortcutKeys("toggle_captions");
   const chatPanelLabel = isChatPanelVisible
     ? t("chat.maximizeWorkStation")
     : t("chat.restoreChatPanel");
-  const chatPanelShortcut = getShortcutKeys("maximize_work_station");
   const hideWorkstationLabel = t("chat.hideWorkstation");
-  const hideWorkstationTooltip = (
-    <KeyboardShortcutTooltipContent
-      label={hideWorkstationLabel}
-      shortcut={getShortcutKeys("maximize_chat")}
-    />
-  );
-
-  const chatPanelTooltip = (
-    <KeyboardShortcutTooltipContent
-      label={chatPanelLabel}
-      shortcut={chatPanelShortcut}
-    />
-  );
-
-  const captionToggleTooltip = (
-    <KeyboardShortcutTooltipContent
-      label={captionToggleLabel}
-      shortcut={captionToggleShortcut}
-    />
-  );
 
   const showCaptionBar = captionEnabled && !!captionMessage;
 
@@ -195,85 +170,49 @@ const AgentStationTopHeader: React.FC = memo(() => {
           ref={trailingControlsRef}
           className="ml-auto flex h-full shrink-0 items-center gap-px pl-1 pr-2"
         >
-          <Tooltip
-            content={captionToggleTooltip}
-            position="bottom-end"
-            mouseEnterDelay={200}
-            framedPanel
+          <TabBarTrailingIconButton
+            title={captionToggleLabel}
+            shortcutId="toggle_captions"
+            active={captionEnabled}
+            aria-pressed={captionEnabled}
+            onClick={handleToggleCaption}
           >
-            <span className="inline-flex">
-              <TabBarTrailingIconButton
-                title={captionToggleLabel}
-                nativeTitle={false}
-                active={captionEnabled}
-                aria-pressed={captionEnabled}
-                onClick={handleToggleCaption}
-              >
-                <Captions size={16} strokeWidth={2} />
-              </TabBarTrailingIconButton>
-            </span>
-          </Tooltip>
+            <Captions size={16} strokeWidth={2} />
+          </TabBarTrailingIconButton>
           {!isSettingsRoute && !isChatPanelVisible && (
-            <Tooltip
-              content={chatPanelTooltip}
-              position="bottom-end"
-              mouseEnterDelay={200}
-              framedPanel
+            <TabBarTrailingIconButton
+              title={chatPanelLabel}
+              shortcutId="maximize_work_station"
+              onClick={handleToggleChatPanel}
             >
-              <span className="inline-flex">
-                <TabBarTrailingIconButton
-                  title={chatPanelLabel}
-                  nativeTitle={false}
-                  onClick={handleToggleChatPanel}
-                >
-                  <Minimize2 size={14} strokeWidth={2} />
-                </TabBarTrailingIconButton>
-              </span>
-            </Tooltip>
+              <Minimize2 size={14} strokeWidth={2} />
+            </TabBarTrailingIconButton>
           )}
           {!isSettingsRoute && (
-            <Tooltip
-              content={chatPanelTooltip}
-              position="bottom-end"
-              mouseEnterDelay={200}
-              framedPanel
+            <TabBarTrailingIconButton
+              title={chatPanelLabel}
+              shortcutId="maximize_work_station"
+              onClick={handleToggleChatPanel}
             >
-              <span className="inline-flex">
-                <TabBarTrailingIconButton
-                  title={chatPanelLabel}
-                  nativeTitle={false}
-                  onClick={handleToggleChatPanel}
-                >
-                  {isChatPanelVisible ? (
-                    <Maximize2 size={14} strokeWidth={2} />
-                  ) : (
-                    <MessageCircle size={14} strokeWidth={2} />
-                  )}
-                </TabBarTrailingIconButton>
-              </span>
-            </Tooltip>
+              {isChatPanelVisible ? (
+                <Maximize2 size={14} strokeWidth={2} />
+              ) : (
+                <MessageCircle size={14} strokeWidth={2} />
+              )}
+            </TabBarTrailingIconButton>
           )}
           {!isSettingsRoute && isChatPanelVisible && (
-            <Tooltip
-              content={hideWorkstationTooltip}
-              position="bottom-end"
-              mouseEnterDelay={200}
-              framedPanel
+            <TabBarTrailingIconButton
+              title={hideWorkstationLabel}
+              shortcutId="maximize_chat"
+              onClick={handleToggleChatPanelMaximized}
             >
-              <span className="inline-flex">
-                <TabBarTrailingIconButton
-                  title={hideWorkstationLabel}
-                  nativeTitle={false}
-                  onClick={handleToggleChatPanelMaximized}
-                >
-                  {sessionChatPosition === "left" ? (
-                    <PanelRight size={HEADER_ICON_SIZE.md} strokeWidth={2} />
-                  ) : (
-                    <X size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
-                  )}
-                </TabBarTrailingIconButton>
-              </span>
-            </Tooltip>
+              {sessionChatPosition === "left" ? (
+                <PanelRight size={HEADER_ICON_SIZE.md} strokeWidth={2} />
+              ) : (
+                <X size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
+              )}
+            </TabBarTrailingIconButton>
           )}
         </NoDragRegion>
       </div>

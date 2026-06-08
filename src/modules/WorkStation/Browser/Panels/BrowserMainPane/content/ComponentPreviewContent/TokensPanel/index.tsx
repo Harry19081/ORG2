@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 import { useRefreshSpin } from "@src/hooks/ui";
 import type { TokenInfo } from "@src/modules/WorkStation/Browser/hooks/useDesignTokens";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 interface TokensPanelProps {
@@ -85,22 +86,28 @@ const TokenRow: FC<TokenRowProps> = memo(
         {/* Actions */}
         <div className="flex opacity-0 group-hover:opacity-100">
           {token.customized && (
-            <button
-              onClick={() => onReset(token.name)}
-              className="p-0.5 text-text-4 hover:text-text-2"
-              title={t("tooltips.resetToDefault")}
-            >
-              <RotateCcw size={10} />
-            </button>
+            <WorkstationToolbarTooltip label={t("tooltips.resetToDefault")}>
+              <button
+                type="button"
+                onClick={() => onReset(token.name)}
+                className="p-0.5 text-text-4 hover:text-text-2"
+                aria-label={t("tooltips.resetToDefault")}
+              >
+                <RotateCcw size={10} />
+              </button>
+            </WorkstationToolbarTooltip>
           )}
           {!token.autoDetected && (
-            <button
-              onClick={() => onRemove(token.name)}
-              className="p-0.5 text-text-4 hover:text-red-500"
-              title={t("actions.remove")}
-            >
-              <X size={10} />
-            </button>
+            <WorkstationToolbarTooltip label={t("actions.remove")}>
+              <button
+                type="button"
+                onClick={() => onRemove(token.name)}
+                className="p-0.5 text-text-4 hover:text-red-500"
+                aria-label={t("actions.remove")}
+              >
+                <X size={10} />
+              </button>
+            </WorkstationToolbarTooltip>
           )}
         </div>
       </div>
@@ -158,26 +165,32 @@ export const TokensPanel: FC<TokensPanelProps> = memo(
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <button
-              onClick={(event) => {
-                event.stopPropagation();
-                handleRefreshClick();
-              }}
-              className="rounded p-1 text-text-4 hover:bg-fill-2 hover:text-text-2"
-              title={t("tooltips.refreshTokens")}
-            >
-              <RefreshCw size={10} className={refreshSpinClass} />
-            </button>
-            <button
-              onClick={(event) => {
-                event.stopPropagation();
-                setShowAddForm(true);
-              }}
-              className="rounded p-1 text-text-4 hover:bg-fill-2 hover:text-text-2"
-              title={t("tooltips.addToken")}
-            >
-              <Plus size={10} />
-            </button>
+            <WorkstationToolbarTooltip label={t("tooltips.refreshTokens")}>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleRefreshClick();
+                }}
+                className="rounded p-1 text-text-4 hover:bg-fill-2 hover:text-text-2"
+                aria-label={t("tooltips.refreshTokens")}
+              >
+                <RefreshCw size={10} className={refreshSpinClass} />
+              </button>
+            </WorkstationToolbarTooltip>
+            <WorkstationToolbarTooltip label={t("tooltips.addToken")}>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setShowAddForm(true);
+                }}
+                className="rounded p-1 text-text-4 hover:bg-fill-2 hover:text-text-2"
+                aria-label={t("tooltips.addToken")}
+              >
+                <Plus size={10} />
+              </button>
+            </WorkstationToolbarTooltip>
           </div>
         </button>
 

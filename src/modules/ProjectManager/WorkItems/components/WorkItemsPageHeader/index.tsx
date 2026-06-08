@@ -46,7 +46,10 @@ import {
 import { WORK_ITEM_STATUS_OPTIONS } from "@src/modules/ProjectManager/config/manage";
 import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import { WorkstationHeaderSectionSeparator } from "@src/modules/WorkStation/shared";
+import {
+  WorkstationHeaderSectionSeparator,
+  WorkstationToolbarTooltip,
+} from "@src/modules/WorkStation/shared";
 
 import { FILTER_TO_STATUS, STATUS_FILTER_KEYS } from "../../types";
 
@@ -169,32 +172,37 @@ const AddActionsButton: React.FC<AddActionsButtonProps> = ({
   if (!onAddProject && !onAddWorkItem) return null;
 
   if (!onAddProject || !onAddWorkItem) {
+    const label = onAddWorkItem ? addWorkItemLabel : addProjectLabel;
     return (
-      <Button
-        htmlType="button"
-        variant="tertiary"
-        size="small"
-        iconOnly
-        onClick={onAddWorkItem ?? onAddProject}
-        title={onAddWorkItem ? addWorkItemLabel : addProjectLabel}
-        icon={<Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />}
-      />
+      <WorkstationToolbarTooltip label={label}>
+        <Button
+          htmlType="button"
+          variant="tertiary"
+          size="small"
+          iconOnly
+          onClick={onAddWorkItem ?? onAddProject}
+          aria-label={label}
+          icon={<Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />}
+        />
+      </WorkstationToolbarTooltip>
     );
   }
 
   return (
     <>
-      <Button
-        ref={triggerRef}
-        htmlType="button"
-        variant="tertiary"
-        size="small"
-        iconOnly
-        className={isOpen ? "!bg-surface-selected !text-primary-6" : ""}
-        onClick={toggle}
-        title={addWorkItemLabel}
-        icon={<Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />}
-      />
+      <WorkstationToolbarTooltip label={addWorkItemLabel} disabled={isOpen}>
+        <Button
+          ref={triggerRef}
+          htmlType="button"
+          variant="tertiary"
+          size="small"
+          iconOnly
+          className={isOpen ? "!bg-surface-selected !text-primary-6" : ""}
+          onClick={toggle}
+          aria-label={addWorkItemLabel}
+          icon={<Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />}
+        />
+      </WorkstationToolbarTooltip>
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -364,15 +372,17 @@ const WorkItemsPageHeader: React.FC<WorkItemsPageHeaderProps> = ({
   const showCollapseAll = activeTab === "List" && onCollapseAll;
 
   const searchControl = onSearch && (
-    <Button
-      htmlType="button"
-      variant="tertiary"
-      size="small"
-      iconOnly
-      onClick={onSearch}
-      title={t("common:actions.search")}
-      icon={<Search size={HEADER_ICON_SIZE.sm} />}
-    />
+    <WorkstationToolbarTooltip label={t("common:actions.search")}>
+      <Button
+        htmlType="button"
+        variant="tertiary"
+        size="small"
+        iconOnly
+        onClick={onSearch}
+        aria-label={t("common:actions.search")}
+        icon={<Search size={HEADER_ICON_SIZE.sm} />}
+      />
+    </WorkstationToolbarTooltip>
   );
 
   const addControls = (onAddWorkItem || onAddProject) && (
@@ -384,21 +394,22 @@ const WorkItemsPageHeader: React.FC<WorkItemsPageHeaderProps> = ({
     />
   );
 
+  const propertiesLabel = showProperties
+    ? t("workItems.hideProperties")
+    : t("workItems.showProperties");
   const propertiesControl = onToggleProperties && (
-    <Button
-      htmlType="button"
-      variant="tertiary"
-      size="small"
-      iconOnly
-      className={showProperties ? "!bg-surface-selected !text-primary-6" : ""}
-      onClick={onToggleProperties}
-      title={
-        showProperties
-          ? t("workItems.hideProperties")
-          : t("workItems.showProperties")
-      }
-      icon={<Info size={HEADER_ICON_SIZE.sm} />}
-    />
+    <WorkstationToolbarTooltip label={propertiesLabel}>
+      <Button
+        htmlType="button"
+        variant="tertiary"
+        size="small"
+        iconOnly
+        className={showProperties ? "!bg-surface-selected !text-primary-6" : ""}
+        onClick={onToggleProperties}
+        aria-label={propertiesLabel}
+        icon={<Info size={HEADER_ICON_SIZE.sm} />}
+      />
+    </WorkstationToolbarTooltip>
   );
 
   const renderHeaderContent = (includeRefresh: boolean) => (
@@ -460,33 +471,39 @@ const WorkItemsPageHeader: React.FC<WorkItemsPageHeaderProps> = ({
         {(showCollapseAll || (includeRefresh && onRefresh) || addControls) && (
           <div className="flex flex-shrink-0 items-center gap-px">
             {showCollapseAll && (
-              <Button
-                htmlType="button"
-                variant="tertiary"
-                size="small"
-                iconOnly
-                onClick={onCollapseAll}
-                title={t("common:actions.collapseAll")}
-                icon={<ListChevronsDownUp size={HEADER_ICON_SIZE.md} />}
-              />
+              <WorkstationToolbarTooltip
+                label={t("common:actions.collapseAll")}
+              >
+                <Button
+                  htmlType="button"
+                  variant="tertiary"
+                  size="small"
+                  iconOnly
+                  onClick={onCollapseAll}
+                  aria-label={t("common:actions.collapseAll")}
+                  icon={<ListChevronsDownUp size={HEADER_ICON_SIZE.md} />}
+                />
+              </WorkstationToolbarTooltip>
             )}
 
             {includeRefresh && onRefresh && (
-              <Button
-                htmlType="button"
-                variant="tertiary"
-                size="small"
-                iconOnly
-                onClick={handleRefreshClick}
-                title={t("common:actions.refresh")}
-                icon={
-                  <RefreshCw
-                    size={HEADER_ICON_SIZE.sm}
-                    strokeWidth={2}
-                    className={refreshSpinClass}
-                  />
-                }
-              />
+              <WorkstationToolbarTooltip label={t("common:actions.refresh")}>
+                <Button
+                  htmlType="button"
+                  variant="tertiary"
+                  size="small"
+                  iconOnly
+                  onClick={handleRefreshClick}
+                  aria-label={t("common:actions.refresh")}
+                  icon={
+                    <RefreshCw
+                      size={HEADER_ICON_SIZE.sm}
+                      strokeWidth={2}
+                      className={refreshSpinClass}
+                    />
+                  }
+                />
+              </WorkstationToolbarTooltip>
             )}
             {addControls}
           </div>

@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: включено",
+    "disabledLabel": "Agent Control: выключено",
+    "enableAction": "Включить Agent Control",
+    "disableAction": "Выключить Agent Control",
+    "inputMode": "Управление",
+    "selectionMode": "Ответ",
+    "toggleMode": "Переключить режим ввода",
+    "inputPlaceholder": "Скажите Agent, что сделать...",
+    "selectionPlaceholder": "Введите выбор или ответ...",
+    "submit": "Отправить ввод Agent Control",
+    "menuToggle": "Agent Control",
+    "selectModel": "Выбрать модель"
+  },
   "actions": {
     "save": "Сохранить",
     "cancel": "Отмена",
@@ -1085,7 +1099,10 @@
       "selectAccount": "Выберите аккаунт"
     },
     "modelProperties": {
-      "options": "Параметры"
+      "options": "Параметры",
+      "effort": "Усилие",
+      "faster": "Быстрее",
+      "smarter": "Умнее"
     },
     "repo": {
       "workspaceFolders": "Папки Workspace",
@@ -1452,6 +1469,7 @@
     "toolLayout": "Рабочая станция",
     "dockAutoHide": "Автоскрытие Dock",
     "modelPickerStyle": "Селектор",
+    "chatPanelPagination": "Пагинация",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Меню",
     "left": "Слева",
@@ -1480,6 +1498,25 @@
     "ramTurnBodies": "Lazy-загрузки истории",
     "ramFileTrees": "Деревья файлов",
     "ramCodeMirrors": "File rendering"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "Переключиться на светлую тему",
+    "switchToDarkTheme": "Переключиться на тёмную тему",
+    "switchToHighContrastTheme": "Переключиться на тему высокого контраста",
+    "moveMyStationChatLeft": "Переместить чат My Station влево",
+    "moveMyStationChatRight": "Переместить чат My Station вправо",
+    "moveAgentStationChatLeft": "Переместить чат Agent Station влево",
+    "moveAgentStationChatRight": "Переместить чат Agent Station вправо",
+    "enableChatPagination": "Включить пагинацию чата",
+    "disableChatPagination": "Отключить пагинацию чата",
+    "useModelPickerSpotlight": "Использовать выбор модели через Spotlight",
+    "useModelPickerDropdown": "Использовать выпадающий выбор модели",
+    "useCompactWorkstationLayout": "Использовать компактную компоновку Workstation",
+    "useComfortWorkstationLayout": "Использовать комфортную компоновку Workstation",
+    "moveWorkstationSidebarLeft": "Переместить боковую панель Workstation влево",
+    "moveWorkstationSidebarRight": "Переместить боковую панель Workstation вправо",
+    "enableDockAutoHide": "Автоматически скрывать Dock Workstation",
+    "disableDockAutoHide": "Всегда показывать Dock Workstation"
   },
   "commands": {
     "showBottomPanel": "Показать нижнюю панель",

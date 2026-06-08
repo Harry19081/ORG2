@@ -2,6 +2,8 @@ import { type MutableRefObject, useEffect } from "react";
 
 import { shortcutRegistry } from "@src/hooks/keyboard";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
+import { toggleGuiControlComposerAtom } from "@src/store/ui/uiAtom";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { isTauriDesktop } from "@src/util/platform/tauri";
 
 import { useGlobalKeydownShortcuts } from "./useGlobalKeydownShortcuts";
@@ -158,6 +160,9 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
         handlePreviousTab("Cmd+Option+←")
       ),
       shortcutRegistry.on("toggle_api_panel", handleToggleAPICallPanel),
+      shortcutRegistry.on("toggle_gui_control", () => {
+        getInstrumentedStore().set(toggleGuiControlComposerAtom);
+      }),
       shortcutRegistry.on("toggle_station_mode", handleToggleStationMode),
       shortcutRegistry.on(
         "open_file_folder_tab",

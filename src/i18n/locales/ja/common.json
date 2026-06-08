@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: オン",
+    "disabledLabel": "Agent Control: オフ",
+    "enableAction": "Agent Control を有効化",
+    "disableAction": "Agent Control を無効化",
+    "inputMode": "Control",
+    "selectionMode": "Answer",
+    "toggleMode": "入力モードを切り替え",
+    "inputPlaceholder": "何をするか Agent に伝える...",
+    "selectionPlaceholder": "選択または回答を入力...",
+    "submit": "Agent Control 入力を送信",
+    "menuToggle": "Agent Control",
+    "selectModel": "モデルを選択"
+  },
   "actions": {
     "save": "保存",
     "cancel": "キャンセル",
@@ -1086,7 +1100,10 @@
       "selectAccount": "アカウントを選択"
     },
     "modelProperties": {
-      "options": "オプション"
+      "options": "オプション",
+      "effort": "Effort",
+      "faster": "高速",
+      "smarter": "高精度"
     },
     "repo": {
       "workspaceFolders": "Workspace フォルダ",
@@ -1453,6 +1470,7 @@
     "toolLayout": "ワークステーション",
     "dockAutoHide": "Dock を自動的に隠す",
     "modelPickerStyle": "ピッカー",
+    "chatPanelPagination": "ページネーション",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "メニュー",
     "replaySession": "Replay セッション",
@@ -1486,6 +1504,25 @@
     "ramTurnBodies": "履歴 lazy load",
     "ramFileTrees": "ファイルツリー",
     "ramCodeMirrors": "ファイルレンダリング"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "ライトテーマに切り替え",
+    "switchToDarkTheme": "ダークテーマに切り替え",
+    "switchToHighContrastTheme": "ハイコントラストテーマに切り替え",
+    "moveMyStationChatLeft": "My Station のチャットを左に移動",
+    "moveMyStationChatRight": "My Station のチャットを右に移動",
+    "moveAgentStationChatLeft": "Agent Station のチャットを左に移動",
+    "moveAgentStationChatRight": "Agent Station のチャットを右に移動",
+    "enableChatPagination": "チャットのページ分割をオンにする",
+    "disableChatPagination": "チャットのページ分割をオフにする",
+    "useModelPickerSpotlight": "Spotlight モデル選択を使う",
+    "useModelPickerDropdown": "ドロップダウンモデル選択を使う",
+    "useCompactWorkstationLayout": "コンパクトな Workstation レイアウトを使う",
+    "useComfortWorkstationLayout": "ゆったりした Workstation レイアウトを使う",
+    "moveWorkstationSidebarLeft": "Workstation サイドバーを左に移動",
+    "moveWorkstationSidebarRight": "Workstation サイドバーを右に移動",
+    "enableDockAutoHide": "Workstation Dock を自動的に隠す",
+    "disableDockAutoHide": "Workstation Dock を常に表示"
   },
   "commands": {
     "showBottomPanel": "ボトムパネルを表示",

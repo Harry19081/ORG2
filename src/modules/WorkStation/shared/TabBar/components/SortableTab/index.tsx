@@ -14,8 +14,6 @@ import { useTranslation } from "react-i18next";
 import { FaviconIcon } from "@src/components/FaviconIcon";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import IntegrationIcon from "@src/components/IntegrationIcon";
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
-import Tooltip from "@src/components/Tooltip";
 import {
   getStatusColor,
   getStatusColorForFile,
@@ -27,6 +25,7 @@ import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTour
 import type { GitFileInfo } from "@src/store/git";
 import { resolveProjectManagerTabTitle } from "@src/store/workstation/tabs";
 
+import { WorkstationToolbarTooltip } from "../../../WorkstationToolbarTooltip";
 import type { WorkStationTab } from "../../types";
 import { TabLabelRowScrim } from "../TabLabelRowScrim";
 import { TabPillCloseButton } from "../TabPillCloseButton";
@@ -225,12 +224,6 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
             : null;
     const shortcut = shortcutId ? getShortcutKeys(shortcutId) : "";
     const shortcutTooltipLabel = getDisplayTitle();
-    const tabTooltipContent = shortcut ? (
-      <KeyboardShortcutTooltipContent
-        label={shortcutTooltipLabel}
-        shortcut={shortcut}
-      />
-    ) : null;
 
     const hasUnsaved = !!tab.hasUnsavedChanges;
     const showCloseSlot =
@@ -278,7 +271,7 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
         }}
         onMouseEnter={() => setIsTabHovered(true)}
         onMouseLeave={() => setIsTabHovered(false)}
-        title={tabTooltipContent ? undefined : getTabTitle()}
+        title={shortcut ? undefined : getTabTitle()}
       >
         {/* Keep icon in-flow so width only comes from the label column; close stays overlay-only. */}
         <div className="flex shrink-0 items-center justify-center">
@@ -355,17 +348,16 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
       </WorkStationTabPillSurface>
     );
 
-    if (!tabTooltipContent) return tabPill;
+    if (!shortcut) return tabPill;
 
     return (
-      <Tooltip
-        content={tabTooltipContent}
+      <WorkstationToolbarTooltip
+        label={shortcutTooltipLabel}
+        shortcut={shortcut}
         position="bottom"
-        mouseEnterDelay={200}
-        framedPanel
       >
         {tabPill}
-      </Tooltip>
+      </WorkstationToolbarTooltip>
     );
   }
 );

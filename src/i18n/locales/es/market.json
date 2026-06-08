@@ -169,7 +169,7 @@
     "title": "Marketplace",
     "models": "Modelos",
     "providers": "Proveedores",
-    "startSession": "Iniciar Session",
+    "startSession": "Iniciar sesión",
     "insufficientBalance": "Saldo insuficiente",
     "addFundsToStart": "Agrega fondos para iniciar una Session",
     "minBalance": "Saldo mínimo requerido: ${{amount}}",

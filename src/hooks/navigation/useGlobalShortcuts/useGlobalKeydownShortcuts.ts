@@ -190,6 +190,12 @@ export function useGlobalKeydownShortcuts(
             handleToggleWorkStationChatFocus();
             return;
           }
+          if (event.code === "KeyG") {
+            event.preventDefault();
+            event.stopPropagation();
+            shortcutRegistry.dispatch("toggle_gui_control");
+            return;
+          }
           if (event.code === "KeyU") {
             event.preventDefault();
             event.stopPropagation();
@@ -298,8 +304,16 @@ export function useGlobalKeydownShortcuts(
           break;
         }
 
-        case "m":
+        case "m": {
           if (event.altKey) return;
+          const target = event.target;
+          if (
+            event.ctrlKey &&
+            !event.metaKey &&
+            isEditableElementExtended(target)
+          ) {
+            return;
+          }
           event.preventDefault();
           event.stopPropagation();
           if (event.shiftKey) {
@@ -308,6 +322,7 @@ export function useGlobalKeydownShortcuts(
             shortcutRegistry.dispatch("hide_window");
           }
           break;
+        }
 
         case "n":
           event.preventDefault();

@@ -6,8 +6,8 @@
     "dbManager": "數據庫管理",
     "economy": "經濟",
     "sourceControl": "原始碼控制",
-    "startSession": "開始 Session",
-    "newSession": "新增聊天",
+    "startSession": "開始會話",
+    "newSession": "新建會話",
     "quickstart": "快速開始",
     "drafts": "草稿",
     "browser": "瀏覽器",
@@ -34,15 +34,19 @@
     "other": "其他",
     "workflow": "工作流",
     "agent": "Agent",
-    "chat": "通訊",
+    "session": "會話",
+    "folders": "資料夾",
     "inbox": "收件箱",
     "issues": "工作項",
     "agentKanban": "Ops Control",
     "history": "歷史",
     "controlTower": "Control Tower",
     "backgroundTasks": "後臺任務",
+    "project": "專案",
     "projects": "專案",
     "projectManager": "專案管理器",
+    "myKeys": "我的密鑰",
+    "myAgents": "我的 Agents",
     "diff": "Diff"
   },
   "trajectoryPanel": {
@@ -54,7 +58,7 @@
   },
   "routes": {
     "session": "聊天",
-    "startSession": "開始 Session",
+    "startSession": "開始會話",
     "sessions": "Session 列表",
     "kanban": "Ops Control",
     "selectProject": "選擇專案",
@@ -132,6 +136,10 @@
       "markAllRead": "全部標為已讀",
       "openHome": "開啟首頁",
       "openWorkstation": "開啟工作站"
+    },
+    "folderCounts": {
+      "repo": "{{count}}個倉庫",
+      "multiRepoWorkspace": "{{count}}個多倉庫工作區"
     },
     "bottomBar": {
       "settings": "設定",
@@ -258,6 +266,12 @@
       "analysisCleared": "分析已清除"
     },
     "addRepo": "添加工作區"
+  },
+  "myRole": {
+    "tabs": {
+      "status": "我的狀態",
+      "about": "關於我"
+    }
   },
   "launchpad": {
     "sections": {
@@ -397,7 +411,7 @@
     },
     "actions": {
       "switchToRepo": "切換到此倉庫",
-      "startSession": "開始 Session",
+      "startSession": "開始會話",
       "openDetails": "開啟詳情",
       "locateInFinder": "在 Finder 中顯示",
       "remove": "移除",

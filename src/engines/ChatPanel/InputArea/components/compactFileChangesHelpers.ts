@@ -4,7 +4,7 @@
  * Pure utility functions and types for CompactFileChanges.
  * Extracted to keep the component file under the 600-line limit.
  */
-import { getFileName } from "@src/util/file/pathUtils";
+import { getFileName, normalizeDiffFilePath } from "@src/util/file/pathUtils";
 
 // ============================================
 // Public types
@@ -66,8 +66,9 @@ export function getNumberField(
 
 export function toBackendFileChange(value: unknown): FileChangeInfo | null {
   const record = asRecord(value);
-  const path = getStringField(record, "path");
-  if (!path) return null;
+  const rawPath = getStringField(record, "path");
+  if (!rawPath) return null;
+  const path = normalizeDiffFilePath(rawPath);
   const additions = getNumberField(record, ["additions", "linesAdded"]);
   const deletions = getNumberField(record, ["deletions", "linesRemoved"]);
   const lineCount = getNumberField(record, ["lineCount", "count"]);

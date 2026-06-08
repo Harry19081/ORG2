@@ -38,6 +38,7 @@ import {
   handleSessionEvicted,
   handleStreamErrorExhausted,
   handleStreamRetry,
+  handleTurnCompleted,
   handleTurnSummary,
   handleWarning,
 } from "./sessionHandlers";
@@ -47,7 +48,11 @@ import {
   handleThinkingDelta,
   handleToolCallDelta,
 } from "./streamHandlers";
-import { getEventSessionId } from "./streamHelpers";
+import {
+  getEventSessionId,
+  isSessionStreamingStopped,
+  noteSessionStreamingTurn,
+} from "./streamHelpers";
 import { handleCodingSessionEvent } from "./subagentHandlers";
 import {
   handleExecOutput,
@@ -92,6 +97,13 @@ const STREAM_RETRY_RECOVERY_EVENTS = new Set<string>([
   "agent:shell_process_backgrounded",
   "agent:shell_process_exited",
   "agent:mcp_progress",
+]);
+
+const LIVE_STREAM_EVENTS_IGNORED_AFTER_STOP = new Set<string>([
+  "agent:message_delta",
+  "agent:thinking_delta",
+  "agent:tool_call_delta",
+  "agent:streaming_complete",
 ]);
 
 export async function dispatchAgentEvent(
@@ -139,6 +151,13 @@ export async function dispatchAgentEvent(
     return;
   }
 
+  if (sessionId && LIVE_STREAM_EVENTS_IGNORED_AFTER_STOP.has(event.type)) {
+    noteSessionStreamingTurn(sessionId, event.turnId);
+    if (isSessionStreamingStopped(sessionId, event.turnId)) {
+      return;
+    }
+  }
+
   // Any subsequent successful activity from the same session means the retry
   // episode recovered. Clear the footer pill before dispatching the real event
   // so plan/tool/question surfaces do not leave a ghost "Reconnecting" state.
@@ -179,6 +198,9 @@ export async function dispatchAgentEvent(
       break;
     case "agent:complete":
       handleComplete(event, sessionId, ctx);
+      break;
+    case "agent:turn_completed":
+      handleTurnCompleted(event, sessionId, ctx);
       break;
     case "agent:error":
       handleError(event, sessionId, ctx);

@@ -519,7 +519,7 @@
     },
     "sessions": {
       "linkedSessions": "Sessions đã liên kết",
-      "newSession": "Session mới",
+      "newSession": "Phiên mới",
       "starting": "Đang bắt đầu...",
       "emptyOverview": "Chưa có Sessions",
       "emptyOverviewHint": "Bắt đầu một Agent Session để theo dõi quá trình thực thi tại đây."

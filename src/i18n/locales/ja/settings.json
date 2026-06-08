@@ -115,6 +115,7 @@
     "uiScale": "UIスケール",
     "timezoneAuto": "自動（ブラウザ）",
     "timezoneSearchPlaceholder": "近くの都市を検索",
+    "language": "言語",
     "languageSearchPlaceholder": "言語を検索...",
     "languageNames": {
       "en": "英語",

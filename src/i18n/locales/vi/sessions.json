@@ -671,8 +671,7 @@
     "singleChoice": "Chọn một",
     "multipleChoice": "Chọn nhiều",
     "typeYourAnswer": "Nhập câu trả lời của bạn…",
-    "newSession": "Session mới",
-    "newChat": "Chat mới",
+    "newSession": "Phiên mới",
     "defaultTitle": "Chat",
     "hideChatPanel": "Ẩn bảng trò chuyện",
     "replay": {
@@ -1645,7 +1644,6 @@
       "createAgent": "Tạo Agent / Skill",
       "project": "Tạo dự án",
       "workItem": "Tạo Work Item",
-      "batchStartBeta": "Khởi động hàng loạt (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Tìm kiếm mô hình...",
@@ -1796,12 +1794,6 @@
       "worktree": "Worktree",
       "lockedHint": "Worktree đã được khóa cho phiên này"
     },
-    "batchStarterPlaceholder": "Mô tả session starter này",
-    "addBatchStarter": "Thêm starter",
-    "removeBatchStarter": "Xóa starter",
-    "batchSendSuccess": "Đã tạo thành công {{count}} session",
-    "batchSendPartial": "Đã tạo thành công {{succeeded}} session; {{failed}} thất bại",
-    "batchSend": "Gửi hàng loạt",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
@@ -1860,6 +1852,8 @@
       "singleRun": "Chạy đơn",
       "batchRun": "Chạy hàng loạt",
       "sourcePathPlaceholder": "Đường dẫn tới thư mục benchmark",
+      "workingDirectory": "Thư mục làm việc",
+      "workingDirectoryPlaceholder": "Đường dẫn để Agent clone hoặc sửa đổi repo",
       "localPath": "đường dẫn cục bộ",
       "runType": "Kiểu chạy",
       "kindTitle": "Benchmark",
@@ -1869,7 +1863,18 @@
       },
       "selectedTasks": "Đã chọn {{selected}}/{{total}}",
       "concurrency": "Song song",
-      "taskLoadingUnsupported": "Chưa thể tải tác vụ cho benchmark này; hãy dùng preflight để kiểm tra nguồn cục bộ."
+      "taskLoadingUnsupported": "Chưa thể tải tác vụ cho benchmark này; hãy dùng preflight để kiểm tra nguồn cục bộ.",
+      "attemptTitle": "Attempt",
+      "batchProgress": "Tổng {{total}} · {{queued}} đang chờ · {{running}} đang chạy · {{launched}} đã khởi chạy · {{failed}} thất bại · {{cancelled}} đã hủy",
+      "sessionGroupTitle": "Benchmark sessions",
+      "sessionGroupProgress": "Tổng {{total}} · {{queued}} đang chờ · {{running}} đang chạy · {{launched}} đã khởi chạy · {{failed}} thất bại · {{cancelled}} đã hủy",
+      "evaluateSubmitted": "Đánh giá",
+      "evaluatingSubmitted": "Đang đánh giá bản vá...",
+      "taskActionPlaceholder": "Task IDs for add/remove/stop/restart",
+      "sessionLabel": "Session: {{sessionId}}",
+      "noSessionYet": "Chưa có Session",
+      "testResultPending": "Đang chờ kết quả kiểm thử",
+      "taskBreadcrumb": "{{attempt}} > {{task}}"
     },
     "skillsAndTools": "Skills và công cụ"
   },

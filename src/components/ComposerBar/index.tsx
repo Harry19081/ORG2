@@ -53,6 +53,8 @@ export interface ComposerBarProps {
    * left (+) and right (pills/submit) clusters (`inlineLayout` true).
    */
   editorSlot?: React.ReactNode;
+  /** Hide the default add-content button while preserving the shared layout. */
+  hideAddButton?: boolean;
   /**
    * When false, omits ContextInfoButton for compact rows.
    * @default true
@@ -78,6 +80,7 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
     bottomPaddingClassName = "",
     inlineLayout = false,
     editorSlot,
+    hideAddButton = false,
     showContextInfo = true,
   }) => {
     const rowClass =
@@ -85,7 +88,7 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
         ? "flex items-center gap-0.5"
         : "flex items-center gap-1";
 
-    const addButton = onOpenSkillsTools ? (
+    const addButton = hideAddButton ? null : onOpenSkillsTools ? (
       <button
         type="button"
         onClick={onOpenSkillsTools}

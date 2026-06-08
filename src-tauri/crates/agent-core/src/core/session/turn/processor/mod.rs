@@ -95,6 +95,8 @@ pub struct TurnInput {
     pub channel: Option<String>,
     /// Chat/conversation identifier within the channel.
     pub chat_id: Option<String>,
+    /// Stable logical turn id assigned when AgentSession begins the turn.
+    pub turn_id: Option<String>,
 }
 
 // ============================================
@@ -374,8 +376,12 @@ impl UnifiedMessageProcessor {
         content: &str,
         context: ProcessingContext,
     ) -> Result<ProcessingResult, String> {
-        // 0. Assign a stable turn ID for this round-trip.
-        let turn_id = uuid::Uuid::new_v4().to_string();
+        // 0. Use the AgentSession turn id when available so active_turn,
+        // live stream broadcasts, and terminal markers describe the same turn.
+        let turn_id = context
+            .turn_id
+            .clone()
+            .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
 
         // 0a. Clear stale turn summary from previous turn so readers
         //     never mistake an old summary for the current turn's.
@@ -465,7 +471,9 @@ impl UnifiedMessageProcessor {
 
         // 3b. Build dynamic context (changes per-turn — separate system message
         // so the stable prefix can be cached by the Anthropic prompt caching API).
-        let dynamic_sections = self.build_dynamic_sections(session_id, None).await;
+        let dynamic_sections = self
+            .build_dynamic_sections(session_id, None, Some(content))
+            .await;
 
         // 4. Build provider messages from the already-loaded history.
         let mut messages: Vec<Value> = Vec::with_capacity(history.len() + 3);
@@ -523,6 +531,13 @@ impl UnifiedMessageProcessor {
         {
             info!(
                 "[unified_processor] Repaired interrupted turn for session {}",
+                session_id
+            );
+        }
+
+        if super::super::recovery::ensure_tool_result_pairing(&mut messages) {
+            info!(
+                "[unified_processor] Normalized tool_result pairing before pre-turn context work for session {}",
                 session_id
             );
         }
@@ -596,6 +611,13 @@ impl UnifiedMessageProcessor {
                 prefetch_hook.abort_pending();
             }
             return Ok(redirect);
+        }
+
+        if super::super::recovery::ensure_tool_result_pairing(&mut messages) {
+            info!(
+                "[unified_processor] Normalized tool_result pairing before provider request for session {}",
+                session_id
+            );
         }
 
         // 7. Execute turn (with reactive ContextTooLong recovery).

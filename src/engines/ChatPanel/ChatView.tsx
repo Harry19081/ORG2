@@ -37,10 +37,8 @@ import { GroupChatPausedBanner } from "@src/engines/ChatPanel/components/ChatSta
 import { useAgentOrgGroupChatController } from "@src/engines/ChatPanel/hooks/useAgentOrgGroupChatController";
 import { AgentOrgGroupChatLiveSessions } from "@src/engines/ChatPanel/hooks/useAgentOrgGroupChatLiveSessions";
 import { useChatPanelState } from "@src/engines/ChatPanel/hooks/useChatPanelState";
-import { replayModeAtom } from "@src/engines/SessionCore/core/atoms/replay";
 import { chatEventsAtom } from "@src/engines/SessionCore/derived/chatEvents";
 import { derivePlanApprovalViewState } from "@src/engines/SessionCore/derived/planDisplayEvents";
-import { AppType } from "@src/engines/Simulator/types/appTypes";
 import { useFileReviewSync } from "@src/hooks/fileReview";
 import { useSessionWorkspaceSync } from "@src/hooks/session/useSessionWorkspaceSync";
 import { activeSessionIdAtom } from "@src/store/session";
@@ -58,7 +56,6 @@ import {
   queueFlushRequestAtom,
   reorderQueueAtom,
 } from "@src/store/ui/messageQueueAtom";
-import { simulatorSelectedAppAtom } from "@src/store/ui/simulatorAtom";
 import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
 import ChatFloatingComposer from "./ChatFloatingComposer";
@@ -368,11 +365,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
       currentPlanApproval && shouldShowCurrentPlanSurface
     );
 
-    const handleFilesExpand = useCallback(() => {
-      store.set(simulatorSelectedAppAtom, AppType.DIFF);
-      store.set(replayModeAtom, "replay");
-    }, [store]);
-
     const {
       questionCollapsed,
       permissionCollapsed,
@@ -400,7 +392,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
       hasPermission,
       hasModeSwitch,
       hasPlan,
-      onFilesExpand: handleFilesExpand,
     });
 
     const hasAgentOrgIntervention =

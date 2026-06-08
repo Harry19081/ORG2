@@ -64,7 +64,7 @@
   "complete": {
     "title": "一切就緒！",
     "description": "您的工作區已準備就緒。開始新的 Session，使用 AI 輔助進行編碼，或探索應用程序以發現所有功能。",
-    "startSession": "開始新 Session"
+    "startSession": "開始新會話"
   },
   "navigation": {
     "skipSetup": "跳過設置",

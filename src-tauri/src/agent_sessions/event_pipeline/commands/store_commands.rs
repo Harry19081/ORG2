@@ -300,6 +300,14 @@ pub async fn es_truncate_before_id(
     let sid = state.resolve_session_id(session_id)?;
     let found = state.with_store_mut(&sid, |store| store.truncate_before_id(&event_id));
     if found {
+        let persist_sid = sid.clone();
+        let persist_event_id = event_id.clone();
+        tokio::task::spawn_blocking(move || {
+            session_persistence::truncate_after_event(&persist_sid, &persist_event_id)
+        })
+        .await
+        .map_err(|err| err.to_string())?
+        .map_err(|err| err.to_string())?;
         schedule_notify(&app, &state, &sid);
     }
     Ok(found)

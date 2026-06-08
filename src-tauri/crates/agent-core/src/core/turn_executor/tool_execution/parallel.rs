@@ -1,6 +1,6 @@
 //! Concurrent execution of read-only tool call groups.
 
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -22,6 +22,7 @@ use super::super::types::{PermissionProvider, TurnEventHandler};
 
 use super::detect_stream_parse_error;
 use super::inject_call_id;
+use super::is_cancelled;
 use super::is_error_text;
 use super::normalize_tool_use_concurrency;
 use super::ToolBatchOutcome;
@@ -70,6 +71,10 @@ pub(super) async fn execute_parallel_group(
     for (idx, call) in calls.iter().enumerate() {
         let args_preview: String = call.arguments.to_string().chars().take(200).collect();
         info!("[agent-core] Tool call: {}({})", call.name, args_preview);
+
+        if is_cancelled(cancel_flag) {
+            return ParallelResult::EarlyExit(denied_count, ToolBatchOutcome::Cancelled);
+        }
 
         let display_name = match call
             .arguments
@@ -150,6 +155,9 @@ pub(super) async fn execute_parallel_group(
         )
         .await
         {
+            if is_cancelled(cancel_flag) {
+                return ParallelResult::EarlyExit(denied_count, ToolBatchOutcome::Cancelled);
+            }
             handler.on_tool_result(session_id, &call.id, &call.name, &display_name, &denied_msg);
             add_tool_result(messages, &call.id, &call.name, &denied_msg, true);
             denied_count += 1;
@@ -186,6 +194,9 @@ pub(super) async fn execute_parallel_group(
             continue;
         }
 
+        if is_cancelled(cancel_flag) {
+            return ParallelResult::EarlyExit(denied_count, ToolBatchOutcome::Cancelled);
+        }
         let call = calls[prep.index];
         handler.on_tool_execute_start(session_id, &call.id, &call.name, &prep.effective_args);
         futures_to_run.push((prep.index, prep.effective_args, prep.display_name));
@@ -372,10 +383,7 @@ pub(super) async fn execute_parallel_group(
         }
         executed_count += 1;
 
-        if cancel_flag
-            .as_ref()
-            .is_some_and(|f| f.load(Ordering::Relaxed))
-        {
+        if is_cancelled(cancel_flag) {
             return ParallelResult::EarlyExit(
                 executed_count + denied_count,
                 ToolBatchOutcome::Cancelled,

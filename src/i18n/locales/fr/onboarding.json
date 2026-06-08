@@ -64,7 +64,7 @@
   "complete": {
     "title": "Vous êtes prêt !",
     "description": "Votre espace de travail est prêt. Démarrez une nouvelle Session pour commencer à coder avec l'assistance IA, ou explorez l'application pour découvrir toutes les fonctionnalités.",
-    "startSession": "Démarrer une nouvelle Session"
+    "startSession": "Démarrer une nouvelle session"
   },
   "navigation": {
     "skipSetup": "Ignorer la configuration",

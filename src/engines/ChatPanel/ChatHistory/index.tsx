@@ -81,7 +81,7 @@ import "./index.scss";
 // Component
 // ============================================
 
-const renderNoGroupHeader = () => null;
+const renderNoGroupHeader = () => <div aria-hidden style={{ minHeight: 1 }} />;
 const TAIL_TURN_COLLAPSE_IDLE_MS = 60_000;
 const BOTTOM_OVERLAY_FADE_PX = 32;
 

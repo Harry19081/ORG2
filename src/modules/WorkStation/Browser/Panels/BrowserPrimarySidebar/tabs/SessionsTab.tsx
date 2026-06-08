@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { FaviconIcon } from "@src/components/FaviconIcon";
 import Input from "@src/components/Input";
 import { TreeRowBase, type TreeRowNode } from "@src/components/TreeRow";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { HEADER_BUTTON } from "@src/modules/WorkStation/shared/tokens";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { getSiteNameFromUrl } from "@src/store/ui/globalTabsAtom";
@@ -103,14 +104,16 @@ const SessionItem: React.FC<SessionItemProps> = memo(
         )}
 
         {/* Close button (on hover) */}
-        <button
-          type="button"
-          className={`group/close ${HEADER_BUTTON.danger} hidden shrink-0 group-focus-within/item:flex group-hover/item:flex`}
-          onClick={onClose}
-          title={t("tooltips.closeSession")}
-        >
-          <X size={14} strokeWidth={1.75} />
-        </button>
+        <WorkstationToolbarTooltip label={t("tooltips.closeSession")}>
+          <button
+            type="button"
+            className={`group/close ${HEADER_BUTTON.danger} hidden shrink-0 group-focus-within/item:flex group-hover/item:flex`}
+            onClick={onClose}
+            aria-label={t("tooltips.closeSession")}
+          >
+            <X size={14} strokeWidth={1.75} />
+          </button>
+        </WorkstationToolbarTooltip>
       </TreeRowBase>
     );
   }

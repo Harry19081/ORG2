@@ -519,7 +519,7 @@
     },
     "sessions": {
       "linkedSessions": "Połączone Sessions",
-      "newSession": "Nowa Session",
+      "newSession": "Nowa sesja",
       "starting": "Uruchamianie...",
       "emptyOverview": "Brak Sessions",
       "emptyOverviewHint": "Uruchom Agent Session, aby śledzić tutaj wykonanie."

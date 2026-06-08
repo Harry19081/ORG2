@@ -6,8 +6,8 @@
     "dbManager": "数据库管理",
     "economy": "经济",
     "sourceControl": "源代码管理",
-    "startSession": "开始 Session",
-    "newSession": "新建聊天",
+    "startSession": "开始会话",
+    "newSession": "新建会话",
     "quickstart": "快速开始",
     "drafts": "草稿",
     "browser": "浏览器",
@@ -34,15 +34,19 @@
     "other": "其他",
     "workflow": "工作流",
     "agent": "Agent",
-    "chat": "通讯",
+    "session": "会话",
+    "folders": "文件夹",
     "inbox": "收件箱",
     "issues": "工作项",
     "agentKanban": "Ops Control",
     "history": "历史",
     "controlTower": "Control Tower",
     "backgroundTasks": "后台任务",
+    "project": "项目",
     "projects": "项目",
     "projectManager": "项目管理器",
+    "myKeys": "我的密钥",
+    "myAgents": "我的 Agents",
     "diff": "Diff"
   },
   "trajectoryPanel": {
@@ -54,7 +58,7 @@
   },
   "routes": {
     "session": "聊天",
-    "startSession": "开始 Session",
+    "startSession": "开始会话",
     "sessions": "Session 列表",
     "kanban": "Ops Control",
     "selectProject": "选择项目",
@@ -132,6 +136,10 @@
       "markAllRead": "全部标为已读",
       "openHome": "打开主页",
       "openWorkstation": "打开工作站"
+    },
+    "folderCounts": {
+      "repo": "{{count}}个仓库",
+      "multiRepoWorkspace": "{{count}}个多仓库工作区"
     },
     "bottomBar": {
       "settings": "设置",
@@ -258,6 +266,12 @@
       "analysisCleared": "分析已清除"
     },
     "addRepo": "添加工作区"
+  },
+  "myRole": {
+    "tabs": {
+      "status": "我的状态",
+      "about": "关于我"
+    }
   },
   "launchpad": {
     "sections": {
@@ -397,7 +411,7 @@
     },
     "actions": {
       "switchToRepo": "切换到此仓库",
-      "startSession": "开始 Session",
+      "startSession": "开始会话",
       "openDetails": "打开详情",
       "locateInFinder": "在 Finder 中显示",
       "remove": "移除",

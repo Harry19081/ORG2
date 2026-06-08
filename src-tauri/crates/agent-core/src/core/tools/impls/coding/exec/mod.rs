@@ -22,6 +22,7 @@ use async_trait::async_trait;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use tauri::async_runtime::Mutex as AsyncMutex;
 use tauri::AppHandle;
@@ -33,7 +34,7 @@ use super::action_router::ActionRouter;
 use crate::security::{self, SecurityPolicy, ValidationResult};
 use crate::session::workspace::SessionWorkspace;
 use crate::tools::names as tool_names;
-use crate::tools::traits::{optional_string, required_string, Tool, ToolError};
+use crate::tools::traits::{optional_string, Tool, ToolError};
 use crate::turn_executor::{PermissionProvider, PermissionVerdict};
 use ::terminal::pty_commands::pty::PtySession;
 
@@ -74,6 +75,7 @@ pub struct ExecTool {
     active_repo: TokioMutex<Option<PathBuf>>,
     router: Option<ActionRouter>,
     session_key: TokioMutex<Option<String>>,
+    cancel_flag: TokioMutex<Option<Arc<AtomicBool>>>,
     security_policy: Option<Arc<SecurityPolicy>>,
     permission_provider: TokioMutex<Option<Arc<dyn PermissionProvider>>>,
     terminal_logs_root: Option<PathBuf>,
@@ -91,6 +93,7 @@ impl ExecTool {
             active_repo: TokioMutex::new(None),
             router: None,
             session_key: TokioMutex::new(None),
+            cancel_flag: TokioMutex::new(None),
             security_policy: None,
             permission_provider: TokioMutex::new(None),
             terminal_logs_root: None,
@@ -112,6 +115,7 @@ impl ExecTool {
             restrict_to_workspace,
             router: None,
             session_key: TokioMutex::new(None),
+            cancel_flag: TokioMutex::new(None),
             pty: Some(PtyResources::new(pty_sessions, app_handle)),
             active_repo: TokioMutex::new(None),
             security_policy: None,
@@ -197,6 +201,10 @@ impl ExecTool {
         let lower = command.to_lowercase();
         DENY_PATTERNS.iter().any(|pattern| lower.contains(pattern))
     }
+
+    fn is_valid_shell_kill_handle(handle: &str) -> bool {
+        !handle.is_empty() && handle.chars().all(|ch| ch.is_ascii_digit())
+    }
 }
 
 #[async_trait]
@@ -225,7 +233,8 @@ impl Tool for ExecTool {
         Kill: set kill_handle to the PID of a backgrounded process to terminate it (SIGTERM → 2s grace → SIGKILL).\n\
         For long-running commands (builds, installs, tests), prefer mode=\"background\" from the start, \
         or set 'wait' to a short duration (e.g. 10-30s) for early feedback in blocking mode. \
-        IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc."
+        IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc. \
+        Do not use executable shell substitutions (`...`, $(...), or ${...}); for literal code fences/backticks, use a single-quoted heredoc such as <<'EOF' or use edit_file/write_file."
     }
 
     fn llm_description(&self) -> Option<String> {
@@ -248,7 +257,8 @@ impl Tool for ExecTool {
             (SIGTERM → 2s grace → SIGKILL).\n\
             For long-running commands (builds, installs, tests), prefer mode=\"background\" from the start, \
             or set 'wait' to a short duration (e.g. 10-30s) for early feedback in blocking mode. \
-            IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc.",
+            IMPORTANT: Always limit output — use | head, --short, --oneline -N, -maxdepth, etc. \
+            Do not use executable shell substitutions (`...`, $(...), or ${{...}}); for literal code fences/backticks, use a single-quoted heredoc such as <<'EOF' or use edit_file/write_file.",
             cwd = cwd, timeout = self.timeout_secs
         ))
     }
@@ -305,21 +315,44 @@ impl Tool for ExecTool {
         *self.session_key.lock().await = Some(session_key.to_string());
     }
 
+    async fn set_cancel_flag(&self, cancel_flag: Arc<AtomicBool>) {
+        *self.cancel_flag.lock().await = Some(cancel_flag);
+    }
+
     async fn set_permission_provider(&self, provider: Arc<dyn PermissionProvider>) {
         *self.permission_provider.lock().await = Some(provider);
     }
 
     async fn execute_text(&self, params: Value) -> Result<String, ToolError> {
-        // Kill shortcut: run_shell(kill_handle="<pid>") to terminate a backgrounded process
-        if let Some(handle) = params.get("kill_handle").and_then(|v| v.as_str()) {
-            return match registry::kill_shell(handle).await {
-                Ok(()) => Ok(format!("Process {handle} killed.")),
-                Err(msg) => Err(ToolError::ExecutionFailed(msg)),
-            };
+        let command = optional_string(&params, "command");
+        let kill_handle = params
+            .get("kill_handle")
+            .and_then(|v| v.as_str())
+            .map(str::trim)
+            .filter(|handle| !handle.is_empty());
+
+        if let Some(handle) = kill_handle {
+            if Self::is_valid_shell_kill_handle(handle) {
+                return match registry::kill_shell(handle).await {
+                    Ok(()) => Ok(format!("Process {handle} killed.")),
+                    Err(msg) => Err(ToolError::ExecutionFailed(msg)),
+                };
+            }
+
+            if command.is_none() {
+                return Err(ToolError::InvalidParams(format!(
+                    "Invalid kill_handle '{handle}'. run_shell kill handles are numeric process handles returned by prior background shell output. To run a command, pass it in the command field instead."
+                )));
+            }
+
+            warn!(
+                "[ExecTool] ignoring invalid kill_handle '{}' because command is present",
+                handle
+            );
         }
 
-        let command = required_string(&params, "command")?;
-        let custom_dir = optional_string(&params, "working_dir");
+        let command = command.ok_or_else(|| ToolError::InvalidParams("Missing required string parameter: command".into()))?;
+        let custom_dir = optional_string(&params, "working_dir").filter(|dir| !dir.trim().is_empty());
         let requested_interactive = params
             .get("interactive")
             .and_then(|val| val.as_bool())
@@ -473,6 +506,7 @@ impl Tool for ExecTool {
         }
 
         let session_key = self.session_key.lock().await.clone();
+        let cancel_flag = self.cancel_flag.lock().await.clone();
         subprocess::execute_via_command(
             &command,
             effective_dir,
@@ -481,6 +515,7 @@ impl Tool for ExecTool {
             mode,
             session_key.as_deref(),
             self.terminal_logs_root.as_ref(),
+            cancel_flag.as_deref(),
         )
         .await
     }
@@ -540,6 +575,103 @@ mod tests {
                 );
             }
             other => panic!("expected InvalidParams, got {other:?}"),
+        }
+    }
+
+    #[tokio::test]
+    async fn empty_working_directory_uses_default_workspace() {
+        let workspace = tempfile::tempdir().expect("workspace tmpdir");
+        let tool = fresh_tool(workspace.path());
+
+        let result = tool
+            .execute_text(json!({
+                "command": "/bin/echo hello",
+                "working_dir": "",
+            }))
+            .await
+            .expect("empty working_dir should fall back to default workspace");
+
+        assert!(result.contains("hello"), "unexpected output: {result}");
+    }
+
+    #[tokio::test]
+    async fn empty_kill_handle_is_ignored() {
+        let workspace = tempfile::tempdir().expect("workspace tmpdir");
+        let tool = fresh_tool(workspace.path());
+
+        let result = tool
+            .execute_text(json!({
+                "command": "/bin/echo hello",
+                "kill_handle": "",
+            }))
+            .await
+            .expect("empty kill_handle should not take the kill path");
+
+        assert!(result.contains("hello"), "unexpected output: {result}");
+    }
+
+    #[tokio::test]
+    async fn path_like_kill_handle_is_ignored_when_command_is_present() {
+        let workspace = tempfile::tempdir().expect("workspace tmpdir");
+        let tool = fresh_tool(workspace.path());
+
+        let result = tool
+            .execute_text(json!({
+                "command": "/bin/echo hello",
+                "kill_handle": "/dev/null",
+            }))
+            .await
+            .expect("path-like kill_handle should not take the kill path when command is present");
+
+        assert!(result.contains("hello"), "unexpected output: {result}");
+    }
+
+    #[tokio::test]
+    async fn invalid_kill_handle_without_command_is_rejected_as_protocol_error() {
+        let workspace = tempfile::tempdir().expect("workspace tmpdir");
+        let tool = fresh_tool(workspace.path());
+
+        let result = tool
+            .execute_text(json!({
+                "kill_handle": "/dev/null",
+            }))
+            .await;
+
+        match result {
+            Err(ToolError::InvalidParams(msg)) => {
+                assert!(msg.contains("Invalid kill_handle"), "unexpected error: {msg}");
+            }
+            other => panic!("expected InvalidParams, got {other:?}"),
+        }
+    }
+
+    #[tokio::test]
+    async fn blocking_command_returns_promptly_when_turn_is_cancelled() {
+        let workspace = tempfile::tempdir().expect("workspace tmpdir");
+        let tool = fresh_tool(workspace.path());
+        let cancel_flag = Arc::new(AtomicBool::new(false));
+        tool.set_cancel_flag(Arc::clone(&cancel_flag)).await;
+
+        let started = std::time::Instant::now();
+        let run = tool.execute_text(json!({
+            "command": "sleep 5",
+            "wait": 10,
+        }));
+        tokio::pin!(run);
+
+        tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+        cancel_flag.store(true, std::sync::atomic::Ordering::SeqCst);
+
+        let result = run.await;
+        assert!(
+            started.elapsed() < std::time::Duration::from_secs(2),
+            "cancelled shell command should not wait for natural process exit"
+        );
+        match result {
+            Err(ToolError::ExecutionFailed(msg)) => {
+                assert!(msg.contains("cancelled"), "unexpected error: {msg}");
+            }
+            other => panic!("expected cancelled execution error, got {other:?}"),
         }
     }
 }

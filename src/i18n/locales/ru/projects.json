@@ -519,7 +519,7 @@
     },
     "sessions": {
       "linkedSessions": "Связанные Sessions",
-      "newSession": "Новая Session",
+      "newSession": "Новая сессия",
       "starting": "Запуск...",
       "emptyOverview": "Sessions пока нет",
       "emptyOverviewHint": "Запустите Agent Session, чтобы отслеживать выполнение здесь."

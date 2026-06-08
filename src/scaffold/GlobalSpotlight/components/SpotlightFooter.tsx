@@ -2,21 +2,18 @@
  * SpotlightFooter Component
  *
  * Keyboard shortcut hints for selectors.
- * - `spotlight` (default): below the main Glass panel — pill, specular, spotlight shadow.
+ * - `spotlight` (default): below the main panel — simple bg-bg-2 pill.
  * - `dropdown`: same hints with `DROPDOWN_CLASSES.panel` (e.g. @-mention menu).
  */
 import { ArrowDown, ArrowUp } from "lucide-react";
-import React, { useContext } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
-import Glass from "@src/components/Glass";
 import {
   KEYBOARD_SHORTCUT_VARIANT,
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
-
-import { SpotlightFooterMaterialContext } from "./spotlightFooterMaterialContext";
 
 // ============ TYPES ============
 
@@ -42,7 +39,7 @@ export interface SpotlightFooterProps {
   /** Whether there's an active path (items selected) */
   hasActiveAction: boolean;
   /**
-   * `spotlight` — Glass pill + spotlight shadow (default, GlobalSpotlight shell).
+   * `spotlight` — simple bg-bg-2 pill (default, GlobalSpotlight shell).
    * `dropdown` — `DROPDOWN_CLASSES.panel` (border-border-2, bg-bg-2, shadow-dropdown).
    */
   variant?: "spotlight" | "dropdown";
@@ -61,7 +58,6 @@ export const SpotlightFooter: React.FC<SpotlightFooterProps> = ({
   activeActionChip = SPOTLIGHT_FOOTER_ACTIVE_CHIP.back,
 }) => {
   const { t } = useTranslation();
-  const material = useContext(SpotlightFooterMaterialContext);
 
   const inner = (
     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-[11px] text-text-2">
@@ -129,14 +125,9 @@ export const SpotlightFooter: React.FC<SpotlightFooterProps> = ({
   }
 
   return (
-    <Glass
-      material={material}
-      radius={999}
-      enableSpecular={true}
-      className="spotlight-shadow mx-auto w-fit max-w-full overflow-hidden"
-    >
+    <div className="mx-auto w-fit max-w-full overflow-hidden rounded-full border border-border-2 bg-bg-2 shadow-lg">
       {inner}
-    </Glass>
+    </div>
   );
 };
 

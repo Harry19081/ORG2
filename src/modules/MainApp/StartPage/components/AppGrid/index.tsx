@@ -21,12 +21,9 @@ import { useAtom, useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { ACTION_ID, useActionSystemOptional } from "@src/ActionSystem";
 import { getMaterialConfig } from "@src/components/Glass/config";
 import { useRegionLuminance } from "@src/hooks/theme/useRegionLuminance";
-import {
-  ACTION_ID,
-  useActionSystemOptional,
-} from "@src/modules/WorkStation/ActionSystem";
 import { appGridConfigAtom } from "@src/store/ui/appGridAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import { classNames } from "@src/util/ui/classNames";
@@ -114,7 +111,7 @@ const APP_GRID_ACTION_IDS: Partial<Record<string, string>> = {
   // which lands on the Code Editor route (the launchpad dashboard is
   // pinned there as the first tab).
   "dev-record": ACTION_ID.APP_GO_TO_DEV_RECORD,
-  inbox: ACTION_ID.APP_GO_TO_INBOX,
+  changelog: ACTION_ID.APP_GO_TO_CHANGELOG,
   projects: ACTION_ID.APP_GO_TO_STORIES,
   settings: ACTION_ID.APP_GO_TO_SETTINGS,
 };

@@ -45,7 +45,13 @@ import {
   createEventHandlerContext,
   dispatchAgentEvent,
 } from "./rustAgent/eventHandlers";
-import { resetAllStreamingState } from "./rustAgent/eventHandlers/streamHelpers";
+import {
+  clearSessionStreamingStopped,
+  isSessionStreamingStopped,
+  markSessionStreamingStopped,
+  noteSessionStreamingTurn,
+  resetAllStreamingState,
+} from "./rustAgent/eventHandlers/streamHelpers";
 import type {
   AgentTokenUsage,
   AgentWSEvent,
@@ -262,12 +268,12 @@ export function createRustAgentAdapter(
             tokenUsage ? toTokenUsageInfo(tokenUsage) : undefined
           );
         },
-        onStatusChange: (status: string, errorMessage?: string) => {
-          if (status === "completed" && _hasQueuedFollowup) {
-            callbacks.onStatusChange?.("running");
-            return;
-          }
-          callbacks.onStatusChange?.(status, errorMessage);
+        onStatusChange: (
+          status: string,
+          errorMessage?: string,
+          meta?: { turnId?: string; turnStatus?: string }
+        ) => {
+          callbacks.onStatusChange?.(status, errorMessage, meta);
         },
         onPermissionRequest: features.hasPermissionRequest
           ? (event: PermissionRequestEvent) => {
@@ -303,9 +309,11 @@ export function createRustAgentAdapter(
         },
       });
 
-      // Terminal event types — signal turn completion and lock out further "running" signals
+      // Terminal event types — signal turn completion and lock out further "running" signals.
+      // `agent:turn_completed` is a lifecycle terminal marker, not transcript content.
       const TERMINAL_EVENTS = new Set([
         "agent:complete",
+        "agent:turn_completed",
         "agent:error",
         "agent:stream_error_exhausted",
         "agent:session_evicted",
@@ -336,6 +344,7 @@ export function createRustAgentAdapter(
       const ALWAYS_TRAILING_EVENTS = new Set([
         "agent:turn_summary",
         "agent:warning",
+        "agent:ide_action",
         "agent:shell_process_started",
         "agent:shell_process_backgrounded",
         "agent:shell_process_exited",
@@ -345,6 +354,12 @@ export function createRustAgentAdapter(
       ]);
 
       const PLAN_SUBMITTED_END_TURN_PREFIX = "PLAN_SUBMITTED_END_TURN:";
+      const LIVE_STREAM_EVENTS_IGNORED_AFTER_STOP = new Set([
+        "agent:message_delta",
+        "agent:thinking_delta",
+        "agent:tool_call_delta",
+        "agent:streaming_complete",
+      ]);
 
       return {
         handleEvent(raw: RawSessionEvent): void {
@@ -357,6 +372,15 @@ export function createRustAgentAdapter(
             ...payload,
             type: raw.type,
           } as unknown as AgentWSEvent;
+
+          if (LIVE_STREAM_EVENTS_IGNORED_AFTER_STOP.has(event.type)) {
+            noteSessionStreamingTurn(sessionId, event.turnId);
+          }
+
+          const shouldIgnoreAfterStop =
+            isSessionStreamingStopped(sessionId, event.turnId) &&
+            LIVE_STREAM_EVENTS_IGNORED_AFTER_STOP.has(event.type);
+          if (shouldIgnoreAfterStop) return;
 
           const isPlanReadyTerminal =
             event.type === "agent:plan_ready_for_approval" &&
@@ -423,6 +447,12 @@ export function createRustAgentAdapter(
           eventQueuePromise = eventQueuePromise
             .then(() => {
               if (_disposed) return;
+              if (
+                LIVE_STREAM_EVENTS_IGNORED_AFTER_STOP.has(event.type) &&
+                isSessionStreamingStopped(sessionId, event.turnId)
+              ) {
+                return;
+              }
               return dispatchAgentEvent(event, ctx);
             })
             .then(() => {
@@ -436,6 +466,9 @@ export function createRustAgentAdapter(
                   event.type === "agent:error" ||
                   event.type === "agent:stream_error_exhausted" ||
                   event.type === "agent:session_evicted" ||
+                  event.turnStatus === "failed" ||
+                  event.sessionStatus === "failed" ||
+                  event.sessionStatus === "error" ||
                   event.isStreamError === true;
               }
             })
@@ -456,6 +489,9 @@ export function createRustAgentAdapter(
                   event.type === "agent:error" ||
                   event.type === "agent:stream_error_exhausted" ||
                   event.type === "agent:session_evicted" ||
+                  event.turnStatus === "failed" ||
+                  event.sessionStatus === "failed" ||
+                  event.sessionStatus === "error" ||
                   event.isStreamError === true;
                 _consecutiveDispatchFailures = 0;
                 return;
@@ -527,6 +563,7 @@ export function createRustAgentAdapter(
       // workspace_root. Using the global repo selection atom would collide
       // when two sessions on different repos are open simultaneously.
       const activePath = sessionRepoPath ?? undefined;
+      clearSessionStreamingStopped(sessionId);
       if (!isResume && content.trim()) {
         await enterAgentOrgSessionIntervention(sessionId);
       }
@@ -552,6 +589,8 @@ export function createRustAgentAdapter(
     },
 
     async stopSession(sessionId: string, reason: CancelReason): Promise<void> {
+      markSessionStreamingStopped(sessionId);
+      void eventStoreProxy.setStreaming(false, sessionId);
       await cancel(sessionId, reason);
     },
   };

@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: ein",
+    "disabledLabel": "Agent Control: aus",
+    "enableAction": "Agent Control aktivieren",
+    "disableAction": "Agent Control deaktivieren",
+    "inputMode": "Steuerung",
+    "selectionMode": "Antwort",
+    "toggleMode": "Eingabemodus umschalten",
+    "inputPlaceholder": "Sagen Sie dem Agent, was er tun soll...",
+    "selectionPlaceholder": "Auswahl oder Antwort eingeben...",
+    "submit": "Agent Control-Eingabe senden",
+    "menuToggle": "Agent Control",
+    "selectModel": "Modell auswählen"
+  },
   "actions": {
     "save": "Speichern",
     "cancel": "Abbrechen",
@@ -1085,7 +1099,10 @@
       "selectAccount": "Konto auswählen"
     },
     "modelProperties": {
-      "options": "Optionen"
+      "options": "Optionen",
+      "effort": "Aufwand",
+      "faster": "Schneller",
+      "smarter": "Intelligenter"
     },
     "repo": {
       "workspaceFolders": "Workspace-Ordner",
@@ -1452,6 +1469,7 @@
     "toolLayout": "Arbeitsstation",
     "dockAutoHide": "Dock automatisch ausblenden",
     "modelPickerStyle": "Auswahl",
+    "chatPanelPagination": "Paginierung",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
     "replaySession": "Replay-Sitzung",
@@ -1485,6 +1503,25 @@
     "ramTurnBodies": "Lazy-Verlaufsladevorgänge",
     "ramFileTrees": "Dateibäume",
     "ramCodeMirrors": "Datei-Rendering"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "Zum hellen Design wechseln",
+    "switchToDarkTheme": "Zum dunklen Design wechseln",
+    "switchToHighContrastTheme": "Zum kontrastreichen Design wechseln",
+    "moveMyStationChatLeft": "My Station-Chat nach links verschieben",
+    "moveMyStationChatRight": "My Station-Chat nach rechts verschieben",
+    "moveAgentStationChatLeft": "Agent Station-Chat nach links verschieben",
+    "moveAgentStationChatRight": "Agent Station-Chat nach rechts verschieben",
+    "enableChatPagination": "Chat-Paginierung einschalten",
+    "disableChatPagination": "Chat-Paginierung ausschalten",
+    "useModelPickerSpotlight": "Spotlight-Modellauswahl verwenden",
+    "useModelPickerDropdown": "Dropdown-Modellauswahl verwenden",
+    "useCompactWorkstationLayout": "Kompaktes Workstation-Layout verwenden",
+    "useComfortWorkstationLayout": "Komfortables Workstation-Layout verwenden",
+    "moveWorkstationSidebarLeft": "Workstation-Seitenleiste nach links verschieben",
+    "moveWorkstationSidebarRight": "Workstation-Seitenleiste nach rechts verschieben",
+    "enableDockAutoHide": "Workstation-Dock automatisch ausblenden",
+    "disableDockAutoHide": "Workstation-Dock sichtbar halten"
   },
   "commands": {
     "showBottomPanel": "Unteres Panel anzeigen",

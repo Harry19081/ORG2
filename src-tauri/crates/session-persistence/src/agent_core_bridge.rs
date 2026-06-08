@@ -1,10 +1,10 @@
 //! Wire-side adapter for `agent_core::foundation::db_bridge` and the
-//! token-usage / event-rollback slots on `session_bridge`.
+//! token-usage slot on `session_bridge`.
 //!
 //! Registers concrete implementations from this crate into agent_core's
 //! IoC slots so agent_core's memory, consolidation, reflection, learnings,
-//! turn processor, and rollback paths can persist state without depending
-//! back on `session_persistence`.
+//! and turn processor can persist state without depending back on
+//! `session_persistence`.
 //!
 //! Called once at startup via [`register`].
 
@@ -31,5 +31,4 @@ fn record_token_usage_adapter(row: session_bridge::TokenUsageRow<'_>) -> rusqlit
 pub fn register() {
     db_bridge::register(super::get_connection);
     session_bridge::register_record_token_usage(record_token_usage_adapter);
-    session_bridge::register_delete_last_user_event(super::delete_last_user_event_and_after);
 }

@@ -80,6 +80,7 @@ export const TruncateAfterMessageInput = z.object({
   sessionId: z.string(),
   createdAt: z.string(),
   revertFiles: z.boolean(),
+  messageId: z.string().optional(),
 });
 
 export const CheckSnapshotChangesInput = z.object({
@@ -304,6 +305,8 @@ export const WingmanMonitorSchema = z.object({
 });
 
 export const IdeActionResultInput = z.object({
-  requestId: z.string(),
-  result: z.string(),
+  correlationId: z.string(),
+  success: z.boolean(),
+  message: z.string(),
+  data: z.unknown().optional(),
 });

@@ -5,7 +5,7 @@
  * Handles icons, labels, status indicators, git badges, and keyboard shortcuts.
  */
 import { Check, CornerDownRight, Diff, Info, Lock } from "lucide-react";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback } from "react";
 
 import Checkbox from "@src/components/Checkbox";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
@@ -186,12 +186,6 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
     const sourceType =
       typeof data.sourceType === "string" ? data.sourceType : undefined;
 
-    const iconBoxStyle = useMemo(() => {
-      return {
-        background: "rgb(var(--fill-2))",
-      };
-    }, []);
-
     const handleMouseEnter = useCallback(() => {
       if (!isKeyboardMode && !isHeader && !isDisabled) {
         onHover(index);
@@ -275,10 +269,7 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
         )}
 
         {item.icon && (
-          <div
-            className="spotlight-icon-box flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg"
-            style={iconBoxStyle}
-          >
+          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-fill-2">
             {isCurrentSelection ? (
               <Check size={18} className="text-primary-6" strokeWidth={2.5} />
             ) : typeof item.icon === "string" ? (

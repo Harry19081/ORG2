@@ -79,6 +79,18 @@ pub fn load_messages(session_id: &str) -> SqliteResult<Vec<shared::AgentMessageR
     shared::load_messages(SESSION_TABLE_PREFIX, session_id)
 }
 
+pub fn message_created_at(session_id: &str, message_id: &str) -> SqliteResult<Option<String>> {
+    let conn = get_connection()?;
+    let mut stmt = conn.prepare(
+        "SELECT created_at FROM agent_messages WHERE session_id = ?1 AND id = ?2 LIMIT 1",
+    )?;
+    match stmt.query_row(params![session_id, message_id], |row| row.get(0)) {
+        Ok(created_at) => Ok(Some(created_at)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(err) => Err(err),
+    }
+}
+
 /// Load LLM-formatted history for a session.
 pub fn load_llm_history(session_id: &str) -> SqliteResult<Vec<serde_json::Value>> {
     shared::load_llm_history(SESSION_TABLE_PREFIX, session_id)
@@ -310,14 +322,6 @@ pub fn clear_messages(session_id: &str) -> SqliteResult<i64> {
 /// Truncate messages at or after a given timestamp.
 pub fn truncate_messages_after(session_id: &str, created_at: &str) -> SqliteResult<i64> {
     shared::truncate_messages_after(SESSION_TABLE_PREFIX, session_id, created_at)
-}
-
-/// Delete the last user message in this session plus every row that came
-/// after it (assistant / tool_call / tool_result). Used by the Scenario A
-/// cancel-rollback path when the user hits Stop before the agent produced
-/// any output.
-pub fn delete_last_user_turn(session_id: &str) -> SqliteResult<i64> {
-    shared::delete_last_user_turn(SESSION_TABLE_PREFIX, session_id)
 }
 
 /// Save a snapshot record for a session. After inserting the row, enforces

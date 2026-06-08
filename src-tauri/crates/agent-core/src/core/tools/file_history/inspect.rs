@@ -1,12 +1,15 @@
 //! Diff / change-detection helpers that compare captured snapshots against
 //! the current on-disk state. Pure read-side.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use super::paths::{backup_file, hash_bytes, read_snapshot, snapshots_dir};
+use super::paths::{
+    backup_file, hash_bytes, latest_snapshot_id_before, list_snapshot_ids_at_or_after,
+    read_snapshot, snapshots_dir,
+};
 use super::types::{FileBackup, FileSnapshot};
 
 #[cfg(test)]
@@ -25,15 +28,60 @@ pub(super) fn has_any_changes(session_id: &str, snapshot_id: &str) -> io::Result
     Ok(false)
 }
 
+pub(super) fn rewind_snapshot_ids(
+    session_id: &str,
+    target_created_at: &str,
+) -> io::Result<Vec<String>> {
+    let db_snapshot_ids =
+        crate::persistence::session_snapshots::get_snapshots_after(session_id, target_created_at)
+            .map_err(|err| io::Error::other(format!("DB error fetching snapshots: {}", err)))?;
+    let pre_message_snapshot_id = crate::persistence::session_snapshots::get_latest_snapshot_before_by_tool_call_id(
+        session_id,
+        "__pre_message__",
+        target_created_at,
+    )
+    .map_err(|err| io::Error::other(format!("DB error fetching pre-message snapshot: {}", err)))?;
+    let manifest_anchor_snapshot_id = latest_snapshot_id_before(session_id, target_created_at)?;
+    let manifest_snapshot_ids = list_snapshot_ids_at_or_after(session_id, target_created_at)?;
+
+    let mut seen = BTreeSet::new();
+    let mut snapshots = BTreeMap::new();
+    for snapshot_id in db_snapshot_ids
+        .into_iter()
+        .chain(pre_message_snapshot_id)
+        .chain(manifest_anchor_snapshot_id)
+        .chain(manifest_snapshot_ids)
+    {
+        if !seen.insert(snapshot_id.clone()) {
+            continue;
+        }
+        match read_snapshot(session_id, &snapshot_id) {
+            Ok(snapshot) => {
+                snapshots.insert(
+                    (snapshot.created_at.clone(), snapshot.snapshot_id.clone()),
+                    snapshot.snapshot_id,
+                );
+            }
+            Err(err) => {
+                tracing::warn!(
+                    session_id,
+                    snapshot_id,
+                    error = %err,
+                    "file_history snapshot unreadable while resolving rewind order; skipping"
+                );
+            }
+        }
+    }
+
+    Ok(snapshots.into_values().collect())
+}
+
 /// Returns true if any file captured in any snapshot for this session at or
 /// after `target_created_at` would actually be modified by `rewind_to_message`.
 /// Used by the "regenerate / edit user message" confirmation dialog: if no
 /// captured files differ from disk, no prompt is needed.
 pub fn has_changes_after_message(session_id: &str, target_created_at: &str) -> io::Result<bool> {
-    let snapshot_ids =
-        crate::persistence::session_snapshots::get_snapshots_after(session_id, target_created_at)
-            .map_err(|err| io::Error::other(format!("DB error fetching snapshots: {}", err)))?;
-    for snapshot_id in snapshot_ids {
+    for snapshot_id in rewind_snapshot_ids(session_id, target_created_at)? {
         if has_any_changes(session_id, &snapshot_id).unwrap_or(false) {
             return Ok(true);
         }

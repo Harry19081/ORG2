@@ -10,7 +10,7 @@ import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import type { SimulatorAppConfig } from "@src/engines/Simulator/apps/core/types";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import { isDiffRoutedEvent } from "@src/engines/Simulator/utils/simulatorEventRouting";
-import { getFileName } from "@src/util/file/pathUtils";
+import { getFileName, normalizeDiffFilePath } from "@src/util/file/pathUtils";
 
 import type { DiffEntry, SimulatorDiffState } from "./types";
 
@@ -86,7 +86,7 @@ export function buildDiffEntry(
   event: SessionEvent,
   isCurrent: boolean
 ): DiffEntry {
-  const filePath = resolveFilePath(event);
+  const filePath = normalizeDiffFilePath(resolveFilePath(event));
   const fileName = filePath ? getFileName(filePath) : event.functionName;
   return {
     entryId: event.id,

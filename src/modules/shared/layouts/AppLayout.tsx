@@ -20,6 +20,7 @@ import { HoverSidebar } from "@/src/scaffold/NavigationSidebar";
 import { useAtomValue } from "jotai";
 import React, { memo, useMemo } from "react";
 
+import { ActionSystemProvider } from "@src/ActionSystem";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
 import ChatPanel from "@src/engines/ChatPanel";
@@ -27,7 +28,6 @@ import { MAX_WIDTH as CHAT_MAX_WIDTH } from "@src/engines/ChatPanel/config";
 import SessionSyncProvider from "@src/engines/SessionCore/sync/SessionSyncProvider";
 import { SessionCreatorChatPanel } from "@src/features/SessionCreator/variants";
 import SettingsSlot from "@src/modules/MainApp/Settings/SettingsSlot";
-import { ActionSystemProvider } from "@src/modules/WorkStation/ActionSystem";
 import GlobalSessionSync from "@src/modules/shared/components/GlobalSessionSync";
 import { GlobalSpotlightPortal } from "@src/modules/shared/components/GlobalSpotlightPortal";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/GeneralLayoutTour";
@@ -332,7 +332,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
 
       <div className="flex h-full min-w-0 flex-1 flex-col">
         <ActionSystemProvider repoPath={repoPath}>
-          <MainContentArea className="relative flex-1">
+          <MainContentArea className="relative min-h-0 flex-1">
             {contentArea}
           </MainContentArea>
 

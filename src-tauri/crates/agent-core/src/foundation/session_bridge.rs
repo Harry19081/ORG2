@@ -16,12 +16,7 @@
 //!    per-turn row into `session_token_usage`. The real implementation is
 //!    `session_persistence::token_usage::insert_token_usage_record`.
 //!
-//! 3. **`delete_last_user_event_and_after`** — `state::unified::rollback_…`
-//!    drops the trailing rows from a session's event log when a turn
-//!    aborts before producing any output. Backed by
-//!    `session_persistence::crud::delete_last_user_event_and_after`.
-//!
-//! 4. **`clear_cli_resume_state`** — file-history rewind runs inside
+//! 3. **`clear_cli_resume_state`** — file-history rewind runs inside
 //!    `agent_core`, while CLI native conversation IDs live in the wire-side
 //!    `agent_sessions::cli` module. Rewind must invalidate those IDs and record
 //!    why the next CLI prompt should distrust native conversation state without
@@ -187,40 +182,7 @@ pub fn record_token_usage(row: TokenUsageRow<'_>) -> rusqlite::Result<i64> {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Rollback last user event
-// ---------------------------------------------------------------------------
-
-pub type DeleteLastUserEventFn = fn(&str) -> rusqlite::Result<i64>;
-
-static DELETE_LAST_USER_EVENT: OnceLock<DeleteLastUserEventFn> = OnceLock::new();
-
-pub fn register_delete_last_user_event(implementation: DeleteLastUserEventFn) {
-    let _ = DELETE_LAST_USER_EVENT.set(implementation);
-}
-
-/// Read-side: drop the trailing user message + everything after it from a
-/// session's event log. Used by the no-output rollback path in
-/// `state::unified`.
-///
-/// Unwired: returns `Ok(0)` and logs a warning. Same reasoning as
-/// `record_token_usage` — a missing rollback hook is not worth aborting a
-/// turn for; the warning makes the wiring gap visible during boot smoke.
-pub fn delete_last_user_event_and_after(session_id: &str) -> rusqlite::Result<i64> {
-    match DELETE_LAST_USER_EVENT.get() {
-        Some(implementation) => implementation(session_id),
-        None => {
-            tracing::warn!(
-                "[session-bridge] delete_last_user_event_and_after called before register; \
-                 skipping rollback for session_id={}",
-                session_id
-            );
-            Ok(0)
-        }
-    }
-}
-
-// ---------------------------------------------------------------------------
-// 4. CLI effective tool snapshot
+// 3. CLI effective tool snapshot
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone)]

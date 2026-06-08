@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: On",
+    "disabledLabel": "Agent Control: Off",
+    "enableAction": "Enable Agent Control",
+    "disableAction": "Disable Agent Control",
+    "inputMode": "Control",
+    "selectionMode": "Answer",
+    "toggleMode": "Toggle input mode",
+    "inputPlaceholder": "Tell the agent what to do...",
+    "selectionPlaceholder": "Type the selection or answer...",
+    "submit": "Submit Agent Control input",
+    "menuToggle": "Agent Control",
+    "selectModel": "Select model"
+  },
   "actions": {
     "all": "All",
     "save": "Save",
@@ -1139,7 +1153,10 @@
       "selectAccount": "Select an account"
     },
     "modelProperties": {
-      "options": "Options"
+      "options": "Options",
+      "effort": "Effort",
+      "faster": "Faster",
+      "smarter": "Smarter"
     },
     "shared": {
       "repo": "repo",
@@ -1514,6 +1531,7 @@
     "toolLayout": "Workstation",
     "dockAutoHide": "Dock Auto-hide",
     "modelPickerStyle": "Picker",
+    "chatPanelPagination": "Pagination",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Left",
@@ -1542,6 +1560,25 @@
     "ramTurnBodies": "History lazy loads",
     "ramFileTrees": "File trees",
     "ramCodeMirrors": "File rendering"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "Switch to light theme",
+    "switchToDarkTheme": "Switch to dark theme",
+    "switchToHighContrastTheme": "Switch to high contrast theme",
+    "moveMyStationChatLeft": "Move My Station chat to the left",
+    "moveMyStationChatRight": "Move My Station chat to the right",
+    "moveAgentStationChatLeft": "Move Agent Station chat to the left",
+    "moveAgentStationChatRight": "Move Agent Station chat to the right",
+    "enableChatPagination": "Turn on chat pagination",
+    "disableChatPagination": "Turn off chat pagination",
+    "useModelPickerSpotlight": "Use Spotlight model picker",
+    "useModelPickerDropdown": "Use dropdown model picker",
+    "useCompactWorkstationLayout": "Use compact Workstation layout",
+    "useComfortWorkstationLayout": "Use comfort Workstation layout",
+    "moveWorkstationSidebarLeft": "Move Workstation sidebar to the left",
+    "moveWorkstationSidebarRight": "Move Workstation sidebar to the right",
+    "enableDockAutoHide": "Auto-hide the Workstation dock",
+    "disableDockAutoHide": "Keep the Workstation dock visible"
   },
   "commands": {
     "showBottomPanel": "Show Bottom Panel",

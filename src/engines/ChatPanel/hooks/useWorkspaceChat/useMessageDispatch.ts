@@ -16,7 +16,7 @@ import { createSyntheticUserEvent } from "@src/engines/SessionCore/sync/adapters
 import { markSessionActive } from "@src/store/session";
 import {
   lastUserMessageAtom,
-  sessionRuntimeStatusAtom,
+  setSessionRuntimeStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
 import {
@@ -35,7 +35,7 @@ interface UseMessageDispatchOptions {
 
 export function useMessageDispatch(options: UseMessageDispatchOptions) {
   const { getSessionId } = options;
-  const setSessionRuntimeStatus = useSetAtom(sessionRuntimeStatusAtom);
+  const setSessionRuntimeStatus = useSetAtom(setSessionRuntimeStatusAtom);
   const setLastUserMessage = useSetAtom(lastUserMessageAtom);
 
   const addUserMessage = useCallback(
@@ -65,7 +65,8 @@ export function useMessageDispatch(options: UseMessageDispatchOptions) {
       content: string,
       imageDataUrls?: string[],
       modelSelectionOverride?: LastModelSelection,
-      displayText?: string
+      displayText?: string,
+      clientMessageId?: string
     ): Promise<void> => {
       // Read directly from the store at call time to avoid stale-closure
       // race: if the user changes the mode pill and immediately sends a
@@ -96,7 +97,7 @@ export function useMessageDispatch(options: UseMessageDispatchOptions) {
       // line because isSessionActive stays false until Rust's first
       // status_changed event arrives. Rust will overwrite this the moment a
       // real status event lands; failures below reset it back to "idle".
-      setSessionRuntimeStatus("running");
+      setSessionRuntimeStatus({ status: "running", source: "dispatch" });
 
       try {
         await SessionService.sendMessage({
@@ -107,6 +108,7 @@ export function useMessageDispatch(options: UseMessageDispatchOptions) {
           accountId,
           mode: agentExecMode,
           imageDataUrls,
+          clientMessageId,
         });
         // Bump the row's `updated_at` to "now" so the sidebar /
         // Kanban "recent activity" views float this session to the
@@ -115,12 +117,12 @@ export function useMessageDispatch(options: UseMessageDispatchOptions) {
         // this — see `markSessionActive` doc for the policy.
         markSessionActive(sessionId);
         if (isCursorIdeSession(sessionId)) {
-          setSessionRuntimeStatus("idle");
+          setSessionRuntimeStatus({ status: "idle", source: "dispatch" });
         }
       } catch (err) {
         // IPC failed before Rust even received the message — reset so the UI
         // does not stay stuck in the optimistic "running" state.
-        setSessionRuntimeStatus("idle");
+        setSessionRuntimeStatus({ status: "idle", source: "dispatch" });
         throw err;
       }
     },

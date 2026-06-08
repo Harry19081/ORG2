@@ -12,6 +12,15 @@ const MOUNT_TIMEOUT_MS = 60_000;
 const RENDER_TIMEOUT_MS = 12_000;
 const RUN_ID = Date.now();
 const BATCH_SIZE = 6;
+const E2E_REPO_PATH = process.env.E2E_REPO_PATH ?? "/tmp/orgii-e2e-workspace-repo";
+const SCENARIO_FILTER = (process.env.E2E_CHAT_RENDERING_SCENARIOS ?? "")
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+function shouldRunScenario(name) {
+  return SCENARIO_FILTER.length === 0 || SCENARIO_FILTER.includes(name);
+}
 
 const SKIP_CHAT_TOOLS = new Set([
   "agent",
@@ -223,6 +232,7 @@ function chunk(items, size) {
 async function waitForApp() {
   await waitForFrontendReady();
   await browser.setTimeout({ script: 5_000 });
+  await execJS(`localStorage.setItem('orgii:auth_skipped', '1'); return true;`);
   await browser.waitUntil(
     async () => {
       try {
@@ -313,10 +323,12 @@ async function assertBatchRendered(batchIndex, tools) {
     sentinel: event.displayText,
     fallbackTexts:
       event.functionName === "read_file"
-        ? ["Read 1 file", "1 file"]
+        ? ["Read 1 file", "1 file", event.args?.path].filter(Boolean)
         : event.functionName === "query_lsp"
           ? ["1 LSP query", "LSP query"]
-          : undefined,
+          : event.functionName === "render_inline_canvas"
+            ? ["Agent Preview"]
+            : undefined,
   }));
   const assistantText = `Tool render ledger batch ${batchIndex} complete.`;
   const seed = await invokeE2E("seedChatEvents", sessionId, [
@@ -571,6 +583,107 @@ async function assertDedupRenderedOnce() {
   expect(finalCounts).toEqual({ thought: 1, answer: 1, assistantBubbles: 1 });
 }
 
+async function assertMultiRepoReadPathRendered() {
+  const sessionId = `e2e-render-multirepo-read-${Date.now()}`;
+  const baseTime = Date.now();
+  const primaryPath = `/tmp/orgii-e2e-multirepo-primary-${RUN_ID}/src/index.tsx`;
+  const secondaryPath = `/tmp/orgii-e2e-multirepo-secondary-${RUN_ID}/src/index.tsx`;
+  const tertiaryPath = `/tmp/orgii-e2e-multirepo-tertiary-${RUN_ID}/README.md`;
+  const userEvent = {
+    ...withCreatedAt(makeOrderUserEvent("multi-read-user", "Read two files"), baseTime),
+    sessionId,
+  };
+  const readPayloads = [
+    {
+      path: primaryPath,
+      args: { targetFile: primaryPath },
+      result: {},
+    },
+    {
+      path: secondaryPath,
+      args: { file_path: secondaryPath },
+      result: {},
+    },
+    {
+      path: tertiaryPath,
+      args: {},
+      result: { success: { filePath: tertiaryPath } },
+    },
+  ];
+  const readEvents = readPayloads.map(({ path: targetPath, args, result }, index) => ({
+    id: `multi-read-${index}`,
+    chunk_id: `multi-read-${index}`,
+    sessionId,
+    createdAt: new Date(baseTime + 1_000 + index).toISOString(),
+    functionName: "read_file",
+    uiCanonical: "read_file",
+    actionType: "tool_call",
+    args,
+    result: {
+      ...result,
+      content: `content for ${targetPath}`,
+      observation: `content for ${targetPath}`,
+      is_delta: false,
+    },
+    source: "assistant",
+    displayText: `Read ${targetPath}`,
+    displayStatus: "completed",
+    displayVariant: "tool_call",
+    activityStatus: "agent",
+    isDelta: false,
+  }));
+  const assistantEvent = {
+    ...withCreatedAt(
+      makeOrderAssistantEvent("multi-read-assistant", "message", "Read complete"),
+      baseTime + 3_000
+    ),
+    sessionId,
+  };
+
+  const seed = await invokeE2E("seedChatEvents", sessionId, [
+    userEvent,
+    ...readEvents,
+    assistantEvent,
+  ]);
+  if (!seed || seed.ok !== true) {
+    throw new Error(
+      `seedChatEvents failed for multi-root read path: ${seed?.error ?? "unknown"}`
+    );
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const paths = Array.from(document.querySelectorAll('[data-testid="read-file-path"]'))
+          .map((node) => node.textContent || "");
+        const body = document.body.innerText || "";
+        return {
+          paths,
+          body: body.slice(0, 3000),
+          expectedPaths: ${JSON.stringify([primaryPath, secondaryPath, tertiaryPath])},
+          hasGenericOnly: paths.some((path) => path.trim() === "file"),
+        };
+      `);
+      return (
+        state.expectedPaths.every((expectedPath) =>
+          state.body.includes(expectedPath) ||
+          state.paths.some((renderedPath) => renderedPath.includes(expectedPath))
+        ) && !state.hasGenericOnly
+      );
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `multi-root read file paths did not render: ${JSON.stringify(
+        await execJS(`
+          const paths = Array.from(document.querySelectorAll('[data-testid="read-file-path"]'))
+            .map((node) => node.textContent || "");
+          return { paths, body: (document.body.innerText || "").slice(0, 3000) };
+        `)
+      )}`,
+    }
+  );
+}
+
 async function assertThinkingChronologicalOrder() {
   const orderedEventIds = [
     "order-user-a",
@@ -662,13 +775,25 @@ async function assertThinkingChronologicalOrder() {
 describe("Core chat rendering UI", () => {
   before(async () => {
     await waitForApp();
+    const repo = await invokeE2E("ensureRepoSelected", {
+      repoPath: E2E_REPO_PATH,
+      repoName: "E2E Fixture Repo",
+    });
+    if (!repo || repo.ok !== true) {
+      throw new Error(`ensureRepoSelected failed: ${repo?.error ?? "unknown"}`);
+    }
     const navigation = await invokeE2E("navigateTo", "/orgii/workstation/code");
     if (!navigation || navigation.ok !== true) {
       throw new Error(`navigateTo failed: ${navigation?.error ?? "unknown"}`);
     }
   });
 
-  it("renders all metadata-ledger tool-call classes from seeded history", async () => {
+  it("renders all metadata-ledger tool-call classes from seeded history", async function () {
+    if (!shouldRunScenario("metadata-ledger")) {
+      this.skip();
+      return;
+    }
+
     const toolsResult = await invokeE2E("listAllTools");
     if (!toolsResult || toolsResult.ok !== true) {
       throw new Error(
@@ -705,11 +830,30 @@ describe("Core chat rendering UI", () => {
     }
   });
 
-  it("renders a duplicated thought/answer segment pair only once", async () => {
+  it("renders multi-repo read file targets as paths instead of generic file labels", async function () {
+    if (!shouldRunScenario("multi-repo-read-path")) {
+      this.skip();
+      return;
+    }
+
+    await assertMultiRepoReadPathRendered();
+  });
+
+  it("renders a duplicated thought/answer segment pair only once", async function () {
+    if (!shouldRunScenario("dedup")) {
+      this.skip();
+      return;
+    }
+
     await assertDedupRenderedOnce();
   });
 
-  it("renders thinking in chronological turn position without duplicates", async () => {
+  it("renders thinking in chronological turn position without duplicates", async function () {
+    if (!shouldRunScenario("thinking-order")) {
+      this.skip();
+      return;
+    }
+
     await assertThinkingChronologicalOrder();
   });
 });

@@ -5,13 +5,10 @@
 //! payloads. Skipping the cleanup step would leak files in
 //! `~/.orgii/...` because the DB row is the only reference back.
 
-use rusqlite::{params, types::Type, OptionalExtension, Result as SqliteResult};
+use rusqlite::{params, types::Type, Result as SqliteResult};
 
 use crate::persistence::images;
 use database::db::{get_connection, with_sessions_writer};
-
-use super::super::message_role;
-
 /// Collect image file paths from messages matching a WHERE clause, then delete
 /// the corresponding files from disk. Called before deleting the DB rows.
 pub(super) fn cleanup_image_files_for_query(
@@ -74,48 +71,6 @@ pub fn truncate_messages_after(
         let sql =
             format!("DELETE FROM {prefix}_messages WHERE session_id = ?1 AND created_at >= ?2");
         let deleted = conn.execute(&sql, params![session_id, created_at])?;
-        Ok(deleted as i64)
-    })
-}
-
-/// Delete the last user message and every message that came after it
-/// (assistant, tool_call, tool_result — anything with a higher sequence).
-///
-/// Used by the "cancel before any assistant output" rollback path so a
-/// cancelled-before-start turn leaves no residue in LLM history.
-///
-/// Returns the number of rows removed (0 if there is no user message in
-/// this session).
-pub fn delete_last_user_turn(prefix: &str, session_id: &str) -> SqliteResult<i64> {
-    // Read the target sequence outside the writer critical section — WAL
-    // allows concurrent reads, so this does not need serialization.
-    let last_user_seq: Option<i64> = {
-        let conn = get_connection()?;
-        let sql_find = format!(
-            "SELECT sequence FROM {prefix}_messages
-             WHERE session_id = ?1 AND role = ?2
-             ORDER BY sequence DESC LIMIT 1",
-        );
-        conn.query_row(&sql_find, params![session_id, message_role::USER], |row| {
-            row.get(0)
-        })
-        .optional()?
-    };
-
-    let Some(seq) = last_user_seq else {
-        return Ok(0);
-    };
-
-    cleanup_image_files_for_query(
-        prefix,
-        "session_id = ?1 AND sequence >= ?2",
-        &[&session_id as &dyn rusqlite::ToSql, &seq],
-    )?;
-    with_sessions_writer(|| {
-        let conn = get_connection()?;
-        let sql_delete =
-            format!("DELETE FROM {prefix}_messages WHERE session_id = ?1 AND sequence >= ?2");
-        let deleted = conn.execute(&sql_delete, params![session_id, seq])?;
         Ok(deleted as i64)
     })
 }

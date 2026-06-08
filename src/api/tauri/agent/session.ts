@@ -101,12 +101,13 @@ export async function clearMessages(sessionId: string): Promise<void> {
 export async function truncateAfterMessage(
   sessionId: string,
   createdAt: string,
-  options?: { revertFiles?: boolean }
+  options?: { revertFiles?: boolean; messageId?: string }
 ): Promise<number> {
   return rpc.agentSession.truncateAfterMessage({
     sessionId,
     createdAt,
     revertFiles: options?.revertFiles ?? true,
+    messageId: options?.messageId,
   });
 }
 
@@ -397,6 +398,7 @@ export interface SessionLaunchParams {
   agentRole?: string;
   worktreePath?: string;
   projectSlug?: string;
+  parentSessionId?: string;
 
   /**
    * Extra workspace folders granted at launch time (multi-root IDE
@@ -527,12 +529,20 @@ export async function wingmanListMonitors(): Promise<WingmanMonitor[]> {
   return rpc.agentSession.wingmanListMonitors();
 }
 
+export interface IdeActionResultPayload {
+  success: boolean;
+  message: string;
+  data?: unknown;
+}
+
 export async function sendIdeActionResult(
-  requestId: string,
-  result: Record<string, unknown>
+  correlationId: string,
+  result: IdeActionResultPayload
 ): Promise<void> {
   return rpc.agentSession.sendIdeActionResult({
-    requestId,
-    result: JSON.stringify(result),
+    correlationId,
+    success: result.success,
+    message: result.message,
+    ...(typeof result.data === "undefined" ? {} : { data: result.data }),
   });
 }

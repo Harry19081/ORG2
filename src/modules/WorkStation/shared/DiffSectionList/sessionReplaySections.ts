@@ -4,6 +4,7 @@ import {
   parseUnifiedDiffToOldNew,
 } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
 import { normalizeEventProps } from "@src/engines/SessionCore/rendering/props/propsNormalizer";
+import { normalizeDiffFilePath } from "@src/util/file/pathUtils";
 
 import type { DiffFileSectionData } from "../DiffFileSection";
 import type { DiffSectionListItem } from "./index";
@@ -66,7 +67,8 @@ export function buildSessionReplayDiffSectionItems(
     const newContent = isDeleted
       ? ""
       : (segment.newContent ?? parsed?.newValue ?? segment.content ?? "");
-    const path = segment.filePath || entry.filePath || entry.fileName;
+    const rawPath = segment.filePath || entry.filePath || entry.fileName;
+    const path = normalizeDiffFilePath(rawPath);
 
     return {
       key: `${entry.entryId}:${index}:${path}`,

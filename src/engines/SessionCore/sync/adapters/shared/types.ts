@@ -126,6 +126,7 @@ export interface AgentWSEvent {
   todos?: unknown[];
   /** OS Agent: IDE action correlation (agent:ide_action) */
   correlationId?: string;
+  operation?: "list" | "inspect" | "dispatch";
   action?: string;
   params?: Record<string, unknown>;
   agentType?: RustAgentType;
@@ -183,6 +184,10 @@ export interface AgentWSEvent {
   createdAt?: string;
   /** Wall time in seconds for the completed turn (agent:turn_summary) */
   wallTimeSecs?: number;
+  /** Terminal turn status from agent:turn_completed. */
+  turnStatus?: string;
+  /** Terminal session status from agent:turn_completed. */
+  sessionStatus?: string;
 
   // ============================================
   // Queue Status Events (agent:queue_status)

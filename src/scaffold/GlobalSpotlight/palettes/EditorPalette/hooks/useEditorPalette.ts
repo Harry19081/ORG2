@@ -7,12 +7,11 @@ import { useAtomValue } from "jotai";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { ACTION_ID, useActionSystem } from "@src/ActionSystem";
 import { ROUTES } from "@src/config/routes";
-import {
-  ACTION_ID,
-  useActionSystem,
-} from "@src/modules/WorkStation/ActionSystem";
 import { FileOperationsService } from "@src/services/file";
+import { currentRepoAtom } from "@src/store/repo/derived";
+import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { activeWorkStationFilePathAtom } from "@src/store/workstation/tabs";
 
 import type { SpotlightItem } from "../../../shared";
@@ -66,6 +65,8 @@ export function useEditorPalette({
   }
 
   const currentFile = useAtomValue(activeWorkStationFilePathAtom);
+  const currentRepo = useAtomValue(currentRepoAtom);
+  const workspaceFolders = useAtomValue(workspaceFoldersAtom);
 
   // Get dispatch for actions
   const { dispatch, isValidAction } = useActionSystem();
@@ -116,6 +117,8 @@ export function useEditorPalette({
     repoPath,
     searchTerm,
     enabled: isOpen && mode === "file",
+    currentRepo,
+    workspaceFolders,
     onFileOpen: handleFileOpen,
   });
 

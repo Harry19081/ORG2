@@ -64,7 +64,7 @@
   "complete": {
     "title": "準備完了！",
     "description": "ワークスペースの準備ができました。新しいSessionを開始して AI アシスタンスでコーディングを始めるか、アプリを探索してすべての機能を発見しましょう。",
-    "startSession": "新しいSessionを開始"
+    "startSession": "新しいセッションを開始"
   },
   "navigation": {
     "skipSetup": "セットアップをスキップ",

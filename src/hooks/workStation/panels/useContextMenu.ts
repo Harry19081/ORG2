@@ -44,6 +44,12 @@ import {
   searchProjects,
   searchSessions,
 } from "./contextMenuSearchHandlers";
+import {
+  attachSearchRootMetadata,
+  buildContextMenuSearchRoots,
+  buildRootSearchResult,
+  mergeSearchResultsByRoot,
+} from "./contextMenuSearchRoots";
 
 // Default configuration
 const DEFAULT_OPTIONS: UseContextMenuOptions = {
@@ -72,28 +78,15 @@ export function useContextMenu(
   const workspaceFolders = useAtomValue(workspaceFoldersAtom);
   const effectiveRepoPath = opts.repoPath || currentRepo?.path || "";
 
-  const searchRoots = useMemo<Array<{ path: string; name: string }>>(() => {
-    const roots =
-      workspaceFolders.length > 0
-        ? workspaceFolders.map((folder) => ({
-            path: folder.path,
-            name: folder.name,
-          }))
-        : [];
-    if (
-      effectiveRepoPath &&
-      !roots.some((root) => root.path === effectiveRepoPath)
-    ) {
-      roots.unshift({
-        path: effectiveRepoPath,
-        name:
-          currentRepo?.name ??
-          effectiveRepoPath.split("/").pop() ??
-          effectiveRepoPath,
-      });
-    }
-    return roots;
-  }, [currentRepo?.name, effectiveRepoPath, workspaceFolders]);
+  const searchRoots = useMemo(
+    () =>
+      buildContextMenuSearchRoots({
+        repoPath: opts.repoPath,
+        currentRepo,
+        workspaceFolders,
+      }),
+    [currentRepo, opts.repoPath, workspaceFolders]
+  );
 
   // Get all sessions for @sessions search
   const allSessions = useAtomValue(sessionsAtom);
@@ -172,40 +165,17 @@ export function useContextMenu(
       try {
         let results: SearchResultItem[];
         if (type === "files") {
-          const roots =
-            searchRoots.length > 0
-              ? searchRoots
-              : effectiveRepoPath
-                ? [
-                    {
-                      path: effectiveRepoPath,
-                      name:
-                        currentRepo?.name ??
-                        effectiveRepoPath.split("/").pop() ??
-                        effectiveRepoPath,
-                    },
-                  ]
-                : [];
           const perRootResults = await Promise.all(
-            roots.map(async (root) => {
-              const matches = await searchFiles(query, root.path);
-              return matches.map((match) => ({
-                ...match,
-                repoPath: root.path,
-                repoName: root.name,
-              }));
-            })
+            searchRoots.map(async (root) =>
+              attachSearchRootMetadata(
+                await searchFiles(query, root.path),
+                root
+              )
+            )
           );
-          const seen = new Set<string>();
-          results = perRootResults
-            .flat()
-            .filter((item) => {
-              const key = `${item.type}\0${item.path}`;
-              if (seen.has(key)) return false;
-              seen.add(key);
-              return true;
-            })
-            .slice(0, 20);
+          const rootResults = searchRoots.map(buildRootSearchResult);
+          const fileResults = mergeSearchResultsByRoot(perRootResults, 20);
+          results = [...rootResults, ...fileResults].slice(0, 20);
         } else if (type === "sessions") {
           results = searchSessions(query, allSessions);
         } else if (type === "projects") {
@@ -225,13 +195,7 @@ export function useContextMenu(
         setSearchLoading(false);
       }
     },
-    [
-      effectiveRepoPath,
-      currentRepo?.name,
-      searchRoots,
-      allSessions,
-      updateSearchResults,
-    ]
+    [effectiveRepoPath, searchRoots, allSessions, updateSearchResults]
   );
 
   // Debounced context menu search — leading: true fires first call immediately
@@ -368,7 +332,9 @@ export function useContextMenu(
               const selected = searchResults[secondLayerActiveIndex];
               // Use iconType for project/work items, otherwise secondLayer.
               let selectType: MenuItemId = secondLayer;
-              if (selected.iconType === "project") {
+              if (selected.iconType === "repo") {
+                selectType = "repo";
+              } else if (selected.iconType === "project") {
                 selectType = "project";
               } else if (selected.iconType === "workitem") {
                 selectType = "workitem";

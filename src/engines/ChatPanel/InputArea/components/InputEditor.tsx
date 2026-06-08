@@ -63,6 +63,8 @@ export interface InputEditorProps {
   slashTriggerMode?: "command" | "context";
   /** Single-line height for compact composer row */
   compact?: boolean;
+  /** Called synchronously before a newline is inserted. */
+  onBeforeNewline?: () => void;
 }
 
 // ============================================
@@ -93,6 +95,7 @@ const InputEditor: React.FC<InputEditorProps> = memo(
     onSlashCommandClose,
     slashTriggerMode = "command",
     compact = false,
+    onBeforeNewline,
   }) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -183,6 +186,7 @@ const InputEditor: React.FC<InputEditorProps> = memo(
           onKeyDownForSlashDropdown={handleKeyDownForSlashDropdown}
           slashTriggerMode={slashTriggerMode}
           onImagePaste={onImagePaste}
+          onBeforeNewline={onBeforeNewline}
         />
       </div>
     );

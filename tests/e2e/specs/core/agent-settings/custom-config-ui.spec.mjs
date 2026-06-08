@@ -1759,6 +1759,51 @@ process.stdin.on("data", (chunk) => {
         );
       }
 
+      const literalBacktickValidation = unwrap(
+        await invokeE2E(
+          "debugSessionValidateCommand",
+          sessionId,
+          "python -c 'print(`not shell`)'; python <<'PY'\nprint(`not shell`)\nPY",
+          false
+        ),
+        "debugSessionValidateCommand literal backticks"
+      ).validation;
+      if (literalBacktickValidation.outcome !== "allowed") {
+        throw new Error(
+          `Literal backticks inside shell-quoted script text should be allowed: ${JSON.stringify(literalBacktickValidation)}`
+        );
+      }
+
+      const executableBacktickValidation = unwrap(
+        await invokeE2E(
+          "debugSessionValidateCommand",
+          sessionId,
+          "echo `whoami`",
+          false
+        ),
+        "debugSessionValidateCommand executable backtick"
+      ).validation;
+      const executableBacktickReason = String(
+        executableBacktickValidation.reason ?? ""
+      );
+      if (executableBacktickValidation.outcome !== "denied") {
+        throw new Error(
+          `Executable backtick subshell should still be denied: ${JSON.stringify(executableBacktickValidation)}`
+        );
+      }
+      for (const expectedReasonPart of [
+        "shell-injection guard",
+        "not an agent autonomy/tool permission",
+        "single-quoted heredoc",
+        "edit_file/write_file",
+      ]) {
+        if (!executableBacktickReason.includes(expectedReasonPart)) {
+          throw new Error(
+            `Executable backtick denial reason was not actionable; missing ${expectedReasonPart}: ${JSON.stringify(executableBacktickValidation)}`
+          );
+        }
+      }
+
       const promptDump = unwrap(
         await invokeSnapshot("promptDump", sessionId, "Prompt"),
         "promptDump"

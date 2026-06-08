@@ -6,7 +6,11 @@
  */
 import { atom } from "jotai";
 
-import { derivedSnapshotAtom, eventsAtom } from "../core/atoms/events";
+import {
+  derivedSnapshotAtom,
+  eventsAtom,
+  streamingDeltaContentAtom,
+} from "../core/atoms/events";
 import { sessionIdAtom } from "../core/atoms/metadata";
 import type { Snapshot } from "../core/store/EventStoreProxy";
 import type { SessionEvent } from "../core/types";
@@ -38,6 +42,86 @@ function isStreamingSnap(snap: Snapshot): boolean {
  */
 let _prevSessionId: string | null = null;
 let _prevChatEvents: SessionEvent[] = [];
+const _liveAssistantCreatedAtBySession = new Map<string, string>();
+
+function getLiveAssistantCreatedAt(sessionId: string): string {
+  const existing = _liveAssistantCreatedAtBySession.get(sessionId);
+  if (existing) return existing;
+  const createdAt = new Date().toISOString();
+  _liveAssistantCreatedAtBySession.set(sessionId, createdAt);
+  return createdAt;
+}
+
+function normalizeEventText(value: string | null | undefined): string {
+  return (value ?? "").replace(/\s+/g, " ").trim();
+}
+
+function getAssistantText(event: SessionEvent): string {
+  return normalizeEventText(
+    event.displayText ||
+      (event.result?.observation as string | undefined) ||
+      (event.result?.content as string | undefined)
+  );
+}
+
+function isFinalAssistantDuplicate(
+  events: SessionEvent[],
+  content: string
+): boolean {
+  const liveText = normalizeEventText(content);
+  if (!liveText) return false;
+  return events.some(
+    (event) =>
+      event.source === "assistant" &&
+      event.displayVariant === "message" &&
+      event.displayStatus !== "running" &&
+      event.isDelta !== true &&
+      getAssistantText(event) === liveText
+  );
+}
+
+function appendLiveAssistantEvent(
+  events: SessionEvent[],
+  sessionId: string | null,
+  content: string | null
+): SessionEvent[] {
+  if (!sessionId || !content || isFinalAssistantDuplicate(events, content)) {
+    if (sessionId) _liveAssistantCreatedAtBySession.delete(sessionId);
+    return events.filter((event) => event.id !== `live-assistant-${sessionId}`);
+  }
+  const liveId = `live-assistant-${sessionId}`;
+  const createdAt = getLiveAssistantCreatedAt(sessionId);
+  const liveEvent: SessionEvent = {
+    id: liveId,
+    chunk_id: null,
+    sessionId,
+    createdAt,
+    functionName: "assistant_message",
+    uiCanonical: "assistant_message",
+    actionType: "assistant",
+    args: { syntheticLive: true },
+    result: { observation: content },
+    source: "assistant",
+    displayText: content,
+    displayStatus: "running",
+    displayVariant: "message",
+    activityStatus: "agent",
+    isDelta: true,
+  };
+  const withoutLive = events.filter((event) => event.id !== liveId);
+  // Summary events are anchored by Rust to their completed turn; the live
+  // overlay uses its first-token timestamp only to place transient UI relative
+  // to those durable, turn-local anchors.
+  const insertAt = withoutLive.findIndex(
+    (event) => event.createdAt && event.createdAt > createdAt
+  );
+  if (insertAt < 0) return [...withoutLive, liveEvent];
+  return [
+    ...withoutLive.slice(0, insertAt),
+    liveEvent,
+    ...withoutLive.slice(insertAt),
+  ];
+}
 
 export const chatEventsAtom = atom((get) => {
   const snap = get(derivedSnapshotAtom);
@@ -50,8 +134,16 @@ export const chatEventsAtom = atom((get) => {
     _prevChatEvents = [];
   }
 
+  const liveContent = sessionId
+    ? (get(streamingDeltaContentAtom).get(sessionId) ?? null)
+    : null;
+
   if (snap && "chatEvents" in snap) {
-    const next = derivePlanDisplayEvents(snap.chatEvents);
+    const next = appendLiveAssistantEvent(
+      derivePlanDisplayEvents(snap.chatEvents),
+      sessionId,
+      liveContent
+    );
 
     if (isStreamingSnap(snap)) {
       _prevChatEvents = next;
@@ -78,7 +170,11 @@ export const chatEventsAtom = atom((get) => {
   // raw StreamingSnapshot without chatEvents). Filter JS-side, same as
   // messagesEventsAtom / simulatorEventsAtom do in their own fallback paths.
   const events = get(eventsAtom);
-  return derivePlanDisplayEvents(events.filter(isVisibleInChat));
+  return appendLiveAssistantEvent(
+    derivePlanDisplayEvents(events.filter(isVisibleInChat)),
+    sessionId,
+    liveContent
+  );
 });
 chatEventsAtom.debugLabel = "session/chatEvents";
 
@@ -88,7 +184,8 @@ function lastEventStable(next: SessionEvent[], prev: SessionEvent[]): boolean {
   const lastP = prev[prev.length - 1];
   return (
     lastN.displayStatus === lastP.displayStatus &&
-    lastN.isDelta === lastP.isDelta
+    lastN.isDelta === lastP.isDelta &&
+    lastN.displayText === lastP.displayText
   );
 }
 

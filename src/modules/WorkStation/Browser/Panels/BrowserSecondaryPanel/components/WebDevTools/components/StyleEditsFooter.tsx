@@ -6,6 +6,7 @@ import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 
 export interface StyleEditsFooterProps {
   /** Number of successful style edits in the current session */
@@ -36,17 +37,18 @@ export const StyleEditsFooter: React.FC<StyleEditsFooterProps> = memo(
           {t("workstation.styleEditsCount", { count: editCount })}
         </span>
         <div className="flex shrink-0 items-center gap-1.5">
-          <Button
-            size="small"
-            shape="square"
-            iconOnly
-            icon={<Undo2 size={14} strokeWidth={1.75} />}
-            disabled={disabled || editCount <= 0}
-            onClick={onUndo}
-            title={t("actions.undo")}
-            aria-label={t("actions.undo")}
-            htmlType="button"
-          />
+          <WorkstationToolbarTooltip label={t("actions.undo")}>
+            <Button
+              size="small"
+              shape="square"
+              iconOnly
+              icon={<Undo2 size={14} strokeWidth={1.75} />}
+              disabled={disabled || editCount <= 0}
+              onClick={onUndo}
+              aria-label={t("actions.undo")}
+              htmlType="button"
+            />
+          </WorkstationToolbarTooltip>
           <Button
             variant="primary"
             size="small"

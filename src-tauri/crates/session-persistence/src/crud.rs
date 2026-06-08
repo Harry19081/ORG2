@@ -342,57 +342,6 @@ pub fn delete_session(session_id: &str) -> SqliteResult<()> {
     })
 }
 
-/// Delete the last "user_message" event and every event that came after it.
-///
-/// Used by the Scenario A cancel-rollback path so the event store mirrors
-/// the `agent_messages` rollback: the just-cancelled user prompt disappears
-/// from the session view, and subsequent turns do not re-see it.
-///
-/// Returns the number of rows removed.
-pub fn delete_last_user_event_and_after(session_id: &str) -> SqliteResult<i64> {
-    with_sessions_writer(|| {
-        let conn = get_connection()?;
-        let tx = begin_immediate(&conn)?;
-        normalize_session_sequences(&conn, session_id)?;
-
-        let last_user_seq: Option<i64> = tx
-            .query_row(
-                "SELECT history_sequence FROM events
-                 WHERE session_id = ?1 AND function_name = 'user_message'
-                 ORDER BY COALESCE(history_sequence, 0) DESC, created_at DESC
-                 LIMIT 1",
-                [session_id],
-                |row| row.get::<_, Option<i64>>(0),
-            )
-            .optional()?
-            .flatten();
-
-        let Some(seq) = last_user_seq else {
-            tx.commit()?;
-            return Ok(0);
-        };
-
-        let deleted = tx.execute(
-            "DELETE FROM events
-             WHERE session_id = ?1
-               AND COALESCE(history_sequence, 0) >= ?2",
-            params![session_id, seq],
-        )?;
-
-        tx.execute(
-            "UPDATE sessions
-             SET event_count = (SELECT COUNT(*) FROM events WHERE session_id = ?1)
-             WHERE session_id = ?1",
-            [session_id],
-        )?;
-        reset_sequence(session_id, seq);
-        tx.commit()?;
-        super::turn_index::rebuild_turn_index(session_id)?;
-
-        Ok(deleted as i64)
-    })
-}
-
 /// Clear sessions older than TTL.
 ///
 /// The lookup is split from the deletes so the writer lock is held only

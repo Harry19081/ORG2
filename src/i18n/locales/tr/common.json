@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: açık",
+    "disabledLabel": "Agent Control: kapalı",
+    "enableAction": "Agent Control'ü aç",
+    "disableAction": "Agent Control'ü kapat",
+    "inputMode": "Kontrol",
+    "selectionMode": "Yanıt",
+    "toggleMode": "Girdi modunu değiştir",
+    "inputPlaceholder": "Agent'a ne yapacağını söyle...",
+    "selectionPlaceholder": "Seçimi veya yanıtı yaz...",
+    "submit": "Agent Control girdisini gönder",
+    "menuToggle": "Agent Control",
+    "selectModel": "Model seç"
+  },
   "actions": {
     "save": "Kaydet",
     "cancel": "İptal",
@@ -1086,7 +1100,10 @@
       "selectAccount": "Hesap seç"
     },
     "modelProperties": {
-      "options": "Seçenekler"
+      "options": "Seçenekler",
+      "effort": "Çaba",
+      "faster": "Daha hızlı",
+      "smarter": "Daha akıllı"
     },
     "repo": {
       "workspaceFolders": "Workspace Klasörleri",
@@ -1453,6 +1470,7 @@
     "toolLayout": "İş istasyonu",
     "dockAutoHide": "Dock otomatik gizle",
     "modelPickerStyle": "Seçici",
+    "chatPanelPagination": "Sayfalama",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menü",
     "left": "Sol",
@@ -1481,6 +1499,25 @@
     "ramTurnBodies": "Geçmiş lazy load",
     "ramFileTrees": "Dosya ağaçları",
     "ramCodeMirrors": "File rendering"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "Açık temaya geç",
+    "switchToDarkTheme": "Koyu temaya geç",
+    "switchToHighContrastTheme": "Yüksek kontrast temaya geç",
+    "moveMyStationChatLeft": "My Station sohbetini sola taşı",
+    "moveMyStationChatRight": "My Station sohbetini sağa taşı",
+    "moveAgentStationChatLeft": "Agent Station sohbetini sola taşı",
+    "moveAgentStationChatRight": "Agent Station sohbetini sağa taşı",
+    "enableChatPagination": "Sohbet sayfalandırmasını aç",
+    "disableChatPagination": "Sohbet sayfalandırmasını kapat",
+    "useModelPickerSpotlight": "Spotlight model seçiciyi kullan",
+    "useModelPickerDropdown": "Açılır model seçiciyi kullan",
+    "useCompactWorkstationLayout": "Kompakt Workstation düzenini kullan",
+    "useComfortWorkstationLayout": "Rahat Workstation düzenini kullan",
+    "moveWorkstationSidebarLeft": "Workstation kenar çubuğunu sola taşı",
+    "moveWorkstationSidebarRight": "Workstation kenar çubuğunu sağa taşı",
+    "enableDockAutoHide": "Workstation Dock'u otomatik gizle",
+    "disableDockAutoHide": "Workstation Dock'u görünür tut"
   },
   "commands": {
     "showBottomPanel": "Alt paneli göster",

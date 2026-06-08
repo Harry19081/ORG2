@@ -671,8 +671,7 @@
     "singleChoice": "Einzelauswahl",
     "multipleChoice": "Mehrfachauswahl",
     "typeYourAnswer": "Geben Sie Ihre Antwort ein…",
-    "newSession": "Neue Session",
-    "newChat": "Neuer Chat",
+    "newSession": "Neue Sitzung",
     "defaultTitle": "Chat",
     "hideChatPanel": "Chat-Panel ausblenden",
     "replay": {
@@ -1645,7 +1644,6 @@
       "createAgent": "Agent / Skill erstellen",
       "project": "Projekt erstellen",
       "workItem": "Work Item erstellen",
-      "batchStartBeta": "Batch-Start (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Modelle suchen...",
@@ -1796,12 +1794,6 @@
       "worktree": "Worktree",
       "lockedHint": "Worktree ist für diese Sitzung gesperrt"
     },
-    "batchStarterPlaceholder": "Diesen session starter beschreiben",
-    "addBatchStarter": "Starter hinzufügen",
-    "removeBatchStarter": "Starter entfernen",
-    "batchSendSuccess": "{{count}} Sessions erfolgreich erstellt",
-    "batchSendPartial": "{{succeeded}} Sessions erfolgreich erstellt; {{failed}} fehlgeschlagen",
-    "batchSend": "Batch senden",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
@@ -1860,6 +1852,8 @@
       "singleRun": "Einzellauf",
       "batchRun": "Batch-Ausführung",
       "sourcePathPlaceholder": "Pfad zum Benchmark-Ordner",
+      "workingDirectory": "Arbeitsverzeichnis",
+      "workingDirectoryPlaceholder": "Pfad, in dem Agents Repos klonen oder ändern sollen",
       "localPath": "lokaler Pfad",
       "runType": "Ausführungstyp",
       "kindTitle": "Benchmark",
@@ -1869,7 +1863,18 @@
       },
       "selectedTasks": "{{selected}}/{{total}} ausgewählt",
       "concurrency": "Parallel",
-      "taskLoadingUnsupported": "Das Laden von Aufgaben ist für diesen Benchmark noch nicht verfügbar; nutze den Preflight, um die lokale Quelle zu prüfen."
+      "taskLoadingUnsupported": "Das Laden von Aufgaben ist für diesen Benchmark noch nicht verfügbar; nutze den Preflight, um die lokale Quelle zu prüfen.",
+      "attemptTitle": "Versuch",
+      "batchProgress": "{{total}} gesamt · {{queued}} in Warteschlange · {{running}} läuft · {{launched}} gestartet · {{failed}} fehlgeschlagen · {{cancelled}} abgebrochen",
+      "sessionGroupTitle": "Benchmark-Sitzungen",
+      "sessionGroupProgress": "{{total}} gesamt · {{queued}} in Warteschlange · {{running}} läuft · {{launched}} gestartet · {{failed}} fehlgeschlagen · {{cancelled}} abgebrochen",
+      "evaluateSubmitted": "Auswerten",
+      "evaluatingSubmitted": "Patches werden ausgewertet...",
+      "taskActionPlaceholder": "Task IDs for add/remove/stop/restart",
+      "sessionLabel": "Session: {{sessionId}}",
+      "noSessionYet": "Noch keine Session",
+      "testResultPending": "Testergebnis ausstehend",
+      "taskBreadcrumb": "{{attempt}} > {{task}}"
     },
     "skillsAndTools": "Skills & Tools"
   },

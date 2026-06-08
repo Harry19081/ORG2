@@ -1,10 +1,11 @@
 /**
  * Search / list_dir / cat / grep result bodies for session replay CodePanel.
  */
-import { Code2 } from "lucide-react";
-import React, { memo } from "react";
+import { ChevronsUpDown, Code2, X } from "lucide-react";
+import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { getToolDisplayLabelFromRegistry } from "@src/util/ui/rendering/registryToolLabel";
@@ -18,13 +19,71 @@ import {
   DiagnosticRow,
   DirectorySummaryHeader,
   ExploreResultRow,
+  GroupedExploreResultRows,
   LspSummaryHeader,
+  SearchMatchRow,
   SearchSummaryHeader,
 } from "./searchResultsComponents";
+import type { GroupedExploreResult } from "./searchResultsComponents";
 import {
   parseDiagnosticContent,
   parseMatchCountText,
+  parseSearchKeywords,
 } from "./searchResultsParsers";
+
+const DEFAULT_VISIBLE_EXPLORE_RESULT_COUNT = 25;
+const LOAD_MORE_EXPLORE_RESULT_COUNT = 25;
+
+function LoadMoreResultsButton({
+  hiddenCount,
+  onClick,
+}: {
+  hiddenCount: number;
+  onClick: () => void;
+}): React.ReactElement | null {
+  const { t } = useTranslation("common");
+
+  if (hiddenCount <= 0) return null;
+
+  return (
+    <div className="flex w-full justify-center py-1.5">
+      <Button
+        htmlType="button"
+        variant="tertiary"
+        appearance="ghost"
+        size="small"
+        icon={<ChevronsUpDown size={14} />}
+        onClick={onClick}
+      >
+        {t("actions.loadMore")} ({hiddenCount})
+      </Button>
+    </div>
+  );
+}
+
+function isDirectoryNotFoundMessage(message: string): boolean {
+  return /Execution failed:\s*Directory not found/i.test(message);
+}
+
+function groupResultsByFile(
+  results: SearchResult[]
+): GroupedExploreResult<SearchResult>[] {
+  const groupedResults = new Map<string, SearchResult[]>();
+  const orderedFiles: string[] = [];
+
+  for (const result of results) {
+    if (!groupedResults.has(result.file)) {
+      orderedFiles.push(result.file);
+      groupedResults.set(result.file, []);
+    }
+    groupedResults.get(result.file)!.push(result);
+  }
+
+  return orderedFiles.map((filePath) => ({
+    filePath,
+    items: groupedResults.get(filePath) ?? [],
+  }));
+}
 
 export const SearchResultsContent: React.FC<{
   operation: ExploreOperationEntry;
@@ -41,6 +100,25 @@ export const SearchResultsContent: React.FC<{
     directory: workspaceDirectoryHint,
     isLoading,
   } = operation;
+  const [visibleExploreResultState, setVisibleExploreResultState] = useState({
+    key: operation.eventId,
+    count: DEFAULT_VISIBLE_EXPLORE_RESULT_COUNT,
+  });
+  const visibleExploreResultCount =
+    visibleExploreResultState.key === operation.eventId
+      ? visibleExploreResultState.count
+      : DEFAULT_VISIBLE_EXPLORE_RESULT_COUNT;
+
+  const handleLoadMoreResults = () => {
+    setVisibleExploreResultState((currentState) => ({
+      key: operation.eventId,
+      count:
+        (currentState.key === operation.eventId
+          ? currentState.count
+          : DEFAULT_VISIBLE_EXPLORE_RESULT_COUNT) +
+        LOAD_MORE_EXPLORE_RESULT_COUNT,
+    }));
+  };
 
   if (isLoading) {
     return (
@@ -56,8 +134,15 @@ export const SearchResultsContent: React.FC<{
 
   if (exploreType === "list_dir") {
     const fileList = files ?? [];
-    const fileCount = totalMatches > 0 ? totalMatches : fileList.length;
-    const showTruncationHint = Boolean(operation.listDirDisplayTruncated);
+    const directoryNotFoundMessage = fileList.find(isDirectoryNotFoundMessage);
+    const visibleFileList = directoryNotFoundMessage ? [] : fileList;
+    const fileCount = directoryNotFoundMessage
+      ? 0
+      : totalMatches > 0
+        ? totalMatches
+        : visibleFileList.length;
+    const showTruncationHint =
+      !directoryNotFoundMessage && Boolean(operation.listDirDisplayTruncated);
     return (
       <div className="flex w-full min-w-0 flex-col">
         <DirectorySummaryHeader
@@ -66,9 +151,21 @@ export const SearchResultsContent: React.FC<{
             count: fileCount,
           })}
         />
-        {fileList.length > 0 ? (
+        {directoryNotFoundMessage ? (
           <div className="flex w-full min-w-0 flex-col gap-0.5 p-2">
-            {fileList.map((file, idx) => (
+            <div className="flex w-full min-w-0 max-w-full items-center gap-2 rounded px-2 py-1.5 text-[13px] hover:bg-fill-2">
+              <X size={14} className="shrink-0 text-danger-6" />
+              <span
+                className="min-w-0 flex-1 truncate text-text-1"
+                title={directoryNotFoundMessage}
+              >
+                {directoryNotFoundMessage}
+              </span>
+            </div>
+          </div>
+        ) : visibleFileList.length > 0 ? (
+          <div className="flex w-full min-w-0 flex-col gap-0.5 p-2">
+            {visibleFileList.map((file, idx) => (
               <div
                 key={idx}
                 className="flex w-full min-w-0 max-w-full items-center gap-2 rounded px-2 py-1.5 text-[13px] hover:bg-fill-2"
@@ -120,6 +217,8 @@ export const SearchResultsContent: React.FC<{
 
   if (exploreType === "glob" || exploreType === "file_search") {
     const fileList = files ?? [];
+    const visibleFiles = fileList.slice(0, visibleExploreResultCount);
+    const hiddenFileCount = Math.max(0, fileList.length - visibleFiles.length);
     const fileCount = totalMatches > 0 ? totalMatches : fileList.length;
     return (
       <div className="flex w-full min-w-0 flex-col">
@@ -134,9 +233,9 @@ export const SearchResultsContent: React.FC<{
             count: fileCount,
           })}
         />
-        {fileList.length > 0 ? (
+        {visibleFiles.length > 0 ? (
           <div className="flex w-full min-w-0 flex-col gap-0.5 p-2">
-            {fileList.map((file, idx) => (
+            {visibleFiles.map((file, idx) => (
               <ExploreResultRow
                 key={`${file}-${idx}`}
                 filePath={file}
@@ -145,6 +244,10 @@ export const SearchResultsContent: React.FC<{
             ))}
           </div>
         ) : null}
+        <LoadMoreResultsButton
+          hiddenCount={hiddenFileCount}
+          onClick={handleLoadMoreResults}
+        />
       </div>
     );
   }
@@ -238,69 +341,60 @@ export const SearchResultsContent: React.FC<{
             ))}
           </div>
         ) : results.length > 0 ? (
-          <div className="flex w-full min-w-0 flex-col p-1">
-            {(() => {
-              const perFileDiagnostics = new Map<string, SearchResult[]>();
-              const orderedFiles: string[] = [];
-              for (const result of results) {
-                if (!perFileDiagnostics.has(result.file)) {
-                  orderedFiles.push(result.file);
-                  perFileDiagnostics.set(result.file, []);
-                }
-                perFileDiagnostics.get(result.file)!.push(result);
-              }
-              return orderedFiles.map((file, idx) => {
-                const fileDiagnostics = perFileDiagnostics.get(file) ?? [];
-                return (
-                  <div
-                    key={`${file}-${idx}`}
-                    className="flex w-full min-w-0 flex-col"
-                  >
-                    <ExploreResultRow
-                      filePath={file}
-                      workspaceDirectoryHint={workspaceDirectoryHint}
-                      count={fileDiagnostics.length}
-                    />
-                    <div className="flex w-full min-w-0 flex-col pl-6">
-                      {fileDiagnostics.map((diagnostic, diagIdx) => {
-                        const parsed = parseDiagnosticContent(
-                          diagnostic.content
-                        );
-                        return (
-                          <DiagnosticRow
-                            key={`${file}-${diagnostic.line}-${diagIdx}`}
-                            severity={parsed.severity}
-                            message={parsed.message}
-                            source={parsed.source}
-                            line={diagnostic.line}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              });
-            })()}
-          </div>
+          <GroupedExploreResultRows
+            groups={groupResultsByFile(results)}
+            workspaceDirectoryHint={workspaceDirectoryHint}
+            renderItem={(diagnostic, diagnosticIndex, filePath) => {
+              const parsed = parseDiagnosticContent(diagnostic.content);
+              return (
+                <DiagnosticRow
+                  key={`${filePath}-${diagnostic.line}-${diagnosticIndex}`}
+                  severity={parsed.severity}
+                  message={parsed.message}
+                  source={parsed.source}
+                  line={diagnostic.line}
+                />
+              );
+            }}
+          />
         ) : null}
       </div>
     );
   }
 
   if (exploreType === "code_search") {
-    const displayResults: SearchResult[] = results;
+    const visibleSearchResults = results.slice(0, visibleExploreResultCount);
+    const fileFallbackList = files ?? [];
+    const visibleFileFallbackList = fileFallbackList.slice(
+      0,
+      visibleExploreResultCount
+    );
+    const hiddenResultCount = Math.max(
+      0,
+      (results.length > 0 ? results.length : fileFallbackList.length) -
+        (results.length > 0
+          ? visibleSearchResults.length
+          : visibleFileFallbackList.length)
+    );
+    const displayResults: SearchResult[] =
+      results.length > 0
+        ? results
+        : fileFallbackList.map((file) => ({ file, line: 0, content: "" }));
 
-    const perFileCounts = new Map<string, number>();
-    for (const result of displayResults) {
-      perFileCounts.set(result.file, (perFileCounts.get(result.file) ?? 0) + 1);
-    }
     const visibleResultCount = displayResults.reduce((sum, result) => {
       const snippet = searchSnippetOneLine(result.content);
       return sum + (parseMatchCountText(snippet) ?? 1);
     }, 0);
+    const resultCount =
+      results.length > 0
+        ? visibleResultCount
+        : totalMatches > 0
+          ? totalMatches
+          : visibleResultCount;
     const countLabel = tSessions("simulator.replay.ide.codePanel.resultCount", {
-      count: visibleResultCount,
+      count: resultCount,
     });
+    const highlightTerms = parseSearchKeywords(_query);
 
     return (
       <div className="flex w-full min-w-0 flex-col">
@@ -313,32 +407,52 @@ export const SearchResultsContent: React.FC<{
           )}
           countLabel={countLabel}
         />
-        <div className="flex w-full min-w-0 flex-col p-1">
-          {displayResults.map((result: SearchResult, idx: number) => {
-            const snippet = searchSnippetOneLine(result.content);
-            const explicitGrepCount = parseMatchCountText(snippet);
-            const derivedCount = perFileCounts.get(result.file) ?? 0;
-            const rowCount = explicitGrepCount ?? derivedCount;
-            const hideSnippetForCount = typeof explicitGrepCount === "number";
-            const lineLabel =
-              result.line > 0
-                ? tSessions(
-                    "simulator.replay.ide.codePanel.searchResultLinePrefix",
-                    { line: result.line }
-                  )
-                : undefined;
-            return (
+        {visibleSearchResults.length > 0 ? (
+          <GroupedExploreResultRows
+            groups={groupResultsByFile(visibleSearchResults)}
+            workspaceDirectoryHint={workspaceDirectoryHint}
+            getCount={(group) =>
+              group.items.reduce((sum, result) => {
+                const snippet = searchSnippetOneLine(result.content);
+                return sum + (parseMatchCountText(snippet) ?? 1);
+              }, 0)
+            }
+            renderItem={(result, resultIndex, filePath) => {
+              const snippet = searchSnippetOneLine(result.content);
+              const explicitGrepCount = parseMatchCountText(snippet);
+              if (typeof explicitGrepCount === "number") return null;
+              const lineLabel =
+                result.line > 0
+                  ? tSessions(
+                      "simulator.replay.ide.codePanel.searchResultLinePrefix",
+                      { line: result.line }
+                    )
+                  : undefined;
+              return (
+                <SearchMatchRow
+                  key={`${filePath}-${result.line}-${resultIndex}`}
+                  message={snippet}
+                  lineLabel={lineLabel}
+                  highlightTerms={highlightTerms}
+                />
+              );
+            }}
+          />
+        ) : visibleFileFallbackList.length > 0 ? (
+          <div className="flex w-full min-w-0 flex-col gap-0.5 p-2">
+            {visibleFileFallbackList.map((file, fileIndex) => (
               <ExploreResultRow
-                key={`${result.file}-${result.line}-${idx}`}
-                filePath={result.file}
+                key={`${file}-${fileIndex}`}
+                filePath={file}
                 workspaceDirectoryHint={workspaceDirectoryHint}
-                detail={hideSnippetForCount ? undefined : snippet}
-                count={rowCount}
-                lineLabel={lineLabel}
               />
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : null}
+        <LoadMoreResultsButton
+          hiddenCount={hiddenResultCount}
+          onClick={handleLoadMoreResults}
+        />
       </div>
     );
   }

@@ -11,27 +11,25 @@
  * 6. Optionally reverts files
  * 7. Re-submits the edited text as a new message
  */
-import { useAtomValue, useSetAtom, useStore } from "jotai";
+import { useSetAtom, useStore } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
-  CANCEL_REASON,
-  cancelSession,
   checkSnapshotChanges,
   truncateAfterMessage,
 } from "@src/api/tauri/agent";
 import Message from "@src/components/Message";
-import useWorkspaceChat from "@src/engines/ChatPanel/hooks/useWorkspaceChat";
+import { useMessageDispatch } from "@src/engines/ChatPanel/hooks/useWorkspaceChat/useMessageDispatch";
 import { editTruncationTimestampAtom } from "@src/engines/SessionCore";
+import { cancelTurnForTimelineBoundary } from "@src/engines/SessionCore/control/sessionTimelineBoundary";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
-import { truncateAfterEvent } from "@src/engines/SessionCore/storage/sqliteCache";
-import { isSessionActiveAtom } from "@src/store/session/cliSessionStatusAtom";
 import {
   clearPendingPlanApproval,
   pendingPlanApprovalsAtom,
 } from "@src/store/session/planApprovalAtom";
+import { activeSessionIdAtom } from "@src/store/session/viewAtom";
 import { clearTodosForSessionAtom } from "@src/store/ui/todoAtom";
 import { invokeTauri } from "@src/util/platform/tauri/init";
 import {
@@ -43,6 +41,13 @@ import type { OptimizedChatItem } from "../chatItemPipeline/types";
 import { showRevertConfirm } from "../components/RevertConfirmDialog";
 
 const TRUNCATION_GUARD_CLEAR_DELAY_MS = 500;
+const USER_MESSAGE_EVENT_ID_PREFIX = "user-message-";
+
+function agentMessageIdFromUserEventId(eventId: string): string | undefined {
+  return eventId.startsWith(USER_MESSAGE_EVENT_ID_PREFIX)
+    ? eventId.slice(USER_MESSAGE_EVENT_ID_PREFIX.length)
+    : undefined;
+}
 
 export function useEditUserMessage(): (
   chatItem: OptimizedChatItem,
@@ -52,10 +57,15 @@ export function useEditUserMessage(): (
   const setEditTruncation = useSetAtom(editTruncationTimestampAtom);
   const setPendingPlanApprovals = useSetAtom(pendingPlanApprovalsAtom);
   const clearTodosForSession = useSetAtom(clearTodosForSessionAtom);
-  const sessionId = useAtomValue(sessionIdAtom);
-  const { handleSessChatSubmit } = useWorkspaceChat();
-  const { t } = useTranslation("sessions");
   const store = useStore();
+  const resolveCurrentSessionId = useCallback(
+    () => store.get(activeSessionIdAtom) ?? store.get(sessionIdAtom),
+    [store]
+  );
+  const { addUserMessage, dispatchMessageBySessionType } = useMessageDispatch({
+    getSessionId: resolveCurrentSessionId,
+  });
+  const { t } = useTranslation("sessions");
 
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -74,9 +84,13 @@ export function useEditUserMessage(): (
       newText: string,
       imageDataUrls?: string[]
     ) => {
-      const initiatedSessionId = sessionId;
-      const isStillOnInitiatingSession = (): boolean =>
-        store.get(sessionIdAtom) === initiatedSessionId;
+      const initiatedSessionId = resolveCurrentSessionId();
+      const isStillOnInitiatingSession = (): boolean => {
+        if (!initiatedSessionId) return false;
+        const activeSessionId = store.get(activeSessionIdAtom);
+        if (activeSessionId) return activeSessionId === initiatedSessionId;
+        return store.get(sessionIdAtom) === initiatedSessionId;
+      };
 
       const dbEventId = chatItem.event?.id ?? null;
       const eventId = dbEventId ?? chatItem.chunk_id;
@@ -111,34 +125,6 @@ export function useEditUserMessage(): (
         }
       }
 
-      if (initiatedSessionId && store.get(isSessionActiveAtom)) {
-        try {
-          if (isAgentSession(initiatedSessionId)) {
-            await cancelSession(initiatedSessionId, CANCEL_REASON.USER_STOP);
-          } else if (isCliSession(initiatedSessionId)) {
-            await invokeTauri<boolean>("cli_agent_cancel", {
-              sessionId: initiatedSessionId,
-            });
-          }
-        } catch (err) {
-          console.warn(
-            "[useEditUserMessage] cancel before truncate failed:",
-            err
-          );
-        }
-        if (!isStillOnInitiatingSession()) return;
-      }
-
-      if (createdAt) {
-        setEditTruncation(createdAt);
-      }
-      if (initiatedSessionId) {
-        setPendingPlanApprovals((prev) =>
-          clearPendingPlanApproval(prev, initiatedSessionId)
-        );
-        clearTodosForSession(initiatedSessionId);
-      }
-
       if (
         initiatedSessionId &&
         !dbEventId &&
@@ -155,19 +141,23 @@ export function useEditUserMessage(): (
       }
 
       try {
-        if (
-          initiatedSessionId &&
-          createdAt &&
-          dbEventId &&
-          !isCliSession(initiatedSessionId)
-        ) {
-          await truncateAfterEvent(initiatedSessionId, dbEventId);
+        if (createdAt) {
+          setEditTruncation(createdAt);
         }
+        if (initiatedSessionId) {
+          await cancelTurnForTimelineBoundary(initiatedSessionId, "rewind");
+        }
+
+        await eventStoreProxy.truncateBeforeId(
+          eventId,
+          initiatedSessionId ?? undefined
+        );
 
         if (initiatedSessionId && createdAt) {
           if (isAgentSession(initiatedSessionId)) {
             await truncateAfterMessage(initiatedSessionId, createdAt, {
               revertFiles,
+              messageId: agentMessageIdFromUserEventId(eventId),
             });
           } else if (isCliSession(initiatedSessionId)) {
             await invokeTauri<number>("cli_agent_truncate_after_chunk", {
@@ -178,20 +168,23 @@ export function useEditUserMessage(): (
           }
         }
 
-        if (!isStillOnInitiatingSession()) return;
+        if (initiatedSessionId) {
+          setPendingPlanApprovals((prev) =>
+            clearPendingPlanApproval(prev, initiatedSessionId)
+          );
+          clearTodosForSession(initiatedSessionId);
+        }
 
-        await eventStoreProxy.truncateBeforeId(
-          eventId,
-          initiatedSessionId ?? undefined
-        );
-
-        await handleSessChatSubmit(
-          undefined,
-          newText,
-          undefined,
-          imageDataUrls && imageDataUrls.length > 0 ? imageDataUrls : undefined,
-          { forceDispatch: true }
-        );
+        const resendImages =
+          imageDataUrls && imageDataUrls.length > 0 ? imageDataUrls : undefined;
+        await addUserMessage(newText, resendImages);
+        if (initiatedSessionId) {
+          await dispatchMessageBySessionType(
+            initiatedSessionId,
+            newText,
+            resendImages
+          );
+        }
       } catch (err) {
         console.error(
           "[useEditUserMessage] edit truncate/resubmit failed:",
@@ -212,8 +205,9 @@ export function useEditUserMessage(): (
       setEditTruncation,
       setPendingPlanApprovals,
       clearTodosForSession,
-      sessionId,
-      handleSessChatSubmit,
+      resolveCurrentSessionId,
+      addUserMessage,
+      dispatchMessageBySessionType,
       t,
       store,
     ]

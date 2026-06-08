@@ -11,7 +11,6 @@
  * Tab strip uses bg-workstation-bg by default; tabs are 32px pills on the 40px row.
  * The tab row has no bottom divider.
  */
-import { useActionSystemOptional } from "@/src/modules/WorkStation/ActionSystem";
 import {
   DndContext,
   DragOverlay,
@@ -37,6 +36,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { useActionSystemOptional } from "@src/ActionSystem";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import {
   COLLAPSED_SIDEBAR_CHROME_OFFSET,
@@ -88,6 +88,8 @@ export interface TabBarProps {
   onMoreOptions?: () => void;
   /** Opens a new tab (e.g. Browser); shows + in the right control section */
   onNewTab?: () => void;
+  /** Optional keyboard shortcut displayed for the new-tab control. */
+  onNewTabShortcutId?: string;
   /** Callback to close all other tabs */
   onCloseOtherTabs?: (tabId: string) => void;
   /** Callback to close all saved tabs */
@@ -195,6 +197,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
     onTabReorder,
     onMoreOptions,
     onNewTab,
+    onNewTabShortcutId,
     onCloseOtherTabs,
     onCloseSavedTabs,
     repoPath = "",
@@ -395,6 +398,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
             <TabBarControls
               hasTabs={hasTabs}
               onNewTab={onNewTab}
+              onNewTabShortcutId={onNewTabShortcutId}
               onMoreOptions={onMoreOptions}
               trailingSlot={trailingSlot}
             />

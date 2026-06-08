@@ -7,7 +7,7 @@
     "economy": "Economia",
     "sourceControl": "Source control",
     "startSession": "Iniciar Sessão",
-    "newSession": "Novo chat",
+    "newSession": "Nova sessão",
     "quickstart": "Início rápido",
     "drafts": "Rascunhos",
     "browser": "Navegador",
@@ -34,15 +34,19 @@
     "other": "Outros",
     "workflow": "Fluxo de Trabalho",
     "agent": "Agent",
-    "chat": "Comunicação",
+    "session": "Sessão",
+    "folders": "Pastas",
     "inbox": "Caixa de Entrada",
     "issues": "Itens de Trabalho",
     "agentKanban": "Ops Control",
     "history": "Histórico",
     "controlTower": "Torre de Controle",
     "backgroundTasks": "Tarefas em Segundo Plano",
+    "project": "Projeto",
     "projects": "Histórias",
     "projectManager": "Project Manager",
+    "myKeys": "Minhas chaves",
+    "myAgents": "Meus Agents",
     "diff": "Diff"
   },
   "trajectoryPanel": {
@@ -133,6 +137,12 @@
       "openHome": "Abrir início",
       "openWorkstation": "Abrir Workstation"
     },
+    "folderCounts": {
+      "repo": "{{count}} Repo",
+      "repo_plural": "{{count}} Repos",
+      "multiRepoWorkspace": "{{count}} Workspace multi-Repo",
+      "multiRepoWorkspace_plural": "{{count}} Workspaces multi-Repo"
+    },
     "bottomBar": {
       "settings": "Configurações",
       "clockLabel": "Hora atual"
@@ -166,6 +176,12 @@
       "duration1h": "1 hora",
       "duration2h": "2 horas",
       "durationTomorrow": "Amanhã"
+    }
+  },
+  "myRole": {
+    "tabs": {
+      "status": "Meu status",
+      "about": "Sobre mim"
     }
   },
   "launchpad": {

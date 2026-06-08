@@ -2,22 +2,32 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
+import { dispatchAgentEvent } from "..";
 import {
   handleMessageDelta,
   handleStreamingComplete,
   handleThinkingDelta,
 } from "../streamHandlers";
+import {
+  clearSessionStreamingStopped,
+  markSessionStreamingStopped,
+} from "../streamHelpers";
 import type { EventHandlerContext } from "../types";
 
-const { upsertSpy, replaceAndRemoveSpy } = vi.hoisted(() => ({
-  upsertSpy: vi.fn().mockResolvedValue(undefined),
-  replaceAndRemoveSpy: vi.fn().mockResolvedValue(true),
-}));
+const { upsertSpy, replaceAndRemoveSpy, removeByIdPrefixSpy } = vi.hoisted(
+  () => ({
+    upsertSpy: vi.fn().mockResolvedValue(undefined),
+    replaceAndRemoveSpy: vi.fn().mockResolvedValue(true),
+    removeByIdPrefixSpy: vi.fn().mockResolvedValue(1),
+  })
+);
 
 vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
   eventStoreProxy: {
     upsert: upsertSpy,
     replaceAndRemove: replaceAndRemoveSpy,
+    removeByIdPrefix: removeByIdPrefixSpy,
+    saveToCache: vi.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -93,9 +103,152 @@ function makeThinkingCompleteEvent(): SessionEvent {
 describe("Rust Agent stream handlers", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearSessionStreamingStopped("session-1");
   });
 
-  it("upserts message deltas as live EventStore events", () => {
+  it("drops stopped-turn live stream events without poisoning the next turn", async () => {
+    const ctx = createCtx();
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:message_delta",
+        sessionId: "session-1",
+        turnId: "turn-a",
+        content: "before stop",
+      },
+      ctx
+    );
+    expect(upsertSpy).not.toHaveBeenCalled();
+    vi.clearAllMocks();
+
+    markSessionStreamingStopped("session-1");
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:message_delta",
+        sessionId: "session-1",
+        turnId: "turn-a",
+        content: "late",
+      },
+      ctx
+    );
+    await dispatchAgentEvent(
+      {
+        type: "agent:thinking_delta",
+        sessionId: "session-1",
+        turnId: "turn-a",
+        content: "late",
+      },
+      ctx
+    );
+    await dispatchAgentEvent(
+      {
+        type: "agent:tool_call_delta",
+        sessionId: "session-1",
+        turnId: "turn-a",
+        toolCallId: "call-1",
+        tool: "edit_file",
+        argumentsDelta: "{}",
+      },
+      ctx
+    );
+    await dispatchAgentEvent(
+      {
+        type: "agent:streaming_complete",
+        sessionId: "session-1",
+        turnId: "turn-a",
+        streamType: "message",
+        event: makeMessageCompleteEvent(),
+      },
+      ctx
+    );
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
+    expect(ctx.setStreaming).not.toHaveBeenCalled();
+    expect(ctx.onStatusChangeRef.current).not.toHaveBeenCalledWith("running");
+
+    clearSessionStreamingStopped("session-1");
+    await dispatchAgentEvent(
+      {
+        type: "agent:message_delta",
+        sessionId: "session-1",
+        turnId: "turn-b",
+        content: "new turn",
+      },
+      ctx
+    );
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(ctx.setStreaming).toHaveBeenCalledWith(true);
+  });
+
+  it("survives hostile late-stream flood after stop without poisoning the next turn", async () => {
+    const ctx = createCtx();
+
+    markSessionStreamingStopped("session-1");
+
+    for (let idx = 0; idx < 250; idx += 1) {
+      await dispatchAgentEvent(
+        {
+          type: idx % 2 === 0 ? "agent:message_delta" : "agent:thinking_delta",
+          sessionId: "session-1",
+          turnId: "turn-late",
+          content: `late-${idx} `,
+        },
+        ctx
+      );
+    }
+    await dispatchAgentEvent(
+      {
+        type: "agent:streaming_complete",
+        sessionId: "session-1",
+        turnId: "turn-late",
+        streamType: "message",
+        event: makeMessageCompleteEvent(),
+      },
+      ctx
+    );
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
+    expect(ctx.setStreaming).not.toHaveBeenCalled();
+    expect(ctx.onStreamingDeltaRef?.current).not.toHaveBeenCalled();
+
+    clearSessionStreamingStopped("session-1");
+    vi.clearAllMocks();
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:message_delta",
+        sessionId: "session-1",
+        turnId: "turn-late",
+        content: "still late",
+      },
+      ctx
+    );
+    expect(ctx.setStreaming).not.toHaveBeenCalled();
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:message_delta",
+        sessionId: "session-1",
+        turnId: "turn-new",
+        content: "new turn",
+      },
+      ctx
+    );
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(ctx.setStreaming).toHaveBeenCalledWith(true);
+    expect(ctx.onStreamingDeltaRef?.current).toHaveBeenCalledWith({
+      isStreaming: true,
+      isThinking: false,
+      content: "new turn",
+    });
+  });
+
+  it("keeps message deltas in ephemeral streaming state", () => {
     const ctx = createCtx();
 
     handleMessageDelta(
@@ -113,22 +266,11 @@ describe("Rust Agent stream handlers", () => {
       isThinking: false,
       content: "Hello",
     });
-    expect(upsertSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: ctx.assistantStreamRef?.current.idRef.current,
-        functionName: "assistant_message",
-        actionType: "assistant",
-        result: { observation: "Hello" },
-        displayStatus: "running",
-        displayVariant: "message",
-        isDelta: true,
-      }),
-      "session-1"
-    );
+    expect(upsertSpy).not.toHaveBeenCalled();
     expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
   });
 
-  it("normalizes cumulative message delta snapshots without duplicating prefixes", () => {
+  it("normalizes cumulative message delta snapshots without durable writes", () => {
     const ctx = createCtx();
 
     handleMessageDelta(
@@ -150,23 +292,35 @@ describe("Rust Agent stream handlers", () => {
       isThinking: false,
       content: "Hello world",
     });
-    expect(upsertSpy).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        result: { observation: "Hello world" },
-        displayText: "Hello world",
-      }),
-      "session-1"
-    );
+    expect(upsertSpy).not.toHaveBeenCalled();
   });
 
-  it("replaces live message event with backend-authoritative completion", async () => {
+  it("does not enqueue durable writes during live message flood", () => {
+    const ctx = createCtx();
+
+    for (let idx = 0; idx < 100; idx += 1) {
+      handleMessageDelta(
+        {
+          type: "agent:message_delta",
+          sessionId: "session-1",
+          turnId: "turn-flood",
+          content: `token-${idx} `,
+        },
+        "session-1",
+        ctx
+      );
+    }
+
+    expect(upsertSpy).not.toHaveBeenCalled();
+  });
+
+  it("removes live message placeholder on backend-authoritative completion", async () => {
     const ctx = createCtx();
     handleMessageDelta(
       { type: "agent:message_delta", content: "Hello" },
       "session-1",
       ctx
     );
-    const liveMessageId = ctx.assistantStreamRef?.current.idRef.current ?? null;
     const completeEvent = makeMessageCompleteEvent();
 
     await handleStreamingComplete(
@@ -183,14 +337,58 @@ describe("Rust Agent stream handlers", () => {
     expect(ctx.assistantStreamRef?.current.contentRef.current).toBe("");
     expect(ctx.setStreaming).toHaveBeenCalledWith(false);
     expect(ctx.onStatusChangeRef.current).toHaveBeenCalledWith("completed");
-    expect(replaceAndRemoveSpy).toHaveBeenCalledWith(
-      liveMessageId,
-      completeEvent,
-      "session-1"
-    );
+    expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
+    expect(removeByIdPrefixSpy).not.toHaveBeenCalled();
   });
 
-  it("upserts thinking deltas as live EventStore events", () => {
+  it("agent complete releases streaming UI even when turn_summary is still pending", async () => {
+    const ctx = createCtx();
+    handleMessageDelta(
+      { type: "agent:message_delta", content: "Done." },
+      "session-1",
+      ctx
+    );
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:complete",
+        sessionId: "session-1",
+        turnId: "turn-a",
+      },
+      ctx
+    );
+
+    expect(ctx.assistantStreamRef?.current.idRef.current).toBe("");
+    expect(ctx.assistantStreamRef?.current.contentRef.current).toBe("");
+    expect(ctx.streamingInfoRef?.current).toEqual({
+      isStreaming: false,
+      isThinking: false,
+      content: "",
+    });
+    expect(ctx.onStreamingDeltaRef?.current).toHaveBeenLastCalledWith({
+      isStreaming: false,
+      isThinking: false,
+      content: "",
+    });
+    expect(ctx.setStreaming).toHaveBeenCalledWith(false);
+    expect(ctx.onStatusChangeRef.current).toHaveBeenCalledWith("completed");
+
+    await dispatchAgentEvent(
+      {
+        type: "agent:turn_summary",
+        sessionId: "session-1",
+        turnId: "turn-a",
+        createdAt: "2026-05-22T07:02:26.000Z",
+        summary: "Summary after completion",
+      },
+      ctx
+    );
+
+    expect(ctx.setStreaming).toHaveBeenCalledTimes(2);
+    expect(ctx.onStatusChangeRef.current).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps thinking deltas in ephemeral streaming state", () => {
     const ctx = createCtx();
 
     handleThinkingDelta(
@@ -208,22 +406,11 @@ describe("Rust Agent stream handlers", () => {
       isThinking: true,
       content: "Thinking",
     });
-    expect(upsertSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: ctx.thinkingStreamRef?.current.idRef.current,
-        functionName: "thinking",
-        actionType: "llm_thinking_delta",
-        result: { observation: "Thinking" },
-        displayStatus: "running",
-        displayVariant: "thinking",
-        isDelta: true,
-      }),
-      "session-1"
-    );
+    expect(upsertSpy).not.toHaveBeenCalled();
     expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
   });
 
-  it("normalizes cumulative thinking delta snapshots without duplicating prefixes", () => {
+  it("normalizes cumulative thinking delta snapshots without durable writes", () => {
     const ctx = createCtx();
 
     handleThinkingDelta(
@@ -245,23 +432,16 @@ describe("Rust Agent stream handlers", () => {
       isThinking: true,
       content: "Thinking through it",
     });
-    expect(upsertSpy).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        result: { observation: "Thinking through it" },
-        displayText: "Thinking through it",
-      }),
-      "session-1"
-    );
+    expect(upsertSpy).not.toHaveBeenCalled();
   });
 
-  it("replaces live thinking event with backend-authoritative completion", async () => {
+  it("removes live thinking placeholder on backend-authoritative completion", async () => {
     const ctx = createCtx();
     handleThinkingDelta(
       { type: "agent:thinking_delta", content: "Thinking" },
       "session-1",
       ctx
     );
-    const liveThinkingId = ctx.thinkingStreamRef?.current.idRef.current ?? null;
     const completeEvent = makeThinkingCompleteEvent();
 
     await handleStreamingComplete(
@@ -281,11 +461,8 @@ describe("Rust Agent stream handlers", () => {
       isThinking: false,
       content: "",
     });
-    expect(upsertSpy).toHaveBeenCalled();
-    expect(replaceAndRemoveSpy).toHaveBeenCalledWith(
-      liveThinkingId,
-      completeEvent,
-      "session-1"
-    );
+    expect(upsertSpy).not.toHaveBeenCalled();
+    expect(replaceAndRemoveSpy).not.toHaveBeenCalled();
+    expect(removeByIdPrefixSpy).not.toHaveBeenCalled();
   });
 });

@@ -43,7 +43,7 @@ const ToolPane: React.FC<ToolPaneProps> = memo(
       <div className="flex h-9 shrink-0 items-center px-3 text-[11px] font-bold uppercase text-text-2">
         {label}
       </div>
-      <div className="min-h-0 flex-1 overflow-auto px-3 pb-3">
+      <div className="min-h-0 flex-1 overflow-auto px-3 pb-[100px]">
         {content ? (
           <pre className="m-0 whitespace-pre-wrap break-words text-[12px] leading-5 text-text-2">
             {content}

@@ -6,8 +6,8 @@
     "dbManager": "Gestor de BD",
     "economy": "Economía",
     "sourceControl": "Source control",
-    "startSession": "Iniciar Session",
-    "newSession": "Nuevo chat",
+    "startSession": "Iniciar sesión",
+    "newSession": "Nueva sesión",
     "quickstart": "Inicio rápido",
     "drafts": "Borradores",
     "browser": "Navegador",
@@ -34,15 +34,19 @@
     "other": "Otros",
     "workflow": "Flujo de trabajo",
     "agent": "Agent",
-    "chat": "Comunicación",
+    "session": "Sesión",
+    "folders": "Carpetas",
     "inbox": "Bandeja de entrada",
     "issues": "Elementos de trabajo",
     "agentKanban": "Ops Control",
     "history": "Historial",
     "controlTower": "Control Tower",
     "backgroundTasks": "Tareas en segundo plano",
+    "project": "Proyecto",
     "projects": "Projects",
     "projectManager": "Project Manager",
+    "myKeys": "Mis claves",
+    "myAgents": "Mis Agents",
     "diff": "Diff"
   },
   "trajectoryPanel": {
@@ -54,7 +58,7 @@
   },
   "routes": {
     "session": "Chat",
-    "startSession": "Iniciar Session",
+    "startSession": "Iniciar sesión",
     "sessions": "Session",
     "kanban": "Ops Control",
     "selectProject": "Seleccionar Project",
@@ -133,6 +137,12 @@
       "openHome": "Abrir inicio",
       "openWorkstation": "Abrir Workstation"
     },
+    "folderCounts": {
+      "repo": "{{count}} Repo",
+      "repo_plural": "{{count}} Repos",
+      "multiRepoWorkspace": "{{count}} Workspace multi-Repo",
+      "multiRepoWorkspace_plural": "{{count}} Workspaces multi-Repo"
+    },
     "bottomBar": {
       "settings": "Configuración",
       "clockLabel": "Hora actual"
@@ -166,6 +176,12 @@
       "duration1h": "1 hora",
       "duration2h": "2 horas",
       "durationTomorrow": "Mañana"
+    }
+  },
+  "myRole": {
+    "tabs": {
+      "status": "Mi estado",
+      "about": "Sobre mí"
     }
   },
   "launchpad": {

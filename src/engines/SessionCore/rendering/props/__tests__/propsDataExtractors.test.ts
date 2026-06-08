@@ -244,9 +244,32 @@ describe("extractFileData", () => {
       expect(extractFileData(props).filePath).toBe("src/target.ts");
     });
 
+    it("gets filePath from camel-case Cursor read args", () => {
+      const props = makeUniversalProps({
+        args: { targetFile: "/Users/vinceorz/Projects/ORGII/src/app/root.tsx" },
+      });
+      expect(extractFileData(props).filePath).toBe(
+        "/Users/vinceorz/Projects/ORGII/src/app/root.tsx"
+      );
+    });
+
     it("gets filePath from args.path", () => {
       const props = makeUniversalProps({ args: { path: "src/path.ts" } });
       expect(extractFileData(props).filePath).toBe("src/path.ts");
+    });
+
+    it("falls back when rust extracted file path is empty", () => {
+      const props = makeUniversalProps({
+        args: { path: "packages/web/src/App.tsx" },
+        rustExtracted: {
+          kind: "file",
+          filePath: "",
+          fileName: "",
+          language: "plaintext",
+        },
+      });
+      expect(extractFileData(props).filePath).toBe("packages/web/src/App.tsx");
+      expect(extractFileData(props).fileName).toBe("App.tsx");
     });
 
     it("gets filePath from successData.path", () => {
@@ -1274,6 +1297,32 @@ describe("extractSearchData", () => {
         result: {},
       });
       expect(extractSearchData(props).results).toEqual([]);
+    });
+
+    it("falls back to ripgrep text when rustExtracted search is empty", () => {
+      const props = makeUniversalProps({
+        args: { pattern: "require\\('../../src/database" },
+        rustExtracted: {
+          kind: "search",
+          query: "require\\('../../src/database",
+          results: [],
+          totalMatches: 77,
+        },
+        result: {
+          content:
+            "/repo/test/mocks/databasemock.js-128-\n" +
+            "/repo/test/mocks/databasemock.js:129:const db = require('../../src/database');",
+        },
+      });
+      const data = extractSearchData(props);
+      expect(data.results).toEqual([
+        {
+          file: "/repo/test/mocks/databasemock.js",
+          line: 129,
+          content: "const db = require('../../src/database');",
+        },
+      ]);
+      expect(data.totalMatches).toBe(1);
     });
   });
 

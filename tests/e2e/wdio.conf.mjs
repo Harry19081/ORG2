@@ -42,6 +42,7 @@ const connectionRetryCount = Number.parseInt(
 const reuseServices = process.env.E2E_REUSE_SERVICES === "1";
 const allowParallel = process.env.E2E_ALLOW_PARALLEL === "1";
 const isolatedRun = process.env.E2E_ISOLATED_RUN === "1";
+const allowPortCleanup = process.env.E2E_ALLOW_PORT_CLEANUP === "1";
 const webDriverPort = Number.parseInt(
   process.env.E2E_WEBDRIVER_PORT ?? "4444",
   10
@@ -55,12 +56,7 @@ const frontendPort = Number.parseInt(
   process.env.E2E_FRONTEND_PORT ?? String(TAURI_DEV_URL_PORT),
   10
 );
-
-if (frontendPort !== TAURI_DEV_URL_PORT) {
-  throw new Error(
-    `E2E_FRONTEND_PORT=${frontendPort} is not supported because src-tauri/tauri.conf.json devUrl points to ${TAURI_DEV_URL_PORT}`
-  );
-}
+const tauriConfigPath = resolve(repoRoot, "src-tauri/tauri.conf.json");
 
 if (allowParallel && !reuseServices) {
   throw new Error(
@@ -139,6 +135,7 @@ const ORGII_HOME_SEED_EXCLUDED_NAMES = new Set([
   "target",
   "tmp",
 ]);
+const e2eMultiRepoWorkspace = process.env.E2E_MULTI_REPO_WORKSPACE === "1";
 const fixtureRepoPath = resolve(
   process.env.E2E_FIXTURE_REPO_PATH ??
     (process.platform === "win32"
@@ -454,10 +451,56 @@ if (orgiiHome) {
   resetDerivedProjectDatabaseForIsolatedRun(orgiiHome);
   process.env.ORGII_HOME = orgiiHome;
 }
+function ensureBenchmarkDockerFixtureRepo() {
+  if (process.env.ORGII_SWE_BENCH_PRO_REPO_PATH) return;
+  const fixtureRoot = join(tmpdir(), "orgii-e2e-swe-bench-pro-fixture");
+  const runScriptsDir = join(fixtureRoot, "run_scripts", "e2e_docker_task");
+  mkdirSync(runScriptsDir, { recursive: true });
+  writeFileSync(
+    join(fixtureRoot, "swe_bench_pro_eval.py"),
+    `#!/usr/bin/env python3
+import argparse
+import json
+import os
+import subprocess
+import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--raw_sample_path", required=True)
+parser.add_argument("--patch_path", required=True)
+parser.add_argument("--output_dir", required=True)
+parser.add_argument("--scripts_dir", required=True)
+parser.add_argument("--dockerhub_username")
+parser.add_argument("--use_local_docker", action="store_true")
+parser.add_argument("--num_workers", default="1")
+args = parser.parse_args()
+
+with open(args.patch_path, "r", encoding="utf-8") as handle:
+    patch_rows = json.load(handle)
+task_id = patch_rows[0]["instance_id"]
+command = ["docker", "run", "--rm", "alpine:3.20", "sh", "-lc", "echo orgii-docker-benchmark-e2e"]
+print("running docker command:", " ".join(command), flush=True)
+completed = subprocess.run(command, text=True, capture_output=True)
+print(completed.stdout, end="", flush=True)
+if completed.stderr:
+    print(completed.stderr, end="", file=sys.stderr, flush=True)
+os.makedirs(args.output_dir, exist_ok=True)
+with open(os.path.join(args.output_dir, "eval_results.json"), "w", encoding="utf-8") as handle:
+    json.dump({task_id: completed.returncode == 0 and "orgii-docker-benchmark-e2e" in completed.stdout}, handle)
+sys.exit(completed.returncode)
+`,
+    "utf8"
+  );
+  writeFileSync(join(runScriptsDir, "run_script.sh"), "#!/usr/bin/env bash\necho e2e run script\n", "utf8");
+  writeFileSync(join(runScriptsDir, "parser.py"), "print('e2e parser')\n", "utf8");
+  process.env.ORGII_SWE_BENCH_PRO_REPO_PATH = fixtureRoot;
+}
+
 process.env.ORGII_IDE_SERVER_PORT = String(ideServerPort);
 process.env.E2E_BASE_URL =
   process.env.E2E_BASE_URL ?? `http://127.0.0.1:${ideServerPort}`;
 ensureE2EWorkspaceRepo();
+ensureBenchmarkDockerFixtureRepo();
 
 const WDIO_PRE_FLIGHT_PORTS = [webDriverPort, frontendPort, ideServerPort];
 const WDIO_PRE_FLIGHT_PROCESS_PATTERNS = [
@@ -570,6 +613,44 @@ function createFixtureRepo(repoPath) {
   verifyE2EWorkspaceRepo(repoPath);
 }
 
+function createMultiRepoFixtureWorkspace(rootPath) {
+  rmSync(rootPath, { force: true, recursive: true });
+  const primaryRepoPath = join(rootPath, "primary-repo");
+  const siblingRepoPath = join(rootPath, "sibling-repo");
+  createFixtureRepo(primaryRepoPath);
+  createFixtureRepo(siblingRepoPath);
+  writeFileSync(
+    join(siblingRepoPath, "src", "math.ts"),
+    [
+      "export function addNumbers(first: number, second: number): number {",
+      "  return first - second;",
+      "}",
+      "",
+      "export const SIBLING_ONLY_SENTINEL = 'ORGII_E2E_SIBLING_REPO';",
+      "",
+    ].join("\n")
+  );
+  execFileSync("git", ["-C", siblingRepoPath, "add", "src/math.ts"], {
+    stdio: "ignore",
+  });
+  execFileSync(
+    "git",
+    [
+      "-C",
+      siblingRepoPath,
+      "-c",
+      "user.name=ORGII E2E",
+      "-c",
+      "user.email=e2e@orgii.local",
+      "commit",
+      "-m",
+      "Add sibling sentinel",
+    ],
+    { stdio: "ignore" }
+  );
+  return primaryRepoPath;
+}
+
 function ensureE2EWorkspaceRepo() {
   const explicitRepoPath = process.env.E2E_REPO_PATH;
   if (explicitRepoPath) {
@@ -578,9 +659,14 @@ function ensureE2EWorkspaceRepo() {
     process.env.E2E_REPO_PATH = repoPath;
     return repoPath;
   }
-  createFixtureRepo(fixtureRepoPath);
-  process.env.E2E_REPO_PATH = fixtureRepoPath;
-  return fixtureRepoPath;
+  const repoPath = e2eMultiRepoWorkspace
+    ? createMultiRepoFixtureWorkspace(fixtureRepoPath)
+    : fixtureRepoPath;
+  if (!e2eMultiRepoWorkspace) {
+    createFixtureRepo(repoPath);
+  }
+  process.env.E2E_REPO_PATH = repoPath;
+  return repoPath;
 }
 
 function killProcessIds(processIds) {
@@ -604,6 +690,7 @@ function processIdsForPattern(pattern) {
 }
 
 function cleanWebDriverEnvironment() {
+  if (!allowPortCleanup) return;
   const portsToClean =
     allowParallel || isolatedRun
       ? [webDriverPort, frontendPort, ideServerPort]
@@ -614,6 +701,17 @@ function cleanWebDriverEnvironment() {
       ? []
       : WDIO_PRE_FLIGHT_PROCESS_PATTERNS.flatMap(processIdsForPattern);
   killProcessIds([...portProcessIds, ...staleProcessIds]);
+}
+
+function assertManagedPortsAvailable() {
+  if (allowPortCleanup || reuseServices) return;
+  const occupiedPorts = WDIO_PRE_FLIGHT_PORTS.filter(
+    (port) => processIdsForPort(port).length > 0
+  );
+  if (occupiedPorts.length === 0) return;
+  throw new Error(
+    `Refusing to start managed WDIO while port(s) ${occupiedPorts.join(", ")} are in use. Close the running ORGII app first, or set E2E_ALLOW_PORT_CLEANUP=1 to let WDIO terminate stale processes.`
+  );
 }
 
 function waitForPort(port, timeoutMs) {
@@ -640,20 +738,45 @@ function startFrontendServer() {
   waitForPort(frontendPort, 60_000);
 }
 
-function buildWebDriverApp() {
-  execFileSync(
-    "cargo",
-    [
-      "build",
-      "--manifest-path",
-      resolve(repoRoot, "src-tauri/Cargo.toml"),
-      "-p",
-      "orgii",
-      "--features",
-      "webdriver",
-    ],
-    { cwd: repoRoot, stdio: "inherit" }
+function withTauriDevUrlForFrontendPort(callback) {
+  if (frontendPort === TAURI_DEV_URL_PORT) return callback();
+  const originalConfig = readFileSync(tauriConfigPath, "utf8");
+  const config = JSON.parse(originalConfig);
+  const patchedConfig = JSON.stringify(
+    {
+      ...config,
+      build: {
+        ...config.build,
+        devUrl: `http://localhost:${frontendPort}`,
+      },
+    },
+    null,
+    2
   );
+  writeFileSync(tauriConfigPath, `${patchedConfig}\n`);
+  try {
+    return callback();
+  } finally {
+    writeFileSync(tauriConfigPath, originalConfig);
+  }
+}
+
+function buildWebDriverApp() {
+  withTauriDevUrlForFrontendPort(() => {
+    execFileSync(
+      "cargo",
+      [
+        "build",
+        "--manifest-path",
+        resolve(repoRoot, "src-tauri/Cargo.toml"),
+        "-p",
+        "orgii",
+        "--features",
+        "webdriver",
+      ],
+      { cwd: repoRoot, stdio: "inherit" }
+    );
+  });
 }
 
 function startTauriWebDriver() {
@@ -711,6 +834,7 @@ export const config = {
   injectGlobals: true,
   onPrepare() {
     if (reuseServices) return;
+    assertManagedPortsAvailable();
     cleanWebDriverEnvironment();
     startFrontendServer();
     buildWebDriverApp();

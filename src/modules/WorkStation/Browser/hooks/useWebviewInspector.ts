@@ -177,14 +177,15 @@ export function useWebviewInspector(
 
   // Disable inspect mode
   const disableInspectMode = useCallback(async () => {
+    setIsInspectMode(false);
+    setSelectedElement(null);
+    prevSelectionRef.current = null;
+
     if (!webviewLabel) return;
 
     try {
       await invoke("disable_webview_inspect_mode", { label: webviewLabel });
       await invoke("clear_element_selection", { label: webviewLabel });
-      setIsInspectMode(false);
-      setSelectedElement(null);
-      prevSelectionRef.current = null;
     } catch (error) {
       console.error("[useWebviewInspector] Disable failed:", error);
     }

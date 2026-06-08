@@ -277,7 +277,7 @@ export const TerminalPanel: React.FC<TerminalPanelProps> = memo(
         <div className="flex min-h-0 flex-1 overflow-hidden">
           {/* Left: Terminal output */}
           <div
-            className={`min-h-0 min-w-0 flex-1 pb-[85px] ${
+            className={`min-h-0 min-w-0 flex-1 pb-[100px] ${
               useCssShellSurface
                 ? "flex flex-col overflow-hidden"
                 : "overflow-auto"

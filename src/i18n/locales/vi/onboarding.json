@@ -64,7 +64,7 @@
   "complete": {
     "title": "Bạn đã sẵn sàng!",
     "description": "Không gian làm việc của bạn đã sẵn sàng. Bắt đầu Session mới để bắt đầu lập trình với sự hỗ trợ của AI, hoặc khám phá ứng dụng để tìm hiểu tất cả tính năng.",
-    "startSession": "Bắt đầu Session mới"
+    "startSession": "Bắt đầu phiên mới"
   },
   "navigation": {
     "skipSetup": "Bỏ qua thiết lập",

@@ -14,6 +14,7 @@ import { getModelInfo } from "@src/util/modelInfo";
 export interface RuleTokenEstimate {
   name: string;
   estimatedTokens: number;
+  source?: "global" | "workspace" | "personal";
 }
 
 export interface ContextUsageInfo {
@@ -39,9 +40,35 @@ export function formatTokenCount(count: number): string {
   return `${count}`;
 }
 
+interface PolicyListItem {
+  name: string;
+  enabled: boolean;
+  estimatedTokens: number;
+  source?: "global" | "workspace" | "personal";
+}
+
 interface RulesDataCache {
   key: string;
   rules: RuleTokenEstimate[];
+}
+
+export function filterContextRules(
+  policies: PolicyListItem[]
+): RuleTokenEstimate[] {
+  return policies
+    .filter((policy) => policy.enabled && policy.source !== "personal")
+    .map((policy) => ({
+      name: policy.name,
+      estimatedTokens: policy.estimatedTokens,
+      source: policy.source,
+    }));
+}
+
+export function resolveRulesTokens(
+  liveBreakdown: ContextBreakdown | null,
+  estimatedRulesTokens: number
+): number {
+  return liveBreakdown?.rulesTokens ?? estimatedRulesTokens;
 }
 
 export function useContextUsageInfo(repoPath?: string): ContextUsageInfo {
@@ -73,13 +100,15 @@ export function useContextUsageInfo(repoPath?: string): ContextUsageInfo {
     [rulesCache, repoPath]
   );
 
-  const rulesTokens = useMemo(
+  const estimatedRulesTokens = useMemo(
     () => rules.reduce((sum, rule) => sum + rule.estimatedTokens, 0),
     [rules]
   );
+  const rulesTokens = resolveRulesTokens(liveBreakdown, estimatedRulesTokens);
 
-  const isPreview = sessionTokens === 0 && rulesTokens > 0;
-  const displayTokens = sessionTokens > 0 ? sessionTokens : rulesTokens;
+  const isPreview = sessionTokens === 0 && estimatedRulesTokens > 0;
+  const displayTokens =
+    sessionTokens > 0 ? sessionTokens : estimatedRulesTokens;
   const percentage = maxTokens > 0 ? (displayTokens / maxTokens) * 100 : 0;
   const clampedPercentage = Math.min(percentage, 100);
 
@@ -100,19 +129,17 @@ export function useContextUsageInfo(repoPath?: string): ContextUsageInfo {
 
     let cancelled = false;
 
-    invoke<Array<{ name: string; enabled: boolean; estimatedTokens: number }>>(
-      "policies_list",
-      { workspacePath: repoPath }
-    )
+    invoke<
+      Array<{
+        name: string;
+        enabled: boolean;
+        estimatedTokens: number;
+        source?: "global" | "workspace" | "personal";
+      }>
+    >("policies_list", { workspacePath: repoPath })
       .then((result) => {
         if (cancelled) return;
-        const enabled = result
-          .filter((policy) => policy.enabled)
-          .map((policy) => ({
-            name: policy.name,
-            estimatedTokens: policy.estimatedTokens,
-          }));
-        setRulesCache({ key: repoPath, rules: enabled });
+        setRulesCache({ key: repoPath, rules: filterContextRules(result) });
       })
       .catch(() => {
         if (cancelled) return;

@@ -88,6 +88,10 @@ export interface UniversalEventProps {
    * to the chat bubble for this tool. Absent on non-tool events.
    */
   callId?: string;
+  /** File path for file operations, when emitted as top-level event metadata. */
+  filePath?: string;
+  /** Repository filesystem path active when this event was emitted. */
+  repoPath?: string;
   /**
    * Session the event belongs to. Needed alongside `callId` for cross-session
    * stores (e.g. `mcpProgressMapAtom`) so the render layer doesn't need to

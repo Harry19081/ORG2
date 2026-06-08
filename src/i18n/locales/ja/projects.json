@@ -519,7 +519,7 @@
     },
     "sessions": {
       "linkedSessions": "リンク済み Sessions",
-      "newSession": "新しい Session",
+      "newSession": "新しいセッション",
       "starting": "開始中...",
       "emptyOverview": "Sessions はまだありません",
       "emptyOverviewHint": "Agent Session を開始すると、ここで実行を追跡できます。"

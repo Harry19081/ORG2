@@ -33,6 +33,7 @@ import { useRatioResize } from "@src/hooks/ui";
 import {
   PanelPositionToggle,
   PanelTabBar,
+  WorkstationToolbarTooltip,
 } from "@src/modules/WorkStation/shared";
 import type { PanelTabBarTab } from "@src/modules/WorkStation/shared";
 import {
@@ -199,15 +200,17 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                   onToggle={onTogglePosition}
                 />
               )}
-              <Button
-                htmlType="button"
-                variant="tertiary"
-                size="small"
-                iconOnly
-                onClick={onClose}
-                title={t("tooltips.closeDevTools")}
-                icon={<X size={HEADER_ICON_SIZE.md} />}
-              />
+              <WorkstationToolbarTooltip label={t("tooltips.closeDevTools")}>
+                <Button
+                  htmlType="button"
+                  variant="tertiary"
+                  size="small"
+                  iconOnly
+                  onClick={onClose}
+                  aria-label={t("tooltips.closeDevTools")}
+                  icon={<X size={HEADER_ICON_SIZE.md} />}
+                />
+              </WorkstationToolbarTooltip>
             </>
           }
         />
@@ -250,23 +253,33 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                           className="animate-spin text-text-3"
                         />
                       )}
-                      <button
-                        onClick={collapseAll}
-                        className={HEADER_BUTTON.actionTreeRow}
-                        title={t("tooltips.collapseAll")}
+                      <WorkstationToolbarTooltip
+                        label={t("tooltips.collapseAll")}
                       >
-                        <ListChevronsDownUp size={HEADER_ICON_SIZE.md} />
-                      </button>
-                      <button
-                        onClick={handleRefreshTreeClick}
-                        className={HEADER_BUTTON.actionTreeRow}
-                        title={t("tooltips.refreshTree")}
+                        <button
+                          type="button"
+                          onClick={collapseAll}
+                          className={HEADER_BUTTON.actionTreeRow}
+                          aria-label={t("tooltips.collapseAll")}
+                        >
+                          <ListChevronsDownUp size={HEADER_ICON_SIZE.md} />
+                        </button>
+                      </WorkstationToolbarTooltip>
+                      <WorkstationToolbarTooltip
+                        label={t("tooltips.refreshTree")}
                       >
-                        <RefreshCw
-                          size={HEADER_ICON_SIZE.sm}
-                          className={refreshTreeSpinClass}
-                        />
-                      </button>
+                        <button
+                          type="button"
+                          onClick={handleRefreshTreeClick}
+                          className={HEADER_BUTTON.actionTreeRow}
+                          aria-label={t("tooltips.refreshTree")}
+                        >
+                          <RefreshCw
+                            size={HEADER_ICON_SIZE.sm}
+                            className={refreshTreeSpinClass}
+                          />
+                        </button>
+                      </WorkstationToolbarTooltip>
                     </div>
                   </div>
                   <div className="min-h-0 flex-1 overflow-hidden">
@@ -326,47 +339,66 @@ const WebDevTools: React.FC<WebDevToolsProps> = memo(
                         />
                       )}
                       {componentsSubTab === "source" && isIndexBuilt && (
-                        <button
-                          onClick={handleClearIndex}
-                          className={HEADER_BUTTON.danger}
-                          title={t("tooltips.clearUiIndex")}
+                        <WorkstationToolbarTooltip
+                          label={t("tooltips.clearUiIndex")}
                         >
-                          <CircleMinus size={HEADER_ICON_SIZE.sm} />
-                        </button>
+                          <button
+                            type="button"
+                            onClick={handleClearIndex}
+                            className={HEADER_BUTTON.danger}
+                            aria-label={t("tooltips.clearUiIndex")}
+                          >
+                            <CircleMinus size={HEADER_ICON_SIZE.sm} />
+                          </button>
+                        </WorkstationToolbarTooltip>
                       )}
-                      <button
-                        onClick={() => {
-                          if (isAllCollapsed) {
-                            setExpandAllKey((prev) => prev + 1);
-                            setIsAllCollapsed(false);
-                          } else {
-                            setCollapseAllKey((prev) => prev + 1);
-                            setIsAllCollapsed(true);
-                          }
-                        }}
-                        className={HEADER_BUTTON.actionTreeRow}
-                        title={
+                      <WorkstationToolbarTooltip
+                        label={
                           isAllCollapsed
                             ? t("tooltips.expandAll")
                             : t("tooltips.collapseAll")
                         }
                       >
-                        {isAllCollapsed ? (
-                          <CopyPlus size={HEADER_ICON_SIZE.sm} />
-                        ) : (
-                          <ListChevronsDownUp size={HEADER_ICON_SIZE.md} />
-                        )}
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isAllCollapsed) {
+                              setExpandAllKey((prev) => prev + 1);
+                              setIsAllCollapsed(false);
+                            } else {
+                              setCollapseAllKey((prev) => prev + 1);
+                              setIsAllCollapsed(true);
+                            }
+                          }}
+                          className={HEADER_BUTTON.actionTreeRow}
+                          aria-label={
+                            isAllCollapsed
+                              ? t("tooltips.expandAll")
+                              : t("tooltips.collapseAll")
+                          }
+                        >
+                          {isAllCollapsed ? (
+                            <CopyPlus size={HEADER_ICON_SIZE.sm} />
+                          ) : (
+                            <ListChevronsDownUp size={HEADER_ICON_SIZE.md} />
+                          )}
+                        </button>
+                      </WorkstationToolbarTooltip>
                       {componentsSubTab === "source" &&
                         repoPath &&
                         !isIndexBuilt && (
-                          <button
-                            onClick={handleBuildIndex}
-                            className="rounded bg-primary-6 px-3 py-0.5 text-[10px] font-medium text-white hover:bg-primary-5"
-                            title={t("workstation.buildUiIndex")}
+                          <WorkstationToolbarTooltip
+                            label={t("workstation.buildUiIndex")}
                           >
-                            Index
-                          </button>
+                            <button
+                              type="button"
+                              onClick={handleBuildIndex}
+                              className="rounded bg-primary-6 px-3 py-0.5 text-[10px] font-medium text-white hover:bg-primary-5"
+                              aria-label={t("workstation.buildUiIndex")}
+                            >
+                              Index
+                            </button>
+                          </WorkstationToolbarTooltip>
                         )}
                     </div>
                   </div>

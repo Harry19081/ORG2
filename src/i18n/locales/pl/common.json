@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: wł.",
+    "disabledLabel": "Agent Control: wył.",
+    "enableAction": "Włącz Agent Control",
+    "disableAction": "Wyłącz Agent Control",
+    "inputMode": "Sterowanie",
+    "selectionMode": "Odpowiedź",
+    "toggleMode": "Przełącz tryb wejścia",
+    "inputPlaceholder": "Powiedz Agent, co zrobić...",
+    "selectionPlaceholder": "Wpisz wybór lub odpowiedź...",
+    "submit": "Prześlij wejście Agent Control",
+    "menuToggle": "Agent Control",
+    "selectModel": "Wybierz model"
+  },
   "actions": {
     "all": "Wszystkie",
     "save": "Zapisz",
@@ -1077,7 +1091,10 @@
       "selectAccount": "Wybierz konto"
     },
     "modelProperties": {
-      "options": "Opcje"
+      "options": "Opcje",
+      "effort": "Wysiłek",
+      "faster": "Szybciej",
+      "smarter": "Mądrzej"
     },
     "shared": {
       "repo": "repo",
@@ -1452,6 +1469,7 @@
     "toolLayout": "Stacja robocza",
     "dockAutoHide": "Automatyczne ukrywanie docka",
     "modelPickerStyle": "Wybór",
+    "chatPanelPagination": "Paginacja",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "left": "Lewa",
@@ -1480,6 +1498,25 @@
     "ramTurnBodies": "Lazy load historii",
     "ramFileTrees": "Drzewa plików",
     "ramCodeMirrors": "Renderowanie plików"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "Przełącz na jasny motyw",
+    "switchToDarkTheme": "Przełącz na ciemny motyw",
+    "switchToHighContrastTheme": "Przełącz na motyw wysokiego kontrastu",
+    "moveMyStationChatLeft": "Przenieś czat My Station na lewo",
+    "moveMyStationChatRight": "Przenieś czat My Station na prawo",
+    "moveAgentStationChatLeft": "Przenieś czat Agent Station na lewo",
+    "moveAgentStationChatRight": "Przenieś czat Agent Station na prawo",
+    "enableChatPagination": "Włącz stronicowanie czatu",
+    "disableChatPagination": "Wyłącz stronicowanie czatu",
+    "useModelPickerSpotlight": "Użyj wyboru modelu Spotlight",
+    "useModelPickerDropdown": "Użyj rozwijanego wyboru modelu",
+    "useCompactWorkstationLayout": "Użyj kompaktowego układu Workstation",
+    "useComfortWorkstationLayout": "Użyj wygodnego układu Workstation",
+    "moveWorkstationSidebarLeft": "Przenieś pasek boczny Workstation na lewo",
+    "moveWorkstationSidebarRight": "Przenieś pasek boczny Workstation na prawo",
+    "enableDockAutoHide": "Automatycznie ukrywaj Dock Workstation",
+    "disableDockAutoHide": "Zawsze pokazuj Dock Workstation"
   },
   "commands": {
     "showBottomPanel": "Pokaż dolny panel",

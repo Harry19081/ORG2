@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { copyText } from "@src/util/data/clipboard";
 
 // ============================================
@@ -126,21 +127,23 @@ export const EditableStyleRow: React.FC<EditableStyleRowProps> = memo(
         )}
 
         {/* Copy button */}
-        <Button
-          variant="tertiary"
-          size="mini"
-          icon={
-            copied ? (
-              <Check size={10} className="text-success-6" />
-            ) : (
-              <Copy size={10} className="text-text-3" />
-            )
-          }
-          iconOnly
-          onClick={handleCopy}
-          title={t("tooltips.copy")}
-          className="flex-shrink-0 opacity-0 group-hover:opacity-100"
-        />
+        <WorkstationToolbarTooltip label={t("tooltips.copy")}>
+          <Button
+            variant="tertiary"
+            size="mini"
+            icon={
+              copied ? (
+                <Check size={10} className="text-success-6" />
+              ) : (
+                <Copy size={10} className="text-text-3" />
+              )
+            }
+            iconOnly
+            onClick={handleCopy}
+            aria-label={t("tooltips.copy")}
+            className="flex-shrink-0 opacity-0 group-hover:opacity-100"
+          />
+        </WorkstationToolbarTooltip>
       </div>
     );
   }

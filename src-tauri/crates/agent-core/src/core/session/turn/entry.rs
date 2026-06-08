@@ -169,6 +169,13 @@ pub async fn process_message(
         lsp_manager,
         app_handle: app_handle.clone(),
         hook_executor: Some(hook_executor),
+        turn_id: input.turn_id.clone(),
+        cancel_flag: Some(Arc::clone(&session.cancel_flag)),
+        active_turn_generation: Some(Arc::clone(&session.active_turn_generation)),
+        active_repo_path: input
+            .ide_context
+            .as_ref()
+            .and_then(|ctx| ctx.repo_path.clone()),
     };
 
     let policy = Arc::clone(&runtime.policy);
@@ -190,6 +197,7 @@ pub async fn process_message(
         images: input.images,
         is_resume: input.is_resume,
         display_text: input.display_text,
+        turn_id: input.turn_id,
     };
 
     let content = expand_skill_slash_command(&input.content, Some(workspace_path.as_path()));

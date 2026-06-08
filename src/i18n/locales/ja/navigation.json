@@ -6,8 +6,8 @@
     "dbManager": "DBマネージャー",
     "economy": "エコノミー",
     "sourceControl": "ソース管理",
-    "startSession": "Sessionを開始",
-    "newSession": "新規チャット",
+    "startSession": "セッションを開始",
+    "newSession": "新しいセッション",
     "quickstart": "クイックスタート",
     "drafts": "下書き",
     "browser": "ブラウザ",
@@ -34,15 +34,19 @@
     "other": "その他",
     "workflow": "ワークフロー",
     "agent": "Agent",
-    "chat": "コミュニケーション",
+    "session": "セッション",
+    "folders": "フォルダー",
     "inbox": "受信トレイ",
     "issues": "ワークアイテム",
     "agentKanban": "Ops Control",
     "history": "履歴",
     "controlTower": "Control Tower",
     "backgroundTasks": "バックグラウンドタスク",
+    "project": "プロジェクト",
     "projects": "Projects",
     "projectManager": "Project マネージャー",
+    "myKeys": "自分のキー",
+    "myAgents": "自分の Agents",
     "diff": "Diff"
   },
   "trajectoryPanel": {
@@ -54,7 +58,7 @@
   },
   "routes": {
     "session": "チャット",
-    "startSession": "Sessionを開始",
+    "startSession": "セッションを開始",
     "sessions": "Session一覧",
     "kanban": "Ops Control",
     "selectProject": "Projectを選択",
@@ -133,6 +137,10 @@
       "openHome": "ホームを開く",
       "openWorkstation": "Workstation を開く"
     },
+    "folderCounts": {
+      "repo": "{{count}} Repo",
+      "multiRepoWorkspace": "{{count}} マルチ Repo Workspace"
+    },
     "bottomBar": {
       "settings": "設定",
       "clockLabel": "現在時刻"
@@ -166,6 +174,12 @@
       "duration1h": "1 時間",
       "duration2h": "2 時間",
       "durationTomorrow": "明日"
+    }
+  },
+  "myRole": {
+    "tabs": {
+      "status": "自分のステータス",
+      "about": "自分について"
     }
   },
   "launchpad": {
@@ -306,7 +320,7 @@
     },
     "actions": {
       "switchToRepo": "開く",
-      "startSession": "Session を開始",
+      "startSession": "セッションを開始",
       "openDetails": "詳細を表示",
       "locateInFinder": "Finder で表示",
       "remove": "削除",

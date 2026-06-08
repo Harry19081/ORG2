@@ -50,7 +50,6 @@ export interface ChatPanelProps {
     hideRepoLine?: boolean;
     onRegionNoticeChange?: (notice: ChatPanelRegionNotice | null) => void;
     hidePresenceButton?: boolean;
-    batchStartMode?: boolean;
     initialContent?: string;
     launchMode?: SessionCreatorLaunchMode;
     onSessionStart?: (info: SessionLaunchSuccessInfo) => void;

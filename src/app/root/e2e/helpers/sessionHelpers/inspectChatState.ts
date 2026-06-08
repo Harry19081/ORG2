@@ -28,6 +28,7 @@ import {
 } from "@src/store/session/viewAtom";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
 import {
+  forceSendPendingQueueAtom,
   messageQueueAtom,
   queueEditingAtom,
   queueFlushRequestAtom,
@@ -60,6 +61,11 @@ export function createInspectChatStateHelper(store: E2EStore) {
       userInitiatedCancel: boolean;
       queueFlushRequest: number;
       queuedMessages: Array<{ id: string; sessionId: string; content: string }>;
+      forceSendPendingMessages: Array<{
+        id: string;
+        sessionId: string;
+        content: string;
+      }>;
       fileReviewCount: number;
       pendingReviewCount: number;
       pendingPlan: Json | null;
@@ -76,11 +82,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
       rawEvents: Array<{
         id: string;
         source: string;
+        createdAt: string;
         actionType: string;
         uiCanonical: string;
         functionName: string;
         displayText: string;
+        displayStatus: string;
         activityStatus: string;
+        isDelta: boolean | null;
         resultStatus: string | null;
         planRevisionId: string | null;
         args: Json;
@@ -89,8 +98,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
       chatEvents: Array<{
         id: string;
         source: string;
+        createdAt: string;
+        actionType: string;
+        uiCanonical: string;
+        functionName: string;
         displayText: string;
+        displayStatus: string;
         displayVariant: string;
+        args: Json;
       }>;
       streamingDelta: {
         length: number;
@@ -112,14 +127,29 @@ export function createInspectChatStateHelper(store: E2EStore) {
       const { items: pipelineItems, stats: pipelineStats } =
         processChatItems(chatEvents);
       const events = store.get(sortedEventsAtom);
-      const queuedMessages = store.get(messageQueueAtom).map((message) => ({
+      const serializeQueuedMessage = (message: {
+        id: string;
+        sessionId: string;
+        content: string;
+        requiresRuntimeSettle?: boolean;
+        releaseAfterTurnId?: string;
+        dispatchAfterUserCancel?: boolean;
+        createdAt: string;
+      }) => ({
         id: message.id,
         sessionId: message.sessionId,
         content: message.content,
         requiresRuntimeSettle: message.requiresRuntimeSettle,
+        releaseAfterTurnId: message.releaseAfterTurnId,
         dispatchAfterUserCancel: message.dispatchAfterUserCancel,
         createdAt: message.createdAt,
-      }));
+      });
+      const queuedMessages = store
+        .get(messageQueueAtom)
+        .map(serializeQueuedMessage);
+      const forceSendPendingMessages = store
+        .get(forceSendPendingQueueAtom)
+        .map(serializeQueuedMessage);
       const activeSessionId = store.get(activeSessionIdAtom);
       const activeSession = activeSessionId
         ? (store
@@ -184,6 +214,7 @@ export function createInspectChatStateHelper(store: E2EStore) {
         userInitiatedCancel: store.get(userInitiatedCancelAtom),
         queueFlushRequest: store.get(queueFlushRequestAtom),
         queuedMessages,
+        forceSendPendingMessages,
         fileReviewCount: store.get(fileReviewMapAtom).size,
         pendingReviewCount: store.get(pendingReviewCountAtom),
         pendingPlan: activeSessionId
@@ -205,11 +236,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
         rawEvents: events.map((event) => ({
           id: event.id,
           source: event.source,
+          createdAt: event.createdAt,
           actionType: event.actionType,
           uiCanonical: event.uiCanonical,
           functionName: event.functionName,
           displayText: event.displayText,
+          displayStatus: event.displayStatus,
           activityStatus: event.activityStatus,
+          isDelta: event.isDelta ?? null,
           resultStatus:
             typeof event.result?.status === "string"
               ? event.result.status
@@ -226,8 +260,14 @@ export function createInspectChatStateHelper(store: E2EStore) {
         chatEvents: chatEvents.map((event) => ({
           id: event.id,
           source: event.source,
+          createdAt: event.createdAt,
+          actionType: event.actionType,
+          uiCanonical: event.uiCanonical,
+          functionName: event.functionName,
           displayText: event.displayText,
+          displayStatus: event.displayStatus,
           displayVariant: event.displayVariant,
+          args: event.args as unknown as Json,
         })),
         streamingDelta: activeSessionId
           ? {

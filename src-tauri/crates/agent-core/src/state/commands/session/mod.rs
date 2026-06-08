@@ -64,14 +64,7 @@ pub async fn agent_session_cancel(
     session_id: String,
     reason: CancelReason,
 ) -> Result<bool, String> {
-    let effect = reason.boundary_effect();
-    let cancelled = state.cancel_session(&session_id, reason).await;
-    if cancelled && effect.rollback_if_no_output {
-        state
-            .rollback_last_user_turn_if_no_output(&session_id)
-            .await;
-    }
-    Ok(cancelled)
+    Ok(state.cancel_session(&session_id, reason).await)
 }
 
 /// Get session info.

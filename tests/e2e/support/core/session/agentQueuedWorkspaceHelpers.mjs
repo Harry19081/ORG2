@@ -19,6 +19,7 @@ import {
 // also caused background tasks (git watcher, worktree prune) to spam errors
 // when the dirs were eventually GC'd while sessions still referenced them.
 const SCENARIO_TMP_DIRS = new Set();
+const E2E_MULTI_REPO_WORKSPACE = process.env.E2E_MULTI_REPO_WORKSPACE === "1";
 let scenarioCleanupRegistered = false;
 
 function registerScenarioCleanup() {
@@ -45,18 +46,11 @@ function registerScenarioCleanup() {
   });
 }
 
-function createTempRepo(label) {
-  registerScenarioCleanup();
-  const root = fs.mkdtempSync(
-    path.join(
-      os.tmpdir(),
-      `orgii-e2e-rewind-${label.replace(/[^a-zA-Z0-9]/g, "-")}-`
-    )
-  );
-  SCENARIO_TMP_DIRS.add(root);
+function initializeGitRepo(root, label) {
+  fs.mkdirSync(root, { recursive: true });
   fs.writeFileSync(
     path.join(root, "README.md"),
-    `# ORGII Rewind E2E\n\n${label}\n`,
+    `# ORGII E2E Workspace\n\n${label}\n`,
     "utf8"
   );
   execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
@@ -72,7 +66,43 @@ function createTempRepo(label) {
       GIT_COMMITTER_EMAIL: "e2e@orgii.local",
     },
   });
-  return root;
+}
+
+function createTempRepo(label) {
+  registerScenarioCleanup();
+  const safeLabel = label.replace(/[^a-zA-Z0-9]/g, "-");
+  const root = fs.mkdtempSync(
+    path.join(os.tmpdir(), `orgii-e2e-rewind-${safeLabel}-`)
+  );
+  SCENARIO_TMP_DIRS.add(root);
+
+  if (!E2E_MULTI_REPO_WORKSPACE) {
+    initializeGitRepo(root, label);
+    return root;
+  }
+
+  const primaryRepo = path.join(root, "primary-repo");
+  const siblingRepo = path.join(root, "sibling-repo");
+  initializeGitRepo(primaryRepo, `${label} primary`);
+  initializeGitRepo(siblingRepo, `${label} sibling`);
+  fs.writeFileSync(
+    path.join(siblingRepo, "README.md"),
+    `# ORGII E2E Sibling Repo\n\n${label}\nSIBLING_ONLY_SENTINEL_${safeLabel}\n`,
+    "utf8"
+  );
+  execFileSync("git", ["add", "README.md"], { cwd: siblingRepo, stdio: "ignore" });
+  execFileSync("git", ["commit", "-m", "sibling sentinel"], {
+    cwd: siblingRepo,
+    stdio: "ignore",
+    env: {
+      ...process.env,
+      GIT_AUTHOR_NAME: "ORGII E2E",
+      GIT_AUTHOR_EMAIL: "e2e@orgii.local",
+      GIT_COMMITTER_NAME: "ORGII E2E",
+      GIT_COMMITTER_EMAIL: "e2e@orgii.local",
+    },
+  });
+  return primaryRepo;
 }
 
 function listWorkspaceFiles(root) {

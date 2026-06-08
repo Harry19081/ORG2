@@ -14,7 +14,9 @@
  *    (upsert) where two events with different IDs but the same content
  *    can briefly coexist in the EventStore.
  */
+import { isRunningSessionEvent } from "@src/engines/SessionCore/core/runningEventGate";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { isSyntheticUserInputEvent } from "@src/engines/SessionCore/sync/utils/activityIds";
 
 export interface DedupResult {
   /** Chunk IDs of transient tool-call rows that should be skipped once a result row exists */
@@ -25,6 +27,14 @@ export interface DedupResult {
   duplicateAssistantIds: Set<string>;
   /** Chunk IDs of duplicate optimistic/persisted user messages that should be skipped */
   duplicateUserIds: Set<string>;
+}
+
+function getEventCallId(event: SessionEvent): string | undefined {
+  return (
+    event.callId ||
+    (event as { call_id?: string }).call_id ||
+    (event.result?.call_id as string | undefined)
+  );
 }
 
 /**
@@ -38,20 +48,19 @@ export function buildDedupMaps(events: SessionEvent[]): DedupResult {
 
   const transientByFunc = new Map<string, number[]>();
   const transientByCallId = new Map<string, number[]>();
+  const completedToolCallByCallId = new Map<string, number>();
   for (let idx = 0; idx < events.length; idx++) {
     const event = events[idx];
     if (event.actionType !== "tool_call" || !event.id) continue;
 
-    const callId =
-      event.callId || (event.result?.call_id as string | undefined);
+    const callId = getEventCallId(event);
     if (callId && event.args && Object.keys(event.args).length > 0) {
       runningArgsMap.set(callId, event.args);
     }
 
-    const isRunning =
-      event.result?.status === "running" || event.displayStatus === "running";
-    const isCallRow = event.id.startsWith("tool-call-");
-    if (!isRunning && !(isCallRow && callId)) continue;
+    const isRunning = isRunningSessionEvent(event);
+    if (callId && !isRunning) completedToolCallByCallId.set(callId, idx);
+    if (!isRunning) continue;
 
     const fn = event.functionName || "";
     if (!transientByFunc.has(fn)) transientByFunc.set(fn, []);
@@ -70,15 +79,17 @@ export function buildDedupMaps(events: SessionEvent[]): DedupResult {
     ) {
       continue;
     }
-    if (
-      event.result?.status === "running" ||
-      event.displayStatus === "running"
-    ) {
+    if (isRunningSessionEvent(event)) {
       continue;
     }
 
-    const callId =
-      event.callId || (event.result?.call_id as string | undefined);
+    const callId = getEventCallId(event);
+    if (event.actionType === "tool_result" && callId) {
+      const completedCallIdx = completedToolCallByCallId.get(callId);
+      if (completedCallIdx !== undefined && completedCallIdx < jdx) {
+        runningChunksToSkip.add(events[completedCallIdx].id);
+      }
+    }
     const matchingTransientIndices = callId
       ? transientByCallId.get(callId)
       : transientByFunc.get(event.functionName || "");
@@ -122,39 +133,33 @@ function isUserMessageEvent(event: SessionEvent): boolean {
   return event.source === "user" && event.displayVariant === "message";
 }
 
-function preferUserEventId(left: SessionEvent, right: SessionEvent): string {
-  const leftIsOptimistic = left.id.startsWith("user-input-");
-  const rightIsOptimistic = right.id.startsWith("user-input-");
-  if (leftIsOptimistic !== rightIsOptimistic) {
-    return leftIsOptimistic ? right.id : left.id;
-  }
-  const leftPersisted = Boolean(left.result?.backendPersisted);
-  const rightPersisted = Boolean(right.result?.backendPersisted);
-  if (leftPersisted !== rightPersisted)
-    return leftPersisted ? left.id : right.id;
-  return right.id;
+function isOptimisticUserEvent(event: SessionEvent): boolean {
+  return isSyntheticUserInputEvent(event);
 }
 
 function buildUserDedupSet(events: SessionEvent[]): Set<string> {
   const duplicates = new Set<string>();
-  const seenByText = new Map<string, SessionEvent>();
+  let pendingOptimisticByText = new Map<string, SessionEvent>();
 
   for (const event of events) {
-    if (!isUserMessageEvent(event)) continue;
+    if (!isUserMessageEvent(event)) {
+      pendingOptimisticByText = new Map();
+      continue;
+    }
 
     const text = normalizeDisplayText(event.displayText);
     if (!text) continue;
 
-    const previous = seenByText.get(text);
-    if (!previous) {
-      seenByText.set(text, event);
+    if (isOptimisticUserEvent(event)) {
+      pendingOptimisticByText.set(text, event);
       continue;
     }
 
-    const keepId = preferUserEventId(previous, event);
-    const drop = keepId === previous.id ? event : previous;
-    duplicates.add(drop.id);
-    seenByText.set(text, keepId === previous.id ? previous : event);
+    const optimistic = pendingOptimisticByText.get(text);
+    if (optimistic) {
+      duplicates.add(optimistic.id);
+      pendingOptimisticByText.delete(text);
+    }
   }
 
   return duplicates;

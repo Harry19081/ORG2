@@ -16,6 +16,7 @@ export {
   // DB-backed workspace state
   savedWorkspacesAtom,
   activeWorkspaceIdAtom,
+  activeWorkspaceNameAtom,
   workspaceActiveAtom,
   // Derived flags
   isMultiRootWorkspaceAtom,

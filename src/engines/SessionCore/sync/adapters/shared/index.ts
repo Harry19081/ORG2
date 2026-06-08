@@ -19,18 +19,14 @@ export type {
   ToolCallDeltaBuffer,
 } from "./types";
 
-// Event factories + stream helpers
+// Event factories
 export {
-  appendStreamDelta,
-  finalizeStream,
-  flushPendingStreamDeltas,
   makeAssistantEvent,
   makeErrorEvent,
   makeThinkingEvent,
   makeToolCallEvent,
   makeToolResultEvent,
   createSyntheticUserEvent,
-  resetStreamRefs,
 } from "./eventBuilders";
 
 // Parsers (streaming args, think tags, shell detection)

@@ -22,9 +22,8 @@ import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import { PanelLeftIcon, PanelRightIcon } from "@src/components/PanelIcons";
-import Tooltip, { type TooltipProps } from "@src/components/Tooltip";
+import type { TooltipProps } from "@src/components/Tooltip";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import {
   simulatorPrimarySidebarCollapsedAtom,
@@ -40,6 +39,7 @@ import {
   activeStatusBarCallbacksAtom,
 } from "@src/store/ui/workStationLayout/statusBarAtoms";
 
+import { WorkstationToolbarTooltip } from "./WorkstationToolbarTooltip";
 import { HEADER_ICON_SIZE } from "./tokens";
 
 // ============================================
@@ -76,15 +76,11 @@ const SidebarToggleButtonComponent: React.FC<SidebarToggleButtonProps> = ({
     ? t("simulator.titleBar.showSidebar")
     : t("simulator.titleBar.hideSidebar");
   const shortcut = getShortcutKeys("toggle_workstation_sidebar");
-  const tooltipContent = (
-    <KeyboardShortcutTooltipContent label={label} shortcut={shortcut} />
-  );
   return (
-    <Tooltip
-      content={tooltipContent}
+    <WorkstationToolbarTooltip
+      label={label}
+      shortcut={shortcut}
       position={tooltipPosition}
-      mouseEnterDelay={200}
-      framedPanel
     >
       <span className="inline-flex">
         <Button
@@ -108,7 +104,7 @@ const SidebarToggleButtonComponent: React.FC<SidebarToggleButtonProps> = ({
           }
         />
       </span>
-    </Tooltip>
+    </WorkstationToolbarTooltip>
   );
 };
 

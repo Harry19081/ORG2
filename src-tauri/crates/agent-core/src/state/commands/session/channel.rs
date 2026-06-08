@@ -125,6 +125,7 @@ pub async fn channel_process_message(
         is_resume: false,
         channel: None,
         chat_id: None,
+        turn_id: None,
     };
 
     const CALLER_TIMEOUT_SECS: u64 = 180;
@@ -158,10 +159,16 @@ pub async fn agent_ide_action_result(
     correlation_id: String,
     success: bool,
     message: String,
+    data: Option<serde_json::Value>,
 ) -> Result<(), String> {
-    let resolved = state
-        .action_bridge
-        .resolve(&correlation_id, ActionBridgeResult { success, message });
+    let resolved = state.action_bridge.resolve(
+        &correlation_id,
+        ActionBridgeResult {
+            success,
+            message,
+            data,
+        },
+    );
     if !resolved {
         warn!(
             "[channel_ide_action_result] No pending request for correlation_id: {}",

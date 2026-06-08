@@ -88,6 +88,26 @@ fn test_extract_file_read() {
 }
 
 #[test]
+fn test_extract_file_read_accepts_camel_case_file_path() {
+    let event = make_event(
+        "read_file",
+        EventDisplayVariant::ToolCall,
+        serde_json::json!({"filePath": "/workspace/package.json"}),
+        serde_json::json!({"content": "{\"name\":\"demo\"}"}),
+    );
+
+    let data = extract_event_data(&event).unwrap();
+    match data {
+        ExtractedData::File(f) => {
+            assert_eq!(f.file_path, "/workspace/package.json");
+            assert_eq!(f.file_name, "package.json");
+            assert_eq!(f.language, "json");
+        }
+        _ => panic!("Expected File variant"),
+    }
+}
+
+#[test]
 fn test_extract_edit() {
     let event = make_event(
         "edit_file_by_replace",

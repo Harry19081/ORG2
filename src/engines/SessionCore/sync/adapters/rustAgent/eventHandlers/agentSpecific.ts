@@ -53,11 +53,12 @@ function coerceAgentExecMode(raw: string | undefined): AgentExecMode {
 // ============================================================================
 
 export function handleIdeAction(event: AgentWSEvent): void {
-  if (event.correlationId && event.action) {
+  if (event.correlationId && (event.action || event.operation)) {
     window.dispatchEvent(
       new CustomEvent("agent-ide-action", {
         detail: {
           correlationId: event.correlationId,
+          operation: event.operation,
           action: event.action,
           params: event.params ?? {},
           sessionId: getEventSessionId(event),
@@ -312,6 +313,7 @@ export function handleExitPlanMode(
   // stale pill over throwing inside an event-stream handler.
   const restoreMode = coerceAgentExecMode(detail.restoreMode);
   const session = store.get(sessionByIdAtom(eventSessionId));
+  if (session?.agentExecMode === restoreMode) return;
   if (session) {
     upsertSession({ ...session, agentExecMode: restoreMode });
   }

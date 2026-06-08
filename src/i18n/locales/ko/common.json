@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control: 켜짐",
+    "disabledLabel": "Agent Control: 꺼짐",
+    "enableAction": "Agent Control 켜기",
+    "disableAction": "Agent Control 끄기",
+    "inputMode": "Control",
+    "selectionMode": "Answer",
+    "toggleMode": "입력 모드 전환",
+    "inputPlaceholder": "수행할 작업을 Agent에게 알려주세요...",
+    "selectionPlaceholder": "선택 항목 또는 답변을 입력하세요...",
+    "submit": "Agent Control 입력 제출",
+    "menuToggle": "Agent Control",
+    "selectModel": "모델 선택"
+  },
   "actions": {
     "save": "저장",
     "cancel": "취소",
@@ -1086,7 +1100,10 @@
       "selectAccount": "계정 선택"
     },
     "modelProperties": {
-      "options": "옵션"
+      "options": "옵션",
+      "effort": "Effort",
+      "faster": "더 빠르게",
+      "smarter": "더 똑똑하게"
     },
     "repo": {
       "workspaceFolders": "Workspace 폴더",
@@ -1453,6 +1470,7 @@
     "toolLayout": "워크스테이션",
     "dockAutoHide": "Dock 자동 숨김",
     "modelPickerStyle": "선택기",
+    "chatPanelPagination": "페이지네이션",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "메뉴",
     "left": "왼쪽",
@@ -1481,6 +1499,25 @@
     "ramTurnBodies": "히스토리 lazy load",
     "ramFileTrees": "파일 트리",
     "ramCodeMirrors": "File rendering"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "라이트 테마로 전환",
+    "switchToDarkTheme": "다크 테마로 전환",
+    "switchToHighContrastTheme": "고대비 테마로 전환",
+    "moveMyStationChatLeft": "My Station 채팅을 왼쪽으로 이동",
+    "moveMyStationChatRight": "My Station 채팅을 오른쪽으로 이동",
+    "moveAgentStationChatLeft": "Agent Station 채팅을 왼쪽으로 이동",
+    "moveAgentStationChatRight": "Agent Station 채팅을 오른쪽으로 이동",
+    "enableChatPagination": "채팅 페이지 나누기 켜기",
+    "disableChatPagination": "채팅 페이지 나누기 끄기",
+    "useModelPickerSpotlight": "Spotlight 모델 선택기 사용",
+    "useModelPickerDropdown": "드롭다운 모델 선택기 사용",
+    "useCompactWorkstationLayout": "컴팩트 Workstation 레이아웃 사용",
+    "useComfortWorkstationLayout": "편안한 Workstation 레이아웃 사용",
+    "moveWorkstationSidebarLeft": "Workstation 사이드바를 왼쪽으로 이동",
+    "moveWorkstationSidebarRight": "Workstation 사이드바를 오른쪽으로 이동",
+    "enableDockAutoHide": "Workstation Dock 자동 숨기기",
+    "disableDockAutoHide": "Workstation Dock 항상 표시"
   },
   "commands": {
     "showBottomPanel": "하단 패널 표시",

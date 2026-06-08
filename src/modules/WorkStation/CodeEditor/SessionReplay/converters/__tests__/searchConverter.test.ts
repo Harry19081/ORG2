@@ -196,6 +196,33 @@ describe("convertToExploreOperation", () => {
     expect(op?.totalMatches).toBe(1);
   });
 
+  it("falls back to text file list when rustExtracted glob is empty", () => {
+    const event = minimalSessionEvent({
+      functionName: "code_search",
+      args: { action: "find_files", pattern: "package.json" },
+      extracted: {
+        kind: "glob",
+        pattern: "package.json",
+        files: [],
+        totalFiles: 0,
+      },
+      result: {
+        content:
+          "/repo/install/package.json\n" +
+          "/repo/test/mocks/plugin_modules/nodebb-plugin-xyz/package.json",
+      },
+    });
+
+    const op = convertToExploreOperation(event, false);
+    expect(op).not.toBeNull();
+    expect(op?.exploreType).toBe("glob");
+    expect(op?.files).toEqual([
+      "/repo/install/package.json",
+      "/repo/test/mocks/plugin_modules/nodebb-plugin-xyz/package.json",
+    ]);
+    expect(op?.totalMatches).toBe(2);
+  });
+
   it("prefers rustExtracted.search results for code_search grep action", () => {
     const event = minimalSessionEvent({
       functionName: "code_search",
@@ -221,6 +248,44 @@ describe("convertToExploreOperation", () => {
     expect(op?.results).toHaveLength(1);
     expect(op?.results[0].file).toBe("src/api/http/client/hostedServiceApi.ts");
     expect(op?.results[0].line).toBe(125);
+  });
+
+  it("falls back to ripgrep text when rustExtracted.search has no rows", () => {
+    const event = minimalSessionEvent({
+      functionName: "code_search",
+      args: {
+        action: "grep",
+        pattern: "mget|methods|require\\('../../src/database|databasemock",
+        repo_path: "/Users/laptop-h/Documents/GitHub/NodeBB/test/mocks",
+      },
+      extracted: {
+        kind: "search",
+        query: "mget|methods|require\\('../../src/database|databasemock",
+        results: [],
+        totalMatches: 77,
+      },
+      result: {
+        content:
+          "/Users/laptop-h/Documents/GitHub/NodeBB/test/mocks/databasemock.js-127-winston.info(`environment ${global.env}`);\n" +
+          "/Users/laptop-h/Documents/GitHub/NodeBB/test/mocks/databasemock.js-128-\n" +
+          "/Users/laptop-h/Documents/GitHub/NodeBB/test/mocks/databasemock.js:129:const db = require('../../src/database');\n" +
+          "/Users/laptop-h/Documents/GitHub/NodeBB/test/mocks/databasemock.js-130-\n" +
+          "/Users/laptop-h/Documents/GitHub/NodeBB/test/mocks/databasemock.js-131-module.exports = db;",
+      },
+    });
+
+    const op = convertToExploreOperation(event, false);
+    expect(op).not.toBeNull();
+    expect(op?.exploreType).toBe("code_search");
+    expect(op?.exploreAction).toBe("grep");
+    expect(op?.results).toHaveLength(1);
+    expect(op?.files).toEqual([]);
+    expect(op?.totalMatches).toBe(1);
+    expect(op?.results[0]).toEqual({
+      file: "/Users/laptop-h/Documents/GitHub/NodeBB/test/mocks/databasemock.js",
+      line: 129,
+      content: "const db = require('../../src/database');",
+    });
   });
 
   it("parses Cursor pruned grep topFiles summaries", () => {

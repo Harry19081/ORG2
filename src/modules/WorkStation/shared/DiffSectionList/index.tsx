@@ -94,7 +94,10 @@ function DiffSectionListInner<TFile extends DiffFileSectionData>({
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div ref={scrollContainerRef} className="min-h-0 flex-1 overflow-auto">
+      <div
+        ref={scrollContainerRef}
+        className="min-h-0 flex-1 overflow-auto pb-[100px]"
+      >
         {sections.map((section) => {
           const isFocused = focusedPath === section.file.path;
           const suffix = sectionKeySuffix?.(section) ?? "";

@@ -12,6 +12,7 @@ import type {
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import { useRefreshSpin } from "@src/hooks/ui";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import { SECTION_CONTAINER_CLASSES } from "@src/modules/shared/layouts/SectionLayout/tokens";
 import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 import type { WorkItemStatus } from "@src/types/core/workItem";
@@ -157,13 +158,15 @@ const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
 
   const titleAction =
     phase !== "idle" && onRefresh ? (
-      <Button
-        variant="tertiary"
-        size="mini"
-        icon={<RefreshCw size={12} className={spinClass} />}
-        onClick={handleRefreshClick}
-        title={t("common:actions.refresh")}
-      />
+      <WorkstationToolbarTooltip label={t("common:actions.refresh")}>
+        <Button
+          variant="tertiary"
+          size="mini"
+          icon={<RefreshCw size={12} className={spinClass} />}
+          onClick={handleRefreshClick}
+          aria-label={t("common:actions.refresh")}
+        />
+      </WorkstationToolbarTooltip>
     ) : undefined;
 
   const hasReviewFeedback = !!proofOfWork?.review_feedback;

@@ -1,4 +1,13 @@
-import { Box, Plus, Radar, SquarePen, StickyNote } from "lucide-react";
+import {
+  Box,
+  FolderSymlink,
+  FolderTree,
+  LayoutDashboard,
+  Plus,
+  Radar,
+  SquarePen,
+  StickyNote,
+} from "lucide-react";
 import React from "react";
 
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
@@ -27,6 +36,15 @@ interface BuildPinnedMenuItemsParams {
 interface BuildProjectsPinnedMenuItemsParams {
   createProjectLabel: string;
   createWorkItemLabel: string;
+}
+
+interface BuildFoldersPinnedMenuItemsParams {
+  dashboardItemId: string;
+  dashboardLabel: string;
+  addWorkspaceItemId: string;
+  addWorkspaceLabel: string;
+  createWorkspaceItemId: string;
+  createWorkspaceLabel: string;
 }
 
 export function buildPinnedMenuItems({
@@ -81,6 +99,39 @@ export function buildProjectsPinnedMenuItems({
       label: createProjectLabel,
       icon: Box,
       iconName: "box",
+    },
+  ];
+}
+
+export function buildFoldersPinnedMenuItems({
+  dashboardItemId,
+  dashboardLabel,
+  addWorkspaceItemId,
+  addWorkspaceLabel,
+  createWorkspaceItemId,
+  createWorkspaceLabel,
+}: BuildFoldersPinnedMenuItemsParams): NavigationMenuItem[] {
+  return [
+    {
+      id: dashboardItemId,
+      key: dashboardItemId,
+      label: dashboardLabel,
+      icon: LayoutDashboard,
+      iconName: "layout-dashboard",
+    },
+    {
+      id: addWorkspaceItemId,
+      key: addWorkspaceItemId,
+      label: addWorkspaceLabel,
+      icon: FolderSymlink,
+      iconName: "folder-symlink",
+    },
+    {
+      id: createWorkspaceItemId,
+      key: createWorkspaceItemId,
+      label: createWorkspaceLabel,
+      icon: FolderTree,
+      iconName: "folder-tree",
     },
   ];
 }

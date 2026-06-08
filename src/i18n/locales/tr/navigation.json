@@ -6,8 +6,8 @@
     "dbManager": "DB Yöneticisi",
     "economy": "Ekonomi",
     "sourceControl": "Source control",
-    "startSession": "Session Başlat",
-    "newSession": "Yeni sohbet",
+    "startSession": "Oturum başlat",
+    "newSession": "Yeni oturum",
     "quickstart": "Hızlı başlangıç",
     "drafts": "Taslaklar",
     "browser": "Tarayıcı",
@@ -34,15 +34,19 @@
     "other": "Diğer",
     "workflow": "İş akışı",
     "agent": "Agent",
-    "chat": "İletişim",
+    "session": "Oturum",
+    "folders": "Klasörler",
     "inbox": "Gelen Kutusu",
     "issues": "İş öğeleri",
     "agentKanban": "Ops Control",
     "history": "Geçmiş",
     "controlTower": "Control Tower",
     "backgroundTasks": "Arka plan görevleri",
+    "project": "Proje",
     "projects": "Projects",
     "projectManager": "Project Manager",
+    "myKeys": "Anahtarlarım",
+    "myAgents": "Agents’larım",
     "diff": "Diff"
   },
   "trajectoryPanel": {
@@ -54,7 +58,7 @@
   },
   "routes": {
     "session": "Sohbet",
-    "startSession": "Session başlat",
+    "startSession": "Oturum başlat",
     "sessions": "Session",
     "kanban": "Ops Control",
     "selectProject": "Project Seç",
@@ -133,6 +137,10 @@
       "openHome": "Home’u aç",
       "openWorkstation": "Workstation’ı aç"
     },
+    "folderCounts": {
+      "repo": "{{count}} Repo",
+      "multiRepoWorkspace": "{{count}} çoklu repo Workspace"
+    },
     "bottomBar": {
       "settings": "Ayarlar",
       "clockLabel": "Şu anki saat"
@@ -166,6 +174,12 @@
       "duration1h": "1 saat",
       "duration2h": "2 saat",
       "durationTomorrow": "Yarın"
+    }
+  },
+  "myRole": {
+    "tabs": {
+      "status": "Durumum",
+      "about": "Hakkımda"
     }
   },
   "launchpad": {

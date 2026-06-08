@@ -1,4 +1,18 @@
 {
+  "guiControl": {
+    "enabledLabel": "Agent Control : activé",
+    "disabledLabel": "Agent Control : désactivé",
+    "enableAction": "Activer Agent Control",
+    "disableAction": "Désactiver Agent Control",
+    "inputMode": "Contrôle",
+    "selectionMode": "Réponse",
+    "toggleMode": "Changer le mode de saisie",
+    "inputPlaceholder": "Dites à l'Agent quoi faire...",
+    "selectionPlaceholder": "Saisissez la sélection ou la réponse...",
+    "submit": "Envoyer la saisie Agent Control",
+    "menuToggle": "Agent Control",
+    "selectModel": "Choisir le modèle"
+  },
   "actions": {
     "save": "Enregistrer",
     "cancel": "Annuler",
@@ -1085,7 +1099,10 @@
       "selectAccount": "Sélectionner un compte"
     },
     "modelProperties": {
-      "options": "Options"
+      "options": "Options",
+      "effort": "Effort",
+      "faster": "Plus rapide",
+      "smarter": "Plus intelligent"
     },
     "repo": {
       "workspaceFolders": "Dossiers du Workspace",
@@ -1452,6 +1469,7 @@
     "toolLayout": "Station de travail",
     "dockAutoHide": "Masquage automatique du Dock",
     "modelPickerStyle": "Sélecteur",
+    "chatPanelPagination": "Pagination",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "Menu",
     "replayStatusPosition": "Position du statut Replay",
@@ -1483,6 +1501,25 @@
     "ramTurnBodies": "Chargements lazy de l’historique",
     "ramFileTrees": "Arbres de fichiers",
     "ramCodeMirrors": "Rendu des fichiers"
+  },
+  "spotlightActions": {
+    "switchToLightTheme": "Passer au thème clair",
+    "switchToDarkTheme": "Passer au thème sombre",
+    "switchToHighContrastTheme": "Passer au thème contraste élevé",
+    "moveMyStationChatLeft": "Déplacer le chat de My Station à gauche",
+    "moveMyStationChatRight": "Déplacer le chat de My Station à droite",
+    "moveAgentStationChatLeft": "Déplacer le chat de l'Agent Station à gauche",
+    "moveAgentStationChatRight": "Déplacer le chat de l'Agent Station à droite",
+    "enableChatPagination": "Activer la pagination du chat",
+    "disableChatPagination": "Désactiver la pagination du chat",
+    "useModelPickerSpotlight": "Utiliser le sélecteur de modèles Spotlight",
+    "useModelPickerDropdown": "Utiliser le sélecteur de modèles déroulant",
+    "useCompactWorkstationLayout": "Utiliser la disposition compacte du Workstation",
+    "useComfortWorkstationLayout": "Utiliser la disposition confort du Workstation",
+    "moveWorkstationSidebarLeft": "Déplacer la barre latérale du Workstation à gauche",
+    "moveWorkstationSidebarRight": "Déplacer la barre latérale du Workstation à droite",
+    "enableDockAutoHide": "Masquer automatiquement le Dock du Workstation",
+    "disableDockAutoHide": "Toujours afficher le Dock du Workstation"
   },
   "commands": {
     "showBottomPanel": "Afficher le panneau inférieur",

@@ -229,7 +229,6 @@ export const CHAT_PANEL_CREATE_TARGET = {
   CREATE_AGENT: "createAgent",
   PROJECT: "project",
   WORK_ITEM: "workItem",
-  BATCH_START: "batchStart",
   BENCHMARK: "benchmark",
 } as const;
 
@@ -247,6 +246,7 @@ chatPanelCreateTargetAtom.debugLabel = "chatPanelCreateTargetAtom";
 export const CHAT_PANEL_CONTENT_MODE = {
   SESSION: "session",
   NON_SESSION: "nonSession",
+  BENCHMARK_SESSION_GROUP: "benchmarkSessionGroup",
 } as const;
 
 export type ChatPanelContentMode =
@@ -279,6 +279,23 @@ export interface ChatPanelSelectedProject {
 export const chatPanelSelectedProjectAtom =
   atom<ChatPanelSelectedProject | null>(null);
 chatPanelSelectedProjectAtom.debugLabel = "chatPanelSelectedProjectAtom";
+
+export interface ChatPanelSelectedWorkspace {
+  kind: "workspace" | "repo";
+  id: string;
+  name: string;
+  path?: string;
+  folderCount?: number;
+  repoIds?: string[];
+}
+
+export const chatPanelSelectedWorkspaceAtom =
+  atom<ChatPanelSelectedWorkspace | null>(null);
+chatPanelSelectedWorkspaceAtom.debugLabel = "chatPanelSelectedWorkspaceAtom";
+
+export const chatPanelWorkspaceDashboardOpenAtom = atom<boolean>(false);
+chatPanelWorkspaceDashboardOpenAtom.debugLabel =
+  "chatPanelWorkspaceDashboardOpenAtom";
 
 /**
  * Whether the chat-panel slot is rendering the full-page Sticky Notes

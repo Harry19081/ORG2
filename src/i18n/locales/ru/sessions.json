@@ -673,8 +673,7 @@
     "singleChoice": "Один вариант",
     "multipleChoice": "Несколько вариантов",
     "typeYourAnswer": "Введите ваш ответ…",
-    "newSession": "Новая Session",
-    "newChat": "Новый чат",
+    "newSession": "Новая сессия",
     "defaultTitle": "Чат",
     "hideChatPanel": "Скрыть панель чата",
     "replay": {
@@ -1651,7 +1650,6 @@
       "createAgent": "Создать Agent / Skill",
       "project": "Создать проект",
       "workItem": "Создать Work Item",
-      "batchStartBeta": "Пакетный запуск (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "Поиск моделей...",
@@ -1802,12 +1800,6 @@
       "worktree": "Worktree",
       "lockedHint": "Worktree заблокирован для этой сессии"
     },
-    "batchStarterPlaceholder": "Опишите этот session starter",
-    "addBatchStarter": "Добавить starter",
-    "removeBatchStarter": "Удалить starter",
-    "batchSendSuccess": "Успешно создано session: {{count}}",
-    "batchSendPartial": "Успешно создано session: {{succeeded}}; ошибок: {{failed}}",
-    "batchSend": "Отправить пакет",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
@@ -1866,6 +1858,8 @@
       "singleRun": "Одиночный запуск",
       "batchRun": "Пакетный запуск",
       "sourcePathPlaceholder": "Путь к папке Benchmark",
+      "workingDirectory": "Рабочий каталог",
+      "workingDirectoryPlaceholder": "Путь, где агенты должны клонировать или изменять репозитории",
       "localPath": "локальный путь",
       "runType": "Тип запуска",
       "kindTitle": "Benchmark",
@@ -1875,7 +1869,18 @@
       },
       "selectedTasks": "Выбрано: {{selected}}/{{total}}",
       "concurrency": "Параллельно",
-      "taskLoadingUnsupported": "Загрузка задач для этого Benchmark пока недоступна; используйте preflight для проверки локального источника."
+      "taskLoadingUnsupported": "Загрузка задач для этого Benchmark пока недоступна; используйте preflight для проверки локального источника.",
+      "attemptTitle": "Attempt",
+      "batchProgress": "Всего {{total}} · {{queued}} в очереди · {{running}} выполняется · {{launched}} запущено · {{failed}} ошибок · {{cancelled}} отменено",
+      "sessionGroupTitle": "Benchmark sessions",
+      "sessionGroupProgress": "Всего {{total}} · {{queued}} в очереди · {{running}} выполняется · {{launched}} запущено · {{failed}} ошибок · {{cancelled}} отменено",
+      "evaluateSubmitted": "Оценить",
+      "evaluatingSubmitted": "Оценка патчей...",
+      "taskActionPlaceholder": "Task IDs for add/remove/stop/restart",
+      "sessionLabel": "Session: {{sessionId}}",
+      "noSessionYet": "Session пока нет",
+      "testResultPending": "Результат теста ожидается",
+      "taskBreadcrumb": "{{attempt}} > {{task}}"
     },
     "skillsAndTools": "Skills и инструменты"
   },

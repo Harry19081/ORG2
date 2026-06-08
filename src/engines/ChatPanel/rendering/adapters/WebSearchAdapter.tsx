@@ -22,8 +22,10 @@ interface WebSearchResult {
 
 function extractWebSearchData(props: UniversalEventProps) {
   if (props.rustExtracted?.kind === "webSearch") {
-    const ws = props.rustExtracted;
-    return { query: ws.query, results: ws.results };
+    const webSearchData = props.rustExtracted;
+    if (webSearchData.query || webSearchData.results.length > 0) {
+      return { query: webSearchData.query, results: webSearchData.results };
+    }
   }
 
   const { args, result } = props;

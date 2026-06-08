@@ -133,9 +133,9 @@ export function useBrowserLayoutState({
     (sessionId: string) => {
       closingSessionIdsRef.current.add(sessionId);
       browserPane.closeTab(createBrowserSessionTabId(sessionId));
-      browser.browserState.closeSession(sessionId);
+      void browser.handleCloseSession(sessionId);
     },
-    [browser.browserState, browserPane]
+    [browser, browserPane]
   );
 
   const handleTabClose = useCallback(

@@ -4,6 +4,7 @@
 
 use std::fs;
 use std::io;
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use app_paths as paths;
@@ -60,6 +61,82 @@ pub(super) fn read_snapshot(session_id: &str, snapshot_id: &str) -> io::Result<F
     let path = snapshot_file(session_id, snapshot_id);
     let bytes = fs::read(&path)?;
     serde_json::from_slice(&bytes).map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))
+}
+
+fn manifest_snapshots(session_id: &str) -> io::Result<BTreeMap<(String, String), String>> {
+    let dir = snapshots_dir(session_id);
+    if !dir.exists() {
+        return Ok(BTreeMap::new());
+    }
+
+    let mut snapshots = BTreeMap::new();
+    for entry in fs::read_dir(dir)? {
+        let path = match entry {
+            Ok(entry) => entry.path(),
+            Err(err) => {
+                tracing::warn!(
+                    session_id,
+                    error = %err,
+                    "file_history snapshot directory entry unreadable; skipping"
+                );
+                continue;
+            }
+        };
+        if path.extension().and_then(|ext| ext.to_str()) != Some("json") {
+            continue;
+        }
+        let bytes = match fs::read(&path) {
+            Ok(bytes) => bytes,
+            Err(err) => {
+                tracing::warn!(
+                    manifest = %path.display(),
+                    error = %err,
+                    "file_history manifest unreadable while listing snapshots; skipping"
+                );
+                continue;
+            }
+        };
+        let snapshot: FileSnapshot = match serde_json::from_slice(&bytes) {
+            Ok(snapshot) => snapshot,
+            Err(err) => {
+                tracing::warn!(
+                    manifest = %path.display(),
+                    error = %err,
+                    "file_history manifest JSON parse failed while listing snapshots; skipping"
+                );
+                continue;
+            }
+        };
+        snapshots.insert(
+            (snapshot.created_at.clone(), snapshot.snapshot_id.clone()),
+            snapshot.snapshot_id,
+        );
+    }
+
+    Ok(snapshots)
+}
+
+pub(super) fn list_snapshot_ids_at_or_after(
+    session_id: &str,
+    target_created_at: &str,
+) -> io::Result<Vec<String>> {
+    Ok(manifest_snapshots(session_id)?
+        .into_iter()
+        .filter_map(|((created_at, _), snapshot_id)| {
+            (created_at.as_str() >= target_created_at).then_some(snapshot_id)
+        })
+        .collect())
+}
+
+pub(super) fn latest_snapshot_id_before(
+    session_id: &str,
+    target_created_at: &str,
+) -> io::Result<Option<String>> {
+    Ok(manifest_snapshots(session_id)?
+        .into_iter()
+        .take_while(|((created_at, _), _)| created_at.as_str() <= target_created_at)
+        .last()
+        .map(|(_, snapshot_id)| snapshot_id))
 }
 
 /// Read only the `created_at` field from a snapshot manifest without loading

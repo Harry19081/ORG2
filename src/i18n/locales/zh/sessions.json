@@ -201,7 +201,7 @@
       "emptyTitle": "暂无日记事件",
       "emptySubtitle": "此日期的 Agent 活动会显示在这里。",
       "event": {
-        "started": "开始 Session",
+        "started": "开始会话",
         "completed": "完成 Session",
         "stillWorking": "仍在工作"
       },
@@ -671,8 +671,7 @@
     "singleChoice": "单选",
     "multipleChoice": "多选",
     "typeYourAnswer": "输入您的回答…",
-    "newSession": "新建 Session",
-    "newChat": "新建 Session",
+    "newSession": "新建会话",
     "defaultTitle": "Session",
     "hideChatPanel": "隐藏聊天面板",
     "replay": {
@@ -1645,7 +1644,6 @@
       "createAgent": "创建 Agent / Skill",
       "project": "创建项目",
       "workItem": "创建 Work Item",
-      "batchStartBeta": "批量启动 (Beta)",
       "benchmark": "Benchmark (Beta)"
     },
     "searchModels": "搜索模型...",
@@ -1796,12 +1794,6 @@
       "cancel": "取消"
     },
     "viewDiff": "查看 Diff",
-    "batchStarterPlaceholder": "描述这个 session starter",
-    "addBatchStarter": "添加 starter",
-    "removeBatchStarter": "移除 starter",
-    "batchSendSuccess": "{{count}} 个 session 创建成功",
-    "batchSendPartial": "{{succeeded}} 个 session 创建成功；{{failed}} 个失败",
-    "batchSend": "批量发送",
     "benchmark": {
       "title": "Benchmark",
       "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
@@ -1860,6 +1852,8 @@
       "singleRun": "单次运行",
       "batchRun": "批量运行",
       "sourcePathPlaceholder": "Benchmark 文件夹路径",
+      "workingDirectory": "工作目录",
+      "workingDirectoryPlaceholder": "Agent 克隆或修改仓库的路径",
       "localPath": "本地路径",
       "runType": "运行类型",
       "kindTitle": "Benchmark",
@@ -1869,7 +1863,18 @@
       },
       "selectedTasks": "已选择 {{selected}}/{{total}} 个",
       "concurrency": "并行数",
-      "taskLoadingUnsupported": "此 Benchmark 暂不支持加载任务；请使用 preflight 检查本地来源。"
+      "taskLoadingUnsupported": "此 Benchmark 暂不支持加载任务；请使用 preflight 检查本地来源。",
+      "attemptTitle": "Attempt",
+      "batchProgress": "共 {{total}} 个 · {{queued}} 个排队 · {{running}} 个运行中 · {{launched}} 个已启动 · {{failed}} 个失败 · {{cancelled}} 个已取消",
+      "sessionGroupTitle": "Benchmark sessions",
+      "sessionGroupProgress": "共 {{total}} 个 · {{queued}} 个排队 · {{running}} 个运行中 · {{launched}} 个已启动 · {{failed}} 个失败 · {{cancelled}} 个已取消",
+      "evaluateSubmitted": "评估",
+      "evaluatingSubmitted": "正在评估补丁...",
+      "taskActionPlaceholder": "Task IDs for add/remove/stop/restart",
+      "sessionLabel": "Session：{{sessionId}}",
+      "noSessionYet": "暂无 Session",
+      "testResultPending": "测试结果待定",
+      "taskBreadcrumb": "{{attempt}} > {{task}}"
     },
     "skillsAndTools": "Skills 与工具"
   },

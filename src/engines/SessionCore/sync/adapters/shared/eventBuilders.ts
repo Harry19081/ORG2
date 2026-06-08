@@ -1,12 +1,9 @@
 /**
  * Shared SessionEvent Factories + Stream Helpers
  *
- * Re-exports from the two focused modules:
- *   - eventFactories: pure SessionEvent constructors (make*, create*)
- *   - streamBuffer:   throttled delta buffer and stream-ref helpers
- *
- * Importers can either use this barrel or import from the focused files
- * directly when they only need one half.
+ * Re-exports pure SessionEvent constructors (make*, create*).
+ * Streaming deltas for Rust agent sessions are intentionally ephemeral and
+ * must not be routed through this durable EventStore factory layer.
  */
 export type { ErrorEventOptions } from "./eventFactories";
 export {
@@ -19,11 +16,3 @@ export {
   makeToolCallEvent,
   makeToolResultEvent,
 } from "./eventFactories";
-export {
-  appendStreamDelta,
-  finalizeStream,
-  flushPendingStreamDeltas,
-  getPendingFlushSize,
-  PENDING_FLUSH_MAX_ENTRIES,
-  resetStreamRefs,
-} from "./streamBuffer";
