@@ -7,10 +7,12 @@ import {
   Dock,
   StationDockChrome,
 } from "@src/engines/Simulator/components/Dock";
+import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import {
   useDockFilterUrlSync,
   useWorkStationPanels,
 } from "@src/hooks/workStation";
+import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
 import {
   workStationDockAutoHideAtom,
   workStationFollowAgentHighlightEnabledAtom,
@@ -63,6 +65,8 @@ const AppShell = React.memo(
     const primaryPanelCollapsed = useAtomValue(
       workStationPrimarySidebarCollapsedAtom
     );
+    const captionEnabled = useAtomValue(simulatorCaptionBarEnabledAtom);
+    const captionMessage = useCurrentTurnLastAgentMessage();
 
     const { repoPath, repoName, pathExists, lastSeenPath } = useAppShellRepo();
     const { visitedModes, handleDockClick } = useAppShellDock();
@@ -78,6 +82,9 @@ const AppShell = React.memo(
       hasVisitedAgentStation,
       illuminateAgentStationChrome,
     } = useAppShellStationMode({ followAgentHighlightEnabled });
+
+    const agentStationCaptionVisible =
+      isAgentStation && captionEnabled && !!captionMessage;
 
     const workStationPanels = useWorkStationPanels();
     useAppShellSimulatorPanelSync({ isAgentStation, workStationPanels });
@@ -134,6 +141,7 @@ const AppShell = React.memo(
           enabled={followAgentHighlightEnabled && isAgentStation}
           illuminated={illuminateAgentStationChrome}
           isFullMode={isFullMode}
+          captionVisible={agentStationCaptionVisible}
         >
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {isKanbanStation ? (

@@ -21,8 +21,7 @@ export type SessionReplayPlaceholderMode = "interactive" | "simulation";
 
 /** Caption for simulator replay panes waiting on Agent tool output */
 export function useSimulatorAwaitingAgentCaption(): string {
-  const { t } = useTranslation("sessions");
-  return t("simulator.replay.agentHasNotUsedTool");
+  return "";
 }
 
 /**
