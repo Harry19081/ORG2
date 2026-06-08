@@ -5,7 +5,7 @@
  * Intercepts internal file-tree drags and WorkStation tab drags early
  * so they don't bubble to GlobalDragDrop.
  */
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import type { ComposerInputRef } from "@src/components/ComposerInput";
 import { insertPillFromTabPayload } from "@src/shared/dnd/dropTargetUtils";
@@ -13,6 +13,41 @@ import { useTabDragEndToPill } from "@src/shared/dnd/useTabDragEndToPill";
 
 import { reorderActiveRef } from "../components/QueuedMessages";
 import { useTabDragHover } from "./useTabDragHover";
+
+/**
+ * Returns true while an external file (from the OS / Finder) is being dragged
+ * over the chat panel. GlobalDragDrop sets `data-chat-file-dragging="true"` on
+ * `document.body` during Tauri native drag events so we observe that attribute
+ * via a MutationObserver rather than relying on unavailable HTML5 drag events.
+ */
+function useExternalFileDragOver(
+  containerRef: React.RefObject<HTMLDivElement>
+): boolean {
+  const [isExternalDragOver, setIsExternalDragOver] = useState(false);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const dragging = document.body.dataset.chatFileDragging === "true";
+      // Only show the highlight when the container element is present in the
+      // DOM and is (or contains) a visible chat drop target.
+      const el = containerRef.current?.matches("[data-chat-drop-target]")
+        ? containerRef.current
+        : containerRef.current?.querySelector<HTMLElement>(
+            "[data-chat-drop-target]"
+          );
+      setIsExternalDragOver(dragging && el !== null);
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["data-chat-file-dragging"],
+    });
+
+    return () => observer.disconnect();
+  }, [containerRef]);
+
+  return isExternalDragOver;
+}
 
 interface UseContainerDragOptions {
   handleDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -36,7 +71,9 @@ export function useContainerDrag({
   composerInputRef,
   containerRef,
 }: UseContainerDragOptions): UseContainerDragReturn {
-  const isDragOver = useTabDragHover(containerRef);
+  const isTabDragOver = useTabDragHover(containerRef);
+  const isExternalDragOver = useExternalFileDragOver(containerRef);
+  const isDragOver = isTabDragOver || isExternalDragOver;
   // tab-drag-end listener — dnd-kit fires onDragEnd before the browser drop
   // event, so globals are already cleared by the time onDrop runs. Instead,
   // we listen for the custom event dispatched by useTabDrag and check whether

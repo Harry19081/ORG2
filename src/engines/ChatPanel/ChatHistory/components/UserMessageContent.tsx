@@ -24,11 +24,34 @@ import BasePill from "@src/components/ComposerInput/BasePill";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import {
   PILL_LINE_HEIGHT,
-  PILL_REGEX,
   PILL_SIZE,
   PILL_TYPES,
 } from "@src/config/pillTokens";
 import type { PillType } from "@src/config/pillTokens";
+
+/**
+ * Local variant of PILL_REGEX that restricts the display-name capture group
+ * to a single line (`[^\n[]` instead of `[^[]`). This prevents the whole
+ * conversation text above a pill from being swallowed as the pill's label
+ * when there are newlines between the preceding text and the `[type:path]`
+ * token.
+ */
+const SINGLE_LINE_PILL_REGEX = new RegExp(
+  `([^\\n[]+?)\\s*\\[(${[
+    "file",
+    "folder",
+    "repo",
+    "branch",
+    "terminal",
+    "session",
+    "browser",
+    "project",
+    "workitem",
+    "dom-element",
+    "skill",
+  ].join("|")}):([^\\]]+)\\]`,
+  "g"
+);
 
 // ============================================
 // Types
@@ -70,16 +93,35 @@ function parseUserMessage(text: string): Segment[] {
   // Pre-extract code block for terminal pills that lack embedded content
   const codeBlockContent = extractCodeBlock(text);
 
-  for (const match of text.matchAll(PILL_REGEX)) {
+  for (const match of text.matchAll(SINGLE_LINE_PILL_REGEX)) {
     const matchStart = match.index;
     if (matchStart === undefined) continue;
 
-    // Text before this pill
+    // The regex captures everything on the same line before the bracket as
+    // the display name. Split off any preceding text (before the last
+    // whitespace-delimited token) so it renders as a plain text segment
+    // rather than being absorbed into the pill label.
+    const rawDisplayName = match[1];
+    const lastSpaceIdx = rawDisplayName.search(/\s[^\s]*$/);
+    let precedingText: string;
+    let displayName: string;
+    if (lastSpaceIdx >= 0) {
+      precedingText = rawDisplayName.slice(0, lastSpaceIdx + 1);
+      displayName = rawDisplayName.slice(lastSpaceIdx + 1).trim();
+    } else {
+      precedingText = "";
+      displayName = rawDisplayName.trim();
+    }
+
+    // Text before this match
     if (matchStart > lastIndex) {
       segments.push({ kind: "text", text: text.slice(lastIndex, matchStart) });
     }
+    // Text on the same line that precedes the pill filename
+    if (precedingText) {
+      segments.push({ kind: "text", text: precedingText });
+    }
 
-    const displayName = match[1].trim();
     const pillType = match[2] as PillType;
     const rawPath = match[3];
 

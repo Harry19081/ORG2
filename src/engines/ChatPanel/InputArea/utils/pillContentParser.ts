@@ -2,7 +2,22 @@ import type {
   ComposerPillAttrs,
   ComposerSnapshot,
 } from "@src/components/ComposerInput/types";
-import { PILL_REGEX, type PillType } from "@src/config/pillTokens";
+import {
+  PILL_REGEX,
+  PILL_TYPE_LIST,
+  type PillType,
+} from "@src/config/pillTokens";
+
+/**
+ * Per-line variant of PILL_REGEX: the display-name capture group is restricted
+ * to `[^\n[]` so it cannot swallow newlines. Used in `parsePillTextToSnapshot`
+ * (which already splits by line) to keep the display name to the last
+ * whitespace-delimited token before the bracket.
+ */
+const SINGLE_LINE_PILL_REGEX = new RegExp(
+  `([^\\n[]+?)\\s*\\[(${PILL_TYPE_LIST.join("|")}):([^\\]]+)\\]`,
+  "g"
+);
 
 /**
  * Separator injected by `pill_resolver.rs` when expanding pill references.
@@ -23,7 +38,9 @@ export function stripExpandedPillContent(text: string): string {
 }
 
 export function hasPillSyntax(text: string): boolean {
-  return text.match(PILL_REGEX) !== null;
+  // Use PILL_REGEX (which can cross newlines) only for the fast-path check;
+  // actual parsing uses SINGLE_LINE_PILL_REGEX per line.
+  return PILL_REGEX.test(text);
 }
 
 /**
@@ -39,15 +56,31 @@ export function parsePillTextToSnapshot(text: string): ComposerSnapshot {
     if (lineIdx > 0) parts.push({ kind: "newline" });
 
     let lastIndex = 0;
-    for (const match of line.matchAll(PILL_REGEX)) {
+    for (const match of line.matchAll(SINGLE_LINE_PILL_REGEX)) {
       const matchStart = match.index;
       if (matchStart === undefined) continue;
+
+      // Split the raw capture into "preceding text on this line" + the actual
+      // pill filename (last whitespace-delimited token before the bracket).
+      const rawDisplayName = match[1];
+      const lastSpaceIdx = rawDisplayName.search(/\s[^\s]*$/);
+      let precedingText: string;
+      let fileName: string;
+      if (lastSpaceIdx >= 0) {
+        precedingText = rawDisplayName.slice(0, lastSpaceIdx + 1);
+        fileName = rawDisplayName.slice(lastSpaceIdx + 1).trim();
+      } else {
+        precedingText = "";
+        fileName = rawDisplayName.trim();
+      }
 
       if (matchStart > lastIndex) {
         parts.push({ kind: "text", text: line.slice(lastIndex, matchStart) });
       }
+      if (precedingText) {
+        parts.push({ kind: "text", text: precedingText });
+      }
 
-      const fileName = match[1].trim();
       const pillType = match[2] as PillType;
       const filePath = match[3];
 
