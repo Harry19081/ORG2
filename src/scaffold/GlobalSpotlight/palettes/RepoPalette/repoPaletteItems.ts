@@ -45,7 +45,7 @@ interface BuildSectionedRepoItemsArgs {
   currentRepoId?: string;
   isMultiRoot: boolean;
   isManageMode: boolean;
-  leadingRepo?: RepoItem;
+  leadingRepos?: readonly RepoItem[];
   selectedIds: Set<string>;
   searchQuery: string;
   paletteText: RepoPaletteText;
@@ -64,7 +64,7 @@ export function buildSectionedRepoItems({
   currentRepoId,
   isMultiRoot,
   isManageMode,
-  leadingRepo,
+  leadingRepos = [],
   selectedIds,
   searchQuery,
   paletteText,
@@ -92,8 +92,8 @@ export function buildSectionedRepoItems({
   );
 
   const leadingRepoItems =
-    leadingRepo && !isManageMode
-      ? buildRepoSpotlightItems([leadingRepo], {
+    leadingRepos.length > 0 && !isManageMode
+      ? buildRepoSpotlightItems([...leadingRepos], {
           currentRepoId,
           onAction: onLeadingRepoAction,
         })

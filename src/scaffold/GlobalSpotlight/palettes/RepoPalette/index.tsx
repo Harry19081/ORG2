@@ -64,7 +64,7 @@ export const RepoPalette: React.FC<RepoPaletteProps> = ({
   asBody = false,
   switchPathLabel,
   hideActionClose = false,
-  leadingRepo,
+  leadingRepos = [],
   onGoBackToParent,
 }) => {
   const { t } = useTranslation();
@@ -408,7 +408,7 @@ export const RepoPalette: React.FC<RepoPaletteProps> = ({
         currentRepoId,
         isMultiRoot,
         isManageMode,
-        leadingRepo,
+        leadingRepos,
         selectedIds,
         searchQuery,
         paletteText,
@@ -431,7 +431,7 @@ export const RepoPalette: React.FC<RepoPaletteProps> = ({
       handleRepoSelectWithWorkspaceExit,
       isManageMode,
       isMultiRoot,
-      leadingRepo,
+      leadingRepos,
       openPathItem,
       paletteText,
       renderRepoTrashAction,
