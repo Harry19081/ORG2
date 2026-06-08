@@ -11,7 +11,7 @@ import {
 } from "@src/store/ui/chatPanelAtom";
 import type { WorkItemDraft } from "@src/store/workstation/projectManager";
 
-const AGENT_ARCHITECT_DEF_ID = "builtin:agent-architect";
+const ADE_MANAGER_DEF_ID = "builtin:agent-architect";
 
 interface UseChatPanelCreateTargetOptions {
   allAgentDefs: AgentDefinition[];
@@ -75,17 +75,17 @@ export function useChatPanelCreateTarget({
       const nextTarget = value as ChatPanelCreateTarget;
 
       if (nextTarget === CHAT_PANEL_CREATE_TARGET.CREATE_AGENT) {
-        const architectDef = allAgentDefs.find(
-          (definition) => definition.id === AGENT_ARCHITECT_DEF_ID
+        const adeManagerDef = allAgentDefs.find(
+          (definition) => definition.id === ADE_MANAGER_DEF_ID
         );
         setCreatorState((previous) => ({
           ...previous,
           dispatchCategory: "rust_agent",
           targetKind: SESSION_TARGET_KIND.AGENT,
-          selectedAgentDefinitionId: AGENT_ARCHITECT_DEF_ID,
+          selectedAgentDefinitionId: ADE_MANAGER_DEF_ID,
           selectedAgentOrgId: null,
-          agentName: architectDef?.name ?? previous.agentName,
-          agentIconId: architectDef?.iconId ?? null,
+          agentName: adeManagerDef?.name ?? previous.agentName,
+          agentIconId: adeManagerDef?.iconId ?? null,
           cliAgentType: null,
         }));
         handleNewSession();

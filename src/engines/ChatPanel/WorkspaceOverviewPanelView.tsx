@@ -16,7 +16,11 @@ import type { TabPillItem } from "@src/components/TabPill";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import WorkItemContentStack from "@src/modules/ProjectManager/WorkItems/components/WorkItemContentStack";
 import { RepoDetailPage } from "@src/modules/shared/launchpad/components";
-import { DetailPanelContainer } from "@src/modules/shared/layouts/blocks";
+import RepoActionButtons from "@src/modules/shared/launchpad/components/RepoActionButtons";
+import {
+  DetailPanelContainer,
+  PanelFooter,
+} from "@src/modules/shared/layouts/blocks";
 import { useRepoGitStatus } from "@src/scaffold/GlobalSpotlight/hooks/useRepoGitStatus";
 import {
   type ChatPanelSelectedWorkspace,
@@ -194,9 +198,29 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
       </div>
     ) : null;
 
+    const handleOpenDetails = useCallback(() => {
+      setActiveTab(WORKSPACE_OVERVIEW_TAB.DETAILS);
+    }, [setActiveTab]);
+
     const detailsBody =
       resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.DETAILS && selectedRepo ? (
         <RepoDetailPage repo={selectedRepo} />
+      ) : null;
+
+    const actionFooter =
+      selectedRepo && resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.OVERVIEW ? (
+        <PanelFooter
+          left={
+            <RepoActionButtons
+              repo={selectedRepo}
+              onOpenDetails={handleOpenDetails}
+              shape="square"
+              showDetails={false}
+              showClose={false}
+              className="overflow-x-auto scrollbar-hide"
+            />
+          }
+        />
       ) : null;
 
     const descriptionContent = (
@@ -224,7 +248,7 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
         data-testid="chat-panel-workspace-overview-detail"
       >
         <DetailPanelContainer
-          className="relative bg-bg-2"
+          className="bg-bg-2"
           testId="workspace-overview-panel"
         >
           <WorkItemContentStack
@@ -234,6 +258,7 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
             descriptionFlexible
             scrollable
           />
+          {actionFooter}
         </DetailPanelContainer>
       </div>
     );

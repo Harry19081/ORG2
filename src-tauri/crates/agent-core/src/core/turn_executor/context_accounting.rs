@@ -2,9 +2,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use crate::core::session::prompt::cache::{RenderedSystemBlockScope, ORGII_SYSTEM_CACHE_SCOPE_KEY};
-use crate::core::turn_executor::helpers::{
-    STRUCTURED_CONTENT_BLOCKS_KEY, STRUCTURED_SIDECAR_KEY,
-};
+use crate::core::turn_executor::helpers::{STRUCTURED_CONTENT_BLOCKS_KEY, STRUCTURED_SIDECAR_KEY};
 
 const APPROX_CHARS_PER_TOKEN: i64 = 4;
 
@@ -75,7 +73,10 @@ impl ContextUsageSnapshot {
         }
 
         for (index, message) in messages.iter().enumerate() {
-            let role = message.get("role").and_then(Value::as_str).unwrap_or("other");
+            let role = message
+                .get("role")
+                .and_then(Value::as_str)
+                .unwrap_or("other");
             match role {
                 "system" => push_system_item(&mut items, message, index),
                 "tool" => push_tool_result_item(&mut items, message, index),
@@ -105,7 +106,9 @@ impl ContextUsageSnapshot {
                     estimated_tokens: delta,
                     included: true,
                     cache_status: None,
-                    details: Some("Difference between provider total and local section estimate".to_string()),
+                    details: Some(
+                        "Difference between provider total and local section estimate".to_string(),
+                    ),
                 }],
             });
         }
@@ -116,7 +119,9 @@ impl ContextUsageSnapshot {
             percent_used: None,
             updated_at: chrono::Utc::now().to_rfc3339(),
             sections,
-            warnings: vec!["Section token counts are estimated from the final request payload.".to_string()],
+            warnings: vec![
+                "Section token counts are estimated from the final request payload.".to_string(),
+            ],
         }
     }
 }
@@ -152,7 +157,12 @@ fn push_system_item(items: &mut Vec<ContextUsageItem>, message: &Value, index: u
     });
 }
 
-fn push_conversation_item(items: &mut Vec<ContextUsageItem>, message: &Value, index: usize, role: &str) {
+fn push_conversation_item(
+    items: &mut Vec<ContextUsageItem>,
+    message: &Value,
+    index: usize,
+    role: &str,
+) {
     let attachments_tokens = attachment_tokens(message);
     let message_tokens = (estimate_tokens_for_json(message) - attachments_tokens).max(0);
     if message_tokens > 0 {
@@ -265,9 +275,15 @@ fn categorize_dynamic_system_text(text: &str) -> ContextUsageCategory {
     let lower = text.to_lowercase();
     if lower.contains("skill") {
         ContextUsageCategory::Skills
-    } else if lower.contains("memory") || lower.contains("learnings") || lower.contains("workspace-memory") {
+    } else if lower.contains("memory")
+        || lower.contains("learnings")
+        || lower.contains("workspace-memory")
+    {
         ContextUsageCategory::Memory
-    } else if lower.contains("rule") || lower.contains("policy") || lower.contains("context rules activated") {
+    } else if lower.contains("rule")
+        || lower.contains("policy")
+        || lower.contains("context rules activated")
+    {
         ContextUsageCategory::Rules
     } else {
         ContextUsageCategory::DynamicPrompt
