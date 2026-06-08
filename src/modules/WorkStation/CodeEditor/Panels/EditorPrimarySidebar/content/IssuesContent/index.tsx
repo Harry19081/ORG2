@@ -11,8 +11,10 @@ import { useSetAtom } from "jotai";
 import { Filter as FilterIcon, RefreshCw } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import Input from "@src/components/Input";
+import { buildIntegrationsPath } from "@src/config/mainAppPaths/integrations";
 import {
   COUNT_BADGE,
   HEADER_BUTTON,
@@ -41,6 +43,7 @@ export interface IssuesContentProps {
 const IssuesContent: React.FC<IssuesContentProps> = memo(
   ({ repoPath, repoId, branchName, remoteUrl }) => {
     const { t } = useTranslation("common");
+    const navigate = useNavigate();
     const setCallbackAtom = useSetAtom(workstationIssueCallbackAtom);
     const { surfaceBgClass } = usePrimarySidebarSurface();
 
@@ -48,6 +51,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
       issues,
       loading,
       remoteUrlLoading,
+      needsReAuth,
       error,
       filterState,
       setFilterState,
@@ -247,6 +251,26 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
           variant="loading"
           placement="sidebar"
           title={t("placeholders.loadingChanges", "Loading issues…")}
+          fillParentHeight
+        />
+      );
+    } else if (needsReAuth) {
+      listContent = (
+        <Placeholder
+          variant="error"
+          placement="sidebar"
+          title={t(
+            "git.issues.reAuthRequired",
+            "GitHub Authorization Required"
+          )}
+          subtitle={t(
+            "git.issues.reAuthDescription",
+            "Your GitHub token has expired. Go to Settings → Integrations → Git to reconnect."
+          )}
+          action={{
+            label: t("git.issues.goToSettings", "Go to Settings"),
+            onClick: () => navigate(buildIntegrationsPath({ category: "git" })),
+          }}
           fillParentHeight
         />
       );

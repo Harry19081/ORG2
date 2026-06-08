@@ -82,6 +82,9 @@ export function useWorkstationIssues({
   // Track whether we're still waiting for the remote URL to resolve so the
   // panel shows a spinner instead of the empty-state placeholder.
   const [remoteUrlLoading, setRemoteUrlLoading] = useState(true);
+  // Set to true when the API returns a re-authorization error so the UI can
+  // show a targeted prompt instead of a generic error or empty state.
+  const [needsReAuth, setNeedsReAuth] = useState(false);
 
   const [repoLabels, setRepoLabels] = useState<GitHubIssueLabel[]>([]);
   const [collaborators, setCollaborators] = useState<GitHubIssueUser[]>([]);
@@ -199,13 +202,11 @@ export function useWorkstationIssues({
       if (!mountedRef.current) return;
 
       if (result.error) {
-        // Real auth rejection from Rust — revoke optimistic auth flag so the
-        // "Connect GitHub" placeholder is shown instead of a generic error.
-        if (
-          result.error.includes("GitHubReAuthRequired") ||
-          result.error.includes("re-authorization required")
-        ) {
-          setHasGitHubAuth(false);
+        const isReAuth =
+          /ReAuthError/i.test(result.error) ||
+          /re-authorization required/i.test(result.error);
+        if (isReAuth) {
+          setNeedsReAuth(true);
           setListState((prev) => ({ ...prev, loading: false, error: null }));
           return;
         }
@@ -482,6 +483,7 @@ export function useWorkstationIssues({
     issues: filteredIssues,
     loading: listState.loading,
     remoteUrlLoading,
+    needsReAuth,
     error: listState.error,
     filterState,
     setFilterState,

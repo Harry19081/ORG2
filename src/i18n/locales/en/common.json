@@ -1131,7 +1131,10 @@
       "authRequired": {
         "title": "Connect GitHub",
         "description": "Go to Settings → Integrations → Git to connect your GitHub account."
-      }
+      },
+      "reAuthRequired": "GitHub Authorization Required",
+      "reAuthDescription": "Your GitHub token has expired. Go to Settings → Integrations → Git to reconnect.",
+      "goToSettings": "Go to Settings"
     }
   },
   "selectors": {
