@@ -1,8 +1,14 @@
 /**
- * ExploreAdapter — renders `list_dir`-shaped events via `ExploreBlock`.
- * Prefers `rustExtracted.kind === "listDir"`; falls back to a defensive
- * parser over `args` / `result` for events that predate the Rust-side
- * extractor (e.g. bracketed `[dir]` / `[file]` text output).
+ * ExploreAdapter — renders `list_dir`-shaped events.
+ *
+ * `list_dir` itself is collapsed to a title-only header row (no expandable
+ * body). Matched entries remain inspectable in the simulator's Files tab,
+ * so the chat panel stays compact for what is usually a high-volume,
+ * low-information event.
+ *
+ * `query_lsp` (also routed through `CbExplore`) keeps the full `ExploreBlock`
+ * because its diagnostic text lines are the actual deliverable to the user
+ * — there is no equivalent surface in the simulator to fall back to.
  */
 import React from "react";
 
@@ -11,9 +17,11 @@ import {
   useLifecycleLabels,
 } from "@src/engines/SessionCore/rendering/registry";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
+import { formatToolTargetPath } from "@src/util/file/repoPathDisplay";
 import { getToolDisplayLabelFromRegistry } from "@src/util/ui/rendering/registryToolLabel";
 
 import ExploreBlock from "../../blocks/ExploreBlock";
+import ListDirBlock from "../../blocks/ListDirBlock";
 import { extractResultText } from "../../blocks/ToolCallBlock/helpers";
 import { FailedEventRow } from "../../blocks/primitives";
 
@@ -189,6 +197,41 @@ export const ExploreAdapter: React.FC<UniversalEventProps> = (props) => {
     );
   }
 
+  const toolName = props.functionName || props.eventType;
+  const isLoading =
+    props.status === "running" && props.showActiveEventPainting === true;
+
+  // `list_dir` renders as a single header row (like Search / Glob). The
+  // expanded directory listing is reachable in the simulator's Files tab.
+  if (props.eventType === "list_dir") {
+    const { directory } = extractListDirData(props);
+    const targetLabel = formatToolTargetPath({
+      args: props.args,
+      repoPath: props.repoPath,
+      pathKeys: [
+        "target_directory",
+        "targetDirectory",
+        "dir",
+        "dir_path",
+        "path",
+      ],
+    });
+    return (
+      <div
+        data-tool-call-event-id={props.eventId}
+        data-tool-call-name={toolName}
+      >
+        <ListDirBlock
+          dirPath={directory}
+          isLoading={isLoading}
+          eventId={props.eventId}
+          title={title}
+          targetPath={targetLabel}
+        />
+      </div>
+    );
+  }
+
   const { directory, entries, contentSummary } = extractListDirData(props);
   const dirs = entries
     .filter((entry) => entry.isDirectory)
@@ -197,8 +240,6 @@ export const ExploreAdapter: React.FC<UniversalEventProps> = (props) => {
     .filter((entry) => !entry.isDirectory)
     .map((entry) => entry.name);
 
-  const toolName = props.functionName || props.eventType;
-
   return (
     <div data-tool-call-event-id={props.eventId} data-tool-call-name={toolName}>
       <ExploreBlock
@@ -206,9 +247,7 @@ export const ExploreAdapter: React.FC<UniversalEventProps> = (props) => {
         dirs={dirs}
         files={files}
         rawOutput={contentSummary}
-        isLoading={
-          props.status === "running" && props.showActiveEventPainting === true
-        }
+        isLoading={isLoading}
         isFailed={false}
         defaultCollapsed={true}
         eventId={props.eventId}

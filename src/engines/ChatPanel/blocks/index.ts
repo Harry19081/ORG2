@@ -12,7 +12,7 @@
  * 1. **Collapsible blocks** — Use EventBlockHeader + useEventBlockHeader primitives.
  *    These have a consistent header with icon, label, collapse toggle, and optional
  *    eventId replay. Includes: TerminalBlock, ToolCallBlock, CodeBlock, SearchBlock,
- *    ExploreBlock, GlobBlock, AgentMessageBlock.
+ *    ExploreBlock, GlobBlock, ListDirBlock, AgentMessageBlock.
  *
  * 2. **Inline blocks** — Flat badge-style displays without collapse behavior.
  *
@@ -42,6 +42,9 @@ export type { SearchBlockProps } from "./SearchBlock";
 
 export { default as GlobBlock } from "./GlobBlock";
 export type { GlobBlockProps } from "./GlobBlock";
+
+export { default as ListDirBlock } from "./ListDirBlock";
+export type { ListDirBlockProps } from "./ListDirBlock";
 
 // Agent message block (collapsible wrapper for agent messages — excluded from collapse-all)
 export { default as AgentMessageBlock } from "./AgentMessageBlock";
