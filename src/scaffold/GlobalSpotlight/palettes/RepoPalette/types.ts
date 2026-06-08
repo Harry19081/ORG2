@@ -40,7 +40,6 @@ export interface RepoPaletteText {
   addPlaceholder: string;
   addEntryLabel: string;
   openFolderLabel: string;
-  sectionWorkspaceLabel: string;
   sectionCurrentLabel: string;
   sectionSystemPathsLabel: string;
   sectionRepoLabel: string;

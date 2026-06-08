@@ -147,20 +147,7 @@ export function buildSectionedRepoItems({
 }
 
 export function buildSectionedAddItems(
-  addWorkspaceItems: SpotlightItem[],
-  sectionWorkspaceLabel: string
+  addWorkspaceItems: SpotlightItem[]
 ): SpotlightItem[] {
-  if (addWorkspaceItems.length === 0) return [];
-  return [
-    {
-      id: "__header_workspace__",
-      label: sectionWorkspaceLabel,
-      desc: "",
-      icon: "",
-      type: "option",
-      data: { isHeader: true },
-      action: () => {},
-    },
-    ...addWorkspaceItems,
-  ];
+  return addWorkspaceItems;
 }
