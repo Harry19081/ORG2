@@ -4,7 +4,7 @@
  * Shared base for second-level sidebars that replace the HomeSidebar when
  * navigating into a specific page (e.g. Dev Record, Settings).
  *
- * Renders inside the same SidebarBase glass/resize shell as HomeSidebar:
+ * Renders inside the same SidebarBase surface/resize shell as HomeSidebar:
  * - Pinned back affordance above the scrollable list
  * - Scrollable list of icon + label items with active highlight
  */

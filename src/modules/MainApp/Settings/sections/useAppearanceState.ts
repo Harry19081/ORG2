@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -22,6 +22,7 @@ import {
   globalThemeIdAtom,
   primaryColorPresetAtom,
   uiScaleAtom,
+  updateSettingsBatchAtom,
 } from "@src/store";
 import { preloadThemeCss, swapThemeCss } from "@src/util/ui/theme/swapThemeCss";
 import { showThemeTransitionCover } from "@src/util/ui/theme/themeTransitionCover";
@@ -44,7 +45,7 @@ for (
 export function useAppearanceState() {
   const { t } = useTranslation("settings");
 
-  const [globalThemeId, setGlobalThemeId] = useAtom(globalThemeIdAtom);
+  const globalThemeId = useAtomValue(globalThemeIdAtom);
   const [primaryColorPreset, setPrimaryColorPreset] = useAtom(
     primaryColorPresetAtom
   );
@@ -55,6 +56,7 @@ export function useAppearanceState() {
   const [globalLayoutMethod, setGlobalLayoutMethod] = useAtom(
     globalLayoutMethodAtom
   );
+  const updateSettingsBatch = useSetAtom(updateSettingsBatchAtom);
 
   // Warm the browser's stylesheet cache for every theme variant the moment
   // the user lands on the appearance page. The actual swap on click then
@@ -77,17 +79,20 @@ export function useAppearanceState() {
     async (themeIdValue: string) => {
       const themeId = normalizeGlobalThemeId(themeIdValue);
       const selectedTheme = getGlobalTheme(themeId);
+      updateSettingsBatch({
+        "general.theme": themeId,
+        "general.primaryColor": selectedTheme.defaultPrimaryColor,
+      });
+      localStorage.setItem("theme", themeId);
+
       const cover = showThemeTransitionCover();
       try {
         await swapThemeCss(selectedTheme.baseCssPath);
-        setGlobalThemeId(themeId);
-        setPrimaryColorPreset(selectedTheme.defaultPrimaryColor);
-        localStorage.setItem("theme", themeId);
       } finally {
         await cover.hide();
       }
     },
-    [setGlobalThemeId, setPrimaryColorPreset]
+    [updateSettingsBatch]
   );
 
   const handleAppearanceModeChange = useCallback(

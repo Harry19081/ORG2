@@ -252,7 +252,6 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
             >
               <TabPill
                 activeTab={activeKey}
-                region="sidebar"
                 tabs={tabPillTabs}
                 onChange={onChange}
                 iconOnly

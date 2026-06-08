@@ -16,6 +16,274 @@ export const taskToolsEvents: Record<string, SessionEvent> = {
     }
   ),
 
+  inspect_terminals: createEvent(
+    "inspect_terminals",
+    {
+      action: "list",
+      include_output: true,
+    },
+    {
+      success: true,
+      terminals: [
+        {
+          id: "48291",
+          cwd: "/Users/developer/Documents/GitHub/orgii_frontend",
+          command: "npm run dev",
+          status: "running",
+          output: "VITE v6.2.0 ready in 418 ms\nLocal: http://localhost:5173/",
+        },
+        {
+          id: "52107",
+          cwd: "/Users/developer/Documents/GitHub/orgii_frontend/src-tauri",
+          command: "cargo test -p agent-core",
+          status: "completed",
+          exit_code: 0,
+          output: "test result: ok. 128 passed; 0 failed",
+        },
+      ],
+    }
+  ),
+
+  org_send_message: createEvent(
+    "org_send_message",
+    {
+      sender_member_id: "coordinator",
+      recipient_member_id: "frontend_builder",
+      kind: "task_assignment",
+      title: "Wire Playground mock coverage",
+      content:
+        "Please add representative fixtures for the newly registered chat blocks so visual QA can exercise them without a live Agent Org run.",
+    },
+    {
+      success: true,
+      sender_member_id: "coordinator",
+      content: JSON.stringify({
+        delivered: [
+          {
+            inbox_id: 42,
+            recipient_member_id: "frontend_builder",
+            kind: "task_assignment",
+            org_run_id: "org-run-preview-001",
+          },
+        ],
+      }),
+    }
+  ),
+
+  task_create: {
+    ...createEvent(
+      "task_create",
+      {
+        org_run_id: "org-run-preview-001",
+        task: {
+          id: "TASK-101",
+          subject: "Add Playground fixtures for new event blocks",
+          description:
+            "Keep DevTools visual previews in sync with the unified event registry.",
+          owner: "frontend_builder",
+          status: "pending",
+          priority: "high",
+          blocks: ["TASK-099"],
+        },
+      },
+      {
+        success: true,
+        task_id: "TASK-101",
+      }
+    ),
+    extracted: {
+      kind: "orgTask",
+      action: "create",
+      orgRunId: "org-run-preview-001",
+      taskAssignedDispatched: true,
+      task: {
+        id: "TASK-101",
+        subject: "Add Playground fixtures for new event blocks",
+        description:
+          "Keep DevTools visual previews in sync with the unified event registry.",
+        owner: "frontend_builder",
+        ownerName: "Frontend Builder",
+        status: "pending",
+        priority: "high",
+        blocks: ["TASK-099"],
+        blockedBy: [],
+      },
+    },
+  },
+
+  task_update: {
+    ...createEvent(
+      "task_update",
+      {
+        org_run_id: "org-run-preview-001",
+        task_id: "TASK-101",
+        status: "in_progress",
+        owner: "qa_reviewer",
+      },
+      {
+        success: true,
+        updated_fields: ["status", "owner"],
+      }
+    ),
+    extracted: {
+      kind: "orgTask",
+      action: "update",
+      orgRunId: "org-run-preview-001",
+      ownerChanged: true,
+      statusChanged: true,
+      task: {
+        id: "TASK-101",
+        subject: "Add Playground fixtures for new event blocks",
+        description:
+          "Fixture coverage is now in progress and ready for QA handoff.",
+        owner: "qa_reviewer",
+        ownerName: "QA Reviewer",
+        status: "in_progress",
+        priority: "high",
+        blocks: [],
+        blockedBy: ["TASK-099"],
+      },
+    },
+  },
+
+  task_list: {
+    ...createEvent(
+      "task_list",
+      {
+        org_run_id: "org-run-preview-001",
+        status: "open",
+      },
+      {
+        success: true,
+        total: 3,
+      }
+    ),
+    extracted: {
+      kind: "orgTask",
+      action: "list",
+      orgRunId: "org-run-preview-001",
+      total: 3,
+      tasks: [
+        {
+          id: "TASK-101",
+          subject: "Add Playground fixtures for new event blocks",
+          status: "in_progress",
+          owner: "qa_reviewer",
+          ownerName: "QA Reviewer",
+          priority: "high",
+          blocks: [],
+          blockedBy: ["TASK-099"],
+        },
+        {
+          id: "TASK-102",
+          subject: "Verify registry sync warning stays quiet",
+          status: "pending",
+          owner: "frontend_builder",
+          ownerName: "Frontend Builder",
+          priority: "medium",
+          blocks: [],
+          blockedBy: [],
+        },
+        {
+          id: "TASK-103",
+          subject: "Capture screenshots for release notes",
+          status: "completed",
+          owner: "docs_writer",
+          ownerName: "Docs Writer",
+          priority: "low",
+          blocks: [],
+          blockedBy: [],
+        },
+      ],
+    },
+  },
+
+  task_get: {
+    ...createEvent(
+      "task_get",
+      {
+        org_run_id: "org-run-preview-001",
+        task_id: "TASK-101",
+      },
+      {
+        success: true,
+        task_id: "TASK-101",
+      }
+    ),
+    extracted: {
+      kind: "orgTask",
+      action: "get",
+      orgRunId: "org-run-preview-001",
+      total: 1,
+      task: {
+        id: "TASK-101",
+        subject: "Add Playground fixtures for new event blocks",
+        description:
+          "The task detail view should include assignment, priority, status, and dependency metadata.",
+        status: "in_progress",
+        owner: "qa_reviewer",
+        ownerName: "QA Reviewer",
+        priority: "high",
+        blocks: [],
+        blockedBy: ["TASK-099"],
+      },
+    },
+  },
+
+  setup_repo: createEvent(
+    "setup_repo",
+    {
+      action: "clone",
+      repo_url: "https://github.com/orgii-labs/playground-demo",
+      target_dir: "/Users/developer/Documents/GitHub/playground-demo",
+    },
+    {
+      success: true,
+      path: "/Users/developer/Documents/GitHub/playground-demo",
+      branch: "main",
+      content: [
+        "Repository cloned successfully.",
+        "Dependencies detected: npm workspace",
+        "Next step: run `npm install` and launch the app preview.",
+      ].join("\n"),
+    }
+  ),
+
+  rate_limit_hint: createEvent(
+    "rate_limit_hint",
+    {},
+    {
+      observation: "rate_limit_hint",
+    },
+    "rate_limit_hint",
+    "completed"
+  ),
+
+  plan_approval: createEvent(
+    "plan_approval",
+    {
+      title: "Playground registry sync plan",
+      content: [
+        "## Goal",
+        "Add mock fixtures for every event type registered in `COMPONENT_LOADERS`.",
+        "",
+        "## Steps",
+        "1. Add representative raw args/results for fallback blocks.",
+        "2. Include extracted task payloads for Agent Org task cards.",
+        "3. Verify the dev-mode sync warning no longer appears.",
+      ].join("\n"),
+      planId: "plan-playground-sync",
+      planRevisionId: "plan-rev-playground-sync-001",
+    },
+    {
+      status: "pending",
+      planId: "plan-playground-sync",
+      planRevisionId: "plan-rev-playground-sync-001",
+    },
+    "plan_approval",
+    "completed"
+  ),
+
   mcp_tool: createEvent(
     "query_database",
     {

@@ -3,17 +3,17 @@
  * Handles all business logic for background customization.
  * Image upload/delete logic lives in useBackgroundImageHandlers.ts.
  */
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import Message from "@src/components/Message";
 import {
-  BACKGROUND_COLOR_PAIRS,
-  getColorPairById,
-  resolveColorPair,
-} from "@src/config/appearance/backgroundColorPairs";
+  BACKGROUND_COLOR_PRESETS,
+  getBackgroundColorPresetById,
+  resolveBackgroundColorPreset,
+} from "@src/config/appearance/backgroundColors";
 import {
   APPEARANCE_MODE_OPTIONS,
   type AppearanceMode,
@@ -25,14 +25,13 @@ import {
   normalizeAppearanceMode,
   normalizeGlobalThemeId,
 } from "@src/config/appearance/globalThemes";
-import type { PrimaryColorPreset } from "@src/config/appearance/primaryColors";
 import { buildSettingsPath } from "@src/config/mainAppPaths";
 import { useBackgroundImageStorage } from "@src/hooks/theme/useBackgroundImageStorage";
 import { useUndoStackWithRestore } from "@src/hooks/ui";
 import {
   backgroundConfigPersistAtom,
   globalThemeIdAtom,
-  primaryColorPresetAtom,
+  updateSettingsBatchAtom,
 } from "@src/store";
 import type { BackgroundConfig } from "@src/store/ui/backgroundConfigAtom";
 import { getStorageInfo } from "@src/util/core/storage/backgroundImage";
@@ -61,7 +60,7 @@ export interface UseBackgroundSettingsReturn {
   // Handlers
   handleBack: () => void;
   handleImageSelect: (imageUrl: string, imageId?: string) => void;
-  handleColorSelect: (pairId: string) => void;
+  handleColorSelect: (presetId: string) => void;
   handleAnimationSelect: (animationId: string) => void;
   handleAnimationClear: () => void;
   handleSelectCustomPaletteHex: (hex: string) => void;
@@ -86,8 +85,8 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
   const navigate = useNavigate();
   const { t } = useTranslation("settings");
   const [config, setConfig] = useAtom(backgroundConfigPersistAtom);
-  const [globalThemeId, setGlobalThemeId] = useAtom(globalThemeIdAtom);
-  const [, setPrimaryColorPreset] = useAtom(primaryColorPresetAtom);
+  const globalThemeId = useAtomValue(globalThemeIdAtom);
+  const updateSettingsBatch = useSetAtom(updateSettingsBatchAtom);
   const [storageInfo, setStorageInfo] = useState<StorageInfo>({
     path: "",
     used: 0,
@@ -216,10 +215,10 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
 
   useEffect(() => {
     if (!config.backgroundColorId) return;
-    const pair = getColorPairById(config.backgroundColorId);
-    if (!pair) return;
-    prewarmColor(resolveColorPair(pair));
-  }, [config.backgroundColorId, globalThemeId]);
+    const preset = getBackgroundColorPresetById(config.backgroundColorId);
+    if (!preset) return;
+    prewarmColor(resolveBackgroundColorPreset(preset));
+  }, [config.backgroundColorId]);
 
   // Undo/redo for config changes (Ctrl+Z / Cmd+Z)
   const undoStack = useUndoStackWithRestore<BackgroundConfig>({
@@ -265,15 +264,15 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
   );
 
   const handleColorSelect = useCallback(
-    (pairId: string) => {
-      const pair = getColorPairById(pairId);
-      if (!pair) return;
+    (presetId: string) => {
+      const preset = getBackgroundColorPresetById(presetId);
+      if (!preset) return;
       setConfigWithUndo({
         ...config,
         imageUrl: "",
         selectedImageId: undefined,
-        backgroundColor: undefined,
-        backgroundColorId: pair.id,
+        backgroundColor: resolveBackgroundColorPreset(preset),
+        backgroundColorId: preset.id,
         glass: undefined,
       });
     },
@@ -372,14 +371,14 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
       };
 
       if (removingActive) {
-        const firstPair = BACKGROUND_COLOR_PAIRS[0];
-        if (firstPair) {
+        const firstPreset = BACKGROUND_COLOR_PRESETS[0];
+        if (firstPreset) {
           nextConfig = {
             ...nextConfig,
             imageUrl: "",
             selectedImageId: undefined,
-            backgroundColor: undefined,
-            backgroundColorId: firstPair.id,
+            backgroundColor: resolveBackgroundColorPreset(firstPreset),
+            backgroundColorId: firstPreset.id,
             glass: undefined,
           };
         }
@@ -402,19 +401,20 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
     async (themeIdValue: string) => {
       const themeId = normalizeGlobalThemeId(themeIdValue);
       const selectedTheme = getGlobalTheme(themeId);
+      updateSettingsBatch({
+        "general.theme": themeId,
+        "general.primaryColor": selectedTheme.defaultPrimaryColor,
+      });
+      localStorage.setItem("theme", themeId);
+
       const cover = showThemeTransitionCover();
       try {
         await swapThemeCss(selectedTheme.baseCssPath);
-        setGlobalThemeId(themeId);
-        setPrimaryColorPreset(
-          selectedTheme.defaultPrimaryColor as PrimaryColorPreset
-        );
-        localStorage.setItem("theme", themeId);
       } finally {
         await cover.hide();
       }
     },
-    [setGlobalThemeId, setPrimaryColorPreset]
+    [updateSettingsBatch]
   );
 
   const handleThemePresetChange = useCallback(

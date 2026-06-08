@@ -11,14 +11,12 @@ import { RotateCcw } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { getMaterialConfig } from "@src/components/Glass/config";
 import Slider from "@src/components/Slider";
 import {
   DEFAULT_APP_GRID_CONFIG,
   appGridConfigAtom,
 } from "@src/store/ui/appGridAtom";
 import { classNames } from "@src/util/ui/classNames";
-import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 // ============================================
 // Types
@@ -54,8 +52,6 @@ const AppGridEditPanel: React.FC<AppGridEditPanelProps> = ({
   className,
 }) => {
   const { t } = useTranslation("navigation");
-  const { isDark } = useCurrentTheme();
-  const glassMaterial = getMaterialConfig(isDark, "thick");
   const setGridConfig = useSetAtom(appGridConfigAtom);
 
   // ============================================
@@ -81,15 +77,11 @@ const AppGridEditPanel: React.FC<AppGridEditPanelProps> = ({
         className
       )}
       style={{
-        background: glassMaterial.background,
-        backdropFilter: `blur(${glassMaterial.blur}px)`,
-        WebkitBackdropFilter: `blur(${glassMaterial.blur}px)`,
-        border: isDark
-          ? "1px solid rgba(255, 255, 255, 0.12)"
-          : "1px solid rgba(0, 0, 0, 0.08)",
-        boxShadow: isDark
-          ? "0 4px 16px rgba(0, 0, 0, 0.25)"
-          : "0 4px 16px rgba(0, 0, 0, 0.1)",
+        background: "var(--start-edit-panel-bg)",
+        backdropFilter: "var(--start-edit-panel-backdrop)",
+        WebkitBackdropFilter: "var(--start-edit-panel-backdrop)",
+        border: "var(--start-edit-panel-border)",
+        boxShadow: "var(--start-edit-panel-shadow)",
       }}
     >
       {/* Title */}

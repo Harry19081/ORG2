@@ -1,12 +1,10 @@
 import { GitFork } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { RUST_AGENT_TYPE } from "@src/api/tauri/agent/types";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import type { Session } from "@src/store/session";
 import { isTerminalStatus } from "@src/types/session/session";
 import { formatBranchLabel } from "@src/util/git/branchLabel";
-import { getRustAgentType } from "@src/util/session/sessionDispatch";
 import { isSessionInProgress } from "@src/util/session/sessionInProgress";
 import {
   getSessionListDisplayName,
@@ -48,11 +46,7 @@ export function isBenchmarkSessionRow(session: Session): boolean {
 }
 
 function shouldShowWorktreeSubtitle(session: Session): boolean {
-  return (
-    !isBenchmarkSessionRow(session) &&
-    Boolean(session.worktreePath) &&
-    getRustAgentType(session.session_id) !== RUST_AGENT_TYPE.TERMINAL
-  );
+  return !isBenchmarkSessionRow(session) && Boolean(session.worktreePath);
 }
 
 interface BuildSessionMenuItemParams {

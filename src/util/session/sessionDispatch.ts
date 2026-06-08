@@ -79,13 +79,6 @@ export const SESSION_PREFIX_REGISTRY: readonly SessionPrefixConfig[] = [
     defId: "builtin:wingman",
   },
   {
-    prefix: "terminalagent-",
-    category: "rust_agent",
-    variant: RUST_AGENT_TYPE.TERMINAL,
-    iconId: "terminal",
-    defId: "builtin:terminal",
-  },
-  {
     prefix: "agentsession-",
     category: "rust_agent",
     variant: RUST_AGENT_TYPE.SDE,
@@ -136,9 +129,6 @@ export const CURSOR_IDE_SESSION_PREFIX = "cursoride-";
 /** Prefix for Wingman Agent session IDs */
 export const WINGMAN_SESSION_PREFIX = "wingman-";
 
-/** Prefix for Terminal Agent session IDs */
-export const TERMINAL_AGENT_SESSION_PREFIX = "terminalagent-";
-
 /** Agent definition ID for the built-in OS Agent */
 export const BUILTIN_OS_DEF_ID = "builtin:os";
 
@@ -150,9 +140,6 @@ export const BUILTIN_SDE_DEF_ID = "builtin:sde";
 
 /** Agent definition ID for the built-in Wingman Agent */
 export const BUILTIN_WINGMAN_DEF_ID = "builtin:wingman";
-
-/** Agent definition ID for the built-in Terminal Agent */
-export const BUILTIN_TERMINAL_DEF_ID = "builtin:terminal";
 
 // ============================================
 // Internal Helpers

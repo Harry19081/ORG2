@@ -58,7 +58,7 @@ export {
 // ============================================
 // Configuration
 // ============================================
-export { SIDEBAR_STYLE, SIDEBAR_PADDING, SIDEBAR_GLASS_CONFIG } from "./config";
+export { SIDEBAR_STYLE, SIDEBAR_PADDING } from "./config";
 
 // ============================================
 // Types

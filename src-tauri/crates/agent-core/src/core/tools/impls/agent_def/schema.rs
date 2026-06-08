@@ -4,13 +4,21 @@ use serde_json::{json, Value};
 
 pub(super) const DESCRIPTION: &str =
     "Manage custom agent definitions and agent organizations.\n\n\
+     ## Required: `action` field\n\
+     Every call MUST include an `action` field as the first key of the arguments object. There is no default. Calling without `action` fails with `missing field 'action'`.\n\n\
      Agent actions: list, get, create, update, remove.\n\
      Org actions: list_orgs, get_org, create_org, update_org, remove_org.\n\n\
      **Always use 'list' / 'list_orgs' first** before creating to avoid duplicates.\n\
      When creating agents, the tool checks for similar names and warns you.\n\
      When creating agents, use `tools` to restrict which built-in or MCP tools the agent can use.\n\
      Use `tools.excludedTools` to exclude specific tools, `tools.disabledMcpServers` to hide MCP servers, \
-     or `tools.disabledMcpTools` to hide individual MCP tools. Leave `tools` empty to inherit everything.";
+     or `tools.disabledMcpTools` to hide individual MCP tools. Leave `tools` empty to inherit everything.\n\n\
+     ## Examples\n\
+     - `{\"action\": \"list\"}`\n\
+     - `{\"action\": \"get\", \"agent_id\": \"my-agent\"}`\n\
+     - `{\"action\": \"create\", \"name\": \"Reviewer\", \"description\": \"Reviews PRs\"}`\n\
+     - `{\"action\": \"list_orgs\"}`\n\
+     - `{\"action\": \"create_org\", \"name\": \"Product\", \"role\": \"PM\"}`";
 
 pub(super) fn parameters_schema() -> Value {
     let agent_props = json!({

@@ -24,7 +24,6 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { PanelLeft, Plus, X } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 
-import Glass from "@src/components/Glass";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
@@ -43,7 +42,7 @@ import {
 import { windowFullscreenAtom } from "@src/store/ui/uiAtom";
 import { isTauriDesktop } from "@src/util/platform/tauri";
 
-import { SIDEBAR_GLASS_CONFIG, SIDEBAR_STYLE } from "./config";
+import { SIDEBAR_STYLE } from "./config";
 import { useForceVisibleSidebar } from "./contexts/ForceVisibleContext";
 import type { SidebarBaseProps } from "./types";
 
@@ -65,7 +64,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     innerClassName = "",
     includeTrafficLightSpace = true,
     showCollapseButton = true,
-    wrapInGlass = true,
+    wrapInSurface = true,
     forceVisible: forceVisibleProp = false,
     theme,
     onCollapse,
@@ -378,7 +377,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     // as inset/full while letting the surface cover the full sidebar column.
     const content = (
       <>
-        {isCompactLayout && wrapInGlass && (
+        {isCompactLayout && wrapInSurface && (
           <div
             className="h-2 flex-shrink-0"
             data-tauri-drag-region
@@ -397,30 +396,41 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     // Compact layout: the sidebar is flush with the window edge with no
     // radius, so the floating drop shadow has nothing to "cast" against
     // and just smudges the boundary with the content panel. Drop it.
-    const sidebarBoxShadow = isCompactLayout ? "none" : SIDEBAR_STYLE.boxShadow;
+    const sidebarBoxShadow = isCompactLayout ? "none" : "var(--sidebar-shadow)";
     const surfaceStyle = themeStyles
-      ? { ...themeStyles, boxShadow: sidebarBoxShadow }
-      : { boxShadow: sidebarBoxShadow };
+      ? {
+          ...themeStyles,
+          boxShadow: sidebarBoxShadow,
+          backdropFilter: "var(--sidebar-backdrop)",
+          WebkitBackdropFilter: "var(--sidebar-backdrop)",
+        }
+      : {
+          backgroundColor: "var(--sidebar-bg)",
+          borderColor: "var(--sidebar-border)",
+          boxShadow: sidebarBoxShadow,
+          backdropFilter: "var(--sidebar-backdrop)",
+          WebkitBackdropFilter: "var(--sidebar-backdrop)",
+        };
 
     // Wrapped content
     // Compact layout: sidebar is flush with the top/left/bottom window edge —
     // no outer padding, no border radius. The 8px header inset lives inside
-    // `content` (see spacer above) so the transparent surface itself reaches
-    // the window edge. Otherwise: pb-2 pl-2 pt-2 wrapper + glass radius.
-    const wrappedContent = wrapInGlass ? (
+    // `content` (see spacer above) so the surface itself reaches the window edge.
+    const wrappedContent = wrapInSurface ? (
       <div
         className={`sidebar-base flex h-full w-full flex-col ${
           isCompactLayout ? "" : "pb-2 pl-2 pt-2"
         } ${innerClassName}`}
       >
-        <Glass
-          {...SIDEBAR_GLASS_CONFIG}
-          radius={isCompactLayout ? 0 : PLATFORM_SIDEBAR_RADIUS}
-          className="flex flex-1 flex-col overflow-hidden"
-          style={surfaceStyle}
+        <div
+          className="flex flex-1 flex-col overflow-hidden border"
+          style={{
+            ...surfaceStyle,
+            borderRadius: isCompactLayout ? 0 : PLATFORM_SIDEBAR_RADIUS,
+          }}
         >
           {content}
-        </Glass>
+        </div>
       </div>
     ) : (
       <div

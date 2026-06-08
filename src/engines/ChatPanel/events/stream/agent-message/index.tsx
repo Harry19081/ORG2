@@ -106,6 +106,8 @@ interface ChatVariantProps {
   isStreaming?: boolean;
   sessionId?: string | null;
   canvasUrls?: ReadonlySet<string>;
+  /** Event id used by AgentMessageBlock's locate-in-simulator arrow. */
+  eventId?: string;
 }
 
 const ChatVariant: React.FC<ChatVariantProps> = ({
@@ -115,6 +117,7 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
   isStreaming = false,
   sessionId,
   canvasUrls,
+  eventId,
 }) => {
   const { payload: canvasPayload, dismiss: _dismissCanvas } =
     useCanvasPreviewForSession(sessionId);
@@ -133,7 +136,7 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
     <>
       {thinkingContent && <InlineThinkingBlock content={thinkingContent} />}
       {hasVisibleContent && (
-        <AgentMessageBlock>
+        <AgentMessageBlock eventId={eventId}>
           <AgentChatItemDefault
             itemIndex={itemIndex}
             expand={true}
@@ -328,6 +331,7 @@ export const AgentMessageEvent: React.FC<AgentMessageEventProps> = (props) => {
         isStreaming={props.isStreaming}
         sessionId={sessionId}
         canvasUrls={canvasUrls}
+        eventId={normalizedProps?.eventId}
       />
     );
   }

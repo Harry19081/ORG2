@@ -2,11 +2,11 @@
  * AppGrid Component
  *
  * Launchpad with staggered honeycomb layout.
- * Uses neutral glass styling with one accent for Start Session.
+ * Uses tokenized translucent styling with one accent for Start Session.
  *
  * Features:
  * - Staggered honeycomb grid (4-5-4 pattern)
- * - Liquid glass circular backgrounds
+ * - Translucent circular backgrounds
  * - Lucide icons with contrast colors
  * - Hover animations with scale effect
  *
@@ -22,12 +22,10 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ACTION_ID, useActionSystemOptional } from "@src/ActionSystem";
-import { getMaterialConfig } from "@src/components/Glass/config";
 import { useRegionLuminance } from "@src/hooks/theme/useRegionLuminance";
 import { appGridConfigAtom } from "@src/store/ui/appGridAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import { classNames } from "@src/util/ui/classNames";
-import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 import AppGridEditPanel from "../AppGridEditPanel";
 import { AppGridIcon } from "./AppGridIcon";
@@ -131,11 +129,9 @@ interface AppGridProps {
 const AppGrid: React.FC<AppGridProps> = ({ className }) => {
   const navigate = useNavigate();
   const actionSystem = useActionSystemOptional();
-  const { isDark } = useCurrentTheme();
 
   const { getRegion } = useRegionLuminance();
   const contentLuminance = getRegion("content");
-  const glassMaterial = getMaterialConfig(isDark, "thin");
 
   const {
     draggedId,
@@ -285,8 +281,6 @@ const AppGrid: React.FC<AppGridProps> = ({ className }) => {
                   iconSize={HONEYCOMB_CONFIG.iconSize}
                   iconColor={iconColor}
                   labelColor={labelColor}
-                  isDark={isDark}
-                  glassMaterial={glassMaterial}
                   editMode={editMode}
                   isBeingDragged={draggedId === app.id}
                   isDragOver={dragOverId === app.id}

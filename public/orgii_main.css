@@ -7,26 +7,26 @@
  * and direct CSS variable references. Migration to custom tokens can be done incrementally.
  */
 :root {
-  /* Desktop background color slots */
-  --desktop-bg-1: #f7f4ee;
-  --desktop-bg-2: #e8e8e8;
-  --desktop-bg-3: #d4dbe2;
-  --desktop-bg-4: #e2e4ee;
-  --desktop-bg-5: #c8d8e8;
-  --desktop-bg-6: #dce8f4;
-  --desktop-bg-7: #ddd7ee;
-  --desktop-bg-8: #cce2df;
-  --desktop-bg-9: #d4e4dc;
-  --desktop-bg-10: #c8dcc9;
-  --desktop-bg-11: #d8dfcb;
-  --desktop-bg-12: #dbc8dc;
-  --desktop-bg-13: #e0cfdc;
-  --desktop-bg-14: #e5cfcc;
-  --desktop-bg-15: #ebd0cf;
-  --desktop-bg-16: #e8c9a8;
-  --desktop-bg-17: #efd8b5;
-  --desktop-bg-18: #e2ded3;
-  --desktop-bg-19: #e0d5c7;
+  /* App background color slots */
+  --app-bg-1: #f7f4ee;
+  --app-bg-2: #e8e8e8;
+  --app-bg-3: #d4dbe2;
+  --app-bg-4: #e2e4ee;
+  --app-bg-5: #c8d8e8;
+  --app-bg-6: #dce8f4;
+  --app-bg-7: #ddd7ee;
+  --app-bg-8: #cce2df;
+  --app-bg-9: #d4e4dc;
+  --app-bg-10: #c8dcc9;
+  --app-bg-11: #d8dfcb;
+  --app-bg-12: #dbc8dc;
+  --app-bg-13: #e0cfdc;
+  --app-bg-14: #e5cfcc;
+  --app-bg-15: #ebd0cf;
+  --app-bg-16: #e8c9a8;
+  --app-bg-17: #efd8b5;
+  --app-bg-18: #e2ded3;
+  --app-bg-19: #e0d5c7;
 
   /* Code editor */
   --cm-editor-background: #ffffff;
@@ -72,6 +72,24 @@ body {
   --color-fill-2: #efefef;
   --color-fill-3: #e6e6e6;
   --color-fill-4: #d4d4d4;
+
+  /* Sidebar */
+  --sidebar-bg: rgba(242, 242, 242, 0.78);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --sidebar-backdrop: blur(10px) saturate(140%);
+  --sidebar-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Start Page */
+  --start-app-icon-bg: rgba(255, 255, 255, 0.58);
+  --start-app-icon-backdrop: blur(8px) saturate(150%);
+  --start-app-icon-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --start-edit-panel-bg: rgba(255, 255, 255, 0.74);
+  --start-edit-panel-backdrop: blur(12px);
+  --start-edit-panel-border: 1px solid rgba(0, 0, 0, 0.08);
+  --start-edit-panel-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+
   /* Shared surfaces */
   --color-surface-hover: color-mix(
     in srgb,

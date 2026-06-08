@@ -14,8 +14,13 @@
  */
 import { useEffect } from "react";
 
+import {
+  getGlobalTheme,
+  normalizeGlobalThemeId,
+} from "@src/config/appearance/globalThemes";
 import { settingsSyncTimestampAtom } from "@src/store/ui/settingsSyncAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
+import { swapThemeCss } from "@src/util/ui/theme/swapThemeCss";
 
 // Prefixes for settings that should be synced across windows
 // Any localStorage key starting with these prefixes will trigger a sync
@@ -140,23 +145,10 @@ function forceAtomRefresh(key: string, _newValue: string | null): void {
  * Update the theme CSS link element.
  * This ensures the visual theme actually changes, not just the atom.
  */
-function updateThemeCSS(themePath: string): void {
-  // Find existing theme link or create new one
-  const themeLink = document.querySelector(
-    'link[href*="orgii_"]'
-  ) as HTMLLinkElement;
-
-  if (themeLink) {
-    // Update existing link
-    themeLink.href = themePath;
-  } else {
-    // Create new link (shouldn't normally happen, but handle gracefully)
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = themePath;
-    document.head.insertBefore(link, document.head.firstChild);
-  }
+function updateThemeCSS(themeValue: string): void {
+  const themeId = normalizeGlobalThemeId(themeValue);
+  const themePath = getGlobalTheme(themeId).baseCssPath;
+  void swapThemeCss(themePath);
 }
 
 /**

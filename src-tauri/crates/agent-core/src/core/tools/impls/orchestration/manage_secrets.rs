@@ -60,6 +60,10 @@ impl Tool for SecretTool {
         "Capture sensitive user input (API keys, passwords, OAuth tokens) \
          out-of-band without exposing the plaintext to the model or the chat \
          transcript.\n\n\
+         ## Required: `action` field\n\
+         Every call MUST include an `action` field as the first key of the \
+         arguments object. There is no default. Calling without `action` fails \
+         with `missing field 'action'`.\n\n\
          Actions:\n\
          - request: Prompt the user via a secure modal. Blocks until they \
            submit or cancel. Returns an opaque `{{secret:<token>}}` placeholder \
@@ -75,7 +79,11 @@ impl Tool for SecretTool {
            this tool — instruct them to use the secure prompt instead.\n\
          - The `label` you pass becomes the user-visible field name (e.g. \
            \"OPENAI_API_KEY\"). Use the exact env-var name when relevant.\n\
-         - `kind` is one of: api_key | password | oauth_token | other."
+         - `kind` is one of: api_key | password | oauth_token | other.\n\n\
+         ## Examples\n\
+         - `{\"action\": \"request\", \"label\": \"OPENAI_API_KEY\", \"kind\": \"api_key\", \"prompt\": \"OpenAI API key for ChatGPT integration\"}`\n\
+         - `{\"action\": \"list\"}`\n\
+         - `{\"action\": \"discard\", \"token\": \"sec_abc123\"}`"
     }
 
     fn category(&self) -> &str {

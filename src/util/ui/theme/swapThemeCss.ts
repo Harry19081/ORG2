@@ -12,6 +12,8 @@ const THEME_LINK_ATTR = "data-orgii-theme";
 const PRELOAD_LINK_ATTR = "data-orgii-theme-preload";
 const SWAP_TIMEOUT_MS = 2000;
 
+let latestRequestedCssPath = "";
+
 /**
  * Warm the browser's stylesheet cache for the given theme CSS files so a
  * subsequent `swapThemeCss(...)` finishes parsing on the same frame as the
@@ -50,6 +52,8 @@ function cssPathSelector(path: string): string {
 }
 
 export function swapThemeCss(newCssPath: string): Promise<void> {
+  latestRequestedCssPath = newCssPath;
+
   const head = document.querySelector("head");
   if (!head) return Promise.resolve();
 
@@ -72,9 +76,22 @@ export function swapThemeCss(newCssPath: string): Promise<void> {
     return insertFreshLink(head, newCssPath);
   }
 
-  if (existingLink.href.endsWith(newCssPath)) return Promise.resolve();
+  if (existingLink.href.endsWith(newCssPath)) {
+    removeOtherThemeLinks(existingLink);
+    return Promise.resolve();
+  }
 
   return swapFromExisting(head, existingLink, newCssPath);
+}
+
+function removeOtherThemeLinks(activeLink: HTMLLinkElement): void {
+  document
+    .querySelectorAll<HTMLLinkElement>(`link[${THEME_LINK_ATTR}]`)
+    .forEach((link) => {
+      if (link !== activeLink) {
+        link.remove();
+      }
+    });
 }
 
 function swapFromExisting(
@@ -94,7 +111,15 @@ function swapFromExisting(
       if (settled) return;
       settled = true;
       clearTimeout(timeoutId);
+
+      if (latestRequestedCssPath !== newCssPath) {
+        newLink.remove();
+        resolve();
+        return;
+      }
+
       oldLink.remove();
+      removeOtherThemeLinks(newLink);
       resolve();
     };
 
@@ -122,6 +147,13 @@ function insertFreshLink(
       if (settled) return;
       settled = true;
       clearTimeout(timeoutId);
+
+      if (latestRequestedCssPath !== cssPath) {
+        link.remove();
+      } else {
+        removeOtherThemeLinks(link);
+      }
+
       resolve();
     };
 

@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 
-import type { GlassRegion } from "@src/util/ui/theme/glassMaterial";
-
 export interface TabPillItem {
   key: string;
   label: string;
@@ -24,7 +22,6 @@ export interface TabPillProps {
   color?: "default" | "fill";
   className?: string;
   iconOnly?: boolean;
-  region?: GlassRegion;
   fillWidth?: boolean;
   wrap?: boolean;
   size?: "mini" | "small" | "default" | "large";

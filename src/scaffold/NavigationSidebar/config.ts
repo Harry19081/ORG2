@@ -25,8 +25,6 @@ export const SIDEBAR_STYLE = {
   borderRadius: 20,
   /** Item border radius */
   itemBorderRadius: 6,
-  /** Drop shadow for the sidebar glass panel (subtle depth against the desktop) */
-  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08)",
 } as const;
 
 // ============================================
@@ -44,21 +42,4 @@ export const SIDEBAR_PADDING = {
   itemX: 8,
   /** Section header height (px) */
   sectionHeaderHeight: 28,
-} as const;
-
-// ============================================
-// Glass Configuration
-// ============================================
-
-export const SIDEBAR_GLASS_CONFIG = {
-  material: "medium" as const,
-  region: "sidebar" as const,
-  radius: SIDEBAR_STYLE.borderRadius,
-  saturation: 180,
-  enableBorder: true,
-  enableSpecular: false,
-  enableLighting: true,
-  lightAngle: -45,
-  lightIntensity: 0.5,
-  depthIntensity: 0.4,
 } as const;

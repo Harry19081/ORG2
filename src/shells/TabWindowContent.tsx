@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { EditorProvider } from "@src/contexts/workstation";
+import { WorkStationShellFallback } from "@src/modules/WorkStation/WorkStationShellFallback";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { TabWindowData } from "@src/util/ui/window/windowManager";
 
@@ -29,17 +30,15 @@ const TabWindowContent: React.FC<TabWindowContentProps> = ({ tabData }) => {
     }
   }, [tabData, navigate]);
 
+  const { type, routePath } = tabData;
+  const isEditorContent =
+    routePath?.includes("/workstation") ||
+    routePath?.includes("/editor") ||
+    type === "editor";
+
   // Render content based on tab type, wrapped with appropriate provider
   // This mirrors the provider wrapping pattern in src/page/Orgii/index.tsx
   const renderContent = () => {
-    const { type, routePath } = tabData;
-
-    // Workstation routes (editor, session workspace, workstation/*) all render Editor
-    const isEditorContent =
-      routePath?.includes("/workstation") ||
-      routePath?.includes("/editor") ||
-      type === "editor";
-
     if (isEditorContent) {
       return (
         <EditorProvider>
@@ -79,11 +78,15 @@ const TabWindowContent: React.FC<TabWindowContentProps> = ({ tabData }) => {
     }
   };
 
+  const fallback = isEditorContent ? (
+    <WorkStationShellFallback isFullMode />
+  ) : (
+    <Placeholder variant="loading" />
+  );
+
   return (
     <div className="h-full w-full overflow-hidden bg-bg-1">
-      <React.Suspense fallback={<Placeholder variant="loading" />}>
-        {renderContent()}
-      </React.Suspense>
+      <React.Suspense fallback={fallback}>{renderContent()}</React.Suspense>
     </div>
   );
 };

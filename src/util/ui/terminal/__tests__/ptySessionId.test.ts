@@ -13,7 +13,7 @@ describe("ptySessionId", () => {
   });
 
   it("keeps agent PTY ids unchanged", () => {
-    const agentPtySessionId = "agent-pty-terminalagent-123";
+    const agentPtySessionId = "agent-pty-sdeagent-123";
 
     expect(isAgentPtySessionId(agentPtySessionId)).toBe(true);
     expect(toBackendPtySessionId(agentPtySessionId)).toBe(agentPtySessionId);

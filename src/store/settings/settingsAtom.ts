@@ -51,6 +51,21 @@ settingsLoadedAtom.debugLabel = "settingsLoadedAtom";
 export const rawSettingsAtom = atom<Record<string, unknown> | null>(null);
 rawSettingsAtom.debugLabel = "rawSettingsAtom";
 
+let settingsWriteQueue: Promise<void> = Promise.resolve();
+
+function enqueueSettingsPartialWrite(
+  partial: Record<string, unknown>
+): Promise<void> {
+  const writePromise = settingsWriteQueue
+    .catch(() => undefined)
+    .then(() => rpc.settings.writePartial({ partial }));
+  settingsWriteQueue = writePromise.then(
+    () => undefined,
+    () => undefined
+  );
+  return writePromise;
+}
+
 // ============================================
 // Read-only atom for a single setting
 // ============================================
@@ -102,9 +117,7 @@ export const updateSettingAtom = atom(
     set(settingsAtom, newSettings);
 
     try {
-      await rpc.settings.writePartial({
-        partial: { [update.key]: update.value },
-      });
+      await enqueueSettingsPartialWrite({ [update.key]: update.value });
     } catch (err) {
       console.error("[Settings] Failed to write setting to disk:", err);
     }
@@ -124,9 +137,7 @@ export const updateSettingsBatchAtom = atom(
     set(settingsAtom, newSettings);
 
     try {
-      await rpc.settings.writePartial({
-        partial: updates as Record<string, unknown>,
-      });
+      await enqueueSettingsPartialWrite(updates as Record<string, unknown>);
     } catch (err) {
       console.error("[Settings] Failed to write batch settings to disk:", err);
     }
@@ -186,7 +197,7 @@ export const initSettingsAtom = atom(null, async (_get, set) => {
     // `settingsLoadedAtom` is set above. We fire both writes without awaiting
     // so the startup critical path ends here.
     if (Object.keys(missingKeys).length > 0) {
-      rpc.settings.writePartial({ partial: missingKeys }).catch((err) => {
+      enqueueSettingsPartialWrite(missingKeys).catch((err) => {
         console.error("[Settings] Failed to backfill missing defaults:", err);
       });
     }

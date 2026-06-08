@@ -324,11 +324,8 @@ pub async fn execute_turn(
 
         if !response.usage.is_empty() {
             usage.accumulate(&response.usage, session_id);
-            let snapshot = ContextUsageSnapshot::from_payload(
-                &llm_messages,
-                &tool_defs,
-                usage.last_prompt,
-            );
+            let snapshot =
+                ContextUsageSnapshot::from_payload(&llm_messages, &tool_defs, usage.last_prompt);
             handler.on_context_usage(session_id, &snapshot);
             context_usage_snapshot = Some(snapshot);
         }

@@ -17,12 +17,9 @@ import {
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   sessionChatPositionAtom,
-  workStationBottomPanelMaximizedAtom,
   workStationChatPositionAtom,
   workStationDockAutoHideAtom,
   workStationDockAutoHidePersistAtom,
-  workStationEditorSecondaryCollapsedAtom,
-  workStationEditorSecondaryCollapsedPersistAtom,
   workStationInternalLayoutModeAtom,
   workStationInternalLayoutModePersistAtom,
   workStationLayoutModeAtom,
@@ -101,15 +98,6 @@ export const SidebarWorkstationSettingsSubmenu: React.FC<SidebarWorkstationSetti
     const setStationChatVisible = useSetAtom(activeStationChatVisibleAtom);
     const layoutMode = useAtomValue(workStationLayoutModeAtom);
     const setLayoutModePersist = useSetAtom(workStationLayoutModePersistAtom);
-    const bottomPanelCollapsed = useAtomValue(
-      workStationEditorSecondaryCollapsedAtom
-    );
-    const setBottomCollapsed = useSetAtom(
-      workStationEditorSecondaryCollapsedPersistAtom
-    );
-    const [bottomMaximized, setBottomMaximized] = useAtom(
-      workStationBottomPanelMaximizedAtom
-    );
     const dockAutoHide = useAtomValue(workStationDockAutoHideAtom);
     const setDockAutoHide = useSetAtom(workStationDockAutoHidePersistAtom);
     const [chatPosition, setChatPosition] = useAtom(
@@ -149,16 +137,6 @@ export const SidebarWorkstationSettingsSubmenu: React.FC<SidebarWorkstationSetti
         setChatPosition(value);
       },
       [setChatPosition, setStationChatVisible, stationMode]
-    );
-
-    const handleBottomPanelToggle = useCallback(
-      (visible: boolean) => {
-        if (bottomMaximized) {
-          setBottomMaximized(false);
-        }
-        setBottomCollapsed(!visible);
-      },
-      [bottomMaximized, setBottomCollapsed, setBottomMaximized]
     );
 
     const content =
@@ -207,11 +185,6 @@ export const SidebarWorkstationSettingsSubmenu: React.FC<SidebarWorkstationSetti
             onChange={setModelPickerStyle}
           />
           <div className={DROPDOWN_CLASSES.menuSeparator} />
-          <SwitchControlRow
-            label={t("layoutSettings.bottomPanel")}
-            checked={!bottomPanelCollapsed}
-            onChange={handleBottomPanelToggle}
-          />
           <SwitchControlRow
             label={t("layoutSettings.dockAutoHide")}
             checked={dockAutoHide}
