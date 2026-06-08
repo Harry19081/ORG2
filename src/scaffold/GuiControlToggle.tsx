@@ -35,6 +35,7 @@ import Message from "@src/components/Message";
 import ModelSelectorPill from "@src/components/ModelSelectorPill";
 import { VoiceInputButton, VoiceRecordingBar } from "@src/components/Voice";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
+// Replace lucide imports to use BrushCleaning instead of RefreshCw.
 import InputEditor from "@src/engines/ChatPanel/InputArea/components/InputEditor";
 import { useEditorExpansion } from "@src/engines/ChatPanel/InputArea/hooks/useEditorExpansion";
 import { extractArgsSummary } from "@src/engines/ChatPanel/blocks/ToolCallBlock/helpers/argsSummary";
@@ -512,7 +513,13 @@ export function GuiControlToggle(): React.ReactNode {
       ref={containerRef}
       className="fixed inset-x-0 bottom-0 z-[70] flex flex-col items-center px-6 pb-6 pt-16"
     >
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg-1 via-bg-1/70 to-transparent" />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg-1 via-bg-1/70 to-transparent"
+        style={{
+          borderBottomLeftRadius: "var(--border-radius-window)",
+          borderBottomRightRadius: "var(--border-radius-window)",
+        }}
+      />
       {showStatusLine && (
         <div
           className="pointer-events-auto z-10 mb-2 rounded-2xl border border-border-2 bg-bg-2 px-3 py-2 text-[12px] text-text-2 shadow-sm backdrop-blur"
