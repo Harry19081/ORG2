@@ -7,8 +7,8 @@
     "inputMode": "Control",
     "selectionMode": "Answer",
     "toggleMode": "입력 모드 전환",
-    "inputPlaceholder": "수행할 작업을 Agent에게 알려주세요...",
-    "selectionPlaceholder": "선택 항목 또는 답변을 입력하세요...",
+    "inputPlaceholder": "Agent가 이 앱을 제어하도록 하세요...",
+    "selectionPlaceholder": "ORGII에 대해 무엇이든 물어보세요...",
     "submit": "Agent Control 입력 제출",
     "menuToggle": "Agent Control",
     "selectModel": "모델 선택"
@@ -63,6 +63,7 @@
     "clear": "지우기",
     "open": "열기",
     "view": "보기",
+    "openInApp": "앱에서 열기",
     "openToRight": "오른쪽에 열기",
     "new": "새로 만들기",
     "rename": "이름 바꾸기",
@@ -289,6 +290,7 @@
     "status": "상태",
     "version": "버전",
     "details": "상세",
+    "overview": "개요",
     "description": "설명",
     "stats": "통계",
     "recentChanges": "최근 변경",
@@ -1257,6 +1259,10 @@
         "home": {
           "label": "Home",
           "description": "데스크톱 자동화를 위한 OS Agent 기본 범위"
+        },
+        "documents": {
+          "label": "Documents",
+          "description": "Documents 폴더"
         }
       }
     },

@@ -7,8 +7,8 @@
     "inputMode": "Control",
     "selectionMode": "Respuesta",
     "toggleMode": "Cambiar modo de entrada",
-    "inputPlaceholder": "Dile al Agent qué hacer...",
-    "selectionPlaceholder": "Escribe la selección o respuesta...",
+    "inputPlaceholder": "Deja que Agent controle esta aplicación...",
+    "selectionPlaceholder": "Haz cualquier pregunta sobre ORGII...",
     "submit": "Enviar entrada de Agent Control",
     "menuToggle": "Agent Control",
     "selectModel": "Seleccionar modelo"
@@ -63,6 +63,7 @@
     "clear": "Limpiar",
     "open": "Abrir",
     "view": "Ver",
+    "openInApp": "Abrir en la app",
     "openToRight": "Abrir a la derecha",
     "new": "Nuevo",
     "rename": "Renombrar",
@@ -289,6 +290,7 @@
     "status": "Estado",
     "version": "Versión",
     "details": "Detalles",
+    "overview": "Resumen",
     "description": "Descripción",
     "stats": "Estadísticas",
     "recentChanges": "Cambios recientes",
@@ -1256,6 +1258,10 @@
         "home": {
           "label": "Home",
           "description": "Ámbito predeterminado del OS Agent para automatización de escritorio"
+        },
+        "documents": {
+          "label": "Documentos",
+          "description": "Carpeta Documentos"
         }
       }
     },

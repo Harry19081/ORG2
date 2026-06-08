@@ -1045,7 +1045,9 @@
     "oauthBrowserOpened": "Se abrió una ventana del navegador. Completa la autorización allí y el asistente continuará."
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "Detección automática",
+    "methodOAuth": "Iniciar sesión con GitHub"
   },
   "builtInTools": {
     "title": "Herramientas integradas",

@@ -1064,7 +1064,9 @@
     "oauthBrowserOpened": "已打开浏览器窗口。请在那里完成授权，然后此向导会继续。"
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "自动检测",
+    "methodOAuth": "使用 GitHub 登录"
   },
   "builtInTools": {
     "title": "内置工具",

@@ -1061,7 +1061,9 @@
     "oauthBrowserOpened": "A browser window was opened. Finish authorization there, then this wizard will continue."
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "Auto Detect",
+    "methodOAuth": "Sign in with GitHub"
   },
   "builtInTools": {
     "title": "Built-in tools",

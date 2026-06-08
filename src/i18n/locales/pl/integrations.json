@@ -1045,7 +1045,9 @@
     "oauthBrowserOpened": "Otwarto okno przeglądarki. Dokończ tam autoryzację, a kreator będzie kontynuował."
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "Automatyczne wykrywanie",
+    "methodOAuth": "Zaloguj się przez GitHub"
   },
   "builtInTools": {
     "title": "Wbudowane narzędzia",

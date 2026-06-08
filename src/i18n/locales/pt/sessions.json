@@ -1724,8 +1724,6 @@
     "cloning": "Clonando...",
     "cloneRepo": "Clonar Repo",
     "repoCloneHelperText": "O Repo será clonado para um Workspace temporário para sua sessão.",
-    "bonusMessage": "Você ganhou um bônus da ORGII!",
-    "upgradedToTier": "Você foi atualizado para o nível {{tier}} sem custo adicional!",
     "yourPrice": "Seu preço",
     "inputPerM": "Entrada /M",
     "outputPerM": "Saída /M",

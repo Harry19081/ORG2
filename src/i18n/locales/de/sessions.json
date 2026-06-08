@@ -1704,8 +1704,6 @@
     "cloning": "Klonen...",
     "cloneRepo": "Repo klonen",
     "repoCloneHelperText": "Das Repo wird in einen temporären Arbeitsbereich für Ihre Session geklont.",
-    "bonusMessage": "Sie haben einen Bonus von ORGII erhalten!",
-    "upgradedToTier": "Sie wurden kostenlos auf die {{tier}}-Stufe aufgestuft!",
     "yourPrice": "Ihr Preis",
     "inputPerM": "Eingabe /M",
     "outputPerM": "Ausgabe /M",

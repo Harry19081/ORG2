@@ -1045,7 +1045,9 @@
     "oauthBrowserOpened": "브라우저 창이 열렸습니다. 거기에서 승인을 완료하면 이 마법사가 계속됩니다."
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "자동 감지",
+    "methodOAuth": "GitHub로 로그인"
   },
   "builtInTools": {
     "title": "기본 제공 도구",

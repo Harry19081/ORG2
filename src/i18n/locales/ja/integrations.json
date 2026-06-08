@@ -1048,7 +1048,9 @@
     "oauthBrowserOpened": "ブラウザウィンドウが開きました。そこで承認を完了すると、このウィザードが続行します。"
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "自動検出",
+    "methodOAuth": "GitHub でサインイン"
   },
   "builtInTools": {
     "title": "組み込みツール",

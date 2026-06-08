@@ -1048,7 +1048,9 @@
     "oauthBrowserOpened": "Một cửa sổ trình duyệt đã được mở. Hoàn tất cấp quyền ở đó, rồi trình hướng dẫn này sẽ tiếp tục."
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "Tự động phát hiện",
+    "methodOAuth": "Đăng nhập bằng GitHub"
   },
   "builtInTools": {
     "title": "Công cụ tích hợp",

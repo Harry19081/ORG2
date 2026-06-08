@@ -1048,7 +1048,9 @@
     "oauthBrowserOpened": "Открыто окно браузера. Завершите авторизацию там, затем мастер продолжит работу."
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "Автообнаружение",
+    "methodOAuth": "Войти через GitHub"
   },
   "builtInTools": {
     "title": "Встроенные инструменты",

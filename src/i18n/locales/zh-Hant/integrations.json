@@ -1045,7 +1045,9 @@
     "oauthBrowserOpened": "已開啟瀏覽器視窗。請在該處完成授權，然後此精靈會繼續。"
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "自動偵測",
+    "methodOAuth": "使用 GitHub 登入"
   },
   "builtInTools": {
     "title": "內置工具",

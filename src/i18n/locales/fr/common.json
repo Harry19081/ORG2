@@ -7,8 +7,8 @@
     "inputMode": "Contrôle",
     "selectionMode": "Réponse",
     "toggleMode": "Changer le mode de saisie",
-    "inputPlaceholder": "Dites à l'Agent quoi faire...",
-    "selectionPlaceholder": "Saisissez la sélection ou la réponse...",
+    "inputPlaceholder": "Laissez l'Agent contrôler cette application...",
+    "selectionPlaceholder": "Posez n'importe quelle question sur ORGII...",
     "submit": "Envoyer la saisie Agent Control",
     "menuToggle": "Agent Control",
     "selectModel": "Choisir le modèle"
@@ -63,6 +63,7 @@
     "clear": "Effacer",
     "open": "Ouvrir",
     "view": "Afficher",
+    "openInApp": "Ouvrir dans l'app",
     "openToRight": "Ouvrir à droite",
     "new": "Nouveau",
     "rename": "Renommer",
@@ -289,6 +290,7 @@
     "status": "Statut",
     "version": "Version",
     "details": "Détails",
+    "overview": "Aperçu",
     "description": "Description",
     "stats": "Statistiques",
     "recentChanges": "Changements récents",
@@ -1256,6 +1258,10 @@
         "home": {
           "label": "Home",
           "description": "Portée par défaut de l’OS Agent pour l’automatisation du bureau"
+        },
+        "documents": {
+          "label": "Documents",
+          "description": "Dossier Documents"
         }
       }
     },

@@ -7,8 +7,8 @@
     "inputMode": "Kontrol",
     "selectionMode": "Yanıt",
     "toggleMode": "Girdi modunu değiştir",
-    "inputPlaceholder": "Agent'a ne yapacağını söyle...",
-    "selectionPlaceholder": "Seçimi veya yanıtı yaz...",
+    "inputPlaceholder": "Agent'ın bu uygulamayı kontrol etmesine izin ver...",
+    "selectionPlaceholder": "ORGII hakkında herhangi bir soru sor...",
     "submit": "Agent Control girdisini gönder",
     "menuToggle": "Agent Control",
     "selectModel": "Model seç"
@@ -63,6 +63,7 @@
     "clear": "Temizle",
     "open": "Aç",
     "view": "Görüntüle",
+    "openInApp": "Uygulamada Aç",
     "openToRight": "Sağda aç",
     "new": "Yeni",
     "rename": "Yeniden Adlandır",
@@ -289,6 +290,7 @@
     "status": "Durum",
     "version": "Sürüm",
     "details": "Detaylar",
+    "overview": "Genel Bakış",
     "description": "Açıklama",
     "stats": "İstatistikler",
     "recentChanges": "Son değişiklikler",
@@ -1257,6 +1259,10 @@
         "home": {
           "label": "Home",
           "description": "Masaüstü otomasyonu için varsayılan OS Agent kapsamı"
+        },
+        "documents": {
+          "label": "Belgeler",
+          "description": "Belgeler klasörü"
         }
       }
     },

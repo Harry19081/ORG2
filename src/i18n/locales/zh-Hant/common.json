@@ -7,8 +7,8 @@
     "inputMode": "控制",
     "selectionMode": "回答",
     "toggleMode": "切換輸入模式",
-    "inputPlaceholder": "告訴 Agent 要做什麼...",
-    "selectionPlaceholder": "輸入選項或回答...",
+    "inputPlaceholder": "讓 Agent 控制此應用...",
+    "selectionPlaceholder": "向 ORGII 提任何問題...",
     "submit": "提交 Agent Control 輸入",
     "menuToggle": "Agent Control",
     "selectModel": "選擇模型"
@@ -63,6 +63,7 @@
     "clear": "清除",
     "open": "打開",
     "view": "查看",
+    "openInApp": "在 App 中開啟",
     "openToRight": "在右側打開",
     "new": "新建",
     "rename": "重命名",
@@ -289,6 +290,7 @@
     "status": "狀態",
     "version": "版本",
     "details": "詳情",
+    "overview": "概覽",
     "description": "描述",
     "stats": "統計",
     "recentChanges": "最近變更",
@@ -1257,6 +1259,10 @@
         "home": {
           "label": "Home",
           "description": "OS Agent 桌面自動化的預設範圍"
+        },
+        "documents": {
+          "label": "Documents",
+          "description": "Documents 文件夾"
         }
       }
     },

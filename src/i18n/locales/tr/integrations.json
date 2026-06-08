@@ -1045,7 +1045,9 @@
     "oauthBrowserOpened": "Bir tarayıcı penceresi açıldı. Yetkilendirmeyi orada tamamlayın, ardından bu sihirbaz devam eder."
   },
   "gitConnections": {
-    "github": "GitHub"
+    "github": "GitHub",
+    "methodScan": "Otomatik algıla",
+    "methodOAuth": "GitHub ile oturum aç"
   },
   "builtInTools": {
     "title": "Yerleşik araçlar",

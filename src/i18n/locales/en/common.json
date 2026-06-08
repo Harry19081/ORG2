@@ -7,8 +7,8 @@
     "inputMode": "Control",
     "selectionMode": "Answer",
     "toggleMode": "Toggle input mode",
-    "inputPlaceholder": "Tell the agent what to do...",
-    "selectionPlaceholder": "Type the selection or answer...",
+    "inputPlaceholder": "Let agent control this app...",
+    "selectionPlaceholder": "Ask any questions about ORGII...",
     "submit": "Submit Agent Control input",
     "menuToggle": "Agent Control",
     "selectModel": "Select model"
@@ -140,7 +140,8 @@
     "closeIssue": "Close issue",
     "reopenIssue": "Reopen issue",
     "addComment": "Add comment",
-    "editIssue": "Edit issue"
+    "editIssue": "Edit issue",
+    "openInApp": "Open in App"
   },
   "refreshToast": {
     "successName": "{{name}} refreshed",
@@ -343,7 +344,8 @@
     "closedIssues": "Closed",
     "issueComments": "{{count}} comment",
     "issueComments_one": "1 comment",
-    "issueComments_other": "{{count}} comments"
+    "issueComments_other": "{{count}} comments",
+    "overview": "Overview"
   },
   "searchModes": {
     "keywordLabel": "Keyword",
@@ -1321,6 +1323,10 @@
         "home": {
           "label": "Home",
           "description": "Default OS Agent scope for desktop automation"
+        },
+        "documents": {
+          "label": "Documents",
+          "description": "Documents folder"
         }
       }
     },

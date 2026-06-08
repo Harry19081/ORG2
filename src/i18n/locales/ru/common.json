@@ -7,8 +7,8 @@
     "inputMode": "Управление",
     "selectionMode": "Ответ",
     "toggleMode": "Переключить режим ввода",
-    "inputPlaceholder": "Скажите Agent, что сделать...",
-    "selectionPlaceholder": "Введите выбор или ответ...",
+    "inputPlaceholder": "Позвольте Agent управлять этим приложением...",
+    "selectionPlaceholder": "Задайте любой вопрос об ORGII...",
     "submit": "Отправить ввод Agent Control",
     "menuToggle": "Agent Control",
     "selectModel": "Выбрать модель"
@@ -63,6 +63,7 @@
     "clear": "Очистить",
     "open": "Открыть",
     "view": "Просмотреть",
+    "openInApp": "Открыть в приложении",
     "openToRight": "Открыть справа",
     "new": "Новый",
     "rename": "Переименовать",
@@ -289,6 +290,7 @@
     "status": "Статус",
     "version": "Версия",
     "details": "Подробности",
+    "overview": "Обзор",
     "description": "Описание",
     "stats": "Статистика",
     "recentChanges": "Последние изменения",
@@ -1256,6 +1258,10 @@
         "home": {
           "label": "Home",
           "description": "Область по умолчанию для OS Agent при автоматизации рабочего стола"
+        },
+        "documents": {
+          "label": "Документы",
+          "description": "Папка Документы"
         }
       }
     },

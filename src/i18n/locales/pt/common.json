@@ -7,8 +7,8 @@
     "inputMode": "Controle",
     "selectionMode": "Resposta",
     "toggleMode": "Alternar modo de entrada",
-    "inputPlaceholder": "Diga ao Agent o que fazer...",
-    "selectionPlaceholder": "Digite a seleção ou resposta...",
+    "inputPlaceholder": "Deixe o Agent controlar este aplicativo...",
+    "selectionPlaceholder": "Faça qualquer pergunta sobre o ORGII...",
     "submit": "Enviar entrada de Agent Control",
     "menuToggle": "Agent Control",
     "selectModel": "Selecionar modelo"
@@ -64,6 +64,7 @@
     "clear": "Limpar",
     "open": "Abrir",
     "view": "Ver",
+    "openInApp": "Abrir no app",
     "openToRight": "Abrir à direita",
     "new": "Novo",
     "rename": "Renomear",
@@ -289,6 +290,7 @@
     "status": "Status",
     "version": "Versão",
     "details": "Detalhes",
+    "overview": "Visão geral",
     "description": "Descrição",
     "stats": "Estatísticas",
     "recentChanges": "Alterações recentes",
@@ -1256,6 +1258,10 @@
         "home": {
           "label": "Home",
           "description": "Escopo padrão do OS Agent para automação de desktop"
+        },
+        "documents": {
+          "label": "Documentos",
+          "description": "Pasta Documentos"
         }
       }
     },

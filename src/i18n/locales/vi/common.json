@@ -7,8 +7,8 @@
     "inputMode": "Điều khiển",
     "selectionMode": "Trả lời",
     "toggleMode": "Chuyển chế độ nhập",
-    "inputPlaceholder": "Cho Agent biết cần làm gì...",
-    "selectionPlaceholder": "Nhập lựa chọn hoặc câu trả lời...",
+    "inputPlaceholder": "Để Agent điều khiển ứng dụng này...",
+    "selectionPlaceholder": "Đặt bất kỳ câu hỏi nào về ORGII...",
     "submit": "Gửi nội dung Agent Control",
     "menuToggle": "Agent Control",
     "selectModel": "Chọn model"
@@ -63,6 +63,7 @@
     "clear": "Xóa",
     "open": "Mở",
     "view": "Xem",
+    "openInApp": "Mở trong ứng dụng",
     "openToRight": "Mở ở bên phải",
     "new": "Mới",
     "rename": "Đổi tên",
@@ -289,6 +290,7 @@
     "status": "Trạng thái",
     "version": "Phiên bản",
     "details": "Chi tiết",
+    "overview": "Tổng quan",
     "description": "Mô tả",
     "stats": "Thống kê",
     "recentChanges": "Thay đổi gần đây",
@@ -1257,6 +1259,10 @@
         "home": {
           "label": "Home",
           "description": "Phạm vi mặc định của OS Agent cho tự động hóa desktop"
+        },
+        "documents": {
+          "label": "Tài liệu",
+          "description": "Thư mục Tài liệu"
         }
       }
     },
