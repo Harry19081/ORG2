@@ -28,14 +28,15 @@ import {
   SECTION_ACTION_BUTTON,
   getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
+import { useWorkStationTabs } from "@src/hooks/workStation/tabs/useWorkStationTabs";
 import { CollapsibleSection } from "@src/modules/WorkStation/shared/PrimarySidebarLayout";
 import { usePrimarySidebarSurface } from "@src/modules/WorkStation/shared/hooks/usePrimarySidebarSurface";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { workstationIssueCallbackAtom } from "@src/store/workstation/codeEditor/workstationIssueAtom";
+import { createGitHubIssueDetailTab } from "@src/store/workstation/tabs";
 
 import { useWorkstationIssues } from "../../hooks/useWorkstationIssues";
 import type { IssueFilterState } from "../../hooks/useWorkstationIssues";
-import { IssueDetailPanel } from "./IssueDetailPanel";
 import { IssueRow } from "./IssueRow";
 import { NewIssueForm } from "./NewIssueForm";
 
@@ -53,6 +54,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
     const navigate = useNavigate();
     const setCallbackAtom = useSetAtom(workstationIssueCallbackAtom);
     const { surfaceBgClass } = usePrimarySidebarSurface();
+    const { openTab } = useWorkStationTabs();
 
     const {
       issues,
@@ -64,11 +66,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
       setFilterState,
       searchQuery,
       setSearchQuery,
-      selectedIssue,
       selectIssue,
-      comments,
-      commentsLoading,
-      submittingComment,
       handleCreateIssue,
       handleCloseIssue,
       handleReopenIssue,
@@ -86,8 +84,7 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
 
     const handleOpenNewIssueForm = useCallback(() => {
       setShowNewIssueForm(true);
-      selectIssue(null);
-    }, [selectIssue]);
+    }, []);
 
     const handleCancelNewIssue = useCallback(() => {
       setShowNewIssueForm(false);
@@ -111,25 +108,45 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
           if (created) {
             setShowNewIssueForm(false);
             selectIssue(created);
+            openTab(
+              createGitHubIssueDetailTab(
+                created.number,
+                created.title,
+                repoPath
+              )
+            );
           }
         } finally {
           setCreatingIssue(false);
         }
       },
-      [handleCreateIssue, selectIssue]
+      [handleCreateIssue, selectIssue, openTab, repoPath]
     );
 
-    const handleSelectIssueNull = useCallback(() => {
-      selectIssue(null);
-    }, [selectIssue]);
-
-    // Register openNewIssueForm callback so PinnedActionsBar or agents can trigger it
+    // Register callbacks so PinnedActionsBar, agents, and the github-issue-detail
+    // tab renderer can trigger issue actions without coupling to this component.
     useEffect(() => {
-      setCallbackAtom({ openNewIssueForm: handleOpenNewIssueForm });
+      setCallbackAtom({
+        openNewIssueForm: handleOpenNewIssueForm,
+        closeIssue: handleCloseIssue,
+        reopenIssue: handleReopenIssue,
+        addComment: (number, body) => handleAddComment(number, body),
+      });
       return () => {
-        setCallbackAtom({ openNewIssueForm: null });
+        setCallbackAtom({
+          openNewIssueForm: null,
+          closeIssue: null,
+          reopenIssue: null,
+          addComment: null,
+        });
       };
-    }, [setCallbackAtom, handleOpenNewIssueForm]);
+    }, [
+      setCallbackAtom,
+      handleOpenNewIssueForm,
+      handleCloseIssue,
+      handleReopenIssue,
+      handleAddComment,
+    ]);
 
     // Show spinner while the remote URL is still being resolved (async) OR
     // while the first page of issues is loading. Without this guard the panel
@@ -138,21 +155,6 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
       remoteUrlLoading || (loading && issues.length === 0);
 
     // ── Render ────────────────────────────────────────────────────────────────
-
-    if (selectedIssue) {
-      return (
-        <IssueDetailPanel
-          issue={selectedIssue}
-          comments={comments}
-          commentsLoading={commentsLoading}
-          submittingComment={submittingComment}
-          onClose={handleSelectIssueNull}
-          onCloseIssue={() => void handleCloseIssue(selectedIssue.number)}
-          onReopenIssue={() => void handleReopenIssue(selectedIssue.number)}
-          onAddComment={(body) => handleAddComment(selectedIssue.number, body)}
-        />
-      );
-    }
 
     const countBadge = (
       <span
@@ -338,7 +340,16 @@ const IssuesContent: React.FC<IssuesContentProps> = memo(
                   key={issue.number}
                   issue={issue}
                   isSelected={false}
-                  onClick={() => selectIssue(issue)}
+                  onClick={() => {
+                    selectIssue(issue);
+                    openTab(
+                      createGitHubIssueDetailTab(
+                        issue.number,
+                        issue.title,
+                        repoPath
+                      )
+                    );
+                  }}
                 />
               ))
             )}

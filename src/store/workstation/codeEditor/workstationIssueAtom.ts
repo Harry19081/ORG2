@@ -53,8 +53,17 @@ export const workstationSelectedIssueAtom =
   atom<WorkstationSelectedIssueState>(initialSelectedState);
 workstationSelectedIssueAtom.debugLabel = "workstationSelectedIssueAtom";
 
-// Callback atom for actions triggerable from PinnedActionsBar or agents
+// Callback atom for actions triggerable from PinnedActionsBar, agents, or the
+// github-issue-detail tab rendered in the main pane.
 export const workstationIssueCallbackAtom = atom<{
   openNewIssueForm: (() => void) | null;
-}>({ openNewIssueForm: null });
+  closeIssue: ((number: number) => Promise<void>) | null;
+  reopenIssue: ((number: number) => Promise<void>) | null;
+  addComment: ((number: number, body: string) => Promise<void>) | null;
+}>({
+  openNewIssueForm: null,
+  closeIssue: null,
+  reopenIssue: null,
+  addComment: null,
+});
 workstationIssueCallbackAtom.debugLabel = "workstationIssueCallbackAtom";

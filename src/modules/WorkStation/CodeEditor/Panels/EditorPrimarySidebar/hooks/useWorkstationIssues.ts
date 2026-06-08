@@ -462,7 +462,12 @@ export function useWorkstationIssues({
         error: null,
         submittingComment: false,
       });
-      setCallbackAtom({ openNewIssueForm: null });
+      setCallbackAtom({
+        openNewIssueForm: null,
+        closeIssue: null,
+        reopenIssue: null,
+        addComment: null,
+      });
     };
   }, [setListState, setSelectedState, setCallbackAtom]);
 

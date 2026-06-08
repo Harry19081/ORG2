@@ -256,6 +256,15 @@ const CanvasPreviewEntry: RendererEntry = {
 };
 
 // ============================================
+// GitHub Issue Detail renderer
+// ============================================
+
+const GitHubIssueDetailEntry: RendererEntry = {
+  Component: lazy(() => import("./renderers/githubIssueDetail")),
+  debugLabel: "github-issue-detail",
+};
+
+// ============================================
 // Registry — exhaustive over WorkStationTabType
 // ============================================
 
@@ -319,6 +328,9 @@ export const REGISTRY: TabContentRegistry = {
 
   // Canvas Preview
   "canvas-preview": CanvasPreviewEntry,
+
+  // GitHub Issue Detail
+  "github-issue-detail": GitHubIssueDetailEntry,
 };
 
 // Exhaustiveness check: any missing WorkStationTabType becomes a TS error.

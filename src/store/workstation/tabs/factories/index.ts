@@ -158,3 +158,10 @@ export {
   getCanvasPreviewTabId,
 } from "./canvasPreview";
 export type { CanvasPreviewTabData } from "./canvasPreview";
+
+// GitHub Issue Detail
+export {
+  githubIssueDetailTabFactory,
+  createGitHubIssueDetailTab,
+} from "./githubIssue";
+export type { GitHubIssueDetailTabData } from "./githubIssue";

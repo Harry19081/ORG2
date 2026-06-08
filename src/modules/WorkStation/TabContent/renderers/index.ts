@@ -37,3 +37,4 @@ export { default as TimelineDiffTabRenderer } from "./timelineDiff";
 export { default as TokenCategoryTabRenderer } from "./tokenCategory";
 export { default as UrlPreviewTabRenderer } from "./urlPreview";
 export { default as WorkItemDetailTabRenderer } from "./workItemDetail";
+export { default as GitHubIssueDetailTabRenderer } from "./githubIssueDetail";

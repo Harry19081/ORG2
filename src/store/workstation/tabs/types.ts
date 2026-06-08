@@ -68,7 +68,9 @@ export type WorkStationTabType =
   // Launchpad tabs
   | "launchpad-repo"
   // Canvas preview tab — renders agent-generated canvas from canvasPreviewAtom
-  | "canvas-preview";
+  | "canvas-preview"
+  // GitHub Issues detail tab — opened from the sidebar Issues panel
+  | "github-issue-detail";
 
 // ============================================
 // Tab Types
@@ -453,6 +455,8 @@ export const TOOL_TAB_TYPES = [
   "kanban-station",
   // Launchpad tabs
   "launchpad-repo",
+  // GitHub Issues detail
+  "github-issue-detail",
 ] as const;
 
 export type FileTabType = (typeof FILE_TAB_TYPES)[number];
