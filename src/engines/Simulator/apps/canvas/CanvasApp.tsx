@@ -33,10 +33,13 @@ import { usePublishWorkstationTabHeader } from "@src/hooks/workStation";
 import { SessionReplayCodeMirrorViewer } from "@src/modules/WorkStation/CodeEditor/SessionReplay/CodePanel/SessionReplayCodeMirrorViewer";
 import {
   NoDragRegion,
+  PrimarySidebarLayoutWithSections,
   SimulatorReplayChrome,
   WorkStationShell,
   buildPrimarySidebarConfig,
 } from "@src/modules/WorkStation/shared";
+import type { PrimarySidebarTab } from "@src/modules/WorkStation/shared/PrimarySidebarLayout/PrimarySidebarLayoutWithSections";
+import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { canvasPreviewAtom } from "@src/store/session/canvasPreviewAtom";
 import {
   simulatorPrimarySidebarCollapsedAtom,
@@ -138,32 +141,55 @@ const CanvasSidebar: React.FC<CanvasSidebarProps> = ({
   selectedEventId,
   onSelect,
   t,
-}) => (
-  <div className="flex h-full flex-col overflow-hidden">
-    <div className="shrink-0 px-3 pb-1.5 pt-3">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-text-4">
-        {t("canvasApp.sidebarTitle", "Canvases")}
-      </span>
-    </div>
-    <div className="min-h-0 flex-1 overflow-y-auto px-1.5 pb-2">
-      {appEvents.length === 0 ? (
-        <p className="px-2 py-2 text-xs text-text-4">
-          {t("canvasApp.noCanvases", "No canvases yet")}
-        </p>
-      ) : (
-        appEvents.map((ev) => (
-          <SidebarItem
-            key={ev.id}
-            event={ev}
-            isSelected={ev.id === selectedEventId}
-            onSelect={() => onSelect(ev.id)}
-            t={t}
-          />
-        ))
-      )}
-    </div>
-  </div>
-);
+}) => {
+  const sidebarTab = useMemo<PrimarySidebarTab>(
+    () => ({
+      key: "canvas-sidebar",
+      label: t("canvasApp.sidebarTitle", "Canvases"),
+      sections: [
+        {
+          key: "canvas-list",
+          title: t("canvasApp.sidebarTitle", "Canvases"),
+          content: (
+            <div className="min-h-0 flex-1 overflow-y-auto px-1.5 py-2">
+              {appEvents.length === 0 ? (
+                <Placeholder
+                  variant="empty"
+                  title={t("canvasApp.noCanvases", "No canvases yet")}
+                />
+              ) : (
+                appEvents.map((event) => (
+                  <SidebarItem
+                    key={event.id}
+                    event={event}
+                    isSelected={event.id === selectedEventId}
+                    onSelect={() => onSelect(event.id)}
+                    t={t}
+                  />
+                ))
+              )}
+            </div>
+          ),
+          defaultFlexGrow: 1,
+          collapsible: true,
+          resizable: false,
+        },
+      ],
+    }),
+    [appEvents, selectedEventId, onSelect, t]
+  );
+
+  const handleTabChange = useCallback(() => {}, []);
+
+  return (
+    <PrimarySidebarLayoutWithSections
+      tabs={[sidebarTab]}
+      activeTab={sidebarTab.key}
+      onTabChange={handleTabChange}
+      hideTabs
+    />
+  );
+};
 
 // ─── iframe viewer ─────────────────────────────────────────────────────────────
 
@@ -462,31 +488,24 @@ const CanvasApp: React.FC<SimulatorAppProps> = () => {
     ]
   );
 
-  // ── empty state ──────────────────────────────────────────────────────────
-
-  if (appEvents.length === 0) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-bg-2">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Layout size={28} className="text-text-4" />
-          <p className="text-sm text-text-4">
-            {t("canvasApp.empty", "No canvas rendered yet")}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // ── main content area ────────────────────────────────────────────────────
 
   const mainContent = (
-    <div className="relative min-h-0 flex-1 overflow-hidden">
-      {!selectedPayload ? (
-        <div className="flex h-full items-center justify-center">
-          <span className="text-xs text-text-4">
-            {t("canvasCard.empty", "No content")}
-          </span>
-        </div>
+    <div className="relative min-h-0 flex-1 overflow-hidden bg-bg-2">
+      {appEvents.length === 0 ? (
+        <Placeholder
+          variant="empty"
+          placement="detail-panel"
+          title={t("canvasApp.empty", "No canvas rendered yet")}
+          fillParentHeight
+        />
+      ) : !selectedPayload ? (
+        <Placeholder
+          variant="empty"
+          placement="detail-panel"
+          title={t("canvasCard.empty", "No content")}
+          fillParentHeight
+        />
       ) : activeTab === "canvas" ? (
         <>
           <CanvasIframe
