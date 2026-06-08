@@ -1,7 +1,7 @@
 /**
  * AppGridIcon
  *
- * Single app icon cell in the honeycomb AppGrid. Renders the liquid-glass
+ * Single app icon cell in the honeycomb AppGrid. Renders the translucent
  * circular background, the Lucide icon, the label, and handles all pointer
  * and interaction events for both normal and edit (drag) modes.
  */
@@ -21,8 +21,6 @@ export interface AppGridIconProps {
   iconSize: number;
   iconColor: string;
   labelColor: string;
-  isDark: boolean;
-  glassMaterial: { background: string; blur: number };
   editMode: boolean;
   isBeingDragged: boolean;
   isDragOver: boolean;
@@ -42,8 +40,6 @@ export const AppGridIcon: React.FC<AppGridIconProps> = ({
   itemWidth,
   iconSize,
   iconColor,
-  isDark,
-  glassMaterial,
   editMode,
   isBeingDragged,
   isDragOver,
@@ -113,19 +109,16 @@ export const AppGridIcon: React.FC<AppGridIconProps> = ({
           touchAction: editMode ? "none" : "auto",
         }}
       >
-        {/* Glass Circular Icon Container */}
         <div
           className="vision-app-icon relative flex items-center justify-center"
           style={{
             width: `${iconSize}px`,
             height: `${iconSize}px`,
             borderRadius: "50%",
-            background: glassMaterial.background,
-            backdropFilter: `blur(${glassMaterial.blur}px) saturate(150%)`,
-            WebkitBackdropFilter: `blur(${glassMaterial.blur}px) saturate(150%)`,
-            boxShadow: isDark
-              ? "0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
-              : "0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6)",
+            background: "var(--start-app-icon-bg)",
+            backdropFilter: "var(--start-app-icon-backdrop)",
+            WebkitBackdropFilter: "var(--start-app-icon-backdrop)",
+            boxShadow: "var(--start-app-icon-shadow)",
           }}
         >
           <span

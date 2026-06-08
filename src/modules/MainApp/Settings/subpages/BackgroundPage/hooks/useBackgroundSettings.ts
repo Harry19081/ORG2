@@ -3,7 +3,7 @@
  * Handles all business logic for background customization.
  * Image upload/delete logic lives in useBackgroundImageHandlers.ts.
  */
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -25,14 +25,13 @@ import {
   normalizeAppearanceMode,
   normalizeGlobalThemeId,
 } from "@src/config/appearance/globalThemes";
-import type { PrimaryColorPreset } from "@src/config/appearance/primaryColors";
 import { buildSettingsPath } from "@src/config/mainAppPaths";
 import { useBackgroundImageStorage } from "@src/hooks/theme/useBackgroundImageStorage";
 import { useUndoStackWithRestore } from "@src/hooks/ui";
 import {
   backgroundConfigPersistAtom,
   globalThemeIdAtom,
-  primaryColorPresetAtom,
+  updateSettingsBatchAtom,
 } from "@src/store";
 import type { BackgroundConfig } from "@src/store/ui/backgroundConfigAtom";
 import { getStorageInfo } from "@src/util/core/storage/backgroundImage";
@@ -86,8 +85,8 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
   const navigate = useNavigate();
   const { t } = useTranslation("settings");
   const [config, setConfig] = useAtom(backgroundConfigPersistAtom);
-  const [globalThemeId, setGlobalThemeId] = useAtom(globalThemeIdAtom);
-  const [, setPrimaryColorPreset] = useAtom(primaryColorPresetAtom);
+  const globalThemeId = useAtomValue(globalThemeIdAtom);
+  const updateSettingsBatch = useSetAtom(updateSettingsBatchAtom);
   const [storageInfo, setStorageInfo] = useState<StorageInfo>({
     path: "",
     used: 0,
@@ -402,19 +401,20 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
     async (themeIdValue: string) => {
       const themeId = normalizeGlobalThemeId(themeIdValue);
       const selectedTheme = getGlobalTheme(themeId);
+      updateSettingsBatch({
+        "general.theme": themeId,
+        "general.primaryColor": selectedTheme.defaultPrimaryColor,
+      });
+      localStorage.setItem("theme", themeId);
+
       const cover = showThemeTransitionCover();
       try {
         await swapThemeCss(selectedTheme.baseCssPath);
-        setGlobalThemeId(themeId);
-        setPrimaryColorPreset(
-          selectedTheme.defaultPrimaryColor as PrimaryColorPreset
-        );
-        localStorage.setItem("theme", themeId);
       } finally {
         await cover.hide();
       }
     },
-    [setGlobalThemeId, setPrimaryColorPreset]
+    [updateSettingsBatch]
   );
 
   const handleThemePresetChange = useCallback(

@@ -8,7 +8,7 @@
 //! - Pretty-printing with comment preservation
 
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// Get the settings directory path: `~/.orgii/`
 pub fn get_settings_dir() -> Result<PathBuf, String> {
@@ -57,7 +57,6 @@ fn strip_jsonc_comments(input: &str) -> String {
             continue;
         }
 
-        // Not in a string
         if chars[idx] == '"' {
             in_string = true;
             result.push(chars[idx]);
@@ -65,23 +64,20 @@ fn strip_jsonc_comments(input: &str) -> String {
             continue;
         }
 
-        // Check for line comment: //
         if idx + 1 < len && chars[idx] == '/' && chars[idx + 1] == '/' {
-            // Skip until end of line
             while idx < len && chars[idx] != '\n' {
                 idx += 1;
             }
             continue;
         }
 
-        // Check for block comment: /* ... */
         if idx + 1 < len && chars[idx] == '/' && chars[idx + 1] == '*' {
             idx += 2;
             while idx + 1 < len && !(chars[idx] == '*' && chars[idx + 1] == '/') {
                 idx += 1;
             }
             if idx + 1 < len {
-                idx += 2; // skip */
+                idx += 2;
             }
             continue;
         }
@@ -91,6 +87,68 @@ fn strip_jsonc_comments(input: &str) -> String {
     }
 
     result
+}
+
+fn find_complete_json_prefix(input: &str) -> Option<&str> {
+    let mut depth = 0usize;
+    let mut in_string = false;
+    let mut escape_next = false;
+    let mut started = false;
+
+    for (idx, ch) in input.char_indices() {
+        if escape_next {
+            escape_next = false;
+            continue;
+        }
+
+        if in_string {
+            if ch == '\\' {
+                escape_next = true;
+            } else if ch == '"' {
+                in_string = false;
+            }
+            continue;
+        }
+
+        if ch == '"' {
+            in_string = true;
+            continue;
+        }
+
+        if ch == '{' || ch == '[' {
+            depth += 1;
+            started = true;
+            continue;
+        }
+
+        if ch == '}' || ch == ']' {
+            if depth == 0 {
+                return None;
+            }
+            depth -= 1;
+            if started && depth == 0 {
+                return Some(&input[..idx + ch.len_utf8()]);
+            }
+        }
+    }
+
+    None
+}
+
+fn recover_trailing_garbage_json(input: &str) -> Option<serde_json::Value> {
+    let prefix = find_complete_json_prefix(input)?;
+    if input[prefix.len()..].trim().is_empty() {
+        return None;
+    }
+    serde_json::from_str(prefix).ok()
+}
+
+fn backup_corrupt_settings(path: &Path, content: &str) -> Result<PathBuf, String> {
+    let mut backup_path = path.to_path_buf();
+    backup_path.set_extension("jsonc.corrupt");
+    fs::write(&backup_path, content)
+        .map_err(|err| format!("Failed to back up corrupt settings file: {err}"))?;
+    Ok(backup_path)
 }
 
 /// Read settings from `~/.orgii/settings.jsonc`.
@@ -114,12 +172,23 @@ pub fn read_settings() -> Result<serde_json::Value, String> {
     let content =
         fs::read_to_string(&path).map_err(|err| format!("Failed to read settings file: {err}"))?;
 
-    // Strip comments and parse
     let json_content = strip_jsonc_comments(&content);
-    let value: serde_json::Value = serde_json::from_str(&json_content)
-        .map_err(|err| format!("Failed to parse settings JSONC: {err}"))?;
+    match serde_json::from_str::<serde_json::Value>(&json_content) {
+        Ok(value) => Ok(value),
+        Err(parse_err) => {
+            if let Some(recovered) = recover_trailing_garbage_json(&json_content) {
+                let backup_path = backup_corrupt_settings(&path, &content)?;
+                write_settings_json(&recovered)?;
+                eprintln!(
+                    "[Settings] Recovered settings from trailing garbage; backup saved to {}",
+                    backup_path.display()
+                );
+                return Ok(recovered);
+            }
 
-    Ok(value)
+            Err(format!("Failed to parse settings JSONC: {parse_err}"))
+        }
+    }
 }
 
 /// Write the complete JSONC content to `~/.orgii/settings.jsonc`.

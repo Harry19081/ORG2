@@ -70,6 +70,21 @@ body {
   --color-fill-3: #2b2b2b;
   --color-fill-4: #3f3f46;
 
+  /* Sidebar */
+  --sidebar-bg: rgba(4, 4, 4, 0.9);
+  --sidebar-border: rgba(255, 255, 255, 0.22);
+  --sidebar-backdrop: blur(8px) saturate(120%);
+  --sidebar-shadow: none;
+
+  /* Start Page */
+  --start-app-icon-bg: rgba(10, 10, 10, 0.82);
+  --start-app-icon-backdrop: blur(8px) saturate(150%);
+  --start-app-icon-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16);
+  --start-edit-panel-bg: rgba(8, 8, 8, 0.9);
+  --start-edit-panel-backdrop: blur(12px);
+  --start-edit-panel-border: 1px solid rgba(255, 255, 255, 0.22);
+  --start-edit-panel-shadow: none;
+
   /* Shared surfaces */
   --color-surface-hover: #242424;
   --color-surface-selected: #1d3f66;

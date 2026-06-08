@@ -72,6 +72,23 @@ body {
   --color-fill-2: #212121;
   --color-fill-3: #2a2a2a;
   --color-fill-4: #3c3c3f;
+
+  /* Sidebar */
+  --sidebar-bg: rgba(27, 28, 31, 0.84);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-backdrop: blur(12px) saturate(150%);
+  --sidebar-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.3);
+
+  /* Start Page */
+  --start-app-icon-bg: rgba(28, 28, 30, 0.68);
+  --start-app-icon-backdrop: blur(8px) saturate(150%);
+  --start-app-icon-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --start-edit-panel-bg: rgba(24, 24, 26, 0.82);
+  --start-edit-panel-backdrop: blur(12px);
+  --start-edit-panel-border: 1px solid rgba(255, 255, 255, 0.12);
+  --start-edit-panel-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+
   /* Shared surfaces */
   --color-surface-hover: color-mix(
     in srgb,

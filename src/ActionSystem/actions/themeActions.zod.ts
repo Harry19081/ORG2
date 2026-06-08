@@ -7,7 +7,7 @@ import {
   type GlobalThemeId,
   getGlobalTheme,
 } from "@src/config/appearance/globalThemes";
-import { globalThemeIdAtom, primaryColorPresetAtom } from "@src/store";
+import { updateSettingsBatchAtom } from "@src/store";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { swapThemeCss } from "@src/util/ui/theme/swapThemeCss";
 import { showThemeTransitionCover } from "@src/util/ui/theme/themeTransitionCover";
@@ -17,12 +17,15 @@ const emptyParams = z.object({});
 async function applyTheme(themeId: GlobalThemeId): Promise<string> {
   const store = getInstrumentedStore();
   const selectedTheme = getGlobalTheme(themeId);
+  store.set(updateSettingsBatchAtom, {
+    "general.theme": themeId,
+    "general.primaryColor": selectedTheme.defaultPrimaryColor,
+  });
+  localStorage.setItem("theme", themeId);
+
   const cover = showThemeTransitionCover();
   try {
     await swapThemeCss(selectedTheme.baseCssPath);
-    store.set(globalThemeIdAtom, themeId);
-    store.set(primaryColorPresetAtom, selectedTheme.defaultPrimaryColor);
-    localStorage.setItem("theme", themeId);
     return selectedTheme.id;
   } finally {
     await cover.hide();
