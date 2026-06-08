@@ -247,10 +247,7 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
         className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden"
         data-testid="chat-panel-workspace-overview-detail"
       >
-        <DetailPanelContainer
-          className="bg-bg-2"
-          testId="workspace-overview-panel"
-        >
+        <DetailPanelContainer testId="workspace-overview-panel">
           <WorkItemContentStack
             pathContent={headerPath}
             propertiesContent={inlineProperties}
