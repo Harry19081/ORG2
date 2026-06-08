@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   CircleDot,
   ExternalLink,
   Loader,
@@ -61,15 +60,6 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
       <div className="flex h-full min-h-0 flex-col overflow-hidden">
         {/* ── Header strip — mirrors CommitTabHeader height/style ─────────── */}
         <div className={HEADER_CLASSES.pageHeader}>
-          <button
-            type="button"
-            onClick={onClose}
-            className={HEADER_BUTTON.action}
-            title="Back"
-          >
-            <ArrowLeft size={HEADER_ICON_SIZE.sm} strokeWidth={2} />
-          </button>
-
           <span
             className={`shrink-0 ${isOpen ? "text-success-6" : "text-text-3"}`}
           >
