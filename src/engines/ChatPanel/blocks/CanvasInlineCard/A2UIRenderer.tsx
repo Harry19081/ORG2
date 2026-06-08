@@ -19,17 +19,13 @@
  *   - DOMPurify sanitization for `type="html"` elements
  *   - recharts integration for `type="chart"` elements
  */
-// @a2ui/react/v0_9 is a physical directory under node_modules — resolves with "node" moduleResolution.
 import {
   A2uiSurface,
   createBinderlessComponentImplementation,
 } from "@a2ui/react/v0_9";
-// @a2ui/web_core/src/v0_9 is the physical deep path to the v0.9 module.
-// The subpath export "@a2ui/web_core/v0_9" requires "bundler" moduleResolution,
-// so we use the physical path instead.
-import { Catalog, MessageProcessor } from "@a2ui/web_core/src/v0_9";
-import type { ComponentApi } from "@a2ui/web_core/src/v0_9";
-import type { SurfaceModel } from "@a2ui/web_core/src/v0_9";
+import { Catalog, MessageProcessor } from "@a2ui/web_core/v0_9";
+import type { ComponentApi } from "@a2ui/web_core/v0_9";
+import type { SurfaceModel } from "@a2ui/web_core/v0_9";
 import React, {
   forwardRef,
   useEffect,
