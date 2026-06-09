@@ -48,10 +48,14 @@ import {
   addWorkspaceInitialStageAtom,
   repoSelectorOpenAtom,
 } from "@src/store/ui/overlayAtom";
-import type { RouteToolbarConfig } from "@src/store/ui/routeToolbarAtom";
+import type {
+  RouteToolbarButton,
+  RouteToolbarConfig,
+} from "@src/store/ui/routeToolbarAtom";
 import { settingsToolbarAtom } from "@src/store/ui/settingsToolbarAtom";
 
 import { getPlusConfigForCategory } from "./toolbarPlusConfigs";
+import { useSettingsRegionNoticeButton } from "./useSettingsRegionNoticeButton";
 
 function toIntegrationCategory(
   category: string | null | undefined
@@ -73,6 +77,7 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
   const noop = useMemo(() => () => {}, []);
 
   const settingsToolbar = useAtomValue(settingsToolbarAtom);
+  const settingsRegionNoticeButton = useSettingsRegionNoticeButton();
   const { spinClass: settingsSpinClass, handleClick: settingsRefreshClick } =
     useRefreshSpin(
       settingsToolbar.onRefresh ?? noop,
@@ -133,6 +138,9 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
 
       if (topTab === "agent-orgs") {
         return {
+          extraButtons: settingsRegionNoticeButton
+            ? [settingsRegionNoticeButton]
+            : undefined,
           plusDropdownItems: [
             {
               id: "add-agent",
@@ -159,7 +167,11 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
           t
         );
 
-        const extraButtons = [];
+        const extraButtons: RouteToolbarButton[] = [];
+
+        if (settingsRegionNoticeButton) {
+          extraButtons.push(settingsRegionNoticeButton);
+        }
 
         if (integrationsToolbar.onRefresh) {
           extraButtons.push({
@@ -180,7 +192,13 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
         };
       }
 
-      const extraButtons = [];
+      const extraButtons: RouteToolbarButton[] = [];
+
+      if (settingsRegionNoticeButton) {
+        extraButtons.push(settingsRegionNoticeButton);
+      }
+
+      extraButtons.push(...(settingsToolbar.extraButtons ?? []));
 
       if (settingsToolbar.onRefresh) {
         extraButtons.push({
@@ -199,7 +217,7 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
     }
 
     if (pathname.startsWith(DEV_RECORD_PREFIX)) {
-      const extraButtons = [];
+      const extraButtons: RouteToolbarButton[] = [];
 
       if (activeToolbarEntry?.onRefresh) {
         extraButtons.push({
@@ -254,6 +272,7 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
   }, [
     pathname,
     settingsToolbar,
+    settingsRegionNoticeButton,
     settingsRefreshClick,
     settingsSpinClass,
     openAgentAdd,

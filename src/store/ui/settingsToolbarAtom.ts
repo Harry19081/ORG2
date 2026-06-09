@@ -9,9 +9,12 @@
  */
 import { atom } from "jotai";
 
+import type { RouteToolbarButton } from "@src/store/ui/routeToolbarAtom";
+
 export interface SettingsToolbarEntry {
   onRefresh?: () => void;
   loading?: boolean;
+  extraButtons?: RouteToolbarButton[];
 }
 
 export const settingsToolbarAtom = atom<SettingsToolbarEntry>({});

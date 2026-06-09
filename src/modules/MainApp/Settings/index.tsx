@@ -222,11 +222,11 @@ const Settings: React.FC = () => {
   // Publish refresh state to toolbar atom (consumed by useRouteToolbarConfig)
   const setToolbarEntry = useSetAtom(settingsToolbarAtom);
   useEffect(() => {
-    setToolbarEntry(
-      showMonitorRefresh
-        ? { onRefresh: handleMonitorRefresh, loading: isMonitorScanning }
-        : {}
-    );
+    setToolbarEntry((current) => ({
+      ...current,
+      onRefresh: showMonitorRefresh ? handleMonitorRefresh : undefined,
+      loading: showMonitorRefresh ? isMonitorScanning : undefined,
+    }));
   }, [
     showMonitorRefresh,
     handleMonitorRefresh,

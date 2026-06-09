@@ -1792,6 +1792,9 @@
     "pill": {
       "focus": "Skupienie",
       "allChanges": "Wszystkie zmiany"
+    },
+    "sessionFilter": {
+      "allSessions": "Wszystkie sesje"
     }
   },
   "contextInfo": {

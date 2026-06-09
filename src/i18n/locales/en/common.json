@@ -1869,6 +1869,9 @@
     "pill": {
       "focus": "Focus",
       "allChanges": "All Changes"
+    },
+    "sessionFilter": {
+      "allSessions": "All sessions"
     }
   },
   "contextInfo": {

@@ -1792,6 +1792,9 @@
     "pill": {
       "focus": "Фокус",
       "allChanges": "Все изменения"
+    },
+    "sessionFilter": {
+      "allSessions": "Все сессии"
     }
   },
   "contextInfo": {

@@ -1796,6 +1796,9 @@
     "pill": {
       "focus": "Odak",
       "allChanges": "Tüm Değişiklikler"
+    },
+    "sessionFilter": {
+      "allSessions": "Tüm oturumlar"
     }
   },
   "contextInfo": {

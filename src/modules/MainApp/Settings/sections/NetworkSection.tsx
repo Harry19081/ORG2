@@ -13,7 +13,6 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import InlineAlert from "@src/components/InlineAlert";
 import { ProgressBar } from "@src/components/ProgressBar";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -38,10 +37,6 @@ const NetworkSection: React.FC = () => {
     successPercent,
     successColor,
     locationText,
-    restrictedProviders,
-    sanctioned,
-    restrictedServices,
-    hasAnyRestriction,
     vpnStatus,
   } = useNetworkSectionData();
 
@@ -51,29 +46,6 @@ const NetworkSection: React.FC = () => {
   return (
     <>
       <HttpVersionSettingsBlock />
-
-      {/* Region restriction warning */}
-      {!geo.loading && hasAnyRestriction && (
-        <InlineAlert
-          type="warning"
-          title={t("monitor.regionDetected", {
-            region: locationText || geo.country,
-          })}
-        >
-          {[
-            restrictedProviders.length > 0 &&
-              t("monitor.regionRestricted", {
-                providers: restrictedProviders.join(", "),
-              }),
-            sanctioned &&
-              t("monitor.regionServicesRestricted", {
-                services: restrictedServices.join(", "),
-              }),
-          ]
-            .filter(Boolean)
-            .join(" ")}
-        </InlineAlert>
-      )}
 
       {/* Connection Status + Request Stats + Location */}
       <SectionContainer>
