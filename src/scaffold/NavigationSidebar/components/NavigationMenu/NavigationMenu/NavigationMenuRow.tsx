@@ -368,9 +368,9 @@ function renderRowActions({
   onRowActionClick,
 }: RenderRowActionsArgs): React.ReactNode {
   if (item.rowActions?.length) {
-    return item.rowActions.map((action) => (
+    return item.rowActions.map((action, actionIndex) => (
       <NavigationMenuRowActionButton
-        key={action.label}
+        key={`${action.label}:${actionIndex}`}
         icon={action.icon}
         label={action.label}
         active={action.active}

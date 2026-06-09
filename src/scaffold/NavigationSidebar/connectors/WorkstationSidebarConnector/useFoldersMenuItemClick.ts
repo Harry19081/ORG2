@@ -33,17 +33,63 @@ type WorkspaceFoldersSetter = (
 ) => void;
 type NullableSetter<T> = (value: T | null) => void;
 
-interface UseFoldersMenuItemClickParams {
+interface OpenWorkspaceTargetParams {
   dispatchSetWorkspaceFolders: WorkspaceFoldersSetter;
-  navigate: NavigateFunction;
-  repos: readonly Repo[];
   resetOpsControlStateForProjectsContent: () => void;
   resolveWorkspaceRepoName: (
     folder: WorkspaceRecord["folders"][number]
   ) => string;
-  savedWorkspaces: readonly WorkspaceRecord[];
+  setActiveWorkspaceName: NullableSetter<string>;
+  workspace: WorkspaceRecord;
+}
+
+interface OpenRepoTargetParams {
+  dispatchSetWorkspaceFolders: WorkspaceFoldersSetter;
+  resetOpsControlStateForProjectsContent: () => void;
   selectRepo: (repoId: string) => void;
   setActiveWorkspaceName: NullableSetter<string>;
+  repoId: string;
+}
+
+export function openWorkspaceTarget({
+  dispatchSetWorkspaceFolders,
+  resetOpsControlStateForProjectsContent,
+  resolveWorkspaceRepoName,
+  setActiveWorkspaceName,
+  workspace,
+}: OpenWorkspaceTargetParams): void {
+  const folders: WorkspaceFolder[] = workspace.folders.map((folder) => ({
+    id: crypto.randomUUID(),
+    name: resolveWorkspaceRepoName(folder),
+    path: folder.folderPath,
+    uri: `file://${folder.folderPath}`,
+    isPrimary: folder.isPrimary,
+    repoId: folder.repoId ?? undefined,
+    kind: folder.kind === "folder" ? "folder" : "git",
+  }));
+  dispatchSetWorkspaceFolders(folders, workspace.workspaceId);
+  setActiveWorkspaceName(workspace.name);
+  resetOpsControlStateForProjectsContent();
+}
+
+export function openRepoTarget({
+  dispatchSetWorkspaceFolders,
+  resetOpsControlStateForProjectsContent,
+  selectRepo,
+  setActiveWorkspaceName,
+  repoId,
+}: OpenRepoTargetParams): void {
+  selectRepo(repoId);
+  dispatchSetWorkspaceFolders([], null);
+  setActiveWorkspaceName(null);
+  resetOpsControlStateForProjectsContent();
+}
+
+interface UseFoldersMenuItemClickParams {
+  navigate: NavigateFunction;
+  repos: readonly Repo[];
+  resetOpsControlStateForProjectsContent: () => void;
+  savedWorkspaces: readonly WorkspaceRecord[];
   setChatPanelContentMode: (mode: ChatPanelContentMode) => void;
   setChatPanelCreateProjectContext: NullableSetter<ChatPanelCreateProjectContext>;
   setChatPanelCreateTarget: (target: ChatPanelCreateTarget) => void;
@@ -60,14 +106,10 @@ interface UseFoldersMenuItemClickParams {
 }
 
 export function useFoldersMenuItemClick({
-  dispatchSetWorkspaceFolders,
   navigate,
   repos,
   resetOpsControlStateForProjectsContent,
-  resolveWorkspaceRepoName,
   savedWorkspaces,
-  selectRepo,
-  setActiveWorkspaceName,
   setChatPanelContentMode,
   setChatPanelCreateProjectContext,
   setChatPanelCreateTarget,
@@ -131,17 +173,6 @@ export function useFoldersMenuItemClick({
           (candidate) => candidate.workspaceId === workspaceId
         );
         if (!workspace) return;
-        const folders: WorkspaceFolder[] = workspace.folders.map((folder) => ({
-          id: crypto.randomUUID(),
-          name: resolveWorkspaceRepoName(folder),
-          path: folder.folderPath,
-          uri: `file://${folder.folderPath}`,
-          isPrimary: folder.isPrimary,
-          repoId: folder.repoId ?? undefined,
-          kind: folder.kind === "folder" ? "folder" : "git",
-        }));
-        dispatchSetWorkspaceFolders(folders, workspace.workspaceId);
-        setActiveWorkspaceName(workspace.name);
         resetOpsControlStateForProjectsContent();
         setProjectsSelectedMenuItemId("");
         setFoldersDashboardSelected(false);
@@ -159,8 +190,8 @@ export function useFoldersMenuItemClick({
           kind: "workspace",
           id: workspace.workspaceId,
           name: workspace.name,
-          folderCount: folders.length,
-          repoIds: folders
+          folderCount: workspace.folders.length,
+          repoIds: workspace.folders
             .map((folder) => folder.repoId)
             .filter((repoId): repoId is string => Boolean(repoId)),
         });
@@ -174,9 +205,6 @@ export function useFoldersMenuItemClick({
         : "";
       if (!repoId) return;
       const repo = repos.find((candidate) => candidate.id === repoId);
-      selectRepo(repoId);
-      dispatchSetWorkspaceFolders([], null);
-      setActiveWorkspaceName(null);
       resetOpsControlStateForProjectsContent();
       setProjectsSelectedMenuItemId("");
       setFoldersDashboardSelected(false);
@@ -199,14 +227,10 @@ export function useFoldersMenuItemClick({
       navigate(ROUTES.workStation.code.path);
     },
     [
-      dispatchSetWorkspaceFolders,
       navigate,
       repos,
       resetOpsControlStateForProjectsContent,
-      resolveWorkspaceRepoName,
       savedWorkspaces,
-      selectRepo,
-      setActiveWorkspaceName,
       setChatPanelContentMode,
       setChatPanelCreateProjectContext,
       setChatPanelCreateTarget,

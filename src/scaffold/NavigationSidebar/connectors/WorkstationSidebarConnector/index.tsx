@@ -110,7 +110,11 @@ import {
   useWorkstationSidebarTabs,
 } from "./sidebarTabs";
 import type { WorkstationSidebarKey } from "./types";
-import { useFoldersMenuItemClick } from "./useFoldersMenuItemClick";
+import {
+  openRepoTarget,
+  openWorkspaceTarget,
+  useFoldersMenuItemClick,
+} from "./useFoldersMenuItemClick";
 import { useFoldersSidebarContextMenu } from "./useFoldersSidebarContextMenu";
 import { useProjectsMenuItemClick } from "./useProjectsMenuItemClick";
 
@@ -296,13 +300,18 @@ export const WorkstationSidebarConnector: React.FC = () => {
     setActiveWorkspaceName(null);
   }, [dispatchSetWorkspaceFolders, setActiveWorkspaceName]);
 
-  const { openWorkspaceMenu, openRepoMenu } = useFoldersSidebarContextMenu({
-    activeWorkspaceId,
-    clearActiveWorkspace,
-    forceRefreshRepos,
-    setSavedWorkspaces,
-    tCommon,
-  });
+  const resetOpsControlStateForProjectsContent = useCallback(() => {
+    const stationMode: StationMode = "my-station";
+    setStationMode(stationMode);
+    setStationChatVisible(stationMode, true);
+    setOpsControlPeekHost(null);
+    setOpsControlFocusedTab(null);
+  }, [
+    setOpsControlFocusedTab,
+    setOpsControlPeekHost,
+    setStationChatVisible,
+    setStationMode,
+  ]);
 
   const handleAddWorkspaceFolder = useCallback(() => {
     openWorkspaceSpotlight("add");
@@ -310,6 +319,56 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const handleCreateMultiRepoWorkspace = useCallback(() => {
     openWorkspaceSpotlight("create");
   }, []);
+
+  const handleOpenWorkspace = useCallback(
+    (workspace: WorkspaceRecord) => {
+      openWorkspaceTarget({
+        dispatchSetWorkspaceFolders,
+        resetOpsControlStateForProjectsContent,
+        resolveWorkspaceRepoName,
+        setActiveWorkspaceName,
+        workspace,
+      });
+      navigate(ROUTES.workStation.code.path);
+    },
+    [
+      dispatchSetWorkspaceFolders,
+      navigate,
+      resetOpsControlStateForProjectsContent,
+      resolveWorkspaceRepoName,
+      setActiveWorkspaceName,
+    ]
+  );
+
+  const handleOpenRepo = useCallback(
+    (repo: Repo) => {
+      openRepoTarget({
+        dispatchSetWorkspaceFolders,
+        resetOpsControlStateForProjectsContent,
+        selectRepo,
+        setActiveWorkspaceName,
+        repoId: repo.id,
+      });
+      navigate(ROUTES.workStation.code.path);
+    },
+    [
+      dispatchSetWorkspaceFolders,
+      navigate,
+      resetOpsControlStateForProjectsContent,
+      selectRepo,
+      setActiveWorkspaceName,
+    ]
+  );
+
+  const { openWorkspaceMenu, openRepoMenu } = useFoldersSidebarContextMenu({
+    activeWorkspaceId,
+    clearActiveWorkspace,
+    forceRefreshRepos,
+    onOpenWorkspace: handleOpenWorkspace,
+    onOpenRepo: handleOpenRepo,
+    setSavedWorkspaces,
+    tCommon,
+  });
 
   const handleMoreActionsForWorkspace = useCallback(
     (
@@ -350,6 +409,8 @@ export const WorkstationSidebarConnector: React.FC = () => {
     tCommon,
     onAddWorkspaceFolder: handleAddWorkspaceFolder,
     onCreateMultiRepoWorkspace: handleCreateMultiRepoWorkspace,
+    onOpenWorkspace: handleOpenWorkspace,
+    onOpenRepo: handleOpenRepo,
     onMoreActionsForWorkspace: handleMoreActionsForWorkspace,
     onMoreActionsForRepo: handleMoreActionsForRepo,
     activeMoreMenuId: activeFolderMoreMenuId,
@@ -407,19 +468,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
       : activeSidebarKey === "folders"
         ? setFoldersCollapsedSectionIds
         : setCollapsedSectionIds;
-
-  const resetOpsControlStateForProjectsContent = useCallback(() => {
-    const stationMode: StationMode = "my-station";
-    setStationMode(stationMode);
-    setStationChatVisible(stationMode, true);
-    setOpsControlPeekHost(null);
-    setOpsControlFocusedTab(null);
-  }, [
-    setOpsControlFocusedTab,
-    setOpsControlPeekHost,
-    setStationChatVisible,
-    setStationMode,
-  ]);
 
   const activateMyStationRouteForProjectsContent = useCallback(() => {
     const targetRoute = ROUTES.workStation.code.path;
@@ -496,14 +544,10 @@ export const WorkstationSidebarConnector: React.FC = () => {
         : decoratedSessionSidebarMenuItems;
 
   const handleFoldersMenuItemClick = useFoldersMenuItemClick({
-    dispatchSetWorkspaceFolders,
     navigate,
     repos,
     resetOpsControlStateForProjectsContent,
-    resolveWorkspaceRepoName,
     savedWorkspaces,
-    selectRepo,
-    setActiveWorkspaceName,
     setChatPanelContentMode,
     setChatPanelCreateProjectContext,
     setChatPanelCreateTarget,

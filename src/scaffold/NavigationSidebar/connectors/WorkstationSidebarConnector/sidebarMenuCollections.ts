@@ -119,6 +119,8 @@ interface UseFoldersSidebarMenuItemsParams {
   tCommon: TCommon;
   onAddWorkspaceFolder: () => void;
   onCreateMultiRepoWorkspace: () => void;
+  onOpenWorkspace: (workspace: WorkspaceRecord) => void;
+  onOpenRepo: (repo: Repo) => void;
   onMoreActionsForWorkspace: (
     event: MouseEvent<HTMLButtonElement>,
     workspace: WorkspaceRecord
@@ -141,6 +143,8 @@ export function useFoldersSidebarMenuItems({
   tCommon,
   onAddWorkspaceFolder,
   onCreateMultiRepoWorkspace,
+  onOpenWorkspace,
+  onOpenRepo,
   onMoreActionsForWorkspace,
   onMoreActionsForRepo,
   activeMoreMenuId,
@@ -177,8 +181,11 @@ export function useFoldersSidebarMenuItems({
         }),
         onAddWorkspaceFolder,
         onCreateMultiRepoWorkspace,
+        onOpenWorkspace,
+        onOpenRepo,
         onMoreActionsForWorkspace,
         onMoreActionsForRepo,
+        openFolderLabel: tCommon("common:openFolder", "Open Folder"),
         moreActionLabel: tCommon("actions.more"),
         addWorkspaceFolderLabel: tCommon(
           "ellipsisMenu.addWorkspace",
@@ -201,6 +208,8 @@ export function useFoldersSidebarMenuItems({
       onCreateMultiRepoWorkspace,
       onMoreActionsForRepo,
       onMoreActionsForWorkspace,
+      onOpenRepo,
+      onOpenWorkspace,
       repos,
       savedWorkspaces,
       t,

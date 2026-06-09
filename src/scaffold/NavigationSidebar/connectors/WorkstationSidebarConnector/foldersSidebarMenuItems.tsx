@@ -1,4 +1,10 @@
-import { Code, FolderTree, MoreHorizontal, Plus } from "lucide-react";
+import {
+  Code,
+  FolderOpen,
+  FolderTree,
+  MoreHorizontal,
+  Plus,
+} from "lucide-react";
 import React, { type MouseEvent } from "react";
 
 import type { WorkspaceRecord } from "@src/api/tauri/workspace";
@@ -35,6 +41,8 @@ export interface FolderTarget {
 interface FolderRowActionHandlers {
   onAddWorkspaceFolder: () => void;
   onCreateMultiRepoWorkspace: () => void;
+  onOpenWorkspace: (workspace: WorkspaceRecord) => void;
+  onOpenRepo: (repo: Repo) => void;
   onMoreActionsForWorkspace: (
     event: MouseEvent<HTMLButtonElement>,
     workspace: WorkspaceRecord
@@ -43,6 +51,7 @@ interface FolderRowActionHandlers {
     event: MouseEvent<HTMLButtonElement>,
     repo: Repo
   ) => void;
+  openFolderLabel: string;
   moreActionLabel: string;
   addWorkspaceFolderLabel: string;
   createMultiRepoWorkspaceLabel: string;
@@ -106,16 +115,22 @@ function createFolderMenuItem({
   target,
   savedWorkspaces,
   repos,
+  onOpenWorkspace,
+  onOpenRepo,
   onMoreActionsForWorkspace,
   onMoreActionsForRepo,
+  openFolderLabel,
   moreActionLabel,
   activeMoreMenuId,
 }: {
   target: FolderTarget;
   savedWorkspaces: readonly WorkspaceRecord[];
   repos: readonly Repo[];
+  onOpenWorkspace: FolderRowActionHandlers["onOpenWorkspace"];
+  onOpenRepo: FolderRowActionHandlers["onOpenRepo"];
   onMoreActionsForWorkspace: FolderRowActionHandlers["onMoreActionsForWorkspace"];
   onMoreActionsForRepo: FolderRowActionHandlers["onMoreActionsForRepo"];
+  openFolderLabel: string;
   moreActionLabel: string;
   activeMoreMenuId: string;
 }): NavigationMenuItem | null {
@@ -126,6 +141,11 @@ function createFolderMenuItem({
     );
     if (!workspace) return null;
     const rowActions: NavigationMenuRowAction[] = [
+      {
+        icon: FolderOpen,
+        label: openFolderLabel,
+        onClick: () => onOpenWorkspace(workspace),
+      },
       {
         icon: MoreHorizontal,
         label: moreActionLabel,
@@ -148,6 +168,11 @@ function createFolderMenuItem({
   const repo = repos.find((candidate) => candidate.id === target.id);
   if (!repo) return null;
   const rowActions: NavigationMenuRowAction[] = [
+    {
+      icon: FolderOpen,
+      label: openFolderLabel,
+      onClick: () => onOpenRepo(repo),
+    },
     {
       icon: MoreHorizontal,
       label: moreActionLabel,
@@ -258,8 +283,11 @@ export function buildFoldersSidebarMenuItems({
   myAgentsLabel,
   onAddWorkspaceFolder,
   onCreateMultiRepoWorkspace,
+  onOpenWorkspace,
+  onOpenRepo,
   onMoreActionsForWorkspace,
   onMoreActionsForRepo,
+  openFolderLabel,
   moreActionLabel,
   addWorkspaceFolderLabel,
   createMultiRepoWorkspaceLabel,
@@ -273,8 +301,11 @@ export function buildFoldersSidebarMenuItems({
         target: { kind: "workspace", id: workspace.workspaceId },
         savedWorkspaces,
         repos,
+        onOpenWorkspace,
+        onOpenRepo,
         onMoreActionsForWorkspace,
         onMoreActionsForRepo,
+        openFolderLabel,
         moreActionLabel,
         activeMoreMenuId,
       })
@@ -301,8 +332,11 @@ export function buildFoldersSidebarMenuItems({
         target: { kind: "repo", id: repo.id },
         savedWorkspaces,
         repos,
+        onOpenWorkspace,
+        onOpenRepo,
         onMoreActionsForWorkspace,
         onMoreActionsForRepo,
+        openFolderLabel,
         moreActionLabel,
         activeMoreMenuId,
       })
