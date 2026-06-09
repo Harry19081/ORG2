@@ -10,8 +10,8 @@
  * Returns a `PrimarySidebarTab` ready to be passed to
  * `PrimarySidebarLayoutWithSections`.
  */
-import { useAtomValue } from "jotai";
-import { CircleDot, RotateCcw } from "lucide-react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { CircleDot, PanelLeftClose, RotateCcw, Search } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -39,6 +39,7 @@ import {
   useSourceControlTabConfig,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/tabs/SourceControlTab";
 import type { PrimarySidebarTab } from "@src/modules/WorkStation/shared/PrimarySidebarLayout";
+import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationAtom";
 import { workstationIssueCallbackAtom } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
@@ -103,6 +104,11 @@ export function useSourceControlSidebarModule({
 
   const [showFilter, setShowFilter] = useState(false);
   const [viewMode, setViewMode] = useState<"list-tree" | "list">("list-tree");
+  const [prFilterQuery, setPrFilterQuery] = useState("");
+  const [showPrFilter, setShowPrFilter] = useState(false);
+  const collapseSidebar = useSetAtom(
+    workStationPrimarySidebarCollapsedPersistAtom
+  );
   const filterMode = controlledFilterMode ?? "uncommitted";
   const isHistoryMode = filterMode === "history";
   const isPrMode = filterMode === "pr";
@@ -117,6 +123,17 @@ export function useSourceControlSidebarModule({
   const handleToggleFilter = useCallback(() => {
     setShowFilter((prev) => !prev);
   }, []);
+
+  const handleTogglePrFilter = useCallback(() => {
+    setShowPrFilter((prev) => {
+      if (prev) setPrFilterQuery("");
+      return !prev;
+    });
+  }, []);
+
+  const handleCollapseSidebar = useCallback(() => {
+    collapseSidebar("toggle");
+  }, [collapseSidebar]);
   const handleToggleViewMode = useCallback(() => {
     setViewMode((prev) => (prev === "list-tree" ? "list" : "list-tree"));
   }, []);
@@ -231,10 +248,40 @@ export function useSourceControlSidebarModule({
     [issueCallbacks, t]
   );
 
+  const prActions = useMemo<SectionHeaderAction[]>(
+    () => [
+      {
+        key: "pr-filter",
+        icon: (
+          <Search
+            size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
+            strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
+            className={showPrFilter ? "text-primary-6" : undefined}
+          />
+        ),
+        tooltip: t("common:actions.filter", "Filter"),
+        onClick: handleTogglePrFilter,
+        forceVisible: showPrFilter,
+      },
+      {
+        key: "pr-collapse-sidebar",
+        icon: (
+          <PanelLeftClose
+            size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
+            strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
+          />
+        ),
+        tooltip: t("common:actions.collapseSidebar", "Collapse sidebar"),
+        onClick: handleCollapseSidebar,
+      },
+    ],
+    [showPrFilter, handleTogglePrFilter, handleCollapseSidebar, t]
+  );
+
   const actions = isHistoryMode
     ? historyActions
     : isPrMode
-      ? []
+      ? prActions
       : isIssuesMode
         ? issueActions
         : sourceControlActionsWithUndo;
@@ -264,13 +311,32 @@ export function useSourceControlSidebarModule({
   const prContent = useMemo(
     () => (
       <div className="flex h-full min-h-0 flex-col">
+        {showPrFilter && (
+          <div className="shrink-0 border-b border-border-1 px-2 py-1.5">
+            <input
+              type="text"
+              autoFocus
+              value={prFilterQuery}
+              onChange={(e) => setPrFilterQuery(e.target.value)}
+              placeholder={t("common:actions.filter", "Filter…")}
+              className="h-6 w-full rounded bg-fill-2 px-2 text-[12px] text-text-1 placeholder:text-text-3 focus:outline-none focus:ring-1 focus:ring-primary-5"
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  setPrFilterQuery("");
+                  setShowPrFilter(false);
+                }
+              }}
+            />
+          </div>
+        )}
         <PullRequestContent
           branchName={branchName}
           onHistorySelectionChange={onGitHistorySelectionChange}
+          filterQuery={prFilterQuery}
         />
       </div>
     ),
-    [branchName, onGitHistorySelectionChange]
+    [branchName, onGitHistorySelectionChange, prFilterQuery, showPrFilter, t]
   );
 
   const issuesContent = useMemo(

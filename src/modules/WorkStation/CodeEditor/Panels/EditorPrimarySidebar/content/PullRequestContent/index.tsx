@@ -36,6 +36,7 @@ import { getPrStatusVariant, truncateBranchLabel } from "./prCardHelpers";
 export interface PullRequestContentProps {
   branchName?: string;
   onHistorySelectionChange?: (selection: SourceControlHistorySelection) => void;
+  filterQuery?: string;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -145,6 +146,7 @@ const PrListRow: React.FC<PrListRowProps> = ({
 const PullRequestContent: React.FC<PullRequestContentProps> = ({
   branchName,
   onHistorySelectionChange,
+  filterQuery = "",
 }) => {
   const { t } = useTranslation("common");
   const {
@@ -169,12 +171,18 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
   const parsedAtomPr = useMemo(() => parsePrUrl(prUrl), [prUrl]);
 
   const orderedPrs = useMemo(() => {
-    if (!currentBranchPrFromList) return allOpenPrs;
-    return [
-      currentBranchPrFromList,
-      ...allOpenPrs.filter((p) => p.number !== currentBranchPrFromList.number),
-    ];
-  }, [allOpenPrs, currentBranchPrFromList]);
+    const sorted = currentBranchPrFromList
+      ? [
+          currentBranchPrFromList,
+          ...allOpenPrs.filter(
+            (p) => p.number !== currentBranchPrFromList.number
+          ),
+        ]
+      : allOpenPrs;
+    if (!filterQuery.trim()) return sorted;
+    const q = filterQuery.trim().toLowerCase();
+    return sorted.filter((p) => p.title.toLowerCase().includes(q));
+  }, [allOpenPrs, currentBranchPrFromList, filterQuery]);
 
   const handlePrClick = useCallback(
     (pr: OpenPRItem) => {
