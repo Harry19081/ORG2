@@ -241,12 +241,17 @@ export interface A2UIRendererProps {
   /** Session ID forwarded to A2UIActionProvider for event tagging. */
   sessionId?: string;
   className?: string;
+  /**
+   * When true and content is already visible, a subtle pulsing dot indicates
+   * that more streamed elements are expected.
+   */
+  isStreaming?: boolean;
 }
 
 // ─── component ─────────────────────────────────────────────────────────────────
 
 const A2UIRenderer = forwardRef<A2UIRendererHandle, A2UIRendererProps>(
-  ({ lines, onAction, sessionId, className }, ref) => {
+  ({ lines, onAction, sessionId, className, isStreaming = false }, ref) => {
     useImperativeHandle(ref, () => ({
       evalScript(js: string) {
         try {
@@ -306,7 +311,7 @@ const A2UIRenderer = forwardRef<A2UIRendererHandle, A2UIRendererProps>(
       <A2UIActionProvider onAction={onAction} sessionId={sessionId}>
         <div
           className={[
-            "a2ui-renderer overflow-y-auto p-4 text-sm text-text-2",
+            "a2ui-renderer relative overflow-y-auto p-4 text-sm text-text-2",
             className,
           ]
             .filter(Boolean)
@@ -316,6 +321,16 @@ const A2UIRenderer = forwardRef<A2UIRendererHandle, A2UIRendererProps>(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             <A2uiSurface surface={surface as any} />
           ) : null}
+
+          {/* Streaming indicator — pulsing dot in bottom-right corner */}
+          {isStreaming && (
+            <div className="sticky bottom-2 flex justify-end pr-1" aria-hidden>
+              <span className="inline-flex items-center gap-1 rounded-full bg-fill-3/80 px-2 py-0.5 text-[10px] text-text-4 backdrop-blur-sm">
+                <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-primary-6" />
+                streaming
+              </span>
+            </div>
+          )}
         </div>
       </A2UIActionProvider>
     );
