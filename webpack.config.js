@@ -49,7 +49,7 @@ module.exports = (env, argv) => {
     cache: {
       type: "filesystem",
       // Version the cache for faster invalidation
-      version: `${isProduction ? "prod" : "dev"}-5`,
+      version: `${isProduction ? "prod" : "dev"}-6`,
       buildDependencies: {
         config: [__filename],
       },
@@ -307,9 +307,14 @@ module.exports = (env, argv) => {
         "@codemirror/view": path.dirname(require.resolve("@codemirror/view")),
         // @a2ui/web_core exports ./v0_9 only under "default" condition, not "import"/"browser".
         // Webpack's package exports resolution omits "default"-only exports, so alias directly.
-        "@a2ui/web_core/v0_9": path.resolve(
-          __dirname,
-          "node_modules/@a2ui/web_core/src/v0_9/index.js"
+        // Point at the DIRECTORY (not index.js): webpack alias does prefix matching, so the bare
+        // import resolves via directory-index (src/v0_9/index.js) while subpath imports like
+        // "@a2ui/web_core/v0_9/basic_catalog" resolve to src/v0_9/basic_catalog (its index.js).
+        // The "." entry resolves to .../src/v0_8/index.js; walk up to src/ then into v0_9 so this
+        // stays correct under pnpm's symlinked store (matches the @codemirror/* pattern above).
+        "@a2ui/web_core/v0_9": path.join(
+          path.dirname(path.dirname(require.resolve("@a2ui/web_core"))),
+          "v0_9"
         ),
         // react-syntax-highlighter expects the v1 lowlight lib/core.js entry.
         // Resolve that nested dependency explicitly from the pnpm store when needed.

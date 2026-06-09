@@ -10,7 +10,13 @@
  * shows a "Create pull request" button instead.
  */
 import { useAtomValue } from "jotai";
-import { ExternalLink, Loader2, TriangleAlert } from "lucide-react";
+import {
+  ExternalLink,
+  FileDiff,
+  GitBranch,
+  Loader2,
+  TriangleAlert,
+} from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -22,6 +28,7 @@ import {
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import {
+  HEADER_BUTTON,
   PRIMARY_SIDEBAR_HOVER,
   TYPOGRAPHY,
 } from "@src/modules/WorkStation/shared/tokens";
@@ -33,12 +40,11 @@ import {
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
-const PR_STATUS_COLORS: Record<string, string> = {
-  open: "bg-success-1 text-success-6",
-  merged: "bg-primary-1 text-primary-6",
-  closed: "bg-fill-3 text-text-3",
-  draft: "bg-warning-1 text-warning-6",
-};
+import {
+  formatStatNumber,
+  getPrStatusVariant,
+  truncateBranchLabel,
+} from "./prCardHelpers";
 
 const ROW_HEIGHT = 36;
 
@@ -266,48 +272,78 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
 
   // ── Header (always shown when a PR exists) ──────────────────────────
   const statusKey = normalizeStatus(detail);
-  const statusClass = PR_STATUS_COLORS[statusKey] ?? "bg-fill-2 text-text-3";
+  const statusVariant = getPrStatusVariant(statusKey);
+  const prNumber = detail?.number ?? parsedPr.number;
+  const prTitle = detail?.title || t("labels.pullRequest", "Pull request");
+  const openLabel = t("actions.openOnGitHub", "Open on GitHub");
 
   const header = (
-    <div className="flex flex-col gap-1.5 px-3 pb-2 pt-3">
-      <div className="flex min-w-0 items-center gap-1.5">
+    <div className="flex flex-col gap-2 px-3 pb-3 pt-3">
+      {/* Status + PR number + open-on-GitHub affordance */}
+      <div className="flex min-w-0 items-center gap-2">
         <span
-          className={`shrink-0 rounded px-1.5 py-0.5 ${TYPOGRAPHY.badge} ${statusClass}`}
+          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 capitalize ${TYPOGRAPHY.badge} ${statusVariant.badgeClass}`}
         >
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${statusVariant.dotClass}`}
+            aria-hidden
+          />
           {t(`labels.prStatus.${statusKey}`, statusKey)}
         </span>
-        <span className={`${TYPOGRAPHY.secondary} text-text-3`}>
-          #{detail?.number ?? parsedPr.number}
+        <span
+          className={`${TYPOGRAPHY.secondary} font-medium tabular-nums text-text-3`}
+        >
+          #{prNumber}
         </span>
         <a
           href={detail?.htmlUrl ?? prUrl ?? "#"}
           target="_blank"
           rel="noreferrer"
-          className="ml-auto inline-flex items-center text-text-3 transition-colors hover:text-primary-6"
-          title={t("actions.openInBrowser", "Open in browser")}
+          className={`${HEADER_BUTTON.action} ml-auto`}
+          aria-label={openLabel}
+          title={openLabel}
         >
-          <ExternalLink size={12} />
+          <ExternalLink size={14} />
         </a>
       </div>
-      <div className="min-w-0 text-[13px] font-medium leading-tight text-text-1">
-        {detail?.title || t("labels.pullRequest", "Pull request")}
+
+      {/* Title */}
+      <div
+        className="line-clamp-2 text-[13px] font-semibold leading-snug text-text-1"
+        title={prTitle}
+      >
+        {prTitle}
       </div>
+
+      {/* Head branch chip */}
       {branchName && (
-        <code
-          className={`truncate ${TYPOGRAPHY.secondary} text-text-3`}
+        <div
+          className="inline-flex max-w-full items-center gap-1 self-start rounded-md bg-fill-2 px-1.5 py-0.5 text-text-2"
           title={branchName}
         >
-          {branchName}
-        </code>
+          <GitBranch size={12} className="shrink-0 text-text-3" />
+          <span className={`truncate font-mono ${TYPOGRAPHY.secondary}`}>
+            {truncateBranchLabel(branchName)}
+          </span>
+        </div>
       )}
+
+      {/* Diff stats */}
       {detail && (
-        <div className={`flex gap-2 ${TYPOGRAPHY.secondary} text-text-3`}>
-          <span className="text-success-6">+{detail.additions}</span>
-          <span className="text-danger-6">−{detail.deletions}</span>
-          <span>
-            {t("labels.filesChanged", "{{count}} files", {
-              count: detail.changedFiles,
-            })}
+        <div className="flex flex-wrap items-center gap-2 text-[11px]">
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-fill-2 px-1.5 py-0.5 font-medium tabular-nums">
+            <span className="text-success-6">
+              +{formatStatNumber(detail.additions)}
+            </span>
+            <span className="text-danger-6">
+              -{formatStatNumber(detail.deletions)}
+            </span>
+          </span>
+          <span className="inline-flex items-center gap-1 text-text-3">
+            <FileDiff size={12} className="shrink-0" />
+            <span className="tabular-nums">
+              {t("labels.fileCount", { count: detail.changedFiles })}
+            </span>
           </span>
         </div>
       )}

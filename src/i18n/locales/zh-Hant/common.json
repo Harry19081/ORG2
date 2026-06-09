@@ -106,6 +106,7 @@
     "closeSaved": "關閉已保存",
     "openInNewWindow": "在新窗口中打開",
     "openInNewTab": "在新標籤頁中打開",
+    "openOnGitHub": "在 GitHub 中開啟",
     "confirmDelete": "確認刪除",
     "confirmDeleteTitle": "刪除「{{name}}」？",
     "confirmDeleteMessage": "此操作將永久刪除，無法撤銷。",
@@ -335,6 +336,12 @@
     "gitHistory": "Git 歷史",
     "noPullRequest": "無 Pull Request",
     "pullRequest": "Pull Request",
+    "prStatus": {
+      "open": "開啟",
+      "merged": "已合併",
+      "closed": "已關閉",
+      "draft": "草稿"
+    },
     "operationLog": "操作日誌",
     "gitDashboard": "儀表盤",
     "changedFiles": "已更改的文件",
