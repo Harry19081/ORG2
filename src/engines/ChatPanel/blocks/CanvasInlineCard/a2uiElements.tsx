@@ -24,6 +24,13 @@ import {
   YAxis,
 } from "recharts";
 
+import Button from "@src/components/Button";
+import Checkbox from "@src/components/Checkbox";
+import Form from "@src/components/Form";
+import Image from "@src/components/Image";
+import Input from "@src/components/Input";
+import Select from "@src/components/Select";
+
 import { useA2UIAction } from "./A2UIActionContext";
 import type {
   A2UIButton,
@@ -104,9 +111,8 @@ const HtmlEl: React.FC<{ el: A2UIHtml }> = ({ el }) => {
 };
 
 const ImageEl: React.FC<{ el: A2UIImage }> = ({ el }) => (
-  <img
+  <Image
     src={el.content ?? ""}
-    loading="lazy"
     className="mb-2.5 max-w-full rounded"
     style={el.style ? cssTextToStyle(el.style) : undefined}
     alt=""
@@ -116,16 +122,17 @@ const ImageEl: React.FC<{ el: A2UIImage }> = ({ el }) => (
 const ButtonEl: React.FC<{ el: A2UIButton }> = ({ el }) => {
   const onAction = useA2UIAction();
   return (
-    <button
-      type="button"
-      className="my-1 inline-flex items-center rounded-md border border-border-2 bg-primary-6/10 px-3.5 py-1.5 text-[0.8125em] font-medium text-primary-6 transition-colors hover:bg-primary-6/20 active:bg-primary-6/30"
+    <Button
+      variant="primary"
+      appearance="outline"
+      className="my-1"
       style={el.style ? cssTextToStyle(el.style) : undefined}
       onClick={() => {
         if (el.actionId) onAction(el.actionId);
       }}
     >
       {el.content ?? ""}
-    </button>
+    </Button>
   );
 };
 
@@ -278,75 +285,61 @@ const FormEl: React.FC<{ el: A2UIForm }> = ({ el }) => {
   });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
     const actionId = el.actionId ?? "form_submit";
     onAction(actionId, values);
   };
 
   return (
-    <form
+    <Form
+      layout="vertical"
+      colon={false}
       onSubmit={handleSubmit}
-      className="mb-2.5 space-y-3 rounded-md border border-border-1 bg-fill-1 p-4"
+      className="mb-2.5 rounded-md border border-border-1 bg-fill-1 p-4"
     >
       {el.fields.map((field) => (
-        <div key={field.name} className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-text-2">
-            {field.label}
-          </label>
-
+        <Form.Item
+          key={field.name}
+          label={field.inputType !== "checkbox" ? field.label : undefined}
+        >
           {field.inputType === "text" && (
-            <input
-              type="text"
+            <Input
               value={values[field.name] as string}
-              onChange={(e) =>
-                setValues((prev) => ({ ...prev, [field.name]: e.target.value }))
+              onChange={(val) =>
+                setValues((prev) => ({ ...prev, [field.name]: val }))
               }
-              className="rounded border border-border-2 bg-bg-2 px-2.5 py-1.5 text-sm text-text-1 outline-none focus:border-primary-6 focus:ring-1 focus:ring-primary-6/30"
             />
           )}
 
           {field.inputType === "select" && (
-            <select
+            <Select
               value={values[field.name] as string}
-              onChange={(e) =>
-                setValues((prev) => ({ ...prev, [field.name]: e.target.value }))
+              options={(field.options ?? []).map((opt) => ({
+                label: opt,
+                value: opt,
+              }))}
+              onChange={(val) =>
+                setValues((prev) => ({ ...prev, [field.name]: val as string }))
               }
-              className="rounded border border-border-2 bg-bg-2 px-2.5 py-1.5 text-sm text-text-1 outline-none focus:border-primary-6"
-            >
-              {(field.options ?? []).map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+            />
           )}
 
           {field.inputType === "checkbox" && (
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={values[field.name] as boolean}
-                onChange={(e) =>
-                  setValues((prev) => ({
-                    ...prev,
-                    [field.name]: e.target.checked,
-                  }))
-                }
-                className="h-4 w-4 rounded border-border-2 accent-primary-6"
-              />
-              <span className="text-sm text-text-2">{field.label}</span>
-            </label>
+            <Checkbox
+              checked={values[field.name] as boolean}
+              onChange={(checked) =>
+                setValues((prev) => ({ ...prev, [field.name]: checked }))
+              }
+            >
+              {field.label}
+            </Checkbox>
           )}
-        </div>
+        </Form.Item>
       ))}
 
-      <button
-        type="submit"
-        className="active:bg-primary-8 mt-1 rounded-md bg-primary-6 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-7"
-      >
+      <Button variant="primary" htmlType="submit" className="mt-1">
         {el.submitLabel ?? "Submit"}
-      </button>
-    </form>
+      </Button>
+    </Form>
   );
 };
 
