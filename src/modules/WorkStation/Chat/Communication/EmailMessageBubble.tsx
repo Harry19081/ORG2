@@ -31,12 +31,12 @@ import { useTranslation } from "react-i18next";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
 import {
+  CHAT_BUBBLE_WIDTH_TOKENS,
   ChatBubbleAvatar,
   ChatBubbleHeader,
   ChatBubbleLayout,
 } from "@src/components/ChatBubble";
 import { parseTaskAssignedPrompt } from "@src/engines/ChatPanel/ChatHistory/GroupChatView/parseTaskAssignedPrompt";
-import ChatItemWrap from "@src/engines/ChatPanel/ChatHistory/renderers/ChatItemWrap";
 import { parseAgentMessageCard } from "@src/engines/ChatPanel/blocks/ToolCallBlock/helpers/cardParsers";
 import { BlockOutput } from "@src/engines/ChatPanel/blocks/primitives";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
@@ -258,81 +258,80 @@ export const EmailMessageBubble: React.FC<EmailMessageBubbleProps> = memo(
     const hasBody = view.body.length > 0;
 
     return (
-      <ChatItemWrap variant="text" className="w-full min-w-0 overflow-hidden">
-        <ChatBubbleLayout
-          align="left"
-          onClick={onClick}
-          interactive={false}
-          avatar={
-            <ChatBubbleAvatar
-              className="h-8 w-8 bg-fill-2"
-              icon={
-                <MailOpen size={AVATAR_ICON_SIZE} className="text-primary-6" />
-              }
-            />
-          }
-        >
-          <ChatBubbleHeader
-            senderName={view.sender?.value ?? agentSenderLabel}
-            timestamp={formatSmartDateTime(message.timestamp, {
-              yesterdayLabel: t("common:relativeDate.yesterday"),
-              locale: toIntlLocaleTag(i18n.resolvedLanguage),
-            })}
-            align="left"
+      <ChatBubbleLayout
+        align="left"
+        onClick={onClick}
+        interactive={false}
+        className={CHAT_BUBBLE_WIDTH_TOKENS.row}
+        avatar={
+          <ChatBubbleAvatar
+            className="h-8 w-8 bg-fill-2"
+            icon={
+              <MailOpen size={AVATAR_ICON_SIZE} className="text-primary-6" />
+            }
           />
-          <div
-            className="rounded-lg border border-border-2 text-left"
-            data-testid="email-message-bubble"
-            data-tool-name={message.event.functionName}
-          >
-            {/* Email-style headers: From / To / Subject */}
-            <div className="space-y-1 px-3 py-2 text-[13px] leading-normal">
-              {view.sender && (
-                <HeaderRow
-                  label={t("cards.agentMessage.meta.sender")}
-                  value={view.sender.value}
-                  title={view.sender.hoverId ?? view.sender.value}
-                />
-              )}
-              {view.recipient && (
-                <HeaderRow
-                  label={t("cards.agentMessage.meta.recipient")}
-                  value={view.recipient.value}
-                  title={view.recipient.hoverId ?? view.recipient.value}
-                />
-              )}
+        }
+      >
+        <ChatBubbleHeader
+          senderName={view.sender?.value ?? agentSenderLabel}
+          timestamp={formatSmartDateTime(message.timestamp, {
+            yesterdayLabel: t("common:relativeDate.yesterday"),
+            locale: toIntlLocaleTag(i18n.resolvedLanguage),
+          })}
+          align="left"
+        />
+        <div
+          className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} rounded-lg border border-border-2 text-left`}
+          data-testid="email-message-bubble"
+          data-tool-name={message.event.functionName}
+        >
+          {/* Email-style headers: From / To / Subject */}
+          <div className="space-y-1 px-3 py-2 text-[13px] leading-normal">
+            {view.sender && (
               <HeaderRow
-                label={t("cards.agentMessage.meta.subject")}
-                value={
-                  <span
-                    className={
-                      view.subject ? "text-text-1" : "italic text-text-3"
-                    }
-                  >
-                    {subjectLabel}
-                  </span>
-                }
-                title={subjectLabel}
+                label={t("cards.agentMessage.meta.sender")}
+                value={view.sender.value}
+                title={view.sender.hoverId ?? view.sender.value}
+              />
+            )}
+            {view.recipient && (
+              <HeaderRow
+                label={t("cards.agentMessage.meta.recipient")}
+                value={view.recipient.value}
+                title={view.recipient.hoverId ?? view.recipient.value}
+              />
+            )}
+            <HeaderRow
+              label={t("cards.agentMessage.meta.subject")}
+              value={
+                <span
+                  className={
+                    view.subject ? "text-text-1" : "italic text-text-3"
+                  }
+                >
+                  {subjectLabel}
+                </span>
+              }
+              title={subjectLabel}
+            />
+          </div>
+
+          {hasBody ? (
+            <div className="border-t border-border-1">
+              <BlockOutput
+                output={view.body}
+                withBorder={false}
+                sessionId={message.event.sessionId}
+                eventId={message.event.id}
               />
             </div>
-
-            {hasBody ? (
-              <div className="border-t border-border-1">
-                <BlockOutput
-                  output={view.body}
-                  withBorder={false}
-                  sessionId={message.event.sessionId}
-                  eventId={message.event.id}
-                />
-              </div>
-            ) : (
-              <div className="border-t border-border-1 px-3 py-2 text-[13px] italic text-text-3">
-                {t("cards.agentMessage.empty")}
-              </div>
-            )}
-          </div>
-        </ChatBubbleLayout>
-      </ChatItemWrap>
+          ) : (
+            <div className="border-t border-border-1 px-3 py-2 text-[13px] italic text-text-3">
+              {t("cards.agentMessage.empty")}
+            </div>
+          )}
+        </div>
+      </ChatBubbleLayout>
     );
   }
 );

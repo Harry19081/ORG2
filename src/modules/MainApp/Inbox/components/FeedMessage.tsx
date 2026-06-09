@@ -81,7 +81,7 @@ const FeedMessage: React.FC<FeedMessageProps> = ({
   return (
     <div className="w-fit max-w-full px-3 py-2.5">
       <ChatBubbleLayout
-        className="w-max max-w-full"
+        className="flex w-max max-w-full gap-3"
         avatar={
           <ChatBubbleAvatar
             className="mt-0.5 h-7 w-7"

@@ -11,6 +11,13 @@
  */
 import React from "react";
 
+export const CHAT_BUBBLE_WIDTH_TOKENS = {
+  row: "flex gap-3 mx-auto w-full max-w-[900px] min-w-0 overflow-hidden",
+  content: "w-full min-w-0 max-w-full overflow-hidden",
+  body: "inline-block min-w-0 max-w-full overflow-hidden",
+  userBody: "inline-block min-w-0 max-w-full overflow-hidden",
+} as const;
+
 // ============================================
 // Avatar — circular icon container
 // ============================================
@@ -89,7 +96,7 @@ export const ChatBubbleBody: React.FC<ChatBubbleBodyProps> = ({
   children,
 }) => (
   <div
-    className={`inline-block min-w-0 max-w-full overflow-hidden text-left ${BODY_VARIANTS[variant]} ${className}`}
+    className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} text-left ${BODY_VARIANTS[variant]} ${className}`}
   >
     <div className="min-w-0 text-[13px] leading-relaxed">{children}</div>
   </div>
@@ -105,6 +112,7 @@ interface ChatBubbleLayoutProps {
   onClick?: () => void;
   interactive?: boolean;
   className?: string;
+  dataAttr?: Record<string, string | number | undefined>;
   children: React.ReactNode;
 }
 
@@ -122,16 +130,18 @@ export const ChatBubbleLayout: React.FC<ChatBubbleLayoutProps> = ({
   align = "left",
   onClick,
   interactive = Boolean(onClick),
-  className = "",
+  className = "flex gap-3",
+  dataAttr,
   children,
 }) => (
   <div
-    className={`flex gap-3 ${align === "right" ? "flex-row-reverse" : ""} ${interactive ? "cursor-pointer transition-opacity hover:opacity-80" : ""} ${className}`}
+    className={`${className} ${align === "right" ? "flex-row-reverse" : ""} ${interactive ? "cursor-pointer transition-opacity hover:opacity-80" : ""}`}
     onClick={onClick}
+    {...dataAttr}
   >
     {avatar}
     <div
-      className={`min-w-0 flex-1 overflow-hidden ${align === "right" ? "text-right" : ""}`}
+      className={`${CHAT_BUBBLE_WIDTH_TOKENS.content} flex-1 ${align === "right" ? "text-right" : ""}`}
     >
       {children}
     </div>

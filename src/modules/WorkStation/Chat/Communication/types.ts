@@ -5,9 +5,9 @@
  * Shows chat, thinking, interaction, and todo events.
  *
  * Event categorization is driven by Rust AppSubtool (single source of truth):
- * - "message"            → chat tab
- * - "thinking"           → think tab
- * - "todo"               → todo tab
+ * - "message"            → Messages timeline
+ * - "thinking"           → Messages timeline
+ * - "todo"               → Todo tab and Messages timeline
  * - "other_interactions" → interactions tab (ask_user, approval, next-step,
  *                          mode-switch)
  *

@@ -34,11 +34,11 @@ import { useTranslation } from "react-i18next";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
 import {
+  CHAT_BUBBLE_WIDTH_TOKENS,
   ChatBubbleAvatar,
   ChatBubbleHeader,
   ChatBubbleLayout,
 } from "@src/components/ChatBubble";
-import ChatItemWrap from "@src/engines/ChatPanel/ChatHistory/renderers/ChatItemWrap";
 import { TaskListCard } from "@src/engines/ChatPanel/blocks/ToolCallBlock/cards/TaskUpdateCard";
 import { parseAgentMessageCard } from "@src/engines/ChatPanel/blocks/ToolCallBlock/helpers";
 import type { TaskListCardData } from "@src/engines/ChatPanel/blocks/ToolCallBlock/types";
@@ -143,29 +143,28 @@ const Framed: React.FC<{
 }> = ({ message, senderName, onClick, children }) => {
   const { t, i18n } = useTranslation(["common", "projects"]);
   return (
-    <ChatItemWrap variant="text" className="w-full min-w-0 overflow-hidden">
-      <ChatBubbleLayout
-        align="left"
-        onClick={onClick}
-        interactive={false}
-        avatar={
-          <ChatBubbleAvatar
-            className="h-8 w-8 bg-fill-2"
-            icon={<Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />}
-          />
-        }
-      >
-        <ChatBubbleHeader
-          senderName={senderName}
-          timestamp={formatSmartDateTime(message.timestamp, {
-            yesterdayLabel: t("relativeDate.yesterday"),
-            locale: toIntlLocaleTag(i18n.resolvedLanguage),
-          })}
-          align="left"
+    <ChatBubbleLayout
+      align="left"
+      onClick={onClick}
+      interactive={false}
+      className={CHAT_BUBBLE_WIDTH_TOKENS.row}
+      avatar={
+        <ChatBubbleAvatar
+          className="h-8 w-8 bg-fill-2"
+          icon={<Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />}
         />
-        {children}
-      </ChatBubbleLayout>
-    </ChatItemWrap>
+      }
+    >
+      <ChatBubbleHeader
+        senderName={senderName}
+        timestamp={formatSmartDateTime(message.timestamp, {
+          yesterdayLabel: t("relativeDate.yesterday"),
+          locale: toIntlLocaleTag(i18n.resolvedLanguage),
+        })}
+        align="left"
+      />
+      {children}
+    </ChatBubbleLayout>
   );
 };
 

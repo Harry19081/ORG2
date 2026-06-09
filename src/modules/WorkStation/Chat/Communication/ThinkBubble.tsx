@@ -9,6 +9,12 @@ import { Sparkle } from "lucide-react";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import {
+  CHAT_BUBBLE_WIDTH_TOKENS,
+  ChatBubbleAvatar,
+  ChatBubbleHeader,
+  ChatBubbleLayout,
+} from "@src/components/ChatBubble";
 import Markdown from "@src/components/MarkDown";
 import { SESSION_UI_TOKENS } from "@src/engines/ChatPanel/blocks/primitives/config";
 import {
@@ -82,49 +88,49 @@ export const ThinkBubble: React.FC<{
   const isEmpty = !message.content || message.content.trim() === "";
 
   return (
-    <div className="flex gap-3" onClick={onClick}>
-      {/* Avatar */}
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-1">
-        <Sparkle size={14} className="text-primary-6" />
-      </div>
-
-      {/* Content */}
-      <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center gap-2">
-          <span
-            className={`${SESSION_UI_TOKENS.FONT_SIZE_BASE} font-medium text-text-1`}
+    <ChatBubbleLayout
+      align="left"
+      onClick={onClick}
+      interactive={false}
+      className={CHAT_BUBBLE_WIDTH_TOKENS.row}
+      avatar={
+        <ChatBubbleAvatar
+          className="h-8 w-8 bg-primary-1"
+          icon={<Sparkle size={14} className="text-primary-6" />}
+        />
+      }
+    >
+      <ChatBubbleHeader
+        senderName={
+          isLatest
+            ? t("simulator.replay.messages.think.labelLatest")
+            : t("simulator.replay.messages.think.labelThought")
+        }
+        timestamp={formatSmartDateTime(message.timestamp, {
+          yesterdayLabel: t(
+            "simulator.replay.messages.bubble.smartDateYesterday"
+          ),
+          locale: toIntlLocaleTag(i18n.resolvedLanguage),
+        })}
+        align="left"
+      />
+      <div
+        className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} rounded-lg p-3 text-text-1 ${isLatest ? "bg-primary-1" : "bg-fill-2"}`}
+      >
+        {isEmpty ? (
+          <div
+            className={`${SESSION_UI_TOKENS.FONT_SIZE_BASE} italic leading-relaxed text-text-3`}
           >
-            {isLatest
-              ? t("simulator.replay.messages.think.labelLatest")
-              : t("simulator.replay.messages.think.labelThought")}
-          </span>
-          <span className="text-[11px] text-text-3">
-            {formatSmartDateTime(message.timestamp, {
-              yesterdayLabel: t(
-                "simulator.replay.messages.bubble.smartDateYesterday"
-              ),
-              locale: toIntlLocaleTag(i18n.resolvedLanguage),
-            })}
-          </span>
-        </div>
-        <div
-          className={`inline-block rounded-lg p-3 text-text-1 ${isLatest ? "bg-primary-1" : "bg-fill-2"}`}
-        >
-          {isEmpty ? (
-            <div
-              className={`${SESSION_UI_TOKENS.FONT_SIZE_BASE} italic leading-relaxed text-text-3`}
-            >
-              {displayContent}
-            </div>
-          ) : (
-            <div
-              className={`activity-thinking activity-thinking--no-style allow-select ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}
-            >
-              <Markdown textContent={displayContent} />
-            </div>
-          )}
-        </div>
+            {displayContent}
+          </div>
+        ) : (
+          <div
+            className={`activity-thinking activity-thinking--no-style allow-select ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}
+          >
+            <Markdown textContent={displayContent} />
+          </div>
+        )}
       </div>
-    </div>
+    </ChatBubbleLayout>
   );
 };
