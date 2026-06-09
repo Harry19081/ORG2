@@ -49,7 +49,7 @@ module.exports = (env, argv) => {
     cache: {
       type: "filesystem",
       // Version the cache for faster invalidation
-      version: `${isProduction ? "prod" : "dev"}-4`,
+      version: `${isProduction ? "prod" : "dev"}-5`,
       buildDependencies: {
         config: [__filename],
       },
@@ -305,6 +305,12 @@ module.exports = (env, argv) => {
         ),
         "@codemirror/state": path.dirname(require.resolve("@codemirror/state")),
         "@codemirror/view": path.dirname(require.resolve("@codemirror/view")),
+        // @a2ui/web_core exports ./v0_9 only under "default" condition, not "import"/"browser".
+        // Webpack's package exports resolution omits "default"-only exports, so alias directly.
+        "@a2ui/web_core/v0_9": path.resolve(
+          __dirname,
+          "node_modules/@a2ui/web_core/src/v0_9/index.js"
+        ),
         // react-syntax-highlighter expects the v1 lowlight lib/core.js entry.
         // Resolve that nested dependency explicitly from the pnpm store when needed.
         "lowlight/lib/core": (() => {
