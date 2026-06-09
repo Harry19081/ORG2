@@ -107,9 +107,15 @@ interface PrCommit {
 
 const prCommitsCache = new Map<string, PrCommit[]>();
 
+interface PrCommitInfo {
+  commitSha: string;
+  shortSha: string;
+  commitMessage: string;
+}
+
 interface PrCommitDropdownProps {
   prUrl: string;
-  onCommitSelect: (selection: SourceControlHistorySelection) => void;
+  onCommitSelect: (commit: PrCommitInfo) => void;
 }
 
 const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
@@ -131,7 +137,6 @@ const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
         const first = cached[0];
         setSelectedSha(first.sha);
         onCommitSelect({
-          type: "commit",
           commitSha: first.sha,
           shortSha: first.shortSha,
           commitMessage: first.summary,
@@ -167,7 +172,6 @@ const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
           const first = parsed2[0];
           setSelectedSha(first.sha);
           onCommitSelect({
-            type: "commit",
             commitSha: first.sha,
             shortSha: first.shortSha,
             commitMessage: first.summary,
@@ -204,7 +208,6 @@ const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
       if (!commit) return;
       setSelectedSha(sha);
       onCommitSelect({
-        type: "commit",
         commitSha: commit.sha,
         shortSha: commit.shortSha,
         commitMessage: commit.summary,
@@ -479,17 +482,34 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     );
 
     const handlePrCommitSelect = useCallback(
-      (selection: SourceControlHistorySelection) => {
+      (commit: {
+        commitSha: string;
+        shortSha: string;
+        commitMessage: string;
+      }) => {
         updatePaneState((state) => {
           const tabIndex = state.tabs.findIndex(
             (item) => item.type === "source-control"
           );
           if (tabIndex === -1) return state;
           const existing = state.tabs[tabIndex];
+          const currentSelection = existing.data.historySelection as
+            | SourceControlHistorySelection
+            | null
+            | undefined;
+          if (!currentSelection || currentSelection.type !== "pr") return state;
           const nextTabs = [...state.tabs];
           nextTabs[tabIndex] = {
             ...existing,
-            data: { ...existing.data, historySelection: selection },
+            data: {
+              ...existing.data,
+              historySelection: {
+                ...currentSelection,
+                selectedCommitSha: commit.commitSha,
+                selectedShortSha: commit.shortSha,
+                selectedCommitMessage: commit.commitMessage,
+              },
+            },
           };
           return { ...state, tabs: nextTabs };
         });
