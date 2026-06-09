@@ -931,6 +931,12 @@ dev_record::cursor_ide_initial_window,
 dev_record::cursor_ide_full_refresh,
 dev_record::cursor_ide_turn_window,
 dev_record::cursor_ide_list_sessions,
+dev_record::codex_app_chunks,
+dev_record::codex_app_list_sessions,
+dev_record::claude_code_history_chunks,
+dev_record::claude_code_history_list_sessions,
+dev_record::windsurf_history_chunks,
+dev_record::windsurf_history_list_sessions,
 // Cursor IDE control — drive a running Cursor.app via CDP `Input.*`
 // so users can submit prompts (start + follow-up) without leaving ORGII.
 // See `crates/cursor-bridge-app/src/lib.rs` and

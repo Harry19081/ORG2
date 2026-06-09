@@ -62,7 +62,10 @@ import {
   simulatorSelectedAppAtom,
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
-import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
+import {
+  isCursorIdeSession,
+  isExternalHistorySession,
+} from "@src/util/session/sessionDispatch";
 
 import ChatFloatingComposer from "./ChatFloatingComposer";
 import ChatHistory, { type ScrollNavState } from "./ChatHistory";
@@ -153,6 +156,8 @@ const ChatView: React.FC<ChatViewProps> = memo(
     useFileReviewSync(sessionId, !readOnly && !secondary);
 
     const isCursorIde = isCursorIdeSession(sessionId);
+    const isExternalHistory = isExternalHistorySession(sessionId);
+    const isReadOnlySurface = readOnly || isExternalHistory;
 
     // Backend `agent_session_list_workspaces` only resolves sessions whose
     // runtime is currently attached. Historical sessions (status
@@ -173,7 +178,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       // runtime is not attached. Once the user sends a follow-up,
       // `agent_send_message` re-inits the runtime and flips the status
       // to "running", which lets sync resume.
-      enabled: !readOnly && !secondary && !isCursorIde && isLiveStatus,
+      enabled: !isReadOnlySurface && !secondary && !isCursorIde && isLiveStatus,
     });
 
     // Cursor IDE sessions used to swap the composer for a read-only
@@ -521,7 +526,11 @@ const ChatView: React.FC<ChatViewProps> = memo(
                   onScrollNavChange={handleScrollNavChange}
                   onRegisterSearchOpen={onRegisterSearchOpen}
                   turnPaginationEnabled={turnPaginationEnabled}
-                  bottomInset={showInteractArea ? floatingComposerInset : 0}
+                  bottomInset={
+                    showInteractArea && !isReadOnlySurface
+                      ? floatingComposerInset
+                      : 0
+                  }
                   groupChatViewAvailable={groupChatViewAvailable}
                   groupChatViewActive={groupChatViewActive}
                   onGroupChatViewToggle={handleGroupChatViewToggle}
@@ -529,7 +538,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
               </GroupChatProvider>
             </ChatHistoryOverrideContext.Provider>
           </div>
-          {showInteractArea && (
+          {showInteractArea && !isReadOnlySurface && (
             <ChatFloatingComposer
               composerRef={floatingComposerRef}
               inputBoxRef={inputBoxRef}

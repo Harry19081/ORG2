@@ -1,19 +1,19 @@
 import { useEffect } from "react";
 
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
-import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
+import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 
 import type { SessionSyncRefs } from "./sessionSyncTypes";
 import { EVENT_STORE_CACHE_SYNC_INTERVAL_MS } from "./sessionSyncUtils";
 
 function saveSessionEventsToCache(sessionId: string): void {
-  if (isCursorIdeSession(sessionId)) return;
+  if (isImportedHistorySession(sessionId)) return;
   eventStoreProxy.saveToCache(sessionId);
 }
 
 export function useEventStoreCacheSync(sessionId: string | null): void {
   useEffect(() => {
-    if (!sessionId || isCursorIdeSession(sessionId)) return;
+    if (!sessionId || isImportedHistorySession(sessionId)) return;
     const interval = setInterval(() => {
       saveSessionEventsToCache(sessionId);
     }, EVENT_STORE_CACHE_SYNC_INTERVAL_MS);

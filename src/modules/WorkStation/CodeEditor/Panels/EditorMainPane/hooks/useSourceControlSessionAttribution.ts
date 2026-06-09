@@ -7,6 +7,8 @@ import { createLogger } from "@src/hooks/logger";
 import { sessionsAtom } from "@src/store/session";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import type { GitFile } from "@src/types/git/types";
+import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
+import { sessionLabel } from "@src/util/session/sessionLabel";
 
 const logger = createLogger("SourceControlSessionAttribution");
 
@@ -105,13 +107,10 @@ function getSessionFilePathCandidates(
 }
 
 function getSessionLabel(session: Session): string {
-  return (
-    session.name ||
-    session.agentDisplayName ||
-    session.user_input ||
-    session.worktreeBranch ||
-    session.session_id.slice(0, 8)
-  );
+  const label = sessionLabel(session, 48);
+  return label === "Untitled"
+    ? session.worktreeBranch || session.session_id.slice(0, 8)
+    : label;
 }
 
 function getCandidateSessions(
@@ -127,6 +126,8 @@ function getCandidateSessions(
   );
 
   return sessions.filter((session) => {
+    if (isCursorIdeSession(session.session_id)) return false;
+
     const sessionRepoPath = normalizePathForAttribution(session.repoPath);
     const sessionWorktreePath = normalizePathForAttribution(
       session.worktreePath

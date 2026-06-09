@@ -4,7 +4,7 @@ import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreP
 import type { Logger } from "@src/hooks/logger";
 import {
   composerIdFromSessionId,
-  isCursorIdeSession,
+  isImportedHistorySession,
 } from "@src/util/session/sessionDispatch";
 
 import { getCursorIdeSnapshotLastUpdatedAt } from "./adapters/cursorIdeAdapter";
@@ -50,16 +50,11 @@ export function runSessionSwitchOrchestrator(
       actions,
       checkAndRecover,
       setPendingPlanApprovals,
-      logger,
     } = options;
 
     try {
       const cacheHit = await eventStoreProxy.switchSession(sessionId);
       if (abortController.signal.aborted) return;
-      logger.debug(
-        `switch ${sessionId}: EventStore ${cacheHit ? "cache hit" : "cache miss → SQLite"}`
-      );
-
       if (cacheHit) {
         await handleCacheHit({
           sessionId,
@@ -168,7 +163,7 @@ async function handleCacheHit(
     abortController,
     setPendingPlanApprovals
   );
-  if (!isCursorIdeSession(sessionId)) {
+  if (!isImportedHistorySession(sessionId)) {
     reconcileInFlightHistory(sessionId, adapter, refs, actions);
   }
   applyPostLoadResult(sessionId, postResult, actions);
@@ -247,7 +242,7 @@ async function handleCacheMiss(
   if (abortController.signal.aborted) return;
 
   actions.dispatchLoadSession({ sessionId, events });
-  if (!isCursorIdeSession(sessionId)) {
+  if (!isImportedHistorySession(sessionId)) {
     reconcileInFlightHistory(sessionId, adapter, refs, actions);
   }
 

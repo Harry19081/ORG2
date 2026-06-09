@@ -14,7 +14,7 @@ import { describe, expect, it } from "vitest";
 import { __TESTS_ONLY } from "../loaders";
 import type { Session } from "../types";
 
-const { mergeSessions } = __TESTS_ONLY;
+const { mergeSessions, replaceExternalHistorySourceFirstPage } = __TESTS_ONLY;
 
 function makeSession(
   id: string,
@@ -70,6 +70,41 @@ describe("mergeSessions", () => {
       "b",
       "c",
       "a",
+    ]);
+  });
+});
+
+describe("replaceExternalHistorySourceFirstPage", () => {
+  const codexSource = {
+    sourceId: "codex_app",
+    listCategory: "external_history:codex_app",
+    dispatchCategory: "external_history",
+    prefix: "codexapp-",
+    iconId: "codex",
+    displayName: "Codex",
+    groupLabel: "Codex App",
+    listSessions: async () => ({ sessions: [], hasMore: false }),
+    loadChunks: async () => [],
+  } as const;
+
+  it("replaces only rows for the matching imported-history source", () => {
+    const prev = [
+      makeSession("codexapp-old", "2026-01-03"),
+      makeSession("claudecodeapp-keep", "2026-01-02"),
+      makeSession("cursoride-keep", "2026-01-01"),
+    ];
+    const incoming = [makeSession("codexapp-new", "2026-01-04")];
+
+    const merged = replaceExternalHistorySourceFirstPage(
+      prev,
+      incoming,
+      codexSource
+    );
+
+    expect(merged.map((session) => session.session_id)).toEqual([
+      "codexapp-new",
+      "claudecodeapp-keep",
+      "cursoride-keep",
     ]);
   });
 });

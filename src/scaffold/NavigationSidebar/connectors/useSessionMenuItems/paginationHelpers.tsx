@@ -1,6 +1,7 @@
 import { MoreHorizontal } from "lucide-react";
 
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
+import { SESSION_LIST_CATEGORIES } from "@src/store/session";
 import type { Session, SessionListCategory } from "@src/store/session";
 
 import { LOAD_MORE_GROUP_PREFIX, LOAD_MORE_PREFIX } from "../types";
@@ -8,11 +9,8 @@ import { DEFAULT_GROUP_VISIBLE_COUNT } from "./dateGroupingHelpers";
 import { renderBreathingStatusDot } from "./statusIndicators";
 import type { BuildSessionRow } from "./types";
 
-export const LOAD_MORE_CATEGORIES: readonly SessionListCategory[] = [
-  "rust_agent",
-  "cli_agent",
-  "cursor_ide",
-];
+export const LOAD_MORE_CATEGORIES: readonly SessionListCategory[] =
+  SESSION_LIST_CATEGORIES;
 
 export function loadMoreRow(
   category: SessionListCategory,
@@ -51,14 +49,7 @@ export function groupLoadMoreRow(
 export function isLoadMoreId(id: string): SessionListCategory | null {
   if (!id.startsWith(LOAD_MORE_PREFIX)) return null;
   const category = id.slice(LOAD_MORE_PREFIX.length) as SessionListCategory;
-  if (
-    category === "cli_agent" ||
-    category === "rust_agent" ||
-    category === "cursor_ide"
-  ) {
-    return category;
-  }
-  return null;
+  return SESSION_LIST_CATEGORIES.includes(category) ? category : null;
 }
 
 export function getLoadMoreGroupId(id: string): string | null {
@@ -84,12 +75,11 @@ export function appendSessionGroup({
   loadMoreLabel,
 }: AppendSessionGroupParams): boolean {
   const visibleSessions = groupSessions.slice(0, visibleCount);
-  for (const session of visibleSessions) {
-    items.push(buildSessionRow(session));
-  }
-  const hasHiddenSessions = groupSessions.length > visibleSessions.length;
-  if (hasHiddenSessions) {
+  items.push(...visibleSessions.map(buildSessionRow));
+
+  const hasHiddenLocalSessions = groupSessions.length > visibleCount;
+  if (hasHiddenLocalSessions) {
     items.push(groupLoadMoreRow(groupId, loadMoreLabel));
   }
-  return hasHiddenSessions;
+  return hasHiddenLocalSessions;
 }

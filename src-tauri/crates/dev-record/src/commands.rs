@@ -8,7 +8,9 @@ use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
 use super::claude_code_db::{self, ClaudeCodeSession};
+use super::claude_code_history;
 use super::cli_session_db::{self, CliSession};
+use super::codex_app;
 use super::collector;
 use super::cursor_db::{self, CursorSession};
 use super::cursor_db_history;
@@ -19,6 +21,7 @@ use super::types::{
     CodingSession, DailySummary, DetectedIde, FileHotspot, HeatmapCell, IdeUsageStat, LanguageStat,
     StreakInfo,
 };
+use super::windsurf_history;
 
 #[tauri::command]
 pub async fn dev_record_get_summary(
@@ -172,6 +175,77 @@ pub async fn cursor_ide_list_sessions(
     let offset = offset.unwrap_or(0);
     tokio::task::spawn_blocking(move || {
         cursor_db_history::list_cursor_ide_sessions_paginated(limit, offset)
+    })
+    .await
+    .map_err(|err| format!("Task join error: {}", err))?
+}
+
+#[tauri::command]
+pub async fn codex_app_chunks(
+    session_id: String,
+) -> Result<Vec<core_types::activity::ActivityChunk>, String> {
+    tokio::task::spawn_blocking(move || codex_app::load_codex_app_for_session(&session_id))
+        .await
+        .map_err(|err| format!("Task join error: {}", err))?
+}
+
+#[tauri::command]
+pub async fn codex_app_list_sessions(
+    limit: Option<usize>,
+    offset: Option<usize>,
+) -> Result<codex_app::CodexAppSessionPage, String> {
+    let limit = limit.unwrap_or(200);
+    let offset = offset.unwrap_or(0);
+    tokio::task::spawn_blocking(move || codex_app::list_codex_app_sessions_paginated(limit, offset))
+        .await
+        .map_err(|err| format!("Task join error: {}", err))?
+}
+
+#[tauri::command]
+pub async fn claude_code_history_chunks(
+    session_id: String,
+) -> Result<Vec<core_types::activity::ActivityChunk>, String> {
+    tokio::task::spawn_blocking(move || {
+        claude_code_history::load_claude_code_history_for_session(&session_id)
+    })
+    .await
+    .map_err(|err| format!("Task join error: {}", err))?
+}
+
+#[tauri::command]
+pub async fn claude_code_history_list_sessions(
+    limit: Option<usize>,
+    offset: Option<usize>,
+) -> Result<claude_code_history::ClaudeCodeHistorySessionPage, String> {
+    let limit = limit.unwrap_or(200);
+    let offset = offset.unwrap_or(0);
+    tokio::task::spawn_blocking(move || {
+        claude_code_history::list_claude_code_history_sessions_paginated(limit, offset)
+    })
+    .await
+    .map_err(|err| format!("Task join error: {}", err))?
+}
+
+#[tauri::command]
+pub async fn windsurf_history_chunks(
+    session_id: String,
+) -> Result<Vec<core_types::activity::ActivityChunk>, String> {
+    tokio::task::spawn_blocking(move || {
+        windsurf_history::load_windsurf_history_for_session(&session_id)
+    })
+    .await
+    .map_err(|err| format!("Task join error: {}", err))?
+}
+
+#[tauri::command]
+pub async fn windsurf_history_list_sessions(
+    limit: Option<usize>,
+    offset: Option<usize>,
+) -> Result<windsurf_history::WindsurfHistorySessionPage, String> {
+    let limit = limit.unwrap_or(200);
+    let offset = offset.unwrap_or(0);
+    tokio::task::spawn_blocking(move || {
+        windsurf_history::list_windsurf_history_sessions_paginated(limit, offset)
     })
     .await
     .map_err(|err| format!("Task join error: {}", err))?

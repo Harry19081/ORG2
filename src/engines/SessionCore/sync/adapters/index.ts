@@ -8,6 +8,7 @@ import { registerAdapter } from "../types";
 import { cliAdapter } from "./cliAdapter";
 import { AGENT_CONFIG, createRustAgentAdapter } from "./createRustAgentAdapter";
 import { cursorIdeAdapter } from "./cursorIdeAdapter";
+import { externalHistoryAdapter } from "./externalHistoryAdapter";
 
 /** Unified agent adapter — handles all Rust-native agents (OS, SDE, custom). */
 export const agentAdapter = createRustAgentAdapter(AGENT_CONFIG);
@@ -15,5 +16,6 @@ export const agentAdapter = createRustAgentAdapter(AGENT_CONFIG);
 registerAdapter(agentAdapter);
 registerAdapter(cliAdapter);
 registerAdapter(cursorIdeAdapter);
+registerAdapter(externalHistoryAdapter);
 
-export { cliAdapter, cursorIdeAdapter };
+export { cliAdapter, cursorIdeAdapter, externalHistoryAdapter };

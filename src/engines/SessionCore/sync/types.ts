@@ -20,6 +20,7 @@ import {
   isAgentSession,
   isCliSession,
   isCursorIdeSession,
+  isExternalHistorySession,
 } from "@src/util/session/sessionDispatch";
 
 import type { SessionEvent } from "../core/types";
@@ -313,6 +314,9 @@ export function getAdapterForSession(
   }
   if (isCursorIdeSession(sessionId)) {
     return adapterRegistry.get("cursor_ide");
+  }
+  if (isExternalHistorySession(sessionId)) {
+    return adapterRegistry.get("external_history");
   }
   return undefined;
 }

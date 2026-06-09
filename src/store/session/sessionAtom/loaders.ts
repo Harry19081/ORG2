@@ -5,25 +5,25 @@
  *
  *  - `loadSessions()` — legacy "load everything (with limit/offset)" entry
  *    used by panels that want a single flat list across all categories
- *    (Chat history panel, Simulator panel, useSessionManager). Behavior
- *    preserved verbatim except for two non-breaking improvements:
- *      1. The atom is **not blanked** while a refresh is in flight — fresh
- *         results swap in atomically only on success. Failure keeps the
- *         previous list so a transient RPC error never empties the sidebar.
- *      2. After a successful merge we persist the result via
- *         `persistSessions()` so the next cold start renders instantly.
+ *    (Chat history panel, Simulator panel, useSessionManager).
  *
  *  - `loadSidebarSessions()` / `loadMoreCategory()` — sidebar-specific
- *    paginated loaders. Each category fetches its own top-N page so a heavy
- *    user with thousands of CLI sessions doesn't pay for the long tail just
- *    to render the most-recent rows. Per-category `hasMore` state lives in
- *    `sessionPaginationAtom` so the sidebar can render a "Load more" row
- *    only when more rows are actually available.
+ *    paginated loaders. Each category/source fetches its own top-N page so a
+ *    heavy user with thousands of CLI/imported sessions doesn't pay for the
+ *    long tail just to render the most-recent rows.
  */
 import {
   type CursorIdeSessionRow,
   cursorIdeListSessions,
 } from "@src/api/tauri/cursorIde";
+import {
+  IMPORTED_HISTORY_SOURCES,
+  type ImportedHistorySessionRow,
+  type ImportedHistorySource,
+  getImportedHistorySourceByListCategory,
+  isImportedHistoryListCategory,
+  isImportedHistorySourceSession,
+} from "@src/api/tauri/importedHistory";
 import {
   type SessionFilter,
   type SessionListResponse,
@@ -41,6 +41,7 @@ import {
   sessionsAtom,
 } from "./atoms";
 import {
+  SESSION_LIST_CATEGORIES,
   SESSION_SIDEBAR_PAGE_SIZE,
   type SessionListCategory,
   type SessionPaginationMap,
@@ -50,16 +51,6 @@ import {
 import { persistSessions } from "./persistence";
 import type { Session, SessionStatus } from "./types";
 
-// ============================================
-// Helpers
-// ============================================
-
-/**
- * Normalize Cursor's free-form composer status into our canonical
- * `SessionStatus` enum. Cursor IDE history rows are read-only artifacts and
- * always come back with `is_active === false`; we only emit `running` for
- * the live composer (excluded by the Rust layer in this list).
- */
 function normalizeCursorIdeStatus(isActive: boolean): SessionStatus {
   return isActive ? "running" : "completed";
 }
@@ -80,26 +71,38 @@ function cursorIdeRowToSession(row: CursorIdeSessionRow): Session {
     repoPath: row.repoPath,
     repo_name: row.repoName || "",
     branch: row.branch || "",
-    // Stamp the Cursor brand icon so sidebar / Ops Control /
-    // Kanban resolvers all pick up "cursor" instead of falling
-    // through to the generic Bot + "Other" pair.
     agentIconId: "cursor",
   };
 }
 
+function importedHistoryRowToSession(
+  row: ImportedHistorySessionRow,
+  source: ImportedHistorySource
+): Session {
+  return {
+    session_id: row.sessionId,
+    status: row.status || "completed",
+    created_at: row.createdAt,
+    updated_at: row.updatedAt,
+    created_time: row.createdAt,
+    updated_time: row.updatedAt,
+    name: row.name,
+    is_active: row.isActive,
+    category: row.category,
+    model: row.model,
+    background: row.background,
+    repoPath: row.repoPath,
+    repo_name: row.repoName || "",
+    branch: row.branch || "",
+    agentIconId: source.iconId,
+    agentDisplayName: source.displayName,
+  };
+}
+
 const getStore = () => getInstrumentedStore();
-
-// Cursor IDE history is the only category grouped primarily by time in the
-// sidebar. A 10-row category page can be entirely "Today", hiding valid older
-// rows and making the time buckets look incomplete.
 const CURSOR_IDE_SIDEBAR_PAGE_SIZE = 50;
+const BULK_CACHE_DURATION_MS = 5 * 60 * 1000;
 
-/**
- * Replace any previously-known rows for `incoming.session_id`s with the
- * incoming versions, then re-sort by recency. Rows whose ids are not in
- * `incoming` are kept untouched — this is what makes `loadMoreCategory()`
- * additive instead of destructive.
- */
 function mergeSessions(
   prev: readonly Session[],
   incoming: readonly Session[]
@@ -124,14 +127,30 @@ function mergeSessions(
   return merged;
 }
 
+function replaceImportedFirstPage(
+  prev: readonly Session[],
+  incoming: readonly Session[],
+  predicate: (sessionId: string) => boolean
+): Session[] {
+  const retained = prev.filter((session) => !predicate(session.session_id));
+  return mergeSessions(retained, incoming);
+}
+
 function replaceCursorIdeFirstPage(
   prev: readonly Session[],
   incoming: readonly Session[]
 ): Session[] {
-  const retained = prev.filter(
-    (session) => !isCursorIdeSession(session.session_id)
+  return replaceImportedFirstPage(prev, incoming, isCursorIdeSession);
+}
+
+function replaceExternalHistorySourceFirstPage(
+  prev: readonly Session[],
+  incoming: readonly Session[],
+  source: ImportedHistorySource
+): Session[] {
+  return replaceImportedFirstPage(prev, incoming, (sessionId) =>
+    isImportedHistorySourceSession(sessionId, source)
   );
-  return mergeSessions(retained, incoming);
 }
 
 function setPaginationFor(
@@ -145,26 +164,25 @@ function setPaginationFor(
   }));
 }
 
-// ============================================
-// Legacy bulk loader (kept for non-sidebar callers)
-// ============================================
+async function loadImportedHistorySourcePage(
+  source: ImportedHistorySource,
+  offset: number,
+  pageSize: number
+): Promise<FetchPageResult> {
+  const page = await source.listSessions({
+    limit: source.sidebarPageSize
+      ? Math.max(pageSize, source.sidebarPageSize)
+      : pageSize,
+    offset,
+  });
+  return {
+    sessions: page.sessions.map((row) =>
+      importedHistoryRowToSession(row, source)
+    ),
+    hasMore: page.hasMore,
+  };
+}
 
-const BULK_CACHE_DURATION_MS = 5 * 60 * 1000;
-
-/**
- * Load a flat session list across all categories. This is the legacy entry
- * used by panels that don't need per-category pagination (Chat history panel,
- * Simulator, useSessionManager, etc.). The sidebar uses `loadSidebarSessions`
- * instead.
- *
- * Behavior:
- * - Honors a 5-minute soft cache via `sessionLastLoadedAtom` unless
- *   `forceRefresh: true`.
- * - Sets `sessionLoadingAtom` to `true` while the fetch is in flight; the
- *   atom value is left untouched (no blank flash).
- * - On success, merges results into `sessionsAtom` and persists.
- * - On failure, sets `sessionErrorAtom` and leaves `sessionsAtom` alone.
- */
 export const loadSessions = async (options?: {
   repoPath?: string;
   status?: SessionStatus;
@@ -200,22 +218,26 @@ export const loadSessions = async (options?: {
           }
         : undefined;
 
-    const [response, cursorPageResult]: [
-      SessionListResponse,
-      PromiseSettledResult<{ sessions: CursorIdeSessionRow[] }>,
-    ] = await Promise.all([
-      sessionAggregateList(filter),
-      cursorIdeListSessions({
-        // The legacy bulk path doesn't carry a UI cap, so request the
-        // backend default (200). The new sidebar path is paginated and
-        // will request smaller pages.
-      }).then(
-        (page) => ({ status: "fulfilled" as const, value: page }),
-        (reason: unknown) => ({ status: "rejected" as const, reason })
-      ),
-    ]);
+    const importedPagePromises = IMPORTED_HISTORY_SOURCES.map((source) =>
+      source.listSessions({}).then(
+        (page) => ({ status: "fulfilled" as const, source, value: page }),
+        (reason: unknown) => ({ status: "rejected" as const, source, reason })
+      )
+    );
 
-    const fetched: Session[] = toFrontendSessions(response.sessions);
+    const [response, cursorPageResult, ...importedPageResults] =
+      await Promise.all([
+        sessionAggregateList(filter),
+        cursorIdeListSessions({}).then(
+          (page) => ({ status: "fulfilled" as const, value: page }),
+          (reason: unknown) => ({ status: "rejected" as const, reason })
+        ),
+        ...importedPagePromises,
+      ]);
+
+    const fetched: Session[] = toFrontendSessions(
+      (response as SessionListResponse).sessions
+    );
 
     if (cursorPageResult.status === "fulfilled") {
       fetched.push(
@@ -226,6 +248,21 @@ export const loadSessions = async (options?: {
         "[SessionAtom] Cursor IDE history load failed (continuing without it):",
         cursorPageResult.reason
       );
+    }
+
+    for (const result of importedPageResults) {
+      if (result.status === "fulfilled") {
+        fetched.push(
+          ...result.value.sessions.map((row) =>
+            importedHistoryRowToSession(row, result.source)
+          )
+        );
+      } else {
+        console.warn(
+          `[SessionAtom] ${result.source.displayName} event load failed (continuing without it):`,
+          result.reason
+        );
+      }
     }
 
     fetched.sort((sessionA, sessionB) =>
@@ -246,10 +283,6 @@ export const loadSessions = async (options?: {
   }
 };
 
-// ============================================
-// Sidebar paginated loaders
-// ============================================
-
 interface FetchPageResult {
   sessions: Session[];
   hasMore: boolean;
@@ -260,9 +293,6 @@ async function fetchAggregatePage(
   offset: number,
   pageSize: number
 ): Promise<FetchPageResult> {
-  // Ask for `pageSize + 1`; if we get the extra row, more pages exist.
-  // OS Agent + SDE Agent both live under the wire category "agent" so a
-  // single fetch covers both for the purposes of `rust_agent` pagination.
   const response = await sessionAggregateList({
     category: wireCategory,
     limit: pageSize + 1,
@@ -299,6 +329,12 @@ async function loadCategoryPage(
   offset: number,
   pageSize: number
 ): Promise<FetchPageResult> {
+  if (isImportedHistoryListCategory(category)) {
+    const source = getImportedHistorySourceByListCategory(category);
+    if (!source) return { sessions: [], hasMore: false };
+    return loadImportedHistorySourcePage(source, offset, pageSize);
+  }
+
   switch (category) {
     case "cli_agent":
       return fetchAggregatePage("cli", offset, pageSize);
@@ -309,14 +345,23 @@ async function loadCategoryPage(
   }
 }
 
-/**
- * Load the first page for every category. Used on sidebar mount.
- *
- * Each category is fetched in parallel; whichever resolves first updates the
- * atom incrementally so the UI doesn't wait for the slowest one. Failures of
- * individual categories are logged but never throw — the sidebar will still
- * render whatever did load.
- */
+function replaceFirstPageForCategory(
+  category: SessionListCategory,
+  prev: readonly Session[],
+  incoming: readonly Session[]
+): Session[] {
+  if (category === "cursor_ide") {
+    return replaceCursorIdeFirstPage(prev, incoming);
+  }
+  if (isImportedHistoryListCategory(category)) {
+    const source = getImportedHistorySourceByListCategory(category);
+    return source
+      ? replaceExternalHistorySourceFirstPage(prev, incoming, source)
+      : mergeSessions(prev, incoming);
+  }
+  return mergeSessions(prev, incoming);
+}
+
 export const loadSidebarSessions = async (options?: {
   pageSize?: number;
   forceRefresh?: boolean;
@@ -340,20 +385,12 @@ export const loadSidebarSessions = async (options?: {
   store.set(sessionErrorAtom, null);
   store.set(sessionPaginationAtom, resetPaginationState());
 
-  const categories: readonly SessionListCategory[] = [
-    "cli_agent",
-    "rust_agent",
-    "cursor_ide",
-  ];
-
-  // Mark all categories as loading up front so the sidebar can render one
-  // unified spinner state instead of three independent ones.
-  for (const category of categories) {
+  for (const category of SESSION_LIST_CATEGORIES) {
     setPaginationFor(category, { loading: true });
   }
 
   await Promise.allSettled(
-    categories.map(async (category) => {
+    SESSION_LIST_CATEGORIES.map(async (category) => {
       try {
         const { sessions, hasMore } = await loadCategoryPage(
           category,
@@ -361,9 +398,7 @@ export const loadSidebarSessions = async (options?: {
           pageSize
         );
         store.set(sessionsAtom, (prev) =>
-          category === "cursor_ide"
-            ? replaceCursorIdeFirstPage(prev, sessions)
-            : mergeSessions(prev, sessions)
+          replaceFirstPageForCategory(category, prev, sessions)
         );
         setPaginationFor(category, {
           loaded: sessions.length,
@@ -377,17 +412,12 @@ export const loadSidebarSessions = async (options?: {
     })
   );
 
-  // Persist the merged result once all categories have settled.
   const merged = store.get(sessionsAtom);
   persistSessions(merged);
   store.set(sessionLastLoadedAtom, now);
   store.set(sessionLoadingAtom, false);
 };
 
-/**
- * Refresh only the first Cursor IDE sidebar page. This lets the sidebar pick up
- * Cursor `state.vscdb` activity without polling CLI/Rust session lists.
- */
 export const refreshCursorIdeSidebarSessions = async (
   pageSize: number = SESSION_SIDEBAR_PAGE_SIZE
 ) => {
@@ -418,18 +448,11 @@ export const refreshCursorIdeSidebarSessions = async (
     });
     persistSessions(store.get(sessionsAtom));
   } catch (error) {
-    console.warn(
-      "[SessionAtom] refreshCursorIdeSidebarSessions failed:",
-      error
-    );
+    console.warn("[SessionAtom] Cursor IDE refresh failed:", error);
     setPaginationFor(category, { loading: false });
   }
 };
 
-/**
- * Fetch the next page for a single category. No-op if a fetch is already in
- * flight for this category or the backend has signaled `hasMore: false`.
- */
 export const loadMoreCategory = async (
   category: SessionListCategory,
   pageSize: number = SESSION_SIDEBAR_PAGE_SIZE
@@ -459,5 +482,7 @@ export const loadMoreCategory = async (
   }
 };
 
-// Internal helpers exported for unit tests.
-export const __TESTS_ONLY = { mergeSessions };
+export const __TESTS_ONLY = {
+  mergeSessions,
+  replaceExternalHistorySourceFirstPage,
+};
