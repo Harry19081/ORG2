@@ -42,10 +42,10 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
     path: filePath,
     repoPath: props.repoPath,
   });
-  const displayName =
-    displayPath.displayPath || fileName || getFileName(filePath) || "file";
+  const baseName = fileName || getFileName(filePath) || "file";
+  const displayName = baseName;
   const fullPathTitle = displayPath.title || filePath || fileName || "file";
-  const iconName = fileName || getFileName(filePath) || displayName;
+  const iconName = baseName;
   const isLoading =
     status === "running" && props.showActiveEventPainting === true;
   const isFailed = status === "failed";
