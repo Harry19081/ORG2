@@ -1,5 +1,10 @@
 import React, { memo } from "react";
 
+import {
+  CHAT_PANEL_HEADER_DRAG_STYLE,
+  ChatPanelHeaderDragSpacer,
+  ChatPanelHeaderNoDragRegion,
+} from "./ChatPanelHeaderPrimitives";
 import type { ChatPanelHeaderSlots } from "./chatPanelHeaderSlots";
 
 interface ChatPanelHeaderSlotsViewProps {
@@ -9,15 +14,24 @@ interface ChatPanelHeaderSlotsViewProps {
 export const ChatPanelHeaderSlotsView: React.FC<ChatPanelHeaderSlotsViewProps> =
   memo(({ slots }) => {
     return (
-      <div className="flex min-w-0 flex-1 items-center">
+      <div
+        className="flex min-w-0 flex-1 items-center"
+        data-tauri-drag-region
+        style={CHAT_PANEL_HEADER_DRAG_STYLE}
+      >
         {slots?.leading && (
-          <div className="flex shrink-0 items-center">{slots.leading}</div>
+          <ChatPanelHeaderNoDragRegion className="flex shrink-0 items-center">
+            {slots.leading}
+          </ChatPanelHeaderNoDragRegion>
         )}
-        <div className="flex min-w-0 flex-1 items-center">{slots?.content}</div>
+        <ChatPanelHeaderNoDragRegion className="flex min-w-0 shrink items-center">
+          {slots?.content}
+        </ChatPanelHeaderNoDragRegion>
+        <ChatPanelHeaderDragSpacer />
         {slots?.trailing && (
-          <div className="flex shrink-0 items-center gap-px">
+          <ChatPanelHeaderNoDragRegion className="flex shrink-0 items-center gap-px">
             {slots.trailing}
-          </div>
+          </ChatPanelHeaderNoDragRegion>
         )}
       </div>
     );
