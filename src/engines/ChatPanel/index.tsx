@@ -28,12 +28,14 @@ import {
 } from "@src/store/session";
 import { addSectionAtom } from "@src/store/stickyNotes/stickyNotesAtom";
 import {
-  CHAT_PANEL_CONTENT_MODE,
+  CHAT_PANEL_SURFACE_KIND,
   chatPanelContentModeAtom,
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
+  chatPanelExploreAgentSearchEnabledAtom,
   chatPanelExploreOpenAtom,
   chatPanelMaximizedAtom,
+  chatPanelNavigateAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
   chatPanelSelectedWorkspaceAtom,
@@ -55,6 +57,7 @@ import { useReloadSession } from "./ChatHistory/hooks/useReloadSession";
 import { ChatPanelContent } from "./ChatPanelContent";
 import { ChatPanelEmptyContent } from "./ChatPanelEmptyContent";
 import { ChatPanelHeader } from "./ChatPanelHeader";
+import { ChatPanelSurfaceHeaderPublisher } from "./header";
 import { useAiWorkItemCreator } from "./hooks/useAiWorkItemCreator";
 import { useChatPanelContentState } from "./hooks/useChatPanelContentState";
 import { useChatPanelCreateTarget } from "./hooks/useChatPanelCreateTarget";
@@ -160,19 +163,18 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const [paginationEnabled, setPaginationEnabled] = useAtom(
       chatTurnPaginationEnabledAtom
     );
+    const [exploreAgentSearchEnabled, setExploreAgentSearchEnabled] = useAtom(
+      chatPanelExploreAgentSearchEnabledAtom
+    );
     const collapseAllCommand = useAtomValue(collapseAllCommandAtom);
     const setAllBlocksCollapsed = useSetAtom(setAllBlocksCollapsedAtom);
     const setActiveSessionId = useSetAtom(activeSessionIdAtom);
+    const navigateChatPanel = useSetAtom(chatPanelNavigateAtom);
     const setWorkstationActiveSessionId = useSetAtom(
       workstationActiveSessionIdAtom
     );
     const setSelectedWorkItem = useSetAtom(chatPanelSelectedWorkItemAtom);
     const setSelectedProject = useSetAtom(chatPanelSelectedProjectAtom);
-    const setSelectedWorkspace = useSetAtom(chatPanelSelectedWorkspaceAtom);
-    const setWorkspaceDashboardOpen = useSetAtom(
-      chatPanelWorkspaceDashboardOpenAtom
-    );
-    const setStickyNotesOpen = useSetAtom(chatPanelStickyNotesOpenAtom);
     const addStickyNotesSection = useSetAtom(addSectionAtom);
     const dispatchClearSession = useSetAtom(clearSessionAtom);
     const creatorState = useAtomValue(sessionCreatorStateAtom);
@@ -217,25 +219,22 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       [setPaginationEnabled]
     );
 
+    const handleExploreAgentSearchToggle = useCallback(
+      (checked: boolean) => {
+        setExploreAgentSearchEnabled(checked);
+      },
+      [setExploreAgentSearchEnabled]
+    );
+
     const handleNewSession = useCallback(() => {
-      setContentMode(CHAT_PANEL_CONTENT_MODE.SESSION);
-      setSelectedWorkItem(null);
-      setSelectedProject(null);
-      setSelectedWorkspace(null);
-      setWorkspaceDashboardOpen(false);
-      setStickyNotesOpen(false);
+      navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
       dispatchClearSession();
       setWorkstationActiveSessionId(null);
       setActiveSessionId(null);
     }, [
       dispatchClearSession,
+      navigateChatPanel,
       setActiveSessionId,
-      setContentMode,
-      setSelectedProject,
-      setSelectedWorkspace,
-      setSelectedWorkItem,
-      setStickyNotesOpen,
-      setWorkspaceDashboardOpen,
       setWorkstationActiveSessionId,
     ]);
 
@@ -424,69 +423,92 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       />
     );
 
+    const publishSurfaceHeader =
+      contentState.showBenchmarkSessionGroupContent ||
+      contentState.showExploreContent ||
+      contentState.showWorkspaceDashboardContent ||
+      contentState.showWorkspaceOverviewContent ||
+      contentState.showStickyNotesContent;
+
     const headerSection = (
-      <ChatPanelHeader
-        activeSessionExists={Boolean(activeSession)}
-        allBlocksCollapsed={allBlocksCollapsed}
-        collapseToggleLabel={collapseToggleLabel}
-        copyEventJsonLabel={copyEventJsonLabel}
-        createTarget={createTarget}
-        createTargetOptions={createTargetOptions}
-        currentSessionId={currentSessionId ?? null}
-        eventsLength={eventCount}
-        handleAddStickyNotesSection={handleAddStickyNotesSection}
-        handleChatFocusToggle={handleChatFocusToggle}
-        handleCopyEventJson={handleCopyEventJson}
-        handleCreateTargetChange={handleCreateTargetChange}
-        handleOpenExportSessionJson={handleOpenExportSessionJson}
-        handleOpenLinkWorkItem={handleOpenLinkWorkItem}
-        handleOpenSearch={handleOpenSearch}
-        handleNewSession={handleNewSession}
-        handlePaginationToggle={handlePaginationToggle}
-        handleProjectAgentCreatorToggle={handleProjectAgentCreatorToggle}
-        handleProjectTitleChange={handleProjectTitleChange}
-        handleReloadFromMenu={handleReloadFromMenu}
-        handleToggleAllBlocksCollapsed={handleToggleAllBlocksCollapsed}
-        handleWorkItemAgentCreatorToggle={handleWorkItemAgentCreatorToggle}
-        handleWorkItemTitleChange={handleWorkItemTitleChange}
-        headerActionsDropdownRef={headerActionsDropdownRef}
-        headerActionsPosition={headerActionsPosition}
-        headerActionsTriggerRef={headerActionsTriggerRef}
-        headerTitle={contentState.headerTitle}
-        headerTitleContent={contentState.headerTitleContent}
-        isChatFocus={isChatFocus}
-        isCompactLayout={isCompactLayout}
-        isHeaderActionsOpen={isHeaderActionsOpen}
-        isHeaderActionsPositioned={isHeaderActionsPositioned}
-        isProjectTarget={contentState.isProjectTarget}
-        paginationEnabled={paginationEnabled}
-        selectedProjectVisible={Boolean(selectedProject)}
-        selectedWorkItemVisible={Boolean(selectedWorkItem)}
-        shouldOffsetHeaderForCollapsedSidebar={
-          shouldOffsetHeaderForCollapsedSidebar
-        }
-        showBenchmarkSessionGroupContent={
-          contentState.showBenchmarkSessionGroupContent
-        }
-        showChatFocusToggle={showChatFocusToggle}
-        showCreatorPresenceInHeader={contentState.showCreatorPresenceInHeader}
-        showHeader={contentState.showHeader}
-        showNewSessionButton={contentState.showNewSessionButton}
-        showNonSessionContent={contentState.showNonSessionContent}
-        showProjectAgentCreator={showProjectAgentCreator}
-        showProjectAgentSwitchInHeader={
-          contentState.showProjectAgentSwitchInHeader
-        }
-        showSessionContent={contentState.showSessionContent}
-        showStickyNotesContent={contentState.showStickyNotesContent}
-        showWorkItemAgentCreator={showWorkItemAgentCreator}
-        showWorkItemAgentSwitchInHeader={
-          contentState.showWorkItemAgentSwitchInHeader
-        }
-        t={t}
-        toggleHeaderActionsMenu={toggleHeaderActionsMenu}
-        visibleRegionNotice={regionNotice}
-      />
+      <>
+        <ChatPanelSurfaceHeaderPublisher
+          enabled={publishSurfaceHeader}
+          title={contentState.headerTitle}
+          titleContent={contentState.headerTitleContent}
+          showAgentSwitch={contentState.showExploreContent}
+          agentSwitchLabel={t("navigation:labels.agent", {
+            defaultValue: "Agent",
+          })}
+          agentSwitchChecked={exploreAgentSearchEnabled}
+          onAgentSwitchChange={handleExploreAgentSearchToggle}
+        />
+        <ChatPanelHeader
+          activeSessionExists={Boolean(activeSession)}
+          allBlocksCollapsed={allBlocksCollapsed}
+          collapseToggleLabel={collapseToggleLabel}
+          copyEventJsonLabel={copyEventJsonLabel}
+          createTarget={createTarget}
+          createTargetOptions={createTargetOptions}
+          currentSessionId={currentSessionId ?? null}
+          eventsLength={eventCount}
+          exploreAgentSearchEnabled={exploreAgentSearchEnabled}
+          handleAddStickyNotesSection={handleAddStickyNotesSection}
+          handleChatFocusToggle={handleChatFocusToggle}
+          handleCopyEventJson={handleCopyEventJson}
+          handleCreateTargetChange={handleCreateTargetChange}
+          handleExploreAgentSearchToggle={handleExploreAgentSearchToggle}
+          handleOpenExportSessionJson={handleOpenExportSessionJson}
+          handleOpenLinkWorkItem={handleOpenLinkWorkItem}
+          handleOpenSearch={handleOpenSearch}
+          handleNewSession={handleNewSession}
+          handlePaginationToggle={handlePaginationToggle}
+          handleProjectAgentCreatorToggle={handleProjectAgentCreatorToggle}
+          handleProjectTitleChange={handleProjectTitleChange}
+          handleReloadFromMenu={handleReloadFromMenu}
+          handleToggleAllBlocksCollapsed={handleToggleAllBlocksCollapsed}
+          handleWorkItemAgentCreatorToggle={handleWorkItemAgentCreatorToggle}
+          handleWorkItemTitleChange={handleWorkItemTitleChange}
+          headerActionsDropdownRef={headerActionsDropdownRef}
+          headerActionsPosition={headerActionsPosition}
+          headerActionsTriggerRef={headerActionsTriggerRef}
+          headerTitle={contentState.headerTitle}
+          headerTitleContent={contentState.headerTitleContent}
+          isChatFocus={isChatFocus}
+          isCompactLayout={isCompactLayout}
+          isHeaderActionsOpen={isHeaderActionsOpen}
+          isHeaderActionsPositioned={isHeaderActionsPositioned}
+          isProjectTarget={contentState.isProjectTarget}
+          paginationEnabled={paginationEnabled}
+          selectedProjectVisible={Boolean(selectedProject)}
+          selectedWorkItemVisible={Boolean(selectedWorkItem)}
+          shouldOffsetHeaderForCollapsedSidebar={
+            shouldOffsetHeaderForCollapsedSidebar
+          }
+          showBenchmarkSessionGroupContent={
+            contentState.showBenchmarkSessionGroupContent
+          }
+          showChatFocusToggle={showChatFocusToggle}
+          showCreatorPresenceInHeader={contentState.showCreatorPresenceInHeader}
+          showHeader={contentState.showHeader}
+          showExploreAgentSwitchInHeader={contentState.showExploreContent}
+          showNewSessionButton={contentState.showNewSessionButton}
+          showNonSessionContent={contentState.showNonSessionContent}
+          showProjectAgentCreator={showProjectAgentCreator}
+          showProjectAgentSwitchInHeader={
+            contentState.showProjectAgentSwitchInHeader
+          }
+          showSessionContent={contentState.showSessionContent}
+          showStickyNotesContent={contentState.showStickyNotesContent}
+          showWorkItemAgentCreator={showWorkItemAgentCreator}
+          showWorkItemAgentSwitchInHeader={
+            contentState.showWorkItemAgentSwitchInHeader
+          }
+          t={t}
+          toggleHeaderActionsMenu={toggleHeaderActionsMenu}
+          visibleRegionNotice={regionNotice}
+        />
+      </>
     );
 
     const chatColumn = (

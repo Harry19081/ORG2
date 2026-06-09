@@ -1543,7 +1543,10 @@
     "moveWorkstationSidebarLeft": "Workstation-Seitenleiste nach links verschieben",
     "moveWorkstationSidebarRight": "Workstation-Seitenleiste nach rechts verschieben",
     "enableDockAutoHide": "Workstation-Dock automatisch ausblenden",
-    "disableDockAutoHide": "Workstation-Dock sichtbar halten"
+    "disableDockAutoHide": "Workstation-Dock sichtbar halten",
+    "openMyStation": "Zu My Station wechseln",
+    "openAgentStation": "Zu Agent Station wechseln",
+    "openOpsControl": "Zu Ops Control wechseln"
   },
   "commands": {
     "showBottomPanel": "Unteres Panel anzeigen",

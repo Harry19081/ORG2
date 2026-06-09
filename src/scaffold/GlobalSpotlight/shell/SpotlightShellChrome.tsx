@@ -7,10 +7,12 @@
  * This is a direct merge of the previous SelectorContainer + SpotlightPortal
  * layer. Only consumed by SpotlightShell; palettes never see this component.
  */
+import { useAtomValue } from "jotai";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
+import { spotlightPlacementAtom } from "@src/store/ui/uiAtom";
 
 import { SPOTLIGHT_CONFIG } from "../constants";
 import { SPOTLIGHT_STYLES } from "../styles";
@@ -39,6 +41,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
   children,
 }) => {
   const inputHostRef = useRef<HTMLDivElement | null>(null);
+  const spotlightPlacement = useAtomValue(spotlightPlacementAtom);
 
   useOverlayLayer(isOpen && asPortal);
 
@@ -137,9 +140,15 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
         data-spotlight-container
         style={{
           position: "fixed",
-          top: SPOTLIGHT_CONFIG.topOffset,
+          top:
+            spotlightPlacement === "center"
+              ? "50%"
+              : SPOTLIGHT_CONFIG.topOffset,
           left: "50%",
-          transform: "translateX(-50%)",
+          transform:
+            spotlightPlacement === "center"
+              ? "translate(-50%, -50%)"
+              : "translateX(-50%)",
           zIndex: SPOTLIGHT_CONFIG.containerZIndex,
           width: `min(${width}px, calc(100vw - 160px))`,
         }}

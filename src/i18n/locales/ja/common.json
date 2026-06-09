@@ -1541,7 +1541,10 @@
     "moveWorkstationSidebarLeft": "Workstation サイドバーを左に移動",
     "moveWorkstationSidebarRight": "Workstation サイドバーを右に移動",
     "enableDockAutoHide": "Workstation Dock を自動的に隠す",
-    "disableDockAutoHide": "Workstation Dock を常に表示"
+    "disableDockAutoHide": "Workstation Dock を常に表示",
+    "openMyStation": "My Station に移動",
+    "openAgentStation": "Agent Station に移動",
+    "openOpsControl": "Ops Control に移動"
   },
   "commands": {
     "showBottomPanel": "ボトムパネルを表示",

@@ -164,6 +164,9 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
         getInstrumentedStore().set(toggleGuiControlComposerAtom);
       }),
       shortcutRegistry.on("toggle_station_mode", handleToggleStationMode),
+      shortcutRegistry.on("open_ops_control", () => {
+        void WorkStationViewService.openStationMode("ops-control");
+      }),
       shortcutRegistry.on(
         "open_file_folder_tab",
         handleOpenCodeEditorFileFolder

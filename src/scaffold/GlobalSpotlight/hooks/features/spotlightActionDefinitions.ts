@@ -30,6 +30,7 @@ import {
   PanelBottom,
   PanelLeft,
   Play,
+  RadioTower,
   RotateCcw,
   Search,
   Sparkles,
@@ -73,6 +74,9 @@ export type SpotlightStaticActionId =
   | "set-workstation-sidebar-right"
   | "enable-dock-auto-hide"
   | "disable-dock-auto-hide"
+  | "open-my-station"
+  | "open-agent-station"
+  | "open-ops-control"
   | "zoom-in"
   | "zoom-out"
   | "zoom-reset"
@@ -99,6 +103,9 @@ export type SpotlightStaticActionFallback =
   | "toggle-bottom-panel"
   | "toggle-chat-focus"
   | "toggle-chat-panel"
+  | "open-my-station"
+  | "open-agent-station"
+  | "open-ops-control"
   | "open-search-sidebar"
   | "open-source-control-tab"
   | "open-terminal-tab";
@@ -225,7 +232,7 @@ export function buildThemeActions(
       keywords: ["light theme", "light mode", "theme", "appearance"],
       actionId: ACTION_ID.THEME_SET_LIGHT,
       payload: {},
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     });
   }
 
@@ -237,7 +244,7 @@ export function buildThemeActions(
       keywords: ["dark theme", "dark mode", "theme", "appearance"],
       actionId: ACTION_ID.THEME_SET_DARK,
       payload: {},
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     });
   }
 
@@ -255,12 +262,46 @@ export function buildThemeActions(
       ],
       actionId: ACTION_ID.THEME_SET_HIGH_CONTRAST,
       payload: {},
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     });
   }
 
   return actions;
 }
+
+export const STATION_MODE_ACTIONS = [
+  {
+    id: "open-my-station",
+    labelKey: "common:spotlightActions.openMyStation",
+    icon: Dock,
+    keywords: ["my station", "workstation", "work station", "coding", "tools"],
+    actionId: ACTION_ID.WORKSTATION_OPEN_MY_STATION,
+    payload: {},
+    fallback: "open-my-station",
+    closeOnSuccess: true,
+  },
+  {
+    id: "open-agent-station",
+    labelKey: "common:spotlightActions.openAgentStation",
+    icon: Sparkles,
+    keywords: ["agent station", "agent", "simulator", "replay"],
+    actionId: ACTION_ID.WORKSTATION_OPEN_AGENT_STATION,
+    payload: {},
+    fallback: "open-agent-station",
+    closeOnSuccess: true,
+  },
+  {
+    id: "open-ops-control",
+    labelKey: "common:spotlightActions.openOpsControl",
+    icon: RadioTower,
+    keywords: ["ops control", "ops", "kanban", "project", "work items"],
+    shortcut: getShortcutKeys("open_ops_control"),
+    actionId: ACTION_ID.WORKSTATION_OPEN_OPS_CONTROL,
+    payload: {},
+    fallback: "open-ops-control",
+    closeOnSuccess: true,
+  },
+] satisfies SpotlightStaticActionDefinition[];
 
 export function buildChatPanelSettingsActions({
   myStationChatPosition,
@@ -302,7 +343,7 @@ export function buildChatPanelSettingsActions({
         ? ACTION_ID.CHAT_PANEL_SET_MY_STATION_RIGHT
         : ACTION_ID.CHAT_PANEL_SET_MY_STATION_LEFT,
     payload: {},
-    closeOnSuccess: true,
+    closeOnSuccess: false,
   });
 
   actions.push({
@@ -325,7 +366,7 @@ export function buildChatPanelSettingsActions({
         ? ACTION_ID.CHAT_PANEL_SET_AGENT_STATION_RIGHT
         : ACTION_ID.CHAT_PANEL_SET_AGENT_STATION_LEFT,
     payload: {},
-    closeOnSuccess: true,
+    closeOnSuccess: false,
   });
 
   actions.push({
@@ -341,7 +382,7 @@ export function buildChatPanelSettingsActions({
       ? ACTION_ID.CHAT_PANEL_DISABLE_PAGINATION
       : ACTION_ID.CHAT_PANEL_ENABLE_PAGINATION,
     payload: {},
-    closeOnSuccess: true,
+    closeOnSuccess: false,
   });
 
   actions.push({
@@ -360,7 +401,7 @@ export function buildChatPanelSettingsActions({
         ? ACTION_ID.CHAT_PANEL_USE_MODEL_PICKER_DROPDOWN
         : ACTION_ID.CHAT_PANEL_USE_MODEL_PICKER_SPOTLIGHT,
     payload: {},
-    closeOnSuccess: true,
+    closeOnSuccess: false,
   });
 
   actions.push({
@@ -379,7 +420,7 @@ export function buildChatPanelSettingsActions({
         ? ACTION_ID.WORKSTATION_SET_COMPACT_LAYOUT
         : ACTION_ID.WORKSTATION_SET_COMFORT_LAYOUT,
     payload: {},
-    closeOnSuccess: true,
+    closeOnSuccess: false,
   });
 
   actions.push({
@@ -403,7 +444,7 @@ export function buildChatPanelSettingsActions({
         ? ACTION_ID.WORKSTATION_SET_SIDEBAR_RIGHT
         : ACTION_ID.WORKSTATION_SET_SIDEBAR_LEFT,
     payload: {},
-    closeOnSuccess: true,
+    closeOnSuccess: false,
   });
 
   actions.push({
@@ -417,7 +458,7 @@ export function buildChatPanelSettingsActions({
       ? ACTION_ID.WORKSTATION_DISABLE_DOCK_AUTO_HIDE
       : ACTION_ID.WORKSTATION_ENABLE_DOCK_AUTO_HIDE,
     payload: {},
-    closeOnSuccess: true,
+    closeOnSuccess: false,
   });
 
   return actions;
@@ -534,10 +575,11 @@ export function buildViewActions(
         "sidebar",
         "view",
       ],
+      shortcut: getShortcutKeys("toggle_sidebar"),
       actionId: ACTION_ID.SIDEBAR_TOGGLE,
       payload: {},
       fallback: "toggle-sidebar",
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     },
   ];
 
@@ -562,7 +604,7 @@ export function buildViewActions(
       actionId: ACTION_ID.WORKSTATION_TOGGLE_SIDEBAR,
       payload: {},
       fallback: "toggle-workstation-sidebar",
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     });
   }
 
@@ -585,7 +627,7 @@ export function buildViewActions(
       actionId: ACTION_ID.PANEL_TOGGLE_BOTTOM,
       payload: {},
       fallback: "toggle-bottom-panel",
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     });
   }
 
@@ -609,7 +651,7 @@ export function buildViewActions(
       actionId: ACTION_ID.WORKSTATION_TOGGLE_CHAT_PANEL_VISIBILITY,
       payload: {},
       fallback: "toggle-chat-panel",
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     });
 
     actions.push({
@@ -631,7 +673,7 @@ export function buildViewActions(
       actionId: ACTION_ID.WORKSTATION_TOGGLE_CHAT_FOCUS,
       payload: {},
       fallback: "toggle-chat-focus",
-      closeOnSuccess: true,
+      closeOnSuccess: false,
     });
   }
 

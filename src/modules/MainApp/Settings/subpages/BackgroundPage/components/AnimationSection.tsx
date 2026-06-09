@@ -59,7 +59,7 @@ export const AnimationSection: React.FC<AnimationSectionProps> = ({
       </SectionRow>
 
       {isEnabled && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 pb-2">
           {filteredAnimations.map((anim) => {
             const isAnimSelected = config.animation === anim.id;
 

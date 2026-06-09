@@ -15,6 +15,16 @@ import {
   zodActionToLLMTool,
 } from "@src/ActionSystem/schema/defineZodAction";
 import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
+import {
+  AGENT_SESSION_ACTIONS,
+  EDITOR_ACTIONS,
+  QUICK_NAVIGATION_ACTIONS,
+  STATION_MODE_ACTIONS,
+  WORKSPACE_ACTIONS,
+  buildChatPanelSettingsActions,
+  buildThemeActions,
+  buildViewActions,
+} from "@src/scaffold/GlobalSpotlight/hooks/features/spotlightActionDefinitions";
 
 import {
   getAllCoreZodActions,
@@ -22,6 +32,54 @@ import {
 } from "../registerCoreActions";
 
 const TEST_REPO = "/tmp/orgii-action-system-test-repo";
+
+const SPOTLIGHT_EDITOR_ACTION_IDS = {
+  "go-to-editor-file": ACTION_ID.SPOTLIGHT_OPEN_EDITOR_FILE,
+  "run-editor-command": ACTION_ID.SPOTLIGHT_OPEN_EDITOR_COMMAND,
+  "go-to-editor-symbol": ACTION_ID.SPOTLIGHT_OPEN_EDITOR_SYMBOL,
+} as const;
+
+function getRepresentativeSpotlightActionIds(): Set<string> {
+  return new Set([
+    ...AGENT_SESSION_ACTIONS.map((action) => action.actionId),
+    ...WORKSPACE_ACTIONS.map((action) => action.actionId),
+    ...buildThemeActions("custom-theme").map((action) => action.actionId),
+    ...buildChatPanelSettingsActions({
+      myStationChatPosition: "left",
+      agentStationChatPosition: "left",
+      chatTurnPaginationEnabled: true,
+      modelPickerStyle: "spotlight",
+      internalLayoutMode: "comfort",
+      workstationSidebarPosition: "left",
+      dockAutoHide: true,
+    }).map((action) => action.actionId),
+    ...buildChatPanelSettingsActions({
+      myStationChatPosition: "right",
+      agentStationChatPosition: "right",
+      chatTurnPaginationEnabled: false,
+      modelPickerStyle: "dropdown",
+      internalLayoutMode: "compact",
+      workstationSidebarPosition: "right",
+      dockAutoHide: false,
+    }).map((action) => action.actionId),
+    ...STATION_MODE_ACTIONS.map((action) => action.actionId),
+    ...QUICK_NAVIGATION_ACTIONS.map((action) => action.actionId),
+    ...buildViewActions(true, true, true, true, true, true, true, true).map(
+      (action) => action.actionId
+    ),
+    ...buildViewActions(
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ).map((action) => action.actionId),
+    ...EDITOR_ACTIONS.map((action) => SPOTLIGHT_EDITOR_ACTION_IDS[action.id]),
+  ]);
+}
 
 describe("getAllCoreZodActions", () => {
   it("returns unique action ids", () => {
@@ -58,6 +116,9 @@ describe("getAllCoreZodActions", () => {
       true
     );
     expect(ids.has(ACTION_ID.WORKSTATION_TOGGLE_SIDEBAR)).toBe(true);
+    expect(ids.has(ACTION_ID.WORKSTATION_OPEN_MY_STATION)).toBe(true);
+    expect(ids.has(ACTION_ID.WORKSTATION_OPEN_AGENT_STATION)).toBe(true);
+    expect(ids.has(ACTION_ID.WORKSTATION_OPEN_OPS_CONTROL)).toBe(true);
     expect(ids.has(ACTION_ID.WORKSTATION_OPEN_FILE_FOLDER_TAB)).toBe(true);
     expect(ids.has(ACTION_ID.WORKSTATION_OPEN_SOURCE_CONTROL_TAB)).toBe(true);
     expect(ids.has(ACTION_ID.WORKSTATION_OPEN_TERMINAL_TAB)).toBe(true);
@@ -136,6 +197,19 @@ describe("app-level spotlightZodActions", () => {
     expect(ids.has(ACTION_ID.SPOTLIGHT_OPEN_BRANCH_PICKER)).toBe(true);
     expect(ids.has(ACTION_ID.SPOTLIGHT_OPEN_EDITOR_FILE)).toBe(true);
     expect(ids.has(ACTION_ID.SPOTLIGHT_OPEN_EDITOR_COMMAND)).toBe(true);
+    expect(ids.has(ACTION_ID.SPOTLIGHT_OPEN_EDITOR_SYMBOL)).toBe(true);
+  });
+
+  it("covers every representative Spotlight static action with a registered Zod action", () => {
+    const registeredIds = new Set(
+      [...collectAppZodActions(), ...getAllCoreZodActions(TEST_REPO)].map(
+        (action) => action.meta.id
+      )
+    );
+
+    for (const actionId of getRepresentativeSpotlightActionIds()) {
+      expect(registeredIds.has(actionId)).toBe(true);
+    }
   });
 
   it("produces OpenAI-style LLM tool definitions for Spotlight actions", () => {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ACTION_ID } from "@src/ActionSystem/actionIds";
+import { ACTION_ID, type ActionId } from "@src/ActionSystem/actionIds";
 import { defineZodAction } from "@src/ActionSystem/schema/defineZodAction";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 
@@ -59,6 +59,64 @@ export const workstationToggleChatPanelVisibility = defineZodAction(
       ? { success: true, message: "Toggled Workstation chat panel" }
       : { success: false, message: "Workstation chat panel is not available" };
   }
+);
+
+function defineOpenStationAction(
+  id: ActionId,
+  mode: "my-station" | "agent-station" | "ops-control",
+  description: string,
+  message: string,
+  shortcut: string,
+  examples: string[]
+) {
+  return defineZodAction(
+    {
+      id,
+      category: "navigation",
+      description,
+      params: z.object({}),
+      ...(shortcut ? { shortcut } : {}),
+      tags: ["workstation", "station", mode, "navigation"],
+      examples,
+    },
+    async () => {
+      const workStationViewService = await getWorkStationViewService();
+      const success = await workStationViewService.openStationMode(mode);
+      return success
+        ? { success: true, message }
+        : {
+            success: false,
+            message: "Workstation station mode is not available",
+          };
+    }
+  );
+}
+
+export const workstationOpenMyStation = defineOpenStationAction(
+  ACTION_ID.WORKSTATION_OPEN_MY_STATION,
+  "my-station",
+  "Switch Workstation to My Station",
+  "Opened My Station",
+  "",
+  ["open my station", "switch to my station", "show my station"]
+);
+
+export const workstationOpenAgentStation = defineOpenStationAction(
+  ACTION_ID.WORKSTATION_OPEN_AGENT_STATION,
+  "agent-station",
+  "Switch Workstation to Agent Station",
+  "Opened Agent Station",
+  "",
+  ["open agent station", "switch to agent station", "show agent station"]
+);
+
+export const workstationOpenOpsControl = defineOpenStationAction(
+  ACTION_ID.WORKSTATION_OPEN_OPS_CONTROL,
+  "ops-control",
+  "Open Ops Control in Workstation",
+  "Opened Ops Control",
+  getShortcutKeys("open_ops_control"),
+  ["open ops control", "go to ops control", "show ops control"]
 );
 
 export const workstationToggleSidebar = defineZodAction(
@@ -201,6 +259,9 @@ export const workstationOpenTerminalTab = defineZodAction(
 export const workStationViewZodActions = [
   workstationToggleChatFocus,
   workstationToggleChatPanelVisibility,
+  workstationOpenMyStation,
+  workstationOpenAgentStation,
+  workstationOpenOpsControl,
   workstationToggleSidebar,
   workstationOpenCodeEditorTab,
   workstationOpenFileFolderTab,

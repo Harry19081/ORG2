@@ -414,7 +414,7 @@ const SettingsSlot: React.FC<SettingsSlotProps> = ({
         </div>
 
         <div
-          className="flex min-h-0 flex-1 flex-col"
+          className="flex min-h-0 flex-1 flex-col bg-bg-2"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
           <Body />

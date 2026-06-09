@@ -1541,7 +1541,10 @@
     "moveWorkstationSidebarLeft": "将工作站侧边栏移到左侧",
     "moveWorkstationSidebarRight": "将工作站侧边栏移到右侧",
     "enableDockAutoHide": "自动隐藏工作站 Dock",
-    "disableDockAutoHide": "始终显示工作站 Dock"
+    "disableDockAutoHide": "始终显示工作站 Dock",
+    "openMyStation": "前往我的工作站",
+    "openAgentStation": "前往 Agent 工作站",
+    "openOpsControl": "前往 Ops Control"
   },
   "commands": {
     "showBottomPanel": "显示底部面板",

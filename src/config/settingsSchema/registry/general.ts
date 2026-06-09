@@ -122,6 +122,17 @@ export const GENERAL_SETTINGS_REGISTRY = {
       compact: "Modern",
     },
   },
+  "general.spotlightPlacement": {
+    schema: z.enum(["top", "center"]),
+    default: "top" as const,
+    description:
+      'Spotlight placement: "top" keeps the command palette near the top edge; "center" places it in the center of the page',
+    category: "general",
+    enumLabels: {
+      top: "Top",
+      center: "Page center",
+    },
+  },
   "general.workStationChatPosition": {
     schema: z.enum(["left", "right"]),
     default: "left" as const,

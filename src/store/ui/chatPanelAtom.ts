@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { type WritableAtom, atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { z } from "zod/v4";
 
@@ -243,6 +243,16 @@ export const chatPanelCreateTargetAtom = atom<ChatPanelCreateTarget>(
 );
 chatPanelCreateTargetAtom.debugLabel = "chatPanelCreateTargetAtom";
 
+export interface ChatPanelCreateProjectContext {
+  orgId: string;
+  scopeBreadcrumbLabel?: string;
+}
+
+export const chatPanelCreateProjectContextAtom =
+  atom<ChatPanelCreateProjectContext | null>(null);
+chatPanelCreateProjectContextAtom.debugLabel =
+  "chatPanelCreateProjectContextAtom";
+
 export const CHAT_PANEL_CONTENT_MODE = {
   SESSION: "session",
   NON_SESSION: "nonSession",
@@ -307,6 +317,10 @@ chatPanelWorkspaceDashboardOpenAtom.debugLabel =
 export const chatPanelExploreOpenAtom = atom<boolean>(false);
 chatPanelExploreOpenAtom.debugLabel = "chatPanelExploreOpenAtom";
 
+export const chatPanelExploreAgentSearchEnabledAtom = atom<boolean>(false);
+chatPanelExploreAgentSearchEnabledAtom.debugLabel =
+  "chatPanelExploreAgentSearchEnabledAtom";
+
 /**
  * Selected tab on the chat-panel workspace overview surface
  * (`WorkspaceOverviewPanelView`). The overview/details split is
@@ -340,15 +354,210 @@ chatPanelWorkspaceOverviewTabAtom.debugLabel =
 export const chatPanelStickyNotesOpenAtom = atom<boolean>(false);
 chatPanelStickyNotesOpenAtom.debugLabel = "chatPanelStickyNotesOpenAtom";
 
-export interface ChatPanelCreateProjectContext {
-  orgId: string;
-  scopeBreadcrumbLabel?: string;
+export const CHAT_PANEL_SURFACE_KIND = {
+  SESSION: "session",
+  BENCHMARK_SESSION_GROUP: "benchmarkSessionGroup",
+  NEW_PROJECT: "newProject",
+  NEW_WORK_ITEM: "newWorkItem",
+  PROJECT: "project",
+  WORK_ITEM: "workItem",
+  WORKSPACE_DASHBOARD: "workspaceDashboard",
+  WORKSPACE_EXPLORE: "workspaceExplore",
+  WORKSPACE_OVERVIEW: "workspaceOverview",
+  STICKY_NOTES: "stickyNotes",
+} as const;
+
+export type ChatPanelSurfaceKind =
+  (typeof CHAT_PANEL_SURFACE_KIND)[keyof typeof CHAT_PANEL_SURFACE_KIND];
+
+export type ChatPanelSurfaceState =
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.SESSION }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.BENCHMARK_SESSION_GROUP }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.NEW_PROJECT }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.PROJECT;
+      project: ChatPanelSelectedProject;
+    }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.WORK_ITEM;
+      workItem: ChatPanelSelectedWorkItem;
+    }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_DASHBOARD }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW;
+      workspace: ChatPanelSelectedWorkspace;
+      tab: WorkspaceOverviewTab;
+    }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.STICKY_NOTES };
+
+export type ChatPanelNavigateCommand =
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.SESSION }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.BENCHMARK_SESSION_GROUP }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.NEW_PROJECT;
+      createProjectContext?: ChatPanelCreateProjectContext | null;
+    }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM;
+      createProjectContext?: ChatPanelCreateProjectContext | null;
+    }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.PROJECT;
+      project: ChatPanelSelectedProject;
+    }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.WORK_ITEM;
+      workItem: ChatPanelSelectedWorkItem;
+    }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_DASHBOARD }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW;
+      workspace: ChatPanelSelectedWorkspace;
+      tab?: WorkspaceOverviewTab;
+    }
+  | { kind: typeof CHAT_PANEL_SURFACE_KIND.STICKY_NOTES };
+
+type SetAtom = <Value, Args extends unknown[], Result>(
+  atomToSet: WritableAtom<Value, Args, Result>,
+  ...args: Args
+) => Result;
+
+function resetChatPanelSurfaceState(set: SetAtom): void {
+  set(chatPanelSelectedWorkItemAtom, null);
+  set(chatPanelSelectedProjectAtom, null);
+  set(chatPanelSelectedWorkspaceAtom, null);
+  set(chatPanelWorkspaceDashboardOpenAtom, false);
+  set(chatPanelExploreOpenAtom, false);
+  set(chatPanelStickyNotesOpenAtom, false);
+  set(chatPanelCreateProjectContextAtom, null);
+  set(chatPanelCreateTargetAtom, DEFAULT_CHAT_PANEL_CREATE_TARGET);
+  set(chatPanelWorkspaceOverviewTabAtom, WORKSPACE_OVERVIEW_TAB.OVERVIEW);
 }
 
-export const chatPanelCreateProjectContextAtom =
-  atom<ChatPanelCreateProjectContext | null>(null);
-chatPanelCreateProjectContextAtom.debugLabel =
-  "chatPanelCreateProjectContextAtom";
+export const chatPanelNavigateAtom = atom(
+  null,
+  (_get, set, command: ChatPanelNavigateCommand) => {
+    resetChatPanelSurfaceState(set);
+
+    switch (command.kind) {
+      case CHAT_PANEL_SURFACE_KIND.SESSION:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.SESSION);
+        return;
+      case CHAT_PANEL_SURFACE_KIND.BENCHMARK_SESSION_GROUP:
+        set(
+          chatPanelContentModeAtom,
+          CHAT_PANEL_CONTENT_MODE.BENCHMARK_SESSION_GROUP
+        );
+        return;
+      case CHAT_PANEL_SURFACE_KIND.NEW_PROJECT:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelCreateTargetAtom, CHAT_PANEL_CREATE_TARGET.PROJECT);
+        set(
+          chatPanelCreateProjectContextAtom,
+          command.createProjectContext ?? null
+        );
+        return;
+      case CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelCreateTargetAtom, CHAT_PANEL_CREATE_TARGET.WORK_ITEM);
+        set(
+          chatPanelCreateProjectContextAtom,
+          command.createProjectContext ?? null
+        );
+        return;
+      case CHAT_PANEL_SURFACE_KIND.PROJECT:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelSelectedProjectAtom, command.project);
+        return;
+      case CHAT_PANEL_SURFACE_KIND.WORK_ITEM:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelSelectedWorkItemAtom, command.workItem);
+        return;
+      case CHAT_PANEL_SURFACE_KIND.WORKSPACE_DASHBOARD:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelWorkspaceDashboardOpenAtom, true);
+        return;
+      case CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelExploreOpenAtom, true);
+        return;
+      case CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelSelectedWorkspaceAtom, command.workspace);
+        set(
+          chatPanelWorkspaceOverviewTabAtom,
+          command.tab ?? WORKSPACE_OVERVIEW_TAB.OVERVIEW
+        );
+        return;
+      case CHAT_PANEL_SURFACE_KIND.STICKY_NOTES:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelStickyNotesOpenAtom, true);
+        return;
+    }
+  }
+);
+chatPanelNavigateAtom.debugLabel = "chatPanelNavigateAtom";
+
+export const activeChatPanelSurfaceAtom = atom<ChatPanelSurfaceState>((get) => {
+  const contentMode = get(chatPanelContentModeAtom);
+  if (contentMode === CHAT_PANEL_CONTENT_MODE.BENCHMARK_SESSION_GROUP) {
+    return { kind: CHAT_PANEL_SURFACE_KIND.BENCHMARK_SESSION_GROUP };
+  }
+
+  const selectedWorkItem = get(chatPanelSelectedWorkItemAtom);
+  if (selectedWorkItem) {
+    return {
+      kind: CHAT_PANEL_SURFACE_KIND.WORK_ITEM,
+      workItem: selectedWorkItem,
+    };
+  }
+
+  const selectedProject = get(chatPanelSelectedProjectAtom);
+  if (selectedProject) {
+    return { kind: CHAT_PANEL_SURFACE_KIND.PROJECT, project: selectedProject };
+  }
+
+  if (get(chatPanelWorkspaceDashboardOpenAtom)) {
+    return { kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_DASHBOARD };
+  }
+
+  if (get(chatPanelExploreOpenAtom)) {
+    return { kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE };
+  }
+
+  const selectedWorkspace = get(chatPanelSelectedWorkspaceAtom);
+  if (selectedWorkspace) {
+    return {
+      kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW,
+      workspace: selectedWorkspace,
+      tab: get(chatPanelWorkspaceOverviewTabAtom),
+    };
+  }
+
+  if (get(chatPanelStickyNotesOpenAtom)) {
+    return { kind: CHAT_PANEL_SURFACE_KIND.STICKY_NOTES };
+  }
+
+  const createTarget = get(chatPanelCreateTargetAtom);
+  if (
+    contentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION &&
+    createTarget === CHAT_PANEL_CREATE_TARGET.PROJECT
+  ) {
+    return { kind: CHAT_PANEL_SURFACE_KIND.NEW_PROJECT };
+  }
+  if (
+    contentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION &&
+    createTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM
+  ) {
+    return { kind: CHAT_PANEL_SURFACE_KIND.NEW_WORK_ITEM };
+  }
+
+  return { kind: CHAT_PANEL_SURFACE_KIND.SESSION };
+});
+activeChatPanelSurfaceAtom.debugLabel = "activeChatPanelSurfaceAtom";
 
 /**
  * Whether the chat-panel slot covers the entire main content area.

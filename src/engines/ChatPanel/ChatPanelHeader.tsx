@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { useAtomValue } from "jotai";
 import {
   Clipboard,
   FolderOutput,
@@ -37,6 +38,7 @@ import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/Collapse
 import { PresenceMenuButton } from "@src/scaffold/NavigationSidebar/blocks/SidebarBottomBar";
 import type { ChatPanelCreateTarget } from "@src/store/ui/chatPanelAtom";
 
+import { ChatPanelHeaderSlotsView, chatPanelHeaderSlotsAtom } from "./header";
 import type { ChatPanelRegionNotice } from "./types";
 
 const CHAT_PANEL_HEADER_ICON_SIZE = 14;
@@ -51,12 +53,14 @@ interface ChatPanelHeaderProps {
   createTargetOptions: SelectOption[];
   currentSessionId: string | null;
   eventsLength: number;
+  exploreAgentSearchEnabled: boolean;
   handleAddStickyNotesSection: () => void;
   handleChatFocusToggle: () => void;
   handleCopyEventJson: () => void;
   handleCreateTargetChange: (
     value: string | number | (string | number)[]
   ) => void;
+  handleExploreAgentSearchToggle: (enabled: boolean) => void;
   handleOpenExportSessionJson: () => void;
   handleOpenLinkWorkItem: () => void;
   handleOpenSearch: () => void;
@@ -86,6 +90,7 @@ interface ChatPanelHeaderProps {
   showChatFocusToggle: boolean;
   showCreatorPresenceInHeader: boolean;
   showHeader: boolean;
+  showExploreAgentSwitchInHeader: boolean;
   showNewSessionButton: boolean;
   showNonSessionContent: boolean;
   showProjectAgentCreator: boolean;
@@ -108,10 +113,12 @@ export function ChatPanelHeader({
   createTargetOptions,
   currentSessionId,
   eventsLength,
+  exploreAgentSearchEnabled,
   handleAddStickyNotesSection,
   handleChatFocusToggle,
   handleCopyEventJson,
   handleCreateTargetChange,
+  handleExploreAgentSearchToggle,
   handleOpenExportSessionJson,
   handleOpenLinkWorkItem,
   handleOpenSearch,
@@ -141,6 +148,7 @@ export function ChatPanelHeader({
   showChatFocusToggle,
   showCreatorPresenceInHeader,
   showHeader,
+  showExploreAgentSwitchInHeader,
   showNewSessionButton,
   showNonSessionContent,
   showProjectAgentCreator,
@@ -153,6 +161,7 @@ export function ChatPanelHeader({
   toggleHeaderActionsMenu,
   visibleRegionNotice,
 }: ChatPanelHeaderProps): React.ReactNode {
+  const publishedHeaderSlots = useAtomValue(chatPanelHeaderSlotsAtom);
   if (!showHeader) return null;
 
   const chatFocusLabel = isChatFocus
@@ -172,6 +181,12 @@ export function ChatPanelHeader({
       shortcut={chatFocusShortcut}
     />
   );
+  const agentSwitchLabel = t("navigation:labels.agent", {
+    defaultValue: "Agent",
+  });
+  const agentSwitchClassName =
+    "flex h-7 shrink-0 items-center !gap-1.5 rounded-lg !border-0 !bg-transparent !px-1.5 text-[13px] font-medium !text-text-1 transition-colors hover:!bg-surface-hover";
+  const agentSwitchTextClassName = "-translate-y-[0.5px]";
 
   const headerToolbar = (
     <div
@@ -486,8 +501,10 @@ export function ChatPanelHeader({
                   role="separator"
                   aria-hidden
                 />
-                <label className="flex h-7 shrink-0 items-center !gap-1.5 rounded-lg !border-0 !bg-transparent !px-1.5 text-[13px] font-medium !text-text-1 transition-colors hover:!bg-surface-hover">
-                  <span className="-translate-y-[0.5px]">Agent</span>
+                <label className={agentSwitchClassName}>
+                  <span className={agentSwitchTextClassName}>
+                    {agentSwitchLabel}
+                  </span>
                   <Switch
                     size="small"
                     checked={
@@ -500,7 +517,7 @@ export function ChatPanelHeader({
                         ? handleProjectAgentCreatorToggle
                         : handleWorkItemAgentCreatorToggle
                     }
-                    ariaLabel="Agent"
+                    ariaLabel={agentSwitchLabel}
                     dataTestId={
                       isProjectTarget
                         ? "chat-panel-project-agent-switch"
@@ -512,12 +529,19 @@ export function ChatPanelHeader({
             )}
           </div>
         )}
-      {showBenchmarkSessionGroupContent ||
-      showSessionContent ||
-      selectedWorkItemVisible ||
-      selectedProjectVisible ||
-      showStickyNotesContent ||
-      headerTitleContent ? (
+      {publishedHeaderSlots ? (
+        <div
+          className="flex h-9 min-w-0 flex-1 items-center"
+          style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+        >
+          <ChatPanelHeaderSlotsView slots={publishedHeaderSlots} />
+        </div>
+      ) : showBenchmarkSessionGroupContent ||
+        showSessionContent ||
+        selectedWorkItemVisible ||
+        selectedProjectVisible ||
+        showStickyNotesContent ||
+        headerTitleContent ? (
         <>
           <div
             className="flex h-9 min-w-0 shrink items-center"
@@ -543,10 +567,31 @@ export function ChatPanelHeader({
               </span>
             ) : headerTitleContent ? (
               <span
-                className="flex min-w-0 max-w-full items-center"
+                className="flex min-w-0 max-w-full items-center gap-2"
                 data-testid="chat-panel-header-title"
               >
                 {headerTitleContent}
+                {showExploreAgentSwitchInHeader ? (
+                  <>
+                    <div
+                      className="h-4 w-px shrink-0 bg-border-2"
+                      role="separator"
+                      aria-hidden
+                    />
+                    <label className={agentSwitchClassName}>
+                      <span className={agentSwitchTextClassName}>
+                        {agentSwitchLabel}
+                      </span>
+                      <Switch
+                        size="small"
+                        checked={exploreAgentSearchEnabled}
+                        onChange={handleExploreAgentSearchToggle}
+                        ariaLabel={agentSwitchLabel}
+                        dataTestId="chat-panel-explore-agent-search-switch"
+                      />
+                    </label>
+                  </>
+                ) : null}
               </span>
             ) : showSessionContent ||
               (selectedWorkItemVisible && currentSessionId) ? (

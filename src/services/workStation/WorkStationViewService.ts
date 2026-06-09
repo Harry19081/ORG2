@@ -1,5 +1,6 @@
 import { getViewModeForRoute } from "@src/config/routeViewModeConfig";
 import { ROUTES } from "@src/config/routes";
+import type { StationMode } from "@src/store/ui/simulatorAtom";
 import type { WorkStationTabType } from "@src/store/workstation/tabs/types";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
@@ -104,6 +105,37 @@ export const WorkStationViewService = {
     return true;
   },
 
+  async openStationMode(mode: StationMode): Promise<boolean> {
+    const [
+      { activeStationChatVisibleAtom },
+      { stationModeAtom },
+      { opsControlFocusedTabAtom, opsControlPeekHostAtom },
+    ] = await Promise.all([
+      import("@src/store/ui/chatPanelAtom"),
+      import("@src/store/ui/simulatorAtom"),
+      import("@src/store/workstation"),
+    ]);
+
+    const store = getStore();
+    store.set(stationModeAtom, mode);
+
+    if (mode === "my-station" || mode === "agent-station") {
+      store.set(activeStationChatVisibleAtom, mode, true);
+      store.set(opsControlPeekHostAtom, null);
+      store.set(opsControlFocusedTabAtom, null);
+      if (
+        !isWorkStationRoute() ||
+        window.location.pathname === ROUTES.workStation.opsControl.path
+      ) {
+        dispatchNavigate(ROUTES.workStation.base.path);
+      }
+      return true;
+    }
+
+    dispatchNavigate(ROUTES.workStation.opsControl.path);
+    return true;
+  },
+
   async toggleStationMode(): Promise<boolean> {
     if (!isWorkStationRoute()) return false;
 
@@ -113,11 +145,7 @@ export const WorkStationViewService = {
     const current = store.get(stationModeAtom);
     const nextMode =
       current === "agent-station" ? "my-station" : "agent-station";
-    store.set(stationModeAtom, nextMode);
-    if (window.location.pathname === ROUTES.workStation.kanban.path) {
-      dispatchNavigate(ROUTES.workStation.base.path);
-    }
-    return true;
+    return this.openStationMode(nextMode);
   },
 
   async toggleWorkstationSidebar(): Promise<boolean> {

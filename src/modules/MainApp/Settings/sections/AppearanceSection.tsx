@@ -22,7 +22,10 @@ import {
   FullLayoutThumb,
   InsetLayoutThumb,
 } from "@src/modules/WorkStation/shared/LayoutSettingsDropdown/LayoutThumbs";
-import type { GlobalLayoutMethod } from "@src/store/ui/uiAtom";
+import type {
+  GlobalLayoutMethod,
+  SpotlightPlacement,
+} from "@src/store/ui/uiAtom";
 
 import { ChatPanelAppearanceTab } from "./ChatPanelAppearanceTab";
 import { UI_SCALE_OPTIONS, useAppearanceState } from "./useAppearanceState";
@@ -47,6 +50,8 @@ const GLOBAL_LAYOUT_METHODS: GlobalLayoutMethod[] = [
   "inset",
   "full",
 ];
+
+const SPOTLIGHT_PLACEMENT_OPTIONS: SpotlightPlacement[] = ["top", "center"];
 
 function renderGlobalLayoutThumb(method: GlobalLayoutMethod) {
   switch (method) {
@@ -76,6 +81,8 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
     setApplicationUiFont,
     globalLayoutMethod,
     setGlobalLayoutMethod,
+    spotlightPlacement,
+    setSpotlightPlacement,
     appearanceMode,
     appearanceModeOptions,
     themeOptions,
@@ -173,6 +180,23 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
                   </LayoutPresetOption>
                 ))}
               </div>
+            </SectionRow>
+            <SectionRow
+              label={t("general.spotlightPlacement")}
+              description={t("general.spotlightPlacementDesc")}
+            >
+              <Select
+                value={spotlightPlacement}
+                onChange={(value) =>
+                  setSpotlightPlacement(String(value) as SpotlightPlacement)
+                }
+                options={SPOTLIGHT_PLACEMENT_OPTIONS.map((placement) => ({
+                  label: t(`general.spotlightPlacementOptions.${placement}`),
+                  value: placement,
+                }))}
+                size="default"
+                style={SECTION_CONTROL_STYLE}
+              />
             </SectionRow>
           </SectionContainer>
 

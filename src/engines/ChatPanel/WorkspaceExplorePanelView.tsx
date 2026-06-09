@@ -329,7 +329,7 @@ const WorkspaceExplorePanelView: React.FC = () => {
 
   const heroSection = (
     <div
-      className={`flex flex-col items-center gap-4 ${showHero ? "text-center" : ""}`}
+      className={`flex w-full flex-col items-center gap-4 ${showHero ? "text-center" : ""}`}
     >
       <h1
         className={`${titleSizeClass} font-semibold leading-tight text-text-1`}

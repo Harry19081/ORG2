@@ -317,3 +317,14 @@ export const globalLayoutMethodAtom = atom(
   }
 );
 globalLayoutMethodAtom.debugLabel = "globalLayoutMethodAtom";
+
+export type SpotlightPlacement = "top" | "center";
+
+export const spotlightPlacementAtom = atom(
+  (get) =>
+    get(settingsAtom)["general.spotlightPlacement"] as SpotlightPlacement,
+  (_get, set, value: SpotlightPlacement) => {
+    set(updateSettingAtom, { key: "general.spotlightPlacement", value });
+  }
+);
+spotlightPlacementAtom.debugLabel = "spotlightPlacementAtom";

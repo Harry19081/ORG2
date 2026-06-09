@@ -208,6 +208,12 @@ export function useGlobalKeydownShortcuts(
             shortcutRegistry.dispatch("toggle_station_mode");
             return;
           }
+          if (workStationShortcutSurface && event.code === "KeyO") {
+            event.preventDefault();
+            event.stopPropagation();
+            shortcutRegistry.dispatch("open_ops_control");
+            return;
+          }
         }
       }
 

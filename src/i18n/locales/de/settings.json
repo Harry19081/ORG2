@@ -135,6 +135,12 @@
     "layout": "Layout",
     "globalLayoutMethod": "Layout-Methode",
     "globalLayoutMethodDesc": "Wählen Sie die Rahmung der Inhaltsbereiche",
+    "spotlightPlacement": "Spotlight-Position",
+    "spotlightPlacementDesc": "Wählen Sie, wo die Spotlight-Befehlspalette geöffnet wird",
+    "spotlightPlacementOptions": {
+      "top": "Oben",
+      "center": "Seitenmitte"
+    },
     "inset": "Komfort",
     "full": "Erweitert",
     "compact": "Modern",

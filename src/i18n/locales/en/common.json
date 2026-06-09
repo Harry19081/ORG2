@@ -1600,7 +1600,10 @@
     "moveWorkstationSidebarLeft": "Move Workstation sidebar to the left",
     "moveWorkstationSidebarRight": "Move Workstation sidebar to the right",
     "enableDockAutoHide": "Auto-hide the Workstation dock",
-    "disableDockAutoHide": "Keep the Workstation dock visible"
+    "disableDockAutoHide": "Keep the Workstation dock visible",
+    "openMyStation": "Go to My Station",
+    "openAgentStation": "Go to Agent Station",
+    "openOpsControl": "Go to Ops Control"
   },
   "commands": {
     "showBottomPanel": "Show Bottom Panel",

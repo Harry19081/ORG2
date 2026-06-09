@@ -1536,7 +1536,10 @@
     "moveWorkstationSidebarLeft": "Chuyển thanh bên Workstation sang trái",
     "moveWorkstationSidebarRight": "Chuyển thanh bên Workstation sang phải",
     "enableDockAutoHide": "Tự động ẩn Dock Workstation",
-    "disableDockAutoHide": "Luôn hiển thị Dock Workstation"
+    "disableDockAutoHide": "Luôn hiển thị Dock Workstation",
+    "openMyStation": "Đi tới My Station",
+    "openAgentStation": "Đi tới Agent Station",
+    "openOpsControl": "Đi tới Ops Control"
   },
   "commands": {
     "showBottomPanel": "Hiện bảng dưới",

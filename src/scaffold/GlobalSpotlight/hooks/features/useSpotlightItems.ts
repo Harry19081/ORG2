@@ -54,6 +54,7 @@ import type { UseSpotlightItemsReturn } from "../core/types";
 import {
   AGENT_SESSION_ACTIONS,
   QUICK_NAVIGATION_ACTIONS,
+  STATION_MODE_ACTIONS,
   type SpotlightEditorActionId,
   type SpotlightStaticActionDefinition,
   WORKSPACE_ACTIONS,
@@ -171,7 +172,7 @@ export function useSpotlightItems(
       isChatPanelVisible
     );
     const quickNavigationActions = isWorkStationRoute
-      ? QUICK_NAVIGATION_ACTIONS
+      ? [...STATION_MODE_ACTIONS, ...QUICK_NAVIGATION_ACTIONS]
       : [];
     const themeActions = buildThemeActions(globalThemeId);
     const chatPanelSettingsActions = buildChatPanelSettingsActions({

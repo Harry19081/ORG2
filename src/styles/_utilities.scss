@@ -246,6 +246,8 @@
  * Applied on `.settings-page` roots (Settings module + AgentOrgs/Integrations).
  */
 .settings-page {
+  background: var(--color-bg-2);
+
   &,
   *:not(.cm-scroller) {
     scrollbar-width: none;

@@ -42,6 +42,14 @@ export const GLOBAL_SHORTCUTS: ShortcutEntry[] = [
     category: "view",
   },
   {
+    id: "open_ops_control",
+    command: "Open Ops Control",
+    macKeys: "⌥⌘O",
+    winKeys: "Ctrl+Alt+O",
+    scope: "global",
+    category: "navigation",
+  },
+  {
     id: "toggle_gui_control",
     command: "Open Agent Control",
     macKeys: "⌥⌘G",

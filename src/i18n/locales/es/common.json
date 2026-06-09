@@ -1535,7 +1535,10 @@
     "moveWorkstationSidebarLeft": "Mover la barra lateral de Workstation a la izquierda",
     "moveWorkstationSidebarRight": "Mover la barra lateral de Workstation a la derecha",
     "enableDockAutoHide": "Ocultar automáticamente el Dock de Workstation",
-    "disableDockAutoHide": "Mantener visible el Dock de Workstation"
+    "disableDockAutoHide": "Mantener visible el Dock de Workstation",
+    "openMyStation": "Ir a My Station",
+    "openAgentStation": "Ir a Agent Station",
+    "openOpsControl": "Ir a Ops Control"
   },
   "commands": {
     "showBottomPanel": "Mostrar panel inferior",

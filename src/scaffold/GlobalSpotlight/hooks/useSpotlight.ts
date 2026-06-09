@@ -197,6 +197,15 @@ export function useSpotlight(
         "toggle-chat-panel": () => {
           void WorkStationViewService.showWorkStation();
         },
+        "open-my-station": () => {
+          void WorkStationViewService.openStationMode("my-station");
+        },
+        "open-agent-station": () => {
+          void WorkStationViewService.openStationMode("agent-station");
+        },
+        "open-ops-control": () => {
+          void WorkStationViewService.openStationMode("ops-control");
+        },
         "open-search-sidebar": () => {
           void WorkStationViewService.openSearchSidebar();
         },

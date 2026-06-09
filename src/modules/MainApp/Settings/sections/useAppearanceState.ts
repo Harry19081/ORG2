@@ -21,6 +21,7 @@ import {
   globalLayoutMethodAtom,
   globalThemeIdAtom,
   primaryColorPresetAtom,
+  spotlightPlacementAtom,
   uiScaleAtom,
   updateSettingsBatchAtom,
 } from "@src/store";
@@ -55,6 +56,9 @@ export function useAppearanceState() {
   );
   const [globalLayoutMethod, setGlobalLayoutMethod] = useAtom(
     globalLayoutMethodAtom
+  );
+  const [spotlightPlacement, setSpotlightPlacement] = useAtom(
+    spotlightPlacementAtom
   );
   const updateSettingsBatch = useSetAtom(updateSettingsBatchAtom);
 
@@ -163,6 +167,8 @@ export function useAppearanceState() {
     setApplicationUiFont,
     globalLayoutMethod,
     setGlobalLayoutMethod,
+    spotlightPlacement,
+    setSpotlightPlacement,
     appearanceMode,
     appearanceModeOptions,
     themeOptions,

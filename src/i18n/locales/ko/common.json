@@ -1539,7 +1539,10 @@
     "moveWorkstationSidebarLeft": "Workstation 사이드바를 왼쪽으로 이동",
     "moveWorkstationSidebarRight": "Workstation 사이드바를 오른쪽으로 이동",
     "enableDockAutoHide": "Workstation Dock 자동 숨기기",
-    "disableDockAutoHide": "Workstation Dock 항상 표시"
+    "disableDockAutoHide": "Workstation Dock 항상 표시",
+    "openMyStation": "My Station으로 이동",
+    "openAgentStation": "Agent Station으로 이동",
+    "openOpsControl": "Ops Control로 이동"
   },
   "commands": {
     "showBottomPanel": "하단 패널 표시",

@@ -1535,7 +1535,10 @@
     "moveWorkstationSidebarLeft": "Переместить боковую панель Workstation влево",
     "moveWorkstationSidebarRight": "Переместить боковую панель Workstation вправо",
     "enableDockAutoHide": "Автоматически скрывать Dock Workstation",
-    "disableDockAutoHide": "Всегда показывать Dock Workstation"
+    "disableDockAutoHide": "Всегда показывать Dock Workstation",
+    "openMyStation": "Перейти в My Station",
+    "openAgentStation": "Перейти в Agent Station",
+    "openOpsControl": "Перейти в Ops Control"
   },
   "commands": {
     "showBottomPanel": "Показать нижнюю панель",

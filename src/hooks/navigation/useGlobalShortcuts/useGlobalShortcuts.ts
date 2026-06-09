@@ -32,6 +32,7 @@ import { useZoomShortcuts } from "./useZoomShortcuts";
  * - Command+J / Ctrl+J: Open Workstation Code Editor terminal tab
  * - Command+Option+B / Ctrl+Alt+B: Focus Chat Panel or show Workstation
  * - Command+Option+M / Ctrl+Alt+M: Toggle My Station / Agent's Station
+ * - Command+Option+O / Ctrl+Alt+O: Open Ops Control
  * - Command+Option+U / Ctrl+Alt+U: Toggle Workstation sidebar
  * - Command+= (Meta+=): Zoom in (increase UI scale)
  * - Command+- (Meta+-): Zoom out (decrease UI scale)

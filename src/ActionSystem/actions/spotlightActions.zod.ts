@@ -149,6 +149,22 @@ const spotlightOpenEditorCommand = defineZodAction(
   }
 );
 
+const spotlightOpenEditorSymbol = defineZodAction(
+  {
+    id: ACTION_ID.SPOTLIGHT_OPEN_EDITOR_SYMBOL,
+    category: "spotlight",
+    description: "Open Spotlight's Code Editor symbol search flow",
+    params: z.object({}),
+    layer: "gui",
+    shortcut: getShortcutKeys("go_to_symbol"),
+    examples: ["go to symbol", "open symbol search", "find editor symbol"],
+  },
+  async () => {
+    openEditorSpotlight("", "symbol");
+    return { success: true, message: "Opened editor symbol search" };
+  }
+);
+
 const spotlightOpenAgentSessionSearch = defineZodAction(
   {
     id: ACTION_ID.SPOTLIGHT_OPEN_AGENT_SESSION_SEARCH,
@@ -177,6 +193,7 @@ export const spotlightZodActions = [
   spotlightOpenBranchPicker,
   spotlightOpenEditorFile,
   spotlightOpenEditorCommand,
+  spotlightOpenEditorSymbol,
   spotlightOpenAgentSessionSearch,
 ];
 
