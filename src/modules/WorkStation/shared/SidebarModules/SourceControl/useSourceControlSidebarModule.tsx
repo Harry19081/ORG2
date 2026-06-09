@@ -21,6 +21,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import Input from "@src/components/Input";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
 import { useGitStatus } from "@src/contexts/git";
 import { sessionIdAtom } from "@src/engines/SessionCore";
@@ -105,6 +106,7 @@ export function useSourceControlSidebarModule({
 
   const [showFilter, setShowFilter] = useState(false);
   const [viewMode, setViewMode] = useState<"list-tree" | "list">("list-tree");
+  const [showPrFilter, setShowPrFilter] = useState(false);
   const [prFilterQuery, setPrFilterQuery] = useState("");
   const collapseSidebar = useSetAtom(
     workStationPrimarySidebarCollapsedPersistAtom
@@ -243,35 +245,27 @@ export function useSourceControlSidebarModule({
     [issueCallbacks, t]
   );
 
-  const prFilterInput = useMemo(
-    () => (
-      <div className="flex items-center gap-0.5">
-        <Search
-          size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
-          strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
-          className="shrink-0 text-text-3"
-        />
-        <input
-          type="text"
-          value={prFilterQuery}
-          onChange={(e) => setPrFilterQuery(e.target.value)}
-          placeholder={t("common:actions.filter", "Filter…")}
-          className="h-5 w-20 rounded bg-fill-2 px-1.5 text-[11px] text-text-1 placeholder:text-text-3 focus:outline-none focus:ring-1 focus:ring-primary-5"
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setPrFilterQuery("");
-          }}
-        />
-      </div>
-    ),
-    [prFilterQuery, t]
-  );
+  const handleTogglePrFilter = useCallback(() => {
+    setShowPrFilter((prev) => {
+      if (prev) setPrFilterQuery("");
+      return !prev;
+    });
+  }, []);
 
   const prActions = useMemo<SectionHeaderAction[]>(
     () => [
       {
         key: "pr-filter",
-        customRender: prFilterInput,
-        forceVisible: prFilterQuery.length > 0,
+        icon: (
+          <Search
+            size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
+            strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
+            className={showPrFilter ? "text-primary-6" : ""}
+          />
+        ),
+        tooltip: t("common:actions.filter", "Filter"),
+        onClick: handleTogglePrFilter,
+        forceVisible: showPrFilter || prFilterQuery.length > 0,
       },
       {
         key: "pr-collapse-sidebar",
@@ -285,7 +279,13 @@ export function useSourceControlSidebarModule({
         onClick: handleCollapseSidebar,
       },
     ],
-    [prFilterQuery, prFilterInput, handleCollapseSidebar, t]
+    [
+      showPrFilter,
+      prFilterQuery,
+      handleTogglePrFilter,
+      handleCollapseSidebar,
+      t,
+    ]
   );
 
   const actions = isHistoryMode
@@ -321,6 +321,28 @@ export function useSourceControlSidebarModule({
   const prContent = useMemo(
     () => (
       <div className="flex h-full min-h-0 flex-col">
+        {showPrFilter && (
+          <div className="flex-shrink-0 px-3 pb-2 pt-1">
+            <Input
+              prefix={<Search size={14} strokeWidth={1.75} />}
+              placeholder={t(
+                "common:actions.filterPullRequests",
+                "Filter pull requests..."
+              )}
+              value={prFilterQuery}
+              onChange={(value) => setPrFilterQuery(value)}
+              size="small"
+              className="input-pane-surface"
+              autoFocus
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === "Escape") {
+                  setPrFilterQuery("");
+                  setShowPrFilter(false);
+                }
+              }}
+            />
+          </div>
+        )}
         <PullRequestContent
           branchName={branchName}
           onHistorySelectionChange={onGitHistorySelectionChange}
@@ -328,7 +350,7 @@ export function useSourceControlSidebarModule({
         />
       </div>
     ),
-    [branchName, onGitHistorySelectionChange, prFilterQuery]
+    [showPrFilter, prFilterQuery, branchName, onGitHistorySelectionChange, t]
   );
 
   const issuesContent = useMemo(

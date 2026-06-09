@@ -27,7 +27,6 @@ import {
   ArrowUpRight,
   ChevronRight,
   ExternalLink,
-  GitBranch,
   ListChevronsDownUp,
 } from "lucide-react";
 import React, {
@@ -55,14 +54,7 @@ import {
   NoTabsPlaceholder,
   TabBarBottomPanelToggle,
 } from "@src/modules/WorkStation/shared";
-import {
-  HEADER_ICON_SIZE,
-  TYPOGRAPHY,
-} from "@src/modules/WorkStation/shared/tokens";
-import {
-  getPrStatusLabelKey,
-  getPrStatusVariant,
-} from "@src/shared/pr/prStatus";
+import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { repoSelectorOpenAtom } from "@src/store/ui/overlayAtom";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationAtom";
 import { gitReviewNavigationAtom } from "@src/store/workstation/codeEditor/gitReviewNavigationAtom";
@@ -567,45 +559,9 @@ const EditorContent: React.FC<EditorContentProps> = memo(
 
           {historySelection?.type === "pr" && (
             <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-2 overflow-x-auto pl-1 scrollbar-hide">
-              {/* Status badge */}
-              {(() => {
-                const statusVariant = getPrStatusVariant(
-                  historySelection.prStatus
-                );
-                return (
-                  <span
-                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 capitalize ${TYPOGRAPHY.badge} ${statusVariant.badgeClass}`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${statusVariant.dotClass}`}
-                      aria-hidden
-                    />
-                    {t(
-                      getPrStatusLabelKey(historySelection.prStatus),
-                      historySelection.prStatus
-                    )}
-                  </span>
-                );
-              })()}
-              <span className={`shrink-0 text-[12px] tabular-nums text-text-3`}>
-                #{historySelection.prNumber}
-              </span>
-              <ChevronRight
-                size={14}
-                strokeWidth={1.75}
-                className="flex-shrink-0 text-fill-4"
-              />
               <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text-1">
                 {historySelection.prTitle}
               </span>
-              {historySelection.headBranch && (
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-fill-2 px-1.5 py-0.5 text-text-3">
-                  <GitBranch size={10} className="shrink-0" />
-                  <span className={`font-mono ${TYPOGRAPHY.secondary}`}>
-                    {historySelection.headBranch}
-                  </span>
-                </span>
-              )}
               <PrCommitDropdown
                 prUrl={historySelection.prUrl}
                 onCommitSelect={handlePrCommitSelect}
