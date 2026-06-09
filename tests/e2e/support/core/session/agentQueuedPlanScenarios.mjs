@@ -1216,9 +1216,10 @@ async function runPlanUpdateSupersedesScenario(config) {
     `${config.label}-plan-update-second`
   );
   updatePrompt = [
-    `Use this updated ORGII_PLAN_REQUEST.md content as the source of truth for ${config.label}:`,
+    `Use these updated inline requirements as the complete source of truth for ${config.label}:`,
     updatedRequestContent.replace(/\s+/g, " ").trim(),
-    "The request file has changed; revise the pending plan from that content before implementation starts.",
+    "Research is complete; do not answer in prose.",
+    "Revise the pending plan from this content before implementation starts.",
     "Submit the revised plan for approval.",
   ].join(" ");
   const chatInputSelector = await waitForChatInput();
