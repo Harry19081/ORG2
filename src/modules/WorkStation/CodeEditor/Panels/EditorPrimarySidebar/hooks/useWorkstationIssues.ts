@@ -10,6 +10,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getGitRemotes } from "@src/api/http/git/remotes";
+import { createLogger } from "@src/hooks/logger";
 import { parseGithubRepoFullName } from "@src/services/git/operations/createPullRequest";
 import {
   addIssueComment,
@@ -35,6 +36,8 @@ import {
 import type { IssueFilterState } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 
 export type { IssueFilterState };
+
+const logger = createLogger("WorkstationIssues");
 
 export interface UpdateIssueFields {
   title?: string;
@@ -95,7 +98,7 @@ export function useWorkstationIssues({
 
     void (async () => {
       if (remoteUrlProp) {
-        console.log("[Issues] remoteUrl from prop:", remoteUrlProp);
+        logger.debug("remote URL from prop", remoteUrlProp);
         if (!cancelled) {
           setResolvedRemoteUrl(remoteUrlProp);
           setRemoteUrlLoading(false);
@@ -107,20 +110,15 @@ export function useWorkstationIssues({
         return;
       }
 
-      console.log(
-        "[Issues] fetching remotes for repoPath:",
-        repoPath,
-        "repoId:",
-        repoId
-      );
+      logger.debug("fetching remotes", { repoPath, repoId });
       try {
         const remotesData = await getGitRemotes({
           repo_id: repoId,
           repo_path: repoPath,
         });
-        console.log("[Issues] getGitRemotes result:", remotesData);
+        logger.debug("getGitRemotes result", remotesData);
         const origin = remotesData?.remotes?.find((r) => r.name === "origin");
-        console.log("[Issues] origin remote:", origin);
+        logger.debug("origin remote", origin);
         if (!cancelled) {
           if (origin?.url) {
             setResolvedRemoteUrl(origin.url);
@@ -128,7 +126,7 @@ export function useWorkstationIssues({
           setRemoteUrlLoading(false);
         }
       } catch (err) {
-        console.warn("[Issues] getGitRemotes failed:", err);
+        logger.warn("getGitRemotes failed", err);
         if (!cancelled) setRemoteUrlLoading(false);
       }
     })();
@@ -144,12 +142,7 @@ export function useWorkstationIssues({
   useEffect(() => {
     if (!resolvedRemoteUrl) return;
     const repoFullName = parseGithubRepoFullName(resolvedRemoteUrl);
-    console.log(
-      "[Issues] resolvedRemoteUrl:",
-      resolvedRemoteUrl,
-      "→ repoFullName:",
-      repoFullName
-    );
+    logger.debug("resolved remote URL", { resolvedRemoteUrl, repoFullName });
     setHasGitHubAuth(!!repoFullName);
   }, [resolvedRemoteUrl]);
 
@@ -178,15 +171,15 @@ export function useWorkstationIssues({
 
   const fetchPage = useCallback(
     async (filter: IssueFilterState, page: number) => {
-      console.log("[Issues] fetchPage called:", {
+      logger.debug("fetchPage called", {
         filter,
         page,
         resolvedRemoteUrl,
         hasGitHubAuth,
       });
       if (!resolvedRemoteUrl || !hasGitHubAuth) {
-        console.log(
-          "[Issues] fetchPage skipped — resolvedRemoteUrl or hasGitHubAuth missing"
+        logger.debug(
+          "fetchPage skipped because remote URL or GitHub auth is missing"
         );
         return;
       }
@@ -197,7 +190,7 @@ export function useWorkstationIssues({
         state: filter === "all" ? "all" : filter,
         page,
       });
-      console.log("[Issues] fetchIssues result:", result);
+      logger.debug("fetchIssues result", result);
 
       if (!mountedRef.current) return;
 

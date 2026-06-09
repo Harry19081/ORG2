@@ -40,7 +40,7 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
     comments,
     commentsLoading,
     submittingComment,
-    onClose,
+    onClose: _onClose,
     onCloseIssue,
     onReopenIssue,
     onAddComment,

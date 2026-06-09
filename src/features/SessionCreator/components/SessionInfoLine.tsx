@@ -138,7 +138,7 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
   onBranchChange,
   branchLoading,
   pillVariant = "default",
-  fullWidth = false,
+  fullWidth: _fullWidth = false,
   worktreeLocation,
   onWorktreeLocationChange,
   disabled = false,

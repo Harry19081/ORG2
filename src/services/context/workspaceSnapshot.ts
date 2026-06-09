@@ -5,11 +5,13 @@
  * Kept in a dependency-free module so `api/tauri/agent/types` and RPC schemas
  * do not import `collectors/IdeContextCollector` (which pulls Jotai stores).
  */
-import type { DispatchCategory, KeySource } from "@src/api/tauri/session";
+import type {
+  DispatchCategory,
+  KeySource,
+} from "@src/api/tauri/session/dispatchTypes";
 import type { CliAgentType } from "@src/api/types/keys";
 import type { TechSavvyLevel } from "@src/config/profile/userProfile";
 import type { ViewModeType } from "@src/config/viewModeTypes";
-import type { ChatPanelSurfaceKind } from "@src/store/ui/chatPanelAtom";
 import type { StationMode } from "@src/store/ui/simulatorAtom";
 import type { StatusBarAppType } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import type {
@@ -35,6 +37,18 @@ export interface GuideTargetSnapshot {
     height: number;
   };
 }
+
+export type ChatPanelSurfaceKind =
+  | "session"
+  | "benchmarkSessionGroup"
+  | "newProject"
+  | "newWorkItem"
+  | "project"
+  | "workItem"
+  | "workspaceDashboard"
+  | "workspaceExplore"
+  | "workspaceOverview"
+  | "stickyNotes";
 
 export interface AppUiSnapshot {
   route?: {

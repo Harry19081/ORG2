@@ -579,7 +579,7 @@ export function useQueueDispatch(): void {
       dispatchLockRef.current = false;
       lockSessionIdRef.current = null;
     });
-  }, [dequeueMessage, rememberSentQueueId, setUserInitiatedCancel, store]);
+  }, [dequeueMessage, setUserInitiatedCancel, store]);
 
   useEffect(() => {
     tryDispatchNextRef.current = tryDispatchNext;
