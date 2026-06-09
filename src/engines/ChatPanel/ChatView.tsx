@@ -301,13 +301,16 @@ const ChatView: React.FC<ChatViewProps> = memo(
 
     // Message queue — keep this aligned with InputArea.sessionId so queued
     // follow-ups written by the composer are visible on the same surface.
+    // Promoted "now" messages are hidden: from the user's perspective Send
+    // Now dispatched them; the dispatcher delivers the moment the FSM allows.
     const messageQueue = useAtomValue(messageQueueAtom);
     const sessionMessageQueue = useMemo(
       () =>
         messageQueue.filter(
           (message) =>
-            message.sessionId === queueSessionId ||
-            message.sessionId === pipelineSessionId
+            (message.sessionId === queueSessionId ||
+              message.sessionId === pipelineSessionId) &&
+            message.priority !== "now"
         ),
       [messageQueue, pipelineSessionId, queueSessionId]
     );

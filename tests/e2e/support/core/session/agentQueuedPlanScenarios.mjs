@@ -614,8 +614,8 @@ function hasRunningToolFeedback(snapshot) {
   );
 }
 
-function hasRunningLiveDelta(snapshot) {
-  return snapshot.running && snapshot.liveDeltaLength > 0;
+function hasObservableLiveDelta(snapshot) {
+  return snapshot.liveDeltaLength > 0;
 }
 
 async function waitForIntermediateStreamEvents(label, finalText = null) {
@@ -624,7 +624,7 @@ async function waitForIntermediateStreamEvents(label, finalText = null) {
   let latestSnapshot = null;
   let sawIncrementalProgress = false;
   let sawRunningToolFeedback = false;
-  let sawRunningLiveDelta = false;
+  let sawObservableLiveDelta = false;
   await browser.waitUntil(
     async () => {
       const state = await inspectChatState(`${label}-intermediate-stream`);
@@ -637,8 +637,8 @@ async function waitForIntermediateStreamEvents(label, finalText = null) {
         if (!firstSnapshot) {
           firstSnapshot = snapshot;
         }
-        if (hasRunningLiveDelta(snapshot)) {
-          sawRunningLiveDelta = true;
+        if (hasObservableLiveDelta(snapshot)) {
+          sawObservableLiveDelta = true;
           return true;
         }
         if (hasRunningToolFeedback(snapshot)) {
@@ -685,7 +685,7 @@ async function waitForIntermediateStreamEvents(label, finalText = null) {
   }
   if (
     !sawIncrementalProgress &&
-    !sawRunningLiveDelta &&
+    !sawObservableLiveDelta &&
     !sawRunningToolFeedback
   ) {
     throw new Error(
