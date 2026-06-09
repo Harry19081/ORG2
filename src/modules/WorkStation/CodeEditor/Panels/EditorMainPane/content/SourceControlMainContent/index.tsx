@@ -68,7 +68,7 @@ const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
   collapseAllSignal,
   emptyFocusActions,
 }) => {
-  if (historySelection) {
+  if (historySelection && historySelection.type !== "pr") {
     const resolvedRepoId = repoId ?? repoPath;
     const repoReady = Boolean(repoPath && resolvedRepoId);
 

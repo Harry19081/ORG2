@@ -222,6 +222,14 @@ export type SourceControlHistorySelection =
       commitSha: string;
       shortSha: string;
       commitMessage: string;
+    }
+  | {
+      type: "pr";
+      prNumber: number;
+      prTitle: string;
+      prUrl: string;
+      prStatus: string;
+      headBranch: string;
     };
 
 export interface SourceControlTabData {

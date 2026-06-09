@@ -26,6 +26,8 @@ import {
   ArrowRight,
   ArrowUpRight,
   ChevronRight,
+  ExternalLink,
+  GitBranch,
   ListChevronsDownUp,
 } from "lucide-react";
 import React, {
@@ -40,7 +42,9 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { useActionSystem } from "@src/ActionSystem";
+import { GitHubReAuthError, listPRCommitsLocal } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
+import Select from "@src/components/Select";
 import TabPill from "@src/components/TabPill";
 import { useGitStatus } from "@src/contexts/git";
 import {
@@ -51,7 +55,14 @@ import {
   NoTabsPlaceholder,
   TabBarBottomPanelToggle,
 } from "@src/modules/WorkStation/shared";
-import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
+import {
+  HEADER_ICON_SIZE,
+  TYPOGRAPHY,
+} from "@src/modules/WorkStation/shared/tokens";
+import {
+  getPrStatusLabelKey,
+  getPrStatusVariant,
+} from "@src/shared/pr/prStatus";
 import { repoSelectorOpenAtom } from "@src/store/ui/overlayAtom";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationAtom";
 import { gitReviewNavigationAtom } from "@src/store/workstation/codeEditor/gitReviewNavigationAtom";
@@ -75,6 +86,121 @@ import type { EditorContentProps } from "./types";
 const TerminalMainContent = React.lazy(
   () => import("./content/TerminalMainContent")
 );
+
+// ============================================
+// PR Header helpers
+// ============================================
+
+function parsePrUrlForHeader(
+  prUrl: string
+): { repoFullName: string; number: number } | null {
+  const m = prUrl.match(/github\.com\/([^/]+\/[^/]+)\/pull\/(\d+)/);
+  if (!m) return null;
+  return { repoFullName: m[1], number: Number(m[2]) };
+}
+
+interface PrCommit {
+  sha: string;
+  shortSha: string;
+  summary: string;
+}
+
+interface PrCommitDropdownProps {
+  prUrl: string;
+  onCommitSelect: (selection: SourceControlHistorySelection) => void;
+}
+
+const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
+  prUrl,
+  onCommitSelect,
+}) => {
+  const [commits, setCommits] = useState<PrCommit[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedSha, setSelectedSha] = useState<string | null>(null);
+
+  useEffect(() => {
+    const parsed = parsePrUrlForHeader(prUrl);
+    if (!parsed) return;
+
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      try {
+        const raw = await listPRCommitsLocal(
+          parsed.repoFullName,
+          parsed.number
+        );
+        if (cancelled) return;
+        setCommits(
+          raw.map((item): PrCommit => {
+            const sha = String((item as Record<string, unknown>)["sha"] ?? "");
+            const commit = ((item as Record<string, unknown>)["commit"] ??
+              {}) as Record<string, unknown>;
+            const message = String(commit["message"] ?? "");
+            return {
+              sha,
+              shortSha: sha.slice(0, 7),
+              summary: message.split("\n")[0] || sha.slice(0, 7),
+            };
+          })
+        );
+      } catch (err) {
+        if (cancelled || err instanceof GitHubReAuthError) return;
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [prUrl]);
+
+  const options = useMemo(
+    () =>
+      commits.map((c) => ({
+        value: c.sha,
+        label: `${c.shortSha} ${c.summary}`,
+        triggerLabel: `${c.shortSha} ${c.summary}`,
+      })),
+    [commits]
+  );
+
+  const handleChange = useCallback(
+    (value: string | number | (string | number)[]) => {
+      const sha = String(Array.isArray(value) ? value[0] : value);
+      const commit = commits.find((c) => c.sha === sha);
+      if (!commit) return;
+      setSelectedSha(sha);
+      onCommitSelect({
+        type: "commit",
+        commitSha: commit.sha,
+        shortSha: commit.shortSha,
+        commitMessage: commit.summary,
+      });
+    },
+    [commits, onCommitSelect]
+  );
+
+  if (commits.length === 0 && !loading) return null;
+
+  return (
+    <Select
+      value={selectedSha ?? undefined}
+      onChange={handleChange}
+      options={options}
+      loading={loading}
+      placeholder="Pick a commit…"
+      size="small"
+      variant="ghost"
+      dropdownWidthMode="min-match"
+      style={{ minWidth: 180, maxWidth: 320 }}
+    />
+  );
+};
 
 // ============================================
 // Main Component
@@ -300,6 +426,8 @@ const EditorContent: React.FC<EditorContentProps> = memo(
 
     const handleOpenSourceControlHistoryInNewTab = useCallback(
       (selection: SourceControlHistorySelection) => {
+        if (selection.type === "pr") return;
+
         const nextTab =
           selection.type === "stash"
             ? createStashDetailTab(
@@ -317,6 +445,25 @@ const EditorContent: React.FC<EditorContentProps> = memo(
           const existing = state.tabs.find((tab) => tab.id === nextTab.id);
           const tabs = existing ? state.tabs : [...state.tabs, nextTab];
           return { ...state, tabs, activeTabId: nextTab.id };
+        });
+      },
+      [updatePaneState]
+    );
+
+    const handlePrCommitSelect = useCallback(
+      (selection: SourceControlHistorySelection) => {
+        updatePaneState((state) => {
+          const tabIndex = state.tabs.findIndex(
+            (item) => item.type === "source-control"
+          );
+          if (tabIndex === -1) return state;
+          const existing = state.tabs[tabIndex];
+          const nextTabs = [...state.tabs];
+          nextTabs[tabIndex] = {
+            ...existing,
+            data: { ...existing.data, historySelection: selection },
+          };
+          return { ...state, tabs: nextTabs };
         });
       },
       [updatePaneState]
@@ -369,7 +516,55 @@ const EditorContent: React.FC<EditorContentProps> = memo(
             </>
           )}
 
-          {historySelection && (
+          {historySelection?.type === "pr" && (
+            <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-2 overflow-x-auto pl-1 scrollbar-hide">
+              {/* Status badge */}
+              {(() => {
+                const statusVariant = getPrStatusVariant(
+                  historySelection.prStatus
+                );
+                return (
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 capitalize ${TYPOGRAPHY.badge} ${statusVariant.badgeClass}`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${statusVariant.dotClass}`}
+                      aria-hidden
+                    />
+                    {t(
+                      getPrStatusLabelKey(historySelection.prStatus),
+                      historySelection.prStatus
+                    )}
+                  </span>
+                );
+              })()}
+              <span className={`shrink-0 text-[12px] tabular-nums text-text-3`}>
+                #{historySelection.prNumber}
+              </span>
+              <ChevronRight
+                size={14}
+                strokeWidth={1.75}
+                className="flex-shrink-0 text-fill-4"
+              />
+              <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text-1">
+                {historySelection.prTitle}
+              </span>
+              {historySelection.headBranch && (
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-fill-2 px-1.5 py-0.5 text-text-3">
+                  <GitBranch size={10} className="shrink-0" />
+                  <span className={`font-mono ${TYPOGRAPHY.secondary}`}>
+                    {historySelection.headBranch}
+                  </span>
+                </span>
+              )}
+              <PrCommitDropdown
+                prUrl={historySelection.prUrl}
+                onCommitSelect={handlePrCommitSelect}
+              />
+            </div>
+          )}
+
+          {historySelection && historySelection.type !== "pr" && (
             <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-[1px] overflow-x-auto pl-1 scrollbar-hide">
               <span className="inline-flex flex-shrink-0 whitespace-nowrap text-[13px] text-text-2">
                 {historySelection.shortSha}
@@ -386,7 +581,19 @@ const EditorContent: React.FC<EditorContentProps> = memo(
           )}
 
           <span className="ml-auto flex h-7 flex-shrink-0 items-center gap-px">
-            {historySelection && (
+            {historySelection?.type === "pr" && (
+              <a
+                href={historySelection.prUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-7 w-7 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+                title={t("common:actions.openOnGitHub", "Open on GitHub")}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink size={HEADER_ICON_SIZE.sm} />
+              </a>
+            )}
+            {historySelection && historySelection.type !== "pr" && (
               <Button
                 htmlType="button"
                 variant="tertiary"
@@ -452,6 +659,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       activeTab,
       gitReviewNavigation.total,
       handleOpenSourceControlHistoryInNewTab,
+      handlePrCommitSelect,
       handleReviewNextFile,
       handleReviewPrevFile,
       handleSourceControlCollapseAll,
