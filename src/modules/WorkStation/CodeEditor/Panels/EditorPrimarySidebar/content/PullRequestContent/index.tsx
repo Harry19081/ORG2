@@ -9,7 +9,7 @@
  * hover tooltip on an info icon so the row stays compact.
  */
 import { useAtomValue } from "jotai";
-import { GitBranch, Info, Loader2, TriangleAlert } from "lucide-react";
+import { Info, Loader2, TriangleAlert } from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -71,25 +71,29 @@ const PrListRow: React.FC<PrListRowProps> = ({
   const tooltipContent = (
     <div className="flex flex-col gap-1 py-0.5">
       <div className="flex items-center gap-2 text-[11px]">
+        <span className="text-text-3">{t("labels.status", "Status")}</span>
+        <span className="capitalize text-text-2">
+          {t(getPrStatusLabelKey(statusKey), statusKey)}
+        </span>
+      </div>
+      <div className="flex items-center gap-2 text-[11px]">
+        <span className="text-text-3">{t("labels.number", "Number")}</span>
+        <span className="tabular-nums text-text-2">#{pr.number}</span>
+      </div>
+      {pr.head_branch && (
+        <div className="flex items-center gap-2 text-[11px]">
+          <span className="text-text-3">{t("labels.branch", "Branch")}</span>
+          <span className="font-mono text-text-2">
+            {truncateBranchLabel(pr.head_branch, 40)}
+          </span>
+        </div>
+      )}
+      <div className="flex items-center gap-2 text-[11px]">
         <span className="text-text-3">{t("labels.updated", "Updated")}</span>
         <span className="text-text-2">
           {pr.updated_at ? formatRelativeTime(pr.updated_at, "nano") : "—"}
         </span>
       </div>
-      <div className="flex items-center gap-2 text-[11px]">
-        <span className="text-text-3">{t("labels.created", "Created")}</span>
-        <span className="text-text-2">
-          {pr.created_at ? formatRelativeTime(pr.created_at, "nano") : "—"}
-        </span>
-      </div>
-      {pr.base_branch && (
-        <div className="flex items-center gap-2 text-[11px]">
-          <span className="text-text-3">{t("labels.base", "Base")}</span>
-          <span className="font-mono text-text-2">
-            {truncateBranchLabel(pr.base_branch, 40)}
-          </span>
-        </div>
-      )}
     </div>
   );
 
@@ -97,64 +101,40 @@ const PrListRow: React.FC<PrListRowProps> = ({
     <button
       type="button"
       onClick={() => onClick(pr)}
-      className={`group flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors ${
+      className={`group flex w-full items-center gap-1.5 px-3 py-1.5 text-left transition-colors ${
         isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row
       } ${isCurrentBranch ? "border-l-2 border-primary-5 pl-[10px]" : ""}`}
     >
-      {/* Top row: status dot + number + current-branch badge + info icon */}
-      <div className="flex min-w-0 items-center gap-1.5">
-        <span
-          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 capitalize ${TYPOGRAPHY.badge} ${statusVariant.badgeClass}`}
-        >
-          <span
-            className={`h-1.5 w-1.5 rounded-full ${statusVariant.dotClass}`}
-            aria-hidden
-          />
-          {t(getPrStatusLabelKey(statusKey), statusKey)}
-        </span>
-        <span className={`${TYPOGRAPHY.secondary} tabular-nums text-text-3`}>
-          #{pr.number}
-        </span>
-        {isCurrentBranch && (
-          <span
-            className={`shrink-0 rounded-full px-1.5 py-0.5 ${TYPOGRAPHY.badge} bg-primary-1 text-primary-6`}
-          >
-            {t("labels.currentBranch", "current")}
-          </span>
-        )}
+      {/* Status dot */}
+      <span
+        className={`h-1.5 w-1.5 shrink-0 rounded-full ${statusVariant.dotClass}`}
+        aria-hidden
+      />
+
+      {/* PR title */}
+      <span
+        className="min-w-0 flex-1 truncate text-[12px] leading-snug text-text-1"
+        title={pr.title}
+      >
+        {pr.title}
+      </span>
+
+      {/* Info icon — stopPropagation on the wrapper div so the button's onClick doesn't fire */}
+      <div
+        className="ml-auto shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Tooltip
           content={tooltipContent}
           position="bottom-end"
           smartPlacement
           panelStyle
-          mouseEnterDelay={300}
+          mouseEnterDelay={200}
         >
-          <span
-            className="ml-auto shrink-0 cursor-default opacity-0 transition-opacity group-hover:opacity-100"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <span className="flex cursor-default items-center">
             <Info size={12} className="text-text-3" />
           </span>
         </Tooltip>
-      </div>
-
-      {/* Title */}
-      <div
-        className="truncate text-[12px] leading-snug text-text-1"
-        title={pr.title}
-      >
-        {pr.title}
-      </div>
-
-      {/* Branch chip */}
-      <div
-        className="inline-flex min-w-0 items-center gap-1 text-text-3"
-        title={pr.head_branch}
-      >
-        <GitBranch size={10} className="shrink-0" />
-        <span className={`truncate font-mono ${TYPOGRAPHY.secondary}`}>
-          {truncateBranchLabel(pr.head_branch, 40)}
-        </span>
       </div>
     </button>
   );

@@ -105,6 +105,8 @@ interface PrCommit {
   summary: string;
 }
 
+const prCommitsCache = new Map<string, PrCommit[]>();
+
 interface PrCommitDropdownProps {
   prUrl: string;
   onCommitSelect: (selection: SourceControlHistorySelection) => void;
@@ -122,6 +124,22 @@ const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
     const parsed = parsePrUrlForHeader(prUrl);
     if (!parsed) return;
 
+    const cached = prCommitsCache.get(prUrl);
+    if (cached) {
+      setCommits(cached);
+      if (cached.length > 0) {
+        const first = cached[0];
+        setSelectedSha(first.sha);
+        onCommitSelect({
+          type: "commit",
+          commitSha: first.sha,
+          shortSha: first.shortSha,
+          commitMessage: first.summary,
+        });
+      }
+      return;
+    }
+
     let cancelled = false;
 
     const load = async () => {
@@ -132,19 +150,29 @@ const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
           parsed.number
         );
         if (cancelled) return;
-        setCommits(
-          raw.map((item): PrCommit => {
-            const sha = String((item as Record<string, unknown>)["sha"] ?? "");
-            const commit = ((item as Record<string, unknown>)["commit"] ??
-              {}) as Record<string, unknown>;
-            const message = String(commit["message"] ?? "");
-            return {
-              sha,
-              shortSha: sha.slice(0, 7),
-              summary: message.split("\n")[0] || sha.slice(0, 7),
-            };
-          })
-        );
+        const parsed2 = raw.map((item): PrCommit => {
+          const sha = String((item as Record<string, unknown>)["sha"] ?? "");
+          const commit = ((item as Record<string, unknown>)["commit"] ??
+            {}) as Record<string, unknown>;
+          const message = String(commit["message"] ?? "");
+          return {
+            sha,
+            shortSha: sha.slice(0, 7),
+            summary: message.split("\n")[0] || sha.slice(0, 7),
+          };
+        });
+        prCommitsCache.set(prUrl, parsed2);
+        setCommits(parsed2);
+        if (parsed2.length > 0) {
+          const first = parsed2[0];
+          setSelectedSha(first.sha);
+          onCommitSelect({
+            type: "commit",
+            commitSha: first.sha,
+            shortSha: first.shortSha,
+            commitMessage: first.summary,
+          });
+        }
       } catch (err) {
         if (cancelled || err instanceof GitHubReAuthError) return;
       } finally {
@@ -157,7 +185,7 @@ const PrCommitDropdown: React.FC<PrCommitDropdownProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [prUrl]);
+  }, [prUrl, onCommitSelect]);
 
   const options = useMemo(
     () =>
@@ -478,7 +506,8 @@ const EditorContent: React.FC<EditorContentProps> = memo(
         | null
         | undefined;
       const hasFocusPath = Boolean(activeTab.data.focusPath);
-      const showModePill = showSourceControlModePill;
+      const showModePill =
+        showSourceControlModePill && historySelection?.type !== "pr";
       const showCollapseAll =
         showModePill && mode === "all-changes" && !historySelection;
       const showReviewNavigation =
