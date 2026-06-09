@@ -450,7 +450,7 @@ pub async fn github_list_open_prs(
             "/repos/{repo_full_name}/pulls?state=open&sort=updated&direction=desc&per_page={limit}"
         ))
         .await?;
-    let items = data
+    let items: Vec<OpenPRItem> = data
         .as_array()
         .map(|arr| {
             arr.iter()
