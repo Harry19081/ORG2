@@ -37,8 +37,10 @@ import { GroupChatPausedBanner } from "@src/engines/ChatPanel/components/ChatSta
 import { useAgentOrgGroupChatController } from "@src/engines/ChatPanel/hooks/useAgentOrgGroupChatController";
 import { AgentOrgGroupChatLiveSessions } from "@src/engines/ChatPanel/hooks/useAgentOrgGroupChatLiveSessions";
 import { useChatPanelState } from "@src/engines/ChatPanel/hooks/useChatPanelState";
+import { replayModeAtom } from "@src/engines/SessionCore";
 import { chatEventsAtom } from "@src/engines/SessionCore/derived/chatEvents";
 import { derivePlanApprovalViewState } from "@src/engines/SessionCore/derived/planDisplayEvents";
+import { AppType } from "@src/engines/Simulator/types/appTypes";
 import { useFileReviewSync } from "@src/hooks/fileReview";
 import { useSessionWorkspaceSync } from "@src/hooks/session/useSessionWorkspaceSync";
 import { activeSessionIdAtom } from "@src/store/session";
@@ -46,7 +48,6 @@ import {
   sessionRuntimeStatusAtom,
   streamRetryStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
-import { fileReviewResetSignalAtom } from "@src/store/session/fileReviewAtom";
 import { pendingPlanApprovalsAtom } from "@src/store/session/planApprovalAtom";
 import {
   dequeueMessageAtom,
@@ -57,6 +58,10 @@ import {
   queueFlushRequestAtom,
   reorderQueueAtom,
 } from "@src/store/ui/messageQueueAtom";
+import {
+  simulatorSelectedAppAtom,
+  stationModeAtom,
+} from "@src/store/ui/simulatorAtom";
 import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
 import ChatFloatingComposer from "./ChatFloatingComposer";
@@ -376,7 +381,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
       deletions: 0,
     });
     const clearFileChangeStatsTimerRef = useRef<number | null>(null);
-    const fileReviewResetSignal = useAtomValue(fileReviewResetSignalAtom);
 
     useEffect(() => {
       return () => {
@@ -385,6 +389,15 @@ const ChatView: React.FC<ChatViewProps> = memo(
         }
       };
     }, []);
+
+    const setStationMode = useSetAtom(stationModeAtom);
+    const setSelectedSimulatorApp = useSetAtom(simulatorSelectedAppAtom);
+    const setReplayMode = useSetAtom(replayModeAtom);
+    const openAgentStationDiff = useCallback(() => {
+      setStationMode("agent-station");
+      setSelectedSimulatorApp(AppType.DIFF);
+      setReplayMode("replay");
+    }, [setReplayMode, setSelectedSimulatorApp, setStationMode]);
 
     const {
       questionCollapsed,
@@ -397,10 +410,8 @@ const ChatView: React.FC<ChatViewProps> = memo(
       collapsePlan,
       queueExpanded,
       processExpanded,
-      filesExpanded,
       toggleQueue,
       toggleProcess,
-      toggleFiles,
       hasAny,
       inlineSections,
       setProcessVisibleCount,
@@ -413,6 +424,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       hasPermission,
       hasModeSwitch,
       hasPlan,
+      onFilesExpand: openAgentStationDiff,
     });
 
     useEffect(() => {
@@ -426,7 +438,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
         deletions: 0,
       };
       setFileChangeStats({ count: 0, additions: 0, deletions: 0 });
-    }, [fileReviewResetSignal, setFileChangeStats]);
+    }, [sessionId, setFileChangeStats]);
 
     const hasAgentOrgIntervention =
       agentOrgInterventionError !== null || agentOrgIntervention !== null;
@@ -540,14 +552,12 @@ const ChatView: React.FC<ChatViewProps> = memo(
               onModeSwitchDataChange={setHasModeSwitch}
               queueExpanded={queueExpanded}
               processExpanded={processExpanded}
-              filesExpanded={filesExpanded}
               queuedMessages={sessionMessageQueue}
               onCancelQueuedMessage={cancelQueuedMessage}
               onSendQueuedMessageNow={handleSendNow}
               onReorderQueuedMessages={handleReorderSessionQueue}
               onToggleQueue={toggleQueue}
               onToggleProcess={toggleProcess}
-              onToggleFiles={toggleFiles}
               onProcessVisibleCountChange={setProcessVisibleCount}
               onFileChangeStatsChange={(stats) => {
                 if (clearFileChangeStatsTimerRef.current !== null) {
@@ -556,8 +566,25 @@ const ChatView: React.FC<ChatViewProps> = memo(
                 }
 
                 if (stats.count > 0) {
-                  lastFileChangeStatsRef.current = stats;
-                  setFileChangeStats(stats);
+                  const lastStats = lastFileChangeStatsRef.current;
+                  const incomingHasLineStats =
+                    stats.additions > 0 || stats.deletions > 0;
+                  const lastHasLineStats =
+                    lastStats.additions > 0 || lastStats.deletions > 0;
+                  const shouldPreserveLineStats =
+                    !incomingHasLineStats &&
+                    lastHasLineStats &&
+                    lastStats.count === stats.count;
+                  const nextStats = shouldPreserveLineStats
+                    ? {
+                        ...stats,
+                        additions: lastStats.additions,
+                        deletions: lastStats.deletions,
+                      }
+                    : stats;
+
+                  lastFileChangeStatsRef.current = nextStats;
+                  setFileChangeStats(nextStats);
                   return;
                 }
 

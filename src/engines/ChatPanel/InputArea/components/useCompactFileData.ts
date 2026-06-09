@@ -9,8 +9,7 @@
  *   BACKEND_FILE_CHANGES_POLL_WINDOW_MS after mount, for CLI sessions that
  *   persist tool chunks without corresponding frontend events.
  *
- * Returns the full `allFiles` list and the subset of `visibleFiles` that
- * haven't been individually accepted/rejected yet.
+ * Returns the full `allFiles` list for composer pill stats.
  */
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo, useState } from "react";
@@ -18,7 +17,6 @@ import { useEffect, useMemo, useState } from "react";
 import { getSessionFiles } from "@src/api/tauri/agent";
 import { sortedEventsAtom } from "@src/engines/SessionCore";
 import { createLogger } from "@src/hooks/logger";
-import { resolvedFilePathsAtom } from "@src/store/session/fileReviewAtom";
 import { getFileName, normalizeDiffFilePath } from "@src/util/file/pathUtils";
 
 import {
@@ -42,8 +40,6 @@ export interface UseCompactFileDataOptions {
 
 export interface UseCompactFileDataReturn {
   allFiles: FileChangeInfo[];
-  visibleFiles: FileChangeInfo[];
-  hasCompletedFileWriteEvent: boolean;
 }
 
 export function useCompactFileData({
@@ -51,20 +47,8 @@ export function useCompactFileData({
   initialData,
 }: UseCompactFileDataOptions): UseCompactFileDataReturn {
   const events = useAtomValue(sortedEventsAtom);
-  const resolvedFiles = useAtomValue(resolvedFilePathsAtom);
   const [backendFileChanges, setBackendFileChanges] =
     useState<FileChangesResult | null>(null);
-
-  const hasCompletedFileWriteEvent = useMemo(
-    () =>
-      events.some(
-        (event) =>
-          event.actionType === "tool_call" &&
-          FILE_EDIT_UI_CANONICALS.has(event.uiCanonical) &&
-          Boolean(event.result)
-      ),
-    [events]
-  );
 
   const eventsBasedFiles = useMemo<FileChangeInfo[]>(() => {
     if (initialData) return initialData.files;
@@ -267,7 +251,5 @@ export function useCompactFileData({
       ? eventsBasedFiles
       : (backendFileChanges?.files ?? []);
 
-  const visibleFiles = allFiles.filter((file) => !resolvedFiles.has(file.path));
-
-  return { allFiles, visibleFiles, hasCompletedFileWriteEvent };
+  return { allFiles };
 }

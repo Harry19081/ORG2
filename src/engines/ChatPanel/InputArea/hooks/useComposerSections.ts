@@ -52,8 +52,8 @@ export interface UseComposerSectionsOptions {
   hasModeSwitch?: boolean;
   /** Whether the CreatePlanCard currently has a pending plan to review. */
   hasPlan?: boolean;
-  /** Optional override for the files pill click; defaults to expanding the in-composer file changes card. */
-  onFilesExpand?: () => void;
+  /** Opens the dedicated file-diff surface when the files pill is clicked. */
+  onFilesExpand: () => void;
 }
 
 export function useComposerSections({
@@ -197,14 +197,8 @@ export function useComposerSections({
     () => setActiveSection((prev) => (prev === "process" ? null : "process")),
     []
   );
-  const toggleFiles = useCallback(
-    () => setActiveSection((prev) => (prev === "files" ? null : "files")),
-    []
-  );
-
   const queueExpanded = activeSection === "queue";
   const processExpanded = activeSection === "process";
-  const filesExpanded = activeSection === "files";
 
   const hasQueue = queueCount > 0;
   const hasProcess = processVisibleCount > 0;
@@ -328,8 +322,8 @@ export function useComposerSections({
             : null,
           ...diffStatNodes
         ),
-        active: filesExpanded,
-        onExpand: onFilesExpand ?? toggleFiles,
+        active: false,
+        onExpand: onFilesExpand,
         testId: "composer-section-files",
       });
     }
@@ -358,10 +352,8 @@ export function useComposerSections({
     fileChangeStats.deletions,
     queueExpanded,
     processExpanded,
-    filesExpanded,
     toggleQueue,
     toggleProcess,
-    toggleFiles,
     onFilesExpand,
   ]);
 
@@ -378,10 +370,8 @@ export function useComposerSections({
     // Secondary section state
     queueExpanded,
     processExpanded,
-    filesExpanded,
     toggleQueue,
     toggleProcess,
-    toggleFiles,
     hasAny,
     inlineSections,
     setProcessVisibleCount,

@@ -25,7 +25,7 @@
  * the simulator entry having to know which sub-mode is active.
  */
 import { useAtomValue } from "jotai";
-import { X } from "lucide-react";
+import { Undo2 } from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -104,12 +104,14 @@ const SimulatorWorkstationTabHeaderComponent: React.FC<
           <Button
             htmlType="button"
             variant="tertiary"
+            appearance="ghost"
             size="small"
-            iconOnly
+            icon={<Undo2 size={14} strokeWidth={1.75} />}
             onClick={handleUndoAll}
             title={t("actions.undoAll")}
-            icon={<X size={14} strokeWidth={1.75} />}
-          />
+          >
+            {t("actions.undoAll")}
+          </Button>
         </NoDragRegion>
       )}
     </div>

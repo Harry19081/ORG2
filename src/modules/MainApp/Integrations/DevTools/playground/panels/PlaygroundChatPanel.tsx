@@ -170,10 +170,8 @@ export function PlaygroundChatPanel({
     collapseModeSwitch,
     queueExpanded,
     processExpanded,
-    filesExpanded,
     toggleQueue,
     toggleProcess,
-    toggleFiles,
     hasAny,
     inlineSections,
     setProcessVisibleCount,
@@ -183,6 +181,7 @@ export function PlaygroundChatPanel({
     hasQuestion: !!pendingAskUser,
     hasPermission: !!pendingApproval,
     hasModeSwitch: showModeSwitchPreview,
+    onFilesExpand: NOOP,
   });
 
   const handleEditUserMessage = useCallback(
@@ -295,14 +294,6 @@ export function PlaygroundChatPanel({
                   onVisibleCountChange={setProcessVisibleCount}
                 />
               )}
-              {filesExpanded && chatExtras?.showFileReview && (
-                <CompactFileChanges
-                  initialData={MOCK_FILE_CHANGES}
-                  onToggle={toggleFiles}
-                  onVisibleStatsChange={setFileChangeStats}
-                />
-              )}
-
               {/* Always-mounted hidden instances for count tracking */}
               {!processExpanded && (
                 <ActiveProcesses
@@ -312,12 +303,10 @@ export function PlaygroundChatPanel({
                   hidden
                 />
               )}
-              {!filesExpanded && chatExtras?.showFileReview && (
+              {chatExtras?.showFileReview && (
                 <CompactFileChanges
                   initialData={MOCK_FILE_CHANGES}
-                  onToggle={toggleFiles}
                   onVisibleStatsChange={setFileChangeStats}
-                  hidden
                 />
               )}
 
