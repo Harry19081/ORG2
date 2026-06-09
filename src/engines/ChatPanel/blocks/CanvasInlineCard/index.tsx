@@ -45,6 +45,35 @@ const StreamingDot: React.FC = () => (
   />
 );
 
+// ─── loading skeleton ─────────────────────────────────────────────────────────
+
+/**
+ * Skeleton placeholder shown while the A2UI stream has not yet produced any
+ * parseable elements. Mirrors a plausible canvas card layout: heading bar,
+ * content lines, and a chart/table rectangle — all in the card's dark theme
+ * using design-system fill tokens.
+ */
+const CanvasLoadingSkeleton: React.FC = () => (
+  <div
+    className="flex h-full flex-col gap-3 p-4"
+    aria-busy="true"
+    aria-label="Loading canvas content"
+  >
+    {/* Heading bar — ~60% width */}
+    <div className="h-4 w-3/5 animate-pulse rounded bg-fill-3" />
+
+    {/* Content lines — varying widths */}
+    <div className="flex flex-col gap-2">
+      <div className="h-3 w-full animate-pulse rounded bg-fill-3" />
+      <div className="h-3 w-[85%] animate-pulse rounded bg-fill-3" />
+      <div className="h-3 w-[70%] animate-pulse rounded bg-fill-3" />
+    </div>
+
+    {/* Chart / table placeholder rectangle */}
+    <div className="mt-1 h-24 w-full animate-pulse rounded-md bg-fill-3" />
+  </div>
+);
+
 // ─── main component ───────────────────────────────────────────────────────────
 
 const CanvasInlineCard: React.FC<CanvasInlineCardProps> = ({
@@ -122,11 +151,15 @@ const CanvasInlineCard: React.FC<CanvasInlineCardProps> = ({
         title={cardTitle}
       />
     );
+  } else if (mode === "a2ui" && isStreaming && a2uiLines.length === 0) {
+    // Full skeleton: stream started but no JSONL elements parsed yet.
+    contentArea = <CanvasLoadingSkeleton />;
   } else if (mode === "a2ui" && a2uiLines.length > 0) {
     contentArea = (
       <A2UIRenderer
         ref={rendererRef}
         lines={a2uiLines}
+        isStreaming={isStreaming}
         onAction={onAction}
         sessionId={sessionId}
         className="h-full"
@@ -135,9 +168,7 @@ const CanvasInlineCard: React.FC<CanvasInlineCardProps> = ({
   } else {
     contentArea = (
       <div className="flex h-full items-center justify-center">
-        <span className="text-xs text-text-4">
-          {isStreaming ? t("canvasCard.waiting") : t("canvasCard.empty")}
-        </span>
+        <span className="text-xs text-text-4">{t("canvasCard.empty")}</span>
       </div>
     );
   }
