@@ -12,13 +12,19 @@
  * - terminal, output: Empty placeholders (rendered via Placeholder component)
  * - settings: Editor settings panel
  */
+import { useAtomValue } from "jotai";
 import React, { Suspense, memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabContent";
 import { REGISTRY } from "@src/modules/WorkStation/TabContent/registry";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { sessionsAtom } from "@src/store/session";
 import type { SearchOptions as StoreSearchOptions } from "@src/store/workstation/codeEditor/search";
+import {
+  SOURCE_CONTROL_ALL_SESSIONS_FILTER,
+  sourceControlSessionFilterAtom,
+} from "@src/store/workstation/codeEditor/sourceControlSessionFilterAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { SubagentDetailTabData } from "@src/store/workstation/tabs/types";
 import type { GitFile } from "@src/types/git/types";
@@ -124,6 +130,10 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
     editorQuickActions,
   }) => {
     const { t } = useTranslation();
+    const sessions = useAtomValue(sessionsAtom);
+    const sourceControlSessionFilter = useAtomValue(
+      sourceControlSessionFilterAtom
+    );
     // ============================================
     // Memoized values for git-diff tab
     // ============================================
@@ -334,8 +344,21 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
           if (sourceControlFilterMode === "unstaged") return !file.staged;
           return true;
         });
-        const allFiles =
+        const unfilteredFiles =
           gitStatusFiles.length > 0 ? gitStatusFiles : filteredEmbeddedFiles;
+        const selectedSession =
+          sourceControlFilterMode !== "uncommitted" ||
+          sourceControlSessionFilter === SOURCE_CONTROL_ALL_SESSIONS_FILTER
+            ? undefined
+            : sessions.find(
+                (session) => session.session_id === sourceControlSessionFilter
+              );
+        const selectedSessionRepoRoot = selectedSession?.worktreePath;
+        const allFiles = selectedSessionRepoRoot
+          ? unfilteredFiles.filter(
+              (file) => file.repoRoot === selectedSessionRepoRoot
+            )
+          : unfilteredFiles;
 
         const focusGitFile = focusPath
           ? (getGitFileForPath(focusPath, repoPath, gitFilesByPath) ?? null)

@@ -41,6 +41,8 @@ import { useTranslation } from "react-i18next";
 
 import { useActionSystem } from "@src/ActionSystem";
 import Button from "@src/components/Button";
+import Select from "@src/components/Select";
+import type { SelectOption } from "@src/components/Select";
 import TabPill from "@src/components/TabPill";
 import { useGitStatus } from "@src/contexts/git";
 import {
@@ -52,9 +54,14 @@ import {
   TabBarBottomPanelToggle,
 } from "@src/modules/WorkStation/shared";
 import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
+import { sessionsAtom } from "@src/store/session";
 import { repoSelectorOpenAtom } from "@src/store/ui/overlayAtom";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationAtom";
 import { gitReviewNavigationAtom } from "@src/store/workstation/codeEditor/gitReviewNavigationAtom";
+import {
+  SOURCE_CONTROL_ALL_SESSIONS_FILTER,
+  sourceControlSessionFilterAtom,
+} from "@src/store/workstation/codeEditor/sourceControlSessionFilterAtom";
 import {
   type SourceControlHistorySelection,
   createGitCommitDetailTab,
@@ -103,6 +110,13 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     const { t } = useTranslation();
     const { dispatch } = useActionSystem();
     const { forceRefresh } = useGitStatus();
+    const sessions = useAtomValue(sessionsAtom);
+    const sourceControlSessionFilter = useAtomValue(
+      sourceControlSessionFilterAtom
+    );
+    const setSourceControlSessionFilter = useSetAtom(
+      sourceControlSessionFilterAtom
+    );
 
     // ============================================
     // File Content Manager (extracted hook)
@@ -298,6 +312,71 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       document.dispatchEvent(new CustomEvent("review-next-file"));
     }, []);
 
+    const sourceControlSessionOptions = useMemo<SelectOption[]>(() => {
+      const changedRepoRoots = new Set(
+        Array.from(gitFilesByPath.values())
+          .map((file) => file.repoRoot)
+          .filter((root): root is string => Boolean(root))
+      );
+      const agentSessionOptions = sessions
+        .filter(
+          (session) =>
+            Boolean(session.worktreePath) &&
+            changedRepoRoots.has(session.worktreePath as string)
+        )
+        .map((session) => {
+          const fallbackName = session.session_id.slice(0, 8);
+          const label =
+            session.name ||
+            session.agentDisplayName ||
+            session.user_input ||
+            session.worktreeBranch ||
+            fallbackName;
+          return {
+            value: session.session_id,
+            label: <span className="whitespace-nowrap">{label}</span>,
+            triggerLabel: label,
+          };
+        });
+
+      return [
+        {
+          value: SOURCE_CONTROL_ALL_SESSIONS_FILTER,
+          label: (
+            <span className="whitespace-nowrap">
+              {t("sourceControl.sessionFilter.allSessions")}
+            </span>
+          ),
+          triggerLabel: t("sourceControl.sessionFilter.allSessions"),
+        },
+        ...agentSessionOptions,
+      ];
+    }, [gitFilesByPath, sessions, t]);
+
+    useEffect(() => {
+      if (
+        sourceControlSessionFilter === SOURCE_CONTROL_ALL_SESSIONS_FILTER ||
+        sourceControlSessionOptions.some(
+          (option) => option.value === sourceControlSessionFilter
+        )
+      ) {
+        return;
+      }
+      setSourceControlSessionFilter(SOURCE_CONTROL_ALL_SESSIONS_FILTER);
+    }, [
+      setSourceControlSessionFilter,
+      sourceControlSessionFilter,
+      sourceControlSessionOptions,
+    ]);
+
+    const handleSourceControlSessionFilterChange = useCallback(
+      (nextValue: string | number | (string | number)[]) => {
+        if (Array.isArray(nextValue)) return;
+        setSourceControlSessionFilter(String(nextValue));
+      },
+      [setSourceControlSessionFilter]
+    );
+
     const handleOpenSourceControlHistoryInNewTab = useCallback(
       (selection: SourceControlHistorySelection) => {
         const nextTab =
@@ -432,6 +511,21 @@ const EditorContent: React.FC<EditorContentProps> = memo(
               </>
             )}
 
+            {showCollapseAll &&
+              sourceControlFilterMode === "uncommitted" &&
+              sourceControlSessionOptions.length > 1 && (
+                <Select
+                  value={sourceControlSessionFilter}
+                  onChange={handleSourceControlSessionFilterChange}
+                  options={sourceControlSessionOptions}
+                  size="small"
+                  variant="ghost"
+                  radius="lg"
+                  dropdownWidthMode="auto"
+                  className="w-auto max-w-[220px]"
+                />
+              )}
+
             {showCollapseAll && (
               <Button
                 htmlType="button"
@@ -456,8 +550,12 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       handleReviewPrevFile,
       handleSourceControlCollapseAll,
       handleSourceControlModeChange,
+      handleSourceControlSessionFilterChange,
       showSourceControlModePill,
+      sourceControlFilterMode,
       sourceControlHeaderTrailingSlot,
+      sourceControlSessionFilter,
+      sourceControlSessionOptions,
       t,
     ]);
 
