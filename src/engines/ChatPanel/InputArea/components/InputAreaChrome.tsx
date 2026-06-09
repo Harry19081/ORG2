@@ -30,11 +30,11 @@ export const InputAreaTopRows: React.FC<TopRowsProps> = ({
   <>
     {!isEditMode && !omitChatHeader && <ChatHeader />}
     {!isEditMode && (
-      <div className="relative z-10 flex min-w-0 items-center gap-1 overflow-x-auto px-0.5 pb-1.5 scrollbar-hide">
-        {topRowPills}
+      <div className="relative z-10 flex min-w-0 items-center gap-1 px-0.5 pb-1.5">
         <PinnedActionsBar
           composerInputRef={composerInputRef}
           sessionId={sessionId}
+          leadingContent={topRowPills}
         />
       </div>
     )}
