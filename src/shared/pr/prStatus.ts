@@ -64,10 +64,10 @@ const PR_STATUS_ICONS: Record<string, PrStatusIconName> = {
  *
  * `merged` overrides `draft`, which overrides `state`. Known GitHub states
  * are lowercased to one of the {@link PrStatus} values. Unknown / custom
- * states are passed through unchanged so callers can still render them, and
- * a missing state defaults to `"open"` (an existing PR with no state field is
- * assumed open). Returns `string` rather than `PrStatus` precisely so this
- * pass-through behavior is preserved.
+ * states are passed through as their lowercased form so callers can still
+ * render them, and a missing/null state defaults to `"open"` (an existing PR
+ * with no state field is assumed open). Returns `string` rather than
+ * `PrStatus` precisely so this pass-through behavior is preserved.
  */
 export function normalizePrStatus(input: {
   state?: string | null;
@@ -86,7 +86,7 @@ export function normalizePrStatus(input: {
   ) {
     return normalized;
   }
-  return normalized || "open";
+  return normalized ?? "open";
 }
 
 /** Resolve a normalized status key to its badge + dot classes. */
