@@ -102,8 +102,9 @@ class DiffGutterMarker extends GutterMarker {
       position: absolute;
       left: 0;
       top: 0;
-      width: var(--diff-gutter-bar-width, 2px);
+      width: var(--diff-gutter-bar-width);
       height: 100%;
+      display: block;
       background-color: ${colorVar};
     `;
     return marker;

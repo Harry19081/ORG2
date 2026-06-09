@@ -106,12 +106,7 @@ const GitFileListItem: React.FC<GitFileListItemProps> = React.memo(
           }`}
           title={file.path}
         >
-          <span className="flex-shrink-0">{fileName}</span>
-          {file.path.includes("/") && (
-            <span className="ml-1 truncate text-[11px] text-text-3">
-              {file.path.substring(0, file.path.lastIndexOf("/"))}
-            </span>
-          )}
+          <span className="min-w-0 flex-1 truncate">{fileName}</span>
         </span>
         {/* Discard action button - show on hover */}
         {onDiscard && (

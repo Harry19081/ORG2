@@ -2,7 +2,7 @@
  * CodeMirrorConflictEditor Styles
  *
  * Cursor/VSCode-style conflict highlighting and action links.
- * Uses shared tokens from _diff-tokens.scss for consistent colors.
+ * Uses shared public theme CSS variables for consistent colors.
  */
 
 // Import shared diff mixins (CSS variables are loaded globally in src/index.scss)
@@ -115,7 +115,7 @@
 
 // ============================================
 // Dark Mode Adjustments
-// Colors are now handled by shared tokens in _diff-tokens.scss
+// Colors are handled by the active public theme CSS
 // Only link-specific overrides needed here
 // ============================================
 

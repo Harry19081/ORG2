@@ -26,6 +26,27 @@
   --app-bg-19: #392315;
 
   /* Code editor */
+  --code-font-family:
+    "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New",
+    monospace;
+  --cm-font-family: var(--code-font-family);
+  --cm-font-size: 13px;
+  --cm-font-size-small: 12px;
+  --cm-font-size-large: 14px;
+  --cm-line-height: 1.5;
+  --cm-line-padding-left: 12px;
+  --cm-line-padding-right: 16px;
+  --cm-gutter-padding: 4px;
+  --cm-content-padding: 8px;
+  --cm-icon-size: 14px;
+  --cm-icon-size-small: 12px;
+  --cm-border-radius: 4px;
+  --cm-border-radius-small: 2px;
+  --cm-tooltip-shadow: none;
+  --cm-dropdown-shadow: none;
+  --cm-lint-error-color: 248, 113, 113;
+  --cm-lint-warning-color: 250, 204, 21;
+  --cm-lint-info-color: 56, 189, 248;
   --cm-editor-background: #050505;
   --cm-editor-foreground: #ffffff;
   --cm-editor-selection: #1d4f7a;
@@ -48,6 +69,23 @@
   --cm-syntax-invalid: #fca5a5;
   --cm-syntax-deleted: #fecaca;
   --cm-syntax-deleted-bg: #5f1015;
+  --diff-added-color: #86efac;
+  --diff-modified-color: #38bdf8;
+  --diff-deleted-color: #f87171;
+  --diff-added-bg: #063d16;
+  --diff-modified-bg: #082f49;
+  --diff-deleted-bg: #5f1015;
+  --diff-added-bg-strong: #14532d;
+  --diff-modified-bg-strong: #075985;
+  --diff-deleted-bg-strong: #7f1d1d;
+  --diff-added-chunk: var(--diff-added-bg);
+  --diff-deleted-chunk: var(--diff-deleted-bg);
+  --diff-conflict-current-color: #86efac;
+  --diff-conflict-incoming-color: #38bdf8;
+  --diff-conflict-separator-color: #c7ced9;
+  --diff-conflict-current-bg: #063d16;
+  --diff-conflict-incoming-bg: #082f49;
+  --diff-conflict-separator-bg: #242424;
 }
 
 body {
@@ -135,6 +173,27 @@ body {
   --color-warning-6: #fde047;
 
   /* Code editor */
+  --code-font-family:
+    "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New",
+    monospace;
+  --cm-font-family: var(--code-font-family);
+  --cm-font-size: 13px;
+  --cm-font-size-small: 12px;
+  --cm-font-size-large: 14px;
+  --cm-line-height: 1.5;
+  --cm-line-padding-left: 12px;
+  --cm-line-padding-right: 16px;
+  --cm-gutter-padding: 4px;
+  --cm-content-padding: 8px;
+  --cm-icon-size: 14px;
+  --cm-icon-size-small: 12px;
+  --cm-border-radius: 4px;
+  --cm-border-radius-small: 2px;
+  --cm-tooltip-shadow: none;
+  --cm-dropdown-shadow: none;
+  --cm-lint-error-color: 248, 113, 113;
+  --cm-lint-warning-color: 250, 204, 21;
+  --cm-lint-info-color: 56, 189, 248;
   --cm-editor-background: #050505;
   --cm-editor-foreground: #ffffff;
   --cm-editor-selection: #1d4f7a;
@@ -157,4 +216,21 @@ body {
   --cm-syntax-invalid: #fca5a5;
   --cm-syntax-deleted: #fecaca;
   --cm-syntax-deleted-bg: #5f1015;
+  --diff-added-color: #86efac;
+  --diff-modified-color: #38bdf8;
+  --diff-deleted-color: #f87171;
+  --diff-added-bg: #063d16;
+  --diff-modified-bg: #082f49;
+  --diff-deleted-bg: #5f1015;
+  --diff-added-bg-strong: #14532d;
+  --diff-modified-bg-strong: #075985;
+  --diff-deleted-bg-strong: #7f1d1d;
+  --diff-added-chunk: var(--diff-added-bg);
+  --diff-deleted-chunk: var(--diff-deleted-bg);
+  --diff-conflict-current-color: #86efac;
+  --diff-conflict-incoming-color: #38bdf8;
+  --diff-conflict-separator-color: #c7ced9;
+  --diff-conflict-current-bg: #063d16;
+  --diff-conflict-incoming-bg: #082f49;
+  --diff-conflict-separator-bg: #242424;
 }

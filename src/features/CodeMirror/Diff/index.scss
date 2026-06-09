@@ -2,7 +2,7 @@
  * CodeMirrorDiff Styles
  *
  * Styles for CodeMirror diff views - unified and split
- * Uses shared tokens from _diff-tokens.scss for consistent colors
+ * Uses shared public theme CSS variables for consistent colors
  */
 
 // Import shared diff mixins (CSS variables are loaded globally in src/index.scss)
@@ -107,14 +107,14 @@
     // Merge view change gutter - match Editor's dirty-diff gutter width
     // Use high specificity selectors to override CodeMirror defaults
     .cm-editor .cm-gutters .cm-gutter.cm-changeGutter {
-      width: var(--diff-gutter-width, 4px);
-      min-width: var(--diff-gutter-width, 4px);
-      max-width: var(--diff-gutter-width, 4px);
+      width: var(--diff-gutter-width, 7px);
+      min-width: var(--diff-gutter-width, 7px);
+      max-width: var(--diff-gutter-width, 7px);
 
       .cm-gutterElement {
         position: relative;
         padding: 0;
-        min-width: var(--diff-gutter-width, 4px);
+        min-width: var(--diff-gutter-width, 7px);
 
         // The gutter marker bar (::before pseudo-element)
         &::before {
@@ -136,7 +136,7 @@
 
     // Diff change backgrounds - uses shared tokens for consistency
     .cm-changedLine {
-      background: var(--diff-modified-bg) !important;
+      background: var(--diff-added-bg) !important;
     }
 
     // Remove ALL underlines and decorations from diff view
@@ -147,6 +147,29 @@
     .cm-activeLine {
       text-decoration: none !important;
       background-image: none !important;
+    }
+
+    .cm-deletedChunk {
+      box-sizing: border-box;
+      padding-left: var(--cm-line-padding-left, 12px) !important;
+      padding-right: var(--cm-line-padding-right, 16px) !important;
+    }
+
+    .cm-deletedChunk .cm-deletedLine {
+      display: block;
+      padding: 0 !important;
+      white-space: pre;
+    }
+
+    .cm-deletedChunk .cm-deletedLine > del {
+      display: inline;
+      margin: 0;
+      padding: 0;
+    }
+
+    .cm-line .cm-deletedLine {
+      display: inline;
+      padding: 0 !important;
     }
 
     // Disable lint squiggles in diff view
@@ -186,13 +209,28 @@
 
     // Note: .cm-collapsedLines styled via EditorView.baseTheme() in index.tsx
 
-    // Inline diffs (word-level changes) - uses shared tokens
-    .cm-deletedChunk {
-      background: var(--diff-deleted-chunk);
+    .cm-insertedChunk,
+    .cm-insertedText,
+    .cm-line.cm-changedLine span[class*="Chunk"],
+    .cm-line.cm-insertedLine span[class*="Chunk"],
+    .cm-line.cm-changedLine span[class*="Text"],
+    .cm-line.cm-insertedLine span[class*="Text"] {
+      background: var(--diff-added-bg) !important;
+      background-color: var(--diff-added-bg) !important;
     }
 
-    .cm-insertedChunk {
-      background: var(--diff-added-chunk);
+    .cm-deletedChunk,
+    .cm-deletedText,
+    .cm-line.cm-deletedLine span[class*="Chunk"],
+    .cm-line.cm-deletedLine span[class*="Text"] {
+      background: var(--diff-deleted-bg) !important;
+      background-color: var(--diff-deleted-bg) !important;
+    }
+
+    .cm-activeLine.cm-changedLine,
+    .cm-activeLine.cm-insertedLine,
+    .cm-activeLine.cm-deletedLine {
+      background-image: none !important;
     }
 
     // Gutter styling for deleted lines in unified view
@@ -217,7 +255,7 @@
       }
 
       .cm-insertedChunk {
-        background: var(--diff-deleted-chunk) !important;
+        background: var(--diff-deleted-bg) !important;
       }
 
       .cm-editor .cm-gutters .cm-gutter.cm-changeGutter {
@@ -245,6 +283,38 @@
       }
     }
   }
+}
+
+// Unified deleted chunks are CodeMirror block widgets, not .cm-line nodes.
+// Keep these plain global selectors outside :global so they apply in non-module SCSS.
+.codemirror-diff .cm-editor .cm-content > .cm-deletedChunk {
+  box-sizing: border-box;
+  margin-left: 0 !important;
+  padding-left: var(--cm-line-padding-left, 12px) !important;
+  padding-right: var(--cm-line-padding-right, 16px) !important;
+  padding-inline-start: var(--cm-line-padding-left, 12px) !important;
+  padding-inline-end: var(--cm-line-padding-right, 16px) !important;
+  text-indent: 0 !important;
+}
+
+.codemirror-diff .cm-editor .cm-content > .cm-deletedChunk > .cm-deletedLine {
+  display: block;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+  white-space: pre;
+}
+
+.codemirror-diff
+  .cm-editor
+  .cm-content
+  > .cm-deletedChunk
+  > .cm-deletedLine
+  > del {
+  display: inline;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
 }
 
 // Note: .cm-collapsedLines styles are applied via EditorView.baseTheme()

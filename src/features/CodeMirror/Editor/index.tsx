@@ -33,7 +33,6 @@ import {
   updateCodeMirrorMemoryEntry,
 } from "@src/hooks/perf/runtimeMemoryStats";
 import { useEditorAppearanceSettings } from "@src/hooks/settings";
-import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 import { BASIC_SETUP_CONFIG, getCodeMirrorTheme } from "../config";
 import {
@@ -118,8 +117,6 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   enableGitBlame = false,
   repoPath,
 }) => {
-  const { isDark } = useCurrentTheme();
-
   // ============================================
   // APPEARANCE SETTINGS: Read from global store
   // Props can override global settings when explicitly provided
@@ -271,7 +268,6 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   // EXTENSIONS: Build complete extensions array
   // ============================================
   const extensions = useEditorExtensions({
-    isDark,
     filePath,
     originalValueRef,
     enableDirtyDiff,
@@ -303,7 +299,7 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   // ============================================
   // THEME
   // ============================================
-  const theme = getCodeMirrorTheme(isDark);
+  const theme = getCodeMirrorTheme();
 
   // The minimap extension renders into a sibling host outside CodeMirror's DOM.
   // Remount the editor when the host is added/removed so the view plugin and

@@ -1,86 +1,13 @@
 /**
- * CodeMirror Editor Tokens
+ * CodeMirror Static SCSS Tokens
  *
- * Centralized design tokens for all CodeMirror styling:
- * - Typography (fonts, sizes, line height)
- * - Spacing (padding, margins)
- * - UI elements (icons, shadows, borders)
+ * CSS custom properties for CodeMirror live in public theme CSS files:
+ * - public/orgii_main.css
+ * - public/orgii_dark.css
+ * - public/orgii_high_contrast.css
  *
- * Uses CSS custom properties for theme customization.
+ * This file only keeps compile-time assets that cannot be expressed as
+ * runtime theme variables.
  */
 
-// ============================================
-// Root CSS Custom Properties
-// ============================================
-
-:root {
-  // ----------------------------------------
-  // Typography Tokens
-  // ----------------------------------------
-  // Canonical code font variable (set by useEditorAppearanceStyles)
-  --code-font-family:
-    "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New",
-    monospace;
-  // CodeMirror font mirrors the canonical code font
-  --cm-font-family: var(--code-font-family);
-  --cm-font-size: 13px;
-  --cm-font-size-small: 12px;
-  --cm-font-size-large: 14px;
-  --cm-line-height: 1.5;
-
-  // ----------------------------------------
-  // Spacing Tokens
-  // ----------------------------------------
-  --cm-line-padding-left: 12px;
-  --cm-line-padding-right: 16px;
-  --cm-gutter-padding: 4px;
-  --cm-content-padding: 8px;
-
-  // ----------------------------------------
-  // UI Tokens
-  // ----------------------------------------
-  --cm-icon-size: 14px;
-  --cm-icon-size-small: 12px;
-  --cm-border-radius: 4px;
-  --cm-border-radius-small: 2px;
-
-  // ----------------------------------------
-  // Shadow Tokens
-  // ----------------------------------------
-  --cm-tooltip-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --cm-dropdown-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-  // ----------------------------------------
-  // Lint/Diagnostic Tokens
-  // ----------------------------------------
-  --cm-lint-error-color: 244, 63, 94; // RGB values for danger/error
-  --cm-lint-warning-color: 245, 158, 11; // RGB values for warning
-  --cm-lint-info-color: 79, 109, 255; // RGB values for info/primary
-}
-
-// ============================================
-// SCSS Variables for Lint Squiggles
-// (Used in SVG data URIs which can't use CSS vars)
-// ============================================
-
-$cm-lint-error-rgb: "rgb(244, 63, 94)";
-$cm-lint-warning-rgb: "rgb(245, 158, 11)";
-$cm-lint-info-rgb: "rgb(79, 109, 255)";
-
-// ============================================
-// SCSS Variables for Icons (Lucide SVG data URIs)
-// ============================================
-
-// Lucide chevrons-up-down (for collapsed/unchanged sections)
 $cm-icon-chevrons-up-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E");
-
-// ============================================
-// Dark Mode Overrides
-// ============================================
-
-:root[data-theme="dark"],
-.dark {
-  // Shadows are slightly more prominent in dark mode
-  --cm-tooltip-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --cm-dropdown-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}

@@ -10,13 +10,10 @@
 import { useSetAtom } from "jotai";
 import { useCallback } from "react";
 
-import type { GitFileDiffResult } from "@src/api/http/git";
-import {
-  getGitBatchFileDiffs,
-  getGitFileContent,
-} from "@src/api/http/git/diff";
+import { getGitFileContent } from "@src/api/http/git/diff";
 import Message from "@src/components/Toast";
 import { useGitStatus } from "@src/contexts/git";
+import { createLogger } from "@src/hooks/logger";
 import {
   type PanelState,
   createFileTab,
@@ -25,32 +22,12 @@ import {
   requestTabScrollRevealAtom,
 } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
-import { decodeOctalPath } from "@src/util/file/pathUtils";
 
 import type { UseGitDiffStateReturn } from "../git/useGitDiffState";
 import type { UseCodeEditorReturn } from "../useCodeEditor";
+import { loadGitFileDiffContent } from "./gitDiffContent";
 
-const BINARY_DIFF_SENTINEL = "Binary file - content not displayed";
-
-function mergeGitFileDiff(file: GitFile, diff: GitFileDiffResult): GitFile {
-  if (diff.binary) {
-    return {
-      ...file,
-      oldContent: BINARY_DIFF_SENTINEL,
-      newContent: BINARY_DIFF_SENTINEL,
-      additions: 0,
-      deletions: 0,
-    };
-  }
-
-  return {
-    ...file,
-    oldContent: diff.old_content ?? "",
-    newContent: diff.new_content ?? "",
-    additions: diff.insertions || 0,
-    deletions: diff.deletions || 0,
-  };
-}
+const logger = createLogger("CodeEditorHandlers");
 
 // ============================================
 // Types
@@ -293,37 +270,17 @@ export function useCodeEditorHandlers(
       }
 
       gitDiffState.setLoading(true);
-      getGitBatchFileDiffs({
-        repo_id: effectiveRepoPath,
-        repo_path: effectiveRepoPath,
-        files: [
-          {
-            path: relativePath,
-            original_path: file.original_path ?? undefined,
-          },
-        ],
-        from_ref: file.staged ? "HEAD" : "HEAD",
-        include_content: true,
-        context_lines: 3,
+      loadGitFileDiffContent({
+        repoPath: effectiveRepoPath,
+        file,
+        relativePath,
       })
-        .then((response) => {
-          const diff = response?.files.find(
-            (item) => decodeOctalPath(item.file_path) === relativePath
-          );
-          if (!diff) return;
-          gitDiffState.setFile(
-            relativePath,
-            mergeGitFileDiff(
-              { ...file, path: relativePath, repoRoot: effectiveRepoPath },
-              diff
-            )
-          );
+        .then((diffFile) => {
+          if (!diffFile) return;
+          gitDiffState.setFile(relativePath, diffFile);
         })
         .catch((error) => {
-          console.error(
-            "[useCodeEditorHandlers] Failed to load git diff:",
-            error
-          );
+          logger.error("Failed to load git diff:", error);
         })
         .finally(() => {
           gitDiffState.setLoading(false);
@@ -408,10 +365,7 @@ export function useCodeEditorHandlers(
         gitDiffState.addTab(tab.id);
         gitDiffState.setLoading(false);
       } catch (error) {
-        console.error(
-          "[useCodeEditorHandlers] Error opening timeline diff:",
-          error
-        );
+        logger.error("Error opening timeline diff:", error);
         Message.error("Failed to open timeline diff");
         gitDiffState.setLoading(false);
       }

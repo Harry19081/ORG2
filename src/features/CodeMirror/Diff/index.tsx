@@ -30,8 +30,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { CustomScrollbar } from "@src/components/CustomScrollbar";
 import type { GitFileStatus } from "@src/config/gitStatus";
 import { useEditorAppearanceSettings } from "@src/hooks/settings";
-import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
+import { EditorService } from "@src/services/workStation";
 
+import { useSelectionExtension } from "../Editor/hooks/useSelectionExtension";
+import type { TextSelectionInfo } from "../Editor/types";
+import type { CallbackRefs } from "../Editor/types";
 import {
   codeMirrorCspNonceExtension,
   createCodeMirrorTheme,
@@ -40,6 +43,7 @@ import {
   findReplaceExtension,
   foldPlaceholderTheme,
   getCodeMirrorTheme,
+  goToLineExtension,
 } from "../config";
 import { createCopyFileRefExtension } from "../shared/createCopyFileRefExtension";
 import { getLanguageExtension } from "../shared/languageExtensions";
@@ -70,6 +74,8 @@ export interface CodeMirrorDiffProps {
   collapseUnchanged?: boolean;
   /** Callback when content changes */
   onChange?: (value: string) => void;
+  /** Callback when text is selected. */
+  onTextSelection?: (selection: TextSelectionInfo | null) => void;
   /** Let the editor grow to its content height instead of scrolling internally. */
   autoHeight?: boolean;
   /** Explicit git status when content alone is not enough to infer diff direction. */
@@ -83,17 +89,17 @@ export interface CodeMirrorDiffProps {
 // ============================================
 
 const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
-  "& .cm-changedLine": {
-    backgroundColor: "var(--diff-added-bg)",
+  "& .cm-changedLine, & .cm-insertedLine": {
+    backgroundColor: "var(--diff-added-bg) !important",
   },
-  "& .cm-insertedChunk": {
-    backgroundColor: "var(--diff-added-chunk)",
+  "&.cm-merge-a .cm-changedLine, & .cm-deletedLine": {
+    backgroundColor: "var(--diff-deleted-bg) !important",
   },
-  "&.cm-merge-a .cm-changedLine": {
-    backgroundColor: "var(--diff-deleted-bg)",
+  "& .cm-insertedChunk, & .cm-insertedText": {
+    backgroundColor: "var(--diff-added-bg) !important",
   },
-  "& .cm-deletedChunk": {
-    backgroundColor: "var(--diff-deleted-chunk)",
+  "& .cm-deletedChunk, & .cm-deletedText": {
+    backgroundColor: "var(--diff-deleted-bg) !important",
   },
   ".cm-collapsedLines": {
     display: "flex",
@@ -136,20 +142,6 @@ const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
       color: "var(--color-text-2)",
     },
   },
-  "&light .cm-collapsedLines": {
-    background: "var(--color-fill-2)",
-    color: "var(--color-text-3)",
-    border: "none",
-    borderRadius: "0",
-    outline: "none",
-  },
-  "&dark .cm-collapsedLines": {
-    background: "var(--color-fill-2)",
-    color: "var(--color-text-3)",
-    border: "none",
-    borderRadius: "0",
-    outline: "none",
-  },
 });
 
 const AUTO_HEIGHT_THEME = EditorView.theme({
@@ -176,11 +168,11 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   mergeControls = true,
   collapseUnchanged = true,
   onChange,
+  onTextSelection,
   autoHeight = false,
   changeType,
   className = "",
 }) => {
-  const { isDark } = useCurrentTheme();
   const appearanceSettings = useEditorAppearanceSettings();
   const isFullDeletion =
     changeType === "deleted" || (oldValue.length > 0 && newValue.length === 0);
@@ -208,6 +200,18 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     onChangeRef.current = onChange;
   }, [onChange]);
 
+  const callbackRefs = useRef<CallbackRefs>({});
+  useEffect(() => {
+    callbackRefs.current = {
+      onTextSelection,
+      filePath,
+    };
+  });
+  const selectionExtension = useSelectionExtension(
+    callbackRefs,
+    !!onTextSelection
+  );
+
   // Track the content that each live instance was last built with,
   // so we can dispatch updates without a full rebuild.
   const unifiedContentRef = useRef<{
@@ -222,7 +226,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   const buildBaseExtensions = (): Extension[] => {
     const exts: Extension[] = [codeMirrorCspNonceExtension];
 
-    exts.push(getCodeMirrorTheme(isDark));
+    exts.push(getCodeMirrorTheme());
 
     if (appearanceSettings.lineNumbers === "on") {
       exts.push(lineNumbers());
@@ -258,7 +262,10 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     exts.push(history());
     exts.push(editorHistoryKeymapExtension());
     exts.push(bracketMatching());
-    exts.push(EditorView.lineWrapping);
+    if (appearanceSettings.wordWrap) {
+      exts.push(EditorView.lineWrapping);
+    }
+    exts.push(goToLineExtension());
 
     const tabSizeSpaces = " ".repeat(appearanceSettings.tabSize);
     exts.push(indentUnit.of(tabSizeSpaces));
@@ -270,6 +277,9 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     if (filePath) exts.push(createCopyFileRefExtension(filePath));
 
     exts.push(findReplaceExtension());
+    if (selectionExtension) {
+      exts.push(selectionExtension);
+    }
 
     return exts;
   };
@@ -312,14 +322,14 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
 
     try {
       const baseExts = buildBaseExtensions();
-      const themeExt = createCodeMirrorTheme(isDark);
+      const themeExt = createCodeMirrorTheme();
 
       const deletionColorOverride = EditorView.theme({
         "& .cm-changedLine, & .cm-insertedLine": {
           backgroundColor: "var(--diff-deleted-bg) !important",
         },
-        "& .cm-insertedChunk": {
-          backgroundColor: "var(--diff-deleted-chunk) !important",
+        "& .cm-insertedChunk, & .cm-deletedChunk": {
+          backgroundColor: "var(--diff-deleted-bg) !important",
         },
         "& .cm-changedLineGutter::before": {
           backgroundColor: "var(--diff-deleted-color) !important",
@@ -377,13 +387,31 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     mergeControls,
     collapseUnchanged,
     autoHeight,
-    isDark,
     filePath,
     language,
     appearanceSettings.lineNumbers,
     appearanceSettings.highlightActiveLine,
+    appearanceSettings.wordWrap,
     appearanceSettings.tabSize,
+    selectionExtension,
   ]);
+
+  useEffect(() => {
+    const activeView =
+      viewMode === "unified"
+        ? unifiedViewRef.current
+        : splitMergeViewRef.current?.b;
+
+    if (!activeView) return;
+
+    EditorService.setEditorView(activeView);
+
+    return () => {
+      if (EditorService.getEditorView() === activeView) {
+        EditorService.clearEditorView();
+      }
+    };
+  }, [viewMode, oldValue, newValue, changeType]);
 
   // ── Split view lifecycle ──────────────────────────────────────────────────
 
@@ -420,7 +448,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
 
     try {
       const baseExts = buildBaseExtensions();
-      const themeExt = createCodeMirrorTheme(isDark);
+      const themeExt = createCodeMirrorTheme();
       const splitExts = [
         ...baseExts,
         themeExt,
@@ -471,12 +499,13 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     readOnly,
     collapseUnchanged,
     autoHeight,
-    isDark,
     filePath,
     language,
     appearanceSettings.lineNumbers,
     appearanceSettings.highlightActiveLine,
+    appearanceSettings.wordWrap,
     appearanceSettings.tabSize,
+    selectionExtension,
   ]);
 
   // ── Render ────────────────────────────────────────────────────────────────

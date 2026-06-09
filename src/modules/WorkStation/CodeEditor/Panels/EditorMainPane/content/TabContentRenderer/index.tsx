@@ -72,6 +72,33 @@ function isCsvTableFile(filePath: string): boolean {
   return lowerPath.endsWith(".csv") || lowerPath.endsWith(".tsv");
 }
 
+function getGitFileForPath(
+  filePath: string,
+  repoPath: string,
+  gitFilesByPath: Map<string, GitFile>
+): GitFile | undefined {
+  const exactMatch = gitFilesByPath.get(filePath);
+  if (exactMatch) return exactMatch;
+
+  const hostRelative = filePath.startsWith(`${repoPath}/`)
+    ? filePath.slice(repoPath.length + 1)
+    : null;
+  if (hostRelative) {
+    const hostMatch = gitFilesByPath.get(hostRelative);
+    if (hostMatch) return hostMatch;
+  }
+
+  for (const file of gitFilesByPath.values()) {
+    if (!file.repoRoot) continue;
+    const prefix = `${file.repoRoot}/`;
+    if (!filePath.startsWith(prefix)) continue;
+    const relativePath = filePath.slice(prefix.length);
+    if (file.path === relativePath) return file;
+  }
+
+  return undefined;
+}
+
 // ============================================
 // Component Implementation
 // ============================================
@@ -189,7 +216,9 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
       case "file": {
         const filePath = activeTab.data.filePath as string;
         // Look up git info for this file to get the base content (HEAD version)
-        const gitFileInfo = filePath ? gitFilesByPath.get(filePath) : undefined;
+        const gitFileInfo = filePath
+          ? getGitFileForPath(filePath, repoPath, gitFilesByPath)
+          : undefined;
 
         // Check if file was deleted (exists in git but removed from disk)
         // Also treat as deleted if we have git info with oldContent and file read failed
@@ -308,47 +337,9 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
         const allFiles =
           gitStatusFiles.length > 0 ? gitStatusFiles : filteredEmbeddedFiles;
 
-        // `focusPath` is stored as an absolute path (set by
-        // `handleGitFileSelect`), but the global git-status map is keyed by
-        // the repo-relative paths emitted by `useGitFiles`. Look up by both
-        // so the focused file survives the periodic git-status refresh that
-        // overwrites the map and would otherwise blank the diff for one
-        // render until the next user interaction.
-        //
-        // Worktrees: files are stored under their worktree-relative path and
-        // carry `repoRoot = worktreePath`. Strip the matching repoRoot prefix
-        // (not necessarily the host repoPath) to produce the correct key.
-        let focusGitFile: GitFile | null = null;
-        if (focusPath) {
-          // 1. Try exact match (unlikely but cheap)
-          focusGitFile = gitFilesByPath.get(focusPath) ?? null;
-
-          if (!focusGitFile) {
-            // 2. Try stripping the host repoPath prefix
-            const hostRelative =
-              repoPath && focusPath.startsWith(repoPath + "/")
-                ? focusPath.slice(repoPath.length + 1)
-                : null;
-            if (hostRelative) {
-              focusGitFile = gitFilesByPath.get(hostRelative) ?? null;
-            }
-          }
-
-          if (!focusGitFile) {
-            // 3. Worktree: scan map for any file whose repoRoot is a prefix of
-            //    focusPath and whose relative path matches the remainder.
-            for (const file of gitFilesByPath.values()) {
-              if (!file.repoRoot) continue;
-              const prefix = file.repoRoot + "/";
-              if (!focusPath.startsWith(prefix)) continue;
-              const candidate = focusPath.slice(prefix.length);
-              if (file.path === candidate) {
-                focusGitFile = file;
-                break;
-              }
-            }
-          }
-        }
+        const focusGitFile = focusPath
+          ? (getGitFileForPath(focusPath, repoPath, gitFilesByPath) ?? null)
+          : null;
 
         return (
           <div className="flex h-full min-h-0 flex-col overflow-hidden">

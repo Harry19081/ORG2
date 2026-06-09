@@ -323,8 +323,6 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
     );
 
     // Render a single tree item
-    const isFlatList = viewMode === "list";
-
     const renderItem = useCallback(
       (item: FlattenedTreeNode<SourceControlNode>) => (
         <SourceControlTreeRow
@@ -350,7 +348,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
           onDiscard={handleDiscardWithMultiSelect}
           onToggleDirectory={handleToggleDirectory}
           onStageResolved={onStageResolved}
-          showPathHint={isFlatList}
+          showPathHint={false}
           overrideRepoPath={repoPath}
         />
       ),
@@ -371,7 +369,6 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
         handleDiscardWithMultiSelect,
         handleToggleDirectory,
         onStageResolved,
-        isFlatList,
         repoPath,
       ]
     );

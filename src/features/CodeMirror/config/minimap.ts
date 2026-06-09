@@ -170,48 +170,24 @@ export function minimapExtension(
       }
 
       getSyntaxColors(): Record<string, string> {
-        const tempEl = document.createElement("div");
-        tempEl.style.backgroundColor = "var(--color-bg-1)";
-        document.body.appendChild(tempEl);
-        const bgColor = getComputedStyle(tempEl).backgroundColor;
-        document.body.removeChild(tempEl);
+        const styles = getComputedStyle(document.documentElement);
+        const readToken = (name: string, fallback: string) => {
+          const value = styles.getPropertyValue(name).trim();
+          return value || fallback;
+        };
 
-        const rgbMatch = bgColor.match(/\d+/g);
-        const isDark = rgbMatch
-          ? (parseInt(rgbMatch[0]) +
-              parseInt(rgbMatch[1]) +
-              parseInt(rgbMatch[2])) /
-              3 <
-            128
-          : false;
-
-        if (isDark) {
-          return {
-            keyword: "#ff7b72",
-            string: "#a5d6ff",
-            comment: "#8b949e",
-            number: "#79c0ff",
-            function: "#d2a8ff",
-            variable: "#ffa657",
-            type: "#7ee787",
-            operator: "#79c0ff",
-            property: "#79c0ff",
-            default: "#8b949e",
-          };
-        } else {
-          return {
-            keyword: "#cf222e",
-            string: "#0a3069",
-            comment: "#6e7781",
-            number: "#0550ae",
-            function: "#8250df",
-            variable: "#953800",
-            type: "#116329",
-            operator: "#0550ae",
-            property: "#0550ae",
-            default: "#6e7781",
-          };
-        }
+        return {
+          keyword: readToken("--cm-syntax-keyword", "#d73a49"),
+          string: readToken("--cm-syntax-string", "#032f62"),
+          comment: readToken("--cm-syntax-comment", "#6a737d"),
+          number: readToken("--cm-syntax-number", "#005cc5"),
+          function: readToken("--cm-syntax-function", "#6f42c1"),
+          variable: readToken("--cm-syntax-variable", "#005cc5"),
+          type: readToken("--cm-syntax-type", "#d73a49"),
+          operator: readToken("--cm-syntax-operator", "#005cc5"),
+          property: readToken("--cm-syntax-property", "#6f42c1"),
+          default: readToken("--cm-editor-gutter-fg", "#6e7781"),
+        };
       }
 
       getTokenColor(nodeType: string, colors: Record<string, string>): string {

@@ -40,7 +40,6 @@ import {
   type ScrollbarMarker,
 } from "@src/components/CustomScrollbar";
 import { useEditorAppearanceSettings } from "@src/hooks/settings";
-import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 import {
   codeMirrorCspNonceExtension,
@@ -280,7 +279,6 @@ export const CodeMirrorConflictEditor: React.FC<
   focusedConflictIndex = 0,
   onFocusConflictChange: _onFocusConflictChange,
 }) => {
-  const { isDark } = useCurrentTheme();
   const appearanceSettings = useEditorAppearanceSettings();
   const containerRef = useRef<HTMLDivElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -381,8 +379,7 @@ export const CodeMirrorConflictEditor: React.FC<
     // Build extensions
     const extensions: Extension[] = [codeMirrorCspNonceExtension];
 
-    // Theme (use centralized helper with user preference)
-    extensions.push(getCodeMirrorTheme(isDark));
+    extensions.push(getCodeMirrorTheme());
 
     // Line numbers based on appearance settings
     if (appearanceSettings.lineNumbers === "on") {
@@ -424,7 +421,7 @@ export const CodeMirrorConflictEditor: React.FC<
     // Fold gutter and bracket matching
     extensions.push(foldGutter());
     extensions.push(bracketMatching());
-    extensions.push(createCodeMirrorTheme(isDark));
+    extensions.push(createCodeMirrorTheme());
 
     // Word wrap
     if (appearanceSettings.wordWrap) {
@@ -487,7 +484,6 @@ export const CodeMirrorConflictEditor: React.FC<
     };
   }, [
     content,
-    isDark,
     filePath,
     language,
     readOnly,

@@ -17,7 +17,6 @@ import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { format as formatSql } from "sql-formatter";
 
 import type { TableInfo } from "@src/engines/DatabaseCore";
-import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 import {
   BASIC_SETUP_SQL_CONFIG,
@@ -60,7 +59,6 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
     history = [],
     onHistorySelect,
   }) => {
-    const { isDark } = useCurrentTheme();
     const [value, setValue] = useState(defaultValue);
     const [showHistory, setShowHistory] = useState(false);
     const historyRef = useRef<HTMLDivElement>(null);
@@ -120,7 +118,7 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
           upperCaseKeywords: true,
         }),
         // Custom theme
-        createCodeMirrorTheme(isDark),
+        createCodeMirrorTheme(),
         // Execute on Ctrl+Enter
         keymap.of([
           {
@@ -136,9 +134,9 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
         EditorView.lineWrapping,
       ];
       return exts;
-    }, [isDark, schema, handleExecute]);
+    }, [schema, handleExecute]);
 
-    const theme = getCodeMirrorTheme(isDark);
+    const theme = getCodeMirrorTheme();
 
     return (
       <div className="sql-query-editor">

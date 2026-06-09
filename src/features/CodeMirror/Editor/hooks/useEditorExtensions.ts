@@ -35,8 +35,6 @@ import type { CallbackRefs } from "../types";
 // ============================================
 
 export interface UseEditorExtensionsOptions {
-  /** Whether dark mode is active */
-  isDark: boolean;
   /** File path for language detection and linting */
   filePath?: string;
   /** Original value ref for dirty diff */
@@ -89,7 +87,6 @@ export function useEditorExtensions(
   options: UseEditorExtensionsOptions
 ): Extension[] {
   const {
-    isDark,
     filePath,
     originalValueRef,
     enableDirtyDiff,
@@ -124,7 +121,7 @@ export function useEditorExtensions(
     return gitBlameExtension(blameDataRef);
   }, [enableGitBlame, blameDataRef]);
 
-  const themeExtension = useMemo(() => createCodeMirrorTheme(isDark), [isDark]);
+  const themeExtension = useMemo(() => createCodeMirrorTheme(), []);
 
   // Create dirty diff extension when originalValue is provided or changes
   const dirtyDiffExtension = useMemo(() => {

@@ -4,7 +4,7 @@
  * Reusable SCSS mixins for diff-related styling.
  * Import this file in component SCSS files that need diff styling.
  *
- * CSS variables are defined in _diff-tokens.scss and loaded globally.
+ * Theme CSS variables are defined by the active public theme CSS.
  */
 
 // ============================================
@@ -12,16 +12,16 @@
 // ============================================
 
 @mixin diff-gutter-base {
-  width: var(--diff-gutter-width, 4px);
-  min-width: var(--diff-gutter-width, 4px);
-  max-width: var(--diff-gutter-width, 4px);
+  width: var(--diff-gutter-width, 7px);
+  min-width: var(--diff-gutter-width, 7px);
+  max-width: var(--diff-gutter-width, 7px);
 }
 
 @mixin diff-gutter-marker {
   position: absolute;
   left: 0;
   top: 0;
-  width: var(--diff-gutter-bar-width, 2px);
+  width: var(--diff-gutter-bar-width);
   height: 100%;
 }
 

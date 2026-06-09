@@ -483,9 +483,6 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
                 }}
               >
                 <div className="space-y-2 text-[13px]">
-                  <div className="mb-2 border-b border-border-2 pb-1.5 font-bold text-text-1">
-                    {t("workstation.languageServices")}
-                  </div>
                   {languageServicePanelRows.map((row) =>
                     row.kind === "empty" ? (
                       <div key={row.key} className="font-bold text-text-3">

@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useMemo } from "react";
 
 import { useGitStatus } from "@src/contexts/git";
 import { useGitFiles } from "@src/hooks/git/sourceControl";
+import { createLogger } from "@src/hooks/logger";
+import { loadGitFileDiffContent } from "@src/hooks/workStation/editor/gitDiffContent";
 import type { UseGitDiffStateReturn } from "@src/hooks/workStation/git/useGitDiffState";
 import {
   sourceControlFilterModeAtom,
@@ -23,6 +25,8 @@ import {
 } from "../shared/SidebarModules";
 import { useWorkstationPr } from "./Panels/EditorPrimarySidebar/hooks/useWorkstationPr";
 import { useStashCount } from "./useStashCount";
+
+const logger = createLogger("SourceControlSetup");
 
 interface UseSourceControlSetupParams {
   repoPath: string;
@@ -238,6 +242,9 @@ export function useSourceControlSetup({
       const absolutePath = file.path.startsWith("/")
         ? file.path
         : `${effectiveRepoPath}/${file.path}`;
+      const relativePath = file.path.startsWith(effectiveRepoPath)
+        ? file.path.slice(effectiveRepoPath.length + 1)
+        : file.path;
 
       const isAllChangesView =
         activeTab?.type === "source-control" &&
@@ -248,8 +255,27 @@ export function useSourceControlSetup({
         return;
       }
 
-      gitDiffState.setFile(file.path, file);
+      gitDiffState.setFile(relativePath, {
+        ...file,
+        path: relativePath,
+        repoRoot: effectiveRepoPath,
+      });
       setSourceControlFocusTarget({ path: absolutePath, nonce: Date.now() });
+
+      if (file.oldContent !== undefined || !effectiveRepoPath) return;
+
+      loadGitFileDiffContent({
+        repoPath: effectiveRepoPath,
+        file,
+        relativePath,
+      })
+        .then((diffFile) => {
+          if (!diffFile) return;
+          gitDiffState.setFile(relativePath, diffFile);
+        })
+        .catch((error) => {
+          logger.error("Failed to load git diff:", error);
+        });
     },
     [
       activeTab,

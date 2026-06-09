@@ -10,6 +10,7 @@
  * - Uses refs for callbacks to prevent child component rebuilds
  */
 import { writeTextFile } from "@tauri-apps/plugin-fs";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, {
   Suspense,
   memo,
@@ -21,11 +22,13 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Message } from "@src/components/Message";
 import { useGitStatus } from "@src/contexts/git";
 import {
   CodeMirrorConflictEditor,
   CodeMirrorDiff,
   type ConflictResolutionChoice,
+  type TextSelectionInfo,
   hasConflictMarkers,
 } from "@src/features/CodeMirror";
 import {
@@ -35,6 +38,15 @@ import {
 } from "@src/modules/WorkStation/shared";
 import { HUMANTOOLS_TEXT_KEYS } from "@src/modules/WorkStation/shared/textTokens";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { EditorService } from "@src/services/workStation";
+import {
+  activeStationChatVisibleAtom,
+  activeStatusBarCallbacksAtom,
+  addToAgentAtom,
+  editorHighlightActiveLineAtom,
+  editorLineNumbersAtom,
+  editorWordWrapAtom,
+} from "@src/store/ui";
 import type { GitFile } from "@src/types/git/types";
 import { isBinaryByExtension } from "@src/util/file/binaryDetection";
 import {
@@ -44,6 +56,10 @@ import {
 
 import { ImageDiffView } from "./ImageDiffView";
 import { useGitDiffLoader } from "./useGitDiffLoader";
+
+const LazyTextSelectionDropdown = React.lazy(
+  () => import("@src/scaffold/ContextMenu/variants/TextSelectionDropdown")
+);
 
 const LazyVideoPreview = React.lazy(
   () => import("../FilePreviewContent/VideoPreview")
@@ -148,6 +164,14 @@ interface CallbackRefs {
   onReload?: GitDiffContentProps["onReload"];
 }
 
+interface SelectionDropdownState {
+  visible: boolean;
+  position: { x: number; y: number };
+  text: string;
+  fromLine: number;
+  toLine: number;
+}
+
 // ============================================
 // Main Component
 // ============================================
@@ -165,6 +189,21 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
   publishHeaderToWorkstation = true,
 }) => {
   const { t } = useTranslation();
+  const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
+  const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
+  const [highlightActiveLine, setHighlightActiveLine] = useAtom(
+    editorHighlightActiveLineAtom
+  );
+  const { onOpenSettings } = useAtomValue(activeStatusBarCallbacksAtom);
+  const setAddToAgent = useSetAtom(addToAgentAtom);
+  const setStationChatVisible = useSetAtom(activeStationChatVisibleAtom);
+  const [selectionDropdown, setSelectionDropdown] =
+    useState<SelectionDropdownState | null>(null);
+  const selectionDropdownRef = useRef(selectionDropdown);
+
+  useEffect(() => {
+    selectionDropdownRef.current = selectionDropdown;
+  }, [selectionDropdown]);
 
   // ============================================
   // Callback refs for stable handler references
@@ -210,6 +249,72 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     return hasConflictMarkers(content);
   }, [editedContent, effectiveGitFile?.newContent]);
 
+  const handleTextSelection = useCallback(
+    (selection: TextSelectionInfo | null) => {
+      if (selection && effectiveGitFile?.path) {
+        setSelectionDropdown({
+          visible: true,
+          position: selection.position,
+          text: selection.text,
+          fromLine: selection.fromLine,
+          toLine: selection.toLine,
+        });
+      } else {
+        setSelectionDropdown(null);
+      }
+    },
+    [effectiveGitFile?.path]
+  );
+
+  const handleCloseSelectionDropdown = useCallback(() => {
+    setSelectionDropdown(null);
+  }, []);
+
+  const handleAskAgent = useCallback(
+    (_text: string) => {
+      const currentSelection = selectionDropdownRef.current;
+      if (!effectiveGitFile?.path || !currentSelection) return;
+
+      const fileName =
+        effectiveGitFile.path.split("/").pop() || effectiveGitFile.path;
+
+      setStationChatVisible("my-station", true);
+      setAddToAgent({
+        type: "lines",
+        filePath: effectiveGitFile.path,
+        fileName,
+        lineStart: currentSelection.fromLine,
+        lineEnd: currentSelection.toLine,
+      });
+
+      Message.success(
+        t("workstation.addedToAgent", {
+          fileName: `Lines ${currentSelection.fromLine}~${currentSelection.toLine}`,
+        })
+      );
+    },
+    [effectiveGitFile?.path, setAddToAgent, setStationChatVisible, t]
+  );
+
+  const handleAddToContext = useCallback(
+    (_text: string, _sessionId: string | null) => {
+      if (!effectiveGitFile?.path) return;
+
+      const fileName =
+        effectiveGitFile.path.split("/").pop() || effectiveGitFile.path;
+
+      setStationChatVisible("my-station", true);
+      setAddToAgent({
+        type: "file",
+        filePath: effectiveGitFile.path,
+        fileName,
+      });
+
+      Message.success(t("workstation.addedToAgent", { fileName }));
+    },
+    [effectiveGitFile?.path, setAddToAgent, setStationChatVisible, t]
+  );
+
   // Store gitFile in ref for stable callback access
   const gitFileRef = useRef(effectiveGitFile);
   useEffect(() => {
@@ -245,6 +350,26 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
   // Handle reload - uses refs
   const handleReload = useCallback(() => {
     callbackRefs.current.onReload?.();
+  }, []);
+
+  const handleSearchRequest = useCallback(() => {
+    EditorService.find();
+  }, []);
+
+  const handleGoToLineRequest = useCallback(() => {
+    EditorService.openGoToLinePanel();
+  }, []);
+
+  const handleLineNumbersChange = useCallback(
+    (enabled: boolean) => {
+      setLineNumbers(enabled ? "on" : "off");
+    },
+    [setLineNumbers]
+  );
+
+  const handleDiscard = useCallback(() => {
+    setEditedContent(null);
+    setHasUnsavedChanges(false);
   }, []);
 
   // Git status context for refreshing after save
@@ -321,6 +446,14 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
     );
   }
 
+  const effectiveRepoPath = effectiveGitFile.repoRoot ?? repoPath;
+  const absoluteFilePath = effectiveGitFile.path.startsWith("/")
+    ? effectiveGitFile.path
+    : `${effectiveRepoPath}/${effectiveGitFile.path}`;
+  const relativePath = effectiveGitFile.path.startsWith(effectiveRepoPath + "/")
+    ? effectiveGitFile.path.slice(effectiveRepoPath.length + 1)
+    : effectiveGitFile.path;
+
   // getPreviewType drives all binary routing — single source of truth
   const previewType = getPreviewType(effectiveGitFile.path);
   const isBinaryPreviewType =
@@ -348,15 +481,6 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
   // get a sentinel (e.g. a newly added PNG in source control).
   if (isBinary || isBinaryPreviewType) {
     const isDeleted = effectiveGitFile.status === "deleted";
-    const effectiveRepoPath = effectiveGitFile.repoRoot ?? repoPath;
-    const absoluteFilePath = effectiveGitFile.path.startsWith("/")
-      ? effectiveGitFile.path
-      : `${effectiveRepoPath}/${effectiveGitFile.path}`;
-    const relativePath = effectiveGitFile.path.startsWith(
-      effectiveRepoPath + "/"
-    )
-      ? effectiveGitFile.path.slice(effectiveRepoPath.length + 1)
-      : effectiveGitFile.path;
 
     const fileHeader = (
       <FileHeader
@@ -367,6 +491,14 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
         additions={effectiveGitFile.additions}
         deletions={effectiveGitFile.deletions}
         onReload={onReload ? handleReload : undefined}
+        relativePathToCopy={relativePath}
+        lineNumbersEnabled={lineNumbers !== "off"}
+        onLineNumbersChange={handleLineNumbersChange}
+        wordWrapEnabled={wordWrap}
+        onWordWrapChange={setWordWrap}
+        highlightActiveLineEnabled={highlightActiveLine}
+        onHighlightActiveLineChange={setHighlightActiveLine}
+        onMoreSettings={onOpenSettings}
         loading={loading || selfFetching}
         onFileSelect={onFileSelect}
         showOpenFileAction={!!onFileSelect}
@@ -486,7 +618,20 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onReload={onReload ? handleReload : undefined}
+        onSave={viewMode === "unified" ? handleSave : undefined}
+        onDiscard={viewMode === "unified" ? handleDiscard : undefined}
+        onSearchRequest={handleSearchRequest}
+        onGoToLineRequest={handleGoToLineRequest}
+        relativePathToCopy={relativePath}
+        lineNumbersEnabled={lineNumbers !== "off"}
+        onLineNumbersChange={handleLineNumbersChange}
+        wordWrapEnabled={wordWrap}
+        onWordWrapChange={setWordWrap}
+        highlightActiveLineEnabled={highlightActiveLine}
+        onHighlightActiveLineChange={setHighlightActiveLine}
+        onMoreSettings={onOpenSettings}
         loading={loading || selfFetching}
+        hasUnsavedChanges={hasUnsavedChanges}
         onFileSelect={onFileSelect}
         showOpenFileAction={!!onFileSelect}
       />
@@ -516,7 +661,26 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
             mergeControls={false}
             collapseUnchanged={true}
             onChange={viewMode === "unified" ? handleContentChange : undefined}
+            onTextSelection={handleTextSelection}
           />
+        )}
+
+        {selectionDropdown && !fileHasConflicts && (
+          <Suspense fallback={null}>
+            <LazyTextSelectionDropdown
+              visible={selectionDropdown.visible}
+              position={selectionDropdown.position}
+              selectedText={selectionDropdown.text}
+              source="editor"
+              lineRange={{
+                fromLine: selectionDropdown.fromLine,
+                toLine: selectionDropdown.toLine,
+              }}
+              onClose={handleCloseSelectionDropdown}
+              onAskAgent={handleAskAgent}
+              onAddToContext={handleAddToContext}
+            />
+          </Suspense>
         )}
 
         {((!fileHasConflicts && viewMode === "unified" && hasUnsavedChanges) ||
@@ -530,10 +694,7 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
                   message={t(HUMANTOOLS_TEXT_KEYS.placeholders.unsavedEdits)}
                   saving={saving}
                   onSave={handleSave}
-                  onDiscard={() => {
-                    setEditedContent(null);
-                    setHasUnsavedChanges(false);
-                  }}
+                  onDiscard={handleDiscard}
                 />
               )}
             {fileHasConflicts && hasUnsavedChanges && (
@@ -544,10 +705,7 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
                 )}
                 saving={saving}
                 onSave={handleSave}
-                onDiscard={() => {
-                  setEditedContent(null);
-                  setHasUnsavedChanges(false);
-                }}
+                onDiscard={handleDiscard}
               />
             )}
           </FloatingBar.Layer>
