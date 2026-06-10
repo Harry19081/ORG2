@@ -39,13 +39,10 @@ interface DomComponentPreviewContentProps {
 type ViewMode = "raw" | "preview";
 
 interface ParsedDomComponent {
-  componentLabel?: string;
-  className?: string;
   cssSelector?: string;
   dimensions?: { width?: number; height?: number };
   reactComponent?: { name?: string; fiber?: string };
   domPath?: string[];
-  dataAttributes?: Record<string, string>;
   meta?: {
     url?: string;
     timestamp?: string;
@@ -72,18 +69,9 @@ const TOGGLE_OPTIONS: readonly ToggleOption[] = [
 // Parsing helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CLASS_NAME_PATTERN = /className=["']([\s\S]*?)["']\s*$/;
-
-function extractClassName(componentLabel: string | undefined): string {
-  if (!componentLabel) return "";
-  const match = CLASS_NAME_PATTERN.exec(componentLabel);
-  return match ? match[1] : componentLabel;
-}
-
 function parseDomJson(jsonText: string): ParsedDomComponent | null {
   try {
-    const parsed = JSON.parse(jsonText) as ParsedDomComponent;
-    return { ...parsed, className: extractClassName(parsed.componentLabel) };
+    return JSON.parse(jsonText) as ParsedDomComponent;
   } catch {
     return null;
   }
@@ -105,46 +93,24 @@ function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (ch) => HTML_ENTITIES[ch] ?? ch);
 }
 
-/** camelCase → kebab-case, safe for use as a `data-` attribute suffix. */
-function camelToKebab(name: string): string {
-  return name.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`).replace(/^-/, "");
-}
-
-function serializeDataAttributes(
-  dataAttributes: Record<string, string> | undefined
-): string {
-  if (!dataAttributes) return "";
-  return Object.entries(dataAttributes)
-    .map(
-      ([key, value]) =>
-        ` data-${escapeHtml(camelToKebab(key))}="${escapeHtml(String(value))}"`
-    )
-    .join("");
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Host element cloning
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * Locate the captured element in the live host document via the recorded CSS
- * selector. Tries the selector as-is first, then progressively trims leading
- * ancestors — element-picker selectors can be brittle if the parent tree
- * shifted by one wrapper since capture, but the trailing portion usually
- * still resolves.
+ * selector. Strict full-selector match only — trimming the leading ancestors
+ * would silently match a *different* component that happens to share the
+ * trailing class chain, producing a misleading "preview" of an unrelated
+ * element.
  */
 function findHostElement(cssSelector: string | undefined): Element | null {
   if (!cssSelector) return null;
-  const segments = cssSelector.split(" > ");
-  for (let i = 0; i < segments.length; i += 1) {
-    try {
-      const el = document.querySelector(segments.slice(i).join(" > "));
-      if (el) return el;
-    } catch {
-      // Invalid selector segment — keep trimming.
-    }
+  try {
+    return document.querySelector(cssSelector);
+  } catch {
+    return null;
   }
-  return null;
 }
 
 /**
@@ -259,31 +225,28 @@ interface PreviewFrameProps {
 const PreviewFrame: React.FC<PreviewFrameProps> = memo(
   ({ parsed, width, height }) => {
     const srcDoc = useMemo(() => {
-      const clonedHtml = (() => {
-        const el = findHostElement(parsed.cssSelector);
-        return el ? serializeClonedElement(el) : null;
-      })();
-
-      const innerHtml =
-        clonedHtml ??
-        `<div class="${escapeHtml(parsed.className ?? "")}"${serializeDataAttributes(
-          parsed.dataAttributes
-        )} style="width: 100%; height: 100%;"></div>`;
-
+      const el = findHostElement(parsed.cssSelector);
+      if (!el) return null;
+      const innerHtml = serializeClonedElement(el);
       return buildSrcDoc({
         innerHtml,
         baseHref: parsed.meta?.url ?? window.location.href,
         width,
         height,
       });
-    }, [
-      parsed.cssSelector,
-      parsed.className,
-      parsed.dataAttributes,
-      parsed.meta?.url,
-      width,
-      height,
-    ]);
+    }, [parsed.cssSelector, parsed.meta?.url, width, height]);
+
+    if (!srcDoc) {
+      return (
+        <Placeholder
+          variant="empty"
+          placement="detail-panel"
+          title="Captured element is no longer mounted"
+          subtitle="Re-capture the component on the live page to refresh this preview, or switch to Raw to inspect the JSON."
+          fillParentHeight
+        />
+      );
+    }
 
     return (
       <iframe
