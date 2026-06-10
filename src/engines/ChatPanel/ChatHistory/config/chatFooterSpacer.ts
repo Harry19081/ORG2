@@ -17,7 +17,7 @@ export const CHAT_FOOTER_SPACER = {
    * Extra guard added on top of bottomInset so the last chat item is never
    * obscured by the absolute-positioned InputArea overlay.
    */
-  BOTTOM_GUARD_PX: 24,
+  BOTTOM_GUARD_PX: 96,
   /** Cap pin-to-top slack so short latest rounds do not create a full viewport void. */
   MAX_PIN_RESERVE_PX: 200,
 } as const;

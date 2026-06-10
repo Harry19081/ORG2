@@ -43,25 +43,31 @@ export function ChatPanelHeaderNoDragRegion({
   );
 }
 
-interface ChatPanelHeaderTitlePillProps {
+interface ChatPanelHeaderTitlePillProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
-  className?: string;
   testId?: string;
 }
 
-export function ChatPanelHeaderTitlePill({
-  children,
-  className = "flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover",
-  testId = "chat-panel-header-title",
-}: ChatPanelHeaderTitlePillProps): React.ReactElement {
+export const ChatPanelHeaderTitlePill = React.forwardRef<
+  HTMLSpanElement,
+  ChatPanelHeaderTitlePillProps
+>(function ChatPanelHeaderTitlePill(
+  {
+    children,
+    className = "flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover",
+    testId = "chat-panel-header-title",
+    ...props
+  },
+  ref
+): React.ReactElement {
   return (
-    <span className={className}>
+    <span ref={ref} className={className} {...props}>
       <span className="min-w-0 -translate-y-px truncate" data-testid={testId}>
         {children}
       </span>
     </span>
   );
-}
+});
 
 interface ChatPanelHeaderAgentSwitchProps {
   checked: boolean;
