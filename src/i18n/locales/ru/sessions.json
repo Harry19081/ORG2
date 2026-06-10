@@ -75,7 +75,7 @@
   "opsControl": {
     "sessions": "Session",
     "replayBarAriaLabel": "Ops Control replay timeline",
-    "followLabel": "Current Ops Control",
+    "followLabel": "Текущий Kanban",
     "view": {
       "list": "Список",
       "diary": "Дневник",
@@ -112,6 +112,9 @@
     "columns": {
       "todo": "К выполнению",
       "inProgress": "В процессе",
+      "blocking": "Блокировка",
+      "turnFinished": "Ход завершён",
+      "archived": "В архиве",
       "yourTurn": "Ваш ход",
       "finished": "Завершено"
     },
@@ -373,7 +376,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "Отправок пока нет",
-          "selectSubmission": "Выберите отправку, чтобы посмотреть детали.",
+          "selectSubmission": "Выберите отправку, чтобы посмотреть детали",
           "noCommits": "Commits пока нет",
           "noPullRequests": "Pull Requests пока нет"
         }

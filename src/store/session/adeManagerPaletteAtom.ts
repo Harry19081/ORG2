@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-import type { AdeSessionProposalDetail } from "@src/modules/WorkStation/ActionSystem/registration/actions/sessionActions.zod";
+import type { PendingSessionProposal } from "@src/modules/WorkStation/Browser/hooks/osagent/useOSAgentIDEActions";
 import type { GuiControlRunStatus } from "@src/scaffold/GlobalSpotlight/palettes/AgentControlPalette/types";
 
 export interface AdeManagerPaletteState {
@@ -8,7 +8,7 @@ export interface AdeManagerPaletteState {
   draftText: string;
   runStatus: GuiControlRunStatus;
   activityCursor: number;
-  pendingProposal: AdeSessionProposalDetail | null;
+  pendingProposal: PendingSessionProposal | null;
 }
 
 const INITIAL_STATE: AdeManagerPaletteState = {

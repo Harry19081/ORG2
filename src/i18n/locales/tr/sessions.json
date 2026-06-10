@@ -75,7 +75,7 @@
   "opsControl": {
     "sessions": "Session",
     "replayBarAriaLabel": "Ops Control replay timeline",
-    "followLabel": "Current Ops Control",
+    "followLabel": "Mevcut Kanban",
     "view": {
       "list": "Liste",
       "diary": "Günlük",
@@ -112,6 +112,9 @@
     "columns": {
       "todo": "Yapılacak",
       "inProgress": "Devam ediyor",
+      "blocking": "Engelliyor",
+      "turnFinished": "Tur bitti",
+      "archived": "Arşivlendi",
       "yourTurn": "Sıra Sende",
       "finished": "Bitti"
     },
@@ -371,7 +374,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "Henüz gönderim yok",
-          "selectSubmission": "Ayrıntıları görüntülemek için bir gönderim seçin.",
+          "selectSubmission": "Ayrıntıları görüntülemek için bir gönderim seçin",
           "noCommits": "Henüz Commits yok",
           "noPullRequests": "Henüz Pull Requests yok"
         }

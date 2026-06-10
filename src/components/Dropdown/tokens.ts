@@ -27,9 +27,9 @@ export const DROPDOWN_PANEL = {
   /** Box shadow - dark mode */
   shadowDark: "0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)",
 
-  /** z-index for dropdown panels */
-  zIndex: 1050,
-  zIndexClass: "z-[1050]",
+  /** z-index for dropdown panels — must exceed Spotlight's containerZIndex (9999) */
+  zIndex: 10000,
+  zIndexClass: "z-[10000]",
 
   /** Panel padding (no header) */
   padding: 4,

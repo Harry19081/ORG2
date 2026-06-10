@@ -27,8 +27,44 @@ import {
   zodActionRegistry,
 } from "@src/ActionSystem";
 import { sendIdeActionResult } from "@src/api/tauri/agent";
+import { clearSessionAtom } from "@src/engines/SessionCore/core/atoms/actions";
 import { currentRepoAtom } from "@src/store/repo";
+import { reposAtom } from "@src/store/repo/atoms";
+import {
+  SESSION_TARGET_KIND,
+  sessionCreatorStateAtom,
+} from "@src/store/session/creatorStateAtom";
+import {
+  activeSessionIdAtom,
+  workstationActiveSessionIdAtom,
+} from "@src/store/session/viewAtom";
+import {
+  CHAT_PANEL_SURFACE_KIND,
+  chatPanelNavigateAtom,
+  restoreChatWidthAtom,
+} from "@src/store/ui/chatPanelAtom";
 import { guiControlEnabledAtom } from "@src/store/ui/uiAtom";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
+
+/**
+ * Pending session proposal — set by `session.propose` handler,
+ * consumed by `AdeAwareSessionCreatorSlot` in AppLayout when the
+ * user launches a session from the creator.
+ */
+export interface PendingSessionProposal {
+  correlationId: string;
+  task: string;
+  agentDefinitionId?: string;
+  repoPath?: string;
+  model?: string;
+  expiresAt: number;
+}
+
+export const pendingSessionProposal: {
+  current: PendingSessionProposal | null;
+} = {
+  current: null,
+};
 
 const GUI_CONTROL_REQUIRED_MESSAGE =
   "ADE Manager is off. Toggle ADE Manager on to allow GUI automation actions.";
@@ -220,6 +256,85 @@ export function useOSAgentIDEActions(): void {
       const action = detail.action ?? getStringParam(params, "action");
 
       try {
+        // ── session.propose ──────────────────────────────────────────────
+        // Pre-seed the session creator atoms and navigate the chat panel
+        // to the creator view. The AdeAwareSessionCreatorSlot in AppLayout
+        // intercepts onSessionStart and calls sendIdeActionResult with the
+        // new session ID, resolving the Rust-side tool call.
+        if (action === "session.propose") {
+          const task = String(params.task ?? "");
+          const agentDefinitionId = params.agentDefinitionId
+            ? String(params.agentDefinitionId)
+            : undefined;
+          const repoPath = params.repoPath
+            ? String(params.repoPath)
+            : undefined;
+          const model = params.model ? String(params.model) : undefined;
+
+          const store = getInstrumentedStore();
+
+          store.set(sessionCreatorStateAtom, (prev) => {
+            const next = { ...prev };
+            if (agentDefinitionId) {
+              next.dispatchCategory = "rust_agent";
+              next.targetKind = SESSION_TARGET_KIND.AGENT;
+              next.selectedAgentDefinitionId = agentDefinitionId;
+              next.selectedAgentOrgId = null;
+              next.cliAgentType = null;
+              next.agentName = null;
+              next.agentIconId = null;
+            }
+            if (repoPath) {
+              const normalized = repoPath.replace(/\/+$/, "");
+              const repos = store.get(reposAtom);
+              const matched = repos.find((repo) => {
+                const rp = (repo.path ?? repo.fs_uri ?? "").replace(/\/+$/, "");
+                return rp === normalized;
+              });
+              if (matched) {
+                next.source = {
+                  type: "local",
+                  repoId: matched.id,
+                  repoName: matched.name,
+                  repoPath: normalized,
+                };
+              }
+            }
+            return next;
+          });
+
+          // Navigate chat panel to the session creator (same as "New session" button).
+          store.set(chatPanelNavigateAtom, {
+            kind: CHAT_PANEL_SURFACE_KIND.SESSION,
+          });
+          store.set(clearSessionAtom);
+          store.set(workstationActiveSessionIdAtom, null);
+          store.set(activeSessionIdAtom, null);
+          store.set(restoreChatWidthAtom);
+
+          // Store the pending proposal so AdeAwareSessionCreatorSlot can
+          // resolve it when the user launches the session.
+          pendingSessionProposal.current = {
+            correlationId,
+            task,
+            agentDefinitionId,
+            repoPath,
+            model,
+            expiresAt: Date.now() + 5 * 60 * 1000,
+          };
+
+          // Notify the ADE palette countdown card.
+          window.dispatchEvent(
+            new CustomEvent("ade-session-proposal", {
+              detail: pendingSessionProposal.current,
+            })
+          );
+
+          // Do NOT call sendIdeActionResult here — it will be called by
+          // AdeAwareSessionCreatorSlot once the session is created.
+          return;
+        }
+
         if (operation === "list") {
           const query = getStringParam(params, "query");
           const inspectResult = await zodActionRegistry.execute(

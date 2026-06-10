@@ -75,7 +75,7 @@
   "opsControl": {
     "sessions": "Session",
     "replayBarAriaLabel": "Ops Control replay timeline",
-    "followLabel": "Current Ops Control",
+    "followLabel": "現在のKanban",
     "view": {
       "list": "リスト",
       "diary": "日誌",
@@ -112,6 +112,9 @@
     "columns": {
       "todo": "Todo",
       "inProgress": "進行中",
+      "blocking": "ブロック中",
+      "turnFinished": "ターン完了",
+      "archived": "アーカイブ済み",
       "yourTurn": "あなたの番",
       "finished": "終了"
     },
@@ -371,7 +374,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "提出はまだありません",
-          "selectSubmission": "提出を選択して詳細を表示します。",
+          "selectSubmission": "提出を選択して詳細を表示します",
           "noCommits": "Commits はまだありません",
           "noPullRequests": "Pull Requests はまだありません"
         }

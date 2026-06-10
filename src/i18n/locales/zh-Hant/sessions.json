@@ -75,7 +75,7 @@
   "opsControl": {
     "sessions": "Session",
     "replayBarAriaLabel": "Ops Control replay timeline",
-    "followLabel": "Current Ops Control",
+    "followLabel": "目前看板",
     "view": {
       "list": "列表",
       "diary": "日誌",
@@ -112,6 +112,9 @@
     "columns": {
       "todo": "待辦",
       "inProgress": "進行中",
+      "blocking": "阻塞中",
+      "turnFinished": "回合完成",
+      "archived": "已封存",
       "yourTurn": "該你了",
       "finished": "已結束"
     },

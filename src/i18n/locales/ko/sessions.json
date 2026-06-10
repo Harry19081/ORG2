@@ -75,7 +75,7 @@
   "opsControl": {
     "sessions": "Session",
     "replayBarAriaLabel": "Ops Control replay timeline",
-    "followLabel": "Current Ops Control",
+    "followLabel": "현재 Kanban",
     "view": {
       "list": "List",
       "diary": "다이어리",
@@ -112,6 +112,9 @@
     "columns": {
       "todo": "할 일",
       "inProgress": "진행 중",
+      "blocking": "차단 중",
+      "turnFinished": "턴 완료",
+      "archived": "보관됨",
       "yourTurn": "당신 차례",
       "finished": "종료됨"
     },
@@ -371,7 +374,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "아직 제출이 없습니다",
-          "selectSubmission": "세부 정보를 보려면 제출을 선택하세요.",
+          "selectSubmission": "세부 정보를 보려면 제출을 선택하세요",
           "noCommits": "아직 Commits가 없습니다",
           "noPullRequests": "아직 Pull Requests가 없습니다"
         }

@@ -75,7 +75,7 @@
   "opsControl": {
     "sessions": "Sessões",
     "replayBarAriaLabel": "Ops Control replay timeline",
-    "followLabel": "Current Ops Control",
+    "followLabel": "Kanban atual",
     "view": {
       "list": "Lista",
       "diary": "Diário",
@@ -118,6 +118,9 @@
     "columns": {
       "todo": "A fazer",
       "inProgress": "Em andamento",
+      "blocking": "Bloqueado",
+      "turnFinished": "Turno concluído",
+      "archived": "Arquivado",
       "yourTurn": "Sua vez",
       "finished": "Finalizado"
     },
@@ -384,7 +387,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "Ainda não há submissões",
-          "selectSubmission": "Selecione uma submissão para ver os detalhes.",
+          "selectSubmission": "Selecione uma submissão para ver os detalhes",
           "noCommits": "Ainda não há Commits",
           "noPullRequests": "Ainda não há Pull Requests"
         }

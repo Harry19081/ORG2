@@ -17,10 +17,11 @@
  * - ChatPanel: ALWAYS mounted (hidden via CSS when inactive to preserve state)
  */
 import { HoverSidebar } from "@/src/scaffold/NavigationSidebar";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import React, { memo, useCallback, useEffect, useMemo } from "react";
 
 import { ActionSystemProvider } from "@src/ActionSystem";
+import { sendIdeActionResult } from "@src/api/tauri/agent";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
 import ChatPanel from "@src/engines/ChatPanel";
@@ -30,12 +31,11 @@ import SessionSyncProvider from "@src/engines/SessionCore/sync/SessionSyncProvid
 import { SessionCreatorChatPanel } from "@src/features/SessionCreator/variants";
 import type { SessionCreatorChatPanelProps } from "@src/features/SessionCreator/variants/ChatPanel";
 import SettingsSlot from "@src/modules/MainApp/Settings/SettingsSlot";
-import { ADE_SESSION_PROPOSAL_RESPONSE_EVENT } from "@src/modules/WorkStation/ActionSystem/registration/actions/sessionActions.zod";
+import { pendingSessionProposal } from "@src/modules/WorkStation/Browser/hooks/osagent/useOSAgentIDEActions";
 import GlobalSessionSync from "@src/modules/shared/components/GlobalSessionSync";
 import { GlobalSpotlightPortal } from "@src/modules/shared/components/GlobalSpotlightPortal";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/GeneralLayoutTour";
 import { currentRepoAtom } from "@src/store/repo";
-import { adeManagerPaletteAtom } from "@src/store/session/adeManagerPaletteAtom";
 import {
   type ChatPanelMode,
   DEFAULT_CHAT_WIDTH,
@@ -54,38 +54,33 @@ export type ChatLayout = "inset" | "full" | "compact";
 // ============================================
 
 /**
- * Wraps SessionCreatorChatPanel so that when there is a pending ADE proposal,
- * launching from the chat panel's creator fires the proposal response event,
- * resolving the Rust-side `session.propose` promise.
+ * Thin wrapper around SessionCreatorChatPanel. When there is a pending ADE
+ * session.propose, launching from the creator directly resolves the Rust-side
+ * tool call via sendIdeActionResult — no custom events, no Zod actions.
  */
 const AdeAwareSessionCreatorSlot: React.FC<SessionCreatorChatPanelProps> = (
   props
 ) => {
-  const paletteState = useAtomValue(adeManagerPaletteAtom);
-  const setPaletteState = useSetAtom(adeManagerPaletteAtom);
-  const pendingProposal = paletteState.pendingProposal;
-
   const handleSessionStart = useCallback(
     (info: SessionLaunchSuccessInfo) => {
-      if (pendingProposal) {
+      const proposal = pendingSessionProposal.current;
+      if (proposal) {
+        pendingSessionProposal.current = null;
+        void sendIdeActionResult(proposal.correlationId, {
+          success: true,
+          message: `Session created: ${info.sessionId}`,
+          data: { sessionId: info.sessionId },
+        });
+        // Dismiss the countdown card in the ADE palette.
         window.dispatchEvent(
-          new CustomEvent(ADE_SESSION_PROPOSAL_RESPONSE_EVENT, {
-            detail: {
-              correlationId: pendingProposal.correlationId,
-              approved: true,
-              name: info.sessionId,
-              task: pendingProposal.task,
-              agentDefinitionId: pendingProposal.agentDefinitionId,
-              repoPath: pendingProposal.repoPath,
-              model: pendingProposal.model,
-            },
+          new CustomEvent("ade-session-proposal-resolved", {
+            detail: { correlationId: proposal.correlationId },
           })
         );
-        setPaletteState((prev) => ({ ...prev, pendingProposal: null }));
       }
       props.onSessionStart?.(info);
     },
-    [pendingProposal, setPaletteState, props]
+    [props]
   );
 
   return (

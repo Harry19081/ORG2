@@ -17,8 +17,7 @@ import Message from "@src/components/Message";
 import { chatEventsForSessionAtomFamily } from "@src/engines/SessionCore/derived/sessionScopedChatEvents";
 import type { AdvancedConfig } from "@src/features/SessionCreator/types";
 import { useValidatedLastPair } from "@src/hooks/models/useValidatedLastPair";
-import type { AdeSessionProposalDetail } from "@src/modules/WorkStation/ActionSystem/registration/actions/sessionActions.zod";
-import { ADE_SESSION_PROPOSAL_EVENT } from "@src/modules/WorkStation/ActionSystem/registration/actions/sessionActions.zod";
+import type { PendingSessionProposal } from "@src/modules/WorkStation/Browser/hooks/osagent/useOSAgentIDEActions";
 import type { SpotlightItem } from "@src/scaffold/GlobalSpotlight/types";
 import { collectIdeContext } from "@src/services/context/collectors";
 import { adeManagerPaletteAtom } from "@src/store/session/adeManagerPaletteAtom";
@@ -118,7 +117,7 @@ export function useAgentControlPalette({
     [setPaletteState]
   );
   const setPendingProposal = useCallback(
-    (proposal: AdeSessionProposalDetail | null) =>
+    (proposal: PendingSessionProposal | null) =>
       setPaletteState((prev) => ({ ...prev, pendingProposal: proposal })),
     [setPaletteState]
   );
@@ -132,16 +131,24 @@ export function useAgentControlPalette({
   const sendingRef = useRef(false);
   const activityItems = useGuiControlActivity(controlSessionId);
 
-  // Listen for session proposals emitted by session.propose Zod action
+  // Listen for session proposals from the manage_session tool handler
   useEffect(() => {
     function handleProposal(evt: Event) {
-      const detail = (evt as CustomEvent<AdeSessionProposalDetail>).detail;
+      const detail = (evt as CustomEvent<PendingSessionProposal>).detail;
       if (!detail?.correlationId) return;
       setPendingProposal(detail);
     }
-    window.addEventListener(ADE_SESSION_PROPOSAL_EVENT, handleProposal);
+    function handleResolved() {
+      setPendingProposal(null);
+    }
+    window.addEventListener("ade-session-proposal", handleProposal);
+    window.addEventListener("ade-session-proposal-resolved", handleResolved);
     return () => {
-      window.removeEventListener(ADE_SESSION_PROPOSAL_EVENT, handleProposal);
+      window.removeEventListener("ade-session-proposal", handleProposal);
+      window.removeEventListener(
+        "ade-session-proposal-resolved",
+        handleResolved
+      );
     };
   }, [setPendingProposal]);
 

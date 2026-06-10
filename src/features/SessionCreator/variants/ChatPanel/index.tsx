@@ -111,6 +111,7 @@ const SessionCreatorChatPanelSingle: React.FC<
 > = ({
   centerFullScreenContent = false,
   className = "",
+  innerClassName,
   footerSlot,
   leadingActionSlot,
   headerLayout = "hero",
@@ -648,11 +649,12 @@ const SessionCreatorChatPanelSingle: React.FC<
     >
       <div
         className={`flex min-h-0 flex-1 items-center justify-center px-4 ${
-          isFullScreenVariant
+          innerClassName ??
+          (isFullScreenVariant
             ? centerFullScreenContent
               ? "pb-[10vh]"
               : "pb-[18vh]"
-            : "pb-[4vh]"
+            : "pb-[4vh]")
         }`}
       >
         <div

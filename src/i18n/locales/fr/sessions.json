@@ -75,7 +75,7 @@
   "opsControl": {
     "sessions": "Sessions",
     "replayBarAriaLabel": "Ops Control replay timeline",
-    "followLabel": "Current Ops Control",
+    "followLabel": "Kanban actuel",
     "view": {
       "list": "Liste",
       "diary": "Journal",
@@ -112,6 +112,9 @@
     "columns": {
       "todo": "À faire",
       "inProgress": "En cours",
+      "blocking": "Bloquant",
+      "turnFinished": "Tour terminé",
+      "archived": "Archivé",
       "yourTurn": "À toi",
       "finished": "Finalisé"
     },
