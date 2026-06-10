@@ -17,8 +17,8 @@ import {
   getStatusLetterForFile,
 } from "@src/config/gitStatus";
 import { CodeMirrorDiff } from "@src/features/CodeMirror";
-import { FileHeader } from "@src/modules/WorkStation/shared";
 import { DIFF_STATS } from "@src/modules/WorkStation/shared/tokens";
+import { FileHeader } from "@src/modules/shared/components/FileHeader";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import {
   TextSelectionDropdown,

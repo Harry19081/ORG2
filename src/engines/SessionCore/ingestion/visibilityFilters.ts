@@ -12,7 +12,6 @@
  */
 import { isLiveRuntimeResourceEvent } from "../core/runningEventGate";
 import type { SessionEvent } from "../core/types";
-import { PLAN_EVENT_NAME } from "../derived/planDisplayEvents";
 
 // ============================================
 // Utility Functions
@@ -118,46 +117,15 @@ export function isVisibleInChat(event: SessionEvent): boolean {
 }
 
 /**
- * Tool names that spawn subagents.
- * Running-state events for these tools are shown in Trajectory/Simulator so
- * subagent progress (injected via updateActiveTaskArgs) is visible immediately.
- * Must mirror SPAWNING_TOOL_NAMES in Rust derived.rs.
- */
-const SPAWNING_TOOL_NAMES = new Set([
-  "agent",
-  "task",
-  "Task",
-  "spawn_sub_agent",
-  "subagent",
-]);
-
-/**
- * Shell tool names whose running-state events should stay visible in the
- * Simulator so the COMMANDS panel shows live streamOutput while a command
- * executes.  Must mirror SHELL_TOOL_NAMES in Rust derived.rs.
- */
-const SHELL_TOOL_NAMES = new Set([
-  "bash",
-  "shell",
-  "execute_command",
-  "run_terminal_command",
-  "terminal",
-  "terminal_command",
-  "run_shell",
-]);
-
-const PLAN_EVENT_NAMES: ReadonlySet<string> = new Set([
-  PLAN_EVENT_NAME.CREATE_PLAN,
-  PLAN_EVENT_NAME.PLAN_APPROVAL,
-]);
-
-/**
  * Shared implementation for simulator and Messages app visibility.
  * Both contexts show completed tool calls, thinking events, and messages
  * but hide streaming deltas and in-progress status events.
  *
- * Spawning tool calls (agent, task, …) and shell tool calls are shown even
- * while Running so that subagent progress and live command output are visible.
+ * All tool_call events are shown while running so every agent station app can
+ * display a loading state immediately when the tool starts, mirroring the chat
+ * panel's shimmer behaviour. Shell, spawning, and plan events additionally
+ * show live content (stream output / subagent progress / plan text) while
+ * running.
  */
 function isVisibleInSimulatorOrMessages(event: SessionEvent): boolean {
   // Hide streaming deltas (show only final events)
@@ -165,16 +133,11 @@ function isVisibleInSimulatorOrMessages(event: SessionEvent): boolean {
     return false;
   }
 
-  // Hide "running" status events — except for tool calls whose live args are
-  // user-visible in replay.
+  // Hide running non-tool_call events (e.g. bare assistant messages that are
+  // still streaming) — only tool_call events get a loading state in the apps.
   if (
     isLiveRuntimeResourceEvent(event) &&
-    !(
-      event.displayVariant === "tool_call" &&
-      (SPAWNING_TOOL_NAMES.has(event.functionName) ||
-        SHELL_TOOL_NAMES.has(event.functionName) ||
-        PLAN_EVENT_NAMES.has(event.functionName))
-    )
+    event.displayVariant !== "tool_call"
   ) {
     return false;
   }

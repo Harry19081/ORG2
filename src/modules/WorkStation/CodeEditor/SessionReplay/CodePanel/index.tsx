@@ -111,6 +111,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
     toolOperation,
     mode = CODE_PANEL_MODE.FILE,
     sessionReplayMode = "simulation",
+    isLoading = false,
   }) => {
     const { t } = useTranslation("sessions");
     const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
@@ -145,7 +146,13 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
 
     if (mode === CODE_PANEL_MODE.TERMINAL) {
       if (!shellOperation) {
-        return (
+        return isLoading ? (
+          <Placeholder
+            variant="loading"
+            placement="detail-panel"
+            fillParentHeight
+          />
+        ) : (
           <NoTabsPlaceholder
             icon="editor"
             caption={simulatorAwaitingAgentCaption}
@@ -193,7 +200,13 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
 
     if (mode === CODE_PANEL_MODE.TOOL) {
       if (!toolOperation) {
-        return (
+        return isLoading ? (
+          <Placeholder
+            variant="loading"
+            placement="detail-panel"
+            fillParentHeight
+          />
+        ) : (
           <NoTabsPlaceholder
             icon="editor"
             caption={simulatorAwaitingAgentCaption}
@@ -212,7 +225,13 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
 
     if (mode === CODE_PANEL_MODE.EXPLORE) {
       if (!exploreOperation) {
-        return (
+        return isLoading ? (
+          <Placeholder
+            variant="loading"
+            placement="detail-panel"
+            fillParentHeight
+          />
+        ) : (
           <NoTabsPlaceholder
             icon="editor"
             caption={simulatorAwaitingAgentCaption}
@@ -244,7 +263,13 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
     }
 
     if (!operation) {
-      return (
+      return isLoading ? (
+        <Placeholder
+          variant="loading"
+          placement="detail-panel"
+          fillParentHeight
+        />
+      ) : (
         <NoTabsPlaceholder
           icon="editor"
           caption={simulatorAwaitingAgentCaption}
@@ -329,6 +354,12 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
                   filePath={filePath}
                 />
               )
+            ) : isLoading ? (
+              <Placeholder
+                variant="loading"
+                placement="detail-panel"
+                fillParentHeight
+              />
             ) : (
               <NoTabsPlaceholder
                 icon="editor"
