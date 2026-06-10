@@ -27,6 +27,13 @@ export interface BreadcrumbFileHeaderProps {
   plainTitle?: boolean;
   textSizeClassName?: string;
   className?: string;
+  /**
+   * Extra className applied to the last (deepest) segment span. Use to add
+   * lifecycle-state styling — e.g. the chat-block loading shimmer — to the
+   * filename/title portion without affecting the breadcrumb chevrons or
+   * intermediate segments.
+   */
+  lastSegmentClassName?: string;
 }
 
 interface PathSegment {
@@ -56,6 +63,7 @@ const BreadcrumbFileHeader: React.FC<BreadcrumbFileHeaderProps> = ({
   plainTitle = false,
   textSizeClassName = "text-[13px]",
   className = "",
+  lastSegmentClassName = "",
 }) => {
   const [activeSegmentPath, setActiveSegmentPath] = useState<string | null>(
     null
@@ -186,7 +194,9 @@ const BreadcrumbFileHeader: React.FC<BreadcrumbFileHeaderProps> = ({
                           ? "text-text-2"
                           : "cursor-pointer text-text-2 hover:text-text-1"
                     }`
-              } ${isActive && !disableNavigation ? "text-text-1 underline decoration-text-1" : ""}`}
+              } ${isActive && !disableNavigation ? "text-text-1 underline decoration-text-1" : ""} ${
+                isLast && lastSegmentClassName ? lastSegmentClassName : ""
+              }`.trim()}
               onClick={() =>
                 handleSegmentClick(segment.fullPath, segment.isLast)
               }

@@ -307,6 +307,7 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
           label,
           title: op.query || label,
           createdAt: op.event?.createdAt ?? "",
+          isLoading: op.isLoading,
         };
       }
     );
@@ -318,6 +319,7 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
         label,
         title: op.command || label,
         createdAt: op.event?.createdAt ?? "",
+        isLoading: op.isLoading,
       };
     });
     const toolTabs: TimestampedReplayTab[] = allToolOperations.map((op) => ({
@@ -327,6 +329,7 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
       title: op.toolName,
       icon: sidebarToolIcon(op.event?.functionName),
       createdAt: op.event?.createdAt ?? "",
+      isLoading: op.isLoading,
     }));
 
     return mergeNewestFirstByTimestamp([

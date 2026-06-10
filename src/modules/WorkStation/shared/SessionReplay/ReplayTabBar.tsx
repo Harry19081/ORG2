@@ -25,6 +25,7 @@ import React, { Fragment, memo, useEffect, useRef } from "react";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { EVENT_LOADING_SHIMMER_TEXT_CLASSES } from "@src/engines/ChatPanel/blocks/primitives";
 
 import { NoDragRegion } from "../NoDragRegion";
 import { WorkStationTabPillSurface } from "../TabBar/components";
@@ -73,6 +74,13 @@ export interface ReplayTab {
    * `sidebarToolIcon(functionName)` for tools).
    */
   icon?: React.ReactNode;
+  /**
+   * When true, the tab label is rendered with the chat-block loading shimmer
+   * so the user can see at a glance that the underlying tool call is still
+   * running. Mirrors the shimmer applied to `TerminalBlock`/`CodeBlock` headers
+   * in `ChatPanel`.
+   */
+  isLoading?: boolean;
 }
 
 export interface ReplayTabBarProps {
@@ -158,7 +166,13 @@ const TabItem: React.FC<TabItemProps> = ({ tab, isActive, onClick }) => {
       >
         {icon}
       </span>
-      <span className="max-w-[160px] truncate text-[13px]">{tab.label}</span>
+      <span
+        className={`max-w-[160px] truncate text-[13px] ${
+          tab.isLoading ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}` : ""
+        }`}
+      >
+        {tab.label}
+      </span>
     </WorkStationTabPillSurface>
   );
 };

@@ -30,6 +30,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { EVENT_LOADING_SHIMMER_TEXT_CLASSES } from "@src/engines/ChatPanel/blocks/primitives";
 import BreadcrumbFileHeader from "@src/modules/shared/components/FileHeader/BreadcrumbFileHeader";
 import { HorizontalResizeHandle } from "@src/scaffold/Resize";
 
@@ -428,6 +429,11 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
             disableNavigation
             plainTitle
             className="!flex-none"
+            lastSegmentClassName={
+              activeSessions.length > 0
+                ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}`
+                : ""
+            }
           />
           <div className="ml-auto flex shrink-0 items-center gap-px">
             {!isBannerCollapsed && pageCount > 1 && (

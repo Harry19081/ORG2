@@ -10,6 +10,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { EVENT_LOADING_SHIMMER_TEXT_CLASSES } from "@src/engines/ChatPanel/blocks/primitives";
 import { replayModeAtom } from "@src/engines/SessionCore";
 
 interface MultiTaskHeaderProps {
@@ -33,7 +34,13 @@ const MultiTaskHeader: React.FC<MultiTaskHeaderProps> = ({
       className={`flex h-10 flex-shrink-0 items-center justify-between bg-bg-1 px-3 ${headerBorderClass}`}
     >
       <div className="flex items-center">
-        <div className="text-xs text-text-3">
+        <div
+          className={`text-xs text-text-3 ${
+            taskCount > 0
+              ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}`
+              : ""
+          }`}
+        >
           {t("simulator.multiTask.monitoringProgress", { count: taskCount })}
         </div>
       </div>
