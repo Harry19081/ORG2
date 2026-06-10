@@ -1148,6 +1148,7 @@ async fn send_initial_turn(
             false,
             false,
             None,
+            None,
         )
         .await?;
         return Ok(());
@@ -1182,6 +1183,7 @@ async fn send_initial_turn(
         ide_context,
         false,
         false,
+        None,
         None,
     )
     .await?;

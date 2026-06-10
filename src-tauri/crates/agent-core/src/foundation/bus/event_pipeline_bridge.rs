@@ -115,6 +115,7 @@ pub type PersistUserMessageEventFn = fn(
     display_text: Option<&str>,
     images: Option<&[String]>,
     source: PersistedUserMessageSource,
+    turn_intent_id: &str,
 );
 
 // ============================================================================
@@ -356,6 +357,7 @@ pub fn persist_user_message_event(
     display_text: Option<&str>,
     images: Option<&[String]>,
     source: PersistedUserMessageSource,
+    turn_intent_id: &str,
 ) {
     if let Some(f) = PERSIST_USER_MESSAGE_EVENT.get() {
         f(
@@ -366,6 +368,7 @@ pub fn persist_user_message_event(
             display_text,
             images,
             source,
+            turn_intent_id,
         );
     } else {
         tracing::warn!(

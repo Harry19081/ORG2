@@ -96,6 +96,11 @@ pub struct TurnInput {
     pub chat_id: Option<String>,
     /// Stable logical turn id assigned when AgentSession begins the turn.
     pub turn_id: Option<String>,
+    /// Canonical user-intent id minted at the user-intent boundary.
+    /// See `ProcessingContext::turn_intent_id` for the design rationale —
+    /// the field is carried on `TurnInput` so the entry layer (which
+    /// constructs `ProcessingContext`) can forward it without re-deriving.
+    pub turn_intent_id: String,
 }
 
 // ============================================
@@ -433,6 +438,7 @@ impl UnifiedMessageProcessor {
                         context.display_text.as_deref(),
                         context.images.as_deref(),
                         crate::bus::event_pipeline_bridge::PersistedUserMessageSource::User,
+                        context.turn_intent_id.as_str(),
                     );
                 });
             }
@@ -578,6 +584,14 @@ impl UnifiedMessageProcessor {
                     .map_err(|err| format!("Failed to save inbox transcript message: {}", err))?;
 
                     if let Some(handle) = self.app_handle.as_ref() {
+                        // Inbox transcript is its own logical user intent
+                        // (an agent-org subagent delivered an answer to a
+                        // parent waiting on inbox_drain). Mint a dedicated
+                        // turn_intent_id with source `agent_org` so the
+                        // turn indexer can collapse this row with any
+                        // matching synthetic event without confusing it
+                        // with the parent user's submit.
+                        let transcript_intent_id = uuid::Uuid::new_v4().to_string();
                         tokio::task::block_in_place(|| {
                             crate::bus::event_pipeline_bridge::persist_user_message_event(
                                 handle,
@@ -587,6 +601,7 @@ impl UnifiedMessageProcessor {
                                 None,
                                 None,
                                 crate::bus::event_pipeline_bridge::PersistedUserMessageSource::AgentOrgInboxTranscript,
+                                &transcript_intent_id,
                             );
                         });
                     }

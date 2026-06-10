@@ -31,6 +31,17 @@ pub struct ProcessingContext {
     pub display_text: Option<String>,
     /// Stable logical turn id assigned by `AgentSession::begin_turn`.
     pub turn_id: Option<String>,
+    /// Canonical user-intent id. One per "user wants the agent to take a
+    /// turn now" event — minted at the user-intent boundary (ChatPanel
+    /// submit, queue enqueue, force-send, resume, mobile-remote,
+    /// agent-org inbox) and propagated through the wire layer, scheduler,
+    /// and persisted user_message events so the turn indexer can collapse
+    /// synthetic + backend rows that share the same intent. Defaults to
+    /// an empty string only on the rare turn paths that intentionally
+    /// skip user-message persistence (resume with empty content); every
+    /// persistence call site treats an empty id as "no canonical id
+    /// available, fall back to per-row identity".
+    pub turn_intent_id: String,
 }
 
 /// User presence mode — QQ-style availability signal the user sets in the

@@ -140,10 +140,15 @@ impl WingmanLoop {
         let app_handle = self.app_handle.clone();
         let session_arc_for_closure: Arc<AgentSession> = Arc::clone(session);
         let session_id_for_event = sid.clone();
+        // Mint the canonical user-intent id once per observation so the
+        // ScheduledMessage and the TurnInput carry the same value.
+        let turn_intent_id = uuid::Uuid::new_v4().to_string();
+        let turn_intent_id_for_closure = turn_intent_id.clone();
 
         let execute: ExecuteFn = Box::new(move || {
             let _sid = sid;
             let content = content;
+            let turn_intent_id = turn_intent_id_for_closure;
 
             Box::pin(async move {
                 cancel_flag.store(false, std::sync::atomic::Ordering::SeqCst);
@@ -163,6 +168,7 @@ impl WingmanLoop {
                     channel: None,
                     chat_id: None,
                     turn_id: Some(turn_id.clone()),
+                    turn_intent_id,
                 };
 
                 let response = crate::session::process_message(
@@ -224,6 +230,9 @@ impl WingmanLoop {
             message_id: uuid::Uuid::new_v4().to_string(),
             generation: 0,
             client_message_id: None,
+            // Same id used for the TurnInput above — keeps the wire
+            // boundary and the turn execution observing a single intent.
+            turn_intent_id,
             content: "[wingman:observe]".to_string(),
             execute,
         };

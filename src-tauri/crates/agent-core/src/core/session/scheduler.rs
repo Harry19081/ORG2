@@ -68,6 +68,12 @@ pub struct ScheduledMessage {
     pub generation: u64,
     /// Client-supplied idempotency key for suppressing duplicate sends.
     pub client_message_id: Option<String>,
+    /// Canonical user-intent id. Stays stable across the IPC boundary and
+    /// is written into the persisted user_message event so the turn
+    /// indexer can collapse synthetic + backend rows that share the same
+    /// id. Empty only on the rare turn paths that intentionally skip
+    /// user-message persistence (resume with empty content).
+    pub turn_intent_id: String,
     /// The user content to process.
     pub content: String,
     /// Opaque processing callback.  Boxed future factory so the scheduler
@@ -446,6 +452,7 @@ mod tests {
                 message_id: "running-before-rewind".to_string(),
                 generation: 0,
                 client_message_id: None,
+                turn_intent_id: String::new(),
                 content: "running".to_string(),
                 execute: Box::new(move || {
                     Box::pin(async move {
@@ -463,6 +470,7 @@ mod tests {
                 message_id: "queued-before-rewind".to_string(),
                 generation: 0,
                 client_message_id: None,
+                turn_intent_id: String::new(),
                 content: "stale".to_string(),
                 execute: Box::new(move || {
                     Box::pin(async move {
@@ -493,6 +501,7 @@ mod tests {
                 message_id: "first".to_string(),
                 generation: 0,
                 client_message_id: Some("client-1".to_string()),
+                turn_intent_id: String::new(),
                 content: "running".to_string(),
                 execute: Box::new(move || {
                     Box::pin(async move {
@@ -509,6 +518,7 @@ mod tests {
                 message_id: "second".to_string(),
                 generation: 0,
                 client_message_id: Some("client-1".to_string()),
+                turn_intent_id: String::new(),
                 content: "duplicate".to_string(),
                 execute: Box::new(|| Box::pin(async { Ok("duplicate ran".to_string()) })),
             })
@@ -534,6 +544,7 @@ mod tests {
                 message_id: "queued-after-rewind".to_string(),
                 generation: 0,
                 client_message_id: None,
+                turn_intent_id: String::new(),
                 content: "fresh".to_string(),
                 execute: Box::new(move || {
                     Box::pin(async move {

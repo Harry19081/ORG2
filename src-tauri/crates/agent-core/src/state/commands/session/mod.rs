@@ -175,6 +175,7 @@ pub async fn agent_send_message(
     ide_context: Option<crate::session::IdeContext>,
     #[allow(non_snake_case)] isResume: Option<bool>,
     #[allow(non_snake_case)] clientMessageId: Option<String>,
+    #[allow(non_snake_case)] turnIntentId: Option<String>,
 ) -> Result<AgentResponse, String> {
     message::send_message_impl(
         &state,
@@ -193,6 +194,7 @@ pub async fn agent_send_message(
         isResume.unwrap_or(false),
         true,
         clientMessageId,
+        turnIntentId,
     )
     .await
 }

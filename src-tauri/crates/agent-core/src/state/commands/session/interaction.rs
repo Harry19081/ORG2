@@ -418,6 +418,7 @@ pub async fn agent_plan_approval_response(
         false,
         false,
         None,
+        None,
     )
     .await
     .map(|_| ())

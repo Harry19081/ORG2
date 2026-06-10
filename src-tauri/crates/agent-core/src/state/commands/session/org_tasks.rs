@@ -431,6 +431,7 @@ pub async fn agent_org_send_user_message_to_member_impl(
         false,
         true,
         None,
+        None,
     )
     .await?;
 

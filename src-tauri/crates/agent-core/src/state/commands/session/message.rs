@@ -38,6 +38,7 @@ pub async fn send_message_impl_for_wake(
         true,
         false,
         None,
+        None,
     )
     .await
 }
@@ -77,6 +78,7 @@ pub async fn send_message_impl_for_mobile_remote(
         false,
         true,
         None,
+        None,
     )
     .await
 }
@@ -115,6 +117,7 @@ pub async fn send_message_impl_for_test(
         false,
         false,
         None,
+        None,
     )
     .await
 }
@@ -133,10 +136,18 @@ pub(crate) async fn send_message_impl(
     is_resume: bool,
     mark_direct_user_intervention: bool,
     client_message_id: Option<String>,
+    turn_intent_id: Option<String>,
 ) -> Result<AgentResponse, String> {
+    // Canonical user-intent id: callers that already mint one at the
+    // submit boundary pass it through; legacy / internal callers that
+    // don't (mobile remote, wake hook, plan-approval re-entry) get a
+    // server-side fallback so the bridge slot is always non-empty.
+    let effective_turn_intent_id =
+        turn_intent_id.unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
+
     let default_mode = crate::session::AgentExecMode::Build.as_str();
     tracing::info!(
-        "[agent_send_message] session={}, model={:?}, account={:?}, mode={:?}, images={}",
+        "[agent_send_message] session={}, model={:?}, account={:?}, mode={:?}, images={}, turn_intent_id={}",
         session_id,
         overrides.model.as_deref().unwrap_or("<default>"),
         overrides.account_id.as_deref().unwrap_or("<default>"),
@@ -144,7 +155,8 @@ pub(crate) async fn send_message_impl(
         images
             .as_ref()
             .map(|v| format!("{} image(s)", v.len()))
-            .unwrap_or_else(|| "none".to_string())
+            .unwrap_or_else(|| "none".to_string()),
+        effective_turn_intent_id,
     );
 
     // ── 1. Resolve session identity (unified — single code path) ─────────
@@ -263,6 +275,7 @@ pub(crate) async fn send_message_impl(
     let content_for_closure = content.clone();
     let display_text_for_closure = display_text;
     let workspace_root_for_closure = effective_workspace_root.clone();
+    let turn_intent_id_for_closure = effective_turn_intent_id.clone();
     // If the coordinator queued an `ExecModeSetRequest` override on
     // this member, consume it now (before defaulting to the
     // wire-supplied mode). The override is one-shot — `take` clears
@@ -322,6 +335,7 @@ pub(crate) async fn send_message_impl(
         let display_text = display_text_for_closure;
         let workspace_root = workspace_root_for_closure;
         let session = session_for_closure;
+        let turn_intent_id = turn_intent_id_for_closure;
 
         Box::pin(async move {
             let turn_id = session.begin_turn(content.clone()).await;
@@ -336,6 +350,7 @@ pub(crate) async fn send_message_impl(
                 channel: None,
                 chat_id: None,
                 turn_id: Some(turn_id.clone()),
+                turn_intent_id,
             };
 
             let response =
@@ -409,6 +424,7 @@ pub(crate) async fn send_message_impl(
         message_id: uuid::Uuid::new_v4().to_string(),
         generation: 0,
         client_message_id,
+        turn_intent_id: effective_turn_intent_id.clone(),
         content,
         execute,
     };

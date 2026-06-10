@@ -122,6 +122,11 @@ pub async fn process_gateway_message(
         channel: Some(msg.channel.clone()),
         chat_id: Some(msg.chat_id.clone()),
         turn_id: None,
+        // Gateway-driven turns (Slack/Discord/etc.) are their own user
+        // intent — mint a dedicated id so the turn indexer treats each
+        // gateway message as a distinct round even if multiple share
+        // the same channel/chat.
+        turn_intent_id: uuid::Uuid::new_v4().to_string(),
     };
 
     let result =
