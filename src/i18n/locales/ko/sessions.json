@@ -112,18 +112,16 @@
     "columns": {
       "todo": "할 일",
       "inProgress": "진행 중",
-      "blocking": "당신 차례",
-      "turnFinished": "턴 종료",
-      "archived": "보관됨"
+      "yourTurn": "당신 차례",
+      "finished": "종료됨"
     },
     "boardColumns": {
       "todo": "할 일",
       "in_progress": "진행 중",
       "in_review": "검토 중",
-      "blocking": "당신 차례",
-      "turn_finished": "턴 종료",
-      "archived": "보관됨",
+      "your_turn": "당신 차례",
       "done": "완료",
+      "finished": "종료됨",
       "cancelled": "실패"
     },
     "sidebar": {
@@ -133,6 +131,7 @@
       "removeDraft": "초안 제거"
     },
     "resultStatus": {
+      "completed": "완료",
       "failed": "실패",
       "archived": "보관됨"
     },

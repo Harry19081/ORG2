@@ -112,18 +112,16 @@
     "columns": {
       "todo": "Cần làm",
       "inProgress": "Đang thực hiện",
-      "blocking": "Đến lượt bạn",
-      "turnFinished": "Lượt đã xong",
-      "archived": "Đã lưu trữ"
+      "yourTurn": "Đến lượt bạn",
+      "finished": "Hoàn tất"
     },
     "boardColumns": {
       "todo": "Cần làm",
       "in_progress": "Đang thực hiện",
       "in_review": "Đang xem xét",
-      "blocking": "Đến lượt bạn",
-      "turn_finished": "Lượt đã xong",
-      "archived": "Đã lưu trữ",
+      "your_turn": "Đến lượt bạn",
       "done": "Hoàn thành",
+      "finished": "Hoàn tất",
       "cancelled": "Thất bại"
     },
     "sidebar": {
@@ -133,6 +131,7 @@
       "removeDraft": "Xóa bản nháp"
     },
     "resultStatus": {
+      "completed": "Hoàn thành",
       "failed": "Thất bại",
       "archived": "Đã lưu trữ"
     },

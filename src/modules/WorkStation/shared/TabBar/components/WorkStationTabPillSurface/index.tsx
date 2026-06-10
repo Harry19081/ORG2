@@ -1,12 +1,6 @@
 import React from "react";
 
-import { TabPillSurface } from "@src/components/TabPill";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
-
-import {
-  WORK_STATION_TAB_PILL_SURFACE_CLASS,
-  WORK_STATION_TAB_PILL_TEXT_CLASS,
-} from "./tokens";
 
 type WorkStationTabPillElement = HTMLButtonElement | HTMLDivElement;
 
@@ -52,18 +46,29 @@ export const WorkStationTabPillSurface = React.forwardRef<
     const draggingClass = isDragging
       ? `work-station-editor-tab--dragging cursor-grabbing ${SURFACE_TOKENS.selected} opacity-90`
       : "";
-    const surfaceClassName = `${WORK_STATION_TAB_PILL_SURFACE_CLASS} ${VARIANT_CLASSES[variant]} ${stateClass} ${draggingClass} ${className}`;
+    const surfaceClassName = `work-station-editor-tab relative flex h-8 min-w-0 cursor-pointer select-none items-center overflow-hidden rounded-lg transition-colors duration-150 ${VARIANT_CLASSES[variant]} ${stateClass} ${draggingClass} ${className}`;
+
+    if (as === "button") {
+      return (
+        <button
+          ref={ref as React.Ref<HTMLButtonElement>}
+          type="button"
+          className={surfaceClassName}
+          {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+        >
+          {children}
+        </button>
+      );
+    }
 
     return (
-      <TabPillSurface
-        ref={ref}
-        as={as}
+      <div
+        ref={ref as React.Ref<HTMLDivElement>}
         className={surfaceClassName}
-        textClassName={WORK_STATION_TAB_PILL_TEXT_CLASS}
-        {...props}
+        {...(props as React.HTMLAttributes<HTMLDivElement>)}
       >
         {children}
-      </TabPillSurface>
+      </div>
     );
   }
 );

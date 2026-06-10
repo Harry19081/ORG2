@@ -118,18 +118,16 @@
     "columns": {
       "todo": "Todo",
       "inProgress": "In Progress",
-      "blocking": "Your Turn",
-      "turnFinished": "Turn Finished",
-      "archived": "Archived"
+      "yourTurn": "Your Turn",
+      "finished": "Finished"
     },
     "boardColumns": {
       "todo": "Todo",
       "in_progress": "In Progress",
       "in_review": "In Review",
-      "blocking": "Your Turn",
-      "turn_finished": "Turn Finished",
-      "archived": "Archived",
+      "your_turn": "Your Turn",
       "done": "Completed",
+      "finished": "Finished",
       "cancelled": "Failed"
     },
     "sidebar": {
@@ -139,6 +137,7 @@
       "removeDraft": "Remove draft"
     },
     "resultStatus": {
+      "completed": "Completed",
       "failed": "Failed",
       "archived": "Archived"
     },

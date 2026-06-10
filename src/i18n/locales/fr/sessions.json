@@ -112,18 +112,16 @@
     "columns": {
       "todo": "À faire",
       "inProgress": "En cours",
-      "blocking": "À toi",
-      "turnFinished": "Tour terminé",
-      "archived": "Archivé"
+      "yourTurn": "À toi",
+      "finished": "Finalisé"
     },
     "boardColumns": {
       "todo": "À faire",
       "in_progress": "En cours",
       "in_review": "En révision",
-      "blocking": "À toi",
-      "turn_finished": "Tour terminé",
-      "archived": "Archivé",
+      "your_turn": "À toi",
       "done": "Terminé",
+      "finished": "Finalisé",
       "cancelled": "Échoué"
     },
     "sidebar": {
@@ -133,6 +131,7 @@
       "removeDraft": "Supprimer le brouillon"
     },
     "resultStatus": {
+      "completed": "Terminé",
       "failed": "Échoué",
       "archived": "Archivé"
     },

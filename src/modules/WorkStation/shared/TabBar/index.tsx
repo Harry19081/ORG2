@@ -54,7 +54,6 @@ import {
   TabBarControls,
   WORK_STATION_TAB_PILL_DRAG_OVERLAY_CLASS,
 } from "./components";
-import { WORK_STATION_TAB_PILL_TEXT_CLASS } from "./components/WorkStationTabPillSurface/tokens";
 import {
   TAB_BAR_HEIGHT,
   TAB_PAIR_SEPARATOR_SLOT_CLASS,
@@ -376,9 +375,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
                           fileName={draggingTab.title}
                           size="small"
                         />
-                        <span
-                          className={`max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-primary-6 ${WORK_STATION_TAB_PILL_TEXT_CLASS}`}
-                        >
+                        <span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-[13px] text-primary-6">
                           {draggingTab.title}
                         </span>
                       </div>

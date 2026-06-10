@@ -32,7 +32,5 @@ export interface TabPillProps {
    *   visually matches the SettingsTable filter selects.
    */
   colorScheme?: "default" | "muted" | "layout" | "ghost";
-  surfaceClassName?: string;
-  textClassName?: string;
   onDropdownRef?: (close: () => void) => void;
 }

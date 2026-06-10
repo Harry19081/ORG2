@@ -6,8 +6,7 @@
 import { LayoutGrid, Minus, Rows2, Square } from "lucide-react";
 import React, { memo, useMemo } from "react";
 
-import { type TabPillItem } from "@src/components/TabPill";
-import { WorkStationTabPill } from "@src/modules/WorkStation/shared";
+import TabPill, { type TabPillItem } from "@src/components/TabPill";
 
 // ============================================
 // Types
@@ -60,7 +59,7 @@ export const LayoutButtons: React.FC<LayoutButtonsProps> = memo(
     );
 
     return (
-      <WorkStationTabPill
+      <TabPill
         variant="pill"
         color="fill"
         size="small"

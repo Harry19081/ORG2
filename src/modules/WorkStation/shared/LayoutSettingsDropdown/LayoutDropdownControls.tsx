@@ -1,8 +1,7 @@
 import React from "react";
 
 import Switch from "@src/components/Switch";
-
-import { WorkStationTabPill } from "../WorkStationTabPill";
+import TabPill from "@src/components/TabPill";
 
 export const SectionLabel: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -50,7 +49,7 @@ export const SidebarPositionToggleRow: React.FC<{
 }) => (
   <div className="flex min-h-[28px] items-center justify-between gap-2">
     <span className={switchRowLabelClasses[labelVariant]}>{label}</span>
-    <WorkStationTabPill
+    <TabPill
       tabs={[
         { key: "left", label: leftLabel },
         { key: "right", label: rightLabel },
@@ -83,7 +82,7 @@ export const LayoutMethodToggleRow: React.FC<{
 }) => (
   <div className="flex min-h-[28px] items-center justify-between gap-2">
     <span className={switchRowLabelClasses[labelVariant]}>{label}</span>
-    <WorkStationTabPill
+    <TabPill
       tabs={[
         { key: "comfort", label: comfortLabel },
         { key: "compact", label: compactLabel },
@@ -115,7 +114,7 @@ export function TwoOptionToggleRow<TValue extends string>({
   return (
     <div className="flex min-h-[28px] items-center justify-between gap-2">
       <span className={switchRowLabelClasses[labelVariant]}>{label}</span>
-      <WorkStationTabPill
+      <TabPill
         tabs={options}
         activeTab={value}
         onChange={(key) => onChange(key as TValue)}

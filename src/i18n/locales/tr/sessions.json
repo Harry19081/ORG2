@@ -112,18 +112,16 @@
     "columns": {
       "todo": "Yapılacak",
       "inProgress": "Devam ediyor",
-      "blocking": "Sıra Sende",
-      "turnFinished": "Tur bitti",
-      "archived": "Arşivlendi"
+      "yourTurn": "Sıra Sende",
+      "finished": "Bitti"
     },
     "boardColumns": {
       "todo": "Yapılacak",
       "in_progress": "Devam ediyor",
       "in_review": "İnceleniyor",
-      "blocking": "Sıra Sende",
-      "turn_finished": "Tur bitti",
-      "archived": "Arşivlendi",
+      "your_turn": "Sıra Sende",
       "done": "Tamamlandı",
+      "finished": "Bitti",
       "cancelled": "Başarısız"
     },
     "sidebar": {
@@ -133,6 +131,7 @@
       "removeDraft": "Taslağı kaldır"
     },
     "resultStatus": {
+      "completed": "Tamamlandı",
       "failed": "Başarısız",
       "archived": "Arşivlendi"
     },
