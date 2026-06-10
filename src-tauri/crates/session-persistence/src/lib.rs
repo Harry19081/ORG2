@@ -30,6 +30,7 @@ mod sequence;
 pub mod token_usage;
 mod turn_index;
 mod turn_index_debounce;
+pub mod turn_intents;
 mod turn_window;
 mod types;
 

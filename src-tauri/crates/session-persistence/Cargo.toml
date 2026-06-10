@@ -41,3 +41,6 @@ chrono = { workspace = true }
 
 # Logging
 tracing = "0.1"
+
+# Error derive macros — `IntentError` in `turn_intents`.
+thiserror = { workspace = true }

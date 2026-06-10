@@ -116,6 +116,39 @@ pub fn init_session_tables(conn: &Connection) -> SqliteResult<()> {
     )
     .ok();
 
+    // ============================================
+    // Canonical user-intent lifecycle (turnIntentId)
+    // ============================================
+    //
+    // One row per logical user intent. Created when a user submission first
+    // crosses any wire boundary (frontend dispatch → agent_send_message →
+    // scheduler enqueue) and updated as it transitions through queued →
+    // running → completed/failed/cancelled, or through stale / superseded if
+    // Stop or Send-Now retires it before it ever runs. This is the
+    // out-of-band source of truth that lets the turn indexer collapse
+    // synthetic + backend user_message rows that share an id, and that lets
+    // round status be derived from lifecycle state instead of event-count
+    // heuristics.
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS session_turn_intents (
+            session_id        TEXT NOT NULL,
+            turn_intent_id    TEXT NOT NULL,
+            client_message_id TEXT,
+            source            TEXT NOT NULL,
+            status            TEXT NOT NULL,
+            superseded_by     TEXT,
+            created_at        TEXT NOT NULL,
+            updated_at        TEXT NOT NULL,
+            PRIMARY KEY (session_id, turn_intent_id)
+        )",
+        [],
+    )?;
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_session_turn_intents_session_status
+         ON session_turn_intents(session_id, status)",
+        [],
+    )?;
+
     // Create FTS5 virtual table for full-text search
     conn.execute(
         "CREATE VIRTUAL TABLE IF NOT EXISTS events_fts USING fts5(
