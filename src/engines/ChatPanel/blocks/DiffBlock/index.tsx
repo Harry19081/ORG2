@@ -65,13 +65,14 @@ interface SegmentViewProps {
   segment: ExtractedEditData;
   isLoading: boolean;
   eventId: string;
-  repoPath?: string;
+  isNewFile?: boolean;
 }
 
 const SegmentView: React.FC<SegmentViewProps> = ({
   segment,
   isLoading,
   eventId,
+  isNewFile,
 }) => {
   const { t } = useTranslation("sessions");
   const {
@@ -94,8 +95,10 @@ const SegmentView: React.FC<SegmentViewProps> = ({
   // For completed new-file writes (no diff, only newContent), synthesize a
   // full-add unified diff so the body renders as a diff and the header
   // gets the +N badge. During streaming we still show raw content.
+  // Only synthesize for actual new-file actions — edit/overwrite events
+  // without a diff payload should not get the "New" tag.
   const syntheticAddDiff =
-    !isLoading && !displayDiff && displayContent
+    !isLoading && !displayDiff && displayContent && isNewFile
       ? synthesizeFullAddDiff(displayContent)
       : undefined;
 
@@ -235,6 +238,8 @@ const EditView: React.FC<EditViewProps> = (props) => {
   const { t } = useTranslation("sessions");
   const { eventId, status, title } = props;
 
+  const isNewFile = props.args?.action === "create";
+
   const editData = useMemo(() => extractEditData(props), [props]);
 
   const segments = useMemo<ExtractedEditData[]>(() => {
@@ -303,6 +308,7 @@ const EditView: React.FC<EditViewProps> = (props) => {
             segment={segment}
             isLoading={isLoading}
             eventId={eventId}
+            isNewFile={isNewFile}
           />
         );
       })}

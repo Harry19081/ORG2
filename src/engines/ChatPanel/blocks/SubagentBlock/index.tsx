@@ -173,7 +173,7 @@ const SubagentBlock: React.FC<SubagentBlockProps> = memo(
             <Infinity size={14} strokeWidth={1.75} className="text-text-2" />
           </div>
           <span
-            className={`min-w-0 shrink truncate font-medium ${isLoading ? EVENT_LOADING_SHIMMER_TEXT_CLASSES : isFailure ? "text-text-3" : "text-text-1"}`}
+            className={`shrink-0 truncate font-medium ${isLoading ? EVENT_LOADING_SHIMMER_TEXT_CLASSES : isFailure ? "text-text-3" : "text-text-1"}`}
             title={displayTitle}
           >
             {displayTitle}
