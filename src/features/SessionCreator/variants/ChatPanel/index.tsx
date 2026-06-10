@@ -665,73 +665,76 @@ const SessionCreatorChatPanelSingle: React.FC<
           <div
             className={`mx-auto flex w-full items-center ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
           >
-            {leadingActionSlot}
-            <Button
-              variant="secondary"
-              appearance="outline"
-              size="small"
-              shape="round"
-              iconOnly
-              icon={<Paperclip size={14} strokeWidth={1.75} />}
-              title={t("common:actions.upload")}
-              aria-label={t("common:actions.upload")}
-              aria-expanded={isAttachmentPanelOpen}
-              aria-controls="session-creator-attachment-panel"
-              onClick={handleToggleAttachment}
-              className={
-                isAttachmentPanelOpen
-                  ? "shrink-0 !bg-fill-1 !text-primary-6"
-                  : "shrink-0"
+            <PinnedActionsBar
+              composerInputRef={
+                composerInputRef as React.RefObject<ComposerInputRef>
+              }
+              manageButtonPlacement="after-leading"
+              managePanelAlign="left"
+              leadingContent={
+                <>
+                  {leadingActionSlot}
+                  <Button
+                    variant="secondary"
+                    appearance="outline"
+                    size="small"
+                    shape="round"
+                    iconOnly
+                    icon={<Paperclip size={14} strokeWidth={1.75} />}
+                    title={t("common:actions.upload")}
+                    aria-label={t("common:actions.upload")}
+                    aria-expanded={isAttachmentPanelOpen}
+                    aria-controls="session-creator-attachment-panel"
+                    onClick={handleToggleAttachment}
+                    className={
+                      isAttachmentPanelOpen
+                        ? "shrink-0 !bg-fill-1 !text-primary-6"
+                        : "shrink-0"
+                    }
+                  />
+                  <Button
+                    variant="secondary"
+                    appearance="outline"
+                    size="small"
+                    shape="round"
+                    iconOnly
+                    icon={<Tags size={14} strokeWidth={1.75} />}
+                    title="Add tag"
+                    aria-label="Add tag"
+                    aria-expanded={isTagPanelOpen}
+                    aria-controls="session-creator-tag-panel"
+                    onClick={handleToggleTag}
+                    className={
+                      isTagPanelOpen
+                        ? "shrink-0 !bg-fill-1 !text-primary-6"
+                        : "shrink-0"
+                    }
+                  />
+                  {selectedOrg && (
+                    <Button
+                      variant="secondary"
+                      appearance="outline"
+                      size="small"
+                      shape="round"
+                      icon={<Network size={14} strokeWidth={1.75} />}
+                      title={t("creator.orgMembers.configButton")}
+                      aria-label={t("creator.orgMembers.configButton")}
+                      aria-expanded={isOrgMembersPanelOpen}
+                      aria-controls="session-creator-org-members-panel"
+                      onClick={handleToggleOrgMembers}
+                      className={
+                        isOrgMembersPanelOpen
+                          ? "shrink-0 !bg-fill-1 !text-primary-6"
+                          : "shrink-0"
+                      }
+                      data-testid="session-creator-org-members-toggle"
+                    >
+                      {t("creator.orgMembers.configButton")}
+                    </Button>
+                  )}
+                </>
               }
             />
-            <Button
-              variant="secondary"
-              appearance="outline"
-              size="small"
-              shape="round"
-              iconOnly
-              icon={<Tags size={14} strokeWidth={1.75} />}
-              title="Add tag"
-              aria-label="Add tag"
-              aria-expanded={isTagPanelOpen}
-              aria-controls="session-creator-tag-panel"
-              onClick={handleToggleTag}
-              className={
-                isTagPanelOpen
-                  ? "ml-1 shrink-0 !bg-fill-1 !text-primary-6"
-                  : "ml-1 shrink-0"
-              }
-            />
-            {selectedOrg && (
-              <Button
-                variant="secondary"
-                appearance="outline"
-                size="small"
-                shape="round"
-                icon={<Network size={14} strokeWidth={1.75} />}
-                title={t("creator.orgMembers.configButton")}
-                aria-label={t("creator.orgMembers.configButton")}
-                aria-expanded={isOrgMembersPanelOpen}
-                aria-controls="session-creator-org-members-panel"
-                onClick={handleToggleOrgMembers}
-                className={
-                  isOrgMembersPanelOpen
-                    ? "ml-1 shrink-0 !bg-fill-1 !text-primary-6"
-                    : "ml-1 shrink-0"
-                }
-                data-testid="session-creator-org-members-toggle"
-              >
-                {t("creator.orgMembers.configButton")}
-              </Button>
-            )}
-            <span aria-hidden className="mx-2 h-4 w-px shrink-0 bg-border-2" />
-            <div className="min-w-0 flex-1">
-              <PinnedActionsBar
-                composerInputRef={
-                  composerInputRef as React.RefObject<ComposerInputRef>
-                }
-              />
-            </div>
           </div>
 
           {isAttachmentPanelOpen && (
