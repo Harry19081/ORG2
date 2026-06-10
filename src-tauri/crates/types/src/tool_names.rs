@@ -86,10 +86,6 @@ pub const SPOTLIGHT: &str = "spotlight";
 // ── Desktop ─────────────────────────────────────────────────────────
 pub const CONTROL_DESKTOP_WITH_PEEKABOO: &str = "control_desktop_with_peekaboo";
 
-// ── Data ────────────────────────────────────────────────────────────
-pub const DB_EXPLORE: &str = "db_explore";
-pub const DB_RUN: &str = "db_run";
-
 // ── Agent / Comms ───────────────────────────────────────────────────
 pub const MANAGE_SESSION: &str = "manage_session";
 pub const SEND_MESSAGE: &str = "send_message";

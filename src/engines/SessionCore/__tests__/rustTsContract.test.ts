@@ -58,8 +58,6 @@ const RUST_CANONICAL_TOOLS = [
   "control_orgii",
   // Data
   "query_knowledge",
-  "db_explore",
-  "db_run",
   // Agent / Comms
   "manage_session",
   "send_message",

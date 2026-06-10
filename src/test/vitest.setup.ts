@@ -105,10 +105,6 @@ const BUILTIN_SIMULATOR_APP_FIXTURE: Map<string, AppType> = new Map([
   // Project tools → STORY_MANAGER
   ["manage_story", AppType.STORY_MANAGER],
   ["manage_work_item", AppType.STORY_MANAGER],
-
-  // Database tools → DB_MANAGER
-  ["db_explore", AppType.DB_MANAGER],
-  ["db_run", AppType.DB_MANAGER],
 ]);
 
 /**
@@ -164,10 +160,6 @@ const BUILTIN_SUBTOOL_FIXTURE: Map<string, AppSubtool> = new Map([
   // Project tools
   ["manage_story", "project"],
   ["manage_work_item", "project"],
-
-  // Database tools
-  ["db_explore", "database"],
-  ["db_run", "database"],
 ]);
 
 type LabelKeySet = { running: string; done: string; failed: string };
@@ -456,8 +448,6 @@ const BUILTIN_ICON_ID_FIXTURE: Map<string, string> = new Map([
   ["control_orgii", "cog"],
   ["manage_nodes", "network"],
   ["query_knowledge", "book-search"],
-  ["db_explore", "database"],
-  ["db_run", "database"],
   ["ask_user_questions", "message-circle-question-mark"],
   ["manage_session", "box"],
   ["send_message", "send"],

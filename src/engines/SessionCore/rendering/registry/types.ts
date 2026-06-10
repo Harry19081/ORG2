@@ -110,7 +110,6 @@ export type AppSubtool =
   | "glob"
   | "browser"
   | "internal_browser"
-  | "database"
   | "project"
   | "message"
   | "other_interactions"
@@ -128,7 +127,6 @@ export const APP_SUBTOOL = {
   GLOB: "glob",
   BROWSER: "browser",
   INTERNAL_BROWSER: "internal_browser",
-  DATABASE: "database",
   STORY: "project",
   MESSAGE: "message",
   OTHER_INTERACTIONS: "other_interactions",
@@ -169,7 +167,7 @@ export type ChatBlock =
  * Canonical entry with storage, UI, simulator app, appSubtool, and chatBlock mapping.
  * - storage: Fine-grained name for DB storage (e.g., "edit_file_by_replace")
  * - ui: Coarse name for UI component lookup (e.g., "edit_file")
- * - simulatorApp: Dock routing ("CODE_EDITOR", "BROWSER", "CHANNELS", "DB_MANAGER", "STORY_MANAGER")
+ * - simulatorApp: Dock routing ("CODE_EDITOR", "BROWSER", "CHANNELS", "STORY_MANAGER")
  * - appSubtool: Panel routing within a simulator app ("file_read", "shell", "explore", etc.)
  * - chatBlock: Chat-panel block dispatch key ("read_file", "diff", "shell", "fallback", ...)
  */

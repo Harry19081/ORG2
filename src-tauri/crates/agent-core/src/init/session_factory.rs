@@ -78,7 +78,6 @@ pub(super) async fn build_session_runtime(
     registration::coding::register(&mut tool_registry, &tool_deps, disabled_tools);
     registration::web::register(&mut tool_registry, &tool_deps, disabled_tools).await;
     registration::desktop::register(&mut tool_registry, &tool_deps, disabled_tools);
-    registration::database::register(&mut tool_registry, &tool_deps, disabled_tools).await;
     registration::agent_ops::register(&mut tool_registry, &tool_deps, disabled_tools);
     registration::channel::register(&mut tool_registry, &tool_deps, disabled_tools);
     registration::plan_mode::register(&mut tool_registry, &tool_deps, disabled_tools);

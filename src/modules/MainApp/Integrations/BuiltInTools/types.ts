@@ -7,7 +7,6 @@ export type SimulatorAppType =
   | "CODE_EDITOR"
   | "BROWSER"
   | "CHANNELS"
-  | "DB_MANAGER"
   | "STORY_MANAGER";
 
 /** Workstation panel key matching Rust `HumanToolKey` enum. */
@@ -23,7 +22,6 @@ const SIMULATOR_APP_VALUES: readonly SimulatorAppType[] = [
   "CODE_EDITOR",
   "BROWSER",
   "CHANNELS",
-  "DB_MANAGER",
   "STORY_MANAGER",
 ];
 

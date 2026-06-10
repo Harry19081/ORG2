@@ -36,7 +36,6 @@ pub enum SimulatorApp {
     Browser,
     #[default]
     Channels,
-    DbManager,
     ProjectManager,
     BackgroundTasks,
     Canvas,

@@ -6,7 +6,6 @@ import type { TFunction } from "i18next";
 import type { LucideIcon } from "lucide-react";
 import {
   Code,
-  Database,
   Globe,
   ListTodo,
   MonitorDot,
@@ -26,8 +25,6 @@ export function getWorkStationStationTitleCenter(
       return { icon: Code, label: t("labels.codeEditor") };
     case "browser":
       return { icon: Globe, label: t("labels.browser") };
-    case "data":
-      return { icon: Database, label: t("labels.databaseManager") };
     case "chat":
       return { icon: Package2, label: t("labels.session") };
     case "project":
@@ -57,8 +54,6 @@ export function getSimulatorDockTitleCenter(
       return { icon, label: t("labels.codeEditor") };
     case AppType.BROWSER:
       return { icon, label: t("labels.browser") };
-    case AppType.DB_MANAGER:
-      return { icon, label: t("labels.databaseManager") };
     case AppType.CHANNELS:
       return { icon, label: t("labels.session") };
     case APP_TYPE_PROJECT:

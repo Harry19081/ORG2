@@ -51,7 +51,7 @@ describe("typed RPC router", () => {
       agentExecMode: "plan",
       registeredToolNames: ["read_file", "create_plan"],
       promptToolNames: ["read_file"],
-      deferredToolNames: ["db_explore"],
+      deferredToolNames: ["manage_nodes"],
       promptTools: [
         {
           name: "read_file",

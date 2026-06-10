@@ -7,7 +7,6 @@ import type { LucideIcon } from "lucide-react";
 import {
   Infinity,
   Code,
-  Database,
   GitBranch,
   Globe,
   Layout,
@@ -32,7 +31,6 @@ export const DOCK_APP_SEGMENTS: DockApp[][] = [
     { id: "CHANNELS", name: "Communication", icon: MessageCircle },
     { id: "CODE_EDITOR", name: "Code Editor", icon: Code },
     { id: "BROWSER", name: "Browser", icon: Globe },
-    { id: "DB_MANAGER", name: "DB Manager", icon: Database },
     { id: "STORY_MANAGER", name: "Project Manager", icon: ListTodo },
     { id: "CANVAS", name: "Canvas", icon: Layout },
   ],

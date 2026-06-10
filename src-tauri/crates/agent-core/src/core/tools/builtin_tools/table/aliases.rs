@@ -10,7 +10,7 @@ pub(super) use super::super::types::{ActionEntry, ToolEntry, DEFAULT_TOOL_ENTRY}
 pub(super) use crate::definitions::capabilities::RequiredCapability;
 
 pub(super) use AppSubtool::{
-    Browser as SubBrowser, Database as SubDb, Explore, FileRead, FileWrite, Glob as SubGlob,
+    Browser as SubBrowser, Explore, FileRead, FileWrite, Glob as SubGlob,
     InternalBrowser as SubInternalBrowser, Message, OtherInteractions, OtherTool,
     Project as SubProject, Search as SubSearch, Shell, Subagent as SubSubagent,
     Thinking as SubThinking, Todo as SubTodo,
@@ -32,8 +32,7 @@ pub(super) use HumanToolKey::{
 };
 pub(super) use SimulatorApp::{
     BackgroundTasks as AppBackgroundTasks, Browser as AppBrowser, Canvas as AppCanvas,
-    Channels as AppChannels, CodeEditor as AppCode, DbManager as AppDb,
-    ProjectManager as AppProject,
+    Channels as AppChannels, CodeEditor as AppCode, ProjectManager as AppProject,
 };
 // RequiredCapability aliases — one per action group.
 // `Core` is the DEFAULT_TOOL_ENTRY default so it's never spelled out explicitly.

@@ -35,8 +35,6 @@ pub enum AppSubtool {
     Browser,
     /// Internal browser automation (Tauri inline webview)
     InternalBrowser,
-    /// Database operations
-    Database,
     /// Project management
     Project,
     /// Agent messages, user interaction, approval, mode-switch
@@ -69,7 +67,6 @@ impl AppSubtool {
             Self::Glob => "glob",
             Self::Browser => "browser",
             Self::InternalBrowser => "internal_browser",
-            Self::Database => "database",
             Self::Project => "project",
             Self::Message => "message",
             Self::OtherInteractions => "other_interactions",

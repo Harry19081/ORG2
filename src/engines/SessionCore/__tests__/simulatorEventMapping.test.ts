@@ -2,7 +2,7 @@
  * Simulator Event Mapping Tests
  *
  * Verifies that event function names correctly route to simulator apps
- * (Browser, Channels, Code Editor, DB Manager, Project Manager).
+ * (Browser, Channels, Code Editor, Project Manager).
  * Canvas-style tools map to CHANNELS.
  *
  * Tests expected tool names against `getAppTypeForEvent` (Rust map + CLI aliases)
@@ -14,7 +14,7 @@ import { getAppTypeForEvent } from "../rendering/registry/constants";
 
 // ---------------------------------------------------------------------------
 // Expected mappings (derived from tool_names.rs categories)
-// AppType values: CODE_EDITOR, BROWSER, CHANNELS, DB_MANAGER, STORY_MANAGER
+// AppType values: CODE_EDITOR, BROWSER, CHANNELS, STORY_MANAGER
 // ---------------------------------------------------------------------------
 
 const EXPECTED_BROWSER_TOOLS = [
@@ -80,6 +80,8 @@ const EXPECTED_CODE_EDITOR_TOOLS = [
   "manage_nodes",
   "mcp_tool",
   "tool_call",
+  "db_explore",
+  "db_run",
 ];
 
 const EXPECTED_CHANNELS_TOOLS = [
@@ -109,8 +111,6 @@ const EXPECTED_CHANNELS_TOOLS = [
 ];
 
 const EXPECTED_STORY_MANAGER_TOOLS = ["manage_story", "manage_work_item"];
-
-const EXPECTED_DB_MANAGER_TOOLS = ["db_explore", "db_run"];
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -145,14 +145,6 @@ describe("Simulator Event Mapping — getAppTypeForEvent", () => {
     for (const tool of EXPECTED_STORY_MANAGER_TOOLS) {
       it(`"${tool}" → STORY_MANAGER`, () => {
         expect(getAppTypeForEvent(tool)).toBe("STORY_MANAGER");
-      });
-    }
-  });
-
-  describe("DB_MANAGER events", () => {
-    for (const tool of EXPECTED_DB_MANAGER_TOOLS) {
-      it(`"${tool}" → DB_MANAGER`, () => {
-        expect(getAppTypeForEvent(tool)).toBe("DB_MANAGER");
       });
     }
   });

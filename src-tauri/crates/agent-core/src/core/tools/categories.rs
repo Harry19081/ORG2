@@ -19,7 +19,7 @@ pub const DESKTOP: &str = "desktop";
 /// `control_external_browser`, etc.).
 pub const WEB: &str = "web";
 
-/// Database introspection and SQL execution (`db_explore`, `db_run`).
+/// Remote device / node management tools (`manage_nodes`).
 pub const DATA: &str = "data";
 
 /// Cross-cutting agent / orchestration tools that aren't tied to a
@@ -36,9 +36,7 @@ pub const ORCHESTRATION: &str = "orchestration";
 /// Not exposed to the LLM as callable tools — only fired internally.
 pub const EVENT: &str = "event";
 
-/// Direct database connectivity tools (`db_explore`, `db_run`). The
-/// `DATA` category covers higher-level data tools that may include
-/// non-DB sources; `DATABASE` is reserved for raw SQL connections.
+/// Raw SQL connectivity category (reserved; no active tools use this yet).
 pub const DATABASE: &str = "database";
 
 /// Session lifecycle tools (`manage_session`).

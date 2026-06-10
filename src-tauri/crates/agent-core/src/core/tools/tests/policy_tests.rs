@@ -182,17 +182,6 @@ fn test_filter_definitions() {
 }
 
 #[test]
-fn test_database_group() {
-    let layer = ToolPolicyLayer {
-        allow: Some(vec!["group:database".to_string()]),
-        deny: Vec::new(),
-    };
-    assert!(layer.is_allowed("db_explore"));
-    assert!(layer.is_allowed("db_run"));
-    assert!(!layer.is_allowed("run_shell"));
-}
-
-#[test]
 fn test_readonly_access_mode_denies_write_tools() {
     use crate::foundation::security::policy::AutonomyLevel;
     use crate::tools::policy::ToolPolicyLayer;

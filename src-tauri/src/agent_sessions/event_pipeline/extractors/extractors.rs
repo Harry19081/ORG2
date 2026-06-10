@@ -468,7 +468,6 @@ fn extract_tool_call_data(
         // extractor yet; generic tool calls fall back to file extraction
         // when a file_path hint is present.
         AppSubtool::InternalBrowser
-        | AppSubtool::Database
         | AppSubtool::Project
         | AppSubtool::Message
         | AppSubtool::OtherInteractions

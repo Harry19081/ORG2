@@ -11,7 +11,6 @@
 //! - [`agent_def`] — `manage_agent_def` (custom agent + org CRUD)
 //! - [`coding`]    — file I/O, exec, code_search, edit_file, LSP, todo, worktree, …
 //! - [`comms`]     — outbound messaging (`send_message`, `send_to_inbox`)
-//! - [`database`]  — `db_explore`, `db_run`
 //! - [`desktop`]   — native desktop automation tools
 //! - [`meta`]      — tool discovery (`tool_search`)
 //! - [`nodes`]     — compute-node CRUD (`manage_nodes`)
@@ -23,7 +22,6 @@
 pub mod agent_def;
 pub mod coding;
 pub mod comms;
-pub mod database;
 pub mod desktop;
 pub mod meta;
 pub mod nodes;

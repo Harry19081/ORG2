@@ -52,7 +52,7 @@ const RUST_TOOL_NAMES = {
     "control_desktop_with_peekaboo",
     "control_orgii",
   ],
-  data: ["query_knowledge", "db_explore", "db_run"],
+  data: ["query_knowledge"],
   agent: [
     "manage_session",
     "send_message",
@@ -96,12 +96,10 @@ describe("Registry Completeness", () => {
       it(`"${tool}" maps to an AppType`, () => {
         const appType = getAppTypeForEvent(tool);
         expect(appType).not.toBeNull();
-        // AppType values after renaming: CODE_EDITOR, BROWSER, CHANNELS, DB_MANAGER, STORY_MANAGER
         expect([
           "CODE_EDITOR",
           "BROWSER",
           "CHANNELS",
-          "DB_MANAGER",
           "STORY_MANAGER",
         ]).toContain(appType);
       });
@@ -173,7 +171,6 @@ describe("Registry Completeness", () => {
       "control_browser_with_playwright",
       "control_external_browser",
       "web_search",
-      "db_explore",
       "manage_story",
     ];
 
@@ -206,8 +203,6 @@ describe("getAppTypeForEvent coverage (common event names)", () => {
     "control_browser_with_agent_browser",
     "control_browser_with_playwright",
     "control_external_browser",
-    "db_explore",
-    "db_run",
     "manage_story",
     "agent",
     "suggest_mode_switch",

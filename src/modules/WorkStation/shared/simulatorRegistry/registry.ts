@@ -8,7 +8,6 @@
  * - CodeEditor/SessionReplay/ — IDE replay
  * - Browser/SessionReplay/    — Browser replay
  * - Chat/Communication/       — Messages replay (includes Canvas replay for canvas-class events)
- * - DatabaseManager/SessionReplay/ — Database replay
  *
  * Event routing uses `getAppTypeForEvent()` from `constants.ts`, which queries:
  * 1. Rust built-in map (canonical tool names)
@@ -27,7 +26,6 @@ import type {
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import { BROWSER_APP_CONFIG } from "@src/modules/WorkStation/Browser/SessionReplay/config";
 import { MESSAGES_APP_CONFIG } from "@src/modules/WorkStation/Chat/Communication/config";
-import { DATABASE_APP_CONFIG } from "@src/modules/WorkStation/DatabaseManager/SessionReplay/config";
 import { DIFF_APP_CONFIG } from "@src/modules/WorkStation/Diff/SessionReplay/config";
 import { STORY_APP_CONFIG } from "@src/modules/WorkStation/ProjectManager/SessionReplay/config";
 
@@ -57,10 +55,6 @@ const LazySimulatorMessages = lazy(
 
 const LazySimulatorBrowser = lazy(
   () => import("@src/modules/WorkStation/Browser/SessionReplay")
-);
-
-const LazySimulatorDatabase = lazy(
-  () => import("@src/modules/WorkStation/DatabaseManager/SessionReplay")
 );
 
 const LazySimulatorProject = lazy(
@@ -111,11 +105,6 @@ export const SIMULATOR_APP_REGISTRY: Partial<
     component:
       LazySimulatorIDE as unknown as React.ComponentType<SimulatorAppProps>,
     deriveState: (_events, _currentEventId) => ({}),
-  },
-
-  [AppType.DB_MANAGER]: {
-    ...DATABASE_APP_CONFIG,
-    component: LazySimulatorDatabase as React.ComponentType<SimulatorAppProps>,
   },
 
   [AppType.STORY_MANAGER]: {

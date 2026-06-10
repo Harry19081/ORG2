@@ -42,7 +42,13 @@ const SIMULATOR_PREVIEW_CONTENT_CLASS =
 // CODE_EDITOR preview (file / shell / search)
 // ============================================
 
-function CodeEditorPreview({ event }: { event: SessionEvent }) {
+function CodeEditorPreview({
+  event,
+  isLoading,
+}: {
+  event: SessionEvent;
+  isLoading: boolean;
+}) {
   const operationType = useMemo(
     () => getOperationType(event.functionName),
     [event.functionName]
@@ -99,6 +105,7 @@ function CodeEditorPreview({ event }: { event: SessionEvent }) {
           exploreOperation={exploreOperation}
           shellOperation={shellOperation}
           mode={codePanelMode}
+          isLoading={isLoading}
         />
       </div>
     </div>
@@ -204,15 +211,6 @@ export function SimulatorPreview({ event }: { event: SessionEvent }) {
         return <ChannelsPreview event={event} />;
       case AppType.BROWSER:
         return <BrowserPreview event={event} />;
-      case AppType.DB_MANAGER:
-        return (
-          <Placeholder
-            variant="empty"
-            placement="detail-panel"
-            fillParentHeight
-            title={`Database Manager — ${event.functionName}`}
-          />
-        );
       case AppType.STORY_MANAGER:
         return <ProjectManagerPreview event={event} />;
       default:

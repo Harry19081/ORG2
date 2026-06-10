@@ -16,8 +16,7 @@ import { getAppTypeForTool } from "./initToolRegistry";
  *   2. CLI alias map (raw CLI agent names like `bash`, `Shell`)
  *
  * @returns AppType string (`CODE_EDITOR`, `BROWSER`, `CHANNELS`,
- *   `DB_MANAGER`, `STORY_MANAGER`) or `null` when the event is
- *   unmapped.
+ *   `STORY_MANAGER`) or `null` when the event is unmapped.
  */
 export function getAppTypeForEvent(functionName?: string): string | null {
   return getAppTypeForTool(functionName);

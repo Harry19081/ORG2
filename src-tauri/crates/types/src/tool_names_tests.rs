@@ -55,10 +55,6 @@ fn tool_name_constants_are_stable_wire_strings() {
         "control_desktop_with_peekaboo"
     );
 
-    // ── Data ──
-    assert_eq!(DB_EXPLORE, "db_explore");
-    assert_eq!(DB_RUN, "db_run");
-
     // ── Agent / Comms ──
     assert_eq!(MANAGE_SESSION, "manage_session");
     assert_eq!(SEND_MESSAGE, "send_message");

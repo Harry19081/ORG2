@@ -3,7 +3,7 @@
 //! Maps CLI agent tool names to canonical forms:
 //! - `storage`: Fine-grained canonical name for database storage
 //! - `ui`: Coarse canonical name for UI component lookup (UiCanonical enum)
-//! - `simulator_app`: Simulator dock routing (CODE_EDITOR, BROWSER, CHANNELS, DB_MANAGER, STORY_MANAGER)
+//! - `simulator_app`: Simulator dock routing (CODE_EDITOR, BROWSER, CHANNELS, STORY_MANAGER)
 //! - `app_subtool`: Fine-grained panel routing within apps (file_read, shell, search, etc.)
 //!
 //! This map is only for CLI agents (Cursor, Claude Code, Codex, Gemini, Kiro, Copilot).
@@ -99,7 +99,6 @@ pub enum SimApp {
     CodeEditor,
     Browser,
     Channels,
-    DbManager,
     ProjectManager,
     BackgroundTasks,
 }
@@ -110,7 +109,6 @@ impl SimApp {
             SimApp::CodeEditor => "CODE_EDITOR",
             SimApp::Browser => "BROWSER",
             SimApp::Channels => "CHANNELS",
-            SimApp::DbManager => "DB_MANAGER",
             SimApp::ProjectManager => "STORY_MANAGER",
             SimApp::BackgroundTasks => "BACKGROUND_TASKS",
         }
@@ -934,7 +932,7 @@ static CLI_ALIAS_MAP: LazyLock<HashMap<&'static str, AliasEntry>> = LazyLock::ne
     m.insert("task_output", AliasEntry::tool_call_shell("task_output"));
 
     // NOTE: Built-in tool names (manage_workspace, query_lsp, manage_lsp,
-    // setup_repo, manage_nodes, control_orgii, db_explore, db_run,
+    // setup_repo, manage_nodes, control_orgii,
     // query_knowledge, manage_project, manage_work_item) are intentionally
     // NOT aliased here. The old entries collapsed their identity to
     // `UiCanonical::ToolCall` ("tool_call"), which masked the per-tool

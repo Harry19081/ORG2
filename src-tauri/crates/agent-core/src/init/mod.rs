@@ -434,14 +434,6 @@ async fn ensure_session_initialized(
         }
     });
 
-    let database_config = if integrations.databases.connections.is_empty() {
-        None
-    } else {
-        Some(Arc::new(tokio::sync::Mutex::new(
-            integrations.databases.clone(),
-        )))
-    };
-
     let disabled_mcp_servers = capabilities::disabled_mcp_servers(&resolved);
     let disabled_mcp_tools = capabilities::disabled_mcp_tools(&resolved);
 
@@ -512,7 +504,6 @@ async fn ensure_session_initialized(
         },
         desktop_enabled: cap_flags.has_desktop,
         agent_model: model.clone(),
-        database_config,
         session_id: session_id.to_string(),
         bus,
         current_account_id: Some(state.current_account_id.clone()),

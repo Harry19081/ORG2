@@ -380,7 +380,6 @@ impl AgentTool {
             web_search_api_key: None,
             desktop_enabled: false,
             agent_model: self.config.agent_model.clone(),
-            database_config: None,
             session_id: session_id.to_string(),
             bus: None,
             current_account_id: self.config.current_account_id.clone(),

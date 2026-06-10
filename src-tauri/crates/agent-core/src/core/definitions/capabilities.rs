@@ -28,7 +28,7 @@ pub enum RequiredCapability {
     BrowserInternal,
     /// Requires `gateway: Some(_)` (send_message).
     Gateway,
-    /// Requires `data: Some(_)` (manage_nodes, db_explore, db_run).
+    /// Requires `data: Some(_)` (manage_nodes).
     Data,
     /// Requires `management: Some(_)` (manage_session, manage_project,
     /// manage_work_item, manage_agent_def).
@@ -157,11 +157,11 @@ impl Default for BrowserCapability {
     }
 }
 
-/// Data capability — marker that this agent has access to the database
-/// and remote-device (node) toolset. Presence gating is handled by
-/// `RequiredCapability::Data` (`data.is_some()`); per-subsystem toggles
-/// live on the app-level `IntegrationsConfig`. No builtin instantiates
-/// it today, so by default `Data` is denied.
+/// Data capability — marker that this agent has access to the
+/// remote-device (node) toolset (`manage_nodes`). Presence gating is
+/// handled by `RequiredCapability::Data` (`data.is_some()`); no builtin
+/// instantiates it by default, so the capability is denied unless
+/// explicitly granted.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct DataCapability {}

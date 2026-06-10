@@ -290,21 +290,6 @@ fn mode_switch_llm_description_with_mode() {
     );
 }
 
-#[test]
-fn db_explore_llm_description_none_when_no_connections() {
-    use crate::config::DatabasesConfig;
-    use crate::tools::impls::database::db_explore::DbExploreTool;
-    use std::sync::Arc;
-    use tokio::sync::Mutex;
-
-    let config = Arc::new(Mutex::new(DatabasesConfig::default()));
-    let tool = DbExploreTool::new(config);
-    assert!(
-        tool.llm_description().is_none(),
-        "Empty connections should return None (fallback to static)"
-    );
-}
-
 // MessageTool and AgentTool dynamic description tests are omitted here because
 // they require complex runtime dependencies (MessageBus, LLMProvider).
 // Their llm_description() implementations are verified by cargo check + clippy.

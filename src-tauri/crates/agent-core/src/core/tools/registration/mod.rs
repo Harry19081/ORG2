@@ -8,7 +8,6 @@
 pub mod agent_ops;
 pub mod channel;
 pub mod coding;
-pub mod database;
 pub mod desktop;
 pub mod plan_mode;
 pub mod web;
@@ -20,7 +19,6 @@ use std::sync::Arc;
 use tokio::sync::Mutex as TokioMutex;
 
 use crate::bus::AgentMessageBus as MessageBus;
-use crate::config::DatabasesConfig;
 use crate::interaction::plan_approval::PlanApprovalManager;
 use crate::nodes::NodeRegistry;
 use crate::security::SecurityPolicy;
@@ -79,7 +77,6 @@ pub struct ToolDeps {
     // ── Typed config fields ──
     pub desktop_enabled: bool,
     pub agent_model: String,
-    pub database_config: Option<Arc<TokioMutex<DatabasesConfig>>>,
 
     // ── Session identity (used by CU lock) ──
     pub session_id: String,
