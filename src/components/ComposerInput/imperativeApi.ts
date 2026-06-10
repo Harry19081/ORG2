@@ -6,6 +6,8 @@
  * (`useComposerInput.handleAtMentionClick` and `useSlashCommand` both use
  * `editor.chain().focus().insertContent("...").run()`).
  */
+import { storePillText } from "@src/config/pillTokens";
+
 import {
   type ComposerEditorChain,
   type ComposerEditorFacade,
@@ -266,6 +268,22 @@ export function buildImperativeApi(
     getFilePills: () => {
       const host = ctx.host();
       return host ? snapshotPillsFromDom(host) : [];
+    },
+    insertPrPill: (prData) => {
+      const pillPath = `pr://${prData.prNumber}`;
+      const displayName = `#${prData.prNumber} ${prData.prTitle}`;
+      storePillText(pillPath, JSON.stringify(prData));
+      ctx.markHistoryBoundary();
+      ctx.insertPill({
+        filePath: pillPath,
+        fileName: displayName,
+        isFolder: false,
+        iconType: "pr",
+        lineStart: null,
+        lineEnd: null,
+      });
+      ctx.insertTextAtCaret(" ");
+      ctx.commitHistoryBoundary();
     },
     getEditor: () => buildFacade(),
     triggerAtMention: () => {

@@ -69,6 +69,25 @@ const PrListRow: React.FC<PrListRowProps> = ({
   const statusKey = pr.draft ? "draft" : pr.state;
   const statusVariant = getPrStatusVariant(statusKey);
 
+  const handleDragStart = useCallback(
+    (event: React.DragEvent<HTMLButtonElement>) => {
+      const dragPayload = JSON.stringify({
+        prNumber: pr.number,
+        prTitle: pr.title,
+        prUrl: pr.url,
+        prStatus: statusKey,
+        sourceBranch: pr.head_branch,
+        targetBranch: pr.base_branch,
+      });
+      event.dataTransfer.setData(
+        "application/x-orgii-pr-reference",
+        dragPayload
+      );
+      event.dataTransfer.effectAllowed = "copy";
+    },
+    [pr, statusKey]
+  );
+
   const tooltipContent = (
     <div className="flex flex-col gap-1 py-0.5">
       <div className="flex items-center gap-2 text-[11px]">
@@ -108,6 +127,8 @@ const PrListRow: React.FC<PrListRowProps> = ({
     >
       <button
         type="button"
+        draggable
+        onDragStart={handleDragStart}
         onClick={() => onClick(pr)}
         className={`flex w-full items-center gap-1.5 px-3 py-1.5 text-left transition-colors ${
           isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row

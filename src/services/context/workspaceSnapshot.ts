@@ -103,6 +103,25 @@ export interface AppUiSnapshot {
   visibleGuideTargets?: GuideTargetSnapshot[];
 }
 
+export interface PullRequestCommitSnapshot {
+  sha: string;
+  message: string;
+}
+
+export interface CurrentPullRequestSnapshot {
+  prNumber: number;
+  prTitle: string;
+  prUrl: string;
+  prStatus: "draft" | "open" | "merged" | "closed";
+  sourceBranch?: string;
+  targetBranch?: string;
+  additions?: number;
+  deletions?: number;
+  filesChanged?: number;
+  body?: string;
+  commits?: PullRequestCommitSnapshot[];
+}
+
 export interface WorkspaceSnapshot {
   activeFile?: string;
   openFiles?: string[];
@@ -112,6 +131,8 @@ export interface WorkspaceSnapshot {
   gitChangedFiles?: string[];
   linterErrors?: string[];
   workspaceFolders?: string[];
+  /** The PR for the current branch, enriched with commits and description. */
+  currentPullRequest?: CurrentPullRequestSnapshot;
   /**
    * QQ-style availability the user set in the sidebar footer. Shipped on
    * every turn even when there is no IDE data so the agent can adapt to

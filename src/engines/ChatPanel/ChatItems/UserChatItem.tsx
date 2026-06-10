@@ -5,7 +5,7 @@ import {
   PencilLine,
   Sparkles,
 } from "lucide-react";
-import {
+import React, {
   type FC,
   type MouseEvent,
   type SyntheticEvent,
@@ -21,8 +21,13 @@ import { useTranslation } from "react-i18next";
 import { ChatImageThumbnailRow } from "@src/components/ChatImageThumbnail";
 import ExpandOverlay from "@src/components/ExpandOverlay";
 import { INPUT_AREA } from "@src/config/inputAreaTokens";
+import { readPillText } from "@src/config/pillTokens";
 import { REPO_SETUP_PROMPT_MARKER } from "@src/config/repoSetupMarker";
 import type { OptimizedChatItem } from "@src/engines/ChatPanel/ChatHistory/chatItemPipeline/types";
+import {
+  SessionLinkCard,
+  type SessionLinkCardData,
+} from "@src/engines/ChatPanel/blocks/ToolCallBlock/cards";
 import { imageRefToRustPath } from "@src/engines/SessionCore/ingestion/agentMessageAdapters";
 
 import UserMessageContent from "../ChatHistory/components/UserMessageContent";
@@ -33,6 +38,51 @@ const USER_MSG_MAX_LINES = 3;
 const USER_MSG_MAX_CHARS = 120;
 const AGENT_ORG_INBOX_TRANSCRIPT_PREFIX = "Acknowledged inbox batch";
 const PLAN_APPROVED_PREFIX = "[Plan approved";
+
+const PR_PILL_REGEX = /[^\n[]+?\s*\[pr:(pr:\/\/\d+)\]/g;
+
+function extractPrPillCards(text: string): SessionLinkCardData[] {
+  const cards: SessionLinkCardData[] = [];
+  const seen = new Set<string>();
+  for (const match of text.matchAll(PR_PILL_REGEX)) {
+    const pillPath = match[1];
+    if (!pillPath || seen.has(pillPath)) continue;
+    seen.add(pillPath);
+    const stored = readPillText(pillPath);
+    if (!stored) continue;
+    try {
+      const prData = JSON.parse(stored) as {
+        prNumber: number;
+        prTitle: string;
+        prUrl: string;
+        prStatus: string;
+        sourceBranch?: string;
+        targetBranch?: string;
+        additions?: number;
+        deletions?: number;
+      };
+      const repoMatch = prData.prUrl.match(
+        /github\.com\/([^/]+\/[^/]+)\/pull\//
+      );
+      const repoFullName = repoMatch?.[1] ?? "";
+      const status = prData.prStatus as SessionLinkCardData["prStatus"];
+      cards.push({
+        prUrl: prData.prUrl,
+        prStatus: status,
+        repoFullName,
+        prNumber: prData.prNumber,
+        prTitle: prData.prTitle,
+        sourceBranch: prData.sourceBranch,
+        targetBranch: prData.targetBranch,
+        additions: prData.additions,
+        deletions: prData.deletions,
+      });
+    } catch {
+      // Malformed stored data — skip
+    }
+  }
+  return cards;
+}
 
 // ============================================
 // Types
@@ -205,6 +255,11 @@ const UserChatItem = ({
     return textToCheck.length > USER_MSG_MAX_CHARS;
   }, [editedText, fullContent]);
 
+  const prPillCards = useMemo(
+    () => extractPrPillCards(fullContent),
+    [fullContent]
+  );
+
   const handleToggleTruncation = useCallback(
     (event: SyntheticEvent) => {
       event.stopPropagation();
@@ -296,112 +351,124 @@ const UserChatItem = ({
 
   // Display mode
   return (
-    <div
-      className={containerClass}
-      data-testid="chat-message-user-editable"
-      onClick={isEditableDisplay ? handleEditClick : undefined}
-    >
-      {/* Edit button — visible on hover */}
-      {isEditableDisplay && (
-        <div className="absolute right-2 top-2 z-10 flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-          <button
-            type="button"
-            data-testid="chat-message-user-edit-button"
-            className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0.5 text-text-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEditClick();
-            }}
-          >
-            <PencilLine size={14} strokeWidth={1.75} />
-          </button>
-        </div>
-      )}
-
-      <div className="flex min-w-0 flex-1 flex-col gap-[6px]">
-        {isRepoSetup ? (
-          <div className="flex items-center gap-2 py-0.5">
-            <Sparkles size={14} className="text-primary-6" />
-            <span className="chat-block-title font-medium text-text-1">
-              {t("chat.repoSetupLabel")}
-            </span>
+    <>
+      <div
+        className={containerClass}
+        data-testid="chat-message-user-editable"
+        onClick={isEditableDisplay ? handleEditClick : undefined}
+      >
+        {/* Edit button — visible on hover */}
+        {isEditableDisplay && (
+          <div className="absolute right-2 top-2 z-10 flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+            <button
+              type="button"
+              data-testid="chat-message-user-edit-button"
+              className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0.5 text-text-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditClick();
+              }}
+            >
+              <PencilLine size={14} strokeWidth={1.75} />
+            </button>
           </div>
-        ) : isPlanApproved ? (
-          <div className="flex items-center gap-2 py-0.5">
-            <ClipboardCheck size={14} className="text-primary-6" />
-            <span className="chat-block-title font-medium text-text-1">
-              {planApprovedEdited
-                ? t(
-                    "chat.planApprovedEditedLabel",
-                    "Implementing approved plan (edited)"
-                  )
-                : t("chat.planApprovedLabel", "Implementing approved plan")}
-            </span>
-          </div>
-        ) : (
-          <>
-            {messageImages && messageImages.length > 0 && (
-              <ChatImageThumbnailRow images={messageImages} />
-            )}
+        )}
 
-            {fullContent && fullContent !== "(image)" && (
-              <div className="group/expand relative w-full pr-6">
-                <div
-                  ref={messageContentRef}
-                  className={`allow-select ${isExpanded && displayNeedsTruncation ? "scrollbar-hide" : ""}`}
-                  style={
-                    displayNeedsTruncation && !isExpanded
-                      ? { maxHeight: 72, overflow: "hidden" }
-                      : isExpanded && displayNeedsTruncation
-                        ? {
-                            maxHeight: 240,
-                            overflowY: "auto",
-                            overflowX: "hidden",
-                          }
-                        : undefined
-                  }
-                >
-                  <UserMessageContent text={fullContent} />
+        <div className="flex min-w-0 flex-1 flex-col gap-[6px]">
+          {isRepoSetup ? (
+            <div className="flex items-center gap-2 py-0.5">
+              <Sparkles size={14} className="text-primary-6" />
+              <span className="chat-block-title font-medium text-text-1">
+                {t("chat.repoSetupLabel")}
+              </span>
+            </div>
+          ) : isPlanApproved ? (
+            <div className="flex items-center gap-2 py-0.5">
+              <ClipboardCheck size={14} className="text-primary-6" />
+              <span className="chat-block-title font-medium text-text-1">
+                {planApprovedEdited
+                  ? t(
+                      "chat.planApprovedEditedLabel",
+                      "Implementing approved plan (edited)"
+                    )
+                  : t("chat.planApprovedLabel", "Implementing approved plan")}
+              </span>
+            </div>
+          ) : (
+            <>
+              {messageImages && messageImages.length > 0 && (
+                <ChatImageThumbnailRow images={messageImages} />
+              )}
 
-                  {displayNeedsTruncation && isExpanded && (
+              {fullContent && fullContent !== "(image)" && (
+                <div className="group/expand relative w-full pr-6">
+                  <div
+                    ref={messageContentRef}
+                    className={`allow-select ${isExpanded && displayNeedsTruncation ? "scrollbar-hide" : ""}`}
+                    style={
+                      displayNeedsTruncation && !isExpanded
+                        ? { maxHeight: 72, overflow: "hidden" }
+                        : isExpanded && displayNeedsTruncation
+                          ? {
+                              maxHeight: 240,
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                            }
+                          : undefined
+                    }
+                  >
+                    <UserMessageContent text={fullContent} />
+
+                    {displayNeedsTruncation && isExpanded && (
+                      <ExpandOverlay
+                        isExpanded
+                        onToggle={handleToggleTruncation}
+                        fadeFrom="from-chat-input"
+                      />
+                    )}
+                  </div>
+
+                  {displayNeedsTruncation && !isExpanded && (
                     <ExpandOverlay
-                      isExpanded
+                      isExpanded={false}
                       onToggle={handleToggleTruncation}
+                      collapsedFadeHeightClass="h-8"
                       fadeFrom="from-chat-input"
                     />
                   )}
                 </div>
+              )}
 
-                {displayNeedsTruncation && !isExpanded && (
-                  <ExpandOverlay
-                    isExpanded={false}
-                    onToggle={handleToggleTruncation}
-                    collapsedFadeHeightClass="h-8"
-                    fadeFrom="from-chat-input"
-                  />
-                )}
-              </div>
-            )}
-
-            {cachedFiles.length > 0 && (
-              <div className="scrollbar-x-hover flex max-w-full flex-nowrap gap-2">
-                {cachedFiles.map((file) => (
-                  <CachedFileChip
-                    key={file}
-                    file={file}
-                    isPreviewOpen={previewFile === file}
-                    onTogglePreview={(event) =>
-                      handleTogglePreview(event, file)
-                    }
-                    onClosePreview={handleClosePreview}
-                  />
-                ))}
-              </div>
-            )}
-          </>
-        )}
+              {cachedFiles.length > 0 && (
+                <div className="scrollbar-x-hover flex max-w-full flex-nowrap gap-2">
+                  {cachedFiles.map((file) => (
+                    <CachedFileChip
+                      key={file}
+                      file={file}
+                      isPreviewOpen={previewFile === file}
+                      onTogglePreview={(event) =>
+                        handleTogglePreview(event, file)
+                      }
+                      onClosePreview={handleClosePreview}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+      {prPillCards.length > 0 && (
+        <div className="mt-1 flex flex-col">
+          {prPillCards.map((card) => (
+            <SessionLinkCard
+              key={`${card.repoFullName}#${card.prNumber}`}
+              card={card}
+            />
+          ))}
+        </div>
+      )}
+    </>
   );
 };
 

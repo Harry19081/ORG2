@@ -25,7 +25,8 @@ export type PillIconType =
   | "dom-element"
   | "skill"
   | "member"
-  | "paste";
+  | "paste"
+  | "pr";
 
 /**
  * Persisted pill payload. This is the canonical, in-memory description of a
@@ -186,6 +187,20 @@ export interface ComposerInputRef {
    * editor is not mounted.
    */
   getEditor: () => ComposerEditorFacade | null;
+  /**
+   * Insert a PR reference pill. Stores the full PR data in the pill cache
+   * keyed by `pr://{prNumber}` so it can be retrieved at submit time.
+   */
+  insertPrPill: (prData: {
+    prNumber: number;
+    prTitle: string;
+    prUrl: string;
+    prStatus: string;
+    sourceBranch?: string;
+    targetBranch?: string;
+    additions?: number;
+    deletions?: number;
+  }) => void;
   /** Open the @ mention menu without a typed `@` character */
   triggerAtMention: () => void;
   /** Open the slash context menu without a typed `/` character */

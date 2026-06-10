@@ -14,6 +14,7 @@ import {
   Code,
   FolderKanban,
   GitBranch,
+  GitPullRequest,
   Globe,
   ListChecks,
   MessageSquare,
@@ -278,6 +279,8 @@ const ComposerPill: React.FC<ComposerPillProps> = ({ attrs, onDelete }) => {
         return <Toolbox {...ICON_PROPS} />;
       case "member":
         return <AtSign {...ICON_PROPS} />;
+      case "pr":
+        return <GitPullRequest {...ICON_PROPS} />;
       default:
         return (
           <FileTypeIcon

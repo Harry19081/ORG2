@@ -26,8 +26,10 @@
  * cross-repo payload. The fallback is "no context", which is strictly
  * better than "wrong context".
  */
+import { getPRLocal, listPRCommitsLocal } from "@src/api/tauri/github";
 import { collectAppUiSnapshot } from "@src/services/context/appUiSnapshot";
 import type {
+  CurrentPullRequestSnapshot,
   UserProfileWire,
   WorkspaceSnapshot,
 } from "@src/services/context/workspaceSnapshot";
@@ -40,12 +42,25 @@ import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { userPresenceWireAtom } from "@src/store/user/userPresenceAtom";
 import { globalLspDiagnosticsAtom } from "@src/store/workstation/codeEditor/diagnostics/globalLspDiagnosticsAtom";
 import {
+  workstationAllOpenPrsAtom,
+  workstationPrAtom,
+} from "@src/store/workstation/codeEditor/workstationPrAtom";
+import {
   activeWorkStationFilePathAtom,
   workstationLayoutAtom,
 } from "@src/store/workstation/tabs";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 export type { WorkspaceSnapshot };
+
+function parsePrUrlForRepo(
+  prUrl: string | undefined
+): { repoFullName: string; number: number } | null {
+  if (!prUrl) return null;
+  const m = prUrl.match(/github\.com\/([^/]+\/[^/]+)\/pull\/(\d+)/);
+  if (!m) return null;
+  return { repoFullName: m[1], number: Number(m[2]) };
+}
 
 const MAX_OPEN_FILES = 30;
 const MAX_CHANGED_FILES = 50;
@@ -303,4 +318,107 @@ export function collectIdeContext(
   } catch {
     return undefined;
   }
+}
+
+/**
+ * Async variant of `collectIdeContext` that additionally fetches full PR
+ * details (diff stats, commits, body) for the current branch's PR via the
+ * GitHub API. Safe to call from async agent dispatch paths.
+ */
+export async function collectIdeContextAsync(
+  options: CollectIdeContextOptions = {}
+): Promise<WorkspaceSnapshot | undefined> {
+  const base = collectIdeContext(options);
+
+  let currentPr: CurrentPullRequestSnapshot | undefined;
+  try {
+    const store = getInstrumentedStore();
+    const prSnapshot = store.get(workstationPrAtom);
+    const allOpenPrs = store.get(workstationAllOpenPrsAtom);
+    const branch = store.get(currentBranchAtom);
+
+    // Prefer the PR URL from the atom, fall back to matching by branch
+    const parsedAtomPr = parsePrUrlForRepo(prSnapshot.prUrl);
+    const branchPrFromList = branch
+      ? allOpenPrs.find((p) => p.head_branch === branch)
+      : undefined;
+
+    const prRef =
+      parsedAtomPr ??
+      (branchPrFromList
+        ? {
+            repoFullName:
+              parsePrUrlForRepo(branchPrFromList.url)?.repoFullName ?? "",
+            number: branchPrFromList.number,
+          }
+        : null);
+
+    if (prRef?.repoFullName) {
+      const [prDetails, commits] = await Promise.all([
+        getPRLocal(prRef.repoFullName, prRef.number).catch(() => null),
+        listPRCommitsLocal(prRef.repoFullName, prRef.number).catch(() => []),
+      ]);
+
+      if (prDetails) {
+        const state = String(prDetails["state"] ?? "open");
+        const isDraft = Boolean(prDetails["draft"]);
+        const prStatus: CurrentPullRequestSnapshot["prStatus"] = isDraft
+          ? "draft"
+          : state === "closed"
+            ? prDetails["merged"]
+              ? "merged"
+              : "closed"
+            : "open";
+
+        const headRef = prDetails["head"] as
+          | Record<string, unknown>
+          | undefined;
+        const baseRef = prDetails["base"] as
+          | Record<string, unknown>
+          | undefined;
+        currentPr = {
+          prNumber: Number(prDetails["number"] ?? prRef.number),
+          prTitle: String(prDetails["title"] ?? ""),
+          prUrl: String(prDetails["html_url"] ?? prSnapshot.prUrl ?? ""),
+          prStatus,
+          sourceBranch: String(headRef?.["ref"] ?? branch ?? ""),
+          targetBranch: String(baseRef?.["ref"] ?? ""),
+          additions:
+            prDetails["additions"] != null
+              ? Number(prDetails["additions"])
+              : undefined,
+          deletions:
+            prDetails["deletions"] != null
+              ? Number(prDetails["deletions"])
+              : undefined,
+          filesChanged:
+            prDetails["changed_files"] != null
+              ? Number(prDetails["changed_files"])
+              : undefined,
+          body: prDetails["body"] ? String(prDetails["body"]) : undefined,
+          commits: Array.isArray(commits)
+            ? commits.map((c) => {
+                const commitObj = c["commit"] as
+                  | Record<string, unknown>
+                  | undefined;
+                return {
+                  sha: String(c["sha"] ?? ""),
+                  message:
+                    String(commitObj?.["message"] ?? "").split("\n")[0] ?? "",
+                };
+              })
+            : undefined,
+        };
+      }
+    }
+  } catch {
+    /* PR enrichment is best-effort; failures must not break the agent */
+  }
+
+  if (!currentPr) return base;
+
+  if (base) {
+    return { ...base, currentPullRequest: currentPr };
+  }
+  return { currentPullRequest: currentPr };
 }

@@ -22,6 +22,10 @@ import CanvasInlineCard from "@src/engines/ChatPanel/blocks/CanvasInlineCard";
 import { useCanvasPreviewForSession } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/useCanvasPreviewForSession";
 import MessageReferenceCards from "@src/engines/ChatPanel/blocks/MessageReferenceCards";
 import {
+  SessionLinkCard,
+  type SessionLinkCardData,
+} from "@src/engines/ChatPanel/blocks/ToolCallBlock/cards";
+import {
   EventBlockHeader,
   EventBlockHeaderIcon,
   EventBlockHeaderTitle,
@@ -41,6 +45,7 @@ import {
   stripThinkTags,
 } from "@src/engines/SessionCore/sync/adapters/shared/streamingParsers";
 import { SimulatorMessages } from "@src/modules/WorkStation/Chat/Communication";
+import { parseGitArtifactsFromText } from "@src/shared/git/sessionGitArtifacts";
 
 // ============================================
 // Types
@@ -94,6 +99,47 @@ const InlineThinkingBlock: React.FC<{ content: string }> = ({ content }) => {
     </div>
   );
 };
+
+// ============================================
+// PR Session Link Cards (extracted from agent message text)
+// ============================================
+
+function extractPrCards(content: string): SessionLinkCardData[] {
+  const artifacts = parseGitArtifactsFromText(content);
+  return artifacts
+    .filter(
+      (a) => a.kind === "pullRequest" && a.url && a.repoFullName && a.prNumber
+    )
+    .map((a) => ({
+      prUrl: a.url!,
+      prStatus: "open" as const,
+      repoFullName: a.repoFullName!,
+      prNumber: a.prNumber!,
+      prTitle: `PR #${a.prNumber}`,
+    }));
+}
+
+const PrSessionLinkCards: React.FC<{
+  content: string;
+  isStreaming: boolean;
+}> = React.memo(({ content, isStreaming }) => {
+  const cards = useMemo(
+    () => (isStreaming ? [] : extractPrCards(content)),
+    [content, isStreaming]
+  );
+  if (cards.length === 0) return null;
+  return (
+    <>
+      {cards.map((card) => (
+        <SessionLinkCard
+          key={`${card.repoFullName}#${card.prNumber}`}
+          card={card}
+        />
+      ))}
+    </>
+  );
+});
+PrSessionLinkCards.displayName = "PrSessionLinkCards";
 
 // ============================================
 // Chat Variant
@@ -152,6 +198,9 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
             sessionId={sessionId}
           />
         </AgentMessageBlock>
+      )}
+      {!isStreaming && content && (
+        <PrSessionLinkCards content={content} isStreaming={isStreaming} />
       )}
       {canvasPayload && (
         <div className="px-2">

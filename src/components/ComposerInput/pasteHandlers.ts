@@ -31,6 +31,52 @@ export interface PasteHandlerContext {
   getInstalledSkills: () => InstalledSkill[];
 }
 
+export interface DropHandlerContext {
+  insertPill: (attrs: ComposerPillAttrs) => void;
+}
+
+/**
+ * Returns a `drop` event handler for the contenteditable host that handles
+ * `application/x-orgii-pr-reference` drag data created by `PrListRow`.
+ * Returns `true` if the event was consumed.
+ */
+export function createDropHandler(ctx: DropHandlerContext) {
+  return (event: DragEvent): boolean => {
+    const prRefData = event.dataTransfer?.getData(
+      "application/x-orgii-pr-reference"
+    );
+    if (!prRefData) return false;
+    try {
+      const prRef = JSON.parse(prRefData) as {
+        prNumber: number;
+        prTitle: string;
+        prUrl: string;
+        prStatus: string;
+        sourceBranch?: string;
+        targetBranch?: string;
+        additions?: number;
+        deletions?: number;
+      };
+      const pillPath = `pr://${prRef.prNumber}`;
+      const displayName = `#${prRef.prNumber} ${prRef.prTitle}`;
+      storePillText(pillPath, JSON.stringify(prRef));
+      ctx.insertPill({
+        filePath: pillPath,
+        fileName: displayName,
+        isFolder: false,
+        iconType: "pr",
+        lineStart: null,
+        lineEnd: null,
+      });
+      event.preventDefault();
+      return true;
+    } catch (parseError) {
+      logger.warn("Failed to parse PR reference drop:", parseError);
+      return false;
+    }
+  };
+}
+
 /**
  * Matches skill file paths of the form:
  *   …/skills/<name>/SKILL.md

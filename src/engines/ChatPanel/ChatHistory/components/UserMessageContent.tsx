@@ -10,6 +10,7 @@ import {
   Folder,
   FolderKanban,
   GitBranch,
+  GitPullRequest,
   Globe,
   ListChecks,
   MessageSquare,
@@ -50,6 +51,7 @@ const SINGLE_LINE_PILL_REGEX = new RegExp(
     "dom-element",
     "skill",
     "paste",
+    "pr",
   ].join("|")}):([^\\]]+)\\]`,
   "g"
 );
@@ -220,6 +222,8 @@ const PillIcon: React.FC<{ pillType: PillType; displayName: string }> = memo(
         return <ListChecks {...ICON_PROPS} />;
       case "skill":
         return <Toolbox {...ICON_PROPS} />;
+      case "pr":
+        return <GitPullRequest {...ICON_PROPS} />;
       default:
         return <FileTypeIcon fileName={displayName} size="small" />;
     }

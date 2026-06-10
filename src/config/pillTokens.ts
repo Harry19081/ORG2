@@ -28,6 +28,7 @@ export const PILL_TYPE_LIST = [
   "dom-element",
   "skill",
   "paste",
+  "pr",
 ] as const;
 
 export type PillType = (typeof PILL_TYPE_LIST)[number];
@@ -56,6 +57,7 @@ export const CONTEXT_PILL_PREFIXES: Record<string, string> = {
   workitem: "workitem://",
   "dom-element": "dom-element://",
   paste: "paste://",
+  pr: "pr://",
 } as const;
 
 /** Pill types that carry async-loaded content stored in the pill cache */
@@ -69,7 +71,7 @@ export const CONTEXT_PILL_TYPES: ReadonlySet<string> = new Set(
 
 /** Matches serialized context pill references like [terminal:terminal://...] */
 export const CONTEXT_PILL_REF_REGEX =
-  /\[(terminal|session|browser|dom-element):(terminal|session|browser|dom-element):\/\/[^\]]+\]/;
+  /\[(terminal|session|browser|dom-element|pr):(terminal|session|browser|dom-element|pr):\/\/[^\]]+\]/;
 
 /** Matches context headers and trace markers injected by the agent pipeline */
 export const CONTEXT_TRACE_MARKER_REGEX =

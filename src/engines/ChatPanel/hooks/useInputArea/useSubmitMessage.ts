@@ -160,15 +160,38 @@ export function useSubmitMessage({
         await import("@src/util/contextPillContent");
       await waitForPendingPills();
 
-      // ── Terminal pill text collection ─────────────────────────────────────
+      // ── Terminal/PR pill text collection ─────────────────────────────────
       const terminalTexts =
         refs.composerInputRef.current.getTerminalPillTexts();
       const terminalEntries = Object.entries(terminalTexts);
       let agentContent: string | undefined;
       if (terminalEntries.length > 0) {
-        const blocks = terminalEntries.map(
-          ([, text]) => "```\n" + text + "\n```"
-        );
+        const blocks = terminalEntries.map(([path, text]) => {
+          if (path.startsWith("pr://")) {
+            try {
+              const prData = JSON.parse(text) as Record<string, unknown>;
+              const lines: string[] = [
+                `[PR Context] #${prData["prNumber"]} ${prData["prTitle"]}`,
+                `Status: ${prData["prStatus"]}`,
+                ...(prData["sourceBranch"]
+                  ? [
+                      `Branch: ${prData["sourceBranch"]}${prData["targetBranch"] ? ` → ${prData["targetBranch"]}` : ""}`,
+                    ]
+                  : []),
+                ...(prData["additions"] != null
+                  ? [
+                      `+${prData["additions"]} -${prData["deletions"] ?? 0} changes`,
+                    ]
+                  : []),
+                `URL: ${prData["prUrl"]}`,
+              ];
+              return lines.join("\n");
+            } catch {
+              return "```\n" + text + "\n```";
+            }
+          }
+          return "```\n" + text + "\n```";
+        });
         const base = hasSkillPills ? skillExpanded : displayText;
         agentContent = base + "\n\n" + blocks.join("\n\n");
       } else if (hasSkillPills) {

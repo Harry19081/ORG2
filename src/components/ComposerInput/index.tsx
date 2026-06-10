@@ -37,7 +37,7 @@ import {
   createKeyDownHandler,
   removePillForDeleteDirection,
 } from "./keyboard";
-import { createPasteHandler } from "./pasteHandlers";
+import { createDropHandler, createPasteHandler } from "./pasteHandlers";
 import {
   caretTextOffset,
   placeCaretAfterPill,
@@ -293,6 +293,21 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
       [ops]
     );
 
+    const handleDrop = useMemo(
+      () =>
+        createDropHandler({
+          insertPill: (attrs) => {
+            pendingCaretAfterPillRef.current = true;
+            ops.insertPill(attrs);
+            updateEmptyState();
+            const host = hostRef.current;
+            if (host) onContentChangeRef.current?.(extractPlainText(host));
+          },
+        }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [ops]
+    );
+
     const handleCut = useMemo(
       () =>
         createCutHandler({
@@ -423,6 +438,20 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
         ops.commitHistoryBoundary();
         handleInput();
       };
+      const handleDropEvent = (event: DragEvent) => {
+        if (handleDrop(event)) {
+          ops.commitHistoryBoundary();
+          handleInput();
+        }
+      };
+      const handleDragOverEvent = (event: DragEvent) => {
+        if (
+          event.dataTransfer?.types.includes("application/x-orgii-pr-reference")
+        ) {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "copy";
+        }
+      };
       const handleCutEvent = (event: ClipboardEvent) => {
         handleCut(event);
       };
@@ -440,6 +469,8 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
       host.addEventListener("compositionend", handleCompositionEnd);
       host.addEventListener("beforeinput", handleBeforeInput);
       host.addEventListener("paste", handlePasteEvent);
+      host.addEventListener("drop", handleDropEvent);
+      host.addEventListener("dragover", handleDragOverEvent);
       host.addEventListener("cut", handleCutEvent);
       host.addEventListener("copy", handleCopyEvent);
       host.addEventListener("keydown", handleKeyDown);
@@ -449,6 +480,8 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
         host.removeEventListener("compositionend", handleCompositionEnd);
         host.removeEventListener("beforeinput", handleBeforeInput);
         host.removeEventListener("paste", handlePasteEvent);
+        host.removeEventListener("drop", handleDropEvent);
+        host.removeEventListener("dragover", handleDragOverEvent);
         host.removeEventListener("cut", handleCutEvent);
         host.removeEventListener("copy", handleCopyEvent);
         host.removeEventListener("keydown", handleKeyDown);
@@ -463,6 +496,7 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
       hostRef,
       ops.insertTextAtCaret,
       handlePaste,
+      handleDrop,
       handleCut,
       handleKeyDown,
       handleInput,
