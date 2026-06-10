@@ -40,6 +40,7 @@ export const BubbleWrapper: React.FC<{
    * Kanban view. No-op when the parent does not provide a handler.
    */
   onNavigateToTodoList?: () => void;
+  showChrome?: boolean;
   /**
    * Active org-run member roster. Passed to `OrgTaskEventBubble` /
    * `OrgSendMessageBubble` so they can resolve a subagent display name
@@ -54,6 +55,7 @@ export const BubbleWrapper: React.FC<{
     total,
     onMessageClick,
     onNavigateToTodoList,
+    showChrome = true,
     orgMembers,
   }) => {
     const handleClick = useCallback(() => {
@@ -69,10 +71,13 @@ export const BubbleWrapper: React.FC<{
             message={message}
             isLatest={isLatest}
             onClick={stableClick}
+            orgMembers={orgMembers}
           />
         );
       case "interaction":
-        return <>{renderInteractionWidget(message, onMessageClick)}</>;
+        return (
+          <>{renderInteractionWidget(message, onMessageClick, orgMembers)}</>
+        );
       case "todo":
         if (isOrgTaskEvent(message.event)) {
           // Already in the Todo Kanban view — no navigate arrow needed.
@@ -98,6 +103,7 @@ export const BubbleWrapper: React.FC<{
               message={message}
               isLatest={isLatest}
               onClick={stableClick}
+              orgMembers={orgMembers}
             />
           );
         }
@@ -116,9 +122,9 @@ export const BubbleWrapper: React.FC<{
         }
         if (message.type === "interaction") {
           return isPlanDisplayEvent(message.event) ? (
-            renderPlanDocCard(message)
+            renderPlanDocCard(message, orgMembers)
           ) : (
-            <>{renderInteractionWidget(message, onMessageClick)}</>
+            <>{renderInteractionWidget(message, onMessageClick, orgMembers)}</>
           );
         }
         if (message.event.functionName === "org_send_message") {
@@ -144,6 +150,7 @@ export const BubbleWrapper: React.FC<{
             message={message}
             index={index}
             isLatest={isLatest}
+            showChrome={showChrome}
             orgMembers={orgMembers}
           />
         );

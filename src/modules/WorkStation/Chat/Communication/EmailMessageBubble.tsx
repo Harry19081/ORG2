@@ -25,7 +25,6 @@
  * The bubble structure (avatar + header) is retained intentionally — the
  * email card is the *body* of the bubble, not a replacement for the bubble.
  */
-import { MailOpen } from "lucide-react";
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -46,11 +45,10 @@ import {
 } from "@src/util/data/formatters/date";
 import { truncate } from "@src/util/string/truncate";
 
-import { resolveSenderName } from "./AgentEventBubbles";
+import { useCommunicationAgentIdentity } from "./communicationAgentIdentity";
 import type { MessageEntry } from "./types";
 import { extractMessageContent, isAgentOrgInboxTranscriptEvent } from "./utils";
 
-const AVATAR_ICON_SIZE = 14;
 const SUBJECT_MAX_CHARS = 80;
 
 export const EMAIL_BUBBLE_TOOLS = [
@@ -231,19 +229,14 @@ HeaderRow.displayName = "EmailMessageBubble.HeaderRow";
 export const EmailMessageBubble: React.FC<EmailMessageBubbleProps> = memo(
   ({ message, onClick, orgMembers }) => {
     const { t, i18n } = useTranslation(["sessions", "common"]);
-    // Resolve the bubble's sender label once: prefer the active org-run
-    // member name for the event's session, fall back to the generic
-    // "Agent" string when the roster is unavailable or the session is
-    // not part of an org run.
-    const agentSenderLabel = useMemo(
-      () =>
-        resolveSenderName(
-          message.event,
-          orgMembers,
-          t("common:terminology.agent")
-        ),
-      [message.event, orgMembers, t]
-    );
+    const { rawAgentName, agentIcon, isAgentOrgBubble } =
+      useCommunicationAgentIdentity(message.event, orgMembers);
+    const agentSenderLabel = rawAgentName;
+    const bubbleSenderName = isAgentOrgBubble
+      ? rawAgentName
+      : t("simulator.replay.messages.bubble.senderTitle.sentMessage", {
+          subject: rawAgentName,
+        });
 
     const view = useMemo(
       () => buildEmailMessageView(message.event, t, agentSenderLabel),
@@ -264,16 +257,11 @@ export const EmailMessageBubble: React.FC<EmailMessageBubbleProps> = memo(
         interactive={false}
         className={CHAT_BUBBLE_WIDTH_TOKENS.row}
         avatar={
-          <ChatBubbleAvatar
-            className="h-8 w-8 bg-fill-2"
-            icon={
-              <MailOpen size={AVATAR_ICON_SIZE} className="text-primary-6" />
-            }
-          />
+          <ChatBubbleAvatar className="h-8 w-8 bg-fill-2" icon={agentIcon} />
         }
       >
         <ChatBubbleHeader
-          senderName={view.sender?.value ?? agentSenderLabel}
+          senderName={bubbleSenderName}
           timestamp={formatSmartDateTime(message.timestamp, {
             yesterdayLabel: t("common:relativeDate.yesterday"),
             locale: toIntlLocaleTag(i18n.resolvedLanguage),

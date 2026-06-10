@@ -6,7 +6,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useAtomValue } from "jotai";
 import {
-  Bot,
   ChevronDown,
   ChevronRight,
   Terminal,
@@ -38,8 +37,11 @@ import {
   toIntlLocaleTag,
 } from "@src/util/data/formatters/date";
 
-import { resolveSenderName } from "./AgentEventBubbles";
 import { TodoView } from "./TodoView";
+import {
+  COMMUNICATION_AVATAR_ICON_SIZE,
+  useCommunicationAgentIdentity,
+} from "./communicationAgentIdentity";
 import type { MessageEntry } from "./types";
 
 interface TerminalPillData {
@@ -57,7 +59,7 @@ interface SkillPillData {
 
 const TERMINAL_PREVIEW_MAX_HEIGHT = 160;
 const SKILL_PREVIEW_MAX_HEIGHT = 160;
-const AVATAR_ICON_SIZE = 14;
+const AVATAR_ICON_SIZE = COMMUNICATION_AVATAR_ICON_SIZE;
 
 const ReplayMarkdown: React.FC<{ content: string }> = memo(({ content }) => (
   <Markdown
@@ -359,11 +361,14 @@ const UserBubbleContent: React.FC<{
 });
 UserBubbleContent.displayName = "UserBubbleContent";
 
+type AgentFramedTitleKind = "generic" | "todo" | "plan" | "interaction";
+
 interface AgentFramedBubbleProps {
   message: MessageEntry;
   onClick?: () => void;
   /** Skip bordered/padded body — for cards that bring their own container chrome. */
   unframed?: boolean;
+  titleKind?: AgentFramedTitleKind;
   /**
    * Active org-run member roster. Used to resolve the bubble header
    * label from `event.sessionId` so multi-agent surfaces show the
@@ -378,19 +383,38 @@ const AgentFramedBubble: React.FC<AgentFramedBubbleProps> = ({
   message,
   onClick,
   unframed = false,
+  titleKind = "generic",
   orgMembers,
   children,
 }) => {
-  const { t, i18n } = useTranslation(["common", "projects"]);
-  const senderName = useMemo(
-    () =>
-      resolveSenderName(
-        message.event,
-        orgMembers,
-        t("terminology.agent", { ns: "common" })
-      ),
-    [message.event, orgMembers, t]
-  );
+  const { t, i18n } = useTranslation(["common", "projects", "sessions"]);
+  const { rawAgentName, agentIcon, isAgentOrgBubble } =
+    useCommunicationAgentIdentity(message.event, orgMembers);
+  const senderName = useMemo(() => {
+    if (isAgentOrgBubble || titleKind === "generic") return rawAgentName;
+    if (titleKind === "todo") {
+      return t(
+        "sessions:simulator.replay.messages.bubble.senderTitle.updatedTodos",
+        {
+          subject: rawAgentName,
+        }
+      );
+    }
+    if (titleKind === "plan") {
+      return t(
+        "sessions:simulator.replay.messages.bubble.senderTitle.updatedPlan",
+        {
+          subject: rawAgentName,
+        }
+      );
+    }
+    return t(
+      "sessions:simulator.replay.messages.bubble.senderTitle.requestedInput",
+      {
+        subject: rawAgentName,
+      }
+    );
+  }, [isAgentOrgBubble, rawAgentName, t, titleKind]);
 
   return (
     <ChatBubbleLayout
@@ -399,10 +423,7 @@ const AgentFramedBubble: React.FC<AgentFramedBubbleProps> = ({
       interactive={false}
       className={CHAT_BUBBLE_WIDTH_TOKENS.row}
       avatar={
-        <ChatBubbleAvatar
-          className="h-8 w-8 bg-fill-2"
-          icon={<Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />}
-        />
+        <ChatBubbleAvatar className="h-8 w-8 bg-fill-2" icon={agentIcon} />
       }
     >
       <ChatBubbleHeader
@@ -435,6 +456,7 @@ export const TodoBubble: React.FC<{
   <AgentFramedBubble
     message={message}
     onClick={onClick}
+    titleKind="todo"
     orgMembers={orgMembers}
   >
     <TodoView message={message} className="p-0" />
@@ -452,6 +474,7 @@ export const InteractionBubble: React.FC<{
     message={message}
     onClick={onClick}
     unframed
+    titleKind="interaction"
     orgMembers={orgMembers}
   >
     {children}
@@ -469,6 +492,7 @@ export const PlanBubble: React.FC<{
     message={message}
     onClick={onClick}
     unframed
+    titleKind="plan"
     orgMembers={orgMembers}
   >
     {children}
@@ -481,6 +505,7 @@ export const ChatBubble: React.FC<{
   index: number;
   isLatest?: boolean;
   onClick?: () => void;
+  showChrome?: boolean;
   /**
    * Active org-run member roster. Used to resolve a subagent display
    * name (e.g. "Planner") from `event.sessionId` on multi-agent
@@ -488,83 +513,94 @@ export const ChatBubble: React.FC<{
    * the session is not in the roster.
    */
   orgMembers?: ReadonlyArray<AgentOrgRunMemberView>;
-}> = memo(({ message, index, isLatest = false, onClick, orgMembers }) => {
-  const { t, i18n } = useTranslation(["common", "projects"]);
-  const isUser = message.sender === "user";
-  const agentSenderName = useMemo(
-    () =>
-      resolveSenderName(
-        message.event,
-        orgMembers,
-        t("terminology.agent", { ns: "common" })
-      ),
-    [message.event, orgMembers, t]
-  );
+}> = memo(
+  ({
+    message,
+    index,
+    isLatest = false,
+    onClick,
+    showChrome = true,
+    orgMembers,
+  }) => {
+    const { t, i18n } = useTranslation(["common", "projects", "sessions"]);
+    const isUser = message.sender === "user";
+    const { rawAgentName, agentIcon } = useCommunicationAgentIdentity(
+      message.event,
+      orgMembers
+    );
+    const agentSenderName = rawAgentName;
 
-  const rawContent =
-    typeof message.content === "string"
-      ? message.content
-      : String(message.content ?? "");
-  const userImages = useMemo<string[] | undefined>(() => {
-    if (!isUser) return undefined;
-    const result = message.event.result as { images?: unknown } | undefined;
-    const raw = result?.images;
-    if (Array.isArray(raw) && raw.length > 0) {
-      return raw.filter((ref): ref is string => typeof ref === "string");
+    const rawContent =
+      typeof message.content === "string"
+        ? message.content
+        : String(message.content ?? "");
+    const userImages = useMemo<string[] | undefined>(() => {
+      if (!isUser) return undefined;
+      const result = message.event.result as { images?: unknown } | undefined;
+      const raw = result?.images;
+      if (Array.isArray(raw) && raw.length > 0) {
+        return raw.filter((ref): ref is string => typeof ref === "string");
+      }
+      return undefined;
+    }, [isUser, message.event.result]);
+    const hasUserImages = !!userImages && userImages.length > 0;
+    if (isUser && !rawContent.trim() && !hasUserImages) {
+      return null;
     }
-    return undefined;
-  }, [isUser, message.event.result]);
-  const hasUserImages = !!userImages && userImages.length > 0;
-  if (isUser && !rawContent.trim() && !hasUserImages) {
-    return null;
-  }
 
-  return (
-    <ChatBubbleLayout
-      align="left"
-      onClick={onClick}
-      interactive={false}
-      className={CHAT_BUBBLE_WIDTH_TOKENS.row}
-      dataAttr={
-        isUser
-          ? { "data-replay-user-msg": index }
-          : { "data-replay-agent-msg": index }
-      }
-      avatar={
-        <ChatBubbleAvatar
-          className={`h-8 w-8 ${isUser ? "bg-primary-1" : "bg-fill-2"}`}
-          icon={
-            isUser ? (
-              <User size={AVATAR_ICON_SIZE} className="text-primary-6" />
-            ) : (
-              <Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />
-            )
-          }
-        />
-      }
-    >
-      <ChatBubbleHeader
-        senderName={isUser ? t("terminology.you") : agentSenderName}
-        timestamp={formatSmartDateTime(message.timestamp, {
-          yesterdayLabel: t("relativeDate.yesterday"),
-          locale: toIntlLocaleTag(i18n.resolvedLanguage),
-        })}
+    return (
+      <ChatBubbleLayout
         align="left"
-      />
-      {isUser ? (
-        <UserBubbleContent content={rawContent} images={userImages} />
-      ) : (
-        <div
-          className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} rounded-lg p-3 text-left text-text-1 ${
-            isLatest ? "bg-fill-2" : "bg-fill-1"
-          }`}
-        >
-          <div className={`min-w-0 ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}>
-            <ReplayMarkdown content={message.content} />
+        onClick={onClick}
+        interactive={false}
+        className={CHAT_BUBBLE_WIDTH_TOKENS.row}
+        dataAttr={
+          isUser
+            ? { "data-replay-user-msg": index }
+            : { "data-replay-agent-msg": index }
+        }
+        avatar={
+          showChrome || isUser ? (
+            <ChatBubbleAvatar
+              className={`h-8 w-8 ${isUser ? "bg-primary-1" : "bg-fill-2"}`}
+              icon={
+                isUser ? (
+                  <User size={AVATAR_ICON_SIZE} className="text-primary-6" />
+                ) : (
+                  agentIcon
+                )
+              }
+            />
+          ) : (
+            <div className="h-8 w-8 shrink-0" aria-hidden="true" />
+          )
+        }
+      >
+        {showChrome && (
+          <ChatBubbleHeader
+            senderName={isUser ? t("terminology.you") : agentSenderName}
+            timestamp={formatSmartDateTime(message.timestamp, {
+              yesterdayLabel: t("relativeDate.yesterday"),
+              locale: toIntlLocaleTag(i18n.resolvedLanguage),
+            })}
+            align="left"
+          />
+        )}
+        {isUser ? (
+          <UserBubbleContent content={rawContent} images={userImages} />
+        ) : (
+          <div
+            className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} rounded-lg p-3 text-left text-text-1 ${
+              isLatest ? "bg-fill-2" : "bg-fill-1"
+            }`}
+          >
+            <div className={`min-w-0 ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}>
+              <ReplayMarkdown content={message.content} />
+            </div>
           </div>
-        </div>
-      )}
-    </ChatBubbleLayout>
-  );
-});
+        )}
+      </ChatBubbleLayout>
+    );
+  }
+);
 ChatBubble.displayName = "ChatBubble";

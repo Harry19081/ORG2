@@ -28,7 +28,6 @@
  * The `manage_todo` tool keeps using `TodoBubble` (TodoView) because the
  * simulator's todo view aggregates state across many events.
  */
-import { Bot } from "lucide-react";
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -59,9 +58,9 @@ import {
 } from "@src/util/data/formatters/date";
 import { prettifyMemberName } from "@src/util/data/formatters/memberName";
 
+import { useCommunicationAgentIdentity } from "./communicationAgentIdentity";
 import type { MessageEntry } from "./types";
 
-const AVATAR_ICON_SIZE = 14;
 const EMPTY_EVENT_PAYLOAD: Record<string, unknown> = {};
 
 /**
@@ -90,19 +89,6 @@ export function isOrgTaskEvent(event: SessionEvent): boolean {
  *     sessionId is the session we're already attached to);
  *   - the session belongs to a member that left the run.
  */
-export function resolveSenderName(
-  event: SessionEvent,
-  orgMembers: ReadonlyArray<AgentOrgRunMemberView> | undefined,
-  fallbackLabel: string
-): string {
-  if (!orgMembers || orgMembers.length === 0) return fallbackLabel;
-  const match = orgMembers.find(
-    (member) => member.sessionRuntime?.sessionId === event.sessionId
-  );
-  if (!match) return fallbackLabel;
-  return match.name?.trim() || prettifyMemberName(match.memberId);
-}
-
 /**
  * Resolve a display name for a recipient `memberId` (e.g. "coordinator").
  * Falls back to a prettified form of the raw id when the roster lookup
@@ -138,9 +124,10 @@ interface FramedProps {
 const Framed: React.FC<{
   message: MessageEntry;
   senderName: string;
+  icon: React.ReactNode;
   onClick?: () => void;
   children: React.ReactNode;
-}> = ({ message, senderName, onClick, children }) => {
+}> = ({ message, senderName, icon, onClick, children }) => {
   const { t, i18n } = useTranslation(["common", "projects"]);
   return (
     <ChatBubbleLayout
@@ -148,12 +135,7 @@ const Framed: React.FC<{
       onClick={onClick}
       interactive={false}
       className={CHAT_BUBBLE_WIDTH_TOKENS.row}
-      avatar={
-        <ChatBubbleAvatar
-          className="h-8 w-8 bg-fill-2"
-          icon={<Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />}
-        />
-      }
+      avatar={<ChatBubbleAvatar className="h-8 w-8 bg-fill-2" icon={icon} />}
     >
       <ChatBubbleHeader
         senderName={senderName}
@@ -188,14 +170,13 @@ export const OrgSendMessageBubble: React.FC<OrgSendMessageBubbleProps> = memo(
       message.event.displayStatus || inferStatusFromResult(result)
     );
 
-    const fallbackAgentLabel = t("terminology.agent", { ns: "common" });
+    const { rawAgentName, agentIcon } = useCommunicationAgentIdentity(
+      message.event,
+      orgMembers
+    );
 
     const senderName = useMemo(() => {
-      const subject = resolveSenderName(
-        message.event,
-        orgMembers,
-        fallbackAgentLabel
-      );
+      const subject = rawAgentName;
       const card = parseAgentMessageCard(args, result);
       if (card.isBroadcast) {
         return t("simulator.replay.messages.bubble.senderTitle.sentBroadcast", {
@@ -218,10 +199,15 @@ export const OrgSendMessageBubble: React.FC<OrgSendMessageBubbleProps> = memo(
         subject,
         defaultValue: "{{subject}} sent a message",
       });
-    }, [args, fallbackAgentLabel, message.event, orgMembers, result, t]);
+    }, [args, message.event, orgMembers, rawAgentName, result, t]);
 
     return (
-      <Framed message={message} senderName={senderName} onClick={onClick}>
+      <Framed
+        message={message}
+        senderName={senderName}
+        icon={agentIcon}
+        onClick={onClick}
+      >
         <OrgSendMessageBlock
           args={args}
           result={result}
@@ -251,7 +237,8 @@ interface OrgTaskBubbleProps extends FramedProps {
 function resolveOrgTaskTitle(
   event: SessionEvent,
   subject: string,
-  t: ReturnType<typeof useTranslation>["t"]
+  t: ReturnType<typeof useTranslation>["t"],
+  isAgentOrgBubble: boolean
 ): string {
   const action =
     event.extracted?.kind === "orgTask"
@@ -265,6 +252,14 @@ function resolveOrgTaskTitle(
           if (event.functionName === "task_list") return "list";
           return null;
         })();
+
+  if (!isAgentOrgBubble) {
+    return t("simulator.replay.messages.bubble.senderTitle.updatedTodos", {
+      ns: "sessions",
+      subject,
+      defaultValue: "{{subject}} updated to-dos",
+    });
+  }
 
   switch (action) {
     case "create":
@@ -307,14 +302,13 @@ export const OrgTaskEventBubble: React.FC<OrgTaskBubbleProps> = memo(
     const { t } = useTranslation(["common", "sessions"]);
     const extracted = message.event.extracted;
 
-    const senderName = useMemo(() => {
-      const subject = resolveSenderName(
-        message.event,
-        orgMembers,
-        t("terminology.agent", { ns: "common" })
-      );
-      return resolveOrgTaskTitle(message.event, subject, t);
-    }, [message.event, orgMembers, t]);
+    const { rawAgentName, agentIcon, isAgentOrgBubble } =
+      useCommunicationAgentIdentity(message.event, orgMembers);
+    const senderName = useMemo(
+      () =>
+        resolveOrgTaskTitle(message.event, rawAgentName, t, isAgentOrgBubble),
+      [isAgentOrgBubble, message.event, rawAgentName, t]
+    );
 
     // List / get → render the standalone TaskListCard with the navigate
     // arrow wired up. This bypasses the chat-panel adapter so we can
@@ -336,7 +330,12 @@ export const OrgTaskEventBubble: React.FC<OrgTaskBubbleProps> = memo(
         orgRunId: extracted.orgRunId,
       };
       return (
-        <Framed message={message} senderName={senderName} onClick={onClick}>
+        <Framed
+          message={message}
+          senderName={senderName}
+          icon={agentIcon}
+          onClick={onClick}
+        >
           <TaskListCard
             card={card}
             onNavigate={onNavigateToTodoList}
@@ -355,7 +354,12 @@ export const OrgTaskEventBubble: React.FC<OrgTaskBubbleProps> = memo(
     );
     if (!props) return null;
     return (
-      <Framed message={message} senderName={senderName} onClick={onClick}>
+      <Framed
+        message={message}
+        senderName={senderName}
+        icon={agentIcon}
+        onClick={onClick}
+      >
         <OrgTaskAdapter {...props} />
       </Framed>
     );

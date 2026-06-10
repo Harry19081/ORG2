@@ -21,6 +21,7 @@ import {
 import type { SessionReplayPlaceholderMode } from "@src/modules/WorkStation/shared";
 import { pendingPlanApprovalsAtom } from "@src/store/session/planApprovalAtom";
 
+import { isEmailBubbleEvent } from "./EmailMessageBubble";
 import { EmptyState } from "./EmptyState";
 import {
   BubbleWrapper,
@@ -39,6 +40,37 @@ import {
 import { PlanDocPanel } from "./PlanDocPanel";
 import { TodoKanban } from "./TodoKanban";
 import type { MessageEntry, MessageViewMode } from "./types";
+
+function minuteBucket(timestamp: string): number {
+  return Math.floor(new Date(timestamp).getTime() / 60_000);
+}
+
+function isRegularMessageBubble(message: MessageEntry): boolean {
+  return (
+    message.sender === "agent" &&
+    message.type === "chat" &&
+    message.event.functionName !== "org_send_message" &&
+    !isEmailBubbleEvent(message.event)
+  );
+}
+
+function shouldGroupWithPreviousMessage(
+  message: MessageEntry,
+  previousMessage: MessageEntry | undefined
+): boolean {
+  if (!previousMessage) return false;
+  if (
+    !isRegularMessageBubble(message) ||
+    !isRegularMessageBubble(previousMessage)
+  ) {
+    return false;
+  }
+  if (message.sender !== previousMessage.sender) return false;
+  if (message.event.sessionId !== previousMessage.event.sessionId) return false;
+  return (
+    minuteBucket(message.timestamp) === minuteBucket(previousMessage.timestamp)
+  );
+}
 
 export interface MessageViewerProps {
   /** Full bucket for the active tab; chat mode still renders it through the recent-message window below. */
@@ -271,7 +303,9 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
       >
         <div
           className={
-            viewMode === "chat" ? "space-y-3 pb-4 pt-3" : "space-y-6 pb-6 pt-4"
+            viewMode === "chat"
+              ? "flex flex-col gap-2 pb-4 pt-3"
+              : "flex flex-col gap-6 pb-6 pt-4"
           }
         >
           {canLoadMoreMessages && (
@@ -294,6 +328,11 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
           )}
           {visibleMessages.map((message, index) => {
             const isLastVisibleMessage = index === totalVisibleMessages - 1;
+            const previousMessage = visibleMessages[index - 1];
+            const showChrome = !shouldGroupWithPreviousMessage(
+              message,
+              previousMessage
+            );
             return (
               <React.Fragment key={message.eventId}>
                 {showNewMessageDivider && isLastVisibleMessage && (
@@ -312,6 +351,7 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
                   onNavigateToTodoList={
                     setViewMode ? handleNavigateToTodoList : undefined
                   }
+                  showChrome={showChrome}
                   orgMembers={orgMembers}
                 />
               </React.Fragment>

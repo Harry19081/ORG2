@@ -1,5 +1,6 @@
 import React from "react";
 
+import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
 import { ApprovalRequestEvent } from "@src/engines/ChatPanel/events/interactive_events/approval";
 import { AskQuestionEvent } from "@src/engines/ChatPanel/events/interactive_events/ask-question";
 import { ModeSwitchEvent } from "@src/engines/ChatPanel/events/interactive_events/mode-switch";
@@ -39,10 +40,13 @@ function isNextStepEvent(event: SessionEvent): boolean {
   return NEXT_STEP_FUNCTIONS.has(event.functionName?.toLowerCase() || "");
 }
 
-export function renderPlanDocCard(message: MessageEntry): React.ReactNode {
+export function renderPlanDocCard(
+  message: MessageEntry,
+  orgMembers?: ReadonlyArray<AgentOrgRunMemberView>
+): React.ReactNode {
   const event = message.event;
   return (
-    <PlanBubble key={message.eventId} message={message}>
+    <PlanBubble key={message.eventId} message={message} orgMembers={orgMembers}>
       <PlanDocAdapter
         eventId={event.id}
         eventType={event.uiCanonical || event.functionName}
@@ -67,12 +71,13 @@ function replayEventInput(event: SessionEvent): RawEventInput {
 
 export function renderInteractionWidget(
   message: MessageEntry,
-  _onOpenPreview?: (eventId: string) => void
+  _onOpenPreview?: (eventId: string) => void,
+  orgMembers?: ReadonlyArray<AgentOrgRunMemberView>
 ): React.ReactNode | null {
   const eventProps = replayEventInput(message.event);
   let widget: React.ReactNode = null;
   if (isPlanDisplayEvent(message.event)) {
-    return renderPlanDocCard(message);
+    return renderPlanDocCard(message, orgMembers);
   }
   if (isAskQuestionEvent(message.event)) {
     widget = <AskQuestionEvent {...eventProps} variant="simulator" />;
@@ -85,7 +90,11 @@ export function renderInteractionWidget(
   }
   if (!widget) return null;
   return (
-    <InteractionBubble key={message.eventId} message={message}>
+    <InteractionBubble
+      key={message.eventId}
+      message={message}
+      orgMembers={orgMembers}
+    >
       {widget}
     </InteractionBubble>
   );

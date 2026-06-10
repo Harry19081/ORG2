@@ -5,10 +5,10 @@
  * timestamp, and markdown content. Shows a random placeholder
  * when the thinking content is empty.
  */
-import { Sparkle } from "lucide-react";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
 import {
   CHAT_BUBBLE_WIDTH_TOKENS,
   ChatBubbleAvatar,
@@ -22,6 +22,7 @@ import {
   toIntlLocaleTag,
 } from "@src/util/data/formatters/date";
 
+import { useCommunicationAgentIdentity } from "./communicationAgentIdentity";
 import type { MessageEntry } from "./types";
 
 // ============================================
@@ -61,8 +62,11 @@ export const ThinkBubble: React.FC<{
   message: MessageEntry;
   isLatest?: boolean;
   onClick?: () => void;
-}> = ({ message, isLatest = false, onClick }) => {
+  orgMembers?: ReadonlyArray<AgentOrgRunMemberView>;
+}> = ({ message, isLatest = false, onClick, orgMembers }) => {
   const { t, i18n } = useTranslation("sessions");
+  const { rawAgentName, agentIcon, isAgentOrgBubble } =
+    useCommunicationAgentIdentity(message.event, orgMembers);
 
   const emptyThinkingPool = useMemo(() => {
     const raw = t("simulator.replay.messages.think.emptyMessages", {
@@ -86,6 +90,11 @@ export const ThinkBubble: React.FC<{
   }, [emptyThinkingPool, message.content, message.eventId, t]);
 
   const isEmpty = !message.content || message.content.trim() === "";
+  const senderName = isAgentOrgBubble
+    ? rawAgentName
+    : t("simulator.replay.messages.bubble.senderTitle.thought", {
+        subject: rawAgentName,
+      });
 
   return (
     <ChatBubbleLayout
@@ -94,18 +103,11 @@ export const ThinkBubble: React.FC<{
       interactive={false}
       className={CHAT_BUBBLE_WIDTH_TOKENS.row}
       avatar={
-        <ChatBubbleAvatar
-          className="h-8 w-8 bg-primary-1"
-          icon={<Sparkle size={14} className="text-primary-6" />}
-        />
+        <ChatBubbleAvatar className="h-8 w-8 bg-primary-1" icon={agentIcon} />
       }
     >
       <ChatBubbleHeader
-        senderName={
-          isLatest
-            ? t("simulator.replay.messages.think.labelLatest")
-            : t("simulator.replay.messages.think.labelThought")
-        }
+        senderName={senderName}
         timestamp={formatSmartDateTime(message.timestamp, {
           yesterdayLabel: t(
             "simulator.replay.messages.bubble.smartDateYesterday"
