@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "ORGII",
-  "version": "0.1.3",
+  "version": "1.0.1",
   "identifier": "yorg.orgii",
   "build": {
     "frontendDist": "../build",
@@ -80,7 +80,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://soydrelease.blob.core.windows.net/releases/latest.json"
+        "https://github.com/YORG-AI/ORGII/releases/latest/download/latest.json"
       ],
       "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU1NDMyREQ2MUFBMTkyRTQKUldUa2txRWExaTFENVY5TzdsbVpzUk9DN1h2emZ1WVhMQi9BSVJqZE4xajVVb3Zmci9pbXZaOUkK"
