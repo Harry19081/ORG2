@@ -173,7 +173,11 @@ export function useInputArea(
   const activeSessionId = propSessionId ?? resolvedActiveSessionId;
   const draftSessionId = activeSessionId ?? "";
   const hasComposerStopBlockingWork = activeSessionId
-    ? sessionHasComposerStopBlockingWork(sessionEvents, activeSessionId)
+    ? sessionHasComposerStopBlockingWork(
+        sessionEvents,
+        activeSessionId,
+        runtimeStatus
+      )
     : false;
 
   // Visual "agent is working" flag — drives the Stop vs. Send icon.

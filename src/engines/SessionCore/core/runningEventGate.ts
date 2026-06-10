@@ -1,3 +1,5 @@
+import { isTerminalStatus } from "@src/types/session/session";
+
 import { isInteractiveTool } from "./interactiveTools";
 import type { SessionEvent } from "./types";
 
@@ -78,8 +80,10 @@ export function isComposerStopBlockingEvent(event: SessionEvent): boolean {
 
 export function sessionHasComposerStopBlockingWork(
   events: readonly SessionEvent[],
-  sessionId: string
+  sessionId: string,
+  runtimeStatus?: string
 ): boolean {
+  if (isTerminalStatus(runtimeStatus)) return false;
   return events.some((event) => {
     if (event.sessionId && event.sessionId !== sessionId) return false;
     return isComposerStopBlockingEvent(event);

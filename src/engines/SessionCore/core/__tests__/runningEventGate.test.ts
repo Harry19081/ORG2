@@ -67,6 +67,17 @@ describe("runningEventGate", () => {
     }
   );
 
+  it("ignores stale running tools after the runtime is terminal", () => {
+    const events = [shellEvent("running")];
+
+    expect(
+      sessionHasComposerStopBlockingWork(events, "session-1", "completed")
+    ).toBe(false);
+    expect(
+      sessionHasComposerStopBlockingWork(events, "session-1", "failed")
+    ).toBe(false);
+  });
+
   it("classifies hidden running status as live but not composer-stop-blocking", () => {
     const events = [hiddenStatusEvent()];
 
