@@ -23,6 +23,7 @@ import {
   useSpotlightEffects,
 } from "./hooks";
 import {
+  AgentControlPalette,
   AgentSessionSearchPalette,
   BranchPalette,
   EditorPalette,
@@ -73,6 +74,7 @@ const GlobalSpotlightInner: React.FC<
     useState<BranchPaletteMode>("checkout");
   const [branchPickerOpen, setBranchPickerOpen] = useState(false);
   const [agentSessionSearchOpen, setAgentSessionSearchOpen] = useState(false);
+  const [agentControlOpen, setAgentControlOpen] = useState(false);
   const [embeddedEditorPalette, setEmbeddedEditorPalette] =
     useState<EmbeddedEditorPaletteState | null>(null);
   const lastActivatedItemIdRef = useRef<string | null>(null);
@@ -98,6 +100,10 @@ const GlobalSpotlightInner: React.FC<
 
   const handleOpenAgentSessionSearch = useCallback(() => {
     setAgentSessionSearchOpen(true);
+  }, []);
+
+  const handleOpenAgentControl = useCallback(() => {
+    setAgentControlOpen(true);
   }, []);
 
   const handleOpenEditorPalette = useCallback(
@@ -126,6 +132,11 @@ const GlobalSpotlightInner: React.FC<
 
   const handleCloseAgentSessionSearch = useCallback(() => {
     setAgentSessionSearchOpen(false);
+    restoreLastActivatedItem();
+  }, [restoreLastActivatedItem]);
+
+  const handleCloseAgentControl = useCallback(() => {
+    setAgentControlOpen(false);
     restoreLastActivatedItem();
   }, [restoreLastActivatedItem]);
 
@@ -256,6 +267,7 @@ const GlobalSpotlightInner: React.FC<
       setWorkspacePickerMode(null);
       setBranchPickerOpen(false);
       setAgentSessionSearchOpen(false);
+      setAgentControlOpen(false);
       setEmbeddedEditorPalette(null);
       lastActivatedItemIdRef.current = null;
       setPendingRestoreItemId(null);
@@ -288,13 +300,15 @@ const GlobalSpotlightInner: React.FC<
       isOpen &&
       !workspacePickerMode &&
       !branchPickerOpen &&
-      !agentSessionSearchOpen,
+      !agentSessionSearchOpen &&
+      !agentControlOpen,
     dispatch: spotlightDispatch,
     closeModal,
     onOpenWorkspaceLayer: handleOpenWorkspacePicker,
     onOpenBranchLayer: handleOpenBranchPicker,
     onOpenEditorLayer: handleOpenEditorPalette,
     onOpenAgentSessionSearchLayer: handleOpenAgentSessionSearch,
+    onOpenAgentControlLayer: handleOpenAgentControl,
   });
 
   // Default view kernel — same hook every palette uses. Owns the input
@@ -342,6 +356,7 @@ const GlobalSpotlightInner: React.FC<
       isOpen &&
       !branchPickerOpen &&
       !agentSessionSearchOpen &&
+      !agentControlOpen &&
       !activeEditorPalette,
     onClose: closeModal,
     items: spotlight.items,
@@ -364,6 +379,7 @@ const GlobalSpotlightInner: React.FC<
       workspacePickerMode ||
       branchPickerOpen ||
       agentSessionSearchOpen ||
+      agentControlOpen ||
       !pendingRestoreItemId
     ) {
       return;
@@ -391,6 +407,7 @@ const GlobalSpotlightInner: React.FC<
     workspacePickerMode,
     branchPickerOpen,
     agentSessionSearchOpen,
+    agentControlOpen,
   ]);
 
   // ============ NORMAL MODE ============
@@ -430,6 +447,7 @@ const GlobalSpotlightInner: React.FC<
     !!workspacePickerMode ||
     branchPickerOpen ||
     agentSessionSearchOpen ||
+    agentControlOpen ||
     !!activeEditorPalette ||
     spotlight.state.path.length > 0;
   const effectiveCurrentRepoId = selectedRepoId || undefined;
@@ -478,6 +496,13 @@ const GlobalSpotlightInner: React.FC<
       onGoBackToParent={handleCloseAgentSessionSearch}
       asBody
     />
+  ) : agentControlOpen ? (
+    <AgentControlPalette
+      isOpen={isOpen}
+      onClose={closeModal}
+      onGoBackToParent={handleCloseAgentControl}
+      asBody
+    />
   ) : activeEditorPalette ? (
     <EditorPalette
       key={activeEditorPalette.query}
@@ -514,7 +539,7 @@ const GlobalSpotlightInner: React.FC<
       onClose={closeModal}
       hasActiveAction={hasActiveAction}
       activeActionChip={activeActionChip}
-      hideFooter={!!showConfirmation}
+      hideFooter={!!showConfirmation || agentControlOpen}
     >
       {body}
     </SpotlightShell>

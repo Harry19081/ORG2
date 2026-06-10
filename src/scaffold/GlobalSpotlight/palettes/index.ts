@@ -55,3 +55,6 @@ export type { AllSessionsSearchPaletteProps } from "./AllSessionsSearchPalette";
 
 export { AgentSessionSearchPalette } from "./AgentSessionSearchPalette";
 export type { AgentSessionSearchPaletteProps } from "./AgentSessionSearchPalette";
+
+export { AgentControlPalette } from "./AgentControlPalette";
+export type { AgentControlPaletteProps } from "./AgentControlPalette";

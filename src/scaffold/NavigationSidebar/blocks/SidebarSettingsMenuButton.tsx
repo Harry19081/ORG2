@@ -1,4 +1,3 @@
-import { useSetAtom } from "jotai";
 import {
   ChevronRight,
   Contrast,
@@ -35,9 +34,9 @@ import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useAppNavigation } from "@src/hooks/navigation";
 import { useAppearanceState } from "@src/modules/MainApp/Settings/sections/useAppearanceState";
 import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
-import { GUI_CONTROL_TOGGLE_SHORTCUT_ID } from "@src/scaffold/GuiControlToggle";
+import { openAgentControlSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
+import { GUI_CONTROL_TOGGLE_SHORTCUT_ID } from "@src/scaffold/GlobalSpotlight/palettes/AgentControlPalette";
 import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
-import { openGuiControlAtom } from "@src/store/ui/uiAtom";
 
 import HoverAnimatedIcon, {
   triggerIconAnimation,
@@ -79,7 +78,6 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
   const submenuPanelRef = useRef<HTMLDivElement | null>(null);
   const preserveRamPanelOnMenuCloseRef = useRef(false);
   const dropdownInsideRefs = useMemo(() => [submenuPanelRef], []);
-  const openGuiControl = useSetAtom(openGuiControlAtom);
   const [activeSubmenu, setActiveSubmenu] = useState<SettingsSubmenu | null>(
     null
   );
@@ -197,9 +195,9 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
   }, [closeAll]);
 
   const handleOpenGuiControl = useCallback(() => {
-    openGuiControl();
+    openAgentControlSpotlight();
     closeAll();
-  }, [closeAll, openGuiControl]);
+  }, [closeAll]);
 
   const handleSelectAppearanceMode = useCallback(
     async (mode: AppearanceMode) => {

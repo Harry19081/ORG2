@@ -27,6 +27,7 @@ import {
   Menu,
   MessageCircle,
   Moon,
+  MousePointer2,
   PanelBottom,
   PanelLeft,
   Play,
@@ -52,6 +53,7 @@ import type { SpotlightItem } from "../../types";
 export type SpotlightStaticActionId =
   | "create-session"
   | "search-agent-sessions"
+  | "open-agent-control"
   | "switch-workspace"
   | "switch-branch"
   | "add-workspace"
@@ -91,6 +93,7 @@ export type SpotlightStaticActionId =
 export type SpotlightStaticActionFallback =
   | "create-session"
   | "search-agent-sessions"
+  | "agent-control"
   | "workspace-switch"
   | "workspace-add"
   | "workspace-create"
@@ -167,6 +170,23 @@ export const AGENT_SESSION_ACTIONS = [
     actionId: ACTION_ID.SPOTLIGHT_OPEN_AGENT_SESSION_SEARCH,
     payload: {},
     fallback: "search-agent-sessions",
+    closeOnSuccess: false,
+  },
+  {
+    id: "open-agent-control",
+    labelKey: "common:guiControl.menuToggle",
+    icon: MousePointer2,
+    keywords: [
+      "agent control",
+      "gui control",
+      "control gui",
+      "control app",
+      "automation",
+    ],
+    shortcut: getShortcutKeys("toggle_gui_control"),
+    actionId: ACTION_ID.SPOTLIGHT_OPEN_AGENT_CONTROL,
+    payload: {},
+    fallback: "agent-control",
     closeOnSuccess: false,
   },
 ] satisfies SpotlightStaticActionDefinition[];

@@ -70,6 +70,7 @@ export const ACTION_ID = {
   SPOTLIGHT_OPEN_EDITOR_COMMAND: "spotlight.openEditorCommand",
   SPOTLIGHT_OPEN_EDITOR_SYMBOL: "spotlight.openEditorSymbol",
   SPOTLIGHT_OPEN_AGENT_SESSION_SEARCH: "spotlight.openAgentSessionSearch",
+  SPOTLIGHT_OPEN_AGENT_CONTROL: "spotlight.openAgentControl",
   FILE_OPEN: "file.open",
   FILE_OPEN_DIRECT: "file.openDirect",
   FILE_OPEN_AT_LINE: "file.openAtLine",

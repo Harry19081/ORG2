@@ -36,6 +36,8 @@ export interface SpotlightSearchBarProps {
   hideActionClose?: boolean;
   /** Whether to hide the trailing text input after path pills */
   hideInput?: boolean;
+  /** Shown inside the search row on the right */
+  trailingSlot?: React.ReactNode;
 }
 
 // ============ COMPONENT ============
@@ -52,6 +54,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
   onRemoveSegment,
   hideActionClose = false,
   hideInput = false,
+  trailingSlot,
 }) => {
   const { t } = useTranslation();
 
@@ -192,6 +195,10 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
           {React.createElement(ICONS.close, { size: 14 })}
         </button>
       )}
+
+      {trailingSlot ? (
+        <div className="flex flex-shrink-0 items-center">{trailingSlot}</div>
+      ) : null}
     </div>
   );
 };

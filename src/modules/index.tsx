@@ -43,7 +43,6 @@ import {
   preloadMainAppRoutes,
   preloadWingmanWindows,
 } from "@src/router/lazy/preload";
-import { GuiControlToggle } from "@src/scaffold/GuiControlToggle";
 import {
   CODE_EDITOR_TOUR_EVENT,
   CodeEditorTour,
@@ -506,7 +505,6 @@ const AppShell = () => {
               </div>
             </div>
           </AppLayout>
-          <GuiControlToggle />
           <GuideHighlightOverlay />
           <TutorialsModal
             open={tutorialsModalOpen}

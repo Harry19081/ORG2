@@ -100,7 +100,6 @@ export interface AppUiSnapshot {
   overlays?: {
     spotlightOpen: boolean;
     guiControlEnabled: boolean;
-    guiControlComposerOpen: boolean;
   };
   visibleGuideTargets?: GuideTargetSnapshot[];
 }
