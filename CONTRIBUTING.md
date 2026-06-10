@@ -18,10 +18,13 @@ Be respectful, constructive, and specific. Assume good intent, but do not tolera
 
 Prerequisites:
 
-- Node.js 20 or current LTS
-- Rust toolchain compatible with `src-tauri/Cargo.toml`
-- Tauri platform prerequisites for your OS
-- Python 3 if you need optional asset download scripts
+| Tool                                 | Required version       | Install                                                                                    |
+| ------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------ |
+| [Node.js](https://nodejs.org/)       | 20 or current LTS      | `nvm install --lts` or download from nodejs.org                                            |
+| [pnpm](https://pnpm.io/installation) | 9.15                   | `npm install -g pnpm@9.15`                                                                 |
+| [Rust toolchain](https://rustup.rs/) | 1.85.0 or later (MSRV) | `rustup toolchain install stable`                                                          |
+| Tauri system dependencies            | —                      | Follow the [Tauri prerequisites guide](https://tauri.app/start/prerequisites/) for your OS |
+| [Python 3](https://www.python.org/)  | any 3.x                | Only needed for optional asset download scripts                                            |
 
 From the repository root:
 
