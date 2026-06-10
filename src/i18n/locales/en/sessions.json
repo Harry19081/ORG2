@@ -375,10 +375,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "All",
         "tabLabel": "Diff",
-        "filterAll": "All changes",
-        "filterCode": "Code",
-        "filterOther": "Other deliverables"
+        "emptyForFilter": "No diffs yet.",
+        "emptyDetail": "Select a change to view the diff.",
+        "submissions": {
+          "tabLabel": "Submissions",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "No submissions yet.",
+          "selectSubmission": "Select a submission to view details.",
+          "noCommits": "No Commits yet",
+          "noPullRequests": "No Pull Requests yet"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "Chat History",
@@ -437,6 +446,10 @@
             "taskDeleted": "{{subject}} deleted task",
             "taskViewed": "{{subject}} viewed task details",
             "taskListed": "{{subject}} viewed task list",
+            "updatedTodos": "{{subject}} updated to-dos",
+            "thought": "{{subject}} thought",
+            "updatedPlan": "{{subject}} updated plan",
+            "requestedInput": "{{subject}} requested input",
             "sentTo": "{{subject}} sent a message to {{recipient}}",
             "sentBroadcast": "{{subject}} sent a message to multiple agents",
             "sentMessage": "{{subject}} sent a message"
@@ -1004,8 +1017,8 @@
     "askUserQuestionsAnswered": "Questions were answered",
     "askUserQuestionsSkipped": "Questions skipped",
     "exploreSummary": {
-      "read_one": "Read {{count}} file",
-      "read_other": "Read {{count}} files",
+      "read_one": "{{count}} file",
+      "read_other": "{{count}} files",
       "search_one": "{{count}} search",
       "search_other": "{{count}} searches",
       "glob_one": "{{count}} glob",
@@ -1099,7 +1112,7 @@
     "listFileCount_other": "{{count}} files",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (truncated for display)",
-    "repeatedErrorNotice": "Same error occurred {{count}} times — agent retrying",
+    "repeatedErrorNotice": "Same error occurred {{count}} times, agent retrying",
     "turnSummary": {
       "label": "Turn Summary",
       "toolCallsCount": "{{count}} tools",

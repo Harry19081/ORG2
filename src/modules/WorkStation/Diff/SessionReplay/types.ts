@@ -22,12 +22,10 @@ export interface DiffEntry {
   fileName: string;
   /** True if the row corresponds to the current replay cursor. */
   isCurrent: boolean;
-  /** True when the file path looks like source code (extension allow-list). */
-  isCode: boolean;
 }
 
-/** Filter tabs surfaced in the Diff app chrome. */
-export type DiffFilter = "all" | "code" | "other";
+/** Top-level tabs surfaced in the Diff app chrome. */
+export type DiffReplayTab = "all" | "diff" | "submissions";
 
 /**
  * State derived from filtered events; consumed by the index component.

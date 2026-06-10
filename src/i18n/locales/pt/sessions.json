@@ -375,10 +375,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "Tudo",
         "tabLabel": "Diff",
-        "filterAll": "Todas as alterações",
-        "filterCode": "Code",
-        "filterOther": "Outros entregáveis"
+        "emptyForFilter": "Ainda não há Diffs.",
+        "emptyDetail": "Selecione uma alteração para ver o Diff.",
+        "submissions": {
+          "tabLabel": "Submissões",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "Ainda não há submissões.",
+          "selectSubmission": "Selecione uma submissão para ver os detalhes.",
+          "noCommits": "Ainda não há Commits",
+          "noPullRequests": "Ainda não há Pull Requests"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "Histórico do chat",
@@ -437,6 +446,10 @@
             "taskDeleted": "{{subject}} excluiu a tarefa",
             "taskViewed": "{{subject}} consultou os detalhes da tarefa",
             "taskListed": "{{subject}} consultou a lista de tarefas",
+            "updatedTodos": "{{subject}} atualizou as tarefas",
+            "thought": "{{subject}} pensou",
+            "updatedPlan": "{{subject}} atualizou o plano",
+            "requestedInput": "{{subject}} solicitou entrada",
             "sentTo": "{{subject}} enviou uma mensagem para {{recipient}}",
             "sentBroadcast": "{{subject}} enviou uma mensagem para vários agentes",
             "sentMessage": "{{subject}} enviou uma mensagem"
@@ -1000,8 +1013,8 @@
     "askUserQuestionsAnswered": "As perguntas foram respondidas",
     "askUserQuestionsSkipped": "Perguntas ignoradas",
     "exploreSummary": {
-      "read_one": "Lido {{count}} arquivo",
-      "read_other": "Lidos {{count}} arquivos",
+      "read_one": "{{count}} arquivo",
+      "read_other": "{{count}} arquivos",
       "search_one": "{{count}} busca",
       "search_other": "{{count}} buscas",
       "glob_one": "{{count}} glob",
@@ -1095,7 +1108,7 @@
     "listFileCount_other": "{{count}} arquivos",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (truncado para exibição)",
-    "repeatedErrorNotice": "O mesmo erro ocorreu {{count}} vezes — Agent tentando novamente",
+    "repeatedErrorNotice": "O mesmo erro ocorreu {{count}} vezes, Agent tentando novamente",
     "turnSummary": {
       "label": "Resumo do turno",
       "toolCallsCount": "{{count}} ferramentas",

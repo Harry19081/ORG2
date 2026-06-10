@@ -14,13 +14,7 @@
  * and `common:sourceControl.pill.*` i18n keys.
  */
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-  FileCode2,
-  FilePlus,
-  GitBranch,
-  GitCommitHorizontal,
-  GitPullRequest,
-} from "lucide-react";
+import { GitBranch, Send } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -70,8 +64,7 @@ import {
   SubmissionPullRequestsContent,
   deriveSubmissionsData,
 } from "./SubmissionsContent";
-import { isCodeFilePath } from "./config";
-import type { DiffFilter } from "./types";
+import type { DiffReplayTab } from "./types";
 import { useDiff } from "./useDiff";
 
 type DiffPillMode = "focus" | "all-changes";
@@ -84,16 +77,16 @@ const GitCommitDetailContent = React.lazy(
     import("@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/GitCommitDetailContent")
 );
 
-const TAB_IDS: Record<DiffFilter, string> = {
-  all: "diff-filter:all",
-  code: "diff-filter:code",
-  other: "diff-filter:other",
+const TAB_IDS: Record<DiffReplayTab, string> = {
+  all: "diff-tab:all",
+  diff: "diff-tab:diff",
+  submissions: "diff-tab:submissions",
 };
 
-const FILTER_BY_TAB_ID: Record<string, DiffFilter> = {
+const TAB_BY_ID: Record<string, DiffReplayTab> = {
   [TAB_IDS.all]: "all",
-  [TAB_IDS.code]: "code",
-  [TAB_IDS.other]: "other",
+  [TAB_IDS.diff]: "diff",
+  [TAB_IDS.submissions]: "submissions",
 };
 
 interface SubmissionRepoContext {
@@ -216,24 +209,13 @@ function collectSubmissionArtifacts(
   return artifacts;
 }
 
-function filterSectionsByType<T extends { file: { path: string } }>(
-  sections: T[],
-  filter: DiffFilter
-): T[] {
-  if (filter === "all") return sections;
-  return sections.filter((section) => {
-    const isCode = isCodeFilePath(section.file.path);
-    return filter === "code" ? isCode : !isCode;
-  });
-}
-
 const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   currentEvent,
   mode = "simulation",
 }) => {
   const { t } = useTranslation("sessions");
   const { t: tCommon } = useTranslation("common");
-  const [filter, setFilter] = useState<DiffFilter>("all");
+  const [activeTab, setActiveTab] = useState<DiffReplayTab>("diff");
   const [pillMode, setPillMode] = useState<DiffPillMode>("all-changes");
   const [historySelection, setHistorySelection] =
     useState<SourceControlHistorySelection | null>(null);
@@ -251,13 +233,8 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   );
   const session = useAtomValue(sessionByIdAtom(sessionId ?? ""));
   const sessionRepoPath = session?.repoPath ?? "";
-  const {
-    filteredEntries,
-    counts,
-    displayEntry,
-    selectedEntryId,
-    selectEntry,
-  } = useDiff({ filter });
+  const { entries, counts, displayEntry, selectedEntryId, selectEntry } =
+    useDiff();
 
   const primarySidebarCollapsed = useAtomValue(
     simulatorPrimarySidebarCollapsedAtom
@@ -279,43 +256,9 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   const simulatorPlaceholderActions = useSimulatorPlaceholderActions(mode);
   const simulatorAwaitingAgentCaption = useSimulatorAwaitingAgentCaption();
 
-  const tabs = useMemo<ReplayTab[]>(() => {
-    const formatLabel = (base: string, count: number) =>
-      count > 0 ? `${base} (${count})` : base;
-    return [
-      {
-        eventId: TAB_IDS.all,
-        kind: "diff-filter",
-        label: formatLabel(t("simulator.replay.diffApp.filterAll"), counts.all),
-        title: t("simulator.replay.diffApp.filterAll"),
-        icon: <GitBranch size={14} className="shrink-0" />,
-      },
-      {
-        eventId: TAB_IDS.code,
-        kind: "diff-filter",
-        label: formatLabel(
-          t("simulator.replay.diffApp.filterCode"),
-          counts.code
-        ),
-        title: t("simulator.replay.diffApp.filterCode"),
-        icon: <FileCode2 size={14} className="shrink-0" />,
-      },
-      {
-        eventId: TAB_IDS.other,
-        kind: "diff-filter",
-        label: formatLabel(
-          t("simulator.replay.diffApp.filterOther"),
-          counts.other
-        ),
-        title: t("simulator.replay.diffApp.filterOther"),
-        icon: <FilePlus size={14} className="shrink-0" />,
-      },
-    ];
-  }, [counts.all, counts.code, counts.other, t]);
-
   const handleTabClick = useCallback((eventId: string) => {
-    const next = FILTER_BY_TAB_ID[eventId];
-    if (next) setFilter(next);
+    const next = TAB_BY_ID[eventId];
+    if (next) setActiveTab(next);
   }, []);
 
   const handlePillModeChange = useCallback((key: string) => {
@@ -508,19 +451,49 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   const hasSubmissions =
     submissionCommits.length > 0 || submissionsData.pullRequests.length > 0;
 
+  const tabs = useMemo<ReplayTab[]>(() => {
+    const formatLabel = (base: string, count: number) =>
+      count > 0 ? `${base} (${count})` : base;
+    const submissionCount =
+      submissionCommits.length + submissionsData.pullRequests.length;
+    return [
+      {
+        eventId: TAB_IDS.diff,
+        kind: "diff-filter",
+        label: formatLabel(
+          t("simulator.replay.diffApp.tabLabel"),
+          counts.files
+        ),
+        title: t("simulator.replay.diffApp.tabLabel"),
+        icon: <GitBranch size={14} className="shrink-0" />,
+      },
+      {
+        eventId: TAB_IDS.submissions,
+        kind: "diff-filter",
+        label: formatLabel(
+          t("simulator.replay.diffApp.submissions.tabLabel"),
+          submissionCount
+        ),
+        title: t("simulator.replay.diffApp.submissions.tabLabel"),
+        icon: <Send size={14} className="shrink-0" />,
+      },
+    ];
+  }, [
+    counts.files,
+    submissionCommits.length,
+    submissionsData.pullRequests.length,
+    t,
+  ]);
+
   usePublishWorkstationTabHeader({
     host: "simulator",
     content: diffHeaderContent,
-    enabled: counts.all > 0 || hasSubmissions,
+    enabled: counts.files > 0 || hasSubmissions,
   });
 
   const sidebarItems = useMemo(
-    () =>
-      filterSectionsByType(
-        buildConsolidatedSessionReplayDiffSectionItems(filteredEntries),
-        filter
-      ),
-    [filteredEntries, filter]
+    () => buildConsolidatedSessionReplayDiffSectionItems(entries),
+    [entries]
   );
 
   const handleSubmissionCommitSelect = useCallback(
@@ -589,46 +562,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
           collapsible: true,
           resizable: false,
         },
-        {
-          key: "submission-commits",
-          title: t("simulator.replay.diffApp.submissions.commits", "Commits"),
-          icon: <GitCommitHorizontal size={14} className="shrink-0" />,
-          content: (
-            <SubmissionCommitsContent
-              commits={submissionCommits}
-              selectedCommitSha={
-                historySelection?.type === "commit"
-                  ? historySelection.commitSha
-                  : null
-              }
-              onCommitSelect={handleSubmissionCommitSelect}
-              emptyLabel={t(
-                "simulator.replay.diffApp.submissions.noCommits",
-                "No commits yet."
-              )}
-            />
-          ),
-          defaultFlexGrow: 0.65,
-          collapsible: true,
-          resizable: false,
-        },
-        {
-          key: "submission-pull-requests",
-          title: t("simulator.replay.diffApp.submissions.pr", "PR"),
-          icon: <GitPullRequest size={14} className="shrink-0" />,
-          content: (
-            <SubmissionPullRequestsContent
-              pullRequests={submissionsData.pullRequests}
-              emptyLabel={t(
-                "simulator.replay.diffApp.submissions.noPullRequests",
-                "No pull requests yet."
-              )}
-            />
-          ),
-          defaultFlexGrow: 0.55,
-          collapsible: true,
-          resizable: false,
-        },
       ],
     }),
     [
@@ -637,9 +570,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       selectedEntryId,
       displayEntry,
       handleSidebarItemSelect,
-      submissionCommits,
-      submissionsData,
-      handleSubmissionCommitSelect,
       t,
     ]
   );
@@ -676,8 +606,8 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   );
 
   const consolidatedSections = useMemo(
-    () => buildConsolidatedSessionReplayDiffSectionItems(filteredEntries),
-    [filteredEntries]
+    () => buildConsolidatedSessionReplayDiffSectionItems(entries),
+    [entries]
   );
 
   const focusedSections = useMemo(
@@ -754,26 +684,54 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       );
     }
 
-    if (pillMode === "all-changes") {
-      if (filteredEntries.length === 0) {
+    if (activeTab === "submissions") {
+      if (!hasSubmissions) {
         return (
           <Placeholder
             variant="empty"
             placement="detail-panel"
             title={t(
-              "simulator.replay.diffApp.emptyForFilter",
-              "No diffs match this filter yet."
+              "simulator.replay.diffApp.submissions.empty",
+              "No submissions yet."
             )}
             fillParentHeight
           />
         );
       }
+
+      return (
+        <div className="flex h-full min-h-0 flex-col overflow-auto">
+          <SubmissionCommitsContent
+            commits={submissionCommits}
+            selectedCommitSha={
+              historySelection?.type === "commit"
+                ? historySelection.commitSha
+                : null
+            }
+            onCommitSelect={handleSubmissionCommitSelect}
+            emptyLabel={t(
+              "simulator.replay.diffApp.submissions.noCommits",
+              "No commits yet."
+            )}
+          />
+          <SubmissionPullRequestsContent
+            pullRequests={submissionsData.pullRequests}
+            emptyLabel={t(
+              "simulator.replay.diffApp.submissions.noPullRequests",
+              "No pull requests yet."
+            )}
+          />
+        </div>
+      );
+    }
+
+    if (pillMode === "all-changes") {
       return (
         <DiffSectionList
           sections={consolidatedSections}
           emptyTitle={t(
             "simulator.replay.diffApp.emptyForFilter",
-            "No diffs match this filter yet."
+            "No diffs yet."
           )}
           focusedPath={focusedDiffPath}
           focusedNonce={focusedDiffNonce}
@@ -781,19 +739,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       );
     }
 
-    if (!displayEntry) {
-      return (
-        <Placeholder
-          variant="empty"
-          placement="detail-panel"
-          title={t(
-            "simulator.replay.diffApp.emptyDetail",
-            "Select a change to view the diff."
-          )}
-          fillParentHeight
-        />
-      );
-    }
     return (
       <DiffSectionList
         sections={focusedSections}
@@ -810,21 +755,24 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     historyRepoContext,
     fallbackRepoContext,
     tCommon,
+    activeTab,
+    hasSubmissions,
+    submissionCommits,
+    submissionsData.pullRequests,
+    handleSubmissionCommitSelect,
     pillMode,
-    filteredEntries,
     consolidatedSections,
-    displayEntry,
     focusedSections,
     focusedDiffPath,
     focusedDiffNonce,
     t,
   ]);
 
-  if (counts.all === 0 && !hasSubmissions) {
+  if (counts.files === 0 && !hasSubmissions) {
     return (
       <SimulatorReplayChrome
         tabs={tabs}
-        activeEventId={TAB_IDS[filter]}
+        activeEventId={TAB_IDS[activeTab]}
         onTabClick={handleTabClick}
       >
         <div className="min-h-0 flex-1">
@@ -841,7 +789,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   return (
     <SimulatorReplayChrome
       tabs={tabs}
-      activeEventId={TAB_IDS[filter]}
+      activeEventId={TAB_IDS[activeTab]}
       onTabClick={handleTabClick}
     >
       <div className="flex min-h-0 flex-1">

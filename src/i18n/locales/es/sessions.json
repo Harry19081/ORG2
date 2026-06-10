@@ -362,10 +362,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "Todo",
         "tabLabel": "Diff",
-        "filterAll": "Todos los cambios",
-        "filterCode": "Code",
-        "filterOther": "Otros entregables"
+        "emptyForFilter": "Aún no hay Diff.",
+        "emptyDetail": "Selecciona un cambio para ver el Diff.",
+        "submissions": {
+          "tabLabel": "Envíos",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "Aún no hay envíos.",
+          "selectSubmission": "Selecciona un envío para ver los detalles.",
+          "noCommits": "Aún no hay Commits",
+          "noPullRequests": "Aún no hay Pull Requests"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "Historial de chat",
@@ -424,6 +433,10 @@
             "taskDeleted": "{{subject}} eliminó la tarea",
             "taskViewed": "{{subject}} consultó los detalles de la tarea",
             "taskListed": "{{subject}} consultó la lista de tareas",
+            "updatedTodos": "{{subject}} actualizó los pendientes",
+            "thought": "{{subject}} pensó",
+            "updatedPlan": "{{subject}} actualizó el plan",
+            "requestedInput": "{{subject}} solicitó información",
             "sentTo": "{{subject}} envió un mensaje a {{recipient}}",
             "sentBroadcast": "{{subject}} envió un mensaje a varios agentes",
             "sentMessage": "{{subject}} envió un mensaje"
@@ -976,8 +989,8 @@
       "noReason": "El Agent sugiere cambiar de modo"
     },
     "exploreSummary": {
-      "read_one": "Leído {{count}} archivo",
-      "read_other": "Leídos {{count}} archivos",
+      "read_one": "{{count}} archivo",
+      "read_other": "{{count}} archivos",
       "search_one": "{{count}} búsqueda",
       "search_other": "{{count}} búsquedas",
       "glob_one": "{{count}} glob",
@@ -1060,7 +1073,7 @@
     "listFileCount_other": "{{count}} archivos",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (truncado para visualización)",
-    "repeatedErrorNotice": "El mismo error ocurrió {{count}} veces — el agente está reintentando",
+    "repeatedErrorNotice": "El mismo error ocurrió {{count}} veces, el agente está reintentando",
     "turnSummary": {
       "label": "Resumen del turno",
       "toolCallsCount": "{{count}} herramientas",

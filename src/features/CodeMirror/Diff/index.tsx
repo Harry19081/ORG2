@@ -80,6 +80,10 @@ export interface CodeMirrorDiffProps {
   autoHeight?: boolean;
   /** Explicit git status when content alone is not enough to infer diff direction. */
   changeType?: GitFileStatus;
+  /** Starting line number for old/original content when rendering a diff hunk. */
+  oldStartLine?: number;
+  /** Starting line number for new/modified content when rendering a diff hunk. */
+  newStartLine?: number;
   /** Custom class name */
   className?: string;
 }
@@ -171,6 +175,8 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   onTextSelection,
   autoHeight = false,
   changeType,
+  oldStartLine = 1,
+  newStartLine = 1,
   className = "",
 }) => {
   const appearanceSettings = useEditorAppearanceSettings();
@@ -218,18 +224,27 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     old: string;
     new: string;
     changeType?: GitFileStatus;
+    startLine: number;
   } | null>(null);
-  const splitContentRef = useRef<{ old: string; new: string } | null>(null);
+  const splitContentRef = useRef<{
+    old: string;
+    new: string;
+    oldStartLine: number;
+    newStartLine: number;
+  } | null>(null);
 
   // ── Stable base extensions (rebuilt only when theme/settings change) ─────
 
-  const buildBaseExtensions = (): Extension[] => {
+  const buildBaseExtensions = (lineNumberStart = 1): Extension[] => {
+    const lineNumberOffset = Math.max(1, lineNumberStart) - 1;
+    const formatAbsoluteLineNumber = (lineNo: number) =>
+      String(lineNo + lineNumberOffset);
     const exts: Extension[] = [codeMirrorCspNonceExtension];
 
     exts.push(getCodeMirrorTheme());
 
     if (appearanceSettings.lineNumbers === "on") {
-      exts.push(lineNumbers());
+      exts.push(lineNumbers({ formatNumber: formatAbsoluteLineNumber }));
     } else if (appearanceSettings.lineNumbers === "relative") {
       exts.push(
         lineNumbers({
@@ -238,7 +253,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
               state.selection.main.head
             ).number;
             return lineNo === cursorLine
-              ? String(lineNo)
+              ? formatAbsoluteLineNumber(lineNo)
               : String(Math.abs(lineNo - cursorLine));
           },
         })
@@ -246,8 +261,12 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     } else if (appearanceSettings.lineNumbers === "interval") {
       exts.push(
         lineNumbers({
-          formatNumber: (lineNo: number) =>
-            lineNo === 1 || lineNo % 10 === 0 ? String(lineNo) : "",
+          formatNumber: (lineNo: number) => {
+            const absoluteLineNo = lineNo + lineNumberOffset;
+            return absoluteLineNo === 1 || absoluteLineNo % 10 === 0
+              ? String(absoluteLineNo)
+              : "";
+          },
         })
       );
     }
@@ -293,7 +312,11 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     // the original side changes; dispatch is only safe for modified content.
     if (unifiedViewRef.current && unifiedContentRef.current) {
       const prev = unifiedContentRef.current;
-      if (prev.old !== oldValue || prev.changeType !== changeType) {
+      if (
+        prev.old !== oldValue ||
+        prev.changeType !== changeType ||
+        prev.startLine !== newStartLine
+      ) {
         unifiedViewRef.current.destroy();
         unifiedViewRef.current = null;
         unifiedContentRef.current = null;
@@ -311,7 +334,12 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
           changes: { from: 0, to: currentDoc.length, insert: doc },
         });
       }
-      unifiedContentRef.current = { old: oldValue, new: newValue, changeType };
+      unifiedContentRef.current = {
+        old: oldValue,
+        new: newValue,
+        changeType,
+        startLine: newStartLine,
+      };
       setUnifiedLines(view.state.doc.lines);
       return;
     }
@@ -321,7 +349,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     container.innerHTML = "";
 
     try {
-      const baseExts = buildBaseExtensions();
+      const baseExts = buildBaseExtensions(newStartLine);
       const themeExt = createCodeMirrorTheme();
 
       const deletionColorOverride = EditorView.theme({
@@ -364,7 +392,12 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
       });
 
       unifiedViewRef.current = view;
-      unifiedContentRef.current = { old: oldValue, new: newValue, changeType };
+      unifiedContentRef.current = {
+        old: oldValue,
+        new: newValue,
+        changeType,
+        startLine: newStartLine,
+      };
       setUnifiedScrollEl(view.scrollDOM);
       setUnifiedLines(view.state.doc.lines);
     } catch (err) {
@@ -383,6 +416,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     oldValue,
     newValue,
     changeType,
+    newStartLine,
     readOnly,
     mergeControls,
     collapseUnchanged,
@@ -411,7 +445,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
         EditorService.clearEditorView();
       }
     };
-  }, [viewMode, oldValue, newValue, changeType]);
+  }, [viewMode, oldValue, newValue, changeType, newStartLine]);
 
   // ── Split view lifecycle ──────────────────────────────────────────────────
 
@@ -421,8 +455,19 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     // If the instance already exists, dispatch content updates
     if (splitMergeViewRef.current && splitContentRef.current) {
       const prev = splitContentRef.current;
-      if (prev.old === oldValue && prev.new === newValue) return;
+      if (
+        prev.oldStartLine !== oldStartLine ||
+        prev.newStartLine !== newStartLine
+      ) {
+        splitMergeViewRef.current.destroy();
+        splitMergeViewRef.current = null;
+        splitContentRef.current = null;
+      } else if (prev.old === oldValue && prev.new === newValue) {
+        return;
+      }
+    }
 
+    if (splitMergeViewRef.current && splitContentRef.current) {
       const mv = splitMergeViewRef.current;
 
       const oldDoc = mv.a.state.doc.toString();
@@ -437,7 +482,12 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
           changes: { from: 0, to: newDoc.length, insert: newValue },
         });
       }
-      splitContentRef.current = { old: oldValue, new: newValue };
+      splitContentRef.current = {
+        old: oldValue,
+        new: newValue,
+        oldStartLine,
+        newStartLine,
+      };
       setSplitLines(mv.b.state.doc.lines);
       return;
     }
@@ -447,18 +497,23 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
     container.innerHTML = "";
 
     try {
-      const baseExts = buildBaseExtensions();
       const themeExt = createCodeMirrorTheme();
-      const splitExts = [
-        ...baseExts,
+      const oldPaneExts = [
+        ...buildBaseExtensions(oldStartLine),
+        themeExt,
+        MERGE_THEME_OVERRIDE,
+        ...(autoHeight ? [AUTO_HEIGHT_THEME] : []),
+      ];
+      const newPaneExts = [
+        ...buildBaseExtensions(newStartLine),
         themeExt,
         MERGE_THEME_OVERRIDE,
         ...(autoHeight ? [AUTO_HEIGHT_THEME] : []),
       ];
 
       const mergeView = new MergeView({
-        a: { doc: oldValue, extensions: splitExts },
-        b: { doc: newValue, extensions: splitExts },
+        a: { doc: oldValue, extensions: oldPaneExts },
+        b: { doc: newValue, extensions: newPaneExts },
         parent: container,
         gutter: true,
         highlightChanges: true,
@@ -468,7 +523,12 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
       });
 
       splitMergeViewRef.current = mergeView;
-      splitContentRef.current = { old: oldValue, new: newValue };
+      splitContentRef.current = {
+        old: oldValue,
+        new: newValue,
+        oldStartLine,
+        newStartLine,
+      };
       setSplitScrollEl(mergeView.b.scrollDOM);
       setSplitLines(mergeView.b.state.doc.lines);
 
@@ -496,6 +556,8 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
   }, [
     oldValue,
     newValue,
+    oldStartLine,
+    newStartLine,
     readOnly,
     collapseUnchanged,
     autoHeight,

@@ -184,13 +184,25 @@ export function stripLineNumberPrefixes(content: string): {
 export function parseUnifiedDiffToOldNew(diffStr: string): {
   oldValue: string;
   newValue: string;
+  oldStartLine?: number;
+  newStartLine?: number;
 } {
   const lines = diffStr.split("\n");
   const oldLines: string[] = [];
   const newLines: string[] = [];
+  let oldStartLine: number | undefined;
+  let newStartLine: number | undefined;
+
   for (const line of lines) {
+    const hunkMatch = /^@@\s+-(\d+)(?:,\d+)?\s+\+(\d+)(?:,\d+)?\s+@@/.exec(
+      line
+    );
+    if (hunkMatch) {
+      oldStartLine ??= Number.parseInt(hunkMatch[1], 10);
+      newStartLine ??= Number.parseInt(hunkMatch[2], 10);
+      continue;
+    }
     if (line.startsWith("---") || line.startsWith("+++")) continue;
-    if (line.startsWith("@@")) continue;
     if (line.startsWith("-")) {
       oldLines.push(line.slice(1));
     } else if (line.startsWith("+")) {
@@ -200,5 +212,10 @@ export function parseUnifiedDiffToOldNew(diffStr: string): {
       newLines.push(line.slice(1));
     }
   }
-  return { oldValue: oldLines.join("\n"), newValue: newLines.join("\n") };
+  return {
+    oldValue: oldLines.join("\n"),
+    newValue: newLines.join("\n"),
+    oldStartLine,
+    newStartLine,
+  };
 }

@@ -369,10 +369,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "全部",
         "tabLabel": "Diff",
-        "filterAll": "全部变更",
-        "filterCode": "Code",
-        "filterOther": "其他交付物"
+        "emptyForFilter": "暂无 Diff。",
+        "emptyDetail": "选择一项变更以查看 Diff。",
+        "submissions": {
+          "tabLabel": "提交",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "暂无提交。",
+          "selectSubmission": "选择一项提交以查看详情。",
+          "noCommits": "暂无 Commits",
+          "noPullRequests": "暂无 Pull Requests"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "聊天记录",
@@ -431,6 +440,10 @@
             "taskDeleted": "{{subject}} 删除了任务",
             "taskViewed": "{{subject}} 查看了任务详情",
             "taskListed": "{{subject}} 查看了任务列表",
+            "updatedTodos": "{{subject}} 更新了待办事项",
+            "thought": "{{subject}} 进行了思考",
+            "updatedPlan": "{{subject}} 更新了计划",
+            "requestedInput": "{{subject}} 请求了输入",
             "sentTo": "{{subject}} 向 {{recipient}} 发送了消息",
             "sentBroadcast": "{{subject}} 向多个 Agent 发送了消息",
             "sentMessage": "{{subject}} 发送了消息"
@@ -980,8 +993,8 @@
       "noReason": "Agent 建议切换模式"
     },
     "exploreSummary": {
-      "read_one": "读取了 {{count}} 个文件",
-      "read_other": "读取了 {{count}} 个文件",
+      "read_one": "{{count}} 个文件",
+      "read_other": "{{count}} 个文件",
       "search_one": "{{count}} 次搜索",
       "search_other": "{{count}} 次搜索",
       "glob_one": "{{count}} 次 Glob",
@@ -1068,7 +1081,7 @@
     "listFileCount_other": "{{count}} 个文件",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n...（已截断显示）",
-    "repeatedErrorNotice": "相同错误共出现 {{count}} 次 — Agent 正在重试",
+    "repeatedErrorNotice": "相同错误共出现 {{count}} 次，Agent 正在重试",
     "turnSummary": {
       "label": "本轮总结",
       "toolCallsCount": "{{count}} 个工具",

@@ -362,10 +362,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "Tout",
         "tabLabel": "Diff",
-        "filterAll": "Toutes les modifications",
-        "filterCode": "Code",
-        "filterOther": "Autres livrables"
+        "emptyForFilter": "Aucun Diff pour le moment.",
+        "emptyDetail": "Sélectionnez une modification pour voir le Diff.",
+        "submissions": {
+          "tabLabel": "Soumissions",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "Aucune soumission pour le moment.",
+          "selectSubmission": "Sélectionnez une soumission pour afficher les détails.",
+          "noCommits": "Aucun Commit pour le moment",
+          "noPullRequests": "Aucune Pull Request pour le moment"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "Historique du chat",
@@ -424,6 +433,10 @@
             "taskDeleted": "{{subject}} a supprimé la tâche",
             "taskViewed": "{{subject}} a consulté les détails de la tâche",
             "taskListed": "{{subject}} a consulté la liste des tâches",
+            "updatedTodos": "{{subject}} a mis à jour les tâches",
+            "thought": "{{subject}} a réfléchi",
+            "updatedPlan": "{{subject}} a mis à jour le plan",
+            "requestedInput": "{{subject}} a demandé une saisie",
             "sentTo": "{{subject}} a envoyé un message à {{recipient}}",
             "sentBroadcast": "{{subject}} a envoyé un message à plusieurs agents",
             "sentMessage": "{{subject}} a envoyé un message"
@@ -976,8 +989,8 @@
       "noReason": "L’agent suggère de changer de mode"
     },
     "exploreSummary": {
-      "read_one": "Lu {{count}} fichier",
-      "read_other": "Lu {{count}} fichiers",
+      "read_one": "{{count}} fichier",
+      "read_other": "{{count}} fichiers",
       "search_one": "{{count}} recherche",
       "search_other": "{{count}} recherches",
       "glob_one": "{{count}} glob",
@@ -1060,7 +1073,7 @@
     "listFileCount_other": "{{count}} fichiers",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (tronqué pour l’affichage)",
-    "repeatedErrorNotice": "Même erreur survenue {{count}} fois — agent en train de réessayer",
+    "repeatedErrorNotice": "Même erreur survenue {{count}} fois, agent en train de réessayer",
     "turnSummary": {
       "label": "Résumé du tour",
       "toolCallsCount": "{{count}} outils",

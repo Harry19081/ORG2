@@ -2,10 +2,8 @@
  * useDiff
  *
  * Adapts `useSimulatorAppState` for the Diff app: pulls derived entries,
- * applies the current filter, computes per-filter counts, and resolves the
- * entry that should be shown in the right pane (preferring the user's
- * sidebar selection, falling back to the replay cursor's diff, and
- * finally to the newest entry in the active filter bucket).
+ * excludes events that do not produce a real diff section, computes the
+ * deduplicated file count, and resolves the entry shown in the detail pane.
  */
 import { useCallback, useMemo } from "react";
 
@@ -17,28 +15,19 @@ import {
   buildSessionReplayDiffSectionItems,
 } from "@src/modules/WorkStation/shared";
 
-import { DIFF_APP_CONFIG, isCodeFilePath } from "./config";
-import type { DiffEntry, DiffFilter, SimulatorDiffState } from "./types";
-
-export interface UseDiffOptions {
-  /** Active filter tab. */
-  filter: DiffFilter;
-}
+import { DIFF_APP_CONFIG } from "./config";
+import type { DiffEntry, SimulatorDiffState } from "./types";
 
 export interface DiffCounts {
-  all: number;
-  code: number;
-  other: number;
+  files: number;
 }
 
 export interface UseDiffReturn {
-  /** All diff entries surfaced by the simulator app state. */
+  /** Diff entries that produce at least one renderable file section. */
   entries: DiffEntry[];
-  /** Entries narrowed by the active filter. */
-  filteredEntries: DiffEntry[];
-  /** Counts for each filter bucket — drive the tab labels. */
+  /** Deduplicated file count for the top-level Diff tab. */
   counts: DiffCounts;
-  /** Entry rendered in the right detail pane (after filter resolution). */
+  /** Entry rendered in the right detail pane. */
   displayEntry: DiffEntry | null;
   /** Sidebar-selected entry id, or null when the cursor is in charge. */
   selectedEntryId: string | null;
@@ -46,68 +35,42 @@ export interface UseDiffReturn {
   selectEntry: (entryId: string) => void;
 }
 
-function entryMatchesFilter(entry: DiffEntry, filter: DiffFilter): boolean {
-  if (filter === "all") return true;
-  const sections = buildSessionReplayDiffSectionItems(entry);
-  const isCode =
-    sections.length > 0
-      ? sections.some((section) => isCodeFilePath(section.file.path))
-      : entry.isCode;
-  return filter === "code" ? isCode : !isCode;
+function hasRenderableDiffSection(entry: DiffEntry): boolean {
+  return buildSessionReplayDiffSectionItems(entry).length > 0;
 }
 
-function applyFilter(entries: DiffEntry[], filter: DiffFilter): DiffEntry[] {
-  if (filter === "all") return entries;
-  return entries.filter((entry) => entryMatchesFilter(entry, filter));
-}
-
-export function useDiff({ filter }: UseDiffOptions): UseDiffReturn {
+export function useDiff(): UseDiffReturn {
   const { state, selectedItemId, setSelectedItemId } =
     useSimulatorAppState<SimulatorDiffState>({
-      // The factory config is component-less; the registry layer is the only
-      // surface that supplies a component, so it's safe to widen here.
       config:
         DIFF_APP_CONFIG as unknown as SimulatorAppConfig<SimulatorDiffState>,
       eventsAtomOverride: simulatorEventsAtom,
     });
 
-  const entries = useMemo(() => state.entries ?? [], [state.entries]);
+  const entries = useMemo(
+    () => (state.entries ?? []).filter(hasRenderableDiffSection),
+    [state.entries]
+  );
 
   const counts = useMemo<DiffCounts>(() => {
-    const codeEntries = entries.filter((entry) =>
-      entryMatchesFilter(entry, "code")
-    );
-    const otherEntries = entries.filter((entry) =>
-      entryMatchesFilter(entry, "other")
-    );
     return {
-      all: buildConsolidatedSessionReplayDiffSectionItems(entries).length,
-      code: buildConsolidatedSessionReplayDiffSectionItems(codeEntries).length,
-      other:
-        buildConsolidatedSessionReplayDiffSectionItems(otherEntries).length,
+      files: buildConsolidatedSessionReplayDiffSectionItems(entries).length,
     };
   }, [entries]);
-
-  const filteredEntries = useMemo(() => {
-    const base = applyFilter(entries, filter);
-    // Keep the currently selected/replay-active entry visible even if it
-    // would otherwise be filtered out — surprises like "the row I just
-    // clicked vanished" are worse than a one-off ordering bend.
-    const activeId = selectedItemId ?? state.selectedEntry?.entryId ?? null;
-    if (!activeId) return base;
-    if (base.some((entry) => entry.entryId === activeId)) return base;
-    const active = entries.find((entry) => entry.entryId === activeId);
-    return active ? [...base, active] : base;
-  }, [entries, filter, selectedItemId, state.selectedEntry]);
 
   const displayEntry = useMemo<DiffEntry | null>(() => {
     if (selectedItemId) {
       const match = entries.find((entry) => entry.entryId === selectedItemId);
       if (match) return match;
     }
-    if (state.selectedEntry) return state.selectedEntry;
-    return filteredEntries[filteredEntries.length - 1] ?? null;
-  }, [entries, filteredEntries, selectedItemId, state.selectedEntry]);
+    if (
+      state.selectedEntry &&
+      entries.some((entry) => entry.entryId === state.selectedEntry?.entryId)
+    ) {
+      return state.selectedEntry;
+    }
+    return entries[entries.length - 1] ?? null;
+  }, [entries, selectedItemId, state.selectedEntry]);
 
   const selectEntry = useCallback(
     (entryId: string) => {
@@ -118,7 +81,6 @@ export function useDiff({ filter }: UseDiffOptions): UseDiffReturn {
 
   return {
     entries,
-    filteredEntries,
     counts,
     displayEntry,
     selectedEntryId: selectedItemId,

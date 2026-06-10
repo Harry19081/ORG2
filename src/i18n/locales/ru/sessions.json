@@ -364,10 +364,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "Все",
         "tabLabel": "Diff",
-        "filterAll": "Все изменения",
-        "filterCode": "Code",
-        "filterOther": "Прочие артефакты"
+        "emptyForFilter": "Diff пока нет.",
+        "emptyDetail": "Выберите изменение, чтобы посмотреть Diff.",
+        "submissions": {
+          "tabLabel": "Отправки",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "Отправок пока нет.",
+          "selectSubmission": "Выберите отправку, чтобы посмотреть детали.",
+          "noCommits": "Commits пока нет",
+          "noPullRequests": "Pull Requests пока нет"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "История чата",
@@ -426,6 +435,10 @@
             "taskDeleted": "{{subject}} удалил задачу",
             "taskViewed": "{{subject}} просмотрел детали задачи",
             "taskListed": "{{subject}} просмотрел список задач",
+            "updatedTodos": "{{subject}} обновил список дел",
+            "thought": "{{subject}} подумал",
+            "updatedPlan": "{{subject}} обновил план",
+            "requestedInput": "{{subject}} запросил ввод",
             "sentTo": "{{subject}} отправил сообщение {{recipient}}",
             "sentBroadcast": "{{subject}} отправил сообщение нескольким Agent",
             "sentMessage": "{{subject}} отправил сообщение"
@@ -986,8 +999,8 @@
       "noReason": "Agent предлагает сменить режим"
     },
     "exploreSummary": {
-      "read_one": "Прочитан {{count}} файл",
-      "read_other": "Прочитано {{count}} файлов",
+      "read_one": "{{count}} файл",
+      "read_other": "{{count}} файлов",
       "search_one": "{{count}} поиск",
       "search_other": "{{count}} поисков",
       "glob_one": "{{count}} glob",
@@ -1066,7 +1079,7 @@
     "listFileCount_other": "{{count}} файлов",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (сокращено для отображения)",
-    "repeatedErrorNotice": "Одна и та же ошибка возникла {{count}} раз — агент повторяет попытку",
+    "repeatedErrorNotice": "Одна и та же ошибка возникла {{count}} раз, агент повторяет попытку",
     "turnSummary": {
       "label": "Итог хода",
       "toolCallsCount": "{{count}} инстр.",

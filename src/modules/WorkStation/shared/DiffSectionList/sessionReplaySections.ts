@@ -54,7 +54,7 @@ export function buildSessionReplayDiffSectionItems(
       ? editData.applyPatchSegments
       : [editData];
 
-  return segments.map((segment, index) => {
+  return segments.flatMap((segment, index) => {
     const parsed =
       segment.diff &&
       (segment.oldContent === undefined || segment.newContent === undefined)
@@ -62,13 +62,15 @@ export function buildSessionReplayDiffSectionItems(
         : undefined;
     const isDeleted = segment.isDeleted;
     const oldContent = isDeleted
-      ? (segment.oldContent ?? parsed?.oldValue ?? segment.content ?? "")
-      : (segment.oldContent ?? parsed?.oldValue ?? "");
+      ? (parsed?.oldValue ?? segment.oldContent ?? segment.content ?? "")
+      : (parsed?.oldValue ?? segment.oldContent ?? "");
     const newContent = isDeleted
       ? ""
-      : (segment.newContent ?? parsed?.newValue ?? segment.content ?? "");
-    const rawPath = segment.filePath || entry.filePath || entry.fileName;
+      : (parsed?.newValue ?? segment.newContent ?? segment.content ?? "");
+    const rawPath = segment.filePath || entry.filePath;
     const path = normalizeDiffFilePath(rawPath);
+    if (!path) return [];
+    if (!oldContent && !newContent && !isDeleted) return [];
 
     return {
       key: `${entry.entryId}:${index}:${path}`,
@@ -80,6 +82,8 @@ export function buildSessionReplayDiffSectionItems(
         deletions: segment.linesRemoved,
         oldContent,
         newContent,
+        oldStartLine: segment.oldStartLine ?? parsed?.oldStartLine,
+        newStartLine: segment.newStartLine ?? parsed?.newStartLine,
       },
       entryIds: [entry.entryId],
     };
@@ -128,6 +132,8 @@ export function buildConsolidatedSessionReplayDiffSectionItems<
             : undefined,
         oldContent: existing.file.oldContent,
         newContent: section.file.newContent,
+        oldStartLine: existing.file.oldStartLine,
+        newStartLine: section.file.newStartLine ?? existing.file.newStartLine,
       };
       existing.entryIds.push(...section.entryIds);
     }

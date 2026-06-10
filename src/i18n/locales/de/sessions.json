@@ -362,10 +362,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "Alle",
         "tabLabel": "Diff",
-        "filterAll": "Alle Änderungen",
-        "filterCode": "Code",
-        "filterOther": "Sonstige Lieferobjekte"
+        "emptyForFilter": "Noch keine Diffs.",
+        "emptyDetail": "Wählen Sie eine Änderung aus, um den Diff anzuzeigen.",
+        "submissions": {
+          "tabLabel": "Einreichungen",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "Noch keine Einreichungen.",
+          "selectSubmission": "Wählen Sie eine Einreichung aus, um Details anzuzeigen.",
+          "noCommits": "Noch keine Commits",
+          "noPullRequests": "Noch keine Pull Requests"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "Chat-Verlauf",
@@ -424,6 +433,10 @@
             "taskDeleted": "{{subject}} hat die Aufgabe gelöscht",
             "taskViewed": "{{subject}} hat die Aufgabendetails angesehen",
             "taskListed": "{{subject}} hat die Aufgabenliste angesehen",
+            "updatedTodos": "{{subject}} hat To-dos aktualisiert",
+            "thought": "{{subject}} hat nachgedacht",
+            "updatedPlan": "{{subject}} hat den Plan aktualisiert",
+            "requestedInput": "{{subject}} hat Eingaben angefordert",
             "sentTo": "{{subject}} hat eine Nachricht an {{recipient}} gesendet",
             "sentBroadcast": "{{subject}} hat eine Nachricht an mehrere Agents gesendet",
             "sentMessage": "{{subject}} hat eine Nachricht gesendet"
@@ -976,8 +989,8 @@
       "noReason": "Der Agent schlägt einen Moduswechsel vor"
     },
     "exploreSummary": {
-      "read_one": "{{count}} Datei gelesen",
-      "read_other": "{{count}} Dateien gelesen",
+      "read_one": "{{count}} Datei",
+      "read_other": "{{count}} Dateien",
       "search_one": "{{count}} Suche",
       "search_other": "{{count}} Suchen",
       "glob_one": "{{count}} Glob",
@@ -1060,7 +1073,7 @@
     "listFileCount_other": "{{count}} Dateien",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (für die Anzeige gekürzt)",
-    "repeatedErrorNotice": "Gleicher Fehler {{count}}-mal aufgetreten — Agent wiederholt den Versuch",
+    "repeatedErrorNotice": "Gleicher Fehler {{count}}-mal aufgetreten, Agent wiederholt den Versuch",
     "turnSummary": {
       "label": "Runden-Zusammenfassung",
       "toolCallsCount": "{{count}} Tools",

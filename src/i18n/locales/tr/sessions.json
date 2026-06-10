@@ -362,10 +362,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "Tümü",
         "tabLabel": "Diff",
-        "filterAll": "Tüm değişiklikler",
-        "filterCode": "Code",
-        "filterOther": "Diğer çıktılar"
+        "emptyForFilter": "Henüz Diff yok.",
+        "emptyDetail": "Diff'i görüntülemek için bir değişiklik seçin.",
+        "submissions": {
+          "tabLabel": "Gönderimler",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "Henüz gönderim yok.",
+          "selectSubmission": "Ayrıntıları görüntülemek için bir gönderim seçin.",
+          "noCommits": "Henüz Commits yok",
+          "noPullRequests": "Henüz Pull Requests yok"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "Sohbet Geçmişi",
@@ -424,6 +433,10 @@
             "taskDeleted": "{{subject}} görevi sildi",
             "taskViewed": "{{subject}} görev ayrıntılarını görüntüledi",
             "taskListed": "{{subject}} görev listesini görüntüledi",
+            "updatedTodos": "{{subject}} yapılacakları güncelledi",
+            "thought": "{{subject}} düşündü",
+            "updatedPlan": "{{subject}} planı güncelledi",
+            "requestedInput": "{{subject}} girdi istedi",
             "sentTo": "{{subject}}, {{recipient}} kişisine bir mesaj gönderdi",
             "sentBroadcast": "{{subject}} birden fazla Agent'a bir mesaj gönderdi",
             "sentMessage": "{{subject}} bir mesaj gönderdi"
@@ -980,8 +993,8 @@
       "noReason": "Agent mod değiştirmeyi öneriyor"
     },
     "exploreSummary": {
-      "read_one": "{{count}} dosya okundu",
-      "read_other": "{{count}} dosya okundu",
+      "read_one": "{{count}} dosya",
+      "read_other": "{{count}} dosya",
       "search_one": "{{count}} arama",
       "search_other": "{{count}} arama",
       "glob_one": "{{count}} glob",
@@ -1060,7 +1073,7 @@
     "listFileCount_other": "{{count}} dosya",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (görüntü için kısaltıldı)",
-    "repeatedErrorNotice": "Aynı hata {{count}} kez oluştu — ajan yeniden deniyor",
+    "repeatedErrorNotice": "Aynı hata {{count}} kez oluştu, ajan yeniden deniyor",
     "turnSummary": {
       "label": "Tur Özeti",
       "toolCallsCount": "{{count}} araç",

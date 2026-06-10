@@ -362,10 +362,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "すべて",
         "tabLabel": "Diff",
-        "filterAll": "すべての変更",
-        "filterCode": "Code",
-        "filterOther": "その他の成果物"
+        "emptyForFilter": "Diff はまだありません。",
+        "emptyDetail": "変更を選択して Diff を表示します。",
+        "submissions": {
+          "tabLabel": "提出",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "提出はまだありません。",
+          "selectSubmission": "提出を選択して詳細を表示します。",
+          "noCommits": "Commits はまだありません",
+          "noPullRequests": "Pull Requests はまだありません"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "チャット履歴",
@@ -424,6 +433,10 @@
             "taskDeleted": "{{subject}} がタスクを削除しました",
             "taskViewed": "{{subject}} がタスクの詳細を確認しました",
             "taskListed": "{{subject}} がタスク一覧を確認しました",
+            "updatedTodos": "{{subject}} がTo-doを更新しました",
+            "thought": "{{subject}} が思考しました",
+            "updatedPlan": "{{subject}} が計画を更新しました",
+            "requestedInput": "{{subject}} が入力を求めました",
             "sentTo": "{{subject}} が {{recipient}} にメッセージを送信しました",
             "sentBroadcast": "{{subject}} が複数の Agent にメッセージを送信しました",
             "sentMessage": "{{subject}} がメッセージを送信しました"
@@ -976,8 +989,8 @@
       "noReason": "Agent がモード切り替えを提案しています"
     },
     "exploreSummary": {
-      "read_one": "{{count}} 件のファイルを読み取り",
-      "read_other": "{{count}} 件のファイルを読み取り",
+      "read_one": "{{count}} 件のファイル",
+      "read_other": "{{count}} 件のファイル",
       "search_one": "{{count}} 件の検索",
       "search_other": "{{count}} 件の検索",
       "glob_one": "{{count}} 件の Glob",
@@ -1064,7 +1077,7 @@
     "listFileCount_other": "ファイル {{count}} 件",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n...（表示のため省略）",
-    "repeatedErrorNotice": "同じエラーが {{count}} 回発生しました — Agent が再試行中",
+    "repeatedErrorNotice": "同じエラーが {{count}} 回発生しました、Agent が再試行中",
     "turnSummary": {
       "label": "ターンサマリー",
       "toolCallsCount": "{{count}} ツール",

@@ -377,10 +377,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "Wszystko",
         "tabLabel": "Diff",
-        "filterAll": "Wszystkie zmiany",
-        "filterCode": "Code",
-        "filterOther": "Pozostałe rezultaty"
+        "emptyForFilter": "Brak Diffów.",
+        "emptyDetail": "Wybierz zmianę, aby zobaczyć Diff.",
+        "submissions": {
+          "tabLabel": "Zgłoszenia",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "Brak zgłoszeń.",
+          "selectSubmission": "Wybierz zgłoszenie, aby zobaczyć szczegóły.",
+          "noCommits": "Brak Commits",
+          "noPullRequests": "Brak Pull Requests"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "Historia czatu",
@@ -439,6 +448,10 @@
             "taskDeleted": "{{subject}} usunął/usunęła zadanie",
             "taskViewed": "{{subject}} wyświetlił(a) szczegóły zadania",
             "taskListed": "{{subject}} wyświetlił(a) listę zadań",
+            "updatedTodos": "{{subject}} zaktualizował(a) listę zadań",
+            "thought": "{{subject}} pomyślał(a)",
+            "updatedPlan": "{{subject}} zaktualizował(a) plan",
+            "requestedInput": "{{subject}} poprosił(a) o dane wejściowe",
             "sentTo": "{{subject}} wysłał(a) wiadomość do {{recipient}}",
             "sentBroadcast": "{{subject}} wysłał(a) wiadomość do wielu Agentów",
             "sentMessage": "{{subject}} wysłał(a) wiadomość"
@@ -1002,8 +1015,8 @@
     "askUserQuestionsAnswered": "Pytania zostały udzielone odpowiedzi",
     "askUserQuestionsSkipped": "Pytania pominięte",
     "exploreSummary": {
-      "read_one": "Odczytano {{count}} plik",
-      "read_other": "Odczytano {{count}} plików",
+      "read_one": "{{count}} plik",
+      "read_other": "{{count}} plików",
       "search_one": "{{count}} wyszukiwanie",
       "search_other": "{{count}} wyszukiwań",
       "glob_one": "{{count}} glob",
@@ -1097,7 +1110,7 @@
     "listFileCount_other": "{{count}} plików",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (skrócono na potrzeby wyświetlenia)",
-    "repeatedErrorNotice": "Ten sam błąd wystąpił {{count}} razy — Agent ponawia próbę",
+    "repeatedErrorNotice": "Ten sam błąd wystąpił {{count}} razy, Agent ponawia próbę",
     "turnSummary": {
       "label": "Podsumowanie tury",
       "toolCallsCount": "{{count}} narzędzi",

@@ -38,6 +38,8 @@ export interface DiffFileSectionData {
   deletions?: number;
   oldContent?: string;
   newContent?: string;
+  oldStartLine?: number;
+  newStartLine?: number;
   isBinary?: boolean;
 }
 
@@ -235,6 +237,8 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
                 newValue={file.newContent || ""}
                 filePath={file.path}
                 changeType={file.status}
+                oldStartLine={file.oldStartLine}
+                newStartLine={file.newStartLine}
                 viewMode="unified"
                 readOnly={true}
                 mergeControls={false}

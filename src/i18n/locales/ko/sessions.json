@@ -362,10 +362,19 @@
         }
       },
       "diffApp": {
+        "allTabLabel": "전체",
         "tabLabel": "Diff",
-        "filterAll": "모든 변경 사항",
-        "filterCode": "Code",
-        "filterOther": "기타 산출물"
+        "emptyForFilter": "아직 Diff가 없습니다.",
+        "emptyDetail": "변경 사항을 선택하여 Diff를 확인하세요.",
+        "submissions": {
+          "tabLabel": "제출",
+          "commits": "Commits",
+          "pr": "PR",
+          "empty": "아직 제출이 없습니다.",
+          "selectSubmission": "세부 정보를 보려면 제출을 선택하세요.",
+          "noCommits": "아직 Commits가 없습니다",
+          "noPullRequests": "아직 Pull Requests가 없습니다"
+        }
       },
       "channelsSidebar": {
         "chatHistoryTab": "채팅 기록",
@@ -424,6 +433,10 @@
             "taskDeleted": "{{subject}}이(가) 작업을 삭제했습니다",
             "taskViewed": "{{subject}}이(가) 작업 세부 정보를 확인했습니다",
             "taskListed": "{{subject}}이(가) 작업 목록을 확인했습니다",
+            "updatedTodos": "{{subject}}이(가) To-do를 업데이트했습니다",
+            "thought": "{{subject}}이(가) 생각했습니다",
+            "updatedPlan": "{{subject}}이(가) 계획을 업데이트했습니다",
+            "requestedInput": "{{subject}}이(가) 입력을 요청했습니다",
             "sentTo": "{{subject}}이(가) {{recipient}}에게 메시지를 보냈습니다",
             "sentBroadcast": "{{subject}}이(가) 여러 Agent에게 메시지를 보냈습니다",
             "sentMessage": "{{subject}}이(가) 메시지를 보냈습니다"
@@ -976,8 +989,8 @@
       "noReason": "Agent가 모드 전환을 제안합니다"
     },
     "exploreSummary": {
-      "read_one": "{{count}}개 파일 읽기",
-      "read_other": "{{count}}개 파일 읽기",
+      "read_one": "{{count}}개 파일",
+      "read_other": "{{count}}개 파일",
       "search_one": "{{count}}개 검색",
       "search_other": "{{count}}개 검색",
       "glob_one": "{{count}}회 Glob",
@@ -1060,7 +1073,7 @@
     "listFileCount_other": "파일 {{count}}개",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (표시용으로 잘림)",
-    "repeatedErrorNotice": "동일한 오류 {{count}}회 발생 — Agent 재시도 중",
+    "repeatedErrorNotice": "동일한 오류 {{count}}회 발생, Agent 재시도 중",
     "turnSummary": {
       "label": "턴 요약",
       "toolCallsCount": "{{count}}개 도구",

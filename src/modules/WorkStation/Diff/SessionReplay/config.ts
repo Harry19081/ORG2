@@ -14,55 +14,6 @@ import { getFileName, normalizeDiffFilePath } from "@src/util/file/pathUtils";
 
 import type { DiffEntry, SimulatorDiffState } from "./types";
 
-/**
- * Extension allow-list used to bucket Diff entries into "Code" vs "Other
- * deliverables". Kept narrow and lowercase; extend as new languages land.
- */
-const CODE_FILE_EXTENSIONS = new Set<string>([
-  "ts",
-  "tsx",
-  "js",
-  "jsx",
-  "mjs",
-  "cjs",
-  "rs",
-  "go",
-  "py",
-  "rb",
-  "java",
-  "kt",
-  "kts",
-  "swift",
-  "c",
-  "h",
-  "cc",
-  "cpp",
-  "hpp",
-  "hh",
-  "cs",
-  "scala",
-  "php",
-  "lua",
-  "dart",
-  "sh",
-  "bash",
-  "zsh",
-  "fish",
-  "ps1",
-  "vue",
-  "svelte",
-  "astro",
-  "sql",
-]);
-
-/** True when the file extension suggests source code. */
-export function isCodeFilePath(filePath: string): boolean {
-  const name = filePath.toLowerCase();
-  const dot = name.lastIndexOf(".");
-  if (dot < 0 || dot === name.length - 1) return false;
-  return CODE_FILE_EXTENSIONS.has(name.slice(dot + 1));
-}
-
 /** True when this event should be surfaced as a diff entry. */
 export function isDiffEvent(event: SessionEvent): boolean {
   const toolName = event.uiCanonical || event.functionName;
@@ -94,7 +45,6 @@ export function buildDiffEntry(
     filePath,
     fileName,
     isCurrent,
-    isCode: filePath ? isCodeFilePath(filePath) : false,
   };
 }
 
