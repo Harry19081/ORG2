@@ -43,7 +43,6 @@ import {
   ToolInlineInfoCard,
 } from "@src/modules/shared/layouts/blocks";
 
-import type { CapabilitySet } from "../../types";
 import { agentToolDisplayName } from "../agentToolName";
 import { type ToolEditorState, useAgentToolEditor } from "./useAgentToolEditor";
 
@@ -52,35 +51,6 @@ const ALL_KEY = "__all__";
 interface ActionRow {
   name: string;
   summary: string;
-}
-
-function satisfiesCapability(
-  requiredCapability: string | undefined,
-  capabilities: CapabilitySet
-): boolean {
-  switch (requiredCapability) {
-    case undefined:
-    case "":
-    case "core":
-    case "orchestration":
-      return true;
-    case "coding":
-      return Boolean(capabilities.coding);
-    case "desktop":
-      return capabilities.desktop?.enabled === true;
-    case "browserExternal":
-      return capabilities.browser?.external === true;
-    case "browserInternal":
-      return capabilities.browser?.internal === true;
-    case "gateway":
-      return Boolean(capabilities.gateway);
-    case "data":
-      return Boolean(capabilities.data);
-    case "management":
-      return Boolean(capabilities.management);
-    default:
-      return true;
-  }
 }
 
 interface ToolDisplayRow {
@@ -157,9 +127,9 @@ const CustomAgentToolsSection: React.FC<CustomAgentToolsSectionProps> = ({
     // toggle this on" when in fact `init.rs` will keep them off.
     //
     // When `systemRestrictToTools` is null (OS / SDE / Custom), show
-    // only tools supported by the current agent kind. The backend's
-    // `supported_agents` is metadata, not a runtime gate, so filtering
-    // here prevents unsupported rows from becoming dead UI toggles.
+    // only tools supported by the current agent kind and capability.
+    // Capability satisfaction comes from the BACKEND-resolved tool
+    // states (`agent_def_tool_states`) — no TS re-implementation.
     const systemSet = editor.systemRestrictToTools
       ? new Set(editor.systemRestrictToTools)
       : null;
@@ -170,10 +140,10 @@ const CustomAgentToolsSection: React.FC<CustomAgentToolsSectionProps> = ({
         const supportedByAgentKind =
           !Array.isArray(raw.supported_agents) ||
           raw.supported_agents.includes(editor.agentKind);
-        const supportedByCapability = satisfiesCapability(
-          raw.requiredCapability,
-          editor.capabilities
-        );
+        const resolved = editor.resolvedToolState(raw.name);
+        const supportedByCapability = resolved
+          ? !resolved.capabilityBlocked
+          : true;
         if (isSpecialistAgent) {
           if (systemSet!.has(raw.name)) return true;
           if (!supportedByAgentKind || !supportedByCapability) return false;
@@ -210,7 +180,7 @@ const CustomAgentToolsSection: React.FC<CustomAgentToolsSectionProps> = ({
     editor.userAllowedTools,
     editor.excludedTools,
     editor.agentKind,
-    editor.capabilities,
+    editor.resolvedToolState,
   ]);
 
   const categoryCounts = useMemo(() => {

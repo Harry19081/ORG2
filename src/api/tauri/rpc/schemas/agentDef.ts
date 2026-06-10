@@ -80,6 +80,25 @@ export const AgentDefGetInput = z.object({
 export type AgentDefGetInput = z.input<typeof AgentDefGetInput>;
 
 /**
+ * One row of `agent_def_tool_states` — the backend-resolved availability
+ * state for a single builtin tool. The Settings tool editor renders this
+ * verbatim; capability satisfaction and excluded/user-allowed precedence
+ * are computed ONLY in Rust.
+ */
+export const AgentToolStateRowSchema = z.object({
+  name: z.string(),
+  enabled: z.boolean(),
+  systemPinned: z.boolean(),
+  userAllowed: z.boolean(),
+  userExcluded: z.boolean(),
+  capabilityBlocked: z.boolean(),
+});
+
+export type AgentToolStateRow = z.output<typeof AgentToolStateRowSchema>;
+
+export const AgentToolStatesSchema = z.array(AgentToolStateRowSchema);
+
+/**
  * Partial patch for `AgentDefinition`. Every field is optional; present
  * keys replace the corresponding field on the definition wholesale.
  * See Rust `AgentDefinitionPatch` for the canonical field list.

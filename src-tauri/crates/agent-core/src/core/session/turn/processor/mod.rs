@@ -235,12 +235,8 @@ impl UnifiedMessageProcessor {
 
     /// Tool policy actually used for this turn, including exec-mode overlays.
     fn effective_tool_policy(&self) -> Arc<ResolvedToolPolicy> {
-        match self
-            .agent_mode
-            .as_ref()
-            .and_then(|mode| mode.policy_layer())
-        {
-            Some(layer) => Arc::new(self.policy.with_extra_layer(layer)),
+        match self.agent_mode {
+            Some(mode) => Arc::new(self.policy.with_exec_mode(mode)),
             None => Arc::clone(&self.policy),
         }
     }

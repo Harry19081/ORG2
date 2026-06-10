@@ -431,6 +431,9 @@ async fn ensure_session_initialized(
 
     let node_registry = capabilities::build_node_registry(&cap_flags, &integrations);
     let bus = capabilities::channel_bus_for(&cap_flags, state);
+    // Single SecurityPolicy instance per session — shared by ToolDeps
+    // (exec tool) AND the subagent AgentTool config so rate limiting and
+    // /add-dir grants observe one state.
     let exec_security_policy =
         Arc::new(resolved.policy.to_runtime_security(workspace_root.clone()));
 
@@ -498,7 +501,7 @@ async fn ensure_session_initialized(
         restrict_to_workspace: resolved.policy.workspace_only,
         pty_sessions: state.pty_sessions.clone(),
         app_handle: state.app_handle.clone(),
-        security_policy: Some(exec_security_policy),
+        security_policy: Some(Arc::clone(&exec_security_policy)),
         action_bridge: Some(state.action_bridge.clone()),
         execution_mode: resolved.execution_mode,
         agent_browser_config: Some(agent_browser_config),
@@ -577,6 +580,7 @@ async fn ensure_session_initialized(
             native_harness_type,
             policy_arc: Arc::clone(&policy_arc),
             disabled_set: &disabled_set,
+            exec_security_policy,
         },
     );
 

@@ -45,6 +45,23 @@ pub enum AutonomyLevel {
     Full,
 }
 
+/// Canonical write/side-effect tool deny set for ALL read-only surfaces:
+/// `AutonomyLevel::ReadOnly` (per-agent access mode) and the read-only
+/// `AgentExecMode`s (Ask / Debug / Review / Plan) both derive from this
+/// single list. Three divergent copies previously existed (this enum
+/// missed worktree/manage_lsp/setup_repo; the mode list missed
+/// apply_patch).
+pub const READ_ONLY_DENY_TOOLS: &[&str] = &[
+    crate::tools::names::RUN_SHELL,
+    crate::tools::names::AWAIT_OUTPUT,
+    crate::tools::names::EDIT_FILE,
+    crate::tools::names::DELETE_FILE,
+    crate::tools::names::APPLY_PATCH,
+    crate::tools::names::WORKTREE,
+    crate::tools::names::MANAGE_LSP,
+    crate::tools::names::SETUP_REPO,
+];
+
 impl AutonomyLevel {
     pub fn ask_tools(&self) -> Vec<String> {
         Vec::new()
@@ -52,15 +69,11 @@ impl AutonomyLevel {
 
     /// Tool names blocked by the selected access mode.
     pub fn deny_tools(&self) -> Vec<String> {
-        use crate::tools::names as tn;
         match self {
-            Self::ReadOnly => vec![
-                tn::RUN_SHELL.to_string(),
-                tn::AWAIT_OUTPUT.to_string(),
-                tn::EDIT_FILE.to_string(),
-                tn::DELETE_FILE.to_string(),
-                tn::APPLY_PATCH.to_string(),
-            ],
+            Self::ReadOnly => READ_ONLY_DENY_TOOLS
+                .iter()
+                .map(|s| (*s).to_string())
+                .collect(),
             Self::Full => Vec::new(),
         }
     }

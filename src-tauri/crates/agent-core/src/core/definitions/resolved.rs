@@ -95,7 +95,7 @@ impl ResolvedToolSelection {
     ///   restore tools hidden by `system_restrict_to_tools`, but they do
     ///   not override capability boundaries; stale on-disk overlays cannot
     ///   re-enable tools the agent's capabilities do not satisfy.
-    fn from_schema(sel: &AgentToolSelection, capabilities: &CapabilitySet) -> Self {
+    pub(crate) fn from_schema(sel: &AgentToolSelection, capabilities: &CapabilitySet) -> Self {
         let capability_blocked: HashSet<String> =
             crate::tools::defaults::default_excluded_tools_for_capabilities(capabilities)
                 .into_iter()

@@ -1,20 +1,17 @@
 /**
  * useAgentToolEditor
  *
- * Per-agent tool editor. Runtime tool availability is the intersection
- * of the agent capability boundary and the explicit allow/deny lists:
- *
- *   - systemRestrictToTools (read-only — system-pinned allowlist)
- *   - userAllowedTools (user additions on top of system pins)
- *   - excludedTools (user subtractions)
- *
- * Capabilities are the coarse runtime boundary on the definition.
- * This hook edits only the per-tool deltas; the backend still enforces
- * capability requirements when the session resolves its tool set.
+ * Per-agent tool editor. The per-tool availability state comes from the
+ * backend (`agent_def_tool_states`) — capability satisfaction and the
+ * excluded/user-allowed precedence are resolved ONLY in Rust, so the
+ * Settings UI can never drift from what the session actually enables.
+ * This hook edits only the per-tool deltas (`userAllowedTools` /
+ * `excludedTools`) and re-fetches the resolved states after each save.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { rpc } from "@src/api/tauri/rpc";
+import type { AgentToolStateRow } from "@src/api/tauri/rpc/schemas/agentDef";
 import type {
   AgentDefinition,
   AgentToolSelection,
@@ -36,13 +33,15 @@ export interface AgentToolEditorState {
   /** User subtractions. */
   excludedTools: Set<string>;
   /**
-   * Per-tool tri-state for rendering.
-   * - `system_pinned` — present in the system allowlist; user cannot
-   *   remove the pin itself but `excludedTools` still wins.
-   * - `enabled`  — currently reachable (in the resolved allow set and
-   *   not excluded).
-   * - `disabled` — currently unreachable (excluded, or system pinned to
-   *   a different set and not user-added).
+   * Backend-resolved availability for a tool, or `undefined` when the
+   * backend has no row for it (non-builtin names).
+   */
+  resolvedToolState: (toolName: string) => AgentToolStateRow | undefined;
+  /**
+   * Per-tool tri-state for rendering, derived from the backend rows.
+   * - `system_pinned` — in the system allowlist.
+   * - `enabled`  — effectively reachable at session resolve.
+   * - `disabled` — effectively unreachable.
    */
   toolState: (toolName: string) => ToolEditorState;
   setUserAllowed: (toolName: string, allowed: boolean) => void;
@@ -84,6 +83,9 @@ export function useAgentToolEditor(agentId: string): AgentToolEditorState {
   >(null);
   const [userAllowedTools, setUserAllowedTools] = useState<string[]>([]);
   const [excludedTools, setExcludedTools] = useState<string[]>([]);
+  const [resolvedStates, setResolvedStates] = useState<
+    Map<string, AgentToolStateRow>
+  >(new Map());
 
   const agentIdRef = useRef(agentId);
   useEffect(() => {
@@ -97,11 +99,22 @@ export function useAgentToolEditor(agentId: string): AgentToolEditorState {
     excludedTools: string[];
   } | null>(null);
 
+  const fetchResolvedStates = useCallback(async (id: string) => {
+    try {
+      const rows = await rpc.agentDef.toolStates({ agentId: id });
+      setResolvedStates(new Map(rows.map((row) => [row.name, row])));
+    } catch (err) {
+      console.error("[useAgentToolEditor] toolStates failed:", err);
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
-    rpc.agentDef
-      .get({ agentId })
-      .then((def) => {
+    Promise.all([
+      rpc.agentDef.get({ agentId }),
+      rpc.agentDef.toolStates({ agentId }),
+    ])
+      .then(([def, rows]) => {
         if (cancelled) return;
         const typed = def as unknown as AgentDefinition;
         const parsed = parseTools(typed);
@@ -111,6 +124,7 @@ export function useAgentToolEditor(agentId: string): AgentToolEditorState {
         setSystemRestrictToTools(parsed.systemRestrictToTools);
         setUserAllowedTools(parsed.userAllowedTools);
         setExcludedTools(parsed.excludedTools);
+        setResolvedStates(new Map(rows.map((row) => [row.name, row])));
         setLoaded(true);
       })
       .catch((err: unknown) => {
@@ -152,10 +166,11 @@ export function useAgentToolEditor(agentId: string): AgentToolEditorState {
           },
         });
       })
+      .then(() => fetchResolvedStates(pending.agentId))
       .catch((err: unknown) => {
         console.error("[useAgentToolEditor] persistTools failed:", err);
       });
-  }, []);
+  }, [fetchResolvedStates]);
 
   useEffect(() => {
     return () => {
@@ -211,22 +226,34 @@ export function useAgentToolEditor(agentId: string): AgentToolEditorState {
     [userAllowedTools]
   );
   const excludedSet = useMemo(() => new Set(excludedTools), [excludedTools]);
-  const systemSet = useMemo(
-    () => (systemRestrictToTools ? new Set(systemRestrictToTools) : null),
-    [systemRestrictToTools]
+
+  const resolvedToolState = useCallback(
+    (toolName: string): AgentToolStateRow | undefined =>
+      resolvedStates.get(toolName),
+    [resolvedStates]
   );
 
+  // Optimistic deltas: between a local toggle and the post-save refetch,
+  // overlay the user's pending intent on top of the last backend rows so
+  // the switch responds immediately.
   const toolState = useCallback(
     (toolName: string): ToolEditorState => {
-      if (excludedSet.has(toolName)) return "disabled";
-      if (systemSet) {
-        if (systemSet.has(toolName)) return "system_pinned";
-        if (userAllowedSet.has(toolName)) return "enabled";
-        return "disabled";
+      const row = resolvedStates.get(toolName);
+      const pendingExcluded = excludedSet.has(toolName);
+      const pendingAllowed = userAllowedSet.has(toolName);
+      if (row) {
+        if (row.capabilityBlocked && !pendingAllowed) return "disabled";
+        if (row.systemPinned) return "system_pinned";
+        const baseEnabled = row.enabled;
+        if (pendingExcluded && !pendingAllowed) return "disabled";
+        if (pendingAllowed) return "enabled";
+        return baseEnabled ? "enabled" : "disabled";
       }
+      // No backend row (unknown/MCP name): fall back to the deltas.
+      if (pendingExcluded && !pendingAllowed) return "disabled";
       return "enabled";
     },
-    [excludedSet, systemSet, userAllowedSet]
+    [resolvedStates, excludedSet, userAllowedSet]
   );
 
   return {
@@ -237,6 +264,7 @@ export function useAgentToolEditor(agentId: string): AgentToolEditorState {
     systemRestrictToTools,
     userAllowedTools: userAllowedSet,
     excludedTools: excludedSet,
+    resolvedToolState,
     toolState,
     setUserAllowed,
     setExcluded,

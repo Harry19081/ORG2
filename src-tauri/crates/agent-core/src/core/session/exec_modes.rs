@@ -11,26 +11,19 @@ use crate::tools::policy::ToolPolicyLayer;
 // ============================================
 
 impl AgentExecMode {
-    /// Write-tool deny list shared by all read-only modes.
-    /// Modes only *subtract* from the definition's tool set — they never grant
-    /// tools the definition didn't provide.
-    const WRITE_DENY: &[&str] = &[
-        tool_names::EDIT_FILE,
-        tool_names::DELETE_FILE,
-        tool_names::RUN_SHELL,
-        tool_names::AWAIT_OUTPUT,
-        tool_names::WORKTREE,
-        tool_names::MANAGE_LSP,
-        tool_names::SETUP_REPO,
-    ];
-
     /// Shared deny list for all read-only modes (Ask, Debug, Review).
     ///
-    /// Contains WRITE_DENY tools plus the orchestration tools that would let
-    /// the LLM escape into write or planning activities. Each read-only mode
-    /// calls this and optionally appends mode-specific extras on top.
+    /// Starts from the canonical `READ_ONLY_DENY_TOOLS` write-tool set
+    /// (single source shared with `AutonomyLevel::ReadOnly`) plus the
+    /// orchestration tools that would let the LLM escape into write or
+    /// planning activities. Each read-only mode calls this and optionally
+    /// appends mode-specific extras on top.
     fn read_only_deny_base() -> Vec<String> {
-        let mut deny: Vec<String> = Self::WRITE_DENY.iter().map(|s| (*s).to_string()).collect();
+        let mut deny: Vec<String> =
+            crate::foundation::security::policy::READ_ONLY_DENY_TOOLS
+                .iter()
+                .map(|s| (*s).to_string())
+                .collect();
         // Prevent mode escalation inside a read-only session.
         deny.push(tool_names::SUGGEST_MODE_SWITCH.to_string());
         // create_plan writes a plan file and surfaces a Build button — not

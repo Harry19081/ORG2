@@ -227,10 +227,7 @@ pub async fn list_effective_tools_for_session(
             .and_then(|record| record.agent_exec_mode.as_deref())
     });
     let agent_exec_mode = resolve_agent_mode(mode_source)?;
-    let effective_policy = match agent_exec_mode.policy_layer() {
-        Some(layer) => runtime.policy.with_extra_layer(layer),
-        None => runtime.policy.as_ref().clone(),
-    };
+    let effective_policy = runtime.policy.with_exec_mode(agent_exec_mode);
 
     let mut registered_tool_names = runtime.tool_registry.tool_names();
     registered_tool_names.sort();

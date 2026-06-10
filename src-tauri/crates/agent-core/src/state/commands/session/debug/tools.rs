@@ -126,10 +126,7 @@ pub async fn debug_session_tools_snapshot(
             .as_ref()
             .and_then(|record| record.agent_exec_mode.as_deref()),
     )?;
-    let effective_policy = match agent_exec_mode.policy_layer() {
-        Some(layer) => runtime.policy.with_extra_layer(layer),
-        None => runtime.policy.as_ref().clone(),
-    };
+    let effective_policy = runtime.policy.with_exec_mode(agent_exec_mode);
 
     let def_tools = session.definition.tools.clone();
     let resolved_tools = runtime.resolved.tools.clone();

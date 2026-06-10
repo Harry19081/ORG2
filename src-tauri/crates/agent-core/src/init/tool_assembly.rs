@@ -60,6 +60,11 @@ pub(super) struct OverlayContext<'a> {
     pub native_harness_type: Option<NativeHarnessType>,
     pub policy_arc: Arc<ResolvedToolPolicy>,
     pub disabled_set: &'a HashSet<String>,
+    /// The session's single `SecurityPolicy` instance (rate limiter +
+    /// extra allowed dirs included). Shared with the subagent AgentTool
+    /// config — constructing a second instance here used to give
+    /// subagents an independent rate-limit tracker.
+    pub exec_security_policy: Arc<crate::foundation::security::SecurityPolicy>,
 }
 
 /// Materialize the overlay tool layer on top of `base_registry` and return
@@ -338,11 +343,7 @@ fn build_agent_tool(
             exec_timeout: ctx.resolved.exec_timeout,
             restrict_to_workspace: ctx.resolved.policy.workspace_only,
             pty_sessions: ctx.state.pty_sessions.clone(),
-            security_policy: Some(Arc::new(
-                ctx.resolved
-                    .policy
-                    .to_runtime_security(ctx.workspace_dir.clone()),
-            )),
+            security_policy: Some(Arc::clone(&ctx.exec_security_policy)),
             action_bridge: Some(ctx.state.action_bridge.clone()),
             execution_mode: ctx.resolved.execution_mode,
             agent_org_context: ctx.agent_org_context.map(|c| Arc::new(c.clone())),

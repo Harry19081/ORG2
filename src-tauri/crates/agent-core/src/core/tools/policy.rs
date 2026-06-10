@@ -257,6 +257,20 @@ impl ResolvedToolPolicy {
         }
     }
 
+    /// The effective per-turn policy: the session's base policy plus the
+    /// exec-mode deny-delta layer (when the mode contributes one).
+    ///
+    /// This is THE single composition point for "what can this turn call".
+    /// The per-turn executor, the effective-tools RPC, and the debug
+    /// snapshot all call this — they previously each composed the overlay
+    /// themselves and could drift.
+    pub fn with_exec_mode(&self, mode: crate::session::AgentExecMode) -> Self {
+        match mode.policy_layer() {
+            Some(layer) => self.with_extra_layer(layer),
+            None => self.clone(),
+        }
+    }
+
     /// Create a new policy with an additional layer appended.
     ///
     /// Used by agent modes (plan, explore) to add mode-specific restrictions

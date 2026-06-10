@@ -807,6 +807,7 @@ agent_core::definitions::commands::agent_definitions_add,
 agent_core::definitions::commands::agent_definitions_remove,
 // Typed agent-definition + integrations patch RPCs
 agent_core::definitions::commands::agent_def_get,
+agent_core::definitions::commands::agent_def_tool_states,
 agent_core::definitions::commands::agent_command_risk_rules_default,
 agent_core::definitions::commands::agent_def_update_patch,
 agent_core::definitions::commands::agent_def_reset_builtin,

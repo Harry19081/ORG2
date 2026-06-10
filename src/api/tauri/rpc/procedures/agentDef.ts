@@ -11,6 +11,16 @@ export const agentDef = {
     .output(schemas.agentDef.AgentDefinitionSchema)
     .build(),
 
+  /**
+   * Backend-resolved per-tool availability for the Settings tool editor.
+   * Replaces the TS re-implementations of capability satisfaction and
+   * excluded/user-allowed precedence.
+   */
+  toolStates: defineProcedure("agent_def_tool_states")
+    .input(schemas.agentDef.AgentDefGetInput)
+    .output(schemas.agentDef.AgentToolStatesSchema)
+    .build(),
+
   commandRiskRulesDefault: defineProcedure("agent_command_risk_rules_default")
     .output(schemas.agentDef.CommandRiskRulesSchema)
     .build(),

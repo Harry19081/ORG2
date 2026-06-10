@@ -177,6 +177,87 @@ pub async fn agent_def_get(
         .ok_or_else(|| format!("agent '{}' not found", agent_id))
 }
 
+/// Backend-resolved per-tool availability state for the Settings tool
+/// editor. One row per builtin tool; the frontend renders this verbatim
+/// instead of re-implementing `CapabilitySet::satisfies` and the
+/// excluded/user-allowed precedence in TypeScript (the two copies had
+/// already diverged: Rust lets `user_allowed_tools` win over
+/// `excluded_tools` when the capability allows, the TS copy made
+/// excluded win unconditionally).
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AgentToolStateRow {
+    pub name: String,
+    /// Effective availability after the full resolve (capability +
+    /// restrict_to + excluded/user_allowed) — what the session will see.
+    pub enabled: bool,
+    /// Tool is in the system-pinned allowlist (`system_restrict_to_tools`).
+    pub system_pinned: bool,
+    /// Tool is in the user's `user_allowed_tools` delta.
+    pub user_allowed: bool,
+    /// Tool is in the user's `excluded_tools` delta.
+    pub user_excluded: bool,
+    /// The agent's capability set does not satisfy the tool's
+    /// `required_capability` — cannot be enabled regardless of deltas.
+    pub capability_blocked: bool,
+}
+
+#[tauri::command]
+pub async fn agent_def_tool_states(
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
+    agent_id: String,
+) -> Result<Vec<AgentToolStateRow>, String> {
+    use crate::tools::builtin_tools::BUILTIN_TOOLS;
+
+    let def = state
+        .get(&agent_id)
+        .ok_or_else(|| format!("agent '{}' not found", agent_id))?;
+    let merged = super::resolver::resolve_definition(&def, Some(&state))
+        .map_err(|err| err.to_string())?;
+    let capabilities = merged.capabilities.clone().unwrap_or_default();
+    let resolved =
+        super::resolved::ResolvedToolSelection::from_schema(&merged.tools, &capabilities);
+    let disabled =
+        crate::tools::derive_disabled_tools(&resolved.restrict_to, &resolved.excluded);
+
+    let system_set: std::collections::HashSet<&str> = merged
+        .tools
+        .system_restrict_to_tools
+        .as_deref()
+        .unwrap_or_default()
+        .iter()
+        .map(String::as_str)
+        .collect();
+    let user_allowed: std::collections::HashSet<&str> = merged
+        .tools
+        .user_allowed_tools
+        .iter()
+        .map(String::as_str)
+        .collect();
+    let user_excluded: std::collections::HashSet<&str> = merged
+        .tools
+        .excluded_tools
+        .iter()
+        .map(String::as_str)
+        .collect();
+    let capability_blocked: std::collections::HashSet<String> =
+        crate::tools::defaults::default_excluded_tools_for_capabilities(&capabilities)
+            .into_iter()
+            .collect();
+
+    Ok(BUILTIN_TOOLS
+        .iter()
+        .map(|entry| AgentToolStateRow {
+            name: entry.name.to_string(),
+            enabled: !disabled.contains(entry.name),
+            system_pinned: system_set.contains(entry.name),
+            user_allowed: user_allowed.contains(entry.name),
+            user_excluded: user_excluded.contains(entry.name),
+            capability_blocked: capability_blocked.contains(entry.name),
+        })
+        .collect())
+}
+
 #[tauri::command]
 pub async fn agent_command_risk_rules_default() -> CommandRiskRules {
     CommandRiskRules::default()

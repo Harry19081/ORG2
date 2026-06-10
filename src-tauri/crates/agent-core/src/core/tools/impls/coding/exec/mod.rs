@@ -147,6 +147,14 @@ impl ExecTool {
         self
     }
 
+    /// Command-level confirmation for risky shell commands.
+    ///
+    /// This is NOT a duplicate of the tool-level Ask verdict in
+    /// `turn_executor/helpers/permission.rs` — that gate fires per TOOL
+    /// CALL before execution; this gate fires per COMMAND when
+    /// `SecurityPolicy` classifies it as needs-approval. Both flow
+    /// through the SAME `PermissionProvider` (AgentPermissionManager),
+    /// so always-allow rules and session permission state are shared.
     async fn request_command_confirmation(
         &self,
         command: &str,
