@@ -27,8 +27,6 @@ export interface SearchBlockProps {
   eventId?: string;
   /** Optional action name for per-action icon (e.g. "grep", "find_files") */
   action?: string;
-  /** Optional repo/path context for multi-root workspaces */
-  targetPath?: string;
   /**
    * Pre-translated header title for the current state. Adapter resolves via
    * `useLifecycleLabels("code_search", action)` and picks running/done/failed.
@@ -37,7 +35,7 @@ export interface SearchBlockProps {
 }
 
 const SearchBlock: React.FC<SearchBlockProps> = React.memo(
-  ({ pattern, isLoading = false, eventId, action, title, targetPath }) => {
+  ({ pattern, isLoading = false, eventId, action, title }) => {
     const {
       isHeaderHovered,
       handleHeaderMouseEnter,
@@ -77,18 +75,13 @@ const SearchBlock: React.FC<SearchBlockProps> = React.memo(
           <EventBlockHeaderTitle isLoading={isLoading}>
             {title}
           </EventBlockHeaderTitle>
-          {(pattern || targetPath) && (
+          {pattern && (
             <EventBlockHeaderSubtitle
               isLoading={isLoading}
-              title={[pattern, targetPath].filter(Boolean).join(" · ")}
+              title={pattern}
               className="text-text-1"
             >
               <span className="min-w-0 truncate">{pattern}</span>
-              {targetPath && (
-                <span className="min-w-0 truncate text-text-3">
-                  in {targetPath}
-                </span>
-              )}
             </EventBlockHeaderSubtitle>
           )}
         </EventBlockHeader>

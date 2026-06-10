@@ -283,8 +283,8 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = memo(
         followOutput={handleFollowOutput}
         atBottomThreshold={80}
         initialTopMostItemIndex={totalFlatItems > 0 ? totalFlatItems - 1 : 0}
-        overscan={{ main: 600, reverse: 400 }}
-        increaseViewportBy={{ top: 400, bottom: 600 }}
+        overscan={{ main: 1200, reverse: 1200 }}
+        increaseViewportBy={{ top: 1000, bottom: 1000 }}
         defaultItemHeight={280}
         computeItemKey={(flatIndex) =>
           flatItems[flatIndex]?.chunk_id || `chat-${flatIndex}`

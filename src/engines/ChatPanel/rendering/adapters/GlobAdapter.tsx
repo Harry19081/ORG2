@@ -10,7 +10,6 @@ import {
   useLifecycleLabels,
 } from "@src/engines/SessionCore/rendering/registry";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
-import { formatToolTargetPath } from "@src/util/file/repoPathDisplay";
 import { getToolDisplayLabelFromRegistry } from "@src/util/ui/rendering/registryToolLabel";
 
 import GlobBlock from "../../blocks/GlobBlock";
@@ -40,19 +39,6 @@ export const GlobAdapter: React.FC<UniversalEventProps> = (props) => {
   if (state === "failed") return null;
 
   const pattern = extractPattern(props);
-  const targetLabel = formatToolTargetPath({
-    args: props.args,
-    repoPath: props.repoPath,
-    pathKeys: [
-      "target_directory",
-      "targetDirectory",
-      "dir",
-      "path",
-      "cwd",
-      "working_dir",
-      "workingDir",
-    ],
-  });
   const title =
     labels[state] || getToolDisplayLabelFromRegistry(props.eventType, action);
   const toolName = props.functionName || props.eventType;
@@ -66,7 +52,6 @@ export const GlobAdapter: React.FC<UniversalEventProps> = (props) => {
         }
         eventId={props.eventId}
         title={title}
-        targetPath={targetLabel}
       />
     </div>
   );

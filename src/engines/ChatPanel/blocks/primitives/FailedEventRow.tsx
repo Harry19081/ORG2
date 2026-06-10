@@ -8,6 +8,10 @@ import { X } from "lucide-react";
 import React from "react";
 
 import { EventBlockHeaderIcon } from "./EventBlockHeaderIcon";
+import {
+  EventBlockHeaderSubtitle,
+  EventBlockHeaderTitle,
+} from "./EventBlockHeaderTextSlots";
 import { SESSION_UI_TOKENS } from "./config";
 
 interface FailedEventRowProps {
@@ -39,10 +43,14 @@ export const FailedEventRow: React.FC<FailedEventRowProps> = ({
       data-tool-call-name={toolName}
     >
       <EventBlockHeaderIcon icon={icon} hasContent={false} />
-      <span className={SESSION_UI_TOKENS.TEXT.TERTIARY}>
+      <EventBlockHeaderTitle className="text-danger-6">
         {label}
-        {trimmedDetail ? `: ${trimmedDetail}` : ""}
-      </span>
+      </EventBlockHeaderTitle>
+      {trimmedDetail && (
+        <EventBlockHeaderSubtitle title={trimmedDetail}>
+          {trimmedDetail}
+        </EventBlockHeaderSubtitle>
+      )}
     </div>
   );
 };

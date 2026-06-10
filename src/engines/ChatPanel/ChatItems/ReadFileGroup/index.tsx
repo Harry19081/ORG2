@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { ChatCodeBlock, StackedBlock } from "@src/engines/ChatPanel/blocks";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { getFileName } from "@src/util/file/pathUtils";
-import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
 
 import { getReadFileName, getReadFilePath } from "../readFileEventData";
 
@@ -90,18 +89,9 @@ function cleanFileContent(rawContent: string): string {
   return content.trimEnd();
 }
 
-function formatReadEventPath(event: SessionEvent): string {
+function formatReadEventName(event: SessionEvent): string {
   const filePath = getReadFilePath(event);
-  const display = formatRepoPathForDisplay({
-    path: filePath,
-    repoPath: event.repoPath,
-  });
-  return (
-    display.displayPath ||
-    getReadFileName(event) ||
-    getFileName(filePath) ||
-    "file"
-  );
+  return getReadFileName(event) || getFileName(filePath) || "file";
 }
 
 // ============================================
@@ -122,14 +112,14 @@ const ReadFileGroup: React.FC<ReadFileGroupProps> = ({ events }) => {
     const event = events[0];
     const content = getFileContent(event);
     const filePath = getReadFilePath(event);
-    const displayPath = formatReadEventPath(event);
+    const displayName = formatReadEventName(event);
 
     if (content) {
       return (
         <ChatCodeBlock
           code={cleanFileContent(content)}
           filePath={filePath}
-          title={displayPath}
+          title={displayName}
           defaultCollapsed={false}
           showLineCount={false}
         />
@@ -138,26 +128,24 @@ const ReadFileGroup: React.FC<ReadFileGroupProps> = ({ events }) => {
   }
 
   const groupLabel = t("tools.nFiles", { count: events.length });
-  const pathSummary = events.map(formatReadEventPath).join(", ");
 
   return (
     <StackedBlock
       items={events}
       icon={<FileText size={14} className="text-text-2" />}
       label={`Read ${groupLabel}`}
-      groupSummary={pathSummary || groupLabel}
       eventId={events[0]?.id}
       renderItem={(event) => {
         const content = getFileContent(event);
         const filePath = getReadFilePath(event);
-        const displayPath = formatReadEventPath(event);
+        const displayName = formatReadEventName(event);
 
         if (!content) {
           return (
             <ChatCodeBlock
-              code={displayPath}
+              code={displayName}
               language="text"
-              title={displayPath}
+              title={displayName}
               defaultCollapsed
               showLineCount={false}
               eventId={event.id}
@@ -169,7 +157,7 @@ const ReadFileGroup: React.FC<ReadFileGroupProps> = ({ events }) => {
           <ChatCodeBlock
             code={cleanFileContent(content)}
             filePath={filePath}
-            title={displayPath}
+            title={displayName}
             defaultCollapsed
             showLineCount={false}
             eventId={event.id}

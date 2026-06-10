@@ -12,7 +12,12 @@ import { AlertCircle, Chrome, FileSymlink, Globe, Search } from "lucide-react";
 import React from "react";
 
 import ToolCallBlock from "@src/engines/ChatPanel/blocks/ToolCallBlock";
-import { StackedBlock } from "@src/engines/ChatPanel/blocks/primitives";
+import {
+  EventBlockHeaderIcon,
+  EventBlockHeaderTitle,
+  SESSION_UI_TOKENS,
+  StackedBlock,
+} from "@src/engines/ChatPanel/blocks/primitives";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import ActionSummaryGroup from "../../ChatItems/ActionSummaryGroup";
@@ -58,13 +63,21 @@ export function renderActivity(
         isStreaming={event.isDelta === true}
       />
       {totalOccurrences !== undefined && totalOccurrences >= 2 && (
-        <div className="mt-1 flex items-center gap-1.5 px-2 py-1 text-xs text-warning-6">
-          <AlertCircle size={11} className="flex-shrink-0" />
-          <span>
+        <div className={SESSION_UI_TOKENS.ROW.INLINE}>
+          <EventBlockHeaderIcon
+            icon={
+              <AlertCircle
+                size={SESSION_UI_TOKENS.ICON.SIZE_SM}
+                className="text-warning-6"
+              />
+            }
+            hasContent={false}
+          />
+          <EventBlockHeaderTitle className="text-warning-6">
             {i18next.t("sessions:tools.repeatedErrorNotice", {
               count: totalOccurrences,
             })}
-          </span>
+          </EventBlockHeaderTitle>
         </div>
       )}
     </ChatItemWrap>
