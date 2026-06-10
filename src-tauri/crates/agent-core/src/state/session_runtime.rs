@@ -84,8 +84,6 @@ pub struct SessionRuntime {
     /// frame (see `AgentDefinition.sovereign_prompt`). Propagated from the
     /// resolved `AgentDefinition` at runtime-build time.
     pub sovereign_prompt: bool,
-    /// Per-agent skills configuration from AgentDefinition.
-    pub skills_config: Option<crate::definitions::AgentSkillsConfig>,
     /// Session-scoped conditional rule activator. Owns once-only activation state
     /// for markdown rule frontmatter `paths:` matches.
     pub policy_context_activator: Option<Arc<SessionScopedContextActivator>>,

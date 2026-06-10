@@ -89,7 +89,7 @@ pub struct IntegrationsConfig {
     /// the Smithery key is a machine-scoped credential shared by every
     /// agent that wants to install MCP servers.
     #[serde(default)]
-    pub mcp: McpConfig,
+    pub mcp: SmitheryConfig,
 
     /// Semantic-memory embedding engine defaults.
     ///
@@ -179,7 +179,7 @@ pub struct NodesConfig {
 /// additional typed fields on this struct rather than free-form JSON.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct McpConfig {
+pub struct SmitheryConfig {
     /// Smithery.ai API key used to resolve and install MCP servers from
     /// the Smithery registry. Empty string means "no key configured".
     #[serde(default)]

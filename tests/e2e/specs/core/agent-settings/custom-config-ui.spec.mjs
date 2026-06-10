@@ -1849,14 +1849,14 @@ process.stdin.on("data", (chunk) => {
         "definition skill exclude"
       );
       assertIncludes(
-        skills.runtimeSkillsConfigInclude,
+        skills.resolvedSkillsInclude,
         skillInclude[0],
-        "runtime skill include"
+        "resolved skill include"
       );
       assertIncludes(
-        skills.runtimeSkillsConfigExclude,
+        skills.resolvedSkillsDisabled,
         skillExclude[0],
-        "runtime skill exclude"
+        "resolved skill disabled"
       );
       assertIncludes(
         skills.effectivePerTurnDisabled,

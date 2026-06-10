@@ -309,25 +309,17 @@ pub async fn test_sde_message(Json(request): Json<SdeTestRequest>) -> Json<serde
                 .map(String::from)
         })
         .collect();
-    let runtime_skills_config = runtime.skills_config.clone();
-    let runtime_skills_include = runtime_skills_config
-        .as_ref()
-        .map(|cfg| cfg.include.clone())
-        .unwrap_or_default();
-    let runtime_skills_exclude = runtime_skills_config
-        .as_ref()
-        .map(|cfg| cfg.exclude.clone())
-        .unwrap_or_default();
-    let mut effective_skill_disabled: std::collections::BTreeSet<String> =
-        runtime.resolved.skills.disabled.iter().cloned().collect();
-    for entry in &runtime_skills_exclude {
-        effective_skill_disabled.insert(entry.clone());
-    }
-    let effective_skill_disabled: Vec<String> = effective_skill_disabled.into_iter().collect();
-    let effective_skill_include = if runtime_skills_include.is_empty() {
+    // Single source: resolved.skills carries enabled/include/disabled.
+    let effective_skill_disabled: Vec<String> = {
+        let set: std::collections::BTreeSet<String> =
+            runtime.resolved.skills.disabled.iter().cloned().collect();
+        set.into_iter().collect()
+    };
+    let resolved_skill_include = runtime.resolved.skills.include.clone();
+    let effective_skill_include = if resolved_skill_include.is_empty() {
         None
     } else {
-        Some(runtime_skills_include.as_slice())
+        Some(resolved_skill_include.as_slice())
     };
     let runtime_skills_listing = if runtime.resolved.skills.enabled {
         let workspace_root = runtime.workspace_state.read().workspace_root.clone();
@@ -351,7 +343,7 @@ pub async fn test_sde_message(Json(request): Json<SdeTestRequest>) -> Json<serde
             .as_ref()
             .map(|cfg| cfg.exclude.clone())
             .unwrap_or_default(),
-        "runtimeSkillsConfigExclude": runtime_skills_exclude,
+        "resolvedSkillsDisabled": runtime.resolved.skills.disabled.clone(),
         "effectivePerTurnDisabled": effective_skill_disabled,
         "effectiveSkillListing": runtime_skills_listing,
         "learningsEnabled": runtime.resolved.learnings.enabled,

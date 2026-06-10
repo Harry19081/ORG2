@@ -43,6 +43,12 @@ use std::path::PathBuf;
 #[serde(rename_all = "camelCase")]
 pub struct SkillsParams {
     pub enabled: bool,
+    /// Whitelist: when non-empty, ONLY these skills are listed/loaded.
+    /// Carried through the resolver so `resolved.skills` is the single
+    /// runtime source of truth (previously `include` survived only on a
+    /// parallel `SessionRuntime.skills_config` cache).
+    #[serde(default)]
+    pub include: Vec<String>,
     pub disabled: Vec<String>,
     pub source_dirs: Vec<String>,
 }
@@ -51,6 +57,7 @@ impl Default for SkillsParams {
     fn default() -> Self {
         Self {
             enabled: true,
+            include: Vec::new(),
             disabled: Vec::new(),
             source_dirs: Vec::new(),
         }
@@ -382,6 +389,7 @@ fn skills_from_schema(cfg: Option<&AgentSkillsConfig>) -> SkillsParams {
     match cfg {
         Some(cfg) => SkillsParams {
             enabled: cfg.enabled.unwrap_or(true),
+            include: cfg.include.clone(),
             disabled: cfg.exclude.clone(),
             source_dirs: cfg.source_dirs.clone(),
         },

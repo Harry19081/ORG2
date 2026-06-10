@@ -233,8 +233,11 @@ pub struct SystemPromptConfig {
     pub model: String,
     pub agent_id: String,
     pub agent_definition_id: Option<String>,
-    pub skills_enabled: bool,
-    pub disabled_skills: Vec<String>,
+    /// The session's single resolved skills view (enabled flag, include
+    /// whitelist, disabled union, extra source dirs). Replaces the three
+    /// parallel fields (`skills_enabled` / `disabled_skills` /
+    /// `agent_skills_config`) that could disagree.
+    pub skills: crate::definitions::SkillsParams,
     pub load_workspace_resources: bool,
     pub load_workspace_rules: bool,
     pub agent_soul: Option<String>,
@@ -242,7 +245,6 @@ pub struct SystemPromptConfig {
     pub channel: Option<String>,
     pub chat_id: Option<String>,
     pub agent_mode: Option<AgentExecMode>,
-    pub agent_skills_config: Option<crate::definitions::AgentSkillsConfig>,
     pub ide_context: Option<IdeContext>,
     /// User presence snapshot (online / invisible / away). Plumbed out
     /// of [`IdeContext::user_presence`] at prompt-build time so the

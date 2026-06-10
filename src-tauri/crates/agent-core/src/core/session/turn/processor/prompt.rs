@@ -42,8 +42,7 @@ impl UnifiedMessageProcessor {
             model: self.runtime.model.clone(),
             agent_id: self.agent_id.clone(),
             agent_definition_id: self.runtime.agent_definition_id.clone(),
-            skills_enabled: self.runtime.resolved.skills.enabled,
-            disabled_skills: self.runtime.resolved.skills.disabled.clone(),
+            skills: self.runtime.resolved.skills.clone(),
             load_workspace_resources: self.runtime.resolved.load_workspace_resources,
             load_workspace_rules: self.runtime.resolved.load_workspace_rules,
             agent_soul: self.runtime.agent_soul.clone(),
@@ -51,7 +50,6 @@ impl UnifiedMessageProcessor {
             channel: self.channel.clone(),
             chat_id: self.chat_id.clone(),
             agent_mode: self.agent_mode,
-            agent_skills_config: self.runtime.skills_config.clone(),
             ide_context: self.ide_context.clone(),
             user_presence,
             user_profile,
@@ -132,20 +130,13 @@ impl UnifiedMessageProcessor {
             if let Some(ws_path) = self.workspace_root() {
                 let skills_dir = ws_path.join(".orgii");
 
-                let mut effective_disabled = self.runtime.resolved.skills.disabled.clone();
-                let include_filter_owned: Vec<String>;
-                let include_filter: Option<&[String]> =
-                    if let Some(ref sc) = self.runtime.skills_config {
-                        effective_disabled.extend(sc.exclude.iter().cloned());
-                        if !sc.include.is_empty() {
-                            include_filter_owned = sc.include.clone();
-                            Some(include_filter_owned.as_slice())
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    };
+                let skills = &self.runtime.resolved.skills;
+                let effective_disabled = skills.disabled.clone();
+                let include_filter: Option<&[String]> = if skills.include.is_empty() {
+                    None
+                } else {
+                    Some(skills.include.as_slice())
+                };
 
                 let agent_key = self
                     .runtime

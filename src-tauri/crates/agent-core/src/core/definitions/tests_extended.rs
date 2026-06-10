@@ -875,6 +875,7 @@ mod tests_extended {
     #[test]
     fn skills_params_json_round_trip() {
         let original = SkillsParams {
+            include: Vec::new(),
             enabled: false,
             disabled: vec!["skill-a".to_string(), "skill-b".to_string()],
             source_dirs: vec!["/some/dir".to_string()],
@@ -889,6 +890,7 @@ mod tests_extended {
     #[test]
     fn skills_params_json_uses_camel_case() {
         let sp = SkillsParams {
+            include: Vec::new(),
             enabled: true,
             disabled: vec!["x".to_string()],
             source_dirs: vec!["/dir".to_string()],

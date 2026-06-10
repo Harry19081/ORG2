@@ -1435,13 +1435,7 @@ impl PromptSection for AlwaysSkillsSection {
         order::ALWAYS_SKILLS
     }
     fn applies(&self, ctx: &PromptCtx) -> AppliesDecision {
-        let effective_skills_enabled = ctx
-            .config
-            .agent_skills_config
-            .as_ref()
-            .and_then(|sc| sc.enabled)
-            .unwrap_or(ctx.config.skills_enabled);
-        if effective_skills_enabled {
+        if ctx.config.skills.enabled {
             AppliesDecision::Apply {
                 reason: "skills_enabled",
             }
@@ -1468,28 +1462,22 @@ impl PromptSection for AlwaysSkillsSection {
             .unwrap_or_else(|| Path::new("."));
         let skills_dir = workspace.join(".orgii");
 
-        let mut effective_disabled: Vec<String> = ctx.config.disabled_skills.clone();
-        let include_filter: Option<&[String]> = ctx
-            .config
-            .agent_skills_config
-            .as_ref()
-            .filter(|sc| !sc.include.is_empty())
-            .map(|sc| sc.include.as_slice());
-        if let Some(sc) = ctx.config.agent_skills_config.as_ref() {
-            effective_disabled.extend(sc.exclude.iter().cloned());
-        }
+        let skills = &ctx.config.skills;
+        let include_filter: Option<&[String]> = if skills.include.is_empty() {
+            None
+        } else {
+            Some(skills.include.as_slice())
+        };
 
         let mut loader = SkillsLoader::new(&skills_dir)
             .with_builtin_dir(crate::skills::loader::global_skills_dir())
             .with_agent_id(ctx.config.agent_id.clone())
             .with_load_workspace_resources(ctx.config.load_workspace_resources);
-        if let Some(sc) = ctx.config.agent_skills_config.as_ref() {
-            if !sc.source_dirs.is_empty() {
-                loader = loader.with_extra_source_dirs(&sc.source_dirs);
-            }
+        if !skills.source_dirs.is_empty() {
+            loader = loader.with_extra_source_dirs(&skills.source_dirs);
         }
         let always_manifest_sections =
-            loader.build_always_skills_manifest_section(&effective_disabled, include_filter);
+            loader.build_always_skills_manifest_section(&skills.disabled, include_filter);
         if always_manifest_sections.is_empty() {
             None
         } else {

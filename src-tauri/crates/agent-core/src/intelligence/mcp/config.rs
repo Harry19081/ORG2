@@ -131,7 +131,15 @@ impl McpConfigFile {
         Self::load_from(&global_config_path())
     }
 
-    /// Merge global + workspace configs. Workspace entries override global by name.
+    /// Merge global + workspace configs.
+    ///
+    /// When a server name exists in BOTH scopes, the workspace entry wins
+    /// for connection details (command/url/env/...) but `disabled` is the
+    /// OR of both scopes — disabling a server in either file keeps it off.
+    /// A workspace `mcp-servers.json` previously wholesale-replaced the
+    /// global entry by name, silently resurrecting servers the user had
+    /// disabled globally.
+    ///
     /// Returns ALL servers including disabled ones so callers can render
     /// them in the UI list and toggle them back on. Connection paths
     /// (`McpManager::connect_all`, etc.) already filter `!cfg.disabled`
@@ -150,7 +158,10 @@ impl McpConfigFile {
         if load_workspace_resources {
             if let Some(workspace) = workspace_path {
                 let workspace_config = Self::load_for_workspace(workspace)?;
-                for (name, server_config) in workspace_config.mcp_servers {
+                for (name, mut server_config) in workspace_config.mcp_servers {
+                    if let Some(global_entry) = merged.mcp_servers.get(&name) {
+                        server_config.disabled = server_config.disabled || global_entry.disabled;
+                    }
                     merged.mcp_servers.insert(name, server_config);
                 }
             }

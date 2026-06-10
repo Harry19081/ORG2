@@ -100,19 +100,6 @@ struct UnifiedInitRequest<'a> {
     /// `resolved`); kept in the request so the future SessionRuntime can
     /// hold the original override set for later read-back.
     overrides: SessionOverrides,
-    /// Captured-at-launch copy of `AgentDefinition.skills_config` from
-    /// the SAME definition snapshot that `resolved` was built from.
-    ///
-    /// This is plumbed through the request so the runtime's two parallel
-    /// skill caches (`resolved.skills` and `runtime.skills_config`) come
-    /// from one source and cannot diverge — see
-    /// `audit-skills-llm.spec.mjs` "L5 parallel cache" for the regression
-    /// guard. Previously `runtime.skills_config` was re-loaded off disk
-    /// inside `runtime_assemble::load_or_recover_definition`, which could
-    /// return a different snapshot than the one already baked into
-    /// `resolved.skills` when the in-memory definition and on-disk
-    /// definition disagreed.
-    skills_config: Option<crate::definitions::AgentSkillsConfig>,
     /// Model override. If None, uses `resolved.selected_model_id`.
     model_override: Option<&'a str>,
     /// Provider override for subscription-bound native harness sessions.
@@ -145,15 +132,7 @@ fn resolve_for_session(
     definition: &AgentDefinition,
     workspace: std::path::PathBuf,
     model_override: Option<&str>,
-) -> Result<
-    (
-        ResolvedAgent,
-        IntegrationsConfig,
-        SessionOverrides,
-        Option<crate::definitions::AgentSkillsConfig>,
-    ),
-    String,
-> {
+) -> Result<(ResolvedAgent, IntegrationsConfig, SessionOverrides), String> {
     let integrations = state.integrations.snapshot();
     let overrides = SessionOverrides::new(Some(workspace), None);
     let store = crate::definitions::definitions_store();
@@ -183,12 +162,6 @@ fn resolve_for_session(
         }
     }
 
-    // Capture `skills_config` from the SAME `pinned` snapshot we hand
-    // to `ResolvedAgent::resolve` so the runtime's two parallel skill
-    // caches (`resolved.skills` and `runtime.skills_config`) cannot
-    // diverge. See `audit-skills-llm.spec.mjs` for the regression guard.
-    let skills_config = pinned.skills_config.clone();
-
     let mut resolved = ResolvedAgent::resolve(&pinned, Some(&store), &overrides)
         .map_err(|err| match err {
             ResolveError::MissingModel(id) => format!(
@@ -206,7 +179,7 @@ fn resolve_for_session(
             resolved.skills.disabled.push(skill.clone());
         }
     }
-    Ok((resolved, integrations, overrides, skills_config))
+    Ok((resolved, integrations, overrides))
 }
 
 /// Combined resolve + init in a single call.
@@ -227,7 +200,7 @@ pub async fn init_session(
         model_override,
         native_harness_type,
     } = spec;
-    let (resolved, integrations, overrides, skills_config) =
+    let (resolved, integrations, overrides) =
         resolve_for_session(state, &definition, workspace, model_override.as_deref())?;
     ensure_session_initialized(UnifiedInitRequest {
         state,
@@ -237,7 +210,6 @@ pub async fn init_session(
         resolved,
         integrations,
         overrides,
-        skills_config,
         model_override: model_override.as_deref(),
         native_harness_type,
     })
@@ -322,7 +294,6 @@ async fn ensure_session_initialized(
         resolved,
         integrations,
         overrides,
-        skills_config: launch_skills_config,
         model_override,
         native_harness_type,
     } = request;
@@ -584,23 +555,19 @@ async fn ensure_session_initialized(
         },
     );
 
-    // Definition load with in-memory fallback for soul + def-id.
-    // `skills_config` is the captured-at-launch copy plumbed through
-    // `UnifiedInitRequest` (taken from the SAME `pinned` definition
-    // that `resolved` was built from) — see the "L5 parallel cache"
-    // pin in `audit-skills-llm.spec.mjs` for why the recovery path is
-    // not allowed to substitute its own copy here.
+    // Definition load with in-memory fallback for soul + def-id. Skills
+    // state lives ONLY on `resolved.skills` (single source); the old
+    // parallel `runtime.skills_config` capture was deleted.
     let (agent_soul, agent_definition_id) =
         runtime_assemble::load_or_recover_definition(session_id, &session_handle).await;
-    let skills_config = launch_skills_config;
     let sovereign_prompt = resolved.sovereign_prompt;
 
     info!(
-        "[init] session={} resolved_def_id={:?} agent_soul_len={} skills={}",
+        "[init] session={} resolved_def_id={:?} agent_soul_len={} skills_enabled={}",
         session_id,
         agent_definition_id,
         agent_soul.as_deref().map(str::len).unwrap_or(0),
-        skills_config.is_some(),
+        resolved.skills.enabled,
     );
 
     let policy_context_activator = build_policy_context_activator(
@@ -626,7 +593,6 @@ async fn ensure_session_initialized(
             overrides,
             agent_soul,
             sovereign_prompt,
-            skills_config,
             policy_context_activator,
             agent_org_context,
             agent_org_current_member_id,

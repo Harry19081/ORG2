@@ -1,5 +1,4 @@
-//! Debug-only Tauri command: introspect the live skills configuration
-//! for an active session.
+//! Debug command: Skills runtime snapshot.
 //!
 //! `debug_session_skills_snapshot(session_id)` reports everything an
 //! audit spec needs to prove the L4→L5 hop for the Skills subsystem:
@@ -8,45 +7,20 @@
 //!     read off the session's `definition` field (captured at launch).
 //!     `definition_present = false` means the agent had `skills_config:
 //!     None` on disk and the resolver fell back to defaults.
-//!   * `resolved_skills_enabled` / `resolved_skills_disabled` —
-//!     `ResolvedAgent.skills` (the `SkillsParams` struct). The resolver
-//!     collapses `enabled: Option<bool>` to `bool` (`None` → `true`)
-//!     and forwards `exclude` as `disabled`. **Note:** the resolver
-//!     does NOT carry the `include` whitelist — that lives only on
-//!     `runtime.skills_config`, see below.
-//!   * `runtime_skills_config_*` — `SessionRuntime.skills_config`,
-//!     a *parallel* capture-at-launch copy of the full
-//!     `AgentSkillsConfig` (with `include`). The per-turn prompt
-//!     builder reads BOTH `runtime.resolved.skills.disabled` AND
-//!     `runtime.skills_config.exclude`, so the audit spec must prove
-//!     they agree.
-//!   * `effective_per_turn_disabled` — the union the prompt builder
-//!     actually feeds to `SkillsLoader::build_skill_listing_attachment`
-//!     (`resolved.skills.disabled` extended with
-//!     `runtime.skills_config.exclude`, sorted+deduped here for
-//!     deterministic comparison). Only the per-turn listing path
-//!     consults this — the persistent always-on / `include`-filtered
-//!     loading uses `runtime.skills_config` directly.
-//!   * `effective_include_filter` — the per-turn whitelist
-//!     forwarded to the loader (`runtime.skills_config.include`,
-//!     `None` when missing or empty so the loader treats it as
-//!     "no filter").
+//!   * `resolved_skills_*` — `ResolvedAgent.skills` (the `SkillsParams`
+//!     struct): the SINGLE runtime source of truth. The resolver
+//!     collapses `enabled: Option<bool>` to `bool` (`None` → `true`),
+//!     carries `include` (whitelist), forwards `exclude` as `disabled`,
+//!     and session init unions in the app-global disabled list.
+//!   * `effective_*` — the exact loader arguments the per-turn prompt
+//!     builder derives from `resolved.skills`, plus the rendered skill
+//!     listing produced with the same `SkillsLoader` call.
 //!
-//! Mirrors `model_dump` / `tools_dump` / `subagent_dump`: the Rust
-//! command is always callable; the frontend `__e2e` helper guards on
-//! `debug_assertions || WEBDRIVER=1` so production users never see it.
-//!
-//! Intended use: an audit spec writes a sentinel skills patch via
-//! `agent_def_update_patch` (or toggles a row via `skills_toggle`),
-//! boots a session, and asserts that the live snapshot reflects
-//! exactly what was on disk *at launch time*. A subsequent on-disk
-//! mutation must NOT alter the running session's snapshot — that's
-//! the capture-at-launch invariant for skills, which is doubly
-//! interesting because skills have two parallel runtime caches
-//! (`resolved.skills` and `runtime.skills_config`) that must agree.
+//! The old parallel `SessionRuntime.skills_config` capture (and its
+//! "two caches must agree" reconciliation) was deleted — `resolved.skills`
+//! is now the only runtime skills state.
 
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeSet;
 
 use crate::state::AgentAppState;
 
@@ -79,42 +53,32 @@ pub struct SessionSkillsSnapshot {
     /// `definition_*` fields below are zero-valued.
     pub definition_present: bool,
     /// `AgentDefinition.skills_config.enabled` captured at launch.
-    /// `None` = "inherit global setting" (resolver folds it to `true`).
+    /// `None` = "inherit default" (resolver folds it to `true`).
     pub definition_enabled: Option<bool>,
     /// `AgentDefinition.skills_config.include` captured at launch.
     pub definition_include: Vec<String>,
     /// `AgentDefinition.skills_config.exclude` captured at launch.
     pub definition_exclude: Vec<String>,
 
-    /// `ResolvedAgent.skills.enabled` — the resolver's collapsed bool
-    /// (`Option<bool>::None` → `true`).
+    /// `ResolvedAgent.skills.enabled` — the resolver's collapsed bool.
     pub resolved_skills_enabled: bool,
-    /// `ResolvedAgent.skills.disabled` — the resolver's view of the
-    /// blacklist. Currently mirrors `definition_exclude` 1:1; the
-    /// snapshot exposes both so a spec can pin that.
+    /// `ResolvedAgent.skills.include` — the whitelist carried through
+    /// the resolver (single source; no parallel runtime cache).
+    pub resolved_skills_include: Vec<String>,
+    /// `ResolvedAgent.skills.disabled` — per-agent exclude unioned with
+    /// the app-global disabled list at session init.
     pub resolved_skills_disabled: Vec<String>,
 
-    /// `SessionRuntime.skills_config` is `Some` iff the runtime has a
-    /// captured-at-launch copy. It can differ from `definition_present`
-    /// in principle (the in-memory recover path can repopulate from a
-    /// stored definition lookup), so the spec asserts agreement
-    /// independently.
-    pub runtime_skills_config_present: bool,
-    pub runtime_skills_config_enabled: Option<bool>,
-    pub runtime_skills_config_include: Vec<String>,
-    pub runtime_skills_config_exclude: Vec<String>,
-
-    /// `union(resolved.skills.disabled, runtime.skills_config.exclude)`,
-    /// sorted + deduped. Mirrors the per-turn merge in
-    /// `processor::prompt::build_dynamic_sections`. Spec uses this to
-    /// pin that the prompt builder's two-source merge is consistent.
+    /// The disabled list the per-turn prompt builder feeds the loader —
+    /// identical to `resolved_skills_disabled` (kept as a separate field
+    /// so specs pin the prompt path explicitly).
     pub effective_per_turn_disabled: Vec<String>,
-    /// `runtime.skills_config.include` when non-empty, else `None`.
-    /// Mirrors how `processor::prompt` produces the loader argument.
+    /// `resolved.skills.include` when non-empty, else `None` — mirrors
+    /// how the prompt builder produces the loader argument.
     pub effective_include_filter: Option<Vec<String>>,
-    /// The exact skill catalogue text produced from the captured runtime
-    /// inputs above, using the same `SkillsLoader::build_skill_listing_attachment`
-    /// call that `processor::prompt` uses for the live per-turn system section.
+    /// The exact skill catalogue text produced from the resolved inputs,
+    /// using the same `SkillsLoader::build_skill_listing_attachment`
+    /// call the live per-turn system section uses.
     pub effective_skill_listing: Option<String>,
 }
 
@@ -144,35 +108,12 @@ pub async fn debug_session_skills_snapshot(
         None => (None, Vec::new(), Vec::new()),
     };
 
-    let resolved_skills_enabled = runtime.resolved.skills.enabled;
-    let resolved_skills_disabled = runtime.resolved.skills.disabled.clone();
-
-    let rt_skills = runtime.skills_config.clone();
-    let runtime_skills_config_present = rt_skills.is_some();
-    let (
-        runtime_skills_config_enabled,
-        runtime_skills_config_include,
-        runtime_skills_config_exclude,
-    ) = match &rt_skills {
-        Some(cfg) => (cfg.enabled, cfg.include.clone(), cfg.exclude.clone()),
-        None => (None, Vec::new(), Vec::new()),
-    };
-
-    // Mirror the per-turn merge in
-    // `core/session/turn/processor/prompt.rs::build_dynamic_sections`:
-    //   effective_disabled = resolved.skills.disabled.clone()
-    //   if let Some(sc) = runtime.skills_config: effective_disabled.extend(sc.exclude.clone())
-    let mut effective_set: BTreeSet<String> = resolved_skills_disabled.iter().cloned().collect();
-    if let Some(ref cfg) = rt_skills {
-        for entry in &cfg.exclude {
-            effective_set.insert(entry.clone());
-        }
-    }
-    let effective_per_turn_disabled: Vec<String> = effective_set.into_iter().collect();
-
-    let effective_include_filter = match &rt_skills {
-        Some(cfg) if !cfg.include.is_empty() => Some(cfg.include.clone()),
-        _ => None,
+    let skills = runtime.resolved.skills.clone();
+    let effective_per_turn_disabled = skills.disabled.clone();
+    let effective_include_filter = if skills.include.is_empty() {
+        None
+    } else {
+        Some(skills.include.clone())
     };
     let effective_skill_listing = build_effective_skill_listing(
         &runtime,
@@ -189,13 +130,9 @@ pub async fn debug_session_skills_snapshot(
         definition_include,
         definition_exclude,
 
-        resolved_skills_enabled,
-        resolved_skills_disabled,
-
-        runtime_skills_config_present,
-        runtime_skills_config_enabled,
-        runtime_skills_config_include,
-        runtime_skills_config_exclude,
+        resolved_skills_enabled: skills.enabled,
+        resolved_skills_include: skills.include,
+        resolved_skills_disabled: skills.disabled,
 
         effective_per_turn_disabled,
         effective_include_filter,

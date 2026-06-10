@@ -1168,6 +1168,7 @@ mod dto_extended_tests {
     fn skills_view_from_params_enabled_true() {
         use agent_core::core::definitions::resolved::SkillsParams;
         let params = SkillsParams {
+            include: Vec::new(),
             enabled: true,
             disabled: vec![],
             source_dirs: vec![],
@@ -1183,6 +1184,7 @@ mod dto_extended_tests {
     fn skills_view_from_params_enabled_false() {
         use agent_core::core::definitions::resolved::SkillsParams;
         let params = SkillsParams {
+            include: Vec::new(),
             enabled: false,
             disabled: vec!["my-skill".to_string()],
             source_dirs: vec![],
@@ -2016,6 +2018,7 @@ mod dto_extended_tests {
     fn skills_view_with_one_disabled_skill() {
         use agent_core::core::definitions::resolved::SkillsParams;
         let params = SkillsParams {
+            include: Vec::new(),
             enabled: true,
             disabled: vec!["skill-brainstorm".to_string()],
             source_dirs: vec![],
@@ -2030,6 +2033,7 @@ mod dto_extended_tests {
     fn skills_view_with_multiple_disabled_skills() {
         use agent_core::core::definitions::resolved::SkillsParams;
         let params = SkillsParams {
+            include: Vec::new(),
             enabled: true,
             disabled: vec![
                 "skill-a".to_string(),
@@ -2049,6 +2053,7 @@ mod dto_extended_tests {
     fn skills_view_disabled_round_trip() {
         use agent_core::core::definitions::resolved::SkillsParams;
         let params = SkillsParams {
+            include: Vec::new(),
             enabled: false,
             disabled: vec!["skill-x".to_string(), "skill-y".to_string()],
             source_dirs: vec![],
@@ -2064,6 +2069,7 @@ mod dto_extended_tests {
     fn skills_view_json_with_disabled_has_correct_structure() {
         use agent_core::core::definitions::resolved::SkillsParams;
         let params = SkillsParams {
+            include: Vec::new(),
             enabled: true,
             disabled: vec!["skill-disabled-1".to_string()],
             source_dirs: vec![],
@@ -2100,6 +2106,7 @@ mod dto_extended_tests {
         use agent_core::core::definitions::resolved::SkillsParams;
         let many: Vec<String> = (0..20).map(|i| format!("skill-{}", i)).collect();
         let params = SkillsParams {
+            include: Vec::new(),
             enabled: true,
             disabled: many.clone(),
             source_dirs: vec![],

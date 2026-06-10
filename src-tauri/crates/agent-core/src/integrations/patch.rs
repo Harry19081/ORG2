@@ -11,7 +11,9 @@
 use serde::{Deserialize, Serialize};
 
 use super::channels::config::ChannelsConfig;
-use super::config::{EmbeddingConfig, IntegrationsConfig, McpConfig, NodesConfig, WebSearchConfig};
+use super::config::{
+    EmbeddingConfig, IntegrationsConfig, NodesConfig, SmitheryConfig, WebSearchConfig,
+};
 use crate::core::config::DatabasesConfig;
 
 /// Typed patch for [`IntegrationsConfig`]. Each field is `Option<T>`:
@@ -24,7 +26,7 @@ pub struct IntegrationsConfigPatch {
     pub databases: Option<DatabasesConfig>,
     pub nodes: Option<NodesConfig>,
     pub web_search: Option<WebSearchConfig>,
-    pub mcp: Option<McpConfig>,
+    pub mcp: Option<SmitheryConfig>,
     /// Semantic-memory embedding engine configuration (provider, model,
     /// chunk sizes). Wholesale replace — frontend must send the full
     /// `EmbeddingConfig` to avoid resetting siblings.
