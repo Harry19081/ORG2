@@ -55,7 +55,7 @@ that experience to more people.
 
 ---
 
-## 3. Session Livestream/Replay and Agent Reliability
+## 3. Session Livestream, Replay, and Agent Reliability
 
 Most agentic tools give you a tiny chat pane or a terminal CLI window. The output is a wall of
 tool calls, diffs, and model text — hard to trace, easy to lose context in, prone to freezing
@@ -88,7 +88,66 @@ Claude Code — and we are continuing to expand both coverage and fidelity, in c
 
 ---
 
-## 4. Tauri + React 19
+## 4. Bring Your Own Key — and Your Own Setup
+
+Most agentic tools lock you into their infrastructure. When you switch, you start over — your
+MCP configurations, your agent-generated memories, your accumulated project context, gone.
+
+We believe in freedom of choice. ORGII is built around BYOK: connect your existing subscriptions
+— Claude, OpenAI, Gemini, Cursor, Copilot, Deepseek, Minimax, Kimi, and others — and use them
+directly. No margin, no lock-in. But more importantly, your _harness_ travels with you. Your MCP
+servers, your skills, and the memories agents have built about your codebase and preferences stay
+stable across sessions, model swaps, and agent upgrades. You should be able to try something new
+without starting from scratch.
+
+---
+
+## 5. The Agentic Organization
+
+When I was studying at Harvard GSAS, in the early days of GPT-3.5, conversations with my
+professors and peers helped me arrive at a realization that has shaped everything since: the AI
+race is not primarily a technological competition. It is, at its core, a question of
+organizational sociology — how groups of people (and now agents) form, share knowledge, create
+(and break) consensus, divide labor, build trust, and make decisions together.
+
+What struck me then, and still does, is how many of these questions are transhistorical. Agents
+raise genuinely new sociotechnical challenges — around autonomy, accountability, memory, and
+trust in non-human actors. But underneath those, the older questions remain: how do you
+coordinate effort across a group of people with different cognitive specializations and
+perspectives? How do you maintain shared context as a team grows? How do you decide what to
+delegate and what to keep close? These are questions that organizational theorists, historians,
+and sociologists have been working on for a long time. The technology changes the parameters; it
+does not dissolve the questions.
+
+Models set the ceiling, but organization determines how close anyone gets to it. The teams that
+ship the best AI products are not necessarily the ones with the best models. They are the ones
+that figured out how to work with AI effectively as a team — how to delegate to agents, how to
+review their output, how to maintain shared context, how to avoid duplication of effort, and how
+to keep humans in the loop on the decisions that matter.
+
+This is what we mean by "agentic organization" — and it is why the app is named ORGII. The name
+is a deliberate nod to our belief that the most important frontier here is not just the model,
+but the organizational methods: new ways of structuring how humans and agents work together,
+share context, and build things that neither could build alone. It is a team — of humans and
+agents — that functions as a coherent unit. Roles get distributed. Some tasks are fully
+delegated. Others require human judgment at the last step. Memory and context are shared across
+the team, not siloed per person. New members (human or agent) can be onboarded quickly because
+the accumulated knowledge is legible and accessible.
+
+Part of this is time management — knowing when to work _with_ agents under supervision, and when
+to let them run solo tasks while you are away. Not every task needs your eyes on it in real time.
+Some are best done collaboratively, at a decision-heavy moment when your input changes the
+outcome. Others can be fully delegated and reviewed later.
+
+ORGII factors in your presence. Like a status in a chat or office app — available, in a meeting,
+away — the platform can behave differently depending on whether you are actively watching. When
+you are present, agents surface key decision points and wait for your input. When you step away,
+they continue on delegated work and queue what needs your review. Your status is not just a
+social signal; it shapes how the system routes work between you and your agents.
+
+---
+
+## 6. Tauri + React 19
 
 Electron bundles a full Chromium (~300–500 MB on disk) — at least 200 MB of RAM before any
 product code runs, multiplied per window. Tauri uses the OS-native WebView and a Rust backend;
