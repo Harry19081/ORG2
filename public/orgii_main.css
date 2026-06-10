@@ -52,7 +52,7 @@
   --cm-lint-info-color: 79, 109, 255;
   --cm-editor-background: #ffffff;
   --cm-editor-foreground: #24292e;
-  --cm-editor-selection: #bbdfff;
+  --cm-editor-selection: #efefef;
   --cm-editor-gutter-bg: var(--cm-editor-background);
   --cm-editor-gutter-fg: #6e7781;
   --cm-editor-line-highlight: transparent;

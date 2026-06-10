@@ -55,17 +55,19 @@ const FocusView: React.FC<FocusViewProps> = ({
   }
 
   return (
-    <Suspense fallback={<LazyFallback />}>
-      <GitDiffContent
-        gitFile={gitFile}
-        loading={loading}
-        repoPath={repoPath}
-        onReload={onReload}
-        onFileSelect={onFileSelect}
-        onUnsavedChange={onUnsavedChange}
-        publishHeaderToWorkstation={!inlineFileHeader}
-      />
-    </Suspense>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <Suspense fallback={<LazyFallback />}>
+        <GitDiffContent
+          gitFile={gitFile}
+          loading={loading}
+          repoPath={repoPath}
+          onReload={onReload}
+          onFileSelect={onFileSelect}
+          onUnsavedChange={onUnsavedChange}
+          publishHeaderToWorkstation={!inlineFileHeader}
+        />
+      </Suspense>
+    </div>
   );
 };
 

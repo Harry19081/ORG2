@@ -52,7 +52,7 @@
   --cm-lint-info-color: 79, 109, 255;
   --cm-editor-background: #0a0a0a;
   --cm-editor-foreground: #c9d1d9;
-  --cm-editor-selection: #003d73;
+  --cm-editor-selection: #212121;
   --cm-editor-gutter-bg: var(--cm-editor-background);
   --cm-editor-gutter-fg: #8b949e;
   --cm-editor-line-highlight: #36334280;
@@ -204,7 +204,7 @@ body {
   --cm-lint-info-color: 79, 109, 255;
   --cm-editor-background: #0a0a0a;
   --cm-editor-foreground: #c9d1d9;
-  --cm-editor-selection: #003d73;
+  --cm-editor-selection: #212121;
   --cm-editor-gutter-bg: var(--cm-editor-background);
   --cm-editor-gutter-fg: #8b949e;
   --cm-editor-line-highlight: #36334280;

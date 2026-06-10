@@ -82,7 +82,7 @@ export function foldPlaceholderTheme(): Extension {
       margin: "0 2px !important",
       fontSize: "var(--cm-font-size-small, 12px) !important",
       color: "var(--color-text-3) !important",
-      backgroundColor: "var(--color-fill-2) !important",
+      backgroundColor: "var(--color-fill-1) !important",
       border: "1px solid var(--color-border-2) !important",
       borderRadius: "var(--cm-border-radius-small, 2px) !important",
       cursor: "pointer !important",

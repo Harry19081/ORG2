@@ -110,7 +110,7 @@ const MERGE_THEME_OVERRIDE = EditorView.baseTheme({
     alignItems: "center",
     gap: "var(--cm-gutter-padding, 4px)",
     width: "100%",
-    background: "var(--color-fill-2)",
+    background: "var(--color-fill-1)",
     border: "none",
     borderRadius: "0",
     outline: "none",
@@ -529,7 +529,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
         oldStartLine,
         newStartLine,
       };
-      setSplitScrollEl(mergeView.b.scrollDOM);
+      setSplitScrollEl(splitContainerRef.current);
       setSplitLines(mergeView.b.state.doc.lines);
 
       if (onChange && !readOnly) {

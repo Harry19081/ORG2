@@ -160,6 +160,18 @@ strong {
   font-weight: bold;
 }
 
+// Global text selection color — matches the CodeMirror selection token so all
+// surfaces (chat, markdown, labels, etc.) use the same neutral fill tone.
+::selection {
+  background: var(--cm-editor-selection);
+}
+
+// Trailing bottom padding on every CodeMirror scroller so the last line can
+// always be scrolled up away from the bottom edge.
+.cm-scroller {
+  padding-bottom: 80px;
+}
+
 // Enable text selection in CodeMirror editors
 // Overrides global * { user-select: none } for editable content areas.
 // Without this, double-click word selection breaks in some themes (e.g. VS Code)

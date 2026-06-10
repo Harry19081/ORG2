@@ -49,7 +49,7 @@
   --cm-lint-info-color: 56, 189, 248;
   --cm-editor-background: #050505;
   --cm-editor-foreground: #ffffff;
-  --cm-editor-selection: #1d4f7a;
+  --cm-editor-selection: #1c1c1c;
   --cm-editor-gutter-bg: #050505;
   --cm-editor-gutter-fg: #c7ced9;
   --cm-editor-line-highlight: #1c1c1c;
@@ -196,7 +196,7 @@ body {
   --cm-lint-info-color: 56, 189, 248;
   --cm-editor-background: #050505;
   --cm-editor-foreground: #ffffff;
-  --cm-editor-selection: #1d4f7a;
+  --cm-editor-selection: #1c1c1c;
   --cm-editor-gutter-bg: #050505;
   --cm-editor-gutter-fg: #c7ced9;
   --cm-editor-line-highlight: #1c1c1c;

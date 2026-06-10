@@ -268,18 +268,32 @@
   }
 
   // Split view specific styles
+  // The .codemirror-diff--split container (position: absolute, inset: 0) is
+  // the scroll viewport. .cm-mergeView grows to content height so it overflows
+  // and becomes scrollable. Inner .cm-scroller must stay overflow: visible
+  // (MergeView library requirement — it scrolls as a single unit).
   &--split {
+    overflow: auto;
+    padding-bottom: 80px;
+
     :global {
       .cm-mergeView {
-        display: flex;
+        min-height: 100%;
 
         .cm-mergeViewEditor {
-          flex: 1;
           min-width: 0;
 
           &:first-child {
             border-right: 1px solid var(--color-border-2);
           }
+        }
+
+        .cm-editor {
+          height: auto !important;
+        }
+
+        .cm-scroller {
+          overflow: visible !important;
         }
       }
     }
