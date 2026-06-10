@@ -237,6 +237,17 @@ impl WingmanLoop {
             execute,
         };
 
+        // Lifecycle: record the wingman observation as `queued` so the
+        // scheduler worker's running/terminal transitions find an existing
+        // row instead of logging NotFound rejections.
+        crate::foundation::session_bridge::upsert_turn_intent(
+            &self.session_id,
+            &msg.turn_intent_id,
+            None,
+            crate::foundation::session_bridge::TurnIntentBridgeSource::Wingman,
+            crate::foundation::session_bridge::TurnIntentBridgeStatus::Queued,
+        );
+
         session
             .scheduler
             .enqueue(msg)

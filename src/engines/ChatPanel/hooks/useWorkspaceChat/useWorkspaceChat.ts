@@ -24,6 +24,7 @@ import {
 } from "@src/engines/SessionCore/control/turnLifecycle";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
+import { mintTurnIntentId } from "@src/engines/SessionCore/sync/adapters/shared/eventFactories";
 import {
   isSessionActiveAtom,
   lastUserMessageAtom,
@@ -246,10 +247,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       // This is the same value that travels through the queue, the synthetic
       // user event, and the wire call to `agent_send_message`. See
       // `QueuedMessage.turnIntentId` for the full propagation contract.
-      const turnIntentId =
-        typeof crypto !== "undefined" && "randomUUID" in crypto
-          ? crypto.randomUUID()
-          : `tii-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+      const turnIntentId = mintTurnIntentId();
       if (
         consumeRestoredStopSubmitSuppression({
           sessionId,

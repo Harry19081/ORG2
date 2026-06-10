@@ -366,10 +366,10 @@ fn build_turn_drafts(rows: &[IndexEventRow], stale_intent_ids: &StaleIntentIds) 
             // first; the durable backend row arrives later with the same
             // id). Adds the new event id so user_event_ids tracks both,
             // but does not open a new round.
-            if let (Some(ref intent_id), Some(ref mut turn)) =
+            if let (Some(intent_id), Some(turn)) =
                 (row_intent_id.as_ref(), current.as_mut())
             {
-                if turn.turn_intent_id.as_ref() == Some(*intent_id) {
+                if turn.turn_intent_id.as_ref() == Some(intent_id) {
                     turn.user_event_ids.push(row.id.clone());
                     turn.event_count += 1;
                     turn.ended_at =

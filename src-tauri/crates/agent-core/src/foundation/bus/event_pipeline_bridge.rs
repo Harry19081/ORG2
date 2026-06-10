@@ -349,6 +349,7 @@ pub fn persist_events_async(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn persist_user_message_event(
     handle: &AppHandle,
     session_id: &str,

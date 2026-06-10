@@ -27,6 +27,7 @@ import {
   useNormalizedEventProps,
 } from "@src/engines/SessionCore/rendering/props";
 import { useLifecycleLabels } from "@src/engines/SessionCore/rendering/registry";
+import { mintTurnIntentId } from "@src/engines/SessionCore/sync/adapters/shared/eventFactories";
 import {
   isSessionActiveAtom,
   setSessionRuntimeStatusAtom,
@@ -230,10 +231,7 @@ const ChatVariant: React.FC<{
           // Mint one canonical user-intent id and use it for both the
           // optimistic synthetic event and the wire dispatch so the turn
           // indexer can collapse the two rows under a single round.
-          const turnIntentId =
-            typeof crypto !== "undefined" && "randomUUID" in crypto
-              ? crypto.randomUUID()
-              : `tii-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+          const turnIntentId = mintTurnIntentId();
           await addUserMessage(step.command, undefined, turnIntentId);
           await dispatchMessageBySessionType(
             sessionId,

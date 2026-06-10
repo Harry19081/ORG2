@@ -244,6 +244,18 @@ export function makeRateLimitHintEvent(sessionId: string): SessionEvent {
   };
 }
 
+/**
+ * Mint a canonical user-intent id at a submit boundary. One id per
+ * "user wants the agent to take a turn now" — reuse the SAME id for the
+ * optimistic synthetic event, the queue row, and the wire dispatch so
+ * the turn indexer can collapse them under one logical round.
+ */
+export function mintTurnIntentId(): string {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `tii-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+}
+
 export function createSyntheticUserEvent(
   sessionId: string,
   content: string,
