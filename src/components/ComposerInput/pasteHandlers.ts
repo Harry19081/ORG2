@@ -35,17 +35,40 @@ export interface DropHandlerContext {
   insertPill: (attrs: ComposerPillAttrs) => void;
 }
 
+/** Max age (ms) for the window-level PR drag fallback payload. */
+const PR_DRAG_MAX_AGE = 30_000;
+
 /**
  * Returns a `drop` event handler for the contenteditable host that handles
  * `application/x-orgii-pr-reference` drag data created by `PrListRow`.
  * Returns `true` if the event was consumed.
+ *
+ * WKWebView (Tauri/macOS) strips custom MIME types from DataTransfer during
+ * cross-element drags, so we fall back to `window.__orgiiLastPrDrag` when
+ * `dataTransfer.getData()` returns an empty string.
  */
 export function createDropHandler(ctx: DropHandlerContext) {
   return (event: DragEvent): boolean => {
-    const prRefData = event.dataTransfer?.getData(
+    // Primary: read from dataTransfer (works in Chromium/Firefox).
+    let prRefData = event.dataTransfer?.getData(
       "application/x-orgii-pr-reference"
     );
+
+    // Fallback: WKWebView strips custom MIME types; use the window-level
+    // stash written by PrListRow.onDragStart if the primary read is empty.
+    if (!prRefData) {
+      const stash = window.__orgiiLastPrDrag;
+      if (stash && Date.now() - stash.timestamp < PR_DRAG_MAX_AGE) {
+        prRefData = JSON.stringify(stash);
+      }
+    }
+
     if (!prRefData) return false;
+
+    // Clear the stash so a subsequent unrelated drop doesn't accidentally
+    // re-use stale PR data.
+    window.__orgiiLastPrDrag = undefined;
+
     try {
       const prRef = JSON.parse(prRefData) as {
         prNumber: number;
@@ -57,9 +80,17 @@ export function createDropHandler(ctx: DropHandlerContext) {
         additions?: number;
         deletions?: number;
       };
+
+      // Guard against malformed payloads that would produce a blank pill.
+      if (!prRef.prNumber || !prRef.prTitle) {
+        logger.warn("PR drag payload missing prNumber or prTitle:", prRef);
+        return false;
+      }
+
       const pillPath = `pr://${prRef.prNumber}`;
       const displayName = `#${prRef.prNumber} ${prRef.prTitle}`;
       storePillText(pillPath, JSON.stringify(prRef));
+      event.preventDefault();
       ctx.insertPill({
         filePath: pillPath,
         fileName: displayName,
@@ -68,7 +99,6 @@ export function createDropHandler(ctx: DropHandlerContext) {
         lineStart: null,
         lineEnd: null,
       });
-      event.preventDefault();
       return true;
     } catch (parseError) {
       logger.warn("Failed to parse PR reference drop:", parseError);

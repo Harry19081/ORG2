@@ -71,18 +71,23 @@ const PrListRow: React.FC<PrListRowProps> = ({
 
   const handleDragStart = useCallback(
     (event: React.DragEvent<HTMLButtonElement>) => {
-      const dragPayload = JSON.stringify({
+      const prPayload = {
         prNumber: pr.number,
         prTitle: pr.title,
         prUrl: pr.url,
         prStatus: statusKey,
         sourceBranch: pr.head_branch,
         targetBranch: pr.base_branch,
-      });
+      };
+      const dragPayload = JSON.stringify(prPayload);
       event.dataTransfer.setData(
         "application/x-orgii-pr-reference",
         dragPayload
       );
+      // WKWebView (Tauri/macOS) may strip custom MIME types during drag-and-drop.
+      // Store the payload in a window-level variable so the drop handler can
+      // retrieve it even if dataTransfer.getData() returns "".
+      window.__orgiiLastPrDrag = { ...prPayload, timestamp: Date.now() };
       event.dataTransfer.effectAllowed = "copy";
     },
     [pr, statusKey]

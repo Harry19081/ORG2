@@ -445,11 +445,16 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
         }
       };
       const handleDragOverEvent = (event: DragEvent) => {
-        if (
-          event.dataTransfer?.types.includes("application/x-orgii-pr-reference")
-        ) {
+        const hasPrType =
+          event.dataTransfer?.types.includes(
+            "application/x-orgii-pr-reference"
+          ) ||
+          // WKWebView (Tauri/macOS) may strip custom MIME types from the
+          // types list during dragover. Fall back to the window-level stash.
+          !!window.__orgiiLastPrDrag;
+        if (hasPrType) {
           event.preventDefault();
-          event.dataTransfer.dropEffect = "copy";
+          if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
         }
       };
       const handleCutEvent = (event: ClipboardEvent) => {
