@@ -550,7 +550,7 @@ mod scope_tests {
 
     #[test]
     fn scope_serde_rejects_unknown_value() {
-        let result: Result<McpConfigScope, _> = serde_json::from_str("\"workspace\"");
+        let result: Result<McpConfigScope, _> = serde_json::from_str("\"bogus-scope\"");
         assert!(
             result.is_err(),
             "unknown scope wire value must fail closed; got Ok({:?})",

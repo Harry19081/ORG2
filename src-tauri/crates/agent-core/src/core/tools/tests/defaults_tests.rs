@@ -30,6 +30,8 @@ fn management_tools_are_not_supported_on_sde_worker_kind() {
 
 #[test]
 fn non_management_tools_supported_on_every_parent_agent_kind() {
+    // `control_orgii` rides with the management surface (OS/Custom only)
+    // in `supported_agents_for`, so it is excluded with them here.
     for entry in BUILTIN_TOOLS.iter().filter(|entry| {
         !matches!(
             entry.name,
@@ -37,6 +39,7 @@ fn non_management_tools_supported_on_every_parent_agent_kind() {
                 | tool_names::MANAGE_PROJECT
                 | tool_names::MANAGE_WORK_ITEM
                 | tool_names::MANAGE_AGENT_DEF
+                | tool_names::CONTROL_ORGII
         )
     }) {
         let agents = supported_agents_for(entry.name);
