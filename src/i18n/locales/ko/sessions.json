@@ -1651,6 +1651,12 @@
     "orgSendMessageDone": "{{recipient}} 에게 메시지를 보냈습니다",
     "orgSendMessageFailed": "{{recipient}} 에게 메시지를 보내지 못했습니다"
   },
+  "hoverCard": {
+    "commits": "커밋",
+    "filesChanged_one": "{{count}}개 파일 변경",
+    "filesChanged_other": "{{count}}개 파일 변경",
+    "branchesTouched": "브랜치"
+  },
   "modelPill": {
     "immutableInSession": "키 소스, Agent 유형 및 가격 티어는 세션 시작 시 고정됩니다. 변경하려면 새 세션을 시작하세요."
   },

@@ -221,7 +221,8 @@
     "noResults": "결과 없음",
     "sending": "전송 중…",
     "scanningFileExtensions": "파일 확장자 스캔 중…",
-    "testing": "테스트 중..."
+    "testing": "테스트 중...",
+    "empty": "비어 있음"
   },
   "pagination": {
     "totalItems": "{{count}}개 항목",

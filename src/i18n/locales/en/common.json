@@ -228,7 +228,8 @@
     "comingSoon": "Coming soon",
     "noResults": "No results",
     "sending": "Sending…",
-    "testing": "Testing..."
+    "testing": "Testing...",
+    "empty": "Empty"
   },
   "pagination": {
     "totalItems": "{{count}} items",

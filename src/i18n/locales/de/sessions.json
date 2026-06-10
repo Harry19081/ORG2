@@ -1651,6 +1651,12 @@
     "orgSendMessageDone": "Nachricht an {{recipient}} gesendet",
     "orgSendMessageFailed": "Senden der Nachricht an {{recipient}} fehlgeschlagen"
   },
+  "hoverCard": {
+    "commits": "Commits",
+    "filesChanged_one": "{{count}} Datei geändert",
+    "filesChanged_other": "{{count}} Dateien geändert",
+    "branchesTouched": "Branches"
+  },
   "modelPill": {
     "immutableInSession": "Schlüsselquelle, Agent-Typ und Preisstufe sind beim Sitzungsstart festgelegt. Starten Sie eine neue Sitzung, um sie zu ändern."
   },

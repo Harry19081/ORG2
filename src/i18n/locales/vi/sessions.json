@@ -1651,6 +1651,12 @@
     "orgSendMessageDone": "Đã gửi tin nhắn đến {{recipient}}",
     "orgSendMessageFailed": "Không gửi được tin nhắn đến {{recipient}}"
   },
+  "hoverCard": {
+    "commits": "Commit",
+    "filesChanged_one": "{{count}} tệp đã thay đổi",
+    "filesChanged_other": "{{count}} tệp đã thay đổi",
+    "branchesTouched": "Branch"
+  },
   "modelPill": {
     "immutableInSession": "Nguồn khóa, loại Agent và bậc giá được cố định khi bắt đầu phiên. Bắt đầu phiên mới để thay đổi."
   },

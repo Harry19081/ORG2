@@ -221,7 +221,8 @@
     "noResults": "Sin resultados",
     "sending": "Enviando…",
     "scanningFileExtensions": "Escaneando extensiones de archivo…",
-    "testing": "Probando..."
+    "testing": "Probando...",
+    "empty": "Vacío"
   },
   "pagination": {
     "totalItems": "{{count}} elementos",

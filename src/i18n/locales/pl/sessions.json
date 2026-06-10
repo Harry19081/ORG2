@@ -1673,6 +1673,14 @@
     "orgSendMessageDone": "Wysłano wiadomość do {{recipient}}",
     "orgSendMessageFailed": "Nie udało się wysłać wiadomości do {{recipient}}"
   },
+  "hoverCard": {
+    "commits": "Commity",
+    "filesChanged_one": "{{count}} plik zmieniony",
+    "filesChanged_few": "{{count}} pliki zmienione",
+    "filesChanged_many": "{{count}} plików zmienionych",
+    "filesChanged_other": "{{count}} plików zmienionych",
+    "branchesTouched": "Branche"
+  },
   "modelPill": {
     "immutableInSession": "Źródło klucza, typ Agenta i poziom cenowy są ustalane na początku sesji. Aby je zmienić, rozpocznij nową sesję."
   },

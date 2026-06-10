@@ -1657,6 +1657,13 @@
     "orgSendMessageDone": "Сообщение отправлено {{recipient}}",
     "orgSendMessageFailed": "Не удалось отправить сообщение {{recipient}}"
   },
+  "hoverCard": {
+    "commits": "Коммиты",
+    "filesChanged_one": "{{count}} файл изменён",
+    "filesChanged_few": "{{count}} файла изменено",
+    "filesChanged_other": "{{count}} файлов изменено",
+    "branchesTouched": "Ветки"
+  },
   "modelPill": {
     "immutableInSession": "Источник ключа, тип Agent и тарифный уровень фиксируются при запуске сессии. Чтобы изменить их, начните новую сессию."
   },

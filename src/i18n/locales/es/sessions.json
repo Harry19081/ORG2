@@ -1651,6 +1651,12 @@
     "orgSendMessageDone": "Mensaje enviado a {{recipient}}",
     "orgSendMessageFailed": "Error al enviar el mensaje a {{recipient}}"
   },
+  "hoverCard": {
+    "commits": "Commits",
+    "filesChanged_one": "{{count}} archivo modificado",
+    "filesChanged_other": "{{count}} archivos modificados",
+    "branchesTouched": "Ramas"
+  },
   "modelPill": {
     "immutableInSession": "La fuente de clave, el tipo de Agent y el nivel de precio se fijan al iniciar la sesión. Inicia una nueva sesión para cambiarlos."
   },

@@ -371,7 +371,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "Aucune soumission pour le moment",
-          "selectSubmission": "Sélectionnez une soumission pour afficher les détails.",
+          "selectSubmission": "Sélectionnez une soumission pour afficher les détails",
           "noCommits": "Aucun Commit pour le moment",
           "noPullRequests": "Aucune Pull Request pour le moment"
         }
@@ -1650,6 +1650,12 @@
     "orgSendMessageRunning": "Envoi du message à {{recipient}}",
     "orgSendMessageDone": "Message envoyé à {{recipient}}",
     "orgSendMessageFailed": "Échec de l'envoi du message à {{recipient}}"
+  },
+  "hoverCard": {
+    "commits": "Commits",
+    "filesChanged_one": "{{count}} fichier modifié",
+    "filesChanged_other": "{{count}} fichiers modifiés",
+    "branchesTouched": "Branches"
   },
   "modelPill": {
     "immutableInSession": "La source de clé, le type d'Agent et le palier tarifaire sont fixés au démarrage de la session. Démarrez une nouvelle session pour les modifier."

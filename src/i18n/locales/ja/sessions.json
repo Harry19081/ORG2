@@ -1651,6 +1651,12 @@
     "orgSendMessageDone": "{{recipient}} にメッセージを送信しました",
     "orgSendMessageFailed": "{{recipient}} へのメッセージ送信に失敗"
   },
+  "hoverCard": {
+    "commits": "コミット",
+    "filesChanged_one": "{{count}} ファイル変更",
+    "filesChanged_other": "{{count}} ファイル変更",
+    "branchesTouched": "ブランチ"
+  },
   "modelPill": {
     "immutableInSession": "キーソース、Agent タイプ、料金ティアはセッション開始時に固定されます。変更するには新しいセッションを開始してください。"
   },

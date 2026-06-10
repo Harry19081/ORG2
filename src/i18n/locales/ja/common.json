@@ -221,7 +221,8 @@
     "noResults": "結果なし",
     "sending": "送信中…",
     "scanningFileExtensions": "ファイル拡張子をスキャン中…",
-    "testing": "テスト中..."
+    "testing": "テスト中...",
+    "empty": "空"
   },
   "pagination": {
     "totalItems": "{{count}} 件",

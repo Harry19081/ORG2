@@ -221,7 +221,8 @@
     "noResults": "Không có kết quả",
     "sending": "Đang gửi…",
     "scanningFileExtensions": "Đang quét phần mở rộng tệp…",
-    "testing": "Đang kiểm tra..."
+    "testing": "Đang kiểm tra...",
+    "empty": "Trống"
   },
   "pagination": {
     "totalItems": "{{count}} mục",

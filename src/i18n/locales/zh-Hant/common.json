@@ -223,7 +223,8 @@
     "noResults": "無結果",
     "sending": "發送中…",
     "scanningFileExtensions": "正在掃描文件擴展名…",
-    "testing": "測試中..."
+    "testing": "測試中...",
+    "empty": "空"
   },
   "pagination": {
     "totalItems": "共 {{count}} 項",

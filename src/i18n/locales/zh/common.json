@@ -223,7 +223,8 @@
     "noResults": "无结果",
     "sending": "发送中…",
     "scanningFileExtensions": "正在扫描文件扩展名…",
-    "testing": "测试中..."
+    "testing": "测试中...",
+    "empty": "空"
   },
   "pagination": {
     "totalItems": "共 {{count}} 项",

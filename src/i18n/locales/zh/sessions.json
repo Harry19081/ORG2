@@ -378,7 +378,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "暂无提交",
-          "selectSubmission": "选择一项提交以查看详情。",
+          "selectSubmission": "选择一项提交以查看详情",
           "noCommits": "暂无 Commits",
           "noPullRequests": "暂无 Pull Requests"
         }
@@ -1654,6 +1654,12 @@
     "orgSendMessageRunning": "正在给 {{recipient}} 发消息",
     "orgSendMessageDone": "给 {{recipient}} 发消息",
     "orgSendMessageFailed": "给 {{recipient}} 发消息失败"
+  },
+  "hoverCard": {
+    "commits": "提交",
+    "filesChanged_one": "{{count}} 个文件已更改",
+    "filesChanged_other": "{{count}} 个文件已更改",
+    "branchesTouched": "分支"
   },
   "modelPill": {
     "immutableInSession": "密钥来源、Agent 类型和价格档位在会话启动时已固定。如需更改请新建会话。"

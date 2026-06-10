@@ -1651,6 +1651,12 @@
     "orgSendMessageDone": "{{recipient}} adresine mesaj gönderildi",
     "orgSendMessageFailed": "{{recipient}} adresine mesaj gönderilemedi"
   },
+  "hoverCard": {
+    "commits": "Commit",
+    "filesChanged_one": "{{count}} dosya değişti",
+    "filesChanged_other": "{{count}} dosya değişti",
+    "branchesTouched": "Branch'ler"
+  },
   "modelPill": {
     "immutableInSession": "Anahtar kaynağı, Agent türü ve fiyat kademesi oturum başlangıcında sabittir. Değiştirmek için yeni bir oturum başlatın."
   },

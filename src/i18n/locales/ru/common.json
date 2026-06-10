@@ -221,7 +221,8 @@
     "noResults": "Нет результатов",
     "sending": "Отправка…",
     "scanningFileExtensions": "Сканирование расширений файлов…",
-    "testing": "Тестирование..."
+    "testing": "Тестирование...",
+    "empty": "Пусто"
   },
   "pagination": {
     "totalItems": "{{count}} записей",

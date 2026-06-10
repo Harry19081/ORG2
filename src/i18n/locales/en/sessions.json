@@ -384,7 +384,7 @@
           "commits": "Commits",
           "pr": "PR",
           "empty": "No submissions yet",
-          "selectSubmission": "Select a submission to view details.",
+          "selectSubmission": "Select a submission to view details",
           "noCommits": "No Commits yet",
           "noPullRequests": "No Pull Requests yet"
         }
@@ -1674,6 +1674,12 @@
     "orgSendMessageRunning": "Sending message to {{recipient}}",
     "orgSendMessageDone": "Sent message to {{recipient}}",
     "orgSendMessageFailed": "Failed to send message to {{recipient}}"
+  },
+  "hoverCard": {
+    "commits": "Commits",
+    "filesChanged_one": "{{count}} file changed",
+    "filesChanged_other": "{{count}} files changed",
+    "branchesTouched": "Branches"
   },
   "modelPill": {
     "immutableInSession": "Key source, agent type, and price tier are fixed at session start. Start a new session to change them."

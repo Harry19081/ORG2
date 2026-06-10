@@ -221,7 +221,8 @@
     "noResults": "Sonuç yok",
     "sending": "Gönderiliyor…",
     "scanningFileExtensions": "Dosya uzantıları taranıyor…",
-    "testing": "Test ediliyor..."
+    "testing": "Test ediliyor...",
+    "empty": "Boş"
   },
   "pagination": {
     "totalItems": "{{count}} öğe",
