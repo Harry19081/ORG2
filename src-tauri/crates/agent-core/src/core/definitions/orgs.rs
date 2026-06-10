@@ -4,12 +4,35 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+#[cfg(not(test))]
+use std::sync::OnceLock;
 use tracing::{error, info};
 
 use key_vault::ModelType;
 
 use app_paths::agent_orgs as storage_path;
+
+#[cfg(not(test))]
+static PROCESS_STORE: OnceLock<Arc<AgentOrgsStore>> = OnceLock::new();
+
+/// Process-wide shared `AgentOrgsStore` — same singleton contract as
+/// `definitions_store()`. Tauri manages this `Arc`; library callers use
+/// this accessor instead of constructing ad-hoc stores that re-read the
+/// JSON file per call. Test builds return a fresh store per call for
+/// `ORGII_HOME` tempdir isolation.
+pub fn orgs_store() -> Arc<AgentOrgsStore> {
+    #[cfg(test)]
+    {
+        Arc::new(AgentOrgsStore::new())
+    }
+    #[cfg(not(test))]
+    {
+        PROCESS_STORE
+            .get_or_init(|| Arc::new(AgentOrgsStore::new()))
+            .clone()
+    }
+}
 
 // ── Types ──
 

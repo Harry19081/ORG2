@@ -111,7 +111,7 @@ pub async fn test_send_message(Json(request): Json<TestMessageRequest>) -> Json<
         }
 
         if os_state.get_session(&session_id).await.is_none() {
-            let store = agent_core::core::definitions::AgentDefinitionsStore::new();
+            let store = agent_core::definitions::definitions_store();
             let definition = agent_core::definitions::resolve_definition_by_id(
                 agent_core::definitions::OS_AGENT_ID,
                 Some(&store),
@@ -745,7 +745,7 @@ pub async fn test_prompt_cache_benchmark(
     }
 
     let definition = {
-        let store = agent_core::core::definitions::AgentDefinitionsStore::new();
+        let store = agent_core::definitions::definitions_store();
         agent_core::definitions::resolve_definition_by_id(
             agent_core::definitions::SDE_AGENT_ID,
             Some(&store),
@@ -806,7 +806,7 @@ pub struct ResolveAgentRequest {
 pub async fn test_resolve_agent(
     Json(request): Json<ResolveAgentRequest>,
 ) -> Json<serde_json::Value> {
-    use agent_core::core::definitions::{AgentDefinitionsStore, ResolvedAgent};
+    use agent_core::core::definitions::ResolvedAgent;
     use agent_core::core::session::overrides::SessionOverrides;
 
     let agent_id = request
@@ -815,7 +815,7 @@ pub async fn test_resolve_agent(
         .unwrap_or_else(|| agent_core::definitions::builtin::SDE_AGENT_ID.to_string());
 
     let result = tokio::task::spawn_blocking(move || {
-        let definitions = AgentDefinitionsStore::new();
+        let definitions = agent_core::definitions::definitions_store();
         let Some(mut def) = definitions.get(&agent_id) else {
             return serde_json::json!({
                 "error": format!("agent definition not found: {}", agent_id),

@@ -39,11 +39,11 @@ impl AgentDefinitionTool {
     }
 
     fn store(&self) -> &AgentDefinitionsStore {
-        self.app_handle.state::<AgentDefinitionsStore>().inner()
+        self.app_handle.state::<std::sync::Arc<AgentDefinitionsStore>>().inner()
     }
 
     fn org_store(&self) -> &AgentOrgsStore {
-        self.app_handle.state::<AgentOrgsStore>().inner()
+        self.app_handle.state::<std::sync::Arc<AgentOrgsStore>>().inner()
     }
 }
 

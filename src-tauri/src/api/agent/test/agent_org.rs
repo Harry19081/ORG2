@@ -176,7 +176,7 @@ pub async fn test_agent_org_seed(Json(body): Json<serde_json::Value>) -> Json<se
     let Some(handle) = crate::api::get_app_handle() else {
         return Json(serde_json::json!({ "ok": false, "error": "AppHandle not initialized." }));
     };
-    let store = handle.state::<AgentOrgsStore>();
+    let store = handle.state::<std::sync::Arc<AgentOrgsStore>>();
 
     match store.seed_for_test(def) {
         Ok(()) => Json(serde_json::json!({
@@ -261,7 +261,7 @@ pub async fn test_agent_org_launch_coordinator(
         return Json(serde_json::json!({ "ok": false, "error": "AppHandle not initialized." }));
     };
     let state = handle.state::<agent_core::state::AgentAppState>();
-    let org_store = handle.state::<AgentOrgsStore>();
+    let org_store = handle.state::<std::sync::Arc<AgentOrgsStore>>();
 
     let launch_log = format!(
         "[agent-org-e2e] launch-coordinator start org_id={} sync_turn={} native_harness_type={:?} content_len={}",

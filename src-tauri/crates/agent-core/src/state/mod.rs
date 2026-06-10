@@ -12,12 +12,13 @@
 
 pub mod commands;
 pub mod control_flow;
-mod integrations_store;
+pub mod integrations_store;
 mod session_runtime;
 mod unified;
 
-// `IntegrationsStore` and its `UpdateError` are reached only through the
-// deeper `state::integrations_store::*` path by sibling submodules
-// (`unified.rs`); they don't need to be flattened onto `state::*`.
+// `IntegrationsStore` and its `UpdateError` are reached through the
+// deeper `state::integrations_store::*` path; the module is public so
+// background subsystems and the main crate can call the process-wide
+// `integrations_store()` accessor.
 pub use session_runtime::{AgentSession, SessionRuntime};
 pub use unified::AgentAppState;

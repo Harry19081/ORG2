@@ -974,11 +974,14 @@ pub fn run() {
 
             // Agent Definitions and Orgs
 
-            // Initialize Agent Definitions store
-            app.manage(agent_core::definitions::AgentDefinitionsStore::new());
+            // Manage the process-wide store singletons. Library code that
+            // has no AppHandle reaches the SAME instances via
+            // `definitions_store()` / `orgs_store()` — one in-memory state,
+            // no per-call disk re-reads.
+            app.manage(agent_core::definitions::definitions_store());
             tracing::info!("[AgentDefinitions] Custom agent definitions loaded");
 
-            app.manage(agent_core::definitions::orgs::AgentOrgsStore::new());
+            app.manage(agent_core::definitions::orgs::orgs_store());
             tracing::info!("[AgentOrgs] Agent organizations loaded");
 
             // Initialize Settings state and file watcher

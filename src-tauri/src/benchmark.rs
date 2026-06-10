@@ -619,7 +619,7 @@ pub async fn benchmark_start_agent_batch(
                 Some(master_session_id.clone()),
             );
             let state = app_handle.state::<AgentAppState>();
-            let org_store = app_handle.state::<AgentOrgsStore>();
+            let org_store = app_handle.state::<std::sync::Arc<AgentOrgsStore>>();
             match session_launch_impl(&state, Some(org_store.inner()), params).await {
                 Ok(result) => {
                     mark_agent_batch_item_launched(&batch_id, &task_id, result).await;
@@ -1082,7 +1082,7 @@ fn spawn_agent_batch_task(
             Some(master_session_id.clone()),
         );
         let state = app_handle.state::<AgentAppState>();
-        let org_store = app_handle.state::<AgentOrgsStore>();
+        let org_store = app_handle.state::<std::sync::Arc<AgentOrgsStore>>();
         match session_launch_impl(&state, Some(org_store.inner()), params).await {
             Ok(result) => {
                 mark_agent_batch_item_launched(&batch_id, &task_id, result).await;

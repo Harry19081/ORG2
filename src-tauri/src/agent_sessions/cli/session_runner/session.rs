@@ -2518,9 +2518,9 @@ pub async fn run_session(
 /// nothing excluded) because the CLI session is already running; we do
 /// not want a missing definitions file to break rule-sync.
 fn resolve_sde_skills() -> agent_core::core::definitions::SkillsParams {
-    use agent_core::core::definitions::{AgentDefinitionsStore, ResolvedAgent, SkillsParams};
+    use agent_core::core::definitions::{ResolvedAgent, SkillsParams};
     use agent_core::core::session::overrides::SessionOverrides;
-    let definitions = AgentDefinitionsStore::new();
+    let definitions = agent_core::definitions::definitions_store();
     let Some(def) = definitions.get(agent_core::definitions::builtin::SDE_AGENT_ID) else {
         tracing::warn!(
             "[code_session] builtin:sde definition not found; using default skills config"

@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use crate::definitions::{AgentDefinition, AgentDefinitionsStore, SubAgentRef};
+use crate::definitions::{AgentDefinition, SubAgentRef};
 use crate::session::persistence as session_persistence;
 use crate::state::AgentAppState;
 use core_types::providers::NativeHarnessType;
@@ -122,7 +122,7 @@ async fn resolve_definition_from_id_or_session(
     agent_definition_id: Option<&str>,
 ) -> Result<AgentDefinition, String> {
     if let Some(definition_id) = agent_definition_id.filter(|id| !id.is_empty()) {
-        let store = AgentDefinitionsStore::new();
+        let store = crate::definitions::definitions_store();
         return store.get(definition_id).ok_or_else(|| {
             format!(
                 "work-item session '{}' references missing agent_definition_id '{}'",
@@ -142,7 +142,7 @@ async fn resolve_definition_for_launch(
     }
 
     if let Some(definition_id) = load_persisted_definition_id(session_id).await? {
-        let store = AgentDefinitionsStore::new();
+        let store = crate::definitions::definitions_store();
         return store.get(&definition_id).ok_or_else(|| {
             format!(
                 "session '{}' references missing persisted agent_definition_id '{}'",
@@ -235,7 +235,7 @@ mod tests {
         );
         let resolved = crate::definitions::resolved::ResolvedAgent::resolve(
             &definition,
-            Some(&crate::definitions::AgentDefinitionsStore::new()),
+            Some(&crate::definitions::definitions_store()),
             &overrides,
         )
         .expect("work-item launch definition should resolve");

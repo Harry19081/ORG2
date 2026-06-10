@@ -206,7 +206,7 @@ pub async fn agent_send_message(
 #[tauri::command]
 pub async fn session_launch(
     state: tauri::State<'_, AgentAppState>,
-    org_store: tauri::State<'_, AgentOrgsStore>,
+    org_store: tauri::State<'_, std::sync::Arc<AgentOrgsStore>>,
     params: launch::SessionLaunchParams,
 ) -> Result<launch::SessionLaunchResult, String> {
     launch::session_launch_impl(&state, Some(org_store.inner()), params).await

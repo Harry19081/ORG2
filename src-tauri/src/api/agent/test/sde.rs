@@ -207,7 +207,7 @@ pub async fn test_sde_message(Json(request): Json<SdeTestRequest>) -> Json<serde
     }
 
     let mut definition = if let Some(ref def_id) = request.agent_definition_id {
-        let store = agent_core::core::definitions::AgentDefinitionsStore::new();
+        let store = agent_core::definitions::definitions_store();
         match agent_core::definitions::resolve_definition_by_id(def_id, Some(&store)) {
             Ok(definition) => definition,
             Err(err) => {
@@ -217,7 +217,7 @@ pub async fn test_sde_message(Json(request): Json<SdeTestRequest>) -> Json<serde
             }
         }
     } else {
-        let store = agent_core::core::definitions::AgentDefinitionsStore::new();
+        let store = agent_core::definitions::definitions_store();
         agent_core::definitions::resolve_definition_by_id(
             agent_core::definitions::SDE_AGENT_ID,
             Some(&store),

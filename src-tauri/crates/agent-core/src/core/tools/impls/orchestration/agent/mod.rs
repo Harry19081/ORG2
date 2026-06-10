@@ -39,7 +39,7 @@ use core_types::providers::NativeHarnessType;
 use crate::definitions::builtin::{EXPLORE_AGENT_ID, GENERAL_AGENT_ID};
 use crate::definitions::schema::SubAgentIsolation;
 use crate::definitions::{
-    resolve_definition_by_id, AgentDefinition, AgentDefinitionsStore, DelegationConfig,
+    resolve_definition_by_id, AgentDefinition, DelegationConfig,
 };
 use crate::providers::traits::LLMProvider;
 use crate::session::workspace::SessionWorkspace;
@@ -270,7 +270,7 @@ impl AgentTool {
     // ── Agent resolution ────────────────────────────────────────────
 
     fn resolve_agent(&self, agent_id: &str) -> Result<AgentDefinition, ToolError> {
-        let store = AgentDefinitionsStore::new();
+        let store = crate::definitions::definitions_store();
         resolve_definition_by_id(agent_id, Some(&store)).map_err(ToolError::InvalidParams)
     }
 

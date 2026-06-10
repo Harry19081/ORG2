@@ -216,7 +216,7 @@ pub fn debug_parse_work_item_launch_sources(kind: &str, content: &str) -> Result
 
 /// Load a full AgentDefinition by its ID (for account/model resolution).
 fn load_agent_def(def_id: &str) -> Result<crate::definitions::AgentDefinition, String> {
-    let store = crate::definitions::AgentDefinitionsStore::new();
+    let store = crate::definitions::definitions_store();
     if crate::definitions::builtin::is_builtin_agent(def_id) {
         return crate::definitions::resolve_definition_by_id(def_id, Some(&store));
     }

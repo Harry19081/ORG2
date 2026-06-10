@@ -16,7 +16,7 @@ const WORK_ITEM_PRIORITY_NONE: &str = "none";
 #[tauri::command]
 pub async fn project_fire_routine(
     state: tauri::State<'_, AgentAppState>,
-    org_store: tauri::State<'_, AgentOrgsStore>,
+    org_store: tauri::State<'_, std::sync::Arc<AgentOrgsStore>>,
     app: tauri::AppHandle,
     routine_id: String,
 ) -> Result<types::RoutineFireResult, String> {

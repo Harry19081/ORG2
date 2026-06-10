@@ -36,7 +36,7 @@ pub(super) fn load_agent_definition(session_id: &str) -> (Option<String>, Option
         return (None, None);
     };
 
-    let store = crate::definitions::AgentDefinitionsStore::new();
+    let store = crate::definitions::definitions_store();
     match crate::definitions::resolver::resolve_definition_by_id(def_id, Some(&store)) {
         Ok(def) => (def.soul_content, Some(def_id.to_string())),
         Err(err) => {

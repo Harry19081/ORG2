@@ -12,19 +12,16 @@ use super::batch::{
 use super::events::EventCounts;
 use super::types::ConsolidationTrigger;
 use crate::core::definitions::resolve_learnings_for;
-use crate::integrations::config::{EmbeddingConfig, IntegrationsConfig, IntegrationsResult};
+use crate::integrations::config::EmbeddingConfig;
 use crate::intelligence::memory::learnings::{self, ConsolidationRunRecord, Learning};
 
 fn load_embedding_config_for_consolidation() -> Result<EmbeddingConfig, String> {
-    embedding_config_from_integrations(IntegrationsConfig::load_or_default())
-}
-
-fn embedding_config_from_integrations(
-    config: IntegrationsResult<IntegrationsConfig>,
-) -> Result<EmbeddingConfig, String> {
-    config
-        .map(|config| config.embedding)
-        .map_err(|err| format!("load integrations config for consolidation: {err}"))
+    // Read through the process-wide IntegrationsStore so in-memory edits
+    // from the settings UI are visible to background consolidation —
+    // never re-read integrations.json from disk directly.
+    Ok(crate::state::integrations_store::integrations_store()
+        .snapshot()
+        .embedding)
 }
 
 /// Entry: drain all pending learnings for `scope`, group by `account_id`,
@@ -190,26 +187,13 @@ pub async fn consolidate(
 
 #[cfg(test)]
 mod tests {
-    use super::embedding_config_from_integrations;
-    use crate::integrations::config::{IntegrationsConfig, IntegrationsError};
+    use super::load_embedding_config_for_consolidation;
 
     #[test]
-    fn embedding_config_from_integrations_propagates_load_error() {
-        let result = serde_json::from_str::<IntegrationsConfig>("{ invalid")
-            .map_err(IntegrationsError::Parse);
-
-        let err = embedding_config_from_integrations(result).unwrap_err();
-        assert!(
-            err.contains("load integrations config for consolidation"),
-            "got: {}",
-            err
-        );
-    }
-
-    #[test]
-    fn embedding_config_from_integrations_reads_embedding_config() {
-        let cfg = IntegrationsConfig::default();
-        let embedding = embedding_config_from_integrations(Ok(cfg)).expect("embedding config");
+    fn embedding_config_reads_through_integrations_store() {
+        // cfg(test) integrations_store() returns a fresh store; defaults
+        // resolve to the "auto" embedding provider.
+        let embedding = load_embedding_config_for_consolidation().expect("embedding config");
         assert_eq!(embedding.provider, "auto");
     }
 }

@@ -142,7 +142,7 @@ fn spawn_execute_pending_fire(
     tauri::async_runtime::spawn(async move {
         use tauri::Manager;
         let state = app.state::<crate::state::AgentAppState>();
-        let org_store = app.state::<crate::definitions::orgs::AgentOrgsStore>();
+        let org_store = app.state::<std::sync::Arc<crate::definitions::orgs::AgentOrgsStore>>();
         if let Err(err) = crate::state::commands::routines::execute_pending_fire(
             state.inner(),
             org_store.inner(),

@@ -49,31 +49,16 @@ pub struct AgentStatusResponse {
 /// 2026-04-30 because every consumer (the channel E2E
 /// `reset_policy_defaults` scenario) reads `integrations`, not `tools`.
 pub async fn get_status() -> Json<AgentStatusResponse> {
-    use agent_core::core::definitions::AgentDefinitionsStore;
-    use agent_core::integrations::config::IntegrationsConfig;
-
-    let store = AgentDefinitionsStore::new();
+    let store = agent_core::definitions::definitions_store();
     let model = store
         .get(agent_core::definitions::builtin::OS_AGENT_ID)
         .and_then(|d| d.selected_model_id)
         .unwrap_or_default();
 
-    // Same fall-back posture as `get_config`: the response type cannot
-    // propagate `Result`, so a corrupt `~/.orgii/integrations.json`
-    // surfaces in logs while the route still returns 200 with default
-    // integration values. The foreground UI write path is gated
-    // separately by `IntegrationsStore`'s `load_failure` latch.
-    let integrations = match IntegrationsConfig::load_or_default() {
-        Ok(cfg) => cfg,
-        Err(err) => {
-            tracing::error!(
-                "[api] get_status: integrations.json failed to load — \
-                 status response will carry default integration values \
-                 until the file is fixed: {err}"
-            );
-            IntegrationsConfig::default()
-        }
-    };
+    // Read through the process-wide IntegrationsStore so this endpoint
+    // observes the same in-memory state the settings UI mutates — never
+    // re-read integrations.json from disk directly.
+    let integrations = agent_core::state::integrations_store::integrations_store().snapshot();
 
     Json(AgentStatusResponse {
         status: "ok",
@@ -93,28 +78,14 @@ pub async fn get_status() -> Json<AgentStatusResponse> {
 /// view that still carries the correct `learnings` and `embedding` fields —
 /// the fields the UI actually reads from this endpoint.
 pub async fn get_config() -> Json<dto::AgentRuntimeView> {
-    use agent_core::core::definitions::{resolved::ResolvedAgent, AgentDefinitionsStore};
+    use agent_core::core::definitions::resolved::ResolvedAgent;
     use agent_core::core::session::overrides::SessionOverrides;
 
-    // get_config returns a non-Result `AgentRuntimeView`, so a corrupt
-    // `integrations.json` cannot be surfaced to the caller as a typed
-    // error. Falling back to the in-memory default preserves the UI's
-    // ability to render the agent definition (model id, learnings,
-    // capabilities) but the integration-derived fields (embedding
-    // provider/model, tool feature flags) will be defaults until the
-    // user fixes the file. Log the parse error so the cause is
-    // recoverable from logs instead of being completely silent.
-    let integrations = match agent_core::integrations::config::IntegrationsConfig::load_or_default()
-    {
-        Ok(cfg) => cfg,
-        Err(err) => {
-            tracing::error!(
-                "[api] get_config: integrations.json failed to load — UI will see default integration values until the file is fixed: {err}"
-            );
-            agent_core::integrations::config::IntegrationsConfig::default()
-        }
-    };
-    let store = AgentDefinitionsStore::new();
+    // Read through the process-wide IntegrationsStore (same in-memory
+    // state the settings UI mutates) — never re-read integrations.json
+    // from disk directly.
+    let integrations = agent_core::state::integrations_store::integrations_store().snapshot();
+    let store = agent_core::definitions::definitions_store();
     let def = store
         .get(agent_core::definitions::builtin::OS_AGENT_ID)
         .unwrap_or_else(agent_core::definitions::os_agent);

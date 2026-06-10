@@ -191,7 +191,7 @@ pub async fn test_learnings_get_status(
 /// `auto_dream_enabled`. `agent_id` is optional and defaults to
 /// `builtin:sde`; the learning suite pins it to `builtin:os` explicitly.
 pub async fn test_agent_config_set(Json(raw): Json<serde_json::Value>) -> Json<serde_json::Value> {
-    use agent_core::core::definitions::AgentDefinitionsStore;
+    
 
     let obj = match raw.as_object() {
         Some(o) => o,
@@ -203,7 +203,7 @@ pub async fn test_agent_config_set(Json(raw): Json<serde_json::Value>) -> Json<s
         .and_then(|v| v.as_str())
         .unwrap_or(agent_core::definitions::builtin::SDE_AGENT_ID)
         .to_string();
-    let store = AgentDefinitionsStore::new();
+    let store = agent_core::definitions::definitions_store();
     let updated = match store.update_with_overlay(&target_id, |def| {
         let learnings = def.learnings.get_or_insert_with(Default::default);
         if let Some(val) = obj.get("learnings_enabled") {
@@ -243,14 +243,14 @@ pub async fn test_agent_config_set(Json(raw): Json<serde_json::Value>) -> Json<s
 pub async fn test_agent_config_reset(
     Json(raw): Json<serde_json::Value>,
 ) -> Json<serde_json::Value> {
-    use agent_core::core::definitions::AgentDefinitionsStore;
+    
 
     let agent_id = raw
         .get("agent_id")
         .and_then(|v| v.as_str())
         .unwrap_or(agent_core::definitions::builtin::SDE_AGENT_ID)
         .to_string();
-    let store = AgentDefinitionsStore::new();
+    let store = agent_core::definitions::definitions_store();
     match store.reset_builtin(&agent_id) {
         Ok(()) => Json(serde_json::json!({ "ok": true, "agent_id": agent_id })),
         Err(err) => Json(serde_json::json!({ "error": err })),

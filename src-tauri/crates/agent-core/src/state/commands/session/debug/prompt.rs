@@ -136,7 +136,7 @@ pub struct PromptDumpResult {
 #[tauri::command]
 pub async fn prompt_dump(
     state: tauri::State<'_, AgentAppState>,
-    defs: tauri::State<'_, AgentDefinitionsStore>,
+    defs: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     session_id: String,
 ) -> Result<PromptDumpResult, String> {
     let session = state

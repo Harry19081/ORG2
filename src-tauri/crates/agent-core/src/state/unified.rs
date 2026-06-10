@@ -200,7 +200,7 @@ impl AgentAppState {
             pty_sessions: None,
             app_handle: None,
             bus,
-            integrations: Arc::new(IntegrationsStore::new()),
+            integrations: crate::state::integrations_store::integrations_store(),
             sessions: Arc::clone(&sessions),
             current_account_id: Arc::new(Mutex::new(None)),
             running: Arc::new(AtomicBool::new(false)),

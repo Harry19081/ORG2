@@ -13,14 +13,14 @@ use super::status::is_active_status;
 use super::types::{SessionAggregateRecord, SessionCategory};
 
 pub struct AgentMetadataResolver {
-    store: agent_core::definitions::AgentDefinitionsStore,
+    store: std::sync::Arc<agent_core::definitions::AgentDefinitionsStore>,
     warned_definition_ids: HashSet<String>,
 }
 
 impl AgentMetadataResolver {
     pub fn new() -> Self {
         Self {
-            store: agent_core::definitions::AgentDefinitionsStore::new(),
+            store: agent_core::definitions::definitions_store(),
             warned_definition_ids: HashSet::new(),
         }
     }

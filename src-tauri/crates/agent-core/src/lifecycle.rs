@@ -13,7 +13,6 @@ use crate::bus::{broadcast_event, event_pipeline_bridge};
 use crate::coordination::agent_inbox::{MemberIdleReason, SYSTEM_SENDER_ID};
 use crate::coordination::agent_org_runs::{AgentOrgRunContext, AgentOrgRunStore};
 use crate::coordination::agent_org_tasks::{self, AgentOrgTaskStore};
-use crate::definitions::orgs::AgentOrgsStore;
 use crate::persistence::db_helpers::AgentSessionStatus;
 use crate::session::persistence as session_persistence;
 use crate::session::turn::streaming::classify_streaming_error_message;
@@ -204,7 +203,7 @@ fn requeue_agent_org_member_in_progress_work(
     let Some(member_id) = record.org_member_id else {
         return Ok(None);
     };
-    let store = AgentOrgsStore::new();
+    let store = crate::definitions::orgs::orgs_store();
     let Some(context) = AgentOrgRunStore::context_for_session_with_parent_walk(session_id, &store)?
     else {
         return Ok(None);

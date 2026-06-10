@@ -20,7 +20,6 @@ use crate::definitions::orgs::{
     is_cli_agent_org_reference, parse_cli_agent_org_reference, AgentOrgsStore, OrgDefinition,
     OrgMember, OrgMemberLaunchOverride, OrgMemberRuntimeConfig,
 };
-use crate::definitions::AgentDefinitionsStore;
 use crate::session::persistence::{
     self as session_persistence, session_type, UnifiedSessionRecord,
 };
@@ -719,7 +718,7 @@ fn validate_launch_agent_definitions(
     agent_definition_id: Option<&str>,
     org_definition: Option<&OrgDefinition>,
 ) -> Result<(), String> {
-    let store = AgentDefinitionsStore::new();
+    let store = crate::definitions::definitions_store();
 
     if let Some(definition_id) = agent_definition_id.filter(|id| !id.trim().is_empty()) {
         if store.get(definition_id).is_none() {

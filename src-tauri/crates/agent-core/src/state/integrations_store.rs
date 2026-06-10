@@ -24,11 +24,37 @@
 //! mutate the store.
 
 use std::path::PathBuf;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+#[cfg(not(test))]
+use std::sync::OnceLock;
 use tracing::{error, info};
 
 use crate::integrations::{IntegrationsConfig, IntegrationsError};
 use app_paths as paths;
+
+#[cfg(not(test))]
+static PROCESS_STORE: OnceLock<Arc<IntegrationsStore>> = OnceLock::new();
+
+/// Process-wide shared `IntegrationsStore`.
+///
+/// `AgentAppState.integrations` holds this same `Arc`, and background
+/// subsystems with no state handle (consolidation, HTTP debug endpoints)
+/// reach it here instead of re-reading `integrations.json` from disk —
+/// eliminating the read-path split brain where in-memory edits were not
+/// yet visible to direct `load_or_default()` callers. Test builds return
+/// a fresh store per call for `ORGII_HOME` tempdir isolation.
+pub fn integrations_store() -> Arc<IntegrationsStore> {
+    #[cfg(test)]
+    {
+        Arc::new(IntegrationsStore::new())
+    }
+    #[cfg(not(test))]
+    {
+        PROCESS_STORE
+            .get_or_init(|| Arc::new(IntegrationsStore::new()))
+            .clone()
+    }
+}
 
 /// Thread-safe owner of the in-memory `IntegrationsConfig`. Held by
 /// `AgentAppState.integrations`.

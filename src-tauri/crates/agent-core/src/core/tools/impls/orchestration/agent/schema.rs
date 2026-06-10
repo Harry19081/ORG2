@@ -9,7 +9,7 @@
 use serde_json::{json, Value};
 
 use crate::definitions::builtin::{get_builtin_agents, EXPLORE_AGENT_ID, GENERAL_AGENT_ID};
-use crate::definitions::{AgentDefinitionsStore, AgentTier};
+use crate::definitions::AgentTier;
 
 /// Static description shown to humans (e.g. tool inspector).
 pub(super) const DESCRIPTION: &str =
@@ -75,7 +75,7 @@ pub fn llm_visible_agent_ids(allowed_subagents: Option<&Vec<String>>) -> Vec<Str
         ids.push(agent.id.clone());
     }
 
-    let store = AgentDefinitionsStore::new();
+    let store = crate::definitions::definitions_store();
     if let Ok(custom_agents) = store.agents.lock() {
         for agent in custom_agents.iter() {
             let delegatable = agent
@@ -137,7 +137,7 @@ pub(super) fn llm_description(allowed_subagents: Option<&Vec<String>>) -> Option
     }
 
     // Custom agents from the store (snapshot under lock).
-    let store = AgentDefinitionsStore::new();
+    let store = crate::definitions::definitions_store();
     if let Ok(custom_agents) = store.agents.lock() {
         for agent in custom_agents.iter() {
             let delegatable = agent

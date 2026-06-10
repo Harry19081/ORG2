@@ -130,7 +130,7 @@ pub fn list_skills_with_config(
 /// workspace-presence heuristic for backward compatibility.
 #[tauri::command]
 pub async fn skills_list(
-    store: tauri::State<'_, AgentDefinitionsStore>,
+    store: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     workspace_path: Option<String>,
     agent_id: Option<String>,
 ) -> Result<Vec<SkillInfo>, String> {
@@ -161,7 +161,7 @@ pub async fn skills_read(workspace_path: Option<String>, name: String) -> Result
 /// through `update` for custom agents.
 #[tauri::command]
 pub async fn skills_toggle(
-    store: tauri::State<'_, AgentDefinitionsStore>,
+    store: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     app_state: tauri::State<'_, AgentAppState>,
     workspace_path: Option<String>,
     agent_id: Option<String>,

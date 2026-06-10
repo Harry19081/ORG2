@@ -21,11 +21,41 @@
 //! 2. Else: lookup in the user-definitions vec.
 
 use std::collections::BTreeMap;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+#[cfg(not(test))]
+use std::sync::OnceLock;
 use tracing::{error, info, warn};
 
 use super::schema::AgentDefinition;
 use app_paths::{agent_definitions as storage_path, builtin_overrides as overrides_path};
+
+#[cfg(not(test))]
+static PROCESS_STORE: OnceLock<Arc<AgentDefinitionsStore>> = OnceLock::new();
+
+/// Process-wide shared `AgentDefinitionsStore`.
+///
+/// This is the ONLY way production code should obtain a store. The Tauri
+/// setup manages the same `Arc`, so command handlers
+/// (`State<'_, Arc<AgentDefinitionsStore>>`) and library callers observe
+/// one consistent in-memory state — no per-call disk re-reads, no
+/// write-path/read-path split brain, and the one-shot migrations in
+/// `AgentDefinitionsStore::new()` run exactly once per process.
+///
+/// In `cfg(test)` builds this returns a FRESH store per call so tests that
+/// point `ORGII_HOME` at a tempdir (`OrgiiHomeGuard`) stay isolated from
+/// each other — mirroring the historical ad-hoc-construction behavior.
+pub fn definitions_store() -> Arc<AgentDefinitionsStore> {
+    #[cfg(test)]
+    {
+        Arc::new(AgentDefinitionsStore::new())
+    }
+    #[cfg(not(test))]
+    {
+        PROCESS_STORE
+            .get_or_init(|| Arc::new(AgentDefinitionsStore::new()))
+            .clone()
+    }
+}
 
 /// Store for user-created agent definitions and builtin overrides.
 pub struct AgentDefinitionsStore {

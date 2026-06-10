@@ -33,7 +33,6 @@ use core_types::providers::NativeHarnessType;
 
 use crate::core::definitions::resolved::{ResolveError, ResolvedAgent};
 use crate::core::definitions::resolver;
-use crate::core::definitions::store::AgentDefinitionsStore;
 use crate::core::definitions::AgentDefinition;
 use crate::core::session::overrides::SessionOverrides;
 use crate::init::launch_spec::AgentLaunchSpec;
@@ -157,7 +156,7 @@ fn resolve_for_session(
 > {
     let integrations = state.integrations.snapshot();
     let overrides = SessionOverrides::new(Some(workspace), None);
-    let store = AgentDefinitionsStore::new();
+    let store = crate::definitions::definitions_store();
 
     // Clone so we can pin `selected_model_id` without disturbing the
     // registered in-memory definition (which might be shared across
@@ -257,7 +256,7 @@ fn load_agent_org_context(
         return None;
     };
     use tauri::Manager;
-    let org_store = handle.state::<crate::definitions::orgs::AgentOrgsStore>();
+    let org_store = handle.state::<std::sync::Arc<crate::definitions::orgs::AgentOrgsStore>>();
     match crate::coordination::agent_org_runs::AgentOrgRunStore::context_for_session_with_parent_walk(
         session_id,
         org_store.inner(),

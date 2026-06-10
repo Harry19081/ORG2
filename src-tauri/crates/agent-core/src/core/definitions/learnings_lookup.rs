@@ -23,13 +23,12 @@
 
 use super::resolver::resolve_definition;
 use super::schema::AgentLearningsConfig;
-use super::store::AgentDefinitionsStore;
 
 /// Resolve the [`AgentLearningsConfig`] for `agent_id`. Never fails on
 /// missing `selected_model_id` — that is a runtime-session concern and
 /// has no bearing on whether learnings should run.
 pub fn resolve_learnings_for(agent_id: &str) -> AgentLearningsConfig {
-    let store = AgentDefinitionsStore::new();
+    let store = crate::definitions::definitions_store();
     let Some(def) = store.get(agent_id) else {
         return AgentLearningsConfig::default();
     };

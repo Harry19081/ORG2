@@ -44,7 +44,7 @@ pub async fn external_import_detect(
 #[tauri::command]
 pub async fn external_import_apply(
     selections: Vec<ImportSelection>,
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
 ) -> Result<ImportReport, String> {
     Ok(apply_selections(selections, &state))
 }

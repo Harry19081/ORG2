@@ -114,7 +114,7 @@ pub struct SessionGeneralSnapshot {
 #[tauri::command]
 pub async fn debug_session_general_snapshot(
     state: tauri::State<'_, AgentAppState>,
-    defs: tauri::State<'_, AgentDefinitionsStore>,
+    defs: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     session_id: String,
 ) -> Result<SessionGeneralSnapshot, String> {
     let session = state

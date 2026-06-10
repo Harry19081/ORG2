@@ -981,7 +981,7 @@ fn agent_org_context_for_session(
     };
 
     use tauri::Manager;
-    let org_store = handle.state::<AgentOrgsStore>();
+    let org_store = handle.state::<std::sync::Arc<AgentOrgsStore>>();
     AgentOrgRunStore::context_for_session_with_parent_walk(session_id, org_store.inner())
 }
 

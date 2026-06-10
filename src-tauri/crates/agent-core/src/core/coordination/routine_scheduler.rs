@@ -106,7 +106,7 @@ async fn evaluate_routine(
 async fn fire(app: &tauri::AppHandle, routine: &RoutineDefinition, scheduled_at: &DateTime<Utc>) {
     use tauri::Manager;
     let state = app.state::<crate::state::AgentAppState>();
-    let org_store = app.state::<crate::definitions::orgs::AgentOrgsStore>();
+    let org_store = app.state::<std::sync::Arc<crate::definitions::orgs::AgentOrgsStore>>();
     let key = idempotency_key(&routine.id, scheduled_at);
 
     info!(

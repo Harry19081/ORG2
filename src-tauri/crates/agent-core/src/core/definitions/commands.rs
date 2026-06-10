@@ -20,7 +20,7 @@ use crate::state::AgentAppState;
 /// `AgentDefinition::built_in`.
 #[tauri::command]
 pub async fn agent_definitions_list_all(
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
 ) -> Result<Vec<AgentDefinition>, String> {
     let mut all = get_builtin_agents();
     let user_agents = state
@@ -33,7 +33,7 @@ pub async fn agent_definitions_list_all(
 
 #[tauri::command]
 pub async fn agent_definitions_add(
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     agent_json: String,
 ) -> Result<String, String> {
     let mut agent: AgentDefinition =
@@ -57,7 +57,7 @@ pub async fn agent_definitions_add(
 
 #[tauri::command]
 pub async fn agent_definitions_update(
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     app_state: tauri::State<'_, AgentAppState>,
     agent_json: String,
 ) -> Result<(), String> {
@@ -91,7 +91,7 @@ pub async fn agent_definitions_update(
 
 #[tauri::command]
 pub async fn agent_definitions_remove(
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     app_state: tauri::State<'_, AgentAppState>,
     agent_id: String,
 ) -> Result<bool, String> {
@@ -125,7 +125,7 @@ pub async fn agent_definitions_remove(
 
 #[tauri::command]
 pub async fn agent_orgs_list(
-    state: tauri::State<'_, AgentOrgsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentOrgsStore>>,
 ) -> Result<Vec<OrgDefinition>, String> {
     let orgs = state
         .orgs
@@ -136,7 +136,7 @@ pub async fn agent_orgs_list(
 
 #[tauri::command]
 pub async fn agent_orgs_add(
-    state: tauri::State<'_, AgentOrgsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentOrgsStore>>,
     org_json: String,
 ) -> Result<String, String> {
     let org: OrgDefinition =
@@ -159,7 +159,7 @@ pub async fn agent_orgs_add(
 
 #[tauri::command]
 pub async fn agent_orgs_update(
-    state: tauri::State<'_, AgentOrgsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentOrgsStore>>,
     org_json: String,
 ) -> Result<(), String> {
     let org: OrgDefinition =
@@ -182,7 +182,7 @@ pub async fn agent_orgs_update(
 
 #[tauri::command]
 pub async fn agent_orgs_remove(
-    state: tauri::State<'_, AgentOrgsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentOrgsStore>>,
     org_id: String,
 ) -> Result<bool, String> {
     let mut orgs = state
@@ -269,7 +269,7 @@ pub async fn agent_org_run_list(limit: Option<usize>) -> Result<Vec<InboxRunSumm
 
 #[tauri::command]
 pub async fn agent_def_get(
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     agent_id: String,
 ) -> Result<AgentDefinition, String> {
     state
@@ -284,7 +284,7 @@ pub async fn agent_command_risk_rules_default() -> CommandRiskRules {
 
 #[tauri::command]
 pub async fn agent_def_update_patch(
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     app_state: tauri::State<'_, AgentAppState>,
     agent_id: String,
     patch: AgentDefinitionPatch,
@@ -310,7 +310,7 @@ pub async fn agent_def_update_patch(
 /// returns an error for non-builtin ids.
 #[tauri::command]
 pub async fn agent_def_reset_builtin(
-    state: tauri::State<'_, AgentDefinitionsStore>,
+    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     app_state: tauri::State<'_, AgentAppState>,
     agent_id: String,
 ) -> Result<AgentDefinition, String> {
