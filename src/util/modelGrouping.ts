@@ -113,16 +113,35 @@ const FAMILY_PATTERNS: {
 ];
 
 /** Anthropic model names that should appear in group labels. */
-const CLAUDE_MODEL_NAMES = new Set(["sonnet", "haiku", "opus"]);
+const CLAUDE_MODEL_NAMES = new Set([
+  "sonnet",
+  "haiku",
+  "opus",
+  "fable",
+  "mythos",
+]);
 
 function parseClaude(rest: string): ParsedGroup {
   const parts = rest.split("-");
 
   function formatClaudeLabel(version: string): string {
     const modelName = parts.find((p) => CLAUDE_MODEL_NAMES.has(p));
-    if (!modelName) return `Claude ${version}`;
-    const modelLabel = modelName.charAt(0).toUpperCase() + modelName.slice(1);
-    return `${modelLabel} ${version}`;
+    if (modelName) {
+      const modelLabel = modelName.charAt(0).toUpperCase() + modelName.slice(1);
+      return `${modelLabel} ${version}`;
+    }
+    // No canonical Anthropic model name (sonnet / haiku / opus). Surface the
+    // first non-numeric, non-empty segment as the codename so unreleased /
+    // preview models like `claude-fable-5` show as "Claude Fable 5" instead
+    // of getting collapsed to a bare "Claude 5".
+    const codename = parts.find(
+      (p) => p.length > 0 && !/^\d+(\.\d+)?$/.test(p) && p !== "claude"
+    );
+    if (codename) {
+      const codeLabel = codename.charAt(0).toUpperCase() + codename.slice(1);
+      return `Claude ${codeLabel} ${version}`;
+    }
+    return `Claude ${version}`;
   }
 
   for (const part of parts) {

@@ -33,11 +33,26 @@ pub struct CodexOauthListModelsRequest {
     pub id_token: Option<String>,
 }
 
+#[derive(Debug, Deserialize)]
+struct GeminiOauthModelsResponse {
+    #[serde(default)]
+    models: Vec<GeminiOauthModelInfo>,
+}
+
+#[derive(Debug, Deserialize)]
+struct GeminiOauthModelInfo {
+    #[serde(default)]
+    name: String,
+}
+
 use crate::provider_config::get_provider_config;
 
 const CLAUDE_CODE_OAUTH_MODELS_URL: &str = "https://api.anthropic.com/v1/models";
 const CLAUDE_CODE_OAUTH_BETA: &str = "oauth-2025-04-20";
 const CLAUDE_CODE_OAUTH_USER_AGENT: &str = "claude-cli/2.1.78 (orgii, cli)";
+
+const GEMINI_OAUTH_MODELS_URL: &str =
+    "https://generativelanguage.googleapis.com/v1beta/models";
 
 /// Get the default base URL for a provider (without /v1 suffix for OpenAI-compat validation).
 /// Uses the unified provider_config module as the single source of truth.
@@ -484,6 +499,119 @@ pub async fn codex_oauth_list_models(
     Ok(models)
 }
 
+async fn gemini_oauth_list_models_from_url(
+    access_token: &str,
+    models_url: &str,
+) -> Result<Vec<String>, String> {
+    let token = access_token.trim();
+    if token.is_empty() {
+        return Err("Gemini OAuth access token is empty".to_string());
+    }
+
+    let response = reqwest::Client::new()
+        .get(models_url)
+        .header("Authorization", format!("Bearer {token}"))
+        .timeout(std::time::Duration::from_secs(15))
+        .send()
+        .await
+        .map_err(|err| format!("Gemini OAuth model discovery request failed: {err}"))?;
+
+    let status = response.status();
+    let body = response
+        .text()
+        .await
+        .map_err(|err| format!("Gemini OAuth model discovery body read failed: {err}"))?;
+
+    if !status.is_success() {
+        return Err(format!(
+            "Gemini OAuth model discovery failed: HTTP {}: {}",
+            status.as_u16(),
+            body
+        ));
+    }
+
+    parse_gemini_oauth_models_response(&body)
+}
+
+fn parse_gemini_oauth_models_response(body: &str) -> Result<Vec<String>, String> {
+    let parsed: GeminiOauthModelsResponse = serde_json::from_str(body)
+        .map_err(|err| format!("Gemini OAuth model discovery parse failed: {err}"))?;
+    let mut models = Vec::new();
+    for model in parsed.models {
+        // Google returns "models/gemini-2.0-flash" — strip the prefix so the
+        // ids align with what the rest of the app expects.
+        let id = model.name.strip_prefix("models/").unwrap_or(&model.name);
+        if !id.is_empty() && !models.iter().any(|existing: &String| existing == id) {
+            models.push(id.to_string());
+        }
+    }
+    Ok(models)
+}
+
+#[tauri::command]
+pub async fn gemini_oauth_list_models(access_token: String) -> Result<Vec<String>, String> {
+    use log::info;
+    info!("[gemini_oauth_list_models] Fetching models via Gemini OAuth...");
+    let models = gemini_oauth_list_models_from_url(&access_token, GEMINI_OAUTH_MODELS_URL).await?;
+    info!(
+        "[gemini_oauth_list_models] Got {} models from Gemini OAuth",
+        models.len()
+    );
+    Ok(models)
+}
+
+/// Force-refresh an OAuth account's access token after the frontend observed a
+/// rejection (e.g. 401 from a list-models call). Dispatches by the key's
+/// model_type and routes through the existing per-provider refresh helpers,
+/// which take per-key locks so concurrent invocations don't double-fire.
+#[tauri::command]
+pub async fn refresh_oauth_token(key_id: String) -> Result<(), String> {
+    use crate::key_store::KEY_SERVICE;
+    use crate::{AuthMethod, ModelType};
+    use log::info;
+
+    let key = KEY_SERVICE
+        .get_key_by_id(&key_id)
+        .ok_or_else(|| format!("Key not found: {}", key_id))?;
+
+    if key.auth_method != AuthMethod::Oauth {
+        return Err(format!("Key {} is not an OAuth account", key_id));
+    }
+
+    let rejected_access_token = key.session_token.clone().unwrap_or_default();
+
+    info!(
+        "[refresh_oauth_token] Forcing refresh for key {} ({:?})",
+        key_id, key.model_type
+    );
+
+    match key.model_type {
+        ModelType::ClaudeCode => {
+            KEY_SERVICE
+                .refresh_claude_code_oauth_key(&key_id, &rejected_access_token)
+                .await?;
+        }
+        ModelType::Codex => {
+            KEY_SERVICE
+                .refresh_codex_oauth_key(&key_id, &rejected_access_token)
+                .await?;
+        }
+        ModelType::GeminiCli => {
+            KEY_SERVICE
+                .refresh_gemini_oauth_key_after_rejection(&key_id, &rejected_access_token)
+                .await?;
+        }
+        other => {
+            return Err(format!(
+                "OAuth refresh not supported for model type {:?}",
+                other
+            ));
+        }
+    }
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -565,6 +693,37 @@ mod tests {
     #[test]
     fn claude_code_oauth_models_response_rejects_invalid_json() {
         let err = parse_claude_code_oauth_models_response("not json").unwrap_err();
+        assert!(err.contains("parse failed"));
+    }
+
+    #[test]
+    fn gemini_oauth_models_response_parses_strips_prefix_and_dedupes() {
+        let models = parse_gemini_oauth_models_response(
+            r#"{
+                "models": [
+                    { "name": "models/gemini-2.0-flash" },
+                    { "name": "models/gemini-2.0-pro" },
+                    { "name": "models/gemini-2.0-flash" },
+                    { "name": "" },
+                    { "name": "gemini-bare-id" }
+                ]
+            }"#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            models,
+            vec![
+                "gemini-2.0-flash".to_string(),
+                "gemini-2.0-pro".to_string(),
+                "gemini-bare-id".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn gemini_oauth_models_response_rejects_invalid_json() {
+        let err = parse_gemini_oauth_models_response("not json").unwrap_err();
         assert!(err.contains("parse failed"));
     }
 

@@ -150,6 +150,21 @@ export async function getCodexOAuthModels(
   });
 }
 
+export async function getGeminiOAuthModels(
+  accessToken: string
+): Promise<string[]> {
+  return rpc.validation.geminiOauthListModels({ accessToken });
+}
+
+/**
+ * Force-refresh an OAuth account's access token after a list-models call
+ * was rejected (e.g. HTTP 401). Backend takes a per-key lock so callers
+ * never double-fire. Throws if refresh fails (e.g. refresh_token revoked).
+ */
+export async function refreshOauthToken(keyId: string): Promise<void> {
+  await rpc.validation.refreshOauthToken({ keyId });
+}
+
 export async function startClaudeCodeOauthLogin(): Promise<ClaudeCodeOauthStartResponse> {
   return rpc.validation.startClaudeCodeOauthLogin();
 }

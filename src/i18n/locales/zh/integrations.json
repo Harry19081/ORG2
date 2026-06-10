@@ -32,7 +32,7 @@
       "refreshed": "{{name}} 刷新成功",
       "refreshFailed": "{{name}} 验证失败 - 请检查密钥",
       "allRefreshed": "所有账户已刷新",
-      "refreshError": "{{name}} 刷新失败",
+      "refreshError": "{{name}} 刷新失败：{{error}}",
       "localRemoved": "{{name}} 已移除",
       "unlistPending": "{{name}} 已请求下架。将在活跃 Session 结束后移除。",
       "listingRemoved": "{{name}} 已从市场移除",
@@ -438,14 +438,6 @@
     "addCustomModelDesc": "手动添加上面未列出的模型",
     "auth": "Auth",
     "pricingConfig": "Pricing Config",
-    "cursorRefresh": {
-      "noSessionToken": "未找到会话令牌——请重新运行设置以捕获。",
-      "emptyModelList": "Cursor 返回的模型列表为空。",
-      "failed": "从 Cursor 刷新失败：{{error}}",
-      "refreshing": "正在从 Cursor 刷新…",
-      "button": "从 Cursor 刷新",
-      "modelsButton": "刷新 Cursor 模型列表"
-    },
     "cursorSessionTokenCapturedTitle": "Cursor 已连接",
     "cursorSessionTokenCapturedDesc": "已登录为 {{user}}…",
     "cursorLoginBrowserTitle": "Cursor 登录",
@@ -491,7 +483,11 @@
     "geminiApiKeyPlaceholder": "AIza...",
     "geminiConnected": "Gemini connected",
     "geminiDetectErrorHint": "Sign in with the secure native window, or paste a Gemini API key manually",
-    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again"
+    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again",
+    "refreshModels": {
+      "button": "刷新模型",
+      "failed": "刷新模型失败：{{error}}"
+    }
   },
   "integrations": {
     "title": "集成",

@@ -444,6 +444,14 @@ export const CodexOauthListModelsInput = z.object({
   }),
 });
 
+export const GeminiOauthListModelsInput = z.object({
+  accessToken: z.string(),
+});
+
+export const RefreshOauthTokenInput = z.object({
+  keyId: z.string(),
+});
+
 export const CursorNativeModelSchema = z.object({
   modelId: z.string(),
   displayModelId: z.string().nullable().optional(),

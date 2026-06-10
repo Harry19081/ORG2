@@ -438,14 +438,6 @@
     "addCustomModelDesc": "Добавить модель вручную, если она не указана выше",
     "auth": "Auth",
     "pricingConfig": "Pricing Config",
-    "cursorRefresh": {
-      "noSessionToken": "Токен сессии недоступен — повторно запустите настройку, чтобы получить его.",
-      "emptyModelList": "Cursor вернул пустой список моделей.",
-      "failed": "Сбой обновления из Cursor: {{error}}",
-      "refreshing": "Обновление из Cursor…",
-      "button": "Обновить из Cursor",
-      "modelsButton": "Обновить список моделей Cursor"
-    },
     "cursorSessionTokenCapturedTitle": "Cursor подключён",
     "cursorSessionTokenCapturedDesc": "Выполнен вход как {{user}}…",
     "cursorLoginBrowserTitle": "Вход в Cursor",
@@ -491,7 +483,11 @@
     "geminiApiKeyPlaceholder": "AIza...",
     "geminiConnected": "Gemini connected",
     "geminiDetectErrorHint": "Sign in with the secure native window, or paste a Gemini API key manually",
-    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again"
+    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again",
+    "refreshModels": {
+      "button": "Обновить список моделей Cursor",
+      "failed": "Сбой обновления из Cursor: {{error}}"
+    }
   },
   "integrations": {
     "title": "Интеграции",

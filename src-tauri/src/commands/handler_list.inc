@@ -418,6 +418,8 @@ key_vault::get_cursor_cli_models,
 key_vault::cursor_list_models_native,
 key_vault::claude_code_oauth_list_models,
 key_vault::codex_oauth_list_models,
+key_vault::gemini_oauth_list_models,
+key_vault::refresh_oauth_token,
 // Key storage commands (CRUD for ~/.orgii/credentials.json)
 key_vault::list_keys,
 key_vault::get_key,

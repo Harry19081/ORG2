@@ -25,20 +25,13 @@ import { useWizardParam } from "@src/hooks/navigation";
 import { clearStaleAccountIdAtom } from "@src/store/session/creatorDefaultModelAtom";
 
 import { disconnectAccount } from "./disconnectAccount";
+import { refreshAccountModels } from "./refreshAccountModels";
 
 export function useKeyVaultPage() {
   const { t } = useTranslation("integrations");
   const navigate = useNavigate();
-  const {
-    accounts,
-    loading,
-    error,
-    refresh,
-    refreshAccount,
-    getAccount,
-    saveKey,
-    deleteKey,
-  } = useKeyVault();
+  const { accounts, loading, error, refresh, getAccount, saveKey, deleteKey } =
+    useKeyVault();
   const clearStaleSelection = useSetAtom(clearStaleAccountIdAtom);
 
   // State
@@ -111,29 +104,26 @@ export function useKeyVaultPage() {
       setRefreshLoading(true);
       try {
         const account = getAccount(accountId);
-        const name = account?.name || "Account";
-        if (account?.authMethod === "oauth") {
-          await refresh();
-          Message.success(t("keyVault.toasts.refreshed", { name }), 5000);
-          return;
-        }
+        if (!account) return;
+        const name = account.name || "Account";
 
-        const success = await refreshAccount(accountId, true);
-        if (success) {
-          Message.success(t("keyVault.toasts.refreshed", { name }), 5000);
-        } else {
-          Message.warning(t("keyVault.toasts.refreshFailed", { name }), 5000);
-        }
+        await refreshAccountModels(account);
+        await refresh();
+        Message.success(t("keyVault.toasts.refreshed", { name }), 5000);
       } catch (err) {
         const name = getAccount(accountId)?.name || "Account";
-        Message.error(t("keyVault.toasts.refreshError", { name }), 5000);
+        const detail = err instanceof Error ? err.message : String(err);
+        Message.error(
+          t("keyVault.toasts.refreshError", { name, error: detail }),
+          5000
+        );
         console.error("[Refresh] Error:", err);
       } finally {
         setRefreshingAccountId(null);
         setRefreshLoading(false);
       }
     },
-    [refreshAccount, refresh, getAccount, t]
+    [getAccount, refresh, t]
   );
 
   const handleRefresh = useCallback(async () => {

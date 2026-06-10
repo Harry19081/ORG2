@@ -7,15 +7,8 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  getCursorNativeModels,
-  getFullKey,
-  updateKeyHealth,
-} from "@src/api/services/keyValidation";
-import { CLI_AGENT } from "@src/api/tauri/rpc/schemas/validation";
 import InlineAlert from "@src/components/InlineAlert";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui";
 
 import {
   buildVariantsByModelFromAccounts,
@@ -109,10 +102,9 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
     Map<string, boolean>
   >(new Map());
   const pendingRef = useRef<Set<string>>(new Set());
-  const [cursorRefreshError, setCursorRefreshError] = useState<string | null>(
+  const [refreshModelsError, setRefreshModelsError] = useState<string | null>(
     null
   );
-  const [refreshingCursorModels, setRefreshingCursorModels] = useState(false);
 
   const canEditAccount =
     !account.listingId && account.hasLocalKey && Boolean(onEditSave);
@@ -156,52 +148,17 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
   );
   const showModels = account.status === "ready" && availableModels.length > 0;
   const showGatewayDeployment = isGatewayWithNoModels(account);
-  const isCursorWithSession =
-    account.modelType === CLI_AGENT.CURSOR && account.hasSessionToken;
 
-  const handleRefreshFromCursor = useCallback(async () => {
-    if (!onRefresh) return;
-    setRefreshingCursorModels(true);
-    setCursorRefreshError(null);
+  const handleRefreshModels = useCallback(async () => {
+    if (!onRevalidateAccount) return;
+    setRefreshModelsError(null);
     try {
-      const fullKey = await getFullKey(account.modelType, account.id);
-      const token = fullKey?.session_token;
-      if (!token) {
-        setCursorRefreshError(t("keyVault.cursorRefresh.noSessionToken"));
-        return;
-      }
-      const models = await getCursorNativeModels(token);
-      if (models.length === 0) {
-        setCursorRefreshError(t("keyVault.cursorRefresh.emptyModelList"));
-        return;
-      }
-      await updateKeyHealth(
-        account.id,
-        account.healthStatus ?? "valid",
-        undefined,
-        models
-      );
-      await onRefresh();
+      await onRevalidateAccount(account.id);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      setCursorRefreshError(t("keyVault.cursorRefresh.failed", { error: msg }));
-    } finally {
-      setRefreshingCursorModels(false);
+      setRefreshModelsError(t("keyVault.refreshModels.failed", { error: msg }));
     }
-  }, [account.healthStatus, account.id, account.modelType, onRefresh, t]);
-
-  const { handleClick: handleCursorRefreshClick } = useRefreshSpin(
-    handleRefreshFromCursor,
-    refreshingCursorModels
-  );
-
-  const handleRevalidate = useCallback(async () => {
-    if (onRevalidateAccount) {
-      await onRevalidateAccount(account.id);
-      return;
-    }
-    await onRefresh?.();
-  }, [account.id, onRevalidateAccount, onRefresh]);
+  }, [account.id, onRevalidateAccount, t]);
 
   const handleEditFormSave = useCallback(
     async (nextName: string, nextDescription: string) => {
@@ -367,13 +324,13 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
         }
         return (
           <>
-            {cursorRefreshError ? (
+            {refreshModelsError ? (
               <InlineAlert
                 type="danger"
-                onClose={() => setCursorRefreshError(null)}
+                onClose={() => setRefreshModelsError(null)}
                 closeAriaLabel={tCommon("actions.close")}
               >
-                {cursorRefreshError}
+                {refreshModelsError}
               </InlineAlert>
             ) : null}
             <AccountModelsInlineSplit
@@ -398,7 +355,7 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
     }
   }, [
     account,
-    cursorRefreshError,
+    refreshModelsError,
     editState,
     effectiveActiveTab,
     enabledSet,
@@ -430,21 +387,11 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
           state={editState}
           onCancel={handleEditCancel}
         />
-      ) : onRevalidateAccount ||
-        onRefresh ||
-        (isCursorWithSession && showModels) ? (
+      ) : onRevalidateAccount && showModels ? (
         <AccountInlineActionsBar
           account={account}
-          refreshing={refreshing}
-          onRefresh={
-            onRevalidateAccount || onRefresh ? handleRevalidate : undefined
-          }
-          onRefreshModels={
-            isCursorWithSession && showModels
-              ? handleCursorRefreshClick
-              : undefined
-          }
-          refreshingModels={refreshingCursorModels}
+          onRefreshModels={handleRefreshModels}
+          refreshingModels={refreshing}
         />
       ) : null}
     </InlineCardShell>
