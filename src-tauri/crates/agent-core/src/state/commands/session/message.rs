@@ -429,6 +429,19 @@ pub(crate) async fn send_message_impl(
         execute,
     };
 
+    // Lifecycle: record the intent as `queued` before handing the scheduler
+    // ownership of the message. The scheduler worker promotes it to
+    // `running` / terminal as the turn executes; `invalidate_pending`
+    // marks it `stale` if rewound before it ran. See `session_turn_intents`
+    // for the state machine.
+    crate::foundation::session_bridge::upsert_turn_intent(
+        &session_id,
+        &effective_turn_intent_id,
+        msg.client_message_id.as_deref(),
+        crate::foundation::session_bridge::TurnIntentBridgeSource::UserSubmit,
+        crate::foundation::session_bridge::TurnIntentBridgeStatus::Queued,
+    );
+
     let enqueue_result = session_handle
         .scheduler
         .enqueue(msg)

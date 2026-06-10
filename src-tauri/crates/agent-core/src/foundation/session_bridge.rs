@@ -289,3 +289,150 @@ pub fn clear_cli_resume_state(session_id: &str, mutation_reason: &str) -> rusqli
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// 7. Turn intent lifecycle writes
+// ---------------------------------------------------------------------------
+//
+// `agent_core` (specifically `DialogScheduler` and `send_message_impl`) needs
+// to transition rows in `session_turn_intents` as turns walk through queue →
+// run → terminal. The actual table CRUD lives in
+// `session_persistence::turn_intents`, so we route through this IoC slot so
+// `agent_core` does not take a back-edge on the session_persistence crate.
+//
+// The transitions exposed here are the minimum surface the scheduler /
+// message pipeline need. Plain enum values are used over the
+// `TurnIntentStatus` / `TurnIntentSource` types from session_persistence so
+// the bridge signature stays leaf-level and the adapter parses them.
+
+#[derive(Debug, Clone, Copy)]
+pub enum TurnIntentBridgeStatus {
+    Optimistic,
+    Queued,
+    Running,
+    Completed,
+    Failed,
+    Cancelled,
+    Stale,
+    Superseded,
+}
+
+impl TurnIntentBridgeStatus {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Optimistic => "optimistic",
+            Self::Queued => "queued",
+            Self::Running => "running",
+            Self::Completed => "completed",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+            Self::Stale => "stale",
+            Self::Superseded => "superseded",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum TurnIntentBridgeSource {
+    UserSubmit,
+    Queue,
+    ForceSend,
+    Resume,
+    AgentOrg,
+    Wingman,
+    MobileRemote,
+}
+
+impl TurnIntentBridgeSource {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::UserSubmit => "user_submit",
+            Self::Queue => "queue",
+            Self::ForceSend => "force_send",
+            Self::Resume => "resume",
+            Self::AgentOrg => "agent_org",
+            Self::Wingman => "wingman",
+            Self::MobileRemote => "mobile_remote",
+        }
+    }
+}
+
+pub type UpsertTurnIntentFn = fn(
+    session_id: &str,
+    turn_intent_id: &str,
+    client_message_id: Option<&str>,
+    source: TurnIntentBridgeSource,
+    status: TurnIntentBridgeStatus,
+);
+
+pub type UpdateTurnIntentStatusFn = fn(
+    session_id: &str,
+    turn_intent_id: &str,
+    new_status: TurnIntentBridgeStatus,
+);
+
+pub type MarkPendingTurnIntentsStaleFn = fn(session_id: &str);
+
+static UPSERT_TURN_INTENT: OnceLock<UpsertTurnIntentFn> = OnceLock::new();
+static UPDATE_TURN_INTENT_STATUS: OnceLock<UpdateTurnIntentStatusFn> = OnceLock::new();
+static MARK_PENDING_TURN_INTENTS_STALE: OnceLock<MarkPendingTurnIntentsStaleFn> = OnceLock::new();
+
+pub fn register_upsert_turn_intent(implementation: UpsertTurnIntentFn) {
+    let _ = UPSERT_TURN_INTENT.set(implementation);
+}
+
+pub fn register_update_turn_intent_status(implementation: UpdateTurnIntentStatusFn) {
+    let _ = UPDATE_TURN_INTENT_STATUS.set(implementation);
+}
+
+pub fn register_mark_pending_turn_intents_stale(implementation: MarkPendingTurnIntentsStaleFn) {
+    let _ = MARK_PENDING_TURN_INTENTS_STALE.set(implementation);
+}
+
+/// Upsert a new lifecycle row. Idempotent: a re-enqueue with the same
+/// `turn_intent_id` observes the existing row without overwriting.
+pub fn upsert_turn_intent(
+    session_id: &str,
+    turn_intent_id: &str,
+    client_message_id: Option<&str>,
+    source: TurnIntentBridgeSource,
+    status: TurnIntentBridgeStatus,
+) {
+    if turn_intent_id.is_empty() {
+        return;
+    }
+    if let Some(implementation) = UPSERT_TURN_INTENT.get() {
+        implementation(
+            session_id,
+            turn_intent_id,
+            client_message_id,
+            source,
+            status,
+        );
+    }
+}
+
+/// Patch the status of an existing lifecycle row. Illegal transitions are
+/// silently rejected by the implementation — callers do not need to handle
+/// the error case.
+pub fn update_turn_intent_status(
+    session_id: &str,
+    turn_intent_id: &str,
+    new_status: TurnIntentBridgeStatus,
+) {
+    if turn_intent_id.is_empty() {
+        return;
+    }
+    if let Some(implementation) = UPDATE_TURN_INTENT_STATUS.get() {
+        implementation(session_id, turn_intent_id, new_status);
+    }
+}
+
+/// Bulk-mark every `optimistic` / `queued` row for the session as `stale`.
+/// Called by `DialogScheduler::invalidate_pending` so the durable log
+/// catches up with the in-memory generation bump.
+pub fn mark_pending_turn_intents_stale(session_id: &str) {
+    if let Some(implementation) = MARK_PENDING_TURN_INTENTS_STALE.get() {
+        implementation(session_id);
+    }
+}

@@ -184,7 +184,6 @@ impl DialogScheduler {
             client_message_ids: Arc::new(TokioMutex::new(HashSet::new())),
         }
     }
-
     /// Ensure the worker is spawned and return a reference to the sender.
     async fn ensure_initialized(&self) -> mpsc::Sender<ScheduledMessage> {
         let mut guard = self.inner.lock().await;
@@ -287,6 +286,12 @@ impl DialogScheduler {
         if let Ok(mut ids) = self.client_message_ids.try_lock() {
             ids.clear();
         }
+        // Lifecycle: every still-queued / optimistic intent for this
+        // session walks to `stale`. The worker drops queued-but-stale
+        // messages on its next `recv` (see WorkerTask::run); the durable
+        // log here ensures the turn indexer also stops grouping events
+        // under those ids.
+        crate::foundation::session_bridge::mark_pending_turn_intents_stale(&self.session_id);
         self.broadcast_queue_status();
     }
 
@@ -336,6 +341,16 @@ impl WorkerTask {
                     "[scheduler] Skipping stale message {} for session {} (message_generation={}, current_generation={})",
                     msg.message_id, self.session_id, msg.generation, current_generation
                 );
+                // Lifecycle: invalidate_pending may have already marked
+                // this intent stale; double-write is harmless because
+                // the state machine treats it as a same-state update.
+                // Cover the case where invalidate_pending ran while this
+                // particular message was already past the channel boundary.
+                crate::foundation::session_bridge::update_turn_intent_status(
+                    &self.session_id,
+                    &msg.turn_intent_id,
+                    crate::foundation::session_bridge::TurnIntentBridgeStatus::Stale,
+                );
                 if let Some(client_message_id) = msg.client_message_id.as_ref() {
                     self.client_message_ids
                         .lock()
@@ -359,6 +374,13 @@ impl WorkerTask {
                 msg.message_id, self.session_id
             );
 
+            // Lifecycle: queued → running.
+            crate::foundation::session_bridge::update_turn_intent_status(
+                &self.session_id,
+                &msg.turn_intent_id,
+                crate::foundation::session_bridge::TurnIntentBridgeStatus::Running,
+            );
+
             // Broadcast "now processing" status
             broadcast_event(
                 "agent:queue_status",
@@ -371,6 +393,7 @@ impl WorkerTask {
             );
 
             let client_message_id = msg.client_message_id.clone();
+            let turn_intent_id = msg.turn_intent_id.clone();
             let execute_future = (msg.execute)();
             let result = std::panic::AssertUnwindSafe(execute_future)
                 .catch_unwind()
@@ -393,6 +416,12 @@ impl WorkerTask {
                         "[scheduler] Message {} completed for session {}",
                         msg.message_id, self.session_id
                     );
+                    // Lifecycle: running → completed.
+                    crate::foundation::session_bridge::update_turn_intent_status(
+                        &self.session_id,
+                        &turn_intent_id,
+                        crate::foundation::session_bridge::TurnIntentBridgeStatus::Completed,
+                    );
                     // agent:complete is already broadcast by processor; we
                     // only broadcast the updated queue status here.
                 }
@@ -400,6 +429,16 @@ impl WorkerTask {
                     warn!(
                         "[scheduler] Message {} failed for session {}: {}",
                         msg.message_id, self.session_id, err
+                    );
+                    // Lifecycle: running → failed. Cancelled turns walk
+                    // here too (the executor returns Err on user stop); a
+                    // future commit can distinguish via the cancel_flag
+                    // probe if we need a separate `cancelled` bucket on
+                    // the round renderer.
+                    crate::foundation::session_bridge::update_turn_intent_status(
+                        &self.session_id,
+                        &turn_intent_id,
+                        crate::foundation::session_bridge::TurnIntentBridgeStatus::Failed,
                     );
                     let error_code = classify_streaming_error_message(err);
                     let streaming_error = StreamingError::new(err.clone(), error_code)
