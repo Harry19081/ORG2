@@ -98,8 +98,8 @@ fn all_scenarios() -> Vec<ScenarioDef> {
         ),
         scenario!(
             "sde",
-            "gui-control-agent-effective-tools",
-            sde::gui_control_agent_has_narrow_effective_tools
+            "ade-manager-gui-control-tools",
+            sde::ade_manager_has_gui_control_tools
         ),
         scenario!(
             "sde",

@@ -63,10 +63,7 @@ import {
 import { modelPickerStyleAtom } from "@src/store/ui/chatPanelAtom";
 import { draftHasContentAtom } from "@src/store/ui/draftAtom";
 import { getBigThreeRegionModelTypeForSession } from "@src/util/session/regionAlertModel";
-import {
-  BUILTIN_GUI_CONTROL_DEF_ID,
-  getRustAgentType,
-} from "@src/util/session/sessionDispatch";
+import { getRustAgentType } from "@src/util/session/sessionDispatch";
 
 import { EditorArea, SessionInfoLine } from "../../components";
 import type { DropdownDirection } from "../../components/ControlButtons";
@@ -350,12 +347,7 @@ const SessionCreatorChatPanelSingle: React.FC<
   const currentRepoPath = effectiveSource?.repoPath ?? "";
 
   const allAgentDefinitions = useMemo(
-    () => [
-      ...builtInAgents.filter(
-        (agent) => agent.id !== BUILTIN_GUI_CONTROL_DEF_ID
-      ),
-      ...customAgents,
-    ],
+    () => [...builtInAgents, ...customAgents],
     [builtInAgents, customAgents]
   );
 

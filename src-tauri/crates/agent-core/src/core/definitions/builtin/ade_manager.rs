@@ -1,10 +1,18 @@
-//! ADE Manager template — manages the Agentic Development Environment.
+//! ADE Manager template — manages the Agentic Development Environment and
+//! controls the ORGII app UI.
 //!
 //! ADE Manager is the built-in operator for ORGII's Agentic Development
 //! Environment (ADE): the IDE-AI analogue that wires up agents, agent
 //! organizations, skills, rules, tracked workspaces, and repo setup. It
 //! helps the user create, edit, and retire custom agents and orgs, author
 //! skills and rules, and onboard repos as tracked workspaces.
+//!
+//! It also subsumes the former GUI Control agent: it can navigate and
+//! control the ORGII app UI via `control_orgii`, `spotlight`, and
+//! `read_file` / `list_session_workspace` for context. This makes ADE
+//! Manager the single entry point reachable from the Spotlight palette
+//! for both "set up my dev environment" and "navigate / change the app UI"
+//! requests.
 //!
 //! Capability mix is intentionally narrow: `coding` (for workspace setup
 //! and file tools that author skills and per-agent SOUL augments) plus
@@ -25,6 +33,7 @@ use crate::definitions::schema::{
 use crate::foundation::security::policy::AutonomyLevel;
 use crate::tools::defaults::default_excluded_tools_for_capabilities;
 use crate::tools::impls::orchestration::context_builders::ids as ctx_ids;
+use crate::tools::names as tool_names;
 
 /// Builtin ADE Manager definition ID.
 ///
@@ -34,18 +43,23 @@ use crate::tools::impls::orchestration::context_builders::ids as ctx_ids;
 /// symbols are the only things that change with the ADE rebrand.
 pub const ADE_MANAGER_ID: &str = "builtin:agent-architect";
 
-/// ADE Manager template — Agentic Development Environment specialist.
+/// ADE Manager template — Agentic Development Environment specialist and
+/// ORGII app UI controller.
 ///
 /// Capabilities:
 /// - `coding` without mode-switch (the agent edits SKILL.md / SOUL.md
 ///   files but does not need Build / Plan / Explore / Review modes).
 /// - `management` (`manage_agent_def` for agents and orgs).
 /// - `manage_workspace` through coding tools for tracked repos and folders.
+/// - `control_orgii` + `spotlight` for ORGII app UI control (subsumes the
+///   former `builtin:gui-control` agent).
 ///
 /// Session Model:
-/// - Per-session with compaction (CRUD conversations can run long).
-/// - Processing lock on (serialize concurrent mutations from the same
-///   session so two `manage_agent_def.create` calls can't race).
+/// - Singleton with compaction: only one ADE Manager session runs at a
+///   time (matching the old GUI Control singleton behaviour so the
+///   Spotlight palette always resumes the same session), but compaction
+///   is still enabled so long ADE conversations do not overflow context.
+/// - Processing lock on: serialises concurrent mutations.
 ///
 /// Security:
 /// - Full autonomy.
@@ -60,14 +74,22 @@ pub fn ade_manager() -> AgentDefinition {
         data: None,
         management: Some(ManagementCapability {}),
     };
-    let excluded_tools = default_excluded_tools_for_capabilities(&capabilities);
+    let mut excluded_tools = default_excluded_tools_for_capabilities(&capabilities);
+
+    // Re-enable GUI-control tools that `default_excluded_tools_for_capabilities`
+    // would otherwise suppress for a coding-only agent.
+    excluded_tools.retain(|tool| {
+        tool != tool_names::CONTROL_ORGII
+            && tool != tool_names::SPOTLIGHT
+            && tool != tool_names::LIST_SESSION_WORKSPACE
+    });
 
     AgentDefinition {
         id: ADE_MANAGER_ID.to_string(),
         name: "ADE Manager".to_string(),
         description: Some(
-            "Manages the Agentic Development Environment: agents, orgs, skills, rules, \
-             workspaces, and repo setup."
+            "Manages the Agentic Development Environment (agents, orgs, skills, rules, \
+             workspaces, repo setup) and controls the ORGII app UI."
                 .to_string(),
         ),
         built_in: true,
@@ -77,7 +99,9 @@ pub fn ade_manager() -> AgentDefinition {
         capabilities: Some(capabilities.clone()),
 
         session_model: Some(SessionModel {
-            mode: SessionMode::PerSession,
+            // Singleton so the Spotlight palette always resumes the same
+            // session (no accumulation of orphaned ADE sessions).
+            mode: SessionMode::Singleton,
             compaction: Some(CompactionConfig {
                 enabled: true,
                 trigger_ratio: 0.8,
@@ -111,18 +135,14 @@ pub fn ade_manager() -> AgentDefinition {
         max_tokens: None,
         temperature: Some(0.0),
         // `builtin:explore` and `builtin:general` are delegation primitives
-        // (`agent_tool` schema fallback + EXPLORE label) and are always
-        // reachable regardless of this list. ADE Manager has no genuine
-        // user-facing sub-agent specialists by default.
+        // and are always reachable regardless of this list.
         sub_agents: Some(vec![]),
         // The three relevant builtin playbooks (`create-orgii-agent`,
         // `create-skill`, `create-rule`) are binary-embedded and always
-        // resolvable via the skill loader's fallback path, so no
-        // `source_dirs` entry is required. The SOUL prompt instructs the
-        // agent to read them on demand.
-        load_workspace_resources: None,
-        load_workspace_rules: None,
-        load_workspace_settings: None,
+        // resolvable via the skill loader's fallback path.
+        load_workspace_resources: Some(false),
+        load_workspace_rules: Some(false),
+        load_workspace_settings: Some(false),
         skills_config: None,
         selected_account_id: None,
         selected_model_id: None,
@@ -132,15 +152,16 @@ pub fn ade_manager() -> AgentDefinition {
         animate: None,
         execution_mode: None,
         exec_timeout: None,
-        max_tool_use_concurrency: None,
+        // Serialise tool calls — GUI control actions must not race.
+        max_tool_use_concurrency: Some(1),
         learnings: Some(AgentLearningsConfig {
-            enabled: true,
-            extract_memories_enabled: true,
-            auto_dream_enabled: true,
+            enabled: false,
+            extract_memories_enabled: false,
+            auto_dream_enabled: false,
         }),
 
         reliability: None,
-        max_instances: None,
+        max_instances: Some(1),
     }
 }
 
@@ -187,6 +208,35 @@ mod tests {
     }
 
     #[test]
+    fn ade_manager_has_gui_control_tools() {
+        let excluded = &ade_manager().tools.excluded_tools;
+        for tool in [
+            tool_names::CONTROL_ORGII,
+            tool_names::SPOTLIGHT,
+            tool_names::LIST_SESSION_WORKSPACE,
+        ] {
+            assert!(
+                !excluded.iter().any(|t| t == tool),
+                "{tool} must NOT be excluded — ADE Manager subsumes GUI Control"
+            );
+        }
+    }
+
+    #[test]
+    fn ade_manager_is_singleton() {
+        let agent = ade_manager();
+        assert_eq!(
+            agent.max_instances,
+            Some(1),
+            "ADE Manager must be a singleton so the Spotlight palette always resumes the same session"
+        );
+        assert!(matches!(
+            agent.session_model.as_ref().map(|m| &m.mode),
+            Some(crate::definitions::schema::SessionMode::Singleton)
+        ));
+    }
+
+    #[test]
     fn ade_manager_subagents_exclude_runtime_primitives() {
         let subs = ade_manager()
             .sub_agents
@@ -201,9 +251,6 @@ mod tests {
 
     #[test]
     fn ade_manager_is_not_workspace_restricted() {
-        // Skills can be authored at the user-global `~/.orgii/skills/`
-        // path, not just inside a workspace, so ADE Manager must not be
-        // workspace-restricted.
         let policy = ade_manager()
             .agent_policy
             .expect("ADE Manager declares policy");
@@ -216,10 +263,6 @@ mod tests {
 
     #[test]
     fn ade_manager_id_remains_agent_architect_for_stability() {
-        // The string ID is the persistent on-disk handle — renaming the
-        // Rust symbol from ORGII Assistant to ADE Manager must NOT change
-        // the wire/storage ID, or it would orphan every existing session
-        // and overlay that references "builtin:agent-architect".
         assert_eq!(ADE_MANAGER_ID, "builtin:agent-architect");
         assert_eq!(ade_manager().id, "builtin:agent-architect");
     }

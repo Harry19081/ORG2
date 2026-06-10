@@ -7,10 +7,10 @@
     "inputMode": "Contrôle",
     "selectionMode": "Réponse",
     "toggleMode": "Changer le mode de saisie",
-    "inputPlaceholder": "Laissez l'Agent contrôler cette application...",
-    "selectionPlaceholder": "Posez n'importe quelle question sur ORGII...",
+    "inputPlaceholder": "Gérer les agents, les espaces de travail ou contrôler cette application...",
+    "selectionPlaceholder": "Posez n'importe quelle question sur ORGII ou votre configuration ADE...",
     "submit": "Envoyer la saisie Agent Control",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "Choisir le modèle",
     "newRound": "Nouveau tour"
   },

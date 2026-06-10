@@ -7,10 +7,10 @@
     "inputMode": "控制",
     "selectionMode": "回答",
     "toggleMode": "切換輸入模式",
-    "inputPlaceholder": "讓 Agent 控制此應用...",
-    "selectionPlaceholder": "向 ORGII 提任何問題...",
+    "inputPlaceholder": "管理 Agent、工作區，或控制此應用...",
+    "selectionPlaceholder": "詢問任何關於 ORGII 或 ADE 設定的問題...",
     "submit": "提交 Agent Control 輸入",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "選擇模型",
     "newRound": "新一輪"
   },

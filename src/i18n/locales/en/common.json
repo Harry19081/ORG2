@@ -7,10 +7,10 @@
     "inputMode": "Control",
     "selectionMode": "Answer",
     "toggleMode": "Toggle input mode",
-    "inputPlaceholder": "Let agent control this app...",
-    "selectionPlaceholder": "Ask any questions about ORGII...",
+    "inputPlaceholder": "Manage agents, workspaces, or control this app...",
+    "selectionPlaceholder": "Ask anything about ORGII or your ADE setup...",
     "submit": "Submit Agent Control input",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "Select model",
     "newRound": "New round"
   },

@@ -254,11 +254,11 @@ mod tests_extended {
 
     #[test]
     fn get_builtin_agents_count_matches_registry() {
-        // ADE Manager, base, os, gui-control, sde, ai-research, wingman,
+        // ADE Manager, base, os, sde, ai-research, wingman,
         // work-item-manager, explore, general, memory-extractor,
-        // memory-consolidator
+        // memory-consolidator  (gui-control merged into ADE Manager)
         let agents = get_builtin_agents();
-        assert_eq!(agents.len(), 12);
+        assert_eq!(agents.len(), 11);
     }
 
     // =========================================================================
@@ -1849,12 +1849,24 @@ mod tests_extended {
 
     #[test]
     fn all_builtins_max_instances_are_none_by_default() {
+        // ADE Manager explicitly sets max_instances=Some(1) to enforce its
+        // singleton contract (the Spotlight palette always resumes the same
+        // session). All other builtins leave max_instances=None and rely on
+        // SessionMode::Singleton or the runtime default instead.
         for agent in get_builtin_agents() {
-            assert!(
-                agent.max_instances.is_none(),
-                "Agent {} should have max_instances=None (use system default)",
-                agent.id
-            );
+            if agent.id == ADE_MANAGER_ID {
+                assert_eq!(
+                    agent.max_instances,
+                    Some(1),
+                    "ADE Manager is an intentional singleton and must have max_instances=Some(1)"
+                );
+            } else {
+                assert!(
+                    agent.max_instances.is_none(),
+                    "Agent {} should have max_instances=None (use system default)",
+                    agent.id
+                );
+            }
         }
     }
 } // end mod tests_extended

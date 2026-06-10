@@ -4,9 +4,9 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsRight,
+  DraftingCompass,
   Loader2,
   MessageCircle,
-  MousePointer2,
   XCircle,
 } from "lucide-react";
 import React, {
@@ -33,11 +33,12 @@ import {
 import { modelSelectorAtom } from "@src/store/ui/modelSelectorAtom";
 import { guiControlEnabledAtom } from "@src/store/ui/uiAtom";
 import { invokeTauri } from "@src/util/platform/tauri";
-import { BUILTIN_GUI_CONTROL_DEF_ID } from "@src/util/session/sessionDispatch";
+import { BUILTIN_ADE_MANAGER_DEF_ID } from "@src/util/session/sessionDispatch";
 
 import { useSelectorKernel } from "../core";
 import {
   GUI_CONTROL_MODE,
+  GUI_CONTROL_SESSION_NAME,
   GUI_CONTROL_SUBMIT_EVENT,
   GUI_CONTROL_TOGGLE_SHORTCUT_ID,
 } from "./constants";
@@ -125,8 +126,8 @@ export function useAgentControlPalette({
           const result = await sessionLaunch({
             category: DISPATCH_CATEGORY.RUST_AGENT,
             content: prompt,
-            name: "Agent Control",
-            agentDefinitionId: BUILTIN_GUI_CONTROL_DEF_ID,
+            name: GUI_CONTROL_SESSION_NAME,
+            agentDefinitionId: BUILTIN_ADE_MANAGER_DEF_ID,
             keySource: modelConfig.keySource,
             ...(modelConfig.model ? { model: modelConfig.model } : {}),
             ...(modelConfig.accountId
@@ -164,7 +165,11 @@ export function useAgentControlPalette({
         event: React.KeyboardEvent<HTMLInputElement>
       ) => void
     ) => {
-      if (event.key === "Enter" && !event.shiftKey) {
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         handleSubmit();
         return;
@@ -238,9 +243,9 @@ export function useAgentControlPalette({
       {
         type: "action" as const,
         id: "agent-control",
-        label: "App Control",
+        label: "ADE Manager",
         icon:
-          mode === GUI_CONTROL_MODE.SELECTION ? MessageCircle : MousePointer2,
+          mode === GUI_CONTROL_MODE.SELECTION ? MessageCircle : DraftingCompass,
         color: "",
       },
     ],

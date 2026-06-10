@@ -7,10 +7,10 @@
     "inputMode": "Kontrol",
     "selectionMode": "Yanıt",
     "toggleMode": "Girdi modunu değiştir",
-    "inputPlaceholder": "Agent'ın bu uygulamayı kontrol etmesine izin ver...",
-    "selectionPlaceholder": "ORGII hakkında herhangi bir soru sor...",
+    "inputPlaceholder": "Agent'ları, çalışma alanlarını yönet veya uygulamayı kontrol et...",
+    "selectionPlaceholder": "ORGII veya ADE kurulumun hakkında herhangi bir soru sor...",
     "submit": "Agent Control girdisini gönder",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "Model seç",
     "newRound": "Yeni tur"
   },

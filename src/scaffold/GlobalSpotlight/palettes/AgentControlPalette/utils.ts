@@ -10,7 +10,7 @@ import { extractArgsSummary } from "@src/engines/ChatPanel/blocks/ToolCallBlock/
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import type { LastModelSelection } from "@src/store/session/creatorDefaultModelAtom";
 import { upsertSession } from "@src/store/session/sessionAtom";
-import { BUILTIN_GUI_CONTROL_DEF_ID } from "@src/util/session/sessionDispatch";
+import { BUILTIN_ADE_MANAGER_DEF_ID } from "@src/util/session/sessionDispatch";
 
 import {
   GUI_CONTROL_AGENT_EXEC_MODE,
@@ -154,7 +154,7 @@ export function upsertGuiControlSession(result: SessionLaunchResult): void {
     category: DISPATCH_CATEGORY.RUST_AGENT,
     model: result.model,
     agentExecMode: GUI_CONTROL_AGENT_EXEC_MODE,
-    agentDefinitionId: BUILTIN_GUI_CONTROL_DEF_ID,
+    agentDefinitionId: BUILTIN_ADE_MANAGER_DEF_ID,
     agentIconId: GUI_CONTROL_AGENT_ICON_ID,
     agentDisplayName: GUI_CONTROL_AGENT_NAME,
     ...(result.accountId ? { accountId: result.accountId } : {}),

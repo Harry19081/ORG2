@@ -5,7 +5,8 @@
 //! same policy-filtered tool surface used when building the prompt, so it is
 //! the single source of truth for runtime tool availability.
 
-use agent_core::definitions::{GUI_CONTROL_AGENT_ID, OS_AGENT_ID, SDE_AGENT_ID};
+use agent_core::definitions::{OS_AGENT_ID, SDE_AGENT_ID};
+use agent_core::definitions::builtin::ADE_MANAGER_ID;
 use agent_core::tools::names::{
     ASK_USER_QUESTIONS, CONTROL_BROWSER_WITH_PLAYWRIGHT, CONTROL_DESKTOP_WITH_PEEKABOO,
     CONTROL_ORGII, EDIT_FILE, MANAGE_AGENT_DEF, MANAGE_PROJECT, MANAGE_SESSION, MANAGE_WORK_ITEM,
@@ -213,18 +214,18 @@ pub async fn agent_definition_management_tools_follow_effective_tools_source(cfg
     )
 }
 
-pub async fn gui_control_agent_has_narrow_effective_tools(cfg: &Config) -> bool {
-    harness::reset_agent_config(cfg, GUI_CONTROL_AGENT_ID).await;
+pub async fn ade_manager_has_gui_control_tools(cfg: &Config) -> bool {
+    harness::reset_agent_config(cfg, ADE_MANAGER_ID).await;
 
-    let session_id = format!("{}-gui-control-tools", cfg.session_prefix);
-    let project = tmp_workspace_path("gui-control-tools");
+    let session_id = format!("{}-ade-manager-tools", cfg.session_prefix);
+    let project = tmp_workspace_path("ade-manager-tools");
     let launch = harness::launch_seed_only_with_opts(
         cfg,
         &project,
         &[],
         &harness::LaunchSeedOnlyOpts {
             session_id_hint: Some(&session_id),
-            agent_definition_id: Some(GUI_CONTROL_AGENT_ID),
+            agent_definition_id: Some(ADE_MANAGER_ID),
             agent_exec_mode: Some("build"),
             initialize_runtime: true,
         },
@@ -238,7 +239,7 @@ pub async fn gui_control_agent_has_narrow_effective_tools(cfg: &Config) -> bool 
     let effective_tools = harness::fetch_effective_tools(cfg, runtime_session_id, "build").await;
 
     let _ = harness::cleanup_sde_session(cfg, runtime_session_id).await;
-    harness::reset_agent_config(cfg, GUI_CONTROL_AGENT_ID).await;
+    harness::reset_agent_config(cfg, ADE_MANAGER_ID).await;
 
     let prompt_tools = effective_tools
         .as_ref()
@@ -254,14 +255,14 @@ pub async fn gui_control_agent_has_narrow_effective_tools(cfg: &Config) -> bool 
         .unwrap_or_default();
 
     harness::print_result(
-        "GUI Control agent has narrow effective tools",
+        "ADE Manager has GUI control tools (control_orgii, spotlight) and excludes shell/desktop",
         &format!(
             "session={} prompt_tools={:?}",
             runtime_session_id, prompt_tools
         ),
         &[
             (
-                "GUI Control seed-only launch initialized runtime",
+                "ADE Manager seed-only launch initialized runtime",
                 launch.as_ref().is_ok_and(|launch| launch.ok),
             ),
             ("Effective-tools HTTP succeeded", effective_tools.is_ok()),

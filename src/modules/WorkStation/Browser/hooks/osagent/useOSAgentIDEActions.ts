@@ -31,7 +31,7 @@ import { currentRepoAtom } from "@src/store/repo";
 import { guiControlEnabledAtom } from "@src/store/ui/uiAtom";
 
 const GUI_CONTROL_REQUIRED_MESSAGE =
-  "Agent Control is off. Toggle Agent Control on to allow GUI automation actions.";
+  "ADE Manager is off. Toggle ADE Manager on to allow GUI automation actions.";
 
 // ============================================
 // Types

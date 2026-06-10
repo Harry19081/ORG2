@@ -51,7 +51,7 @@ export const GLOBAL_SHORTCUTS: ShortcutEntry[] = [
   },
   {
     id: "toggle_gui_control",
-    command: "Open Agent Control",
+    command: "Open ADE Manager",
     macKeys: "⌥⌘G",
     winKeys: "Ctrl+Alt+G",
     scope: "global",

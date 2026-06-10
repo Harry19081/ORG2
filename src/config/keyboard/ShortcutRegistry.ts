@@ -181,7 +181,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
   },
   {
     id: "toggle_gui_control",
-    description: "Open Agent Control",
+    description: "Open ADE Manager",
     key: "g",
     modifiers: ["cmd", "alt"],
     accelerator: "CmdOrCtrl+Alt+G",

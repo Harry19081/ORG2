@@ -7,10 +7,10 @@
     "inputMode": "Control",
     "selectionMode": "Answer",
     "toggleMode": "입력 모드 전환",
-    "inputPlaceholder": "Agent가 이 앱을 제어하도록 하세요...",
-    "selectionPlaceholder": "ORGII에 대해 무엇이든 물어보세요...",
+    "inputPlaceholder": "Agent, 워크스페이스 관리 또는 앱 제어...",
+    "selectionPlaceholder": "ORGII 또는 ADE 설정에 대해 무엇이든 물어보세요...",
     "submit": "Agent Control 입력 제출",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "모델 선택",
     "newRound": "새 라운드"
   },

@@ -7,10 +7,10 @@
     "inputMode": "Steuerung",
     "selectionMode": "Antwort",
     "toggleMode": "Eingabemodus umschalten",
-    "inputPlaceholder": "Lass den Agent diese App steuern...",
-    "selectionPlaceholder": "Stelle eine beliebige Frage zu ORGII...",
+    "inputPlaceholder": "Agents, Arbeitsbereiche verwalten oder App steuern...",
+    "selectionPlaceholder": "Stelle eine beliebige Frage zu ORGII oder deiner ADE-Konfiguration...",
     "submit": "Agent Control-Eingabe senden",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "Modell auswählen",
     "newRound": "Neue Runde"
   },

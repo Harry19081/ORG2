@@ -7,10 +7,10 @@
     "inputMode": "Điều khiển",
     "selectionMode": "Trả lời",
     "toggleMode": "Chuyển chế độ nhập",
-    "inputPlaceholder": "Để Agent điều khiển ứng dụng này...",
-    "selectionPlaceholder": "Đặt bất kỳ câu hỏi nào về ORGII...",
+    "inputPlaceholder": "Quản lý Agent, workspace hoặc điều khiển ứng dụng này...",
+    "selectionPlaceholder": "Đặt bất kỳ câu hỏi nào về ORGII hoặc cấu hình ADE...",
     "submit": "Gửi nội dung Agent Control",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "Chọn model",
     "newRound": "Vòng mới"
   },

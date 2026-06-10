@@ -8,7 +8,7 @@ export const GUI_CONTROL_MODE = {
   SELECTION: "selection",
 } as const;
 
-export const GUI_CONTROL_AGENT_NAME = "ORGII GUI Control";
-export const GUI_CONTROL_SESSION_NAME = "Agent Control";
-export const GUI_CONTROL_AGENT_ICON_ID = "mouse-pointer-click";
+export const GUI_CONTROL_AGENT_NAME = "ADE Manager";
+export const GUI_CONTROL_SESSION_NAME = "ADE Manager";
+export const GUI_CONTROL_AGENT_ICON_ID = "drafting-compass";
 export const GUI_CONTROL_AGENT_EXEC_MODE: AgentExecMode = "build";

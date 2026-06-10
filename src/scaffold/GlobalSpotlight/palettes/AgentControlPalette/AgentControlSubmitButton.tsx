@@ -2,7 +2,10 @@ import { ArrowUp } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
+import { Tooltip } from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
+import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 
 export interface AgentControlSubmitButtonProps {
   disabled: boolean;
@@ -14,7 +17,7 @@ export const AgentControlSubmitButton: React.FC<
 > = ({ disabled, onSubmit }) => {
   const { t } = useTranslation("common");
 
-  return (
+  const button = (
     <button
       type="button"
       onClick={onSubmit}
@@ -29,5 +32,23 @@ export const AgentControlSubmitButton: React.FC<
     >
       <ArrowUp size={INPUT_AREA_BUTTONS.iconSize} strokeWidth={2} />
     </button>
+  );
+
+  if (disabled) return button;
+
+  return (
+    <Tooltip
+      content={
+        <KeyboardShortcutTooltipContent
+          label={t("guiControl.submit")}
+          shortcut={getShortcutKeys("chat_send")}
+        />
+      }
+      position="top-end"
+      mouseEnterDelay={200}
+      framedPanel
+    >
+      {button}
+    </Tooltip>
   );
 };

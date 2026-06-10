@@ -1,4 +1,4 @@
-use crate::definitions::builtin::GUI_CONTROL_AGENT_ID;
+use crate::definitions::builtin::ADE_MANAGER_ID;
 
 const MAX_RELEVANT_CONTROLS: usize = 4;
 
@@ -139,7 +139,7 @@ pub fn build_gui_control_relevant_controls_section(
     agent_definition_id: Option<&str>,
     user_message: &str,
 ) -> Option<String> {
-    if agent_definition_id != Some(GUI_CONTROL_AGENT_ID) {
+    if agent_definition_id != Some(ADE_MANAGER_ID) {
         return None;
     }
 
@@ -188,7 +188,7 @@ mod tests {
     #[test]
     fn retrieves_language_for_french_request() {
         let section = build_gui_control_relevant_controls_section(
-            Some(GUI_CONTROL_AGENT_ID),
+            Some(ADE_MANAGER_ID),
             "change my language to French",
         )
         .expect("section");
@@ -200,7 +200,7 @@ mod tests {
     #[test]
     fn retrieves_spotlight_for_command_palette_request() {
         let section = build_gui_control_relevant_controls_section(
-            Some(GUI_CONTROL_AGENT_ID),
+            Some(ADE_MANAGER_ID),
             "open the command palette",
         )
         .expect("section");
@@ -212,7 +212,7 @@ mod tests {
     #[test]
     fn retrieves_discrete_theme_commands() {
         let section = build_gui_control_relevant_controls_section(
-            Some(GUI_CONTROL_AGENT_ID),
+            Some(ADE_MANAGER_ID),
             "switch to high contrast theme",
         )
         .expect("section");
@@ -223,7 +223,7 @@ mod tests {
     #[test]
     fn retrieves_chat_panel_settings_commands() {
         let section = build_gui_control_relevant_controls_section(
-            Some(GUI_CONTROL_AGENT_ID),
+            Some(ADE_MANAGER_ID),
             "move the chat panel to the right and use the model picker dropdown",
         )
         .expect("section");
@@ -233,11 +233,21 @@ mod tests {
     }
 
     #[test]
-    fn skips_non_gui_control_agents() {
+    fn skips_non_gui_capable_agents() {
         assert!(build_gui_control_relevant_controls_section(
             Some("builtin:os"),
             "change my language to French",
         )
         .is_none());
+    }
+
+    #[test]
+    fn fires_for_ade_manager() {
+        let section = build_gui_control_relevant_controls_section(
+            Some(super::ADE_MANAGER_ID),
+            "change my language to French",
+        )
+        .expect("section must be returned for ADE Manager");
+        assert!(section.contains("settings.language.set"));
     }
 }

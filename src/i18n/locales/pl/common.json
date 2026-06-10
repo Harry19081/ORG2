@@ -7,10 +7,10 @@
     "inputMode": "Sterowanie",
     "selectionMode": "Odpowiedź",
     "toggleMode": "Przełącz tryb wejścia",
-    "inputPlaceholder": "Pozwól Agentowi sterować tą aplikacją...",
-    "selectionPlaceholder": "Zadaj dowolne pytanie o ORGII...",
+    "inputPlaceholder": "Zarządzaj agentami, przestrzeniami roboczymi lub steruj aplikacją...",
+    "selectionPlaceholder": "Zadaj dowolne pytanie o ORGII lub konfigurację ADE...",
     "submit": "Prześlij wejście Agent Control",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "Wybierz model",
     "newRound": "Nowa runda"
   },

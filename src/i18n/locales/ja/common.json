@@ -7,10 +7,10 @@
     "inputMode": "Control",
     "selectionMode": "Answer",
     "toggleMode": "入力モードを切り替え",
-    "inputPlaceholder": "Agent にこのアプリを操作させる...",
-    "selectionPlaceholder": "ORGII について何でも質問する...",
+    "inputPlaceholder": "Agent・ワークスペース管理またはアプリ操作...",
+    "selectionPlaceholder": "ORGII または ADE セットアップについて何でも質問する...",
     "submit": "Agent Control 入力を送信",
-    "menuToggle": "Agent Control",
+    "menuToggle": "ADE Manager",
     "selectModel": "モデルを選択",
     "newRound": "新しいラウンド"
   },

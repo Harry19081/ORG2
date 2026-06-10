@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { MousePointer2 } from "lucide-react";
+import { DraftingCompass } from "lucide-react";
 import React, { useCallback } from "react";
 
 import { DISPATCH_CATEGORY } from "@src/api/tauri/session";
@@ -59,7 +59,7 @@ export const AgentControlPalette: React.FC<AgentControlPaletteProps> = ({
         placeholder={palette.placeholder}
         inputTrailingSlot={inputTrailingSlot}
         contentOverride={null}
-        inputIcon={MousePointer2}
+        inputIcon={DraftingCompass}
       />
       {palette.showStatusLine && (
         <AgentControlStatus
