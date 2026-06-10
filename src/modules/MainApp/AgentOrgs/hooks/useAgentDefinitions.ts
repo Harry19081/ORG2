@@ -9,14 +9,15 @@
  *
  * Multiple instances may mount in parallel (AgentOrgsPage, ChatPanel,
  * WorkItem detail, etc). Because the underlying state lives on Jotai
- * atoms, every CRUD mutation propagates to every consumer. Pre-atom
- * versions held the list in local component state, so a mutation in
- * one tree branch left every other instance stale.
+ * atoms, every CRUD mutation propagates to every consumer.
  *
- * The initial fetch is gated by `agentDefsLoadedAtom`: only the first
- * mounted instance issues a `agent_definitions_list_all` call. Every
- * subsequent mount short-circuits.
+ * Staleness: the backend emits `orgii-agent-defs-changed` on EVERY store
+ * mutation (RPC commands, skills_toggle, the manage_agent_def LLM tool).
+ * The first mounted instance subscribes and re-fetches, so writes from
+ * outside this hook (e.g. the agent editing its own definition) propagate
+ * without manual refresh calls.
  */
+import { listen } from "@tauri-apps/api/event";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -36,6 +37,9 @@ import type { AgentDefinition } from "../types";
 // Module-level guard so concurrent first-mounts coalesce into a single
 // in-flight fetch instead of racing N requests against the backend.
 let inflightFetch: Promise<AgentDefinition[]> | null = null;
+
+// Module-level guard: only one Tauri listener for the defs-changed event.
+let changeListenerInstalled = false;
 
 async function fetchAllDefs(forceFresh = false): Promise<AgentDefinition[]> {
   if (!forceFresh && inflightFetch) return inflightFetch;
@@ -110,6 +114,30 @@ export function useAgentDefinitions() {
     void refresh();
   }, [loaded, refresh]);
 
+  // Backend-driven invalidation: any store mutation (including LLM-tool
+  // writes that never touch this hook) re-syncs the atoms.
+  useEffect(() => {
+    if (changeListenerInstalled) return;
+    changeListenerInstalled = true;
+    const unlistenPromise = listen("orgii-agent-defs-changed", () => {
+      void fetchAllDefs(true)
+        .then((result) => applyResult(result))
+        .catch((error) => {
+          console.error(
+            "[AgentDefinitions] Failed to refresh after defs-changed:",
+            error
+          );
+        });
+    });
+    return () => {
+      changeListenerInstalled = false;
+      void unlistenPromise.then((unlisten) => unlisten());
+    };
+    // applyResult is stable per-mount; the module-level guard ensures a
+    // single live listener regardless.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const builtInAgents = useMemo(
     () =>
       allDefs.filter(
@@ -131,22 +159,6 @@ export function useAgentDefinitions() {
         await refresh({ forceFresh: true });
       } catch (error) {
         console.error("[AgentDefinitions] Failed to add:", error);
-        throw error;
-      } finally {
-        if (mountedRef.current) setLoading(false);
-      }
-    },
-    [refresh, mountedRef]
-  );
-
-  const updateAgent = useCallback(
-    async (agent: AgentDefinition) => {
-      setLoading(true);
-      try {
-        await rpc.agentDef.update({ agentJson: JSON.stringify(agent) });
-        await refresh({ forceFresh: true });
-      } catch (error) {
-        console.error("[AgentDefinitions] Failed to update:", error);
         throw error;
       } finally {
         if (mountedRef.current) setLoading(false);
@@ -190,7 +202,6 @@ export function useAgentDefinitions() {
     loadError,
     refresh,
     addAgent,
-    updateAgent,
     removeAgent,
   };
 }

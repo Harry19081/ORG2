@@ -36,57 +36,9 @@ pub async fn agent_definitions_add(
     state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     agent_json: String,
 ) -> Result<String, String> {
-    let mut agent: AgentDefinition =
+    let agent: AgentDefinition =
         serde_json::from_str(&agent_json).map_err(|err| format!("Invalid agent JSON: {}", err))?;
-    super::builtin::strip_forbidden_sub_agents(&mut agent);
-    let id = agent.id.clone();
-
-    let mut agents = state
-        .agents
-        .lock()
-        .map_err(|err| format!("Lock error: {}", err))?;
-
-    if agents.iter().any(|existing| existing.id == id) {
-        return Err(format!("Agent with id '{}' already exists", id));
-    }
-
-    agents.push(agent);
-    state.persist(&agents);
-    Ok(id)
-}
-
-#[tauri::command]
-pub async fn agent_definitions_update(
-    state: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
-    app_state: tauri::State<'_, AgentAppState>,
-    agent_json: String,
-) -> Result<(), String> {
-    let mut agent: AgentDefinition =
-        serde_json::from_str(&agent_json).map_err(|err| format!("Invalid agent JSON: {}", err))?;
-    super::builtin::strip_forbidden_sub_agents(&mut agent);
-    let agent_id = agent.id.clone();
-
-    {
-        let mut agents = state
-            .agents
-            .lock()
-            .map_err(|err| format!("Lock error: {}", err))?;
-
-        let idx = agents
-            .iter()
-            .position(|existing| existing.id == agent.id)
-            .ok_or_else(|| format!("Agent '{}' not found", agent.id))?;
-
-        agents[idx] = agent;
-        state.persist(&agents);
-    }
-    app_state
-        .invalidate_prompt_caches_for_agent_definition(
-            &agent_id,
-            PromptCacheInvalidationReason::AgentDefinitionChanged,
-        )
-        .await;
-    Ok(())
+    state.insert(agent)
 }
 
 #[tauri::command]
@@ -95,21 +47,7 @@ pub async fn agent_definitions_remove(
     app_state: tauri::State<'_, AgentAppState>,
     agent_id: String,
 ) -> Result<bool, String> {
-    let removed = {
-        let mut agents = state
-            .agents
-            .lock()
-            .map_err(|err| format!("Lock error: {}", err))?;
-
-        let len_before = agents.len();
-        agents.retain(|agent| agent.id != agent_id);
-        let removed = agents.len() < len_before;
-
-        if removed {
-            state.persist(&agents);
-        }
-        removed
-    };
+    let removed = state.remove(&agent_id)?;
     if removed {
         app_state
             .invalidate_prompt_caches_for_agent_definition(
@@ -141,20 +79,7 @@ pub async fn agent_orgs_add(
 ) -> Result<String, String> {
     let org: OrgDefinition =
         serde_json::from_str(&org_json).map_err(|err| format!("Invalid org JSON: {}", err))?;
-    let id = org.id.clone();
-
-    let mut orgs = state
-        .orgs
-        .lock()
-        .map_err(|err| format!("Lock error: {}", err))?;
-
-    if orgs.iter().any(|existing| existing.id == id) {
-        return Err(format!("Org with id '{}' already exists", id));
-    }
-
-    orgs.push(org);
-    state.persist(&orgs);
-    Ok(id)
+    state.insert(org)
 }
 
 #[tauri::command]
@@ -164,20 +89,7 @@ pub async fn agent_orgs_update(
 ) -> Result<(), String> {
     let org: OrgDefinition =
         serde_json::from_str(&org_json).map_err(|err| format!("Invalid org JSON: {}", err))?;
-
-    let mut orgs = state
-        .orgs
-        .lock()
-        .map_err(|err| format!("Lock error: {}", err))?;
-
-    let idx = orgs
-        .iter()
-        .position(|existing| existing.id == org.id)
-        .ok_or_else(|| format!("Org '{}' not found", org.id))?;
-
-    orgs[idx] = org;
-    state.persist(&orgs);
-    Ok(())
+    state.replace(org)
 }
 
 #[tauri::command]
@@ -185,19 +97,7 @@ pub async fn agent_orgs_remove(
     state: tauri::State<'_, std::sync::Arc<AgentOrgsStore>>,
     org_id: String,
 ) -> Result<bool, String> {
-    let mut orgs = state
-        .orgs
-        .lock()
-        .map_err(|err| format!("Lock error: {}", err))?;
-
-    let len_before = orgs.len();
-    orgs.retain(|org| org.id != org_id);
-    let removed = orgs.len() < len_before;
-
-    if removed {
-        state.persist(&orgs);
-    }
-    Ok(removed)
+    state.remove(&org_id)
 }
 
 /// One row in the Inbox flat chat list — a persisted agent-org run that

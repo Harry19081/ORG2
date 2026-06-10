@@ -57,14 +57,28 @@ export function createConfigHelpers() {
     }
   };
 
+  /**
+   * Apply a full definition as a patch via `agent_def_update_patch` —
+   * the wholesale-replace `agent_definitions_update` RPC was retired.
+   * The definition's `id` selects the target; remaining fields become
+   * the patch body.
+   */
   const updateAgentDef = async (
     definition: Json
   ): Promise<{ ok: true } | Err> => {
     try {
-      if (!definition || typeof definition !== "object") {
+      if (
+        !definition ||
+        typeof definition !== "object" ||
+        Array.isArray(definition)
+      ) {
         return { ok: false, error: "updateAgentDef: `definition` is required" };
       }
-      await rpc.agentDef.update({ agentJson: JSON.stringify(definition) });
+      const { id, ...patch } = definition as Record<string, unknown>;
+      if (typeof id !== "string" || !id) {
+        return { ok: false, error: "updateAgentDef: `definition.id` required" };
+      }
+      await rpc.agentDef.updatePatch({ agentId: id, patch });
       return { ok: true };
     } catch (err) {
       return asError(err);

@@ -215,6 +215,121 @@ impl AgentOrgsStore {
         }
     }
 
+    /// Names of orgs that reference `agent_id` (as coordinator or any
+    /// member, recursively). Used by `AgentDefinitionsStore::remove` to
+    /// refuse deleting agents with dangling org references.
+    pub fn org_names_referencing_agent(&self, agent_id: &str) -> Vec<String> {
+        fn members_reference(members: &[OrgMember], agent_id: &str) -> bool {
+            members
+                .iter()
+                .any(|m| m.agent_id == agent_id || members_reference(&m.children, agent_id))
+        }
+        let Ok(orgs) = self.orgs.lock() else {
+            return Vec::new();
+        };
+        orgs.iter()
+            .filter(|org| {
+                org.agent_id == agent_id || members_reference(&org.children, agent_id)
+            })
+            .map(|org| org.name.clone())
+            .collect()
+    }
+
+    /// Validate that every agent referenced by `org` (coordinator + all
+    /// members) resolves to a known agent definition or a valid `cli:*`
+    /// reference. Write-time enforcement so dangling references fail at
+    /// save instead of at launch.
+    fn validate_agent_references(org: &OrgDefinition) -> Result<(), String> {
+        fn check(agent_id: &str, where_: &str, missing: &mut Vec<String>) {
+            let id = agent_id.trim();
+            if id.is_empty() {
+                return;
+            }
+            if parse_cli_agent_org_reference(id).is_some() {
+                return;
+            }
+            if super::definitions_store().get(id).is_none() {
+                missing.push(format!("{} ({})", id, where_));
+            }
+        }
+        fn walk(members: &[OrgMember], missing: &mut Vec<String>) {
+            for member in members {
+                check(&member.agent_id, &member.name, missing);
+                walk(&member.children, missing);
+            }
+        }
+        let mut missing = Vec::new();
+        check(&org.agent_id, "coordinator", &mut missing);
+        walk(&org.children, &mut missing);
+        if missing.is_empty() {
+            Ok(())
+        } else {
+            Err(format!(
+                "Org '{}' references unknown agent definition(s): {}",
+                org.name,
+                missing.join(", ")
+            ))
+        }
+    }
+
+    /// Insert a new org. The single creation chokepoint: validates agent
+    /// references, rejects duplicate ids AND duplicate names
+    /// (case-insensitive — the LLM tool path and RPC path previously used
+    /// different uniqueness rules).
+    pub fn insert(&self, org: OrgDefinition) -> Result<String, String> {
+        Self::validate_agent_references(&org)?;
+        let id = org.id.clone();
+        let snapshot = {
+            let mut guard = self.orgs.lock().map_err(|err| format!("Lock error: {}", err))?;
+            if guard.iter().any(|existing| existing.id == id) {
+                return Err(format!("Org with id '{}' already exists", id));
+            }
+            if guard
+                .iter()
+                .any(|existing| existing.name.eq_ignore_ascii_case(&org.name))
+            {
+                return Err(format!(
+                    "An org named '{}' already exists. Use update to modify it.",
+                    org.name
+                ));
+            }
+            guard.push(org);
+            guard.clone()
+        };
+        self.persist(&snapshot);
+        Ok(id)
+    }
+
+    /// Replace an existing org by id. Validates agent references.
+    pub fn replace(&self, org: OrgDefinition) -> Result<(), String> {
+        Self::validate_agent_references(&org)?;
+        let snapshot = {
+            let mut guard = self.orgs.lock().map_err(|err| format!("Lock error: {}", err))?;
+            let idx = guard
+                .iter()
+                .position(|existing| existing.id == org.id)
+                .ok_or_else(|| format!("Org '{}' not found", org.id))?;
+            guard[idx] = org;
+            guard.clone()
+        };
+        self.persist(&snapshot);
+        Ok(())
+    }
+
+    /// Remove an org by id. Returns `true` when an org was removed.
+    pub fn remove(&self, org_id: &str) -> Result<bool, String> {
+        let (removed, snapshot) = {
+            let mut guard = self.orgs.lock().map_err(|err| format!("Lock error: {}", err))?;
+            let len_before = guard.len();
+            guard.retain(|org| org.id != org_id);
+            (guard.len() < len_before, guard.clone())
+        };
+        if removed {
+            self.persist(&snapshot);
+        }
+        Ok(removed)
+    }
+
     pub fn apply_member_launch_overrides(
         &self,
         org_id: &str,

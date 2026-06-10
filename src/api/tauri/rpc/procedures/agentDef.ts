@@ -31,12 +31,6 @@ export const agentDef = {
     .output(schemas.agentDef.AgentDefAddOutput)
     .build(),
 
-  /** Wholesale-replace an existing agent definition (custom or built-in). */
-  update: defineProcedure("agent_definitions_update")
-    .input(schemas.agentDef.AgentDefUpdateInput)
-    .output(schemas.agentDef.AgentDefinitionSchema)
-    .build(),
-
   /** Remove a custom agent definition by id. Returns true if deleted. */
   remove: defineProcedure("agent_definitions_remove")
     .input(schemas.agentDef.AgentDefRemoveInput)

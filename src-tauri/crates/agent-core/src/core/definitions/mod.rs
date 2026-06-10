@@ -55,7 +55,7 @@ pub use schema::{
     AgentDefinition, AgentLearningsConfig, AgentPolicy, AgentSkillsConfig, AgentTier,
     AgentToolSelection, DelegationConfig, SessionMode, SessionModel, SubAgentRef,
 };
-pub use store::{definitions_store, AgentDefinitionsStore};
+pub use store::{definitions_store, set_definitions_changed_hook, AgentDefinitionsStore};
 // Per-builtin entry points reached as `definitions::{os_agent, OS_AGENT_ID,
 // sde_agent, SDE_AGENT_ID, wingman_agent}` from session-launch and test
 // fixtures. Other builtin items (memory_consolidator/extractor,

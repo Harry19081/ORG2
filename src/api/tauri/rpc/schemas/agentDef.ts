@@ -113,16 +113,6 @@ export type AgentDefAddInput = z.input<typeof AgentDefAddInput>;
 /** Output of `agent_definitions_add` — the newly-assigned agent id. */
 export const AgentDefAddOutput = z.string();
 
-/**
- * Input to `agent_definitions_update` — full `AgentDefinition` as JSON.
- * This is a wholesale replace, unlike `agent_def_update_patch`.
- */
-export const AgentDefUpdateInput = z.object({
-  agentJson: z.string().min(1),
-});
-
-export type AgentDefUpdateInput = z.input<typeof AgentDefUpdateInput>;
-
 /** Input to `agent_definitions_remove`. */
 export const AgentDefRemoveInput = z.object({
   agentId: z.string().min(1),

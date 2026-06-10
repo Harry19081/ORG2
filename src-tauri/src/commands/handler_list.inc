@@ -804,7 +804,6 @@ agent_core::memory::commands::debug_memory_prefetch_section,
 // Custom Agent Definitions
 agent_core::definitions::commands::agent_definitions_list_all,
 agent_core::definitions::commands::agent_definitions_add,
-agent_core::definitions::commands::agent_definitions_update,
 agent_core::definitions::commands::agent_definitions_remove,
 // Typed agent-definition + integrations patch RPCs
 agent_core::definitions::commands::agent_def_get,

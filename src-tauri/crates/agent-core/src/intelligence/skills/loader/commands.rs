@@ -1,10 +1,10 @@
 //! Tauri commands for skill CRUD operations.
 //!
-//! Disabled-skills storage is keyed by agent definition ID. Callers
-//! that already know which agent they edit pass `agent_id` explicitly;
-//! when absent we fall back to picking a builtin from the workspace
-//! presence (`builtin:sde` for workspace contexts, `builtin:os` for
-//! global / desktop) so existing call sites stay backward-compatible.
+//! Disabled-skills storage is keyed by agent definition ID. Every caller
+//! that reads or toggles per-agent skill enablement MUST pass `agent_id`
+//! explicitly — the old workspace-presence heuristic (silently writing
+//! builtin:sde / builtin:os) made a custom-agent context toggle a
+//! BUILTIN's skills, so it was removed.
 
 use std::fs;
 use std::path::PathBuf;
@@ -13,29 +13,10 @@ use super::scanner::SkillsLoader;
 use super::types::SkillInfo;
 use crate::intelligence::skills::builtin;
 
-use crate::core::definitions::builtin::{OS_AGENT_ID, SDE_AGENT_ID};
 use crate::core::definitions::store::AgentDefinitionsStore;
 use crate::core::definitions::AgentSkillsConfig;
 use crate::session::prompt::cache::PromptCacheInvalidationReason;
 use crate::state::AgentAppState;
-
-/// Resolve the agent definition that owns the disabled-skills list.
-///
-/// `agent_id` wins when supplied; otherwise we infer the builtin from
-/// the workspace presence (mirrors the original behaviour so existing
-/// callers keep working).
-fn skills_owner_agent_id(agent_id: Option<&str>, workspace_path: Option<&str>) -> String {
-    if let Some(id) = agent_id {
-        if !id.is_empty() {
-            return id.to_string();
-        }
-    }
-    if workspace_path.map(|p| !p.is_empty()).unwrap_or(false) {
-        SDE_AGENT_ID.to_string()
-    } else {
-        OS_AGENT_ID.to_string()
-    }
-}
 
 /// Read the disabled-skills list from `AgentDefinition.skills_config.exclude`.
 ///
@@ -128,14 +109,25 @@ pub fn list_skills_with_config(
 /// `agent_id` lets callers (custom-agent detail view, AgentWizard) edit
 /// the right agent's exclusion list; when omitted we fall back to the
 /// workspace-presence heuristic for backward compatibility.
+/// When `agent_id` is supplied, `enabled` reflects the union of the
+/// app-global disabled list and that agent's exclusion list; otherwise it
+/// reflects only the app-global list (the Extensions hub view).
 #[tauri::command]
 pub async fn skills_list(
     store: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
     workspace_path: Option<String>,
     agent_id: Option<String>,
 ) -> Result<Vec<SkillInfo>, String> {
-    let owner = skills_owner_agent_id(agent_id.as_deref(), workspace_path.as_deref());
-    let disabled = load_disabled_skills_for(&store, &owner);
+    let mut disabled = crate::state::integrations_store::integrations_store()
+        .snapshot()
+        .disabled_skills;
+    if let Some(owner) = agent_id.as_deref().filter(|id| !id.trim().is_empty()) {
+        for skill in load_disabled_skills_for(&store, owner) {
+            if !disabled.contains(&skill) {
+                disabled.push(skill);
+            }
+        }
+    }
     Ok(list_skills_with_config(
         workspace_path.as_deref(),
         &disabled,
@@ -151,14 +143,14 @@ pub async fn skills_read(workspace_path: Option<String>, name: String) -> Result
         .ok_or_else(|| format!("Skill '{}' not found", name))
 }
 
-/// Toggle a skill on/off on the agent definition.
+/// Toggle a skill on/off.
 ///
-/// `agent_id` wins when supplied; otherwise we infer the builtin from
-/// the workspace presence. Writes through the registered
-/// `AgentDefinitionsStore`'s `update_with_overlay` for builtins (so
-/// the change persists to `~/.orgii/builtin-overrides.json` AND
-/// updates the in-memory cache `agent_def_get` reads from) and
-/// through `update` for custom agents.
+/// With `agent_id`: per-agent toggle on that definition's
+/// `skills_config.exclude` (store chokepoints fire persistence + the
+/// defs-changed event). Without `agent_id`: app-global toggle on
+/// `IntegrationsConfig.disabled_skills` — off for EVERY agent (the
+/// Extensions hub semantics; previously this silently wrote builtin:os's
+/// overlay and never applied to other agents).
 #[tauri::command]
 pub async fn skills_toggle(
     store: tauri::State<'_, std::sync::Arc<AgentDefinitionsStore>>,
@@ -168,14 +160,34 @@ pub async fn skills_toggle(
     name: String,
     enabled: bool,
 ) -> Result<(), String> {
-    let owner = skills_owner_agent_id(agent_id.as_deref(), workspace_path.as_deref());
-    toggle_disabled_skill_for(&store, &owner, &name, enabled)?;
-    app_state
-        .invalidate_prompt_caches_for_agent_definition(
-            &owner,
-            PromptCacheInvalidationReason::AgentDefinitionChanged,
-        )
-        .await;
+    let _ = workspace_path; // catalog scope is irrelevant for ownership
+    match agent_id.as_deref().filter(|id| !id.trim().is_empty()) {
+        Some(owner) => {
+            toggle_disabled_skill_for(&store, owner, &name, enabled)?;
+            app_state
+                .invalidate_prompt_caches_for_agent_definition(
+                    owner,
+                    PromptCacheInvalidationReason::AgentDefinitionChanged,
+                )
+                .await;
+        }
+        None => {
+            app_state
+                .integrations
+                .update(|cfg| -> Result<(), std::convert::Infallible> {
+                    if enabled {
+                        cfg.disabled_skills.retain(|skill| skill != &name);
+                    } else if !cfg.disabled_skills.iter().any(|s| s == &name) {
+                        cfg.disabled_skills.push(name.clone());
+                    }
+                    Ok(())
+                })
+                .map_err(|err| err.to_string())?;
+            app_state
+                .invalidate_prompt_caches(PromptCacheInvalidationReason::SkillCatalogChanged)
+                .await;
+        }
+    }
     Ok(())
 }
 
@@ -438,21 +450,6 @@ mod tests {
             skill.path.to_string_lossy(),
             "builtin://create-orgii-agent/SKILL.md"
         );
-    }
-
-    #[test]
-    fn skills_owner_agent_id_prefers_explicit_id() {
-        assert_eq!(
-            skills_owner_agent_id(Some("custom:abc"), Some("/tmp/proj")),
-            "custom:abc"
-        );
-        assert_eq!(
-            skills_owner_agent_id(Some("custom:abc"), None),
-            "custom:abc"
-        );
-        assert_eq!(skills_owner_agent_id(None, Some("/tmp/proj")), SDE_AGENT_ID);
-        assert_eq!(skills_owner_agent_id(None, None), OS_AGENT_ID);
-        assert_eq!(skills_owner_agent_id(Some(""), None), OS_AGENT_ID);
     }
 
     #[test]

@@ -49,7 +49,7 @@ pub(super) fn create_org(store: &AgentOrgsStore, params: &Value) -> Result<Strin
     let leader_agent_id = optional_string(params, "agent_id").unwrap_or_default();
     let children = parse_org_members(params);
 
-    let mut orgs = store
+    let orgs = store
         .orgs
         .lock()
         .map_err(|err| ToolError::ExecutionFailed(format!("Lock error: {}", err)))?;
@@ -64,6 +64,7 @@ pub(super) fn create_org(store: &AgentOrgsStore, params: &Value) -> Result<Strin
         )));
     }
 
+    drop(orgs);
     let new_id = Uuid::new_v4().to_string();
     let org = OrgDefinition {
         id: new_id.clone(),
@@ -75,8 +76,7 @@ pub(super) fn create_org(store: &AgentOrgsStore, params: &Value) -> Result<Strin
         children,
     };
 
-    orgs.push(org);
-    store.persist(&orgs);
+    store.insert(org).map_err(ToolError::ExecutionFailed)?;
 
     Ok(format!("Created org '{}' with id `{}`.", name, new_id))
 }
@@ -111,7 +111,9 @@ pub(super) fn update_org(store: &AgentOrgsStore, params: &Value) -> Result<Strin
     }
 
     let name = org.name.clone();
-    store.persist(&orgs);
+    let updated = org.clone();
+    drop(orgs);
+    store.replace(updated).map_err(ToolError::ExecutionFailed)?;
 
     Ok(format!("Updated org '{}'.", name))
 }
@@ -119,18 +121,16 @@ pub(super) fn update_org(store: &AgentOrgsStore, params: &Value) -> Result<Strin
 pub(super) fn remove_org(store: &AgentOrgsStore, params: &Value) -> Result<String, ToolError> {
     let org_id = required_string(params, "org_id")?;
 
-    let mut orgs = store
+    let orgs = store
         .orgs
         .lock()
         .map_err(|err| ToolError::ExecutionFailed(format!("Lock error: {}", err)))?;
 
     let removed_name = orgs.iter().find(|o| o.id == org_id).map(|o| o.name.clone());
-    let len_before = orgs.len();
-    orgs.retain(|o| o.id != org_id);
-    let removed = orgs.len() < len_before;
+    drop(orgs);
+    let removed = store.remove(&org_id).map_err(ToolError::ExecutionFailed)?;
 
     if removed {
-        store.persist(&orgs);
         Ok(format!("Removed org '{}'.", removed_name.unwrap_or(org_id)))
     } else {
         Err(ToolError::ExecutionFailed(format!(

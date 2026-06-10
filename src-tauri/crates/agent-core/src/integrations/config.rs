@@ -98,6 +98,14 @@ pub struct IntegrationsConfig {
     /// which embedding model the index uses.
     #[serde(default)]
     pub embedding: EmbeddingConfig,
+
+    /// Globally disabled skills (by name). App-level: a skill disabled in
+    /// the Extensions hub is off for EVERY agent. Per-agent deltas live on
+    /// `AgentDefinition.skills_config.exclude`. The effective disabled set
+    /// for a session is the union of both. Replaces the old behavior where
+    /// the Extensions toggle silently wrote `builtin:os`'s overlay.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub disabled_skills: Vec<String>,
 }
 
 impl IntegrationsConfig {

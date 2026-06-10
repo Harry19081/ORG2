@@ -189,7 +189,7 @@ fn resolve_for_session(
     // diverge. See `audit-skills-llm.spec.mjs` for the regression guard.
     let skills_config = pinned.skills_config.clone();
 
-    let resolved = ResolvedAgent::resolve(&pinned, Some(&store), &overrides)
+    let mut resolved = ResolvedAgent::resolve(&pinned, Some(&store), &overrides)
         .map_err(|err| match err {
             ResolveError::MissingModel(id) => format!(
                 "agent '{}' has no selected_model_id after resolve — caller must supply a model_override",
@@ -197,6 +197,15 @@ fn resolve_for_session(
             ),
             other => other.to_string(),
         })?;
+    // Effective disabled-skills set = app-global list (Extensions hub)
+    // ∪ per-agent exclude (definition). The global list previously lived
+    // on builtin:os's overlay, which silently failed to apply to other
+    // agents.
+    for skill in &integrations.disabled_skills {
+        if !resolved.skills.disabled.contains(skill) {
+            resolved.skills.disabled.push(skill.clone());
+        }
+    }
     Ok((resolved, integrations, overrides, skills_config))
 }
 

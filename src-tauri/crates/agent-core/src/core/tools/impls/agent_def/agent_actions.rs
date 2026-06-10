@@ -79,7 +79,7 @@ pub(super) fn create_agent(
     let context_window = params.get("context_window").and_then(|v| v.as_u64());
     let sub_agents = parse_sub_agents(params);
 
-    let mut agents = store
+    let agents = store
         .agents
         .lock()
         .map_err(|err| ToolError::ExecutionFailed(format!("Lock error: {}", err)))?;
@@ -170,8 +170,10 @@ pub(super) fn create_agent(
         reliability: None,
     };
 
-    agents.push(agent);
-    store.persist(&agents);
+    drop(agents);
+    store
+        .insert(agent)
+        .map_err(ToolError::ExecutionFailed)?;
 
     Ok(format!("Created agent '{}' with id `{}`.", name, new_id))
 }
@@ -182,48 +184,42 @@ pub(super) fn update_agent(
 ) -> Result<String, ToolError> {
     let agent_id = required_string(params, "agent_id")?;
 
-    let mut agents = store
-        .agents
-        .lock()
-        .map_err(|err| ToolError::ExecutionFailed(format!("Lock error: {}", err)))?;
+    let tools = parse_optional_config::<AgentToolSelection>(params, "tools")?;
+    let skills_config = parse_optional_config::<AgentSkillsConfig>(params, "skills_config")?;
 
-    let agent = agents
-        .iter_mut()
-        .find(|a| a.id == agent_id)
-        .ok_or_else(|| ToolError::ExecutionFailed(format!("Agent '{}' not found", agent_id)))?;
+    let updated = store
+        .update(&agent_id, |agent| {
+            if let Some(name) = optional_string(params, "name") {
+                agent.name = name;
+            }
+            if let Some(desc) = optional_string(params, "description") {
+                agent.description = Some(desc);
+            }
+            if let Some(soul) = optional_string(params, "soul_content") {
+                agent.soul_content = Some(soul);
+            }
+            if let Some(temp) = params.get("temperature").and_then(|v| v.as_f64()) {
+                agent.temperature = Some(temp);
+            }
+            if let Some(max) = params.get("max_tokens").and_then(|v| v.as_u64()) {
+                agent.max_tokens = Some(max);
+            }
+            if let Some(ctx) = params.get("context_window").and_then(|v| v.as_u64()) {
+                agent.context_window = Some(ctx);
+            }
+            if params.get("sub_agents").is_some() {
+                agent.sub_agents = parse_sub_agents(params);
+            }
+            if let Some(parsed) = tools {
+                agent.tools = parsed;
+            }
+            if let Some(parsed) = skills_config {
+                agent.skills_config = Some(parsed);
+            }
+        })
+        .map_err(ToolError::ExecutionFailed)?;
 
-    if let Some(name) = optional_string(params, "name") {
-        agent.name = name;
-    }
-    if let Some(desc) = optional_string(params, "description") {
-        agent.description = Some(desc);
-    }
-    if let Some(soul) = optional_string(params, "soul_content") {
-        agent.soul_content = Some(soul);
-    }
-    if let Some(temp) = params.get("temperature").and_then(|v| v.as_f64()) {
-        agent.temperature = Some(temp);
-    }
-    if let Some(max) = params.get("max_tokens").and_then(|v| v.as_u64()) {
-        agent.max_tokens = Some(max);
-    }
-    if let Some(ctx) = params.get("context_window").and_then(|v| v.as_u64()) {
-        agent.context_window = Some(ctx);
-    }
-    if params.get("sub_agents").is_some() {
-        agent.sub_agents = parse_sub_agents(params);
-    }
-    if let Some(parsed) = parse_optional_config::<AgentToolSelection>(params, "tools")? {
-        agent.tools = parsed;
-    }
-    if let Some(parsed) = parse_optional_config::<AgentSkillsConfig>(params, "skills_config")? {
-        agent.skills_config = Some(parsed);
-    }
-
-    let name = agent.name.clone();
-    store.persist(&agents);
-
-    Ok(format!("Updated agent '{}'.", name))
+    Ok(format!("Updated agent '{}'.", updated.name))
 }
 
 pub(super) fn remove_agent(
@@ -232,22 +228,12 @@ pub(super) fn remove_agent(
 ) -> Result<String, ToolError> {
     let agent_id = required_string(params, "agent_id")?;
 
-    let mut agents = store
-        .agents
-        .lock()
-        .map_err(|err| ToolError::ExecutionFailed(format!("Lock error: {}", err)))?;
-
-    let len_before = agents.len();
-    let removed_name = agents
-        .iter()
-        .find(|a| a.id == agent_id)
-        .map(|a| a.name.clone());
-
-    agents.retain(|a| a.id != agent_id);
-    let removed = agents.len() < len_before;
+    let removed_name = store.get(&agent_id).map(|a| a.name);
+    let removed = store
+        .remove(&agent_id)
+        .map_err(ToolError::ExecutionFailed)?;
 
     if removed {
-        store.persist(&agents);
         Ok(format!(
             "Removed agent '{}'.",
             removed_name.unwrap_or(agent_id)

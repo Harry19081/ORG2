@@ -981,6 +981,21 @@ pub fn run() {
             app.manage(agent_core::definitions::definitions_store());
             tracing::info!("[AgentDefinitions] Custom agent definitions loaded");
 
+            // Every store mutation (RPC commands, skills_toggle, the
+            // manage_agent_def LLM tool) flows through the store
+            // chokepoints, which fire this hook — frontend atoms refresh
+            // on the event instead of manual post-mutation polling.
+            {
+                let handle = app.handle().clone();
+                agent_core::definitions::set_definitions_changed_hook(move |agent_id| {
+                    use tauri::Emitter;
+                    let _ = handle.emit(
+                        "orgii-agent-defs-changed",
+                        serde_json::json!({ "agentId": agent_id }),
+                    );
+                });
+            }
+
             app.manage(agent_core::definitions::orgs::orgs_store());
             tracing::info!("[AgentOrgs] Agent organizations loaded");
 

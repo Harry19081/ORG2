@@ -6,19 +6,30 @@
 //!
 //! - `~/.orgii/agent-definitions.json` — user-created agents (no prefix).
 //!   Editable via `update(id, patch)`; builtins are rejected.
-//! - `~/.orgii/builtin-overrides.json` — map of `builtin:*` → full
-//!   `AgentDefinition`. User overlays layered on top of the compiled-in
-//!   builtin at read time. Written via `update_with_overlay(id, patch)`
-//!   for builtin ids. "Reset to builtin" = remove the key from this file.
+//! - `~/.orgii/builtin-overrides.json` — map of `builtin:*` → **field-level
+//!   delta** against the compiled-in builtin (top-level JSON keys whose
+//!   value differs). The effective definition is composed at load time as
+//!   `compiled builtin + delta`, so ship-time changes to builtin tool
+//!   lists / prompts / rosters still reach users who customised other
+//!   fields. Written via `update_with_overlay(id, patch)` for builtin
+//!   ids. "Reset to builtin" = remove the key from this file. Legacy
+//!   full-snapshot entries are reduced to deltas on first load.
 //!
 //! # Lookup order (`get`)
 //!
 //! 1. If `id.starts_with("builtin:")`:
-//!    - Load compiled-in builtin.
-//!    - If `builtin-overrides.json` has a matching entry, **replace** with
-//!      the override (full replace; no field-level merge — per §12 Conflict
-//!      C, "the user owns the override once they write one").
+//!    - Return the in-memory effective definition (compiled + delta,
+//!      composed at load/write time), or the compiled-in builtin when no
+//!      overlay exists.
 //! 2. Else: lookup in the user-definitions vec.
+//!
+//! # Change notification
+//!
+//! Every successful mutation invokes the process-wide `on_change` hook
+//! (installed once at Tauri setup) with the affected agent id; the hook
+//! emits `orgii-agent-defs-changed` so frontend atoms refresh without
+//! manual polling. Mutating definitions outside the store's methods is
+//! a bug.
 
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
@@ -60,7 +71,26 @@ pub fn definitions_store() -> Arc<AgentDefinitionsStore> {
 /// Store for user-created agent definitions and builtin overrides.
 pub struct AgentDefinitionsStore {
     pub(crate) agents: Mutex<Vec<AgentDefinition>>,
+    /// Effective (compiled + delta) definitions for overridden builtins.
+    /// Persistence reduces these back to top-level field deltas.
     pub(crate) builtin_overrides: Mutex<BTreeMap<String, AgentDefinition>>,
+}
+
+type ChangeHook = Box<dyn Fn(&str) + Send + Sync>;
+
+static ON_CHANGE: std::sync::OnceLock<ChangeHook> = std::sync::OnceLock::new();
+
+/// Install the process-wide definition-change hook. Called once from the
+/// Tauri setup; the hook emits `orgii-agent-defs-changed` to the frontend.
+/// Subsequent calls are ignored.
+pub fn set_definitions_changed_hook(hook: impl Fn(&str) + Send + Sync + 'static) {
+    let _ = ON_CHANGE.set(Box::new(hook));
+}
+
+pub(crate) fn notify_change(agent_id: &str) {
+    if let Some(hook) = ON_CHANGE.get() {
+        hook(agent_id);
+    }
 }
 
 impl Default for AgentDefinitionsStore {
@@ -194,6 +224,7 @@ impl AgentDefinitionsStore {
             (agent.clone(), guard.clone())
         };
         self.persist(&snapshot);
+        notify_change(id);
         Ok(updated)
     }
 
@@ -231,6 +262,7 @@ impl AgentDefinitionsStore {
             (agent, guard.clone())
         };
         self.persist_overrides(&snapshot);
+        notify_change(id);
         Ok(updated)
     }
 
@@ -249,7 +281,87 @@ impl AgentDefinitionsStore {
             guard.clone()
         };
         self.persist_overrides(&snapshot);
+        notify_change(id);
         Ok(())
+    }
+
+    /// Insert a new user-created agent definition. Rejects duplicate ids
+    /// and builtin ids. The single creation chokepoint — strips forbidden
+    /// sub-agents, persists, and fires the change hook.
+    pub fn insert(&self, mut agent: AgentDefinition) -> Result<String, String> {
+        if super::builtin::is_builtin_agent(&agent.id) {
+            return Err(format!("insert() rejects builtin id '{}'", agent.id));
+        }
+        super::builtin::strip_forbidden_sub_agents(&mut agent);
+        let id = agent.id.clone();
+        let snapshot = {
+            let mut guard = self
+                .agents
+                .lock()
+                .expect("agent-definitions mutex poisoned");
+            if guard.iter().any(|existing| existing.id == id) {
+                return Err(format!("Agent with id '{}' already exists", id));
+            }
+            guard.push(agent);
+            guard.clone()
+        };
+        self.persist(&snapshot);
+        notify_change(&id);
+        Ok(id)
+    }
+
+    /// Insert-or-replace a user-created agent definition by id. Used by
+    /// import flows that legitimately overwrite. Same invariants as
+    /// `insert` otherwise.
+    pub fn upsert(&self, mut agent: AgentDefinition) -> Result<(), String> {
+        if super::builtin::is_builtin_agent(&agent.id) {
+            return Err(format!("upsert() rejects builtin id '{}'", agent.id));
+        }
+        super::builtin::strip_forbidden_sub_agents(&mut agent);
+        let id = agent.id.clone();
+        let snapshot = {
+            let mut guard = self
+                .agents
+                .lock()
+                .expect("agent-definitions mutex poisoned");
+            if let Some(existing) = guard.iter_mut().find(|a| a.id == id) {
+                *existing = agent;
+            } else {
+                guard.push(agent);
+            }
+            guard.clone()
+        };
+        self.persist(&snapshot);
+        notify_change(&id);
+        Ok(())
+    }
+
+    /// Remove a user-created agent definition by id. Returns `true` when a
+    /// definition was removed. Refuses when any agent org still references
+    /// the agent (dangling org members previously only failed at launch).
+    pub fn remove(&self, id: &str) -> Result<bool, String> {
+        let referencing = super::orgs::orgs_store().org_names_referencing_agent(id);
+        if !referencing.is_empty() {
+            return Err(format!(
+                "Agent '{}' is still referenced by org(s): {}. Remove it from those orgs first.",
+                id,
+                referencing.join(", ")
+            ));
+        }
+        let (removed, snapshot) = {
+            let mut guard = self
+                .agents
+                .lock()
+                .expect("agent-definitions mutex poisoned");
+            let len_before = guard.len();
+            guard.retain(|agent| agent.id != id);
+            (guard.len() < len_before, guard.clone())
+        };
+        if removed {
+            self.persist(&snapshot);
+            notify_change(id);
+        }
+        Ok(removed)
     }
 }
 
@@ -364,16 +476,18 @@ fn load_overrides_from_disk(path: &std::path::Path) -> BTreeMap<String, AgentDef
                     .fold(false, |acc, v| migrate_legacy_workspace_settings(v) || acc);
                 let overrides: BTreeMap<String, AgentDefinition> = raw
                     .into_iter()
-                    .filter_map(|(id, v)| match serde_json::from_value(v) {
-                        Ok(agent) => Some((id, agent)),
-                        Err(err) => {
-                            warn!(
-                                "[builtin-overrides] Skipping unparsable overlay '{}' in {}: {}",
-                                id,
-                                path.display(),
-                                err
-                            );
-                            None
+                    .filter_map(|(id, delta)| {
+                        match compose_builtin_with_delta(&id, &delta) {
+                            Some(agent) => Some((id, agent)),
+                            None => {
+                                warn!(
+                                    "[builtin-overrides] Skipping overlay '{}' in {} \
+                                     (unknown builtin or unparsable delta)",
+                                    id,
+                                    path.display()
+                                );
+                                None
+                            }
                         }
                     })
                     .collect();
@@ -412,6 +526,65 @@ fn load_overrides_from_disk(path: &std::path::Path) -> BTreeMap<String, AgentDef
     }
 }
 
+/// Compose `compiled builtin + on-disk delta` into an effective definition.
+///
+/// The delta is a JSON object holding only the top-level fields the user
+/// changed. Unknown builtin ids return `None` (e.g. a builtin retired in a
+/// newer release). Legacy full-snapshot entries compose identically —
+/// every field overwrites the compiled value — and are reduced to true
+/// deltas on the next write.
+fn compose_builtin_with_delta(
+    id: &str,
+    delta: &serde_json::Value,
+) -> Option<AgentDefinition> {
+    let builtin = super::builtin::get_builtin_agent(id)?;
+    let mut base = serde_json::to_value(&builtin).ok()?;
+    let (Some(base_obj), Some(delta_obj)) = (base.as_object_mut(), delta.as_object()) else {
+        return None;
+    };
+    for (key, value) in delta_obj {
+        // Identity/structural keys never come from the overlay.
+        if key == "id" || key == "builtIn" {
+            continue;
+        }
+        base_obj.insert(key.clone(), value.clone());
+    }
+    serde_json::from_value(base).ok()
+}
+
+/// Reduce an effective builtin definition back to the top-level field
+/// delta against the compiled-in builtin. Fields whose serialized value
+/// equals the compiled value are dropped; an explicit `null` is written
+/// when the user cleared a field the builtin sets.
+fn delta_against_builtin(id: &str, effective: &AgentDefinition) -> Option<serde_json::Value> {
+    let builtin = super::builtin::get_builtin_agent(id)?;
+    let base = serde_json::to_value(&builtin).ok()?;
+    let full = serde_json::to_value(effective).ok()?;
+    let (Some(base_obj), Some(full_obj)) = (base.as_object(), full.as_object()) else {
+        return None;
+    };
+    let mut delta = serde_json::Map::new();
+    for (key, value) in full_obj {
+        if key == "id" || key == "builtIn" {
+            continue;
+        }
+        if base_obj.get(key) != Some(value) {
+            delta.insert(key.clone(), value.clone());
+        }
+    }
+    // Fields present on the compiled builtin but absent from the effective
+    // serialization were cleared by the user — record explicit null.
+    for key in base_obj.keys() {
+        if key == "id" || key == "builtIn" {
+            continue;
+        }
+        if !full_obj.contains_key(key) {
+            delta.insert(key.clone(), serde_json::Value::Null);
+        }
+    }
+    Some(serde_json::Value::Object(delta))
+}
+
 fn save_overrides_to_disk(
     path: &std::path::Path,
     overrides: &BTreeMap<String, AgentDefinition>,
@@ -420,13 +593,83 @@ fn save_overrides_to_disk(
         std::fs::create_dir_all(parent)
             .map_err(|err| format!("Failed to create directory: {}", err))?;
     }
-    let content = serde_json::to_string_pretty(overrides)
+    let deltas: BTreeMap<&String, serde_json::Value> = overrides
+        .iter()
+        .filter_map(|(id, agent)| delta_against_builtin(id, agent).map(|d| (id, d)))
+        .collect();
+    let content = serde_json::to_string_pretty(&deltas)
         .map_err(|err| format!("Failed to serialize overrides: {}", err))?;
     std::fs::write(path, content).map_err(|err| format!("Failed to write overrides: {}", err))?;
     info!(
-        "[builtin-overrides] Saved {} overrides to {}",
-        overrides.len(),
+        "[builtin-overrides] Saved {} override delta(s) to {}",
+        deltas.len(),
         path.display()
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod overlay_tests {
+    use super::*;
+
+    #[test]
+    fn compose_applies_delta_field_over_builtin() {
+        let delta = serde_json::json!({"name": "My SDE"});
+        let agent = compose_builtin_with_delta("builtin:sde", &delta).expect("composes");
+        assert_eq!(agent.name, "My SDE");
+        // Untouched fields keep compiled-in values.
+        let compiled = crate::definitions::builtin::get_builtin_agent("builtin:sde").unwrap();
+        assert_eq!(agent.tools.excluded_tools, compiled.tools.excluded_tools);
+    }
+
+    #[test]
+    fn compose_legacy_full_snapshot_still_composes() {
+        let compiled = crate::definitions::builtin::get_builtin_agent("builtin:os").unwrap();
+        let mut snapshot = serde_json::to_value(&compiled).unwrap();
+        snapshot["name"] = serde_json::json!("Renamed OS");
+        let agent = compose_builtin_with_delta("builtin:os", &snapshot).expect("composes");
+        assert_eq!(agent.name, "Renamed OS");
+    }
+
+    #[test]
+    fn delta_round_trip_keeps_only_changed_fields() {
+        let mut effective =
+            crate::definitions::builtin::get_builtin_agent("builtin:sde").unwrap();
+        effective.name = "Custom SDE".to_string();
+        effective.temperature = Some(0.3);
+
+        let delta = delta_against_builtin("builtin:sde", &effective).expect("delta");
+        let obj = delta.as_object().expect("object");
+        assert!(obj.contains_key("name"));
+        assert!(obj.contains_key("temperature"));
+        assert!(
+            !obj.contains_key("soulContent"),
+            "untouched field must not be in the delta"
+        );
+
+        let recomposed = compose_builtin_with_delta("builtin:sde", &delta).expect("recompose");
+        assert_eq!(recomposed.name, "Custom SDE");
+        assert_eq!(recomposed.temperature, Some(0.3));
+    }
+
+    #[test]
+    fn delta_records_cleared_field_as_null() {
+        let mut effective =
+            crate::definitions::builtin::get_builtin_agent("builtin:sde").unwrap();
+        // SDE ships a soul; the user clears it.
+        assert!(effective.soul_content.is_some());
+        effective.soul_content = None;
+
+        let delta = delta_against_builtin("builtin:sde", &effective).expect("delta");
+        assert!(delta.get("soulContent").is_some_and(|v| v.is_null()));
+
+        let recomposed = compose_builtin_with_delta("builtin:sde", &delta).expect("recompose");
+        assert!(recomposed.soul_content.is_none());
+    }
+
+    #[test]
+    fn compose_unknown_builtin_returns_none() {
+        let delta = serde_json::json!({"name": "ghost"});
+        assert!(compose_builtin_with_delta("builtin:retired-agent", &delta).is_none());
+    }
 }
