@@ -54,25 +54,6 @@ fn non_management_tools_supported_on_every_parent_agent_kind() {
 // -- Subagent defaults ------------------------------------------------------
 
 #[test]
-fn subagent_disabled_list_not_empty() {
-    assert!(
-        !DEFAULT_SUBAGENT_DISABLED.is_empty(),
-        "Subagent disabled defaults should contain at least one tool"
-    );
-}
-
-#[test]
-fn subagent_disabled_no_duplicates() {
-    let mut seen = HashSet::new();
-    for name in DEFAULT_SUBAGENT_DISABLED {
-        assert!(
-            seen.insert(name),
-            "Duplicate in DEFAULT_SUBAGENT_DISABLED: {name}"
-        );
-    }
-}
-
-#[test]
 fn subagent_forbidden_contains_user_interaction_tools() {
     let forbidden: HashSet<&str> = SUBAGENT_FORBIDDEN_TOOLS.iter().copied().collect();
     for expected in &[
@@ -91,30 +72,13 @@ fn subagent_forbidden_contains_user_interaction_tools() {
 }
 
 #[test]
-fn subagent_forbidden_and_default_disabled_disjoint() {
+fn retired_aliases_disjoint_from_forbidden() {
     let forbidden: HashSet<&str> = SUBAGENT_FORBIDDEN_TOOLS.iter().copied().collect();
-    let disabled: HashSet<&str> = DEFAULT_SUBAGENT_DISABLED.iter().copied().collect();
-    let overlap: Vec<&&str> = forbidden.intersection(&disabled).collect();
-    assert!(
-        overlap.is_empty(),
-        "SUBAGENT_FORBIDDEN_TOOLS and DEFAULT_SUBAGENT_DISABLED must be disjoint, but share: {overlap:?}"
-    );
-}
-
-#[test]
-fn retired_aliases_disjoint_from_forbidden_and_default_disabled() {
-    let forbidden: HashSet<&str> = SUBAGENT_FORBIDDEN_TOOLS.iter().copied().collect();
-    let disabled: HashSet<&str> = DEFAULT_SUBAGENT_DISABLED.iter().copied().collect();
     let aliases: HashSet<&str> = SUBAGENT_RETIRED_TOOL_ALIASES.iter().copied().collect();
     assert!(
         forbidden.is_disjoint(&aliases),
         "An alias in SUBAGENT_RETIRED_TOOL_ALIASES is also a real \
          forbidden tool — fold it into SUBAGENT_FORBIDDEN_TOOLS instead"
-    );
-    assert!(
-        disabled.is_disjoint(&aliases),
-        "An alias in SUBAGENT_RETIRED_TOOL_ALIASES is also default-disabled \
-         — keep retired-only names out of the live tool registry"
     );
 }
 
@@ -136,12 +100,6 @@ fn subagent_helpers_return_owned() {
     let forbidden = subagent_forbidden_tools();
     assert_eq!(forbidden.len(), SUBAGENT_FORBIDDEN_TOOLS.len());
     for (owned, static_ref) in forbidden.iter().zip(SUBAGENT_FORBIDDEN_TOOLS.iter()) {
-        assert_eq!(owned.as_str(), *static_ref);
-    }
-
-    let disabled = default_subagent_disabled_tools();
-    assert_eq!(disabled.len(), DEFAULT_SUBAGENT_DISABLED.len());
-    for (owned, static_ref) in disabled.iter().zip(DEFAULT_SUBAGENT_DISABLED.iter()) {
         assert_eq!(owned.as_str(), *static_ref);
     }
 }

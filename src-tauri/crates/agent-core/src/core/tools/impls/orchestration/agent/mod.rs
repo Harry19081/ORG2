@@ -657,10 +657,8 @@ impl Tool for AgentTool {
             }
         }
 
-        // 3. Instance numbering — also enforces the per-agent max_instances cap.
-        let instance_number = self
-            .next_instance_number(&agent_id, agent.max_instances)
-            .await?;
+        // 3. Instance numbering — also enforces the max-instances cap.
+        let instance_number = self.next_instance_number(&agent_id).await?;
 
         // 4. Resolve model + reliability for THIS sub-agent.
         //

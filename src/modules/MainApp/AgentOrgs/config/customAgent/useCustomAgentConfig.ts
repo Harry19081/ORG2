@@ -112,15 +112,10 @@ function projectConfig(
   const tools = agent.tools ?? {};
   const sessionModel = agent.sessionModel ?? null;
   const agentRecord = agent as unknown as Record<string, unknown>;
-  const previousWorkspaceSetting =
-    typeof agentRecord.loadWorkspaceSettings === "boolean"
-      ? agentRecord.loadWorkspaceSettings
-      : true;
   return {
     ...agentRecord,
-    loadWorkspaceResources:
-      agent.loadWorkspaceResources ?? previousWorkspaceSetting,
-    loadWorkspaceRules: agent.loadWorkspaceRules ?? previousWorkspaceSetting,
+    loadWorkspaceResources: agent.loadWorkspaceResources ?? true,
+    loadWorkspaceRules: agent.loadWorkspaceRules ?? true,
     security: {
       autonomy: policy.autonomy,
       workspaceOnly: policy.workspaceOnly,

@@ -54,35 +54,6 @@ pub const SUBAGENT_FORBIDDEN_TOOLS: &[&str] = &[
 /// `core/tools/impls/orchestration/agent`.
 pub const SUBAGENT_RETIRED_TOOL_ALIASES: &[&str] = &["task", "spawn_sub_agent"];
 
-/// Tools disabled on subagents **by default** (but may be re-allowed by
-/// an agent definition's `tool_set.builtin_tools` allow-list).
-///
-/// These tools typically require deps (bus, bridge, DB) that subagents
-/// don't receive, so they'd fail at runtime anyway — the deny list is
-/// defence-in-depth.
-pub const DEFAULT_SUBAGENT_DISABLED: &[&str] = &[
-    tool_names::MANAGE_NODES,
-    tool_names::CONTROL_ORGII,
-    tool_names::SPOTLIGHT,
-    tool_names::QUERY_LSP,
-    tool_names::MANAGE_LSP,
-    tool_names::MANAGE_TODO,
-    tool_names::MANAGE_FILE_HISTORY,
-    tool_names::EDIT_FILE,
-    tool_names::DELETE_FILE,
-    tool_names::SETUP_REPO,
-    // Resolves secret tokens at write time — only meaningful when paired
-    // with the parent session's `SecretBroker`. Subagents never receive
-    // one, so the tool would be unable to register anyway.
-    tool_names::WRITE_ENV_FILE,
-    tool_names::MANAGE_WORK_ITEM,
-    tool_names::MANAGE_AGENT_DEF,
-    tool_names::CONTROL_DESKTOP_WITH_PEEKABOO,
-    tool_names::CONTROL_BROWSER_WITH_AGENT_BROWSER,
-    tool_names::CONTROL_BROWSER_WITH_PLAYWRIGHT,
-    tool_names::CONTROL_INTERNAL_BROWSER,
-];
-
 const NON_BUILTIN_REGISTERED_TOOLS: &[&str] = &[
     tool_names::LIST_KNOWN_WORKSPACES,
     tool_names::ADD_WORKSPACE_DIRECTORY,
@@ -133,13 +104,6 @@ pub fn supported_agents_for(tool_name: &str) -> Vec<AgentKind> {
         | tool_names::MANAGE_AGENT_DEF => vec![AgentKind::Os, AgentKind::Custom],
         _ => vec![AgentKind::Os, AgentKind::Sde, AgentKind::Custom],
     }
-}
-
-pub fn default_subagent_disabled_tools() -> Vec<String> {
-    DEFAULT_SUBAGENT_DISABLED
-        .iter()
-        .map(|s| (*s).to_string())
-        .collect()
 }
 
 /// Capability-driven seed for `excluded_tools` on a fresh built-in

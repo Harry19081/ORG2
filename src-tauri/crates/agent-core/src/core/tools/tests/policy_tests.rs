@@ -131,26 +131,15 @@ fn test_resolved_permissive() {
 }
 
 #[test]
-fn test_build_default_allows_everything() {
-    // `build(false)` is a no-op base policy (no layers). All tool access
+fn test_permissive_default_allows_everything() {
+    // `permissive()` is a no-op base policy (no layers). All tool access
     // flows through `excludedTools` (off at registration time) and
     // the runtime access-mode tool policy.
-    let policy = ResolvedToolPolicy::build(false);
+    let policy = ResolvedToolPolicy::permissive();
     assert_eq!(policy.verdict("run_shell"), ToolVerdict::Allow);
     assert_eq!(policy.verdict("read_file"), ToolVerdict::Allow);
     assert_eq!(policy.verdict("edit_file"), ToolVerdict::Allow);
     assert_eq!(policy.verdict("send_message"), ToolVerdict::Allow);
-}
-
-#[test]
-fn test_subagent_default_restrictions() {
-    // Subagents still inherit the hardcoded `group:nodes` deny — the only
-    // surviving non-overlay restriction. (`control_orgii` is disabled at the
-    // builtin-tools level; no need to repeat it here.)
-    let policy = ResolvedToolPolicy::build(true);
-    assert!(!policy.is_allowed("manage_nodes"));
-    assert!(policy.is_allowed("read_file"));
-    assert!(policy.is_allowed("run_shell"));
 }
 
 #[test]
@@ -186,7 +175,7 @@ fn test_readonly_access_mode_denies_write_tools() {
     use crate::foundation::security::policy::AutonomyLevel;
     use crate::tools::policy::ToolPolicyLayer;
 
-    let base = ResolvedToolPolicy::build(false);
+    let base = ResolvedToolPolicy::permissive();
     let policy = base.with_extra_layer(ToolPolicyLayer::deny_only(
         AutonomyLevel::ReadOnly.deny_tools(),
     ));
@@ -199,7 +188,7 @@ fn test_readonly_access_mode_denies_write_tools() {
 fn test_with_ask_tools_full_autonomy() {
     use crate::foundation::security::policy::AutonomyLevel;
 
-    let base = ResolvedToolPolicy::build(false);
+    let base = ResolvedToolPolicy::permissive();
     let policy = base.with_ask_tools(AutonomyLevel::Full.ask_tools());
 
     assert_eq!(policy.verdict("run_shell"), ToolVerdict::Allow);
@@ -219,7 +208,7 @@ fn test_with_ask_tools_full_autonomy() {
 fn with_extra_layer_applies_plan_mode_deny_delta() {
     use crate::session::AgentExecMode;
 
-    let base = ResolvedToolPolicy::build(false);
+    let base = ResolvedToolPolicy::permissive();
     assert_eq!(
         base.verdict("edit_file"),
         ToolVerdict::Allow,
@@ -245,7 +234,7 @@ fn with_extra_layer_applies_plan_mode_deny_delta() {
 fn with_extra_layer_applies_ask_mode_deny_delta() {
     use crate::session::AgentExecMode;
 
-    let base = ResolvedToolPolicy::build(false);
+    let base = ResolvedToolPolicy::permissive();
     let layer = AgentExecMode::Ask
         .policy_layer()
         .expect("ask mode must contribute a policy layer");
@@ -263,7 +252,7 @@ fn with_extra_layer_applies_ask_mode_deny_delta() {
 fn build_mode_denies_create_plan_only() {
     use crate::session::AgentExecMode;
 
-    let base = ResolvedToolPolicy::build(false);
+    let base = ResolvedToolPolicy::permissive();
     let layer = AgentExecMode::Build
         .policy_layer()
         .expect("build mode must deny create_plan");

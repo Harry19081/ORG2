@@ -218,7 +218,7 @@ pub struct SkillListingCacheKey {
     disabled_skills: Vec<String>,
     include_filter: Option<Vec<String>>,
     agent_id: String,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
 }
 
 impl SkillListingCacheKey {
@@ -227,7 +227,7 @@ impl SkillListingCacheKey {
         disabled_skills: &[String],
         include_filter: Option<&[String]>,
         agent_id: &str,
-        load_workspace_settings: bool,
+        load_workspace_resources: bool,
     ) -> Self {
         let mut disabled = disabled_skills.to_vec();
         disabled.sort();
@@ -245,7 +245,7 @@ impl SkillListingCacheKey {
             disabled_skills: disabled,
             include_filter: include,
             agent_id: agent_id.to_string(),
-            load_workspace_settings,
+            load_workspace_resources,
         }
     }
 }

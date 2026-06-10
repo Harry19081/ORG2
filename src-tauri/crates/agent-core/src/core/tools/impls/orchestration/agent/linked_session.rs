@@ -14,19 +14,18 @@ use project_management::orchestrator::state_machine;
 use project_management::projects::io as projects_io;
 
 use super::AgentTool;
-use crate::definitions::schema::DEFAULT_MAX_SUBAGENT_INSTANCES;
 use crate::tools::traits::ToolError;
+
+/// Hard cap on spawns of one agent id within a single parent session.
+/// Prevents runaway LLM delegation loops.
+const MAX_SUBAGENT_INSTANCES: u32 = 30;
 
 impl AgentTool {
     /// Increment and return the monotonic launch count for `agent_id`.
-    /// Returns `Err` when the count would exceed the agent's `max_instances`
-    /// cap, preventing unbounded delegation loops.
-    pub(super) async fn next_instance_number(
-        &self,
-        agent_id: &str,
-        max_instances: Option<u32>,
-    ) -> Result<u32, ToolError> {
-        let limit = max_instances.unwrap_or(DEFAULT_MAX_SUBAGENT_INSTANCES);
+    /// Returns `Err` when the count would exceed `MAX_SUBAGENT_INSTANCES`,
+    /// preventing unbounded delegation loops.
+    pub(super) async fn next_instance_number(&self, agent_id: &str) -> Result<u32, ToolError> {
+        let limit = MAX_SUBAGENT_INSTANCES;
         let mut counts = self.instance_counts.lock().await;
         let count = counts.entry(agent_id.to_string()).or_insert(0);
         *count += 1;

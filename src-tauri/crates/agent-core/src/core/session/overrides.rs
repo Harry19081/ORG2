@@ -21,10 +21,9 @@
 //!
 //! # Field selection
 //!
-//! This struct holds exactly three fields: `workspace`, `label`,
-//! `animate`. That is the minimum needed for a session to pick its own
-//! directory, log prefix, and animation setting without mutating the
-//! underlying `AgentDefinition`.
+//! This struct holds exactly two fields: `workspace` and `animate`. That is
+//! the minimum needed for a session to pick its own directory and animation
+//! setting without mutating the underlying `AgentDefinition`.
 //!
 //! Additional overrides (`execution_mode`, `exec_mode`, `excluded_tools`)
 //! are expected in a follow-up phase that wires mode-switch and runtime
@@ -53,10 +52,6 @@ pub struct SessionOverrides {
     /// when `None`.
     pub workspace: Option<PathBuf>,
 
-    /// Short display label shown in log prefixes and session pickers.
-    /// When `None`, code falls back to `AgentDefinition.name`.
-    pub label: Option<String>,
-
     /// Whether this session animates streaming output. When `None`, falls
     /// back to the resolved agent's `animate` flag.
     pub animate: Option<bool>,
@@ -65,12 +60,8 @@ pub struct SessionOverrides {
 impl SessionOverrides {
     /// Convenience constructor for tests and for the session-launch path
     /// that knows the full override set at launch time.
-    pub fn new(workspace: Option<PathBuf>, label: Option<String>, animate: Option<bool>) -> Self {
-        Self {
-            workspace,
-            label,
-            animate,
-        }
+    pub fn new(workspace: Option<PathBuf>, animate: Option<bool>) -> Self {
+        Self { workspace, animate }
     }
 }
 
@@ -82,22 +73,17 @@ mod tests {
     fn default_overrides_are_empty() {
         let overrides = SessionOverrides::default();
         assert!(overrides.workspace.is_none());
-        assert!(overrides.label.is_none());
         assert!(overrides.animate.is_none());
     }
 
     #[test]
     fn new_preserves_all_fields() {
-        let overrides = SessionOverrides::new(
-            Some(PathBuf::from("/tmp/project")),
-            Some("my-session".into()),
-            Some(false),
-        );
+        let overrides =
+            SessionOverrides::new(Some(PathBuf::from("/tmp/project")), Some(false));
         assert_eq!(
             overrides.workspace.as_deref(),
             Some(std::path::Path::new("/tmp/project"))
         );
-        assert_eq!(overrides.label.as_deref(), Some("my-session"));
         assert_eq!(overrides.animate, Some(false));
     }
 }

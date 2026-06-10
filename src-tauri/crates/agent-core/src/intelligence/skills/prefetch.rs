@@ -102,7 +102,7 @@ pub async fn select_skills(
     disabled_skills: &[String],
     source_dirs: &[String],
     agent_id: &str,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
 ) -> PrefetchResult {
     let empty_result = PrefetchResult {
         selected_names: Vec::new(),
@@ -116,7 +116,7 @@ pub async fn select_skills(
         .with_extra_source_dirs(source_dirs)
         .with_disabled_skills(disabled_skills.to_vec())
         .with_agent_id(agent_id.to_string())
-        .with_load_workspace_settings(load_workspace_settings);
+        .with_load_workspace_resources(load_workspace_resources);
 
     let all_skills: Vec<SkillInfo> = loader
         .list_skills()

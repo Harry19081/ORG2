@@ -150,7 +150,6 @@ pub fn ade_manager() -> AgentDefinition {
         // resolvable via the skill loader's fallback path.
         load_workspace_resources: Some(false),
         load_workspace_rules: Some(false),
-        load_workspace_settings: Some(false),
         skills_config: None,
         selected_account_id: None,
         selected_model_id: None,
@@ -169,7 +168,6 @@ pub fn ade_manager() -> AgentDefinition {
         }),
 
         reliability: None,
-        max_instances: Some(1),
     }
 }
 
@@ -244,15 +242,13 @@ mod tests {
     #[test]
     fn ade_manager_is_singleton() {
         let agent = ade_manager();
-        assert_eq!(
-            agent.max_instances,
-            Some(1),
+        assert!(
+            matches!(
+                agent.session_model.as_ref().map(|m| &m.mode),
+                Some(crate::definitions::schema::SessionMode::Singleton)
+            ),
             "ADE Manager must be a singleton so the Spotlight palette always resumes the same session"
         );
-        assert!(matches!(
-            agent.session_model.as_ref().map(|m| &m.mode),
-            Some(crate::definitions::schema::SessionMode::Singleton)
-        ));
     }
 
     #[test]

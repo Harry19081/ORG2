@@ -98,7 +98,6 @@ pub fn wingman_agent() -> AgentDefinition {
         sub_agents: None,
         load_workspace_resources: None,
         load_workspace_rules: None,
-        load_workspace_settings: None,
         skills_config: None,
         selected_account_id: None,
         selected_model_id: None,
@@ -112,7 +111,6 @@ pub fn wingman_agent() -> AgentDefinition {
         learnings: None,
 
         reliability: None,
-        max_instances: None,
     }
 }
 

@@ -167,7 +167,7 @@ impl UnifiedMessageProcessor {
                             let mut loader = crate::skills::loader::SkillsLoader::new(&skills_dir)
                                 .with_builtin_dir(crate::skills::loader::global_skills_dir())
                                 .with_agent_id(agent_key.to_string())
-                                .with_load_workspace_settings(
+                                .with_load_workspace_resources(
                                     self.runtime.resolved.load_workspace_resources,
                                 );
                             if !self.runtime.resolved.skills.source_dirs.is_empty() {

@@ -86,7 +86,6 @@ pub fn work_item_manager_agent() -> AgentDefinition {
         sub_agents: Some(vec![]),
         load_workspace_resources: None,
         load_workspace_rules: None,
-        load_workspace_settings: None,
         skills_config: None,
         selected_account_id: None,
         selected_model_id: None,
@@ -101,7 +100,6 @@ pub fn work_item_manager_agent() -> AgentDefinition {
             auto_dream_enabled: false,
         }),
         reliability: None,
-        max_instances: None,
     }
 }
 

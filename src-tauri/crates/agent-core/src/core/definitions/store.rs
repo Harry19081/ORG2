@@ -225,13 +225,60 @@ impl AgentDefinitionsStore {
 
 // ── File I/O ──
 
+/// One-shot migration for the retired `loadWorkspaceSettings` field: if an
+/// on-disk definition still carries it, fold its value into the two fields
+/// that replaced it (`loadWorkspaceResources` / `loadWorkspaceRules`) when
+/// those are unset, then drop the legacy key. Returns `true` when the value
+/// was changed and should be re-persisted.
+fn migrate_legacy_workspace_settings(value: &mut serde_json::Value) -> bool {
+    let Some(obj) = value.as_object_mut() else {
+        return false;
+    };
+    let Some(legacy) = obj.remove("loadWorkspaceSettings") else {
+        return false;
+    };
+    if legacy.as_bool().is_some() {
+        for key in ["loadWorkspaceResources", "loadWorkspaceRules"] {
+            if obj.get(key).is_none_or(serde_json::Value::is_null) {
+                obj.insert(key.to_string(), legacy.clone());
+            }
+        }
+    }
+    true
+}
+
 fn load_from_disk(path: &std::path::Path) -> Vec<AgentDefinition> {
     if !path.exists() {
         return Vec::new();
     }
     match std::fs::read_to_string(path) {
-        Ok(content) => match serde_json::from_str::<Vec<AgentDefinition>>(&content) {
-            Ok(agents) => {
+        Ok(content) => match serde_json::from_str::<Vec<serde_json::Value>>(&content) {
+            Ok(mut raw) => {
+                let migrated = raw
+                    .iter_mut()
+                    .fold(false, |acc, v| migrate_legacy_workspace_settings(v) || acc);
+                let agents: Vec<AgentDefinition> = raw
+                    .into_iter()
+                    .filter_map(|v| match serde_json::from_value(v) {
+                        Ok(agent) => Some(agent),
+                        Err(err) => {
+                            error!(
+                                "[agent-definitions] Skipping unparsable entry in {}: {}",
+                                path.display(),
+                                err
+                            );
+                            None
+                        }
+                    })
+                    .collect();
+                if migrated {
+                    if let Err(err) = save_to_disk(path, &agents) {
+                        error!(
+                            "[agent-definitions] migration: failed to persist \
+                             loadWorkspaceSettings removal: {err}"
+                        );
+                    }
+                }
                 info!(
                     "[agent-definitions] Loaded {} agents from {}",
                     agents.len(),
@@ -280,8 +327,34 @@ fn load_overrides_from_disk(path: &std::path::Path) -> BTreeMap<String, AgentDef
         return BTreeMap::new();
     }
     match std::fs::read_to_string(path) {
-        Ok(content) => match serde_json::from_str::<BTreeMap<String, AgentDefinition>>(&content) {
-            Ok(overrides) => {
+        Ok(content) => match serde_json::from_str::<BTreeMap<String, serde_json::Value>>(&content) {
+            Ok(mut raw) => {
+                let migrated = raw
+                    .values_mut()
+                    .fold(false, |acc, v| migrate_legacy_workspace_settings(v) || acc);
+                let overrides: BTreeMap<String, AgentDefinition> = raw
+                    .into_iter()
+                    .filter_map(|(id, v)| match serde_json::from_value(v) {
+                        Ok(agent) => Some((id, agent)),
+                        Err(err) => {
+                            warn!(
+                                "[builtin-overrides] Skipping unparsable overlay '{}' in {}: {}",
+                                id,
+                                path.display(),
+                                err
+                            );
+                            None
+                        }
+                    })
+                    .collect();
+                if migrated {
+                    if let Err(err) = save_overrides_to_disk(path, &overrides) {
+                        error!(
+                            "[builtin-overrides] migration: failed to persist \
+                             loadWorkspaceSettings removal: {err}"
+                        );
+                    }
+                }
                 info!(
                     "[builtin-overrides] Loaded {} overrides from {}",
                     overrides.len(),

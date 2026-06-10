@@ -56,7 +56,7 @@ pub(super) async fn build_session_runtime(
     disabled_tools: &HashSet<String>,
     disabled_mcp_servers: &HashSet<String>,
     disabled_mcp_tools: &HashSet<String>,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
     log_prefix: &str,
 ) -> Result<SessionRuntimeSpec, String> {
     let workspace_snapshot = tool_deps.workspace.read().clone();
@@ -96,14 +96,14 @@ pub(super) async fn build_session_runtime(
         } else {
             Some(disabled_mcp_servers)
         },
-        load_workspace_settings,
+        load_workspace_resources,
         log_prefix,
     )
     .await?;
 
     let provider_arc: Arc<dyn LLMProvider> = Arc::from(provider);
 
-    let policy = ResolvedToolPolicy::build(false);
+    let policy = ResolvedToolPolicy::permissive();
 
     Ok(SessionRuntimeSpec {
         provider: provider_arc,

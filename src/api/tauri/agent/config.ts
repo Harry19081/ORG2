@@ -113,10 +113,8 @@ export function assembleAgentConfigBlob(
     model: def.selectedModelId ?? "",
     maxIterations: sessionModel.maxIterations ?? 500,
     compaction: toRecord(sessionModel.compaction),
-    loadWorkspaceResources:
-      def.loadWorkspaceResources ?? def.loadWorkspaceSettings ?? true,
-    loadWorkspaceRules:
-      def.loadWorkspaceRules ?? def.loadWorkspaceSettings ?? true,
+    loadWorkspaceResources: def.loadWorkspaceResources ?? true,
+    loadWorkspaceRules: def.loadWorkspaceRules ?? true,
     reliability: toRecord(def.reliability),
     learnings: toRecord(def.learnings),
     subAgents: def.subAgents ?? null,

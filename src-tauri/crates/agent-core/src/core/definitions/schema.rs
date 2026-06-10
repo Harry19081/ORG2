@@ -86,9 +86,6 @@ pub fn default_max_tool_use_concurrency() -> u32 {
     DEFAULT_MAX_TOOL_USE_CONCURRENCY
 }
 
-/// Fallback for `AgentDefinition.max_instances` when unset.
-pub const DEFAULT_MAX_SUBAGENT_INSTANCES: u32 = 30;
-
 impl Default for SessionModel {
     fn default() -> Self {
         Self {
@@ -447,9 +444,6 @@ pub struct AgentDefinition {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub load_workspace_rules: Option<bool>,
 
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub load_workspace_settings: Option<bool>,
-
     /// Per-agent skills configuration.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub skills_config: Option<AgentSkillsConfig>,
@@ -492,12 +486,6 @@ pub struct AgentDefinition {
     /// concurrently from one assistant message. `None` = resolver default.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_tool_use_concurrency: Option<u32>,
-
-    /// Maximum number of times this agent may be spawned as a subagent
-    /// within a single parent session turn. Prevents runaway LLM delegation
-    /// loops. `None` = use `DEFAULT_MAX_SUBAGENT_INSTANCES`.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub max_instances: Option<u32>,
 
     // NOTE: `restrict_to_workspace` was a parallel toggle that meant the
     // same thing as `agent_policy.workspace_only`, just plumbed through a

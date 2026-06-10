@@ -355,13 +355,13 @@ pub async fn register_mcp_tools(
     disabled_tools: Option<&std::collections::HashSet<String>>,
     disabled_servers: Option<&std::collections::HashSet<String>>,
     workspace_path: Option<&std::path::Path>,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
 ) -> Result<Vec<String>, String> {
     // Load merged config first so a session that opts out of workspace settings
     // does not inherit tools from workspace servers connected by another session.
     let config = crate::mcp::config::McpConfigFile::load_merged_with_workspace_scope(
         workspace_path,
-        load_workspace_settings,
+        load_workspace_resources,
     )?;
     let visible_server_names: std::collections::HashSet<String> = config
         .mcp_servers

@@ -85,9 +85,9 @@ impl McpState {
     pub async fn ensure_connected_with_workspace_scope(
         &self,
         workspace_path: Option<&Path>,
-        load_workspace_settings: bool,
+        load_workspace_resources: bool,
     ) {
-        let effective_workspace_path = workspace_path.filter(|_| load_workspace_settings);
+        let effective_workspace_path = workspace_path.filter(|_| load_workspace_resources);
         let canonical = effective_workspace_path
             .and_then(|p| p.canonicalize().ok())
             .or_else(|| effective_workspace_path.map(|p| p.to_path_buf()));
@@ -112,7 +112,7 @@ impl McpState {
 
         let errors = self
             .manager
-            .connect_all(effective_workspace_path, load_workspace_settings)
+            .connect_all(effective_workspace_path, load_workspace_resources)
             .await;
         for err in &errors {
             tracing::warn!("[mcp:state] {}", err);

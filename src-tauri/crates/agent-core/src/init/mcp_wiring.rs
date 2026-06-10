@@ -36,7 +36,7 @@ pub(super) async fn register_mcp_tools_from_app(
     workspace: Option<&std::path::Path>,
     disabled_mcp_tools: Option<&HashSet<String>>,
     disabled_mcp_servers: Option<&HashSet<String>>,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
     log_prefix: &str,
 ) -> Result<Vec<String>, String> {
     let Some(handle) = app_handle else {
@@ -46,7 +46,7 @@ pub(super) async fn register_mcp_tools_from_app(
 
     let mcp_state = handle.state::<McpState>();
     mcp_state
-        .ensure_connected_with_workspace_scope(workspace, load_workspace_settings)
+        .ensure_connected_with_workspace_scope(workspace, load_workspace_resources)
         .await;
 
     let auto_approved = crate::mcp::register_mcp_tools(
@@ -55,7 +55,7 @@ pub(super) async fn register_mcp_tools_from_app(
         disabled_mcp_tools,
         disabled_mcp_servers,
         workspace,
-        load_workspace_settings,
+        load_workspace_resources,
     )
     .await?;
 

@@ -145,9 +145,6 @@ pub(super) fn create_agent(
             .get("load_workspace_resources")
             .and_then(|v| v.as_bool()),
         load_workspace_rules: params.get("load_workspace_rules").and_then(|v| v.as_bool()),
-        load_workspace_settings: params
-            .get("load_workspace_settings")
-            .and_then(|v| v.as_bool()),
         skills_config,
         selected_account_id: params
             .get("selected_account_id")
@@ -171,7 +168,6 @@ pub(super) fn create_agent(
 
         agent_policy,
         reliability: None,
-        max_instances: None,
     };
 
     agents.push(agent);

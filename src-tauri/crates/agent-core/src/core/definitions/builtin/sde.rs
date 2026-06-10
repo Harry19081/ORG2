@@ -110,7 +110,6 @@ pub fn sde_agent() -> AgentDefinition {
         sub_agents: Some(vec![]),
         load_workspace_resources: None,
         load_workspace_rules: None,
-        load_workspace_settings: None,
         skills_config: None,
         selected_account_id: None,
         selected_model_id: None,
@@ -128,7 +127,6 @@ pub fn sde_agent() -> AgentDefinition {
         }),
 
         reliability: None,
-        max_instances: None,
     }
 }
 

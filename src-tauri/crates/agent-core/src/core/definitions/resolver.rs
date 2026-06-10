@@ -186,9 +186,6 @@ fn merge_definitions(parent: &AgentDefinition, child: &AgentDefinition) -> Agent
             .load_workspace_resources
             .or(parent.load_workspace_resources),
         load_workspace_rules: child.load_workspace_rules.or(parent.load_workspace_rules),
-        load_workspace_settings: child
-            .load_workspace_settings
-            .or(parent.load_workspace_settings),
         skills_config: merge_skills_config(
             parent.skills_config.as_ref(),
             child.skills_config.as_ref(),
@@ -224,7 +221,6 @@ fn merge_definitions(parent: &AgentDefinition, child: &AgentDefinition) -> Agent
             .reliability
             .clone()
             .or_else(|| parent.reliability.clone()),
-        max_instances: child.max_instances.or(parent.max_instances),
     }
 }
 

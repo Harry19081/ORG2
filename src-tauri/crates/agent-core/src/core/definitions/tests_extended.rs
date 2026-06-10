@@ -834,7 +834,7 @@ mod tests_extended {
     fn resolved_workspace_uses_override_when_provided() {
         let def = with_model(get_builtin_agent(OS_AGENT_ID).expect("os exists"));
         let override_path = PathBuf::from("/tmp/test-workspace-override");
-        let overrides = SessionOverrides::new(Some(override_path.clone()), None, None);
+        let overrides = SessionOverrides::new(Some(override_path.clone()), None);
         let resolved = ResolvedAgent::resolve(&def, None, &overrides).expect("resolve");
         assert_eq!(resolved.workspace(), override_path.as_path());
     }
@@ -1681,7 +1681,7 @@ mod tests_extended {
     #[test]
     fn animate_override_false_respected() {
         let def = with_model(get_builtin_agent(OS_AGENT_ID).expect("os exists"));
-        let overrides = SessionOverrides::new(None, None, Some(false));
+        let overrides = SessionOverrides::new(None, Some(false));
         let resolved = ResolvedAgent::resolve(&def, None, &overrides).expect("resolve");
         assert!(!resolved.animate);
     }
@@ -1689,7 +1689,7 @@ mod tests_extended {
     #[test]
     fn animate_override_true_respected() {
         let def = with_model(get_builtin_agent(OS_AGENT_ID).expect("os exists"));
-        let overrides = SessionOverrides::new(None, None, Some(true));
+        let overrides = SessionOverrides::new(None, Some(true));
         let resolved = ResolvedAgent::resolve(&def, None, &overrides).expect("resolve");
         assert!(resolved.animate);
     }
@@ -1814,14 +1814,8 @@ mod tests_extended {
     }
 
     // =========================================================================
-    // Additional: load_workspace_settings field
+    // Additional: workspace resource toggles
     // =========================================================================
-
-    #[test]
-    fn load_workspace_settings_default_is_none() {
-        let def = AgentDefinition::default();
-        assert!(def.load_workspace_settings.is_none());
-    }
 
     #[test]
     fn load_workspace_resources_default_is_none() {
@@ -1835,38 +1829,5 @@ mod tests_extended {
         def.load_workspace_resources = Some(false);
         let resolved = ResolvedAgent::resolve(&def, None, &default_overrides()).expect("resolve");
         assert!(!resolved.load_workspace_resources);
-    }
-
-    // =========================================================================
-    // Additional: max_instances field
-    // =========================================================================
-
-    #[test]
-    fn max_instances_default_is_none_on_definition() {
-        let def = AgentDefinition::default();
-        assert!(def.max_instances.is_none());
-    }
-
-    #[test]
-    fn all_builtins_max_instances_are_none_by_default() {
-        // ADE Manager explicitly sets max_instances=Some(1) to enforce its
-        // singleton contract (the Spotlight palette always resumes the same
-        // session). All other builtins leave max_instances=None and rely on
-        // SessionMode::Singleton or the runtime default instead.
-        for agent in get_builtin_agents() {
-            if agent.id == ADE_MANAGER_ID {
-                assert_eq!(
-                    agent.max_instances,
-                    Some(1),
-                    "ADE Manager is an intentional singleton and must have max_instances=Some(1)"
-                );
-            } else {
-                assert!(
-                    agent.max_instances.is_none(),
-                    "Agent {} should have max_instances=None (use system default)",
-                    agent.id
-                );
-            }
-        }
     }
 } // end mod tests_extended

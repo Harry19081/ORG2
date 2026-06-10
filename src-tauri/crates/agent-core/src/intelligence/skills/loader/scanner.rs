@@ -18,7 +18,7 @@ struct SkillScanKey {
     builtin_dir: Option<PathBuf>,
     extra_source_dirs: Vec<PathBuf>,
     agent_id: Option<String>,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
 }
 
 static SKILL_SCAN_CACHE: LazyLock<Arc<SwrCache<SkillScanKey, Vec<SkillInfo>>>> =
@@ -32,7 +32,7 @@ pub struct SkillsLoader {
     disabled_skills: Vec<String>,
     skills_enabled: bool,
     agent_id: Option<String>,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
 }
 
 impl SkillsLoader {
@@ -48,7 +48,7 @@ impl SkillsLoader {
             disabled_skills: Vec::new(),
             skills_enabled: true,
             agent_id: None,
-            load_workspace_settings: true,
+            load_workspace_resources: true,
         }
     }
 
@@ -83,8 +83,8 @@ impl SkillsLoader {
         self
     }
 
-    pub fn with_load_workspace_settings(mut self, enabled: bool) -> Self {
-        self.load_workspace_settings = enabled;
+    pub fn with_load_workspace_resources(mut self, enabled: bool) -> Self {
+        self.load_workspace_resources = enabled;
         self
     }
 
@@ -97,20 +97,20 @@ impl SkillsLoader {
             builtin_dir: self.builtin_dir.clone(),
             extra_source_dirs: self.extra_source_dirs.clone(),
             agent_id: self.agent_id.clone(),
-            load_workspace_settings: self.load_workspace_settings,
+            load_workspace_resources: self.load_workspace_resources,
         };
         let scan_workspace = self.workspace.clone();
         let scan_builtin_dir = self.builtin_dir.clone();
         let scan_extra_source_dirs = self.extra_source_dirs.clone();
         let scan_agent_id = self.agent_id.clone();
-        let scan_load_workspace_settings = self.load_workspace_settings;
+        let scan_load_workspace_resources = self.load_workspace_resources;
         let mut skills = SKILL_SCAN_CACHE
             .get_or_refresh(key, SKILL_SCAN_CACHE_TTL, move || {
                 let scanner = SkillsLoader::new(&scan_workspace)
                     .with_builtin_dir_if_some(scan_builtin_dir.clone())
                     .with_extra_source_paths(scan_extra_source_dirs.clone())
                     .with_agent_id_if_some(scan_agent_id.clone())
-                    .with_load_workspace_settings(scan_load_workspace_settings);
+                    .with_load_workspace_resources(scan_load_workspace_resources);
                 Ok(scanner.scan_skills_uncached())
             })
             .unwrap_or_else(|err| {
@@ -148,7 +148,7 @@ impl SkillsLoader {
             builtin_dir: self.builtin_dir.clone(),
             extra_source_dirs: self.extra_source_dirs.clone(),
             agent_id: self.agent_id.clone(),
-            load_workspace_settings: self.load_workspace_settings,
+            load_workspace_resources: self.load_workspace_resources,
         };
         SKILL_SCAN_CACHE.invalidate(&key);
     }
@@ -163,7 +163,7 @@ impl SkillsLoader {
         let mut skills = Vec::new();
 
         let workspace_skills_dir = self.workspace.join("skills");
-        if self.load_workspace_settings && workspace_skills_dir.exists() {
+        if self.load_workspace_resources && workspace_skills_dir.exists() {
             self.scan_skills_dir(&workspace_skills_dir, "workspace", &mut skills);
         }
 
@@ -193,7 +193,7 @@ impl SkillsLoader {
     /// Load a skill's full content by name.
     pub fn load_skill(&self, name: &str) -> Option<String> {
         let workspace_path = self.workspace.join("skills").join(name).join("SKILL.md");
-        if self.load_workspace_settings && workspace_path.exists() {
+        if self.load_workspace_resources && workspace_path.exists() {
             match fs::read_to_string(&workspace_path) {
                 Ok(contents) => {
                     let meta = self.parse_skill_metadata(&contents);
@@ -891,7 +891,7 @@ mod include_filter_tests {
             &skill_doc("workspace-only", "workspace skill"),
         );
 
-        let loader = SkillsLoader::new(&ws).with_load_workspace_settings(false);
+        let loader = SkillsLoader::new(&ws).with_load_workspace_resources(false);
 
         assert!(loader.list_skills().is_empty());
     }

@@ -29,10 +29,14 @@ export interface AgentLearningsState {
   setAutoDreamEnabled: (next: boolean) => void;
 }
 
+// Must mirror Rust `AgentLearningsConfig::default()` exactly — extract and
+// auto-dream are opt-in (false) on the backend, so the UI must not render
+// them as ON before the real config loads (a debounced save from that state
+// would persist `true` the user never chose).
 const DEFAULT_LEARNINGS: AgentLearningsConfig = {
   enabled: true,
-  extractMemoriesEnabled: true,
-  autoDreamEnabled: true,
+  extractMemoriesEnabled: false,
+  autoDreamEnabled: false,
 };
 
 export function useAgentLearnings(agentId: string): AgentLearningsState {
@@ -99,8 +103,8 @@ export function useAgentLearnings(agentId: string): AgentLearningsState {
   return {
     loaded,
     enabled: learnings.enabled ?? true,
-    extractMemoriesEnabled: learnings.extractMemoriesEnabled ?? true,
-    autoDreamEnabled: learnings.autoDreamEnabled ?? true,
+    extractMemoriesEnabled: learnings.extractMemoriesEnabled ?? false,
+    autoDreamEnabled: learnings.autoDreamEnabled ?? false,
     setEnabled: (next) =>
       update((prev) => ({
         ...prev,

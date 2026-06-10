@@ -232,7 +232,6 @@ mod tests {
         let overrides = crate::session::overrides::SessionOverrides::new(
             Some(std::path::PathBuf::from("/tmp/orgii-test-work-item")),
             None,
-            None,
         );
         let resolved = crate::definitions::resolved::ResolvedAgent::resolve(
             &definition,

@@ -300,12 +300,12 @@ pub fn load_enabled_policies(workspace_path: &Path, agent_id: &str) -> Vec<(Stri
 pub(crate) fn load_enabled_unconditional_policies_with_workspace_scope(
     workspace_path: &Path,
     agent_id: &str,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
 ) -> Vec<(String, String)> {
     let set = load_enabled_policy_set_with_workspace_scope(
         workspace_path,
         agent_id,
-        load_workspace_settings,
+        load_workspace_resources,
     );
     flatten_unconditional_for_prompt(set)
 }
@@ -320,7 +320,7 @@ pub(crate) fn load_enabled_policy_set(
 pub(crate) fn load_enabled_policy_set_with_workspace_scope(
     workspace_path: &Path,
     agent_id: &str,
-    load_workspace_settings: bool,
+    load_workspace_resources: bool,
 ) -> metadata::PolicySet {
     let repo_path = workspace_path.to_string_lossy();
     let repo_path = Some(repo_path.as_ref());
@@ -337,7 +337,7 @@ pub(crate) fn load_enabled_policy_set_with_workspace_scope(
         ),
     }
 
-    if load_workspace_settings {
+    if load_workspace_resources {
         match PoliciesConfig::load_for_workspace(workspace_path) {
             Ok(workspace_config) => merge_policy_set(
                 &mut merged,

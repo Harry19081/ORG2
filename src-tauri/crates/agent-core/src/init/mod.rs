@@ -156,7 +156,7 @@ fn resolve_for_session(
     String,
 > {
     let integrations = state.integrations.snapshot();
-    let overrides = SessionOverrides::new(Some(workspace), None, None);
+    let overrides = SessionOverrides::new(Some(workspace), None);
     let store = AgentDefinitionsStore::new();
 
     // Clone so we can pin `selected_model_id` without disturbing the
@@ -426,13 +426,11 @@ async fn ensure_session_initialized(
     let exec_security_policy =
         Arc::new(resolved.policy.to_runtime_security(workspace_root.clone()));
 
-    let log_prefix = overrides.label.clone().unwrap_or_else(|| {
-        if resolved.name.is_empty() {
-            "agent".to_string()
-        } else {
-            resolved.name.clone()
-        }
-    });
+    let log_prefix = if resolved.name.is_empty() {
+        "agent".to_string()
+    } else {
+        resolved.name.clone()
+    };
 
     let disabled_mcp_servers = capabilities::disabled_mcp_servers(&resolved);
     let disabled_mcp_tools = capabilities::disabled_mcp_tools(&resolved);

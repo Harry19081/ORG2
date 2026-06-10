@@ -286,10 +286,11 @@ impl ResolvedAgent {
             .clone()
             .unwrap_or_else(default_session_model);
 
-        let mut policy = merged.agent_policy.clone().unwrap_or_default();
-        if merged.built_in {
-            policy.autonomy = crate::foundation::security::AutonomyLevel::Full;
-        }
+        // Compiled-in builtins ship `autonomy: Full` (and `AutonomyLevel`
+        // defaults to Full), so this honors a user overlay that downgrades
+        // a builtin to ReadOnly — the Settings Access Mode toggle must
+        // take effect at session launch.
+        let policy = merged.agent_policy.clone().unwrap_or_default();
 
         let animate = overrides
             .animate
@@ -312,14 +313,8 @@ impl ResolvedAgent {
 
         let compaction = session_model.compaction.clone().unwrap_or_default();
 
-        let load_workspace_resources = merged
-            .load_workspace_resources
-            .or(merged.load_workspace_settings)
-            .unwrap_or(true);
-        let load_workspace_rules = merged
-            .load_workspace_rules
-            .or(merged.load_workspace_settings)
-            .unwrap_or(true);
+        let load_workspace_resources = merged.load_workspace_resources.unwrap_or(true);
+        let load_workspace_rules = merged.load_workspace_rules.unwrap_or(true);
         let skills = skills_from_schema(merged.skills_config.as_ref());
         let tools = ResolvedToolSelection::from_schema(&merged.tools, &capabilities);
 
@@ -496,9 +491,8 @@ mod tests {
     fn workspace_resource_and_rule_toggles_resolve_independently() {
         let mut def =
             with_pinned_model(get_builtin_agent("builtin:os").expect("os builtin exists"));
-        def.load_workspace_settings = Some(false);
         def.load_workspace_resources = Some(true);
-        def.load_workspace_rules = None;
+        def.load_workspace_rules = Some(false);
 
         let resolved = ResolvedAgent::resolve(&def, None, &empty_overrides()).expect("resolves");
 
@@ -599,7 +593,7 @@ mod tests {
     fn workspace_session_override_wins() {
         let def = with_pinned_model(get_builtin_agent("builtin:os").expect("os builtin exists"));
         let overrides =
-            SessionOverrides::new(Some(PathBuf::from("/tmp/session-override")), None, None);
+            SessionOverrides::new(Some(PathBuf::from("/tmp/session-override")), None);
         let resolved = ResolvedAgent::resolve(&def, None, &overrides).expect("resolves");
         assert_eq!(
             resolved.workspace(),
@@ -611,7 +605,7 @@ mod tests {
     #[test]
     fn animate_session_override_wins() {
         let def = with_pinned_model(get_builtin_agent("builtin:os").expect("os builtin exists"));
-        let overrides = SessionOverrides::new(None, None, Some(false));
+        let overrides = SessionOverrides::new(None, Some(false));
         let resolved = ResolvedAgent::resolve(&def, None, &overrides).expect("resolves");
         assert!(!resolved.animate);
     }

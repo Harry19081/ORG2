@@ -375,7 +375,7 @@ fn get_definitions_budgeted_excludes_on_demand() {
     )));
     registry.register(Box::new(MockTool::on_demand("db_run", "Run SQL queries")));
 
-    let policy = ResolvedToolPolicy::build(false);
+    let policy = ResolvedToolPolicy::permissive();
     let defs = registry.get_definitions_budgeted(&policy);
 
     let names: Vec<&str> = defs
@@ -427,7 +427,7 @@ fn get_definitions_budgeted_with_fallback() {
     let mut outer = ToolRegistry::with_fallback(inner_arc);
     outer.register(Box::new(MockTool::new("outer_always")));
 
-    let policy = ResolvedToolPolicy::build(false);
+    let policy = ResolvedToolPolicy::permissive();
     let defs = outer.get_definitions_budgeted(&policy);
 
     let names: Vec<&str> = defs
@@ -458,7 +458,7 @@ fn get_definitions_budgeted_recurses_through_multiple_fallback_layers() {
 
     let fork = ToolRegistry::with_fallback(overlay_arc);
 
-    let policy = ResolvedToolPolicy::build(false);
+    let policy = ResolvedToolPolicy::permissive();
     let defs = fork.get_definitions_budgeted(&policy);
 
     let names: Vec<&str> = defs

@@ -20,11 +20,11 @@ impl McpManager {
     pub async fn connect_all(
         &self,
         workspace_path: Option<&Path>,
-        load_workspace_settings: bool,
+        load_workspace_resources: bool,
     ) -> Vec<String> {
         let config = match McpConfigFile::load_merged_with_workspace_scope(
             workspace_path,
-            load_workspace_settings,
+            load_workspace_resources,
         ) {
             Ok(config) => config,
             Err(err) => return vec![err],

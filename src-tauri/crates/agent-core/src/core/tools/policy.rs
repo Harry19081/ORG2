@@ -243,34 +243,13 @@ impl ResolvedToolPolicy {
         self
     }
 
-    /// Build a resolved policy for the given runtime context.
+    /// Build a permissive policy (no restrictions). Used when no policy is configured.
     ///
     /// Per-agent allow/deny is enforced at tool-registration time via
     /// `AgentDefinition.tools.excludedTools` (the registry never sees
-    /// disabled tools). Access-mode policy is layered by the init path.
-    ///
-    /// The only thing this function does today is push the hardcoded
-    /// subagent default-deny layer when `is_subagent` is true.
-    pub fn build(is_subagent: bool) -> Self {
-        let mut layers = Vec::new();
-
-        if is_subagent {
-            layers.push(ToolPolicyLayer::deny_only(vec![
-                "group:nodes".to_string(),
-                // `control_orgii` entry omitted while the tool is disabled
-                // (see `builtin_tools.rs`). Re-add
-                // `tool_names::CONTROL_ORGII.to_string()` when the tool
-                // comes back.
-            ]));
-        }
-
-        Self {
-            layers,
-            ask_tools: Vec::new(),
-        }
-    }
-
-    /// Build a permissive policy (no restrictions). Used when no policy is configured.
+    /// disabled tools). Access-mode policy is layered by the init path;
+    /// subagent denies are layered at spawn time
+    /// (`AgentTool::subagent_hard_deny_layer`).
     pub fn permissive() -> Self {
         Self {
             layers: Vec::new(),

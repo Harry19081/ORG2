@@ -1482,7 +1482,7 @@ impl PromptSection for AlwaysSkillsSection {
         let mut loader = SkillsLoader::new(&skills_dir)
             .with_builtin_dir(crate::skills::loader::global_skills_dir())
             .with_agent_id(ctx.config.agent_id.clone())
-            .with_load_workspace_settings(ctx.config.load_workspace_resources);
+            .with_load_workspace_resources(ctx.config.load_workspace_resources);
         if let Some(sc) = ctx.config.agent_skills_config.as_ref() {
             if !sc.source_dirs.is_empty() {
                 loader = loader.with_extra_source_dirs(&sc.source_dirs);

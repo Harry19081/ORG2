@@ -143,11 +143,11 @@ impl McpConfigFile {
 
     pub fn load_merged_with_workspace_scope(
         workspace_path: Option<&Path>,
-        load_workspace_settings: bool,
+        load_workspace_resources: bool,
     ) -> Result<Self, String> {
         let mut merged = Self::load_global()?;
 
-        if load_workspace_settings {
+        if load_workspace_resources {
             if let Some(workspace) = workspace_path {
                 let workspace_config = Self::load_for_workspace(workspace)?;
                 for (name, server_config) in workspace_config.mcp_servers {

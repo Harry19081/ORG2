@@ -71,7 +71,6 @@ pub fn ai_research_agent() -> AgentDefinition {
         sub_agents: Some(vec![]),
         load_workspace_resources: None,
         load_workspace_rules: None,
-        load_workspace_settings: None,
         skills_config: Some(AgentSkillsConfig {
             enabled: Some(true),
             include: Vec::new(),
@@ -91,7 +90,6 @@ pub fn ai_research_agent() -> AgentDefinition {
             auto_dream_enabled: true,
         }),
         reliability: None,
-        max_instances: None,
     }
 }
 
