@@ -8,6 +8,7 @@ import { useAtomValue } from "jotai";
 import {
   ChevronDown,
   ChevronRight,
+  ClipboardCheck,
   Terminal,
   Toolbox,
   User,
@@ -60,6 +61,7 @@ interface SkillPillData {
 const TERMINAL_PREVIEW_MAX_HEIGHT = 160;
 const SKILL_PREVIEW_MAX_HEIGHT = 160;
 const AVATAR_ICON_SIZE = COMMUNICATION_AVATAR_ICON_SIZE;
+const PLAN_APPROVED_PREFIX = "[Plan approved";
 
 const ReplayMarkdown: React.FC<{ content: string }> = memo(({ content }) => (
   <Markdown
@@ -306,9 +308,14 @@ const UserBubbleContent: React.FC<{
   content: string;
   images?: string[];
 }> = memo(({ content, images }) => {
+  const { t } = useTranslation("sessions");
   const terminalPills = useMemo(() => parseTerminalPills(content), [content]);
   const skillPills = useMemo(() => parseSkillPills(content), [content]);
   const installedSkills = useAtomValue(installedSkillsAtom);
+
+  const isPlanApproved = content.startsWith(PLAN_APPROVED_PREFIX);
+  const planApprovedEdited =
+    isPlanApproved && content.startsWith("[Plan approved (edited)");
 
   // Strip terminal and skill pill tokens before passing to UserMessageContent.
   // Their cards render below; keeping the tokens would produce duplicate inline badges.
@@ -327,6 +334,28 @@ const UserBubbleContent: React.FC<{
 
   const hasImages = !!images && images.length > 0;
   const hasContent = strippedContent !== "";
+
+  if (isPlanApproved) {
+    return (
+      <div className="flex flex-col items-start gap-1.5 text-left">
+        <div
+          className={`${CHAT_BUBBLE_WIDTH_TOKENS.userBody} rounded-lg bg-primary-1 p-3`}
+        >
+          <div className="flex items-center gap-2">
+            <ClipboardCheck size={14} className="text-primary-6" />
+            <span className="text-[13px] font-medium text-text-1">
+              {planApprovedEdited
+                ? t(
+                    "chat.planApprovedEditedLabel",
+                    "Implementing approved plan (edited)"
+                  )
+                : t("chat.planApprovedLabel", "Implementing approved plan")}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (
     !hasContent &&
