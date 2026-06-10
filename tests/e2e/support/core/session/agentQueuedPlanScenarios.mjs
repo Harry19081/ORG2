@@ -3,6 +3,7 @@ import path from "node:path";
 
 import {
   clickMainAction,
+  waitForRuntimeIdle,
   waitForWorkingTurn,
 } from "./agentQueuedControlScenarios.mjs";
 import {
@@ -1146,6 +1147,11 @@ async function runPlanBuildDirectScenario(config) {
 
     const filePath = path.join(repoPath, markerFile);
     await waitForMarkerFile(config, filePath, markerText);
+    // Wait for the build turn to fully complete before inspecting the file
+    // changes panel — the marker file exists as soon as the tool call lands, but
+    // the agent session may still be streaming its final assistant message and
+    // the file-change review buttons only activate once the turn is idle.
+    await waitForRuntimeIdle(`${config.label}-plan-direct-build-complete`);
     await waitForFileChangesPanel(`${config.label}-plan-direct-rewind`);
     await clickUndoAllAndConfirm(`${config.label}-plan-direct-rewind`);
 
