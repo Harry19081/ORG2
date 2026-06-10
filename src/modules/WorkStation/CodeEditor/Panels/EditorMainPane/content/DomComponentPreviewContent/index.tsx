@@ -200,15 +200,14 @@ ${getHostStyleHead()}
 <style nonce="${PREVIEW_STYLE_NONCE}">
   html, body { margin: 0; padding: 0; background: transparent; color: inherit; }
   body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     min-height: 100vh;
     padding: ${PREVIEW_PADDING}px;
     box-sizing: border-box;
   }
   .__preview-host {
-    display: inline-block;
+    display: block;
+    width: 100%;
     box-sizing: border-box;
     position: relative;
   }
