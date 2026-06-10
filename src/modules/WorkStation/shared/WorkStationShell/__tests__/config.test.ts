@@ -93,7 +93,6 @@ describe("WorkStationShell config", () => {
         content: "devtools",
         position: "right",
         collapsed: false,
-        maximized: false,
         size: 400,
         onSizeChange: undefined,
         onClose: undefined,
@@ -101,18 +100,6 @@ describe("WorkStationShell config", () => {
         maxSize: undefined,
         resetSize: undefined,
       });
-    });
-
-    it("passes through bottom-position maximized state", () => {
-      const config = buildSecondaryPanelConfig({
-        content: "terminal",
-        position: "bottom",
-        size: 300,
-        maximized: true,
-      });
-
-      expect(config.position).toBe("bottom");
-      expect(config.maximized).toBe(true);
     });
 
     it("forwards resize and close callbacks", () => {

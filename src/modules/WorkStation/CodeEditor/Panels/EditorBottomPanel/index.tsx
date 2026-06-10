@@ -24,7 +24,6 @@ import {
 import React, { memo, useCallback, useMemo } from "react";
 
 import { useActionSystem } from "@src/ActionSystem";
-import { useBottomPanelState } from "@src/hooks/workStation";
 import {
   BOTTOM_PANEL_TABS,
   type SecondaryPanelPosition,
@@ -115,10 +114,6 @@ const EditorBottomPanel: React.FC<EditorBottomPanelProps> = memo(
     onTogglePosition,
   }) => {
     const { dispatch } = useActionSystem();
-
-    // Panel state (maximize, debug timestamps) — height/collapse now owned by Shell
-    const { bottomPanelMaximized, toggleBottomPanelMaximize } =
-      useBottomPanelState();
 
     // Tab management (needed for native resize menu "Close panel")
     const { activeTab, handleTabChange, handleTogglePanel } =
@@ -222,8 +217,6 @@ const EditorBottomPanel: React.FC<EditorBottomPanelProps> = memo(
         <BottomPanelHeader
           activeTab={visibleActiveTab}
           onTabChange={handleTabChange}
-          isMaximized={bottomPanelMaximized}
-          onToggleMaximize={toggleBottomPanelMaximize}
           onClose={handleTogglePanel}
           outputChannels={outputChannels}
           activeChannelId={activeChannelId}

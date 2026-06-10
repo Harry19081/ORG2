@@ -242,7 +242,7 @@
       }
 
       &.work-station-shell__secondary-panel--bottom {
-        padding: 0 8px 8px 0;
+        padding: 0 8px 8px 8px;
       }
 
       > * {
@@ -259,11 +259,6 @@
     }
   }
 
-  &__grid--reversed
-    &__secondary-panel--comfort.work-station-shell__secondary-panel--bottom {
-    padding: 0 0 8px 8px;
-  }
-
   &__grid--primary-collapsed
     &__secondary-panel--comfort.work-station-shell__secondary-panel--bottom {
     padding: 0 8px 8px;
@@ -278,16 +273,6 @@
 
     &.work-station-shell__grid--secondary-bottom {
       grid-template-rows: 1fr 0 0;
-    }
-  }
-
-  // When secondary is maximized (bottom only), content row collapses and
-  // secondary takes the full height of the main area.
-  &__grid--secondary-maximized.work-station-shell__grid--secondary-bottom {
-    grid-template-rows: 0 auto 1fr;
-
-    .work-station-shell__grid-content {
-      display: none;
     }
   }
 

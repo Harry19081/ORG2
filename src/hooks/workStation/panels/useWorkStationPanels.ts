@@ -10,7 +10,7 @@
  * - Uses useSetAtom for write-only operations (no re-render on value change)
  * - This prevents unnecessary re-renders when unrelated panel state changes
  */
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 
 import {
@@ -19,7 +19,6 @@ import {
   type PrimarySidebarTabKey,
   workStationBottomPanelHeightAtom,
   workStationBottomPanelHeightPersistAtom,
-  workStationBottomPanelMaximizedAtom,
   workStationBottomPanelTabAtom,
   workStationBottomPanelTabPersistAtom,
   workStationDevToolsCollapsedAtom,
@@ -61,9 +60,6 @@ export interface UseWorkStationPanelsReturn {
   toggleBottomPanel: () => void;
   bottomPanelHeight: number;
   setBottomPanelHeight: (height: number) => void;
-  bottomPanelMaximized: boolean;
-  setBottomPanelMaximized: (maximized: boolean) => void;
-  toggleBottomPanelMaximize: () => void;
 
   // Terminal sidebar (in bottom panel)
   terminalSidebarWidth: number;
@@ -111,9 +107,6 @@ export function useWorkStationPanels(): UseWorkStationPanelsReturn {
   const setBottomPanelHeightPersist = useSetAtom(
     workStationBottomPanelHeightPersistAtom
   );
-  const [bottomPanelMaximized, setBottomPanelMaximized] = useAtom(
-    workStationBottomPanelMaximizedAtom
-  );
 
   const terminalSidebarWidth = useAtomValue(
     workStationTerminalSidebarWidthAtom
@@ -140,20 +133,8 @@ export function useWorkStationPanels(): UseWorkStationPanelsReturn {
   }, [setPrimarySidebarCollapsedPersist]);
 
   const toggleBottomPanel = useCallback(() => {
-    if (bottomPanelMaximized) {
-      setBottomPanelMaximized(false);
-    }
     setBottomPanelCollapsedPersist(!bottomPanelCollapsed);
-  }, [
-    bottomPanelCollapsed,
-    bottomPanelMaximized,
-    setBottomPanelCollapsedPersist,
-    setBottomPanelMaximized,
-  ]);
-
-  const toggleBottomPanelMaximize = useCallback(() => {
-    setBottomPanelMaximized(!bottomPanelMaximized);
-  }, [bottomPanelMaximized, setBottomPanelMaximized]);
+  }, [bottomPanelCollapsed, setBottomPanelCollapsedPersist]);
 
   const toggleDevTools = useCallback(() => {
     setDevToolsCollapsedPersist(!devToolsCollapsed);
@@ -180,9 +161,6 @@ export function useWorkStationPanels(): UseWorkStationPanelsReturn {
     toggleBottomPanel,
     bottomPanelHeight,
     setBottomPanelHeight: setBottomPanelHeightPersist,
-    bottomPanelMaximized,
-    setBottomPanelMaximized,
-    toggleBottomPanelMaximize,
 
     terminalSidebarWidth,
     setTerminalSidebarWidth: setTerminalSidebarWidthPersist,
@@ -252,25 +230,10 @@ export function useBottomPanelState() {
   const setBottomPanelHeight = useSetAtom(
     workStationBottomPanelHeightPersistAtom
   );
-  const [bottomPanelMaximized, setBottomPanelMaximized] = useAtom(
-    workStationBottomPanelMaximizedAtom
-  );
 
   const toggleBottomPanel = useCallback(() => {
-    if (bottomPanelMaximized) {
-      setBottomPanelMaximized(false);
-    }
     setBottomPanelCollapsed(!bottomPanelCollapsed);
-  }, [
-    bottomPanelCollapsed,
-    bottomPanelMaximized,
-    setBottomPanelCollapsed,
-    setBottomPanelMaximized,
-  ]);
-
-  const toggleBottomPanelMaximize = useCallback(() => {
-    setBottomPanelMaximized(!bottomPanelMaximized);
-  }, [bottomPanelMaximized, setBottomPanelMaximized]);
+  }, [bottomPanelCollapsed, setBottomPanelCollapsed]);
 
   return {
     bottomPanelTab,
@@ -280,8 +243,5 @@ export function useBottomPanelState() {
     toggleBottomPanel,
     bottomPanelHeight,
     setBottomPanelHeight,
-    bottomPanelMaximized,
-    setBottomPanelMaximized,
-    toggleBottomPanelMaximize,
   };
 }

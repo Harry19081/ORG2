@@ -63,8 +63,6 @@ export interface SecondaryPanelConfig {
   position: SecondaryPanelPosition;
   /** Whether the panel is collapsed (hidden) */
   collapsed?: boolean;
-  /** Whether the panel is maximized (only when position = "bottom") */
-  maximized?: boolean;
   /** Current size along the active axis (width when right, height when bottom) */
   size: number;
   /** Callback to update size */
@@ -147,7 +145,6 @@ export function buildSecondaryPanelConfig(options: {
   content: ReactNode;
   position: SecondaryPanelPosition;
   collapsed?: boolean;
-  maximized?: boolean;
   size: number;
   onSizeChange?: (size: number) => void;
   onClose?: () => void;
@@ -159,7 +156,6 @@ export function buildSecondaryPanelConfig(options: {
     content: options.content,
     position: options.position,
     collapsed: options.collapsed ?? false,
-    maximized: options.maximized ?? false,
     size: options.size,
     onSizeChange: options.onSizeChange,
     onClose: options.onClose,

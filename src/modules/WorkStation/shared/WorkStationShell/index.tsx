@@ -218,12 +218,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
           appClassName && `${appClassName}__content-panel`
         )}
       >
-        {/* Hide main content when the secondary panel is maximized at the
-            bottom (replay of the old VS Code-style "maximize panel"). */}
-        {!(
-          secondaryPanelConfig?.maximized &&
-          secondaryPanelConfig.position === "bottom"
-        ) && <div className="work-station-shell__main-content">{content}</div>}
+        <div className="work-station-shell__main-content">{content}</div>
       </div>
     );
 
@@ -234,14 +229,10 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
       !secondaryPanelConfig ||
       secondaryPanelConfig.collapsed ||
       !secondaryPanelConfig.content;
-    const secondaryMaximized =
-      secondaryPanelConfig?.maximized &&
-      secondaryPanelConfig.position === "bottom";
     const showSecondaryResizeHandle =
       secondaryPanelConfig &&
       !secondaryPanelCollapsed &&
-      secondaryPanelConfig.onSizeChange &&
-      !secondaryMaximized;
+      secondaryPanelConfig.onSizeChange;
 
     const secondaryPanelElement = secondaryPanelConfig && (
       <div
@@ -259,8 +250,8 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
         )}
         style={{
           ...(secondaryPosition === "right"
-            ? { width: secondaryMaximized ? "100%" : secondarySize }
-            : { height: secondaryMaximized ? "100%" : secondarySize }),
+            ? { width: secondarySize }
+            : { height: secondarySize }),
         }}
         onContextMenu={
           !secondaryPanelCollapsed && secondaryPanelConfig.onSizeChange
@@ -311,9 +302,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
               resolvedPrimarySidebar.collapsed &&
                 "work-station-shell__grid--primary-collapsed",
               secondaryPanelCollapsed &&
-                "work-station-shell__grid--secondary-collapsed",
-              secondaryMaximized &&
-                "work-station-shell__grid--secondary-maximized"
+                "work-station-shell__grid--secondary-collapsed"
             )}
           >
             <div className="work-station-shell__grid-sidebar">

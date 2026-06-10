@@ -472,10 +472,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
         content: editorPanelContent,
         position: editorPanelPosition,
         collapsed: panels.bottomPanelCollapsed,
-        maximized:
-          editorPanelPosition === "bottom"
-            ? panels.bottomPanelMaximized
-            : false,
         size:
           editorPanelPosition === "bottom"
             ? panels.bottomPanelHeight
@@ -493,7 +489,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       editorPanelContent,
       editorPanelPosition,
       panels.bottomPanelCollapsed,
-      panels.bottomPanelMaximized,
       panels.bottomPanelHeight,
       panels.setBottomPanelHeight,
       editorRightPanelWidth,

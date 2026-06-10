@@ -11,7 +11,6 @@
 import {
   type BottomPanelTab,
   type PrimarySidebarTabKey,
-  workStationBottomPanelMaximizedAtom,
   workStationBottomPanelTabPersistAtom,
   workStationEditorSecondaryCollapsedAtom,
   workStationEditorSecondaryCollapsedPersistAtom,
@@ -62,14 +61,10 @@ export const PanelService = {
   },
 
   /**
-   * Toggle bottom panel visibility (persisted). Exits maximize if active.
+   * Toggle bottom panel visibility (persisted).
    */
   toggleBottomPanel(): void {
-    const store = getStore();
-    if (store.get(workStationBottomPanelMaximizedAtom)) {
-      store.set(workStationBottomPanelMaximizedAtom, false);
-    }
-    store.set(workStationEditorSecondaryCollapsedPersistAtom, "toggle");
+    getStore().set(workStationEditorSecondaryCollapsedPersistAtom, "toggle");
   },
 };
 

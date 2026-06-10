@@ -110,10 +110,6 @@ export const workStationBottomPanelHeightPersistAtom = atom(
   }
 );
 
-export const workStationBottomPanelMaximizedAtom = atom<boolean>(false);
-workStationBottomPanelMaximizedAtom.debugLabel =
-  "workStationBottomPanelMaximizedAtom";
-
 function getStoredTerminalSidebarWidth(): number {
   const stored = getStoredValue("terminal_sidebar_width");
   if (stored) {

@@ -12,7 +12,7 @@
  * (terminals, output buffers, etc.) lives in `BottomPanelContent` as a
  * sibling and stays mounted.
  */
-import { BrushCleaning, ChevronDown, ChevronUp, X } from "lucide-react";
+import { BrushCleaning, X } from "lucide-react";
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -40,7 +40,7 @@ import type { TabAction } from "../types";
 // BOTTOM_PANEL_TAB_ORDER so the icons line up with the tabs.
 const BOTTOM_PANEL_TAB_ICONS: Partial<Record<BottomPanelTab, string>> = {
   [BOTTOM_PANEL_TABS.PROBLEMS]: "TriangleAlert",
-  [BOTTOM_PANEL_TABS.OUTPUT]: "SquareArrowOutUpRight",
+  [BOTTOM_PANEL_TABS.OUTPUT]: "ScrollText",
   // Bottom-panel Terminal is intentionally hidden while the standalone Terminal tab is the single source of truth.
   // [BOTTOM_PANEL_TABS.TERMINAL]: "SquareTerminal",
   [BOTTOM_PANEL_TABS.TEST_RESULTS]: "FlaskConical",
@@ -49,8 +49,6 @@ const BOTTOM_PANEL_TAB_ICONS: Partial<Record<BottomPanelTab, string>> = {
 export interface BottomPanelHeaderProps {
   activeTab: BottomPanelTab;
   onTabChange: (tab: BottomPanelTab) => void;
-  isMaximized: boolean;
-  onToggleMaximize: () => void;
   onClose: () => void;
 
   // Output tab controls
@@ -85,8 +83,6 @@ const BottomPanelHeader: React.FC<BottomPanelHeaderProps> = memo(
   ({
     activeTab,
     onTabChange,
-    isMaximized,
-    onToggleMaximize,
     onClose,
     outputChannels,
     activeChannelId,
@@ -350,27 +346,6 @@ const BottomPanelHeader: React.FC<BottomPanelHeaderProps> = memo(
     // ------------------------------------------------------------------
     const persistentActions = (
       <>
-        {resolvedPosition === "bottom" && (
-          <Button
-            htmlType="button"
-            variant="tertiary"
-            size="small"
-            iconOnly
-            onClick={onToggleMaximize}
-            title={
-              isMaximized
-                ? t("tooltips.restorePanel")
-                : t("tooltips.maximizePanel")
-            }
-            icon={
-              isMaximized ? (
-                <ChevronDown size={HEADER_ICON_SIZE.md} />
-              ) : (
-                <ChevronUp size={HEADER_ICON_SIZE.md} />
-              )
-            }
-          />
-        )}
         {position && onTogglePosition && (
           <PanelPositionToggle
             position={position}

@@ -6,34 +6,28 @@
  * DevTools, Code Editor bottom panel), but designed so any panel — primary
  * or secondary, modal or dock — can reuse the same tab + slot contract.
  *
- * Behaviour by position (matches the `SecondaryPanelPosition` toggle):
- * - `bottom` → renders pill-style tabs (`TabPill` variant=pill). All
- *   per-tab action buttons sit inline on the same row to the right of
- *   the tabs, exactly like the editor bottom panel.
- * - `right`  → renders editor-style tab rows (`TabBar` chrome). Persistent
- *   controls (position toggle, close) stay on the tab row; per-tab
- *   action buttons drop to a second row underneath so the narrow right
- *   rail isn't cluttered.
+ * Both `bottom` and `right` positions render the same icon-only square tab
+ * buttons. Each button shows only the Lucide icon from `tab.icon`; hovering
+ * reveals a plain-text tooltip with the tab label (no keyboard shortcut).
  *
  * Tabs and content stay mounted across position toggles — only the
  * chrome flavour swaps. Caller owns the active tab state.
  */
+import * as LucideIcons from "lucide-react";
 import type { ReactNode } from "react";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback } from "react";
 
-import TabPill from "@src/components/TabPill";
-import { TabBar } from "@src/modules/WorkStation/shared/TabBar";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared/WorkstationToolbarTooltip";
 import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
-import type { WorkStationTab } from "@src/store/workstation/tabs";
 
 export { PanelPositionToggle } from "./PositionToggle";
 
 export interface PanelTabBarTab {
   key: string;
   label: string;
-  /** Optional lucide icon name; only consumed by the TabBar (right) chrome. */
+  /** Lucide icon name string (e.g. "Layers", "SquareChevronRight"). */
   icon?: string;
-  /** Optional badge node rendered next to the label (pill chrome only). */
+  /** Optional badge node rendered next to the icon. */
   badge?: ReactNode;
 }
 
@@ -49,16 +43,114 @@ export interface PanelTabBarProps {
   /** Persistent controls (position toggle, close). Always on the tab row. */
   persistentActions?: ReactNode;
 
-  /** Stable id used to namespace the TabBar's tab ids (right mode). */
+  /** Stable id used to namespace the panel (for aria). */
   paneId: string;
 
-  /** When true, per-tab actions stay invisible until the panel is hovered.
-   *  Matches the existing editor / devtools "show on hover" UX. */
+  /** When true, per-tab actions stay invisible until the panel is hovered. */
   hideTabActionsUntilHover?: boolean;
 
-  /** Optional class for the outer wrapper (e.g. add `group/...` for hover). */
+  /** Optional class for the outer wrapper. */
   className?: string;
 }
+
+// ── Icon-only tab strip ───────────────────────────────────────────────────────
+
+const ICON_SIZE = 14;
+
+type LucideIconComponent = React.ComponentType<{
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+}>;
+
+function resolveLucideIcon(name: string): LucideIconComponent | null {
+  return (
+    (LucideIcons as unknown as Record<string, LucideIconComponent>)[name] ??
+    null
+  );
+}
+
+interface IconTabStripProps {
+  tabs: PanelTabBarTab[];
+  activeTabKey: string;
+  onTabChange: (key: string) => void;
+  /**
+   * - `"always"` (bottom) — every tab shows icon + label.
+   * - `"active-only"` (right) — only the active tab shows label; others icon-only with tooltip.
+   * - `"never"` — icon-only with tooltip for all tabs.
+   */
+  labelMode?: "always" | "active-only" | "never";
+  tooltipPosition?: "bottom" | "top";
+}
+
+const IconTabStrip: React.FC<IconTabStripProps> = memo(
+  ({
+    tabs,
+    activeTabKey,
+    onTabChange,
+    labelMode = "never",
+    tooltipPosition = "bottom",
+  }) => (
+    <div className="flex items-center gap-px">
+      {tabs.map((tab) => {
+        const isActive = tab.key === activeTabKey;
+        const IconComponent = tab.icon ? resolveLucideIcon(tab.icon) : null;
+        const showLabel =
+          labelMode === "always" || (labelMode === "active-only" && isActive);
+
+        const btn = (
+          <button
+            type="button"
+            data-active={isActive ? "true" : "false"}
+            onClick={() => onTabChange(tab.key)}
+            aria-label={tab.label}
+            aria-selected={isActive}
+            role="tab"
+            style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+            className={`relative flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded outline-none transition-colors duration-150 ${
+              showLabel ? "px-2" : "w-8"
+            } ${
+              isActive
+                ? "bg-fill-1 text-primary-6"
+                : "bg-transparent text-text-2 hover:bg-surface-hover hover:text-text-1"
+            }`}
+          >
+            {IconComponent && (
+              <IconComponent size={ICON_SIZE} strokeWidth={1.75} />
+            )}
+            {showLabel && (
+              <span className="whitespace-nowrap text-[12px] font-medium">
+                {tab.label}
+              </span>
+            )}
+            {tab.badge && (
+              <span className="pointer-events-none absolute -right-0.5 -top-0.5">
+                {tab.badge}
+              </span>
+            )}
+          </button>
+        );
+
+        if (showLabel)
+          return <React.Fragment key={tab.key}>{btn}</React.Fragment>;
+
+        return (
+          <WorkstationToolbarTooltip
+            key={tab.key}
+            label={tab.label}
+            position={tooltipPosition}
+          >
+            {btn}
+          </WorkstationToolbarTooltip>
+        );
+      })}
+    </div>
+  )
+);
+
+IconTabStrip.displayName = "IconTabStrip";
+
+// ── PanelTabBar ───────────────────────────────────────────────────────────────
 
 const PanelTabBar: React.FC<PanelTabBarProps> = memo(
   ({
@@ -68,126 +160,56 @@ const PanelTabBar: React.FC<PanelTabBarProps> = memo(
     onTabChange,
     tabActions,
     persistentActions,
-    paneId,
     hideTabActionsUntilHover = false,
     className,
   }) => {
-    // ------------------------------------------------------------------
-    // Bottom (pill) mode
-    // ------------------------------------------------------------------
-    const pillTabs = useMemo(
-      () =>
-        tabs.map((tab) => ({
-          key: tab.key,
-          label: tab.label,
-          badge: tab.badge,
-        })),
-      [tabs]
+    const handleTabChange = useCallback(
+      (key: string) => onTabChange(key),
+      [onTabChange]
     );
 
-    // ------------------------------------------------------------------
-    // Right (TabBar) mode — convert to WorkStationTab shape
-    // ------------------------------------------------------------------
-    const tabBarTabId = useCallback(
-      (key: string) => `${paneId}-${key}`,
-      [paneId]
-    );
-    const tabBarTabs = useMemo<WorkStationTab[]>(
-      () =>
-        tabs.map((tab) => ({
-          id: tabBarTabId(tab.key),
-          type: "devtools",
-          title: tab.label,
-          icon: tab.icon,
-          data: {},
-          closable: false,
-        })),
-      [tabs, tabBarTabId]
-    );
-    const handleTabBarClick = useCallback(
-      (tabId: string) => {
-        const match = tabs.find((tab) => tabBarTabId(tab.key) === tabId);
-        if (match) onTabChange(match.key);
-      },
-      [tabs, tabBarTabId, onTabChange]
-    );
-    const noopTabClose = useCallback((_tabId: string) => {}, []);
-
-    // ------------------------------------------------------------------
-    // Render
-    // ------------------------------------------------------------------
-    if (position === "bottom") {
-      // Container-query driven layout. When the header is wide enough the
-      // tab actions sit inline next to the persistent controls (single row).
-      // When the header gets narrow (and buttons would start to overlap the
-      // tabs), the per-tab actions wrap to their own row underneath —
-      // matching the right-mode "second action row" structure.
-      return (
-        <div
-          className={`shrink-0 bg-workstation-bg @container/spheader ${className ?? ""}`}
-        >
-          <div className="flex flex-wrap items-center justify-between gap-y-1 pb-1.5 pt-1.5 @[520px]/spheader:h-10 @[520px]/spheader:flex-nowrap @[520px]/spheader:gap-x-1.5 @[520px]/spheader:py-0 @[520px]/spheader:pl-2 @[520px]/spheader:pr-2">
-            <div className="secondary-panel-header__tab-scroll order-1 flex min-w-0 flex-1 items-center overflow-x-auto overflow-y-hidden pl-2 scrollbar-hide @[520px]/spheader:pl-0">
-              <TabPill
-                activeTab={activeTabKey}
-                tabs={pillTabs}
-                onChange={onTabChange}
-                variant="pill"
-                color="fill"
-                fillWidth={false}
-                size="small"
-                className="shrink-0"
-              />
-            </div>
-            <div className="order-2 flex items-center gap-px pr-2 @[520px]/spheader:order-3 @[520px]/spheader:pr-0">
-              {persistentActions}
-            </div>
-            {tabActions && (
-              <div
-                className={`secondary-panel-header__tab-actions order-3 flex w-full items-center justify-end gap-1.5 pr-2 pt-1 @[520px]/spheader:order-2 @[520px]/spheader:w-auto @[520px]/spheader:p-0 ${
-                  hideTabActionsUntilHover
-                    ? "invisible group-hover/panel:visible"
-                    : ""
-                }`}
-              >
-                {tabActions}
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    // Right mode: TabBar row + optional second action row.
+    // Both positions use the same icon-only strip. Layout differs only in
+    // how tab actions are arranged relative to the persistent controls.
     return (
-      <div className={`flex shrink-0 flex-col ${className ?? ""}`}>
-        <TabBar
-          paneId={paneId}
-          tabs={tabBarTabs}
-          activeTabId={tabBarTabId(activeTabKey)}
-          onTabClick={handleTabBarClick}
-          onTabClose={noopTabClose}
-          repoPath=""
-          surfaceClassName="bg-workstation-bg"
-          trailingSlot={
-            persistentActions ? (
-              <div className="flex items-center gap-px">
-                {persistentActions}
-              </div>
-            ) : undefined
-          }
-        />
-        {tabActions && (
-          <div
-            className={`flex h-8 shrink-0 items-center justify-end gap-1.5 px-3 ${
-              hideTabActionsUntilHover
-                ? "invisible group-hover/panel:visible"
-                : ""
-            }`}
-          >
-            {tabActions}
+      <div
+        className={`shrink-0 bg-workstation-bg @container/spheader ${className ?? ""}`}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-y-1 px-2 pb-1.5 pt-1.5 @[520px]/spheader:h-10 @[520px]/spheader:flex-nowrap @[520px]/spheader:gap-x-1.5 @[520px]/spheader:py-0">
+          {/* Tab strip */}
+          <div className="order-1 flex min-w-0 flex-1 items-center">
+            <IconTabStrip
+              tabs={tabs}
+              activeTabKey={activeTabKey}
+              onTabChange={handleTabChange}
+              labelMode={
+                position === "bottom"
+                  ? "always"
+                  : position === "right"
+                    ? "active-only"
+                    : "never"
+              }
+              tooltipPosition="bottom"
+            />
           </div>
-        )}
+
+          {/* Persistent actions (position toggle, close) */}
+          <div className="order-2 flex items-center gap-px @[520px]/spheader:order-3">
+            {persistentActions}
+          </div>
+
+          {/* Per-tab actions */}
+          {tabActions && (
+            <div
+              className={`order-3 flex w-full items-center justify-end gap-px pt-1 @[520px]/spheader:order-2 @[520px]/spheader:w-auto @[520px]/spheader:pt-0 ${
+                hideTabActionsUntilHover
+                  ? "invisible group-hover/panel:visible"
+                  : ""
+              }`}
+            >
+              {tabActions}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
