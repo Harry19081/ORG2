@@ -8,8 +8,8 @@
  * All events use a single `agent:*` namespace. Feature flags control
  * which capabilities are active per session (not per variant).
  */
+import { confirmTurnRunning } from "@src/engines/SessionCore/control/turnLifecycle";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
-import { markQueueTurnWorking } from "@src/engines/SessionCore/hooks/session/queueTurnGate";
 import { createLogger } from "@src/hooks/logger";
 
 import {
@@ -31,7 +31,6 @@ import {
   handleHeartbeat,
   handleSecretRequest,
   handleSetupRepoUpdate,
-  handleWorkspaceCloneProgress,
 } from "./fileChangeHandlers";
 import { handleMcpProgress } from "./mcpHandlers";
 import {
@@ -188,8 +187,10 @@ export async function dispatchAgentEvent(
     clearStreamRetryStatus(ctx, sessionId);
   }
 
+  // Raw event traffic is a low-trust signal: it may trail a terminal, so it
+  // only confirms a pending dispatch — it never opens a turn from idle.
   if (sessionId && QUEUE_TURN_ACTIVITY_EVENTS.has(event.type)) {
-    markQueueTurnWorking(sessionId);
+    confirmTurnRunning(sessionId);
   }
 
   switch (event.type) {
@@ -294,12 +295,6 @@ export async function dispatchAgentEvent(
       // value via the secure modal. The plaintext does not flow through
       // this event — only the request metadata.
       handleSecretRequest(event, eventSessionId || sessionId);
-      break;
-    case "agent:workspace_clone_progress":
-      // Side-channel: `manage_workspace` clone action is streaming
-      // `git clone --progress` output. The matching ToolCallBlock listens
-      // by toolCallId and renders a thin progress strip.
-      handleWorkspaceCloneProgress(event, eventSessionId || sessionId);
       break;
     case "agent:heartbeat":
       // Side-channel: long-running automation liveness ping. The Rust

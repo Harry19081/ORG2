@@ -17,13 +17,20 @@
  *   own the data store (it lives in Cursor's `state.vscdb`) but we *do*
  *   support sending new prompts back into the live probe Cursor instance
  *   via `cursorIdeAdapter.sendMessage`. Read history; write follow-ups.
+ * - `"external_history"` — Imported read-only history owned by an external
+ *   agent CLI database/log (Codex first, Claude Code / Windsurf later).
  */
-export type DispatchCategory = "cli_agent" | "rust_agent" | "cursor_ide";
+export type DispatchCategory =
+  | "cli_agent"
+  | "rust_agent"
+  | "cursor_ide"
+  | "external_history";
 
 export const DISPATCH_CATEGORY = {
   CLI_AGENT: "cli_agent",
   RUST_AGENT: "rust_agent",
   CURSOR_IDE: "cursor_ide",
+  EXTERNAL_HISTORY: "external_history",
 } as const;
 
 /**

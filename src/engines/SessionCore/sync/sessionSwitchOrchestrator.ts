@@ -1,10 +1,11 @@
 import { cursorBridgeComposerLastUpdatedAt } from "@src/api/tauri/cursorBridge";
 import { Message } from "@src/components/Message";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
+import { isVisibleInChat } from "@src/engines/SessionCore/ingestion/visibilityFilters";
 import type { Logger } from "@src/hooks/logger";
 import {
   composerIdFromSessionId,
-  isCursorIdeSession,
+  isImportedHistorySession,
 } from "@src/util/session/sessionDispatch";
 
 import { getCursorIdeSnapshotLastUpdatedAt } from "./adapters/cursorIdeAdapter";
@@ -50,16 +51,11 @@ export function runSessionSwitchOrchestrator(
       actions,
       checkAndRecover,
       setPendingPlanApprovals,
-      logger,
     } = options;
 
     try {
       const cacheHit = await eventStoreProxy.switchSession(sessionId);
       if (abortController.signal.aborted) return;
-      logger.debug(
-        `switch ${sessionId}: EventStore ${cacheHit ? "cache hit" : "cache miss → SQLite"}`
-      );
-
       if (cacheHit) {
         await handleCacheHit({
           sessionId,
@@ -138,7 +134,7 @@ async function handleCacheHit(
   if (abortController.signal.aborted) return;
 
   const cacheHitInFlight = isInFlightRunStatus(postResult?.runStatus);
-  let displayEvents = await eventStoreProxy.getEvents();
+  let displayEvents = await eventStoreProxy.getEvents(sessionId);
   if (abortController.signal.aborted) return;
 
   if (!cacheHitInFlight) {
@@ -146,7 +142,10 @@ async function handleCacheHit(
       await eventStoreProxy.loadInitialTurnWindow(sessionId);
       if (abortController.signal.aborted) return;
       displayEvents = await eventStoreProxy.getEvents(sessionId);
-    } else if (displayEvents.length === 0) {
+    } else if (
+      displayEvents.length === 0 ||
+      !displayEvents.some(isVisibleInChat)
+    ) {
       displayEvents = await loadPersistedHistory(
         adapter,
         sessionId,
@@ -168,7 +167,7 @@ async function handleCacheHit(
     abortController,
     setPendingPlanApprovals
   );
-  if (!isCursorIdeSession(sessionId)) {
+  if (!isImportedHistorySession(sessionId)) {
     reconcileInFlightHistory(sessionId, adapter, refs, actions);
   }
   applyPostLoadResult(sessionId, postResult, actions);
@@ -247,7 +246,7 @@ async function handleCacheMiss(
   if (abortController.signal.aborted) return;
 
   actions.dispatchLoadSession({ sessionId, events });
-  if (!isCursorIdeSession(sessionId)) {
+  if (!isImportedHistorySession(sessionId)) {
     reconcileInFlightHistory(sessionId, adapter, refs, actions);
   }
 

@@ -83,6 +83,34 @@ describe("groupModels", () => {
   it("returns empty array for empty input", () => {
     expect(groupModels([])).toEqual([]);
   });
+  it("treats fable as a Claude sub-family (claude-fable-5 → Fable 5)", () => {
+    const groups = groupModels(["claude-fable-5"]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]).toMatchObject({
+      label: "Fable 5",
+      sortVersion: 500,
+      models: ["claude-fable-5"],
+    });
+  });
+
+  it("treats mythos as a Claude sub-family (claude-mythos-5 → Mythos 5)", () => {
+    const groups = groupModels(["claude-mythos-5"]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]).toMatchObject({
+      label: "Mythos 5",
+      sortVersion: 500,
+      models: ["claude-mythos-5"],
+    });
+  });
+
+  it("falls back to bare Claude + version when no codename or canonical name is present (claude-5)", () => {
+    const groups = groupModels(["claude-5"]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]).toMatchObject({
+      label: "Claude 5",
+      sortVersion: 500,
+    });
+  });
 });
 
 describe("getDefaultEnabledModels", () => {

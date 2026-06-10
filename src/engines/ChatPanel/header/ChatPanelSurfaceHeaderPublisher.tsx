@@ -1,7 +1,9 @@
 import React, { useMemo } from "react";
 
-import Switch from "@src/components/Switch";
-
+import {
+  ChatPanelHeaderAgentSwitch,
+  ChatPanelHeaderTitlePill,
+} from "./ChatPanelHeaderPrimitives";
 import { usePublishChatPanelHeader } from "./usePublishChatPanelHeader";
 
 interface ChatPanelSurfaceHeaderPublisherProps {
@@ -27,17 +29,12 @@ export function ChatPanelSurfaceHeaderPublisher({
     if (!enabled) return null;
 
     const titleNode = titleContent ?? (
-      <span
-        className="min-w-0 -translate-y-px truncate"
-        data-testid="chat-panel-header-title"
-      >
-        {title}
-      </span>
+      <ChatPanelHeaderTitlePill>{title}</ChatPanelHeaderTitlePill>
     );
 
     return {
       content: (
-        <span className="flex min-w-0 max-w-full cursor-default items-center gap-2 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover">
+        <span className="flex min-w-0 max-w-full cursor-default items-center gap-2">
           {titleNode}
           {showAgentSwitch && onAgentSwitchChange ? (
             <>
@@ -46,16 +43,12 @@ export function ChatPanelSurfaceHeaderPublisher({
                 role="separator"
                 aria-hidden
               />
-              <label className="flex h-7 shrink-0 items-center !gap-1.5 rounded-lg !border-0 !bg-transparent !px-1.5 text-[13px] font-medium !text-text-1 transition-colors hover:!bg-surface-hover">
-                <span className="-translate-y-[0.5px]">{agentSwitchLabel}</span>
-                <Switch
-                  size="small"
-                  checked={agentSwitchChecked}
-                  onChange={onAgentSwitchChange}
-                  ariaLabel={agentSwitchLabel}
-                  dataTestId="chat-panel-explore-agent-search-switch"
-                />
-              </label>
+              <ChatPanelHeaderAgentSwitch
+                checked={agentSwitchChecked}
+                label={agentSwitchLabel}
+                onChange={onAgentSwitchChange}
+                dataTestId="chat-panel-explore-agent-search-switch"
+              />
             </>
           ) : null}
         </span>

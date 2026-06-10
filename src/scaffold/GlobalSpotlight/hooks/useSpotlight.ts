@@ -22,6 +22,7 @@ import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
 import { showScaleMessage } from "@src/hooks/navigation/useGlobalShortcuts/types";
 import { useFilteredItems } from "@src/hooks/search";
 import type { SupportedLanguage } from "@src/i18n";
+import { openAgentControlSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { AppViewService } from "@src/services/app";
 import { PanelService } from "@src/services/panel";
 import { WorkStationViewService } from "@src/services/workStation";
@@ -157,6 +158,7 @@ export function useSpotlight(
           void AppViewService.createAgentStationSession();
         },
         "search-agent-sessions": () => onOpenAgentSessionSearch?.(),
+        "agent-control": openAgentControlSpotlight,
         "workspace-switch": () => onOpenWorkspacePicker?.("switch"),
         "workspace-add": () => onOpenWorkspacePicker?.("add"),
         "workspace-create": () => onOpenWorkspacePicker?.("create"),
@@ -219,7 +221,12 @@ export function useSpotlight(
 
       fallbackHandlers[fallback]();
     },
-    [onOpenAgentSessionSearch, onOpenBranchPicker, onOpenWorkspacePicker]
+    [
+      dispatchActionOrFallback,
+      onOpenAgentSessionSearch,
+      onOpenBranchPicker,
+      onOpenWorkspacePicker,
+    ]
   );
 
   const handleSelectStaticAction = useCallback(

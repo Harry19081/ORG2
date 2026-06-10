@@ -86,10 +86,19 @@ export interface PinnedActionsBarProps {
    * session has a live canvas payload and the canvas tab is not already open.
    */
   sessionId?: string | null;
+  leadingContent?: React.ReactNode;
+  manageButtonPlacement?: "after-actions" | "after-leading";
+  managePanelAlign?: "left" | "right";
 }
 
 const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
-  ({ composerInputRef, sessionId }) => {
+  ({
+    composerInputRef,
+    sessionId,
+    leadingContent,
+    manageButtonPlacement = "after-actions",
+    managePanelAlign = "right",
+  }) => {
     const { t } = useTranslation("sessions");
     const [pinnedActions, setPinnedActions] = useAtom(pinnedActionsAtom);
 
@@ -169,15 +178,9 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
       setPanelOpen(false);
     }, []);
 
-    // When the "…" button is the only element in the bar, align the panel's
-    // left edge with the button so it extends rightward from the click target.
-    // Otherwise right-align it to the button so it tucks under the trailing
-    // edge of the pills row.
-    const hasLeadingPills =
-      showPrPill ||
-      (showCanvasPill && !isCanvasTabOpen) ||
-      pinnedActions.length > 0;
-    const panelAlign: "left" | "right" = hasLeadingPills ? "right" : "left";
+    const hasPinnedActions = pinnedActions.length > 0;
+    const showCanvasAction = showCanvasPill && !isCanvasTabOpen;
+    const hasActionPills = showPrPill || showCanvasAction || hasPinnedActions;
 
     // ── Pin / unpin ───────────────────────────────────────────────────────────
 
@@ -244,84 +247,107 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
       [composerInputRef, handleSetupRepo]
     );
 
+    const manageButton = (
+      <Button
+        ref={moreButtonRef}
+        variant="secondary"
+        appearance="outline"
+        size="small"
+        shape="round"
+        icon={<MoreHorizontal size={14} strokeWidth={1.75} />}
+        iconOnly
+        title={t("input.pinnedActions.manage")}
+        aria-label={t("input.pinnedActions.manage")}
+        onClick={handleOpenPanel}
+        className={
+          panelOpen ? "shrink-0 !bg-fill-1 !text-primary-6" : "shrink-0"
+        }
+      />
+    );
+
+    const actionPills = (
+      <>
+        {showPrPill && (
+          <Button
+            variant="secondary"
+            size="small"
+            shape="round"
+            title={t("input.pr.open", { defaultValue: "Open PR" })}
+            onClick={handleOpenPr}
+            loading={prIsCreating}
+            icon={
+              !prIsCreating ? (
+                <GitPullRequest size={12} strokeWidth={1.75} />
+              ) : undefined
+            }
+            className="max-w-[180px] shrink-0 select-none"
+          >
+            {prIsCreating
+              ? t("input.pr.creating", { defaultValue: "Creating PR…" })
+              : t("input.pr.open", { defaultValue: "Open PR" })}
+          </Button>
+        )}
+
+        {showCanvasAction && (
+          <div className="shrink-0">
+            <UserActionButton
+              leftIcon={<Layout size={12} strokeWidth={1.75} />}
+              title="Canvas"
+              onClick={handleOpenCanvas}
+              onClose={handleClearCanvas}
+            />
+          </div>
+        )}
+
+        {pinnedActions.map((action) => (
+          <ActionPill
+            key={actionKey(action)}
+            action={action}
+            onClick={handlePillClick}
+          />
+        ))}
+      </>
+    );
+
     return (
       <div className="relative flex min-w-0 flex-1 items-center gap-1">
-        <div className="relative min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-1 overflow-x-auto scrollbar-hide">
-            {showPrPill && (
-              <Button
-                variant="secondary"
-                size="small"
-                shape="round"
-                title={t("input.pr.open", { defaultValue: "Open PR" })}
-                onClick={handleOpenPr}
-                loading={prIsCreating}
-                icon={
-                  !prIsCreating ? (
-                    <GitPullRequest size={12} strokeWidth={1.75} />
-                  ) : undefined
-                }
-                className="max-w-[180px] shrink-0 select-none"
-              >
-                {prIsCreating
-                  ? t("input.pr.creating", { defaultValue: "Creating PR…" })
-                  : t("input.pr.open", { defaultValue: "Open PR" })}
-              </Button>
+        {manageButtonPlacement === "after-leading" ? (
+          <>
+            <div className="flex shrink-0 items-center gap-1">
+              {leadingContent}
+              {manageButton}
+            </div>
+            {hasActionPills && (
+              <div aria-hidden className="mx-2 h-4 w-px shrink-0 bg-border-2" />
             )}
-
-            {showCanvasPill && !isCanvasTabOpen && (
-              <div className="shrink-0">
-                <UserActionButton
-                  leftIcon={<Layout size={12} strokeWidth={1.75} />}
-                  title="Canvas"
-                  onClick={handleOpenCanvas}
-                  onClose={handleClearCanvas}
-                />
-              </div>
+            <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto scrollbar-hide">
+              {actionPills}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto scrollbar-hide">
+              {leadingContent}
+              {actionPills}
+            </div>
+            {hasActionPills && (
+              <div aria-hidden className="mx-2 h-4 w-px shrink-0 bg-border-2" />
             )}
-
-            {pinnedActions.map((action) => (
-              <ActionPill
-                key={actionKey(action)}
-                action={action}
-                onClick={handlePillClick}
-              />
-            ))}
-          </div>
-          {hasLeadingPills && (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[var(--color-chat-input)] to-transparent"
-            />
-          )}
-        </div>
-
-        <Button
-          ref={moreButtonRef}
-          variant="secondary"
-          appearance="outline"
-          size="small"
-          shape="round"
-          icon={<MoreHorizontal size={14} strokeWidth={1.75} />}
-          iconOnly
-          title={t("input.pinnedActions.manage")}
-          aria-label={t("input.pinnedActions.manage")}
-          onClick={handleOpenPanel}
-          className={
-            panelOpen ? "shrink-0 !bg-fill-1 !text-primary-6" : "shrink-0"
-          }
-        />
+            {manageButton}
+          </>
+        )}
 
         <PinActionsPanel
           visible={panelOpen}
           availableItems={availableItems}
           pinnedActions={pinnedActions}
           onTogglePin={handleTogglePin}
+          onInsert={handlePillClick}
           onUnpinAll={handleUnpinAll}
           onClose={handleClosePanel}
           loading={loadingItems}
           triggerRef={moreButtonRef}
-          align={panelAlign}
+          align={managePanelAlign}
         />
       </div>
     );

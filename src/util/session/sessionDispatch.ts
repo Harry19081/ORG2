@@ -2,6 +2,7 @@ import {
   RUST_AGENT_TYPE,
   type RustAgentType,
 } from "@src/api/tauri/agent/types";
+import type { ImportedHistorySourceId } from "@src/api/tauri/importedHistory";
 import type { DispatchCategory } from "@src/api/tauri/session";
 
 /**
@@ -43,6 +44,8 @@ export interface SessionPrefixConfig {
   iconId: string;
   /** Agent definition ID for built-in agents (e.g., "builtin:os") */
   defId?: string;
+  /** Source subtype for imported read-only external history sessions. */
+  externalHistorySourceId?: ImportedHistorySourceId;
 }
 
 /**
@@ -100,6 +103,27 @@ export const SESSION_PREFIX_REGISTRY: readonly SessionPrefixConfig[] = [
     // `CursorBrandIcon` adapter (see `src/config/agentIcons.tsx`).
     iconId: "cursor",
   },
+  {
+    prefix: "codexapp-",
+    category: "external_history",
+    variant: undefined,
+    iconId: "codex",
+    externalHistorySourceId: "codex_app",
+  },
+  {
+    prefix: "claudecodeapp-",
+    category: "external_history",
+    variant: undefined,
+    iconId: "claude_code",
+    externalHistorySourceId: "claude_code",
+  },
+  {
+    prefix: "windsurfapp-",
+    category: "external_history",
+    variant: undefined,
+    iconId: "windsurf",
+    externalHistorySourceId: "windsurf",
+  },
 ] as const;
 
 // ============================================
@@ -125,6 +149,15 @@ export const CLI_SESSION_PREFIX = "cliagent-";
  * `cursor_ide_chunks` Tauri command. Frontend code never sees the bare UUID.
  */
 export const CURSOR_IDE_SESSION_PREFIX = "cursoride-";
+
+/** Prefix for imported Codex app event session IDs. */
+export const CODEX_APP_SESSION_PREFIX = "codexapp-";
+
+/** Prefix for imported Claude Code event session IDs. */
+export const CLAUDE_CODE_HISTORY_SESSION_PREFIX = "claudecodeapp-";
+
+/** Prefix for imported Windsurf event session IDs. */
+export const WINDSURF_HISTORY_SESSION_PREFIX = "windsurfapp-";
 
 /** Prefix for Wingman Agent session IDs */
 export const WINGMAN_SESSION_PREFIX = "wingman-";
@@ -177,6 +210,47 @@ export function isCursorIdeSession(
 ): boolean {
   const config = findPrefixConfig(sessionId);
   return config?.category === "cursor_ide";
+}
+
+/**
+ * Check if a session ID belongs to imported read-only external history.
+ */
+export function isExternalHistorySession(
+  sessionId: string | null | undefined
+): boolean {
+  const config = findPrefixConfig(sessionId);
+  return config?.category === "external_history";
+}
+
+export function isImportedHistorySession(
+  sessionId: string | null | undefined
+): boolean {
+  return isCursorIdeSession(sessionId) || isExternalHistorySession(sessionId);
+}
+
+export function getExternalHistorySourceId(
+  sessionId: string | null | undefined
+): ImportedHistorySourceId | undefined {
+  const config = findPrefixConfig(sessionId);
+  return config?.externalHistorySourceId;
+}
+
+export function isCodexAppSession(
+  sessionId: string | null | undefined
+): boolean {
+  return getExternalHistorySourceId(sessionId) === "codex_app";
+}
+
+export function isClaudeCodeHistorySession(
+  sessionId: string | null | undefined
+): boolean {
+  return getExternalHistorySourceId(sessionId) === "claude_code";
+}
+
+export function isWindsurfHistorySession(
+  sessionId: string | null | undefined
+): boolean {
+  return getExternalHistorySourceId(sessionId) === "windsurf";
 }
 
 /**

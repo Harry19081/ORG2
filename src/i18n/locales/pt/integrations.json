@@ -438,14 +438,6 @@
     },
     "addCustomModel": "Adicionar modelo personalizado",
     "addCustomModelDesc": "Adicione manualmente um modelo que não esteja listado acima",
-    "cursorRefresh": {
-      "noSessionToken": "Nenhum Token de sessão disponível — refaça a configuração para capturar um.",
-      "emptyModelList": "O Cursor retornou uma lista de modelos vazia.",
-      "failed": "Falha ao atualizar a partir do Cursor: {{error}}",
-      "refreshing": "Atualizando a partir do Cursor…",
-      "button": "Atualizar a partir do Cursor",
-      "modelsButton": "Atualizar lista de modelos do Cursor"
-    },
     "cursorSessionTokenCapturedTitle": "Cursor conectado",
     "cursorSessionTokenCapturedDesc": "Conectado como {{user}}…",
     "cursorLoginBrowserTitle": "Login do Cursor",
@@ -491,7 +483,11 @@
     "geminiApiKeyPlaceholder": "AIza...",
     "geminiConnected": "Gemini connected",
     "geminiDetectErrorHint": "Sign in with the secure native window, or paste a Gemini API key manually",
-    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again"
+    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again",
+    "refreshModels": {
+      "button": "Atualizar lista de modelos do Cursor",
+      "failed": "Falha ao atualizar a partir do Cursor: {{error}}"
+    }
   },
   "integrations": {
     "title": "Integrações",

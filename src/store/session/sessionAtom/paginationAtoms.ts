@@ -1,28 +1,31 @@
 /**
  * Per-category pagination state for the sidebar's session list.
  *
- * The sidebar fetches each category in its own page (top N per category, see
+ * The sidebar fetches each list bucket in its own page (top N per category, see
  * `SESSION_SIDEBAR_PAGE_SIZE`) so a power user with 5000 CLI sessions doesn't
- * make us pull all of them just to render the "Today" bucket. The state below
- * remembers, per category:
- *  - `loaded`  — how many rows we've fetched so far (offset for the next page)
- *  - `hasMore` — backend signaled that more rows exist beyond `loaded`
- *  - `loading` — a fetch is currently in flight (so the sidebar can disable
- *                the "Load more" row to prevent duplicate calls)
- *
- * The `cursor_ide` category is special because Cursor IDE history rows come
- * from a different RPC (`cursor_ide_list_sessions`) than the OS Agent / SDE
- * Agent / CLI rows (`session_aggregate_list`). They share the same atom shape
- * because the sidebar treats them uniformly.
+ * make us pull all of them just to render the "Today" bucket. Imported history
+ * sources get their own source-specific pagination keys so Codex App and future
+ * Claude Code pages cannot overwrite each other.
  */
 import { atom } from "jotai";
 
-export type SessionListCategory = "cli_agent" | "rust_agent" | "cursor_ide";
+import {
+  IMPORTED_HISTORY_SOURCES,
+  type ImportedHistoryListCategory,
+} from "@src/api/tauri/importedHistory";
+
+export type BaseSessionListCategory = "cli_agent" | "rust_agent" | "cursor_ide";
+
+export type SessionListCategory =
+  | BaseSessionListCategory
+  | ImportedHistoryListCategory;
+
+export const BASE_SESSION_LIST_CATEGORIES: readonly BaseSessionListCategory[] =
+  ["cli_agent", "rust_agent", "cursor_ide"];
 
 export const SESSION_LIST_CATEGORIES: readonly SessionListCategory[] = [
-  "cli_agent",
-  "rust_agent",
-  "cursor_ide",
+  ...BASE_SESSION_LIST_CATEGORIES,
+  ...IMPORTED_HISTORY_SOURCES.map((source) => source.listCategory),
 ];
 
 /**
@@ -49,11 +52,10 @@ export type SessionPaginationMap = Readonly<
 >;
 
 function makeInitialMap(): SessionPaginationMap {
-  return {
-    cli_agent: { ...DEFAULT_STATE },
-    rust_agent: { ...DEFAULT_STATE },
-    cursor_ide: { ...DEFAULT_STATE },
-  };
+  const entries = SESSION_LIST_CATEGORIES.map(
+    (category) => [category, { ...DEFAULT_STATE }] as const
+  );
+  return Object.fromEntries(entries) as SessionPaginationMap;
 }
 
 export const sessionPaginationAtom =

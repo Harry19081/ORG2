@@ -23,7 +23,9 @@
 //! - `commands` — Tauri command handlers
 
 pub mod claude_code_db;
+pub mod claude_code_history;
 pub mod cli_session_db;
+pub mod codex_app;
 pub mod collector;
 pub mod commands;
 pub mod cursor_db;
@@ -31,10 +33,12 @@ pub mod cursor_db_history;
 pub mod heartbeat_import;
 pub mod ide_attribution;
 pub mod ide_detector;
+pub mod imported_history;
 pub mod queries;
 pub mod retroactive;
 pub mod schema;
 pub mod types;
+pub mod windsurf_history;
 
 pub use commands::*;
 

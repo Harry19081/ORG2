@@ -1,12 +1,11 @@
 /**
  * SessionReplayMessages Component
  *
- * Communication replay interface for chat, think, interaction, and todo events.
+ * Communication replay interface for messages, interaction, preview, and todo events.
  *
  * Uses WorkStationShell for consistent layout.
  * Structure:
- * - Left: Sidebar (Internal dialogue / Interactions / Todo List)
- * - Right: ReplayTabBar (event-driven tabs) + stacked event viewer
+ * - Right: ReplayTabBar (Messages / Kanban / Interactions / Preview) + stacked event viewer
  */
 import { useAtomValue } from "jotai";
 import React, { Suspense, lazy, memo, useCallback, useMemo } from "react";
@@ -89,6 +88,7 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
   const transcriptMessages = useMemo(() => {
     const combined = [
       ...chatMessages,
+      ...state.thinkMessages,
       ...state.todoMessages,
       ...interactionMessages,
     ];
@@ -99,7 +99,12 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
       return timestampDelta || messageA.order - messageB.order;
     });
     return combined;
-  }, [chatMessages, state.todoMessages, interactionMessages]);
+  }, [
+    chatMessages,
+    state.thinkMessages,
+    state.todoMessages,
+    interactionMessages,
+  ]);
 
   const currentMessages =
     viewMode === "chat"

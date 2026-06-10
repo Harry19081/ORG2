@@ -7,13 +7,11 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import type { AppearanceMode } from "@src/config/appearance/globalThemes";
-import type { SupportedLanguage } from "@src/i18n";
 
 import { SidebarWorkstationSettingsSubmenu } from "./SidebarWorkstationSettingsSubmenu";
 
 export type SettingsSubmenu =
   | "appearance"
-  | "language"
   | "chatPanelLocation"
   | "workstation";
 
@@ -32,25 +30,17 @@ interface ThemeOption {
   label: string;
 }
 
-interface LanguageOption {
-  value: SupportedLanguage;
-  label: string;
-}
-
 interface SidebarSettingsMenuSubmenusProps {
   activeSubmenu: SettingsSubmenu | null;
   appearanceMode: AppearanceMode;
   appearanceModeLabel: string;
   appearanceModeOptions: readonly AppearanceOption[];
-  currentLanguage: SupportedLanguage;
   globalThemeId: string;
-  languageOptions: readonly LanguageOption[];
   submenuPanelRef: React.Ref<HTMLDivElement>;
   submenuPosition: SubmenuPosition | null;
   themeOptions: readonly ThemeOption[];
   themePresetLabel: string;
   onSelectAppearanceMode: (mode: AppearanceMode) => void;
-  onSelectLanguage: (language: SupportedLanguage) => void;
   onSelectTheme: (themeId: string) => void;
   onSubmenuMouseDown: (event: React.MouseEvent<HTMLDivElement>) => void;
   onSubmenuPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
@@ -61,15 +51,12 @@ export function SidebarSettingsMenuSubmenus({
   appearanceMode,
   appearanceModeLabel,
   appearanceModeOptions,
-  currentLanguage,
   globalThemeId,
-  languageOptions,
   submenuPanelRef,
   submenuPosition,
   themeOptions,
   themePresetLabel,
   onSelectAppearanceMode,
-  onSelectLanguage,
   onSelectTheme,
   onSubmenuMouseDown,
   onSubmenuPointerDown,
@@ -147,39 +134,5 @@ export function SidebarSettingsMenuSubmenus({
     );
   }
 
-  return createPortal(
-    <div
-      ref={submenuPanelRef}
-      className={`${DROPDOWN_CLASSES.menuPanelWithHeaderBase} ${DROPDOWN_WIDTHS.panelWidthClass} fixed`}
-      style={{ left: submenuPosition.left, bottom: submenuPosition.bottom }}
-      onPointerDown={onSubmenuPointerDown}
-      onMouseDown={onSubmenuMouseDown}
-    >
-      <div className="scrollbar-overlay max-h-[320px] overflow-y-auto">
-        <div className={DROPDOWN_CLASSES.itemsColumnPadded}>
-          {languageOptions.map((language) => {
-            const selected = currentLanguage === language.value;
-            return (
-              <button
-                key={language.value}
-                type="button"
-                className={`${DROPDOWN_CLASSES.menuActionItem} ${selected ? DROPDOWN_CLASSES.itemSelected : ""} justify-between`}
-                onPointerDown={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  onSelectLanguage(language.value);
-                }}
-                onClick={() => onSelectLanguage(language.value)}
-                aria-selected={selected}
-              >
-                <span>{language.label}</span>
-                {selected && <DropdownSelectedCheck />}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>,
-    document.body
-  );
+  return null;
 }

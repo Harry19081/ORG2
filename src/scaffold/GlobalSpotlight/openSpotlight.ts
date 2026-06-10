@@ -45,6 +45,10 @@ export function createAgentSessionSearchSpotlightRequest(): SpotlightInitialQuer
   return { query: "", layer: { kind: "agentSessionSearch" } };
 }
 
+export function createAgentControlSpotlightRequest(): SpotlightInitialQuery {
+  return { query: "", layer: { kind: "agentControl" } };
+}
+
 export function openGlobalSpotlight(): void {
   if (!isStoreInitialized()) return;
   getInstrumentedStore().set(spotlightOpenAtom, true);
@@ -96,5 +100,12 @@ export function openAgentSessionSearchSpotlight(): void {
     spotlightInitialQueryAtom,
     createAgentSessionSearchSpotlightRequest()
   );
+  store.set(spotlightOpenAtom, true);
+}
+
+export function openAgentControlSpotlight(): void {
+  if (!isStoreInitialized()) return;
+  const store = getInstrumentedStore();
+  store.set(spotlightInitialQueryAtom, createAgentControlSpotlightRequest());
   store.set(spotlightOpenAtom, true);
 }

@@ -174,10 +174,14 @@ Core UI:
 
 ```bash
 cd tests/e2e
-npm test
-npm test -- --spec './specs/core/session-plan-ui.spec.mjs'
-E2E_CONTROL_SCENARIOS=plan-update npm test -- --spec './specs/core/session-controls-ui.spec.mjs'
-E2E_CONTROL_SCENARIOS=plan-edit-resend npm test -- --spec './specs/core/session-controls-ui.spec.mjs'
+# Full matrix (requires E2E_ALLOW_PORT_CLEANUP=1 if dev app is running)
+E2E_ALLOW_PORT_CLEANUP=1 npm test -- --spec './specs/core/session-controls-ui.spec.mjs'
+
+# Single scenario
+E2E_ALLOW_PORT_CLEANUP=1 E2E_CONTROL_SCENARIOS=rewind npm test -- --spec './specs/core/session-controls-ui.spec.mjs'
+E2E_ALLOW_PORT_CLEANUP=1 E2E_CONTROL_SCENARIOS=plan-build-direct npm test -- --spec './specs/core/session-controls-ui.spec.mjs'
+E2E_ALLOW_PORT_CLEANUP=1 E2E_CONTROL_SCENARIOS=plan-update npm test -- --spec './specs/core/session-controls-ui.spec.mjs'
+E2E_ALLOW_PORT_CLEANUP=1 E2E_CONTROL_SCENARIOS=plan-edit-resend npm test -- --spec './specs/core/session-controls-ui.spec.mjs'
 ```
 
 ## Result-driven orchestration regressions
@@ -206,6 +210,18 @@ Minimum failure cases that a valid Agent Org spec must catch:
 - Multiple org members sharing the same `agent_id` / `agent_definition_id` while inbox delivery, wake, drain, task owner, and task-tool authorization are only keyed by `agent_id`.
 - A run that appears visually populated but cannot make forward progress from the original user prompt without a corrective second prompt.
 
+## File changes panel and diff view
+
+The inline file-review panel was removed in `fbf20c78`. The composer "files pill" now opens Agent Station Diff view instead of expanding an inline card. Tests that assert file-change review must account for this:
+
+- The files pill (`data-testid="composer-section-files"`) click calls `openAgentStationDiff`, which sets `chatPanelMaximized=false`, `stationMode="agent-station"`, `simulatorSelectedAppAtom=AppType.DIFF`, and `replayModeAtom="replay"`.
+- **`chatPanelMaximized` must be false** before `ActivitySimulator` (and thus `SimulatorWorkstationTabHeader`) renders. If the chat panel is maximized, the diff view pane is suppressed and its buttons are invisible.
+- Undo All button: `data-testid="file-changes-undo-all"` in `SimulatorWorkstationTabHeader` (rendered only when `pendingCount > 0`).
+- Redo All button: `data-testid="file-changes-redo-all"` in `SimulatorWorkstationTabHeader` (rendered only when `redoSnapshotAnchors.length > 0`).
+- The E2E helper `__e2e.openAgentStationDiff()` sets the same atoms as the product pill callback and is available as a fallback when Tauri WebDriver `element.click()` misses React synthetic events. Use `invokeE2E("openAgentStationDiff")` after failed pill-click retries.
+- `waitForFileChangesPanel` in `agentQueuedWorkspaceHelpers.mjs` encapsulates this logic: it retries pill click 3×, then falls back to `invokeE2E("openAgentStationDiff")`, then waits for `[data-testid="file-changes-undo-all"]` or `[data-testid="replay-tab-diff-filter"]` to appear.
+- For plan-build-direct, always call `waitForRuntimeIdle()` before `waitForFileChangesPanel()` — the Undo All button only activates after the build turn is fully idle.
+
 ## Plan, rewind, and streaming regressions
 
 Rendered plan tests must pin the caller path, not only derived UI helpers:
@@ -225,3 +241,33 @@ Rendered plan tests must pin the caller path, not only derived UI helpers:
 - Never add a rendered UI claim to Rust-only coverage.
 - Never add a debug endpoint that tests only a helper when the bug is in the caller path.
 - Never preserve an obsolete scenario just because it once caught a phase bug; keep the invariant, not the phase artifact.
+
+## Turn lifecycle and queue E2E
+
+The turn lifecycle is controlled by a FSM in `src/engines/SessionCore/control/turnLifecycle.ts`. Key concepts for E2E:
+
+- `turnPhase`: `"idle"` | `"dispatching"` | `"running"` | `"stopping"` — use `inspectChatState().turnPhase` to assert turn state precisely.
+- `turnGeneration`: monotonically increasing counter; each new turn gets a new generation. Stale terminal signals from old turns are ignored.
+- `runtimeStatus`: derived from FSM + provider signals. Use `waitForRuntimeIdle()` to wait for `runtimeStatus === "idle"` and `turnPhase === "idle"`.
+- Queue tests must assert `queuedMessages` array contents, not just UI queue item count. Use `inspectChatState().queuedMessages`.
+- After Stop, queued messages with `requiresExplicitDispatch=true` must not auto-flush. Assert queue retention before any follow-up send.
+
+## CLI session reload
+
+CLI sessions (claude-code, codex, cursor-cli, gemini-cli) reload history from SQLite via `cliAdapter.loadHistory` after a browser refresh. Key rules:
+
+- After `cli_agent_truncate_after_chunk` (edit-resend / rewind), the product code calls `deleteCachedSession` and `evictSession` to ensure a clean reload. Tests that reload after rewind must wait for `chatEventCount > 0`, not just `activeSessionId` match.
+- `reloadAndOpenActiveSession` retries `openSession` up to 3× with 3s gaps — CLI adapter settling after reload is a known race that does not affect real users (who wait for UI to render before clicking).
+- Do not mark CLI reload as a product failure if `chatEventCount: 0` appears only after a programmatic `browser.refresh()` + immediate `openSession`. Verify with multiple runs before treating as a stable product bug.
+
+## File changes panel and diff view
+
+The inline file-review panel was removed in `fbf20c78`. The composer "files pill" now opens Agent Station Diff view. Tests that assert file-change review must account for this:
+
+- The files pill (`data-testid="composer-section-files"`) click calls `openAgentStationDiff`, which sets `chatPanelMaximized=false`, `stationMode="agent-station"`, `simulatorSelectedAppAtom=AppType.DIFF`, and `replayModeAtom="replay"`.
+- **`chatPanelMaximized` must be false** before `ActivitySimulator` renders. If the chat panel is maximized, the diff view pane is suppressed and `SimulatorWorkstationTabHeader` buttons are invisible.
+- Undo All: `data-testid="file-changes-undo-all"` in `SimulatorWorkstationTabHeader` (rendered only when `pendingCount > 0`).
+- Redo All: `data-testid="file-changes-redo-all"` in `SimulatorWorkstationTabHeader` (rendered only when `redoSnapshotAnchors.length > 0`).
+- `__e2e.openAgentStationDiff()` sets the same atoms as the product pill callback and is available as a fallback when Tauri WebDriver `element.click()` misses React synthetic events.
+- `waitForFileChangesPanel` in `agentQueuedWorkspaceHelpers.mjs` encapsulates this: retries pill click 3×, falls back to `invokeE2E("openAgentStationDiff")`, then waits for `[data-testid="file-changes-undo-all"]` or `[data-testid="replay-tab-diff-filter"]`.
+- For plan-build-direct: always call `waitForRuntimeIdle()` before `waitForFileChangesPanel()` — the Undo All button only activates after the build turn is fully idle.

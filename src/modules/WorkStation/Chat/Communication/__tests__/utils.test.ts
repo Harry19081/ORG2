@@ -150,6 +150,21 @@ describe("derivePlanTitle", () => {
 });
 
 describe("deriveMessagesState", () => {
+  it("keeps thinking events in the Messages view when they are current", () => {
+    const thinkingEvent = minimalSessionEvent({
+      id: "thinking-1",
+      functionName: "llm_thinking",
+      result: { thought: "Planning the next step" },
+    });
+
+    const state = deriveMessagesState([thinkingEvent], "thinking-1");
+
+    expect(state.viewMode).toBe("chat");
+    expect(state.thinkMessages.map((message) => message.eventId)).toEqual([
+      "thinking-1",
+    ]);
+  });
+
   it("replaces optimistic user echo with the backend user message in Communication chat", () => {
     const optimisticUserMessage = minimalSessionEvent({
       id: "user-input-1",

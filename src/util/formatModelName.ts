@@ -22,7 +22,13 @@ import { formatReasoningLevel, parseModelVariant } from "./modelVariants";
 
 const UPPERCASE_TOKENS = new Set(["gpt", "o1", "o3", "o4"]);
 const TRAILING_JUNK_RE = /(?:-\d{8,}|-\d{4}-\d{2}-\d{2}|-latest)$/;
-const CLAUDE_MODEL_NAMES = new Set(["opus", "sonnet", "haiku"]);
+const CLAUDE_MODEL_NAMES = new Set([
+  "opus",
+  "sonnet",
+  "haiku",
+  "fable",
+  "mythos",
+]);
 
 function formatClaudeModelName(cleanedModel: string): string | undefined {
   if (!cleanedModel.toLowerCase().startsWith("claude")) return undefined;
@@ -37,25 +43,34 @@ function formatClaudeModelName(cleanedModel: string): string | undefined {
     ? modelName.charAt(0).toUpperCase() + modelName.slice(1)
     : undefined;
 
+  // When no canonical Anthropic model name is present (sonnet / haiku / opus),
+  // surface the first non-numeric codename segment so e.g. `claude-fable-5`
+  // formats as "Claude Fable 5" instead of bare "Claude 5".
+  const codename = modelLabel
+    ? undefined
+    : parts.find((part) => !/^\d+(\.\d+)?$/.test(part));
+  const codeLabel = codename
+    ? codename.charAt(0).toUpperCase() + codename.slice(1)
+    : undefined;
+
+  const familyPrefix =
+    modelLabel ?? (codeLabel ? `Claude ${codeLabel}` : "Claude");
+
   const decimalVersion = parts.find((part) => /^\d+\.\d+$/.test(part));
   if (decimalVersion) {
-    return modelLabel
-      ? `${modelLabel} ${decimalVersion}`
-      : `Claude ${decimalVersion}`;
+    return `${familyPrefix} ${decimalVersion}`;
   }
 
   const integerParts = parts.filter((part) => /^\d+$/.test(part));
   if (integerParts.length >= 2) {
     const version = `${integerParts[0]}.${integerParts[1]}`;
-    return modelLabel ? `${modelLabel} ${version}` : `Claude ${version}`;
+    return `${familyPrefix} ${version}`;
   }
   if (integerParts.length === 1) {
-    return modelLabel
-      ? `${modelLabel} ${integerParts[0]}`
-      : `Claude ${integerParts[0]}`;
+    return `${familyPrefix} ${integerParts[0]}`;
   }
 
-  return modelLabel ?? "Claude";
+  return familyPrefix;
 }
 
 export function formatModelName(model: string): string {

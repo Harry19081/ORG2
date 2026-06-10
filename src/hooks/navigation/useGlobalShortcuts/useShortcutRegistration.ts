@@ -1,8 +1,9 @@
 import { type MutableRefObject, useEffect } from "react";
 
 import { shortcutRegistry } from "@src/hooks/keyboard";
+import { openAgentControlSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import { toggleGuiControlComposerAtom } from "@src/store/ui/uiAtom";
+import { spotlightOpenAtom } from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { isTauriDesktop } from "@src/util/platform/tauri";
 
@@ -161,7 +162,12 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
       ),
       shortcutRegistry.on("toggle_api_panel", handleToggleAPICallPanel),
       shortcutRegistry.on("toggle_gui_control", () => {
-        getInstrumentedStore().set(toggleGuiControlComposerAtom);
+        const store = getInstrumentedStore();
+        if (store.get(spotlightOpenAtom)) {
+          store.set(spotlightOpenAtom, false);
+          return;
+        }
+        openAgentControlSpotlight();
       }),
       shortcutRegistry.on("toggle_station_mode", handleToggleStationMode),
       shortcutRegistry.on("open_ops_control", () => {

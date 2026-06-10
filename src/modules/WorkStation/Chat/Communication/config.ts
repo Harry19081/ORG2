@@ -6,9 +6,9 @@
  * CODE_EDITOR's file_read/shell/search routing. No hardcoded event arrays.
  *
  * Rust AppSubtool is the single source of truth:
- * - "message"            → chat tab
- * - "thinking"           → think tab
- * - "todo"               → todo tab
+ * - "message"            → Messages timeline
+ * - "thinking"           → Messages timeline
+ * - "todo"               → Todo tab and Messages timeline
  * - "other_interactions" → interactions tab (ask_user, approval, next-step,
  *                          mode-switch)
  */
@@ -106,9 +106,9 @@ function isUserRawEvent(event: SessionEvent): boolean {
  * Build categorized message lists from events.
  *
  * Pure getAppSubtool() routing — same pattern as CODE_EDITOR:
- * - "message"  → chat tab
- * - "thinking" → think tab
- * - "todo"     → todo tab
+ * - "message"  → Messages timeline
+ * - "thinking" → Messages timeline
+ * - "todo"     → Todo tab and Messages timeline
  */
 let _prevBuildEvents: SessionEvent[] = [];
 let _prevBuildResult: {
@@ -238,10 +238,9 @@ export function deriveMessagesState(
     thinkMessages[thinkMessages.length - 1] ||
     null;
 
-  // Todo updates render inline in Messages, and the Todo List tab filters them.
   let viewMode: MessageEntry["type"] = "chat";
   if (selectedMessage && currentEventId && messageIndex.has(currentEventId)) {
-    viewMode = selectedMessage.type;
+    viewMode = selectedMessage.type === "think" ? "chat" : selectedMessage.type;
   }
 
   return {

@@ -418,6 +418,8 @@ key_vault::get_cursor_cli_models,
 key_vault::cursor_list_models_native,
 key_vault::claude_code_oauth_list_models,
 key_vault::codex_oauth_list_models,
+key_vault::gemini_oauth_list_models,
+key_vault::refresh_oauth_token,
 // Key storage commands (CRUD for ~/.orgii/credentials.json)
 key_vault::list_keys,
 key_vault::get_key,
@@ -932,6 +934,12 @@ dev_record::cursor_ide_initial_window,
 dev_record::cursor_ide_full_refresh,
 dev_record::cursor_ide_turn_window,
 dev_record::cursor_ide_list_sessions,
+dev_record::codex_app_chunks,
+dev_record::codex_app_list_sessions,
+dev_record::claude_code_history_chunks,
+dev_record::claude_code_history_list_sessions,
+dev_record::windsurf_history_chunks,
+dev_record::windsurf_history_list_sessions,
 // Cursor IDE control — drive a running Cursor.app via CDP `Input.*`
 // so users can submit prompts (start + follow-up) without leaving ORGII.
 // See `crates/cursor-bridge-app/src/lib.rs` and

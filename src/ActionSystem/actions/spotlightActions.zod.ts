@@ -12,6 +12,7 @@ import { defineAppActionRegistration } from "@src/ActionSystem/schema/actionRegi
 import { defineZodAction } from "@src/ActionSystem/schema/defineZodAction";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import {
+  openAgentControlSpotlight,
   openAgentSessionSearchSpotlight,
   openBranchSpotlight,
   openEditorSpotlight,
@@ -181,6 +182,22 @@ const spotlightOpenAgentSessionSearch = defineZodAction(
   }
 );
 
+const spotlightOpenAgentControl = defineZodAction(
+  {
+    id: ACTION_ID.SPOTLIGHT_OPEN_AGENT_CONTROL,
+    category: "spotlight",
+    description: "Open Spotlight's Agent Control flow",
+    params: z.object({}),
+    layer: "gui",
+    shortcut: getShortcutKeys("toggle_gui_control"),
+    examples: ["agent control", "control the GUI", "open Agent Control"],
+  },
+  async () => {
+    openAgentControlSpotlight();
+    return { success: true, message: "Opened Agent Control" };
+  }
+);
+
 // ============================================
 // Export
 // ============================================
@@ -195,6 +212,7 @@ export const spotlightZodActions = [
   spotlightOpenEditorCommand,
   spotlightOpenEditorSymbol,
   spotlightOpenAgentSessionSearch,
+  spotlightOpenAgentControl,
 ];
 
 export const spotlightActionRegistration =

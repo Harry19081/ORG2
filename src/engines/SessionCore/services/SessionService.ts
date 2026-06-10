@@ -40,6 +40,7 @@ import {
   isAgentSession,
   isCliSession,
   isCursorIdeSession,
+  isExternalHistorySession,
 } from "@src/util/session/sessionDispatch";
 
 import type {
@@ -82,10 +83,18 @@ function throwServiceError(context: string, error: unknown): never {
  * the adapter (Cursor IDE has working `sendMessage` and a no-op
  * `stopSession`) and never reach this guard.
  */
-function assertNotCursorIde(sessionId: string, operation: string): void {
+function assertSupportsManagedOperation(
+  sessionId: string,
+  operation: string
+): void {
   if (isCursorIdeSession(sessionId)) {
     throw new Error(
       `Operation "${operation}" is not supported for Cursor IDE sessions (${sessionId}).`
+    );
+  }
+  if (isExternalHistorySession(sessionId)) {
+    throw new Error(
+      `Operation "${operation}" is not supported for imported external history sessions (${sessionId}).`
     );
   }
 }
@@ -93,6 +102,7 @@ function assertNotCursorIde(sessionId: string, operation: string): void {
 function categoryForSession(sessionId: string): SessionInfo["category"] {
   if (isCliSession(sessionId)) return "cli_agent";
   if (isCursorIdeSession(sessionId)) return "cursor_ide";
+  if (isExternalHistorySession(sessionId)) return "external_history";
   return "rust_agent";
 }
 
@@ -339,7 +349,7 @@ export const SessionService = {
    */
   async answerQuestion(params: SessionAnswerQuestionParams): Promise<void> {
     const { sessionId, questionId, answer } = params;
-    assertNotCursorIde(sessionId, "answerQuestion");
+    assertSupportsManagedOperation(sessionId, "answerQuestion");
 
     try {
       await respondQuestion(sessionId, questionId, [[answer]]);
@@ -386,7 +396,7 @@ export const SessionService = {
    */
   async resumeCli(params: SessionResumeCliParams): Promise<void> {
     const { sessionId, onError } = params;
-    assertNotCursorIde(sessionId, "resumeCli");
+    assertSupportsManagedOperation(sessionId, "resumeCli");
 
     if (isAgentSession(sessionId)) {
       const err =
@@ -419,7 +429,7 @@ export const SessionService = {
    */
   async resume(params: SessionPauseResumeParams): Promise<void> {
     const { sessionId } = params;
-    assertNotCursorIde(sessionId, "resume");
+    assertSupportsManagedOperation(sessionId, "resume");
 
     try {
       if (isAgentSession(sessionId)) {

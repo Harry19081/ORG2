@@ -92,6 +92,15 @@ export const BubbleWrapper: React.FC<{
           />
         );
       case "chat":
+        if (message.type === "think") {
+          return (
+            <ThinkBubble
+              message={message}
+              isLatest={isLatest}
+              onClick={stableClick}
+            />
+          );
+        }
         if (message.type === "todo") {
           if (isOrgTaskEvent(message.event)) {
             return (

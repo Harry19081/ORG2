@@ -49,6 +49,7 @@ import {
   streamRetryStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { pendingPlanApprovalsAtom } from "@src/store/session/planApprovalAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
 import {
   dequeueMessageAtom,
   editMessageAtom,
@@ -62,7 +63,10 @@ import {
   simulatorSelectedAppAtom,
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
-import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
+import {
+  isCursorIdeSession,
+  isExternalHistorySession,
+} from "@src/util/session/sessionDispatch";
 
 import ChatFloatingComposer from "./ChatFloatingComposer";
 import ChatHistory, { type ScrollNavState } from "./ChatHistory";
@@ -74,6 +78,7 @@ import AgentOrgOverviewPanel from "./InputArea/components/AgentOrgOverviewPanel"
 import { useAgentOrgIntervention } from "./InputArea/components/useAgentOrgIntervention";
 import { useAgentOrgMemberSessionJump } from "./InputArea/components/useAgentOrgMemberSessionJump";
 import { useAgentOrgRunView } from "./InputArea/components/useAgentOrgRunView";
+import { deriveGitArtifactStats } from "./InputArea/hooks/gitArtifactStats";
 import { useComposerSections } from "./InputArea/hooks/useComposerSections";
 import { useQueueEditMode } from "./InputArea/hooks/useQueueEditMode";
 
@@ -153,6 +158,8 @@ const ChatView: React.FC<ChatViewProps> = memo(
     useFileReviewSync(sessionId, !readOnly && !secondary);
 
     const isCursorIde = isCursorIdeSession(sessionId);
+    const isExternalHistory = isExternalHistorySession(sessionId);
+    const isReadOnlySurface = readOnly || isExternalHistory;
 
     // Backend `agent_session_list_workspaces` only resolves sessions whose
     // runtime is currently attached. Historical sessions (status
@@ -173,7 +180,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       // runtime is not attached. Once the user sends a follow-up,
       // `agent_send_message` re-inits the runtime and flips the status
       // to "running", which lets sync resume.
-      enabled: !readOnly && !secondary && !isCursorIde && isLiveStatus,
+      enabled: !isReadOnlySurface && !secondary && !isCursorIde && isLiveStatus,
     });
 
     // Cursor IDE sessions used to swap the composer for a read-only
@@ -218,6 +225,10 @@ const ChatView: React.FC<ChatViewProps> = memo(
       sessionId
     )?.current;
     const chatEvents = useAtomValue(chatEventsAtom);
+    const gitArtifactStats = useMemo(
+      () => deriveGitArtifactStats(chatEvents),
+      [chatEvents]
+    );
     const planViewState = useMemo(
       () =>
         derivePlanApprovalViewState({
@@ -296,13 +307,16 @@ const ChatView: React.FC<ChatViewProps> = memo(
 
     // Message queue — keep this aligned with InputArea.sessionId so queued
     // follow-ups written by the composer are visible on the same surface.
+    // Promoted "now" messages are hidden: from the user's perspective Send
+    // Now dispatched them; the dispatcher delivers the moment the FSM allows.
     const messageQueue = useAtomValue(messageQueueAtom);
     const sessionMessageQueue = useMemo(
       () =>
         messageQueue.filter(
           (message) =>
-            message.sessionId === queueSessionId ||
-            message.sessionId === pipelineSessionId
+            (message.sessionId === queueSessionId ||
+              message.sessionId === pipelineSessionId) &&
+            message.priority !== "now"
         ),
       [messageQueue, pipelineSessionId, queueSessionId]
     );
@@ -393,11 +407,22 @@ const ChatView: React.FC<ChatViewProps> = memo(
     const setStationMode = useSetAtom(stationModeAtom);
     const setSelectedSimulatorApp = useSetAtom(simulatorSelectedAppAtom);
     const setReplayMode = useSetAtom(replayModeAtom);
+    const setChatPanelMaximized = useSetAtom(chatPanelMaximizedAtom);
     const openAgentStationDiff = useCallback(() => {
+      // Un-maximize the chat panel so ActivitySimulator becomes visible.
+      // When chatPanelMaximized is true, AppShellContent suppresses the
+      // simulator pane entirely (chatPanelFocused guard), so switching to
+      // the Diff app would have no visible effect.
+      setChatPanelMaximized(false);
       setStationMode("agent-station");
       setSelectedSimulatorApp(AppType.DIFF);
       setReplayMode("replay");
-    }, [setReplayMode, setSelectedSimulatorApp, setStationMode]);
+    }, [
+      setChatPanelMaximized,
+      setReplayMode,
+      setSelectedSimulatorApp,
+      setStationMode,
+    ]);
 
     const {
       questionCollapsed,
@@ -424,6 +449,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       hasPermission,
       hasModeSwitch,
       hasPlan,
+      gitArtifactStats,
       onFilesExpand: openAgentStationDiff,
     });
 
@@ -521,7 +547,11 @@ const ChatView: React.FC<ChatViewProps> = memo(
                   onScrollNavChange={handleScrollNavChange}
                   onRegisterSearchOpen={onRegisterSearchOpen}
                   turnPaginationEnabled={turnPaginationEnabled}
-                  bottomInset={showInteractArea ? floatingComposerInset : 0}
+                  bottomInset={
+                    showInteractArea && !isReadOnlySurface
+                      ? floatingComposerInset
+                      : 0
+                  }
                   groupChatViewAvailable={groupChatViewAvailable}
                   groupChatViewActive={groupChatViewActive}
                   onGroupChatViewToggle={handleGroupChatViewToggle}
@@ -529,7 +559,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
               </GroupChatProvider>
             </ChatHistoryOverrideContext.Provider>
           </div>
-          {showInteractArea && (
+          {showInteractArea && !isReadOnlySurface && (
             <ChatFloatingComposer
               composerRef={floatingComposerRef}
               inputBoxRef={inputBoxRef}

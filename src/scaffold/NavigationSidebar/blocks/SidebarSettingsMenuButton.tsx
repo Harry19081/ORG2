@@ -1,10 +1,8 @@
-import { useSetAtom } from "jotai";
 import {
   ChevronRight,
   Contrast,
   Gauge,
   HelpCircle,
-  Languages,
   Laptop,
   MessageCircle,
   MousePointer2,
@@ -34,17 +32,11 @@ import type { AppearanceMode } from "@src/config/appearance/globalThemes";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useAppNavigation } from "@src/hooks/navigation";
-import {
-  LANGUAGE_NAMES,
-  SUPPORTED_LANGUAGES,
-  type SupportedLanguage,
-} from "@src/i18n";
 import { useAppearanceState } from "@src/modules/MainApp/Settings/sections/useAppearanceState";
 import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
-import { GUI_CONTROL_TOGGLE_SHORTCUT_ID } from "@src/scaffold/GuiControlToggle";
+import { openAgentControlSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
+import { GUI_CONTROL_TOGGLE_SHORTCUT_ID } from "@src/scaffold/GlobalSpotlight/palettes/AgentControlPalette";
 import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
-import { languageAtom } from "@src/store/ui/languageAtom";
-import { openGuiControlAtom } from "@src/store/ui/uiAtom";
 
 import HoverAnimatedIcon, {
   triggerIconAnimation,
@@ -80,14 +72,12 @@ function getSubmenuPosition(
 
 const SidebarSettingsMenuButton: React.FC = React.memo(() => {
   const { t } = useTranslation("navigation");
-  const { t: tSettings, i18n } = useTranslation("settings");
+  const { t: tSettings } = useTranslation("settings");
   const { goToSettings } = useAppNavigation();
   const ramPanelRef = useRef<HTMLDivElement | null>(null);
   const submenuPanelRef = useRef<HTMLDivElement | null>(null);
   const preserveRamPanelOnMenuCloseRef = useRef(false);
   const dropdownInsideRefs = useMemo(() => [submenuPanelRef], []);
-  const setLanguagePreference = useSetAtom(languageAtom);
-  const openGuiControl = useSetAtom(openGuiControlAtom);
   const [activeSubmenu, setActiveSubmenu] = useState<SettingsSubmenu | null>(
     null
   );
@@ -136,26 +126,6 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
   const openSettingsShortcut = getShortcutKeys("open_settings");
   const guiControlShortcut = getShortcutKeys(GUI_CONTROL_TOGGLE_SHORTCUT_ID);
   const settingsButtonClassName = isOpen ? "text-primary-6" : "text-text-2";
-
-  const languageOptions = useMemo(
-    () =>
-      SUPPORTED_LANGUAGES.map((language) => {
-        const translatedName = tSettings(`general.languageNames.${language}`);
-        const nativeName = LANGUAGE_NAMES[language];
-        const label =
-          translatedName === nativeName
-            ? nativeName
-            : `${translatedName} · ${nativeName}`;
-
-        return {
-          value: language,
-          label,
-        };
-      }),
-    [tSettings]
-  );
-
-  const currentLanguage = i18n.language as SupportedLanguage;
 
   useEffect(() => {
     if (!ramPanelOpen) return;
@@ -225,9 +195,9 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
   }, [closeAll]);
 
   const handleOpenGuiControl = useCallback(() => {
-    openGuiControl();
+    openAgentControlSpotlight();
     closeAll();
-  }, [closeAll, openGuiControl]);
+  }, [closeAll]);
 
   const handleSelectAppearanceMode = useCallback(
     async (mode: AppearanceMode) => {
@@ -243,15 +213,6 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
       closeAll();
     },
     [closeAll, handleThemeChange]
-  );
-
-  const handleSelectLanguage = useCallback(
-    async (language: SupportedLanguage) => {
-      setLanguagePreference(language);
-      await i18n.changeLanguage(language);
-      closeAll();
-    },
-    [closeAll, i18n, setLanguagePreference]
   );
 
   const handleSubmenuPointerDown = useCallback(
@@ -385,30 +346,6 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
               </button>
               <button
                 type="button"
-                className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "language" ? DROPDOWN_CLASSES.itemActive : ""} justify-between`}
-                onMouseEnter={(event) =>
-                  openSubmenu("language", event.currentTarget)
-                }
-                onFocus={(event) =>
-                  openSubmenu("language", event.currentTarget)
-                }
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <Languages
-                    size={DROPDOWN_ITEM.iconSize}
-                    className={MENU_ICON_CLASS_NAME}
-                  />
-                  <span className="truncate">
-                    {t("sidebar.settingsMenu.language")}
-                  </span>
-                </span>
-                <ChevronRight
-                  size={DROPDOWN_ITEM.iconSize}
-                  className={MENU_ARROW_CLASS_NAME}
-                />
-              </button>
-              <button
-                type="button"
                 className={`${DROPDOWN_CLASSES.menuActionItem} ${activeSubmenu === "chatPanelLocation" ? DROPDOWN_CLASSES.itemActive : ""} justify-between`}
                 onMouseEnter={(event) =>
                   openSubmenu("chatPanelLocation", event.currentTarget)
@@ -486,15 +423,12 @@ const SidebarSettingsMenuButton: React.FC = React.memo(() => {
         appearanceMode={appearanceMode}
         appearanceModeLabel={tSettings("general.appearanceMode")}
         appearanceModeOptions={appearanceModeOptions}
-        currentLanguage={currentLanguage}
         globalThemeId={globalThemeId}
-        languageOptions={languageOptions}
         submenuPanelRef={submenuPanelRef}
         submenuPosition={submenuPosition}
         themeOptions={themeOptions}
         themePresetLabel={tSettings("general.themePreset")}
         onSelectAppearanceMode={(mode) => void handleSelectAppearanceMode(mode)}
-        onSelectLanguage={(language) => void handleSelectLanguage(language)}
         onSelectTheme={(themeId) => void handleSelectTheme(themeId)}
         onSubmenuMouseDown={handleSubmenuMouseDown}
         onSubmenuPointerDown={handleSubmenuPointerDown}

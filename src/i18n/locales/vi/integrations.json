@@ -438,14 +438,6 @@
     "addCustomModelDesc": "Thêm thủ công model không có trong danh sách trên",
     "auth": "Auth",
     "pricingConfig": "Pricing Config",
-    "cursorRefresh": {
-      "noSessionToken": "Không có token phiên — chạy lại thiết lập để lấy.",
-      "emptyModelList": "Cursor trả về danh sách mô hình trống.",
-      "failed": "Làm mới từ Cursor thất bại: {{error}}",
-      "refreshing": "Đang làm mới từ Cursor…",
-      "button": "Làm mới từ Cursor",
-      "modelsButton": "Làm mới danh sách mô hình Cursor"
-    },
     "cursorSessionTokenCapturedTitle": "Cursor đã kết nối",
     "cursorSessionTokenCapturedDesc": "Đã đăng nhập với {{user}}…",
     "cursorLoginBrowserTitle": "Đăng nhập Cursor",
@@ -491,7 +483,11 @@
     "geminiApiKeyPlaceholder": "AIza...",
     "geminiConnected": "Gemini connected",
     "geminiDetectErrorHint": "Sign in with the secure native window, or paste a Gemini API key manually",
-    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again"
+    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again",
+    "refreshModels": {
+      "button": "Làm mới danh sách mô hình Cursor",
+      "failed": "Làm mới từ Cursor thất bại: {{error}}"
+    }
   },
   "integrations": {
     "title": "Tích hợp",

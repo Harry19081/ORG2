@@ -50,7 +50,7 @@ export interface PaletteBodyProps {
 
   topSlot?: React.ReactNode;
   hintSlot?: React.ReactNode;
-  contentOverride?: React.ReactNode;
+  contentOverride?: React.ReactNode | null;
   afterListSlot?: React.ReactNode;
 }
 
@@ -101,6 +101,7 @@ export const PaletteBody: React.FC<PaletteBodyProps> = ({
           isLoading={isLoading}
           isCountingDown={false}
           hideActionClose={hideActionClose}
+          trailingSlot={inputTrailingSlot}
           path={path}
           onRemoveSegment={onRemoveSegment}
         />
@@ -109,7 +110,9 @@ export const PaletteBody: React.FC<PaletteBodyProps> = ({
       {topSlot}
       {hintSlot}
 
-      {contentOverride ?? (
+      {contentOverride !== undefined ? (
+        contentOverride
+      ) : (
         <SpotlightItemList
           items={items}
           selectedIndex={kernel.selectedIndex}

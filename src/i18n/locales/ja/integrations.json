@@ -438,14 +438,6 @@
     "addCustomModelDesc": "上記にないモデルを手動で追加",
     "auth": "Auth",
     "pricingConfig": "Pricing Config",
-    "cursorRefresh": {
-      "noSessionToken": "セッショントークンが利用できません — セットアップを再実行して取得してください。",
-      "emptyModelList": "Cursor が空のモデルリストを返しました。",
-      "failed": "Cursor からの更新に失敗しました: {{error}}",
-      "refreshing": "Cursor から更新中…",
-      "button": "Cursor から更新",
-      "modelsButton": "Cursor モデル一覧を更新"
-    },
     "cursorSessionTokenCapturedTitle": "Cursor が接続されました",
     "cursorSessionTokenCapturedDesc": "{{user}} としてサインインしました…",
     "cursorLoginBrowserTitle": "Cursor ログイン",
@@ -491,7 +483,11 @@
     "geminiApiKeyPlaceholder": "AIza...",
     "geminiConnected": "Gemini connected",
     "geminiDetectErrorHint": "Sign in with the secure native window, or paste a Gemini API key manually",
-    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again"
+    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again",
+    "refreshModels": {
+      "button": "Cursor モデル一覧を更新",
+      "failed": "Cursor からの更新に失敗しました: {{error}}"
+    }
   },
   "integrations": {
     "title": "統合",

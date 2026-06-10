@@ -7,7 +7,7 @@ import {
 } from "@src/api/tauri/agent";
 import {
   isCliSession,
-  isCursorIdeSession,
+  isImportedHistorySession,
 } from "@src/util/session/sessionDispatch";
 
 const AGENT_ORG_INTERVENTION_REFRESH_MS = 2500;
@@ -36,7 +36,9 @@ export function useAgentOrgIntervention(sessionId: string | null) {
   });
 
   const isPollingEnabled =
-    !!sessionId && !isCliSession(sessionId) && !isCursorIdeSession(sessionId);
+    !!sessionId &&
+    !isCliSession(sessionId) &&
+    !isImportedHistorySession(sessionId);
 
   const refresh = useCallback(async () => {
     if (!isPollingEnabled || !sessionId) return;

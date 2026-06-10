@@ -20,6 +20,7 @@ import {
   isAgentSession,
   isCliSession,
   isCursorIdeSession,
+  isExternalHistorySession,
 } from "@src/util/session/sessionDispatch";
 
 import type { SessionEvent } from "../core/types";
@@ -81,7 +82,7 @@ export interface EventHandlerCallbacks {
   onStatusChange?: (
     status: string,
     error?: string,
-    meta?: { turnId?: string; turnStatus?: string }
+    meta?: { turnId?: string; turnStatus?: string; intermediate?: boolean }
   ) => void;
   /** Called when CLI token usage updates. */
   onTokenUpdate?: (tokens: number) => void;
@@ -313,6 +314,9 @@ export function getAdapterForSession(
   }
   if (isCursorIdeSession(sessionId)) {
     return adapterRegistry.get("cursor_ide");
+  }
+  if (isExternalHistorySession(sessionId)) {
+    return adapterRegistry.get("external_history");
   }
   return undefined;
 }

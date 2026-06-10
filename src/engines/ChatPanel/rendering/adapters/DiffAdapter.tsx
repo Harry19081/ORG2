@@ -22,7 +22,8 @@ export const DiffAdapter: React.FC<UniversalEventProps> = (props) => {
   const action = (props.args?.action as string) || undefined;
   const editData = extractEditData(props);
   const fileName =
-    editData.fileName ||
+    getFileName(editData.filePath) ||
+    getFileName(editData.fileName) ||
     (typeof props.args?.file_path === "string"
       ? getFileName(props.args.file_path as string)
       : undefined);

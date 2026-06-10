@@ -33,7 +33,7 @@
       "refreshed": "{{name}} refreshed successfully",
       "refreshFailed": "{{name}} validation failed - check your keys",
       "allRefreshed": "All accounts refreshed",
-      "refreshError": "Failed to refresh {{name}}",
+      "refreshError": "Failed to refresh {{name}}: {{error}}",
       "localRemoved": "{{name}} removed",
       "unlistPending": "{{name}} unlisting requested. Will be removed when active sessions end.",
       "listingRemoved": "{{name}} removed from marketplace",
@@ -435,14 +435,6 @@
     },
     "addCustomModel": "Add Custom Model",
     "addCustomModelDesc": "Manually add a model not listed above",
-    "cursorRefresh": {
-      "noSessionToken": "No session token available — re-run setup to capture one.",
-      "emptyModelList": "Cursor returned an empty model list.",
-      "failed": "Refresh from Cursor failed: {{error}}",
-      "refreshing": "Refreshing from Cursor…",
-      "button": "Refresh from Cursor",
-      "modelsButton": "Refresh Cursor model list"
-    },
     "cursorSessionTokenCapturedTitle": "Cursor connected",
     "cursorSessionTokenCapturedDesc": "Signed in as {{user}}…",
     "cursorLoginBrowserTitle": "Cursor sign-in",
@@ -488,7 +480,11 @@
     "geminiApiKeyPlaceholder": "AIza...",
     "geminiConnected": "Gemini connected",
     "geminiDetectErrorHint": "Sign in with the secure native window, or paste a Gemini API key manually",
-    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again"
+    "geminiValidationErrorHint": "Check that the Gemini token or API key is valid and try again",
+    "refreshModels": {
+      "button": "Refresh models",
+      "failed": "Refresh models failed: {{error}}"
+    }
   },
   "integrations": {
     "title": "Integrations",

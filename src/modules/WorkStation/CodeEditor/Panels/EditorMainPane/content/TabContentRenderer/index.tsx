@@ -12,6 +12,7 @@
  * - terminal, output: Empty placeholders (rendered via Placeholder component)
  * - settings: Editor settings panel
  */
+import { useAtomValue } from "jotai";
 import React, { Suspense, memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,11 +20,16 @@ import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabCon
 import { REGISTRY } from "@src/modules/WorkStation/TabContent/registry";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import type { SearchOptions as StoreSearchOptions } from "@src/store/workstation/codeEditor/search";
+import {
+  SOURCE_CONTROL_ALL_SESSIONS_FILTER,
+  sourceControlSessionFilterAtom,
+} from "@src/store/workstation/codeEditor/sourceControlSessionFilterAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { SubagentDetailTabData } from "@src/store/workstation/tabs/types";
 import type { GitFile } from "@src/types/git/types";
 import { requiresFilePreviewRoute as shouldUseDedicatedPreviewRoute } from "@src/util/file/previewTypes";
 
+import { SOURCE_CONTROL_OTHER_SESSIONS_FILTER } from "../../hooks";
 import type { TabContentRendererProps } from "./types";
 
 // Lazy-load heavy components to avoid parsing on initial load
@@ -110,6 +116,7 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
     repoId,
     fileContentState,
     gitFilesByPath,
+    sourceControlAttributedFiles,
     gitDiffLoading,
     forceRefresh,
     onFileSelect,
@@ -124,6 +131,9 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
     editorQuickActions,
   }) => {
     const { t } = useTranslation();
+    const sourceControlSessionFilter = useAtomValue(
+      sourceControlSessionFilterAtom
+    );
     // ============================================
     // Memoized values for git-diff tab
     // ============================================
@@ -321,21 +331,32 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
             | null
             | undefined) ?? null;
 
-        const gitStatusFiles = Array.from(gitFilesByPath.values()).filter(
-          (file) => {
-            if (sourceControlFilterMode === "staged") return file.staged;
-            if (sourceControlFilterMode === "unstaged") return !file.staged;
+        const gitStatusFiles = Array.from(gitFilesByPath.values());
+        const embeddedFiles = (activeTab.data.files ?? []) as GitFile[];
+        const unfilteredFiles =
+          sourceControlAttributedFiles.length > 0
+            ? sourceControlAttributedFiles
+            : gitStatusFiles.length > 0
+              ? gitStatusFiles
+              : embeddedFiles;
+        const allFiles = unfilteredFiles.filter((file) => {
+          if (sourceControlFilterMode === "staged" && !file.staged)
+            return false;
+          if (sourceControlFilterMode === "unstaged" && file.staged)
+            return false;
+          if (
+            sourceControlFilterMode !== "uncommitted" ||
+            sourceControlSessionFilter === SOURCE_CONTROL_ALL_SESSIONS_FILTER
+          ) {
             return true;
           }
-        );
-        const embeddedFiles = (activeTab.data.files ?? []) as GitFile[];
-        const filteredEmbeddedFiles = embeddedFiles.filter((file) => {
-          if (sourceControlFilterMode === "staged") return file.staged;
-          if (sourceControlFilterMode === "unstaged") return !file.staged;
-          return true;
+          if (
+            sourceControlSessionFilter === SOURCE_CONTROL_OTHER_SESSIONS_FILTER
+          ) {
+            return !file.sourceSessionId;
+          }
+          return file.sourceSessionId === sourceControlSessionFilter;
         });
-        const allFiles =
-          gitStatusFiles.length > 0 ? gitStatusFiles : filteredEmbeddedFiles;
 
         const focusGitFile = focusPath
           ? (getGitFileForPath(focusPath, repoPath, gitFilesByPath) ?? null)

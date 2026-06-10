@@ -284,7 +284,8 @@ const FormEl: React.FC<{ el: A2UIForm }> = ({ el }) => {
     return init;
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     const actionId = el.actionId ?? "form_submit";
     onAction(actionId, values);
   };

@@ -7,7 +7,7 @@ import {
 } from "@src/api/tauri/agent";
 import {
   isCliSession,
-  isCursorIdeSession,
+  isImportedHistorySession,
 } from "@src/util/session/sessionDispatch";
 
 const AGENT_ORG_RUN_VIEW_REFRESH_MS = 2500;
@@ -71,7 +71,9 @@ export function useAgentOrgRunView(sessionId: string | null) {
   );
 
   const canFetchRunView =
-    !!sessionId && !isCliSession(sessionId) && !isCursorIdeSession(sessionId);
+    !!sessionId &&
+    !isCliSession(sessionId) &&
+    !isImportedHistorySession(sessionId);
 
   const pollingIntervalMs = isRunTerminal
     ? AGENT_ORG_TERMINAL_RUN_VIEW_REFRESH_MS
@@ -79,7 +81,11 @@ export function useAgentOrgRunView(sessionId: string | null) {
   const isPollingEnabled = canFetchRunView;
 
   const refresh = useCallback(async () => {
-    if (!sessionId || isCliSession(sessionId) || isCursorIdeSession(sessionId))
+    if (
+      !sessionId ||
+      isCliSession(sessionId) ||
+      isImportedHistorySession(sessionId)
+    )
       return;
 
     try {

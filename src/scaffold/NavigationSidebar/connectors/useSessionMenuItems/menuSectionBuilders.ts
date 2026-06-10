@@ -100,8 +100,8 @@ export function buildByAgentMenuItems({
   }
 
   const items: NavigationMenuItem[] = [];
+  let hasHiddenLocalSessions = appendPinnedSessions(items);
   const loadMoreEmitted = new Set<SessionListCategory>();
-  appendPinnedSessions(items);
   const sortedAgentOrgGroups = Array.from(agentOrgGroups.entries()).sort(
     ([orgIdA, sessionsA], [orgIdB, sessionsB]) => {
       const labelA = sessionsA[0]?.agentOrgName ?? orgIdA;
@@ -119,6 +119,7 @@ export function buildByAgentMenuItems({
       groupSessions
     );
     if (hasHiddenOrgSessions) {
+      hasHiddenLocalSessions = true;
       loadMoreEmitted.add("rust_agent");
     }
   }
@@ -127,11 +128,13 @@ export function buildByAgentMenuItems({
     const groupSessions = groups.get(key);
     if (!groupSessions || groupSessions.length === 0) continue;
     items.push(separator(key, SESSION_GROUP_LABELS[key]));
-    const hasHiddenLocalSessions = appendGroupSessions(
+    const groupHasHiddenLocalSessions = appendGroupSessions(
       items,
       `agent:${key}`,
       groupSessions
     );
+    hasHiddenLocalSessions =
+      groupHasHiddenLocalSessions || hasHiddenLocalSessions;
     const wireCategory = groupKeyToWireCategory(key);
     if (!hasHiddenLocalSessions && !loadMoreEmitted.has(wireCategory)) {
       const row = loadMoreRowFor(wireCategory);

@@ -62,9 +62,9 @@ export const AccountInlineActionsBar: React.FC<
           onClick={handleRefreshModelsClick}
           disabled={refreshingModels}
           icon={<RefreshCw size={14} className={modelSpinClass} />}
-          title={t("keyVault.cursorRefresh.modelsButton")}
+          title={t("keyVault.refreshModels.button")}
         >
-          {t("keyVault.cursorRefresh.modelsButton")}
+          {t("keyVault.refreshModels.button")}
         </Button>
       ) : null}
       {showEdit ? (

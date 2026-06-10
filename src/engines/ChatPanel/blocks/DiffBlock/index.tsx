@@ -20,7 +20,6 @@ import type {
   UniversalEventProps,
 } from "@src/engines/SessionCore/rendering/types/universalProps";
 import { getFileName } from "@src/util/file/pathUtils";
-import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
 
 import ChatCodeBlock from "../CodeBlock";
 import {
@@ -73,7 +72,6 @@ const SegmentView: React.FC<SegmentViewProps> = ({
   segment,
   isLoading,
   eventId,
-  repoPath,
 }) => {
   const { t } = useTranslation("sessions");
   const {
@@ -86,9 +84,7 @@ const SegmentView: React.FC<SegmentViewProps> = ({
     linesRemoved = 0,
   } = segment;
 
-  const displayPath = formatRepoPathForDisplay({ path: filePath, repoPath });
-  const displayTitle =
-    displayPath.displayPath || fileName || getFileName(filePath) || "file";
+  const displayTitle = getFileName(filePath) || fileName || "file";
 
   const displayDiff = diff ? decodeStreamContent(diff) : undefined;
   const displayContent = newContent
@@ -198,12 +194,7 @@ const DeleteFileView: React.FC<DiffBlockProps> = (props) => {
     fileName = filePath ? getFileName(filePath) || "file" : "file";
   }
 
-  const displayPath = formatRepoPathForDisplay({
-    path: filePath,
-    repoPath: props.repoPath,
-  });
-  const displayTitle =
-    displayPath.displayPath || fileName || getFileName(filePath) || "file";
+  const displayTitle = getFileName(filePath) || fileName || "file";
 
   if (status === "running") {
     const deleteIcon = getToolIcon("delete_file", {
@@ -292,15 +283,8 @@ const EditView: React.FC<EditViewProps> = (props) => {
       {segments.map((segment, segmentIndex) => {
         const segmentKey = `${segment.filePath}-${segmentIndex}`;
         if (segment.isDeleted) {
-          const displayPath = formatRepoPathForDisplay({
-            path: segment.filePath,
-            repoPath: props.repoPath,
-          });
           const displayTitle =
-            displayPath.displayPath ||
-            segment.fileName ||
-            getFileName(segment.filePath) ||
-            "file";
+            getFileName(segment.filePath) || segment.fileName || "file";
           return (
             <ChatCodeBlock
               key={segmentKey}
@@ -319,7 +303,6 @@ const EditView: React.FC<EditViewProps> = (props) => {
             segment={segment}
             isLoading={isLoading}
             eventId={eventId}
-            repoPath={props.repoPath}
           />
         );
       })}

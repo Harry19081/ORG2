@@ -38,7 +38,15 @@ import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/Collapse
 import { PresenceMenuButton } from "@src/scaffold/NavigationSidebar/blocks/SidebarBottomBar";
 import type { ChatPanelCreateTarget } from "@src/store/ui/chatPanelAtom";
 
-import { ChatPanelHeaderSlotsView, chatPanelHeaderSlotsAtom } from "./header";
+import {
+  CHAT_PANEL_HEADER_DRAG_STYLE,
+  CHAT_PANEL_HEADER_NO_DRAG_STYLE,
+  ChatPanelHeaderAgentSwitch,
+  ChatPanelHeaderDragSpacer,
+  ChatPanelHeaderSlotsView,
+  ChatPanelHeaderTitlePill,
+  chatPanelHeaderSlotsAtom,
+} from "./header";
 import type { ChatPanelRegionNotice } from "./types";
 
 const CHAT_PANEL_HEADER_ICON_SIZE = 14;
@@ -184,14 +192,11 @@ export function ChatPanelHeader({
   const agentSwitchLabel = t("navigation:labels.agent", {
     defaultValue: "Agent",
   });
-  const agentSwitchClassName =
-    "flex h-7 shrink-0 items-center !gap-1.5 rounded-lg !border-0 !bg-transparent !px-1.5 text-[13px] font-medium !text-text-1 transition-colors hover:!bg-surface-hover";
-  const agentSwitchTextClassName = "-translate-y-[0.5px]";
 
   const headerToolbar = (
     <div
       className="flex h-9 flex-shrink-0 items-center gap-px"
-      style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+      style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
     >
       {showSessionContent && (
         <Tooltip
@@ -454,12 +459,12 @@ export function ChatPanelHeader({
           paddingLeft: shouldOffsetHeaderForCollapsedSidebar
             ? COLLAPSED_SIDEBAR_CHROME_OFFSET
             : undefined,
-          WebkitAppRegion: "drag",
+          ...CHAT_PANEL_HEADER_DRAG_STYLE,
         } as React.CSSProperties
       }
     >
       {shouldOffsetHeaderForCollapsedSidebar ? (
-        <div style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}>
+        <div style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}>
           <CollapsedSidebarButton />
         </div>
       ) : null}
@@ -468,7 +473,7 @@ export function ChatPanelHeader({
         !selectedProjectVisible && (
           <div
             className="flex h-9 w-auto flex-shrink-0 items-center"
-            style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+            style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
           >
             <Select
               value={createTarget}
@@ -501,39 +506,30 @@ export function ChatPanelHeader({
                   role="separator"
                   aria-hidden
                 />
-                <label className={agentSwitchClassName}>
-                  <span className={agentSwitchTextClassName}>
-                    {agentSwitchLabel}
-                  </span>
-                  <Switch
-                    size="small"
-                    checked={
-                      isProjectTarget
-                        ? showProjectAgentCreator
-                        : showWorkItemAgentCreator
-                    }
-                    onChange={
-                      isProjectTarget
-                        ? handleProjectAgentCreatorToggle
-                        : handleWorkItemAgentCreatorToggle
-                    }
-                    ariaLabel={agentSwitchLabel}
-                    dataTestId={
-                      isProjectTarget
-                        ? "chat-panel-project-agent-switch"
-                        : "chat-panel-work-item-agent-switch"
-                    }
-                  />
-                </label>
+                <ChatPanelHeaderAgentSwitch
+                  checked={
+                    isProjectTarget
+                      ? showProjectAgentCreator
+                      : showWorkItemAgentCreator
+                  }
+                  label={agentSwitchLabel}
+                  onChange={
+                    isProjectTarget
+                      ? handleProjectAgentCreatorToggle
+                      : handleWorkItemAgentCreatorToggle
+                  }
+                  dataTestId={
+                    isProjectTarget
+                      ? "chat-panel-project-agent-switch"
+                      : "chat-panel-work-item-agent-switch"
+                  }
+                />
               </>
             )}
           </div>
         )}
       {publishedHeaderSlots ? (
-        <div
-          className="flex h-9 min-w-0 flex-1 items-center"
-          style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-        >
+        <div className="flex h-9 min-w-0 flex-1 items-center">
           <ChatPanelHeaderSlotsView slots={publishedHeaderSlots} />
         </div>
       ) : showBenchmarkSessionGroupContent ||
@@ -545,26 +541,10 @@ export function ChatPanelHeader({
         <>
           <div
             className="flex h-9 min-w-0 shrink items-center"
-            style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+            style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
           >
-            {showBenchmarkSessionGroupContent ? (
-              <span className="flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover">
-                <span
-                  className="min-w-0 -translate-y-px truncate"
-                  data-testid="chat-panel-header-title"
-                >
-                  {headerTitle}
-                </span>
-              </span>
-            ) : showStickyNotesContent ? (
-              <span className="flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover">
-                <span
-                  className="min-w-0 -translate-y-px truncate"
-                  data-testid="chat-panel-header-title"
-                >
-                  {headerTitle}
-                </span>
-              </span>
+            {showBenchmarkSessionGroupContent || showStickyNotesContent ? (
+              <ChatPanelHeaderTitlePill>{headerTitle}</ChatPanelHeaderTitlePill>
             ) : headerTitleContent ? (
               <span
                 className="flex min-w-0 max-w-full items-center gap-2"
@@ -578,32 +558,21 @@ export function ChatPanelHeader({
                       role="separator"
                       aria-hidden
                     />
-                    <label className={agentSwitchClassName}>
-                      <span className={agentSwitchTextClassName}>
-                        {agentSwitchLabel}
-                      </span>
-                      <Switch
-                        size="small"
-                        checked={exploreAgentSearchEnabled}
-                        onChange={handleExploreAgentSearchToggle}
-                        ariaLabel={agentSwitchLabel}
-                        dataTestId="chat-panel-explore-agent-search-switch"
-                      />
-                    </label>
+                    <ChatPanelHeaderAgentSwitch
+                      checked={exploreAgentSearchEnabled}
+                      label={agentSwitchLabel}
+                      onChange={handleExploreAgentSearchToggle}
+                      dataTestId="chat-panel-explore-agent-search-switch"
+                    />
                   </>
                 ) : null}
               </span>
             ) : showSessionContent ||
               (selectedWorkItemVisible && currentSessionId) ? (
               <SessionHoverCard sessionId={currentSessionId}>
-                <span className="flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover">
-                  <span
-                    className="min-w-0 -translate-y-px truncate"
-                    data-testid="chat-panel-header-title"
-                  >
-                    {headerTitle}
-                  </span>
-                </span>
+                <ChatPanelHeaderTitlePill>
+                  {headerTitle}
+                </ChatPanelHeaderTitlePill>
               </SessionHoverCard>
             ) : selectedProjectVisible ? (
               <Input
@@ -626,20 +595,10 @@ export function ChatPanelHeader({
               />
             )}
           </div>
-          <div
-            className="min-w-0 flex-1"
-            aria-hidden
-            data-tauri-drag-region
-            style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-          />
+          <ChatPanelHeaderDragSpacer />
         </>
       ) : (
-        <div
-          className="min-w-0 flex-1"
-          aria-hidden
-          data-tauri-drag-region
-          style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-        />
+        <ChatPanelHeaderDragSpacer />
       )}
       {headerToolbar}
     </div>

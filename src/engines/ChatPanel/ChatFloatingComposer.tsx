@@ -153,7 +153,11 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
         className="absolute bottom-0 left-0 right-0 z-50 flex w-full flex-shrink-0 flex-col items-center px-2 pb-2 pt-1"
       >
         <div
-          className={`flex w-full flex-col gap-1.5 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 top-[-28px] bg-gradient-to-t from-chat-pane via-chat-pane/90 to-transparent"
+        />
+        <div
+          className={`relative z-10 flex w-full flex-col gap-1.5 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
         >
           {currentPlanApproval && shouldShowCurrentPlanSurface && (
             <CreatePlanCard

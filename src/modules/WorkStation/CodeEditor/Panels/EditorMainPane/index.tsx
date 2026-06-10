@@ -44,6 +44,7 @@ import { useActionSystem } from "@src/ActionSystem";
 import { GitHubReAuthError, listPRCommitsLocal } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
 import Select from "@src/components/Select";
+import type { SelectOption } from "@src/components/Select";
 import TabPill from "@src/components/TabPill";
 import { useGitStatus } from "@src/contexts/git";
 import {
@@ -59,17 +60,24 @@ import { repoSelectorOpenAtom } from "@src/store/ui/overlayAtom";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationAtom";
 import { gitReviewNavigationAtom } from "@src/store/workstation/codeEditor/gitReviewNavigationAtom";
 import {
+  SOURCE_CONTROL_ALL_SESSIONS_FILTER,
+  sourceControlSessionFilterAtom,
+} from "@src/store/workstation/codeEditor/sourceControlSessionFilterAtom";
+import {
   type SourceControlHistorySelection,
   createGitCommitDetailTab,
   createStashDetailTab,
 } from "@src/store/workstation/tabs";
+import type { GitFile } from "@src/types/git/types";
 
 import { CodeEditorDefaultHeader } from "./components/CodeEditorDefaultHeader";
 import { createEditorQuickActions } from "./config";
 import { TabContentRenderer } from "./content";
 import {
+  SOURCE_CONTROL_OTHER_SESSIONS_FILTER,
   useEditorPaneState,
   useFileContentManager,
+  useSourceControlSessionAttribution,
   useTabContentSync,
 } from "./hooks";
 import "./index.scss";
@@ -252,6 +260,12 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     const { t } = useTranslation();
     const { dispatch } = useActionSystem();
     const { forceRefresh } = useGitStatus();
+    const sourceControlSessionFilter = useAtomValue(
+      sourceControlSessionFilterAtom
+    );
+    const setSourceControlSessionFilter = useSetAtom(
+      sourceControlSessionFilterAtom
+    );
 
     // ============================================
     // File Content Manager (extracted hook)
@@ -295,6 +309,22 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     const { tabs, activeTabId, activeTab, closeTab, updatePaneState } =
       useEditorPaneState(fileContentStateRef, forceRefreshRef);
     const isTerminalTabActive = activeTab?.type === "terminal";
+
+    const sourceControlBaseFiles = useMemo(() => {
+      if (activeTab?.type !== "source-control") return [];
+      const gitStatusFiles = Array.from(gitFilesByPath.values());
+      if (gitStatusFiles.length > 0) return gitStatusFiles;
+      return (activeTab.data.files ?? []) as GitFile[];
+    }, [activeTab, gitFilesByPath]);
+
+    const {
+      attributedFiles: sourceControlAttributedFiles,
+      sessionOptions: sourceControlAttributedSessionOptions,
+      otherCount: sourceControlOtherCount,
+    } = useSourceControlSessionAttribution({
+      files: sourceControlBaseFiles,
+      repoPath,
+    });
 
     // ============================================
     // Tab Content Sync (extracted hook - side effects only)
@@ -446,6 +476,79 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     const handleReviewNextFile = useCallback(() => {
       document.dispatchEvent(new CustomEvent("review-next-file"));
     }, []);
+
+    const sourceControlSessionOptions = useMemo<SelectOption[]>(() => {
+      const formatLabelWithCount = (label: string, count: number) =>
+        `${label} (${count})`;
+      const allSessionsLabel = t("sourceControl.sessionFilter.allSessions");
+      const otherLabel = t("dashboard.other");
+      const attributedCount = sourceControlAttributedSessionOptions.reduce(
+        (total, option) => total + option.count,
+        0
+      );
+      const totalCount = attributedCount + sourceControlOtherCount;
+
+      return [
+        {
+          value: SOURCE_CONTROL_ALL_SESSIONS_FILTER,
+          label: (
+            <span className="whitespace-nowrap">
+              {formatLabelWithCount(allSessionsLabel, totalCount)}
+            </span>
+          ),
+          triggerLabel: formatLabelWithCount(allSessionsLabel, totalCount),
+        },
+        ...sourceControlAttributedSessionOptions.map((option) => ({
+          value: option.sessionId,
+          label: (
+            <span className="whitespace-nowrap">
+              {formatLabelWithCount(option.label, option.count)}
+            </span>
+          ),
+          triggerLabel: formatLabelWithCount(option.label, option.count),
+        })),
+        ...(sourceControlOtherCount > 0
+          ? [
+              {
+                value: SOURCE_CONTROL_OTHER_SESSIONS_FILTER,
+                label: (
+                  <span className="whitespace-nowrap">
+                    {formatLabelWithCount(otherLabel, sourceControlOtherCount)}
+                  </span>
+                ),
+                triggerLabel: formatLabelWithCount(
+                  otherLabel,
+                  sourceControlOtherCount
+                ),
+              },
+            ]
+          : []),
+      ];
+    }, [sourceControlAttributedSessionOptions, sourceControlOtherCount, t]);
+
+    useEffect(() => {
+      if (
+        sourceControlSessionFilter === SOURCE_CONTROL_ALL_SESSIONS_FILTER ||
+        sourceControlSessionOptions.some(
+          (option) => option.value === sourceControlSessionFilter
+        )
+      ) {
+        return;
+      }
+      setSourceControlSessionFilter(SOURCE_CONTROL_ALL_SESSIONS_FILTER);
+    }, [
+      setSourceControlSessionFilter,
+      sourceControlSessionFilter,
+      sourceControlSessionOptions,
+    ]);
+
+    const handleSourceControlSessionFilterChange = useCallback(
+      (nextValue: string | number | (string | number)[]) => {
+        if (Array.isArray(nextValue)) return;
+        setSourceControlSessionFilter(String(nextValue));
+      },
+      [setSourceControlSessionFilter]
+    );
 
     const handleOpenSourceControlHistoryInNewTab = useCallback(
       (selection: SourceControlHistorySelection) => {
@@ -644,6 +747,28 @@ const EditorContent: React.FC<EditorContentProps> = memo(
               </>
             )}
 
+            {showCollapseAll &&
+              sourceControlFilterMode === "uncommitted" &&
+              sourceControlSessionOptions.length > 1 && (
+                <>
+                  <Select
+                    value={sourceControlSessionFilter}
+                    onChange={handleSourceControlSessionFilterChange}
+                    options={sourceControlSessionOptions}
+                    size="small"
+                    variant="ghost"
+                    radius="lg"
+                    dropdownAlign="right"
+                    dropdownWidthMode="auto"
+                    className="w-auto max-w-[220px]"
+                  />
+                  <span
+                    className="pointer-events-none mx-2 h-4 w-px shrink-0 bg-border-2"
+                    aria-hidden
+                  />
+                </>
+              )}
+
             {showCollapseAll && (
               <Button
                 htmlType="button"
@@ -669,8 +794,12 @@ const EditorContent: React.FC<EditorContentProps> = memo(
       handleReviewPrevFile,
       handleSourceControlCollapseAll,
       handleSourceControlModeChange,
+      handleSourceControlSessionFilterChange,
       showSourceControlModePill,
+      sourceControlFilterMode,
       sourceControlHeaderTrailingSlot,
+      sourceControlSessionFilter,
+      sourceControlSessionOptions,
       t,
     ]);
 
@@ -755,6 +884,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                   repoId={repoId ?? null}
                   fileContentState={fileContentManager}
                   gitFilesByPath={gitFilesByPath}
+                  sourceControlAttributedFiles={sourceControlAttributedFiles}
                   gitDiffLoading={gitDiffLoading}
                   forceRefresh={forceRefresh}
                   onFileSelect={onFileSelect}

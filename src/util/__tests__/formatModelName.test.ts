@@ -44,6 +44,14 @@ describe("formatModelName", () => {
   it("strips -latest suffix", () => {
     expect(formatModelName("gpt-4-latest")).toBe("GPT 4");
   });
+
+  it("treats fable as a Claude sub-family (claude-fable-5 → Fable 5)", () => {
+    expect(formatModelName("claude-fable-5")).toBe("Fable 5");
+  });
+
+  it("treats mythos as a Claude sub-family (claude-mythos-5 → Mythos 5)", () => {
+    expect(formatModelName("claude-mythos-5")).toBe("Mythos 5");
+  });
 });
 
 describe("formatModelNameFull", () => {

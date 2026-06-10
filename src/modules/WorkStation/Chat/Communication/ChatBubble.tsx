@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
 import {
+  CHAT_BUBBLE_WIDTH_TOKENS,
   ChatBubbleAvatar,
   ChatBubbleBody,
   ChatBubbleHeader,
@@ -28,7 +29,6 @@ import Markdown from "@src/components/MarkDown";
 import { TerminalOutput } from "@src/components/TerminalDisplay";
 import { PILL_REGEX, PILL_TYPES, type PillType } from "@src/config/pillTokens";
 import UserMessageContent from "@src/engines/ChatPanel/ChatHistory/components/UserMessageContent";
-import ChatItemWrap from "@src/engines/ChatPanel/ChatHistory/renderers/ChatItemWrap";
 import { stripExpandedPillContent } from "@src/engines/ChatPanel/InputArea/utils/pillContentParser";
 import { SESSION_UI_TOKENS } from "@src/engines/ChatPanel/blocks/primitives/config";
 import { installedSkillsAtom } from "@src/store/skills/installedSkillsAtom";
@@ -338,7 +338,9 @@ const UserBubbleContent: React.FC<{
     <div className="flex flex-col items-start gap-1.5 text-left">
       {hasImages && <ChatImageThumbnailRow images={images} />}
       {hasContent && (
-        <div className="inline-block rounded-lg bg-primary-1 p-3">
+        <div
+          className={`${CHAT_BUBBLE_WIDTH_TOKENS.userBody} rounded-lg bg-primary-1 p-3`}
+        >
           <UserMessageContent text={strippedContent} />
         </div>
       )}
@@ -391,38 +393,37 @@ const AgentFramedBubble: React.FC<AgentFramedBubbleProps> = ({
   );
 
   return (
-    <ChatItemWrap variant="text" className="w-full min-w-0 overflow-hidden">
-      <ChatBubbleLayout
-        align="left"
-        onClick={onClick}
-        interactive={false}
-        avatar={
-          <ChatBubbleAvatar
-            className="h-8 w-8 bg-fill-2"
-            icon={<Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />}
-          />
-        }
-      >
-        <ChatBubbleHeader
-          senderName={senderName}
-          timestamp={formatSmartDateTime(message.timestamp, {
-            yesterdayLabel: t("relativeDate.yesterday"),
-            locale: toIntlLocaleTag(i18n.resolvedLanguage),
-          })}
-          align="left"
+    <ChatBubbleLayout
+      align="left"
+      onClick={onClick}
+      interactive={false}
+      className={CHAT_BUBBLE_WIDTH_TOKENS.row}
+      avatar={
+        <ChatBubbleAvatar
+          className="h-8 w-8 bg-fill-2"
+          icon={<Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />}
         />
-        {unframed ? (
-          children
-        ) : (
-          <ChatBubbleBody
-            variant="agent"
-            className="border border-border-2 bg-transparent px-3 py-2.5"
-          >
-            {children}
-          </ChatBubbleBody>
-        )}
-      </ChatBubbleLayout>
-    </ChatItemWrap>
+      }
+    >
+      <ChatBubbleHeader
+        senderName={senderName}
+        timestamp={formatSmartDateTime(message.timestamp, {
+          yesterdayLabel: t("relativeDate.yesterday"),
+          locale: toIntlLocaleTag(i18n.resolvedLanguage),
+        })}
+        align="left"
+      />
+      {unframed ? (
+        children
+      ) : (
+        <ChatBubbleBody
+          variant="agent"
+          className="border border-border-2 bg-transparent px-3 py-2.5"
+        >
+          {children}
+        </ChatBubbleBody>
+      )}
+    </ChatBubbleLayout>
   );
 };
 
@@ -519,55 +520,51 @@ export const ChatBubble: React.FC<{
   }
 
   return (
-    <ChatItemWrap
-      variant={isUser ? "default" : "text"}
-      className={`w-full min-w-0 ${isUser ? "" : "overflow-hidden"}`}
+    <ChatBubbleLayout
+      align="left"
+      onClick={onClick}
+      interactive={false}
+      className={CHAT_BUBBLE_WIDTH_TOKENS.row}
       dataAttr={
         isUser
           ? { "data-replay-user-msg": index }
           : { "data-replay-agent-msg": index }
       }
-    >
-      <ChatBubbleLayout
-        align="left"
-        onClick={onClick}
-        interactive={false}
-        avatar={
-          <ChatBubbleAvatar
-            className={`h-8 w-8 ${isUser ? "bg-primary-1" : "bg-fill-2"}`}
-            icon={
-              isUser ? (
-                <User size={AVATAR_ICON_SIZE} className="text-primary-6" />
-              ) : (
-                <Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />
-              )
-            }
-          />
-        }
-      >
-        <ChatBubbleHeader
-          senderName={isUser ? t("terminology.you") : agentSenderName}
-          timestamp={formatSmartDateTime(message.timestamp, {
-            yesterdayLabel: t("relativeDate.yesterday"),
-            locale: toIntlLocaleTag(i18n.resolvedLanguage),
-          })}
-          align="left"
+      avatar={
+        <ChatBubbleAvatar
+          className={`h-8 w-8 ${isUser ? "bg-primary-1" : "bg-fill-2"}`}
+          icon={
+            isUser ? (
+              <User size={AVATAR_ICON_SIZE} className="text-primary-6" />
+            ) : (
+              <Bot size={AVATAR_ICON_SIZE} className="text-primary-6" />
+            )
+          }
         />
-        {isUser ? (
-          <UserBubbleContent content={rawContent} images={userImages} />
-        ) : (
-          <div
-            className={`inline-block min-w-0 max-w-full overflow-hidden rounded-lg p-3 text-left text-text-1 ${
-              isLatest ? "bg-fill-2" : "bg-fill-1"
-            }`}
-          >
-            <div className={`min-w-0 ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}>
-              <ReplayMarkdown content={message.content} />
-            </div>
+      }
+    >
+      <ChatBubbleHeader
+        senderName={isUser ? t("terminology.you") : agentSenderName}
+        timestamp={formatSmartDateTime(message.timestamp, {
+          yesterdayLabel: t("relativeDate.yesterday"),
+          locale: toIntlLocaleTag(i18n.resolvedLanguage),
+        })}
+        align="left"
+      />
+      {isUser ? (
+        <UserBubbleContent content={rawContent} images={userImages} />
+      ) : (
+        <div
+          className={`${CHAT_BUBBLE_WIDTH_TOKENS.body} rounded-lg p-3 text-left text-text-1 ${
+            isLatest ? "bg-fill-2" : "bg-fill-1"
+          }`}
+        >
+          <div className={`min-w-0 ${SESSION_UI_TOKENS.TEXT.BODY_BASE}`}>
+            <ReplayMarkdown content={message.content} />
           </div>
-        )}
-      </ChatBubbleLayout>
-    </ChatItemWrap>
+        </div>
+      )}
+    </ChatBubbleLayout>
   );
 });
 ChatBubble.displayName = "ChatBubble";
