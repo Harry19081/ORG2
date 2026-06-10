@@ -25,6 +25,7 @@ import {
   useSimulatorPlaceholderActions,
 } from "@src/modules/WorkStation/shared";
 import { BrowserStatusBar } from "@src/modules/WorkStation/shared/StatusBar";
+import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
 import {
   simulatorEffectiveDockAppAtom,
@@ -479,6 +480,12 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
           {activeSubtool === "internal_browser" ? (
             nativeDisplayContent ? (
               nativeDisplayContent
+            ) : isCurrentEventLoading ? (
+              <Placeholder
+                variant="loading"
+                placement="detail-panel"
+                fillParentHeight
+              />
             ) : (
               <NoTabsPlaceholder
                 icon="browser"
@@ -504,6 +511,12 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
                 </pre>
               </div>
             )
+          ) : isCurrentEventLoading ? (
+            <Placeholder
+              variant="loading"
+              placement="detail-panel"
+              fillParentHeight
+            />
           ) : (
             <NoTabsPlaceholder
               icon="browser"

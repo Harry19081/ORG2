@@ -83,10 +83,6 @@ pub const TOOL_GROUPS: &[(&str, &[&str])] = &[
         &[tool_names::QUERY_LSP, tool_names::MANAGE_LSP],
     ),
     (
-        "group:database",
-        &[tool_names::DB_EXPLORE, tool_names::DB_RUN],
-    ),
-    (
         "group:todo",
         &[tool_names::MANAGE_TODO, tool_names::MANAGE_FILE_HISTORY],
     ),

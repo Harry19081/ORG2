@@ -38,9 +38,8 @@ impl AgentExecMode {
         // a plan tool call here would mislead the user into thinking planning
         // was intentional).
         deny.push(tool_names::CREATE_PLAN.to_string());
-        // Workflow/node management and DB writes are side-effectful.
+        // Workflow/node management is side-effectful.
         deny.push(tool_names::MANAGE_NODES.to_string());
-        deny.push(tool_names::DB_RUN.to_string());
         deny
     }
 

@@ -388,6 +388,8 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
     [tabKindByEventId, handleReplayTabClick]
   );
 
+  const isCurrentEventLoading = sessionEvent?.displayStatus === "running";
+
   const mainContent = (
     <div className="ide-code-panel allow-select-deep flex min-h-0 flex-1 flex-col overflow-hidden">
       <CodePanel
@@ -397,6 +399,7 @@ const SessionReplayIDEComponent: React.FC<SimulatorIDEProps> = ({
         toolOperation={selectedToolOperation}
         mode={codePanelMode}
         sessionReplayMode={mode}
+        isLoading={isCurrentEventLoading}
       />
     </div>
   );

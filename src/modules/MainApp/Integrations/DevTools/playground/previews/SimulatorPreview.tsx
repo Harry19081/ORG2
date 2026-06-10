@@ -203,10 +203,12 @@ export function SimulatorPreview({ event }: { event: SessionEvent }) {
     [event.functionName]
   );
 
+  const isLoading = event.displayStatus === "running";
+
   const content = useMemo(() => {
     switch (appType) {
       case AppType.CODE_EDITOR:
-        return <CodeEditorPreview event={event} />;
+        return <CodeEditorPreview event={event} isLoading={isLoading} />;
       case AppType.CHANNELS:
         return <ChannelsPreview event={event} />;
       case AppType.BROWSER:
@@ -223,7 +225,7 @@ export function SimulatorPreview({ event }: { event: SessionEvent }) {
           />
         );
     }
-  }, [appType, event]);
+  }, [appType, event, isLoading]);
 
   return <PlaygroundPreviewShell>{content}</PlaygroundPreviewShell>;
 }

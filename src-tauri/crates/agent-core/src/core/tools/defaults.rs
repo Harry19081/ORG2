@@ -64,8 +64,6 @@ pub const DEFAULT_SUBAGENT_DISABLED: &[&str] = &[
     tool_names::MANAGE_NODES,
     tool_names::CONTROL_ORGII,
     tool_names::SPOTLIGHT,
-    tool_names::DB_EXPLORE,
-    tool_names::DB_RUN,
     tool_names::QUERY_LSP,
     tool_names::MANAGE_LSP,
     tool_names::MANAGE_TODO,

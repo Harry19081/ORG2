@@ -16,6 +16,11 @@ export interface CodePanelProps {
   mode?: CodePanelMode;
   /** When `"simulation"` (default), empty-state placeholders omit layout shortcut hints. */
   sessionReplayMode?: SessionReplayPlaceholderMode;
+  /**
+   * When true, the current event is still running. Empty-operation states
+   * render a loading skeleton instead of the idle NoTabsPlaceholder.
+   */
+  isLoading?: boolean;
 }
 
 export interface PreviewModeState {

@@ -231,6 +231,8 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   currentEvent,
   mode = "simulation",
 }) => {
+  const isCurrentEventLoading =
+    (currentEvent as unknown as SessionEvent)?.displayStatus === "running";
   const { t } = useTranslation("sessions");
   const { t: tCommon } = useTranslation("common");
   const [activeTab, setActiveTab] = useState<DiffReplayTab>("diff");
@@ -801,6 +803,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       return (
         <DiffSectionList
           sections={consolidatedSections}
+          loading={isCurrentEventLoading}
           emptyTitle={t(
             "simulator.replay.diffApp.emptyForFilter",
             "No diffs yet."
@@ -839,6 +842,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     pillMode,
     consolidatedSections,
     focusedSections,
+    isCurrentEventLoading,
     focusedDiffPath,
     focusedDiffNonce,
     collapseAllSignal,
@@ -853,11 +857,19 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
         onTabClick={handleTabClick}
       >
         <div className="min-h-0 flex-1">
-          <NoTabsPlaceholder
-            icon="editor"
-            caption={simulatorAwaitingAgentCaption}
-            actions={simulatorPlaceholderActions}
-          />
+          {isCurrentEventLoading ? (
+            <Placeholder
+              variant="loading"
+              placement="detail-panel"
+              fillParentHeight
+            />
+          ) : (
+            <NoTabsPlaceholder
+              icon="editor"
+              caption={simulatorAwaitingAgentCaption}
+              actions={simulatorPlaceholderActions}
+            />
+          )}
         </div>
       </SimulatorReplayChrome>
     );

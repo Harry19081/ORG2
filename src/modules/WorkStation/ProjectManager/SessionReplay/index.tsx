@@ -31,6 +31,7 @@ import {
   useSimulatorPlaceholderActions,
 } from "@src/modules/WorkStation/shared";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/modules/WorkStation/shared/tokens";
+import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import type {
   Project,
   ProjectPriority,
@@ -504,6 +505,9 @@ const SessionReplayProject: React.FC<SimulatorAppProps> = ({
 }) => {
   const projectState = appState as SimulatorProjectState | undefined;
   const { t } = useTranslation("sessions");
+  const isCurrentEventLoading =
+    (currentEvent as unknown as { displayStatus?: string })?.displayStatus ===
+    "running";
   const simulatorPlaceholderActions = useSimulatorPlaceholderActions(mode);
   const simulatorAwaitingAgentCaption = useSimulatorAwaitingAgentCaption();
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -573,11 +577,19 @@ const SessionReplayProject: React.FC<SimulatorAppProps> = ({
         sidebarToggleDisabled
       >
         <div className={`min-h-0 flex-1 ${EDITOR_TAB_CANVAS_BG_CLASS}`}>
-          <NoTabsPlaceholder
-            icon="project"
-            caption={simulatorAwaitingAgentCaption}
-            actions={simulatorPlaceholderActions}
-          />
+          {isCurrentEventLoading ? (
+            <Placeholder
+              variant="loading"
+              placement="detail-panel"
+              fillParentHeight
+            />
+          ) : (
+            <NoTabsPlaceholder
+              icon="project"
+              caption={simulatorAwaitingAgentCaption}
+              actions={simulatorPlaceholderActions}
+            />
+          )}
         </div>
       </SimulatorReplayChrome>
     );
