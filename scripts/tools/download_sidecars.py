@@ -18,7 +18,7 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
-AGENT_BROWSER_VERSION = "v0.27.0"
+AGENT_BROWSER_VERSION = "v0.27.2"
 PEEKABOO_VERSION = "v3.2.3"
 PROGRESS_BAR_LENGTH = 40
 
