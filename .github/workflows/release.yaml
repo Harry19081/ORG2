@@ -132,6 +132,24 @@ jobs:
       - name: Download sidecar binaries
         run: python3 scripts/tools/download_sidecars.py
 
+      # ── Sign bundled git binaries (required for notarization) ───
+      - name: Sign dugite git binaries
+        if: env.HAS_APPLE_CERT == 'true'
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: |
+          DUGITE_DIR="node_modules/dugite/git"
+          echo "Signing binaries in $DUGITE_DIR..."
+          find "$DUGITE_DIR" -type f | while read -r bin; do
+            if file "$bin" | grep -qE "Mach-O|executable|dylib|bundle"; then
+              codesign --force --sign "$APPLE_SIGNING_IDENTITY" \
+                --options runtime \
+                --timestamp \
+                "$bin" 2>/dev/null && echo "Signed: $bin" || echo "Skipped: $bin"
+            fi
+          done
+          echo "Done signing dugite binaries"
+
       # ── Build Tauri app (sign + notarize + updater artifacts) ─
       - name: Build ORGII
         env:
