@@ -154,4 +154,69 @@ staged file lint stats
       references.find((item) => item.kind === "local_path")
     ).toBeUndefined();
   });
+
+  it("extracts session ids as session cards, not commits", () => {
+    const references = extractMessageReferences(
+      "queue flushed into sdeagent-ee970f47-dfcb-4a78-97e5-fc56e3451821 after it failed"
+    );
+
+    expect(references).toHaveLength(1);
+    expect(references[0]).toMatchObject({
+      kind: "session",
+      value: "sdeagent-ee970f47-dfcb-4a78-97e5-fc56e3451821",
+      sessionId: "sdeagent-ee970f47-dfcb-4a78-97e5-fc56e3451821",
+      title: "sdeagent-ee970f47…",
+    });
+  });
+
+  it("extracts delegate worker handles as session cards", () => {
+    const references = extractMessageReferences(
+      "see agent-builtin:explore-93edacaf-c1e2-44bb-8e13-4bf5362aaecb for details"
+    );
+
+    expect(references).toHaveLength(1);
+    expect(references[0]).toMatchObject({
+      kind: "session",
+      sessionId: "agent-builtin:explore-93edacaf-c1e2-44bb-8e13-4bf5362aaecb",
+    });
+  });
+
+  it("session id in commit-context prose does not produce a commit card", () => {
+    const references = extractMessageReferences(
+      "已 commit。queue flush 进了 session sdeagent-ee970f47-dfcb-4a78-97e5-fc56e3451821"
+    );
+
+    expect(
+      references.find((item) => item.kind === "git_commit")
+    ).toBeUndefined();
+    expect(references.find((item) => item.kind === "session")).toBeDefined();
+  });
+
+  it("keeps a real commit alongside a session card", () => {
+    const references = extractMessageReferences(
+      "committed f55f430b; session sdeagent-9be175b5-aacb-4b2b-b23a-b46a8d4d6a35 continues"
+    );
+
+    expect(references.map((item) => item.kind).sort()).toEqual([
+      "git_commit",
+      "session",
+    ]);
+  });
+
+  it("does not extract session ids embedded in longer job handles", () => {
+    const references = extractMessageReferences(
+      "job extract-mem-sdeagent-9be175b5-aacb-4b2b-b23a-b46a8d4d6a35-ad0ba9f1-b874-4927-b2f9-03b936aa0aef ran"
+    );
+
+    expect(references.find((item) => item.kind === "session")).toBeUndefined();
+  });
+
+  it("dedupes repeated session ids into one card", () => {
+    const id = "sdeagent-ee970f47-dfcb-4a78-97e5-fc56e3451821";
+    const references = extractMessageReferences(`first ${id}, again ${id}`);
+
+    expect(references.filter((item) => item.kind === "session")).toHaveLength(
+      1
+    );
+  });
 });

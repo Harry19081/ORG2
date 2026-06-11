@@ -2339,6 +2339,9 @@
       "directory": "目录",
       "file": "文件",
       "emptyDirectory": "空目录"
+    },
+    "session": {
+      "open": "打开会话"
     }
   },
   "codePreview": {

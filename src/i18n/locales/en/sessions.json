@@ -2338,6 +2338,9 @@
       "directory": "Directory",
       "file": "File",
       "emptyDirectory": "Empty directory"
+    },
+    "session": {
+      "open": "Open session"
     }
   },
   "codePreview": {
