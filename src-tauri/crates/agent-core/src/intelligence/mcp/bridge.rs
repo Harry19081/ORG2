@@ -277,6 +277,17 @@ impl Tool for McpBridgeTool {
         let session_key = session_key.unwrap_or_default();
         let tool_name_full = self.full_name.clone();
 
+        // Strip the framework-reserved `__` meta namespace before the
+        // params leave the process. External MCP servers must only see
+        // LLM-supplied arguments: strict servers (additionalProperties:
+        // false) reject unknown keys — the exact failure mode that hit
+        // the agent-org task tools — and `__session_id` is internal
+        // attribution that must not leak to third-party servers.
+        let mut params = params;
+        if let Some(obj) = params.as_object_mut() {
+            obj.retain(|key, _| !key.starts_with("__"));
+        }
+
         let result = self
             .manager
             .call_tool_with_progress(
