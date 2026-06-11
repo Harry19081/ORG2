@@ -19,11 +19,15 @@
  * Preview chrome: a meta strip on top (component name / dimensions / DOM
  * depth / url).
  */
-import React, { Suspense, memo, useMemo, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { PenTool } from "lucide-react";
+import React, { Suspense, memo, useCallback, useMemo, useState } from "react";
 
 import { FileHeader } from "@src/modules/WorkStation/shared";
+import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import type { ToggleOption } from "@src/modules/shared/components/FileHeader";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { IFRAME_STYLE_NONCE } from "@src/util/iframeCspNonce";
 
 const CodeViewerContent = React.lazy(() => import("../CodeViewerContent"));
 
@@ -66,8 +70,11 @@ const CHECKERBOARD =
  * `'unsafe-inline'` keyword is ignored per CSP3, so every inline <style> we
  * emit MUST stamp this nonce — otherwise the production WKWebView refuses to
  * apply the preview's bootstrap styles and the iframe renders unstyled.
+ *
+ * Re-exports the canonical constant from `@src/util/iframeCspNonce` to keep
+ * the value in sync with every other srcdoc producer.
  */
-const PREVIEW_STYLE_NONCE = "orgii-codemirror-style";
+const PREVIEW_STYLE_NONCE = IFRAME_STYLE_NONCE;
 
 const TOGGLE_OPTIONS: readonly ToggleOption[] = [
   { value: "raw", label: "Raw" },
@@ -282,20 +289,40 @@ interface MetaStripProps {
 }
 
 const MetaStrip: React.FC<MetaStripProps> = memo(
-  ({ componentName, width, height, domDepth, url }) => (
-    <div className="flex shrink-0 flex-wrap items-center gap-3 border-0 border-b border-solid border-border-2 px-3 py-2 text-[11px] text-text-3">
-      <span className="font-medium text-text-2">{componentName}</span>
-      <span>
-        {width} × {height} px
-      </span>
-      <span>DOM depth {domDepth}</span>
-      {url && (
-        <span className="truncate" title={url}>
-          {url}
+  ({ componentName, width, height, domDepth, url }) => {
+    const handleOpenDevtools = useCallback(async () => {
+      try {
+        await invoke("open_webview_devtools", { label: "main" });
+      } catch (error) {
+        console.error("[DomComponentPreview] open devtools failed:", error);
+      }
+    }, []);
+
+    return (
+      <div className="flex shrink-0 flex-wrap items-center gap-3 border-0 border-b border-solid border-border-2 px-3 py-2 text-[11px] text-text-3">
+        <span className="font-medium text-text-2">{componentName}</span>
+        <span>
+          {width} × {height} px
         </span>
-      )}
-    </div>
-  )
+        <span>DOM depth {domDepth}</span>
+        {url && (
+          <span className="truncate" title={url}>
+            {url}
+          </span>
+        )}
+        <WorkstationToolbarTooltip label="Inspect with DevTools">
+          <button
+            type="button"
+            onClick={handleOpenDevtools}
+            aria-label="Inspect with DevTools"
+            className="ml-auto inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border-none bg-transparent p-0 text-text-3 hover:bg-fill-2 hover:text-text-2"
+          >
+            <PenTool size={14} />
+          </button>
+        </WorkstationToolbarTooltip>
+      </div>
+    );
+  }
 );
 MetaStrip.displayName = "MetaStrip";
 

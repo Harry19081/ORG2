@@ -6,11 +6,10 @@
  *
  * CSP note: tauri.conf.json's `style-src` carries a nonce token, which per
  * CSP3 invalidates the `'unsafe-inline'` keyword sitting next to it. Every
- * inline `<style>` we emit MUST stamp `nonce="orgii-codemirror-style"` or
- * WKWebView silently drops it.
+ * inline `<style>` we emit MUST stamp the canonical iframe nonce
+ * (see `src/util/iframeCspNonce.ts`) or WKWebView silently drops it.
  */
-
-const STYLE_NONCE = "orgii-codemirror-style";
+import { IFRAME_STYLE_NONCE, stampStyleNonces } from "@src/util/iframeCspNonce";
 
 const BASE_STYLES = `
   *,*::before,*::after{box-sizing:border-box;}
@@ -52,33 +51,18 @@ function isFullHtmlDocument(html: string): boolean {
   return head.startsWith("<!doctype html") || head.startsWith("<html");
 }
 
-/**
- * Stamp `nonce="..."` onto every inline `<style>` tag that doesn't already
- * carry a nonce attribute. Required for WKWebView under Tauri's CSP.
- */
-function injectStyleNonces(html: string): string {
-  return html.replace(
-    /<style(\s[^>]*)?>/gi,
-    (match, attrs: string | undefined) => {
-      const attrString = attrs ?? "";
-      if (/\snonce\s*=/i.test(attrString)) return match;
-      return `<style${attrString} nonce="${STYLE_NONCE}">`;
-    }
-  );
-}
-
 /** Wrap arbitrary HTML in the sandbox template. */
 export function buildHtmlDocument(html: string): string {
   if (isFullHtmlDocument(html)) {
     // Agent supplied a full document. Stamp nonces onto its inline <style>
     // blocks and ship it directly — wrapping it in another <html>/<body>
     // would invalidate the markup and strip the agent's styles.
-    return injectStyleNonces(html);
+    return stampStyleNonces(html);
   }
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style nonce="${STYLE_NONCE}">${BASE_STYLES}</style>
-<script nonce="${STYLE_NONCE}">${EVAL_BRIDGE_SCRIPT}</script>
+<style nonce="${IFRAME_STYLE_NONCE}">${BASE_STYLES}</style>
+<script nonce="${IFRAME_STYLE_NONCE}">${EVAL_BRIDGE_SCRIPT}</script>
 </head><body style="padding:16px">${html}</body></html>`;
 }

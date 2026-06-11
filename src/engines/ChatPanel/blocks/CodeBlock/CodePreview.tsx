@@ -14,18 +14,20 @@ import { ExternalLink, Maximize2, Minimize2, X } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { IFRAME_STYLE_NONCE, stampStyleNonces } from "@src/util/iframeCspNonce";
+
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function buildHtmlDoc(code: string, language: string): string {
   if (language === "svg") {
-    return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><style nonce="${IFRAME_STYLE_NONCE}">
       html,body{margin:0;display:flex;align-items:center;justify-content:center;
       min-height:100vh;background:#1a1a2e;overflow:auto;}
       svg{max-width:100%;height:auto;}
     </style></head><body>${code}</body></html>`;
   }
   if (language === "css") {
-    return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"><style nonce="${IFRAME_STYLE_NONCE}">
       *,*::before,*::after{box-sizing:border-box;}
       html,body{margin:0;padding:16px;background:#1a1a2e;color:#e0e0e0;
       font-family:system-ui,-apple-system,sans-serif;}
@@ -41,8 +43,9 @@ function buildHtmlDoc(code: string, language: string): string {
       </div>
     </body></html>`;
   }
-  // html (default)
-  return `<!DOCTYPE html><html><head><meta charset="utf-8">
+  // html (default) — user-authored body may contain its own <style> tags;
+  // stamp nonces on the whole document so they survive WKWebView's CSP.
+  return stampStyleNonces(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
       *,*::before,*::after{box-sizing:border-box;}
@@ -53,7 +56,7 @@ function buildHtmlDoc(code: string, language: string): string {
         background:rgba(255,255,255,.05);padding:2px 4px;border-radius:4px;}
       pre{padding:12px;overflow-x:auto;}
     </style>
-  </head><body>${code}</body></html>`;
+  </head><body>${code}</body></html>`);
 }
 
 // Height steps for the resize toggle (px)

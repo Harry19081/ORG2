@@ -30,6 +30,7 @@ import {
   editorWordWrapAtom,
 } from "@src/store/ui/editorSettingsAtom";
 import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
+import { stampStyleNonces } from "@src/util/iframeCspNonce";
 
 import type { ContentViewProps } from "../types";
 import { PlanFileActions } from "./PlanFileActions";
@@ -186,7 +187,7 @@ export const ContentView: React.FC<ContentViewProps> = ({
         ) : isPreviewMode && isHtml ? (
           <div className="html-preview-container h-full w-full">
             <iframe
-              srcDoc={localContent}
+              srcDoc={stampStyleNonces(localContent)}
               title={t("tooltips.htmlPreview")}
               className="h-full w-full border-none bg-white"
               sandbox="allow-scripts allow-same-origin"
