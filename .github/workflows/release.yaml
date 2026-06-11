@@ -36,7 +36,7 @@ permissions:
 jobs:
   build-and-release:
     name: Build & Release (macOS aarch64)
-    runs-on: self-hosted
+    runs-on: macos-latest
     env:
       HAS_APPLE_CERT: ${{ secrets.APPLE_CERTIFICATE != '' }}
     steps:
@@ -46,16 +46,6 @@ jobs:
         with:
           fetch-depth: 0
           path: .
-
-      # ── Use local node_modules from repo ──────────────────────
-      - name: Link local node_modules
-        run: |
-          if [ -n "$LOCAL_REPO_PATH" ] && [ -d "$LOCAL_REPO_PATH/node_modules" ] && [ ! -d "node_modules" ]; then
-            ln -s "$LOCAL_REPO_PATH/node_modules" node_modules
-            echo "Linked node_modules from $LOCAL_REPO_PATH"
-          else
-            echo "node_modules already present or LOCAL_REPO_PATH not set"
-          fi
 
       # ── Apple code-signing certificate (fail fast before slow steps) ─
       - name: Import Apple certificate
@@ -115,14 +105,7 @@ jobs:
           key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install frontend dependencies
-        run: |
-          if [ -L "node_modules" ]; then
-            echo "node_modules symlinked from local repo, skipping install"
-          elif [ -f "node_modules/.modules.yaml" ]; then
-            echo "node_modules restored from cache, skipping install"
-          else
-            pnpm install --frozen-lockfile
-          fi
+        run: pnpm install --frozen-lockfile
 
       # ── Rust ──────────────────────────────────────────────────
       - name: Install Rust stable
