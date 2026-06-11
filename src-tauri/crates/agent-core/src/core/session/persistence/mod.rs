@@ -33,11 +33,13 @@ pub use crud::{
 };
 
 pub use messages::{
-    clear_messages, clear_session_memory_state, load_llm_history, load_messages,
-    load_session_memory_state, mark_turn_cancelled, message_created_at,
-    replace_messages_with_compacted_history, save_assistant_msg, save_compact_summary_msg,
-    save_session_memory_state, save_snapshot, save_subagent_transcript, save_tool_call_msg,
-    save_tool_result_msg, save_user_msg, take_turn_cancelled, truncate_messages_after,
+    anchor_at_or_after_created_at, append_compact_boundary, clear_messages,
+    clear_session_memory_state, compact_cutoff_sequence, load_llm_history, load_messages,
+    load_session_memory_state, mark_turn_cancelled, message_anchor, message_created_at,
+    save_assistant_msg, save_compact_summary_msg, save_session_memory_state, save_snapshot,
+    save_subagent_transcript, save_tool_call_msg, save_tool_result_msg, save_user_msg,
+    seed_session_with_messages, take_turn_cancelled, truncate_messages_from_sequence,
+    MessageAnchor,
 };
 
 use rusqlite::{Connection, Result as SqliteResult};

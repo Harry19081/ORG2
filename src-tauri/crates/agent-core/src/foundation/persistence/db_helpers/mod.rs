@@ -176,6 +176,12 @@ pub struct AgentMessageRow {
     /// JSON array of disk file paths (vision support). Only set for user messages.
     /// Legacy rows may contain base64 data URLs; new rows always contain file paths.
     pub images: Option<String>,
+    /// Compact-boundary pointer. `None` for ordinary rows. A `Some(seq)` value
+    /// marks this row as a compaction summary: the visible transcript is this
+    /// row's content followed by all non-boundary rows with `sequence >= seq`.
+    /// Compaction appends boundary + tail rows and never rewrites or deletes
+    /// prior rows (immutable transcript invariant).
+    pub compact_from_sequence: Option<i64>,
 }
 
 /// Simplified lifecycle states for agent session persistence (database level).
@@ -268,8 +274,8 @@ fn insert_message(prefix: &str, msg: &AgentMessageRow) -> SqliteResult<String> {
         let seq_sql = format!("SELECT MAX(sequence) FROM {prefix}_messages WHERE session_id = ?1");
         let insert_sql = format!(
             "INSERT OR REPLACE INTO {prefix}_messages
-             (id, session_id, role, content, tool_name, tool_call_id, tool_input, tool_output, model, sequence, created_at, images)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)"
+             (id, session_id, role, content, tool_name, tool_call_id, tool_input, tool_output, model, sequence, created_at, images, compact_from_sequence)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)"
         );
         let touch_sql =
             format!("UPDATE {prefix}_sessions SET updated_at = ?2 WHERE session_id = ?1");
@@ -297,6 +303,7 @@ fn insert_message(prefix: &str, msg: &AgentMessageRow) -> SqliteResult<String> {
                 sequence,
                 msg.created_at,
                 msg.images,
+                msg.compact_from_sequence,
             ],
         );
 
@@ -354,7 +361,8 @@ pub fn load_messages(prefix: &str, session_id: &str) -> SqliteResult<Vec<AgentMe
     let conn = get_connection()?;
     let sql = format!(
         "SELECT id, session_id, role, content, tool_name, tool_call_id,
-                tool_input, tool_output, model, sequence, created_at, images
+                tool_input, tool_output, model, sequence, created_at, images,
+                compact_from_sequence
          FROM {prefix}_messages
          WHERE session_id = ?1
          ORDER BY sequence ASC"
@@ -375,6 +383,7 @@ pub fn load_messages(prefix: &str, session_id: &str) -> SqliteResult<Vec<AgentMe
                 sequence: row.get(9)?,
                 created_at: row.get(10)?,
                 images: row.get(11)?,
+                compact_from_sequence: row.get(12)?,
             })
         })?
         .collect::<SqliteResult<Vec<_>>>()?;

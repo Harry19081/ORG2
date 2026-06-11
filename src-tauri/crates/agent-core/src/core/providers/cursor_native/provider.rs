@@ -767,6 +767,8 @@ async fn drive_run(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use super::client::ClientError;
+    use crate::tools::names as tool_names;
 
     #[test]
     fn map_error_unauthenticated_becomes_auth_error() {

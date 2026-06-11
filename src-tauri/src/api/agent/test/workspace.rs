@@ -581,8 +581,8 @@ pub async fn test_session_aggregate_list_filter(
 }
 
 /// `POST /agent/test/session/seed-compacted-history` — seed a session with an
-/// old transcript, then replace it through the production compacted-history
-/// persistence helper. E2E uses this to prove restarts read the durable
+/// old transcript, then compact it through the production append-only
+/// compact-boundary helper. E2E uses this to prove restarts read the durable
 /// compacted view instead of old full history.
 pub async fn test_session_seed_compacted_history(
     Json(body): Json<serde_json::Value>,
@@ -632,17 +632,21 @@ pub async fn test_session_seed_compacted_history(
             .map_err(|err| err.to_string())?;
             agent_core::session::persistence::save_session_memory_state(&sid, "stale sm", Some(99))
                 .map_err(|err| err.to_string())?;
-            let compacted = vec![
-                serde_json::json!({
-                    "role": "system",
-                    "content": format!("[Conversation summary — 2 earlier messages compacted]\n\n{summary}"),
-                }),
-                serde_json::json!({"role": "user", "content": recent_user}),
-                serde_json::json!({"role": "assistant", "content": recent_assistant}),
-            ];
-            agent_core::session::persistence::replace_messages_with_compacted_history(
+            // Append the surviving tail, then a compact boundary pointing at
+            // the tail's first row — the production append-only equivalent of
+            // the old destructive replace.
+            let recent_user_id =
+                agent_core::session::persistence::save_user_msg(&sid, &recent_user, None)
+                    .map_err(|err| err.to_string())?;
+            agent_core::session::persistence::save_assistant_msg(&sid, &recent_assistant, "e2e")
+                .map_err(|err| err.to_string())?;
+            let anchor = agent_core::session::persistence::message_anchor(&sid, &recent_user_id)
+                .map_err(|err| err.to_string())?
+                .ok_or_else(|| format!("anchor row {recent_user_id} not found"))?;
+            agent_core::session::persistence::append_compact_boundary(
                 &sid,
-                &compacted,
+                &format!("[Conversation summary — 2 earlier messages compacted]\n\n{summary}"),
+                anchor.sequence,
             )
             .map_err(|err| err.to_string())?;
             agent_core::session::persistence::clear_session_memory_state(&sid)

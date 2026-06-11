@@ -1,5 +1,6 @@
 use super::helpers::load_by_id;
 use super::*;
+use rusqlite::params;
 use crate::core::session::persistence::{upsert_session, UnifiedSessionRecord};
 use crate::definitions::orgs::{AgentOrgsStore, HierarchyMode, OrgDefinition, OrgMember};
 

@@ -78,6 +78,13 @@ fn build_multimodal_content(text: &str, image_refs: &[String]) -> serde_json::Va
 /// message with multiple tool_calls, followed by their corresponding tool results.
 /// This matches the LLM API format where one assistant turn can have multiple
 /// tool calls, each requiring a matching tool result message.
+///
+/// **Compact boundaries:** when the session contains compaction boundary
+/// rows (`compact_from_sequence IS NOT NULL`), the latest boundary wins:
+/// the returned history is `[boundary summary] + reconstruct(rows with
+/// sequence >= boundary.compact_from_sequence)`. Rows before that pointer
+/// and older boundary rows stay in the table untouched (immutable
+/// transcript) but are excluded from the LLM view.
 pub fn load_llm_history(
     prefix: &str,
     session_id: &str,
@@ -94,7 +101,7 @@ pub fn load_llm_history(
             .collect::<Vec<_>>()
     );
 
-    let result = reconstruct(&messages);
+    let result = reconstruct(&visible_rows(&messages));
 
     // Debug: log reconstructed message summary
     tracing::debug!(
@@ -125,6 +132,147 @@ pub fn load_llm_history(
     );
 
     Ok(result)
+}
+
+/// Sequence of the first row contributing to each reconstructed LLM
+/// message, in output order. Mirrors the grouping rules of
+/// [`reconstruct`] (consecutive tool_call/tool_result rows form one
+/// assistant message followed by its tool messages, all attributed to
+/// the group's first row). Must stay in sync with `reconstruct`; the
+/// `start_sequences_match_reconstruct_len` test pins that.
+fn llm_message_start_sequences(messages: &[&AgentMessageRow]) -> Vec<i64> {
+    let mut result: Vec<i64> = Vec::new();
+    let mut pending_calls = 0usize;
+    let mut pending_results = 0usize;
+    let mut group_start: Option<i64> = None;
+
+    fn flush(
+        result: &mut Vec<i64>,
+        pending_calls: &mut usize,
+        pending_results: &mut usize,
+        group_start: &mut Option<i64>,
+    ) {
+        if let Some(seq) = *group_start {
+            if *pending_calls > 0 {
+                result.push(seq);
+            }
+            for _ in 0..*pending_results {
+                result.push(seq);
+            }
+        }
+        *pending_calls = 0;
+        *pending_results = 0;
+        *group_start = None;
+    }
+
+    for msg in messages {
+        match msg.role.as_str() {
+            message_role::SYSTEM | message_role::USER | message_role::ASSISTANT => {
+                flush(
+                    &mut result,
+                    &mut pending_calls,
+                    &mut pending_results,
+                    &mut group_start,
+                );
+                result.push(msg.sequence);
+            }
+            message_role::TOOL_CALL => {
+                group_start.get_or_insert(msg.sequence);
+                pending_calls += 1;
+            }
+            message_role::TOOL_RESULT => {
+                group_start.get_or_insert(msg.sequence);
+                pending_results += 1;
+            }
+            _ => {}
+        }
+    }
+    flush(
+        &mut result,
+        &mut pending_calls,
+        &mut pending_results,
+        &mut group_start,
+    );
+
+    result
+}
+
+/// Map "the last `tail_len` LLM messages stay visible" onto a durable
+/// sequence cutoff for a new compact boundary.
+///
+/// Operates on the current visible window (after the latest existing
+/// boundary, if any). Conservative by construction: when `tail_len`
+/// covers the whole window (or in-memory/durable views have drifted),
+/// the cutoff falls back to the window start, which keeps *more* context
+/// visible rather than hiding unsummarized rows. Never deletes anything.
+pub fn compact_cutoff_sequence(
+    prefix: &str,
+    session_id: &str,
+    tail_len: usize,
+) -> rusqlite::Result<i64> {
+    let rows = load_messages(prefix, session_id)?;
+
+    let latest_boundary = rows
+        .iter()
+        .filter(|m| m.compact_from_sequence.is_some())
+        .max_by_key(|m| m.sequence);
+
+    let window_start = match latest_boundary {
+        Some(boundary) => boundary
+            .compact_from_sequence
+            .expect("filtered on is_some above"),
+        None => rows.first().map(|m| m.sequence).unwrap_or(0),
+    };
+    let tail_rows: Vec<&AgentMessageRow> = rows
+        .iter()
+        .filter(|m| m.compact_from_sequence.is_none() && m.sequence >= window_start)
+        .collect();
+
+    if tail_len == 0 {
+        // Hide the entire window behind the summary.
+        return Ok(tail_rows
+            .last()
+            .map(|m| m.sequence + 1)
+            .unwrap_or(window_start));
+    }
+
+    let starts = llm_message_start_sequences(&tail_rows);
+    if tail_len >= starts.len() {
+        return Ok(window_start);
+    }
+    Ok(starts[starts.len() - tail_len])
+}
+
+/// Apply the latest compact boundary to the raw row list.
+///
+/// Returns the rows that form the current LLM view: when a boundary row
+/// (`compact_from_sequence IS NOT NULL`) exists, the view is the boundary
+/// row itself (rendered as a system summary) followed by every
+/// non-boundary row with `sequence >= compact_from_sequence`. Without a
+/// boundary, all rows pass through unchanged. Boundary rows other than
+/// the latest are always skipped.
+fn visible_rows(messages: &[AgentMessageRow]) -> Vec<AgentMessageRow> {
+    let latest_boundary = messages
+        .iter()
+        .filter(|m| m.compact_from_sequence.is_some())
+        .max_by_key(|m| m.sequence);
+
+    let Some(boundary) = latest_boundary else {
+        return messages.to_vec();
+    };
+    let from_sequence = boundary
+        .compact_from_sequence
+        .expect("filtered on is_some above");
+
+    let mut visible = Vec::with_capacity(messages.len());
+    visible.push(boundary.clone());
+    visible.extend(
+        messages
+            .iter()
+            .filter(|m| m.compact_from_sequence.is_none() && m.sequence >= from_sequence)
+            .cloned(),
+    );
+    visible
 }
 
 /// Pure reconstruction step: turn an ordered slice of `AgentMessageRow` rows
@@ -262,7 +410,8 @@ mod tests {
                 model        TEXT,
                 sequence     INTEGER NOT NULL DEFAULT 0,
                 created_at   TEXT NOT NULL,
-                images       TEXT
+                images       TEXT,
+                compact_from_sequence INTEGER
              );"
         ))
         .expect("create message table");
@@ -370,6 +519,7 @@ mod tests {
             sequence: seq,
             created_at: "2024-01-01T00:00:00Z".to_string(),
             images: None,
+            compact_from_sequence: None,
         }
     }
 
@@ -387,6 +537,7 @@ mod tests {
             sequence: seq,
             created_at: "2024-01-01T00:00:00Z".to_string(),
             images: None,
+            compact_from_sequence: None,
         }
     }
 
@@ -404,6 +555,7 @@ mod tests {
             sequence: seq,
             created_at: "2024-01-01T00:00:00Z".to_string(),
             images: None,
+            compact_from_sequence: None,
         }
     }
 
@@ -421,6 +573,7 @@ mod tests {
             sequence: seq,
             created_at: "2024-01-01T00:00:00Z".to_string(),
             images: None,
+            compact_from_sequence: None,
         }
     }
 
@@ -438,6 +591,7 @@ mod tests {
             sequence: seq,
             created_at: "2024-01-01T00:00:00Z".to_string(),
             images: None,
+            compact_from_sequence: None,
         }
     }
 
@@ -639,5 +793,125 @@ mod tests {
             validate_tool_call_result_pairing(&history).is_ok(),
             "Tool call/result pairing should be valid"
         );
+    }
+
+    fn make_boundary_msg(seq: i64, content: &str, from_sequence: i64) -> AgentMessageRow {
+        let mut msg = make_system_msg(seq, content);
+        msg.compact_from_sequence = Some(from_sequence);
+        msg
+    }
+
+    #[test]
+    fn visible_rows_without_boundary_passes_all_rows_through() {
+        let rows = vec![make_user_msg(0, "u1"), make_assistant_msg(1, "a1")];
+        let visible = visible_rows(&rows);
+        assert_eq!(visible.len(), 2);
+        assert_eq!(visible[0].content, "u1");
+    }
+
+    #[test]
+    fn visible_rows_latest_boundary_hides_older_rows() {
+        let rows = vec![
+            make_user_msg(0, "old user"),
+            make_assistant_msg(1, "old assistant"),
+            make_user_msg(2, "recent user"),
+            make_assistant_msg(3, "recent assistant"),
+            make_boundary_msg(4, "summary", 2),
+        ];
+        let visible = visible_rows(&rows);
+        assert_eq!(visible.len(), 3);
+        assert_eq!(visible[0].content, "summary");
+        assert_eq!(visible[1].content, "recent user");
+        assert_eq!(visible[2].content, "recent assistant");
+    }
+
+    #[test]
+    fn visible_rows_second_boundary_wins_and_older_boundary_is_skipped() {
+        let rows = vec![
+            make_user_msg(0, "u1"),
+            make_user_msg(1, "u2"),
+            make_boundary_msg(2, "first summary", 1),
+            make_user_msg(3, "u3"),
+            make_boundary_msg(4, "second summary", 3),
+        ];
+        let visible = visible_rows(&rows);
+        assert_eq!(visible.len(), 2);
+        assert_eq!(visible[0].content, "second summary");
+        assert_eq!(visible[1].content, "u3");
+    }
+
+    #[test]
+    fn start_sequences_match_reconstruct_len() {
+        let rows = vec![
+            make_user_msg(0, "Hello"),
+            make_tool_call(1, "list_dir:0", "list_dir", r#"{"path":"/"}"#),
+            make_tool_call(2, "read_file:1", "read_file", r#"{"path":"/a"}"#),
+            make_tool_result(3, "list_dir:0", "list_dir", "f1"),
+            make_tool_result(4, "read_file:1", "read_file", "c"),
+            make_assistant_msg(5, "done"),
+            make_user_msg(6, "next"),
+        ];
+        let refs: Vec<&AgentMessageRow> = rows.iter().collect();
+        let starts = llm_message_start_sequences(&refs);
+        let history = reconstruct(&rows);
+        assert_eq!(
+            starts.len(),
+            history.len(),
+            "start-sequence mapping must mirror reconstruct grouping"
+        );
+        // user(0), assistant tool_calls(1), tool(1), tool(1), assistant(5), user(6)
+        assert_eq!(starts, vec![0, 1, 1, 1, 5, 6]);
+    }
+
+    #[test]
+    fn compact_cutoff_sequence_maps_tail_len_onto_durable_sequence() {
+        let _sandbox = test_env::sandbox();
+        create_message_table(DB_PREFIX);
+        let sid = "cutoff-session";
+        insert_text_message(DB_PREFIX, sid, message_role::USER, "u1", 0);
+        insert_text_message(DB_PREFIX, sid, message_role::ASSISTANT, "a1", 1);
+        insert_text_message(DB_PREFIX, sid, message_role::USER, "u2", 2);
+        insert_text_message(DB_PREFIX, sid, message_role::ASSISTANT, "a2", 3);
+
+        // Keep last 2 LLM messages -> cutoff at sequence 2.
+        assert_eq!(
+            compact_cutoff_sequence(DB_PREFIX, sid, 2).expect("cutoff"),
+            2
+        );
+        // tail_len covering everything degrades to window start.
+        assert_eq!(
+            compact_cutoff_sequence(DB_PREFIX, sid, 10).expect("cutoff"),
+            0
+        );
+        // tail_len 0 hides the entire window.
+        assert_eq!(
+            compact_cutoff_sequence(DB_PREFIX, sid, 0).expect("cutoff"),
+            4
+        );
+    }
+
+    #[test]
+    fn load_llm_history_applies_compact_boundary_from_db() {
+        let _sandbox = test_env::sandbox();
+        create_message_table(DB_PREFIX);
+        let sid = "boundary-db-session";
+        insert_text_message(DB_PREFIX, sid, message_role::USER, "old", 0);
+        insert_text_message(DB_PREFIX, sid, message_role::USER, "recent", 1);
+        let conn = get_connection().expect("conn");
+        conn.execute(
+            &format!(
+                "INSERT INTO {DB_PREFIX}_messages
+                 (id, session_id, role, content, sequence, created_at, compact_from_sequence)
+                 VALUES ('b-1', ?1, 'system', 'summary', 2, '2024-01-02T00:00:00Z', 1)"
+            ),
+            [sid],
+        )
+        .expect("insert boundary row");
+
+        let history = load_llm_history(DB_PREFIX, sid).expect("load");
+        assert_eq!(history.len(), 2);
+        assert_eq!(history[0]["role"], "system");
+        assert_eq!(history[0]["content"], "summary");
+        assert_eq!(history[1]["content"], "recent");
     }
 }

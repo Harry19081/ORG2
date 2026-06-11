@@ -3,7 +3,7 @@
         cap_rule_content, format_user_profile,
     };
     use crate::coordination::agent_org_runs::{AgentOrgContextMember, AgentOrgRunContext};
-    use crate::coordination::agent_org_tasks::{CreateTaskParams, TaskStatus};
+    use crate::coordination::agent_org_tasks::{AgentOrgTaskStore, CreateTaskParams, TaskStatus};
     use crate::definitions::orgs::HierarchyMode;
     use serial_test::serial;
     use test_helpers::test_env;

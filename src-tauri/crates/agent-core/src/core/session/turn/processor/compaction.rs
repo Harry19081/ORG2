@@ -301,14 +301,19 @@ impl UnifiedMessageProcessor {
             }
         }
 
-        let persist_messages = durable_compacted_messages.clone();
+        // Durable persistence: append a compact boundary row instead of
+        // rewriting the transcript. The durable view is `[summary] +
+        // rows >= cutoff`; prior rows are never touched, so sequence and
+        // created_at coordinates stay valid for truncation/replay.
+        let (summary_text, tail_len) = split_summary_and_tail(&durable_compacted_messages);
         let persist_result = tokio::task::spawn_blocking({
             let sid = session_id.to_string();
-            move || {
-                unified_persistence::replace_messages_with_compacted_history(
-                    &sid,
-                    &persist_messages,
-                )
+            move || -> Result<(), String> {
+                let cutoff = unified_persistence::compact_cutoff_sequence(&sid, tail_len)
+                    .map_err(|err| err.to_string())?;
+                unified_persistence::append_compact_boundary(&sid, &summary_text, cutoff)
+                    .map_err(|err| err.to_string())?;
+                Ok(())
             }
         })
         .await;
@@ -327,22 +332,48 @@ impl UnifiedMessageProcessor {
                 sm_state.tokens_at_last_extraction = 0;
                 sm_state.tool_calls_since_extraction = 0;
                 info!(
-                    "[unified_processor] Persisted compacted transcript for session {} ({} durable messages)",
+                    "[unified_processor] Appended compact boundary for session {} ({} durable messages visible)",
                     session_id,
                     durable_compacted_messages.len()
                 );
             }
             Ok(Err(err)) => warn!(
-                "[unified_processor] Failed to persist compacted transcript for session {}: {}",
+                "[unified_processor] Failed to persist compact boundary for session {}: {}",
                 session_id, err
             ),
             Err(err) => warn!(
-                "[unified_processor] Failed to join compacted transcript persistence for session {}: {}",
+                "[unified_processor] Failed to join compact boundary persistence for session {}: {}",
                 session_id, err
             ),
         }
 
         CompactionPhaseOutcome::Continue
+    }
+}
+
+/// Split the compacted in-memory view into the boundary summary text and
+/// the number of preserved tail messages. The compactors emit
+/// `[system summary] + tail`; if the leading summary is missing (e.g.
+/// truncation fallback dropped messages without summarizing), a generic
+/// marker is used and every message counts as tail.
+fn split_summary_and_tail(durable_compacted_messages: &[Value]) -> (String, usize) {
+    match durable_compacted_messages.first() {
+        Some(first) if message_role(first) == Some("system") => {
+            let text = match first.get("content") {
+                Some(Value::String(text)) => text.clone(),
+                Some(Value::Array(parts)) => parts
+                    .iter()
+                    .filter_map(|part| part.get("text").and_then(Value::as_str))
+                    .collect::<Vec<_>>()
+                    .join("\n"),
+                _ => String::new(),
+            };
+            (text, durable_compacted_messages.len().saturating_sub(1))
+        }
+        _ => (
+            "[Conversation summary — earlier messages compacted without summary]".to_string(),
+            durable_compacted_messages.len(),
+        ),
     }
 }
 
