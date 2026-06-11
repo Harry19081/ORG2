@@ -313,6 +313,7 @@ pub(super) async fn send_initial_turn(
             false,
             None,
             None,
+            crate::foundation::session_bridge::TurnIntentBridgeSource::AgentOrg,
         )
         .await?;
         return Ok(());
@@ -349,6 +350,7 @@ pub(super) async fn send_initial_turn(
         false,
         None,
         None,
+        crate::foundation::session_bridge::TurnIntentBridgeSource::AgentOrg,
     )
     .await?;
     Ok(())

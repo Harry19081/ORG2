@@ -26,7 +26,10 @@
         "hiddenTitle": true,
         "transparent": true,
         "titleBarStyle": "Overlay",
-        "trafficLightPosition": { "x": 20, "y": 28.5 }
+        "trafficLightPosition": {
+          "x": 20,
+          "y": 28.5
+        }
       }
     ],
     "security": {
@@ -64,8 +67,8 @@
     "macOS": {
       "entitlements": "entitlements.plist",
       "signingIdentity": "Developer ID Application: HOUYi HE (S4UG24G7HJ)",
-      "providerShortName": "S4UG24G7HJ",
-      "minimumSystemVersion": "10.15"
+      "minimumSystemVersion": "10.15",
+      "providerShortName": "S4UG24G7HJ"
     }
   },
   "plugins": {

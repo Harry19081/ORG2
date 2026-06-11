@@ -170,11 +170,11 @@ fn resolve_for_session(
             ),
             other => other.to_string(),
         })?;
-    // Effective disabled-skills set = app-global list (Extensions hub)
+    // Effective excluded-skills set = app-global list (Extensions hub)
     // ∪ per-agent exclude (definition). The global list previously lived
     // on builtin:os's overlay, which silently failed to apply to other
     // agents.
-    for skill in &integrations.disabled_skills {
+    for skill in &integrations.excluded_skills {
         if !resolved.skills.disabled.contains(skill) {
             resolved.skills.disabled.push(skill.clone());
         }

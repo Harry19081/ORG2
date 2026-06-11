@@ -99,13 +99,16 @@ pub struct IntegrationsConfig {
     #[serde(default)]
     pub embedding: EmbeddingConfig,
 
-    /// Globally disabled skills (by name). App-level: a skill disabled in
+    /// Globally excluded skills (by name). App-level: a skill excluded in
     /// the Extensions hub is off for EVERY agent. Per-agent deltas live on
-    /// `AgentDefinition.skills_config.exclude`. The effective disabled set
+    /// `AgentDefinition.skills_config.exclude`. The effective excluded set
     /// for a session is the union of both. Replaces the old behavior where
     /// the Extensions toggle silently wrote `builtin:os`'s overlay.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub disabled_skills: Vec<String>,
+    ///
+    /// On-disk JSON key remains `"disabled_skills"` to keep existing
+    /// `~/.orgii/integrations.json` files readable without migration.
+    #[serde(default, skip_serializing_if = "Vec::is_empty", rename = "disabled_skills")]
+    pub excluded_skills: Vec<String>,
 }
 
 impl IntegrationsConfig {

@@ -432,6 +432,7 @@ pub async fn agent_org_send_user_message_to_member_impl(
         true,
         None,
         None,
+        crate::foundation::session_bridge::TurnIntentBridgeSource::AgentOrg,
     )
     .await?;
 

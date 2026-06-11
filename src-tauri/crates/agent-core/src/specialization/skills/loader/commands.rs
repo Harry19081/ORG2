@@ -120,7 +120,7 @@ pub async fn skills_list(
 ) -> Result<Vec<SkillInfo>, String> {
     let mut disabled = crate::state::integrations_store::integrations_store()
         .snapshot()
-        .disabled_skills;
+        .excluded_skills;
     if let Some(owner) = agent_id.as_deref().filter(|id| !id.trim().is_empty()) {
         for skill in load_disabled_skills_for(&store, owner) {
             if !disabled.contains(&skill) {
@@ -148,7 +148,7 @@ pub async fn skills_read(workspace_path: Option<String>, name: String) -> Result
 /// With `agent_id`: per-agent toggle on that definition's
 /// `skills_config.exclude` (store chokepoints fire persistence + the
 /// defs-changed event). Without `agent_id`: app-global toggle on
-/// `IntegrationsConfig.disabled_skills` — off for EVERY agent (the
+/// `IntegrationsConfig.excluded_skills` — off for EVERY agent (the
 /// Extensions hub semantics; previously this silently wrote builtin:os's
 /// overlay and never applied to other agents).
 #[tauri::command]
@@ -176,9 +176,9 @@ pub async fn skills_toggle(
                 .integrations
                 .update(|cfg| -> Result<(), std::convert::Infallible> {
                     if enabled {
-                        cfg.disabled_skills.retain(|skill| skill != &name);
-                    } else if !cfg.disabled_skills.iter().any(|s| s == &name) {
-                        cfg.disabled_skills.push(name.clone());
+                        cfg.excluded_skills.retain(|skill| skill != &name);
+                    } else if !cfg.excluded_skills.iter().any(|s| s == &name) {
+                        cfg.excluded_skills.push(name.clone());
                     }
                     Ok(())
                 })

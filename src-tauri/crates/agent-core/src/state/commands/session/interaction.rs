@@ -419,6 +419,7 @@ pub async fn agent_plan_approval_response(
         false,
         None,
         None,
+        crate::foundation::session_bridge::TurnIntentBridgeSource::UserSubmit,
     )
     .await
     .map(|_| ())

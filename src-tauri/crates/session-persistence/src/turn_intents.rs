@@ -15,8 +15,6 @@
 //!   `Err(IntentTransitionError::IllegalTransition)` and leave the row
 //!   untouched, so transient bugs in callers can't silently downgrade a
 //!   running turn back to queued.
-//! - `superseded_by` records the replacement intent when Send-Now re-submits
-//!   a restored stop draft.
 //!
 //! Lifecycle ownership:
 //!
@@ -27,8 +25,6 @@
 //!   `completed` / `failed` / `cancelled` at the terminal state.
 //! - `DialogScheduler::invalidate_pending` marks every queued intent for
 //!   the session `stale`.
-//! - Stop / Send-Now-on-restored-draft mark the previous intent
-//!   `superseded` with `superseded_by` pointing at the replacement.
 
 use chrono::Utc;
 use rusqlite::{params, Connection, OptionalExtension, Result as SqliteResult};
@@ -111,9 +107,6 @@ pub enum TurnIntentStatus {
     /// Queue invalidated this entry before it started executing
     /// (rewind, generation bump, edit-resend invalidation).
     Stale,
-    /// Replaced by a later submission of the same logical intent.
-    /// `superseded_by` holds the replacement intent id.
-    Superseded,
 }
 
 impl TurnIntentStatus {
@@ -126,7 +119,6 @@ impl TurnIntentStatus {
             Self::Failed => "failed",
             Self::Cancelled => "cancelled",
             Self::Stale => "stale",
-            Self::Superseded => "superseded",
         }
     }
 
@@ -139,7 +131,6 @@ impl TurnIntentStatus {
             "failed" => Self::Failed,
             "cancelled" => Self::Cancelled,
             "stale" => Self::Stale,
-            "superseded" => Self::Superseded,
             _ => return None,
         })
     }
@@ -149,15 +140,15 @@ impl TurnIntentStatus {
     pub fn is_terminal(self) -> bool {
         matches!(
             self,
-            Self::Completed | Self::Failed | Self::Cancelled | Self::Stale | Self::Superseded
+            Self::Completed | Self::Failed | Self::Cancelled | Self::Stale
         )
     }
 
     /// True when the intent will never produce a durable round
-    /// (`Stale` / `Superseded`). Cancelled is NOT in this set — a
+    /// (currently only `Stale`). Cancelled is NOT in this set — a
     /// cancelled turn still has user-visible intent and gets a round.
     pub fn is_pre_durable_terminal(self) -> bool {
-        matches!(self, Self::Stale | Self::Superseded)
+        matches!(self, Self::Stale)
     }
 }
 
@@ -173,7 +164,6 @@ pub struct TurnIntentRow {
     pub client_message_id: Option<String>,
     pub source: TurnIntentSource,
     pub status: TurnIntentStatus,
-    pub superseded_by: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -209,10 +199,7 @@ fn transition_allowed(from: TurnIntentStatus, to: TurnIntentStatus) -> bool {
         | (Running, Failed)
         | (Running, Cancelled) => true,
         // Pre-run invalidation paths.
-        (Optimistic, Stale)
-        | (Optimistic, Superseded)
-        | (Queued, Stale)
-        | (Queued, Superseded) => true,
+        (Optimistic, Stale) | (Queued, Stale) => true,
         // Everything else is rejected; in particular a terminal can never
         // walk backwards into a non-terminal.
         _ => false,
@@ -240,9 +227,8 @@ fn row_from_sql(row: &rusqlite::Row<'_>) -> SqliteResult<TurnIntentRow> {
         client_message_id: row.get(2)?,
         source,
         status,
-        superseded_by: row.get(5)?,
-        created_at: row.get(6)?,
-        updated_at: row.get(7)?,
+        created_at: row.get(5)?,
+        updated_at: row.get(6)?,
     })
 }
 
@@ -264,8 +250,8 @@ pub fn upsert_initial(
     let inserted = conn.execute(
         "INSERT OR IGNORE INTO session_turn_intents
             (session_id, turn_intent_id, client_message_id, source, status,
-             superseded_by, created_at, updated_at)
-         VALUES (?1, ?2, ?3, ?4, ?5, NULL, ?6, ?6)",
+             created_at, updated_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)",
         params![
             session_id,
             turn_intent_id,
@@ -282,7 +268,6 @@ pub fn upsert_initial(
             client_message_id: client_message_id.map(str::to_string),
             source,
             status,
-            superseded_by: None,
             created_at: now.clone(),
             updated_at: now,
         });
@@ -324,46 +309,6 @@ pub fn update_status(
     Ok(row)
 }
 
-/// Mark `turn_intent_id` superseded, pointing at the replacement.
-///
-/// Only valid from `Optimistic` / `Queued`. If the original is already
-/// running or terminal we refuse to overwrite — the caller mis-ordered
-/// the supersede vs the cancel/complete signals.
-pub fn mark_superseded(
-    session_id: &str,
-    turn_intent_id: &str,
-    superseded_by: &str,
-) -> Result<TurnIntentRow, IntentError> {
-    let conn = get_connection()?;
-    let existing = get_intent(&conn, session_id, turn_intent_id)?.ok_or_else(|| {
-        IntentError::NotFound(turn_intent_id.to_string(), session_id.to_string())
-    })?;
-    if !transition_allowed(existing.status, TurnIntentStatus::Superseded) {
-        return Err(IntentError::IllegalTransition {
-            from: existing.status,
-            to: TurnIntentStatus::Superseded,
-        });
-    }
-    let now = Utc::now().to_rfc3339();
-    conn.execute(
-        "UPDATE session_turn_intents
-            SET status = ?3, superseded_by = ?4, updated_at = ?5
-          WHERE session_id = ?1 AND turn_intent_id = ?2",
-        params![
-            session_id,
-            turn_intent_id,
-            TurnIntentStatus::Superseded.as_str(),
-            superseded_by,
-            now,
-        ],
-    )?;
-    let mut row = existing;
-    row.status = TurnIntentStatus::Superseded;
-    row.superseded_by = Some(superseded_by.to_string());
-    row.updated_at = now;
-    Ok(row)
-}
-
 /// Bulk-mark every still-pending (`Optimistic` / `Queued`) intent for the
 /// session as `Stale`. Used by `DialogScheduler::invalidate_pending` so the
 /// durable lifecycle log catches up with the in-memory generation bump.
@@ -389,7 +334,7 @@ pub fn get_intent(
 ) -> SqliteResult<Option<TurnIntentRow>> {
     let mut stmt = conn.prepare_cached(
         "SELECT session_id, turn_intent_id, client_message_id, source, status,
-                superseded_by, created_at, updated_at
+                created_at, updated_at
            FROM session_turn_intents
           WHERE session_id = ?1 AND turn_intent_id = ?2",
     )?;
@@ -403,7 +348,7 @@ pub fn list_for_session(session_id: &str) -> SqliteResult<Vec<TurnIntentRow>> {
     let conn = get_connection()?;
     let mut stmt = conn.prepare_cached(
         "SELECT session_id, turn_intent_id, client_message_id, source, status,
-                superseded_by, created_at, updated_at
+                created_at, updated_at
            FROM session_turn_intents
           WHERE session_id = ?1
           ORDER BY created_at ASC, turn_intent_id ASC",
@@ -575,19 +520,6 @@ mod tests {
             assert_eq!(by_id["pending-a"], TurnIntentStatus::Stale);
             assert_eq!(by_id["pending-b"], TurnIntentStatus::Stale);
             assert_eq!(by_id["running-c"], TurnIntentStatus::Running);
-        });
-    }
-
-    #[test]
-    fn mark_superseded_records_replacement() {
-        with_temp_orgii_home(|| {
-            let session = "test-session-supersede";
-            let intent = "intent-old-1";
-            let _ = fresh_intent(session, intent);
-            let row = mark_superseded(session, intent, "intent-new-2")
-                .expect("queued -> superseded with pointer");
-            assert_eq!(row.status, TurnIntentStatus::Superseded);
-            assert_eq!(row.superseded_by.as_deref(), Some("intent-new-2"));
         });
     }
 }
