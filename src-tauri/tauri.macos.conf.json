@@ -1,0 +1,22 @@
+{
+  "bundle": {
+    "resources": {
+      "model/": "model/",
+      "../scripts/tools/download.py": "scripts/tools/download.py",
+      "resources/drag-icons/": "resources/drag-icons/",
+      "../node_modules/dugite/git/": "git/",
+      "bin/agent-browser-aarch64-apple-darwin": "bin/agent-browser-aarch64-apple-darwin",
+      "bin/peekaboo": "bin/peekaboo",
+      "bin/peekaboo-LICENSE": "bin/peekaboo-LICENSE",
+      "bin/peekaboo-VERSION": "bin/peekaboo-VERSION",
+      "bin/peekaboo-aarch64-apple-darwin": "bin/peekaboo-aarch64-apple-darwin",
+      "bin/peekaboo-x86_64-apple-darwin": "bin/peekaboo-x86_64-apple-darwin"
+    },
+    "macOS": {
+      "entitlements": "entitlements.plist",
+      "signingIdentity": "Developer ID Application: HOUYi HE (S4UG24G7HJ)",
+      "minimumSystemVersion": "10.15",
+      "providerShortName": "S4UG24G7HJ"
+    }
+  }
+}
