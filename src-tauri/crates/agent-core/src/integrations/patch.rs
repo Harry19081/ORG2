@@ -31,8 +31,10 @@ pub struct IntegrationsConfigPatch {
     /// chunk sizes). Wholesale replace — frontend must send the full
     /// `EmbeddingConfig` to avoid resetting siblings.
     pub embedding: Option<EmbeddingConfig>,
-    /// Globally disabled skills. Wholesale replace of the full list.
-    pub disabled_skills: Option<Vec<String>>,
+    /// Globally excluded skills. Wholesale replace of the full list.
+    /// Wire shape stays `disabledSkills` for FE compatibility.
+    #[serde(rename = "disabledSkills")]
+    pub excluded_skills: Option<Vec<String>>,
 }
 
 impl IntegrationsConfigPatch {
@@ -57,8 +59,8 @@ impl IntegrationsConfigPatch {
         if let Some(v) = self.embedding {
             target.embedding = v;
         }
-        if let Some(v) = self.disabled_skills {
-            target.disabled_skills = v;
+        if let Some(v) = self.excluded_skills {
+            target.excluded_skills = v;
         }
     }
 }
