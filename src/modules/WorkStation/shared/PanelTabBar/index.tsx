@@ -13,7 +13,15 @@
  * Tabs and content stay mounted across position toggles — only the
  * chrome flavour swaps. Caller owns the active tab state.
  */
-import * as LucideIcons from "lucide-react";
+import {
+  ArrowUpDown,
+  FlaskConical,
+  Layers,
+  type LucideIcon,
+  ScrollText,
+  SquareChevronRight,
+  TriangleAlert,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import React, { memo, useCallback } from "react";
 
@@ -22,11 +30,21 @@ import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
 
 export { PanelPositionToggle } from "./PositionToggle";
 
+const PANEL_TAB_ICONS = {
+  ArrowUpDown,
+  FlaskConical,
+  Layers,
+  ScrollText,
+  SquareChevronRight,
+  TriangleAlert,
+} as const satisfies Record<string, LucideIcon>;
+
+export type PanelTabIconName = keyof typeof PANEL_TAB_ICONS;
+
 export interface PanelTabBarTab {
   key: string;
   label: string;
-  /** Lucide icon name string (e.g. "Layers", "SquareChevronRight"). */
-  icon?: string;
+  icon?: PanelTabIconName;
   /** Optional badge node rendered next to the icon. */
   badge?: ReactNode;
 }
@@ -57,17 +75,8 @@ export interface PanelTabBarProps {
 
 const ICON_SIZE = 14;
 
-type LucideIconComponent = React.ComponentType<{
-  size?: number;
-  strokeWidth?: number;
-  className?: string;
-}>;
-
-function resolveLucideIcon(name: string): LucideIconComponent | null {
-  return (
-    (LucideIcons as unknown as Record<string, LucideIconComponent>)[name] ??
-    null
-  );
+function resolveLucideIcon(name: PanelTabIconName): LucideIcon {
+  return PANEL_TAB_ICONS[name];
 }
 
 interface IconTabStripProps {

@@ -23,7 +23,10 @@ import {
   PanelPositionToggle,
   PanelTabBar,
 } from "@src/modules/WorkStation/shared";
-import type { PanelTabBarTab } from "@src/modules/WorkStation/shared";
+import type {
+  PanelTabBarTab,
+  PanelTabIconName,
+} from "@src/modules/WorkStation/shared";
 import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import {
   BOTTOM_PANEL_TABS,
@@ -38,11 +41,11 @@ import type { TabAction } from "../types";
 
 // Lucide icon names used by the TabBar (right) chrome. Keep parallel with
 // BOTTOM_PANEL_TAB_ORDER so the icons line up with the tabs.
-const BOTTOM_PANEL_TAB_ICONS: Partial<Record<BottomPanelTab, string>> = {
+const BOTTOM_PANEL_TAB_ICONS: Partial<
+  Record<BottomPanelTab, PanelTabIconName>
+> = {
   [BOTTOM_PANEL_TABS.PROBLEMS]: "TriangleAlert",
   [BOTTOM_PANEL_TABS.OUTPUT]: "ScrollText",
-  // Bottom-panel Terminal is intentionally hidden while the standalone Terminal tab is the single source of truth.
-  // [BOTTOM_PANEL_TABS.TERMINAL]: "SquareTerminal",
   [BOTTOM_PANEL_TABS.TEST_RESULTS]: "FlaskConical",
 };
 

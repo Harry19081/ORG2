@@ -108,5 +108,15 @@ module.exports = {
 
     // Discourage direct console usage — migrate to @src/util/logger
     "no-console": ["warn", { allow: ["warn", "error"] }],
+
+    "no-restricted-syntax": [
+      "error",
+      {
+        selector:
+          "ImportDeclaration[source.value='lucide-react'] ImportNamespaceSpecifier",
+        message:
+          "Do not namespace-import lucide-react; use named imports or a finite typed icon registry so icons remain tree-shakeable.",
+      },
+    ],
   },
 };
