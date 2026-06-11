@@ -89,7 +89,7 @@ export function createDropHandler(ctx: DropHandlerContext) {
 
       const pillPath = `pr://${prRef.prNumber}`;
       const displayName = `#${prRef.prNumber} ${prRef.prTitle}`;
-      storePillText(pillPath, JSON.stringify(prRef));
+      storePillText(pillPath, capPillText(JSON.stringify(prRef)));
       event.preventDefault();
       ctx.insertPill({
         filePath: pillPath,

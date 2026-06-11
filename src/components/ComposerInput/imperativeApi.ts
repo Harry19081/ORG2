@@ -6,7 +6,7 @@
  * (`useComposerInput.handleAtMentionClick` and `useSlashCommand` both use
  * `editor.chain().focus().insertContent("...").run()`).
  */
-import { storePillText } from "@src/config/pillTokens";
+import { capPillText, storePillText } from "@src/config/pillTokens";
 
 import {
   type ComposerEditorChain,
@@ -264,7 +264,7 @@ export function buildImperativeApi(
     insertPrPill: (prData) => {
       const pillPath = `pr://${prData.prNumber}`;
       const displayName = `#${prData.prNumber} ${prData.prTitle}`;
-      storePillText(pillPath, JSON.stringify(prData));
+      storePillText(pillPath, capPillText(JSON.stringify(prData)));
       ctx.markHistoryBoundary();
       ctx.insertPill({
         filePath: pillPath,
