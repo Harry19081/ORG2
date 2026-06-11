@@ -82,7 +82,7 @@ function SidebarGroupInner<T extends SidebarItemData = SidebarItemData>({
         <div
           className={`group mx-2 flex h-[36px] cursor-pointer items-center justify-between rounded-lg px-2 transition-colors duration-150 ${
             hasSelectedChild
-              ? "bg-bg-2 text-primary-6"
+              ? "bg-bg-1 text-primary-6"
               : "text-text-1 hover:bg-fill-2"
           }`}
           onClick={handleToggle}

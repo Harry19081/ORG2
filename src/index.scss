@@ -300,7 +300,11 @@ img {
   // Use overflow: clip as a defensive measure against scrollIntoView calls
   // on hidden components that could scroll the root element
   overflow: clip;
-  background: var(--color-bg-2);
+  // Faint bg-2 tint instead of a solid fill so the wallpaper (rendered by
+  // BackgroundLayer inside #root) and the underlying window vibrancy show
+  // through. Without a wallpaper this still gives the chrome a subtle
+  // app-surface feel.
+  background: color-mix(in srgb, var(--color-bg-2) 15%, transparent);
 }
 
 // KeepAlive wraps each cached route in its own DOM node. The wrapper must
@@ -371,13 +375,13 @@ select,
 }
 html {
   overscroll-behavior-x: none;
-  background: var(--color-bg-2);
+  background: color-mix(in srgb, var(--color-bg-2) 15%, transparent);
 }
 body {
   overscroll-behavior-x: none;
   border-radius: var(--border-radius-window);
   overflow: hidden;
-  background: var(--color-bg-2);
+  background: color-mix(in srgb, var(--color-bg-2) 15%, transparent);
 }
 
 // Ensure popup layers are not clipped by body's overflow: hidden
