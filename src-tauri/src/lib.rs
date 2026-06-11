@@ -831,41 +831,7 @@ pub fn run() {
             project_management::sync::start_worker(app.handle().clone());
             tracing::info!("[sync::worker] Sync worker started");
 
-            // Boot the mobile-remote bridge through its supervisor
-            // so subsequent Settings actions (URL change, first
-            // pairing, device revoke) can call `restart` and have
-            // the live bridge actually pick the change up. Without
-            // the supervisor the returned handle would drop here,
-            // leaving the spawned tasks orphaned and unreachable.
-            //
-            // If the user has no paired devices, the bridge stays
-            // inactive (`start` returns `Ok(None)`); the supervisor
-            // records that state and the next `pair_complete` will
-            // drive a restart.
-            let mobile_remote_app_handle = app.handle().clone();
-            tauri::async_runtime::spawn(async move {
-                let supervisor = mobile_remote::supervisor::BridgeSupervisor::global();
-                // Install the production `DispatchHost` factory before
-                // `start`. The factory captures the live `AppHandle` and
-                // builds a fresh `TauriDispatchHost` for every restart
-                // — this is what keeps `mobile_remote` a pure leaf
-                // crate (it doesn't depend on `agent_core` /
-                // `agent_sessions`; the impl lives here).
-                let factory_handle = mobile_remote_app_handle.clone();
-                supervisor
-                    .set_host_factory(move || {
-                        let h = factory_handle.clone();
-                        std::sync::Arc::new(crate::api::mobile_remote_host::TauriDispatchHost::new(
-                            h,
-                        ))
-                    })
-                    .await;
-                if let Err(err) = supervisor.start().await {
-                    tracing::warn!(?err, "[mobile_remote] bridge start failed");
-                }
-            });
-
-            // Restore previously-enabled channels (e.g. feishu was toggled on last run)
+                        // Restore previously-enabled channels (e.g. feishu was toggled on last run)
             let app_handle_for_restore = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 let state = app_handle_for_restore.state::<agent_core::state::AgentAppState>();

@@ -1147,14 +1147,3 @@ agent_core::state::commands::session::wingman_open_window,
 agent_core::state::commands::session::wingman_close_windows,
 agent_core::state::commands::session::wingman_toggle_panel,
 agent_core::state::commands::session::wingman_list_monitors,
-// Mobile remote control — pair / list / revoke + relay URL config.
-// Phase 4: HTTP pairing flow is real; the WS dispatch layer compiles
-// but no command drives it yet (NoopDispatchHost is the wired default).
-mobile_remote::pairing::commands::mobile_remote_pair_init,
-mobile_remote::pairing::commands::mobile_remote_pair_complete,
-mobile_remote::pairing::commands::mobile_remote_list_devices,
-mobile_remote::pairing::commands::mobile_remote_sync_devices,
-mobile_remote::pairing::commands::mobile_remote_revoke_device,
-mobile_remote::pairing::commands::mobile_remote_set_primary_desktop,
-mobile_remote::pairing::commands::mobile_remote_set_relay_url,
-mobile_remote::pairing::commands::mobile_remote_get_relay_url,
