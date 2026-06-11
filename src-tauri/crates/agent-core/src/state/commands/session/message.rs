@@ -2,6 +2,7 @@
 
 use std::sync::Arc;
 
+use crate::foundation::session_bridge::TurnIntentBridgeSource;
 use crate::persistence::AgentResponse;
 use crate::session::persistence as session_persistence;
 use crate::state::AgentAppState;
@@ -39,6 +40,7 @@ pub async fn send_message_impl_for_wake(
         false,
         None,
         None,
+        TurnIntentBridgeSource::Resume,
     )
     .await
 }
@@ -79,6 +81,7 @@ pub async fn send_message_impl_for_mobile_remote(
         true,
         None,
         None,
+        TurnIntentBridgeSource::MobileRemote,
     )
     .await
 }
@@ -118,6 +121,7 @@ pub async fn send_message_impl_for_test(
         false,
         None,
         None,
+        TurnIntentBridgeSource::UserSubmit,
     )
     .await
 }
@@ -137,6 +141,7 @@ pub(crate) async fn send_message_impl(
     mark_direct_user_intervention: bool,
     client_message_id: Option<String>,
     turn_intent_id: Option<String>,
+    source: TurnIntentBridgeSource,
 ) -> Result<AgentResponse, String> {
     // Canonical user-intent id: callers that already mint one at the
     // submit boundary pass it through; legacy / internal callers that
@@ -438,7 +443,7 @@ pub(crate) async fn send_message_impl(
         &session_id,
         &effective_turn_intent_id,
         msg.client_message_id.as_deref(),
-        crate::foundation::session_bridge::TurnIntentBridgeSource::UserSubmit,
+        source,
         crate::foundation::session_bridge::TurnIntentBridgeStatus::Queued,
     );
 

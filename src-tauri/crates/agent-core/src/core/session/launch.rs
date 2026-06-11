@@ -1109,6 +1109,7 @@ async fn send_initial_turn(
             false,
             None,
             None,
+            crate::foundation::session_bridge::TurnIntentBridgeSource::UserSubmit,
         )
         .await?;
         return Ok(());
@@ -1145,6 +1146,7 @@ async fn send_initial_turn(
         false,
         None,
         None,
+        crate::foundation::session_bridge::TurnIntentBridgeSource::UserSubmit,
     )
     .await?;
     Ok(())
