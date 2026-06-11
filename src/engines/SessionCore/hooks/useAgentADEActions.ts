@@ -1,17 +1,18 @@
 /**
- * useOSAgentIDEActions Hook
+ * useAgentADEActions Hook
  *
- * Bridges global agent GUI-control requests to the frontend ActionSystem.
+ * Bridges global agent ADE (Agentic Development Environment) action requests
+ * to the frontend ActionSystem.
  *
  * Behaviour today:
  *   - category === "session" → dispatched normally (required for manage_session)
  *   - layer === "gui" → dispatched only while global Agent Control is on
  *   - layer === "action" → rejected when a native backend tool should be used
  *
- * Bridges the OS agent's `ide` tool to the frontend ActionSystem.
- * Listens for `agent-ide-action` CustomEvents (dispatched by the OS agent event handlers),
+ * Bridges the agent's `ade` tool to the frontend ActionSystem.
+ * Listens for `agent-ade-action` CustomEvents (dispatched by the agent event handlers),
  * executes the requested action via zodActionRegistry, and reports the result
- * back to the Rust backend via the `agent_ide_action_result` Tauri command.
+ * back to the Rust backend via the `agent_ade_action_result` Tauri command.
  *
  * Also ensures that ActionSystem actions are registered (via registerCoreActions)
  * so they're available even if the Workstation editor isn't mounted.
@@ -26,7 +27,7 @@ import {
   registerCoreActions,
   zodActionRegistry,
 } from "@src/ActionSystem";
-import { sendIdeActionResult } from "@src/api/tauri/agent";
+import { sendAdeActionResult } from "@src/api/tauri/agent";
 import { clearSessionAtom } from "@src/engines/SessionCore/core/atoms/actions";
 import { currentRepoAtom } from "@src/store/repo";
 import { reposAtom } from "@src/store/repo/atoms";
@@ -43,7 +44,7 @@ import {
   chatPanelNavigateAtom,
   restoreChatWidthAtom,
 } from "@src/store/ui/chatPanelAtom";
-import { guiControlEnabledAtom } from "@src/store/ui/uiAtom";
+import { adeManagerEnabledAtom } from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 /**
@@ -66,20 +67,20 @@ export const pendingSessionProposal: {
   current: null,
 };
 
-const GUI_CONTROL_REQUIRED_MESSAGE =
+const ADE_MANAGER_REQUIRED_MESSAGE =
   "ADE Manager is off. Toggle ADE Manager on to allow GUI automation actions.";
 
 // ============================================
 // Types
 // ============================================
 
-type IDEActionOperation = "list" | "inspect" | "dispatch";
+type AdeActionOperation = "list" | "inspect" | "dispatch";
 
-interface IDEActionDetail {
+interface AdeActionDetail {
   correlationId: string;
   action?: string;
   params: Record<string, unknown>;
-  operation?: IDEActionOperation;
+  operation?: AdeActionOperation;
   sessionId?: string;
 }
 
@@ -87,9 +88,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function parseIdeActionEnvelope(rawMessage: string): IDEActionDetail | null {
+function parseAdeActionEnvelope(rawMessage: string): AdeActionDetail | null {
   const parsed = JSON.parse(rawMessage) as unknown;
-  if (!isRecord(parsed) || parsed.type !== "agent:ide_action") return null;
+  if (!isRecord(parsed) || parsed.type !== "agent:ade_action") return null;
   const payload = parsed.payload;
   if (!isRecord(payload)) return null;
 
@@ -116,9 +117,9 @@ function parseIdeActionEnvelope(rawMessage: string): IDEActionDetail | null {
   };
 }
 
-function dispatchIdeActionDetail(detail: IDEActionDetail): void {
+function dispatchAdeActionDetail(detail: AdeActionDetail): void {
   window.dispatchEvent(
-    new CustomEvent("agent-ide-action", {
+    new CustomEvent("agent-ade-action", {
       detail,
     })
   );
@@ -160,16 +161,16 @@ function matchesGuiManifestQuery(
 // ============================================
 
 /**
- * Listens for IDE action requests from the OS agent and dispatches them
+ * Listens for ADE action requests from the agent and dispatches them
  * through the ActionSystem. Reports results back via Tauri command.
  *
  * Must be mounted inside a component tree that has Jotai provider (for repo atom).
  */
-export function useOSAgentIDEActions(): void {
+export function useAgentADEActions(): void {
   const currentRepo = useAtomValue(currentRepoAtom);
-  const guiControlEnabled = useAtomValue(guiControlEnabledAtom);
+  const adeManagerEnabled = useAtomValue(adeManagerEnabledAtom);
   const cleanupRef = useRef<(() => void) | null>(null);
-  const guiControlEnabledRef = useRef(false);
+  const adeManagerEnabledRef = useRef(false);
   const handledCorrelationIdsRef = useRef<Set<string>>(new Set());
   const repoPathRef = useRef<string>("");
 
@@ -178,8 +179,8 @@ export function useOSAgentIDEActions(): void {
   }, [currentRepo?.path]);
 
   useEffect(() => {
-    guiControlEnabledRef.current = guiControlEnabled;
-  }, [guiControlEnabled]);
+    adeManagerEnabledRef.current = adeManagerEnabled;
+  }, [adeManagerEnabled]);
 
   useEffect(() => {
     const sessionId = "";
@@ -190,8 +191,8 @@ export function useOSAgentIDEActions(): void {
     channel.onmessage = (rawMessage: string) => {
       if (cancelled) return;
       try {
-        const detail = parseIdeActionEnvelope(rawMessage);
-        if (detail) dispatchIdeActionDetail(detail);
+        const detail = parseAdeActionEnvelope(rawMessage);
+        if (detail) dispatchAdeActionDetail(detail);
       } catch {
         return;
       }
@@ -222,13 +223,13 @@ export function useOSAgentIDEActions(): void {
     };
   }, []);
 
-  // Register actions and listen for IDE action events
+  // Register actions and listen for ADE action events
   useEffect(() => {
     const repoPath = currentRepo?.path ?? "";
     const repoId = currentRepo?.id;
 
     // Ensure ActionSystem actions are registered (ref counted — safe if
-    // Workstation has already registered them). This means IDE actions are
+    // Workstation has already registered them). This means ADE actions are
     // available even when the user isn't looking at the Code Editor.
     if (repoPath) {
       initializeServices(repoPath, repoId).catch(() => {
@@ -237,8 +238,8 @@ export function useOSAgentIDEActions(): void {
       cleanupRef.current = registerCoreActions(repoPath);
     }
 
-    async function handleIDEAction(evt: Event) {
-      const detail = (evt as CustomEvent<IDEActionDetail>).detail;
+    async function handleADEAction(evt: Event) {
+      const detail = (evt as CustomEvent<AdeActionDetail>).detail;
       if (!detail?.correlationId) return;
 
       if (handledCorrelationIdsRef.current.has(detail.correlationId)) return;
@@ -259,7 +260,7 @@ export function useOSAgentIDEActions(): void {
         // ── session.propose ──────────────────────────────────────────────
         // Pre-seed the session creator atoms and navigate the chat panel
         // to the creator view. The AdeAwareSessionCreatorSlot in AppLayout
-        // intercepts onSessionStart and calls sendIdeActionResult with the
+        // intercepts onSessionStart and calls sendAdeActionResult with the
         // new session ID, resolving the Rust-side tool call.
         if (action === "session.propose") {
           const task = String(params.task ?? "");
@@ -330,7 +331,7 @@ export function useOSAgentIDEActions(): void {
             })
           );
 
-          // Do NOT call sendIdeActionResult here — it will be called by
+          // Do NOT call sendAdeActionResult here — it will be called by
           // AdeAwareSessionCreatorSlot once the session is created.
           return;
         }
@@ -343,7 +344,7 @@ export function useOSAgentIDEActions(): void {
               ...(query ? { query } : {}),
             }
           );
-          await sendIdeActionResult(correlationId, {
+          await sendAdeActionResult(correlationId, {
             success: inspectResult.success,
             message: inspectResult.message ?? "Collected GUI manifest",
             data: inspectResult.data,
@@ -365,7 +366,7 @@ export function useOSAgentIDEActions(): void {
                 )
               : manifest.actions;
 
-          await sendIdeActionResult(correlationId, {
+          await sendAdeActionResult(correlationId, {
             success: targetAction ? actions.length === 1 : true,
             message:
               targetAction && actions.length === 0
@@ -377,7 +378,7 @@ export function useOSAgentIDEActions(): void {
         }
 
         if (!action) {
-          await sendIdeActionResult(correlationId, {
+          await sendAdeActionResult(correlationId, {
             success: false,
             message: "Missing action for GUI dispatch",
           });
@@ -386,15 +387,14 @@ export function useOSAgentIDEActions(): void {
 
         // Check if actions are registered (registry might be empty if no repo is selected)
         if (!zodActionRegistry.has(action)) {
-          // Return a helpful error listing available IDE-exposed actions
-          const ideActions = zodActionRegistry.getIDEExposedActions();
-          const availableIds = ideActions.map((act) => act.meta.id);
+          const adeActions = zodActionRegistry.getADEExposedActions();
+          const availableIds = adeActions.map((act) => act.meta.id);
           const message =
             availableIds.length === 0
-              ? `No IDE actions are registered. A repo must be selected in the IDE.`
-              : `Unknown action: "${action}". Available IDE actions: ${availableIds.slice(0, 20).join(", ")}${availableIds.length > 20 ? ` (and ${availableIds.length - 20} more)` : ""}`;
+              ? `No ADE actions are registered. A repo must be selected in the ADE.`
+              : `Unknown action: "${action}". Available ADE actions: ${availableIds.slice(0, 20).join(", ")}${availableIds.length > 20 ? ` (and ${availableIds.length - 20} more)` : ""}`;
 
-          await sendIdeActionResult(correlationId, {
+          await sendAdeActionResult(correlationId, {
             success: false,
             message,
           });
@@ -414,12 +414,12 @@ export function useOSAgentIDEActions(): void {
         // Session actions are backend session control; GUI-layer actions require the explicit global toggle.
         if (
           !isReadOnlyGuiInspect &&
-          !guiControlEnabledRef.current &&
+          !adeManagerEnabledRef.current &&
           category !== "session"
         ) {
-          await sendIdeActionResult(correlationId, {
+          await sendAdeActionResult(correlationId, {
             success: false,
-            message: `${GUI_CONTROL_REQUIRED_MESSAGE} (action="${action}")`,
+            message: `${ADE_MANAGER_REQUIRED_MESSAGE} (action="${action}")`,
           });
           return;
         }
@@ -435,16 +435,16 @@ export function useOSAgentIDEActions(): void {
           const hint =
             nativeToolHints[category] ?? "Use the corresponding native tool";
 
-          await sendIdeActionResult(correlationId, {
+          await sendAdeActionResult(correlationId, {
             success: false,
-            message: `Action "${action}" has a native backend equivalent and is not available via the ide tool. ${hint}.`,
+            message: `Action "${action}" has a native backend equivalent and is not available via the ade tool. ${hint}.`,
           });
           return;
         }
 
         const result = await zodActionRegistry.execute(action, params);
 
-        await sendIdeActionResult(correlationId, {
+        await sendAdeActionResult(correlationId, {
           success: result.success,
           message:
             result.message ??
@@ -456,17 +456,17 @@ export function useOSAgentIDEActions(): void {
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        await sendIdeActionResult(correlationId, {
+        await sendAdeActionResult(correlationId, {
           success: false,
-          message: `IDE action dispatch error: ${errorMessage}`,
+          message: `ADE action dispatch error: ${errorMessage}`,
         }).catch(() => {});
       }
     }
 
-    window.addEventListener("agent-ide-action", handleIDEAction);
+    window.addEventListener("agent-ade-action", handleADEAction);
 
     return () => {
-      window.removeEventListener("agent-ide-action", handleIDEAction);
+      window.removeEventListener("agent-ade-action", handleADEAction);
       cleanupRef.current?.();
       cleanupRef.current = null;
     };

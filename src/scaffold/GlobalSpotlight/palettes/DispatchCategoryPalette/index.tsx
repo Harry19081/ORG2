@@ -155,6 +155,7 @@ export const DispatchCategoryPalette: React.FC<
 > = ({
   isOpen,
   onClose,
+  onGoBackToParent,
   onSelect,
   currentCategory = "cli_agent",
   currentAgentDefinitionId,
@@ -525,6 +526,25 @@ export const DispatchCategoryPalette: React.FC<
     return !data?.isHeader;
   }, []);
 
+  const handleExternalKeyDown = useCallback(
+    (
+      event: React.KeyboardEvent<HTMLInputElement>,
+      internalHandleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
+    ) => {
+      if (
+        (event.key === "Backspace" || event.key === "Delete") &&
+        searchQuery === "" &&
+        onGoBackToParent
+      ) {
+        event.preventDefault();
+        onGoBackToParent();
+        return;
+      }
+      internalHandleKeyDown(event);
+    },
+    [searchQuery, onGoBackToParent]
+  );
+
   const kernel = useSelectorKernel({
     isOpen,
     onClose,
@@ -533,6 +553,7 @@ export const DispatchCategoryPalette: React.FC<
     externalSearchQuery: searchQuery,
     externalSetSearchQuery: setSearchQuery,
     onReset: () => setSearchQuery(""),
+    externalHandleKeyDown: onGoBackToParent ? handleExternalKeyDown : undefined,
   });
 
   const containerHeight = Math.min(88 + items.length * 40, 400);
@@ -592,6 +613,7 @@ export const DispatchCategoryPalette: React.FC<
         items={items}
         placeholder={placeholderLabel ?? tCommon("filters.searchAgentOrOrg")}
         path={path}
+        onRemoveSegment={onGoBackToParent ?? onClose}
         containerHeight={containerHeight}
         afterListSlot={afterListSlot}
       />

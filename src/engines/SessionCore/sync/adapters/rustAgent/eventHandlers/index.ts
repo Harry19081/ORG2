@@ -18,8 +18,6 @@ import {
 } from "../../shared/subagentTracking";
 import type { AgentWSEvent } from "../../shared/types";
 import {
-  handleExitPlanMode,
-  handleIdeAction,
   handlePermissionRequest,
   handlePlanApprovalArchived,
   handlePlanReadyForApproval,
