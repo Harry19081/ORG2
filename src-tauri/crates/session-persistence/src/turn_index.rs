@@ -138,7 +138,7 @@ fn is_user_message(row: &IndexEventRow) -> bool {
 }
 
 /// Lookup of intent ids that the indexer must treat as not yielding a
-/// durable round (Stale / Superseded). Built from the lifecycle store at
+/// durable round (Stale). Built from the lifecycle store at
 /// rebuild time.
 type StaleIntentIds = std::collections::HashSet<String>;
 
@@ -352,9 +352,8 @@ fn build_turn_drafts(rows: &[IndexEventRow], stale_intent_ids: &StaleIntentIds) 
             let row_intent_id = turn_intent_id_for_row(row);
 
             // Lifecycle-pre-durable terminal: this intent will never yield
-            // a durable round (Stale = invalidated, Superseded = replaced
-            // by a later submit). Drop the row entirely so the indexer
-            // does not paint a phantom turn.
+            // a durable round (Stale = invalidated). Drop the row entirely
+            // so the indexer does not paint a phantom turn.
             if let Some(ref intent_id) = row_intent_id {
                 if stale_intent_ids.contains(intent_id) {
                     continue;
@@ -462,7 +461,7 @@ fn rebuild_turn_index_inner(session_id: &str) -> SqliteResult<Vec<CachedTurnSumm
     normalize_session_sequences(&conn, session_id)?;
     let rows = load_index_rows(&conn, session_id)?;
     // Consult the lifecycle store so the indexer can drop rows whose
-    // intent was retired before it ran (Stale / Superseded). Read failure
+    // intent was retired before it ran (Stale). Read failure
     // falls back to an empty set, which preserves the legacy behaviour of
     // building rounds purely from events.
     let stale_intent_ids = load_stale_intent_ids(session_id);

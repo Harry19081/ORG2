@@ -41,7 +41,6 @@ fn map_bridge_status(status: session_bridge::TurnIntentBridgeStatus) -> PsStatus
         B::Failed => PsStatus::Failed,
         B::Cancelled => PsStatus::Cancelled,
         B::Stale => PsStatus::Stale,
-        B::Superseded => PsStatus::Superseded,
     }
 }
 

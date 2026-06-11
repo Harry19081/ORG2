@@ -314,7 +314,6 @@ pub enum TurnIntentBridgeStatus {
     Failed,
     Cancelled,
     Stale,
-    Superseded,
 }
 
 impl TurnIntentBridgeStatus {
@@ -327,7 +326,6 @@ impl TurnIntentBridgeStatus {
             Self::Failed => "failed",
             Self::Cancelled => "cancelled",
             Self::Stale => "stale",
-            Self::Superseded => "superseded",
         }
     }
 }

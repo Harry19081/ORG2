@@ -123,11 +123,11 @@ pub fn init_session_tables(conn: &Connection) -> SqliteResult<()> {
     // One row per logical user intent. Created when a user submission first
     // crosses any wire boundary (frontend dispatch → agent_send_message →
     // scheduler enqueue) and updated as it transitions through queued →
-    // running → completed/failed/cancelled, or through stale / superseded if
-    // Stop or Send-Now retires it before it ever runs. This is the
-    // out-of-band source of truth that lets the turn indexer collapse
-    // synthetic + backend user_message rows that share an id, and that lets
-    // round status be derived from lifecycle state instead of event-count
+    // running → completed/failed/cancelled, or through stale if Stop or
+    // rewind retires it before it ever runs. This is the out-of-band
+    // source of truth that lets the turn indexer collapse synthetic +
+    // backend user_message rows that share an id, and that lets round
+    // status be derived from lifecycle state instead of event-count
     // heuristics.
     conn.execute(
         "CREATE TABLE IF NOT EXISTS session_turn_intents (
@@ -136,7 +136,6 @@ pub fn init_session_tables(conn: &Connection) -> SqliteResult<()> {
             client_message_id TEXT,
             source            TEXT NOT NULL,
             status            TEXT NOT NULL,
-            superseded_by     TEXT,
             created_at        TEXT NOT NULL,
             updated_at        TEXT NOT NULL,
             PRIMARY KEY (session_id, turn_intent_id)
