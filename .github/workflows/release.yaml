@@ -105,7 +105,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: src-tauri/bin
-          key: sidecars-peekaboo-v3.2.3-agent-browser-v0.27.2-aarch64
+          key: sidecars-peekaboo-v3.2.3-agent-browser-v0.27.2-macos
 
       - name: Download sidecar binaries
         run: python3 scripts/tools/download_sidecars.py
