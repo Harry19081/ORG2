@@ -161,6 +161,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
       attachedImages,
       handleImagePaste,
       hasImages,
+      clearAttachedImages,
     } = useInputArea({
       placeholder,
       sessionId: propSessionId,
@@ -200,14 +201,22 @@ const InputArea: React.FC<InputAreaProps> = memo(
         initialContent,
         onEditSubmit,
         attachedImageDataUrls,
+        clearAttachedImages,
         onEditCancel,
         composerInputRef,
       });
     const handleEditSendNow = useCallback(() => {
       if (!composerInputRef.current || !onEditSendNow) return;
       const text = composerInputRef.current.getTextWithPills().trim();
-      if (text) onEditSendNow(text, attachedImageDataUrls);
-    }, [attachedImageDataUrls, onEditSendNow, composerInputRef]);
+      if (!text) return;
+      onEditSendNow(text, attachedImageDataUrls);
+      if (attachedImageDataUrls.length > 0) clearAttachedImages();
+    }, [
+      attachedImageDataUrls,
+      clearAttachedImages,
+      onEditSendNow,
+      composerInputRef,
+    ]);
 
     const {
       handleContainerDragOver,

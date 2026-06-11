@@ -29,6 +29,14 @@ interface UseEditModeOptions {
   onEditSubmit?: (text: string, imageDataUrls?: string[]) => void;
   /** Images newly attached while editing */
   attachedImageDataUrls?: string[];
+  /**
+   * Clears the composer's attached-image atom after a successful submit.
+   * Without this, images pasted during a queue/sent-message edit stay in
+   * `chatImageAttachmentsAtom` after they've been folded into the message —
+   * the strip re-renders next to `editImages` on the next edit (stacked
+   * duplicate) and every subsequent Save folds another copy in.
+   */
+  clearAttachedImages?: () => void;
   /** Callback when edit is cancelled */
   onEditCancel?: () => void;
   /** Ref to the ComposerInput editor handle */
@@ -56,6 +64,7 @@ export function useEditMode({
   initialContent,
   onEditSubmit,
   attachedImageDataUrls = [],
+  clearAttachedImages,
   onEditCancel,
   composerInputRef,
 }: UseEditModeOptions): UseEditModeReturn {
@@ -123,9 +132,18 @@ export function useEditMode({
           text,
           attachedImageDataUrls.length > 0 ? attachedImageDataUrls : undefined
         );
+        // The images are now part of the edited message — drop them from
+        // the composer attachment atom so they aren't shown (or re-folded)
+        // a second time.
+        if (attachedImageDataUrls.length > 0) clearAttachedImages?.();
       }
     }
-  }, [attachedImageDataUrls, onEditSubmit, composerInputRef]);
+  }, [
+    attachedImageDataUrls,
+    clearAttachedImages,
+    onEditSubmit,
+    composerInputRef,
+  ]);
 
   // Handle edit mode cancel (Escape key)
   const handleEditKeyDown = useCallback(

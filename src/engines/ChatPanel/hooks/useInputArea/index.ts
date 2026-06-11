@@ -555,6 +555,7 @@ export function useInputArea(
     attachedImages: imageAttachment.images,
     handleImagePaste: imageAttachment.handleImagePaste,
     hasImages: imageAttachment.hasImages,
+    clearAttachedImages: imageAttachment.clearImages,
   };
 }
 

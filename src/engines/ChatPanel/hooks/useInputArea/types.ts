@@ -252,4 +252,5 @@ export interface UseInputAreaReturn {
   attachedImages: ChatImageAttachment[];
   handleImagePaste: (files: File[]) => void;
   hasImages: boolean;
+  clearAttachedImages: () => void;
 }
