@@ -429,10 +429,9 @@ fn newest_mtime_in_dir(dir: &str) -> Option<String> {
 
 /// Build a map from ide_id -> macOS .app path for plist/Spotlight lookups.
 fn build_app_path_map() -> std::collections::HashMap<String, String> {
-    let mut map = std::collections::HashMap::new();
-
     #[cfg(target_os = "macos")]
     {
+        let mut map = std::collections::HashMap::new();
         let macos_apps: &[(&str, &str)] = &[
             ("vscode", "/Applications/Visual Studio Code.app"),
             (
@@ -459,9 +458,13 @@ fn build_app_path_map() -> std::collections::HashMap<String, String> {
                 map.insert(id.to_string(), path.to_string());
             }
         }
+        return map;
     }
 
-    map
+    #[cfg(not(target_os = "macos"))]
+    {
+        std::collections::HashMap::new()
+    }
 }
 
 /// Convert macOS Spotlight date format ("2026-03-05 14:30:22 +0000") to ISO 8601.

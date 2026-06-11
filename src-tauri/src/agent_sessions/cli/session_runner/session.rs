@@ -84,7 +84,17 @@ fn is_transient_spawn_error(err: &io::Error) -> bool {
     matches!(
         err.kind(),
         io::ErrorKind::WouldBlock | io::ErrorKind::Interrupted
-    ) || err.raw_os_error().is_some_and(|code| code == libc::EAGAIN)
+    ) || transient_spawn_os_error(err)
+}
+
+#[cfg(unix)]
+fn transient_spawn_os_error(err: &io::Error) -> bool {
+    err.raw_os_error().is_some_and(|code| code == libc::EAGAIN)
+}
+
+#[cfg(not(unix))]
+fn transient_spawn_os_error(_err: &io::Error) -> bool {
+    false
 }
 
 /// Run a code session: spawn CLI, parse stdout, broadcast events.

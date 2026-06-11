@@ -239,7 +239,9 @@ pub async fn set_glass_thickness(app: AppHandle, level: String) -> Result<(), St
         tracing::info!("[Glass] thickness set to '{}'", level);
     }
     #[cfg(not(target_os = "macos"))]
-    let _ = level;
+    {
+        let _ = (app, level);
+    }
     Ok(())
 }
 

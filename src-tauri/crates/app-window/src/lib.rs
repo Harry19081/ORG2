@@ -291,7 +291,7 @@ pub fn recreate_main_window(app: &AppHandle) -> Result<(), String> {
 
     println!("📦 [Window] Recreating main window");
 
-    let mut builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+    let builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
         .title("ORGII")
         .inner_size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         .min_inner_size(DEFAULT_MIN_WIDTH, DEFAULT_MIN_HEIGHT)
@@ -301,17 +301,14 @@ pub fn recreate_main_window(app: &AppHandle) -> Result<(), String> {
         .transparent(true)
         .center();
 
-    // macOS-specific styling
     #[cfg(target_os = "macos")]
-    {
-        builder = builder
-            .hidden_title(true)
-            .title_bar_style(TitleBarStyle::Overlay)
-            .traffic_light_position(Position::Logical(LogicalPosition::new(
-                TRAFFIC_LIGHT_X,
-                TRAFFIC_LIGHT_Y,
-            )));
-    }
+    let builder = builder
+        .hidden_title(true)
+        .title_bar_style(TitleBarStyle::Overlay)
+        .traffic_light_position(Position::Logical(LogicalPosition::new(
+            TRAFFIC_LIGHT_X,
+            TRAFFIC_LIGHT_Y,
+        )));
 
     let window = builder
         .build()
@@ -350,7 +347,7 @@ pub fn create_new_app_window(app: &AppHandle) -> Result<(), String> {
 
     println!("📦 [Window] Creating new app window: {}", label);
 
-    let mut builder = WebviewWindowBuilder::new(app, &label, WebviewUrl::default())
+    let builder = WebviewWindowBuilder::new(app, &label, WebviewUrl::default())
         .title("ORGII")
         .inner_size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         .min_inner_size(DEFAULT_MIN_WIDTH, DEFAULT_MIN_HEIGHT)
@@ -360,17 +357,14 @@ pub fn create_new_app_window(app: &AppHandle) -> Result<(), String> {
         .transparent(true)
         .center();
 
-    // macOS-specific styling
     #[cfg(target_os = "macos")]
-    {
-        builder = builder
-            .hidden_title(true)
-            .title_bar_style(TitleBarStyle::Overlay)
-            .traffic_light_position(Position::Logical(LogicalPosition::new(
-                TRAFFIC_LIGHT_X,
-                TRAFFIC_LIGHT_Y,
-            )));
-    }
+    let builder = builder
+        .hidden_title(true)
+        .title_bar_style(TitleBarStyle::Overlay)
+        .traffic_light_position(Position::Logical(LogicalPosition::new(
+            TRAFFIC_LIGHT_X,
+            TRAFFIC_LIGHT_Y,
+        )));
 
     let window = builder
         .build()

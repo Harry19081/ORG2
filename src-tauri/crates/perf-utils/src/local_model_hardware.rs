@@ -4,6 +4,7 @@ use sysinfo::{CpuRefreshKind, System};
 
 const BACKEND_CPU: &str = "cpu";
 const BACKEND_CUDA: &str = "cuda";
+#[cfg(target_os = "macos")]
 const BACKEND_METAL: &str = "metal";
 const GPU_DETECTION_STATUS_DETECTED: &str = "detected";
 const GPU_DETECTION_STATUS_NOT_AVAILABLE: &str = "not_available";

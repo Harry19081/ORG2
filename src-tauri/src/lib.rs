@@ -797,6 +797,9 @@ pub fn run() {
             std::process::exit(1);
         })
         .run(|app_handle, event| {
+            #[cfg(not(target_os = "macos"))]
+            let _ = &app_handle;
+
             match event {
                 // Handle macOS file/folder open events (from Dock, Finder, Expose)
                 #[cfg(target_os = "macos")]
@@ -833,6 +836,7 @@ pub fn run() {
         });
 }
 
+#[cfg(target_os = "macos")]
 /// Handle files/folders opened via macOS Dock, Finder, or Expose
 ///
 /// This is triggered when:

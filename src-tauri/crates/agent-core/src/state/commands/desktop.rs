@@ -131,6 +131,7 @@ impl DesktopPermissionName {
         }
     }
 
+    #[cfg(target_os = "macos")]
     fn grant_instructions(self) -> &'static str {
         match self {
             DesktopPermissionName::Accessibility => {

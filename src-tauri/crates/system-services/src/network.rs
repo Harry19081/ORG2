@@ -21,6 +21,7 @@ pub struct VpnInterface {
 }
 
 /// Known VPN interface prefixes and their human-readable types
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 const VPN_PREFIXES: &[(&str, &str)] = &[
     ("utun", "VPN Tunnel"),
     ("tun", "TUN"),
@@ -32,6 +33,7 @@ const VPN_PREFIXES: &[(&str, &str)] = &[
     ("tailscale", "Tailscale"),
 ];
 
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 fn classify_interface(name: &str) -> Option<&'static str> {
     let lower = name.to_lowercase();
     for &(prefix, kind) in VPN_PREFIXES {
