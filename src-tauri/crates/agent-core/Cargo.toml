@@ -180,6 +180,10 @@ serial_test = "3"
 wiremock = "0.6"
 insta = { version = "1", features = ["yaml", "redactions"] }
 assert_matches = "1"
+# Tests that construct a reqwest::Client need a rustls crypto provider
+# (workspace reqwest is rustls-no-provider); see test_support.rs. Same
+# `ring` feature set as key-vault / the root app crate so cargo unifies.
+tokio-rustls = { version = "0.26", default-features = false, features = ["logging", "tls12", "ring"] }
 
 [build-dependencies]
 prost = "0.14.3"

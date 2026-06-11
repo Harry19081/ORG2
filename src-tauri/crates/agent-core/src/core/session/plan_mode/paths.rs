@@ -263,7 +263,7 @@ mod tests {
         let path = plan_file_path(&ctx).unwrap();
         assert_eq!(
             path,
-            Path::new("/tmp/myproj/.orgii/plans/refactor-auth-flow_deadbeef.plan.md")
+            Path::new("/tmp/myworkspace/.orgii/plans/refactor-auth-flow_deadbeef.plan.md")
         );
     }
 
@@ -279,7 +279,7 @@ mod tests {
         let path = plan_file_path(&ctx).unwrap();
         assert_eq!(
             path,
-            Path::new("/tmp/myproj/.orgii/plans/draft_abcd1234-agent-child-1.plan.md")
+            Path::new("/tmp/myworkspace/.orgii/plans/draft_abcd1234-agent-child-1.plan.md")
         );
     }
 }

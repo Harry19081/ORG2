@@ -12,7 +12,22 @@
 
 use async_trait::async_trait;
 use serde_json::{json, Value};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, Once};
+
+/// Install the `ring` rustls crypto provider exactly once per test process.
+///
+/// The workspace `reqwest` is built with `rustls-no-provider`, so any test
+/// that constructs a `reqwest::Client` (directly, or indirectly via
+/// `create_optimized_client` / `WebSearchTool::new`) panics with
+/// `"No provider set"` unless a crypto provider has been installed. The
+/// production binary installs it in `lib.rs::run`; tests need this
+/// one-shot bootstrap. Idempotent and cheap to call repeatedly.
+pub fn install_crypto_provider_for_tests() {
+    static INIT: Once = Once::new();
+    INIT.call_once(|| {
+        let _ = tokio_rustls::rustls::crypto::ring::default_provider().install_default();
+    });
+}
 
 // ============================================
 // Message Builders

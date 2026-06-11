@@ -47,8 +47,11 @@ fn default_forbidden_paths() -> Vec<String> {
     Vec::new()
 }
 
+/// Effectively-unlimited rate cap. The old default (100/hour) throttled
+/// legitimate long refactor sessions mid-task; the tracker is kept as a
+/// runaway-loop circuit breaker only.
 fn default_max_actions_per_hour() -> u32 {
-    100
+    100_000
 }
 
 impl Default for SecurityConfig {

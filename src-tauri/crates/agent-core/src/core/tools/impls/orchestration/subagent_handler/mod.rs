@@ -166,7 +166,10 @@ mod tests {
         assert_eq!(event.action_type, "tool_call");
         assert_eq!(event.call_id, Some("call-42".to_string()));
         assert_eq!(event.display_status, EventDisplayStatus::Running);
-        assert!(event.extracted.is_some());
+        // The EXTRACTOR IoC slot is registered by the app layer at startup;
+        // in unit tests it is empty so `extracted` stays None. Assert the
+        // recompute hook ran (stamps `last_extract_at`) instead.
+        assert!(event.last_extract_at.is_some());
     }
 
     #[test]

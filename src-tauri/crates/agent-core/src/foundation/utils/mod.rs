@@ -147,19 +147,23 @@ pub fn build_http_client_with_proxy(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::install_crypto_provider_for_tests;
 
     #[test]
     fn proxy_none_yields_direct_client() {
+        install_crypto_provider_for_tests();
         let _ = build_http_client_with_proxy(std::time::Duration::from_secs(5), None);
     }
 
     #[test]
     fn proxy_empty_string_treated_as_direct() {
+        install_crypto_provider_for_tests();
         let _ = build_http_client_with_proxy(std::time::Duration::from_secs(5), Some("   "));
     }
 
     #[test]
     fn proxy_valid_http_url_accepted() {
+        install_crypto_provider_for_tests();
         let _ = build_http_client_with_proxy(
             std::time::Duration::from_secs(5),
             Some("http://127.0.0.1:8080"),
@@ -168,6 +172,7 @@ mod tests {
 
     #[test]
     fn proxy_invalid_url_falls_back_to_direct() {
+        install_crypto_provider_for_tests();
         let _ = build_http_client_with_proxy(
             std::time::Duration::from_secs(5),
             Some("not a valid url"),

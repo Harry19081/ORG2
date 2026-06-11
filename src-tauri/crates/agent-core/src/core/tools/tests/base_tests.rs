@@ -153,6 +153,7 @@ fn llm_description_default_returns_none() {
 fn web_search_llm_description_contains_current_year() {
     use crate::tools::impls::web::web_search::WebSearchTool;
 
+    crate::test_support::install_crypto_provider_for_tests();
     let tool = WebSearchTool::new(Some("test-key".into()));
     let desc = tool
         .llm_description()

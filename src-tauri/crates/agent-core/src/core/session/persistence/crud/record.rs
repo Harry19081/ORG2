@@ -312,7 +312,7 @@ mod tests {
                     0, '2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z', 'sde',
                     NULL, NULL, '/tmp/project', NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                     'builtin:sde', NULL, NULL, NULL, '{}', 'hosted_key', 'plan',
-                    'half-typed reply', 'evt-42',
+                    NULL, 'half-typed reply', 'evt-42',
                     NULL, 0
                 "#,
                 [],

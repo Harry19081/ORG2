@@ -429,8 +429,14 @@ fn restored_sm_state_enables_sm_compact() {
         "SM-compact should work with restored state"
     );
     let compacted = result.unwrap();
+    // compacted_summary_message emits structured content blocks
+    // ([{type:"text", text:...}]) so the prompt-cache scope marker can
+    // ride on the block — read the first block's text.
     let first_content = compacted[0]
         .get("content")
+        .and_then(|val| val.as_array())
+        .and_then(|blocks| blocks.first())
+        .and_then(|block| block.get("text"))
         .and_then(|val| val.as_str())
         .unwrap();
     assert!(first_content.contains("Working on file X"));

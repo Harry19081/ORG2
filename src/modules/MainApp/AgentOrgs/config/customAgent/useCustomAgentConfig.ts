@@ -6,7 +6,8 @@
  * etc.) consume a flat config shape with paths like `security.autonomy`
  * and `disabledMcpServers`. This hook projects the typed `AgentDefinition`
  * schema onto that shape so those sections can be reused unchanged.
- * Writes are debounced and flushed through `agent_definitions_update`.
+ * Writes are debounced and flushed through the caller-supplied
+ * `onPersist` (which routes to `agent_def_update_patch`).
  *
  * Path mapping (frontend section path → AgentDefinition field):
  * - `security.autonomy`     → `agentPolicy.autonomy`
