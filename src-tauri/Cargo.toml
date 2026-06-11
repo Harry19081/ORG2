@@ -199,7 +199,6 @@ tauri-plugin-store = "2"
 tauri-plugin-drag = "2"
 tauri-plugin-notification = "2"
 tauri-plugin-webdriver-automation = { version = "0.1", optional = true }
-tauri-plugin-liquid-glass = "0.1"
 open = "5"     # Open URLs/files in default app
 portable-pty = "0.9"
 tokio = { workspace = true }
@@ -232,8 +231,8 @@ app_platform = { path = "crates/app-platform" }
 # `set_sensitive_file_permissions` chmod.
 app_utils = { path = "crates/app-utils" }
 
-# Native window helpers (macOS traffic-light positioning + liquid-glass
-# background, Windows DWM rounded corners, "Open new window" /
+# Native window helpers (macOS traffic-light positioning,
+# Windows DWM rounded corners, "Open new window" /
 # "Recreate main window" flows). Used by `app::lib`, the macOS app menu,
 # and `browser::windows`. Synchronous Tauri operations only — no IoC
 # hooks, no async runtime.

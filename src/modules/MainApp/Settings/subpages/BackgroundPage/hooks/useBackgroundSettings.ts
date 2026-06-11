@@ -39,7 +39,6 @@ import {
   sanitizeSidebarOpacity,
 } from "@src/store/ui/backgroundConfigAtom";
 import { getStorageInfo } from "@src/util/core/storage/backgroundImage";
-import { setGlassThickness } from "@src/util/platform/ipcRenderer";
 import { prewarmColor } from "@src/util/ui/theme/glassMaterial";
 import { preloadThemeCss, swapThemeCss } from "@src/util/ui/theme/swapThemeCss";
 import { showThemeTransitionCover } from "@src/util/ui/theme/themeTransitionCover";
@@ -198,14 +197,6 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
 
     cleanupAndMigrate();
   }, [config, migrateImages, setConfig]);
-
-  // Sync the Rust tint to whatever level the stored config has.
-  // setGlassThickness is idempotent, so re-firing on changes is fine.
-  useEffect(() => {
-    if (config.glass) {
-      setGlassThickness(config.glass);
-    }
-  }, [config.glass]);
 
   // Warm the browser's stylesheet cache for every theme variant the moment
   // the user lands on the background page. The actual swap on click then

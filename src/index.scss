@@ -300,7 +300,7 @@ img {
   // Use overflow: clip as a defensive measure against scrollIntoView calls
   // on hidden components that could scroll the root element
   overflow: clip;
-  background: transparent;
+  background: var(--color-bg-2);
 }
 
 // KeepAlive wraps each cached route in its own DOM node. The wrapper must
@@ -371,13 +371,13 @@ select,
 }
 html {
   overscroll-behavior-x: none;
-  background: transparent;
+  background: var(--color-bg-2);
 }
 body {
   overscroll-behavior-x: none;
   border-radius: var(--border-radius-window);
   overflow: hidden;
-  background: transparent;
+  background: var(--color-bg-2);
 }
 
 // Ensure popup layers are not clipped by body's overflow: hidden

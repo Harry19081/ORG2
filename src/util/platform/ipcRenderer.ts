@@ -114,16 +114,6 @@ async function getBackgroundImageBase64(): Promise<string | null> {
   }
 }
 
-export const setGlassThickness = async (
-  level: "regular" | "medium" | "thick"
-): Promise<void> => {
-  try {
-    await invoke("set_glass_thickness", { level });
-  } catch {
-    // Not available or failed — continue silently
-  }
-};
-
 export const setWindowVibrancy = async (enabled: boolean): Promise<void> => {
   try {
     let bgColor: [number, number, number] | null = null;
