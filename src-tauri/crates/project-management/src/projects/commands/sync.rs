@@ -37,6 +37,7 @@ mod sync_oauth;
 mod sync_webhook;
 
 pub use sync_adapter::*;
+#[cfg(debug_assertions)]
 pub use sync_debug::*;
 pub use sync_import::*;
 pub use sync_oauth::*;
