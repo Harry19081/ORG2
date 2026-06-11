@@ -11,7 +11,6 @@
 #   APPLE_TEAM_ID                   — 10-char Apple Team ID
 #   TAURI_SIGNING_PRIVATE_KEY       — Tauri updater ed25519 private key
 #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD — password for the updater key
-#   AZURE_STORAGE_CONNECTION_STRING — Azure Blob Storage connection string (for updater hosting)
 
 name: "Release ORGII (macOS)"
 
@@ -147,11 +146,10 @@ jobs:
       - name: Generate latest.json for updater
         env:
           TAG: ${{ github.ref_name }}
-          BLOB_BASE_URL: ${{ vars.AZURE_BLOB_BASE_URL }}
         run: |
           SIGNATURE=$(cat "${{ steps.artifacts.outputs.updater_sig }}")
           TAR_NAME="${{ steps.artifacts.outputs.updater_tar_name }}"
-          DOWNLOAD_URL="${BLOB_BASE_URL}/${TAR_NAME}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/${TAR_NAME}"
 
           jq -n \
             --arg version "${TAG#v}" \
@@ -165,38 +163,18 @@ jobs:
           echo "=== latest.json ==="
           cat latest.json
 
-      # ── Upload updater artifacts to Azure Blob Storage ────────
-      - name: Upload to Azure Blob Storage
-        env:
-          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-        run: |
-          brew install azure-cli
-          az storage blob upload \
-            --container-name releases \
-            --file "${{ steps.artifacts.outputs.updater_tar }}" \
-            --name "${{ steps.artifacts.outputs.updater_tar_name }}" \
-            --overwrite
-          az storage blob upload \
-            --container-name releases \
-            --file "${{ steps.artifacts.outputs.updater_sig }}" \
-            --name "${{ steps.artifacts.outputs.updater_sig_name }}" \
-            --overwrite
-          az storage blob upload \
-            --container-name releases \
-            --file latest.json \
-            --name latest.json \
-            --overwrite
-          echo "=== Uploaded to Azure Blob Storage ==="
-
-      # ── Create GitHub Release (for team manual download) ──────
+      # ── Create GitHub Release ─────────────────────────────────
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }}
+          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-nightly') }}
           generate_release_notes: true
           files: |
             ${{ steps.artifacts.outputs.dmg }}
+            ${{ steps.artifacts.outputs.updater_tar }}
+            ${{ steps.artifacts.outputs.updater_sig }}
+            latest.json
 
       # ── Cleanup keychain (only if certificate was imported) ────
       - name: Cleanup keychain
