@@ -275,13 +275,19 @@ const TextSelectionDropdown: React.FC<TextSelectionDropdownProps> = ({
   // Select menu items based on source
   const menuItems = source === "editor" ? EDITOR_MENU_ITEMS : MENU_ITEMS;
 
-  // Calculate safe position to keep dropdown within viewport
-  // Use useLayoutEffect to calculate position after render but before paint
+  // Phase 1 (layout): hide the dropdown and compute the clamped position into
+  // a ref. Direct DOM opacity mutation avoids setState-in-layoutEffect.
+  // Under CSS zoom, position coords come from MouseEvent.clientX/Y ÷ uiScale
+  // (layout pixels). Both getBoundingClientRect() and getViewportSize() return
+  // values in the same layout-pixel space, so clamping is correct at any zoom.
   useLayoutEffect(() => {
-    if (!visible || !dropdownRef.current) {
-      calculatedPositionRef.current = position;
-      return;
-    }
+    if (!dropdownRef.current) return;
+
+    // Hide immediately so the browser never paints the dropdown at a stale or
+    // unclamped position while the new safe coords are being computed.
+    dropdownRef.current.style.opacity = "0";
+
+    if (!visible) return;
 
     const dropdownRect = dropdownRef.current.getBoundingClientRect();
     const { width: viewportWidth, height: viewportHeight } = getViewportSize();
@@ -307,9 +313,15 @@ const TextSelectionDropdown: React.FC<TextSelectionDropdownProps> = ({
     calculatedPositionRef.current = { x: safeX, y: safeY };
   }, [visible, position]);
 
-  // Sync calculated position to state (separate effect to avoid setState-in-effect warning)
+  // Phase 2 (effect): commit the clamped position to state and reveal the
+  // dropdown. Runs after the layout phase above, so safePosition is already
+  // correct when the browser first paints the visible dropdown.
   useEffect(() => {
+    if (!visible) return;
     setSafePosition(calculatedPositionRef.current);
+    if (dropdownRef.current) {
+      dropdownRef.current.style.opacity = "";
+    }
   }, [visible, position]);
 
   // Handle menu item click
