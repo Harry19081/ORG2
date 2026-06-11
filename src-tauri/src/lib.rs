@@ -473,7 +473,6 @@ pub fn run() {
             EnvFilter::new(
                 "info,\
                  key_vault=debug,\
-                 app_lib::osagent=debug,\
                  app_lib::agent_core=debug,\
                  app_lib::agent_core::tool_infra=debug,\
                  hyper=warn,\
@@ -913,26 +912,44 @@ pub fn run() {
             // session no longer exists in the DB. This replaces the legacy
             // shadow-git prune.
             tauri::async_runtime::spawn(async {
-                let live_ids: Vec<String> = match database::db::get_connection() {
-                    Ok(conn) => match conn.prepare("SELECT session_id FROM agent_sessions") {
-                        Ok(mut stmt) => stmt
-                            .query_map([], |row| row.get::<_, String>(0))
-                            .and_then(|rows| rows.collect::<Result<Vec<_>, _>>())
-                            .unwrap_or_default(),
-                        Err(err) => {
-                            tracing::warn!(
-                                "[startup] failed to prepare live-session query: {}",
-                                err
-                            );
-                            Vec::new()
-                        }
-                    },
+                let conn = match database::db::get_connection() {
+                    Ok(conn) => conn,
                     Err(err) => {
                         tracing::warn!(
-                            "[startup] failed to open DB for live-session query: {}",
+                            "[startup] failed to open DB for live-session query; skipping file-history prune to avoid orphan wipe: {}",
                             err
                         );
-                        Vec::new()
+                        return;
+                    }
+                };
+                let mut stmt = match conn.prepare("SELECT session_id FROM agent_sessions") {
+                    Ok(stmt) => stmt,
+                    Err(err) => {
+                        tracing::warn!(
+                            "[startup] failed to prepare live-session query; skipping file-history prune to avoid orphan wipe: {}",
+                            err
+                        );
+                        return;
+                    }
+                };
+                let rows = match stmt.query_map([], |row| row.get::<_, String>(0)) {
+                    Ok(rows) => rows,
+                    Err(err) => {
+                        tracing::warn!(
+                            "[startup] failed to run live-session query; skipping file-history prune to avoid orphan wipe: {}",
+                            err
+                        );
+                        return;
+                    }
+                };
+                let live_ids: Vec<String> = match rows.collect::<Result<Vec<_>, _>>() {
+                    Ok(ids) => ids,
+                    Err(err) => {
+                        tracing::warn!(
+                            "[startup] failed to decode live-session rows; skipping file-history prune to avoid orphan wipe: {}",
+                            err
+                        );
+                        return;
                     }
                 };
                 match agent_core::tools::file_history::prune_orphan_sessions(&live_ids) {
