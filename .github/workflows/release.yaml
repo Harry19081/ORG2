@@ -15,16 +15,13 @@
 # Required GitHub Secrets (Windows — Azure Trusted Signing):
 #   AZURE_TENANT_ID                 — Entra ID tenant ID
 #   AZURE_CLIENT_ID                 — App Registration client ID
-#   AZURE_CLIENT_SECRET             — App Registration client secret
-#   AZURE_TRUSTED_SIGNING_ENDPOINT  — e.g. https://eus.codesigning.azure.net/
-#   AZURE_TRUSTED_SIGNING_ACCOUNT   — Trusted Signing account name
-#   AZURE_TRUSTED_SIGNING_PROFILE   — Certificate Profile name
+#   AZURE_SUBSCRIPTION_ID           — Azure subscription ID
+#   (client secret handled via azure/login OIDC — no secret needed if federated)
 #
-# Azure Trusted Signing setup:
-#   1. portal.azure.com → create Trusted Signing Account (Basic tier ~$9.99/mo)
-#   2. Create a Certificate Profile (type: Public Trust)
-#   3. Create an App Registration in Entra ID; note Client ID + Tenant ID; create a Client Secret
-#   4. Grant the App Registration the "Artifact Signing Certificate Profile Signer" role
+# Azure Trusted Signing config (already provisioned):
+#   Account:  orgii-codesign  (East US — https://eus.codesigning.azure.net/)
+#   Profile:  orgii-windows   (Public Trust, SHA256)
+#   Role:     Artifact Signing Certificate Profile Signer on the profile
 
 name: "Release ORGII"
 
@@ -300,3 +297,130 @@ jobs:
           if [ -f "$KEYCHAIN_PATH" ]; then
             security delete-keychain "$KEYCHAIN_PATH"
           fi
+
+  # ── Windows x64 build ─────────────────────────────────────────────────
+  build-windows:
+    name: Build & Release (Windows x64)
+    runs-on: windows-latest
+    needs: build-and-release  # upload to the release the macOS job already created
+    env:
+      HAS_AZURE_SIGNING: ${{ secrets.AZURE_CLIENT_ID != '' }}
+    steps:
+      # ── Checkout ────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # ── Stamp version from git tag ───────────────────────────────
+      - name: Set version from tag
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" package.json
+
+      # ── Node.js + pnpm ──────────────────────────────────────────
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── Rust ────────────────────────────────────────────────────
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          shared-key: "release-windows-x64"
+
+      # ── Download sidecar binaries (agent-browser Windows) ───────
+      - name: Cache sidecar binaries
+        uses: actions/cache@v5
+        with:
+          path: src-tauri/bin
+          key: sidecars-agent-browser-v0.27.2-windows
+
+      - name: Download sidecar binaries
+        run: python3 scripts/tools/download_sidecars.py
+
+      # ── Build Tauri app ──────────────────────────────────────────
+      - name: Build ORGII
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: pnpm tauri build --target x86_64-pc-windows-msvc
+
+      # ── Sign with Azure Trusted Signing ─────────────────────────
+      - name: Azure login
+        if: env.HAS_AZURE_SIGNING == 'true'
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign Windows artifacts
+        if: env.HAS_AZURE_SIGNING == 'true'
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: orgii-codesign
+          certificate-profile-name: orgii-windows
+          files-folder: src-tauri\target\x86_64-pc-windows-msvc\release\bundle
+          files-folder-filter: exe,msi
+          files-folder-recurse: true
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      # ── Gather artifacts ─────────────────────────────────────────
+      - name: Gather release artifacts
+        id: artifacts
+        shell: bash
+        run: |
+          BUNDLE_DIR="src-tauri/target/x86_64-pc-windows-msvc/release/bundle"
+
+          MSI=$(find "$BUNDLE_DIR/msi" -name "*.msi" ! -name "*.zip" | head -1)
+          MSI_ZIP=$(find "$BUNDLE_DIR/msi" -name "*.msi.zip" | head -1)
+          MSI_SIG=$(find "$BUNDLE_DIR/msi" -name "*.msi.zip.sig" | head -1)
+          NSIS=$(find "$BUNDLE_DIR/nsis" -name "*.exe" ! -name "*.zip" | head -1)
+          NSIS_ZIP=$(find "$BUNDLE_DIR/nsis" -name "*.nsis.zip" | head -1)
+          NSIS_SIG=$(find "$BUNDLE_DIR/nsis" -name "*.nsis.zip.sig" | head -1)
+
+          echo "msi=$MSI"             >> "$GITHUB_OUTPUT"
+          echo "msi_zip=$MSI_ZIP"     >> "$GITHUB_OUTPUT"
+          echo "msi_sig=$MSI_SIG"     >> "$GITHUB_OUTPUT"
+          echo "nsis=$NSIS"           >> "$GITHUB_OUTPUT"
+          echo "nsis_zip=$NSIS_ZIP"   >> "$GITHUB_OUTPUT"
+          echo "nsis_sig=$NSIS_SIG"   >> "$GITHUB_OUTPUT"
+
+          echo "=== Windows artifacts ==="
+          echo "MSI:      $MSI"
+          echo "NSIS:     $NSIS"
+
+      # ── Upload to existing GitHub Release ───────────────────────
+      - name: Upload Windows artifacts to release
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-nightly') }}
+          files: |
+            ${{ steps.artifacts.outputs.msi }}
+            ${{ steps.artifacts.outputs.msi_zip }}
+            ${{ steps.artifacts.outputs.msi_sig }}
+            ${{ steps.artifacts.outputs.nsis }}
+            ${{ steps.artifacts.outputs.nsis_zip }}
+            ${{ steps.artifacts.outputs.nsis_sig }}
