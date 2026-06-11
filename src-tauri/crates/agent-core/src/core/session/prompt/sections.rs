@@ -13,6 +13,8 @@ use super::helpers::{cap_text, load_conventions};
 use super::registry::{order, AppliesDecision, PromptCtx, PromptSection, PromptSource};
 use super::section_builders::*;
 
+pub use super::section_builders::build_agent_org_context_section;
+
 use crate::skills::loader::SkillsLoader;
 use crate::tools::names as tool_names;
 

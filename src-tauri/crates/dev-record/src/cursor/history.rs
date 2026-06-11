@@ -28,27 +28,20 @@ use serde::Serialize;
 
 use core_types::activity::ActivityChunk;
 
-use crate::cursor_db;
+use super::db as cursor_db;
 
-mod cursor_db_helpers;
-mod cursor_db_io;
-mod cursor_db_models;
-mod cursor_db_summaries;
-
-use cursor_db_helpers::{
+use super::helpers::{
     build_fallback_user_chunk, build_unloaded_turn_placeholder_chunk, bubbles_to_chunks,
     cache_row_to_session_row, composer_source_updated_at, is_listable_cursor_session,
 };
-use cursor_db_io::{load_bubbles_by_id, load_composer_for_order, open_cursor_db};
-use cursor_db_models::{CursorComposerContext, OrderedBubble, RawComposerHeader};
-use cursor_db_summaries::{
+use super::io::{load_bubbles_by_id, load_composer_for_order, open_cursor_db};
+use super::models::{CursorComposerContext, OrderedBubble, RawComposerHeader};
+use super::summaries::{
     build_cursor_ide_turn_summaries, cursor_ide_summary_source_fingerprint,
     load_cached_cursor_ide_turn_summaries, upsert_cursor_ide_turn_summaries,
 };
 
-// Re-export the public turn summary type so callers can use it without knowing
-// the internal module structure.
-pub use cursor_db_models::CursorIdeTurnSummary;
+pub use super::models::CursorIdeTurnSummary;
 
 // Items brought into scope so the test module's `use super::*` can reach them.
 #[cfg(test)]
@@ -56,14 +49,14 @@ use rusqlite::Connection;
 #[cfg(test)]
 use serde_json::{json, Value};
 #[cfg(test)]
-use cursor_db_helpers::{
+use super::helpers::{
     assistant_text_bubble_to_chunk, assistant_tool_bubble_to_chunk, cursor_tool_name_to_canonical,
     normalize_created_at, parse_inner_json, user_bubble_to_chunk,
 };
 #[cfg(test)]
-use cursor_db_io::load_content_blob;
+use super::io::load_content_blob;
 #[cfg(test)]
-use cursor_db_models::{RawBubble, RawComposerForOrder, RawCursorSubagentInfo, RawToolFormerData};
+use super::models::{RawBubble, RawComposerForOrder, RawCursorSubagentInfo, RawToolFormerData};
 
 // ============================================================================
 // Constants
@@ -129,8 +122,6 @@ pub struct CursorIdeSessionPage {
     /// row only when more is actually available.
     pub has_more: bool,
 }
-
-pub use cursor_db_models::CursorIdeTurnSummary;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -428,7 +419,7 @@ pub fn load_initial_window_for_session(
                 chunks.push(build_fallback_user_chunk(
                     session_id,
                     &header.bubble_id,
-                    cursor_db_helpers::fallback_turn_created_at(&order, &bubbles_by_id, index),
+                    super::helpers::fallback_turn_created_at(&order, &bubbles_by_id, index),
                 ));
             }
         }
@@ -527,5 +518,5 @@ pub fn load_turn_window_for_session(
 }
 
 #[cfg(test)]
-#[path = "cursor_db_history_tests.rs"]
+#[path = "history_tests.rs"]
 mod tests;

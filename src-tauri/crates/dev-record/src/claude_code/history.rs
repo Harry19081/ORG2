@@ -497,5 +497,5 @@ fn file_mtime_ms(path: &Path) -> Result<i64, String> {
 }
 
 #[cfg(test)]
-#[path = "claude_code_history_tests.rs"]
+#[path = "history_tests.rs"]
 mod tests;

@@ -519,5 +519,5 @@ fn file_mtime_ms(path: &Path) -> Result<i64, String> {
 }
 
 #[cfg(test)]
-#[path = "codex_app_tests.rs"]
+#[path = "app_tests.rs"]
 mod tests;

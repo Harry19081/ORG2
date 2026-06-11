@@ -605,5 +605,5 @@ fn windsurf_profile_db_path(root: PathBuf) -> PathBuf {
 }
 
 #[cfg(test)]
-#[path = "windsurf_history_tests.rs"]
+#[path = "history_tests.rs"]
 mod tests;

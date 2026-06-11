@@ -25,10 +25,15 @@
 //! | `sync_import`  | Bulk import, conflict resolution, outbox problems |
 //! | `sync_debug`   | Debug-only e2e helpers (`#[cfg(debug_assertions)]`) |
 
+#[path = "sync_adapter.rs"]
 mod sync_adapter;
+#[path = "sync_debug.rs"]
 mod sync_debug;
+#[path = "sync_import.rs"]
 mod sync_import;
+#[path = "sync_oauth.rs"]
 mod sync_oauth;
+#[path = "sync_webhook.rs"]
 mod sync_webhook;
 
 pub use sync_adapter::*;
