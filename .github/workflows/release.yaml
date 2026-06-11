@@ -24,7 +24,7 @@ permissions:
 jobs:
   build-and-release:
     name: Build & Release (macOS aarch64)
-    runs-on: macos-latest # Apple Silicon runner
+    runs-on: self-hosted
     env:
       HAS_APPLE_CERT: ${{ secrets.APPLE_CERTIFICATE != '' }}
     steps:
