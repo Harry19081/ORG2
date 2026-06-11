@@ -134,4 +134,24 @@ staged file lint stats
       value: "https://example.com/docs",
     });
   });
+
+  it("does not treat custom URI schemes embedded in text as drive-letter paths", () => {
+    const references = extractMessageReferences(
+      "看一下 @session://abc-123/456 的逻辑链"
+    );
+
+    expect(
+      references.find((item) => item.kind === "local_path")
+    ).toBeUndefined();
+  });
+
+  it("does not treat lowercase keywords inside other words as home-relative roots", () => {
+    const references = extractMessageReferences(
+      "Visit subdocuments/readme.md inside the project"
+    );
+
+    expect(
+      references.find((item) => item.kind === "local_path")
+    ).toBeUndefined();
+  });
 });

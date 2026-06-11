@@ -40,8 +40,13 @@ import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 
 const WEB_URL_PATTERN = /https?:\/\/[^\s<>"'`\])}]+/gi;
+// Drive letters (`C:\`, `D:/`) only count when they sit at a token boundary
+// AND the character right after the separator is itself a path character —
+// not another slash. Without that guard, custom URI schemes like
+// `session://…` or `terminal://…` were being chopped to `n://…` and
+// rendered as a fake "n:" path card.
 const LOCAL_PATH_PATTERN =
-  /(?:~\/|(?:\.\.\/|\.\/)|[A-Za-z]:[\\/]|\/(?:Users|home|Volumes|Applications|tmp|var|opt|usr|etc)\/|(?:documents|desktop|downloads|github|users)\/)[^\s<>"'`\])}]+/gi;
+  /(?:~\/|(?:\.\.\/|\.\/)|(?<![A-Za-z0-9])[A-Za-z]:[\\/](?=[^\s<>"'`\\/\])}])|\/(?:Users|home|Volumes|Applications|tmp|var|opt|usr|etc)\/|(?<![A-Za-z0-9])(?:documents|desktop|downloads|github|users)\/)[^\s<>"'`\])}]+/gi;
 const TRAILING_REFERENCE_PUNCTUATION_PATTERN = /[.,;:!?]+$/;
 const MAX_REFERENCE_CARDS = 4;
 const COMMIT_METADATA_LOOKUP_LIMIT = 200;
