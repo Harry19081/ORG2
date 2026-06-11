@@ -17,7 +17,7 @@ import {
 } from "@src/store/workstation/projectManager";
 import { STORY_PERSONAL_ORG_FILTER_ID } from "@src/store/workstation/tabs";
 
-import { BenchmarkRunBuilder } from "./BenchmarkRunBuilder";
+import { BenchmarkRunBuilder } from "./panels/BenchmarkRunBuilder";
 import type { ChatPanelProps, ChatPanelRegionNotice } from "./types";
 
 type SessionCreatorSlot = NonNullable<ChatPanelProps["sessionCreatorSlot"]>;

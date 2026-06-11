@@ -272,5 +272,3 @@ export const WorkStationViewService = {
     );
   },
 };
-
-export default WorkStationViewService;

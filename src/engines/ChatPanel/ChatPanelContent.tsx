@@ -13,11 +13,11 @@ import type {
 } from "@src/store/ui/chatPanelAtom";
 
 import ChatView from "./ChatView";
-import ProjectPanelView from "./ProjectPanelView";
-import WorkItemPanelView from "./WorkItemPanelView";
-import WorkspaceDashboardPanelView from "./WorkspaceDashboardPanelView";
-import WorkspaceExplorePanelView from "./WorkspaceExplorePanelView";
-import WorkspaceOverviewPanelView from "./WorkspaceOverviewPanelView";
+import ProjectPanelView from "./panels/ProjectPanelView";
+import WorkItemPanelView from "./panels/WorkItemPanelView";
+import WorkspaceDashboardPanelView from "./panels/WorkspaceDashboardPanelView";
+import WorkspaceExplorePanelView from "./panels/WorkspaceExplorePanelView";
+import WorkspaceOverviewPanelView from "./panels/WorkspaceOverviewPanelView";
 
 interface ChatPanelContentProps {
   chatFocusLabel: string;

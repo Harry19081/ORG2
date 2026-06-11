@@ -488,5 +488,3 @@ export const EditorService = {
     return editorView.state.doc.lines;
   },
 };
-
-export default EditorService;

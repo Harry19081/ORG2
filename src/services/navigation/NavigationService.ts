@@ -93,5 +93,3 @@ export const NavigationService = {
     };
   },
 };
-
-export default NavigationService;

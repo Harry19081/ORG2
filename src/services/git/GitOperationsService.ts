@@ -79,5 +79,3 @@ export const GitOperationsService = {
   stageWithDialog: commitOps.stageWithDialog,
   unstageWithDialog: commitOps.unstageWithDialog,
 };
-
-export default GitOperationsService;

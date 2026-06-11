@@ -465,5 +465,3 @@ export const GitService = {
     }
   },
 };
-
-export default GitService;

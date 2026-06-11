@@ -5,7 +5,7 @@ import { type ComponentProps, useCallback, useState } from "react";
 import Message from "@src/components/Message";
 import { SessionImportExportModal } from "@src/scaffold/NavigationSidebar/connectors/SessionImportExportModal";
 
-import LinkSessionToWorkItemModal from "../LinkSessionToWorkItemModal";
+import LinkSessionToWorkItemModal from "../panels/LinkSessionToWorkItemModal";
 
 type ExportActiveSession = ComponentProps<
   typeof SessionImportExportModal

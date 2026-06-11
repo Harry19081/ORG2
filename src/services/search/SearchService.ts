@@ -153,5 +153,3 @@ export const SearchService = {
     return getStore().get(searchResultsAtom);
   },
 };
-
-export default SearchService;

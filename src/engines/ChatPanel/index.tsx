@@ -66,8 +66,8 @@ import { useChatPanelResize } from "./hooks/useChatPanelResize";
 import { useChatPanelSessionModals } from "./hooks/useChatPanelSessionModals";
 import { usePanelTitle } from "./hooks/usePanelTitle";
 import { useProjectWorkItemHandlers } from "./hooks/useProjectWorkItemHandlers";
+import { useBenchmarkSessionCreatorSlots } from "./panels/useBenchmarkSessionCreatorSlots";
 import type { ChatPanelProps, ChatPanelRegionNotice } from "./types";
-import { useBenchmarkSessionCreatorSlots } from "./useBenchmarkSessionCreatorSlots";
 
 const ChatPanel: React.FC<ChatPanelProps> = memo(
   ({

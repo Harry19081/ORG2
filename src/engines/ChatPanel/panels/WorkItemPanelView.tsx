@@ -25,7 +25,7 @@ import {
 } from "@src/store/ui/chatPanelAtom";
 import type { WorkItem } from "@src/types/core/workItem";
 
-import ChatView from "./ChatView";
+import ChatView from "../ChatView";
 
 const logger = createLogger("WorkItemPanelView");
 interface WorkItemPanelViewProps {

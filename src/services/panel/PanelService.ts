@@ -67,5 +67,3 @@ export const PanelService = {
     getStore().set(workStationEditorSecondaryCollapsedPersistAtom, "toggle");
   },
 };
-
-export default PanelService;

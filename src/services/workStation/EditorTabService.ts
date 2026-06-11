@@ -172,5 +172,3 @@ export const EditorTabService = {
     return true;
   },
 };
-
-export default EditorTabService;

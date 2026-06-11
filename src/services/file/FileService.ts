@@ -486,5 +486,3 @@ export const FileService = {
     }
   },
 };
-
-export default FileService;

@@ -330,5 +330,3 @@ class GUIAgentServiceClass {
 
 // Export singleton instance
 export const GUIAgentService = new GUIAgentServiceClass();
-
-export default GUIAgentService;

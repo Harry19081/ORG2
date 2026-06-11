@@ -46,5 +46,3 @@ export const AppViewService = {
     return true;
   },
 };
-
-export default AppViewService;

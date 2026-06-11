@@ -423,5 +423,3 @@ export const FileOperationsService = {
     }
   },
 };
-
-export default FileOperationsService;

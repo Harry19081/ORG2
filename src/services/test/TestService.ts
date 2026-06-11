@@ -245,5 +245,3 @@ export const TestService = {
     getStore().set(clearResultsAtom);
   },
 };
-
-export default TestService;
