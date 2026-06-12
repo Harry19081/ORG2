@@ -124,6 +124,31 @@ pub struct SessionAggregateRecord {
     /// Whether this session is pinned to the top of the sidebar.
     #[serde(default)]
     pub pinned: bool,
+
+    /// Host/source session ID for read-only remote mirror sessions.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_session_id: Option<String>,
+    /// Share connection ID for read-only remote mirror sessions.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub share_id: Option<String>,
+    /// Original category of the host session mirrored by this row.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_category: Option<SessionCategory>,
+    /// Sharing permission mode. MVP supports readonly only.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub share_mode: Option<String>,
+    /// Connection status of the local mirror session.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mirror_status: Option<String>,
+    /// Optional display label for the host peer/device.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_peer_label: Option<String>,
+    /// Last time this mirror was connected to the host peer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_connected_at: Option<String>,
+    /// Time the share ended, if known.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ended_at: Option<String>,
 }
 
 /// Session category enum.
@@ -136,6 +161,29 @@ pub enum SessionCategory {
     Agent,
     /// OS Agent session (external channels)
     Os,
+    /// Read-only local mirror of another peer's shared session.
+    RemoteShared,
+}
+
+impl SessionCategory {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Cli => "cli",
+            Self::Agent => "agent",
+            Self::Os => "os",
+            Self::RemoteShared => "remote_shared",
+        }
+    }
+
+    pub fn parse(raw: &str) -> Result<Self, String> {
+        match raw {
+            "cli" => Ok(Self::Cli),
+            "agent" => Ok(Self::Agent),
+            "os" => Ok(Self::Os),
+            "remote_shared" => Ok(Self::RemoteShared),
+            other => Err(format!("Unknown session category: {other}")),
+        }
+    }
 }
 
 // ============================================================================
@@ -165,6 +213,7 @@ pub struct CategoryStats {
     pub cli: usize,
     pub agent: usize,
     pub os: usize,
+    pub remote_shared: usize,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]

@@ -114,6 +114,14 @@ pub fn cli_session_to_aggregate_record(
         reply_target_event_id: session.reply_target_event_id,
         tags: vec![],
         pinned: false,
+        source_session_id: None,
+        share_id: None,
+        source_category: None,
+        share_mode: None,
+        mirror_status: None,
+        source_peer_label: None,
+        last_connected_at: None,
+        ended_at: None,
     }
 }
 
@@ -178,6 +186,14 @@ pub fn sde_session_to_aggregate_record(
             .and_then(|s| serde_json::from_str::<Vec<String>>(s).ok())
             .unwrap_or_default(),
         pinned: session.pinned,
+        source_session_id: None,
+        share_id: None,
+        source_category: None,
+        share_mode: None,
+        mirror_status: None,
+        source_peer_label: None,
+        last_connected_at: None,
+        ended_at: None,
     }
 }
 
@@ -235,5 +251,13 @@ pub fn os_session_to_aggregate_record(
             .and_then(|s| serde_json::from_str::<Vec<String>>(s).ok())
             .unwrap_or_default(),
         pinned: session.pinned,
+        source_session_id: None,
+        share_id: None,
+        source_category: None,
+        share_mode: None,
+        mirror_status: None,
+        source_peer_label: None,
+        last_connected_at: None,
+        ended_at: None,
     }
 }

@@ -18,5 +18,6 @@
 pub mod cli;
 pub mod event_pipeline;
 pub mod health;
+pub mod remote_shared;
 pub mod stream_recovery;
 pub mod unified_stats;
