@@ -35,6 +35,7 @@ export const DatabasePrimarySidebar: React.FC<DatabasePrimarySidebarProps> =
       onConnectionClose,
       onOpenAddModal,
       onOpenDbSelector,
+      onRunQuery,
     }) => {
       // Active tab state
       const [activeTab, setActiveTab] = useState("connections");
@@ -94,6 +95,7 @@ export const DatabasePrimarySidebar: React.FC<DatabasePrimarySidebarProps> =
 
       const queryHistoryTab = useQueryHistoryTabConfig({
         connectionId: selectedConnectionId,
+        onRunQuery,
       });
 
       // Build tabs array

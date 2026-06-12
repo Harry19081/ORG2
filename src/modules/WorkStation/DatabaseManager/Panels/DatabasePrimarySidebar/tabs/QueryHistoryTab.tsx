@@ -17,6 +17,7 @@ import QueryHistoryContent from "../content/QueryHistoryContent";
 
 interface UseQueryHistoryTabConfigOptions {
   connectionId: string | null;
+  onRunQuery?: (sql: string) => void;
 }
 
 // ============================================
@@ -25,6 +26,7 @@ interface UseQueryHistoryTabConfigOptions {
 
 export function useQueryHistoryTabConfig({
   connectionId,
+  onRunQuery,
 }: UseQueryHistoryTabConfigOptions): PrimarySidebarTab {
   const { t } = useTranslation();
   return useMemo(
@@ -36,12 +38,17 @@ export function useQueryHistoryTabConfig({
         {
           key: "query-history",
           title: t("labels.history"),
-          content: <QueryHistoryContent connectionId={connectionId} />,
+          content: (
+            <QueryHistoryContent
+              connectionId={connectionId}
+              onRunQuery={onRunQuery}
+            />
+          ),
           defaultFlexGrow: 1,
           resizable: false,
         },
       ],
     }),
-    [t, connectionId]
+    [t, connectionId, onRunQuery]
   );
 }
