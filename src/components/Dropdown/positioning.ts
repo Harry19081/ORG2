@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { DROPDOWN_PANEL } from "./tokens";
@@ -7,6 +9,14 @@ export interface DropdownCoordinates {
   top: number;
   left: number;
   transform?: string;
+}
+
+export function getPositionedOverlayVisibilityStyle(
+  isPositioned: boolean
+): Pick<CSSProperties, "visibility" | "pointerEvents"> {
+  return isPositioned
+    ? { visibility: "visible", pointerEvents: "auto" }
+    : { visibility: "hidden", pointerEvents: "none" };
 }
 
 interface CalculateDropdownPositionParams {

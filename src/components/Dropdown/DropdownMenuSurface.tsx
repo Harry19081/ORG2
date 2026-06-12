@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { getPositionClasses } from "./positioning";
+import {
+  getPositionClasses,
+  getPositionedOverlayVisibilityStyle,
+} from "./positioning";
 import { DROPDOWN_PANEL } from "./tokens";
 import type { DropdownPosition } from "./types";
 
@@ -43,9 +46,10 @@ const DropdownMenuSurface: React.FC<DropdownMenuSurfaceProps> = ({
     const dropdownContent = (
       <div
         ref={dropdownRef}
-        className={`pointer-events-auto fixed min-w-fit ${DROPDOWN_PANEL.zIndexClass} ${className}`}
+        className={`fixed min-w-fit ${DROPDOWN_PANEL.zIndexClass} ${className}`}
         style={{
           ...style,
+          ...getPositionedOverlayVisibilityStyle(Boolean(dropdownPosition)),
           top: dropdownPosition ? `${dropdownPosition.top}px` : undefined,
           left: dropdownPosition ? `${dropdownPosition.left}px` : undefined,
           transform: dropdownPosition?.transform,

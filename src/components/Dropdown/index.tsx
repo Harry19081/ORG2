@@ -321,18 +321,26 @@ const Dropdown: React.FC<DropdownProps> = ({
   }, [avoidViewportOverflow, position, getPopupContainer]);
 
   useEffect(() => {
-    if (visible && getPopupContainer) {
-      queueMicrotask(() => updatePosition());
-      window.requestAnimationFrame(updatePosition);
-      window.addEventListener("scroll", updatePosition, true);
-      window.addEventListener("resize", updatePosition);
+    if (!visible) return;
+    if (!getPopupContainer) return;
 
-      return () => {
-        window.removeEventListener("scroll", updatePosition, true);
-        window.removeEventListener("resize", updatePosition);
-      };
-    }
+    queueMicrotask(() => updatePosition());
+    const animationFrameId = window.requestAnimationFrame(updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
   }, [visible, updatePosition, getPopupContainer]);
+
+  useEffect(() => {
+    if (visible) return;
+    const id = requestAnimationFrame(() => setDropdownPosition(null));
+    return () => cancelAnimationFrame(id);
+  }, [visible, setDropdownPosition]);
 
   useEffect(() => {
     if (visible && isOptionsMode && showSearch) {

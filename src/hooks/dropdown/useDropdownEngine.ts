@@ -221,9 +221,7 @@ export function useDropdownEngine<
     (newOpen: boolean) => {
       if (disabled && newOpen) return;
 
-      if (!newOpen) {
-        setIsPositioned(false);
-      }
+      setIsPositioned(false);
 
       if (!isControlled) {
         setInternalOpen(newOpen);
@@ -244,6 +242,12 @@ export function useDropdownEngine<
   const close = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);
+
+  useEffect(() => {
+    if (isOpen) return;
+    const id = requestAnimationFrame(() => setIsPositioned(false));
+    return () => cancelAnimationFrame(id);
+  }, [isOpen, setIsPositioned]);
 
   // Position when controlled open changes
   useEffect(() => {
