@@ -28,7 +28,7 @@ import { atom } from "jotai";
 import { atomFamily } from "jotai/utils";
 
 import { isInteractiveTool } from "../core/interactiveTools";
-import { isLiveRuntimeResourceEvent } from "../core/runningEventGate";
+import { hasLiveRuntimeResourceInLatestTurn } from "../core/runningEventGate";
 import type { Snapshot } from "../core/store/EventStoreProxy";
 import {
   eventStoreProxy,
@@ -197,7 +197,7 @@ export const sessionScopedPlanningMetaAtomFamily = atomFamily(
       const chatEvents = extractChatEvents(snapshot);
       const next: SessionScopedPlanningMeta = {
         version: snapshot.version,
-        anyRunning: chatEvents.some(isLiveRuntimeResourceEvent),
+        anyRunning: hasLiveRuntimeResourceInLatestTurn(chatEvents),
         hasAwaitingUserInteraction: chatEvents.some(
           (event) =>
             event.displayStatus === "awaiting_user" &&

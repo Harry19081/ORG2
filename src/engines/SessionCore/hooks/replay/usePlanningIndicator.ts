@@ -54,7 +54,7 @@ import {
 } from "@src/engines/SessionCore/core/atoms/events";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms/metadata";
 import { isInteractiveTool } from "@src/engines/SessionCore/core/interactiveTools";
-import { isLiveRuntimeResourceEvent } from "@src/engines/SessionCore/core/runningEventGate";
+import { hasLiveRuntimeResourceInLatestTurn } from "@src/engines/SessionCore/core/runningEventGate";
 import {
   noopSessionScopedPlanningMetaAtom,
   sessionScopedPlanningMetaAtomFamily,
@@ -185,7 +185,10 @@ export function usePlanningIndicator(
   const globalAnyRunning = useMemo(() => {
     if (scoped) return false;
     if (!snapshot || !("chatEvents" in snapshot)) return false;
-    return snapshot.chatEvents.some(isLiveRuntimeResourceEvent);
+    // Latest-turn scan: zombie running events from old turns (dropped
+    // terminal merges, frozen shellProcessStatus) must not suppress the
+    // footer for the rest of the session.
+    return hasLiveRuntimeResourceInLatestTurn(snapshot.chatEvents);
   }, [scoped, snapshot]);
   const anyRunning = scoped ? scopedMeta.anyRunning : globalAnyRunning;
 
