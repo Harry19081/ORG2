@@ -94,16 +94,55 @@ export interface SessionCreatorState {
 // Default State
 // ============================================
 
+const DEFAULT_AGENT_ORG_ID = "default:sde-feature-team";
+const DEFAULT_AGENT_NAME = "SDE Agent";
+const DEFAULT_AGENT_ICON_ID = "code";
+
 const DEFAULT_STATE: SessionCreatorState = {
   dispatchCategory: "rust_agent",
   targetKind: SESSION_TARGET_KIND.AGENT,
   source: null,
   selectedAgentDefinitionId: BUILTIN_SDE_DEF_ID,
   selectedAgentOrgId: null,
-  agentName: "SDE Agent",
-  agentIconId: "code",
+  agentName: DEFAULT_AGENT_NAME,
+  agentIconId: DEFAULT_AGENT_ICON_ID,
   cliAgentType: null,
 };
+
+function withDefaultSdeAgent(state: SessionCreatorState): SessionCreatorState {
+  return {
+    ...state,
+    dispatchCategory: "rust_agent",
+    targetKind: SESSION_TARGET_KIND.AGENT,
+    selectedAgentDefinitionId: BUILTIN_SDE_DEF_ID,
+    selectedAgentOrgId: null,
+    agentName: DEFAULT_AGENT_NAME,
+    agentIconId: DEFAULT_AGENT_ICON_ID,
+    cliAgentType: null,
+  };
+}
+
+export function normalizeSessionCreatorState(
+  state: SessionCreatorState
+): SessionCreatorState {
+  const missingRustAgentSelection =
+    state.dispatchCategory === "rust_agent" &&
+    state.targetKind === SESSION_TARGET_KIND.AGENT &&
+    !state.selectedAgentDefinitionId &&
+    !state.selectedAgentOrgId;
+
+  const defaultAgentOrgSelection =
+    state.dispatchCategory === "rust_agent" &&
+    state.targetKind === SESSION_TARGET_KIND.AGENT_ORG &&
+    (!state.selectedAgentOrgId ||
+      state.selectedAgentOrgId === DEFAULT_AGENT_ORG_ID);
+
+  if (missingRustAgentSelection || defaultAgentOrgSelection) {
+    return withDefaultSdeAgent(state);
+  }
+
+  return state;
+}
 
 // ============================================
 // Atoms
@@ -123,20 +162,7 @@ export const sessionCreatorStateAtom = atomWithStorage<SessionCreatorState>(
         if (!item) return initialValue;
         const parsed = JSON.parse(item) as Partial<SessionCreatorState>;
         const nextState = { ...initialValue, ...parsed };
-        if (
-          nextState.dispatchCategory === "rust_agent" &&
-          nextState.targetKind === SESSION_TARGET_KIND.AGENT &&
-          !nextState.selectedAgentDefinitionId &&
-          !nextState.selectedAgentOrgId
-        ) {
-          return {
-            ...nextState,
-            selectedAgentDefinitionId: BUILTIN_SDE_DEF_ID,
-            agentName: initialValue.agentName,
-            agentIconId: initialValue.agentIconId,
-          };
-        }
-        return nextState;
+        return normalizeSessionCreatorState(nextState);
       } catch (error) {
         console.warn("[SessionCreatorState] Failed to load state:", error);
         return initialValue;

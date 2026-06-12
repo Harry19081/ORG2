@@ -60,10 +60,12 @@ export const workstationIssueCallbackAtom = atom<{
   closeIssue: ((number: number) => Promise<void>) | null;
   reopenIssue: ((number: number) => Promise<void>) | null;
   addComment: ((number: number, body: string) => Promise<void>) | null;
+  refreshIssues: (() => void) | null;
 }>({
   openNewIssueForm: null,
   closeIssue: null,
   reopenIssue: null,
   addComment: null,
+  refreshIssues: null,
 });
 workstationIssueCallbackAtom.debugLabel = "workstationIssueCallbackAtom";

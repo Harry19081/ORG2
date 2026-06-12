@@ -157,8 +157,7 @@ function shouldSuppressLine(clean) {
     clean.startsWith("🔍 Search API:") ||
     clean.startsWith("📄 File API:") ||
     clean.startsWith("🤖 Agent API:") ||
-    clean.startsWith("🔌 WebSocket:") ||
-    clean.startsWith("📖 Swagger UI:")
+    clean.startsWith("🔌 WebSocket:")
   );
 }
 

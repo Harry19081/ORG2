@@ -234,6 +234,12 @@ export type SourceControlHistorySelection =
       selectedCommitSha?: string;
       selectedShortSha?: string;
       selectedCommitMessage?: string;
+    }
+  | {
+      type: "issue";
+      issueNumber: number;
+      issueTitle: string;
+      issueUrl: string;
     };
 
 export interface SourceControlTabData {

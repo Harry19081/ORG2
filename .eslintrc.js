@@ -85,6 +85,7 @@ module.exports = {
     "/*", // Ignore root directory
     "!/src", // Except src/ directory
     "*.css", // Ignore CSS files
+    "*.scss", // Ignore SCSS files (@tailwind directives cause false-positive parse errors)
   ],
 
   // Custom rules
