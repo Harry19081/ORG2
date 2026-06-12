@@ -24,6 +24,11 @@
 #   AZURE_TENANT_ID                 — Entra ID tenant ID
 #   AZURE_SUBSCRIPTION_ID           — Azure subscription ID
 #
+# Recommended GitHub/Azure OIDC setup for scalable tag releases:
+#   GitHub Environment: code-signing
+#   Azure Federated Credential subject:
+#     repo:YORG-AI/ORGII:environment:code-signing
+#
 # Azure Trusted Signing config (already provisioned):
 #   Account:  orgii-codesign  (East US — https://eus.codesigning.azure.net/)
 #   Profile:  orgii-windows   (Public Trust, SHA256)
@@ -223,6 +228,9 @@ jobs:
     name: Build & Release (Windows x64)
     runs-on: windows-latest
     needs: build-and-release
+    # This makes GitHub's OIDC subject stable across all release tags:
+    # repo:YORG-AI/ORGII:environment:code-signing
+    environment: code-signing
     env:
       HAS_AZURE_SIGNING: ${{ secrets.AZURE_CLIENT_ID != '' }}
     steps:
