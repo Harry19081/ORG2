@@ -18,15 +18,25 @@ import {
 // ── Enums ──
 
 /**
- * Wire category from Rust (cli | agent | os).
+ * Wire category from Rust (cli | agent | os | remote_shared).
  * Transformed at parse time to `DispatchCategory` so consumers never see the
- * wire value — only the two-way routing value used by the frontend.
+ * wire value — only the routing value used by the frontend.
  */
 const WireCategorySchema = z
-  .enum(["cli", "agent", "os"])
-  .transform((cat): "cli_agent" | "rust_agent" =>
-    cat === "cli" ? "cli_agent" : "rust_agent"
-  );
+  .enum(["cli", "agent", "os", "remote_shared"])
+  .transform((cat): "cli_agent" | "rust_agent" | "remote_shared_session" => {
+    if (cat === "cli") return "cli_agent";
+    if (cat === "remote_shared") return "remote_shared_session";
+    return "rust_agent";
+  });
+
+const RemoteShareModeSchema = z.enum(["readonly"]);
+const RemoteMirrorStatusSchema = z.enum([
+  "connecting",
+  "live",
+  "disconnected",
+  "ended",
+]);
 
 // Schema for wire validation only — canonical KeySource type lives in dispatchTypes.ts
 const KeySourceSchema = z.enum(["own_key", "hosted_key"]);
@@ -174,6 +184,14 @@ export const SessionAggregateRecordSchema = z.object({
   tags: z.array(z.string()).default([]),
   // Whether the session is pinned to the top of the sidebar (P5).
   pinned: z.boolean().default(false),
+  sourceSessionId: z.string().optional(),
+  shareId: z.string().optional(),
+  sourceCategory: WireCategorySchema.optional(),
+  shareMode: RemoteShareModeSchema.optional(),
+  mirrorStatus: RemoteMirrorStatusSchema.optional(),
+  sourcePeerLabel: z.string().optional(),
+  lastConnectedAt: z.string().optional(),
+  endedAt: z.string().optional(),
 });
 
 export const CategoryStatsSchema = z
@@ -181,10 +199,12 @@ export const CategoryStatsSchema = z
     cli: z.number().int(),
     agent: z.number().int(),
     os: z.number().int().optional(),
+    remoteShared: z.number().int().optional(),
   })
   .transform((raw) => ({
     cliAgent: raw.cli,
     rustAgent: raw.agent + (raw.os ?? 0),
+    remoteSharedSession: raw.remoteShared ?? 0,
   }));
 
 export const KeySourceStatsSchema = z.object({

@@ -22,5 +22,6 @@ export * as searchRegex from "./searchRegex";
 export * as searchSymbol from "./searchSymbol";
 export * as tools from "./tools";
 export * as mcp from "./mcp";
+export * as remoteSharedSession from "./remoteSharedSession";
 export * as flow from "./flow";
 export * as sessionCore from "./sessionCore";

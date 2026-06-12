@@ -1078,6 +1078,12 @@ agent_sessions::unified_stats::commands::session_get_aggregate_stats,
 agent_sessions::unified_stats::commands::session_get_history,
 agent_sessions::unified_stats::commands::session_usage_list,
 agent_sessions::unified_stats::patch::session_patch,
+// Remote shared session metadata commands
+agent_sessions::remote_shared::remote_shared_session_create,
+agent_sessions::remote_shared::remote_shared_session_patch,
+agent_sessions::remote_shared::remote_shared_session_get,
+agent_sessions::remote_shared::remote_shared_session_list,
+agent_sessions::remote_shared::remote_shared_session_delete,
 // Flow Awareness commands (user activity tracking for intent inference)
 agent_core::flow_awareness::commands::flow_record_activity,
 agent_core::flow_awareness::commands::flow_record_activities,
