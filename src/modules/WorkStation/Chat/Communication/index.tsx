@@ -25,6 +25,11 @@ import type { SimulatorAppBaseState } from "@src/engines/Simulator/apps/core/typ
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import { matchesCanvasEvent } from "@src/modules/WorkStation/Canvas/config";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import {
+  chatCodeFontSizeAtom,
+  chatFontSizeAtom,
+  chatLineHeightAtom,
+} from "@src/store/config/configAtom";
 import { canvasPreviewAtom } from "@src/store/session/canvasPreviewAtom";
 import { simulatorEffectiveDockAppAtom } from "@src/store/ui/simulatorAtom";
 import type { BackendEvent } from "@src/types/session/steps";
@@ -66,6 +71,9 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
 }) => {
   const { t } = useTranslation("sessions");
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
+  const chatFontSize = useAtomValue(chatFontSizeAtom);
+  const chatCodeFontSize = useAtomValue(chatCodeFontSizeAtom);
+  const chatLineHeight = useAtomValue(chatLineHeightAtom);
 
   const {
     viewMode,
@@ -240,7 +248,18 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
   }
 
   const mainContent = (
-    <div className="flex h-full w-full flex-col overflow-hidden">
+    <div
+      className="flex h-full w-full flex-col overflow-hidden"
+      style={
+        {
+          fontSize: `${chatFontSize}px`,
+          lineHeight: chatLineHeight ?? 1.6,
+          "--chat-font-size": `${chatFontSize}px`,
+          "--chat-code-font-size": `${chatCodeFontSize ?? 13}px`,
+          "--chat-line-height": chatLineHeight ?? 1.6,
+        } as React.CSSProperties
+      }
+    >
       <MessageViewer
         messages={currentMessages}
         viewMode={viewMode}

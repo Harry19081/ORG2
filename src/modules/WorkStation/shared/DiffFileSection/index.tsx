@@ -135,12 +135,15 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
 
   useEffect(() => {
     if (!expanded) return;
+    if (isDeleted) return;
     if (file.oldContent !== undefined || file.newContent !== undefined) return;
     onRequestContent?.(file);
-  }, [expanded, file, onRequestContent]);
+  }, [expanded, file, isDeleted, onRequestContent]);
 
   const statusLetter = getStatusLetterForFile(file.status, file.staged);
   const statusColor = getStatusColor(statusLetter);
+
+  const isDeleted = file.status === "deleted";
 
   const toggleExpanded = useCallback(() => {
     setExpanded((prev) => !prev);
@@ -269,10 +272,13 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         data-diff-section-path={dataPath}
       >
         <button
-          className="sticky top-0 z-10 flex w-full min-w-0 items-center gap-2 bg-[var(--cm-editor-background)] px-3 py-2 text-left hover:bg-fill-2"
+          className="sticky top-0 z-10 flex w-full min-w-0 items-center gap-2 bg-[var(--cm-editor-background)] px-3 py-2 text-left hover:bg-fill-2 disabled:cursor-default disabled:hover:bg-transparent"
           onClick={toggleExpanded}
+          disabled={isDeleted}
         >
-          {expanded ? (
+          {isDeleted ? (
+            <span className="inline-block w-[14px] shrink-0" aria-hidden />
+          ) : expanded ? (
             <ChevronDown size={14} className="shrink-0 text-text-3" />
           ) : (
             <ChevronRight size={14} className="shrink-0 text-text-3" />
@@ -307,7 +313,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           </span>
         </button>
 
-        {expanded && diffContent}
+        {!isDeleted && expanded && diffContent}
       </div>
       <TextSelectionDropdown
         visible={dropdownVisible}
