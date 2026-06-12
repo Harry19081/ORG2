@@ -52,6 +52,7 @@ import {
   derivedSnapshotAtom,
   eventStoreVersionAtom,
 } from "@src/engines/SessionCore/core/atoms/events";
+import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms/metadata";
 import { isInteractiveTool } from "@src/engines/SessionCore/core/interactiveTools";
 import { isLiveRuntimeResourceEvent } from "@src/engines/SessionCore/core/runningEventGate";
 import {
@@ -132,6 +133,7 @@ export function usePlanningIndicator(): PlanningIndicatorState {
   const runtimeStatus = useAtomValue(sessionRuntimeStatusAtom);
   const snapshot = useAtomValue(derivedSnapshotAtom);
   const version = useAtomValue(eventStoreVersionAtom);
+  const sessionId = useAtomValue(sessionIdAtom);
   const setSessionRuntimeStatus = useSetAtom(setSessionRuntimeStatusAtom);
 
   const anyRunning = useMemo(() => {
@@ -287,19 +289,23 @@ export function usePlanningIndicator(): PlanningIndicatorState {
   // If Rust genuinely dropped agent:complete, the queue's backend status
   // gate re-checks and drains once the session row reads terminal.
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || !sessionId) return;
     const timerId = window.setTimeout(() => {
       console.warn(
         `[usePlanningIndicator] watchdog: planning indicator stuck for ${PLANNING_WATCHDOG_MS}ms — ` +
           "forcing session status to 'completed'. This usually means Rust dropped agent:complete " +
           "or the idle agent:queue_status frame."
       );
-      setSessionRuntimeStatus({ status: "completed", source: "planning" });
+      setSessionRuntimeStatus({
+        sessionId,
+        status: "completed",
+        source: "planning",
+      });
     }, PLANNING_WATCHDOG_MS);
     return () => {
       window.clearTimeout(timerId);
     };
-  }, [visible, setSessionRuntimeStatus]);
+  }, [visible, sessionId, setSessionRuntimeStatus]);
 
   // Re-roll the variant index on every hidden → visible transition.
   // Using a large random integer and letting the consumer mod by the

@@ -16,6 +16,10 @@ import Markdown from "@src/components/MarkDown";
 import Message from "@src/components/Message";
 import { getToolIcon } from "@src/config/toolIcons";
 import {
+  beginOptimisticTurn,
+  failOptimisticTurn,
+} from "@src/engines/SessionCore/control/optimisticTurnStatus";
+import {
   type PlanApprovalStatus,
   type PlanSurface,
   type PlanSurfaceState,
@@ -23,10 +27,7 @@ import {
 } from "@src/engines/SessionCore/derived/planDisplayEvents";
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { currentRepoAtom } from "@src/store/repo";
-import {
-  sessionRuntimeStatusAtom,
-  setSessionRuntimeStatusAtom,
-} from "@src/store/session/cliSessionStatusAtom";
+import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefaultModelAtom";
 import {
   clearPendingPlanApproval,
@@ -123,7 +124,6 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
     const sessionId = sessionIdProp ?? activeSessionId;
     const approvalMap = useAtomValue(pendingPlanApprovalsAtom);
     const setPendingPlanApprovals = useSetAtom(pendingPlanApprovalsAtom);
-    const setSessionRuntimeStatus = useSetAtom(setSessionRuntimeStatusAtom);
     const runtimeStatus = useAtomValue(sessionRuntimeStatusAtom);
     // Read the plan's *own* session row for model+key — approving a
     // plan should not silently use whatever model the user happens to
@@ -233,20 +233,27 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
             currentRepo?.path ??
             currentRepo?.fs_uri ??
             undefined;
-          await respondPlanApproval(sessionId, choice, edited, {
-            model,
-            accountId,
-            workspacePath,
-          });
+          // Build kicks off a synthetic turn on the backend without going
+          // through useMessageDispatch — optimistically flip to running
+          // BEFORE the RPC await so the planning indicator appears
+          // immediately (P3), not one round-trip later. Skip stays idle.
+          // The setter's session gate drops the write for background plans.
+          if (choice !== "reject") {
+            beginOptimisticTurn(sessionId);
+          }
+          try {
+            await respondPlanApproval(sessionId, choice, edited, {
+              model,
+              accountId,
+              workspacePath,
+            });
+          } catch (rpcError) {
+            if (choice !== "reject") failOptimisticTurn(sessionId);
+            throw rpcError;
+          }
           setPendingPlanApprovals((prev) =>
             clearPendingPlanApproval(prev, sessionId, cardRevisionId)
           );
-          // Build kicks off a synthetic turn on the backend without going
-          // through useMessageDispatch — optimistically flip to running so
-          // the planning indicator appears immediately (P3). Skip stays idle.
-          if (choice !== "reject" && sessionId === activeSessionId) {
-            setSessionRuntimeStatus({ status: "running", source: "dispatch" });
-          }
           if (mountedRef.current) setIsEditing(false);
         } catch (err) {
           Message.error(
@@ -264,8 +271,6 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
         creatorDefaultSelection,
         currentRepo,
         setPendingPlanApprovals,
-        setSessionRuntimeStatus,
-        activeSessionId,
         cardRevisionId,
         t,
         mountedRef,

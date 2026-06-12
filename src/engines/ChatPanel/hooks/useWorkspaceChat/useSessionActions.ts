@@ -9,6 +9,10 @@ import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
 import {
+  beginOptimisticTurn,
+  failOptimisticTurn,
+} from "@src/engines/SessionCore/control/optimisticTurnStatus";
+import {
   beginStopBoundary,
   cancelTurnForTimelineBoundary,
   clearLiveStreamingForSession,
@@ -104,6 +108,9 @@ export function useSessionActions(options: UseSessionActionsOptions) {
 
     try {
       clearSessionStreamingStopped(sessionId);
+      // Resume bypasses useMessageDispatch — without the optimistic running
+      // the panel looks dead until Rust's first status event (#9).
+      beginOptimisticTurn(sessionId);
       await SessionService.resumeCli({
         sessionId,
         onError: (msg: string) => {
@@ -112,6 +119,7 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       });
     } catch (err) {
       console.error("[useSessionActions] resume failed:", err);
+      failOptimisticTurn(sessionId);
       Message.error(t("errors.failedToResume"));
     }
   }, [getSessionId, t]);
@@ -174,6 +182,7 @@ export function useSessionActions(options: UseSessionActionsOptions) {
         if (runtimeStartedAnotherTurn) return;
         setPendingCancel(false);
         setSessionRuntimeStatus({
+          sessionId,
           status: "idle",
           source: "timeline-boundary",
         });
@@ -185,6 +194,7 @@ export function useSessionActions(options: UseSessionActionsOptions) {
           Message.error(t(msg));
           setPendingCancel(false);
           setSessionRuntimeStatus({
+            sessionId,
             status: "idle",
             source: "timeline-boundary",
           });

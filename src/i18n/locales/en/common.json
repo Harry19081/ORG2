@@ -365,6 +365,7 @@
     "fileCount_other": "{{count}} files",
     "queuedCount_one": "{{count}} queued",
     "queuedCount_other": "{{count}} queued",
+    "sendingNow": "sending now…",
     "processCount_one": "{{count}} running",
     "processCount_other": "{{count}} running",
     "filters": "Filters",

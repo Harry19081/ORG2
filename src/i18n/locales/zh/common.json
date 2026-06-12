@@ -361,6 +361,7 @@
     "fileCount_other": "{{count}} 个文件",
     "queuedCount_one": "{{count}} 条排队",
     "queuedCount_other": "{{count}} 条排队",
+    "sendingNow": "正在发送…",
     "processCount_one": "{{count}} 个运行中",
     "processCount_other": "{{count}} 个运行中",
     "filters": "筛选条件",
