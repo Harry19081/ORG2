@@ -379,49 +379,69 @@ fn git_binary_name() -> &'static str {
     }
 }
 
-/// Augment the process `$PATH` with the user's login-shell PATH.
+/// Augment the process `$PATH` with the user's full interactive login-shell PATH.
 ///
 /// macOS `.app` bundles launched from the Dock or Finder start with a
 /// stripped PATH (`/usr/bin:/bin:/usr/sbin:/sbin`), so `which npm`,
 /// `which claude`, etc. fail even when those tools are installed via
 /// Homebrew (`/opt/homebrew/bin`) or nvm/fnm (`~/.nvm/...`).
 ///
-/// This function spawns `$SHELL -l -c 'echo $PATH'` (a non-interactive
-/// login shell), captures the output, and prepends any new directories
-/// to the current process PATH. Safe to call multiple times (idempotent).
-/// On Windows it's a no-op — the OS resolves PATH differently.
+/// Strategy: try shells in order, most complete first.
+///   1. `$SHELL -i -l -c 'echo $PATH'` — interactive login: sources both
+///      `~/.zprofile` (or `~/.bash_profile`) AND `~/.zshrc` (or `~/.bashrc`),
+///      which is where nvm/fnm/conda inject themselves.
+///   2. `$SHELL -l -c 'echo $PATH'` — non-interactive login: fallback if
+///      the interactive run fails (some shells refuse `-i` without a tty).
 ///
+/// The `-i` flag is what makes nvm visible: nvm hooks itself into the shell
+/// via `~/.zshrc`, which is only sourced for interactive shells, not for
+/// plain `zsh -l` (login-but-non-interactive).
+///
+/// Safe to call multiple times (idempotent). On Windows it's a no-op.
 /// Call once at app startup before any binary-detection probes run.
 pub fn augment_path_from_shell() {
     #[cfg(unix)]
     {
         let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/zsh".to_string());
 
-        let Ok(output) = Command::new(&shell)
-            .args(["-l", "-c", "echo $PATH"])
-            .stdin(Stdio::null())
-            .stderr(Stdio::null())
-            .output()
-        else {
+        // Try interactive login first (picks up nvm via ~/.zshrc), then
+        // plain login as fallback.
+        let shell_path_str = [
+            vec!["-i", "-l", "-c", "echo $PATH"],
+            vec!["-l", "-c", "echo $PATH"],
+        ]
+        .iter()
+        .find_map(|args| {
+            let output = Command::new(&shell)
+                .args(args)
+                .stdin(Stdio::null())
+                .stderr(Stdio::null())
+                .output()
+                .ok()?;
+
+            if !output.status.success() {
+                return None;
+            }
+
+            let raw = String::from_utf8(output.stdout).ok()?;
+            let trimmed = raw.trim().to_string();
+            if trimmed.is_empty() {
+                None
+            } else {
+                Some(trimmed)
+            }
+        });
+
+        let Some(shell_path) = shell_path_str else {
             return;
         };
-
-        if !output.status.success() {
-            return;
-        }
-
-        let shell_path = String::from_utf8_lossy(&output.stdout);
-        let shell_path = shell_path.trim();
-        if shell_path.is_empty() {
-            return;
-        }
 
         let current_path = std::env::var("PATH").unwrap_or_default();
         let current_dirs: HashSet<&str> = current_path.split(':').collect();
 
         let new_dirs: Vec<&str> = shell_path
             .split(':')
-            .filter(|dir| !dir.is_empty() && !current_dirs.contains(dir))
+            .filter(|dir| !dir.is_empty() && !current_dirs.contains(*dir))
             .collect();
 
         if new_dirs.is_empty() {
@@ -436,8 +456,9 @@ pub fn augment_path_from_shell() {
 
         std::env::set_var("PATH", &augmented);
         tracing::info!(
-            "[app_paths] augmented PATH with {} new dirs from login shell",
-            new_dirs.len()
+            "[app_paths] augmented PATH with {} new dirs from interactive login shell: {:?}",
+            new_dirs.len(),
+            new_dirs,
         );
     }
 }
