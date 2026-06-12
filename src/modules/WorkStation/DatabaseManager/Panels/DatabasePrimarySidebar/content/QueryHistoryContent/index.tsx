@@ -5,7 +5,7 @@
  * Queries are stored per-connection in localStorage via queryHistoryAtom.
  */
 import { Eraser, Play, Trash2 } from "lucide-react";
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useQueryHistory } from "@src/hooks/database";
@@ -18,6 +18,26 @@ import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 interface QueryHistoryContentProps {
   connectionId: string | null;
+  /** Called when the user clicks Run on a history item */
+  onRunQuery?: (sql: string) => void;
+}
+
+// ============================================
+// Helpers
+// ============================================
+
+function formatTimestamp(ts: number): string {
+  const d = new Date(ts);
+  const now = new Date();
+  const isToday =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  return isToday
+    ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    : d.toLocaleDateString([], { month: "short", day: "numeric" }) +
+        " " +
+        d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 // ============================================
@@ -25,9 +45,18 @@ interface QueryHistoryContentProps {
 // ============================================
 
 export const QueryHistoryContent: React.FC<QueryHistoryContentProps> = memo(
-  ({ connectionId }) => {
+  ({ connectionId, onRunQuery }) => {
     const { t } = useTranslation();
-    const { history, clearHistory } = useQueryHistory(connectionId ?? "");
+    const { history, removeQuery, clearHistory } = useQueryHistory(
+      connectionId ?? ""
+    );
+
+    const handleRun = useCallback(
+      (sql: string) => {
+        onRunQuery?.(sql);
+      },
+      [onRunQuery]
+    );
 
     // Empty state
     if (history.length === 0) {
@@ -80,6 +109,7 @@ export const QueryHistoryContent: React.FC<QueryHistoryContentProps> = memo(
                 {item.rowCount !== undefined && (
                   <span>{item.rowCount} rows</span>
                 )}
+                <span>{formatTimestamp(item.timestamp)}</span>
               </div>
             </div>
 
@@ -88,12 +118,14 @@ export const QueryHistoryContent: React.FC<QueryHistoryContentProps> = memo(
               <button
                 className={HEADER_BUTTON.success}
                 title={t("tooltips.runQuery")}
+                onClick={() => handleRun(item.sql)}
               >
                 <Play size={14} />
               </button>
               <button
                 className={HEADER_BUTTON.danger}
                 title={t("tooltips.removeFromHistory")}
+                onClick={() => removeQuery(item.timestamp)}
               >
                 <Trash2 size={14} />
               </button>

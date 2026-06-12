@@ -44,7 +44,13 @@ const QueryResults = React.lazy(
 // ============================================
 
 export const DatabaseMainPane: React.FC<DatabaseMainPaneProps> = memo(
-  ({ connectionId, tableName, repoPath: _repoPath, tables = [] }) => {
+  ({
+    connectionId,
+    tableName,
+    repoPath: _repoPath,
+    tables = [],
+    onRegisterExecuteQuery,
+  }) => {
     // View mode: table data or SQL query
     const [viewMode, setViewMode] = useState<ViewMode>(VIEW_MODES.table);
 
@@ -181,6 +187,11 @@ export const DatabaseMainPane: React.FC<DatabaseMainPaneProps> = memo(
       },
       [connectionId, queryHistory]
     );
+
+    // Expose executeQuery to parent (for sidebar history "Run" button)
+    useEffect(() => {
+      onRegisterExecuteQuery?.(handleExecuteQuery);
+    }, [onRegisterExecuteQuery, handleExecuteQuery]);
 
     // Get row data by index
     const getRowData = useCallback(

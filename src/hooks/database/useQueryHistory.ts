@@ -22,6 +22,8 @@ export interface UseQueryHistoryReturn {
   history: QueryHistoryItem[];
   /** Add a query to history */
   addQuery: (item: Omit<QueryHistoryItem, "timestamp">) => void;
+  /** Remove a single history item by timestamp */
+  removeQuery: (timestamp: number) => void;
   /** Clear all history for this connection */
   clearHistory: () => void;
 }
@@ -58,6 +60,18 @@ export function useQueryHistory(connectionId: string): UseQueryHistoryReturn {
     [connectionId, setAllHistory]
   );
 
+  const removeQuery = useCallback(
+    (timestamp: number) => {
+      if (!connectionId) return;
+      setAllHistory((prev) => {
+        const existing = prev[connectionId] ?? [];
+        const updated = existing.filter((item) => item.timestamp !== timestamp);
+        return { ...prev, [connectionId]: updated };
+      });
+    },
+    [connectionId, setAllHistory]
+  );
+
   const clearHistory = useCallback(() => {
     if (!connectionId) return;
     setAllHistory((prev) => {
@@ -70,6 +84,7 @@ export function useQueryHistory(connectionId: string): UseQueryHistoryReturn {
   return {
     history,
     addQuery,
+    removeQuery,
     clearHistory,
   };
 }

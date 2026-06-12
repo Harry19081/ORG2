@@ -12,6 +12,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
@@ -130,6 +131,20 @@ export const DatabaseLayout: React.FC<DatabaseLayoutProps> = memo(
 
     // Overlay states
     const [showDbSelector, setShowDbSelector] = useState(false);
+
+    // Ref to the active pane's executeQuery function (registered by DatabaseMainPane)
+    const executeQueryRef = useRef<((sql: string) => Promise<void>) | null>(
+      null
+    );
+    const handleRegisterExecuteQuery = useCallback(
+      (fn: (sql: string) => Promise<void>) => {
+        executeQueryRef.current = fn;
+      },
+      []
+    );
+    const handleRunQuery = useCallback((sql: string) => {
+      executeQueryRef.current?.(sql);
+    }, []);
 
     // Handle selecting a connection (from left panel)
     const handleSelectConnection = useCallback(
@@ -259,6 +274,7 @@ export const DatabaseLayout: React.FC<DatabaseLayoutProps> = memo(
               onConnectionClose={handleCloseConnectionTabs}
               onOpenAddModal={handleOpenAddConnection}
               onOpenDbSelector={handleOpenDbSelector}
+              onRunQuery={handleRunQuery}
             />
           ),
           collapsed: primarySidebarCollapsed,
@@ -278,6 +294,7 @@ export const DatabaseLayout: React.FC<DatabaseLayoutProps> = memo(
         handleCloseConnectionTabs,
         handleOpenAddConnection,
         handleOpenDbSelector,
+        handleRunQuery,
         primarySidebarCollapsed,
         primarySidebarWidth,
         setPrimarySidebarWidth,
@@ -337,6 +354,7 @@ export const DatabaseLayout: React.FC<DatabaseLayoutProps> = memo(
               tableName={selectedTable}
               repoPath={repoPath}
               tables={activeConnectionTables}
+              onRegisterExecuteQuery={handleRegisterExecuteQuery}
             />
           </Suspense>
         )}
