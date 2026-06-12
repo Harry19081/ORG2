@@ -12,6 +12,7 @@ import React, { Suspense, lazy, memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import TabPill from "@src/components/TabPill";
+import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import { useAgentOrgRunView } from "@src/engines/ChatPanel/InputArea/components/useAgentOrgRunView";
 import EventWrapper from "@src/engines/ChatPanel/adapters/EventWrapper";
 import { InSimulatorReplayContext } from "@src/engines/ChatPanel/blocks/primitives/inSimulatorReplayContext";
@@ -298,6 +299,7 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
         trailingSlot={planTrailingSlot}
         sidebarToggleDisabled
         showWorkstationTabHeader={false}
+        tabBarSurfaceClassName={EDITOR_TAB_CANVAS_BG_CLASS}
       >
         <FileHeader
           filePath={headerFilePath}

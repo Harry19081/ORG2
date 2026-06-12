@@ -100,6 +100,7 @@ export interface ReplayTabBarProps {
    * controls (bottom-panel toggle, etc.).
    */
   trailingSlot?: React.ReactNode;
+  surfaceClassName?: string;
 }
 
 const ICON_SIZE = 14;
@@ -183,6 +184,7 @@ const ReplayTabBarComponent: React.FC<ReplayTabBarProps> = ({
   onTabClick,
   leadingSlot,
   trailingSlot,
+  surfaceClassName = SURFACE_TOKENS.surface,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -222,7 +224,7 @@ const ReplayTabBarComponent: React.FC<ReplayTabBarProps> = ({
   return (
     <>
       <div
-        className={`relative flex shrink-0 items-center overflow-hidden ${SURFACE_TOKENS.surface}`}
+        className={`relative flex shrink-0 items-center overflow-hidden ${surfaceClassName}`}
         data-tauri-drag-region
         style={
           {

@@ -16,6 +16,7 @@ export interface SimulatorReplayChromeProps {
   showSidebarToggle?: boolean;
   sidebarToggleDisabled?: boolean;
   showWorkstationTabHeader?: boolean;
+  tabBarSurfaceClassName?: string;
   className?: string;
 }
 
@@ -29,6 +30,7 @@ const SimulatorReplayChromeComponent: React.FC<SimulatorReplayChromeProps> = ({
   showSidebarToggle = true,
   sidebarToggleDisabled = false,
   showWorkstationTabHeader = true,
+  tabBarSurfaceClassName,
   className,
 }) => {
   return (
@@ -41,6 +43,7 @@ const SimulatorReplayChromeComponent: React.FC<SimulatorReplayChromeProps> = ({
         onTabClick={onTabClick}
         leadingSlot={leadingSlot ?? <SimulatorTabBarLeading />}
         trailingSlot={trailingSlot}
+        surfaceClassName={tabBarSurfaceClassName}
       />
       {showWorkstationTabHeader && (
         <SimulatorWorkstationTabHeader
