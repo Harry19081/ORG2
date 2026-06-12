@@ -14,7 +14,7 @@ import { ModelTypeSchema } from "@src/api/tauri/rpc/schemas/validation";
 import { KEY_SOURCE, isHostedKey } from "@src/api/tauri/session";
 import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
-import { getIconSize } from "@src/components/CompoundPill/config";
+import { PILL_SM_ICON_SIZE } from "@src/components/CompoundPill/config";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelPillTooltipContent from "@src/components/ModelPillTooltipContent";
 import SelectorPill from "@src/components/SelectorPill";
@@ -107,7 +107,7 @@ const AgentLauncherSection: React.FC<AgentLauncherSectionProps> = ({
 
   const [isModelOpen, setIsModelOpen] = useState(false);
 
-  const iconSize = getIconSize();
+  const iconSize = PILL_SM_ICON_SIZE;
   const defaultModelLabel = tSessions("creator.model");
 
   const {

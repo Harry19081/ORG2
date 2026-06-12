@@ -22,7 +22,7 @@ import type {
   CursorModeEntry,
   CursorModeSource,
 } from "@src/api/tauri/cursorBridge";
-import { getIconSize } from "@src/components/CompoundPill/config";
+import { PILL_SM_ICON_SIZE } from "@src/components/CompoundPill/config";
 import {
   DropdownFooter,
   DropdownItem,
@@ -60,7 +60,7 @@ const CursorModePillView: React.FC<CursorModePillViewProps> = ({
   selectMode,
 }) => {
   const { t } = useTranslation("sessions");
-  const iconSize = getIconSize();
+  const iconSize = PILL_SM_ICON_SIZE;
 
   const {
     isOpen,

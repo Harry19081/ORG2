@@ -15,12 +15,3 @@ export interface AdeManagerActivityItem {
   status: AdeManagerActivityStatus;
   isMarkdown?: boolean;
 }
-
-/** @deprecated Use AdeManagerRunStatus */
-export type GuiControlRunStatus = AdeManagerRunStatus;
-/** @deprecated Use AdeManagerActivityStatus */
-export type GuiControlActivityStatus = AdeManagerActivityStatus;
-/** @deprecated Use AdeManagerSubmitDetail */
-export type GuiControlSubmitDetail = AdeManagerSubmitDetail;
-/** @deprecated Use AdeManagerActivityItem */
-export type GuiControlActivityItem = AdeManagerActivityItem;

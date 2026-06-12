@@ -8,8 +8,6 @@ export {
   useGlobalSessionTabs,
   useGlobalShortcutTabs,
   useGlobalTabCounts,
-  // Combined hook (subscribes to all categories)
-  useGlobalTabs,
 } from "./useGlobalTabs";
 // Tab sync functions (for browser/terminal/editor contexts)
 export {

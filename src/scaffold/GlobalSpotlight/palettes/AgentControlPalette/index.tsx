@@ -17,12 +17,9 @@ import { AgentControlToolbar } from "./AgentControlToolbar";
 import { useAgentControlPalette } from "./useAgentControlPalette";
 
 export type { AdeManagerSubmitDetail } from "./types";
-export type { GuiControlSubmitDetail } from "./types";
 export {
   ADE_MANAGER_SUBMIT_EVENT,
   ADE_MANAGER_TOGGLE_SHORTCUT_ID,
-  GUI_CONTROL_SUBMIT_EVENT,
-  GUI_CONTROL_TOGGLE_SHORTCUT_ID,
 } from "./constants";
 
 // ── Proposal creator panel ────────────────────────────────────────────────────

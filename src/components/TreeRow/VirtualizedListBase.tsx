@@ -70,9 +70,6 @@ export interface VirtualizedListBaseProps<T> {
   onScrollPositionChange?: (scrollTop: number) => void;
 }
 
-// Debug flag for VirtualizedListBase - matches VirtualizedSearchResults
-const DEBUG_SCROLL_BASE = process.env.NODE_ENV === "development" && true;
-
 // ============================================
 // Component
 // ============================================
@@ -95,19 +92,6 @@ function VirtualizedListBaseInner<T>(
   ref: React.ForwardedRef<VirtualizedListBaseHandle>
 ) {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-
-  // DEBUG: Track mount/unmount
-  React.useEffect(() => {
-    if (DEBUG_SCROLL_BASE) {
-      // Debug: component mounted
-    }
-    return () => {
-      if (DEBUG_SCROLL_BASE) {
-        // Debug: component unmounted
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // SCROLL PRESERVATION: Track scroll position and first visible item
   // Initialize from external state if provided (survives remounting)
@@ -237,28 +221,16 @@ function VirtualizedListBaseInner<T>(
     if (initialScrollTop <= 0) return;
 
     const scroller = scrollerElementRef.current;
-    if (!scroller) {
-      if (DEBUG_SCROLL_BASE) {
-        // Debug: scroller not available yet
-      }
-      return;
-    }
+    if (!scroller) return;
 
     // Mark as restoring to prevent interference
     isRestoringScrollRef.current = true;
     hasRestoredInitialScrollRef.current = true;
 
-    if (DEBUG_SCROLL_BASE) {
-      // Debug: restoring initial scroll position
-    }
-
     // Use requestAnimationFrame to ensure Virtuoso has rendered
     requestAnimationFrame(() => {
       if (scrollerElementRef.current) {
         scrollerElementRef.current.scrollTop = initialScrollTop;
-        if (DEBUG_SCROLL_BASE) {
-          // Debug: scroll position restored
-        }
       }
       // Also update our internal ref
       lastScrollTopRef.current = initialScrollTop;
@@ -283,9 +255,6 @@ function VirtualizedListBaseInner<T>(
     const actualScrollTop = scroller.scrollTop;
 
     if (expectedScrollTop > itemHeight && actualScrollTop === 0) {
-      if (DEBUG_SCROLL_BASE) {
-        // Debug: fixing unexpected scroll reset
-      }
       isRestoringScrollRef.current = true;
       scroller.scrollTop = expectedScrollTop;
       requestAnimationFrame(() => {

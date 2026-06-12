@@ -17,8 +17,3 @@ export const PILL_SM_HEIGHT_CLASS = "h-[28px]";
 
 /** Label line-height that visually centers 12–13px text in 28px pills. */
 export const PILL_SM_LABEL_CLASS = "leading-[16px]";
-
-/** @deprecated Use PILL_SM_ICON_SIZE directly */
-export function getIconSize(): number {
-  return PILL_SM_ICON_SIZE;
-}

@@ -261,25 +261,3 @@ export const browserStatusBarCallbacksAtom =
 export const dataStatusBarCallbacksAtom = makeStatusBarCallbacksAtom("data");
 export const projectStatusBarCallbacksAtom =
   makeStatusBarCallbacksAtom("project");
-
-/**
- * @deprecated Use the per-app atom (codeStatusBarCallbacksAtom, etc.) so writes
- * always target the correct slot regardless of which app is currently active.
- */
-export const statusBarCallbacksAtom = atom(
-  (get) => get(activeStatusBarCallbacksAtom),
-  (
-    get,
-    set,
-    update:
-      | StatusBarCallbacks
-      | ((prev: StatusBarCallbacks) => StatusBarCallbacks)
-  ) => {
-    const activeApp = get(activeStatusBarAppAtom);
-    const perApp = get(perAppStatusBarCallbacksAtom);
-    const prev = perApp[activeApp];
-    const newCallbacks = typeof update === "function" ? update(prev) : update;
-    set(perAppStatusBarCallbacksAtom, { ...perApp, [activeApp]: newCallbacks });
-  }
-);
-statusBarCallbacksAtom.debugLabel = "statusBarCallbacks";

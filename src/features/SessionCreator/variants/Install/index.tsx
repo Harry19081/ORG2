@@ -12,7 +12,7 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { ModelTypeSchema } from "@src/api/tauri/rpc/schemas/validation";
-import { getIconSize } from "@src/components/CompoundPill/config";
+import { PILL_SM_ICON_SIZE } from "@src/components/CompoundPill/config";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelPillTooltipContent from "@src/components/ModelPillTooltipContent";
 import SelectorPill from "@src/components/SelectorPill";
@@ -38,7 +38,7 @@ const SessionCreatorInstall: React.FC<SessionCreatorInstallProps> = memo(
 
     const [isModelOpen, setIsModelOpen] = useState(false);
 
-    const iconSize = getIconSize();
+    const iconSize = PILL_SM_ICON_SIZE;
     const defaultModelLabel = tSessions("creator.model");
 
     const {

@@ -22,7 +22,7 @@ import type {
   CursorModelEntry,
   CursorModelSource,
 } from "@src/api/tauri/cursorBridge";
-import { getIconSize } from "@src/components/CompoundPill/config";
+import { PILL_SM_ICON_SIZE } from "@src/components/CompoundPill/config";
 import ModelIcon from "@src/components/ModelIcon";
 import PillGroup, { type PillGroupSegment } from "@src/components/PillGroup";
 import { CursorModelPalette } from "@src/scaffold/GlobalSpotlight/palettes/CursorModelPalette";
@@ -59,7 +59,7 @@ const CursorModelPillView: React.FC<CursorModelPillViewProps> = ({
   dropdownPlacement = "bottom",
 }) => {
   const { t } = useTranslation("sessions");
-  const iconSize = getIconSize();
+  const iconSize = PILL_SM_ICON_SIZE;
   const modelPickerStyle = useAtomValue(modelPickerStyleAtom);
   const modelSegmentRef = useRef<HTMLButtonElement>(null);
 

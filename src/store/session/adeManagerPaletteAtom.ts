@@ -1,12 +1,12 @@
 import { atom } from "jotai";
 
 import type { PendingSessionProposal } from "@src/engines/SessionCore/hooks/useAgentADEActions";
-import type { GuiControlRunStatus } from "@src/scaffold/GlobalSpotlight/palettes/AgentControlPalette/types";
+import type { AdeManagerRunStatus } from "@src/scaffold/GlobalSpotlight/palettes/AgentControlPalette/types";
 
 export interface AdeManagerPaletteState {
   sessionId: string | null;
   draftText: string;
-  runStatus: GuiControlRunStatus;
+  runStatus: AdeManagerRunStatus;
   activityCursor: number;
   pendingProposal: PendingSessionProposal | null;
 }

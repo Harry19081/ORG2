@@ -24,13 +24,7 @@ export const A2UIActionContext = createContext<A2UIActionHandler | undefined>(
 
 export function useA2UIAction(): A2UIActionHandler {
   const handler = useContext(A2UIActionContext);
-  return (
-    handler ??
-    ((actionId, payload) => {
-      // eslint-disable-next-line no-console
-      console.log("[A2UI action]", actionId, payload);
-    })
-  );
+  return handler ?? (() => {});
 }
 
 interface A2UIActionProviderProps {
