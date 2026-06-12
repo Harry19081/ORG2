@@ -508,6 +508,18 @@ body.drag-over::after {
   background: var(--color-fill-2) !important;
 }
 
+.mode-pill-tone-plan,
+.mode-pill-tone-plan span,
+.mode-pill-tone-plan svg {
+  color: var(--color-warning-6) !important;
+}
+
+.mode-pill-tone-ask,
+.mode-pill-tone-ask span,
+.mode-pill-tone-ask svg {
+  color: var(--color-success-6) !important;
+}
+
 /* Dark-mode override for the `shadow-dropdown` Tailwind utility.
  * The light value lives in `tailwind.config.js` under `boxShadow.dropdown`.
  * We cannot express this with Tailwind's `dark:` variant because the app
