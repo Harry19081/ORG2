@@ -110,7 +110,7 @@ impl Tool for InspectTerminalsTool {
     }
 
     fn description(&self) -> &str {
-        "Inspect and control live ORGII-managed terminal sessions."
+        "Inspect and control live ORGII-managed terminal sessions. Every call must include an `action` field: `list`, `read_output`, `write_input`, or `close`."
     }
 
     fn category(&self) -> &str {
