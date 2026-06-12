@@ -28,12 +28,26 @@
  * action — it writes both atoms and runs the clear → loading → set-id
  * sequence.
  */
-import { atom } from "jotai";
+import { type Atom, type WritableAtom, atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { z } from "zod/v4";
 
 import { clearSessionAtom } from "@src/engines/SessionCore/core/atoms/actions";
 import { loadStatusAtom } from "@src/engines/SessionCore/core/atoms/metadata";
+import {
+  lastUsedRepoAtom,
+  reposAtom,
+  selectedRepoIdAtom,
+} from "@src/store/repo/atoms";
+import {
+  matchRepoByPath,
+  normalizeRepoPath,
+} from "@src/store/repo/matchRepoByPath";
+import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
+import {
+  activeFolderIdAtom,
+  workspaceFoldersAtom,
+} from "@src/store/ui/workspaceFoldersAtom";
 import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";
 
 import type { SessionViewState } from "./types";
@@ -237,7 +251,53 @@ export const jumpToSessionAtom = atom(
     if (sessionId) {
       // Clear "unread" badge: the user has now opened this session.
       markSessionVisited(sessionId);
+      // My Station follows the session's workspace. Prefer the rich
+      // payload's repoPath; fall back to the session record.
+      const repoPath =
+        (isRich ? payload.repoPath : undefined) ??
+        get(sessionsAtom).find((s) => s.session_id === sessionId)?.repoPath;
+      if (repoPath) {
+        followSessionRepo(get, set, repoPath);
+      }
     }
   }
 );
 jumpToSessionAtom.debugLabel = "jumpToSessionAtom";
+
+/**
+ * Make My Station follow the session's workspace: when jumping to a
+ * session whose repoPath maps to a registered repo, select that repo
+ * so the file tree / editor / git panels show the session's project.
+ *
+ * Multi-root: if the path matches a workspace folder, point the
+ * active-folder override at it (currentRepoAtom follows activeFolder
+ * in multi-root mode). Unknown paths are left alone — the status-bar
+ * "Switch to" hint (sessionRepoHintAtom) stays as the degraded path.
+ */
+function followSessionRepo(
+  get: <T>(atom: Atom<T>) => T,
+  set: <T, A extends unknown[]>(
+    atom: WritableAtom<T, A, unknown>,
+    ...args: A
+  ) => void,
+  repoPath: string
+): void {
+  const folders = get(workspaceFoldersAtom);
+  if (folders.length > 1) {
+    const normalized = normalizeRepoPath(repoPath);
+    const folder = folders.find(
+      (candidate) => normalizeRepoPath(candidate.path) === normalized
+    );
+    if (folder) {
+      set(activeFolderIdAtom, folder.id);
+      return;
+    }
+  }
+
+  const match = matchRepoByPath(get(reposAtom), repoPath);
+  if (!match) return;
+  if (get(selectedRepoIdAtom) !== match.id) {
+    set(selectedRepoIdAtom, match.id);
+    set(lastUsedRepoAtom, match.id);
+  }
+}

@@ -43,8 +43,6 @@ export {
 
 export {
   isVisibleInChat,
-  isVisibleInSimulator,
-  isVisibleInMessages,
   stripTerminalCodeBlocks,
 } from "@src/engines/SessionCore/ingestion/visibilityFilters";
 
