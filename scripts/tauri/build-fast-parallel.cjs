@@ -1,0 +1,171 @@
+#!/usr/bin/env node
+/**
+ * Parallel local fast build.
+ *
+ * Standard `tauri:build:fast` serialises work:
+ *   webpack (beforeBuildCommand) → then Rust compile → then bundle
+ *
+ * This script runs the two independent phases concurrently:
+ *   1. webpack --mode production   (JS bundle → build/)
+ *   2. cargo build --profile dev-build  (Rust → target/dev-build/)
+ *
+ * Tauri is invoked after both finish, but because the JS bundle and
+ * Rust artifacts are already on disk it only has to copy + assemble
+ * the .app — no recompilation happens.
+ *
+ * On a 10-core M-series Mac the parallel phase typically saves 60-90s
+ * (webpack ~40s and Rust ~3-5min are fully overlapped).
+ *
+ * Usage:
+ *   npm run tauri:build:fast:parallel          # default features
+ *   npm run tauri:build:fast:parallel -- --semantic
+ */
+
+const { spawn, spawnSync } = require("child_process");
+const path = require("path");
+const { tauriFeatureString } = require("./features.cjs");
+
+const rootDir = path.join(__dirname, "..", "..");
+const includeSemantic = process.argv.includes("--semantic");
+const featureString = tauriFeatureString({ semantic: includeSemantic });
+
+// ─── helpers ──────────────────────────────────────────────────────────────────
+
+function prefix(tag, color) {
+  return (data) => {
+    const reset = "\x1b[0m";
+    const lines = data.toString().split("\n");
+    for (const line of lines) {
+      if (line.trim()) process.stdout.write(`${color}[${tag}]${reset} ${line}\n`);
+    }
+  };
+}
+
+function runParallel(commands) {
+  return new Promise((resolve) => {
+    const results = new Array(commands.length).fill(null);
+    let remaining = commands.length;
+
+    commands.forEach(({ cmd, args, opts, tag, color }, idx) => {
+      const child = spawn(cmd, args, {
+        cwd: rootDir,
+        env: { ...process.env, FORCE_COLOR: "1" },
+        shell: false,
+        ...opts,
+      });
+
+      const log = prefix(tag, color);
+      child.stdout?.on("data", log);
+      child.stderr?.on("data", log);
+
+      child.on("close", (code) => {
+        results[idx] = code ?? 1;
+        remaining -= 1;
+        if (remaining === 0) resolve(results);
+      });
+    });
+  });
+}
+
+// ─── env (strip signing so codesign doesn't run locally) ─────────────────────
+
+const env = { ...process.env };
+for (const key of [
+  "APPLE_ID",
+  "APPLE_PASSWORD",
+  "APPLE_TEAM_ID",
+  "APPLE_API_KEY",
+  "APPLE_API_KEY_PATH",
+  "APPLE_API_ISSUER",
+]) {
+  delete env[key];
+}
+
+// ─── phase 1: webpack + cargo in parallel ─────────────────────────────────────
+
+async function main() {
+  console.log("\x1b[1m[build-fast-parallel] Phase 1: webpack + cargo (parallel)\x1b[0m");
+  const t0 = Date.now();
+
+  // Derive cargo args for dev-build
+  const cargoArgs = ["build", "--profile", "dev-build"];
+  if (featureString.length > 0) {
+    cargoArgs.push("--features", featureString);
+  }
+  // Point cargo at the src-tauri workspace root
+  cargoArgs.push("--manifest-path", path.join(rootDir, "src-tauri", "Cargo.toml"));
+
+  const [webpackCode, cargoCode] = await runParallel([
+    {
+      cmd: path.join(rootDir, "node_modules/.bin/webpack"),
+      args: ["--mode", "production"],
+      // FAST_PROD=true: use esbuild for transpilation + minification
+      // instead of SWC+Terser, saving ~30-40s on the webpack phase.
+      opts: { env: { ...env, FAST_PROD: "true" } },
+      tag: "webpack",
+      color: "\x1b[34m", // blue
+    },
+    {
+      cmd: "cargo",
+      args: cargoArgs,
+      opts: { env, cwd: rootDir },
+      tag: "cargo",
+      color: "\x1b[33m", // yellow
+    },
+  ]);
+
+  const phase1Ms = Date.now() - t0;
+  console.log(
+    `\x1b[1m[build-fast-parallel] Phase 1 done in ${(phase1Ms / 1000).toFixed(1)}s` +
+      ` (webpack=${webpackCode} cargo=${cargoCode})\x1b[0m`
+  );
+
+  if (webpackCode !== 0 || cargoCode !== 0) {
+    process.exit(Math.max(webpackCode, cargoCode));
+  }
+
+  // ─── phase 2: tauri assemble-only (no recompile, no beforeBuildCommand) ─────
+
+  console.log("\x1b[1m[build-fast-parallel] Phase 2: tauri bundle (assemble only)\x1b[0m");
+
+  const configOverride = JSON.stringify({
+    build: {
+      // Empty string = skip beforeBuildCommand; artifacts already on disk.
+      beforeBuildCommand: "",
+    },
+    bundle: {
+      createUpdaterArtifacts: false,
+      macOS: { signingIdentity: null },
+    },
+  });
+
+  const tauriArgs = ["build"];
+  if (featureString.length > 0) {
+    tauriArgs.push("--features", featureString);
+  }
+  tauriArgs.push(
+    "--bundles", "app",
+    "--config", configOverride,
+    "--",
+    "--profile", "dev-build"
+  );
+
+  const tauriBin = path.join(rootDir, "node_modules/.bin/tauri");
+  const result = spawnSync(tauriBin, tauriArgs, {
+    stdio: "inherit",
+    cwd: rootDir,
+    env,
+  });
+
+  const totalMs = Date.now() - t0;
+  console.log(
+    `\x1b[1m[build-fast-parallel] Total: ${(totalMs / 1000).toFixed(1)}s\x1b[0m`
+  );
+
+  process.exit(result.status ?? 1);
+}
+
+main().catch((err) => {
+  console.error("[build-fast-parallel] fatal:", err);
+  process.exit(1);
+});

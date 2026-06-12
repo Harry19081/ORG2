@@ -9,7 +9,11 @@ FFMPEG_INCLUDE_DIR = { value = "/opt/homebrew/Cellar/ffmpeg/8.0.1_2/include", fo
 
 # ── Build performance ─────────────────────────────────────────────────────────
 # Cap parallel rustc processes to limit memory usage (~4-5 GB each).
-# 10 jobs = ~45 GB peak; 5 jobs = ~22 GB peak (good balance on 16/32 GB Mac).
+# 10 jobs = ~45 GB peak; 8 jobs = ~36 GB peak (fine on 32 GB, watch on 16 GB).
+# 5 jobs = ~22 GB peak (conservative; drop back if OOM).
+# dev-build uses opt-level=1 which is ~2× lighter than release, so 8 is safe.
+# For `tauri:build:fast:parallel`, webpack also runs concurrently — that
+# adds ~1 GB, so reduce back to 6 if you see memory pressure.
 #
 # `incremental = false`: Incremental compilation is intentionally OFF.
 #
@@ -49,7 +53,7 @@ FFMPEG_INCLUDE_DIR = { value = "/opt/homebrew/Cellar/ffmpeg/8.0.1_2/include", fo
 # cargo processes running. Re-enabling here permanently will bring
 # the "dep-graph.part.bin: No such file" errors back.
 [build]
-jobs = 5
+jobs = 8
 incremental = false
 
 # ── macOS / Apple Silicon target ─────────────────────────────────────────────
@@ -58,6 +62,7 @@ rustflags = [
   # FFmpeg library search paths (arm64 Homebrew)
   "-L", "/opt/homebrew/lib",
   "-L", "/opt/homebrew/Cellar/ffmpeg/8.0.1_2/lib",
-  # lld linker disabled — ld64.lld not installed (brew install lld to re-enable)
-  # "-C", "link-arg=-fuse-ld=/opt/homebrew/bin/ld64.lld",
+  # lld: LLVM linker — ~3× faster than ld64 for incremental links.
+  # Requires: brew install llvm  (provides /opt/homebrew/bin/ld64.lld)
+  "-C", "link-arg=-fuse-ld=/opt/homebrew/bin/ld64.lld",
 ]

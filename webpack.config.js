@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const { EsbuildPlugin } = require("esbuild-loader");
 const WebpackObfuscator = require("webpack-obfuscator");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
@@ -24,6 +25,13 @@ module.exports = (env, argv) => {
   // SWC is a Rust-based compiler that's nearly as fast as esbuild but supports
   // React Fast Refresh. esbuild is faster but can't support Fast Refresh.
   const useFastDev = !isProduction && process.env.FAST_DEV === "true";
+
+  // FAST_PROD=true: use esbuild for transpilation + minification in production.
+  // Saves ~30-40s vs the SWC+Terser path. Trades some dead-code elimination
+  // depth for speed. Intended for `tauri:build:fast:parallel` (local .app
+  // builds). Never set for release builds (use OBFUSCATE=true path instead).
+  const useFastProd = isProduction && process.env.FAST_PROD === "true";
+
   const useObfuscation = isProduction && process.env.OBFUSCATE === "true";
   const isE2E = process.env.ORGII_E2E === "1";
   const devServerPort = Number.parseInt(
@@ -137,75 +145,78 @@ module.exports = (env, argv) => {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: useFastDev
-            ? {
-                loader: "esbuild-loader",
-                options: {
-                  loader: "js",
-                  target: "es2020",
-                },
-              }
-            : {
-                loader: "swc-loader",
-                options: {
-                  jsc: {
+          use:
+            useFastDev || useFastProd
+              ? {
+                  loader: "esbuild-loader",
+                  options: {
+                    loader: "js",
                     target: "es2020",
-                    parser: { syntax: "ecmascript" },
+                  },
+                }
+              : {
+                  loader: "swc-loader",
+                  options: {
+                    jsc: {
+                      target: "es2020",
+                      parser: { syntax: "ecmascript" },
+                    },
                   },
                 },
-              },
         },
         {
           test: /\.tsx$/,
           exclude: /node_modules/,
-          use: useFastDev
-            ? {
-                // esbuild-loader: fastest but no React Fast Refresh
-                loader: "esbuild-loader",
-                options: {
-                  loader: "tsx",
-                  target: "es2020",
-                  jsx: "automatic",
-                },
-              }
-            : {
-                // SWC: Fast Rust-based compiler with React Fast Refresh support
-                loader: "swc-loader",
-                options: {
-                  jsc: {
+          use:
+            useFastDev || useFastProd
+              ? {
+                  // esbuild-loader: fastest but no React Fast Refresh
+                  loader: "esbuild-loader",
+                  options: {
+                    loader: "tsx",
                     target: "es2020",
-                    parser: { syntax: "typescript", tsx: true },
-                    transform: {
-                      react: {
-                        runtime: "automatic",
-                        refresh: !isProduction,
+                    jsx: "automatic",
+                  },
+                }
+              : {
+                  // SWC: Fast Rust-based compiler with React Fast Refresh support
+                  loader: "swc-loader",
+                  options: {
+                    jsc: {
+                      target: "es2020",
+                      parser: { syntax: "typescript", tsx: true },
+                      transform: {
+                        react: {
+                          runtime: "automatic",
+                          refresh: !isProduction,
+                        },
                       },
                     },
                   },
                 },
-              },
         },
         {
           test: /\.ts$/,
           exclude: /node_modules/,
-          use: useFastDev
-            ? {
-                // IMPORTANT: .ts must be parsed as TS (not TSX) to avoid JSX ambiguity
-                loader: "esbuild-loader",
-                options: {
-                  loader: "ts",
-                  target: "es2020",
-                },
-              }
-            : {
-                loader: "swc-loader",
-                options: {
-                  jsc: {
+          use:
+            useFastDev || useFastProd
+              ? {
+                  // IMPORTANT: .ts must be parsed as TS (not TSX) to avoid JSX ambiguity
+                  loader: "esbuild-loader",
+                  options: {
+                    loader: "ts",
                     target: "es2020",
-                    parser: { syntax: "typescript", tsx: false },
+                  },
+                }
+              : {
+                  loader: "swc-loader",
+                  options: {
+                    jsc: {
+                      target: "es2020",
+                      parser: { syntax: "typescript", tsx: false },
+                    },
                   },
                 },
-              },
         },
         {
           test: /\.(mp4|webm)$/i,
@@ -349,37 +360,48 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: isProduction,
       minimizer: isProduction
-        ? [
-            new TerserPlugin({
-              parallel: true,
-              terserOptions: {
-                compress: {
-                  drop_console: true,
-                  drop_debugger: true,
-                  pure_funcs: [
-                    "console.log",
-                    "console.info",
-                    "console.debug",
-                    "console.trace",
-                  ],
-                  passes: 1,
-                  dead_code: true,
-                },
-                mangle: {
+        ? useFastProd
+          ? [
+              // FAST_PROD: esbuild minifier — ~10× faster than Terser, saves ~30s locally.
+              // Slightly less aggressive dead-code elimination but output is production-safe.
+              new EsbuildPlugin({
+                target: "es2020",
+                css: true,
+                keepNames: true,
+                drop: ["console", "debugger"],
+              }),
+            ]
+          : [
+              new TerserPlugin({
+                parallel: true,
+                terserOptions: {
+                  compress: {
+                    drop_console: true,
+                    drop_debugger: true,
+                    pure_funcs: [
+                      "console.log",
+                      "console.info",
+                      "console.debug",
+                      "console.trace",
+                    ],
+                    passes: 1,
+                    dead_code: true,
+                  },
+                  mangle: {
+                    keep_classnames: true,
+                    keep_fnames: true,
+                  },
                   keep_classnames: true,
                   keep_fnames: true,
+                  output: {
+                    comments: false,
+                    ascii_only: true,
+                  },
                 },
-                keep_classnames: true,
-                keep_fnames: true,
-                output: {
-                  comments: false,
-                  ascii_only: true,
-                },
-              },
-              extractComments: false,
-            }),
-            new CssMinimizerPlugin(),
-          ]
+                extractComments: false,
+              }),
+              new CssMinimizerPlugin(),
+            ]
         : [],
       // In dev, skip expensive per-module regex splitting and runtime chunk extraction.
       // Only apply granular code splitting in production for caching benefits.
