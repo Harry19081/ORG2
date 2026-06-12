@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import TabPill from "@src/components/TabPill";
 import { useAgentOrgRunView } from "@src/engines/ChatPanel/InputArea/components/useAgentOrgRunView";
 import EventWrapper from "@src/engines/ChatPanel/adapters/EventWrapper";
+import { InSimulatorReplayContext } from "@src/engines/ChatPanel/blocks/primitives/inSimulatorReplayContext";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import {
@@ -248,36 +249,39 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
   }
 
   const mainContent = (
-    <div
-      className="flex h-full w-full flex-col overflow-hidden"
-      style={
-        {
-          fontSize: `${chatFontSize}px`,
-          lineHeight: chatLineHeight ?? 1.6,
-          "--chat-font-size": `${chatFontSize}px`,
-          "--chat-code-font-size": `${chatCodeFontSize ?? 13}px`,
-          "--chat-line-height": chatLineHeight ?? 1.6,
-        } as React.CSSProperties
-      }
-    >
-      <MessageViewer
-        messages={currentMessages}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        orgMembers={orgMembers}
-        sessionReplayMode={mode}
-        planPreviewMode={isPlanDoc ? isPreviewMode : undefined}
-        planDocPending={isPlanDoc && isPlanPending}
-        activePlanMessage={activePlanMessage}
-        selectedMessage={state.selectedMessage}
-        previewSelectedPlan={
-          viewMode === "preview" && (hasLocalSelection || selectedMessageIsPlan)
+    <InSimulatorReplayContext.Provider value={true}>
+      <div
+        className="flex h-full w-full flex-col overflow-hidden"
+        style={
+          {
+            fontSize: `${chatFontSize}px`,
+            lineHeight: chatLineHeight ?? 1.6,
+            "--chat-font-size": `${chatFontSize}px`,
+            "--chat-code-font-size": `${chatCodeFontSize ?? 13}px`,
+            "--chat-line-height": chatLineHeight ?? 1.6,
+          } as React.CSSProperties
         }
-        onMessageClick={handleMessageClick}
-        currentEventId={state.currentEventId}
-        canvasPayload={activeCanvasPayload}
-      />
-    </div>
+      >
+        <MessageViewer
+          messages={currentMessages}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          orgMembers={orgMembers}
+          sessionReplayMode={mode}
+          planPreviewMode={isPlanDoc ? isPreviewMode : undefined}
+          planDocPending={isPlanDoc && isPlanPending}
+          activePlanMessage={activePlanMessage}
+          selectedMessage={state.selectedMessage}
+          previewSelectedPlan={
+            viewMode === "preview" &&
+            (hasLocalSelection || selectedMessageIsPlan)
+          }
+          onMessageClick={handleMessageClick}
+          currentEventId={state.currentEventId}
+          canvasPayload={activeCanvasPayload}
+        />
+      </div>
+    </InSimulatorReplayContext.Provider>
   );
 
   return (
