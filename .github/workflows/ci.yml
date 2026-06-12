@@ -1,0 +1,83 @@
+# CI — runs on every pull request to main / master.
+#
+# Two parallel jobs:
+#   frontend  — TypeScript typecheck + ESLint + Vitest unit tests
+#   rust      — cargo check + clippy (warnings-as-errors) + cargo test
+#
+# Mirrors the toolchain versions used in release.yaml (Node 20, pnpm 9,
+# Rust stable, swatinem/rust-cache) so CI and release builds stay in sync.
+
+name: "CI"
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  # ── Frontend ────────────────────────────────────────────────────────────────
+  frontend:
+    name: Frontend (typecheck · lint · test)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test --run
+
+  # ── Rust ────────────────────────────────────────────────────────────────────
+  rust:
+    name: Rust (check · clippy · test)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          shared-key: "ci-macos"
+
+      - name: cargo check
+        working-directory: src-tauri
+        run: cargo check --workspace
+
+      - name: cargo clippy
+        working-directory: src-tauri
+        run: cargo clippy --workspace -- -D warnings
+
+      - name: cargo test
+        working-directory: src-tauri
+        run: cargo test --workspace
