@@ -527,19 +527,35 @@ pub fn delete_session(session_id: &str) -> SqliteResult<bool> {
 /// After an app crash or forced quit, CLI subprocess PIDs are stale and sessions
 /// may be stuck in "running" or "pending". This marks them as "failed" and clears
 /// their PID so the frontend no longer shows a spinning indicator.
-pub fn sweep_stale_sessions() -> SqliteResult<usize> {
+///
+/// Returns the orphaned `(session_id, pid)` pairs that still had a PID so the
+/// caller can terminate the actual OS process trees. Without that kill, a
+/// backend restart (dev hot-reload recompiles included) leaves the CLI agent
+/// running unsupervised — it keeps editing files and can't be cancelled
+/// because the new backend has no handle to it.
+pub fn sweep_stale_sessions() -> SqliteResult<Vec<(String, i64)>> {
     let conn = get_connection()?;
+    let orphans: Vec<(String, i64)> = {
+        let mut stmt = conn.prepare(
+            "SELECT session_id, pid FROM code_sessions WHERE status IN ('running', 'pending') AND pid IS NOT NULL",
+        )?;
+        let rows = stmt.query_map([], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+        })?;
+        rows.collect::<Result<Vec<_>, _>>()?
+    };
     let affected = conn.execute(
         "UPDATE code_sessions SET status = 'failed', pid = NULL, error_message = 'Session interrupted by app restart', updated_at = ?1 WHERE status IN ('running', 'pending')",
         params![now_iso()],
     )?;
     if affected > 0 {
         tracing::info!(
-            "[CLI Persistence] Swept {} stale sessions to 'failed' on startup",
-            affected
+            "[CLI Persistence] Swept {} stale sessions to 'failed' on startup ({} with live PIDs)",
+            affected,
+            orphans.len()
         );
     }
-    Ok(affected)
+    Ok(orphans)
 }
 
 fn row_to_session(row: &rusqlite::Row) -> rusqlite::Result<CodeSession> {

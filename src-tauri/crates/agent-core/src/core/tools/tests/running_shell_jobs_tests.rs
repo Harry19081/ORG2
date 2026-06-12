@@ -47,7 +47,7 @@ fn test_list_running_shell_jobs_excludes_exited() {
 #[test]
 fn test_list_running_shell_jobs_excludes_subagents() {
     let handle = "agent-recon-test:explore-001".to_string();
-    let _tx = registry::register_subagent(
+    let (_tx, _cancel) = registry::register_subagent(
         handle.clone(),
         "explore".into(),
         "Explorer".into(),

@@ -280,7 +280,7 @@ async fn test_shell_killed_is_failed_with_killed_flag() {
 #[tokio::test]
 async fn test_subagent_completed_has_succeeded_metadata() {
     let handle = "shadow-test-meta-abc".to_string();
-    let _tx = registry::register_subagent(
+    let (_tx, _cancel) = registry::register_subagent(
         handle.clone(),
         "shadow".into(),
         "Test Agent".into(),
@@ -317,7 +317,7 @@ async fn test_subagent_completed_has_succeeded_metadata() {
 #[tokio::test]
 async fn test_subagent_failed_has_failed_metadata() {
     let handle = "agent-test-fail-meta".to_string();
-    let _tx = registry::register_subagent(
+    let (_tx, _cancel) = registry::register_subagent(
         handle.clone(),
         "delegate".into(),
         "Failing Agent".into(),
@@ -350,7 +350,7 @@ async fn test_subagent_failed_has_failed_metadata() {
 #[tokio::test]
 async fn test_subagent_running_has_running_metadata() {
     let handle = "shadow-running-xyz".to_string();
-    let _tx = registry::register_subagent(
+    let (_tx, _cancel) = registry::register_subagent(
         handle.clone(),
         "shadow".into(),
         "Running Agent".into(),
@@ -445,7 +445,7 @@ async fn test_monitor_tail_lines_honored() {
 #[tokio::test]
 async fn test_monitor_subagent_reads_recent_buffer() {
     let handle = "sub-tail-buffer-test".to_string();
-    let _tx = registry::register_subagent(
+    let (_tx, _cancel) = registry::register_subagent(
         handle.clone(),
         "shadow".into(),
         "Buffer Agent".into(),
@@ -488,7 +488,7 @@ async fn test_list_returns_session_jobs() {
     );
 
     let sub_handle = "sub-list-test-001".to_string();
-    let _tx2 = registry::register_subagent(
+    let (_tx2, _cancel2) = registry::register_subagent(
         sub_handle.clone(),
         "delegate".into(),
         "Explorer".into(),

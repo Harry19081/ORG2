@@ -91,18 +91,30 @@ impl AgentTool {
         let bg_work_item_id = work_item_id;
         let bg_cancel_flag = parent_cancel_flag;
 
-        // Register in job registry so AwaitTool can monitor
-        let broadcast_tx = job_registry::register_subagent(
+        // Register in job registry so AwaitTool can monitor. The job owns its
+        // own cancel flag — `kill_subagent` and the parent-Stop fan-out in
+        // `AgentSession::cancel_active_turn` set THAT flag, not the parent
+        // session's. Two reasons:
+        // - the parent flag is pulsed back to `false` at the parent's turn
+        //   boundary, so a slow worker could miss the pulse entirely;
+        // - ForceSend (Send Now) pulses the parent flag but must NOT stop
+        //   background workers (`boundary_effect().cancel_background_workers
+        //   == false`), which a shared flag cannot express.
+        let (broadcast_tx, job_cancel_flag) = job_registry::register_subagent(
             bg_session_id.clone(),
             subagent_type_label,
             bg_agent_name.clone(),
             parent_session_id.clone(),
         );
+        // Parent flag is delivered via the explicit fan-out above, not by
+        // sharing the Arc. Drop it here so nobody reintroduces the pulse race.
+        drop(bg_cancel_flag);
 
         // Wrap handler with BroadcastingHandler to feed the registry channel
         let broadcasting_handler = BroadcastingHandler::new(handler, broadcast_tx);
 
         let registry_handle = bg_session_id.clone();
+        let turn_cancel_flag = Arc::clone(&job_cancel_flag);
         let join_handle = tokio::spawn(async move {
             let turn_result = turn_executor::execute_turn(
                 &mut messages,
@@ -113,7 +125,7 @@ impl AgentTool {
                 &bg_session_id,
                 &broadcasting_handler,
                 None,
-                bg_cancel_flag.as_ref(),
+                Some(&turn_cancel_flag),
                 Some(bg_workspace.as_path()),
                 None,
             )
@@ -149,6 +161,13 @@ impl AgentTool {
             // Handle result + update registry.
             // Same finalizeAgentTool parity as the foreground path: backtrack
             // through message history when the terminal iteration was pure tool_use.
+            //
+            // A cooperative cancel (kill_subagent / parent-Stop fan-out) makes
+            // `execute_turn` return Ok with no content — classify that as
+            // Cancelled, not Completed, for the LinkedSession write-back.
+            // The registry status is already `Killed` (sticky in mark_exited).
+            let was_cancelled =
+                turn_cancel_flag.load(std::sync::atomic::Ordering::SeqCst);
             match turn_result {
                 Ok(result) => {
                     let resp = result.content.or_else(|| {
@@ -160,17 +179,21 @@ impl AgentTool {
                             );
                         })
                     }).unwrap_or_else(|| {
-                        format!(
-                            "Agent '{}' completed but produced no text response.",
-                            bg_agent_name
-                        )
+                        if was_cancelled {
+                            format!("Agent '{}' was cancelled before completing.", bg_agent_name)
+                        } else {
+                            format!(
+                                "Agent '{}' completed but produced no text response.",
+                                bg_agent_name
+                            )
+                        }
                     });
                     broadcasting_handler.broadcast_complete();
                     job_registry::set_final_result(&bg_session_id, resp.clone());
                     job_registry::mark_exited(&bg_session_id, job_registry::JobStatus::Completed);
                     info!(
-                        "[agent:bg] '{}' done (model={}): {} tokens",
-                        bg_agent_name, bg_model, result.total_tokens
+                        "[agent:bg] '{}' done (model={}, cancelled={}): {} tokens",
+                        bg_agent_name, bg_model, was_cancelled, result.total_tokens
                     );
 
                     if let Some(ref wid) = bg_work_item_id {
@@ -178,7 +201,11 @@ impl AgentTool {
                         AgentTool::update_linked_session_sync(
                             wid,
                             &bg_session_id,
-                            LinkedSessionStatus::Completed,
+                            if was_cancelled {
+                                LinkedSessionStatus::Cancelled
+                            } else {
+                                LinkedSessionStatus::Completed
+                            },
                             result.total_tokens,
                             &preview,
                         );

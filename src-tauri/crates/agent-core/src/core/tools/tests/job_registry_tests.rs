@@ -38,7 +38,7 @@ fn test_mark_exited_shell() {
 #[test]
 fn test_register_subagent() {
     let handle = "shadow-builtin:general-abc123".to_string();
-    let tx = registry::register_subagent(
+    let (tx, _cancel) = registry::register_subagent(
         handle.clone(),
         "shadow".into(),
         "General Agent".into(),
@@ -94,7 +94,7 @@ fn test_list_shell_for_session() {
 #[test]
 fn test_subagent_not_in_shell_list() {
     let handle = "agent-builtin:explore-xyz".to_string();
-    let _tx = registry::register_subagent(
+    let (_tx, _cancel) = registry::register_subagent(
         handle.clone(),
         "explore".into(),
         "Explorer".into(),
@@ -105,4 +105,79 @@ fn test_subagent_not_in_shell_list() {
     assert!(list.is_empty());
 
     registry::remove(&handle);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kill_subagent_sets_job_cancel_flag() {
+    use std::sync::atomic::Ordering;
+
+    let handle = "agent-builtin:general-kill-flag".to_string();
+    let (_tx, cancel) = registry::register_subagent(
+        handle.clone(),
+        "delegate".into(),
+        "Worker".into(),
+        "session_kill".into(),
+    );
+    assert!(!cancel.load(Ordering::SeqCst));
+
+    registry::kill_subagent(&handle).expect("kill succeeds");
+    assert!(
+        cancel.load(Ordering::SeqCst),
+        "kill must set the job's own cancel flag for cooperative shutdown"
+    );
+    let (status, _) = registry::get_status(&handle).unwrap();
+    assert!(matches!(status, JobStatus::Killed));
+
+    registry::remove(&handle);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_killed_status_is_sticky_over_completed() {
+    let handle = "agent-builtin:general-sticky".to_string();
+    let (_tx, _cancel) = registry::register_subagent(
+        handle.clone(),
+        "delegate".into(),
+        "Worker".into(),
+        "session_sticky".into(),
+    );
+
+    registry::kill_subagent(&handle).expect("kill succeeds");
+    // The cooperatively-cancelled worker's completion path still calls
+    // mark_exited(Completed) — that must not overwrite the Killed verdict.
+    registry::mark_exited(&handle, JobStatus::Completed);
+    let (status, _) = registry::get_status(&handle).unwrap();
+    assert!(matches!(status, JobStatus::Killed));
+
+    registry::remove(&handle);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_cancel_subagents_for_session_scopes_to_session() {
+    use std::sync::atomic::Ordering;
+
+    let mine = "agent-fanout-mine".to_string();
+    let other = "agent-fanout-other".to_string();
+    let (_tx1, mine_flag) = registry::register_subagent(
+        mine.clone(),
+        "delegate".into(),
+        "Mine".into(),
+        "session_fanout_a".into(),
+    );
+    let (_tx2, other_flag) = registry::register_subagent(
+        other.clone(),
+        "delegate".into(),
+        "Other".into(),
+        "session_fanout_b".into(),
+    );
+
+    let cancelled = registry::cancel_subagents_for_session("session_fanout_a");
+    assert_eq!(cancelled, 1);
+    assert!(mine_flag.load(Ordering::SeqCst));
+    assert!(
+        !other_flag.load(Ordering::SeqCst),
+        "fan-out must not touch other sessions' workers"
+    );
+
+    registry::remove(&mine);
+    registry::remove(&other);
 }

@@ -8,7 +8,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, VecDeque};
 use std::path::PathBuf;
-use std::sync::{LazyLock, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, LazyLock, Mutex};
 use std::time::Instant;
 use tokio::sync::broadcast;
 use tokio::task::JoinHandle;
@@ -62,6 +63,14 @@ pub struct BackgroundJob {
     recent_lines: VecDeque<String>,
     /// Tokio JoinHandle for background subagents — `abort()` cancels the task.
     join_handle: Option<JoinHandle<()>>,
+    /// Per-job cancel flag for background subagents. Owned by the job (NOT
+    /// the parent session's flag — that one is pulsed back to `false` at the
+    /// parent's turn boundary, which a slow worker can miss entirely).
+    /// Setting it lets the worker's `execute_turn` loop exit at the next
+    /// iteration/stream checkpoint and run its own completion path
+    /// (LinkedSession terminal write, worktree cleanup, registry grace
+    /// period). `None` for shell jobs.
+    cancel_flag: Option<Arc<AtomicBool>>,
     /// Set to `true` once the agent has read the completed job's output via
     /// `AwaitTool` (monitor/wait_for). Acknowledged completed jobs are excluded
     /// from the per-turn system reminder to avoid the stale-reminder
@@ -144,6 +153,7 @@ pub fn register_shell(
         output_tx: tx,
         recent_lines: VecDeque::new(),
         join_handle: None,
+        cancel_flag: None,
         output_acknowledged: false,
     };
     let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
@@ -151,16 +161,19 @@ pub fn register_shell(
     sender
 }
 
-/// Register a background subagent. Returns a `broadcast::Sender` the caller
-/// should use to feed text summaries of subagent events.
+/// Register a background subagent. Returns the `broadcast::Sender` the caller
+/// should use to feed text summaries of subagent events, plus the job's own
+/// cancel flag (to be passed into the worker's `execute_turn` so kill /
+/// parent-Stop fan-out can cooperatively stop the turn loop).
 pub fn register_subagent(
     handle: String,
     subagent_type: String,
     agent_name: String,
     session_id: String,
-) -> broadcast::Sender<String> {
+) -> (broadcast::Sender<String>, Arc<AtomicBool>) {
     let (tx, _) = broadcast::channel(BROADCAST_CAPACITY);
     let sender = tx.clone();
+    let cancel_flag = Arc::new(AtomicBool::new(false));
     let job = BackgroundJob {
         handle: handle.clone(),
         label: agent_name.clone(),
@@ -175,18 +188,26 @@ pub fn register_subagent(
         output_tx: tx,
         recent_lines: VecDeque::new(),
         join_handle: None,
+        cancel_flag: Some(Arc::clone(&cancel_flag)),
         output_acknowledged: false,
     };
     let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
     reg.insert(handle, job);
-    sender
+    (sender, cancel_flag)
 }
 
 /// Mark a job as exited/completed/failed. The entry remains for a grace period
 /// so `AwaitTool` can still read final status.
+///
+/// `Killed` is sticky: a cooperatively-cancelled subagent still runs its
+/// normal completion path, which calls this with `Completed` — that must
+/// not overwrite the user-visible "killed" verdict.
 pub fn mark_exited(handle: &str, status: JobStatus) {
     let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(job) = reg.get_mut(handle) {
+        if matches!(job.status, JobStatus::Killed) {
+            return;
+        }
         job.status = status;
     }
 }
@@ -439,27 +460,99 @@ pub async fn kill_shell(handle: &str) -> Result<(), String> {
     terminate_shell_process_tree(pid).await.map(|_| ())
 }
 
-/// Abort a background subagent by cancelling its JoinHandle.
+/// Abort a background subagent.
+///
+/// Cooperative-first: sets the job's own cancel flag so the worker's
+/// `execute_turn` exits at its next checkpoint and runs its normal
+/// completion path (final-result write, LinkedSession terminal status,
+/// worktree cleanup, registry grace period). A watchdog task hard-aborts
+/// the JoinHandle only if the worker has not finished within the grace
+/// window — a worker stuck inside a non-cancellable await must not leak
+/// forever.
+///
 /// Returns `Ok(())` on success or `Err(msg)` if the handle is not found or
 /// not a subagent.
 pub fn kill_subagent(handle: &str) -> Result<(), String> {
-    let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
-    let job = reg
-        .get_mut(handle)
-        .ok_or_else(|| format!("handle '{handle}' not found"))?;
-    match &job.kind {
-        JobKind::Shell { .. } => {
-            return Err("not a subagent — use run_shell to kill shell processes".into())
-        }
-        JobKind::Subagent { .. } => {}
-    }
-    if !job.is_running() {
-        return Err(format!("subagent '{handle}' already finished"));
-    }
+    const HARD_ABORT_GRACE_SECS: u64 = 10;
 
-    if let Some(jh) = job.join_handle.take() {
+    let (cancel_flag, join_handle) = {
+        let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
+        let job = reg
+            .get_mut(handle)
+            .ok_or_else(|| format!("handle '{handle}' not found"))?;
+        match &job.kind {
+            JobKind::Shell { .. } => {
+                return Err("not a subagent — use run_shell to kill shell processes".into())
+            }
+            JobKind::Subagent { .. } => {}
+        }
+        if !job.is_running() {
+            return Err(format!("subagent '{handle}' already finished"));
+        }
+        job.status = JobStatus::Killed;
+        (job.cancel_flag.clone(), job.join_handle.take())
+    };
+
+    if let Some(flag) = cancel_flag {
+        flag.store(true, Ordering::SeqCst);
+        if let Some(jh) = join_handle {
+            // Watchdog: give the cooperative path a grace window, then abort.
+            tokio::spawn(async move {
+                tokio::time::sleep(std::time::Duration::from_secs(HARD_ABORT_GRACE_SECS)).await;
+                if !jh.is_finished() {
+                    tracing::warn!(
+                        "[job-registry] background subagent did not stop within {}s of cancel; hard-aborting task",
+                        HARD_ABORT_GRACE_SECS
+                    );
+                    jh.abort();
+                }
+            });
+        }
+    } else if let Some(jh) = join_handle {
+        // Legacy job registered without a flag — hard abort is all we have.
         jh.abort();
     }
-    job.status = JobStatus::Killed;
     Ok(())
+}
+
+/// Fan out cancellation to every **running background subagent** spawned by
+/// `session_id`. Called from `AgentSession::cancel_active_turn` when the
+/// cancel reason's boundary effect requests worker cancellation (UserStop /
+/// OrgPause / shutdown — NOT ForceSend).
+///
+/// Uses each job's own flag, so the parent resetting its session flag at the
+/// next turn boundary cannot "un-cancel" a slow worker (the pulse-miss race).
+/// Best-effort: errors on individual jobs are logged, not propagated.
+pub fn cancel_subagents_for_session(session_id: &str) -> usize {
+    let handles: Vec<String> = {
+        let reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
+        reg.values()
+            .filter(|job| {
+                job.session_id == session_id
+                    && job.is_running()
+                    && matches!(job.kind, JobKind::Subagent { .. })
+            })
+            .map(|job| job.handle.clone())
+            .collect()
+    };
+    let mut cancelled = 0usize;
+    for handle in &handles {
+        match kill_subagent(handle) {
+            Ok(()) => cancelled += 1,
+            Err(err) => tracing::warn!(
+                "[job-registry] failed to cancel background subagent '{}' for session {}: {}",
+                handle,
+                session_id,
+                err
+            ),
+        }
+    }
+    if cancelled > 0 {
+        tracing::info!(
+            "[job-registry] cancelled {} background subagent(s) for session {}",
+            cancelled,
+            session_id
+        );
+    }
+    cancelled
 }

@@ -326,8 +326,31 @@ pub fn run() {
             tracing::info!("[RamHistory] Background RAM sampler started");
 
             match agent_sessions::cli::persistence::sweep_stale_sessions() {
-                Ok(count) if count > 0 => {
-                    tracing::info!(count, "[CLI Sessions] swept stale sessions to failed");
+                Ok(orphans) if !orphans.is_empty() => {
+                    tracing::info!(
+                        count = orphans.len(),
+                        "[CLI Sessions] swept stale sessions to failed"
+                    );
+                    // Kill the orphaned CLI process trees. After a backend
+                    // restart (crash, quit, or dev-mode Rust recompile) the
+                    // old CLI agents keep running unsupervised — the new
+                    // backend has no RUNNING_SESSIONS handle, so the user's
+                    // cancel button can't reach them. Resume previously did
+                    // this lazily per-session; do it eagerly for all.
+                    tauri::async_runtime::spawn(async move {
+                        for (session_id, pid) in orphans {
+                            tracing::info!(
+                                "[CLI Sessions] terminating orphaned process tree pid={} (session {})",
+                                pid,
+                                session_id
+                            );
+                            agent_sessions::cli::session_runner::terminate_process_tree(
+                                pid,
+                                &session_id,
+                            )
+                            .await;
+                        }
+                    });
                 }
                 Ok(_) => {}
                 Err(err) => {

@@ -412,12 +412,28 @@ impl AgentSession {
     ///
     /// This is a lightweight signal: it sets the shared `cancel_flag`
     /// and lets the processor observe it on the next iteration.
+    ///
+    /// Depending on the reason's `boundary_effect`, this also:
+    /// - discards messages already enqueued on the `DialogScheduler`
+    ///   (UserStop must not let a queued Send-Now message start the
+    ///   moment the cancelled turn ends);
+    /// - fans out cancellation to background Delegate/Shadow workers via
+    ///   their per-job flags (a worker must not keep burning tokens after
+    ///   the user pressed Stop, and must not miss the parent flag's pulse).
     pub async fn cancel_active_turn(&self, reason: CancelReason) {
         let effect = reason.boundary_effect();
         self.suppress_next_crash_repair
             .store(!effect.allow_crash_repair_on_next_turn, Ordering::SeqCst);
         self.persist_next_cancel_marker
             .store(effect.persist_cancel_marker, Ordering::SeqCst);
+
+        if effect.discard_queued_messages {
+            self.scheduler.invalidate_pending();
+        }
+
+        if effect.cancel_background_workers {
+            crate::tools::impls::coding::exec::registry::cancel_subagents_for_session(&self.id);
+        }
 
         let guard: tokio::sync::MutexGuard<'_, Option<DialogTurn>> = self.active_turn.lock().await;
         if let Some(ref turn) = *guard {
