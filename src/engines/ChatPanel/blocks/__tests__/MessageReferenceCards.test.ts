@@ -135,6 +135,14 @@ staged file lint stats
     });
   });
 
+  it("does not extract local filesystem paths as reference cards", () => {
+    const references = extractMessageReferences(
+      "Open /Users/me/project/src and ~/Documents/file.txt"
+    );
+
+    expect(references).toHaveLength(0);
+  });
+
   it("does not treat custom URI schemes embedded in text as drive-letter paths", () => {
     const references = extractMessageReferences(
       "看一下 @session://abc-123/456 的逻辑链"

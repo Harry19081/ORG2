@@ -32,7 +32,6 @@ import {
   simulatorSelectedAppAtom,
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
-import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { copyText } from "@src/util/data/clipboard";
 import {
   SESSION_REFERENCE_FILE_MANAGER_REVEAL_KEYS,
@@ -46,29 +45,9 @@ import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 
 const WEB_URL_PATTERN = /https?:\/\/[^\s<>"'`\])}]+/gi;
-// Drive letters (`C:\`, `D:/`) only count when they sit at a token boundary
-// AND the character right after the separator is itself a path character —
-// not another slash. Without that guard, custom URI schemes like
-// `session://…` or `terminal://…` were being chopped to `n://…` and
-// rendered as a fake "n:" path card.
-const LOCAL_PATH_PATTERN =
-  /(?:~\/|(?:\.\.\/|\.\/)|(?<![A-Za-z0-9])[A-Za-z]:[\\/](?=[^\s<>"'`\\/\])}])|\/(?:Users|home|Volumes|Applications|tmp|var|opt|usr|etc)\/|(?<![A-Za-z0-9])(?:documents|desktop|downloads|github|users)\/)[^\s<>"'`\])}]+/gi;
 const TRAILING_REFERENCE_PUNCTUATION_PATTERN = /[.,;:!?]+$/;
 const MAX_REFERENCE_CARDS = 4;
 const COMMIT_METADATA_LOOKUP_LIMIT = 200;
-const PATH_SEGMENT_LABELS: Record<string, string> = {
-  documents: "Documents",
-  desktop: "Desktop",
-  downloads: "Downloads",
-  github: "GitHub",
-  users: "Users",
-};
-const HOME_RELATIVE_ROOTS = new Set([
-  "documents",
-  "desktop",
-  "downloads",
-  "github",
-]);
 
 export type MessageReferenceKind =
   | "web_url"
@@ -109,31 +88,6 @@ function stripTrailingPunctuation(candidate: string): string {
   return candidate.replace(TRAILING_REFERENCE_PUNCTUATION_PATTERN, "");
 }
 
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function normalizeFsPath(path: string | undefined): string {
-  if (!path) return "";
-  const stripped = path.startsWith("file://")
-    ? path.replace("file://", "")
-    : path;
-  return stripped.replace(/\/+$/, "");
-}
-
-function normalizeWorkspacePaths(paths: Array<string | undefined>): string[] {
-  const seen = new Set<string>();
-  return paths
-    .map(normalizeFsPath)
-    .filter((path) => path.length > 1)
-    .filter((path) => {
-      if (seen.has(path)) return false;
-      seen.add(path);
-      return true;
-    })
-    .sort((left, right) => right.length - left.length);
-}
-
 /**
  * Returns true when a URL regex match is enclosed in bare parentheses and
  * is likely being *cited* rather than recommended for the user to open.
@@ -168,29 +122,6 @@ function normalizeUrlCandidate(candidate: string): string | null {
   } catch {
     return null;
   }
-}
-
-function normalizePathCandidate(candidate: string): string | null {
-  const normalized = stripTrailingPunctuation(candidate);
-  if (normalized.length < 2) return null;
-  if (normalized.startsWith("http://") || normalized.startsWith("https://")) {
-    return null;
-  }
-
-  const segments = normalized.split("/");
-  const firstSegment = segments[0]?.toLowerCase();
-  const normalizedSegments = segments.map((segment) => {
-    const label = PATH_SEGMENT_LABELS[segment.toLowerCase()];
-    return label ?? segment;
-  });
-  if (firstSegment === "users") {
-    return `/${normalizedSegments.join("/")}`;
-  }
-  if (firstSegment && HOME_RELATIVE_ROOTS.has(firstSegment)) {
-    return `~/${normalizedSegments.join("/")}`;
-  }
-
-  return normalized;
 }
 
 /**
@@ -345,35 +276,6 @@ function mergeCommitMetadata(
   };
 }
 
-function getPathTitle(path: string): string {
-  const trimmed = path.replace(/\/+$/, "");
-  const segments = trimmed.split("/").filter(Boolean);
-  return segments[segments.length - 1] ?? path;
-}
-
-function isDirectoryPath(path: string): boolean {
-  if (path.endsWith("/")) return true;
-  const title = getPathTitle(path);
-  return !title.includes(".");
-}
-
-function collectWorkspacePathCandidates(
-  content: string,
-  workspacePaths: Array<string | undefined>
-): string[] {
-  const candidates: string[] = [];
-  for (const workspacePath of normalizeWorkspacePaths(workspacePaths)) {
-    const pattern = new RegExp(
-      `${escapeRegExp(workspacePath)}(?:/[^\\s<>"'\`\\])}]+)?`,
-      "g"
-    );
-    for (const match of content.matchAll(pattern)) {
-      candidates.push(match[0]);
-    }
-  }
-  return candidates;
-}
-
 function makeReferenceKey(item: MessageReferenceItem): string {
   if (item.kind === "git_commit") {
     return `git_commit:${item.sha ?? item.shortSha ?? item.value}`;
@@ -395,11 +297,9 @@ function shortSessionIdLabel(sessionId: string): string {
 
 export function extractMessageReferences(
   content: string,
-  workspacePaths: Array<string | undefined> = [],
   excludeUrls?: ReadonlySet<string>
 ): MessageReferenceItem[] {
   const searchableContent = stripFencedCodeBlocks(content);
-  let pathSearchContent = searchableContent;
   const references: MessageReferenceItem[] = [];
   const seen = new Set<string>();
 
@@ -423,11 +323,6 @@ export function extractMessageReferences(
       seen.add(key);
       references.push(item);
     }
-    const start = match.index ?? 0;
-    pathSearchContent =
-      pathSearchContent.slice(0, start) +
-      " ".repeat(sessionId.length) +
-      pathSearchContent.slice(start + sessionId.length);
     if (references.length >= MAX_REFERENCE_CARDS) return references;
   }
 
@@ -443,27 +338,6 @@ export function extractMessageReferences(
   }
 
   for (const match of searchableContent.matchAll(WEB_URL_PATTERN)) {
-    // Blank out the URL and any non-whitespace characters that directly
-    // precede it in the same token (e.g. the "marketplace/" prefix before
-    // "/users/me" in "marketplace/users/me"), preventing LOCAL_PATH_PATTERN
-    // from matching URL sub-paths as local filesystem paths.
-    const urlStart = match.index ?? 0;
-    let tokenStart = urlStart;
-    while (tokenStart > 0 && !/\s/.test(pathSearchContent[tokenStart - 1]!)) {
-      tokenStart--;
-    }
-    const urlEnd = urlStart + match[0].length;
-    let tokenEnd = urlEnd;
-    while (
-      tokenEnd < pathSearchContent.length &&
-      !/\s/.test(pathSearchContent[tokenEnd]!)
-    ) {
-      tokenEnd++;
-    }
-    pathSearchContent =
-      pathSearchContent.slice(0, tokenStart) +
-      " ".repeat(tokenEnd - tokenStart) +
-      pathSearchContent.slice(tokenEnd);
     const url = normalizeUrlCandidate(match[0]);
     if (!url) continue;
     if (isGitHubCommitUrl(url)) continue;
@@ -481,43 +355,6 @@ export function extractMessageReferences(
       value: url,
       title: getUrlHost(url),
       subtitle: url,
-    };
-    const key = makeReferenceKey(item);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    references.push(item);
-    if (references.length >= MAX_REFERENCE_CARDS) return references;
-  }
-
-  for (const candidate of collectWorkspacePathCandidates(
-    pathSearchContent,
-    workspacePaths
-  )) {
-    const path = normalizePathCandidate(candidate);
-    if (!path) continue;
-    const item: MessageReferenceItem = {
-      kind: "local_path",
-      value: path,
-      title: getPathTitle(path),
-      subtitle: path,
-      isDirectory: isDirectoryPath(path),
-    };
-    const key = makeReferenceKey(item);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    references.push(item);
-    if (references.length >= MAX_REFERENCE_CARDS) return references;
-  }
-
-  for (const match of pathSearchContent.matchAll(LOCAL_PATH_PATTERN)) {
-    const path = normalizePathCandidate(match[0]);
-    if (!path) continue;
-    const item: MessageReferenceItem = {
-      kind: "local_path",
-      value: path,
-      title: getPathTitle(path),
-      subtitle: path,
-      isDirectory: isDirectoryPath(path),
     };
     const key = makeReferenceKey(item);
     if (seen.has(key)) continue;
@@ -855,26 +692,10 @@ const MessageReferenceCards: React.FC<MessageReferenceCardsProps> = ({
 }) => {
   const currentRepo = useAtomValue(currentRepoAtom);
   const session = useAtomValue(sessionByIdAtom(sessionId ?? ""));
-  const workspaceFolders = useAtomValue(workspaceFoldersAtom);
-  const workspaceReferencePaths = useMemo(
-    () => [
-      ...workspaceFolders.map((folder) => folder.path),
-      currentRepo?.path,
-      currentRepo?.fs_uri,
-    ],
-    [currentRepo?.fs_uri, currentRepo?.path, workspaceFolders]
-  );
   const references = useMemo(
     () =>
-      items ??
-      (enabled
-        ? extractMessageReferences(
-            content,
-            workspaceReferencePaths,
-            excludeUrls
-          )
-        : []),
-    [content, enabled, excludeUrls, items, workspaceReferencePaths]
+      items ?? (enabled ? extractMessageReferences(content, excludeUrls) : []),
+    [content, enabled, excludeUrls, items]
   );
   const metadataRepoPath = session?.repoPath || currentRepo?.path;
   const resolvedReferences = useCommitMetadataReferences(
