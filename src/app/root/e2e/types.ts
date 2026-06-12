@@ -572,7 +572,24 @@ export interface E2EHelpers {
     createdAt: string;
     updatedAt: string;
   }) => Promise<Result<{ sessionId: string }>>;
+  debugSeedPendingPlanWire: (input: {
+    sessionId: string;
+    planPath: string;
+    planTitle: string;
+    planContent: string;
+  }) => Promise<Result<{ sessionId: string }>>;
   deleteSessionWire: (sessionId: string) => Promise<{ ok: true } | Err>;
+  patchSessionExecModeWire: (
+    sessionId: string,
+    agentExecMode: string
+  ) => Promise<{ ok: true } | Err>;
+  getPendingPlanApprovalWire: (
+    sessionId: string
+  ) => Promise<Result<{ snapshot: Json | null }>>;
+  respondPlanApprovalWire: (
+    sessionId: string,
+    choice: "approve" | "approve_with_edits" | "reject"
+  ) => Promise<{ ok: true } | Err>;
   inspectChatState: () => Promise<
     Result<{
       activeSessionId: string | null;

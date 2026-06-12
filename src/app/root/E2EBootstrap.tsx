@@ -234,7 +234,11 @@ export const E2EBootstrap: FC = () => {
       debugSeedSubagentJobWire,
       killSubagentJobWire,
       debugSeedChildSessionWire,
+      debugSeedPendingPlanWire,
       deleteSessionWire,
+      patchSessionExecModeWire,
+      getPendingPlanApprovalWire,
+      respondPlanApprovalWire,
       inspectChatState,
     } = createSessionHelpers(store);
 
@@ -420,7 +424,11 @@ export const E2EBootstrap: FC = () => {
       debugSeedSubagentJobWire,
       killSubagentJobWire,
       debugSeedChildSessionWire,
+      debugSeedPendingPlanWire,
       deleteSessionWire,
+      patchSessionExecModeWire,
+      getPendingPlanApprovalWire,
+      respondPlanApprovalWire,
       inspectChatState,
       debugSessionSkillsSnapshot,
       debugSessionGeneralSnapshot,

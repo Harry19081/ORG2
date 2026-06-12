@@ -47,6 +47,9 @@ import {
 import { useBlockHeader } from "../useBlockLocate";
 
 const PLAN_ICON_SIZE = 14;
+// Generous bound: approval does plan-file IO + may register a session before
+// returning; normal completion is <1s, the timeout only guards a wedged IPC.
+const PLAN_APPROVAL_RPC_TIMEOUT_MS = 30_000;
 
 function deriveDisplayTitle(title: string, content: string): string {
   const trimmedTitle = title.trim();
@@ -242,11 +245,23 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
             beginOptimisticTurn(sessionId);
           }
           try {
-            await respondPlanApproval(sessionId, choice, edited, {
-              model,
-              accountId,
-              workspacePath,
-            });
+            // Timeout fallback: if the approval RPC hangs (backend wedged,
+            // IPC drop), roll back the optimistic running state instead of
+            // leaving the session stuck in a running state with no terminal
+            // event ever arriving.
+            await Promise.race([
+              respondPlanApproval(sessionId, choice, edited, {
+                model,
+                accountId,
+                workspacePath,
+              }),
+              new Promise<never>((_, reject) => {
+                window.setTimeout(
+                  () => reject(new Error(t("planDoc.buildFailed"))),
+                  PLAN_APPROVAL_RPC_TIMEOUT_MS
+                );
+              }),
+            ]);
           } catch (rpcError) {
             if (choice !== "reject") failOptimisticTurn(sessionId);
             throw rpcError;

@@ -82,6 +82,12 @@ const MyRolesSection: React.FC<MyRolesSectionProps> = ({
   const questionAutoSkipTimeoutByPresence = settings[
     "agent.sde.questionAutoSkipTimeoutByPresence"
   ] as Record<BuiltInPresenceMode, number>;
+  const planAutoApproveTimeoutByPresence = settings[
+    "agent.sde.planAutoApproveTimeoutByPresence"
+  ] as Record<BuiltInPresenceMode, number>;
+  const goalMaxTurnsByPresence = settings[
+    "agent.sde.goalMaxTurnsByPresence"
+  ] as Record<BuiltInPresenceMode, number>;
   const presenceGuidanceOnline =
     (settings["general.presenceGuidanceOnline"] as string | undefined) ?? "";
   const presenceGuidanceInvisible =
@@ -163,6 +169,108 @@ const MyRolesSection: React.FC<MyRolesSectionProps> = ({
       });
     },
     [questionAutoSkipTimeoutByPresence, updateSetting]
+  );
+
+  const handlePlanAutoApproveTimeoutChange = useCallback(
+    (mode: BuiltInPresenceMode) => (value: number | undefined) => {
+      if (value === undefined) return;
+      updateSetting({
+        key: "agent.sde.planAutoApproveTimeoutByPresence",
+        value: {
+          ...planAutoApproveTimeoutByPresence,
+          [mode]: value,
+        },
+      });
+    },
+    [planAutoApproveTimeoutByPresence, updateSetting]
+  );
+
+  const handleGoalMaxTurnsChange = useCallback(
+    (mode: BuiltInPresenceMode) => (value: number | undefined) => {
+      if (value === undefined) return;
+      updateSetting({
+        key: "agent.sde.goalMaxTurnsByPresence",
+        value: {
+          ...goalMaxTurnsByPresence,
+          [mode]: value,
+        },
+      });
+    },
+    [goalMaxTurnsByPresence, updateSetting]
+  );
+
+  const renderPolicyRows = useCallback(
+    (mode: BuiltInPresenceMode, statusLabel: string) => (
+      <>
+        <SectionRow
+          label={t("sdeAgent.questionAutoSkipTimeoutByStatus", {
+            status: statusLabel,
+          })}
+          description={t("sdeAgent.questionAutoSkipTimeoutByStatusDesc")}
+        >
+          <NumberInput
+            value={questionAutoSkipTimeoutByPresence[mode]}
+            onChange={handleQuestionAutoSkipTimeoutChange(mode)}
+            min={0}
+            max={300}
+            step={5}
+            suffix={t("common:common.s")}
+            controlsPosition="sides"
+            style={SECTION_CONTROL_STYLE}
+          />
+        </SectionRow>
+        <SectionRow
+          label={t("sdeAgent.planAutoApproveTimeoutByStatus", {
+            status: statusLabel,
+            defaultValue: `${statusLabel} plan auto-approve`,
+          })}
+          description={t("sdeAgent.planAutoApproveTimeoutByStatusDesc", {
+            defaultValue:
+              "Auto-approve a pending plan after this many seconds in this status (0 = disabled).",
+          })}
+        >
+          <NumberInput
+            value={planAutoApproveTimeoutByPresence[mode]}
+            onChange={handlePlanAutoApproveTimeoutChange(mode)}
+            min={0}
+            max={3600}
+            step={10}
+            suffix={t("common:common.s")}
+            controlsPosition="sides"
+            style={SECTION_CONTROL_STYLE}
+          />
+        </SectionRow>
+        <SectionRow
+          label={t("sdeAgent.goalMaxTurnsByStatus", {
+            status: statusLabel,
+            defaultValue: `${statusLabel} goal continuation budget`,
+          })}
+          description={t("sdeAgent.goalMaxTurnsByStatusDesc", {
+            defaultValue:
+              "Keep working toward your last request for up to this many extra turns after the agent would normally stop (0 = disabled).",
+          })}
+        >
+          <NumberInput
+            value={goalMaxTurnsByPresence[mode]}
+            onChange={handleGoalMaxTurnsChange(mode)}
+            min={0}
+            max={100}
+            step={1}
+            controlsPosition="sides"
+            style={SECTION_CONTROL_STYLE}
+          />
+        </SectionRow>
+      </>
+    ),
+    [
+      t,
+      questionAutoSkipTimeoutByPresence,
+      planAutoApproveTimeoutByPresence,
+      goalMaxTurnsByPresence,
+      handleQuestionAutoSkipTimeoutChange,
+      handlePlanAutoApproveTimeoutChange,
+      handleGoalMaxTurnsChange,
+    ]
   );
 
   const techSavvy = settings[
@@ -323,23 +431,10 @@ const MyRolesSection: React.FC<MyRolesSectionProps> = ({
             placeholder={t("general.presenceGuidancePlaceholder")}
           />
         </SectionRow>
-        <SectionRow
-          label={t("sdeAgent.questionAutoSkipTimeoutByStatus")}
-          description={t("sdeAgent.questionAutoSkipTimeoutByStatusDesc")}
-        >
-          <NumberInput
-            value={questionAutoSkipTimeoutByPresence.online}
-            onChange={handleQuestionAutoSkipTimeoutChange(
-              USER_PRESENCE_MODE.ONLINE
-            )}
-            min={0}
-            max={300}
-            step={5}
-            suffix={t("common:common.s")}
-            controlsPosition="sides"
-            style={SECTION_CONTROL_STYLE}
-          />
-        </SectionRow>
+        {renderPolicyRows(
+          USER_PRESENCE_MODE.ONLINE,
+          t("navigation:sidebar.presence.online")
+        )}
       </SectionContainer>
 
       <SectionContainer title={t("navigation:sidebar.presence.invisible")}>
@@ -356,23 +451,10 @@ const MyRolesSection: React.FC<MyRolesSectionProps> = ({
             placeholder={t("general.presenceGuidancePlaceholder")}
           />
         </SectionRow>
-        <SectionRow
-          label={t("sdeAgent.questionAutoSkipTimeoutByStatus")}
-          description={t("sdeAgent.questionAutoSkipTimeoutByStatusDesc")}
-        >
-          <NumberInput
-            value={questionAutoSkipTimeoutByPresence.invisible}
-            onChange={handleQuestionAutoSkipTimeoutChange(
-              USER_PRESENCE_MODE.INVISIBLE
-            )}
-            min={0}
-            max={300}
-            step={5}
-            suffix={t("common:common.s")}
-            controlsPosition="sides"
-            style={SECTION_CONTROL_STYLE}
-          />
-        </SectionRow>
+        {renderPolicyRows(
+          USER_PRESENCE_MODE.INVISIBLE,
+          t("navigation:sidebar.presence.invisible")
+        )}
       </SectionContainer>
 
       <SectionContainer title={t("navigation:sidebar.presence.away")}>
@@ -389,23 +471,10 @@ const MyRolesSection: React.FC<MyRolesSectionProps> = ({
             placeholder={t("general.presenceGuidancePlaceholder")}
           />
         </SectionRow>
-        <SectionRow
-          label={t("sdeAgent.questionAutoSkipTimeoutByStatus")}
-          description={t("sdeAgent.questionAutoSkipTimeoutByStatusDesc")}
-        >
-          <NumberInput
-            value={questionAutoSkipTimeoutByPresence.away}
-            onChange={handleQuestionAutoSkipTimeoutChange(
-              USER_PRESENCE_MODE.AWAY
-            )}
-            min={0}
-            max={300}
-            step={5}
-            suffix={t("common:common.s")}
-            controlsPosition="sides"
-            style={SECTION_CONTROL_STYLE}
-          />
-        </SectionRow>
+        {renderPolicyRows(
+          USER_PRESENCE_MODE.AWAY,
+          t("navigation:sidebar.presence.away")
+        )}
       </SectionContainer>
     </div>
   );

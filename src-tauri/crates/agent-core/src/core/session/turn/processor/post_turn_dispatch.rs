@@ -160,5 +160,25 @@ impl UnifiedMessageProcessor {
                 .await;
             }
         }
+
+        // 9e. Goal continuation loop (Ralph loop) — judge the completed
+        // turn against the standing goal and enqueue a continuation when
+        // the presence policy enables it (Invisible / custom autonomous
+        // modes). Fire-and-forget; skipped for cancelled turns (the user
+        // explicitly stopped — auto-continuing would fight the Stop).
+        if final_turn_state != DialogTurnState::Cancelled && !result.is_stream_error {
+            crate::session::goal_loop::spawn_turn_end_evaluation(
+                crate::session::goal_loop::GoalLoopTurnEnd {
+                    session_id: session_id.to_string(),
+                    response_text: response_text.to_string(),
+                    model: self.runtime.model.clone(),
+                    account_id: self.runtime.account_id.clone(),
+                    reliability: self.runtime.resolved.reliability.clone(),
+                    native_harness_type: self.runtime.native_harness_type,
+                    workspace: self.runtime.workspace_state.read().clone(),
+                    app_handle: self.app_handle.clone(),
+                },
+            );
+        }
     }
 }

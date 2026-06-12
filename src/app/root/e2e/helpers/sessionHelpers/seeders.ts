@@ -477,6 +477,38 @@ export function createSessionSeederHelpers(store: E2EStore) {
     }
   };
 
+  /**
+   * Wire-path pending-plan seeder for the plan-lifecycle specs: drives the
+   * debug-only Tauri command `debug_seed_pending_plan`, which calls the
+   * PRODUCTION `PlanApprovalManager::mark_ready` — DB row, transcript event
+   * and `agent:plan_ready_for_approval` broadcast are all live-shaped.
+   */
+  const debugSeedPendingPlanWire = async (input: {
+    sessionId: string;
+    planPath: string;
+    planTitle: string;
+    planContent: string;
+  }): Promise<Result<{ sessionId: string }>> => {
+    try {
+      if (!input.sessionId || !input.planPath) {
+        return {
+          ok: false,
+          error:
+            "debugSeedPendingPlanWire: `sessionId` and `planPath` required",
+        };
+      }
+      await invoke("debug_seed_pending_plan", {
+        sessionId: input.sessionId,
+        planPath: input.planPath,
+        planTitle: input.planTitle,
+        planContent: input.planContent,
+      });
+      return { ok: true, sessionId: input.sessionId };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
   return {
     seedChatEvents,
     seedSidebarSession,
@@ -487,6 +519,7 @@ export function createSessionSeederHelpers(store: E2EStore) {
     debugSeedSubagentJobWire,
     killSubagentJobWire,
     debugSeedChildSessionWire,
+    debugSeedPendingPlanWire,
     deleteSessionWire,
   };
 }
