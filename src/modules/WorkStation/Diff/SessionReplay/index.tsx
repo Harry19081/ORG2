@@ -49,6 +49,7 @@ import {
 import type { ReplayTab } from "@src/modules/WorkStation/shared/SessionReplay/ReplayTabBar";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { getGitArtifactsFromEvent } from "@src/shared/git/sessionGitArtifacts";
+import { reposAtom } from "@src/store/repo/atoms";
 import { sessionByIdAtom } from "@src/store/session";
 import {
   simulatorDiffCommitNavigationRequestAtom,
@@ -141,9 +142,9 @@ function resolveLatestRepoContext(
 }
 
 function getRepoContextKey(context: SubmissionRepoContext): string | null {
-  const repoId = context.repoId ?? context.repoPath;
-  if (!repoId) return null;
-  return `${repoId}:${context.repoPath ?? ""}`;
+  // Key by filesystem path when available so the same repo reached via
+  // different repoId formats (UUID vs path) shares one history cache entry.
+  return context.repoPath ?? context.repoId ?? null;
 }
 
 function commitMatchesSubmission(
@@ -192,8 +193,11 @@ function mergeResolvedCommit(
     short_sha: resolved.short_sha,
     summary: resolved.summary,
     author: resolved.author,
-    repoId: submission.repoId ?? context.repoId,
-    repoPath: submission.repoPath ?? context.repoPath,
+    // The commit was actually found in `context`'s git history, so that
+    // context is authoritative — the submission's own repo context may be
+    // a wrong session-level fallback (e.g. a non-git working directory).
+    repoId: context.repoId ?? submission.repoId,
+    repoPath: context.repoPath ?? submission.repoPath,
   };
 }
 
@@ -254,6 +258,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   );
   const session = useAtomValue(sessionByIdAtom(sessionId ?? ""));
   const sessionRepoPath = session?.repoPath ?? "";
+  const repos = useAtomValue(reposAtom);
   const [diffCommitNavigationRequest, setDiffCommitNavigationRequest] = useAtom(
     simulatorDiffCommitNavigationRequestAtom
   );
@@ -368,6 +373,14 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   const [resolvedSubmissionCommits, setResolvedSubmissionCommits] = useState<
     SubmissionCommit[]
   >([]);
+  // Tracks which submissionsData.commits array the resolution ran against.
+  // Commit-card navigation must wait for git-history resolution: consuming
+  // the request against unresolved submissions would select a commit whose
+  // repo context may still be a wrong session-level fallback.
+  const [resolvedForCommits, setResolvedForCommits] = useState<
+    SubmissionCommit[] | null
+  >(null);
+  const submissionsResolved = resolvedForCommits === submissionsData.commits;
 
   useEffect(() => {
     let cancelled = false;
@@ -379,86 +392,89 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       });
 
       const resolvedByContextKey = new Map<string, GitCommitInfo[]>();
+
+      async function loadHistory(
+        context: SubmissionRepoContext,
+        contextKey: string
+      ): Promise<GitCommitInfo[]> {
+        let commits = resolvedByContextKey.get(contextKey);
+        if (commits) return commits;
+        const result = await getGitCommits({
+          repo_id: context.repoId ?? context.repoPath ?? "",
+          repo_path: context.repoPath,
+          limit: SUBMISSION_COMMIT_RESOLVE_LIMIT,
+        });
+        commits = result?.commits ?? [];
+        resolvedByContextKey.set(contextKey, commits);
+        logger.info("git history loaded for submission commit resolve", {
+          repoId: context.repoId ?? context.repoPath ?? "",
+          repoPath: context.repoPath,
+          loadedCommitCount: commits.length,
+          firstCommitSha: commits[0]?.sha,
+        });
+        return commits;
+      }
+
       const nextCommits = await Promise.all(
         submissionsData.commits.map(async (submission) => {
-          const context = {
+          const primaryContext = {
             repoId: submission.repoId ?? fallbackRepoContext.repoId,
             repoPath: submission.repoPath ?? fallbackRepoContext.repoPath,
           };
-          const contextKey = getRepoContextKey(context);
-          logger.info("submission commit resolve candidate", {
-            parsedSha: submission.sha,
-            parsedShortSha: submission.short_sha,
-            parsedSummary: submission.summary,
-            context,
-            contextKey,
-            hasFullSha: submission.sha.length >= 40,
-          });
 
-          if (!contextKey) {
+          // The session's repo context can point at a non-git working
+          // directory (or the wrong repo) — e.g. a chat session whose cwd
+          // is not where the agent actually committed. Search the primary
+          // context first, then fall back to every known workspace repo so
+          // the commit card still resolves to the repo that owns the SHA.
+          const candidateContexts: SubmissionRepoContext[] = [];
+          const seenKeys = new Set<string>();
+          const pushCandidate = (context: SubmissionRepoContext) => {
+            const key = getRepoContextKey(context);
+            if (!key || seenKeys.has(key)) return;
+            seenKeys.add(key);
+            candidateContexts.push(context);
+          };
+          pushCandidate(primaryContext);
+          for (const repo of repos) {
+            const path = repo.fs_uri ?? repo.path;
+            if (path) pushCandidate({ repoId: repo.id, repoPath: path });
+          }
+
+          if (candidateContexts.length === 0) {
             logger.warn("submission commit missing repo context", {
               parsedSha: submission.sha,
               parsedSummary: submission.summary,
               fallbackRepoContext,
             });
-            return mergeResolvedCommit(submission, undefined, context);
+            return mergeResolvedCommit(submission, undefined, primaryContext);
           }
 
-          if (submission.sha.length >= 40) {
-            logger.info("submission commit already has full sha", {
-              commitSha: submission.sha,
-              context,
-            });
-            return mergeResolvedCommit(submission, undefined, context);
-          }
-
-          let commits = resolvedByContextKey.get(contextKey);
-          if (!commits) {
-            logger.info(
-              `loading git history for submission commit resolve sha=${submission.sha} repoId=${context.repoId ?? context.repoPath ?? ""} repoPath=${context.repoPath ?? ""}`,
-              {
-                repoId: context.repoId ?? context.repoPath ?? "",
-                repoPath: context.repoPath,
-                limit: SUBMISSION_COMMIT_RESOLVE_LIMIT,
-              }
+          for (const context of candidateContexts) {
+            const contextKey = getRepoContextKey(context);
+            if (!contextKey) continue;
+            const commits = await loadHistory(context, contextKey);
+            const resolvedCommit = commits.find((candidate) =>
+              commitMatchesSubmission(candidate, submission)
             );
-            const result = await getGitCommits({
-              repo_id: context.repoId ?? context.repoPath ?? "",
-              repo_path: context.repoPath,
-              limit: SUBMISSION_COMMIT_RESOLVE_LIMIT,
-            });
-            commits = result?.commits ?? [];
-            resolvedByContextKey.set(contextKey, commits);
-            logger.info("git history loaded for submission commit resolve", {
-              repoId: context.repoId ?? context.repoPath ?? "",
-              repoPath: context.repoPath,
-              loadedCommitCount: commits.length,
-              firstCommitSha: commits[0]?.sha,
-              firstCommitSummary: commits[0]?.summary,
-            });
+            if (resolvedCommit) {
+              logger.info("submission commit matched git history", {
+                parsedSha: submission.sha,
+                resolvedSha: resolvedCommit.sha,
+                resolvedShortSha: resolvedCommit.short_sha,
+                resolvedSummary: resolvedCommit.summary,
+                context,
+              });
+              return mergeResolvedCommit(submission, resolvedCommit, context);
+            }
           }
 
-          const resolvedCommit = commits.find((candidate) =>
-            commitMatchesSubmission(candidate, submission)
-          );
-          if (!resolvedCommit) {
-            logger.warn("submission commit did not match git history", {
-              parsedSha: submission.sha,
-              parsedSummary: submission.summary,
-              context,
-              loadedCommitCount: commits.length,
-            });
-          } else {
-            logger.info("submission commit matched git history", {
-              parsedSha: submission.sha,
-              resolvedSha: resolvedCommit.sha,
-              resolvedShortSha: resolvedCommit.short_sha,
-              resolvedSummary: resolvedCommit.summary,
-              context,
-            });
-          }
-
-          return mergeResolvedCommit(submission, resolvedCommit, context);
+          logger.warn("submission commit did not match any repo history", {
+            parsedSha: submission.sha,
+            parsedSummary: submission.summary,
+            candidateCount: candidateContexts.length,
+          });
+          return mergeResolvedCommit(submission, undefined, primaryContext);
         })
       );
 
@@ -474,6 +490,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
           })),
         });
         setResolvedSubmissionCommits(nextCommits);
+        setResolvedForCommits(submissionsData.commits);
       }
     }
 
@@ -482,7 +499,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [fallbackRepoContext, submissionsData.commits]);
+  }, [fallbackRepoContext, repos, submissionsData.commits]);
 
   const submissionCommits =
     resolvedSubmissionCommits.length > 0
@@ -564,6 +581,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
 
   useEffect(() => {
     if (!diffCommitNavigationRequest?.commitSha) return;
+    if (!submissionsResolved) return;
     if (
       diffCommitNavigationRequest.sessionId &&
       sessionId &&
@@ -594,6 +612,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     sessionId,
     setDiffCommitNavigationRequest,
     submissionCommits,
+    submissionsResolved,
   ]);
 
   const handleSidebarItemSelect = useCallback(
