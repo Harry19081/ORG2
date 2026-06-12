@@ -82,7 +82,7 @@ export const NavigationMenuParentRow = React.forwardRef<
         data-testid={item.dataTestId}
         className={`group flex min-h-[36px] cursor-pointer items-center justify-between rounded-lg transition-colors duration-150 ${
           isChild ? "pl-5 pr-2" : "px-2"
-        } ${submenuSelected ? "bg-bg-2 text-primary-6" : "text-text-1 hover:bg-fill-2"}`}
+        } ${submenuSelected ? "bg-bg-1 text-primary-6" : "text-text-1 hover:bg-fill-2"}`}
         onClick={() => {
           if (!item.disabled) onMenuItemClick(item.key, item);
         }}
@@ -230,7 +230,7 @@ export const NavigationMenuLeafRow = React.forwardRef<
               ? "cursor-default text-text-2 opacity-60"
               : "cursor-default text-text-3 opacity-60"
             : isSelected
-              ? "bg-bg-2 text-primary-6"
+              ? "bg-bg-1 text-primary-6"
               : isSecondaryTone
                 ? "cursor-pointer text-text-2 hover:bg-fill-2 hover:text-text-1"
                 : "cursor-pointer text-text-1 hover:bg-fill-2"

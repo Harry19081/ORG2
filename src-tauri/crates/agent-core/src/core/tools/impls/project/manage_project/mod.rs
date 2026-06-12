@@ -20,8 +20,6 @@ mod work_items;
 
 use async_trait::async_trait;
 use serde_json::Value;
-use std::sync::Arc;
-use tokio::sync::Mutex as TokioMutex;
 
 use crate::tools::names as tool_names;
 use crate::tools::traits::{required_string, Tool, ToolError};
@@ -30,8 +28,8 @@ use crate::tools::traits::{required_string, Tool, ToolError};
 pub struct ProjectTool {
     /// App handle for launching sessions (`start_item`).
     app_handle: Option<tauri::AppHandle>,
-    /// Agent session code account (shared with `SessionTool` when set).
-    current_account_id: Option<Arc<TokioMutex<Option<String>>>>,
+    /// The parent session's own account id (shared with `SessionTool` when set).
+    session_account_id: Option<String>,
     /// Agent model id for the running session (used with session account for
     /// `start_item`).
     agent_model: String,
@@ -40,12 +38,12 @@ pub struct ProjectTool {
 impl ProjectTool {
     pub fn new(
         app_handle: Option<tauri::AppHandle>,
-        current_account_id: Option<Arc<TokioMutex<Option<String>>>>,
+        session_account_id: Option<String>,
         agent_model: String,
     ) -> Self {
         Self {
             app_handle,
-            current_account_id,
+            session_account_id,
             agent_model,
         }
     }
@@ -135,7 +133,7 @@ impl Tool for ProjectTool {
                     &slug,
                     &short_id,
                     self.app_handle.as_ref(),
-                    self.current_account_id.as_ref(),
+                    self.session_account_id.as_deref(),
                     &self.agent_model,
                 )
                 .await

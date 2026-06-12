@@ -400,30 +400,57 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       </>
     );
 
-    // Compact layout: the sidebar is flush with the window edge with no
-    // radius, so the floating drop shadow has nothing to "cast" against
-    // and just smudges the boundary with the content panel. Drop it.
+    // Compact layout: the sidebar is flush with the rounded window edge
+    // (top-left + bottom-left curves match `--border-radius-window`). Both
+    // the floating drop shadow and the backdrop-filter blur produce a
+    // faint dark halo along that curve — the shadow smudges the boundary
+    // with the content panel, and `backdrop-filter` samples beyond the
+    // rounded clip on WebKit, leaving a visible "shade" tracing the
+    // corner. Drop both in compact so the corner is a clean fill.
     const sidebarBoxShadow = isCompactLayout ? "none" : "var(--sidebar-shadow)";
+    const sidebarBackdropFilter = isCompactLayout
+      ? "none"
+      : "var(--sidebar-backdrop)";
     const surfaceStyle = themeStyles
       ? {
           ...themeStyles,
           boxShadow: sidebarBoxShadow,
-          backdropFilter: "var(--sidebar-backdrop)",
-          WebkitBackdropFilter: "var(--sidebar-backdrop)",
+          backdropFilter: sidebarBackdropFilter,
+          WebkitBackdropFilter: sidebarBackdropFilter,
         }
       : {
           backgroundColor: "var(--sidebar-bg)",
           borderColor: "var(--sidebar-border)",
           boxShadow: sidebarBoxShadow,
-          backdropFilter: "var(--sidebar-backdrop)",
-          WebkitBackdropFilter: "var(--sidebar-backdrop)",
+          backdropFilter: sidebarBackdropFilter,
+          WebkitBackdropFilter: sidebarBackdropFilter,
           ...sidebarOpacityStyle,
         };
 
     // Wrapped content
     // Compact layout: sidebar is flush with the top/left/bottom window edge —
-    // no outer padding, no border radius. The 8px header inset lives inside
-    // `content` (see spacer above) so the surface itself reaches the window edge.
+    // no outer padding, no border radius on the right (it butts against the
+    // content panel). The top-left and bottom-left corners follow the window
+    // radius (`--border-radius-window`) so the sidebar surface aligns with
+    // the rounded window/body clip instead of leaving a sliver of the body
+    // surface visible through the corner curve.
+    // The 8px header inset lives inside `content` (see spacer above) so the
+    // surface itself reaches the window edge.
+    // In compact mode the outer edges (top/left/bottom) sit flush against
+    // the rounded window chrome. A 1px border on those edges would trace
+    // the curve and read as a dark shade around the corner. Drop it and
+    // only keep a 1px separator on the right edge where the sidebar meets
+    // the content panel.
+    const compactSurfaceStyle = {
+      borderTopLeftRadius: "var(--border-radius-window)",
+      borderBottomLeftRadius: "var(--border-radius-window)",
+      borderTopRightRadius: 0,
+      borderBottomRightRadius: 0,
+      borderTopWidth: 0,
+      borderLeftWidth: 0,
+      borderBottomWidth: 0,
+      borderRightWidth: 1,
+    } as const;
     const wrappedContent = wrapInSurface ? (
       <div
         className={`sidebar-base flex h-full w-full flex-col ${
@@ -431,10 +458,14 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
         } ${innerClassName}`}
       >
         <div
-          className="flex flex-1 flex-col overflow-hidden border"
+          className={`flex flex-1 flex-col overflow-hidden ${
+            isCompactLayout ? "" : "border"
+          }`}
           style={{
             ...surfaceStyle,
-            borderRadius: isCompactLayout ? 0 : PLATFORM_SIDEBAR_RADIUS,
+            ...(isCompactLayout
+              ? compactSurfaceStyle
+              : { borderRadius: PLATFORM_SIDEBAR_RADIUS }),
           }}
         >
           {content}

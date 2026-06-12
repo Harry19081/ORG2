@@ -5,9 +5,37 @@
  * and close button with unsaved indicator.
  */
 import { useSortable } from "@dnd-kit/sortable";
-import * as LucideIcons from "lucide-react";
-import { Lock, MoveHorizontal } from "lucide-react";
-// named imports kept separate from namespace import intentionally
+import {
+  Infinity,
+  BookLock,
+  Box,
+  Building2,
+  CircleDot,
+  Code,
+  Code2,
+  Folder,
+  GitBranch,
+  GitCommitHorizontal,
+  GitMerge,
+  Globe,
+  Layout,
+  LayoutList,
+  ListChecks,
+  Lock,
+  type LucideIcon,
+  MessageCircle,
+  MessageSquare,
+  MoveHorizontal,
+  Package,
+  Palette,
+  Plus,
+  Radar,
+  ScanSearch,
+  Search,
+  Settings,
+  Sparkles,
+  Terminal,
+} from "lucide-react";
 import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -38,6 +66,40 @@ import { WorkStationTabPillSurface } from "../WorkStationTabPillSurface";
 // ============================================
 // Types
 // ============================================
+
+const WORKSTATION_TAB_ICONS = {
+  BookLock,
+  Box,
+  Building2,
+  CircleDot,
+  Code,
+  Code2,
+  GitBranch,
+  GitCommitHorizontal,
+  GitMerge,
+  Globe,
+  Infinity,
+  Layout,
+  LayoutList,
+  ListChecks,
+  MessageCircle,
+  MessageSquare,
+  Package,
+  Palette,
+  Plus,
+  Radar,
+  ScanSearch,
+  Search,
+  Settings,
+  Sparkles,
+  Terminal,
+} as const satisfies Record<string, LucideIcon>;
+
+type WorkstationTabIconName = keyof typeof WORKSTATION_TAB_ICONS;
+
+function resolveWorkstationTabIcon(name: string): LucideIcon | null {
+  return WORKSTATION_TAB_ICONS[name as WorkstationTabIconName] ?? null;
+}
 
 export interface SortableTabProps {
   tab: WorkStationTab;
@@ -108,7 +170,7 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
 
       if (tab.type === "benchmark") {
         return (
-          <LucideIcons.BookLock
+          <BookLock
             size={16}
             strokeWidth={1.75}
             className={isActive ? "text-primary-6" : "text-text-2"}
@@ -118,16 +180,7 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
 
       // Custom Lucide override — tint active tab only (FileTypeIcon / favicons keep their own colors).
       if (tab.icon) {
-        const IconComponent = (
-          LucideIcons as unknown as Record<
-            string,
-            React.ComponentType<{
-              size?: number;
-              strokeWidth?: number;
-              className?: string;
-            }>
-          >
-        )[tab.icon];
+        const IconComponent = resolveWorkstationTabIcon(tab.icon);
         if (IconComponent) {
           return (
             <IconComponent
@@ -152,7 +205,7 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
           return <FileTypeIcon fileName="folder" type="folder" size="small" />;
         case "explorer":
           return (
-            <LucideIcons.Folder
+            <Folder
               size={16}
               strokeWidth={1.75}
               className={isActive ? "text-primary-6" : "text-text-2"}

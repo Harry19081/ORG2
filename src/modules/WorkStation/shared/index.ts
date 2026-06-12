@@ -27,7 +27,11 @@ export type {
 
 // Shared panel tab-bar chrome (position-aware tab header + position toggle)
 export { default as PanelTabBar, PanelPositionToggle } from "./PanelTabBar";
-export type { PanelTabBarProps, PanelTabBarTab } from "./PanelTabBar";
+export type {
+  PanelTabBarProps,
+  PanelTabBarTab,
+  PanelTabIconName,
+} from "./PanelTabBar";
 
 // Icon button
 export { IconButton } from "./IconButton";

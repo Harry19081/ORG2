@@ -54,23 +54,29 @@ pub fn clear_messages(prefix: &str, session_id: &str) -> SqliteResult<i64> {
     })
 }
 
-/// Delete messages at or after a specific timestamp.
+/// Delete messages at or after a specific sequence number.
 /// Also cleans up any image files referenced by the deleted messages.
-pub fn truncate_messages_after(
+///
+/// Sequence is the **only** truncation coordinate for `<prefix>_messages`:
+/// it is assigned append-only and never rewritten, so `sequence >= ?`
+/// always selects a suffix of the transcript. (`created_at` truncation
+/// was removed after compaction-rewritten timestamps caused a full
+/// transcript wipe — see `seed_session_with_messages` docs.)
+pub fn truncate_messages_from_sequence(
     prefix: &str,
     session_id: &str,
-    created_at: &str,
+    from_sequence: i64,
 ) -> SqliteResult<i64> {
     cleanup_image_files_for_query(
         prefix,
-        "session_id = ?1 AND created_at >= ?2",
-        &[&session_id as &dyn rusqlite::ToSql, &created_at],
+        "session_id = ?1 AND sequence >= ?2",
+        &[&session_id as &dyn rusqlite::ToSql, &from_sequence],
     )?;
     with_sessions_writer(|| {
         let conn = get_connection()?;
         let sql =
-            format!("DELETE FROM {prefix}_messages WHERE session_id = ?1 AND created_at >= ?2");
-        let deleted = conn.execute(&sql, params![session_id, created_at])?;
+            format!("DELETE FROM {prefix}_messages WHERE session_id = ?1 AND sequence >= ?2");
+        let deleted = conn.execute(&sql, params![session_id, from_sequence])?;
         Ok(deleted as i64)
     })
 }

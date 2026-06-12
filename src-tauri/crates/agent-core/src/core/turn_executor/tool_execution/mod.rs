@@ -24,8 +24,9 @@
 //! straight into the message vec. Anything that doesn't qualify falls
 //! through into this module's `execute_tool_calls` post-stream.
 //!
-//! Both paths share `inject_call_id` (the `__call_id` contract) so adding
-//! a new framework metadata field is a one-line change here.
+//! Both paths construct a typed [`CallContext`](crate::tools::traits::CallContext)
+//! per call, so adding a new framework metadata field is a struct-field
+//! change in `call_context.rs` plus population at the dispatch sites.
 
 mod diff_feedback;
 mod parallel;

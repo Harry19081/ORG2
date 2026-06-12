@@ -355,25 +355,6 @@ pub async fn cli_agent_message(
     }
 
     let target_account_id = account_id.as_deref().or(session.account_id.as_deref());
-    let cli_resume_id = persistence::get_cli_session_id_for_account(&session_id, target_account_id)
-        .map_err(|err| format!("DB error: {}", err))?
-        .or_else(|| {
-            if account_id
-                .as_deref()
-                .is_some_and(|new_account_id| session.account_id.as_deref() != Some(new_account_id))
-            {
-                None
-            } else {
-                session.cli_session_id.clone()
-            }
-        });
-
-    tracing::info!(
-        session_id = %session_id,
-        target_account_id = ?target_account_id,
-        cli_resume_id = ?cli_resume_id,
-        "cli_agent_message: resolved resume state"
-    );
 
     // If the user switched model/account, persist the change so run_session picks it up.
     if model.is_some() || account_id.is_some() {
@@ -392,12 +373,57 @@ pub async fn cli_agent_message(
         })
         .await
         .map_err(|e| format!("Task error: {}", e))?;
+
+        if let Some(ref new_account_id) = account_id {
+            if session.account_id.as_deref() != Some(new_account_id.as_str()) {
+                agent_core::lifecycle::emit_session_account_switched(
+                    agent_core::interaction::plan_approval::global_app_handle(),
+                    &session_id,
+                    session.account_id.as_deref(),
+                    new_account_id,
+                    model.as_deref().or(session.model.as_deref()),
+                );
+            }
+        }
     }
 
     // Kill the existing agent process, Tokio task, and per-session proxy.
     tracing::info!(session_id = %session_id, "cli_agent_message: killing existing runner");
     session_runner::kill_running_agent(&session_id).await;
     tracing::info!(session_id = %session_id, "cli_agent_message: existing runner cleanup complete");
+
+    // Resolve the resume id AFTER the old runner is dead — a slow runner
+    // can commit a fresh cli_session_id right up until the kill, so an
+    // earlier read would resume one conversation-id behind (TOCTOU on
+    // same-account follow-ups). Reading post-kill from a fresh row sees
+    // the runner's final commit.
+    let fresh_cli_session_id = {
+        let sid = session_id.clone();
+        tokio::task::spawn_blocking(move || persistence::get_session(&sid))
+            .await
+            .map_err(|e| format!("Task error: {}", e))?
+            .map_err(|err| format!("DB error: {}", err))?
+            .and_then(|s| s.cli_session_id)
+    };
+    let cli_resume_id = persistence::get_cli_session_id_for_account(&session_id, target_account_id)
+        .map_err(|err| format!("DB error: {}", err))?
+        .or_else(|| {
+            if account_id
+                .as_deref()
+                .is_some_and(|new_account_id| session.account_id.as_deref() != Some(new_account_id))
+            {
+                None
+            } else {
+                fresh_cli_session_id
+            }
+        });
+
+    tracing::info!(
+        session_id = %session_id,
+        target_account_id = ?target_account_id,
+        cli_resume_id = ?cli_resume_id,
+        "cli_agent_message: resolved resume state"
+    );
 
     // For hosted_key sessions (or legacy proxy billing), allocate a fresh token.
     // The previous token was released when the last run completed (or expired

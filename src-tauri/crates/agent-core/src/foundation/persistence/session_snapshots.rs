@@ -90,7 +90,12 @@ pub fn ensure_tables_with(conn: &Connection) -> SqliteResult<()> {
             tool_output TEXT,
             model       TEXT,
             sequence    INTEGER NOT NULL,
-            created_at  TEXT NOT NULL
+            created_at  TEXT NOT NULL,
+            -- Compact boundary pointer: NULL for ordinary rows. A non-NULL
+            -- value marks this row as a compaction summary whose visible
+            -- tail starts at that sequence. Rows are never rewritten or
+            -- deleted by compaction (immutable transcript invariant).
+            compact_from_sequence INTEGER
         );
         CREATE INDEX IF NOT EXISTS idx_am_session
             ON agent_messages(session_id, sequence);
@@ -127,6 +132,10 @@ pub fn ensure_tables_with(conn: &Connection) -> SqliteResult<()> {
     )?;
 
     try_migrate(conn, "ALTER TABLE agent_messages ADD COLUMN images TEXT");
+    try_migrate(
+        conn,
+        "ALTER TABLE agent_messages ADD COLUMN compact_from_sequence INTEGER",
+    );
     try_migrate(
         conn,
         "ALTER TABLE agent_sessions ADD COLUMN workspace_path TEXT",

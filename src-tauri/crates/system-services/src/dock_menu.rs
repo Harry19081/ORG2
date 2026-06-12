@@ -188,6 +188,7 @@ pub fn install_dock_menu_action(_app_handle: &tauri::AppHandle) {
 }
 
 /// Global AppHandle so the extern "C" handler can emit events to the frontend.
+#[cfg(target_os = "macos")]
 static DOCK_APP_HANDLE: std::sync::Mutex<Option<tauri::AppHandle>> = std::sync::Mutex::new(None);
 
 /// Action handler for dock menu recent item clicks.

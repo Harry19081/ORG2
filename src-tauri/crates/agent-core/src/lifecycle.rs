@@ -77,6 +77,49 @@ fn emit_session_status_changed(
     }
 }
 
+/// Wire payload emitted as "session-account-switched" to all Tauri windows.
+///
+/// Single event chokepoint for EVERY path that changes a session's account
+/// (session_patch, send_message_impl override sync, channel switch,
+/// cli_agent_message). Cross-window UIs listen for this instead of relying
+/// on the initiating window's optimistic update.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SessionAccountSwitchedPayload<'a> {
+    session_id: &'a str,
+    from_account_id: Option<&'a str>,
+    to_account_id: &'a str,
+    model: Option<&'a str>,
+}
+
+pub fn emit_session_account_switched(
+    app_handle: Option<&tauri::AppHandle>,
+    session_id: &str,
+    from_account_id: Option<&str>,
+    to_account_id: &str,
+    model: Option<&str>,
+) {
+    let Some(handle) = app_handle else {
+        return;
+    };
+
+    if let Err(err) = handle.emit(
+        "session-account-switched",
+        SessionAccountSwitchedPayload {
+            session_id,
+            from_account_id,
+            to_account_id,
+            model,
+        },
+    ) {
+        tracing::warn!(
+            "[lifecycle] Failed to emit session-account-switched for {}: {}",
+            session_id,
+            err
+        );
+    }
+}
+
 fn persist_and_emit_terminal_turn(
     session_id: &str,
     terminal_turn: &TerminalTurnSignal,

@@ -46,8 +46,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
   const rowStateClasses = isActive
     ? isPrivateTab
-      ? "bg-bg-2 text-warning-6"
-      : "bg-bg-2 text-text-1"
+      ? "bg-bg-1 text-warning-6"
+      : "bg-bg-1 text-text-1"
     : theme
       ? "text-text-1"
       : "text-text-1 hover:bg-fill-2";

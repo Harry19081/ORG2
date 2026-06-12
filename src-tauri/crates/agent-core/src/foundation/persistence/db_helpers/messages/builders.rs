@@ -27,6 +27,35 @@ pub fn save_system_msg(prefix: &str, session_id: &str, content: &str) -> SqliteR
         sequence: 0,
         created_at: Utc::now().to_rfc3339(),
         images: None,
+        compact_from_sequence: None,
+    };
+    insert_message_retry(prefix, &msg)
+}
+
+/// Save a compact-boundary row: a `system` summary whose
+/// `compact_from_sequence` points at the first surviving tail row.
+/// Appended like any other message (sequence assigned by
+/// `insert_message_retry`); never rewrites or deletes prior rows.
+pub fn save_compact_boundary_msg(
+    prefix: &str,
+    session_id: &str,
+    summary: &str,
+    from_sequence: i64,
+) -> SqliteResult<String> {
+    let msg = AgentMessageRow {
+        id: Uuid::new_v4().to_string(),
+        session_id: session_id.to_string(),
+        role: message_role::SYSTEM.to_string(),
+        content: summary.to_string(),
+        tool_name: None,
+        tool_call_id: None,
+        tool_input: None,
+        tool_output: None,
+        model: None,
+        sequence: 0,
+        created_at: Utc::now().to_rfc3339(),
+        images: None,
+        compact_from_sequence: Some(from_sequence),
     };
     insert_message_retry(prefix, &msg)
 }
@@ -66,6 +95,7 @@ pub fn save_user_msg(
         sequence: 0, // overwritten inside insert_message_retry
         created_at: Utc::now().to_rfc3339(),
         images: images_json,
+        compact_from_sequence: None,
     };
     insert_message_retry(prefix, &msg)
 }
@@ -90,6 +120,7 @@ pub fn save_assistant_msg(
         sequence: 0, // overwritten inside insert_message_retry
         created_at: Utc::now().to_rfc3339(),
         images: None,
+        compact_from_sequence: None,
     };
     insert_message_retry(prefix, &msg)
 }
@@ -115,6 +146,7 @@ pub fn save_tool_call_msg(
         sequence: 0, // overwritten inside insert_message_retry
         created_at: Utc::now().to_rfc3339(),
         images: None,
+        compact_from_sequence: None,
     };
     insert_message_retry(prefix, &msg)
 }
@@ -141,6 +173,7 @@ pub fn save_tool_result_msg(
         sequence: 0, // overwritten inside insert_message_retry
         created_at: Utc::now().to_rfc3339(),
         images: None,
+        compact_from_sequence: None,
     };
     insert_message_retry(prefix, &msg)
 }

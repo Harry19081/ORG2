@@ -19,8 +19,10 @@ import Dropdown from "@src/components/Dropdown";
 import { openUrlInBrowserApp } from "@src/components/MarkDown/markdownUtils";
 import Menu from "@src/components/Menu";
 import Message from "@src/components/Message";
+import { resolveAgentIcon } from "@src/config/agentIcons";
 import { replayModeAtom } from "@src/engines/SessionCore";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
+import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import { parseGitArtifactsFromText } from "@src/shared/git/sessionGitArtifacts";
 import { currentRepoAtom } from "@src/store/repo";
 import { sessionByIdAtom } from "@src/store/session";
@@ -36,6 +38,10 @@ import {
   SESSION_REFERENCE_FILE_MANAGER_REVEAL_KEYS,
   getFileManagerRevealLabelKey,
 } from "@src/util/platform/fileManagerLabels";
+import {
+  createSessionIdTextPattern,
+  resolveSessionIconId,
+} from "@src/util/session/sessionDispatch";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 
@@ -64,7 +70,11 @@ const HOME_RELATIVE_ROOTS = new Set([
   "github",
 ]);
 
-export type MessageReferenceKind = "web_url" | "local_path" | "git_commit";
+export type MessageReferenceKind =
+  | "web_url"
+  | "local_path"
+  | "git_commit"
+  | "session";
 
 export interface MessageReferenceItem {
   kind: MessageReferenceKind;
@@ -77,6 +87,8 @@ export interface MessageReferenceItem {
   shortSha?: string;
   authorName?: string;
   authorDate?: string;
+  /** Full session id for `kind === "session"` cards. */
+  sessionId?: string;
 }
 
 function stripFencedCodeBlocks(content: string): string {
@@ -369,6 +381,18 @@ function makeReferenceKey(item: MessageReferenceItem): string {
   return `${item.kind}:${item.value}`;
 }
 
+/**
+ * Compact session-id label for the card subtitle: prefix + first UUID
+ * segment (`sdeagent-ee970f47…`). The full id stays in `value` for copy.
+ */
+function shortSessionIdLabel(sessionId: string): string {
+  const uuidStart = sessionId.search(
+    /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+  );
+  if (uuidStart <= 0) return sessionId;
+  return `${sessionId.slice(0, uuidStart)}${sessionId.slice(uuidStart, uuidStart + 8)}…`;
+}
+
 export function extractMessageReferences(
   content: string,
   workspacePaths: Array<string | undefined> = [],
@@ -378,6 +402,34 @@ export function extractMessageReferences(
   let pathSearchContent = searchableContent;
   const references: MessageReferenceItem[] = [];
   const seen = new Set<string>();
+
+  // Session ids first: they win over commit/path extraction for the same
+  // text span. `parseGitArtifactsFromText` masks session ids internally,
+  // and we blank them out of the path-search content below so the path
+  // pass cannot partially match inside them either.
+  for (const match of searchableContent.matchAll(
+    createSessionIdTextPattern()
+  )) {
+    const sessionId = match[0];
+    const item: MessageReferenceItem = {
+      kind: "session",
+      value: sessionId,
+      title: shortSessionIdLabel(sessionId),
+      subtitle: sessionId,
+      sessionId,
+    };
+    const key = makeReferenceKey(item);
+    if (!seen.has(key)) {
+      seen.add(key);
+      references.push(item);
+    }
+    const start = match.index ?? 0;
+    pathSearchContent =
+      pathSearchContent.slice(0, start) +
+      " ".repeat(sessionId.length) +
+      pathSearchContent.slice(start + sessionId.length);
+    if (references.length >= MAX_REFERENCE_CARDS) return references;
+  }
 
   for (const artifact of parseGitArtifactsFromText(searchableContent)) {
     if (artifact.kind !== "commit") continue;
@@ -527,6 +579,74 @@ interface MessageReferenceCardProps {
   item: MessageReferenceItem;
   sessionId?: string | null;
 }
+
+/**
+ * Reference card for a session id mentioned in chat ("look at session
+ * sdeagent-…"). Title shows the live session name when the session is
+ * known to the store; the primary action jumps the WorkStation to it.
+ */
+const SessionReferenceCard: React.FC<{ item: MessageReferenceItem }> = ({
+  item,
+}) => {
+  const { t } = useTranslation("sessions");
+  const { t: tCommon } = useTranslation("common");
+  const referencedSessionId = item.sessionId ?? item.value;
+  const referencedSession = useAtomValue(sessionByIdAtom(referencedSessionId));
+  const { openSession } = useSessionView();
+
+  const handleJump = useCallback(() => {
+    openSession(
+      referencedSessionId,
+      referencedSession?.name,
+      referencedSession?.repoPath ?? undefined
+    );
+  }, [openSession, referencedSession, referencedSessionId]);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await copyText(referencedSessionId);
+      Message.success(tCommon("copied"));
+    } catch {
+      Message.error(t("failedToCopyContent"));
+    }
+  }, [referencedSessionId, t, tCommon]);
+
+  const sessionIcon = React.createElement(
+    resolveAgentIcon(resolveSessionIconId(referencedSessionId)),
+    { size: 18 }
+  );
+  const title = referencedSession?.name || item.title;
+
+  return (
+    <div className="flex min-w-0 items-center gap-3 rounded-xl border border-border-2 bg-bg-2 p-3">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-1 text-primary-6">
+        {sessionIcon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[13px] font-medium text-text-1">
+          {title}
+        </div>
+        <div className="truncate text-[12px] text-text-3">{item.subtitle}</div>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <Button
+          variant="secondary"
+          appearance="ghost"
+          size="small"
+          icon={<Copy size={14} />}
+          iconOnly
+          aria-label={tCommon("actions.copy")}
+          title={tCommon("actions.copy")}
+          onClick={handleCopy}
+        />
+        <Button variant="primary" size="small" onClick={handleJump}>
+          {t("cards.session.open")}
+        </Button>
+      </div>
+    </div>
+  );
+};
+SessionReferenceCard.displayName = "SessionReferenceCard";
 
 const MessageReferenceCard: React.FC<MessageReferenceCardProps> = ({
   item,
@@ -766,13 +886,17 @@ const MessageReferenceCards: React.FC<MessageReferenceCardsProps> = ({
 
   return (
     <div className="mt-3 flex w-full flex-col gap-2">
-      {resolvedReferences.map((item) => (
-        <MessageReferenceCard
-          key={makeReferenceKey(item)}
-          item={item}
-          sessionId={sessionId}
-        />
-      ))}
+      {resolvedReferences.map((item) =>
+        item.kind === "session" ? (
+          <SessionReferenceCard key={makeReferenceKey(item)} item={item} />
+        ) : (
+          <MessageReferenceCard
+            key={makeReferenceKey(item)}
+            item={item}
+            sessionId={sessionId}
+          />
+        )
+      )}
     </div>
   );
 };

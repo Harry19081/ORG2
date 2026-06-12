@@ -4,6 +4,7 @@
 //! platforms intentionally do not create a Tauri WebviewWindow fallback; they
 //! should use a system-level implementation when added.
 
+#[cfg(not(target_os = "windows"))]
 use tracing::warn;
 
 #[cfg(target_os = "windows")]

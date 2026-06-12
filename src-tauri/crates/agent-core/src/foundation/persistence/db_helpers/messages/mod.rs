@@ -8,10 +8,10 @@
 //!
 //! Submodules:
 //! - `cleanup`  — image-file cleanup + table-level deletes
-//!   (`clear_messages`, `truncate_messages_after`).
+//!   (`clear_messages`, `truncate_messages_from_sequence`).
 //! - `builders` — typed convenience constructors that wrap `insert_message_retry`
 //!   (`save_user_msg`, `save_assistant_msg`, `save_tool_call_msg`,
-//!   `save_tool_result_msg`).
+//!   `save_tool_result_msg`, `save_compact_boundary_msg`).
 //! - `load_llm` — `load_llm_history` + the multimodal/image helpers it
 //!   uses, plus the parallel/serial tool-call merging tests that pin
 //!   the LLM-format invariants.
@@ -23,7 +23,8 @@ mod insert_tests;
 mod load_llm;
 
 pub use builders::{
-    save_assistant_msg, save_system_msg, save_tool_call_msg, save_tool_result_msg, save_user_msg,
+    save_assistant_msg, save_compact_boundary_msg, save_system_msg, save_tool_call_msg,
+    save_tool_result_msg, save_user_msg,
 };
-pub use cleanup::{clear_messages, truncate_messages_after};
-pub use load_llm::load_llm_history;
+pub use cleanup::{clear_messages, truncate_messages_from_sequence};
+pub use load_llm::{compact_cutoff_sequence, load_llm_history};

@@ -2,6 +2,7 @@ import type {
   ExtractedGitArtifactData,
   SessionEvent,
 } from "@src/engines/SessionCore/core/types";
+import { maskSessionIdsInText } from "@src/util/session/sessionDispatch";
 
 const GITHUB_PULL_REQUEST_URL_PATTERN =
   /https?:\/\/github\.com\/([^\s/]+)\/([^\s/]+)\/pull\/(\d+)(?:[^\s<>"'`)\]}]*)?/gi;
@@ -12,7 +13,7 @@ const ASSISTANT_COMMIT_LINE_PATTERN =
 const ASSISTANT_SHA_DASH_SUBJECT_PATTERN =
   /^\s*(?:[-*•]\s*)?(?:[A-Za-z][A-Za-z\s-]{0,32}:\s*)?`?([0-9a-f]{7,40})`?\s*(?:—|–|-)\s*([a-z][a-z0-9-]*(?:\([^)]+\))?!?:\s+[^\n]+)$/gim;
 const ASSISTANT_CONTEXTUAL_COMMIT_SHA_PATTERN =
-  /\b(?:commit(?:ted|s)?|commit\s+(?:created|sha|tip)|branch\s+tip|synced\s+at)\b[^\n]{0,120}?`?([0-9a-f]{7,40})`?/gi;
+  /\b(?:commit(?:ted|s)?|commit\s+(?:created|sha|tip)|branch\s+tip|synced\s+at)\b[^\n]{0,120}?`?(?<![#0-9a-f-])([0-9a-f]{7,40})(?![0-9a-f-])`?/gi;
 const BARE_GIT_SHA_PATTERN = /(?<![#0-9a-f-])([0-9a-f]{7,40})(?![0-9a-f-])/gi;
 const ASSISTANT_COMMIT_SUBJECT_LINE_PATTERN =
   /^\s*(?:[-*•]\s*)?`?([a-z][a-z0-9-]*(?:\([^)]+\))?!?:\s+[^`\n]+?)`?\s*$/i;
@@ -56,6 +57,12 @@ export function parseGitArtifactsFromText(
   text: string | undefined
 ): ExtractedGitArtifactData[] {
   if (!text) return [];
+
+  // Session IDs (sdeagent-<uuid>, agent-builtin:explore-<uuid>, …) contain
+  // hex UUID segments that the commit-SHA patterns below would otherwise
+  // match as commits. Mask them (length-preserving) before any SHA pass —
+  // they are session references, not git artifacts.
+  text = maskSessionIdsInText(text);
 
   const artifacts: ExtractedGitArtifactData[] = [];
   const seenKeys = new Set<string>();

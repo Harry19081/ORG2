@@ -69,4 +69,46 @@ After rebase/push, the branch tip is synced at \`1a4a01d3\`.
       )
     ).toEqual([]);
   });
+
+  it("does not parse session ids as commits", () => {
+    expect(
+      parseGitArtifactsFromText(
+        "queue flushed into session sdeagent-ee970f47-dfcb-4a78-97e5-fc56e3451821 after it failed"
+      )
+    ).toEqual([]);
+  });
+
+  it("does not parse session ids as commits even in commit-context sentences", () => {
+    expect(
+      parseGitArtifactsFromText(
+        "已 commit。queue flush 进了死 session sdeagent-ee970f47-dfcb-4a78-97e5-fc56e3451821"
+      )
+    ).toEqual([]);
+  });
+
+  it("does not parse delegate worker handles as commits", () => {
+    expect(
+      parseGitArtifactsFromText(
+        "committed nothing; see agent-builtin:explore-93edacaf-c1e2-44bb-8e13-4bf5362aaecb"
+      )
+    ).toEqual([]);
+  });
+
+  it("still parses a real commit next to a session id", () => {
+    const artifacts = parseGitArtifactsFromText(
+      "committed f55f430b; session sdeagent-9be175b5-aacb-4b2b-b23a-b46a8d4d6a35 continues"
+    );
+
+    expect(artifacts).toEqual([
+      expect.objectContaining({ kind: "commit", sha: "f55f430b" }),
+    ]);
+  });
+
+  it("does not partial-match hex inside bare UUIDs via commit context", () => {
+    expect(
+      parseGitArtifactsFromText(
+        "commit failed for turn 422124fd-5d84-4572-9969-d4500011803a"
+      )
+    ).toEqual([]);
+  });
 });

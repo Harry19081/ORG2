@@ -12,6 +12,7 @@
 //!   added by wiring per-platform snapshot APIs (WebView2 on Windows,
 //!   WebKitGTK on Linux).
 
+#[cfg(target_os = "macos")]
 use base64::Engine;
 use tauri::{AppHandle, Manager};
 

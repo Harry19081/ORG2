@@ -72,6 +72,11 @@ async fn ensure_account_key_fresh(account_id: Option<&str>) -> Result<(), Provid
     };
 
     let Some(key) = key_vault::key_store::KEY_SERVICE.get_key_by_id(account_id) else {
+        tracing::debug!(
+            "[factory] ensure_account_key_fresh: account {} not in key vault — \
+             deferring to resolve_credentials for the loud error",
+            account_id
+        );
         return Ok(());
     };
     if key.auth_method != AuthMethod::Oauth {
@@ -97,7 +102,14 @@ async fn ensure_account_key_fresh(account_id: Option<&str>) -> Result<(), Provid
                 .await
                 .map_err(ProviderError::AuthError)?;
         }
-        _ => {}
+        other => {
+            tracing::debug!(
+                "[factory] ensure_account_key_fresh: no preflight refresher for \
+                 OAuth model_type {:?} (account {}) — relying on lazy 401-retry",
+                other,
+                account_id
+            );
+        }
     }
     Ok(())
 }

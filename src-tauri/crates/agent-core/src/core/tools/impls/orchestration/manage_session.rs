@@ -4,12 +4,11 @@
 //! `session_intervene` into a single tool with an `action` parameter.
 //! All actions route through the frontend ActionSystem via the `ActionBridge`
 //! request/response mechanism (events delivered over the Tauri IPC Channel,
-//! results returned via the `agent_ide_action_result` Tauri command).
+//! results returned via the `agent_ade_action_result` Tauri command).
 
 use async_trait::async_trait;
 use serde_json::Value;
 use std::sync::Arc;
-use tokio::sync::Mutex;
 
 use crate::tools::impls::web::control_orgii::{execute_gui_action_with_timeout, ActionBridge};
 use crate::tools::names as tool_names;
@@ -20,19 +19,19 @@ const SESSION_ACTION_TIMEOUT_SECS: u64 = 30;
 
 pub struct SessionTool {
     bridge: Arc<ActionBridge>,
-    current_account_id: Arc<Mutex<Option<String>>>,
+    session_account_id: Option<String>,
     agent_model: String,
 }
 
 impl SessionTool {
     pub fn new(
         bridge: Arc<ActionBridge>,
-        current_account_id: Arc<Mutex<Option<String>>>,
+        session_account_id: Option<String>,
         agent_model: String,
     ) -> Self {
         Self {
             bridge,
-            current_account_id,
+            session_account_id,
             agent_model,
         }
     }
@@ -267,7 +266,7 @@ impl SessionTool {
         let effective_account_id = if account_id.is_some() {
             account_id
         } else {
-            self.current_account_id.lock().await.clone()
+            self.session_account_id.clone()
         };
         if let Some(acct) = effective_account_id {
             inner["accountId"] = Value::String(acct);

@@ -1,8 +1,8 @@
 //! Native window helpers for Tauri windows.
 //!
 //! Centralised so `app`, `browser`, and other leaf crates can apply
-//! consistent native chrome (macOS traffic-light positioning + liquid-glass
-//! background, Windows DWM rounded corners) and recreate the main window
+//! consistent native chrome (macOS traffic-light positioning,
+//! Windows DWM rounded corners) and recreate the main window
 //! from the Tauri menu without each consumer reimplementing the platform
 //! glue. All operations are synchronous against a `tauri::AppHandle` /
 //! `WebviewWindow` — no async runtime, no IoC hooks.
@@ -12,9 +12,6 @@ use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 
 #[cfg(target_os = "macos")]
 use tauri::{LogicalPosition, Position, TitleBarStyle};
-
-#[cfg(target_os = "macos")]
-use tauri_plugin_liquid_glass::{GlassMaterialVariant, LiquidGlassConfig, LiquidGlassExt};
 
 #[cfg(target_os = "macos")]
 use objc2::msg_send;
@@ -244,19 +241,9 @@ pub fn create_window(app: &AppHandle, options: CreateWindowOptions) -> Result<()
         .build()
         .map_err(|e| format!("Failed to create window: {}", e))?;
 
-    // Apply Liquid Glass and fix traffic light position
+    // Manually set traffic light position (Tauri's builder method doesn't always work)
     #[cfg(target_os = "macos")]
-    {
-        let config = LiquidGlassConfig {
-            corner_radius: 26.0,
-            variant: GlassMaterialVariant::Sidebar,
-            tint_color: Some("#ffffff18".into()),
-            ..Default::default()
-        };
-        let _ = app.liquid_glass().set_effect(&window, config);
-        // Manually set traffic light position (Tauri's builder method doesn't always work)
-        set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
-    }
+    set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
 
     apply_host_desktop_window_chrome(&window);
 
@@ -291,7 +278,7 @@ pub fn recreate_main_window(app: &AppHandle) -> Result<(), String> {
 
     println!("📦 [Window] Recreating main window");
 
-    let mut builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+    let builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
         .title("ORGII")
         .inner_size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         .min_inner_size(DEFAULT_MIN_WIDTH, DEFAULT_MIN_HEIGHT)
@@ -301,33 +288,21 @@ pub fn recreate_main_window(app: &AppHandle) -> Result<(), String> {
         .transparent(true)
         .center();
 
-    // macOS-specific styling
     #[cfg(target_os = "macos")]
-    {
-        builder = builder
-            .hidden_title(true)
-            .title_bar_style(TitleBarStyle::Overlay)
-            .traffic_light_position(Position::Logical(LogicalPosition::new(
-                TRAFFIC_LIGHT_X,
-                TRAFFIC_LIGHT_Y,
-            )));
-    }
+    let builder = builder
+        .hidden_title(true)
+        .title_bar_style(TitleBarStyle::Overlay)
+        .traffic_light_position(Position::Logical(LogicalPosition::new(
+            TRAFFIC_LIGHT_X,
+            TRAFFIC_LIGHT_Y,
+        )));
 
     let window = builder
         .build()
         .map_err(|e| format!("Failed to recreate main window: {}", e))?;
 
     #[cfg(target_os = "macos")]
-    {
-        let config = LiquidGlassConfig {
-            corner_radius: 26.0,
-            variant: GlassMaterialVariant::Sidebar,
-            tint_color: Some("#ffffff18".into()),
-            ..Default::default()
-        };
-        let _ = app.liquid_glass().set_effect(&window, config);
-        set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
-    }
+    set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
 
     apply_host_desktop_window_chrome(&window);
 
@@ -350,7 +325,7 @@ pub fn create_new_app_window(app: &AppHandle) -> Result<(), String> {
 
     println!("📦 [Window] Creating new app window: {}", label);
 
-    let mut builder = WebviewWindowBuilder::new(app, &label, WebviewUrl::default())
+    let builder = WebviewWindowBuilder::new(app, &label, WebviewUrl::default())
         .title("ORGII")
         .inner_size(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         .min_inner_size(DEFAULT_MIN_WIDTH, DEFAULT_MIN_HEIGHT)
@@ -360,33 +335,21 @@ pub fn create_new_app_window(app: &AppHandle) -> Result<(), String> {
         .transparent(true)
         .center();
 
-    // macOS-specific styling
     #[cfg(target_os = "macos")]
-    {
-        builder = builder
-            .hidden_title(true)
-            .title_bar_style(TitleBarStyle::Overlay)
-            .traffic_light_position(Position::Logical(LogicalPosition::new(
-                TRAFFIC_LIGHT_X,
-                TRAFFIC_LIGHT_Y,
-            )));
-    }
+    let builder = builder
+        .hidden_title(true)
+        .title_bar_style(TitleBarStyle::Overlay)
+        .traffic_light_position(Position::Logical(LogicalPosition::new(
+            TRAFFIC_LIGHT_X,
+            TRAFFIC_LIGHT_Y,
+        )));
 
     let window = builder
         .build()
         .map_err(|e| format!("Failed to create app window: {}", e))?;
 
     #[cfg(target_os = "macos")]
-    {
-        let config = LiquidGlassConfig {
-            corner_radius: 26.0,
-            variant: GlassMaterialVariant::Sidebar,
-            tint_color: Some("#ffffff18".into()),
-            ..Default::default()
-        };
-        let _ = app.liquid_glass().set_effect(&window, config);
-        set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
-    }
+    set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
 
     apply_host_desktop_window_chrome(&window);
 

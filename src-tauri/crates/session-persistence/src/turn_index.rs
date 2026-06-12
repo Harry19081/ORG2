@@ -176,6 +176,25 @@ fn user_event_id_for_message(message_id: &str) -> String {
     format!("user-message-{message_id}")
 }
 
+/// Content-dedup key for backfill matching.
+///
+/// Event rows store searchable content truncated to 500 bytes (see
+/// `build_searchable_content` in the wire crate), while `agent_messages`
+/// keeps the full text. Comparing full message content against the
+/// truncated event preview never matches for long messages (e.g. the
+/// synthetic "[Plan approved] …" submit carrying the whole plan body),
+/// so backfill inserted a duplicate user bubble after every transcript
+/// rewrite. Normalize both sides to the same 500-byte boundary.
+const USER_CONTENT_DEDUP_BYTES: usize = 500;
+
+fn user_content_dedup_key(content: &str) -> String {
+    let mut end = USER_CONTENT_DEDUP_BYTES.min(content.len());
+    while end > 0 && !content.is_char_boundary(end) {
+        end -= 1;
+    }
+    content[..end].to_string()
+}
+
 fn load_user_messages(conn: &Connection, session_id: &str) -> SqliteResult<Vec<UserMessageRow>> {
     let mut stmt = conn.prepare_cached(
         "SELECT id, content, sequence, created_at, images
@@ -238,7 +257,9 @@ fn load_existing_user_event_keys(
             .strip_prefix("user_message ")
             .unwrap_or(&content)
             .to_string();
-        *content_counts.entry(preview).or_insert(0) += 1;
+        *content_counts
+            .entry(user_content_dedup_key(&preview))
+            .or_insert(0) += 1;
     }
     Ok((ids, content_counts))
 }
@@ -257,7 +278,7 @@ fn backfill_missing_user_events(conn: &Connection, session_id: &str) -> SqliteRe
         if existing_ids.contains(&event_id) {
             continue;
         }
-        if let Some(count) = existing_content_counts.get_mut(&message.content) {
+        if let Some(count) = existing_content_counts.get_mut(&user_content_dedup_key(&message.content)) {
             if *count > 0 {
                 *count -= 1;
                 continue;
@@ -704,6 +725,56 @@ mod tests {
             )
             .unwrap();
         assert_eq!(count, 1);
+    }
+
+    #[test]
+    fn backfill_dedups_long_messages_against_truncated_event_previews() {
+        // After a transcript rewrite (compaction) agent_messages rows get
+        // fresh ids, so id-based dedup misses and we fall back to content
+        // matching. Event rows store content truncated to 500 bytes; the
+        // full agent_messages content must still match instead of
+        // re-inserting a duplicate "[Plan approved] …" user bubble.
+        let conn = Connection::open_in_memory().unwrap();
+        create_backfill_test_tables(&conn);
+
+        let long_content = format!(
+            "[Plan approved] Implement the approved plan now. 计划正文 {}",
+            "非常长的计划内容 plan body ".repeat(200)
+        );
+        assert!(long_content.len() > 1_000);
+
+        conn.execute(
+            "INSERT INTO agent_messages (id, session_id, role, content, sequence, created_at, images)
+             VALUES (?1, ?2, 'user', ?3, ?4, ?5, NULL)",
+            params![
+                "rewritten-id",
+                "session-1",
+                &long_content,
+                1_i64,
+                "2026-05-27T00:00:00Z",
+            ],
+        )
+        .unwrap();
+
+        // Pre-existing event row from the original submit (different
+        // message id, content truncated like build_searchable_content).
+        let truncated = user_content_dedup_key(&long_content);
+        conn.execute(
+            "INSERT INTO events
+             (id, session_id, event_type, function_name, thread_id, args_json, result_json,
+              content, created_at, meta_json, history_sequence)
+             VALUES (?1, ?2, 'raw', 'user_message', NULL, '{}', ?3, ?4, ?5, '{}', 1)",
+            params![
+                "user-message-original-id",
+                "session-1",
+                r#"{"backendPersisted":true}"#,
+                format!("user_message {truncated}"),
+                "2026-05-27T00:00:00Z",
+            ],
+        )
+        .unwrap();
+
+        assert_eq!(backfill_missing_user_events(&conn, "session-1").unwrap(), 0);
     }
 
     #[test]

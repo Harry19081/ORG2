@@ -52,6 +52,10 @@ pub(super) struct OverlayContext<'a> {
     pub session_id: &'a str,
     pub resolved: &'a ResolvedAgent,
     pub model: &'a str,
+    /// The session's account id, resolved by `init_session` (same value the
+    /// provider was built with). Threaded into the `AgentTool` config so
+    /// sub-agents inherit the parent session's account — never the global.
+    pub account_id: &'a str,
     pub workspace_dir: PathBuf,
     pub workspace: crate::session::workspace::SessionWorkspace,
     pub scratchpad_dir: Option<PathBuf>,
@@ -327,7 +331,7 @@ fn build_agent_tool(
         AgentToolConfig {
             workspace: ctx.workspace.clone(),
             app_handle: ctx.state.app_handle.clone(),
-            current_account_id: Some(ctx.state.current_account_id.clone()),
+            session_account_id: Some(ctx.account_id.to_string()),
             agent_model: ctx.model.to_string(),
             provider: Arc::clone(&ctx.provider),
             native_harness_type: ctx.native_harness_type,

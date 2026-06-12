@@ -41,6 +41,7 @@ static ACTIVE_LOGIN: LazyLock<Mutex<Option<KiroLoginState>>> = LazyLock::new(|| 
 
 struct KiroLoginState {
     stop_flag: Arc<AtomicBool>,
+    #[cfg_attr(not(unix), allow(dead_code))]
     child_id: Option<u32>,
 }
 
@@ -738,12 +739,10 @@ fn cancel_existing_login() {
         state.stop_flag.store(true, Ordering::SeqCst);
 
         // Kill child process if running
+        #[cfg(unix)]
         if let Some(pid) = state.child_id {
-            #[cfg(unix)]
-            {
-                unsafe {
-                    libc::kill(pid as i32, libc::SIGTERM);
-                }
+            unsafe {
+                libc::kill(pid as i32, libc::SIGTERM);
             }
         }
     }

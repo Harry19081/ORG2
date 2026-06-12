@@ -13,8 +13,6 @@
 use tauri::{AppHandle, Manager};
 
 #[cfg(target_os = "macos")]
-use tauri_plugin_liquid_glass::{GlassMaterialVariant, LiquidGlassConfig, LiquidGlassExt};
-#[cfg(target_os = "macos")]
 use window_vibrancy::clear_vibrancy;
 
 #[cfg(target_os = "macos")]
@@ -144,16 +142,7 @@ pub async fn set_window_vibrancy(
     {
         use base64::Engine as _;
 
-        if enabled {
-            // Restore Glass (NSGlassEffectView on macOS 26+, NSVisualEffectView fallback)
-            let config = LiquidGlassConfig {
-                corner_radius: 26.0,
-                variant: GlassMaterialVariant::Sidebar,
-                tint_color: Some("#ffffff18".into()),
-                ..Default::default()
-            };
-            let _ = app.liquid_glass().set_effect(&window, config);
-        } else {
+        if !enabled {
             let _ = clear_vibrancy(&window);
         }
 
@@ -205,43 +194,6 @@ pub async fn set_window_vibrancy(
     Ok(())
 }
 
-/// Update the Glass tint to reflect the chosen thickness level.
-///
-/// - `"regular"` → subtle 9% white tint (most transparent)
-/// - `"medium"`  → 19% white tint
-/// - `"thick"`   → 31% white tint (most opaque)
-///
-/// Safe no-op on non-macOS platforms.
-#[tauri::command]
-pub async fn set_glass_thickness(app: AppHandle, level: String) -> Result<(), String> {
-    #[cfg(target_os = "macos")]
-    {
-        let window = app
-            .get_webview_window("main")
-            .ok_or("Main window not found")?;
-
-        let tint_color = match level.as_str() {
-            "medium" => "#ffffff30",
-            "thick" => "#ffffff50",
-            _ => "#ffffff18", // "regular" and any unknown value
-        };
-
-        let config = LiquidGlassConfig {
-            corner_radius: 26.0,
-            variant: GlassMaterialVariant::Sidebar,
-            tint_color: Some(tint_color.into()),
-            ..Default::default()
-        };
-        app.liquid_glass()
-            .set_effect(&window, config)
-            .map_err(|e| e.to_string())?;
-
-        tracing::info!("[Glass] thickness set to '{}'", level);
-    }
-    #[cfg(not(target_os = "macos"))]
-    let _ = level;
-    Ok(())
-}
 
 // ============================================
 // macOS background-image helpers

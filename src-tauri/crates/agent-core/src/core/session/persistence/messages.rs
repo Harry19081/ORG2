@@ -91,9 +91,67 @@ pub fn message_created_at(session_id: &str, message_id: &str) -> SqliteResult<Op
     }
 }
 
+/// Truncation anchor for a message row: its `sequence` (the canonical
+/// truncation coordinate) plus its own `created_at` (used only to rewind
+/// the timestamp-keyed side stores: file-history and session snapshots).
+pub struct MessageAnchor {
+    pub sequence: i64,
+    pub created_at: String,
+}
+
+/// Resolve a message id to its truncation anchor.
+pub fn message_anchor(session_id: &str, message_id: &str) -> SqliteResult<Option<MessageAnchor>> {
+    let conn = get_connection()?;
+    let mut stmt = conn.prepare(
+        "SELECT sequence, created_at FROM agent_messages WHERE session_id = ?1 AND id = ?2 LIMIT 1",
+    )?;
+    match stmt.query_row(params![session_id, message_id], |row| {
+        Ok(MessageAnchor {
+            sequence: row.get(0)?,
+            created_at: row.get(1)?,
+        })
+    }) {
+        Ok(anchor) => Ok(Some(anchor)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(err) => Err(err),
+    }
+}
+
+/// Resolve a `created_at` timestamp to a truncation anchor: the earliest
+/// row at or after that timestamp. Legacy path for callers that only have
+/// a timestamp (no `message_id`); returns `None` when nothing matches so
+/// the caller can fail loudly instead of deleting on a bad coordinate.
+pub fn anchor_at_or_after_created_at(
+    session_id: &str,
+    created_at: &str,
+) -> SqliteResult<Option<MessageAnchor>> {
+    let conn = get_connection()?;
+    let mut stmt = conn.prepare(
+        "SELECT sequence, created_at FROM agent_messages
+         WHERE session_id = ?1 AND created_at >= ?2
+         ORDER BY sequence ASC LIMIT 1",
+    )?;
+    match stmt.query_row(params![session_id, created_at], |row| {
+        Ok(MessageAnchor {
+            sequence: row.get(0)?,
+            created_at: row.get(1)?,
+        })
+    }) {
+        Ok(anchor) => Ok(Some(anchor)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(err) => Err(err),
+    }
+}
+
 /// Load LLM-formatted history for a session.
 pub fn load_llm_history(session_id: &str) -> SqliteResult<Vec<serde_json::Value>> {
     shared::load_llm_history(SESSION_TABLE_PREFIX, session_id)
+}
+
+/// Map "keep the last `tail_len` LLM messages visible" onto a durable
+/// sequence cutoff for [`append_compact_boundary`].
+pub fn compact_cutoff_sequence(session_id: &str, tail_len: usize) -> SqliteResult<i64> {
+    shared::compact_cutoff_sequence(SESSION_TABLE_PREFIX, session_id, tail_len)
 }
 
 fn text_content_from_llm_message(msg: &serde_json::Value) -> String {
@@ -249,16 +307,21 @@ fn message_row(
         sequence: 0,
         created_at: Utc::now().to_rfc3339(),
         images,
+        compact_from_sequence: None,
     }
 }
 
 /// Replace a session's persisted transcript with a compacted LLM history view.
 ///
-/// This is the durable equivalent of Claude Code's `messagesForQuery =
-/// postCompactMessages`: after compaction succeeds, future turns and app
-/// restarts read the compacted view instead of reconstructing the full
-/// pre-compact history and summarizing it again.
-pub fn replace_messages_with_compacted_history(
+/// **Seeding only.** This is the durable bootstrap used by compact-fork:
+/// it writes an initial transcript into a *fresh* session id. It refuses
+/// to run against a session that already has messages — in-place
+/// compaction must use [`append_compact_boundary`] instead, which never
+/// rewrites or deletes existing rows (immutable transcript invariant).
+/// The destructive DELETE+INSERT variant of this function is what
+/// destroyed session transcripts when `created_at`-based truncation met
+/// rewritten timestamps (2026-06-11 incident).
+pub fn seed_session_with_messages(
     session_id: &str,
     compacted_messages: &[serde_json::Value],
 ) -> SqliteResult<()> {
@@ -267,12 +330,26 @@ pub fn replace_messages_with_compacted_history(
         let conn = get_connection()?;
         let now = Utc::now().to_rfc3339();
         conn.execute_batch("BEGIN IMMEDIATE")?;
-        if let Err(err) = conn.execute(
-            "DELETE FROM agent_messages WHERE session_id = ?1",
+
+        let existing: i64 = match conn.query_row(
+            "SELECT COUNT(*) FROM agent_messages WHERE session_id = ?1",
             [session_id],
+            |row| row.get(0),
         ) {
+            Ok(count) => count,
+            Err(err) => {
+                let _ = conn.execute_batch("ROLLBACK");
+                return Err(err);
+            }
+        };
+        if existing > 0 {
             let _ = conn.execute_batch("ROLLBACK");
-            return Err(err);
+            return Err(rusqlite::Error::SqliteFailure(
+                rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_CONSTRAINT),
+                Some(format!(
+                    "seed_session_with_messages refused: session {session_id} already has {existing} message row(s); transcripts are immutable — use append_compact_boundary"
+                )),
+            ));
         }
 
         for (sequence, row) in rows.iter().enumerate() {
@@ -314,14 +391,31 @@ pub fn replace_messages_with_compacted_history(
     })
 }
 
+/// Append a compact-boundary row to a session's transcript.
+///
+/// The boundary row is a `system` message whose `compact_from_sequence`
+/// points at the first surviving tail row. `load_llm_history` renders the
+/// view as `[summary] + rows where sequence >= from_sequence`; everything
+/// older stays in the table untouched. This is the only durable write
+/// compaction performs — no row is ever rewritten or deleted, so
+/// sequence/created_at coordinates of prior messages remain stable for
+/// truncation, turn indexing, and replay.
+pub fn append_compact_boundary(
+    session_id: &str,
+    summary: &str,
+    from_sequence: i64,
+) -> SqliteResult<String> {
+    shared::save_compact_boundary_msg(SESSION_TABLE_PREFIX, session_id, summary, from_sequence)
+}
+
 /// Clear all messages for a session.
 pub fn clear_messages(session_id: &str) -> SqliteResult<i64> {
     shared::clear_messages(SESSION_TABLE_PREFIX, session_id)
 }
 
-/// Truncate messages at or after a given timestamp.
-pub fn truncate_messages_after(session_id: &str, created_at: &str) -> SqliteResult<i64> {
-    shared::truncate_messages_after(SESSION_TABLE_PREFIX, session_id, created_at)
+/// Truncate messages at or after a given sequence number.
+pub fn truncate_messages_from_sequence(session_id: &str, from_sequence: i64) -> SqliteResult<i64> {
+    shared::truncate_messages_from_sequence(SESSION_TABLE_PREFIX, session_id, from_sequence)
 }
 
 /// Save a snapshot record for a session. After inserting the row, enforces
@@ -581,7 +675,8 @@ mod tests {
                 model TEXT,
                 sequence INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL,
-                images TEXT
+                images TEXT,
+                compact_from_sequence INTEGER
              );",
         )
         .expect("create session/message tables");
@@ -595,29 +690,37 @@ mod tests {
     }
 
     #[test]
-    fn compacted_history_replaces_full_transcript_and_clears_sm_state() {
+    fn compact_boundary_hides_old_rows_but_keeps_them_in_table() {
         let _sandbox = test_env::sandbox();
-        let session_id = "compact-replace-test";
+        let session_id = "compact-boundary-test";
         seed_session_for_message_tests(session_id);
 
         save_user_msg(session_id, "old user", None).expect("save old user");
         save_assistant_msg(session_id, "old assistant", "test-model").expect("save old assistant");
         save_session_memory_state(session_id, "stale sm", Some(99)).expect("save stale sm");
+        let recent_user_id =
+            save_user_msg(session_id, "recent user", None).expect("save recent user");
+        save_assistant_msg(session_id, "recent assistant", "test-model")
+            .expect("save recent assistant");
 
-        let compacted = vec![
-            serde_json::json!({"role": "system", "content": "[Conversation summary — 2 earlier messages compacted]\n\nsummary"}),
-            serde_json::json!({"role": "user", "content": "recent user"}),
-            serde_json::json!({"role": "assistant", "content": "recent assistant"}),
-        ];
-
-        replace_messages_with_compacted_history(session_id, &compacted)
-            .expect("replace with compacted transcript");
+        let anchor = message_anchor(session_id, &recent_user_id)
+            .expect("resolve anchor")
+            .expect("anchor row exists");
+        append_compact_boundary(
+            session_id,
+            "[Conversation summary — 2 earlier messages compacted]\n\nsummary",
+            anchor.sequence,
+        )
+        .expect("append boundary");
         clear_session_memory_state(session_id).expect("clear stale sm");
 
         let history = load_llm_history(session_id).expect("load compacted history");
         assert_eq!(history.len(), 3);
         assert_eq!(history[0]["role"], "system");
-        assert_eq!(history[0]["content"], compacted[0]["content"]);
+        assert_eq!(
+            history[0]["content"],
+            "[Conversation summary — 2 earlier messages compacted]\n\nsummary"
+        );
         assert_eq!(history[1]["content"], "recent user");
         assert_eq!(history[2]["content"], "recent assistant");
         assert!(history.iter().all(|message| message
@@ -625,9 +728,150 @@ mod tests {
             .and_then(|value| value.as_str())
             != Some("old user")));
 
+        // Immutability: hidden rows are still in the table.
+        let all_rows = load_messages(session_id).expect("load raw rows");
+        assert_eq!(all_rows.len(), 5, "no row may be deleted by compaction");
+        assert!(all_rows.iter().any(|row| row.content == "old user"));
+
         let sm_state = load_session_memory_state(session_id).expect("load cleared sm");
         assert!(sm_state.content.is_none());
         assert!(sm_state.last_msg_idx.is_none());
+    }
+
+    /// Incident reproduction (2026-06-11 transcript wipe): compaction
+    /// followed by truncating at a pre-compaction message must restore the
+    /// original history instead of wiping the transcript.
+    #[test]
+    fn truncate_at_precompaction_message_revives_original_history() {
+        let _sandbox = test_env::sandbox();
+        let session_id = "compact-truncate-revive-test";
+        seed_session_for_message_tests(session_id);
+
+        save_user_msg(session_id, "genesis user", None).expect("save genesis user");
+        save_assistant_msg(session_id, "genesis assistant", "test-model")
+            .expect("save genesis assistant");
+        let old_user_id = save_user_msg(session_id, "old user", None).expect("save old user");
+        save_assistant_msg(session_id, "old assistant", "test-model").expect("save old assistant");
+        let recent_user_id =
+            save_user_msg(session_id, "recent user", None).expect("save recent user");
+        save_assistant_msg(session_id, "recent assistant", "test-model")
+            .expect("save recent assistant");
+
+        let cutoff = message_anchor(session_id, &recent_user_id)
+            .expect("resolve cutoff")
+            .expect("cutoff row exists")
+            .sequence;
+        append_compact_boundary(session_id, "summary", cutoff).expect("append boundary");
+
+        // User edits/resends the *old* (pre-compaction) message.
+        let anchor = message_anchor(session_id, &old_user_id)
+            .expect("resolve old anchor")
+            .expect("old row still exists because compaction never deletes");
+        let deleted = truncate_messages_from_sequence(session_id, anchor.sequence)
+            .expect("truncate from old anchor");
+        assert_eq!(
+            deleted, 5,
+            "old pair + recent pair + boundary are all >= anchor"
+        );
+
+        // The boundary was deleted with the suffix, so nothing is hidden:
+        // pre-anchor history is fully visible again — NOT a wiped transcript.
+        let history = load_llm_history(session_id).expect("load revived history");
+        assert_eq!(history.len(), 2);
+        assert_eq!(history[0]["content"], "genesis user");
+        assert_eq!(history[1]["content"], "genesis assistant");
+    }
+
+    #[test]
+    fn second_compaction_boundary_wins() {
+        let _sandbox = test_env::sandbox();
+        let session_id = "compact-twice-test";
+        seed_session_for_message_tests(session_id);
+
+        save_user_msg(session_id, "u1", None).expect("save u1");
+        let u2 = save_user_msg(session_id, "u2", None).expect("save u2");
+        let first_cutoff = message_anchor(session_id, &u2)
+            .expect("anchor u2")
+            .expect("u2 exists")
+            .sequence;
+        append_compact_boundary(session_id, "first summary", first_cutoff)
+            .expect("first boundary");
+
+        let u3 = save_user_msg(session_id, "u3", None).expect("save u3");
+        let second_cutoff = message_anchor(session_id, &u3)
+            .expect("anchor u3")
+            .expect("u3 exists")
+            .sequence;
+        append_compact_boundary(session_id, "second summary", second_cutoff)
+            .expect("second boundary");
+
+        let history = load_llm_history(session_id).expect("load history");
+        assert_eq!(history.len(), 2);
+        assert_eq!(history[0]["content"], "second summary");
+        assert_eq!(history[1]["content"], "u3");
+    }
+
+    #[test]
+    fn seed_session_with_messages_refuses_non_empty_session() {
+        let _sandbox = test_env::sandbox();
+        let session_id = "seed-guard-test";
+        seed_session_for_message_tests(session_id);
+
+        save_user_msg(session_id, "existing", None).expect("save existing");
+
+        let err = seed_session_with_messages(
+            session_id,
+            &[serde_json::json!({"role": "user", "content": "seed"})],
+        )
+        .expect_err("seeding a non-empty session must fail");
+        assert!(
+            err.to_string().contains("immutable"),
+            "error should explain the invariant, got: {err}"
+        );
+
+        let rows = load_messages(session_id).expect("load rows");
+        assert_eq!(rows.len(), 1, "existing transcript untouched");
+        assert_eq!(rows[0].content, "existing");
+    }
+
+    #[test]
+    fn seed_session_with_messages_seeds_empty_session_and_clears_sm_state() {
+        let _sandbox = test_env::sandbox();
+        let session_id = "seed-empty-test";
+        seed_session_for_message_tests(session_id);
+
+        let compacted = vec![
+            serde_json::json!({"role": "system", "content": "[Conversation summary — 2 earlier messages compacted]\n\nsummary"}),
+            serde_json::json!({"role": "user", "content": "recent user"}),
+            serde_json::json!({"role": "assistant", "content": "recent assistant"}),
+        ];
+
+        seed_session_with_messages(session_id, &compacted).expect("seed empty session");
+        clear_session_memory_state(session_id).expect("clear sm");
+
+        let history = load_llm_history(session_id).expect("load seeded history");
+        assert_eq!(history.len(), 3);
+        assert_eq!(history[0]["role"], "system");
+        assert_eq!(history[0]["content"], compacted[0]["content"]);
+        assert_eq!(history[1]["content"], "recent user");
+        assert_eq!(history[2]["content"], "recent assistant");
+    }
+
+    #[test]
+    fn truncate_anchor_resolution_fails_loud_for_missing_rows() {
+        let _sandbox = test_env::sandbox();
+        let session_id = "anchor-missing-test";
+        seed_session_for_message_tests(session_id);
+        save_user_msg(session_id, "only message", None).expect("save");
+
+        assert!(message_anchor(session_id, "no-such-id")
+            .expect("query ok")
+            .is_none());
+        assert!(
+            anchor_at_or_after_created_at(session_id, "2999-01-01T00:00:00Z")
+                .expect("query ok")
+                .is_none()
+        );
     }
 
     /// Validates the skip-system-message logic used in `save_subagent_transcript`.

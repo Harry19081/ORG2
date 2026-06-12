@@ -7,6 +7,9 @@ import type { TFunction } from "i18next";
 
 import Message from "@src/components/Message";
 import type { KeyVaultAccount, ModelType } from "@src/hooks/keyVault";
+import { sessionsAtom } from "@src/store/session/sessionAtom";
+import { isActiveStatus } from "@src/types/session/session";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 interface DisconnectDeps {
@@ -37,9 +40,33 @@ export async function disconnectAccount(
 
   const accountLabel = account.name || accountId;
 
+  // Disconnecting an account that live sessions still point at leaves
+  // their `accountId` dangling — the next turn fails credential
+  // resolution with no warning. List the affected sessions in the
+  // confirm dialog so the user decides knowingly. We deliberately do
+  // NOT auto-migrate them to another account (user must opt in to any
+  // resource change per session).
+  const activeSessions = getInstrumentedStore()
+    .get(sessionsAtom)
+    .filter(
+      (session) =>
+        session.accountId === accountId && isActiveStatus(session.status)
+    );
+
+  const message =
+    activeSessions.length > 0
+      ? `${t("keyVault.confirmRemoveMessage")}\n\n${t(
+          "keyVault.confirmRemoveActiveSessions",
+          { count: activeSessions.length }
+        )}\n${activeSessions
+          .slice(0, 5)
+          .map((session) => `• ${session.name || session.session_id}`)
+          .join("\n")}`
+      : t("keyVault.confirmRemoveMessage");
+
   const confirmed = await confirmDestructiveAction({
     title: t("keyVault.confirmRemoveTitle", { name: accountLabel }),
-    message: t("keyVault.confirmRemoveMessage"),
+    message,
     okLabel: t("common:actions.remove"),
     cancelLabel: t("common:actions.cancel"),
   });

@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "resources": {
+      "model/": "model/",
+      "../scripts/tools/download.py": "scripts/tools/download.py",
+      "resources/drag-icons/": "resources/drag-icons/"
+    }
+  }
+}

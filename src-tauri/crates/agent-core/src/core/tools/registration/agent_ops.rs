@@ -37,14 +37,12 @@ fn should_register_question_tool(
 /// because it requires an LLM provider which is created at agent initialization time.
 pub fn register(registry: &mut ToolRegistry, deps: &ToolDeps, disabled: &HashSet<String>) {
     // ── Session (SDE agent management / human proxy) ──
-    if let (Some(ref bridge), Some(ref current_id)) =
-        (&deps.action_bridge, &deps.current_account_id)
-    {
+    if let Some(ref bridge) = deps.action_bridge {
         register_if_enabled(
             registry,
             Box::new(SessionTool::new(
                 Arc::clone(bridge),
-                Arc::clone(current_id),
+                deps.session_account_id.clone(),
                 deps.agent_model.clone(),
             )),
             disabled,
@@ -95,7 +93,7 @@ pub fn register(registry: &mut ToolRegistry, deps: &ToolDeps, disabled: &HashSet
         registry,
         Box::new(ProjectTool::new(
             deps.app_handle.clone(),
-            deps.current_account_id.clone(),
+            deps.session_account_id.clone(),
             deps.agent_model.clone(),
         )),
         disabled,

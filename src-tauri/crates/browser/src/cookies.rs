@@ -8,7 +8,9 @@
 //! - **macOS**: Full support via WKHTTPCookieStore and NSHTTPCookieStorage
 //! - **Other platforms**: Not yet implemented
 
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
+#[cfg(target_os = "macos")]
+use tauri::Manager;
 
 use super::types::CookieInfo;
 

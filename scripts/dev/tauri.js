@@ -282,8 +282,8 @@ function routeLine(line) {
 
 function cleanupOrphanedProcesses() {
   try {
-    const cleanupScript = path.join(__dirname, "cleanup-orphans.sh");
-    execSync(`bash "${cleanupScript}" --quiet`, {
+    const cleanupScript = path.join(__dirname, "cleanup-orphans.cjs");
+    execSync(`${process.execPath} "${cleanupScript}" --quiet`, {
       stdio: "inherit",
       cwd: rootDir,
     });
@@ -331,16 +331,24 @@ function cleanChildEnv() {
 }
 
 function startTauriDev(features) {
-  const tauriBin = path.join(rootDir, "node_modules", ".bin", "tauri");
-  const tauriProcess = spawn(
-    tauriBin,
-    ["dev", "--features", features.join(",")],
-    {
-      stdio: ["inherit", "pipe", "pipe"],
-      cwd: rootDir,
-      env: cleanChildEnv(),
-    }
+  const args = ["dev"];
+  if (features.length > 0) {
+    args.push("--features", features.join(","));
+  }
+
+  const isWindows = process.platform === "win32";
+  const tauriBin = path.join(
+    rootDir,
+    "node_modules",
+    ".bin",
+    isWindows ? "tauri.cmd" : "tauri"
   );
+  const tauriProcess = spawn(tauriBin, args, {
+    stdio: ["inherit", "pipe", "pipe"],
+    cwd: rootDir,
+    env: cleanChildEnv(),
+    ...(isWindows ? { shell: true } : {}),
+  });
 
   // Initialize status bar once the process starts
   writeStatusBar();

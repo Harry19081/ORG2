@@ -3,7 +3,8 @@
 //! Exercised via provider.rs: #[cfg(test)] #[path = "pipeline_tests.rs"] mod pipeline_tests;
 
 use super::*;
-use crate::providers::cursor_native::client::ServerMessageStream;
+use crate::providers::cursor_native::client::{ClientError, ServerMessageStream};
+use crate::tools::names as tool_names;
 use crate::providers::cursor_native::request::BlobStore;
 use async_stream::try_stream;
 use prost::Message;

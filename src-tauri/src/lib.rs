@@ -275,7 +275,6 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_drag::init())
-        .plugin(tauri_plugin_liquid_glass::init())
         .invoke_handler(include!(concat!(
             env!("OUT_DIR"),
             "/tauri_invoke_handler_expr.rs"
@@ -304,29 +303,6 @@ pub fn run() {
                 }
             }
 
-            // macOS: apply Liquid Glass (NSGlassEffectView on macOS 26+, falls back to
-            // NSVisualEffectView on older macOS). This replaces the window-vibrancy
-            // HudWindow material on macOS — all other platforms are a safe no-op.
-            #[cfg(target_os = "macos")]
-            {
-                use tauri::Manager;
-                use tauri_plugin_liquid_glass::{
-                    GlassMaterialVariant, LiquidGlassConfig, LiquidGlassExt,
-                };
-                if let Some(main_window) = app.handle().get_webview_window("main") {
-                    let config = LiquidGlassConfig {
-                        corner_radius: 26.0,
-                        variant: GlassMaterialVariant::Sidebar,
-                        tint_color: Some("#ffffff18".into()),
-                        ..Default::default()
-                    };
-                    if let Err(err) = app.handle().liquid_glass().set_effect(&main_window, config) {
-                        tracing::warn!("[LiquidGlass] Failed to apply effect: {}", err);
-                    } else {
-                        tracing::debug!("[LiquidGlass] Liquid Glass applied to main window");
-                    }
-                }
-            }
 
             // Initialize transport layer (unified event emission)
             {
@@ -468,6 +444,11 @@ pub fn run() {
             app.manage(agent_browser.clone());
             app.manage(screenshot_store.clone());
             tracing::info!("[Browser] Agent browser controller and screenshot store initialized");
+
+            // Download peekaboo, agent-browser, and bundled git into ~/.orgii/bin/
+            // on first launch (post-notarized download strategy). Non-blocking.
+            spawn_sidecar_setup();
+            tracing::info!("[sidecar_setup] background sidecar download spawned");
 
             // Initialize Unified Agent State (replaces separate OS/SDE states)
             let mut unified_state = agent_core::state::AgentAppState::with_browser(
@@ -797,6 +778,9 @@ pub fn run() {
             std::process::exit(1);
         })
         .run(|app_handle, event| {
+            #[cfg(not(target_os = "macos"))]
+            let _ = &app_handle;
+
             match event {
                 // Handle macOS file/folder open events (from Dock, Finder, Expose)
                 #[cfg(target_os = "macos")]
@@ -833,6 +817,7 @@ pub fn run() {
         });
 }
 
+#[cfg(target_os = "macos")]
 /// Handle files/folders opened via macOS Dock, Finder, or Expose
 ///
 /// This is triggered when:

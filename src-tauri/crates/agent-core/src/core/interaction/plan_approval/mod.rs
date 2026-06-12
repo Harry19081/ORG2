@@ -55,6 +55,13 @@ pub fn install_app_handle(handle: tauri::AppHandle) {
     let _ = GLOBAL_APP_HANDLE.set(handle);
 }
 
+/// Read the process-wide AppHandle (None before app setup / in unit tests).
+/// Shared by other out-of-session event emitters (e.g. the CLI
+/// account-switch path) that have no per-session handle of their own.
+pub fn global_app_handle() -> Option<&'static tauri::AppHandle> {
+    GLOBAL_APP_HANDLE.get()
+}
+
 /// Terminal outcome for a pending plan. Every transition out of the
 /// "pending" state — regardless of which surface triggered it — must go
 /// through [`resolve_pending`] so the DB row, the in-memory slot, the

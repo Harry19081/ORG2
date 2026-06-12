@@ -43,7 +43,8 @@ use crate::state::AgentSession;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::coordination::agent_inbox::{InsertInboxParams, MemberIdleReason, RequestId};
+    use crate::coordination::agent_inbox::{InsertInboxParams, MemberIdleReason, MemberTerminationReason, RequestId};
+    use serde_json::Value;
     use crate::coordination::agent_member_interventions::{
         AgentMemberInterventionStore, EnterMemberInterventionParams,
     };

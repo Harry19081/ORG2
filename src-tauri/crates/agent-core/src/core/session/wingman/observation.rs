@@ -42,6 +42,7 @@ pub(super) fn build_observation_prompt(
 /// Capture a screenshot of the main display using native ScreenCaptureKit.
 ///
 /// Returns a PNG base64 string on success.
+#[cfg(target_os = "macos")]
 pub(super) async fn capture_screenshot() -> Result<String, String> {
     use crate::tools::impls::desktop::screen_capture;
 
@@ -51,4 +52,9 @@ pub(super) async fn capture_screenshot() -> Result<String, String> {
         .map_err(|e| format!("screenshot: {e}"))?;
 
     Ok(screen_capture::png_to_base64(&png_bytes))
+}
+
+#[cfg(not(target_os = "macos"))]
+pub(super) async fn capture_screenshot() -> Result<String, String> {
+    Err("native screenshot capture is only available on macOS".to_string())
 }

@@ -159,6 +159,48 @@ fn locate_session(session_id: &str) -> SqliteResult<Option<SessionLocation>> {
     Ok(None)
 }
 
+/// Reject account/model pairs that can never serve a turn (G10 of the
+/// account-switch audit): a vanished/disabled vault account, or a model
+/// outside the account's enabled set (e.g. keeping `claude-sonnet-*` while
+/// switching to an OpenAI API key) used to surface only as an HTTP-layer
+/// error on the NEXT turn. Failing the patch up-front gives the frontend
+/// rollback path a useful message instead.
+///
+/// Matching is deliberately lenient (exact, prefix in either direction, or
+/// alias) because palette model ids may carry variant suffixes; an empty
+/// `enabled_models` list means "no restriction" (e.g. fallback-populated
+/// native accounts).
+fn validate_account_model_compat(account_id: &str, model: &str) -> Result<(), String> {
+    let Some(key) = key_vault::key_store::KEY_SERVICE.get_key_by_id(account_id) else {
+        return Err(format!(
+            "session_patch: account {account_id} not found in key vault"
+        ));
+    };
+    if !key.enabled {
+        return Err(format!(
+            "session_patch: account {account_id} is disabled"
+        ));
+    }
+    if key.enabled_models.is_empty() {
+        return Ok(());
+    }
+    let compatible = key
+        .enabled_models
+        .iter()
+        .any(|enabled| {
+            enabled == model || model.starts_with(enabled.as_str()) || enabled.starts_with(model)
+        })
+        || key.model_aliases.iter().any(|alias| alias.alias == model);
+    if !compatible {
+        return Err(format!(
+            "session_patch: model {model} is not enabled for account {account_id} \
+             (enabled: {:?})",
+            key.enabled_models
+        ));
+    }
+    Ok(())
+}
+
 /// Apply a patch synchronously. Public for `#[tauri::command]`
 /// adapter; tests can also call this directly with an in-memory DB
 /// once the connection abstraction allows it.
@@ -170,6 +212,10 @@ pub fn apply_session_patch(session_id: &str, patch: &SessionPatch) -> Result<(),
             "session_patch: account_id provided without model — pair them in the same call"
                 .to_string(),
         );
+    }
+    if let (Some(account_id), Some(model)) = (patch.account_id.as_deref(), patch.model.as_deref())
+    {
+        validate_account_model_compat(account_id, model)?;
     }
     if patch.model.is_none()
         && patch.agent_exec_mode.is_none()
@@ -280,6 +326,31 @@ pub fn apply_session_patch(session_id: &str, patch: &SessionPatch) -> Result<(),
     Ok(())
 }
 
+/// Read the session's current account_id from whichever table owns it.
+/// Used to populate `fromAccountId` on the account-switched event.
+fn read_current_account(session_id: &str) -> Option<String> {
+    let conn = get_connection().ok()?;
+    conn.query_row(
+        "SELECT account_id FROM agent_sessions WHERE session_id = ?1",
+        params![session_id],
+        |row| row.get::<_, Option<String>>(0),
+    )
+    .optional()
+    .ok()
+    .flatten()
+    .or_else(|| {
+        conn.query_row(
+            "SELECT account_id FROM code_sessions WHERE session_id = ?1",
+            params![session_id],
+            |row| row.get::<_, Option<String>>(0),
+        )
+        .optional()
+        .ok()
+        .flatten()
+    })
+    .flatten()
+}
+
 /// Tauri command: partial update of an existing session row.
 ///
 /// See module docs for the supported field set and routing rules.
@@ -290,6 +361,8 @@ pub async fn session_patch(
     patch: SessionPatch,
 ) -> Result<(), String> {
     let identity_changed = patch.model.is_some();
+    let switched_account = patch.account_id.clone();
+    let switched_model = patch.model.clone();
     // Chokepoint B: leaving Plan mode with a plan still pending abandons it.
     // Evaluated before the patch is applied so the plan-mode lookup inside
     // `resolve_pending`'s consumers can't race the mode write. The approve
@@ -301,9 +374,16 @@ pub async fn session_patch(
         .as_deref()
         .is_some_and(|mode| mode != "plan");
     let patched_session_id = session_id.clone();
-    tokio::task::spawn_blocking(move || apply_session_patch(&session_id, &patch))
-        .await
-        .map_err(|err| format!("session_patch task join error: {err}"))??;
+    let prev_account = tokio::task::spawn_blocking(move || {
+        let prev_account = patch
+            .account_id
+            .is_some()
+            .then(|| read_current_account(&session_id))
+            .flatten();
+        apply_session_patch(&session_id, &patch).map(|()| prev_account)
+    })
+    .await
+    .map_err(|err| format!("session_patch task join error: {err}"))??;
     if leaves_plan_mode {
         let manager = state
             .get_session(&patched_session_id)
@@ -318,6 +398,17 @@ pub async fn session_patch(
     }
     if identity_changed {
         state.invalidate_session(&patched_session_id).await;
+    }
+    if let Some(to_account) = switched_account.as_deref() {
+        if prev_account.as_deref() != Some(to_account) {
+            agent_core::lifecycle::emit_session_account_switched(
+                state.app_handle.as_ref(),
+                &patched_session_id,
+                prev_account.as_deref(),
+                to_account,
+                switched_model.as_deref(),
+            );
+        }
     }
     Ok(())
 }

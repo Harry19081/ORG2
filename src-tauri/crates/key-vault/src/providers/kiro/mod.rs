@@ -19,7 +19,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use std::process::Command;
 use std::time::Duration;
 
 use crate::types::ValidationResult;
@@ -273,6 +272,8 @@ pub fn get_kiro_sqlite_path() -> Option<PathBuf> {
 /// Read Kiro token from macOS Keychain
 #[cfg(target_os = "macos")]
 pub fn read_token_from_macos_keychain() -> Option<KiroToken> {
+    use std::process::Command;
+
     let output = Command::new("security")
         .args(["find-generic-password", "-s", KIRO_TOKEN_KEY, "-w"])
         .output()
@@ -355,6 +356,8 @@ fn read_device_reg_from_sqlite(db_path: &std::path::Path) -> Option<DeviceRegist
 /// Read device registration from macOS Keychain
 #[cfg(target_os = "macos")]
 fn read_device_reg_from_macos_keychain() -> Option<DeviceRegistration> {
+    use std::process::Command;
+
     let output = Command::new("security")
         .args(["find-generic-password", "-s", KIRO_DEVICE_REG_KEY, "-w"])
         .output()

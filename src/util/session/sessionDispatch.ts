@@ -341,3 +341,55 @@ export function resolveSessionIconId(
   const config = findPrefixConfig(sessionId);
   return config?.iconId ?? "bot";
 }
+
+// ============================================
+// Session ID Text Extraction
+// ============================================
+
+const UUID_PATTERN_SOURCE =
+  "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+
+function escapePatternLiteral(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Build a regex matching full session IDs in free text.
+ *
+ * Matches `<registered-prefix><uuid>` for every prefix in
+ * {@link SESSION_PREFIX_REGISTRY} plus delegate worker handles of the form
+ * `agent-<agent_id>-<uuid>` (e.g. `agent-builtin:explore-<uuid>`).
+ *
+ * Boundary guards ensure we only match standalone tokens: a session ID
+ * embedded inside a longer handle (e.g. the parent-session segment of an
+ * `extract-mem-<parent>-<uuid>` job ID) is NOT matched.
+ *
+ * Returned as a factory (fresh regex per call) because `g`-flagged
+ * RegExp objects carry mutable `lastIndex` state.
+ *
+ * Canonical single source for "what does a session id look like in prose" —
+ * used by chat reference-card extraction AND by the git-artifact parser to
+ * mask session IDs before commit-SHA matching (session UUIDs contain hex
+ * segments that otherwise false-positive as commit SHAs).
+ */
+export function createSessionIdTextPattern(): RegExp {
+  const prefixAlternation = SESSION_PREFIX_REGISTRY.map((config) =>
+    escapePatternLiteral(config.prefix)
+  ).join("|");
+  return new RegExp(
+    `(?<![\\w:.-])(?:(?:${prefixAlternation})|agent-[A-Za-z0-9:._-]*?-)${UUID_PATTERN_SOURCE}(?![\\w-])`,
+    "g"
+  );
+}
+
+/**
+ * Replace every session ID in `text` with same-length whitespace so
+ * downstream pattern passes (commit SHAs, file paths) can't partially
+ * match inside them. Length-preserving so match indices in the masked
+ * text remain valid against the original.
+ */
+export function maskSessionIdsInText(text: string): string {
+  return text.replace(createSessionIdTextPattern(), (match) =>
+    " ".repeat(match.length)
+  );
+}

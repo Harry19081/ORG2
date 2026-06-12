@@ -1,49 +1,54 @@
-# Build, sign, notarize, and release ORGII for macOS (Apple Silicon).
+# Build, sign, notarize, and release ORGII for macOS (Apple Silicon) and Windows (x64).
 #
-# Trigger: push a tag matching v* (e.g. v0.2.0, v0.2.0-rc.1)
+# Trigger: push a tag matching v* (e.g. v1.0.1, v1.0.1-nightly.20260611)
 #
-# Required GitHub Secrets:
+# Sidecar binaries (peekaboo, agent-browser, dugite/git) are NOT bundled in the
+# .app. They are downloaded at first launch into ~/.orgii/bin/ by the app itself
+# (post-notarized download strategy). This keeps the notarized bundle small and
+# eliminates the historical notarization hang caused by thousands of dugite files.
+#
+# Required GitHub Secrets (macOS):
 #   APPLE_CERTIFICATE               — base64-encoded .p12 Developer ID certificate
 #   APPLE_CERTIFICATE_PASSWORD      — password for the .p12
-#   APPLE_SIGNING_IDENTITY          — e.g. "Developer ID Application: ORGII AI Inc (XXXXXXXXXX)"
+#   APPLE_SIGNING_IDENTITY          — e.g. "Developer ID Application: HOUYi HE (S4UG24G7HJ)"
 #   APPLE_ID                        — Apple account email for notarization
 #   APPLE_PASSWORD                  — app-specific password for notarization
 #   APPLE_TEAM_ID                   — 10-char Apple Team ID
 #   TAURI_SIGNING_PRIVATE_KEY       — Tauri updater ed25519 private key
 #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD — password for the updater key
+#
+# Required GitHub Secrets (Windows — Azure Trusted Signing via OIDC):
+#   AZURE_CLIENT_ID                 — App Registration client ID (Federated Credential)
+#   AZURE_TENANT_ID                 — Entra ID tenant ID
+#   AZURE_SUBSCRIPTION_ID           — Azure subscription ID
+#
+# Azure Trusted Signing config (already provisioned):
+#   Account:  orgii-codesign  (East US — https://eus.codesigning.azure.net/)
+#   Profile:  orgii-windows   (Public Trust, SHA256)
 
-name: "Release ORGII (macOS)"
+name: "Release ORGII"
 
 on:
   push:
     tags: ["v*"]
 
 permissions:
-  contents: write # needed to create releases and upload assets
+  contents: write  # create releases and upload assets
+  id-token: write  # Azure OIDC for Trusted Signing (Windows job)
 
 jobs:
   build-and-release:
     name: Build & Release (macOS aarch64)
-    runs-on: self-hosted
+    runs-on: macos-latest
     env:
       HAS_APPLE_CERT: ${{ secrets.APPLE_CERTIFICATE != '' }}
     steps:
       # ── Checkout ──────────────────────────────────────────────
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           path: .
-
-      # ── Use local node_modules from repo ──────────────────────
-      - name: Link local node_modules
-        run: |
-          if [ -n "$LOCAL_REPO_PATH" ] && [ -d "$LOCAL_REPO_PATH/node_modules" ] && [ ! -d "node_modules" ]; then
-            ln -s "$LOCAL_REPO_PATH/node_modules" node_modules
-            echo "Linked node_modules from $LOCAL_REPO_PATH"
-          else
-            echo "node_modules already present or LOCAL_REPO_PATH not set"
-          fi
 
       # ── Apple code-signing certificate (fail fast before slow steps) ─
       - name: Import Apple certificate
@@ -73,42 +78,31 @@ jobs:
       # ── Stamp version from git tag ──────────────────────────
       - name: Set version from tag
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"  # v0.2.0-rc.1 → 0.2.0-rc.1
+          VERSION="${GITHUB_REF_NAME#v}"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "=== Release version: $VERSION ==="
-
-          # Patch tauri.conf.json
           sed -i '' "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
-
-          # Patch package.json
           sed -i '' "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" package.json
-
-          # Verify
           grep '"version"' src-tauri/tauri.conf.json package.json
 
       # ── Node.js + pnpm ───────────────────────────────────────
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: "pnpm"
 
       - name: Cache node_modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install frontend dependencies
-        run: |
-          if [ -L "node_modules" ] || [ -d "node_modules/.bin" ]; then
-            echo "node_modules already present via symlink or cache, skipping install"
-          else
-            pnpm install --frozen-lockfile
-          fi
+        run: pnpm install --frozen-lockfile
 
       # ── Rust ──────────────────────────────────────────────────
       - name: Install Rust stable
@@ -120,48 +114,17 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
-          shared-key: "release-macos-aarch64" # shared across all tag refs
-
-      # ── Download sidecar binaries (peekaboo, agent-browser) ──
-      - name: Cache sidecar binaries
-        uses: actions/cache@v4
-        with:
-          path: src-tauri/bin
-          key: sidecars-peekaboo-v3.2.3-agent-browser-v0.27.2-macos
-
-      - name: Download sidecar binaries
-        run: python3 scripts/tools/download_sidecars.py
-
-      # ── Sign bundled git binaries (required for notarization) ───
-      - name: Sign dugite git binaries
-        if: env.HAS_APPLE_CERT == 'true'
-        env:
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-        run: |
-          DUGITE_DIR="node_modules/dugite/git"
-          echo "Signing binaries in $DUGITE_DIR..."
-          find "$DUGITE_DIR" -type f | while read -r bin; do
-            if file "$bin" | grep -qE "Mach-O|executable|dylib|bundle"; then
-              codesign --force --sign "$APPLE_SIGNING_IDENTITY" \
-                --options runtime \
-                --timestamp \
-                "$bin" 2>/dev/null && echo "Signed: $bin" || echo "Skipped: $bin"
-            fi
-          done
-          echo "Done signing dugite binaries"
+          shared-key: "release-macos-aarch64"
 
       # ── Build Tauri app (sign + notarize + updater artifacts) ─
       - name: Build ORGII
         env:
-          # Apple signing & notarization (Tauri reads these automatically)
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          # Tauri updater signing
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        # Semantic search archived; no extra `--features` needed.
         run: pnpm tauri build --target aarch64-apple-darwin
 
       # ── Locate build artifacts ────────────────────────────────
@@ -170,11 +133,9 @@ jobs:
         run: |
           BUNDLE_DIR="src-tauri/target/aarch64-apple-darwin/release/bundle"
 
-          # .dmg installer
           DMG=$(find "$BUNDLE_DIR/dmg" -name "*.dmg" | head -1)
           echo "dmg=$DMG" >> "$GITHUB_OUTPUT"
 
-          # Updater: .app.tar.gz and .app.tar.gz.sig
           UPDATER_TAR=$(find "$BUNDLE_DIR/macos" -name "*.app.tar.gz" ! -name "*.sig" | head -1)
           UPDATER_SIG=$(find "$BUNDLE_DIR/macos" -name "*.app.tar.gz.sig" | head -1)
           echo "updater_tar=$UPDATER_TAR" >> "$GITHUB_OUTPUT"
@@ -210,7 +171,7 @@ jobs:
 
       # ── Create GitHub Release ─────────────────────────────────
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: false
           prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-nightly') }}
@@ -221,7 +182,7 @@ jobs:
             ${{ steps.artifacts.outputs.updater_sig }}
             latest.json
 
-      # ── Cleanup keychain (only if certificate was imported) ────
+      # ── Cleanup keychain ────────────────────────────────────────
       - name: Cleanup keychain
         if: always() && env.HAS_APPLE_CERT == 'true'
         run: |
@@ -229,3 +190,136 @@ jobs:
           if [ -f "$KEYCHAIN_PATH" ]; then
             security delete-keychain "$KEYCHAIN_PATH"
           fi
+
+  # ── Windows x64 build ─────────────────────────────────────────────────
+  build-windows:
+    name: Build & Release (Windows x64)
+    runs-on: windows-latest
+    needs: build-and-release
+    env:
+      HAS_AZURE_SIGNING: ${{ secrets.AZURE_CLIENT_ID != '' }}
+    steps:
+      # ── Checkout ────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # ── Stamp version from git tag ───────────────────────────────
+      #
+      # MSI's ProductVersion only accepts numeric `major.minor.build[.revision]`
+      # with each segment <= 65535. Any SemVer pre-release identifier (e.g.
+      # `-nightly.20260611`, `-rc.1`) makes `tauri build` abort the bundling
+      # step with:
+      #   "optional pre-release identifier in app version must be numeric-only
+      #    and cannot be greater than 65535 for msi target"
+      #
+      # So on Windows we always strip the pre-release/build-metadata suffix
+      # from the tag before writing it into tauri.conf.json. package.json keeps
+      # the full SemVer (npm tolerates it) so chat surfaces / About box can
+      # still display the original "1.0.1-nightly.20260611".
+      - name: Set version from tag
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          MSI_VERSION="${VERSION%%-*}"   # strip "-nightly.20260611" / "-rc.1" / ...
+          MSI_VERSION="${MSI_VERSION%%+*}" # strip SemVer build metadata "+sha.abc"
+          echo "VERSION=$VERSION"         >> "$GITHUB_ENV"
+          echo "MSI_VERSION=$MSI_VERSION" >> "$GITHUB_ENV"
+          echo "=== Release version: $VERSION (msi: $MSI_VERSION) ==="
+          sed -i "s/\"version\": \".*\"/\"version\": \"$MSI_VERSION\"/" src-tauri/tauri.conf.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" package.json
+
+      # ── Node.js + pnpm ──────────────────────────────────────────
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── Rust ────────────────────────────────────────────────────
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          shared-key: "release-windows-x64"
+
+      # ── Build Tauri app ──────────────────────────────────────────
+      - name: Build ORGII
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: pnpm tauri build --target x86_64-pc-windows-msvc
+
+      # ── Sign with Azure Trusted Signing ─────────────────────────
+      - name: Azure login (OIDC)
+        if: env.HAS_AZURE_SIGNING == 'true'
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign Windows artifacts
+        if: env.HAS_AZURE_SIGNING == 'true'
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: orgii-codesign
+          certificate-profile-name: orgii-windows
+          files-folder: src-tauri\target\x86_64-pc-windows-msvc\release\bundle
+          files-folder-filter: exe,msi
+          files-folder-recurse: true
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      # ── Gather artifacts ─────────────────────────────────────────
+      - name: Gather release artifacts
+        id: artifacts
+        shell: bash
+        run: |
+          BUNDLE_DIR="src-tauri/target/x86_64-pc-windows-msvc/release/bundle"
+
+          MSI=$(find "$BUNDLE_DIR/msi" -name "*.msi" ! -name "*.zip" | head -1)
+          MSI_ZIP=$(find "$BUNDLE_DIR/msi" -name "*.msi.zip" | head -1)
+          MSI_SIG=$(find "$BUNDLE_DIR/msi" -name "*.msi.zip.sig" | head -1)
+          NSIS=$(find "$BUNDLE_DIR/nsis" -name "*.exe" ! -name "*.zip" | head -1)
+          NSIS_ZIP=$(find "$BUNDLE_DIR/nsis" -name "*.nsis.zip" | head -1)
+          NSIS_SIG=$(find "$BUNDLE_DIR/nsis" -name "*.nsis.zip.sig" | head -1)
+
+          echo "msi=$MSI"           >> "$GITHUB_OUTPUT"
+          echo "msi_zip=$MSI_ZIP"   >> "$GITHUB_OUTPUT"
+          echo "msi_sig=$MSI_SIG"   >> "$GITHUB_OUTPUT"
+          echo "nsis=$NSIS"         >> "$GITHUB_OUTPUT"
+          echo "nsis_zip=$NSIS_ZIP" >> "$GITHUB_OUTPUT"
+          echo "nsis_sig=$NSIS_SIG" >> "$GITHUB_OUTPUT"
+
+          echo "=== Windows artifacts ==="
+          echo "MSI:  $MSI"
+          echo "NSIS: $NSIS"
+
+      # ── Upload to existing GitHub Release ───────────────────────
+      - name: Upload Windows artifacts to release
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-nightly') }}
+          files: |
+            ${{ steps.artifacts.outputs.msi }}
+            ${{ steps.artifacts.outputs.msi_zip }}
+            ${{ steps.artifacts.outputs.msi_sig }}
+            ${{ steps.artifacts.outputs.nsis }}
+            ${{ steps.artifacts.outputs.nsis_zip }}
+            ${{ steps.artifacts.outputs.nsis_sig }}

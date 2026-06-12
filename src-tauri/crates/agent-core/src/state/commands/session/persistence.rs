@@ -56,7 +56,16 @@ pub async fn agent_clear_messages(session_id: String) -> Result<i64, String> {
     shared::spawn_blocking_cmd(move || session_persistence::clear_messages(&session_id)).await
 }
 
-/// Truncate messages at or after a timestamp.
+/// Truncate messages at or after an anchor message.
+///
+/// The anchor is resolved to a `(sequence, created_at)` pair **from the
+/// anchor row itself** — `sequence` drives the transcript truncation
+/// (the only safe coordinate; see `truncate_messages_from_sequence`),
+/// while the row's own `created_at` rewinds the timestamp-keyed side
+/// stores (file-history, session snapshots). Resolution is fail-loud:
+/// if neither `message_id` nor `created_at` matches an existing row, the
+/// command errors instead of guessing — a silently-wrong anchor is how
+/// the 2026-06-11 transcript wipe happened.
 ///
 /// When `revert_files` is true (default behavior for edit/regenerate flows),
 /// also rewinds the per-session file-history so edited files are restored to
@@ -79,16 +88,26 @@ pub async fn agent_truncate_after_message(
 
     let should_revert = revert_files.unwrap_or(true);
     tokio::task::spawn_blocking(move || -> Result<i64, String> {
-        let created_at = match message_id.as_deref() {
-            Some(message_id) => session_persistence::message_created_at(&session_id, message_id)
+        let anchor = match message_id.as_deref() {
+            Some(message_id) => session_persistence::message_anchor(&session_id, message_id)
                 .map_err(|err| err.to_string())?
-                .unwrap_or(created_at),
-            None => created_at,
+                .ok_or_else(|| {
+                    format!(
+                        "Refusing to truncate session {session_id}: anchor message {message_id} not found"
+                    )
+                })?,
+            None => session_persistence::anchor_at_or_after_created_at(&session_id, &created_at)
+                .map_err(|err| err.to_string())?
+                .ok_or_else(|| {
+                    format!(
+                        "Refusing to truncate session {session_id}: no message at or after {created_at}"
+                    )
+                })?,
         };
         let review_session_ids = review_session_ids(&session_id);
         if should_revert {
             for review_session_id in &review_session_ids {
-                let stats = file_history::rewind_to_message(review_session_id, &created_at)
+                let stats = file_history::rewind_to_message(review_session_id, &anchor.created_at)
                     .map_err(|err| format!("file-history rewind failed for {review_session_id}: {err}"))?;
                 tracing::info!(
                     "[agent_truncate] file-history rewind: session={} restored={} deleted={} skipped={} failed={}",
@@ -102,11 +121,11 @@ pub async fn agent_truncate_after_message(
         }
 
         for review_session_id in &review_session_ids {
-            session_snapshots::truncate_snapshots_after(review_session_id, &created_at)
+            session_snapshots::truncate_snapshots_after(review_session_id, &anchor.created_at)
                 .map_err(|err| err.to_string())?;
         }
         PlanApprovalStore::delete_by_session(&session_id).map_err(|err| err.to_string())?;
-        session_persistence::truncate_messages_after(&session_id, &created_at)
+        session_persistence::truncate_messages_from_sequence(&session_id, anchor.sequence)
             .map_err(|err| err.to_string())
     })
     .await
