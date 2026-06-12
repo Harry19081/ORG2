@@ -13,13 +13,17 @@ const ASSISTANT_COMMIT_LINE_PATTERN =
 const ASSISTANT_SHA_DASH_SUBJECT_PATTERN =
   /^\s*(?:[-*•]\s*)?(?:[A-Za-z][A-Za-z\s-]{0,32}:\s*)?`?([0-9a-f]{7,40})`?\s*(?:—|–|-)\s*([a-z][a-z0-9-]*(?:\([^)]+\))?!?:\s+[^\n]+)$/gim;
 const ASSISTANT_CONTEXTUAL_COMMIT_SHA_PATTERN =
-  /\b(?:commit(?:ted|s)?|commit\s+(?:created|sha|tip)|branch\s+tip|synced\s+at)\b[^\n]{0,120}?`?(?<![#0-9a-f-])([0-9a-f]{7,40})(?![0-9a-f-])`?/gi;
-const BARE_GIT_SHA_PATTERN = /(?<![#0-9a-f-])([0-9a-f]{7,40})(?![0-9a-f-])/gi;
+  /\b(?:commit(?:ted|s)?|commit\s+(?:created|sha|tip)|branch\s+tip|synced\s+at)\b[^\n]{0,120}?`?(?<![#0-9a-z_-])([0-9a-f]{7,40})(?![0-9a-z_-])`?/gi;
+const BARE_GIT_SHA_PATTERN = /(?<![#0-9a-z_-])([0-9a-f]{7,40})(?![0-9a-z_-])/gi;
 const ASSISTANT_COMMIT_SUBJECT_LINE_PATTERN =
   /^\s*(?:[-*•]\s*)?`?([a-z][a-z0-9-]*(?:\([^)]+\))?!?:\s+[^`\n]+?)`?\s*$/i;
 
 function shortSha(sha: string): string {
   return sha.length <= 12 ? sha : sha.slice(0, 7);
+}
+
+function looksLikeAutoDetectedSha(sha: string): boolean {
+  return (sha.match(/\d/g)?.length ?? 0) >= 2;
 }
 
 function findNearestCommitSubjectBefore(
@@ -105,7 +109,7 @@ export function parseGitArtifactsFromText(
   for (const match of text.matchAll(ASSISTANT_SHA_DASH_SUBJECT_PATTERN)) {
     const sha = match[1]?.toLowerCase();
     const subject = match[2]?.trim();
-    if (!sha || !subject) continue;
+    if (!sha || !subject || !looksLikeAutoDetectedSha(sha)) continue;
     pushArtifact({
       kind: "commit",
       sha,
@@ -117,7 +121,7 @@ export function parseGitArtifactsFromText(
   for (const match of text.matchAll(ASSISTANT_COMMIT_LINE_PATTERN)) {
     const sha = match[1]?.toLowerCase();
     const subject = match[2]?.trim();
-    if (!sha || !subject) continue;
+    if (!sha || !subject || !looksLikeAutoDetectedSha(sha)) continue;
     pushArtifact({
       kind: "commit",
       sha,
@@ -128,7 +132,7 @@ export function parseGitArtifactsFromText(
 
   for (const match of text.matchAll(ASSISTANT_CONTEXTUAL_COMMIT_SHA_PATTERN)) {
     const sha = match[1]?.toLowerCase();
-    if (!sha) continue;
+    if (!sha || !looksLikeAutoDetectedSha(sha)) continue;
     pushArtifact({
       kind: "commit",
       sha,
@@ -139,7 +143,7 @@ export function parseGitArtifactsFromText(
 
   for (const match of text.matchAll(BARE_GIT_SHA_PATTERN)) {
     const sha = match[1]?.toLowerCase();
-    if (!sha) continue;
+    if (!sha || !looksLikeAutoDetectedSha(sha)) continue;
     pushArtifact({
       kind: "commit",
       sha,

@@ -104,6 +104,22 @@ After rebase/push, the branch tip is synced at \`1a4a01d3\`.
     ]);
   });
 
+  it("does not parse all-letter words as commits", () => {
+    expect(
+      parseGitArtifactsFromText("The commit succeeded as cceeded.")
+    ).toEqual([]);
+    expect(parseGitArtifactsFromText("Commit succeeded.")).toEqual([]);
+  });
+
+  it("does not auto-detect hexadecimal tokens with fewer than two digits as commits", () => {
+    expect(parseGitArtifactsFromText("Latest revision is deadbee.")).toEqual(
+      []
+    );
+    expect(parseGitArtifactsFromText("Latest revision is deadbe1.")).toEqual(
+      []
+    );
+  });
+
   it("does not partial-match hex inside bare UUIDs via commit context", () => {
     expect(
       parseGitArtifactsFromText(
