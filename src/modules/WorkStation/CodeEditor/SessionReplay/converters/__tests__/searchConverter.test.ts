@@ -60,6 +60,24 @@ describe("convertToExploreOperation", () => {
     expect(op?.isCurrent).toBe(true);
   });
 
+  it("handles null args from replay cache for code_search events", () => {
+    const event = minimalSessionEvent({
+      functionName: "code_search",
+      args: null as unknown as SessionEvent["args"],
+      result: {
+        content: "No matches found.",
+        observation: "No matches found.",
+      },
+    });
+
+    const op = convertToExploreOperation(event, false);
+    expect(op).not.toBeNull();
+    expect(op?.exploreType).toBe("code_search");
+    expect(op?.query).toBe("");
+    expect(op?.results).toEqual([]);
+    expect(op?.event.args).toEqual({});
+  });
+
   it("does not synthesize rows for Rust agent grep no-match output", () => {
     const event = minimalSessionEvent({
       functionName: "code_search",

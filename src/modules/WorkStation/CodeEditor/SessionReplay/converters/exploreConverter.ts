@@ -199,8 +199,8 @@ export function convertToExploreOperation(
 
   if (!isExplorePanelTool(eventType)) return null;
 
-  const args = event.args;
-  const result = event.result;
+  const args = asRecord(event.args) ?? {};
+  const result = asRecord(event.result) ?? {};
 
   const statusString = getEventStatus(event) as EventStatus;
   const action =

@@ -11,6 +11,12 @@ import { AppType } from "@src/engines/Simulator/types/appTypes";
 
 import type { ProjectOperation, SimulatorProjectState } from "./types";
 
+function normalizeArgs(args: unknown): Record<string, unknown> {
+  return args && typeof args === "object" && !Array.isArray(args)
+    ? (args as Record<string, unknown>)
+    : {};
+}
+
 function extractAction(
   params: Record<string, unknown> | undefined
 ): string | undefined {
@@ -26,7 +32,7 @@ function extractProjectOp(
     return null;
   }
 
-  const params = event.args as Record<string, unknown> | undefined;
+  const params = normalizeArgs(event.args);
   const result = event.result as Record<string, unknown> | string | undefined;
   const isError =
     typeof result === "string"
@@ -54,12 +60,12 @@ function extractProjectOp(
     type: "project",
     functionName: event.functionName,
     action,
-    args: params ?? {},
+    args: params,
     resultText,
     projectName:
-      (params?.project_name as string) ?? (params?.name as string) ?? undefined,
+      (params.project_name as string) ?? (params.name as string) ?? undefined,
     workItemTitle:
-      (params?.title as string) ?? (params?.item_title as string) ?? undefined,
+      (params.title as string) ?? (params.item_title as string) ?? undefined,
     resultSummary,
     isError,
     isCurrent,
