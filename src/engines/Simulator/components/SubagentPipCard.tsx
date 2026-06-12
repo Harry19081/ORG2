@@ -92,6 +92,19 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
   );
   const subagentEventsMap = useMultiSessionSimulatorEvents(visibleSessions);
 
+  // "Monitoring N" counts only clips still running at the cursor — open
+  // clips (endedAtMs === null) or clips whose end the cursor hasn't reached.
+  // Finished in-window clips keep their cell but don't count as monitored.
+  const runningCount = useMemo(
+    () =>
+      activeSessions.filter(
+        (sub) =>
+          sub.endedAtMs === null ||
+          (mainCursorMs != null && mainCursorMs < sub.endedAtMs)
+      ).length,
+    [activeSessions, mainCursorMs]
+  );
+
   // ── Banner collapsed state ────────────────────────────────────────────────
   const [isBannerCollapsed, setIsBannerCollapsed] = useState(false);
   const bannerPaneRef = useRef<HTMLDivElement>(null);
@@ -424,13 +437,13 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
           <span className="pointer-events-none h-4 w-px shrink-0 bg-border-2" />
           <BreadcrumbFileHeader
             filePath={t("simulator.multiTask.monitoringProgress", {
-              count: activeSessions.length,
+              count: runningCount,
             })}
             disableNavigation
             plainTitle
             className="!flex-none"
             lastSegmentClassName={
-              activeSessions.length > 0
+              runningCount > 0
                 ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}`
                 : ""
             }

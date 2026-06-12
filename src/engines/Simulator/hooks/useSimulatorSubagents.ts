@@ -73,16 +73,23 @@ export function useSimulatorSubagents({
   }, [allSubagentSessions, setSimulatorSubagentSessions]);
 
   // Filter to sessions whose time-window covers the current replay cursor.
-  // Falls back to the full list so the split pane never goes blank while
-  // subagents exist but the cursor hasn't reached them yet.
+  // When no clip covers the cursor, fall back to clips that are still OPEN
+  // (endedAtMs === null, i.e. running right now) so a freshly spawned
+  // subagent is visible even while the main cursor lags behind its
+  // startedAtMs (the spawning tool_call is filtered from the slider).
+  // Closed clips deliberately do NOT resurface here — once the cursor
+  // passes a clip's end, its cell retires from the monitor. The old
+  // fall-back-to-everything behavior is what made cells accumulate.
   const cursorActiveSubagents = useActiveSubagentsAtCursor(
     allSubagentSessions,
     currentEvent
   );
+  const openSubagents = useMemo(
+    () => allSubagentSessions.filter((sub) => sub.endedAtMs === null),
+    [allSubagentSessions]
+  );
   const cursorOrAllSubagents =
-    cursorActiveSubagents.length > 0
-      ? cursorActiveSubagents
-      : allSubagentSessions;
+    cursorActiveSubagents.length > 0 ? cursorActiveSubagents : openSubagents;
 
   // Subscribe (count-only) to every subagent's EventStore so we can rank
   // "has activity" rows ahead of "no activity" rows BEFORE the consumer

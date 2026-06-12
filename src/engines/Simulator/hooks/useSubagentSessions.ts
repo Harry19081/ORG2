@@ -10,8 +10,12 @@
  *
  * Each subagent is a "clip" on the parent timeline:
  *   - `startedAtMs` = child session's `created_at`
- *   - `endedAtMs` = child session's `updated_at` when completed/failed,
- *     or `null` when still running (clip stays open).
+ *   - `endedAtMs` = backend-authoritative `endedAt` (last event timestamp)
+ *     when the session is terminal, or `null` while running (clip stays open).
+ *
+ * Terminal-ness is decided by Rust (`SessionStatus::is_terminal` via the
+ * `isTerminal` field on each record) — the frontend never re-derives it
+ * from the raw status string. See `es_get_child_sessions`.
  *
  * `useActiveSubagentsAtCursor` filters the full list to clips whose window
  * covers the current replay cursor timestamp.
@@ -39,6 +43,8 @@ export interface SubagentSession {
   startedAtMs: number;
   /** Epoch ms when the subagent finished, or `null` if still running. */
   endedAtMs: number | null;
+  /** Backend-authoritative terminal flag (`SessionStatus::is_terminal`). */
+  isTerminal: boolean;
 }
 
 interface ChildSessionRecord {
@@ -50,11 +56,30 @@ interface ChildSessionRecord {
   sessionType: string;
   parentSessionId: string | null;
   parentEventId: string | null;
+  /** Authoritative terminal flag computed by Rust from the status enum. */
+  isTerminal: boolean;
+  /** Clip right edge (last event timestamp); null while non-terminal. */
+  endedAt: string | null;
 }
 
-function mapStatus(raw: string): SubagentSession["status"] {
+/**
+ * Zombie-row fuse: a non-terminal row whose `updated_at` is older than this
+ * is treated as ended (clip closed at `updated_at`). Defends against legacy
+ * rows stuck in a non-terminal status forever (pre-fix data) without a DB
+ * migration. Not a normal-path mechanism.
+ */
+const ZOMBIE_ROW_FUSE_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Coarse display status for sorting/labels only. Clip-window semantics
+ * (open/closed) come exclusively from `isTerminal` / `endedAt`.
+ */
+function mapStatus(
+  raw: string,
+  isTerminal: boolean
+): SubagentSession["status"] {
   if (raw === "completed") return "completed";
-  if (raw === "failed" || raw === "error") return "failed";
+  if (isTerminal) return "failed";
   if (raw === "running" || raw === "streaming") return "running";
   return "pending";
 }
@@ -142,6 +167,48 @@ export function isActiveAtTimestamp(
 }
 
 /**
+ * Map one backend record into a SubagentSession clip.
+ *
+ * Pure + exported for tests. `nowMs` is injected so the zombie-row fuse
+ * is deterministic under test.
+ */
+export function mapChildSessionRecord(
+  record: ChildSessionRecord,
+  nowMs: number
+): SubagentSession {
+  const status = mapStatus(record.status, record.isTerminal);
+  const startedAtMs = new Date(record.createdAt).getTime();
+
+  let endedAtMs = record.endedAt ? new Date(record.endedAt).getTime() : null;
+  if (endedAtMs === null && !record.isTerminal) {
+    // Zombie-row fuse — see ZOMBIE_ROW_FUSE_MS.
+    const updatedAtMs = new Date(record.updatedAt).getTime();
+    if (nowMs - updatedAtMs > ZOMBIE_ROW_FUSE_MS) {
+      endedAtMs = updatedAtMs;
+    }
+  }
+
+  const rawName = record.name || record.sessionId;
+  const agentName = extractSubagentSessionAgentName(rawName);
+  const taskTitle = extractSubagentSessionTaskTitle(rawName);
+
+  return {
+    key: record.sessionId,
+    sessionId: record.sessionId,
+    name: agentName,
+    description: stripAgentNamePrefix(taskTitle, agentName),
+    sessionType: record.sessionType,
+    status,
+    isBackground: true,
+    startedAtMs,
+    endedAtMs,
+    isTerminal: record.isTerminal,
+  };
+}
+
+export type { ChildSessionRecord };
+
+/**
  * Query child sessions from the DB for a given parent session.
  *
  * The `eventCount` parameter is used as a re-fetch trigger: whenever the
@@ -184,30 +251,7 @@ export function useSubagentSessions(
           const rawName = record.name || record.sessionId;
           return isSubagentTaskAssigned(rawName);
         })
-        .map((record) => {
-          const status = mapStatus(record.status);
-          const startedAtMs = new Date(record.createdAt).getTime();
-          const isTerminal = status === "completed" || status === "failed";
-          const endedAtMs = isTerminal
-            ? new Date(record.updatedAt).getTime()
-            : null;
-
-          const rawName = record.name || record.sessionId;
-          const agentName = extractSubagentSessionAgentName(rawName);
-          const taskTitle = extractSubagentSessionTaskTitle(rawName);
-
-          return {
-            key: record.sessionId,
-            sessionId: record.sessionId,
-            name: agentName,
-            description: stripAgentNamePrefix(taskTitle, agentName),
-            sessionType: record.sessionType,
-            status,
-            isBackground: true,
-            startedAtMs,
-            endedAtMs,
-          };
-        });
+        .map((record) => mapChildSessionRecord(record, Date.now()));
 
       // Stable sort: subagents that have actually started (any non-pending
       // status) come first so the bottom strip / grid always shows
