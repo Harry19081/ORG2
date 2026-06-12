@@ -471,12 +471,12 @@
     "delete": "Sind Sie sicher, dass Sie dies löschen möchten?",
     "unsavedChanges": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?",
     "discard": "Änderungen verwerfen?",
-    "removeTitle": "\"{{name}}\" aus dem ORGII workspace entfernen?",
-    "removeMessage": "Der Code-Ordner wird nicht von Ihrem Gerät gelöscht — er wird nur aus dem ORGII workspace entfernt. Sie können ihn jederzeit wieder hinzufügen.",
+    "removeTitle": "\"{{name}}\" aus ORGII entfernen?",
+    "removeMessage": "Dies entfernt nur die Verknüpfung mit ORGII. Auf der Festplatte wird nichts entfernt.",
     "deleteWorkspaceTitle": "Workspace \"{{name}}\" löschen?",
     "deleteWorkspaceMessage": "Es wird nur das Workspace-Preset gelöscht. Die enthaltenen Repos und Ordner sind nicht betroffen.",
-    "deleteSelectedTitle": "{{count}} ausgewählte Elemente löschen?",
-    "deleteSelectedMessage": "Die ausgewählten Workspaces werden gelöscht und die ausgewählten Repos werden entkoppelt. Die Repo-Dateien auf der Festplatte werden nicht gelöscht.",
+    "deleteSelectedTitle": "{{count}} ausgewählte Elemente aus ORGII entfernen?",
+    "deleteSelectedMessage": "Dies entfernt nur ihre Verknüpfung mit ORGII. Auf der Festplatte wird nichts entfernt.",
     "disconnectTitle": "\"{{name}}\" trennen?",
     "disconnectMessage": "Dadurch wird der Zugriff auf alle Repos dieses Kontos entfernt.",
     "dropStashTitle": "Drop stash?",
@@ -1134,7 +1134,7 @@
     "repo": {
       "workspaceFolders": "Workspace-Ordner",
       "addRepo": "Workspace hinzufügen",
-      "addEntry": "Weitere Workspace-Optionen",
+      "addEntry": "Weitere Importoptionen",
       "addRepoDescription": "Workspace öffnen, erstellen oder klonen",
       "sections": {
         "coding": "Workspace",
@@ -1143,6 +1143,7 @@
         "current": "Aktuell",
         "repo": "Repositories",
         "systemPaths": "Systempfade",
+        "usedElsewhere": "Used elsewhere",
         "workspace": "Workspace"
       },
       "tabs": {
@@ -1462,12 +1463,12 @@
         }
       },
       "toast": {
-        "repoRemoved": "Repo erfolgreich entfernt",
-        "repoRemoveFailed": "Repo konnte nicht entfernt werden",
-        "workspaceRemoved": "Workspace gelöscht",
-        "workspaceRemoveFailed": "Workspace konnte nicht gelöscht werden",
-        "bulkDeleted": "{{count}} Elemente gelöscht",
-        "bulkDeleteFailed": "{{count}} Elemente konnten nicht gelöscht werden"
+        "repoRemoved": "Linkage to ORGII removed",
+        "repoRemoveFailed": "Failed to remove linkage to ORGII",
+        "workspaceRemoved": "Linkage to ORGII removed",
+        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
+        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
   },
@@ -1478,7 +1479,7 @@
     "locateInFinder": "Im Finder anzeigen",
     "copyLocalPath": "Lokalen Pfad kopieren",
     "copyEventsJson": "Events JSON kopieren",
-    "removeRepo": "Repo entfernen",
+    "removeRepo": "Remove from ORGII",
     "addRepo": "Repo hinzufügen...",
     "simulatorView": "Simulator-Ansicht",
     "addWorkspace": "Workspace hinzufügen..."

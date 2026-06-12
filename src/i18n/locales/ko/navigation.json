@@ -324,9 +324,9 @@
       "startSession": "세션 시작",
       "openDetails": "세부 정보 표시",
       "locateInFinder": "Finder에서 보기",
-      "remove": "제거",
-      "removeSuccess": "작업 공간이 제거되었습니다",
-      "removeFailed": "작업 공간 제거 실패"
+      "remove": "Remove from ORGII",
+      "removeSuccess": "Linkage to ORGII removed",
+      "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Workspace 추가"
   },

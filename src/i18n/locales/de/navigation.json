@@ -326,9 +326,9 @@
       "startSession": "Sitzung starten",
       "openDetails": "Details anzeigen",
       "locateInFinder": "Im Finder anzeigen",
-      "remove": "Entfernen",
-      "removeSuccess": "Workspace entfernt",
-      "removeFailed": "Workspace konnte nicht entfernt werden"
+      "remove": "Remove from ORGII",
+      "removeSuccess": "Linkage to ORGII removed",
+      "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Workspace hinzufügen"
   },

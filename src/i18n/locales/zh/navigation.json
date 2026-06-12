@@ -415,9 +415,9 @@
       "startSession": "开始会话",
       "openDetails": "打开详情",
       "locateInFinder": "在 Finder 中显示",
-      "remove": "移除",
-      "removeSuccess": "工作区已移除",
-      "removeFailed": "移除工作区失败"
+      "remove": "Remove from ORGII",
+      "removeSuccess": "Linkage to ORGII removed",
+      "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "添加工作区"
   },

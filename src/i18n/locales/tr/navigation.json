@@ -324,9 +324,9 @@
       "startSession": "Oturum başlat",
       "openDetails": "Detayları göster",
       "locateInFinder": "Finder'da göster",
-      "remove": "Kaldır",
-      "removeSuccess": "Çalışma alanı kaldırıldı",
-      "removeFailed": "Çalışma alanı kaldırılamadı"
+      "remove": "Remove from ORGII",
+      "removeSuccess": "Linkage to ORGII removed",
+      "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Workspace ekle"
   },

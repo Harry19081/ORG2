@@ -484,12 +484,12 @@
     "delete": "确定要删除吗？",
     "unsavedChanges": "您有未保存的更改。确定要离开吗？",
     "discard": "放弃更改？",
-    "removeTitle": "从 ORGII 工作区中移除「{{name}}」？",
-    "removeMessage": "这不会从你的设备上删除代码文件夹——只是将其从 ORGII 工作区中移除。你可以随时重新添加。",
+    "removeTitle": "从 ORGII 中移除「{{name}}」？",
+    "removeMessage": "这只会移除它与 ORGII 的关联，不会从磁盘中移除任何内容。",
     "deleteWorkspaceTitle": "删除工作区「{{name}}」？",
     "deleteWorkspaceMessage": "仅删除工作区预设。其中包含的 Repo 和文件夹不会受到影响。",
-    "deleteSelectedTitle": "删除选中的 {{count}} 项？",
-    "deleteSelectedMessage": "将删除选中的工作区并取消关联选中的 Repos。磁盘上的 Repo 文件不会被删除。",
+    "deleteSelectedTitle": "从 ORGII 中移除选中的 {{count}} 项？",
+    "deleteSelectedMessage": "这只会移除它们与 ORGII 的关联，不会从磁盘中移除任何内容。",
     "disconnectTitle": "断开「{{name}}」？",
     "disconnectMessage": "这将移除该账户对所有仓库的访问权限。",
     "dropStashTitle": "Drop stash？",
@@ -1148,7 +1148,7 @@
     "repo": {
       "workspaceFolders": "工作区文件夹",
       "addRepo": "添加工作区",
-      "addEntry": "更多工作区选项",
+      "addEntry": "更多导入选项",
       "addRepoDescription": "打开、创建或克隆工作区",
       "sections": {
         "coding": "工作区",
@@ -1157,6 +1157,7 @@
         "current": "当前",
         "repo": "仓库",
         "systemPaths": "系统路径",
+        "usedElsewhere": "Used elsewhere",
         "workspace": "工作区"
       },
       "tabs": {
@@ -1476,12 +1477,12 @@
         }
       },
       "toast": {
-        "repoRemoved": "仓库已移除",
-        "repoRemoveFailed": "移除仓库失败",
-        "workspaceRemoved": "已删除工作区",
-        "workspaceRemoveFailed": "删除工作区失败",
-        "bulkDeleted": "已删除 {{count}} 项",
-        "bulkDeleteFailed": "{{count}} 项删除失败"
+        "repoRemoved": "Linkage to ORGII removed",
+        "repoRemoveFailed": "Failed to remove linkage to ORGII",
+        "workspaceRemoved": "Linkage to ORGII removed",
+        "workspaceRemoveFailed": "Failed to remove linkage to ORGII",
+        "bulkDeleted": "{{count}} linkages to ORGII removed",
+        "bulkDeleteFailed": "{{count}} linkages failed to remove"
       }
     }
   },
@@ -1492,7 +1493,7 @@
     "locateInFinder": "在 Finder 中定位",
     "copyLocalPath": "复制本地路径",
     "copyEventsJson": "复制 Events JSON",
-    "removeRepo": "移除仓库",
+    "removeRepo": "Remove from ORGII",
     "addRepo": "添加仓库...",
     "simulatorView": "模拟器视图",
     "addWorkspace": "添加工作区..."

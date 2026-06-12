@@ -354,9 +354,9 @@
       "startSession": "Start session",
       "openDetails": "Show details",
       "locateInFinder": "Locate in Finder",
-      "remove": "Remove",
-      "removeSuccess": "Workspace removed",
-      "removeFailed": "Failed to remove workspace"
+      "remove": "Remove from ORGII",
+      "removeSuccess": "Linkage to ORGII removed",
+      "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Add workspace"
   },
