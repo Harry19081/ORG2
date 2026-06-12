@@ -403,11 +403,10 @@ async fn ensure_session_initialized(
     let node_registry = capabilities::build_node_registry(&cap_flags, &integrations);
     let bus = capabilities::channel_bus_for(&cap_flags, state);
     // Single SecurityPolicy instance per session — shared by ToolDeps
-    // (exec tool) AND the subagent AgentTool config so rate limiting
-    // observes one state. This policy owns command policy + path
-    // *syntax* validation only; path containment is decided by the
-    // live `SessionWorkspace` (the single source of truth for
-    // workspace roots and `/add-dir` grants).
+    // (exec tool) AND the subagent AgentTool config. This policy owns
+    // command policy + path *syntax* validation only; path containment
+    // is decided by the live `SessionWorkspace` (the single source of
+    // truth for workspace roots and `/add-dir` grants).
     let exec_security_policy = Arc::new(resolved.policy.to_runtime_security());
 
     let log_prefix = if resolved.name.is_empty() {

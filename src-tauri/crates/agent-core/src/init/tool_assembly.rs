@@ -64,10 +64,8 @@ pub(super) struct OverlayContext<'a> {
     pub native_harness_type: Option<NativeHarnessType>,
     pub policy_arc: Arc<ResolvedToolPolicy>,
     pub disabled_set: &'a HashSet<String>,
-    /// The session's single `SecurityPolicy` instance (rate limiter +
-    /// extra allowed dirs included). Shared with the subagent AgentTool
-    /// config — constructing a second instance here used to give
-    /// subagents an independent rate-limit tracker.
+    /// The session's single `SecurityPolicy` instance, shared with the
+    /// subagent AgentTool config.
     pub exec_security_policy: Arc<crate::foundation::security::SecurityPolicy>,
 }
 

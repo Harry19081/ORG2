@@ -85,7 +85,7 @@ export interface CommandRiskRules {
 
 /** Per-agent unified policy. Mirrors the backend Rust `AgentPolicy`
  *  struct field-for-field. The runtime fields (`confirmation_commands`,
- *  `max_actions_per_hour`, `block_high_risk_commands`) are policy invariants
+ *  `block_high_risk_commands`) are policy invariants
  *  supplied at session launch and intentionally not editable per agent.
  *
  *  Tool allow/deny is NOT carried here — it lives entirely on

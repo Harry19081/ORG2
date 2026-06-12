@@ -367,7 +367,6 @@ impl AgentTool {
                 policy.blocked_commands.clone(),
                 policy.confirmation_commands.clone(),
                 policy.forbidden_paths.clone(),
-                policy.max_actions_per_hour,
                 policy.block_high_risk_commands,
                 policy.risk_rules.clone(),
             ))
