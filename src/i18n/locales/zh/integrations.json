@@ -24,6 +24,7 @@
     "unlist": "下架",
     "confirmRemoveTitle": "移除 \"{{name}}\"？",
     "confirmRemoveMessage": "这将移除本地账户配置，此操作无法撤销。",
+    "confirmRemoveActiveSessions_other": "仍有 {{count}} 个活跃会话在使用此账号，移除后它们的下一轮将失败：",
     "confirmUnlistTitle": "下架 \"{{name}}\"？",
     "confirmUnlistMessage": "这将从市场移除该列表，本地账户配置将保留。",
     "confirmDeleteTitle": "删除 \"{{name}}\"？",

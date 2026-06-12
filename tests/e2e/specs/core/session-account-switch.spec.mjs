@@ -30,6 +30,7 @@ import {
   isGeminiTransientCapacityResponse,
   logScenarioScope,
   runRenderedAccountSwitch,
+  runRenderedMidStreamAccountSwitch,
   sharedModelsFromChain,
   shouldRunScenario,
   skipCursorProviderBlockedIfApplicable,
@@ -283,6 +284,48 @@ describe("Claude Code CLI multi-account switching", () => {
     });
   });
 
+  it("switches Claude Code Rust-native account WHILE a turn is streaming (行进中)", async function () {
+    const scenarioName = "claude-code-rust-midstream";
+    if (!shouldRunScenario(scenarioName)) {
+      this.skip();
+      return;
+    }
+    logScenarioScope(scenarioName);
+    await waitForApp();
+
+    const accounts = unwrap(
+      await invokeE2E("listAccounts"),
+      "listAccounts"
+    ).accounts;
+    const accountPair = findClaudeCodeAccountPair(accounts, {
+      requireRustAgentSupport: true,
+    });
+    if (!accountPair) {
+      skipOrFailMissingCoverage(
+        this,
+        scenarioName,
+        `[claude-code-rust-midstream] fewer than two enabled Rust-capable Claude Code OAuth accounts with ${MODEL_ID}`
+      );
+      return;
+    }
+    const [initialAccount, followupAccount] = accountPair;
+    expect(initialAccount.id).not.toBe(followupAccount.id);
+
+    const repo = await ensureFixtureRepoSelected();
+
+    await runRenderedMidStreamAccountSwitch({
+      label: "claude-code-rust-midstream-switch",
+      initialAccount,
+      followupAccount,
+      model: MODEL_ID,
+      category: "rust_agent",
+      agentDefinitionId: "builtin:sde",
+      repoPath: repo.path,
+      initialExpectedText: "ORGII_CC_RUST_MIDSTREAM_STREAM_DONE",
+      followupExpectedText: "ORGII_CC_RUST_MIDSTREAM_FOLLOWUP_READY",
+    });
+  });
+
   it("switches Gemini Rust-native follow-up to another OAuth account with model-chain fallback", async function () {
     const scenarioName = "gemini-rust";
     if (!shouldRunScenario(scenarioName)) {
@@ -405,6 +448,11 @@ describe("Claude Code CLI multi-account switching", () => {
           initialExpectedText: GEMINI_INITIAL_EXPECTED_TEXT,
           followupExpectedText: GEMINI_FOLLOWUP_EXPECTED_TEXT,
           allowFollowupProviderFailure: true,
+          // Deliberate coverage gap: Gemini CLI free-tier capacity makes a
+          // post-switch provider call too flaky for CI, so this scenario
+          // only proves the row patch — the new account serving a real
+          // turn is covered by gemini-rust above. Remove once a paid
+          // Gemini profile is available in the E2E vault.
           skipFollowupProviderCall: true,
         });
         geminiModel = candidateModel;

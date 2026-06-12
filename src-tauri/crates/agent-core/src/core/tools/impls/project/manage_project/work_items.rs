@@ -1,10 +1,7 @@
 //! Work-item action handlers (`list_items`, `read_item`, `create_item`,
 //! `update_item`, `delete_item`, `start_item`, `find`).
 
-use std::sync::Arc;
-
 use serde_json::Value;
-use tokio::sync::Mutex as TokioMutex;
 
 use crate::tools::traits::{optional_bool, optional_string, required_string, ToolError};
 
@@ -119,7 +116,7 @@ pub(super) async fn start(
     slug: &str,
     short_id: &str,
     app_handle: Option<&tauri::AppHandle>,
-    current_account_id: Option<&Arc<TokioMutex<Option<String>>>>,
+    session_account_id: Option<&str>,
     agent_model: &str,
 ) -> Result<String, ToolError> {
     let app = app_handle.ok_or_else(|| {
@@ -127,12 +124,7 @@ pub(super) async fn start(
             "start_item requires app_handle (not available in this context)".to_string(),
         )
     })?;
-    let session_acct = if let Some(mtx) = current_account_id {
-        mtx.lock().await.clone().filter(|acct| !acct.is_empty())
-    } else {
-        None
-    };
-    let override_account = session_acct.as_deref();
+    let override_account = session_account_id.filter(|acct| !acct.is_empty());
     let override_model = if !agent_model.trim().is_empty() {
         Some(agent_model)
     } else {

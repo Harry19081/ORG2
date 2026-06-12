@@ -1667,7 +1667,8 @@
     "branchesTouched": "分支"
   },
   "modelPill": {
-    "immutableInSession": "密钥来源、Agent 类型和价格档位在会话启动时已固定。如需更改请新建会话。"
+    "immutableInSession": "密钥来源、Agent 类型和价格档位在会话启动时已固定。如需更改请新建会话。",
+    "appliesNextTurn": "账号已切换。当前回复仍由原账号完成，新账号将从下一轮开始生效。"
   },
   "creator": {
     "createTarget": {

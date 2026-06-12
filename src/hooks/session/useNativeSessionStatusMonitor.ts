@@ -10,6 +10,12 @@
  * user is not actively viewing — e.g. sessions launched from another window
  * whose TaskCard status should reflect the live state.
  *
+ * Also listens for "session-account-switched" (the single backend
+ * chokepoint event for EVERY account-switch path: session_patch, message
+ * override sync, channel switch, CLI follow-up) so cross-window or
+ * backend-initiated switches reach `sessionsAtom` without relying on the
+ * initiating window's optimistic update.
+ *
  * This intentionally does NOT trigger toasts or notifications: those are
  * owned by `useBackgroundSessionMonitor` (CLI sessions) and individual
  * session panels. This hook is the minimal "keep the store in sync" layer.
@@ -30,6 +36,13 @@ interface SessionStatusChangedPayload {
   status: string;
 }
 
+interface SessionAccountSwitchedPayload {
+  sessionId: string;
+  fromAccountId: string | null;
+  toAccountId: string;
+  model: string | null;
+}
+
 export function useNativeSessionStatusMonitor(): void {
   useEffect(() => {
     const unlistenPromise = listen<SessionStatusChangedPayload>(
@@ -45,8 +58,38 @@ export function useNativeSessionStatusMonitor(): void {
       }
     );
 
+    const unlistenAccountPromise = listen<SessionAccountSwitchedPayload>(
+      "session-account-switched",
+      (event) => {
+        const { sessionId, toAccountId, model } = event.payload;
+        void (async () => {
+          const [{ getInstrumentedStore }, { sessionByIdAtom, upsertSession }] =
+            await Promise.all([
+              import("@src/util/core/state/instrumentedStore"),
+              import("@src/store/session"),
+            ]);
+          const store = getInstrumentedStore();
+          const before = store.get(sessionByIdAtom(sessionId));
+          // Unknown session (not yet loaded in this window) — the next
+          // full session-list sync will carry the new account anyway.
+          if (!before) return;
+          if (
+            before.accountId === toAccountId &&
+            (model == null || before.model === model)
+          )
+            return;
+          upsertSession({
+            ...before,
+            accountId: toAccountId,
+            ...(model != null ? { model } : {}),
+          });
+        })();
+      }
+    );
+
     return () => {
       unlistenPromise.then((unlisten) => unlisten());
+      unlistenAccountPromise.then((unlisten) => unlisten());
     };
   }, []);
 }

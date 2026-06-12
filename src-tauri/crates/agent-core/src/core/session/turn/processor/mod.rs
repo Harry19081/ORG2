@@ -322,7 +322,10 @@ impl UnifiedMessageProcessor {
                 session_id,
                 session_type: crate::session::persistence::session_type::GENERIC,
                 model: Some(&self.runtime.model),
-                account_id: None,
+                // Attribute usage to the account the runtime was built with —
+                // an account switch rebuilds the runtime, so the dying turn
+                // still bills the account that actually served it.
+                account_id: self.runtime.account_id.as_deref(),
                 input_tokens: result.prompt_tokens,
                 output_tokens: result.completion_tokens,
                 cache_read_tokens: result.cache_read_tokens,

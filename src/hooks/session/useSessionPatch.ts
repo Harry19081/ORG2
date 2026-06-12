@@ -7,7 +7,7 @@
  * Rust `agent_sessions` / `code_sessions` tables — see
  * `Documentation/Session/per-session-input-state-audit-and-plan--0430.md`.
  * UI components that let the user edit those fields (`ModelPalette`,
- * `ModePill`, `KeyVaultDropdown`) call into this hook so:
+ * `ModePill`) call into this hook so:
  *
  *  1. The optimistic update happens immediately (`upsertSession`).
  *  2. The Rust patch lands in the background.

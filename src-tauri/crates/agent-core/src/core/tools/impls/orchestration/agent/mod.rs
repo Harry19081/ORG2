@@ -99,7 +99,11 @@ pub struct AgentToolConfig {
     /// that need a `PathBuf` use `workspace.working_dir().to_path_buf()`.
     pub workspace: SessionWorkspace,
     pub app_handle: Option<tauri::AppHandle>,
-    pub current_account_id: Option<Arc<TokioMutex<Option<String>>>>,
+    /// The parent session's own account id, snapshotted at runtime build
+    /// time. An account switch invalidates + rebuilds the parent runtime
+    /// (and with it this config), so it is always current for the
+    /// runtime's lifetime. Sub-agents inherit this — never a global.
+    pub session_account_id: Option<String>,
     pub agent_model: String,
     pub provider: Arc<dyn LLMProvider>,
     pub native_harness_type: Option<NativeHarnessType>,
@@ -385,7 +389,7 @@ impl AgentTool {
             agent_model: self.config.agent_model.clone(),
             session_id: session_id.to_string(),
             bus: None,
-            current_account_id: self.config.current_account_id.clone(),
+            session_account_id: self.config.session_account_id.clone(),
             node_registry: None,
             question_manager: None,
             secret_broker: None,
@@ -688,11 +692,7 @@ impl Tool for AgentTool {
 
         let parent_session_id = self.parent_session_id.lock().await.clone();
         let parent_account_id_for_provider: Option<String> =
-            match self.config.current_account_id.as_ref() {
-                Some(mutex) => mutex.lock().await.clone(),
-                None => None,
-            }
-            .or_else(|| {
+            self.config.session_account_id.clone().or_else(|| {
                 crate::session::persistence::get_session(&parent_session_id)
                     .ok()
                     .flatten()

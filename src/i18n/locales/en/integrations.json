@@ -25,6 +25,8 @@
     "unlist": "Unlist",
     "confirmRemoveTitle": "Remove \"{{name}}\"?",
     "confirmRemoveMessage": "This will remove the locally saved key. This action cannot be undone.",
+    "confirmRemoveActiveSessions_one": "{{count}} active session still uses this account and will fail on its next turn:",
+    "confirmRemoveActiveSessions_other": "{{count}} active sessions still use this account and will fail on their next turn:",
     "confirmUnlistTitle": "Unlist \"{{name}}\"?",
     "confirmUnlistMessage": "This will remove the listing from the marketplace. The local key will be kept.",
     "confirmDeleteTitle": "Delete \"{{name}}\"?",

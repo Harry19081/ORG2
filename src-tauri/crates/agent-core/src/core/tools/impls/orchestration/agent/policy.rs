@@ -152,7 +152,7 @@ impl AgentTool {
                 tool_names::MANAGE_PROJECT => {
                     let project_tool = ProjectTool::new(
                         self.config.app_handle.clone(),
-                        self.config.current_account_id.clone(),
+                        self.config.session_account_id.clone(),
                         self.config.agent_model.clone(),
                     );
                     registry.register(Box::new(project_tool));

@@ -37,6 +37,7 @@ import {
   UnifiedModelDropdown,
   UnifiedModelPalette,
 } from "@src/scaffold/GlobalSpotlight/palettes";
+import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
 import {
   type LastModelSelection,
   creatorDefaultModelSelectionAtom,
@@ -66,6 +67,7 @@ const ModelPill: React.FC = memo(() => {
   const { sessionId } = useSessionId();
   const isInSession = Boolean(sessionId);
   const session = useAtomValue(sessionByIdAtom(sessionId ?? ""));
+  const runtimeStatus = useAtomValue(sessionRuntimeStatusAtom);
   const { setModel: setSessionModel } = useSessionModelField(sessionId ?? "");
 
   // When inside an active session, pass the session's own dispatchCategory and
@@ -188,11 +190,30 @@ const ModelPill: React.FC = memo(() => {
         const wireModel = market ? config.listingModel : config.model;
         const wireAccount = market ? undefined : config.selectedAccountId;
         if (wireModel) {
+          // Mid-stream account switch is allowed (the patch lands and the
+          // NEXT turn rebuilds onto the new account), but the in-flight
+          // turn keeps streaming on the old account's provider — surface
+          // that so the pill's instant repaint doesn't read as "the
+          // current reply switched too".
+          const accountChanges =
+            wireAccount !== undefined &&
+            session?.accountId !== undefined &&
+            wireAccount !== session.accountId;
+          if (runtimeStatus === "running" && accountChanges) {
+            Message.info(t("sessions:modelPill.appliesNextTurn"));
+          }
           void setSessionModel(wireModel, wireAccount);
         }
       }
     },
-    [setCreatorDefaultModel, isInSession, session, setSessionModel, t]
+    [
+      setCreatorDefaultModel,
+      isInSession,
+      session,
+      setSessionModel,
+      runtimeStatus,
+      t,
+    ]
   );
 
   const handleOpenModelSelector = useCallback(() => {

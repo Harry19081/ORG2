@@ -27,30 +27,38 @@ pub async fn channel_process_message(
     let session_key = session_id.unwrap_or_else(|| "tauri:direct".to_string());
     info!("[channel_process_message] session_key={}", session_key);
 
-    // Model override is threaded per-request into `init_session`; we do NOT mutate any
-    // shared state. Account changes do still require invalidation so the
-    // next turn re-picks the provider.
+    // Model override is threaded per-request into `init_session`; we do NOT
+    // mutate any shared state. Account changes do still require invalidation
+    // so the next turn re-picks the provider. The comparison baseline is
+    // THIS session's runtime account — never a global (an unrelated
+    // session's switch must not affect us, and ours must not affect them).
     {
+        let runtime_account = match state.get_session(&session_key).await {
+            Some(session) => session
+                .get_runtime()
+                .await
+                .and_then(|r| r.account_id.clone()),
+            None => None,
+        };
         let account_changed = if let Some(ref new_account_id) = account_id {
-            let current = state.current_account_id.lock().await;
-            current.as_deref() != Some(new_account_id.as_str())
+            runtime_account.as_deref() != Some(new_account_id.as_str())
         } else {
             false
         };
 
         if account_changed {
             state.invalidate_session(&session_key).await;
-            state
-                .running
-                .store(false, std::sync::atomic::Ordering::Relaxed);
-            if let Some(ref acc) = account_id {
-                let mut current = state.current_account_id.lock().await;
-                *current = Some(acc.clone());
-            }
             if let Some(ref new_account_id) = account_id {
                 session_persistence::update_account_id(&session_key, new_account_id).map_err(
                     |err| format!("[channel] Failed to persist account switch: {}", err),
                 )?;
+                crate::lifecycle::emit_session_account_switched(
+                    state.app_handle.as_ref(),
+                    &session_key,
+                    runtime_account.as_deref(),
+                    new_account_id,
+                    model.as_deref(),
+                );
             }
         }
         if let Some(ref new_model) = model {
@@ -64,26 +72,29 @@ pub async fn channel_process_message(
     // `init_session` time.
     let requested_model_override = model.clone();
 
+    // Account chain mirrors `resolve_session_identity`: override → this
+    // session's runtime → DB row. No global fallback.
     let effective_account_id = if account_id.is_some() {
         account_id
     } else {
-        let in_memory = state.current_account_id.lock().await.clone();
-        if in_memory.is_some() {
-            in_memory
+        let runtime_account = match state.get_session(&session_key).await {
+            Some(session) => session
+                .get_runtime()
+                .await
+                .and_then(|r| r.account_id.clone()),
+            None => None,
+        };
+        if runtime_account.is_some() {
+            runtime_account
         } else {
             let sk = session_key.clone();
-            let db_account_id: Option<String> = tokio::task::spawn_blocking(move || {
+            tokio::task::spawn_blocking(move || {
                 session_persistence::get_session(&sk)
                     .map_err(|err| format!("[channel] DB error loading account_id: {}", err))
                     .map(|opt| opt.and_then(|s| s.account_id))
             })
             .await
-            .map_err(|err| format!("[channel] Task panic loading account_id: {}", err))??;
-            if let Some(ref acc_id) = db_account_id {
-                let mut current = state.current_account_id.lock().await;
-                *current = Some(acc_id.clone());
-            }
-            db_account_id
+            .map_err(|err| format!("[channel] Task panic loading account_id: {}", err))??
         }
     };
 

@@ -1687,7 +1687,8 @@
     "branchesTouched": "Branches"
   },
   "modelPill": {
-    "immutableInSession": "Key source, agent type, and price tier are fixed at session start. Start a new session to change them."
+    "immutableInSession": "Key source, agent type, and price tier are fixed at session start. Start a new session to change them.",
+    "appliesNextTurn": "Account switched. The current reply still runs on the previous account; the new account takes effect from the next turn."
   },
   "creator": {
     "createTarget": {

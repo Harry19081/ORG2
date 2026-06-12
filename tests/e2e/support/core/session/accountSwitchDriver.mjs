@@ -76,6 +76,7 @@ const ACCOUNT_SWITCH_SCENARIO_NAMES = new Set([
   "cursor-cli",
   "cursor-rust",
   "claude-code-rust",
+  "claude-code-rust-midstream",
   "gemini-rust",
   "gemini-cli",
 ]);
@@ -174,7 +175,6 @@ const js = {
         if (document.querySelector('[data-testid="chat-input"]')) return "creator";
         return "unknown";
       })(),
-      sourcePillText: document.querySelector('[data-testid="chat-model-pill-source"]')?.textContent || null,
       modelPillText: document.querySelector('[data-testid="chat-model-pill-model"]')?.textContent || null,
       sourceOptions: Array.from(document.querySelectorAll('[data-testid="unified-model-source-option"]')).map((node) => ({
         text: node.textContent || "",
@@ -851,11 +851,16 @@ async function isSessionPatchedTo(accountId, expectedModels, label) {
   );
 }
 
-async function readRuntimeModelSnapshot(sessionId, label) {
-  return unwrap(
-    await invokeE2E("debugSessionModelSnapshot", sessionId),
-    `${label}-debugSessionModelSnapshot`
-  ).snapshot;
+/**
+ * Tolerant variant for polling loops: between an account patch
+ * (`invalidate_session`) and the next turn's re-init the backend
+ * legitimately returns "session runtime not initialized" — that window
+ * must read as "not switched yet", not a hard throw inside waitUntil.
+ */
+async function tryReadRuntimeModelSnapshot(sessionId) {
+  const result = await invokeE2E("debugSessionModelSnapshot", sessionId);
+  if (!result || result.ok !== true) return null;
+  return result.snapshot;
 }
 
 async function assertRustRuntimeAccount(
@@ -867,7 +872,7 @@ async function assertRustRuntimeAccount(
   let snapshot = null;
   await browser.waitUntil(
     async () => {
-      snapshot = await readRuntimeModelSnapshot(sessionId, label);
+      snapshot = await tryReadRuntimeModelSnapshot(sessionId);
       return snapshot?.activeAccountId === expectedAccountId;
     },
     {
@@ -885,18 +890,41 @@ async function assertRustRuntimeAccount(
   );
 }
 
+/**
+ * Backend-truth assertion for CLI sessions: the persisted
+ * `code_sessions.account_id` row (read via `cli_agent_status`) must carry
+ * the switched account — the frontend store value alone is optimistic.
+ */
+async function assertCliPersistedAccount(sessionId, expectedAccountId, label) {
+  let session = null;
+  await browser.waitUntil(
+    async () => {
+      const result = await invokeE2E("inspectCliSessionStatus", sessionId);
+      if (!result || result.ok !== true) return false;
+      session = result.session;
+      return session?.accountId === expectedAccountId;
+    },
+    {
+      timeout: 20_000,
+      interval: 500,
+      timeoutMsg: `${label} persisted code_sessions.account_id never became ${expectedAccountId}; session=${JSON.stringify(session)}`,
+    }
+  );
+  console.log(
+    `[account-switch-evidence] label=${label} persistedCliAccount=${session?.accountId}`
+  );
+}
+
 async function switchAccountThroughRenderedPicker(
   followupAccount,
   model,
   label
 ) {
   await browser.waitUntil(
-    async () =>
-      (await execJS(js.exists('[data-testid="chat-model-pill-model"]'))) ||
-      (await execJS(js.exists('[data-testid="chat-model-pill-source"]'))),
+    async () => execJS(js.exists('[data-testid="chat-model-pill-model"]')),
     {
       timeout: MOUNT_TIMEOUT_MS,
-      timeoutMsg: `${label} model/source pill never mounted; dump=${JSON.stringify(await execJS(js.pageDump))}`,
+      timeoutMsg: `${label} model pill never mounted; dump=${JSON.stringify(await execJS(js.pageDump))}`,
     }
   );
 
@@ -1063,6 +1091,16 @@ async function runRenderedAccountSwitchImpl({
   console.log(
     `[account-switch-evidence] label=${label} session=${sessionId} initialAccount=${initialAccount.id} followupAccount=${followupAccount.id} switchedAccount=${switchedState.activeSession?.accountId ?? "<missing>"} model=${switchedState.activeSession?.model ?? "<missing>"}`
   );
+  if (category === "cli_agent") {
+    // Backend truth — the frontend value above is the optimistic store
+    // write; CLI scenarios have no runtime snapshot, so assert the
+    // persisted DB row instead.
+    await assertCliPersistedAccount(
+      sessionId,
+      followupAccount.id,
+      `${label} switched-persisted`
+    );
+  }
 
   if (skipFollowupProviderCall) {
     console.log(
@@ -1144,6 +1182,148 @@ async function runRenderedAccountSwitchImpl({
 export async function runRenderedAccountSwitch(config) {
   return runAccountSwitchWithTimeout(config.label, () =>
     runRenderedAccountSwitchImpl(config)
+  );
+}
+
+/**
+ * 行进中 (mid-stream) variant: the switch happens WHILE a turn is
+ * actively streaming, not between turns. Contract under test:
+ *  1. The in-flight turn completes normally on the OLD account (the
+ *     runtime Arc snapshotted at turn entry is isolated from the patch).
+ *  2. The session row is patched to the new account immediately.
+ *  3. The NEXT turn rebuilds the runtime onto the new account.
+ *  4. The transcript is not duplicated by the mid-stream invalidation.
+ *
+ * Rust-agent only: CLI sessions intentionally kill + rerun on switch,
+ * so "current turn completes on the old account" is not their contract.
+ */
+async function runRenderedMidStreamAccountSwitchImpl({
+  label,
+  initialAccount,
+  followupAccount,
+  model,
+  category,
+  agentDefinitionId,
+  nativeHarnessType,
+  repoPath,
+  streamingPrompt,
+  initialExpectedText,
+  followupExpectedText,
+}) {
+  if (category !== "rust_agent") {
+    throw new Error(
+      `${label}: mid-stream switch contract only applies to rust_agent sessions`
+    );
+  }
+
+  await configureRenderedCreator({
+    account: initialAccount,
+    model,
+    category,
+    agentDefinitionId,
+    nativeHarnessType,
+    repoPath,
+  });
+
+  // A prompt long enough to keep the turn streaming while we drive the
+  // picker. The sentinel terminator lets us detect orderly completion.
+  await sendFromRenderedComposer(
+    streamingPrompt ??
+      `Count from 1 to 40, one number per line, then finish with exactly ${initialExpectedText} on its own line.`,
+    `${label} streaming`
+  );
+  const sessionId = await waitForActiveSession(`${label} streaming`);
+  expect(sessionId).toBeTruthy();
+
+  // Wait for the turn to actually be RUNNING (not idle) — the whole
+  // point is to switch mid-flight.
+  await browser.waitUntil(
+    async () => {
+      const chat = unwrap(
+        await invokeE2E("inspectChatState"),
+        `${label}-inspectChatState-running`
+      );
+      return chat.runtimeStatus === "running" || chat.isSessionActive;
+    },
+    {
+      timeout: 30_000,
+      interval: 250,
+      timeoutMsg: `${label} turn never entered running state before switch`,
+    }
+  );
+
+  const expectedFinalModels = await switchAccountThroughRenderedPicker(
+    followupAccount,
+    model,
+    `${label} midstream`
+  );
+
+  // Session row must be patched immediately, even while streaming.
+  await browser.waitUntil(
+    async () =>
+      isSessionPatchedTo(
+        followupAccount.id,
+        expectedFinalModels,
+        `${label} midstream-row`
+      ),
+    {
+      timeout: 20_000,
+      interval: 500,
+      timeoutMsg: `${label} session row was not patched to followup account during streaming; state=${JSON.stringify(await invokeE2E("inspectChatState"))}`,
+    }
+  );
+  console.log(
+    `[account-switch-evidence] label=${label} session=${sessionId} rowPatchedMidStream=true to=${followupAccount.id}`
+  );
+
+  // The in-flight turn must still complete normally (old account serves
+  // it). The reply is "numbers + sentinel", so unlike the exact-match
+  // idle helper we only require the sentinel to APPEAR in an assistant
+  // message before the composer settles.
+  await waitForComposerIdle(`${label} streaming`);
+  const streamedChat = unwrap(
+    await invokeE2E("inspectChatState"),
+    `${label}-inspectChatState-streamed`
+  );
+  const sentinelSeen = streamedChat.chatEvents.some(
+    (event) =>
+      event.source === "assistant" &&
+      event.displayVariant === "message" &&
+      event.displayText.includes(initialExpectedText)
+  );
+  if (!sentinelSeen) {
+    throw new Error(
+      `${label}: in-flight turn did not complete with sentinel ${initialExpectedText} after mid-stream switch`
+    );
+  }
+  await assertNoDuplicateTranscriptMessages(`${label} streaming`);
+
+  // Next turn rebuilds onto the new account.
+  await sendFromRenderedComposer(
+    `Reply with exactly ${followupExpectedText} and no other words.`,
+    `${label} follow-up`
+  );
+  await assertRustRuntimeAccount(
+    sessionId,
+    followupAccount.id,
+    initialAccount.id,
+    `${label} followup-runtime-account`
+  );
+  await waitForComposerIdle(`${label} follow-up`, followupExpectedText);
+  await assertNoDuplicateTranscriptMessages(`${label} follow-up`);
+
+  const state = unwrap(
+    await invokeE2E("inspectChatState"),
+    `${label} inspectChatState`
+  );
+  expect(state.activeSessionId).toBe(sessionId);
+  expect(state.activeSession?.accountId).toBe(followupAccount.id);
+  return state;
+}
+
+export async function runRenderedMidStreamAccountSwitch(config) {
+  return runAccountSwitchWithTimeout(config.label, () =>
+    runRenderedMidStreamAccountSwitchImpl(config)
   );
 }
 

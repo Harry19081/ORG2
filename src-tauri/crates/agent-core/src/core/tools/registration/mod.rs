@@ -83,8 +83,12 @@ pub struct ToolDeps {
 
     // ── Agent comms ──
     pub bus: Option<Arc<TokioMutex<MessageBus>>>,
-    /// Shared mutable account ID for SessionTool (updated at runtime).
-    pub current_account_id: Option<Arc<TokioMutex<Option<String>>>>,
+    /// The session's own account id, snapshotted at runtime build time.
+    /// An account switch invalidates + rebuilds the runtime, so this is
+    /// always current for the runtime's lifetime. Never read the global
+    /// `AgentAppState.current_account_id` here — that is a gateway-launch
+    /// hint and leaks across sessions.
+    pub session_account_id: Option<String>,
 
     // ── Nodes (pre-created by agent if enabled) ──
     pub node_registry: Option<Arc<TokioMutex<NodeRegistry>>>,

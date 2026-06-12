@@ -212,16 +212,28 @@ pub(crate) async fn send_message_impl(
     let app_handle = state.app_handle.clone();
 
     // ── 4. Persist initial status and user_input (single DB write) ───────
+    //
+    // Also closes the override-account persistence gap: callers that switch
+    // the account purely on the message wire (plan-approval Build kick-off,
+    // composer-sent account) used to only rebuild the runtime — the DB row
+    // kept the old account, so an app restart silently reverted the switch.
+    // Syncing the resolved account here keeps memory and DB in one truth.
     {
         let sid = session_id.clone();
         let input_preview: String = content.chars().take(100).collect();
         let model_clone = effective_model.clone();
-        tokio::task::spawn_blocking(move || {
+        let account_clone = effective_account_id.clone();
+        let prev_account = tokio::task::spawn_blocking(move || {
+            let mut prev_account: Option<Option<String>> = None;
             if let Ok(Some(mut db_session)) = session_persistence::get_session(&sid) {
                 db_session.status = crate::session::SessionStatus::Running.as_str().to_owned();
                 if db_session.user_input.is_none() {
                     db_session.user_input = Some(input_preview);
                     db_session.model = Some(model_clone);
+                }
+                if account_clone.is_some() && db_session.account_id != account_clone {
+                    prev_account = Some(db_session.account_id.take());
+                    db_session.account_id = account_clone;
                 }
                 if let Err(err) = session_persistence::upsert_session(&db_session) {
                     tracing::warn!("[session] Failed to upsert session {sid}: {err}");
@@ -229,9 +241,20 @@ pub(crate) async fn send_message_impl(
             } else {
                 tracing::warn!("[session] DB row missing for {sid}, cannot persist status");
             }
+            prev_account
         })
         .await
         .map_err(|err| err.to_string())?;
+        // `Some(prev)` only when the account actually flipped above.
+        if let (Some(prev), Some(to_account)) = (prev_account, effective_account_id.as_deref()) {
+            crate::lifecycle::emit_session_account_switched(
+                state.app_handle.as_ref(),
+                &session_id,
+                prev.as_deref(),
+                to_account,
+                Some(&effective_model),
+            );
+        }
     }
 
     // ── 5. Build the processing closure ──────────────────────────────────

@@ -372,13 +372,19 @@ fn mapped_cli_session_id_for_account_with_conn(
 
 /// Update the model and/or account_id for mid-session switching.
 /// Config write — does not bump `updated_at`.
+///
+/// Transactional: the read of the current row + resume map and the UPDATE
+/// happen atomically, so a concurrent writer (slow old runner committing a
+/// fresh cli_session_id, health checker) cannot interleave between the read
+/// and the write and make the carried `cli_session_id` stale.
 pub fn update_model_and_account(
     session_id: &str,
     model: Option<&str>,
     account_id: Option<&str>,
 ) -> SqliteResult<bool> {
     let conn = get_connection()?;
-    let current: Option<(Option<String>, Option<String>)> = conn
+    let tx = conn.unchecked_transaction()?;
+    let current: Option<(Option<String>, Option<String>)> = tx
         .query_row(
             "SELECT account_id, cli_session_id FROM code_sessions WHERE session_id = ?1",
             params![session_id],
@@ -387,7 +393,7 @@ pub fn update_model_and_account(
         .optional()?;
     let mapped_cli_session_id = if let Some(target_account_id) = account_id {
         let mapped = mapped_cli_session_id_for_account_with_conn(
-            &conn,
+            &tx,
             session_id,
             Some(target_account_id),
         )?;
@@ -404,7 +410,7 @@ pub fn update_model_and_account(
         None
     };
     let affected = match (model, account_id) {
-        (Some(model), Some(account_id)) => conn.execute(
+        (Some(model), Some(account_id)) => tx.execute(
             "UPDATE code_sessions
              SET model = ?2,
                  account_id = ?3,
@@ -412,11 +418,11 @@ pub fn update_model_and_account(
              WHERE session_id = ?1",
             params![session_id, model, account_id, mapped_cli_session_id],
         )?,
-        (Some(model), None) => conn.execute(
+        (Some(model), None) => tx.execute(
             "UPDATE code_sessions SET model = ?2 WHERE session_id = ?1",
             params![session_id, model],
         )?,
-        (None, Some(account_id)) => conn.execute(
+        (None, Some(account_id)) => tx.execute(
             "UPDATE code_sessions
              SET account_id = ?2,
                  cli_session_id = ?3
@@ -425,6 +431,7 @@ pub fn update_model_and_account(
         )?,
         (None, None) => 0,
     };
+    tx.commit()?;
     Ok(affected > 0)
 }
 
