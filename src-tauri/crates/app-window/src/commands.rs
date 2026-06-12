@@ -194,7 +194,6 @@ pub async fn set_window_vibrancy(
     Ok(())
 }
 
-
 // ============================================
 // macOS background-image helpers
 // ============================================

@@ -16,7 +16,7 @@ use tauri::{LogicalPosition, Position, TitleBarStyle};
 #[cfg(target_os = "macos")]
 use objc2::msg_send;
 #[cfg(target_os = "macos")]
-use objc2::runtime::AnyObject;
+use objc2::runtime::{AnyClass, AnyObject};
 #[cfg(target_os = "macos")]
 use objc2_app_kit::NSWindowButton;
 
@@ -45,23 +45,18 @@ pub const TRAFFIC_LIGHT_Y: f64 = 28.5;
 /// matching Tauri's trafficLightPosition config format.
 #[cfg(target_os = "macos")]
 pub fn set_traffic_light_position(window: &tauri::WebviewWindow, x: f64, y: f64) {
-    // Get the NS window pointer from tauri
     let ns_window_ptr = match window.ns_window() {
         Ok(ptr) => ptr,
         Err(_) => return,
     };
 
-    // Convert to address for thread-safe transfer (we use exec_sync so pointer remains valid)
     let ns_window_addr = ns_window_ptr as usize;
-
-    // Dispatch to main thread - Cocoa UI operations must happen on the main thread
-    dispatch2::DispatchQueue::main().exec_sync(move || {
+    let run = move || {
         let ns_window = ns_window_addr as *mut AnyObject;
 
         unsafe {
             use objc2_foundation::NSRect;
 
-            // Get the three traffic light buttons (same as tao's inset_traffic_lights)
             let close: *mut AnyObject =
                 msg_send![ns_window, standardWindowButton: NSWindowButton::CloseButton];
             let miniaturize: *mut AnyObject =
@@ -73,7 +68,6 @@ pub fn set_traffic_light_position(window: &tauri::WebviewWindow, x: f64, y: f64)
                 return;
             }
 
-            // Get the title bar container view (superview of superview of buttons)
             let close_superview: *mut AnyObject = msg_send![close, superview];
             if close_superview.is_null() {
                 return;
@@ -83,26 +77,18 @@ pub fn set_traffic_light_position(window: &tauri::WebviewWindow, x: f64, y: f64)
                 return;
             }
 
-            // Get window frame for height calculation
             let window_frame: NSRect = msg_send![ns_window, frame];
-
-            // Get close button frame for height reference
             let close_rect: NSRect = msg_send![close, frame];
-
-            // Calculate new title bar height (button height + y inset)
             let title_bar_frame_height = close_rect.size.height + y;
 
-            // Get and modify title bar container frame
             let mut title_bar_rect: NSRect = msg_send![title_bar_container_view, frame];
             title_bar_rect.size.height = title_bar_frame_height;
             title_bar_rect.origin.y = window_frame.size.height - title_bar_frame_height;
             let _: () = msg_send![title_bar_container_view, setFrame: title_bar_rect];
 
-            // Get spacing between buttons
             let miniaturize_rect: NSRect = msg_send![miniaturize, frame];
             let space_between = miniaturize_rect.origin.x - close_rect.origin.x;
 
-            // Reposition each button
             let buttons = [close, miniaturize, zoom];
             for (i, button) in buttons.iter().enumerate() {
                 let mut rect: NSRect = msg_send![*button, frame];
@@ -110,7 +96,24 @@ pub fn set_traffic_light_position(window: &tauri::WebviewWindow, x: f64, y: f64)
                 let _: () = msg_send![*button, setFrameOrigin: rect.origin];
             }
         }
-    });
+    };
+
+    if is_main_thread() {
+        run();
+    } else {
+        dispatch2::DispatchQueue::main().exec_sync(run);
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn is_main_thread() -> bool {
+    unsafe {
+        let Some(cls) = AnyClass::get(c"NSThread") else {
+            return false;
+        };
+        let is_main: bool = msg_send![cls, isMainThread];
+        is_main
+    }
 }
 
 /// Default window sizes
