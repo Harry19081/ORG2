@@ -2,8 +2,6 @@ import { useSetAtom } from "jotai";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
 import Textarea from "@src/components/Textarea";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
@@ -33,9 +31,11 @@ export const JoinSharedSessionDialog: React.FC<
   const [connection, setConnection] =
     useState<GuestSessionShareConnection | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleJoin = async () => {
     setError(null);
+    setLoading(true);
     try {
       const offer = await decodeShareOffer(offerCode.trim(), pin);
       const nextConnection = await joinSharedSession({
@@ -56,6 +56,8 @@ export const JoinSharedSessionDialog: React.FC<
         });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,7 +70,14 @@ export const JoinSharedSessionDialog: React.FC<
       visible
       title={t("sharing.joinDialogTitle")}
       onCancel={handleClose}
-      footer={null}
+      onOk={() => void handleJoin()}
+      okText={t("sharing.joinSharedSession")}
+      cancelText={t("common:actions.close")}
+      okButtonProps={{
+        loading,
+        disabled: !offerCode.trim() || !pin.trim() || Boolean(connection),
+      }}
+      cancelButtonProps={{ disabled: loading }}
       width={640}
       bodyClassName="p-4"
     >
@@ -93,14 +102,6 @@ export const JoinSharedSessionDialog: React.FC<
           <Input value={pin} onChange={setPin} inputMode="numeric" />
         </label>
 
-        <Button
-          variant="primary"
-          onClick={() => void handleJoin()}
-          disabled={!offerCode.trim() || !pin.trim() || Boolean(connection)}
-        >
-          {t("sharing.joinSharedSession")}
-        </Button>
-
         {connection && (
           <label className="block space-y-1.5 text-sm text-text-1">
             <span>{t("sharing.answerCodeLabel")}</span>
@@ -113,13 +114,7 @@ export const JoinSharedSessionDialog: React.FC<
           </label>
         )}
 
-        {error && <InlineAlert type="danger">{error}</InlineAlert>}
-
-        <div className="flex justify-end">
-          <Button variant="secondary" onClick={handleClose}>
-            {t("common:actions.close")}
-          </Button>
-        </div>
+        {error && <p className="text-sm text-danger-6">{error}</p>}
       </div>
     </Modal>
   );
