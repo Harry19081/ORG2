@@ -26,7 +26,6 @@ interface ShortcutRegistrationOptions {
   handleZoomOut: () => void;
   handleZoomReset: () => boolean;
   // Window
-  handleQuit: () => Promise<void>;
   confirmAndQuit: () => Promise<void>;
   handleHideWindow: () => Promise<void>;
   // Tabs & navigation
@@ -72,7 +71,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handleZoomIn,
     handleZoomOut,
     handleZoomReset,
-    handleQuit,
     confirmAndQuit,
     handleHideWindow,
     spotlightOpenRef,
@@ -244,7 +242,7 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
         "menu-open-location-selector": handleOpenLocationSelector,
         "menu-open-model-selector": handleOpenModelSelector,
         "menu-open-settings": handleOpenSettings,
-        "menu-quit": handleQuit,
+        "menu-quit": () => void confirmAndQuit(),
         "menu-maximize-work-station": () =>
           void WorkStationViewService.showWorkStation(),
         "menu-select-all": () => {
@@ -308,7 +306,7 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handleOpenSettings,
     handleOpenWorkStationFilePalette,
     handleOpenWorkspaceSelector,
-    handleQuit,
+    confirmAndQuit,
     handleToggleSpotlight,
     handleZoomIn,
     handleZoomOut,

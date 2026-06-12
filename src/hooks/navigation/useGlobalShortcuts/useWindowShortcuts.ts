@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { isAppQuittingAtom } from "@src/store/ui/overlayAtom";
@@ -11,6 +11,9 @@ interface QuitConfirmationCopy {
   okLabel: string;
   cancelLabel: string;
 }
+
+let quitInProgress = false;
+let quitDialogOpen = false;
 
 async function confirmQuit(copy: QuitConfirmationCopy): Promise<boolean> {
   try {
@@ -28,13 +31,11 @@ async function confirmQuit(copy: QuitConfirmationCopy): Promise<boolean> {
 
 export function useWindowShortcuts() {
   const { t } = useTranslation("common");
-  const quitInProgressRef = useRef(false);
-  const quitDialogOpenRef = useRef(false);
 
   const handleQuit = useCallback(async () => {
-    if (!isTauriDesktop() || quitInProgressRef.current) return;
+    if (!isTauriDesktop() || quitInProgress) return;
 
-    quitInProgressRef.current = true;
+    quitInProgress = true;
 
     try {
       const jotaiStore = getInstrumentedStore();
@@ -45,21 +46,17 @@ export function useWindowShortcuts() {
     } catch (error) {
       const jotaiStore = getInstrumentedStore();
       jotaiStore.set(isAppQuittingAtom, false);
-      quitInProgressRef.current = false;
+      quitInProgress = false;
       console.error("Failed to quit app:", error);
     }
   }, []);
 
   const confirmAndQuit = useCallback(async () => {
-    if (
-      !isTauriDesktop() ||
-      quitInProgressRef.current ||
-      quitDialogOpenRef.current
-    ) {
+    if (!isTauriDesktop() || quitInProgress || quitDialogOpen) {
       return;
     }
 
-    quitDialogOpenRef.current = true;
+    quitDialogOpen = true;
     try {
       const confirmed = await confirmQuit({
         title: t("quitConfirmation.title"),
@@ -71,7 +68,7 @@ export function useWindowShortcuts() {
         await handleQuit();
       }
     } finally {
-      quitDialogOpenRef.current = false;
+      quitDialogOpen = false;
     }
   }, [handleQuit, t]);
 

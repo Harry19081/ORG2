@@ -96,7 +96,6 @@ export const useGlobalShortcuts = () => {
     handleZoomIn,
     handleZoomOut,
     handleZoomReset,
-    handleQuit,
     confirmAndQuit,
     handleHideWindow,
     spotlightOpenRef,
