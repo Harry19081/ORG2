@@ -3,7 +3,7 @@
 //! Standalone browser windows for viewing external websites.
 //! Each window is independent with its own navigation history.
 
-use tauri::{AppHandle, Emitter, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{utils::config::Color, AppHandle, Emitter, Manager, WebviewUrl, WebviewWindowBuilder};
 
 #[cfg(target_os = "macos")]
 use tauri::{LogicalPosition, Position, TitleBarStyle};
@@ -69,6 +69,7 @@ pub async fn open_browser_window(
     .resizable(true)
     .visible(true)
     .decorations(true)
+    .background_color(Color(255, 255, 255, 255))
     .initialization_script(SPA_NAVIGATION_SCRIPT)
     .on_navigation(move |navigation_url: &url::Url| {
         let url_str = navigation_url.to_string();

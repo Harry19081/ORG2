@@ -8,7 +8,7 @@
 //! `WebviewWindow` — no async runtime, no IoC hooks.
 
 use serde::Deserialize;
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{utils::config::Color, AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 
 #[cfg(target_os = "macos")]
 use tauri::{LogicalPosition, Position, TitleBarStyle};
@@ -217,7 +217,8 @@ pub fn create_window(app: &AppHandle, options: CreateWindowOptions) -> Result<()
             .min_inner_size(min_width, min_height)
             .resizable(options.resizable)
             .visible(true)
-            .decorations(true);
+            .decorations(true)
+            .background_color(Color(255, 255, 255, 255));
 
     // macOS-specific styling
     #[cfg(target_os = "macos")]
@@ -287,6 +288,7 @@ pub fn recreate_main_window(app: &AppHandle) -> Result<(), String> {
         .resizable(true)
         .visible(true)
         .decorations(true)
+        .background_color(Color(255, 255, 255, 255))
         .center();
 
     #[cfg(target_os = "macos")]
@@ -333,6 +335,7 @@ pub fn create_new_app_window(app: &AppHandle) -> Result<(), String> {
         .resizable(true)
         .visible(true)
         .decorations(true)
+        .background_color(Color(255, 255, 255, 255))
         .center();
 
     #[cfg(target_os = "macos")]

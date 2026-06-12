@@ -24,7 +24,7 @@
         "fullscreen": false,
         "decorations": true,
         "hiddenTitle": true,
-        "transparent": true,
+        "backgroundColor": "#ffffff",
         "titleBarStyle": "Overlay",
         "trafficLightPosition": {
           "x": 20,
