@@ -201,7 +201,27 @@ describe("applyLiveOperationOverlay", () => {
     expect(state.fileOperations).toHaveLength(1);
     expect(state.fileOperations[0].eventId).toBe("read-1");
     expect(state.fileOperations[0].isCurrent).toBe(true);
+    expect(state.fileOperations[0].isLoading).toBe(false);
     expect(state.fileOperations[0].content).toBe("const live = true;");
+  });
+
+  it("marks a live running read_file operation as loading until content arrives", () => {
+    const currentEvent = minimalSessionEvent({
+      id: "read-running",
+      functionName: "read_file",
+      args: { path: "/repo/loading.ts" },
+      displayStatus: "running",
+      status: "running",
+      result: {},
+    });
+
+    const state = applyLiveOperationOverlay(baseDerivedState(), currentEvent);
+
+    expect(state.fileOperations).toHaveLength(1);
+    expect(state.fileOperations[0].eventId).toBe("read-running");
+    expect(state.fileOperations[0].isCurrent).toBe(true);
+    expect(state.fileOperations[0].isLoading).toBe(true);
+    expect(state.fileOperations[0].content).toBeUndefined();
   });
 
   it("replaces stale generic tool operation with the live completed event", () => {

@@ -30,7 +30,10 @@ import { TerminalOutput } from "@src/components/TerminalDisplay";
 import { PILL_REGEX, PILL_TYPES, type PillType } from "@src/config/pillTokens";
 import UserMessageContent from "@src/engines/ChatPanel/ChatHistory/components/UserMessageContent";
 import { stripExpandedPillContent } from "@src/engines/ChatPanel/InputArea/utils/pillContentParser";
+import TodoBlock from "@src/engines/ChatPanel/blocks/TodoBlock";
 import { SESSION_UI_TOKENS } from "@src/engines/ChatPanel/blocks/primitives/config";
+import { extractTodoData } from "@src/engines/SessionCore/rendering/props";
+import { normalizeActivity } from "@src/lib/activityData";
 import { installedSkillsAtom } from "@src/store/skills/installedSkillsAtom";
 import type { InstalledSkill } from "@src/types/extensions";
 import {
@@ -38,7 +41,6 @@ import {
   toIntlLocaleTag,
 } from "@src/util/data/formatters/date";
 
-import { TodoView } from "./TodoView";
 import {
   COMMUNICATION_AVATAR_ICON_SIZE,
   useCommunicationAgentIdentity,
@@ -481,16 +483,36 @@ export const TodoBubble: React.FC<{
   message: MessageEntry;
   onClick?: () => void;
   orgMembers?: ReadonlyArray<AgentOrgRunMemberView>;
-}> = memo(({ message, onClick, orgMembers }) => (
-  <AgentFramedBubble
-    message={message}
-    onClick={onClick}
-    titleKind="todo"
-    orgMembers={orgMembers}
-  >
-    <TodoView message={message} className="p-0" />
-  </AgentFramedBubble>
-));
+}> = memo(({ message, onClick, orgMembers }) => {
+  const { todos, wasMerge } = useMemo(() => {
+    const normalized = normalizeActivity(
+      message.event as unknown as Record<string, unknown>
+    );
+
+    return extractTodoData({
+      eventId: message.eventId,
+      eventType: "manage_todo",
+      args: normalized.args,
+      result: normalized.result,
+      status: "success",
+      variant: "simulator",
+      context: "simulator",
+      rustExtracted: message.event.extracted,
+    });
+  }, [message.event, message.eventId]);
+
+  return (
+    <AgentFramedBubble
+      message={message}
+      onClick={onClick}
+      unframed
+      titleKind="todo"
+      orgMembers={orgMembers}
+    >
+      <TodoBlock todos={todos} wasMerge={wasMerge} defaultCollapsed />
+    </AgentFramedBubble>
+  );
+});
 TodoBubble.displayName = "TodoBubble";
 
 export const InteractionBubble: React.FC<{

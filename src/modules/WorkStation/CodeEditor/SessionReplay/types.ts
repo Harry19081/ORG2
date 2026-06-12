@@ -35,6 +35,8 @@ export interface FileOperationEntry {
   directory: string;
   /** Operation type */
   type: FileOperationType;
+  /** Whether still loading */
+  isLoading?: boolean;
   /** Whether the tool call itself failed (displayStatus === "failed") */
   isFailed?: boolean;
   /** Original event */
