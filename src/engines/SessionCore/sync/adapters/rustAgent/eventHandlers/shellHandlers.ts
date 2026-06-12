@@ -7,6 +7,10 @@
  */
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import { updateShellProcessAtom } from "@src/store/session/shellProcessAtom";
+import {
+  type SubagentJobStatus,
+  updateSubagentJobAtom,
+} from "@src/store/session/subagentJobAtom";
 
 import type { AgentWSEvent } from "../../shared/types";
 import { type EventHandlerContext, MAX_EXEC_BUFFER } from "./types";
@@ -160,4 +164,44 @@ export function handleShellProcessExited(
     undefined,
     resolvedSessionId
   );
+}
+
+const SUBAGENT_JOB_STATUSES: ReadonlySet<string> = new Set([
+  "running",
+  "completed",
+  "failed",
+  "killed",
+]);
+
+/**
+ * Handle background subagent job lifecycle event
+ * (agent:subagent_job_changed).
+ *
+ * Mirrors the shell process handlers above but for Delegate/Shadow workers:
+ * "running" inserts a row into `subagentJobMapAtom` (pin bar above the
+ * composer), any terminal status removes it.
+ */
+export function handleSubagentJobChanged(
+  event: AgentWSEvent,
+  sessionId: string | undefined,
+  ctx: EventHandlerContext
+): void {
+  const resolvedSessionId =
+    sessionId || event.sessionId || ctx.filterSessionIdRef.current || "";
+  const handle = event.handle;
+  const status = event.status;
+
+  if (!handle || !resolvedSessionId) return;
+  if (!status || !SUBAGENT_JOB_STATUSES.has(status)) return;
+
+  const store = ctx.getDefaultStore();
+  if (!store) return;
+
+  store.set(updateSubagentJobAtom, {
+    sessionId: resolvedSessionId,
+    handle,
+    agentName: event.agentName || handle,
+    subagentType: event.subagentType || "delegate",
+    status: status as SubagentJobStatus,
+  });
 }

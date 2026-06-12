@@ -744,6 +744,8 @@ agent_core::state::commands::session::channel::agent_ade_action_result,
 // Agent shell commands
 agent_core::utils::shell_commands::agent_kill_shell_process,
 agent_core::utils::shell_commands::agent_list_running_shell_jobs,
+agent_core::utils::shell_commands::agent_list_running_subagent_jobs,
+agent_core::utils::shell_commands::agent_kill_subagent_job,
 // Settings commands (JSONC file at ~/.orgii/settings.jsonc)
 settings::commands::settings_read,
 settings::commands::settings_write,

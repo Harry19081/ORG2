@@ -2,14 +2,15 @@
  * ActiveProcesses
  *
  * Collapsible section in ComposerStack showing currently running/background
- * agent shell processes for the active session. Each row displays the command
- * text with a Stop button on hover.
+ * agent jobs for the active session — both shell processes and background
+ * Delegate/Shadow subagent workers. Each row displays the command / agent
+ * name with a Stop button on hover.
  *
- * Data comes from shellProcessMapAtom, filtered by the active session ID
- * to only include processes with status "running" or "background".
+ * Data comes from shellProcessMapAtom (status "running" | "background") and
+ * subagentJobMapAtom (status "running"), both filtered by the active session.
  */
 import { useAtomValue } from "jotai";
-import { SquareTerminal, Trash2 } from "lucide-react";
+import { Bot, SquareTerminal, Trash2 } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -29,6 +30,11 @@ import {
   type ShellProcessState,
   shellProcessMapAtom,
 } from "@src/store/session/shellProcessAtom";
+import {
+  type SubagentJobState,
+  subagentJobMapAtom,
+} from "@src/store/session/subagentJobAtom";
+import { invokeTauri } from "@src/util/platform/tauri/init";
 
 import ComposerStackHeader from "./ComposerStackHeader";
 
@@ -49,7 +55,7 @@ export interface ActiveProcessesProps {
 }
 
 // ============================================
-// Process row
+// Shell process row
 // ============================================
 
 interface ProcessRowProps {
@@ -88,6 +94,58 @@ const ProcessRow: React.FC<ProcessRowProps> = memo(({ process, onStop }) => {
 ProcessRow.displayName = "ProcessRow";
 
 // ============================================
+// Subagent worker row
+// ============================================
+
+function formatElapsed(startedAt: number): string {
+  const totalSec = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+  if (totalSec < 60) return `${totalSec}s`;
+  const min = Math.floor(totalSec / 60);
+  if (min < 60) return `${min}m`;
+  return `${Math.floor(min / 60)}h${min % 60 > 0 ? ` ${min % 60}m` : ""}`;
+}
+
+interface SubagentRowProps {
+  job: SubagentJobState;
+  onStop: (handle: string) => void;
+}
+
+const SubagentRow: React.FC<SubagentRowProps> = memo(({ job, onStop }) => {
+  const { t } = useTranslation("common");
+  const handleStop = useCallback(
+    () => onStop(job.handle),
+    [onStop, job.handle]
+  );
+
+  return (
+    <div className={`${COMPOSER_STACK_ROW_BASE} ${COMPOSER_STACK_ROW_HOVER}`}>
+      <div className="flex h-[14px] w-[14px] shrink-0 items-center justify-center">
+        <Bot size={14} className="text-text-2" />
+      </div>
+      <span className={COMPOSER_STACK_ROW_LABEL}>
+        {job.agentName}
+        <span className="ml-1.5 text-text-3">
+          {job.subagentType} · {formatElapsed(job.startedAt)}
+        </span>
+      </span>
+      <span className={COMPOSER_STACK_ROW_ACTIONS}>
+        <Button
+          htmlType="button"
+          variant="tertiary"
+          size="mini"
+          icon={<Trash2 size={12} />}
+          iconOnly
+          className="enabled:hover:bg-fill-3 enabled:hover:text-danger-6"
+          onClick={handleStop}
+          title={t("actions.stop")}
+        />
+      </span>
+    </div>
+  );
+});
+SubagentRow.displayName = "SubagentRow";
+
+// ============================================
 // Main component
 // ============================================
 
@@ -103,6 +161,7 @@ const ActiveProcesses: React.FC<ActiveProcessesProps> = memo(
     const activeSessionId = useAtomValue(activeSessionIdAtom);
     const sessionId = sessionIdProp ?? activeSessionId;
     const processMap = useAtomValue(shellProcessMapAtom);
+    const subagentJobMap = useAtomValue(subagentJobMapAtom);
 
     const activeProcesses = useMemo(() => {
       if (initialProcesses) return initialProcesses;
@@ -114,7 +173,15 @@ const ActiveProcesses: React.FC<ActiveProcessesProps> = memo(
       );
     }, [initialProcesses, processMap, sessionId]);
 
-    const count = activeProcesses.length;
+    const activeSubagents = useMemo(() => {
+      if (initialProcesses) return [];
+      if (!sessionId) return [];
+      const jobs = subagentJobMap.get(sessionId);
+      if (!jobs) return [];
+      return [...jobs.values()].filter((job) => job.status === "running");
+    }, [initialProcesses, subagentJobMap, sessionId]);
+
+    const count = activeProcesses.length + activeSubagents.length;
 
     useEffect(() => {
       onVisibleCountChange?.(count);
@@ -134,6 +201,14 @@ const ActiveProcesses: React.FC<ActiveProcessesProps> = memo(
       [sessionId]
     );
 
+    const handleStopSubagent = useCallback(async (handle: string) => {
+      try {
+        await invokeTauri("agent_kill_subagent_job", { handle });
+      } catch (err: unknown) {
+        logger.warn("subagent kill failed:", err);
+      }
+    }, []);
+
     if (count === 0 || hidden) return null;
 
     return (
@@ -149,6 +224,13 @@ const ActiveProcesses: React.FC<ActiveProcessesProps> = memo(
         <div
           className={`${CHAT_COMPOSER_STACK_BAR_INNER_PADDING_X_CLASS} max-h-[192px] overflow-y-auto pb-1`}
         >
+          {activeSubagents.map((job) => (
+            <SubagentRow
+              key={job.handle}
+              job={job}
+              onStop={handleStopSubagent}
+            />
+          ))}
           {activeProcesses.map((proc) => (
             <ProcessRow key={proc.pid} process={proc} onStop={handleStop} />
           ))}

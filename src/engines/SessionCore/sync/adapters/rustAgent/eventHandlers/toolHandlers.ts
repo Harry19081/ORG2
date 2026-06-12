@@ -250,4 +250,5 @@ export {
   handleShellProcessBackgrounded,
   handleShellProcessExited,
   handleShellProcessStarted,
+  handleSubagentJobChanged,
 } from "./shellHandlers";
