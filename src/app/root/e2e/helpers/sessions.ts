@@ -511,6 +511,7 @@ export function createSessionHelpers(store: E2EStore) {
     seedModeSwitchSession: seeders.seedModeSwitchSession,
     seedPlanCard: seeders.seedPlanCard,
     seedShellProcess: seeders.seedShellProcess,
+    seedSubagentJob: seeders.seedSubagentJob,
     inspectChatState: createInspectChatStateHelper(store),
   };
 }

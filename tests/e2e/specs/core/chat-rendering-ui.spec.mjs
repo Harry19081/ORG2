@@ -952,6 +952,135 @@ async function assertBackgroundProcessPinnedToChatSession() {
   );
 }
 
+async function assertBackgroundSubagentPinnedToChatSession() {
+  const sessionId = `e2e-render-bg-subagent-chat-${Date.now()}`;
+  const agentName = `E2E Worker ${RUN_ID}`;
+  const handle = `agent-builtin:general-e2e-${RUN_ID}`;
+  const baseTime = Date.now();
+  const events = [
+    {
+      id: "bg-subagent-user",
+      chunk_id: "bg-subagent-user",
+      sessionId,
+      createdAt: new Date(baseTime).toISOString(),
+      functionName: "user_message",
+      uiCanonical: "user_message",
+      actionType: "raw",
+      args: {},
+      result: {
+        type: "user",
+        message: "Launch a background worker",
+        is_delta: false,
+      },
+      source: "user",
+      displayText: "Launch a background worker",
+      displayStatus: "completed",
+      displayVariant: "message",
+      activityStatus: "processed",
+      isDelta: false,
+    },
+  ];
+
+  const seed = await invokeE2E("seedChatEvents", sessionId, events, {
+    chatPanelMaximized: true,
+    stationMode: "my-station",
+  });
+  if (!seed || seed.ok !== true) {
+    throw new Error(`seedChatEvents failed for bg subagent pin: ${seed?.error ?? "unknown"}`);
+  }
+
+  const jobSeed = await invokeE2E("seedSubagentJob", {
+    sessionId,
+    handle,
+    agentName,
+    subagentType: "delegate",
+    status: "running",
+  });
+  if (!jobSeed || jobSeed.ok !== true) {
+    throw new Error(`seedSubagentJob failed: ${jobSeed?.error ?? "unknown"}`);
+  }
+
+  // Pill renders with count 1 (the subagent contributes to the same
+  // process section as shell jobs).
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const pills = Array.from(document.querySelectorAll('[data-testid="composer-section-process"]'))
+          .map((el) => el.textContent || "");
+        return { pills, hasProcessPill: pills.some((text) => text.includes("1")) };
+      `);
+      return state.hasProcessPill;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `background subagent pill did not render: ${JSON.stringify(
+        await execJS(`
+          return {
+            body: (document.body.innerText || "").slice(0, 5000),
+            pills: Array.from(document.querySelectorAll('[data-testid="composer-section-process"]')).map((el) => el.textContent || ""),
+          };
+        `)
+      )}`,
+    }
+  );
+
+  // Expand and assert the worker row shows agent name + type label.
+  const clickResult = await execJS(`
+    const pill = document.querySelector('[data-testid="composer-section-process"]');
+    if (!pill) return "missing";
+    pill.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window, button: 0 }));
+    pill.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window, button: 0 }));
+    pill.click();
+    return "clicked";
+  `);
+  if (clickResult !== "clicked") {
+    throw new Error(`failed to click process pill: ${clickResult}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const body = await execJS(`return document.body.innerText || "";`);
+      return body.includes(agentName) && body.includes("delegate");
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `expanded subagent row missing name/type: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}`,
+    }
+  );
+
+  // Terminal status removes the row: seed "completed" and assert the pin
+  // bar empties (Rule-9 negative — no ghost rows for finished workers).
+  const completeSeed = await invokeE2E("seedSubagentJob", {
+    sessionId,
+    handle,
+    agentName,
+    subagentType: "delegate",
+    status: "completed",
+  });
+  if (!completeSeed || completeSeed.ok !== true) {
+    throw new Error(`seedSubagentJob(completed) failed: ${completeSeed?.error ?? "unknown"}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const body = document.body.innerText || "";
+        const pills = Array.from(document.querySelectorAll('[data-testid="composer-section-process"]'));
+        return { pillCount: pills.length, hasAgentRow: body.includes(${JSON.stringify(agentName)}) };
+      `);
+      return state.pillCount === 0 && !state.hasAgentRow;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `completed subagent row did not disappear: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}`,
+    }
+  );
+}
+
 function makeHiddenRunningEvents(sessionId, baseTime) {
   return [
     {
@@ -1314,6 +1443,15 @@ describe("Core chat rendering UI", () => {
     }
 
     await assertBackgroundProcessPinnedToChatSession();
+  });
+
+  it("pins background subagent workers and drops them on completion", async function () {
+    if (!shouldRunScenario("background-subagent-pin")) {
+      this.skip();
+      return;
+    }
+
+    await assertBackgroundSubagentPinnedToChatSession();
   });
 
   it("shows the working footer when running events are hidden from chat", async function () {

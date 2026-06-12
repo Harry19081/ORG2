@@ -229,6 +229,7 @@ export const E2EBootstrap: FC = () => {
       seedModeSwitchSession,
       seedPlanCard,
       seedShellProcess,
+      seedSubagentJob,
       inspectChatState,
     } = createSessionHelpers(store);
 
@@ -409,6 +410,7 @@ export const E2EBootstrap: FC = () => {
       seedModeSwitchSession,
       seedPlanCard,
       seedShellProcess,
+      seedSubagentJob,
       inspectChatState,
       debugSessionSkillsSnapshot,
       debugSessionGeneralSnapshot,

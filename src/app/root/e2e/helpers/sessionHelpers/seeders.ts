@@ -18,6 +18,7 @@ import {
   upsertSession,
 } from "@src/store/session/sessionAtom";
 import { updateShellProcessAtom } from "@src/store/session/shellProcessAtom";
+import { updateSubagentJobAtom } from "@src/store/session/subagentJobAtom";
 import {
   activeSessionIdAtom,
   openSessionAtom,
@@ -299,10 +300,44 @@ export function createSessionSeederHelpers(store: E2EStore) {
     }
   };
 
+  const seedSubagentJob = async (input: {
+    sessionId: string;
+    handle: string;
+    agentName: string;
+    subagentType?: string;
+    status?: "running" | "completed" | "failed" | "killed";
+  }): Promise<Result<{ sessionId: string; handle: string }>> => {
+    try {
+      if (!input.sessionId) {
+        return {
+          ok: false,
+          error: "seedSubagentJob: `sessionId` is required",
+        };
+      }
+      if (!input.handle) {
+        return {
+          ok: false,
+          error: "seedSubagentJob: `handle` is required",
+        };
+      }
+      store.set(updateSubagentJobAtom, {
+        sessionId: input.sessionId,
+        handle: input.handle,
+        agentName: input.agentName || input.handle,
+        subagentType: input.subagentType ?? "delegate",
+        status: input.status ?? "running",
+      });
+      return { ok: true, sessionId: input.sessionId, handle: input.handle };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
   return {
     seedChatEvents,
     seedModeSwitchSession,
     seedPlanCard,
     seedShellProcess,
+    seedSubagentJob,
   };
 }
