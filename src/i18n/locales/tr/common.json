@@ -1094,6 +1094,10 @@
       "resolveConflicts": "Çakışmaları çöz",
       "conflictedFiles": "Çakışan dosyaların çözülmesi gerekiyor",
       "gitAction": "Git İşlemi"
+    },
+    "commit": {
+      "copySha": "SHA’yı kopyala",
+      "shaCopied": "SHA panoya kopyalandı"
     }
   },
   "selectors": {
@@ -2098,5 +2102,13 @@
   },
   "dashboard": {
     "other": "Diğer"
+  },
+  "imagePreview": {
+    "dialogLabel": "Görsel önizleme",
+    "copyImage": "Görseli kopyala",
+    "downloadImage": "Görseli indir",
+    "closePreview": "Önizlemeyi kapat",
+    "copiedToClipboard": "Görsel panoya kopyalandı",
+    "previewAlt": "Önizleme"
   }
 }

@@ -1093,6 +1093,10 @@
       "resolveConflicts": "Rozwiąż konflikty",
       "conflictedFiles": "Pliki w konflikcie wymagają rozwiązania",
       "gitAction": "Akcja Git"
+    },
+    "commit": {
+      "copySha": "Kopiuj SHA",
+      "shaCopied": "SHA skopiowano do schowka"
     }
   },
   "selectors": {
@@ -2093,5 +2097,13 @@
   },
   "dashboard": {
     "other": "Inne"
+  },
+  "imagePreview": {
+    "dialogLabel": "Podgląd obrazu",
+    "copyImage": "Kopiuj obraz",
+    "downloadImage": "Pobierz obraz",
+    "closePreview": "Zamknij podgląd",
+    "copiedToClipboard": "Obraz skopiowano do schowka",
+    "previewAlt": "Podgląd"
   }
 }

@@ -1094,6 +1094,10 @@
       "resolveConflicts": "충돌 해결",
       "conflictedFiles": "충돌된 파일을 해결해야 합니다",
       "gitAction": "Git 작업"
+    },
+    "commit": {
+      "copySha": "SHA 복사",
+      "shaCopied": "SHA를 클립보드에 복사했습니다"
     }
   },
   "selectors": {
@@ -2097,5 +2101,13 @@
   },
   "dashboard": {
     "other": "기타"
+  },
+  "imagePreview": {
+    "dialogLabel": "이미지 미리보기",
+    "copyImage": "이미지 복사",
+    "downloadImage": "이미지 다운로드",
+    "closePreview": "미리보기 닫기",
+    "copiedToClipboard": "이미지를 클립보드에 복사했습니다",
+    "previewAlt": "미리보기"
   }
 }

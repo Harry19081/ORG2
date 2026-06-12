@@ -1094,6 +1094,10 @@
       "resolveConflicts": "コンフリクトを解決",
       "conflictedFiles": "コンフリクトのあるファイルの解決が必要です",
       "gitAction": "Git アクション"
+    },
+    "commit": {
+      "copySha": "SHAをコピー",
+      "shaCopied": "SHAをクリップボードにコピーしました"
     }
   },
   "selectors": {
@@ -2099,5 +2103,13 @@
   },
   "dashboard": {
     "other": "その他"
+  },
+  "imagePreview": {
+    "dialogLabel": "画像プレビュー",
+    "copyImage": "画像をコピー",
+    "downloadImage": "画像をダウンロード",
+    "closePreview": "プレビューを閉じる",
+    "copiedToClipboard": "画像をクリップボードにコピーしました",
+    "previewAlt": "プレビュー"
   }
 }

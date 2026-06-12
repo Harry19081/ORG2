@@ -507,12 +507,16 @@ const MessageReferenceCard: React.FC<MessageReferenceCardProps> = ({
     ? t("cards.url.copyUrl")
     : isLocalPath
       ? t("cards.path.copyPath")
-      : tCommon("actions.copy");
+      : isCommit
+        ? tCommon("git.commit.copySha")
+        : tCommon("actions.copy");
   const copiedLabel = isUrl
     ? t("cards.url.copied")
     : isLocalPath
       ? t("cards.path.copied")
-      : tCommon("copied");
+      : isCommit
+        ? tCommon("git.commit.shaCopied")
+        : tCommon("copied");
   const openLabel = isLocalPath ? t("cards.path.open") : t("cards.url.open");
   const openInAppLabel = t("cards.actions.openInApp");
   const externalOpenLabel =

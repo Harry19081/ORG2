@@ -1093,6 +1093,10 @@
       "resolveConflicts": "Решить конфликты",
       "conflictedFiles": "Файлы с конфликтами требуют разрешения",
       "gitAction": "Git действие"
+    },
+    "commit": {
+      "copySha": "Копировать SHA",
+      "shaCopied": "SHA скопирован в буфер обмена"
     }
   },
   "selectors": {
@@ -2093,5 +2097,13 @@
   },
   "dashboard": {
     "other": "Другое"
+  },
+  "imagePreview": {
+    "dialogLabel": "Предпросмотр изображения",
+    "copyImage": "Копировать изображение",
+    "downloadImage": "Скачать изображение",
+    "closePreview": "Закрыть предпросмотр",
+    "copiedToClipboard": "Изображение скопировано в буфер обмена",
+    "previewAlt": "Предпросмотр"
   }
 }

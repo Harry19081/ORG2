@@ -300,10 +300,13 @@ export default function GitHistoryContextMenu(
           }),
           PredefinedMenuItem.new({ item: "Separator" }),
           MenuItem.new({
-            text: "Copy SHA",
+            text: t("common:git.commit.copySha"),
             action: async () => {
               await copyText(commit.sha);
-              showGitActionDialogSafely("SHA copied to clipboard", "info");
+              showGitActionDialogSafely(
+                t("common:git.commit.shaCopied"),
+                "info"
+              );
             },
           }),
           MenuItem.new({

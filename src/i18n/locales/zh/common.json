@@ -1106,6 +1106,10 @@
       "resolveConflicts": "解决冲突",
       "conflictedFiles": "冲突文件需要解决",
       "gitAction": "Git 操作"
+    },
+    "commit": {
+      "copySha": "复制 SHA",
+      "shaCopied": "SHA 已复制到剪贴板"
     }
   },
   "selectors": {
@@ -2111,5 +2115,13 @@
   },
   "dashboard": {
     "other": "其他"
+  },
+  "imagePreview": {
+    "dialogLabel": "图片预览",
+    "copyImage": "复制图片",
+    "downloadImage": "下载图片",
+    "closePreview": "关闭预览",
+    "copiedToClipboard": "图片已复制到剪贴板",
+    "previewAlt": "预览"
   }
 }

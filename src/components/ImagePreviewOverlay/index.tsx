@@ -8,6 +8,7 @@
 import { Copy, Download, X } from "lucide-react";
 import React, { memo, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
@@ -30,6 +31,8 @@ interface ImagePreviewOverlayProps {
 
 const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
   ({ dataUrl, fileName, onClose, showCopyButton = true }) => {
+    const { t } = useTranslation("common");
+
     // Drop inline browser webviews behind this fullscreen modal.
     useOverlayLayer(true);
 
@@ -61,11 +64,11 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
         await navigator.clipboard.write([
           new ClipboardItem({ [blob.type]: blob }),
         ]);
-        Message.success("Image copied to clipboard");
+        Message.success(t("imagePreview.copiedToClipboard"));
       } catch {
-        Message.error("Failed to copy image");
+        Message.error(t("errors.failedToCopy"));
       }
-    }, [dataUrl]);
+    }, [dataUrl, t]);
 
     const handleDownload = useCallback(() => {
       const link = document.createElement("a");
@@ -82,7 +85,7 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
         onClick={handleBackdropClick}
         role="dialog"
         aria-modal="true"
-        aria-label="Image preview"
+        aria-label={t("imagePreview.dialogLabel")}
       >
         {/* Image container with toolbar overlay */}
         <div className="relative">
@@ -93,8 +96,8 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
                 type="button"
                 onClick={handleCopy}
                 className="flex h-7 w-7 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/15 hover:text-white"
-                aria-label="Copy image"
-                title="Copy"
+                aria-label={t("imagePreview.copyImage")}
+                title={t("actions.copy")}
               >
                 <Copy size={15} strokeWidth={2} />
               </button>
@@ -103,8 +106,8 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
               type="button"
               onClick={handleDownload}
               className="flex h-7 w-7 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/15 hover:text-white"
-              aria-label="Download image"
-              title="Download"
+              aria-label={t("imagePreview.downloadImage")}
+              title={t("actions.download")}
             >
               <Download size={15} strokeWidth={2} />
             </button>
@@ -112,8 +115,8 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
               type="button"
               onClick={onClose}
               className="flex h-7 w-7 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/15 hover:text-white"
-              aria-label="Close preview"
-              title="Close"
+              aria-label={t("imagePreview.closePreview")}
+              title={t("actions.close")}
             >
               <X size={15} strokeWidth={2} />
             </button>
@@ -122,7 +125,7 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
           {/* Image */}
           <img
             src={dataUrl}
-            alt={fileName || "Preview"}
+            alt={fileName || t("imagePreview.previewAlt")}
             className="max-h-[80vh] max-w-[80vw] rounded-lg object-contain"
             draggable={false}
           />

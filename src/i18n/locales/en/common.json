@@ -1170,6 +1170,10 @@
       "reAuthRequired": "GitHub Authorization Required",
       "reAuthDescription": "Your GitHub token has expired. Go to Settings → Integrations → Git to reconnect.",
       "goToSettings": "Go to Settings"
+    },
+    "commit": {
+      "copySha": "Copy SHA",
+      "shaCopied": "SHA copied to clipboard"
     }
   },
   "selectors": {
@@ -2170,5 +2174,13 @@
   },
   "dashboard": {
     "other": "Other"
+  },
+  "imagePreview": {
+    "dialogLabel": "Image preview",
+    "copyImage": "Copy image",
+    "downloadImage": "Download image",
+    "closePreview": "Close preview",
+    "copiedToClipboard": "Image copied to clipboard",
+    "previewAlt": "Preview"
   }
 }

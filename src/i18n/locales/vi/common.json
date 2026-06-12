@@ -1094,6 +1094,10 @@
       "resolveConflicts": "Giải quyết xung đột",
       "conflictedFiles": "Các tệp xung đột cần được giải quyết",
       "gitAction": "Hành động Git"
+    },
+    "commit": {
+      "copySha": "Sao chép SHA",
+      "shaCopied": "Đã sao chép SHA vào bảng nhớ tạm"
     }
   },
   "selectors": {
@@ -2094,5 +2098,13 @@
   },
   "dashboard": {
     "other": "Khác"
+  },
+  "imagePreview": {
+    "dialogLabel": "Xem trước hình ảnh",
+    "copyImage": "Sao chép hình ảnh",
+    "downloadImage": "Tải hình ảnh xuống",
+    "closePreview": "Đóng xem trước",
+    "copiedToClipboard": "Đã sao chép hình ảnh vào bảng nhớ tạm",
+    "previewAlt": "Xem trước"
   }
 }
