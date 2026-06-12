@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { isTauriProduction } from "@src/config/serviceAuth";
 import { createLogger } from "@src/hooks/logger";
 
 import {
@@ -37,6 +38,29 @@ const logger = createLogger("VoiceInput");
  * first mount.
  */
 let probeLogged = false;
+let devModeDialogOpen = false;
+
+async function showVoiceInputDevModeDialog(): Promise<void> {
+  if (devModeDialogOpen) return;
+  devModeDialogOpen = true;
+  try {
+    const { message } = await import("@tauri-apps/plugin-dialog");
+    await message(
+      "Voice transcription is unavailable when running with npm run tauri:dev. This preview will show the recording UI, but dictation only works in the packaged desktop app.",
+      {
+        title: "Voice transcription unavailable",
+        kind: "warning",
+      }
+    );
+  } catch {
+    window.alert(
+      "Voice transcription is unavailable when running with npm run tauri:dev. This preview will show the recording UI, but dictation only works in the packaged desktop app."
+    );
+  } finally {
+    devModeDialogOpen = false;
+  }
+}
+
 function probeSpeechRecognitionOnce(): void {
   if (probeLogged) return;
   probeLogged = true;
@@ -142,7 +166,7 @@ export function useVoiceInput(
 
   const [isSupported] = useState<boolean>(() => {
     probeSpeechRecognitionOnce();
-    return getSpeechRecognitionCtor() != null;
+    return !isTauriProduction() || getSpeechRecognitionCtor() != null;
   });
 
   const clearTimer = useCallback(() => {
@@ -169,6 +193,18 @@ export function useVoiceInput(
 
   const start = useCallback(() => {
     if (isRecording) return;
+
+    if (!isTauriProduction()) {
+      startTimeRef.current = Date.now();
+      setIsRecording(true);
+      setElapsedSeconds(0);
+      tickIntervalRef.current = window.setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+        setElapsedSeconds(elapsed);
+      }, 250);
+      void showVoiceInputDevModeDialog();
+      return;
+    }
 
     const Ctor = getSpeechRecognitionCtor();
     if (!Ctor) {
@@ -271,7 +307,10 @@ export function useVoiceInput(
   }, [isRecording, lang, onCancel, onCommit, onError, teardown]);
 
   const stop = useCallback(() => {
-    if (!recognitionRef.current) return;
+    if (!recognitionRef.current) {
+      if (isRecording) teardown();
+      return;
+    }
     shouldCommitRef.current = true;
     try {
       recognitionRef.current.stop();
@@ -279,10 +318,16 @@ export function useVoiceInput(
       logger.warn("stop failed", err);
       teardown();
     }
-  }, [teardown]);
+  }, [isRecording, teardown]);
 
   const cancel = useCallback(() => {
-    if (!recognitionRef.current) return;
+    if (!recognitionRef.current) {
+      if (isRecording) {
+        teardown();
+        onCancel?.();
+      }
+      return;
+    }
     shouldCommitRef.current = false;
     try {
       recognitionRef.current.abort();
@@ -291,7 +336,7 @@ export function useVoiceInput(
       teardown();
       onCancel?.();
     }
-  }, [onCancel, teardown]);
+  }, [isRecording, onCancel, teardown]);
 
   const toggle = useCallback(() => {
     if (isRecording) {

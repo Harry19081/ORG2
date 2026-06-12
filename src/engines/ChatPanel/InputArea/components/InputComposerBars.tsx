@@ -337,6 +337,7 @@ export const NormalComposerContent: React.FC<NormalComposerContentProps> = ({
           onCancel={voice.cancel}
           onAccept={voice.stop}
           onAddContent={onAddContent}
+          compact={isCursorCompactRow}
         />
       ) : (
         <ComposerBar

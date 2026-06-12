@@ -24,6 +24,7 @@ interface VoiceRecordingBarProps {
   elapsedSeconds: number;
   onCancel: () => void;
   onAccept: () => void;
+  compact?: boolean;
   /** Optional + click handler so the row keeps feature parity with the idle toolbar. */
   onAddContent?: () => void;
 }
@@ -51,7 +52,7 @@ const WAVEFORM_SEEDS: Array<{ peak: number; delay: number }> = Array.from(
 );
 
 const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
-  ({ elapsedSeconds, onCancel, onAccept, onAddContent }) => {
+  ({ elapsedSeconds, onCancel, onAccept, compact = false, onAddContent }) => {
     const { t } = useTranslation();
 
     const bars = useMemo(
@@ -73,7 +74,7 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
 
     return (
       <div
-        className="flex h-9 min-h-9 w-full items-center gap-1 px-1 text-text-2"
+        className={`${compact ? "h-7 min-h-7 gap-0.5 px-0" : "h-9 min-h-9 gap-1 px-1"} flex w-full items-center text-text-2`}
         data-testid="composer-voice-recording-bar"
         role="region"
         aria-label={t("common:tooltips.startVoiceInput")}
@@ -82,9 +83,12 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
           type="button"
           onClick={onAddContent}
           disabled={!onAddContent}
-          className={`${INPUT_AREA_BUTTONS.iconButtonBase} ${
-            onAddContent ? "cursor-pointer" : "cursor-default opacity-60"
-          } leading-none`}
+          className={[
+            "flex items-center justify-center rounded-full bg-fill-1 text-text-1 transition-colors duration-200 hover:bg-fill-2 focus:outline-none",
+            INPUT_AREA_BUTTONS.iconButtonSizeClass,
+            onAddContent ? "cursor-pointer" : "cursor-default opacity-60",
+            "leading-none",
+          ].join(" ")}
           style={{ lineHeight: 0 }}
           aria-hidden={!onAddContent}
           tabIndex={onAddContent ? 0 : -1}
@@ -131,7 +135,7 @@ const VoiceRecordingBar: React.FC<VoiceRecordingBarProps> = memo(
           <button
             type="button"
             onClick={onAccept}
-            className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer leading-none`}
+            className={`${INPUT_AREA_BUTTONS.iconButtonBase} cursor-pointer bg-fill-3 leading-none`}
             style={{ lineHeight: 0 }}
             data-testid="composer-voice-accept"
             aria-label={t("common:tooltips.stopAndTranscribe")}
