@@ -279,6 +279,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
     }
 
     const { filePath, type, language, relatedOperations } = operation;
+    const operationIsLoading = operation.isLoading || isLoading;
 
     if (operation.isFailed) {
       return (
@@ -327,7 +328,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
         />
 
         <div
-          className={`code-viewer-scroll-container relative min-h-0 flex-1 pb-[100px] ${hasMultipleEdits ? "overflow-y-auto overflow-x-hidden" : "overflow-hidden"}`}
+          className={`code-viewer-scroll-container relative min-h-0 flex-1 ${hasMultipleEdits ? "overflow-y-auto overflow-x-hidden" : "overflow-hidden"}`}
         >
           {type === FILE_OPERATION_TYPE.DELETE ? (
             <Placeholder
@@ -355,7 +356,7 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
                   startLine={resolvedPayload?.contentStartLine}
                 />
               )
-            ) : isLoading ? (
+            ) : operationIsLoading ? (
               <Placeholder
                 variant="loading"
                 placement="detail-panel"
