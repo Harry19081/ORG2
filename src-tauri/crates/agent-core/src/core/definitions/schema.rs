@@ -124,9 +124,9 @@ pub enum AgentTier {
 ///
 /// The runtime execution policy (`foundation::security::SecurityPolicy`)
 /// is built from this at session launch via `to_runtime_security`;
-/// defaults for runtime-only fields (`max_actions_per_hour`,
-/// `block_high_risk_commands`) are applied at conversion time — they are
-/// policy invariants rather than per-agent configuration.
+/// the runtime-only default (`block_high_risk_commands`) is applied at
+/// conversion time — it is a policy invariant rather than per-agent
+/// configuration.
 ///
 /// Tool allow/deny is NOT carried here — it lives entirely on
 /// `AgentDefinition.tools.excludedTools` (per-agent name-based deny
@@ -161,33 +161,20 @@ impl AgentPolicy {
     ///
     /// The agent-level fields (`autonomy`, `workspace_only`,
     /// `blocked_commands`, `forbidden_paths`) ride on `AgentPolicy`;
-    /// runtime-only defaults (`max_actions_per_hour`, `block_high_risk_commands`)
-    /// are supplied here.
-    pub fn to_runtime_security(
-        &self,
-        workspace_dir: std::path::PathBuf,
-    ) -> crate::foundation::security::SecurityPolicy {
+    /// the runtime-only default (`block_high_risk_commands`) is supplied here.
+    pub fn to_runtime_security(&self) -> crate::foundation::security::SecurityPolicy {
         use crate::foundation::security::SecurityPolicy;
 
         SecurityPolicy::new(
             self.autonomy,
-            workspace_dir,
             self.workspace_only,
             self.blocked_commands.clone(),
             Vec::new(),
             self.forbidden_paths.clone(),
-            default_max_actions_per_hour(),
             true, // block_high_risk_commands — invariant across agents
             self.risk_rules.clone(),
         )
     }
-}
-
-/// Effectively-unlimited rate cap. The old default (100/hour) throttled
-/// legitimate long refactor sessions mid-task; the tracker is kept as a
-/// runaway-loop circuit breaker only.
-fn default_max_actions_per_hour() -> u32 {
-    100_000
 }
 
 // ============================================

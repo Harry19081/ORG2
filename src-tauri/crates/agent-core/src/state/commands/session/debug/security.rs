@@ -10,8 +10,8 @@
 //!
 //! `debug_session_validate_command(session_id, command, approved)` runs
 //! the rebuilt policy's full validation pipeline (`is_command_blocked`,
-//! `requires_confirmation`, `command_risk_level`, autonomy gates,
-//! rate-limit) and returns the resolved `ValidationResult` shape so
+//! `requires_confirmation`, `command_risk_level`, autonomy gates)
+//! and returns the resolved `ValidationResult` shape so
 //! audit specs can pin the exact runtime behaviour for representative
 //! commands (`rm -rf /`, `git push`, `echo hi`, …) without going through
 //! the LLM.
@@ -51,7 +51,6 @@ pub struct SessionSecuritySnapshot {
     pub blocked_commands: Vec<String>,
     pub confirmation_commands: Vec<String>,
     pub forbidden_paths: Vec<String>,
-    pub max_actions_per_hour: u32,
     pub block_high_risk_commands: bool,
     pub medium_risk_rules: Vec<String>,
     pub high_risk_rules: Vec<String>,
@@ -78,10 +77,7 @@ pub async fn debug_session_security_snapshot(
         .ok_or_else(|| format!("session runtime not initialized: {}", session_id))?;
 
     let workspace = runtime.resolved.workspace.clone();
-    let policy = runtime
-        .resolved
-        .policy
-        .to_runtime_security(workspace.clone());
+    let policy = runtime.resolved.policy.to_runtime_security();
 
     Ok(SessionSecuritySnapshot {
         session_id: session_id.clone(),
@@ -92,7 +88,6 @@ pub async fn debug_session_security_snapshot(
         blocked_commands: policy.blocked_commands.clone(),
         confirmation_commands: policy.confirmation_commands.clone(),
         forbidden_paths: policy.forbidden_paths.clone(),
-        max_actions_per_hour: policy.max_actions_per_hour,
         block_high_risk_commands: policy.block_high_risk_commands,
         medium_risk_rules: policy.risk_rules.medium.clone(),
         high_risk_rules: policy.risk_rules.high.clone(),
@@ -138,14 +133,10 @@ pub async fn debug_session_validate_command(
         .ok_or_else(|| format!("session runtime not initialized: {}", session_id))?;
 
     // Rebuild a fresh `SecurityPolicy` for this validation call rather
-    // than reaching into the live `ToolDeps`-owned `Arc`. Two reasons:
-    // (1) the `Arc<SecurityPolicy>` is buried inside per-tool wrappers
-    // and not directly addressable from a session-level command; (2)
-    // a fresh policy means the rate-limit tracker for this validation
-    // is independent — audit specs can fire many calls in a row
-    // without polluting the live session's hourly bucket.
-    let workspace = runtime.resolved.workspace.clone();
-    let policy = runtime.resolved.policy.to_runtime_security(workspace);
+    // than reaching into the live `ToolDeps`-owned `Arc` — the
+    // `Arc<SecurityPolicy>` is buried inside per-tool wrappers and not
+    // directly addressable from a session-level command.
+    let policy = runtime.resolved.policy.to_runtime_security();
 
     let approved = approved.unwrap_or(false);
     let result = policy.validate_command_execution(&command, approved);

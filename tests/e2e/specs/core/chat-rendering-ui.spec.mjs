@@ -952,6 +952,270 @@ async function assertBackgroundProcessPinnedToChatSession() {
   );
 }
 
+async function assertBackgroundSubagentPinnedToChatSession() {
+  const sessionId = `e2e-render-bg-subagent-chat-${Date.now()}`;
+  const agentName = `E2E Worker ${RUN_ID}`;
+  const handle = `agent-builtin:general-e2e-${RUN_ID}`;
+  const baseTime = Date.now();
+  const events = [
+    {
+      id: "bg-subagent-user",
+      chunk_id: "bg-subagent-user",
+      sessionId,
+      createdAt: new Date(baseTime).toISOString(),
+      functionName: "user_message",
+      uiCanonical: "user_message",
+      actionType: "raw",
+      args: {},
+      result: {
+        type: "user",
+        message: "Launch a background worker",
+        is_delta: false,
+      },
+      source: "user",
+      displayText: "Launch a background worker",
+      displayStatus: "completed",
+      displayVariant: "message",
+      activityStatus: "processed",
+      isDelta: false,
+    },
+  ];
+
+  const seed = await invokeE2E("seedChatEvents", sessionId, events, {
+    chatPanelMaximized: true,
+    stationMode: "my-station",
+  });
+  if (!seed || seed.ok !== true) {
+    throw new Error(`seedChatEvents failed for bg subagent pin: ${seed?.error ?? "unknown"}`);
+  }
+
+  const jobSeed = await invokeE2E("seedSubagentJob", {
+    sessionId,
+    handle,
+    agentName,
+    subagentType: "delegate",
+    status: "running",
+  });
+  if (!jobSeed || jobSeed.ok !== true) {
+    throw new Error(`seedSubagentJob failed: ${jobSeed?.error ?? "unknown"}`);
+  }
+
+  // Pill renders with count 1 (the subagent contributes to the same
+  // process section as shell jobs).
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const pills = Array.from(document.querySelectorAll('[data-testid="composer-section-process"]'))
+          .map((el) => el.textContent || "");
+        return { pills, hasProcessPill: pills.some((text) => text.includes("1")) };
+      `);
+      return state.hasProcessPill;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `background subagent pill did not render: ${JSON.stringify(
+        await execJS(`
+          return {
+            body: (document.body.innerText || "").slice(0, 5000),
+            pills: Array.from(document.querySelectorAll('[data-testid="composer-section-process"]')).map((el) => el.textContent || ""),
+          };
+        `)
+      )}`,
+    }
+  );
+
+  // Expand and assert the worker row shows agent name + type label.
+  const clickResult = await execJS(`
+    const pill = document.querySelector('[data-testid="composer-section-process"]');
+    if (!pill) return "missing";
+    pill.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window, button: 0 }));
+    pill.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window, button: 0 }));
+    pill.click();
+    return "clicked";
+  `);
+  if (clickResult !== "clicked") {
+    throw new Error(`failed to click process pill: ${clickResult}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const body = await execJS(`return document.body.innerText || "";`);
+      return body.includes(agentName) && body.includes("delegate");
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `expanded subagent row missing name/type: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}`,
+    }
+  );
+
+  // Terminal status removes the row: seed "completed" and assert the pin
+  // bar empties (Rule-9 negative — no ghost rows for finished workers).
+  const completeSeed = await invokeE2E("seedSubagentJob", {
+    sessionId,
+    handle,
+    agentName,
+    subagentType: "delegate",
+    status: "completed",
+  });
+  if (!completeSeed || completeSeed.ok !== true) {
+    throw new Error(`seedSubagentJob(completed) failed: ${completeSeed?.error ?? "unknown"}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const body = document.body.innerText || "";
+        const pills = Array.from(document.querySelectorAll('[data-testid="composer-section-process"]'));
+        return { pillCount: pills.length, hasAgentRow: body.includes(${JSON.stringify(agentName)}) };
+      `);
+      return state.pillCount === 0 && !state.hasAgentRow;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `completed subagent row did not disappear: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 5000) };`)
+      )}`,
+    }
+  );
+}
+
+/**
+ * Full wire-path variant: unlike `assertBackgroundSubagentPinnedToChatSession`
+ * (which writes the frontend atom directly), this drives the PRODUCTION
+ * Rust path — `debug_seed_subagent_job` calls `registry::register_subagent`,
+ * whose `agent:subagent_job_changed` broadcast must travel bus → IPC
+ * channel → `handleSubagentJobChanged` → atom → pin bar. The only
+ * substituted link is the LLM deciding to launch a worker. Kill goes
+ * through the same Tauri command the Stop button invokes, and the
+ * resulting "killed" broadcast must remove the row.
+ */
+async function assertBackgroundSubagentWirePath() {
+  // MUST be `sdeagent-` prefixed: getAdapterForSession resolves the rust
+  // agent adapter (and thus the channel event handler) by id prefix —
+  // an unprefixed id mounts the surface but drops every wire event.
+  const sessionId = `sdeagent-e2e-bg-subagent-wire-${Date.now()}`;
+  const agentName = `E2E Wire Worker ${RUN_ID}`;
+  const handle = `agent-builtin:general-wire-${RUN_ID}`;
+  const baseTime = Date.now();
+  const events = [
+    {
+      id: "bg-subagent-wire-user",
+      chunk_id: "bg-subagent-wire-user",
+      sessionId,
+      createdAt: new Date(baseTime).toISOString(),
+      functionName: "user_message",
+      uiCanonical: "user_message",
+      actionType: "raw",
+      args: {},
+      result: {
+        type: "user",
+        message: "Launch a background worker over the wire",
+        is_delta: false,
+      },
+      source: "user",
+      displayText: "Launch a background worker over the wire",
+      displayStatus: "completed",
+      displayVariant: "message",
+      activityStatus: "processed",
+      isDelta: false,
+    },
+  ];
+
+  const seed = await invokeE2E("seedChatEvents", sessionId, events, {
+    chatPanelMaximized: true,
+    stationMode: "my-station",
+  });
+  if (!seed || seed.ok !== true) {
+    throw new Error(`seedChatEvents failed for wire path: ${seed?.error ?? "unknown"}`);
+  }
+
+  // The session surface must be mounted so useSessionChannel has
+  // subscribed to the backend IPC channel before we fire the broadcast.
+  // seedChatEvents waits for the surface; give the subscribe invoke a
+  // brief settle window on top.
+  await browser.pause(500);
+
+  const wireSeed = await invokeE2E("debugSeedSubagentJobWire", {
+    sessionId,
+    handle,
+    agentName,
+    subagentType: "delegate",
+  });
+  if (!wireSeed || wireSeed.ok !== true) {
+    throw new Error(`debugSeedSubagentJobWire failed: ${wireSeed?.error ?? "unknown"}`);
+  }
+
+  // The row must arrive via the real broadcast — no frontend store write
+  // happened in this spec.
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const pills = Array.from(document.querySelectorAll('[data-testid="composer-section-process"]'))
+          .map((el) => el.textContent || "");
+        return { pills, hasProcessPill: pills.some((text) => text.includes("1")) };
+      `);
+      return state.hasProcessPill;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `wire-path subagent pill did not render (broadcast chain broken?): ${JSON.stringify(
+        await execJS(`
+          return {
+            body: (document.body.innerText || "").slice(0, 3000),
+            pills: Array.from(document.querySelectorAll('[data-testid="composer-section-process"]')).map((el) => el.textContent || ""),
+          };
+        `)
+      )}`,
+    }
+  );
+
+  // Expand and verify the row content came from the Rust payload.
+  await execJS(`
+    const pill = document.querySelector('[data-testid="composer-section-process"]');
+    if (pill) {
+      pill.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window, button: 0 }));
+      pill.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window, button: 0 }));
+      pill.click();
+    }
+  `);
+  await browser.waitUntil(
+    async () => {
+      const body = await execJS(`return document.body.innerText || "";`);
+      return body.includes(agentName);
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: "wire-path subagent row missing agent name after expand",
+    }
+  );
+
+  // Kill via the SAME Tauri command the Stop button calls. The "killed"
+  // broadcast must travel the wire and remove the row.
+  const killResult = await invokeE2E("killSubagentJobWire", handle);
+  if (!killResult || killResult.ok !== true) {
+    throw new Error(`killSubagentJobWire failed: ${killResult?.error ?? "unknown"}`);
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const state = await execJS(`
+        const body = document.body.innerText || "";
+        const pills = Array.from(document.querySelectorAll('[data-testid="composer-section-process"]'));
+        return { pillCount: pills.length, hasAgentRow: body.includes(${JSON.stringify(agentName)}) };
+      `);
+      return state.pillCount === 0 && !state.hasAgentRow;
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `killed wire-path subagent row did not disappear: ${JSON.stringify(
+        await execJS(`return { body: (document.body.innerText || "").slice(0, 3000) };`)
+      )}`,
+    }
+  );
+}
+
 function makeHiddenRunningEvents(sessionId, baseTime) {
   return [
     {
@@ -1314,6 +1578,24 @@ describe("Core chat rendering UI", () => {
     }
 
     await assertBackgroundProcessPinnedToChatSession();
+  });
+
+  it("pins background subagent workers and drops them on completion", async function () {
+    if (!shouldRunScenario("background-subagent-pin")) {
+      this.skip();
+      return;
+    }
+
+    await assertBackgroundSubagentPinnedToChatSession();
+  });
+
+  it("delivers subagent job events over the real broadcast wire and kills via the Stop command", async function () {
+    if (!shouldRunScenario("background-subagent-pin-wire")) {
+      this.skip();
+      return;
+    }
+
+    await assertBackgroundSubagentWirePath();
   });
 
   it("shows the working footer when running events are hidden from chat", async function () {

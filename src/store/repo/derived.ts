@@ -19,6 +19,7 @@ import {
   selectedRepoIdAtom,
   validRepoIdsAtom,
 } from "./atoms";
+import { matchRepoByPath } from "./matchRepoByPath";
 import { REPO_KIND, type Repo } from "./types";
 
 // ============================================
@@ -235,11 +236,7 @@ export const sessionRepoHintAtom = atom<{
   const selectedId = get(selectedRepoIdAtom);
   const repos = get(reposAtom);
 
-  const normalized = sessionRepoPath.replace(/\/+$/, "");
-  const match = repos.find((repo) => {
-    const repoPath = (repo.path ?? repo.fs_uri ?? "").replace(/\/+$/, "");
-    return repoPath === normalized;
-  });
+  const match = matchRepoByPath(repos, sessionRepoPath);
 
   if (!match) return null;
   if (match.id === selectedId) return null;

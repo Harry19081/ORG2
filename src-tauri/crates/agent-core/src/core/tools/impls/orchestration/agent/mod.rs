@@ -346,8 +346,11 @@ impl AgentTool {
         .map_err(|err| ToolError::ExecutionFailed(err.to_string()))?
         .map_err(ToolError::ExecutionFailed)?;
 
-        let workspace =
-            SessionWorkspace::new_worktree(workspace_root, PathBuf::from(&worktree_info.path));
+        let workspace = SessionWorkspace::new_worktree_inheriting(
+            workspace_root,
+            PathBuf::from(&worktree_info.path),
+            &self.config.workspace,
+        );
         Ok((workspace, worktree_info))
     }
 
@@ -360,12 +363,10 @@ impl AgentTool {
         let security_policy = self.config.security_policy.as_ref().map(|policy| {
             Arc::new(crate::security::SecurityPolicy::new(
                 policy.autonomy,
-                workspace.working_dir().to_path_buf(),
                 policy.workspace_only,
                 policy.blocked_commands.clone(),
                 policy.confirmation_commands.clone(),
                 policy.forbidden_paths.clone(),
-                policy.max_actions_per_hour,
                 policy.block_high_risk_commands,
                 policy.risk_rules.clone(),
             ))

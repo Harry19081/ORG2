@@ -3,8 +3,8 @@
  *
  * Surfaces the per-agent fields that exist on the backend `AgentPolicy`
  * struct: autonomy, workspace-only restriction, blocked-command blacklist,
- * forbidden paths, and medium/high command risk rules. Confirmation commands,
- * max actions per hour, and the security-list master switch are policy
+ * forbidden paths, and medium/high command risk rules. Confirmation commands
+ * and the security-list master switch are policy
  * invariants filled in by `AgentPolicy::to_runtime_security`.
  *
  * Returns content only — parent wraps in SectionHeading.
