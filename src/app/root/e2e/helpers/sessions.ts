@@ -508,6 +508,7 @@ export function createSessionHelpers(store: E2EStore) {
     getSessionAggregateRowFromList,
     seedSessionContextUsage,
     seedChatEvents: seeders.seedChatEvents,
+    seedSidebarSession: seeders.seedSidebarSession,
     seedModeSwitchSession: seeders.seedModeSwitchSession,
     seedPlanCard: seeders.seedPlanCard,
     seedShellProcess: seeders.seedShellProcess,

@@ -44,16 +44,35 @@ export function createWorkspaceHelpers(store: E2EStore) {
     opts?: EnsureRepoSelectedOptions
   ): Promise<Result<{ repoId: string; path: string }>> => {
     try {
-      const pinRepoPath = (
+      const pinRepoPath = async (
         repoPath: string
-      ): { repoId: string; path: string } => {
-        const repoId = `e2e-repo-${btoa(repoPath)
-          .replace(/[^a-zA-Z0-9]/g, "")
-          .slice(0, 24)}`;
+      ): Promise<{ repoId: string; path: string }> => {
+        // Register with the backend first so the app's own repo loader
+        // (`useRepoLoader.loadRepos`) keeps the fixture repo when it
+        // REPLACES `reposAtom` with backend rows. Front-end-only pins
+        // get clobbered by the next loadRepos pass.
+        let backendId: string | null = null;
+        let backendName: string | null = null;
+        try {
+          const imported = (await invoke("server_import_repo", {
+            path: repoPath,
+          })) as { id?: string; repo_id?: string; name?: string };
+          backendId = imported.repo_id ?? imported.id ?? null;
+          backendName = imported.name ?? null;
+        } catch {
+          // Backend registration is best-effort (e.g. duplicate import);
+          // fall through to the frontend pin.
+        }
+        const repoId =
+          backendId ??
+          `e2e-repo-${btoa(repoPath)
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .slice(0, 24)}`;
         const repo: Repo = {
           id: repoId,
           name:
             opts?.repoName ??
+            backendName ??
             repoPath.split(/[\\/]/).filter(Boolean).pop() ??
             "E2E Repo",
           path: repoPath,
@@ -86,7 +105,7 @@ export function createWorkspaceHelpers(store: E2EStore) {
       };
 
       if (opts?.repoPath) {
-        return { ok: true, ...pinRepoPath(opts.repoPath) };
+        return { ok: true, ...(await pinRepoPath(opts.repoPath)) };
       }
 
       const deadline = Date.now() + 15_000;

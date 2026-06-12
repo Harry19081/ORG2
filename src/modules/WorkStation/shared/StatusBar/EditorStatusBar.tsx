@@ -165,7 +165,11 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
       () => (
         <>
           {repoName && (
-            <StatusBarButton onClick={onRepoClick} title={workspaceTooltip}>
+            <StatusBarButton
+              onClick={onRepoClick}
+              title={workspaceTooltip}
+              dataTestId="status-bar-repo-name"
+            >
               {isMultiRoot ? (
                 <FolderTree size={13} className="text-text-1" />
               ) : (
@@ -268,6 +272,7 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
                 name: sessionRepoHint.repoName,
               })}
               variant="primary"
+              dataTestId="status-bar-switch-to-session-repo"
             >
               <ArrowRightLeft size={13} />
               <span className="font-medium">

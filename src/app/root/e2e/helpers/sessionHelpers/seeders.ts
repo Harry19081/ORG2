@@ -101,6 +101,49 @@ export function createSessionSeederHelpers(store: E2EStore) {
     }
   };
 
+  /**
+   * Seed a bare session row into the sidebar list (`sessionsAtom`) without
+   * opening it or touching the event store. Used by specs that exercise the
+   * REAL rendered sidebar-row click path (e.g. "My Station follows the
+   * active session's repo") — the spec performs the click; this only makes
+   * the row exist with a deterministic `repoPath`.
+   */
+  const seedSidebarSession = async (input: {
+    sessionId: string;
+    name?: string;
+    repoPath?: string;
+    status?: string;
+  }): Promise<Result<{ sessionId: string }>> => {
+    try {
+      if (!input.sessionId) {
+        return {
+          ok: false,
+          error: "seedSidebarSession: `sessionId` is required",
+        };
+      }
+      const now = new Date().toISOString();
+      const existing = store
+        .get(sessionsAtom)
+        .find((candidate) => candidate.session_id === input.sessionId);
+      const session: Session = {
+        ...(existing ?? {}),
+        session_id: input.sessionId,
+        status: input.status ?? existing?.status ?? "completed",
+        created_at: existing?.created_at ?? now,
+        updated_at: now,
+        name: input.name ?? existing?.name ?? input.sessionId,
+        user_input: input.name ?? existing?.user_input ?? input.sessionId,
+        repoPath: input.repoPath ?? existing?.repoPath,
+        category: existing?.category ?? "rust_agent",
+        is_active: true,
+      };
+      upsertSession(session);
+      return { ok: true, sessionId: input.sessionId };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
   const seedModeSwitchSession = async (input: {
     sessionId?: string;
     repoPath?: string;
@@ -383,6 +426,7 @@ export function createSessionSeederHelpers(store: E2EStore) {
 
   return {
     seedChatEvents,
+    seedSidebarSession,
     seedModeSwitchSession,
     seedPlanCard,
     seedShellProcess,

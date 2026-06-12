@@ -525,6 +525,12 @@ export interface E2EHelpers {
   seedSessionContextUsage: (
     usage: Json
   ) => Promise<Result<{ usedTokens: number }>>;
+  seedSidebarSession: (input: {
+    sessionId: string;
+    name?: string;
+    repoPath?: string;
+    status?: string;
+  }) => Promise<Result<{ sessionId: string }>>;
   seedModeSwitchSession: (input: {
     sessionId?: string;
     repoPath?: string;
