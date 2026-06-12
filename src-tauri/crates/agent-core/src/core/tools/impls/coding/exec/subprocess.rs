@@ -320,6 +320,14 @@ pub async fn execute_via_command(
 
     configure_git_environment(&mut cmd);
 
+    // Forward the augmented PATH (set by app_paths::augment_path_from_shell at
+    // startup) so tools like pnpm/npm/node installed via nvm or Homebrew are
+    // visible to agent shell commands. Without this, `sh -c` only sees the
+    // minimal macOS app PATH (/usr/bin:/bin:/usr/sbin:/sbin).
+    if let Ok(path) = std::env::var("PATH") {
+        cmd.env("PATH", path);
+    }
+
     cmd.arg(command)
         .current_dir(&work_dir)
         .stdin(Stdio::null())
