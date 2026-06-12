@@ -43,7 +43,10 @@ async fn run_sidecar_setup() -> Result<(), String> {
 
     install_bundled_git(&client, &bin_dir, os, arch).await?;
 
-    info!("[sidecar_setup] all sidecars ready in {}", bin_dir.display());
+    info!(
+        "[sidecar_setup] all sidecars ready in {}",
+        bin_dir.display()
+    );
     Ok(())
 }
 
@@ -77,16 +80,31 @@ async fn install_agent_browser(
     );
     download_to(client, &url, &dest).await?;
     set_executable(&dest)?;
-    info!("[sidecar_setup] installed agent-browser → {}", dest.display());
+    info!(
+        "[sidecar_setup] installed agent-browser → {}",
+        dest.display()
+    );
     Ok(())
 }
 
 fn agent_browser_target(os: &str, arch: &str) -> Result<(String, String), String> {
     let pair = match (os, arch) {
-        ("macos", "aarch64") => ("agent-browser-darwin-arm64", "agent-browser-aarch64-apple-darwin"),
-        ("macos", "x86_64") => ("agent-browser-darwin-x64", "agent-browser-x86_64-apple-darwin"),
-        ("linux", "x86_64") => ("agent-browser-linux-x64", "agent-browser-x86_64-unknown-linux-gnu"),
-        ("windows", "x86_64") => ("agent-browser-win32-x64.exe", "agent-browser-x86_64-pc-windows-msvc.exe"),
+        ("macos", "aarch64") => (
+            "agent-browser-darwin-arm64",
+            "agent-browser-aarch64-apple-darwin",
+        ),
+        ("macos", "x86_64") => (
+            "agent-browser-darwin-x64",
+            "agent-browser-x86_64-apple-darwin",
+        ),
+        ("linux", "x86_64") => (
+            "agent-browser-linux-x64",
+            "agent-browser-x86_64-unknown-linux-gnu",
+        ),
+        ("windows", "x86_64") => (
+            "agent-browser-win32-x64.exe",
+            "agent-browser-x86_64-pc-windows-msvc.exe",
+        ),
         _ => return Err(format!("agent-browser: unsupported platform {os}/{arch}")),
     };
     Ok((pair.0.to_string(), pair.1.to_string()))
@@ -132,9 +150,12 @@ async fn install_peekaboo(client: &reqwest::Client, bin_dir: &Path) -> Result<()
     }
 
     // Write VERSION marker
-    tokio::fs::write(bin_dir.join("peekaboo-VERSION"), format!("{PEEKABOO_VERSION}\n"))
-        .await
-        .map_err(|err| format!("write peekaboo-VERSION: {err}"))?;
+    tokio::fs::write(
+        bin_dir.join("peekaboo-VERSION"),
+        format!("{PEEKABOO_VERSION}\n"),
+    )
+    .await
+    .map_err(|err| format!("write peekaboo-VERSION: {err}"))?;
 
     // Clean up temp dir
     let _ = tokio::fs::remove_dir_all(&tmp_dir).await;
@@ -176,7 +197,10 @@ async fn install_bundled_git(
     // so ~/.orgii/bin/git/bin/git resolves correctly.
     run_tar_extract_strip(&archive, &git_dir, 1)?;
 
-    info!("[sidecar_setup] installed bundled git → {}", git_exec.display());
+    info!(
+        "[sidecar_setup] installed bundled git → {}",
+        git_exec.display()
+    );
     Ok(())
 }
 
@@ -282,14 +306,15 @@ fn run_tar_extract_strip(archive: &Path, dest_dir: &Path, strip: u32) -> Result<
 /// Create a temporary working directory inside `parent`.
 fn temp_dir_in(parent: &Path, prefix: &str) -> Result<PathBuf, String> {
     let tmp = parent.join(format!(".tmp-{prefix}-{}", std::process::id()));
-    std::fs::create_dir_all(&tmp)
-        .map_err(|err| format!("mkdir tmp {}: {err}", tmp.display()))?;
+    std::fs::create_dir_all(&tmp).map_err(|err| format!("mkdir tmp {}: {err}", tmp.display()))?;
     Ok(tmp)
 }
 
 /// Recursively find the first file with `name` under `dir`.
 fn find_file_named(dir: &Path, name: &str) -> Option<PathBuf> {
-    let Ok(entries) = std::fs::read_dir(dir) else { return None };
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return None;
+    };
     for entry in entries.flatten() {
         let path = entry.path();
         if path.is_dir() {
@@ -307,8 +332,8 @@ fn set_executable(path: &Path) -> Result<(), String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        let meta = std::fs::metadata(path)
-            .map_err(|err| format!("metadata {}: {err}", path.display()))?;
+        let meta =
+            std::fs::metadata(path).map_err(|err| format!("metadata {}: {err}", path.display()))?;
         let mut perms = meta.permissions();
         perms.set_mode(perms.mode() | 0o755);
         std::fs::set_permissions(path, perms)
