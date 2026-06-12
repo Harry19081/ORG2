@@ -558,6 +558,18 @@ $font-mono: var(
     }
   }
 
+  .chat-event-diff &-collapse {
+    background: var(--color-fill-2);
+
+    .diff-line-gutter {
+      background: var(--color-fill-2);
+    }
+
+    &:hover {
+      background: var(--color-fill-2);
+    }
+  }
+
   // ============================================
   // Border Style Mode (left border)
   // ============================================

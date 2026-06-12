@@ -14,7 +14,10 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { getToolIcon } from "@src/config/toolIcons";
-import { extractEditData } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
+import {
+  extractEditData,
+  parseUnifiedDiffToOldNew,
+} from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
 import type {
   ExtractedEditData,
   UniversalEventProps,
@@ -34,7 +37,7 @@ function hasStreamingContent(segments: ExtractedEditData[]): boolean {
   return segments.some((s) => s.newContent || s.diff);
 }
 
-const VISIBLE_LINES = 5;
+const VISIBLE_LINES = 6;
 
 // Decode escape sequences that arrive in streaming payloads before the
 // backend has had a chance to deliver the real diff/content.
@@ -103,16 +106,26 @@ const SegmentView: React.FC<SegmentViewProps> = ({
       : undefined;
 
   const resolvedDiff = displayDiff || syntheticAddDiff;
-  const resolvedContent = isLoading
-    ? displayContent
-    : resolvedDiff || displayContent;
-  const isDiff = !isLoading && Boolean(resolvedDiff);
+  const resolvedContent = resolvedDiff || displayContent;
+  const isDiff = Boolean(resolvedDiff);
   const resolvedLanguage = isDiff ? "diff" : language || "text";
+  const showResolvedLineCount = isDiff || !isLoading;
 
   const resolvedLinesAdded =
-    !isLoading && syntheticAddDiff && !linesAdded
+    syntheticAddDiff && !linesAdded
       ? (displayContent ?? "").split("\n").length
       : linesAdded;
+
+  const diffPayload = useMemo(() => {
+    if (!isDiff || !resolvedDiff) return undefined;
+    const parsed = parseUnifiedDiffToOldNew(resolvedDiff);
+    return {
+      oldValue: parsed.oldValue,
+      newValue: parsed.newValue,
+      oldStartLine: parsed.oldStartLine,
+      newStartLine: parsed.newStartLine,
+    };
+  }, [isDiff, resolvedDiff]);
 
   // For new-file writes, append a muted "New" suffix next to the green `+N` count.
   const trailingTags = syntheticAddDiff
@@ -133,7 +146,8 @@ const SegmentView: React.FC<SegmentViewProps> = ({
           visibleLines={VISIBLE_LINES}
           linesAdded={resolvedLinesAdded}
           linesRemoved={linesRemoved}
-          showLineCount={!isLoading}
+          diffPayload={diffPayload}
+          showLineCount={showResolvedLineCount}
           trailingTags={trailingTags}
           eventId={eventId}
           isLoading={isLoading}

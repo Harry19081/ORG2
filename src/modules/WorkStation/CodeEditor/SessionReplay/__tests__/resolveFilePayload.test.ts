@@ -93,4 +93,20 @@ describe("resolveFileOperationPayload", () => {
 
     expect(resolveFileOperationPayload(op).content).toBe("full text");
   });
+
+  it("parses inline diff-only write payloads into old and new content", () => {
+    const op = baseFileOp({
+      eventId: "e4",
+      filePath: "/repo/y.ts",
+      type: FILE_OPERATION_TYPE.WRITE,
+      diff: "--- a/repo/y.ts\n+++ b/repo/y.ts\n@@ -10,2 +10,2 @@\n context\n-old\n+new",
+    });
+
+    const payload = resolveFileOperationPayload(op);
+
+    expect(payload.oldContent).toBe("context\nold");
+    expect(payload.newContent).toBe("context\nnew");
+    expect(payload.oldStartLine).toBe(10);
+    expect(payload.newStartLine).toBe(10);
+  });
 });

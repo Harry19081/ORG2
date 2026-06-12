@@ -33,6 +33,7 @@ import {
 import { useBlockHeader } from "../useBlockLocate";
 import CodePreview from "./CodePreview";
 import { STYLE_CONFIG } from "./config";
+import type { ParsedDiff } from "./diffParser";
 import "./index.scss";
 import { useCodeBlockState } from "./useCodeBlockState";
 
@@ -70,6 +71,7 @@ export interface ChatCodeBlockProps {
   linesAdded?: number;
   linesRemoved?: number;
   showLineCount?: boolean;
+  diffPayload?: ParsedDiff;
   trailingTags?: ReadonlyArray<{
     tone: "success" | "danger" | "muted" | "secondary";
     text: string;
@@ -103,6 +105,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
     linesAdded,
     linesRemoved,
     showLineCount = true,
+    diffPayload,
     trailingTags,
     hasContent = true,
     eventId,
@@ -154,6 +157,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
       linesAdded,
       linesRemoved,
       showLineCount,
+      diffPayload,
       isCollapsed,
     });
 
@@ -380,7 +384,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                     height={contentHeight}
                     width={containerWidth}
                     collapseUnchanged={true}
-                    contextLines={3}
+                    contextLines={2}
                     showFilePath={false}
                     showStatsBar={false}
                     showLineNumbers={false}
@@ -388,6 +392,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                     noWrapper={true}
                     allowExpand={false}
                     indicatorStyle="border"
+                    className="chat-event-diff"
                     oldStartLine={displayedDiff.oldStartLine}
                     newStartLine={displayedDiff.newStartLine}
                   />

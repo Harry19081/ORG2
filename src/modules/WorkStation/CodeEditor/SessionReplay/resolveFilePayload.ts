@@ -5,6 +5,8 @@
  * stripped from `FileOperationEntry` to save memory; this rehydrates from the
  * original `SessionEvent` via the same conversion path as initial ingest.
  */
+import { parseUnifiedDiffToOldNew } from "@src/engines/SessionCore/rendering/props";
+
 import { convertToFileOperation } from "./converters/fileConverter";
 import type { FileOperationEntry } from "./types";
 
@@ -23,6 +25,24 @@ function isEmptyEventPlaceholder(event: FileOperationEntry["event"]): boolean {
   return !event || Object.keys(event as object).length === 0;
 }
 
+function normalizePayload(payload: ResolvedFilePayload): ResolvedFilePayload {
+  if (
+    payload.diff !== undefined &&
+    payload.oldContent === undefined &&
+    payload.newContent === undefined
+  ) {
+    const parsed = parseUnifiedDiffToOldNew(payload.diff);
+    return {
+      ...payload,
+      oldContent: parsed.oldValue,
+      newContent: parsed.newValue,
+      oldStartLine: payload.oldStartLine ?? parsed.oldStartLine,
+      newStartLine: payload.newStartLine ?? parsed.newStartLine,
+    };
+  }
+  return payload;
+}
+
 /**
  * Returns inline payload if present; otherwise re-extracts from `op.event`.
  */
@@ -35,7 +55,7 @@ export function resolveFileOperationPayload(
     op.newContent !== undefined ||
     op.diff !== undefined
   ) {
-    return {
+    return normalizePayload({
       content: op.content,
       contentStartLine: op.contentStartLine,
       oldContent: op.oldContent,
@@ -44,7 +64,7 @@ export function resolveFileOperationPayload(
       oldStartLine: op.oldStartLine,
       newStartLine: op.newStartLine,
       language: op.language,
-    };
+    });
   }
 
   if (isEmptyEventPlaceholder(op.event)) {
@@ -56,7 +76,7 @@ export function resolveFileOperationPayload(
     return { language: op.language };
   }
 
-  return {
+  return normalizePayload({
     content: reconverted.content,
     contentStartLine: reconverted.contentStartLine,
     oldContent: reconverted.oldContent,
@@ -65,5 +85,5 @@ export function resolveFileOperationPayload(
     oldStartLine: reconverted.oldStartLine,
     newStartLine: reconverted.newStartLine,
     language: reconverted.language ?? op.language,
-  };
+  });
 }

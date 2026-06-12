@@ -10,6 +10,7 @@ import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
 import { detectLanguageFromPath, getLanguageDisplayName } from "./config";
 import {
   DEFAULT_VISIBLE_LINES,
+  type ParsedDiff,
   VIRTUAL_LINE_HEIGHT,
   VIRTUAL_SCROLL_THRESHOLD,
   parseUnifiedDiff,
@@ -31,6 +32,7 @@ export interface UseCodeBlockStateOptions {
   linesAdded?: number;
   linesRemoved?: number;
   showLineCount?: boolean;
+  diffPayload?: ParsedDiff;
   isCollapsed: boolean;
 }
 
@@ -47,6 +49,7 @@ export function useCodeBlockState({
   linesAdded,
   linesRemoved,
   showLineCount = true,
+  diffPayload,
   isCollapsed,
 }: UseCodeBlockStateOptions) {
   const useTerminalLayout = Boolean(actionTitle && separateTitle);
@@ -96,8 +99,9 @@ export function useCodeBlockState({
 
   const parsedDiff = useMemo(() => {
     if (!isDiff) return null;
+    if (diffPayload) return diffPayload;
     return parseUnifiedDiff(code);
-  }, [code, isDiff]);
+  }, [code, diffPayload, isDiff]);
 
   const hasProvidedStats =
     linesAdded !== undefined || linesRemoved !== undefined;
@@ -124,10 +128,7 @@ export function useCodeBlockState({
   }, [code, hasProvidedStats, isDiff, linesAdded, linesRemoved]);
 
   const shouldShowLineCount =
-    showLineCount &&
-    !isLoading &&
-    isDiff &&
-    (addedLines > 0 || removedLines > 0);
+    showLineCount && isDiff && (addedLines > 0 || removedLines > 0);
 
   const codeLines = useMemo(() => code?.split("\n") || [], [code]);
 
@@ -138,31 +139,30 @@ export function useCodeBlockState({
     return codeLines.length;
   }, [isDiff, parsedDiff, codeLines]);
 
-  const needsExpand = !isLoading && totalLineCount > visibleLines;
+  const needsExpand = totalLineCount > visibleLines;
 
   const displayedCode = useMemo(() => {
-    if (isLoading || isExpanded || !needsExpand) return code;
+    if (isExpanded || !needsExpand) return code;
     return codeLines.slice(0, visibleLines).join("\n");
-  }, [code, codeLines, isLoading, isExpanded, needsExpand, visibleLines]);
+  }, [code, codeLines, isExpanded, needsExpand, visibleLines]);
 
   const displayedDiff = useMemo(() => {
     if (!isDiff) return null;
-    if (isLoading || isExpanded || !needsExpand) return parsedDiff;
+    if (isExpanded || !needsExpand) return diffPayload ?? parsedDiff;
     return parseUnifiedDiff(truncateDiff(code, visibleLines));
   }, [
     isDiff,
+    diffPayload,
     parsedDiff,
     code,
-    isLoading,
     isExpanded,
     needsExpand,
     visibleLines,
   ]);
 
-  const displayedLineCount =
-    isLoading || isExpanded
-      ? totalLineCount
-      : Math.min(totalLineCount, visibleLines);
+  const displayedLineCount = isExpanded
+    ? totalLineCount
+    : Math.min(totalLineCount, visibleLines);
 
   const contentHeight = useMemo(() => {
     if (isCollapsed) return 0;
