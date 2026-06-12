@@ -11,6 +11,7 @@ import { useAtomValue } from "jotai";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
+import { CODEMIRROR_STYLE_NONCE } from "@src/features/CodeMirror/config/csp";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
 import { spotlightPlacementAtom } from "@src/store/ui/uiAtom";
 
@@ -116,7 +117,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
   if (!asPortal) {
     return (
       <>
-        <style>{SPOTLIGHT_STYLES}</style>
+        <style nonce={CODEMIRROR_STYLE_NONCE}>{SPOTLIGHT_STYLES}</style>
         {shell}
       </>
     );
@@ -124,7 +125,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
 
   return createPortal(
     <>
-      <style>{SPOTLIGHT_STYLES}</style>
+      <style nonce={CODEMIRROR_STYLE_NONCE}>{SPOTLIGHT_STYLES}</style>
       <div
         style={{
           position: "fixed",

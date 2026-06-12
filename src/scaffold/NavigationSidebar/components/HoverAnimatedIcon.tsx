@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import React, { useCallback, useEffect, useRef } from "react";
 
+import { CODEMIRROR_STYLE_NONCE } from "@src/features/CodeMirror/config/csp";
+
 type AnimationStrategy =
   | "stroke-draw"
   | "spring-rotate"
@@ -116,6 +118,7 @@ function injectStyles() {
   if (document.getElementById(STYLE_ID)) return;
   const style = document.createElement("style");
   style.id = STYLE_ID;
+  style.setAttribute("nonce", CODEMIRROR_STYLE_NONCE);
   style.textContent = KEYFRAMES_CSS;
   document.head.appendChild(style);
 }

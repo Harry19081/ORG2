@@ -10,6 +10,7 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
+import { CODEMIRROR_STYLE_NONCE } from "@src/features/CodeMirror/config/csp";
 
 /** Idle state display - shown when no event is active (Gemini style) */
 export const IdleState = memo(() => {
@@ -113,7 +114,7 @@ export const BootingState = memo(() => {
       </div>
 
       {/* Inline keyframes for animations (always enabled) */}
-      <style>
+      <style nonce={CODEMIRROR_STYLE_NONCE}>
         {`
         @keyframes bootProgress {
           0% { width: 0%; }

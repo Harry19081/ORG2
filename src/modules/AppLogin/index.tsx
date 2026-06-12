@@ -7,6 +7,7 @@ import Button from "@src/components/Button";
 import InlineAlert from "@src/components/InlineAlert";
 import { ROUTES } from "@src/config/routes";
 import { setAuthSkipped } from "@src/config/serviceAuth";
+import { CODEMIRROR_STYLE_NONCE } from "@src/features/CodeMirror/config/csp";
 import {
   clearAuthStateCompletely,
   useServiceAuth,
@@ -323,7 +324,7 @@ const LoginPage: React.FC = () => {
     return (
       <>
         {/* Global styles to hide toolbar elements when in login-page mode */}
-        <style>{`
+        <style nonce={CODEMIRROR_STYLE_NONCE}>{`
           body.login-page-mode .tab-bar {
             display: none !important;
           }
@@ -356,7 +357,7 @@ const LoginPage: React.FC = () => {
   return (
     <>
       {/* Global styles to hide toolbar elements when in login-page mode */}
-      <style>{`
+      <style nonce={CODEMIRROR_STYLE_NONCE}>{`
         body.login-page-mode .tab-bar {
           display: none !important;
         }

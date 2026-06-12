@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 import type { WorkspaceRecord } from "@src/api/tauri/workspace";
 import Input from "@src/components/Input";
+import { CODEMIRROR_STYLE_NONCE } from "@src/features/CodeMirror/config/csp";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import {
   ONBOARDING_LOADING_VIDEO_MAX_WIDTH_CLASS,
@@ -461,7 +462,7 @@ const SelectRepoPage: React.FC = () => {
   return (
     <>
       {/* Global styles to hide toolbar elements when in select-repo mode */}
-      <style>{`
+      <style nonce={CODEMIRROR_STYLE_NONCE}>{`
         body.select-repo-mode .tab-bar {
           display: none !important;
         }

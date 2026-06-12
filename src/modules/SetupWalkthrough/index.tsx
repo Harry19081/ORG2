@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@src/components/Button";
 import "@src/components/DevPassport/devpassport.css";
 import { ROUTES } from "@src/config/routes";
+import { CODEMIRROR_STYLE_NONCE } from "@src/features/CodeMirror/config/csp";
 import { OnboardingLayout } from "@src/modules/shared/layouts";
 import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 
@@ -172,7 +173,7 @@ const SetupWalkthrough: React.FC = () => {
   return (
     <>
       {/* Global styles for walkthrough mode */}
-      <style>{WALKTHROUGH_STYLES}</style>
+      <style nonce={CODEMIRROR_STYLE_NONCE}>{WALKTHROUGH_STYLES}</style>
 
       <OnboardingLayout
         variant="contained"
