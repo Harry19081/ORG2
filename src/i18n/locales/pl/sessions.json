@@ -617,7 +617,8 @@
       "switchTo": "Przełącz na",
       "current": "Bieżące"
     },
-    "agentSentMessageCaption": "Agent wysłał Ci wiadomość"
+    "agentSentMessageCaption": "Agent wysłał Ci wiadomość",
+    "userSentMessageCaption": "Wysłano wiadomość do Agent"
   },
   "terminal": {
     "findInTerminal": "Znajdź w terminalu",
@@ -974,6 +975,7 @@
     "editFileFailedNoName": "Nie udało się edytować pliku",
     "file": "plik",
     "runShellRunning": "Wykonywanie polecenia",
+    "terminalWaitRunning": "Oczekiwanie na zakończenie terminala",
     "runShellDone": "Wykonano polecenie",
     "runShellFailed": "Polecenie nieudane",
     "inspectTerminalsRunning": "Sprawdzanie terminali",

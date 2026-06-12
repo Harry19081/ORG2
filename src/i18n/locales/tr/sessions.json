@@ -609,7 +609,8 @@
       "switchTo": "Geçiş yap",
       "current": "Geçerli"
     },
-    "agentSentMessageCaption": "Agent size bir mesaj gönderdi"
+    "agentSentMessageCaption": "Agent size bir mesaj gönderdi",
+    "userSentMessageCaption": "Agent'a bir mesaj gönderdiniz"
   },
   "terminal": {
     "findInTerminal": "Terminalde ara",
@@ -952,6 +953,7 @@
     "editFileFailedNoName": "Dosya düzenlenemedi",
     "file": "dosya",
     "runShellRunning": "Komut çalıştırılıyor",
+    "terminalWaitRunning": "Terminalin bitmesi bekleniyor",
     "runShellDone": "Komut çalıştırıldı",
     "runShellFailed": "Komut başarısız",
     "inspectTerminalsRunning": "Terminaller inceleniyor",

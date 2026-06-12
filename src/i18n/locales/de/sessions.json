@@ -609,7 +609,8 @@
       "switchTo": "Wechseln zu",
       "current": "Aktuell"
     },
-    "agentSentMessageCaption": "Der Agent hat dir eine Nachricht gesendet"
+    "agentSentMessageCaption": "Der Agent hat dir eine Nachricht gesendet",
+    "userSentMessageCaption": "Du hast Agent eine Nachricht gesendet"
   },
   "terminal": {
     "findInTerminal": "Im Terminal suchen",
@@ -952,6 +953,7 @@
     "editFileFailedNoName": "Datei konnte nicht bearbeitet werden",
     "file": "Datei",
     "runShellRunning": "Befehl wird ausgeführt",
+    "terminalWaitRunning": "Warten, bis das Terminal fertig ist",
     "runShellDone": "Befehl ausgeführt",
     "runShellFailed": "Befehl fehlgeschlagen",
     "inspectTerminalsRunning": "Terminals werden geprüft",

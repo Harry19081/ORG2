@@ -615,7 +615,8 @@
       "switchTo": "Switch to",
       "current": "Current"
     },
-    "agentSentMessageCaption": "Agent sent you a message"
+    "agentSentMessageCaption": "Agent sent you a message",
+    "userSentMessageCaption": "You sent Agent a message"
   },
   "terminal": {
     "findInTerminal": "Find in terminal",
@@ -976,6 +977,7 @@
     "editFileFailedNoName": "Failed to edit file",
     "file": "file",
     "runShellRunning": "Running command",
+    "terminalWaitRunning": "Waiting for terminal to finish",
     "runShellDone": "Ran command",
     "runShellFailed": "Command failed",
     "inspectTerminalsRunning": "Inspecting terminals",

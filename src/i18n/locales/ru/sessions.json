@@ -611,7 +611,8 @@
       "switchTo": "Переключиться на",
       "current": "Текущий"
     },
-    "agentSentMessageCaption": "Agent отправил вам сообщение"
+    "agentSentMessageCaption": "Agent отправил вам сообщение",
+    "userSentMessageCaption": "Вы отправили сообщение Agent"
   },
   "terminal": {
     "findInTerminal": "Поиск в терминале",
@@ -958,6 +959,7 @@
     "editFileFailedNoName": "Не удалось отредактировать файл",
     "file": "файл",
     "runShellRunning": "Выполнение команды",
+    "terminalWaitRunning": "Ожидание завершения терминала",
     "runShellDone": "Команда выполнена",
     "runShellFailed": "Ошибка выполнения команды",
     "inspectTerminalsRunning": "Проверка терминалов",

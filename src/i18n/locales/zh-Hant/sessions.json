@@ -609,7 +609,8 @@
       "switchTo": "切換到",
       "current": "當前"
     },
-    "agentSentMessageCaption": "Agent 傳送了一則訊息給你"
+    "agentSentMessageCaption": "Agent 傳送了一則訊息給你",
+    "userSentMessageCaption": "你傳送了一則訊息給 Agent"
   },
   "terminal": {
     "findInTerminal": "在終端中查找",
@@ -956,6 +957,7 @@
     "editFileFailedNoName": "編輯文件失敗",
     "file": "文件",
     "runShellRunning": "正在執行命令",
+    "terminalWaitRunning": "正在等待終端完成",
     "runShellDone": "執行命令",
     "runShellFailed": "命令執行失敗",
     "inspectTerminalsRunning": "正在檢查終端",

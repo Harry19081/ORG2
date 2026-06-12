@@ -609,7 +609,8 @@
       "switchTo": "切换到",
       "current": "当前"
     },
-    "agentSentMessageCaption": "Agent 给你发送了一条消息"
+    "agentSentMessageCaption": "Agent 给你发送了一条消息",
+    "userSentMessageCaption": "你给 Agent 发送了一条消息"
   },
   "terminal": {
     "findInTerminal": "在终端中查找",
@@ -956,6 +957,7 @@
     "editFileFailedNoName": "编辑文件失败",
     "file": "文件",
     "runShellRunning": "正在执行命令",
+    "terminalWaitRunning": "正在等待终端完成",
     "runShellDone": "执行命令",
     "runShellFailed": "命令执行失败",
     "inspectTerminalsRunning": "正在检查终端",

@@ -609,7 +609,8 @@
       "switchTo": "Chuyển sang",
       "current": "Hiện tại"
     },
-    "agentSentMessageCaption": "Agent đã gửi cho bạn một tin nhắn"
+    "agentSentMessageCaption": "Agent đã gửi cho bạn một tin nhắn",
+    "userSentMessageCaption": "Bạn đã gửi một tin nhắn cho Agent"
   },
   "terminal": {
     "findInTerminal": "Tìm trong terminal",
@@ -952,6 +953,7 @@
     "editFileFailedNoName": "Không thể chỉnh sửa tệp",
     "file": "tệp",
     "runShellRunning": "Đang chạy lệnh",
+    "terminalWaitRunning": "Đang chờ terminal hoàn tất",
     "runShellDone": "Đã chạy lệnh",
     "runShellFailed": "Lệnh thất bại",
     "inspectTerminalsRunning": "Đang kiểm tra terminal",

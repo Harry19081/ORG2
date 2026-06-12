@@ -609,7 +609,8 @@
       "switchTo": "Cambiar a",
       "current": "Actual"
     },
-    "agentSentMessageCaption": "El Agent te envió un mensaje"
+    "agentSentMessageCaption": "El Agent te envió un mensaje",
+    "userSentMessageCaption": "Enviaste un mensaje a Agent"
   },
   "terminal": {
     "findInTerminal": "Buscar en terminal",
@@ -952,6 +953,7 @@
     "editFileFailedNoName": "Error al editar el archivo",
     "file": "archivo",
     "runShellRunning": "Ejecutando comando",
+    "terminalWaitRunning": "Esperando a que termine el terminal",
     "runShellDone": "Comando ejecutado",
     "runShellFailed": "Error en el comando",
     "inspectTerminalsRunning": "Inspeccionando terminales",

@@ -609,7 +609,8 @@
       "switchTo": "전환",
       "current": "현재"
     },
-    "agentSentMessageCaption": "Agent가 메시지를 보냈습니다"
+    "agentSentMessageCaption": "Agent가 메시지를 보냈습니다",
+    "userSentMessageCaption": "Agent에게 메시지를 보냈습니다"
   },
   "terminal": {
     "findInTerminal": "터미널에서 검색",
@@ -952,6 +953,7 @@
     "editFileFailedNoName": "파일 편집 실패",
     "file": "파일",
     "runShellRunning": "명령 실행 중",
+    "terminalWaitRunning": "터미널 완료 대기 중",
     "runShellDone": "명령 실행됨",
     "runShellFailed": "명령 실행 실패",
     "inspectTerminalsRunning": "Terminal 검사 중",
