@@ -382,6 +382,20 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       [handleFileSelect, handleFileSelectWithLine]
     );
 
+    const isSourceControlActive = activeTab?.type === "source-control";
+    const editorSourceControlHeaderSlot = isSourceControlActive
+      ? sourceControlHeaderFilter
+      : null;
+    const editorSourceControlFilterMode = isSourceControlActive
+      ? sourceControlFilterMode
+      : "uncommitted";
+    const editorShowSourceControlModePill =
+      isSourceControlActive &&
+      sourceControlFilterMode !== "stashed" &&
+      sourceControlFilterMode !== "history" &&
+      sourceControlFilterMode !== "pr" &&
+      sourceControlFilterMode !== "issues";
+
     const mainContent = (
       <div className="flex h-full min-h-0 w-full flex-col">
         <EditorContent
@@ -407,13 +421,9 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
           isBinary={codeEditorState.isBinary}
           onCursorPositionChange={handleCursorPositionChange}
           terminalState={terminalState}
-          sourceControlHeaderTrailingSlot={sourceControlHeaderFilter}
-          sourceControlFilterMode={sourceControlFilterMode}
-          showSourceControlModePill={
-            sourceControlFilterMode !== "stashed" &&
-            sourceControlFilterMode !== "history" &&
-            sourceControlFilterMode !== "pr"
-          }
+          sourceControlHeaderTrailingSlot={editorSourceControlHeaderSlot}
+          sourceControlFilterMode={editorSourceControlFilterMode}
+          showSourceControlModePill={editorShowSourceControlModePill}
         />
       </div>
     );

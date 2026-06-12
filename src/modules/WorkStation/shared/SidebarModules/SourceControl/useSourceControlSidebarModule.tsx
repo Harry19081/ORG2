@@ -11,7 +11,7 @@
  * `PrimarySidebarLayoutWithSections`.
  */
 import { useAtomValue } from "jotai";
-import { CircleDot, RotateCcw } from "lucide-react";
+import { CircleDot, RefreshCw, RotateCcw } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -254,6 +254,13 @@ export function useSourceControlSidebarModule({
   } = useSectionFilter();
 
   const issueCallbacks = useAtomValue(workstationIssueCallbackAtom);
+  const handleIssuesRefresh = useCallback(() => {
+    issueCallbacks.refreshIssues?.();
+  }, [issueCallbacks]);
+  const {
+    spinClass: issuesRefreshSpinClass,
+    handleClick: handleIssuesRefreshClick,
+  } = useRefreshSpin(handleIssuesRefresh, false);
   const issueActions = useMemo<SectionHeaderAction[]>(
     () => [
       makeSectionFilterAction({
@@ -261,8 +268,20 @@ export function useSourceControlSidebarModule({
         isOpen: showIssuesFilter,
         hasQuery: issuesFilterQuery.length > 0,
         onToggle: handleToggleIssuesFilter,
-        tooltip: t("common:actions.filter", "Filter"),
+        tooltip: "Filter",
       }),
+      {
+        key: "refresh-issues",
+        icon: (
+          <RefreshCw
+            size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
+            strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
+            className={issuesRefreshSpinClass}
+          />
+        ),
+        tooltip: "Refresh",
+        onClick: handleIssuesRefreshClick,
+      },
       {
         key: "new-issue",
         icon: (
@@ -271,19 +290,19 @@ export function useSourceControlSidebarModule({
             strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
           />
         ),
-        tooltip: t("common:git.issues.newIssueTitlePlaceholder", "New issue"),
+        tooltip: "New issue",
         onClick: () => {
           issueCallbacks.openNewIssueForm?.();
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       showIssuesFilter,
       issuesFilterQuery,
       handleToggleIssuesFilter,
+      handleIssuesRefreshClick,
+      issuesRefreshSpinClass,
       issueCallbacks,
-      t,
     ]
   );
 
@@ -388,6 +407,7 @@ export function useSourceControlSidebarModule({
           repoPath={repoPath}
           repoId={repoId}
           branchName={branchName}
+          onHistorySelectionChange={onGitHistorySelectionChange}
           showFilter={showIssuesFilter}
           filterQuery={issuesFilterQuery}
           onFilterQueryChange={setIssuesFilterQuery}
@@ -399,6 +419,7 @@ export function useSourceControlSidebarModule({
       repoPath,
       repoId,
       branchName,
+      onGitHistorySelectionChange,
       showIssuesFilter,
       issuesFilterQuery,
       setIssuesFilterQuery,

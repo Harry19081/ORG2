@@ -25,7 +25,6 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  ChevronRight,
   ExternalLink,
   ListChevronsDownUp,
 } from "lucide-react";
@@ -552,7 +551,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
 
     const handleOpenSourceControlHistoryInNewTab = useCallback(
       (selection: SourceControlHistorySelection) => {
-        if (selection.type === "pr") return;
+        if (selection.type === "pr" || selection.type === "issue") return;
 
         const nextTab =
           selection.type === "stash"
@@ -621,8 +620,9 @@ const EditorContent: React.FC<EditorContentProps> = memo(
         | null
         | undefined;
       const hasFocusPath = Boolean(activeTab.data.focusPath);
+      const isIssuesMode = sourceControlFilterMode === "issues";
       const showModePill =
-        showSourceControlModePill && historySelection?.type !== "pr";
+        showSourceControlModePill && !isIssuesMode && !historySelection;
       const showCollapseAll =
         showModePill && mode === "all-changes" && !historySelection;
       const showReviewNavigation =
@@ -672,22 +672,6 @@ const EditorContent: React.FC<EditorContentProps> = memo(
             </div>
           )}
 
-          {historySelection && historySelection.type !== "pr" && (
-            <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-[1px] overflow-x-auto pl-1 scrollbar-hide">
-              <span className="inline-flex flex-shrink-0 whitespace-nowrap text-[13px] text-text-2">
-                {historySelection.shortSha}
-              </span>
-              <ChevronRight
-                size={14}
-                strokeWidth={1.75}
-                className="flex-shrink-0 text-fill-4"
-              />
-              <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text-1">
-                {historySelection.commitMessage}
-              </span>
-            </div>
-          )}
-
           <span className="ml-auto flex h-7 flex-shrink-0 items-center gap-px">
             {historySelection?.type === "pr" && (
               <a
@@ -701,20 +685,22 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                 <ExternalLink size={HEADER_ICON_SIZE.sm} />
               </a>
             )}
-            {historySelection && historySelection.type !== "pr" && (
-              <Button
-                htmlType="button"
-                variant="tertiary"
-                size="small"
-                iconOnly
-                className="flex-shrink-0"
-                onClick={() =>
-                  handleOpenSourceControlHistoryInNewTab(historySelection)
-                }
-                title={t("common:actions.openInNewTab")}
-                icon={<ArrowUpRight size={HEADER_ICON_SIZE.sm} />}
-              />
-            )}
+            {historySelection &&
+              (historySelection.type === "commit" ||
+                historySelection.type === "stash") && (
+                <Button
+                  htmlType="button"
+                  variant="tertiary"
+                  size="small"
+                  iconOnly
+                  className="flex-shrink-0"
+                  onClick={() =>
+                    handleOpenSourceControlHistoryInNewTab(historySelection)
+                  }
+                  title={t("common:actions.openInNewTab")}
+                  icon={<ArrowUpRight size={HEADER_ICON_SIZE.sm} />}
+                />
+              )}
 
             {showReviewNavigation && (
               <>

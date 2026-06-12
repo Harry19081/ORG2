@@ -20,6 +20,7 @@ import {
   workstationPrCallbackAtom,
 } from "@src/store/workstation/codeEditor/workstationPrAtom";
 
+import { getCachedPrs, isPrCacheStale, setCachedPrs } from "./githubListCache";
 import {
   formatWorkstationPrTitle,
   getStoredWorkstationPr,
@@ -164,6 +165,13 @@ export function useWorkstationPr(options: UseWorkstationPrOptions) {
   useEffect(() => {
     if (!repoPath) return;
 
+    // Seed from cache immediately so the PR list is visible on re-entry
+    const cachedEntry = getCachedPrs(repoPath);
+    if (cachedEntry) {
+      setAllOpenPrs(cachedEntry.prs);
+      if (!isPrCacheStale(repoPath)) return; // fresh — skip network
+    }
+
     let cancelled = false;
 
     void (async () => {
@@ -183,6 +191,7 @@ export function useWorkstationPr(options: UseWorkstationPrOptions) {
         const prs = await listOpenPRsLocal(repoFullName);
         if (cancelled) return;
         setAllOpenPrs(prs);
+        setCachedPrs(repoPath, prs);
       } catch {
         // Non-critical — swallow silently; current-branch PR lookup is unaffected
       }

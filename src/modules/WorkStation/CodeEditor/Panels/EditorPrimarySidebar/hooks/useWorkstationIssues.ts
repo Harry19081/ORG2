@@ -35,6 +35,13 @@ import {
 } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import type { IssueFilterState } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 
+import {
+  getCachedIssues,
+  isIssueCacheStale,
+  updateCachedClosedIssues,
+  updateCachedOpenIssues,
+} from "./githubListCache";
+
 export type { IssueFilterState };
 
 const logger = createLogger("WorkstationIssues");
@@ -62,7 +69,6 @@ export function useWorkstationIssues({
   const setSelectedState = useSetAtom(workstationSelectedIssueAtom);
   const setCallbackAtom = useSetAtom(workstationIssueCallbackAtom);
 
-  const listState = useAtomValue(workstationIssueListAtom);
   const selectedState = useAtomValue(workstationSelectedIssueAtom);
 
   const mountedRef = useRef(true);
@@ -81,7 +87,6 @@ export function useWorkstationIssues({
   // Credentials are resolved Rust-side from connection_token_store — no
   // pre-flight token ping needed. Real auth failures from API calls will
   // flip this to false, matching the trust model used by the PR panel.
-  const [hasGitHubAuth, setHasGitHubAuth] = useState(false);
   // Track whether we're still waiting for the remote URL to resolve so the
   // panel shows a spinner instead of the empty-state placeholder.
   const [remoteUrlLoading, setRemoteUrlLoading] = useState(true);
@@ -136,19 +141,21 @@ export function useWorkstationIssues({
     };
   }, [repoPath, repoId, remoteUrlProp]);
 
-  // Set hasGitHubAuth optimistically when the remote URL resolves.
-  // A valid GitHub URL means credentials should be available via the
+  // Optimistically true when the remote resolves to a GitHub URL.
+  // A valid GitHub URL means credentials should be available via
   // connection_token_store — no need for a separate /user ping.
-  useEffect(() => {
-    if (!resolvedRemoteUrl) return;
+  const hasGitHubAuth = useMemo(() => {
+    if (!resolvedRemoteUrl) return false;
     const repoFullName = parseGithubRepoFullName(resolvedRemoteUrl);
     logger.debug("resolved remote URL", { resolvedRemoteUrl, repoFullName });
-    setHasGitHubAuth(!!repoFullName);
+    return !!repoFullName;
   }, [resolvedRemoteUrl]);
 
-  // ── Local filter state (search debounce lives here) ───────────────────────
+  // Stable cache key — use repoPath so it survives workspace switches
+  const repoKey = repoPath;
 
-  const [filterState, setFilterState] = useState<IssueFilterState>("open");
+  // ── Search debounce ───────────────────────────────────────────────────────
+
   const [searchQuery, setSearchQuery] = useState("");
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -167,74 +174,109 @@ export function useWorkstationIssues({
     };
   }, []);
 
-  // ── Fetch issues ──────────────────────────────────────────────────────────
+  // ── Separate open / closed fetch state ───────────────────────────────────
 
-  const fetchPage = useCallback(
-    async (filter: IssueFilterState, page: number) => {
-      logger.debug("fetchPage called", {
-        filter,
-        page,
-        resolvedRemoteUrl,
-        hasGitHubAuth,
-      });
-      if (!resolvedRemoteUrl || !hasGitHubAuth) {
-        logger.debug(
-          "fetchPage skipped because remote URL or GitHub auth is missing"
-        );
-        return;
+  type SectionLoadState = "idle" | "loading" | "ready" | "error";
+
+  // Seed from cache immediately so the list shows on re-entry without a spinner
+  const cached = getCachedIssues(repoKey);
+  const [openLoadState, setOpenLoadState] = useState<SectionLoadState>(
+    cached ? "ready" : "idle"
+  );
+  const [closedLoadState, setClosedLoadState] = useState<SectionLoadState>(
+    cached?.closedIssues.length ? "ready" : "idle"
+  );
+  const [openIssues, setOpenIssues] = useState<GitHubIssue[]>(
+    cached?.openIssues ?? []
+  );
+  const [closedIssues, setClosedIssues] = useState<GitHubIssue[]>(
+    cached?.closedIssues ?? []
+  );
+  const [openError, setOpenError] = useState<string | null>(null);
+  const [closedError, setClosedError] = useState<string | null>(null);
+
+  const handleFetchError = useCallback(
+    (
+      error: string,
+      setError: (e: string | null) => void,
+      setLoad: (s: SectionLoadState) => void
+    ) => {
+      const isReAuth =
+        /ReAuthError/i.test(error) || /re-authorization required/i.test(error);
+      if (isReAuth) {
+        setNeedsReAuth(true);
+      } else {
+        setError(error);
       }
-
-      setListState((prev) => ({ ...prev, loading: true, error: null }));
-
-      const result = await fetchIssues(resolvedRemoteUrl, {
-        state: filter === "all" ? "all" : filter,
-        page,
-      });
-      logger.debug("fetchIssues result", result);
-
-      if (!mountedRef.current) return;
-
-      if (result.error) {
-        const isReAuth =
-          /ReAuthError/i.test(result.error) ||
-          /re-authorization required/i.test(result.error);
-        if (isReAuth) {
-          setNeedsReAuth(true);
-          setListState((prev) => ({ ...prev, loading: false, error: null }));
-          return;
-        }
-        setListState((prev) => ({
-          ...prev,
-          loading: false,
-          error: result.error ?? null,
-        }));
-        return;
-      }
-
-      const { issues, has_more } = result.data!;
-      setListState((prev) => ({
-        ...prev,
-        loading: false,
-        issues: page === 1 ? issues : [...prev.issues, ...issues],
-        hasMore: has_more,
-        page,
-        filter,
-      }));
+      setLoad("error");
     },
-    [resolvedRemoteUrl, hasGitHubAuth, setListState]
+    [setNeedsReAuth]
   );
 
-  const refresh = useCallback(() => {
-    void fetchPage(filterState, 1);
-  }, [fetchPage, filterState]);
+  const fetchOpen = useCallback(async () => {
+    if (!resolvedRemoteUrl || !hasGitHubAuth) return;
+    setOpenLoadState("loading");
+    setOpenError(null);
+    const result = await fetchIssues(resolvedRemoteUrl, { state: "open" });
+    if (!mountedRef.current) return;
+    if (result.error) {
+      handleFetchError(result.error, setOpenError, setOpenLoadState);
+      return;
+    }
+    const issues = result.data!.issues;
+    setOpenIssues(issues);
+    setOpenLoadState("ready");
+    updateCachedOpenIssues(repoKey, issues);
+  }, [resolvedRemoteUrl, hasGitHubAuth, handleFetchError, repoKey]);
 
-  // Fetch on mount or when filter/auth changes
+  const fetchClosed = useCallback(async () => {
+    if (!resolvedRemoteUrl || !hasGitHubAuth) return;
+    setClosedLoadState("loading");
+    setClosedError(null);
+    const result = await fetchIssues(resolvedRemoteUrl, { state: "closed" });
+    if (!mountedRef.current) return;
+    if (result.error) {
+      handleFetchError(result.error, setClosedError, setClosedLoadState);
+      return;
+    }
+    const issues = result.data!.issues;
+    setClosedIssues(issues);
+    setClosedLoadState("ready");
+    updateCachedClosedIssues(repoKey, issues);
+  }, [resolvedRemoteUrl, hasGitHubAuth, handleFetchError, repoKey]);
+
+  // Fetch open issues on mount / auth ready.
+  // Skip the network hit when the cache is still fresh (< 5 min) — the UI
+  // already shows cached rows so there's no spinner flash on re-entry.
+  // Deferred via setTimeout to avoid synchronous setState inside effect body.
   useEffect(() => {
     if (!resolvedRemoteUrl || !hasGitHubAuth) return;
-    setListState((prev) => ({ ...prev, page: 1 }));
-    void fetchPage(filterState, 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolvedRemoteUrl, hasGitHubAuth, filterState]);
+    if (!isIssueCacheStale(repoKey)) return;
+    const timer = setTimeout(() => void fetchOpen(), 0);
+    return () => clearTimeout(timer);
+  }, [resolvedRemoteUrl, hasGitHubAuth, fetchOpen, repoKey]);
+
+  const refresh = useCallback(() => {
+    void fetchOpen();
+    if (closedLoadState === "ready") void fetchClosed();
+  }, [fetchOpen, fetchClosed, closedLoadState]);
+
+  // Keep the shared atom in sync (used by external consumers like agent callbacks)
+  useEffect(() => {
+    const combined = [...openIssues, ...closedIssues];
+    setListState((prev) => ({
+      ...prev,
+      issues: combined,
+      loading: openLoadState === "loading",
+      error: openError,
+    }));
+  }, [openIssues, closedIssues, openLoadState, openError, setListState]);
+
+  // Keep legacy filterState around so mutation callbacks that reference it compile
+  const filterState: IssueFilterState = "all";
+  const setFilterState = (_: IssueFilterState) => {
+    /* no-op — UI no longer drives this */
+  };
 
   // Refetch on debounced search change (client-side filter applied in UI)
   // Search filtering is done client-side via filterIssuesByQuery helper
@@ -466,23 +508,47 @@ export function useWorkstationIssues({
 
   // ── Derived values ────────────────────────────────────────────────────────
 
-  const filteredIssues = useMemo<GitHubIssue[]>(() => {
-    if (!debouncedSearch.trim()) return listState.issues;
-    const q = debouncedSearch.toLowerCase();
-    return listState.issues.filter(
-      (issue) =>
-        issue.title.toLowerCase().includes(q) ||
-        issue.labels.some((l) => l.name.toLowerCase().includes(q)) ||
-        issue.user.login.toLowerCase().includes(q)
-    );
-  }, [listState.issues, debouncedSearch]);
+  const applySearch = useCallback(
+    (list: GitHubIssue[]) => {
+      if (!debouncedSearch.trim()) return list;
+      const q = debouncedSearch.toLowerCase();
+      return list.filter(
+        (issue) =>
+          issue.title.toLowerCase().includes(q) ||
+          issue.labels.some((l) => l.name.toLowerCase().includes(q)) ||
+          issue.user.login.toLowerCase().includes(q)
+      );
+    },
+    [debouncedSearch]
+  );
+
+  const filteredOpen = useMemo(
+    () => applySearch(openIssues),
+    [openIssues, applySearch]
+  );
+  const filteredClosed = useMemo(
+    () => applySearch(closedIssues),
+    [closedIssues, applySearch]
+  );
 
   return {
-    issues: filteredIssues,
-    loading: listState.loading,
+    // Per-section data
+    openIssues: filteredOpen,
+    closedIssues: filteredClosed,
+    openLoadState,
+    closedLoadState,
+    openError,
+    closedError,
+    fetchClosed,
+    // Legacy combined — kept for atom sync / mutation callbacks
+    issues: useMemo(
+      () => applySearch([...openIssues, ...closedIssues]),
+      [openIssues, closedIssues, applySearch]
+    ),
+    loading: openLoadState === "loading",
     remoteUrlLoading,
     needsReAuth,
-    error: listState.error,
+    error: openError,
     filterState,
     setFilterState,
     searchQuery,

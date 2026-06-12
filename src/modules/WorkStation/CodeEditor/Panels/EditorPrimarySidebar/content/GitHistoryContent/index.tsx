@@ -218,7 +218,7 @@ export interface GitHistoryContentProps {
 
 type GitHistoryTabsApi = Pick<
   UseWorkStationTabsReturn,
-  "openTab" | "activeTab" | "updateTabData" | "switchTab"
+  "openTab" | "activeTab" | "updateTabData"
 >;
 
 type GitHistoryContentInnerProps = GitHistoryContentProps & GitHistoryTabsApi;
@@ -233,7 +233,6 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
   openTab,
   activeTab,
   updateTabData,
-  switchTab,
 }) => {
   const isGraphMode = viewMode === "graph";
   const { t } = useTranslation();
@@ -422,7 +421,6 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
         updateTabData(SOURCE_CONTROL_CHANGES_TAB_ID, {
           historySelection: selection,
         });
-        switchTab(SOURCE_CONTROL_CHANGES_TAB_ID);
         return;
       }
 
@@ -432,7 +430,6 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
       activeTab?.type,
       onHistorySelectionChange,
       openCommitInNewTab,
-      switchTab,
       updateTabData,
     ]
   );
@@ -536,14 +533,13 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
 };
 
 const GitHistoryContent: React.FC<GitHistoryContentProps> = (props) => {
-  const { openTab, activeTab, updateTabData, switchTab } = useWorkStationTabs();
+  const { openTab, activeTab, updateTabData } = useWorkStationTabs();
   return (
     <GitHistoryContentInner
       {...props}
       openTab={openTab}
       activeTab={activeTab}
       updateTabData={updateTabData}
-      switchTab={switchTab}
     />
   );
 };

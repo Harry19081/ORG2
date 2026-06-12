@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Funnel } from "lucide-react";
 import React from "react";
 
 import Input from "@src/components/Input";
@@ -22,7 +22,7 @@ export const SectionFilterInput: React.FC<SectionFilterInputProps> = ({
 }) => (
   <div className="flex-shrink-0 px-3 pb-2 pt-1">
     <Input
-      prefix={<Search size={14} strokeWidth={1.75} />}
+      prefix={<Funnel size={14} strokeWidth={1.75} />}
       placeholder={placeholder}
       value={query}
       onChange={(value) => onChange(value)}
@@ -49,7 +49,7 @@ export interface MakeSectionFilterActionOptions {
   tooltip?: string;
 }
 
-/** Returns a `SectionHeaderAction` for the search-icon toggle button */
+/** Returns a `SectionHeaderAction` for the filter toggle button */
 export function makeSectionFilterAction({
   key,
   isOpen,
@@ -60,7 +60,7 @@ export function makeSectionFilterAction({
   return {
     key,
     icon: (
-      <Search
+      <Funnel
         size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
         strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
         className={isOpen ? "text-primary-6" : ""}

@@ -203,18 +203,20 @@ export function useSourceControlSetup({
     ]
   );
 
+  const isSourceControlAllChangesActive =
+    activeTab?.type === "source-control" &&
+    activeTab.data.mode === "all-changes";
+
   const tabSidebarExtraContext = useMemo(
     () => ({
       surface: {
         sourceControl: {
           filterMode: sourceControlFilterMode,
-          navigateWithoutSelecting:
-            activeTab?.type === "source-control" &&
-            activeTab.data.mode === "all-changes",
+          navigateWithoutSelecting: isSourceControlAllChangesActive,
         },
       },
     }),
-    [activeTab, sourceControlFilterMode]
+    [isSourceControlAllChangesActive, sourceControlFilterMode]
   );
 
   const handleSourceControlHistorySelectionChange = useCallback(
@@ -230,7 +232,11 @@ export function useSourceControlSetup({
           ...existing,
           data: { ...existing.data, historySelection: selection },
         };
-        return { tabs: nextTabs, activeTabId: existing.id };
+        return {
+          tabs: nextTabs,
+          activeTabId:
+            prev.activeTabId === existing.id ? existing.id : prev.activeTabId,
+        };
       });
     },
     [setPrimaryPanel]

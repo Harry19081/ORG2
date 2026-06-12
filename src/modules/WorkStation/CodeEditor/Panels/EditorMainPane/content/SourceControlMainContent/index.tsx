@@ -8,10 +8,19 @@
  * In Focus mode with a loaded file, the file breadcrumb renders in its own
  * 40px header inside the main pane directly above the diff editor.
  */
-import React, { Suspense, memo } from "react";
+import { useAtomValue } from "jotai";
+import React, { Suspense, memo, useCallback } from "react";
 
-import type { QuickAction } from "@src/modules/WorkStation/shared";
+import { IssueDetailPanel } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/IssuesContent/IssueDetailPanel";
+import {
+  NoTabsPlaceholder,
+  type QuickAction,
+} from "@src/modules/WorkStation/shared";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import {
+  workstationIssueCallbackAtom,
+  workstationSelectedIssueAtom,
+} from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
 
@@ -68,6 +77,49 @@ const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
   collapseAllSignal,
   emptyFocusActions,
 }) => {
+  const selectedIssueState = useAtomValue(workstationSelectedIssueAtom);
+  const issueCallbacks = useAtomValue(workstationIssueCallbackAtom);
+
+  const handleCloseIssue = useCallback(() => {
+    if (selectedIssueState.issue && issueCallbacks.closeIssue) {
+      void issueCallbacks.closeIssue(selectedIssueState.issue.number);
+    }
+  }, [selectedIssueState.issue, issueCallbacks]);
+
+  const handleReopenIssue = useCallback(() => {
+    if (selectedIssueState.issue && issueCallbacks.reopenIssue) {
+      void issueCallbacks.reopenIssue(selectedIssueState.issue.number);
+    }
+  }, [selectedIssueState.issue, issueCallbacks]);
+
+  const handleAddIssueComment = useCallback(
+    async (body: string) => {
+      if (selectedIssueState.issue && issueCallbacks.addComment) {
+        await issueCallbacks.addComment(selectedIssueState.issue.number, body);
+      }
+    },
+    [selectedIssueState.issue, issueCallbacks]
+  );
+
+  if (historySelection?.type === "issue") {
+    if (!selectedIssueState.issue) {
+      return <NoTabsPlaceholder icon="editor" actions={emptyFocusActions} />;
+    }
+
+    return (
+      <IssueDetailPanel
+        issue={selectedIssueState.issue}
+        comments={selectedIssueState.comments}
+        commentsLoading={selectedIssueState.commentsLoading}
+        submittingComment={selectedIssueState.submittingComment}
+        onClose={() => undefined}
+        onCloseIssue={handleCloseIssue}
+        onReopenIssue={handleReopenIssue}
+        onAddComment={handleAddIssueComment}
+      />
+    );
+  }
+
   if (historySelection) {
     const isPr = historySelection.type === "pr";
     const commitSha = isPr

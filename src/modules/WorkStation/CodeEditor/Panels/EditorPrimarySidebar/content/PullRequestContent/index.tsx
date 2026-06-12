@@ -1,25 +1,29 @@
 /**
  * PullRequestContent
  *
- * Sidebar-only PR list. Always shows the full list of open PRs — no
- * inline detail panel. Clicking a row fires `onHistorySelectionChange`
- * with `type: "pr"`, which moves PR context into the top header bar.
- *
- * Stats (additions/deletions/file count) and timestamps surface in a
- * hover tooltip on the row itself so the row stays compact.
+ * Sidebar PR list using TreeRowBase rows grouped under a collapsible
+ * "OPEN" section header (same pattern as IssuesContent).
+ * Clicking a row fires `onHistorySelectionChange` with `type: "pr"`.
  */
 import { useAtomValue } from "jotai";
-import { Loader2, TriangleAlert } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  GitPullRequest,
+  Loader2,
+  TriangleAlert,
+} from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { OpenPRItem } from "@src/api/tauri/github";
 import Tooltip from "@src/components/Tooltip";
+import { TreeRowBase, type TreeRowNode } from "@src/components/TreeRow";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
-import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { TYPOGRAPHY } from "@src/modules/WorkStation/shared/tokens";
 import {
-  PRIMARY_SIDEBAR_HOVER,
-  TYPOGRAPHY,
+  COUNT_BADGE,
+  getCountBadgeSizeClass,
 } from "@src/modules/WorkStation/shared/tokens";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { getPrStatusLabelKey } from "@src/shared/pr/prStatus";
@@ -50,109 +54,119 @@ function parsePrUrl(
   return { repoFullName: m[1], number: Number(m[2]) };
 }
 
-// ── PR list row ────────────────────────────────────────────────────────────────
+// ── PR tree row ───────────────────────────────────────────────────────────────
 
-interface PrListRowProps {
+interface PrRowProps {
   pr: OpenPRItem;
+  depth?: number;
   isCurrentBranch: boolean;
   isSelected: boolean;
   onClick: (pr: OpenPRItem) => void;
 }
 
-const PrListRow: React.FC<PrListRowProps> = ({
-  pr,
-  isCurrentBranch,
-  isSelected,
-  onClick,
-}) => {
-  const { t } = useTranslation("common");
-  const statusKey = pr.draft ? "draft" : pr.state;
-  const statusVariant = getPrStatusVariant(statusKey);
+const PrRow: React.FC<PrRowProps> = memo(
+  ({ pr, depth = 1, isCurrentBranch, isSelected, onClick }) => {
+    const { t } = useTranslation("common");
+    const statusKey = pr.draft ? "draft" : pr.state;
+    const statusVariant = getPrStatusVariant(statusKey);
 
-  const handleDragStart = useCallback(
-    (event: React.DragEvent<HTMLButtonElement>) => {
-      const prPayload = {
-        prNumber: pr.number,
-        prTitle: pr.title,
-        prUrl: pr.url,
-        prStatus: statusKey,
-        sourceBranch: pr.head_branch,
-        targetBranch: pr.base_branch,
-      };
-      const dragPayload = JSON.stringify(prPayload);
-      event.dataTransfer.setData(
-        "application/x-orgii-pr-reference",
-        dragPayload
-      );
-      // WKWebView (Tauri/macOS) may strip custom MIME types during drag-and-drop.
-      // Store the payload in a window-level variable so the drop handler can
-      // retrieve it even if dataTransfer.getData() returns "".
-      window.__orgiiLastPrDrag = { ...prPayload, timestamp: Date.now() };
-      event.dataTransfer.effectAllowed = "copy";
-    },
-    [pr, statusKey]
-  );
+    const handleDragStart = useCallback(
+      (event: React.DragEvent<HTMLElement>) => {
+        const prPayload = {
+          prNumber: pr.number,
+          prTitle: pr.title,
+          prUrl: pr.url,
+          prStatus: statusKey,
+          sourceBranch: pr.head_branch,
+          targetBranch: pr.base_branch,
+        };
+        event.dataTransfer.setData(
+          "application/x-orgii-pr-reference",
+          JSON.stringify(prPayload)
+        );
+        window.__orgiiLastPrDrag = { ...prPayload, timestamp: Date.now() };
+        event.dataTransfer.effectAllowed = "copy";
+      },
+      [pr, statusKey]
+    );
 
-  const tooltipContent = (
-    <div className="flex flex-col gap-1 py-0.5">
-      <div className="flex items-center gap-2 text-[11px]">
-        <span className="text-text-3">{t("labels.status", "Status")}</span>
-        <span className="capitalize text-text-2">
-          {t(getPrStatusLabelKey(statusKey), statusKey)}
-        </span>
-      </div>
-      <div className="flex items-center gap-2 text-[11px]">
-        <span className="text-text-3">{t("labels.number", "Number")}</span>
-        <span className="tabular-nums text-text-2">#{pr.number}</span>
-      </div>
-      {pr.head_branch && (
+    const node: TreeRowNode = useMemo(
+      () => ({
+        id: String(pr.number),
+        name: pr.title,
+        path: pr.url,
+        type: "file",
+        icon: (
+          <span className={statusVariant.dotClass.replace("bg-", "text-")}>
+            <GitPullRequest size={14} strokeWidth={1.75} />
+          </span>
+        ),
+      }),
+      [pr.number, pr.title, pr.url, statusVariant.dotClass]
+    );
+
+    const tooltipContent = (
+      <div className="flex flex-col gap-1 py-0.5">
         <div className="flex items-center gap-2 text-[11px]">
-          <span className="text-text-3">{t("labels.branch", "Branch")}</span>
-          <span className="font-mono text-text-2">
-            {truncateBranchLabel(pr.head_branch, 40)}
+          <span className="text-text-3">{t("labels.status", "Status")}</span>
+          <span className="capitalize text-text-2">
+            {t(getPrStatusLabelKey(statusKey), statusKey)}
           </span>
         </div>
-      )}
-      <div className="flex items-center gap-2 text-[11px]">
-        <span className="text-text-3">{t("labels.updated", "Updated")}</span>
-        <span className="text-text-2">
-          {pr.updated_at ? formatRelativeTime(pr.updated_at, "nano") : "—"}
-        </span>
+        <div className="flex items-center gap-2 text-[11px]">
+          <span className="text-text-3">{t("labels.number", "Number")}</span>
+          <span className="tabular-nums text-text-2">#{pr.number}</span>
+        </div>
+        {pr.head_branch && (
+          <div className="flex items-center gap-2 text-[11px]">
+            <span className="text-text-3">{t("labels.branch", "Branch")}</span>
+            <span className="font-mono text-text-2">
+              {truncateBranchLabel(pr.head_branch, 40)}
+            </span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-[11px]">
+          <span className="text-text-3">{t("labels.updated", "Updated")}</span>
+          <span className="text-text-2">
+            {pr.updated_at ? formatRelativeTime(pr.updated_at, "nano") : "—"}
+          </span>
+        </div>
       </div>
-    </div>
-  );
+    );
 
-  return (
-    <Tooltip
-      content={tooltipContent}
-      position="bottom-end"
-      smartPlacement
-      panelStyle
-      mouseEnterDelay={200}
-    >
-      <button
-        type="button"
-        draggable
-        onDragStart={handleDragStart}
-        onClick={() => onClick(pr)}
-        className={`flex w-full items-center gap-1.5 px-3 py-1.5 text-left transition-colors ${
-          isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row
-        } ${isCurrentBranch ? "border-l-2 border-primary-5 pl-[10px]" : ""}`}
+    return (
+      <Tooltip
+        content={tooltipContent}
+        position="bottom-end"
+        smartPlacement
+        panelStyle
+        mouseEnterDelay={200}
       >
-        {/* Status dot */}
-        <span
-          className={`h-1.5 w-1.5 shrink-0 rounded-full ${statusVariant.dotClass}`}
-          aria-hidden
-        />
-
-        {/* PR title */}
-        <span className="min-w-0 flex-1 truncate text-[12px] leading-snug text-text-1">
-          {pr.title}
-        </span>
-      </button>
-    </Tooltip>
-  );
-};
+        <TreeRowBase
+          node={node}
+          depth={depth}
+          isSelected={isSelected}
+          onClick={() => onClick(pr)}
+          showIndentGuides={false}
+          draggable
+          onDragStart={handleDragStart}
+          className={
+            isCurrentBranch
+              ? "border-l-2 border-primary-5 !pl-[calc(theme(spacing.3)+2px+theme(spacing.4))]"
+              : undefined
+          }
+        >
+          <span className="ml-auto flex shrink-0 items-center gap-1">
+            <span className="min-w-[28px] text-right text-[11px] tabular-nums text-text-3">
+              #{pr.number}
+            </span>
+          </span>
+        </TreeRowBase>
+      </Tooltip>
+    );
+  }
+);
+PrRow.displayName = "PrRow";
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -172,6 +186,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
 
   const [selectedPrNumber, setSelectedPrNumber] = useState<number | null>(null);
   const [localCreateError, setLocalCreateError] = useState<string | null>(null);
+  const [openCollapsed, setOpenCollapsed] = useState(false);
 
   const currentBranchPrFromList = useMemo(
     () =>
@@ -226,103 +241,118 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
     }
   }, [onCreatePr, prCreating]);
 
-  // ── Create PR state ────────────────────────────────────────────────────
+  const openSectionNode: TreeRowNode = {
+    id: "open-prs",
+    name: "Open",
+    path: "open-prs",
+    type: "directory",
+    expanded: !openCollapsed,
+    icon: (
+      <div className="flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center">
+        {openCollapsed ? (
+          <ChevronRight size={14} className="text-text-3" />
+        ) : (
+          <ChevronDown size={14} className="text-text-3" />
+        )}
+      </div>
+    ),
+  };
+
   const hasCurrentBranchPr = !!currentBranchPrFromList || !!parsedAtomPr;
 
-  if (!hasCurrentBranchPr && readyToCreate) {
-    return (
-      <div className="flex h-full flex-col gap-3 p-3">
-        <div>
-          <p className={`${TYPOGRAPHY.secondary} text-text-2`}>
-            {t(
-              "labels.noPullRequestForBranch",
-              "There is no pull request for this branch yet."
+  return (
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      {/* Create PR section */}
+      {!hasCurrentBranchPr && readyToCreate && (
+        <div className="flex flex-col gap-3 border-b border-border-2 p-3">
+          <div>
+            <p className={`${TYPOGRAPHY.secondary} text-text-2`}>
+              {t(
+                "labels.noPullRequestForBranch",
+                "There is no pull request for this branch yet."
+              )}
+            </p>
+            {branchName && (
+              <code
+                className={`mt-1 block truncate ${TYPOGRAPHY.secondary} text-text-3`}
+              >
+                {branchName}
+              </code>
             )}
-          </p>
-          {branchName && (
-            <code
-              className={`mt-1 block truncate ${TYPOGRAPHY.secondary} text-text-3`}
+          </div>
+          {prCreating ? (
+            <div
+              className={`flex items-center gap-2 ${TYPOGRAPHY.secondary} text-text-3`}
             >
-              {branchName}
-            </code>
+              <Loader2
+                size={SPINNER_TOKENS.default}
+                className="animate-spin text-text-3"
+              />
+              <span>{t("labels.creatingPullRequest", "Creating…")}</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={handleCreate}
+              disabled={!onCreatePr}
+              className="flex h-7 items-center justify-center rounded-md bg-primary-6 px-2.5 text-[12px] font-medium text-white transition-colors hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {t("actions.createPullRequest", "Create pull request")}
+            </button>
+          )}
+          {localCreateError && (
+            <div className="flex items-start gap-1.5 rounded-md bg-fill-2 px-2 py-1.5">
+              <TriangleAlert
+                size={12}
+                className="mt-0.5 shrink-0 text-warning-6"
+              />
+              <p
+                className={`min-w-0 flex-1 ${TYPOGRAPHY.secondary} text-text-2`}
+              >
+                {localCreateError}
+              </p>
+            </div>
           )}
         </div>
-        {prCreating ? (
-          <div
-            className={`flex items-center gap-2 ${TYPOGRAPHY.secondary} text-text-3`}
-          >
-            <Loader2
-              size={SPINNER_TOKENS.default}
-              className="animate-spin text-text-3"
-            />
-            <span>{t("labels.creatingPullRequest", "Creating…")}</span>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={handleCreate}
-            disabled={!onCreatePr}
-            className="flex h-7 items-center justify-center rounded-md bg-primary-6 px-2.5 text-[12px] font-medium text-white transition-colors hover:bg-primary-7 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {t("actions.createPullRequest", "Create pull request")}
-          </button>
-        )}
-        {localCreateError && (
-          <div className="flex items-start gap-1.5 rounded-md bg-fill-2 px-2 py-1.5">
-            <TriangleAlert
-              size={12}
-              className="mt-0.5 shrink-0 text-warning-6"
-            />
-            <p className={`min-w-0 flex-1 ${TYPOGRAPHY.secondary} text-text-2`}>
-              {localCreateError}
-            </p>
-          </div>
-        )}
+      )}
 
-        {/* Still show other repo PRs below the create section if they exist */}
-        {orderedPrs.length > 0 && (
-          <div className="mt-1 flex flex-col border-t border-fill-2 pt-2">
-            <p className={`mb-1 px-0 ${TYPOGRAPHY.secondary} text-text-3`}>
-              {t("labels.otherOpenPullRequests", "Other open pull requests")}
-            </p>
-            {orderedPrs.map((pr) => (
-              <PrListRow
+      {/* PR tree list */}
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        {/* Open section header */}
+        <TreeRowBase
+          node={openSectionNode}
+          depth={0}
+          onClick={() => setOpenCollapsed((prev) => !prev)}
+          showIndentGuides={false}
+          className="[&_.min-w-0]:text-[11px] [&_.min-w-0]:font-medium [&_.min-w-0]:uppercase [&_.min-w-0]:text-text-2"
+        >
+          <span
+            className={`${COUNT_BADGE.base} ${getCountBadgeSizeClass(orderedPrs.length)} ${COUNT_BADGE.primary}`}
+          >
+            {orderedPrs.length}
+          </span>
+        </TreeRowBase>
+
+        {!openCollapsed &&
+          (orderedPrs.length === 0 ? (
+            <Placeholder
+              variant="empty"
+              placement="sidebar"
+              title={t("labels.noPullRequest", "No pull request")}
+            />
+          ) : (
+            orderedPrs.map((pr) => (
+              <PrRow
                 key={pr.number}
                 pr={pr}
+                depth={1}
                 isCurrentBranch={pr.head_branch === branchName}
                 isSelected={pr.number === selectedPrNumber}
                 onClick={handlePrClick}
               />
-            ))}
-          </div>
-        )}
+            ))
+          ))}
       </div>
-    );
-  }
-
-  // ── Full PR list view ──────────────────────────────────────────────────
-  if (orderedPrs.length === 0) {
-    return (
-      <Placeholder
-        variant="empty"
-        placement="sidebar"
-        title={t("labels.noPullRequest", "No pull request")}
-        fillParentHeight
-      />
-    );
-  }
-
-  return (
-    <div className="flex h-full min-h-0 flex-col overflow-auto scrollbar-hide">
-      {orderedPrs.map((pr) => (
-        <PrListRow
-          key={pr.number}
-          pr={pr}
-          isCurrentBranch={pr.head_branch === branchName}
-          isSelected={pr.number === selectedPrNumber}
-          onClick={handlePrClick}
-        />
-      ))}
     </div>
   );
 };
