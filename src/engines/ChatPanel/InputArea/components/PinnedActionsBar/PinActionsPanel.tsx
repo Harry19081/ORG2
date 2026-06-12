@@ -181,14 +181,28 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
     const PANEL_WIDTH = 240;
     const VIEWPORT_PADDING = 8;
     const { width: vw } = getViewportSize();
-    const alignedLeft =
-      panelPosition.right !== undefined
-        ? vw - panelPosition.right - PANEL_WIDTH
-        : panelPosition.left;
-    const left = Math.max(
-      VIEWPORT_PADDING,
-      Math.min(alignedLeft, vw - PANEL_WIDTH - VIEWPORT_PADDING)
-    );
+
+    // Anchor to whichever edge the engine populated. When `align="right"`,
+    // `panelPosition.right` is set (distance from viewport's right edge to the
+    // trigger's right edge) and we hand it straight to CSS — this avoids
+    // round-tripping through `left` arithmetic that goes wrong under CSS
+    // `zoom`, where viewport-width and getBoundingClientRect() can disagree on
+    // their coordinate space.  Sibling dropdowns (FollowModeDropdown,
+    // PlaybackSpeedInline) use the same direct-edge pattern.
+    let positionStyle: React.CSSProperties;
+    if (panelPosition.right !== undefined) {
+      const clampedRight = Math.max(
+        VIEWPORT_PADDING,
+        Math.min(panelPosition.right, vw - PANEL_WIDTH - VIEWPORT_PADDING)
+      );
+      positionStyle = { right: clampedRight };
+    } else {
+      const clampedLeft = Math.max(
+        VIEWPORT_PADDING,
+        Math.min(panelPosition.left, vw - PANEL_WIDTH - VIEWPORT_PADDING)
+      );
+      positionStyle = { left: clampedLeft };
+    }
 
     return createPortal(
       <div
@@ -197,7 +211,7 @@ const PinActionsPanel: React.FC<PinActionsPanelProps> = memo(
         style={{
           top: panelPosition.top,
           bottom: panelPosition.bottom,
-          left,
+          ...positionStyle,
           width: PANEL_WIDTH,
         }}
       >
