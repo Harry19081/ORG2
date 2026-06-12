@@ -272,7 +272,6 @@ const ActivitySimulator: React.FC = memo(() => {
                     activeApp={dockActiveApp}
                     currentWorkingApp={currentWorkingApp}
                     showDock={showDock}
-                    hasActiveSubagents={hasActiveSubagents}
                     onAppClick={handleDockAppClick}
                     onAppContextMenu={handleDockAppContextMenu}
                   />

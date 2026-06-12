@@ -18,12 +18,7 @@ import {
 } from "react";
 
 import { AppType } from "../../types/appTypes";
-import {
-  BACKGROUND_TASKS_DOCK_APP,
-  DOCK_APPS,
-  DOCK_APP_SEGMENTS,
-  getAppById,
-} from "./config";
+import { DOCK_APPS, DOCK_APP_SEGMENTS, getAppById } from "./config";
 import {
   DOCK_LUCIDE_ICON_PROPS,
   DockIconColumn,
@@ -40,8 +35,6 @@ interface DockReplayControlProps {
   currentWorkingApp?: AppType;
   /** Whether to show the dock icons */
   showDock?: boolean;
-  /** True when ≥1 subagent/background task is active at the current cursor */
-  hasActiveSubagents?: boolean;
   /** Callback when a dock app is clicked */
   onAppClick?: (appId: string, event?: MouseEvent) => void;
   /** Callback when a dock app is right-clicked */
@@ -55,7 +48,6 @@ export const DockReplayControl: FC<DockReplayControlProps> = memo(
     activeApp,
     currentWorkingApp,
     showDock = true,
-    hasActiveSubagents = false,
     onAppClick,
     onAppContextMenu,
     trailing,
@@ -118,37 +110,6 @@ export const DockReplayControl: FC<DockReplayControlProps> = memo(
               })}
             </Fragment>
           ))}
-
-          {hasActiveSubagents && (
-            <>
-              <DockSegmentDivider />
-              <DockIconColumn
-                trailer={
-                  activeApp === AppType.BACKGROUND_TASKS
-                    ? "spacer"
-                    : "agent-working"
-                }
-              >
-                <div
-                  className={dockIconHitAreaClassName({
-                    active: activeApp === AppType.BACKGROUND_TASKS,
-                  })}
-                  onClick={(e) =>
-                    handleAppClick(BACKGROUND_TASKS_DOCK_APP.id, e)
-                  }
-                  onContextMenu={(e) =>
-                    handleContextMenu(BACKGROUND_TASKS_DOCK_APP.id, e)
-                  }
-                  title={BACKGROUND_TASKS_DOCK_APP.name}
-                >
-                  {createElement(
-                    BACKGROUND_TASKS_DOCK_APP.icon,
-                    DOCK_LUCIDE_ICON_PROPS
-                  )}
-                </div>
-              </DockIconColumn>
-            </>
-          )}
 
           {showActive && activeAppInfo && (
             <>
