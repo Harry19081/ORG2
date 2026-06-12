@@ -244,6 +244,7 @@ const ActivitySimulator: React.FC = memo(() => {
                     mainContent={<ActivitySimulatorGrid {...splitGridProps} />}
                     activeSessions={activeSubagents}
                     mainCursorMs={mainCursorMs}
+                    liveFollow={replayMode === "follow"}
                   />
                 ) : (
                   <ActivitySimulatorGrid {...gridProps} />

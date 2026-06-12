@@ -63,6 +63,14 @@ interface SubagentPipCardProps {
   activeSessions?: SubagentSession[];
   /** The main replay cursor's absolute epoch-ms timestamp, used for highlight window calculation. */
   mainCursorMs?: number | null;
+  /**
+   * True while the main session is live-following ("Following Agent").
+   * Cells then live-tail their own event stream instead of time-syncing to
+   * the main cursor — the parent's last-event timestamp lags behind a
+   * streaming subagent (the parent is usually silent while delegating), so
+   * synced mapping would pin every cell visibly behind its tail.
+   */
+  liveFollow?: boolean;
 }
 
 const AGENT_COLORS = [
@@ -76,6 +84,7 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
   mainContent,
   activeSessions = [],
   mainCursorMs = null,
+  liveFollow = false,
 }) => {
   const { t } = useTranslation("sessions");
   const [pageIndex, setPageIndex] = useState(0);
@@ -540,7 +549,7 @@ const SubagentPipCard: React.FC<SubagentPipCardProps> = ({
                       specs={[]}
                       sessionType={entry.sessionType}
                       threadId={entry.sessionId}
-                      externalCursorMs={mainCursorMs}
+                      externalCursorMs={liveFollow ? null : mainCursorMs}
                       isHighlighted={isHighlighted}
                       isExpanded={isExpanded}
                       onExpand={entry.onExpand}

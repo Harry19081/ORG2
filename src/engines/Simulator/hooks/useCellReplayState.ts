@@ -213,6 +213,29 @@ export function useCellReplayState(
     });
   }, [events.length, isPlaying, mode, patchCellState]);
 
+  // ── Follow-mode entry snap ────────────────────────────────────────────
+  // When the cell TRANSITIONS into follow mode (e.g. the main session
+  // switches to live "Following Agent" and the parent stops supplying an
+  // external cursor), snap to the tail immediately. The tailing effect
+  // above only fires on event growth, so without this the cursor would
+  // stay wherever synced-mode mapping left it until the next event lands.
+  const prevModeRef = useRef(mode);
+  useEffect(() => {
+    const prevMode = prevModeRef.current;
+    prevModeRef.current = mode;
+
+    if (mode !== "follow" || prevMode === "follow") return;
+    if (events.length === 0) return;
+    if (isScrubbingRef.current) return;
+    if (isPlaying) return;
+
+    const tail = events.length - 1;
+    queueMicrotask(() => {
+      setCurrentIndexLocal(tail);
+      patchCellState({ currentIndex: tail, isPlaying });
+    });
+  }, [mode, events.length, isPlaying, patchCellState]);
+
   // ── Synced-mode external-cursor mapping ──────────────────────────────
   const safeIndex = useMemo(() => {
     if (events.length === 0) return -1;

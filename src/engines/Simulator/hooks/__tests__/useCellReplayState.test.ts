@@ -266,3 +266,42 @@ describe("useCellReplayState — detached vs follow event growth", () => {
     expect(grown.state.currentIndex).toBe(1);
   });
 });
+
+describe("useCellReplayState — follow-mode entry snap", () => {
+  it("snaps to the tail when transitioning synced → follow", async () => {
+    // Live "Following Agent" regression: parent stops supplying an external
+    // cursor (synced → follow), but no new event lands. The cursor must
+    // snap to the tail immediately instead of staying pinned at the old
+    // synced-mapped position until the next event.
+    const events = buildEvents(5);
+    const cursorMs = new Date(events[1].createdAt).getTime();
+
+    // First render: synced to an early external cursor (index 1).
+    const synced = evaluateHook({ events, externalCursorMs: cursorMs });
+    expect(synced.state.mode).toBe("synced");
+    expect(synced.state.currentIndex).toBe(1);
+
+    // Second render: parent enters live follow (external cursor removed).
+    evaluateHook({ events, externalCursorMs: null });
+    await Promise.resolve(); // flush the queueMicrotask snap
+
+    const after = evaluateHook({ events, externalCursorMs: null });
+    expect(after.state.mode).toBe("follow");
+    expect(after.state.currentIndex).toBe(events.length - 1);
+  });
+
+  it("does not snap on follow entry while the user is detached", async () => {
+    const events = buildEvents(5);
+    const cursorMs = new Date(events[1].createdAt).getTime();
+
+    const { controls } = evaluateHook({ events, externalCursorMs: cursorMs });
+    controls.goToIndex(2); // user takes the wheel → detached
+
+    evaluateHook({ events, externalCursorMs: null });
+    await Promise.resolve();
+
+    const after = evaluateHook({ events, externalCursorMs: null });
+    expect(after.state.mode).toBe("detached");
+    expect(after.state.currentIndex).toBe(2);
+  });
+});
