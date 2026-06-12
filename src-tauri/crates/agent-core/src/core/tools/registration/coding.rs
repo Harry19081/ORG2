@@ -140,8 +140,9 @@ pub fn register(registry: &mut ToolRegistry, deps: &ToolDeps, disabled: &HashSet
     }
 
     // ── Search ──
-    let mut search =
-        SearchTool::new(working_dir.clone()).with_workspace_state(Arc::clone(&deps.workspace));
+    let mut search = SearchTool::new(working_dir.clone())
+        .with_workspace_state(Arc::clone(&deps.workspace))
+        .with_restrict_to_workspace(deps.restrict_to_workspace);
     if let Some(router) = make_router() {
         search = search.with_router(router);
     }
