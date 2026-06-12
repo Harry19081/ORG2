@@ -70,10 +70,15 @@ impl AgentExecMode {
                 allow: None,
                 deny: Self::read_only_deny_base(),
             }),
-            Self::Review => Some(ToolPolicyLayer {
-                allow: None,
-                deny: Self::read_only_deny_base(),
-            }),
+            Self::Review => {
+                let mut deny = Self::read_only_deny_base();
+                // Review's prompt mandates `git diff` via run_shell and
+                // "run analysis commands" — a prompt must never reference a
+                // tool its own policy denies. Shell access stays; file-write
+                // tools remain denied.
+                deny.retain(|t| t != tool_names::RUN_SHELL && t != tool_names::AWAIT_OUTPUT);
+                Some(ToolPolicyLayer { allow: None, deny })
+            }
         }
     }
 
@@ -155,7 +160,7 @@ impl AgentExecMode {
                 "### Workflow — follow this exactly\n",
                 "1. **Research for new plans** — read the relevant files, search the codebase, clarify unknowns. ",
                 "**HARD LIMIT: at most 5 tool calls that read or search (`read_file`, `list_dir`, `code_search`, ",
-                "`glob_file_search`, `web_search`, `web_fetch`, `query_lsp`) before you must call `create_plan`.** ",
+                "`web_search`, `web_fetch`, `query_lsp`) before you must call `create_plan`.** ",
                 "If you still feel uncertain after 5 such calls, proceed anyway — write the plan with the best information ",
                 "you have and note open questions in the `## Risks & Open Questions` section. ",
                 "Do NOT keep researching indefinitely. ",
@@ -259,7 +264,7 @@ impl AgentExecMode {
                 "### Review process\n",
                 "1. Run `git diff <base_branch>..HEAD` via `run_shell` to get the full diff (the base branch is provided in the task)\n",
                 "2. Read changed files for full context around the diff hunks\n",
-                "3. Use the `work_item` tool to read the linked work item for requirements and acceptance criteria\n",
+                "3. Use the `manage_work_item` tool (action `read_item`) to read the linked work item for requirements and acceptance criteria\n",
                 "4. Evaluate: correctness, edge cases, error handling, security, performance, test coverage, code style\n",
                 "5. Produce your verdict in the EXACT structured format below\n\n",
                 "### Output format (MANDATORY)\n",

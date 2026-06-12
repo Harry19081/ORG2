@@ -78,8 +78,8 @@ pub use super::call_context::CallContext;
 pub use super::error::ToolError;
 pub use super::metadata::{ToolAction, ToolPriority, ToolSchemaCacheScope, ToolUIMetadata};
 pub use super::params::{
-    optional_bool, optional_int, optional_string, params_schema, parse_params, required_string,
-    sanitize_tool_name,
+    assert_llm_compatible_schema, optional_bool, optional_int, optional_string, params_schema,
+    parse_params, parse_params_described, required_string, sanitize_tool_name,
 };
 pub use super::result::{McpMeta, ToolContentBlock, ToolExecuteResult};
 
@@ -120,6 +120,13 @@ pub trait Tool: Send + Sync {
     /// Surfaced in logs and the frontend "config required" indicator.
     fn not_ready_reason(&self) -> Option<&str> {
         None
+    }
+
+    /// Space-separated synonym keywords that improve `tool_search`
+    /// discoverability (e.g. `"bash shell terminal grep"` for an exec tool).
+    /// Matched with higher weight than the description, lower than the name.
+    fn search_hint(&self) -> &str {
+        ""
     }
 
     /// JSON Schema for tool parameters.

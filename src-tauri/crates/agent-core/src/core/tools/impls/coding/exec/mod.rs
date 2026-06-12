@@ -229,6 +229,10 @@ impl Tool for ExecTool {
         30_000
     }
 
+    fn search_hint(&self) -> &str {
+        "bash shell terminal command execute exec grep awk sed process cli run script"
+    }
+
     fn description(&self) -> &str {
         "Execute a shell command or kill a backgrounded process.\n\
         Execute: runs as a fast subprocess with clean stdout/stderr capture. \
