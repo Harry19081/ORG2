@@ -21,6 +21,7 @@ import {
   shellProcessMapAtom,
   updateShellProcessAtom,
 } from "@src/store/session/shellProcessAtom";
+import { updateSubagentJobAtom } from "@src/store/session/subagentJobAtom";
 import {
   closeTerminalSessionAtom,
   terminalSessionsAtom,
@@ -37,6 +38,14 @@ interface RunningShellJob {
   log_path: string | null;
 }
 
+interface RunningSubagentJob {
+  sessionId: string;
+  handle: string;
+  agentName: string;
+  subagentType: string;
+  ageMs: number;
+}
+
 interface PtySessionInfo {
   session_id: string;
   pid: number | null;
@@ -50,6 +59,7 @@ export function useProcessReconciliation(): void {
   const shellProcessMap = useAtomValue(shellProcessMapAtom);
   const terminalSessions = useAtomValue(terminalSessionsAtom);
   const dispatchUpdateShellProcess = useSetAtom(updateShellProcessAtom);
+  const dispatchUpdateSubagentJob = useSetAtom(updateSubagentJobAtom);
   const dispatchUpdateTerminalInfo = useSetAtom(updateTerminalSessionInfoAtom);
   const dispatchCloseSession = useSetAtom(closeTerminalSessionAtom);
 
@@ -58,6 +68,7 @@ export function useProcessReconciliation(): void {
   const shellProcessMapRef = useRef(shellProcessMap);
   const terminalSessionsRef = useRef(terminalSessions);
   const dispatchUpdateShellProcessRef = useRef(dispatchUpdateShellProcess);
+  const dispatchUpdateSubagentJobRef = useRef(dispatchUpdateSubagentJob);
   const dispatchUpdateTerminalInfoRef = useRef(dispatchUpdateTerminalInfo);
   const dispatchCloseSessionRef = useRef(dispatchCloseSession);
 
@@ -65,6 +76,7 @@ export function useProcessReconciliation(): void {
     shellProcessMapRef.current = shellProcessMap;
     terminalSessionsRef.current = terminalSessions;
     dispatchUpdateShellProcessRef.current = dispatchUpdateShellProcess;
+    dispatchUpdateSubagentJobRef.current = dispatchUpdateSubagentJob;
     dispatchUpdateTerminalInfoRef.current = dispatchUpdateTerminalInfo;
     dispatchCloseSessionRef.current = dispatchCloseSession;
   });
@@ -100,6 +112,27 @@ export function useProcessReconciliation(): void {
         }
       } catch (err) {
         console.error("[ProcessReconciliation] agent jobs:", err);
+      }
+
+      // --- Background subagent workers ---
+      try {
+        const runningSubagents = await invokeTauri<RunningSubagentJob[]>(
+          "agent_list_running_subagent_jobs"
+        );
+        if (cancelled) return;
+
+        for (const job of runningSubagents) {
+          dispatchUpdateSubagentJobRef.current({
+            sessionId: job.sessionId,
+            handle: job.handle,
+            agentName: job.agentName,
+            subagentType: job.subagentType,
+            status: "running",
+            startedAtOverride: Date.now() - job.ageMs,
+          });
+        }
+      } catch (err) {
+        console.error("[ProcessReconciliation] subagent jobs:", err);
       }
 
       // --- PTY sessions ---

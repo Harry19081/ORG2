@@ -26,3 +26,24 @@ pub async fn agent_kill_shell_process(pid: u32) -> Result<String, String> {
 pub fn agent_list_running_shell_jobs() -> Vec<registry::RunningShellJob> {
     registry::list_running_shell_jobs()
 }
+
+/// List all currently running background subagents (across all sessions).
+///
+/// Subagent counterpart of `agent_list_running_shell_jobs`, consumed by the
+/// same reconciliation hook to reseed the ActiveProcesses pin bar after a
+/// hot reload / page refresh.
+#[tauri::command]
+pub fn agent_list_running_subagent_jobs() -> Vec<registry::RunningSubagentJob> {
+    registry::list_running_subagent_jobs()
+}
+
+/// Kill a background subagent by its job-registry handle.
+///
+/// Invoked from the ActiveProcesses pin bar's stop button. Cooperative-first
+/// (sets the job's own cancel flag, 10s watchdog before hard abort) — see
+/// `registry::kill_subagent`.
+#[tauri::command]
+pub fn agent_kill_subagent_job(handle: String) -> Result<(), String> {
+    info!("[agent_kill_subagent_job] Killing subagent '{}'", handle);
+    registry::kill_subagent(&handle)
+}

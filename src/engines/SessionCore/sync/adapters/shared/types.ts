@@ -222,6 +222,18 @@ export interface AgentWSEvent {
   reason?: "explicit" | "timeout";
 
   // ============================================
+  // Background Subagent Job Events (agent:subagent_job_changed)
+  // ============================================
+
+  /** Job-registry handle of the background subagent (its session id) */
+  handle?: string;
+  /** Display name of the subagent's agent definition */
+  agentName?: string;
+  /** "delegate" | "shadow" | agent id label */
+  subagentType?: string;
+  // (job status rides the shared `status` field above)
+
+  // ============================================
   // Streaming Complete Events (agent:streaming_complete)
   // From Rust StreamingBuffer — replaces TS-side delta accumulation
   // ============================================

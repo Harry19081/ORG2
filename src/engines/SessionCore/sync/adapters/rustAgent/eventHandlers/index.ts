@@ -63,6 +63,7 @@ import {
   handleShellProcessBackgrounded,
   handleShellProcessExited,
   handleShellProcessStarted,
+  handleSubagentJobChanged,
   handleToolCall,
   handleToolResult,
 } from "./toolHandlers";
@@ -273,6 +274,9 @@ export async function dispatchAgentEvent(
       break;
     case "agent:shell_process_exited":
       handleShellProcessExited(event, eventSessionId, ctx);
+      break;
+    case "agent:subagent_job_changed":
+      handleSubagentJobChanged(event, eventSessionId, ctx);
       break;
     case "agent:mcp_progress":
       handleMcpProgress(event, eventSessionId, ctx);

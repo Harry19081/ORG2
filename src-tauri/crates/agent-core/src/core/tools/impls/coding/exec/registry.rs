@@ -178,10 +178,10 @@ pub fn register_subagent(
         handle: handle.clone(),
         label: agent_name.clone(),
         kind: JobKind::Subagent {
-            subagent_type,
-            agent_name,
+            subagent_type: subagent_type.clone(),
+            agent_name: agent_name.clone(),
         },
-        session_id,
+        session_id: session_id.clone(),
         started_at: Instant::now(),
         status: JobStatus::Running,
         final_result: None,
@@ -192,8 +192,35 @@ pub fn register_subagent(
         output_acknowledged: false,
     };
     let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
-    reg.insert(handle, job);
+    reg.insert(handle.clone(), job);
+    drop(reg);
+    broadcast_subagent_job_changed(&session_id, &handle, &agent_name, &subagent_type, "running");
     (sender, cancel_flag)
+}
+
+/// Broadcast a background-subagent lifecycle change to the frontend.
+///
+/// The subagent counterpart of `subprocess::broadcast_process_started` /
+/// `broadcast_process_exited`: drives the ActiveProcesses pin bar above the
+/// chat composer so the user can see (and kill) background workers. `status`
+/// is the wire string: "running" | "completed" | "failed" | "killed".
+pub fn broadcast_subagent_job_changed(
+    session_id: &str,
+    handle: &str,
+    agent_name: &str,
+    subagent_type: &str,
+    status: &str,
+) {
+    crate::bus::broadcast_event(
+        "agent:subagent_job_changed",
+        serde_json::json!({
+            "sessionId": session_id,
+            "handle": handle,
+            "agentName": agent_name,
+            "subagentType": subagent_type,
+            "status": status,
+        }),
+    );
 }
 
 /// Mark a job as exited/completed/failed. The entry remains for a grace period
@@ -204,11 +231,31 @@ pub fn register_subagent(
 /// not overwrite the user-visible "killed" verdict.
 pub fn mark_exited(handle: &str, status: JobStatus) {
     let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
-    if let Some(job) = reg.get_mut(handle) {
-        if matches!(job.status, JobStatus::Killed) {
-            return;
-        }
-        job.status = status;
+    let Some(job) = reg.get_mut(handle) else {
+        return;
+    };
+    if matches!(job.status, JobStatus::Killed) {
+        return;
+    }
+    job.status = status;
+    if let JobKind::Subagent {
+        subagent_type,
+        agent_name,
+    } = &job.kind
+    {
+        let wire_status = match &job.status {
+            JobStatus::Completed | JobStatus::Exited(_) => "completed",
+            JobStatus::Failed => "failed",
+            JobStatus::Killed => "killed",
+            JobStatus::Running => "running",
+        };
+        broadcast_subagent_job_changed(
+            &job.session_id,
+            &job.handle,
+            agent_name,
+            subagent_type,
+            wire_status,
+        );
     }
 }
 
@@ -325,6 +372,40 @@ pub fn list_running_shell_jobs() -> Vec<RunningShellJob> {
                 log_path: Some(log_path.to_string_lossy().into_owned()),
             }),
             JobKind::Subagent { .. } => None,
+        })
+        .collect()
+}
+
+/// Lightweight snapshot of a running background subagent, the subagent
+/// counterpart of [`RunningShellJob`]. Same consumer: frontend process
+/// reconciliation after a hot reload / page refresh.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RunningSubagentJob {
+    pub session_id: String,
+    pub handle: String,
+    pub agent_name: String,
+    pub subagent_type: String,
+    pub age_ms: u64,
+}
+
+/// List all currently running background subagents across all sessions.
+pub fn list_running_subagent_jobs() -> Vec<RunningSubagentJob> {
+    let reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
+    reg.values()
+        .filter(|job| job.is_running())
+        .filter_map(|job| match &job.kind {
+            JobKind::Subagent {
+                subagent_type,
+                agent_name,
+            } => Some(RunningSubagentJob {
+                session_id: job.session_id.clone(),
+                handle: job.handle.clone(),
+                agent_name: agent_name.clone(),
+                subagent_type: subagent_type.clone(),
+                age_ms: job.started_at.elapsed().as_millis() as u64,
+            }),
+            JobKind::Shell { .. } => None,
         })
         .collect()
 }
@@ -475,23 +556,33 @@ pub async fn kill_shell(handle: &str) -> Result<(), String> {
 pub fn kill_subagent(handle: &str) -> Result<(), String> {
     const HARD_ABORT_GRACE_SECS: u64 = 10;
 
-    let (cancel_flag, join_handle) = {
+    let (cancel_flag, join_handle, broadcast_info) = {
         let mut reg = REGISTRY.lock().unwrap_or_else(|e| e.into_inner());
         let job = reg
             .get_mut(handle)
             .ok_or_else(|| format!("handle '{handle}' not found"))?;
-        match &job.kind {
+        let broadcast_info = match &job.kind {
             JobKind::Shell { .. } => {
                 return Err("not a subagent — use run_shell to kill shell processes".into())
             }
-            JobKind::Subagent { .. } => {}
-        }
+            JobKind::Subagent {
+                subagent_type,
+                agent_name,
+            } => (
+                job.session_id.clone(),
+                agent_name.clone(),
+                subagent_type.clone(),
+            ),
+        };
         if !job.is_running() {
             return Err(format!("subagent '{handle}' already finished"));
         }
         job.status = JobStatus::Killed;
-        (job.cancel_flag.clone(), job.join_handle.take())
+        (job.cancel_flag.clone(), job.join_handle.take(), broadcast_info)
     };
+
+    let (session_id, agent_name, subagent_type) = broadcast_info;
+    broadcast_subagent_job_changed(&session_id, handle, &agent_name, &subagent_type, "killed");
 
     if let Some(flag) = cancel_flag {
         flag.store(true, Ordering::SeqCst);
