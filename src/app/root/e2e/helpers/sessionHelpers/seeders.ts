@@ -424,6 +424,56 @@ export function createSessionSeederHelpers(store: E2EStore) {
     }
   };
 
+  /**
+   * Wire-path variant for the subagent MONITOR (clip model): seeds a child
+   * `agent_sessions` row via the debug-only Tauri command
+   * `debug_seed_child_session`, which calls the PRODUCTION `upsert_session`.
+   * `useSubagentSessions` then discovers the row through the real
+   * `es_get_child_sessions` query — including the backend-authoritative
+   * `isTerminal` / `endedAt` clip fields. No store writes happen here.
+   */
+  const debugSeedChildSessionWire = async (input: {
+    parentSessionId: string;
+    sessionId: string;
+    name: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  }): Promise<Result<{ sessionId: string }>> => {
+    try {
+      if (!input.parentSessionId || !input.sessionId) {
+        return {
+          ok: false,
+          error:
+            "debugSeedChildSessionWire: `parentSessionId` and `sessionId` required",
+        };
+      }
+      await invoke("debug_seed_child_session", {
+        parentSessionId: input.parentSessionId,
+        sessionId: input.sessionId,
+        name: input.name,
+        status: input.status,
+        createdAt: input.createdAt,
+        updatedAt: input.updatedAt,
+      });
+      return { ok: true, sessionId: input.sessionId };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
+  /** Remove a seeded child session row (fixture cleanup). */
+  const deleteSessionWire = async (
+    sessionId: string
+  ): Promise<{ ok: true } | Result<never>> => {
+    try {
+      await invoke("agent_delete_session", { sessionId });
+      return { ok: true };
+    } catch (err) {
+      return asError(err);
+    }
+  };
+
   return {
     seedChatEvents,
     seedSidebarSession,
@@ -433,5 +483,7 @@ export function createSessionSeederHelpers(store: E2EStore) {
     seedSubagentJob,
     debugSeedSubagentJobWire,
     killSubagentJobWire,
+    debugSeedChildSessionWire,
+    deleteSessionWire,
   };
 }

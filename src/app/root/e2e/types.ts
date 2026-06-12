@@ -564,6 +564,15 @@ export interface E2EHelpers {
     subagentType?: string;
   }) => Promise<Result<{ sessionId: string; handle: string }>>;
   killSubagentJobWire: (handle: string) => Promise<{ ok: true } | Err>;
+  debugSeedChildSessionWire: (input: {
+    parentSessionId: string;
+    sessionId: string;
+    name: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  }) => Promise<Result<{ sessionId: string }>>;
+  deleteSessionWire: (sessionId: string) => Promise<{ ok: true } | Err>;
   inspectChatState: () => Promise<
     Result<{
       activeSessionId: string | null;

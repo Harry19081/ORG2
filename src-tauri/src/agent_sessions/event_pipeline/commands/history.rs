@@ -124,6 +124,39 @@ pub async fn es_get_parent_session(
         .map_err(|e| format!("Failed to get parent session: {}", e))
 }
 
+/// Debug-only: seed a child `agent_sessions` row for WDIO subagent-monitor
+/// specs. Drives the production `upsert_session` with
+/// `session_type=subagent`, so the row is shaped exactly like what the
+/// `agent` tool persists — `es_get_child_sessions` then computes the same
+/// authoritative `isTerminal`/`endedAt` clip fields the live path uses.
+#[tauri::command]
+pub async fn debug_seed_child_session(
+    parent_session_id: String,
+    session_id: String,
+    name: String,
+    status: String,
+    created_at: String,
+    updated_at: String,
+) -> Result<(), String> {
+    if !cfg!(debug_assertions) {
+        return Err("debug_seed_child_session is only available in debug builds".into());
+    }
+    let record = UnifiedSessionRecord {
+        session_id,
+        name,
+        status,
+        created_at,
+        updated_at,
+        session_type: agent_core::session::persistence::session_type::SUBAGENT.to_string(),
+        parent_session_id: Some(parent_session_id),
+        ..Default::default()
+    };
+    tokio::task::spawn_blocking(move || agent_core::session::persistence::upsert_session(&record))
+        .await
+        .map_err(|e| e.to_string())?
+        .map_err(|e| e.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::clip_fields;

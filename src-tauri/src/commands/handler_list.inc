@@ -1071,6 +1071,8 @@ agent_sessions::event_pipeline::commands::es_group_sessions,
 agent_sessions::event_pipeline::commands::es_compute_session_statistics,
 agent_sessions::event_pipeline::commands::es_get_child_sessions,
 agent_sessions::event_pipeline::commands::es_get_parent_session,
+// Debug-only: WDIO subagent-monitor fixture seeding (no-op outside debug builds)
+agent_sessions::event_pipeline::commands::debug_seed_child_session,
 // Unified Session API commands
 agent_sessions::unified_stats::commands::session_aggregate_list,
 agent_sessions::unified_stats::commands::session_check_health,

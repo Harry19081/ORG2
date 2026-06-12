@@ -515,6 +515,8 @@ export function createSessionHelpers(store: E2EStore) {
     seedSubagentJob: seeders.seedSubagentJob,
     debugSeedSubagentJobWire: seeders.debugSeedSubagentJobWire,
     killSubagentJobWire: seeders.killSubagentJobWire,
+    debugSeedChildSessionWire: seeders.debugSeedChildSessionWire,
+    deleteSessionWire: seeders.deleteSessionWire,
     inspectChatState: createInspectChatStateHelper(store),
   };
 }

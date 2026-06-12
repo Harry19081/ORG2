@@ -233,6 +233,8 @@ export const E2EBootstrap: FC = () => {
       seedSubagentJob,
       debugSeedSubagentJobWire,
       killSubagentJobWire,
+      debugSeedChildSessionWire,
+      deleteSessionWire,
       inspectChatState,
     } = createSessionHelpers(store);
 
@@ -417,6 +419,8 @@ export const E2EBootstrap: FC = () => {
       seedSubagentJob,
       debugSeedSubagentJobWire,
       killSubagentJobWire,
+      debugSeedChildSessionWire,
+      deleteSessionWire,
       inspectChatState,
       debugSessionSkillsSnapshot,
       debugSessionGeneralSnapshot,
