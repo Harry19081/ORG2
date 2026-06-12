@@ -11,6 +11,7 @@
 import cn from "classnames";
 import { ChevronDown, Loader2, Search } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
+import type { ComponentType } from "react";
 
 import Dropdown from "@src/components/Dropdown";
 import DropdownSelectedCheck from "@src/components/Dropdown/DropdownSelectedCheck";
@@ -19,16 +20,22 @@ import {
   DROPDOWN_ITEM,
 } from "@src/components/Dropdown/tokens";
 
-import type { DropdownOption } from "../../types/workflow";
-
 // ============================================
 // Types
 // ============================================
 
+export interface InlineDropdownOption<T = unknown> {
+  label: string;
+  value: string;
+  icon?: ComponentType<{ size?: number; className?: string }>;
+  extra?: T;
+  disabled?: boolean;
+}
+
 export interface InlineDropdownProps {
   value?: string;
   onChange: (value: string, extra?: unknown) => void;
-  options: DropdownOption[];
+  options: InlineDropdownOption[];
   placeholder?: string;
   loading?: boolean;
   className?: string;
@@ -56,11 +63,9 @@ function InlineDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Find selected option
   const selectedOption = options.find((opt) => opt.value === value);
   const displayLabel = selectedOption?.label || placeholder;
 
-  // Filter options based on search
   const filteredOptions = useMemo(() => {
     if (!searchQuery) return options;
     return options.filter((opt) =>
@@ -69,7 +74,7 @@ function InlineDropdown({
   }, [options, searchQuery]);
 
   const handleSelect = useCallback(
-    (opt: DropdownOption) => {
+    (opt: InlineDropdownOption) => {
       if (opt.disabled) return;
       onChange(opt.value, opt.extra);
       setIsOpen(false);

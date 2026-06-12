@@ -7,11 +7,12 @@
  * Categories: Repo | Session | Projects | Work items
  * Scope varies based on category (multi-select supported)
  */
-import InlineDropdown from "@/src/modules/MainApp/AgentOrgs/components/InlineDropdown";
-import type { DropdownOption } from "@/src/modules/MainApp/AgentOrgs/types/workflow";
 import { Box, Folder, GitBranch, Layers } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
+import InlineDropdown from "@src/components/InlineDropdown";
+import type { InlineDropdownOption as DropdownOption } from "@src/components/InlineDropdown";
 
 // ============================================
 // Type Definitions

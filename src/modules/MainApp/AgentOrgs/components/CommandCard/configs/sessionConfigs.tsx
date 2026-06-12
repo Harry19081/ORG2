@@ -13,12 +13,13 @@
 import { Bot, Brain } from "lucide-react";
 import React from "react";
 
+import InlineDropdown from "@src/components/InlineDropdown";
+
 import {
   useWorkflowAgentOptions,
   useWorkflowModelOptions,
 } from "../../../hooks/useWorkflowModelOptions";
 import { SESSION_STAGE_OPTIONS } from "../../../types/workflow";
-import InlineDropdown from "../../InlineDropdown";
 import InlineNumberInput from "../../InlineNumberInput";
 import type { InlineActionConfig, InlineTemplateProps } from "../types";
 

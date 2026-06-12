@@ -6,7 +6,8 @@
 import { GitBranch } from "lucide-react";
 import React from "react";
 
-import InlineDropdown from "../../InlineDropdown";
+import InlineDropdown from "@src/components/InlineDropdown";
+
 import type { InlineActionConfig, InlineTemplateProps } from "../types";
 
 // ============================================
