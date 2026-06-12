@@ -15,6 +15,7 @@
 import {
   Copy,
   Ellipsis,
+  FolderOpen,
   Hash,
   RefreshCw,
   Save,
@@ -40,6 +41,7 @@ import Tooltip from "@src/components/Tooltip";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { TabBarTrailingIconButton } from "@src/modules/WorkStation/shared/TabBar/components/TabBarTrailingIconButton";
+import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";
 
 interface MenuItemContentProps {
   icon?: React.ReactNode;
@@ -73,6 +75,7 @@ export interface FileHeaderMoreMenuProps {
   showSaveAction: boolean;
   showDiscardAction: boolean;
   showCopyRelativePathAction: boolean;
+  showRevealInFileManagerAction: boolean;
   showLineNumbersToggle: boolean;
   showWordWrapToggle: boolean;
   showMinimapToggle: boolean;
@@ -101,6 +104,7 @@ export interface FileHeaderMoreMenuProps {
   onSearchClick: () => void;
   onGoToLineClick: () => void;
   onCopyRelativePathClick: () => void;
+  onRevealInFileManagerClick: () => void;
   onReloadClick: () => void;
   onLineNumbersChange: (enabled: boolean) => void;
   onWordWrapChange: (enabled: boolean) => void;
@@ -117,6 +121,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
   showSaveAction,
   showDiscardAction,
   showCopyRelativePathAction,
+  showRevealInFileManagerAction,
   showLineNumbersToggle,
   showWordWrapToggle,
   showMinimapToggle,
@@ -139,6 +144,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
   onSearchClick,
   onGoToLineClick,
   onCopyRelativePathClick,
+  onRevealInFileManagerClick,
   onReloadClick,
   onLineNumbersChange,
   onWordWrapChange,
@@ -151,12 +157,14 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
   const searchShortcut = getShortcutKeys("find");
   const goToLineShortcut = getShortcutKeys("go_to_line");
   const saveShortcut = getShortcutKeys("save_file");
+  const revealInFileManagerLabelKey = getFileManagerRevealLabelKey();
   const fileChangeActionsDisabled = !hasUnsavedChanges || loading;
   const saveDisabled = !showSaveAction || fileChangeActionsDisabled;
   const discardDisabled = !showDiscardAction || fileChangeActionsDisabled;
   const searchDisabled = !showSearchAction;
   const goToLineDisabled = !showGoToLineAction;
   const copyRelativePathDisabled = !showCopyRelativePathAction;
+  const revealInFileManagerDisabled = !showRevealInFileManagerAction;
   const reloadDisabled = !showReloadButton || loading || reloadMenuCoolingDown;
 
   const renderToggleRow = useCallback(
@@ -288,6 +296,20 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
             <MenuItemContent
               icon={<Copy size={HEADER_ICON_SIZE.sm} />}
               label={t("common:actions.copyRelativePath")}
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={onRevealInFileManagerClick}
+            disabled={revealInFileManagerDisabled}
+            className={`${DROPDOWN_CLASSES.menuActionItem} ${
+              revealInFileManagerDisabled ? DROPDOWN_CLASSES.itemDisabled : ""
+            }`}
+          >
+            <MenuItemContent
+              icon={<FolderOpen size={HEADER_ICON_SIZE.sm} />}
+              label={t(revealInFileManagerLabelKey)}
             />
           </button>
 

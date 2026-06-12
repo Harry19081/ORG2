@@ -100,6 +100,7 @@ export interface FileHeaderProps {
   onDiscard?: () => void;
   /** Relative file path copied from the more menu. */
   relativePathToCopy?: string;
+  onRevealInFileManager?: () => void;
   /** Current editor line number visibility state. */
   lineNumbersEnabled?: boolean;
   /** Callback when editor line number visibility changes. */
@@ -190,6 +191,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     onSave,
     onDiscard,
     relativePathToCopy,
+    onRevealInFileManager,
     lineNumbersEnabled = true,
     onLineNumbersChange,
     wordWrapEnabled = false,
@@ -290,6 +292,10 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
       }
       setMoreMenuVisible(false);
     }, [relativePathToCopy, t]);
+    const handleRevealInFileManagerMenuClick = useCallback(() => {
+      onRevealInFileManager?.();
+      setMoreMenuVisible(false);
+    }, [onRevealInFileManager]);
     const handleLineNumbersChange = useCallback(
       (enabled: boolean) => {
         onLineNumbersChange?.(enabled);
@@ -334,6 +340,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     const showSaveAction = !!onSave;
     const showDiscardAction = !!onDiscard;
     const showCopyRelativePathAction = !!relativePathToCopy;
+    const showRevealInFileManagerAction = !!onRevealInFileManager;
     const showLineNumbersToggle = !!onLineNumbersChange;
     const showWordWrapToggle = !!onWordWrapChange;
     const showMinimapToggle = !!onMinimapChange;
@@ -346,6 +353,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
       showSaveAction ||
       showDiscardAction ||
       showCopyRelativePathAction ||
+      showRevealInFileManagerAction ||
       showLineNumbersToggle ||
       showWordWrapToggle ||
       showMinimapToggle ||
@@ -528,6 +536,9 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
                     showSaveAction={showSaveAction}
                     showDiscardAction={showDiscardAction}
                     showCopyRelativePathAction={showCopyRelativePathAction}
+                    showRevealInFileManagerAction={
+                      showRevealInFileManagerAction
+                    }
                     showLineNumbersToggle={showLineNumbersToggle}
                     showWordWrapToggle={showWordWrapToggle}
                     showMinimapToggle={showMinimapToggle}
@@ -552,6 +563,9 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
                     onSearchClick={handleSearchMenuClick}
                     onGoToLineClick={handleGoToLineMenuClick}
                     onCopyRelativePathClick={handleCopyRelativePathMenuClick}
+                    onRevealInFileManagerClick={
+                      handleRevealInFileManagerMenuClick
+                    }
                     onReloadClick={handleReloadMenuClick}
                     onLineNumbersChange={handleLineNumbersChange}
                     onWordWrapChange={handleWordWrapChange}

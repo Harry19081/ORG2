@@ -837,6 +837,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
         <CodeEditorDefaultHeader
           enabled={isExplorerHome}
           repoDisplayName={repoDisplayName}
+          activeFilePath={activeFilePath}
         />
         <div className="relative min-h-0 flex-1 overflow-hidden">
           {shouldMountTerminalContent && (

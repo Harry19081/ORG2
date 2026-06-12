@@ -1,10 +1,12 @@
 import { useAtom, useAtomValue } from "jotai";
 import React, { useCallback } from "react";
 
+import Message from "@src/components/Message";
 import {
   FileHeader,
   TabBarBottomPanelToggle,
 } from "@src/modules/WorkStation/shared";
+import { FileOperationsService } from "@src/services/file/FileOperationsService";
 import {
   editorHighlightActiveLineAtom,
   editorLineNumbersAtom,
@@ -16,11 +18,12 @@ import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
 interface CodeEditorDefaultHeaderProps {
   enabled: boolean;
   repoDisplayName: string;
+  activeFilePath: string | null;
 }
 
 export const CodeEditorDefaultHeader: React.FC<
   CodeEditorDefaultHeaderProps
-> = ({ enabled, repoDisplayName }) => {
+> = ({ enabled, repoDisplayName, activeFilePath }) => {
   const [lineNumbers, setLineNumbers] = useAtom(editorLineNumbersAtom);
   const [wordWrap, setWordWrap] = useAtom(editorWordWrapAtom);
   const [showMinimap, setShowMinimap] = useAtom(editorShowMinimapAtom);
@@ -35,6 +38,15 @@ export const CodeEditorDefaultHeader: React.FC<
     },
     [setLineNumbers]
   );
+
+  const handleRevealInFileManager = useCallback(async () => {
+    if (!activeFilePath) return;
+
+    const result = await FileOperationsService.revealInFinder(activeFilePath);
+    if (!result.success) {
+      Message.error(result.message);
+    }
+  }, [activeFilePath]);
 
   return (
     <FileHeader
@@ -61,6 +73,9 @@ export const CodeEditorDefaultHeader: React.FC<
       highlightActiveLineEnabled={highlightActiveLine}
       onHighlightActiveLineChange={setHighlightActiveLine}
       beforeMoreMenuSlot={<TabBarBottomPanelToggle />}
+      onRevealInFileManager={
+        activeFilePath ? handleRevealInFileManager : undefined
+      }
       onMoreSettings={onOpenSettings}
     />
   );
