@@ -66,8 +66,10 @@ export function ResultsSummaryLine({
   countLabel,
 }: {
   directory?: string;
-  countLabel: string;
-}): React.ReactElement {
+  countLabel?: string;
+}): React.ReactElement | null {
+  if (!countLabel) return null;
+
   return (
     <div className="flex min-w-0 items-center gap-1.5 text-[12px] text-text-3">
       <span className="shrink-0 pl-1.5 font-medium tabular-nums text-text-1">
@@ -93,7 +95,7 @@ export function SearchSummaryHeader({
 }: {
   query: string;
   directory?: string;
-  countLabel: string;
+  countLabel?: string;
   toolLabel: string;
 }): React.ReactElement {
   const keywords = parseSearchKeywords(query);
@@ -129,7 +131,7 @@ export function DirectorySummaryHeader({
   countLabel,
 }: {
   directory?: string;
-  countLabel: string;
+  countLabel?: string;
 }): React.ReactElement {
   const displayDirectory = directory || "/";
   return (
@@ -160,7 +162,7 @@ export function LspSummaryHeader({
 }: {
   filePath?: string;
   directory?: string;
-  countLabel: string;
+  countLabel?: string;
   fileCountLabel?: string;
 }): React.ReactElement {
   return (

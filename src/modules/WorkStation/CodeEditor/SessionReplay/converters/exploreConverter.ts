@@ -67,6 +67,10 @@ function firstStringFromSources(
 // Slim Event (strip large payload fields)
 // ============================================
 
+function hasResultPayload(result: Record<string, unknown>): boolean {
+  return Object.keys(result).length > 0;
+}
+
 function toSlimExploreEvent(event: SessionEvent): SessionEvent {
   const argsCallId =
     typeof event.args?.call_id === "string" ? event.args.call_id : undefined;
@@ -260,6 +264,7 @@ export function convertToExploreOperation(
     results,
     files,
     totalMatches,
+    hasResultPayload: hasResultPayload(result),
     directory,
     event: toSlimExploreEvent(event),
     eventId: event.id,

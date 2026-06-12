@@ -99,6 +99,7 @@ export const SearchResultsContent: React.FC<{
     totalMatches,
     directory: workspaceDirectoryHint,
     isLoading,
+    hasResultPayload,
   } = operation;
   const [visibleExploreResultState, setVisibleExploreResultState] = useState({
     key: operation.eventId,
@@ -147,9 +148,13 @@ export const SearchResultsContent: React.FC<{
       <div className="flex w-full min-w-0 flex-col">
         <DirectorySummaryHeader
           directory={workspaceDirectoryHint}
-          countLabel={tSessions("simulator.replay.ide.codePanel.resultCount", {
-            count: fileCount,
-          })}
+          countLabel={
+            hasResultPayload
+              ? tSessions("simulator.replay.ide.codePanel.resultCount", {
+                  count: fileCount,
+                })
+              : undefined
+          }
         />
         {directoryNotFoundMessage ? (
           <div className="flex w-full min-w-0 flex-col gap-0.5 p-2">
@@ -229,9 +234,13 @@ export const SearchResultsContent: React.FC<{
             "code_search",
             exploreType === "file_search" ? "find_files" : "glob"
           )}
-          countLabel={tSessions("simulator.replay.ide.codePanel.resultCount", {
-            count: fileCount,
-          })}
+          countLabel={
+            hasResultPayload
+              ? tSessions("simulator.replay.ide.codePanel.resultCount", {
+                  count: fileCount,
+                })
+              : undefined
+          }
         />
         {visibleFiles.length > 0 ? (
           <div className="flex w-full min-w-0 flex-col gap-0.5 p-2">
@@ -391,9 +400,11 @@ export const SearchResultsContent: React.FC<{
         : totalMatches > 0
           ? totalMatches
           : visibleResultCount;
-    const countLabel = tSessions("simulator.replay.ide.codePanel.resultCount", {
-      count: resultCount,
-    });
+    const countLabel = hasResultPayload
+      ? tSessions("simulator.replay.ide.codePanel.resultCount", {
+          count: resultCount,
+        })
+      : undefined;
     const highlightTerms = parseSearchKeywords(_query);
 
     return (

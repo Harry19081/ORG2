@@ -184,6 +184,8 @@ export interface ExploreOperationEntry {
   files?: string[];
   /** Total matches */
   totalMatches: number;
+  /** Whether a result payload has arrived for this operation. */
+  hasResultPayload?: boolean;
   /** Target directory */
   directory?: string;
   /** Original event */
