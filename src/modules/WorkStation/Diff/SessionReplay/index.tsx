@@ -14,7 +14,7 @@
  * and `common:sourceControl.pill.*` i18n keys.
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { GitBranch, ListChevronsDownUp, Send } from "lucide-react";
+import { GitBranch, ListChevronsDownUp, RotateCcw, Send } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -26,6 +26,7 @@ import { SIMULATOR_PRIMARY_SIDEBAR } from "@src/config/simulatorPrimarySidebar";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { simulatorEventsAtom } from "@src/engines/SessionCore/derived/simulatorEvents";
 import type { SimulatorAppProps } from "@src/engines/Simulator/apps/core/types";
+import { useFileReviewBatchActions } from "@src/hooks/fileReview/useFileReview";
 import { createLogger } from "@src/hooks/logger";
 import { usePublishWorkstationTabHeader } from "@src/hooks/workStation";
 import {
@@ -59,6 +60,7 @@ import {
   simulatorPrimarySidebarWidthPersistAtom,
 } from "@src/store/ui/simulatorAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
+import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import {
   type SubmissionArtifact,
@@ -298,39 +300,90 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     setCollapseAllSignal((prev) => prev + 1);
   }, []);
 
+  const { pendingCount, onUndoAll } = useFileReviewBatchActions(sessionId);
+  const [isUndoingAll, setIsUndoingAll] = useState(false);
+
+  const handleUndoAll = useCallback(async () => {
+    const confirmed = await confirmDestructiveAction({
+      title: tCommon("actions.undoAll"),
+      message: tCommon("confirmation.undoAllChanges", {
+        count: pendingCount,
+      }),
+      okLabel: tCommon("actions.undoAll"),
+      cancelLabel: tCommon("actions.cancel"),
+    });
+    if (!confirmed) return;
+
+    setIsUndoingAll(true);
+    try {
+      await onUndoAll();
+    } finally {
+      setIsUndoingAll(false);
+    }
+  }, [tCommon, pendingCount, onUndoAll]);
+
+  const canUndoAll = pendingCount > 0 && !isUndoingAll;
+
   const diffHeaderContent = useMemo(
-    () => (
-      <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <TabPill
-          activeTab={pillMode}
-          tabs={[
-            { key: "focus", label: tCommon("sourceControl.pill.focus") },
-            {
-              key: "all-changes",
-              label: tCommon("sourceControl.pill.allChanges"),
-            },
-          ]}
-          onChange={handlePillModeChange}
-          variant="pill"
-          color="fill"
-          fillWidth={false}
-          size="small"
-        />
-        {pillMode === "all-changes" && (
-          <Button
-            htmlType="button"
-            variant="tertiary"
-            size="small"
-            iconOnly
-            className="flex-shrink-0"
-            onClick={handleCollapseAll}
-            title={tCommon("actions.collapseAll")}
-            icon={<ListChevronsDownUp size={14} />}
-          />
-        )}
-      </div>
-    ),
-    [pillMode, handlePillModeChange, handleCollapseAll, tCommon]
+    () => ({
+      content:
+        activeTab === "diff" ? (
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
+            <TabPill
+              activeTab={pillMode}
+              tabs={[
+                { key: "focus", label: tCommon("sourceControl.pill.focus") },
+                {
+                  key: "all-changes",
+                  label: tCommon("sourceControl.pill.allChanges"),
+                },
+              ]}
+              onChange={handlePillModeChange}
+              variant="pill"
+              color="fill"
+              fillWidth={false}
+              size="small"
+            />
+          </div>
+        ) : null,
+      trailing:
+        activeTab === "diff" && pillMode === "all-changes" ? (
+          <div className="flex items-center gap-px">
+            {canUndoAll ? (
+              <Button
+                htmlType="button"
+                variant="tertiary"
+                size="small"
+                iconOnly
+                className="flex-shrink-0"
+                onClick={handleUndoAll}
+                title={tCommon("actions.undoAll")}
+                icon={<RotateCcw size={14} />}
+              />
+            ) : null}
+            {canUndoAll ? <div className="mx-2 h-5 w-px bg-border-2" /> : null}
+            <Button
+              htmlType="button"
+              variant="tertiary"
+              size="small"
+              iconOnly
+              className="flex-shrink-0"
+              onClick={handleCollapseAll}
+              title={tCommon("actions.collapseAll")}
+              icon={<ListChevronsDownUp size={14} />}
+            />
+          </div>
+        ) : undefined,
+    }),
+    [
+      activeTab,
+      pillMode,
+      handlePillModeChange,
+      handleUndoAll,
+      canUndoAll,
+      handleCollapseAll,
+      tCommon,
+    ]
   );
 
   const fallbackRepoContext = useMemo(() => {

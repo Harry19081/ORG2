@@ -133,6 +133,8 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
     enabled: expanded,
   });
 
+  const isDeleted = file.status === "deleted";
+
   useEffect(() => {
     if (!expanded) return;
     if (isDeleted) return;
@@ -142,8 +144,6 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
 
   const statusLetter = getStatusLetterForFile(file.status, file.staged);
   const statusColor = getStatusColor(statusLetter);
-
-  const isDeleted = file.status === "deleted";
 
   const toggleExpanded = useCallback(() => {
     setExpanded((prev) => !prev);
