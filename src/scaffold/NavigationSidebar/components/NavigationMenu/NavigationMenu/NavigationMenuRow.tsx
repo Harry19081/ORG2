@@ -1,5 +1,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
-import React from "react";
+import React, { useCallback } from "react";
+
+import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 
 import type { NavigationMenuItem } from "../config";
 import { NavItemDragGhost } from "./NavItemDragGhost";
@@ -59,8 +61,20 @@ export const NavigationMenuParentRow = React.forwardRef<
   ref
 ): React.ReactElement {
   const iconColor = submenuSelected ? "text-primary-6" : "text-text-1";
-
   const { dragHandlers, dragState } = useNavItemDrag(item);
+  const {
+    cursorReset,
+    markClicked,
+    resetCursor: resetImmediateCursor,
+  } = useImmediateCursorReset(submenuSelected, !item.disabled);
+
+  const handleRootMouseLeave = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      resetImmediateCursor();
+      onMouseLeave?.(event);
+    },
+    [resetImmediateCursor, onMouseLeave]
+  );
 
   return (
     <div
@@ -69,7 +83,7 @@ export const NavigationMenuParentRow = React.forwardRef<
       ref={ref}
       className={`mb-1 ${rootProps.className ?? ""} ${item.dragPayload ? "cursor-grab active:cursor-grabbing" : ""}`}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseLeave={handleRootMouseLeave}
       onContextMenu={
         onMenuItemContextMenu
           ? (event: React.MouseEvent) =>
@@ -80,11 +94,13 @@ export const NavigationMenuParentRow = React.forwardRef<
       {dragState && <NavItemDragGhost dragState={dragState} />}
       <div
         data-testid={item.dataTestId}
-        className={`group flex min-h-[36px] cursor-pointer items-center justify-between rounded-lg transition-colors duration-150 ${
+        className={`group flex min-h-[36px] items-center justify-between rounded-lg transition-colors duration-150 ${
           isChild ? "pl-5 pr-2" : "px-2"
-        } ${submenuSelected ? "bg-bg-1 text-primary-6" : "text-text-1 hover:bg-fill-2"}`}
+        } ${submenuSelected ? "cursor-default bg-bg-1 text-primary-6" : cursorReset ? "cursor-default text-text-1 hover:bg-fill-2" : "cursor-pointer text-text-1 hover:bg-fill-2"}`}
         onClick={() => {
-          if (!item.disabled) onMenuItemClick(item.key, item);
+          if (item.disabled) return;
+          markClicked();
+          onMenuItemClick(item.key, item);
         }}
         onMouseEnter={(event: React.MouseEvent) =>
           onRowMouseEnter(event, item.routePath)
@@ -206,6 +222,19 @@ export const NavigationMenuLeafRow = React.forwardRef<
         : "text-text-1";
 
   const { dragHandlers, dragState } = useNavItemDrag(item);
+  const {
+    cursorReset,
+    markClicked,
+    resetCursor: resetImmediateCursor,
+  } = useImmediateCursorReset(isSelected, !item.disabled);
+
+  const handleRootMouseLeave = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      resetImmediateCursor();
+      onMouseLeave?.(event);
+    },
+    [resetImmediateCursor, onMouseLeave]
+  );
 
   return (
     <div
@@ -214,7 +243,7 @@ export const NavigationMenuLeafRow = React.forwardRef<
       ref={ref}
       className={`${rootProps.className ?? ""} ${item.dragPayload ? "cursor-grab active:cursor-grabbing" : ""}`}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseLeave={handleRootMouseLeave}
       onContextMenu={(event: React.MouseEvent) =>
         onMenuItemContextMenu?.(event, item.key, item)
       }
@@ -230,10 +259,10 @@ export const NavigationMenuLeafRow = React.forwardRef<
               ? "cursor-default text-text-2 opacity-60"
               : "cursor-default text-text-3 opacity-60"
             : isSelected
-              ? "bg-bg-1 text-primary-6"
+              ? "cursor-default bg-bg-1 text-primary-6"
               : isSecondaryTone
-                ? "cursor-pointer text-text-2 hover:bg-fill-2 hover:text-text-1"
-                : "cursor-pointer text-text-1 hover:bg-fill-2"
+                ? `${cursorReset ? "cursor-default" : "cursor-pointer"} text-text-2 hover:bg-fill-2 hover:text-text-1`
+                : `${cursorReset ? "cursor-default" : "cursor-pointer"} text-text-1 hover:bg-fill-2`
         }`}
         onClick={(event: React.MouseEvent) => {
           if (item.disabled) return;
@@ -241,6 +270,7 @@ export const NavigationMenuLeafRow = React.forwardRef<
             onMenuItemContextMenu(event, item.key, item);
             return;
           }
+          markClicked();
           onMenuItemClick(item.key, item);
         }}
         onMouseEnter={(event: React.MouseEvent) =>

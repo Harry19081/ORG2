@@ -2,6 +2,7 @@ import React, { memo, useCallback } from "react";
 
 import type { GitCommitInfo, GitCommitPerson } from "@src/api/http/git/types";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 import { PRIMARY_SIDEBAR_HOVER } from "@src/modules/WorkStation/shared/tokens";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
@@ -97,9 +98,13 @@ function GitCommitRowComponent<TCommit extends GitCommitRowBaseCommit>({
   onContextMenu,
   showGraphPlaceholder = false,
 }: GitCommitRowProps<TCommit>) {
+  const { cursorReset, markClicked, resetCursor } =
+    useImmediateCursorReset(isSelected);
+
   const handleClick = useCallback(() => {
+    markClicked();
     onSelect(commit);
-  }, [commit, onSelect]);
+  }, [commit, markClicked, onSelect]);
 
   const authorName = commit.author?.name ?? "Unknown";
   const authorDate = commit.author?.date ?? "";
@@ -109,11 +114,12 @@ function GitCommitRowComponent<TCommit extends GitCommitRowBaseCommit>({
     <button
       type="button"
       className={`group flex w-full items-center gap-1 pl-2 pr-3 text-left transition-colors ${
-        isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row
-      }`}
+        cursorReset || isSelected ? "cursor-default" : "cursor-pointer"
+      } ${isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row}`}
       style={{ height: `${GIT_COMMIT_ROW_HEIGHT}px` }}
       onClick={handleClick}
       onContextMenu={(event) => onContextMenu?.(event, commit)}
+      onMouseLeave={resetCursor}
       title={`${commit.summary}\n\n${commit.short_sha} by ${authorName}`}
     >
       {graphNode && svgWidth ? (

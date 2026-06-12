@@ -203,6 +203,24 @@ const TabPill: React.FC<TabPillProps> = ({
   );
 
   const [hoveredTabKey, setHoveredTabKey] = useState<string | null>(null);
+  const [cursorResetTabKey, setCursorResetTabKey] = useState<string | null>(
+    null
+  );
+
+  const handleImmediateTabClick = useCallback(
+    (tab: TabPillItem, isActive: boolean) => {
+      if (!tab.disabled && !isActive) {
+        setCursorResetTabKey(tab.key);
+      }
+      handleTabClickWithDropdown(tab);
+    },
+    [handleTabClickWithDropdown]
+  );
+
+  const handleImmediateTabMouseLeave = useCallback(() => {
+    setCursorResetTabKey(null);
+    setHoveredTabKey(null);
+  }, []);
 
   if (variant === "sidebar") {
     return (
@@ -249,11 +267,15 @@ const TabPill: React.FC<TabPillProps> = ({
           data-active={isActive ? "true" : "false"}
           data-tab-key={tab.key}
           data-testid={tab.dataTestId}
-          onClick={() => handleTabClickWithDropdown(tab)}
+          onClick={() => handleImmediateTabClick(tab, isActive)}
+          onMouseLeave={handleImmediateTabMouseLeave}
           disabled={tab.disabled}
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
           className={cn(
-            "group relative z-10 flex cursor-pointer select-none flex-col items-center justify-center",
+            "group relative z-10 flex select-none flex-col items-center justify-center",
+            cursorResetTabKey === tab.key || isActive
+              ? "cursor-default"
+              : "cursor-pointer",
             !fillWidth && "shrink-0",
             size === "mini"
               ? "h-full text-[12px]"
@@ -289,13 +311,16 @@ const TabPill: React.FC<TabPillProps> = ({
         data-seg=""
         data-tab-key={tab.key}
         data-testid={tab.dataTestId}
-        onClick={() => handleTabClickWithDropdown(tab)}
+        onClick={() => handleImmediateTabClick(tab, isActive)}
         onMouseEnter={() => setHoveredTabKey(tab.key)}
-        onMouseLeave={() => setHoveredTabKey(null)}
+        onMouseLeave={handleImmediateTabMouseLeave}
         disabled={tab.disabled}
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         className={cn(
-          "relative z-[2] flex cursor-pointer select-none items-center justify-center",
+          "relative z-[2] flex select-none items-center justify-center",
+          cursorResetTabKey === tab.key || isActive
+            ? "cursor-default"
+            : "cursor-pointer",
           "whitespace-nowrap",
           !fillWidth && "shrink-0",
           "rounded-[100px]",

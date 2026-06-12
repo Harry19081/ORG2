@@ -23,6 +23,7 @@ import { getGitCommits } from "@src/api/http/git/commits";
 import type { GitCommitInfo } from "@src/api/http/git/types";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 import {
   type UseWorkStationTabsReturn,
   useWorkStationTabs,
@@ -149,9 +150,13 @@ const CommitRow: React.FC<CommitRowProps> = memo(
     onSelect,
     onContextMenu,
   }) => {
+    const { cursorReset, markClicked, resetCursor } =
+      useImmediateCursorReset(isSelected);
+
     const handleClick = useCallback(() => {
+      markClicked();
       onSelect(commit);
-    }, [commit, onSelect]);
+    }, [commit, markClicked, onSelect]);
 
     const authorName = commit.author?.name ?? "Unknown";
     const authorDate = commit.author?.date ?? "";
@@ -159,11 +164,12 @@ const CommitRow: React.FC<CommitRowProps> = memo(
     return (
       <button
         className={`group flex w-full items-center gap-1 pl-2 pr-3 text-left transition-colors ${
-          isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row
-        }`}
+          cursorReset || isSelected ? "cursor-default" : "cursor-pointer"
+        } ${isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row}`}
         style={{ height: `${ROW_HEIGHT}px` }}
         onClick={handleClick}
         onContextMenu={(event) => onContextMenu(event, commit)}
+        onMouseLeave={resetCursor}
         title={`${commit.summary}\n\n${commit.short_sha} by ${authorName}`}
       >
         {/* Graph SVG column — all rows use same width for text alignment */}

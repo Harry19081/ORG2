@@ -12,10 +12,11 @@
  */
 import { useAtomValue } from "jotai";
 import { ChevronDown, ChevronRight, CornerDownRight } from "lucide-react";
-import React, { forwardRef } from "react";
+import React, { forwardRef, useCallback } from "react";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 import { editorShowTreeIndentGuidesAtom } from "@src/store/ui/editorSettingsAtom";
 
 import {
@@ -59,6 +60,19 @@ export const TreeRowBase = React.memo(
       const isHighlighted = isSelected || isMultiSelected;
       const isSymlink = node.isSymlink ?? false;
       const isIgnored = node.isIgnored ?? false;
+      const isClickable = Boolean(onClick);
+      const { cursorReset, markClicked, resetCursor } = useImmediateCursorReset(
+        isHighlighted,
+        isClickable
+      );
+
+      const handleRowClick = useCallback(
+        (event: React.MouseEvent<HTMLDivElement>) => {
+          markClicked();
+          onClick?.(event);
+        },
+        [markClicked, onClick]
+      );
 
       // Calculate padding based on depth
       const paddingLeft = depth * TREE_INDENT_PX + TREE_PADDING_X;
@@ -78,7 +92,11 @@ export const TreeRowBase = React.memo(
         <div
           ref={ref}
           data-tree-path={dataPath}
-          className={`tree-row-base group/item relative flex h-7 min-w-0 shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden transition-colors ${
+          className={`tree-row-base group/item relative flex h-7 min-w-0 shrink-0 ${
+            isClickable && !cursorReset && !isHighlighted
+              ? "cursor-pointer"
+              : "cursor-default"
+          } items-center gap-1.5 overflow-hidden transition-colors ${
             isHighlighted
               ? `${SURFACE_TOKENS.selected} ${SURFACE_TOKENS.selectedHover}`
               : TREE_ROW_HOVER_BG_CLASS
@@ -87,8 +105,9 @@ export const TreeRowBase = React.memo(
             paddingLeft: `${paddingLeft}px`,
             paddingRight: `8px`,
           }}
-          onClick={onClick}
+          onClick={isClickable ? handleRowClick : undefined}
           onContextMenu={onContextMenu}
+          onMouseLeave={resetCursor}
           draggable={draggable}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}

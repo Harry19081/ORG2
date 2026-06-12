@@ -25,6 +25,7 @@ import {
 import type { ReactNode } from "react";
 import React, { memo, useCallback } from "react";
 
+import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared/WorkstationToolbarTooltip";
 import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
 
@@ -75,8 +76,12 @@ export interface PanelTabBarProps {
 
 const ICON_SIZE = 14;
 
-function resolveLucideIcon(name: PanelTabIconName): LucideIcon {
-  return PANEL_TAB_ICONS[name];
+function renderPanelTabIcon(
+  name: PanelTabIconName | undefined
+): React.ReactNode {
+  if (!name) return null;
+  const IconComponent = PANEL_TAB_ICONS[name];
+  return <IconComponent size={ICON_SIZE} strokeWidth={1.75} />;
 }
 
 interface IconTabStripProps {
@@ -92,6 +97,61 @@ interface IconTabStripProps {
   tooltipPosition?: "bottom" | "top";
 }
 
+interface PanelTabButtonProps {
+  tab: PanelTabBarTab;
+  isActive: boolean;
+  showLabel: boolean;
+  onTabChange: (key: string) => void;
+}
+
+const PanelTabButton: React.FC<PanelTabButtonProps> = memo(
+  ({ tab, isActive, showLabel, onTabChange }) => {
+    const { cursorReset, markClicked, resetCursor } =
+      useImmediateCursorReset(isActive);
+
+    const handleClick = useCallback(() => {
+      markClicked();
+      onTabChange(tab.key);
+    }, [markClicked, onTabChange, tab.key]);
+
+    return (
+      <button
+        type="button"
+        data-active={isActive ? "true" : "false"}
+        onClick={handleClick}
+        onMouseLeave={resetCursor}
+        aria-label={tab.label}
+        aria-selected={isActive}
+        role="tab"
+        style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+        className={`relative flex h-8 shrink-0 ${
+          cursorReset || isActive ? "cursor-default" : "cursor-pointer"
+        } items-center justify-center gap-1.5 rounded outline-none transition-colors duration-150 ${
+          showLabel ? "px-2" : "w-8"
+        } ${
+          isActive
+            ? "bg-fill-1 text-primary-6"
+            : "bg-transparent text-text-2 hover:bg-surface-hover hover:text-text-1"
+        }`}
+      >
+        {renderPanelTabIcon(tab.icon)}
+        {showLabel && (
+          <span className="whitespace-nowrap text-[12px] font-medium">
+            {tab.label}
+          </span>
+        )}
+        {tab.badge && (
+          <span className="pointer-events-none absolute -right-0.5 -top-0.5">
+            {tab.badge}
+          </span>
+        )}
+      </button>
+    );
+  }
+);
+
+PanelTabButton.displayName = "PanelTabButton";
+
 const IconTabStrip: React.FC<IconTabStripProps> = memo(
   ({
     tabs,
@@ -103,41 +163,16 @@ const IconTabStrip: React.FC<IconTabStripProps> = memo(
     <div className="flex items-center gap-px">
       {tabs.map((tab) => {
         const isActive = tab.key === activeTabKey;
-        const IconComponent = tab.icon ? resolveLucideIcon(tab.icon) : null;
         const showLabel =
           labelMode === "always" || (labelMode === "active-only" && isActive);
 
         const btn = (
-          <button
-            type="button"
-            data-active={isActive ? "true" : "false"}
-            onClick={() => onTabChange(tab.key)}
-            aria-label={tab.label}
-            aria-selected={isActive}
-            role="tab"
-            style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-            className={`relative flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded outline-none transition-colors duration-150 ${
-              showLabel ? "px-2" : "w-8"
-            } ${
-              isActive
-                ? "bg-fill-1 text-primary-6"
-                : "bg-transparent text-text-2 hover:bg-surface-hover hover:text-text-1"
-            }`}
-          >
-            {IconComponent && (
-              <IconComponent size={ICON_SIZE} strokeWidth={1.75} />
-            )}
-            {showLabel && (
-              <span className="whitespace-nowrap text-[12px] font-medium">
-                {tab.label}
-              </span>
-            )}
-            {tab.badge && (
-              <span className="pointer-events-none absolute -right-0.5 -top-0.5">
-                {tab.badge}
-              </span>
-            )}
-          </button>
+          <PanelTabButton
+            tab={tab}
+            isActive={isActive}
+            showLabel={showLabel}
+            onTabChange={onTabChange}
+          />
         );
 
         if (showLabel)

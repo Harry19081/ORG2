@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useCallback } from "react";
+
+import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
 
 import { cn } from "./cn";
 import { BoldStableLabel } from "./tabContent";
@@ -10,15 +12,27 @@ export const SidebarTabButton: React.FC<{
   onClick: () => void;
   iconOnly?: boolean;
 }> = ({ tab, isActive, onClick, iconOnly }) => {
+  const { cursorReset, markClicked, resetCursor } = useImmediateCursorReset(
+    isActive,
+    !tab.disabled
+  );
+
+  const handleClick = useCallback(() => {
+    markClicked();
+    onClick();
+  }, [markClicked, onClick]);
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       disabled={tab.disabled}
       data-action="panel.setLeftTab"
       data-action-id={tab.key}
       data-testid={tab.dataTestId}
+      onMouseLeave={resetCursor}
       className={cn(
-        "group relative flex flex-1 cursor-pointer select-none items-center justify-center",
+        "group relative flex flex-1 select-none items-center justify-center",
+        cursorReset || isActive ? "cursor-default" : "cursor-pointer",
         "overflow-hidden rounded-[100px] border-none",
         "h-[28px] px-[10px]",
         isActive
