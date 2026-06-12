@@ -2082,10 +2082,9 @@
     "selectWorkspaceToStart": "Chọn một Workspace để bắt đầu",
     "selectRepoToStart": "Chọn một Repo để bắt đầu"
   },
-  "quitConfirmation": {
-    "title": "Thoát ORGII?",
-    "message": "Các phiên đang hoạt động và tác vụ nền sẽ dừng.",
-    "okLabel": "Thoát"
+  "holdToQuit": {
+    "title": "Giữ {{shortcut}} trong 1 giây để thoát",
+    "subtitle": "Thả ra để hủy"
   },
   "projects": {
     "title": "Bản đồ nhiệt",

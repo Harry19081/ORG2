@@ -2099,10 +2099,9 @@
     "selectWorkspaceToStart": "選擇一個工作區開始",
     "selectRepoToStart": "選擇一個 Repo 開始"
   },
-  "quitConfirmation": {
-    "title": "結束 ORGII？",
-    "message": "作用中的會話與背景任務將會停止。",
-    "okLabel": "結束"
+  "holdToQuit": {
+    "title": "按住 {{shortcut}} 1 秒以結束",
+    "subtitle": "放開以取消"
   },
   "projects": {
     "title": "熱力圖",

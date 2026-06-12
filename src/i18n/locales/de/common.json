@@ -2089,10 +2089,9 @@
     "selectWorkspaceToStart": "Workspace auswählen, um zu starten",
     "selectRepoToStart": "Repo auswählen, um zu starten"
   },
-  "quitConfirmation": {
-    "title": "ORGII beenden?",
-    "message": "Aktive Sitzungen und Hintergrundaufgaben werden beendet.",
-    "okLabel": "Beenden"
+  "holdToQuit": {
+    "title": "{{shortcut}} 1 Sekunde gedrückt halten, um zu beenden",
+    "subtitle": "Loslassen zum Abbrechen"
   },
   "projects": {
     "title": "Heatmap",

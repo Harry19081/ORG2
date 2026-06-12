@@ -2081,10 +2081,9 @@
     "selectWorkspaceToStart": "Wybierz Workspace, aby rozpocząć",
     "selectRepoToStart": "Wybierz Repo, aby rozpocząć"
   },
-  "quitConfirmation": {
-    "title": "Zamknąć ORGII?",
-    "message": "Aktywne sesje i zadania w tle zostaną zatrzymane.",
-    "okLabel": "Zamknij"
+  "holdToQuit": {
+    "title": "Przytrzymaj {{shortcut}} przez 1 sekundę, aby zamknąć",
+    "subtitle": "Puść, aby anulować"
   },
   "projects": {
     "title": "Heatmapa",

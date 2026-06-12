@@ -2084,10 +2084,9 @@
     "selectWorkspaceToStart": "Sélectionnez un Workspace pour commencer",
     "selectRepoToStart": "Sélectionnez un Repo pour commencer"
   },
-  "quitConfirmation": {
-    "title": "Quitter ORGII ?",
-    "message": "Les sessions actives et les tâches en arrière-plan seront arrêtées.",
-    "okLabel": "Quitter"
+  "holdToQuit": {
+    "title": "Maintenez {{shortcut}} pendant 1 seconde pour quitter",
+    "subtitle": "Relâchez pour annuler"
   },
   "projects": {
     "title": "Carte thermique",

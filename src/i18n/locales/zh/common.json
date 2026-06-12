@@ -2100,11 +2100,6 @@
     "selectWorkspaceToStart": "选择一个工作区以开始",
     "selectRepoToStart": "选择一个 Repo 开始"
   },
-  "quitConfirmation": {
-    "title": "退出 ORGII？",
-    "message": "活动会话和后台任务将会停止。",
-    "okLabel": "退出"
-  },
   "projects": {
     "title": "热力图",
     "workspace": "工作区",
@@ -2124,5 +2119,9 @@
     "closePreview": "关闭预览",
     "copiedToClipboard": "图片已复制到剪贴板",
     "previewAlt": "预览"
+  },
+  "holdToQuit": {
+    "title": "按住 {{shortcut}} 1 秒以退出",
+    "subtitle": "松开以取消"
   }
 }

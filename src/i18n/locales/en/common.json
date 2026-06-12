@@ -2159,11 +2159,6 @@
     "selectWorkspaceToStart": "Select a workspace to start",
     "selectRepoToStart": "Select a repo to start"
   },
-  "quitConfirmation": {
-    "title": "Quit ORGII?",
-    "message": "Active sessions and background tasks will stop.",
-    "okLabel": "Quit"
-  },
   "projects": {
     "title": "Heatmap",
     "workspace": "Workspace",
@@ -2183,5 +2178,9 @@
     "closePreview": "Close preview",
     "copiedToClipboard": "Image copied to clipboard",
     "previewAlt": "Preview"
+  },
+  "holdToQuit": {
+    "title": "Hold {{shortcut}} for 1 second to quit",
+    "subtitle": "Release to cancel"
   }
 }

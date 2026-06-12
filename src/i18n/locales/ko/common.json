@@ -2085,10 +2085,9 @@
     "selectWorkspaceToStart": "Workspace를 선택하여 시작",
     "selectRepoToStart": "Repo를 선택하여 시작"
   },
-  "quitConfirmation": {
-    "title": "ORGII를 종료하시겠습니까?",
-    "message": "활성 세션과 백그라운드 작업이 중지됩니다.",
-    "okLabel": "종료"
+  "holdToQuit": {
+    "title": "종료하려면 {{shortcut}}를 1초 동안 누르세요",
+    "subtitle": "취소하려면 놓으세요"
   },
   "projects": {
     "title": "히트맵",

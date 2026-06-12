@@ -2081,10 +2081,9 @@
     "selectWorkspaceToStart": "Выберите Workspace, чтобы начать",
     "selectRepoToStart": "Выберите Repo, чтобы начать"
   },
-  "quitConfirmation": {
-    "title": "Выйти из ORGII?",
-    "message": "Активные сеансы и фоновые задачи будут остановлены.",
-    "okLabel": "Выйти"
+  "holdToQuit": {
+    "title": "Удерживайте {{shortcut}} 1 секунду, чтобы выйти",
+    "subtitle": "Отпустите, чтобы отменить"
   },
   "projects": {
     "title": "Тепловая карта",

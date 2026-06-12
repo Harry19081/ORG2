@@ -2081,10 +2081,9 @@
     "selectWorkspaceToStart": "Selecione um Workspace para começar",
     "selectRepoToStart": "Selecione um Repo para começar"
   },
-  "quitConfirmation": {
-    "title": "Sair do ORGII?",
-    "message": "Sessões ativas e tarefas em segundo plano serão interrompidas.",
-    "okLabel": "Sair"
+  "holdToQuit": {
+    "title": "Segure {{shortcut}} por 1 segundo para sair",
+    "subtitle": "Solte para cancelar"
   },
   "projects": {
     "title": "Mapa de calor",
