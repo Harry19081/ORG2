@@ -11,20 +11,12 @@ use tokio::io::AsyncWriteExt;
 use tracing::{info, warn};
 
 const AGENT_BROWSER_VERSION: &str = "v0.27.2";
-#[cfg(target_os = "macos")]
 const PEEKABOO_VERSION: &str = "v3.2.3";
 const DUGITE_VERSION: &str = "v2.50.0-2";
 
 const PLACEHOLDER_MARKER: &[u8] = b"ORGII_GENERATED_OPTIONAL_SIDECAR_PLACEHOLDER";
 
-/// Spawn the sidecar download task in the Tauri async runtime.
-///
-/// Uses `tauri::async_runtime::spawn` rather than `tokio::spawn` because this
-/// is invoked from the Tauri `setup` callback on the main thread, which has
-/// no entered Tokio runtime — calling `tokio::spawn` there panics with
-/// "there is no reactor running" and the non-unwinding panic aborts the app
-/// during `NSApplicationDidFinishLaunching`.
-///
+/// Spawn the sidecar download task in the Tauri/Tokio background.
 /// Returns immediately; errors are logged, never fatal.
 pub fn spawn_sidecar_setup() {
     tauri::async_runtime::spawn(async {
@@ -244,8 +236,6 @@ async fn download_to(client: &reqwest::Client, url: &str, dest: &Path) -> Result
 }
 
 /// Extract a .tar.gz archive into `dest_dir` using system `tar`.
-/// Only the peekaboo installer (macOS) uses this; gate to avoid dead-code on Windows.
-#[cfg(target_os = "macos")]
 fn run_tar_extract(archive: &Path, dest_dir: &Path) -> Result<(), String> {
     let status = std::process::Command::new("tar")
         .arg("-xzf")
@@ -298,8 +288,6 @@ fn temp_dir_in(parent: &Path, prefix: &str) -> Result<PathBuf, String> {
 }
 
 /// Recursively find the first file with `name` under `dir`.
-/// Only the peekaboo installer (macOS) uses this; gate to avoid dead-code on Windows.
-#[cfg(target_os = "macos")]
 fn find_file_named(dir: &Path, name: &str) -> Option<PathBuf> {
     let Ok(entries) = std::fs::read_dir(dir) else { return None };
     for entry in entries.flatten() {
@@ -315,7 +303,7 @@ fn find_file_named(dir: &Path, name: &str) -> Option<PathBuf> {
     None
 }
 
-fn set_executable(#[cfg_attr(not(unix), allow(unused_variables))] path: &Path) -> Result<(), String> {
+fn set_executable(path: &Path) -> Result<(), String> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
