@@ -11,6 +11,7 @@ app_window::commands::close_app_window,
 app_window::commands::focus_app_window,
 app_window::commands::set_window_vibrancy,
 app_window::commands::set_main_webview_zoom,
+app_window::commands::remove_window_background,
 // Integration commands - External IDE
 integrations::external_ide::open_in_external_ide,
 integrations::external_ide::show_in_folder,

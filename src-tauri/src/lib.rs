@@ -306,11 +306,14 @@ pub fn run() {
                 use tauri::Manager;
                 if let Some(main_window) = app.handle().get_webview_window("main") {
                     #[cfg(target_os = "macos")]
-                    app_window::set_traffic_light_position(
-                        &main_window,
-                        app_window::TRAFFIC_LIGHT_X,
-                        app_window::TRAFFIC_LIGHT_Y,
-                    );
+                    {
+                        app_window::set_traffic_light_position(
+                            &main_window,
+                            app_window::TRAFFIC_LIGHT_X,
+                            app_window::TRAFFIC_LIGHT_Y,
+                        );
+                        app_window::apply_window_background_color(&main_window);
+                    }
 
                     app_window::apply_host_desktop_window_chrome(&main_window);
                 }

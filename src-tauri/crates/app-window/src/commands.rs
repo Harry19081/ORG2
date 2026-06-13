@@ -282,3 +282,21 @@ unsafe fn set_draws_background_recursive(view: *mut AnyObject, draws: bool) {
         set_draws_background_recursive(subview, draws);
     }
 }
+
+/// Remove the startup background from the main window. Called from the
+/// frontend once the React app finishes loading and CSS backgrounds are
+/// painted — this restores the normal transparent glass appearance.
+#[tauri::command]
+pub async fn remove_window_background(app: AppHandle) -> Result<(), String> {
+    let window = app
+        .get_webview_window("main")
+        .ok_or("Main window not found")?;
+
+    #[cfg(target_os = "macos")]
+    super::remove_window_background_color(&window);
+
+    #[cfg(not(target_os = "macos"))]
+    let _ = window;
+
+    Ok(())
+}
