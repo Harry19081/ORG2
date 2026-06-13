@@ -96,7 +96,7 @@ export const NavigationMenuParentRow = React.forwardRef<
         data-testid={item.dataTestId}
         className={`group flex min-h-[36px] items-center justify-between rounded-lg transition-colors duration-150 ${
           isChild ? "pl-5 pr-2" : "px-2"
-        } ${submenuSelected ? "cursor-default bg-bg-1 text-primary-6" : cursorReset ? "cursor-default text-text-1 hover:bg-fill-2" : "cursor-pointer text-text-1 hover:bg-fill-2"}`}
+        } ${submenuSelected ? "cursor-default bg-fill-2 text-primary-6" : cursorReset ? "cursor-default text-text-1 hover:bg-fill-2" : "cursor-pointer text-text-1 hover:bg-fill-2"}`}
         onClick={() => {
           if (item.disabled) return;
           markClicked();
@@ -259,7 +259,7 @@ export const NavigationMenuLeafRow = React.forwardRef<
               ? "cursor-default text-text-2 opacity-60"
               : "cursor-default text-text-3 opacity-60"
             : isSelected
-              ? "cursor-default bg-bg-1 text-primary-6"
+              ? "cursor-default bg-fill-2 text-primary-6"
               : isSecondaryTone
                 ? `${cursorReset ? "cursor-default" : "cursor-pointer"} text-text-2 hover:bg-fill-2 hover:text-text-1`
                 : `${cursorReset ? "cursor-default" : "cursor-pointer"} text-text-1 hover:bg-fill-2`

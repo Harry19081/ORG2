@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { createLogger } from "@src/hooks/logger";
 import {
@@ -15,6 +15,24 @@ const HOLD_TO_QUIT_MS = 1000;
 let quitInProgress = false;
 let holdToQuitTimer: ReturnType<typeof setTimeout> | null = null;
 
+async function requestNativeQuitAfterRelease() {
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("complete_hold_to_quit");
+}
+
+async function requestNativeCancelHoldToQuit() {
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("cancel_hold_to_quit");
+}
+
+function cancelLocalHoldToQuit() {
+  if (holdToQuitTimer) {
+    clearTimeout(holdToQuitTimer);
+    holdToQuitTimer = null;
+  }
+  getInstrumentedStore().set(holdToQuitOverlayOpenAtom, false);
+}
+
 export function useWindowShortcuts() {
   const handleQuit = useCallback(async () => {
     if (!isTauriDesktop() || quitInProgress) return;
@@ -26,8 +44,7 @@ export function useWindowShortcuts() {
       jotaiStore.set(holdToQuitOverlayOpenAtom, false);
       jotaiStore.set(isAppQuittingAtom, true);
 
-      const { exit } = await import("@tauri-apps/plugin-process");
-      await exit(0);
+      await requestNativeQuitAfterRelease();
     } catch (error) {
       const jotaiStore = getInstrumentedStore();
       jotaiStore.set(isAppQuittingAtom, false);
@@ -41,16 +58,12 @@ export function useWindowShortcuts() {
     }
   }, []);
 
-  const confirmAndQuit = useCallback(async () => {
-    await handleQuit();
-  }, [handleQuit]);
-
   const cancelHoldToQuit = useCallback(() => {
-    if (holdToQuitTimer) {
-      clearTimeout(holdToQuitTimer);
-      holdToQuitTimer = null;
+    if (quitInProgress) return;
+    cancelLocalHoldToQuit();
+    if (isTauriDesktop()) {
+      void requestNativeCancelHoldToQuit();
     }
-    getInstrumentedStore().set(holdToQuitOverlayOpenAtom, false);
   }, []);
 
   const startHoldToQuit = useCallback(() => {
@@ -63,6 +76,45 @@ export function useWindowShortcuts() {
       void handleQuit();
     }, HOLD_TO_QUIT_MS);
   }, [handleQuit]);
+
+  useEffect(() => {
+    if (!isTauriDesktop()) return;
+
+    let cancelled = false;
+    const unlisteners: Array<() => void> = [];
+
+    const setupListeners = async () => {
+      const { listen } = await import("@tauri-apps/api/event");
+
+      const unlistenStart = await listen("native-hold-to-quit-start", () => {
+        if (!cancelled) startHoldToQuit();
+      });
+      unlisteners.push(unlistenStart);
+
+      const unlistenCancel = await listen("native-hold-to-quit-cancel", () => {
+        if (!cancelled) cancelLocalHoldToQuit();
+      });
+      unlisteners.push(unlistenCancel);
+    };
+
+    const handleFocusLoss = () => cancelHoldToQuit();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") cancelHoldToQuit();
+    };
+
+    window.addEventListener("blur", handleFocusLoss);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    void setupListeners();
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("blur", handleFocusLoss);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      unlisteners.forEach((unlisten) => unlisten());
+      cancelHoldToQuit();
+    };
+  }, [cancelHoldToQuit, startHoldToQuit]);
 
   const handleHideWindow = useCallback(async () => {
     if (!isTauriDesktop()) return;
@@ -78,7 +130,6 @@ export function useWindowShortcuts() {
 
   return {
     handleQuit,
-    confirmAndQuit,
     startHoldToQuit,
     cancelHoldToQuit,
     handleHideWindow,

@@ -26,7 +26,6 @@ interface ShortcutRegistrationOptions {
   handleZoomOut: () => void;
   handleZoomReset: () => boolean;
   // Window
-  confirmAndQuit: () => Promise<void>;
   startHoldToQuit: () => void;
   cancelHoldToQuit: () => void;
   handleHideWindow: () => Promise<void>;
@@ -54,7 +53,6 @@ interface ShortcutRegistrationOptions {
   handlePreviousTab: (shortcut: string) => void;
   handleCloseCurrentTab: () => boolean;
   handleToggleWorkStationChatFocus: () => void;
-  handleToggleStationMode: () => void;
 }
 
 /**
@@ -73,7 +71,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handleZoomIn,
     handleZoomOut,
     handleZoomReset,
-    confirmAndQuit,
     startHoldToQuit,
     cancelHoldToQuit,
     handleHideWindow,
@@ -100,7 +97,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handlePreviousTab,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    handleToggleStationMode,
   } = options;
 
   // ── Global keydown listener (capture phase) ──
@@ -126,7 +122,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handleOpenCodeEditorTerminal,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    handleToggleStationMode,
   });
 
   // ── ShortcutRegistry subscriptions ──
@@ -135,7 +130,7 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
       shortcutRegistry.on("zoom_in", handleZoomIn),
       shortcutRegistry.on("zoom_out", handleZoomOut),
       shortcutRegistry.on("zoom_reset", handleZoomReset),
-      shortcutRegistry.on("quit_app", () => void confirmAndQuit()),
+      shortcutRegistry.on("quit_app", startHoldToQuit),
       shortcutRegistry.on("close_tab", handleCloseCurrentTab),
       shortcutRegistry.on("hide_window", handleHideWindow),
       shortcutRegistry.on(
@@ -175,7 +170,12 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
         }
         openAgentControlSpotlight();
       }),
-      shortcutRegistry.on("toggle_station_mode", handleToggleStationMode),
+      shortcutRegistry.on("open_my_station", () => {
+        void WorkStationViewService.openStationMode("my-station");
+      }),
+      shortcutRegistry.on("open_agent_station", () => {
+        void WorkStationViewService.openStationMode("agent-station");
+      }),
       shortcutRegistry.on("open_ops_control", () => {
         void WorkStationViewService.openStationMode("ops-control");
       }),
@@ -195,7 +195,7 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handleZoomIn,
     handleZoomOut,
     handleZoomReset,
-    confirmAndQuit,
+    startHoldToQuit,
     handleCloseCurrentTab,
     handleHideWindow,
     handleCreateNewSession,
@@ -211,7 +211,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handleNextTab,
     handlePreviousTab,
     handleToggleAPICallPanel,
-    handleToggleStationMode,
     handleOpenCodeEditorFileFolder,
     handleToggleWorkStationChatFocus,
     handleToggleInspectMode,
@@ -247,7 +246,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
         "menu-open-location-selector": handleOpenLocationSelector,
         "menu-open-model-selector": handleOpenModelSelector,
         "menu-open-settings": handleOpenSettings,
-        "menu-quit": () => void confirmAndQuit(),
         "menu-maximize-work-station": () =>
           void WorkStationViewService.showWorkStation(),
         "menu-select-all": () => {
@@ -311,7 +309,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
     handleOpenSettings,
     handleOpenWorkStationFilePalette,
     handleOpenWorkspaceSelector,
-    confirmAndQuit,
     handleToggleSpotlight,
     handleZoomIn,
     handleZoomOut,

@@ -224,13 +224,6 @@ export function useTabShortcuts() {
     dispatchWorkStationAction(ACTION_ID.WORKSTATION_TOGGLE_CHAT_FOCUS);
   }, [dispatchWorkStationAction]);
 
-  const handleToggleStationMode = useCallback(() => {
-    const currentViewMode = getViewModeForRoute(window.location.pathname);
-    if (currentViewMode !== "workStation") return;
-
-    void WorkStationViewService.toggleStationMode();
-  }, []);
-
   const handleCloseCurrentTab = useCallback(() => {
     const pathname = window.location.pathname;
     if (getViewModeForRoute(pathname) !== "workStation") return false;
@@ -263,6 +256,5 @@ export function useTabShortcuts() {
     handlePreviousTab,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    handleToggleStationMode,
   };
 }
