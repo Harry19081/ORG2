@@ -609,7 +609,7 @@
       "switchTo": "전환",
       "current": "현재"
     },
-    "agentSentMessageCaption": "Agent가 메시지를 보냈습니다",
+    "agentSentMessageCaption": "{{subject}}가 메시지를 보냈습니다",
     "userSentMessageCaption": "Agent에게 메시지를 보냈습니다"
   },
   "terminal": {

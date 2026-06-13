@@ -617,7 +617,7 @@
       "switchTo": "Przełącz na",
       "current": "Bieżące"
     },
-    "agentSentMessageCaption": "Agent wysłał Ci wiadomość",
+    "agentSentMessageCaption": "{{subject}} wysłał Ci wiadomość",
     "userSentMessageCaption": "Wysłano wiadomość do Agent"
   },
   "terminal": {

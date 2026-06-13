@@ -611,7 +611,7 @@
       "switchTo": "Переключиться на",
       "current": "Текущий"
     },
-    "agentSentMessageCaption": "Agent отправил вам сообщение",
+    "agentSentMessageCaption": "{{subject}} отправил вам сообщение",
     "userSentMessageCaption": "Вы отправили сообщение Agent"
   },
   "terminal": {

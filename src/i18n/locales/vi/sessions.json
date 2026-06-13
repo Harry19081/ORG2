@@ -609,7 +609,7 @@
       "switchTo": "Chuyển sang",
       "current": "Hiện tại"
     },
-    "agentSentMessageCaption": "Agent đã gửi cho bạn một tin nhắn",
+    "agentSentMessageCaption": "{{subject}} đã gửi cho bạn một tin nhắn",
     "userSentMessageCaption": "Bạn đã gửi một tin nhắn cho Agent"
   },
   "terminal": {

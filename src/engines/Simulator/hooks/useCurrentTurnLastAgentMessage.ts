@@ -31,6 +31,7 @@ import { simulatorEventsAtom } from "@src/engines/SessionCore/derived/simulatorE
 export interface CurrentTurnLastAgentMessage {
   text: string;
   source: "assistant" | "user";
+  eventKind: "message" | "thought";
   /** Event id of the source message, useful for keying renderers. */
   eventId: string;
   /** Whether the replay cursor is currently on this exact message event. */
@@ -55,23 +56,24 @@ function getThinkingText(event: SessionEvent | undefined): string | undefined {
   return event.extracted.content?.trim() || undefined;
 }
 
-function getMessageOrThinkingText(
+function getMessageOrThinkingCaption(
   preview: SimulatorEventPreview,
   event: SessionEvent | undefined
-): string | undefined {
+): { text: string; eventKind: "message" | "thought" } | undefined {
   if (preview.displayVariant === "thinking") {
-    return (
+    const text =
       getThinkingText(event) ||
       safeString(event?.result?.thought)?.trim() ||
       safeString(event?.result?.content)?.trim() ||
       safeString(event?.result?.observation)?.trim() ||
       preview.displayText?.trim() ||
-      undefined
-    );
+      undefined;
+    return text ? { text, eventKind: "thought" } : undefined;
   }
 
   if (!isAssistantMessagePreview(preview)) return undefined;
-  return preview.displayText?.trim() || undefined;
+  const text = preview.displayText?.trim() || undefined;
+  return text ? { text, eventKind: "message" } : undefined;
 }
 
 export function useCurrentTurnLastAgentMessage(): CurrentTurnLastAgentMessage | null {
@@ -94,6 +96,7 @@ export function useCurrentTurnLastAgentMessage(): CurrentTurnLastAgentMessage | 
     return {
       text: currentText,
       source: "user",
+      eventKind: "message",
       eventId: currentPreview.id,
       isCurrentEvent: true,
     };
@@ -112,11 +115,15 @@ export function useCurrentTurnLastAgentMessage(): CurrentTurnLastAgentMessage | 
     const eventId = eventIds[index];
     const preview = previewById[eventId];
     if (!preview) continue;
-    const text = getMessageOrThinkingText(preview, eventById.get(eventId));
-    if (!text) continue;
+    const caption = getMessageOrThinkingCaption(
+      preview,
+      eventById.get(eventId)
+    );
+    if (!caption) continue;
     return {
-      text,
+      text: caption.text,
       source: "assistant",
+      eventKind: caption.eventKind,
       eventId: preview.id,
       isCurrentEvent: index === cursor,
     };

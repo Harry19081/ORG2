@@ -615,7 +615,7 @@
       "switchTo": "Alternar para",
       "current": "Atual"
     },
-    "agentSentMessageCaption": "O Agent enviou uma mensagem para você",
+    "agentSentMessageCaption": "{{subject}} enviou uma mensagem para você",
     "userSentMessageCaption": "Você enviou uma mensagem para Agent"
   },
   "terminal": {

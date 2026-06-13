@@ -609,7 +609,7 @@
       "switchTo": "Geçiş yap",
       "current": "Geçerli"
     },
-    "agentSentMessageCaption": "Agent size bir mesaj gönderdi",
+    "agentSentMessageCaption": "{{subject}} size bir mesaj gönderdi",
     "userSentMessageCaption": "Agent'a bir mesaj gönderdiniz"
   },
   "terminal": {

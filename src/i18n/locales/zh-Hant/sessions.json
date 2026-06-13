@@ -609,7 +609,7 @@
       "switchTo": "切換到",
       "current": "當前"
     },
-    "agentSentMessageCaption": "Agent 傳送了一則訊息給你",
+    "agentSentMessageCaption": "{{subject}} 傳送了一則訊息給你",
     "userSentMessageCaption": "你傳送了一則訊息給 Agent"
   },
   "terminal": {

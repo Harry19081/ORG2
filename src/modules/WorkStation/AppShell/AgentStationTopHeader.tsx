@@ -29,7 +29,10 @@ import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { useIsCompactLayout } from "@src/modules/shared/layouts/useCompactLayout";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import { workstationActiveSessionIdAtom } from "@src/store/session";
+import {
+  sessionMapAtom,
+  workstationActiveSessionIdAtom,
+} from "@src/store/session";
 import {
   activeStationChatVisibleAtom,
   chatWidthAtom,
@@ -72,14 +75,24 @@ const AgentStationTopHeader: React.FC = memo(() => {
   const workstationActiveSessionId = useAtomValue(
     workstationActiveSessionIdAtom
   );
+  const sessionMap = useAtomValue(sessionMapAtom);
+  const activeSession = workstationActiveSessionId
+    ? sessionMap.get(workstationActiveSessionId)
+    : undefined;
+  const captionAgentName = activeSession?.agentDisplayName?.trim() || "Agent";
   const showMessageNotice =
     captionMessage?.isCurrentEvent && effectiveDockApp === AppType.CHANNELS;
   const captionText = showMessageNotice
-    ? t(
-        captionMessage.source === "user"
-          ? "simulator.userSentMessageCaption"
-          : "simulator.agentSentMessageCaption"
-      )
+    ? captionMessage.eventKind === "thought"
+      ? t("workStation.chat.messages.bubble.senderTitle.thought", {
+          subject: captionAgentName,
+        })
+      : t(
+          captionMessage.source === "user"
+            ? "simulator.userSentMessageCaption"
+            : "simulator.agentSentMessageCaption",
+          { subject: captionAgentName }
+        )
     : captionMessage?.text;
   const captionToggleLabel = t("simulator.captionBarToggleTooltip");
   const chatPanelLabel = isChatPanelVisible

@@ -609,7 +609,7 @@
       "switchTo": "切换到",
       "current": "当前"
     },
-    "agentSentMessageCaption": "Agent 给你发送了一条消息",
+    "agentSentMessageCaption": "{{subject}} 给你发送了一条消息",
     "userSentMessageCaption": "你给 Agent 发送了一条消息"
   },
   "terminal": {

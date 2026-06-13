@@ -609,7 +609,7 @@
       "switchTo": "切替先",
       "current": "現在"
     },
-    "agentSentMessageCaption": "Agent からメッセージが届きました",
+    "agentSentMessageCaption": "{{subject}} からメッセージが届きました",
     "userSentMessageCaption": "Agent にメッセージを送信しました"
   },
   "terminal": {

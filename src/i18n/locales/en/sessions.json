@@ -615,7 +615,7 @@
       "switchTo": "Switch to",
       "current": "Current"
     },
-    "agentSentMessageCaption": "Agent sent you a message",
+    "agentSentMessageCaption": "{{subject}} sent you a message",
     "userSentMessageCaption": "You sent Agent a message"
   },
   "terminal": {
