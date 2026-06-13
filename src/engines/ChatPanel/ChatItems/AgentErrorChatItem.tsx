@@ -21,7 +21,6 @@
  *      the original user prompt without any duplicate bubbles.
  */
 import { useAtomValue } from "jotai";
-import { RefreshCw } from "lucide-react";
 import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -155,14 +154,6 @@ const AgentErrorChatItem: React.FC<AgentErrorChatItemProps> = memo(
                 size="small"
                 onClick={handleResume}
                 disabled={isResuming}
-                icon={
-                  <RefreshCw
-                    size={12}
-                    strokeWidth={1.75}
-                    className={isResuming ? "animate-spin" : ""}
-                  />
-                }
-                iconPosition="left"
               >
                 {t("common:actions.resume")}
               </Button>
