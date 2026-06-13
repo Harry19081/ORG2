@@ -112,9 +112,9 @@ impl CodeMapTool {
             return self.authorize_workspace_path(path).await;
         }
 
-        let active = self.active_repo.lock().await;
-        if let Some(path) = active.as_ref() {
-            return self.authorize_workspace_path(path.clone()).await;
+        let active_path = self.active_repo.lock().await.clone();
+        if let Some(path) = active_path {
+            return self.authorize_workspace_path(path).await;
         }
 
         let path = self.workspace_state.read().working_dir().to_path_buf();
@@ -157,7 +157,7 @@ impl CodeMapTool {
 #[async_trait]
 impl Tool for CodeMapTool {
     fn name(&self) -> &str {
-        tool_names::CODE_MAP
+        tool_names::USE_CODE_MAP
     }
 
     fn category(&self) -> &str {
@@ -177,7 +177,8 @@ impl Tool for CodeMapTool {
     }
 
     fn description(&self) -> &str {
-        "Query the Rust-native Code Map symbol graph for the current workspace.\n\
+        "Use the Rust-native Code Map symbol graph for the current workspace.\n\
+         This read-only tool queries an existing Code Map index. Use `manage_code_map` for index lifecycle actions such as status checks, incremental indexing, full rebuilds, cancellation, or clearing the local index.\n\
          Code Map reports confidence/provenance because some languages are AST-backed while fallback extraction is heuristic.\n\
          Actions:\n\
          - status: show index status, freshness, unresolved refs, and file/symbol/relationship counts\n\
@@ -187,7 +188,7 @@ impl Tool for CodeMapTool {
          - callees: show outgoing call/reference relationships, excluding containment-only edges\n\
          - impact: bounded reverse traversal for semantic dependency impact analysis\n\
          - explore: ranked Code Map exploration with source context and relationship counts\n\
-         Use status first if unsure whether the workspace is indexed or stale."
+         Use `manage_code_map` status first if unsure whether the workspace is indexed or stale."
     }
 
     fn llm_description(&self) -> Option<String> {
@@ -197,7 +198,7 @@ impl Tool for CodeMapTool {
             .map(|state| state.working_dir().display().to_string())
             .unwrap_or_else(|| self.default_workspace.display().to_string());
         Some(format!(
-            "Query the Rust-native Code Map symbol graph for {workspace}. Use `status` first if unsure whether the workspace has been indexed or is stale. Results include confidence/provenance because some extraction and relationships are heuristic. Actions: status, search, node, callers, callees, impact, explore."
+            "Use the Rust-native Code Map symbol graph for {workspace}. This tool is read-only and expects an existing index; use `manage_code_map` first when indexing, refreshing, clearing, or checking stale/missing index state. Results include confidence/provenance because some extraction and relationships are heuristic. Actions: status, search, node, callers, callees, impact, explore."
         ))
     }
 

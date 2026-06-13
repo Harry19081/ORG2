@@ -79,7 +79,11 @@ pub const TOOL_GROUPS: &[(&str, &[&str])] = &[
     ),
     (
         "group:search",
-        &[tool_names::CODE_SEARCH, tool_names::CODE_MAP],
+        &[
+            tool_names::CODE_SEARCH,
+            tool_names::USE_CODE_MAP,
+            tool_names::MANAGE_CODE_MAP,
+        ],
     ),
     (
         "group:lsp",

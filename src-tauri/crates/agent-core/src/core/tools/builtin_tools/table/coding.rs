@@ -195,11 +195,11 @@ pub(super) static TOOLS: &[ToolEntry] = &[
         ..DEFAULT_TOOL_ENTRY
     },
     ToolEntry {
-        name: tool_names::CODE_MAP,
-        description: "Query the persistent Code Map symbol graph.",
-        description_detail: "Read-only code intelligence backed by the Rust-native Code Map SQLite index. Use it for symbol search, source-aware node inspection, callers/callees, impact analysis, and relationship-oriented exploration after a workspace has been indexed.",
+        name: tool_names::USE_CODE_MAP,
+        description: "Use the persistent Code Map symbol graph.",
+        description_detail: "Read-only code intelligence backed by the Rust-native Code Map SQLite index. Use it for symbol search, source-aware node inspection, callers/callees, impact analysis, and relationship-oriented exploration after a workspace has been indexed. Use `manage_code_map` first when the index is missing, stale, failed, or needs a rebuild.",
         category: tool_categories::CODING,
-        icon_id: "network",
+        icon_id: "map",
         simulator_app: AppCode,
         app_subtool: SubSearch,
         chat_block: CbSearch,
@@ -224,6 +224,36 @@ pub(super) static TOOLS: &[ToolEntry] = &[
             action_sub!("impact", "Run bounded reverse traversal for impact analysis", Explore, labels: "tools.codeMapImpactRunning", "tools.codeMapImpactDone", "tools.codeMapImpactFailed"),
             action_sub!("explore", "Explore related indexed symbols and relationship trails", Explore, labels: "tools.codeMapExploreRunning", "tools.codeMapExploreDone", "tools.codeMapExploreFailed"),
         ],
+        ..DEFAULT_TOOL_ENTRY
+    },
+    ToolEntry {
+        name: tool_names::MANAGE_CODE_MAP,
+        description: "Manage the Code Map index lifecycle.",
+        description_detail: "Companion management tool for the Rust-native Code Map index. Use it to inspect status and freshness, run incremental indexing, force a full rebuild, cancel an active index task, or clear the local index. It prepares the persistent symbol graph consumed by the read-only `use_code_map` tool.",
+        category: tool_categories::CODING,
+        icon_id: "map",
+        simulator_app: AppCode,
+        app_subtool: OtherTool,
+        chat_block: CbFallback,
+        human_tool_key: Some(HtCode),
+        action_icons: &[
+            ("status", "activity"),
+            ("index", "play"),
+            ("reindex", "refresh-cw"),
+            ("cancel", "circle-stop"),
+            ("clear", "trash-2"),
+        ],
+        label_running: "tools.manageCodeMapRunning",
+        label_done: "tools.manageCodeMapDone",
+        label_failed: "tools.manageCodeMapFailed",
+        actions: &[
+            action_sub!("status", "Inspect Code Map index state, progress, freshness, counts, and size", OtherTool, chat: CbFallback, labels: "tools.manageCodeMapStatusRunning", "tools.manageCodeMapStatusDone", "tools.manageCodeMapStatusFailed"),
+            action_sub!("index", "Run an incremental Code Map index for new or stale files", OtherTool, chat: CbFallback, labels: "tools.manageCodeMapIndexRunning", "tools.manageCodeMapIndexDone", "tools.manageCodeMapIndexFailed"),
+            action_sub!("reindex", "Force a full Code Map rebuild", OtherTool, chat: CbFallback, labels: "tools.manageCodeMapReindexRunning", "tools.manageCodeMapReindexDone", "tools.manageCodeMapReindexFailed"),
+            action_sub!("cancel", "Request cancellation for an active Code Map index task", OtherTool, chat: CbFallback, labels: "tools.manageCodeMapCancelRunning", "tools.manageCodeMapCancelDone", "tools.manageCodeMapCancelFailed"),
+            action_sub!("clear", "Delete the local Code Map index for a workspace", OtherTool, chat: CbFallback, labels: "tools.manageCodeMapClearRunning", "tools.manageCodeMapClearDone", "tools.manageCodeMapClearFailed"),
+        ],
+        required_capability: CapCoding,
         ..DEFAULT_TOOL_ENTRY
     },
     ToolEntry {

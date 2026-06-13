@@ -19,7 +19,7 @@ fn fresh_tool() -> CodeMapTool {
 fn code_map_tool_uses_canonical_name_and_is_read_only() {
     let tool = fresh_tool();
 
-    assert_eq!(tool.name(), tool_names::CODE_MAP);
+    assert_eq!(tool.name(), tool_names::USE_CODE_MAP);
     assert_eq!(tool.category(), crate::tools::categories::CODING);
     assert!(tool.is_read_only());
 }

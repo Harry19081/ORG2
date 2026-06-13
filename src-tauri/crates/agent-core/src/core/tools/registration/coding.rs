@@ -12,6 +12,7 @@ use crate::tools::impls::coding::{
     exec::{await_tool::AwaitTool, ExecTool},
     files::{DeleteFileTool, ListDirTool, ReadFileTool, WriteEnvFileTool},
     inspect_terminals::InspectTerminalsTool,
+    manage_code_map::ManageCodeMapTool,
     manage_file_history::ManageFileHistoryTool,
     manage_lsp::ManageLspTool,
     manage_todo::{TodoSessionContext, TodoTool},
@@ -154,6 +155,15 @@ pub fn register(registry: &mut ToolRegistry, deps: &ToolDeps, disabled: &HashSet
         registry,
         Box::new(CodeMapTool::new(
             working_dir.clone(),
+            Arc::clone(&deps.workspace),
+        )),
+        disabled,
+    );
+    register_if_enabled(
+        registry,
+        Box::new(ManageCodeMapTool::new(
+            working_dir.clone(),
+            deps.app_handle.clone(),
             Arc::clone(&deps.workspace),
         )),
         disabled,

@@ -34,13 +34,7 @@ use crate::coordination::agent_inbox::{
     AgentInboxStore, AgentMessage, SYSTEM_SENDER_ID, USER_SENDER_ID,
 };
 #[cfg(test)]
-use crate::coordination::agent_org_runs::{
-    AgentOrgRunStatus, AgentOrgRunStore, COORDINATOR_MEMBER_ID,
-};
-#[cfg(test)]
-use crate::coordination::agent_org_tasks::AgentOrgTaskStore;
-#[cfg(test)]
-use crate::state::AgentSession;
+use crate::coordination::agent_org_runs::COORDINATOR_MEMBER_ID;
 
 #[cfg(test)]
 mod tests {

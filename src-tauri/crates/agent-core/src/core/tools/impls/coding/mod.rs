@@ -3,11 +3,12 @@
 //! One file (or subfolder) per tool — the file/folder name matches the tool
 //! name. Helper-only modules (`action_router`, `terminal_log`) are kept flat.
 //!
-//! - [`code_map`]      — `code_map` tool
+//! - [`code_map`]      — `use_code_map` tool
 //! - [`code_search`]   — `code_search` tool
 //! - [`edit_file`]     — `edit_file` tool (subfolder: strategies + tests)
 //! - [`exec`]          — `run_shell` + `await_output` tools (subfolder)
 //! - [`files`]         — `read_file` + `list_dir` + `delete_file` tools (subfolder)
+//! - [`manage_code_map`] — `manage_code_map` tool
 //! - [`manage_lsp`]    — `manage_lsp` tool (subfolder: tests)
 //! - [`manage_todo`]   — `manage_todo` tool
 //! - [`manage_workspace`] — `manage_workspace` tool
@@ -26,6 +27,7 @@ pub mod edit_file;
 pub mod exec;
 pub mod files;
 pub mod inspect_terminals;
+pub mod manage_code_map;
 pub mod manage_file_history;
 pub mod manage_lsp;
 pub mod manage_todo;
