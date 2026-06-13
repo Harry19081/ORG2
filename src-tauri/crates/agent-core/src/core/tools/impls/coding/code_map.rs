@@ -178,8 +178,12 @@ impl Tool for CodeMapTool {
 
     fn description(&self) -> &str {
         "Use the Rust-native Code Map symbol graph for the current workspace.\n\
-         This read-only tool queries an existing Code Map index. Use `manage_code_map` for index lifecycle actions such as status checks, incremental indexing, full rebuilds, cancellation, or clearing the local index.\n\
+         This read-only tool queries an existing Code Map index. Use it when you need repository-scale symbol context: where a type/function is defined, who calls it, what it calls, impact radius, or relationship-oriented exploration. Use `manage_code_map` for index lifecycle actions such as status checks, incremental indexing, full rebuilds, cancellation, or clearing the local index.\n\
          Code Map reports confidence/provenance because some languages are AST-backed while fallback extraction is heuristic.\n\
+         Workflow:\n\
+         - For broad architecture, dependency, or impact questions, prefer `use_code_map` over ad-hoc text search after confirming the index is ready.\n\
+         - If the index is missing, stale, failed, or indexing status is unknown, use `manage_code_map` status/index/reindex first when that tool is available.\n\
+         - After search/explore returns a node_id, pass that node_id to node/callers/callees/impact rather than repeating fuzzy queries.\n\
          Actions:\n\
          - status: show index status, freshness, unresolved refs, and file/symbol/relationship counts\n\
          - search: find symbols by name, qualified name, source signature, or path\n\
@@ -187,8 +191,7 @@ impl Tool for CodeMapTool {
          - callers: show incoming call/reference relationships, excluding containment-only edges\n\
          - callees: show outgoing call/reference relationships, excluding containment-only edges\n\
          - impact: bounded reverse traversal for semantic dependency impact analysis\n\
-         - explore: ranked Code Map exploration with source context and relationship counts\n\
-         Use `manage_code_map` status first if unsure whether the workspace is indexed or stale."
+         - explore: ranked Code Map exploration with source context and relationship counts."
     }
 
     fn llm_description(&self) -> Option<String> {
@@ -198,7 +201,7 @@ impl Tool for CodeMapTool {
             .map(|state| state.working_dir().display().to_string())
             .unwrap_or_else(|| self.default_workspace.display().to_string());
         Some(format!(
-            "Use the Rust-native Code Map symbol graph for {workspace}. This tool is read-only and expects an existing index; use `manage_code_map` first when indexing, refreshing, clearing, or checking stale/missing index state. Results include confidence/provenance because some extraction and relationships are heuristic. Actions: status, search, node, callers, callees, impact, explore."
+            "Use the Rust-native Code Map symbol graph for {workspace}. Prefer this over ad-hoc text search for repository-scale symbol, dependency, caller/callee, or impact questions after the index is ready. This tool is read-only and expects an existing index; use `manage_code_map` first when indexing, refreshing, clearing, or checking stale/missing index state. After search/explore returns a node_id, pass that node_id to node/callers/callees/impact instead of repeating fuzzy queries. Results include confidence/provenance because some extraction and relationships are heuristic. Actions: status, search, node, callers, callees, impact, explore."
         ))
     }
 

@@ -135,14 +135,14 @@ impl Tool for ManageCodeMapTool {
 
     fn description(&self) -> &str {
         "Manage the local Code Map index for the current workspace.\n\n\
-         Use this tool to prepare or reset the persistent symbol graph that the `use_code_map` query tool reads.\n\n\
+         Use this tool to prepare or reset the persistent symbol graph that the `use_code_map` query tool reads. Call it before repository-scale Code Map queries when index readiness is unknown, and pass `workspace_path` when the user asks about a specific workspace.\n\n\
          Actions:\n\
          - `status` — inspect index state, freshness, counts, progress, and index size\n\
-         - `index` — run an incremental index if the workspace is new or stale\n\
-         - `reindex` — force a full rebuild of the Code Map index\n\
+         - `index` — run an incremental index if the workspace is new, stale, or not indexed\n\
+         - `reindex` — force a full rebuild after parser/config changes, persistent failures, or suspicious results\n\
          - `cancel` — request cancellation for an active index task\n\
          - `clear` — delete the local Code Map index; requires `confirm: true`\n\n\
-         Prefer `status` before `use_code_map` queries. If the status is not_indexed or stale, run `index` or `reindex` first."
+         Workflow: call `status`; if ready, use `use_code_map`; if not_indexed or stale, call `index`; if failed or results look corrupted, call `reindex`; avoid `clear` unless the user asked to reset/delete the local index."
     }
 
     fn llm_description(&self) -> Option<String> {
@@ -152,7 +152,7 @@ impl Tool for ManageCodeMapTool {
             .map(|state| state.working_dir().display().to_string())
             .unwrap_or_else(|| self.default_workspace.display().to_string());
         Some(format!(
-            "Manage the local Code Map index for {workspace}. Actions: status, index, reindex, cancel, clear. Use this before the `use_code_map` query tool when the workspace is not indexed or stale; clear requires confirm=true."
+            "Manage the local Code Map index for {workspace}. Call status before repository-scale use_code_map queries when readiness is unknown; call index for not_indexed/stale workspaces; call reindex for failed or suspicious indexes; pass workspace_path for a specific workspace. Actions: status, index, reindex, cancel, clear. clear requires confirm=true and should only be used when the user wants to reset/delete the local index."
         ))
     }
 
