@@ -355,7 +355,7 @@
     },
     "plusMenu": {
       "title": "新しいタブ",
-      "searchPlaceholder": "ファイル、URL を開く...",
+      "searchFile": "ファイルを検索",
       "newBrowserTab": "新しいブラウザタブ",
       "newPrivateBrowserTab": "新しいプライベートブラウザタブ",
       "workItems": "作業項目",

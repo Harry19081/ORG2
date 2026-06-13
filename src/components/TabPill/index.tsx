@@ -343,7 +343,7 @@ const TabPill: React.FC<TabPillProps> = ({
             ? size === "mini"
               ? "h-6 px-1 py-[2px]"
               : size === "small"
-                ? "h-7 px-1 py-[2px]"
+                ? "h-[24px] w-[28px] p-0 [&_svg]:h-[14px] [&_svg]:w-[14px]"
                 : size === "large"
                   ? "h-9 px-2 py-1"
                   : "h-[28px] px-1.5 py-[3px]"

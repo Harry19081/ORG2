@@ -357,7 +357,7 @@
     },
     "plusMenu": {
       "title": "Nueva pestaña",
-      "searchPlaceholder": "Abrir archivo, URL...",
+      "searchFile": "Buscar archivo",
       "newBrowserTab": "Nueva pestaña del navegador",
       "newPrivateBrowserTab": "Nueva pestaña privada del navegador",
       "workItems": "Elementos de trabajo",

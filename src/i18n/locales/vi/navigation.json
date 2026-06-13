@@ -355,7 +355,7 @@
     },
     "plusMenu": {
       "title": "Thẻ mới",
-      "searchPlaceholder": "Mở tệp, URL...",
+      "searchFile": "Tìm tệp",
       "newBrowserTab": "Thẻ trình duyệt mới",
       "newPrivateBrowserTab": "Thẻ trình duyệt ẩn danh mới",
       "workItems": "Mục công việc",

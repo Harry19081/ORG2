@@ -357,7 +357,7 @@
     },
     "plusMenu": {
       "title": "Nouvel onglet",
-      "searchPlaceholder": "Ouvrir un fichier, URL...",
+      "searchFile": "Rechercher un fichier",
       "newBrowserTab": "Nouvel onglet de navigateur",
       "newPrivateBrowserTab": "Nouvel onglet de navigation privée",
       "workItems": "Éléments de travail",

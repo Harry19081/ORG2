@@ -68,7 +68,7 @@
     },
     "plusMenu": {
       "title": "New tab",
-      "searchPlaceholder": "Open file, URL...",
+      "searchFile": "Search file",
       "newBrowserTab": "New browser tab",
       "newPrivateBrowserTab": "New private browser tab",
       "workItems": "Work items",
