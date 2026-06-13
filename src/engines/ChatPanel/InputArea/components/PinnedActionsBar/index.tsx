@@ -98,6 +98,7 @@ export interface PinnedActionsBarProps {
    */
   sessionId?: string | null;
   leadingContent?: React.ReactNode;
+  trailingContent?: React.ReactNode;
   manageButtonPlacement?: "after-actions" | "after-leading";
   managePanelAlign?: "left" | "right";
 }
@@ -107,6 +108,7 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     composerInputRef,
     sessionId,
     leadingContent,
+    trailingContent,
     manageButtonPlacement = "after-actions",
     managePanelAlign = "right",
   }) => {
@@ -242,6 +244,8 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     const showCanvasAction = showCanvasPill && !isCanvasTabOpen;
     const hasActionPills =
       showPrPill || showCommitPushPill || showCanvasAction || hasPinnedActions;
+    const hasTrailingContent = Boolean(trailingContent);
+    const showTrailingSeparator = hasActionPills || hasTrailingContent;
 
     // ── Pin / unpin ───────────────────────────────────────────────────────────
 
@@ -395,7 +399,7 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
               {leadingContent}
               {manageButton}
             </div>
-            {hasActionPills && (
+            {showTrailingSeparator && (
               <div aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border-2" />
             )}
             <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 scrollbar-hide">
@@ -408,9 +412,10 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
               {leadingContent}
               {actionPills}
             </div>
-            {hasActionPills && (
+            {showTrailingSeparator && (
               <div aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border-2" />
             )}
+            {trailingContent}
             {manageButton}
           </>
         )}

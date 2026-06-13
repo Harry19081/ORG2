@@ -12,6 +12,7 @@ interface TopRowsProps {
   isEditMode: boolean;
   omitChatHeader: boolean;
   topRowPills?: React.ReactNode;
+  topRowTrailingContent?: React.ReactNode;
   statusBanners?: React.ReactNode;
   composerInputRef: React.ComponentProps<
     typeof PinnedActionsBar
@@ -23,6 +24,7 @@ export const InputAreaTopRows: React.FC<TopRowsProps> = ({
   isEditMode,
   omitChatHeader,
   topRowPills,
+  topRowTrailingContent,
   statusBanners,
   composerInputRef,
   sessionId,
@@ -35,6 +37,7 @@ export const InputAreaTopRows: React.FC<TopRowsProps> = ({
           composerInputRef={composerInputRef}
           sessionId={sessionId}
           leadingContent={topRowPills}
+          trailingContent={topRowTrailingContent}
         />
       </div>
     )}

@@ -5,12 +5,10 @@
  * (queue, processes, file changes). Always visible when any section has data.
  * Clicking a pill expands that section's card above.
  *
- * Also renders scroll-nav action pills (scroll to bottom, follow agent)
- * immediately after the section pills.
+ * Also renders the follow-agent action pill immediately after the section pills.
  *
  * Each pill shows icon + numeric count only. gap-1 between pills.
  */
-import { ArrowDown } from "lucide-react";
 import React, { memo } from "react";
 
 import Button from "@src/components/Button";
@@ -57,11 +55,9 @@ function getButtonClassName(section: InlineSection) {
 
 const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
   ({ sections, scrollNav }) => {
-    const showScrollToBottom = scrollNav?.showScrollToBottom ?? false;
     const showFollowAgent = scrollNav?.showFollowAgent ?? false;
-    const hasTrailing = showScrollToBottom || showFollowAgent;
 
-    if (sections.length === 0 && !hasTrailing) return null;
+    if (sections.length === 0 && !showFollowAgent) return null;
 
     return (
       <div className="flex items-center gap-1 px-0.5">
@@ -82,46 +78,31 @@ const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
           </Button>
         ))}
 
-        {hasTrailing && (
-          <div className="flex items-center gap-1">
-            {showFollowAgent && (
-              <Tooltip
-                content={
-                  <KeyboardShortcutTooltipContent
-                    label={scrollNav!.followAgentTooltipLabel}
-                    shortcut={scrollNav!.followAgentShortcut || undefined}
-                  />
-                }
-                position="top"
-                mouseEnterDelay={250}
-                framedPanel
-              >
-                <span className="inline-flex">
-                  <Button
-                    variant="secondary"
-                    appearance="outline"
-                    size="small"
-                    shape="round"
-                    onClick={scrollNav!.onFollowAgent}
-                    aria-label={scrollNav!.followAgentTooltipLabel}
-                  >
-                    {scrollNav!.followAgentLabel}
-                  </Button>
-                </span>
-              </Tooltip>
-            )}
-            {showScrollToBottom && (
+        {showFollowAgent && (
+          <Tooltip
+            content={
+              <KeyboardShortcutTooltipContent
+                label={scrollNav!.followAgentTooltipLabel}
+                shortcut={scrollNav!.followAgentShortcut || undefined}
+              />
+            }
+            position="top"
+            mouseEnterDelay={250}
+            framedPanel
+          >
+            <span className="inline-flex">
               <Button
                 variant="secondary"
                 appearance="outline"
                 size="small"
                 shape="round"
-                icon={<ArrowDown size={14} />}
-                iconOnly
-                onClick={scrollNav!.onScrollToBottom}
-              />
-            )}
-          </div>
+                onClick={scrollNav!.onFollowAgent}
+                aria-label={scrollNav!.followAgentTooltipLabel}
+              >
+                {scrollNav!.followAgentLabel}
+              </Button>
+            </span>
+          </Tooltip>
         )}
       </div>
     );
