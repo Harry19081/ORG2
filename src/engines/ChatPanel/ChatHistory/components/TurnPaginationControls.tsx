@@ -477,7 +477,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                   <Tooltip
                     content={
                       <KeyboardShortcutTooltipContent
-                        label={t("common:actions.previous")}
+                        label={t("common:pagination.previousRound")}
                       />
                     }
                     position="bottom-end"
@@ -493,7 +493,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                         data-testid="turn-pagination-previous-round"
                         onClick={onPreviousTurnPage}
                         disabled={!turnPaginationReady || currentPageIndex <= 0}
-                        aria-label={t("common:actions.previous")}
+                        aria-label={t("common:pagination.previousRound")}
                         icon={
                           <ChevronLeft
                             size={DROPDOWN_ITEM.iconSize}
@@ -506,7 +506,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                   <Tooltip
                     content={
                       <KeyboardShortcutTooltipContent
-                        label={t("common:actions.next")}
+                        label={t("common:pagination.nextRound")}
                       />
                     }
                     position="bottom-end"
@@ -525,7 +525,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                           !turnPaginationReady ||
                           currentPageIndex >= pageCount - 1
                         }
-                        aria-label={t("common:actions.next")}
+                        aria-label={t("common:pagination.nextRound")}
                         icon={
                           <ChevronRight
                             size={DROPDOWN_ITEM.iconSize}
@@ -538,9 +538,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                   <Tooltip
                     content={
                       <KeyboardShortcutTooltipContent
-                        label={t("common:pagination.round", {
-                          current: Math.max(1, pageCount),
-                        })}
+                        label={t("common:pagination.latestRound")}
                       />
                     }
                     position="bottom-end"
@@ -559,9 +557,7 @@ const TurnPaginationControls: React.FC<TurnPaginationControlsProps> = memo(
                           !turnPaginationReady ||
                           currentPageIndex >= pageCount - 1
                         }
-                        aria-label={t("common:pagination.round", {
-                          current: Math.max(1, pageCount),
-                        })}
+                        aria-label={t("common:pagination.latestRound")}
                         icon={
                           <ChevronsRight
                             size={18}
