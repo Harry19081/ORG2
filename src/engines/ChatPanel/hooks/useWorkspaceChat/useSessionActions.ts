@@ -23,7 +23,6 @@ import {
   pendingSyntheticEventAtom,
   sortedEventsAtom,
 } from "@src/engines/SessionCore/core/atoms";
-import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { SessionService } from "@src/engines/SessionCore/services/SessionService";
 import { clearSessionStreamingStopped } from "@src/engines/SessionCore/sync/adapters/rustAgent/eventHandlers/streamHelpers";
@@ -236,22 +235,6 @@ export function useSessionActions(options: UseSessionActionsOptions) {
           displayContent: currentUserMessage.displayContent,
           imageDataUrls: currentUserMessage.imageDataUrls,
         });
-      }
-
-      // Find the last user event for this session — that's the message to discard.
-      let lastUserEventId: string | null = null;
-      for (let i = events.length - 1; i >= 0; i--) {
-        const ev = events[i];
-        if (ev.sessionId && ev.sessionId !== sessionId) continue;
-        if (ev.source === "user") {
-          lastUserEventId = ev.id;
-          break;
-        }
-      }
-
-      if (lastUserEventId) {
-        // Truncate removes this event and everything after it.
-        void eventStoreProxy.truncateBeforeId(lastUserEventId, sessionId);
       }
 
       if (hasPriorTurns(events, sessionId)) {
