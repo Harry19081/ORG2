@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 import type { ActivityChunk } from "@src/types/session/session";
 
-export interface WindsurfHistorySessionRow {
+export interface OpenCodeHistorySessionRow {
   sessionId: string;
   name: string;
   status: string;
@@ -19,38 +19,38 @@ export interface WindsurfHistorySessionRow {
   branch?: string;
 }
 
-export interface WindsurfHistorySessionPage {
-  sessions: WindsurfHistorySessionRow[];
+export interface OpenCodeHistorySessionPage {
+  sessions: OpenCodeHistorySessionRow[];
   hasMore: boolean;
 }
 
-export interface WindsurfRecentPath {
+export interface OpenCodeRecentPath {
   path: string;
   name?: string;
   lastUsedAt: string;
   sessionCount: number;
 }
 
-export async function windsurfHistoryListSessions(args?: {
+export async function opencodeHistoryListSessions(args?: {
   limit?: number;
   offset?: number;
-}): Promise<WindsurfHistorySessionPage> {
-  return invoke<WindsurfHistorySessionPage>("windsurf_history_list_sessions", {
+}): Promise<OpenCodeHistorySessionPage> {
+  return invoke<OpenCodeHistorySessionPage>("opencode_history_list_sessions", {
     limit: args?.limit,
     offset: args?.offset,
   });
 }
 
-export async function windsurfRecentPaths(args?: {
+export async function opencodeRecentPaths(args?: {
   limit?: number;
-}): Promise<WindsurfRecentPath[]> {
-  return invoke<WindsurfRecentPath[]>("windsurf_recent_paths", {
+}): Promise<OpenCodeRecentPath[]> {
+  return invoke<OpenCodeRecentPath[]>("opencode_recent_paths", {
     limit: args?.limit,
   });
 }
 
-export async function windsurfHistoryChunks(
+export async function opencodeHistoryChunks(
   sessionId: string
 ): Promise<ActivityChunk[]> {
-  return invoke<ActivityChunk[]>("windsurf_history_chunks", { sessionId });
+  return invoke<ActivityChunk[]>("opencode_history_chunks", { sessionId });
 }
