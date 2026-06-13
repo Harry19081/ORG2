@@ -51,6 +51,12 @@ const RESULT_COMPARE_KEYS = [
   "images",
   "call_id",
   "output",
+  "diff",
+  "diffString",
+  "segments",
+  "filePaths",
+  "linesAdded",
+  "linesRemoved",
 ] as const;
 
 function isResultEqual(
@@ -84,6 +90,8 @@ function arePropsEqual(
   if (prevEvent.displayStatus !== nextEvent.displayStatus) return false;
   if (prevEvent.displayText !== nextEvent.displayText) return false;
   if (prevEvent.displayVariant !== nextEvent.displayVariant) return false;
+  if (prevEvent.extracted !== nextEvent.extracted) return false;
+  if (prevEvent.payloadRefs !== nextEvent.payloadRefs) return false;
 
   if (!isResultEqual(prevEvent.result, nextEvent.result)) {
     return false;
@@ -94,6 +102,14 @@ function arePropsEqual(
   if (prevArgs?.streamContent !== nextArgs?.streamContent) return false;
   if (prevArgs?.title !== nextArgs?.title) return false;
   if (prevArgs?.streamOutput !== nextArgs?.streamOutput) return false;
+  if (prevArgs?.patch_text !== nextArgs?.patch_text) return false;
+  if (prevArgs?.old_str !== nextArgs?.old_str) return false;
+  if (prevArgs?.old_string !== nextArgs?.old_string) return false;
+  if (prevArgs?.old_content !== nextArgs?.old_content) return false;
+  if (prevArgs?.new_str !== nextArgs?.new_str) return false;
+  if (prevArgs?.new_string !== nextArgs?.new_string) return false;
+  if (prevArgs?.new_content !== nextArgs?.new_content) return false;
+  if (prevArgs?.content !== nextArgs?.content) return false;
   if (prevArgs?.command !== nextArgs?.command) return false;
   if (prevArgs?.action !== nextArgs?.action) return false;
   if (prevArgs?.subagentSessionId !== nextArgs?.subagentSessionId) return false;

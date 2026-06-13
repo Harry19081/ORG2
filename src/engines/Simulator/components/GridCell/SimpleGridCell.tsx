@@ -12,6 +12,33 @@ import type { SessionEvent } from "@src/engines/SessionCore";
 import SimulatorContentArea from "../../SimulatorMainPane";
 import type { GridCellProps } from "../../types/gridTypes";
 
+function getEventRenderSignature(
+  event: SessionEvent | null | undefined
+): string {
+  if (!event) return "";
+  return [
+    event.id,
+    event.chunk_id ?? "",
+    event.functionName,
+    event.displayStatus,
+    event.displayText,
+    event.displayVariant,
+    event.lastActivityAt ?? "",
+    event.args ? JSON.stringify(event.args) : "",
+    event.result ? JSON.stringify(event.result) : "",
+    event.extracted ? JSON.stringify(event.extracted) : "",
+    event.payloadRefs ? JSON.stringify(event.payloadRefs) : "",
+  ].join("|");
+}
+
+function getEventsTailSignature(
+  events: readonly SessionEvent[] | undefined
+): string {
+  if (!events || events.length === 0) return "0";
+  const tail = events[events.length - 1];
+  return `${events.length}:${getEventRenderSignature(tail)}`;
+}
+
 const SimpleGridCell = memo<
   GridCellProps & { currentEvent: SessionEvent | null }
 >(
@@ -27,27 +54,25 @@ const SimpleGridCell = memo<
     />
   ),
   (prev, next) => {
-    // Re-render if visual props changed
     if (prev.index !== next.index) return false;
     if (prev.color !== next.color) return false;
+    if (prev.forceAppType !== next.forceAppType) return false;
+    if (prev.events !== next.events) return false;
+    if (prev.specs !== next.specs) return false;
 
-    // Re-render if event changed
-    const prevEventId = prev.currentEvent?.chunk_id;
-    const nextEventId = next.currentEvent?.chunk_id;
-
-    if (prevEventId || nextEventId) {
-      if (prevEventId !== nextEventId) return false;
-    } else {
-      if (prev.currentEvent !== next.currentEvent) return false;
-      if (prev.currentEvent?.createdAt !== next.currentEvent?.createdAt)
-        return false;
+    if (
+      getEventRenderSignature(prev.currentEvent) !==
+      getEventRenderSignature(next.currentEvent)
+    ) {
+      return false;
     }
 
-    // Also check functionName changes for same chunk_id
-    if (prev.currentEvent?.functionName !== next.currentEvent?.functionName)
+    if (
+      getEventsTailSignature(prev.events) !==
+      getEventsTailSignature(next.events)
+    ) {
       return false;
-
-    if (prev.forceAppType !== next.forceAppType) return false;
+    }
 
     return true;
   }

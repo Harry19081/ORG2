@@ -6,6 +6,7 @@ import { applyLiveOperationOverlay } from "../liveOperationOverlay";
 import type {
   ExploreOperationEntry,
   FileOperationEntry,
+  ShellOperationEntry,
   SimulatorIDEState,
   ToolOperationEntry,
 } from "../types";
@@ -98,6 +99,27 @@ function staleFileOperation(
   };
 }
 
+function staleShellOperation(
+  overrides: Partial<ShellOperationEntry> = {}
+): ShellOperationEntry {
+  const event = minimalSessionEvent({
+    id: "evt-1",
+    functionName: "run_shell",
+    args: { command: "pnpm test" },
+    displayStatus: "running",
+  });
+  return {
+    command: "pnpm test",
+    shortCommand: "pnpm",
+    commandKeywords: "pnpm",
+    event,
+    eventId: event.id,
+    isCurrent: false,
+    isLoading: true,
+    ...overrides,
+  };
+}
+
 function staleToolOperation(
   overrides: Partial<ToolOperationEntry> = {}
 ): ToolOperationEntry {
@@ -178,6 +200,44 @@ describe("applyLiveOperationOverlay", () => {
     expect(state.exploreOperations[0].listDirTotalListedCount).toBe(2);
   });
 
+  it("marks a live running list_dir operation as loading immediately", () => {
+    const currentEvent = minimalSessionEvent({
+      id: "list-running",
+      functionName: "list_dir",
+      args: { path: "/repo/src" },
+      displayStatus: "running",
+      result: {},
+    });
+
+    const state = applyLiveOperationOverlay(baseDerivedState(), currentEvent);
+
+    expect(state.exploreOperations).toHaveLength(1);
+    expect(state.exploreOperations[0].eventId).toBe("list-running");
+    expect(state.exploreOperations[0].query).toBe("ls /repo/src");
+    expect(state.exploreOperations[0].exploreType).toBe("list_dir");
+    expect(state.exploreOperations[0].isCurrent).toBe(true);
+    expect(state.exploreOperations[0].isLoading).toBe(true);
+  });
+
+  it("marks a live running code_search operation as loading immediately", () => {
+    const currentEvent = minimalSessionEvent({
+      id: "search-running",
+      functionName: "code_search",
+      args: { action: "grep", pattern: "SessionReplay" },
+      displayStatus: "running",
+      result: {},
+    });
+
+    const state = applyLiveOperationOverlay(baseDerivedState(), currentEvent);
+
+    expect(state.exploreOperations).toHaveLength(1);
+    expect(state.exploreOperations[0].eventId).toBe("search-running");
+    expect(state.exploreOperations[0].query).toBe("SessionReplay");
+    expect(state.exploreOperations[0].exploreType).toBe("code_search");
+    expect(state.exploreOperations[0].isCurrent).toBe(true);
+    expect(state.exploreOperations[0].isLoading).toBe(true);
+  });
+
   it("replaces stale read_file operation with live completed content", () => {
     const currentEvent = minimalSessionEvent({
       id: "read-1",
@@ -221,6 +281,44 @@ describe("applyLiveOperationOverlay", () => {
     expect(state.fileOperations[0].isCurrent).toBe(true);
     expect(state.fileOperations[0].isLoading).toBe(true);
     expect(state.fileOperations[0].content).toBeUndefined();
+  });
+
+  it("replaces stale terminal operation with live running stream output", () => {
+    const currentEvent = minimalSessionEvent({
+      id: "shell-running",
+      functionName: "run_shell",
+      args: { command: "pnpm test", streamOutput: "running tests" },
+      displayStatus: "running",
+    });
+
+    const state = applyLiveOperationOverlay(
+      baseDerivedState({
+        shellOperations: [staleShellOperation({ eventId: "shell-running" })],
+      }),
+      currentEvent
+    );
+
+    expect(state.shellOperations).toHaveLength(1);
+    expect(state.shellOperations[0].eventId).toBe("shell-running");
+    expect(state.shellOperations[0].isCurrent).toBe(true);
+    expect(state.shellOperations[0].isLoading).toBe(true);
+    expect(state.shellOperations[0].streamOutput).toBe("running tests");
+  });
+
+  it("adds a live running terminal operation immediately", () => {
+    const currentEvent = minimalSessionEvent({
+      id: "shell-new-running",
+      functionName: "run_shell",
+      args: { command: "pnpm lint", streamOutput: "linting" },
+      displayStatus: "running",
+    });
+
+    const state = applyLiveOperationOverlay(baseDerivedState(), currentEvent);
+
+    expect(state.shellOperations).toHaveLength(1);
+    expect(state.shellOperations[0].eventId).toBe("shell-new-running");
+    expect(state.shellOperations[0].isCurrent).toBe(true);
+    expect(state.shellOperations[0].streamOutput).toBe("linting");
   });
 
   it("replaces stale generic tool operation with the live completed event", () => {
