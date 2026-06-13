@@ -43,6 +43,7 @@ const reuseServices = process.env.E2E_REUSE_SERVICES === "1";
 const allowParallel = process.env.E2E_ALLOW_PARALLEL === "1";
 const isolatedRun = process.env.E2E_ISOLATED_RUN === "1";
 const allowPortCleanup = process.env.E2E_ALLOW_PORT_CLEANUP === "1";
+const allowOAuthRotationSeed = process.env.E2E_ALLOW_OAUTH_ROTATION_SEED === "1";
 const webDriverPort = Number.parseInt(
   process.env.E2E_WEBDRIVER_PORT ?? "4444",
   10
@@ -96,14 +97,8 @@ const orgiiHome =
 const ORGII_HOME_SEED_ENTRIES = [
   "agent-definitions.json",
   "agent-orgs.json",
-  "auth_tokens.json",
   "builtin-overrides.json",
-  "claude-code-cli-profiles",
-  "codex-cli-profiles",
-  "credentials.json",
-  "cursor-cli-profiles",
   "data",
-  "gemini-cli-profiles",
   "integrations.json",
   "mcp-servers.json",
   "personal",
@@ -114,15 +109,20 @@ const ORGII_HOME_SEED_ENTRIES = [
   "skills",
   "workspace-memory",
 ];
+const ORGII_HOME_OAUTH_ROTATION_SEED_ENTRIES = [
+  "auth_tokens.json",
+  "claude-code-cli-profiles",
+  "codex-cli-profiles",
+  "credentials.json",
+  "cursor-cli-profiles",
+  "gemini-cli-profiles",
+];
 
 // OAuth providers (Anthropic, Google, OpenAI Codex) use rotating refresh
-// tokens. Every successful refresh invalidates the previous token. If an
-// isolated E2E home and the user's source home diverge, the older copy will
-// replay a revoked refresh token and permanently disable the account.
-//
-// Most OAuth-adjacent files can be preserved when a named isolated home already
-// owns a valid chain. `credentials.json` is reconciled below instead of blindly
-// preserved so a stale isolated home cannot beat a fresher source home.
+// tokens. Every successful refresh invalidates the previous token. Seeding
+// these files into E2E homes is disabled by default because any isolated refresh
+// can fork the user's real OAuth chain. Opt in with E2E_ALLOW_OAUTH_ROTATION_SEED=1
+// only for live-provider tests that intentionally exercise token rotation.
 const ORGII_HOME_SEED_PRESERVE_IF_EXISTS = new Set([
   "auth_tokens.json",
   "claude-code-cli-profiles",
@@ -158,7 +158,10 @@ function seedOrgiiHomeForParallel(sourceHome, targetHome) {
   if (process.env.E2E_ORGII_HOME && !isolatedRun) return;
   if (resolve(sourceHome) === resolve(targetHome)) return;
   mkdirSync(targetHome, { recursive: true });
-  for (const entry of ORGII_HOME_SEED_ENTRIES) {
+  const seedEntries = allowOAuthRotationSeed
+    ? [...ORGII_HOME_SEED_ENTRIES, ...ORGII_HOME_OAUTH_ROTATION_SEED_ENTRIES]
+    : ORGII_HOME_SEED_ENTRIES;
+  for (const entry of seedEntries) {
     const sourcePath = join(sourceHome, entry);
     if (!existsSync(sourcePath)) continue;
     const targetPath = join(targetHome, entry);
@@ -302,6 +305,7 @@ function markOAuthRotationKnownGood(key) {
 }
 
 function reconcileOAuthRotationFields(sourceHome, isoHome) {
+  if (!allowOAuthRotationSeed) return;
   if (!sourceHome || !isoHome) return;
   if (resolve(sourceHome) === resolve(isoHome)) return;
 
@@ -356,6 +360,7 @@ function reconcileOAuthRotationFields(sourceHome, isoHome) {
 }
 
 function reconcilePreservedOAuthCredentialStatus(sourceHome, isoHome) {
+  if (!allowOAuthRotationSeed) return;
   if (!sourceHome || !isoHome) return;
   if (resolve(sourceHome) === resolve(isoHome)) return;
 
@@ -407,22 +412,11 @@ function reconcilePreservedOAuthCredentialStatus(sourceHome, isoHome) {
 }
 
 // Mirror rotated OAuth tokens from the iso home's credentials.json back to
-// the user's source ~/.orgii/credentials.json. OAuth providers (Anthropic,
-// Google, OpenAI Codex) issue a fresh refresh_token on every successful
-// refresh and invalidate the previous one server-side. If E2E ran inside
-// an iso home, that home now holds the only valid token in the chain — the
-// user's source home still has the old (now-revoked) token and will be
-// permanently disabled the next time the dev app tries to refresh.
-//
-// To avoid burning the user's source account every time E2E runs, we copy
-// only the rotation-sensitive fields back. If a token was refreshed, we also
-// clear derived OAuth failure state because the chain is known-good again.
-// Everything else (quotas, aliases, custom base_url, ...) stays owned by the
-// user's source home.
-//
-// Opt out by setting ORGII_E2E_MIRROR_OAUTH_BACK=0. Always skipped when iso
-// === source (no isolation) or when only one of the two files exists.
+// the user's source ~/.orgii/credentials.json. This is disabled unless
+// E2E_ALLOW_OAUTH_ROTATION_SEED=1 because copying real rotating OAuth chains
+// into E2E homes is otherwise forbidden.
 function mirrorRotatedOAuthTokensBack(sourceHome, isoHome) {
+  if (!allowOAuthRotationSeed) return;
   if (process.env.ORGII_E2E_MIRROR_OAUTH_BACK === "0") return;
   if (!sourceHome || !isoHome) return;
   if (resolve(sourceHome) === resolve(isoHome)) return;
@@ -466,7 +460,7 @@ function mirrorRotatedOAuthTokensBack(sourceHome, isoHome) {
 
 if (orgiiHome) {
   seedOrgiiHomeForParallel(sourceOrgiiHome, orgiiHome);
-normalizeUiScaleForIsolatedRun(orgiiHome);
+  normalizeUiScaleForIsolatedRun(orgiiHome);
   reconcileOAuthRotationFields(sourceOrgiiHome, orgiiHome);
   reconcilePreservedOAuthCredentialStatus(sourceOrgiiHome, orgiiHome);
   resetDerivedProjectDatabaseForIsolatedRun(orgiiHome);
