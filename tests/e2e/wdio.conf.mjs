@@ -740,7 +740,7 @@ function waitForPort(port, timeoutMs) {
 
 function startFrontendServer() {
   if (processIdsForPort(frontendPort).length > 0) return;
-  frontendServerProcess = spawn("pnpm", ["run", "start:fast"], {
+  frontendServerProcess = spawn("pnpm", ["run", "dev:frontend:light"], {
     cwd: repoRoot,
     env: {
       ...process.env,
