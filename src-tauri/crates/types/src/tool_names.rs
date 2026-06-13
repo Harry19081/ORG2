@@ -16,6 +16,7 @@ pub const RUN_SHELL: &str = "run_shell";
 pub const AWAIT_OUTPUT: &str = "await_output";
 pub const INSPECT_TERMINALS: &str = "inspect_terminals";
 pub const CODE_SEARCH: &str = "code_search";
+pub const CODE_MAP: &str = "code_map";
 pub const EDIT_FILE: &str = "edit_file";
 pub const DELETE_FILE: &str = "delete_file";
 pub const APPLY_PATCH: &str = "apply_patch";

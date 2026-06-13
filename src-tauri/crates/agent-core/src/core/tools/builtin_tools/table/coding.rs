@@ -195,6 +195,38 @@ pub(super) static TOOLS: &[ToolEntry] = &[
         ..DEFAULT_TOOL_ENTRY
     },
     ToolEntry {
+        name: tool_names::CODE_MAP,
+        description: "Query the persistent Code Map symbol graph.",
+        description_detail: "Read-only code intelligence backed by the Rust-native Code Map SQLite index. Use it for symbol search, source-aware node inspection, callers/callees, impact analysis, and relationship-oriented exploration after a workspace has been indexed.",
+        category: tool_categories::CODING,
+        icon_id: "network",
+        simulator_app: AppCode,
+        app_subtool: SubSearch,
+        chat_block: CbSearch,
+        human_tool_key: Some(HtCode),
+        action_icons: &[
+            ("status", "activity"),
+            ("node", "braces"),
+            ("callers", "arrow-left-to-line"),
+            ("callees", "arrow-right-from-line"),
+            ("impact", "radar"),
+            ("explore", "network"),
+        ],
+        label_running: "tools.codeMapSearchRunning",
+        label_done: "tools.codeMapSearchDone",
+        label_failed: "tools.codeMapSearchFailed",
+        actions: &[
+            action_sub!("status", "Show Code Map index status and counts", OtherTool, chat: CbFallback, labels: "tools.codeMapStatusRunning", "tools.codeMapStatusDone", "tools.codeMapStatusFailed"),
+            action_sub!("search", "Search indexed symbols by name or qualified name", SubSearch, labels: "tools.codeMapSearchRunning", "tools.codeMapSearchDone", "tools.codeMapSearchFailed"),
+            action_sub!("node", "Inspect a symbol or file node with source and relationships", Explore, labels: "tools.codeMapNodeRunning", "tools.codeMapNodeDone", "tools.codeMapNodeFailed"),
+            action_sub!("callers", "List incoming callers and references for a node", Explore, labels: "tools.codeMapCallersRunning", "tools.codeMapCallersDone", "tools.codeMapCallersFailed"),
+            action_sub!("callees", "List outgoing callees and references for a node", Explore, labels: "tools.codeMapCalleesRunning", "tools.codeMapCalleesDone", "tools.codeMapCalleesFailed"),
+            action_sub!("impact", "Run bounded reverse traversal for impact analysis", Explore, labels: "tools.codeMapImpactRunning", "tools.codeMapImpactDone", "tools.codeMapImpactFailed"),
+            action_sub!("explore", "Explore related indexed symbols and relationship trails", Explore, labels: "tools.codeMapExploreRunning", "tools.codeMapExploreDone", "tools.codeMapExploreFailed"),
+        ],
+        ..DEFAULT_TOOL_ENTRY
+    },
+    ToolEntry {
         name: tool_names::MANAGE_WORKSPACE,
         description: "Manage orgii workspaces (git repos and work folders) tracked by the IDE.",
         description_detail: "Unified tool for listing, adding, creating, and removing workspaces. Actions: `list` enumerates tracked workspaces (names, paths, kinds); `add` registers an existing directory (auto-detects git vs folder); `create` creates a brand-new workspace (git=true|false); `remove` unregisters a workspace without touching files on disk. To clone a remote repo, use `run_shell` with `git clone`, wait for completion with `await_output` if it backgrounds, then register the cloned path with `add`.",

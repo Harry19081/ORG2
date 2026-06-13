@@ -384,10 +384,8 @@
     "foundByKeyword": "由关键词搜索命中",
     "semanticSecondary": "meaning match",
     "hybridSecondary": "semantic + full-text",
-    "tantivySecondary": "indexed full-text",
     "semanticDescription": "Embedding-based meaning search",
-    "hybridDescription": "Combined semantic and full-text search",
-    "tantivyDescription": "Indexed full-text search"
+    "hybridDescription": "Combined semantic and full-text search"
   },
   "tabs": {
     "terminal": "终端",

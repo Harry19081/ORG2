@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use crate::tools::impls::coding::{
     action_router::ActionRouter,
+    code_map::CodeMapTool,
     code_search::SearchTool,
     edit_file::EditTool,
     exec::{await_tool::AwaitTool, ExecTool},
@@ -147,6 +148,16 @@ pub fn register(registry: &mut ToolRegistry, deps: &ToolDeps, disabled: &HashSet
         search = search.with_router(router);
     }
     register_if_enabled(registry, Box::new(search), disabled);
+
+    // ── Code Map ──
+    register_if_enabled(
+        registry,
+        Box::new(CodeMapTool::new(
+            working_dir.clone(),
+            Arc::clone(&deps.workspace),
+        )),
+        disabled,
+    );
 
     // ── Workspace management (list / add / remove) ──
     register_if_enabled(registry, Box::new(ManageWorkspaceTool::new()), disabled);

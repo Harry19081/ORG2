@@ -42,6 +42,8 @@ import {
 import type { Repo } from "@src/store/repo/types";
 import { copyText } from "@src/util/data/clipboard";
 
+import { CodeMapExplorePanel } from "../CodeMapExplorePanel";
+import { CodeMapWorkspaceStatusPanel } from "../CodeMapWorkspaceStatus";
 import ContainersSection from "../ContainersSection";
 import AgentLauncherSection from "./AgentLauncherSection";
 import {
@@ -454,6 +456,9 @@ const RepoDetailPage: React.FC<RepoDetailPageProps> = ({
           </div>
         </div>
       </div>
+
+      <CodeMapWorkspaceStatusPanel workspacePath={repoPath} />
+      <CodeMapExplorePanel workspacePath={repoPath} />
 
       {/* Config Files */}
       {configFiles.length > 0 && (

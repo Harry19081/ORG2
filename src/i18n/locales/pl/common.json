@@ -371,10 +371,8 @@
     "foundByKeyword": "Znalezione przez wyszukiwanie słów kluczowych",
     "semanticSecondary": "dopasowanie znaczeniowe",
     "hybridSecondary": "semantyczne + pełnotekstowe",
-    "tantivySecondary": "indeksowane pełnotekstowe",
     "semanticDescription": "Wyszukiwanie semantyczne oparte na Embeddingach",
-    "hybridDescription": "Wyszukiwanie semantyczne i pełnotekstowe",
-    "tantivyDescription": "Indeksowane wyszukiwanie pełnotekstowe"
+    "hybridDescription": "Wyszukiwanie semantyczne i pełnotekstowe"
   },
   "tabs": {
     "terminal": "Terminal",

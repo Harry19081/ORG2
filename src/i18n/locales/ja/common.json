@@ -371,10 +371,8 @@
     "foundByKeyword": "キーワード検索で検出",
     "semanticSecondary": "meaning match",
     "hybridSecondary": "semantic + full-text",
-    "tantivySecondary": "indexed full-text",
     "semanticDescription": "Embedding-based meaning search",
-    "hybridDescription": "Combined semantic and full-text search",
-    "tantivyDescription": "Indexed full-text search"
+    "hybridDescription": "Combined semantic and full-text search"
   },
   "tabs": {
     "terminal": "Terminal",

@@ -371,10 +371,8 @@
     "foundByKeyword": "키워드 검색으로 발견됨",
     "semanticSecondary": "meaning match",
     "hybridSecondary": "semantic + full-text",
-    "tantivySecondary": "indexed full-text",
     "semanticDescription": "Embedding-based meaning search",
-    "hybridDescription": "Combined semantic and full-text search",
-    "tantivyDescription": "Indexed full-text search"
+    "hybridDescription": "Combined semantic and full-text search"
   },
   "tabs": {
     "terminal": "터미널",

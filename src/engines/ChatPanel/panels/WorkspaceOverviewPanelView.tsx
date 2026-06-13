@@ -16,6 +16,7 @@ import type { TabPillItem } from "@src/components/TabPill";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import WorkItemContentStack from "@src/modules/ProjectManager/WorkItems/components/WorkItemContentStack";
 import { RepoDetailPage } from "@src/modules/shared/launchpad/components";
+import { CodeMapWorkspaceStatusPanel } from "@src/modules/shared/launchpad/components/CodeMapWorkspaceStatus";
 import RepoActionButtons from "@src/modules/shared/launchpad/components/RepoActionButtons";
 import {
   DetailPanelContainer,
@@ -207,6 +208,11 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
         <RepoDetailPage repo={selectedRepo} />
       ) : null;
 
+    const overviewBody =
+      resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.OVERVIEW && selectedRepo ? (
+        <CodeMapWorkspaceStatusPanel workspacePath={selectedRepo.path} />
+      ) : null;
+
     const actionFooter =
       selectedRepo && resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.OVERVIEW ? (
         <PanelFooter
@@ -238,6 +244,7 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
             size="large"
           />
         </div>
+        {overviewBody}
         {detailsBody}
       </section>
     );
