@@ -211,6 +211,7 @@ pub(super) async fn consolidate_batch(
             max_tokens: 800,
             temperature: 0.0,
             system_prompt: None,
+            ..Default::default()
         };
 
         let llm_result = side_query_typed(&*ctx.provider, &user_messages, &cfg, &ctx.model).await;

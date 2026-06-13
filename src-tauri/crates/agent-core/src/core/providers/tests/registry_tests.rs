@@ -101,7 +101,7 @@ fn context_window_hint_gemini() {
 fn context_window_hint_unknown_returns_default() {
     assert_eq!(
         context_window_hint("totally-unknown"),
-        DEFAULT_CONTEXT_WINDOW_HINT
+        128_000  // ModelCapabilities::unknown().context_window
     );
 }
 
