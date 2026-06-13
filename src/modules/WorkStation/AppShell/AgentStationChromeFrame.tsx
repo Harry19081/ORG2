@@ -11,6 +11,7 @@ interface AgentStationChromeFrameProps {
    */
   isFullMode: boolean;
   captionVisible?: boolean;
+  hasSession: boolean;
   children: React.ReactNode;
 }
 
@@ -19,6 +20,7 @@ const AgentStationChromeFrame: React.FC<AgentStationChromeFrameProps> = ({
   illuminated,
   isFullMode,
   captionVisible = false,
+  hasSession,
   children,
 }) => {
   if (!enabled) {
@@ -28,8 +30,8 @@ const AgentStationChromeFrame: React.FC<AgentStationChromeFrameProps> = ({
   }
 
   const frameClassName = illuminated
-    ? "border-primary-6/80 ring-primary-6/15"
-    : "border-border-2 ring-border-2/60";
+    ? "border-primary-6/80 ring-2 ring-primary-6/15"
+    : "border-border-2";
 
   // In `inset` mode the outer view container already paints a `rounded-page`
   // (20px) card. The chrome frame sits 4px inside that card (`p-1`), so the
@@ -46,6 +48,7 @@ const AgentStationChromeFrame: React.FC<AgentStationChromeFrameProps> = ({
     : captionVisible
       ? "px-1 pb-1"
       : "p-1";
+  const borderWidthClass = hasSession ? "border-[1.5px]" : "border";
 
   return (
     <div
@@ -57,7 +60,7 @@ const AgentStationChromeFrame: React.FC<AgentStationChromeFrameProps> = ({
         />
       )}
       <div
-        className={`relative z-10 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${innerRadiusClass} border-[1.5px] bg-workstation-bg ring-4 ${frameClassName}`}
+        className={`relative z-10 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${innerRadiusClass} ${borderWidthClass} bg-workstation-bg ${frameClassName}`}
       >
         <div
           className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${innerRadiusClass}`}
