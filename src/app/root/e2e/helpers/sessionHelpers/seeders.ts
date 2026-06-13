@@ -8,6 +8,7 @@ import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import {
   isPendingCancelAtom,
+  lastUserMessageAtom,
   sessionRuntimeStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import {
@@ -56,6 +57,7 @@ export function createSessionSeederHelpers(store: E2EStore) {
         | "waiting_for_funds";
       stationMode?: "my-station" | "agent-station";
       selectedApp?: "CODE_EDITOR" | "CHANNELS";
+      lastUserMessage?: { displayContent: string; imageDataUrls?: string[] };
     }
   ): Promise<Result<{ eventCount: number; chatEventCount: number }>> => {
     try {
@@ -80,6 +82,13 @@ export function createSessionSeederHelpers(store: E2EStore) {
       store.set(derivedSnapshotAtom, snapshot);
       if (options?.runtimeStatus) {
         store.set(sessionRuntimeStatusAtom, options.runtimeStatus);
+      }
+      if (options?.lastUserMessage) {
+        store.set(lastUserMessageAtom, {
+          sessionId,
+          displayContent: options.lastUserMessage.displayContent,
+          imageDataUrls: options.lastUserMessage.imageDataUrls,
+        });
       }
       if (options?.selectedApp === "CODE_EDITOR") {
         store.set(simulatorSelectedAppAtom, AppType.CODE_EDITOR);

@@ -1481,6 +1481,172 @@ async function assertStaleHiddenRunningEventDoesNotHoldStopButton() {
   );
 }
 
+async function assertEarlyCancelStopNavigatesToPreviousTurnPage() {
+  const sessionId = `e2e-render-early-cancel-turnpage-${Date.now()}`;
+  const baseTime = Date.now();
+  const draftText = `Early cancel draft marker ${RUN_ID}`;
+
+  // Build 2 completed turns + 1 running turn (user-only, no assistant output)
+  const turn1User = {
+    id: "ec-t1-user",
+    chunk_id: "ec-t1-user",
+    sessionId,
+    createdAt: new Date(baseTime).toISOString(),
+    functionName: "user_message",
+    uiCanonical: "user_message",
+    actionType: "raw",
+    args: {},
+    result: { type: "user", message: "Turn 1 prompt", is_delta: false },
+    source: "user",
+    displayText: "Turn 1 prompt",
+    displayStatus: "completed",
+    displayVariant: "message",
+    activityStatus: "processed",
+    isDelta: false,
+  };
+  const turn1Assistant = {
+    id: "ec-t1-assist",
+    chunk_id: "ec-t1-assist",
+    sessionId,
+    createdAt: new Date(baseTime + 1_000).toISOString(),
+    functionName: "agent_message",
+    uiCanonical: "agent_message",
+    actionType: "raw",
+    args: {},
+    result: { type: "assistant", message: "Turn 1 answer", is_delta: false },
+    source: "assistant",
+    displayText: "Turn 1 answer",
+    displayStatus: "completed",
+    displayVariant: "message",
+    activityStatus: "processed",
+    isDelta: false,
+  };
+  const turn2User = {
+    id: "ec-t2-user",
+    chunk_id: "ec-t2-user",
+    sessionId,
+    createdAt: new Date(baseTime + 2_000).toISOString(),
+    functionName: "user_message",
+    uiCanonical: "user_message",
+    actionType: "raw",
+    args: {},
+    result: { type: "user", message: "Turn 2 prompt", is_delta: false },
+    source: "user",
+    displayText: "Turn 2 prompt",
+    displayStatus: "completed",
+    displayVariant: "message",
+    activityStatus: "processed",
+    isDelta: false,
+  };
+  const turn2Assistant = {
+    id: "ec-t2-assist",
+    chunk_id: "ec-t2-assist",
+    sessionId,
+    createdAt: new Date(baseTime + 3_000).toISOString(),
+    functionName: "agent_message",
+    uiCanonical: "agent_message",
+    actionType: "raw",
+    args: {},
+    result: { type: "assistant", message: "Turn 2 answer", is_delta: false },
+    source: "assistant",
+    displayText: "Turn 2 answer",
+    displayStatus: "completed",
+    displayVariant: "message",
+    activityStatus: "processed",
+    isDelta: false,
+  };
+  const turn3User = {
+    id: "ec-t3-user",
+    chunk_id: "ec-t3-user",
+    sessionId,
+    createdAt: new Date(baseTime + 4_000).toISOString(),
+    functionName: "user_message",
+    uiCanonical: "user_message",
+    actionType: "raw",
+    args: {},
+    result: { type: "user", message: draftText, is_delta: false },
+    source: "user",
+    displayText: draftText,
+    displayStatus: "completed",
+    displayVariant: "message",
+    activityStatus: "processed",
+    isDelta: false,
+  };
+
+  const seed = await invokeE2E(
+    "seedChatEvents",
+    sessionId,
+    [turn1User, turn1Assistant, turn2User, turn2Assistant, turn3User],
+    {
+      chatPanelMaximized: true,
+      stationMode: "my-station",
+      runtimeStatus: "running",
+      lastUserMessage: { displayContent: draftText },
+    }
+  );
+  if (!seed || seed.ok !== true) {
+    throw new Error(
+      `seedChatEvents failed for early-cancel turn page: ${seed?.error ?? "unknown"}`
+    );
+  }
+
+  // Wait for the send button to show stop state (runtime is running)
+  await browser.waitUntil(
+    async () => {
+      const sendState = await execJS(`
+        const button = document.querySelector('[data-testid="chat-send-button"]');
+        return button ? button.getAttribute("data-state") : null;
+      `);
+      return sendState === "stop";
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: "send button did not enter stop state for early-cancel turn page test",
+    }
+  );
+
+  // Verify we're on the latest round before clicking Stop
+  await browser.waitUntil(
+    async () => {
+      const roundLabel = await execJS(`
+        const node = document.querySelector('[data-testid="turn-pagination-current-round"]');
+        return node ? node.textContent.trim() : null;
+      `);
+      return roundLabel !== null && /latest/i.test(roundLabel);
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: "turn pagination did not show Latest round before Stop",
+    }
+  );
+
+  // Click Stop
+  await execJS(`
+    const button = document.querySelector('[data-testid="chat-send-button"]');
+    if (button) {
+      button.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+      button.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true }));
+      button.click();
+    }
+    return !!button;
+  `);
+
+  // Assert turn page navigated back to the previous round (Round 2)
+  await browser.waitUntil(
+    async () => {
+      const roundLabel = await execJS(`
+        const node = document.querySelector('[data-testid="turn-pagination-current-round"]');
+        return node ? node.textContent.trim() : null;
+      `);
+      return roundLabel !== null && /round\s+2/i.test(roundLabel);
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: `early-cancel Stop did not navigate to previous turn page; roundLabel=${JSON.stringify(await execJS(`return document.querySelector('[data-testid="turn-pagination-current-round"]')?.textContent || null;`))}`,
+    }
+  );
+}
+
 async function assertMultiRepoReadPathRendered() {
   const sessionId = `e2e-render-multirepo-read-${Date.now()}`;
   const baseTime = Date.now();
@@ -1780,6 +1946,15 @@ describe("Core chat rendering UI", () => {
     }
 
     await assertStaleHiddenRunningEventDoesNotHoldStopButton();
+  });
+
+  it("navigates to previous turn page on early-cancel Stop", async function () {
+    if (!shouldRunScenario("early-cancel-turnpage-nav")) {
+      this.skip();
+      return;
+    }
+
+    await assertEarlyCancelStopNavigatesToPreviousTurnPage();
   });
 
   it("renders multi-repo read file targets as paths instead of generic file labels", async function () {
