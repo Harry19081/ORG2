@@ -32,6 +32,7 @@ import {
   sessionRolledBackAtom,
   sessionRuntimeStatusAtom,
   setSessionRuntimeStatusAtom,
+  stopEarlyCancelEpochAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 
 import {
@@ -52,14 +53,28 @@ function readImageDataUrls(value: unknown): string[] | undefined {
   return images.length > 0 ? images : undefined;
 }
 
-export function hasSessionProducedOutput(
+export function hasCurrentTurnProducedOutput(
   events: readonly SessionEvent[],
   sessionId: string
 ): boolean {
-  return events.some((event) => {
-    if (event.sessionId && event.sessionId !== sessionId) return false;
-    return event.source !== "user";
-  });
+  // Walk backwards from the end to find the last user event for this session,
+  // then check if any non-user event follows it.
+  let lastUserIndex = -1;
+  for (let i = events.length - 1; i >= 0; i--) {
+    const event = events[i];
+    if (event.sessionId && event.sessionId !== sessionId) continue;
+    if (event.source === "user") {
+      lastUserIndex = i;
+      break;
+    }
+  }
+  if (lastUserIndex === -1) return false;
+  for (let i = lastUserIndex + 1; i < events.length; i++) {
+    const event = events[i];
+    if (event.sessionId && event.sessionId !== sessionId) continue;
+    if (event.source !== "user") return true;
+  }
+  return false;
 }
 
 export function resolveRestorableUserMessage(options: {
@@ -159,20 +174,14 @@ export function useSessionActions(options: UseSessionActionsOptions) {
     setSessionRolledBack(false);
 
     const pendingSyntheticEvent = store.get(pendingSyntheticEventAtom);
-    const hasProducedOutput = hasSessionProducedOutput(
-      store.get(sortedEventsAtom),
-      sessionId
-    );
-    const currentUserMessage = hasProducedOutput
-      ? null
-      : resolveRestorableUserMessage({
-          lastUserMessage: store.get(lastUserMessageAtom),
-          pendingDisplayText:
-            pendingSyntheticEvent?.source === "user"
-              ? pendingSyntheticEvent.displayText
-              : undefined,
-          pendingImages: pendingSyntheticEvent?.result?.images,
-        });
+    const currentUserMessage = resolveRestorableUserMessage({
+      lastUserMessage: store.get(lastUserMessageAtom),
+      pendingDisplayText:
+        pendingSyntheticEvent?.source === "user"
+          ? pendingSyntheticEvent.displayText
+          : undefined,
+      pendingImages: pendingSyntheticEvent?.result?.images,
+    });
 
     if (currentUserMessage) {
       setRestoreToInput({
@@ -190,6 +199,16 @@ export function useSessionActions(options: UseSessionActionsOptions) {
         displayContent: currentUserMessage.displayContent,
         imageDataUrls: currentUserMessage.imageDataUrls,
       });
+    }
+
+    // Navigate back to the previous turn page when the current turn has not
+    // produced any assistant/tool output yet (early cancel in pagination mode).
+    const currentTurnHasOutput = hasCurrentTurnProducedOutput(
+      store.get(sortedEventsAtom),
+      sessionId
+    );
+    if (!currentTurnHasOutput) {
+      store.set(stopEarlyCancelEpochAtom, (prev) => prev + 1);
     }
 
     void (async () => {

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import {
-  hasSessionProducedOutput,
+  hasCurrentTurnProducedOutput,
   resolveRestorableUserMessage,
 } from "./useSessionActions";
 
@@ -80,7 +80,7 @@ describe("resolveRestorableUserMessage", () => {
   });
 });
 
-describe("hasSessionProducedOutput", () => {
+describe("hasCurrentTurnProducedOutput", () => {
   function event(overrides: Partial<SessionEvent>): SessionEvent {
     return {
       id: "event-1",
@@ -94,15 +94,15 @@ describe("hasSessionProducedOutput", () => {
     } as SessionEvent;
   }
 
-  it("returns false when the current session only has user input", () => {
+  it("returns false when the current turn only has a user message", () => {
     expect(
-      hasSessionProducedOutput([event({ source: "user" })], "session-1")
+      hasCurrentTurnProducedOutput([event({ source: "user" })], "session-1")
     ).toBe(false);
   });
 
-  it("returns true after assistant output exists in the current session", () => {
+  it("returns true after assistant output exists in the current turn", () => {
     expect(
-      hasSessionProducedOutput(
+      hasCurrentTurnProducedOutput(
         [event({ source: "user" }), event({ source: "assistant" })],
         "session-1"
       )
@@ -111,7 +111,7 @@ describe("hasSessionProducedOutput", () => {
 
   it("ignores output from other sessions", () => {
     expect(
-      hasSessionProducedOutput(
+      hasCurrentTurnProducedOutput(
         [
           event({ source: "assistant", sessionId: "other-session" }),
           event({ source: "user" }),
@@ -119,5 +119,32 @@ describe("hasSessionProducedOutput", () => {
         "session-1"
       )
     ).toBe(false);
+  });
+
+  it("returns false when prior turns have output but current turn does not", () => {
+    expect(
+      hasCurrentTurnProducedOutput(
+        [
+          event({ id: "t1-user", source: "user" }),
+          event({ id: "t1-assist", source: "assistant" }),
+          event({ id: "t2-user", source: "user" }),
+        ],
+        "session-1"
+      )
+    ).toBe(false);
+  });
+
+  it("returns true when the current turn has output after prior turns", () => {
+    expect(
+      hasCurrentTurnProducedOutput(
+        [
+          event({ id: "t1-user", source: "user" }),
+          event({ id: "t1-assist", source: "assistant" }),
+          event({ id: "t2-user", source: "user" }),
+          event({ id: "t2-assist", source: "assistant" }),
+        ],
+        "session-1"
+      )
+    ).toBe(true);
   });
 });

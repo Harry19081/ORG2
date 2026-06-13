@@ -30,7 +30,10 @@ import {
   removeChatRenderedTreeMemoryEntry,
   updateChatRenderedTreeMemoryEntry,
 } from "@src/hooks/perf/runtimeMemoryStats";
-import { isSessionActiveAtom } from "@src/store/session/cliSessionStatusAtom";
+import {
+  isSessionActiveAtom,
+  stopEarlyCancelEpochAtom,
+} from "@src/store/session/cliSessionStatusAtom";
 import { cursorIdeTurnSummariesAtomFamily } from "@src/store/session/cursorIdeTurnSummariesAtom";
 import {
   collapseAllCommandAtom,
@@ -690,6 +693,23 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     setTurnPageSelection,
     setTurnPageListOpen,
   });
+
+  // Navigate to the previous turn page on early-cancel Stop.
+  const earlyCancelEpoch = useAtomValue(stopEarlyCancelEpochAtom);
+  const earlyCancelEpochRef = useRef(earlyCancelEpoch);
+  useEffect(() => {
+    if (earlyCancelEpoch === earlyCancelEpochRef.current) return;
+    earlyCancelEpochRef.current = earlyCancelEpoch;
+    if (!turnPaginationEnabled) return;
+    if (currentPageIndex > 0) {
+      handlePreviousTurnPage();
+    }
+  }, [
+    earlyCancelEpoch,
+    turnPaginationEnabled,
+    currentPageIndex,
+    handlePreviousTurnPage,
+  ]);
 
   const handleTurnPageEndReached = useCallback(() => {
     if (!turnPaginationEnabled) handleEndReached();
