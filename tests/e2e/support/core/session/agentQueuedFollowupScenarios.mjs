@@ -21,6 +21,7 @@ export {
   runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
+  runForceSendStopDoesNotWithdrawScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runQueueAutodispatchesAfterNaturalCompletionScenario,

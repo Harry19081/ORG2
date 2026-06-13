@@ -25,7 +25,6 @@ import {
 import { prewarmFileIndex } from "@src/util/platform/tauri/fileSearch";
 
 import { isImageName } from "./imageExtensions";
-import { useImageAttachment } from "./useImageAttachment";
 
 interface UseInputAreaEffectsOptions {
   // Refs
@@ -46,6 +45,9 @@ interface UseInputAreaEffectsOptions {
   // Repo path for debug logging
   currentRepoPath: string | undefined;
 
+  handleImagePaste: (files: File[]) => Promise<void>;
+  handleImagePath: (path: string, fileName?: string) => Promise<void>;
+
   withProgrammaticInputMutation?: (mutation: () => void) => void;
   onRestoreInputContent?: (text: string) => void;
 }
@@ -62,6 +64,8 @@ export function useInputAreaEffects(options: UseInputAreaEffectsOptions): void {
     selectedCiteRange,
     citeFileName,
     currentRepoPath,
+    handleImagePaste,
+    handleImagePath,
     withProgrammaticInputMutation,
     onRestoreInputContent,
   } = options;
@@ -69,12 +73,6 @@ export function useInputAreaEffects(options: UseInputAreaEffectsOptions): void {
   // Drag & drop file handling
   const droppedFiles = useAtomValue(droppedFilesAtom);
   const clearDroppedFiles = useSetAtom(clearDroppedFilesAtom);
-
-  // Image attachments — unified entry point for paste / upload / drag-drop
-  // images. `handleImagePath` reads bytes from a filesystem path and routes
-  // them through the same optimize pipeline as `handleImagePaste`.
-  const { handleImagePaste, handleImagePath } =
-    useImageAttachment(dropTargetId);
 
   // Restore-to-input signal set by the cancel-restore path after a
   // user-initiated cancel. We push the message back into the editor so

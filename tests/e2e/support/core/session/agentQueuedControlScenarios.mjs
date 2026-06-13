@@ -400,11 +400,14 @@ async function attachTestImageToComposer(
     context.fillRect(4, 4, 8, 8);
     const dataUrl = canvas.toDataURL("image/png");
     editor.focus();
+    const inputShell = editor.closest('[data-testid="chat-input"]');
+    const ownerId = inputShell?.querySelector('[data-chat-drop-target-id]')?.getAttribute('data-chat-drop-target-id');
     window.dispatchEvent(new CustomEvent("orgii:e2e-add-chat-image", {
       detail: {
         eventId: "e2e-image-" + Date.now() + "-" + Math.random().toString(16).slice(2),
         fileName: ${JSON.stringify(fileName)},
         dataUrl,
+        ownerId,
       },
     }));
     return { ok: true, fileName: ${JSON.stringify(fileName)}, dataUrlLength: dataUrl.length };
@@ -734,9 +737,9 @@ async function clickSendNowForQueuedMarker(marker) {
       const visibleStillContainsMarker = visibleItems.some((item) =>
         item.text.includes(marker)
       );
-      const promotedToNow = (
-        instantState.forceSendPendingMessages ?? []
-      ).some((item) => item.content.includes(marker));
+      const promotedToNow = (instantState.forceSendPendingMessages ?? []).some(
+        (item) => item.content.includes(marker)
+      );
       const queuedStillContainsMarker = instantState.queuedMessages.some(
         (item) => item.content.includes(marker)
       );
@@ -899,6 +902,7 @@ async function runFreshStopRollbackScenario(config) {
   await configureScenario(config);
   const inputSelector = await waitForChatInput();
   await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
   await installControlFlowInstrumentation(`${config.label}-fresh-stop`);
   const beforeStopProbe = await readControlFlowInstrumentation();
   await clickMainAction("stop", `${config.label}-fresh-stop`, 30_000);
@@ -920,7 +924,7 @@ async function runFreshStopRollbackScenario(config) {
       }
       // No output — session cleared, draft restored to composer.
       return (
-        mode === "chat" &&
+        (mode === "creator" || mode === "chat") &&
         typeof editorText === "string" &&
         editorText.includes(firstPrompt.slice(0, 80))
       );
@@ -958,6 +962,7 @@ async function runFreshStopImageRestoreScenario(config) {
   });
 
   await clickMainAction("submit", `${config.label}-image-send`, 20_000);
+  await waitForChatLaunched(imagePrompt);
   await clickMainAction("stop", `${config.label}-image-stop`, 30_000);
 
   // Same early-cancel logic as runFreshStopRollbackScenario: if no output,
@@ -978,10 +983,10 @@ async function runFreshStopImageRestoreScenario(config) {
         return mode === "chat";
       }
       return (
-        mode === "chat" &&
+        (mode === "creator" || mode === "chat") &&
         typeof editorText === "string" &&
         editorText.includes(marker) &&
-        imageState.count >= 1 &&
+        imageState.count === 1 &&
         imageState.fileNames.some(
           (fileName) =>
             fileName.includes("restored-image") || fileName.includes(marker)
@@ -1223,7 +1228,10 @@ async function runSendAfterIdleDoesNotQueueScenario(config) {
   const beforeSecond = await inspectChatState(
     `${config.label}-send-after-idle-before-second-send`
   );
-  throwIfProviderRuntimeBlocked(beforeSecond, `${config.label}-send-after-idle`);
+  throwIfProviderRuntimeBlocked(
+    beforeSecond,
+    `${config.label}-send-after-idle`
+  );
   if (beforeSecond.queuedMessages.length > 0) {
     throw new Error(
       `${config.label} had leftover queued messages before idle direct-send assertion; state=${JSON.stringify(summarizeChatState(beforeSecond))}`
@@ -1516,6 +1524,38 @@ async function runChaosControlFlowScenario(config) {
   );
 }
 
+async function runForceSendStopDoesNotWithdrawScenario(config) {
+  const marker = `FORCE_SEND_STOP_KEEP_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  const firstPrompt = repoExplorationPromptForConfig(config, 45);
+  const followupPrompt = `${repoExplorationPromptForConfig(config, 45)} This Send Now turn must remain in transcript even if stopped immediately: ${marker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForWorkingTurn(`${config.label}-force-stop-initial`);
+
+  const chatInputSelector = await waitForChatInput();
+  await typeAndSubmitWithShortcut(chatInputSelector, followupPrompt);
+  await waitForQueuedFollowup(marker);
+  await clickSendNowForQueuedMarker(marker);
+  await waitForMarkerState(
+    `${config.label}-force-stop-force-sent-before-stop`,
+    marker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    60_000
+  );
+
+  await clickMainAction("stop", `${config.label}-force-stop-stop`, 30_000);
+  await browser.pause(2_000);
+  await waitForMarkerState(
+    `${config.label}-force-stop-after-stop`,
+    marker,
+    { shouldBeQueued: false, shouldBeUserTurn: true },
+    20_000
+  );
+}
+
 async function runForceSendScenario(config) {
   const marker = `QUEUE_FORCE_SEND_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
   const firstPrompt = longRunningPromptForConfig(config);
@@ -1664,6 +1704,7 @@ export {
   runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
+  runForceSendStopDoesNotWithdrawScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runQueueAutodispatchesAfterNaturalCompletionScenario,

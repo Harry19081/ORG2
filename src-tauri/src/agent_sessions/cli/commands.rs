@@ -306,6 +306,7 @@ pub async fn cli_agent_message(
     ide_context: Option<IdeContext>,
     mode: Option<String>,
     images: Option<Vec<String>>,
+    #[allow(non_snake_case)] turnIntentSource: Option<String>,
 ) -> Result<(), String> {
     tracing::info!(
         session_id = %session_id,
@@ -447,6 +448,7 @@ pub async fn cli_agent_message(
     }
 
     // Re-run the session with the new message
+    session_runner::set_next_turn_intent_source(&session_id, turnIntentSource.clone()).await;
     tracing::info!(session_id = %session_id, "cli_agent_message: dispatching rerun");
     cli_agent_run(
         session_id,

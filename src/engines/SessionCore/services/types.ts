@@ -9,6 +9,7 @@
 import type { AgentRole } from "@src/api/http/project";
 import type { CancelReason } from "@src/api/tauri/agent/session";
 import type { DispatchCategory } from "@src/api/tauri/session";
+import type { UserTurnIntentSource } from "@src/engines/SessionCore/sync/adapters/shared/eventFactories";
 
 // ============================================
 // Action Params
@@ -96,6 +97,7 @@ export interface SessionSendMessageParams {
    * row all observe the same logical identity.
    */
   turnIntentId?: string;
+  turnIntentSource?: UserTurnIntentSource;
   /**
    * When `true`, this is a user-initiated Resume after a failed turn.
    * Backend runs deletion-based orphan tool-use filter.

@@ -26,6 +26,7 @@ import {
 } from "@src/util/session/sessionDispatch";
 
 import type { SessionEvent } from "../core/types";
+import type { UserTurnIntentSource } from "./adapters/shared/eventFactories";
 
 const log = createLogger("SessionCore");
 
@@ -155,6 +156,7 @@ export interface AdapterSendInput {
    * `QueuedMessage.turnIntentId` for the propagation contract.
    */
   turnIntentId?: string;
+  turnIntentSource?: UserTurnIntentSource;
   /**
    * When `true`, this is a user-initiated Resume after a failed turn.
    * The backend runs deletion-based orphan tool-use filter instead of
