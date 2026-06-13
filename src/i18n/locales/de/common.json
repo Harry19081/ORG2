@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Keine Workspace-Ordner",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Vorschau nicht verfügbar"
   },
   "inbox": {
     "searchPlaceholder": "Nachrichten durchsuchen...",
@@ -2089,9 +2090,11 @@
     "selectWorkspaceToStart": "Workspace auswählen, um zu starten",
     "selectRepoToStart": "Repo auswählen, um zu starten"
   },
-  "holdToQuit": {
-    "title": "{{shortcut}} 1 Sekunde gedrückt halten, um zu beenden",
-    "subtitle": "Loslassen zum Abbrechen"
+  "quitConfirmation": {
+    "title": "ORGII beenden?",
+    "subtitle": "Laufende Sitzungen behalten ihren aktuellen Zustand. Sie können ORGII später erneut öffnen.",
+    "cancel": "Abbrechen",
+    "confirm": "Beenden"
   },
   "projects": {
     "title": "Heatmap",

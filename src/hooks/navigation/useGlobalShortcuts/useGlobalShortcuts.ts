@@ -9,7 +9,7 @@ import { useZoomShortcuts } from "./useZoomShortcuts";
  *
  * Handles:
  * - Backspace: Prevented from triggering any navigation (only works in input fields)
- * - Command+Q (Meta+Q): Native hold-to-quit on macOS; frontend hold-to-quit elsewhere
+ * - Command+Q (Meta+Q): Open quit confirmation modal
  * - Command+W (Meta+W): Close current tab with special home page logic
  * - Command+M (Meta+M): Hide the window (minimize to background)
  * - Command+N (Meta+N): Create a new Agent Station session
@@ -55,8 +55,12 @@ export const useGlobalShortcuts = () => {
 
   const { handleZoomIn, handleZoomOut, handleZoomReset } = useZoomShortcuts();
 
-  const { handleQuit, startHoldToQuit, cancelHoldToQuit, handleHideWindow } =
-    useWindowShortcuts();
+  const {
+    handleQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
+    handleHideWindow,
+  } = useWindowShortcuts();
 
   const {
     spotlightOpen,
@@ -97,8 +101,8 @@ export const useGlobalShortcuts = () => {
     handleZoomIn,
     handleZoomOut,
     handleZoomReset,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
     handleHideWindow,
     spotlightOpenRef,
     handleCreateNewSession,

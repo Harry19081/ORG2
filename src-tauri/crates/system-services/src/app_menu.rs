@@ -22,13 +22,12 @@ const MAX_RECENT_ITEMS: usize = 10;
 
 const RECENT_PATHS_FILENAME: &str = "recent_paths.json";
 const MAIN_WINDOW_LABEL: &str = "main";
-const EVENT_HOLD_TO_QUIT_START: &str = "native-hold-to-quit-start";
-const EVENT_HOLD_TO_QUIT_CANCEL: &str = "native-hold-to-quit-cancel";
+const EVENT_QUIT_CONFIRMATION_OPEN: &str = "native-quit-confirmation-open";
+const EVENT_QUIT_CONFIRMATION_CLOSE: &str = "native-quit-confirmation-close";
 
 /// Global state for recent paths (thread-safe)
 static RECENT_PATHS: Mutex<Vec<String>> = Mutex::new(Vec::new());
-static HOLD_TO_QUIT_ACTIVE: AtomicBool = AtomicBool::new(false);
-static HOLD_TO_QUIT_READY_TO_EXIT: AtomicBool = AtomicBool::new(false);
+static QUIT_CONFIRMATION_ACTIVE: AtomicBool = AtomicBool::new(false);
 
 /// Create the application menu bar
 pub fn create_app_menu(app: &AppHandle) -> Result<Menu<Wry>, tauri::Error> {
@@ -472,23 +471,20 @@ fn emit_main_window(app: &AppHandle, event: &str) {
     }
 }
 
-fn begin_hold_to_quit(app: &AppHandle) {
-    HOLD_TO_QUIT_ACTIVE.store(true, Ordering::Release);
-    HOLD_TO_QUIT_READY_TO_EXIT.store(false, Ordering::Release);
-    emit_main_window(app, EVENT_HOLD_TO_QUIT_START);
+fn open_quit_confirmation(app: &AppHandle) {
+    QUIT_CONFIRMATION_ACTIVE.store(true, Ordering::Release);
+    emit_main_window(app, EVENT_QUIT_CONFIRMATION_OPEN);
 }
 
-fn cancel_hold_to_quit_state(app: &AppHandle) {
-    if !HOLD_TO_QUIT_ACTIVE.swap(false, Ordering::AcqRel) {
+fn close_quit_confirmation_state(app: &AppHandle) {
+    if !QUIT_CONFIRMATION_ACTIVE.swap(false, Ordering::AcqRel) {
         return;
     }
-    HOLD_TO_QUIT_READY_TO_EXIT.store(false, Ordering::Release);
-    emit_main_window(app, EVENT_HOLD_TO_QUIT_CANCEL);
+    emit_main_window(app, EVENT_QUIT_CONFIRMATION_CLOSE);
 }
 
-fn finish_hold_to_quit(app: &AppHandle) {
-    HOLD_TO_QUIT_READY_TO_EXIT.store(false, Ordering::Release);
-    HOLD_TO_QUIT_ACTIVE.store(false, Ordering::Release);
+fn quit_app(app: &AppHandle) {
+    QUIT_CONFIRMATION_ACTIVE.store(false, Ordering::Release);
     app.exit(0);
 }
 
@@ -501,7 +497,7 @@ pub fn setup_menu_events(app: &AppHandle) {
 
         match event_id {
             "app_quit" => {
-                begin_hold_to_quit(app);
+                open_quit_confirmation(app);
             }
             "file_new_session" => {
                 if let Some(window) = app.get_webview_window("main") {
@@ -661,11 +657,11 @@ pub fn menu_clear_recent(app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn complete_hold_to_quit(app: AppHandle) {
-    finish_hold_to_quit(&app);
+pub fn confirm_quit_app(app: AppHandle) {
+    quit_app(&app);
 }
 
 #[tauri::command]
-pub fn cancel_hold_to_quit(app: AppHandle) {
-    cancel_hold_to_quit_state(&app);
+pub fn cancel_quit_confirmation(app: AppHandle) {
+    close_quit_confirmation_state(&app);
 }

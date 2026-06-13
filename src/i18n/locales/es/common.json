@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Sin carpetas de workspace",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Vista previa no disponible"
   },
   "inbox": {
     "searchPlaceholder": "Buscar mensajes...",
@@ -2081,9 +2082,11 @@
     "selectWorkspaceToStart": "Selecciona un Workspace para empezar",
     "selectRepoToStart": "Selecciona un Repo para empezar"
   },
-  "holdToQuit": {
-    "title": "Mantén {{shortcut}} durante 1 segundo para salir",
-    "subtitle": "Suelta para cancelar"
+  "quitConfirmation": {
+    "title": "¿Salir de ORGII?",
+    "subtitle": "Las sesiones en ejecución conservarán su estado actual. Puedes volver a abrir ORGII más tarde.",
+    "cancel": "Cancelar",
+    "confirm": "Salir"
   },
   "projects": {
     "title": "Mapa de calor",

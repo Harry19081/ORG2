@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Brak folderów Workspace",
     "noRepoSelected": "Nie wybrano Repo",
     "scanningFileExtensions": "Skanowanie rozszerzeń plików...",
-    "startBrowsingMarket": "Rozpocznij przeglądanie marketplace"
+    "startBrowsingMarket": "Rozpocznij przeglądanie marketplace",
+    "previewUnavailable": "Podgląd niedostępny"
   },
   "inbox": {
     "searchPlaceholder": "Szukaj wiadomości...",
@@ -2081,9 +2082,11 @@
     "selectWorkspaceToStart": "Wybierz Workspace, aby rozpocząć",
     "selectRepoToStart": "Wybierz Repo, aby rozpocząć"
   },
-  "holdToQuit": {
-    "title": "Przytrzymaj {{shortcut}} przez 1 sekundę, aby zamknąć",
-    "subtitle": "Puść, aby anulować"
+  "quitConfirmation": {
+    "title": "Zamknąć ORGII?",
+    "subtitle": "Uruchomione sesje zachowają swój bieżący stan. Możesz ponownie otworzyć ORGII później.",
+    "cancel": "Anuluj",
+    "confirm": "Zamknij"
   },
   "projects": {
     "title": "Heatmapa",

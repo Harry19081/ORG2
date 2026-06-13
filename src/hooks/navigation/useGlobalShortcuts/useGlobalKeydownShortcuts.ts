@@ -54,8 +54,8 @@ interface UseGlobalKeydownShortcutsOptions {
   handleOpenCodeEditorTerminal: () => void;
   handleCloseCurrentTab: () => boolean;
   handleToggleWorkStationChatFocus: () => void;
-  startHoldToQuit: () => void;
-  cancelHoldToQuit: () => void;
+  openQuitConfirmation: () => void;
+  closeQuitConfirmation: () => void;
 }
 
 export function useGlobalKeydownShortcuts(
@@ -81,8 +81,8 @@ export function useGlobalKeydownShortcuts(
     handleOpenCodeEditorTerminal,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
   } = options;
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export function useGlobalKeydownShortcuts(
       ) {
         event.preventDefault();
         event.stopPropagation();
-        startHoldToQuit();
+        openQuitConfirmation();
         return;
       }
 
@@ -484,22 +484,10 @@ export function useGlobalKeydownShortcuts(
       }
     };
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      const releasedQuitChord =
-        event.key.toLowerCase() === "q" ||
-        event.key === "Meta" ||
-        event.key === "Control";
-      if (releasedQuitChord) {
-        cancelHoldToQuit();
-      }
-    };
-
     document.addEventListener("keydown", handleKeyDown, true);
-    document.addEventListener("keyup", handleKeyUp, true);
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true);
-      document.removeEventListener("keyup", handleKeyUp, true);
-      cancelHoldToQuit();
+      closeQuitConfirmation();
     };
   }, [
     handleZoomReset,
@@ -521,7 +509,7 @@ export function useGlobalKeydownShortcuts(
     handleOpenCodeEditorTerminal,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
   ]);
 }

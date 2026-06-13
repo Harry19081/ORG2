@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Workspace klasörü yok",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Önizleme kullanılamıyor"
   },
   "inbox": {
     "searchPlaceholder": "Mesajlarda ara...",
@@ -2086,9 +2087,11 @@
     "selectWorkspaceToStart": "Başlamak için bir Workspace seçin",
     "selectRepoToStart": "Başlamak için bir Repo seçin"
   },
-  "holdToQuit": {
-    "title": "Çıkmak için {{shortcut}} tuşunu 1 saniye basılı tutun",
-    "subtitle": "İptal etmek için bırakın"
+  "quitConfirmation": {
+    "title": "ORGII'den çıkılsın mı?",
+    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORGII'yi daha sonra yeniden açabilirsiniz.",
+    "cancel": "İptal",
+    "confirm": "Çık"
   },
   "projects": {
     "title": "Isı haritası",

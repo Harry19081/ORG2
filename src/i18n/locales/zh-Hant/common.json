@@ -886,7 +886,8 @@
     "noWorkspaceFolders": "沒有工作區文件夾",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "預覽不可用"
   },
   "inbox": {
     "searchPlaceholder": "搜索消息...",
@@ -2099,9 +2100,11 @@
     "selectWorkspaceToStart": "選擇一個工作區開始",
     "selectRepoToStart": "選擇一個 Repo 開始"
   },
-  "holdToQuit": {
-    "title": "按住 {{shortcut}} 1 秒以結束",
-    "subtitle": "放開以取消"
+  "quitConfirmation": {
+    "title": "結束 ORGII？",
+    "subtitle": "正在執行的工作階段會保留目前狀態。你可以稍後重新開啟 ORGII。",
+    "cancel": "取消",
+    "confirm": "結束"
   },
   "projects": {
     "title": "熱力圖",

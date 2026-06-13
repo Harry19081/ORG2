@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Workspace フォルダがありません",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "プレビューを利用できません"
   },
   "inbox": {
     "searchPlaceholder": "メッセージを検索...",
@@ -2087,9 +2088,11 @@
     "selectWorkspaceToStart": "Workspace を選択して開始",
     "selectRepoToStart": "Repo を選択して開始"
   },
-  "holdToQuit": {
-    "title": "終了するには {{shortcut}} を 1 秒間押し続けます",
-    "subtitle": "離すとキャンセルします"
+  "quitConfirmation": {
+    "title": "ORGII を終了しますか？",
+    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORGII を再度開くことができます。",
+    "cancel": "キャンセル",
+    "confirm": "終了"
   },
   "projects": {
     "title": "ヒートマップ",

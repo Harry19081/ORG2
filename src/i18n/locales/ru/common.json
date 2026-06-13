@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Нет папок Workspace",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Предпросмотр недоступен"
   },
   "inbox": {
     "searchPlaceholder": "Поиск сообщений...",
@@ -2081,9 +2082,11 @@
     "selectWorkspaceToStart": "Выберите Workspace, чтобы начать",
     "selectRepoToStart": "Выберите Repo, чтобы начать"
   },
-  "holdToQuit": {
-    "title": "Удерживайте {{shortcut}} 1 секунду, чтобы выйти",
-    "subtitle": "Отпустите, чтобы отменить"
+  "quitConfirmation": {
+    "title": "Выйти из ORGII?",
+    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORGII позже.",
+    "cancel": "Отмена",
+    "confirm": "Выйти"
   },
   "projects": {
     "title": "Тепловая карта",

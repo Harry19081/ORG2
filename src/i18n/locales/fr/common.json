@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Aucun dossier de workspace",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Aperçu indisponible"
   },
   "inbox": {
     "searchPlaceholder": "Rechercher des messages...",
@@ -2084,9 +2085,11 @@
     "selectWorkspaceToStart": "Sélectionnez un Workspace pour commencer",
     "selectRepoToStart": "Sélectionnez un Repo pour commencer"
   },
-  "holdToQuit": {
-    "title": "Maintenez {{shortcut}} pendant 1 seconde pour quitter",
-    "subtitle": "Relâchez pour annuler"
+  "quitConfirmation": {
+    "title": "Quitter ORGII ?",
+    "subtitle": "Les sessions en cours conserveront leur état actuel. Vous pourrez rouvrir ORGII plus tard.",
+    "cancel": "Annuler",
+    "confirm": "Quitter"
   },
   "projects": {
     "title": "Carte thermique",

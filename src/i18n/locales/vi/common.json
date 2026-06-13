@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Không có thư mục Workspace",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Không thể xem trước"
   },
   "inbox": {
     "searchPlaceholder": "Tìm kiếm tin nhắn...",
@@ -2082,9 +2083,11 @@
     "selectWorkspaceToStart": "Chọn một Workspace để bắt đầu",
     "selectRepoToStart": "Chọn một Repo để bắt đầu"
   },
-  "holdToQuit": {
-    "title": "Giữ {{shortcut}} trong 1 giây để thoát",
-    "subtitle": "Thả ra để hủy"
+  "quitConfirmation": {
+    "title": "Thoát ORGII?",
+    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORGII sau.",
+    "cancel": "Hủy",
+    "confirm": "Thoát"
   },
   "projects": {
     "title": "Bản đồ nhiệt",

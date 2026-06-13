@@ -887,7 +887,8 @@
     "noWorkspaceFolders": "没有工作区文件夹",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "预览不可用"
   },
   "inbox": {
     "searchPlaceholder": "搜索消息...",
@@ -2120,8 +2121,10 @@
     "copiedToClipboard": "图片已复制到剪贴板",
     "previewAlt": "预览"
   },
-  "holdToQuit": {
-    "title": "按住 {{shortcut}} 1 秒以退出",
-    "subtitle": "松开以取消"
+  "quitConfirmation": {
+    "title": "退出 ORGII？",
+    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORGII。",
+    "cancel": "取消",
+    "confirm": "退出"
   }
 }

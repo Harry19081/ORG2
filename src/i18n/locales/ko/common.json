@@ -874,7 +874,8 @@
     "noWorkspaceFolders": "Workspace 폴더 없음",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "미리보기를 사용할 수 없습니다"
   },
   "inbox": {
     "searchPlaceholder": "메시지 검색...",
@@ -2085,9 +2086,11 @@
     "selectWorkspaceToStart": "Workspace를 선택하여 시작",
     "selectRepoToStart": "Repo를 선택하여 시작"
   },
-  "holdToQuit": {
-    "title": "종료하려면 {{shortcut}}를 1초 동안 누르세요",
-    "subtitle": "취소하려면 놓으세요"
+  "quitConfirmation": {
+    "title": "ORGII를 종료하시겠습니까?",
+    "subtitle": "실행 중인 세션은 현재 상태를 유지합니다. 나중에 ORGII를 다시 열 수 있습니다.",
+    "cancel": "취소",
+    "confirm": "종료"
   },
   "projects": {
     "title": "히트맵",
