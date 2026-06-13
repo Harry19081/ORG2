@@ -62,7 +62,15 @@ export interface UseComposerSectionsOptions {
   gitArtifactStats?: GitArtifactStats;
   /** Opens the dedicated file-diff surface when the files/submissions pill is clicked. */
   onFilesExpand: () => void;
+  /**
+   * When provided, the files / git-artifacts pills open this dropdown menu
+   * instead of invoking `onFilesExpand` directly. Surfaces without a menu
+   * (e.g. the DevTools playground) keep the plain expand behavior.
+   */
+  filesMenu?: React.ReactNode;
 }
+
+const NOOP = () => {};
 
 export function useComposerSections({
   sessionId,
@@ -74,6 +82,7 @@ export function useComposerSections({
   hasPlan = false,
   gitArtifactStats = { commitCount: 0, pullRequestCount: 0 },
   onFilesExpand,
+  filesMenu,
 }: UseComposerSectionsOptions) {
   // Primary card collapsed states
   const [questionCollapsed, setQuestionCollapsed] = useState(false);
@@ -336,7 +345,8 @@ export function useComposerSections({
           ...diffStatNodes
         ),
         active: false,
-        onExpand: onFilesExpand,
+        onExpand: filesMenu ? NOOP : onFilesExpand,
+        droplist: filesMenu,
         testId: "composer-section-files",
       });
     }
@@ -346,7 +356,8 @@ export function useComposerSections({
         icon: React.createElement(GitCommitHorizontal, { size: 13 }),
         count: gitArtifactCount,
         active: false,
-        onExpand: onFilesExpand,
+        onExpand: filesMenu ? NOOP : onFilesExpand,
+        droplist: filesMenu,
         testId: "composer-section-git-artifacts",
       });
     }
@@ -380,6 +391,7 @@ export function useComposerSections({
     toggleQueue,
     toggleProcess,
     onFilesExpand,
+    filesMenu,
   ]);
 
   return {

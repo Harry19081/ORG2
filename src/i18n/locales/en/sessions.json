@@ -1757,6 +1757,15 @@
       "models": "Models",
       "skills": "Skills"
     },
+    "diffMenu": {
+      "gitActions": "Git Actions",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "Review",
+      "viewMyStation": "View in my station",
+      "viewAgentStation": "View in Agent station"
+    },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",
     "cliAgent": "CLI Agent",

@@ -78,11 +78,13 @@ import { AgentEventsTap } from "./ChatHistory/GroupChatView/useGroupChatMergedEv
 import { ChatHistoryOverrideContext } from "./ChatHistoryOverrideContext";
 import { ChatSessionContext } from "./ChatSessionContext";
 import AgentOrgOverviewPanel from "./InputArea/components/AgentOrgOverviewPanel";
+import GitDiffActionsMenu from "./InputArea/components/GitDiffActionsMenu";
 import { useAgentOrgIntervention } from "./InputArea/components/useAgentOrgIntervention";
 import { useAgentOrgMemberSessionJump } from "./InputArea/components/useAgentOrgMemberSessionJump";
 import { useAgentOrgRunView } from "./InputArea/components/useAgentOrgRunView";
 import { deriveGitArtifactStats } from "./InputArea/hooks/gitArtifactStats";
 import { useComposerSections } from "./InputArea/hooks/useComposerSections";
+import { useGitDiffActions } from "./InputArea/hooks/useGitDiffActions";
 import { useQueueEditMode } from "./InputArea/hooks/useQueueEditMode";
 
 const CHAT_FLOATING_COMPOSER_FALLBACK_INSET_PX = 72;
@@ -443,6 +445,36 @@ const ChatView: React.FC<ChatViewProps> = memo(
     ]);
 
     const {
+      onCommit,
+      onCommitPush,
+      onPush,
+      onViewMyStation,
+      onViewAgentStation,
+      gitActionsDisabled,
+    } = useGitDiffActions({ sessionId, openAgentStationDiff });
+
+    const filesMenu = useMemo(
+      () => (
+        <GitDiffActionsMenu
+          onCommit={onCommit}
+          onCommitPush={onCommitPush}
+          onPush={onPush}
+          onViewMyStation={onViewMyStation}
+          onViewAgentStation={onViewAgentStation}
+          gitActionsDisabled={gitActionsDisabled}
+        />
+      ),
+      [
+        onCommit,
+        onCommitPush,
+        onPush,
+        onViewMyStation,
+        onViewAgentStation,
+        gitActionsDisabled,
+      ]
+    );
+
+    const {
       questionCollapsed,
       permissionCollapsed,
       modeSwitchCollapsed,
@@ -469,6 +501,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       hasPlan,
       gitArtifactStats,
       onFilesExpand: openAgentStationDiff,
+      filesMenu,
     });
 
     useEffect(() => {

@@ -9,9 +9,10 @@
  *
  * Each pill shows icon + numeric count only. gap-1 between pills.
  */
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 
 import Button from "@src/components/Button";
+import Dropdown from "@src/components/Dropdown";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 
@@ -31,6 +32,12 @@ export interface InlineSection {
   iconOnly?: boolean;
   /** Optional custom content rendered after the leading icon. */
   content?: React.ReactNode;
+  /**
+   * When set, clicking the pill opens this dropdown menu (anchored to the
+   * pill) instead of invoking `onExpand`. The host injects an `onClose`
+   * prop into the element so menu items can dismiss the dropdown.
+   */
+  droplist?: React.ReactNode;
   /** Stable selector for rendered UI E2E coverage. */
   testId?: string;
 }
@@ -56,27 +63,59 @@ function getButtonClassName(section: InlineSection) {
 const CollapsedInlineRow: React.FC<CollapsedInlineRowProps> = memo(
   ({ sections, scrollNav }) => {
     const showFollowAgent = scrollNav?.showFollowAgent ?? false;
+    const [openMenuKey, setOpenMenuKey] = useState<string | null>(null);
 
     if (sections.length === 0 && !showFollowAgent) return null;
 
     return (
       <div className="flex items-center gap-1 px-0.5">
-        {sections.map((section) => (
-          <Button
-            key={section.key}
-            variant="secondary"
-            appearance="outline"
-            size="small"
-            shape="round"
-            icon={section.icon}
-            iconOnly={section.iconOnly}
-            onClick={section.onExpand}
-            data-testid={section.testId}
-            className={getButtonClassName(section)}
-          >
-            {renderSectionContent(section)}
-          </Button>
-        ))}
+        {sections.map((section) => {
+          const button = (
+            <Button
+              key={section.key}
+              variant="secondary"
+              appearance="outline"
+              size="small"
+              shape="round"
+              icon={section.icon}
+              iconOnly={section.iconOnly}
+              onClick={section.onExpand}
+              data-testid={section.testId}
+              className={getButtonClassName(section)}
+            >
+              {renderSectionContent(section)}
+            </Button>
+          );
+
+          if (!section.droplist) return button;
+
+          const isOpen = openMenuKey === section.key;
+          const droplist = React.isValidElement(section.droplist)
+            ? React.cloneElement(
+                section.droplist as React.ReactElement<{
+                  onClose?: () => void;
+                }>,
+                { onClose: () => setOpenMenuKey(null) }
+              )
+            : section.droplist;
+
+          return (
+            <Dropdown
+              key={section.key}
+              trigger="click"
+              position="top"
+              avoidViewportOverflow
+              getPopupContainer={() => document.body}
+              droplist={droplist}
+              popupVisible={isOpen}
+              onVisibleChange={(visible) =>
+                setOpenMenuKey(visible ? section.key : null)
+              }
+            >
+              {button}
+            </Dropdown>
+          );
+        })}
 
         {showFollowAgent && (
           <Tooltip
