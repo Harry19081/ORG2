@@ -609,7 +609,7 @@
       "switchTo": "전환",
       "current": "현재"
     },
-    "agentSentMessageCaption": "Agent가 메시지를 보냈습니다",
+    "agentSentMessageCaption": "{{subject}}가 메시지를 보냈습니다",
     "userSentMessageCaption": "Agent에게 메시지를 보냈습니다"
   },
   "terminal": {
@@ -927,6 +927,7 @@
     "thought": "사고",
     "thinkingRunning": "생각 중",
     "thinkingDone": "사고",
+    "thinkingDuration": "{{duration}} 동안",
     "noThoughtPreview": "사고 미리보기를 사용할 수 없습니다",
     "message": "메시지",
     "pathCopied": "경로가 복사되었습니다!",
@@ -1689,7 +1690,8 @@
     "taskGetFailed": "Failed to fetch task",
     "orgSendMessageRunning": "{{recipient}} 에게 메시지를 보내는 중",
     "orgSendMessageDone": "{{recipient}} 에게 메시지를 보냈습니다",
-    "orgSendMessageFailed": "{{recipient}} 에게 메시지를 보내지 못했습니다"
+    "orgSendMessageFailed": "{{recipient}} 에게 메시지를 보내지 못했습니다",
+    "noMatch": "No match"
   },
   "hoverCard": {
     "commits": "커밋",

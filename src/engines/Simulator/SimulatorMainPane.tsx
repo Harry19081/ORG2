@@ -23,6 +23,33 @@ import { BootingState } from "./components/SimulatorContentArea/StateDisplays";
 import type { SimulatorContentAreaProps } from "./components/SimulatorContentArea/types";
 import { useSimulatorContent } from "./components/SimulatorContentArea/useSimulatorContent";
 
+function getEventRenderSignature(
+  event: SimulatorContentAreaProps["currentEvent"]
+): string {
+  if (!event) return "";
+  return [
+    event.id,
+    event.chunk_id ?? "",
+    event.functionName,
+    event.displayStatus,
+    event.displayText,
+    event.displayVariant,
+    event.lastActivityAt ?? "",
+    event.args ? JSON.stringify(event.args) : "",
+    event.result ? JSON.stringify(event.result) : "",
+    event.extracted ? JSON.stringify(event.extracted) : "",
+    event.payloadRefs ? JSON.stringify(event.payloadRefs) : "",
+  ].join("|");
+}
+
+function getEventsTailSignature(
+  events: SimulatorContentAreaProps["events"]
+): string {
+  if (!events || events.length === 0) return "0";
+  const tail = events[events.length - 1];
+  return `${events.length}:${getEventRenderSignature(tail)}`;
+}
+
 const SimulatorContentAreaComponent: FC<SimulatorContentAreaProps> = ({
   currentEvent = null,
   events = [],
@@ -88,23 +115,26 @@ const arePropsEqual = (
   prev: SimulatorContentAreaProps,
   next: SimulatorContentAreaProps
 ): boolean => {
-  const prevEventId = prev.currentEvent?.id;
-  const nextEventId = next.currentEvent?.id;
-
-  if (prevEventId || nextEventId) {
-    if (prevEventId !== nextEventId) return false;
-  } else {
-    if (prev.currentEvent !== next.currentEvent) return false;
-    if (prev.currentEvent?.createdAt !== next.currentEvent?.createdAt)
-      return false;
-  }
-
-  if (prev.currentEvent?.functionName !== next.currentEvent?.functionName)
-    return false;
-
   if (prev.index !== next.index) return false;
   if (prev.agentColor !== next.agentColor) return false;
   if (prev.forceAppType !== next.forceAppType) return false;
+  if (prev.hideHeader !== next.hideHeader) return false;
+  if (prev.compactMode !== next.compactMode) return false;
+  if (prev.events !== next.events) return false;
+  if (prev.specs !== next.specs) return false;
+
+  if (
+    getEventRenderSignature(prev.currentEvent) !==
+    getEventRenderSignature(next.currentEvent)
+  ) {
+    return false;
+  }
+
+  if (
+    getEventsTailSignature(prev.events) !== getEventsTailSignature(next.events)
+  ) {
+    return false;
+  }
 
   return true;
 };

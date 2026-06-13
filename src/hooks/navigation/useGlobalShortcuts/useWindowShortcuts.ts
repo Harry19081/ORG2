@@ -1,19 +1,30 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { createLogger } from "@src/hooks/logger";
 import {
-  holdToQuitOverlayOpenAtom,
   isAppQuittingAtom,
+  quitConfirmationModalOpenAtom,
 } from "@src/store/ui/overlayAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 import { isTauriDesktop } from "@src/util/platform/tauri";
 
 const logger = createLogger("WindowShortcuts");
 
-const HOLD_TO_QUIT_MS = 1000;
-
 let quitInProgress = false;
-let holdToQuitTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function requestNativeQuit() {
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("confirm_quit_app");
+}
+
+async function requestNativeCancelQuitConfirmation() {
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("cancel_quit_confirmation");
+}
+
+function setQuitConfirmationClosed() {
+  getInstrumentedStore().set(quitConfirmationModalOpenAtom, false);
+}
 
 export function useWindowShortcuts() {
   const handleQuit = useCallback(async () => {
@@ -23,46 +34,79 @@ export function useWindowShortcuts() {
 
     try {
       const jotaiStore = getInstrumentedStore();
-      jotaiStore.set(holdToQuitOverlayOpenAtom, false);
+      jotaiStore.set(quitConfirmationModalOpenAtom, false);
       jotaiStore.set(isAppQuittingAtom, true);
 
-      const { exit } = await import("@tauri-apps/plugin-process");
-      await exit(0);
+      await requestNativeQuit();
+      quitInProgress = false;
+      jotaiStore.set(isAppQuittingAtom, false);
     } catch (error) {
       const jotaiStore = getInstrumentedStore();
       jotaiStore.set(isAppQuittingAtom, false);
-      jotaiStore.set(holdToQuitOverlayOpenAtom, false);
+      jotaiStore.set(quitConfirmationModalOpenAtom, false);
       quitInProgress = false;
-      if (holdToQuitTimer) {
-        clearTimeout(holdToQuitTimer);
-        holdToQuitTimer = null;
-      }
       logger.error("failed to quit app", error);
     }
   }, []);
 
-  const confirmAndQuit = useCallback(async () => {
-    await handleQuit();
-  }, [handleQuit]);
-
-  const cancelHoldToQuit = useCallback(() => {
-    if (holdToQuitTimer) {
-      clearTimeout(holdToQuitTimer);
-      holdToQuitTimer = null;
+  const closeQuitConfirmation = useCallback(() => {
+    if (quitInProgress) return;
+    setQuitConfirmationClosed();
+    if (isTauriDesktop()) {
+      void requestNativeCancelQuitConfirmation();
     }
-    getInstrumentedStore().set(holdToQuitOverlayOpenAtom, false);
   }, []);
 
-  const startHoldToQuit = useCallback(() => {
-    if (!isTauriDesktop() || quitInProgress || holdToQuitTimer) return;
+  const openQuitConfirmation = useCallback(() => {
+    if (!isTauriDesktop() || quitInProgress) return;
 
-    getInstrumentedStore().set(holdToQuitOverlayOpenAtom, true);
-    holdToQuitTimer = setTimeout(() => {
-      holdToQuitTimer = null;
-      getInstrumentedStore().set(holdToQuitOverlayOpenAtom, false);
-      void handleQuit();
-    }, HOLD_TO_QUIT_MS);
-  }, [handleQuit]);
+    getInstrumentedStore().set(quitConfirmationModalOpenAtom, true);
+  }, []);
+
+  useEffect(() => {
+    if (!isTauriDesktop()) return;
+
+    let cancelled = false;
+    const unlisteners: Array<() => void> = [];
+
+    const setupListeners = async () => {
+      const { listen } = await import("@tauri-apps/api/event");
+
+      const unlistenStart = await listen(
+        "native-quit-confirmation-open",
+        () => {
+          if (!cancelled) openQuitConfirmation();
+        }
+      );
+      unlisteners.push(unlistenStart);
+
+      const unlistenCancel = await listen(
+        "native-quit-confirmation-close",
+        () => {
+          if (!cancelled) setQuitConfirmationClosed();
+        }
+      );
+      unlisteners.push(unlistenCancel);
+    };
+
+    const handleFocusLoss = () => closeQuitConfirmation();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") closeQuitConfirmation();
+    };
+
+    window.addEventListener("blur", handleFocusLoss);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    void setupListeners();
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("blur", handleFocusLoss);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      unlisteners.forEach((unlisten) => unlisten());
+      closeQuitConfirmation();
+    };
+  }, [closeQuitConfirmation, openQuitConfirmation]);
 
   const handleHideWindow = useCallback(async () => {
     if (!isTauriDesktop()) return;
@@ -78,9 +122,8 @@ export function useWindowShortcuts() {
 
   return {
     handleQuit,
-    confirmAndQuit,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
     handleHideWindow,
   };
 }

@@ -609,7 +609,7 @@
       "switchTo": "切换到",
       "current": "当前"
     },
-    "agentSentMessageCaption": "Agent 给你发送了一条消息",
+    "agentSentMessageCaption": "{{subject}} 给你发送了一条消息",
     "userSentMessageCaption": "你给 Agent 发送了一条消息"
   },
   "terminal": {
@@ -931,6 +931,7 @@
     "thought": "思考",
     "thinkingRunning": "思考中",
     "thinkingDone": "思考",
+    "thinkingDuration": "用时 {{duration}}",
     "noThoughtPreview": "无思考预览可用",
     "message": "消息",
     "pathCopied": "路径复制！",
@@ -1693,7 +1694,8 @@
     "taskGetFailed": "Failed to fetch task",
     "orgSendMessageRunning": "正在给 {{recipient}} 发消息",
     "orgSendMessageDone": "给 {{recipient}} 发消息",
-    "orgSendMessageFailed": "给 {{recipient}} 发消息失败"
+    "orgSendMessageFailed": "给 {{recipient}} 发消息失败",
+    "noMatch": "No match"
   },
   "hoverCard": {
     "commits": "提交",

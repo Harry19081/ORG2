@@ -16,7 +16,7 @@ import { useEffect } from "react";
 
 import {
   getGlobalTheme,
-  normalizeGlobalThemeId,
+  resolveGlobalThemePreference,
 } from "@src/config/appearance/globalThemes";
 import { createLogger } from "@src/hooks/logger";
 import { settingsSyncTimestampAtom } from "@src/store/ui/settingsSyncAtom";
@@ -144,7 +144,7 @@ function forceAtomRefresh(key: string, _newValue: string | null): void {
  * This ensures the visual theme actually changes, not just the atom.
  */
 function updateThemeCSS(themeValue: string): void {
-  const themeId = normalizeGlobalThemeId(themeValue);
+  const themeId = resolveGlobalThemePreference(themeValue);
   const themePath = getGlobalTheme(themeId).baseCssPath;
   void swapThemeCss(themePath);
 }

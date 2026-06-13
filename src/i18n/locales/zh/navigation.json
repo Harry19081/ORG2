@@ -446,7 +446,7 @@
     },
     "plusMenu": {
       "title": "新建标签页",
-      "searchPlaceholder": "打开文件、URL...",
+      "searchFile": "搜索文件",
       "newBrowserTab": "新建浏览器标签页",
       "newPrivateBrowserTab": "新建隐私浏览器标签页",
       "workItems": "工作项",

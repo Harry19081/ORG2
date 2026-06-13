@@ -188,19 +188,26 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
             expand={true}
             finish={!isStreaming}
             streamHtml={isStreaming}
+            appendedContent={
+              <>
+                <MessageReferenceCards
+                  content={content || ""}
+                  enabled={!isStreaming}
+                  excludeUrls={canvasUrls}
+                  sessionId={sessionId}
+                />
+                {!isStreaming && content && (
+                  <PrSessionLinkCards
+                    content={content}
+                    isStreaming={isStreaming}
+                  />
+                )}
+              </>
+            }
           >
             {content || ""}
           </AgentChatItemDefault>
-          <MessageReferenceCards
-            content={content || ""}
-            enabled={!isStreaming}
-            excludeUrls={canvasUrls}
-            sessionId={sessionId}
-          />
         </AgentMessageBlock>
-      )}
-      {!isStreaming && content && (
-        <PrSessionLinkCards content={content} isStreaming={isStreaming} />
       )}
       {canvasPayload && (
         <div className="px-2">

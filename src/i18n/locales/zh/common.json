@@ -237,6 +237,8 @@
     "title": "分页",
     "roundOf": "第 {{current}} / {{total}} 轮",
     "round": "第 {{current}} 轮",
+    "previousRound": "上一轮",
+    "nextRound": "下一轮",
     "latestRound": "最新轮次",
     "searchRounds": "搜索轮次"
   },
@@ -887,7 +889,8 @@
     "noWorkspaceFolders": "没有工作区文件夹",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "预览不可用"
   },
   "inbox": {
     "searchPlaceholder": "搜索消息...",
@@ -1133,7 +1136,7 @@
       "chooseModel": "选择模型",
       "chooseKey": "选择密钥",
       "noCompatibleAccounts": "无兼容密钥",
-      "hoverModelHint": "悬停模型以查看可用密钥",
+      "chooseModelHint": "使用键盘导航，或用鼠标点击模型",
       "variantFast": "Fast",
       "selectAccount": "选择账号"
     },
@@ -1579,7 +1582,8 @@
     "openMyStation": "前往我的工作站",
     "openAgentStation": "前往 Agent 工作站",
     "openOpsControl": "前往 Ops Control",
-    "changeLanguage": "更改语言"
+    "changeLanguage": "更改语言",
+    "switchToSystemTheme": "跟随系统主题"
   },
   "commands": {
     "showBottomPanel": "显示底部面板",
@@ -2119,8 +2123,10 @@
     "copiedToClipboard": "图片已复制到剪贴板",
     "previewAlt": "预览"
   },
-  "holdToQuit": {
-    "title": "按住 {{shortcut}} 1 秒以退出",
-    "subtitle": "松开以取消"
+  "quitConfirmation": {
+    "title": "退出 ORGII？",
+    "subtitle": "正在运行的会话会保留当前状态。你可以稍后重新打开 ORGII。",
+    "cancel": "取消",
+    "confirm": "退出"
   }
 }

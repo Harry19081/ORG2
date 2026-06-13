@@ -237,6 +237,8 @@
     "title": "分頁",
     "roundOf": "第 {{current}} / {{total}} 輪",
     "round": "第 {{current}} 輪",
+    "previousRound": "上一輪",
+    "nextRound": "下一輪",
     "latestRound": "最新輪次",
     "searchRounds": "搜尋輪次"
   },
@@ -886,7 +888,8 @@
     "noWorkspaceFolders": "沒有工作區文件夾",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "預覽不可用"
   },
   "inbox": {
     "searchPlaceholder": "搜索消息...",
@@ -1132,7 +1135,7 @@
       "chooseModel": "選擇模型",
       "chooseKey": "選擇金鑰",
       "noCompatibleAccounts": "無相容金鑰",
-      "hoverModelHint": "懸停模型以查看可用金鑰",
+      "chooseModelHint": "使用鍵盤導覽，或用滑鼠點擊模型",
       "variantFast": "Fast",
       "selectAccount": "選擇帳號"
     },
@@ -1578,7 +1581,8 @@
     "openMyStation": "前往我的工作站",
     "openAgentStation": "前往 Agent 工作站",
     "openOpsControl": "前往 Ops Control",
-    "changeLanguage": "變更語言"
+    "changeLanguage": "變更語言",
+    "switchToSystemTheme": "跟隨系統主題"
   },
   "commands": {
     "showBottomPanel": "顯示底部面板",
@@ -2098,9 +2102,11 @@
     "selectWorkspaceToStart": "選擇一個工作區開始",
     "selectRepoToStart": "選擇一個 Repo 開始"
   },
-  "holdToQuit": {
-    "title": "按住 {{shortcut}} 1 秒以結束",
-    "subtitle": "放開以取消"
+  "quitConfirmation": {
+    "title": "結束 ORGII？",
+    "subtitle": "正在執行的工作階段會保留目前狀態。你可以稍後重新開啟 ORGII。",
+    "cancel": "取消",
+    "confirm": "結束"
   },
   "projects": {
     "title": "熱力圖",

@@ -152,6 +152,7 @@ const AppShell = React.memo(
           illuminated={illuminateAgentStationChrome}
           isFullMode={isFullMode}
           captionVisible={agentStationCaptionVisible}
+          hasSession={!!workstationActiveSessionId}
         >
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {isOpsControlStation ? (

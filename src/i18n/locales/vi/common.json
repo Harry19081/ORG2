@@ -235,6 +235,8 @@
     "title": "Phân trang",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
+    "previousRound": "Round trước",
+    "nextRound": "Round tiếp theo",
     "latestRound": "Round mới nhất",
     "searchRounds": "Tìm kiếm rounds"
   },
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Không có thư mục Workspace",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Không thể xem trước"
   },
   "inbox": {
     "searchPlaceholder": "Tìm kiếm tin nhắn...",
@@ -1120,7 +1123,7 @@
       "chooseModel": "Chọn một mô hình",
       "chooseKey": "Chọn một khóa",
       "noCompatibleAccounts": "Không có khóa tương thích",
-      "hoverModelHint": "Di chuột qua một mô hình để xem các khóa khả dụng",
+      "chooseModelHint": "Dùng bàn phím để điều hướng hoặc dùng chuột nhấp vào một mô hình",
       "variantFast": "Fast",
       "selectAccount": "Chọn tài khoản"
     },
@@ -1561,7 +1564,8 @@
     "openMyStation": "Đi tới My Station",
     "openAgentStation": "Đi tới Agent Station",
     "openOpsControl": "Đi tới Ops Control",
-    "changeLanguage": "Thay đổi ngôn ngữ"
+    "changeLanguage": "Thay đổi ngôn ngữ",
+    "switchToSystemTheme": "Theo chủ đề hệ thống"
   },
   "commands": {
     "showBottomPanel": "Hiện bảng dưới",
@@ -2081,9 +2085,11 @@
     "selectWorkspaceToStart": "Chọn một Workspace để bắt đầu",
     "selectRepoToStart": "Chọn một Repo để bắt đầu"
   },
-  "holdToQuit": {
-    "title": "Giữ {{shortcut}} trong 1 giây để thoát",
-    "subtitle": "Thả ra để hủy"
+  "quitConfirmation": {
+    "title": "Thoát ORGII?",
+    "subtitle": "Các phiên đang chạy sẽ giữ nguyên trạng thái hiện tại. Bạn có thể mở lại ORGII sau.",
+    "cancel": "Hủy",
+    "confirm": "Thoát"
   },
   "projects": {
     "title": "Bản đồ nhiệt",

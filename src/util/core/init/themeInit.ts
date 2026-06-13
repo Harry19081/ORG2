@@ -1,8 +1,10 @@
 import {
+  GLOBAL_THEMES,
   getGlobalTheme,
-  normalizeGlobalThemeId,
+  resolveGlobalThemePreference,
 } from "@src/config/appearance/globalThemes";
 import { createLogger } from "@src/hooks/logger";
+import { preloadThemeCss } from "@src/util/ui/theme/swapThemeCss";
 
 const log = createLogger("Theme");
 
@@ -23,13 +25,30 @@ const log = createLogger("Theme");
  * OPTIMIZATION: Timeout reduced to 500ms since CSS is preloaded in index.html
  * and should be available from cache almost instantly.
  */
+function scheduleThemePreload(activeThemePath: string): void {
+  const preload = () => {
+    const themePaths = Array.from(
+      new Set(Object.values(GLOBAL_THEMES).map((theme) => theme.baseCssPath))
+    ).filter((themePath) => themePath !== activeThemePath);
+
+    preloadThemeCss(themePaths);
+  };
+
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(preload, { timeout: 1500 });
+    return;
+  }
+
+  setTimeout(preload, 250);
+}
+
 const initTheme = (): Promise<void> => {
   return new Promise((resolve, _reject) => {
     const startTime = performance.now();
 
     // Get theme from localStorage (supports legacy CSS path and legacy light/dark)
     const storedTheme = localStorage.getItem("theme");
-    const themeId = normalizeGlobalThemeId(storedTheme);
+    const themeId = resolveGlobalThemePreference(storedTheme);
     const theme = getGlobalTheme(themeId).baseCssPath;
 
     // Check if the preloaded CSS matches the user's theme preference
@@ -47,6 +66,7 @@ const initTheme = (): Promise<void> => {
     const safeResolve = () => {
       if (resolved) return;
       resolved = true;
+      scheduleThemePreload(theme);
       resolve();
     };
 
@@ -57,6 +77,7 @@ const initTheme = (): Promise<void> => {
       if (resolved) return;
       resolved = true;
       log.error("[Theme] Failed to load CSS:", theme, error);
+      scheduleThemePreload(theme);
       // Don't block app startup - resolve anyway
       resolve();
     };
@@ -73,6 +94,7 @@ const initTheme = (): Promise<void> => {
         `[Theme] CSS load timeout after ${duration.toFixed(0)}ms, continuing:`,
         theme
       );
+      scheduleThemePreload(theme);
       resolve();
     }, timeoutMs);
 

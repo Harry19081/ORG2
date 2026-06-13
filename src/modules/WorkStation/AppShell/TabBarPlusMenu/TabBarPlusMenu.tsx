@@ -2,23 +2,12 @@
  * TabBarPlusMenu
  *
  * Trailing `+` button for the unified workstation tab bar. Opens a tiny
- * palette that combines a single smart search field with a small set of
- * quick-action items. Each action adds (or activates) a tab in
+ * palette with quick-action items. Each action adds (or activates) a tab in
  * `mainPane`; `AppShell` then swaps in the matching host content via
  * `activeHostAtom`.
  *
- * Smart search input ("Open file, URL ?"):
- *   - Heuristic-routed by {@link classifyPlusMenuQuery}:
- *     - **file-like** (leading `.` or `/`, looks like `name.ext`,
- *       contains path separators) → `openEditorSpotlight(query)` so the
- *       user lands in the global file palette with the query prefilled.
- *     - **otherwise** (URL, domain, search keywords) →
- *       `requestNewBrowserSession({ url })`. The Browser host runs the
- *       value through `normalizeBrowserInput`, so bare keywords become a
- *       search-engine URL and partial domains gain a scheme.
- *   - Submit with Enter; Escape closes the menu. Empty submit is a no-op.
- *
  * Menu items:
+ *   - `"searchFile"` → open the Spotlight file search flow.
  *   - `"newBrowserTab"` → `requestNewBrowserSession({})` for a blank
  *     regular session.
  *   - `"newPrivateBrowserTab"` → `requestNewBrowserSession({ isPrivate:
@@ -28,10 +17,10 @@
  *   - `"projects"` → open the workspace-scope Projects dashboard tab.
  *
  * Surfaces:
- *   - **All Tabs** mode renders the full palette with search + 3 items
- *     (regular browser tab / work items / projects).
- *   - **Browser** mode renders a Browser-focused palette: same search,
- *     plus `newBrowserTab` and `newPrivateBrowserTab`.
+ *   - **All Tabs** mode renders the full palette with file search, regular
+ *     browser tab, private browser tab, work items, and projects.
+ *   - **Browser** mode renders a Browser-focused palette with file search,
+ *     `newBrowserTab`, and `newPrivateBrowserTab`.
  *   - Other modes (Code / Data / Project) do **not** show a `+` at all.
  *
  * Keyboard: ⌘T (`new_tab`) opens whichever instance of this menu is
@@ -43,25 +32,24 @@
  * Project create-project) are intentionally NOT bound to ⌘T.
  */
 import { useSetAtom } from "jotai";
-import { Box, Globe, ListTodo, Plus, Search, ShieldOff } from "lucide-react";
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import {
+  Box,
+  FileSearch,
+  Globe,
+  ListTodo,
+  Plus,
+  ShieldOff,
+} from "lucide-react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Dropdown from "@src/components/Dropdown";
 import {
   DROPDOWN_CLASSES,
-  DROPDOWN_SEARCH,
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
+import KeyBadge from "@src/components/KeyBadge";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
-import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import { TabBarTrailingIconButton } from "@src/modules/WorkStation/shared/TabBar/components/TabBarTrailingIconButton";
 import { openEditorSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
@@ -75,17 +63,17 @@ import {
 } from "@src/store/workstation";
 import type { WorkStationTab } from "@src/store/workstation/tabs";
 
-import { classifyPlusMenuQuery } from "./classifyQuery";
-
 const WORKSTATION_NEW_TAB_EVENT = "workstation-new-tab";
 
 export type TabBarPlusMenuItem =
+  | "searchFile"
   | "newBrowserTab"
   | "newPrivateBrowserTab"
   | "workItems"
   | "projects";
 
 const DEFAULT_ITEMS: readonly TabBarPlusMenuItem[] = [
+  "searchFile",
   "newBrowserTab",
   "newPrivateBrowserTab",
   "workItems",
@@ -93,6 +81,7 @@ const DEFAULT_ITEMS: readonly TabBarPlusMenuItem[] = [
 ];
 
 const KNOWN_ITEMS: readonly TabBarPlusMenuItem[] = [
+  "searchFile",
   "newBrowserTab",
   "newPrivateBrowserTab",
   "workItems",
@@ -125,13 +114,9 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
   const requestNewBrowserSession = useSetAtom(requestNewBrowserSessionAtom);
   const setLayout = useSetAtom(workstationLayoutAtom);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const tauriSelectAll = useTauriSelectAllShortcut();
 
   const close = useCallback(() => {
     setMenuVisible(false);
-    setQuery("");
   }, []);
 
   // Add (or activate) a tab in the single `mainPane` pool. AppShell's
@@ -170,39 +155,10 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
     close();
   }, [close, openTabInMainPane]);
 
-  // Submit the search field. Routes to the file palette for file-like
-  // input, otherwise opens a Browser tab pointed at the (normalized)
-  // URL or search query.
-  const handleSubmitQuery = useCallback(() => {
-    const trimmed = query.trim();
-    if (!trimmed) return;
-    const kind = classifyPlusMenuQuery(trimmed);
-    if (kind === "file") {
-      // `openEditorSpotlight` prefills the global file palette so the
-      // user can refine the match without retyping.
-      openEditorSpotlight(trimmed);
-    } else {
-      requestNewBrowserSession({ url: trimmed });
-    }
+  const handleSearchFile = useCallback(() => {
+    openEditorSpotlight("");
     close();
-  }, [close, query, requestNewBrowserSession]);
-
-  const handleInputKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        handleSubmitQuery();
-        return;
-      }
-      if (event.key === "Escape") {
-        event.preventDefault();
-        close();
-        return;
-      }
-      tauriSelectAll(event);
-    },
-    [close, handleSubmitQuery, tauriSelectAll]
-  );
+  }, [close]);
 
   // ⌘T (`new_tab`) is exclusively bound to opening this menu. Whether the
   // bridge route or the dock filter route triggered it, the rule is the
@@ -216,18 +172,6 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
     };
   }, []);
 
-  // Autofocus the search field when the dropdown opens. We defer to the
-  // next frame so the popup's mount/positioning has settled and Dropdown
-  // hasn't reclaimed focus.
-  useEffect(() => {
-    if (!menuVisible) return;
-    const id = requestAnimationFrame(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    });
-    return () => cancelAnimationFrame(id);
-  }, [menuVisible]);
-
   const triggerLabel = t("workstation.plusMenu.title");
 
   const visibleItems = useMemo(
@@ -237,28 +181,23 @@ const TabBarPlusMenuComponent: React.FC<TabBarPlusMenuProps> = ({
 
   const droplist = (
     <div
-      className={`${DROPDOWN_CLASSES.menuPanelWithHeaderBase} ${DROPDOWN_WIDTHS.wideMenuClass}`}
+      className={`${DROPDOWN_CLASSES.menuPanelBase} ${DROPDOWN_WIDTHS.wideMenuClass}`}
     >
-      <div className={DROPDOWN_CLASSES.searchContainer}>
-        <Search
-          size={DROPDOWN_SEARCH.iconSize}
-          className="flex-shrink-0 text-text-3"
-        />
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          onKeyDown={handleInputKeyDown}
-          placeholder={t("workstation.plusMenu.searchPlaceholder")}
-          className={DROPDOWN_CLASSES.searchInput}
-          spellCheck={false}
-          autoCorrect="off"
-          autoCapitalize="off"
-        />
-      </div>
+      <div className={DROPDOWN_CLASSES.itemsColumn}>
+        {visibleItems.includes("searchFile") && (
+          <button
+            type="button"
+            onClick={handleSearchFile}
+            className={DROPDOWN_CLASSES.menuActionItem}
+          >
+            <MenuItemContent
+              icon={<FileSearch size={HEADER_ICON_SIZE.sm} />}
+              label={t("workstation.plusMenu.searchFile")}
+            />
+            <KeyBadge keys="⌘P" showSeparator={false} />
+          </button>
+        )}
 
-      <div className={DROPDOWN_CLASSES.itemsColumnBelowSearch}>
         {visibleItems.includes("newBrowserTab") && (
           <button
             type="button"

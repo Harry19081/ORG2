@@ -17,16 +17,21 @@
  * (webpack ~40s and Rust ~3-5min are fully overlapped).
  *
  * Usage:
- *   npm run tauri:build:fast:parallel          # default features
- *   npm run tauri:build:fast:parallel -- --semantic
+ *   pnpm run tauri:build:fast
+ *   pnpm run tauri:build:fast -- /tmp/ORGII.app
+ *   pnpm run tauri:build:fast -- ~/Desktop
+ *   pnpm run tauri:build:fast -- --semantic ~/Desktop
  */
 
 const { spawn, spawnSync } = require("child_process");
+const fs = require("fs");
 const path = require("path");
 const { tauriFeatureString } = require("./features.cjs");
 
 const rootDir = path.join(__dirname, "..", "..");
-const includeSemantic = process.argv.includes("--semantic");
+const rawArgs = process.argv.slice(2);
+const includeSemantic = rawArgs.includes("--semantic");
+const outputPathArg = rawArgs.find((arg) => arg !== "--semantic");
 const featureString = tauriFeatureString({ semantic: includeSemantic });
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -65,6 +70,50 @@ function runParallel(commands) {
       });
     });
   });
+}
+
+function resolveCargoTargetDir() {
+  const metadataResult = spawnSync(
+    "cargo",
+    ["metadata", "--format-version", "1", "--no-deps"],
+    {
+      cwd: path.join(rootDir, "src-tauri"),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "inherit"],
+    }
+  );
+
+  if (metadataResult.status !== 0) {
+    console.error("Failed to resolve Cargo target directory via cargo metadata");
+    process.exit(metadataResult.status ?? 1);
+  }
+
+  const metadata = JSON.parse(metadataResult.stdout);
+  return metadata.target_directory;
+}
+
+function resolveOutputAppPath(outputPath) {
+  const resolved = path.resolve(rootDir, outputPath);
+  return path.extname(resolved) === ".app"
+    ? resolved
+    : path.join(resolved, "ORGII.app");
+}
+
+function copyBuiltApp(outputPath) {
+  if (!outputPath) return;
+
+  const targetDir = resolveCargoTargetDir();
+  const builtAppPath = path.join(targetDir, "dev-build", "bundle", "macos", "ORGII.app");
+  if (!fs.existsSync(builtAppPath)) {
+    console.error(`Built app not found at ${builtAppPath}`);
+    process.exit(1);
+  }
+
+  const destinationAppPath = resolveOutputAppPath(outputPath);
+  fs.mkdirSync(path.dirname(destinationAppPath), { recursive: true });
+  fs.rmSync(destinationAppPath, { recursive: true, force: true });
+  fs.cpSync(builtAppPath, destinationAppPath, { recursive: true });
+  console.log(`\x1b[32m[build-fast-parallel] Copied app to ${destinationAppPath}\x1b[0m`);
 }
 
 // ─── env: strip all signing/notarization so no certificate is required ────────
@@ -169,12 +218,18 @@ async function main() {
     env,
   });
 
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1);
+  }
+
+  copyBuiltApp(outputPathArg);
+
   const totalMs = Date.now() - t0;
   console.log(
     `\x1b[1m[build-fast-parallel] Total: ${(totalMs / 1000).toFixed(1)}s\x1b[0m`
   );
 
-  process.exit(result.status ?? 1);
+  process.exit(0);
 }
 
 main().catch((err) => {

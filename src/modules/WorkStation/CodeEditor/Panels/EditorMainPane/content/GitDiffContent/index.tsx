@@ -55,7 +55,6 @@ import {
   supportsSourceControlWorkingCopyPreview,
 } from "@src/util/file/previewTypes";
 
-import { ImageDiffView } from "./ImageDiffView";
 import { useGitDiffLoader } from "./useGitDiffLoader";
 
 const log = createLogger("GitDiffContent");
@@ -64,6 +63,9 @@ const LazyTextSelectionDropdown = React.lazy(
   () => import("@src/scaffold/ContextMenu/variants/TextSelectionDropdown")
 );
 
+const LazyImagePreview = React.lazy(
+  () => import("../FilePreviewContent/ImagePreview")
+);
 const LazyVideoPreview = React.lazy(
   () => import("../FilePreviewContent/VideoPreview")
 );
@@ -72,6 +74,9 @@ const LazyPdfPreview = React.lazy(
 );
 const LazyDocxPreview = React.lazy(
   () => import("../FilePreviewContent/DocxPreview")
+);
+const LazyXlsxPreview = React.lazy(
+  () => import("../FilePreviewContent/XlsxPreview")
 );
 const LazyPptxPreview = React.lazy(
   () => import("../FilePreviewContent/PptxPreview")
@@ -508,27 +513,15 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
       />
     );
 
-    // Images get a dedicated side-by-side diff view
-    if (previewType === "image") {
-      return (
-        <div className="relative flex min-h-0 flex-1 flex-col">
-          {fileHeader}
-          <div className="flex min-h-0 flex-1 flex-col">
-            <ImageDiffView
-              filePath={absoluteFilePath}
-              relativePath={relativePath}
-              repoPath={effectiveRepoPath}
-              status={effectiveGitFile.status}
-            />
-          </div>
-        </div>
-      );
-    }
-
     // Non-deleted previewable binary types: show the working-copy preview
     let PreviewEl: React.ReactNode = null;
     if (!isDeleted && supportsSourceControlWorkingCopyPreview(previewType)) {
       switch (previewType) {
+        case "image":
+          PreviewEl = (
+            <LazyImagePreview filePath={absoluteFilePath} className="flex-1" />
+          );
+          break;
         case "video":
           PreviewEl = (
             <LazyVideoPreview filePath={absoluteFilePath} className="flex-1" />
@@ -542,6 +535,15 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
         case "docx":
           PreviewEl = (
             <LazyDocxPreview filePath={absoluteFilePath} className="flex-1" />
+          );
+          break;
+        case "xlsx":
+          PreviewEl = (
+            <LazyXlsxPreview
+              filePath={absoluteFilePath}
+              className="flex-1"
+              readOnly
+            />
           );
           break;
         case "pptx":
@@ -587,8 +589,8 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
         <Placeholder
           variant="empty"
           placement="detail-panel"
-          title={t("placeholders.unsupportedFileType")}
-          subtitle={t("placeholders.binaryUnsupportedEncoding")}
+          title={t("placeholders.previewUnavailable")}
+          subtitle={relativePath}
           fillParentHeight
         />
       </div>

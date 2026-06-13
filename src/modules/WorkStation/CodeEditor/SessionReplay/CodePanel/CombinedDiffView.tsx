@@ -64,7 +64,7 @@ const EditSection: React.FC<{
     <div className="flex flex-col">
       <button
         onClick={toggleCollapse}
-        className="sticky top-0 z-10 flex h-10 w-full cursor-pointer items-center gap-2 border-b border-border-2 bg-workstation-bg px-3 text-[11px]"
+        className="sticky top-0 z-10 flex h-10 w-full cursor-pointer items-center gap-2 border-t border-border-2 bg-[var(--cm-editor-background)] px-3 text-[11px] hover:bg-fill-2"
       >
         {isCollapsed ? (
           <ChevronsUpDown size={14} className="shrink-0 text-text-3" />
@@ -174,7 +174,7 @@ export const CombinedDiffView: React.FC<{
   return (
     <div className="flex flex-col gap-0">
       {earlierEditCount > 0 && !showEarlierEdits && (
-        <div className="flex w-full justify-center border-b border-border-2 py-1.5">
+        <div className="flex w-full justify-center py-1.5">
           <Button
             htmlType="button"
             variant="tertiary"

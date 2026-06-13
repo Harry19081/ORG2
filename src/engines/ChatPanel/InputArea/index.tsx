@@ -58,6 +58,7 @@ interface InputAreaProps {
   onSubmitOverride?: (input: SubmitOverrideInput) => Promise<boolean>;
   customMentionOptions?: ReadonlyArray<CustomMentionOption>;
   topRowPills?: React.ReactNode;
+  topRowTrailingContent?: React.ReactNode;
   statusBanners?: React.ReactNode;
   composerShellRef?: React.Ref<HTMLDivElement>;
   disableStopWhenEmpty?: boolean;
@@ -84,6 +85,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
     onSubmitOverride,
     customMentionOptions,
     topRowPills,
+    topRowTrailingContent,
     statusBanners,
     composerShellRef,
     disableStopWhenEmpty = false,
@@ -318,7 +320,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
             isEditMode={isEditMode}
             omitChatHeader={omitChatHeader}
             topRowPills={topRowPills}
-            statusBanners={statusBanners}
+            topRowTrailingContent={topRowTrailingContent}
             composerInputRef={composerInputRef}
             sessionId={sessionId}
           />
@@ -465,6 +467,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
               />
             )}
           </ComposerShell>
+          {!isEditMode && statusBanners}
         </div>
 
         <InputAreaPortals

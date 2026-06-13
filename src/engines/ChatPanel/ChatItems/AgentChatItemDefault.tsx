@@ -22,6 +22,7 @@ interface AgentChatItemProps {
   codeBlockContainerWidth?: number;
   /** Current check status (for showing result indicator) */
   curCheckStatus?: string;
+  appendedContent?: React.ReactNode;
 }
 const AgentChatItemDefault: React.FC<AgentChatItemProps> = ({
   children,
@@ -31,6 +32,7 @@ const AgentChatItemDefault: React.FC<AgentChatItemProps> = ({
   streamHtml,
   codeBlockContainerWidth,
   curCheckStatus,
+  appendedContent,
 }) => {
   const [isShow, setIsShow] = useState(expand);
   const themes = useAtomValue(themesAtom);
@@ -105,6 +107,7 @@ const AgentChatItemDefault: React.FC<AgentChatItemProps> = ({
                       </Button>
                     </div>
                   ))}
+                {appendedContent}
               </div>
             </div>
           </>

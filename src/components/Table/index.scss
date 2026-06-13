@@ -273,17 +273,17 @@
   }
 
   .table-td {
-    padding: 8px 0;
+    padding: 0;
     border-bottom: 1px solid var(--border-2);
     font-size: 13px;
     vertical-align: middle;
+    height: 40px;
   }
 
-  /* min-height on td is ignored by browsers; apply to inner div instead */
   .table-td-inner {
     display: flex;
     align-items: center;
-    min-height: 24px; /* 8 + 24 + 8 padding = 40px row */
+    height: 100%;
   }
 
   .table-td-fill {
@@ -317,22 +317,16 @@
   }
 
   &.table-settings-dense .table-td {
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-
-  &.table-settings-dense .table-td-inner {
-    min-height: 36px; /* 4 + 36 + 4 padding = 44px row */
+    height: 40px;
   }
 
   /* Tighter vertical padding on expandable sub-rows (e.g. ModelTable group view). */
   &.table-settings-expanded-compact .table-expanded-row .table-td {
-    padding-top: 4px;
-    padding-bottom: 4px;
+    height: auto;
   }
 
   &.table-settings-expanded-compact .table-expanded-row .table-td-inner {
-    min-height: unset;
+    height: auto;
   }
 
   &.table-settings-expanded-compact .table-expanded-row-last .table-td {

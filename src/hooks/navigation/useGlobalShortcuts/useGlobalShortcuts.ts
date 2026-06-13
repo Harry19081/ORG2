@@ -9,7 +9,7 @@ import { useZoomShortcuts } from "./useZoomShortcuts";
  *
  * Handles:
  * - Backspace: Prevented from triggering any navigation (only works in input fields)
- * - Command+Q (Meta+Q): Hold to quit the app
+ * - Command+Q (Meta+Q): Open quit confirmation modal
  * - Command+W (Meta+W): Close current tab with special home page logic
  * - Command+M (Meta+M): Hide the window (minimize to background)
  * - Command+N (Meta+N): Create a new Agent Station session
@@ -31,8 +31,9 @@ import { useZoomShortcuts } from "./useZoomShortcuts";
  * - Command+E / Ctrl+E: Open Workstation Code Editor source control tab
  * - Command+J / Ctrl+J: Open Workstation Code Editor terminal tab
  * - Command+Option+B / Ctrl+Alt+B: Focus Chat Panel or show Workstation
- * - Command+Option+M / Ctrl+Alt+M: Toggle My Station / Agent's Station
- * - Command+Option+O / Ctrl+Alt+O: Open Ops Control
+ * - Command+1 / Ctrl+1: Open My Station
+ * - Command+2 / Ctrl+2: Open Agent's Station
+ * - Command+3 / Ctrl+3: Open Ops Control
  * - Command+Option+U / Ctrl+Alt+U: Toggle Workstation sidebar
  * - Command+= (Meta+=): Zoom in (increase UI scale)
  * - Command+- (Meta+-): Zoom out (decrease UI scale)
@@ -56,9 +57,8 @@ export const useGlobalShortcuts = () => {
 
   const {
     handleQuit,
-    confirmAndQuit,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
     handleHideWindow,
   } = useWindowShortcuts();
 
@@ -87,7 +87,6 @@ export const useGlobalShortcuts = () => {
     handlePreviousTab,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    handleToggleStationMode,
   } = useTabShortcuts();
 
   // Wire everything into the keydown listener + registry
@@ -102,9 +101,8 @@ export const useGlobalShortcuts = () => {
     handleZoomIn,
     handleZoomOut,
     handleZoomReset,
-    confirmAndQuit,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
     handleHideWindow,
     spotlightOpenRef,
     handleCreateNewSession,
@@ -129,7 +127,6 @@ export const useGlobalShortcuts = () => {
     handlePreviousTab,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    handleToggleStationMode,
   });
 
   return {

@@ -355,7 +355,7 @@
     },
     "plusMenu": {
       "title": "Yeni sekme",
-      "searchPlaceholder": "Dosya veya URL aç...",
+      "searchFile": "Dosya ara",
       "newBrowserTab": "Yeni tarayıcı sekmesi",
       "newPrivateBrowserTab": "Yeni gizli tarayıcı sekmesi",
       "workItems": "İş öğeleri",

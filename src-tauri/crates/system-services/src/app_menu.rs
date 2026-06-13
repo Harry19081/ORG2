@@ -12,6 +12,7 @@
 //! and restored on startup (including re-registering with macOS NSDocumentController).
 
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 use tauri::menu::{Menu, MenuBuilder, MenuItem, Submenu, SubmenuBuilder};
 use tauri::{AppHandle, Emitter, Manager, Wry};
@@ -20,16 +21,20 @@ use tauri::{AppHandle, Emitter, Manager, Wry};
 const MAX_RECENT_ITEMS: usize = 10;
 
 const RECENT_PATHS_FILENAME: &str = "recent_paths.json";
+const MAIN_WINDOW_LABEL: &str = "main";
+const EVENT_QUIT_CONFIRMATION_OPEN: &str = "native-quit-confirmation-open";
+const EVENT_QUIT_CONFIRMATION_CLOSE: &str = "native-quit-confirmation-close";
 
 /// Global state for recent paths (thread-safe)
 static RECENT_PATHS: Mutex<Vec<String>> = Mutex::new(Vec::new());
+static QUIT_CONFIRMATION_ACTIVE: AtomicBool = AtomicBool::new(false);
 
 /// Create the application menu bar
 pub fn create_app_menu(app: &AppHandle) -> Result<Menu<Wry>, tauri::Error> {
     // ========================================
     // App Menu (ORGII)
     // ========================================
-    let quit_item = MenuItem::with_id(app, "app_quit", "Quit ORGII", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(app, "app_quit", "Quit ORGII", true, Some("CmdOrCtrl+Q"))?;
 
     let app_menu = SubmenuBuilder::new(app, "ORGII")
         .about(None)
@@ -456,6 +461,33 @@ pub fn clear_recent_menu(app: &AppHandle) {
     save_recent_paths_to_disk(app);
 }
 
+fn main_window(app: &AppHandle) -> Option<tauri::WebviewWindow<Wry>> {
+    app.get_webview_window(MAIN_WINDOW_LABEL)
+}
+
+fn emit_main_window(app: &AppHandle, event: &str) {
+    if let Some(window) = main_window(app) {
+        let _ = window.emit(event, ());
+    }
+}
+
+fn open_quit_confirmation(app: &AppHandle) {
+    QUIT_CONFIRMATION_ACTIVE.store(true, Ordering::Release);
+    emit_main_window(app, EVENT_QUIT_CONFIRMATION_OPEN);
+}
+
+fn close_quit_confirmation_state(app: &AppHandle) {
+    if !QUIT_CONFIRMATION_ACTIVE.swap(false, Ordering::AcqRel) {
+        return;
+    }
+    emit_main_window(app, EVENT_QUIT_CONFIRMATION_CLOSE);
+}
+
+fn quit_app(app: &AppHandle) {
+    QUIT_CONFIRMATION_ACTIVE.store(false, Ordering::Release);
+    app.exit(0);
+}
+
 /// Setup menu event handlers
 pub fn setup_menu_events(app: &AppHandle) {
     let app_handle = app.clone();
@@ -465,9 +497,7 @@ pub fn setup_menu_events(app: &AppHandle) {
 
         match event_id {
             "app_quit" => {
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.emit("menu-quit", ());
-                }
+                open_quit_confirmation(app);
             }
             "file_new_session" => {
                 if let Some(window) = app.get_webview_window("main") {
@@ -624,4 +654,14 @@ pub fn menu_get_recent() -> Vec<String> {
 pub fn menu_clear_recent(app: AppHandle) -> Result<(), String> {
     clear_recent_menu(&app);
     rebuild_menu(&app).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn confirm_quit_app(app: AppHandle) {
+    quit_app(&app);
+}
+
+#[tauri::command]
+pub fn cancel_quit_confirmation(app: AppHandle) {
+    close_quit_confirmation_state(&app);
 }

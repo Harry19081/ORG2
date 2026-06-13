@@ -235,6 +235,8 @@
     "title": "Paginacja",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
+    "previousRound": "Poprzednia runda",
+    "nextRound": "Następna runda",
     "latestRound": "Najnowsza runda",
     "searchRounds": "Szukaj rounds"
   },
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Brak folderów Workspace",
     "noRepoSelected": "Nie wybrano Repo",
     "scanningFileExtensions": "Skanowanie rozszerzeń plików...",
-    "startBrowsingMarket": "Rozpocznij przeglądanie marketplace"
+    "startBrowsingMarket": "Rozpocznij przeglądanie marketplace",
+    "previewUnavailable": "Podgląd niedostępny"
   },
   "inbox": {
     "searchPlaceholder": "Szukaj wiadomości...",
@@ -1111,7 +1114,7 @@
       "chooseModel": "Wybierz model",
       "chooseKey": "Wybierz klucz",
       "noCompatibleAccounts": "Brak zgodnych kluczy",
-      "hoverModelHint": "Najedź na model, aby zobaczyć dostępne klucze",
+      "chooseModelHint": "Użyj klawiatury do nawigacji albo kliknij model myszą",
       "variantFast": "Fast",
       "selectAccount": "Wybierz konto"
     },
@@ -1560,7 +1563,8 @@
     "openMyStation": "Przejdź do My Station",
     "openAgentStation": "Przejdź do Agent Station",
     "openOpsControl": "Przejdź do Ops Control",
-    "changeLanguage": "Zmień język"
+    "changeLanguage": "Zmień język",
+    "switchToSystemTheme": "Zgodnie z motywem systemu"
   },
   "commands": {
     "showBottomPanel": "Pokaż dolny panel",
@@ -2080,9 +2084,11 @@
     "selectWorkspaceToStart": "Wybierz Workspace, aby rozpocząć",
     "selectRepoToStart": "Wybierz Repo, aby rozpocząć"
   },
-  "holdToQuit": {
-    "title": "Przytrzymaj {{shortcut}} przez 1 sekundę, aby zamknąć",
-    "subtitle": "Puść, aby anulować"
+  "quitConfirmation": {
+    "title": "Zamknąć ORGII?",
+    "subtitle": "Uruchomione sesje zachowają swój bieżący stan. Możesz ponownie otworzyć ORGII później.",
+    "cancel": "Anuluj",
+    "confirm": "Zamknij"
   },
   "projects": {
     "title": "Heatmapa",

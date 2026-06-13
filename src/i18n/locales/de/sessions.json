@@ -609,7 +609,7 @@
       "switchTo": "Wechseln zu",
       "current": "Aktuell"
     },
-    "agentSentMessageCaption": "Der Agent hat dir eine Nachricht gesendet",
+    "agentSentMessageCaption": "{{subject}} hat dir eine Nachricht gesendet",
     "userSentMessageCaption": "Du hast Agent eine Nachricht gesendet"
   },
   "terminal": {
@@ -927,6 +927,7 @@
     "thought": "Gedanke",
     "thinkingRunning": "Denkt nach",
     "thinkingDone": "Gedanke",
+    "thinkingDuration": "für {{duration}}",
     "noThoughtPreview": "Keine Gedankenvorschau verfügbar",
     "message": "Nachricht",
     "pathCopied": "Pfad kopiert!",
@@ -1689,7 +1690,8 @@
     "taskGetFailed": "Failed to fetch task",
     "orgSendMessageRunning": "Nachricht wird an {{recipient}} gesendet",
     "orgSendMessageDone": "Nachricht an {{recipient}} gesendet",
-    "orgSendMessageFailed": "Senden der Nachricht an {{recipient}} fehlgeschlagen"
+    "orgSendMessageFailed": "Senden der Nachricht an {{recipient}} fehlgeschlagen",
+    "noMatch": "No match"
   },
   "hoverCard": {
     "commits": "Commits",

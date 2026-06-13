@@ -206,6 +206,7 @@ export const CursorModelDropdown: React.FC<CursorModelDropdownProps> = ({
   return createPortal(
     <div
       ref={panelRef}
+      data-dropdown-main-panel-anchor
       className={`${DROPDOWN_CLASSES.panel} fixed flex flex-col`}
       style={{
         top: panelPosition.top,

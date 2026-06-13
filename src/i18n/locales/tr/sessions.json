@@ -609,7 +609,7 @@
       "switchTo": "Geçiş yap",
       "current": "Geçerli"
     },
-    "agentSentMessageCaption": "Agent size bir mesaj gönderdi",
+    "agentSentMessageCaption": "{{subject}} size bir mesaj gönderdi",
     "userSentMessageCaption": "Agent'a bir mesaj gönderdiniz"
   },
   "terminal": {
@@ -927,6 +927,7 @@
     "thought": "Düşünce",
     "thinkingRunning": "Düşünüyor",
     "thinkingDone": "Düşünce",
+    "thinkingDuration": "{{duration}} boyunca",
     "noThoughtPreview": "Düşünce önizlemesi mevcut değil",
     "message": "Mesaj",
     "pathCopied": "Yol kopyalandı!",
@@ -1689,7 +1690,8 @@
     "taskGetFailed": "Failed to fetch task",
     "orgSendMessageRunning": "{{recipient}} adresine mesaj gönderiliyor",
     "orgSendMessageDone": "{{recipient}} adresine mesaj gönderildi",
-    "orgSendMessageFailed": "{{recipient}} adresine mesaj gönderilemedi"
+    "orgSendMessageFailed": "{{recipient}} adresine mesaj gönderilemedi",
+    "noMatch": "No match"
   },
   "hoverCard": {
     "commits": "Commit",

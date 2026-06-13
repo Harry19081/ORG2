@@ -355,7 +355,7 @@
     },
     "plusMenu": {
       "title": "새 탭",
-      "searchPlaceholder": "파일 또는 URL 열기...",
+      "searchFile": "파일 검색",
       "newBrowserTab": "새 브라우저 탭",
       "newPrivateBrowserTab": "새 시크릿 브라우저 탭",
       "workItems": "작업 항목",

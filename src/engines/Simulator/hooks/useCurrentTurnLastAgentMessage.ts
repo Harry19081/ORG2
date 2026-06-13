@@ -22,11 +22,16 @@ import {
   effectiveSimulatorEventIdsAtom,
   simulatorEventPreviewByIdAtom,
 } from "@src/engines/SessionCore";
-import type { SimulatorEventPreview } from "@src/engines/SessionCore";
+import type {
+  SessionEvent,
+  SimulatorEventPreview,
+} from "@src/engines/SessionCore";
+import { simulatorEventsAtom } from "@src/engines/SessionCore/derived/simulatorEvents";
 
 export interface CurrentTurnLastAgentMessage {
   text: string;
   source: "assistant" | "user";
+  eventKind: "message" | "thought";
   /** Event id of the source message, useful for keying renderers. */
   eventId: string;
   /** Whether the replay cursor is currently on this exact message event. */
@@ -42,10 +47,41 @@ function isAssistantMessagePreview(preview: SimulatorEventPreview): boolean {
   );
 }
 
+function safeString(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+function getThinkingText(event: SessionEvent | undefined): string | undefined {
+  if (!event || event.extracted?.kind !== "thinking") return undefined;
+  return event.extracted.content?.trim() || undefined;
+}
+
+function getMessageOrThinkingCaption(
+  preview: SimulatorEventPreview,
+  event: SessionEvent | undefined
+): { text: string; eventKind: "message" | "thought" } | undefined {
+  if (preview.displayVariant === "thinking") {
+    const text =
+      getThinkingText(event) ||
+      safeString(event?.result?.thought)?.trim() ||
+      safeString(event?.result?.content)?.trim() ||
+      safeString(event?.result?.observation)?.trim() ||
+      preview.displayText?.trim() ||
+      undefined;
+    return text ? { text, eventKind: "thought" } : undefined;
+  }
+
+  if (!isAssistantMessagePreview(preview)) return undefined;
+  const text = preview.displayText?.trim() || undefined;
+  return text ? { text, eventKind: "message" } : undefined;
+}
+
 export function useCurrentTurnLastAgentMessage(): CurrentTurnLastAgentMessage | null {
   const eventIds = useAtomValue(effectiveSimulatorEventIdsAtom);
   const previewById = useAtomValue(simulatorEventPreviewByIdAtom);
+  const simulatorEvents = useAtomValue(simulatorEventsAtom);
   const currentIndex = useAtomValue(currentSimulatorEventIndexAtom);
+  const eventById = new Map(simulatorEvents.map((event) => [event.id, event]));
 
   if (eventIds.length === 0) return null;
 
@@ -60,6 +96,7 @@ export function useCurrentTurnLastAgentMessage(): CurrentTurnLastAgentMessage | 
     return {
       text: currentText,
       source: "user",
+      eventKind: "message",
       eventId: currentPreview.id,
       isCurrentEvent: true,
     };
@@ -75,13 +112,18 @@ export function useCurrentTurnLastAgentMessage(): CurrentTurnLastAgentMessage | 
   }
 
   for (let index = cursor; index >= turnStart; index--) {
-    const preview = previewById[eventIds[index]];
-    if (!preview || !isAssistantMessagePreview(preview)) continue;
-    const text = preview.displayText?.trim();
-    if (!text) continue;
+    const eventId = eventIds[index];
+    const preview = previewById[eventId];
+    if (!preview) continue;
+    const caption = getMessageOrThinkingCaption(
+      preview,
+      eventById.get(eventId)
+    );
+    if (!caption) continue;
     return {
-      text,
+      text: caption.text,
       source: "assistant",
+      eventKind: caption.eventKind,
       eventId: preview.id,
       isCurrentEvent: index === cursor,
     };

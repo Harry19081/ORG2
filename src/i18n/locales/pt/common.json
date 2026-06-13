@@ -235,7 +235,9 @@
     "title": "Paginação",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
-    "latestRound": "Última rodada",
+    "previousRound": "Rodada anterior",
+    "nextRound": "Próxima rodada",
+    "latestRound": "Rodada mais recente",
     "searchRounds": "Pesquisar rounds"
   },
   "optional": "opcional",
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Sem pastas de Workspace",
     "noRepoSelected": "Nenhum Repo selecionado",
     "scanningFileExtensions": "Varrendo extensões de arquivo...",
-    "startBrowsingMarket": "Comece a navegar no Marketplace"
+    "startBrowsingMarket": "Comece a navegar no Marketplace",
+    "previewUnavailable": "Pré-visualização indisponível"
   },
   "inbox": {
     "searchPlaceholder": "Pesquisar mensagens...",
@@ -1111,7 +1114,7 @@
       "chooseModel": "Escolha um modelo",
       "chooseKey": "Escolha uma chave",
       "noCompatibleAccounts": "Nenhuma chave compatível",
-      "hoverModelHint": "Passe o cursor sobre um modelo para ver as chaves disponíveis",
+      "chooseModelHint": "Use o teclado para navegar ou clique em um modelo com o mouse",
       "variantFast": "Fast",
       "selectAccount": "Selecionar uma conta"
     },
@@ -1560,7 +1563,8 @@
     "openMyStation": "Ir para My Station",
     "openAgentStation": "Ir para Agent Station",
     "openOpsControl": "Ir para Ops Control",
-    "changeLanguage": "Alterar idioma"
+    "changeLanguage": "Alterar idioma",
+    "switchToSystemTheme": "Seguir o tema do sistema"
   },
   "commands": {
     "showBottomPanel": "Mostrar painel inferior",
@@ -2080,9 +2084,11 @@
     "selectWorkspaceToStart": "Selecione um Workspace para começar",
     "selectRepoToStart": "Selecione um Repo para começar"
   },
-  "holdToQuit": {
-    "title": "Segure {{shortcut}} por 1 segundo para sair",
-    "subtitle": "Solte para cancelar"
+  "quitConfirmation": {
+    "title": "Sair do ORGII?",
+    "subtitle": "As sessões em execução manterão o estado atual. Você poderá reabrir o ORGII mais tarde.",
+    "cancel": "Cancelar",
+    "confirm": "Sair"
   },
   "projects": {
     "title": "Mapa de calor",

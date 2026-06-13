@@ -1,7 +1,9 @@
+import { ArrowDown } from "lucide-react";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { AgentOrgMemberIntervention } from "@src/api/tauri/agent";
+import Button from "@src/components/Button";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import {
   ChatRetryBanner,
@@ -142,10 +144,21 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     disableStopWhenEmpty = false,
   }) => {
     const { t } = useTranslation("sessions");
-    const showTopRowPills =
-      hasAnyInlineSection ||
-      scrollNav?.showScrollToBottom ||
-      scrollNav?.showFollowAgent;
+    const showTopRowPills = hasAnyInlineSection || scrollNav?.showFollowAgent;
+    const trailingScrollButton = scrollNav?.showScrollToBottom ? (
+      <Button
+        variant="secondary"
+        appearance="outline"
+        size="small"
+        shape="round"
+        icon={<ArrowDown size={14} />}
+        iconOnly
+        aria-label={t("common:chat.scrollToBottom")}
+        title={t("common:chat.scrollToBottom")}
+        onClick={scrollNav.onScrollToBottom}
+        className="shrink-0"
+      />
+    ) : null;
 
     return (
       <div
@@ -259,6 +272,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
                 />
               ) : null
             }
+            topRowTrailingContent={trailingScrollButton}
             statusBanners={
               <>
                 {hasModeSwitch && !modeSwitchCollapsed && (

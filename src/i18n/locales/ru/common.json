@@ -235,6 +235,8 @@
     "title": "Пагинация",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
+    "previousRound": "Предыдущий раунд",
+    "nextRound": "Следующий раунд",
     "latestRound": "Последний раунд",
     "searchRounds": "Поиск rounds"
   },
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Нет папок Workspace",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Предпросмотр недоступен"
   },
   "inbox": {
     "searchPlaceholder": "Поиск сообщений...",
@@ -1119,7 +1122,7 @@
       "chooseModel": "Выберите модель",
       "chooseKey": "Выберите ключ",
       "noCompatibleAccounts": "Нет совместимых ключей",
-      "hoverModelHint": "Наведите на модель, чтобы увидеть доступные ключи",
+      "chooseModelHint": "Используйте клавиатуру для навигации или щелкните модель мышью",
       "variantFast": "Fast",
       "selectAccount": "Выберите аккаунт"
     },
@@ -1560,7 +1563,8 @@
     "openMyStation": "Перейти в My Station",
     "openAgentStation": "Перейти в Agent Station",
     "openOpsControl": "Перейти в Ops Control",
-    "changeLanguage": "Изменить язык"
+    "changeLanguage": "Изменить язык",
+    "switchToSystemTheme": "Следовать системной теме"
   },
   "commands": {
     "showBottomPanel": "Показать нижнюю панель",
@@ -2080,9 +2084,11 @@
     "selectWorkspaceToStart": "Выберите Workspace, чтобы начать",
     "selectRepoToStart": "Выберите Repo, чтобы начать"
   },
-  "holdToQuit": {
-    "title": "Удерживайте {{shortcut}} 1 секунду, чтобы выйти",
-    "subtitle": "Отпустите, чтобы отменить"
+  "quitConfirmation": {
+    "title": "Выйти из ORGII?",
+    "subtitle": "Запущенные сеансы сохранят текущее состояние. Вы сможете открыть ORGII позже.",
+    "cancel": "Отмена",
+    "confirm": "Выйти"
   },
   "projects": {
     "title": "Тепловая карта",

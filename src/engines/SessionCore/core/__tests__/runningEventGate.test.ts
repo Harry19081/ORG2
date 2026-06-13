@@ -79,6 +79,14 @@ describe("runningEventGate", () => {
     ).toBe(false);
   });
 
+  it("ignores stale running tools when runtime is idle (post-stop fallback)", () => {
+    const events = [shellEvent("running")];
+
+    expect(
+      sessionHasComposerStopBlockingWork(events, "session-1", "idle")
+    ).toBe(false);
+  });
+
   it("classifies hidden running status as live but not composer-stop-blocking", () => {
     const events = [hiddenStatusEvent()];
 

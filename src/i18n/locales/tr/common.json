@@ -235,6 +235,8 @@
     "title": "Sayfalama",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
+    "previousRound": "Önceki round",
+    "nextRound": "Sonraki round",
     "latestRound": "En son round",
     "searchRounds": "Round ara"
   },
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Workspace klasörü yok",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Önizleme kullanılamıyor"
   },
   "inbox": {
     "searchPlaceholder": "Mesajlarda ara...",
@@ -1120,7 +1123,7 @@
       "chooseModel": "Bir model seçin",
       "chooseKey": "Bir anahtar seçin",
       "noCompatibleAccounts": "Uyumlu anahtar yok",
-      "hoverModelHint": "Kullanılabilir anahtarları görmek için bir modelin üzerine gelin",
+      "chooseModelHint": "Gezinmek için klavyeyi kullanın veya fareyle bir modele tıklayın",
       "variantFast": "Fast",
       "selectAccount": "Hesap seç"
     },
@@ -1565,7 +1568,8 @@
     "openMyStation": "My Station'a git",
     "openAgentStation": "Agent Station'a git",
     "openOpsControl": "Ops Control'e git",
-    "changeLanguage": "Dili değiştir"
+    "changeLanguage": "Dili değiştir",
+    "switchToSystemTheme": "Sistem temasını izle"
   },
   "commands": {
     "showBottomPanel": "Alt paneli göster",
@@ -2085,9 +2089,11 @@
     "selectWorkspaceToStart": "Başlamak için bir Workspace seçin",
     "selectRepoToStart": "Başlamak için bir Repo seçin"
   },
-  "holdToQuit": {
-    "title": "Çıkmak için {{shortcut}} tuşunu 1 saniye basılı tutun",
-    "subtitle": "İptal etmek için bırakın"
+  "quitConfirmation": {
+    "title": "ORGII'den çıkılsın mı?",
+    "subtitle": "Çalışan oturumlar mevcut durumunu korur. ORGII'yi daha sonra yeniden açabilirsiniz.",
+    "cancel": "İptal",
+    "confirm": "Çık"
   },
   "projects": {
     "title": "Isı haritası",

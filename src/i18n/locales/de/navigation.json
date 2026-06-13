@@ -357,7 +357,7 @@
     },
     "plusMenu": {
       "title": "Neuer Tab",
-      "searchPlaceholder": "Datei öffnen, URL...",
+      "searchFile": "Datei suchen",
       "newBrowserTab": "Neuer Browser-Tab",
       "newPrivateBrowserTab": "Neuer privater Browser-Tab",
       "workItems": "Arbeitsaufgaben",

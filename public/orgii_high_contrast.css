@@ -108,8 +108,9 @@ body {
   --color-border-3: #9ca3af;
   --color-fill-1: #111111;
   --color-fill-2: #1c1c1c;
-  --color-fill-3: #2b2b2b;
+  --color-fill-3: #242424;
   --color-fill-4: #3f3f46;
+  --sidebar-tab-pill-selected-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 
   /* Sidebar */
   --sidebar-bg: rgba(4, 4, 4, 0.9);

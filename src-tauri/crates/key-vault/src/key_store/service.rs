@@ -427,6 +427,19 @@ impl KeyService {
             }
             entry.updated_at = Utc::now();
             store.updated_at = Utc::now();
+            tracing::warn!(
+                "[key-vault] OAuth refresh failure recorded key={} type={:?} count={} enabled={} health={:?} permanent={} cooldown_until={:?} error={}",
+                key_id,
+                entry.model_type,
+                count,
+                entry.enabled,
+                entry.health_status,
+                is_permanent_oauth_refresh_failure(error_message),
+                entry
+                    .temporary_unavailable_until
+                    .map(|dt| dt.to_rfc3339()),
+                error_message
+            );
             Some(entry.clone())
         })
     }
@@ -573,6 +586,12 @@ impl KeyService {
         Self::claude_code_oauth_key_needs_refresh_inner(key)
     }
 
+    fn claude_code_oauth_expires_at(key: &ModelKey) -> Option<chrono::DateTime<Utc>> {
+        let expires_at_value = key.env_vars.get(CLAUDE_CODE_EXPIRES_AT_ENV)?;
+        let expires_at_millis = expires_at_value.parse::<i64>().ok()?;
+        chrono::DateTime::<Utc>::from_timestamp_millis(expires_at_millis)
+    }
+
     fn claude_code_oauth_key_needs_refresh_inner(key: &ModelKey) -> bool {
         if key.model_type != ModelType::ClaudeCode || key.auth_method != AuthMethod::Oauth {
             return false;
@@ -585,14 +604,7 @@ impl KeyService {
             return true;
         }
 
-        let Some(expires_at_value) = key.env_vars.get(CLAUDE_CODE_EXPIRES_AT_ENV) else {
-            return false;
-        };
-        let Ok(expires_at_millis) = expires_at_value.parse::<i64>() else {
-            return false;
-        };
-        let Some(expires_at) = chrono::DateTime::<Utc>::from_timestamp_millis(expires_at_millis)
-        else {
+        let Some(expires_at) = Self::claude_code_oauth_expires_at(key) else {
             return false;
         };
 
@@ -607,7 +619,23 @@ impl KeyService {
             .get_key_by_id(key_id)
             .ok_or_else(|| format!("Key not found: {}", key_id))?;
 
-        if !Self::claude_code_oauth_key_needs_refresh_inner(&key) {
+        let needs_refresh = Self::claude_code_oauth_key_needs_refresh_inner(&key);
+        tracing::info!(
+            "[key-vault] Claude Code OAuth preflight key={} name={:?} needs_refresh={} has_access={} has_refresh={} expires_at={:?} health={:?} failures={}",
+            key_id,
+            key.name,
+            needs_refresh,
+            key.session_token
+                .as_deref()
+                .is_some_and(|token| !token.trim().is_empty()),
+            key.env_vars
+                .get(CLAUDE_CODE_REFRESH_TOKEN_ENV)
+                .is_some_and(|token| !token.trim().is_empty()),
+            Self::claude_code_oauth_expires_at(&key).map(|dt| dt.to_rfc3339()),
+            key.health_status,
+            key.oauth_refresh_failure_count
+        );
+        if !needs_refresh {
             return Ok(key);
         }
 
@@ -629,7 +657,31 @@ impl KeyService {
             .get_key_by_id(key_id)
             .ok_or_else(|| format!("Key not found: {}", key_id))?;
 
+        tracing::info!(
+            "[key-vault] Claude Code OAuth refresh acquired lock key={} name={:?} has_access={} rejected_matches={} has_refresh={} expires_at={:?} health={:?} failures={}",
+            key_id,
+            key.name,
+            key.session_token
+                .as_deref()
+                .is_some_and(|token| !token.trim().is_empty()),
+            key.session_token
+                .as_deref()
+                .is_some_and(|token| !token.is_empty() && token == rejected_access_token),
+            key.env_vars
+                .get(CLAUDE_CODE_REFRESH_TOKEN_ENV)
+                .is_some_and(|token| !token.trim().is_empty()),
+            Self::claude_code_oauth_expires_at(&key).map(|dt| dt.to_rfc3339()),
+            key.health_status,
+            key.oauth_refresh_failure_count
+        );
+
         if key.model_type != ModelType::ClaudeCode || key.auth_method != AuthMethod::Oauth {
+            tracing::info!(
+                "[key-vault] Claude Code OAuth refresh skipped key={} reason=not_claude_oauth type={:?} auth={:?}",
+                key_id,
+                key.model_type,
+                key.auth_method
+            );
             return Ok(key);
         }
 
@@ -638,6 +690,10 @@ impl KeyService {
             .as_deref()
             .is_some_and(|token| !token.is_empty() && token != rejected_access_token)
         {
+            tracing::info!(
+                "[key-vault] Claude Code OAuth refresh skipped key={} reason=access_token_already_rotated",
+                key_id
+            );
             return Ok(key);
         }
 
@@ -656,6 +712,13 @@ impl KeyService {
 
         let token_url = std::env::var(CLAUDE_CODE_REFRESH_TOKEN_URL_OVERRIDE_ENV)
             .unwrap_or_else(|_| CLAUDE_CODE_TOKEN_URL.to_string());
+        tracing::info!(
+            "[key-vault] Claude Code OAuth refresh request start key={} endpoint_override={} refresh_len={} access_len={}",
+            key_id,
+            std::env::var(CLAUDE_CODE_REFRESH_TOKEN_URL_OVERRIDE_ENV).is_ok(),
+            refresh_token.len(),
+            rejected_access_token.len()
+        );
 
         let response = match reqwest::Client::builder()
             .timeout(OAUTH_REFRESH_REQUEST_TIMEOUT)
@@ -677,6 +740,11 @@ impl KeyService {
         {
             Ok(response) => response,
             Err(err) => {
+                tracing::warn!(
+                    "[key-vault] Claude Code OAuth refresh request transport error key={}: {}",
+                    key_id,
+                    err
+                );
                 let message = format!("Claude Code OAuth refresh request failed: {}", err);
                 self.record_oauth_refresh_failure(key_id, &message)?;
                 return Err(message);
@@ -687,11 +755,22 @@ impl KeyService {
         let body = match response.text().await {
             Ok(body) => body,
             Err(err) => {
+                tracing::warn!(
+                    "[key-vault] Claude Code OAuth refresh response read error key={}: {}",
+                    key_id,
+                    err
+                );
                 let message = format!("Claude Code OAuth refresh response read failed: {}", err);
                 self.record_oauth_refresh_failure(key_id, &message)?;
                 return Err(message);
             }
         };
+        tracing::info!(
+            "[key-vault] Claude Code OAuth refresh response key={} status={} body_len={}",
+            key_id,
+            status,
+            body.len()
+        );
 
         if !status.is_success() {
             let detail = serde_json::from_str::<ClaudeCodeRefreshErrorResponse>(&body)
@@ -702,6 +781,12 @@ impl KeyService {
                 "Claude Code OAuth refresh failed with HTTP {}: {}",
                 status, detail
             );
+            tracing::warn!(
+                "[key-vault] Claude Code OAuth refresh HTTP failure key={} status={} message={}",
+                key_id,
+                status,
+                message
+            );
             self.record_oauth_refresh_failure(key_id, &message)?;
             return Err(message);
         }
@@ -709,11 +794,26 @@ impl KeyService {
         let refreshed: ClaudeCodeRefreshResponse = match serde_json::from_str(&body) {
             Ok(refreshed) => refreshed,
             Err(err) => {
+                tracing::warn!(
+                    "[key-vault] Claude Code OAuth refresh response parse error key={}: {}",
+                    key_id,
+                    err
+                );
                 let message = format!("Claude Code OAuth refresh response parse failed: {}", err);
                 self.record_oauth_refresh_failure(key_id, &message)?;
                 return Err(message);
             }
         };
+        tracing::info!(
+            "[key-vault] Claude Code OAuth refresh parsed key={} access_len={} has_next_refresh={} expires_in={:?}",
+            key_id,
+            refreshed.access_token.len(),
+            refreshed
+                .refresh_token
+                .as_deref()
+                .is_some_and(|token| !token.trim().is_empty()),
+            refreshed.expires_in
+        );
 
         let saved = self.update_store(|store| {
             let entry = store.keys.get_mut(key_id).ok_or_else(|| {
@@ -742,10 +842,21 @@ impl KeyService {
             entry.enabled = true;
             entry.updated_at = Utc::now();
             store.updated_at = Utc::now();
-            Ok(entry.clone())
-        })?;
+            Ok::<ModelKey, String>(entry.clone())
+        })??;
+        tracing::info!(
+            "[key-vault] Claude Code OAuth refresh saved key={} enabled={} health={:?} failures={} expires_at={:?} has_refresh={}",
+            key_id,
+            saved.enabled,
+            saved.health_status,
+            saved.oauth_refresh_failure_count,
+            Self::claude_code_oauth_expires_at(&saved).map(|dt| dt.to_rfc3339()),
+            saved.env_vars
+                .get(CLAUDE_CODE_REFRESH_TOKEN_ENV)
+                .is_some_and(|token| !token.trim().is_empty())
+        );
 
-        saved
+        Ok(saved)
     }
 
     fn jwt_expires_at(token: &str) -> Option<chrono::DateTime<Utc>> {

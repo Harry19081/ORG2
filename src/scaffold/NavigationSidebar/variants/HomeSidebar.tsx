@@ -96,9 +96,6 @@ const HomeSidebar: React.FC = () => {
       routeToMenuItem(ROUTES.app.home.start, {
         label: getTranslatedRouteLabel(ROUTES.app.home.start),
       }),
-      routeToMenuItem(ROUTES.app.ideas.area, {
-        label: getTranslatedRouteLabel(ROUTES.app.ideas.area),
-      }),
       routeToMenuItem(ROUTES.app.journey.record, {
         label: getTranslatedRouteLabel(ROUTES.app.journey.record),
       }),
@@ -134,7 +131,6 @@ const HomeSidebar: React.FC = () => {
       ROUTES.app.market.profile.path,
       ROUTES.app.market.wallet.path,
       ROUTES.app.journey.record.path,
-      ROUTES.app.ideas.area.path,
       ROUTES.app.home.changelog.path,
     ];
     for (const path of allPaths) {

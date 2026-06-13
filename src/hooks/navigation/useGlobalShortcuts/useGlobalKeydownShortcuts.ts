@@ -54,9 +54,8 @@ interface UseGlobalKeydownShortcutsOptions {
   handleOpenCodeEditorTerminal: () => void;
   handleCloseCurrentTab: () => boolean;
   handleToggleWorkStationChatFocus: () => void;
-  handleToggleStationMode: () => void;
-  startHoldToQuit: () => void;
-  cancelHoldToQuit: () => void;
+  openQuitConfirmation: () => void;
+  closeQuitConfirmation: () => void;
 }
 
 export function useGlobalKeydownShortcuts(
@@ -82,9 +81,8 @@ export function useGlobalKeydownShortcuts(
     handleOpenCodeEditorTerminal,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    handleToggleStationMode,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
   } = options;
 
   useEffect(() => {
@@ -95,6 +93,7 @@ export function useGlobalKeydownShortcuts(
       const modifierKey = isMac ? event.metaKey : event.ctrlKey;
 
       if (
+        !isMac &&
         modifierKey &&
         event.code === "KeyQ" &&
         !event.shiftKey &&
@@ -102,7 +101,7 @@ export function useGlobalKeydownShortcuts(
       ) {
         event.preventDefault();
         event.stopPropagation();
-        startHoldToQuit();
+        openQuitConfirmation();
         return;
       }
 
@@ -216,18 +215,6 @@ export function useGlobalKeydownShortcuts(
             handleToggleWorkstationSidebar();
             return;
           }
-          if (workStationShortcutSurface && event.code === "KeyM") {
-            event.preventDefault();
-            event.stopPropagation();
-            shortcutRegistry.dispatch("toggle_station_mode");
-            return;
-          }
-          if (workStationShortcutSurface && event.code === "KeyO") {
-            event.preventDefault();
-            event.stopPropagation();
-            shortcutRegistry.dispatch("open_ops_control");
-            return;
-          }
         }
       }
 
@@ -276,6 +263,29 @@ export function useGlobalKeydownShortcuts(
           event.preventDefault();
           event.stopPropagation();
           handleOpenCodeEditorTerminal();
+          return;
+        }
+      }
+
+      if (!event.shiftKey && !event.altKey) {
+        if (event.code === "Digit1") {
+          event.preventDefault();
+          event.stopPropagation();
+          shortcutRegistry.dispatch("open_my_station");
+          return;
+        }
+
+        if (event.code === "Digit2") {
+          event.preventDefault();
+          event.stopPropagation();
+          shortcutRegistry.dispatch("open_agent_station");
+          return;
+        }
+
+        if (event.code === "Digit3") {
+          event.preventDefault();
+          event.stopPropagation();
+          shortcutRegistry.dispatch("open_ops_control");
           return;
         }
       }
@@ -474,22 +484,10 @@ export function useGlobalKeydownShortcuts(
       }
     };
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      const releasedQuitChord =
-        event.key.toLowerCase() === "q" ||
-        event.key === "Meta" ||
-        event.key === "Control";
-      if (releasedQuitChord) {
-        cancelHoldToQuit();
-      }
-    };
-
     document.addEventListener("keydown", handleKeyDown, true);
-    document.addEventListener("keyup", handleKeyUp, true);
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true);
-      document.removeEventListener("keyup", handleKeyUp, true);
-      cancelHoldToQuit();
+      closeQuitConfirmation();
     };
   }, [
     handleZoomReset,
@@ -511,8 +509,7 @@ export function useGlobalKeydownShortcuts(
     handleOpenCodeEditorTerminal,
     handleCloseCurrentTab,
     handleToggleWorkStationChatFocus,
-    handleToggleStationMode,
-    startHoldToQuit,
-    cancelHoldToQuit,
+    openQuitConfirmation,
+    closeQuitConfirmation,
   ]);
 }

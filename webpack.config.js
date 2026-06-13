@@ -9,7 +9,6 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { EsbuildPlugin } = require("esbuild-loader");
-const WebpackObfuscator = require("webpack-obfuscator");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 // ForkTsCheckerWebpackPlugin removed - causes memory issues with large codebase
@@ -18,21 +17,25 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = (env, argv) => {
   const isProduction = argv.mode === "production";
 
+  const isLightDev = !isProduction && process.env.ORGII_LIGHT_DEV === "true";
+
   // Development build mode:
   // - Default: SWC (fast builds ~3-5s + React Fast Refresh for state-preserving HMR)
   // - FAST_DEV=true: esbuild (fastest ~2s, but full app remount on changes)
+  // - ORGII_LIGHT_DEV=true: esbuild, no HMR, no source maps
   //
   // SWC is a Rust-based compiler that's nearly as fast as esbuild but supports
   // React Fast Refresh. esbuild is faster but can't support Fast Refresh.
-  const useFastDev = !isProduction && process.env.FAST_DEV === "true";
+  const useFastDev =
+    !isProduction && (isLightDev || process.env.FAST_DEV === "true");
+  const useDevSourceMaps =
+    !isProduction && !isLightDev && process.env.DEV_SOURCEMAPS !== "false";
 
   // FAST_PROD=true: use esbuild for transpilation + minification in production.
   // Saves ~30-40s vs the SWC+Terser path. Trades some dead-code elimination
-  // depth for speed. Intended for `tauri:build:fast:parallel` (local .app
-  // builds). Never set for release builds (use OBFUSCATE=true path instead).
+  // depth for speed. Intended for local fast .app builds, not release builds.
   const useFastProd = isProduction && process.env.FAST_PROD === "true";
 
-  const useObfuscation = isProduction && process.env.OBFUSCATE === "true";
   const isE2E = process.env.ORGII_E2E === "1";
   const devServerPort = Number.parseInt(
     process.env.WEBPACK_DEV_SERVER_PORT ?? process.env.PORT ?? "1998",
@@ -460,9 +463,10 @@ module.exports = (env, argv) => {
       }),
       // NOTE: HotModuleReplacementPlugin is automatically added by webpack-dev-server when hot: true
       // ReactRefreshWebpackPlugin works with SWC's refresh: true option to enable
-      // state-preserving hot reload. Only enabled when not using esbuild (FAST_DEV mode).
+      // state-preserving hot reload. Only enabled when not using esbuild/light mode.
       !isProduction &&
         !useFastDev &&
+        !isLightDev &&
         new ReactRefreshWebpackPlugin({ overlay: false }),
       new Dotenv({
         systemvars: true,
@@ -486,44 +490,14 @@ module.exports = (env, argv) => {
         new CopyWebpackPlugin({
           patterns: [{ from: "public/**/*.css", to: "[name][ext]" }],
         }),
-      // JavaScript obfuscation for release builds — makes reverse engineering significantly harder.
-      // Only enabled when OBFUSCATE=true (via `pnpm run build:release` or `pnpm run tauri:build:release`).
-      // Excludes vendor chunks (node_modules) since they're public code and obfuscating them
-      // bloats bundle size for no security benefit.
-      useObfuscation &&
-        new WebpackObfuscator(
-          {
-            rotateStringArray: true,
-            stringArray: true,
-            stringArrayThreshold: 0.75,
-            stringArrayEncoding: ["base64"],
-            stringArrayWrappersCount: 2,
-            splitStrings: true,
-            splitStringsChunkLength: 10,
-            identifierNamesGenerator: "hexadecimal",
-            renameGlobals: false,
-            selfDefending: true,
-            transformObjectKeys: true,
-            unicodeEscapeSequence: false,
-            controlFlowFlattening: true,
-            controlFlowFlatteningThreshold: 0.5,
-            deadCodeInjection: true,
-            deadCodeInjectionThreshold: 0.2,
-            debugProtection: false,
-            disableConsoleOutput: true,
-            numbersToExpressions: true,
-          },
-          // Exclude vendor chunks — no point obfuscating open-source code
-          ["vendors.*.js", "vendor.*.js"]
-        ),
       // ForkTsCheckerWebpackPlugin disabled - causes memory issues with large codebase
       // Type checking is handled by IDE instead. transpileOnly: true provides fast builds.
     ].filter(Boolean),
     devServer: {
       port: devServerPort,
-      hot: true,
-      // Disable liveReload when HMR is enabled to prevent double reloads
-      liveReload: false,
+      hot: !isLightDev,
+      // Light dev uses full page reloads to avoid HMR runtime overhead.
+      liveReload: isLightDev,
       historyApiFallback: true,
       // Disable static file watching to prevent full page reloads during HMR.
       // Default behavior watches public/ directory, which can race with HMR
@@ -579,8 +553,8 @@ module.exports = (env, argv) => {
       // Only show minimal info in dev mode
       preset: isProduction ? "normal" : "minimal",
     },
-    // eval-cheap-module-source-map: maps to original lines (not columns) via loaders
-    // ~1-2s faster rebuilds than eval-source-map; column precision rarely needed in dev
-    devtool: isProduction ? false : "eval-cheap-module-source-map",
+    // eval-cheap-module-source-map maps to original lines via loaders.
+    // Light dev disables source maps to reduce renderer and compiler memory.
+    devtool: useDevSourceMaps ? "eval-cheap-module-source-map" : false,
   };
 };

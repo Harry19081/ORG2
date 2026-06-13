@@ -235,7 +235,9 @@
     "title": "Pagination",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
-    "latestRound": "Dernier round",
+    "previousRound": "Round précédent",
+    "nextRound": "Round suivant",
+    "latestRound": "Round le plus récent",
     "searchRounds": "Rechercher des rounds"
   },
   "optional": "facultatif",
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Aucun dossier de workspace",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Aperçu indisponible"
   },
   "inbox": {
     "searchPlaceholder": "Rechercher des messages...",
@@ -1119,7 +1122,7 @@
       "chooseModel": "Choisir un modèle",
       "chooseKey": "Choisir une clé",
       "noCompatibleAccounts": "Aucune clé compatible",
-      "hoverModelHint": "Survolez un modèle pour voir les clés disponibles",
+      "chooseModelHint": "Utilisez le clavier pour naviguer ou cliquez sur un modèle avec la souris",
       "variantFast": "Fast",
       "selectAccount": "Sélectionner un compte"
     },
@@ -1563,7 +1566,8 @@
     "openMyStation": "Aller à My Station",
     "openAgentStation": "Aller à Agent Station",
     "openOpsControl": "Aller à Ops Control",
-    "changeLanguage": "Changer la langue"
+    "changeLanguage": "Changer la langue",
+    "switchToSystemTheme": "Suivre le thème du système"
   },
   "commands": {
     "showBottomPanel": "Afficher le panneau inférieur",
@@ -2083,9 +2087,11 @@
     "selectWorkspaceToStart": "Sélectionnez un Workspace pour commencer",
     "selectRepoToStart": "Sélectionnez un Repo pour commencer"
   },
-  "holdToQuit": {
-    "title": "Maintenez {{shortcut}} pendant 1 seconde pour quitter",
-    "subtitle": "Relâchez pour annuler"
+  "quitConfirmation": {
+    "title": "Quitter ORGII ?",
+    "subtitle": "Les sessions en cours conserveront leur état actuel. Vous pourrez rouvrir ORGII plus tard.",
+    "cancel": "Annuler",
+    "confirm": "Quitter"
   },
   "projects": {
     "title": "Carte thermique",

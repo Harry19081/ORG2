@@ -235,7 +235,9 @@
     "title": "Seitennummerierung",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
-    "latestRound": "Letzte Runde",
+    "previousRound": "Vorherige Runde",
+    "nextRound": "Nächste Runde",
+    "latestRound": "Neueste Runde",
     "searchRounds": "Rounds suchen"
   },
   "optional": "optional",
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Keine Workspace-Ordner",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Vorschau nicht verfügbar"
   },
   "inbox": {
     "searchPlaceholder": "Nachrichten durchsuchen...",
@@ -1119,7 +1122,7 @@
       "chooseModel": "Modell auswählen",
       "chooseKey": "Schlüssel auswählen",
       "noCompatibleAccounts": "Keine kompatiblen Schlüssel",
-      "hoverModelHint": "Zeige mit der Maus auf ein Modell, um verfügbare Schlüssel zu sehen",
+      "chooseModelHint": "Navigiere mit der Tastatur oder klicke mit der Maus auf ein Modell",
       "variantFast": "Fast",
       "selectAccount": "Konto auswählen"
     },
@@ -1568,7 +1571,8 @@
     "openMyStation": "Zu My Station wechseln",
     "openAgentStation": "Zu Agent Station wechseln",
     "openOpsControl": "Zu Ops Control wechseln",
-    "changeLanguage": "Sprache ändern"
+    "changeLanguage": "Sprache ändern",
+    "switchToSystemTheme": "Systemdesign folgen"
   },
   "commands": {
     "showBottomPanel": "Unteres Panel anzeigen",
@@ -2088,9 +2092,11 @@
     "selectWorkspaceToStart": "Workspace auswählen, um zu starten",
     "selectRepoToStart": "Repo auswählen, um zu starten"
   },
-  "holdToQuit": {
-    "title": "{{shortcut}} 1 Sekunde gedrückt halten, um zu beenden",
-    "subtitle": "Loslassen zum Abbrechen"
+  "quitConfirmation": {
+    "title": "ORGII beenden?",
+    "subtitle": "Laufende Sitzungen behalten ihren aktuellen Zustand. Sie können ORGII später erneut öffnen.",
+    "cancel": "Abbrechen",
+    "confirm": "Beenden"
   },
   "projects": {
     "title": "Heatmap",

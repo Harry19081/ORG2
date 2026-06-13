@@ -235,6 +235,8 @@
     "title": "ページネーション",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
+    "previousRound": "前のRound",
+    "nextRound": "次のRound",
     "latestRound": "最新のRound",
     "searchRounds": "Round を検索"
   },
@@ -874,7 +876,8 @@
     "noWorkspaceFolders": "Workspace フォルダがありません",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "プレビューを利用できません"
   },
   "inbox": {
     "searchPlaceholder": "メッセージを検索...",
@@ -1120,7 +1123,7 @@
       "chooseModel": "モデルを選択",
       "chooseKey": "キーを選択",
       "noCompatibleAccounts": "互換性のあるキーがありません",
-      "hoverModelHint": "モデルにカーソルを合わせると利用可能なキーが表示されます",
+      "chooseModelHint": "キーボードで移動するか、マウスでモデルをクリックしてください",
       "variantFast": "Fast",
       "selectAccount": "アカウントを選択"
     },
@@ -1566,7 +1569,8 @@
     "openMyStation": "My Station に移動",
     "openAgentStation": "Agent Station に移動",
     "openOpsControl": "Ops Control に移動",
-    "changeLanguage": "言語を変更"
+    "changeLanguage": "言語を変更",
+    "switchToSystemTheme": "システムテーマに従う"
   },
   "commands": {
     "showBottomPanel": "ボトムパネルを表示",
@@ -2086,9 +2090,11 @@
     "selectWorkspaceToStart": "Workspace を選択して開始",
     "selectRepoToStart": "Repo を選択して開始"
   },
-  "holdToQuit": {
-    "title": "終了するには {{shortcut}} を 1 秒間押し続けます",
-    "subtitle": "離すとキャンセルします"
+  "quitConfirmation": {
+    "title": "ORGII を終了しますか？",
+    "subtitle": "実行中のセッションは現在の状態を保持します。後で ORGII を再度開くことができます。",
+    "cancel": "キャンセル",
+    "confirm": "終了"
   },
   "projects": {
     "title": "ヒートマップ",

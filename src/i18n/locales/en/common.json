@@ -242,7 +242,9 @@
     "title": "Pagination",
     "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
-    "latestRound": "Latest Round",
+    "previousRound": "Previous round",
+    "nextRound": "Next round",
+    "latestRound": "Latest round",
     "searchRounds": "Search rounds"
   },
   "optional": "optional",
@@ -899,7 +901,8 @@
     "noWorkspaceFolders": "No workspace folders",
     "noRepoSelected": "No repository selected",
     "scanningFileExtensions": "Scanning file extensions...",
-    "startBrowsingMarket": "Start browsing the marketplace"
+    "startBrowsingMarket": "Start browsing the marketplace",
+    "previewUnavailable": "Preview unavailable"
   },
   "inbox": {
     "searchPlaceholder": "Search messages...",
@@ -1189,7 +1192,7 @@
       "chooseModel": "Choose a model",
       "chooseKey": "Choose a key",
       "noCompatibleAccounts": "No compatible keys",
-      "hoverModelHint": "Hover a model to see available keys",
+      "chooseModelHint": "Use the keyboard to navigate, or click a model with the mouse",
       "variantFast": "Fast",
       "selectAccount": "Select an account"
     },
@@ -1638,7 +1641,8 @@
     "openMyStation": "Go to My Station",
     "openAgentStation": "Go to Agent Station",
     "openOpsControl": "Go to Ops Control",
-    "changeLanguage": "Change language"
+    "changeLanguage": "Change language",
+    "switchToSystemTheme": "Follow system theme"
   },
   "commands": {
     "showBottomPanel": "Show Bottom Panel",
@@ -2178,8 +2182,10 @@
     "copiedToClipboard": "Image copied to clipboard",
     "previewAlt": "Preview"
   },
-  "holdToQuit": {
-    "title": "Hold {{shortcut}} for 1 second to quit",
-    "subtitle": "Release to cancel"
+  "quitConfirmation": {
+    "title": "Quit ORGII?",
+    "subtitle": "Any running sessions will keep their current state. You can reopen ORGII later.",
+    "cancel": "Cancel",
+    "confirm": "Quit"
   }
 }

@@ -609,7 +609,7 @@
       "switchTo": "Chuyển sang",
       "current": "Hiện tại"
     },
-    "agentSentMessageCaption": "Agent đã gửi cho bạn một tin nhắn",
+    "agentSentMessageCaption": "{{subject}} đã gửi cho bạn một tin nhắn",
     "userSentMessageCaption": "Bạn đã gửi một tin nhắn cho Agent"
   },
   "terminal": {
@@ -927,6 +927,7 @@
     "thought": "Suy nghĩ",
     "thinkingRunning": "Đang suy nghĩ",
     "thinkingDone": "Suy nghĩ",
+    "thinkingDuration": "trong {{duration}}",
     "noThoughtPreview": "Không có bản xem trước suy nghĩ",
     "message": "Tin nhắn",
     "pathCopied": "Đã sao chép đường dẫn!",
@@ -1689,7 +1690,8 @@
     "taskGetFailed": "Failed to fetch task",
     "orgSendMessageRunning": "Đang gửi tin nhắn đến {{recipient}}",
     "orgSendMessageDone": "Đã gửi tin nhắn đến {{recipient}}",
-    "orgSendMessageFailed": "Không gửi được tin nhắn đến {{recipient}}"
+    "orgSendMessageFailed": "Không gửi được tin nhắn đến {{recipient}}",
+    "noMatch": "No match"
   },
   "hoverCard": {
     "commits": "Commit",

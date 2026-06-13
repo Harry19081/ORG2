@@ -28,6 +28,25 @@ import { MultiTaskHeader } from "./components/MultiTaskHeader";
 import { useGridLayout } from "./hooks/useGridLayout";
 import type { ActivitySimulatorGridProps } from "./types/gridTypes";
 
+function getEventRenderSignature(
+  event: ActivitySimulatorGridProps["currentEvent"]
+): string {
+  if (!event) return "";
+  return [
+    event.id,
+    event.chunk_id ?? "",
+    event.functionName,
+    event.displayStatus,
+    event.displayText,
+    event.displayVariant,
+    event.lastActivityAt ?? "",
+    event.args ? JSON.stringify(event.args) : "",
+    event.result ? JSON.stringify(event.result) : "",
+    event.extracted ? JSON.stringify(event.extracted) : "",
+    event.payloadRefs ? JSON.stringify(event.payloadRefs) : "",
+  ].join("|");
+}
+
 // ============================================
 // Main Component
 // ============================================
@@ -140,19 +159,12 @@ const arePropsEqual = (
   if (prev.specs !== next.specs) return false;
   if (prev.taskThreads !== next.taskThreads) return false;
 
-  const prevEventId = prev.currentEvent?.id;
-  const nextEventId = next.currentEvent?.id;
-
-  if (prevEventId || nextEventId) {
-    if (prevEventId !== nextEventId) return false;
-  } else {
-    if (prev.currentEvent !== next.currentEvent) return false;
-    if (prev.currentEvent?.createdAt !== next.currentEvent?.createdAt)
-      return false;
-  }
-
-  if (prev.currentEvent?.functionName !== next.currentEvent?.functionName)
+  if (
+    getEventRenderSignature(prev.currentEvent) !==
+    getEventRenderSignature(next.currentEvent)
+  ) {
     return false;
+  }
 
   return true;
 };

@@ -355,7 +355,7 @@
     },
     "plusMenu": {
       "title": "Nowa karta",
-      "searchPlaceholder": "Otwórz plik, URL...",
+      "searchFile": "Szukaj pliku",
       "newBrowserTab": "Nowa karta przeglądarki",
       "newPrivateBrowserTab": "Nowa prywatna karta przeglądarki",
       "workItems": "Elementy pracy",

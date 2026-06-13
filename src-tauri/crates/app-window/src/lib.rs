@@ -24,6 +24,113 @@ use objc2_app_kit::NSWindowButton;
 mod windows_corner;
 
 // ============================================
+// macOS window background color
+// ============================================
+
+/// Set the NSWindow `backgroundColor` and enable WKWebView background
+/// drawing so the window shows a solid colour before the webview CSS
+/// paints its first frame. Without this, `transparent: true` windows
+/// flash fully transparent at startup.
+#[cfg(target_os = "macos")]
+pub fn apply_window_background_color(window: &tauri::WebviewWindow) {
+    let ns_window_ptr = match window.ns_window() {
+        Ok(ptr) => ptr,
+        Err(_) => return,
+    };
+    let ns_window_addr = ns_window_ptr as usize;
+
+    let run = move || {
+        use objc2::msg_send;
+        use objc2::runtime::{AnyClass, AnyObject};
+
+        let ns_win = ns_window_addr as *mut AnyObject;
+
+        unsafe {
+            let ns_color_class = AnyClass::get(c"NSColor").expect("NSColor");
+            let bg: *mut AnyObject = msg_send![
+                ns_color_class,
+                colorWithSRGBRed: (0x0d as f64 / 255.0),
+                green: (0x0d as f64 / 255.0),
+                blue: (0x0d as f64 / 255.0),
+                alpha: 1.0_f64,
+            ];
+            let _: () = msg_send![ns_win, setBackgroundColor: bg];
+
+            let content_view: *mut AnyObject = msg_send![ns_win, contentView];
+            if !content_view.is_null() {
+                set_draws_background_recursive(content_view, true);
+            }
+        }
+    };
+
+    if is_main_thread() {
+        run();
+    } else {
+        dispatch2::DispatchQueue::main().exec_sync(run);
+    }
+}
+
+/// Remove the startup background: clear the NSWindow backgroundColor,
+/// disable WKWebView background drawing. Called from the frontend once
+/// the React app finishes loading and CSS backgrounds are painted.
+#[cfg(target_os = "macos")]
+pub fn remove_window_background_color(window: &tauri::WebviewWindow) {
+    let ns_window_ptr = match window.ns_window() {
+        Ok(ptr) => ptr,
+        Err(_) => return,
+    };
+    let ns_window_addr = ns_window_ptr as usize;
+
+    let run = move || {
+        use objc2::msg_send;
+        use objc2::runtime::{AnyClass, AnyObject};
+
+        let ns_win = ns_window_addr as *mut AnyObject;
+
+        unsafe {
+            let ns_color_class = AnyClass::get(c"NSColor").expect("NSColor");
+            let clear: *mut AnyObject = msg_send![ns_color_class, clearColor];
+            let _: () = msg_send![ns_win, setBackgroundColor: clear];
+
+            let content_view: *mut AnyObject = msg_send![ns_win, contentView];
+            if !content_view.is_null() {
+                set_draws_background_recursive(content_view, false);
+            }
+        }
+    };
+
+    if is_main_thread() {
+        run();
+    } else {
+        dispatch2::DispatchQueue::main().exec_sync(run);
+    }
+}
+
+/// Recursively search for WKWebView subviews and set _drawsBackground.
+#[cfg(target_os = "macos")]
+unsafe fn set_draws_background_recursive(view: *mut AnyObject, draws: bool) {
+    use objc2::runtime::Bool;
+
+    let class_name: *mut AnyObject = msg_send![view, className];
+    let class_str: *const std::os::raw::c_char = msg_send![class_name, UTF8String];
+    if !class_str.is_null() {
+        let name = std::ffi::CStr::from_ptr(class_str).to_string_lossy();
+        if name.contains("WKWebView") {
+            let val: Bool = Bool::new(draws);
+            let _: () = msg_send![view, _setDrawsBackground: val];
+            return;
+        }
+    }
+
+    let subviews: *mut AnyObject = msg_send![view, subviews];
+    let count: usize = msg_send![subviews, count];
+    for idx in 0..count {
+        let subview: *mut AnyObject = msg_send![subviews, objectAtIndex: idx];
+        set_draws_background_recursive(subview, draws);
+    }
+}
+
+// ============================================
 // Configuration Constants
 // ============================================
 
@@ -303,7 +410,10 @@ pub fn recreate_main_window(app: &AppHandle) -> Result<(), String> {
         .map_err(|e| format!("Failed to recreate main window: {}", e))?;
 
     #[cfg(target_os = "macos")]
-    set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
+    {
+        set_traffic_light_position(&window, TRAFFIC_LIGHT_X, TRAFFIC_LIGHT_Y);
+        apply_window_background_color(&window);
+    }
 
     apply_host_desktop_window_chrome(&window);
 
