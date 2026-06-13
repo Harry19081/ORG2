@@ -167,11 +167,15 @@ export function useEditMode({
       const target = event.target;
       if (!(target instanceof Node)) return;
 
-      // Ignore clicks inside any open spotlight / selector portal
-      const spotlightContainer = document.querySelector(
-        "[data-spotlight-container]"
-      );
-      if (spotlightContainer?.contains(target)) return;
+      const targetElement =
+        target instanceof Element ? target : target.parentElement;
+      if (
+        targetElement?.closest(
+          "[data-spotlight-container], [data-dropdown-main-panel-anchor], [data-dropdown-side-panel-anchor], [data-context-menu-portal]"
+        )
+      ) {
+        return;
+      }
 
       if (
         editContainerRef.current &&

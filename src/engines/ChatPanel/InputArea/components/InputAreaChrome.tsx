@@ -13,7 +13,6 @@ interface TopRowsProps {
   omitChatHeader: boolean;
   topRowPills?: React.ReactNode;
   topRowTrailingContent?: React.ReactNode;
-  statusBanners?: React.ReactNode;
   composerInputRef: React.ComponentProps<
     typeof PinnedActionsBar
   >["composerInputRef"];
@@ -25,7 +24,6 @@ export const InputAreaTopRows: React.FC<TopRowsProps> = ({
   omitChatHeader,
   topRowPills,
   topRowTrailingContent,
-  statusBanners,
   composerInputRef,
   sessionId,
 }) => (
@@ -41,7 +39,6 @@ export const InputAreaTopRows: React.FC<TopRowsProps> = ({
         />
       </div>
     )}
-    {!isEditMode && statusBanners}
   </>
 );
 
@@ -98,7 +95,7 @@ export const EditImagePreviews: React.FC<EditImagePreviewsProps> = ({
   return (
     <>
       {editImages && editImages.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 px-6">
+        <div className="flex flex-wrap gap-1.5 px-3 pb-0.5">
           {editImages.map((dataUrl, imageIndex) => (
             <EditModeImageThumbnail
               key={imageIndex}

@@ -321,7 +321,6 @@ const InputArea: React.FC<InputAreaProps> = memo(
             omitChatHeader={omitChatHeader}
             topRowPills={topRowPills}
             topRowTrailingContent={topRowTrailingContent}
-            statusBanners={statusBanners}
             composerInputRef={composerInputRef}
             sessionId={sessionId}
           />
@@ -468,6 +467,7 @@ const InputArea: React.FC<InputAreaProps> = memo(
               />
             )}
           </ComposerShell>
+          {!isEditMode && statusBanners}
         </div>
 
         <InputAreaPortals
