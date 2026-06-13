@@ -18,7 +18,6 @@ import {
   DelegationHistoryPage,
   DevRecordPage,
   FlowAwarenessTestPage,
-  IdeaAreaPage,
   LoginPage,
   ModeSelectionWindow,
   Profile,
@@ -33,6 +32,7 @@ import {
   WingmanWindow,
   WorktreeCompareWindowPage,
 } from "@src/router/lazy/pages";
+import ComingSoonRoutePage from "@src/router/routes/ComingSoonRoutePage";
 import OpenSourceMarketUnavailablePage from "@src/router/routes/OpenSourceMarketUnavailablePage";
 import { WorkStationRoutePlaceholder } from "@src/router/routes/placeholders";
 
@@ -209,7 +209,7 @@ export const mainAppRouteGroup: RouteObject = {
     },
     { path: "changelog", element: lazy(<ChangelogPage />) },
     { path: "journey/record", element: <DevRecordPage /> },
-    { path: "ideas", element: <IdeaAreaPage /> },
+    { path: "ideas", element: <ComingSoonRoutePage /> },
   ],
 };
 
