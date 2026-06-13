@@ -113,6 +113,7 @@ body {
   --color-fill-2: #efefef;
   --color-fill-3: #eeeeee;
   --color-fill-4: #d4d4d4;
+  --sidebar-tab-pill-selected-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   /* Sidebar */
   --sidebar-bg: rgba(242, 242, 242, 0.78);
