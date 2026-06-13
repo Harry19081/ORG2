@@ -1,6 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { resolveRestorableUserMessage } from "./useSessionActions";
+import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+
+import {
+  hasSessionProducedOutput,
+  resolveRestorableUserMessage,
+} from "./useSessionActions";
+
+vi.hoisted(() => {
+  Object.defineProperty(globalThis.window, "matchMedia", {
+    writable: true,
+    value: () => ({ matches: false }),
+  });
+});
 
 describe("resolveRestorableUserMessage", () => {
   it("preserves image attachments when restoring from a snapshot-backed user event", () => {
@@ -65,5 +77,47 @@ describe("resolveRestorableUserMessage", () => {
       displayContent: "pending message",
       imageDataUrls,
     });
+  });
+});
+
+describe("hasSessionProducedOutput", () => {
+  function event(overrides: Partial<SessionEvent>): SessionEvent {
+    return {
+      id: "event-1",
+      sessionId: "session-1",
+      source: "user",
+      createdAt: new Date().toISOString(),
+      actionType: "raw",
+      functionName: "user_message",
+      displayVariant: "message",
+      ...overrides,
+    } as SessionEvent;
+  }
+
+  it("returns false when the current session only has user input", () => {
+    expect(
+      hasSessionProducedOutput([event({ source: "user" })], "session-1")
+    ).toBe(false);
+  });
+
+  it("returns true after assistant output exists in the current session", () => {
+    expect(
+      hasSessionProducedOutput(
+        [event({ source: "user" }), event({ source: "assistant" })],
+        "session-1"
+      )
+    ).toBe(true);
+  });
+
+  it("ignores output from other sessions", () => {
+    expect(
+      hasSessionProducedOutput(
+        [
+          event({ source: "assistant", sessionId: "other-session" }),
+          event({ source: "user" }),
+        ],
+        "session-1"
+      )
+    ).toBe(false);
   });
 });

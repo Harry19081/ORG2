@@ -1,5 +1,3 @@
-import { isTerminalStatus } from "@src/types/session/session";
-
 import { isInteractiveTool } from "./interactiveTools";
 import type { SessionEvent } from "./types";
 
@@ -105,12 +103,23 @@ export function isComposerStopBlockingEvent(event: SessionEvent): boolean {
   );
 }
 
+const ENGINE_ACTIVE_STATUSES = new Set([
+  "running",
+  "installing",
+  "waiting_for_user",
+  "waiting_for_funds",
+]);
+
 export function sessionHasComposerStopBlockingWork(
   events: readonly SessionEvent[],
   sessionId: string,
   runtimeStatus?: string
 ): boolean {
-  if (isTerminalStatus(runtimeStatus)) return false;
+  // Stale running events in the store must not override a definitive
+  // non-running runtime status. Only scan events when the runtime status
+  // itself says the engine is active (or is unknown/unset).
+  if (runtimeStatus !== undefined && !ENGINE_ACTIVE_STATUSES.has(runtimeStatus))
+    return false;
   return events.some((event) => {
     if (event.sessionId && event.sessionId !== sessionId) return false;
     return isComposerStopBlockingEvent(event);

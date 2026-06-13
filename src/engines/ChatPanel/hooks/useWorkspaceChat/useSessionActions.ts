@@ -18,7 +18,11 @@ import {
   clearLiveStreamingForSession,
 } from "@src/engines/SessionCore/control/sessionTimelineBoundary";
 import { forceTurnIdle } from "@src/engines/SessionCore/control/turnLifecycle";
-import { pendingSyntheticEventAtom } from "@src/engines/SessionCore/core/atoms";
+import {
+  pendingSyntheticEventAtom,
+  sortedEventsAtom,
+} from "@src/engines/SessionCore/core/atoms";
+import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { SessionService } from "@src/engines/SessionCore/services/SessionService";
 import { clearSessionStreamingStopped } from "@src/engines/SessionCore/sync/adapters/rustAgent/eventHandlers/streamHelpers";
 import {
@@ -46,6 +50,16 @@ function readImageDataUrls(value: unknown): string[] | undefined {
     (item): item is string => typeof item === "string"
   );
   return images.length > 0 ? images : undefined;
+}
+
+export function hasSessionProducedOutput(
+  events: readonly SessionEvent[],
+  sessionId: string
+): boolean {
+  return events.some((event) => {
+    if (event.sessionId && event.sessionId !== sessionId) return false;
+    return event.source !== "user";
+  });
 }
 
 export function resolveRestorableUserMessage(options: {
@@ -145,14 +159,20 @@ export function useSessionActions(options: UseSessionActionsOptions) {
     setSessionRolledBack(false);
 
     const pendingSyntheticEvent = store.get(pendingSyntheticEventAtom);
-    const currentUserMessage = resolveRestorableUserMessage({
-      lastUserMessage: store.get(lastUserMessageAtom),
-      pendingDisplayText:
-        pendingSyntheticEvent?.source === "user"
-          ? pendingSyntheticEvent.displayText
-          : undefined,
-      pendingImages: pendingSyntheticEvent?.result?.images,
-    });
+    const hasProducedOutput = hasSessionProducedOutput(
+      store.get(sortedEventsAtom),
+      sessionId
+    );
+    const currentUserMessage = hasProducedOutput
+      ? null
+      : resolveRestorableUserMessage({
+          lastUserMessage: store.get(lastUserMessageAtom),
+          pendingDisplayText:
+            pendingSyntheticEvent?.source === "user"
+              ? pendingSyntheticEvent.displayText
+              : undefined,
+          pendingImages: pendingSyntheticEvent?.result?.images,
+        });
 
     if (currentUserMessage) {
       setRestoreToInput({
