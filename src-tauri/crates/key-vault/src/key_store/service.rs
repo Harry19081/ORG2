@@ -263,6 +263,54 @@ impl KeyService {
         })
     }
 
+    /// Record behaviorally-observed reasoning capability for `model` on key
+    /// `key_id`. Called by agent-core's side-query layer when a model is
+    /// seen emitting thinking-only responses (or rejecting
+    /// `thinking: disabled` with a 400) so future capability resolution
+    /// skips the failed first attempt.
+    ///
+    /// Idempotent: when the variant already carries the same reasoning
+    /// value, nothing is written to disk (avoids write amplification —
+    /// side queries run on every turn).
+    pub fn record_observed_reasoning(
+        &self,
+        key_id: &str,
+        model: &str,
+        reasoning: &str,
+    ) -> Result<(), String> {
+        // Read-only fast path: skip the store write lock entirely when the
+        // value is already recorded.
+        if let Some(key) = self.get_key_by_id(key_id) {
+            if key
+                .model_variants
+                .iter()
+                .any(|v| v.model == model && v.reasoning.as_deref() == Some(reasoning))
+            {
+                return Ok(());
+            }
+        } else {
+            return Err(format!("Key '{}' not found", key_id));
+        }
+
+        self.update_store(|store| {
+            let Some(entry) = store.keys.get_mut(key_id) else {
+                return Err(format!("Key '{}' not found", key_id));
+            };
+            if let Some(variant) = entry.model_variants.iter_mut().find(|v| v.model == model) {
+                variant.reasoning = Some(reasoning.to_string());
+            } else {
+                entry.model_variants.push(crate::key_store::ModelVariant {
+                    model: model.to_string(),
+                    base_model: model.to_string(),
+                    reasoning: Some(reasoning.to_string()),
+                    fast: false,
+                });
+            }
+            entry.updated_at = chrono::Utc::now();
+            Ok(())
+        })?
+    }
+
     pub fn sync_cli_oauth_tokens_if_current(
         &self,
         key_id: &str,
@@ -438,6 +486,18 @@ impl KeyService {
         &self,
         key_id: &str,
     ) -> Result<Option<ModelKey>, String> {
+        // Fast path: most requests succeed with nothing to clear. Skip the
+        // store rewrite entirely so the per-request happy path stays read-only.
+        if let Some(existing) = self.get_key_by_id(key_id) {
+            let nothing_to_clear = existing.temporary_unavailable_until.is_none()
+                && existing.temporary_unavailable_reason.is_none()
+                && existing.last_upstream_status.is_none()
+                && existing.last_upstream_error_type.is_none()
+                && existing.rate_limit_reset_at.is_none();
+            if nothing_to_clear {
+                return Ok(Some(existing));
+            }
+        }
         self.update_store(|store| {
             let entry = store.keys.get_mut(key_id)?;
             if entry.model_type != ModelType::ClaudeCode || entry.auth_method != AuthMethod::Oauth {
