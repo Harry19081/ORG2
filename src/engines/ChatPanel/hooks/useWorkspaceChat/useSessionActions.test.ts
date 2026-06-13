@@ -4,6 +4,7 @@ import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import {
   hasCurrentTurnProducedOutput,
+  hasPriorTurns,
   resolveRestorableUserMessage,
 } from "./useSessionActions";
 
@@ -146,5 +147,49 @@ describe("hasCurrentTurnProducedOutput", () => {
         "session-1"
       )
     ).toBe(true);
+  });
+});
+
+describe("hasPriorTurns", () => {
+  function event(overrides: Partial<SessionEvent>): SessionEvent {
+    return {
+      id: "event-1",
+      sessionId: "session-1",
+      source: "user",
+      createdAt: new Date().toISOString(),
+      actionType: "raw",
+      functionName: "user_message",
+      displayVariant: "message",
+      ...overrides,
+    } as SessionEvent;
+  }
+
+  it("returns false for a single user event (first conversation)", () => {
+    expect(hasPriorTurns([event({ source: "user" })], "session-1")).toBe(false);
+  });
+
+  it("returns true when two user events exist (multi-turn)", () => {
+    expect(
+      hasPriorTurns(
+        [
+          event({ id: "t1-user", source: "user" }),
+          event({ id: "t1-assist", source: "assistant" }),
+          event({ id: "t2-user", source: "user" }),
+        ],
+        "session-1"
+      )
+    ).toBe(true);
+  });
+
+  it("ignores user events from other sessions", () => {
+    expect(
+      hasPriorTurns(
+        [
+          event({ id: "other-user", source: "user", sessionId: "other" }),
+          event({ id: "my-user", source: "user" }),
+        ],
+        "session-1"
+      )
+    ).toBe(false);
   });
 });

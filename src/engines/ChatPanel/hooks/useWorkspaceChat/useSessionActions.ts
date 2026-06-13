@@ -19,6 +19,7 @@ import {
 } from "@src/engines/SessionCore/control/sessionTimelineBoundary";
 import { forceTurnIdle } from "@src/engines/SessionCore/control/turnLifecycle";
 import {
+  clearSessionAtom,
   pendingSyntheticEventAtom,
   sortedEventsAtom,
 } from "@src/engines/SessionCore/core/atoms";
@@ -34,6 +35,10 @@ import {
   setSessionRuntimeStatusAtom,
   stopEarlyCancelEpochAtom,
 } from "@src/store/session/cliSessionStatusAtom";
+import {
+  activeSessionIdAtom,
+  workstationActiveSessionIdAtom,
+} from "@src/store/session/viewAtom";
 
 import {
   markRestoredStopDraft,
@@ -73,6 +78,27 @@ export function hasCurrentTurnProducedOutput(
     const event = events[i];
     if (event.sessionId && event.sessionId !== sessionId) continue;
     if (event.source !== "user") return true;
+  }
+  return false;
+}
+
+/**
+ * Returns true when the session has prior completed turns (user events
+ * that precede the current/last user event). Used to distinguish
+ * "first conversation" from "multi-turn with early cancel on the latest turn".
+ */
+export function hasPriorTurns(
+  events: readonly SessionEvent[],
+  sessionId: string
+): boolean {
+  let userCount = 0;
+  for (let i = events.length - 1; i >= 0; i--) {
+    const event = events[i];
+    if (event.sessionId && event.sessionId !== sessionId) continue;
+    if (event.source === "user") {
+      userCount++;
+      if (userCount >= 2) return true;
+    }
   }
   return false;
 }
@@ -203,12 +229,21 @@ export function useSessionActions(options: UseSessionActionsOptions) {
 
     // Navigate back to the previous turn page when the current turn has not
     // produced any assistant/tool output yet (early cancel in pagination mode).
+    const events = store.get(sortedEventsAtom);
     const currentTurnHasOutput = hasCurrentTurnProducedOutput(
-      store.get(sortedEventsAtom),
+      events,
       sessionId
     );
     if (!currentTurnHasOutput) {
-      store.set(stopEarlyCancelEpochAtom, (prev) => prev + 1);
+      if (hasPriorTurns(events, sessionId)) {
+        // Multi-turn: signal ChatHistory to navigate to the previous page.
+        store.set(stopEarlyCancelEpochAtom, (prev) => prev + 1);
+      } else {
+        // First conversation: clear the session so the creator shows.
+        store.set(clearSessionAtom);
+        store.set(activeSessionIdAtom, null);
+        store.set(workstationActiveSessionIdAtom, null);
+      }
     }
 
     void (async () => {
