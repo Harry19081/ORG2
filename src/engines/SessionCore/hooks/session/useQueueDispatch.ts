@@ -234,7 +234,11 @@ export function useQueueDispatch(): void {
       }
 
       // Capture the payload for Stop-restore before the async append.
-      store.set(lastUserMessageAtom, { displayContent, imageDataUrls });
+      store.set(lastUserMessageAtom, {
+        sessionId,
+        displayContent,
+        imageDataUrls,
+      });
 
       beginOptimisticTurn(sessionId, "queue");
 

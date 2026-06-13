@@ -166,8 +166,7 @@ impl AgentTool {
             // `execute_turn` return Ok with no content — classify that as
             // Cancelled, not Completed, for the LinkedSession write-back.
             // The registry status is already `Killed` (sticky in mark_exited).
-            let was_cancelled =
-                turn_cancel_flag.load(std::sync::atomic::Ordering::SeqCst);
+            let was_cancelled = turn_cancel_flag.load(std::sync::atomic::Ordering::SeqCst);
             match turn_result {
                 Ok(result) => {
                     let resp = result.content.or_else(|| {

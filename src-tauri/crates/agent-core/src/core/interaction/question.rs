@@ -197,9 +197,7 @@ impl QuestionManager {
                 let policy = presence_state::global_policy();
                 let deadline_ms = match policy.question_auto_resolve {
                     AutoResolve::Off => None,
-                    AutoResolve::After(window) => {
-                        Some(created_at_ms + window.as_millis() as i64)
-                    }
+                    AutoResolve::After(window) => Some(created_at_ms + window.as_millis() as i64),
                 };
 
                 // Keep the FE countdown in sync with the active deadline.
@@ -296,7 +294,11 @@ impl QuestionManager {
             }),
         );
 
-        if entry.sender.send(QuestionResolution::Answered(answers)).is_err() {
+        if entry
+            .sender
+            .send(QuestionResolution::Answered(answers))
+            .is_err()
+        {
             warn!(
                 "[question] Request {} was dropped before answers arrived",
                 resolved_id

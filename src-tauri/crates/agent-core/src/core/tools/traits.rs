@@ -179,11 +179,7 @@ pub trait Tool: Send + Sync {
     /// this method as the default `unimplemented!()`.
     ///
     /// `ctx` carries the per-call framework metadata — see [`CallContext`].
-    async fn execute_text(
-        &self,
-        _params: Value,
-        _ctx: &CallContext,
-    ) -> Result<String, ToolError> {
+    async fn execute_text(&self, _params: Value, _ctx: &CallContext) -> Result<String, ToolError> {
         Err(ToolError::ExecutionFailed(format!(
             "tool '{}' did not implement execute_text or override execute",
             self.name()

@@ -168,7 +168,7 @@ pub(super) fn collect_files(root: &Path, filters: &SearchFilters) -> Vec<PathBuf
 /// default so the regex searcher doesn't waste time on them.
 const BINARY_EXTENSIONS: &[&str] = &[
     "png", "jpg", "jpeg", "gif", "webp", "bmp", "ico", "icns", "pdf", "zip", "gz", "tar", "bz2",
-    "xz", "7z", "rar", "dmg", "iso", "exe", "dll", "so", "dylib", "a", "o", "rlib", "class",
-    "jar", "war", "pyc", "pyo", "wasm", "woff", "woff2", "ttf", "otf", "eot", "mp3", "mp4",
-    "mov", "avi", "mkv", "wav", "flac", "ogg", "sqlite", "db", "bin", "dat", "pack", "idx",
+    "xz", "7z", "rar", "dmg", "iso", "exe", "dll", "so", "dylib", "a", "o", "rlib", "class", "jar",
+    "war", "pyc", "pyo", "wasm", "woff", "woff2", "ttf", "otf", "eot", "mp3", "mp4", "mov", "avi",
+    "mkv", "wav", "flac", "ogg", "sqlite", "db", "bin", "dat", "pack", "idx",
 ];

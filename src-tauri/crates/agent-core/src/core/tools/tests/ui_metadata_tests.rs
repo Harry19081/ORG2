@@ -2,7 +2,7 @@
 
 use std::collections::{BTreeSet, HashSet};
 
-use super::builtin_tools::{BUILTIN_TOOLS, builtin_tool_entries};
+use super::builtin_tools::{builtin_tool_entries, BUILTIN_TOOLS};
 use super::names;
 use super::policy::TOOL_GROUPS;
 use super::ui_metadata::{AppSubtool, ChatBlock, SimulatorApp, ToolDisplayBehavior};

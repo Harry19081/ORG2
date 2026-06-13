@@ -358,6 +358,7 @@ const useWorkspaceChat = (options: UseWorkspaceChatOptions = {}) => {
       // optimistic EventStore append finishes, so cancel-restore needs this
       // synchronous source of truth for text and images.
       setLastUserMessage({
+        sessionId,
         displayContent: finalInput,
         imageDataUrls: restoreImageDataUrls,
       });

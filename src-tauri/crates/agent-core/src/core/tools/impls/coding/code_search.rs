@@ -74,13 +74,8 @@ impl SearchTool {
             let path = PathBuf::from(explicit);
             if self.restrict_to_workspace {
                 if let Some(ref workspace) = self.workspace_state {
-                    let extra: Vec<PathBuf> = self
-                        .active_repo
-                        .lock()
-                        .await
-                        .clone()
-                        .into_iter()
-                        .collect();
+                    let extra: Vec<PathBuf> =
+                        self.active_repo.lock().await.clone().into_iter().collect();
                     workspace
                         .read()
                         .is_path_allowed(&path, &extra)

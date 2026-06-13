@@ -299,7 +299,9 @@ async fn evaluate_turn_end(input: GoalLoopTurnEnd, max_turns: u32) {
             // come back online while the judge was running.
             let policy = presence_state::global_policy();
             if policy.goal_loop == GoalLoopPolicy::Off {
-                info!("[goal_loop] presence switched mid-judge; loop stopped (session={session_id})");
+                info!(
+                    "[goal_loop] presence switched mid-judge; loop stopped (session={session_id})"
+                );
                 return;
             }
             // Idempotence against duplicate evaluations: re-load and
@@ -478,7 +480,8 @@ mod tests {
 
     #[test]
     fn verdict_parses_json_wrapped_in_prose_or_fences() {
-        let wrapped = "Sure — here is my verdict:\n```json\n{\"done\": true, \"reason\": \"ok\"}\n```";
+        let wrapped =
+            "Sure — here is my verdict:\n```json\n{\"done\": true, \"reason\": \"ok\"}\n```";
         assert!(matches!(
             parse_judge_verdict(wrapped),
             JudgeVerdict::Done { .. }

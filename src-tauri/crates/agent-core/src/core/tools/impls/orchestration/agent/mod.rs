@@ -38,9 +38,7 @@ use core_types::providers::NativeHarnessType;
 
 use crate::definitions::builtin::{EXPLORE_AGENT_ID, GENERAL_AGENT_ID};
 use crate::definitions::schema::SubAgentIsolation;
-use crate::definitions::{
-    resolve_definition_by_id, AgentDefinition, DelegationConfig,
-};
+use crate::definitions::{resolve_definition_by_id, AgentDefinition, DelegationConfig};
 use crate::providers::traits::LLMProvider;
 use crate::session::workspace::SessionWorkspace;
 use crate::tools::impls::coding::exec::registry as job_registry;

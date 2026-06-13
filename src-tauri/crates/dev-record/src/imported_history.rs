@@ -115,7 +115,9 @@ pub fn row_from_input(input: ImportedHistoryRowInput) -> ImportedHistorySessionR
     }
 }
 
-pub fn recent_paths_from_rows(rows: &[ImportedHistorySessionRow]) -> Vec<ImportedHistoryRecentPath> {
+pub fn recent_paths_from_rows(
+    rows: &[ImportedHistorySessionRow],
+) -> Vec<ImportedHistoryRecentPath> {
     let paths = rows
         .iter()
         .filter_map(|row| {
@@ -134,7 +136,9 @@ pub fn recent_paths_from_rows(rows: &[ImportedHistorySessionRow]) -> Vec<Importe
     recent_paths_from_paths(&paths)
 }
 
-pub fn recent_paths_from_paths(paths: &[ImportedHistoryRecentPath]) -> Vec<ImportedHistoryRecentPath> {
+pub fn recent_paths_from_paths(
+    paths: &[ImportedHistoryRecentPath],
+) -> Vec<ImportedHistoryRecentPath> {
     let mut path_stats: HashMap<String, (Option<String>, String, usize)> = HashMap::new();
 
     for recent_path in paths {
@@ -145,7 +149,10 @@ pub fn recent_paths_from_paths(paths: &[ImportedHistoryRecentPath]) -> Vec<Impor
 
         let entry = path_stats.entry(path.to_string()).or_insert_with(|| {
             (
-                recent_path.name.clone().or_else(|| repo_name_from_path(path)),
+                recent_path
+                    .name
+                    .clone()
+                    .or_else(|| repo_name_from_path(path)),
                 recent_path.last_used_at.clone(),
                 0,
             )
@@ -158,12 +165,14 @@ pub fn recent_paths_from_paths(paths: &[ImportedHistoryRecentPath]) -> Vec<Impor
 
     let mut recent_paths = path_stats
         .into_iter()
-        .map(|(path, (name, last_used_at, session_count))| ImportedHistoryRecentPath {
-            name,
-            path,
-            last_used_at,
-            session_count,
-        })
+        .map(
+            |(path, (name, last_used_at, session_count))| ImportedHistoryRecentPath {
+                name,
+                path,
+                last_used_at,
+                session_count,
+            },
+        )
         .collect::<Vec<_>>();
     recent_paths.sort_by(|path_a, path_b| path_b.last_used_at.cmp(&path_a.last_used_at));
     recent_paths

@@ -74,7 +74,6 @@ describe("convertToFileOperation", () => {
       args: { path: "/repo/loading.ts" },
       result: {},
       displayStatus: "running",
-      status: "running",
     });
 
     const op = convertToFileOperation(event, true);

@@ -128,10 +128,7 @@ fn wire_model_name_keeps_direct_deepseek_model_bare() {
 #[test]
 fn wire_model_name_strips_stale_deepseek_prefix() {
     let spec = find_by_name("deepseek").unwrap();
-    assert_eq!(
-        wire_model_name(spec, "deepseek/deepseek-r1"),
-        "deepseek-r1"
-    );
+    assert_eq!(wire_model_name(spec, "deepseek/deepseek-r1"), "deepseek-r1");
 }
 
 #[test]

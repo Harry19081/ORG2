@@ -290,8 +290,7 @@ mod tests {
         let params = serde_json::json!({
             "subject": "audit yoyo-evolve",
         });
-        let parsed: StrictParams = parse_params(params)
-            .expect("clean params must deserialize");
+        let parsed: StrictParams = parse_params(params).expect("clean params must deserialize");
         assert_eq!(parsed.subject, "audit yoyo-evolve");
     }
 
@@ -307,13 +306,19 @@ mod tests {
             "__call_id": "call-1",
         });
         let result: Result<StrictParams, _> = parse_params(meta_leaked);
-        assert!(result.is_err(), "framework meta in params is a wiring bug, must fail closed");
+        assert!(
+            result.is_err(),
+            "framework meta in params is a wiring bug, must fail closed"
+        );
 
         let real_unknown = serde_json::json!({
             "subject": "x",
             "bogus_field": true,
         });
         let result: Result<StrictParams, _> = parse_params(real_unknown);
-        assert!(result.is_err(), "non-framework unknown fields must still fail closed");
+        assert!(
+            result.is_err(),
+            "non-framework unknown fields must still fail closed"
+        );
     }
 }

@@ -56,8 +56,8 @@ use serde_json::Value;
 use tracing::{info, warn};
 
 use crate::core::tools::traits::ToolExecuteResult;
-use crate::specialization::policies::activation::SessionScopedContextActivator;
 use crate::providers::traits::{finish_reason as finish, LLMProvider, StreamDelta};
+use crate::specialization::policies::activation::SessionScopedContextActivator;
 use crate::tools::names as tool_names;
 use crate::tools::policy::ResolvedToolPolicy;
 use crate::tools::registry::ToolRegistry;

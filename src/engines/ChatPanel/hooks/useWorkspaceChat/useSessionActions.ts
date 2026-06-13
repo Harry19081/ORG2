@@ -156,6 +156,7 @@ export function useSessionActions(options: UseSessionActionsOptions) {
 
     if (currentUserMessage) {
       setRestoreToInput({
+        sessionId,
         displayContent: currentUserMessage.displayContent,
         imageDataUrls: currentUserMessage.imageDataUrls,
       });

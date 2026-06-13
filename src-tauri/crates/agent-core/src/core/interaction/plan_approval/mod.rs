@@ -665,17 +665,16 @@ fn spawn_auto_approve_watcher(session_id: String, plan_revision_id: String, crea
         loop {
             // Exit when this revision is no longer the pending plan.
             let sid = session_id.clone();
-            let still_pending = tokio::task::spawn_blocking(move || {
-                PlanApprovalStore::load_by_session(&sid)
-            })
-            .await
-            .ok()
-            .and_then(Result::ok)
-            .flatten()
-            .is_some_and(|row| {
-                row.plan_revision_id == plan_revision_id
-                    || row.tool_call_id.as_deref() == Some(plan_revision_id.as_str())
-            });
+            let still_pending =
+                tokio::task::spawn_blocking(move || PlanApprovalStore::load_by_session(&sid))
+                    .await
+                    .ok()
+                    .and_then(Result::ok)
+                    .flatten()
+                    .is_some_and(|row| {
+                        row.plan_revision_id == plan_revision_id
+                            || row.tool_call_id.as_deref() == Some(plan_revision_id.as_str())
+                    });
             if !still_pending {
                 return;
             }

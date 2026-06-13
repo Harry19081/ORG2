@@ -111,7 +111,9 @@ impl PresencePolicy {
 
         Self {
             question_auto_resolve: AutoResolve::from_secs(
-                presence.question_auto_resolve_secs.unwrap_or(default_question),
+                presence
+                    .question_auto_resolve_secs
+                    .unwrap_or(default_question),
             ),
             plan_auto_approve: AutoResolve::from_secs(
                 presence.plan_auto_approve_secs.unwrap_or(default_plan),

@@ -15,9 +15,9 @@ use super::events::{apply_event, EventCounts};
 use super::recall::{recall_mode_embedding, recall_mode_manifest};
 use super::types::CandidateMode;
 use crate::core::side_query::{side_query_typed, SideQueryConfig, SideQueryError};
+use crate::providers::traits::{LLMProvider, ProviderError};
 use crate::specialization::memory::embeddings::{AutoEmbeddingProvider, EmbeddingProvider};
 use crate::specialization::memory::learnings::{self, Learning};
-use crate::providers::traits::{LLMProvider, ProviderError};
 
 /// Context passed into `consolidate_batch`: all the pre-resolved knobs that
 /// don't change per pending row.
@@ -378,9 +378,9 @@ mod tests {
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     use crate::core::providers::finish_reason;
+    use crate::providers::traits::LLMResponse;
     use crate::specialization::memory::consolidation::tests_support::{pending, setup_conn};
     use crate::specialization::memory::learnings::LearningStatus;
-    use crate::providers::traits::LLMResponse;
 
     struct RateLimitedProvider {
         calls: Arc<AtomicUsize>,

@@ -6,7 +6,7 @@ pub(super) use super::super::super::names as tool_names;
 pub(super) use super::super::super::ui_metadata::{
     AppSubtool, ChatBlock, HumanToolKey, SimulatorApp, ToolDisplayBehavior,
 };
-pub(super) use super::super::types::{ActionEntry, DEFAULT_TOOL_ENTRY, ToolEntry};
+pub(super) use super::super::types::{ActionEntry, ToolEntry, DEFAULT_TOOL_ENTRY};
 pub(super) use crate::definitions::capabilities::RequiredCapability;
 
 pub(super) use AppSubtool::{

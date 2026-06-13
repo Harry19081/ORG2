@@ -50,9 +50,7 @@ pub(super) fn extract_todo(
     if let Some(meta_todos) = result
         .and_then(|r| r.get("uiMetadata"))
         .and_then(|v| v.as_object())
-        .filter(|meta| {
-            meta.get("display_type").and_then(|v| v.as_str()) == Some("todo_list")
-        })
+        .filter(|meta| meta.get("display_type").and_then(|v| v.as_str()) == Some("todo_list"))
         .and_then(|meta| meta.get("data"))
         .and_then(|v| v.as_object())
         .and_then(|data| data.get("todos"))

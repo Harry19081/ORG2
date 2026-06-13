@@ -19,11 +19,10 @@ impl AgentExecMode {
     /// planning activities. Each read-only mode calls this and optionally
     /// appends mode-specific extras on top.
     fn read_only_deny_base() -> Vec<String> {
-        let mut deny: Vec<String> =
-            crate::foundation::security::policy::READ_ONLY_DENY_TOOLS
-                .iter()
-                .map(|s| (*s).to_string())
-                .collect();
+        let mut deny: Vec<String> = crate::foundation::security::policy::READ_ONLY_DENY_TOOLS
+            .iter()
+            .map(|s| (*s).to_string())
+            .collect();
         // Prevent mode escalation inside a read-only session.
         deny.push(tool_names::SUGGEST_MODE_SWITCH.to_string());
         // create_plan writes a plan file and surfaces a Build button — not

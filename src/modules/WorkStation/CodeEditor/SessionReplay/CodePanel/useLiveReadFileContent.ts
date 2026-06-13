@@ -33,13 +33,14 @@ export function useLiveReadFileContent(
   useEffect(() => {
     if (!enabled || !filePath) return;
 
+    const currentFilePath = filePath;
     let cancelled = false;
 
     async function loadFileContent() {
-      if (isBinaryByExtension(filePath)) {
+      if (isBinaryByExtension(currentFilePath)) {
         if (!cancelled) {
           setLoadedContent({
-            filePath,
+            filePath: currentFilePath,
             content: getBinaryFileMessage(),
             status: "loaded",
           });
@@ -47,11 +48,11 @@ export function useLiveReadFileContent(
         return;
       }
 
-      const fileContent = await readTextFile(filePath);
+      const fileContent = await readTextFile(currentFilePath);
       if (cancelled) return;
 
       setLoadedContent({
-        filePath,
+        filePath: currentFilePath,
         content: isBinaryContent(fileContent)
           ? getBinaryFileMessage()
           : fileContent,
@@ -62,10 +63,14 @@ export function useLiveReadFileContent(
     loadFileContent().catch((error: unknown) => {
       if (!cancelled) {
         logger.rateLimited("local-read-failed", 60_000, "local read failed", {
-          filePath,
+          filePath: currentFilePath,
           error,
         });
-        setLoadedContent({ filePath, content: undefined, status: "failed" });
+        setLoadedContent({
+          filePath: currentFilePath,
+          content: undefined,
+          status: "failed",
+        });
       }
     });
 

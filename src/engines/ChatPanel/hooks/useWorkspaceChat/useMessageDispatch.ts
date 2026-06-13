@@ -68,7 +68,11 @@ export function useMessageDispatch(options: UseMessageDispatchOptions) {
       // Capture the exact text/images the user sent so the cancel-restore
       // path (Scenario A: cancel before any assistant output) can put it
       // back into the input box.
-      setLastUserMessage({ displayContent: content, imageDataUrls });
+      setLastUserMessage({
+        sessionId,
+        displayContent: content,
+        imageDataUrls,
+      });
     },
     [getSessionId, setLastUserMessage]
   );

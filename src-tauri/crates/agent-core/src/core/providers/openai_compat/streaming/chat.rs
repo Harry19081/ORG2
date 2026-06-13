@@ -158,10 +158,8 @@ pub(super) async fn run_chat(
     // Demux inline `<think>…</think>` reasoning out of the message content.
     // Mirrors the same logic used in `sse_stream::run_chat_streaming` so the
     // streaming and non-streaming paths surface reasoning identically.
-    let (content, reasoning_content) = split_inline_thinking(
-        choice.message.content,
-        choice.message.reasoning_content,
-    );
+    let (content, reasoning_content) =
+        split_inline_thinking(choice.message.content, choice.message.reasoning_content);
 
     let response = LLMResponse {
         content,

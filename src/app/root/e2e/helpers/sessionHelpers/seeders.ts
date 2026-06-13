@@ -428,10 +428,10 @@ export function createSessionSeederHelpers(store: E2EStore) {
   };
 
   const listRunningSubagentJobsWire = async (): Promise<
-    Result<{ jobs: unknown[] }>
+    Result<{ jobs: Json[] }>
   > => {
     try {
-      const jobs = await invoke<unknown[]>("agent_list_running_subagent_jobs");
+      const jobs = await invoke<Json[]>("agent_list_running_subagent_jobs");
       return { ok: true, jobs };
     } catch (err) {
       return asError(err);

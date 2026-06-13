@@ -262,11 +262,7 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
               isLoading={isStillRunning}
               isFailed={isError}
             />
-            <EventBlockHeaderTitle
-              isLoading={isStillRunning}
-              isFailed={isError}
-              title={displayTitle}
-            >
+            <EventBlockHeaderTitle isLoading={isStillRunning}>
               {displayTitle}
             </EventBlockHeaderTitle>
             {commandSymbols.length > 0 ? (

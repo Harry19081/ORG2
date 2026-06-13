@@ -8,9 +8,9 @@
 
 mod launch_helpers;
 mod launch_org;
-mod launch_workspace;
 #[cfg(test)]
 mod launch_tests;
+mod launch_workspace;
 
 use std::collections::HashMap;
 
@@ -20,9 +20,7 @@ use crate::coordination::agent_org_runs::{
     AgentOrgRunEntryMode, AgentOrgRunStatus, AgentOrgRunStore, CreateAgentOrgRunParams,
     COORDINATOR_MEMBER_ID,
 };
-use crate::definitions::orgs::{
-    AgentOrgsStore, OrgMemberLaunchOverride,
-};
+use crate::definitions::orgs::{AgentOrgsStore, OrgMemberLaunchOverride};
 use crate::session::persistence;
 use crate::session::IdeContext;
 use crate::state::AgentAppState;

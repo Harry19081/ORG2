@@ -1475,10 +1475,7 @@ pub async fn tool_schema_flat_params(cfg: &Config) -> bool {
                         has_prop(&worktree, "branch"),
                     ),
                     ("worktree has NO top-level oneOf", no_one_of(&worktree)),
-                    (
-                        "inspect_terminals flat (or not registered)",
-                        inspect_ok,
-                    ),
+                    ("inspect_terminals flat (or not registered)", inspect_ok),
                     (
                         "tool_search registered with select: lookup documented",
                         tool_search_desc

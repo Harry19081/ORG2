@@ -227,6 +227,8 @@ userInitiatedCancelAtom.debugLabel = "userInitiatedCancel";
  * follow-up without another atom.
  */
 export interface RestoreToInputPayload {
+  /** Session the payload belongs to — composer must not consume cross-session. */
+  sessionId: string;
   displayContent: string;
   imageDataUrls?: string[];
 }
@@ -240,6 +242,10 @@ restoreToInputAtom.debugLabel = "restoreToInput";
  * having to scan the event store.
  */
 export interface LastUserMessagePayload {
+  /** Session the message was dispatched into. Stop-restore must ignore
+   * payloads captured by a different session (two sessions working in
+   * parallel used to leak session B's prompt into session A's composer). */
+  sessionId: string;
   displayContent: string;
   imageDataUrls?: string[];
 }

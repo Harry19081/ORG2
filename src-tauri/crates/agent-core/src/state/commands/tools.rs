@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::mcp::bridge::build_mcp_tool_name;
 use crate::mcp::commands::McpState;
-use crate::state::AgentAppState;
 use crate::state::commands::session::message::resolve_agent_mode;
+use crate::state::AgentAppState;
 use crate::tools::builtin_tools;
 use crate::tools::ui_metadata::{
     AgentKind, ChatBlock, SimulatorApp, ToolDisplayBehavior, ToolInfo,

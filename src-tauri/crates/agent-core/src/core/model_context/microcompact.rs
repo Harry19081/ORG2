@@ -164,7 +164,6 @@ fn clear_old_tool_results(
     messages: &mut [Value],
     config: &MicrocompactConfig,
 ) -> MicrocompactStats {
-
     let tool_result_indices: Vec<usize> = messages
         .iter()
         .enumerate()

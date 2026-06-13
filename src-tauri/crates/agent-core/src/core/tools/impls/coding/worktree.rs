@@ -553,7 +553,10 @@ mod tests {
             )
             .await;
         let err = format!("{:?}", result.unwrap_err());
-        assert!(err.contains("branch"), "error must name the missing field: {err}");
+        assert!(
+            err.contains("branch"),
+            "error must name the missing field: {err}"
+        );
     }
 
     #[tokio::test]
@@ -588,7 +591,12 @@ mod tests {
     #[tokio::test]
     async fn leave_without_add_fails() {
         let tool = test_tool();
-        let result = tool.execute(json!({ "action": "leave" }), &crate::tools::call_context::CallContext::default()).await;
+        let result = tool
+            .execute(
+                json!({ "action": "leave" }),
+                &crate::tools::call_context::CallContext::default(),
+            )
+            .await;
         assert!(result.is_err());
     }
 }

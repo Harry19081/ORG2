@@ -8,8 +8,8 @@ use std::sync::OnceLock;
 
 use super::cache::GitBranchCache;
 use super::helpers::{
-    append_personal_workspace_context, format_tool_summaries,
-    render_channel_additional_dirs_block, resolve_workspace_path_string, truncate_at_boundary,
+    append_personal_workspace_context, format_tool_summaries, render_channel_additional_dirs_block,
+    resolve_workspace_path_string, truncate_at_boundary,
 };
 
 use crate::coordination::agent_org_runs::COORDINATOR_MEMBER_ID;
@@ -800,7 +800,6 @@ pub(super) fn build_runtime_line(model: &str, channel: Option<&str>) -> String {
     }
     format!("Runtime: {}", fields.join(" | "))
 }
-
 
 // ============================================
 // User profile helpers

@@ -157,12 +157,13 @@ export const CodePanel: React.FC<CodePanelProps> = memo(
       return getToolDisplayBehavior(operation.event.functionName, action);
     }, [operation]);
 
-    const shouldLoadLiveReadContent =
+    const shouldLoadLiveReadContent = Boolean(
       operationDisplayBehavior === TOOL_DISPLAY_BEHAVIOR.INSTANT &&
       operation?.type === FILE_OPERATION_TYPE.READ &&
       operation.isLoading &&
       resolvedPayload?.content === undefined &&
-      getPreviewType(operation.filePath) !== "image";
+      getPreviewType(operation.filePath) !== "image"
+    );
     const liveReadContent = useLiveReadFileContent(
       operation?.filePath,
       shouldLoadLiveReadContent

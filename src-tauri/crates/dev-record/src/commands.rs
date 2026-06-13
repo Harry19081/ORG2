@@ -25,7 +25,8 @@ use super::types::{
 };
 use super::windsurf::history as windsurf_history;
 
-fn imported_recent_paths() -> Result<Vec<super::imported_history::ImportedHistoryRecentPath>, String> {
+fn imported_recent_paths() -> Result<Vec<super::imported_history::ImportedHistoryRecentPath>, String>
+{
     let mut paths = codex_app::list_codex_app_recent_paths(0)?;
     paths.extend(claude_code_history::list_claude_code_recent_paths(0)?);
     Ok(super::imported_history::recent_paths_from_paths(&paths))

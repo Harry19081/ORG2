@@ -341,8 +341,7 @@ pub fn repair_stranded_plan_events() {
             }
         };
 
-    let stranded = match session_persistence::find_awaiting_user_events_by_function("create_plan")
-    {
+    let stranded = match session_persistence::find_awaiting_user_events_by_function("create_plan") {
         Ok(rows) => rows,
         Err(err) => {
             tracing::warn!("[plan-repair] scan failed: {err}");

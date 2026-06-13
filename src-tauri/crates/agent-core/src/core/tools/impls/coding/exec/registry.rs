@@ -603,7 +603,11 @@ pub fn kill_subagent(handle: &str) -> Result<(), String> {
             return Err(format!("subagent '{handle}' already finished"));
         }
         job.status = JobStatus::Killed;
-        (job.cancel_flag.clone(), job.join_handle.take(), broadcast_info)
+        (
+            job.cancel_flag.clone(),
+            job.join_handle.take(),
+            broadcast_info,
+        )
     };
 
     let (session_id, agent_name, subagent_type) = broadcast_info;

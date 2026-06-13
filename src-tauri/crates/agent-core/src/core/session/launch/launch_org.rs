@@ -7,7 +7,9 @@ use core_types::key_source::KeySource;
 
 use crate::coordination::agent_org_runs::AgentOrgRunStore;
 use crate::definitions::orgs::{parse_cli_agent_org_reference, OrgDefinition};
-use crate::session::persistence::{self as session_persistence, session_type, UnifiedSessionRecord};
+use crate::session::persistence::{
+    self as session_persistence, session_type, UnifiedSessionRecord,
+};
 use crate::session::IdeContext;
 use crate::state::AgentAppState;
 
