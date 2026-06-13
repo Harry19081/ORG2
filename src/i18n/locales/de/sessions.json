@@ -2242,6 +2242,20 @@
       "homeTerminals": "Terminalsitzungen",
       "openInMyStation": "In My Station öffnen",
       "openInTerminalTab": "Im Terminal-Tab öffnen"
+    },
+    "workspaceTools": {
+      "title": "Workspace-Tools",
+      "description": "Prüft empfohlene LSP servers und lint-Tools für diesen workspace.",
+      "summary": "{{ready}}/{{total}} bereit",
+      "noRecommendations": "Keine empfohlenen Tools",
+      "refresh": "Aktualisieren",
+      "lsp": "LSP servers",
+      "lint": "Lint-Tools",
+      "ready": "Alle {{total}} empfohlenen Tools sind bereit",
+      "needsSetup": "{{ready}} von {{total}} empfohlenen Tools sind bereit",
+      "notApplicable": "Keine workspace-spezifischen Empfehlungen",
+      "missing": "Fehlt",
+      "disabled": "Deaktiviert"
     }
   },
   "worktreeCompare": {

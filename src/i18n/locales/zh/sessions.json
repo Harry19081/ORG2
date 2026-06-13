@@ -2248,6 +2248,20 @@
       "homeTerminals": "终端会话",
       "openInMyStation": "在 My Station 打开",
       "openInTerminalTab": "在 Terminal 标签打开"
+    },
+    "workspaceTools": {
+      "title": "Workspace 工具",
+      "description": "检查此 workspace 推荐的 LSP servers 和 lint 工具。",
+      "summary": "{{ready}}/{{total}} 就绪",
+      "noRecommendations": "没有推荐工具",
+      "refresh": "刷新",
+      "lsp": "LSP servers",
+      "lint": "Lint 工具",
+      "ready": "全部 {{total}} 个推荐工具已就绪",
+      "needsSetup": "{{total}} 个推荐工具中 {{ready}} 个已就绪",
+      "notApplicable": "没有 workspace 专属推荐",
+      "missing": "缺失",
+      "disabled": "已禁用"
     }
   },
   "worktreeCompare": {

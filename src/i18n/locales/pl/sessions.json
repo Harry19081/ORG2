@@ -2252,6 +2252,20 @@
       "homeTerminals": "Sesje terminala",
       "openInMyStation": "Otwórz w My Station",
       "openInTerminalTab": "Otwórz w karcie terminala"
+    },
+    "workspaceTools": {
+      "title": "Narzędzia workspace",
+      "description": "Sprawdza zalecane LSP servers i narzędzia lint dla tego workspace.",
+      "summary": "{{ready}}/{{total}} gotowe",
+      "noRecommendations": "Brak zalecanych narzędzi",
+      "refresh": "Odśwież",
+      "lsp": "LSP servers",
+      "lint": "Narzędzia lint",
+      "ready": "Wszystkie {{total}} zalecane narzędzia są gotowe",
+      "needsSetup": "{{ready}} z {{total}} zalecanych narzędzi jest gotowe",
+      "notApplicable": "Brak zaleceń specyficznych dla workspace",
+      "missing": "Brak",
+      "disabled": "Wyłączone"
     }
   },
   "groupChat": {

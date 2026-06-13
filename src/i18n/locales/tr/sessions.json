@@ -2243,6 +2243,20 @@
       "homeTerminals": "Terminal oturumları",
       "openInMyStation": "My Station'da aç",
       "openInTerminalTab": "Terminal sekmesinde aç"
+    },
+    "workspaceTools": {
+      "title": "Workspace araçları",
+      "description": "Bu workspace için önerilen LSP servers ve lint araçlarını kontrol eder.",
+      "summary": "{{ready}}/{{total}} hazır",
+      "noRecommendations": "Önerilen araç yok",
+      "refresh": "Yenile",
+      "lsp": "LSP servers",
+      "lint": "Lint araçları",
+      "ready": "Önerilen {{total}} aracın tümü hazır",
+      "needsSetup": "Önerilen {{total}} araçtan {{ready}} tanesi hazır",
+      "notApplicable": "Workspace özelinde öneri yok",
+      "missing": "Eksik",
+      "disabled": "Devre dışı"
     }
   },
   "worktreeCompare": {

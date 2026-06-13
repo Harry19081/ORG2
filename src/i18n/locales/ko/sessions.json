@@ -2243,6 +2243,20 @@
       "homeTerminals": "터미널 세션",
       "openInMyStation": "My Station 에서 열기",
       "openInTerminalTab": "Terminal 탭에서 열기"
+    },
+    "workspaceTools": {
+      "title": "Workspace 도구",
+      "description": "이 workspace에 권장되는 LSP servers와 lint 도구를 확인합니다.",
+      "summary": "{{ready}}/{{total}} 준비됨",
+      "noRecommendations": "권장 도구 없음",
+      "refresh": "새로고침",
+      "lsp": "LSP servers",
+      "lint": "Lint 도구",
+      "ready": "권장 도구 {{total}}개가 모두 준비되었습니다",
+      "needsSetup": "권장 도구 {{total}}개 중 {{ready}}개가 준비되었습니다",
+      "notApplicable": "Workspace별 권장 사항 없음",
+      "missing": "없음",
+      "disabled": "비활성화됨"
     }
   },
   "worktreeCompare": {

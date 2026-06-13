@@ -2250,6 +2250,20 @@
       "homeTerminals": "Сеансы терминала",
       "openInMyStation": "Открыть в My Station",
       "openInTerminalTab": "Открыть во вкладке Terminal"
+    },
+    "workspaceTools": {
+      "title": "Инструменты workspace",
+      "description": "Проверяет рекомендованные LSP servers и lint-инструменты для этого workspace.",
+      "summary": "{{ready}}/{{total}} готово",
+      "noRecommendations": "Нет рекомендованных инструментов",
+      "refresh": "Обновить",
+      "lsp": "LSP servers",
+      "lint": "Lint-инструменты",
+      "ready": "Все {{total}} рекомендованных инструментов готовы",
+      "needsSetup": "{{ready}} из {{total}} рекомендованных инструментов готовы",
+      "notApplicable": "Нет рекомендаций для этого workspace",
+      "missing": "Отсутствует",
+      "disabled": "Отключено"
     }
   },
   "worktreeCompare": {

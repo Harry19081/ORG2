@@ -2253,6 +2253,20 @@
       "homeTerminals": "Terminal sessions",
       "openInMyStation": "Open in My Station",
       "openInTerminalTab": "Open in Terminal tab"
+    },
+    "workspaceTools": {
+      "title": "Workspace Tools",
+      "description": "Checks recommended LSP servers and lint tools for this workspace.",
+      "summary": "{{ready}}/{{total}} ready",
+      "noRecommendations": "No recommended tools",
+      "refresh": "Refresh",
+      "lsp": "LSP servers",
+      "lint": "Lint tools",
+      "ready": "All {{total}} recommended tools are ready",
+      "needsSetup": "{{ready}} of {{total}} recommended tools are ready",
+      "notApplicable": "No workspace-specific recommendations",
+      "missing": "Missing",
+      "disabled": "Disabled"
     }
   },
   "groupChat": {

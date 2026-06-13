@@ -2242,6 +2242,20 @@
       "homeTerminals": "Phiên Terminal",
       "openInMyStation": "Mở trong My Station",
       "openInTerminalTab": "Mở trong thẻ Terminal"
+    },
+    "workspaceTools": {
+      "title": "Công cụ workspace",
+      "description": "Kiểm tra LSP servers và công cụ lint được đề xuất cho workspace này.",
+      "summary": "{{ready}}/{{total}} sẵn sàng",
+      "noRecommendations": "Không có công cụ được đề xuất",
+      "refresh": "Làm mới",
+      "lsp": "LSP servers",
+      "lint": "Công cụ lint",
+      "ready": "Tất cả {{total}} công cụ được đề xuất đã sẵn sàng",
+      "needsSetup": "{{ready}} trong {{total}} công cụ được đề xuất đã sẵn sàng",
+      "notApplicable": "Không có đề xuất riêng cho workspace",
+      "missing": "Thiếu",
+      "disabled": "Đã tắt"
     }
   },
   "worktreeCompare": {

@@ -2242,6 +2242,20 @@
       "homeTerminals": "ターミナルセッション",
       "openInMyStation": "My Station で開く",
       "openInTerminalTab": "Terminal タブで開く"
+    },
+    "workspaceTools": {
+      "title": "Workspace ツール",
+      "description": "この workspace に推奨される LSP servers と lint ツールを確認します。",
+      "summary": "{{ready}}/{{total}} 準備完了",
+      "noRecommendations": "推奨ツールはありません",
+      "refresh": "更新",
+      "lsp": "LSP servers",
+      "lint": "Lint ツール",
+      "ready": "推奨ツール {{total}} 件はすべて準備完了です",
+      "needsSetup": "推奨ツール {{total}} 件中 {{ready}} 件が準備完了です",
+      "notApplicable": "Workspace 固有の推奨はありません",
+      "missing": "未インストール",
+      "disabled": "無効"
     }
   },
   "worktreeCompare": {
