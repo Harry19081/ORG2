@@ -15,13 +15,15 @@
 
 pub use lsp_types::{
     Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams, GotoDefinitionParams, GotoDefinitionResponse, Hover, HoverContents,
-    HoverParams, InitializeParams, InitializeResult, LanguageString, Location, LocationLink,
-    MarkedString, MarkupContent, MarkupKind, NumberOrString, Position, PublishDiagnosticsParams,
-    Range, ReferenceContext, ReferenceParams, ServerCapabilities, TextDocumentContentChangeEvent,
-    TextDocumentIdentifier, TextDocumentItem, TextDocumentPositionParams,
-    TextDocumentSyncCapability, TextDocumentSyncKind, Uri, VersionedTextDocumentIdentifier,
-    WorkspaceFolder,
+    DidOpenTextDocumentParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
+    GotoDefinitionParams, GotoDefinitionResponse, Hover, HoverContents, HoverParams,
+    InitializeParams, InitializeResult, LanguageString, Location, LocationLink, MarkedString,
+    MarkupContent, MarkupKind, NumberOrString, Position, PublishDiagnosticsParams, Range,
+    ReferenceContext, ReferenceParams, ServerCapabilities, SymbolInformation, SymbolKind,
+    TextDocumentContentChangeEvent, TextDocumentIdentifier, TextDocumentItem,
+    TextDocumentPositionParams, TextDocumentSyncCapability, TextDocumentSyncKind, Uri,
+    VersionedTextDocumentIdentifier, WorkspaceFolder, WorkspaceSymbol, WorkspaceSymbolParams,
+    WorkspaceSymbolResponse,
 };
 
 /// Small ergonomic layer over `lsp_types::ServerCapabilities` so the
@@ -36,6 +38,8 @@ pub trait ServerCapabilitiesExt {
     fn supports_hover(&self) -> bool;
     fn supports_definition(&self) -> bool;
     fn supports_references(&self) -> bool;
+    fn supports_document_symbol(&self) -> bool;
+    fn supports_workspace_symbol(&self) -> bool;
     /// Resolved `textDocument/didChange` sync mode. Defaults to
     /// `None` (sync disabled) when the server didn't advertise the
     /// field — the LSP spec leaves the default open, so the safe
@@ -63,6 +67,22 @@ impl ServerCapabilitiesExt for ServerCapabilities {
 
     fn supports_references(&self) -> bool {
         match self.references_provider.as_ref() {
+            None => false,
+            Some(lsp_types::OneOf::Left(b)) => *b,
+            Some(lsp_types::OneOf::Right(_)) => true,
+        }
+    }
+
+    fn supports_document_symbol(&self) -> bool {
+        match self.document_symbol_provider.as_ref() {
+            None => false,
+            Some(lsp_types::OneOf::Left(b)) => *b,
+            Some(lsp_types::OneOf::Right(_)) => true,
+        }
+    }
+
+    fn supports_workspace_symbol(&self) -> bool {
+        match self.workspace_symbol_provider.as_ref() {
             None => false,
             Some(lsp_types::OneOf::Left(b)) => *b,
             Some(lsp_types::OneOf::Right(_)) => true,

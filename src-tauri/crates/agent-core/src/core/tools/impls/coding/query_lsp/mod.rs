@@ -1,7 +1,8 @@
 //! LSP tool — exposes language server features to the coding agent.
 //!
 //! Bridges the existing `lsp::LspManager` into the agent's tool loop.
-//! Actions: diagnostics, definition, references, hover.
+//! Actions: diagnostics, definition, references, hover, document_symbol,
+//! workspace_symbol.
 //!
 //! Layout:
 //! - [`language`]  — file extension → LSP language ID + workspace root
@@ -35,7 +36,10 @@ use lsp::LspManager;
 // Bring submodule helpers into scope so the tool impl below reads naturally,
 // and so unit tests in `tests.rs` can keep their `super::language_for_file`
 // (etc.) call sites unchanged.
-use format::{format_diagnostics, format_hover, format_locations, format_reference_locations};
+use format::{
+    format_diagnostics, format_document_symbols, format_hover, format_locations,
+    format_reference_locations, format_workspace_symbols,
+};
 use language::{
     document_language_id_for_file, infer_workspace_root, language_for_file, path_to_uri,
 };
@@ -156,7 +160,9 @@ impl Tool for LspTool {
            for files whose language is supported.\n\
          - `definition` — go to definition of symbol at line:character (requires `file_path`)\n\
          - `references` — find all references to symbol at line:character (requires `file_path`)\n\
-         - `hover` — get type/documentation info at line:character (requires `file_path`)\n\n\
+         - `hover` — get type/documentation info at line:character (requires `file_path`)\n\
+         - `document_symbol` — list symbols in a file (requires `file_path`)\n\
+         - `workspace_symbol` — search symbols across the workspace (requires `file_path`; optional `query`)\n\n\
          Starts the language server on demand for each target file when needed. \
          Positions are 1-indexed (line 1, character 1 = first char of first line).\n\
          Use `diagnostics` after making changes to check for errors."
@@ -172,7 +178,7 @@ impl Tool for LspTool {
             "properties": {
                 "action": {
                     "type": "string",
-                    "enum": ["diagnostics", "definition", "references", "hover"],
+                    "enum": ["diagnostics", "definition", "references", "hover", "document_symbol", "workspace_symbol"],
                     "description": "The LSP action to perform"
                 },
                 "paths": {
@@ -191,6 +197,10 @@ impl Tool for LspTool {
                 "character": {
                     "type": "integer",
                     "description": "Character position (1-indexed). Required for definition/references/hover."
+                },
+                "query": {
+                    "type": "string",
+                    "description": "Search query for action=workspace_symbol. Empty string asks the server for all symbols it is willing to return."
                 }
             },
             "required": ["action"]
@@ -206,11 +216,11 @@ impl Tool for LspTool {
 
         match action.as_str() {
             "diagnostics" => self.run_diagnostics(&params).await,
-            "definition" | "references" | "hover" => {
-                self.run_position_action(&action, &params).await
+            "definition" | "references" | "hover" | "document_symbol" | "workspace_symbol" => {
+                self.run_code_intelligence_action(&action, &params).await
             }
             _ => Err(ToolError::InvalidParams(format!(
-                "Unknown action '{}'. Use: diagnostics, definition, references, hover",
+                "Unknown action '{}'. Use: diagnostics, definition, references, hover, document_symbol, workspace_symbol",
                 action
             ))),
         }
@@ -296,7 +306,11 @@ impl LspTool {
         Ok(output)
     }
 
-    async fn run_position_action(&self, action: &str, params: &Value) -> Result<String, ToolError> {
+    async fn run_code_intelligence_action(
+        &self,
+        action: &str,
+        params: &Value,
+    ) -> Result<String, ToolError> {
         let file_path = required_string(params, "file_path").map_err(|_| {
             ToolError::InvalidParams(format!(
                 "action '{}' requires `file_path` (absolute path to a single file)",
@@ -370,8 +384,34 @@ impl LspTool {
                     format_hover(&result)
                 ))
             }
+            "document_symbol" => {
+                let result = manager
+                    .document_symbol(language, &uri)
+                    .await
+                    .map_err(ToolError::ExecutionFailed)?;
+
+                Ok(format!(
+                    "Document symbols for {}:\n{}",
+                    file_path,
+                    format_document_symbols(&result)
+                ))
+            }
+            "workspace_symbol" => {
+                let query = params.get("query").and_then(Value::as_str).unwrap_or("");
+                let result = manager
+                    .workspace_symbol(language, query)
+                    .await
+                    .map_err(ToolError::ExecutionFailed)?;
+
+                Ok(format!(
+                    "Workspace symbols matching {:?} from {}:\n{}",
+                    query,
+                    file_path,
+                    format_workspace_symbols(&result)
+                ))
+            }
             other => Err(ToolError::InvalidParams(format!(
-                "Unknown position action '{}'",
+                "Unknown code intelligence action '{}'",
                 other
             ))),
         }

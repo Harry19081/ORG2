@@ -358,8 +358,8 @@ pub(super) static TOOLS: &[ToolEntry] = &[
     },
     ToolEntry {
         name: tool_names::QUERY_LSP,
-        description: "Query language servers for diagnostics, completions, and symbols.",
-        description_detail: "Talks to installed Language Servers for diagnostics, completions, definitions, references, and document symbols. Grounds edits in real type and project structure.",
+        description: "Query language servers for diagnostics and code navigation.",
+        description_detail: "Talks to installed Language Servers for diagnostics, definitions, references, hover details, document symbols, and workspace symbol search. Grounds edits in real type and project structure.",
         category: tool_categories::CODING,
         icon_id: "braces",
         simulator_app: AppCode,
@@ -374,6 +374,8 @@ pub(super) static TOOLS: &[ToolEntry] = &[
             action_sub!("definition", "Go to definition at a position", Explore, labels: "tools.queryLspDefinitionRunning", "tools.queryLspDefinitionDone", "tools.queryLspDefinitionFailed"),
             action_sub!("references", "Find all references of a symbol", Explore, labels: "tools.queryLspReferencesRunning", "tools.queryLspReferencesDone", "tools.queryLspReferencesFailed"),
             action_sub!("hover", "Get type info and documentation at a position", Explore, labels: "tools.queryLspHoverRunning", "tools.queryLspHoverDone", "tools.queryLspHoverFailed"),
+            action_sub!("document_symbol", "List symbols in a file", Explore, labels: "tools.queryLspRunning", "tools.queryLspDone", "tools.queryLspFailed"),
+            action_sub!("workspace_symbol", "Search symbols across the workspace", Explore, labels: "tools.queryLspRunning", "tools.queryLspDone", "tools.queryLspFailed"),
         ],
         required_capability: CapCoding,
         ..DEFAULT_TOOL_ENTRY

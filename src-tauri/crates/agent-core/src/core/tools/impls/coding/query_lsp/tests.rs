@@ -1,7 +1,8 @@
 use crate::tools::impls::coding::query_lsp::*;
 use lsp::types::{
-    Diagnostic, DiagnosticSeverity, GotoDefinitionResponse, Hover, HoverContents, Location,
-    LocationLink, MarkedString, MarkupContent, MarkupKind, Position, Range, Uri,
+    Diagnostic, DiagnosticSeverity, DocumentSymbol, DocumentSymbolResponse, GotoDefinitionResponse,
+    Hover, HoverContents, Location, LocationLink, MarkedString, MarkupContent, MarkupKind,
+    Position, Range, SymbolInformation, SymbolKind, Uri, WorkspaceSymbolResponse,
 };
 use serde_json::json;
 use std::str::FromStr;
@@ -679,4 +680,86 @@ fn expand_diagnostic_paths_empty_dir_returns_empty() {
     let expanded =
         super::expand_diagnostic_paths(&[dir.path().to_string_lossy().into_owned()]).unwrap();
     assert!(expanded.is_empty());
+}
+
+#[test]
+#[allow(deprecated)]
+fn format_document_symbols_nested() {
+    let response = Some(DocumentSymbolResponse::Nested(vec![DocumentSymbol {
+        name: "App".to_string(),
+        detail: Some("struct App".to_string()),
+        kind: SymbolKind::STRUCT,
+        tags: None,
+        deprecated: None,
+        range: Range {
+            start: Position {
+                line: 0,
+                character: 0,
+            },
+            end: Position {
+                line: 10,
+                character: 0,
+            },
+        },
+        selection_range: Range {
+            start: Position {
+                line: 1,
+                character: 4,
+            },
+            end: Position {
+                line: 1,
+                character: 7,
+            },
+        },
+        children: Some(vec![DocumentSymbol {
+            name: "render".to_string(),
+            detail: None,
+            kind: SymbolKind::METHOD,
+            tags: None,
+            deprecated: None,
+            range: Range {
+                start: Position {
+                    line: 3,
+                    character: 0,
+                },
+                end: Position {
+                    line: 4,
+                    character: 0,
+                },
+            },
+            selection_range: Range {
+                start: Position {
+                    line: 3,
+                    character: 8,
+                },
+                end: Position {
+                    line: 3,
+                    character: 14,
+                },
+            },
+            children: None,
+        }]),
+    }]));
+
+    let out = format_document_symbols(&response);
+    assert!(out.contains("App [struct] L2:5"));
+    assert!(out.contains("struct App"));
+    assert!(out.contains("render [method] L4:9"));
+}
+
+#[test]
+#[allow(deprecated)]
+fn format_workspace_symbols_flat() {
+    let response = Some(WorkspaceSymbolResponse::Flat(vec![SymbolInformation {
+        name: "run".to_string(),
+        kind: SymbolKind::FUNCTION,
+        tags: None,
+        deprecated: None,
+        location: loc("file:///repo/src/main.rs", 4, 2),
+        container_name: Some("main".to_string()),
+    }]));
+
+    let out = format_workspace_symbols(&response);
+    assert!(out.contains("run [function] /repo/src/main.rs:5:3"));
+    assert!(out.contains("(main)"));
 }
