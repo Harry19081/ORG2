@@ -551,6 +551,7 @@ export function createRustAgentAdapter(
         isResume,
         clientMessageId,
         turnIntentId,
+        turnIntentSource,
         sessionRepoPath,
       } = input;
       // The session row's persisted repo is the source of truth for
@@ -578,6 +579,7 @@ export function createRustAgentAdapter(
           ...(isResume ? { isResume: true } : {}),
           ...(clientMessageId ? { clientMessageId } : {}),
           ...(turnIntentId ? { turnIntentId } : {}),
+          ...(turnIntentSource ? { turnIntentSource } : {}),
         },
         sessionId
       );

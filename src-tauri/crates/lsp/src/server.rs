@@ -347,6 +347,10 @@ impl LspServer {
                     "hover": { "dynamicRegistration": true },
                     "definition": { "dynamicRegistration": true },
                     "references": { "dynamicRegistration": true },
+                    "documentSymbol": {
+                        "dynamicRegistration": true,
+                        "hierarchicalDocumentSymbolSupport": true
+                    },
                     "documentHighlight": { "dynamicRegistration": true },
                     "publishDiagnostics": {
                         "relatedInformation": true
@@ -361,6 +365,9 @@ impl LspServer {
                         "dynamicRegistration": true
                     },
                     "didChangeWatchedFiles": {
+                        "dynamicRegistration": true
+                    },
+                    "symbol": {
                         "dynamicRegistration": true
                     },
                     "configuration": true
@@ -795,6 +802,44 @@ impl LspServer {
             work_done_progress_params: Default::default(),
         };
         self.send_typed_request("textDocument/hover", &params, Duration::from_secs(10))
+            .await
+    }
+
+    /// Request textDocument/documentSymbol for a synced file.
+    pub async fn document_symbol(
+        &self,
+        uri: &str,
+    ) -> Result<Option<DocumentSymbolResponse>, String> {
+        self.require_capability(|c| c.supports_document_symbol(), "document symbols")
+            .await?;
+        let params = DocumentSymbolParams {
+            text_document: TextDocumentIdentifier {
+                uri: parse_uri(uri)?,
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        };
+        self.send_typed_request(
+            "textDocument/documentSymbol",
+            &params,
+            Duration::from_secs(15),
+        )
+        .await
+    }
+
+    /// Request workspace/symbol for the initialized workspace.
+    pub async fn workspace_symbol(
+        &self,
+        query: &str,
+    ) -> Result<Option<WorkspaceSymbolResponse>, String> {
+        self.require_capability(|c| c.supports_workspace_symbol(), "workspace symbols")
+            .await?;
+        let params = WorkspaceSymbolParams {
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            query: query.to_string(),
+        };
+        self.send_typed_request("workspace/symbol", &params, Duration::from_secs(15))
             .await
     }
 

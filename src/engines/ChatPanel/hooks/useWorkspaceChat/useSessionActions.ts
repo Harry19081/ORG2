@@ -107,6 +107,30 @@ export function hasPriorTurns(
   return false;
 }
 
+function eventResultObject(event: SessionEvent): Record<string, unknown> {
+  if (!event.result) return {};
+  if (typeof event.result === "string") {
+    try {
+      const parsed = JSON.parse(event.result);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? (parsed as Record<string, unknown>)
+        : {};
+    } catch {
+      return {};
+    }
+  }
+  return typeof event.result === "object" && !Array.isArray(event.result)
+    ? (event.result as Record<string, unknown>)
+    : {};
+}
+
+function isStopRollbackEligibleUserEvent(event: SessionEvent): boolean {
+  if (event.source !== "user") return false;
+  const result = eventResultObject(event);
+  const turnIntentSource = result.turnIntentSource;
+  return turnIntentSource === undefined || turnIntentSource === "user_submit";
+}
+
 export function getCurrentTurnUserEventId(
   events: readonly SessionEvent[],
   sessionId: string
@@ -114,7 +138,8 @@ export function getCurrentTurnUserEventId(
   for (let i = events.length - 1; i >= 0; i--) {
     const event = events[i];
     if (event.sessionId && event.sessionId !== sessionId) continue;
-    if (event.source === "user") return event.id;
+    if (isStopRollbackEligibleUserEvent(event)) return event.id;
+    if (event.source === "user") return null;
   }
   return null;
 }
@@ -263,6 +288,7 @@ export function useSessionActions(options: UseSessionActionsOptions) {
         // Multi-turn: signal ChatHistory to navigate to the previous page.
         store.set(stopEarlyCancelEpochAtom, (prev) => prev + 1);
       } else {
+        setSessionRolledBack(true);
         // First conversation: clear the session so the creator shows.
         store.set(clearSessionAtom);
         store.set(activeSessionIdAtom, null);

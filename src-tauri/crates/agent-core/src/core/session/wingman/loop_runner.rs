@@ -169,6 +169,9 @@ impl WingmanLoop {
                     chat_id: None,
                     turn_id: Some(turn_id.clone()),
                     turn_intent_id,
+                    turn_intent_source: Some(
+                        crate::foundation::session_bridge::TurnIntentBridgeSource::Wingman,
+                    ),
                 };
 
                 let response = crate::session::process_message(

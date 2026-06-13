@@ -9,8 +9,9 @@
 //! crate boundary, not these formatters, is now the JSON↔Rust seam.
 
 use lsp::types::{
-    Diagnostic, DiagnosticSeverity, GotoDefinitionResponse, Hover, HoverContents, Location,
-    LocationLink, MarkedString,
+    Diagnostic, DiagnosticSeverity, DocumentSymbol, DocumentSymbolResponse, GotoDefinitionResponse,
+    Hover, HoverContents, Location, LocationLink, MarkedString, SymbolInformation, SymbolKind,
+    WorkspaceSymbol, WorkspaceSymbolResponse,
 };
 
 /// Format LSP diagnostics into a human-readable string.
@@ -122,6 +123,149 @@ pub(super) fn format_hover(hover: &Option<Hover>) -> String {
         "No hover information available.".to_string()
     } else {
         text
+    }
+}
+
+pub(super) fn format_document_symbols(response: &Option<DocumentSymbolResponse>) -> String {
+    match response {
+        None => "No document symbols found.".to_string(),
+        Some(DocumentSymbolResponse::Flat(symbols)) => format_symbol_information_lines(symbols),
+        Some(DocumentSymbolResponse::Nested(symbols)) => format_nested_document_symbols(symbols),
+    }
+}
+
+pub(super) fn format_workspace_symbols(response: &Option<WorkspaceSymbolResponse>) -> String {
+    match response {
+        None => "No workspace symbols found.".to_string(),
+        Some(WorkspaceSymbolResponse::Flat(symbols)) => format_symbol_information_lines(symbols),
+        Some(WorkspaceSymbolResponse::Nested(symbols)) => format_workspace_symbol_lines(symbols),
+    }
+}
+
+fn format_nested_document_symbols(symbols: &[DocumentSymbol]) -> String {
+    if symbols.is_empty() {
+        return "No document symbols found.".to_string();
+    }
+
+    let mut lines = Vec::new();
+    for symbol in symbols {
+        push_document_symbol_line(symbol, 0, &mut lines);
+    }
+    lines.join("\n")
+}
+
+fn push_document_symbol_line(symbol: &DocumentSymbol, depth: usize, lines: &mut Vec<String>) {
+    let indent = "  ".repeat(depth + 1);
+    let line = symbol.selection_range.start.line + 1;
+    let col = symbol.selection_range.start.character + 1;
+    let detail = symbol
+        .detail
+        .as_deref()
+        .filter(|value| !value.trim().is_empty())
+        .map(|value| format!(" — {}", value))
+        .unwrap_or_default();
+    lines.push(format!(
+        "{}{} [{}] L{}:{}{}",
+        indent,
+        symbol.name,
+        symbol_kind_label(symbol.kind),
+        line,
+        col,
+        detail
+    ));
+
+    if let Some(children) = &symbol.children {
+        for child in children {
+            push_document_symbol_line(child, depth + 1, lines);
+        }
+    }
+}
+
+fn format_symbol_information_lines(symbols: &[SymbolInformation]) -> String {
+    if symbols.is_empty() {
+        return "No symbols found.".to_string();
+    }
+
+    symbols
+        .iter()
+        .map(|symbol| {
+            let path = uri_to_path(&symbol.location.uri.to_string());
+            let line = symbol.location.range.start.line + 1;
+            let col = symbol.location.range.start.character + 1;
+            let container = symbol
+                .container_name
+                .as_deref()
+                .filter(|value| !value.trim().is_empty())
+                .map(|value| format!(" ({})", value))
+                .unwrap_or_default();
+            format!(
+                "  {} [{}] {}:{}:{}{}",
+                symbol.name,
+                symbol_kind_label(symbol.kind),
+                path,
+                line,
+                col,
+                container
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn format_workspace_symbol_lines(symbols: &[WorkspaceSymbol]) -> String {
+    if symbols.is_empty() {
+        return "No workspace symbols found.".to_string();
+    }
+
+    symbols
+        .iter()
+        .map(|symbol| {
+            let container = symbol
+                .container_name
+                .as_deref()
+                .filter(|value| !value.trim().is_empty())
+                .map(|value| format!(" ({})", value))
+                .unwrap_or_default();
+            format!(
+                "  {} [{}]{}",
+                symbol.name,
+                symbol_kind_label(symbol.kind),
+                container
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn symbol_kind_label(kind: SymbolKind) -> &'static str {
+    match kind {
+        SymbolKind::FILE => "file",
+        SymbolKind::MODULE => "module",
+        SymbolKind::NAMESPACE => "namespace",
+        SymbolKind::PACKAGE => "package",
+        SymbolKind::CLASS => "class",
+        SymbolKind::METHOD => "method",
+        SymbolKind::PROPERTY => "property",
+        SymbolKind::FIELD => "field",
+        SymbolKind::CONSTRUCTOR => "constructor",
+        SymbolKind::ENUM => "enum",
+        SymbolKind::INTERFACE => "interface",
+        SymbolKind::FUNCTION => "function",
+        SymbolKind::VARIABLE => "variable",
+        SymbolKind::CONSTANT => "constant",
+        SymbolKind::STRING => "string",
+        SymbolKind::NUMBER => "number",
+        SymbolKind::BOOLEAN => "boolean",
+        SymbolKind::ARRAY => "array",
+        SymbolKind::OBJECT => "object",
+        SymbolKind::KEY => "key",
+        SymbolKind::NULL => "null",
+        SymbolKind::ENUM_MEMBER => "enum_member",
+        SymbolKind::STRUCT => "struct",
+        SymbolKind::EVENT => "event",
+        SymbolKind::OPERATOR => "operator",
+        SymbolKind::TYPE_PARAMETER => "type_parameter",
+        _ => "symbol",
     }
 }
 

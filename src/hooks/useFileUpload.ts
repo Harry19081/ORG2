@@ -59,8 +59,10 @@ export function useFileUpload(options: UseFileUploadOptions) {
   const droppedFiles = useAtomValue(droppedFilesAtom);
   const clearDroppedFiles = useSetAtom(clearDroppedFilesAtom);
 
-  const { handleImagePaste, handleImagePath } =
-    useImageAttachment(imageOwnerId);
+  const { handleImagePaste, handleImagePath } = useImageAttachment(
+    imageOwnerId,
+    { listenForE2EEvents: false }
+  );
 
   /**
    * Handle file picker selection: images → unified image atom, everything

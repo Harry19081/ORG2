@@ -672,6 +672,44 @@ impl LspManager {
         server.hover(uri, line, character).await
     }
 
+    /// Get document symbols for a file.
+    pub async fn document_symbol(
+        &self,
+        language: &str,
+        uri: &str,
+    ) -> Result<Option<super::types::DocumentSymbolResponse>, String> {
+        let key = self
+            .find_server_for_language(language)
+            .await
+            .ok_or_else(|| format!("No LSP server running for language: {}", language))?;
+
+        let servers = self.servers.read().await;
+        let server = servers
+            .get(&key)
+            .ok_or_else(|| format!("Server not found: {:?}", key))?;
+
+        server.document_symbol(uri).await
+    }
+
+    /// Search workspace symbols for a running language server.
+    pub async fn workspace_symbol(
+        &self,
+        language: &str,
+        query: &str,
+    ) -> Result<Option<super::types::WorkspaceSymbolResponse>, String> {
+        let key = self
+            .find_server_for_language(language)
+            .await
+            .ok_or_else(|| format!("No LSP server running for language: {}", language))?;
+
+        let servers = self.servers.read().await;
+        let server = servers
+            .get(&key)
+            .ok_or_else(|| format!("Server not found: {:?}", key))?;
+
+        server.workspace_symbol(query).await
+    }
+
     /// Stop a specific LSP server (resolves first running server for the language).
     pub async fn stop_server(&self, language: &str) -> Result<(), String> {
         let key = self

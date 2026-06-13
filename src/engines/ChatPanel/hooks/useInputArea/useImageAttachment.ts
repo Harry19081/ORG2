@@ -54,7 +54,11 @@ function mimeFromPath(path: string): string | undefined {
   return EXTENSION_MIME[match[1]];
 }
 
-export function useImageAttachment(ownerId?: string) {
+export function useImageAttachment(
+  ownerId?: string,
+  options: { listenForE2EEvents?: boolean } = {}
+) {
+  const listenForE2EEvents = options.listenForE2EEvents !== false;
   const [images, setImages] = useAtom(chatImageAttachmentsAtom);
 
   const ownerImages = useMemo(
@@ -138,15 +142,34 @@ export function useImageAttachment(ownerId?: string) {
   );
 
   useEffect(() => {
+    if (!listenForE2EEvents) return;
+
     const handleE2EImageAttachment = (event: Event) => {
       const detail = (
         event as CustomEvent<{
           eventId?: string;
           fileName?: string;
           dataUrl?: string;
+          ownerId?: string;
         }>
       ).detail;
       if (!detail?.dataUrl?.startsWith("data:image/")) return;
+      if (detail.ownerId && detail.ownerId !== ownerId) return;
+      if (!detail.ownerId) {
+        const activeElement = document.activeElement;
+        if (!ownerId) {
+          if (activeElement?.closest("[data-chat-drop-target-id]")) return;
+        } else {
+          const target = Array.from(
+            document.querySelectorAll<HTMLElement>("[data-chat-drop-target-id]")
+          ).find(
+            (element) =>
+              element.getAttribute("data-chat-drop-target-id") === ownerId
+          );
+          if (target && activeElement && !target.contains(activeElement))
+            return;
+        }
+      }
 
       const e2eWindow = window as Window & {
         __orgiiE2EImageAttachLast?: Record<string, unknown>;
@@ -167,6 +190,7 @@ export function useImageAttachment(ownerId?: string) {
       e2eWindow.__orgiiE2EImageAttachLast = {
         eventId,
         fileName: detail.fileName,
+        ownerId: detail.ownerId,
         received: true,
         mime,
         size: file.size,
@@ -185,7 +209,7 @@ export function useImageAttachment(ownerId?: string) {
         handleE2EImageAttachment
       );
     };
-  }, [handleImagePaste]);
+  }, [handleImagePaste, listenForE2EEvents, ownerId]);
 
   /**
    * Add an image by absolute filesystem path.  Used by the Tauri drag-drop

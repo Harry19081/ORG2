@@ -228,4 +228,30 @@ describe("getCurrentTurnUserEventId", () => {
       getCurrentTurnUserEventId([event({ source: "assistant" })], "session-1")
     ).toBeNull();
   });
+
+  it("does not return a force-send user event for Stop rollback", () => {
+    expect(
+      getCurrentTurnUserEventId(
+        [
+          event({ id: "direct-user", source: "user" }),
+          event({ id: "direct-assist", source: "assistant" }),
+          event({
+            id: "force-send-user",
+            source: "user",
+            result: { turnIntentSource: "force_send" },
+          }),
+        ],
+        "session-1"
+      )
+    ).toBeNull();
+  });
+
+  it("keeps legacy user events eligible when no source is stamped", () => {
+    expect(
+      getCurrentTurnUserEventId(
+        [event({ id: "legacy-user", source: "user" })],
+        "session-1"
+      )
+    ).toBe("legacy-user");
+  });
 });

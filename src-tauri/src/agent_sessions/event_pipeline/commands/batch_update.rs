@@ -23,6 +23,33 @@ const SHELL_TOOLS: &[&str] = &[
     "run_shell",
 ];
 
+const DELETE_EVENT_MAX_RETRIES: u32 = 3;
+
+fn delete_event_with_retry(session_id: &str, event_id: &str) -> Result<(), String> {
+    for attempt in 0..DELETE_EVENT_MAX_RETRIES {
+        match session_persistence::delete_event(session_id, event_id) {
+            Ok(_) => return Ok(()),
+            Err(err) if attempt + 1 < DELETE_EVENT_MAX_RETRIES => {
+                let delay_ms = 250 * (attempt + 1) as u64;
+                tracing::debug!(
+                    session_id,
+                    event_id,
+                    error = %err,
+                    attempt = attempt + 1,
+                    max_retries = DELETE_EVENT_MAX_RETRIES,
+                    delay_ms,
+                    "es_remove_by_id persist delete failed; retrying"
+                );
+                std::thread::sleep(std::time::Duration::from_millis(delay_ms));
+            }
+            Err(err) => {
+                return Err(err.to_string());
+            }
+        }
+    }
+    Err("delete_event retry loop ran no attempts".to_string())
+}
+
 /// Complete the last running event (mark as completed).
 #[tauri::command]
 pub async fn es_complete_last_running(
@@ -68,12 +95,29 @@ pub async fn es_remove_by_id(
     if removed {
         let persist_sid = sid.clone();
         let persist_id = id.clone();
-        tokio::task::spawn_blocking(move || {
-            session_persistence::delete_event(&persist_sid, &persist_id)
-        })
-        .await
-        .map_err(|err| err.to_string())?
-        .map_err(|err| err.to_string())?;
+        let log_sid = persist_sid.clone();
+        let log_id = persist_id.clone();
+        tokio::spawn(async move {
+            let result = tokio::task::spawn_blocking(move || {
+                delete_event_with_retry(&persist_sid, &persist_id)
+            })
+            .await;
+            match result {
+                Ok(Ok(_)) => {}
+                Ok(Err(err)) => tracing::warn!(
+                    session_id = %log_sid,
+                    event_id = %log_id,
+                    error = %err,
+                    "es_remove_by_id failed to persist event deletion"
+                ),
+                Err(err) => tracing::warn!(
+                    session_id = %log_sid,
+                    event_id = %log_id,
+                    error = %err,
+                    "es_remove_by_id persistence task failed"
+                ),
+            }
+        });
         schedule_notify(&app, &state, &sid);
     }
     Ok(removed)

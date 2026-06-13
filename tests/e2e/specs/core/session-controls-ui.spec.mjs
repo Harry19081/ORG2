@@ -19,6 +19,7 @@ import {
   runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
+  runForceSendStopDoesNotWithdrawScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runIntermediateStreamingScenario,
@@ -148,6 +149,7 @@ const CONTROL_SCENARIO_NAMES = [
   "queue-does-not-autoflush-while-active",
   "stop-double-click-no-resubmit",
   "force-send",
+  "force-send-stop-keeps-turn",
   "rewind",
   "plan-build-direct",
   "plan-update",
@@ -316,6 +318,15 @@ describe("ORGII force-send queued follow-up behavior", function () {
   it("force-sends coherent follow-ups through Rust and CLI agents", async function () {
     this.timeout(1_200_000);
     await runScenario("force-send", runForceSendScenario, this);
+  });
+
+  it("does not withdraw a force-sent user turn when Stop is clicked immediately after Send Now", async function () {
+    this.timeout(1_200_000);
+    await runScenario(
+      "force-send-stop-keeps-turn",
+      runForceSendStopDoesNotWithdrawScenario,
+      this
+    );
   });
 
   it("rewinds agent file edits through the rendered Undo All control across Rust and CLI agents", async function () {

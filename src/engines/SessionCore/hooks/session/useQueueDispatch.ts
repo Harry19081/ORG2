@@ -247,12 +247,15 @@ export function useQueueDispatch(): void {
 
       void (async () => {
         try {
+          const turnIntentSource =
+            msg.priority === "now" ? "force_send" : "queue";
           const userEvent = createSyntheticUserEvent(
             sessionId,
             displayContent,
             {
               imageDataUrls,
               turnIntentId: msg.turnIntentId,
+              turnIntentSource,
             }
           );
           await eventStoreProxy.append([userEvent], sessionId);
@@ -274,6 +277,7 @@ export function useQueueDispatch(): void {
             imageDataUrls,
             clientMessageId: `queued:${sessionId}:${msg.id}`,
             turnIntentId: msg.turnIntentId,
+            turnIntentSource,
           });
           // Backend accepted the message — confirm the turn as running.
           confirmTurnRunning(sessionId);
