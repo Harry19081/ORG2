@@ -137,6 +137,11 @@ impl AnthropicClient {
         };
 
         let rejected_access_token = self.current_access_token()?;
+        tracing::info!(
+            "[anthropic] Claude Code OAuth lazy refresh start key={} reason=local_expiry_after_rejection access_len={}",
+            refresh_config.key_id,
+            rejected_access_token.len()
+        );
         let refreshed = key_vault::key_store::KEY_SERVICE
             .refresh_claude_code_oauth_key(&refresh_config.key_id, &rejected_access_token)
             .await
@@ -156,6 +161,10 @@ impl AnthropicClient {
             ProviderError::RequestFailed(format!("Anthropic auth lock poisoned: {err}"))
         })?;
         auth_state.access_token = access_token;
+        tracing::info!(
+            "[anthropic] Claude Code OAuth lazy refresh completed key={}",
+            refresh_config.key_id
+        );
         Ok(())
     }
 

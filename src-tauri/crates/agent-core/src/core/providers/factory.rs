@@ -85,10 +85,22 @@ async fn ensure_account_key_fresh(account_id: Option<&str>) -> Result<(), Provid
 
     match key.model_type {
         ModelType::ClaudeCode => {
+            tracing::info!(
+                "[factory] Claude Code OAuth preflight refresh check account={} name={:?} health={:?} failures={} enabled={}",
+                account_id,
+                key.name,
+                key.health_status,
+                key.oauth_refresh_failure_count,
+                key.enabled
+            );
             key_vault::key_store::KEY_SERVICE
                 .ensure_claude_code_oauth_key_fresh(account_id)
                 .await
                 .map_err(ProviderError::AuthError)?;
+            tracing::info!(
+                "[factory] Claude Code OAuth preflight refresh check completed account={}",
+                account_id
+            );
         }
         ModelType::Codex => {
             key_vault::key_store::KEY_SERVICE
