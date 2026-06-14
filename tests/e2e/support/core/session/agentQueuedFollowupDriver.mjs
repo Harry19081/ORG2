@@ -91,6 +91,8 @@ const CONTROL_SCENARIO_FILTER = (process.env.E2E_CONTROL_SCENARIOS ?? "")
   .map((value) => value.trim())
   .filter(Boolean);
 const DEFAULT_REPO_PATH = process.env.E2E_REPO_PATH;
+const E2E_PROVIDER_MODE = process.env.E2E_PROVIDER_MODE ?? "mock";
+const OAUTH_LIVE_MODE = E2E_PROVIDER_MODE === "oauth-live";
 const WORKSTATION_CODE_PATH = "/orgii/workstation/code";
 const CHAT_INPUT_SELECTOR =
   '[data-testid="chat-input"] [contenteditable="true"]';
@@ -757,7 +759,11 @@ function findTurnSummaryOrderingViolations(chatEvents) {
     const segment = chatEvents.slice(segmentStart, i);
     const summaryIndexes = segment
       .map((event, index) => ({ event, index }))
-      .filter(({ event }) => event.functionName === "turn_summary" || event.uiCanonical === "turn_summary");
+      .filter(
+        ({ event }) =>
+          event.functionName === "turn_summary" ||
+          event.uiCanonical === "turn_summary"
+      );
     for (const { event, index } of summaryIndexes) {
       const priorTurnOutput = segment
         .slice(0, index)
@@ -776,7 +782,11 @@ function findTurnSummaryOrderingViolations(chatEvents) {
             candidate.uiCanonical !== "turn_summary"
         );
       if (!priorTurnOutput || outputAfterSummary) {
-        violations.push({ summary: event, priorTurnOutput, outputAfterSummary });
+        violations.push({
+          summary: event,
+          priorTurnOutput,
+          outputAfterSummary,
+        });
       }
     }
     segmentStart = i;
@@ -797,7 +807,9 @@ async function assertTurnSummaryOrdering(label) {
 async function assertLiveAssistantOverlayOrdering(label) {
   const state = await inspectChatState(`${label}-live-overlay-ordering`);
   const chatEvents = state.chatEvents ?? [];
-  const liveIndex = chatEvents.findIndex((event) => event.id?.startsWith("live-assistant-"));
+  const liveIndex = chatEvents.findIndex((event) =>
+    event.id?.startsWith("live-assistant-")
+  );
   if (liveIndex < 0) return;
   const liveEvent = chatEvents[liveIndex];
   if (liveEvent.args?.syntheticLive !== true) {
@@ -874,7 +886,9 @@ async function assertNoVisiblePlanningFooter(label) {
 
 async function assertNoDuplicateTranscriptMessages(label) {
   const state = await inspectChatState(`${label}-duplicate-transcript-events`);
-  const eventById = new Map((state.chatEvents ?? []).map((event) => [event.id, event]));
+  const eventById = new Map(
+    (state.chatEvents ?? []).map((event) => [event.id, event])
+  );
   const eventEntries = (state.pipelineItems ?? [])
     .map((item) => (item.eventId ? eventById.get(item.eventId) : null))
     .filter(
@@ -932,21 +946,29 @@ function accountMatchesName(account, accountName) {
 async function installControlFlowInstrumentation(label) {
   const result = await execJS(js.installControlFlowInstrumentation);
   if (!result?.ok) {
-    throw new Error(`${label} failed to install control-flow instrumentation: ${JSON.stringify(result)}`);
+    throw new Error(
+      `${label} failed to install control-flow instrumentation: ${JSON.stringify(result)}`
+    );
   }
   return result;
 }
 
 async function readControlFlowInstrumentation() {
-  return (await execJS(js.readControlFlowInstrumentation)) ?? {
-    invokeCounts: {},
-    invokeLog: [],
-    maxEventLoopLagMs: 0,
-    tickCount: 0,
-  };
+  return (
+    (await execJS(js.readControlFlowInstrumentation)) ?? {
+      invokeCounts: {},
+      invokeLog: [],
+      maxEventLoopLagMs: 0,
+      tickCount: 0,
+    }
+  );
 }
 
-async function assertControlFlowHealthyAfterStop(label, beforeProbe, options = {}) {
+async function assertControlFlowHealthyAfterStop(
+  label,
+  beforeProbe,
+  options = {}
+) {
   const afterProbe = await readControlFlowInstrumentation();
   const beforeCounts = beforeProbe?.invokeCounts ?? {};
   const afterCounts = afterProbe?.invokeCounts ?? {};
@@ -974,6 +996,23 @@ async function assertControlFlowHealthyAfterStop(label, beforeProbe, options = {
   await assertNoDuplicateCommunicationMessages(`${label}-control-flow-health`);
 }
 
+function isRotatingOAuthCliAccount(account) {
+  return (
+    account?.auth_method === "oauth" &&
+    [CLAUDE_CODE_AGENT_TYPE, CODEX_AGENT_TYPE, GEMINI_AGENT_TYPE].includes(
+      account?.agent_type
+    )
+  );
+}
+
+function assertE2EOAuthAccountAllowed(account, label) {
+  if (!isRotatingOAuthCliAccount(account)) return;
+  if (OAUTH_LIVE_MODE && (account.name ?? "").startsWith("e2e-")) return;
+  throw new Error(
+    `Refusing OAuth account ${accountDisplayName(account)} for ${label} in E2E_PROVIDER_MODE=${E2E_PROVIDER_MODE}. Use E2E_PROVIDER_MODE=oauth-live with an e2e-* account in E2E_OAUTH_TEST_HOME.`
+  );
+}
+
 function accountMatchesChain(account, accountChain) {
   return accountChain.length === 0
     ? true
@@ -994,6 +1033,7 @@ function claudeCodeFallbackConfigs(accounts, baseConfig) {
   const candidateAccounts = accounts.filter(
     (row) =>
       row.agent_type === CLAUDE_CODE_AGENT_TYPE &&
+      (!isRotatingOAuthCliAccount(row) || OAUTH_LIVE_MODE) &&
       row.enabled &&
       row.has_session_token &&
       accountMatchesChain(row, CLAUDE_CODE_ACCOUNT_CHAIN) &&
@@ -1026,6 +1066,7 @@ function geminiFallbackConfigs(accounts, baseConfig) {
   const candidateAccounts = accounts.filter(
     (row) =>
       row.agent_type === GEMINI_AGENT_TYPE &&
+      (!isRotatingOAuthCliAccount(row) || OAUTH_LIVE_MODE) &&
       row.enabled &&
       row.has_session_token &&
       accountMatchesChain(row, GEMINI_ACCOUNT_CHAIN) &&
@@ -1112,7 +1153,9 @@ async function safePageDump() {
 }
 
 async function ensureAuthBypass() {
-  await ensureBrowserAuthBypass(process.env.E2E_BASE_URL ?? "http://127.0.0.1:13847");
+  await ensureBrowserAuthBypass(
+    process.env.E2E_BASE_URL ?? "http://127.0.0.1:13847"
+  );
 }
 
 async function waitForApp() {
@@ -1189,13 +1232,17 @@ function requireGeminiAccountFromChain(
   const account = accounts.find(
     (row) =>
       row.agent_type === GEMINI_AGENT_TYPE &&
+      (!isRotatingOAuthCliAccount(row) || OAUTH_LIVE_MODE) &&
       accountMatchesChain(row, GEMINI_ACCOUNT_CHAIN) &&
       row.enabled &&
       row.has_session_token &&
       (!requireRustAgentSupport || row.supports_rust_agents) &&
       GEMINI_MODEL_CHAIN.some((model) => accountSupportsModel(row, model))
   );
-  if (account) return account;
+  if (account) {
+    assertE2EOAuthAccountAllowed(account, "Gemini E2E config");
+    return account;
+  }
 
   const rows = accounts
     .filter((row) => row.agent_type === GEMINI_AGENT_TYPE)
@@ -1220,6 +1267,7 @@ function requireClaudeCodeConfigFromChain(
   const account = accounts.find(
     (row) =>
       row.agent_type === CLAUDE_CODE_AGENT_TYPE &&
+      (!isRotatingOAuthCliAccount(row) || OAUTH_LIVE_MODE) &&
       accountMatchesChain(row, CLAUDE_CODE_ACCOUNT_CHAIN) &&
       row.enabled &&
       row.has_session_token &&
@@ -1231,6 +1279,7 @@ function requireClaudeCodeConfigFromChain(
       CLAUDE_CODE_MODEL_CHAIN.find((candidate) =>
         accountSupportsModel(account, candidate)
       ) ?? account.enabled_models[0];
+    assertE2EOAuthAccountAllowed(account, "Claude Code E2E config");
     return { account, model };
   }
 
@@ -1270,7 +1319,10 @@ function requireAccount(accounts, options) {
     );
   });
   const account = candidates.find((row) => row.enabled) ?? candidates[0];
-  if (account) return account;
+  if (account) {
+    assertE2EOAuthAccountAllowed(account, `${options.agentType} E2E config`);
+    return account;
+  }
 
   const rows = accounts
     .filter((row) => row.agent_type === options.agentType)
@@ -1646,7 +1698,10 @@ async function stopActiveTurnIfNeeded(label) {
     ) {
       return;
     }
-    if (!observedStopped(finalState) && !observedStopped(finalDump?.sendState)) {
+    if (
+      !observedStopped(finalState) &&
+      !observedStopped(finalDump?.sendState)
+    ) {
       return;
     }
     throw error;
@@ -1700,7 +1755,9 @@ function parseMaybeJson(value) {
 async function assertSingleUserPromptInActiveTranscript(firstPrompt) {
   const promptPrefix = firstPrompt.slice(0, 120);
   const state = await inspectChatState("single-user-prompt-check");
-  const eventById = new Map((state.chatEvents ?? []).map((event) => [event.id, event]));
+  const eventById = new Map(
+    (state.chatEvents ?? []).map((event) => [event.id, event])
+  );
   const visibleEvents = (state.pipelineItems ?? [])
     .map((item) => (item.eventId ? eventById.get(item.eventId) : null))
     .filter(Boolean);
@@ -1771,7 +1828,8 @@ function rustAgentConfigs(configs) {
 }
 
 async function readCurrentModeFromMenu(label) {
-  const skillsToolsButtonSelector = '[data-testid="composer-skills-tools-button"]';
+  const skillsToolsButtonSelector =
+    '[data-testid="composer-skills-tools-button"]';
   // The slash menu renders mode entries as flat ModeRow items (the Mode
   // flyout trigger was removed in ddcbdbdd); the current mode row carries
   // a lucide Check icon via DropdownSelectedCheck.
@@ -1802,7 +1860,9 @@ async function waitForModePill(label, expectedText) {
       const text = await execJS(js.modePillText);
       if (typeof text === "string" && text.includes(expectedText)) return true;
       const menuMode = await readCurrentModeFromMenu(label);
-      return menuMode.ok && String(menuMode.triggerText ?? "").includes(expectedText);
+      return (
+        menuMode.ok && String(menuMode.triggerText ?? "").includes(expectedText)
+      );
     },
     {
       timeout: 15_000,
