@@ -534,7 +534,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       atBottom,
       setAtBottom,
       setIsChatScrolledToBottom,
-      isWpGeneWorkingRef,
       isPendingCancelRef,
       visibleRangeEndRef,
       pinLastGroupRef,

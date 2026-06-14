@@ -36,7 +36,6 @@ export interface UseChatScrollOptions {
   atBottom: boolean;
   setAtBottom: Dispatch<SetStateAction<boolean>>;
   setIsChatScrolledToBottom: (bottom: boolean) => void;
-  isWpGeneWorkingRef: MutableRefObject<boolean>;
   /** When true, a user-initiated cancel is in flight. Auto-scroll is
    *  suppressed to prevent the viewport from jumping upward as content
    *  shrinks (events finalizing, planning footer collapsing). */
@@ -91,7 +90,6 @@ export function useChatScroll({
   atBottom,
   setAtBottom,
   setIsChatScrolledToBottom,
-  isWpGeneWorkingRef,
   isPendingCancelRef,
   visibleRangeEndRef,
   pinLastGroupRef,
@@ -180,7 +178,7 @@ export function useChatScroll({
     if (shouldSuppressTurnCollapseFollow()) return;
     if (!alwaysFollowTail && !isContentOverflowingRef.current) return;
 
-    const isNearContentBottom = visibleRangeEndRef.current >= currentCount - 2;
+    const isNearContentBottom = visibleRangeEndRef.current >= currentCount - 1;
 
     if (
       currentCount > prevCount &&
@@ -241,14 +239,13 @@ export function useChatScroll({
       if (isPendingCancelRef.current) return false;
 
       const length = chatHistoryLengthRef.current;
-      const isNearContentBottom = visibleRangeEndRef.current >= length - 2;
+      const isNearContentBottom = visibleRangeEndRef.current >= length - 1;
 
       if (
         alwaysFollowTail ||
         isAtBottom ||
         atBottomRef.current ||
-        isNearContentBottom ||
-        isWpGeneWorkingRef.current
+        isNearContentBottom
       ) {
         cancelAnimationFrame(scrollRafRef.current);
         scrollRafRef.current = requestAnimationFrame(() => {
@@ -271,7 +268,6 @@ export function useChatScroll({
     },
     [
       virtuosoRef,
-      isWpGeneWorkingRef,
       isPendingCancelRef,
       visibleRangeEndRef,
       pinLastGroupRef,
