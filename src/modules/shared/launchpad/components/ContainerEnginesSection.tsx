@@ -15,6 +15,7 @@ import SettingsTable, {
 import { useRefreshSpin } from "@src/hooks/ui";
 import {
   CollapsibleSection,
+  DETAIL_PANEL_TOKENS,
   Placeholder,
 } from "@src/modules/shared/layouts/blocks";
 
@@ -134,7 +135,7 @@ const ContainerEnginesSection: React.FC<ContainerEnginesSectionProps> = ({
       }
     >
       {error ? (
-        <div className="rounded-lg bg-fill-2 p-4">
+        <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
           <Placeholder
             variant="error"
             title={t("navigation:launchpad.containerEngines.errorTitle")}
@@ -146,11 +147,11 @@ const ContainerEnginesSection: React.FC<ContainerEnginesSectionProps> = ({
           />
         </div>
       ) : loading ? (
-        <div className="rounded-lg bg-fill-2 p-4">
+        <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
           <Placeholder variant="loading" />
         </div>
       ) : engines.length === 0 ? (
-        <div className="rounded-lg bg-fill-2 p-4">
+        <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
           <Placeholder
             variant="empty"
             title={t("navigation:launchpad.containerEngines.emptyTitle")}

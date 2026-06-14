@@ -6,6 +6,7 @@ import type { CodeMapNode } from "@src/api/tauri/codeMap";
 import Button from "@src/components/Button";
 import InlineAlert from "@src/components/InlineAlert";
 import { useCodeMapSearch } from "@src/hooks/codeMap";
+import { DETAIL_PANEL_TOKENS } from "@src/modules/shared/layouts/blocks";
 
 interface CodeMapSearchPanelProps {
   workspacePath?: string | null;
@@ -25,7 +26,7 @@ export const CodeMapSearchPanel: React.FC<CodeMapSearchPanelProps> = ({
   }, [query, search]);
 
   return (
-    <div className="rounded-lg bg-fill-2 p-4">
+    <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
       <div className="mb-3 flex items-center gap-2">
         <Search size={14} className="text-text-2" />
         <h3 className="text-[13px] font-semibold text-text-1">
@@ -40,7 +41,7 @@ export const CodeMapSearchPanel: React.FC<CodeMapSearchPanelProps> = ({
             if (event.key === "Enter") handleSearch();
           }}
           placeholder={t("controlTower.codeMap.browser.searchPlaceholder")}
-          className="min-w-0 flex-1 rounded-md border border-border-2 bg-bg-1 px-3 py-2 text-[12px] text-text-1 outline-none transition-colors placeholder:text-text-4 focus:border-primary-6"
+          className="min-w-0 flex-1 rounded-md border border-border-2 bg-chat-pane px-3 py-2 text-[12px] text-text-1 outline-none transition-colors placeholder:text-text-4 focus:border-primary-6"
         />
         <Button
           variant="primary"
@@ -75,7 +76,7 @@ export const CodeMapSearchPanel: React.FC<CodeMapSearchPanelProps> = ({
             })}
           </div>
           {result.results.length === 0 ? (
-            <div className="rounded-md bg-bg-1 p-3 text-[12px] text-text-3">
+            <div className="rounded-md bg-chat-pane p-3 text-[12px] text-text-3">
               {t("controlTower.codeMap.browser.noResults")}
             </div>
           ) : (
@@ -85,7 +86,7 @@ export const CodeMapSearchPanel: React.FC<CodeMapSearchPanelProps> = ({
                   key={item.node.id}
                   type="button"
                   onClick={() => onSelectNode(item.node)}
-                  className="w-full rounded-md bg-bg-1 px-3 py-2 text-left transition-colors hover:bg-fill-3"
+                  className="w-full rounded-md bg-chat-pane px-3 py-2 text-left transition-colors hover:bg-fill-3"
                 >
                   <div className="flex min-w-0 items-center justify-between gap-2">
                     <span className="truncate text-[12px] font-medium text-text-1">
