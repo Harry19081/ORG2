@@ -62,7 +62,12 @@ rustflags = [
   # FFmpeg library search paths (arm64 Homebrew)
   "-L", "/opt/homebrew/lib",
   "-L", "/opt/homebrew/Cellar/ffmpeg/8.0.1_2/lib",
-  # lld: LLVM linker — ~3× faster than ld64 for incremental links.
-  # Requires: brew install llvm  (provides /opt/homebrew/bin/ld64.lld)
-  "-C", "link-arg=-fuse-ld=/opt/homebrew/bin/ld64.lld",
 ]
+# lld (LLVM linker) is ~3× faster than ld64 for incremental links but is a
+# machine-local optimization: the absolute Homebrew path is not present on CI
+# runners and breaks the release build with "invalid linker name". To opt in
+# locally, run `brew install llvm` and add the flag to your *personal*,
+# uncommitted `~/.cargo/config.toml` instead of here:
+#
+#   [target.aarch64-apple-darwin]
+#   rustflags = ["-C", "link-arg=-fuse-ld=/opt/homebrew/bin/ld64.lld"]
