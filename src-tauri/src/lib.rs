@@ -68,6 +68,7 @@ pub mod api;
 pub mod benchmark;
 pub mod cursor_ide_watch; // cursor_ide streaming delta watch commands
 pub mod infrastructure; // In-tree-only cross-cutting infrastructure (paths, platform, archive, index_manager, jsonrpc, housekeeping). Leaf pieces live in their own workspace crates.
+pub mod orgtrack;
 pub(crate) mod setup;
 pub mod usage_diagnostics;
 
@@ -335,9 +336,6 @@ pub fn run() {
                 }
             }
 
-            dev_record::collector::cleanup_old_data();
-            tracing::info!("[CodingTracker] Activity tracker initialized");
-
             perf_utils::ram_history::start_sampler();
             tracing::info!("[RamHistory] Background RAM sampler started");
 
@@ -398,14 +396,6 @@ pub fn run() {
             // ad-hoc tokio runtime.
             agent_core::specialization::memory::consolidation::spawn_consolidation_tick();
 
-            // Retroactive backfill: scan git history + IDE databases for offline activity,
-            // then scan IDE local history for file-edit timestamps
-            std::thread::spawn(|| {
-                dev_record::retroactive::backfill_offline_activity();
-                if let Err(err) = dev_record::heartbeat_import::scan_all() {
-                    tracing::warn!(error = %err, "[heartbeat_import] Startup scan failed");
-                }
-            });
 
             // Create WebSocket broadcast channel for real-time events
             let (ws_tx, _ws_rx) = tokio::sync::broadcast::channel::<String>(1000);

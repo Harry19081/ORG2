@@ -2,7 +2,7 @@
 //! converts into a `SessionEvent` for rendering.
 //!
 //! Lives here (not in `agent_sessions::cli::parsers::types`) so crates
-//! that read or emit chunks — `dev_record`, `agent_sessions`,
+//! that read or emit chunks — `orgtrack_core`, `agent_sessions`,
 //! event-pipeline ingestion, websocket broadcasters — don't have to
 //! depend on each other or on the parent `app` crate just to type the
 //! shape they pass through.

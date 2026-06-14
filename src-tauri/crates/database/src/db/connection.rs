@@ -16,7 +16,7 @@
 //! ## Schema-init dispatcher
 //!
 //! The actual `CREATE TABLE` DDL is owned by the `app` crate (each domain
-//! module — `agent_sessions`, `inbox`, `dev_record`, `agent_core::*` —
+//! module — `agent_sessions`, `inbox`, `orgtrack_core`, `agent_core::*` —
 //! contributes its own `init_*_tables`). At app startup, `app::run()` calls
 //! [`register_sessions_init`] / [`register_projects_init`] with a function
 //! pointer that walks every domain initializer in the right order. The

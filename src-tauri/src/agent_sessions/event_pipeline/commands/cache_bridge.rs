@@ -2,7 +2,7 @@
 //!
 //! Load/save events from SQLite cache with SessionEvent <-> CachedEvent conversion.
 
-use dev_record::cursor::history::CURSORIDE_SESSION_PREFIX;
+use orgtrack_core::sources::cursor_ide::history::CURSORIDE_SESSION_PREFIX;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, State};
 

@@ -1,0 +1,35 @@
+[package]
+name = "orgtrack_core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85.0"
+description = "Publishable core for developer activity collection, canonical orgtrack records, SQLite storage, replay/stat projections, and repo sync."
+license = "AGPL-3.0-or-later"
+publish = false
+
+[lib]
+name = "orgtrack_core"
+path = "src/lib.rs"
+
+[features]
+default = ["sqlite", "repo-sync", "git"]
+sqlite = ["dep:rusqlite"]
+repo-sync = ["dep:sha2"]
+git = []
+source-cursor = []
+source-claude-code = []
+source-codex = []
+source-orgii-cli = []
+source-orgii-rust-agents = []
+schema = []
+
+[dependencies]
+core_types = { path = "../types" }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { workspace = true }
+rusqlite = { workspace = true, optional = true }
+sha2 = { version = "0.10", optional = true }
+dirs = "6.0"
+similar = "2.6"

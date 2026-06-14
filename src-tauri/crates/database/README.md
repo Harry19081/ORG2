@@ -35,7 +35,7 @@ conn.execute("INSERT INTO ...", params![...])?;
 | `agent_core::session`       | Unified session persistence                |
 | `agent_core::variants::os`  | OS Agent context                           |
 | `agent_core::variants::sde` | SDE Agent context and persistence          |
-| `dev_record`                | Development activity records               |
+| `orgtrack_core`             | Orgtrack records and source history caches |
 | `lineage`                   | AI session → commit tracking               |
 | `git::repos`                | Repository tracking                        |
 | `inbox`                     | Message persistence                        |
@@ -43,7 +43,7 @@ conn.execute("INSERT INTO ...", params![...])?;
 **Schema Initialization:**
 
 The actual `CREATE TABLE` DDL is owned by the `app` crate (each domain
-module — `agent_sessions`, `inbox`, `dev_record`, `agent_core::*` —
+module — `agent_sessions`, `inbox`, `orgtrack_core`, `agent_core::*` —
 contributes its own `init_*_tables`). At startup, `app::run()` calls
 `database::register_sessions_init` / `database::register_projects_init`
 with a function pointer that walks every domain initializer in the order
@@ -53,7 +53,7 @@ below. The dispatcher fires once per physical DB path per process:
 2. `cli_session::init_cli_agent_tables` — code_sessions, code_session_chunks
 3. `inbox::init_inbox_tables` — inbox messages
 4. `agent_core::knowledge::schema::init_kg_tables` — knowledge graph
-5. `dev_record::schema::init_tables` — dev activity records
-6. `lineage::schema::init_lineage_tables` — provenance, commit associations
-7. `agent_core::session::persistence::init` — unified session columns
-
+5. `orgtrack_core::store::sqlite::SqliteRecordStore::init_tables` — orgtrack records
+6. `orgtrack_core::store::sqlite::SqliteRecordStore::init_source_cache_tables` — source history caches
+7. `lineage::schema::init_lineage_tables` — provenance, commit associations
+8. `agent_core::session::persistence::init` — unified session columns

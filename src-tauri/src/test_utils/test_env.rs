@@ -43,7 +43,8 @@ fn prime_schema(_sandbox_root: &Path) {
     let _ = session_persistence::init_session_tables(&conn);
     let _ = crate::agent_sessions::cli::init_cli_agent_tables(&conn);
     let _ = inbox::init_inbox_tables(&conn);
-    let _ = dev_record::schema::init_tables(&conn);
+    let _ = orgtrack_core::store::sqlite::SqliteRecordStore::init_tables(&conn);
+    let _ = orgtrack_core::store::sqlite::SqliteRecordStore::init_source_cache_tables(&conn);
     let _ = project_management::lineage::schema::init_lineage_tables(&conn);
     // `agent_core::session::persistence::init` only ALTERs the existing
     // `agent_sessions` table; the table itself is owned by

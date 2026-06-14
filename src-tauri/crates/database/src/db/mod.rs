@@ -8,7 +8,7 @@
 //!   - SDE Agent snapshots/todos/files (`agent_core::sde_agent::persistence`)
 //!   - CLI agent sessions & chunks (`cli_session`)
 //!   - Repository tracking (`git::repos::repo_db`)
-//!   - Development activity records (`dev_record`)
+//!   - Orgtrack sessions and source history caches (`orgtrack_core`)
 //!   - Lineage tracking (`lineage`)
 //!   - Orchestrator runtime state (`project_management::orchestrator`)
 //!   - Inbox messages (`inbox`)
