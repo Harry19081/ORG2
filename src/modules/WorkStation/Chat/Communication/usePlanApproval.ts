@@ -33,6 +33,15 @@ interface UsePlanApprovalOptions {
 
 export interface PlanApprovalState {
   activePlanMessage: MessageEntry | null;
+  /**
+   * Stable, view-independent id of the plan that is currently pending, or
+   * null when nothing is pending. Unlike `activePlanMessage.eventId` (which
+   * can switch between a synthesized snapshot id and a real event id as the
+   * view mode changes), this is derived straight from the pending-approval
+   * record so it stays constant for a given plan — making it safe to key
+   * user view/preview overrides on.
+   */
+  pendingPlanId: string | null;
   isPlanDoc: boolean;
   isPlanPending: boolean;
   isEditing: boolean;
@@ -198,6 +207,12 @@ export function usePlanApproval({
   );
   const isPlanPending =
     matchesCurrentPendingPlan && planViewState.currentSurfaceVisible;
+  const pendingPlanId =
+    isPlanPending && approvalState?.current
+      ? approvalState.current.planRevisionId ||
+        approvalState.current.toolCallId ||
+        "pending-plan"
+      : null;
   const sessionIsWorking =
     planSessionId === activeSessionId &&
     (runtimeStatus === "running" || runtimeStatus === "installing");
@@ -286,6 +301,7 @@ export function usePlanApproval({
 
   return {
     activePlanMessage,
+    pendingPlanId,
     isPlanDoc,
     isPlanPending,
     isEditing,

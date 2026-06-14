@@ -8,7 +8,14 @@
  * - Right: ReplayTabBar (Messages / Kanban / Interactions / Preview) + stacked event viewer
  */
 import { useAtomValue } from "jotai";
-import React, { Suspense, lazy, memo, useCallback, useMemo } from "react";
+import React, {
+  Suspense,
+  lazy,
+  memo,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 import TabPill from "@src/components/TabPill";
@@ -43,6 +50,12 @@ import {
   buildPrimarySidebarConfig,
 } from "../../shared";
 import MessageViewer from "./MessageViewer";
+import {
+  type PlanIntentOverride,
+  computeEffectivePlanPreview,
+  computeEffectivePlanView,
+} from "./planPreviewView";
+import type { MessageViewMode } from "./types";
 import { useMessages } from "./useMessages";
 import { usePlanApproval } from "./usePlanApproval";
 import { useReplayTabs } from "./useReplayTabs";
@@ -116,14 +129,70 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
     interactionMessages,
   ]);
 
+  const { activePlanMessage, pendingPlanId, isPlanDoc, isPlanPending } =
+    usePlanApproval({
+      interactionMessages,
+      selectedMessage: state.selectedMessage,
+      viewMode,
+    });
+
+  // Plan-scoped user intent. When the user explicitly picks a replay view or
+  // flips the source/preview toggle while a plan is pending, we tag that choice
+  // with the plan's id in a single intent object. The effective values below
+  // honour the intent only while that same plan stays pending — replacing the
+  // old auto-open Effect + dedup-ref with a pure render-time derivation.
+  const [planIntentOverride, setPlanIntentOverride] =
+    useState<PlanIntentOverride | null>(null);
+
+  const currentPlanId = pendingPlanId;
+  const effectiveViewMode = computeEffectivePlanView({
+    baseView: viewMode,
+    currentPlanId,
+    override: planIntentOverride,
+  });
+  const effectivePreviewMode = computeEffectivePlanPreview({
+    currentPlanId,
+    override: planIntentOverride,
+  });
+
+  // Merge a partial choice into the existing intent when it targets the same
+  // plan (so setting the view never clobbers a prior preview choice, and vice
+  // versa); otherwise start a fresh intent for the current plan.
+  const recordPlanIntent = useCallback(
+    (patch: { view?: MessageViewMode; preview?: boolean }) => {
+      if (!currentPlanId) return;
+      setPlanIntentOverride((prev) =>
+        prev && prev.planId === currentPlanId
+          ? { ...prev, ...patch }
+          : { planId: currentPlanId, ...patch }
+      );
+    },
+    [currentPlanId]
+  );
+
+  const handleViewModeChange = useCallback(
+    (nextView: MessageViewMode) => {
+      setViewMode(nextView);
+      recordPlanIntent({ view: nextView });
+    },
+    [setViewMode, recordPlanIntent]
+  );
+
+  const handlePreviewToggle = useCallback(
+    (nextPreview: boolean) => {
+      recordPlanIntent({ preview: nextPreview });
+    },
+    [recordPlanIntent]
+  );
+
   const currentMessages =
-    viewMode === "chat"
+    effectiveViewMode === "chat"
       ? transcriptMessages
-      : viewMode === "todo"
+      : effectiveViewMode === "todo"
         ? state.todoMessages
-        : viewMode === "think"
+        : effectiveViewMode === "think"
           ? state.thinkMessages
-          : viewMode === "preview"
+          : effectiveViewMode === "preview"
             ? previewMessages
             : interactionMessages;
   const selectedMessageIsPlan = Boolean(
@@ -132,36 +201,24 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
   );
 
   const { replayTabs, activeTabId, handleTabClick } = useReplayTabs({
-    viewMode,
-    setViewMode,
+    viewMode: effectiveViewMode,
+    setViewMode: handleViewModeChange,
   });
 
   const headerBreadcrumbLabel = useMemo(() => {
-    if (viewMode === "todo") {
+    if (effectiveViewMode === "todo") {
       return t("simulator.replay.channelsSidebar.kanban");
     }
-    if (viewMode === "interaction") {
+    if (effectiveViewMode === "interaction") {
       return t("simulator.replay.channelsSidebar.interactions");
     }
-    if (viewMode === "preview") {
+    if (effectiveViewMode === "preview") {
       return t("common:common.preview");
     }
     return t("simulator.replay.channelsSidebar.messages");
-  }, [t, viewMode]);
+  }, [t, effectiveViewMode]);
 
   const headerFilePath = headerBreadcrumbLabel;
-
-  const {
-    activePlanMessage,
-    isPlanDoc,
-    isPlanPending,
-    isPreviewMode,
-    setIsPreviewMode,
-  } = usePlanApproval({
-    interactionMessages,
-    selectedMessage: state.selectedMessage,
-    viewMode,
-  });
 
   const handleMessageClick = useCallback(
     (messageId: string) => {
@@ -171,22 +228,22 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
           planAliasesContain(getPlanEventAliases(message.event), messageId)
         )
       ) {
-        setViewMode("preview");
+        handleViewModeChange("preview");
       }
     },
-    [jumpToMessage, previewMessages, setViewMode]
+    [jumpToMessage, previewMessages, handleViewModeChange]
   );
 
   const planTrailingSlot =
     isPlanDoc && isPlanPending ? (
       <div className="flex h-full items-center gap-2 px-2">
         <TabPill
-          activeTab={isPreviewMode ? "preview" : "source"}
+          activeTab={effectivePreviewMode ? "preview" : "source"}
           tabs={[
             { key: "source", label: t("common:common.sourceCode") },
             { key: "preview", label: t("common:common.preview") },
           ]}
-          onChange={(key) => setIsPreviewMode(key === "preview")}
+          onChange={(key) => handlePreviewToggle(key === "preview")}
           variant="pill"
           fillWidth={false}
           size="small"
@@ -265,16 +322,16 @@ const SimulatorMessagesComponent: React.FC<SimulatorMessagesProps> = ({
       >
         <MessageViewer
           messages={currentMessages}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
+          viewMode={effectiveViewMode}
+          setViewMode={handleViewModeChange}
           orgMembers={orgMembers}
           sessionReplayMode={mode}
-          planPreviewMode={isPlanDoc ? isPreviewMode : undefined}
+          planPreviewMode={isPlanDoc ? effectivePreviewMode : undefined}
           planDocPending={isPlanDoc && isPlanPending}
           activePlanMessage={activePlanMessage}
           selectedMessage={state.selectedMessage}
           previewSelectedPlan={
-            viewMode === "preview" &&
+            effectiveViewMode === "preview" &&
             (hasLocalSelection || selectedMessageIsPlan)
           }
           onMessageClick={handleMessageClick}
