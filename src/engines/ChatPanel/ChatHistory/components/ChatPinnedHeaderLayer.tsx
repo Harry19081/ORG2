@@ -35,6 +35,7 @@ interface ChatPinnedHeaderLayerProps {
   groupChatViewAvailable?: boolean;
   groupChatViewActive?: boolean;
   onGroupChatViewToggle?: (active: boolean) => void;
+  paginationOnLastPage?: boolean;
   showPinnedTurnHeader: boolean;
   sessionId: string | null;
   sourceGroupIndex?: number;
@@ -77,6 +78,7 @@ const ChatPinnedHeaderLayer: React.FC<ChatPinnedHeaderLayerProps> = memo(
     groupChatViewAvailable,
     groupChatViewActive,
     onGroupChatViewToggle,
+    paginationOnLastPage = false,
     showPinnedTurnHeader,
     sessionId,
     sourceGroupIndex,
@@ -136,7 +138,7 @@ const ChatPinnedHeaderLayer: React.FC<ChatPinnedHeaderLayerProps> = memo(
           hasPinnedContent={hasPinnedContent}
           collapseLabelVariant={collapseLabelVariant}
           collapseTailWhenIdle={collapseTailWhenIdle}
-          hideCollapseBar={turnPaginationEnabled}
+          hideCollapseBar={turnPaginationEnabled && !paginationOnLastPage}
           hideUserMessage={hideUserMessage}
           turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
           onEditSubmit={onEditSubmit}

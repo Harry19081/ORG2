@@ -212,6 +212,8 @@ export interface UseChatGroupsOptions {
   forceCollapseAllTurns?: boolean;
   /** Disable the structural "Agent worked for …" turn collapse entirely. */
   disableTurnCollapse?: boolean;
+  /** Limit structural collapse eligibility to the overall tail turn. */
+  collapseOnlyTailTurn?: boolean;
   allTurnsCollapsed?: boolean;
   /**
    * Optional predicate for which items open a new turn group. Defaults
@@ -233,6 +235,7 @@ export function useChatGroups(
     collapseTailWhenIdle = false,
     forceCollapseAllTurns = false,
     disableTurnCollapse = false,
+    collapseOnlyTailTurn = false,
     allTurnsCollapsed,
     isTurnHeaderItem,
     isTurnBoundaryItem,
@@ -329,8 +332,10 @@ export function useChatGroups(
       const group = groups[gi];
       const meta = groupMeta[gi];
       const turnId = meta.turnId;
+      const isTailGroup = gi === groups.length - 1;
       const eligible =
         !disableTurnCollapse &&
+        (!collapseOnlyTailTurn || isTailGroup) &&
         isTurnCollapseEligible(meta, gi, groups.length, {
           collapseTailWhenIdle,
           forceCollapseAllTurns,
@@ -537,6 +542,7 @@ export function useChatGroups(
     collapseTailWhenIdle,
     forceCollapseAllTurns,
     disableTurnCollapse,
+    collapseOnlyTailTurn,
     allTurnsCollapsed,
     isTurnBoundaryItem,
     isTurnHeaderItem,
