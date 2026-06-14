@@ -221,7 +221,6 @@ export function useSessionActions(options: UseSessionActionsOptions) {
     // (beginTurnStopping), sets isPendingCancel/userInitiatedCancel atoms,
     // clears streaming, kills shells, closes running events, and writes
     // sessionRuntimeStatus = "idle". The async tail sends the IPC interrupt.
-    setSessionRolledBack(false);
 
     void cancelTurnForTimelineBoundary(sessionId, "stop", {
       onError: (msg: string) => {
@@ -232,6 +231,7 @@ export function useSessionActions(options: UseSessionActionsOptions) {
     // ── Phase C: UI side effects based on Phase A snapshot ───────────────────
     if (priorTurnsExist) {
       // Multi-turn: signal ChatHistory to navigate to the previous page.
+      setSessionRolledBack(false);
       store.set(stopEarlyCancelEpochAtom, (prev) => prev + 1);
     } else if (!currentTurnHasOutput) {
       // First conversation with no output: clear the session so the creator
@@ -244,10 +244,15 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       // normally reset them.
       store.set(isPendingCancelAtom, false);
       store.set(userInitiatedCancelAtom, false);
+      // Force false→true transition so useEffect dependants re-fire even
+      // when sessionRolledBack was already true from a prior Stop.
+      setSessionRolledBack(false);
       setSessionRolledBack(true);
       store.set(clearSessionAtom);
       store.set(activeSessionIdAtom, null);
       store.set(workstationActiveSessionIdAtom, null);
+    } else {
+      setSessionRolledBack(false);
     }
 
     // Restore the draft AFTER the session/page transition above so the

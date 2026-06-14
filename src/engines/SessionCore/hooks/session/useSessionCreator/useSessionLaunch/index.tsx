@@ -5,7 +5,7 @@
  * then handles state updates and navigation.
  */
 import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -101,15 +101,10 @@ export function useSessionLaunch(
   const { t } = useTranslation("sessions");
   const [isLoading, setIsLoading] = useState(false);
   const sessionRolledBack = useAtomValue(sessionRolledBackAtom);
-  const activeSessionId = useAtomValue(activeSessionIdAtom);
-  useEffect(() => {
-    // Reset loading when the session is cleared (first-turn Stop rolls
-    // back to creator). Both signals are needed: sessionRolledBack gates
-    // the reset so a normal session-switch (activeSessionId → null → new)
-    // doesn't flicker, and activeSessionId=null triggers re-evaluation
-    // even when sessionRolledBack was already true from a prior Stop.
-    if (sessionRolledBack && !activeSessionId) setIsLoading(false);
-  }, [sessionRolledBack, activeSessionId]);
+  // When the session is rolled back (first-turn Stop), force loading off.
+  // Derived: even if the effect doesn't re-fire (atom was already true),
+  // the render still sees sessionRolledBack=true and overrides isLoading.
+  const effectiveIsLoading = isLoading && !sessionRolledBack;
   const {
     closeAddFundsModal,
     closeBuyCreditsModal,
@@ -481,7 +476,7 @@ export function useSessionLaunch(
   ]);
 
   return {
-    isLoading,
+    isLoading: effectiveIsLoading,
     handleLaunch,
     showAddFundsModal,
     closeAddFundsModal,
