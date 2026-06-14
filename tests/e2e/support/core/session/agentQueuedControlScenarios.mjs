@@ -400,14 +400,11 @@ async function attachTestImageToComposer(
     context.fillRect(4, 4, 8, 8);
     const dataUrl = canvas.toDataURL("image/png");
     editor.focus();
-    const inputShell = editor.closest('[data-testid="chat-input"]');
-    const ownerId = inputShell?.querySelector('[data-chat-drop-target-id]')?.getAttribute('data-chat-drop-target-id');
     window.dispatchEvent(new CustomEvent("orgii:e2e-add-chat-image", {
       detail: {
         eventId: "e2e-image-" + Date.now() + "-" + Math.random().toString(16).slice(2),
         fileName: ${JSON.stringify(fileName)},
         dataUrl,
-        ownerId,
       },
     }));
     return { ok: true, fileName: ${JSON.stringify(fileName)}, dataUrlLength: dataUrl.length };
@@ -737,9 +734,9 @@ async function clickSendNowForQueuedMarker(marker) {
       const visibleStillContainsMarker = visibleItems.some((item) =>
         item.text.includes(marker)
       );
-      const promotedToNow = (instantState.forceSendPendingMessages ?? []).some(
-        (item) => item.content.includes(marker)
-      );
+      const promotedToNow = (
+        instantState.forceSendPendingMessages ?? []
+      ).some((item) => item.content.includes(marker));
       const queuedStillContainsMarker = instantState.queuedMessages.some(
         (item) => item.content.includes(marker)
       );
@@ -887,15 +884,6 @@ function longRunningPromptForConfig(config, waitSeconds = 20) {
   ].join(" ");
 }
 
-function outputThenWaitPromptForConfig(config, waitSeconds = 30) {
-  return [
-    `Start a stoppable turn for ${config.label}.`,
-    "Immediately write one short sentence saying OUTPUT_STARTED, then keep the turn active.",
-    `Use a harmless waiting mechanism for about ${waitSeconds} seconds before the final answer.`,
-    "After the wait completes, reply with a short confirmation.",
-  ].join(" ");
-}
-
 function repoExplorationPromptForConfig(config, waitSeconds = 20) {
   return [
     `Explore the current fixture repo for ${config.label} before answering.`,
@@ -911,37 +899,36 @@ async function runFreshStopRollbackScenario(config) {
   await configureScenario(config);
   const inputSelector = await waitForChatInput();
   await typeAndClickSend(inputSelector, firstPrompt);
-  await waitForChatLaunched(firstPrompt);
   await installControlFlowInstrumentation(`${config.label}-fresh-stop`);
   const beforeStopProbe = await readControlFlowInstrumentation();
   await clickMainAction("stop", `${config.label}-fresh-stop`, 30_000);
 
-  // After Stop on a first-turn with no output, the session is cleared and
-  // the draft is restored. If the LLM was fast enough to produce output
-  // before Stop, the session stays and no draft is restored. Accept either.
   await browser.waitUntil(
     async () => {
       const mode = await execJS(js.mode);
       const editorText = await execJS(js.editorText);
       const state = await inspectChatState(`${config.label}-fresh-stop`);
-      const hasAssistantOutput = state.chatEvents.some(
-        (event) => event.source !== "user"
+      const promptStillVisible = state.chatEvents.some(
+        (event) =>
+          event.source === "user" &&
+          event.displayText?.includes(firstPrompt.slice(0, 80))
       );
-      if (hasAssistantOutput) {
-        // LLM produced output before Stop — session stays, no draft restore.
-        return mode === "chat";
-      }
-      // No output — session cleared, draft restored to composer.
       return (
-        (mode === "creator" || mode === "chat") &&
+        mode === "chat" &&
         typeof editorText === "string" &&
-        editorText.includes(firstPrompt.slice(0, 80))
+        editorText.includes(firstPrompt.slice(0, 80)) &&
+        promptStillVisible &&
+        state.queuedMessages.length === 0
       );
     },
     {
       timeout: 15_000,
-      timeoutMsg: `${config.label} fresh Stop did not settle cleanly; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+      timeoutMsg: `${config.label} fresh Stop did not keep first prompt visible with draft restored; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
+  );
+  await assertComposerResponsiveAfterStop(
+    `${config.label}-fresh-stop`,
+    firstPrompt
   );
   await assertControlFlowHealthyAfterStop(
     `${config.label}-fresh-stop`,
@@ -971,12 +958,8 @@ async function runFreshStopImageRestoreScenario(config) {
   });
 
   await clickMainAction("submit", `${config.label}-image-send`, 20_000);
-  await waitForChatLaunched(imagePrompt);
   await clickMainAction("stop", `${config.label}-image-stop`, 30_000);
 
-  // Same early-cancel logic as runFreshStopRollbackScenario: if no output,
-  // session is cleared and draft+images are restored. If output arrived first,
-  // session stays with no restore. Accept either.
   await browser.waitUntil(
     async () => {
       const mode = await execJS(js.mode);
@@ -985,28 +968,32 @@ async function runFreshStopImageRestoreScenario(config) {
       const state = await inspectChatState(
         `${config.label}-image-cancel-restore`
       );
-      const hasAssistantOutput = state.chatEvents.some(
-        (event) => event.source !== "user"
+      const promptStillVisible = state.chatEvents.some(
+        (event) =>
+          event.source === "user" && event.displayText?.includes(marker)
       );
-      if (hasAssistantOutput) {
-        return mode === "chat";
-      }
       return (
-        (mode === "creator" || mode === "chat") &&
+        mode === "chat" &&
         typeof editorText === "string" &&
         editorText.includes(marker) &&
-        imageState.count === 1 &&
+        promptStillVisible &&
+        imageState.count >= 1 &&
         imageState.fileNames.some(
           (fileName) =>
             fileName.includes("restored-image") || fileName.includes(marker)
-        )
+        ) &&
+        state.queuedMessages.length === 0
       );
     },
     {
       timeout: 30_000,
       interval: 500,
-      timeoutMsg: `${config.label} fresh Stop did not settle cleanly for image restore; imageState=${JSON.stringify(await execJS(js.imageAttachmentState))} state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+      timeoutMsg: `${config.label} fresh Stop did not restore image attachment with prompt; imageState=${JSON.stringify(await execJS(js.imageAttachmentState))} state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
+  );
+  await assertComposerResponsiveAfterStop(
+    `${config.label}-image-stop`,
+    imagePrompt
   );
 }
 
@@ -1040,6 +1027,14 @@ async function runStopRestoresInFlightScenario(config) {
       );
       if (!hasAuthoritativeRunningTurn(state)) return true;
       if (state.isPendingCancel || state.userInitiatedCancel) return true;
+      const editorText = await execJS(js.editorText);
+      const restoredPromptVisible =
+        typeof editorText === "string" &&
+        editorText.includes(firstPrompt.slice(0, 80));
+      const queuedStillContainsMarker = state.queuedMessages.some((item) =>
+        item.content.includes(marker)
+      );
+      if (restoredPromptVisible && queuedStillContainsMarker) return true;
       const sendState = await execJS(js.sendState);
       if (sendState?.state === "stop" && !sendState.disabled) {
         await clickMainAction(
@@ -1057,20 +1052,23 @@ async function runStopRestoresInFlightScenario(config) {
     }
   );
 
-  // The turn already had output (waitForWorkingTurn passed), so the draft
-  // is NOT restored. The queued follow-up must still be parked.
   await browser.waitUntil(
     async () => {
+      const editorText = await execJS(js.editorText);
       const state = await inspectChatState(`${config.label}-stop-restore`);
       const queuedStillContainsMarker = state.queuedMessages.some((item) =>
         item.content.includes(marker)
       );
-      return queuedStillContainsMarker;
+      return (
+        typeof editorText === "string" &&
+        editorText.includes(firstPrompt.slice(0, 80)) &&
+        queuedStillContainsMarker
+      );
     },
     {
       timeout: 45_000,
       interval: 500,
-      timeoutMsg: `${config.label} Stop did not preserve queued follow-up; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+      timeoutMsg: `${config.label} Stop did not restore in-flight prompt while preserving queue; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
   );
 }
@@ -1237,10 +1235,7 @@ async function runSendAfterIdleDoesNotQueueScenario(config) {
   const beforeSecond = await inspectChatState(
     `${config.label}-send-after-idle-before-second-send`
   );
-  throwIfProviderRuntimeBlocked(
-    beforeSecond,
-    `${config.label}-send-after-idle`
-  );
+  throwIfProviderRuntimeBlocked(beforeSecond, `${config.label}-send-after-idle`);
   if (beforeSecond.queuedMessages.length > 0) {
     throw new Error(
       `${config.label} had leftover queued messages before idle direct-send assertion; state=${JSON.stringify(summarizeChatState(beforeSecond))}`
@@ -1379,34 +1374,18 @@ async function runStopDoubleClickDoesNotResubmitScenario(config) {
   const secondClick = await execJS(
     js.click('[data-testid="chat-send-button"]')
   );
-  await browser.waitUntil(
-    async () => {
-      const state = await inspectChatState(
-        `${config.label}-double-stop-settle`
-      );
-      const mode = await execJS(js.mode);
-      return (
-        !hasAuthoritativeRunningTurn(state) &&
-        (mode === "creator" || mode === "chat")
-      );
-    },
-    {
-      timeout: 20_000,
-      interval: 500,
-      timeoutMsg: `${config.label}-double-stop-first Stop left a running or unloaded session; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
-    }
+  await assertComposerResponsiveAfterStop(
+    `${config.label}-double-stop-first`,
+    firstPrompt
   );
 
   const state = await inspectChatState(
     `${config.label}-double-stop-second-click`
   );
+  const sendState = await execJS(js.sendState);
+  const editorText = await execJS(js.editorText);
   const userTurns = markerUserTranscriptEvents(state, marker);
-  // Core assertion: the second click must NOT have resubmitted the prompt.
-  // In first-turn Stop the session may be cleared to creator (no
-  // editorText), which is also safe — there's no session to resubmit into.
-  if (userTurns.length > 1) {
-    const sendState = await execJS(js.sendState);
-    const editorText = await execJS(js.editorText);
+  if (userTurns.length > 1 || !String(editorText ?? "").includes(marker)) {
     throw new Error(
       `${config.label} rapid second Stop click re-submitted restored draft; secondClick=${secondClick} userTurns=${userTurns.length} sendState=${JSON.stringify(sendState)} editorText=${JSON.stringify(String(editorText ?? "").slice(0, 180))} state=${JSON.stringify(summarizeChatState(state))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
     );
@@ -1546,38 +1525,6 @@ async function runChaosControlFlowScenario(config) {
       shouldBeUserTurn: true,
     },
     60_000
-  );
-}
-
-async function runForceSendStopDoesNotWithdrawScenario(config) {
-  const marker = `FORCE_SEND_STOP_KEEP_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
-  const firstPrompt = repoExplorationPromptForConfig(config, 45);
-  const followupPrompt = `${repoExplorationPromptForConfig(config, 45)} This Send Now turn must remain in transcript even if stopped immediately: ${marker}`;
-
-  await configureScenario(config);
-  const inputSelector = await waitForChatInput();
-  await typeAndClickSend(inputSelector, firstPrompt);
-  await waitForChatLaunched(firstPrompt);
-  await waitForWorkingTurn(`${config.label}-force-stop-initial`);
-
-  const chatInputSelector = await waitForChatInput();
-  await typeAndSubmitWithShortcut(chatInputSelector, followupPrompt);
-  await waitForQueuedFollowup(marker);
-  await clickSendNowForQueuedMarker(marker);
-  await waitForMarkerState(
-    `${config.label}-force-stop-force-sent-before-stop`,
-    marker,
-    { shouldBeQueued: false, shouldBeUserTurn: true },
-    60_000
-  );
-
-  await clickMainAction("stop", `${config.label}-force-stop-stop`, 30_000);
-  await browser.pause(2_000);
-  await waitForMarkerState(
-    `${config.label}-force-stop-after-stop`,
-    marker,
-    { shouldBeQueued: false, shouldBeUserTurn: true },
-    20_000
   );
 }
 
@@ -1722,68 +1669,6 @@ async function runForceSendScenario(config) {
   );
 }
 
-async function runStopAfterOutputTruncatesTurnScenario(config) {
-  const prompt = outputThenWaitPromptForConfig(config, 30);
-
-  await configureScenario(config);
-  const inputSelector = await waitForChatInput();
-  await typeAndClickSend(inputSelector, prompt);
-  await waitForChatLaunched(prompt);
-  await waitForWorkingTurn(`${config.label}-stop-truncate-working`);
-
-  await browser.waitUntil(
-    async () => {
-      const state = await inspectChatState(`${config.label}-stop-truncate-output`);
-      const rawEvents = state.rawEvents ?? [];
-      const sendState = await execJS(js.sendState);
-      const lastUserIndex = rawEvents.findLastIndex(
-        (event) => event.source === "user"
-      );
-      if (lastUserIndex < 0 || sendState?.state !== "stop") return false;
-      return rawEvents.slice(lastUserIndex + 1).some(
-        (event) => event.source !== "user"
-      );
-    },
-    {
-      timeout: 90_000,
-      interval: 500,
-      timeoutMsg: `${config.label} stop-truncate turn did not produce output while Stop was available; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))}`,
-    }
-  );
-
-  await clickMainAction("stop", `${config.label}-stop-truncate-stop`);
-
-  await browser.waitUntil(
-    async () => {
-      const state = await inspectChatState(
-        `${config.label}-stop-truncate-post-stop`
-      );
-      return !hasAuthoritativeRunningTurn(state) && !state.isPendingCancel;
-    },
-    {
-      timeout: 90_000,
-      interval: 1_000,
-      timeoutMsg: `${config.label} Stop did not settle to idle; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} rawEvents=${JSON.stringify((unwrap(await invokeE2E("inspectChatState"), "inspectChatState").rawEvents ?? []).map((e) => ({ id: e.id, fn: e.functionName, displayStatus: e.displayStatus, resultStatus: e.resultStatus, args: e.args })))}`,
-    }
-  );
-
-  const postStop = await inspectChatState(
-    `${config.label}-stop-truncate-final`
-  );
-  const mode = await execJS(js.mode);
-  // First-turn Stop with output: session stays (mode=chat), but the backend
-  // turn_index marks the cancelled intent as pre-durable so the round is
-  // hidden from the visible timeline on next load/rebuild. We verify the
-  // session is idle and not stuck.
-  if (mode !== "chat" && mode !== "creator") {
-    throw new Error(
-      `${config.label} stop-after-output left an unexpected mode; ` +
-        `rawEvents=${JSON.stringify((postStop.rawEvents ?? []).map((e) => ({ id: e.id, source: e.source, fn: e.functionName })))} ` +
-        `mode=${JSON.stringify(mode)}`
-    );
-  }
-}
-
 export {
   assertStationSurfacesConsistent,
   clickMainAction,
@@ -1791,13 +1676,11 @@ export {
   runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
-  runForceSendStopDoesNotWithdrawScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runQueueAutodispatchesAfterNaturalCompletionScenario,
   runQueueDoesNotAutoflushWhileActiveScenario,
   runSendAfterIdleDoesNotQueueScenario,
-  runStopAfterOutputTruncatesTurnScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
   waitForIdleSendButton,

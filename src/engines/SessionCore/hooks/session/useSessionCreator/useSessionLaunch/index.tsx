@@ -34,7 +34,6 @@ import {
 } from "@src/store/session";
 import {
   lastUserMessageAtom,
-  sessionRolledBackAtom,
   setSessionRuntimeStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
@@ -100,11 +99,6 @@ export function useSessionLaunch(
 
   const { t } = useTranslation("sessions");
   const [isLoading, setIsLoading] = useState(false);
-  const sessionRolledBack = useAtomValue(sessionRolledBackAtom);
-  // When the session is rolled back (first-turn Stop), force loading off.
-  // Derived: even if the effect doesn't re-fire (atom was already true),
-  // the render still sees sessionRolledBack=true and overrides isLoading.
-  const effectiveIsLoading = isLoading && !sessionRolledBack;
   const {
     closeAddFundsModal,
     closeBuyCreditsModal,
@@ -402,13 +396,11 @@ export function useSessionLaunch(
           dispatchCategory === DISPATCH_CATEGORY.CLI_AGENT &&
           !sessionUsesHostedKey
         ) {
-          void emitOpenWorkspace(
+          await emitOpenWorkspace(
             result.sessionId,
             effectiveSource?.repoId ?? "",
             "Quick"
-          ).catch((error) => {
-            log.warn("Failed to open workspace after session launch", error);
-          });
+          );
         }
         navigateToLaunchedSession(result.sessionId, sessionUsesHostedKey);
         // After navigation: the pipeline atom now points at the launched
@@ -476,7 +468,7 @@ export function useSessionLaunch(
   ]);
 
   return {
-    isLoading: effectiveIsLoading,
+    isLoading,
     handleLaunch,
     showAddFundsModal,
     closeAddFundsModal,
