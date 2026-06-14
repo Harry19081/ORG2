@@ -229,24 +229,6 @@ export function useSessionActions(options: UseSessionActionsOptions) {
     });
 
     // ── Phase C: UI side effects based on Phase A snapshot ───────────────────
-    if (restorable) {
-      setRestoreToInput({
-        sessionId,
-        displayContent: restorable.displayContent,
-        imageDataUrls: restorable.imageDataUrls,
-      });
-      markRestoredStopDraft({
-        sessionId,
-        displayContent: restorable.displayContent,
-        imageDataUrls: restorable.imageDataUrls,
-      });
-      suppressRestoredStopSubmit({
-        sessionId,
-        displayContent: restorable.displayContent,
-        imageDataUrls: restorable.imageDataUrls,
-      });
-    }
-
     if (priorTurnsExist) {
       // Multi-turn: signal ChatHistory to navigate to the previous page.
       store.set(stopEarlyCancelEpochAtom, (prev) => prev + 1);
@@ -263,6 +245,26 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       store.set(clearSessionAtom);
       store.set(activeSessionIdAtom, null);
       store.set(workstationActiveSessionIdAtom, null);
+    }
+
+    // Restore the draft AFTER the session/page transition above so the
+    // creator InputArea (if we just cleared) picks up the atom write.
+    if (restorable) {
+      setRestoreToInput({
+        sessionId,
+        displayContent: restorable.displayContent,
+        imageDataUrls: restorable.imageDataUrls,
+      });
+      markRestoredStopDraft({
+        sessionId,
+        displayContent: restorable.displayContent,
+        imageDataUrls: restorable.imageDataUrls,
+      });
+      suppressRestoredStopSubmit({
+        sessionId,
+        displayContent: restorable.displayContent,
+        imageDataUrls: restorable.imageDataUrls,
+      });
     }
   }, [getSessionId, setRestoreToInput, setSessionRolledBack, store, t]);
 
