@@ -687,6 +687,7 @@
     "newSession": "Yeni oturum",
     "defaultTitle": "Sohbet",
     "hideChatPanel": "Sohbet panelini gizle",
+    "compactDisplayMode": "Kompakt mod",
     "replay": {
       "follow": "Takip et"
     },
@@ -938,6 +939,9 @@
     "readFileRunning": "Okunuyor",
     "readFileDone": "Okundu",
     "readFileFailed": "Okunamadı",
+    "readFileSkillRunning": "Skill kullanılıyor",
+    "readFileSkillDone": "Skill kullan",
+    "readFileSkillFailed": "Skill kullanılamadı",
     "readFileNoContent": "(içerik kaydedilmedi)",
     "readImageRunning": "Görsel {{name}} analiz ediliyor",
     "readImageDone": "Görsel {{name}} analiz edildi",
@@ -951,6 +955,8 @@
     "editFileFailed": "{{name}} düzenlenemedi",
     "editFileRunningNoName": "Dosya düzenleniyor",
     "editFileDoneNoName": "Dosya düzenlendi",
+    "editFileCompactRunning": "Düzenleniyor",
+    "editFileCompactDone": "Düzenle",
     "editFileFailedNoName": "Dosya düzenlenemedi",
     "file": "dosya",
     "runShellRunning": "Komut çalıştırılıyor",
@@ -1731,6 +1737,15 @@
       "mode": "Mod",
       "models": "Modeller",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "GIT eylemleri",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "İncele",
+      "viewMyStation": "My Station'da görüntüle",
+      "viewAgentStation": "Agent Station'da görüntüle"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

@@ -33,6 +33,7 @@ import {
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import {
   CHAT_PANEL_SURFACE_KIND,
+  chatHistoryDisplayModeAtom,
   chatPanelContentModeAtom,
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
@@ -172,6 +173,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const [paginationEnabled, setPaginationEnabled] = useAtom(
       chatTurnPaginationEnabledAtom
     );
+    const [displayMode, setDisplayMode] = useAtom(chatHistoryDisplayModeAtom);
     const [exploreAgentSearchEnabled, setExploreAgentSearchEnabled] = useAtom(
       chatPanelExploreAgentSearchEnabledAtom
     );
@@ -238,6 +240,13 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         setExploreAgentSearchEnabled(checked);
       },
       [setExploreAgentSearchEnabled]
+    );
+
+    const handleCompactDisplayModeToggle = useCallback(
+      (checked: boolean) => {
+        setDisplayMode(checked ? "compact" : "full");
+      },
+      [setDisplayMode]
     );
 
     const handleNewSession = useCallback(() => {
@@ -463,9 +472,11 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           createTarget={createTarget}
           createTargetOptions={createTargetOptions}
           currentSessionId={currentSessionId ?? null}
+          displayMode={displayMode}
           eventsLength={eventCount}
           exploreAgentSearchEnabled={exploreAgentSearchEnabled}
           handleChatFocusToggle={handleChatFocusToggle}
+          handleCompactDisplayModeToggle={handleCompactDisplayModeToggle}
           handleCopyEventJson={handleCopyEventJson}
           handleCreateTargetChange={handleCreateTargetChange}
           handleExploreAgentSearchToggle={handleExploreAgentSearchToggle}
@@ -527,6 +538,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       <ChatPanelContent
         chatFocusLabel={chatFocusLabel}
         currentSessionId={currentSessionId ?? null}
+        displayMode={displayMode}
         emptyChatContent={emptyChatContent}
         handleChatFocusToggle={handleChatFocusToggle}
         handleRegisterSearchOpen={handleRegisterSearchOpen}

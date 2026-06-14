@@ -691,6 +691,7 @@
     "newSession": "新建会话",
     "defaultTitle": "Session",
     "hideChatPanel": "隐藏聊天面板",
+    "compactDisplayMode": "紧凑模式",
     "replay": {
       "follow": "跟随"
     },
@@ -942,6 +943,9 @@
     "readFileRunning": "正在读取",
     "readFileDone": "阅读文件",
     "readFileFailed": "读取失败",
+    "readFileSkillRunning": "正在使用 skill",
+    "readFileSkillDone": "使用 skill",
+    "readFileSkillFailed": "使用 skill 失败",
     "readFileNoContent": "(未保存内容)",
     "readImageRunning": "正在分析图片 {{name}}",
     "readImageDone": "分析图片 {{name}}",
@@ -955,6 +959,8 @@
     "editFileFailed": "编辑{{name}}失败",
     "editFileRunningNoName": "正在编辑文件",
     "editFileDoneNoName": "编辑文件",
+    "editFileCompactRunning": "正在编辑",
+    "editFileCompactDone": "编辑",
     "editFileFailedNoName": "编辑文件失败",
     "file": "文件",
     "runShellRunning": "正在执行命令",
@@ -1736,6 +1742,15 @@
       "mode": "模式",
       "models": "模型",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "GIT 操作",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "审查",
+      "viewMyStation": "在 My Station 查看",
+      "viewAgentStation": "在 Agent Station 查看"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

@@ -693,6 +693,7 @@
     "newSession": "Nova sessão",
     "defaultTitle": "Chat",
     "hideChatPanel": "Ocultar painel de chat",
+    "compactDisplayMode": "Modo compacto",
     "replay": {
       "follow": "Acompanhar"
     },
@@ -958,6 +959,9 @@
     "readFileRunning": "Lendo",
     "readFileDone": "Lido",
     "readFileFailed": "Falha ao ler",
+    "readFileSkillRunning": "Usando skill",
+    "readFileSkillDone": "Usar skill",
+    "readFileSkillFailed": "Falha ao usar skill",
     "readFileNoContent": "(conteúdo não capturado)",
     "readImageRunning": "Analisando imagem {{name}}",
     "readImageDone": "Imagem {{name}} analisada",
@@ -971,6 +975,8 @@
     "editFileFailed": "Falha ao editar {{name}}",
     "editFileRunningNoName": "Editando arquivo",
     "editFileDoneNoName": "Arquivo editado",
+    "editFileCompactRunning": "Editando",
+    "editFileCompactDone": "Editar",
     "editFileFailedNoName": "Falha ao editar arquivo",
     "file": "arquivo",
     "runShellRunning": "Executando comando",
@@ -1751,6 +1757,15 @@
       "mode": "Modo",
       "models": "Modelos",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "Ações GIT",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "Revisar",
+      "viewMyStation": "Ver em My Station",
+      "viewAgentStation": "Ver em Agent Station"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

@@ -25,6 +25,7 @@ interface PinnedTurnHeaderProps {
   hasPinnedContent: boolean;
   collapseLabelVariant?: GroupHeaderRendererProps["collapseLabelVariant"];
   collapseTailWhenIdle: boolean;
+  hideCollapseBar?: boolean;
   hideUserMessage: boolean;
   turnCollapseInteractionAtRef: React.MutableRefObject<number>;
   onEditSubmit: GroupHeaderRendererProps["onEditSubmit"];
@@ -74,6 +75,7 @@ function samePinnedTurnHeaderProps(
     previous.hasPinnedContent === next.hasPinnedContent &&
     previous.collapseLabelVariant === next.collapseLabelVariant &&
     previous.collapseTailWhenIdle === next.collapseTailWhenIdle &&
+    previous.hideCollapseBar === next.hideCollapseBar &&
     previous.hideUserMessage === next.hideUserMessage &&
     previous.turnCollapseInteractionAtRef ===
       next.turnCollapseInteractionAtRef &&
@@ -93,6 +95,7 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
   hasPinnedContent,
   collapseLabelVariant = "agent",
   collapseTailWhenIdle,
+  hideCollapseBar = false,
   hideUserMessage,
   turnCollapseInteractionAtRef,
   onEditSubmit,
@@ -121,14 +124,11 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
 
   const isLastGroup = collapseGroupIndex === sourceGroupCount - 1;
   const showPinnedBars = isLastGroup && hasPinnedContent && !isEditing;
-  const showCollapseBar = isTurnCollapseEligible(
-    meta,
-    collapseGroupIndex,
-    sourceGroupCount,
-    {
+  const showCollapseBar =
+    !hideCollapseBar &&
+    isTurnCollapseEligible(meta, collapseGroupIndex, sourceGroupCount, {
       collapseTailWhenIdle,
-    }
-  );
+    });
   const headerPaddingBottomClass = showCollapseBar && turnId ? "" : "pb-2";
   const pinnedContentBodyGap = showPinnedBars
     ? CHAT_FOOTER_SPACER.PINNED_CONTENT_BODY_GAP_PX

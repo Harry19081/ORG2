@@ -687,6 +687,7 @@
     "newSession": "新しいセッション",
     "defaultTitle": "チャット",
     "hideChatPanel": "チャットパネルを非表示",
+    "compactDisplayMode": "コンパクトモード",
     "replay": {
       "follow": "フォロー"
     },
@@ -938,6 +939,9 @@
     "readFileRunning": "読み取り中",
     "readFileDone": "読み取りました",
     "readFileFailed": "読み取りに失敗しました",
+    "readFileSkillRunning": "skill を使用中",
+    "readFileSkillDone": "skill を使用",
+    "readFileSkillFailed": "skill の使用に失敗しました",
     "readFileNoContent": "(内容は保存されていません)",
     "readImageRunning": "画像 {{name}} を分析中",
     "readImageDone": "画像 {{name}} を分析しました",
@@ -951,6 +955,8 @@
     "editFileFailed": "{{name}} の編集に失敗しました",
     "editFileRunningNoName": "ファイルを編集中",
     "editFileDoneNoName": "ファイルを編集しました",
+    "editFileCompactRunning": "編集中",
+    "editFileCompactDone": "編集",
     "editFileFailedNoName": "ファイルの編集に失敗しました",
     "file": "ファイル",
     "runShellRunning": "コマンド実行中",
@@ -1731,6 +1737,15 @@
       "mode": "モード",
       "models": "モデル",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "GIT アクション",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "レビュー",
+      "viewMyStation": "My Station で表示",
+      "viewAgentStation": "Agent Station で表示"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

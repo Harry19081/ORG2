@@ -7,6 +7,7 @@ import Tooltip from "@src/components/Tooltip";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { BenchmarkPanel } from "@src/features/BenchmarkPanel";
 import type {
+  ChatHistoryDisplayMode,
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
   ChatPanelSelectedWorkspace,
@@ -25,6 +26,7 @@ interface ChatPanelContentProps {
   emptyChatContent: React.ReactNode;
   handleChatFocusToggle: () => void;
   handleRegisterSearchOpen: (handler: (() => void) | null) => void;
+  displayMode: ChatHistoryDisplayMode;
   paginationEnabled: boolean;
   position: "left" | "right";
   selectedProject: ChatPanelSelectedProject | null;
@@ -47,6 +49,7 @@ export function ChatPanelContent({
   emptyChatContent,
   handleChatFocusToggle,
   handleRegisterSearchOpen,
+  displayMode,
   paginationEnabled,
   position,
   selectedProject,
@@ -87,6 +90,7 @@ export function ChatPanelContent({
         <ChatView
           sessionId={currentSessionId}
           onRegisterSearchOpen={handleRegisterSearchOpen}
+          displayMode={displayMode}
           turnPaginationEnabled={paginationEnabled}
           position={position}
         />

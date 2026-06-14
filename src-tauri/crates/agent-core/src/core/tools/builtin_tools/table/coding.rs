@@ -20,6 +20,11 @@ pub(super) static TOOLS: &[ToolEntry] = &[
         label_running: "tools.readFileRunning",
         label_done: "tools.readFileDone",
         label_failed: "tools.readFileFailed",
+        status_labels: &[
+            ("skill_running", "tools.readFileSkillRunning"),
+            ("skill_done", "tools.readFileSkillDone"),
+            ("skill_failed", "tools.readFileSkillFailed"),
+        ],
         actions: &[
             action_sub!("read_text", "Read text file contents with optional line range", FileRead, labels: "tools.readTextRunning", "tools.readTextDone", "tools.readTextFailed"),
             action_sub!("read_image", "Read image file into context for vision analysis", FileRead, labels: "tools.readImageRunning", "tools.readImageDone", "tools.readImageFailed"),
@@ -329,6 +334,10 @@ pub(super) static TOOLS: &[ToolEntry] = &[
         label_running: "tools.editFileRunning",
         label_done: "tools.editFileDone",
         label_failed: "tools.editFileFailed",
+        status_labels: &[
+            ("compact_running", "tools.editFileCompactRunning"),
+            ("compact_done", "tools.editFileCompactDone"),
+        ],
         actions: &[
             action_sub!("create", "Create a new file with full content", FileWrite, labels: "tools.editFileCreateRunning", "tools.editFileCreateDone", "tools.editFileCreateFailed"),
             action_sub!("overwrite", "Replace entire file contents", FileWrite, labels: "tools.editFileOverwriteRunning", "tools.editFileOverwriteDone", "tools.editFileOverwriteFailed"),

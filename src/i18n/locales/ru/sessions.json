@@ -689,6 +689,7 @@
     "newSession": "Новая сессия",
     "defaultTitle": "Чат",
     "hideChatPanel": "Скрыть панель чата",
+    "compactDisplayMode": "Компактный режим",
     "replay": {
       "follow": "Следовать"
     },
@@ -944,6 +945,9 @@
     "readFileRunning": "Чтение",
     "readFileDone": "Прочитано",
     "readFileFailed": "Не удалось прочитать",
+    "readFileSkillRunning": "Использование skill",
+    "readFileSkillDone": "Использовать skill",
+    "readFileSkillFailed": "Не удалось использовать skill",
     "readFileNoContent": "(содержимое не сохранено)",
     "readImageRunning": "Анализ изображения {{name}}",
     "readImageDone": "Изображение {{name}} проанализировано",
@@ -957,6 +961,8 @@
     "editFileFailed": "Не удалось отредактировать {{name}}",
     "editFileRunningNoName": "Редактирование файла",
     "editFileDoneNoName": "Файл отредактирован",
+    "editFileCompactRunning": "Редактирование",
+    "editFileCompactDone": "Редактировать",
     "editFileFailedNoName": "Не удалось отредактировать файл",
     "file": "файл",
     "runShellRunning": "Выполнение команды",
@@ -1738,6 +1744,15 @@
       "mode": "Режим",
       "models": "Модели",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "Действия GIT",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "Обзор",
+      "viewMyStation": "Показать в My Station",
+      "viewAgentStation": "Показать в Agent Station"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

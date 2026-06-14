@@ -687,6 +687,7 @@
     "newSession": "Phiên mới",
     "defaultTitle": "Chat",
     "hideChatPanel": "Ẩn bảng trò chuyện",
+    "compactDisplayMode": "Chế độ gọn",
     "replay": {
       "follow": "Theo dõi"
     },
@@ -938,6 +939,9 @@
     "readFileRunning": "Đang đọc",
     "readFileDone": "Đã đọc",
     "readFileFailed": "Không thể đọc",
+    "readFileSkillRunning": "Đang dùng skill",
+    "readFileSkillDone": "Dùng skill",
+    "readFileSkillFailed": "Không thể dùng skill",
     "readFileNoContent": "(không có nội dung)",
     "readImageRunning": "Đang phân tích ảnh {{name}}",
     "readImageDone": "Đã phân tích ảnh {{name}}",
@@ -951,6 +955,8 @@
     "editFileFailed": "Không thể chỉnh sửa {{name}}",
     "editFileRunningNoName": "Đang chỉnh sửa tệp",
     "editFileDoneNoName": "Đã chỉnh sửa tệp",
+    "editFileCompactRunning": "Đang chỉnh sửa",
+    "editFileCompactDone": "Chỉnh sửa",
     "editFileFailedNoName": "Không thể chỉnh sửa tệp",
     "file": "tệp",
     "runShellRunning": "Đang chạy lệnh",
@@ -1731,6 +1737,15 @@
       "mode": "Chế độ",
       "models": "Mô hình",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "Hành động GIT",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "Xem lại",
+      "viewMyStation": "Xem trong My Station",
+      "viewAgentStation": "Xem trong Agent Station"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

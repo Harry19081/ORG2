@@ -281,6 +281,16 @@ describe("willEventRenderContent", () => {
       expect(willEventRenderContent(event)).toBe(true);
     });
 
+    it("returns true for registered uiCanonical aliases with empty results", () => {
+      const event = makeSessionEvent({
+        action_type: "tool_call",
+        function: "Grep",
+        uiCanonical: "code_search",
+        result: { success: true, matches: [] },
+      });
+      expect(willEventRenderContent(event)).toBe(true);
+    });
+
     it("returns true for unknown action_type with observation in result", () => {
       const event = makeSessionEvent({
         action_type: "custom_event",

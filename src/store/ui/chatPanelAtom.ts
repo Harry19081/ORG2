@@ -187,6 +187,19 @@ export const chatTurnPaginationEnabledAtom = atom(
 );
 chatTurnPaginationEnabledAtom.debugLabel = "chatTurnPaginationEnabledAtom";
 
+export type ChatHistoryDisplayMode = "full" | "compact";
+
+const ChatHistoryDisplayModeSchema = z.enum(["full", "compact"]);
+
+export const chatHistoryDisplayModeAtom =
+  atomWithStorage<ChatHistoryDisplayMode>(
+    "orgii:chatHistoryDisplayMode",
+    "full",
+    createZodJsonStorage(ChatHistoryDisplayModeSchema),
+    { getOnInit: true }
+  );
+chatHistoryDisplayModeAtom.debugLabel = "chatHistoryDisplayModeAtom";
+
 /** Presentation style for the chat panel model picker. */
 export type ModelPickerStyle = "spotlight" | "dropdown";
 

@@ -697,6 +697,7 @@
     "newSession": "New Session",
     "defaultTitle": "Chat",
     "hideChatPanel": "Hide chat panel",
+    "compactDisplayMode": "Compact mode",
     "replay": {
       "follow": "Follow"
     },
@@ -962,6 +963,9 @@
     "readFileRunning": "Reading",
     "readFileDone": "Read",
     "readFileFailed": "Failed to read",
+    "readFileSkillRunning": "Using skill",
+    "readFileSkillDone": "Use skill",
+    "readFileSkillFailed": "Failed to use skill",
     "readFileNoContent": "(content not captured)",
     "readImageRunning": "Analyzing image {{name}}",
     "readImageDone": "Analyzed image {{name}}",
@@ -975,6 +979,8 @@
     "editFileFailed": "Failed to edit {{name}}",
     "editFileRunningNoName": "Editing file",
     "editFileDoneNoName": "Edited file",
+    "editFileCompactRunning": "Editing",
+    "editFileCompactDone": "Edit",
     "editFileFailedNoName": "Failed to edit file",
     "file": "file",
     "runShellRunning": "Running command",
@@ -1763,8 +1769,8 @@
       "commitPush": "commit & push",
       "push": "push",
       "review": "Review",
-      "viewMyStation": "View in my station",
-      "viewAgentStation": "View in Agent station"
+      "viewMyStation": "View in My Station",
+      "viewAgentStation": "View in Agent Station"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

@@ -210,6 +210,8 @@ export interface UseChatGroupsOptions {
    * expand individual turns via the in-history collapse pin-bar.
    */
   forceCollapseAllTurns?: boolean;
+  /** Disable the structural "Agent worked for …" turn collapse entirely. */
+  disableTurnCollapse?: boolean;
   allTurnsCollapsed?: boolean;
   /**
    * Optional predicate for which items open a new turn group. Defaults
@@ -230,6 +232,7 @@ export function useChatGroups(
     isAgentWorking = false,
     collapseTailWhenIdle = false,
     forceCollapseAllTurns = false,
+    disableTurnCollapse = false,
     allTurnsCollapsed,
     isTurnHeaderItem,
     isTurnBoundaryItem,
@@ -326,10 +329,12 @@ export function useChatGroups(
       const group = groups[gi];
       const meta = groupMeta[gi];
       const turnId = meta.turnId;
-      const eligible = isTurnCollapseEligible(meta, gi, groups.length, {
-        collapseTailWhenIdle,
-        forceCollapseAllTurns,
-      });
+      const eligible =
+        !disableTurnCollapse &&
+        isTurnCollapseEligible(meta, gi, groups.length, {
+          collapseTailWhenIdle,
+          forceCollapseAllTurns,
+        });
       const override =
         turnId && collapseOverrides ? collapseOverrides.get(turnId) : undefined;
       // Collapse default = true for eligible turns; the override (when set)
@@ -531,6 +536,7 @@ export function useChatGroups(
     isAgentWorking,
     collapseTailWhenIdle,
     forceCollapseAllTurns,
+    disableTurnCollapse,
     allTurnsCollapsed,
     isTurnBoundaryItem,
     isTurnHeaderItem,

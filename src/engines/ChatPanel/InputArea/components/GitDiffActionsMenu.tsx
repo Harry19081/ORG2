@@ -11,7 +11,7 @@
  * - Git Actions: commit / commit & push (agent-driven) and push (direct git)
  * - Review: open the diff in My Station or Agent Station
  */
-import { ArrowUp, Bot, GitCommit, LayoutPanelLeft, Upload } from "lucide-react";
+import { Infinity as InfinityIcon, Laptop } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -39,6 +39,7 @@ export interface GitDiffActionsMenuProps {
 }
 
 const ICON_SIZE = DROPDOWN_ITEM.iconSize;
+const LEFT_ALIGNED_ITEM_CLASS = "text-left";
 
 const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
   onCommit,
@@ -65,7 +66,7 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
           })}
         >
           <DropdownItem
-            icon={<GitCommit size={ICON_SIZE} strokeWidth={1.75} />}
+            className={LEFT_ALIGNED_ITEM_CLASS}
             disabled={gitActionsDisabled}
             onClick={run(onCommit)}
             dataTestId="git-diff-action-commit"
@@ -73,7 +74,7 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
             {t("creator.diffMenu.commit", { defaultValue: "commit" })}
           </DropdownItem>
           <DropdownItem
-            icon={<Upload size={ICON_SIZE} strokeWidth={1.75} />}
+            className={LEFT_ALIGNED_ITEM_CLASS}
             disabled={gitActionsDisabled}
             onClick={run(onCommitPush)}
             dataTestId="git-diff-action-commit-push"
@@ -83,7 +84,7 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
             })}
           </DropdownItem>
           <DropdownItem
-            icon={<ArrowUp size={ICON_SIZE} strokeWidth={1.75} />}
+            className={LEFT_ALIGNED_ITEM_CLASS}
             disabled={gitActionsDisabled}
             onClick={run(onPush)}
             dataTestId="git-diff-action-push"
@@ -98,21 +99,23 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
           label={t("creator.diffMenu.review", { defaultValue: "Review" })}
         >
           <DropdownItem
-            icon={<LayoutPanelLeft size={ICON_SIZE} strokeWidth={1.75} />}
+            className={LEFT_ALIGNED_ITEM_CLASS}
+            icon={<Laptop size={ICON_SIZE} strokeWidth={1.75} />}
             onClick={run(onViewMyStation)}
             dataTestId="git-diff-action-view-my-station"
           >
             {t("creator.diffMenu.viewMyStation", {
-              defaultValue: "View in my station",
+              defaultValue: "View in My Station",
             })}
           </DropdownItem>
           <DropdownItem
-            icon={<Bot size={ICON_SIZE} strokeWidth={1.75} />}
+            className={LEFT_ALIGNED_ITEM_CLASS}
+            icon={<InfinityIcon size={ICON_SIZE} strokeWidth={1.75} />}
             onClick={run(onViewAgentStation)}
             dataTestId="git-diff-action-view-agent-station"
           >
             {t("creator.diffMenu.viewAgentStation", {
-              defaultValue: "View in Agent station",
+              defaultValue: "View in Agent Station",
             })}
           </DropdownItem>
         </DropdownItemGroup>

@@ -25,7 +25,7 @@ export function usePinnedContent() {
 
 const ChatPinnedBars: React.FC = memo(() => {
   return (
-    <div data-testid="chat-pinned-bars" className="w-full">
+    <div data-testid="chat-pinned-bars" className="relative z-20 w-full">
       <PlanTodoPinBar />
     </div>
   );

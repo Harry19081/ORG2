@@ -37,7 +37,10 @@ import { TabBarTrailingIconButton } from "@src/modules/WorkStation/shared";
 import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { PresenceMenuButton } from "@src/scaffold/NavigationSidebar/blocks/SidebarBottomBar";
-import type { ChatPanelCreateTarget } from "@src/store/ui/chatPanelAtom";
+import type {
+  ChatHistoryDisplayMode,
+  ChatPanelCreateTarget,
+} from "@src/store/ui/chatPanelAtom";
 
 import {
   CHAT_PANEL_HEADER_DRAG_STYLE,
@@ -61,9 +64,11 @@ interface ChatPanelHeaderProps {
   createTarget: ChatPanelCreateTarget;
   createTargetOptions: SelectOption[];
   currentSessionId: string | null;
+  displayMode: ChatHistoryDisplayMode;
   eventsLength: number;
   exploreAgentSearchEnabled: boolean;
   handleChatFocusToggle: () => void;
+  handleCompactDisplayModeToggle: (checked: boolean) => void;
   handleCopyEventJson: () => void;
   handleCreateTargetChange: (
     value: string | number | (string | number)[]
@@ -121,9 +126,11 @@ export function ChatPanelHeader({
   createTarget,
   createTargetOptions,
   currentSessionId,
+  displayMode,
   eventsLength,
   exploreAgentSearchEnabled,
   handleChatFocusToggle,
+  handleCompactDisplayModeToggle,
   handleCopyEventJson,
   handleCreateTargetChange,
   handleExploreAgentSearchToggle,
@@ -422,6 +429,18 @@ export function ChatPanelHeader({
               <Switch
                 checked={paginationEnabled}
                 onChange={handlePaginationToggle}
+                size="small"
+              />
+            </div>
+            <div
+              className={`${DROPDOWN_CLASSES.item} w-full justify-between text-left`}
+            >
+              <span className="flex-1 truncate">
+                {t("chat.compactDisplayMode")}
+              </span>
+              <Switch
+                checked={displayMode === "compact"}
+                onChange={handleCompactDisplayModeToggle}
                 size="small"
               />
             </div>

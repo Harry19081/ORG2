@@ -687,6 +687,7 @@
     "newSession": "새 세션",
     "defaultTitle": "채팅",
     "hideChatPanel": "채팅 패널 숨기기",
+    "compactDisplayMode": "컴팩트 모드",
     "replay": {
       "follow": "팔로우"
     },
@@ -938,6 +939,9 @@
     "readFileRunning": "읽는 중",
     "readFileDone": "읽음",
     "readFileFailed": "읽기 실패",
+    "readFileSkillRunning": "skill 사용 중",
+    "readFileSkillDone": "skill 사용",
+    "readFileSkillFailed": "skill 사용 실패",
     "readFileNoContent": "(내용 없음)",
     "readImageRunning": "이미지 {{name}} 분석 중",
     "readImageDone": "이미지 {{name}} 분석 완료",
@@ -951,6 +955,8 @@
     "editFileFailed": "{{name}} 편집 실패",
     "editFileRunningNoName": "파일 편집 중",
     "editFileDoneNoName": "파일 편집됨",
+    "editFileCompactRunning": "편집 중",
+    "editFileCompactDone": "편집",
     "editFileFailedNoName": "파일 편집 실패",
     "file": "파일",
     "runShellRunning": "명령 실행 중",
@@ -1731,6 +1737,15 @@
       "mode": "모드",
       "models": "모델",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "GIT 작업",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "리뷰",
+      "viewMyStation": "My Station에서 보기",
+      "viewAgentStation": "Agent Station에서 보기"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

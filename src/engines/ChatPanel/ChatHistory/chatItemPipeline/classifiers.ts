@@ -37,7 +37,13 @@ export type ActionSummaryCategory = "read" | "search" | "list" | "glob" | "lsp";
 export function getActionSummaryCategory(
   event: SessionEvent
 ): ActionSummaryCategory | null {
-  return getActivitySummaryCategory(event.actionType, event.functionName);
+  const uiCategory = event.uiCanonical
+    ? getActivitySummaryCategory(event.uiCanonical)
+    : null;
+  return (
+    uiCategory ??
+    getActivitySummaryCategory(event.actionType, event.functionName)
+  );
 }
 
 /**

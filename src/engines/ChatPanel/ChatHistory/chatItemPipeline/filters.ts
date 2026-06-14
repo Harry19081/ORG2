@@ -172,11 +172,13 @@ export function willEventRenderContent(event: SessionEvent): boolean {
     if (!result || result["status"] === "running") return false;
   }
 
-  // Check if action_type is registered
+  // Check if the normalized UI canonical or raw action/function names are registered.
+  const configByNormalized = getActionConfig(normalized);
+  if (configByNormalized) return true;
+
   const configByAction = getActionConfig(actionType);
   if (configByAction) return true;
 
-  // Check if function name is registered
   if (functionName) {
     const configByFunction = getActionConfig(functionName);
     if (configByFunction) return true;

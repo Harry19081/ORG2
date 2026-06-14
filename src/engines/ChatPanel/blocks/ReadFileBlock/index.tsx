@@ -8,12 +8,13 @@
  * hiding read failures behind a generic header was the bug that
  * `fix(cursor): keep native sessions continuous` set out to fix.
  */
-import { Sparkles } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import React, { useMemo } from "react";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
 import { extractFileData } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
+import { useToolLabelText } from "@src/engines/SessionCore/rendering/registry";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
 import { getFileName } from "@src/util/file/pathUtils";
 import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
@@ -51,13 +52,20 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
     [filePath]
   );
   const isSkill = Boolean(skillName);
-  const displayName = isSkill ? `${skillName} skill` : baseName;
+  const displayName = skillName || baseName;
   const fullPathTitle = displayPath.title || filePath || fileName || "file";
   const iconName = baseName;
   const isLoading =
     status === "running" && props.showActiveEventPainting === true;
   const isFailed = status === "failed";
-  const title = isSkill ? "Use" : props.title || "Read";
+  const skillLabelState =
+    status === "running"
+      ? "skill_running"
+      : isFailed
+        ? "skill_failed"
+        : "skill_done";
+  const skillTitle = useToolLabelText("read_file", skillLabelState);
+  const title = isSkill ? skillTitle : props.title || "Read";
 
   const {
     isHeaderHovered,
@@ -69,7 +77,7 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
   const toolIcon = useMemo(
     () =>
       isSkill ? (
-        <Sparkles
+        <Briefcase
           size={SESSION_UI_TOKENS.ICON.SIZE_SM}
           className="text-text-2"
         />
@@ -101,6 +109,7 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
       <EventBlockHeader
         isCollapsed
         withHover={false}
+        onClick={handleLocate}
         onNavigate={handleLocate}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}

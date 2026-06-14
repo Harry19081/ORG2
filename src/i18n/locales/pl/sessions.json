@@ -695,6 +695,7 @@
     "newSession": "Nowa sesja",
     "defaultTitle": "Czat",
     "hideChatPanel": "Ukryj panel czatu",
+    "compactDisplayMode": "Tryb kompaktowy",
     "replay": {
       "follow": "Śledź"
     },
@@ -960,6 +961,9 @@
     "readFileRunning": "Odczytywanie",
     "readFileDone": "Odczytano",
     "readFileFailed": "Nie udało się odczytać",
+    "readFileSkillRunning": "Używanie skill",
+    "readFileSkillDone": "Użyj skill",
+    "readFileSkillFailed": "Nie udało się użyć skill",
     "readFileNoContent": "(treść nie została przechwycona)",
     "readImageRunning": "Analizowanie obrazu {{name}}",
     "readImageDone": "Przeanalizowano obraz {{name}}",
@@ -973,6 +977,8 @@
     "editFileFailed": "Nie udało się edytować {{name}}",
     "editFileRunningNoName": "Edytowanie pliku",
     "editFileDoneNoName": "Edytowano plik",
+    "editFileCompactRunning": "Edytowanie",
+    "editFileCompactDone": "Edytuj",
     "editFileFailedNoName": "Nie udało się edytować pliku",
     "file": "plik",
     "runShellRunning": "Wykonywanie polecenia",
@@ -1755,6 +1761,15 @@
       "mode": "Tryb",
       "models": "Modele",
       "skills": "Skills"
+    },
+    "diffMenu": {
+      "gitActions": "Akcje GIT",
+      "commit": "commit",
+      "commitPush": "commit & push",
+      "push": "push",
+      "review": "Przegląd",
+      "viewMyStation": "Wyświetl w My Station",
+      "viewAgentStation": "Wyświetl w Agent Station"
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",

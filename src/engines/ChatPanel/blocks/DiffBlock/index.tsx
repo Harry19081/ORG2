@@ -13,25 +13,33 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
 import {
   extractEditData,
   parseUnifiedDiffToOldNew,
 } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
+import { useToolLabelText } from "@src/engines/SessionCore/rendering/registry";
 import type {
+  EventStatus,
   ExtractedEditData,
   UniversalEventProps,
 } from "@src/engines/SessionCore/rendering/types/universalProps";
 import { getFileName } from "@src/util/file/pathUtils";
 
+import { useChatHistoryDisplayMode } from "../../ChatHistory/chatDisplayModeContext";
 import ChatCodeBlock from "../CodeBlock";
 import {
   EventBlockHeader,
   EventBlockHeaderIcon,
+  EventBlockHeaderInfo,
+  EventBlockHeaderSubtitle,
   EventBlockHeaderTitle,
   FailedEventRow,
   SESSION_UI_TOKENS,
+  getEventBlockContainerClasses,
 } from "../primitives";
+import { useBlockHeader } from "../useBlockLocate";
 
 function hasStreamingContent(segments: ExtractedEditData[]): boolean {
   return segments.some((s) => s.newContent || s.diff);
@@ -181,6 +189,111 @@ const SegmentView: React.FC<SegmentViewProps> = ({
   return null;
 };
 
+interface CompactSegmentViewProps {
+  segment: ExtractedEditData;
+  eventId: string;
+  status: EventStatus;
+  isLoading: boolean;
+  isNewFile?: boolean;
+}
+
+const CompactSegmentView: React.FC<CompactSegmentViewProps> = ({
+  segment,
+  eventId,
+  status,
+  isLoading,
+  isNewFile,
+}) => {
+  const { t } = useTranslation("sessions");
+  const displayTitle =
+    getFileName(segment.filePath) || segment.fileName || "file";
+  const decodedContent = segment.newContent
+    ? decodeStreamContent(segment.newContent)
+    : undefined;
+  const linesAdded =
+    isNewFile && !segment.linesAdded && decodedContent
+      ? decodedContent.split("\n").length
+      : (segment.linesAdded ?? 0);
+  const linesRemoved = segment.linesRemoved ?? 0;
+  const fullPathTitle = segment.filePath || segment.fileName || "file";
+  const hasInfo = linesAdded > 0 || linesRemoved > 0 || segment.isDeleted;
+  const compactLabelState =
+    status === "running" ? "compact_running" : "compact_done";
+  const compactTitle = useToolLabelText("edit_file", compactLabelState);
+
+  const {
+    isHeaderHovered,
+    handleHeaderMouseEnter,
+    handleHeaderMouseLeave,
+    handleLocate,
+  } = useBlockHeader({ eventId });
+
+  const editIcon = useMemo(
+    () =>
+      getToolIcon("edit_file", {
+        size: SESSION_UI_TOKENS.ICON.SIZE_SM,
+        className: "text-text-2",
+      }),
+    []
+  );
+
+  return (
+    <div
+      className={`${getEventBlockContainerClasses(false)} animate-fade-in`}
+      title={fullPathTitle}
+    >
+      <EventBlockHeader
+        isCollapsed
+        withHover={false}
+        onClick={handleLocate}
+        onNavigate={handleLocate}
+        onMouseEnter={handleHeaderMouseEnter}
+        onMouseLeave={handleHeaderMouseLeave}
+      >
+        <EventBlockHeaderIcon
+          icon={editIcon}
+          isCollapsed
+          isHeaderHovered={isHeaderHovered}
+          hasContent={false}
+          revealChevronOnIconHoverOnly={Boolean(eventId)}
+          isLoading={isLoading}
+        />
+        <EventBlockHeaderTitle isLoading={isLoading}>
+          {compactTitle}
+        </EventBlockHeaderTitle>
+        <EventBlockHeaderSubtitle
+          isLoading={isLoading}
+          title={displayTitle}
+          className="text-text-1"
+        >
+          <FileTypeIcon
+            fileName={displayTitle}
+            size="small"
+            className="mr-1.5 shrink-0"
+          />
+          <span className="min-w-0 truncate text-text-1">{displayTitle}</span>
+        </EventBlockHeaderSubtitle>
+        {hasInfo && (
+          <EventBlockHeaderInfo
+            isLoading={isLoading}
+            className="inline-flex items-center gap-1 whitespace-nowrap"
+          >
+            {linesAdded > 0 && (
+              <span className="text-success-6">+{linesAdded}</span>
+            )}
+            {linesRemoved > 0 && (
+              <span className="text-danger-6">-{linesRemoved}</span>
+            )}
+            {segment.isDeleted && (
+              <span className="text-danger-6">{t("tools.deleted")}</span>
+            )}
+          </EventBlockHeaderInfo>
+        )}
+      </EventBlockHeader>
+    </div>
+  );
+};
+
 export interface DiffBlockProps extends UniversalEventProps {
   /**
    * Pre-translated header title for the current lifecycle state.
@@ -255,6 +368,7 @@ interface EditViewProps extends UniversalEventProps {
 
 const EditView: React.FC<EditViewProps> = (props) => {
   const { t } = useTranslation("sessions");
+  const displayMode = useChatHistoryDisplayMode();
   const { eventId, status, title } = props;
 
   const isNewFile = props.args?.action === "create";
@@ -299,6 +413,23 @@ const EditView: React.FC<EditViewProps> = (props) => {
           {title}
         </EventBlockHeaderTitle>
       </EventBlockHeader>
+    );
+  }
+
+  if (displayMode === "compact") {
+    return (
+      <div className="flex flex-col gap-2">
+        {segments.map((segment, segmentIndex) => (
+          <CompactSegmentView
+            key={`${eventId}-compact-segment-${segmentIndex}`}
+            segment={segment}
+            eventId={eventId}
+            status={status}
+            isLoading={isLoading}
+            isNewFile={isNewFile}
+          />
+        ))}
+      </div>
     );
   }
 

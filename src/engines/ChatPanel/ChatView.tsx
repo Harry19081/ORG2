@@ -51,6 +51,7 @@ import {
   streamRetryStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { pendingPlanApprovalsAtom } from "@src/store/session/planApprovalAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
 import {
   dequeueMessageAtom,
@@ -96,6 +97,7 @@ export interface ChatViewProps {
   /** Session ID to display. Sync bridges and events load for this session. */
   sessionId: string;
   onRegisterSearchOpen?: (handler: (() => void) | null) => void;
+  displayMode?: ChatHistoryDisplayMode;
   turnPaginationEnabled?: boolean;
   /** Dock side for the containing chat panel, used to place side previews inward. */
   position?: "left" | "right";
@@ -126,6 +128,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
   ({
     sessionId,
     onRegisterSearchOpen,
+    displayMode = "full",
     turnPaginationEnabled = true,
     position = "right",
     surfaceBgClass = "bg-chat-pane",
@@ -586,7 +589,9 @@ const ChatView: React.FC<ChatViewProps> = memo(
                         onEvents={handleGroupChatTapEvents}
                       />
                     ))}
-                <AgentMessageClampProvider value={agentMessageClampEligible}>
+                <AgentMessageClampProvider
+                  value={agentMessageClampEligible && !turnPaginationEnabled}
+                >
                   <ChatHistory
                     surfaceBgClass={surfaceBgClass}
                     agentOrgCurrentMemberName={
@@ -611,6 +616,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
                     onScrollNavChange={handleScrollNavChange}
                     followAgentNav={followAgentNav}
                     onRegisterSearchOpen={onRegisterSearchOpen}
+                    displayMode={displayMode}
                     turnPaginationEnabled={turnPaginationEnabled}
                     pinnedHeaderPortalHost={pinnedHeaderHost}
                     bottomInset={

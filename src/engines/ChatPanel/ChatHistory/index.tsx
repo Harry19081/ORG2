@@ -33,6 +33,7 @@ import {
 } from "@src/hooks/perf/runtimeMemoryStats";
 import { isSessionActiveAtom } from "@src/store/session/cliSessionStatusAtom";
 import { cursorIdeTurnSummariesAtomFamily } from "@src/store/session/cursorIdeTurnSummariesAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
 import {
   collapseAllCommandAtom,
   turnCollapseOverrideAtom,
@@ -50,6 +51,7 @@ import {
   isAgentOrgInboxTranscriptEvent,
   isCoordinatorHumanUserEvent,
 } from "./GroupChatView/groupChatUtils";
+import { ChatHistoryDisplayModeProvider } from "./chatDisplayModeContext";
 import type { OptimizedChatItem } from "./chatItemPipeline/types";
 import ChatHistoryEmptyState from "./components/ChatHistoryEmptyState";
 import ChatHistoryList from "./components/ChatHistoryList";
@@ -126,6 +128,7 @@ interface ChatHistoryProps {
   onScrollNavChange?: (state: ScrollNavState) => void;
   followAgentNav?: FollowAgentNavState;
   onRegisterSearchOpen?: (handler: (() => void) | null) => void;
+  displayMode?: ChatHistoryDisplayMode;
   turnPaginationEnabled?: boolean;
   /** Optional external host for pinned/pagination chrome, outside the scroll body subtree. */
   pinnedHeaderPortalHost?: HTMLElement | null;
@@ -209,6 +212,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   onScrollNavChange,
   followAgentNav = EMPTY_FOLLOW_AGENT_NAV,
   onRegisterSearchOpen,
+  displayMode = "full",
   turnPaginationEnabled = true,
   pinnedHeaderPortalHost = null,
   bottomInset = 0,
@@ -376,6 +380,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     isAgentWorking,
     collapseTailWhenIdle,
     forceCollapseAllTurns,
+    disableTurnCollapse: turnPaginationEnabled,
     allTurnsCollapsed:
       collapseAllCommand.epoch > 0 && collapseAllCommand.collapsed
         ? true
@@ -908,176 +913,181 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   // ============================================
 
   return (
-    <div
-      className="wp__chat__history relative z-20 flex h-full min-w-0 max-w-full flex-1 flex-col self-stretch overflow-hidden"
-      data-testid="chat-message-list"
-      data-chat-history-count={chatHistory.length}
-      data-optimized-count={optimizedChatHistory.length}
-      data-flat-count={displayTotalFlatItems}
-      data-group-counts={displayGroupCounts.join(",")}
-      ref={chatContainerRef as React.RefObject<HTMLDivElement>}
-      style={
-        {
-          minHeight: 0,
-          fontSize: `${chatFontSize}px`,
-          lineHeight: chatLineHeight ?? 1.6,
-          "--chat-font-size": `${chatFontSize}px`,
-          "--chat-code-font-size": `${chatCodeFontSize ?? 13}px`,
-          "--chat-line-height": chatLineHeight ?? 1.6,
-        } as React.CSSProperties
-      }
-    >
+    <ChatHistoryDisplayModeProvider value={displayMode}>
       <div
-        className={`flex items-center justify-between ${DETAIL_PANEL_TOKENS.contentWidth}`}
+        className="wp__chat__history relative z-20 flex h-full min-w-0 max-w-full flex-1 flex-col self-stretch overflow-hidden"
+        data-testid="chat-message-list"
+        data-chat-history-count={chatHistory.length}
+        data-optimized-count={optimizedChatHistory.length}
+        data-flat-count={displayTotalFlatItems}
+        data-group-counts={displayGroupCounts.join(",")}
+        ref={chatContainerRef as React.RefObject<HTMLDivElement>}
+        style={
+          {
+            minHeight: 0,
+            fontSize: `${chatFontSize}px`,
+            lineHeight: chatLineHeight ?? 1.6,
+            "--chat-font-size": `${chatFontSize}px`,
+            "--chat-code-font-size": `${chatCodeFontSize ?? 13}px`,
+            "--chat-line-height": chatLineHeight ?? 1.6,
+          } as React.CSSProperties
+        }
       >
-        <SessionHeader sessionInfo={sessionInfo} />
-      </div>
+        <div
+          className={`flex items-center justify-between ${DETAIL_PANEL_TOKENS.contentWidth}`}
+        >
+          <SessionHeader sessionInfo={sessionInfo} />
+        </div>
 
-      <ChatSearchBar
-        ref={searchBarRef}
-        search={search}
-        isVisible={isSearchVisible}
-        onClose={handleCloseSearch}
-      />
+        <ChatSearchBar
+          ref={searchBarRef}
+          search={search}
+          isVisible={isSearchVisible}
+          onClose={handleCloseSearch}
+        />
 
-      {pinnedHeaderPortalHost
-        ? createPortal(pinnedHeaderLayer, pinnedHeaderPortalHost)
-        : pinnedHeaderLayer}
+        {pinnedHeaderPortalHost
+          ? createPortal(pinnedHeaderLayer, pinnedHeaderPortalHost)
+          : pinnedHeaderLayer}
 
-      <div className="flex min-h-0 flex-1 flex-col">
-        {agentOrgOverviewOpen && agentOrgOverviewPanel && (
-          <div
-            className={`max-h-[45%] flex-shrink-0 overflow-y-auto scrollbar-hide ${surfaceBgClass}`}
-          >
+        <div className="flex min-h-0 flex-1 flex-col">
+          {agentOrgOverviewOpen && agentOrgOverviewPanel && (
             <div
-              className={`mx-auto w-full px-2 pb-2 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+              className={`max-h-[45%] flex-shrink-0 overflow-y-auto scrollbar-hide ${surfaceBgClass}`}
             >
               <div
-                data-agent-org-overview-panel="true"
-                className={`${DROPDOWN_CLASSES.panel} p-1`}
+                className={`mx-auto w-full px-2 pb-2 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
               >
-                {agentOrgOverviewPanel}
+                <div
+                  data-agent-org-overview-panel="true"
+                  className={`${DROPDOWN_CLASSES.panel} p-1`}
+                >
+                  {agentOrgOverviewPanel}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div
+            className="relative min-h-0 flex-1"
+            style={{
+              backfaceVisibility: "hidden",
+              contain: "layout paint",
+              transform: "translateZ(0)",
+              willChange: "transform",
+            }}
+            data-chat-virtualized-body-layer
+          >
+            {turnPageListOpen && turnPaginationReady && (
+              <TurnPageList
+                surfaceBgClass={surfaceBgClass}
+                pages={pages}
+                groupHeaders={groupHeaders}
+                groupMeta={groupMeta}
+                currentPageIndex={currentPageIndex}
+                turnPageSortAscending={turnPageSortAscending}
+                onSelectTurnPage={selectTurnPage}
+              />
+            )}
+
+            {isLoadingMore && (
+              <div
+                className={`absolute left-0 right-0 top-0 z-20 flex items-center justify-center ${surfaceBgClass} py-2 ${DETAIL_PANEL_TOKENS.contentMaxWidth} mx-auto`}
+              >
+                <Loader2
+                  size={SPINNER_TOKENS.default}
+                  className="animate-spin text-text-3"
+                />
+                <span className="ml-2 text-xs text-text-3">
+                  {t("placeholders.loadingHistory")}
+                </span>
+              </div>
+            )}
+
+            {bottomInset > 0 && (
+              <div
+                className="pointer-events-none absolute bottom-0 left-0 right-0 z-10"
+                style={{
+                  height: bottomInset,
+                  maskImage: `linear-gradient(to bottom, transparent 0, black ${BOTTOM_OVERLAY_FADE_PX}px)`,
+                  WebkitMaskImage: `linear-gradient(to bottom, transparent 0, black ${BOTTOM_OVERLAY_FADE_PX}px)`,
+                }}
+              >
+                <div className={`h-full w-full ${surfaceBgClass}`} />
+              </div>
+            )}
+
+            <div
+              ref={scrollAreaRef}
+              className="absolute inset-0 overflow-hidden"
+            >
+              <div
+                className={`mx-auto h-full w-full ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+              >
+                {optimizedChatHistory.length > 0 ? (
+                  <ChatHistoryList
+                    flatItems={displayFlatItems}
+                    groupCounts={displayGroupCounts}
+                    totalFlatItems={displayTotalFlatItems}
+                    lastAssistantFlatIndexPerItem={
+                      displayLastAssistantFlatIndexPerItem
+                    }
+                    codeBlockContainerWidth={codeBlockContainerWidth ?? 0}
+                    footerSpacerHeight={footerSpacerHeight}
+                    planningIndicatorCount={planningIndicatorCount}
+                    planningShowSlowHint={planningShowSlowHint}
+                    planningVariantIndex={planningVariantIndex}
+                    virtuosoRef={
+                      virtuosoRef as React.RefObject<GroupedVirtuosoHandle>
+                    }
+                    virtuosoDataKey={virtuosoDataKey}
+                    getIsWpGeneWorking={getIsWpGeneWorking}
+                    getIsExploring={getIsExploring}
+                    followOutput={followOutput}
+                    renderGroupHeader={
+                      turnPaginationEnabled
+                        ? renderNoGroupHeader
+                        : renderGroupHeader
+                    }
+                    onAtBottomStateChange={handleAtBottomStateChange}
+                    onRangeChanged={handleRangeChanged}
+                    onEndReached={handleTurnPageEndReached}
+                    onRegenerate={handleRegenerateGroup}
+                    onSubmit={memoizedSubmit}
+                    onSkip={stableHandleIgnoreQuestion}
+                    onEditUserMessage={handleEditUserMessage}
+                    ChatScroller={ChatScroller}
+                    staticScrollerRef={staticScrollerRef}
+                    newEventDividerLabel={newEventDividerLabel}
+                  />
+                ) : (
+                  <div className="flex h-full min-h-0 flex-col">
+                    {hasPinnedContent && (
+                      <div
+                        className={`${DETAIL_PANEL_TOKENS.contentWidth} px-3 pb-2 pt-1`}
+                      >
+                        <ChatPinnedBars />
+                      </div>
+                    )}
+                    <div className="min-h-0 flex-1">
+                      <ChatHistoryEmptyState
+                        sessionLoadStatus={sessionLoadStatus}
+                        sessionLoadError={sessionLoadError}
+                        emptyConfirmed={emptyConfirmed}
+                        shouldShowEmpty={shouldShowEmpty}
+                        isRolledBack={isRolledBack}
+                        onReload={handleReloadSession}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        )}
-
-        <div
-          className="relative min-h-0 flex-1"
-          style={{
-            backfaceVisibility: "hidden",
-            contain: "layout paint",
-            transform: "translateZ(0)",
-            willChange: "transform",
-          }}
-          data-chat-virtualized-body-layer
-        >
-          {turnPageListOpen && turnPaginationReady && (
-            <TurnPageList
-              surfaceBgClass={surfaceBgClass}
-              pages={pages}
-              groupHeaders={groupHeaders}
-              groupMeta={groupMeta}
-              currentPageIndex={currentPageIndex}
-              turnPageSortAscending={turnPageSortAscending}
-              onSelectTurnPage={selectTurnPage}
-            />
-          )}
-
-          {isLoadingMore && (
-            <div
-              className={`absolute left-0 right-0 top-0 z-20 flex items-center justify-center ${surfaceBgClass} py-2 ${DETAIL_PANEL_TOKENS.contentMaxWidth} mx-auto`}
-            >
-              <Loader2
-                size={SPINNER_TOKENS.default}
-                className="animate-spin text-text-3"
-              />
-              <span className="ml-2 text-xs text-text-3">
-                {t("placeholders.loadingHistory")}
-              </span>
-            </div>
-          )}
-
-          {bottomInset > 0 && (
-            <div
-              className="pointer-events-none absolute bottom-0 left-0 right-0 z-10"
-              style={{
-                height: bottomInset,
-                maskImage: `linear-gradient(to bottom, transparent 0, black ${BOTTOM_OVERLAY_FADE_PX}px)`,
-                WebkitMaskImage: `linear-gradient(to bottom, transparent 0, black ${BOTTOM_OVERLAY_FADE_PX}px)`,
-              }}
-            >
-              <div className={`h-full w-full ${surfaceBgClass}`} />
-            </div>
-          )}
-
-          <div ref={scrollAreaRef} className="absolute inset-0 overflow-hidden">
-            <div
-              className={`mx-auto h-full w-full ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
-            >
-              {optimizedChatHistory.length > 0 ? (
-                <ChatHistoryList
-                  flatItems={displayFlatItems}
-                  groupCounts={displayGroupCounts}
-                  totalFlatItems={displayTotalFlatItems}
-                  lastAssistantFlatIndexPerItem={
-                    displayLastAssistantFlatIndexPerItem
-                  }
-                  codeBlockContainerWidth={codeBlockContainerWidth ?? 0}
-                  footerSpacerHeight={footerSpacerHeight}
-                  planningIndicatorCount={planningIndicatorCount}
-                  planningShowSlowHint={planningShowSlowHint}
-                  planningVariantIndex={planningVariantIndex}
-                  virtuosoRef={
-                    virtuosoRef as React.RefObject<GroupedVirtuosoHandle>
-                  }
-                  virtuosoDataKey={virtuosoDataKey}
-                  getIsWpGeneWorking={getIsWpGeneWorking}
-                  getIsExploring={getIsExploring}
-                  followOutput={followOutput}
-                  renderGroupHeader={
-                    turnPaginationEnabled
-                      ? renderNoGroupHeader
-                      : renderGroupHeader
-                  }
-                  onAtBottomStateChange={handleAtBottomStateChange}
-                  onRangeChanged={handleRangeChanged}
-                  onEndReached={handleTurnPageEndReached}
-                  onRegenerate={handleRegenerateGroup}
-                  onSubmit={memoizedSubmit}
-                  onSkip={stableHandleIgnoreQuestion}
-                  onEditUserMessage={handleEditUserMessage}
-                  ChatScroller={ChatScroller}
-                  staticScrollerRef={staticScrollerRef}
-                  newEventDividerLabel={newEventDividerLabel}
-                />
-              ) : (
-                <div className="flex h-full min-h-0 flex-col">
-                  {hasPinnedContent && (
-                    <div
-                      className={`${DETAIL_PANEL_TOKENS.contentWidth} px-3 pb-2 pt-1`}
-                    >
-                      <ChatPinnedBars />
-                    </div>
-                  )}
-                  <div className="min-h-0 flex-1">
-                    <ChatHistoryEmptyState
-                      sessionLoadStatus={sessionLoadStatus}
-                      sessionLoadError={sessionLoadError}
-                      emptyConfirmed={emptyConfirmed}
-                      shouldShowEmpty={shouldShowEmpty}
-                      isRolledBack={isRolledBack}
-                      onReload={handleReloadSession}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
+        <RevertConfirmDialog />
       </div>
-      <RevertConfirmDialog />
-    </div>
+    </ChatHistoryDisplayModeProvider>
   );
 };
 

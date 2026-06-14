@@ -88,6 +88,20 @@ function makeListDirItem(directory: string) {
   });
 }
 
+function makeCliAliasItem(
+  functionName: string,
+  uiCanonical: string,
+  args: Record<string, unknown>
+) {
+  return makeSessionEvent({
+    action_type: "tool_call",
+    function: functionName,
+    uiCanonical,
+    args,
+    result: { success: true, content: "ok" },
+  });
+}
+
 // ============================================
 // Tests
 // ============================================
@@ -384,6 +398,28 @@ describe("processChatItems", () => {
       expect(summaryItem.actionSummaryEntries).toBeDefined();
       expect(summaryItem.actionSummaryItems?.length).toBe(3);
       expect(summaryItem.actionSummaryClosedByBoundary).toBe(false);
+    });
+
+    it("groups CLI exploration aliases using uiCanonical", () => {
+      const readItem = makeCliAliasItem("Read", "read_file", {
+        file_path: "a.ts",
+      });
+      const grepItem = makeCliAliasItem("Grep", "code_search", {
+        pattern: "handleClick",
+      });
+      const listItem = makeCliAliasItem("LS", "list_dir", {
+        path: "src/",
+      });
+
+      const { items } = processChatItems([readItem, grepItem, listItem], {
+        groupActionSummaries: true,
+        preFilterEmptyActivities: false,
+      });
+
+      expect(items.length).toBe(1);
+      expect(items[0].type).toBe("actionSummaryGroup");
+      const summaryItem = items[0] as OptimizedChatItem;
+      expect(summaryItem.actionSummaryItems?.length).toBe(3);
     });
 
     it("keeps action summary group key stable when first tool transitions to result", () => {
