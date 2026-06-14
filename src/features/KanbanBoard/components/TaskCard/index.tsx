@@ -4,7 +4,12 @@
  * Individual task card displayed in Kanban columns.
  * Shows task information with priority, tags, and metadata.
  */
-import { ChevronRight, MessagesSquare } from "lucide-react";
+import {
+  ChevronRight,
+  FileText,
+  GitCommit,
+  MessagesSquare,
+} from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -156,6 +161,26 @@ const TaskCard: React.FC<TaskCardProps> = ({
               />
               <span>{formatModelNameFull(task.modelName)}</span>
             </div>
+          )}
+          {task.orgtrackMetadata && (
+            <>
+              <div className="kanban-task-card__meta-pill">
+                <FileText size={12} strokeWidth={1.75} />
+                <span>
+                  {t("orgtrack.filesChanged", {
+                    count: task.orgtrackMetadata.filesChanged,
+                  })}
+                </span>
+              </div>
+              <div className="kanban-task-card__meta-pill">
+                <GitCommit size={12} strokeWidth={1.75} />
+                <span>
+                  {t("orgtrack.committedRateShort", {
+                    percent: task.orgtrackMetadata.committedRatePercent,
+                  })}
+                </span>
+              </div>
+            </>
           )}
           {task.metaLines?.map((entry, idx) => {
             const Icon = entry.icon;

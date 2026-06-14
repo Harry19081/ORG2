@@ -87,6 +87,7 @@
       "started": "開始時間",
       "lastUpdated": "最後更新",
       "agentModel": "Agent · 模型",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "沒有符合這些篩選條件的會話",
       "emptyDescription": "嘗試切換狀態、Agent 類型或時間範圍。"
     },
@@ -210,6 +211,11 @@
       },
       "commitsTo": "提交至 {{repo}}",
       "commitsToMultiple": "提交至 {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} 個檔案",
+      "filesChanged_other": "{{count}} 個檔案",
+      "committedRateShort": "{{percent}}% 已提交"
     }
   },
   "changes": {

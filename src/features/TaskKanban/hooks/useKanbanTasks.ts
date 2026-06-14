@@ -36,6 +36,7 @@ import { createReplayEvents } from "./useKanbanTasks/replayEvents";
 import { applyReplayCursor } from "./useKanbanTasks/replayProjection";
 import { sessionToKanbanTask } from "./useKanbanTasks/sessionToKanbanTask";
 import { getTaskTimestamp } from "./useKanbanTasks/taskTimestamps";
+import { useSessionOrgtrackMetadata } from "./useSessionOrgtrackMetadata";
 
 // ============================================
 // Types
@@ -98,33 +99,45 @@ export function useKanbanTasks(
     return () => clearInterval(id);
   }, []);
 
+  const visibleSessions = useMemo(
+    () =>
+      sessions.filter(
+        (session) =>
+          isPrimarySessionListSession(session) &&
+          (!sessionIdFilter || sessionIdFilter.has(session.session_id))
+      ),
+    [sessions, sessionIdFilter]
+  );
+  const orgtrackMetadata = useSessionOrgtrackMetadata(visibleSessions);
+
   // Pair sessions with their kanban-task projection once. Downstream
   // code reads from this so we don't re-iterate `sessions` per concern.
   // The filter is applied here so every later memo (events, bounds,
   // tasks) automatically respects the scope.
   const sessionPairs = useMemo(() => {
-    const filtered = sessions.filter(
-      (session) =>
-        isPrimarySessionListSession(session) &&
-        (!sessionIdFilter || sessionIdFilter.has(session.session_id))
-    );
-    return filtered.map((session) => ({
-      session,
-      task: sessionToKanbanTask(
+    return visibleSessions.map((session) => {
+      const task = sessionToKanbanTask(
         session,
         visitedSessions,
         manualArchivedSessionIds,
         autoArchiveTtl,
         nowTick
-      ),
-    }));
+      );
+      return {
+        session,
+        task: {
+          ...task,
+          orgtrackMetadata: orgtrackMetadata.get(session.session_id),
+        },
+      };
+    });
   }, [
-    sessions,
+    visibleSessions,
     visitedSessions,
     manualArchivedSessionIds,
     autoArchiveTtl,
     nowTick,
-    sessionIdFilter,
+    orgtrackMetadata,
   ]);
 
   const sessionTasks = useMemo(

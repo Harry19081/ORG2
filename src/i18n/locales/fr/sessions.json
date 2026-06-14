@@ -87,6 +87,7 @@
       "started": "Démarré",
       "lastUpdated": "Dernière mise à jour",
       "agentModel": "Agent · Modèle",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Aucune session ne correspond à ces filtres",
       "emptyDescription": "Essayez un autre statut, type d'Agent ou intervalle."
     },
@@ -210,6 +211,11 @@
       },
       "commitsTo": "Commits vers {{repo}}",
       "commitsToMultiple": "Commits vers {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} fichier",
+      "filesChanged_other": "{{count}} fichiers",
+      "committedRateShort": "{{percent}} % validé"
     }
   },
   "changes": {

@@ -87,6 +87,7 @@
       "started": "Начато",
       "lastUpdated": "Последнее обновление",
       "agentModel": "Agent · Модель",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Нет сессий, соответствующих этим фильтрам",
       "emptyDescription": "Попробуйте другой статус, тип Agent или период."
     },
@@ -210,6 +211,11 @@
       },
       "commitsTo": "Commits в {{repo}}",
       "commitsToMultiple": "Commits в {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} файл",
+      "filesChanged_other": "{{count}} файлов",
+      "committedRateShort": "{{percent}}% закоммичено"
     }
   },
   "changes": {

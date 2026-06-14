@@ -1,5 +1,7 @@
-import type { KeySource } from "@src/api/tauri/session";
-import type { DispatchCategory } from "@src/api/tauri/session/dispatchTypes";
+import type {
+  DispatchCategory,
+  KeySource,
+} from "@src/api/tauri/session/dispatchTypes";
 
 export const DIAGNOSTICS_LEVEL = {
   OFF: "off",

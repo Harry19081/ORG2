@@ -156,14 +156,15 @@
   display: flex;
   min-width: 0;
   flex: 1;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .kanban-task-card__meta-pill {
   display: inline-flex;
   min-width: 0;
-  max-width: 45%;
+  max-width: 100%;
   flex-shrink: 1;
   align-items: center;
   gap: 4px;

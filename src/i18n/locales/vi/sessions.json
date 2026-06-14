@@ -87,6 +87,7 @@
       "started": "Đã bắt đầu",
       "lastUpdated": "Cập nhật lần cuối",
       "agentModel": "Agent · Mô hình",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Không có phiên nào khớp với các bộ lọc này",
       "emptyDescription": "Hãy thử trạng thái, loại Agent hoặc khoảng thời gian khác."
     },
@@ -210,6 +211,11 @@
       },
       "commitsTo": "Commits tới {{repo}}",
       "commitsToMultiple": "Commits tới {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} tệp",
+      "filesChanged_other": "{{count}} tệp",
+      "committedRateShort": "{{percent}}% đã commit"
     }
   },
   "changes": {

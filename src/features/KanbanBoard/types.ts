@@ -31,6 +31,13 @@ export const KANBAN_RESULT_STATUS = {
 export type KanbanResultStatus =
   (typeof KANBAN_RESULT_STATUS)[keyof typeof KANBAN_RESULT_STATUS];
 
+export interface KanbanTaskOrgtrackMetadata {
+  filesChanged: number;
+  relatedCommits: number;
+  committedFiles: number;
+  committedRatePercent: number;
+}
+
 export interface KanbanTask {
   id: string;
   title: string;
@@ -61,6 +68,8 @@ export interface KanbanTask {
   cliAgentType?: CliAgentType;
   /** Raw LLM model id used by the session. */
   modelName?: string;
+  /** Repo-shareable orgtrack metadata for session file/commit attribution. */
+  orgtrackMetadata?: KanbanTaskOrgtrackMetadata;
   /** Display label for the workspace root associated with the session. */
   workspaceName?: string;
   /**

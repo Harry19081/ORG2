@@ -157,6 +157,7 @@ body {
   --color-chat-pane: var(--color-chat-pane-base);
   --color-chat-container: #202020;
   --color-chat-input: #2b2b2b;
+  --color-chat-panel-info-container: var(--color-chat-input);
   --color-event-block: #181818;
   --color-event-block-fade: var(--color-event-block);
   --color-diff-add: #123a1b;

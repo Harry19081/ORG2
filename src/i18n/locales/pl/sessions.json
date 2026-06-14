@@ -87,6 +87,7 @@
       "started": "Rozpoczęto",
       "lastUpdated": "Ostatnia aktualizacja",
       "agentModel": "Agent · Model",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Brak sesji pasujących do tych filtrów",
       "emptyDescription": "Spróbuj wybrać inny status, typ Agent lub zakres czasu."
     },
@@ -210,6 +211,11 @@
       },
       "commitsTo": "Commits do {{repo}}",
       "commitsToMultiple": "Commits do {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} plik",
+      "filesChanged_other": "{{count}} plików",
+      "committedRateShort": "{{percent}}% scommitowane"
     }
   },
   "worktreeCompare": {

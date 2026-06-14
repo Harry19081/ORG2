@@ -29,7 +29,7 @@ import {
   getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
 import { getUiScaleFromCssVar } from "@src/lib/dndKit";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { Placeholder } from "@src/modules/shared/layouts/blocks/Placeholder";
 
 import type { KanbanColumnConfig, KanbanTask } from "../../types";
 import TaskCard from "../TaskCard";

@@ -15,6 +15,10 @@ interface TableBodyProps<T> {
   settings: boolean;
   rowClassName?: string | ((record: T, index: number) => string);
   rowDataTestId?: (record: T, index: number) => string | undefined;
+  rowDataAttributes?: (
+    record: T,
+    index: number
+  ) => Record<string, string | number | boolean | undefined> | undefined;
   onRowClick?: (record: T, index: number) => void;
   noDataElement?: React.ReactNode;
 }
@@ -130,6 +134,7 @@ export function TableBody<T>({
   settings,
   rowClassName,
   rowDataTestId,
+  rowDataAttributes,
   onRowClick,
   noDataElement,
 }: TableBodyProps<T>) {
@@ -168,6 +173,7 @@ export function TableBody<T>({
 
         const rowKey = resolveRowKey(row.original, index);
         const dataTestId = rowDataTestId?.(row.original, index);
+        const dataAttributes = rowDataAttributes?.(row.original, index) ?? {};
         const canExpand =
           expandable?.rowExpandable?.(row.original) ?? !!expandable;
         const isExpanded = expandedRows.has(rowKey);
@@ -176,6 +182,7 @@ export function TableBody<T>({
           <React.Fragment key={rowKey}>
             <tr
               data-testid={dataTestId}
+              {...dataAttributes}
               className={[
                 "table-row",
                 rowClass,

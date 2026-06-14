@@ -87,6 +87,7 @@
       "started": "Started",
       "lastUpdated": "Last Updated",
       "agentModel": "Agent · Model",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "No sessions match these filters",
       "emptyDescription": "Try a different status, agent type, or time window."
     },
@@ -143,6 +144,11 @@
       "completed": "Completed",
       "failed": "Failed",
       "archived": "Archived"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} file",
+      "filesChanged_other": "{{count}} files",
+      "committedRateShort": "{{percent}}% committed"
     },
     "addContent": "Add Content",
     "merge": {

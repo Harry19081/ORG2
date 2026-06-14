@@ -87,6 +87,7 @@
       "started": "開始時刻",
       "lastUpdated": "最終更新",
       "agentModel": "Agent · モデル",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "これらのフィルターに一致するセッションはありません",
       "emptyDescription": "別のステータス、Agent タイプ、または時間範囲を試してください。"
     },
@@ -210,6 +211,11 @@
       },
       "commitsTo": "{{repo}} への Commits",
       "commitsToMultiple": "{{repos}} への Commits"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} ファイル",
+      "filesChanged_other": "{{count}} ファイル",
+      "committedRateShort": "{{percent}}% コミット済み"
     }
   },
   "changes": {

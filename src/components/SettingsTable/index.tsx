@@ -15,11 +15,10 @@ import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
 import Table, { type TableColumn } from "@src/components/Table";
 import Tooltip from "@src/components/Tooltip";
-import {
-  Placeholder,
-  SearchSortBar,
+import { Placeholder } from "@src/modules/shared/layouts/blocks/Placeholder";
+import SearchSortBar, {
   type SearchSortBarProps,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/modules/shared/layouts/blocks/SearchSortBar";
 
 import {
   SettingsTableAddFooter,
@@ -124,6 +123,11 @@ export interface SettingsTablePaginationContext {
   onPageSizeChange: (pageSize: number) => void;
 }
 
+export type SettingsTableSurfaceVariant =
+  | "default"
+  | "chatPanel"
+  | "transparent";
+
 export interface SettingsTableProps<RowData> {
   columns: SettingsTableColumn<RowData>[];
   rows: RowData[];
@@ -197,6 +201,15 @@ export interface SettingsTableProps<RowData> {
   /** Optional class or function for row styling (e.g. selected highlight) */
   rowClassName?: string | ((row: RowData, index: number) => string);
   rowDataTestId?: (row: RowData, index: number) => string | undefined;
+  rowDataAttributes?: (
+    row: RowData,
+    index: number
+  ) => Record<string, string | number | boolean | undefined> | undefined;
+  surfaceVariant?: SettingsTableSurfaceVariant;
+  /** Fill the parent flex column and scroll rows inside the table body. */
+  fillHeight?: boolean;
+  /** Cap table height and scroll rows inside the body. */
+  maxHeight?: number | string;
   className?: string;
   rootClassName?: string;
 }
@@ -419,6 +432,10 @@ export default function SettingsTable<RowData>({
   hover = false,
   rowClassName,
   rowDataTestId,
+  rowDataAttributes,
+  surfaceVariant = "default",
+  fillHeight = false,
+  maxHeight,
   className = "",
   rootClassName = "",
 }: SettingsTableProps<RowData>) {
@@ -481,6 +498,7 @@ export default function SettingsTable<RowData>({
 
   const needsPagination = pageSize != null && rows.length > pageSize;
   const hasBottomFooter = needsPagination || resolvedFooter != null;
+  const containedScroll = fillHeight || maxHeight != null;
   const heightClass = headerHeight === "tall" ? "table-settings-tall" : "";
   const denseClass = dense ? "table-settings-dense" : "";
   const noStickyClass = !stickyHeader ? "table-settings-no-sticky" : "";
@@ -497,7 +515,12 @@ export default function SettingsTable<RowData>({
     noHeaderClass,
     noPxClass,
     cellVAlignClass,
-    !hasSearchBar && "table-settings-rounded-top",
+    fillHeight && "table-settings-fill-height",
+    maxHeight != null && "table-settings-fill-height",
+    containedScroll && "table-settings-contained-scroll",
+    !hasSearchBar &&
+      surfaceVariant !== "transparent" &&
+      "table-settings-rounded-top",
     !hasBottomFooter && "table-settings-no-footer",
     className,
   ]
@@ -517,8 +540,18 @@ export default function SettingsTable<RowData>({
   }, [needsPagination, paginationFooter, pageSizeOptions]);
 
   const hasHeader = !!searchBar || hasSelectFilterRow;
+  const surfaceClassName =
+    surfaceVariant === "chatPanel"
+      ? "settings-table-root-chat-panel bg-chat-panel-info-container"
+      : surfaceVariant === "transparent"
+        ? "settings-table-root-transparent"
+        : "settings-table-root-default bg-surface-container";
   const rootClasses = [
-    "settings-table-root min-w-0 max-w-full rounded-lg bg-surface-container",
+    "settings-table-root min-w-0 max-w-full",
+    surfaceVariant !== "transparent" && "rounded-xl",
+    fillHeight && "flex h-full min-h-0 flex-col overflow-hidden",
+    maxHeight != null && "flex min-h-0 flex-col overflow-hidden",
+    surfaceClassName,
     rootClassName,
   ]
     .filter(Boolean)
@@ -527,16 +560,17 @@ export default function SettingsTable<RowData>({
   return (
     <div
       className={rootClasses}
-      style={
-        hasHeader
+      style={{
+        ...(hasHeader && !containedScroll
           ? ({ "--search-bar-h": `${searchHeight}px` } as React.CSSProperties)
-          : undefined
-      }
+          : {}),
+        ...(maxHeight != null ? { maxHeight } : {}),
+      }}
     >
       {hasHeader && (
         <div
           ref={searchRef}
-          className={`sticky top-0 z-[21] rounded-t-lg border-b border-border-2 bg-surface-container px-4 ${searchHeaderClassName}`.trim()}
+          className={`${containedScroll ? "shrink-0" : "sticky top-0 z-[21]"} border-b border-border-2 px-4 ${surfaceVariant !== "transparent" ? "rounded-t-xl" : ""} ${surfaceClassName} ${searchHeaderClassName}`.trim()}
         >
           {inlineHeaderToolbar ? (
             <SettingsTableToolbar
@@ -578,6 +612,7 @@ export default function SettingsTable<RowData>({
         }
         rowClassName={rowClassName}
         rowDataTestId={rowDataTestId}
+        rowDataAttributes={rowDataAttributes}
         noDataElement={
           noDataElement ??
           (loading ? (

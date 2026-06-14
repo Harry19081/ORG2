@@ -83,7 +83,12 @@ export const SessionGroupPage: React.FC<SessionGroupPageProps> = ({
       ) : null}
 
       <div className="min-h-0 flex-1 overflow-hidden" data-testid={listTestId}>
-        <SessionTable items={items} onSelect={onSelectItem} />
+        <SessionTable
+          items={items}
+          onSelect={onSelectItem}
+          fillHeight
+          showSearch
+        />
       </div>
     </div>
   );

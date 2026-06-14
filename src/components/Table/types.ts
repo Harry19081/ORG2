@@ -95,6 +95,10 @@ export interface TableProps<T = unknown> {
   noDataElement?: ReactNode;
   rowClassName?: string | ((record: T, index: number) => string);
   rowDataTestId?: (record: T, index: number) => string | undefined;
+  rowDataAttributes?: (
+    record: T,
+    index: number
+  ) => Record<string, string | number | boolean | undefined> | undefined;
   className?: string;
   style?: CSSProperties;
   scroll?: {

@@ -87,6 +87,7 @@
       "started": "Started",
       "lastUpdated": "Last Updated",
       "agentModel": "Agent · Model",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "No sessions match these filters",
       "emptyDescription": "Try a different status, Agent type, or time window."
     },
@@ -210,6 +211,11 @@
       },
       "commitsTo": "{{repo}} Commits",
       "commitsToMultiple": "{{repos}} Commits"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} file",
+      "filesChanged_other": "{{count}} files",
+      "committedRateShort": "{{percent}}% committed"
     }
   },
   "changes": {

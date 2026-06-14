@@ -126,7 +126,8 @@ const LinkedSessionsList: React.FC<LinkedSessionsListProps> = ({
       <SessionTable
         items={tableItems}
         onSelect={(item) => onOpenSession?.(item.id)}
-        className="max-h-[360px]"
+        surfaceVariant="chatPanel"
+        maxHeight={360}
       />
     </div>
   );
