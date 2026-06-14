@@ -330,7 +330,12 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                       opacity: isCollapsed ? 0 : 1,
                       overflow:
                         isExpanded && needsExpand ? undefined : "hidden",
-                      maxHeight: isExpanded && needsExpand ? "40vh" : undefined,
+                      maxHeight:
+                        isExpanded && needsExpand
+                          ? "40vh"
+                          : needsExpand
+                            ? contentHeight
+                            : undefined,
                       overflowY: isExpanded && needsExpand ? "auto" : undefined,
                       overflowX:
                         isExpanded && needsExpand ? "hidden" : undefined,

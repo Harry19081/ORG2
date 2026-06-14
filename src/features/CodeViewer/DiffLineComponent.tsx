@@ -176,7 +176,7 @@ export const DiffLineComponent = React.memo<DiffLineComponentProps>(
             </>
           )}
           <div className="diff-line-content">
-            <span className="collapse-label">
+            <span className="collapse-label text-primary-6">
               {line.collapsedCount} hidden lines
             </span>
           </div>

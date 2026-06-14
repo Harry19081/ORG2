@@ -151,21 +151,8 @@ export function useCodeBlockState({
 
   const displayedDiff = useMemo(() => {
     if (!isDiff) return null;
-    if (isExpanded || !needsExpand) return diffPayload ?? parsedDiff;
-
-    if (diffPayload) {
-      return {
-        ...diffPayload,
-        oldValue: diffPayload.oldValue
-          .split("\n")
-          .slice(0, visibleLines)
-          .join("\n"),
-        newValue: diffPayload.newValue
-          .split("\n")
-          .slice(0, visibleLines)
-          .join("\n"),
-      };
-    }
+    if (diffPayload) return diffPayload;
+    if (isExpanded || !needsExpand) return parsedDiff;
 
     return parseUnifiedDiff(truncateDiff(code, visibleLines));
   }, [

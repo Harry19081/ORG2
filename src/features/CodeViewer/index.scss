@@ -520,7 +520,6 @@ $font-mono: var(
       font-family: $font-mono !important;
       font-size: var(--chat-code-font-size, 13px) !important;
       line-height: 1.5 !important;
-      color: var(--color-text-3);
       font-weight: 500;
       padding: 0;
       background: transparent;
@@ -542,7 +541,6 @@ $font-mono: var(
 
       .collapse-label {
         background: transparent;
-        color: var(--color-text-3);
 
         svg {
           opacity: 1;
@@ -556,8 +554,6 @@ $font-mono: var(
 
       &:hover {
         .collapse-label {
-          color: var(--color-text-3);
-
           svg {
             opacity: 0.7;
           }

@@ -107,17 +107,8 @@ const SegmentView: React.FC<SegmentViewProps> = ({
 
   const resolvedDiff = displayDiff || syntheticAddDiff;
   const resolvedContent = resolvedDiff || displayContent;
-  const isDiff = Boolean(resolvedDiff);
-  const resolvedLanguage = isDiff ? "diff" : language || "text";
-  const showResolvedLineCount = isDiff || !isLoading;
 
-  const resolvedLinesAdded =
-    syntheticAddDiff && !linesAdded
-      ? (displayContent ?? "").split("\n").length
-      : linesAdded;
-
-  const diffPayload = useMemo(() => {
-    if (!isDiff || !resolvedDiff) return undefined;
+  const diffPayload = (() => {
     if (segment.oldContent !== undefined && segment.newContent !== undefined) {
       return {
         oldValue: decodeStreamContent(segment.oldContent),
@@ -126,6 +117,7 @@ const SegmentView: React.FC<SegmentViewProps> = ({
         newStartLine: segment.newStartLine,
       };
     }
+    if (!resolvedDiff) return undefined;
     const parsed = parseUnifiedDiffToOldNew(resolvedDiff);
     return {
       oldValue: parsed.oldValue,
@@ -133,14 +125,16 @@ const SegmentView: React.FC<SegmentViewProps> = ({
       oldStartLine: parsed.oldStartLine,
       newStartLine: parsed.newStartLine,
     };
-  }, [
-    isDiff,
-    resolvedDiff,
-    segment.oldContent,
-    segment.newContent,
-    segment.oldStartLine,
-    segment.newStartLine,
-  ]);
+  })();
+
+  const isDiff = Boolean(resolvedDiff || diffPayload);
+  const resolvedLanguage = isDiff ? "diff" : language || "text";
+  const showResolvedLineCount = isDiff || !isLoading;
+
+  const resolvedLinesAdded =
+    syntheticAddDiff && !linesAdded
+      ? (displayContent ?? "").split("\n").length
+      : linesAdded;
 
   // For new-file writes, append a muted "New" suffix next to the green `+N` count.
   const trailingTags = syntheticAddDiff

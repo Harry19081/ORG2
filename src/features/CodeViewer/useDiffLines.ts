@@ -121,16 +121,17 @@ export function useDiffLines(options: UseDiffLinesOptions): UseDiffLinesResult {
     const collapseMap = new Map<number, number>();
     let collapseIndex = 0;
 
-    diffLines.forEach((line) => {
+    diffLines.forEach((line, lineIndex) => {
       if (line.type === "collapse") {
         const currentCollapseIndex = collapseIndex;
         const isExpanded = expandedSections.has(currentCollapseIndex);
+        const isLeadingCollapse = lineIndex === 0;
 
         if (isExpanded && line.collapsedLines) {
           line.collapsedLines.forEach((collapsedLine) => {
             result.push(collapsedLine);
           });
-        } else {
+        } else if (!isLeadingCollapse) {
           result.push(line);
           collapseMap.set(result.length - 1, collapseIndex);
         }
