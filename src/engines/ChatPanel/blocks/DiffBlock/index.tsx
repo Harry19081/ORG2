@@ -13,6 +13,7 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
 import {
@@ -150,7 +151,7 @@ const SegmentView: React.FC<SegmentViewProps> = ({
     : undefined;
 
   if (resolvedContent) {
-    return (
+    const content = (
       <ChatCodeBlock
         code={resolvedContent}
         language={resolvedLanguage}
@@ -167,12 +168,26 @@ const SegmentView: React.FC<SegmentViewProps> = ({
         trailingTags={trailingTags}
         eventId={eventId}
         isLoading={isLoading}
+        showFileTreeHover={false}
       />
+    );
+
+    if (!filePath) return content;
+
+    return (
+      <FileTreeHoverPreview
+        path={filePath}
+        itemType="file"
+        as="div"
+        display="block"
+      >
+        {content}
+      </FileTreeHoverPreview>
     );
   }
 
   if (isLoading) {
-    return (
+    const content = (
       <ChatCodeBlock
         code=""
         language={resolvedLanguage}
@@ -182,7 +197,21 @@ const SegmentView: React.FC<SegmentViewProps> = ({
         defaultCollapsed
         eventId={eventId}
         isLoading
+        showFileTreeHover={false}
       />
+    );
+
+    if (!filePath) return content;
+
+    return (
+      <FileTreeHoverPreview
+        path={filePath}
+        itemType="file"
+        as="div"
+        display="block"
+      >
+        {content}
+      </FileTreeHoverPreview>
     );
   }
 
@@ -237,7 +266,7 @@ const CompactSegmentView: React.FC<CompactSegmentViewProps> = ({
     []
   );
 
-  return (
+  const content = (
     <div
       className={`${getEventBlockContainerClasses(false)} animate-fade-in`}
       title={fullPathTitle}
@@ -291,6 +320,19 @@ const CompactSegmentView: React.FC<CompactSegmentViewProps> = ({
         )}
       </EventBlockHeader>
     </div>
+  );
+
+  if (!segment.filePath) return content;
+
+  return (
+    <FileTreeHoverPreview
+      path={segment.filePath}
+      itemType="file"
+      as="div"
+      display="block"
+    >
+      {content}
+    </FileTreeHoverPreview>
   );
 };
 

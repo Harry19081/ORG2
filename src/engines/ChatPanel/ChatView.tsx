@@ -460,6 +460,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       onPush,
       onViewMyStation,
       onViewAgentStation,
+      hasCommitsToPush,
       gitActionsDisabled,
     } = useGitDiffActions({ sessionId, openAgentStationDiff });
 
@@ -471,6 +472,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
           onPush={onPush}
           onViewMyStation={onViewMyStation}
           onViewAgentStation={onViewAgentStation}
+          hasCommitsToPush={hasCommitsToPush}
           gitActionsDisabled={gitActionsDisabled}
         />
       ),
@@ -480,6 +482,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
         onPush,
         onViewMyStation,
         onViewAgentStation,
+        hasCommitsToPush,
         gitActionsDisabled,
       ]
     );

@@ -9,6 +9,7 @@
 import { Briefcase } from "lucide-react";
 import React, { useMemo } from "react";
 
+import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
 import { extractFileData } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
@@ -86,7 +87,7 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
     [isSkill]
   );
 
-  return (
+  const content = (
     <div
       className={`${getEventBlockContainerClasses(false)} animate-fade-in`}
       title={fullPathTitle}
@@ -135,6 +136,20 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
         </EventBlockHeaderSubtitle>
       </EventBlockHeader>
     </div>
+  );
+
+  if (isSkill || !filePath) return content;
+
+  return (
+    <FileTreeHoverPreview
+      path={filePath}
+      itemType="file"
+      repoPath={props.repoPath}
+      as="div"
+      display="block"
+    >
+      {content}
+    </FileTreeHoverPreview>
   );
 };
 

@@ -18,9 +18,14 @@ import { mintTurnIntentId } from "@src/engines/SessionCore/sync/adapters/shared/
 import { createLogger } from "@src/hooks/logger";
 import { WorkStationViewService } from "@src/services/workStation";
 import {
+  currentGitStatusAtom,
+  workspaceGitStatusMapAtom,
+} from "@src/store/git";
+import {
   isSessionActiveAtom,
   setSessionRuntimeStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
+import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 
 import {
   GIT_DIFF_COMMIT_PROMPT,
@@ -44,6 +49,7 @@ export interface UseGitDiffActionsResult {
   onPush: () => void;
   onViewMyStation: () => void;
   onViewAgentStation: () => void;
+  hasCommitsToPush: boolean;
   gitActionsDisabled: boolean;
 }
 
@@ -52,6 +58,9 @@ export function useGitDiffActions({
   openAgentStationDiff,
 }: UseGitDiffActionsOptions): UseGitDiffActionsResult {
   const isSessionActive = useAtomValue(isSessionActiveAtom);
+  const currentGitStatus = useAtomValue(currentGitStatusAtom);
+  const workspaceFolders = useAtomValue(workspaceFoldersAtom);
+  const workspaceGitStatusMap = useAtomValue(workspaceGitStatusMapAtom);
   const setSessionRuntimeStatus = useSetAtom(setSessionRuntimeStatusAtom);
   const { addUserMessage, dispatchMessageBySessionType } = useMessageDispatch({
     getSessionId: () => sessionId ?? null,
@@ -118,6 +127,17 @@ export function useGitDiffActions({
     openAgentStationDiff();
   }, [openAgentStationDiff]);
 
+  const hasCommitsToPush = useMemo(() => {
+    if ((currentGitStatus?.branch_ahead_behind?.ahead ?? 0) > 0) {
+      return true;
+    }
+
+    return workspaceFolders.some((folder) => {
+      const status = workspaceGitStatusMap.get(folder.path);
+      return (status?.branch_ahead_behind?.ahead ?? 0) > 0;
+    });
+  }, [currentGitStatus, workspaceFolders, workspaceGitStatusMap]);
+
   const gitActionsDisabled = useMemo(
     () => computeGitActionsDisabled({ isSessionActive, sessionId }),
     [isSessionActive, sessionId]
@@ -129,6 +149,7 @@ export function useGitDiffActions({
     onPush,
     onViewMyStation,
     onViewAgentStation,
+    hasCommitsToPush,
     gitActionsDisabled,
   };
 }

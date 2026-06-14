@@ -181,7 +181,6 @@ const TreePreview: React.FC<TreePreviewProps> = memo(
             path={item.path}
             itemType={item.type}
             repoPath={item.repoPath ?? repoPath}
-            sourceLabel={item.repoName}
           />
         </div>
       );
@@ -192,7 +191,6 @@ const TreePreview: React.FC<TreePreviewProps> = memo(
           path={item.path}
           itemType={item.type}
           repoPath={item.repoPath ?? repoPath}
-          sourceLabel={item.repoName}
           width={`${TREE_PANEL_RESERVED - 8}px`}
         />
       </div>

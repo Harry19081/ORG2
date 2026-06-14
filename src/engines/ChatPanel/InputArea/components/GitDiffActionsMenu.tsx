@@ -32,6 +32,7 @@ export interface GitDiffActionsMenuProps {
   onPush: () => void;
   onViewMyStation: () => void;
   onViewAgentStation: () => void;
+  hasCommitsToPush?: boolean;
   /** Disables the agent-driven git actions (commit / commit & push / push) while the session is running. */
   gitActionsDisabled?: boolean;
   /** Injected by the Dropdown host so each action also closes the menu. */
@@ -47,6 +48,7 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
   onPush,
   onViewMyStation,
   onViewAgentStation,
+  hasCommitsToPush = false,
   gitActionsDisabled = false,
   onClose,
 }) => {
@@ -71,7 +73,7 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
             onClick={run(onCommit)}
             dataTestId="git-diff-action-commit"
           >
-            {t("creator.diffMenu.commit", { defaultValue: "commit" })}
+            {t("creator.diffMenu.commit", { defaultValue: "Commit" })}
           </DropdownItem>
           <DropdownItem
             className={LEFT_ALIGNED_ITEM_CLASS}
@@ -80,17 +82,19 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
             dataTestId="git-diff-action-commit-push"
           >
             {t("creator.diffMenu.commitPush", {
-              defaultValue: "commit & push",
+              defaultValue: "Commit & Push",
             })}
           </DropdownItem>
-          <DropdownItem
-            className={LEFT_ALIGNED_ITEM_CLASS}
-            disabled={gitActionsDisabled}
-            onClick={run(onPush)}
-            dataTestId="git-diff-action-push"
-          >
-            {t("creator.diffMenu.push", { defaultValue: "push" })}
-          </DropdownItem>
+          {hasCommitsToPush && (
+            <DropdownItem
+              className={LEFT_ALIGNED_ITEM_CLASS}
+              disabled={gitActionsDisabled}
+              onClick={run(onPush)}
+              dataTestId="git-diff-action-push"
+            >
+              {t("creator.diffMenu.push", { defaultValue: "Push" })}
+            </DropdownItem>
+          )}
         </DropdownItemGroup>
 
         <div className={DROPDOWN_CLASSES.menuSeparatorInset} />

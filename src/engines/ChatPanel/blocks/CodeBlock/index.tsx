@@ -16,6 +16,7 @@ import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import ExpandOverlay from "@src/components/ExpandOverlay";
+import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import ModernCodeViewer from "@src/features/CodeViewer/ModernCodeViewer";
 import { VirtualizedModernDiff } from "@src/features/CodeViewer/VirtualizedModernDiff";
@@ -80,6 +81,7 @@ export interface ChatCodeBlockProps {
   eventId?: string;
   isLoading?: boolean;
   isFailed?: boolean;
+  showFileTreeHover?: boolean;
 }
 
 // ============================================
@@ -111,6 +113,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
     eventId,
     isLoading = false,
     isFailed = false,
+    showFileTreeHover = true,
   }) => {
     const {
       isCollapsed,
@@ -212,26 +215,55 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
             {!useTerminalLayout && (
               <>
                 {filePath ? (
-                  <div
-                    className={`min-w-0 flex-initial cursor-pointer truncate hover:underline ${
-                      isLoading
-                        ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}`
-                        : actionTitle
-                          ? "text-text-2"
-                          : "font-medium text-text-1"
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      document.dispatchEvent(
-                        new CustomEvent("open-file-in-editor", {
-                          detail: { path: filePath, isDirectory: false },
-                        })
-                      );
-                    }}
-                    title={filePath}
-                  >
-                    {displayTitle}
-                  </div>
+                  showFileTreeHover ? (
+                    <FileTreeHoverPreview
+                      path={filePath}
+                      itemType="file"
+                      className="flex-initial"
+                    >
+                      <div
+                        className={`min-w-0 cursor-pointer truncate hover:underline ${
+                          isLoading
+                            ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}`
+                            : actionTitle
+                              ? "text-text-2"
+                              : "font-medium text-text-1"
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          document.dispatchEvent(
+                            new CustomEvent("open-file-in-editor", {
+                              detail: { path: filePath, isDirectory: false },
+                            })
+                          );
+                        }}
+                        title={filePath}
+                      >
+                        {displayTitle}
+                      </div>
+                    </FileTreeHoverPreview>
+                  ) : (
+                    <div
+                      className={`min-w-0 flex-initial cursor-pointer truncate hover:underline ${
+                        isLoading
+                          ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}`
+                          : actionTitle
+                            ? "text-text-2"
+                            : "font-medium text-text-1"
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        document.dispatchEvent(
+                          new CustomEvent("open-file-in-editor", {
+                            detail: { path: filePath, isDirectory: false },
+                          })
+                        );
+                      }}
+                      title={filePath}
+                    >
+                      {displayTitle}
+                    </div>
+                  )
                 ) : (
                   <div
                     className={`min-w-0 flex-initial truncate ${
