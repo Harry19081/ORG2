@@ -3,8 +3,10 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import { useSettingValue } from "@src/hooks/settings";
 import { sessionsAtom } from "@src/store/session/sessionAtom";
+import type { Session } from "@src/store/session/sessionAtom";
 import { settingsLoadedAtom } from "@src/store/settings/settingsAtom";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
+import type { WorkspaceFolder } from "@src/types/workspace";
 
 import { createDiagnosticsUsageSnapshot } from "./aggregate";
 import {
@@ -17,6 +19,8 @@ import { DIAGNOSTICS_LEVEL } from "./types";
 import type { DiagnosticsLevel, DiagnosticsServiceConfig } from "./types";
 
 const MINUTE_MS = 60_000;
+const HOUR_MS = 60 * MINUTE_MS;
+const LAST_FLUSH_STORAGE_KEY = "orgii:diagnostics:lastFlushAt";
 
 function normalizeDiagnosticsLevel(value: unknown): DiagnosticsLevel {
   if (
@@ -27,6 +31,21 @@ function normalizeDiagnosticsLevel(value: unknown): DiagnosticsLevel {
     return value;
   }
   return DIAGNOSTICS_LEVEL.DEFAULT;
+}
+
+function readLastFlushAt(): number {
+  const stored = window.localStorage.getItem(LAST_FLUSH_STORAGE_KEY);
+  if (!stored) return 0;
+  const parsed = Number(stored);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+}
+
+function writeLastFlushAt(timestamp: number): void {
+  window.localStorage.setItem(LAST_FLUSH_STORAGE_KEY, String(timestamp));
+}
+
+function shouldFlushNow(intervalMs: number, nowMs: number): boolean {
+  return nowMs - readLastFlushAt() >= intervalMs;
 }
 
 export function useDiagnosticsBootstrap(): void {
@@ -40,8 +59,11 @@ export function useDiagnosticsBootstrap(): void {
   const workspaceFolders = useAtomValue(workspaceFoldersAtom);
   const startedRef = useRef(false);
   const runningRef = useRef(false);
+  const sessionsRef = useRef<Session[]>(sessions);
+  const workspaceFoldersRef = useRef<WorkspaceFolder[]>(workspaceFolders);
 
   const diagnosticsLevel = normalizeDiagnosticsLevel(diagnosticsLevelSetting);
+  const intervalMs = Math.max(uploadIntervalHours, 1) * HOUR_MS;
   const serviceConfig = useMemo<DiagnosticsServiceConfig>(
     () => ({
       diagnosticsLevel,
@@ -50,6 +72,14 @@ export function useDiagnosticsBootstrap(): void {
     }),
     [diagnosticsLevel, offlineMode, uploadIntervalHours]
   );
+
+  useEffect(() => {
+    sessionsRef.current = sessions;
+  }, [sessions]);
+
+  useEffect(() => {
+    workspaceFoldersRef.current = workspaceFolders;
+  }, [workspaceFolders]);
 
   useEffect(() => {
     if (!settingsLoaded) return;
@@ -73,44 +103,46 @@ export function useDiagnosticsBootstrap(): void {
     };
   }, [serviceConfig, settingsLoaded]);
 
-  const collectAndSendSnapshot = useCallback(async () => {
-    if (runningRef.current) return;
-    if (!settingsLoaded || offlineMode) {
-      return;
-    }
-
-    runningRef.current = true;
-    try {
-      const snapshot = await createDiagnosticsUsageSnapshot({
-        diagnosticsLevel,
-        sessions,
-        workspaceFolders,
-      });
-      if (snapshot) {
-        await diagnosticsRecordUsageSnapshot(snapshot);
+  const collectAndSendSnapshot = useCallback(
+    async (force = false) => {
+      if (runningRef.current) return;
+      if (!settingsLoaded || offlineMode) {
+        return;
       }
-      await diagnosticsFlushNow();
-    } finally {
-      runningRef.current = false;
-    }
-  }, [
-    diagnosticsLevel,
-    offlineMode,
-    sessions,
-    settingsLoaded,
-    workspaceFolders,
-  ]);
+
+      const nowMs = Date.now();
+      if (!force && !shouldFlushNow(intervalMs, nowMs)) {
+        return;
+      }
+
+      runningRef.current = true;
+      try {
+        const snapshot = await createDiagnosticsUsageSnapshot({
+          diagnosticsLevel,
+          sessions: sessionsRef.current,
+          workspaceFolders: workspaceFoldersRef.current,
+        });
+        if (snapshot) {
+          await diagnosticsRecordUsageSnapshot(snapshot);
+        }
+        writeLastFlushAt(nowMs);
+        await diagnosticsFlushNow();
+      } finally {
+        runningRef.current = false;
+      }
+    },
+    [diagnosticsLevel, intervalMs, offlineMode, settingsLoaded]
+  );
 
   useEffect(() => {
     if (!settingsLoaded) return;
 
     void collectAndSendSnapshot();
 
-    const intervalMs = Math.max(uploadIntervalHours, 1) * 60 * MINUTE_MS;
     const interval = window.setInterval(() => {
-      void collectAndSendSnapshot();
+      void collectAndSendSnapshot(true);
     }, intervalMs);
 
     return () => window.clearInterval(interval);
-  }, [collectAndSendSnapshot, settingsLoaded, uploadIntervalHours]);
+  }, [collectAndSendSnapshot, intervalMs, settingsLoaded]);
 }

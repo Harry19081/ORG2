@@ -70,6 +70,8 @@ pub struct DiagnosticsUsageSnapshot {
     pub schema_version: u32,
     pub diagnostics_level: DiagnosticsLevel,
     pub captured_at: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub app_version: Option<String>,
     pub app_launch_count: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub app_usage_duration_bucket: Option<String>,

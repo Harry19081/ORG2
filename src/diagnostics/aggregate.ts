@@ -1,3 +1,5 @@
+import { getVersion } from "@tauri-apps/api/app";
+
 import { IMPORTED_HISTORY_SOURCES } from "@src/api/tauri/importedHistory";
 import {
   detectLocalModelHardware,
@@ -345,11 +347,13 @@ export async function createDiagnosticsUsageSnapshot(input: {
       ? periodEndMs - periodStartMs
       : performance.now()
   );
+  const appVersion = await getVersion();
 
   const snapshot: DiagnosticsUsageSnapshot = {
     schemaVersion: SCHEMA_VERSION,
     diagnosticsLevel: input.diagnosticsLevel,
     capturedAt: periodEnd.toISOString(),
+    appVersion,
     appLaunchCount: 1,
     appUsageDurationBucket,
   };

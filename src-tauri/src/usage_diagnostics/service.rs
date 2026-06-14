@@ -14,6 +14,8 @@ use super::types::{
 };
 
 const ENDPOINT_ENV: &str = "ORGII_DIAGNOSTICS_ENDPOINT";
+const TOKEN_ENV: &str = "ORGII_DIAGNOSTICS_TOKEN";
+const APP_VERSION_ENV: &str = "ORGII_APP_VERSION";
 const USER_AGENT: &str = "ORGII Diagnostics";
 
 static GLOBAL_SERVICE: OnceLock<Arc<DiagnosticsService>> = OnceLock::new();
@@ -74,6 +76,7 @@ impl DiagnosticsService {
             schema_version: DIAGNOSTICS_SCHEMA_VERSION,
             diagnostics_level: DiagnosticsLevel::PerformanceOnly,
             captured_at: now_rfc3339(),
+            app_version: app_version(),
             app_launch_count: 1,
             app_usage_duration_bucket: Some(
                 bucket_duration_ms((metrics.uptime_secs as f64) * 1000.0).to_string(),
@@ -151,10 +154,14 @@ impl DiagnosticsService {
             records: records.clone(),
         };
         let client = reqwest::Client::new();
-        let response = client
+        let mut request = client
             .post(endpoint)
             .header(reqwest::header::USER_AGENT, USER_AGENT)
-            .json(&payload)
+            .json(&payload);
+        if let Some(token) = auth_token() {
+            request = request.bearer_auth(token);
+        }
+        let response = request
             .send()
             .await
             .map_err(|err| format!("Diagnostics upload failed: {}", err))?;
@@ -225,5 +232,21 @@ fn endpoint_url() -> Option<String> {
         .ok()
         .filter(|value| !value.trim().is_empty())
         .or_else(|| option_env!("ORGII_DIAGNOSTICS_ENDPOINT").map(ToOwned::to_owned))
+        .filter(|value| !value.trim().is_empty())
+}
+
+fn auth_token() -> Option<String> {
+    std::env::var(TOKEN_ENV)
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+        .or_else(|| option_env!("ORGII_DIAGNOSTICS_TOKEN").map(ToOwned::to_owned))
+        .filter(|value| !value.trim().is_empty())
+}
+
+fn app_version() -> Option<String> {
+    std::env::var(APP_VERSION_ENV)
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+        .or_else(|| option_env!("ORGII_APP_VERSION").map(ToOwned::to_owned))
         .filter(|value| !value.trim().is_empty())
 }

@@ -9,6 +9,7 @@ fn snapshot(level: DiagnosticsLevel) -> DiagnosticsUsageSnapshot {
         schema_version: 999,
         diagnostics_level: level,
         captured_at: "2026-06-14T00:00:00Z".to_string(),
+        app_version: Some("1.0.1+test".to_string()),
         app_launch_count: 1,
         app_usage_duration_bucket: Some("6h_plus".to_string()),
         system_profile: Some(json!({
@@ -110,6 +111,7 @@ fn performance_only_strips_usage_aggregates() {
         DiagnosticsLevel::PerformanceOnly,
     );
     assert_eq!(sanitized.schema_version, 1);
+    assert_eq!(sanitized.app_version.as_deref(), Some("1.0.1+test"));
     assert!(sanitized.app_usage_duration_bucket.is_some());
     assert!(sanitized.system_profile.is_some());
     assert!(sanitized.app_resource_usage.is_some());
@@ -126,6 +128,7 @@ fn off_keeps_minimal_existence_usage_only() {
     let sanitized = sanitize_snapshot(snapshot(DiagnosticsLevel::Default), DiagnosticsLevel::Off);
     assert_eq!(sanitized.schema_version, 1);
     assert_eq!(sanitized.diagnostics_level, DiagnosticsLevel::Off);
+    assert_eq!(sanitized.app_version.as_deref(), Some("1.0.1+test"));
     assert!(sanitized.app_usage_duration_bucket.is_some());
     assert!(sanitized.sessions.is_some());
     assert!(sanitized.workspaces.is_some());

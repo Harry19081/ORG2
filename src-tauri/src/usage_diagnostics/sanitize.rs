@@ -83,6 +83,7 @@ pub fn sanitize_snapshot(
         schema_version: DIAGNOSTICS_SCHEMA_VERSION,
         diagnostics_level: effective_level,
         captured_at: snapshot.captured_at,
+        app_version: snapshot.app_version.and_then(sanitize_app_version),
         app_launch_count: snapshot.app_launch_count.min(10_000),
         app_usage_duration_bucket: snapshot
             .app_usage_duration_bucket
@@ -399,6 +400,17 @@ fn sanitize_operation_name(value: &str) -> String {
         })
         .take(120)
         .collect::<String>()
+}
+
+fn sanitize_app_version(value: String) -> Option<String> {
+    let sanitized = value
+        .chars()
+        .filter(|character| {
+            character.is_ascii_alphanumeric() || matches!(character, '_' | '-' | '.' | '+')
+        })
+        .take(80)
+        .collect::<String>();
+    (!sanitized.is_empty()).then_some(sanitized)
 }
 
 fn number_field(value: &Value, key: &str) -> Option<f64> {

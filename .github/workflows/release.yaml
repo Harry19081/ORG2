@@ -18,6 +18,7 @@
 #   APPLE_TEAM_ID                   — 10-char Apple Team ID
 #   TAURI_SIGNING_PRIVATE_KEY       — Tauri updater ed25519 private key
 #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD — password for the updater key
+#   ORGII_DIAGNOSTICS_TOKEN         — Bearer token for Diagnostics Worker uploads
 #
 # Required GitHub Secrets (Windows — Azure Trusted Signing via OIDC):
 #   AZURE_CLIENT_ID                 — App Registration client ID (Federated Credential)
@@ -157,6 +158,8 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          ORGII_DIAGNOSTICS_TOKEN: ${{ secrets.ORGII_DIAGNOSTICS_TOKEN }}
+          ORGII_APP_VERSION: ${{ env.SEMVER }}
         run: pnpm tauri build --target aarch64-apple-darwin
 
       # ── Locate build artifacts ────────────────────────────────
@@ -293,6 +296,8 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          ORGII_DIAGNOSTICS_TOKEN: ${{ secrets.ORGII_DIAGNOSTICS_TOKEN }}
+          ORGII_APP_VERSION: ${{ env.SEMVER }}
         run: pnpm tauri build --target x86_64-pc-windows-msvc
 
       # ── Sign with Azure Trusted Signing ─────────────────────────

@@ -84,6 +84,7 @@ export interface DiagnosticsUsageSnapshot {
   schemaVersion: number;
   diagnosticsLevel: DiagnosticsLevel;
   capturedAt: string;
+  appVersion?: string;
   appLaunchCount: number;
   appUsageDurationBucket?: string;
   systemProfile?: DiagnosticsSystemProfile;

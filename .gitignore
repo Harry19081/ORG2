@@ -75,6 +75,7 @@ build/
 
 # Sensitive files
 encoded_key.txt
+scripts/tauri/diagnostics-auth-parts.local.cjs
 
 # Runtime lock files
 init.lock
