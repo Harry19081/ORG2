@@ -206,6 +206,12 @@ async function waitForFileChangesPanel(label) {
       `${label} file changes pill (attempt ${attempt})`
     );
 
+    // The pill now opens a dropdown menu (GitDiffActionsMenu); choose
+    // "View in Agent station" to open the diff.
+    await execJS(
+      `const el = document.querySelector('[data-testid="git-diff-action-view-agent-station"]'); if (el) el.click(); return el ? "clicked" : "missing";`
+    );
+
     const opened = await browser
       .waitUntil(
         async () => {

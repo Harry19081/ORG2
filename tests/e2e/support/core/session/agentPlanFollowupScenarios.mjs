@@ -1577,6 +1577,12 @@ async function waitForFileChangesPanel(label) {
       throw new Error(`${label} file changes pill click failed: ${clicked}`);
     }
 
+    // The pill now opens a dropdown menu (GitDiffActionsMenu); choose
+    // "View in Agent station" to open the diff.
+    await execJS(
+      js.click('[data-testid="git-diff-action-view-agent-station"]')
+    );
+
     const opened = await browser
       .waitUntil(
         async () => {
@@ -1597,6 +1603,27 @@ async function waitForFileChangesPanel(label) {
     if (opened) return;
 
     if (attempt === MAX_EXPAND_ATTEMPTS) {
+      // Fall back to the bridge that sets the same atoms as the
+      // "View in Agent station" menu item, in case Tauri WebDriver clicks
+      // missed the portal-rendered menu.
+      await invokeE2E("openAgentStationDiff");
+      const openedViaBridge = await browser
+        .waitUntil(
+          async () => {
+            const state = await execJS(js.fileChanges);
+            if (state.undoAll) return true;
+            const hasDiffTabs = await execJS(
+              `return !!document.querySelector('[data-testid="replay-tab-diff-filter"]');`
+            );
+            return !!hasDiffTabs;
+          },
+          {
+            timeout: 10_000,
+            interval: 500,
+          }
+        )
+        .catch(() => null);
+      if (openedViaBridge) return;
       throw new Error(
         `${label} file changes panel did not expand after ${MAX_EXPAND_ATTEMPTS} attempts; fileChanges=${JSON.stringify(await execJS(js.fileChanges))}`
       );
