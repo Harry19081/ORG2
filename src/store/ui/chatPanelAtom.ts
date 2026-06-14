@@ -194,7 +194,7 @@ const ChatHistoryDisplayModeSchema = z.enum(["full", "compact"]);
 export const chatHistoryDisplayModeAtom =
   atomWithStorage<ChatHistoryDisplayMode>(
     "orgii:chatHistoryDisplayMode",
-    "full",
+    "compact",
     createZodJsonStorage(ChatHistoryDisplayModeSchema),
     { getOnInit: true }
   );

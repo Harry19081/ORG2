@@ -4,7 +4,6 @@
  * Displays directory contents with tree view
  * Uses file type icons like context menu
  */
-import { X } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -100,7 +99,10 @@ const ExploreFlatEntryRow: React.FC<{
     return (
       <ComposerStackListRow
         title={item.name}
-        leading={<X size={14} className="shrink-0 text-danger-6" />}
+        leading={getToolIcon("list_dir", {
+          size: 14,
+          className: "shrink-0 text-text-3",
+        })}
         primary={item.name}
       />
     );

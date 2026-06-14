@@ -190,12 +190,11 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
       const el = viewportRef.current;
       if (!el) return;
       const measure = () => {
-        setNeedsExpand(
-          el.scrollHeight > el.clientHeight + 1 ||
-            (defaultScrollToBottom && el.scrollTop > 1) ||
-            (expandLineThreshold !== undefined &&
-              outputLines.length > expandLineThreshold)
-        );
+        const hasVerticalOverflow = el.scrollHeight > el.clientHeight + 1;
+        const exceedsLineThreshold =
+          expandLineThreshold !== undefined &&
+          outputLines.length > expandLineThreshold;
+        setNeedsExpand(hasVerticalOverflow || exceedsLineThreshold);
       };
       measure();
       const handleScroll = () => {
@@ -226,7 +225,7 @@ const BlockOutput: React.FC<BlockOutputProps> = memo(
       if (!el) return;
       el.scrollTop = el.scrollHeight;
       setScrollTop(el.scrollTop);
-      setNeedsExpand(el.scrollHeight > el.clientHeight + 1 || el.scrollTop > 1);
+      setNeedsExpand(el.scrollHeight > el.clientHeight + 1);
     }, [
       defaultScrollToBottom,
       processedOutput,

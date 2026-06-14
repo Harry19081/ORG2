@@ -391,13 +391,52 @@ const EditView: React.FC<EditViewProps> = (props) => {
     []
   );
 
+  const {
+    isHeaderHovered,
+    handleHeaderMouseEnter,
+    handleHeaderMouseLeave,
+    handleLocate,
+  } = useBlockHeader({ eventId });
+
   if (status === "failed") {
+    const displayTitle =
+      getFileName(editData.filePath) || editData.fileName || "file";
     return (
-      <div className={SESSION_UI_TOKENS.ROW.INLINE}>
-        <EventBlockHeaderIcon icon={editIcon} isFailed />
-        <span className={SESSION_UI_TOKENS.TEXT.TERTIARY}>
-          {t("tools.editFileFailed", { name: editData.fileName })}
-        </span>
+      <div
+        className={`${getEventBlockContainerClasses(false)} animate-fade-in`}
+        title={editData.filePath || editData.fileName || "file"}
+      >
+        <EventBlockHeader
+          isCollapsed
+          withHover={false}
+          onClick={handleLocate}
+          onNavigate={handleLocate}
+          onMouseEnter={handleHeaderMouseEnter}
+          onMouseLeave={handleHeaderMouseLeave}
+        >
+          <EventBlockHeaderIcon
+            icon={editIcon}
+            isCollapsed
+            isHeaderHovered={isHeaderHovered}
+            isFailed
+            hasContent={false}
+            revealChevronOnIconHoverOnly={Boolean(eventId)}
+          />
+          <EventBlockHeaderTitle className="text-text-3">
+            {title}
+          </EventBlockHeaderTitle>
+          <EventBlockHeaderSubtitle
+            title={displayTitle}
+            className="text-text-3"
+          >
+            <FileTypeIcon
+              fileName={displayTitle}
+              size="small"
+              className="mr-1.5 shrink-0"
+            />
+            <span className="min-w-0 truncate">{displayTitle}</span>
+          </EventBlockHeaderSubtitle>
+        </EventBlockHeader>
       </div>
     );
   }

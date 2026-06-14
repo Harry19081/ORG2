@@ -141,6 +141,24 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
     );
     const commandViewportRef = useRef<HTMLDivElement | null>(null);
     const [isCommandExpanded, setIsCommandExpanded] = useState(false);
+    const [commandNeedsExpand, setCommandNeedsExpand] = useState(false);
+
+    useEffect(() => {
+      const element = commandViewportRef.current;
+      if (!element || !command) return;
+
+      const measure = () => {
+        setCommandNeedsExpand(element.scrollHeight > element.clientHeight + 1);
+      };
+
+      const frameId = requestAnimationFrame(measure);
+      const observer = new ResizeObserver(measure);
+      observer.observe(element);
+      return () => {
+        cancelAnimationFrame(frameId);
+        observer.disconnect();
+      };
+    }, [command, formattedCommand, isCommandExpanded]);
 
     // Stop button state — reset when process finishes.
     //
@@ -309,17 +327,19 @@ const TerminalBlock: React.FC<TerminalBlockProps> = memo(
                       {formattedCommand}
                     </span>
                   </div>
-                  <ExpandOverlay
-                    isExpanded={isCommandExpanded}
-                    onToggle={(event) => {
-                      event.stopPropagation();
-                      if (isCommandExpanded) {
-                        commandViewportRef.current?.scrollTo({ top: 0 });
-                      }
-                      setIsCommandExpanded((prev) => !prev);
-                    }}
-                    fadeFrom={EVENT_BLOCK_FADE_FROM}
-                  />
+                  {(commandNeedsExpand || isCommandExpanded) && (
+                    <ExpandOverlay
+                      isExpanded={isCommandExpanded}
+                      onToggle={(event) => {
+                        event.stopPropagation();
+                        if (isCommandExpanded) {
+                          commandViewportRef.current?.scrollTo({ top: 0 });
+                        }
+                        setIsCommandExpanded((prev) => !prev);
+                      }}
+                      fadeFrom={EVENT_BLOCK_FADE_FROM}
+                    />
+                  )}
                 </div>
               )}
 

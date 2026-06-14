@@ -1,11 +1,12 @@
 /**
  * FailedEventRow - Inline failed state for chat variant event components
  *
- * Renders a muted row (icon + label) when a tool event has status "failed".
- * The caller provides a fully-formed, tense-aware label (e.g. "Failed to read file.ts").
+ * Renders a muted attempted-action row (tool icon + label) when a tool event
+ * has status "failed".
  */
-import { X } from "lucide-react";
 import React from "react";
+
+import { getToolIcon } from "@src/config/toolIcons";
 
 import { EventBlockHeaderIcon } from "./EventBlockHeaderIcon";
 import {
@@ -36,11 +37,14 @@ export const FailedEventRow: React.FC<FailedEventRowProps> = ({
   label,
   detail,
   eventId,
+  action,
   trailingAction,
 }) => {
-  const icon = (
-    <X size={SESSION_UI_TOKENS.ICON.SIZE_SM} className="text-danger-6" />
-  );
+  const icon = getToolIcon(toolName, {
+    action,
+    size: SESSION_UI_TOKENS.ICON.SIZE_SM,
+    className: "text-text-3",
+  });
   const trimmedDetail = detail?.trim();
 
   return (
@@ -49,12 +53,12 @@ export const FailedEventRow: React.FC<FailedEventRowProps> = ({
       data-tool-call-event-id={eventId}
       data-tool-call-name={toolName}
     >
-      <EventBlockHeaderIcon icon={icon} hasContent={false} />
-      <EventBlockHeaderTitle className="text-danger-6">
+      <EventBlockHeaderIcon icon={icon} hasContent={false} isFailed />
+      <EventBlockHeaderTitle className="text-text-3">
         {label}
       </EventBlockHeaderTitle>
       {trimmedDetail && (
-        <EventBlockHeaderSubtitle title={trimmedDetail}>
+        <EventBlockHeaderSubtitle title={trimmedDetail} className="text-text-3">
           {trimmedDetail}
         </EventBlockHeaderSubtitle>
       )}

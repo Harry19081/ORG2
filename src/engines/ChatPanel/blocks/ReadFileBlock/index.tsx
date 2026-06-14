@@ -2,11 +2,9 @@
  * ReadFileBlock — header-only chat rendering for `read_file` events.
  *
  * The file contents are available in the simulator; the chat timeline only
- * shows the read action and target file name. The one exception is the
- * `failed` state, which routes through `FailedEventRow` so the underlying
- * error detail (e.g. "ENOENT: no such file") stays visible — silently
- * hiding read failures behind a generic header was the bug that
- * `fix(cursor): keep native sessions continuous` set out to fix.
+ * shows the read action and target file name. Failed reads keep the same
+ * compact row shape as attempted edits instead of rendering a separate red
+ * error row.
  */
 import { Briefcase } from "lucide-react";
 import React, { useMemo } from "react";
@@ -20,14 +18,12 @@ import { getFileName } from "@src/util/file/pathUtils";
 import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
 import { extractSkillNameFromPath } from "@src/util/skills/skillPath";
 
-import { extractResultText } from "../ToolCallBlock/helpers";
 import {
   EVENT_LOADING_SHIMMER_TEXT_CLASSES,
   EventBlockHeader,
   EventBlockHeaderIcon,
   EventBlockHeaderSubtitle,
   EventBlockHeaderTitle,
-  FailedEventRow,
   SESSION_UI_TOKENS,
   getEventBlockContainerClasses,
 } from "../primitives";
@@ -90,17 +86,6 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
     [isSkill]
   );
 
-  if (isFailed) {
-    return (
-      <FailedEventRow
-        toolName="read_file"
-        label={`${title} ${displayName}`}
-        detail={extractResultText(props.result)}
-        eventId={eventId}
-      />
-    );
-  }
-
   return (
     <div
       className={`${getEventBlockContainerClasses(false)} animate-fade-in`}
@@ -121,14 +106,18 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
           hasContent={false}
           revealChevronOnIconHoverOnly={Boolean(eventId)}
           isLoading={isLoading}
+          isFailed={isFailed}
         />
-        <EventBlockHeaderTitle isLoading={isLoading}>
+        <EventBlockHeaderTitle
+          isLoading={isLoading}
+          className={isFailed ? "text-text-3" : undefined}
+        >
           {title}
         </EventBlockHeaderTitle>
         <EventBlockHeaderSubtitle
           isLoading={isLoading}
           title={displayName}
-          className="text-text-1"
+          className={isFailed ? "text-text-3" : "text-text-1"}
         >
           {!isSkill && (
             <FileTypeIcon
