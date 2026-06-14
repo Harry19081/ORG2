@@ -5,14 +5,14 @@ import type { OpenPRItem } from "@src/api/tauri/github";
 /**
  * Shared PR state for the active workstation repo.
  * Written by `useWorkstationPr` when eligibility or PR URL changes.
- * Read by `PinnedActionsBar` to show the "Open PR" quick-action pill.
+ * Read by Source Control surfaces and context collection.
  *
  * TODO(multi-panel): This is a single global atom. When multiple workstation
  * panels are open simultaneously they will share state incorrectly. Fix by
  * migrating to `atomFamily` keyed by `repoId` (from `jotai-family`), matching
  * the pattern used in `cursorModeOverrideAtom.ts`. Callers to update:
  *   - `useWorkstationPr` (useSetAtom → useAtom(workstationPrAtomFamily(repoId)))
- *   - `PinnedActionsBar` / `workstationPrCallbackAtom` consumer
+ *   - `workstationPrCallbackAtom` consumers
  *   - Any other direct reader of `workstationPrAtom`
  */
 export interface WorkstationPrSnapshot {
@@ -59,7 +59,7 @@ export const workstationPrCommitMessageAtom = atom<string>("");
 export const workstationAllOpenPrsAtom = atom<OpenPRItem[]>([]);
 
 /**
- * Stable ref-backed callback for triggering PR creation from PinnedActionsBar.
+ * Stable ref-backed callback for triggering PR creation from Source Control UI.
  * Stored as a ref container to avoid stale closure issues with atom-stored functions.
  */
 export const workstationPrCallbackAtom = atom<{

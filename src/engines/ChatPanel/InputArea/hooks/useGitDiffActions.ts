@@ -30,6 +30,7 @@ import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import {
   GIT_DIFF_COMMIT_PROMPT,
   GIT_DIFF_COMMIT_PUSH_PROMPT,
+  GIT_DIFF_CREATE_PR_PROMPT,
   GIT_DIFF_PUSH_PROMPT,
   computeGitActionsDisabled,
   runAgentGitAction,
@@ -47,6 +48,7 @@ export interface UseGitDiffActionsResult {
   onCommit: () => void;
   onCommitPush: () => void;
   onPush: () => void;
+  onCreatePr: () => void;
   onViewMyStation: () => void;
   onViewAgentStation: () => void;
   hasCommitsToPush: boolean;
@@ -117,6 +119,11 @@ export function useGitDiffActions({
     [sendAgentPrompt]
   );
 
+  const onCreatePr = useCallback(
+    () => sendAgentPrompt(GIT_DIFF_CREATE_PR_PROMPT),
+    [sendAgentPrompt]
+  );
+
   const onViewMyStation = useCallback(() => {
     void WorkStationViewService.openSourceControlTab().catch((err) =>
       log.error("open source control failed:", err)
@@ -147,6 +154,7 @@ export function useGitDiffActions({
     onCommit,
     onCommitPush,
     onPush,
+    onCreatePr,
     onViewMyStation,
     onViewAgentStation,
     hasCommitsToPush,

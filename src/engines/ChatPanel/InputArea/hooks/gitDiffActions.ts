@@ -6,15 +6,28 @@
  * agent-prompt dispatch sequence — is unit-testable without rendering hooks.
  */
 
+const SYSTEM_GENERATED_GIT_ACTION_LANGUAGE_INSTRUCTION =
+  " This is a system-generated Git action request. Continue using the user's language from the earlier conversation rounds.";
+
 /** Prompt sent to the agent for a plain "commit" action. */
-export const GIT_DIFF_COMMIT_PROMPT = "Commit all current changes.";
+export const GIT_DIFF_COMMIT_PROMPT =
+  "Commit all current changes." +
+  SYSTEM_GENERATED_GIT_ACTION_LANGUAGE_INSTRUCTION;
 
 /** Prompt sent to the agent for a "commit & push" action. */
 export const GIT_DIFF_COMMIT_PUSH_PROMPT =
-  "Commit all current changes and push to the remote.";
+  "Commit all current changes and push to the remote." +
+  SYSTEM_GENERATED_GIT_ACTION_LANGUAGE_INSTRUCTION;
 
 /** Prompt sent to the agent for a plain "push" action. */
-export const GIT_DIFF_PUSH_PROMPT = "Push the latest commits to the remote.";
+export const GIT_DIFF_PUSH_PROMPT =
+  "Push the latest commits to the remote." +
+  SYSTEM_GENERATED_GIT_ACTION_LANGUAGE_INSTRUCTION;
+
+/** Prompt sent to the agent for a "create PR" action. */
+export const GIT_DIFF_CREATE_PR_PROMPT =
+  "Create a pull request for the current branch. Unless the user specifies otherwise, include only the files you have worked on." +
+  SYSTEM_GENERATED_GIT_ACTION_LANGUAGE_INSTRUCTION;
 
 /** A mutable single-slot guard, structurally compatible with a React ref. */
 export interface MutableGuard {

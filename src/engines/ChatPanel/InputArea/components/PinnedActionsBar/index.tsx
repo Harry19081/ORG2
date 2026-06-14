@@ -10,7 +10,7 @@
  * Design: uses shared secondary buttons so pinned actions match other composer controls.
  */
 import { useAtom, useAtomValue } from "jotai";
-import { GitPullRequest, Layout, MoreHorizontal } from "lucide-react";
+import { Layout, MoreHorizontal } from "lucide-react";
 import React, { memo, useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -24,10 +24,6 @@ import {
   type PinnedAction,
   pinnedActionsAtom,
 } from "@src/store/session/pinnedActionsAtom";
-import {
-  workstationPrAtom,
-  workstationPrCallbackAtom,
-} from "@src/store/workstation/codeEditor/workstationPrAtom";
 import { mainPaneTabsAtom } from "@src/store/workstation/tabs";
 import {
   createCanvasPreviewTab,
@@ -104,19 +100,6 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     const { t } = useTranslation("sessions");
     const [pinnedActions, setPinnedActions] = useAtom(pinnedActionsAtom);
 
-    // ── PR pill ───────────────────────────────────────────────────────────────
-
-    const { readyToCreate: prReadyToCreate, isCreating: prIsCreating } =
-      useAtomValue(workstationPrAtom);
-    const { createPr } = useAtomValue(workstationPrCallbackAtom);
-
-    const handleOpenPr = useCallback(() => {
-      if (!createPr || prIsCreating) return;
-      void createPr();
-    }, [createPr, prIsCreating]);
-
-    const showPrPill = prReadyToCreate && Boolean(createPr);
-
     // ── Canvas pill ───────────────────────────────────────────────────────────
 
     const [canvasEntry, setCanvasEntry] = useAtom(canvasPreviewAtom);
@@ -180,7 +163,7 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
 
     const hasPinnedActions = pinnedActions.length > 0;
     const showCanvasAction = showCanvasPill && !isCanvasTabOpen;
-    const hasActionPills = showPrPill || showCanvasAction || hasPinnedActions;
+    const hasActionPills = showCanvasAction || hasPinnedActions;
     const hasTrailingContent = Boolean(trailingContent);
     const showTrailingSeparator = hasActionPills || hasTrailingContent;
 
@@ -269,27 +252,6 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
 
     const actionPills = (
       <>
-        {showPrPill && (
-          <Button
-            variant="secondary"
-            size="small"
-            shape="round"
-            title={t("input.pr.open", { defaultValue: "Open PR" })}
-            onClick={handleOpenPr}
-            loading={prIsCreating}
-            icon={
-              !prIsCreating ? (
-                <GitPullRequest size={12} strokeWidth={1.75} />
-              ) : undefined
-            }
-            className="max-w-[180px] shrink-0 select-none"
-          >
-            {prIsCreating
-              ? t("input.pr.creating", { defaultValue: "Creating PR…" })
-              : t("input.pr.open", { defaultValue: "Open PR" })}
-          </Button>
-        )}
-
         {showCanvasAction && (
           <div className="shrink-0">
             <UserActionButton

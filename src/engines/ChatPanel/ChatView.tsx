@@ -458,6 +458,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       onCommit,
       onCommitPush,
       onPush,
+      onCreatePr,
       onViewMyStation,
       onViewAgentStation,
       hasCommitsToPush,
@@ -470,6 +471,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
           onCommit={onCommit}
           onCommitPush={onCommitPush}
           onPush={onPush}
+          onCreatePr={onCreatePr}
           onViewMyStation={onViewMyStation}
           onViewAgentStation={onViewAgentStation}
           hasCommitsToPush={hasCommitsToPush}
@@ -480,6 +482,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
         onCommit,
         onCommitPush,
         onPush,
+        onCreatePr,
         onViewMyStation,
         onViewAgentStation,
         hasCommitsToPush,

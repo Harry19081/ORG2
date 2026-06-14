@@ -30,6 +30,7 @@ export interface GitDiffActionsMenuProps {
   onCommit: () => void;
   onCommitPush: () => void;
   onPush: () => void;
+  onCreatePr: () => void;
   onViewMyStation: () => void;
   onViewAgentStation: () => void;
   hasCommitsToPush?: boolean;
@@ -46,6 +47,7 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
   onCommit,
   onCommitPush,
   onPush,
+  onCreatePr,
   onViewMyStation,
   onViewAgentStation,
   hasCommitsToPush = false,
@@ -95,6 +97,14 @@ const GitDiffActionsMenu: React.FC<GitDiffActionsMenuProps> = ({
               {t("creator.diffMenu.push", { defaultValue: "Push" })}
             </DropdownItem>
           )}
+          <DropdownItem
+            className={LEFT_ALIGNED_ITEM_CLASS}
+            disabled={gitActionsDisabled}
+            onClick={run(onCreatePr)}
+            dataTestId="git-diff-action-create-pr"
+          >
+            Create PR
+          </DropdownItem>
         </DropdownItemGroup>
 
         <div className={DROPDOWN_CLASSES.menuSeparatorInset} />
