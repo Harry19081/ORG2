@@ -133,7 +133,7 @@ impl Tool for AwaitTool {
                 },
                 "block_until_ms": {
                     "type": "integer",
-                    "description": "Max milliseconds to block (wait_for only). Default: 120000."
+                    "description": "Max milliseconds to block (wait_for only). Default: 30000."
                 },
                 "tail_lines": {
                     "type": "integer",

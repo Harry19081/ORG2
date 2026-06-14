@@ -318,9 +318,12 @@ const SessionCreatorChatPanelSingle: React.FC<
     };
 
     if (applyRestore()) return;
-    // Editor ref may not be available yet on first mount; retry briefly.
-    const timer = setTimeout(applyRestore, 100);
-    return () => clearTimeout(timer);
+    // Editor ref may not be available yet on first mount; poll briefly.
+    let retries = 0;
+    const timer = setInterval(() => {
+      if (applyRestore() || ++retries >= 10) clearInterval(timer);
+    }, 50);
+    return () => clearInterval(timer);
   }, [
     restoreToInput,
     composerInputRef,

@@ -275,7 +275,13 @@ impl AgentTool {
         job_registry::set_join_handle(&registry_handle, join_handle);
 
         format!(
-            "Subagent '{}' launched in background.\nHandle: {}\nUse await_output(handle=\"{}\") to monitor progress.",
+            "Subagent '{}' launched in background.\n\
+             Handle: {}\n\
+             The subagent has its own session and you will be notified automatically \
+             when it finishes (via the Background Jobs reminder). Do NOT call \
+             await_output repeatedly to poll. Continue with other work.\n\
+             If you need to check progress before completion, use \
+             await_output(command=\"monitor\", handles=[\"{}\"]).",
             agent.name, subagent_session_id, subagent_session_id
         )
     }
