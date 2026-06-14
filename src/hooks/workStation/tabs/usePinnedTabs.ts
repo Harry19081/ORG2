@@ -86,16 +86,21 @@ export function usePinnedTabs({
 
     if (!orderChanged && !refreshed) return;
 
-    setLayout((prev) => ({
-      ...prev,
-      mainPane: {
-        tabs: [...desiredPinned, ...nonPinned],
-        activeTabId:
-          prev.mainPane?.activeTabId ??
-          initialActiveTabId ??
-          desiredPinned[0]?.id ??
-          null,
-      },
-    }));
+    setLayout((prev) => {
+      const nextTabs = [...desiredPinned, ...nonPinned];
+      const prevActiveTabId = prev.mainPane?.activeTabId ?? null;
+      const hasActiveTab = Boolean(
+        prevActiveTabId && nextTabs.some((tab) => tab.id === prevActiveTabId)
+      );
+      return {
+        ...prev,
+        mainPane: {
+          tabs: nextTabs,
+          activeTabId: hasActiveTab
+            ? prevActiveTabId
+            : (initialActiveTabId ?? desiredPinned[0]?.id ?? null),
+        },
+      };
+    });
   }, [enabled, initialActiveTabId, pinnedKey, pinnedTabs, setLayout, tabs]);
 }

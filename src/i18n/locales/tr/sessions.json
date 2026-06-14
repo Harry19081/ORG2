@@ -367,7 +367,7 @@
       "diffApp": {
         "allTabLabel": "Tümü",
         "tabLabel": "Diff",
-        "emptyForFilter": "Henüz Diff yok.",
+        "emptyForFilter": "Henüz Diff yok",
         "emptyDetail": "Diff'i görüntülemek için bir değişiklik seçin.",
         "submissions": {
           "tabLabel": "Gönderimler",

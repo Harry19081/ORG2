@@ -880,7 +880,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
           loading={isCurrentEventLoading}
           emptyTitle={t(
             "simulator.replay.diffApp.emptyForFilter",
-            "No diffs yet."
+            "No diffs yet"
           )}
           focusedPath={focusedDiffPath}
           focusedNonce={focusedDiffNonce}

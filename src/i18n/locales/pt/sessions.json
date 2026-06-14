@@ -380,7 +380,7 @@
       "diffApp": {
         "allTabLabel": "Tudo",
         "tabLabel": "Diff",
-        "emptyForFilter": "Ainda não há Diffs.",
+        "emptyForFilter": "Ainda não há Diffs",
         "emptyDetail": "Selecione uma alteração para ver o Diff.",
         "submissions": {
           "tabLabel": "Submissões",

@@ -68,6 +68,61 @@ export interface WorkStationShellProps {
 
 const noop = () => {};
 
+interface PrimarySidebarPanelProps {
+  className: string;
+  width: number;
+  onContextMenu?: React.MouseEventHandler<HTMLDivElement>;
+  content: React.ReactNode;
+}
+
+const PrimarySidebarPanel = memo(
+  ({ className, width, onContextMenu, content }: PrimarySidebarPanelProps) => (
+    <div className={className} style={{ width }} onContextMenu={onContextMenu}>
+      {content}
+    </div>
+  )
+);
+PrimarySidebarPanel.displayName = "PrimarySidebarPanel";
+
+interface ContentPanelProps {
+  className: string;
+  content: React.ReactNode;
+}
+
+const ContentPanel = memo(({ className, content }: ContentPanelProps) => (
+  <div className={className}>
+    <div className="work-station-shell__main-content">{content}</div>
+  </div>
+));
+ContentPanel.displayName = "ContentPanel";
+
+interface SecondaryPanelProps {
+  className: string;
+  position: "right" | "bottom";
+  size: number;
+  onContextMenu?: React.MouseEventHandler<HTMLDivElement>;
+  content: React.ReactNode;
+}
+
+const SecondaryPanel = memo(
+  ({
+    className,
+    position,
+    size,
+    onContextMenu,
+    content,
+  }: SecondaryPanelProps) => (
+    <div
+      className={className}
+      style={position === "right" ? { width: size } : { height: size }}
+      onContextMenu={onContextMenu}
+    >
+      {content}
+    </div>
+  )
+);
+SecondaryPanel.displayName = "SecondaryPanel";
+
 export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
   ({
     primarySidebarConfig,
@@ -177,7 +232,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     // component state). Right-click anywhere on the sidebar surface opens
     // the resize context menu.
     const primarySidebarElement = (
-      <div
+      <PrimarySidebarPanel
         className={classNames(
           "work-station-shell__side-panel",
           isComfortLayout && "work-station-shell__side-panel--comfort",
@@ -186,20 +241,17 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
             "work-station-shell__side-panel--collapsed",
           appClassName && `${appClassName}__side-panel`
         )}
-        style={{
-          width: resolvedPrimarySidebar.collapsed
-            ? 0
-            : resolvedPrimarySidebar.size,
-        }}
+        width={
+          resolvedPrimarySidebar.collapsed ? 0 : resolvedPrimarySidebar.size
+        }
         onContextMenu={
           !resolvedPrimarySidebar.collapsed &&
           resolvedPrimarySidebar.onSizeChange
             ? handlePrimarySidebarContextMenu
             : undefined
         }
-      >
-        {resolvedPrimarySidebar.content}
-      </div>
+        content={resolvedPrimarySidebar.content}
+      />
     );
 
     const primarySidebarResizeHandle = !resolvedPrimarySidebar.collapsed &&
@@ -212,14 +264,13 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
       );
 
     const contentPanelElement = (
-      <div
+      <ContentPanel
         className={classNames(
           "work-station-shell__content-panel",
           appClassName && `${appClassName}__content-panel`
         )}
-      >
-        <div className="work-station-shell__main-content">{content}</div>
-      </div>
+        content={content}
+      />
     );
 
     // Secondary panel: single mount. Always rendered when the config is
@@ -235,7 +286,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
       secondaryPanelConfig.onSizeChange;
 
     const secondaryPanelElement = secondaryPanelConfig && (
-      <div
+      <SecondaryPanel
         className={classNames(
           "work-station-shell__secondary-panel",
           `work-station-shell__secondary-panel--${secondaryPosition}`,
@@ -248,19 +299,15 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
             "work-station-shell__secondary-panel--collapsed",
           appClassName && `${appClassName}__secondary-panel`
         )}
-        style={{
-          ...(secondaryPosition === "right"
-            ? { width: secondarySize }
-            : { height: secondarySize }),
-        }}
+        position={secondaryPosition}
+        size={secondarySize}
         onContextMenu={
           !secondaryPanelCollapsed && secondaryPanelConfig.onSizeChange
             ? handleSecondaryContextMenu
             : undefined
         }
-      >
-        {secondaryPanelConfig.content}
-      </div>
+        content={secondaryPanelConfig.content}
+      />
     );
 
     // Resize handle for secondary panel — its own grid cell between

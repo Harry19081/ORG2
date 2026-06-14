@@ -367,7 +367,7 @@
       "diffApp": {
         "allTabLabel": "Alle",
         "tabLabel": "Diff",
-        "emptyForFilter": "Noch keine Diffs.",
+        "emptyForFilter": "Noch keine Diffs",
         "emptyDetail": "Wählen Sie eine Änderung aus, um den Diff anzuzeigen.",
         "submissions": {
           "tabLabel": "Einreichungen",

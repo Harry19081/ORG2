@@ -367,7 +367,7 @@
       "diffApp": {
         "allTabLabel": "Tất cả",
         "tabLabel": "Diff",
-        "emptyForFilter": "Chưa có Diff.",
+        "emptyForFilter": "Chưa có Diff",
         "emptyDetail": "Chọn một thay đổi để xem Diff.",
         "submissions": {
           "tabLabel": "Bài gửi",

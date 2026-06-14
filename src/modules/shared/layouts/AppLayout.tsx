@@ -296,9 +296,33 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
               data-main-content
             >
               <div
-                className={`relative isolate flex h-full min-h-0 min-w-0 ${isChatOnLeft ? "flex-row-reverse" : "flex-row"} overflow-hidden ${needsPadding ? "rounded-page" : ""}`}
+                className={`relative isolate flex h-full min-h-0 min-w-0 flex-row overflow-hidden ${needsPadding ? "rounded-page" : ""}`}
               >
+                {isChatOnLeft && isSlotVisible && (
+                  <div
+                    key="chat-slot"
+                    className={
+                      chatPanelMaximized
+                        ? "absolute inset-0 z-10 flex min-h-0 min-w-0"
+                        : "relative z-10 flex flex-shrink-0"
+                    }
+                    style={
+                      chatPanelMaximized ? undefined : { width: chatWidth }
+                    }
+                    data-fullmode-chat-wrapper
+                    data-tour-target={
+                      chatPanelMode === "session"
+                        ? GENERAL_LAYOUT_TOUR_TARGETS.chatPanel
+                        : undefined
+                    }
+                    data-chat-focus={chatPanelMaximized || undefined}
+                    data-chat-slot-mode={chatPanelMode}
+                  >
+                    {slotInner}
+                  </div>
+                )}
                 <div
+                  key="workbench-surface"
                   // Maximizing the slot collapses the workbench surface to
                   // zero width (instead of `flex-1`) so any inline native
                   // webview hosted inside it sees `ResizeObserver` report
@@ -313,8 +337,9 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
                 >
                   {children}
                 </div>
-                {isSlotVisible && (
+                {!isChatOnLeft && isSlotVisible && (
                   <div
+                    key="chat-slot"
                     className={
                       chatPanelMaximized
                         ? "absolute inset-0 z-10 flex min-h-0 min-w-0"

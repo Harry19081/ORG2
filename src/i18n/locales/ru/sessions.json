@@ -369,7 +369,7 @@
       "diffApp": {
         "allTabLabel": "Все",
         "tabLabel": "Diff",
-        "emptyForFilter": "Diff пока нет.",
+        "emptyForFilter": "Diff пока нет",
         "emptyDetail": "Выберите изменение, чтобы посмотреть Diff.",
         "submissions": {
           "tabLabel": "Отправки",

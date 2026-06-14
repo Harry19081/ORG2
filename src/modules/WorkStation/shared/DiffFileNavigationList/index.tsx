@@ -80,7 +80,7 @@ function DiffFileNavigationListInner<TFile extends DiffFileSectionData>({
     emptyTitle ??
     t(
       "simulator.replay.diffApp.emptyForFilter",
-      "No diffs match this filter yet."
+      "No diffs match this filter yet"
     );
 
   const flattenedNodes = useMemo(() => items.map(buildTreeNode), [items]);

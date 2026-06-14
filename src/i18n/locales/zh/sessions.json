@@ -374,7 +374,7 @@
       "diffApp": {
         "allTabLabel": "全部",
         "tabLabel": "Diff",
-        "emptyForFilter": "暂无 Diff。",
+        "emptyForFilter": "暂无 Diff",
         "emptyDetail": "选择一项变更以查看 Diff。",
         "submissions": {
           "tabLabel": "提交",

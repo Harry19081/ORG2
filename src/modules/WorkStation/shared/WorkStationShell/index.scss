@@ -18,6 +18,8 @@
   width: 100%;
   overflow: hidden;
   background-color: transparent;
+  contain: layout paint;
+  isolation: isolate;
 
   &--comfort {
     .work-station-shell__container,
@@ -70,10 +72,12 @@
       }
     }
 
-    // Collapsed state - hide with CSS instead of unmounting
-    // This preserves component state and avoids expensive remounting
+    // Collapsed state keeps the sidebar's layout item mounted at zero width.
+    // Removing it with display:none causes adjacent docked panels to repaint.
     &--collapsed {
-      display: none;
+      min-width: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
   }
 

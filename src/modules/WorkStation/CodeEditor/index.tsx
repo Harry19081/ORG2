@@ -229,7 +229,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
     const explorerTab = useMemo(() => explorerTabFactory({}), []);
     const pinnedTabs = useMemo(
       () => [
-        explorerTab,
         terminalTabFactory({
           sessionId: CODE_EDITOR_MAIN_TERMINAL_SESSION_ID,
           sessionName: "Terminal",
@@ -241,6 +240,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
           focusPath: null,
           historySelection: null,
         }),
+        explorerTab,
       ],
       [explorerTab, sourceControlFilterCounts.unstaged]
     );
@@ -396,36 +396,65 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       sourceControlFilterMode !== "pr" &&
       sourceControlFilterMode !== "issues";
 
-    const mainContent = (
-      <div className="flex h-full min-h-0 w-full flex-col">
-        <EditorContent
-          selectedFile={codeEditorState.selectedFile}
-          fileContent={codeEditorState.fileContent ?? ""}
-          loading={codeEditorState.loadingContent}
-          error={codeEditorState.contentError}
-          repoPath={repoPath}
-          repoId={selectedRepoId ?? repoPath}
-          repoDisplayName={repoDisplayName}
-          gitDiffTabs={gitDiffTabs}
-          gitFilesByPath={gitFilesByPath}
-          gitDiffLoading={gitDiffLoading}
-          onFileSelect={handleFileSelect}
-          onFileSelectWithLine={handleFileSelectWithLine}
-          onContentChange={handleContentChange}
-          onSave={handleSave}
-          onDiscard={handleDiscard}
-          onDiagnosticsChange={handleDiagnosticsChange}
-          onAllChangesClick={handleAllChangesClick}
-          hasUnsavedChanges={codeEditorState.hasUnsavedChanges}
-          saving={codeEditorState.saving}
-          isBinary={codeEditorState.isBinary}
-          onCursorPositionChange={handleCursorPositionChange}
-          terminalState={terminalState}
-          sourceControlHeaderTrailingSlot={editorSourceControlHeaderSlot}
-          sourceControlFilterMode={editorSourceControlFilterMode}
-          showSourceControlModePill={editorShowSourceControlModePill}
-        />
-      </div>
+    const mainContent = useMemo(
+      () => (
+        <div className="flex h-full min-h-0 w-full flex-col">
+          <EditorContent
+            selectedFile={codeEditorState.selectedFile}
+            fileContent={codeEditorState.fileContent ?? ""}
+            loading={codeEditorState.loadingContent}
+            error={codeEditorState.contentError}
+            repoPath={repoPath}
+            repoId={selectedRepoId ?? repoPath}
+            repoDisplayName={repoDisplayName}
+            gitDiffTabs={gitDiffTabs}
+            gitFilesByPath={gitFilesByPath}
+            gitDiffLoading={gitDiffLoading}
+            onFileSelect={handleFileSelect}
+            onFileSelectWithLine={handleFileSelectWithLine}
+            onContentChange={handleContentChange}
+            onSave={handleSave}
+            onDiscard={handleDiscard}
+            onDiagnosticsChange={handleDiagnosticsChange}
+            onAllChangesClick={handleAllChangesClick}
+            hasUnsavedChanges={codeEditorState.hasUnsavedChanges}
+            saving={codeEditorState.saving}
+            isBinary={codeEditorState.isBinary}
+            onCursorPositionChange={handleCursorPositionChange}
+            terminalState={terminalState}
+            sourceControlHeaderTrailingSlot={editorSourceControlHeaderSlot}
+            sourceControlFilterMode={editorSourceControlFilterMode}
+            showSourceControlModePill={editorShowSourceControlModePill}
+          />
+        </div>
+      ),
+      [
+        codeEditorState.selectedFile,
+        codeEditorState.fileContent,
+        codeEditorState.loadingContent,
+        codeEditorState.contentError,
+        codeEditorState.hasUnsavedChanges,
+        codeEditorState.saving,
+        codeEditorState.isBinary,
+        repoPath,
+        selectedRepoId,
+        repoDisplayName,
+        gitDiffTabs,
+        gitFilesByPath,
+        gitDiffLoading,
+        handleFileSelect,
+        handleFileSelectWithLine,
+        handleContentChange,
+        handleSave,
+        handleDiscard,
+        handleDiagnosticsChange,
+        handleAllChangesClick,
+        handleCursorPositionChange,
+        terminalState,
+        editorSourceControlHeaderSlot,
+        editorSourceControlFilterMode,
+        editorShowSourceControlModePill,
+      ]
     );
 
     const editorPanelContent = useMemo(

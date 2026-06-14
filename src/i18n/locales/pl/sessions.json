@@ -382,7 +382,7 @@
       "diffApp": {
         "allTabLabel": "Wszystko",
         "tabLabel": "Diff",
-        "emptyForFilter": "Brak Diffów.",
+        "emptyForFilter": "Brak Diffów",
         "emptyDetail": "Wybierz zmianę, aby zobaczyć Diff.",
         "submissions": {
           "tabLabel": "Zgłoszenia",

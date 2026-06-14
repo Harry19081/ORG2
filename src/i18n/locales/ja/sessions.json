@@ -367,7 +367,7 @@
       "diffApp": {
         "allTabLabel": "すべて",
         "tabLabel": "Diff",
-        "emptyForFilter": "Diff はまだありません。",
+        "emptyForFilter": "Diff はまだありません",
         "emptyDetail": "変更を選択して Diff を表示します。",
         "submissions": {
           "tabLabel": "提出",

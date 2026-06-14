@@ -367,7 +367,7 @@
       "diffApp": {
         "allTabLabel": "전체",
         "tabLabel": "Diff",
-        "emptyForFilter": "아직 Diff가 없습니다.",
+        "emptyForFilter": "아직 Diff가 없습니다",
         "emptyDetail": "변경 사항을 선택하여 Diff를 확인하세요.",
         "submissions": {
           "tabLabel": "제출",
