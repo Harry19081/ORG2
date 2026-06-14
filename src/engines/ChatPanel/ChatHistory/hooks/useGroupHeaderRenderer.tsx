@@ -25,6 +25,7 @@ interface UseGroupHeaderRendererOptions {
   hideUserMessage: boolean;
   turnCollapseInteractionAtRef: React.MutableRefObject<number>;
   onEditSubmit: GroupHeaderRendererProps["onEditSubmit"];
+  onRestoreCheckpoint: GroupHeaderRendererProps["onRestoreCheckpoint"];
 }
 
 export function useGroupHeaderRenderer({
@@ -40,6 +41,7 @@ export function useGroupHeaderRenderer({
   hideUserMessage,
   turnCollapseInteractionAtRef,
   onEditSubmit,
+  onRestoreCheckpoint,
 }: UseGroupHeaderRendererOptions) {
   return useCallback(
     (groupIndex: number) => {
@@ -68,6 +70,7 @@ export function useGroupHeaderRenderer({
           hideUserMessage={hideUserMessage}
           turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
           onEditSubmit={onEditSubmit}
+          onRestoreCheckpoint={onRestoreCheckpoint}
         />
       );
     },
@@ -84,6 +87,7 @@ export function useGroupHeaderRenderer({
       hideUserMessage,
       turnCollapseInteractionAtRef,
       onEditSubmit,
+      onRestoreCheckpoint,
     ]
   );
 }

@@ -42,4 +42,7 @@ export {
   runAskForceSendScenario,
   runAskWriteDeniedScenario,
 } from "./agentQueuedAskScenarios.mjs";
-export { runRewindScenario } from "./agentQueuedRewindScenarios.mjs";
+export {
+  runRestoreCheckpointScenario,
+  runRewindScenario,
+} from "./agentQueuedRewindScenarios.mjs";

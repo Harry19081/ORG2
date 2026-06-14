@@ -906,13 +906,21 @@ async function waitForIdleSendButton(label) {
 }
 
 async function waitForRuntimeIdle(label) {
+  // Default 60s, but allow an env override so slow providers (e.g. cursor
+  // composer) or runs sharing the host with another e2e matrix can extend the
+  // wait without flaking. The restore/rewind scenarios only assert idle as a
+  // precondition gate, so a longer ceiling never weakens correctness.
+  const RUNTIME_IDLE_TIMEOUT_MS = Number.parseInt(
+    process.env.E2E_RUNTIME_IDLE_TIMEOUT_MS ?? "60000",
+    10
+  );
   await browser.waitUntil(
     async () => {
       const state = await inspectChatState(`${label}-runtime-idle`);
       return !hasAuthoritativeRunningTurn(state);
     },
     {
-      timeout: 60_000,
+      timeout: RUNTIME_IDLE_TIMEOUT_MS,
       interval: 1_000,
       timeoutMsg: `${label} runtime did not become idle; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
