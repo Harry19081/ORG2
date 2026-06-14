@@ -264,11 +264,14 @@ export function useSessionActions(options: UseSessionActionsOptions) {
         displayContent: restorable.displayContent,
         imageDataUrls: restorable.imageDataUrls,
       };
-      queueMicrotask(() => {
+      // Use setTimeout(0) instead of queueMicrotask — microtasks run before
+      // React commits, so the creator's composerInputRef may still be null.
+      // setTimeout(0) defers past the React commit so the editor is mounted.
+      setTimeout(() => {
         setRestoreToInput(restorePayload);
         markRestoredStopDraft(restorePayload);
         suppressRestoredStopSubmit(restorePayload);
-      });
+      }, 0);
     }
   }, [getSessionId, setRestoreToInput, setSessionRolledBack, store, t]);
 
