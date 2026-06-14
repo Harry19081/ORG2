@@ -136,7 +136,6 @@ const ChatPinnedHeaderLayer: React.FC<ChatPinnedHeaderLayerProps> = memo(
           hasPinnedContent={hasPinnedContent}
           collapseLabelVariant={collapseLabelVariant}
           collapseTailWhenIdle={collapseTailWhenIdle}
-          hideCollapseBar={turnPaginationEnabled}
           hideUserMessage={hideUserMessage}
           turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
           onEditSubmit={onEditSubmit}

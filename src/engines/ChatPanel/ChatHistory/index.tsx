@@ -380,7 +380,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     isAgentWorking,
     collapseTailWhenIdle,
     forceCollapseAllTurns,
-    disableTurnCollapse: turnPaginationEnabled,
     allTurnsCollapsed:
       collapseAllCommand.epoch > 0 && collapseAllCommand.collapsed
         ? true

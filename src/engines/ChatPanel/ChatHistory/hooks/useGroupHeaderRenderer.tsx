@@ -63,7 +63,6 @@ export function useGroupHeaderRenderer({
           hasPinnedContent={hasPinnedContent}
           collapseLabelVariant={collapseLabelVariant}
           hideCollapseTimeRange={turnPaginationEnabled}
-          expandPinnedContentGap={!turnPaginationEnabled}
           collapseTailWhenIdle={collapseTailWhenIdle}
           hideUserMessage={hideUserMessage}
           turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}

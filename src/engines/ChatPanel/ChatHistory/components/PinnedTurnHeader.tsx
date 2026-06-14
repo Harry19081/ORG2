@@ -8,7 +8,6 @@ import UserChatItem from "../../ChatItems/UserChatItem";
 import ChatPinnedBars from "../../InputArea/components/ChatPinnedBars";
 import TurnCollapsePinBar from "../../InputArea/components/TurnCollapsePinBar";
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
-import { CHAT_FOOTER_SPACER } from "../config/chatFooterSpacer";
 import {
   type ChatGroupMeta,
   isTurnCollapseEligible,
@@ -130,9 +129,6 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
       collapseTailWhenIdle,
     });
   const headerPaddingBottomClass = showCollapseBar && turnId ? "" : "pb-2";
-  const pinnedContentBodyGap = showPinnedBars
-    ? CHAT_FOOTER_SPACER.PINNED_CONTENT_BODY_GAP_PX
-    : 0;
 
   return (
     <div className="relative z-[70]">
@@ -145,11 +141,6 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
               showPinnedBars
                 ? "flex flex-col rounded-[12px] bg-chat-container"
                 : "contents"
-            }
-            style={
-              pinnedContentBodyGap > 0
-                ? { marginBottom: pinnedContentBodyGap }
-                : undefined
             }
           >
             <UserChatItem
