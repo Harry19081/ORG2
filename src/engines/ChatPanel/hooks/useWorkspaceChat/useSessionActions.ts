@@ -252,21 +252,17 @@ export function useSessionActions(options: UseSessionActionsOptions) {
 
     // Restore the draft AFTER the session/page transition above so the
     // creator InputArea (if we just cleared) picks up the atom write.
+    // Defer to next microtask so React commits the clear/navigation first.
     if (restorable) {
-      setRestoreToInput({
+      const restorePayload = {
         sessionId,
         displayContent: restorable.displayContent,
         imageDataUrls: restorable.imageDataUrls,
-      });
-      markRestoredStopDraft({
-        sessionId,
-        displayContent: restorable.displayContent,
-        imageDataUrls: restorable.imageDataUrls,
-      });
-      suppressRestoredStopSubmit({
-        sessionId,
-        displayContent: restorable.displayContent,
-        imageDataUrls: restorable.imageDataUrls,
+      };
+      queueMicrotask(() => {
+        setRestoreToInput(restorePayload);
+        markRestoredStopDraft(restorePayload);
+        suppressRestoredStopSubmit(restorePayload);
       });
     }
   }, [getSessionId, setRestoreToInput, setSessionRolledBack, store, t]);
