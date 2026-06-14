@@ -402,6 +402,7 @@ fn init_local_tables(conn: &Connection) -> SqliteResult<()> {
         "#,
     )?;
     ensure_workitems_deleted_at_column(conn)?;
+    ensure_projects_sync_columns(conn)?;
     ensure_routine_definitions_durable_columns(conn)?;
     ensure_routine_fires_durable_columns(conn)?;
     conn.execute(
@@ -429,6 +430,28 @@ fn init_local_tables(conn: &Connection) -> SqliteResult<()> {
 
 fn ensure_workitems_deleted_at_column(conn: &Connection) -> SqliteResult<()> {
     ensure_column(conn, "workitems", "deleted_at", "INTEGER")
+}
+
+/// Backfill the project-sync columns on DBs created before they were
+/// added to the `projects` CREATE TABLE.
+///
+/// Fresh DBs already carry these columns from the DDL above, so
+/// [`ensure_column`] is a no-op for them. Older DBs that created
+/// `projects` without the sync surface get the columns added here —
+/// without this, the worker's pull-cycle binding query fails with
+/// `no such column: sync_connection_id`.
+fn ensure_projects_sync_columns(conn: &Connection) -> SqliteResult<()> {
+    for (column, definition) in [
+        ("sync_kind", "TEXT NOT NULL DEFAULT 'none'"),
+        ("sync_config_json", "TEXT"),
+        ("sync_connection_id", "TEXT"),
+        ("sync_last_pull_at", "INTEGER"),
+        ("sync_cursor_blob", "TEXT"),
+        ("sync_last_webhook_at", "INTEGER"),
+    ] {
+        ensure_column(conn, "projects", column, definition)?;
+    }
+    Ok(())
 }
 
 fn ensure_routine_definitions_durable_columns(conn: &Connection) -> SqliteResult<()> {
@@ -694,6 +717,90 @@ mod tests {
                 cols
             );
         }
+    }
+
+    #[test]
+    fn init_backfills_legacy_projects_sync_columns() {
+        let conn = open_in_memory();
+        // Simulate a DB created before the sync surface was added to the
+        // `projects` CREATE TABLE: no sync_* columns at all.
+        conn.execute_batch(
+            r#"
+            CREATE TABLE projects (
+                id                  TEXT PRIMARY KEY,
+                org_id              TEXT NOT NULL DEFAULT 'personal-org',
+                name                TEXT NOT NULL,
+                slug                TEXT NOT NULL,
+                status              TEXT NOT NULL DEFAULT 'active',
+                priority            TEXT NOT NULL DEFAULT 'none',
+                health              TEXT NOT NULL DEFAULT 'on_track',
+                lead                TEXT,
+                description         TEXT,
+                short_id_prefix     TEXT NOT NULL,
+                next_work_item_id   INTEGER NOT NULL DEFAULT 1,
+                start_date          TEXT,
+                target_date         TEXT,
+                linked_repos_json   TEXT NOT NULL DEFAULT '[]',
+                agent_defaults_json TEXT,
+                created_at          INTEGER NOT NULL,
+                updated_at          INTEGER NOT NULL,
+                local_version       INTEGER NOT NULL DEFAULT 0
+            );
+            INSERT INTO projects (id, name, slug, short_id_prefix, created_at, updated_at)
+            VALUES ('p1', 'P1', 'p1', 'AAA', 0, 0);
+            "#,
+        )
+        .expect("legacy projects schema");
+
+        init_project_tables(&conn).expect("init upgrades legacy projects table");
+
+        let cols: Vec<String> = conn
+            .prepare("PRAGMA table_info(projects)")
+            .unwrap()
+            .query_map([], |row| row.get::<_, String>(1))
+            .unwrap()
+            .map(Result::unwrap)
+            .collect();
+        for expected in [
+            "sync_kind",
+            "sync_config_json",
+            "sync_connection_id",
+            "sync_last_pull_at",
+            "sync_cursor_blob",
+            "sync_last_webhook_at",
+        ] {
+            assert!(
+                cols.iter().any(|column| column == expected),
+                "missing backfilled projects column {}; got: {:?}",
+                expected,
+                cols
+            );
+        }
+
+        // The exact binding query the worker runs must now succeed against
+        // the upgraded legacy DB.
+        let bound: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM (
+                     SELECT slug, sync_kind, sync_config_json, sync_connection_id, sync_last_webhook_at
+                     FROM projects
+                     WHERE sync_kind IS NOT NULL AND sync_kind != 'none'
+                       AND sync_connection_id IS NOT NULL
+                     ORDER BY slug ASC
+                 )",
+                [],
+                |row| row.get(0),
+            )
+            .expect("worker binding query must run on upgraded legacy DB");
+        assert_eq!(bound, 0, "no bound projects in the legacy fixture");
+
+        // Existing rows survive the migration with the default sync_kind.
+        let kind: String = conn
+            .query_row("SELECT sync_kind FROM projects WHERE id = 'p1'", [], |row| {
+                row.get(0)
+            })
+            .expect("row survives");
+        assert_eq!(kind, "none");
     }
 
     #[test]
