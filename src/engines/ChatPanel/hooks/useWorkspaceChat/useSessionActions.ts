@@ -28,6 +28,7 @@ import {
   restoreToInputAtom,
   sessionRolledBackAtom,
   stopEarlyCancelEpochAtom,
+  userInitiatedCancelAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import {
   activeSessionIdAtom,
@@ -238,9 +239,11 @@ export function useSessionActions(options: UseSessionActionsOptions) {
       // see what the agent already produced; the backend turn_index handles
       // round visibility for cancelled intents.
       //
-      // Clear isPendingCancel here because clearing the session unsubscribes
-      // from the backend terminal event that would normally reset it.
+      // Clear isPendingCancel and userInitiatedCancel here because clearing
+      // the session unsubscribes from the backend terminal event that would
+      // normally reset them.
       store.set(isPendingCancelAtom, false);
+      store.set(userInitiatedCancelAtom, false);
       setSessionRolledBack(true);
       store.set(clearSessionAtom);
       store.set(activeSessionIdAtom, null);
