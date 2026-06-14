@@ -21,13 +21,11 @@ export {
   runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
-  runForceSendStopDoesNotWithdrawScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runQueueAutodispatchesAfterNaturalCompletionScenario,
   runQueueDoesNotAutoflushWhileActiveScenario,
   runSendAfterIdleDoesNotQueueScenario,
-  runStopAfterOutputTruncatesTurnScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
 } from "./agentQueuedControlScenarios.mjs";

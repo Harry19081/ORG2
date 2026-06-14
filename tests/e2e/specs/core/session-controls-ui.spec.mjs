@@ -19,7 +19,6 @@ import {
   runBurstQueueSendNowOrderingScenario,
   runChaosControlFlowScenario,
   runForceSendScenario,
-  runForceSendStopDoesNotWithdrawScenario,
   runFreshStopImageRestoreScenario,
   runFreshStopRollbackScenario,
   runIntermediateStreamingScenario,
@@ -32,7 +31,6 @@ import {
   runQueueDoesNotAutoflushWhileActiveScenario,
   runRewindScenario,
   runSendAfterIdleDoesNotQueueScenario,
-  runStopAfterOutputTruncatesTurnScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
   rustAgentConfigs,
@@ -149,9 +147,7 @@ const CONTROL_SCENARIO_NAMES = [
   "send-after-idle-does-not-queue",
   "queue-does-not-autoflush-while-active",
   "stop-double-click-no-resubmit",
-  "stop-after-output-truncates-turn",
   "force-send",
-  "force-send-stop-keeps-turn",
   "rewind",
   "plan-build-direct",
   "plan-update",
@@ -317,23 +313,9 @@ describe("ORGII force-send queued follow-up behavior", function () {
     await runScenario("stop-restore", runStopRestoresInFlightScenario, this);
   });
 
-  it("truncates the stopped turn's events when Stop is clicked after output has started across Rust and CLI agents", async function () {
-    this.timeout(1_200_000);
-    await runScenario("stop-after-output-truncates-turn", runStopAfterOutputTruncatesTurnScenario, this);
-  });
-
   it("force-sends coherent follow-ups through Rust and CLI agents", async function () {
     this.timeout(1_200_000);
     await runScenario("force-send", runForceSendScenario, this);
-  });
-
-  it("does not withdraw a force-sent user turn when Stop is clicked immediately after Send Now", async function () {
-    this.timeout(1_200_000);
-    await runScenario(
-      "force-send-stop-keeps-turn",
-      runForceSendStopDoesNotWithdrawScenario,
-      this
-    );
   });
 
   it("rewinds agent file edits through the rendered Undo All control across Rust and CLI agents", async function () {

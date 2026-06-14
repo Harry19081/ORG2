@@ -229,24 +229,17 @@ const js = {
       const rect = element.getBoundingClientRect();
       return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
     };
-    const allVisibleElements = Array.from(document.querySelectorAll(${JSON.stringify(selector)})).filter(isVisible);
-    const targetState = ${JSON.stringify(expectedState)};
-    const matchingElements = allVisibleElements.filter((candidate) =>
-      candidate.getAttribute("data-state") === targetState && !candidate.disabled
-    );
     const visibleInputShells = Array.from(document.querySelectorAll('[data-testid="chat-input"]')).filter(isVisible);
     const activeInputShell = visibleInputShells[visibleInputShells.length - 1] ?? null;
     const scopedElements = activeInputShell ? Array.from(activeInputShell.querySelectorAll(${JSON.stringify(selector)})).filter(isVisible) : [];
-    const elements = matchingElements.length > 0
-      ? matchingElements
-      : scopedElements.length > 0
-        ? scopedElements
-        : allVisibleElements;
+    const elements = scopedElements.length > 0
+      ? scopedElements
+      : Array.from(document.querySelectorAll(${JSON.stringify(selector)})).filter(isVisible);
     const element = elements[elements.length - 1] ?? null;
     if (!element) return "missing";
     if (element.disabled) return "disabled";
     const state = element.getAttribute("data-state");
-    if (state !== targetState) return "state:" + String(state);
+    if (state !== ${JSON.stringify(expectedState)}) return "state:" + String(state);
     element.scrollIntoView({ block: "center", inline: "center" });
     element.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window, button: 0 }));
     element.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window, button: 0 }));
@@ -261,14 +254,10 @@ const js = {
     };
     const visibleInputShells = Array.from(document.querySelectorAll('[data-testid="chat-input"]')).filter(isVisible);
     const activeInputShell = visibleInputShells[visibleInputShells.length - 1] ?? null;
-    const allButtons = Array.from(document.querySelectorAll('[data-testid="chat-send-button"]')).filter(isVisible);
-    const stopButton = allButtons.find((candidate) => candidate.getAttribute("data-state") === "stop");
     const scopedButtons = activeInputShell ? Array.from(activeInputShell.querySelectorAll('[data-testid="chat-send-button"]')).filter(isVisible) : [];
-    const buttons = stopButton
-      ? [stopButton]
-      : scopedButtons.length > 0
-        ? scopedButtons
-        : allButtons;
+    const buttons = scopedButtons.length > 0
+      ? scopedButtons
+      : Array.from(document.querySelectorAll('[data-testid="chat-send-button"]')).filter(isVisible);
     const scopedEditors = activeInputShell ? Array.from(activeInputShell.querySelectorAll(${JSON.stringify(CHAT_INPUT_SELECTOR)})).filter(isVisible) : [];
     const editors = scopedEditors.length > 0
       ? scopedEditors

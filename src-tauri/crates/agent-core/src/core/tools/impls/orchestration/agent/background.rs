@@ -276,12 +276,13 @@ impl AgentTool {
 
         format!(
             "Subagent '{}' launched in background.\n\
-             Handle: {}\n\
-             The subagent has its own session and you will be notified automatically \
-             when it finishes (via the Background Jobs reminder). Do NOT call \
-             await_output repeatedly to poll. Continue with other work.\n\
-             If you need to check progress before completion, use \
-             await_output(command=\"monitor\", handles=[\"{}\"]).",
+             Session ID: {}\n\
+             You will be notified automatically when it finishes (via the Background Jobs system reminder).\n\
+             Do NOT call await_output repeatedly to poll.\n\
+             Proceed with other work. If you want to check the subagent's progress, \
+             you can query its session data:\n  \
+             sqlite3 ~/.orgii/sessions.db \"SELECT role, substr(content,1,200), tool_name \
+             FROM agent_messages WHERE session_id='{}' ORDER BY sequence DESC LIMIT 10\"",
             agent.name, subagent_session_id, subagent_session_id
         )
     }
