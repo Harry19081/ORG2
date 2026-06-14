@@ -115,7 +115,10 @@ export function useChatFooterSpacer(
         CHAT_FOOTER_SPACER.MIN_WHEN_FULL_PX +
         bottomInsetRef.current +
         CHAT_FOOTER_SPACER.BOTTOM_GUARD_PX;
-      if (Math.abs(minForOverlay - footerSpacerHeightRef.current) >= 8) {
+      if (
+        Math.abs(minForOverlay - footerSpacerHeightRef.current) >=
+        CHAT_FOOTER_SPACER.UPDATE_THRESHOLD_PX
+      ) {
         footerSpacerHeightRef.current = minForOverlay;
         setFooterSpacerHeight(minForOverlay);
       }
@@ -145,7 +148,10 @@ export function useChatFooterSpacer(
         reservePinToTop,
       })
     );
-    if (Math.abs(next - footerSpacerHeightRef.current) >= 8) {
+    if (
+      Math.abs(next - footerSpacerHeightRef.current) >=
+      CHAT_FOOTER_SPACER.UPDATE_THRESHOLD_PX
+    ) {
       footerSpacerHeightRef.current = next;
       setFooterSpacerHeight(next);
     }

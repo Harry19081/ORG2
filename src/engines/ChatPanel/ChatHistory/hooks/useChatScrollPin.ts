@@ -25,6 +25,8 @@ export interface UseChatScrollPinOptions {
    * read/write this ref so they coordinate pin intent without re-renders.
    */
   pinLastGroupRef: MutableRefObject<boolean>;
+  /** Updated when the scroller receives a real user scroll, not a programmatic correction. */
+  manualScrollAtRef?: MutableRefObject<number>;
   onPinToTopChange?: (active: boolean) => void;
   /**
    * Fallback scroll container for the static rendering path (≤12 items,
@@ -38,6 +40,8 @@ export interface UseChatScrollPinReturn {
   scrollToEnd: () => void;
   programmaticScrollAtRef: MutableRefObject<number>;
 }
+
+const MANUAL_SCROLL_REPIN_SUPPRESS_MS = 450;
 
 /**
  * Manages three scroll-pin behaviours for ChatHistory:
@@ -56,24 +60,34 @@ export function useChatScrollPin({
   activeId,
   groupCounts,
   totalFlatItems,
-  footerSpacerHeight,
+  footerSpacerHeight: _footerSpacerHeight,
   sessionLoadStatus: _sessionLoadStatus,
   virtuosoRef,
   virtuosoScrollerRef,
-  atBottom,
-  isPendingCancelRef,
-  isContentOverflowingRef,
+  atBottom: _atBottom,
+  isPendingCancelRef: _isPendingCancelRef,
+  isContentOverflowingRef: _isContentOverflowingRef,
   optimizedChatHistoryLength,
   pinLastGroupRef,
+  manualScrollAtRef,
   onPinToTopChange,
   staticScrollerRef,
 }: UseChatScrollPinOptions): UseChatScrollPinReturn {
   const programmaticScrollAtRef = useRef(0);
+  const fallbackManualScrollAtRef = useRef(0);
+  const effectiveManualScrollAtRef =
+    manualScrollAtRef ?? fallbackManualScrollAtRef;
 
-  const atBottomRef = useRef(atBottom);
-  useLayoutEffect(() => {
-    atBottomRef.current = atBottom;
-  }, [atBottom]);
+  const getManualScrollAt = useCallback(
+    () => effectiveManualScrollAtRef.current,
+    [effectiveManualScrollAtRef]
+  );
+
+  const shouldSuppressManualScrollRepin = useCallback(() => {
+    return (
+      performance.now() - getManualScrollAt() < MANUAL_SCROLL_REPIN_SUPPRESS_MS
+    );
+  }, [getManualScrollAt]);
 
   // Keep a ref to onPinToTopChange so Effect 3's listener doesn't need
   // it in the dependency array (avoids re-registering the scroll listener
@@ -104,8 +118,10 @@ export function useChatScrollPin({
     }
   }, [totalFlatItems, virtuosoRef, staticScrollerRef]);
 
-  // Effect 1: re-pin last item when spacer converges or history grows;
-  // always scroll to end on session switch.
+  // Effect 1: always scroll to end on session switch.
+  // New-event tail following is owned by Virtuoso followOutput/useChatScroll;
+  // doing it here as well makes flushed event batches fight Virtuoso's own
+  // layout anchoring and produces visible up/down bounce.
   const prevActiveIdForScrollRef = useRef<string | null>(null);
   useLayoutEffect(() => {
     if (optimizedChatHistoryLength === 0) return;
@@ -125,58 +141,37 @@ export function useChatScrollPin({
       });
       return () => cancelAnimationFrame(rafId);
     }
-    if (pinLastGroupRef.current) return;
-    if (isPendingCancelRef.current) return;
-    if (!isContentOverflowingRef.current) return;
-    if (!atBottomRef.current) return;
-    const rafId = requestAnimationFrame(() => {
-      // Mark as programmatic so Effect 3's listener doesn't break the pin.
-      programmaticScrollAtRef.current = performance.now();
-      scrollToEnd();
-    });
-    return () => cancelAnimationFrame(rafId);
   }, [
     activeId,
-    footerSpacerHeight,
     optimizedChatHistoryLength,
     scrollToEnd,
-    isContentOverflowingRef,
-    isPendingCancelRef,
     onPinToTopChange,
     pinLastGroupRef,
   ]);
 
-  // Effect 2: scroll to bottom when a new user-message group is added.
+  // Effect 2: scroll to bottom only when a new user-message group is added.
   const prevGroupLenRef = useRef(groupCounts.length);
-  const prevFooterSpacerForPinRef = useRef(footerSpacerHeight);
 
   useEffect(() => {
     const prevGroupLen = prevGroupLenRef.current;
-    const prevSpacer = prevFooterSpacerForPinRef.current;
     prevGroupLenRef.current = groupCounts.length;
-    prevFooterSpacerForPinRef.current = footerSpacerHeight;
 
     const newGroupAdded = groupCounts.length > prevGroupLen;
-    const spacerGrew =
-      pinLastGroupRef.current && footerSpacerHeight > prevSpacer;
+    if (!newGroupAdded) return;
 
-    if (newGroupAdded) {
-      pinLastGroupRef.current = false;
-      onPinToTopChange?.(false);
-    }
-
-    if (newGroupAdded || spacerGrew) {
-      requestAnimationFrame(() => {
-        programmaticScrollAtRef.current = performance.now();
-        scrollToEnd();
-      });
-    }
+    pinLastGroupRef.current = false;
+    onPinToTopChange?.(false);
+    requestAnimationFrame(() => {
+      if (shouldSuppressManualScrollRepin()) return;
+      programmaticScrollAtRef.current = performance.now();
+      scrollToEnd();
+    });
   }, [
     groupCounts.length,
-    footerSpacerHeight,
     onPinToTopChange,
     pinLastGroupRef,
     scrollToEnd,
+    shouldSuppressManualScrollRepin,
   ]);
 
   // Effect 3: break pin intent on user-initiated scroll.
@@ -190,9 +185,11 @@ export function useChatScrollPin({
     if (!el) return;
     const PROGRAMMATIC_WINDOW_MS = 250;
     const handleScroll = (): void => {
-      if (!pinLastGroupRef.current) return;
-      const elapsed = performance.now() - programmaticScrollAtRef.current;
+      const now = performance.now();
+      const elapsed = now - programmaticScrollAtRef.current;
       if (elapsed < PROGRAMMATIC_WINDOW_MS) return;
+      effectiveManualScrollAtRef.current = now;
+      if (!pinLastGroupRef.current) return;
       pinLastGroupRef.current = false;
       onPinToTopChangeRef.current?.(false);
     };

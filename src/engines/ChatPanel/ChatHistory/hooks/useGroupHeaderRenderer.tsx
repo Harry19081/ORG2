@@ -42,23 +42,35 @@ export function useGroupHeaderRenderer({
   onEditSubmit,
 }: UseGroupHeaderRendererOptions) {
   return useCallback(
-    (groupIndex: number) => (
-      <GroupHeaderRenderer
-        groupIndex={groupIndex}
-        sourceGroupIndex={displaySourceGroupIndices[groupIndex]}
-        sourceGroupCount={sourceGroupCount}
-        groupHeaders={displayGroupHeaders}
-        groupMeta={displayGroupMeta}
-        groupCount={displayGroupCount}
-        hasPinnedContent={hasPinnedContent}
-        collapseLabelVariant={collapseLabelVariant}
-        hideCollapseTimeRange={turnPaginationEnabled}
-        collapseTailWhenIdle={collapseTailWhenIdle}
-        hideUserMessage={hideUserMessage}
-        turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
-        onEditSubmit={onEditSubmit}
-      />
-    ),
+    (groupIndex: number) => {
+      const header = displayGroupHeaders[groupIndex];
+      const meta = displayGroupMeta[groupIndex];
+      const headerKey =
+        meta?.turnId ??
+        header?.event?.id ??
+        header?.chunk_id ??
+        `group-${groupIndex}`;
+
+      return (
+        <GroupHeaderRenderer
+          key={headerKey}
+          groupIndex={groupIndex}
+          sourceGroupIndex={displaySourceGroupIndices[groupIndex]}
+          sourceGroupCount={sourceGroupCount}
+          groupHeaders={displayGroupHeaders}
+          groupMeta={displayGroupMeta}
+          groupCount={displayGroupCount}
+          hasPinnedContent={hasPinnedContent}
+          collapseLabelVariant={collapseLabelVariant}
+          hideCollapseTimeRange={turnPaginationEnabled}
+          expandPinnedContentGap={!turnPaginationEnabled}
+          collapseTailWhenIdle={collapseTailWhenIdle}
+          hideUserMessage={hideUserMessage}
+          turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
+          onEditSubmit={onEditSubmit}
+        />
+      );
+    },
     [
       displaySourceGroupIndices,
       sourceGroupCount,

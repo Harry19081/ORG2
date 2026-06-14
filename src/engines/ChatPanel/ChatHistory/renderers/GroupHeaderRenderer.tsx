@@ -10,10 +10,84 @@ import UserChatItem from "../../ChatItems/UserChatItem";
 import ChatPinnedBars from "../../InputArea/components/ChatPinnedBars";
 import TurnCollapsePinBar from "../../InputArea/components/TurnCollapsePinBar";
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
+import { CHAT_FOOTER_SPACER } from "../config/chatFooterSpacer";
 import {
   type ChatGroupMeta,
   isTurnCollapseEligible,
 } from "../hooks/useChatGroups";
+
+function sameHeader(
+  left: OptimizedChatItem | null | undefined,
+  right: OptimizedChatItem | null | undefined
+): boolean {
+  if (left === right) return true;
+  if (!left || !right) return false;
+  return (
+    left.chunk_id === right.chunk_id &&
+    left.type === right.type &&
+    left.event?.id === right.event?.id &&
+    left.event?.displayText === right.event?.displayText &&
+    left.event?.createdAt === right.event?.createdAt
+  );
+}
+
+function sameMeta(
+  left: ChatGroupMeta | undefined,
+  right: ChatGroupMeta | undefined
+): boolean {
+  if (left === right) return true;
+  if (!left || !right) return false;
+  return (
+    left.turnId === right.turnId &&
+    left.durationMs === right.durationMs &&
+    left.itemCount === right.itemCount &&
+    left.previewText === right.previewText &&
+    left.startMs === right.startMs &&
+    left.endMs === right.endMs &&
+    left.unloadedTurn?.turnId === right.unloadedTurn?.turnId
+  );
+}
+
+function sameGroupHeaderProps(
+  previous: GroupHeaderRendererProps,
+  next: GroupHeaderRendererProps
+): boolean {
+  const previousHeader = previous.groupHeaders[previous.groupIndex];
+  const nextHeader = next.groupHeaders[next.groupIndex];
+  const previousMeta = previous.groupMeta[previous.groupIndex];
+  const nextMeta = next.groupMeta[next.groupIndex];
+  const previousHeaderKey =
+    previousMeta?.turnId ??
+    previousHeader?.event?.id ??
+    previousHeader?.chunk_id;
+  const nextHeaderKey =
+    nextMeta?.turnId ?? nextHeader?.event?.id ?? nextHeader?.chunk_id;
+  const previousSourceGroupIndex =
+    previous.sourceGroupIndex ?? previous.groupIndex;
+  const nextSourceGroupIndex = next.sourceGroupIndex ?? next.groupIndex;
+  const previousSourceGroupCount =
+    previous.sourceGroupCount ?? previous.groupCount;
+  const nextSourceGroupCount = next.sourceGroupCount ?? next.groupCount;
+
+  return (
+    previous.groupIndex === next.groupIndex &&
+    previousHeaderKey === nextHeaderKey &&
+    previousSourceGroupIndex === nextSourceGroupIndex &&
+    previousSourceGroupCount === nextSourceGroupCount &&
+    previous.hasPinnedContent === next.hasPinnedContent &&
+    previous.collapseLabelVariant === next.collapseLabelVariant &&
+    previous.hideCollapseTimeRange === next.hideCollapseTimeRange &&
+    previous.expandPinnedContentGap === next.expandPinnedContentGap &&
+    previous.suppressRoundGap === next.suppressRoundGap &&
+    previous.collapseTailWhenIdle === next.collapseTailWhenIdle &&
+    previous.hideUserMessage === next.hideUserMessage &&
+    previous.turnCollapseInteractionAtRef ===
+      next.turnCollapseInteractionAtRef &&
+    previous.onEditSubmit === next.onEditSubmit &&
+    sameHeader(previousHeader, nextHeader) &&
+    sameMeta(previousMeta, nextMeta)
+  );
+}
 
 export interface GroupHeaderRendererProps {
   groupIndex: number;
@@ -28,6 +102,10 @@ export interface GroupHeaderRendererProps {
   collapseLabelVariant?: "agent" | "agents";
   /** Hide the turn time range when another surface already shows it. */
   hideCollapseTimeRange?: boolean;
+  /** Adds extra space below last-turn pinned content before body events. */
+  expandPinnedContentGap?: boolean;
+  /** Suppresses the inter-round top gap for headers rendered outside the list. */
+  suppressRoundGap?: boolean;
   /** Allows the latest turn to show the collapse bar after the session idles. */
   collapseTailWhenIdle?: boolean;
   /**
@@ -64,6 +142,8 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
     hasPinnedContent,
     collapseLabelVariant = "agent",
     hideCollapseTimeRange = false,
+    expandPinnedContentGap = false,
+    suppressRoundGap = false,
     collapseTailWhenIdle = false,
     hideUserMessage = false,
     turnCollapseInteractionAtRef,
@@ -123,10 +203,17 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
     );
 
     const headerPaddingBottomClass = showCollapseBar && turnId ? "" : "pb-2";
+    const roundGap =
+      groupIndex > 0 && !suppressRoundGap ? CHAT_FOOTER_SPACER.ROUND_GAP_PX : 0;
+    const pinnedContentBodyGap =
+      showPinnedBars && expandPinnedContentGap
+        ? CHAT_FOOTER_SPACER.PINNED_CONTENT_BODY_GAP_PX
+        : 0;
 
     return (
       <div
         className={`${CHAT_ITEM_PADDING_X} ${DETAIL_PANEL_TOKENS.contentWidth} bg-chat-pane ${headerPaddingBottomClass}`.trim()}
+        style={roundGap > 0 ? { marginTop: roundGap } : undefined}
       >
         {/*
           User message and any pinned bars sit directly on the chat
@@ -141,6 +228,11 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
               showPinnedBars
                 ? "flex flex-col rounded-[12px] bg-chat-container"
                 : "contents"
+            }
+            style={
+              pinnedContentBodyGap > 0
+                ? { marginBottom: pinnedContentBodyGap }
+                : undefined
             }
           >
             <UserChatItem
@@ -170,7 +262,8 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
         )}
       </div>
     );
-  }
+  },
+  sameGroupHeaderProps
 );
 
 GroupHeaderRenderer.displayName = "GroupHeaderRenderer";

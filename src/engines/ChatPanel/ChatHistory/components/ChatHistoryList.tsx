@@ -18,16 +18,126 @@ import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { PlanningFooter } from "@src/engines/ChatPanel/blocks/primitives";
 
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
-import type { ChatGroupMeta } from "../hooks";
+import { CHAT_FOOTER_SPACER } from "../config/chatFooterSpacer";
 import { GroupItemRenderer } from "../renderers";
 
 const STATIC_RENDER_ITEM_LIMIT = 24;
 
+function sameNumberArray(
+  left: readonly number[],
+  right: readonly number[]
+): boolean {
+  if (left === right) return true;
+  if (left.length !== right.length) return false;
+  return left.every((value, index) => value === right[index]);
+}
+
+function sameNullableNumberArray(
+  left: readonly (number | null)[],
+  right: readonly (number | null)[]
+): boolean {
+  if (left === right) return true;
+  if (left.length !== right.length) return false;
+  return left.every((value, index) => value === right[index]);
+}
+
+type EventSummary = NonNullable<OptimizedChatItem["event"]>;
+
+function sameEventSummary(
+  left: EventSummary | undefined,
+  right: EventSummary | undefined
+): boolean {
+  if (left === right) return true;
+  if (!left || !right) return false;
+  return (
+    left.id === right.id &&
+    left.displayText === right.displayText &&
+    left.displayStatus === right.displayStatus &&
+    left.displayVariant === right.displayVariant
+  );
+}
+
+function sameEventList(
+  left: readonly EventSummary[] | undefined,
+  right: readonly EventSummary[] | undefined
+): boolean {
+  if (left === right) return true;
+  if (!left || !right) return false;
+  if (left.length !== right.length) return false;
+  return left.every((leftEvent, index) =>
+    sameEventSummary(leftEvent, right[index])
+  );
+}
+
+function sameFlatItems(
+  left: readonly OptimizedChatItem[],
+  right: readonly OptimizedChatItem[]
+): boolean {
+  if (left === right) return true;
+  if (left.length !== right.length) return false;
+  return left.every((leftItem, index) => {
+    const rightItem = right[index];
+    return (
+      rightItem !== undefined &&
+      leftItem.chunk_id === rightItem.chunk_id &&
+      leftItem.type === rightItem.type &&
+      leftItem.consolidatedParts === rightItem.consolidatedParts &&
+      leftItem.repeatedErrorCount === rightItem.repeatedErrorCount &&
+      leftItem.structuralOnly === rightItem.structuralOnly &&
+      sameEventSummary(leftItem.event, rightItem.event) &&
+      sameEventList(leftItem.readFileEvents, rightItem.readFileEvents) &&
+      sameEventList(
+        leftItem.activityStackGroup?.events,
+        rightItem.activityStackGroup?.events
+      ) &&
+      sameEventList(
+        leftItem.actionSummaryItems?.map((item) => item.event),
+        rightItem.actionSummaryItems?.map((item) => item.event)
+      )
+    );
+  });
+}
+
+function sameChatHistoryListProps(
+  previous: ChatHistoryListProps,
+  next: ChatHistoryListProps
+): boolean {
+  return (
+    sameFlatItems(previous.flatItems, next.flatItems) &&
+    sameNumberArray(previous.groupCounts, next.groupCounts) &&
+    previous.totalFlatItems === next.totalFlatItems &&
+    sameNullableNumberArray(
+      previous.lastAssistantFlatIndexPerItem,
+      next.lastAssistantFlatIndexPerItem
+    ) &&
+    previous.codeBlockContainerWidth === next.codeBlockContainerWidth &&
+    Math.abs(previous.footerSpacerHeight - next.footerSpacerHeight) <
+      CHAT_FOOTER_SPACER.UPDATE_THRESHOLD_PX &&
+    previous.planningIndicatorCount === next.planningIndicatorCount &&
+    previous.planningShowSlowHint === next.planningShowSlowHint &&
+    previous.planningVariantIndex === next.planningVariantIndex &&
+    previous.virtuosoRef === next.virtuosoRef &&
+    previous.virtuosoDataKey === next.virtuosoDataKey &&
+    previous.getIsWpGeneWorking === next.getIsWpGeneWorking &&
+    previous.getIsExploring === next.getIsExploring &&
+    previous.followOutput === next.followOutput &&
+    previous.renderGroupHeader === next.renderGroupHeader &&
+    previous.onAtBottomStateChange === next.onAtBottomStateChange &&
+    previous.onRangeChanged === next.onRangeChanged &&
+    previous.onEndReached === next.onEndReached &&
+    previous.onRegenerate === next.onRegenerate &&
+    previous.onSubmit === next.onSubmit &&
+    previous.onSkip === next.onSkip &&
+    previous.onEditUserMessage === next.onEditUserMessage &&
+    previous.ChatScroller === next.ChatScroller &&
+    previous.staticScrollerRef === next.staticScrollerRef &&
+    previous.newEventDividerLabel === next.newEventDividerLabel
+  );
+}
+
 interface ChatHistoryListProps {
   flatItems: OptimizedChatItem[];
   groupCounts: number[];
-  groupHeaders: (OptimizedChatItem | null)[];
-  groupMeta: ChatGroupMeta[];
   totalFlatItems: number;
   lastAssistantFlatIndexPerItem: (number | null)[];
   codeBlockContainerWidth: number;
@@ -215,7 +325,11 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = memo(
     );
 
     const renderGroupHeader = React.useCallback(
-      (groupIndex: number) => renderGroupHeaderProp(groupIndex),
+      (groupIndex: number) => (
+        <div className="relative z-[60]">
+          {renderGroupHeaderProp(groupIndex)}
+        </div>
+      ),
       [renderGroupHeaderProp]
     );
 
@@ -238,7 +352,7 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = memo(
           >
             {staticGroups.map(({ groupIndex, itemIndexes }) => (
               <div key={`static-group-${groupIndex}`} className="relative">
-                <div className="sticky top-0 z-20">
+                <div className="sticky top-0 z-[60]">
                   {renderGroupHeaderProp(groupIndex)}
                 </div>
                 {itemIndexes.map((itemFlatIndex) => {
@@ -316,7 +430,8 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = memo(
         components={virtuosoComponents}
       />
     );
-  }
+  },
+  sameChatHistoryListProps
 );
 
 ChatHistoryList.displayName = "ChatHistoryList";

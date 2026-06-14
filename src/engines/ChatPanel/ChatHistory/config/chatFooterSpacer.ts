@@ -20,6 +20,12 @@ export const CHAT_FOOTER_SPACER = {
   BOTTOM_GUARD_PX: 96,
   /** Cap pin-to-top slack so short latest rounds do not create a full viewport void. */
   MAX_PIN_RESERVE_PX: 200,
+  /** Ignore sub-pixel / tiny remeasure noise, but keep spacer state and rendering in sync. */
+  UPDATE_THRESHOLD_PX: 8,
+  /** Gap before every non-first turn header so adjacent rounds do not visually merge. */
+  ROUND_GAP_PX: 96,
+  /** Gap between the last-turn pinned bars and the body while the header is outside turn pagination. */
+  PINNED_CONTENT_BODY_GAP_PX: 100,
 } as const;
 
 export function computeChatFooterSpacerHeight(params: {

@@ -494,9 +494,10 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
 
   const visibleRangeEndRef = useRef(0);
 
-  // Shared pin intent ref — owned here, passed into both scroll hooks so
+  // Shared scroll intent refs — owned here, passed into scroll hooks so
   // they coordinate without re-renders.
   const pinLastGroupRef = useRef(false);
+  const manualScrollAtRef = useRef(0);
   const turnCollapseInteractionAtRef = useRef(0);
   const [reservePinToTop, setReservePinToTop] = React.useState(false);
   const handlePinToTopChange = useCallback((active: boolean) => {
@@ -522,18 +523,19 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       bottomInset,
       reservePinToTop,
     });
-
   // --- Scroll ---
   const { handleAtBottomStateChange, scrollToBottom, followOutput } =
     useChatScroll({
       optimizedChatHistoryLength: displayTotalFlatItems,
       virtuosoRef,
+      virtuosoScrollerRef,
       atBottom,
       setAtBottom,
       setIsChatScrolledToBottom,
       isPendingCancelRef,
       visibleRangeEndRef,
       pinLastGroupRef,
+      manualScrollAtRef,
       turnCollapseInteractionAtRef,
       isContentOverflowingRef,
       activeSessionId: activeId,
@@ -588,6 +590,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     isContentOverflowingRef,
     optimizedChatHistoryLength: optimizedChatHistory.length,
     pinLastGroupRef,
+    manualScrollAtRef,
     onPinToTopChange: handlePinToTopChange,
     staticScrollerRef,
   });
@@ -595,8 +598,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const showScrollToBottom =
     !atBottom &&
     displayTotalFlatItems > 0 &&
-    (visibleRange.endIndex < displayTotalFlatItems - 1 ||
-      footerSpacerHeight > 0);
+    visibleRange.endIndex < displayTotalFlatItems - 1;
 
   // Notify parent of scroll-nav state changes
   React.useEffect(() => {
@@ -709,10 +711,17 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     turnCollapseInteractionAtRef,
     onEditSubmit: handleEditUserMessage,
   });
-  const pinnedTurnHeader =
-    turnPaginationEnabled && !turnPageListOpen && !agentOrgOverviewOpen
-      ? renderGroupHeader(0)
-      : null;
+  const pinnedTurnHeader = useMemo(() => {
+    if (!turnPaginationEnabled || turnPageListOpen || agentOrgOverviewOpen) {
+      return null;
+    }
+    return <div className="relative z-[70]">{renderGroupHeader(0)}</div>;
+  }, [
+    agentOrgOverviewOpen,
+    renderGroupHeader,
+    turnPageListOpen,
+    turnPaginationEnabled,
+  ]);
   const showTurnContextRow =
     turnPaginationEnabled ||
     Boolean(agentOrgCurrentMemberName) ||
@@ -854,8 +863,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
                 <ChatHistoryList
                   flatItems={displayFlatItems}
                   groupCounts={displayGroupCounts}
-                  groupHeaders={displayGroupHeaders}
-                  groupMeta={displayGroupMeta}
                   totalFlatItems={displayTotalFlatItems}
                   lastAssistantFlatIndexPerItem={
                     displayLastAssistantFlatIndexPerItem
