@@ -231,10 +231,15 @@ fn truncate_entrypoint(content: &str) -> String {
     let mut result = truncated_lines.join("\n");
 
     let was_byte_truncated = if result.len() > MAX_ENTRYPOINT_BYTES {
-        if let Some(last_nl) = result[..MAX_ENTRYPOINT_BYTES].rfind('\n') {
+        // MAX_ENTRYPOINT_BYTES can land inside a multi-byte UTF-8 char (em-dash,
+        // CJK, emoji). Snap the budget down to the nearest char boundary first;
+        // both `result[..limit]` and `String::truncate(limit)` panic otherwise.
+        let safe_limit = crate::utils::safe_truncate_utf8(&result, MAX_ENTRYPOINT_BYTES).len();
+        // `rfind('\n')` yields an ASCII '\n' index, always a valid boundary.
+        if let Some(last_nl) = result[..safe_limit].rfind('\n') {
             result.truncate(last_nl);
         } else {
-            result.truncate(MAX_ENTRYPOINT_BYTES);
+            result.truncate(safe_limit);
         }
         true
     } else {
@@ -425,6 +430,75 @@ mod tests {
         assert!(result_lines.len() > 200);
         assert!(result.contains("[MEMORY.md truncated"));
         assert!(result.contains("200 line limit"));
+    }
+
+    #[test]
+    fn test_truncate_entrypoint_no_truncation() {
+        let content = "- [A](a.md)\n- [B](b.md)\n- [C](c.md)";
+        let result = truncate_entrypoint(content);
+        assert_eq!(result, content);
+        assert!(!result.contains("truncated"));
+    }
+
+    #[test]
+    fn test_truncate_entrypoint_line_limit() {
+        let content: String = (1..=MAX_ENTRYPOINT_LINES + 50)
+            .map(|i| format!("line {}", i))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let result = truncate_entrypoint(&content);
+        assert!(result.contains("[MEMORY.md truncated"));
+        assert!(result.contains("line limit"));
+    }
+
+    // Regression: MAX_ENTRYPOINT_BYTES landing inside a multi-byte UTF-8 char
+    // used to panic ("byte index 25000 is not a char boundary; it is inside
+    // '—'") via both `result[..MAX_ENTRYPOINT_BYTES]` and `String::truncate`.
+    #[test]
+    fn test_truncate_entrypoint_byte_limit_mid_char_no_panic() {
+        // Em-dash '—' is 3 bytes; no string of them lands a boundary exactly on
+        // 25_000, so the byte limit always falls inside a char. No newlines, so
+        // the rfind('\n') branch falls through to truncate(safe_limit).
+        let content = "—".repeat(MAX_ENTRYPOINT_BYTES / 3 + 100);
+        assert!(content.len() > MAX_ENTRYPOINT_BYTES);
+        assert!(!content.is_char_boundary(MAX_ENTRYPOINT_BYTES));
+
+        let result = truncate_entrypoint(&content);
+
+        // Must not panic, must be valid UTF-8, and the truncated body (before
+        // the appended notice) must be at or under the byte budget.
+        assert!(std::str::from_utf8(result.as_bytes()).is_ok());
+        assert!(result.contains("[MEMORY.md truncated"));
+        assert!(result.contains("byte limit"));
+        let body = result.split("\n\n[MEMORY.md truncated").next().unwrap();
+        assert!(body.len() <= MAX_ENTRYPOINT_BYTES);
+        assert!(body.is_char_boundary(body.len()));
+    }
+
+    // Same panic class but with CJK content and embedded newlines so the
+    // rfind('\n') branch (slice of a non-boundary budget) is exercised. Uses
+    // few, long lines to stay under the line cap and trip the byte cap instead.
+    #[test]
+    fn test_truncate_entrypoint_byte_limit_cjk_with_newlines_no_panic() {
+        // 300-byte CJK lines (100 chars * 3 bytes), well under the 200-line cap
+        // but together far over the 25_000-byte budget.
+        let line = "你".repeat(100);
+        let content: String = std::iter::repeat(line.as_str())
+            .take(100)
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert!(content.lines().count() <= MAX_ENTRYPOINT_LINES);
+        assert!(content.len() > MAX_ENTRYPOINT_BYTES);
+        assert!(!content.is_char_boundary(MAX_ENTRYPOINT_BYTES));
+
+        let result = truncate_entrypoint(&content);
+
+        assert!(std::str::from_utf8(result.as_bytes()).is_ok());
+        assert!(result.contains("[MEMORY.md truncated"));
+        assert!(result.contains("byte limit"));
+        let body = result.split("\n\n[MEMORY.md truncated").next().unwrap();
+        assert!(body.len() <= MAX_ENTRYPOINT_BYTES);
+        assert!(body.is_char_boundary(body.len()));
     }
 
     #[test]
