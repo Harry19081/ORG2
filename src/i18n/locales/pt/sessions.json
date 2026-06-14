@@ -957,7 +957,7 @@
     "explore": "Explorar",
     "readFile": "Ler arquivo",
     "readFileRunning": "Lendo",
-    "readFileDone": "Lido",
+    "readFileDone": "Ler",
     "readFileFailed": "Tentou ler",
     "readFileSkillRunning": "Usando skill",
     "readFileSkillDone": "Usar skill",

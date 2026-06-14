@@ -937,7 +937,7 @@
     "explore": "Explorer",
     "readFile": "Lire le fichier",
     "readFileRunning": "Lecture",
-    "readFileDone": "Lu",
+    "readFileDone": "Lire",
     "readFileFailed": "Tentative de lecture",
     "readFileSkillRunning": "Utilisation de la skill",
     "readFileSkillDone": "Utiliser la skill",

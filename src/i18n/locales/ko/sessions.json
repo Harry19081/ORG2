@@ -937,7 +937,7 @@
     "explore": "탐색",
     "readFile": "파일 읽기",
     "readFileRunning": "읽는 중",
-    "readFileDone": "읽음",
+    "readFileDone": "읽기",
     "readFileFailed": "읽기 시도",
     "readFileSkillRunning": "skill 사용 중",
     "readFileSkillDone": "skill 사용",

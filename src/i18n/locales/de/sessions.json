@@ -937,7 +937,7 @@
     "explore": "Erkunden",
     "readFile": "Datei lesen",
     "readFileRunning": "Wird gelesen",
-    "readFileDone": "Gelesen",
+    "readFileDone": "Lesen",
     "readFileFailed": "Leseversuch",
     "readFileSkillRunning": "Skill wird verwendet",
     "readFileSkillDone": "Skill verwenden",

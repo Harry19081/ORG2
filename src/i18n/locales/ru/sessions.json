@@ -943,7 +943,7 @@
     "explore": "Исследовать",
     "readFile": "Чтение файла",
     "readFileRunning": "Чтение",
-    "readFileDone": "Прочитано",
+    "readFileDone": "Читать",
     "readFileFailed": "Попытка прочитать",
     "readFileSkillRunning": "Использование skill",
     "readFileSkillDone": "Использовать skill",

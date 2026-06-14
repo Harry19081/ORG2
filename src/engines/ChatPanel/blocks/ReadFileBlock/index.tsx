@@ -13,7 +13,10 @@ import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
 import { extractFileData } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
-import { useToolLabelText } from "@src/engines/SessionCore/rendering/registry";
+import {
+  statusToLifecycle,
+  useToolLabelText,
+} from "@src/engines/SessionCore/rendering/registry";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
 import { getFileName } from "@src/util/file/pathUtils";
 import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
@@ -61,8 +64,9 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
       : isFailed
         ? "skill_failed"
         : "skill_done";
+  const fileTitle = useToolLabelText("read_file", statusToLifecycle(status));
   const skillTitle = useToolLabelText("read_file", skillLabelState);
-  const title = isSkill ? skillTitle : props.title || "Read";
+  const title = isSkill ? skillTitle : fileTitle;
 
   const {
     isHeaderHovered,
@@ -111,7 +115,7 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
         />
         <EventBlockHeaderTitle
           isLoading={isLoading}
-          className={isFailed ? "text-text-3" : undefined}
+          className={isFailed ? "text-text-3" : "text-text-1"}
         >
           {title}
         </EventBlockHeaderTitle>
@@ -129,7 +133,7 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
           )}
           <span
             data-testid="read-file-path"
-            className={`min-w-0 truncate ${isLoading ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}` : ""}`.trim()}
+            className={`min-w-0 truncate ${isLoading ? `font-bold ${EVENT_LOADING_SHIMMER_TEXT_CLASSES}` : isFailed ? "text-text-3" : "text-text-1"}`.trim()}
           >
             {displayName}
           </span>

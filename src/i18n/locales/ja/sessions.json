@@ -937,7 +937,7 @@
     "explore": "探索",
     "readFile": "ファイルを読み込む",
     "readFileRunning": "読み取り中",
-    "readFileDone": "読み取りました",
+    "readFileDone": "読み取り",
     "readFileFailed": "読み取りを試行",
     "readFileSkillRunning": "skill を使用中",
     "readFileSkillDone": "skill を使用",

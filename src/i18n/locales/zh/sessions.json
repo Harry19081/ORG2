@@ -941,7 +941,7 @@
     "explore": "探索",
     "readFile": "读取文件",
     "readFileRunning": "正在读取",
-    "readFileDone": "阅读文件",
+    "readFileDone": "阅读",
     "readFileFailed": "尝试读取",
     "readFileSkillRunning": "正在使用 skill",
     "readFileSkillDone": "使用 skill",
