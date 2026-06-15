@@ -484,6 +484,36 @@
     "inviteReady": "邀請已產生",
     "copyInvite": "複製邀請",
     "copiedInvite": "已複製",
-    "setupMode": "設定模式"
+    "setupMode": "設定模式",
+    "hubSetupTitle": "如何設定 Cloudflare hub URL",
+    "orgDemoTitle": "Org",
+    "orgNotFound": "找不到 Org",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "成員",
+      "chat": "群組聊天"
+    },
+    "stats": {
+      "members": "成員",
+      "sessionsToday": "今日 Sessions",
+      "totalSessions": "Sessions 總數",
+      "activeToday": "今日活躍"
+    },
+    "status": {
+      "connected": "已連線",
+      "offline": "離線",
+      "activeToday": "今日活躍",
+      "idle": "閒置"
+    },
+    "chat": {
+      "empty": "尚無群組訊息",
+      "placeholder": "分享更新或連結...",
+      "send": "傳送",
+      "humanOnly": "只有 Human 身分可以在群組聊天中發言。",
+      "hint": "Humans 可以在這裡交談，並向 Org 分享連結。"
+    },
+    "sessionStatusActive": "活躍",
+    "localHuman": "本機 Human",
+    "backToOrg": "返回 Org"
   }
 }

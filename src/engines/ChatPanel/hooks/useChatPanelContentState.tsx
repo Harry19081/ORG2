@@ -8,6 +8,7 @@ import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelContentMode,
   type ChatPanelCreateTarget,
+  type ChatPanelSelectedCollabOrg,
   type ChatPanelSelectedProject,
   type ChatPanelSelectedWorkItem,
   type ChatPanelSelectedWorkspace,
@@ -24,6 +25,7 @@ interface UseChatPanelContentStateOptions {
   exploreOpen: boolean;
   isChatFocus: boolean;
   panelTitle: string;
+  selectedCollabOrg: ChatPanelSelectedCollabOrg | null;
   selectedProject: ChatPanelSelectedProject | null;
   selectedWorkItem: ChatPanelSelectedWorkItem | null;
   selectedWorkspace: ChatPanelSelectedWorkspace | null;
@@ -47,6 +49,7 @@ export interface ChatPanelContentState {
   isWorkItemTarget: boolean;
   showBenchmarkChildSessionContent: boolean;
   showBenchmarkSessionGroupContent: boolean;
+  showCollabOrgContent: boolean;
   showCreatorPresenceInHeader: boolean;
   showEmptyChatFocusRestoreButton: boolean;
   showExploreContent: boolean;
@@ -78,6 +81,7 @@ export function useChatPanelContentState({
   exploreOpen,
   isChatFocus,
   panelTitle,
+  selectedCollabOrg,
   selectedProject,
   selectedWorkItem,
   selectedWorkspace,
@@ -127,6 +131,14 @@ export function useChatPanelContentState({
     !showWorkItemContent &&
     !showProjectContent &&
     !showWorkspaceDashboardContent;
+  const showCollabOrgContent =
+    Boolean(selectedCollabOrg) &&
+    !showBenchmarkSessionGroupContent &&
+    !showSessionContent &&
+    !showWorkItemContent &&
+    !showProjectContent &&
+    !showWorkspaceDashboardContent &&
+    !showExploreContent;
   const showWorkspaceOverviewContent =
     Boolean(selectedWorkspace) &&
     !showBenchmarkSessionGroupContent &&
@@ -134,7 +146,8 @@ export function useChatPanelContentState({
     !showWorkItemContent &&
     !showProjectContent &&
     !showWorkspaceDashboardContent &&
-    !showExploreContent;
+    !showExploreContent &&
+    !showCollabOrgContent;
   const showExplicitNonSessionContent =
     contentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION;
   const showNonSessionContent =
@@ -143,6 +156,7 @@ export function useChatPanelContentState({
     !showProjectContent &&
     !showWorkspaceDashboardContent &&
     !showExploreContent &&
+    !showCollabOrgContent &&
     !showWorkspaceOverviewContent &&
     !showSessionContent;
   const showPanelContent =
@@ -152,6 +166,7 @@ export function useChatPanelContentState({
     showProjectContent ||
     showWorkspaceDashboardContent ||
     showExploreContent ||
+    showCollabOrgContent ||
     showWorkspaceOverviewContent ||
     showExplicitNonSessionContent;
   const showHeader =
@@ -160,6 +175,7 @@ export function useChatPanelContentState({
     showProjectContent ||
     showWorkspaceDashboardContent ||
     showExploreContent ||
+    showCollabOrgContent ||
     showWorkspaceOverviewContent ||
     showExplicitNonSessionContent ||
     (active && (showSessionContent || viewMode === "workStation"));
@@ -186,11 +202,13 @@ export function useChatPanelContentState({
             ? t("navigation:launchpad.dashboard")
             : showExploreContent
               ? t("navigation:explore.title", { defaultValue: "Explore" })
-              : createTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG
-                ? t("navigation:collaboration.addOrg")
-                : selectedWorkspace
-                  ? workspaceTitle
-                  : panelTitle;
+              : showCollabOrgContent
+                ? t("navigation:collaboration.orgDemoTitle")
+                : createTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG
+                  ? t("navigation:collaboration.addOrg")
+                  : selectedWorkspace
+                    ? workspaceTitle
+                    : panelTitle;
 
   const handleBenchmarkSessionGroupHeaderClick = useCallback(() => {
     if (!benchmarkMasterSessionId) return;
@@ -231,6 +249,7 @@ export function useChatPanelContentState({
     </span>
   ) : showWorkspaceDashboardContent ||
     showExploreContent ||
+    showCollabOrgContent ||
     showWorkspaceOverviewContent ? (
     <span className={`${BENCHMARK_HEADER_SEGMENT_CLASS} cursor-default`}>
       <span className="min-w-0 truncate">{headerTitle}</span>
@@ -250,6 +269,7 @@ export function useChatPanelContentState({
     !selectedWorkItem &&
     !selectedProject &&
     !selectedWorkspace &&
+    !selectedCollabOrg &&
     !showExploreContent &&
     !isBenchmarkTarget &&
     !isProjectTarget &&
@@ -260,6 +280,7 @@ export function useChatPanelContentState({
     !selectedWorkItem &&
     !selectedProject &&
     !selectedWorkspace &&
+    !selectedCollabOrg &&
     !showExploreContent &&
     isWorkItemTarget &&
     sessionCreatorAvailable;
@@ -268,6 +289,7 @@ export function useChatPanelContentState({
     !selectedWorkItem &&
     !selectedProject &&
     !selectedWorkspace &&
+    !selectedCollabOrg &&
     !showExploreContent &&
     isProjectTarget &&
     sessionCreatorAvailable;
@@ -277,6 +299,7 @@ export function useChatPanelContentState({
     !selectedWorkItem &&
     !selectedProject &&
     !selectedWorkspace &&
+    !selectedCollabOrg &&
     !showExploreContent &&
     isChatFocus &&
     showChatFocusToggle;
@@ -290,6 +313,7 @@ export function useChatPanelContentState({
     isWorkItemTarget,
     showBenchmarkChildSessionContent,
     showBenchmarkSessionGroupContent,
+    showCollabOrgContent,
     showCreatorPresenceInHeader,
     showEmptyChatFocusRestoreButton,
     showExploreContent,

@@ -317,6 +317,15 @@ export const chatPanelSelectedWorkspaceAtom =
   atom<ChatPanelSelectedWorkspace | null>(null);
 chatPanelSelectedWorkspaceAtom.debugLabel = "chatPanelSelectedWorkspaceAtom";
 
+export interface ChatPanelSelectedCollabOrg {
+  orgId: string;
+  memberId?: string;
+}
+
+export const chatPanelSelectedCollabOrgAtom =
+  atom<ChatPanelSelectedCollabOrg | null>(null);
+chatPanelSelectedCollabOrgAtom.debugLabel = "chatPanelSelectedCollabOrgAtom";
+
 export const chatPanelWorkspaceDashboardOpenAtom = atom<boolean>(false);
 chatPanelWorkspaceDashboardOpenAtom.debugLabel =
   "chatPanelWorkspaceDashboardOpenAtom";
@@ -372,6 +381,7 @@ export const CHAT_PANEL_SURFACE_KIND = {
   WORKSPACE_DASHBOARD: "workspaceDashboard",
   WORKSPACE_EXPLORE: "workspaceExplore",
   WORKSPACE_OVERVIEW: "workspaceOverview",
+  COLLAB_ORG: "collabOrg",
 } as const;
 
 export type ChatPanelSurfaceKind =
@@ -397,6 +407,10 @@ export type ChatPanelSurfaceState =
       kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW;
       workspace: ChatPanelSelectedWorkspace;
       tab: WorkspaceOverviewTab;
+    }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.COLLAB_ORG;
+      collabOrg: ChatPanelSelectedCollabOrg;
     };
 
 export type ChatPanelNavigateCommand =
@@ -425,6 +439,10 @@ export type ChatPanelNavigateCommand =
       kind: typeof CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW;
       workspace: ChatPanelSelectedWorkspace;
       tab?: WorkspaceOverviewTab;
+    }
+  | {
+      kind: typeof CHAT_PANEL_SURFACE_KIND.COLLAB_ORG;
+      collabOrg: ChatPanelSelectedCollabOrg;
     };
 
 type SetAtom = <Value, Args extends unknown[], Result>(
@@ -436,6 +454,7 @@ function resetChatPanelSurfaceState(set: SetAtom): void {
   set(chatPanelSelectedWorkItemAtom, null);
   set(chatPanelSelectedProjectAtom, null);
   set(chatPanelSelectedWorkspaceAtom, null);
+  set(chatPanelSelectedCollabOrgAtom, null);
   set(chatPanelWorkspaceDashboardOpenAtom, false);
   set(chatPanelExploreOpenAtom, false);
   set(chatPanelCreateProjectContextAtom, null);
@@ -502,6 +521,10 @@ export const chatPanelNavigateAtom = atom(
           command.tab ?? WORKSPACE_OVERVIEW_TAB.OVERVIEW
         );
         return;
+      case CHAT_PANEL_SURFACE_KIND.COLLAB_ORG:
+        set(chatPanelContentModeAtom, CHAT_PANEL_CONTENT_MODE.NON_SESSION);
+        set(chatPanelSelectedCollabOrgAtom, command.collabOrg);
+        return;
     }
   }
 );
@@ -540,6 +563,14 @@ export const activeChatPanelSurfaceAtom = atom<ChatPanelSurfaceState>((get) => {
       kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW,
       workspace: selectedWorkspace,
       tab: get(chatPanelWorkspaceOverviewTabAtom),
+    };
+  }
+
+  const selectedCollabOrg = get(chatPanelSelectedCollabOrgAtom);
+  if (selectedCollabOrg) {
+    return {
+      kind: CHAT_PANEL_SURFACE_KIND.COLLAB_ORG,
+      collabOrg: selectedCollabOrg,
     };
   }
 

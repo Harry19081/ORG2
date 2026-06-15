@@ -101,6 +101,17 @@ describe("buildColleaguesSidebarMenuItems", () => {
           createdAt: "2026-06-15T00:00:00.000Z",
         },
       ],
+      members: [
+        {
+          id: "member-1",
+          orgId: "org-1",
+          displayName: "Build Agent",
+          avatar: { initials: "BA", variant: "v" },
+          role: "member",
+          identityKind: "agent",
+          joinedAt: "2026-06-15T00:00:00.000Z",
+        },
+      ],
       remoteSessions: [
         {
           id: "remote-1",
@@ -118,6 +129,6 @@ describe("buildColleaguesSidebarMenuItems", () => {
       unknownOrgLabel: "Unknown org",
     });
 
-    expect(items[1]?.shortcut).toBe("agent · running");
+    expect(items[0]?.children?.[1]?.shortcut).toBe("agent · running");
   });
 });

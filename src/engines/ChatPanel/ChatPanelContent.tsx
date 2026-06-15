@@ -8,12 +8,14 @@ import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { BenchmarkPanel } from "@src/features/BenchmarkPanel";
 import type {
   ChatHistoryDisplayMode,
+  ChatPanelSelectedCollabOrg,
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
   ChatPanelSelectedWorkspace,
 } from "@src/store/ui/chatPanelAtom";
 
 import ChatView from "./ChatView";
+import CollabOrgPanelView from "./panels/CollabOrgPanelView";
 import ProjectPanelView from "./panels/ProjectPanelView";
 import WorkItemPanelView from "./panels/WorkItemPanelView";
 import WorkspaceDashboardPanelView from "./panels/WorkspaceDashboardPanelView";
@@ -29,10 +31,12 @@ interface ChatPanelContentProps {
   displayMode: ChatHistoryDisplayMode;
   paginationEnabled: boolean;
   position: "left" | "right";
+  selectedCollabOrg: ChatPanelSelectedCollabOrg | null;
   selectedProject: ChatPanelSelectedProject | null;
   selectedWorkItem: ChatPanelSelectedWorkItem | null;
   selectedWorkspace: ChatPanelSelectedWorkspace | null;
   showBenchmarkSessionGroupContent: boolean;
+  showCollabOrgContent: boolean;
   showEmptyChatFocusRestoreButton: boolean;
   showExploreContent: boolean;
   showPanelContent: boolean;
@@ -52,10 +56,12 @@ export function ChatPanelContent({
   displayMode,
   paginationEnabled,
   position,
+  selectedCollabOrg,
   selectedProject,
   selectedWorkItem,
   selectedWorkspace,
   showBenchmarkSessionGroupContent,
+  showCollabOrgContent,
   showEmptyChatFocusRestoreButton,
   showExploreContent,
   showPanelContent,
@@ -84,6 +90,8 @@ export function ChatPanelContent({
         <WorkspaceDashboardPanelView />
       ) : showExploreContent ? (
         <WorkspaceExplorePanelView />
+      ) : showCollabOrgContent && selectedCollabOrg ? (
+        <CollabOrgPanelView selectedCollabOrg={selectedCollabOrg} />
       ) : showWorkspaceOverviewContent && selectedWorkspace ? (
         <WorkspaceOverviewPanelView selectedWorkspace={selectedWorkspace} />
       ) : showSessionContent && currentSessionId ? (

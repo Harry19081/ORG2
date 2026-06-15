@@ -3,6 +3,7 @@ import React from "react";
 
 import { SESSION_CREATOR_LAUNCH_MODE } from "@src/features/SessionCreator/types";
 import CreateCollabOrgView from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
+import type { CreatedCollabOrgResult } from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
 import CreateProjectView from "@src/modules/ProjectManager/Projects/components/CreateProjectView";
 import CreateWorkItemView, {
   type CreatedWorkItemResult,
@@ -46,6 +47,7 @@ interface ChatPanelEmptyContentProps {
   handleCancelWorkItemCreate: () => void;
   handleCancelCollabOrgCreate: () => void;
   handleChatPanelProjectCreated: (options?: { keepOpen?: boolean }) => void;
+  handleChatPanelCollabOrgCreated: (result: CreatedCollabOrgResult) => void;
   handleChatPanelWorkItemCreated: (result?: CreatedWorkItemResult) => void;
   handleRegionNoticeChange: (notice: ChatPanelRegionNotice | null) => void;
   handleWorkItemAgentCreatorToggle: (enabled: boolean) => void;
@@ -73,6 +75,7 @@ export function ChatPanelEmptyContent({
   handleCancelWorkItemCreate,
   handleCancelCollabOrgCreate,
   handleChatPanelProjectCreated,
+  handleChatPanelCollabOrgCreated,
   handleChatPanelWorkItemCreated,
   handleRegionNoticeChange,
   handleWorkItemAgentCreatorToggle,
@@ -177,7 +180,10 @@ export function ChatPanelEmptyContent({
   if (createTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG) {
     return (
       <div className={`flex overflow-hidden ${creatorClassName}`}>
-        <CreateCollabOrgView onCancel={handleCancelCollabOrgCreate} />
+        <CreateCollabOrgView
+          onCancel={handleCancelCollabOrgCreate}
+          onCreated={handleChatPanelCollabOrgCreated}
+        />
       </div>
     );
   }

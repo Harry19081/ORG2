@@ -4,6 +4,7 @@ import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelContentMode,
   type ChatPanelCreateTarget,
+  type ChatPanelSelectedCollabOrg,
   type ChatPanelSelectedProject,
   type ChatPanelSelectedWorkItem,
   type ChatPanelSelectedWorkspace,
@@ -15,6 +16,10 @@ import {
   getSelectedMenuItemId,
   getSelectedPinnedMenuItemId,
 } from "../workstationSidebarData";
+import {
+  COLLAB_MEMBER_PREFIX,
+  COLLAB_ORG_SECTION_PREFIX,
+} from "./colleaguesSidebarMenuItems";
 import {
   FOLDERS_DASHBOARD_ITEM_ID,
   FOLDERS_EXPLORE_ITEM_ID,
@@ -28,6 +33,7 @@ interface ResolveSelectedMenuItemIdParams {
   activeSidebarKey: WorkstationSidebarKey;
   chatPanelContentMode: ChatPanelContentMode;
   chatPanelCreateTarget: ChatPanelCreateTarget;
+  chatPanelSelectedCollabOrg: ChatPanelSelectedCollabOrg | null;
   chatPanelSelectedProject: ChatPanelSelectedProject | null;
   chatPanelSelectedWorkItem: ChatPanelSelectedWorkItem | null;
   chatPanelSelectedWorkspace: ChatPanelSelectedWorkspace | null;
@@ -51,6 +57,7 @@ export function resolveSelectedMenuItemIds({
   activeSidebarKey,
   chatPanelContentMode,
   chatPanelCreateTarget,
+  chatPanelSelectedCollabOrg,
   chatPanelSelectedProject,
   chatPanelSelectedWorkItem,
   chatPanelSelectedWorkspace,
@@ -99,10 +106,15 @@ export function resolveSelectedMenuItemIds({
       : chatPanelWorkspaceDashboardOpen
         ? FOLDERS_DASHBOARD_ITEM_ID
         : "";
+  const selectedCollabOrgMenuItemId = chatPanelSelectedCollabOrg
+    ? chatPanelSelectedCollabOrg.memberId
+      ? `${COLLAB_MEMBER_PREFIX}${chatPanelSelectedCollabOrg.memberId}`
+      : `${COLLAB_ORG_SECTION_PREFIX}${chatPanelSelectedCollabOrg.orgId}`
+    : "";
   const resolvedColleaguesSelectedMenuItemId =
     chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG
       ? colleaguesSelectedMenuItemId || COLLAB_ADD_ORG_MENU_ITEM_ID
-      : "";
+      : selectedCollabOrgMenuItemId;
   const selectedMenuItemId =
     activeSidebarKey === "projects"
       ? resolvedProjectsSelectedMenuItemId

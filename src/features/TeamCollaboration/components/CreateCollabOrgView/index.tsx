@@ -4,11 +4,13 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import Markdown from "@src/components/MarkDown";
 import { DetailSplitLayout } from "@src/modules/ProjectManager/shared";
 import {
   SectionContainer,
   SectionRow,
 } from "@src/modules/shared/layouts/SectionLayout";
+import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 import SelectionGrid from "@src/scaffold/WizardSystem/primitives/SelectionGrid";
 import type { SelectionGridOption } from "@src/scaffold/WizardSystem/primitives/SelectionGrid";
 import {
@@ -37,13 +39,58 @@ const JOIN_MODE = "join";
 
 type CreateCollabOrgMode = typeof CREATE_MODE | typeof JOIN_MODE;
 
+const HUB_SETUP_MARKDOWN = `1. Create a hub project.
+
+\`\`\`bash
+npx @orgii/collab-hub init my-orgii-hub
+cd my-orgii-hub
+\`\`\`
+
+2. Install dependencies. The generated project installs only TypeScript dependencies and should report 0 vulnerabilities.
+
+\`\`\`bash
+npm install
+\`\`\`
+
+3. Log in to Cloudflare. The \`--yes\` flag skips the npm install confirmation prompt for agents and scripts.
+
+\`\`\`bash
+npx --yes wrangler@latest login
+\`\`\`
+
+4. Create the D1 database, then paste the returned \`database_id\` into \`wrangler.jsonc\`.
+
+\`\`\`bash
+npm run db:create
+\`\`\`
+
+5. Apply migrations. If Wrangler asks whether local dev should connect to the remote resource, press Enter to keep the default \`N\`.
+
+\`\`\`bash
+npm run db:migrate
+\`\`\`
+
+6. Deploy the Worker, copy the deployed Worker URL, and paste it here.
+
+\`\`\`bash
+npm run deploy
+\`\`\`
+
+Teammates can join with the generated invite link and do not need repo access or Cloudflare setup.`;
+
 const COLLAB_FORM_CONTROL_STYLE = {
   width: "100%",
   maxWidth: "100%",
 } as const;
 
+export interface CreatedCollabOrgResult {
+  org: CollabOrgRecord;
+  member: CollabMemberRecord;
+}
+
 export interface CreateCollabOrgViewProps {
   onCancel: () => void;
+  onCreated?: (result: CreatedCollabOrgResult) => void;
 }
 
 function upsertOrg(
@@ -81,6 +128,7 @@ function upsertInvite(
 
 const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
   onCancel,
+  onCreated,
 }) => {
   const { t } = useTranslation(["navigation", "common"]);
   const setCollabOrgs = useSetAtom(collabOrgsAtom);
@@ -138,6 +186,7 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
     async (org: CollabOrgRecord, member: CollabMemberRecord) => {
       setCollabOrgs((current) => upsertOrg(current, org));
       setCollabMembers((current) => upsertMember(current, member));
+      onCreated?.({ org, member });
       const invite = await createCollabInvite({
         hubUrl: org.hubUrl ?? hubUrl,
         orgId: org.id,
@@ -146,7 +195,7 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
       setCollabInvites((current) => upsertInvite(current, invite));
       setLatestInviteLink(invite.inviteLink);
     },
-    [hubUrl, setCollabInvites, setCollabMembers, setCollabOrgs]
+    [hubUrl, onCreated, setCollabInvites, setCollabMembers, setCollabOrgs]
   );
 
   const handleSubmit = useCallback(async () => {
@@ -175,6 +224,7 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
       });
       setCollabOrgs((current) => upsertOrg(current, result.org));
       setCollabMembers((current) => upsertMember(current, result.member));
+      onCreated?.(result);
       setLatestInviteLink("");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -188,6 +238,7 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
     hubUrl,
     inviteInput,
     mode,
+    onCreated,
     orgName,
     setCollabMembers,
     setCollabOrgs,
@@ -206,10 +257,10 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
       hideHeader
       leftContent={
         <div
-          className="min-h-0 flex-1 overflow-auto py-4"
+          className="h-full min-h-0 overflow-y-auto py-4"
           data-testid="create-collab-org-body"
         >
-          <div className="mx-auto flex h-full w-full max-w-[932px] flex-col gap-4 px-4">
+          <div className="mx-auto flex w-full max-w-[932px] flex-col gap-4 px-4 pb-6">
             <SectionContainer color="chatPanelInfo">
               <SectionRow
                 label={t("navigation:collaboration.setupMode")}
@@ -288,6 +339,23 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
                 />
               </SectionRow>
             </SectionContainer>
+
+            <CollapsibleSection
+              title={t("navigation:collaboration.hubSetupTitle")}
+              defaultOpen={false}
+              compact
+              headerRowClassName="h-5 px-1"
+              titleButtonClassName="text-[12px] font-medium text-text-2 hover:text-text-1"
+              chevronSize={12}
+            >
+              <div className="cursor-text select-text px-1 text-[12px] leading-[18px] text-text-2">
+                <Markdown
+                  textContent={HUB_SETUP_MARKDOWN}
+                  useChatCodeBlock
+                  skipPreprocess
+                />
+              </div>
+            </CollapsibleSection>
 
             {mode === JOIN_MODE && (
               <SectionContainer color="chatPanelInfo">

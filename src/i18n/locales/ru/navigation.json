@@ -393,6 +393,36 @@
     "inviteReady": "Приглашение готово",
     "copyInvite": "Копировать приглашение",
     "copiedInvite": "Скопировано",
-    "setupMode": "Режим настройки"
+    "setupMode": "Режим настройки",
+    "hubSetupTitle": "Как настроить URL хаба Cloudflare",
+    "orgDemoTitle": "Org",
+    "orgNotFound": "Org не найден",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Участники",
+      "chat": "Групповой чат"
+    },
+    "stats": {
+      "members": "Участники",
+      "sessionsToday": "Sessions сегодня",
+      "totalSessions": "Всего Sessions",
+      "activeToday": "Активны сегодня"
+    },
+    "status": {
+      "connected": "Подключено",
+      "offline": "Офлайн",
+      "activeToday": "Активен сегодня",
+      "idle": "Неактивен"
+    },
+    "chat": {
+      "empty": "Пока нет групповых сообщений",
+      "placeholder": "Поделитесь обновлением или ссылкой...",
+      "send": "Отправить",
+      "humanOnly": "Только человеческие идентичности могут писать в групповой чат.",
+      "hint": "Люди могут общаться здесь и делиться ссылками с org."
+    },
+    "sessionStatusActive": "Активно",
+    "localHuman": "Локальный человек",
+    "backToOrg": "Назад к org"
   }
 }

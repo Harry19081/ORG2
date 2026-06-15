@@ -393,6 +393,36 @@
     "inviteReady": "초대 준비됨",
     "copyInvite": "초대 복사",
     "copiedInvite": "복사됨",
-    "setupMode": "설정 모드"
+    "setupMode": "설정 모드",
+    "hubSetupTitle": "Cloudflare hub URL 설정 방법",
+    "orgDemoTitle": "Org",
+    "orgNotFound": "Org를 찾을 수 없음",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "멤버",
+      "chat": "그룹 채팅"
+    },
+    "stats": {
+      "members": "멤버",
+      "sessionsToday": "오늘 Sessions",
+      "totalSessions": "총 Sessions",
+      "activeToday": "오늘 활성"
+    },
+    "status": {
+      "connected": "연결됨",
+      "offline": "오프라인",
+      "activeToday": "오늘 활성",
+      "idle": "유휴"
+    },
+    "chat": {
+      "empty": "아직 그룹 메시지가 없습니다",
+      "placeholder": "업데이트 또는 링크 공유...",
+      "send": "보내기",
+      "humanOnly": "Human ID만 그룹 채팅에 게시할 수 있습니다.",
+      "hint": "Humans는 여기서 대화하고 Org에 링크를 공유할 수 있습니다."
+    },
+    "sessionStatusActive": "활성",
+    "localHuman": "로컬 Human",
+    "backToOrg": "Org로 돌아가기"
   }
 }

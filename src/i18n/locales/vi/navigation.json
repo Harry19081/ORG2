@@ -393,6 +393,36 @@
     "inviteReady": "Lời mời đã sẵn sàng",
     "copyInvite": "Sao chép lời mời",
     "copiedInvite": "Đã sao chép",
-    "setupMode": "Chế độ thiết lập"
+    "setupMode": "Chế độ thiết lập",
+    "hubSetupTitle": "Cách thiết lập URL hub Cloudflare",
+    "orgDemoTitle": "Org",
+    "orgNotFound": "Không tìm thấy Org",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Thành viên",
+      "chat": "Chat nhóm"
+    },
+    "stats": {
+      "members": "Thành viên",
+      "sessionsToday": "Sessions hôm nay",
+      "totalSessions": "Tổng Sessions",
+      "activeToday": "Hoạt động hôm nay"
+    },
+    "status": {
+      "connected": "Đã kết nối",
+      "offline": "Ngoại tuyến",
+      "activeToday": "Hoạt động hôm nay",
+      "idle": "Không hoạt động"
+    },
+    "chat": {
+      "empty": "Chưa có tin nhắn nhóm",
+      "placeholder": "Chia sẻ cập nhật hoặc liên kết...",
+      "send": "Gửi",
+      "humanOnly": "Chỉ danh tính con người mới có thể đăng trong chat nhóm.",
+      "hint": "Con người có thể trò chuyện tại đây và chia sẻ liên kết với org."
+    },
+    "sessionStatusActive": "Đang hoạt động",
+    "localHuman": "Người dùng cục bộ",
+    "backToOrg": "Quay lại org"
   }
 }

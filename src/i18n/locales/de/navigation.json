@@ -395,6 +395,36 @@
     "inviteReady": "Einladung bereit",
     "copyInvite": "Einladung kopieren",
     "copiedInvite": "Kopiert",
-    "setupMode": "Einrichtungsmodus"
+    "setupMode": "Einrichtungsmodus",
+    "hubSetupTitle": "Cloudflare-Hub-URL einrichten",
+    "orgDemoTitle": "Org",
+    "orgNotFound": "Org nicht gefunden",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Mitglieder",
+      "chat": "Gruppenchat"
+    },
+    "stats": {
+      "members": "Mitglieder",
+      "sessionsToday": "Sessions heute",
+      "totalSessions": "Sessions gesamt",
+      "activeToday": "Heute aktiv"
+    },
+    "status": {
+      "connected": "Verbunden",
+      "offline": "Offline",
+      "activeToday": "Heute aktiv",
+      "idle": "Inaktiv"
+    },
+    "chat": {
+      "empty": "Noch keine Gruppennachrichten",
+      "placeholder": "Update oder Link teilen...",
+      "send": "Senden",
+      "humanOnly": "Nur menschliche Identitäten können im Gruppenchat posten.",
+      "hint": "Menschen können hier sprechen und Links mit der Org teilen."
+    },
+    "sessionStatusActive": "Aktiv",
+    "localHuman": "Lokaler Mensch",
+    "backToOrg": "Zurück zur Org"
   }
 }

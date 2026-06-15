@@ -393,6 +393,36 @@
     "inviteReady": "Davet hazır",
     "copyInvite": "Daveti kopyala",
     "copiedInvite": "Kopyalandı",
-    "setupMode": "Kurulum modu"
+    "setupMode": "Kurulum modu",
+    "hubSetupTitle": "Cloudflare hub URL'si nasıl ayarlanır",
+    "orgDemoTitle": "Org",
+    "orgNotFound": "Org bulunamadı",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Üyeler",
+      "chat": "Grup sohbeti"
+    },
+    "stats": {
+      "members": "Üyeler",
+      "sessionsToday": "Bugünkü Sessions",
+      "totalSessions": "Toplam Sessions",
+      "activeToday": "Bugün aktif"
+    },
+    "status": {
+      "connected": "Bağlandı",
+      "offline": "Çevrimdışı",
+      "activeToday": "Bugün aktif",
+      "idle": "Boşta"
+    },
+    "chat": {
+      "empty": "Henüz grup mesajı yok",
+      "placeholder": "Bir güncelleme veya bağlantı paylaş...",
+      "send": "Gönder",
+      "humanOnly": "Grup sohbetinde yalnızca insan kimlikleri gönderi paylaşabilir.",
+      "hint": "İnsanlar burada konuşabilir ve org ile bağlantı paylaşabilir."
+    },
+    "sessionStatusActive": "Aktif",
+    "localHuman": "Yerel insan",
+    "backToOrg": "Org'a dön"
   }
 }

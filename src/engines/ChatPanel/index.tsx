@@ -14,6 +14,7 @@ import {
   eventsAtom,
 } from "@src/engines/SessionCore/core/atoms";
 import { ShareSessionDialog } from "@src/features/SessionSharing/ShareSessionDialog";
+import type { CreatedCollabOrgResult } from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { allAgentDefsAtom } from "@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom";
@@ -41,6 +42,7 @@ import {
   chatPanelExploreOpenAtom,
   chatPanelMaximizedAtom,
   chatPanelNavigateAtom,
+  chatPanelSelectedCollabOrgAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
   chatPanelSelectedWorkspaceAtom,
@@ -114,6 +116,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const selectedWorkItem = useAtomValue(chatPanelSelectedWorkItemAtom);
     const selectedProject = useAtomValue(chatPanelSelectedProjectAtom);
     const selectedWorkspace = useAtomValue(chatPanelSelectedWorkspaceAtom);
+    const selectedCollabOrg = useAtomValue(chatPanelSelectedCollabOrgAtom);
     const workspaceDashboardOpen = useAtomValue(
       chatPanelWorkspaceDashboardOpenAtom
     );
@@ -261,6 +264,24 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       setWorkstationActiveSessionId,
     ]);
 
+    const handleChatPanelCollabOrgCreated = useCallback(
+      (result: CreatedCollabOrgResult) => {
+        navigateChatPanel({
+          kind: CHAT_PANEL_SURFACE_KIND.COLLAB_ORG,
+          collabOrg: { orgId: result.org.id },
+        });
+        dispatchClearSession();
+        setWorkstationActiveSessionId(null);
+        setActiveSessionId(null);
+      },
+      [
+        dispatchClearSession,
+        navigateChatPanel,
+        setActiveSessionId,
+        setWorkstationActiveSessionId,
+      ]
+    );
+
     const eventCount = useAtomValue(eventCountAtom);
     const events = useAtomValue(eventsAtom);
     const [copyEventJsonLabel, setCopyEventJsonLabel] = React.useState<
@@ -324,6 +345,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       exploreOpen,
       isChatFocus,
       panelTitle,
+      selectedCollabOrg,
       selectedProject,
       selectedWorkItem,
       selectedWorkspace,
@@ -435,6 +457,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         handleCancelWorkItemCreate={handleCancelWorkItemCreate}
         handleCancelCollabOrgCreate={handleCancelCollabOrgCreate}
         handleChatPanelProjectCreated={handleChatPanelProjectCreated}
+        handleChatPanelCollabOrgCreated={handleChatPanelCollabOrgCreated}
         handleChatPanelWorkItemCreated={handleChatPanelWorkItemCreated}
         handleRegionNoticeChange={handleRegionNoticeChange}
         handleWorkItemAgentCreatorToggle={handleWorkItemAgentCreatorToggle}
@@ -546,12 +569,14 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         handleRegisterSearchOpen={handleRegisterSearchOpen}
         paginationEnabled={paginationEnabled}
         position={position}
+        selectedCollabOrg={selectedCollabOrg}
         selectedProject={selectedProject}
         selectedWorkItem={selectedWorkItem}
         selectedWorkspace={selectedWorkspace}
         showBenchmarkSessionGroupContent={
           contentState.showBenchmarkSessionGroupContent
         }
+        showCollabOrgContent={contentState.showCollabOrgContent}
         showEmptyChatFocusRestoreButton={
           contentState.showEmptyChatFocusRestoreButton
         }

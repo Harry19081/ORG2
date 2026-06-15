@@ -393,6 +393,36 @@
     "inviteReady": "招待の準備完了",
     "copyInvite": "招待をコピー",
     "copiedInvite": "コピー済み",
-    "setupMode": "セットアップモード"
+    "setupMode": "セットアップモード",
+    "hubSetupTitle": "Cloudflare hub URL の設定方法",
+    "orgDemoTitle": "Org",
+    "orgNotFound": "Org が見つかりません",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "メンバー",
+      "chat": "グループチャット"
+    },
+    "stats": {
+      "members": "メンバー",
+      "sessionsToday": "今日の Sessions",
+      "totalSessions": "Sessions 合計",
+      "activeToday": "今日アクティブ"
+    },
+    "status": {
+      "connected": "接続済み",
+      "offline": "オフライン",
+      "activeToday": "今日アクティブ",
+      "idle": "アイドル"
+    },
+    "chat": {
+      "empty": "グループメッセージはまだありません",
+      "placeholder": "更新やリンクを共有...",
+      "send": "送信",
+      "humanOnly": "Human ID のみがグループチャットに投稿できます。",
+      "hint": "Humans はここで会話し、Org にリンクを共有できます。"
+    },
+    "sessionStatusActive": "アクティブ",
+    "localHuman": "ローカル Human",
+    "backToOrg": "Org に戻る"
   }
 }

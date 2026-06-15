@@ -26,6 +26,7 @@ import { openWorkspaceSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotli
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { benchmarkAgentBatchStatusAtom } from "@src/store/benchmark";
 import {
+  collabMembersAtom,
   collabOrgsAtom,
   remoteTeammateSessionsAtom,
 } from "@src/store/collaboration/collabOrgsAtom";
@@ -50,6 +51,7 @@ import {
   chatPanelCreateTargetAtom,
   chatPanelExploreOpenAtom,
   chatPanelNavigateAtom,
+  chatPanelSelectedCollabOrgAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
   chatPanelSelectedWorkspaceAtom,
@@ -90,7 +92,12 @@ import {
   sortSessionsByActivity,
 } from "../workstationSidebarData";
 import { useSidebarBottomRightActions } from "./bottomActions";
-import { buildColleaguesSidebarMenuItems } from "./colleaguesSidebarMenuItems";
+import {
+  COLLAB_MEMBER_PREFIX,
+  COLLAB_ORG_SECTION_PREFIX,
+  buildColleaguesSidebarMenuItems,
+  getCollabTeammateSessionIdFromMenuItemId,
+} from "./colleaguesSidebarMenuItems";
 import {
   FOLDERS_MY_AGENTS_COLLAPSE_SECTION_ID,
   FOLDERS_MY_AGENT_ORGS_COLLAPSE_SECTION_ID,
@@ -155,6 +162,9 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const chatPanelSelectedProject = useAtomValue(chatPanelSelectedProjectAtom);
   const chatPanelSelectedWorkspace = useAtomValue(
     chatPanelSelectedWorkspaceAtom
+  );
+  const chatPanelSelectedCollabOrg = useAtomValue(
+    chatPanelSelectedCollabOrgAtom
   );
   const chatPanelWorkspaceDashboardOpen = useAtomValue(
     chatPanelWorkspaceDashboardOpenAtom
@@ -319,6 +329,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     : activeSessionId;
 
   const collabOrgs = useAtomValue(collabOrgsAtom);
+  const collabMembers = useAtomValue(collabMembersAtom);
   const remoteTeammateSessions = useAtomValue(remoteTeammateSessionsAtom);
 
   const { pinnedMenuItems } = usePinnedMenuItems({
@@ -338,11 +349,18 @@ export const WorkstationSidebarConnector: React.FC = () => {
     () =>
       buildColleaguesSidebarMenuItems({
         orgs: collabOrgs,
+        members: collabMembers,
         remoteSessions: remoteTeammateSessions,
         searchQuery: sidebarSearchQueries.colleagues,
         unknownOrgLabel: t("collaboration.unknownOrg"),
       }),
-    [collabOrgs, remoteTeammateSessions, sidebarSearchQueries.colleagues, t]
+    [
+      collabMembers,
+      collabOrgs,
+      remoteTeammateSessions,
+      sidebarSearchQueries.colleagues,
+      t,
+    ]
   );
   const clearActiveWorkspace = useCallback(() => {
     dispatchSetWorkspaceFolders([], null);
@@ -495,6 +513,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       activeSidebarKey,
       chatPanelContentMode,
       chatPanelCreateTarget,
+      chatPanelSelectedCollabOrg,
       chatPanelSelectedProject,
       chatPanelSelectedWorkItem,
       chatPanelSelectedWorkspace,
@@ -606,9 +625,46 @@ export const WorkstationSidebarConnector: React.FC = () => {
         navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.NEW_COLLAB_ORG });
         return;
       }
+      if (item.id.startsWith(COLLAB_ORG_SECTION_PREFIX)) {
+        const orgId = item.id.slice(COLLAB_ORG_SECTION_PREFIX.length);
+        setColleaguesSelectedMenuItemId(item.id);
+        navigateChatPanel({
+          kind: CHAT_PANEL_SURFACE_KIND.COLLAB_ORG,
+          collabOrg: { orgId },
+        });
+        return;
+      }
+      if (item.id.startsWith(COLLAB_MEMBER_PREFIX)) {
+        const memberId = item.id.slice(COLLAB_MEMBER_PREFIX.length);
+        const member = collabMembers.find(
+          (candidate) => candidate.id === memberId
+        );
+        if (!member) return;
+        setColleaguesSelectedMenuItemId(item.id);
+        navigateChatPanel({
+          kind: CHAT_PANEL_SURFACE_KIND.COLLAB_ORG,
+          collabOrg: { orgId: member.orgId, memberId },
+        });
+        return;
+      }
+      const sessionId = getCollabTeammateSessionIdFromMenuItemId(item.id);
+      const session = sessionId
+        ? remoteTeammateSessions.find((candidate) => candidate.id === sessionId)
+        : undefined;
+      if (session) {
+        setColleaguesSelectedMenuItemId(item.id);
+        navigateChatPanel({
+          kind: CHAT_PANEL_SURFACE_KIND.COLLAB_ORG,
+          collabOrg: {
+            orgId: session.orgId,
+            memberId: session.ownerMemberId,
+          },
+        });
+        return;
+      }
       setColleaguesSelectedMenuItemId(item.id);
     },
-    [navigateChatPanel]
+    [collabMembers, navigateChatPanel, remoteTeammateSessions]
   );
 
   const handleFoldersMenuItemClick = useFoldersMenuItemClick({
