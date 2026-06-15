@@ -1617,7 +1617,8 @@
     "openOpsControl": "Zu Ops Control wechseln",
     "changeLanguage": "Sprache ändern",
     "switchToSystemTheme": "Systemdesign folgen",
-    "detectUpdate": "Nach Updates suchen"
+    "detectUpdate": "Nach Updates suchen",
+    "recentlyUsed": "Zuletzt verwendet"
   },
   "commands": {
     "showBottomPanel": "Unteres Panel anzeigen",

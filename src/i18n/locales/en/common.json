@@ -1687,7 +1687,8 @@
     "openOpsControl": "Go to Ops Control",
     "changeLanguage": "Change language",
     "switchToSystemTheme": "Follow system theme",
-    "detectUpdate": "Detect update"
+    "detectUpdate": "Detect update",
+    "recentlyUsed": "Recently used"
   },
   "commands": {
     "showBottomPanel": "Show Bottom Panel",

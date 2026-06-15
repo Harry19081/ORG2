@@ -1627,7 +1627,8 @@
     "openOpsControl": "前往 Ops Control",
     "changeLanguage": "變更語言",
     "switchToSystemTheme": "跟隨系統主題",
-    "detectUpdate": "檢查更新"
+    "detectUpdate": "檢查更新",
+    "recentlyUsed": "最近使用"
   },
   "commands": {
     "showBottomPanel": "顯示底部面板",
