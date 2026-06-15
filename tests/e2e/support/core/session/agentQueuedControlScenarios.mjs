@@ -1889,6 +1889,7 @@ async function runForceSendScenario(config) {
 
 export {
   assertStationSurfacesConsistent,
+  hasAuthoritativeRunningTurn,
   clickMainAction,
   clickSendNowForQueuedMarker,
   runBurstQueueSendNowOrderingScenario,
