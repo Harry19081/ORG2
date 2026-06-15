@@ -182,7 +182,7 @@ Raw tool name (e.g., "Edit", "str_replace", "str_replace_editor")
 | ------------ | -------------------------------------------- |
 | `session/`   | useSessionManager, useSessionCreator         |
 | `replay/`    | useReplayState, useStepState, useRecentFiles |
-| `hostedKey/` | useHostedKeyActivitySync, usePartialRecovery |
+| `hostedKey/` | useHostedKeyActivitySync                     |
 
 ### Ingestion Layer (`ingestion/`)
 

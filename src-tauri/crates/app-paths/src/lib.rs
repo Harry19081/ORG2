@@ -757,11 +757,6 @@ pub fn logs_dir() -> PathBuf {
     orgii_root().join("logs")
 }
 
-/// Partial stream recovery files: `~/.orgii/partials/`.
-pub fn partials_dir() -> PathBuf {
-    orgii_root().join("partials")
-}
-
 /// Per-session Cursor CLI config root: `~/.orgii/cursor-config/`.
 pub fn cursor_config_root() -> PathBuf {
     orgii_root().join("cursor-config")

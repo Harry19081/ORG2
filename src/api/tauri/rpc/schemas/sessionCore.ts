@@ -173,18 +173,6 @@ export const DerivedSnapshotSchema = z.object({
   hasRunningEvent: z.boolean(),
 });
 
-export const PartialStreamStateSchema = z.object({
-  sessionId: z.string(),
-  messageEventId: z.string().optional(),
-  thinkingEventId: z.string().optional(),
-  accumulatedMessage: z.string().optional(),
-  accumulatedThinking: z.string().optional(),
-  startedAt: z.string(),
-  lastUpdatedAt: z.string(),
-  model: z.string().optional(),
-  wasInterrupted: z.boolean().optional(),
-});
-
 export const NullableSessionIdInput = z.object({
   sessionId: z.string().nullable(),
 });
@@ -403,9 +391,4 @@ export const NormalizeChunkInput = z.object({
 export const SetRepoContextInput = z.object({
   repoId: z.string().nullable(),
   repoPath: z.string().nullable(),
-});
-
-export const PartialSaveInput = z.object({
-  sessionId: z.string(),
-  state: PartialStreamStateSchema,
 });

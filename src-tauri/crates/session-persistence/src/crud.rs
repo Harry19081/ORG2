@@ -371,7 +371,15 @@ pub fn clear_old_sessions(max_age_hours: i64) -> SqliteResult<i64> {
         let tx = begin_immediate(&conn)?;
         for sid in &session_ids {
             tx.execute("DELETE FROM events WHERE session_id = ?1", [sid])?;
+            // Best-effort cascade of session-keyed satellite tables owned by
+            // other crates (same `sessions.db`). `let _ =` tolerates a table
+            // not yet existing on a fresh DB, matching `agent_snapshots`.
             let _ = tx.execute("DELETE FROM agent_snapshots WHERE session_id = ?1", [sid]);
+            let _ = tx.execute("DELETE FROM goal_loop_state WHERE session_id = ?1", [sid]);
+            let _ = tx.execute(
+                "DELETE FROM agent_member_interventions WHERE session_id = ?1",
+                [sid],
+            );
         }
         tx.execute("DELETE FROM sessions WHERE cached_at < ?1", [cutoff])?;
         tx.commit()?;

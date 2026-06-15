@@ -264,10 +264,6 @@ pub fn create_routes() -> Router {
             post(test::housekeeping::test_housekeeping_seed_aged),
         )
         .route(
-            "/test/housekeeping/seed-partial",
-            post(test::housekeeping::test_housekeeping_seed_partial),
-        )
-        .route(
             "/test/housekeeping/seed-session-dir",
             post(test::housekeeping::test_housekeeping_seed_session_dir),
         )

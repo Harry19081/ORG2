@@ -7,7 +7,6 @@
 //! - `event_pipeline` — Event ingestion, buffering, filtering, streaming, history, statistics
 //! - `unified_stats`  — Cross-backend unified session listing, filtering, and statistics
 //! - `health`         — Session health checks and stale detection
-//! - `stream_recovery`— Crash recovery for streaming messages
 //!
 //! Session-specific SQLite persistence (event cache + token usage) lives
 //! in the `session_persistence` workspace crate; consumers should import
@@ -19,5 +18,4 @@ pub mod cli;
 pub mod event_pipeline;
 pub mod health;
 pub mod remote_shared;
-pub mod stream_recovery;
 pub mod unified_stats;

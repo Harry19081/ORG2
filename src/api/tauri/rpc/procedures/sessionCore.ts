@@ -235,32 +235,7 @@ const eventStore = {
     .build(),
 } as const;
 
-const partial = {
-  listAll: defineProcedure("partial_list_all")
-    .output(z.array(z.string()))
-    .build(),
-  save: defineProcedure("partial_save")
-    .input(schemas.sessionCore.PartialSaveInput)
-    .build(),
-  load: defineProcedure("partial_load")
-    .input(schemas.sessionCore.SessionIdInput)
-    .output(schemas.sessionCore.PartialStreamStateSchema.nullable())
-    .build(),
-  delete: defineProcedure("partial_delete")
-    .input(schemas.sessionCore.SessionIdInput)
-    .build(),
-  exists: defineProcedure("partial_exists")
-    .input(schemas.sessionCore.SessionIdInput)
-    .output(z.boolean())
-    .build(),
-  cleanupStale: defineProcedure("partial_cleanup_stale")
-    .input(schemas.sessionCore.ClearOldSessionsInput)
-    .output(z.number())
-    .build(),
-} as const;
-
 export const sessionCore = {
   cache,
   eventStore,
-  partial,
 } as const;

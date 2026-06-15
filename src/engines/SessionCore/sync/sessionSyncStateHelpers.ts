@@ -123,21 +123,6 @@ export function applyPostLoadResult(
   }
 }
 
-export function appendRecoveredEvents(
-  recoveredEvents: SessionEvent[],
-  setEvents: SessionLoadStateActions["setEvents"]
-): void {
-  if (recoveredEvents.length === 0) return;
-  setEvents((prev) => {
-    const existingIds = new Set(prev.map((event) => event.id));
-    const uniqueEvents = recoveredEvents.filter(
-      (event) => !existingIds.has(event.id)
-    );
-    if (uniqueEvents.length === 0) return prev;
-    return [...prev, ...uniqueEvents];
-  });
-}
-
 export function updateStreamingDeltaContent(
   sessionId: string,
   info: StreamingDeltaInfo,

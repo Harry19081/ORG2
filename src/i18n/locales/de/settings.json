@@ -873,7 +873,6 @@
     "diskCategory_sessionsDb": "Session-Datenbank",
     "diskCategory_logs": "Protokolle",
     "diskCategory_personalWorkspace": "OS Agent Arbeitsbereich",
-    "diskCategory_partials": "Session-Zwischendaten",
     "diskCategory_cursorConfig": "Session-CLI-Configen",
     "diskCategory_geminiCliHome": "Gemini CLI Verzeichnisse",
     "diskCategory_extensions": "Erweiterungen",

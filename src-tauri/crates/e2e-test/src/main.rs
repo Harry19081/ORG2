@@ -514,11 +514,6 @@ fn all_scenarios() -> Vec<ScenarioDef> {
         ),
         scenario!(
             "housekeeping",
-            "housekeeping-partials-ttl",
-            housekeeping::partials_ttl
-        ),
-        scenario!(
-            "housekeeping",
             "housekeeping-cursor-config-orphan-evict",
             housekeeping::cursor_config_orphan_evict
         ),

@@ -47,7 +47,6 @@ pub async fn test_housekeeping_run() -> Json<serde_json::Value> {
         "manifests_capped": stats.manifests_capped,
         "blobs_capped": stats.blobs_capped,
         "log_files_removed": stats.log_files_removed,
-        "partials_removed": stats.partials_removed,
         "cursor_configs_evicted": stats.cursor_configs_evicted,
         "gemini_homes_evicted": stats.gemini_homes_evicted,
         "screenshots_removed": stats.screenshots_removed,
@@ -111,57 +110,6 @@ pub async fn test_housekeeping_seed_aged(
             "path": path.display().to_string(),
         })),
         Ok(Err(err)) => Json(serde_json::json!({ "error": err.to_string() })),
-        Err(join) => Json(serde_json::json!({ "error": join.to_string() })),
-    }
-}
-
-#[derive(Debug, Deserialize)]
-pub struct SeedPartialRequest {
-    /// Filename under `~/.orgii/partials/`. Callers should include a unique
-    /// prefix to avoid clashing with real partials on the dev machine.
-    name: String,
-    /// Backdate the file's mtime by this many days. Pass `0` for a fresh
-    /// file that should survive a TTL sweep.
-    age_days: u64,
-}
-
-/// Seed a file under `~/.orgii/partials/` with a controlled mtime. Used by the
-/// `housekeeping-partials-ttl` E2E to prove `prune_old_files_in_dir` actually
-/// deletes aged partials and leaves fresh ones alone. Mirrors
-/// `debug_seed_aged_session` but for the partials directory.
-pub async fn test_housekeeping_seed_partial(
-    Json(request): Json<SeedPartialRequest>,
-) -> Json<serde_json::Value> {
-    let result = tokio::task::spawn_blocking(move || -> Result<std::path::PathBuf, String> {
-        let dir = app_paths::partials_dir();
-        std::fs::create_dir_all(&dir).map_err(|err| format!("create_dir_all: {}", err))?;
-        let path = dir.join(&request.name);
-        std::fs::write(&path, b"debug-partial").map_err(|err| format!("write: {}", err))?;
-
-        if request.age_days > 0 {
-            let target = std::time::SystemTime::now()
-                .checked_sub(std::time::Duration::from_secs(
-                    request.age_days.saturating_mul(86_400),
-                ))
-                .unwrap_or(std::time::SystemTime::UNIX_EPOCH);
-            let handle = std::fs::File::options()
-                .read(true)
-                .write(true)
-                .open(&path)
-                .map_err(|err| format!("open: {}", err))?;
-            handle
-                .set_modified(target)
-                .map_err(|err| format!("set_modified: {}", err))?;
-        }
-        Ok(path)
-    })
-    .await;
-    match result {
-        Ok(Ok(path)) => Json(serde_json::json!({
-            "ok": true,
-            "path": path.display().to_string(),
-        })),
-        Ok(Err(err)) => Json(serde_json::json!({ "error": err })),
         Err(join) => Json(serde_json::json!({ "error": join.to_string() })),
     }
 }
