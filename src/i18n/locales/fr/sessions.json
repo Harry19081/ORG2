@@ -215,6 +215,8 @@
     "orgtrack": {
       "filesChanged_one": "{{count}} fichier",
       "filesChanged_other": "{{count}} fichiers",
+      "commits_one": "{{count}} commit",
+      "commits_other": "{{count}} commits",
       "committedRateShort": "{{percent}} % validé"
     }
   },

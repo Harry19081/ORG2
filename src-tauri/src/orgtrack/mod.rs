@@ -111,8 +111,9 @@ pub async fn orgtrack_get_session_summaries(
         let conn = get_connection().map_err(|err| err.to_string())?;
         let store = SqliteRecordStore::new(&conn);
         let sessions = store.list_sessions(workspace_path.as_deref())?;
-        let file_changes = store.list_file_changes(workspace_path.as_deref())?;
-        Ok(session_summaries(sessions, file_changes))
+        let file_changes = store.list_file_changes(None)?;
+        let commit_links = store.list_commit_links()?;
+        Ok(session_summaries(sessions, file_changes, commit_links))
     })
     .await
     .map_err(|err| err.to_string())?

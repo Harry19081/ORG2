@@ -215,6 +215,8 @@
     "orgtrack": {
       "filesChanged_one": "{{count}} 个文件",
       "filesChanged_other": "{{count}} 个文件",
+      "commits_one": "{{count}} 个 Commit",
+      "commits_other": "{{count}} 个 Commit",
       "committedRateShort": "{{percent}}% 已提交"
     }
   },

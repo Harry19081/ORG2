@@ -21,6 +21,8 @@ function metadataFromSummaries(
   for (const summary of summaries) {
     metadataBySessionId.set(summary.sessionId, {
       filesChanged: summary.filesChanged,
+      linesAdded: summary.linesAdded,
+      linesRemoved: summary.linesRemoved,
       relatedCommits: summary.relatedCommits,
       committedFiles: Math.round(
         (summary.filesChanged * summary.committedRatePercent) / 100

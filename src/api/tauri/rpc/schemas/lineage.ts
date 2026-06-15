@@ -295,6 +295,8 @@ export const CoreSessionSummarySchema = z.object({
   source: z.string(),
   workspacePath: z.string().nullable().optional(),
   filesChanged: z.number().int(),
+  linesAdded: z.number().int(),
+  linesRemoved: z.number().int(),
   relatedCommits: z.number().int(),
   committedRatePercent: z.number().int(),
   model: z.string().nullable().optional(),

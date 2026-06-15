@@ -76,6 +76,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   const isInteractive = Boolean(onClick);
+  const hasOrgtrackImpactMetadata = Boolean(
+    task.orgtrackMetadata &&
+    (task.orgtrackMetadata.filesChanged > 0 ||
+      task.orgtrackMetadata.linesAdded > 0 ||
+      task.orgtrackMetadata.linesRemoved > 0 ||
+      task.orgtrackMetadata.relatedCommits > 0 ||
+      task.orgtrackMetadata.committedRatePercent > 0)
+  );
   const cardClasses = [
     "kanban-task-card",
     isInteractive && "kanban-task-card--interactive",
@@ -162,20 +170,35 @@ const TaskCard: React.FC<TaskCardProps> = ({
               <span>{formatModelNameFull(task.modelName)}</span>
             </div>
           )}
-          {task.orgtrackMetadata && (
+          {hasOrgtrackImpactMetadata && task.orgtrackMetadata && (
             <>
               <div className="kanban-task-card__meta-pill">
                 <FileText size={12} strokeWidth={1.75} />
                 <span>
-                  {t("orgtrack.filesChanged", {
+                  {t("opsControl.orgtrack.filesChanged", {
                     count: task.orgtrackMetadata.filesChanged,
                   })}
                 </span>
               </div>
               <div className="kanban-task-card__meta-pill">
+                <span className="text-success-6">
+                  +{task.orgtrackMetadata.linesAdded.toLocaleString()}
+                </span>
+                <span className="text-danger-6">
+                  -{task.orgtrackMetadata.linesRemoved.toLocaleString()}
+                </span>
+              </div>
+              <div className="kanban-task-card__meta-pill">
                 <GitCommit size={12} strokeWidth={1.75} />
                 <span>
-                  {t("orgtrack.committedRateShort", {
+                  {t("opsControl.orgtrack.commits", {
+                    count: task.orgtrackMetadata.relatedCommits,
+                  })}
+                </span>
+              </div>
+              <div className="kanban-task-card__meta-pill">
+                <span>
+                  {t("opsControl.orgtrack.committedRateShort", {
                     percent: task.orgtrackMetadata.committedRatePercent,
                   })}
                 </span>

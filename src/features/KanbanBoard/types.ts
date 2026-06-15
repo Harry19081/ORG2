@@ -33,6 +33,8 @@ export type KanbanResultStatus =
 
 export interface KanbanTaskOrgtrackMetadata {
   filesChanged: number;
+  linesAdded: number;
+  linesRemoved: number;
   relatedCommits: number;
   committedFiles: number;
   committedRatePercent: number;

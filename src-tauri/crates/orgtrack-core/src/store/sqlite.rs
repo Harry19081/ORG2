@@ -301,6 +301,20 @@ impl RecordStore for SqliteRecordStore<'_> {
         Ok(())
     }
 
+    fn list_commit_links(&self) -> Result<Vec<CommitLinkRecord>, String> {
+        let mut records = Vec::new();
+        let mut stmt = self.conn
+            .prepare("SELECT payload_json FROM orgtrack_core_commit_links ORDER BY linked_at DESC")
+            .map_err(|err| err.to_string())?;
+        let rows = stmt
+            .query_map([], |row| row.get::<_, String>(0))
+            .map_err(|err| err.to_string())?;
+        for row in rows {
+            records.push(Self::from_json(row.map_err(|err| err.to_string())?)?);
+        }
+        Ok(records)
+    }
+
     fn get_checkpoint(&self, source: &str) -> Result<Option<ScanCheckpoint>, String> {
         self.conn
             .query_row(
