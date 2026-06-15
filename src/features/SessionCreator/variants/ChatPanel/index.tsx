@@ -119,7 +119,7 @@ const SessionCreatorChatPanelSingle: React.FC<
   headerLayout = "hero",
   hideRepoLine = false,
   initialContent,
-  dropdownDirection = "up",
+  dropdownDirection = "down",
   onRegionNoticeChange,
   onSessionStart,
   hidePresenceButton = false,
@@ -673,7 +673,7 @@ const SessionCreatorChatPanelSingle: React.FC<
       data-testid="session-creator-chat-panel"
     >
       <div
-        className={`flex min-h-0 flex-1 items-center justify-center px-4 ${
+        className={`session-creator-chat-panel-content flex min-h-0 flex-1 items-center justify-center px-4 ${
           innerClassName ??
           (isFullScreenVariant
             ? centerFullScreenContent

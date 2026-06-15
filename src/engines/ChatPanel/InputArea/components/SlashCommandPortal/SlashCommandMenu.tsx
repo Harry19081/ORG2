@@ -39,7 +39,7 @@ import { useEntries } from "./useEntries";
 import { useKeyboard } from "./useKeyboard";
 
 const PANEL_WIDTH = 280;
-const MAX_PANEL_HEIGHT = 360;
+const MAX_PANEL_HEIGHT = 300;
 const MAX_SKILLS_SECTION_HEIGHT = 200;
 
 const SlashCommandMenu: React.FC<SlashCommandPortalProps> = ({

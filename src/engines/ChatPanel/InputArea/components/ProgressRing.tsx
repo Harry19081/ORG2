@@ -3,7 +3,7 @@
  *
  * Circular SVG progress indicator rendered in the ContextInfoButton toolbar
  * trigger. Fills clockwise from the top with a smooth CSS transition.
- * Color tone changes at WARNING_THRESHOLD and DANGER_THRESHOLD fill levels.
+ * Color tone distinguishes empty context from used context.
  */
 import { memo } from "react";
 
@@ -21,15 +21,10 @@ export interface ProgressRingProps {
 }
 
 const ProgressRing = memo(
-  ({ percentage, tone = "neutral" }: ProgressRingProps) => {
+  ({ percentage, tone = "unused" }: ProgressRingProps) => {
     const filled = (Math.min(percentage, 100) / 100) * RING_CIRCUMFERENCE;
     const gap = RING_CIRCUMFERENCE - filled;
-    const strokeClass =
-      tone === "danger"
-        ? "stroke-danger-6"
-        : tone === "warning"
-          ? "stroke-warning-6"
-          : "stroke-text-3";
+    const strokeClass = tone === "used" ? "stroke-text-2" : "stroke-text-4";
 
     return (
       <svg

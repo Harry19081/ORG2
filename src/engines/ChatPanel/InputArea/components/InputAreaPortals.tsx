@@ -87,6 +87,7 @@ export const InputAreaPortals: React.FC<InputAreaPortalsProps> = ({
   const menuAnchorSelector = isEditMode
     ? "[data-editor-slot]"
     : "[data-composer-menu-anchor]";
+  const plusMenuAnchorSelector = "[data-composer-plus-menu-trigger]";
 
   return (
     <>
@@ -126,7 +127,7 @@ export const InputAreaPortals: React.FC<InputAreaPortalsProps> = ({
       <SlashCommandPortal
         visible={showPlusSlashMenu}
         containerRef={containerRef}
-        anchorSelector={menuAnchorSelector}
+        anchorSelector={plusMenuAnchorSelector}
         placement={portalPlacement}
         items={filteredSlashItems}
         loading={slashLoading}

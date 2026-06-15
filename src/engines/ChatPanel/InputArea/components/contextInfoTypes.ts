@@ -2,7 +2,7 @@
  * Shared types for the ContextInfoButton sub-component tree.
  */
 
-export type RingTone = "neutral" | "warning" | "danger";
+export type RingTone = "unused" | "used";
 
 export interface PanelCategory {
   key: string;
@@ -27,7 +27,3 @@ export const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 export const PANEL_GAP = 8;
 export const PANEL_WIDTH = 320;
 export const VIEWPORT_PADDING = 8;
-
-// Context-fill thresholds for visual warnings.
-export const WARNING_THRESHOLD = 80;
-export const DANGER_THRESHOLD = 95;
