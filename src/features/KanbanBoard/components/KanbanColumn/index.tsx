@@ -23,10 +23,8 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import {
-  COUNT_BADGE,
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
-  getCountBadgeSizeClass,
 } from "@src/config/workstation/tokens";
 import { getUiScaleFromCssVar } from "@src/lib/dndKit";
 import { Placeholder } from "@src/modules/shared/layouts/blocks/Placeholder";
@@ -165,9 +163,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
     transition,
     opacity: isSortableDragging ? 0.5 : 1,
   };
-  const countTextColor =
-    column.id === "planned" ? "var(--color-text-1)" : "var(--color-text-white)";
-
   const handleAddTask = () => {
     onAddTask?.(column.id);
   };
@@ -203,12 +198,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
              * locale switching works. */}
             {t(column.title)}
           </div>
-          <span
-            className={`kanban-column__count ${COUNT_BADGE.base} ${getCountBadgeSizeClass(tasks.length)}`}
-            style={{ backgroundColor: column.color, color: countTextColor }}
-          >
-            {tasks.length}
-          </span>
+          <span className="kanban-column__count">{tasks.length}</span>
         </div>
         {showAddButton && (
           <button
