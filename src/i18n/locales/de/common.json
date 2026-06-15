@@ -1610,7 +1610,8 @@
     "openOpsControl": "Zu Ops Control wechseln",
     "changeLanguage": "Sprache ändern",
     "switchToSystemTheme": "Systemdesign folgen",
-    "recentlyUsed": "Zuletzt verwendet"
+    "recentlyUsed": "Zuletzt verwendet",
+    "detectUpdate": "Nach Updates suchen"
   },
   "commands": {
     "showBottomPanel": "Unteres Panel anzeigen",

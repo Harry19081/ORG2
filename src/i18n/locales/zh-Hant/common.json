@@ -1620,7 +1620,8 @@
     "openOpsControl": "前往 Ops Control",
     "changeLanguage": "變更語言",
     "switchToSystemTheme": "跟隨系統主題",
-    "recentlyUsed": "最近使用"
+    "recentlyUsed": "最近使用",
+    "detectUpdate": "檢查更新"
   },
   "commands": {
     "showBottomPanel": "顯示底部面板",

@@ -1602,7 +1602,8 @@
     "openOpsControl": "Перейти в Ops Control",
     "changeLanguage": "Изменить язык",
     "switchToSystemTheme": "Следовать системной теме",
-    "recentlyUsed": "Недавно использованные"
+    "recentlyUsed": "Недавно использованные",
+    "detectUpdate": "Проверить обновления"
   },
   "commands": {
     "showBottomPanel": "Показать нижнюю панель",

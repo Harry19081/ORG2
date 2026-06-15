@@ -1605,7 +1605,8 @@
     "openOpsControl": "Aller à Ops Control",
     "changeLanguage": "Changer la langue",
     "switchToSystemTheme": "Suivre le thème du système",
-    "recentlyUsed": "Récemment utilisés"
+    "recentlyUsed": "Récemment utilisés",
+    "detectUpdate": "Rechercher des mises à jour"
   },
   "commands": {
     "showBottomPanel": "Afficher le panneau inférieur",

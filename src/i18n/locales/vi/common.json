@@ -1603,7 +1603,8 @@
     "openOpsControl": "Đi tới Ops Control",
     "changeLanguage": "Thay đổi ngôn ngữ",
     "switchToSystemTheme": "Theo chủ đề hệ thống",
-    "recentlyUsed": "Đã dùng gần đây"
+    "recentlyUsed": "Đã dùng gần đây",
+    "detectUpdate": "Kiểm tra cập nhật"
   },
   "commands": {
     "showBottomPanel": "Hiện bảng dưới",

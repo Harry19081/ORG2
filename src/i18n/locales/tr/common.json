@@ -1607,7 +1607,8 @@
     "openOpsControl": "Ops Control'e git",
     "changeLanguage": "Dili değiştir",
     "switchToSystemTheme": "Sistem temasını izle",
-    "recentlyUsed": "Son kullanılanlar"
+    "recentlyUsed": "Son kullanılanlar",
+    "detectUpdate": "Güncellemeleri denetle"
   },
   "commands": {
     "showBottomPanel": "Alt paneli göster",
