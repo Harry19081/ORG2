@@ -35,6 +35,7 @@
     "workflow": "Workflow",
     "agent": "Agent",
     "session": "Session",
+    "colleagues": "Colleagues",
     "folders": "Folders",
     "inbox": "Inbox",
     "issues": "Work Items",
@@ -137,8 +138,7 @@
       "title": "Group by",
       "byTime": "By Time",
       "byAgent": "By Agent",
-      "byWorkspace": "By Workspace",
-      "byTags": "By Tags"
+      "byWorkspace": "By Workspace"
     },
     "defaults": {
       "untitledSession": "Untitled Session",
@@ -167,6 +167,7 @@
     "search": {
       "folders": "Search Workspace...",
       "sessions": "Search Sessions...",
+      "colleagues": "Search colleagues...",
       "projects": "Search projects..."
     },
     "folderCounts": {
@@ -211,6 +212,69 @@
       "duration2h": "2 hours",
       "durationTomorrow": "Tomorrow"
     }
+  },
+  "collaboration": {
+    "addOrg": "Add ORG",
+    "unknownOrg": "Unknown ORG",
+    "emptyColleagues": "No colleague activity yet",
+    "emptyColleaguesDesc": "Add an ORG to start sharing session metadata with teammates.",
+    "createOrg": "Create",
+    "joinOrg": "Join",
+    "orgSource": "Org source",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "Cloudflare hub URL",
+    "orgName": "ORG name",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "Invite link or code",
+    "inviteCodePlaceholder": "Paste an orgii:// invite link or invite code",
+    "joinAs": "Join as",
+    "joinAsPlaceholder": "Your name",
+    "identityKind": "My identity",
+    "identityHuman": "Human",
+    "identityAgent": "Agent",
+    "inviteReady": "Invite ready",
+    "copyInvite": "Copy invite",
+    "copiedInvite": "Copied",
+    "setupMode": "Setup mode",
+    "hubSetupTitle": "How to set up the Cloudflare hub URL",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG not found",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Members",
+      "chat": "Group chat"
+    },
+    "stats": {
+      "members": "Members",
+      "sessionsToday": "Sessions today",
+      "totalSessions": "Total sessions",
+      "activeToday": "Active today"
+    },
+    "status": {
+      "connected": "Connected",
+      "offline": "Offline",
+      "activeToday": "Active today",
+      "idle": "Idle"
+    },
+    "chat": {
+      "empty": "No group messages yet",
+      "placeholder": "Share an update or link...",
+      "send": "Send",
+      "humanOnly": "Only human identities can post in group chat.",
+      "hint": "Humans can talk here and share links with the ORG."
+    },
+    "sessionStatusActive": "Active",
+    "localHuman": "Local human",
+    "backToOrg": "Back to ORG",
+    "invite": {
+      "title": "Invite link",
+      "description": "Create an invite link for teammates to join this ORG. The latest link is shown here for quick copying.",
+      "adminOnly": "Only ORG admins can create invite links.",
+      "create": "Create invite",
+      "createNew": "New invite"
+    },
+    "orgDashboard": "Dashboard"
   },
   "myRole": {
     "tabs": {

@@ -9,6 +9,7 @@ import {
   type ChatPanelSelectedWorkspace,
 } from "@src/store/ui/chatPanelAtom";
 
+import { COLLAB_ADD_ORG_MENU_ITEM_ID } from "../sidebarConnectorUtils";
 import {
   getSelectedDraftMenuItemId,
   getSelectedMenuItemId,
@@ -74,6 +75,7 @@ export function resolveSelectedMenuItemIds({
   const sessionSelectedMenuItemId =
     chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.PROJECT ||
     chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM ||
+    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG ||
     isChatPanelProjectsContentSelected
       ? ""
       : getSelectedMenuItemId({
@@ -82,12 +84,14 @@ export function resolveSelectedMenuItemIds({
           selectedDraftMenuItemId,
         });
   const resolvedProjectsSelectedMenuItemId =
-    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.PROJECT ||
-    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM ||
-    chatPanelSelectedWorkItem ||
-    chatPanelSelectedProject
-      ? projectsSelectedMenuItemId
-      : "";
+    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG
+      ? COLLAB_ADD_ORG_MENU_ITEM_ID
+      : chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.PROJECT ||
+          chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM ||
+          chatPanelSelectedWorkItem ||
+          chatPanelSelectedProject
+        ? projectsSelectedMenuItemId
+        : "";
   const foldersSelectedMenuItemId = chatPanelSelectedWorkspace
     ? getFolderItemId(chatPanelSelectedWorkspace)
     : chatPanelExploreOpen
@@ -97,7 +101,7 @@ export function resolveSelectedMenuItemIds({
         : "";
   const selectedMenuItemId =
     activeSidebarKey === "projects"
-      ? resolvedProjectsSelectedMenuItemId
+      ? resolvedProjectsSelectedMenuItemId || projectsSelectedMenuItemId
       : activeSidebarKey === "folders"
         ? foldersSelectedMenuItemId
         : sessionSelectedMenuItemId;

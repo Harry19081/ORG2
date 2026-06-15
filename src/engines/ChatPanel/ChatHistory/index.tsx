@@ -74,6 +74,7 @@ import {
   useEditUserMessage,
   useGroupHeaderRenderer,
   useReloadSession,
+  useRestoreCheckpoint,
   useTurnPageNavigation,
   useTurnPageSelectionState,
 } from "./hooks";
@@ -380,7 +381,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     isAgentWorking,
     collapseTailWhenIdle,
     forceCollapseAllTurns,
-    disableTurnCollapse: turnPaginationEnabled,
     allTurnsCollapsed:
       collapseAllCommand.epoch > 0 && collapseAllCommand.collapsed
         ? true
@@ -763,6 +763,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
 
   // --- Stable handlers ---
   const handleEditUserMessage = useEditUserMessage();
+  const handleRestoreCheckpoint = useRestoreCheckpoint();
   const pinnedEditSubmitRef = useRef(handleEditUserMessage);
   useEffect(() => {
     pinnedEditSubmitRef.current = handleEditUserMessage;
@@ -770,6 +771,16 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const handlePinnedEditSubmit = useCallback(
     (header: OptimizedChatItem, newText: string, imageDataUrls?: string[]) => {
       return pinnedEditSubmitRef.current(header, newText, imageDataUrls);
+    },
+    []
+  );
+  const pinnedRestoreRef = useRef(handleRestoreCheckpoint);
+  useEffect(() => {
+    pinnedRestoreRef.current = handleRestoreCheckpoint;
+  }, [handleRestoreCheckpoint]);
+  const handleHeaderRestoreCheckpoint = useCallback(
+    (header: OptimizedChatItem) => {
+      return pinnedRestoreRef.current(header);
     },
     []
   );
@@ -858,6 +869,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     hideUserMessage: hideGroupUserMessage,
     turnCollapseInteractionAtRef,
     onEditSubmit: handleEditUserMessage,
+    onRestoreCheckpoint: handleHeaderRestoreCheckpoint,
   });
   const showPinnedTurnHeader =
     turnPaginationEnabled && !turnPageListOpen && !agentOrgOverviewOpen;
@@ -905,6 +917,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       hideUserMessage={hideGroupUserMessage}
       turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
       onEditSubmit={handlePinnedEditSubmit}
+      onRestoreCheckpoint={handleHeaderRestoreCheckpoint}
     />
   );
 

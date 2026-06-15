@@ -45,7 +45,8 @@
     "projects": "Projects",
     "projectManager": "Project Manager",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "Коллеги"
   },
   "trajectoryPanel": {
     "title": "Траектория",
@@ -109,8 +110,7 @@
       "title": "Группировка",
       "byTime": "По времени",
       "byAgent": "По Agent",
-      "byWorkspace": "По Workspace",
-      "byTags": "По Тегам"
+      "byWorkspace": "По Workspace"
     },
     "defaults": {
       "untitledSession": "Session без названия",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "Искать в рабочей области...",
       "sessions": "Искать сессии...",
-      "projects": "Искать проекты..."
+      "projects": "Искать проекты...",
+      "colleagues": "Поиск коллег..."
     },
     "folderCounts": {
       "repo": "{{count}} репо",
@@ -370,5 +371,68 @@
     "details": "Подробности",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "Добавить ORG",
+    "unknownOrg": "Неизвестная ORG",
+    "emptyColleagues": "Активности коллег пока нет",
+    "emptyColleaguesDesc": "Добавьте ORG, чтобы начать делиться метаданными сессий с teammates.",
+    "createOrg": "Создать",
+    "joinOrg": "Присоединиться",
+    "orgSource": "Источник организации",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "URL хаба Cloudflare",
+    "orgName": "Название ORG",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "Ссылка или код приглашения",
+    "inviteCodePlaceholder": "Вставьте ссылку orgii:// или код приглашения",
+    "joinAs": "Вступить как",
+    "joinAsPlaceholder": "Ваше имя",
+    "identityKind": "Моя идентичность",
+    "identityHuman": "Человек",
+    "identityAgent": "Agent",
+    "inviteReady": "Приглашение готово",
+    "copyInvite": "Копировать приглашение",
+    "copiedInvite": "Скопировано",
+    "setupMode": "Режим настройки",
+    "hubSetupTitle": "Как настроить URL хаба Cloudflare",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG не найдена",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Участники",
+      "chat": "Групповой чат"
+    },
+    "stats": {
+      "members": "Участники",
+      "sessionsToday": "Sessions сегодня",
+      "totalSessions": "Всего Sessions",
+      "activeToday": "Активны сегодня"
+    },
+    "status": {
+      "connected": "Подключено",
+      "offline": "Офлайн",
+      "activeToday": "Активен сегодня",
+      "idle": "Неактивен"
+    },
+    "chat": {
+      "empty": "Пока нет групповых сообщений",
+      "placeholder": "Поделитесь обновлением или ссылкой...",
+      "send": "Отправить",
+      "humanOnly": "Только человеческие идентичности могут писать в групповой чат.",
+      "hint": "Люди могут общаться здесь и делиться ссылками с ORG."
+    },
+    "sessionStatusActive": "Активно",
+    "localHuman": "Локальный человек",
+    "backToOrg": "Назад к ORG",
+    "invite": {
+      "title": "Ссылка-приглашение",
+      "description": "Создайте ссылку-приглашение, чтобы teammates могли присоединиться к этой ORG. Последняя ссылка показана здесь для быстрого копирования.",
+      "adminOnly": "Только администраторы ORG могут создавать ссылки-приглашения.",
+      "create": "Создать приглашение",
+      "createNew": "Новое приглашение"
+    },
+    "orgDashboard": "Панель"
   }
 }

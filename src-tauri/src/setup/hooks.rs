@@ -34,7 +34,8 @@ pub(crate) fn register_database_schemas() {
              DROP TABLE IF EXISTS group_chats;",
         );
 
-        dev_record::schema::init_tables(conn)?;
+        orgtrack_core::store::sqlite::SqliteRecordStore::init_tables(conn)?;
+        orgtrack_core::store::sqlite::SqliteRecordStore::init_source_cache_tables(conn)?;
 
         project_management::lineage::schema::init_lineage_tables(conn)?;
 
@@ -80,22 +81,12 @@ pub(crate) fn register_database_schemas() {
 }
 
 /// Wire the inversion-of-control hooks the `git` crate uses to call back into
-/// the rest of the app (websocket broadcast, dev_record telemetry, automation
-/// bridge). Registered once at startup before any git watcher can fire.
+/// the rest of the app (websocket broadcast and automation bridge). Registered
+/// once at startup before any git watcher can fire.
 pub(crate) fn register_git_hooks() {
     git::hooks::register_websocket_broadcast(Box::new(|msg| {
         api::websocket_handler::broadcast(msg);
     }));
-    git::hooks::register_file_change(Box::new(
-        |project, file_path, lines_added, lines_removed| {
-            dev_record::collector::record_file_change(
-                project,
-                file_path,
-                lines_added,
-                lines_removed,
-            );
-        },
-    ));
     git::hooks::register_git_event(Box::new(|ev| {
         agent_core::automation::bridge::send_git_event(agent_core::automation::GitBroadcastEvent {
             operation: ev.operation,

@@ -87,6 +87,7 @@
       "started": "Started",
       "lastUpdated": "Last Updated",
       "agentModel": "Agent · Model",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "No sessions match these filters",
       "emptyDescription": "Try a different status, Agent type, or time window."
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "{{repo}} Commits",
       "commitsToMultiple": "{{repos}} Commits"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} file",
+      "filesChanged_other": "{{count}} files",
+      "commits_one": "{{count}} commit",
+      "commits_other": "{{count}} commits",
+      "committedRateShort": "{{percent}}% committed"
     }
   },
   "changes": {
@@ -737,14 +745,11 @@
     "historyThisWeek": "이번 주",
     "historyOlder": "이전",
     "historyPinned": "고정됨",
-    "historyNoTags": "태그 없음",
     "historyRefresh": "새로고침",
     "historyLastUsedModel": "마지막 사용 모델",
     "historyUntitled": "제목 없는 세션",
     "pinSession": "고정",
     "unpinSession": "고정 해제",
-    "addTag": "태그 추가...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "권한이 필요합니다",
     "questionsPrompt": "입력이 필요합니다",
     "generatingQuestions": "질문 생성 중",
@@ -937,7 +942,7 @@
     "explore": "탐색",
     "readFile": "파일 읽기",
     "readFileRunning": "읽는 중",
-    "readFileDone": "읽음",
+    "readFileDone": "읽기",
     "readFileFailed": "읽기 시도",
     "readFileSkillRunning": "skill 사용 중",
     "readFileSkillDone": "skill 사용",

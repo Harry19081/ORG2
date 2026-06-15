@@ -1939,26 +1939,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dev_record"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "core-foundation",
- "core_types",
- "database",
- "dirs",
- "git",
- "rusqlite",
- "serde",
- "serde_json",
- "similar",
- "sysinfo",
- "tauri",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5193,7 +5173,6 @@ dependencies = [
  "database",
  "db_browser",
  "db_clients",
- "dev_record",
  "dirs",
  "dispatch2",
  "file_ops",
@@ -5211,6 +5190,7 @@ dependencies = [
  "objc2",
  "objc2-app-kit",
  "objc2-foundation",
+ "orgtrack_core",
  "parking_lot 0.12.5",
  "perf_utils",
  "portable-pty",
@@ -5263,6 +5243,42 @@ dependencies = [
  "windows 0.61.3",
  "wiremock",
  "zip 2.4.2",
+]
+
+[[package]]
+name = "orgtrack_core"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "core_types",
+ "dirs",
+ "orgtrack_sync",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha2",
+ "similar",
+]
+
+[[package]]
+name = "orgtrack_graph"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "orgtrack_sync",
+ "rusqlite",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "orgtrack_sync"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -5984,6 +6000,7 @@ dependencies = [
  "hex",
  "hmac",
  "log",
+ "orgtrack_sync",
  "rand 0.9.4",
  "reqwest 0.13.4",
  "rusqlite",

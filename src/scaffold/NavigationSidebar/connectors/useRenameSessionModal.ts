@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { rpc } from "@src/api/tauri/rpc";
 import { createLogger } from "@src/hooks/logger";
 import { type Session, upsertSession } from "@src/store/session";
 import { getSessionListDisplayName } from "@src/util/session/sessionSidebarRow";
@@ -52,9 +53,14 @@ export function useRenameSessionModal(): UseRenameSessionModalResult {
       setLoading(true);
       try {
         upsertSession({ ...existing, name: newName });
+        await rpc.sessionAggregate.patch({
+          sessionId: renameSessionId,
+          patch: { name: newName },
+        });
         setVisible(false);
       } catch (error) {
-        log.error("[WorkstationSidebar] Failed to rename session:", error);
+        upsertSession(existing);
+        log.error("Failed to rename session:", error);
       } finally {
         setLoading(false);
       }

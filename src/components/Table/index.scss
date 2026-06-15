@@ -10,7 +10,7 @@
 
 .table-container {
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .table-scroll {
@@ -160,6 +160,8 @@
 // ==========================================
 
 .table-settings {
+  --settings-table-surface: var(--color-surface-container);
+
   .table-container {
     position: relative;
     z-index: 0;
@@ -185,7 +187,7 @@
     left: 0;
     background: linear-gradient(
       90deg,
-      var(--color-surface-container) 0%,
+      var(--settings-table-surface) 0%,
       transparent 100%
     );
   }
@@ -194,7 +196,7 @@
     right: 0;
     background: linear-gradient(
       270deg,
-      var(--color-surface-container) 0%,
+      var(--settings-table-surface) 0%,
       transparent 100%
     );
   }
@@ -210,8 +212,8 @@
     z-index: 20;
     min-width: 0;
     overflow: hidden;
-    background: var(--color-surface-container);
-    box-shadow: 0 -1px 0 0 var(--color-surface-container);
+    background: var(--settings-table-surface);
+    box-shadow: 0 -1px 0 0 var(--settings-table-surface);
   }
 
   .table-scroll {
@@ -252,7 +254,7 @@
      */
     z-index: 20;
     padding: 8px 0;
-    background: var(--color-surface-container);
+    background: var(--settings-table-surface);
     font-size: 12px;
     font-weight: 500;
     color: var(--color-text-2);
@@ -263,13 +265,17 @@
      * height never leaves a sliver where scrolling rows can bleed
      * through above the sticky header.
      */
-    box-shadow: 0 -1px 0 0 var(--color-surface-container);
+    box-shadow: 0 -1px 0 0 var(--settings-table-surface);
+  }
+
+  .table,
+  .table-tbody {
+    background: var(--settings-table-surface);
   }
 
   .table-tbody {
     position: relative;
     z-index: 0;
-    background: transparent;
   }
 
   .table-td {
@@ -336,7 +342,7 @@
   &.table-settings-tall .table-th {
     padding-top: 12px;
     padding-bottom: 12px;
-    background: var(--color-surface-container);
+    background: var(--settings-table-surface);
   }
 
   &.table-settings-header-border .table-th {
@@ -384,7 +390,7 @@
     .table-row > .table-td:last-child {
       // Avoid position:sticky;right + CSS zoom: WebKit miscalculates sticky
       // positions inside overflow-x:auto when the root has style.zoom set.
-      background: var(--color-surface-container);
+      background: var(--settings-table-surface);
 
       &::before {
         position: absolute;
@@ -397,7 +403,7 @@
         background: linear-gradient(
           90deg,
           transparent 0%,
-          var(--color-surface-container) 100%
+          var(--settings-table-surface) 100%
         );
         transition: opacity 120ms ease;
         content: "";
@@ -423,13 +429,13 @@
 
     &.table-hover .table-row:hover > .table-td:last-child,
     &.table-clickable .table-row:hover > .table-td:last-child {
-      background: var(--color-surface-container);
+      background: var(--settings-table-surface);
 
       &::before {
         background: linear-gradient(
           90deg,
           transparent 0%,
-          var(--color-surface-container) 100%
+          var(--settings-table-surface) 100%
         );
       }
     }
@@ -444,26 +450,39 @@
   .table-row,
   .table-expanded-row,
   .table-tbody > tr:not(.table-row):not(.table-expanded-row),
-  .table-empty {
-    background: var(--color-surface-container);
+  .table-empty,
+  .table-row > .table-td,
+  .table-expanded-row > .table-td {
+    background: var(--settings-table-surface);
   }
 
   &.table-hover .table-row,
   &.table-hover .table-expanded-row,
   &.table-clickable .table-row,
   &.table-clickable .table-expanded-row {
-    &:hover {
-      background: var(--color-surface-container);
+    &:hover,
+    &:hover > .table-td {
+      background: var(--settings-table-surface);
     }
   }
 
   &.table-expanded-no-hover .table-expanded-row:hover,
-  .table-row-hover-suppressed:hover {
-    background: var(--color-surface-container) !important;
+  &.table-expanded-no-hover .table-expanded-row:hover > .table-td,
+  .table-row-hover-suppressed:hover,
+  .table-row-hover-suppressed:hover > .table-td {
+    background: var(--settings-table-surface) !important;
   }
 
   .table-expanded-row .bg-chat-input {
-    background: var(--color-surface-container);
+    background: var(--settings-table-surface);
+  }
+
+  .settings-table-root-chat-panel &,
+  .settings-table-root-chat-panel .table-wrapper,
+  .settings-table-root-chat-panel .table-container,
+  .settings-table-root-chat-panel .table-scroll,
+  .settings-table-root-chat-panel .table-pagination-wrapper {
+    background: var(--settings-table-surface);
   }
 
   &.table-policy-fixed-layout .table {
@@ -480,24 +499,35 @@
 
   &.table-settings-rounded-top {
     .table-thead .table-th:first-child {
-      border-top-left-radius: 8px;
+      border-top-left-radius: 12px;
     }
 
     .table-thead .table-th:last-child {
-      border-top-right-radius: 8px;
+      border-top-right-radius: 12px;
     }
   }
 
-  &.table-settings-no-footer.table-hover {
-    .table-row:last-child:hover .table-td:first-child,
-    .table-expanded-row-last:hover .table-td:first-child {
-      border-bottom-left-radius: 8px;
+  &.table-settings-no-footer {
+    .table-tbody > tr:last-child > .table-td:first-child,
+    .table-tbody > tr:last-child > td:first-child,
+    .table-row:last-child .table-td:first-child,
+    .table-expanded-row-last .table-td:first-child {
+      border-bottom-left-radius: 12px;
     }
 
-    .table-row:last-child:hover .table-td:last-child,
-    .table-expanded-row-last:hover .table-td:last-child {
-      border-bottom-right-radius: 8px;
+    .table-tbody > tr:last-child > .table-td:last-child,
+    .table-tbody > tr:last-child > td:last-child,
+    .table-row:last-child .table-td:last-child,
+    .table-expanded-row-last .table-td:last-child {
+      border-bottom-right-radius: 12px;
     }
+  }
+
+  .table-pagination-wrapper,
+  > div:last-child.flex.h-12 {
+    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    background: var(--settings-table-surface);
   }
 
   .table-expanded-row + .table-row .table-td {
@@ -512,6 +542,111 @@
 
 .settings-table-root {
   container-type: inline-size;
+}
+
+.settings-table-root-default .table-settings {
+  --settings-table-surface: var(--color-surface-container);
+}
+
+.settings-table-root-transparent,
+.settings-table-root-transparent .table-settings {
+  --settings-table-surface: transparent;
+}
+
+.settings-table-root-transparent {
+  background: transparent;
+}
+
+.settings-table-root-transparent .table-settings .table-row,
+.settings-table-root-transparent .table-settings .table-expanded-row,
+.settings-table-root-transparent .table-settings .table-row > .table-td,
+.settings-table-root-transparent
+  .table-settings
+  .table-expanded-row
+  > .table-td,
+.settings-table-root-transparent .table-settings .table-td-inner,
+.settings-table-root-transparent .table-settings .table-tbody,
+.settings-table-root-transparent .table-settings .table,
+.settings-table-root-transparent .table-settings .table-fixed-header {
+  background: transparent;
+}
+
+.settings-table-root-transparent .table-settings.table-hover .table-row:hover,
+.settings-table-root-transparent
+  .table-settings.table-hover
+  .table-expanded-row:hover,
+.settings-table-root-transparent
+  .table-settings.table-hover
+  .table-row:hover
+  > .table-td,
+.settings-table-root-transparent
+  .table-settings.table-hover
+  .table-expanded-row:hover
+  > .table-td,
+.settings-table-root-transparent
+  .table-settings.table-clickable
+  .table-row:hover,
+.settings-table-root-transparent
+  .table-settings.table-clickable
+  .table-row:hover
+  > .table-td {
+  background: transparent;
+}
+
+.settings-table-root-transparent .table-settings.table-dark .table-tbody {
+  background: transparent;
+}
+
+.settings-table-root-chat-panel,
+.settings-table-root-chat-panel .table-settings {
+  --settings-table-surface: var(--color-chat-panel-info-container);
+}
+
+.settings-table-root-chat-panel .table-settings .table-row,
+.settings-table-root-chat-panel .table-settings .table-expanded-row,
+.settings-table-root-chat-panel .table-settings .table-row > .table-td,
+.settings-table-root-chat-panel .table-settings .table-expanded-row > .table-td,
+.settings-table-root-chat-panel .table-settings .table-td-inner {
+  background: var(--settings-table-surface);
+}
+
+.table-settings.table-settings-fill-height {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+
+  .table-wrapper {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .table-container {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .table-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+}
+
+.table-settings.table-settings-contained-scroll {
+  .table-fixed-header {
+    position: static;
+    top: auto;
+    flex-shrink: 0;
+  }
 }
 
 @container (max-width: 500px) {
@@ -535,22 +670,22 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 8px;
+  height: 12px;
   pointer-events: none;
   z-index: 1;
   background:
     radial-gradient(
-        circle 8px at 100% 100%,
+        circle 12px at 100% 100%,
         transparent 7.5px,
-        var(--color-bg-2) 8px
+        var(--color-bg-2) 12px
       )
-      left top / 8px 8px no-repeat,
+      left top / 12px 12px no-repeat,
     radial-gradient(
-        circle 8px at 0% 100%,
+        circle 12px at 0% 100%,
         transparent 7.5px,
-        var(--color-bg-2) 8px
+        var(--color-bg-2) 12px
       )
-      right top / 8px 8px no-repeat;
+      right top / 12px 12px no-repeat;
 }
 
 // Fixed layout — forces columns to respect assigned widths
@@ -612,7 +747,7 @@
   padding: 16px;
   border-top: 1px solid var(--border-1);
   background: var(--color-bg-1);
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 12px 12px;
 }
 
 .table-pagination {
@@ -665,7 +800,7 @@
 .table-pagination-jumper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 13px;
   color: var(--text-2);
 

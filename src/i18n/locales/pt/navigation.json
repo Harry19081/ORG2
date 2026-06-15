@@ -45,7 +45,8 @@
     "projects": "Histórias",
     "projectManager": "Project Manager",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "Colegas"
   },
   "trajectoryPanel": {
     "title": "Trajetória",
@@ -109,8 +110,7 @@
       "title": "Agrupar por",
       "byTime": "Por Tempo",
       "byAgent": "Por Agent",
-      "byWorkspace": "Por Workspace",
-      "byTags": "Por Tags"
+      "byWorkspace": "Por Workspace"
     },
     "defaults": {
       "untitledSession": "Sessão Sem Título",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "Pesquisar no Workspace...",
       "sessions": "Pesquisar sessões...",
-      "projects": "Pesquisar projetos..."
+      "projects": "Pesquisar projetos...",
+      "colleagues": "Pesquisar colegas..."
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
@@ -372,5 +373,68 @@
     "details": "Detalhes",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "Adicionar ORG",
+    "unknownOrg": "ORG desconhecida",
+    "emptyColleagues": "Ainda não há atividade de colegas",
+    "emptyColleaguesDesc": "Adicione uma ORG para começar a compartilhar metadados de sessão com colegas.",
+    "createOrg": "Criar",
+    "joinOrg": "Entrar",
+    "orgSource": "Origem da organização",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "URL do hub Cloudflare",
+    "orgName": "Nome da ORG",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "Link ou código de convite",
+    "inviteCodePlaceholder": "Cole um link orgii:// ou código de convite",
+    "joinAs": "Entrar como",
+    "joinAsPlaceholder": "Seu nome",
+    "identityKind": "Minha identidade",
+    "identityHuman": "Humano",
+    "identityAgent": "Agent",
+    "inviteReady": "Convite pronto",
+    "copyInvite": "Copiar convite",
+    "copiedInvite": "Copiado",
+    "setupMode": "Modo de configuração",
+    "hubSetupTitle": "Como configurar a URL do hub Cloudflare",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG não encontrada",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Membros",
+      "chat": "Chat em grupo"
+    },
+    "stats": {
+      "members": "Membros",
+      "sessionsToday": "Sessions hoje",
+      "totalSessions": "Sessions totais",
+      "activeToday": "Ativos hoje"
+    },
+    "status": {
+      "connected": "Conectado",
+      "offline": "Offline",
+      "activeToday": "Ativo hoje",
+      "idle": "Ocioso"
+    },
+    "chat": {
+      "empty": "Ainda não há mensagens em grupo",
+      "placeholder": "Compartilhe uma atualização ou link...",
+      "send": "Enviar",
+      "humanOnly": "Somente identidades humanas podem postar no chat em grupo.",
+      "hint": "Humanos podem conversar aqui e compartilhar links com a ORG."
+    },
+    "sessionStatusActive": "Ativo",
+    "localHuman": "Humano local",
+    "backToOrg": "Voltar para a ORG",
+    "invite": {
+      "title": "Link de convite",
+      "description": "Crie um link de convite para colegas entrarem nesta ORG. O link mais recente aparece aqui para copiar rapidamente.",
+      "adminOnly": "Somente administradores da ORG podem criar links de convite.",
+      "create": "Criar convite",
+      "createNew": "Novo convite"
+    },
+    "orgDashboard": "Painel"
   }
 }

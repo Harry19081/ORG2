@@ -87,6 +87,7 @@
       "started": "Başlatıldı",
       "lastUpdated": "Son güncelleme",
       "agentModel": "Agent · Model",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Bu filtrelerle eşleşen oturum yok",
       "emptyDescription": "Farklı bir durum, Agent türü veya zaman aralığı deneyin."
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "{{repo}} için Commits",
       "commitsToMultiple": "{{repos}} için Commits"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} dosya",
+      "filesChanged_other": "{{count}} dosya",
+      "commits_one": "{{count}} commit",
+      "commits_other": "{{count}} commit",
+      "committedRateShort": "%{{percent}} commitlendi"
     }
   },
   "changes": {
@@ -737,14 +745,11 @@
     "historyThisWeek": "Bu hafta",
     "historyOlder": "Daha eski",
     "historyPinned": "Sabitlendi",
-    "historyNoTags": "Etiketsiz",
     "historyRefresh": "Yenile",
     "historyLastUsedModel": "Son kullanılan model",
     "historyUntitled": "Başlıksız oturum",
     "pinSession": "Sabitle",
     "unpinSession": "Sabitlemeyi kaldır",
-    "addTag": "Etiket ekle...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "İzniniz gerekiyor",
     "questionsPrompt": "Yanıtınız gerekiyor",
     "generatingQuestions": "Sorular oluşturuluyor",
@@ -937,7 +942,7 @@
     "explore": "Keşfet",
     "readFile": "Dosya oku",
     "readFileRunning": "Okunuyor",
-    "readFileDone": "Okundu",
+    "readFileDone": "Oku",
     "readFileFailed": "Okumayı denedi",
     "readFileSkillRunning": "Skill kullanılıyor",
     "readFileSkillDone": "Skill kullan",

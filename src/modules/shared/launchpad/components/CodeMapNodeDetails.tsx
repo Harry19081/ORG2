@@ -3,6 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { CodeMapNodeDetails as CodeMapNodeDetailsData } from "@src/api/tauri/codeMap";
+import { DETAIL_PANEL_TOKENS } from "@src/modules/shared/layouts/blocks";
 
 import CodeMapRelationshipList from "./CodeMapRelationshipList";
 
@@ -19,7 +20,9 @@ export const CodeMapNodeDetails: React.FC<CodeMapNodeDetailsProps> = ({
 
   if (loading) {
     return (
-      <div className="rounded-lg bg-fill-2 p-4 text-[12px] text-text-3">
+      <div
+        className={`${DETAIL_PANEL_TOKENS.chatPanelInfoContainer} text-[12px] text-text-3`}
+      >
         {t("controlTower.codeMap.browser.loadingDetails")}
       </div>
     );
@@ -27,14 +30,16 @@ export const CodeMapNodeDetails: React.FC<CodeMapNodeDetailsProps> = ({
 
   if (!details) {
     return (
-      <div className="rounded-lg bg-fill-2 p-4 text-[12px] text-text-3">
+      <div
+        className={`${DETAIL_PANEL_TOKENS.chatPanelInfoContainer} text-[12px] text-text-3`}
+      >
         {t("controlTower.codeMap.browser.selectNode")}
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 rounded-lg bg-fill-2 p-4">
+    <div className={`${DETAIL_PANEL_TOKENS.chatPanelInfoContainer} space-y-3`}>
       <div className="flex min-w-0 items-start gap-2">
         <FileCode2 size={16} className="mt-0.5 shrink-0 text-text-2" />
         <div className="min-w-0 flex-1">
@@ -67,7 +72,7 @@ export const CodeMapNodeDetails: React.FC<CodeMapNodeDetailsProps> = ({
       </div>
 
       {details.source ? (
-        <div className="rounded-md bg-bg-1 p-3">
+        <div className="rounded-md bg-chat-pane p-3">
           <div className="mb-2 text-[12px] font-medium text-text-1">
             {t("controlTower.codeMap.browser.source")}
           </div>

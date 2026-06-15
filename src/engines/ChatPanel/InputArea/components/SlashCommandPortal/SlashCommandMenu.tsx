@@ -39,7 +39,7 @@ import { useEntries } from "./useEntries";
 import { useKeyboard } from "./useKeyboard";
 
 const PANEL_WIDTH = 280;
-const MAX_PANEL_HEIGHT = 360;
+const MAX_PANEL_HEIGHT = 300;
 const MAX_SKILLS_SECTION_HEIGHT = 200;
 
 const SlashCommandMenu: React.FC<SlashCommandPortalProps> = ({
@@ -224,6 +224,7 @@ const SlashCommandMenu: React.FC<SlashCommandPortalProps> = ({
   return createPortal(
     <div
       ref={portalContainerRef}
+      data-slash-portal
       className="fixed z-[99999] flex flex-col gap-2"
       style={portalStyle}
     >

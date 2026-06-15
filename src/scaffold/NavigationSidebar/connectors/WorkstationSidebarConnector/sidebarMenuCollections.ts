@@ -31,6 +31,7 @@ type TCommon = (key: string, defaultValue?: string) => string;
 
 interface UsePinnedMenuItemsParams {
   activeSidebarKey: WorkstationSidebarKey;
+  addOrgLabel: string;
   createProjectLabel: string;
   createWorkItemLabel: string;
   newSessionLabel: string;
@@ -44,6 +45,7 @@ interface UsePinnedMenuItemsResult {
 
 export function usePinnedMenuItems({
   activeSidebarKey,
+  addOrgLabel,
   createProjectLabel,
   createWorkItemLabel,
   newSessionLabel,
@@ -62,8 +64,12 @@ export function usePinnedMenuItems({
   );
   const projectsPinnedMenuItems = useMemo<NavigationMenuItem[]>(
     () =>
-      buildProjectsPinnedMenuItems({ createProjectLabel, createWorkItemLabel }),
-    [createProjectLabel, createWorkItemLabel]
+      buildProjectsPinnedMenuItems({
+        addOrgLabel,
+        createProjectLabel,
+        createWorkItemLabel,
+      }),
+    [addOrgLabel, createProjectLabel, createWorkItemLabel]
   );
   const foldersPinnedMenuItems = useMemo<NavigationMenuItem[]>(
     () =>

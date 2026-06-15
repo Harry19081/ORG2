@@ -25,9 +25,11 @@ export {
   runFreshStopRollbackScenario,
   runQueueAutodispatchesAfterNaturalCompletionScenario,
   runQueueDoesNotAutoflushWhileActiveScenario,
+  runQueueEditImageUploadScenario,
   runSendAfterIdleDoesNotQueueScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
+  runStopWithBackgroundSubagentNextMessageScenario,
 } from "./agentQueuedControlScenarios.mjs";
 export {
   runPlanBuildDirectScenario,
@@ -41,4 +43,7 @@ export {
   runAskForceSendScenario,
   runAskWriteDeniedScenario,
 } from "./agentQueuedAskScenarios.mjs";
-export { runRewindScenario } from "./agentQueuedRewindScenarios.mjs";
+export {
+  runRestoreCheckpointScenario,
+  runRewindScenario,
+} from "./agentQueuedRewindScenarios.mjs";

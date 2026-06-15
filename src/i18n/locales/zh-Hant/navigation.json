@@ -45,7 +45,8 @@
     "projects": "專案",
     "projectManager": "專案管理器",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "同事"
   },
   "trajectoryPanel": {
     "title": "軌跡",
@@ -109,8 +110,7 @@
       "title": "分組",
       "byTime": "按時間",
       "byAgent": "按 Agent",
-      "byWorkspace": "按工作區",
-      "byTags": "按標籤"
+      "byWorkspace": "按工作區"
     },
     "defaults": {
       "untitledSession": "未命名 Session",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "搜尋工作區...",
       "sessions": "搜尋會話...",
-      "projects": "搜尋專案..."
+      "projects": "搜尋專案...",
+      "colleagues": "搜尋同事..."
     },
     "folderCounts": {
       "repo": "{{count}}個倉庫",
@@ -461,5 +462,68 @@
     "details": "詳情",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "新增 ORG",
+    "unknownOrg": "未知 ORG",
+    "emptyColleagues": "暫無同事活動",
+    "emptyColleaguesDesc": "新增 ORG，開始與隊友共享工作階段中繼資料。",
+    "createOrg": "建立",
+    "joinOrg": "加入",
+    "orgSource": "組織來源",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "Cloudflare hub URL",
+    "orgName": "ORG 名稱",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "邀請連結或代碼",
+    "inviteCodePlaceholder": "貼上 orgii:// 邀請連結或邀請代碼",
+    "joinAs": "顯示名稱",
+    "joinAsPlaceholder": "你的名字",
+    "identityKind": "我的身份",
+    "identityHuman": "Human",
+    "identityAgent": "Agent",
+    "inviteReady": "邀請已產生",
+    "copyInvite": "複製邀請",
+    "copiedInvite": "已複製",
+    "setupMode": "設定模式",
+    "hubSetupTitle": "如何設定 Cloudflare hub URL",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "找不到 ORG",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "成員",
+      "chat": "群組聊天"
+    },
+    "stats": {
+      "members": "成員",
+      "sessionsToday": "今日 Sessions",
+      "totalSessions": "Sessions 總數",
+      "activeToday": "今日活躍"
+    },
+    "status": {
+      "connected": "已連線",
+      "offline": "離線",
+      "activeToday": "今日活躍",
+      "idle": "閒置"
+    },
+    "chat": {
+      "empty": "尚無群組訊息",
+      "placeholder": "分享更新或連結...",
+      "send": "傳送",
+      "humanOnly": "只有 Human 身分可以在群組聊天中發言。",
+      "hint": "人類成員可以在這裡聊天，並與 ORG 分享連結。"
+    },
+    "sessionStatusActive": "活躍",
+    "localHuman": "本機 Human",
+    "backToOrg": "返回 ORG",
+    "invite": {
+      "title": "邀請連結",
+      "description": "建立邀請連結，讓隊友加入此 ORG。最新連結會顯示在這裡，方便快速複製。",
+      "adminOnly": "只有 ORG 管理員可以建立邀請連結。",
+      "create": "建立邀請",
+      "createNew": "新邀請"
+    },
+    "orgDashboard": "儀表板"
   }
 }

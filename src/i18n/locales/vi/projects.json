@@ -71,9 +71,16 @@
   },
   "orgs": {
     "yourOrgs": "Tổ chức của bạn",
+    "sectionTitle": "Tổ chức",
+    "recentProjects": "Dự án gần đây",
     "personalOrg": "Tổ chức cá nhân",
     "linearOrg": "Tổ chức Linear",
     "noLinearOrgs": "Chưa có tổ chức nào được kết nối",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "Thêm tổ chức",
     "importOrgs": "Nhập tổ chức",
     "importLinearOrgs": "Nhập tổ chức Linear",

@@ -87,6 +87,7 @@
       "started": "Démarré",
       "lastUpdated": "Dernière mise à jour",
       "agentModel": "Agent · Modèle",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Aucune session ne correspond à ces filtres",
       "emptyDescription": "Essayez un autre statut, type d'Agent ou intervalle."
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "Commits vers {{repo}}",
       "commitsToMultiple": "Commits vers {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} fichier",
+      "filesChanged_other": "{{count}} fichiers",
+      "commits_one": "{{count}} commit",
+      "commits_other": "{{count}} commits",
+      "committedRateShort": "{{percent}} % validé"
     }
   },
   "changes": {
@@ -737,14 +745,11 @@
     "historyThisWeek": "Cette semaine",
     "historyOlder": "Plus ancien",
     "historyPinned": "Épinglés",
-    "historyNoTags": "Sans étiquette",
     "historyRefresh": "Actualiser",
     "historyLastUsedModel": "Dernier modèle utilisé",
     "historyUntitled": "Session sans titre",
     "pinSession": "Épingler",
     "unpinSession": "Désépingler",
-    "addTag": "Ajouter un tag...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "Votre autorisation est requise",
     "questionsPrompt": "Votre réponse est requise",
     "generatingQuestions": "Génération des questions",
@@ -937,7 +942,7 @@
     "explore": "Explorer",
     "readFile": "Lire le fichier",
     "readFileRunning": "Lecture",
-    "readFileDone": "Lu",
+    "readFileDone": "Lire",
     "readFileFailed": "Tentative de lecture",
     "readFileSkillRunning": "Utilisation de la skill",
     "readFileSkillDone": "Utiliser la skill",

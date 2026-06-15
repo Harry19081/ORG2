@@ -87,6 +87,7 @@
       "started": "Gestartet",
       "lastUpdated": "Zuletzt aktualisiert",
       "agentModel": "Agent · Modell",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Keine Sitzungen entsprechen diesen Filtern",
       "emptyDescription": "Versuchen Sie einen anderen Status, Agent-Typ oder Zeitraum."
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "Commits in {{repo}}",
       "commitsToMultiple": "Commits in {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} Datei",
+      "filesChanged_other": "{{count}} Dateien",
+      "commits_one": "{{count}} Commit",
+      "commits_other": "{{count}} Commits",
+      "committedRateShort": "{{percent}} % committed"
     }
   },
   "changes": {
@@ -737,14 +745,11 @@
     "historyThisWeek": "Diese Woche",
     "historyOlder": "Älter",
     "historyPinned": "Angeheftet",
-    "historyNoTags": "Ohne Tag",
     "historyRefresh": "Aktualisieren",
     "historyLastUsedModel": "Zuletzt verwendetes Modell",
     "historyUntitled": "Unbenannte Sitzung",
     "pinSession": "Anpinnen",
     "unpinSession": "Entpinnen",
-    "addTag": "Tag hinzufügen...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "Deine Berechtigung wird benötigt",
     "questionsPrompt": "Deine Eingabe wird benötigt",
     "generatingQuestions": "Fragen werden generiert",
@@ -937,7 +942,7 @@
     "explore": "Erkunden",
     "readFile": "Datei lesen",
     "readFileRunning": "Wird gelesen",
-    "readFileDone": "Gelesen",
+    "readFileDone": "Lesen",
     "readFileFailed": "Leseversuch",
     "readFileSkillRunning": "Skill wird verwendet",
     "readFileSkillDone": "Skill verwenden",

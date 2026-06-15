@@ -891,7 +891,6 @@
     "diskCategory_sessionsDb": "База данных Session",
     "diskCategory_logs": "Журналы",
     "diskCategory_personalWorkspace": "Рабочая область OS Agent",
-    "diskCategory_partials": "Временные данные Session",
     "diskCategory_cursorConfig": "CLI-конфигурации Session",
     "diskCategory_geminiCliHome": "Каталоги Gemini CLI",
     "diskCategory_extensions": "Расширения",

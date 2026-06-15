@@ -2,6 +2,8 @@ import type { TFunction } from "i18next";
 import React from "react";
 
 import { SESSION_CREATOR_LAUNCH_MODE } from "@src/features/SessionCreator/types";
+import CreateCollabOrgView from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
+import type { CreatedOrgResult } from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
 import CreateProjectView from "@src/modules/ProjectManager/Projects/components/CreateProjectView";
 import CreateWorkItemView, {
   type CreatedWorkItemResult,
@@ -43,7 +45,9 @@ interface ChatPanelEmptyContentProps {
     React.ComponentProps<SessionCreatorSlot>["onSessionStart"]
   >;
   handleCancelWorkItemCreate: () => void;
+  handleCancelCollabOrgCreate: () => void;
   handleChatPanelProjectCreated: (options?: { keepOpen?: boolean }) => void;
+  handleChatPanelCollabOrgCreated: (result: CreatedOrgResult) => void;
   handleChatPanelWorkItemCreated: (result?: CreatedWorkItemResult) => void;
   handleRegionNoticeChange: (notice: ChatPanelRegionNotice | null) => void;
   handleWorkItemAgentCreatorToggle: (enabled: boolean) => void;
@@ -69,7 +73,9 @@ export function ChatPanelEmptyContent({
   defaultAiWorkItemAssignee,
   handleAiWorkItemSessionStart,
   handleCancelWorkItemCreate,
+  handleCancelCollabOrgCreate,
   handleChatPanelProjectCreated,
+  handleChatPanelCollabOrgCreated,
   handleChatPanelWorkItemCreated,
   handleRegionNoticeChange,
   handleWorkItemAgentCreatorToggle,
@@ -167,6 +173,17 @@ export function ChatPanelEmptyContent({
     return (
       <div className={`flex overflow-hidden ${creatorClassName}`}>
         {workItemCreator}
+      </div>
+    );
+  }
+
+  if (createTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG) {
+    return (
+      <div className={`flex overflow-hidden ${creatorClassName}`}>
+        <CreateCollabOrgView
+          onCancel={handleCancelCollabOrgCreate}
+          onCreated={handleChatPanelCollabOrgCreated}
+        />
       </div>
     );
   }

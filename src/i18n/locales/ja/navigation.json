@@ -45,7 +45,8 @@
     "projects": "Projects",
     "projectManager": "Project マネージャー",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "同僚"
   },
   "trajectoryPanel": {
     "title": "トラジェクトリ",
@@ -109,8 +110,7 @@
       "title": "グループ表示",
       "byTime": "時間順",
       "byAgent": "Agent 別",
-      "byWorkspace": "Workspace 別",
-      "byTags": "タグ別"
+      "byWorkspace": "Workspace 別"
     },
     "defaults": {
       "untitledSession": "無題のSession",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "ワークスペースを検索...",
       "sessions": "セッションを検索...",
-      "projects": "プロジェクトを検索..."
+      "projects": "プロジェクトを検索...",
+      "colleagues": "同僚を検索..."
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
@@ -370,5 +371,68 @@
     "details": "詳細",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "ORG を追加",
+    "unknownOrg": "不明な ORG",
+    "emptyColleagues": "同僚のアクティビティはまだありません",
+    "emptyColleaguesDesc": "ORG を追加して、チームメイトとのセッションメタデータ共有を開始します。",
+    "createOrg": "作成",
+    "joinOrg": "参加",
+    "orgSource": "Org ソース",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "Cloudflare hub URL",
+    "orgName": "ORG 名",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "招待リンクまたはコード",
+    "inviteCodePlaceholder": "orgii:// 招待リンクまたは招待コードを貼り付け",
+    "joinAs": "参加名",
+    "joinAsPlaceholder": "あなたの名前",
+    "identityKind": "自分の ID",
+    "identityHuman": "Human",
+    "identityAgent": "Agent",
+    "inviteReady": "招待の準備完了",
+    "copyInvite": "招待をコピー",
+    "copiedInvite": "コピー済み",
+    "setupMode": "セットアップモード",
+    "hubSetupTitle": "Cloudflare hub URL の設定方法",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG が見つかりません",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "メンバー",
+      "chat": "グループチャット"
+    },
+    "stats": {
+      "members": "メンバー",
+      "sessionsToday": "今日の Sessions",
+      "totalSessions": "Sessions 合計",
+      "activeToday": "今日アクティブ"
+    },
+    "status": {
+      "connected": "接続済み",
+      "offline": "オフライン",
+      "activeToday": "今日アクティブ",
+      "idle": "アイドル"
+    },
+    "chat": {
+      "empty": "グループメッセージはまだありません",
+      "placeholder": "更新やリンクを共有...",
+      "send": "送信",
+      "humanOnly": "Human ID のみがグループチャットに投稿できます。",
+      "hint": "人間メンバーはここで会話し、ORG とリンクを共有できます。"
+    },
+    "sessionStatusActive": "アクティブ",
+    "localHuman": "ローカル Human",
+    "backToOrg": "ORG に戻る",
+    "invite": {
+      "title": "招待リンク",
+      "description": "チームメイトがこの ORG に参加できる招待リンクを作成します。最新のリンクはここに表示され、すぐコピーできます。",
+      "adminOnly": "ORG 管理者だけが招待リンクを作成できます。",
+      "create": "招待を作成",
+      "createNew": "新しい招待"
+    },
+    "orgDashboard": "ダッシュボード"
   }
 }

@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import { Folders, House, ListTodo, MessageCircle } from "lucide-react";
+import { Folders, House, MessageCircle, Network } from "lucide-react";
 import React, { useMemo } from "react";
 
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
@@ -31,9 +31,9 @@ export function useWorkstationSidebarTabs(t: TFunction<"navigation">) {
       },
       {
         key: "projects",
-        label: t("labels.project"),
-        icon: ListTodo,
-        iconName: "list-todo",
+        label: t("labels.org"),
+        icon: Network,
+        iconName: "network",
       },
     ],
     [t]

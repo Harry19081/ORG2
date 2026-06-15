@@ -45,7 +45,8 @@
     "projects": "Historie",
     "projectManager": "Project Manager",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "Współpracownicy"
   },
   "trajectoryPanel": {
     "title": "Trajektoria",
@@ -109,8 +110,7 @@
       "title": "Grupuj według",
       "byTime": "Według czasu",
       "byAgent": "Według Agenta",
-      "byWorkspace": "Według Workspace",
-      "byTags": "Według Tagów"
+      "byWorkspace": "Według Workspace"
     },
     "defaults": {
       "untitledSession": "Sesja bez nazwy",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "Szukaj w Workspace...",
       "sessions": "Szukaj sesji...",
-      "projects": "Szukaj projektów..."
+      "projects": "Szukaj projektów...",
+      "colleagues": "Szukaj współpracowników..."
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
@@ -370,5 +371,68 @@
     "details": "Szczegóły",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "Dodaj ORG",
+    "unknownOrg": "Nieznana ORG",
+    "emptyColleagues": "Brak aktywności współpracowników",
+    "emptyColleaguesDesc": "Dodaj ORG, aby zacząć udostępniać metadane sesji członkom zespołu.",
+    "createOrg": "Utwórz",
+    "joinOrg": "Dołącz",
+    "orgSource": "Źródło Org",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "URL huba Cloudflare",
+    "orgName": "Nazwa ORG",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "Link lub kod zaproszenia",
+    "inviteCodePlaceholder": "Wklej link orgii:// lub kod zaproszenia",
+    "joinAs": "Dołącz jako",
+    "joinAsPlaceholder": "Twoje imię",
+    "identityKind": "Moja tożsamość",
+    "identityHuman": "Człowiek",
+    "identityAgent": "Agent",
+    "inviteReady": "Zaproszenie gotowe",
+    "copyInvite": "Kopiuj zaproszenie",
+    "copiedInvite": "Skopiowano",
+    "setupMode": "Tryb konfiguracji",
+    "hubSetupTitle": "Jak skonfigurować URL huba Cloudflare",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "Nie znaleziono ORG",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Członkowie",
+      "chat": "Czat grupowy"
+    },
+    "stats": {
+      "members": "Członkowie",
+      "sessionsToday": "Dzisiejsze Sessions",
+      "totalSessions": "Łącznie Sessions",
+      "activeToday": "Aktywni dziś"
+    },
+    "status": {
+      "connected": "Połączono",
+      "offline": "Offline",
+      "activeToday": "Aktywny dziś",
+      "idle": "Bezczynny"
+    },
+    "chat": {
+      "empty": "Brak wiadomości grupowych",
+      "placeholder": "Udostępnij aktualizację lub link...",
+      "send": "Wyślij",
+      "humanOnly": "Tylko tożsamości ludzkie mogą pisać na czacie grupowym.",
+      "hint": "Ludzie mogą tutaj rozmawiać i udostępniać linki w ORG."
+    },
+    "sessionStatusActive": "Aktywne",
+    "localHuman": "Lokalny człowiek",
+    "backToOrg": "Wróć do ORG",
+    "invite": {
+      "title": "Link z zaproszeniem",
+      "description": "Utwórz link z zaproszeniem, aby członkowie zespołu mogli dołączyć do tej ORG. Najnowszy link jest pokazany tutaj do szybkiego kopiowania.",
+      "adminOnly": "Tylko administratorzy ORG mogą tworzyć linki z zaproszeniem.",
+      "create": "Utwórz zaproszenie",
+      "createNew": "Nowe zaproszenie"
+    },
+    "orgDashboard": "Panel"
   }
 }

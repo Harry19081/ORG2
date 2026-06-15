@@ -71,9 +71,16 @@
   },
   "orgs": {
     "yourOrgs": "Ваши организации",
-    "personalOrg": "Личная организация",
+    "sectionTitle": "Организации",
+    "recentProjects": "Недавние проекты",
+    "personalOrg": "Мои проекты",
     "linearOrg": "Организация Linear",
     "noLinearOrgs": "Подключенных организаций пока нет",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "Добавить организацию",
     "importOrgs": "Импортировать организации",
     "importLinearOrgs": "Импортировать организации Linear",

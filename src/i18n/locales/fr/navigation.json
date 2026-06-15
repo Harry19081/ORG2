@@ -45,7 +45,8 @@
     "projects": "Projects",
     "projectManager": "Project Manager",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "Collègues"
   },
   "trajectoryPanel": {
     "title": "Trajectoire",
@@ -109,8 +110,7 @@
       "title": "Grouper par",
       "byTime": "Par date",
       "byAgent": "Par Agent",
-      "byWorkspace": "Par Workspace",
-      "byTags": "Par Tags"
+      "byWorkspace": "Par Workspace"
     },
     "defaults": {
       "untitledSession": "Session sans titre",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "Rechercher dans l’espace de travail...",
       "sessions": "Rechercher des sessions...",
-      "projects": "Rechercher des projets..."
+      "projects": "Rechercher des projets...",
+      "colleagues": "Rechercher des collègues..."
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
@@ -372,5 +373,68 @@
     "details": "Détails",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "Ajouter une ORG",
+    "unknownOrg": "ORG inconnue",
+    "emptyColleagues": "Aucune activité de collègue pour le moment",
+    "emptyColleaguesDesc": "Ajoutez une ORG pour commencer à partager les métadonnées de session avec vos coéquipiers.",
+    "createOrg": "Créer",
+    "joinOrg": "Rejoindre",
+    "orgSource": "Source de l’organisation",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "URL du hub Cloudflare",
+    "orgName": "Nom de l’ORG",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "Lien ou code d’invitation",
+    "inviteCodePlaceholder": "Collez un lien orgii:// ou un code d’invitation",
+    "joinAs": "Rejoindre en tant que",
+    "joinAsPlaceholder": "Votre nom",
+    "identityKind": "Mon identité",
+    "identityHuman": "Humain",
+    "identityAgent": "Agent",
+    "inviteReady": "Invitation prête",
+    "copyInvite": "Copier l’invitation",
+    "copiedInvite": "Copié",
+    "setupMode": "Mode de configuration",
+    "hubSetupTitle": "Configurer l’URL du hub Cloudflare",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG introuvable",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Membres",
+      "chat": "Chat de groupe"
+    },
+    "stats": {
+      "members": "Membres",
+      "sessionsToday": "Sessions aujourd'hui",
+      "totalSessions": "Sessions totales",
+      "activeToday": "Actifs aujourd'hui"
+    },
+    "status": {
+      "connected": "Connecté",
+      "offline": "Hors ligne",
+      "activeToday": "Actif aujourd'hui",
+      "idle": "Inactif"
+    },
+    "chat": {
+      "empty": "Aucun message de groupe pour le moment",
+      "placeholder": "Partagez une mise à jour ou un lien...",
+      "send": "Envoyer",
+      "humanOnly": "Seules les identités humaines peuvent publier dans le chat de groupe.",
+      "hint": "Les humains peuvent discuter ici et partager des liens avec l’ORG."
+    },
+    "sessionStatusActive": "Actif",
+    "localHuman": "Humain local",
+    "backToOrg": "Retour à l’ORG",
+    "invite": {
+      "title": "Lien d'invitation",
+      "description": "Créez un lien d’invitation pour que vos coéquipiers rejoignent cette ORG. Le dernier lien s’affiche ici pour être copié rapidement.",
+      "adminOnly": "Seuls les administrateurs de l’ORG peuvent créer des liens d’invitation.",
+      "create": "Créer une invitation",
+      "createNew": "Nouvelle invitation"
+    },
+    "orgDashboard": "Tableau de bord"
   }
 }

@@ -891,7 +891,6 @@
     "diskCategory_sessionsDb": "Session 数据库",
     "diskCategory_logs": "日志",
     "diskCategory_personalWorkspace": "OS Agent 工作区",
-    "diskCategory_partials": "Session 临时数据",
     "diskCategory_cursorConfig": "Session CLI 配置",
     "diskCategory_geminiCliHome": "Gemini CLI 目录",
     "diskCategory_extensions": "扩展",

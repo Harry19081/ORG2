@@ -2,7 +2,7 @@
 //!
 //! The canonical `ActivityChunk` wire shape lives in
 //! [`core_types::activity::ActivityChunk`] so non-CLI emitters
-//! (`dev_record`, event-pipeline ingestion, websocket broadcasters) can
+//! (`orgtrack_core`, event-pipeline ingestion, websocket broadcasters) can
 //! type their values without depending on this module.
 
 use serde::{Deserialize, Serialize};

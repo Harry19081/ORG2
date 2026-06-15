@@ -29,4 +29,5 @@ pub mod events;
 pub mod io;
 pub mod paths;
 pub mod schema;
+pub mod sync_export;
 pub mod types;

@@ -2,6 +2,7 @@ import {
   Box,
   Compass,
   LayoutDashboard,
+  Network,
   Plus,
   Radar,
   SquarePen,
@@ -14,6 +15,7 @@ import { resolveSessionRowIcon } from "@src/util/session/sessionSidebarRow";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 import {
+  COLLAB_ADD_ORG_MENU_ITEM_ID,
   NEW_SESSION_MENU_ITEM_ID,
   OPS_CONTROL_MENU_ITEM_ID,
   PROJECTS_NEW_PROJECT_MENU_ITEM_ID,
@@ -31,6 +33,7 @@ interface BuildPinnedMenuItemsParams {
 }
 
 interface BuildProjectsPinnedMenuItemsParams {
+  addOrgLabel: string;
   createProjectLabel: string;
   createWorkItemLabel: string;
 }
@@ -71,10 +74,18 @@ export function buildPinnedMenuItems({
 }
 
 export function buildProjectsPinnedMenuItems({
+  addOrgLabel,
   createProjectLabel,
   createWorkItemLabel,
 }: BuildProjectsPinnedMenuItemsParams): NavigationMenuItem[] {
   return [
+    {
+      id: COLLAB_ADD_ORG_MENU_ITEM_ID,
+      key: COLLAB_ADD_ORG_MENU_ITEM_ID,
+      label: addOrgLabel,
+      icon: Network,
+      iconName: "network",
+    },
     {
       id: PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID,
       key: PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID,

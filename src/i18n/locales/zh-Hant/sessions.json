@@ -87,6 +87,7 @@
       "started": "開始時間",
       "lastUpdated": "最後更新",
       "agentModel": "Agent · 模型",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "沒有符合這些篩選條件的會話",
       "emptyDescription": "嘗試切換狀態、Agent 類型或時間範圍。"
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "提交至 {{repo}}",
       "commitsToMultiple": "提交至 {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} 個檔案",
+      "filesChanged_other": "{{count}} 個檔案",
+      "commits_one": "{{count}} 個 Commit",
+      "commits_other": "{{count}} 個 Commit",
+      "committedRateShort": "{{percent}}% 已提交"
     }
   },
   "changes": {
@@ -741,14 +749,11 @@
     "historyThisWeek": "本週",
     "historyOlder": "更早",
     "historyPinned": "置頂",
-    "historyNoTags": "未標記",
     "historyRefresh": "刷新",
     "historyLastUsedModel": "上次使用的模型",
     "historyUntitled": "未命名會話",
     "pinSession": "置頂",
     "unpinSession": "取消置頂",
-    "addTag": "新增標籤...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "需要你的授權",
     "questionsPrompt": "需要你的輸入",
     "generatingQuestions": "正在生成問題",
@@ -941,7 +946,7 @@
     "explore": "探索",
     "readFile": "讀取文件",
     "readFileRunning": "正在讀取",
-    "readFileDone": "閱讀文件",
+    "readFileDone": "閱讀",
     "readFileFailed": "嘗試讀取",
     "readFileSkillRunning": "正在使用 skill",
     "readFileSkillDone": "使用 skill",

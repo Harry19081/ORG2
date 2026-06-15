@@ -8,7 +8,6 @@ import UserChatItem from "../../ChatItems/UserChatItem";
 import ChatPinnedBars from "../../InputArea/components/ChatPinnedBars";
 import TurnCollapsePinBar from "../../InputArea/components/TurnCollapsePinBar";
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
-import { CHAT_FOOTER_SPACER } from "../config/chatFooterSpacer";
 import {
   type ChatGroupMeta,
   isTurnCollapseEligible,
@@ -29,6 +28,7 @@ interface PinnedTurnHeaderProps {
   hideUserMessage: boolean;
   turnCollapseInteractionAtRef: React.MutableRefObject<number>;
   onEditSubmit: GroupHeaderRendererProps["onEditSubmit"];
+  onRestoreCheckpoint: GroupHeaderRendererProps["onRestoreCheckpoint"];
 }
 
 function samePinnedHeader(
@@ -80,6 +80,7 @@ function samePinnedTurnHeaderProps(
     previous.turnCollapseInteractionAtRef ===
       next.turnCollapseInteractionAtRef &&
     previous.onEditSubmit === next.onEditSubmit &&
+    previous.onRestoreCheckpoint === next.onRestoreCheckpoint &&
     samePinnedHeader(previous.header, next.header) &&
     samePinnedMeta(previous.meta, next.meta)
   );
@@ -99,6 +100,7 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
   hideUserMessage,
   turnCollapseInteractionAtRef,
   onEditSubmit,
+  onRestoreCheckpoint,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const collapseGroupIndex = sourceGroupIndex ?? 0;
@@ -119,6 +121,10 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
     },
     [onEditSubmit, header]
   );
+  const handleRestoreCheckpoint = useCallback(() => {
+    if (!onRestoreCheckpoint || !header) return;
+    return onRestoreCheckpoint(header);
+  }, [onRestoreCheckpoint, header]);
 
   if (!visible || !header) return null;
 
@@ -130,9 +136,6 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
       collapseTailWhenIdle,
     });
   const headerPaddingBottomClass = showCollapseBar && turnId ? "" : "pb-2";
-  const pinnedContentBodyGap = showPinnedBars
-    ? CHAT_FOOTER_SPACER.PINNED_CONTENT_BODY_GAP_PX
-    : 0;
 
   return (
     <div className="relative z-[70]">
@@ -146,15 +149,13 @@ const PinnedTurnHeaderComponent: React.FC<PinnedTurnHeaderProps> = ({
                 ? "flex flex-col rounded-[12px] bg-chat-container"
                 : "contents"
             }
-            style={
-              pinnedContentBodyGap > 0
-                ? { marginBottom: pinnedContentBodyGap }
-                : undefined
-            }
           >
             <UserChatItem
               chatItem={header}
               onEditSubmit={onEditSubmit ? handleEdit : undefined}
+              onRestoreCheckpoint={
+                onRestoreCheckpoint ? handleRestoreCheckpoint : undefined
+              }
               onEditingChange={
                 isLastGroup && hasPinnedContent ? setIsEditing : undefined
               }

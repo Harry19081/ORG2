@@ -26,7 +26,6 @@ import {
 } from "./menuItemBuilders";
 import {
   buildByAgentMenuItems,
-  buildByTagsMenuItems,
   buildByTimeMenuItems,
   buildByWorkspaceMenuItems,
 } from "./menuSectionBuilders";
@@ -285,46 +284,17 @@ export function useSessionMenuItems({
       appendTrailingLoadMoreItems,
     ]
   );
-
-  const noTagsLabel = tCommon("sessions:chat.historyNoTags", "Untagged");
-
-  const byTagsMenuItems = useMemo<NavigationMenuItem[]>(
-    () =>
-      buildByTagsMenuItems({
-        unpinnedSessions,
-        noTagsLabel,
-        appendPinnedSessions,
-        appendGroupSessions,
-        appendTrailingLoadMoreItems,
-      }),
-    [
-      unpinnedSessions,
-      noTagsLabel,
-      appendPinnedSessions,
-      appendGroupSessions,
-      appendTrailingLoadMoreItems,
-    ]
-  );
-
   const menuItems = useMemo<NavigationMenuItem[]>(() => {
     switch (groupByMode) {
       case "byAgent":
         return byAgentMenuItems;
       case "byWorkspace":
         return byWorkspaceMenuItems;
-      case "byTags":
-        return byTagsMenuItems;
       case "byTime":
       default:
         return byTimeMenuItems;
     }
-  }, [
-    groupByMode,
-    byTimeMenuItems,
-    byAgentMenuItems,
-    byWorkspaceMenuItems,
-    byTagsMenuItems,
-  ]);
+  }, [groupByMode, byTimeMenuItems, byAgentMenuItems, byWorkspaceMenuItems]);
 
   return { menuItems, sessionMap, isLoadMoreId, getLoadMoreGroupId };
 }

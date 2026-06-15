@@ -87,6 +87,7 @@
       "started": "Started",
       "lastUpdated": "Last Updated",
       "agentModel": "Agent · Model",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "No sessions match these filters",
       "emptyDescription": "Try a different status, agent type, or time window."
     },
@@ -143,6 +144,13 @@
       "completed": "Completed",
       "failed": "Failed",
       "archived": "Archived"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} file",
+      "filesChanged_other": "{{count}} files",
+      "commits_one": "{{count}} commit",
+      "commits_other": "{{count}} commits",
+      "committedRateShort": "{{percent}}% committed"
     },
     "addContent": "Add Content",
     "merge": {
@@ -674,6 +682,7 @@
   "chat": {
     "planApprovedLabel": "Implementing approved plan",
     "planApprovedEditedLabel": "Implementing approved plan (edited)",
+    "restoreCheckpoint": "Restore checkpoint",
     "sessionStarted": "Session started",
     "contentCopied": "Content Copied!",
     "failedToCopyContent": "Failed to copy content",
@@ -747,14 +756,11 @@
     "historyThisWeek": "This week",
     "historyOlder": "Older",
     "historyPinned": "Pinned",
-    "historyNoTags": "Untagged",
     "historyRefresh": "Refresh",
     "historyLastUsedModel": "Last used model",
     "historyUntitled": "Untitled session",
     "pinSession": "Pin",
     "unpinSession": "Unpin",
-    "addTag": "Add Tag...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "Your permission is needed",
     "questionsPrompt": "Your input is needed",
     "generatingQuestions": "Generating questions",

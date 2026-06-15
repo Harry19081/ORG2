@@ -27,7 +27,6 @@ members = [
     "crates/database",
     "crates/db-browser",
     "crates/db-clients",
-    "crates/dev-record",
     "crates/e2e-test",
     "crates/file-ops",
     "crates/git",
@@ -36,6 +35,9 @@ members = [
     "crates/integrations",
     "crates/key-vault",
     "crates/lsp",
+    "crates/orgtrack-core",
+    "crates/orgtrack-graph",
+    "crates/orgtrack-sync",
     "crates/perf-utils",
     "crates/project-management",
     "crates/search",
@@ -135,7 +137,7 @@ dispatch2 = "0.3"
 # same library and pay the build cost twice).
 zip = "2"                # ZIP compression — used by app, agent-core, extensions, lsp
 lzma-sys = { version = "0.1.20", features = ["static"] } # Static liblzma so distributed macOS apps do not depend on Homebrew xz
-sysinfo = "0.38"         # CPU / memory / process metrics — used by perf-utils, dev-record, terminal
+sysinfo = "0.38"         # CPU / memory / process metrics — used by perf-utils and terminal
 rand = "0.9"             # CSPRNG — used by app, project-management
 webpki-roots = "1.0"     # TLS root certs — used by integrations
 base64 = "0.22"          # Base64 codec — used by 8 crates (app, agent-core, app-window, browser, extensions, git, key-vault, project-management, shared-state)
@@ -279,15 +281,6 @@ agent_core = { path = "crates/agent-core" }
 # `.manage()`s the `UiIndexState` in `run()`.
 ui_indexer = { path = "crates/ui-indexer" }
 
-# Local-only developer activity timeline: heartbeat collector, external
-# IDE detection, retroactive backfill from git/IDE history, and the Tauri
-# queries that surface the daily/IDE/file stats. Schema init and the few
-# bootstrap calls (`record_file_change`, `cleanup_old_data`,
-# `backfill_offline_activity`, `heartbeat_import::scan_all`) are wired
-# from `app::lib::run` and `register_database_schemas`. The crate has no
-# parent-crate dependency.
-dev_record = { path = "crates/dev-record" }
-
 # LLM provider key vault, validation, and auto-detection. Keeps its
 # `#[tauri::command]` macros in-crate (cursor-bridge pattern); the
 # `app` crate just re-registers them in `commands/handler_list.inc`.
@@ -313,7 +306,7 @@ db_clients = { path = "crates/db-clients" }
 # Keeps its `#[tauri::command]` macros in-crate (key-vault pattern); the
 # `app` crate re-registers them in `commands/handler_list.inc`. IoC hooks in
 # `git::hooks` keep the crate a leaf — `app::register_git_hooks` wires the
-# websocket / dev_record / automation callbacks once at startup.
+# websocket / automation callbacks once at startup.
 git = { path = "crates/git" }
 
 # Inbox message persistence (SQLite) + Tauri commands. Leaf crate — depends
@@ -331,6 +324,7 @@ inbox = { path = "crates/inbox" }
 # `lineage::git_bridge::get_commit_diff` from `git_api::lineage_bridge`,
 # called once at boot from `app::run()`.
 project_management = { path = "crates/project-management" }
+orgtrack_core = { path = "crates/orgtrack-core" }
 
 # Language Server Protocol manager + lint tooling. Owns LSP server processes,
 # JSON-RPC parsing, lint-tool catalog (eslint/ruff/mypy/golangci-lint/clippy),

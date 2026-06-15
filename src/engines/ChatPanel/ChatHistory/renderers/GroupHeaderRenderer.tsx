@@ -77,13 +77,13 @@ function sameGroupHeaderProps(
     previous.hasPinnedContent === next.hasPinnedContent &&
     previous.collapseLabelVariant === next.collapseLabelVariant &&
     previous.hideCollapseTimeRange === next.hideCollapseTimeRange &&
-    previous.expandPinnedContentGap === next.expandPinnedContentGap &&
     previous.suppressRoundGap === next.suppressRoundGap &&
     previous.collapseTailWhenIdle === next.collapseTailWhenIdle &&
     previous.hideUserMessage === next.hideUserMessage &&
     previous.turnCollapseInteractionAtRef ===
       next.turnCollapseInteractionAtRef &&
     previous.onEditSubmit === next.onEditSubmit &&
+    previous.onRestoreCheckpoint === next.onRestoreCheckpoint &&
     sameHeader(previousHeader, nextHeader) &&
     sameMeta(previousMeta, nextMeta)
   );
@@ -102,8 +102,6 @@ export interface GroupHeaderRendererProps {
   collapseLabelVariant?: "agent" | "agents";
   /** Hide the turn time range when another surface already shows it. */
   hideCollapseTimeRange?: boolean;
-  /** Adds extra space below last-turn pinned content before body events. */
-  expandPinnedContentGap?: boolean;
   /** Suppresses the inter-round top gap for headers rendered outside the list. */
   suppressRoundGap?: boolean;
   /** Allows the latest turn to show the collapse bar after the session idles. */
@@ -122,6 +120,7 @@ export interface GroupHeaderRendererProps {
     newText: string,
     imageDataUrls?: string[]
   ) => Promise<void> | void;
+  onRestoreCheckpoint?: (header: OptimizedChatItem) => Promise<void> | void;
 }
 
 /**
@@ -142,12 +141,12 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
     hasPinnedContent,
     collapseLabelVariant = "agent",
     hideCollapseTimeRange = false,
-    expandPinnedContentGap = false,
     suppressRoundGap = false,
     collapseTailWhenIdle = false,
     hideUserMessage = false,
     turnCollapseInteractionAtRef,
     onEditSubmit,
+    onRestoreCheckpoint,
   }) => {
     const header = groupHeaders[groupIndex];
     const meta = groupMeta[groupIndex];
@@ -184,6 +183,10 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
       },
       [onEditSubmit, header]
     );
+    const handleRestoreCheckpoint = useCallback(() => {
+      if (!onRestoreCheckpoint || !header) return;
+      return onRestoreCheckpoint(header);
+    }, [onRestoreCheckpoint, header]);
 
     if (!header) return <div />;
 
@@ -205,10 +208,6 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
     const headerPaddingBottomClass = showCollapseBar && turnId ? "" : "pb-2";
     const roundGap =
       groupIndex > 0 && !suppressRoundGap ? CHAT_FOOTER_SPACER.ROUND_GAP_PX : 0;
-    const pinnedContentBodyGap =
-      showPinnedBars && expandPinnedContentGap
-        ? CHAT_FOOTER_SPACER.PINNED_CONTENT_BODY_GAP_PX
-        : 0;
 
     return (
       <div
@@ -229,15 +228,13 @@ export const GroupHeaderRenderer: React.FC<GroupHeaderRendererProps> = memo(
                 ? "flex flex-col rounded-[12px] bg-chat-container"
                 : "contents"
             }
-            style={
-              pinnedContentBodyGap > 0
-                ? { marginBottom: pinnedContentBodyGap }
-                : undefined
-            }
           >
             <UserChatItem
               chatItem={header}
               onEditSubmit={onEditSubmit ? handleEdit : undefined}
+              onRestoreCheckpoint={
+                onRestoreCheckpoint ? handleRestoreCheckpoint : undefined
+              }
               onEditingChange={
                 isLastGroup && hasPinnedContent ? setIsEditing : undefined
               }

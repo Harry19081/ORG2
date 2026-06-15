@@ -87,6 +87,7 @@
       "started": "Đã bắt đầu",
       "lastUpdated": "Cập nhật lần cuối",
       "agentModel": "Agent · Mô hình",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Không có phiên nào khớp với các bộ lọc này",
       "emptyDescription": "Hãy thử trạng thái, loại Agent hoặc khoảng thời gian khác."
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "Commits tới {{repo}}",
       "commitsToMultiple": "Commits tới {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} tệp",
+      "filesChanged_other": "{{count}} tệp",
+      "commits_one": "{{count}} commit",
+      "commits_other": "{{count}} commit",
+      "committedRateShort": "{{percent}}% đã commit"
     }
   },
   "changes": {
@@ -737,14 +745,11 @@
     "historyThisWeek": "Tuần này",
     "historyOlder": "Cũ hơn",
     "historyPinned": "Đã ghim",
-    "historyNoTags": "Chưa gắn thẻ",
     "historyRefresh": "Làm mới",
     "historyLastUsedModel": "Model lần cuối dùng",
     "historyUntitled": "Phiên không có tên",
     "pinSession": "Ghim",
     "unpinSession": "Bỏ ghim",
-    "addTag": "Thêm thẻ...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "Cần quyền của bạn",
     "questionsPrompt": "Cần phản hồi của bạn",
     "generatingQuestions": "Đang tạo câu hỏi",
@@ -937,7 +942,7 @@
     "explore": "Khám phá",
     "readFile": "Đọc tệp",
     "readFileRunning": "Đang đọc",
-    "readFileDone": "Đã đọc",
+    "readFileDone": "Đọc",
     "readFileFailed": "Đã thử đọc",
     "readFileSkillRunning": "Đang dùng skill",
     "readFileSkillDone": "Dùng skill",

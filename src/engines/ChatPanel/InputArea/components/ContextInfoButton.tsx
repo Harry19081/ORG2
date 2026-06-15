@@ -17,11 +17,7 @@ import { useTranslation } from "react-i18next";
 import ContextBreakdownBar from "./ContextBreakdownBar";
 import ContextCategoryRow from "./ContextCategoryRow";
 import ProgressRing from "./ProgressRing";
-import {
-  DANGER_THRESHOLD,
-  type PanelCategory,
-  WARNING_THRESHOLD,
-} from "./contextInfoTypes";
+import { type PanelCategory } from "./contextInfoTypes";
 import { useContextPanel } from "./useContextPanel";
 import { useContextUsageInfo } from "./useContextUsageInfo";
 
@@ -72,23 +68,15 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
         }));
     }, [contextUsage]);
 
-    const isWarning =
-      clampedPercentage >= WARNING_THRESHOLD &&
-      clampedPercentage < DANGER_THRESHOLD;
-    const isDanger = clampedPercentage >= DANGER_THRESHOLD;
-
     const handleMouseEnter = useCallback(
       (key: string) => () => setHoveredKey(key),
       []
     );
     const handleMouseLeave = useCallback(() => setHoveredKey(null), []);
 
-    const ringTone = isDanger ? "danger" : isWarning ? "warning" : "neutral";
-    const cornerLabelClass = isDanger
-      ? "text-danger-6"
-      : isWarning
-        ? "text-warning-6"
-        : "text-text-1";
+    const ringTone = clampedPercentage > 0 ? "used" : "unused";
+    const cornerLabelClass =
+      ringTone === "used" ? "text-text-2" : "text-text-4";
 
     return (
       <>

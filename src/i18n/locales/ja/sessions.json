@@ -87,6 +87,7 @@
       "started": "開始時刻",
       "lastUpdated": "最終更新",
       "agentModel": "Agent · モデル",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "これらのフィルターに一致するセッションはありません",
       "emptyDescription": "別のステータス、Agent タイプ、または時間範囲を試してください。"
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "{{repo}} への Commits",
       "commitsToMultiple": "{{repos}} への Commits"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} ファイル",
+      "filesChanged_other": "{{count}} ファイル",
+      "commits_one": "{{count}} Commit",
+      "commits_other": "{{count}} Commit",
+      "committedRateShort": "{{percent}}% コミット済み"
     }
   },
   "changes": {
@@ -737,14 +745,11 @@
     "historyThisWeek": "今週",
     "historyOlder": "それ以前",
     "historyPinned": "固定済み",
-    "historyNoTags": "タグなし",
     "historyRefresh": "更新",
     "historyLastUsedModel": "最後に使用したモデル",
     "historyUntitled": "無題のセッション",
     "pinSession": "ピン留め",
     "unpinSession": "ピン留めを解除",
-    "addTag": "タグを追加...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "あなたの許可が必要です",
     "questionsPrompt": "あなたの入力が必要です",
     "generatingQuestions": "質問を生成中",
@@ -937,7 +942,7 @@
     "explore": "探索",
     "readFile": "ファイルを読み込む",
     "readFileRunning": "読み取り中",
-    "readFileDone": "読み取りました",
+    "readFileDone": "読み取り",
     "readFileFailed": "読み取りを試行",
     "readFileSkillRunning": "skill を使用中",
     "readFileSkillDone": "skill を使用",

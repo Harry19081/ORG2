@@ -408,7 +408,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                   {section.title &&
                     (collapsibleSections ? (
                       <div
-                        className={`${isSectionCollapsed ? "" : "mb-px"} group/section-title flex h-7 cursor-pointer items-center gap-2 px-2`}
+                        className={`${isSectionCollapsed ? "" : "mb-px"} group/section-title flex h-7 cursor-pointer items-center gap-2 pl-2`}
                         onClick={() => {
                           if (!hasSearchInput) toggleSection(section.id);
                         }}

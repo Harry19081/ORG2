@@ -70,9 +70,16 @@
   },
   "orgs": {
     "yourOrgs": "Your Orgs",
-    "personalOrg": "Personal Org",
+    "sectionTitle": "Orgs",
+    "recentProjects": "Recent projects",
+    "personalOrg": "My Projects",
     "linearOrg": "Linear Org",
     "noLinearOrgs": "No connected orgs yet",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "Add Org",
     "importOrgs": "Import Orgs",
     "importLinearOrgs": "Import Linear Orgs",
@@ -864,7 +871,7 @@
     "title": "Your teams",
     "localTeams": "Local teams",
     "linearTeams": "Linear teams",
-    "personalOrg": "Personal Org",
+    "personalOrg": "My Projects",
     "agentOrgs": "Agent Orgs",
     "emptyLinearTeams": "No Linear teams found",
     "empty": "No teams found"

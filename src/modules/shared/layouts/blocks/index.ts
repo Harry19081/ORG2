@@ -11,6 +11,10 @@ export { default as SessionTable } from "./SessionTable";
 export type { HintWithInfoProps } from "./HintWithInfo";
 export type { SessionGroupPageProps } from "./SessionGroupPage";
 export type { SessionTableItem } from "./SessionTable";
+export {
+  mapKanbanTaskToSessionTableItem,
+  type SessionTableDateTimeLabelOptions,
+} from "./sessionTableItem";
 export type { BrowseCardProps } from "./BrowseCard";
 
 export { default as CollapsibleSection } from "./CollapsibleSection";

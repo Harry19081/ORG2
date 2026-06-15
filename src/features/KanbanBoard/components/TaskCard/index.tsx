@@ -4,7 +4,14 @@
  * Individual task card displayed in Kanban columns.
  * Shows task information with priority, tags, and metadata.
  */
-import { ChevronRight, MessagesSquare } from "lucide-react";
+import {
+  ChevronRight,
+  CircleSlash,
+  Diff,
+  GitCommit,
+  LoaderCircle,
+  MessagesSquare,
+} from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -13,11 +20,7 @@ import Tag from "@src/components/Tag";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { formatModelNameFull } from "@src/util/formatModelName";
 
-import {
-  KANBAN_RESULT_STATUS,
-  type KanbanResultStatus,
-  type KanbanTask,
-} from "../../types";
+import { type KanbanTask } from "../../types";
 import { PriorityIndicator } from "../../utils/priority";
 import "./index.scss";
 
@@ -32,18 +35,9 @@ export interface TaskCardProps {
   isSelected?: boolean;
 }
 
-function getResultStatusClass(resultStatus: KanbanResultStatus): string {
-  switch (resultStatus) {
-    case KANBAN_RESULT_STATUS.Failed:
-      return "kanban-task-card__result-badge--failed";
-    case KANBAN_RESULT_STATUS.Archived:
-      return "kanban-task-card__result-badge--archived";
-  }
-}
-
 function renderAgentIcon(task: KanbanTask) {
   if (task.cliAgentType) {
-    return <ModelIcon agentType={task.cliAgentType} size={14} />;
+    return <ModelIcon agentType={task.cliAgentType} size={12} />;
   }
 
   // Cursor IDE history sessions don't carry a `cliAgentType` (they're not
@@ -52,11 +46,11 @@ function renderAgentIcon(task: KanbanTask) {
   // matches the Session Creator's hero icon (themeable `text-text-1`) instead
   // of the dim `text-text-3` brand wrapper used for generic Lucide icons.
   if (task.agentIconId === "cursor") {
-    return <ModelIcon agentType="cursor_cli" size={14} />;
+    return <ModelIcon agentType="cursor_cli" size={12} />;
   }
 
   const AgentIcon = resolveAgentIcon(task.agentIconId);
-  return <AgentIcon size={14} strokeWidth={1.75} className="text-text-3" />;
+  return <AgentIcon size={12} strokeWidth={1.75} className="text-text-3" />;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
@@ -65,12 +59,26 @@ const TaskCard: React.FC<TaskCardProps> = ({
   isDragging,
   isSelected = false,
 }) => {
-  const { t } = useTranslation("sessions");
+  const { t } = useTranslation("common");
   const handleClick = () => {
     onClick?.(task);
   };
+  const handleUpdateGitBlame = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    task.onUpdateGitBlame?.(task);
+  };
 
   const isInteractive = Boolean(onClick);
+  const hasOrgtrackImpactMetadata = Boolean(
+    task.orgtrackMetadata &&
+    (task.orgtrackMetadata.filesChanged > 0 ||
+      task.orgtrackMetadata.linesAdded > 0 ||
+      task.orgtrackMetadata.linesRemoved > 0 ||
+      task.orgtrackMetadata.relatedCommits > 0 ||
+      task.orgtrackMetadata.committedRatePercent > 0)
+  );
+  const relatedCommits = task.orgtrackMetadata?.relatedCommits ?? 0;
+  const hasRelatedCommits = relatedCommits > 0;
   const cardClasses = [
     "kanban-task-card",
     isInteractive && "kanban-task-card--interactive",
@@ -97,21 +105,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
       {/* Header */}
       <div className="kanban-task-card__header">
         <div className="kanban-task-card__title">{task.title}</div>
-        {(task.resultStatus ||
-          (task.attempt_count && task.attempt_count > 1)) && (
+        {task.attempt_count && task.attempt_count > 1 && (
           <div className="kanban-task-card__header-badges">
-            {task.resultStatus && (
-              <div
-                className={`kanban-task-card__result-badge ${getResultStatusClass(task.resultStatus)}`}
-              >
-                {t(`kanban.resultStatus.${task.resultStatus}`)}
-              </div>
-            )}
-            {task.attempt_count && task.attempt_count > 1 && (
-              <div className="kanban-task-card__badge">
-                Retry {task.attempt_count - 1}
-              </div>
-            )}
+            <div className="kanban-task-card__badge">
+              Retry {task.attempt_count - 1}
+            </div>
           </div>
         )}
       </div>
@@ -140,41 +138,94 @@ const TaskCard: React.FC<TaskCardProps> = ({
       {/* Footer */}
       <div className="kanban-task-card__footer">
         <div className="kanban-task-card__footer-left">
-          <PriorityIndicator priority={task.priority} />
-          {task.agentLabel && (
-            <div className="kanban-task-card__meta-pill">
-              {renderAgentIcon(task)}
-              <span>{task.agentLabel}</span>
-            </div>
-          )}
-          {task.modelName && (
-            <div className="kanban-task-card__meta-pill">
-              <ModelIcon
-                modelName={task.modelName}
-                agentType={task.cliAgentType}
-                size={14}
-              />
-              <span>{formatModelNameFull(task.modelName)}</span>
-            </div>
-          )}
-          {task.metaLines?.map((entry, idx) => {
-            const Icon = entry.icon;
-            // `color` is applied inline so callers can drive it from
-            // domain state (e.g. todo status → success-6 / danger-6)
-            // without having to fork a new pill variant per state. The
-            // pill itself reuses the same size as agent / model pills
-            // so all footer entries share one visual rhythm.
-            return (
-              <div
-                key={idx}
-                className="kanban-task-card__meta-pill"
-                style={entry.color ? { color: entry.color } : undefined}
+          <div className="kanban-task-card__impact-line">
+            {hasOrgtrackImpactMetadata && task.orgtrackMetadata ? (
+              <>
+                <span className="kanban-task-card__impact-diff">
+                  <span className="text-success-6">
+                    +{task.orgtrackMetadata.linesAdded.toLocaleString()}
+                  </span>
+                  <span className="text-danger-6">
+                    -{task.orgtrackMetadata.linesRemoved.toLocaleString()}
+                  </span>
+                </span>
+                <span className="kanban-task-card__impact-dot" />
+                <span className="kanban-task-card__impact-item">
+                  <Diff size={12} strokeWidth={1.75} />
+                  <span>
+                    {task.orgtrackMetadata.filesChanged.toLocaleString()}
+                  </span>
+                </span>
+                {hasRelatedCommits && (
+                  <>
+                    <span className="kanban-task-card__impact-dot" />
+                    <span className="kanban-task-card__impact-item text-primary-6">
+                      <GitCommit
+                        className="kanban-task-card__commit-icon"
+                        size={12}
+                        strokeWidth={1.75}
+                      />
+                      <span>{relatedCommits.toLocaleString()}</span>
+                    </span>
+                  </>
+                )}
+              </>
+            ) : task.orgtrackMetadataLoading ? (
+              <span className="kanban-task-card__impact-loading">
+                <LoaderCircle size={12} strokeWidth={1.75} />
+                <span>{t("loading")}</span>
+              </span>
+            ) : task.onUpdateGitBlame ? (
+              <button
+                className="kanban-task-card__impact-action"
+                type="button"
+                onClick={handleUpdateGitBlame}
               >
-                {Icon && <Icon size={12} strokeWidth={1.75} />}
-                <span>{entry.text}</span>
+                <CircleSlash size={12} strokeWidth={1.75} />
+                <span>{t("actions.updateAiBlame")}</span>
+              </button>
+            ) : (
+              <span className="kanban-task-card__impact-empty">
+                <CircleSlash size={12} strokeWidth={1.75} />
+                <span>Not analyzed</span>
+              </span>
+            )}
+          </div>
+          <div className="kanban-task-card__meta-row">
+            <PriorityIndicator priority={task.priority} />
+            {task.agentLabel && (
+              <div className="kanban-task-card__meta-pill">
+                {renderAgentIcon(task)}
+                <span>{task.agentLabel}</span>
               </div>
-            );
-          })}
+            )}
+            {task.agentLabel && task.modelName && (
+              <span className="kanban-task-card__impact-dot" />
+            )}
+            {task.modelName && (
+              <div className="kanban-task-card__meta-pill">
+                <ModelIcon
+                  modelName={task.modelName}
+                  agentType={task.cliAgentType}
+                  size={12}
+                />
+                <span>{formatModelNameFull(task.modelName)}</span>
+              </div>
+            )}
+            {task.metaLines?.map((entry, idx) => {
+              const Icon = entry.icon;
+              return (
+                <div
+                  key={idx}
+                  className="kanban-task-card__meta-pill"
+                  style={entry.color ? { color: entry.color } : undefined}
+                >
+                  {Icon && <Icon size={12} strokeWidth={1.75} />}
+                  <span>{entry.text}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
         {/* Chevron is purely an affordance for "click to open detail" —
          * only render it when there's actually an onClick handler.

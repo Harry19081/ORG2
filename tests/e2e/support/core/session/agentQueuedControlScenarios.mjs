@@ -4,6 +4,7 @@ import {
   assertControlFlowHealthyAfterStop,
   assertLiveAssistantOverlayOrdering,
   assertNoDurableLiveStreamPlaceholders,
+  assertProgressUiSettledAfterAssistantReply,
   assertTurnSummaryOrdering,
   configureScenario,
   execJS,
@@ -344,6 +345,43 @@ async function assertRealPlusImageUploadPathOpensFilePicker(label) {
       timeoutMsg: `${label} real + image path did not render Image row/input; dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
   );
+
+  // The bottom-anchored floating composer must open this menu UPWARD — the
+  // panel has to sit fully above the composer shell and stay within the
+  // viewport. Regression guard for the queue-edit "+" menu rendering off the
+  // bottom edge (placement was hardcoded "down" for every edit-mode composer).
+  const menuGeometry = await execJS(`
+    const menu = document.querySelector('[data-testid="slash-command-menu"]');
+    const shell = document.querySelector('[data-testid="chat-input"]');
+    if (!menu || !shell) return { ok: false, reason: "missing-menu-or-shell" };
+    const menuRect = menu.getBoundingClientRect();
+    const shellRect = shell.getBoundingClientRect();
+    return {
+      ok: true,
+      menuTop: menuRect.top,
+      menuBottom: menuRect.bottom,
+      shellTop: shellRect.top,
+      viewportHeight: window.innerHeight,
+    };
+  `);
+  if (!menuGeometry?.ok) {
+    throw new Error(
+      `${label} could not measure + menu geometry: ${JSON.stringify(menuGeometry)}; dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+  // Allow a small overlap tolerance for the trigger-gap rounding, but the menu
+  // must clearly open upward (its bottom near/above the composer top) and must
+  // not be clipped by the viewport bottom.
+  const opensUpward = menuGeometry.menuBottom <= menuGeometry.shellTop + 8;
+  const withinViewport =
+    menuGeometry.menuBottom <= menuGeometry.viewportHeight + 1 &&
+    menuGeometry.menuTop >= -1;
+  if (!opensUpward || !withinViewport) {
+    throw new Error(
+      `${label} + menu did not open upward within the viewport (off-bottom regression); geometry=${JSON.stringify(menuGeometry)}; dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+
   const patchResult = await execJS(`
     const input = document.querySelector('[data-testid="chat-file-upload-input"]');
     if (!input) return { ok: false, reason: "missing-upload-input" };
@@ -387,8 +425,13 @@ async function attachTestImageToComposer(
   fileName = "orgii-e2e-cancel-image.png"
 ) {
   const result = await execJS(`
-    const editor = document.querySelector('[data-testid="chat-input"] [contenteditable="true"]');
+    const shell = document.querySelector('[data-testid="chat-input"]');
+    const editor = shell && shell.querySelector('[contenteditable="true"]');
     if (!editor) return { ok: false, reason: "missing-editor" };
+    // The image-attach hook is mounted by multiple composers at once; scope the
+    // injected event to THIS composer's owner so the image lands on exactly one
+    // attachment strip (mirrors how a real file picker is scoped to its input).
+    const ownerId = shell.getAttribute("data-image-owner-id") || "";
     const canvas = document.createElement("canvas");
     canvas.width = 16;
     canvas.height = 16;
@@ -405,9 +448,10 @@ async function attachTestImageToComposer(
         eventId: "e2e-image-" + Date.now() + "-" + Math.random().toString(16).slice(2),
         fileName: ${JSON.stringify(fileName)},
         dataUrl,
+        ownerId,
       },
     }));
-    return { ok: true, fileName: ${JSON.stringify(fileName)}, dataUrlLength: dataUrl.length };
+    return { ok: true, fileName: ${JSON.stringify(fileName)}, dataUrlLength: dataUrl.length, ownerId };
   `);
   if (!result?.ok) {
     throw new Error(
@@ -863,13 +907,21 @@ async function waitForIdleSendButton(label) {
 }
 
 async function waitForRuntimeIdle(label) {
+  // Default 60s, but allow an env override so slow providers (e.g. cursor
+  // composer) or runs sharing the host with another e2e matrix can extend the
+  // wait without flaking. The restore/rewind scenarios only assert idle as a
+  // precondition gate, so a longer ceiling never weakens correctness.
+  const RUNTIME_IDLE_TIMEOUT_MS = Number.parseInt(
+    process.env.E2E_RUNTIME_IDLE_TIMEOUT_MS ?? "60000",
+    10
+  );
   await browser.waitUntil(
     async () => {
       const state = await inspectChatState(`${label}-runtime-idle`);
       return !hasAuthoritativeRunningTurn(state);
     },
     {
-      timeout: 60_000,
+      timeout: RUNTIME_IDLE_TIMEOUT_MS,
       interval: 1_000,
       timeoutMsg: `${label} runtime did not become idle; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
     }
@@ -936,6 +988,114 @@ async function runFreshStopRollbackScenario(config) {
   );
 }
 
+// Regression: pressing the MAIN composer Stop while the parent turn has
+// already settled (runtime idle) but a background subagent is still running
+// took the `keep_pre_turn_cancel_when_idle` branch in `cancel_active_turn`
+// and left `session.cancel_flag = true` with no turn closure to reset it.
+// The NEXT user message then inherited that stale flag and self-cancelled on
+// iteration 1 (0 tokens, no assistant reply). The fix resets `cancel_flag`
+// at the start of every fresh turn closure (message.rs). This scenario:
+//   1. runs a real turn to completion (parent idle),
+//   2. seeds a *running* background subagent so the composer shows Stop,
+//   3. clicks Stop (the idle UserStop that strands the flag),
+//   4. sends a NEW message and asserts it gets a genuine assistant reply —
+//      proving the next turn was NOT self-cancelled by a stale flag.
+async function runStopWithBackgroundSubagentNextMessageScenario(config) {
+  const label = `${config.label}-stop-bg-subagent`;
+  const safeLabel = config.label.replace(/[^a-zA-Z0-9]/g, "_");
+  const firstPrompt = `Reply with a one-line confirmation for ${config.label}. STOP_BG_FIRST_${safeLabel}_${Date.now()}`;
+  const followupMarker = `STOP_BG_NEXT_${safeLabel}_${Date.now()}`;
+  const followupPrompt = `Reply with exactly this token and nothing else: ${followupMarker}`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+
+  // 1. First turn runs to natural completion → parent session goes idle.
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForRuntimeIdle(label);
+  await waitForIdleSendButton(label);
+
+  const active = unwrap(
+    await invokeE2E("getActiveSessionId"),
+    `${label}-getActiveSessionId`
+  );
+  if (!active.sessionId) {
+    throw new Error(`${label} produced no active session id`);
+  }
+
+  // 2. Seed a live background subagent job on the REAL session. This drives
+  //    updateSubagentJobAtom (the same atom agent:subagent_job_changed feeds)
+  //    so the composer re-enters Stop state over the idle parent — the exact
+  //    "parent idle + background worker running" window the bug needs.
+  const subagentHandle = `agent-builtin:explore-stopbg-${Date.now()}`;
+  const seed = await invokeE2E("seedSubagentJob", {
+    sessionId: active.sessionId,
+    handle: subagentHandle,
+    agentName: `E2E Stop-BG Worker ${safeLabel}`,
+    subagentType: "delegate",
+    status: "running",
+  });
+  if (!seed || seed.ok !== true) {
+    throw new Error(
+      `${label} seedSubagentJob failed: ${seed?.error ?? "unknown"}`
+    );
+  }
+
+  await browser.waitUntil(
+    async () => {
+      const sendState = await execJS(js.sendState);
+      return sendState?.state === "stop";
+    },
+    {
+      timeout: 20_000,
+      interval: 400,
+      timeoutMsg: `${label} composer did not re-enter Stop while a background subagent ran; sendState=${JSON.stringify(await execJS(js.sendState))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+
+  // 3. The bug's trigger: UserStop while the parent turn is already idle.
+  await clickMainAction("stop", `${label}-idle-stop`, 30_000);
+
+  // Drop the seeded subagent so it can no longer hold the composer in Stop —
+  // any subsequent Stop state must come from the new turn we are about to send.
+  unwrap(
+    await invokeE2E("seedSubagentJob", {
+      sessionId: active.sessionId,
+      handle: subagentHandle,
+      agentName: `E2E Stop-BG Worker ${safeLabel}`,
+      subagentType: "delegate",
+      status: "completed",
+    }),
+    `${label}-complete-subagent`
+  );
+
+  await browser.waitUntil(
+    async () => {
+      const sendState = await execJS(js.sendState);
+      return sendState?.state === "submit";
+    },
+    {
+      timeout: 20_000,
+      interval: 400,
+      timeoutMsg: `${label} composer never returned to Send after Stop + subagent completion; sendState=${JSON.stringify(await execJS(js.sendState))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+
+  // 4. Send a fresh message. Before the fix this self-cancelled instantly
+  //    (0 tokens, no reply); after the fix it must produce a real reply.
+  const followupSelector = await waitForChatInput();
+  await typeAndClickSend(followupSelector, followupPrompt);
+  await assertProgressUiSettledAfterAssistantReply(
+    `${label}-next-message`,
+    followupMarker
+  );
+
+  console.log(
+    `[queued-followup] ${label} session=${active.sessionId} nextMarker=${followupMarker}`
+  );
+}
+
 async function runFreshStopImageRestoreScenario(config) {
   const marker = `IMAGE_CANCEL_RESTORE_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
   const imageFileName = `${marker}.png`;
@@ -994,6 +1154,173 @@ async function runFreshStopImageRestoreScenario(config) {
   await assertComposerResponsiveAfterStop(
     `${config.label}-image-stop`,
     imagePrompt
+  );
+}
+
+async function openQueuedMessageEditComposer(label, marker) {
+  // Click the pencil (edit) button on the queued item matching `marker`. The
+  // queued row has no dedicated edit testid — the first action button is Edit.
+  const opened = await execJS(`
+    const marker = ${JSON.stringify(marker)};
+    const rows = Array.from(document.querySelectorAll('[data-testid="queued-message-item"]'));
+    const row = rows.find((node) =>
+      ((node.getAttribute("data-queued-message-content") || node.textContent || "")).includes(marker)
+    );
+    if (!row) return { ok: false, reason: "missing-row", rowCount: rows.length };
+    const editButton = row.querySelector('button[title="Edit"]')
+      || row.querySelector("button");
+    if (!editButton) return { ok: false, reason: "missing-edit-button" };
+    editButton.click();
+    return { ok: true };
+  `);
+  if (!opened?.ok) {
+    throw new Error(
+      `${label} could not open queued-message edit composer: ${JSON.stringify(opened)} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+  await browser.waitUntil(
+    async () => {
+      const state = await inspectChatState(`${label}-queue-edit-open`);
+      const cardVisible = await execJS(
+        js.exists('[data-testid="queue-edit-mode-card"]')
+      );
+      return state.isQueueEditing === true && cardVisible;
+    },
+    {
+      timeout: 10_000,
+      interval: 250,
+      timeoutMsg: `${label} queue-edit mode did not activate after clicking Edit; state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+}
+
+async function clickQueueEditSave(label) {
+  const clicked = await execJS(`
+    const card = document.querySelector('[data-testid="queue-edit-mode-card"]');
+    const shell = document.querySelector('[data-testid="chat-input"]');
+    const scope = shell || document;
+    const buttons = Array.from(scope.querySelectorAll('button'));
+    const save = buttons.find((button) => (button.textContent || "").trim() === "Save");
+    if (!save) {
+      return { ok: false, reason: "missing-save", labels: buttons.map((b) => (b.textContent || "").trim()).filter(Boolean) };
+    }
+    save.click();
+    return { ok: true, hadCard: !!card };
+  `);
+  if (!clicked?.ok) {
+    throw new Error(
+      `${label} could not click Save in queue-edit composer: ${JSON.stringify(clicked)} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+}
+
+// Regression: uploading an image via the "+" menu while editing a QUEUED
+// message used to collapse queue-edit mode (the slash/+ menu portal renders to
+// document.body, outside the edit container, so its mousedown tripped the
+// edit-mode click-outside guard). The picked image then landed in the main
+// composer's attachment strip above the input instead of the queued message.
+// This scenario proves: (1) opening the + menu's Upload Image row keeps
+// queue-edit mode open, and (2) the attached image folds into the queued
+// message on Save.
+async function runQueueEditImageUploadScenario(config) {
+  const marker = `QUEUE_EDIT_IMAGE_${config.label.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`;
+  // Use the repo-exploration prompt (real multi-step tool calls) rather than a
+  // "wait N seconds" prompt — fast non-reasoning relay models ignore the wait
+  // and complete instantly, leaving no working window to queue a follow-up.
+  const firstPrompt = repoExplorationPromptForConfig(config, 12);
+  const followupPrompt = `Queued follow-up to edit with an image: ${marker}`;
+  const imageFileName = `${marker}.png`;
+
+  await configureScenario(config);
+  const inputSelector = await waitForChatInput();
+  await typeAndClickSend(inputSelector, firstPrompt);
+  await waitForChatLaunched(firstPrompt);
+  await waitForWorkingTurn(`${config.label}-queue-edit-image`);
+
+  const chatInputSelector = await waitForChatInput();
+  await typeAndSubmitWithShortcut(chatInputSelector, followupPrompt);
+  await waitForQueuedFollowup(marker);
+
+  // Enter queue-edit mode for the parked follow-up.
+  await openQueuedMessageEditComposer(
+    `${config.label}-queue-edit-image`,
+    marker
+  );
+
+  // Drive the REAL "+" menu → Upload image path. This patches the hidden file
+  // input's click(), opens the menu, and clicks the Image row. The key
+  // assertion is inside: after the row's mousedown, queue-edit mode must NOT
+  // collapse (the bug closed it here).
+  await assertRealPlusImageUploadPathOpensFilePicker(
+    `${config.label}-queue-edit-image-plus-path`
+  );
+
+  // The + menu closed but queue-edit mode must still be active. Before the fix
+  // the click-outside guard fired and dropped us back to the normal composer.
+  const afterMenu = await inspectChatState(
+    `${config.label}-queue-edit-image-after-menu`
+  );
+  const editCardStillVisible = await execJS(
+    js.exists('[data-testid="queue-edit-mode-card"]')
+  );
+  if (!afterMenu.isQueueEditing || !editCardStillVisible) {
+    throw new Error(
+      `${config.label} opening the + menu Upload-Image row collapsed queue-edit mode (regression); isQueueEditing=${afterMenu.isQueueEditing} editCardStillVisible=${editCardStillVisible} state=${JSON.stringify(summarizeChatState(afterMenu))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+
+  // Now actually attach an image (the real OS picker can't be driven in
+  // WebDriver, so we inject the file the same way the picker would) and ensure
+  // it lands on the edit composer's attachment strip, not a stale main one.
+  // Exactly one image must appear — the E2E inject event is scoped to this
+  // composer's owner, so it must not multicast onto other mounted composers.
+  await attachTestImageToComposer(imageFileName);
+  await waitForImageAttachmentCount(
+    1,
+    `${config.label}-queue-edit-image-before-save`
+  );
+  const stillEditingAfterAttach = await inspectChatState(
+    `${config.label}-queue-edit-image-after-attach`
+  );
+  if (!stillEditingAfterAttach.isQueueEditing) {
+    throw new Error(
+      `${config.label} attaching an image dropped queue-edit mode (image leaked to the main composer); state=${JSON.stringify(summarizeChatState(stillEditingAfterAttach))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`
+    );
+  }
+
+  // Save the edit. The image must fold into the queued message, and queue-edit
+  // mode must close. We assert on the queued message still carrying the image
+  // (imageCount>=1) the moment the edit commits — this is the core proof that
+  // the upload landed on the queued message and not the main composer. We do
+  // NOT assert it stays parked afterwards: the active exploration turn may
+  // naturally complete and auto-dispatch the (still "next" priority) follow-up,
+  // which is correct queue behaviour and orthogonal to this regression.
+  await clickQueueEditSave(`${config.label}-queue-edit-image`);
+  await browser.waitUntil(
+    async () => {
+      const state = await inspectChatState(
+        `${config.label}-queue-edit-image-saved`
+      );
+      if (state.isQueueEditing) return false;
+      const queued = state.queuedMessages.find((item) =>
+        item.content.includes(marker)
+      );
+      // Either the edit just committed with the image folded in (still queued),
+      // or the turn completed and it already auto-dispatched as a user turn —
+      // both are acceptable terminal states. The regression we guard against is
+      // the image NOT reaching the queued message at all.
+      if (queued) return (queued.imageCount ?? 0) >= 1;
+      return markerUserTranscriptEvents(state, marker).length > 0;
+    },
+    {
+      timeout: 15_000,
+      interval: 300,
+      timeoutMsg: `${config.label} queued message did not receive the uploaded image after Save (image leaked to the main composer or edit never committed); state=${JSON.stringify(summarizeChatState(await invokeE2E("inspectChatState")))} dump=${JSON.stringify(summarizePageDump(await execJS(js.pageDump)))}`,
+    }
+  );
+
+  console.log(
+    `[queue-edit-image] ${config.label} marker=${marker} image folded into queued message`
   );
 }
 
@@ -1671,6 +1998,7 @@ async function runForceSendScenario(config) {
 
 export {
   assertStationSurfacesConsistent,
+  hasAuthoritativeRunningTurn,
   clickMainAction,
   clickSendNowForQueuedMarker,
   runBurstQueueSendNowOrderingScenario,
@@ -1680,9 +2008,11 @@ export {
   runFreshStopRollbackScenario,
   runQueueAutodispatchesAfterNaturalCompletionScenario,
   runQueueDoesNotAutoflushWhileActiveScenario,
+  runQueueEditImageUploadScenario,
   runSendAfterIdleDoesNotQueueScenario,
   runStopDoubleClickDoesNotResubmitScenario,
   runStopRestoresInFlightScenario,
+  runStopWithBackgroundSubagentNextMessageScenario,
   waitForIdleSendButton,
   waitForQueuedFollowup,
   waitForRuntimeIdle,

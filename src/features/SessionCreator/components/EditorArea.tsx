@@ -551,6 +551,7 @@ const EditorArea: React.FC<EditorAreaProps> = ({
           <SlashCommandPortal
             visible={showPlusSlashMenu}
             containerRef={editorContainerRef}
+            anchorSelector="[data-composer-plus-menu-trigger]"
             placement={resolvedDropdownDirection}
             items={filteredSlashItems}
             loading={slashLoading}

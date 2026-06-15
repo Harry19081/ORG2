@@ -1,21 +1,16 @@
 //! Inversion-of-control hooks the `git` crate uses to notify the rest of the
 //! app. Set once at startup from `app::lib`; absent in tests (no-op).
 //!
-//! Keeps the crate a true leaf — implementations of `api::websocket_handler`,
-//! `agent_core::automation::bridge`, and `dev_record::collector` are
-//! registered by `app::lib::run` rather than imported directly.
+//! Keeps the crate a true leaf — implementations of `api::websocket_handler`
+//! and `agent_core::automation::bridge` are registered by `app::lib::run`
+//! rather than imported directly.
 
 use std::sync::OnceLock;
 
 /// Broadcast a git event over the WebSocket layer (JSON-encoded message body).
 pub type WebsocketBroadcast = Box<dyn Fn(String) + Send + Sync>;
 
-/// Record a file change for coding-activity telemetry.
-///
-/// Args mirror `dev_record::collector::record_file_change`:
-/// `(project, file_path, lines_added, lines_removed)`. The `git` watch layer
-/// always passes `0, 0` for line deltas — they are computed downstream from
-/// the actual git diff, not from the inotify event.
+/// Forward a file-watch change to an optional app-level consumer.
 pub type RecordFileChange = Box<dyn Fn(Option<String>, String, i32, i32) + Send + Sync>;
 
 /// Forward a git watch event onto the automation bus.

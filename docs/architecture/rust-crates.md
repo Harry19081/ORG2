@@ -180,7 +180,6 @@ graph TD
 
 | Crate                    | Lib name      | Purpose                                                                        |
 | ------------------------ | ------------- | ------------------------------------------------------------------------------ |
-| `dev-record`             | `dev_record`  | Records and replays agent sessions for development and regression testing.     |
 | `e2e-test`               | `e2e_test`    | End-to-end test harness — drives a full `agent_core` session programmatically. |
 | `test-runner`            | `test_runner` | In-process test runner utilities for headless CI runs against the agent.       |
 | `bin-gateway-chat-cli`   | _(binary)_    | CLI smoke-test binary for the LLM gateway layer.                               |

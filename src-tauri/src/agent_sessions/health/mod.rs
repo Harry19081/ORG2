@@ -162,7 +162,6 @@ mod tests {
             agent_exec_mode: None,
             draft_text: None,
             reply_target_event_id: None,
-            tags: vec![],
             pinned: false,
             source_session_id: None,
             share_id: None,

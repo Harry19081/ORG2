@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const SESSION_TABLE_GRID_CLASS =
-  "grid-cols-[minmax(220px,1.45fr)_minmax(95px,0.55fr)_minmax(210px,1.05fr)_minmax(130px,0.7fr)_minmax(115px,0.6fr)_minmax(115px,0.6fr)]";
+import SettingsTable from "@src/components/SettingsTable";
+import type {
+  SettingsTableColumn,
+  SettingsTableSurfaceVariant,
+} from "@src/components/SettingsTable";
 
 export interface SessionTableItem {
   id: string;
@@ -16,6 +19,10 @@ export interface SessionTableItem {
   modelLabel?: React.ReactNode;
   workspaceLabel?: React.ReactNode;
   workspaceTitle?: string;
+  filesChangedLabel?: React.ReactNode;
+  relatedCommitsLabel?: React.ReactNode;
+  committedRateLabel?: React.ReactNode;
+  committedRateValue?: number;
   startedLabel?: React.ReactNode;
   lastUpdatedLabel?: React.ReactNode;
   active?: boolean;
@@ -28,118 +35,266 @@ interface SessionTableProps {
   items: SessionTableItem[];
   onSelect?: (item: SessionTableItem) => void;
   className?: string;
+  rootClassName?: string;
+  surfaceVariant?: SettingsTableSurfaceVariant;
+  showSearch?: boolean;
+  fillHeight?: boolean;
+  maxHeight?: number | string;
+  pageSize?: number;
+  pageSizeOptions?: number[];
 }
 
 const EMPTY_CELL = "—";
+
+function toSearchText(value: React.ReactNode | undefined): string {
+  if (value == null) return "";
+  return typeof value === "string" || typeof value === "number"
+    ? String(value)
+    : "";
+}
+
+function compareSessionText(
+  left: React.ReactNode | undefined,
+  right: React.ReactNode | undefined
+): number {
+  return toSearchText(left).localeCompare(toSearchText(right), undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
+}
+
+function matchesSessionSearch(
+  item: SessionTableItem,
+  searchQuery: string
+): boolean {
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  if (!normalizedQuery) return true;
+
+  const haystack = [
+    item.id,
+    toSearchText(item.title),
+    toSearchText(item.description),
+    toSearchText(item.statusLabel),
+    toSearchText(item.agentLabel),
+    toSearchText(item.modelLabel),
+    toSearchText(item.workspaceLabel),
+    toSearchText(item.filesChangedLabel),
+    toSearchText(item.relatedCommitsLabel),
+    toSearchText(item.committedRateLabel),
+    toSearchText(item.startedLabel),
+    toSearchText(item.lastUpdatedLabel),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(normalizedQuery);
+}
 
 export const SessionTable: React.FC<SessionTableProps> = ({
   items,
   onSelect,
   className,
+  rootClassName,
+  surfaceVariant = "transparent",
+  showSearch,
+  fillHeight = false,
+  maxHeight,
+  pageSize,
+  pageSizeOptions,
 }) => {
   const { t } = useTranslation(["sessions", "common"]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const shouldShowSearch = showSearch ?? true;
+
+  const columns = useMemo<SettingsTableColumn<SessionTableItem>[]>(
+    () => [
+      {
+        key: "name",
+        label: t("common:labels.name"),
+        width: "250px",
+        sorter: (left, right) => compareSessionText(left.title, right.title),
+        renderCell: (item) => (
+          <div className="flex min-w-0 max-w-[250px] items-center gap-2">
+            <span className="min-w-0 truncate font-medium text-text-1">
+              {item.title}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: "status",
+        label: t("common:labels.status"),
+        width: "95px",
+        renderCell: (item) => (
+          <div className="flex min-w-0 items-center gap-2 text-text-2">
+            <span
+              className="h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{
+                backgroundColor: item.statusColor ?? "var(--color-fill-4)",
+              }}
+            />
+            <span className="truncate">{item.statusLabel}</span>
+          </div>
+        ),
+      },
+      {
+        key: "agent",
+        label: t("common:terminology.agent"),
+        width: "130px",
+        sorter: (left, right) =>
+          compareSessionText(left.agentLabel, right.agentLabel),
+        renderCell: (item) => (
+          <div className="flex min-w-0 items-center gap-2 text-text-2">
+            {item.agentIcon}
+            <span className="min-w-0 truncate">
+              {item.agentLabel ?? EMPTY_CELL}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: "model",
+        label: t("common:labels.model"),
+        width: "130px",
+        sorter: (left, right) =>
+          compareSessionText(left.modelLabel, right.modelLabel),
+        renderCell: (item) => (
+          <div className="flex min-w-0 items-center gap-2 text-text-2">
+            {item.modelIcon}
+            <span className="min-w-0 truncate">
+              {item.modelLabel ?? EMPTY_CELL}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: "workspace",
+        label: t("common:selectors.shared.workspace"),
+        width: "130px",
+        renderCell: (item) => (
+          <div className="truncate text-text-3" title={item.workspaceTitle}>
+            {item.workspaceLabel ?? EMPTY_CELL}
+          </div>
+        ),
+      },
+      {
+        key: "filesChanged",
+        label: t("common:labels.files"),
+        width: "80px",
+        renderCell: (item) => (
+          <div className="truncate text-text-3">
+            {item.filesChangedLabel ?? EMPTY_CELL}
+          </div>
+        ),
+      },
+      {
+        key: "relatedCommits",
+        label: t("common:labels.commits"),
+        width: "90px",
+        renderCell: (item) => (
+          <div className="truncate text-text-3">
+            {item.relatedCommitsLabel ?? EMPTY_CELL}
+          </div>
+        ),
+      },
+      {
+        key: "committedRate",
+        label: t("common:labels.committedRate"),
+        width: "105px",
+        sorter: (left, right) =>
+          (left.committedRateValue ?? -1) - (right.committedRateValue ?? -1),
+        renderCell: (item) => (
+          <div className="flex min-w-0 items-center gap-2 text-text-3">
+            <div className="h-1.5 w-12 overflow-hidden rounded-full bg-fill-3">
+              <div
+                className="h-full rounded-full bg-success-6"
+                style={{ width: `${item.committedRateValue ?? 0}%` }}
+              />
+            </div>
+            <span className="truncate">
+              {item.committedRateLabel ?? EMPTY_CELL}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: "started",
+        label: t("sessions:opsControl.list.started"),
+        width: "115px",
+        renderCell: (item) => (
+          <div className="truncate text-text-3">
+            {item.startedLabel ?? EMPTY_CELL}
+          </div>
+        ),
+      },
+      {
+        key: "lastUpdated",
+        label: t("sessions:opsControl.list.lastUpdated"),
+        width: "115px",
+        renderCell: (item) => (
+          <div className="truncate text-text-3">
+            {item.lastUpdatedLabel ?? EMPTY_CELL}
+          </div>
+        ),
+      },
+    ],
+    [t]
+  );
+
+  const filteredItems = useMemo(() => {
+    if (!shouldShowSearch) return items;
+    return items.filter((item) => matchesSessionSearch(item, searchQuery));
+  }, [items, searchQuery, shouldShowSearch]);
+
+  const hasSearchFilter = shouldShowSearch && searchQuery.trim().length > 0;
 
   return (
-    <div
-      className={`${className ?? ""} scrollbar-overlay min-h-0 flex-1 overflow-auto`}
-    >
-      <div className="min-w-[980px]">
-        <div
-          className={`sticky top-0 z-10 grid ${SESSION_TABLE_GRID_CLASS} gap-4 border-b border-border-2 px-5 py-2 text-[11px] font-medium uppercase tracking-wide text-text-3`}
-        >
-          <div>{t("common:labels.name")}</div>
-          <div>{t("common:labels.status")}</div>
-          <div>{t("sessions:opsControl.list.agentModel")}</div>
-          <div>{t("common:selectors.shared.workspace")}</div>
-          <div>{t("sessions:opsControl.list.started")}</div>
-          <div>{t("sessions:opsControl.list.lastUpdated")}</div>
-        </div>
-
-        <div>
-          {items.map((item) => {
-            const dataAttributes = item.dataAttributes ?? {};
-            return (
-              <button
-                key={item.id}
-                type="button"
-                disabled={item.disabled}
-                data-testid={item.testId}
-                className={`grid w-full ${SESSION_TABLE_GRID_CLASS} items-center gap-4 border-b border-border-2 px-5 py-2 text-left transition-colors hover:bg-fill-1 ${
-                  item.active ? "bg-fill-1" : ""
-                } ${item.disabled ? "cursor-default opacity-60" : "cursor-pointer"}`}
-                onClick={() => {
-                  if (item.disabled) return;
-                  onSelect?.(item);
-                }}
-                {...dataAttributes}
-              >
-                <div className="min-w-0">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="truncate text-[12px] font-medium text-text-1">
-                      {item.title}
-                    </span>
-                  </div>
-                  {item.description ? (
-                    <div
-                      className="mt-0.5 truncate text-[11px] text-text-3"
-                      title={
-                        typeof item.description === "string"
-                          ? item.description
-                          : undefined
-                      }
-                    >
-                      {item.description}
-                    </div>
-                  ) : null}
-                </div>
-
-                <div className="flex min-w-0 items-center gap-2 text-[12px] text-text-2">
-                  <span
-                    className="h-1.5 w-1.5 shrink-0 rounded-full"
-                    style={{
-                      backgroundColor:
-                        item.statusColor ?? "var(--color-fill-4)",
-                    }}
-                  />
-                  <span className="truncate">{item.statusLabel}</span>
-                </div>
-
-                <div className="flex min-w-0 items-center gap-2 text-[12px] text-text-2">
-                  {item.agentIcon}
-                  <span className="min-w-0 truncate">
-                    {item.agentLabel ?? EMPTY_CELL}
-                  </span>
-                  {item.modelLabel ? (
-                    <>
-                      <span className="shrink-0 text-text-4">·</span>
-                      {item.modelIcon}
-                      <span className="min-w-0 truncate">
-                        {item.modelLabel}
-                      </span>
-                    </>
-                  ) : null}
-                </div>
-
-                <div
-                  className="truncate text-[12px] text-text-3"
-                  title={item.workspaceTitle}
-                >
-                  {item.workspaceLabel ?? EMPTY_CELL}
-                </div>
-
-                <div className="truncate text-[12px] text-text-3">
-                  {item.startedLabel ?? EMPTY_CELL}
-                </div>
-
-                <div className="truncate text-[12px] text-text-3">
-                  {item.lastUpdatedLabel ?? EMPTY_CELL}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
+    <SettingsTable<SessionTableItem>
+      columns={columns}
+      rows={filteredItems}
+      getRowKey={(item) => item.id}
+      hover
+      headerBorder
+      stickyHeader
+      surfaceVariant={surfaceVariant}
+      fillHeight={fillHeight}
+      maxHeight={maxHeight}
+      pageSize={pageSize}
+      pageSizeOptions={pageSizeOptions}
+      className={className}
+      rootClassName={rootClassName}
+      emptyTitle={hasSearchFilter ? t("common:status.noResults") : undefined}
+      searchBar={
+        shouldShowSearch
+          ? {
+              searchValue: searchQuery,
+              searchPlaceholder: t(
+                "sessions:opsControl.list.searchPlaceholder"
+              ),
+              onSearchChange: setSearchQuery,
+              onSearchClear: () => setSearchQuery(""),
+              searchCountText:
+                hasSearchFilter && filteredItems.length !== items.length
+                  ? `${filteredItems.length} / ${items.length}`
+                  : undefined,
+            }
+          : undefined
+      }
+      rowClassName={(item) =>
+        [
+          item.active && surfaceVariant !== "transparent" ? "bg-fill-1" : "",
+          item.disabled ? "cursor-default opacity-60" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")
+      }
+      rowDataTestId={(item) => item.testId}
+      rowDataAttributes={(item) => item.dataAttributes}
+      onRowClick={(item) => {
+        if (item.disabled) return;
+        onSelect?.(item);
+      }}
+    />
   );
 };
 

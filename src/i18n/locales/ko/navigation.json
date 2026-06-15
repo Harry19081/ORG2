@@ -45,7 +45,8 @@
     "projects": "Projects",
     "projectManager": "Project 관리자",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "Colleagues"
   },
   "trajectoryPanel": {
     "title": "트래젝터리",
@@ -109,8 +110,7 @@
       "title": "그룹",
       "byTime": "시간순",
       "byAgent": "Agent 별",
-      "byWorkspace": "Workspace 별",
-      "byTags": "태그별"
+      "byWorkspace": "Workspace 별"
     },
     "defaults": {
       "untitledSession": "제목 없는 Session",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "워크스페이스 검색...",
       "sessions": "세션 검색...",
-      "projects": "프로젝트 검색..."
+      "projects": "프로젝트 검색...",
+      "colleagues": "Search colleagues..."
     },
     "folderCounts": {
       "repo": "{{count}}개 Repo",
@@ -370,5 +371,68 @@
     "details": "세부 정보",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "ORG 추가",
+    "unknownOrg": "알 수 없는 ORG",
+    "emptyColleagues": "No colleague activity yet",
+    "emptyColleaguesDesc": "ORG를 추가해 팀원과 세션 메타데이터 공유를 시작하세요.",
+    "createOrg": "만들기",
+    "joinOrg": "참여",
+    "orgSource": "Org source",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "Cloudflare hub URL",
+    "orgName": "ORG 이름",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "초대 링크 또는 코드",
+    "inviteCodePlaceholder": "orgii:// 초대 링크 또는 초대 코드를 붙여넣기",
+    "joinAs": "참여 이름",
+    "joinAsPlaceholder": "이름",
+    "identityKind": "내 ID",
+    "identityHuman": "Human",
+    "identityAgent": "Agent",
+    "inviteReady": "초대 준비됨",
+    "copyInvite": "초대 복사",
+    "copiedInvite": "복사됨",
+    "setupMode": "설정 모드",
+    "hubSetupTitle": "Cloudflare hub URL 설정 방법",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG를 찾을 수 없음",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "멤버",
+      "chat": "그룹 채팅"
+    },
+    "stats": {
+      "members": "멤버",
+      "sessionsToday": "오늘 Sessions",
+      "totalSessions": "총 Sessions",
+      "activeToday": "오늘 활성"
+    },
+    "status": {
+      "connected": "연결됨",
+      "offline": "오프라인",
+      "activeToday": "오늘 활성",
+      "idle": "유휴"
+    },
+    "chat": {
+      "empty": "아직 그룹 메시지가 없습니다",
+      "placeholder": "업데이트 또는 링크 공유...",
+      "send": "보내기",
+      "humanOnly": "Human ID만 그룹 채팅에 게시할 수 있습니다.",
+      "hint": "사람 구성원은 여기서 대화하고 ORG와 링크를 공유할 수 있습니다."
+    },
+    "sessionStatusActive": "활성",
+    "localHuman": "로컬 Human",
+    "backToOrg": "ORG로 돌아가기",
+    "invite": {
+      "title": "초대 링크",
+      "description": "팀원이 이 ORG에 참여할 수 있는 초대 링크를 만듭니다. 최신 링크가 여기에 표시되어 빠르게 복사할 수 있습니다.",
+      "adminOnly": "ORG 관리자만 초대 링크를 만들 수 있습니다.",
+      "create": "초대 만들기",
+      "createNew": "새 초대"
+    },
+    "orgDashboard": "대시보드"
   }
 }

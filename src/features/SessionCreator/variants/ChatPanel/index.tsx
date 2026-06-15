@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom, useStore } from "jotai";
-import { Airplay, Network, Paperclip, Tags } from "lucide-react";
+import { Airplay, Network, Paperclip } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -71,7 +71,6 @@ import AttachmentPanel from "./AttachmentPopover";
 import ScreenPickerModal from "./ScreenPickerModal";
 import SessionCreatorAgentHero from "./SessionCreatorAgentHero";
 import SessionCreatorOrgMembersPanel from "./SessionCreatorOrgMembersPanel";
-import TagPanel from "./TagPanel";
 import "./index.scss";
 import { resolveSessionCreatorAgentHeroContent } from "./resolveSessionCreatorAgentHero";
 import { useSessionCreatorChatPanelHandlers } from "./useSessionCreatorChatPanelHandlers";
@@ -119,7 +118,7 @@ const SessionCreatorChatPanelSingle: React.FC<
   headerLayout = "hero",
   hideRepoLine = false,
   initialContent,
-  dropdownDirection = "up",
+  dropdownDirection = "down",
   onRegionNoticeChange,
   onSessionStart,
   hidePresenceButton = false,
@@ -226,10 +225,6 @@ const SessionCreatorChatPanelSingle: React.FC<
   const [isAttachmentPanelOpen, setIsAttachmentPanelOpen] = useState(false);
   const handleToggleAttachment = useCallback(() => {
     setIsAttachmentPanelOpen((prev) => !prev);
-  }, []);
-  const [isTagPanelOpen, setIsTagPanelOpen] = useState(false);
-  const handleToggleTag = useCallback(() => {
-    setIsTagPanelOpen((prev) => !prev);
   }, []);
   const modelPickerStyle = useAtomValue(modelPickerStyleAtom);
   const [openOrgMembersPanelId, setOpenOrgMembersPanelId] = useState<
@@ -673,7 +668,7 @@ const SessionCreatorChatPanelSingle: React.FC<
       data-testid="session-creator-chat-panel"
     >
       <div
-        className={`flex min-h-0 flex-1 items-center justify-center px-4 ${
+        className={`session-creator-chat-panel-content flex min-h-0 flex-1 items-center justify-center px-4 ${
           innerClassName ??
           (isFullScreenVariant
             ? centerFullScreenContent
@@ -758,24 +753,6 @@ const SessionCreatorChatPanelSingle: React.FC<
                         : "shrink-0"
                     }
                   />
-                  <Button
-                    variant="secondary"
-                    appearance="outline"
-                    size="small"
-                    shape="round"
-                    iconOnly
-                    icon={<Tags size={14} strokeWidth={1.75} />}
-                    title="Add tag"
-                    aria-label="Add tag"
-                    aria-expanded={isTagPanelOpen}
-                    aria-controls="session-creator-tag-panel"
-                    onClick={handleToggleTag}
-                    className={
-                      isTagPanelOpen
-                        ? "shrink-0 !bg-fill-1 !text-primary-6"
-                        : "shrink-0"
-                    }
-                  />
                   {selectedOrg && (
                     <Button
                       variant="secondary"
@@ -810,15 +787,6 @@ const SessionCreatorChatPanelSingle: React.FC<
               <AttachmentPanel open={isAttachmentPanelOpen} />
             </div>
           )}
-
-          {isTagPanelOpen && (
-            <div
-              className={`mx-auto w-full ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
-            >
-              <TagPanel open={isTagPanelOpen} />
-            </div>
-          )}
-
           {selectedOrg && isOrgMembersPanelOpen && (
             <div id="session-creator-org-members-panel">
               <SessionCreatorOrgMembersPanel

@@ -74,6 +74,7 @@ export const SessionGetAggregateStatsInput = z.object({
  * routing rules.
  *
  * Allowed fields are deliberately limited:
+ *  - `name` — session display title, including generated Rust-agent titles.
  *  - `model` + optional `accountId` — atomic model+key swap (one user pick).
  *  - `agentExecMode` — ModePill click; legal for Rust-agent and CLI-agent sessions.
  *  - `draftText` (P3) — per-session unsent composer text. `null` = clear,
@@ -96,6 +97,7 @@ export const SessionPatchInput = z.object({
   sessionId: z.string().min(1),
   patch: z
     .object({
+      name: z.string().trim().min(1).optional(),
       model: z.string().optional(),
       accountId: z.string().optional(),
       agentExecMode: z.string().optional(),
@@ -104,25 +106,17 @@ export const SessionPatchInput = z.object({
       // string = set.
       draftText: z.string().nullable().optional(),
       replyTargetEventId: z.string().nullable().optional(),
-      // P5: tag list replacement (absent = leave alone, [] = clear all tags)
-      tags: z.array(z.string()).optional(),
-      // P5: pin toggle (absent = leave alone)
+      // Pin toggle (absent = leave alone)
       pinned: z.boolean().optional(),
-      filesChanged: z.number().optional(),
-      linesAdded: z.number().optional(),
-      linesRemoved: z.number().optional(),
     })
     .refine(
       (p) =>
+        p.name !== undefined ||
         p.model !== undefined ||
         p.agentExecMode !== undefined ||
         p.draftText !== undefined ||
         p.replyTargetEventId !== undefined ||
-        p.tags !== undefined ||
-        p.pinned !== undefined ||
-        p.filesChanged !== undefined ||
-        p.linesAdded !== undefined ||
-        p.linesRemoved !== undefined,
+        p.pinned !== undefined,
       { message: "session_patch: at least one field must be set" }
     )
     .refine((p) => !(p.accountId !== undefined && p.model === undefined), {
@@ -180,9 +174,7 @@ export const SessionAggregateRecordSchema = z.object({
   // "Reply" on a chat item; cleared when the banner is dismissed or the
   // message is sent. Persisted via `session_patch`.
   replyTargetEventId: z.string().optional(),
-  // User-defined tags (P5). Empty array means no tags.
-  tags: z.array(z.string()).default([]),
-  // Whether the session is pinned to the top of the sidebar (P5).
+  // Whether the session is pinned to the top of the sidebar.
   pinned: z.boolean().default(false),
   sourceSessionId: z.string().optional(),
   shareId: z.string().optional(),

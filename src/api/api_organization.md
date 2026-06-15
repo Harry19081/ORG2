@@ -121,7 +121,7 @@ Add to `realtime/`. SSE utilities are in `sseStream.ts`.
 | Search                       | `@src/api/tauri/search`                 |
 | Diff                         | `@src/api/tauri/diff`                   |
 | Perf utilities               | `@src/api/tauri/perf`                   |
-| DevRecord                    | `@src/api/tauri/devRecord`              |
+| Orgtrack history             | `@src/api/tauri/orgtrackHistory`        |
 | Repo commands                | `@src/api/tauri/repo`                   |
 | GitHub local                 | `@src/api/tauri/github`                 |
 | Learning                     | `@src/api/tauri/learning`               |

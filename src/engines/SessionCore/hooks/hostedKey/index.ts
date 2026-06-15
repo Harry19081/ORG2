@@ -5,4 +5,3 @@
  */
 
 export { useHostedKeyActivitySync } from "./useHostedKeyActivitySync";
-export { usePartialRecovery } from "./usePartialRecovery";

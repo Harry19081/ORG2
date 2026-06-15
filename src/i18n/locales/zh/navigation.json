@@ -45,7 +45,8 @@
     "projects": "项目",
     "projectManager": "项目管理器",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "同事"
   },
   "trajectoryPanel": {
     "title": "轨迹",
@@ -109,8 +110,7 @@
       "title": "分组",
       "byTime": "按时间",
       "byAgent": "按 Agent",
-      "byWorkspace": "按工作区",
-      "byTags": "按标签"
+      "byWorkspace": "按工作区"
     },
     "defaults": {
       "untitledSession": "未命名 Session",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "搜索工作区...",
       "sessions": "搜索会话...",
-      "projects": "搜索项目..."
+      "projects": "搜索项目...",
+      "colleagues": "搜索同事..."
     },
     "folderCounts": {
       "repo": "{{count}}个仓库",
@@ -461,5 +462,68 @@
     "details": "详情",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "添加 ORG",
+    "unknownOrg": "未知 ORG",
+    "emptyColleagues": "暂无同事活动",
+    "emptyColleaguesDesc": "添加 ORG，开始与队友共享会话元数据。",
+    "createOrg": "创建",
+    "joinOrg": "加入",
+    "orgSource": "组织来源",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "Cloudflare hub URL",
+    "orgName": "ORG 名称",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "邀请链接或代码",
+    "inviteCodePlaceholder": "粘贴 orgii:// 邀请链接或邀请代码",
+    "joinAs": "显示名称",
+    "joinAsPlaceholder": "你的名字",
+    "identityKind": "我的身份",
+    "identityHuman": "Human",
+    "identityAgent": "Agent",
+    "inviteReady": "邀请已生成",
+    "copyInvite": "复制邀请",
+    "copiedInvite": "已复制",
+    "setupMode": "设置模式",
+    "hubSetupTitle": "如何设置 Cloudflare hub URL",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "找不到 ORG",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "成员",
+      "chat": "群聊"
+    },
+    "stats": {
+      "members": "成员",
+      "sessionsToday": "今日 Sessions",
+      "totalSessions": "Sessions 总数",
+      "activeToday": "今日活跃"
+    },
+    "status": {
+      "connected": "已连接",
+      "offline": "离线",
+      "activeToday": "今日活跃",
+      "idle": "空闲"
+    },
+    "chat": {
+      "empty": "暂无群聊消息",
+      "placeholder": "分享更新或链接...",
+      "send": "发送",
+      "humanOnly": "只有 Human 身份可以在群聊中发言。",
+      "hint": "人类成员可以在这里聊天，并与 ORG 共享链接。"
+    },
+    "sessionStatusActive": "活跃",
+    "localHuman": "本地 Human",
+    "backToOrg": "返回 ORG",
+    "invite": {
+      "title": "邀请链接",
+      "description": "创建邀请链接，让队友加入此 ORG。最新链接会显示在这里，方便快速复制。",
+      "adminOnly": "只有 ORG 管理员可以创建邀请链接。",
+      "create": "创建邀请",
+      "createNew": "新邀请"
+    },
+    "orgDashboard": "仪表盘"
   }
 }

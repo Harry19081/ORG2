@@ -1,13 +1,7 @@
 import { RenameModal } from "@/src/scaffold/ModalSystem/variants";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Search } from "lucide-react";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -15,6 +9,7 @@ import type { WorkspaceRecord } from "@src/api/tauri/workspace";
 import { ROUTES } from "@src/config/routes";
 import { JoinSharedSessionDialog } from "@src/features/SessionSharing/JoinSharedSessionDialog";
 import { ShareSessionDialog } from "@src/features/SessionSharing/ShareSessionDialog";
+import { useCollaborationMetadataSync } from "@src/features/TeamCollaboration/useCollaborationMetadataSync";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { useKeyVault } from "@src/hooks/keyVault";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
@@ -64,14 +59,8 @@ import {
 
 import { SidebarBottomBar } from "../../blocks";
 import NavigationSidebar from "../../variants/NavigationSidebar";
-import {
-  projectsSidebarGroupByAtom,
-  sidebarGroupByAtom,
-} from "../sidebarGroupByAtom";
-import {
-  isProjectsLinearOrgGroupId,
-  useProjectsWorkItemMenuItems,
-} from "../useProjectsWorkItemMenuItems";
+import { sidebarGroupByAtom } from "../sidebarGroupByAtom";
+import { useProjectsWorkItemMenuItems } from "../useProjectsWorkItemMenuItems";
 import { useRenameSessionModal } from "../useRenameSessionModal";
 import { useSessionMenuItems } from "../useSessionMenuItems";
 import { useWorkstationSidebarContextMenu } from "../useWorkstationSidebarContextMenu";
@@ -225,9 +214,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
   );
 
   const [groupByMode, setGroupByMode] = useAtom(sidebarGroupByAtom);
-  const [projectsGroupByMode, setProjectsGroupByMode] = useAtom(
-    projectsSidebarGroupByAtom
-  );
   const [groupVisibleCounts, setGroupVisibleCounts] = useState<
     Map<string, number>
   >(new Map());
@@ -248,7 +234,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
   );
   const [projectsCollapsedSectionIds, setProjectsCollapsedSectionIds] =
     useState<Set<string>>(() => new Set());
-  const defaultedProjectsLinearSectionIdsRef = useRef<Set<string>>(new Set());
 
   const untitledSession = t("sidebar.defaults.untitledSession");
   const newSessionLabel = t("labels.newSession");
@@ -256,6 +241,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const unpinFolderLabel = tCommon("sessions:chat.unpinSession", "Unpin");
   const createProjectLabel = tProjects("projects.createProject");
   const createWorkItemLabel = tProjects("workItems.createWorkItem");
+  const addOrgLabel = t("collaboration.addOrg");
   const homeLabel = t("sidebar.tabs.build");
   const searchPlaceholder =
     activeSidebarKey === "projects"
@@ -280,17 +266,23 @@ export const WorkstationSidebarConnector: React.FC = () => {
     projectMap: projectsProjectMap,
     workItemMap: projectsWorkItemMap,
     linearWorkItemMap: projectsLinearWorkItemMap,
+    localOrgMap: projectsLocalOrgMap,
+    cloudOrgMap: projectsCloudOrgMap,
+    linearOrgMap: projectsLinearOrgMap,
     loading: projectsWorkItemsLoading,
     getLoadMoreGroupId: getProjectsLoadMoreGroupId,
     loadLinearOrgWorkItems: loadProjectsLinearOrgWorkItems,
     toChatPanelProject,
     toChatPanelWorkItem,
+    openLinearOrg: openProjectsLinearOrg,
     openLinearWorkItem: openProjectsLinearWorkItem,
   } = useProjectsWorkItemMenuItems({
     enabled: activeSidebarKey === "projects",
-    groupByMode: projectsGroupByMode,
     groupVisibleCounts: projectsGroupVisibleCounts,
+    searchQuery: sidebarSearchQueries.projects,
   });
+
+  useCollaborationMetadataSync();
 
   const rename = useRenameSessionModal();
   const activeSessionId = useAtomValue(workstationActiveSessionIdAtom) ?? "";
@@ -303,6 +295,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
 
   const { pinnedMenuItems } = usePinnedMenuItems({
     activeSidebarKey,
+    addOrgLabel,
     createProjectLabel,
     createWorkItemLabel,
     newSessionLabel,
@@ -436,27 +429,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
   });
   const projectsSidebarMenuItems = projectsWorkItemMenuItems;
 
-  useEffect(() => {
-    if (activeSidebarKey !== "projects" || projectsGroupByMode !== "byOrg") {
-      return;
-    }
-    const linearSectionIds = getAllSectionIds(projectsSidebarMenuItems).filter(
-      isProjectsLinearOrgGroupId
-    );
-    const newLinearSectionIds = linearSectionIds.filter(
-      (sectionId) =>
-        !defaultedProjectsLinearSectionIdsRef.current.has(sectionId)
-    );
-    if (newLinearSectionIds.length === 0) return;
-    setProjectsCollapsedSectionIds((previousIds) => {
-      const nextIds = new Set(previousIds);
-      for (const sectionId of newLinearSectionIds) {
-        nextIds.add(sectionId);
-        defaultedProjectsLinearSectionIdsRef.current.add(sectionId);
-      }
-      return nextIds;
-    });
-  }, [activeSidebarKey, projectsGroupByMode, projectsSidebarMenuItems]);
   const { selectedMenuItemId, sessionSelectedMenuItemId } =
     resolveSelectedMenuItemIds({
       activeSessionCreatorDraftId,
@@ -493,6 +465,23 @@ export const WorkstationSidebarConnector: React.FC = () => {
     if (location.pathname !== targetRoute) navigate(targetRoute);
   }, [location.pathname, navigate, resetOpsControlStateForProjectsContent]);
 
+  const activateMyStationRouteForProjectTabContent = useCallback(() => {
+    const stationMode: StationMode = "my-station";
+    const targetRoute = ROUTES.workStation.code.path;
+    setStationMode(stationMode);
+    setStationChatVisible(stationMode, true);
+    setOpsControlPeekHost(null);
+    setOpsControlFocusedTab(null);
+    if (location.pathname !== targetRoute) navigate(targetRoute);
+  }, [
+    location.pathname,
+    navigate,
+    setOpsControlFocusedTab,
+    setOpsControlPeekHost,
+    setStationChatVisible,
+    setStationMode,
+  ]);
+
   const { handleGoToNewSession } = useSessionEntryActions({
     goToNewSession,
     navigateChatPanel,
@@ -512,7 +501,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     handleExportMarkdown,
     handleMenuItemClick,
     handleTogglePin,
-    handleAddTag,
   } = useWorkstationSidebarHandlers({
     activeSessionId,
     selectedMenuItemId: sessionSelectedMenuItemId,
@@ -534,7 +522,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     handleDeleteDraft: deleteSessionCreatorDraft,
     handleExportMarkdown,
     handleTogglePin,
-    handleAddTag,
     onShareSession: handleOpenShareDialog,
     tCommon,
   });
@@ -572,12 +559,17 @@ export const WorkstationSidebarConnector: React.FC = () => {
     setProjectsSelectedMenuItemId,
   });
   const handleProjectsMenuItemClick = useProjectsMenuItemClick({
+    activateMyStationRouteForProjectTabContent,
     activateMyStationRouteForProjectsContent,
     getProjectsLoadMoreGroupId,
     loadProjectsLinearOrgWorkItems,
     navigateChatPanel,
+    openProjectsLinearOrg,
     openProjectsLinearWorkItem: openProjectsLinearWorkItem,
+    projectsCloudOrgMap,
+    projectsLinearOrgMap,
     projectsLinearWorkItemMap,
+    projectsLocalOrgMap,
     projectsProjectMap,
     projectsWorkItemMap,
     resetOpsControlStateForProjectsContent,
@@ -664,21 +656,14 @@ export const WorkstationSidebarConnector: React.FC = () => {
         : false;
   const sidebarBottomRightActions = useSidebarBottomRightActions({
     activeSidebarKey,
-    defaultedProjectsLinearSectionIdsRef,
     groupByMode,
     handleCollapseAll,
     handleCollapseAllActiveSections,
     handleMarkAllRead,
     handleRefreshSessions,
     onJoinSharedSession: handleOpenJoinSharedSession,
-    projectsGroupByMode,
     setGroupByMode,
-    setProjectsCollapsedSectionIds,
-    setProjectsGroupByMode,
-    setProjectsGroupVisibleCounts,
-    setProjectsSelectedMenuItemId,
     t,
-    tProjects,
   });
 
   useWorkstationSidebarMemory({

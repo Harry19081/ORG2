@@ -113,17 +113,15 @@ export interface Session {
    * action. `undefined` means no reply banner is open.
    */
   replyTargetEventId?: string;
-  /** User-defined tags for this session (P5). Empty array = no tags. */
-  tags?: string[];
-  /** Whether this session is pinned to the top of the sidebar (P5). */
+  /** Whether this session is pinned to the top of the sidebar. */
   pinned?: boolean;
   created_time?: string;
   updated_time?: string;
-  /** Number of files changed in this session (written by the frontend diff pipeline). */
+  /** Deprecated source-cache stat. Do not use for canonical AI Blame/final impact; use Orgtrack summaries. */
   filesChanged?: number;
-  /** Number of lines added in this session (written by the frontend diff pipeline). */
+  /** Deprecated source-cache stat. Do not use for canonical AI Blame/final impact; use Orgtrack summaries. */
   linesAdded?: number;
-  /** Number of lines removed in this session (written by the frontend diff pipeline). */
+  /** Deprecated source-cache stat. Do not use for canonical AI Blame/final impact; use Orgtrack summaries. */
   linesRemoved?: number;
 }
 

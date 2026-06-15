@@ -8,6 +8,16 @@
     min-height: auto;
   }
 
+  @media (max-height: 800px) {
+    .session-creator-chat-panel-content {
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+  }
+
   .session-creator-chat-panel-fullscreen-composer {
     position: relative;
   }

@@ -101,6 +101,7 @@ const ComposerBar: React.FC<ComposerBarProps> = memo(
           INPUT_AREA_BUTTONS.iconButtonSizeClass,
         ].join(" ")}
         aria-label="Skills & Tools"
+        data-composer-plus-menu-trigger="true"
         data-testid="composer-skills-tools-button"
       >
         <Plus

@@ -29,6 +29,7 @@ module.exports = {
           pane: colorVariable("chat-pane"),
           input: colorVariable("chat-input"),
           container: colorVariable("chat-container"),
+          "panel-info-container": colorVariable("chat-panel-info-container"),
         },
         button: {
           hover: colorVariable("button-hover"),

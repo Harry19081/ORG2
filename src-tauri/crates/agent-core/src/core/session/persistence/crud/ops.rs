@@ -27,9 +27,9 @@ INSERT INTO agent_sessions (
     worktree_branch, base_branch, merge_status,
     project_slug, agent_definition_id, org_member_id, parent_session_id, parent_event_id,
     workspace_additional_json, key_source, agent_exec_mode, native_harness_type,
-    draft_text, reply_target_event_id, tags_json, pinned
+    draft_text, reply_target_event_id, pinned
 )
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30, ?31)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30)
 ON CONFLICT(session_id) DO UPDATE SET
     name                       = excluded.name,
     status                     = excluded.status,
@@ -89,10 +89,8 @@ ON CONFLICT(session_id) DO UPDATE SET
     -- currently typing or replying to.
     draft_text                 = agent_sessions.draft_text,
     reply_target_event_id      = agent_sessions.reply_target_event_id,
-    -- `tags_json` and `pinned` are user-set metadata (P5). Only the
-    -- explicit `update_tags` / `update_pinned` helpers write them; upserts
-    -- must preserve whatever the user set last.
-    tags_json                  = agent_sessions.tags_json,
+    -- `pinned` is user-set metadata. Only the explicit `update_pinned`
+    -- helper writes it; upserts must preserve whatever the user set last.
     pinned                     = agent_sessions.pinned
 "#;
 
@@ -133,7 +131,6 @@ pub fn upsert_session(record: &UnifiedSessionRecord) -> SqliteResult<()> {
                 record.native_harness_type,
                 record.draft_text,
                 record.reply_target_event_id,
-                record.tags_json,
                 record.pinned as i64,
             ],
         )?;
@@ -391,6 +388,19 @@ pub fn update_org_member_id(session_id: &str, org_member_id: &str) -> SqliteResu
 // send-message flow, etc.). Same posture is mirrored in
 // `agent_sessions/cli/persistence.rs` for `code_sessions`.
 
+/// Update the display name for a session. Does not bump `updated_at` —
+/// renaming is metadata, not conversation activity.
+pub fn update_name(session_id: &str, name: &str) -> SqliteResult<bool> {
+    with_sessions_writer(|| {
+        let conn = get_connection()?;
+        let affected = conn.execute(
+            "UPDATE agent_sessions SET name = ?2 WHERE session_id = ?1",
+            params![session_id, name],
+        )?;
+        Ok(affected > 0)
+    })
+}
+
 /// Update the model for a session. Does not bump `updated_at` —
 /// switching models is config, not activity.
 pub fn update_model(session_id: &str, model: &str) -> SqliteResult<()> {
@@ -538,26 +548,6 @@ pub fn update_reply_target_event_id_with_conn(
     )?;
     Ok(affected > 0)
 }
-
-/// Update the `tags_json` column for a session.
-///
-/// `tags` is serialized as a JSON array; `None` (empty slice) stores `NULL`.
-pub fn update_tags(session_id: &str, tags: &[String]) -> SqliteResult<bool> {
-    let json_value: Option<String> = if tags.is_empty() {
-        None
-    } else {
-        serde_json::to_string(tags).ok()
-    };
-    with_sessions_writer(|| {
-        let conn = get_connection()?;
-        let affected = conn.execute(
-            "UPDATE agent_sessions SET tags_json = ?2 WHERE session_id = ?1",
-            params![session_id, json_value],
-        )?;
-        Ok(affected > 0)
-    })
-}
-
 /// Update the `pinned` column for a session.
 pub fn update_pinned(session_id: &str, pinned: bool) -> SqliteResult<bool> {
     with_sessions_writer(|| {
@@ -778,7 +768,6 @@ mod tests {
             native_harness_type TEXT,
             draft_text TEXT,
             reply_target_event_id TEXT,
-            tags_json TEXT,
             pinned INTEGER NOT NULL DEFAULT 0
         );
         CREATE TABLE session_token_usage (
@@ -838,7 +827,6 @@ mod tests {
                 record.native_harness_type,
                 record.draft_text,
                 record.reply_target_event_id,
-                record.tags_json,
                 record.pinned as i64,
             ],
         )

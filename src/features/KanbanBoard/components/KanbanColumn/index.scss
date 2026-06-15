@@ -64,7 +64,10 @@
 }
 
 .kanban-column__count {
-  color: var(--color-text-white);
+  color: var(--color-text-2);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .kanban-column__add-btn {

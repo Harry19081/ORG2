@@ -28,7 +28,7 @@ export const CodeMapRelationshipList: React.FC<
         {relationships.map((relationship) => (
           <div
             key={`${relationship.edge.source}-${relationship.edge.target}-${relationship.edge.kind}-${relationship.edge.line ?? 0}`}
-            className="rounded bg-bg-1 px-3 py-2"
+            className="rounded bg-chat-pane px-3 py-2"
           >
             <div className="flex min-w-0 items-center justify-between gap-2">
               <span className="truncate text-[12px] font-medium text-text-1">

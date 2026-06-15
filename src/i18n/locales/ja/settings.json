@@ -891,7 +891,6 @@
     "diskCategory_sessionsDb": "Sessionデータベース",
     "diskCategory_logs": "ログ",
     "diskCategory_personalWorkspace": "OS Agent ワークスペース",
-    "diskCategory_partials": "Session一時データ",
     "diskCategory_cursorConfig": "Session CLI 設定",
     "diskCategory_geminiCliHome": "Gemini CLI ディレクトリ",
     "diskCategory_extensions": "拡張機能",

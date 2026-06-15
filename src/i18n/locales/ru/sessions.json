@@ -87,6 +87,7 @@
       "started": "Начато",
       "lastUpdated": "Последнее обновление",
       "agentModel": "Agent · Модель",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Нет сессий, соответствующих этим фильтрам",
       "emptyDescription": "Попробуйте другой статус, тип Agent или период."
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "Commits в {{repo}}",
       "commitsToMultiple": "Commits в {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} файл",
+      "filesChanged_other": "{{count}} файлов",
+      "commits_one": "{{count}} commit",
+      "commits_other": "{{count}} commits",
+      "committedRateShort": "{{percent}}% закоммичено"
     }
   },
   "changes": {
@@ -739,14 +747,11 @@
     "historyThisWeek": "На этой неделе",
     "historyOlder": "Ранее",
     "historyPinned": "Закреплённые",
-    "historyNoTags": "Без тегов",
     "historyRefresh": "Обновить",
     "historyLastUsedModel": "Последняя использованная модель",
     "historyUntitled": "Сессия без названия",
     "pinSession": "Закрепить",
     "unpinSession": "Открепить",
-    "addTag": "Добавить тег...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "Требуется ваше разрешение",
     "questionsPrompt": "Требуется ваш ответ",
     "generatingQuestions": "Генерация вопросов",
@@ -943,7 +948,7 @@
     "explore": "Исследовать",
     "readFile": "Чтение файла",
     "readFileRunning": "Чтение",
-    "readFileDone": "Прочитано",
+    "readFileDone": "Читать",
     "readFileFailed": "Попытка прочитать",
     "readFileSkillRunning": "Использование skill",
     "readFileSkillDone": "Использовать skill",

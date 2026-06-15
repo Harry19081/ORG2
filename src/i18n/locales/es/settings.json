@@ -891,7 +891,6 @@
     "diskCategory_sessionsDb": "Base de datos de Session",
     "diskCategory_logs": "Registros",
     "diskCategory_personalWorkspace": "Espacio de trabajo de OS Agent",
-    "diskCategory_partials": "Datos temporales de Session",
     "diskCategory_cursorConfig": "Configuraciones CLI de Session",
     "diskCategory_geminiCliHome": "Directorios Gemini CLI",
     "diskCategory_extensions": "Extensiones",

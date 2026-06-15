@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 use app_paths::{
     agent_worktrees_root, claude_code_cli_profile_root, codex_cli_profile_root, cursor_config_root,
     extensions_dir, file_history_root, gemini_cli_home_root, logs_dir, lsp_bin_dir, orgii_root,
-    partials_dir, personal_workspace, screenshots_dir, session_images_dir, sessions_db,
+    personal_workspace, screenshots_dir, session_images_dir, sessions_db,
 };
 
 /// Tauri command: path where agent memory (KG) is stored: `~/.orgii/sessions.db`.
@@ -90,7 +90,6 @@ pub fn get_disk_usage() -> DiskUsageReport {
             "OS Agent Workspace",
             personal_workspace(),
         ),
-        ("partials", "Session Partials", partials_dir()),
         ("cursorConfig", "Session CLI Configs", cursor_config_root()),
         (
             "claudeCodeCliProfiles",
@@ -145,7 +144,6 @@ fn category_path(key: &str) -> Option<PathBuf> {
         "logs" => Some(logs_dir()),
         "fileHistory" => Some(file_history_root()),
         "personalWorkspace" => Some(personal_workspace()),
-        "partials" => Some(partials_dir()),
         "cursorConfig" => Some(cursor_config_root()),
         "claudeCodeCliProfiles" => Some(claude_code_cli_profile_root()),
         "codexCliProfiles" => Some(codex_cli_profile_root()),

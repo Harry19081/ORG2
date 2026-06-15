@@ -76,6 +76,7 @@ function TableComponent<T = unknown>(
     noDataElement,
     rowClassName,
     rowDataTestId,
+    rowDataAttributes,
     className = "",
     style,
     scroll,
@@ -434,6 +435,7 @@ function TableComponent<T = unknown>(
               settings={settings}
               rowClassName={rowClassName}
               rowDataTestId={rowDataTestId}
+              rowDataAttributes={rowDataAttributes}
               onRowClick={onRowClick}
               noDataElement={noDataElement}
             />

@@ -131,13 +131,6 @@ pub struct UnifiedSessionRecord {
     /// banner is dismissed or the message is sent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reply_target_event_id: Option<String>,
-
-    /// User-defined tags for this session (e.g. "review", "infra").
-    /// Stored as a JSON-encoded `Vec<String>` in the `tags_json` column.
-    /// `None` means the column is NULL (no tags ever set).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tags_json: Option<String>,
-
     /// Whether the session is pinned to the top of the sidebar.
     /// Stored as INTEGER (0/1) in the `pinned` column.
     #[serde(default)]
@@ -184,7 +177,6 @@ impl Default for UnifiedSessionRecord {
             agent_exec_mode: None,
             draft_text: None,
             reply_target_event_id: None,
-            tags_json: None,
             pinned: false,
         }
     }
@@ -215,7 +207,6 @@ pub(super) const UNIFIED_SESSION_SELECT: &str = r#"
         s.native_harness_type,
         s.draft_text,
         s.reply_target_event_id,
-        s.tags_json,
         COALESCE(s.pinned, 0)
     FROM agent_sessions s
 "#;
@@ -267,9 +258,8 @@ pub(super) fn row_to_record(row: &rusqlite::Row) -> rusqlite::Result<UnifiedSess
         agent_exec_mode: row.get(26)?,
         draft_text: row.get(28)?,
         reply_target_event_id: row.get(29)?,
-        tags_json: row.get(30)?,
         pinned: {
-            let pinned_int: i64 = row.get(31)?;
+            let pinned_int: i64 = row.get(30)?;
             pinned_int != 0
         },
     })
@@ -285,7 +275,7 @@ mod tests {
             0, '2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z', 'sde',
             NULL, NULL, '/tmp/project', NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                     'builtin:sde', NULL, NULL, NULL, '{}', 'own_key', NULL, NULL, NULL, NULL,
-                    NULL, 0
+                    0
     "#;
 
     #[test]
@@ -313,7 +303,7 @@ mod tests {
                     NULL, NULL, '/tmp/project', NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                     'builtin:sde', NULL, NULL, NULL, '{}', 'hosted_key', 'plan',
                     NULL, 'half-typed reply', 'evt-42',
-                    NULL, 0
+                    0
                 "#,
                 [],
                 row_to_record,
@@ -366,7 +356,7 @@ mod tests {
                     0, '2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z', 'sde',
                     NULL, NULL, '/tmp/project', NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                     'builtin:sde', NULL, NULL, NULL, '{}', 'market', NULL, NULL, NULL, NULL,
-                    NULL, 0
+                    0
                 "#,
                 [],
                 row_to_record,
@@ -410,7 +400,7 @@ mod tests {
                     0, '2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z', 'sde',
                     NULL, NULL, '/tmp/project', NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                     'builtin:sde', NULL, NULL, NULL, NULL, 'own_key', NULL, NULL, NULL, NULL,
-                    NULL, 0
+                    0
                 "#,
                 [],
                 row_to_record,

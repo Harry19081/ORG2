@@ -96,8 +96,6 @@ pub fn ensure_unified_schema(conn: &Connection) -> SqliteResult<()> {
         conn,
         "ALTER TABLE agent_sessions ADD COLUMN native_harness_type TEXT",
     );
-    // JSON-encoded Vec<String> of user-defined tags. NULL means no tags (same as empty).
-    try_migrate(conn, "ALTER TABLE agent_sessions ADD COLUMN tags_json TEXT");
     // Whether the session is pinned to the top of the sidebar (0 = no, 1 = yes).
     try_migrate(
         conn,

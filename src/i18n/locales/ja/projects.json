@@ -71,9 +71,16 @@
   },
   "orgs": {
     "yourOrgs": "あなたの組織",
-    "personalOrg": "個人組織",
+    "sectionTitle": "組織",
+    "recentProjects": "最近のプロジェクト",
+    "personalOrg": "自分のプロジェクト",
     "linearOrg": "Linear 組織",
     "noLinearOrgs": "接続済みの組織はまだありません",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "組織を追加",
     "importOrgs": "組織をインポート",
     "importLinearOrgs": "Linear 組織をインポート",

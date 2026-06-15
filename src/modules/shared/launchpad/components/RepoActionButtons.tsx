@@ -208,9 +208,7 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
         loading={launching}
         onClick={handleSetupRepo}
       >
-        {t("navigation:launchpad.actions.setupRepo", {
-          defaultValue: "Setup",
-        })}
+        {t("navigation:launchpad.preview.setupWithAI")}
       </Button>
       <Button
         variant="secondary"

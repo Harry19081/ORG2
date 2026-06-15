@@ -71,9 +71,16 @@
   },
   "orgs": {
     "yourOrgs": "Suas organizações",
-    "personalOrg": "Organização pessoal",
+    "sectionTitle": "Organizações",
+    "recentProjects": "Projetos recentes",
+    "personalOrg": "Meus projetos",
     "linearOrg": "Organização Linear",
     "noLinearOrgs": "Nenhuma organização conectada ainda",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "Adicionar organização",
     "importOrgs": "Importar organizações",
     "importLinearOrgs": "Importar organizações do Linear",

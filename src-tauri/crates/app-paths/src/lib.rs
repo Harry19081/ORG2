@@ -190,7 +190,6 @@ pub fn code_map_root() -> PathBuf {
     orgii_root().join("code-map")
 }
 
-
 /// Semantic-search USearch index: `~/.orgii/semantic_index/`.
 pub fn semantic_index_dir() -> PathBuf {
     orgii_root().join("semantic_index")
@@ -756,11 +755,6 @@ pub fn set_sensitive_file_permissions(path: &Path) -> std::io::Result<()> {
 /// Log directory: `~/.orgii/logs/`.
 pub fn logs_dir() -> PathBuf {
     orgii_root().join("logs")
-}
-
-/// Partial stream recovery files: `~/.orgii/partials/`.
-pub fn partials_dir() -> PathBuf {
-    orgii_root().join("partials")
 }
 
 /// Per-session Cursor CLI config root: `~/.orgii/cursor-config/`.

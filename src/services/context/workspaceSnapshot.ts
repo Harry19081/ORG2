@@ -44,10 +44,13 @@ export type ChatPanelSurfaceKind =
   | "newProject"
   | "newWorkItem"
   | "project"
+  | "projectOrg"
   | "workItem"
   | "workspaceDashboard"
   | "workspaceExplore"
-  | "workspaceOverview";
+  | "workspaceOverview"
+  | "newCollabOrg"
+  | "collabOrg";
 
 export interface AppUiSnapshot {
   route?: {

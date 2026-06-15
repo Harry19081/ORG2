@@ -71,9 +71,16 @@
   },
   "orgs": {
     "yourOrgs": "내 조직",
-    "personalOrg": "개인 조직",
+    "sectionTitle": "조직",
+    "recentProjects": "최근 프로젝트",
+    "personalOrg": "내 프로젝트",
     "linearOrg": "Linear 조직",
     "noLinearOrgs": "아직 연결된 조직이 없습니다",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "조직 추가",
     "importOrgs": "조직 가져오기",
     "importLinearOrgs": "Linear 조직 가져오기",

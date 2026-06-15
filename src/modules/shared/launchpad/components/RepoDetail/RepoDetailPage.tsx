@@ -43,7 +43,6 @@ import type { Repo } from "@src/store/repo/types";
 import { copyText } from "@src/util/data/clipboard";
 
 import ContainersSection from "../ContainersSection";
-import AgentLauncherSection from "./AgentLauncherSection";
 import {
   STATUS_DOT_COLOR,
   STATUS_LABEL_KEY,
@@ -132,27 +131,6 @@ const RepoDetailPage: React.FC<RepoDetailPageProps> = ({
     if (hasMakefile) result.push("Make");
     return result;
   }, [hasDocker, hasMakefile]);
-
-  const setupContext = useMemo(
-    () => ({
-      repoPath,
-      repoName,
-      repoType,
-      repoTypeLabel,
-      configFiles,
-      hasDocker,
-      hasMakefile,
-    }),
-    [
-      repoPath,
-      repoName,
-      repoType,
-      repoTypeLabel,
-      configFiles,
-      hasDocker,
-      hasMakefile,
-    ]
-  );
 
   const loading =
     detectionLoading || envLoading || scriptsLoading || containersLoading;
@@ -410,13 +388,11 @@ const RepoDetailPage: React.FC<RepoDetailPageProps> = ({
   // outer DetailPanelContainer, no extra scroll wrapper, no width cap.
   // Scrolling and horizontal padding are owned by the enclosing
   // WorkItemContentStack, matching the Overview tab's layout exactly.
-  // The fragment-level `relative` wrapper exists only to anchor the
-  // floating AgentLauncherSection's `absolute bottom-2` positioning.
   return (
-    <div className="relative flex flex-col">
+    <div className="flex flex-col">
       {/* Info Section */}
       <div className={DETAIL_PANEL_TOKENS.sectionGap}>
-        <div className="rounded-lg bg-fill-2 p-4">
+        <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
           <h3
             className="mb-3 truncate text-[14px] font-semibold text-text-1"
             title={repoName}
@@ -459,7 +435,7 @@ const RepoDetailPage: React.FC<RepoDetailPageProps> = ({
       {configFiles.length > 0 && (
         <CollapsibleSection title={t("launchpad.preview.configFiles")}>
           <div
-            className={`${DETAIL_PANEL_TOKENS.contentStack} rounded-lg bg-fill-2 p-4`}
+            className={`${DETAIL_PANEL_TOKENS.contentStack} ${DETAIL_PANEL_TOKENS.chatPanelInfoContainer}`}
           >
             {configFiles.map((file) => (
               <div
@@ -498,13 +474,14 @@ const RepoDetailPage: React.FC<RepoDetailPageProps> = ({
             ? `${t("launchpad.detail.envVarsTitle")} (${envVars.filter((v) => v.filled).length}/${envVars.length})`
             : t("launchpad.detail.envVarsTitle")
         }
-        defaultOpen
+        defaultOpen={false}
       >
         <SettingsTable<EnvVar>
           columns={envColumns}
           rows={filteredEnvVars}
           getRowKey={(row) => row.key}
           headerHeight="compact"
+          surfaceVariant="chatPanel"
           emptyTitle={
             envSearch
               ? t("common:status.noResults")
@@ -545,13 +522,14 @@ const RepoDetailPage: React.FC<RepoDetailPageProps> = ({
             ? `${t("launchpad.detail.scriptsTitle")} (${scripts.length})`
             : t("launchpad.detail.scriptsTitle")
         }
-        defaultOpen
+        defaultOpen={false}
       >
         <SettingsTable<RepoScript>
           columns={scriptColumns}
           rows={filteredScripts}
           getRowKey={(row) => `${row.source}:${row.command}`}
           headerHeight="tall"
+          surfaceVariant="chatPanel"
           className="table-layout-fixed"
           searchBar={{
             searchValue: scriptSearch,
@@ -598,8 +576,6 @@ const RepoDetailPage: React.FC<RepoDetailPageProps> = ({
           </div>
         )}
       </CollapsibleSection>
-
-      <AgentLauncherSection context={setupContext} />
     </div>
   );
 };

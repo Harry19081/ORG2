@@ -15,7 +15,6 @@ import {
   loadStatusAtom,
   streamingDeltaContentAtom,
 } from "@src/engines/SessionCore";
-import { usePartialRecovery } from "@src/engines/SessionCore/hooks/hostedKey";
 import { createLogger } from "@src/hooks/logger";
 import {
   type CliSessionStatus,
@@ -91,12 +90,6 @@ export function useSessionSync(
   const setStreamingDeltaContent = useSetAtom(streamingDeltaContentAtom);
   const setPendingPlanApprovals = useSetAtom(pendingPlanApprovalsAtom);
 
-  const { checkAndRecover } = usePartialRecovery();
-  const checkAndRecoverRef = useRef(checkAndRecover);
-  useEffect(() => {
-    checkAndRecoverRef.current = checkAndRecover;
-  }, [checkAndRecover]);
-
   const adapterRef = useRef<SessionAdapter | null>(null);
   const handlerRef = useRef<SessionEventHandler | null>(null);
   const prevSessionIdRef = useRef<string | null>(null);
@@ -110,7 +103,6 @@ export function useSessionSync(
       prevSessionIdRef,
       prevReloadEpochRef,
       liveSessionIdRef,
-      checkAndRecoverRef,
     }),
     []
   );

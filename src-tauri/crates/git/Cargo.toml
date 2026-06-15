@@ -13,8 +13,8 @@ path = "src/lib.rs"
 # The crate keeps its `#[tauri::command]` macros (mirroring `crates/key-vault`
 # and `crates/cursor-bridge`) so the `app` crate just re-registers them
 # in `commands/handler_list.inc` without a command-shell shim. The IoC hooks
-# in `hooks.rs` keep the crate a true leaf — `agent_core`, `dev_record`, and
-# `api/git` callbacks are wired up from `app::lib::register_git_hooks`.
+# in `hooks.rs` keep the crate a true leaf — `agent_core` and `api/git`
+# callbacks are wired up from `app::lib::register_git_hooks`.
 [dependencies]
 core_types = { path = "../types" }
 app_paths = { path = "../app-paths" }

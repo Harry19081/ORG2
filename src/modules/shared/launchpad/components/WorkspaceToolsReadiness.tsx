@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { AlertTriangle, CheckCircle2, RefreshCw, Wrench } from "lucide-react";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -8,7 +8,10 @@ import StatusDot from "@src/components/StatusDot";
 import { createLogger } from "@src/hooks/logger";
 import { useLanguageServers } from "@src/modules/MainApp/Integrations/hooks/lsp/useLanguageServers";
 import { useLintTools } from "@src/modules/MainApp/Integrations/hooks/lsp/useLintTools";
-import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
+import {
+  CollapsibleSection,
+  DETAIL_PANEL_TOKENS,
+} from "@src/modules/shared/layouts/blocks";
 
 import type { DetectedConfigFile, RepoType } from "../types";
 
@@ -315,12 +318,11 @@ export const WorkspaceToolsReadiness: React.FC<
       title={t("controlTower.workspaceTools.title")}
       defaultOpen={false}
     >
-      <div className="rounded-lg bg-fill-2 p-4">
+      <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-2">
-                <Wrench size={14} className="shrink-0 text-text-2" />
                 <span className="truncate text-[13px] font-semibold text-text-1">
                   {t("controlTower.workspaceTools.title")}
                 </span>
@@ -348,7 +350,6 @@ export const WorkspaceToolsReadiness: React.FC<
               variant="secondary"
               size="small"
               shape="round"
-              icon={<RefreshCw size={14} />}
               loading={loading}
               disabled={loading}
               onClick={handleRefresh}
@@ -359,7 +360,7 @@ export const WorkspaceToolsReadiness: React.FC<
 
           <div className="grid gap-2 lg:grid-cols-2">
             {groups.map((group) => (
-              <div key={group.key} className="rounded-md bg-bg-1 p-3">
+              <div key={group.key} className="rounded-md bg-chat-pane p-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="truncate text-[12px] font-semibold text-text-1">

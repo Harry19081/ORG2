@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { getCursorSessions } from "@src/api/tauri/devRecord";
-import type { CursorSession } from "@src/api/tauri/devRecord/types";
+import { getOrgtrackCursorSessions } from "@src/api/tauri/orgtrackHistory";
+import type { CursorSession } from "@src/api/tauri/orgtrackHistory/types";
 
 import {
   DATE_RANGE_OPTIONS,
@@ -16,7 +16,6 @@ import {
   DEFAULT_TAB,
   type ModelStats,
   type OtherUsageTabKey,
-  type OverviewStats,
   buildModelStats,
 } from "./config";
 
@@ -55,9 +54,8 @@ export interface UseOtherUsageDataReturn {
 
   // Derived data
   sessions: CursorSession[];
-  overviewStats: OverviewStats;
   modelStats: ModelStats[];
-  modelChartData: { model: string; lines: number }[];
+  modelChartData: { model: string; tokens: number }[];
   modelNameMap: Map<string, string>;
   sidebarModelStats: { model: string; count: number }[];
 
@@ -96,7 +94,8 @@ export function useOtherUsageData(): UseOtherUsageDataReturn {
   );
 
   const fetcher = useMemo(
-    () => () => getCursorSessions(dateRange.startDate, dateRange.endDate),
+    () => () =>
+      getOrgtrackCursorSessions(dateRange.startDate, dateRange.endDate),
     [dateRange.startDate, dateRange.endDate]
   );
 
@@ -144,18 +143,6 @@ export function useOtherUsageData(): UseOtherUsageDataReturn {
 
   const sessions = useMemo(() => data ?? [], [data]);
 
-  const overviewStats = useMemo<OverviewStats>(() => {
-    const totalLinesAdded = sessions.reduce(
-      (acc, session) => acc + session.linesAdded,
-      0
-    );
-    const totalLinesRemoved = sessions.reduce(
-      (acc, session) => acc + session.linesRemoved,
-      0
-    );
-    return { totalLinesAdded, totalLinesRemoved };
-  }, [sessions]);
-
   const modelStats = useMemo(
     () => buildModelStats(sessions, formatModelNameFull),
     [sessions]
@@ -165,7 +152,7 @@ export function useOtherUsageData(): UseOtherUsageDataReturn {
     () =>
       modelStats.slice(0, 8).map((stat) => ({
         model: formatModelNameFull(stat.model),
-        lines: stat.linesAdded + stat.linesRemoved,
+        tokens: stat.tokensUsed,
       })),
     [modelStats]
   );
@@ -207,7 +194,6 @@ export function useOtherUsageData(): UseOtherUsageDataReturn {
     selectedModel,
     setSelectedModel,
     sessions,
-    overviewStats,
     modelStats,
     modelChartData,
     modelNameMap,

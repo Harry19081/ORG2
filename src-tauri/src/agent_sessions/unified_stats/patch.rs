@@ -18,6 +18,7 @@
 //! The wire payload is a struct with all fields `Option`. The fields
 //! are bundled by *atomic operation* — the only legal combinations are:
 //!
+//! - `name` set on its own (rename / generated title)
 //! - `model` set with optional `account_id` (a model-pick is one user
 //!   action; the account binds to the model)
 //! - `agent_exec_mode` set on its own (a ModePill click)
@@ -86,6 +87,9 @@ where
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SessionPatch {
+    /// Display title for the session. Metadata write only; does not bump
+    /// `updated_at` because renaming is not conversation activity.
+    pub name: Option<String>,
     /// New model identifier (e.g. `"claude-sonnet-4-5"`). When `Some`,
     /// `account_id` is written in the same statement so a model+key
     /// pair never appears in a half-applied state.
@@ -112,13 +116,6 @@ pub struct SessionPatch {
         deserialize_with = "deserialize_some"
     )]
     pub reply_target_event_id: Option<Option<String>>,
-
-    /// Replacement tag list for this session (P5). `None` means "leave alone";
-    /// `Some([])` clears all tags; `Some(["review", "infra"])` overwrites.
-    /// Only valid for agent sessions (`agent_sessions` table).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
-
     /// Pin/unpin toggle (P5). `None` means "leave alone".
     /// Only valid for agent sessions.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -210,11 +207,11 @@ pub fn apply_session_patch(session_id: &str, patch: &SessionPatch) -> Result<(),
     if let (Some(account_id), Some(model)) = (patch.account_id.as_deref(), patch.model.as_deref()) {
         validate_account_model_compat(account_id, model)?;
     }
-    if patch.model.is_none()
+    if patch.name.is_none()
+        && patch.model.is_none()
         && patch.agent_exec_mode.is_none()
         && patch.draft_text.is_none()
         && patch.reply_target_event_id.is_none()
-        && patch.tags.is_none()
         && patch.pinned.is_none()
     {
         return Err("session_patch: at least one field must be set".to_string());
@@ -223,6 +220,23 @@ pub fn apply_session_patch(session_id: &str, patch: &SessionPatch) -> Result<(),
     let location = locate_session(session_id)
         .map_err(|err| format!("session_patch lookup failed: {err}"))?
         .ok_or_else(|| format!("session_patch: session {session_id} not found"))?;
+
+    if let Some(name) = patch.name.as_deref() {
+        let trimmed = name.trim();
+        if trimmed.is_empty() {
+            return Err("session_patch: name cannot be empty".to_string());
+        }
+        match location {
+            SessionLocation::Agent => {
+                session_persistence::update_name(session_id, trimmed)
+                    .map_err(|err| format!("session_patch update name (agent): {err}"))?;
+            }
+            SessionLocation::Cli => {
+                cli_persistence::update_name(session_id, trimmed)
+                    .map_err(|err| format!("session_patch update name (cli): {err}"))?;
+            }
+        }
+    }
 
     if let Some(model) = patch.model.as_deref() {
         match location {
@@ -295,17 +309,6 @@ pub fn apply_session_patch(session_id: &str, patch: &SessionPatch) -> Result<(),
             }
         }
     }
-
-    if let Some(tags) = patch.tags.as_ref() {
-        if location == SessionLocation::Cli {
-            return Err(format!(
-                "session_patch: tags are not supported for CLI session {session_id}"
-            ));
-        }
-        session_persistence::update_tags(session_id, tags)
-            .map_err(|err| format!("session_patch update tags: {err}"))?;
-    }
-
     if let Some(pinned) = patch.pinned {
         if location == SessionLocation::Cli {
             return Err(format!(
@@ -354,6 +357,12 @@ pub async fn session_patch(
     patch: SessionPatch,
 ) -> Result<(), String> {
     let identity_changed = patch.model.is_some();
+    let renamed = patch
+        .name
+        .as_deref()
+        .map(str::trim)
+        .filter(|name| !name.is_empty())
+        .map(str::to_string);
     let switched_account = patch.account_id.clone();
     let switched_model = patch.model.clone();
     let patched_session_id = session_id.clone();
@@ -369,6 +378,13 @@ pub async fn session_patch(
     .map_err(|err| format!("session_patch task join error: {err}"))??;
     if identity_changed {
         state.invalidate_session(&patched_session_id).await;
+    }
+    if let Some(name) = renamed.as_deref() {
+        agent_core::lifecycle::emit_session_renamed(
+            state.app_handle.as_ref(),
+            &patched_session_id,
+            name,
+        );
     }
     if let Some(to_account) = switched_account.as_deref() {
         if prev_account.as_deref() != Some(to_account) {

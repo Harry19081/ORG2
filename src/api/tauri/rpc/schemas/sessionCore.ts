@@ -102,6 +102,21 @@ export const SessionEventSchema = SessionEventRuntimeSchema as z.ZodType<
 
 export const SessionEventArraySchema = z.array(SessionEventSchema);
 
+export const ExtractedEventDataWindowInput = z.object({
+  sessionId: z.string().optional(),
+  offset: z.number().int().nonnegative(),
+  limit: z.number().int().positive(),
+});
+
+export const ExtractedEventDataPairSchema = z.tuple([
+  z.string(),
+  ExtractedDataSchema,
+]);
+
+export const ExtractedEventDataPairsSchema = z.array(
+  ExtractedEventDataPairSchema
+);
+
 const SessionEventPartialRuntimeSchema =
   SessionEventRuntimeSchema.partial().catchall(z.unknown());
 
@@ -171,18 +186,6 @@ export const DerivedSnapshotSchema = z.object({
   eventIndex: z.record(z.string(), z.number()),
   chatEventCount: z.number(),
   hasRunningEvent: z.boolean(),
-});
-
-export const PartialStreamStateSchema = z.object({
-  sessionId: z.string(),
-  messageEventId: z.string().optional(),
-  thinkingEventId: z.string().optional(),
-  accumulatedMessage: z.string().optional(),
-  accumulatedThinking: z.string().optional(),
-  startedAt: z.string(),
-  lastUpdatedAt: z.string(),
-  model: z.string().optional(),
-  wasInterrupted: z.boolean().optional(),
 });
 
 export const NullableSessionIdInput = z.object({
@@ -403,9 +406,4 @@ export const NormalizeChunkInput = z.object({
 export const SetRepoContextInput = z.object({
   repoId: z.string().nullable(),
   repoPath: z.string().nullable(),
-});
-
-export const PartialSaveInput = z.object({
-  sessionId: z.string(),
-  state: PartialStreamStateSchema,
 });

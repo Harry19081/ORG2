@@ -87,6 +87,7 @@
       "started": "开始时间",
       "lastUpdated": "最后更新",
       "agentModel": "Agent · 模型",
+      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "没有符合这些筛选条件的会话",
       "emptyDescription": "尝试切换状态、Agent 类型或时间范围。"
     },
@@ -210,6 +211,13 @@
       },
       "commitsTo": "提交至 {{repo}}",
       "commitsToMultiple": "提交至 {{repos}}"
+    },
+    "orgtrack": {
+      "filesChanged_one": "{{count}} 个文件",
+      "filesChanged_other": "{{count}} 个文件",
+      "commits_one": "{{count}} 个 Commit",
+      "commits_other": "{{count}} 个 Commit",
+      "committedRateShort": "{{percent}}% 已提交"
     }
   },
   "changes": {
@@ -668,6 +676,7 @@
   "chat": {
     "planApprovedLabel": "执行已批准的计划",
     "planApprovedEditedLabel": "执行已批准的计划（已编辑）",
+    "restoreCheckpoint": "恢复到此检查点",
     "sessionStarted": "Session 已开始",
     "contentCopied": "内容复制！",
     "failedToCopyContent": "复制内容失败",
@@ -741,14 +750,11 @@
     "historyThisWeek": "本周",
     "historyOlder": "更早",
     "historyPinned": "置顶",
-    "historyNoTags": "未标记",
     "historyRefresh": "刷新",
     "historyLastUsedModel": "上次使用的模型",
     "historyUntitled": "未命名会话",
     "pinSession": "置顶",
     "unpinSession": "取消置顶",
-    "addTag": "添加标签...",
-    "addTagPrompt": "Add tag (e.g. review, infra):",
     "permissionPrompt": "需要你的授权",
     "questionsPrompt": "需要你的输入",
     "generatingQuestions": "正在生成问题",
@@ -941,7 +947,7 @@
     "explore": "探索",
     "readFile": "读取文件",
     "readFileRunning": "正在读取",
-    "readFileDone": "阅读文件",
+    "readFileDone": "阅读",
     "readFileFailed": "尝试读取",
     "readFileSkillRunning": "正在使用 skill",
     "readFileSkillDone": "使用 skill",

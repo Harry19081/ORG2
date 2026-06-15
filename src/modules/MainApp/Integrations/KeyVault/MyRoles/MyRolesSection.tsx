@@ -344,7 +344,7 @@ const MyRolesSection: React.FC<MyRolesSectionProps> = ({
   if (activeTab === MY_ROLES_TAB.PROFILE) {
     return (
       <div className="flex flex-col gap-3">
-        <SectionContainer title={t("myRoles.profile.title")}>
+        <SectionContainer>
           <SectionRow
             label={t("myRoles.profile.techSavvy")}
             description={t("myRoles.profile.techSavvyDescription")}

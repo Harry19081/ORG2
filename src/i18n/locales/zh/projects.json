@@ -71,9 +71,16 @@
   },
   "orgs": {
     "yourOrgs": "你的组织",
-    "personalOrg": "个人组织",
+    "sectionTitle": "组织",
+    "recentProjects": "最近项目",
+    "personalOrg": "我的项目",
     "linearOrg": "Linear 组织",
     "noLinearOrgs": "还没有连接的组织",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "添加组织",
     "importOrgs": "导入组织",
     "importLinearOrgs": "导入 Linear 组织",

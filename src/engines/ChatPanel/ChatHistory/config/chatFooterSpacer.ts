@@ -24,8 +24,6 @@ export const CHAT_FOOTER_SPACER = {
   UPDATE_THRESHOLD_PX: 8,
   /** Gap before every non-first turn header so adjacent rounds do not visually merge. */
   ROUND_GAP_PX: 96,
-  /** Gap between the last-turn pinned bars and the body while the header is outside turn pagination. */
-  PINNED_CONTENT_BODY_GAP_PX: 100,
 } as const;
 
 export function computeChatFooterSpacerHeight(params: {

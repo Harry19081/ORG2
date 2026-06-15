@@ -45,7 +45,8 @@
     "projects": "Projects",
     "projectManager": "Project Manager",
     "diff": "Diff",
-    "opsControl": "Ops Control"
+    "opsControl": "Ops Control",
+    "colleagues": "Ekip arkadaşları"
   },
   "trajectoryPanel": {
     "title": "Yörünge",
@@ -109,8 +110,7 @@
       "title": "Grupla",
       "byTime": "Zamana göre",
       "byAgent": "Agent'a göre",
-      "byWorkspace": "Workspace'e göre",
-      "byTags": "Etiketlere Göre"
+      "byWorkspace": "Workspace'e göre"
     },
     "defaults": {
       "untitledSession": "Başlıksız Session",
@@ -139,7 +139,8 @@
     "search": {
       "folders": "Çalışma alanında ara...",
       "sessions": "Oturum ara...",
-      "projects": "Projelerde ara..."
+      "projects": "Projelerde ara...",
+      "colleagues": "Ekip arkadaşlarını ara..."
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
@@ -370,5 +371,68 @@
     "details": "Ayrıntılar",
     "frontend": "Frontend",
     "backend": "Backend"
+  },
+  "collaboration": {
+    "addOrg": "ORG ekle",
+    "unknownOrg": "Bilinmeyen ORG",
+    "emptyColleagues": "Henüz ekip arkadaşı aktivitesi yok",
+    "emptyColleaguesDesc": "Takım arkadaşlarınla oturum meta verilerini paylaşmaya başlamak için bir ORG ekle.",
+    "createOrg": "Oluştur",
+    "joinOrg": "Katıl",
+    "orgSource": "Org kaynağı",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
+    "hubUrl": "Cloudflare hub URL'si",
+    "orgName": "ORG adı",
+    "orgNamePlaceholder": "Team Alpha",
+    "inviteCode": "Davet bağlantısı veya kodu",
+    "inviteCodePlaceholder": "orgii:// davet bağlantısı veya davet kodu yapıştırın",
+    "joinAs": "Şu adla katıl",
+    "joinAsPlaceholder": "Adınız",
+    "identityKind": "Kimliğim",
+    "identityHuman": "İnsan",
+    "identityAgent": "Agent",
+    "inviteReady": "Davet hazır",
+    "copyInvite": "Daveti kopyala",
+    "copiedInvite": "Kopyalandı",
+    "setupMode": "Kurulum modu",
+    "hubSetupTitle": "Cloudflare hub URL'si nasıl ayarlanır",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG bulunamadı",
+    "tabs": {
+      "sessions": "Sessions",
+      "members": "Üyeler",
+      "chat": "Grup sohbeti"
+    },
+    "stats": {
+      "members": "Üyeler",
+      "sessionsToday": "Bugünkü Sessions",
+      "totalSessions": "Toplam Sessions",
+      "activeToday": "Bugün aktif"
+    },
+    "status": {
+      "connected": "Bağlandı",
+      "offline": "Çevrimdışı",
+      "activeToday": "Bugün aktif",
+      "idle": "Boşta"
+    },
+    "chat": {
+      "empty": "Henüz grup mesajı yok",
+      "placeholder": "Bir güncelleme veya bağlantı paylaş...",
+      "send": "Gönder",
+      "humanOnly": "Grup sohbetinde yalnızca insan kimlikleri gönderi paylaşabilir.",
+      "hint": "İnsan üyeler burada konuşabilir ve ORG ile bağlantı paylaşabilir."
+    },
+    "sessionStatusActive": "Aktif",
+    "localHuman": "Yerel insan",
+    "backToOrg": "ORG’ye dön",
+    "invite": {
+      "title": "Davet bağlantısı",
+      "description": "Takım arkadaşlarının bu ORG’ye katılması için bir davet bağlantısı oluşturun. En son bağlantı hızlı kopyalama için burada gösterilir.",
+      "adminOnly": "Davet bağlantılarını yalnızca ORG yöneticileri oluşturabilir.",
+      "create": "Davet oluştur",
+      "createNew": "Yeni davet"
+    },
+    "orgDashboard": "Pano"
   }
 }

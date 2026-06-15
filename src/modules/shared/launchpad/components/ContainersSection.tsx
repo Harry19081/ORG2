@@ -18,6 +18,7 @@ import SettingsTable, {
 import { useRefreshSpin } from "@src/hooks/ui";
 import {
   CollapsibleSection,
+  DETAIL_PANEL_TOKENS,
   Placeholder,
 } from "@src/modules/shared/layouts/blocks";
 
@@ -266,7 +267,7 @@ const ContainersSection: React.FC<ContainersSectionProps> = ({
       }
     >
       {error ? (
-        <div className="rounded-lg bg-fill-2 p-4">
+        <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
           <Placeholder
             variant="error"
             title={t("navigation:launchpad.containers.dockerUnavailable")}
@@ -278,11 +279,11 @@ const ContainersSection: React.FC<ContainersSectionProps> = ({
           />
         </div>
       ) : loading ? (
-        <div className="rounded-lg bg-fill-2 p-4">
+        <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
           <Placeholder variant="loading" />
         </div>
       ) : containers.length === 0 ? (
-        <div className="rounded-lg bg-fill-2 p-4">
+        <div className={DETAIL_PANEL_TOKENS.chatPanelInfoContainer}>
           <Placeholder
             variant="empty"
             title={emptyTitle}
