@@ -75,7 +75,7 @@ export interface StationDockGlassPillProps {
 
 export const StationDockGlassPill: React.FC<StationDockGlassPillProps> = memo(
   ({ children }) => (
-    <div className="relative flex flex-row items-center gap-1 overflow-visible px-1.5 pb-0.5 pt-1.5">
+    <div className="relative flex h-12 flex-row items-center gap-1 overflow-visible px-1.5 py-0">
       {children}
     </div>
   )
@@ -105,6 +105,10 @@ StationDockRow.displayName = "StationDockRow";
 export interface DockIconColumnProps {
   children: React.ReactNode;
   trailer: DockIconTrailerMode;
+}
+
+export interface CompactDockIconColumnProps {
+  children: React.ReactNode;
 }
 
 /**
@@ -138,3 +142,13 @@ export const DockIconColumn: React.FC<DockIconColumnProps> = memo(
 );
 
 DockIconColumn.displayName = "DockIconColumn";
+
+export const CompactDockIconColumn: React.FC<CompactDockIconColumnProps> = memo(
+  ({ children }) => (
+    <div className="group relative flex h-[36px] items-center justify-center overflow-visible">
+      {children}
+    </div>
+  )
+);
+
+CompactDockIconColumn.displayName = "CompactDockIconColumn";

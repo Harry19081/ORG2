@@ -10,8 +10,8 @@ import React, { memo } from "react";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/GeneralLayoutTour";
 
 import {
+  CompactDockIconColumn,
   DOCK_LUCIDE_ICON_PROPS,
-  DockIconColumn,
   DockSegmentDivider,
   StationDockGlassPill,
   StationDockRow,
@@ -70,7 +70,7 @@ export const Dock: React.FC<DockProps> = memo(
             {segment.map((app) => {
               const isActive = activeApp === app.id;
               return (
-                <DockIconColumn key={app.id} trailer="spacer">
+                <CompactDockIconColumn key={app.id}>
                   <div
                     className={dockIconHitAreaClassName({ active: isActive })}
                     onClick={() => onAppClick?.(app.id)}
@@ -79,7 +79,7 @@ export const Dock: React.FC<DockProps> = memo(
                   >
                     {React.createElement(app.icon, DOCK_LUCIDE_ICON_PROPS)}
                   </div>
-                </DockIconColumn>
+                </CompactDockIconColumn>
               );
             })}
           </React.Fragment>
