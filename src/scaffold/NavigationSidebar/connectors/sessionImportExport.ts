@@ -26,7 +26,6 @@ const logger = createLogger("SessionImportExport");
 const EXPORT_FORMAT = "orgii.session.export";
 const EXPORT_VERSION = 1;
 const IMPORTED_SESSION_PREFIX = "imported-session-";
-const IMPORT_TAG = "imported";
 const SNAPSHOT_ICON_ID = "archive";
 const SNAPSHOT_MODEL = "Imported JSON Snapshot";
 const FILENAME_UNSAFE_CHARS = /[/\\?%*:|"<>]/g;
@@ -66,7 +65,6 @@ const SessionExportFileSchema = z.object({
     agentIconId: z.string().optional(),
     agentDisplayName: z.string().optional(),
     agentExecMode: z.string().optional(),
-    tags: z.array(z.string()).optional(),
     pinned: z.boolean().optional(),
     created_time: z.string().optional(),
     updated_time: z.string().optional(),
@@ -210,7 +208,6 @@ function cloneSessionForExport(session: Session): SessionExportFile["session"] {
     agentIconId: session.agentIconId,
     agentDisplayName: session.agentDisplayName,
     agentExecMode: session.agentExecMode,
-    tags: session.tags,
     pinned: session.pinned,
     created_time: session.created_time,
     updated_time: session.updated_time,
@@ -391,7 +388,6 @@ export async function importSessionExportFile(
     background: false,
     agentIconId: SNAPSHOT_ICON_ID,
     agentDisplayName: SNAPSHOT_MODEL,
-    tags: Array.from(new Set([...(parsed.session.tags ?? []), IMPORT_TAG])),
     pinned: false,
     error_message: JSON.stringify(importMetadata),
   };

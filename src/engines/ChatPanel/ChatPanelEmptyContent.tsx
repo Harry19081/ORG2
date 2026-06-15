@@ -3,7 +3,7 @@ import React from "react";
 
 import { SESSION_CREATOR_LAUNCH_MODE } from "@src/features/SessionCreator/types";
 import CreateCollabOrgView from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
-import type { CreatedCollabOrgResult } from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
+import type { CreatedOrgResult } from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
 import CreateProjectView from "@src/modules/ProjectManager/Projects/components/CreateProjectView";
 import CreateWorkItemView, {
   type CreatedWorkItemResult,
@@ -47,7 +47,7 @@ interface ChatPanelEmptyContentProps {
   handleCancelWorkItemCreate: () => void;
   handleCancelCollabOrgCreate: () => void;
   handleChatPanelProjectCreated: (options?: { keepOpen?: boolean }) => void;
-  handleChatPanelCollabOrgCreated: (result: CreatedCollabOrgResult) => void;
+  handleChatPanelCollabOrgCreated: (result: CreatedOrgResult) => void;
   handleChatPanelWorkItemCreated: (result?: CreatedWorkItemResult) => void;
   handleRegionNoticeChange: (notice: ChatPanelRegionNotice | null) => void;
   handleWorkItemAgentCreatorToggle: (enabled: boolean) => void;

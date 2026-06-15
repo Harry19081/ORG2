@@ -54,8 +54,6 @@ interface PatchOptions {
   draftText?: string | null;
   /** Three-state reply target event id (P3). Same semantics as `draftText`. */
   replyTargetEventId?: string | null;
-  /** Replacement tag list (P5). Absent = leave alone; [] = clear all tags. */
-  tags?: string[];
   /** Pin toggle (P5). Absent = leave alone. */
   pinned?: boolean;
 }
@@ -96,14 +94,6 @@ function patchWouldChangeSession(
       normalizedOptionalText(options.replyTargetEventId)
   )
     return true;
-  if (options.tags !== undefined) {
-    const current = before.tags ?? [];
-    if (
-      current.length !== options.tags.length ||
-      current.some((tag, index) => tag !== options.tags?.[index])
-    )
-      return true;
-  }
   if (options.pinned !== undefined && before.pinned !== options.pinned)
     return true;
   return false;
@@ -167,7 +157,6 @@ function usePatchSession(): {
         optimistic.draftText = options.draftText ?? undefined;
       if (options.replyTargetEventId !== undefined)
         optimistic.replyTargetEventId = options.replyTargetEventId ?? undefined;
-      if (options.tags !== undefined) optimistic.tags = options.tags;
       if (options.pinned !== undefined) optimistic.pinned = options.pinned;
       upsertSession(optimistic);
 
@@ -185,7 +174,6 @@ function usePatchSession(): {
             // sets.
             draftText: options.draftText,
             replyTargetEventId: options.replyTargetEventId,
-            tags: options.tags,
             pinned: options.pinned,
           },
         });
@@ -423,52 +411,6 @@ export function useSessionReplyField(sessionId: string) {
     error,
   };
 }
-
-/**
- * Read+write the per-session tag list (P5).
- *
- * `setTags` replaces the entire tag list atomically. Pass `[]` to clear.
- * Only legal for agent sessions — calling on a CLI session will propagate
- * a backend error.
- */
-export function useSessionTags(sessionId: string) {
-  const session = useAtomValue(sessionByIdAtom(sessionId));
-  const { patch, isPatching, error } = usePatchSession();
-
-  const setTags = useCallback(
-    (tags: string[]) => patch(sessionId, { tags }),
-    [patch, sessionId]
-  );
-
-  const addTag = useCallback(
-    (tag: string) => {
-      const current = session?.tags ?? [];
-      if (current.includes(tag)) return Promise.resolve();
-      return patch(sessionId, { tags: [...current, tag] });
-    },
-    [patch, session, sessionId]
-  );
-
-  const removeTag = useCallback(
-    (tag: string) => {
-      const current = session?.tags ?? [];
-      return patch(sessionId, {
-        tags: current.filter((existingTag) => existingTag !== tag),
-      });
-    },
-    [patch, session, sessionId]
-  );
-
-  return {
-    tags: session?.tags ?? [],
-    setTags,
-    addTag,
-    removeTag,
-    isPatching,
-    error,
-  };
-}
-
 /**
  * Read+write the per-session pinned state (P5).
  *
