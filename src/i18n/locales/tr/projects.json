@@ -71,9 +71,16 @@
   },
   "orgs": {
     "yourOrgs": "Kuruluşlarınız",
+    "sectionTitle": "Kuruluşlar",
+    "recentProjects": "Son projeler",
     "personalOrg": "Kişisel kuruluş",
     "linearOrg": "Linear kuruluşu",
     "noLinearOrgs": "Henüz bağlı kuruluş yok",
+    "sources": {
+      "local": "Local",
+      "cloud": "Cloud",
+      "linear": "Linear"
+    },
     "addOrg": "Kuruluş ekle",
     "importOrgs": "Kuruluşları içe aktar",
     "importLinearOrgs": "Linear kuruluşlarını içe aktar",

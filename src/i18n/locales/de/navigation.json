@@ -110,8 +110,7 @@
       "title": "Gruppieren nach",
       "byTime": "Nach Zeit",
       "byAgent": "Nach Agent",
-      "byWorkspace": "Nach Workspace",
-      "byTags": "Nach Tags"
+      "byWorkspace": "Nach Workspace"
     },
     "defaults": {
       "untitledSession": "Unbenannte Session",
@@ -382,6 +381,9 @@
     "emptyColleaguesDesc": "Füge eine ORG hinzu, um Sitzungsmetadaten mit Teamkollegen zu teilen.",
     "createOrg": "Erstellen",
     "joinOrg": "Beitreten",
+    "orgSource": "Org-Quelle",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
     "hubUrl": "Cloudflare-Hub-URL",
     "orgName": "ORG-Name",
     "orgNamePlaceholder": "Team Alpha",

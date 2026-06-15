@@ -110,8 +110,7 @@
       "title": "分組",
       "byTime": "按時間",
       "byAgent": "按 Agent",
-      "byWorkspace": "按工作區",
-      "byTags": "按標籤"
+      "byWorkspace": "按工作區"
     },
     "defaults": {
       "untitledSession": "未命名 Session",
@@ -471,6 +470,9 @@
     "emptyColleaguesDesc": "新增 ORG，開始與隊友共享工作階段中繼資料。",
     "createOrg": "建立",
     "joinOrg": "加入",
+    "orgSource": "組織來源",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
     "hubUrl": "Cloudflare hub URL",
     "orgName": "ORG 名稱",
     "orgNamePlaceholder": "Team Alpha",

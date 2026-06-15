@@ -110,8 +110,7 @@
       "title": "Grupla",
       "byTime": "Zamana göre",
       "byAgent": "Agent'a göre",
-      "byWorkspace": "Workspace'e göre",
-      "byTags": "Etiketlere Göre"
+      "byWorkspace": "Workspace'e göre"
     },
     "defaults": {
       "untitledSession": "Başlıksız Session",
@@ -380,6 +379,9 @@
     "emptyColleaguesDesc": "Takım arkadaşlarınla oturum meta verilerini paylaşmaya başlamak için bir ORG ekle.",
     "createOrg": "Oluştur",
     "joinOrg": "Katıl",
+    "orgSource": "Org kaynağı",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
     "hubUrl": "Cloudflare hub URL'si",
     "orgName": "ORG adı",
     "orgNamePlaceholder": "Team Alpha",

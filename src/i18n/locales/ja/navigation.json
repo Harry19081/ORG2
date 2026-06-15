@@ -110,8 +110,7 @@
       "title": "グループ表示",
       "byTime": "時間順",
       "byAgent": "Agent 別",
-      "byWorkspace": "Workspace 別",
-      "byTags": "タグ別"
+      "byWorkspace": "Workspace 別"
     },
     "defaults": {
       "untitledSession": "無題のSession",
@@ -380,6 +379,9 @@
     "emptyColleaguesDesc": "ORG を追加して、チームメイトとのセッションメタデータ共有を開始します。",
     "createOrg": "作成",
     "joinOrg": "参加",
+    "orgSource": "Org ソース",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
     "hubUrl": "Cloudflare hub URL",
     "orgName": "ORG 名",
     "orgNamePlaceholder": "Team Alpha",

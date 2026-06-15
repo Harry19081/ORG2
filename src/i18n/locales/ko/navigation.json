@@ -110,8 +110,7 @@
       "title": "그룹",
       "byTime": "시간순",
       "byAgent": "Agent 별",
-      "byWorkspace": "Workspace 별",
-      "byTags": "태그별"
+      "byWorkspace": "Workspace 별"
     },
     "defaults": {
       "untitledSession": "제목 없는 Session",
@@ -380,6 +379,9 @@
     "emptyColleaguesDesc": "ORG를 추가해 팀원과 세션 메타데이터 공유를 시작하세요.",
     "createOrg": "만들기",
     "joinOrg": "참여",
+    "orgSource": "Org source",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
     "hubUrl": "Cloudflare hub URL",
     "orgName": "ORG 이름",
     "orgNamePlaceholder": "Team Alpha",

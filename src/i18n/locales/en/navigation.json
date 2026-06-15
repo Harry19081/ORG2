@@ -138,8 +138,7 @@
       "title": "Group by",
       "byTime": "By Time",
       "byAgent": "By Agent",
-      "byWorkspace": "By Workspace",
-      "byTags": "By Tags"
+      "byWorkspace": "By Workspace"
     },
     "defaults": {
       "untitledSession": "Untitled Session",
@@ -221,6 +220,9 @@
     "emptyColleaguesDesc": "Add an ORG to start sharing session metadata with teammates.",
     "createOrg": "Create",
     "joinOrg": "Join",
+    "orgSource": "Org source",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
     "hubUrl": "Cloudflare hub URL",
     "orgName": "ORG name",
     "orgNamePlaceholder": "Team Alpha",

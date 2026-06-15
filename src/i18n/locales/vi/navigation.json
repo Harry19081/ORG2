@@ -110,8 +110,7 @@
       "title": "Nhóm theo",
       "byTime": "Theo thời gian",
       "byAgent": "Theo Agent",
-      "byWorkspace": "Theo Workspace",
-      "byTags": "Theo Tag"
+      "byWorkspace": "Theo Workspace"
     },
     "defaults": {
       "untitledSession": "Session chưa đặt tên",
@@ -380,6 +379,9 @@
     "emptyColleaguesDesc": "Thêm một ORG để bắt đầu chia sẻ siêu dữ liệu phiên với đồng đội.",
     "createOrg": "Tạo",
     "joinOrg": "Tham gia",
+    "orgSource": "Nguồn Org",
+    "localOrg": "Local",
+    "cloudOrg": "Cloud",
     "hubUrl": "URL hub Cloudflare",
     "orgName": "Tên ORG",
     "orgNamePlaceholder": "Team Alpha",
