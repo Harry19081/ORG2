@@ -17,6 +17,8 @@ pub enum GraphNodeType {
     File,
     Attempt,
     Lesson,
+    Validation,
+    SyncRecord,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

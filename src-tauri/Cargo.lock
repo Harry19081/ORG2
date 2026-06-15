@@ -5252,11 +5252,23 @@ dependencies = [
  "chrono",
  "core_types",
  "dirs",
+ "orgtrack_sync",
  "rusqlite",
  "serde",
  "serde_json",
  "sha2",
  "similar",
+]
+
+[[package]]
+name = "orgtrack_graph"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "orgtrack_sync",
+ "rusqlite",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -5988,6 +6000,7 @@ dependencies = [
  "hex",
  "hmac",
  "log",
+ "orgtrack_sync",
  "rand 0.9.4",
  "reqwest 0.13.4",
  "rusqlite",

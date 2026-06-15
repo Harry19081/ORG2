@@ -15,6 +15,7 @@ pub mod projectors;
 pub mod repo_sync;
 pub mod sources;
 pub mod store;
+pub mod sync_export;
 
 pub use canonical::*;
 pub use privacy::*;
