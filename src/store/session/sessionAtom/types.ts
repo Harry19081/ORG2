@@ -113,9 +113,7 @@ export interface Session {
    * action. `undefined` means no reply banner is open.
    */
   replyTargetEventId?: string;
-  /** User-defined tags for this session (P5). Empty array = no tags. */
-  tags?: string[];
-  /** Whether this session is pinned to the top of the sidebar (P5). */
+  /** Whether this session is pinned to the top of the sidebar. */
   pinned?: boolean;
   created_time?: string;
   updated_time?: string;

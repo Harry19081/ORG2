@@ -114,13 +114,6 @@ pub struct SessionAggregateRecord {
     /// "Reply" action. `None` means no reply banner is open.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_target_event_id: Option<String>,
-
-    /// User-defined tags for this session. Decoded from the DB's
-    /// `tags_json` column (JSON-encoded `Vec<String>`).
-    /// Empty means no tags.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tags: Vec<String>,
-
     /// Whether this session is pinned to the top of the sidebar.
     #[serde(default)]
     pub pinned: bool,

@@ -103,7 +103,6 @@ export function toFrontendSession(record: SessionAggregateRecord): Session {
     agentExecMode: normalizeAgentExecMode(record.agentExecMode) ?? undefined,
     draftText: record.draftText,
     replyTargetEventId: record.replyTargetEventId,
-    tags: record.tags,
     pinned: record.pinned,
   };
 }

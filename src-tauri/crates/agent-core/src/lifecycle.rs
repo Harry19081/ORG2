@@ -691,7 +691,6 @@ mod tests {
                 native_harness_type TEXT,
                 draft_text TEXT,
                 reply_target_event_id TEXT,
-                tags_json TEXT,
                 pinned INTEGER NOT NULL DEFAULT 0
             );
             CREATE TABLE IF NOT EXISTS session_token_usage (

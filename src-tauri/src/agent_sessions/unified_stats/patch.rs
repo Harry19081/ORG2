@@ -116,13 +116,6 @@ pub struct SessionPatch {
         deserialize_with = "deserialize_some"
     )]
     pub reply_target_event_id: Option<Option<String>>,
-
-    /// Replacement tag list for this session (P5). `None` means "leave alone";
-    /// `Some([])` clears all tags; `Some(["review", "infra"])` overwrites.
-    /// Only valid for agent sessions (`agent_sessions` table).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
-
     /// Pin/unpin toggle (P5). `None` means "leave alone".
     /// Only valid for agent sessions.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -219,7 +212,6 @@ pub fn apply_session_patch(session_id: &str, patch: &SessionPatch) -> Result<(),
         && patch.agent_exec_mode.is_none()
         && patch.draft_text.is_none()
         && patch.reply_target_event_id.is_none()
-        && patch.tags.is_none()
         && patch.pinned.is_none()
     {
         return Err("session_patch: at least one field must be set".to_string());
@@ -317,17 +309,6 @@ pub fn apply_session_patch(session_id: &str, patch: &SessionPatch) -> Result<(),
             }
         }
     }
-
-    if let Some(tags) = patch.tags.as_ref() {
-        if location == SessionLocation::Cli {
-            return Err(format!(
-                "session_patch: tags are not supported for CLI session {session_id}"
-            ));
-        }
-        session_persistence::update_tags(session_id, tags)
-            .map_err(|err| format!("session_patch update tags: {err}"))?;
-    }
-
     if let Some(pinned) = patch.pinned {
         if location == SessionLocation::Cli {
             return Err(format!(

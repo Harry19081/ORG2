@@ -112,7 +112,6 @@ pub fn cli_session_to_aggregate_record(
         agent_exec_mode: session.agent_exec_mode,
         draft_text: session.draft_text,
         reply_target_event_id: session.reply_target_event_id,
-        tags: vec![],
         pinned: false,
         source_session_id: None,
         share_id: None,
@@ -180,11 +179,6 @@ pub fn sde_session_to_aggregate_record(
         agent_exec_mode: session.agent_exec_mode,
         draft_text: session.draft_text,
         reply_target_event_id: session.reply_target_event_id,
-        tags: session
-            .tags_json
-            .as_deref()
-            .and_then(|s| serde_json::from_str::<Vec<String>>(s).ok())
-            .unwrap_or_default(),
         pinned: session.pinned,
         source_session_id: None,
         share_id: None,
@@ -245,11 +239,6 @@ pub fn os_session_to_aggregate_record(
         agent_exec_mode: session.agent_exec_mode,
         draft_text: session.draft_text,
         reply_target_event_id: session.reply_target_event_id,
-        tags: session
-            .tags_json
-            .as_deref()
-            .and_then(|s| serde_json::from_str::<Vec<String>>(s).ok())
-            .unwrap_or_default(),
         pinned: session.pinned,
         source_session_id: None,
         share_id: None,
