@@ -4,12 +4,14 @@ import { z } from "zod/v4";
 import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";
 
 import {
+  CollabChatMessageRecordSchema,
   CollabMemberRecordSchema,
   CollabOrgRecordSchema,
   RemoteTeammateSessionMetadataSchema,
 } from "./protocol";
 import { COLLAB_CONNECTION_STATUS } from "./types";
 import type {
+  CollabChatMessageRecord,
   CollabConnectionStatus,
   CollabInviteRecord,
   CollabMemberRecord,
@@ -52,6 +54,7 @@ const CollabOrgsSchema = z.array(CollabOrgRecordSchema);
 const CollabMembersSchema = z.array(CollabMemberRecordSchema);
 const CollabInvitesSchema = z.array(CollabInviteRecordSchema);
 const CollabConnectionStatesSchema = z.array(CollabOrgConnectionStateSchema);
+const CollabChatMessagesSchema = z.array(CollabChatMessageRecordSchema);
 const RemoteTeammateSessionsSchema = z.array(
   RemoteTeammateSessionMetadataSchema
 );
@@ -89,6 +92,16 @@ export const collabConnectionStatesAtom = atomWithStorage<
   { getOnInit: true }
 );
 collabConnectionStatesAtom.debugLabel = "collabConnectionStatesAtom";
+
+export const collabChatMessagesAtom = atomWithStorage<
+  CollabChatMessageRecord[]
+>(
+  "orgii:collabChatMessages",
+  [],
+  createZodJsonStorage(CollabChatMessagesSchema),
+  { getOnInit: true }
+);
+collabChatMessagesAtom.debugLabel = "collabChatMessagesAtom";
 
 export const remoteTeammateSessionsAtom = atomWithStorage<
   RemoteTeammateSessionMetadata[]

@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useMemo } from "react";
 
 import {
+  collabChatMessagesAtom,
   collabConnectionStatesAtom,
   collabMembersAtom,
   collabOrgsAtom,
@@ -63,6 +64,7 @@ export function useCollaborationMetadataSync(): void {
   const sessions = useAtomValue(sessionsAtom);
   const setRemoteSessions = useSetAtom(remoteTeammateSessionsAtom);
   const setConnectionStates = useSetAtom(collabConnectionStatesAtom);
+  const setChatMessages = useSetAtom(collabChatMessagesAtom);
 
   const activeConnections = useMemo(
     () =>
@@ -141,6 +143,18 @@ export function useCollaborationMetadataSync(): void {
               )
             );
           }
+          if (message.type === COLLAB_MESSAGE_TYPE.CHAT_MESSAGE) {
+            setChatMessages((current) => {
+              const incoming = message.payload.message;
+              const existingIndex = current.findIndex(
+                (chatMessage) => chatMessage.id === incoming.id
+              );
+              if (existingIndex < 0) return [...current, incoming];
+              const next = [...current];
+              next[existingIndex] = incoming;
+              return next;
+            });
+          }
         },
       });
       return socket;
@@ -149,5 +163,11 @@ export function useCollaborationMetadataSync(): void {
     return () => {
       for (const socket of sockets) socket.close();
     };
-  }, [activeConnections, sessions, setConnectionStates, setRemoteSessions]);
+  }, [
+    activeConnections,
+    sessions,
+    setChatMessages,
+    setConnectionStates,
+    setRemoteSessions,
+  ]);
 }

@@ -43,6 +43,17 @@ describe("Cloudflare collaboration hub routes", () => {
     });
   });
 
+  it("matches chat routes", () => {
+    expect(matchCollabHubRoute(request("GET", "/orgs/org-1/chat"))).toEqual({
+      kind: "listChatMessages",
+      orgId: "org-1",
+    });
+    expect(matchCollabHubRoute(request("POST", "/orgs/org-1/chat"))).toEqual({
+      kind: "postChatMessage",
+      orgId: "org-1",
+    });
+  });
+
   it("matches WebSocket route", () => {
     expect(matchCollabHubRoute(request("GET", "/orgs/org-1/ws"))).toEqual({
       kind: "webSocket",

@@ -1,0 +1,17 @@
+{
+  "name": "orgii-collab-hub-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes wrangler@latest dev",
+    "deploy": "npx --yes wrangler@latest deploy",
+    "typecheck": "tsc --noEmit",
+    "db:create": "npx --yes wrangler@latest d1 create orgii-collab-hub",
+    "db:migrate": "npx --yes wrangler@latest d1 migrations apply orgii-collab-hub"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260613.1",
+    "typescript": "^5.3.3"
+  }
+}

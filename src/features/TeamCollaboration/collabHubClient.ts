@@ -7,11 +7,13 @@ import {
   toCollabWebSocketUrl,
 } from "@src/store/collaboration/protocol";
 import {
+  CollabChatMessageRecordSchema,
   CollabMemberRecordSchema,
   CollabOrgRecordSchema,
 } from "@src/store/collaboration/protocol";
 import type { CollabMessageEnvelope } from "@src/store/collaboration/protocol";
 import type {
+  CollabChatMessageRecord,
   CollabIdentityKind,
   CollabInviteRecord,
   CollabMemberRecord,
@@ -35,6 +37,14 @@ const HubCreateInviteResponseSchema = z.object({
 
 const HubAcceptInviteResponseSchema = HubCreateOrgResponseSchema;
 
+const HubChatMessagesResponseSchema = z.object({
+  messages: z.array(CollabChatMessageRecordSchema),
+});
+
+const HubPostChatMessageResponseSchema = z.object({
+  message: CollabChatMessageRecordSchema,
+});
+
 export interface CreateCollabOrgInput {
   hubUrl: string;
   name: string;
@@ -55,6 +65,20 @@ export interface CreateCollabInviteInput {
   accessToken: string;
   expiresAt?: string;
   usageLimit?: number;
+}
+
+export interface ListCollabChatMessagesInput {
+  hubUrl: string;
+  orgId: string;
+  accessToken: string;
+  limit?: number;
+}
+
+export interface PostCollabChatMessageInput {
+  hubUrl: string;
+  orgId: string;
+  accessToken: string;
+  body: string;
 }
 
 async function parseJsonResponse(response: Response): Promise<unknown> {
@@ -153,6 +177,42 @@ export async function createCollabInvite(
     expiresAt: parsed.invite.expiresAt,
     createdAt: parsed.invite.createdAt,
   };
+}
+
+export async function listCollabChatMessages(
+  input: ListCollabChatMessagesInput
+): Promise<CollabChatMessageRecord[]> {
+  const hubUrl = normalizeCollabHubUrl(input.hubUrl);
+  const url = new URL(`${hubUrl}/orgs/${encodeURIComponent(input.orgId)}/chat`);
+  if (input.limit) url.searchParams.set("limit", String(input.limit));
+  const response = await fetch(url.toString(), {
+    headers: authHeaders(input.accessToken),
+  });
+  const parsed = HubChatMessagesResponseSchema.parse(
+    await parseJsonResponse(response)
+  );
+  return parsed.messages;
+}
+
+export async function postCollabChatMessage(
+  input: PostCollabChatMessageInput
+): Promise<CollabChatMessageRecord> {
+  const hubUrl = normalizeCollabHubUrl(input.hubUrl);
+  const response = await fetch(
+    `${hubUrl}/orgs/${encodeURIComponent(input.orgId)}/chat`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...authHeaders(input.accessToken),
+      },
+      body: JSON.stringify({ body: input.body }),
+    }
+  );
+  const parsed = HubPostChatMessageResponseSchema.parse(
+    await parseJsonResponse(response)
+  );
+  return parsed.message;
 }
 
 export interface CollabHubSocket {

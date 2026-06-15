@@ -67,6 +67,16 @@ export interface CollabOrgConnectionState {
   updatedAt: string;
 }
 
+export interface CollabChatMessageRecord {
+  id: string;
+  orgId: string;
+  authorMemberId: string;
+  authorDisplayName: string;
+  authorIdentityKind: CollabIdentityKind;
+  body: string;
+  createdAt: string;
+}
+
 export interface RemoteTeammateSessionMetadata {
   id: string;
   orgId: string;

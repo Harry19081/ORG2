@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  COLLAB_MESSAGE_TYPE,
+  COLLAB_PROTOCOL_VERSION,
   buildCollabInviteLink,
   createCollabAvatarIdentity,
   normalizeCollabHubUrl,
   parseCollabInviteInput,
+  parseCollabMessageEnvelope,
   toCollabWebSocketUrl,
 } from "./protocol";
+import { COLLAB_IDENTITY_KIND } from "./types";
 
 describe("collaboration protocol helpers", () => {
   it("normalizes hub URLs", () => {
@@ -44,5 +48,29 @@ describe("collaboration protocol helpers", () => {
     expect(["v", "h"]).toContain(
       createCollabAvatarIdentity("Ada Lovelace").variant
     );
+  });
+
+  it("parses group chat message envelopes", () => {
+    expect(
+      parseCollabMessageEnvelope({
+        protocolVersion: COLLAB_PROTOCOL_VERSION,
+        id: "evt-1",
+        orgId: "org-1",
+        senderMemberId: "mem-1",
+        sentAt: "2026-06-15T00:00:00.000Z",
+        type: COLLAB_MESSAGE_TYPE.CHAT_MESSAGE,
+        payload: {
+          message: {
+            id: "msg-1",
+            orgId: "org-1",
+            authorMemberId: "mem-1",
+            authorDisplayName: "Ada",
+            authorIdentityKind: COLLAB_IDENTITY_KIND.HUMAN,
+            body: "Sharing https://example.com",
+            createdAt: "2026-06-15T00:00:00.000Z",
+          },
+        },
+      }).payload.message.body
+    ).toBe("Sharing https://example.com");
   });
 });

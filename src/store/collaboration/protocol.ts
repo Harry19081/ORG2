@@ -4,6 +4,7 @@ import {
   COLLAB_IDENTITY_KIND,
   COLLAB_ROLE,
   type CollabAvatarIdentity,
+  type CollabChatMessageRecord,
   type CollabIdentityKind,
   type CollabMemberRecord,
   type CollabOrgRecord,
@@ -74,6 +75,16 @@ export const RemoteTeammateSessionMetadataSchema = z.object({
   lastActivityAt: z.string().optional(),
 }) satisfies z.ZodType<RemoteTeammateSessionMetadata>;
 
+export const CollabChatMessageRecordSchema = z.object({
+  id: z.string(),
+  orgId: z.string(),
+  authorMemberId: z.string(),
+  authorDisplayName: z.string(),
+  authorIdentityKind: CollabIdentityKindSchema,
+  body: z.string(),
+  createdAt: z.string(),
+}) satisfies z.ZodType<CollabChatMessageRecord>;
+
 const BaseEnvelopeSchema = z.object({
   protocolVersion: z.literal(COLLAB_PROTOCOL_VERSION),
   id: z.string(),
@@ -107,7 +118,7 @@ const SessionMetadataRemoveEnvelopeSchema = BaseEnvelopeSchema.extend({
 const ChatMessageEnvelopeSchema = BaseEnvelopeSchema.extend({
   type: z.literal(COLLAB_MESSAGE_TYPE.CHAT_MESSAGE),
   payload: z.object({
-    text: z.string(),
+    message: CollabChatMessageRecordSchema,
   }),
 });
 
