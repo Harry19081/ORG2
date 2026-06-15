@@ -873,7 +873,6 @@
     "diskCategory_sessionsDb": "Session Veritabanı",
     "diskCategory_logs": "Günlükler",
     "diskCategory_personalWorkspace": "OS Agent Çalışma Alanı",
-    "diskCategory_partials": "Session Geçici Verileri",
     "diskCategory_cursorConfig": "Session CLI Yapılandırmaları",
     "diskCategory_geminiCliHome": "Gemini CLI Dizinleri",
     "diskCategory_extensions": "Uzantılar",

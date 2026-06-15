@@ -64,4 +64,4 @@ export type {
 // Hosted Key Sync (hostedKey/)
 // ============================================
 
-export { useHostedKeyActivitySync, usePartialRecovery } from "./hostedKey";
+export { useHostedKeyActivitySync } from "./hostedKey";

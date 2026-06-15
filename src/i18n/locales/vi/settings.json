@@ -873,7 +873,6 @@
     "diskCategory_sessionsDb": "Cơ sở dữ liệu Session",
     "diskCategory_logs": "Nhật ký",
     "diskCategory_personalWorkspace": "Không gian làm việc OS Agent",
-    "diskCategory_partials": "Dữ liệu tạm thời Session",
     "diskCategory_cursorConfig": "Cấu hình CLI Session",
     "diskCategory_geminiCliHome": "Thư mục Gemini CLI",
     "diskCategory_extensions": "Tiện ích mở rộng",

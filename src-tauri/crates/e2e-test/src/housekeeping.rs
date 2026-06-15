@@ -7,7 +7,6 @@
 //! - `POST /agent/test/housekeeping/run`              — run the cleanup pass synchronously
 //! - `POST /agent/test/housekeeping/seed-snapshots`   — plant N synthetic manifests + DB rows
 //! - `POST /agent/test/housekeeping/seed-aged`        — plant an aged session dir
-//! - `POST /agent/test/housekeeping/seed-partial`     — plant a partial with configurable mtime
 //! - `POST /agent/test/housekeeping/seed-session-dir` — plant a `cursor-config/<sid>/` or
 //!   `gemini-cli-home/<sid>/` dir, optionally with a matching `agent_sessions` row
 //! - `POST /agent/test/housekeeping/seed-aged-file`   — plant a flat TTL file under `screenshots/` or `merkle/`
@@ -252,10 +251,6 @@ pub async fn happy_noop(cfg: &Config) -> bool {
                 result.get("file_history_sessions_removed").is_some(),
             ),
             (
-                "Has partials_removed field",
-                result.get("partials_removed").is_some(),
-            ),
-            (
                 "Has cursor_configs_evicted field",
                 result.get("cursor_configs_evicted").is_some(),
             ),
@@ -296,31 +291,8 @@ pub async fn happy_noop(cfg: &Config) -> bool {
 }
 
 // ============================================
-// Helpers: partials TTL + cursor/gemini orphan sweeps
+// Helpers: cursor/gemini orphan sweeps
 // ============================================
-
-async fn seed_partial(cfg: &Config, name: &str, age_days: u64) -> Result<String, String> {
-    let url = format!("{}/agent/test/housekeeping/seed-partial", cfg.base_url);
-    let body = serde_json::json!({ "name": name, "age_days": age_days });
-    let resp = reqwest::Client::new()
-        .post(&url)
-        .json(&body)
-        .timeout(std::time::Duration::from_secs(10))
-        .send()
-        .await
-        .map_err(|err| format!("HTTP error: {}", err))?;
-    let json: serde_json::Value = resp
-        .json()
-        .await
-        .map_err(|err| format!("JSON parse error: {}", err))?;
-    if let Some(err) = json.get("error").and_then(|v| v.as_str()) {
-        return Err(err.to_string());
-    }
-    json.get("path")
-        .and_then(|v| v.as_str())
-        .map(|s| s.to_string())
-        .ok_or_else(|| "response missing 'path'".to_string())
-}
 
 async fn seed_session_dir(
     cfg: &Config,
@@ -354,63 +326,9 @@ async fn seed_session_dir(
         .ok_or_else(|| "response missing 'path'".to_string())
 }
 
-/// Seed one aged partial (2 days > `PARTIALS_TTL_DAYS=1`) AND one fresh
-/// partial in the same directory, run the cleanup pass, and assert that
-/// the aged one is gone and the fresh one still exists. Positive+negative:
-/// positive AND negative assertions for the TTL filter.
-pub async fn partials_ttl(cfg: &Config) -> bool {
-    let ts = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_nanos())
-        .unwrap_or(0);
-    let aged_name = format!("e2e-aged-{}.partial", ts);
-    let fresh_name = format!("e2e-fresh-{}.partial", ts);
-
-    let aged_path = match seed_partial(cfg, &aged_name, 2).await {
-        Ok(p) => p,
-        Err(err) => return harness::print_error("Housekeeping: Partials TTL", &err),
-    };
-    let fresh_path = match seed_partial(cfg, &fresh_name, 0).await {
-        Ok(p) => p,
-        Err(err) => return harness::print_error("Housekeeping: Partials TTL", &err),
-    };
-
-    let aged_pre = std::path::Path::new(&aged_path).exists();
-    let fresh_pre = std::path::Path::new(&fresh_path).exists();
-
-    let result = match run_housekeeping(cfg).await {
-        Ok(json) => json,
-        Err(err) => return harness::print_error("Housekeeping: Partials TTL", &err),
-    };
-
-    let aged_post = std::path::Path::new(&aged_path).exists();
-    let fresh_post = std::path::Path::new(&fresh_path).exists();
-
-    let partials_removed = result
-        .get("partials_removed")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(0);
-
-    // Always clean up the fresh partial we deliberately left behind so reruns
-    // don't accumulate test litter under `~/.orgii/partials/`.
-    let _ = std::fs::remove_file(&fresh_path);
-
-    harness::print_result(
-        "Housekeeping: Partials TTL",
-        &result.to_string(),
-        &[
-            ("Aged partial seeded on disk", aged_pre),
-            ("Fresh partial seeded on disk", fresh_pre),
-            ("Aged partial removed", !aged_post),
-            ("Fresh partial survived", fresh_post),
-            ("Reported >= 1 partial_removed", partials_removed >= 1),
-        ],
-    )
-}
-
 /// Seed one orphan `cursor-config/<sid>/` (no matching `agent_sessions`
 /// row) AND one live `cursor-config/<sid>/` (row inserted), run cleanup,
-/// assert orphan gone, live survives. Mirrors `partials_ttl` but for the
+/// assert orphan gone, live survives. Positive+negative assertions for the
 /// orphan sweep path.
 pub async fn cursor_config_orphan_evict(cfg: &Config) -> bool {
     let orphan_sid = format!("{}-cursor-orphan", cfg.session_prefix);

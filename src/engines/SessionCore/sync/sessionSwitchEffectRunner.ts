@@ -72,7 +72,6 @@ export function runSessionSwitchEffect(
     abortController,
     refs,
     actions: loadActions,
-    checkAndRecover: refs.checkAndRecoverRef.current,
     setPendingPlanApprovals,
     logger,
   });

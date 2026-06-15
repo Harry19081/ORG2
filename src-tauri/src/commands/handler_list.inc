@@ -322,13 +322,6 @@ orgtrack::orgtrack_get_session_summaries,
 orgtrack::orgtrack_lookup_file_sessions,
 // Per-round token usage
 session_persistence::get_session_token_usage_records,
-// Stream Recovery - Crash Recovery for Streaming Messages
-agent_sessions::stream_recovery::partial_save,
-agent_sessions::stream_recovery::partial_load,
-agent_sessions::stream_recovery::partial_delete,
-agent_sessions::stream_recovery::partial_exists,
-agent_sessions::stream_recovery::partial_list_all,
-agent_sessions::stream_recovery::partial_cleanup_stale,
 // Git Bundle commands (for cloud session upload - preserves git history)
 git::bundle::create_git_bundle,
 git::bundle::get_git_repo_info,

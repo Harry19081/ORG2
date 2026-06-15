@@ -9,7 +9,6 @@
 //! - File-history TTL prune (30 days, mtime-based, with DB sync)
 //! - File-history per-session cap enforcement (100 manifests)
 //! - Log file TTL prune (30 days, mtime-based)
-//! - Partial stream recovery file TTL prune (1 day, mtime-based)
 //! - Browser automation screenshot TTL prune (7 days, mtime-based)
 //! - Plan-mode plan file TTL prune (30 days, mtime-based, recursive)
 //! - Merkle snapshot TTL prune (30 days, mtime-based — stale snapshots
@@ -42,14 +41,6 @@ use app_paths as paths;
 /// Retention window for rotated frontend/backend log files. Matches the
 /// `file-history` TTL so disk-age policy is uniform across the data dir.
 pub const LOG_TTL_DAYS: u64 = 30;
-
-/// Retention window for partial-stream recovery files in `~/.orgii/partials/`.
-///
-/// Partials are written mid-stream so an in-progress assistant turn can
-/// recover after a crash. Once the turn lands (or the user moves on), the
-/// corresponding file becomes dead weight. Anything older than a day is
-/// effectively abandoned.
-pub const PARTIALS_TTL_DAYS: u64 = 1;
 
 /// Retention window for browser-automation screenshots in
 /// `~/.orgii/screenshots/`. Shorter than the file-history window because
@@ -91,8 +82,6 @@ pub struct HousekeepingStats {
     pub manifests_capped: usize,
     /// Total backup blobs GC'd during cap enforcement.
     pub blobs_capped: usize,
-    /// Files removed from `~/.orgii/partials/` via TTL sweep.
-    pub partials_removed: usize,
     /// Per-session directories removed from `~/.orgii/cursor-config/` because
     /// their owning session was no longer present in `agent_sessions`.
     pub cursor_configs_evicted: usize,
@@ -154,13 +143,7 @@ pub fn run_deferred_cleanup() -> HousekeepingStats {
         Err(err) => tracing::warn!("[housekeeping] log file prune failed: {}", err),
     }
 
-    // Step 4: partial-stream recovery files older than PARTIALS_TTL_DAYS.
-    match prune_old_files_in_dir(paths::partials_dir(), PARTIALS_TTL_DAYS) {
-        Ok(n) => stats.partials_removed = n,
-        Err(err) => tracing::warn!("[housekeeping] partials prune failed: {}", err),
-    }
-
-    // Step 5: orphan per-session dirs whose owning session is no longer in
+    // Step 4: orphan per-session dirs whose owning session is no longer in
     // `agent_sessions` (e.g. session row was hard-deleted while the process
     // was down, or startup cleanup missed it).
     match list_known_session_ids() {
@@ -201,32 +184,32 @@ pub fn run_deferred_cleanup() -> HousekeepingStats {
         }
     }
 
-    // Step 6: screenshots TTL — diagnostic-only files, aged aggressively.
+    // Step 5: screenshots TTL — diagnostic-only files, aged aggressively.
     match prune_old_files_in_dir(paths::screenshots_dir(), SCREENSHOTS_TTL_DAYS) {
         Ok(n) => stats.screenshots_removed = n,
         Err(err) => tracing::warn!("[housekeeping] screenshots prune failed: {}", err),
     }
 
-    // Step 7: Plan-mode plan markdown TTL (recursive — nested per-agent dirs).
+    // Step 6: Plan-mode plan markdown TTL (recursive — nested per-agent dirs).
     match prune_old_files_recursive(paths::orgii_root().join("plans"), PLANS_TTL_DAYS) {
         Ok(n) => stats.plans_removed = n,
         Err(err) => tracing::warn!("[housekeeping] plans prune failed: {}", err),
     }
 
-    // Step 8: Merkle snapshot TTL — pruned snapshots auto-rebuild on next access.
+    // Step 7: Merkle snapshot TTL — pruned snapshots auto-rebuild on next access.
     match prune_old_files_in_dir(paths::merkle_root(), MERKLE_TTL_DAYS) {
         Ok(n) => stats.merkle_snapshots_removed = n,
         Err(err) => tracing::warn!("[housekeeping] merkle prune failed: {}", err),
     }
 
-    // Step 9: session-image orphan eviction — files whose filename no
+    // Step 8: session-image orphan eviction — files whose filename no
     // longer appears in any surviving message's `images` JSON array.
     match evict_orphan_session_images() {
         Ok(n) => stats.session_images_evicted = n,
         Err(err) => tracing::warn!("[housekeeping] session-images orphan sweep failed: {}", err),
     }
 
-    // Step 10: session-cache TTL — drops `sessions`/`events` rows older
+    // Step 9: session-cache TTL — drops `sessions`/`events` rows older
     // than SESSION_CACHE_TTL_DAYS. `agent_snapshots` is cascaded by
     // `clear_old_sessions` as a side-effect.
     match session_persistence::clear_old_sessions(
@@ -237,14 +220,13 @@ pub fn run_deferred_cleanup() -> HousekeepingStats {
     }
 
     tracing::info!(
-        "[housekeeping] pass finished: file_history(sessions={}, rows={}), capped(sessions={}, manifests={}, blobs={}), logs_removed={}, partials_removed={}, cursor_configs_evicted={}, gemini_homes_evicted={}, agent_worktrees_evicted={}, screenshots_removed={}, plans_removed={}, merkle_snapshots_removed={}, session_images_evicted={}, gateway_bindings_evicted={}, session_cache_rows_evicted={}",
+        "[housekeeping] pass finished: file_history(sessions={}, rows={}), capped(sessions={}, manifests={}, blobs={}), logs_removed={}, cursor_configs_evicted={}, gemini_homes_evicted={}, agent_worktrees_evicted={}, screenshots_removed={}, plans_removed={}, merkle_snapshots_removed={}, session_images_evicted={}, gateway_bindings_evicted={}, session_cache_rows_evicted={}",
         stats.file_history.sessions_removed,
         stats.file_history.db_rows_removed,
         stats.sessions_capped,
         stats.manifests_capped,
         stats.blobs_capped,
         stats.log_files_removed,
-        stats.partials_removed,
         stats.cursor_configs_evicted,
         stats.gemini_homes_evicted,
         stats.agent_worktrees_evicted,

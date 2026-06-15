@@ -14,13 +14,9 @@ import { rehydratePendingPlanApproval } from "./sessionSyncPlanApproval";
 import { reconcileInFlightHistory } from "./sessionSyncReconcile";
 import {
   type SessionLoadStateActions,
-  appendRecoveredEvents,
   applyPostLoadResult,
 } from "./sessionSyncStateHelpers";
-import type {
-  CheckAndRecoverSession,
-  SessionSyncRefs,
-} from "./sessionSyncTypes";
+import type { SessionSyncRefs } from "./sessionSyncTypes";
 import {
   hydrateSessionStoreBeforeDisplay,
   isInFlightRunStatus,
@@ -34,7 +30,6 @@ interface SessionSwitchOrchestratorOptions {
   abortController: AbortController;
   refs: Pick<SessionSyncRefs, "liveSessionIdRef">;
   actions: SessionLoadStateActions;
-  checkAndRecover: CheckAndRecoverSession;
   setPendingPlanApprovals: Parameters<typeof rehydratePendingPlanApproval>[2];
   logger: Logger;
 }
@@ -49,7 +44,6 @@ export function runSessionSwitchOrchestrator(
       abortController,
       refs,
       actions,
-      checkAndRecover,
       setPendingPlanApprovals,
     } = options;
 
@@ -74,7 +68,6 @@ export function runSessionSwitchOrchestrator(
         abortController,
         refs,
         actions,
-        checkAndRecover,
         setPendingPlanApprovals,
       });
     } catch (error) {
@@ -212,7 +205,6 @@ async function handleCacheMiss(
     | "abortController"
     | "refs"
     | "actions"
-    | "checkAndRecover"
     | "setPendingPlanApprovals"
   >
 ): Promise<void> {
@@ -222,7 +214,6 @@ async function handleCacheMiss(
     abortController,
     refs,
     actions,
-    checkAndRecover,
     setPendingPlanApprovals,
   } = options;
 
@@ -251,12 +242,6 @@ async function handleCacheMiss(
   }
 
   applyPostLoadResult(sessionId, missPostResult, actions);
-
-  const recovery = await checkAndRecover(sessionId);
-  if (abortController.signal.aborted) return;
-  if (recovery.found) {
-    appendRecoveredEvents(recovery.recoveredEvents, actions.setEvents);
-  }
 
   rehydratePendingPlanApproval(
     sessionId,
