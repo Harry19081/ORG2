@@ -423,6 +423,14 @@
     },
     "sessionStatusActive": "Aktywne",
     "localHuman": "Lokalny człowiek",
-    "backToOrg": "Wróć do org"
+    "backToOrg": "Wróć do org",
+    "invite": {
+      "title": "Link z zaproszeniem",
+      "description": "Utwórz link z zaproszeniem, aby członkowie zespołu mogli dołączyć do tego org. Najnowszy link jest pokazany tutaj do szybkiego kopiowania.",
+      "adminOnly": "Tylko administratorzy org mogą tworzyć linki z zaproszeniem.",
+      "create": "Utwórz zaproszenie",
+      "createNew": "Nowe zaproszenie"
+    },
+    "orgDashboard": "Panel"
   }
 }

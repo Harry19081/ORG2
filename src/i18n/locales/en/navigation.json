@@ -264,7 +264,15 @@
     },
     "sessionStatusActive": "Active",
     "localHuman": "Local human",
-    "backToOrg": "Back to org"
+    "backToOrg": "Back to org",
+    "invite": {
+      "title": "Invite link",
+      "description": "Create an invite link for teammates to join this org. The latest link is shown here for quick copying.",
+      "adminOnly": "Only org admins can create invite links.",
+      "create": "Create invite",
+      "createNew": "New invite"
+    },
+    "orgDashboard": "Dashboard"
   },
   "myRole": {
     "tabs": {

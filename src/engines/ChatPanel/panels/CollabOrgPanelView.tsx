@@ -6,15 +6,21 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import TabPill from "@src/components/TabPill";
 import {
+  createCollabInvite,
   listCollabChatMessages,
   postCollabChatMessage,
 } from "@src/features/TeamCollaboration/collabHubClient";
+import WorkItemContentStack from "@src/modules/ProjectManager/WorkItems/components/WorkItemContentStack";
 import { SectionContainer } from "@src/modules/shared/layouts/SectionLayout";
-import { SessionTable } from "@src/modules/shared/layouts/blocks";
+import {
+  DETAIL_PANEL_TOKENS,
+  DetailPanelContainer,
+  SessionTable,
+} from "@src/modules/shared/layouts/blocks";
 import type { SessionTableItem } from "@src/modules/shared/layouts/blocks";
 import {
   collabChatMessagesAtom,
-  collabConnectionStatesAtom,
+  collabInvitesAtom,
   collabMembersAtom,
   collabOrgsAtom,
   remoteTeammateSessionsAtom,
@@ -22,14 +28,17 @@ import {
 import {
   COLLAB_CONNECTION_STATUS,
   COLLAB_IDENTITY_KIND,
+  COLLAB_ROLE,
 } from "@src/store/collaboration/types";
 import type {
   CollabChatMessageRecord,
+  CollabInviteRecord,
   CollabMemberRecord,
   RemoteTeammateSessionMetadata,
 } from "@src/store/collaboration/types";
 import type { ChatPanelSelectedCollabOrg } from "@src/store/ui/chatPanelAtom";
 import { chatPanelSelectedCollabOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { copyText } from "@src/util/data/clipboard";
 import { formatSmartDateTime } from "@src/util/data/formatters/date";
 
 const COLLAB_ORG_TAB = {
@@ -106,6 +115,19 @@ function upsertChatMessage(
   return next;
 }
 
+function upsertInvite(
+  invites: CollabInviteRecord[],
+  incoming: CollabInviteRecord
+): CollabInviteRecord[] {
+  const existingIndex = invites.findIndex(
+    (invite) => invite.id === incoming.id
+  );
+  if (existingIndex < 0) return [incoming, ...invites];
+  const next = [...invites];
+  next[existingIndex] = incoming;
+  return next;
+}
+
 function MemberStatusPill({
   active,
   label,
@@ -140,9 +162,9 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
   const { t } = useTranslation("navigation");
   const orgs = useAtomValue(collabOrgsAtom);
   const members = useAtomValue(collabMembersAtom);
-  const connectionStates = useAtomValue(collabConnectionStatesAtom);
   const remoteSessions = useAtomValue(remoteTeammateSessionsAtom);
   const [chatMessages, setChatMessages] = useAtom(collabChatMessagesAtom);
+  const [invites, setInvites] = useAtom(collabInvitesAtom);
   const setSelectedCollabOrg = useSetAtom(chatPanelSelectedCollabOrgAtom);
   const [activeTab, setActiveTab] = useState<CollabOrgTab>(
     selectedCollabOrg.memberId
@@ -152,6 +174,9 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
   const [draftMessage, setDraftMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
+  const [creatingInvite, setCreatingInvite] = useState(false);
+  const [copyingInvite, setCopyingInvite] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
 
   const org = useMemo(
     () => orgs.find((candidate) => candidate.id === selectedCollabOrg.orgId),
@@ -176,9 +201,21 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
     () => orgMembers.find((member) => member.accessToken),
     [orgMembers]
   );
-  const connectionState = connectionStates.find(
-    (state) => state.orgId === selectedCollabOrg.orgId
+  const latestInvite = useMemo(
+    () =>
+      invites
+        .filter(
+          (invite) =>
+            invite.orgId === selectedCollabOrg.orgId && !invite.revokedAt
+        )
+        .sort((left, right) =>
+          right.createdAt.localeCompare(left.createdAt)
+        )[0],
+    [invites, selectedCollabOrg.orgId]
   );
+  const canCreateInvite =
+    Boolean(org?.hubUrl && currentMember?.accessToken) &&
+    currentMember?.role === COLLAB_ROLE.ADMIN;
   const orgSessions = useMemo(
     () =>
       remoteSessions.filter(
@@ -305,6 +342,39 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
     setActiveTab(COLLAB_ORG_TAB.SESSIONS);
   }, [selectedCollabOrg.orgId, setSelectedCollabOrg]);
 
+  const handleCreateInvite = useCallback(async () => {
+    if (!org?.hubUrl || !currentMember?.accessToken || creatingInvite) return;
+    setCreatingInvite(true);
+    setInviteError(null);
+    try {
+      const invite = await createCollabInvite({
+        hubUrl: org.hubUrl,
+        orgId: org.id,
+        accessToken: currentMember.accessToken,
+      });
+      setInvites((current) => upsertInvite(current, invite));
+      await copyText(invite.inviteLink);
+      setCopyingInvite(true);
+      window.setTimeout(() => setCopyingInvite(false), 1500);
+    } catch (error) {
+      setInviteError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setCreatingInvite(false);
+    }
+  }, [creatingInvite, currentMember?.accessToken, org, setInvites]);
+
+  const handleCopyInvite = useCallback(async () => {
+    if (!latestInvite?.inviteLink || copyingInvite) return;
+    setInviteError(null);
+    try {
+      await copyText(latestInvite.inviteLink);
+      setCopyingInvite(true);
+      window.setTimeout(() => setCopyingInvite(false), 1500);
+    } catch (error) {
+      setInviteError(error instanceof Error ? error.message : String(error));
+    }
+  }, [copyingInvite, latestInvite?.inviteLink]);
+
   const tabs = useMemo(
     () => [
       { key: COLLAB_ORG_TAB.SESSIONS, label: t("collaboration.tabs.sessions") },
@@ -322,195 +392,233 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
     );
   }
 
-  const title = selectedMember?.displayName ?? org.name;
-  const connected =
-    connectionState?.status === COLLAB_CONNECTION_STATUS.CONNECTED;
-  const selectedMemberActive = selectedMember
-    ? activeMemberIds.has(selectedMember.id)
-    : connected;
-
-  return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-bg-1">
-      <div className="shrink-0 border-b border-border-2 px-4 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="truncate text-[13px] font-semibold text-text-1">
-              {title}
-            </div>
-            <div className="mt-0.5 flex items-center gap-2 text-[12px] text-text-3">
-              <span>
-                {selectedMember ? org.name : t("collaboration.orgDemoTitle")}
-              </span>
-              <MemberStatusPill
-                active={selectedMemberActive}
-                label={
-                  selectedMember
-                    ? selectedMemberActive
-                      ? t("collaboration.status.activeToday")
-                      : t("collaboration.status.idle")
-                    : connected
-                      ? t("collaboration.status.connected")
-                      : t("collaboration.status.offline")
-                }
-              />
-            </div>
-          </div>
-          {selectedMember ? (
-            <Button htmlType="button" size="small" onClick={handleBackToOrg}>
-              {t("collaboration.backToOrg")}
-            </Button>
-          ) : null}
-        </div>
-        <div className="mt-3">
-          <TabPill
-            tabs={tabs}
-            activeTab={activeTab}
-            onChange={(tab) => setActiveTab(tab as CollabOrgTab)}
-            variant="pill"
-            size="small"
-            fillWidth={false}
-          />
-        </div>
+  const descriptionContent = (
+    <section
+      className={`${DETAIL_PANEL_TOKENS.contentWidth} flex flex-col`}
+      data-testid="chat-panel-collab-org-section"
+    >
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <TabPill
+          tabs={tabs}
+          activeTab={activeTab}
+          onChange={(tab) => setActiveTab(tab as CollabOrgTab)}
+          variant="simple"
+          size="large"
+          fillWidth={false}
+        />
+        {selectedMember ? (
+          <Button htmlType="button" size="small" onClick={handleBackToOrg}>
+            {t("collaboration.backToOrg")}
+          </Button>
+        ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto px-4 py-4">
-        <div className="mx-auto flex w-full max-w-[900px] flex-col gap-3">
+      <div className="flex flex-col gap-3">
+        <SectionContainer color="chatPanelInfo" padding="default">
+          <div className="grid grid-cols-2 gap-2 @[720px]:grid-cols-4">
+            <StatCard
+              label={t("collaboration.stats.members")}
+              value={orgMembers.length}
+            />
+            <StatCard
+              label={t("collaboration.stats.sessionsToday")}
+              value={todaySessionCount}
+            />
+            <StatCard
+              label={t("collaboration.stats.totalSessions")}
+              value={visibleSessions.length}
+            />
+            <StatCard
+              label={t("collaboration.stats.activeToday")}
+              value={
+                selectedMember
+                  ? activeMemberIds.has(selectedMember.id)
+                    ? 1
+                    : 0
+                  : activeMemberIds.size
+              }
+            />
+          </div>
+        </SectionContainer>
+
+        {!selectedMember ? (
           <SectionContainer color="chatPanelInfo" padding="default">
-            <div className="grid grid-cols-2 gap-2 @[720px]:grid-cols-4">
-              <StatCard
-                label={t("collaboration.stats.members")}
-                value={orgMembers.length}
-              />
-              <StatCard
-                label={t("collaboration.stats.sessionsToday")}
-                value={todaySessionCount}
-              />
-              <StatCard
-                label={t("collaboration.stats.totalSessions")}
-                value={visibleSessions.length}
-              />
-              <StatCard
-                label={t("collaboration.stats.activeToday")}
-                value={
-                  selectedMember
-                    ? activeMemberIds.has(selectedMember.id)
-                      ? 1
-                      : 0
-                    : activeMemberIds.size
-                }
-              />
+            <div className="flex flex-col gap-3 @[720px]:flex-row @[720px]:items-center @[720px]:justify-between">
+              <div className="min-w-0">
+                <div className="text-[13px] font-semibold text-text-1">
+                  {t("collaboration.invite.title")}
+                </div>
+                <div className="mt-1 text-[12px] text-text-3">
+                  {canCreateInvite
+                    ? t("collaboration.invite.description")
+                    : t("collaboration.invite.adminOnly")}
+                </div>
+                {latestInvite ? (
+                  <div className="mt-2 select-text break-all rounded-lg bg-fill-1 px-3 py-2 text-[12px] text-text-2">
+                    {latestInvite.inviteLink}
+                  </div>
+                ) : null}
+                {inviteError ? (
+                  <div className="mt-2 text-[12px] text-danger-6">
+                    {inviteError}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex shrink-0 gap-2">
+                {latestInvite ? (
+                  <Button
+                    htmlType="button"
+                    size="small"
+                    disabled={copyingInvite}
+                    onClick={() => void handleCopyInvite()}
+                  >
+                    {copyingInvite
+                      ? t("collaboration.copiedInvite")
+                      : t("collaboration.copyInvite")}
+                  </Button>
+                ) : null}
+                <Button
+                  htmlType="button"
+                  size="small"
+                  variant="primary"
+                  disabled={!canCreateInvite || creatingInvite}
+                  loading={creatingInvite}
+                  onClick={() => void handleCreateInvite()}
+                >
+                  {latestInvite
+                    ? t("collaboration.invite.createNew")
+                    : t("collaboration.invite.create")}
+                </Button>
+              </div>
             </div>
           </SectionContainer>
+        ) : null}
 
-          {activeTab === COLLAB_ORG_TAB.SESSIONS ? (
-            <SessionTable
-              items={sessionItems}
-              showSearch
-              surfaceVariant="transparent"
-              pageSize={10}
-            />
-          ) : null}
+        {activeTab === COLLAB_ORG_TAB.SESSIONS ? (
+          <SessionTable
+            items={sessionItems}
+            showSearch
+            surfaceVariant="chatPanel"
+            maxHeight={520}
+            pageSize={10}
+            pageSizeOptions={[10, 25, 50]}
+          />
+        ) : null}
 
-          {activeTab === COLLAB_ORG_TAB.MEMBERS ? (
-            <SectionContainer color="chatPanelInfo" padding="default">
-              <div className="flex flex-col divide-y divide-border-2">
-                {orgMembers.map((member) => (
-                  <button
-                    key={member.id}
-                    type="button"
-                    className="flex w-full items-center justify-between gap-3 py-2 text-left transition-colors hover:bg-surface-hover"
-                    onClick={() => handleSelectMember(member)}
-                  >
-                    <span className="min-w-0 px-3 text-[13px] font-medium text-text-1">
-                      {member.displayName}
-                    </span>
-                    <span className="flex min-w-0 items-center gap-2 px-3 text-[12px] text-text-3">
-                      <span>{member.identityKind}</span>
-                      <span>·</span>
-                      <span>{member.role}</span>
-                      <MemberStatusPill
-                        active={activeMemberIds.has(member.id)}
-                        label={
-                          activeMemberIds.has(member.id)
-                            ? t("collaboration.status.activeToday")
-                            : t("collaboration.status.idle")
-                        }
-                      />
-                    </span>
-                  </button>
-                ))}
+        {activeTab === COLLAB_ORG_TAB.MEMBERS ? (
+          <SectionContainer color="chatPanelInfo" padding="default">
+            <div className="flex flex-col divide-y divide-border-2">
+              {orgMembers.map((member) => (
+                <button
+                  key={member.id}
+                  type="button"
+                  className="flex w-full items-center justify-between gap-3 py-2 text-left transition-colors hover:bg-surface-hover"
+                  onClick={() => handleSelectMember(member)}
+                >
+                  <span className="min-w-0 px-3 text-[13px] font-medium text-text-1">
+                    {member.displayName}
+                  </span>
+                  <span className="flex min-w-0 items-center gap-2 px-3 text-[12px] text-text-3">
+                    <span>{member.identityKind}</span>
+                    <span>·</span>
+                    <span>{member.role}</span>
+                    <MemberStatusPill
+                      active={activeMemberIds.has(member.id)}
+                      label={
+                        activeMemberIds.has(member.id)
+                          ? t("collaboration.status.activeToday")
+                          : t("collaboration.status.idle")
+                      }
+                    />
+                  </span>
+                </button>
+              ))}
+            </div>
+          </SectionContainer>
+        ) : null}
+
+        {activeTab === COLLAB_ORG_TAB.CHAT ? (
+          <SectionContainer color="chatPanelInfo" padding="default">
+            <div className="flex min-h-[320px] flex-col gap-3">
+              <div className="text-[12px] text-text-3">
+                {t("collaboration.chat.hint")}
               </div>
-            </SectionContainer>
-          ) : null}
-
-          {activeTab === COLLAB_ORG_TAB.CHAT ? (
-            <SectionContainer color="chatPanelInfo" padding="default">
-              <div className="flex min-h-[320px] flex-col gap-3">
-                <div className="text-[12px] text-text-3">
-                  {t("collaboration.chat.hint")}
-                </div>
-                <div className="min-h-0 flex-1 overflow-auto rounded-lg bg-fill-1 p-3">
-                  {orgChatMessages.length === 0 ? (
-                    <div className="flex h-full min-h-[160px] items-center justify-center text-[13px] text-text-3">
-                      {t("collaboration.chat.empty")}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      {orgChatMessages.map((message) => (
-                        <div
-                          key={message.id}
-                          className="rounded-lg bg-bg-2 px-3 py-2"
-                        >
-                          <div className="flex items-center justify-between gap-2 text-[11px] text-text-3">
-                            <span className="font-medium text-text-2">
-                              {message.authorDisplayName}
-                            </span>
-                            <span>{formatSessionDate(message.createdAt)}</span>
-                          </div>
-                          <div className="mt-1 whitespace-pre-wrap break-words text-[13px] text-text-1">
-                            {message.body}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {chatError ? (
-                  <div className="text-[12px] text-danger-6">{chatError}</div>
-                ) : null}
-                {currentMember?.identityKind === COLLAB_IDENTITY_KIND.AGENT ? (
-                  <div className="text-[12px] text-text-3">
-                    {t("collaboration.chat.humanOnly")}
+              <div className="min-h-0 flex-1 overflow-auto rounded-lg bg-fill-1 p-3">
+                {orgChatMessages.length === 0 ? (
+                  <div className="flex h-full min-h-[160px] items-center justify-center text-[13px] text-text-3">
+                    {t("collaboration.chat.empty")}
                   </div>
                 ) : (
-                  <div className="flex gap-2">
-                    <Input
-                      value={draftMessage}
-                      onChange={setDraftMessage}
-                      placeholder={t("collaboration.chat.placeholder")}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" && !event.shiftKey) {
-                          event.preventDefault();
-                          void handleSendMessage();
-                        }
-                      }}
-                    />
-                    <Button
-                      htmlType="button"
-                      variant="primary"
-                      disabled={!draftMessage.trim() || sending}
-                      loading={sending}
-                      onClick={() => void handleSendMessage()}
-                    >
-                      {t("collaboration.chat.send")}
-                    </Button>
+                  <div className="flex flex-col gap-2">
+                    {orgChatMessages.map((message) => (
+                      <div
+                        key={message.id}
+                        className="rounded-lg bg-bg-2 px-3 py-2"
+                      >
+                        <div className="flex items-center justify-between gap-2 text-[11px] text-text-3">
+                          <span className="font-medium text-text-2">
+                            {message.authorDisplayName}
+                          </span>
+                          <span>{formatSessionDate(message.createdAt)}</span>
+                        </div>
+                        <div className="mt-1 whitespace-pre-wrap break-words text-[13px] text-text-1">
+                          {message.body}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            </SectionContainer>
-          ) : null}
-        </div>
+              {chatError ? (
+                <div className="text-[12px] text-danger-6">{chatError}</div>
+              ) : null}
+              {currentMember?.identityKind === COLLAB_IDENTITY_KIND.AGENT ? (
+                <div className="text-[12px] text-text-3">
+                  {t("collaboration.chat.humanOnly")}
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Input
+                    value={draftMessage}
+                    onChange={setDraftMessage}
+                    placeholder={t("collaboration.chat.placeholder")}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" && !event.shiftKey) {
+                        event.preventDefault();
+                        void handleSendMessage();
+                      }
+                    }}
+                  />
+                  <Button
+                    htmlType="button"
+                    variant="primary"
+                    disabled={!draftMessage.trim() || sending}
+                    loading={sending}
+                    onClick={() => void handleSendMessage()}
+                  >
+                    {t("collaboration.chat.send")}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </SectionContainer>
+        ) : null}
       </div>
+    </section>
+  );
+
+  return (
+    <div
+      className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden"
+      data-testid="chat-panel-collab-org-detail"
+    >
+      <DetailPanelContainer testId="collab-org-panel">
+        <WorkItemContentStack
+          descriptionContent={descriptionContent}
+          descriptionFlexible
+          scrollable
+        />
+      </DetailPanelContainer>
     </div>
   );
 };

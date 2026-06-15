@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import SessionHoverCard from "@src/components/SessionHoverCard";
+import { ChatPanelHeaderBreadcrumb } from "@src/engines/ChatPanel/header";
 import type { Session } from "@src/store/session";
 import {
   CHAT_PANEL_CONTENT_MODE,
@@ -25,6 +26,8 @@ interface UseChatPanelContentStateOptions {
   exploreOpen: boolean;
   isChatFocus: boolean;
   panelTitle: string;
+  collabOrgHeaderTitle?: string;
+  collabOrgHeaderTitleContent?: React.ReactNode;
   selectedCollabOrg: ChatPanelSelectedCollabOrg | null;
   selectedProject: ChatPanelSelectedProject | null;
   selectedWorkItem: ChatPanelSelectedWorkItem | null;
@@ -67,9 +70,6 @@ export interface ChatPanelContentState {
   showWorkspaceOverviewContent: boolean;
 }
 
-const BENCHMARK_HEADER_SEGMENT_CLASS =
-  "flex h-7 min-w-0 max-w-full cursor-default items-center gap-1.5 rounded-lg px-1.5 text-[13px] font-medium text-text-1 transition-colors hover:bg-surface-hover";
-
 export function useChatPanelContentState({
   active,
   activeSession,
@@ -81,6 +81,8 @@ export function useChatPanelContentState({
   exploreOpen,
   isChatFocus,
   panelTitle,
+  collabOrgHeaderTitle,
+  collabOrgHeaderTitleContent,
   selectedCollabOrg,
   selectedProject,
   selectedWorkItem,
@@ -203,7 +205,8 @@ export function useChatPanelContentState({
             : showExploreContent
               ? t("navigation:explore.title", { defaultValue: "Explore" })
               : showCollabOrgContent
-                ? t("navigation:collaboration.orgDemoTitle")
+                ? (collabOrgHeaderTitle ??
+                  t("navigation:collaboration.orgDemoTitle"))
                 : createTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG
                   ? t("navigation:collaboration.addOrg")
                   : selectedWorkspace
@@ -223,37 +226,37 @@ export function useChatPanelContentState({
   ]);
 
   const headerTitleContent = showBenchmarkChildSessionContent ? (
-    <span className="flex min-w-0 max-w-full items-center gap-1.5">
-      <button
-        type="button"
-        className={`${BENCHMARK_HEADER_SEGMENT_CLASS} cursor-pointer`}
-        onClick={(event) => {
-          event.stopPropagation();
-          handleBenchmarkSessionGroupHeaderClick();
-        }}
-      >
-        <span className="min-w-0 truncate">{benchmarkSessionGroupTitle}</span>
-      </button>
-      <span className="shrink-0 text-text-4">&gt;</span>
-      {currentSessionId ? (
-        <SessionHoverCard sessionId={currentSessionId}>
-          <span className={`${BENCHMARK_HEADER_SEGMENT_CLASS} cursor-default`}>
-            <span className="min-w-0 truncate">{panelTitle}</span>
-          </span>
-        </SessionHoverCard>
-      ) : (
-        <span className={`${BENCHMARK_HEADER_SEGMENT_CLASS} cursor-default`}>
-          <span className="min-w-0 truncate">{panelTitle}</span>
-        </span>
-      )}
-    </span>
+    <ChatPanelHeaderBreadcrumb
+      items={[
+        {
+          key: "benchmark-group",
+          label: benchmarkSessionGroupTitle,
+          onClick: (event) => {
+            event.stopPropagation();
+            handleBenchmarkSessionGroupHeaderClick();
+          },
+        },
+        {
+          key: "benchmark-session",
+          label: currentSessionId ? (
+            <SessionHoverCard sessionId={currentSessionId}>
+              <span className="min-w-0 truncate">{panelTitle}</span>
+            </SessionHoverCard>
+          ) : (
+            panelTitle
+          ),
+        },
+      ]}
+    />
+  ) : showCollabOrgContent && collabOrgHeaderTitleContent ? (
+    collabOrgHeaderTitleContent
   ) : showWorkspaceDashboardContent ||
     showExploreContent ||
     showCollabOrgContent ||
     showWorkspaceOverviewContent ? (
-    <span className={`${BENCHMARK_HEADER_SEGMENT_CLASS} cursor-default`}>
-      <span className="min-w-0 truncate">{headerTitle}</span>
-    </span>
+    <ChatPanelHeaderBreadcrumb
+      items={[{ key: "surface", label: headerTitle }]}
+    />
   ) : undefined;
 
   const showNewSessionButton =

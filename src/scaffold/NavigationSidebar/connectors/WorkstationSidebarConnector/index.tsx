@@ -96,6 +96,7 @@ import {
   COLLAB_MEMBER_PREFIX,
   COLLAB_ORG_SECTION_PREFIX,
   buildColleaguesSidebarMenuItems,
+  getCollabOrgIdFromDashboardMenuItemId,
   getCollabTeammateSessionIdFromMenuItemId,
 } from "./colleaguesSidebarMenuItems";
 import {
@@ -352,6 +353,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         members: collabMembers,
         remoteSessions: remoteTeammateSessions,
         searchQuery: sidebarSearchQueries.colleagues,
+        dashboardLabel: t("collaboration.orgDashboard"),
         unknownOrgLabel: t("collaboration.unknownOrg"),
       }),
     [
@@ -626,11 +628,14 @@ export const WorkstationSidebarConnector: React.FC = () => {
         return;
       }
       if (item.id.startsWith(COLLAB_ORG_SECTION_PREFIX)) {
-        const orgId = item.id.slice(COLLAB_ORG_SECTION_PREFIX.length);
+        return;
+      }
+      const dashboardOrgId = getCollabOrgIdFromDashboardMenuItemId(item.id);
+      if (dashboardOrgId) {
         setColleaguesSelectedMenuItemId(item.id);
         navigateChatPanel({
           kind: CHAT_PANEL_SURFACE_KIND.COLLAB_ORG,
-          collabOrg: { orgId },
+          collabOrg: { orgId: dashboardOrgId },
         });
         return;
       }

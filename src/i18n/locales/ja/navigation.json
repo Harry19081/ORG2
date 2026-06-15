@@ -423,6 +423,14 @@
     },
     "sessionStatusActive": "アクティブ",
     "localHuman": "ローカル Human",
-    "backToOrg": "Org に戻る"
+    "backToOrg": "Org に戻る",
+    "invite": {
+      "title": "招待リンク",
+      "description": "チームメイトがこの org に参加できる招待リンクを作成します。最新のリンクはここに表示され、すぐコピーできます。",
+      "adminOnly": "org 管理者だけが招待リンクを作成できます。",
+      "create": "招待を作成",
+      "createNew": "新しい招待"
+    },
+    "orgDashboard": "ダッシュボード"
   }
 }

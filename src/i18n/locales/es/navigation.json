@@ -425,6 +425,14 @@
     },
     "sessionStatusActive": "Activo",
     "localHuman": "Humano local",
-    "backToOrg": "Volver al org"
+    "backToOrg": "Volver al org",
+    "invite": {
+      "title": "Enlace de invitación",
+      "description": "Crea un enlace de invitación para que tus compañeros se unan a este org. El enlace más reciente aparece aquí para copiarlo rápido.",
+      "adminOnly": "Solo los administradores del org pueden crear enlaces de invitación.",
+      "create": "Crear invitación",
+      "createNew": "Nueva invitación"
+    },
+    "orgDashboard": "Panel"
   }
 }

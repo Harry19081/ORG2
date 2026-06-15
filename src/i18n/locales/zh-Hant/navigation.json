@@ -514,6 +514,14 @@
     },
     "sessionStatusActive": "活躍",
     "localHuman": "本機 Human",
-    "backToOrg": "返回 Org"
+    "backToOrg": "返回 Org",
+    "invite": {
+      "title": "邀請連結",
+      "description": "建立邀請連結，讓隊友加入此 org。最新連結會顯示在這裡，方便快速複製。",
+      "adminOnly": "只有 org 管理員可以建立邀請連結。",
+      "create": "建立邀請",
+      "createNew": "新邀請"
+    },
+    "orgDashboard": "儀表板"
   }
 }

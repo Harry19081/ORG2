@@ -514,6 +514,14 @@
     },
     "sessionStatusActive": "活跃",
     "localHuman": "本地 Human",
-    "backToOrg": "返回 Org"
+    "backToOrg": "返回 Org",
+    "invite": {
+      "title": "邀请链接",
+      "description": "创建邀请链接，让队友加入此 org。最新链接会显示在这里，方便快速复制。",
+      "adminOnly": "只有 org 管理员可以创建邀请链接。",
+      "create": "创建邀请",
+      "createNew": "新邀请"
+    },
+    "orgDashboard": "仪表盘"
   }
 }

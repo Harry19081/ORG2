@@ -423,6 +423,14 @@
     },
     "sessionStatusActive": "Aktif",
     "localHuman": "Yerel insan",
-    "backToOrg": "Org'a dön"
+    "backToOrg": "Org'a dön",
+    "invite": {
+      "title": "Davet bağlantısı",
+      "description": "Takım arkadaşlarının bu org içine katılması için bir davet bağlantısı oluşturun. En son bağlantı hızlı kopyalama için burada gösterilir.",
+      "adminOnly": "Davet bağlantılarını yalnızca org yöneticileri oluşturabilir.",
+      "create": "Davet oluştur",
+      "createNew": "Yeni davet"
+    },
+    "orgDashboard": "Pano"
   }
 }

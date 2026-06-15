@@ -425,6 +425,14 @@
     },
     "sessionStatusActive": "Ativo",
     "localHuman": "Humano local",
-    "backToOrg": "Voltar para org"
+    "backToOrg": "Voltar para org",
+    "invite": {
+      "title": "Link de convite",
+      "description": "Crie um link de convite para colegas entrarem neste org. O link mais recente aparece aqui para copiar rapidamente.",
+      "adminOnly": "Somente administradores do org podem criar links de convite.",
+      "create": "Criar convite",
+      "createNew": "Novo convite"
+    },
+    "orgDashboard": "Painel"
   }
 }

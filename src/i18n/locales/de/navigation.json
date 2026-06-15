@@ -425,6 +425,14 @@
     },
     "sessionStatusActive": "Aktiv",
     "localHuman": "Lokaler Mensch",
-    "backToOrg": "Zurück zur Org"
+    "backToOrg": "Zurück zur Org",
+    "invite": {
+      "title": "Einladungslink",
+      "description": "Erstelle einen Einladungslink, damit Teamkollegen diesem org beitreten können. Der neueste Link wird hier zum schnellen Kopieren angezeigt.",
+      "adminOnly": "Nur org-Administratoren können Einladungslinks erstellen.",
+      "create": "Einladung erstellen",
+      "createNew": "Neue Einladung"
+    },
+    "orgDashboard": "Dashboard"
   }
 }

@@ -92,7 +92,7 @@ describe("resolveSelectedMenuItemIds", () => {
 });
 
 describe("buildColleaguesSidebarMenuItems", () => {
-  it("adds identity kind to teammate row shortcut", () => {
+  it("groups colleagues by org with dashboard and member rows", () => {
     const items = buildColleaguesSidebarMenuItems({
       orgs: [
         {
@@ -126,9 +126,12 @@ describe("buildColleaguesSidebarMenuItems", () => {
         },
       ],
       searchQuery: "agent",
+      dashboardLabel: "Dashboard",
       unknownOrgLabel: "Unknown org",
     });
 
-    expect(items[0]?.children?.[1]?.shortcut).toBe("agent · running");
+    expect(items[0]?.id).toBe("separator-colleagues-org-section:org-1");
+    expect(items[1]?.label).toBe("Dashboard");
+    expect(items[2]?.shortcut).toBe("agent");
   });
 });

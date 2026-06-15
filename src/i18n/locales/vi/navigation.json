@@ -423,6 +423,14 @@
     },
     "sessionStatusActive": "Đang hoạt động",
     "localHuman": "Người dùng cục bộ",
-    "backToOrg": "Quay lại org"
+    "backToOrg": "Quay lại org",
+    "invite": {
+      "title": "Liên kết mời",
+      "description": "Tạo liên kết mời để đồng đội tham gia org này. Liên kết mới nhất được hiển thị ở đây để sao chép nhanh.",
+      "adminOnly": "Chỉ quản trị viên org mới có thể tạo liên kết mời.",
+      "create": "Tạo lời mời",
+      "createNew": "Lời mời mới"
+    },
+    "orgDashboard": "Bảng điều khiển"
   }
 }

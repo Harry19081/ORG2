@@ -423,6 +423,14 @@
     },
     "sessionStatusActive": "활성",
     "localHuman": "로컬 Human",
-    "backToOrg": "Org로 돌아가기"
+    "backToOrg": "Org로 돌아가기",
+    "invite": {
+      "title": "초대 링크",
+      "description": "팀원이 이 org에 참여할 수 있는 초대 링크를 만듭니다. 최신 링크가 여기에 표시되어 빠르게 복사할 수 있습니다.",
+      "adminOnly": "org 관리자만 초대 링크를 만들 수 있습니다.",
+      "create": "초대 만들기",
+      "createNew": "새 초대"
+    },
+    "orgDashboard": "대시보드"
   }
 }

@@ -18,7 +18,7 @@ import {
 } from "../workstationSidebarData";
 import {
   COLLAB_MEMBER_PREFIX,
-  COLLAB_ORG_SECTION_PREFIX,
+  getCollabOrgDashboardMenuItemId,
 } from "./colleaguesSidebarMenuItems";
 import {
   FOLDERS_DASHBOARD_ITEM_ID,
@@ -109,7 +109,7 @@ export function resolveSelectedMenuItemIds({
   const selectedCollabOrgMenuItemId = chatPanelSelectedCollabOrg
     ? chatPanelSelectedCollabOrg.memberId
       ? `${COLLAB_MEMBER_PREFIX}${chatPanelSelectedCollabOrg.memberId}`
-      : `${COLLAB_ORG_SECTION_PREFIX}${chatPanelSelectedCollabOrg.orgId}`
+      : getCollabOrgDashboardMenuItemId(chatPanelSelectedCollabOrg.orgId)
     : "";
   const resolvedColleaguesSelectedMenuItemId =
     chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG
