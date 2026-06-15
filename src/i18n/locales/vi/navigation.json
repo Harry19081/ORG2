@@ -374,14 +374,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Thêm org",
-    "unknownOrg": "Org không xác định",
+    "addOrg": "Thêm ORG",
+    "unknownOrg": "ORG không xác định",
     "emptyColleagues": "Chưa có hoạt động của đồng nghiệp",
-    "emptyColleaguesDesc": "Thêm org để bắt đầu chia sẻ metadata session với nhóm.",
-    "createOrg": "Tạo Org",
-    "joinOrg": "Tham gia Org",
+    "emptyColleaguesDesc": "Thêm một ORG để bắt đầu chia sẻ siêu dữ liệu phiên với đồng đội.",
+    "createOrg": "Tạo",
+    "joinOrg": "Tham gia",
     "hubUrl": "URL hub Cloudflare",
-    "orgName": "Tên Org",
+    "orgName": "Tên ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Liên kết hoặc mã mời",
     "inviteCodePlaceholder": "Dán liên kết orgii:// hoặc mã mời",
@@ -395,8 +395,8 @@
     "copiedInvite": "Đã sao chép",
     "setupMode": "Chế độ thiết lập",
     "hubSetupTitle": "Cách thiết lập URL hub Cloudflare",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Không tìm thấy Org",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "Không tìm thấy ORG",
     "tabs": {
       "sessions": "Sessions",
       "members": "Thành viên",
@@ -419,15 +419,15 @@
       "placeholder": "Chia sẻ cập nhật hoặc liên kết...",
       "send": "Gửi",
       "humanOnly": "Chỉ danh tính con người mới có thể đăng trong chat nhóm.",
-      "hint": "Con người có thể trò chuyện tại đây và chia sẻ liên kết với org."
+      "hint": "Thành viên con người có thể trò chuyện ở đây và chia sẻ liên kết với ORG."
     },
     "sessionStatusActive": "Đang hoạt động",
     "localHuman": "Người dùng cục bộ",
-    "backToOrg": "Quay lại org",
+    "backToOrg": "Quay lại ORG",
     "invite": {
       "title": "Liên kết mời",
-      "description": "Tạo liên kết mời để đồng đội tham gia org này. Liên kết mới nhất được hiển thị ở đây để sao chép nhanh.",
-      "adminOnly": "Chỉ quản trị viên org mới có thể tạo liên kết mời.",
+      "description": "Tạo liên kết mời để đồng đội tham gia ORG này. Liên kết mới nhất được hiển thị ở đây để sao chép nhanh.",
+      "adminOnly": "Chỉ quản trị viên ORG mới có thể tạo liên kết mời.",
       "create": "Tạo lời mời",
       "createNew": "Lời mời mới"
     },

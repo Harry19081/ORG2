@@ -37,9 +37,10 @@ import { TabBarTrailingIconButton } from "@src/modules/WorkStation/shared";
 import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { PresenceMenuButton } from "@src/scaffold/NavigationSidebar/blocks/SidebarBottomBar";
-import type {
-  ChatHistoryDisplayMode,
-  ChatPanelCreateTarget,
+import {
+  CHAT_PANEL_CREATE_TARGET,
+  type ChatHistoryDisplayMode,
+  type ChatPanelCreateTarget,
 } from "@src/store/ui/chatPanelAtom";
 
 import {
@@ -179,6 +180,12 @@ export function ChatPanelHeader({
 }: ChatPanelHeaderProps): React.ReactNode {
   const publishedHeaderSlots = useAtomValue(chatPanelHeaderSlotsAtom);
   if (!showHeader) return null;
+
+  const showStaticCollabCreateTitle =
+    showNonSessionContent &&
+    !selectedWorkItemVisible &&
+    !selectedProjectVisible &&
+    createTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG;
 
   const chatFocusLabel = isChatFocus
     ? t("chat.showWorkstation")
@@ -476,19 +483,23 @@ export function ChatPanelHeader({
             className="flex h-9 w-auto flex-shrink-0 items-center"
             style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
           >
-            <Select
-              value={createTarget}
-              options={createTargetOptions}
-              onChange={handleCreateTargetChange}
-              size="small"
-              variant="ghost"
-              radius="pill"
-              dropdownMinWidth={168}
-              dropdownWidthMode="auto"
-              className="w-auto"
-              selectorClassName="!h-7 max-w-[180px] !gap-1.5 !rounded-lg !border-0 !bg-transparent !px-1.5 !text-[13px] font-medium !text-text-1 hover:!bg-surface-hover [&_.select-suffix]:!ml-0 [&_.select-value]:-translate-y-[0.5px]"
-              dataTestId="chat-panel-create-target-select"
-            />
+            {showStaticCollabCreateTitle ? (
+              <ChatPanelHeaderTitlePill>{headerTitle}</ChatPanelHeaderTitlePill>
+            ) : (
+              <Select
+                value={createTarget}
+                options={createTargetOptions}
+                onChange={handleCreateTargetChange}
+                size="small"
+                variant="ghost"
+                radius="pill"
+                dropdownMinWidth={168}
+                dropdownWidthMode="auto"
+                className="w-auto"
+                selectorClassName="!h-7 max-w-[180px] !gap-1.5 !rounded-lg !border-0 !bg-transparent !px-1.5 !text-[13px] font-medium !text-text-1 hover:!bg-surface-hover [&_.select-suffix]:!ml-0 [&_.select-value]:-translate-y-[0.5px]"
+                dataTestId="chat-panel-create-target-select"
+              />
+            )}
             {showCreatorPresenceInHeader && (
               <>
                 <div

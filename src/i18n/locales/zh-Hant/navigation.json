@@ -465,14 +465,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "新增 Org",
-    "unknownOrg": "未知 Org",
+    "addOrg": "新增 ORG",
+    "unknownOrg": "未知 ORG",
     "emptyColleagues": "暫無同事活動",
-    "emptyColleaguesDesc": "新增 Org 後即可與隊友共享 Session 元資料。",
-    "createOrg": "建立 Org",
-    "joinOrg": "加入 Org",
+    "emptyColleaguesDesc": "新增 ORG，開始與隊友共享工作階段中繼資料。",
+    "createOrg": "建立",
+    "joinOrg": "加入",
     "hubUrl": "Cloudflare hub URL",
-    "orgName": "Org 名稱",
+    "orgName": "ORG 名稱",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "邀請連結或代碼",
     "inviteCodePlaceholder": "貼上 orgii:// 邀請連結或邀請代碼",
@@ -486,8 +486,8 @@
     "copiedInvite": "已複製",
     "setupMode": "設定模式",
     "hubSetupTitle": "如何設定 Cloudflare hub URL",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "找不到 Org",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "找不到 ORG",
     "tabs": {
       "sessions": "Sessions",
       "members": "成員",
@@ -510,15 +510,15 @@
       "placeholder": "分享更新或連結...",
       "send": "傳送",
       "humanOnly": "只有 Human 身分可以在群組聊天中發言。",
-      "hint": "Humans 可以在這裡交談，並向 Org 分享連結。"
+      "hint": "人類成員可以在這裡聊天，並與 ORG 分享連結。"
     },
     "sessionStatusActive": "活躍",
     "localHuman": "本機 Human",
-    "backToOrg": "返回 Org",
+    "backToOrg": "返回 ORG",
     "invite": {
       "title": "邀請連結",
-      "description": "建立邀請連結，讓隊友加入此 org。最新連結會顯示在這裡，方便快速複製。",
-      "adminOnly": "只有 org 管理員可以建立邀請連結。",
+      "description": "建立邀請連結，讓隊友加入此 ORG。最新連結會顯示在這裡，方便快速複製。",
+      "adminOnly": "只有 ORG 管理員可以建立邀請連結。",
       "create": "建立邀請",
       "createNew": "新邀請"
     },

@@ -147,15 +147,6 @@ function MemberStatusPill({
   );
 }
 
-function StatCard({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="rounded-lg bg-fill-1 px-3 py-2">
-      <div className="text-[11px] text-text-3">{label}</div>
-      <div className="mt-1 text-[16px] font-semibold text-text-1">{value}</div>
-    </div>
-  );
-}
-
 export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
   selectedCollabOrg,
 }) => {
@@ -239,9 +230,6 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
       ),
     [visibleSessions, t]
   );
-  const todaySessionCount = visibleSessions.filter((session) =>
-    isToday(session.lastActivityAt)
-  ).length;
   const activeMemberIds = new Set(
     orgSessions
       .filter((session) => isToday(session.lastActivityAt))
@@ -414,86 +402,6 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
       </div>
 
       <div className="flex flex-col gap-3">
-        <SectionContainer color="chatPanelInfo" padding="default">
-          <div className="grid grid-cols-2 gap-2 @[720px]:grid-cols-4">
-            <StatCard
-              label={t("collaboration.stats.members")}
-              value={orgMembers.length}
-            />
-            <StatCard
-              label={t("collaboration.stats.sessionsToday")}
-              value={todaySessionCount}
-            />
-            <StatCard
-              label={t("collaboration.stats.totalSessions")}
-              value={visibleSessions.length}
-            />
-            <StatCard
-              label={t("collaboration.stats.activeToday")}
-              value={
-                selectedMember
-                  ? activeMemberIds.has(selectedMember.id)
-                    ? 1
-                    : 0
-                  : activeMemberIds.size
-              }
-            />
-          </div>
-        </SectionContainer>
-
-        {!selectedMember ? (
-          <SectionContainer color="chatPanelInfo" padding="default">
-            <div className="flex flex-col gap-3 @[720px]:flex-row @[720px]:items-center @[720px]:justify-between">
-              <div className="min-w-0">
-                <div className="text-[13px] font-semibold text-text-1">
-                  {t("collaboration.invite.title")}
-                </div>
-                <div className="mt-1 text-[12px] text-text-3">
-                  {canCreateInvite
-                    ? t("collaboration.invite.description")
-                    : t("collaboration.invite.adminOnly")}
-                </div>
-                {latestInvite ? (
-                  <div className="mt-2 select-text break-all rounded-lg bg-fill-1 px-3 py-2 text-[12px] text-text-2">
-                    {latestInvite.inviteLink}
-                  </div>
-                ) : null}
-                {inviteError ? (
-                  <div className="mt-2 text-[12px] text-danger-6">
-                    {inviteError}
-                  </div>
-                ) : null}
-              </div>
-              <div className="flex shrink-0 gap-2">
-                {latestInvite ? (
-                  <Button
-                    htmlType="button"
-                    size="small"
-                    disabled={copyingInvite}
-                    onClick={() => void handleCopyInvite()}
-                  >
-                    {copyingInvite
-                      ? t("collaboration.copiedInvite")
-                      : t("collaboration.copyInvite")}
-                  </Button>
-                ) : null}
-                <Button
-                  htmlType="button"
-                  size="small"
-                  variant="primary"
-                  disabled={!canCreateInvite || creatingInvite}
-                  loading={creatingInvite}
-                  onClick={() => void handleCreateInvite()}
-                >
-                  {latestInvite
-                    ? t("collaboration.invite.createNew")
-                    : t("collaboration.invite.create")}
-                </Button>
-              </div>
-            </div>
-          </SectionContainer>
-        ) : null}
-
         {activeTab === COLLAB_ORG_TAB.SESSIONS ? (
           <SessionTable
             items={sessionItems}
@@ -506,35 +414,90 @@ export const CollabOrgPanelView: React.FC<CollabOrgPanelViewProps> = ({
         ) : null}
 
         {activeTab === COLLAB_ORG_TAB.MEMBERS ? (
-          <SectionContainer color="chatPanelInfo" padding="default">
-            <div className="flex flex-col divide-y divide-border-2">
-              {orgMembers.map((member) => (
-                <button
-                  key={member.id}
-                  type="button"
-                  className="flex w-full items-center justify-between gap-3 py-2 text-left transition-colors hover:bg-surface-hover"
-                  onClick={() => handleSelectMember(member)}
-                >
-                  <span className="min-w-0 px-3 text-[13px] font-medium text-text-1">
-                    {member.displayName}
-                  </span>
-                  <span className="flex min-w-0 items-center gap-2 px-3 text-[12px] text-text-3">
-                    <span>{member.identityKind}</span>
-                    <span>·</span>
-                    <span>{member.role}</span>
-                    <MemberStatusPill
-                      active={activeMemberIds.has(member.id)}
-                      label={
-                        activeMemberIds.has(member.id)
-                          ? t("collaboration.status.activeToday")
-                          : t("collaboration.status.idle")
-                      }
-                    />
-                  </span>
-                </button>
-              ))}
-            </div>
-          </SectionContainer>
+          <>
+            {!selectedMember ? (
+              <SectionContainer color="chatPanelInfo" padding="none">
+                <div className="flex flex-col gap-3 p-4 @[720px]:flex-row @[720px]:items-center @[720px]:justify-between">
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold text-text-1">
+                      {t("collaboration.invite.title")}
+                    </div>
+                    {!canCreateInvite ? (
+                      <div className="mt-1 text-[12px] text-text-3">
+                        {t("collaboration.invite.adminOnly")}
+                      </div>
+                    ) : null}
+                    {latestInvite ? (
+                      <div className="mt-2 select-text break-all rounded-lg bg-fill-1 px-3 py-2 text-[12px] text-text-2">
+                        {latestInvite.inviteLink}
+                      </div>
+                    ) : null}
+                    {inviteError ? (
+                      <div className="mt-2 text-[12px] text-danger-6">
+                        {inviteError}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    {latestInvite ? (
+                      <Button
+                        htmlType="button"
+                        size="small"
+                        disabled={copyingInvite}
+                        onClick={() => void handleCopyInvite()}
+                      >
+                        {copyingInvite
+                          ? t("collaboration.copiedInvite")
+                          : t("collaboration.copyInvite")}
+                      </Button>
+                    ) : null}
+                    <Button
+                      htmlType="button"
+                      size="small"
+                      variant="primary"
+                      disabled={!canCreateInvite || creatingInvite}
+                      loading={creatingInvite}
+                      onClick={() => void handleCreateInvite()}
+                    >
+                      {latestInvite
+                        ? t("collaboration.invite.createNew")
+                        : t("collaboration.invite.create")}
+                    </Button>
+                  </div>
+                </div>
+              </SectionContainer>
+            ) : null}
+
+            <SectionContainer color="chatPanelInfo" padding="default">
+              <div className="flex flex-col divide-y divide-border-2">
+                {orgMembers.map((member) => (
+                  <button
+                    key={member.id}
+                    type="button"
+                    className="flex w-full items-center justify-between gap-3 py-2 text-left transition-colors hover:bg-surface-hover"
+                    onClick={() => handleSelectMember(member)}
+                  >
+                    <span className="min-w-0 px-3 text-[13px] font-medium text-text-1">
+                      {member.displayName}
+                    </span>
+                    <span className="flex min-w-0 items-center gap-2 px-3 text-[12px] text-text-3">
+                      <span>{member.identityKind}</span>
+                      <span>·</span>
+                      <span>{member.role}</span>
+                      <MemberStatusPill
+                        active={activeMemberIds.has(member.id)}
+                        label={
+                          activeMemberIds.has(member.id)
+                            ? t("collaboration.status.activeToday")
+                            : t("collaboration.status.idle")
+                        }
+                      />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </SectionContainer>
+          </>
         ) : null}
 
         {activeTab === COLLAB_ORG_TAB.CHAT ? (

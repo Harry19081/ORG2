@@ -376,14 +376,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Org hinzufügen",
-    "unknownOrg": "Unbekannte Org",
+    "addOrg": "ORG hinzufügen",
+    "unknownOrg": "Unbekannte ORG",
     "emptyColleagues": "Noch keine Kolleg:innen-Aktivität",
-    "emptyColleaguesDesc": "Füge eine Org hinzu, um Session-Metadaten im Team zu teilen.",
-    "createOrg": "Org erstellen",
-    "joinOrg": "Org beitreten",
+    "emptyColleaguesDesc": "Füge eine ORG hinzu, um Sitzungsmetadaten mit Teamkollegen zu teilen.",
+    "createOrg": "Erstellen",
+    "joinOrg": "Beitreten",
     "hubUrl": "Cloudflare-Hub-URL",
-    "orgName": "Org-Name",
+    "orgName": "ORG-Name",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Einladungslink oder -code",
     "inviteCodePlaceholder": "orgii:// Einladungslink oder Einladungscode einfügen",
@@ -397,8 +397,8 @@
     "copiedInvite": "Kopiert",
     "setupMode": "Einrichtungsmodus",
     "hubSetupTitle": "Cloudflare-Hub-URL einrichten",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org nicht gefunden",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG nicht gefunden",
     "tabs": {
       "sessions": "Sessions",
       "members": "Mitglieder",
@@ -421,15 +421,15 @@
       "placeholder": "Update oder Link teilen...",
       "send": "Senden",
       "humanOnly": "Nur menschliche Identitäten können im Gruppenchat posten.",
-      "hint": "Menschen können hier sprechen und Links mit der Org teilen."
+      "hint": "Menschen können hier sprechen und Links mit der ORG teilen."
     },
     "sessionStatusActive": "Aktiv",
     "localHuman": "Lokaler Mensch",
-    "backToOrg": "Zurück zur Org",
+    "backToOrg": "Zurück zur ORG",
     "invite": {
       "title": "Einladungslink",
-      "description": "Erstelle einen Einladungslink, damit Teamkollegen diesem org beitreten können. Der neueste Link wird hier zum schnellen Kopieren angezeigt.",
-      "adminOnly": "Nur org-Administratoren können Einladungslinks erstellen.",
+      "description": "Erstelle einen Einladungslink, damit Teamkollegen dieser ORG beitreten können. Der neueste Link wird hier zum schnellen Kopieren angezeigt.",
+      "adminOnly": "Nur ORG-Administratoren können Einladungslinks erstellen.",
       "create": "Einladung erstellen",
       "createNew": "Neue Einladung"
     },

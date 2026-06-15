@@ -374,14 +374,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Org を追加",
-    "unknownOrg": "不明な Org",
+    "addOrg": "ORG を追加",
+    "unknownOrg": "不明な ORG",
     "emptyColleagues": "同僚のアクティビティはまだありません",
-    "emptyColleaguesDesc": "Org を追加すると、チームと Session メタデータを共有できます。",
-    "createOrg": "Org を作成",
-    "joinOrg": "Org に参加",
+    "emptyColleaguesDesc": "ORG を追加して、チームメイトとのセッションメタデータ共有を開始します。",
+    "createOrg": "作成",
+    "joinOrg": "参加",
     "hubUrl": "Cloudflare hub URL",
-    "orgName": "Org 名",
+    "orgName": "ORG 名",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "招待リンクまたはコード",
     "inviteCodePlaceholder": "orgii:// 招待リンクまたは招待コードを貼り付け",
@@ -395,8 +395,8 @@
     "copiedInvite": "コピー済み",
     "setupMode": "セットアップモード",
     "hubSetupTitle": "Cloudflare hub URL の設定方法",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org が見つかりません",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG が見つかりません",
     "tabs": {
       "sessions": "Sessions",
       "members": "メンバー",
@@ -419,15 +419,15 @@
       "placeholder": "更新やリンクを共有...",
       "send": "送信",
       "humanOnly": "Human ID のみがグループチャットに投稿できます。",
-      "hint": "Humans はここで会話し、Org にリンクを共有できます。"
+      "hint": "人間メンバーはここで会話し、ORG とリンクを共有できます。"
     },
     "sessionStatusActive": "アクティブ",
     "localHuman": "ローカル Human",
-    "backToOrg": "Org に戻る",
+    "backToOrg": "ORG に戻る",
     "invite": {
       "title": "招待リンク",
-      "description": "チームメイトがこの org に参加できる招待リンクを作成します。最新のリンクはここに表示され、すぐコピーできます。",
-      "adminOnly": "org 管理者だけが招待リンクを作成できます。",
+      "description": "チームメイトがこの ORG に参加できる招待リンクを作成します。最新のリンクはここに表示され、すぐコピーできます。",
+      "adminOnly": "ORG 管理者だけが招待リンクを作成できます。",
       "create": "招待を作成",
       "createNew": "新しい招待"
     },

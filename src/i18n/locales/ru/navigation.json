@@ -374,14 +374,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Добавить org",
-    "unknownOrg": "Неизвестная org",
+    "addOrg": "Добавить ORG",
+    "unknownOrg": "Неизвестная ORG",
     "emptyColleagues": "Активности коллег пока нет",
-    "emptyColleaguesDesc": "Добавьте org, чтобы начать делиться метаданными сессий с командой.",
-    "createOrg": "Создать Org",
-    "joinOrg": "Вступить в Org",
+    "emptyColleaguesDesc": "Добавьте ORG, чтобы начать делиться метаданными сессий с teammates.",
+    "createOrg": "Создать",
+    "joinOrg": "Присоединиться",
     "hubUrl": "URL хаба Cloudflare",
-    "orgName": "Название Org",
+    "orgName": "Название ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Ссылка или код приглашения",
     "inviteCodePlaceholder": "Вставьте ссылку orgii:// или код приглашения",
@@ -395,8 +395,8 @@
     "copiedInvite": "Скопировано",
     "setupMode": "Режим настройки",
     "hubSetupTitle": "Как настроить URL хаба Cloudflare",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org не найден",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG не найдена",
     "tabs": {
       "sessions": "Sessions",
       "members": "Участники",
@@ -419,15 +419,15 @@
       "placeholder": "Поделитесь обновлением или ссылкой...",
       "send": "Отправить",
       "humanOnly": "Только человеческие идентичности могут писать в групповой чат.",
-      "hint": "Люди могут общаться здесь и делиться ссылками с org."
+      "hint": "Люди могут общаться здесь и делиться ссылками с ORG."
     },
     "sessionStatusActive": "Активно",
     "localHuman": "Локальный человек",
-    "backToOrg": "Назад к org",
+    "backToOrg": "Назад к ORG",
     "invite": {
       "title": "Ссылка-приглашение",
-      "description": "Создайте ссылку-приглашение, чтобы teammates могли присоединиться к этому org. Последняя ссылка показана здесь для быстрого копирования.",
-      "adminOnly": "Только администраторы org могут создавать ссылки-приглашения.",
+      "description": "Создайте ссылку-приглашение, чтобы teammates могли присоединиться к этой ORG. Последняя ссылка показана здесь для быстрого копирования.",
+      "adminOnly": "Только администраторы ORG могут создавать ссылки-приглашения.",
       "create": "Создать приглашение",
       "createNew": "Новое приглашение"
     },

@@ -376,14 +376,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Adicionar org",
-    "unknownOrg": "Org desconhecida",
+    "addOrg": "Adicionar ORG",
+    "unknownOrg": "ORG desconhecida",
     "emptyColleagues": "Ainda não há atividade de colegas",
-    "emptyColleaguesDesc": "Adicione uma org para começar a compartilhar metadados de sessão com a equipe.",
-    "createOrg": "Criar Org",
-    "joinOrg": "Entrar na Org",
+    "emptyColleaguesDesc": "Adicione uma ORG para começar a compartilhar metadados de sessão com colegas.",
+    "createOrg": "Criar",
+    "joinOrg": "Entrar",
     "hubUrl": "URL do hub Cloudflare",
-    "orgName": "Nome da Org",
+    "orgName": "Nome da ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Link ou código de convite",
     "inviteCodePlaceholder": "Cole um link orgii:// ou código de convite",
@@ -397,8 +397,8 @@
     "copiedInvite": "Copiado",
     "setupMode": "Modo de configuração",
     "hubSetupTitle": "Como configurar a URL do hub Cloudflare",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org não encontrada",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG não encontrada",
     "tabs": {
       "sessions": "Sessions",
       "members": "Membros",
@@ -421,15 +421,15 @@
       "placeholder": "Compartilhe uma atualização ou link...",
       "send": "Enviar",
       "humanOnly": "Somente identidades humanas podem postar no chat em grupo.",
-      "hint": "Humanos podem conversar aqui e compartilhar links com a org."
+      "hint": "Humanos podem conversar aqui e compartilhar links com a ORG."
     },
     "sessionStatusActive": "Ativo",
     "localHuman": "Humano local",
-    "backToOrg": "Voltar para org",
+    "backToOrg": "Voltar para a ORG",
     "invite": {
       "title": "Link de convite",
-      "description": "Crie um link de convite para colegas entrarem neste org. O link mais recente aparece aqui para copiar rapidamente.",
-      "adminOnly": "Somente administradores do org podem criar links de convite.",
+      "description": "Crie um link de convite para colegas entrarem nesta ORG. O link mais recente aparece aqui para copiar rapidamente.",
+      "adminOnly": "Somente administradores da ORG podem criar links de convite.",
       "create": "Criar convite",
       "createNew": "Novo convite"
     },

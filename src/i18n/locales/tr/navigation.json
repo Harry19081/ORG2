@@ -374,14 +374,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Org ekle",
-    "unknownOrg": "Bilinmeyen org",
+    "addOrg": "ORG ekle",
+    "unknownOrg": "Bilinmeyen ORG",
     "emptyColleagues": "Henüz ekip arkadaşı aktivitesi yok",
-    "emptyColleaguesDesc": "Ekip ile session metadata paylaşmaya başlamak için bir org ekleyin.",
-    "createOrg": "Org oluştur",
-    "joinOrg": "Org'a katıl",
+    "emptyColleaguesDesc": "Takım arkadaşlarınla oturum meta verilerini paylaşmaya başlamak için bir ORG ekle.",
+    "createOrg": "Oluştur",
+    "joinOrg": "Katıl",
     "hubUrl": "Cloudflare hub URL'si",
-    "orgName": "Org adı",
+    "orgName": "ORG adı",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Davet bağlantısı veya kodu",
     "inviteCodePlaceholder": "orgii:// davet bağlantısı veya davet kodu yapıştırın",
@@ -395,8 +395,8 @@
     "copiedInvite": "Kopyalandı",
     "setupMode": "Kurulum modu",
     "hubSetupTitle": "Cloudflare hub URL'si nasıl ayarlanır",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org bulunamadı",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG bulunamadı",
     "tabs": {
       "sessions": "Sessions",
       "members": "Üyeler",
@@ -419,15 +419,15 @@
       "placeholder": "Bir güncelleme veya bağlantı paylaş...",
       "send": "Gönder",
       "humanOnly": "Grup sohbetinde yalnızca insan kimlikleri gönderi paylaşabilir.",
-      "hint": "İnsanlar burada konuşabilir ve org ile bağlantı paylaşabilir."
+      "hint": "İnsan üyeler burada konuşabilir ve ORG ile bağlantı paylaşabilir."
     },
     "sessionStatusActive": "Aktif",
     "localHuman": "Yerel insan",
-    "backToOrg": "Org'a dön",
+    "backToOrg": "ORG’ye dön",
     "invite": {
       "title": "Davet bağlantısı",
-      "description": "Takım arkadaşlarının bu org içine katılması için bir davet bağlantısı oluşturun. En son bağlantı hızlı kopyalama için burada gösterilir.",
-      "adminOnly": "Davet bağlantılarını yalnızca org yöneticileri oluşturabilir.",
+      "description": "Takım arkadaşlarının bu ORG’ye katılması için bir davet bağlantısı oluşturun. En son bağlantı hızlı kopyalama için burada gösterilir.",
+      "adminOnly": "Davet bağlantılarını yalnızca ORG yöneticileri oluşturabilir.",
       "create": "Davet oluştur",
       "createNew": "Yeni davet"
     },

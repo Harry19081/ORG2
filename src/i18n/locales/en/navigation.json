@@ -215,14 +215,14 @@
     }
   },
   "collaboration": {
-    "addOrg": "Add Org",
-    "unknownOrg": "Unknown org",
+    "addOrg": "Add ORG",
+    "unknownOrg": "Unknown ORG",
     "emptyColleagues": "No colleague activity yet",
-    "emptyColleaguesDesc": "Add an org to start sharing session metadata with teammates.",
-    "createOrg": "Create Org",
-    "joinOrg": "Join Org",
+    "emptyColleaguesDesc": "Add an ORG to start sharing session metadata with teammates.",
+    "createOrg": "Create",
+    "joinOrg": "Join",
     "hubUrl": "Cloudflare hub URL",
-    "orgName": "Org name",
+    "orgName": "ORG name",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Invite link or code",
     "inviteCodePlaceholder": "Paste an orgii:// invite link or invite code",
@@ -236,8 +236,8 @@
     "copiedInvite": "Copied",
     "setupMode": "Setup mode",
     "hubSetupTitle": "How to set up the Cloudflare hub URL",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org not found",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG not found",
     "tabs": {
       "sessions": "Sessions",
       "members": "Members",
@@ -260,15 +260,15 @@
       "placeholder": "Share an update or link...",
       "send": "Send",
       "humanOnly": "Only human identities can post in group chat.",
-      "hint": "Humans can talk here and share links with the org."
+      "hint": "Humans can talk here and share links with the ORG."
     },
     "sessionStatusActive": "Active",
     "localHuman": "Local human",
-    "backToOrg": "Back to org",
+    "backToOrg": "Back to ORG",
     "invite": {
       "title": "Invite link",
-      "description": "Create an invite link for teammates to join this org. The latest link is shown here for quick copying.",
-      "adminOnly": "Only org admins can create invite links.",
+      "description": "Create an invite link for teammates to join this ORG. The latest link is shown here for quick copying.",
+      "adminOnly": "Only ORG admins can create invite links.",
       "create": "Create invite",
       "createNew": "New invite"
     },

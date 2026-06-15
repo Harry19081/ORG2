@@ -374,14 +374,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Dodaj org",
-    "unknownOrg": "Nieznana org",
+    "addOrg": "Dodaj ORG",
+    "unknownOrg": "Nieznana ORG",
     "emptyColleagues": "Brak aktywności współpracowników",
-    "emptyColleaguesDesc": "Dodaj org, aby zacząć udostępniać metadane sesji zespołowi.",
-    "createOrg": "Utwórz Org",
-    "joinOrg": "Dołącz do Org",
+    "emptyColleaguesDesc": "Dodaj ORG, aby zacząć udostępniać metadane sesji członkom zespołu.",
+    "createOrg": "Utwórz",
+    "joinOrg": "Dołącz",
     "hubUrl": "URL huba Cloudflare",
-    "orgName": "Nazwa Org",
+    "orgName": "Nazwa ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Link lub kod zaproszenia",
     "inviteCodePlaceholder": "Wklej link orgii:// lub kod zaproszenia",
@@ -395,8 +395,8 @@
     "copiedInvite": "Skopiowano",
     "setupMode": "Tryb konfiguracji",
     "hubSetupTitle": "Jak skonfigurować URL huba Cloudflare",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Nie znaleziono org",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "Nie znaleziono ORG",
     "tabs": {
       "sessions": "Sessions",
       "members": "Członkowie",
@@ -419,15 +419,15 @@
       "placeholder": "Udostępnij aktualizację lub link...",
       "send": "Wyślij",
       "humanOnly": "Tylko tożsamości ludzkie mogą pisać na czacie grupowym.",
-      "hint": "Ludzie mogą tu rozmawiać i udostępniać linki org."
+      "hint": "Ludzie mogą tutaj rozmawiać i udostępniać linki w ORG."
     },
     "sessionStatusActive": "Aktywne",
     "localHuman": "Lokalny człowiek",
-    "backToOrg": "Wróć do org",
+    "backToOrg": "Wróć do ORG",
     "invite": {
       "title": "Link z zaproszeniem",
-      "description": "Utwórz link z zaproszeniem, aby członkowie zespołu mogli dołączyć do tego org. Najnowszy link jest pokazany tutaj do szybkiego kopiowania.",
-      "adminOnly": "Tylko administratorzy org mogą tworzyć linki z zaproszeniem.",
+      "description": "Utwórz link z zaproszeniem, aby członkowie zespołu mogli dołączyć do tej ORG. Najnowszy link jest pokazany tutaj do szybkiego kopiowania.",
+      "adminOnly": "Tylko administratorzy ORG mogą tworzyć linki z zaproszeniem.",
       "create": "Utwórz zaproszenie",
       "createNew": "Nowe zaproszenie"
     },

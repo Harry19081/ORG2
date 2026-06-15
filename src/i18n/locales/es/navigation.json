@@ -376,14 +376,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Agregar org",
-    "unknownOrg": "Org desconocida",
+    "addOrg": "Añadir ORG",
+    "unknownOrg": "ORG desconocida",
     "emptyColleagues": "Aún no hay actividad de colegas",
-    "emptyColleaguesDesc": "Agrega una org para empezar a compartir metadatos de sesión con tu equipo.",
-    "createOrg": "Crear Org",
-    "joinOrg": "Unirse a Org",
+    "emptyColleaguesDesc": "Añade una ORG para empezar a compartir metadatos de sesión con tus compañeros.",
+    "createOrg": "Crear",
+    "joinOrg": "Unirse",
     "hubUrl": "URL del hub de Cloudflare",
-    "orgName": "Nombre de la Org",
+    "orgName": "Nombre de la ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Enlace o código de invitación",
     "inviteCodePlaceholder": "Pega un enlace orgii:// o un código de invitación",
@@ -397,8 +397,8 @@
     "copiedInvite": "Copiado",
     "setupMode": "Modo de configuración",
     "hubSetupTitle": "Cómo configurar la URL del hub de Cloudflare",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org no encontrado",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG no encontrada",
     "tabs": {
       "sessions": "Sessions",
       "members": "Miembros",
@@ -421,15 +421,15 @@
       "placeholder": "Comparte una actualización o enlace...",
       "send": "Enviar",
       "humanOnly": "Solo las identidades humanas pueden publicar en el chat grupal.",
-      "hint": "Los humanos pueden hablar aquí y compartir enlaces con el org."
+      "hint": "Los humanos pueden hablar aquí y compartir enlaces con la ORG."
     },
     "sessionStatusActive": "Activo",
     "localHuman": "Humano local",
-    "backToOrg": "Volver al org",
+    "backToOrg": "Volver a la ORG",
     "invite": {
       "title": "Enlace de invitación",
-      "description": "Crea un enlace de invitación para que tus compañeros se unan a este org. El enlace más reciente aparece aquí para copiarlo rápido.",
-      "adminOnly": "Solo los administradores del org pueden crear enlaces de invitación.",
+      "description": "Crea un enlace de invitación para que tus compañeros se unan a esta ORG. El enlace más reciente aparece aquí para copiarlo rápido.",
+      "adminOnly": "Solo los administradores de la ORG pueden crear enlaces de invitación.",
       "create": "Crear invitación",
       "createNew": "Nueva invitación"
     },

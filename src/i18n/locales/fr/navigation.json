@@ -376,14 +376,14 @@
     "backend": "Backend"
   },
   "collaboration": {
-    "addOrg": "Ajouter une org",
-    "unknownOrg": "Org inconnue",
+    "addOrg": "Ajouter une ORG",
+    "unknownOrg": "ORG inconnue",
     "emptyColleagues": "Aucune activité de collègue pour le moment",
-    "emptyColleaguesDesc": "Ajoutez une org pour commencer à partager les métadonnées de session avec votre équipe.",
-    "createOrg": "Créer une Org",
-    "joinOrg": "Rejoindre une Org",
+    "emptyColleaguesDesc": "Ajoutez une ORG pour commencer à partager les métadonnées de session avec vos coéquipiers.",
+    "createOrg": "Créer",
+    "joinOrg": "Rejoindre",
     "hubUrl": "URL du hub Cloudflare",
-    "orgName": "Nom de l’Org",
+    "orgName": "Nom de l’ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Lien ou code d’invitation",
     "inviteCodePlaceholder": "Collez un lien orgii:// ou un code d’invitation",
@@ -397,8 +397,8 @@
     "copiedInvite": "Copié",
     "setupMode": "Mode de configuration",
     "hubSetupTitle": "Configurer l’URL du hub Cloudflare",
-    "orgDemoTitle": "Org",
-    "orgNotFound": "Org introuvable",
+    "orgDemoTitle": "ORG",
+    "orgNotFound": "ORG introuvable",
     "tabs": {
       "sessions": "Sessions",
       "members": "Membres",
@@ -421,15 +421,15 @@
       "placeholder": "Partagez une mise à jour ou un lien...",
       "send": "Envoyer",
       "humanOnly": "Seules les identités humaines peuvent publier dans le chat de groupe.",
-      "hint": "Les humains peuvent discuter ici et partager des liens avec l'org."
+      "hint": "Les humains peuvent discuter ici et partager des liens avec l’ORG."
     },
     "sessionStatusActive": "Actif",
     "localHuman": "Humain local",
-    "backToOrg": "Retour à l'org",
+    "backToOrg": "Retour à l’ORG",
     "invite": {
       "title": "Lien d'invitation",
-      "description": "Créez un lien d'invitation pour que vos coéquipiers rejoignent cet org. Le dernier lien s'affiche ici pour être copié rapidement.",
-      "adminOnly": "Seuls les administrateurs de l'org peuvent créer des liens d'invitation.",
+      "description": "Créez un lien d’invitation pour que vos coéquipiers rejoignent cette ORG. Le dernier lien s’affiche ici pour être copié rapidement.",
+      "adminOnly": "Seuls les administrateurs de l’ORG peuvent créer des liens d’invitation.",
       "create": "Créer une invitation",
       "createNew": "Nouvelle invitation"
     },
