@@ -22,6 +22,7 @@ import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
 import { showScaleMessage } from "@src/hooks/navigation/useGlobalShortcuts/types";
 import { useFilteredItems } from "@src/hooks/search";
 import type { LanguagePreference } from "@src/i18n";
+import { checkForUpdatesManually } from "@src/scaffold/AppUpdater";
 import {
   openAgentControlSpotlight,
   openSessionCreatorSpotlight,
@@ -239,6 +240,9 @@ export function useSpotlight(
         },
         "open-terminal-tab": () => {
           void WorkStationViewService.openTerminalTab();
+        },
+        "detect-update": () => {
+          checkForUpdatesManually();
         },
       };
 

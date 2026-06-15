@@ -53,6 +53,7 @@ import { useSpotlightState } from "../core";
 import type { UseSpotlightItemsReturn } from "../core/types";
 import {
   AGENT_SESSION_ACTIONS,
+  APP_ACTIONS,
   QUICK_NAVIGATION_ACTIONS,
   STATION_MODE_ACTIONS,
   type SpotlightEditorActionId,
@@ -204,6 +205,7 @@ export function useSpotlightItems(
           ...chatPanelSettingsActions,
           ...quickNavigationActions,
           ...viewActions,
+          ...APP_ACTIONS,
         ],
         onSelectAction,
         onSelectStaticAction,
@@ -274,7 +276,12 @@ export function useSpotlightItems(
       ? buildEditorActionItems(onSelectEditorAction, translate)
       : [];
     const viewItems = buildStaticActionItems(
-      [...themeActions, ...chatPanelSettingsActions, ...viewActions],
+      [
+        ...themeActions,
+        ...chatPanelSettingsActions,
+        ...viewActions,
+        ...APP_ACTIONS,
+      ],
       onSelectStaticAction,
       translate
     );
