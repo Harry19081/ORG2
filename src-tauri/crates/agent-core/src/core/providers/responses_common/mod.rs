@@ -12,7 +12,7 @@ pub mod types;
 // `ResponseContent`, `ResponseFunctionCall`, `ResponseMessage` are only
 // used inside `parser.rs`'s test module via the deeper
 // `responses_common::types::*` path, so we don't need to flatten them.
-pub use converter::{convert_messages, convert_tools};
+pub use converter::{convert_messages, convert_tools, convert_tools_with_choice};
 pub use parser::{parse_response, response_reasoning_summary_text_from_values};
 pub use streaming_events::{ResponsesStreamNormalizer, ResponsesStreamOutput};
 pub use types::{
