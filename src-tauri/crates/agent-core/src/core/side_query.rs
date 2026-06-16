@@ -102,6 +102,27 @@ impl std::error::Error for SideQueryError {}
 // structured output without changing the trait, we inject a sentinel
 // element at the end of the tools array. Provider request builders
 // detect and strip it.
+//
+// ### Contract: every provider's tools entry-point MUST strip this sentinel
+//
+// The sentinel element has NO `"function"` key. A provider that forwards it
+// verbatim to the wire leaks a `type`-less object into the request's `tools`
+// array, which the OpenAI Responses backend rejects with
+// `HTTP 400: Unsupported tool type: None`. Because `reliable.rs` historically
+// treated that 400 as transient, the failure surfaced as a ~68s retry storm
+// that delayed the user's first turn (see the side-query decoupling in
+// `session/launch/mod.rs`).
+//
+// Each provider must remove the sentinel before serializing tools. Current
+// handling, for reference when adding a new provider:
+//   - `openai_compat`   → `extract_tool_choice_override` (chat.rs / sse_stream.rs)
+//   - `anthropic_native`→ `extract_tool_choice_override` (request.rs)
+//   - `openai_responses`→ `convert_tools_with_choice` (responses_common)
+//   - `codex_native`    → `convert_tools_with_choice` (responses_common)
+//   - `gemini_native`   → implicitly safe: `convert_tools` `filter_map`
+//                         drops any element lacking a `name` key.
+// A new provider that builds a `tools` payload without one of the above is a
+// latent `Unsupported tool type` bug — wire it through the shared helper.
 
 /// JSON key on a tools-array element that marks it as a tool_choice
 /// override rather than a real tool definition.

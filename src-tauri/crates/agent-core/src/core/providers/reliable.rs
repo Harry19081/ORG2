@@ -191,6 +191,7 @@ impl ReliableProvider {
                             || lower.contains("model_not_found")
                             || lower.contains("unsupported model")
                             || lower.contains("invalid model")
+                            || lower.contains("unsupported tool type")
                             || lower.contains("temperature` is deprecated")
                             || lower.contains("temperature is deprecated")
                             || lower.contains("thinking may not be enabled")
