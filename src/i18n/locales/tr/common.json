@@ -200,6 +200,8 @@
     "sort": "Sırala",
     "openFolder": "Klasör aç",
     "addWorkspace": "Workspace ekle",
+    "openSpotlight": "Spotlight'ı aç",
+    "openWorkspace": "Workspace aç",
     "skipThisVersion": "Bu sürümü atla",
     "later": "Daha sonra",
     "updateAiBlame": "AI Blame'i güncelle",
@@ -930,6 +932,8 @@
     "loadingAccountStatus": "Hesap durumu yükleniyor...",
     "noRepositorySelected": "Depo seçilmedi",
     "selectRepositoryFromHome": "Açmak için ana sayfadan bir depo seçin.",
+    "noWorkspaceExplorerTitle": "Açık Workspace yok",
+    "noWorkspaceExplorerSubtitle": "Dosyaları görüntülemek için Workspace aç",
     "cannotFindRepo": "{{repoName}} bulunamıyor",
     "lastSeenAtPath": "Son görüldüğü konum: {{path}}",
     "unsupportedFileType": "Desteklenmeyen dosya türü",
@@ -1225,7 +1229,7 @@
         "current": "Geçerli",
         "repo": "Depolar",
         "systemPaths": "Sistem Yolları",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "Başka yerde kullanıldı",
         "workspace": "Workspace"
       },
       "tabs": {
@@ -2164,7 +2168,8 @@
       "repoTooltip": "Repo: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} repo: {{names}}",
       "branchTooltip": "Branch: {{branch}}",
-      "branchSwitching": " (değiştiriliyor...)"
+      "branchSwitching": " (değiştiriliyor...)",
+      "noRepo": "Repo yok"
     }
   },
   "globalToolbar": {

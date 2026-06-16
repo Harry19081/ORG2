@@ -35,7 +35,7 @@ export function useAppShellRepo(): AppShellRepoState {
   const repoName = useMemo(() => {
     if (isMultiRoot && primaryFolder) return primaryFolder.name;
     if (currentRepo?.name) return currentRepo.name;
-    return getFolderName(repoPath) || "Code Editor";
+    return getFolderName(repoPath);
   }, [isMultiRoot, primaryFolder, currentRepo?.name, repoPath]);
 
   const appMode = useRouteAppMode();

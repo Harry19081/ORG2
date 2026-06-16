@@ -200,6 +200,8 @@
     "sort": "정렬",
     "openFolder": "폴더 열기",
     "addWorkspace": "Workspace 추가",
+    "openSpotlight": "Spotlight 열기",
+    "openWorkspace": "Workspace 열기",
     "skipThisVersion": "이 버전 건너뛰기",
     "later": "나중에",
     "updateAiBlame": "AI Blame 업데이트",
@@ -930,6 +932,8 @@
     "loadingAccountStatus": "계정 상태 로드 중...",
     "noRepositorySelected": "선택된 리포지토리가 없습니다",
     "selectRepositoryFromHome": "열려면 홈 페이지에서 리포지토리를 선택하세요.",
+    "noWorkspaceExplorerTitle": "열린 Workspace가 없습니다",
+    "noWorkspaceExplorerSubtitle": "파일을 보려면 Workspace 열기",
     "cannotFindRepo": "{{repoName}}을(를) 찾을 수 없습니다",
     "lastSeenAtPath": "마지막으로 확인된 경로: {{path}}",
     "unsupportedFileType": "지원되지 않는 파일 형식",
@@ -1225,7 +1229,7 @@
         "current": "Current",
         "repo": "리포지토리",
         "systemPaths": "시스템 경로",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "다른 곳에서 사용됨",
         "workspace": "Workspace"
       },
       "tabs": {
@@ -2163,7 +2167,8 @@
       "repoTooltip": "Repo: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}}개 repo: {{names}}",
       "branchTooltip": "Branch: {{branch}}",
-      "branchSwitching": " (전환 중...)"
+      "branchSwitching": " (전환 중...)",
+      "noRepo": "Repo 없음"
     }
   },
   "globalToolbar": {

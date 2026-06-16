@@ -164,6 +164,7 @@ export function useWorkspacePaletteWorkspace({
         await deleteWorkspace(ws.workspaceId);
         if (ws.workspaceId === activeWorkspaceId) {
           dispatchSetFolders([], null);
+          setActiveWorkspaceName(null);
         }
         const refreshed = await listWorkspaces();
         setSavedWorkspaces(refreshed);
@@ -182,7 +183,13 @@ export function useWorkspacePaletteWorkspace({
         );
       }
     },
-    [t, activeWorkspaceId, dispatchSetFolders, setSavedWorkspaces]
+    [
+      t,
+      activeWorkspaceId,
+      dispatchSetFolders,
+      setActiveWorkspaceName,
+      setSavedWorkspaces,
+    ]
   );
 
   const handleBulkDelete = useCallback(async () => {

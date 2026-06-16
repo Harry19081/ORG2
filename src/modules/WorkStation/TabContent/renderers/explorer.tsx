@@ -7,20 +7,34 @@
  * shows an empty placeholder. Phase 1b mirrors that semantics so the
  * registry remains exhaustive without inventing a new surface.
  */
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { openWorkspaceSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 
 import type { UnifiedTabContentProps } from "../types";
 
 const ExplorerTabRenderer: React.FC<UnifiedTabContentProps> = memo(() => {
   const { t } = useTranslation();
+  const handleAddWorkspace = useCallback(() => {
+    openWorkspaceSpotlight("switch");
+  }, []);
+
   return (
     <Placeholder
       variant="empty"
       placement="detail-panel"
-      title={t("placeholders.explorerTabTitle", { defaultValue: "Explorer" })}
+      title={t("placeholders.noWorkspaceExplorerTitle", {
+        defaultValue: "No workspace open",
+      })}
+      subtitle={t("placeholders.noWorkspaceExplorerSubtitle", {
+        defaultValue: "Open workspace to view file",
+      })}
+      action={{
+        label: t("actions.openWorkspace", { defaultValue: "Open Workspace" }),
+        onClick: handleAddWorkspace,
+      }}
       fillParentHeight
     />
   );

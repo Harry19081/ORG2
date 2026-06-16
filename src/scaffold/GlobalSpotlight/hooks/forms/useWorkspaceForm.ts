@@ -55,7 +55,10 @@ export interface UseWorkspaceFormReturn {
     name: string,
     path: string
   ) => Promise<string | undefined>;
-  handleImportWorkspace: (path: string) => Promise<string | undefined>;
+  handleImportWorkspace: (
+    path: string,
+    options?: { promptForGitInit?: boolean }
+  ) => Promise<string | undefined>;
   handleOpenLocalWorkspace: (
     initialPath?: string
   ) => Promise<string | undefined>;
@@ -207,16 +210,20 @@ export function useWorkspaceForm(
   );
 
   const handleImportWorkspace = useCallback(
-    async (path: string): Promise<string | undefined> => {
+    async (
+      path: string,
+      options: { promptForGitInit?: boolean } = {}
+    ): Promise<string | undefined> => {
       if (!path.trim()) return undefined;
 
       setLoading(true);
       try {
         const fsPath = path.trim();
         const isGitWorkspace = await repoApi.checkIsGitRepo(fsPath);
+        const promptForGitInit = options.promptForGitInit ?? true;
         const initializeGit = isGitWorkspace
           ? true
-          : await shouldInitializeGit(fsPath);
+          : promptForGitInit && (await shouldInitializeGit(fsPath));
         const result = initializeGit
           ? await repoApi.importLocalRepo({ fs_path: fsPath })
           : await repoApi.importWorkFolder({ fs_path: fsPath });

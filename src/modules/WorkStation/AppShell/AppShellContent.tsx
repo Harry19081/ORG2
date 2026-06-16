@@ -92,23 +92,6 @@ export function AppShellContent({
     activeTab?.type === "subagent-detail";
 
   const renderCodeEditor = () => {
-    if (!repoPath && !activeTabCanRenderWithoutRepo) {
-      return (
-        <Placeholder
-          variant="empty"
-          placement="detail-panel"
-          fillParentHeight
-          className={WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS}
-          title={t("placeholders.noRepositorySelected")}
-          subtitle={t("placeholders.selectRepositoryFromHome")}
-          action={{
-            label: t("actions.selectRepository"),
-            onClick: handleSelectRepo,
-          }}
-        />
-      );
-    }
-
     if (
       pathExists === false &&
       lastSeenPath &&

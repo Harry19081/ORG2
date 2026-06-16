@@ -76,11 +76,15 @@ export function useSystemPathRepoItems(
     }
 
     if (standardPaths) {
-      items.push(createSystemHomeRepoItem(t, standardPaths.home));
+      if (!addedPaths.has(standardPaths.home)) {
+        items.push(createSystemHomeRepoItem(t, standardPaths.home));
+      }
       seenPaths.add(standardPaths.home);
 
       if (standardPaths.documents !== standardPaths.home) {
-        items.push(createSystemDocumentsRepoItem(t, standardPaths.documents));
+        if (!addedPaths.has(standardPaths.documents)) {
+          items.push(createSystemDocumentsRepoItem(t, standardPaths.documents));
+        }
         seenPaths.add(standardPaths.documents);
       }
     } else {

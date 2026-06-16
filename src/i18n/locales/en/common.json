@@ -201,6 +201,8 @@
     "sort": "Sort",
     "openFolder": "Open Folder",
     "addWorkspace": "Add Workspace",
+    "openSpotlight": "Open Spotlight",
+    "openWorkspace": "Open Workspace",
     "newIssue": "New issue",
     "closeIssue": "Close issue",
     "reopenIssue": "Reopen issue",
@@ -955,6 +957,8 @@
     "loadingAccountStatus": "Loading account status...",
     "noRepositorySelected": "No Repo Selected",
     "selectRepositoryFromHome": "Please select a repo from the home page to open.",
+    "noWorkspaceExplorerTitle": "No workspace open",
+    "noWorkspaceExplorerSubtitle": "Open workspace to view file",
     "cannotFindRepo": "Cannot find {{repoName}}",
     "lastSeenAtPath": "It was last seen at {{path}}",
     "unsupportedFileType": "Unsupported file type",
@@ -2265,7 +2269,8 @@
       "repoTooltip": "Repo: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} repos: {{names}}",
       "branchTooltip": "Branch: {{branch}}",
-      "branchSwitching": " (switching...)"
+      "branchSwitching": " (switching...)",
+      "noRepo": "No repo"
     }
   },
   "globalToolbar": {

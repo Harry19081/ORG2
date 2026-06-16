@@ -200,6 +200,8 @@
     "sort": "Sắp xếp",
     "openFolder": "Mở thư mục",
     "addWorkspace": "Thêm Workspace",
+    "openSpotlight": "Mở Spotlight",
+    "openWorkspace": "Mở Workspace",
     "skipThisVersion": "Bỏ qua phiên bản này",
     "later": "Để sau",
     "updateAiBlame": "Cập nhật AI Blame",
@@ -930,6 +932,8 @@
     "loadingAccountStatus": "Đang tải trạng thái tài khoản...",
     "noRepositorySelected": "Chưa chọn kho lưu trữ",
     "selectRepositoryFromHome": "Vui lòng chọn một kho lưu trữ từ trang chủ để mở.",
+    "noWorkspaceExplorerTitle": "Chưa mở Workspace",
+    "noWorkspaceExplorerSubtitle": "Mở Workspace để xem tệp",
     "cannotFindRepo": "Không tìm thấy {{repoName}}",
     "lastSeenAtPath": "Lần cuối thấy tại {{path}}",
     "unsupportedFileType": "Loại tệp không được hỗ trợ",
@@ -1225,7 +1229,7 @@
         "current": "Hiện tại",
         "repo": "Kho lưu trữ",
         "systemPaths": "Đường dẫn hệ thống",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "Được dùng ở nơi khác",
         "workspace": "Workspace"
       },
       "tabs": {
@@ -2160,7 +2164,8 @@
       "repoTooltip": "Repo: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} repo: {{names}}",
       "branchTooltip": "Branch: {{branch}}",
-      "branchSwitching": " (đang chuyển...)"
+      "branchSwitching": " (đang chuyển...)",
+      "noRepo": "Không có repo"
     }
   },
   "globalToolbar": {

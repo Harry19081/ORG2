@@ -245,7 +245,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       [explorerTab, sourceControlFilterCounts.unstaged]
     );
     usePinnedTabs({
-      enabled: Boolean(repoPath),
+      enabled: true,
       pinnedTabs,
       initialActiveTabId: explorerTab.id,
     });

@@ -200,6 +200,8 @@
     "sort": "Ordenar",
     "openFolder": "Abrir carpeta",
     "addWorkspace": "Añadir espacio de trabajo",
+    "openSpotlight": "Abrir Spotlight",
+    "openWorkspace": "Abrir workspace",
     "skipThisVersion": "Omitir esta versión",
     "later": "Más tarde",
     "updateAiBlame": "Actualizar AI Blame",
@@ -930,6 +932,8 @@
     "loadingAccountStatus": "Cargando estado de cuenta...",
     "noRepositorySelected": "Ningún repo seleccionado",
     "selectRepositoryFromHome": "Selecciona un repo desde la página de inicio para abrirlo.",
+    "noWorkspaceExplorerTitle": "No hay workspace abierto",
+    "noWorkspaceExplorerSubtitle": "Abrir workspace para ver archivos",
     "cannotFindRepo": "No se encuentra {{repoName}}",
     "lastSeenAtPath": "Se vio por última vez en {{path}}",
     "unsupportedFileType": "Tipo de archivo no compatible",
@@ -1224,7 +1228,7 @@
         "current": "Actual",
         "repo": "Repositorios",
         "systemPaths": "Rutas del sistema",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "Usado en otros lugares",
         "workspace": "Espacio de trabajo"
       },
       "tabs": {
@@ -2159,7 +2163,8 @@
       "repoTooltip": "Repo: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} repos: {{names}}",
       "branchTooltip": "Branch: {{branch}}",
-      "branchSwitching": " (cambiando...)"
+      "branchSwitching": " (cambiando...)",
+      "noRepo": "Sin repo"
     }
   },
   "globalToolbar": {
