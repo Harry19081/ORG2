@@ -1,5 +1,5 @@
-import { useSetAtom } from "jotai";
-import React, { useCallback, useMemo, useState } from "react";
+import { useAtom, useSetAtom } from "jotai";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { projectApi } from "@src/api/http/project";
@@ -20,6 +20,7 @@ import {
   collabMembersAtom,
   collabOrgsAtom,
 } from "@src/store/collaboration/collabOrgsAtom";
+import { collabPendingInviteAtom } from "@src/store/collaboration/collabPendingInviteAtom";
 import { parseCollabInviteInput } from "@src/store/collaboration/protocol";
 import { COLLAB_IDENTITY_KIND } from "@src/store/collaboration/types";
 import type {
@@ -145,6 +146,7 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
   const setCollabOrgs = useSetAtom(collabOrgsAtom);
   const setCollabMembers = useSetAtom(collabMembersAtom);
   const setCollabInvites = useSetAtom(collabInvitesAtom);
+  const [pendingInvite, setPendingInvite] = useAtom(collabPendingInviteAtom);
 
   const [source, setSource] = useState<CreateOrgSource | null>(null);
   const [mode, setMode] = useState<CreateCollabOrgMode>(CREATE_MODE);
@@ -159,6 +161,41 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Consume a deep-link invite (orgii://collaboration/join) once: open the
+  // form directly in Cloud + Join mode with the invite code (and hub, when the
+  // link embedded one) prefilled, then clear the pending atom so reopening the
+  // surface manually does not re-trigger a stale prefill.
+  useEffect(() => {
+    if (!pendingInvite) return;
+    setSource(CLOUD_SOURCE);
+    setMode(JOIN_MODE);
+    setInviteInput(pendingInvite.inviteCode);
+    if (pendingInvite.hubUrl) {
+      setHubUrl(pendingInvite.hubUrl);
+    }
+    setError(null);
+    setPendingInvite(null);
+  }, [pendingInvite, setPendingInvite]);
+
+  // When the invite input is itself a full orgii:// link carrying a hub, the
+  // user should not have to retype the Hub URL — auto-fill it (only while the
+  // field is empty so manual edits win).
+  const inviteHubUrl = useMemo(() => {
+    const trimmed = inviteInput.trim();
+    if (!trimmed) return undefined;
+    try {
+      return parseCollabInviteInput(trimmed).hubUrl;
+    } catch {
+      return undefined;
+    }
+  }, [inviteInput]);
+
+  useEffect(() => {
+    if (inviteHubUrl && !hubUrl.trim()) {
+      setHubUrl(inviteHubUrl);
+    }
+  }, [inviteHubUrl, hubUrl]);
 
   const sourceOptions = useMemo<SelectionGridOption<CreateOrgSource>[]>(
     () => [
@@ -205,10 +242,24 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
   const canSubmit = useMemo(() => {
     if (loading || source === null) return false;
     if (source === LOCAL_SOURCE) return Boolean(orgName.trim());
-    if (!hubUrl.trim() || !displayName.trim()) return false;
-    if (mode === CREATE_MODE) return Boolean(orgName.trim());
-    return Boolean(inviteInput.trim());
-  }, [displayName, hubUrl, inviteInput, loading, mode, orgName, source]);
+    if (!displayName.trim()) return false;
+    if (mode === CREATE_MODE) {
+      return Boolean(hubUrl.trim() && orgName.trim());
+    }
+    // JOIN: the hub can come from the typed field or be embedded in the
+    // invite link, so don't force the user to retype it.
+    if (!inviteInput.trim()) return false;
+    return Boolean(hubUrl.trim() || inviteHubUrl?.trim());
+  }, [
+    displayName,
+    hubUrl,
+    inviteHubUrl,
+    inviteInput,
+    loading,
+    mode,
+    orgName,
+    source,
+  ]);
 
   const handleCreated = useCallback(
     async (org: CollabOrgRecord, member: CollabMemberRecord) => {
