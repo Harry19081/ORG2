@@ -21,8 +21,6 @@ ORG-II explores a different model: agents as persistent, observable colleagues i
 
 https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a
 
-![ORGII desktop app demo preview](assets/demo-preview.jpg)
-
 ![ORGII GitHub browser demo](assets/github-browser-demo.png)
 
 ## Download
