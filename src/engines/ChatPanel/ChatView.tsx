@@ -49,6 +49,7 @@ import { createLogger } from "@src/hooks/logger";
 import { useSessionWorkspaceSync } from "@src/hooks/session/useSessionWorkspaceSync";
 import { activeSessionIdAtom } from "@src/store/session";
 import {
+  isSessionActiveAtom,
   sessionRuntimeStatusAtom,
   streamRetryStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
@@ -85,6 +86,10 @@ import { ChatHistoryOverrideContext } from "./ChatHistoryOverrideContext";
 import { ChatSessionContext } from "./ChatSessionContext";
 import AgentOrgOverviewPanel from "./InputArea/components/AgentOrgOverviewPanel";
 import GitDiffActionsMenu from "./InputArea/components/GitDiffActionsMenu";
+import {
+  buildCompactFilesReloadKey,
+  countChatRounds,
+} from "./InputArea/components/compactFileChangesHelpers";
 import { useAgentOrgIntervention } from "./InputArea/components/useAgentOrgIntervention";
 import { useAgentOrgMemberSessionJump } from "./InputArea/components/useAgentOrgMemberSessionJump";
 import { useAgentOrgRunView } from "./InputArea/components/useAgentOrgRunView";
@@ -251,6 +256,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       sessionId
     )?.current;
     const chatEvents = useAtomValue(chatEventsAtom);
+    const isAgentWorking = useAtomValue(isSessionActiveAtom);
     const [relatedCommitCount, setRelatedCommitCount] = useState(0);
 
     useEffect(() => {
@@ -566,6 +572,18 @@ const ChatView: React.FC<ChatViewProps> = memo(
       : agentOrgInteractionSessionId;
     const inputAreaSessionId = queueSessionId;
 
+    // Idle-reload signal for the composer "N Files Changed" pill. The pill's
+    // count comes from the per-session-cached orgtrack final diffs, so it must
+    // refetch when the session changes, a new round appears, or the agent goes
+    // idle — mirroring the per-round footer's `turnFilesReloadKey`. Counting
+    // user-message boundaries (not raw event length) keeps this stable during
+    // streaming so the backend isn't hammered mid-turn.
+    const composerFilesReloadKey = buildCompactFilesReloadKey(
+      inputAreaSessionId,
+      countChatRounds(chatEvents),
+      isAgentWorking
+    );
+
     return (
       <ChatSessionContext.Provider value={chatHistorySessionId}>
         <div
@@ -713,6 +731,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
               onToggleProcess={toggleProcess}
               onProcessVisibleCountChange={setProcessVisibleCount}
               onFileChangeStatsChange={setFileChangeStats}
+              filesReloadKey={composerFilesReloadKey}
               groupChatPendingMessage={groupChatPendingMessage}
               groupChatViewActive={groupChatViewActive}
               hasAnyInlineSection={hasAny}
