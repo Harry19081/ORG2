@@ -209,11 +209,18 @@ const AgentWizard: FC<AgentWizardProps> = ({ onSave, onCancel }) => {
                     }
                   >
                     <Select
-                      value={w.isCustomContextWindow ? "custom" : "auto"}
+                      value={w.contextWindowSelectValue}
                       options={w.contextWindowOptions}
-                      onChange={(val) =>
-                        w.setContextWindow(val === "auto" ? 0 : 128000)
-                      }
+                      onChange={(val) => {
+                        if (val === "auto") {
+                          w.setContextWindow(0);
+                        } else if (val === "custom") {
+                          w.setContextWindow(128000);
+                        } else {
+                          const n = Number(val);
+                          if (!Number.isNaN(n) && n > 0) w.setContextWindow(n);
+                        }
+                      }}
                       style={SECTION_CONTROL_STYLE}
                       dataTestId="agent-orgs-agent-wizard-context-window-select"
                     />
