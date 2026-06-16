@@ -28,6 +28,7 @@ export {
   isBrowserSnapshotResult,
   isErrorResult,
   parseAwaitListingResult,
+  parseManageLspResult,
   parseManageWorkspaceResult,
   parseProjectToolListResult,
   parseSearchFilesResult,

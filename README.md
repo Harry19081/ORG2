@@ -14,6 +14,7 @@ ORG-II explores a different model: agents as persistent, observable colleagues i
 - Cross-session memory, cross-agent knowledge sharing, and shared workspace state.
 - Resource-aware execution that can react to CPU, RAM, and human attention availability.
 - Agent-powered GUI end-to-end testing for supervised self-evolution.
+- Scheduling and auto-started sessions so agents can run overnight or continue work when you are away.
 - Org-level alignment surfaces (issues/projects management) for coordinating humans, agents, goals, and accountability (WIP).
 - Session collaboration and group issue workflows via self-hosted Supabase (WIP).
 
@@ -21,7 +22,11 @@ ORG-II explores a different model: agents as persistent, observable colleagues i
 
 https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a
 
+![ORGII desktop app demo preview](assets/demo-preview.jpg)
+
 ![ORGII GitHub browser demo](assets/github-browser-demo.png)
+
+![ORGII agent scheduling demo](assets/agent-scheduling-demo.png)
 
 ## Download
 

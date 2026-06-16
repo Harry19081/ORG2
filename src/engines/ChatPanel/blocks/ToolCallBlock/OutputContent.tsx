@@ -1,6 +1,7 @@
 import {
   Bot,
   CheckCircle,
+  Circle,
   Code2,
   Folder,
   LayoutList,
@@ -35,6 +36,7 @@ import {
 } from "./config";
 import type {
   BackgroundJobRow,
+  LspStatusOutputData,
   OutputContentProps,
   ProjectToolListRow,
   WorkspaceEntry,
@@ -209,6 +211,36 @@ const ProjectToolListOutput: React.FC<{ rows: ProjectToolListRow[] }> = ({
   />
 );
 
+const LspStatusOutput: React.FC<{ data: LspStatusOutputData }> = ({ data }) => (
+  <EventBlockExpandableStackList
+    layout="body"
+    items={data.rows}
+    renderItem={(row) => {
+      const isRunningRow = row.key === "running";
+      const running = data.running === true;
+      const leading = isRunningRow ? (
+        running ? (
+          <CheckCircle size={14} className="shrink-0 text-success-6" />
+        ) : (
+          <Circle size={14} className="shrink-0 text-text-4" />
+        )
+      ) : null;
+
+      return (
+        <ComposerStackListRow
+          title={`${row.label}: ${row.value}`}
+          leading={leading}
+          primary={row.label}
+          secondary={row.value}
+          variant="info"
+        />
+      );
+    }}
+    getKey={(row, index) => `${row.key}:${index}`}
+    visibleCount={VISIBLE_ITEMS}
+  />
+);
+
 const SearchFilesOutput: React.FC<{ files: string[]; repoPath?: string }> = ({
   files,
   repoPath,
@@ -274,6 +306,9 @@ const OutputContent: React.FC<OutputContentProps> = ({
     )}
     {styledOutput?.type === "projectToolList" && (
       <ProjectToolListOutput rows={styledOutput.rows} />
+    )}
+    {styledOutput?.type === "lspStatus" && (
+      <LspStatusOutput data={styledOutput.data} />
     )}
     {styledOutput?.type === "files" && (
       <SearchFilesOutput

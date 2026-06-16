@@ -49,6 +49,7 @@ import {
   parseAwaitListingResult,
   parseCommandResult,
   parseFileCardResult,
+  parseManageLspResult,
   parseManageWorkspaceResult,
   parseProjectCardResult,
   parseProjectToolListResult,
@@ -179,6 +180,10 @@ const ToolCallBlock: React.FC<ToolCallBlockProps> = React.memo(
           if (workspaces) return { type: "workspaces" as const, workspaces };
         }
       }
+      if (toolName === "manage_lsp" && hasResult) {
+        const data = parseManageLspResult(args, result);
+        if (data) return { type: "lspStatus" as const, data };
+      }
       if (
         toolName === "await_output" &&
         (args.command as string | undefined) === "list" &&
@@ -246,7 +251,7 @@ const ToolCallBlock: React.FC<ToolCallBlockProps> = React.memo(
       return null;
     }, [toolName, hasResult, result, args, isError]);
 
-    const hideRawArgs = hasStyledOutput(toolName);
+    const hideRawArgs = hasStyledOutput(toolName) || toolName === "manage_lsp";
 
     const outputPayloadRef = payloadRefs?.find(
       (ref) =>

@@ -26,8 +26,8 @@ const appCheckForUpdates = defineZodAction(
     examples: ["check for updates", "detect update", "update the app"],
   },
   async () => {
-    checkForUpdatesManually();
-    return { success: true, message: "Checking for updates" };
+    await checkForUpdatesManually();
+    return { success: true, message: "Checked for updates" };
   }
 );
 

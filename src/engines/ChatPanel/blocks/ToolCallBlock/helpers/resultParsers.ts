@@ -9,6 +9,7 @@ import {
 } from "../../../rendering/adapters/awaitMeta";
 import type {
   BackgroundJobRow,
+  LspStatusOutputData,
   ProjectToolListRow,
   WorkspaceEntry,
   WorkspaceInfoRow,
@@ -166,6 +167,64 @@ export function parseManageWorkspaceResult(
     const [name, ...pathParts] = rest.split("→");
     return { name: name.trim(), path: pathParts.join("→").trim(), kind };
   });
+}
+
+export function parseManageLspResult(
+  args: Record<string, unknown>,
+  result: Record<string, unknown>
+): LspStatusOutputData | null {
+  const action = typeof args.action === "string" ? args.action : "";
+  if (!action) return null;
+
+  const rows: LspStatusOutputData["rows"] = [];
+  const addRow = (key: string, label: string, value: unknown) => {
+    if (value === undefined || value === null || value === "") return;
+    rows.push({ key, label, value: String(value) });
+  };
+
+  addRow("action", "Action", action);
+  addRow("language", "Language", result.language ?? args.language);
+  addRow("running", "Running", result.running);
+  addRow("installed", "Installed", result.installed);
+  addRow("workspaceEnabled", "Workspace", result.workspaceEnabled);
+  addRow(
+    "path",
+    result.rootPath ? "Root" : "Workspace",
+    result.rootPath ??
+      result.workspacePath ??
+      args.root_path ??
+      args.workspace_path
+  );
+  addRow("command", "Command", result.command);
+
+  const nestedResult = result.result;
+  if (nestedResult && typeof nestedResult === "object") {
+    const command = (nestedResult as Record<string, unknown>).command;
+    addRow("installCommand", "Command", command);
+  }
+
+  if (typeof result.count === "number") {
+    addRow("count", "Count", result.count);
+  }
+
+  const runningServers = result.runningServers;
+  if (Array.isArray(runningServers)) {
+    addRow("servers", "Servers", runningServers.join(", "));
+  }
+
+  return rows.length > 1
+    ? {
+        language:
+          typeof result.language === "string"
+            ? result.language
+            : typeof args.language === "string"
+              ? args.language
+              : undefined,
+        running:
+          typeof result.running === "boolean" ? result.running : undefined,
+        rows,
+      }
+    : null;
 }
 
 export function parseProjectToolListResult(

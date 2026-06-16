@@ -82,6 +82,18 @@ export interface ProjectToolListRow {
   change?: ProjectToolRowChange;
 }
 
+export interface LspStatusRow {
+  key: string;
+  label: string;
+  value: string;
+}
+
+export interface LspStatusOutputData {
+  language?: string;
+  running?: boolean;
+  rows: LspStatusRow[];
+}
+
 // ============================================
 // Rich card output types
 // ============================================
@@ -218,6 +230,7 @@ export type StyledOutput =
   | { type: "workspaceInfo"; rows: WorkspaceInfoRow[] }
   | { type: "jobListing"; jobs: BackgroundJobRow[] }
   | { type: "projectToolList"; rows: ProjectToolListRow[] }
+  | { type: "lspStatus"; data: LspStatusOutputData }
   | { type: "files"; files: string[]; repoPath?: string }
   | { type: "noResult"; message: string }
   | { type: "fileCard"; card: FileCardData }
