@@ -159,7 +159,7 @@ export function useEditorExtensions(
       codeMirrorCspNonceExtension,
       panelsOverride,
       editorHistoryKeymapExtension(),
-      autocompletion(),
+      autocompletion({ icons: false }),
       themeExtension,
     ];
 
