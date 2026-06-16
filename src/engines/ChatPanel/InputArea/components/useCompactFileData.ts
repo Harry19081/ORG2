@@ -2,18 +2,26 @@ import { useEffect, useMemo, useState } from "react";
 
 import { getOrgtrackSessionFinalDiffs } from "@src/api/tauri/lineage";
 import { createLogger } from "@src/hooks/logger";
-import { getFileName } from "@src/util/file/pathUtils";
 
 import type {
   FileChangeInfo,
   FileChangesResult,
 } from "./compactFileChangesHelpers";
+import { mapFinalDiffToFileChangeInfo } from "./compactFileChangesHelpers";
 
 const logger = createLogger("CompactFileChanges");
 
 export interface UseCompactFileDataOptions {
   sessionId: string | null;
   initialData?: FileChangesResult;
+  /**
+   * Idle-reload signal. The orgtrack final diffs are cached per session in
+   * Rust, so without this the pill only refetches on session switch/remount
+   * and the count goes stale as the agent edits more files across rounds.
+   * Bumping this string (session changed / new round / agent idle) forces a
+   * fresh read without hammering the backend on every streamed tick.
+   */
+  reloadKey?: string;
 }
 
 export interface UseCompactFileDataReturn {
@@ -23,6 +31,7 @@ export interface UseCompactFileDataReturn {
 export function useCompactFileData({
   sessionId,
   initialData,
+  reloadKey,
 }: UseCompactFileDataOptions): UseCompactFileDataReturn {
   const [orgtrackFiles, setOrgtrackFiles] = useState<FileChangeInfo[]>([]);
 
@@ -35,16 +44,7 @@ export function useCompactFileData({
     void getOrgtrackSessionFinalDiffs({ sessionId })
       .then((finalDiffs) => {
         if (cancelled) return;
-        setOrgtrackFiles(
-          finalDiffs.map((finalDiff) => ({
-            path: finalDiff.filePath,
-            fileName: getFileName(finalDiff.filePath),
-            status: finalDiff.isDeleted ? "D" : "M",
-            additions: finalDiff.linesAdded,
-            deletions: finalDiff.linesRemoved,
-            lineCount: finalDiff.linesAdded + finalDiff.linesRemoved,
-          }))
-        );
+        setOrgtrackFiles(finalDiffs.map(mapFinalDiffToFileChangeInfo));
       })
       .catch((err: unknown) => {
         if (!cancelled) {
@@ -58,7 +58,8 @@ export function useCompactFileData({
     return () => {
       cancelled = true;
     };
-  }, [initialData, sessionId]);
+    // reloadKey already encodes sessionId; listed explicitly for clarity.
+  }, [initialData, sessionId, reloadKey]);
 
   const allFiles = useMemo(
     () => initialData?.files ?? (sessionId ? orgtrackFiles : []),

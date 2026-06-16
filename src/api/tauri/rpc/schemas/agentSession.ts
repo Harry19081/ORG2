@@ -74,6 +74,9 @@ export const SessionMetaSchema = z
     workspacePath: z.string().nullable().optional(),
     model: z.string().nullable().optional(),
     accountId: z.string().nullable().optional(),
+    orgId: z.string().nullable().optional(),
+    projectId: z.string().nullable().optional(),
+    projectName: z.string().nullable().optional(),
     workItemId: z.string().nullable().optional(),
     projectSlug: z.string().nullable().optional(),
     agentDefinitionId: z.string().nullable().optional(),
@@ -120,6 +123,7 @@ export const SaveSessionInput = z.object({
 
 export const LinkSessionToWorkItemInput = z.object({
   sessionId: z.string(),
+  orgId: z.string().optional(),
   projectSlug: z.string(),
   workItemId: z.string(),
   agentRole: z.string().optional(),
@@ -294,6 +298,12 @@ export const SessionLaunchResultSchema = z
     accountId: z.string().optional(),
     agentOrgId: z.string().optional(),
     agentOrgRunId: z.string().optional(),
+    orgId: z.string().optional(),
+    projectId: z.string().optional(),
+    projectName: z.string().optional(),
+    projectSlug: z.string().optional(),
+    workItemId: z.string().optional(),
+    agentRole: z.string().optional(),
     worktreePath: z.string().optional(),
   })
   .catchall(z.unknown());

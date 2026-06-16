@@ -48,6 +48,7 @@ pub(crate) struct AgentRunLaunchRequest {
     pub target: AgentRunTarget,
     pub resources: LaunchResourceSelection,
     pub workspace: WorkspaceLaunchTarget,
+    pub org_context: LaunchOrgContext,
     pub provenance: LaunchProvenance,
     pub mode: Option<String>,
     pub name: Option<String>,
@@ -68,6 +69,13 @@ pub(crate) enum AgentRunTarget {
         member_overrides: HashMap<String, OrgMemberLaunchOverride>,
         apply_member_overrides_for_future: bool,
     },
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct LaunchOrgContext {
+    pub org_id: String,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -131,6 +139,12 @@ pub(crate) struct AgentRunLaunchResult {
     pub worktree_path: Option<String>,
     pub agent_org_id: Option<String>,
     pub agent_org_run_id: Option<String>,
+    pub org_id: String,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
+    pub project_slug: Option<String>,
+    pub work_item_id: Option<String>,
+    pub agent_role: Option<String>,
 }
 
 async fn generate_title_before_first_turn(
@@ -261,6 +275,11 @@ pub async fn launch_agent_session(
                 native_harness_type: None,
             },
             workspace,
+            org_context: LaunchOrgContext {
+                org_id: project_management::projects::types::PERSONAL_ORG_ID.to_string(),
+                project_id: None,
+                project_name: None,
+            },
             provenance: LaunchProvenance::WorkItem {
                 project_slug: project_slug.to_string(),
                 work_item_id: work_item_id.to_string(),
@@ -393,6 +412,9 @@ pub(crate) async fn launch_rust_agent_run(
         request.resources.model.clone(),
         request.resources.account_id.clone(),
         Some(name.clone()),
+        Some(request.org_context.org_id.clone()),
+        request.org_context.project_id.clone(),
+        request.org_context.project_name.clone(),
         work_item_id.clone(),
         agent_role.clone(),
         existing_worktree_path.clone(),
@@ -611,6 +633,12 @@ pub(crate) async fn launch_rust_agent_run(
             worktree_path: existing_worktree_path,
             agent_org_id,
             agent_org_run_id,
+            org_id: request.org_context.org_id.clone(),
+            project_id: request.org_context.project_id.clone(),
+            project_name: request.org_context.project_name.clone(),
+            project_slug,
+            work_item_id,
+            agent_role,
         });
     }
 
@@ -721,5 +749,11 @@ pub(crate) async fn launch_rust_agent_run(
         worktree_path,
         agent_org_id,
         agent_org_run_id,
+        org_id: request.org_context.org_id,
+        project_id: request.org_context.project_id,
+        project_name: request.org_context.project_name,
+        project_slug,
+        work_item_id,
+        agent_role,
     })
 }

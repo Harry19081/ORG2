@@ -31,6 +31,10 @@ import TabPill from "@src/components/TabPill";
 import { SIMULATOR_PRIMARY_SIDEBAR } from "@src/config/simulatorPrimarySidebar";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { simulatorEventsAtom } from "@src/engines/SessionCore/derived/simulatorEvents";
+import {
+  parseUnifiedDiffToHunks,
+  parseUnifiedDiffToOldNew,
+} from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
 import type { SimulatorAppProps } from "@src/engines/Simulator/apps/core/types";
 import { useFileReviewBatchActions } from "@src/hooks/fileReview/useFileReview";
 import { createLogger } from "@src/hooks/logger";
@@ -43,6 +47,7 @@ import {
   NoTabsPlaceholder,
   SimulatorReplayChrome,
   WorkStationShell,
+  buildConsolidatedSessionReplayDiffSectionItems,
   buildPrimarySidebarConfig,
   buildSessionReplayDiffSectionItems,
   useSimulatorAwaitingAgentCaption,
@@ -59,6 +64,8 @@ import { reposAtom } from "@src/store/repo/atoms";
 import { sessionByIdAtom } from "@src/store/session";
 import {
   simulatorDiffCommitNavigationRequestAtom,
+  simulatorDiffRefreshNonceAtom,
+  simulatorDiffScopeRequestAtom,
   simulatorPrimarySidebarCollapsedAtom,
   simulatorPrimarySidebarPositionAtom,
   simulatorPrimarySidebarWidthAtom,
@@ -74,6 +81,11 @@ import {
   SubmissionPullRequestsContent,
   deriveSubmissionsData,
 } from "./SubmissionsContent";
+import {
+  filterDiffSectionsByScope,
+  isDiffScopeActive,
+  resolveScopedSelectedPath,
+} from "./diffScope";
 import type { DiffReplayTab } from "./types";
 import { useDiff } from "./useDiff";
 
@@ -97,10 +109,26 @@ function commitLinkToSubmissionCommit(
   };
 }
 
-function finalDiffToSection(
+/** Exported for unit testing. */
+export function finalDiffToSection(
   finalDiff: OrgtrackSessionFinalDiff
 ): DiffFileNavigationItem<DiffFileSectionData> {
   const isDeleted = Boolean(finalDiff.isDeleted);
+  const parsedDiff = finalDiff.diff
+    ? parseUnifiedDiffToOldNew(finalDiff.diff)
+    : undefined;
+  const hunks = finalDiff.diff
+    ? parseUnifiedDiffToHunks(finalDiff.diff)
+    : undefined;
+
+  const oldContent = finalDiff.oldContent ?? parsedDiff?.oldValue ?? "";
+  const newContent = isDeleted
+    ? ""
+    : (finalDiff.newContent ?? parsedDiff?.newValue ?? "");
+
+  const contentUnavailable =
+    !finalDiff.diff && !finalDiff.oldContent && !finalDiff.newContent;
+
   return {
     key: finalDiff.filePath,
     file: {
@@ -109,12 +137,12 @@ function finalDiffToSection(
       staged: false,
       additions: finalDiff.linesAdded,
       deletions: finalDiff.linesRemoved,
-      oldContent: finalDiff.oldContent ?? "",
-      newContent: finalDiff.newContent ?? "",
-      isUnavailable:
-        !finalDiff.diff && !finalDiff.oldContent && !finalDiff.newContent
-          ? true
-          : undefined,
+      oldContent: contentUnavailable ? undefined : oldContent,
+      newContent: contentUnavailable ? undefined : newContent,
+      oldStartLine: parsedDiff?.oldStartLine,
+      newStartLine: parsedDiff?.newStartLine,
+      isUnavailable: contentUnavailable || undefined,
+      hunks: isDeleted ? undefined : hunks,
     },
     entryIds: [finalDiff.recordId],
   };
@@ -203,22 +231,6 @@ function commitMatchesSubmission(
   );
 }
 
-function commitShaMatchesSubmission(
-  requestedSha: string,
-  submission: SubmissionCommit
-): boolean {
-  const sha = requestedSha.toLowerCase();
-  const submissionSha = submission.sha.toLowerCase();
-  const submissionShortSha = submission.short_sha.toLowerCase();
-  return (
-    submissionSha === sha ||
-    submissionSha.startsWith(sha) ||
-    sha.startsWith(submissionSha) ||
-    submissionShortSha === sha ||
-    sha.startsWith(submissionShortSha)
-  );
-}
-
 function mergeResolvedCommit(
   submission: SubmissionCommit,
   resolved: GitCommitInfo | undefined,
@@ -272,6 +284,7 @@ function collectSubmissionArtifacts(
         ...artifact,
         repoId: artifactRepoContext?.repoId,
         repoPath: artifactRepoContext?.repoPath,
+        eventId: event.id,
       }))
     );
   }
@@ -309,7 +322,11 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   const [diffCommitNavigationRequest, setDiffCommitNavigationRequest] = useAtom(
     simulatorDiffCommitNavigationRequestAtom
   );
-  const { displayEntry, selectedEntryId, selectEntry } = useDiff();
+  const diffScopeRequest = useAtomValue(simulatorDiffScopeRequestAtom);
+  // Bumped on every chat→Diff navigation; forces a fresh read of the canonical
+  // final diffs below so a just-edited file isn't shown with a stale diff.
+  const diffRefreshNonce = useAtomValue(simulatorDiffRefreshNonceAtom);
+  const { entries, displayEntry, selectedEntryId, selectEntry } = useDiff();
   const [orgtrackFinalDiffs, setOrgtrackFinalDiffs] = useState<
     OrgtrackSessionFinalDiff[]
   >([]);
@@ -378,13 +395,34 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [sessionId]);
+    // `diffRefreshNonce` re-runs this load on each chat→Diff navigation so the
+    // canonical final diffs reflect the latest working tree (not a stale cache).
+  }, [sessionId, diffRefreshNonce]);
 
   const canonicalFinalSections = useMemo(
     () => orgtrackFinalDiffs.map(finalDiffToSection),
     [orgtrackFinalDiffs]
   );
   const finalDiffCount = canonicalFinalSections.length;
+
+  const simulatorConsolidatedSections = useMemo(
+    () => buildConsolidatedSessionReplayDiffSectionItems(entries),
+    [entries]
+  );
+  const hasSimulatorDiffs = simulatorConsolidatedSections.length > 0;
+
+  // When the chat `TurnFilesFooter` requested a per-round scope (and it
+  // targets the session on screen), narrow the file list to that round's
+  // files; otherwise this is the whole-session diff exactly as before.
+  const baseSections =
+    finalDiffCount > 0 ? canonicalFinalSections : simulatorConsolidatedSections;
+
+  const sidebarItems = useMemo(
+    () => filterDiffSectionsByScope(baseSections, diffScopeRequest, sessionId),
+    [baseSections, diffScopeRequest, sessionId]
+  );
+
+  const consolidatedSections = sidebarItems;
 
   const primarySidebarCollapsed = useAtomValue(
     simulatorPrimarySidebarCollapsedAtom
@@ -554,10 +592,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   const [resolvedSubmissionCommits, setResolvedSubmissionCommits] = useState<
     SubmissionCommit[]
   >([]);
-  // Tracks which Orgtrack commit-link array the resolution ran against.
-  // Commit-card navigation must wait for git-history resolution: consuming
-  // the request against unresolved submissions would select a commit whose
-  // repo context may still be a wrong session-level fallback.
   const [resolvedForCommits, setResolvedForCommits] = useState<
     SubmissionCommit[] | null
   >(null);
@@ -682,10 +716,20 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     };
   }, [fallbackRepoContext, orgtrackSubmissionCommits, repos]);
 
-  const submissionCommits =
-    resolvedSubmissionCommits.length > 0
+  const submissionCommits = useMemo(() => {
+    if (submissionsResolved) {
+      return resolvedSubmissionCommits.filter(
+        (commit) => commit.author !== null
+      );
+    }
+    return resolvedSubmissionCommits.length > 0
       ? resolvedSubmissionCommits
       : orgtrackSubmissionCommits;
+  }, [
+    resolvedSubmissionCommits,
+    orgtrackSubmissionCommits,
+    submissionsResolved,
+  ]);
   const hasSubmissions =
     submissionCommits.length > 0 || submissionsData.pullRequests.length > 0;
 
@@ -726,10 +770,8 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   usePublishWorkstationTabHeader({
     host: "simulator",
     content: diffHeaderContent,
-    enabled: finalDiffCount > 0 || hasSubmissions,
+    enabled: finalDiffCount > 0 || hasSimulatorDiffs || hasSubmissions,
   });
-
-  const sidebarItems = canonicalFinalSections;
 
   const handleSubmissionCommitSelect = useCallback(
     (commit: SubmissionCommit) => {
@@ -759,7 +801,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
 
   useEffect(() => {
     if (!diffCommitNavigationRequest?.commitSha) return;
-    if (!submissionsResolved) return;
     if (
       diffCommitNavigationRequest.sessionId &&
       sessionId &&
@@ -768,30 +809,95 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       return;
     }
 
-    const matchingCommit = submissionCommits.find((commit) =>
-      commitShaMatchesSubmission(diffCommitNavigationRequest.commitSha, commit)
-    );
-    if (!matchingCommit) return;
-
+    const requestedSha = diffCommitNavigationRequest.commitSha;
     let cancelled = false;
-    queueMicrotask(() => {
-      if (cancelled) return;
-      setActiveTab("submissions");
-      handleSubmissionCommitSelect(matchingCommit);
-      setDiffCommitNavigationRequest(null);
-    });
+
+    // A commit reached via a chat-message reference card may not exist in
+    // any submission list (those only carry commits this session actually
+    // produced). Resolve the SHA directly against every registered repo's
+    // git history so the diff renders regardless of where it was committed.
+    const candidateContexts: SubmissionRepoContext[] = [];
+    const seenKeys = new Set<string>();
+    const pushCandidate = (context: SubmissionRepoContext) => {
+      const key = getRepoContextKey(context);
+      if (!key || seenKeys.has(key)) return;
+      seenKeys.add(key);
+      candidateContexts.push(context);
+    };
+    pushCandidate(fallbackRepoContext);
+    for (const repo of repos) {
+      const path = repo.fs_uri ?? repo.path;
+      if (path) pushCandidate({ repoId: repo.id, repoPath: path });
+    }
+
+    async function resolveAndSelect() {
+      for (const context of candidateContexts) {
+        if (cancelled) return;
+        const contextKey = getRepoContextKey(context);
+        if (!contextKey) continue;
+        const result = await getGitCommits({
+          repo_id: context.repoId ?? context.repoPath ?? "",
+          repo_path: context.repoPath,
+          limit: SUBMISSION_COMMIT_RESOLVE_LIMIT,
+        });
+        const match = (result?.commits ?? []).find(
+          (candidate) =>
+            candidate.sha
+              .toLowerCase()
+              .startsWith(requestedSha.toLowerCase()) ||
+            candidate.short_sha.toLowerCase() === requestedSha.toLowerCase()
+        );
+        if (match) {
+          if (cancelled) return;
+          setActiveTab("submissions");
+          handleSubmissionCommitSelect({
+            sha: match.sha,
+            short_sha: match.short_sha,
+            summary: match.summary,
+            author: match.author,
+            repoId: context.repoId,
+            repoPath: context.repoPath,
+          });
+          setDiffCommitNavigationRequest(null);
+          return;
+        }
+      }
+      // Not found anywhere — clear the request so it doesn't retry forever.
+      if (!cancelled) setDiffCommitNavigationRequest(null);
+    }
+
+    void resolveAndSelect();
 
     return () => {
       cancelled = true;
     };
   }, [
     diffCommitNavigationRequest,
+    fallbackRepoContext,
     handleSubmissionCommitSelect,
+    repos,
     sessionId,
     setDiffCommitNavigationRequest,
-    submissionCommits,
-    submissionsResolved,
   ]);
+
+  // Per-round scope from the chat `TurnFilesFooter`. When a new scope arrives
+  // for this session, drop into the all-changes diff view (the only mode that
+  // renders the filtered consolidated list) and scroll to the clicked row, if
+  // any. `nonce` is part of the dep set so re-clicking the same file refocuses.
+  useEffect(() => {
+    if (!isDiffScopeActive(diffScopeRequest, sessionId)) return;
+    setActiveTab("diff");
+    setPillMode("all-changes");
+    setHistorySelection(null);
+    setHistoryRepoContext(null);
+    const selected = resolveScopedSelectedPath(diffScopeRequest, sessionId);
+    if (selected) {
+      setFocusedDiffPath(selected);
+      setFocusedDiffNonce((prev) => prev + 1);
+    } else {
+      setFocusedDiffPath(null);
+    }
+  }, [diffScopeRequest, sessionId]);
 
   const handleSidebarItemSelect = useCallback(
     (item: DiffFileNavigationItem<DiffFileSectionData>) => {
@@ -882,8 +988,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       handlePrimarySidebarWidthChange,
     ]
   );
-
-  const consolidatedSections = canonicalFinalSections;
 
   const focusedSections = useMemo(
     () =>
@@ -1053,7 +1157,20 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     t,
   ]);
 
-  if (finalDiffCount === 0 && !hasSubmissions) {
+  // A commit-detail selection (or a pending navigation request from a chat
+  // reference card) must keep the replay shell mounted even when the session
+  // itself produced no diffs/submissions — otherwise the navigated commit's
+  // detail panel never gets a chance to render.
+  const hasActiveCommitDetail =
+    historySelection?.type === "commit" ||
+    Boolean(diffCommitNavigationRequest?.commitSha);
+
+  if (
+    finalDiffCount === 0 &&
+    !hasSimulatorDiffs &&
+    !hasSubmissions &&
+    !hasActiveCommitDetail
+  ) {
     return (
       <SimulatorReplayChrome
         tabs={tabs}

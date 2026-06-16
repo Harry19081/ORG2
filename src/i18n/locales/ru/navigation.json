@@ -381,8 +381,9 @@
     "joinOrg": "Присоединиться",
     "orgSource": "Источник организации",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "URL хаба Cloudflare",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "URL проекта Supabase",
+    "supabaseAnonKey": "Anon-ключ Supabase",
     "orgName": "Название ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Ссылка или код приглашения",
@@ -396,13 +397,22 @@
     "copyInvite": "Копировать приглашение",
     "copiedInvite": "Скопировано",
     "setupMode": "Режим настройки",
-    "hubSetupTitle": "Как настроить URL хаба Cloudflare",
+    "supabaseSetupTitle": "Как настроить Supabase Sync",
+    "verifySupabaseSetup": "Проверить настройку",
+    "copySetupSql": "Копировать SQL настройки",
+    "copiedSetupSql": "SQL скопирован",
+    "openSupabaseSqlEditor": "Открыть Supabase SQL Editor",
+    "supabaseSetupVerified": "Настройка Supabase проверена",
+    "supabaseSetupMissing": "Настройка Supabase отсутствует. Скопируйте SQL, выполните его в Supabase SQL Editor и проверьте снова.",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG не найдена",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "Проект",
       "sessions": "Sessions",
       "members": "Участники",
-      "chat": "Групповой чат"
+      "chat": "Групповой чат",
+      "settings": "Настройки"
     },
     "stats": {
       "members": "Участники",
@@ -423,6 +433,20 @@
       "humanOnly": "Только человеческие идентичности могут писать в групповой чат.",
       "hint": "Люди могут общаться здесь и делиться ссылками с ORG."
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "Отслеживайте work items ORG в единой local/cloud структуре.",
+      "empty": "В этой ORG пока нет work items.",
+      "count": "{{count}} элементов",
+      "unassigned": "Не назначено"
+    },
+    "projects": {
+      "title": "Проект",
+      "description": "Просматривайте проекты, связанные с этой ORG.",
+      "empty": "В этой ORG пока нет проектов.",
+      "count": "{{count}} проектов",
+      "noDescription": "Нет описания"
+    },
     "sessionStatusActive": "Активно",
     "localHuman": "Локальный человек",
     "backToOrg": "Назад к ORG",
@@ -431,8 +455,38 @@
       "description": "Создайте ссылку-приглашение, чтобы teammates могли присоединиться к этой ORG. Последняя ссылка показана здесь для быстрого копирования.",
       "adminOnly": "Только администраторы ORG могут создавать ссылки-приглашения.",
       "create": "Создать приглашение",
-      "createNew": "Новое приглашение"
+      "createNew": "Новое приглашение",
+      "remainingUses": "Осталось использований: {{count}}",
+      "expires": "Истекает {{date}}"
     },
-    "orgDashboard": "Панель"
+    "orgDashboard": "Панель",
+    "access": {
+      "title": "Доступ к сессиям",
+      "description": "Выберите, что teammates могут видеть из ваших локальных sessions в этом ORG.",
+      "modes": {
+        "off": {
+          "title": "Выкл.",
+          "description": "Не делиться карточками sessions или replay-данными."
+        },
+        "metadata_only": {
+          "title": "Только карточки sessions",
+          "description": "Делиться только названиями, владельцами, ветками и workspaces."
+        },
+        "full_replay": {
+          "title": "Полный replay",
+          "description": "Разрешить teammates запрашивать полный snapshot событий."
+        }
+      },
+      "workspaces": "Разрешенные Workspaces",
+      "workspacesHint": "Выберите пути workspace, которые можно делиться. Ничего не делится, пока не выбран хотя бы один.",
+      "noWorkspaces": "Локальные session workspaces пока не найдены.",
+      "fullReplayWarning": "Полный replay может включать prompts, outputs, tool calls и пути файлов. Включайте только для доверенных ORGs.",
+      "metadataOnlyBadge": "Только метаданные",
+      "metadataOnlyDenied": "Эта session делится только метаданными. Полный replay недоступен.",
+      "requestPending": "Запрашиваем session replay у владельца..."
+    },
+    "members": {
+      "remove": "Удалить"
+    }
   }
 }

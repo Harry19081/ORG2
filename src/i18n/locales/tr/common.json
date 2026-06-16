@@ -202,7 +202,8 @@
     "addWorkspace": "Workspace ekle",
     "skipThisVersion": "Bu sürümü atla",
     "later": "Daha sonra",
-    "updateAiBlame": "AI Blame'i güncelle"
+    "updateAiBlame": "AI Blame'i güncelle",
+    "link": "Bağla"
   },
   "refreshToast": {
     "successName": "{{name}} yenilendi",

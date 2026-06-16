@@ -202,7 +202,8 @@
     "addWorkspace": "Workspace 추가",
     "skipThisVersion": "이 버전 건너뛰기",
     "later": "나중에",
-    "updateAiBlame": "AI Blame 업데이트"
+    "updateAiBlame": "AI Blame 업데이트",
+    "link": "연결"
   },
   "refreshToast": {
     "successName": "{{name}} 새로고침됨",

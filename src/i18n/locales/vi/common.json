@@ -202,7 +202,8 @@
     "addWorkspace": "Thêm Workspace",
     "skipThisVersion": "Bỏ qua phiên bản này",
     "later": "Để sau",
-    "updateAiBlame": "Cập nhật AI Blame"
+    "updateAiBlame": "Cập nhật AI Blame",
+    "link": "Liên kết"
   },
   "refreshToast": {
     "successName": "Đã làm mới {{name}}",

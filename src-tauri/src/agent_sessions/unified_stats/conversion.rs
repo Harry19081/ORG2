@@ -11,10 +11,29 @@ use agent_core::session::persistence as session_persistence;
 use super::display::generate_display_label;
 use super::status::is_active_status;
 use super::types::{SessionAggregateRecord, SessionCategory};
+use crate::orgtrack::impact_indexer::get_session_impact;
 
 pub struct AgentMetadataResolver {
     store: std::sync::Arc<agent_core::definitions::AgentDefinitionsStore>,
     warned_definition_ids: HashSet<String>,
+}
+
+fn native_impact_fields(
+    session_id: &str,
+) -> (Option<i64>, Option<i64>, Option<i64>, Option<Vec<String>>) {
+    match get_session_impact(session_id) {
+        Ok(Some(impact)) => (
+            Some(impact.files_changed),
+            Some(impact.lines_added),
+            Some(impact.lines_removed),
+            Some(impact.touched_files),
+        ),
+        Ok(None) => (None, None, None, None),
+        Err(err) => {
+            tracing::debug!(session_id = %session_id, error = %err, "[unified_stats] source impact unavailable");
+            (None, None, None, None)
+        }
+    }
 }
 
 impl AgentMetadataResolver {
@@ -100,6 +119,12 @@ pub fn cli_session_to_aggregate_record(
         base_branch: session.base_branch,
         merge_status: session.merge_status,
         background: session.background,
+        org_id: Some(session.org_id),
+        project_id: session.project_id,
+        project_name: session.project_name,
+        project_slug: session.project_slug,
+        work_item_id: session.work_item_id,
+        agent_role: session.agent_role,
         is_active,
         display_label,
         parent_session_id: None,
@@ -113,6 +138,10 @@ pub fn cli_session_to_aggregate_record(
         draft_text: session.draft_text,
         reply_target_event_id: session.reply_target_event_id,
         pinned: false,
+        files_changed: None,
+        lines_added: None,
+        lines_removed: None,
+        touched_files: None,
         source_session_id: None,
         share_id: None,
         source_category: None,
@@ -144,6 +173,8 @@ pub fn sde_session_to_aggregate_record(
     let display_label = generate_display_label(&session.name, session.user_input.as_deref());
     let (agent_definition_id, agent_icon_id, agent_display_name) =
         metadata_resolver.resolve(&session.session_id, session.agent_definition_id.as_deref());
+    let (files_changed, lines_added, lines_removed, touched_files) =
+        native_impact_fields(&session.session_id);
     SessionAggregateRecord {
         session_id: session.session_id,
         name: session.name,
@@ -167,6 +198,12 @@ pub fn sde_session_to_aggregate_record(
         base_branch: session.base_branch,
         merge_status: session.merge_status,
         background: false,
+        org_id: session.org_id,
+        project_id: session.project_id,
+        project_name: session.project_name,
+        project_slug: session.project_slug,
+        work_item_id: session.work_item_id,
+        agent_role: session.agent_role,
         is_active,
         display_label,
         parent_session_id: session.parent_session_id,
@@ -180,6 +217,10 @@ pub fn sde_session_to_aggregate_record(
         draft_text: session.draft_text,
         reply_target_event_id: session.reply_target_event_id,
         pinned: session.pinned,
+        files_changed,
+        lines_added,
+        lines_removed,
+        touched_files,
         source_session_id: None,
         share_id: None,
         source_category: None,
@@ -204,6 +245,8 @@ pub fn os_session_to_aggregate_record(
     let display_label = generate_display_label(&session.name, session.user_input.as_deref());
     let (agent_definition_id, agent_icon_id, agent_display_name) =
         metadata_resolver.resolve(&session.session_id, session.agent_definition_id.as_deref());
+    let (files_changed, lines_added, lines_removed, touched_files) =
+        native_impact_fields(&session.session_id);
     SessionAggregateRecord {
         session_id: session.session_id,
         name: session.name,
@@ -227,6 +270,12 @@ pub fn os_session_to_aggregate_record(
         base_branch: None,
         merge_status: None,
         background: false,
+        org_id: session.org_id,
+        project_id: session.project_id,
+        project_name: session.project_name,
+        project_slug: session.project_slug,
+        work_item_id: session.work_item_id,
+        agent_role: session.agent_role,
         is_active,
         display_label,
         parent_session_id: session.parent_session_id,
@@ -240,6 +289,10 @@ pub fn os_session_to_aggregate_record(
         draft_text: session.draft_text,
         reply_target_event_id: session.reply_target_event_id,
         pinned: session.pinned,
+        files_changed,
+        lines_added,
+        lines_removed,
+        touched_files,
         source_session_id: None,
         share_id: None,
         source_category: None,

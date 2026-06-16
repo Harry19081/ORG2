@@ -63,7 +63,7 @@
     },
     "deep-link": {
       "desktop": {
-        "schemes": ["yorgai"]
+        "schemes": ["yorgai", "orgii"]
       }
     },
     "updater": {

@@ -69,10 +69,18 @@ export interface Session {
   mergeStatus?: MergeStatus;
   /** Whether this session was launched in background ("fire and forget") mode */
   background?: boolean;
+  /** Owning project/collaboration org ID for this session. */
+  orgId?: string;
+  /** Linked project ID, when the session is scoped below an org. */
+  projectId?: string;
+  /** Linked project display name, when available from launch/readback context. */
+  projectName?: string;
+  /** Linked project slug, when the session is scoped below a project/work item. */
+  projectSlug?: string;
   /** Linked work item short ID (e.g. "PROJ-0042") */
   workItemId?: string;
   /** Agent role in the work item lifecycle */
-  agentRole?: AgentRole;
+  agentRole?: AgentRole | string;
   /** Parent/root session id for child sessions such as Agent Org member sessions. */
   parentSessionId?: string;
   /** Agent Org roster member id for org member session rows. */
@@ -117,12 +125,14 @@ export interface Session {
   pinned?: boolean;
   created_time?: string;
   updated_time?: string;
-  /** Deprecated source-cache stat. Do not use for canonical AI Blame/final impact; use Orgtrack summaries. */
+  /** Source-cache impact stat for external and Rust-native sessions. */
   filesChanged?: number;
-  /** Deprecated source-cache stat. Do not use for canonical AI Blame/final impact; use Orgtrack summaries. */
+  /** Source-cache impact stat for external and Rust-native sessions. */
   linesAdded?: number;
-  /** Deprecated source-cache stat. Do not use for canonical AI Blame/final impact; use Orgtrack summaries. */
+  /** Source-cache impact stat for external and Rust-native sessions. */
   linesRemoved?: number;
+  /** Source-cache touched file list for external and Rust-native sessions. */
+  touchedFiles?: string[];
 }
 
 // ============================================

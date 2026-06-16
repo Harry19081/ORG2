@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use super::config::{LabelsFile, MembersFile};
 use super::orchestrator::AgentDefaults;
 
+pub const PERSONAL_ORG_ID: &str = "personal-org";
+
 // ============================================
 // Project
 // ============================================
@@ -71,6 +73,7 @@ pub struct ProjectOrg {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateProjectOrgRequest {
     pub name: String,
+    pub id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -145,7 +148,7 @@ pub struct SyncProjectOrgGitFolderResult {
 }
 
 fn default_org_id() -> String {
-    "personal-org".to_string()
+    PERSONAL_ORG_ID.to_string()
 }
 
 fn default_priority() -> String {

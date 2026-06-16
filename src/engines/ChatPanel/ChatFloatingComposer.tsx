@@ -83,6 +83,8 @@ interface ChatFloatingComposerProps {
   onToggleProcess: () => void;
   onProcessVisibleCountChange: (count: number) => void;
   onFileChangeStatsChange: (stats: FileChangeVisibleStats) => void;
+  /** Idle-reload signal for the files pill (session/round/idle transitions). */
+  filesReloadKey: string;
   groupChatPendingMessage: GroupChatPendingMessageView | null;
   groupChatViewActive: boolean;
   hasAnyInlineSection: boolean;
@@ -129,6 +131,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     onToggleProcess,
     onProcessVisibleCountChange,
     onFileChangeStatsChange,
+    filesReloadKey,
     groupChatPendingMessage,
     groupChatViewActive,
     hasAnyInlineSection,
@@ -237,6 +240,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
           <CompactFileChanges
             key={`files-tracker-${inputAreaSessionId}`}
             sessionIdOverride={inputAreaSessionId}
+            reloadKey={filesReloadKey}
             onVisibleStatsChange={onFileChangeStatsChange}
           />
 

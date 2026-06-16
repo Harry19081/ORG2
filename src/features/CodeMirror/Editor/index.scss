@@ -155,6 +155,11 @@
     .cm-tooltip-autocomplete {
       border-radius: var(--cm-border-radius, 4px);
       box-shadow: var(--cm-tooltip-shadow);
+
+      // Hide the completion icon column (including CSS color swatches)
+      .cm-completionIcon {
+        display: none;
+      }
     }
 
     // Search panel

@@ -202,7 +202,8 @@
     "addWorkspace": "Workspace を追加",
     "skipThisVersion": "このバージョンをスキップ",
     "later": "後で",
-    "updateAiBlame": "AI Blame を更新"
+    "updateAiBlame": "AI Blame を更新",
+    "link": "リンク"
   },
   "refreshToast": {
     "successName": "{{name}} を更新しました",

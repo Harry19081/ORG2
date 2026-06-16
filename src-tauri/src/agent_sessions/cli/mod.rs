@@ -51,6 +51,12 @@ pub fn init_cli_agent_tables(conn: &Connection) -> SqliteResult<()> {
             cli_session_id TEXT,
             parent_session_id TEXT,
             org_member_id TEXT,
+            org_id TEXT NOT NULL DEFAULT 'personal-org',
+            project_id TEXT,
+            project_name TEXT,
+            project_slug TEXT,
+            work_item_id TEXT,
+            agent_role TEXT,
             created_at     TEXT NOT NULL,
             updated_at     TEXT NOT NULL
         );
@@ -105,6 +111,21 @@ pub fn init_cli_agent_tables(conn: &Connection) -> SqliteResult<()> {
             ON code_sessions(parent_session_id, org_member_id)",
         [],
     )?;
+    conn.execute(
+        "ALTER TABLE code_sessions ADD COLUMN org_id TEXT NOT NULL DEFAULT 'personal-org'",
+        [],
+    )
+    .ok();
+    conn.execute("ALTER TABLE code_sessions ADD COLUMN project_id TEXT", [])
+        .ok();
+    conn.execute("ALTER TABLE code_sessions ADD COLUMN project_name TEXT", [])
+        .ok();
+    conn.execute("ALTER TABLE code_sessions ADD COLUMN project_slug TEXT", [])
+        .ok();
+    conn.execute("ALTER TABLE code_sessions ADD COLUMN work_item_id TEXT", [])
+        .ok();
+    conn.execute("ALTER TABLE code_sessions ADD COLUMN agent_role TEXT", [])
+        .ok();
 
     // Schema update: add hosted_token column for proxy token release on session cleanup
     conn.execute("ALTER TABLE code_sessions ADD COLUMN hosted_token TEXT", [])

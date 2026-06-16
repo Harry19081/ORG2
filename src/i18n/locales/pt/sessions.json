@@ -136,6 +136,10 @@
     },
     "sidebar": {
       "agentTypes": "Tipos de Agent",
+      "manageItems": "Gerenciar itens",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "Visualizações",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "Remover rascunho"
@@ -197,10 +201,6 @@
       "activeSessions": "Sessions ativas",
       "completedSessions": "Concluídas",
       "timeline": "Linha do tempo de eventos",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "emptyTitle": "Nenhum evento no diário",
       "emptySubtitle": "A atividade do Agent deste dia aparecerá aqui.",

@@ -153,19 +153,6 @@ agent_sessions::cli::platform_adapters::kiro::kiro_auth::create_kiro_auth_webvie
 agent_sessions::cli::platform_adapters::kiro::kiro_auth::close_kiro_auth_webview,
 // Kiro ACP session listing
 agent_sessions::cli::parsers::kiro::list_kiro_sessions_cmd,
-// Auth0 commands (bypass CORS for token exchange)
-integrations::auth::auth0_exchange_code,
-integrations::auth::auth0_refresh_token,
-integrations::auth::auth0_exchange_and_store,
-integrations::auth::auth0_refresh_and_store,
-integrations::auth::auth0_revoke_token,
-// Secure token storage (local file)
-integrations::auth::secure_store_tokens,
-integrations::auth::secure_get_auth_state,
-integrations::auth::secure_get_access_token,
-integrations::auth::secure_get_refresh_token,
-integrations::auth::secure_is_token_expiring,
-integrations::auth::secure_clear_tokens,
 // GitHub local API commands
 integrations::github::commands::github_list_repos,
 integrations::github::commands::github_search_repos,
@@ -325,6 +312,10 @@ orgtrack::orgtrack_get_session_edit_artifacts,
 orgtrack::orgtrack_get_session_diff_chunks,
 orgtrack::orgtrack_get_session_final_diffs,
 orgtrack::orgtrack_get_session_commit_links,
+// Debug-only: WDIO Submissions-tab commit-link seeding (Err outside debug builds)
+orgtrack::debug_seed_commit_link,
+// Debug-only: WDIO Diff-tab-content final-diff seeding (Err outside debug builds)
+orgtrack::debug_seed_final_diff,
 orgtrack::orgtrack_get_session_checkpoints,
 orgtrack::orgtrack_get_checkpoint_file_states,
 // Per-round token usage
@@ -1180,3 +1171,5 @@ agent_core::state::commands::session::wingman_open_window,
 agent_core::state::commands::session::wingman_close_windows,
 agent_core::state::commands::session::wingman_toggle_panel,
 agent_core::state::commands::session::wingman_list_monitors,
+// Model capability resolution (context window lookup from FAMILY_RULES)
+agent_core::core::providers::model_capabilities::resolve_model_context_k,

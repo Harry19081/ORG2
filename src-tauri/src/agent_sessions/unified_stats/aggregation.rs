@@ -178,6 +178,18 @@ fn apply_filters(
         });
     }
 
+    if let Some(ref org_id) = filter.org_id {
+        sessions.retain(|session| session.org_id.as_deref() == Some(org_id.as_str()));
+    }
+
+    if let Some(ref project_slug) = filter.project_slug {
+        sessions.retain(|session| session.project_slug.as_deref() == Some(project_slug.as_str()));
+    }
+
+    if let Some(ref work_item_id) = filter.work_item_id {
+        sessions.retain(|session| session.work_item_id.as_deref() == Some(work_item_id.as_str()));
+    }
+
     // Text search filter
     if let Some(ref query) = filter.text_query {
         if !query.trim().is_empty() {
@@ -384,6 +396,10 @@ mod tests {
             draft_text: None,
             reply_target_event_id: None,
             pinned: false,
+            files_changed: None,
+            lines_added: None,
+            lines_removed: None,
+            touched_files: None,
             source_session_id: None,
             share_id: None,
             source_category: None,

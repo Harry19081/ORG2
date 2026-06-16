@@ -205,6 +205,7 @@ pub async fn agent_save_session(session: serde_json::Value) -> Result<(), String
 pub async fn agent_link_session_to_work_item(
     app: tauri::AppHandle,
     session_id: String,
+    org_id: Option<String>,
     project_slug: String,
     work_item_id: String,
     agent_role: Option<String>,
@@ -212,6 +213,7 @@ pub async fn agent_link_session_to_work_item(
     let updated_record = tokio::task::spawn_blocking(move || {
         link_session_to_work_item_sync(
             &session_id,
+            org_id.as_deref(),
             &project_slug,
             &work_item_id,
             agent_role.as_deref(),
@@ -234,6 +236,7 @@ pub async fn agent_link_session_to_work_item(
 
 fn link_session_to_work_item_sync(
     session_id: &str,
+    org_id: Option<&str>,
     project_slug: &str,
     work_item_id: &str,
     agent_role: Option<&str>,
@@ -241,6 +244,17 @@ fn link_session_to_work_item_sync(
     let session = session_persistence::get_session(session_id)
         .map_err(|err| err.to_string())?
         .ok_or_else(|| format!("Session not found: {session_id}"))?;
+
+    let project = project_management::projects::io::read_project(project_slug)
+        .map_err(|err| format!("Failed to read project {project_slug}: {err}"))?;
+    if let Some(supplied_org_id) = org_id {
+        if supplied_org_id != project.meta.org_id {
+            return Err(format!(
+                "Project {project_slug} belongs to org {}, not {}",
+                project.meta.org_id, supplied_org_id
+            ));
+        }
+    }
 
     if session.project_slug.as_deref() != Some(project_slug)
         || session.work_item_id.as_deref() != Some(work_item_id)
@@ -259,8 +273,16 @@ fn link_session_to_work_item_sync(
         }
     }
 
-    session_persistence::update_work_item_link(session_id, project_slug, work_item_id, agent_role)
-        .map_err(|err| err.to_string())?
+    session_persistence::update_work_item_link(
+        session_id,
+        &project.meta.org_id,
+        Some(&project.meta.id),
+        Some(&project.meta.name),
+        project_slug,
+        work_item_id,
+        agent_role,
+    )
+    .map_err(|err| err.to_string())?
         .then_some(())
         .ok_or_else(|| format!("Session not found: {session_id}"))?;
 

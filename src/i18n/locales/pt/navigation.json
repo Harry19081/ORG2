@@ -383,8 +383,9 @@
     "joinOrg": "Entrar",
     "orgSource": "Origem da organização",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "URL do hub Cloudflare",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "URL do projeto Supabase",
+    "supabaseAnonKey": "Chave anon do Supabase",
     "orgName": "Nome da ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Link ou código de convite",
@@ -398,13 +399,22 @@
     "copyInvite": "Copiar convite",
     "copiedInvite": "Copiado",
     "setupMode": "Modo de configuração",
-    "hubSetupTitle": "Como configurar a URL do hub Cloudflare",
+    "supabaseSetupTitle": "Como configurar Supabase Sync",
+    "verifySupabaseSetup": "Verificar configuração",
+    "copySetupSql": "Copiar SQL de configuração",
+    "copiedSetupSql": "SQL copiado",
+    "openSupabaseSqlEditor": "Abrir Supabase SQL Editor",
+    "supabaseSetupVerified": "Configuração do Supabase verificada",
+    "supabaseSetupMissing": "A configuração do Supabase está ausente. Copie o SQL, execute no Supabase SQL Editor e verifique novamente.",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG não encontrada",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "Projeto",
       "sessions": "Sessions",
       "members": "Membros",
-      "chat": "Chat em grupo"
+      "chat": "Chat em grupo",
+      "settings": "Configurações"
     },
     "stats": {
       "members": "Membros",
@@ -425,6 +435,20 @@
       "humanOnly": "Somente identidades humanas podem postar no chat em grupo.",
       "hint": "Humanos podem conversar aqui e compartilhar links com a ORG."
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "Acompanhe os work items da ORG com a mesma estrutura local/cloud.",
+      "empty": "Ainda não há work items nesta ORG.",
+      "count": "{{count}} itens",
+      "unassigned": "Não atribuído"
+    },
+    "projects": {
+      "title": "Projeto",
+      "description": "Revise os projetos associados a esta ORG.",
+      "empty": "Ainda não há projetos nesta ORG.",
+      "count": "{{count}} projetos",
+      "noDescription": "Sem descrição"
+    },
     "sessionStatusActive": "Ativo",
     "localHuman": "Humano local",
     "backToOrg": "Voltar para a ORG",
@@ -433,8 +457,38 @@
       "description": "Crie um link de convite para colegas entrarem nesta ORG. O link mais recente aparece aqui para copiar rapidamente.",
       "adminOnly": "Somente administradores da ORG podem criar links de convite.",
       "create": "Criar convite",
-      "createNew": "Novo convite"
+      "createNew": "Novo convite",
+      "remainingUses": "{{count}} usos restantes",
+      "expires": "Expira em {{date}}"
     },
-    "orgDashboard": "Painel"
+    "orgDashboard": "Painel",
+    "access": {
+      "title": "Acesso a sessões",
+      "description": "Escolha o que colegas podem ver das suas sessões locais neste ORG.",
+      "modes": {
+        "off": {
+          "title": "Desativado",
+          "description": "Não compartilhar cartões de sessão nem dados de replay."
+        },
+        "metadata_only": {
+          "title": "Somente cartões de sessão",
+          "description": "Compartilhar apenas títulos, proprietários, branches e workspaces."
+        },
+        "full_replay": {
+          "title": "Replay completo",
+          "description": "Permitir que colegas solicitem o snapshot completo de eventos."
+        }
+      },
+      "workspaces": "Workspaces permitidos",
+      "workspacesHint": "Escolha os caminhos de workspace que podem ser compartilhados. Nada é compartilhado até escolher pelo menos um.",
+      "noWorkspaces": "Nenhum workspace de sessão local encontrado.",
+      "fullReplayWarning": "O replay completo pode incluir prompts, saídas, tool calls e caminhos de arquivos. Ative apenas para ORGs confiáveis.",
+      "metadataOnlyBadge": "Somente metadados",
+      "metadataOnlyDenied": "Esta sessão compartilha somente metadados. Replay completo indisponível.",
+      "requestPending": "Solicitando replay da sessão ao proprietário..."
+    },
+    "members": {
+      "remove": "Remover"
+    }
   }
 }

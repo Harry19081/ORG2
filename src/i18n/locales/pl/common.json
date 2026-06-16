@@ -202,7 +202,8 @@
     "addWorkspace": "Dodaj workspace",
     "skipThisVersion": "Pomiń tę wersję",
     "later": "Później",
-    "updateAiBlame": "Zaktualizuj AI Blame"
+    "updateAiBlame": "Zaktualizuj AI Blame",
+    "link": "Połącz"
   },
   "refreshToast": {
     "successName": "Odświeżono: {{name}}",

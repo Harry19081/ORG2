@@ -44,6 +44,12 @@ fn run(
             additional_directories: params.additional_directories,
             parent_session_id: params.parent_session_id,
             org_member_id: params.org_member_id,
+            org_id: Some(params.org_id),
+            project_id: params.project_id,
+            project_name: params.project_name,
+            project_slug: params.project_slug,
+            work_item_id: params.work_item_id,
+            agent_role: params.agent_role,
         };
 
         let session = cli_agent_create(create_params).await?;

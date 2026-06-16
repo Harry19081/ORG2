@@ -34,14 +34,6 @@ import type { Session } from "@src/store/session";
 
 export type { TaskStatus, KanbanColumnConfig };
 
-export const DIARY_TIMELINE_DISPLAY_MODE = {
-  Timeline: "timeline",
-  Gantt: "gantt",
-} as const;
-
-export type DiaryTimelineDisplayMode =
-  (typeof DIARY_TIMELINE_DISPLAY_MODE)[keyof typeof DIARY_TIMELINE_DISPLAY_MODE];
-
 /** Agent-Kanban-only column ids on top of the shared `TaskStatus` set. */
 export type AgentExtraColumnId =
   | "todo"

@@ -8,20 +8,24 @@
  *   Uses `fill-3` hover because it sits inside a `fill-2` container.
  * - "footer": always visible, same token-button styling.
  */
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, CircleArrowOutUpRight } from "lucide-react";
 import React, { memo } from "react";
 
 const BASE_CLASSES =
   "flex h-5 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1";
+const CIRCLE_CLASSES =
+  "flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-fill-2/90 text-text-3 shadow-sm backdrop-blur-sm transition-colors hover:bg-fill-3 hover:text-text-1";
 
 const HEADER_VISIBILITY =
   "w-0 overflow-hidden opacity-0 transition-[width,opacity,background-color,color] group-hover/chat-block-header:w-5 group-hover/chat-block-header:opacity-100";
 const FOOTER_VISIBILITY = "w-5";
+const FOOTER_HOVER_VISIBILITY =
+  "opacity-0 transition-opacity group-hover/agent-message:opacity-100";
 
 export interface EventNavigateIconProps {
   onClick: () => void;
-  /** "header" hides until parent hover; "footer" is always visible. */
-  variant?: "header" | "footer";
+  /** "header" hides until header hover; "footer" is always visible; "footer-hover" hides until agent-message hover. */
+  variant?: "header" | "footer" | "footer-hover";
 }
 
 const EventNavigateIcon: React.FC<EventNavigateIconProps> = memo(
@@ -31,15 +35,25 @@ const EventNavigateIcon: React.FC<EventNavigateIconProps> = memo(
       onClick();
     };
 
+    const visibilityClass =
+      variant === "header"
+        ? HEADER_VISIBILITY
+        : variant === "footer-hover"
+          ? FOOTER_HOVER_VISIBILITY
+          : FOOTER_VISIBILITY;
+    const className = `${variant === "footer-hover" ? CIRCLE_CLASSES : BASE_CLASSES} ${visibilityClass}`;
+    const Icon =
+      variant === "footer-hover" ? CircleArrowOutUpRight : ArrowUpRight;
+
     return (
       <button
         type="button"
         data-testid="event-navigate"
-        className={`${BASE_CLASSES} ${variant === "header" ? HEADER_VISIBILITY : FOOTER_VISIBILITY}`}
+        className={className}
         onClick={handleClick}
         tabIndex={-1}
       >
-        <ArrowUpRight size={14} />
+        <Icon size={variant === "footer-hover" ? 16 : 14} />
       </button>
     );
   }

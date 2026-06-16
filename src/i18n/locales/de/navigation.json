@@ -383,8 +383,9 @@
     "joinOrg": "Beitreten",
     "orgSource": "Org-Quelle",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "Cloudflare-Hub-URL",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "Supabase-Projekt-URL",
+    "supabaseAnonKey": "Supabase anon key",
     "orgName": "ORG-Name",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Einladungslink oder -code",
@@ -398,13 +399,22 @@
     "copyInvite": "Einladung kopieren",
     "copiedInvite": "Kopiert",
     "setupMode": "Einrichtungsmodus",
-    "hubSetupTitle": "Cloudflare-Hub-URL einrichten",
+    "supabaseSetupTitle": "Supabase Sync einrichten",
+    "verifySupabaseSetup": "Setup prüfen",
+    "copySetupSql": "Setup-SQL kopieren",
+    "copiedSetupSql": "SQL kopiert",
+    "openSupabaseSqlEditor": "Supabase SQL Editor öffnen",
+    "supabaseSetupVerified": "Supabase-Setup geprüft",
+    "supabaseSetupMissing": "Supabase-Setup fehlt. Kopiere die Setup-SQL, führe sie im Supabase SQL Editor aus und prüfe erneut.",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG nicht gefunden",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "Projekt",
       "sessions": "Sessions",
       "members": "Mitglieder",
-      "chat": "Gruppenchat"
+      "chat": "Gruppenchat",
+      "settings": "Einstellungen"
     },
     "stats": {
       "members": "Mitglieder",
@@ -425,6 +435,20 @@
       "humanOnly": "Nur menschliche Identitäten können im Gruppenchat posten.",
       "hint": "Menschen können hier sprechen und Links mit der ORG teilen."
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "Verfolgen Sie ORG work items mit derselben local/cloud Struktur.",
+      "empty": "Noch keine work items in dieser ORG.",
+      "count": "{{count}} Elemente",
+      "unassigned": "Nicht zugewiesen"
+    },
+    "projects": {
+      "title": "Projekt",
+      "description": "Prüfen Sie Projekte, die mit dieser ORG verbunden sind.",
+      "empty": "Noch keine Projekte in dieser ORG.",
+      "count": "{{count}} Projekte",
+      "noDescription": "Keine Beschreibung"
+    },
     "sessionStatusActive": "Aktiv",
     "localHuman": "Lokaler Mensch",
     "backToOrg": "Zurück zur ORG",
@@ -433,8 +457,38 @@
       "description": "Erstelle einen Einladungslink, damit Teamkollegen dieser ORG beitreten können. Der neueste Link wird hier zum schnellen Kopieren angezeigt.",
       "adminOnly": "Nur ORG-Administratoren können Einladungslinks erstellen.",
       "create": "Einladung erstellen",
-      "createNew": "Neue Einladung"
+      "createNew": "Neue Einladung",
+      "remainingUses": "{{count}} Nutzungen übrig",
+      "expires": "Läuft am {{date}} ab"
     },
-    "orgDashboard": "Dashboard"
+    "orgDashboard": "Dashboard",
+    "access": {
+      "title": "Session-Zugriff",
+      "description": "Wählen Sie, was Teammitglieder von Ihren lokalen Sessions in diesem ORG sehen können.",
+      "modes": {
+        "off": {
+          "title": "Aus",
+          "description": "Keine Session-Karten oder Replay-Daten teilen."
+        },
+        "metadata_only": {
+          "title": "Nur Session-Karten",
+          "description": "Nur Titel, Besitzer, Branches und Workspaces teilen."
+        },
+        "full_replay": {
+          "title": "Vollständiges Replay",
+          "description": "Teammitgliedern erlauben, den vollständigen Event-Snapshot anzufordern."
+        }
+      },
+      "workspaces": "Erlaubte Workspaces",
+      "workspacesHint": "Wählen Sie Workspace-Pfade aus, die geteilt werden dürfen. Nichts wird geteilt, bis mindestens einer ausgewählt ist.",
+      "noWorkspaces": "Noch keine lokalen Session-Workspaces gefunden.",
+      "fullReplayWarning": "Vollständiges Replay kann Prompts, Ausgaben, tool calls und Dateipfade enthalten. Nur für vertrauenswürdige ORGs aktivieren.",
+      "metadataOnlyBadge": "Nur Metadaten",
+      "metadataOnlyDenied": "Diese Session teilt nur Metadaten. Vollständiges Replay ist nicht verfügbar.",
+      "requestPending": "Session-Replay wird beim Besitzer angefordert..."
+    },
+    "members": {
+      "remove": "Entfernen"
+    }
   }
 }

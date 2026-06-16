@@ -49,6 +49,7 @@ import { createLogger } from "@src/hooks/logger";
 import { useSessionWorkspaceSync } from "@src/hooks/session/useSessionWorkspaceSync";
 import { activeSessionIdAtom } from "@src/store/session";
 import {
+  isSessionActiveAtom,
   sessionRuntimeStatusAtom,
   streamRetryStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
@@ -66,6 +67,8 @@ import {
 } from "@src/store/ui/messageQueueAtom";
 import {
   STATION_MODE,
+  bumpSimulatorDiffRefreshNonceAtom,
+  simulatorDiffScopeRequestAtom,
   simulatorSelectedAppAtom,
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
@@ -83,6 +86,10 @@ import { ChatHistoryOverrideContext } from "./ChatHistoryOverrideContext";
 import { ChatSessionContext } from "./ChatSessionContext";
 import AgentOrgOverviewPanel from "./InputArea/components/AgentOrgOverviewPanel";
 import GitDiffActionsMenu from "./InputArea/components/GitDiffActionsMenu";
+import {
+  buildCompactFilesReloadKey,
+  countChatRounds,
+} from "./InputArea/components/compactFileChangesHelpers";
 import { useAgentOrgIntervention } from "./InputArea/components/useAgentOrgIntervention";
 import { useAgentOrgMemberSessionJump } from "./InputArea/components/useAgentOrgMemberSessionJump";
 import { useAgentOrgRunView } from "./InputArea/components/useAgentOrgRunView";
@@ -249,6 +256,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
       sessionId
     )?.current;
     const chatEvents = useAtomValue(chatEventsAtom);
+    const isAgentWorking = useAtomValue(isSessionActiveAtom);
     const [relatedCommitCount, setRelatedCommitCount] = useState(0);
 
     useEffect(() => {
@@ -448,16 +456,27 @@ const ChatView: React.FC<ChatViewProps> = memo(
     const setSelectedSimulatorApp = useSetAtom(simulatorSelectedAppAtom);
     const setReplayMode = useSetAtom(replayModeAtom);
     const setChatPanelMaximized = useSetAtom(chatPanelMaximizedAtom);
+    const setDiffScope = useSetAtom(simulatorDiffScopeRequestAtom);
+    const refreshDiff = useSetAtom(bumpSimulatorDiffRefreshNonceAtom);
     const openAgentStationDiff = useCallback(() => {
       // Un-maximize the chat panel so ActivitySimulator becomes visible.
       // When chatPanelMaximized is true, AppShellContent suppresses the
       // simulator pane entirely (chatPanelFocused guard), so switching to
       // the Diff app would have no visible effect.
+      //
+      // Clear any per-round scope set by a chat `TurnFilesFooter` so this
+      // composer-level entry point always shows the whole-session diff.
+      setDiffScope(null);
+      // Force a fresh read of the canonical diffs so the full-session view
+      // reflects edits made since the Diff app last cached them.
+      refreshDiff();
       setChatPanelMaximized(false);
       setStationMode(STATION_MODE.AGENT_STATION);
       setSelectedSimulatorApp(AppType.DIFF);
       setReplayMode("replay");
     }, [
+      setDiffScope,
+      refreshDiff,
       setChatPanelMaximized,
       setReplayMode,
       setSelectedSimulatorApp,
@@ -553,6 +572,18 @@ const ChatView: React.FC<ChatViewProps> = memo(
       : agentOrgInteractionSessionId;
     const inputAreaSessionId = queueSessionId;
 
+    // Idle-reload signal for the composer "N Files Changed" pill. The pill's
+    // count comes from the per-session-cached orgtrack final diffs, so it must
+    // refetch when the session changes, a new round appears, or the agent goes
+    // idle — mirroring the per-round footer's `turnFilesReloadKey`. Counting
+    // user-message boundaries (not raw event length) keeps this stable during
+    // streaming so the backend isn't hammered mid-turn.
+    const composerFilesReloadKey = buildCompactFilesReloadKey(
+      inputAreaSessionId,
+      countChatRounds(chatEvents),
+      isAgentWorking
+    );
+
     return (
       <ChatSessionContext.Provider value={chatHistorySessionId}>
         <div
@@ -596,9 +627,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
                         onEvents={handleGroupChatTapEvents}
                       />
                     ))}
-                <AgentMessageClampProvider
-                  value={agentMessageClampEligible && !turnPaginationEnabled}
-                >
+                <AgentMessageClampProvider value={agentMessageClampEligible}>
                   <ChatHistory
                     surfaceBgClass={surfaceBgClass}
                     agentOrgCurrentMemberName={
@@ -700,6 +729,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
               onToggleProcess={toggleProcess}
               onProcessVisibleCountChange={setProcessVisibleCount}
               onFileChangeStatsChange={setFileChangeStats}
+              filesReloadKey={composerFilesReloadKey}
               groupChatPendingMessage={groupChatPendingMessage}
               groupChatViewActive={groupChatViewActive}
               hasAnyInlineSection={hasAny}

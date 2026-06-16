@@ -130,6 +130,10 @@
     },
     "sidebar": {
       "agentTypes": "Agent タイプ",
+      "manageItems": "項目を管理",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "ビュー",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "ドラフトを削除"
@@ -197,10 +201,6 @@
       "activeSessions": "アクティブな Session",
       "completedSessions": "完了",
       "timeline": "イベントのタイムライン",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "emptyTitle": "日記イベントはありません",
       "emptySubtitle": "この日の Agent アクティビティがここに表示されます。",

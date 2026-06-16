@@ -381,8 +381,9 @@
     "joinOrg": "参加",
     "orgSource": "Org ソース",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "Cloudflare hub URL",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "Supabase Project URL",
+    "supabaseAnonKey": "Supabase anon key",
     "orgName": "ORG 名",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "招待リンクまたはコード",
@@ -396,13 +397,22 @@
     "copyInvite": "招待をコピー",
     "copiedInvite": "コピー済み",
     "setupMode": "セットアップモード",
-    "hubSetupTitle": "Cloudflare hub URL の設定方法",
+    "supabaseSetupTitle": "Supabase Sync の設定方法",
+    "verifySupabaseSetup": "設定を検証",
+    "copySetupSql": "セットアップ SQL をコピー",
+    "copiedSetupSql": "SQL をコピーしました",
+    "openSupabaseSqlEditor": "Supabase SQL Editor を開く",
+    "supabaseSetupVerified": "Supabase 設定を検証しました",
+    "supabaseSetupMissing": "Supabase 設定がありません。セットアップ SQL をコピーして Supabase SQL Editor で実行し、もう一度検証してください。",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG が見つかりません",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "プロジェクト",
       "sessions": "Sessions",
       "members": "メンバー",
-      "chat": "グループチャット"
+      "chat": "グループチャット",
+      "settings": "設定"
     },
     "stats": {
       "members": "メンバー",
@@ -423,6 +433,20 @@
       "humanOnly": "Human ID のみがグループチャットに投稿できます。",
       "hint": "人間メンバーはここで会話し、ORG とリンクを共有できます。"
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "同じ local/cloud 構造で ORG の work items を追跡します。",
+      "empty": "この ORG にはまだ work items がありません。",
+      "count": "{{count}} 件",
+      "unassigned": "未割り当て"
+    },
+    "projects": {
+      "title": "プロジェクト",
+      "description": "この ORG に関連付けられたプロジェクトを確認します。",
+      "empty": "この ORG にはまだプロジェクトがありません。",
+      "count": "{{count}} プロジェクト",
+      "noDescription": "説明なし"
+    },
     "sessionStatusActive": "アクティブ",
     "localHuman": "ローカル Human",
     "backToOrg": "ORG に戻る",
@@ -431,8 +455,38 @@
       "description": "チームメイトがこの ORG に参加できる招待リンクを作成します。最新のリンクはここに表示され、すぐコピーできます。",
       "adminOnly": "ORG 管理者だけが招待リンクを作成できます。",
       "create": "招待を作成",
-      "createNew": "新しい招待"
+      "createNew": "新しい招待",
+      "remainingUses": "残り {{count}} 回使用可能",
+      "expires": "{{date}} に期限切れ"
     },
-    "orgDashboard": "ダッシュボード"
+    "orgDashboard": "ダッシュボード",
+    "access": {
+      "title": "Session アクセス",
+      "description": "この ORG でチームメイトがあなたのローカル sessions から見られる内容を選びます。",
+      "modes": {
+        "off": {
+          "title": "オフ",
+          "description": "Session カードや replay データを共有しません。"
+        },
+        "metadata_only": {
+          "title": "Session カードのみ",
+          "description": "タイトル、所有者、ブランチ、Workspaces のみ共有します。"
+        },
+        "full_replay": {
+          "title": "完全 replay",
+          "description": "チームメイトが完全なイベント snapshot をリクエストできます。"
+        }
+      },
+      "workspaces": "許可された Workspaces",
+      "workspacesHint": "共有できる workspace パスを選択します。少なくとも 1 つ選ぶまで何も共有されません。",
+      "noWorkspaces": "ローカル session workspace がまだ見つかりません。",
+      "fullReplayWarning": "完全 replay には prompts、出力、tool calls、ファイルパスが含まれる場合があります。信頼できる ORGs でのみ有効にしてください。",
+      "metadataOnlyBadge": "メタデータのみ",
+      "metadataOnlyDenied": "この session はメタデータのみ共有されています。完全 replay は利用できません。",
+      "requestPending": "所有者に session replay をリクエスト中..."
+    },
+    "members": {
+      "remove": "削除"
+    }
   }
 }

@@ -4,6 +4,7 @@ use crate::definitions::prefix_lookup::PENDING_SESSION_PLACEHOLDER;
 use crate::session::persistence as session_persistence;
 use core_types::key_source::KeySource;
 use core_types::providers::NativeHarnessType;
+use project_management::projects::types::PERSONAL_ORG_ID;
 
 /// Default agent type when none is provided by the caller.
 const DEFAULT_AGENT_TYPE: &str = "sde";
@@ -35,6 +36,9 @@ pub(crate) async fn create_session_impl(
     model: Option<String>,
     account_id: Option<String>,
     name: Option<String>,
+    org_id: Option<String>,
+    project_id: Option<String>,
+    project_name: Option<String>,
     work_item_id: Option<String>,
     agent_role: Option<String>,
     worktree_path: Option<String>,
@@ -99,6 +103,9 @@ pub(crate) async fn create_session_impl(
         _ => return Err("model is required when creating a session".into()),
     };
 
+    let resolved_org_id = org_id
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| PERSONAL_ORG_ID.to_string());
     let wid_for_link = work_item_id.clone();
     let slug_for_link = project_slug.clone();
 
@@ -109,6 +116,9 @@ pub(crate) async fn create_session_impl(
         model: Some(effective_model.clone()),
         account_id,
         workspace_path: Some(workspace_path.clone()),
+        org_id: Some(resolved_org_id),
+        project_id,
+        project_name,
         user_input: None,
         total_tokens: 0,
         created_at: now.clone(),

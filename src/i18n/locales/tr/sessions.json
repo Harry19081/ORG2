@@ -130,6 +130,10 @@
     },
     "sidebar": {
       "agentTypes": "Agent Türleri",
+      "manageItems": "Öğeleri yönet",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "Görünümler",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "Taslağı kaldır"
@@ -197,10 +201,6 @@
       "activeSessions": "Aktif Sessions",
       "completedSessions": "Tamamlandı",
       "timeline": "Olay zaman çizelgesi",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "emptyTitle": "Günlük olayı yok",
       "emptySubtitle": "Bu güne ait Agent etkinliği burada görünür.",

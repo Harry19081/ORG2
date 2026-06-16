@@ -41,9 +41,17 @@ pub struct PrefetchResult {
     /// Names of selected skills.
     pub selected_names: Vec<String>,
     /// Full SKILL.md content for each selected skill.
-    pub skill_contents: Vec<(String, String)>,
+    pub skill_contents: Vec<PrefetchedSkill>,
     /// Side-query tokens used.
     pub tokens_used: i64,
+}
+
+#[derive(Debug, Clone)]
+pub struct PrefetchedSkill {
+    pub name: String,
+    pub source: String,
+    pub path: String,
+    pub content: String,
 }
 
 impl PrefetchResult {
@@ -54,8 +62,14 @@ impl PrefetchResult {
         }
 
         let mut parts = Vec::new();
-        for (name, content) in &self.skill_contents {
-            parts.push(format!("### Skill: {}\n\n{}", name, content.trim()));
+        for skill in &self.skill_contents {
+            parts.push(format!(
+                "### Skill: {}\n\nSource: {}\nPath: `{}`\nContent already prefetched; do not try to read a guessed skill path for this skill.\n\n{}",
+                skill.name,
+                skill.source,
+                skill.path,
+                skill.content.trim()
+            ));
         }
 
         Some(format!(
@@ -175,7 +189,7 @@ pub async fn select_skills(
     let valid_names: std::collections::HashSet<String> =
         all_skills.iter().map(|s| s.name.clone()).collect();
 
-    let mut skill_contents: Vec<(String, String)> = Vec::new();
+    let mut skill_contents: Vec<PrefetchedSkill> = Vec::new();
     for name in &selected_names {
         if !valid_names.contains(name) {
             warn!(
@@ -193,7 +207,12 @@ pub async fn select_skills(
                         name,
                         content.len()
                     );
-                    skill_contents.push((name.clone(), content));
+                    skill_contents.push(PrefetchedSkill {
+                        name: name.clone(),
+                        source: skill.source.clone(),
+                        path: skill.path.display().to_string(),
+                        content,
+                    });
                 }
                 Err(err) => {
                     warn!("[skill-prefetch] Failed to read skill '{}': {}", name, err);
@@ -202,7 +221,10 @@ pub async fn select_skills(
         }
     }
 
-    let final_names: Vec<String> = skill_contents.iter().map(|(n, _)| n.clone()).collect();
+    let final_names: Vec<String> = skill_contents
+        .iter()
+        .map(|skill| skill.name.clone())
+        .collect();
     info!(
         "[skill-prefetch] Selected {} skill(s): {:?} (tokens_used={})",
         final_names.len(),
@@ -290,13 +312,21 @@ mod tests {
     fn prefetch_result_builds_prompt_section() {
         let result = PrefetchResult {
             selected_names: vec!["my-skill".into()],
-            skill_contents: vec![("my-skill".into(), "# My Skill\n\nDo this thing.".into())],
+            skill_contents: vec![PrefetchedSkill {
+                name: "my-skill".into(),
+                source: "workspace".into(),
+                path: "/repo/.orgii/skills/my-skill/SKILL.md".into(),
+                content: "# My Skill\n\nDo this thing.".into(),
+            }],
             tokens_used: 100,
         };
 
         let section = result.build_prompt_section().unwrap();
         assert!(section.contains("Prefetched Skills"));
         assert!(section.contains("my-skill"));
+        assert!(section.contains("Source: workspace"));
+        assert!(section.contains("/repo/.orgii/skills/my-skill/SKILL.md"));
+        assert!(section.contains("Content already prefetched"));
         assert!(section.contains("Do this thing."));
     }
 

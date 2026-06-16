@@ -472,8 +472,9 @@
     "joinOrg": "加入",
     "orgSource": "組織來源",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "Cloudflare hub URL",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "Supabase Project URL",
+    "supabaseAnonKey": "Supabase anon key",
     "orgName": "ORG 名稱",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "邀請連結或代碼",
@@ -487,13 +488,22 @@
     "copyInvite": "複製邀請",
     "copiedInvite": "已複製",
     "setupMode": "設定模式",
-    "hubSetupTitle": "如何設定 Cloudflare hub URL",
+    "supabaseSetupTitle": "如何設定 Supabase Sync",
+    "verifySupabaseSetup": "驗證設定",
+    "copySetupSql": "複製設定 SQL",
+    "copiedSetupSql": "SQL 已複製",
+    "openSupabaseSqlEditor": "開啟 Supabase SQL Editor",
+    "supabaseSetupVerified": "Supabase 設定已驗證",
+    "supabaseSetupMissing": "缺少 Supabase 設定。複製設定 SQL，在 Supabase SQL Editor 中執行，然後再次驗證。",
     "orgDemoTitle": "ORG",
     "orgNotFound": "找不到 ORG",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "專案",
       "sessions": "Sessions",
       "members": "成員",
-      "chat": "群組聊天"
+      "chat": "群組聊天",
+      "settings": "設定"
     },
     "stats": {
       "members": "成員",
@@ -514,6 +524,20 @@
       "humanOnly": "只有 Human 身分可以在群組聊天中發言。",
       "hint": "人類成員可以在這裡聊天，並與 ORG 分享連結。"
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "用同一套本地/cloud 結構追蹤 ORG work items。",
+      "empty": "這個 ORG 尚無 work items。",
+      "count": "{{count}} 個項目",
+      "unassigned": "未分配"
+    },
+    "projects": {
+      "title": "專案",
+      "description": "查看與此 ORG 關聯的專案。",
+      "empty": "這個 ORG 尚無專案。",
+      "count": "{{count}} 個專案",
+      "noDescription": "無描述"
+    },
     "sessionStatusActive": "活躍",
     "localHuman": "本機 Human",
     "backToOrg": "返回 ORG",
@@ -522,8 +546,38 @@
       "description": "建立邀請連結，讓隊友加入此 ORG。最新連結會顯示在這裡，方便快速複製。",
       "adminOnly": "只有 ORG 管理員可以建立邀請連結。",
       "create": "建立邀請",
-      "createNew": "新邀請"
+      "createNew": "新邀請",
+      "remainingUses": "剩餘 {{count}} 次使用",
+      "expires": "{{date}} 到期"
     },
-    "orgDashboard": "儀表板"
+    "orgDashboard": "儀表板",
+    "access": {
+      "title": "Session 存取",
+      "description": "選擇隊友可以在這個 ORG 中看到你的哪些本地 session。",
+      "modes": {
+        "off": {
+          "title": "關閉",
+          "description": "不分享 session 卡片或 replay 資料。"
+        },
+        "metadata_only": {
+          "title": "僅 Session 卡片",
+          "description": "只分享標題、所有者、分支和 Workspace。"
+        },
+        "full_replay": {
+          "title": "完整 replay",
+          "description": "允許隊友請求完整事件 snapshot。"
+        }
+      },
+      "workspaces": "允許的 Workspaces",
+      "workspacesHint": "選擇可以分享的 workspace 路徑。至少選擇一個後才會分享。",
+      "noWorkspaces": "尚未找到本地 session workspace。",
+      "fullReplayWarning": "完整 replay 可能包含 prompts、輸出、tool calls 和檔案路徑。只對可信 ORG 開啟。",
+      "metadataOnlyBadge": "僅元資料",
+      "metadataOnlyDenied": "此 session 僅分享元資料，無法開啟完整 replay。",
+      "requestPending": "正在向所有者請求 session replay..."
+    },
+    "members": {
+      "remove": "移除"
+    }
   }
 }

@@ -8,12 +8,15 @@ import type {
   AdvancedConfig,
   SessionCreatorLaunchMode,
 } from "@src/features/SessionCreator/types";
-import type { SessionSource } from "@src/store/session/creatorStateAtom";
+import type {
+  SessionLaunchOrgContext,
+  SessionSource,
+} from "@src/store/session/creatorStateAtom";
 
 import type { SessionValidationResult } from "../useSessionValidation";
 
-export interface SessionLaunchWorkItemContext {
-  workItemId: string;
+export interface SessionLaunchWorkItemContext extends Partial<SessionLaunchOrgContext> {
+  workItemId?: string;
   projectSlug?: string;
   agentRole?: string;
   metadata?: Record<string, unknown>;

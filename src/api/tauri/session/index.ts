@@ -93,6 +93,12 @@ export function toFrontendSession(record: SessionAggregateRecord): Session {
     baseBranch: record.baseBranch,
     mergeStatus: record.mergeStatus,
     background: record.background,
+    orgId: record.orgId,
+    projectId: record.projectId,
+    projectName: record.projectName,
+    projectSlug: record.projectSlug,
+    workItemId: record.workItemId,
+    agentRole: record.agentRole,
     parentSessionId: record.parentSessionId,
     orgMemberId: record.orgMemberId,
     agentOrgId: record.agentOrgId,
@@ -104,6 +110,10 @@ export function toFrontendSession(record: SessionAggregateRecord): Session {
     draftText: record.draftText,
     replyTargetEventId: record.replyTargetEventId,
     pinned: record.pinned,
+    filesChanged: record.filesChanged,
+    linesAdded: record.linesAdded,
+    linesRemoved: record.linesRemoved,
+    touchedFiles: record.touchedFiles,
   };
 }
 

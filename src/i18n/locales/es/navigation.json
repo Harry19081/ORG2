@@ -383,8 +383,9 @@
     "joinOrg": "Unirse",
     "orgSource": "Origen de la organización",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "URL del hub de Cloudflare",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "URL del proyecto Supabase",
+    "supabaseAnonKey": "Clave anon de Supabase",
     "orgName": "Nombre de la ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Enlace o código de invitación",
@@ -398,13 +399,22 @@
     "copyInvite": "Copiar invitación",
     "copiedInvite": "Copiado",
     "setupMode": "Modo de configuración",
-    "hubSetupTitle": "Cómo configurar la URL del hub de Cloudflare",
+    "supabaseSetupTitle": "Cómo configurar Supabase Sync",
+    "verifySupabaseSetup": "Verificar configuración",
+    "copySetupSql": "Copiar SQL de configuración",
+    "copiedSetupSql": "SQL copiado",
+    "openSupabaseSqlEditor": "Abrir Supabase SQL Editor",
+    "supabaseSetupVerified": "Configuración de Supabase verificada",
+    "supabaseSetupMissing": "Falta la configuración de Supabase. Copia el SQL, ejecútalo en Supabase SQL Editor y verifica de nuevo.",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG no encontrada",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "Proyecto",
       "sessions": "Sessions",
       "members": "Miembros",
-      "chat": "Chat grupal"
+      "chat": "Chat grupal",
+      "settings": "Configuración"
     },
     "stats": {
       "members": "Miembros",
@@ -425,6 +435,20 @@
       "humanOnly": "Solo las identidades humanas pueden publicar en el chat grupal.",
       "hint": "Los humanos pueden hablar aquí y compartir enlaces con la ORG."
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "Rastrea los work items de la ORG con la misma estructura local/cloud.",
+      "empty": "Aún no hay work items en esta ORG.",
+      "count": "{{count}} elementos",
+      "unassigned": "Sin asignar"
+    },
+    "projects": {
+      "title": "Proyecto",
+      "description": "Revisa los proyectos asociados con esta ORG.",
+      "empty": "Aún no hay proyectos en esta ORG.",
+      "count": "{{count}} proyectos",
+      "noDescription": "Sin descripción"
+    },
     "sessionStatusActive": "Activo",
     "localHuman": "Humano local",
     "backToOrg": "Volver a la ORG",
@@ -433,8 +457,38 @@
       "description": "Crea un enlace de invitación para que tus compañeros se unan a esta ORG. El enlace más reciente aparece aquí para copiarlo rápido.",
       "adminOnly": "Solo los administradores de la ORG pueden crear enlaces de invitación.",
       "create": "Crear invitación",
-      "createNew": "Nueva invitación"
+      "createNew": "Nueva invitación",
+      "remainingUses": "Quedan {{count}} usos",
+      "expires": "Vence el {{date}}"
     },
-    "orgDashboard": "Panel"
+    "orgDashboard": "Panel",
+    "access": {
+      "title": "Acceso a sesiones",
+      "description": "Elige qué pueden ver tus compañeros de tus sesiones locales en este ORG.",
+      "modes": {
+        "off": {
+          "title": "Desactivado",
+          "description": "No compartir tarjetas de sesión ni datos de replay."
+        },
+        "metadata_only": {
+          "title": "Solo tarjetas de sesión",
+          "description": "Compartir solo títulos, propietarios, ramas y workspaces."
+        },
+        "full_replay": {
+          "title": "Replay completo",
+          "description": "Permitir que compañeros soliciten el snapshot completo de eventos."
+        }
+      },
+      "workspaces": "Workspaces permitidos",
+      "workspacesHint": "Elige las rutas de workspace que se pueden compartir. No se comparte nada hasta elegir al menos una.",
+      "noWorkspaces": "No se encontraron workspaces de sesiones locales.",
+      "fullReplayWarning": "El replay completo puede incluir prompts, salidas, tool calls y rutas de archivos. Actívalo solo para ORGs de confianza.",
+      "metadataOnlyBadge": "Solo metadatos",
+      "metadataOnlyDenied": "Esta sesión solo comparte metadatos. El replay completo no está disponible.",
+      "requestPending": "Solicitando replay de sesión al propietario..."
+    },
+    "members": {
+      "remove": "Eliminar"
+    }
   }
 }

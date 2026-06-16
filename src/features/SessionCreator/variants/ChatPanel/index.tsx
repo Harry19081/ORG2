@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom, useStore } from "jotai";
-import { Airplay, Network, Paperclip } from "lucide-react";
+import { Airplay, Network } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -60,17 +60,23 @@ import {
   type ChatImageAttachment,
   chatImageAttachmentsAtom,
 } from "@src/store/ui/chatImageAtom";
-import { modelPickerStyleAtom } from "@src/store/ui/chatPanelAtom";
+import {
+  chatPanelSelectedProjectAtom,
+  chatPanelSelectedProjectOrgAtom,
+  chatPanelSelectedWorkItemAtom,
+  modelPickerStyleAtom,
+} from "@src/store/ui/chatPanelAtom";
 import { draftHasContentAtom } from "@src/store/ui/draftAtom";
 import { getBigThreeRegionModelTypeForSession } from "@src/util/session/regionAlertModel";
 import { getRustAgentType } from "@src/util/session/sessionDispatch";
 
 import { EditorArea, SessionInfoLine } from "../../components";
 import type { DropdownDirection } from "../../components/ControlButtons";
-import AttachmentPanel from "./AttachmentPopover";
 import ScreenPickerModal from "./ScreenPickerModal";
 import SessionCreatorAgentHero from "./SessionCreatorAgentHero";
 import SessionCreatorOrgMembersPanel from "./SessionCreatorOrgMembersPanel";
+import WorkItemAttachmentControl from "./WorkItemAttachmentControl";
+import { deriveChatPanelLaunchContext } from "./deriveLaunchContext";
 import "./index.scss";
 import { resolveSessionCreatorAgentHeroContent } from "./resolveSessionCreatorAgentHero";
 import { useSessionCreatorChatPanelHandlers } from "./useSessionCreatorChatPanelHandlers";
@@ -141,6 +147,29 @@ const SessionCreatorChatPanelSingle: React.FC<
     branchLoading,
     loadBranchList,
   } = useRepoSelection({ autoLoad: true });
+  const [attachedWorkItemContext, setAttachedWorkItemContext] =
+    useState<SessionLaunchWorkItemContext | null>(null);
+  const selectedProjectOrgContext = useAtomValue(
+    chatPanelSelectedProjectOrgAtom
+  );
+  const selectedProjectContext = useAtomValue(chatPanelSelectedProjectAtom);
+  const selectedWorkItemContext = useAtomValue(chatPanelSelectedWorkItemAtom);
+  const chatPanelLaunchContext = useMemo(
+    () =>
+      deriveChatPanelLaunchContext({
+        selectedProjectContext,
+        selectedProjectOrgContext,
+        selectedWorkItemContext,
+      }),
+    [selectedProjectContext, selectedProjectOrgContext, selectedWorkItemContext]
+  );
+  const handleSessionStart = useCallback(
+    (info: SessionLaunchSuccessInfo) => {
+      setAttachedWorkItemContext(null);
+      onSessionStart?.(info);
+    },
+    [onSessionStart]
+  );
 
   const {
     fileInputRef,
@@ -184,9 +213,10 @@ const SessionCreatorChatPanelSingle: React.FC<
     launchMode,
     persistDraft: !initialContent,
     skipDraftLoading: Boolean(initialContent),
-    workItemContext,
+    workItemContext:
+      attachedWorkItemContext ?? workItemContext ?? chatPanelLaunchContext,
     resolveWorkItemContext,
-    onLaunchSuccess: onSessionStart,
+    onLaunchSuccess: handleSessionStart,
   });
 
   const setCreatorState = useSetAtom(sessionCreatorStateAtom);
@@ -221,11 +251,8 @@ const SessionCreatorChatPanelSingle: React.FC<
 
   const [isCategorySelectorOpen, setIsCategorySelectorOpen] = useState(false);
   const agentHeroRef = useRef<HTMLButtonElement>(null);
+  const workItemPanelHostRef = useRef<HTMLDivElement>(null);
   const setSessionSource = useSetAtom(sessionSourceAtom);
-  const [isAttachmentPanelOpen, setIsAttachmentPanelOpen] = useState(false);
-  const handleToggleAttachment = useCallback(() => {
-    setIsAttachmentPanelOpen((prev) => !prev);
-  }, []);
   const modelPickerStyle = useAtomValue(modelPickerStyleAtom);
   const [openOrgMembersPanelId, setOpenOrgMembersPanelId] = useState<
     string | null
@@ -735,23 +762,11 @@ const SessionCreatorChatPanelSingle: React.FC<
               leadingContent={
                 <>
                   {leadingActionSlot}
-                  <Button
-                    variant="secondary"
-                    appearance="outline"
-                    size="small"
-                    shape="round"
-                    iconOnly
-                    icon={<Paperclip size={14} strokeWidth={1.75} />}
-                    title={t("common:actions.upload")}
-                    aria-label={t("common:actions.upload")}
-                    aria-expanded={isAttachmentPanelOpen}
-                    aria-controls="session-creator-attachment-panel"
-                    onClick={handleToggleAttachment}
-                    className={
-                      isAttachmentPanelOpen
-                        ? "shrink-0 !bg-fill-1 !text-primary-6"
-                        : "shrink-0"
-                    }
+                  <WorkItemAttachmentControl
+                    currentWorkItemContext={attachedWorkItemContext}
+                    panelHostRef={workItemPanelHostRef}
+                    repoPath={currentRepoPath}
+                    onWorkItemContextChange={setAttachedWorkItemContext}
                   />
                   {selectedOrg && (
                     <Button
@@ -780,13 +795,11 @@ const SessionCreatorChatPanelSingle: React.FC<
             />
           </div>
 
-          {isAttachmentPanelOpen && (
-            <div
-              className={`mx-auto w-full ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
-            >
-              <AttachmentPanel open={isAttachmentPanelOpen} />
-            </div>
-          )}
+          <div
+            ref={workItemPanelHostRef}
+            className={`mx-auto w-full ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+          />
+
           {selectedOrg && isOrgMembersPanelOpen && (
             <div id="session-creator-org-members-panel">
               <SessionCreatorOrgMembersPanel

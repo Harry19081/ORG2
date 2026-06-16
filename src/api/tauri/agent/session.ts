@@ -394,6 +394,9 @@ export interface SessionLaunchParams {
   applyAgentOrgMemberOverridesForFuture?: boolean;
   isolate?: boolean;
   mode?: string;
+  orgId?: string;
+  projectId?: string;
+  projectName?: string;
   workItemId?: string;
   agentRole?: string;
   worktreePath?: string;
@@ -427,6 +430,12 @@ export interface SessionLaunchResult {
   accountId?: string;
   agentOrgId?: string;
   agentOrgRunId?: string;
+  orgId?: string;
+  projectId?: string;
+  projectName?: string;
+  projectSlug?: string;
+  workItemId?: string;
+  agentRole?: string;
   worktreePath?: string;
 }
 

@@ -3,8 +3,8 @@
 use crate::definitions::builtin::SDE_AGENT_ID;
 use crate::definitions::orgs::AgentOrgsStore;
 use crate::session::launch::{
-    launch_rust_agent_run, AgentRunLaunchRequest, AgentRunTarget, LaunchProvenance,
-    LaunchResourceSelection, WorkspaceLaunchTarget,
+    launch_rust_agent_run, AgentRunLaunchRequest, AgentRunTarget, LaunchOrgContext,
+    LaunchProvenance, LaunchResourceSelection, WorkspaceLaunchTarget,
 };
 use crate::state::AgentAppState;
 use project_management::projects::{io, types};
@@ -526,6 +526,11 @@ fn routine_to_launch_request(
             native_harness_type: routine.run_template.resources.native_harness_type.clone(),
         },
         workspace,
+        org_context: LaunchOrgContext {
+            org_id: types::PERSONAL_ORG_ID.to_string(),
+            project_id: None,
+            project_name: None,
+        },
         provenance: LaunchProvenance::RoutineFire {
             routine_fire_id: fire_id.to_string(),
         },

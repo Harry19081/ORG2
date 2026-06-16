@@ -29,6 +29,12 @@ interface CompactFileChangesProps {
   sessionIdOverride?: string | null;
   /** When provided, uses this static data instead of fetching from the session. */
   initialData?: FileChangesResult;
+  /**
+   * Idle-reload signal forwarded to the data hook so the pill refetches the
+   * orgtrack snapshot when a round completes / the agent goes idle, instead of
+   * only on session switch.
+   */
+  reloadKey?: string;
   /** Reports file stats to the parent pill. */
   onVisibleStatsChange?: (stats: FileChangeVisibleStats) => void;
 }
@@ -40,7 +46,7 @@ const EMPTY_STATS: FileChangeVisibleStats = {
 };
 
 const CompactFileChanges: React.FC<CompactFileChangesProps> = memo(
-  ({ sessionIdOverride, initialData, onVisibleStatsChange }) => {
+  ({ sessionIdOverride, initialData, reloadKey, onVisibleStatsChange }) => {
     const contextSessionId = useChatSessionId();
     const globalSessionId = useAtomValue(sessionIdAtom);
     const sessionId = sessionIdOverride ?? contextSessionId ?? globalSessionId;
@@ -48,6 +54,7 @@ const CompactFileChanges: React.FC<CompactFileChangesProps> = memo(
     const { allFiles } = useCompactFileData({
       sessionId,
       initialData,
+      reloadKey,
     });
 
     const visibleStats = useMemo<FileChangeVisibleStats>(() => {

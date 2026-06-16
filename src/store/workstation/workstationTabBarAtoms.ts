@@ -85,10 +85,23 @@ export const OPS_CONTROL_HOME_TAB = {
 export type OpsControlHomeTab =
   (typeof OPS_CONTROL_HOME_TAB)[keyof typeof OPS_CONTROL_HOME_TAB];
 
+export const OPS_CONTROL_PROJECTS_VIEW = {
+  PROJECTS: "projects",
+  WORK_ITEMS: "work-items",
+} as const;
+
+export type OpsControlProjectsView =
+  (typeof OPS_CONTROL_PROJECTS_VIEW)[keyof typeof OPS_CONTROL_PROJECTS_VIEW];
+
 export const opsControlHomeTabAtom = atom<OpsControlHomeTab>(
   OPS_CONTROL_HOME_TAB.OPS_CONTROL
 );
 opsControlHomeTabAtom.debugLabel = "opsControlHomeTabAtom";
+
+export const opsControlProjectsViewAtom = atom<OpsControlProjectsView>(
+  OPS_CONTROL_PROJECTS_VIEW.WORK_ITEMS
+);
+opsControlProjectsViewAtom.debugLabel = "opsControlProjectsViewAtom";
 
 export const opsControlPeekHostAtom = atom<WorkstationTabHost | null>(null);
 opsControlPeekHostAtom.debugLabel = "opsControlPeekHostAtom";

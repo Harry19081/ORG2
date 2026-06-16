@@ -22,7 +22,7 @@ import {
 import i18next from "i18next";
 import { useAtomValue, useSetAtom } from "jotai";
 import { PanelLeft, Plus, X } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
@@ -57,14 +57,7 @@ const PLATFORM_SIDEBAR_RADIUS =
 const IDLE_SIDEBAR_RESIZE_HANDLE_CLASS_NAME =
   "h-full [&>div:first-child]:origin-right [&>div:first-child]:scale-x-50 [&>div:first-child]:transition-transform hover:[&>div:first-child]:scale-x-100";
 
-const SIDEBAR_TOP_CHROME_TRANSITION_CLASS_NAME =
-  "transition-opacity duration-150";
-
-function getSidebarTopChromeVisibilityClassName(visible: boolean): string {
-  return visible
-    ? "pointer-events-auto opacity-100"
-    : "pointer-events-none opacity-0";
-}
+const SIDEBAR_TOP_CHROME_CLASS_NAME = "pointer-events-auto opacity-100";
 
 // ============================================
 // SidebarBase Component
@@ -99,7 +92,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       setWidth,
     } = useSidebarState();
 
-    const [sidebarChromeVisible, setSidebarChromeVisible] = useState(false);
     const isMacOS = isTauriDesktop();
     const hideSidebarShortcut = getShortcutKeys("toggle_sidebar");
     const isFullscreen = useAtomValue(windowFullscreenAtom);
@@ -230,7 +222,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       return null;
     }
 
-    const sidebarTopChromeClassName = `${SIDEBAR_TOP_CHROME_TRANSITION_CLASS_NAME} ${getSidebarTopChromeVisibilityClassName(sidebarChromeVisible)}`;
+    const sidebarTopChromeClassName = SIDEBAR_TOP_CHROME_CLASS_NAME;
 
     // Traffic lights section
     const renderTrafficLightsSpace = () => {
@@ -523,8 +515,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
           isDragging ? "" : "transition-[width] duration-150"
         } ${className}`}
         style={containerStyle}
-        onMouseEnter={() => setSidebarChromeVisible(true)}
-        onMouseLeave={() => setSidebarChromeVisible(false)}
         onContextMenu={handleResizeContextMenu}
       >
         {wrappedContent}

@@ -6,6 +6,7 @@ use database::db::get_connection;
 
 use super::super::types::{
     session_defaults, KeySource, SessionRunner, SessionStatus, DEFAULT_CODE_SESSION_FLOW,
+    PERSONAL_ORG_ID,
 };
 use super::types::{CliHistoryMutation, CodeSession, CreateCodeSessionParams};
 
@@ -63,6 +64,12 @@ pub fn create_session(
         None => KeySource::default().to_string(),
     };
 
+    let org_id = params
+        .org_id
+        .clone()
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| PERSONAL_ORG_ID.to_string());
+
     let additional_dirs_json: Option<String> = params
         .additional_directories
         .as_ref()
@@ -74,14 +81,17 @@ pub fn create_session(
             (session_id, name, status, flow, runner, cli_agent_type, model, tier,
              account_id, repo_path, branch, proxy_token, proxy_url, hosted_token,
              proxy_session_id, background, key_source, additional_directories,
-             parent_session_id, org_member_id, created_at, updated_at)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22)",
+             parent_session_id, org_member_id, org_id, project_id, project_name,
+             project_slug, work_item_id, agent_role, created_at, updated_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28)",
         params![
             session_id, name, SessionStatus::Pending.as_ref(), flow, runner, params.cli_agent_type,
             params.model, params.tier, params.account_id,
             params.repo_path, params.branch, params.proxy_token, params.proxy_url,
             params.hosted_token, params.proxy_session_id, background, key_source_str,
-            additional_dirs_json, params.parent_session_id, params.org_member_id, ts, ts,
+            additional_dirs_json, params.parent_session_id, params.org_member_id,
+            org_id, params.project_id, params.project_name, params.project_slug,
+            params.work_item_id, params.agent_role, ts, ts,
         ],
     )?;
 
@@ -102,6 +112,8 @@ const SESSION_COLUMNS: &str =
      cs.agent_exec_mode, cs.draft_text, cs.reply_target_event_id,
      cs.additional_directories,
      cs.parent_session_id, cs.org_member_id,
+     COALESCE(cs.org_id, 'personal-org'), cs.project_id, cs.project_name,
+     cs.project_slug, cs.work_item_id, cs.agent_role,
      cs.created_at, cs.updated_at";
 
 /// Get a session by ID.
@@ -637,7 +649,13 @@ fn row_to_session(row: &rusqlite::Row) -> rusqlite::Result<CodeSession> {
             .filter(|v| !v.is_empty()),
         parent_session_id: row.get(30)?,
         org_member_id: row.get(31)?,
-        created_at: row.get(32)?,
-        updated_at: row.get(33)?,
+        org_id: row.get(32)?,
+        project_id: row.get(33)?,
+        project_name: row.get(34)?,
+        project_slug: row.get(35)?,
+        work_item_id: row.get(36)?,
+        agent_role: row.get(37)?,
+        created_at: row.get(38)?,
+        updated_at: row.get(39)?,
     })
 }
