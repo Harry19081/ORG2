@@ -242,7 +242,7 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
 
   const panelContent = mode ? (
     <div
-      className={`w-full rounded-xl bg-chat-panel-info-container ${
+      className={`w-full rounded-xl border border-solid border-border-2 ${
         mode === "create" ? "p-2" : ""
       }`}
       data-testid="work-item-attachment-panel"
@@ -258,17 +258,17 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
             descriptionClassName="hidden"
             showDescription={false}
           />
-          <div className="mt-2 flex justify-end gap-2">
-            <Button variant="secondary" size="small" onClick={handleClosePanel}>
-              {t("common:actions.cancel")}
-            </Button>
+          <div className="mt-2 flex justify-start gap-2">
             <Button
-              variant="primary"
+              variant="secondary"
               size="small"
               onClick={handleCreate}
               disabled={saving}
             >
               {saving ? t("common:status.saving") : t("common:actions.create")}
+            </Button>
+            <Button variant="tertiary" size="small" onClick={handleClosePanel}>
+              {t("common:actions.cancel")}
             </Button>
           </div>
         </div>
@@ -327,17 +327,17 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
               </div>
             )}
           </div>
-          <div className="flex justify-end gap-2 px-1 pb-1 pt-2">
-            <Button variant="secondary" size="small" onClick={handleClosePanel}>
-              {t("common:actions.cancel")}
-            </Button>
+          <div className="flex justify-start gap-2 p-2">
             <Button
-              variant="primary"
+              variant="secondary"
               size="small"
               onClick={handleAddLinkedWorkItems}
               disabled={selectedWorkItemKeys.length === 0}
             >
               {t("common:actions.add")}
+            </Button>
+            <Button variant="tertiary" size="small" onClick={handleClosePanel}>
+              {t("common:actions.cancel")}
             </Button>
           </div>
         </div>
