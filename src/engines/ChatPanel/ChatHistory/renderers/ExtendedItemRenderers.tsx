@@ -64,6 +64,7 @@ export function renderActivity(
         status={event.activityStatus || "agent"}
         itemIndex={index}
         isStreaming={event.isDelta === true}
+        collapsedNarration={chatItem.collapsedNarration === true}
       />
       {totalOccurrences !== undefined && totalOccurrences >= 2 && (
         <div className={SESSION_UI_TOKENS.ROW.INLINE}>
