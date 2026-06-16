@@ -8,7 +8,9 @@ use reqwest::Client;
 use serde::Serialize;
 use serde_json::Value;
 
-use crate::providers::responses_common::{convert_messages, convert_tools, ResponsesRequest};
+use crate::providers::responses_common::{
+    convert_messages, convert_tools_with_choice, ResponsesRequest,
+};
 use crate::providers::traits::{ProviderConfig, ProviderError};
 use crate::utils::build_http_client;
 
@@ -77,14 +79,14 @@ impl OpenAIResponsesClient {
         stream: bool,
     ) -> ResponsesRequest {
         let (instructions, input) = convert_messages(messages);
-        let converted_tools = convert_tools(tools);
+        let (converted_tools, tool_choice) = convert_tools_with_choice(tools);
 
         ResponsesRequest {
             model: model.to_string(),
             input,
             instructions,
             tools: converted_tools,
-            tool_choice: tools.map(|_| Value::String("auto".to_string())),
+            tool_choice,
             max_output_tokens: Some(max_tokens),
             temperature: None,
             store: false,

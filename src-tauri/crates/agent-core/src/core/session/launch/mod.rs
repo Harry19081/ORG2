@@ -205,6 +205,38 @@ async fn generate_title_before_first_turn(
     crate::lifecycle::emit_session_renamed(state.app_handle.as_ref(), session_id, &title);
 }
 
+/// Spawn session-title generation as an independent fire-and-forget task.
+///
+/// Title generation is a `side_query` that runs a full LLM round-trip. It
+/// MUST NOT block `send_initial_turn`: doing so makes any slowness/failure in
+/// the auxiliary call (provider 400s, retry backoff, network) directly delay
+/// the user's first turn — the very "a side query stalls the main turn"
+/// coupling this decoupling removes. The title task persists the name and
+/// emits `session:renamed` when it finishes; the first turn proceeds
+/// concurrently regardless of when (or whether) the title resolves.
+fn spawn_session_title_generation(
+    state: AgentAppState,
+    session_id: String,
+    workspace_path: std::path::PathBuf,
+    account_id: Option<String>,
+    model: Option<String>,
+    native_harness_type: Option<core_types::providers::NativeHarnessType>,
+    content: String,
+) {
+    tokio::spawn(async move {
+        generate_title_before_first_turn(
+            &state,
+            &session_id,
+            workspace_path,
+            account_id,
+            model,
+            native_harness_type,
+            &content,
+        )
+        .await;
+    });
+}
+
 /// Create and start an agent session linked to a work item.
 ///
 /// This remains as the public WorkItem-facing adapter for existing callers;
@@ -575,16 +607,17 @@ pub(crate) async fn launch_rust_agent_run(
             let workspace_path_for_send = prepared_worktree_path
                 .clone()
                 .unwrap_or_else(|| workspace_path_for_background.clone());
-            generate_title_before_first_turn(
-                &state_for_background,
-                &session_id_for_background,
+            // Title generation runs concurrently — it must not delay the
+            // first turn. See `spawn_session_title_generation`.
+            spawn_session_title_generation(
+                state_for_background.clone(),
+                session_id_for_background.clone(),
                 std::path::PathBuf::from(&workspace_path_for_send),
                 account_id_for_send.clone(),
                 model_for_send.clone(),
                 native_harness_type_for_send.clone(),
-                &content_for_send,
-            )
-            .await;
+                content_for_send.clone(),
+            );
             let send_result = send_initial_turn(
                 &state_for_background,
                 &session_id_for_background,
@@ -685,16 +718,17 @@ pub(crate) async fn launch_rust_agent_run(
         let app_handle_for_send = state.app_handle.clone();
 
         tokio::spawn(async move {
-            generate_title_before_first_turn(
-                &state_for_send,
-                &session_id_for_send,
+            // Title generation runs concurrently — it must not delay the
+            // first turn. See `spawn_session_title_generation`.
+            spawn_session_title_generation(
+                state_for_send.clone(),
+                session_id_for_send.clone(),
                 std::path::PathBuf::from(&workspace_path_for_send),
                 account_id_for_send.clone(),
                 model_for_send.clone(),
                 native_harness_type_for_send.clone(),
-                &content_for_send,
-            )
-            .await;
+                content_for_send.clone(),
+            );
 
             // A plain (non-org) launch's first message IS the user's real
             // request — UserSubmit so downstream consumers (goal loop,

@@ -11,7 +11,7 @@ use std::collections::HashMap;
 use std::sync::RwLock;
 
 use super::types::{CHATGPT_CODEX_BASE, CODEX_USER_AGENT};
-use crate::providers::responses_common::{convert_messages, convert_tools};
+use crate::providers::responses_common::convert_messages;
 use crate::providers::traits::{ProviderConfig, ProviderError};
 use crate::utils::build_http_client;
 
@@ -90,12 +90,6 @@ impl CodexNativeClient {
         instructions
             .filter(|value| !value.trim().is_empty())
             .unwrap_or_else(|| "You are Codex, a coding agent running in ORGII.".to_string())
-    }
-
-    /// Convert Chat Completions tool definitions to Responses API format.
-    /// Delegates to shared converter.
-    pub(super) fn convert_tools(tools: Option<&[Value]>) -> Option<Vec<Value>> {
-        convert_tools(tools)
     }
 
     /// Build HTTP request with required Codex native backend headers.
