@@ -6,7 +6,7 @@
 //! **FD safety (Unix):** before spawning any `git` subprocess, `pre_exec`
 //! closes all inherited file descriptors (3–1024) to prevent
 //! "Bad file descriptor (os error 9)" from WebView FD leakage.
-//! See: `Documentation/Development/bad-file-descriptor-root-cause-0124.md`
+//! See: `docs/development/bad-file-descriptor-root-cause-0124.md`
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 

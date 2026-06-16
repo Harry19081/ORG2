@@ -50,7 +50,7 @@ pub(super) async fn recall_mode_embedding(
 /// itself (or its sibling pending rows) as "similar neighbours", the LLM
 /// picks UPDATE/MERGE, and the whole pending batch collapses into `merged`
 /// status without ever graduating to `active`. See
-/// `Documentation/Agent/audit-fallbacks-0421.md` for the 14 rows lost this
+/// `docs/agent/audit-fallbacks-0421.md` for the 14 rows lost this
 /// way on `agent:builtin:sde` before 0421.
 pub(super) fn recall_mode_manifest(
     conn: &Connection,
@@ -117,7 +117,7 @@ mod tests {
     /// batch collapses into `merged` status without ever reaching `active`.
     ///
     /// This is the bug that produced the 14 dead rows on `agent:builtin:sde`
-    /// before 0421 — see `Documentation/Agent/audit-fallbacks-0421.md`.
+    /// before 0421 — see `docs/agent/audit-fallbacks-0421.md`.
     #[test]
     fn recall_mode_manifest_excludes_pending_candidates() {
         let conn = setup_conn();

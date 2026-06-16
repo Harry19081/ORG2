@@ -95,11 +95,11 @@ If a check cannot be run locally, explain why in the pull request and include an
 
 - `src/` — React, TypeScript, UI, stores, hooks, and frontend services
 - `src-tauri/` — Tauri shell and Rust backend
-- `Documentation/` — living architecture and feature documentation
+- `docs/` — living architecture and feature documentation
 - `scripts/` — development, setup, maintenance, and build scripts
 - `tests/` — repository-level tests and test helpers
 
-Documentation is organized by domain under `Documentation/`. New or substantially changed features should include documentation when the behavior, architecture, or operating model is not obvious from the code. Follow `Documentation/_TEMPLATE.md` and the naming format documented in `Documentation/README.md`.
+Documentation is organized by domain under `docs/`. New or substantially changed features should include documentation when the behavior, architecture, or operating model is not obvious from the code. Use lowercase domain folders such as `docs/architecture/`, `docs/shared/`, `docs/workstation/`, and `docs/contributing/`; use `{subject}--MMDD.md` for date-stamped domain docs.
 
 ## Coding guidelines
 
@@ -168,7 +168,7 @@ If you use a coding agent, the agent must read and follow this section before cr
 
 ## Contributor License Agreement
 
-ORGII requires contributors to sign the repository Contributor License Agreement before a pull request can be merged. The agreement text is in [`CLA.md`](CLA.md).
+ORGII requires contributors to sign the repository Contributor License Agreement before a pull request can be merged. The agreement text is in [`docs/contributing/CLA.md`](docs/contributing/CLA.md).
 
 The repository uses GitHub CLA Assistant to collect signatures and report CLA status on pull requests. When you open your first PR, CLA Assistant will comment with a signing link if your GitHub account has not signed the current agreement.
 
@@ -200,4 +200,4 @@ Never commit API keys, signing keys, OAuth secrets, personal tokens, private log
 
 ## License
 
-By contributing, you agree that your contributions are licensed under the repository license: AGPL-3.0-or-later and are submitted under the Contributor License Agreement in `CLA.md`. See `LICENSE` for the full license text.
+By contributing, you agree that your contributions are licensed under the repository license: AGPL-3.0-or-later and are submitted under the Contributor License Agreement in `docs/contributing/CLA.md`. See `LICENSE` for the full license text.

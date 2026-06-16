@@ -204,7 +204,7 @@ pub fn ensure_tables_with(conn: &Connection) -> SqliteResult<()> {
 
     // L3 rebuild: the per-session learning toggle was replaced by a per-agent
     // `learnings.enabled` flag on `AgentDefinition`
-    // (see Documentation/Agent/l3-memory-rebuild--0421.md §6.4).
+    // (see docs/agent/l3-memory-rebuild--0421.md §6.4).
     // Drop the legacy column if it survives from an older install.
     try_drop_column(conn, "agent_sessions", "learning_enabled");
 

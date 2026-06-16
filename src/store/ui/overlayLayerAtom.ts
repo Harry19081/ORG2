@@ -15,7 +15,7 @@
  * (`useDropdownEngine`, `SpotlightPortal`, `Tooltip` portal) contribute
  * automatically — no per-call-site work.
  *
- * See `Documentation/WorkStation/Browser/webview-layering--0418.md`.
+ * See `docs/workstation/Browser/webview-layering--0418.md`.
  */
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";

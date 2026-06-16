@@ -90,7 +90,7 @@ use infrastructure::index_manager::IndexManager;
 // - Config/Providers: key_vault module (reads credentials.json)
 // - Git operations: api/git module (git2 crate)
 // - Repo management: git/repos module (SQLite + git watcher)
-// See Documentation/Architecture-Guide/unified-proxy-architecture-0210.md
+// See docs/architecture-guide/unified-proxy-architecture-0210.md
 
 /// Main entry point for the Tauri application.
 ///

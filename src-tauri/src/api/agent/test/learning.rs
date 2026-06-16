@@ -428,7 +428,7 @@ pub async fn test_learnings_consolidate(
 //
 // These endpoints expose internal helpers of `memory::reflection` so
 // e2e scenarios can pin the invariants documented in
-// `Documentation/Agent/audit-fallbacks-0421.md`:
+// `docs/agent/audit-fallbacks-0421.md`:
 //
 //   - Transcript hygiene — `build_transcript` must exclude tool_call /
 //     tool_result rows and tail-truncate (never head-truncate per-message).

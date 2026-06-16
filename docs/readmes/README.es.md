@@ -1,6 +1,6 @@
 # ORG-II
 
-[English](README.md) · [Français](README.fr.md) · [简体中文](README.zh.md) · [繁體中文](README.zh-Hant.md) · [Español](README.es.md) · [Русский](README.ru.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · [Polski](README.pl.md)
+[English](../../README.md) · [Français](README.fr.md) · [简体中文](README.zh.md) · [繁體中文](README.zh-Hant.md) · [Español](README.es.md) · [Русский](README.ru.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · [Polski](README.pl.md)
 
 ORG-II es un framework open-source de desarrollo agentic construido con Rust y Tauri para ejecución local-first con menos de 100 MB en disco.
 
@@ -24,9 +24,9 @@ ORG-II explora un modelo distinto: Agents como colegas persistentes y observable
 
 https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a
 
-![Demo del navegador GitHub en ORGII](assets/github-browser-demo.png)
+![Demo del navegador GitHub en ORGII](../../assets/github-browser-demo.png)
 
-![Demo de programación de Agents en ORGII](assets/agent-scheduling-demo.png)
+![Demo de programación de Agents en ORGII](../../assets/agent-scheduling-demo.png)
 
 ## Descargar
 
@@ -42,7 +42,7 @@ pnpm run download:sidecars
 pnpm run tauri:dev
 ```
 
-Para más detalles sobre contribución, consulta [CONTRIBUTING.md](CONTRIBUTING.md). Pedimos a todos actuar con respeto y empatía; consulta [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Para más detalles sobre contribución, consulta [CONTRIBUTING.md](../../CONTRIBUTING.md). Pedimos a todos actuar con respeto y empatía; consulta [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md).
 
 ## Sidecars nativos opcionales
 
@@ -57,4 +57,4 @@ Si falta un sidecar, el build de Rust crea un pequeño recurso placeholder para 
 
 ## Licencia
 
-ORGII está licenciado bajo GNU Affero General Public License v3.0 o posterior (`AGPL-3.0-or-later`). Consulta [`LICENSE`](LICENSE) para ver el texto completo de la licencia.
+ORGII está licenciado bajo GNU Affero General Public License v3.0 o posterior (`AGPL-3.0-or-later`). Consulta [`LICENSE`](../../LICENSE) para ver el texto completo de la licencia.

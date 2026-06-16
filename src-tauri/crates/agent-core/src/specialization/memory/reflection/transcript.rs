@@ -22,7 +22,7 @@ pub(super) const MIN_TRANSCRIPT_LEN: usize = 200;
 /// 800 tool_input, 500 tool_output) which caused the reflection model to see
 /// only the head bytes of every message — including sandbox paths, e2e test
 /// IDs, and tool schema errors that then leaked into "learnings". See
-/// `Documentation/Agent/audit-fallbacks-0421.md` for the 14 polluted rows this
+/// `docs/agent/audit-fallbacks-0421.md` for the 14 polluted rows this
 /// caused before 0421.
 pub(super) const TRANSCRIPT_TOTAL_CAP: usize = 16_000;
 

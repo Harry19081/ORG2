@@ -398,7 +398,7 @@ mod tests {
     /// Pin the identity-quartet inheritance contract from the docstring on
     /// `build_forked_record`. The four fields below are the same matrix
     /// audited under "P1 Multi-field session identity resolvers" in
-    /// `Documentation/RustBackend/agent-core-cleanup-todo--0429.md`:
+    /// `docs/rust-backend/agent-core-cleanup-todo--0429.md`:
     /// dropping any one of them on fork was the original split-brain
     /// shape (a hosted_key parent compacting into an own_key child, etc.).
     #[test]

@@ -123,7 +123,7 @@ impl OutboxOp {
     }
 }
 
-/// Outbox row lifecycle. See `Documentation/Shared/pluggable-sync-framework-plan--0430.md`
+/// Outbox row lifecycle. See `docs/shared/pluggable-sync-framework-plan--0430.md`
 /// §"Outbox Schema" for the full state machine.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

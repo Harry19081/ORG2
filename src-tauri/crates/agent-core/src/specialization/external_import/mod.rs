@@ -16,7 +16,7 @@
 //!     (→ `AgentDefinition`, routed through `AgentDefinitionsStore` so
 //!     in-memory state is updated immediately).
 //!
-//! Design: `Documentation/Agent/external-agent-auto-import--design.md`.
+//! Design: `docs/agent/external-agent-auto-import--design.md`.
 
 pub mod commands;
 pub mod detect;

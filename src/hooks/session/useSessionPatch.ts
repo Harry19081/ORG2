@@ -5,7 +5,7 @@
  *
  * Per-session input state (model, account, exec mode) lives in the
  * Rust `agent_sessions` / `code_sessions` tables — see
- * `Documentation/Session/per-session-input-state-audit-and-plan--0430.md`.
+ * `docs/session/per-session-input-state-audit-and-plan--0430.md`.
  * UI components that let the user edit those fields (`ModelPalette`,
  * `ModePill`) call into this hook so:
  *

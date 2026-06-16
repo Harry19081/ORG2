@@ -154,7 +154,7 @@ pub(super) async fn consolidate_batch(
         // list, which silently caused the LLM to choose ADD (no
         // similar neighbours found) instead of UPDATE/MERGE — exactly
         // the silent-fallback class documented in
-        // `Documentation/Agent/audit-fallbacks-0421.md`. Surface the
+        // `docs/agent/audit-fallbacks-0421.md`. Surface the
         // fallback failure via `warn!` and still return an empty list
         // so the consolidation pass for the surrounding scope does
         // not abort, but a partial recall miss is now traceable.

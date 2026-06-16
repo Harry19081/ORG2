@@ -13,7 +13,7 @@ python3 scripts/download_models.py
 
 ## Documentation
 
-See [Documentation/Development/dev-embedding-models-setup.md](../../Documentation/Development/dev-embedding-models-setup.md) for full setup guide.
+See [docs/development/dev-embedding-models-setup.md](../../docs/development/dev-embedding-models-setup.md) for full setup guide.
 
 ## Required Files
 

@@ -189,7 +189,7 @@ let live = match query(…).await {
 
 ### F-MED-3 — 重载词缺 glossary
 
-见 naming-collisions.md。建议在 `Documentation/` 加 `glossary.md`，每个重载词列含义 + 推荐用法 + 当前位置。
+见 naming-collisions.md。建议在 `docs/` 加 `glossary.md`，每个重载词列含义 + 推荐用法 + 当前位置。
 
 ### F-MED-4 — FE 5 处重复定义 status / mode
 

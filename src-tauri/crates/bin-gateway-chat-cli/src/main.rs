@@ -39,8 +39,8 @@
 //!    transcript file next to it.
 //!    ```bash
 //!    cargo run --bin gateway-chat-cli -- \
-//!        --script Documentation/Agent/gateway-dogfood/scenarios/news_brief.md \
-//!        --transcript Documentation/Agent/gateway-dogfood/transcripts/news_brief--MMDD.md
+//!        --script docs/agent/gateway-dogfood/scenarios/news_brief.md \
+//!        --transcript docs/agent/gateway-dogfood/transcripts/news_brief--MMDD.md
 //!    ```
 //!    Each run uses a fresh `source_chat_id` derived from the script
 //!    basename + UTC timestamp so scenarios don't bleed into each other.

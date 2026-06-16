@@ -11,7 +11,7 @@ name = "key_vault"
 path = "src/lib.rs"
 
 # Phase 2 of the workspace migration. See
-# `Documentation/RustBackend/modularization-plan--0504.md`. The crate keeps its
+# `docs/rust-backend/modularization-plan--0504.md`. The crate keeps its
 # `#[tauri::command]` macros (mirroring `crates/cursor-bridge`) so the
 # `app` crate still re-registers them in `commands/handler_list.inc` without a
 # command shell shim.

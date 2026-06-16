@@ -56,7 +56,7 @@ pub fn refresh_git_status_sync(repo_path: &Path) -> Result<GitStatus, String> {
 /// - Ahead/behind counts (# branch.ab)
 /// - Commit hash (# branch.oid)
 /// - All file status info
-///   See: Documentation/Development/bad-file-descriptor-root-cause-0124.md
+///   See: docs/development/bad-file-descriptor-root-cause-0124.md
 fn run_git_status_sync(repo_path: &Path) -> Result<GitStatus, String> {
     let canonical_path = repo_path
         .canonicalize()

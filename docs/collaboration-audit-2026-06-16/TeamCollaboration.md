@@ -12,8 +12,7 @@ Scope read:
   `components/CreateCollabOrgView/index.tsx`
 - `src/engines/ChatPanel/panels/CollabOrgPanelView.tsx`
 - `src/hooks/platform/useDeepLinkHandler.ts`, `src-tauri/tauri.conf.json`
-- `cloudflare/collab-hub/src/index.ts`, `route.ts`, `migrations/0001_initial.sql`,
-  `wrangler.jsonc`
+- Historical Cloudflare collaboration hub worker package, removed after this audit
 
 ---
 
@@ -40,8 +39,8 @@ feature.
 - Whether the OS actually registers the deep-link scheme at install time (only the
   Tauri config + handler were inspected, not a built bundle).
 - Runtime D1/Durable Object behavior (static read only).
-- The generated copy under `cloudflare/collab-hub/templates/worker/**` was not
-  diffed against `src/**`; assumed to mirror it.
+- The generated Cloudflare worker template copy was not diffed against `src/**`;
+  assumed to mirror it at audit time.
 
 ---
 

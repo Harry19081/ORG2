@@ -268,7 +268,7 @@ impl ResolvedAgent {
     /// path) and a small `api/agent/public::get_config` view that prefers
     /// the full resolve and falls back to `resolve_definition` on failure
     /// (already documented at the call site). Cleanup history for this
-    /// invariant lives in `Documentation/RustBackend/agent-core-cleanup-todo--0429.md`.
+    /// invariant lives in `docs/rust-backend/agent-core-cleanup-todo--0429.md`.
     pub fn resolve(
         def: &AgentDefinition,
         store: Option<&AgentDefinitionsStore>,

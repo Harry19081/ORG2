@@ -1,6 +1,10 @@
 # ORG-II
 
-[English](README.md) · [Français](README.fr.md) · [简体中文](README.zh.md) · [繁體中文](README.zh-Hant.md) · [Español](README.es.md) · [Русский](README.ru.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · [Polski](README.pl.md)
+[English](README.md) · [Français](docs/readmes/README.fr.md) · [简体中文](docs/readmes/README.zh.md) · [繁體中文](docs/readmes/README.zh-Hant.md) · [Español](docs/readmes/README.es.md) · [Русский](docs/readmes/README.ru.md) · [Português](docs/readmes/README.pt.md) · [Deutsch](docs/readmes/README.de.md) · [日本語](docs/readmes/README.ja.md) · [한국어](docs/readmes/README.ko.md) · [Türkçe](docs/readmes/README.tr.md) · [Tiếng Việt](docs/readmes/README.vi.md) · [Polski](docs/readmes/README.pl.md)
+
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a" controls width="720"></video>
+</p>
 
 ORG-II is an open-source agentic development framework built with Rust and Tauri for local-first execution under 100MB on disk.
 
@@ -20,13 +24,13 @@ ORG-II explores a different model: agents as persistent, observable colleagues i
 - Org-level alignment surfaces (issues/projects management) for coordinating humans, agents, goals, and accountability (WIP).
 - Session collaboration and group issue workflows via self-hosted Supabase (WIP).
 
-## Demo
+<p align="center">
+  <img src="assets/github-browser-demo.png" alt="ORGII GitHub browser demo" width="720" />
+</p>
 
-https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a
-
-![ORGII GitHub browser demo](assets/github-browser-demo.png)
-
-![ORGII agent scheduling demo](assets/agent-scheduling-demo.png)
+<p align="center">
+  <img src="assets/agent-scheduling-demo.png" alt="ORGII agent scheduling demo" width="720" />
+</p>
 
 ## Download
 

@@ -16,7 +16,7 @@
 //! - [`provider`] — provider selection mirror of `reflection::provider`
 //! - [`extract`] — LLM extraction prompt and response parsing
 //!
-//! Ref: §2.3 of `Documentation/Agent/l3-memory-rebuild--0421.md`.
+//! Ref: §2.3 of `docs/agent/l3-memory-rebuild--0421.md`.
 
 mod extract;
 mod patterns;

@@ -9,7 +9,7 @@
  * - Manages split pane dismiss/reveal state
  *
  * Bug 5 note: trigger is eventStoreVersion (not event_count / events.length).
- * See Documentation/Agent/subagent-rendering-bug--0417.md § Bug 5 for the
+ * See docs/agent/subagent-rendering-bug--0417.md § Bug 5 for the
  * full root-cause chain. Do NOT change the trigger without reading that doc.
  */
 import { useAtomValue, useSetAtom } from "jotai";

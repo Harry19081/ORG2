@@ -142,7 +142,7 @@ const AppShell = () => {
   // === Global Browser Webview Layering ===
   // Drops inline browser WKWebViews behind React portals whenever any
   // overlay (dropdown, modal, spotlight) is visible. See
-  // `Documentation/WorkStation/Browser/webview-layering--0418.md`.
+  // `docs/workstation/Browser/webview-layering--0418.md`.
   useGlobalBrowserWebviewLayering();
 
   // === Preload MainApp route chunks in the background ===

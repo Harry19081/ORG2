@@ -7,6 +7,7 @@ This document describes the organization of the `src/types/` folder.
 ```
 src/types/
 ├── index.ts                    # Main barrel export
+├── ambient/                    # Global declaration files for assets and browser globals
 ├── core/                       # Core domain types
 ├── session/                    # Session/workflow types
 ├── editor/                     # Editor/IDE types
@@ -18,6 +19,10 @@ src/types/
 > **Market types** live in `src/api/http/market/types.ts` — the canonical source of truth for all token market types.
 
 ## Domain Categories
+
+### `ambient/` - Global Declarations
+
+Ambient `.d.ts` files for asset imports and browser/build globals. These files are included by `tsconfig.json` through `src/**/*` and should not export application domain types.
 
 ### `core/` - Core Domain Types
 

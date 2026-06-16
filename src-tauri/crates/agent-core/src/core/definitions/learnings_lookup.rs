@@ -5,7 +5,7 @@
 //! resolved model id (they reuse the session's recorded model and account).
 //! Calling `ResolvedAgent::resolve()` from those subsystems was forcing
 //! agents to declare `selected_model_id` purely to read three boolean
-//! flags, which broke `builtin:sde` (see Documentation/Agent/learnings-decoupling--0424.md).
+//! flags, which broke `builtin:sde` (see docs/agent/learnings-decoupling--0424.md).
 //!
 //! This helper:
 //! - Loads the agent definition by id.

@@ -1,6 +1,6 @@
 # ORG-II
 
-[English](README.md) · [Français](README.fr.md) · [简体中文](README.zh.md) · [繁體中文](README.zh-Hant.md) · [Español](README.es.md) · [Русский](README.ru.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · [Polski](README.pl.md)
+[English](../../README.md) · [Français](README.fr.md) · [简体中文](README.zh.md) · [繁體中文](README.zh-Hant.md) · [Español](README.es.md) · [Русский](README.ru.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · [Polski](README.pl.md)
 
 ORG-II 是一個開源的 Agentic 開發框架，基於 Rust 和 Tauri 建構，面向 local-first 執行，磁碟占用低於 100MB。
 
@@ -24,9 +24,9 @@ ORG-II 探索另一種模式：把 Agent 視為結構化組織中持久且可觀
 
 https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a
 
-![ORGII GitHub 瀏覽器示範](assets/github-browser-demo.png)
+![ORGII GitHub 瀏覽器示範](../../assets/github-browser-demo.png)
 
-![ORGII Agent 排程示範](assets/agent-scheduling-demo.png)
+![ORGII Agent 排程示範](../../assets/agent-scheduling-demo.png)
 
 ## 下載
 
@@ -42,7 +42,7 @@ pnpm run download:sidecars
 pnpm run tauri:dev
 ```
 
-更多貢獻資訊請參閱 [CONTRIBUTING.md](CONTRIBUTING.md)。我們希望所有人保持尊重與同理心；請參閱 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)。
+更多貢獻資訊請參閱 [CONTRIBUTING.md](../../CONTRIBUTING.md)。我們希望所有人保持尊重與同理心；請參閱 [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md)。
 
 ## 可選原生 sidecars
 
@@ -57,4 +57,4 @@ Computer Use 目前僅支援 macOS。Browser Use 可在受支援平台上使用 
 
 ## 授權
 
-ORGII 使用 GNU Affero General Public License v3.0 或更新版本（`AGPL-3.0-or-later`）授權。完整授權文字請參閱 [`LICENSE`](LICENSE)。
+ORGII 使用 GNU Affero General Public License v3.0 或更新版本（`AGPL-3.0-or-later`）授權。完整授權文字請參閱 [`LICENSE`](../../LICENSE)。

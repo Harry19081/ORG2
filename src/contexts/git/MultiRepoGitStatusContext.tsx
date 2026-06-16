@@ -101,7 +101,7 @@ export const MultiRepoGitStatusProvider: React.FC<{
   // Track if initial startup is complete. During startup, only fetch selected repo
   // to prevent "bad file descriptor" errors from too many concurrent git processes.
   // Other repos are lazily loaded when user opens components that need them.
-  // See: Documentation/Development/bad-file-descriptor-root-cause-0124.md
+  // See: docs/development/bad-file-descriptor-root-cause-0124.md
   const startupCompleteRef = useRef(false);
 
   // ============================================
@@ -356,7 +356,7 @@ export const MultiRepoGitStatusProvider: React.FC<{
       // During startup, ONLY fetch the selected repo to prevent file descriptor exhaustion
       // from too many concurrent git processes. Other repos are lazily loaded when user
       // explicitly opens components that need them (e.g., Spotlight dropdown).
-      // See: Documentation/Development/bad-file-descriptor-root-cause-0124.md
+      // See: docs/development/bad-file-descriptor-root-cause-0124.md
       if (startupCompleteRef.current) {
         // After startup: queue uncached repos AND cached repos whose TTL
         // (or error-retry backoff) has elapsed, so badges don't go permanently stale.

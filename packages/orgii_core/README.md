@@ -14,6 +14,6 @@ onward.
 
 License: MIT (matches the planned public upstream).
 
-See `Documentation/RustBackend/oss-boundary--0506.md` for the full
+See `docs/rust-backend/oss-boundary--0506.md` for the full
 boundary design, one-way sync invariants, and the per-surface
 classification of what lives here vs. in `orgii_marketplace/`.

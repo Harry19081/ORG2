@@ -22,7 +22,7 @@ name = "app_window"
 
 [dependencies]
 # Shared serde defaults (`default_true`) so we don't redefine the helper
-# locally — see `Documentation/RustBackend/modularization-plan--0504.md`
+# locally — see `docs/rust-backend/modularization-plan--0504.md`
 # (latent crate-root path leaks).
 app_utils = { path = "../app-utils" }
 

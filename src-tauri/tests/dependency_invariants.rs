@@ -21,7 +21,7 @@
 //! …and fix the new dep at the source (either replace it, or make sure
 //! it's added with `default-features = false` plus rustls-tls features).
 //!
-//! See `Documentation/RustBackend/architecture/rust-backend-restructure
+//! See `docs/rust-backend/architecture/rust-backend-restructure
 //! --0211.md` and the commit retiring native-tls / vendored OpenSSL
 //! for the broader context.
 

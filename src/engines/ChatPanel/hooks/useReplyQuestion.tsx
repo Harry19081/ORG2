@@ -23,7 +23,7 @@ const log = createLogger("useReplyQuestion");
 /**
  * Reply / ignore handlers for inline `Q` chat items rendered by
  * `AskUserChatItem`. Wired into `ChatHistory` via `useChatHistoryState`
- * — see `Documentation/Session/chatpanel-session-flows--0410.md` for
+ * — see `docs/session/chatpanel-session-flows--0410.md` for
  * the full call chain.
  *
  * Scope is intentionally narrow: this hook only handles the *answer
