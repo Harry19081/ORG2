@@ -5,7 +5,7 @@ ORGII is a self-evolving agentic development framework for coding with agents an
 - Lightweight Tauri + Rust architecture; < 100MB on disk.
 - Rust agents that work with your existing API keys and agent subscriptions.
 - Livestream and replay agent trajectories for auditing, review, and debugging.
-- GUI compatible with both ORGII Rust and CLI agents
+- GUI compatible with both ORGII Rust and CLI agents.
 - Local-first architecture with group issue and session collaboration via self-hosted Supabase (early stage).
 
 Agents:
