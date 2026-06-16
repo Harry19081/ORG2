@@ -245,7 +245,7 @@ export function useSpotlight(
           void WorkStationViewService.openTerminalTab();
         },
         "detect-update": () => {
-          checkForUpdatesManually();
+          void checkForUpdatesManually();
         },
       };
 

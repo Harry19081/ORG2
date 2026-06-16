@@ -2,6 +2,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { check } from "@tauri-apps/plugin-updater";
 import { atom, useAtomValue } from "jotai";
+import { LoaderCircle } from "lucide-react";
 import { useCallback, useEffect } from "react";
 
 import Button from "@src/components/Button";
@@ -195,6 +196,15 @@ export async function installAvailableAppUpdate() {
 }
 
 export async function checkForAppUpdates(onUserClick = false) {
+  const checkingMessageId = onUserClick
+    ? Message.info({
+        content: "Checking for updates…",
+        duration: 0,
+        closable: false,
+        icon: <LoaderCircle size={18} className="animate-spin" />,
+      })
+    : "";
+
   try {
     const currentVersion = await getVersion();
     const update = TEMPORARY_FORCE_APP_UPDATE_UI_FOR_TESTING
@@ -224,6 +234,10 @@ export async function checkForAppUpdates(onUserClick = false) {
     log.error("Update check failed:", err);
     if (onUserClick) {
       Message.error(`Update check failed: ${err}`);
+    }
+  } finally {
+    if (checkingMessageId) {
+      Message.remove(checkingMessageId);
     }
   }
 }
@@ -356,9 +370,9 @@ export function AppUpdater() {
   return <AppUpdateModal />;
 }
 
-export const checkForUpdatesManually = () => {
+export const checkForUpdatesManually = async () => {
   if (isTauriDesktop()) {
-    checkForAppUpdates(true);
+    await checkForAppUpdates(true);
   } else {
     Message.info("This feature is only available in desktop app");
   }
