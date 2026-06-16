@@ -41,15 +41,54 @@ const DIFF_RENDER_TIMEOUT_MS = 120_000;
 // Unique sentinel the agent must write; asserted in the rendered diff panel.
 const SENTINEL = `DIFF_LIVE_SENTINEL_${RUN_ID}`;
 const TARGET_FILE = `diff-live-${RUN_ID}.ts`;
+// A single rendered code row taller than this means a line stretched the
+// layout instead of scrolling — the "giant row" artifact regressed.
+const MAX_SANE_LINE_HEIGHT_PX = 80;
 
 async function diffPanelSnapshot() {
   return execJS(`
     const replay = document.querySelector('.session-replay-diff');
+    if (!replay) {
+      return {
+        hasReplayShell: false,
+        replayText: '',
+        bodyTail: (document.body.innerText || '').slice(-1500),
+      };
+    }
+    const editors = replay.querySelectorAll('.cm-editor');
+    let maxLineHeight = 0;
+    let maxLineSample = '';
+    for (const line of replay.querySelectorAll('.cm-line')) {
+      const h = line.getBoundingClientRect().height;
+      if (h > maxLineHeight) {
+        maxLineHeight = h;
+        maxLineSample = (line.innerText || '').slice(0, 60);
+      }
+    }
+    const sectionButtons = Array.from(replay.querySelectorAll('button'))
+      .filter((b) => (b.innerText || '').includes(${JSON.stringify(TARGET_FILE)}));
     return {
-      hasReplayShell: !!replay,
-      replayText: replay ? (replay.innerText || '') : '',
+      hasReplayShell: true,
+      editorCount: editors.length,
+      sectionButtonCount: sectionButtons.length,
+      maxLineHeight: Math.round(maxLineHeight),
+      maxLineSample,
+      replayText: replay.innerText || '',
       bodyTail: (document.body.innerText || '').slice(-1500),
     };
+  `);
+}
+
+// Click the file-section header toggle (chevron button labeled with the
+// file name) so we can prove the section is collapsible.
+async function toggleLiveFileSection() {
+  return execJS(`
+    const replay = document.querySelector('.session-replay-diff') || document;
+    const btn = Array.from(replay.querySelectorAll('button'))
+      .find((b) => (b.innerText || '').includes(${JSON.stringify(TARGET_FILE)}));
+    if (!btn) return { clicked: false };
+    btn.click();
+    return { clicked: true };
   `);
 }
 
@@ -130,10 +169,11 @@ describe("Diff tab content live (real agent edit → orgtrack final-diff)", () =
     //    consolidated the live edit into a SessionFinalDiffRecord, and
     //    finalDiffToSection rendered it. Before the fix a diff-only record
     //    produced a blank panel; here the sentinel must be visible.
+    let snap = null;
     await browser.waitUntil(
       async () => {
-        const snap = await diffPanelSnapshot();
-        return snap.replayText.includes(SENTINEL);
+        snap = await diffPanelSnapshot();
+        return snap.replayText.includes(SENTINEL) && snap.editorCount > 0;
       },
       {
         timeout: DIFF_RENDER_TIMEOUT_MS,
@@ -142,6 +182,46 @@ describe("Diff tab content live (real agent edit → orgtrack final-diff)", () =
           `live diff content never rendered the sentinel; snapshot=${JSON.stringify(
             await diffPanelSnapshot()
           )}`,
+      }
+    );
+
+    // 3a. Structural health on the LIVE render: no single code row may be
+    //     absurdly tall (the "giant row" artifact). The live path does not
+    //     guarantee a collapse band (depends on file size), so we only
+    //     assert the universal invariants here; the collapse-band + expand
+    //     coverage lives in the seeded spec which controls the diff shape.
+    expect(snap.maxLineHeight).toBeLessThan(MAX_SANE_LINE_HEIGHT_PX);
+
+    // 3b. The file section is collapsible: clicking its header toggle hides
+    //     the editor, clicking again restores it — the same collapsible
+    //     chevron the user operates.
+    expect(snap.sectionButtonCount).toBeGreaterThan(0);
+    unwrap(
+      (await toggleLiveFileSection()).clicked
+        ? { ok: true }
+        : { ok: false, error: "file section toggle not found" },
+      "toggleLiveFileSection(collapse)"
+    );
+    await browser.waitUntil(
+      async () => (await diffPanelSnapshot()).editorCount === 0,
+      {
+        timeout: 10_000,
+        interval: 400,
+        timeoutMsg: "live file section never collapsed (editor still mounted)",
+      }
+    );
+    unwrap(
+      (await toggleLiveFileSection()).clicked
+        ? { ok: true }
+        : { ok: false, error: "file section toggle not found" },
+      "toggleLiveFileSection(expand)"
+    );
+    await browser.waitUntil(
+      async () => (await diffPanelSnapshot()).editorCount > 0,
+      {
+        timeout: 10_000,
+        interval: 400,
+        timeoutMsg: "live file section never re-expanded",
       }
     );
   });

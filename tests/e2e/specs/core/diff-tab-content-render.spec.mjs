@@ -35,6 +35,20 @@ const SENTINEL_OLD = `const SENTINEL_${RUN_ID}_OLD = "before";`;
 const SENTINEL_NEW = `const SENTINEL_${RUN_ID}_NEW = "after";`;
 const SEEDED_FILE_PATH = "src/sentinel.ts";
 
+// A line long enough to overflow the editor width. The "over-wide / giant
+// row" artifact (workspace_session_replay_diff_consolidation_bug) stretched
+// the whole section instead of scrolling horizontally; the SCSS fix
+// (max-width:100% + overflow-x:auto) keeps every rendered line at a normal
+// row height. We assert no .cm-line exceeds a sane height bound.
+const LONG_LINE = `const SENTINEL_${RUN_ID}_LONG = "${"x".repeat(400)}";`;
+// Any single rendered code row taller than this means the line wrapped /
+// stretched the layout instead of scrolling — i.e. the bug regressed.
+const MAX_SANE_LINE_HEIGHT_PX = 80;
+// CodeMirror's collapseUnchanged uses {margin:3, minSize:10}; we need a run
+// of >=10 identical context lines around the change so a collapse band
+// ("N unchanged lines") is actually produced.
+const CONTEXT_LINE_COUNT = 24;
+
 async function execJS(script) {
   return browser.executeScript(script, []);
 }
@@ -172,6 +186,88 @@ async function diffPanelSnapshot() {
   return { ...dom, surface };
 }
 
+// Snapshot the rendered diff's structural health: the collapse band
+// ("N unchanged lines"), the file-section toggle button, the CodeMirror
+// editor presence, and the tallest rendered code row. This is the proof
+// that the panel is the real collapsible/expandable diff — not a blank or
+// a single absurdly-tall row.
+async function diffStructureSnapshot() {
+  return execJS(`
+    const replay = document.querySelector('.session-replay-diff');
+    if (!replay) return { hasReplayShell: false };
+
+    // File-section toggle: the collapsible chevron <button> whose text is
+    // the file name (DiffFileSection renders content only when expanded).
+    const sectionButtons = Array.from(replay.querySelectorAll('button'))
+      .filter((b) => (b.innerText || '').includes('sentinel.ts'));
+
+    // CodeMirror editor(s) actually mounted (content is only present when
+    // the section is expanded).
+    const editors = Array.from(replay.querySelectorAll('.cm-editor'));
+
+    // The native collapse band for unchanged regions.
+    const collapseBands = Array.from(
+      replay.querySelectorAll('.cm-collapsedLines')
+    );
+
+    // Tallest single rendered code row — guards the "giant row" artifact.
+    let maxLineHeight = 0;
+    let maxLineSample = '';
+    for (const line of replay.querySelectorAll('.cm-line')) {
+      const h = line.getBoundingClientRect().height;
+      if (h > maxLineHeight) {
+        maxLineHeight = h;
+        maxLineSample = (line.innerText || '').slice(0, 60);
+      }
+    }
+
+    // Does the editor scroll horizontally (the correct behavior for a long
+    // line) rather than stretch the section? Compare scrollWidth vs client.
+    let horizontallyScrollable = false;
+    for (const sc of replay.querySelectorAll('.cm-scroller')) {
+      if (sc.scrollWidth > sc.clientWidth + 4) horizontallyScrollable = true;
+    }
+
+    return {
+      hasReplayShell: true,
+      sectionButtonCount: sectionButtons.length,
+      editorCount: editors.length,
+      collapseBandCount: collapseBands.length,
+      collapseBandText: collapseBands.map((b) => (b.innerText || '').trim()),
+      maxLineHeight: Math.round(maxLineHeight),
+      maxLineSample,
+      horizontallyScrollable,
+      replayText: (replay.innerText || '').slice(0, 4000),
+    };
+  `);
+}
+
+// Click the file-section toggle (chevron button whose label includes the
+// file name). Returns whether the click landed and the post-click editor
+// count so the caller can assert the collapse/expand transition.
+async function toggleFileSection() {
+  return execJS(`
+    const replay = document.querySelector('.session-replay-diff') || document;
+    const btn = Array.from(replay.querySelectorAll('button'))
+      .find((b) => (b.innerText || '').includes('sentinel.ts'));
+    if (!btn) return { clicked: false };
+    btn.click();
+    return { clicked: true };
+  `);
+}
+
+// Click the collapse band to expand the hidden unchanged region, then
+// report whether previously-hidden context lines became visible.
+async function expandCollapseBand() {
+  return execJS(`
+    const replay = document.querySelector('.session-replay-diff') || document;
+    const band = replay.querySelector('.cm-collapsedLines');
+    if (!band) return { clicked: false };
+    band.click();
+    return { clicked: true };
+  `);
+}
+
 async function clickTabByText(tabLabelFragment) {
   return execJS(`
     const frag = ${JSON.stringify(tabLabelFragment)}.toLowerCase();
@@ -263,13 +359,30 @@ describe("Diff / orgtrack final-diff tab content", function () {
 
     // 2. Seed a diff-only orgtrack final-diff record. This is the bug shape:
     //    old_content and new_content are null; only `diff` is populated.
+    //    The hunk carries a long run of unchanged context lines (so
+    //    CodeMirror's collapseUnchanged {margin:3, minSize:10} produces a
+    //    clickable "N unchanged lines" band), a one-line change (the
+    //    sentinel), and one very long line (so the "giant row" artifact
+    //    would manifest here if the SCSS fix regressed).
+    const contextLines = Array.from(
+      { length: CONTEXT_LINE_COUNT },
+      (_unused, index) => `const ctx_${index} = ${index};`
+    );
+    const changedLineNo = CONTEXT_LINE_COUNT + 1;
+    const hunkLineCount = CONTEXT_LINE_COUNT + CONTEXT_LINE_COUNT + 2;
     const unifiedDiff = [
       `--- ${SEEDED_FILE_PATH}`,
       `+++ ${SEEDED_FILE_PATH}`,
-      "@@ -1,1 +1,1 @@",
+      `@@ -1,${hunkLineCount} +1,${hunkLineCount} @@`,
+      // Leading unchanged run (>=10) → collapses into a band.
+      ...contextLines.map((line) => ` ${line}`),
       `-${SENTINEL_OLD}`,
       `+${SENTINEL_NEW}`,
+      ` ${LONG_LINE}`,
+      // Trailing unchanged run (>=10) → collapses into a second band.
+      ...contextLines.map((line) => ` ${line}`),
     ].join("\n");
+    void changedLineNo;
 
     unwrap(
       await invokeE2E("debugSeedFinalDiffWire", {
@@ -322,6 +435,107 @@ describe("Diff / orgtrack final-diff tab content", function () {
         timeoutMsg: `sentinel diff content never rendered: ${JSON.stringify(
           await diffPanelSnapshot()
         )}`,
+      }
+    );
+
+    // 6. Structural health: the rendered diff must be the real
+    //    collapsible/expandable CodeMirror diff, NOT a blank panel and NOT
+    //    a single absurdly-tall row. Wait for the editor to mount, then
+    //    snapshot structure.
+    let structure = null;
+    await browser.waitUntil(
+      async () => {
+        structure = await diffStructureSnapshot();
+        return structure.hasReplayShell && structure.editorCount > 0;
+      },
+      {
+        timeout: DIFF_DETAIL_TIMEOUT_MS,
+        interval: 500,
+        timeoutMsg: () =>
+          `CodeMirror editor never mounted: ${JSON.stringify(structure)}`,
+      }
+    );
+
+    // 6a. A collapse band ("N unchanged lines") must be produced for the
+    //     long unchanged context run — this is the collapsible original
+    //     text the user cares about.
+    expect(structure.collapseBandCount).toBeGreaterThan(0);
+
+    // 6b. No single rendered code row may be absurdly tall. The "giant row"
+    //     artifact stretched the layout instead of scrolling the long line
+    //     horizontally; assert every .cm-line stays at a normal height and
+    //     that the long line scrolls horizontally instead.
+    expect(structure.maxLineHeight).toBeLessThan(MAX_SANE_LINE_HEIGHT_PX);
+    expect(structure.horizontallyScrollable).toBe(true);
+
+    // 6c. Clicking the collapse band expands the hidden context — the
+    //     previously-collapsed ctx lines become visible.
+    const bandBefore = structure.collapseBandCount;
+    unwrap(
+      (await expandCollapseBand()).clicked
+        ? { ok: true }
+        : { ok: false, error: "collapse band not clickable" },
+      "expandCollapseBand"
+    );
+    await browser.waitUntil(
+      async () => {
+        const after = await diffStructureSnapshot();
+        // Expanding consumes a band and reveals real context line text.
+        return (
+          after.collapseBandCount < bandBefore &&
+          after.replayText.includes("ctx_0")
+        );
+      },
+      {
+        timeout: 10_000,
+        interval: 400,
+        timeoutMsg: async () =>
+          `collapse band never expanded to show context: ${JSON.stringify(
+            await diffStructureSnapshot()
+          )}`,
+      }
+    );
+
+    // 6d. The file section is collapsible: clicking its header toggle hides
+    //     the editor; clicking again restores it.
+    const collapsedSnap = await (async () => {
+      unwrap(
+        (await toggleFileSection()).clicked
+          ? { ok: true }
+          : { ok: false, error: "file section toggle not found" },
+        "toggleFileSection(collapse)"
+      );
+      let snap = null;
+      await browser.waitUntil(
+        async () => {
+          snap = await diffStructureSnapshot();
+          return snap.editorCount === 0;
+        },
+        {
+          timeout: 10_000,
+          interval: 400,
+          timeoutMsg: () =>
+            `file section never collapsed (editor still mounted): ${JSON.stringify(
+              snap
+            )}`,
+        }
+      );
+      return snap;
+    })();
+    expect(collapsedSnap.editorCount).toBe(0);
+
+    unwrap(
+      (await toggleFileSection()).clicked
+        ? { ok: true }
+        : { ok: false, error: "file section toggle not found" },
+      "toggleFileSection(expand)"
+    );
+    await browser.waitUntil(
+      async () => (await diffStructureSnapshot()).editorCount > 0,
+      {
+        timeout: 10_000,
+        interval: 400,
+        timeoutMsg: "file section never re-expanded",
       }
     );
   });
