@@ -32,7 +32,6 @@ export interface UseAgentWizardReturn {
   temperature: number;
   setTemperature: (v: number) => void;
   isCustomContextWindow: boolean;
-  contextWindowSelectValue: string;
   contextWindowOptions: Array<{
     label: string;
     value: string;
@@ -136,27 +135,7 @@ export function useAgentWizard(
   const [capManagement, setCapManagement] = useState<boolean>(false);
 
   const canCreate = agentName.trim().length > 0;
-  const PRESETS = useMemo(
-    () => [
-      { value: 1000000, label: "1M (1,000,000)" },
-      { value: 200000, label: "200K (200,000)" },
-      { value: 128000, label: "128K (128,000)" },
-      { value: 64000, label: "64K (64,000)" },
-      { value: 32000, label: "32K (32,000)" },
-      { value: 16000, label: "16K (16,000)" },
-    ],
-    []
-  );
-
-  const contextWindowSelectValue = (() => {
-    if (contextWindow <= 0) return "auto";
-    const matched = PRESETS.find((p) => p.value === contextWindow);
-    if (matched) return String(matched.value);
-    return "custom";
-  })();
-
-  const isCustomContextWindow =
-    contextWindow > 0 && !PRESETS.some((p) => p.value === contextWindow);
+  const isCustomContextWindow = contextWindow > 0;
 
   const contextWindowOptions = useMemo(
     () => [
@@ -165,17 +144,13 @@ export function useAgentWizard(
         value: "auto",
         dataTestId: "agent-orgs-agent-wizard-context-window-option-auto",
       },
-      ...PRESETS.map((p) => ({
-        label: p.label,
-        value: String(p.value),
-      })),
       {
         label: tSettings("sharedAgentConfig.contextWindowCustom"),
         value: "custom",
         dataTestId: "agent-orgs-agent-wizard-context-window-option-custom",
       },
     ],
-    [tSettings, PRESETS]
+    [tSettings]
   );
 
   const tabs = useMemo(
@@ -283,7 +258,6 @@ export function useAgentWizard(
     temperature,
     setTemperature,
     isCustomContextWindow,
-    contextWindowSelectValue,
     contextWindowOptions,
     compactionEnabled,
     setCompactionEnabled,
