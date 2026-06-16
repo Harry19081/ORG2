@@ -293,7 +293,10 @@ pub async fn remove_window_background(app: AppHandle) -> Result<(), String> {
         .ok_or("Main window not found")?;
 
     #[cfg(target_os = "macos")]
-    super::remove_window_background_color(&window);
+    {
+        super::remove_window_background_color(&window);
+        super::set_traffic_light_position(&window, super::TRAFFIC_LIGHT_X, super::TRAFFIC_LIGHT_Y);
+    }
 
     #[cfg(not(target_os = "macos"))]
     let _ = window;

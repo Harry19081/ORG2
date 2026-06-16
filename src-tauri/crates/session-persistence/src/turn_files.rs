@@ -87,11 +87,6 @@ impl TurnFileAccumulator {
     pub fn files(&self) -> &[TurnModifiedFile] {
         &self.files
     }
-
-    /// Drain into the final list (first-seen order preserved).
-    pub fn into_files(self) -> Vec<TurnModifiedFile> {
-        self.files
-    }
 }
 
 /// Tools that modify files on disk and therefore contribute to a round's
@@ -289,7 +284,7 @@ mod tests {
         let mut acc = TurnFileAccumulator::new();
         acc.add_event(Some("read_file"), r#"{"file_path":"a.rs"}"#, "{}");
         acc.add_event(None, "{}", "{}");
-        assert!(acc.into_files().is_empty());
+        assert!(acc.files().is_empty());
     }
 
     #[test]
@@ -300,7 +295,7 @@ mod tests {
             r#"{"file_path":"src/foo.rs"}"#,
             r#"{"success":{"linesAdded":3,"linesRemoved":1}}"#,
         );
-        let files = acc.into_files();
+        let files = acc.files();
         assert_eq!(files.len(), 1);
         assert_eq!(files[0].path, "src/foo.rs");
         assert_eq!(files[0].file_name, "foo.rs");
@@ -314,7 +309,7 @@ mod tests {
         let mut acc = TurnFileAccumulator::new();
         acc.add_event(Some("create_file"), r#"{"file_path":"new.ts"}"#, "{}");
         acc.add_event(Some("delete_file"), r#"{"file_path":"old.ts"}"#, "{}");
-        let files = acc.into_files();
+        let files = acc.files();
         assert_eq!(files[0].status, "created");
         assert_eq!(files[1].status, "deleted");
     }
@@ -332,7 +327,7 @@ mod tests {
             r#"{"file_path":"a.rs"}"#,
             r#"{"linesAdded":5,"linesRemoved":3}"#,
         );
-        let files = acc.into_files();
+        let files = acc.files();
         assert_eq!(files.len(), 1);
         assert_eq!(files[0].additions, 7);
         assert_eq!(files[0].deletions, 3);
@@ -346,7 +341,7 @@ mod tests {
             r#"{"file_path":"a.rs"}"#,
             r#"{"content":"Error: permission denied"}"#,
         );
-        assert!(acc.into_files().is_empty());
+        assert!(acc.files().is_empty());
     }
 
     #[test]
@@ -360,7 +355,7 @@ mod tests {
                 {"filePath":"b.rs","isDeleted":true}
             ]}"#,
         );
-        let files = acc.into_files();
+        let files = acc.files();
         assert_eq!(files.len(), 2);
         assert_eq!(files[0].path, "a.rs");
         assert_eq!(files[0].additions, 4);
@@ -376,7 +371,7 @@ mod tests {
             r#"{"patch_text":"*** Add File: x.rs\n*** Update File: y.rs\n"}"#,
             "{}",
         );
-        let files = acc.into_files();
+        let files = acc.files();
         let paths: Vec<&str> = files.iter().map(|f| f.path.as_str()).collect();
         assert_eq!(paths, vec!["x.rs", "y.rs"]);
     }
@@ -385,6 +380,6 @@ mod tests {
     fn malformed_json_is_tolerated() {
         let mut acc = TurnFileAccumulator::new();
         acc.add_event(Some("edit_file"), "{not json", "{also not json");
-        assert!(acc.into_files().is_empty());
+        assert!(acc.files().is_empty());
     }
 }
