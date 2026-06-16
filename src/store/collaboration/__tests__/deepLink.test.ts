@@ -3,14 +3,15 @@ import { describe, expect, it } from "vitest";
 import { isCollabJoinDeepLink, parseCollabJoinDeepLink } from "../deepLink";
 import { buildCollabInviteLink } from "../protocol";
 
-const HUB = "https://orgii-collab-hub.orgii.workers.dev";
+const SUPABASE_URL = "https://team-project.supabase.co";
+const ANON_KEY = "anon-public-key";
 const INVITE = "2poycTL4TJfAc_Zd7mbvmXv_9JtrFX-1";
 
 describe("isCollabJoinDeepLink", () => {
   it("recognizes an orgii collaboration/join link", () => {
     expect(
       isCollabJoinDeepLink(
-        `orgii://collaboration/join?hub=${encodeURIComponent(HUB)}&invite=${INVITE}`
+        `orgii://collaboration/join?sync=supabase&supabase=${encodeURIComponent(SUPABASE_URL)}&invite=${INVITE}`
       )
     ).toBe(true);
   });
@@ -39,32 +40,45 @@ describe("isCollabJoinDeepLink", () => {
 });
 
 describe("parseCollabJoinDeepLink", () => {
-  it("parses a valid link with URL-encoded hub", () => {
+  it("parses a valid link with URL-encoded Supabase project", () => {
     expect(
       parseCollabJoinDeepLink(
-        `orgii://collaboration/join?hub=${encodeURIComponent(HUB)}&invite=${INVITE}`
+        `orgii://collaboration/join?sync=supabase&supabase=${encodeURIComponent(SUPABASE_URL)}&anon=${encodeURIComponent(ANON_KEY)}&invite=${INVITE}`
       )
-    ).toEqual({ hubUrl: HUB, inviteCode: INVITE });
-  });
-
-  it("decodes the hub built by buildCollabInviteLink round-trip", () => {
-    const link = buildCollabInviteLink({ hubUrl: HUB, inviteCode: INVITE });
-    expect(parseCollabJoinDeepLink(link)).toEqual({
-      hubUrl: HUB,
+    ).toEqual({
+      supabaseUrl: SUPABASE_URL,
+      anonKey: ANON_KEY,
       inviteCode: INVITE,
     });
   });
 
-  it("allows a missing hub (user supplies it manually)", () => {
+  it("decodes the Supabase URL built by buildCollabInviteLink round-trip", () => {
+    const link = buildCollabInviteLink({
+      supabaseUrl: SUPABASE_URL,
+      anonKey: ANON_KEY,
+      inviteCode: INVITE,
+    });
+    expect(parseCollabJoinDeepLink(link)).toEqual({
+      supabaseUrl: SUPABASE_URL,
+      anonKey: ANON_KEY,
+      inviteCode: INVITE,
+    });
+  });
+
+  it("allows a missing Supabase URL (user supplies it manually)", () => {
     expect(
       parseCollabJoinDeepLink(`orgii://collaboration/join?invite=${INVITE}`)
-    ).toEqual({ hubUrl: undefined, inviteCode: INVITE });
+    ).toEqual({
+      supabaseUrl: undefined,
+      anonKey: undefined,
+      inviteCode: INVITE,
+    });
   });
 
   it("returns null when the invite code is missing", () => {
     expect(
       parseCollabJoinDeepLink(
-        `orgii://collaboration/join?hub=${encodeURIComponent(HUB)}`
+        `orgii://collaboration/join?supabase=${encodeURIComponent(SUPABASE_URL)}`
       )
     ).toBeNull();
   });

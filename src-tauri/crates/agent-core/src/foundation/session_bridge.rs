@@ -54,6 +54,12 @@ pub struct CliLaunchParams {
     pub additional_directories: Option<Vec<String>>,
     pub parent_session_id: Option<String>,
     pub org_member_id: Option<String>,
+    pub org_id: String,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
+    pub project_slug: Option<String>,
+    pub work_item_id: Option<String>,
+    pub agent_role: Option<String>,
 
     // Run-side params
     pub user_input: String,

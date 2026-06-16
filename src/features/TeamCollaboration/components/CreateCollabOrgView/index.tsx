@@ -31,63 +31,39 @@ import type {
 } from "@src/store/collaboration/types";
 import { copyText } from "@src/util/data/clipboard";
 
-import {
-  acceptCollabInvite,
-  createCollabInvite,
-  createCollabOrg,
-} from "../../collabHubClient";
+import { ORGII_SUPABASE_SETUP_SQL } from "../../sync/supabaseSetupSql";
+import { supabaseSyncClient } from "../../sync/supabaseSyncClient";
 
 const LOCAL_SOURCE = "local";
-const CLOUD_SOURCE = "cloud";
+const SUPABASE_SOURCE = "supabase";
 const CREATE_MODE = "create";
 const JOIN_MODE = "join";
+const DEFAULT_INVITE_USAGE_LIMIT = 10;
 
-type CreateOrgSource = typeof LOCAL_SOURCE | typeof CLOUD_SOURCE;
-type CreateCollabOrgMode = typeof CREATE_MODE | typeof JOIN_MODE;
+const SUPABASE_SETUP_MARKDOWN = `1. Create a Supabase project in the Supabase dashboard.
 
-const HUB_SETUP_MARKDOWN = `1. Create a hub project.
+2. Copy the Project URL and anon public key into ORGII.
 
-\`\`\`bash
-npx @orgii/collab-hub init my-orgii-hub
-cd my-orgii-hub
-\`\`\`
+3. Click **Copy setup SQL** below.
 
-2. Install dependencies. The generated project installs only TypeScript dependencies and should report 0 vulnerabilities.
+4. Open the Supabase SQL Editor, paste the SQL, and click **Run**.
 
-\`\`\`bash
-npm install
-\`\`\`
+5. Return to ORGII and click **Verify setup**.
 
-3. Log in to Cloudflare. The \`--yes\` flag skips the npm install confirmation prompt for agents and scripts.
+No terminal commands are required. ORGII stores project, work item, chat, and shared session data in your own Supabase project.`;
 
-\`\`\`bash
-npx --yes wrangler@latest login
-\`\`\`
-
-4. Create the D1 database, then paste the returned \`database_id\` into \`wrangler.jsonc\`.
-
-\`\`\`bash
-npm run db:create
-\`\`\`
-
-5. Apply migrations. If Wrangler asks whether local dev should connect to the remote resource, press Enter to keep the default \`N\`.
-
-\`\`\`bash
-npm run db:migrate
-\`\`\`
-
-6. Deploy the Worker, copy the deployed Worker URL, and paste it here.
-
-\`\`\`bash
-npm run deploy
-\`\`\`
-
-Teammates can join with the generated invite link and do not need repo access or Cloudflare setup.`;
+const SUPABASE_SQL_EDITOR_URL =
+  "https://supabase.com/dashboard/project/_/sql/new";
 
 const COLLAB_FORM_CONTROL_STYLE = {
   width: "100%",
   maxWidth: "100%",
 } as const;
+
+type CreateOrgSource = typeof LOCAL_SOURCE | typeof SUPABASE_SOURCE;
+type CreateCollabOrgMode = typeof CREATE_MODE | typeof JOIN_MODE;
+
+type SetupVerificationStatus = "idle" | "ok" | "missing";
 
 export type CreatedOrgResult =
   | {
@@ -95,7 +71,7 @@ export type CreatedOrgResult =
       org: ProjectOrg;
     }
   | {
-      source: typeof CLOUD_SOURCE;
+      source: typeof SUPABASE_SOURCE;
       org: CollabOrgRecord;
       member: CollabMemberRecord;
     };
@@ -138,6 +114,23 @@ function upsertInvite(
   return next;
 }
 
+async function ensureProjectOrgForCollabOrg(
+  org: CollabOrgRecord
+): Promise<ProjectOrg> {
+  const projectOrgs = await projectApi.readOrgs();
+  const existingOrg = projectOrgs.find(
+    (projectOrg) => projectOrg.id === org.id
+  );
+  if (existingOrg) return existingOrg;
+
+  const existingByName = projectOrgs.find(
+    (projectOrg) => projectOrg.name === org.name
+  );
+  if (existingByName) return existingByName;
+
+  return projectApi.createOrg({ name: org.name, id: org.id });
+}
+
 const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
   onCancel,
   onCreated,
@@ -150,7 +143,8 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
 
   const [source, setSource] = useState<CreateOrgSource | null>(null);
   const [mode, setMode] = useState<CreateCollabOrgMode>(CREATE_MODE);
-  const [hubUrl, setHubUrl] = useState("");
+  const [supabaseUrl, setSupabaseUrl] = useState("");
+  const [anonKey, setAnonKey] = useState("");
   const [orgName, setOrgName] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [inviteInput, setInviteInput] = useState("");
@@ -158,44 +152,43 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
     COLLAB_IDENTITY_KIND.HUMAN
   );
   const [latestInviteLink, setLatestInviteLink] = useState("");
+  const [verificationStatus, setVerificationStatus] =
+    useState<SetupVerificationStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedSql, setCopiedSql] = useState(false);
 
-  // Consume a deep-link invite (orgii://collaboration/join) once: open the
-  // form directly in Cloud + Join mode with the invite code (and hub, when the
-  // link embedded one) prefilled, then clear the pending atom so reopening the
-  // surface manually does not re-trigger a stale prefill.
   useEffect(() => {
     if (!pendingInvite) return;
-    setSource(CLOUD_SOURCE);
+    setSource(SUPABASE_SOURCE);
     setMode(JOIN_MODE);
     setInviteInput(pendingInvite.inviteCode);
-    if (pendingInvite.hubUrl) {
-      setHubUrl(pendingInvite.hubUrl);
-    }
+    if (pendingInvite.supabaseUrl) setSupabaseUrl(pendingInvite.supabaseUrl);
+    if (pendingInvite.anonKey) setAnonKey(pendingInvite.anonKey);
     setError(null);
     setPendingInvite(null);
   }, [pendingInvite, setPendingInvite]);
 
-  // When the invite input is itself a full orgii:// link carrying a hub, the
-  // user should not have to retype the Hub URL — auto-fill it (only while the
-  // field is empty so manual edits win).
-  const inviteHubUrl = useMemo(() => {
+  const parsedInvite = useMemo(() => {
     const trimmed = inviteInput.trim();
     if (!trimmed) return undefined;
     try {
-      return parseCollabInviteInput(trimmed).hubUrl;
+      return parseCollabInviteInput(trimmed);
     } catch {
       return undefined;
     }
   }, [inviteInput]);
 
   useEffect(() => {
-    if (inviteHubUrl && !hubUrl.trim()) {
-      setHubUrl(inviteHubUrl);
+    if (parsedInvite?.supabaseUrl && !supabaseUrl.trim()) {
+      setSupabaseUrl(parsedInvite.supabaseUrl);
     }
-  }, [inviteHubUrl, hubUrl]);
+    if (parsedInvite?.anonKey && !anonKey.trim()) {
+      setAnonKey(parsedInvite.anonKey);
+    }
+  }, [anonKey, parsedInvite, supabaseUrl]);
 
   const sourceOptions = useMemo<SelectionGridOption<CreateOrgSource>[]>(
     () => [
@@ -204,8 +197,8 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
         label: t("navigation:collaboration.localOrg"),
       },
       {
-        key: CLOUD_SOURCE,
-        label: t("navigation:collaboration.cloudOrg"),
+        key: SUPABASE_SOURCE,
+        label: t("navigation:collaboration.supabaseSyncOrg"),
       },
     ],
     [t]
@@ -239,21 +232,20 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
     [t]
   );
 
+  const effectiveSupabaseUrl = parsedInvite?.supabaseUrl ?? supabaseUrl;
+  const effectiveAnonKey = parsedInvite?.anonKey ?? anonKey;
+
   const canSubmit = useMemo(() => {
     if (loading || source === null) return false;
     if (source === LOCAL_SOURCE) return Boolean(orgName.trim());
     if (!displayName.trim()) return false;
-    if (mode === CREATE_MODE) {
-      return Boolean(hubUrl.trim() && orgName.trim());
-    }
-    // JOIN: the hub can come from the typed field or be embedded in the
-    // invite link, so don't force the user to retype it.
-    if (!inviteInput.trim()) return false;
-    return Boolean(hubUrl.trim() || inviteHubUrl?.trim());
+    if (!effectiveSupabaseUrl.trim() || !effectiveAnonKey.trim()) return false;
+    if (mode === CREATE_MODE) return Boolean(orgName.trim());
+    return Boolean(inviteInput.trim());
   }, [
     displayName,
-    hubUrl,
-    inviteHubUrl,
+    effectiveAnonKey,
+    effectiveSupabaseUrl,
     inviteInput,
     loading,
     mode,
@@ -261,20 +253,58 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
     source,
   ]);
 
+  const handleVerifySetup = useCallback(async () => {
+    if (!supabaseUrl.trim() || !anonKey.trim() || verifying) return;
+    setVerifying(true);
+    setError(null);
+    try {
+      const result = await supabaseSyncClient.verifySetup({
+        supabaseUrl,
+        anonKey,
+      });
+      setVerificationStatus(result.ok ? "ok" : "missing");
+      if (!result.ok) {
+        setError(t("navigation:collaboration.supabaseSetupMissing"));
+      }
+    } catch (err) {
+      setVerificationStatus("missing");
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setVerifying(false);
+    }
+  }, [anonKey, supabaseUrl, t, verifying]);
+
+  const handleCopySetupSql = useCallback(async () => {
+    await copyText(ORGII_SUPABASE_SETUP_SQL);
+    setCopiedSql(true);
+    window.setTimeout(() => setCopiedSql(false), 1500);
+  }, []);
+
   const handleCreated = useCallback(
     async (org: CollabOrgRecord, member: CollabMemberRecord) => {
-      setCollabOrgs((current) => upsertOrg(current, org));
+      const projectOrg = await ensureProjectOrgForCollabOrg(org);
+      const canonicalOrg = { ...org, projectOrgId: projectOrg.id };
+      setCollabOrgs((current) => upsertOrg(current, canonicalOrg));
       setCollabMembers((current) => upsertMember(current, member));
-      onCreated?.({ source: CLOUD_SOURCE, org, member });
-      const invite = await createCollabInvite({
-        hubUrl: org.hubUrl ?? hubUrl,
+      onCreated?.({ source: SUPABASE_SOURCE, org: canonicalOrg, member });
+      const invite = await supabaseSyncClient.createInvite({
+        supabaseUrl: org.supabaseUrl ?? supabaseUrl,
+        anonKey: org.supabaseAnonKey ?? anonKey,
+        orgSecret: org.orgSecret,
         orgId: org.id,
-        accessToken: member.accessToken ?? "",
+        usageLimit: DEFAULT_INVITE_USAGE_LIMIT,
       });
       setCollabInvites((current) => upsertInvite(current, invite));
       setLatestInviteLink(invite.inviteLink);
     },
-    [hubUrl, onCreated, setCollabInvites, setCollabMembers, setCollabOrgs]
+    [
+      anonKey,
+      onCreated,
+      setCollabInvites,
+      setCollabMembers,
+      setCollabOrgs,
+      supabaseUrl,
+    ]
   );
 
   const handleSubmit = useCallback(async () => {
@@ -290,8 +320,9 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
       }
 
       if (mode === CREATE_MODE) {
-        const result = await createCollabOrg({
-          hubUrl,
+        const result = await supabaseSyncClient.createOrg({
+          supabaseUrl: effectiveSupabaseUrl,
+          anonKey: effectiveAnonKey,
           name: orgName,
           displayName,
           identityKind: COLLAB_IDENTITY_KIND.HUMAN,
@@ -300,16 +331,23 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
         return;
       }
 
-      const parsedInvite = parseCollabInviteInput(inviteInput);
-      const result = await acceptCollabInvite({
-        hubUrl: parsedInvite.hubUrl ?? hubUrl,
-        inviteCode: parsedInvite.inviteCode,
+      const parsed = parseCollabInviteInput(inviteInput);
+      const result = await supabaseSyncClient.acceptInvite({
+        supabaseUrl: parsed.supabaseUrl ?? effectiveSupabaseUrl,
+        anonKey: parsed.anonKey ?? effectiveAnonKey,
+        inviteCode: parsed.inviteCode,
         displayName,
         identityKind,
       });
-      setCollabOrgs((current) => upsertOrg(current, result.org));
+      const projectOrg = await ensureProjectOrgForCollabOrg(result.org);
+      const canonicalOrg = { ...result.org, projectOrgId: projectOrg.id };
+      setCollabOrgs((current) => upsertOrg(current, canonicalOrg));
       setCollabMembers((current) => upsertMember(current, result.member));
-      onCreated?.({ source: CLOUD_SOURCE, ...result });
+      onCreated?.({
+        source: SUPABASE_SOURCE,
+        org: canonicalOrg,
+        member: result.member,
+      });
       setLatestInviteLink("");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -319,8 +357,9 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
   }, [
     canSubmit,
     displayName,
+    effectiveAnonKey,
+    effectiveSupabaseUrl,
     handleCreated,
-    hubUrl,
     identityKind,
     inviteInput,
     mode,
@@ -365,7 +404,7 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
               </SectionRow>
             </SectionContainer>
 
-            {source === CLOUD_SOURCE && (
+            {source === SUPABASE_SOURCE && (
               <SectionContainer color="chatPanelInfo">
                 <SectionRow
                   label={t("navigation:collaboration.setupMode")}
@@ -417,7 +456,7 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
                   </SectionRow>
                 )}
 
-                {source === CLOUD_SOURCE && (
+                {source === SUPABASE_SOURCE && (
                   <SectionRow
                     label={t("navigation:collaboration.joinAs")}
                     layout="vertical"
@@ -436,44 +475,96 @@ const CreateCollabOrgView: React.FC<CreateCollabOrgViewProps> = ({
               </SectionContainer>
             )}
 
-            {source === CLOUD_SOURCE && (
+            {source === SUPABASE_SOURCE && (
               <>
                 <SectionContainer color="chatPanelInfo">
                   <SectionRow
-                    label={t("navigation:collaboration.hubUrl")}
+                    label={t("navigation:collaboration.supabaseUrl")}
                     layout="vertical"
                     required
                   >
                     <Input
-                      value={hubUrl}
-                      onChange={setHubUrl}
-                      placeholder="https://team.example.workers.dev"
+                      value={supabaseUrl}
+                      onChange={setSupabaseUrl}
+                      placeholder="https://your-project.supabase.co"
                       type="url"
                       style={COLLAB_FORM_CONTROL_STYLE}
                     />
                   </SectionRow>
+                  <SectionRow
+                    label={t("navigation:collaboration.supabaseAnonKey")}
+                    layout="vertical"
+                    required
+                  >
+                    <Input
+                      value={anonKey}
+                      onChange={setAnonKey}
+                      placeholder="eyJhbGciOi..."
+                      style={COLLAB_FORM_CONTROL_STYLE}
+                    />
+                  </SectionRow>
+                  {mode === CREATE_MODE ? (
+                    <div className="flex flex-wrap items-center gap-2 pt-2">
+                      <Button
+                        htmlType="button"
+                        size="small"
+                        disabled={
+                          !supabaseUrl.trim() || !anonKey.trim() || verifying
+                        }
+                        loading={verifying}
+                        onClick={() => void handleVerifySetup()}
+                      >
+                        {t("navigation:collaboration.verifySupabaseSetup")}
+                      </Button>
+                      <Button
+                        htmlType="button"
+                        size="small"
+                        onClick={() => void handleCopySetupSql()}
+                      >
+                        {copiedSql
+                          ? t("navigation:collaboration.copiedSetupSql")
+                          : t("navigation:collaboration.copySetupSql")}
+                      </Button>
+                      <Button
+                        htmlType="button"
+                        size="small"
+                        onClick={() =>
+                          window.open(SUPABASE_SQL_EDITOR_URL, "_blank")
+                        }
+                      >
+                        {t("navigation:collaboration.openSupabaseSqlEditor")}
+                      </Button>
+                      {verificationStatus === "ok" ? (
+                        <span className="text-[12px] text-success-6">
+                          {t("navigation:collaboration.supabaseSetupVerified")}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </SectionContainer>
 
-                <CollapsibleSection
-                  title={t("navigation:collaboration.hubSetupTitle")}
-                  defaultOpen={false}
-                  compact
-                  headerRowClassName="h-5 px-1"
-                  titleButtonClassName="text-[12px] font-medium text-text-2 hover:text-text-1"
-                  chevronSize={12}
-                >
-                  <div className="cursor-text select-text px-1 text-[12px] leading-[18px] text-text-2">
-                    <Markdown
-                      textContent={HUB_SETUP_MARKDOWN}
-                      useChatCodeBlock
-                      skipPreprocess
-                    />
-                  </div>
-                </CollapsibleSection>
+                {mode === CREATE_MODE ? (
+                  <CollapsibleSection
+                    title={t("navigation:collaboration.supabaseSetupTitle")}
+                    defaultOpen={false}
+                    compact
+                    headerRowClassName="h-5 px-1"
+                    titleButtonClassName="text-[12px] font-medium text-text-2 hover:text-text-1"
+                    chevronSize={12}
+                  >
+                    <div className="cursor-text select-text px-1 text-[12px] leading-[18px] text-text-2">
+                      <Markdown
+                        textContent={SUPABASE_SETUP_MARKDOWN}
+                        useChatCodeBlock
+                        skipPreprocess
+                      />
+                    </div>
+                  </CollapsibleSection>
+                ) : null}
               </>
             )}
 
-            {source === CLOUD_SOURCE && mode === JOIN_MODE && (
+            {source === SUPABASE_SOURCE && mode === JOIN_MODE && (
               <SectionContainer color="chatPanelInfo">
                 <SectionRow
                   label={t("navigation:collaboration.identityKind")}

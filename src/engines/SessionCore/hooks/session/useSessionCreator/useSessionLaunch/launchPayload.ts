@@ -20,7 +20,10 @@ import {
   type SessionStatus,
   type SessionTargetKind,
 } from "@src/store/session";
-import type { SessionSource } from "@src/store/session/creatorStateAtom";
+import type {
+  SessionLaunchOrgContext,
+  SessionSource,
+} from "@src/store/session/creatorStateAtom";
 
 import type { ResolvedKeys } from "./resolveKeys";
 
@@ -245,10 +248,16 @@ export function buildSessionFromLaunchResult(options: {
   agentExecMode: AgentExecMode;
   effectiveSource: SessionSource | null;
   isBackgroundLaunch: boolean;
+  launchOrgContext?: Partial<SessionLaunchOrgContext>;
   result: SessionLaunchResult;
 }): Session {
-  const { agentExecMode, effectiveSource, isBackgroundLaunch, result } =
-    options;
+  const {
+    agentExecMode,
+    effectiveSource,
+    isBackgroundLaunch,
+    launchOrgContext,
+    result,
+  } = options;
 
   return {
     session_id: result.sessionId,
@@ -269,6 +278,24 @@ export function buildSessionFromLaunchResult(options: {
       ? { agentIconId: AGENT_ORG_ICON_ID, agentOrgId: result.agentOrgId }
       : {}),
     ...(result.accountId ? { accountId: result.accountId } : {}),
+    ...((result.orgId ?? launchOrgContext?.orgId)
+      ? { orgId: result.orgId ?? launchOrgContext?.orgId }
+      : {}),
+    ...((result.projectId ?? launchOrgContext?.projectId)
+      ? { projectId: result.projectId ?? launchOrgContext?.projectId }
+      : {}),
+    ...((result.projectName ?? launchOrgContext?.projectName)
+      ? { projectName: result.projectName ?? launchOrgContext?.projectName }
+      : {}),
+    ...((result.projectSlug ?? launchOrgContext?.projectSlug)
+      ? { projectSlug: result.projectSlug ?? launchOrgContext?.projectSlug }
+      : {}),
+    ...((result.workItemId ?? launchOrgContext?.workItemId)
+      ? { workItemId: result.workItemId ?? launchOrgContext?.workItemId }
+      : {}),
+    ...((result.agentRole ?? launchOrgContext?.agentRole)
+      ? { agentRole: result.agentRole ?? launchOrgContext?.agentRole }
+      : {}),
     ...(result.background ? { background: true } : {}),
     ...(result.worktreePath ? { worktreePath: result.worktreePath } : {}),
     ...(result.workspacePath ? { repoPath: result.workspacePath } : {}),

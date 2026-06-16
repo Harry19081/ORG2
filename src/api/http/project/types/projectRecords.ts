@@ -16,6 +16,7 @@ export interface ProjectOrg {
 
 export interface CreateProjectOrgRequest {
   name: string;
+  id?: string;
 }
 
 /**

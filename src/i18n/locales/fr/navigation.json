@@ -383,8 +383,9 @@
     "joinOrg": "Rejoindre",
     "orgSource": "Source de l’organisation",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "URL du hub Cloudflare",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "URL du projet Supabase",
+    "supabaseAnonKey": "Clé anon Supabase",
     "orgName": "Nom de l’ORG",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Lien ou code d’invitation",
@@ -398,13 +399,22 @@
     "copyInvite": "Copier l’invitation",
     "copiedInvite": "Copié",
     "setupMode": "Mode de configuration",
-    "hubSetupTitle": "Configurer l’URL du hub Cloudflare",
+    "supabaseSetupTitle": "Configurer Supabase Sync",
+    "verifySupabaseSetup": "Vérifier la configuration",
+    "copySetupSql": "Copier le SQL de configuration",
+    "copiedSetupSql": "SQL copié",
+    "openSupabaseSqlEditor": "Ouvrir l’éditeur SQL Supabase",
+    "supabaseSetupVerified": "Configuration Supabase vérifiée",
+    "supabaseSetupMissing": "La configuration Supabase est manquante. Copiez le SQL, exécutez-le dans l’éditeur SQL Supabase, puis vérifiez à nouveau.",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG introuvable",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "Projet",
       "sessions": "Sessions",
       "members": "Membres",
-      "chat": "Chat de groupe"
+      "chat": "Chat de groupe",
+      "settings": "Paramètres"
     },
     "stats": {
       "members": "Membres",
@@ -425,6 +435,20 @@
       "humanOnly": "Seules les identités humaines peuvent publier dans le chat de groupe.",
       "hint": "Les humains peuvent discuter ici et partager des liens avec l’ORG."
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "Suivez les work items de l’ORG avec la même structure locale/cloud.",
+      "empty": "Aucun work item dans cette ORG pour le moment.",
+      "count": "{{count}} éléments",
+      "unassigned": "Non assigné"
+    },
+    "projects": {
+      "title": "Projet",
+      "description": "Consultez les projets associés à cette ORG.",
+      "empty": "Aucun projet dans cette ORG pour le moment.",
+      "count": "{{count}} projets",
+      "noDescription": "Aucune description"
+    },
     "sessionStatusActive": "Actif",
     "localHuman": "Humain local",
     "backToOrg": "Retour à l’ORG",
@@ -433,8 +457,38 @@
       "description": "Créez un lien d’invitation pour que vos coéquipiers rejoignent cette ORG. Le dernier lien s’affiche ici pour être copié rapidement.",
       "adminOnly": "Seuls les administrateurs de l’ORG peuvent créer des liens d’invitation.",
       "create": "Créer une invitation",
-      "createNew": "Nouvelle invitation"
+      "createNew": "Nouvelle invitation",
+      "remainingUses": "{{count}} utilisations restantes",
+      "expires": "Expire le {{date}}"
     },
-    "orgDashboard": "Tableau de bord"
+    "orgDashboard": "Tableau de bord",
+    "access": {
+      "title": "Accès aux sessions",
+      "description": "Choisissez ce que les coéquipiers peuvent voir de vos sessions locales dans cet ORG.",
+      "modes": {
+        "off": {
+          "title": "Désactivé",
+          "description": "Ne partagez ni cartes de session ni données de replay."
+        },
+        "metadata_only": {
+          "title": "Cartes de session seulement",
+          "description": "Partagez seulement les titres, propriétaires, branches et workspaces."
+        },
+        "full_replay": {
+          "title": "Replay complet",
+          "description": "Autorisez les coéquipiers à demander le snapshot complet des événements."
+        }
+      },
+      "workspaces": "Workspaces autorisés",
+      "workspacesHint": "Choisissez les chemins de workspace pouvant être partagés. Rien n’est partagé avant d’en sélectionner au moins un.",
+      "noWorkspaces": "Aucun workspace de session locale trouvé.",
+      "fullReplayWarning": "Le replay complet peut inclure prompts, sorties, tool calls et chemins de fichiers. Activez-le seulement pour les ORGs de confiance.",
+      "metadataOnlyBadge": "Métadonnées seulement",
+      "metadataOnlyDenied": "Cette session partage seulement les métadonnées. Le replay complet n’est pas disponible.",
+      "requestPending": "Demande du replay de session au propriétaire..."
+    },
+    "members": {
+      "remove": "Retirer"
+    }
   }
 }

@@ -144,6 +144,8 @@ pub mod session_defaults {
 // Key Source
 // ============================================
 
+pub const PERSONAL_ORG_ID: &str = project_management::projects::types::PERSONAL_ORG_ID;
+
 pub use core_types::key_source::KeySource;
 
 // Proxy environment variable name constants moved to `core_types::proxy_env`

@@ -2,6 +2,7 @@ import { rpc } from "@src/api/tauri/rpc";
 import type { SessionAggregateRecord } from "@src/api/tauri/rpc/schemas/sessionAggregate";
 import { DISPATCH_CATEGORY } from "@src/api/tauri/session";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store";
+import type { Snapshot } from "@src/engines/SessionCore/core/store";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import {
@@ -111,6 +112,29 @@ function rewriteBootstrapEvents(
   return events.map((event) => ({ ...event, sessionId: sourceSessionId }));
 }
 
+export function extractShareableSnapshotEvents(
+  snapshot: Snapshot
+): SessionEvent[] {
+  const eventById = new Map<string, SessionEvent>();
+  const addEvents = (events: SessionEvent[] | undefined) => {
+    for (const event of events ?? []) {
+      eventById.set(event.id, event);
+    }
+  };
+
+  if ("events" in snapshot) {
+    addEvents(snapshot.events);
+    return Array.from(eventById.values());
+  }
+
+  addEvents(snapshot.chatEvents);
+  addEvents(snapshot.sortedSimulatorEvents);
+  addEvents(snapshot.simulatorEventUpserts);
+  return Array.from(eventById.values()).sort((left, right) =>
+    left.createdAt.localeCompare(right.createdAt)
+  );
+}
+
 function buildBootstrapMessage(options: {
   shareId: string;
   sourceSessionId: string;
@@ -195,8 +219,7 @@ export async function startHostSessionShare(options: {
       unsubscribeSnapshot = eventStoreProxy.subscribeSession(
         options.sessionId,
         (snapshot) => {
-          const snapshotEvents =
-            "events" in snapshot ? snapshot.events : snapshot.chatEvents;
+          const snapshotEvents = extractShareableSnapshotEvents(snapshot);
           const newEvents = snapshotEvents.filter(
             (event) => !state.sentEventIds.has(event.id)
           );

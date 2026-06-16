@@ -338,7 +338,12 @@ export function useSessionLaunch(
         ...launchParams,
         ...(resolvedWorkItemContext
           ? {
-              workItemId: resolvedWorkItemContext.workItemId,
+              orgId: resolvedWorkItemContext.orgId,
+              projectId: resolvedWorkItemContext.projectId,
+              projectName: resolvedWorkItemContext.projectName,
+              ...(resolvedWorkItemContext.workItemId
+                ? { workItemId: resolvedWorkItemContext.workItemId }
+                : {}),
               agentRole: resolvedWorkItemContext.agentRole,
               projectSlug: resolvedWorkItemContext.projectSlug,
             }
@@ -354,6 +359,7 @@ export function useSessionLaunch(
           agentExecMode,
           effectiveSource,
           isBackgroundLaunch,
+          launchOrgContext: resolvedWorkItemContext ?? undefined,
           result,
         })
       );
@@ -393,7 +399,7 @@ export function useSessionLaunch(
           dispatchCategory === DISPATCH_CATEGORY.CLI_AGENT &&
           !sessionUsesHostedKey
         ) {
-          await emitOpenWorkspace(
+          void emitOpenWorkspace(
             result.sessionId,
             effectiveSource?.repoId ?? "",
             "Quick"

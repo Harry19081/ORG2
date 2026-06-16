@@ -309,7 +309,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
 
     const handleChatPanelCollabOrgCreated = useCallback(
       (result: CreatedOrgResult) => {
-        if (result.source === "cloud") {
+        if (result.source === "supabase") {
           navigateChatPanel({
             kind: CHAT_PANEL_SURFACE_KIND.COLLAB_ORG,
             collabOrg: { orgId: result.org.id },

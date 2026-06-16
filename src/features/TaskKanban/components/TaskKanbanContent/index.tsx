@@ -7,7 +7,6 @@ import type {
   TaskStatus,
 } from "@src/features/KanbanBoard";
 
-import type { DiaryTimelineDisplayMode } from "../../config";
 import DiaryView from "../DiaryView";
 import type { FactoryViewMode } from "../FactoryViewPill";
 import ListView from "../ListView";
@@ -20,7 +19,6 @@ export interface TaskKanbanContentProps {
   selectedTaskId: string | null;
   detailPanelVisible: boolean;
   calendarDate: Date;
-  diaryTimelineDisplayMode: DiaryTimelineDisplayMode;
   onTaskMove: (taskId: string, newStatus: TaskStatus) => void;
   onTaskClick: (task: KanbanTask) => void;
   onAddTask: () => void;
@@ -34,7 +32,6 @@ const TaskKanbanContent: React.FC<TaskKanbanContentProps> = ({
   selectedTaskId,
   detailPanelVisible,
   calendarDate,
-  diaryTimelineDisplayMode,
   onTaskMove,
   onTaskClick,
   onAddTask,
@@ -45,7 +42,6 @@ const TaskKanbanContent: React.FC<TaskKanbanContentProps> = ({
         <DiaryView
           tasks={diaryTasks}
           date={calendarDate}
-          displayMode={diaryTimelineDisplayMode}
           onTaskClick={onTaskClick}
         />
       );

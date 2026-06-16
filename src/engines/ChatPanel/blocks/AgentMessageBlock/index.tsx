@@ -30,6 +30,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 import ExpandOverlay from "@src/components/ExpandOverlay";
 
@@ -65,6 +66,7 @@ const AgentMessageBlock: React.FC<AgentMessageBlockProps> = ({
   children,
   eventId,
 }) => {
+  const { t } = useTranslation("common");
   const clampEligible = useContext(AgentMessageClampContext);
 
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -126,7 +128,7 @@ const AgentMessageBlock: React.FC<AgentMessageBlockProps> = ({
   // the simulator is visible side-by-side.
   const showLocateArrow = Boolean(eventId);
   return (
-    <div className="w-full min-w-0 overflow-hidden px-2 py-0.5">
+    <div className="group/agent-message w-full min-w-0 overflow-hidden px-2 py-0.5">
       <div
         ref={viewportRef}
         className="group/expand relative scrollbar-hide"
@@ -147,7 +149,11 @@ const AgentMessageBlock: React.FC<AgentMessageBlockProps> = ({
               event.stopPropagation();
               setIsExpanded((prev) => !prev);
             }}
+            collapsedLabel={t("actions.expand")}
+            expandedLabel={t("actions.collapse")}
             fadeFrom={CHAT_PANE_FADE_FROM}
+            showLabel
+            alwaysShowControl
           />
         )}
       </div>
@@ -155,7 +161,7 @@ const AgentMessageBlock: React.FC<AgentMessageBlockProps> = ({
         <div className="mt-1 flex justify-end">
           <EventNavigateIcon
             onClick={handleLocate ?? (() => undefined)}
-            variant="footer"
+            variant="footer-hover"
           />
         </div>
       )}

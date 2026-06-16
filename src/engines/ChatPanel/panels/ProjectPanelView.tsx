@@ -9,7 +9,6 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { enrichedWorkItemToUI, projectApi } from "@src/api/http/project";
-import { PropertyDropdownField } from "@src/components/PropertyField/PropertyDropdownField";
 import TabPill from "@src/components/TabPill";
 import { createLogger } from "@src/hooks/logger";
 import { useProjectDataChanged } from "@src/hooks/project";
@@ -24,6 +23,7 @@ import {
   type ProjectData,
   ProjectPropertyFields,
 } from "@src/modules/ProjectManager/shared";
+import ProjectManagerBreadcrumb from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import {
   DetailPanelContainer,
   Placeholder,
@@ -243,23 +243,15 @@ export const ProjectPanelView: React.FC<ProjectPanelViewProps> = ({
   });
 
   const headerPath = (
-    <div
-      className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5"
-      data-testid="chat-panel-project-org-pill"
-    >
-      <PropertyDropdownField
-        value={selectedProject.orgId}
-        label={orgPathLabel}
-        icon={null}
-        placement="portal"
-        fieldVariant="pill"
-        triggerVariant="pill"
-        readonly
-        searchable={false}
-        selected
-        maxWidthClassName="max-w-[220px] shrink-0"
-      />
-    </div>
+    <ProjectManagerBreadcrumb
+      segments={[
+        { label: orgPathLabel },
+        { label: selectedProject.project.name },
+        ...(activePanelTab === "workItems"
+          ? [{ label: t("projects:workItems.label") }]
+          : []),
+      ]}
+    />
   );
 
   const inlineProperties = (

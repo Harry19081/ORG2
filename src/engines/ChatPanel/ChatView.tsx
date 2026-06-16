@@ -596,9 +596,7 @@ const ChatView: React.FC<ChatViewProps> = memo(
                         onEvents={handleGroupChatTapEvents}
                       />
                     ))}
-                <AgentMessageClampProvider
-                  value={agentMessageClampEligible && !turnPaginationEnabled}
-                >
+                <AgentMessageClampProvider value={agentMessageClampEligible}>
                   <ChatHistory
                     surfaceBgClass={surfaceBgClass}
                     agentOrgCurrentMemberName={

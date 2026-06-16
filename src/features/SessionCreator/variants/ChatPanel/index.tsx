@@ -60,7 +60,12 @@ import {
   type ChatImageAttachment,
   chatImageAttachmentsAtom,
 } from "@src/store/ui/chatImageAtom";
-import { modelPickerStyleAtom } from "@src/store/ui/chatPanelAtom";
+import {
+  chatPanelSelectedProjectAtom,
+  chatPanelSelectedProjectOrgAtom,
+  chatPanelSelectedWorkItemAtom,
+  modelPickerStyleAtom,
+} from "@src/store/ui/chatPanelAtom";
 import { draftHasContentAtom } from "@src/store/ui/draftAtom";
 import { getBigThreeRegionModelTypeForSession } from "@src/util/session/regionAlertModel";
 import { getRustAgentType } from "@src/util/session/sessionDispatch";
@@ -71,6 +76,7 @@ import ScreenPickerModal from "./ScreenPickerModal";
 import SessionCreatorAgentHero from "./SessionCreatorAgentHero";
 import SessionCreatorOrgMembersPanel from "./SessionCreatorOrgMembersPanel";
 import WorkItemAttachmentControl from "./WorkItemAttachmentControl";
+import { deriveChatPanelLaunchContext } from "./deriveLaunchContext";
 import "./index.scss";
 import { resolveSessionCreatorAgentHeroContent } from "./resolveSessionCreatorAgentHero";
 import { useSessionCreatorChatPanelHandlers } from "./useSessionCreatorChatPanelHandlers";
@@ -143,6 +149,20 @@ const SessionCreatorChatPanelSingle: React.FC<
   } = useRepoSelection({ autoLoad: true });
   const [attachedWorkItemContext, setAttachedWorkItemContext] =
     useState<SessionLaunchWorkItemContext | null>(null);
+  const selectedProjectOrgContext = useAtomValue(
+    chatPanelSelectedProjectOrgAtom
+  );
+  const selectedProjectContext = useAtomValue(chatPanelSelectedProjectAtom);
+  const selectedWorkItemContext = useAtomValue(chatPanelSelectedWorkItemAtom);
+  const chatPanelLaunchContext = useMemo(
+    () =>
+      deriveChatPanelLaunchContext({
+        selectedProjectContext,
+        selectedProjectOrgContext,
+        selectedWorkItemContext,
+      }),
+    [selectedProjectContext, selectedProjectOrgContext, selectedWorkItemContext]
+  );
   const handleSessionStart = useCallback(
     (info: SessionLaunchSuccessInfo) => {
       setAttachedWorkItemContext(null);
@@ -193,7 +213,8 @@ const SessionCreatorChatPanelSingle: React.FC<
     launchMode,
     persistDraft: !initialContent,
     skipDraftLoading: Boolean(initialContent),
-    workItemContext: attachedWorkItemContext ?? workItemContext,
+    workItemContext:
+      attachedWorkItemContext ?? workItemContext ?? chatPanelLaunchContext,
     resolveWorkItemContext,
     onLaunchSuccess: handleSessionStart,
   });

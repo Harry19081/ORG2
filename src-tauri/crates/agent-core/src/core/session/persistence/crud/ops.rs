@@ -23,13 +23,14 @@ pub(super) const UPSERT_SESSION_SQL: &str = r#"
 INSERT INTO agent_sessions (
     session_id, name, status, model, account_id, user_input,
     created_at, updated_at, session_type, channel, chat_id,
-    workspace_path, work_item_id, agent_role, worktree_path,
+    workspace_path, org_id, project_id, project_name,
+    work_item_id, agent_role, worktree_path,
     worktree_branch, base_branch, merge_status,
     project_slug, agent_definition_id, org_member_id, parent_session_id, parent_event_id,
     workspace_additional_json, key_source, agent_exec_mode, native_harness_type,
     draft_text, reply_target_event_id, pinned
 )
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30, ?31, ?32, ?33)
 ON CONFLICT(session_id) DO UPDATE SET
     name                       = excluded.name,
     status                     = excluded.status,
@@ -41,6 +42,9 @@ ON CONFLICT(session_id) DO UPDATE SET
     channel                    = COALESCE(excluded.channel, agent_sessions.channel),
     chat_id                    = COALESCE(excluded.chat_id, agent_sessions.chat_id),
     workspace_path               = COALESCE(excluded.workspace_path, agent_sessions.workspace_path),
+    org_id                     = COALESCE(excluded.org_id, agent_sessions.org_id),
+    project_id                 = COALESCE(excluded.project_id, agent_sessions.project_id),
+    project_name               = COALESCE(excluded.project_name, agent_sessions.project_name),
     work_item_id               = COALESCE(excluded.work_item_id, agent_sessions.work_item_id),
     agent_role                 = COALESCE(excluded.agent_role, agent_sessions.agent_role),
     worktree_path             = COALESCE(excluded.worktree_path, agent_sessions.worktree_path),
@@ -114,6 +118,9 @@ pub fn upsert_session(record: &UnifiedSessionRecord) -> SqliteResult<()> {
                 record.channel,
                 record.chat_id,
                 record.workspace_path,
+                record.org_id,
+                record.project_id,
+                record.project_name,
                 record.work_item_id,
                 record.agent_role,
                 record.worktree_path,
@@ -337,6 +344,9 @@ pub fn reconcile_sessions_with_terminal_turn_markers() -> SqliteResult<usize> {
 /// conversation activity, so it intentionally leaves `updated_at` untouched.
 pub fn update_work_item_link(
     session_id: &str,
+    org_id: &str,
+    project_id: Option<&str>,
+    project_name: Option<&str>,
     project_slug: &str,
     work_item_id: &str,
     agent_role: Option<&str>,
@@ -345,11 +355,22 @@ pub fn update_work_item_link(
         let conn = get_connection()?;
         let updated = conn.execute(
             "UPDATE agent_sessions
-             SET work_item_id = ?2,
-                 project_slug = ?3,
-                 agent_role = COALESCE(?4, agent_role)
+             SET org_id = ?2,
+                 project_id = COALESCE(?3, project_id),
+                 project_name = COALESCE(?4, project_name),
+                 work_item_id = ?5,
+                 project_slug = ?6,
+                 agent_role = COALESCE(?7, agent_role)
              WHERE session_id = ?1",
-            params![session_id, work_item_id, project_slug, agent_role],
+            params![
+                session_id,
+                org_id,
+                project_id,
+                project_name,
+                work_item_id,
+                project_slug,
+                agent_role
+            ],
         )?;
         Ok(updated > 0)
     })
@@ -751,6 +772,9 @@ mod tests {
             channel TEXT,
             chat_id TEXT,
             workspace_path TEXT,
+            org_id TEXT,
+            project_id TEXT,
+            project_name TEXT,
             work_item_id TEXT,
             agent_role TEXT,
             worktree_path TEXT,
@@ -810,6 +834,9 @@ mod tests {
                 record.channel,
                 record.chat_id,
                 record.workspace_path,
+                record.org_id,
+                record.project_id,
+                record.project_name,
                 record.work_item_id,
                 record.agent_role,
                 record.worktree_path,
@@ -859,6 +886,29 @@ mod tests {
         assert_eq!(market_back.key_source, KeySource::HostedKey);
         let own_back = select_one(&conn, "sid-own");
         assert_eq!(own_back.key_source, KeySource::OwnKey);
+    }
+
+    #[test]
+    fn org_project_work_item_context_round_trips() {
+        let conn = rusqlite::Connection::open_in_memory().unwrap();
+        conn.execute_batch(TEST_SCHEMA).unwrap();
+
+        let mut record = make_record("sid-org", KeySource::OwnKey);
+        record.org_id = Some("org-platform".to_string());
+        record.project_id = Some("project-runtime".to_string());
+        record.project_name = Some("Runtime".to_string());
+        record.project_slug = Some("runtime".to_string());
+        record.work_item_id = Some("RUN-12".to_string());
+        record.agent_role = Some("reviewer".to_string());
+        upsert_into(&conn, &record);
+
+        let back = select_one(&conn, "sid-org");
+        assert_eq!(back.org_id.as_deref(), Some("org-platform"));
+        assert_eq!(back.project_id.as_deref(), Some("project-runtime"));
+        assert_eq!(back.project_name.as_deref(), Some("Runtime"));
+        assert_eq!(back.project_slug.as_deref(), Some("runtime"));
+        assert_eq!(back.work_item_id.as_deref(), Some("RUN-12"));
+        assert_eq!(back.agent_role.as_deref(), Some("reviewer"));
     }
 
     /// Mirror of `key_source_is_immutable_on_conflict` for the P3

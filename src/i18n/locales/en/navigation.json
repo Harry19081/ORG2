@@ -222,8 +222,9 @@
     "joinOrg": "Join",
     "orgSource": "Org source",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "Cloudflare hub URL",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "Supabase Project URL",
+    "supabaseAnonKey": "Supabase anon key",
     "orgName": "ORG name",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Invite link or code",
@@ -237,13 +238,22 @@
     "copyInvite": "Copy invite",
     "copiedInvite": "Copied",
     "setupMode": "Setup mode",
-    "hubSetupTitle": "How to set up the Cloudflare hub URL",
+    "supabaseSetupTitle": "How to set up Supabase Sync",
+    "verifySupabaseSetup": "Verify setup",
+    "copySetupSql": "Copy setup SQL",
+    "copiedSetupSql": "SQL copied",
+    "openSupabaseSqlEditor": "Open Supabase SQL Editor",
+    "supabaseSetupVerified": "Supabase setup verified",
+    "supabaseSetupMissing": "Supabase setup is missing. Copy the setup SQL, run it in Supabase SQL Editor, then verify again.",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG not found",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "Project",
       "sessions": "Sessions",
       "members": "Members",
-      "chat": "Group chat"
+      "chat": "Group chat",
+      "settings": "Settings"
     },
     "stats": {
       "members": "Members",
@@ -264,6 +274,20 @@
       "humanOnly": "Only human identities can post in group chat.",
       "hint": "Humans can talk here and share links with the ORG."
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "Track ORG work items from the same local/cloud structure.",
+      "empty": "No work items in this ORG yet.",
+      "count": "{{count}} items",
+      "unassigned": "Unassigned"
+    },
+    "projects": {
+      "title": "Project",
+      "description": "Review projects associated with this ORG.",
+      "empty": "No projects in this ORG yet.",
+      "count": "{{count}} projects",
+      "noDescription": "No description"
+    },
     "sessionStatusActive": "Active",
     "localHuman": "Local human",
     "backToOrg": "Back to ORG",
@@ -272,9 +296,39 @@
       "description": "Create an invite link for teammates to join this ORG. The latest link is shown here for quick copying.",
       "adminOnly": "Only ORG admins can create invite links.",
       "create": "Create invite",
-      "createNew": "New invite"
+      "createNew": "New invite",
+      "remainingUses": "{{count}} uses remaining",
+      "expires": "Expires {{date}}"
     },
-    "orgDashboard": "Dashboard"
+    "orgDashboard": "Dashboard",
+    "access": {
+      "title": "Session access",
+      "description": "Choose what teammates can see from your local sessions in this ORG.",
+      "modes": {
+        "off": {
+          "title": "Off",
+          "description": "Do not share session cards or replay data."
+        },
+        "metadata_only": {
+          "title": "Session cards only",
+          "description": "Share titles, owners, branches, and workspaces only."
+        },
+        "full_replay": {
+          "title": "Full replay",
+          "description": "Allow teammates to request the full event snapshot."
+        }
+      },
+      "workspaces": "Allowed workspaces",
+      "workspacesHint": "Pick the workspace paths that can be shared. Nothing is shared until at least one workspace is selected.",
+      "noWorkspaces": "No local session workspaces found yet.",
+      "fullReplayWarning": "Full replay can include prompts, outputs, tool calls, and file paths. Only enable it for trusted ORGs.",
+      "metadataOnlyBadge": "Metadata only",
+      "metadataOnlyDenied": "This session is shared as metadata only. Full replay is not available.",
+      "requestPending": "Requesting session replay from the owner..."
+    },
+    "members": {
+      "remove": "Remove"
+    }
   },
   "myRole": {
     "tabs": {

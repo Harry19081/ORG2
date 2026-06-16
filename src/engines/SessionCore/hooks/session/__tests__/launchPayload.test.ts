@@ -35,6 +35,76 @@ describe("launchPayload", () => {
     expect(session.repoPath).toBe("/workspace/repo-one");
   });
 
+  it("hydrates optimistic session org context from launch readback", () => {
+    const session = buildSessionFromLaunchResult({
+      agentExecMode: "build",
+      effectiveSource: null,
+      isBackgroundLaunch: false,
+      launchOrgContext: {
+        orgId: "org-fallback",
+        projectId: "project-fallback",
+        projectName: "Fallback Project",
+        projectSlug: "fallback-project",
+        workItemId: "FB-1",
+        agentRole: "custom",
+      },
+      result: {
+        sessionId: "agent-1",
+        category: DISPATCH_CATEGORY.RUST_AGENT,
+        name: "Test session",
+        status: "running",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        userInput: "hello",
+        background: false,
+        orgId: "org-platform",
+        projectId: "project-runtime",
+        projectName: "Runtime",
+        projectSlug: "runtime",
+        workItemId: "RUN-12",
+        agentRole: "reviewer",
+      },
+    });
+
+    expect(session.orgId).toBe("org-platform");
+    expect(session.projectId).toBe("project-runtime");
+    expect(session.projectName).toBe("Runtime");
+    expect(session.projectSlug).toBe("runtime");
+    expect(session.workItemId).toBe("RUN-12");
+    expect(session.agentRole).toBe("reviewer");
+  });
+
+  it("hydrates optimistic session org context from launch fallback before readback", () => {
+    const session = buildSessionFromLaunchResult({
+      agentExecMode: "build",
+      effectiveSource: null,
+      isBackgroundLaunch: false,
+      launchOrgContext: {
+        orgId: "org-platform",
+        projectId: "project-runtime",
+        projectName: "Runtime",
+        projectSlug: "runtime",
+        workItemId: "RUN-12",
+        agentRole: "custom",
+      },
+      result: {
+        sessionId: "agent-1",
+        category: DISPATCH_CATEGORY.RUST_AGENT,
+        name: "Test session",
+        status: "running",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        userInput: "hello",
+        background: false,
+      },
+    });
+
+    expect(session.orgId).toBe("org-platform");
+    expect(session.projectId).toBe("project-runtime");
+    expect(session.projectName).toBe("Runtime");
+    expect(session.projectSlug).toBe("runtime");
+    expect(session.workItemId).toBe("RUN-12");
+    expect(session.agentRole).toBe("custom");
+  });
+
   it("passes non-primary multi-root folders as additional directories", () => {
     const { launchParams } = buildSessionLaunchPayload({
       agentExecMode: "build",

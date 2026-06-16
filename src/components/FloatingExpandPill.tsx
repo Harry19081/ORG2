@@ -22,12 +22,14 @@ interface FloatingExpandPillProps {
   expanded: boolean;
   onClick: (e: React.MouseEvent) => void;
   label?: string;
+  showLabel?: boolean;
 }
 
 const FloatingExpandPill: React.FC<FloatingExpandPillProps> = ({
   expanded,
   onClick,
   label,
+  showLabel = false,
 }) => {
   const { t } = useTranslation();
   const text =
@@ -40,14 +42,16 @@ const FloatingExpandPill: React.FC<FloatingExpandPillProps> = ({
       variant="secondary"
       appearance="solid"
       size="mini"
-      shape="circle"
-      iconOnly
+      shape={showLabel ? "round" : "circle"}
+      iconOnly={!showLabel}
       icon={<Icon size={16} strokeWidth={2.25} />}
       className="pointer-events-auto shadow-sm backdrop-blur-sm"
       onClick={onClick}
       aria-label={text}
       title={text}
-    />
+    >
+      {showLabel ? text : null}
+    </Button>
   );
 };
 

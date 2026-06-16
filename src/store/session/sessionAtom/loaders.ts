@@ -196,6 +196,9 @@ async function loadImportedHistorySourcePage(
 
 export const loadSessions = async (options?: {
   repoPath?: string;
+  orgId?: string;
+  projectSlug?: string;
+  workItemId?: string;
   status?: SessionStatus;
   limit?: number;
   offset?: number;
@@ -220,9 +223,18 @@ export const loadSessions = async (options?: {
 
   try {
     const filter: SessionFilter | undefined =
-      options?.repoPath || options?.status || options?.limit || options?.offset
+      options?.repoPath ||
+      options?.orgId ||
+      options?.projectSlug ||
+      options?.workItemId ||
+      options?.status ||
+      options?.limit ||
+      options?.offset
         ? {
             repoPath: options?.repoPath,
+            orgId: options?.orgId,
+            projectSlug: options?.projectSlug,
+            workItemId: options?.workItemId,
             status: options?.status,
             limit: options?.limit,
             offset: options?.offset,

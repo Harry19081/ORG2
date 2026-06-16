@@ -24,6 +24,7 @@ export interface ProjectOrgHubContentProps {
   orgView: ProjectOrgSurfaceView;
   breadcrumbSegments?: readonly { label: string }[];
   workStationTabId: string;
+  renderSurfaceControlsInline?: boolean;
   onOrgViewChange: (view: ProjectOrgSurfaceView) => void;
   onSelectProject: (
     projectId: string,
@@ -49,6 +50,7 @@ export const ProjectOrgHubContent: React.FC<ProjectOrgHubContentProps> = ({
   orgView,
   breadcrumbSegments,
   workStationTabId,
+  renderSurfaceControlsInline = false,
   onOrgViewChange,
   onSelectProject,
   onCreateProject,
@@ -78,7 +80,25 @@ export const ProjectOrgHubContent: React.FC<ProjectOrgHubContentProps> = ({
     [orgView, onOrgViewChange]
   );
 
-  const publishesHubHeaderOnly = orgView === PROJECT_ORG_SURFACE_VIEW.SETTINGS;
+  const inlineOrgSurfaceControls = useMemo(
+    () => (
+      <ProjectOrgSurfacePillSwitch
+        orgView={orgView}
+        onOrgViewChange={onOrgViewChange}
+        variant="simple"
+        color="default"
+        size="large"
+      />
+    ),
+    [orgView, onOrgViewChange]
+  );
+
+  const publishesHubHeaderOnly =
+    !renderSurfaceControlsInline &&
+    orgView === PROJECT_ORG_SURFACE_VIEW.SETTINGS;
+  const contentOrgSurfaceControls = renderSurfaceControlsInline
+    ? undefined
+    : orgSurfaceControls;
 
   const body = useMemo(() => {
     if (orgView === PROJECT_ORG_SURFACE_VIEW.PROJECTS) {
@@ -93,7 +113,7 @@ export const ProjectOrgHubContent: React.FC<ProjectOrgHubContentProps> = ({
             allowExternalSources={false}
             publishToWorkstationHeader
             workStationTabId={workStationTabId}
-            orgSurfaceControls={orgSurfaceControls}
+            orgSurfaceControls={contentOrgSurfaceControls}
           />
         </Suspense>
       );
@@ -111,7 +131,7 @@ export const ProjectOrgHubContent: React.FC<ProjectOrgHubContentProps> = ({
             onCreateProject={onCreateProject}
             onCreateWorkItem={onCreateWorkItem}
             workStationTabId={workStationTabId}
-            orgSurfaceControls={orgSurfaceControls}
+            orgSurfaceControls={contentOrgSurfaceControls}
           />
         </Suspense>
       );
@@ -156,7 +176,7 @@ export const ProjectOrgHubContent: React.FC<ProjectOrgHubContentProps> = ({
     onExpandWorkItemToTab,
     onOpenLinearProjects,
     onSelectProject,
-    orgSurfaceControls,
+    contentOrgSurfaceControls,
     orgView,
     resolvedBreadcrumbSegments,
     scopedOrgId,
@@ -172,6 +192,11 @@ export const ProjectOrgHubContent: React.FC<ProjectOrgHubContentProps> = ({
           onOrgViewChange={onOrgViewChange}
         />
       )}
+      {renderSurfaceControlsInline ? (
+        <div className="shrink-0 px-4 pb-4 pt-2">
+          {inlineOrgSurfaceControls}
+        </div>
+      ) : null}
       <div className="min-h-0 flex-1 overflow-hidden">{body}</div>
     </div>
   );

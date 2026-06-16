@@ -69,6 +69,24 @@ pub struct SessionAggregateRecord {
     /// Whether this session runs in background mode
     #[serde(default)]
     pub background: bool,
+    /// Owning project/collaboration org ID for this session.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub org_id: Option<String>,
+    /// Linked project ID, when available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub project_id: Option<String>,
+    /// Linked project display name, when available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub project_name: Option<String>,
+    /// Linked project slug, when available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub project_slug: Option<String>,
+    /// Linked work item short ID, when available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub work_item_id: Option<String>,
+    /// Work item agent role, when available.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub agent_role: Option<String>,
     /// Whether this session is currently active (running, pending, etc.)
     pub is_active: bool,
     /// Display label for UI (truncated name or user_input, pill references stripped)
@@ -269,6 +287,15 @@ pub struct SessionFilter {
     /// Filter by repo path prefix
     #[serde(skip_serializing_if = "Option::is_none")]
     pub repo_path: Option<String>,
+    /// Filter by owning project/collaboration org ID
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub org_id: Option<String>,
+    /// Filter by linked project slug
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub project_slug: Option<String>,
+    /// Filter by linked work item short ID
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub work_item_id: Option<String>,
     /// Maximum number of sessions to return
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<usize>,
