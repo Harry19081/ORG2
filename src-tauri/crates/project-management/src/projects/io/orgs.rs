@@ -60,12 +60,20 @@ pub fn create_project_org(request: &CreateProjectOrgRequest) -> Result<ProjectOr
         return Err("Org name must include at least one alphanumeric character".to_string());
     }
 
+    let org_id = request
+        .id
+        .as_ref()
+        .map(|id| id.trim())
+        .filter(|id| !id.is_empty())
+        .map(ToString::to_string)
+        .unwrap_or_else(|| format!("{}-{}", DEFAULT_ORG_ID_PREFIX, slug));
+
     let connection = conn()?;
     let exists: bool = map_db(
         connection
             .query_row(
-                "SELECT 1 FROM project_orgs WHERE slug = ?1 OR org_key = ?2",
-                params![&slug, org_key_from_slug(&slug)],
+                "SELECT 1 FROM project_orgs WHERE id = ?1 OR slug = ?2 OR org_key = ?3",
+                params![&org_id, &slug, org_key_from_slug(&slug)],
                 |_| Ok(true),
             )
             .optional(),
@@ -77,7 +85,7 @@ pub fn create_project_org(request: &CreateProjectOrgRequest) -> Result<ProjectOr
 
     let now = now_ms();
     let org = ProjectOrg {
-        id: format!("{}-{}", DEFAULT_ORG_ID_PREFIX, slug),
+        id: org_id,
         name: name.to_string(),
         slug: slug.clone(),
         org_key: org_key_from_slug(&slug),

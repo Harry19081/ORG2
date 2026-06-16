@@ -212,6 +212,12 @@ pub async fn test_cursor_cli_runtime(
         additional_directories: None,
         parent_session_id: None,
         org_member_id: None,
+        org_id: None,
+        project_id: None,
+        project_name: None,
+        project_slug: None,
+        work_item_id: None,
+        agent_role: None,
     };
 
     let created = match cli_agent_create(create_params).await {
@@ -315,6 +321,12 @@ pub async fn test_gemini_cli_runtime(
         additional_directories: None,
         parent_session_id: None,
         org_member_id: None,
+        org_id: None,
+        project_id: None,
+        project_name: None,
+        project_slug: None,
+        work_item_id: None,
+        agent_role: None,
     };
 
     let created = match cli_agent_create(create_params).await {
@@ -440,6 +452,12 @@ pub async fn test_gemini_cli_account_switch(
         additional_directories: None,
         parent_session_id: None,
         org_member_id: None,
+        org_id: None,
+        project_id: None,
+        project_name: None,
+        project_slug: None,
+        work_item_id: None,
+        agent_role: None,
     };
 
     let created = match cli_agent_create(create_params).await {
@@ -595,6 +613,12 @@ pub async fn test_cursor_cli_account_switch(
         additional_directories: None,
         parent_session_id: None,
         org_member_id: None,
+        org_id: None,
+        project_id: None,
+        project_name: None,
+        project_slug: None,
+        work_item_id: None,
+        agent_role: None,
     };
 
     let created = match cli_agent_create(create_params).await {
@@ -703,6 +727,12 @@ pub async fn test_claude_code_cli_account_switch(
         additional_directories: None,
         parent_session_id: None,
         org_member_id: None,
+        org_id: None,
+        project_id: None,
+        project_name: None,
+        project_slug: None,
+        work_item_id: None,
+        agent_role: None,
     };
 
     let created = match cli_agent_create(create_params).await {
@@ -849,6 +879,12 @@ pub async fn test_codex_cli_account_switch(
         additional_directories: None,
         parent_session_id: None,
         org_member_id: None,
+        org_id: None,
+        project_id: None,
+        project_name: None,
+        project_slug: None,
+        work_item_id: None,
+        agent_role: None,
     };
 
     let created = match cli_agent_create(create_params).await {
@@ -1010,6 +1046,12 @@ pub async fn test_cli_resume_lock_isolation() -> Json<serde_json::Value> {
         additional_directories: None,
         parent_session_id: None,
         org_member_id: None,
+        org_id: None,
+        project_id: None,
+        project_name: None,
+        project_slug: None,
+        work_item_id: None,
+        agent_role: None,
     };
 
     let stale_session = match cli_agent_create(create_params("E2E stale resume lock probe")).await {
