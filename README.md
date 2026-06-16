@@ -1,12 +1,19 @@
-# ORGII
+# ORG-II
 
 ORGII is a self-evolving agentic development framework for coding with agents and Agentic Orgs.
 
-Built with Tauri and Rust, ORGII stays lightweight and RAM-friendly compared with Electron-based IDEs and heavier agentic tools. It supports bring-your-own keys and existing subscriptions across your favorite CLI agents & ORGII's resource-friendly Rust harness.
-
-Agents can be aware of your computer's RAM, CPU, and presence status, then adapt their behavior based on your instructions. ORGII also supports the keys and subscriptions you already love and use.
-
-Agents and GUIs support end-to-end testing, which empowers ORGII to self-evolve (with human supervision). A research paper is releasing soon. The frontend is written with our ORGII SDE Agent.
+- Lightweight Tauri + Rust architecture.
+- Rust agents that work with your existing API keys and agent subscriptions.
+- Livestream and replay agent trajectories for auditing, review, and debugging.
+- GUI compatible with both ORGII Rust and CLI agents
+- Local-first architecture with group issue and session collaboration via self-hosted Supabase (early stage).
+  
+Agents:
+- Resource-aware, understanding system state (RAM, CPU, and human attention avialability).
+- Agent-powered GUI end-to-end testing for supervised self-evolution.
+- Cross-agent memory and knowledge sharing.
+- AI blame system that attributes actions to the original agent and restores that agent in any new session.
+- Designed for long-running agent sessions and organizational-scale development.
 
 ## Demo
 
@@ -23,23 +30,6 @@ pnpm install
 pnpm run download:sidecars
 pnpm run tauri:dev
 ```
-
-Useful scripts:
-
-- `pnpm run tauri:dev` — launch the full desktop app in development mode, including the Tauri shell and frontend dev server.
-- `pnpm run start:fast` — start only the webpack frontend dev server for fast UI iteration.
-- `pnpm run build` — create the production frontend bundle used by desktop builds.
-- `pnpm run tauri:build` — build the packaged desktop app with the default Tauri profile.
-- `pnpm run tauri:build:fast` — build with the faster local development profile for quicker validation.
-- `pnpm run tauri:build:fast:open` — fast iteration mode: clean only the app target for the local development profile, rebuild the Tauri app bundle, and open it immediately.
-- `pnpm run download:sidecars` — download optional native helpers for Browser Use and Computer Use features.
-- `pnpm run lint` / `pnpm run lint:fix` — check or automatically fix frontend lint issues.
-- `pnpm run test` / `pnpm run test:coverage` / `pnpm run test:watch` — run frontend tests, coverage, or watch mode.
-- `pnpm run cargo:check` — validate the Rust backend without producing a full build.
-- `pnpm run cargo:test` — run Rust library tests.
-- `pnpm run cargo:clippy` — run Rust lint checks.
-- `pnpm run check:circular` — detect circular imports in `src/`.
-
 For more contribution details, see [CONTRIBUTING.md](CONTRIBUTING.md). We ask everyone to be respectful and empathetic; see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ## Optional native sidecars
