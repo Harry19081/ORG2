@@ -1,10 +1,10 @@
 import {
   ClipboardCheck,
   File,
-  History,
   Image,
   PencilLine,
   Sparkles,
+  Undo2,
 } from "lucide-react";
 import React, {
   type FC,
@@ -366,32 +366,34 @@ const UserChatItem = ({
       >
         {/* Edit + Restore buttons — visible on hover */}
         {isEditableDisplay && (
-          <div className="absolute right-2 top-2 z-10 flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-            {onRestoreCheckpoint && (
+          <div className="absolute right-2 top-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="flex items-center gap-1 rounded-lg border border-fill-2 bg-fill-2 p-0.5">
+              {onRestoreCheckpoint && (
+                <button
+                  type="button"
+                  data-testid="chat-message-restore-checkpoint"
+                  title={t("chat.restoreCheckpoint", "Restore checkpoint")}
+                  className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0.5 text-text-2 hover:text-danger-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger-6/30"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRestoreCheckpoint();
+                  }}
+                >
+                  <Undo2 size={14} strokeWidth={1.75} />
+                </button>
+              )}
               <button
                 type="button"
-                data-testid="chat-message-restore-checkpoint"
-                title={t("chat.restoreCheckpoint", "Restore checkpoint")}
+                data-testid="chat-message-user-edit-button"
                 className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0.5 text-text-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRestoreCheckpoint();
+                  handleEditClick();
                 }}
               >
-                <History size={14} strokeWidth={1.75} />
+                <PencilLine size={14} strokeWidth={1.75} />
               </button>
-            )}
-            <button
-              type="button"
-              data-testid="chat-message-user-edit-button"
-              className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0.5 text-text-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEditClick();
-              }}
-            >
-              <PencilLine size={14} strokeWidth={1.75} />
-            </button>
+            </div>
           </div>
         )}
 

@@ -136,6 +136,10 @@
     },
     "sidebar": {
       "agentTypes": "Agent Types",
+      "manageItems": "Manage items",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "Views",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "Remove draft"
@@ -204,10 +208,6 @@
       "activeSessions": "Active sessions",
       "completedSessions": "Completed",
       "timeline": "Timeline of events",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "commitsTo": "Commits to {{repo}}",
       "commitsToMultiple": "Commits to {{repos}}",

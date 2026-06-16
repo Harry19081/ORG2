@@ -141,6 +141,9 @@ pub fn ensure_tables_with(conn: &Connection) -> SqliteResult<()> {
         "ALTER TABLE agent_sessions ADD COLUMN workspace_path TEXT",
     );
 
+    try_migrate(conn, "ALTER TABLE agent_sessions ADD COLUMN org_id TEXT");
+    try_migrate(conn, "ALTER TABLE agent_sessions ADD COLUMN project_id TEXT");
+    try_migrate(conn, "ALTER TABLE agent_sessions ADD COLUMN project_name TEXT");
     try_migrate(
         conn,
         "ALTER TABLE agent_sessions ADD COLUMN work_item_id TEXT",

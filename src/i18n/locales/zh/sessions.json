@@ -130,6 +130,10 @@
     },
     "sidebar": {
       "agentTypes": "Agent 类型",
+      "manageItems": "管理项目",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "视图",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "删除草稿"
@@ -197,10 +201,6 @@
       "activeSessions": "活跃 Session",
       "completedSessions": "已完成",
       "timeline": "事件时间线",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "emptyTitle": "暂无日记事件",
       "emptySubtitle": "此日期的 Agent 活动会显示在这里。",

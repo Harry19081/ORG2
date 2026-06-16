@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -9,8 +9,6 @@ import {
 import type { MemberEntry } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
-import TabPill from "@src/components/TabPill";
-import type { TabPillItem } from "@src/components/TabPill";
 import {
   SECTION_ACTION_GAP_CLASSES,
   SECTION_DESCRIPTION_CLASSES,
@@ -20,28 +18,13 @@ import {
 } from "@src/modules/shared/layouts/SectionLayout";
 import {
   CARD_ROW_TOKENS,
+  CollapsibleSection,
   DETAIL_PANEL_TOKENS,
-  InternalHeader,
 } from "@src/modules/shared/layouts/blocks";
 import type { Label } from "@src/types/core/shared";
 
 import { RepoMembersSection } from "../../Projects/components/RepoSettings/sections";
 import { LabelsSection } from "../../WorkItems/components/WorkItemsSettings/subpages";
-
-const PROJECT_ORG_SETTINGS_TAB = {
-  SYNC_METHODS: "sync-methods",
-  MEMBERS: "members",
-  LABELS: "labels",
-} as const;
-
-type ProjectOrgSettingsTab =
-  (typeof PROJECT_ORG_SETTINGS_TAB)[keyof typeof PROJECT_ORG_SETTINGS_TAB];
-
-function isProjectOrgSettingsTab(
-  value: string
-): value is ProjectOrgSettingsTab {
-  return Object.values(PROJECT_ORG_SETTINGS_TAB).some((tab) => tab === value);
-}
 
 const SyncMethodsSection: React.FC<{
   org: ProjectOrg | null;
@@ -202,98 +185,46 @@ export const ProjectOrgSettingsPane: React.FC<ProjectOrgSettingsPaneProps> = ({
   onUpdateLabels,
 }) => {
   const { t } = useTranslation("projects");
-  const [activeTab, setActiveTab] = useState<ProjectOrgSettingsTab>(
-    PROJECT_ORG_SETTINGS_TAB.SYNC_METHODS
-  );
-
-  const tabs = useMemo<TabPillItem[]>(
-    () => [
-      {
-        key: PROJECT_ORG_SETTINGS_TAB.SYNC_METHODS,
-        label: t("orgs.management.syncMethods"),
-      },
-      { key: PROJECT_ORG_SETTINGS_TAB.MEMBERS, label: t("properties.members") },
-      { key: PROJECT_ORG_SETTINGS_TAB.LABELS, label: t("properties.labels") },
-    ],
-    [t]
-  );
-
-  const handleTabChange = useCallback((tab: string) => {
-    if (isProjectOrgSettingsTab(tab)) {
-      setActiveTab(tab);
-    }
-  }, []);
-
-  const content = useMemo(() => {
-    if (activeTab === PROJECT_ORG_SETTINGS_TAB.MEMBERS) {
-      return projectCount > 0 ? (
-        <RepoMembersSection
-          members={members}
-          onUpdateMembers={onUpdateMembers}
-          showTitle={false}
-        />
-      ) : (
-        <EmptyOrgCatalogHint />
-      );
-    }
-
-    if (activeTab === PROJECT_ORG_SETTINGS_TAB.LABELS) {
-      return projectCount > 0 ? (
-        <LabelsSection
-          labels={labels}
-          onUpdateLabels={onUpdateLabels}
-          showTitle={false}
-        />
-      ) : (
-        <EmptyOrgCatalogHint />
-      );
-    }
-
-    return (
-      <SyncMethodsSection
-        org={org}
-        folderPath={folderPath}
-        onFolderPathChange={onFolderPathChange}
-        onConfigure={onConfigureGitFolder}
-        onSyncNow={onSyncGitFolder}
+  const membersContent =
+    projectCount > 0 ? (
+      <RepoMembersSection
+        members={members}
+        onUpdateMembers={onUpdateMembers}
+        showTitle={false}
       />
+    ) : (
+      <EmptyOrgCatalogHint />
     );
-  }, [
-    activeTab,
-    folderPath,
-    labels,
-    members,
-    onConfigureGitFolder,
-    onFolderPathChange,
-    onSyncGitFolder,
-    onUpdateLabels,
-    onUpdateMembers,
-    org,
-    projectCount,
-  ]);
+  const labelsContent =
+    projectCount > 0 ? (
+      <LabelsSection
+        labels={labels}
+        onUpdateLabels={onUpdateLabels}
+        showTitle={false}
+      />
+    ) : (
+      <EmptyOrgCatalogHint />
+    );
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <InternalHeader
-        noPanelHeader
-        contentPadding
-        className={DETAIL_PANEL_TOKENS.headerWidth}
-        tabs={
-          <TabPill
-            tabs={tabs}
-            activeTab={activeTab}
-            onChange={handleTabChange}
-            variant="simple"
-            fillWidth={false}
-            size="large"
-          />
-        }
-      />
-      <div className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
-        <div
-          className={`${DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop} flex flex-col gap-10`}
-        >
-          {content}
+      <div className={DETAIL_PANEL_TOKENS.scrollContent}>
+        <div className={DETAIL_PANEL_TOKENS.contentWidthWithPadding}>
+          <CollapsibleSection title={t("orgs.management.syncMethods")}>
+            <SyncMethodsSection
+              org={org}
+              folderPath={folderPath}
+              onFolderPathChange={onFolderPathChange}
+              onConfigure={onConfigureGitFolder}
+              onSyncNow={onSyncGitFolder}
+            />
+          </CollapsibleSection>
+          <CollapsibleSection title={t("properties.members")}>
+            {membersContent}
+          </CollapsibleSection>
+          <CollapsibleSection title={t("properties.labels")}>
+            {labelsContent}
+          </CollapsibleSection>
         </div>
       </div>
     </div>

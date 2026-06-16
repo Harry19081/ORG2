@@ -9,6 +9,7 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
+import type { AgentRole } from "@src/api/http/project/types/agentWorkflow";
 import type { CliAgentType } from "@src/api/tauri/rpc/schemas/validation";
 import type { DispatchCategory } from "@src/api/tauri/session";
 import { createLogger } from "@src/hooks/logger";
@@ -45,6 +46,26 @@ export type SessionSourceType =
   (typeof SESSION_SOURCE_TYPE)[keyof typeof SESSION_SOURCE_TYPE];
 
 export type SystemPathId = (typeof SYSTEM_PATH_ID)[keyof typeof SYSTEM_PATH_ID];
+
+export const DEFAULT_SESSION_ORG_ID = "personal-org";
+export const DEFAULT_SESSION_ORG_NAME = "Personal Org";
+
+export interface SessionLaunchOrgContext {
+  orgId: string;
+  orgName?: string;
+  projectSlug?: string;
+  projectId?: string;
+  projectName?: string;
+  workItemId?: string;
+  agentRole?: AgentRole | string;
+}
+
+export function createDefaultSessionLaunchOrgContext(): SessionLaunchOrgContext {
+  return {
+    orgId: DEFAULT_SESSION_ORG_ID,
+    orgName: DEFAULT_SESSION_ORG_NAME,
+  };
+}
 
 /** Unified source selection for session creation */
 export interface SessionSource {

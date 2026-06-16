@@ -2,6 +2,7 @@ pub mod analysis_backfill;
 pub mod exporter;
 pub mod extraction_scheduler;
 pub mod history_commands;
+pub mod impact_indexer;
 pub mod importer;
 pub mod paths;
 pub mod types;
@@ -12,6 +13,7 @@ use database::db::get_connection;
 use orgtrack_core::canonical::{
     CommitLinkRecord, SessionCheckpointFileStateRecord, SessionCheckpointRecord,
     SessionDiffChunkRecord, SessionEditArtifactRecord, SessionFinalDiffRecord,
+    SOURCE_ORGII_RUST_AGENTS,
 };
 use orgtrack_core::policy::{source_tier_policy, SourceTierPolicy};
 use orgtrack_core::privacy::ORGTRACK_SCHEMA_VERSION;
@@ -122,7 +124,18 @@ pub async fn orgtrack_get_session_summaries(
         let sessions = store.list_sessions(workspace_path.as_deref())?;
         let final_diffs = store.list_final_diffs(None, None)?;
         let commit_links = store.list_commit_links()?;
-        Ok(session_summaries(sessions, final_diffs, commit_links))
+        let mut summaries = session_summaries(sessions, final_diffs, commit_links);
+        for summary in &mut summaries {
+            if summary.source != SOURCE_ORGII_RUST_AGENTS {
+                continue;
+            }
+            if let Some(impact) = impact_indexer::get_session_impact(&summary.session_id)? {
+                summary.files_changed = impact.files_changed.max(0) as usize;
+                summary.lines_added = impact.lines_added.max(0) as i32;
+                summary.lines_removed = impact.lines_removed.max(0) as i32;
+            }
+        }
+        Ok(summaries)
     })
     .await
     .map_err(|err| err.to_string())?
@@ -246,10 +259,7 @@ pub async fn orgtrack_get_session_commit_links(
 /// `orgtrack_get_session_commit_links` returns it and the Submissions tab
 /// renders the commit exactly like a live push. Returns Err in release builds.
 #[tauri::command]
-pub async fn debug_seed_commit_link(
-    session_id: String,
-    commit_sha: String,
-) -> Result<(), String> {
+pub async fn debug_seed_commit_link(session_id: String, commit_sha: String) -> Result<(), String> {
     if !cfg!(debug_assertions) {
         return Err("debug_seed_commit_link is only available in debug builds".into());
     }
@@ -300,8 +310,14 @@ pub async fn debug_seed_final_diff(
         let store = SqliteRecordStore::new(&conn);
         let record_id = record_id(&["debug_seed_final_diff", &session_id, &file_path]);
         let words: Vec<&str> = diff.lines().collect();
-        let lines_added = words.iter().filter(|l| l.starts_with('+') && !l.starts_with("+++")).count() as i32;
-        let lines_removed = words.iter().filter(|l| l.starts_with('-') && !l.starts_with("---")).count() as i32;
+        let lines_added = words
+            .iter()
+            .filter(|l| l.starts_with('+') && !l.starts_with("+++"))
+            .count() as i32;
+        let lines_removed = words
+            .iter()
+            .filter(|l| l.starts_with('-') && !l.starts_with("---"))
+            .count() as i32;
         store.upsert_final_diff(&SessionFinalDiffRecord {
             schema_version: ORGTRACK_SCHEMA_VERSION,
             record_id,

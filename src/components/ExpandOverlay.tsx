@@ -31,6 +31,8 @@ interface ExpandOverlayProps {
   collapsedFadeHeightClass?: string;
   collapsedFadeEdge?: "top" | "bottom";
   collapsedOffsetPx?: number;
+  showLabel?: boolean;
+  alwaysShowControl?: boolean;
   /** Tailwind `from-*` class for the gradient background (default: "from-fill-2") */
   fadeFrom?: string;
 }
@@ -43,6 +45,8 @@ const ExpandOverlay: React.FC<ExpandOverlayProps> = ({
   collapsedFadeHeightClass = "h-14",
   collapsedFadeEdge = "bottom",
   collapsedOffsetPx = 0,
+  showLabel = false,
+  alwaysShowControl = false,
   fadeFrom = "from-fill-2",
 }) => {
   const isTopFade = collapsedFadeEdge === "top";
@@ -58,13 +62,14 @@ const ExpandOverlay: React.FC<ExpandOverlayProps> = ({
           style={collapsedOffsetStyle}
         />
         <div
-          className={`absolute left-0 right-0 z-20 flex justify-center opacity-0 transition-opacity group-hover/expand:opacity-100 ${isTopFade ? "top-0 pt-1" : "bottom-0 pb-1"}`}
+          className={`absolute left-0 right-0 z-20 flex justify-center transition-opacity ${alwaysShowControl ? "opacity-100" : "opacity-0 group-hover/expand:opacity-100"} ${isTopFade ? "top-0 pt-1" : "bottom-0 pb-1"}`}
           style={collapsedOffsetStyle}
         >
           <FloatingExpandPill
             expanded={false}
             onClick={onToggle}
             label={collapsedLabel}
+            showLabel={showLabel}
           />
         </div>
       </>
@@ -75,7 +80,12 @@ const ExpandOverlay: React.FC<ExpandOverlayProps> = ({
     <div
       className={`sticky -bottom-2 z-10 flex flex-col items-center bg-gradient-to-t ${fadeFrom} to-transparent pb-3 pt-3 opacity-75`}
     >
-      <FloatingExpandPill expanded onClick={onToggle} label={expandedLabel} />
+      <FloatingExpandPill
+        expanded
+        onClick={onToggle}
+        label={expandedLabel}
+        showLabel={showLabel}
+      />
     </div>
   );
 };

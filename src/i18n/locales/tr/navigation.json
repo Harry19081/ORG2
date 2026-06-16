@@ -381,8 +381,9 @@
     "joinOrg": "Katıl",
     "orgSource": "Org kaynağı",
     "localOrg": "Local",
-    "cloudOrg": "Cloud",
-    "hubUrl": "Cloudflare hub URL'si",
+    "supabaseSyncOrg": "Supabase Sync",
+    "supabaseUrl": "Supabase Project URL",
+    "supabaseAnonKey": "Supabase anon key",
     "orgName": "ORG adı",
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Davet bağlantısı veya kodu",
@@ -396,13 +397,22 @@
     "copyInvite": "Daveti kopyala",
     "copiedInvite": "Kopyalandı",
     "setupMode": "Kurulum modu",
-    "hubSetupTitle": "Cloudflare hub URL'si nasıl ayarlanır",
+    "supabaseSetupTitle": "Supabase Sync nasıl ayarlanır",
+    "verifySupabaseSetup": "Kurulumu doğrula",
+    "copySetupSql": "Kurulum SQL'ini kopyala",
+    "copiedSetupSql": "SQL kopyalandı",
+    "openSupabaseSqlEditor": "Supabase SQL Editor'ı aç",
+    "supabaseSetupVerified": "Supabase kurulumu doğrulandı",
+    "supabaseSetupMissing": "Supabase kurulumu eksik. Kurulum SQL'ini kopyalayın, Supabase SQL Editor'da çalıştırın ve tekrar doğrulayın.",
     "orgDemoTitle": "ORG",
     "orgNotFound": "ORG bulunamadı",
     "tabs": {
+      "workItems": "Work Items",
+      "projects": "Proje",
       "sessions": "Sessions",
       "members": "Üyeler",
-      "chat": "Grup sohbeti"
+      "chat": "Grup sohbeti",
+      "settings": "Ayarlar"
     },
     "stats": {
       "members": "Üyeler",
@@ -423,6 +433,20 @@
       "humanOnly": "Grup sohbetinde yalnızca insan kimlikleri gönderi paylaşabilir.",
       "hint": "İnsan üyeler burada konuşabilir ve ORG ile bağlantı paylaşabilir."
     },
+    "workItems": {
+      "title": "Work Items",
+      "description": "ORG work items öğelerini aynı local/cloud yapısıyla izleyin.",
+      "empty": "Bu ORG içinde henüz work items yok.",
+      "count": "{{count}} öğe",
+      "unassigned": "Atanmamış"
+    },
+    "projects": {
+      "title": "Proje",
+      "description": "Bu ORG ile ilişkili projeleri inceleyin.",
+      "empty": "Bu ORG içinde henüz proje yok.",
+      "count": "{{count}} proje",
+      "noDescription": "Açıklama yok"
+    },
     "sessionStatusActive": "Aktif",
     "localHuman": "Yerel insan",
     "backToOrg": "ORG’ye dön",
@@ -431,8 +455,38 @@
       "description": "Takım arkadaşlarının bu ORG’ye katılması için bir davet bağlantısı oluşturun. En son bağlantı hızlı kopyalama için burada gösterilir.",
       "adminOnly": "Davet bağlantılarını yalnızca ORG yöneticileri oluşturabilir.",
       "create": "Davet oluştur",
-      "createNew": "Yeni davet"
+      "createNew": "Yeni davet",
+      "remainingUses": "{{count}} kullanım kaldı",
+      "expires": "{{date}} tarihinde sona erer"
     },
-    "orgDashboard": "Pano"
+    "orgDashboard": "Pano",
+    "access": {
+      "title": "Session erişimi",
+      "description": "Bu ORG içinde ekip arkadaşlarının yerel sessions içinden ne görebileceğini seçin.",
+      "modes": {
+        "off": {
+          "title": "Kapalı",
+          "description": "Session kartları veya replay verileri paylaşılmaz."
+        },
+        "metadata_only": {
+          "title": "Yalnızca session kartları",
+          "description": "Yalnızca başlıklar, sahipler, branchler ve workspaces paylaşılır."
+        },
+        "full_replay": {
+          "title": "Tam replay",
+          "description": "Ekip arkadaşlarının tam event snapshot istemesine izin ver."
+        }
+      },
+      "workspaces": "İzin verilen Workspaces",
+      "workspacesHint": "Paylaşılabilecek workspace yollarını seçin. En az bir seçim yapılmadan hiçbir şey paylaşılmaz.",
+      "noWorkspaces": "Henüz yerel session workspace bulunamadı.",
+      "fullReplayWarning": "Tam replay prompts, çıktılar, tool calls ve dosya yolları içerebilir. Yalnızca güvenilir ORGs için etkinleştirin.",
+      "metadataOnlyBadge": "Yalnızca metadata",
+      "metadataOnlyDenied": "Bu session yalnızca metadata paylaşıyor. Tam replay kullanılamaz.",
+      "requestPending": "Session replay sahibinden isteniyor..."
+    },
+    "members": {
+      "remove": "Kaldır"
+    }
   }
 }

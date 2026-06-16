@@ -681,6 +681,7 @@ mod tests {
     fn create_git_bound_org(folder: &Path) -> String {
         let org = create_project_org(&CreateProjectOrgRequest {
             name: "Sync Team".to_string(),
+            id: None,
         })
         .expect("create org");
         fs::create_dir_all(folder.join(".git")).expect("create git metadata");

@@ -12,7 +12,6 @@ import { createLogger } from "@src/hooks/logger";
 import type { Session } from "@src/store/session";
 import { sessionMapAtom } from "@src/store/session/sessionAtom/atoms";
 
-import type { DiaryTimelineDisplayMode } from "../../config";
 import { buildDiaryDaySummary } from "../../utils/diaryUtils";
 import DiaryPanel from "../DiaryPanel";
 
@@ -21,7 +20,6 @@ const log = createLogger("DiaryView");
 export interface DiaryViewProps {
   tasks: KanbanTask[];
   date: Date;
-  displayMode: DiaryTimelineDisplayMode;
   onTaskClick?: (task: KanbanTask) => void;
 }
 
@@ -98,12 +96,7 @@ function getDiaryRepoPaths(
   );
 }
 
-const DiaryView: React.FC<DiaryViewProps> = ({
-  tasks,
-  date,
-  displayMode,
-  onTaskClick,
-}) => {
+const DiaryView: React.FC<DiaryViewProps> = ({ tasks, date, onTaskClick }) => {
   const { t } = useTranslation("sessions");
   const sessionMap = useAtomValue(sessionMapAtom);
   const sessionIds = useMemo(() => getDiarySessionIds(tasks), [tasks]);
@@ -235,7 +228,6 @@ const DiaryView: React.FC<DiaryViewProps> = ({
     <div className="h-full min-h-0 w-full overflow-hidden">
       <DiaryPanel
         summary={summary}
-        displayMode={displayMode}
         commitsRowTitle={commitsRowTitle}
         onEventClick={(taskId) => {
           const task = tasks.find((candidate) => candidate.id === taskId);

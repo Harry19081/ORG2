@@ -61,6 +61,12 @@ pub struct CodeSession {
     pub additional_directories: Option<Vec<String>>,
     pub parent_session_id: Option<String>,
     pub org_member_id: Option<String>,
+    pub org_id: String,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
+    pub project_slug: Option<String>,
+    pub work_item_id: Option<String>,
+    pub agent_role: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -110,4 +116,10 @@ pub struct CreateCodeSessionParams {
     pub additional_directories: Option<Vec<String>>,
     pub parent_session_id: Option<String>,
     pub org_member_id: Option<String>,
+    pub org_id: Option<String>,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
+    pub project_slug: Option<String>,
+    pub work_item_id: Option<String>,
+    pub agent_role: Option<String>,
 }

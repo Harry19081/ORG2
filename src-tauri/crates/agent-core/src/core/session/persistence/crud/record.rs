@@ -62,6 +62,9 @@ pub struct UnifiedSessionRecord {
     /// `None` only for pure-channel OS sessions with no project
     /// grounding (e.g. some gateway entry points).
     pub workspace_path: Option<String>,
+    pub org_id: Option<String>,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
     pub work_item_id: Option<String>,
     pub agent_role: Option<String>,
     /// Storage projection of `SessionWorkspace.working_dir` — the
@@ -161,6 +164,9 @@ impl Default for UnifiedSessionRecord {
             channel: None,
             chat_id: None,
             workspace_path: None,
+            org_id: None,
+            project_id: None,
+            project_name: None,
             work_item_id: None,
             agent_role: None,
             worktree_path: None,
@@ -197,7 +203,8 @@ pub(super) const UNIFIED_SESSION_SELECT: &str = r#"
         s.session_id, s.name, s.status, s.model, s.account_id, s.user_input,
         COALESCE((SELECT SUM(total_tokens) FROM session_token_usage WHERE session_id = s.session_id), 0),
         s.created_at, s.updated_at, s.session_type, s.channel, s.chat_id,
-        s.workspace_path, s.work_item_id, s.agent_role, s.worktree_path,
+        s.workspace_path, s.org_id, s.project_id, s.project_name,
+        s.work_item_id, s.agent_role, s.worktree_path,
         s.worktree_branch, s.base_branch, s.merge_status,
         s.project_slug, s.agent_definition_id, s.org_member_id,
         s.parent_session_id, s.parent_event_id,
@@ -214,7 +221,7 @@ pub(super) const UNIFIED_SESSION_SELECT: &str = r#"
 /// Row mapper for unified session records. Must be kept in lock-step with
 /// [`UNIFIED_SESSION_SELECT`].
 pub(super) fn row_to_record(row: &rusqlite::Row) -> rusqlite::Result<UnifiedSessionRecord> {
-    let key_source_str: String = row.get(25)?;
+    let key_source_str: String = row.get(28)?;
     // Fail-closed on unknown `key_source` values rather than silently
     // mapping to `OwnKey`: a bad value here means the row was written by
     // a build that doesn't agree with us about the enum, and treating it
@@ -222,7 +229,7 @@ pub(super) fn row_to_record(row: &rusqlite::Row) -> rusqlite::Result<UnifiedSess
     // affected. Same reasoning the CLI `row_to_session` uses.
     let key_source = KeySource::parse(&key_source_str).ok_or_else(|| {
         rusqlite::Error::FromSqlConversionFailure(
-            25,
+            28,
             rusqlite::types::Type::Text,
             format!("unknown KeySource value: {key_source_str:?}").into(),
         )
@@ -233,7 +240,7 @@ pub(super) fn row_to_record(row: &rusqlite::Row) -> rusqlite::Result<UnifiedSess
         status: row.get(2)?,
         model: row.get(3)?,
         account_id: row.get(4)?,
-        native_harness_type: row.get(27)?,
+        native_harness_type: row.get(30)?,
         user_input: row.get(5)?,
         total_tokens: row.get(6)?,
         created_at: row.get(7)?,
@@ -242,24 +249,27 @@ pub(super) fn row_to_record(row: &rusqlite::Row) -> rusqlite::Result<UnifiedSess
         channel: row.get(10)?,
         chat_id: row.get(11)?,
         workspace_path: row.get(12)?,
-        work_item_id: row.get(13)?,
-        agent_role: row.get(14)?,
-        worktree_path: row.get(15)?,
-        worktree_branch: row.get(16)?,
-        base_branch: row.get(17)?,
-        merge_status: row.get(18)?,
-        project_slug: row.get(19)?,
-        agent_definition_id: row.get(20)?,
-        org_member_id: row.get(21)?,
-        parent_session_id: row.get(22)?,
-        parent_event_id: row.get(23)?,
-        workspace_additional_json: row.get(24)?,
+        org_id: row.get(13)?,
+        project_id: row.get(14)?,
+        project_name: row.get(15)?,
+        work_item_id: row.get(16)?,
+        agent_role: row.get(17)?,
+        worktree_path: row.get(18)?,
+        worktree_branch: row.get(19)?,
+        base_branch: row.get(20)?,
+        merge_status: row.get(21)?,
+        project_slug: row.get(22)?,
+        agent_definition_id: row.get(23)?,
+        org_member_id: row.get(24)?,
+        parent_session_id: row.get(25)?,
+        parent_event_id: row.get(26)?,
+        workspace_additional_json: row.get(27)?,
         key_source,
-        agent_exec_mode: row.get(26)?,
-        draft_text: row.get(28)?,
-        reply_target_event_id: row.get(29)?,
+        agent_exec_mode: row.get(29)?,
+        draft_text: row.get(31)?,
+        reply_target_event_id: row.get(32)?,
         pinned: {
-            let pinned_int: i64 = row.get(30)?;
+            let pinned_int: i64 = row.get(33)?;
             pinned_int != 0
         },
     })

@@ -130,6 +130,10 @@
     },
     "sidebar": {
       "agentTypes": "Типы Agent",
+      "manageItems": "Управление элементами",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "Представления",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "Удалить черновик"
@@ -197,10 +201,6 @@
       "activeSessions": "Активные Sessions",
       "completedSessions": "Завершено",
       "timeline": "Лента событий",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "emptyTitle": "Нет событий дневника",
       "emptySubtitle": "Активность Agent за этот день появится здесь.",

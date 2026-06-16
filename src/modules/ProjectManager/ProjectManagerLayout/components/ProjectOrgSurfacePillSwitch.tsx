@@ -11,11 +11,20 @@ import {
 export interface ProjectOrgSurfacePillSwitchProps {
   orgView: ProjectOrgSurfaceView;
   onOrgViewChange: (view: ProjectOrgSurfaceView) => void;
+  variant?: "pill" | "simple";
+  color?: "default" | "fill";
+  size?: "small" | "large";
 }
 
 export const ProjectOrgSurfacePillSwitch: React.FC<
   ProjectOrgSurfacePillSwitchProps
-> = ({ orgView, onOrgViewChange }) => {
+> = ({
+  orgView,
+  onOrgViewChange,
+  variant = "pill",
+  color = "fill",
+  size = "small",
+}) => {
   const { t } = useTranslation("projects");
   const { t: tCommon } = useTranslation("common");
 
@@ -42,10 +51,10 @@ export const ProjectOrgSurfacePillSwitch: React.FC<
       tabs={surfaceTabs}
       activeTab={orgView}
       onChange={(key) => onOrgViewChange(key as ProjectOrgSurfaceView)}
-      variant="pill"
-      color="fill"
+      variant={variant}
+      color={color}
       fillWidth={false}
-      size="small"
+      size={size}
     />
   );
 };

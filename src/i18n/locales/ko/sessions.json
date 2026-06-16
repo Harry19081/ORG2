@@ -130,6 +130,10 @@
     },
     "sidebar": {
       "agentTypes": "Agent 유형",
+      "manageItems": "항목 관리",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "보기",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "초안 제거"
@@ -197,10 +201,6 @@
       "activeSessions": "활성 Session",
       "completedSessions": "완료됨",
       "timeline": "이벤트 타임라인",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "emptyTitle": "Diary 이벤트 없음",
       "emptySubtitle": "이 날짜의 Agent 활동이 여기에 표시됩니다.",

@@ -38,6 +38,9 @@ type WorkItemAttachmentMode = "create" | "link" | null;
 
 interface ExistingWorkItemOption {
   shortId: string;
+  orgId?: string;
+  projectId?: string;
+  projectName?: string;
   projectSlug?: string;
   title: string;
 }
@@ -105,7 +108,13 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
       const projectItemGroups = await Promise.all(
         projects.map(async (project) => {
           const items = await projectApi.readWorkItems(project.slug);
-          return items.map((item) => ({ item, projectSlug: project.slug }));
+          return items.map((item) => ({
+            item,
+            orgId: project.meta.org_id,
+            projectId: project.meta.id,
+            projectName: project.meta.name,
+            projectSlug: project.slug,
+          }));
         })
       );
       const allItems = [
@@ -113,11 +122,16 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
         ...projectItemGroups.flat(),
       ];
       setWorkItems(
-        allItems.map(({ item, projectSlug }) => ({
-          shortId: item.frontmatter.short_id || item.frontmatter.id,
-          projectSlug,
-          title: item.frontmatter.title,
-        }))
+        allItems.map(
+          ({ item, orgId, projectId, projectName, projectSlug }) => ({
+            shortId: item.frontmatter.short_id || item.frontmatter.id,
+            orgId,
+            projectId,
+            projectName,
+            projectSlug,
+            title: item.frontmatter.title,
+          })
+        )
       );
     } catch (err) {
       logger.error("Failed to load work items for linking", err);
@@ -158,11 +172,18 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
         draft: inlineFields.draft,
         selectedProjectSlug: inlineFields.selectedProjectSlug,
       });
+      const projects = await projectApi.readProjects();
+      const resultProject = result.projectSlug
+        ? projects.find((project) => project.slug === result.projectSlug)
+        : undefined;
       await emit("orgii-data-changed");
       inlineFields.clearDraft();
       onDraftChange?.(null);
       onCreated?.(result);
       onWorkItemContextChange?.({
+        orgId: resultProject?.meta.org_id,
+        projectId: resultProject?.meta.id,
+        projectName: resultProject?.meta.name,
         workItemId: result.shortId,
         projectSlug: result.projectSlug,
         agentRole: "custom",
@@ -215,11 +236,17 @@ const WorkItemAttachmentControl: React.FC<WorkItemAttachmentControlProps> = ({
     if (!primaryItem) return;
 
     onWorkItemContextChange?.({
+      orgId: primaryItem.orgId,
+      projectId: primaryItem.projectId,
+      projectName: primaryItem.projectName,
       workItemId: primaryItem.shortId,
       projectSlug: primaryItem.projectSlug,
       agentRole: "custom",
       metadata: {
         linkedWorkItems: selectedItems.map((item) => ({
+          orgId: item.orgId,
+          projectId: item.projectId,
+          projectName: item.projectName,
           workItemId: item.shortId,
           projectSlug: item.projectSlug,
           title: item.title,

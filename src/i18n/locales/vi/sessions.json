@@ -130,6 +130,10 @@
     },
     "sidebar": {
       "agentTypes": "Loại Agent",
+      "manageItems": "Quản lý mục",
+      "sessionsView": "Sessions View",
+      "workitemView": "Workitem View",
+      "views": "Chế độ xem",
       "cliAgent": "CLI Agent",
       "rustAgent": "Rust Agent",
       "removeDraft": "Xóa bản nháp"
@@ -197,10 +201,6 @@
       "activeSessions": "Sessions đang hoạt động",
       "completedSessions": "Đã hoàn tất",
       "timeline": "Dòng thời gian sự kiện",
-      "timelineMode": {
-        "timeline": "Timeline",
-        "gantt": "Gantt"
-      },
       "commits": "Commits",
       "emptyTitle": "Không có sự kiện nhật ký",
       "emptySubtitle": "Hoạt động Agent của ngày này sẽ xuất hiện tại đây.",

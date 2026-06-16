@@ -4,13 +4,14 @@
 //! Rust-agent launch service or the CLI launch bridge.
 
 use key_vault::{AuthMethod, ModelType};
+use project_management::projects::types::PERSONAL_ORG_ID;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::definitions::orgs::{AgentOrgsStore, OrgMemberLaunchOverride};
 use crate::session::launch::{
-    launch_rust_agent_run, AgentRunLaunchRequest, AgentRunTarget, LaunchProvenance,
-    LaunchResourceSelection, WorkspaceLaunchTarget,
+    launch_rust_agent_run, AgentRunLaunchRequest, AgentRunTarget, LaunchOrgContext,
+    LaunchProvenance, LaunchResourceSelection, WorkspaceLaunchTarget,
 };
 use crate::session::IdeContext;
 use crate::state::AgentAppState;
@@ -67,7 +68,10 @@ pub struct SessionLaunchParams {
     pub isolate: bool,
     pub mode: Option<String>,
 
-    // Work-item / orchestrator fields (rust_agent only)
+    // Project/collaboration org + work-item fields
+    pub org_id: Option<String>,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
     pub work_item_id: Option<String>,
     pub agent_role: Option<String>,
     pub worktree_path: Option<String>,
@@ -105,6 +109,12 @@ pub struct SessionLaunchResult {
     pub account_id: Option<String>,
     pub agent_org_id: Option<String>,
     pub agent_org_run_id: Option<String>,
+    pub org_id: Option<String>,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
+    pub project_slug: Option<String>,
+    pub work_item_id: Option<String>,
+    pub agent_role: Option<String>,
     pub worktree_path: Option<String>,
 }
 
@@ -172,6 +182,15 @@ async fn launch_rust_agent(
             additional_directories: params.additional_directories.clone(),
         }
     };
+    let org_context = LaunchOrgContext {
+        org_id: params
+            .org_id
+            .clone()
+            .filter(|value| !value.trim().is_empty())
+            .unwrap_or_else(|| PERSONAL_ORG_ID.to_string()),
+        project_id: params.project_id.clone(),
+        project_name: params.project_name.clone(),
+    };
     let provenance = match (params.project_slug.clone(), params.work_item_id.clone()) {
         (Some(project_slug), Some(work_item_id)) => LaunchProvenance::WorkItem {
             project_slug,
@@ -196,6 +215,7 @@ async fn launch_rust_agent(
                 native_harness_type: params.native_harness_type,
             },
             workspace,
+            org_context,
             provenance,
             mode: params.mode,
             name: Some(name.clone()),
@@ -222,6 +242,12 @@ async fn launch_rust_agent(
         account_id,
         agent_org_id: result.agent_org_id,
         agent_org_run_id: result.agent_org_run_id,
+        org_id: Some(result.org_id),
+        project_id: result.project_id,
+        project_name: result.project_name,
+        project_slug: result.project_slug,
+        work_item_id: result.work_item_id,
+        agent_role: result.agent_role,
         worktree_path: result.worktree_path,
     })
 }
@@ -281,6 +307,17 @@ async fn launch_cli_agent(
     let branch = params.branch.clone();
     let workspace_path = params.workspace_path.clone();
 
+    let org_id = params
+        .org_id
+        .clone()
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| PERSONAL_ORG_ID.to_string());
+    let project_id = params.project_id.clone();
+    let project_name = params.project_name.clone();
+    let project_slug = params.project_slug.clone();
+    let work_item_id = params.work_item_id.clone();
+    let agent_role = params.agent_role.clone();
+
     let extras = if params.additional_directories.is_empty() {
         None
     } else {
@@ -304,6 +341,12 @@ async fn launch_cli_agent(
         additional_directories: extras,
         parent_session_id: params.parent_session_id,
         org_member_id: None,
+        org_id: org_id.clone(),
+        project_id: project_id.clone(),
+        project_name: project_name.clone(),
+        project_slug: project_slug.clone(),
+        work_item_id: work_item_id.clone(),
+        agent_role: agent_role.clone(),
         user_input: params.content,
         ide_context: params.ide_context,
         mode: params.mode,
@@ -329,6 +372,12 @@ async fn launch_cli_agent(
         account_id,
         agent_org_id: None,
         agent_org_run_id: None,
+        org_id: Some(org_id),
+        project_id,
+        project_name,
+        project_slug,
+        work_item_id,
+        agent_role,
         worktree_path: None,
     })
 }

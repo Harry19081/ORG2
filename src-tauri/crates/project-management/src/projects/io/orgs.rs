@@ -231,6 +231,7 @@ mod tests {
         let _sandbox = test_env::sandbox();
         let org = create_project_org(&CreateProjectOrgRequest {
             name: "Platform Team".to_string(),
+            id: None,
         })
         .expect("create org");
 
@@ -242,10 +243,26 @@ mod tests {
     }
 
     #[test]
+    fn create_project_org_accepts_explicit_canonical_id() {
+        let _sandbox = test_env::sandbox();
+        let org = create_project_org(&CreateProjectOrgRequest {
+            name: "Supabase Team".to_string(),
+            id: Some("org-supabase-canonical".to_string()),
+        })
+        .expect("create org");
+
+        assert_eq!(org.id, "org-supabase-canonical");
+
+        let read_back = read_project_org(&org.id).expect("read org");
+        assert_eq!(read_back.name, "Supabase Team");
+    }
+
+    #[test]
     fn configure_project_org_git_folder_sync_round_trips() {
         let sandbox = test_env::sandbox();
         let org = create_project_org(&CreateProjectOrgRequest {
             name: "Platform Team".to_string(),
+            id: None,
         })
         .expect("create org");
         let repo_path = sandbox.path().join("repo");
