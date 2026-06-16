@@ -172,6 +172,10 @@ export interface ContextUsageSnapshot {
   updatedAt: string;
   sections: ContextUsageSection[];
   warnings: string[];
+  /** Provider-reported cache-read tokens (Anthropic prompt caching). */
+  cacheReadTokens?: number;
+  /** Provider-reported cache-write tokens (new KV blocks written this turn). */
+  cacheWriteTokens?: number;
 }
 
 export const sessionContextUsageAtom = atom<ContextUsageSnapshot | null>(null);
