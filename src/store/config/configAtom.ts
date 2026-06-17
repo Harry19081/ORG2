@@ -15,18 +15,6 @@ import {
 } from "@src/store/settings/settingsAtom";
 
 // ============================================
-// Preferred External IDE Setting (backed by settings.jsonc)
-// ============================================
-
-export const preferIDEAtom = atom(
-  (get) => get(settingsAtom)["externalIde.preferred"],
-  (_get, set, value: string) => {
-    set(updateSettingAtom, { key: "externalIde.preferred", value });
-  }
-);
-preferIDEAtom.debugLabel = "preferIDEAtom";
-
-// ============================================
 // Workspace Defaults Settings (backed by settings.jsonc)
 // ============================================
 

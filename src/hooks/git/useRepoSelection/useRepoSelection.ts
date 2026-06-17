@@ -28,10 +28,10 @@ import {
   branchesAtom,
   cachedReposAtom,
   currentBranchAtom,
-  currentRepoAtom,
   lastUsedRepoAtom,
   repoMapAtom,
   reposAtom,
+  selectedRepoAtom,
   selectedRepoIdAtom,
   updateCachedRepos,
 } from "@src/store/repo";
@@ -60,7 +60,7 @@ export function useRepoSelection(
   const [currentBranch, setCurrentBranch] = useAtom(currentBranchAtom);
   const [_cachedRepos, setCachedRepos] = useAtom(cachedReposAtom);
   const repoMap = useAtomValue(repoMapAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const currentRepo = useAtomValue(selectedRepoAtom);
   const currentGitStatus = useAtomValue(currentGitStatusAtom);
 
   const setLastUsedRepo = useSetAtom(lastUsedRepoAtom);

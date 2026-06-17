@@ -29,7 +29,6 @@ import {
 } from "@src/ActionSystem";
 import { sendAdeActionResult } from "@src/api/tauri/agent";
 import { clearSessionAtom } from "@src/engines/SessionCore/core/atoms/actions";
-import { currentRepoAtom } from "@src/store/repo";
 import { reposAtom } from "@src/store/repo/atoms";
 import {
   SESSION_TARGET_KIND,
@@ -45,6 +44,7 @@ import {
   restoreChatWidthAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { adeManagerEnabledAtom } from "@src/store/ui/uiAtom";
+import { activeWorkspaceRootAtom } from "@src/store/workspace";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 /**
@@ -167,7 +167,7 @@ function matchesGuiManifestQuery(
  * Must be mounted inside a component tree that has Jotai provider (for repo atom).
  */
 export function useAgentADEActions(): void {
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRoot = useAtomValue(activeWorkspaceRootAtom);
   const adeManagerEnabled = useAtomValue(adeManagerEnabledAtom);
   const cleanupRef = useRef<(() => void) | null>(null);
   const adeManagerEnabledRef = useRef(false);
@@ -175,8 +175,8 @@ export function useAgentADEActions(): void {
   const repoPathRef = useRef<string>("");
 
   useEffect(() => {
-    repoPathRef.current = currentRepo?.path ?? "";
-  }, [currentRepo?.path]);
+    repoPathRef.current = activeWorkspaceRoot?.path ?? "";
+  }, [activeWorkspaceRoot?.path]);
 
   useEffect(() => {
     adeManagerEnabledRef.current = adeManagerEnabled;
@@ -225,8 +225,8 @@ export function useAgentADEActions(): void {
 
   // Register actions and listen for ADE action events
   useEffect(() => {
-    const repoPath = currentRepo?.path ?? "";
-    const repoId = currentRepo?.id;
+    const repoPath = activeWorkspaceRoot?.path ?? "";
+    const repoId = activeWorkspaceRoot?.repoId ?? activeWorkspaceRoot?.repo?.id;
 
     // Ensure ActionSystem actions are registered (ref counted — safe if
     // Workstation has already registered them). This means ADE actions are
@@ -470,5 +470,9 @@ export function useAgentADEActions(): void {
       cleanupRef.current?.();
       cleanupRef.current = null;
     };
-  }, [currentRepo?.path, currentRepo?.id]);
+  }, [
+    activeWorkspaceRoot?.path,
+    activeWorkspaceRoot?.repoId,
+    activeWorkspaceRoot?.repo?.id,
+  ]);
 }

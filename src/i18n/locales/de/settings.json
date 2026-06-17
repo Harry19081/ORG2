@@ -4,9 +4,7 @@
     "signedOut": "Erfolgreich abgemeldet",
     "logoutFailed": "Abmeldung fehlgeschlagen. Bitte erneut versuchen.",
     "customCommandUpdated": "Benutzerdefinierter Befehl aktualisiert",
-    "shellSettingUpdated": "Shell-Einstellung aktualisiert",
-    "idesDetected": "{{count}} IDE erkannt",
-    "ideDetectFailed": "IDEs konnten nicht erkannt werden. Stelle sicher, dass deine IDE installiert ist, und versuche es erneut."
+    "shellSettingUpdated": "Shell-Einstellung aktualisiert"
   },
   "noSettingsFound": "Keine Einstellungen für \"{{query}}\" gefunden",
   "searchPlaceholder": "Einstellungen durchsuchen...",
@@ -715,11 +713,6 @@
     "customShell": "Benutzerdefinierte Shell",
     "customCommand": "Benutzerdefinierter Befehl",
     "customCommandDesc": "Pfad zur Shell-Datei",
-    "externalIde": "Externe IDE",
-    "preferredExternalIde": "Bevorzugte externe IDE",
-    "preferredExternalIdeDesc": "Wird beim Öffnen von Dateien in einem externen Editor verwendet",
-    "selectIde": "IDE auswählen",
-    "runDetect": "Erkennung ausführen",
     "workspaceDefaults": "Workspace-Standards",
     "defaultRepoFolder": "Standard-Repo-Ordner",
     "defaultRepoFolderDesc": "Füllt Formulare zum Klonen und Erstellen von Repos vorab aus",

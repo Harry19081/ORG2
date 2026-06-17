@@ -30,8 +30,8 @@ import React, {
 
 import { setGitOperationAtom } from "@src/store/git";
 import {
-  currentRepoAtom,
   repoMapAtom,
+  selectedRepoAtom,
   selectedRepoIdAtom,
 } from "@src/store/repo";
 import type {
@@ -66,7 +66,7 @@ export const GitStatusProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   // Atoms
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const currentRepo = useAtomValue(selectedRepoAtom);
   const repoMap = useAtomValue(repoMapAtom);
 
   // Sync to global atoms

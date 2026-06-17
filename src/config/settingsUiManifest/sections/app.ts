@@ -54,7 +54,6 @@ const APPEARANCE_SECTION_KEYS = keysByPrefixes([
 const EDITOR_SECTION_KEYS = keysByPrefixes([
   "editor.",
   "terminal.",
-  "externalIde.",
   "workspace.",
   "git.",
 ]);
@@ -86,7 +85,7 @@ export const APP_SETTINGS_UI_SECTIONS: SettingsSectionDefinition[] = [
     icon: iconForSegment("editor"),
     customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_EDITOR,
     // `coveredKeys` only describes the Editor-tab settings
-    // (terminal / git / lsp / external-ide). The Index tab body is
+    // (terminal / git / lsp). The Index tab body is
     // rendered by `EditorSection` itself (lazy-loaded `IndexingSection`)
     // and has no schema-driven rows.
     coveredKeys: EDITOR_SECTION_KEYS,

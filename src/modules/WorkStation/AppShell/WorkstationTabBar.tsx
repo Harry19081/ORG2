@@ -11,7 +11,7 @@ import {
   WorkStationTabBarLeading,
 } from "@src/modules/WorkStation/shared";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import { useWorkstationTabList } from "./useWorkstationTabList";
 import { useWorkstationTrailingSlot } from "./useWorkstationTrailingSlot";
@@ -31,7 +31,7 @@ export interface WorkstationTabBarProps {
 
 const WorkstationTabBar: React.FC<WorkstationTabBarProps> = memo(
   ({ appMode }) => {
-    const currentRepo = useAtomValue(currentRepoAtom);
+    const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
 
     const {
       tabsForBar,
@@ -65,7 +65,7 @@ const WorkstationTabBar: React.FC<WorkstationTabBarProps> = memo(
         onTabReorder={handleTabReorder}
         onCloseOtherTabs={handleCloseOther}
         onCloseSavedTabs={handleCloseSaved}
-        repoPath={currentRepo?.path ?? ""}
+        repoPath={activeWorkspaceRootPath}
         leadingSlot={<WorkStationTabBarLeading />}
         trailingSlot={trailingSlot}
         onNewTabShortcutId={

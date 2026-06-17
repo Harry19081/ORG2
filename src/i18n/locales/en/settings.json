@@ -4,9 +4,7 @@
     "signedOut": "Signed out successfully",
     "logoutFailed": "Logout failed. Please try again.",
     "customCommandUpdated": "Custom command updated",
-    "shellSettingUpdated": "Shell setting updated",
-    "idesDetected": "Detected {{count}} IDE(s)",
-    "ideDetectFailed": "Unable to detect IDEs. Please ensure your IDE is installed and try again."
+    "shellSettingUpdated": "Shell setting updated"
   },
   "noSettingsFound": "No settings found for \"{{query}}\"",
   "searchPlaceholder": "Search settings...",
@@ -715,11 +713,6 @@
     "customShell": "Custom shell",
     "customCommand": "Custom command",
     "customCommandDesc": "Path to shell executable",
-    "externalIde": "External IDE",
-    "preferredExternalIde": "Preferred external IDE",
-    "preferredExternalIdeDesc": "Used when opening files in an external editor",
-    "selectIde": "Select an IDE",
-    "runDetect": "Run Detect to populate IDEs",
     "workspaceDefaults": "Workspace Defaults",
     "defaultRepoFolder": "Default repo folder",
     "defaultRepoFolderDesc": "Prefills clone and create repository forms",

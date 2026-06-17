@@ -4,9 +4,7 @@
     "signedOut": "Đã đăng xuất thành công",
     "logoutFailed": "Đăng xuất thất bại. Vui lòng thử lại.",
     "customCommandUpdated": "Đã cập nhật lệnh tùy chỉnh",
-    "shellSettingUpdated": "Đã cập nhật cài đặt shell",
-    "idesDetected": "Đã phát hiện {{count}} IDE",
-    "ideDetectFailed": "Không thể phát hiện IDE. Vui lòng đảm bảo IDE của bạn đã được cài đặt và thử lại."
+    "shellSettingUpdated": "Đã cập nhật cài đặt shell"
   },
   "noSettingsFound": "Không tìm thấy cài đặt cho \"{{query}}\"",
   "searchPlaceholder": "Tìm kiếm cài đặt...",
@@ -715,11 +713,6 @@
     "customShell": "Shell tùy chỉnh",
     "customCommand": "Lệnh tùy chỉnh",
     "customCommandDesc": "Đường dẫn đến tệp thực thi shell",
-    "externalIde": "IDE bên ngoài",
-    "preferredExternalIde": "IDE bên ngoài ưa thích",
-    "preferredExternalIdeDesc": "Được sử dụng khi mở tệp trong trình soạn thảo bên ngoài",
-    "selectIde": "Chọn IDE",
-    "runDetect": "Chạy phát hiện để liệt kê IDE",
     "workspaceDefaults": "Mặc định Workspace",
     "defaultRepoFolder": "Thư mục Repo mặc định",
     "defaultRepoFolderDesc": "Điền sẵn biểu mẫu clone và tạo Repo",

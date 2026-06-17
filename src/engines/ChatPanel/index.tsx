@@ -35,7 +35,6 @@ import {
   type CollabConnectionStatus,
 } from "@src/store/collaboration/types";
 import { projectListRefreshAtom } from "@src/store/project/projectAtom";
-import { currentRepoAtom } from "@src/store/repo";
 import {
   activeSessionIdAtom,
   sessionCreatorStateAtom,
@@ -167,9 +166,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const createProjectContext = useAtomValue(
       chatPanelCreateProjectContextAtom
     );
-    const currentRepo = useAtomValue(currentRepoAtom);
-    const currentRepoPath = currentRepo?.path ?? currentRepo?.fs_uri ?? null;
-    const currentRepoName = currentRepo?.name ?? undefined;
 
     const isChatFocus = useAtomValue(chatPanelMaximizedAtom);
     const toggleChatFocus = useSetAtom(toggleChatPanelMaximizedAtom);
@@ -574,8 +570,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         createTarget={createTarget}
         creatorClassName={creatorClassName}
         creatorVariant={creatorVariant}
-        currentRepoName={currentRepoName}
-        currentRepoPath={currentRepoPath}
         defaultAiWorkItemAssignee={defaultAiWorkItemAssignee}
         handleAiWorkItemSessionStart={handleAiWorkItemSessionStart}
         handleCancelWorkItemCreate={handleCancelWorkItemCreate}

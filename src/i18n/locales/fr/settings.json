@@ -4,9 +4,7 @@
     "signedOut": "Déconnexion réussie",
     "logoutFailed": "Échec de la déconnexion. Veuillez réessayer.",
     "customCommandUpdated": "Commande personnalisée mise à jour",
-    "shellSettingUpdated": "Paramètre du shell mis à jour",
-    "idesDetected": "{{count}} IDE détecté(s)",
-    "ideDetectFailed": "Impossible de détecter les IDE. Veuillez vérifier que votre IDE est installé et réessayer."
+    "shellSettingUpdated": "Paramètre du shell mis à jour"
   },
   "noSettingsFound": "Aucun paramètre trouvé pour \"{{query}}\"",
   "searchPlaceholder": "Rechercher des paramètres...",
@@ -715,11 +713,6 @@
     "customShell": "Shell personnalisé",
     "customCommand": "Commande personnalisée",
     "customCommandDesc": "Chemin vers l'exécutable Shell",
-    "externalIde": "IDE externe",
-    "preferredExternalIde": "IDE externe préféré",
-    "preferredExternalIdeDesc": "Utilisé lors de l'ouverture de fichiers dans un éditeur externe",
-    "selectIde": "Sélectionner un IDE",
-    "runDetect": "Exécuter la détection pour obtenir les IDEs",
     "workspaceDefaults": "Valeurs par défaut du Workspace",
     "defaultRepoFolder": "Dossier de Repo par défaut",
     "defaultRepoFolderDesc": "Préremplit les formulaires de clonage et de création de Repo",

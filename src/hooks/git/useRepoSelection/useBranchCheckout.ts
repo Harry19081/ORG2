@@ -11,8 +11,7 @@ import { runGuardedCheckout } from "@src/services/git/operations/guardedCheckout
 import {
   REPO_KIND,
   currentBranchAtom,
-  currentRepoAtom,
-  repoMapAtom,
+  selectedRepoAtom,
   selectedRepoIdAtom,
 } from "@src/store/repo";
 import { showGitActionDialogSafely } from "@src/util/dialogs/gitActionDialog";
@@ -30,8 +29,7 @@ const log = createLogger("useBranchCheckout");
 export function useBranchCheckout(): UseBranchCheckoutReturn {
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
   const [currentBranch, setCurrentBranch] = useAtom(currentBranchAtom);
-  const repoMap = useAtomValue(repoMapAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const selectedRepo = useAtomValue(selectedRepoAtom);
 
   const [checkoutLoading, setCheckoutLoading] = useState(isCheckingOut);
 
@@ -47,9 +45,8 @@ export function useBranchCheckout(): UseBranchCheckoutReturn {
         return;
       }
 
-      const repo = repoMap.get(selectedRepoId) || currentRepo;
-      const repoPath =
-        repo?.path || repo?.fs_uri || currentRepo?.path || currentRepo?.fs_uri;
+      const repo = selectedRepo;
+      const repoPath = repo?.path || repo?.fs_uri;
 
       if (!repoPath) {
         log.warn("[useBranchCheckout] Cannot checkout: no repo path");
@@ -126,7 +123,7 @@ export function useBranchCheckout(): UseBranchCheckoutReturn {
         notifyCheckoutState(false);
       }
     },
-    [selectedRepoId, repoMap, currentRepo, currentBranch, setCurrentBranch]
+    [selectedRepoId, selectedRepo, currentBranch, setCurrentBranch]
   );
 
   return {

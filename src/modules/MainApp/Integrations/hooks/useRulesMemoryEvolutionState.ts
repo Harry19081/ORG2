@@ -26,7 +26,8 @@ import type {
   RuleScopeMode,
   RulesMemoryEvolutionDetailState,
 } from "@src/modules/MainApp/Integrations/RulesMemoryEvolution/types";
-import { currentRepoAtom, reposAtom } from "@src/store/repo";
+import { reposAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import type { DetailMode, IntegrationCategory } from "../types";
 
@@ -63,9 +64,8 @@ export function useRulesMemoryEvolutionState(
 ): UseRulesMemoryEvolutionStateReturn {
   const categoryActive = category === "rulesMemoryEvolution";
 
-  const currentRepo = useAtomValue(currentRepoAtom);
   const allRepos = useAtomValue(reposAtom);
-  const workspacePath = currentRepo?.path;
+  const workspacePath = useAtomValue(activeWorkspaceRootPathAtom) || undefined;
 
   const {
     policies: _sharedPolicies,

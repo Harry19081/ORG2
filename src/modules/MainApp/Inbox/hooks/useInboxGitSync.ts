@@ -12,7 +12,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getGitCommits } from "@src/api/http/git/commits";
 import { gitOperationHistoryAtom } from "@src/store/git/gitOperationAtom";
 import { currentGitStatusAtom } from "@src/store/git/gitStatusAtom";
-import { currentRepoAtom, selectedRepoIdAtom } from "@src/store/repo";
+import {
+  selectedRepoAtom,
+  selectedRepoIdAtom,
+  selectedRepoPathAtom,
+} from "@src/store/repo";
 import { upsertInboxMessageAtom } from "@src/store/ui/inboxAtom";
 
 import type { InboxMessage } from "../types";
@@ -30,7 +34,8 @@ export function useInboxGitSync({ dbLoaded }: UseInboxGitSyncOptions) {
   const gitOperationHistory = useAtomValue(gitOperationHistoryAtom);
   const gitStatus = useAtomValue(currentGitStatusAtom);
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const selectedRepo = useAtomValue(selectedRepoAtom);
+  const selectedRepoPath = useAtomValue(selectedRepoPathAtom);
   const upsertMessage = useSetAtom(upsertInboxMessageAtom);
 
   // Track read status for ephemeral live messages
@@ -75,12 +80,12 @@ export function useInboxGitSync({ dbLoaded }: UseInboxGitSyncOptions) {
       try {
         const result = await getGitCommits({
           repo_id: selectedRepoId,
-          repo_path: currentRepo?.path,
+          repo_path: selectedRepoPath || undefined,
           limit: MAX_RECENT_COMMITS,
         });
         if (cancelled || !result?.commits) return;
 
-        const repoName = currentRepo?.name ?? selectedRepoId;
+        const repoName = selectedRepo?.name ?? selectedRepoId;
         for (const commit of result.commits) {
           if (cancelled) return;
           const msg = gitCommitToInboxMessage(commit, repoName);
@@ -99,8 +104,8 @@ export function useInboxGitSync({ dbLoaded }: UseInboxGitSyncOptions) {
   }, [
     gitStatus?.current_tip,
     selectedRepoId,
-    currentRepo?.path,
-    currentRepo?.name,
+    selectedRepoPath,
+    selectedRepo?.name,
     dbLoaded,
     upsertMessage,
   ]);

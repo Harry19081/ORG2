@@ -13,10 +13,10 @@ import { createLogger } from "@src/hooks/logger";
 import {
   branchCacheAtom,
   branchLoadingRepoIdsAtom,
-  currentRepoAtom,
   getBranchesFromCache,
   isBranchCacheFresh,
   repoMapAtom,
+  selectedRepoAtom,
   setBranchCacheWithLRU,
 } from "@src/store/repo";
 
@@ -39,7 +39,7 @@ export function useBranchFetch(options: UseBranchFetchOptions) {
   const [branchCache, setBranchCacheAtom] = useAtom(branchCacheAtom);
   const [loadingRepoIds, setLoadingRepoIds] = useAtom(branchLoadingRepoIdsAtom);
   const repoMap = useAtomValue(repoMapAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const selectedRepo = useAtomValue(selectedRepoAtom);
 
   // ============ STATE ============
   // Initialize branches directly from cache so first render is never blank.
@@ -70,12 +70,12 @@ export function useBranchFetch(options: UseBranchFetchOptions) {
       return repo.path || repo.fs_uri || "";
     }
 
-    if (currentRepo && currentRepo.id === repoId) {
-      return currentRepo.path || currentRepo.fs_uri || "";
+    if (selectedRepo && selectedRepo.id === repoId) {
+      return selectedRepo.path || selectedRepo.fs_uri || "";
     }
 
     return "";
-  }, [repoPathProp, repoMap, repoId, currentRepo]);
+  }, [repoPathProp, repoMap, repoId, selectedRepo]);
 
   // Derive isLoading from both local fetching and global loading state
   const isLoading = isFetching || loadingRepoIds.has(repoId);
