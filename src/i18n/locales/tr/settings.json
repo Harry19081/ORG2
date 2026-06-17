@@ -4,9 +4,7 @@
     "signedOut": "Başarıyla çıkış yapıldı",
     "logoutFailed": "Çıkış başarısız. Lütfen tekrar deneyin.",
     "customCommandUpdated": "Özel komut güncellendi",
-    "shellSettingUpdated": "Shell ayarı güncellendi",
-    "idesDetected": "{{count}} IDE algılandı",
-    "ideDetectFailed": "IDE algılanamadı. Lütfen IDE'nizin yüklü olduğundan emin olup tekrar deneyin."
+    "shellSettingUpdated": "Shell ayarı güncellendi"
   },
   "noSettingsFound": "\"{{query}}\" için ayar bulunamadı",
   "searchPlaceholder": "Ayarlarda ara...",
@@ -715,11 +713,6 @@
     "customShell": "Özel kabuk",
     "customCommand": "Özel komut",
     "customCommandDesc": "Kabuk yürütülebilir dosyasının yolu",
-    "externalIde": "Harici IDE",
-    "preferredExternalIde": "Tercih edilen harici IDE",
-    "preferredExternalIdeDesc": "Dosyaları harici bir düzenleyicide açarken kullanılır",
-    "selectIde": "Bir IDE seçin",
-    "runDetect": "IDE'leri tespit etmek için algılamayı çalıştır",
     "workspaceDefaults": "Workspace varsayılanları",
     "defaultRepoFolder": "Varsayılan Repo klasörü",
     "defaultRepoFolderDesc": "Repo clone ve oluşturma formlarını önceden doldurur",

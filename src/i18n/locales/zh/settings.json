@@ -4,9 +4,7 @@
     "signedOut": "已成功退出登录",
     "logoutFailed": "退出登录失败，请重试。",
     "customCommandUpdated": "自定义命令已更新",
-    "shellSettingUpdated": "Shell 设置已更新",
-    "idesDetected": "检测到 {{count}} 个 IDE",
-    "ideDetectFailed": "无法检测到 IDE。请确保已安装 IDE 后重试。"
+    "shellSettingUpdated": "Shell 设置已更新"
   },
   "noSettingsFound": "未找到\"{{query}}\"相关设置",
   "searchPlaceholder": "搜索设置...",
@@ -715,11 +713,6 @@
     "customShell": "自定义 Shell",
     "customCommand": "自定义命令",
     "customCommandDesc": "Shell 可执行文件的路径",
-    "externalIde": "外部 IDE",
-    "preferredExternalIde": "首选外部 IDE",
-    "preferredExternalIdeDesc": "在外部编辑器中打开文件时使用",
-    "selectIde": "选择 IDE",
-    "runDetect": "运行检测以填充 IDE",
     "workspaceDefaults": "工作区默认值",
     "defaultRepoFolder": "默认仓库文件夹",
     "defaultRepoFolderDesc": "用于预填克隆和创建仓库表单",
