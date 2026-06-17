@@ -14,7 +14,7 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 
-import { currentRepoAtom, selectedRepoIdAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import { useEditorCache } from "./useEditorCache";
 
@@ -43,10 +43,7 @@ export function useEditorRepoCacheSync(
 ): void {
   const { enabled = true } = options;
 
-  // Watch for repo changes
-  const _selectedRepoId = useAtomValue(selectedRepoIdAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const repoPath = currentRepo?.path ?? null;
+  const repoPath = useAtomValue(activeWorkspaceRootPathAtom) || null;
 
   // Editor cache hook
   const { switchRepo, activeRepoPath: _activeRepoPath } = useEditorCache();

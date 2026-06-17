@@ -35,9 +35,9 @@ import {
   DEBOUNCE_DELAYS,
   useDebouncedCallback,
 } from "@src/hooks/perf/useDebouncedCallback";
-import { currentRepoAtom } from "@src/store/repo/derived";
 import { sessionsAtom } from "@src/store/session/sessionAtom";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
+import { activeWorkspaceRootAtom } from "@src/store/workspace";
 
 import {
   type DrilledProject,
@@ -76,10 +76,16 @@ export function useContextMenu(
   onSelectRef.current = opts.onSelect;
   onCloseRef.current = opts.onClose;
 
-  // Fallback repo path — always available even when session repoPath is not set
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRoot = useAtomValue(activeWorkspaceRootAtom);
+  const currentRepo = useMemo(
+    () =>
+      activeWorkspaceRoot
+        ? { name: activeWorkspaceRoot.name, path: activeWorkspaceRoot.path }
+        : null,
+    [activeWorkspaceRoot]
+  );
   const workspaceFolders = useAtomValue(workspaceFoldersAtom);
-  const effectiveRepoPath = opts.repoPath || currentRepo?.path || "";
+  const effectiveRepoPath = opts.repoPath || activeWorkspaceRoot?.path || "";
 
   const searchRoots = useMemo(
     () =>

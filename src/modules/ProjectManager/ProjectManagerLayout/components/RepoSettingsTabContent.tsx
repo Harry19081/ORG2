@@ -13,7 +13,7 @@ import { type FC, lazy, useCallback, useEffect, useState } from "react";
 import { type MemberEntry, projectApi } from "@src/api/http/project";
 import { createLogger } from "@src/hooks/logger";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { Label } from "@src/types/core/shared";
 
 const RepoSettingsPage = lazy(
@@ -29,8 +29,7 @@ interface RepoSettingsTabContentProps {
 export const RepoSettingsTabContent: FC<RepoSettingsTabContentProps> = ({
   initialSection,
 }) => {
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const repoPath = currentRepo?.path ?? null;
+  const repoPath = useAtomValue(activeWorkspaceRootPathAtom) || null;
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [members, setMembers] = useState<MemberEntry[]>([]);
   const [labels, setLabels] = useState<Label[]>([]);

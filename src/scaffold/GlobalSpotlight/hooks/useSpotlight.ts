@@ -30,7 +30,7 @@ import {
 import { AppViewService } from "@src/services/app";
 import { PanelService } from "@src/services/panel";
 import { WorkStationViewService } from "@src/services/workStation";
-import { currentRepoAtom } from "@src/store/repo/derived";
+import { selectedRepoAtom } from "@src/store/repo";
 import { REPO_KIND } from "@src/store/repo/types";
 import { spotlightRecentActionsAtom } from "@src/store/ui/spotlightRecentActionsAtom";
 import { UI_SCALE_CONFIG, uiScaleAtom } from "@src/store/ui/uiAtom";
@@ -93,7 +93,7 @@ export function useSpotlight(
 
   // Core state and dispatch
   const state = useSpotlightState();
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const currentRepo = useAtomValue(selectedRepoAtom);
   const { navigateTo } = useAppNavigation();
   const actionSystem = useActionSystemOptional();
   const dispatch = useSpotlightDispatch();

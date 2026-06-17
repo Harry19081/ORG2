@@ -35,11 +35,11 @@ import type {
 } from "@src/services/context/workspaceSnapshot";
 import { currentGitStatusAtom } from "@src/store/git";
 import { currentBranchAtom } from "@src/store/repo/atoms";
-import { currentRepoAtom } from "@src/store/repo/derived";
 import { settingsAtom } from "@src/store/settings";
 import { globalStatusBarStateAtom } from "@src/store/ui/workStationAtom";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { userPresenceWireAtom } from "@src/store/user/userPresenceAtom";
+import { activeWorkspaceRootAtom } from "@src/store/workspace";
 import { globalLspDiagnosticsAtom } from "@src/store/workstation/codeEditor/diagnostics/globalLspDiagnosticsAtom";
 import {
   workstationAllOpenPrsAtom,
@@ -149,10 +149,8 @@ export function collectIdeContext(
 
     const expected = normalizeRepoPath(options.expectedRepoPath);
     if (expected) {
-      const toolbarRepo = store.get(currentRepoAtom);
-      const toolbarPath = normalizeRepoPath(
-        toolbarRepo?.path ?? toolbarRepo?.fs_uri
-      );
+      const activeWorkspaceRoot = store.get(activeWorkspaceRootAtom);
+      const toolbarPath = normalizeRepoPath(activeWorkspaceRoot?.path);
       if (toolbarPath && toolbarPath !== expected) {
         const userScopedPayload: WorkspaceSnapshot = {};
         if (presenceWire) {
@@ -298,20 +296,15 @@ export function collectIdeContext(
       /* workspace folders not available */
     }
 
-    // Active repository selected in the toolbar — maps to IdeContext.repo_path on the Rust side.
-    // workspaceFolders lists all registered roots but does not identify which is selected;
-    // this field fills that gap so the agent always knows the active repo context.
     try {
-      const toolbarRepo = store.get(currentRepoAtom);
-      const repoPath = normalizeRepoPath(
-        toolbarRepo?.path ?? toolbarRepo?.fs_uri
-      );
+      const activeWorkspaceRoot = store.get(activeWorkspaceRootAtom);
+      const repoPath = normalizeRepoPath(activeWorkspaceRoot?.path);
       if (repoPath) {
         payload.repoPath = repoPath;
         hasData = true;
       }
     } catch {
-      /* toolbar repo not available */
+      /* active workspace root not available */
     }
 
     // User-scoped ambient state ships on every turn even when the IDE has

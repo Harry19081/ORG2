@@ -33,6 +33,13 @@ export {
 export {
   primaryFolderAtom,
   activeFolderAtom,
+  activeWorkspaceFolderRepoAtom,
+  activeWorkspaceRootAtom,
+  activeWorkspaceRootPathAtom,
+  primaryWorkspaceRootAtom,
+  primaryWorkspaceRootPathAtom,
+  workspaceFolderRepoMapAtom,
   workspaceNameAtom,
   workspaceFolderCountAtom,
+  type WorkspaceRootContext,
 } from "./derived";

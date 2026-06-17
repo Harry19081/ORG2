@@ -4,7 +4,6 @@
  * Command palette with reducer-based state management.
  * Modularized for better maintainability.
  */
-import { useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -12,7 +11,6 @@ import { useLocation } from "react-router-dom";
 import { gitApi } from "@src/api/http/git";
 import { ROUTES } from "@src/config/routes";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
-import { currentRepoAtom } from "@src/store/repo/derived";
 import { showGitActionDialogSafely } from "@src/util/dialogs/gitActionDialog";
 
 import { SPOTLIGHT_FOOTER_ACTIVE_CHIP } from "./components";
@@ -61,9 +59,9 @@ const GlobalSpotlightInner: React.FC<
 
   const { t } = useTranslation();
   const location = useLocation();
-  const currentRepo = useAtomValue(currentRepoAtom);
   const {
     selectedRepoId,
+    currentRepo,
     currentBranch: selectedBranchName,
     selectRepo,
     selectBranch,

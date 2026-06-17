@@ -13,7 +13,7 @@ import type {
   CommitDiffResult,
   GitFileDiffStatus,
 } from "@src/api/http/git/types";
-import { currentRepoAtom, selectedRepoIdAtom } from "@src/store/repo";
+import { selectedRepoIdAtom, selectedRepoPathAtom } from "@src/store/repo";
 import { decodeOctalPath } from "@src/util/file/pathUtils";
 
 export interface CommitFileInfo {
@@ -33,7 +33,7 @@ const MAX_CACHE_SIZE = 50;
 
 export function useCommitFiles(messageId: string): UseCommitFilesResult {
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const selectedRepoPath = useAtomValue(selectedRepoPathAtom);
   const [files, setFiles] = useState<CommitFileInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalStats, setTotalStats] = useState<{
@@ -78,7 +78,7 @@ export function useCommitFiles(messageId: string): UseCommitFilesResult {
       try {
         const result = await getGitCommitDiff({
           repo_id: selectedRepoId,
-          repo_path: currentRepo?.path,
+          repo_path: selectedRepoPath || undefined,
           commit_sha: commitSha,
           context_lines: 0, // We only need stats, not full diff
         });
@@ -115,7 +115,7 @@ export function useCommitFiles(messageId: string): UseCommitFilesResult {
     return () => {
       cancelled = true;
     };
-  }, [commitSha, selectedRepoId, currentRepo?.path]);
+  }, [commitSha, selectedRepoId, selectedRepoPath]);
 
   return { files, loading, totalStats };
 }

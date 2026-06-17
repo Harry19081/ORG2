@@ -2,8 +2,8 @@
  * Workspace Folders Atoms
  *
  * Multi-root workspace support: manages an ordered list of workspace folder roots.
- * Syncs with the existing single-repo model (currentRepoAtom / selectedRepoIdAtom)
- * so that the primary folder acts as the "selected repo".
+ * Syncs with selectedRepoIdAtom so that the primary folder acts as the
+ * selected repo where legacy single-repo flows still need one.
  *
  * Workspaces are DB-backed presets (savedWorkspacesAtom) that can be
  * activated/deactivated. The runtime folder list (workspaceFoldersAtom)

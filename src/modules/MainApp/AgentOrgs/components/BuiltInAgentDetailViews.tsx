@@ -6,7 +6,7 @@ import {
   DETAIL_PANEL_TOKENS,
   DetailPanelContainer,
 } from "@src/modules/shared/layouts/blocks";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import {
   BUILTIN_OS_DEF_ID,
   BUILTIN_SDE_DEF_ID,
@@ -35,8 +35,8 @@ export const BuiltInAgentDetailView: React.FC<BuiltInAgentDetailViewProps> = ({
   const sdeTabs = useSdeAgentTabs();
   const tabs = variant === "os" ? osTabs : sdeTabs;
   const [activeTab, setActiveTab] = useAtom(agentOrgsActiveTabAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const workspacePath = variant === "sde" ? currentRepo?.path : undefined;
+  const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
+  const workspacePath = variant === "sde" ? activeWorkspaceRootPath : undefined;
 
   const agentId = variant === "os" ? BUILTIN_OS_DEF_ID : BUILTIN_SDE_DEF_ID;
   const osConfig = useOSAgentConfig();

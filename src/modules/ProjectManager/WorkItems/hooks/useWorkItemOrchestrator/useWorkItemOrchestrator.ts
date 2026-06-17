@@ -6,7 +6,7 @@ import Message from "@src/components/Message";
 import { SessionService } from "@src/engines/SessionCore/services/SessionService";
 import type { AgentExecMode } from "@src/features/SessionCreator/config";
 import { createLogger } from "@src/hooks/logger";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { WorkItem as WorkItemExtended } from "@src/types/core/workItem";
 import { invokeTauri } from "@src/util/platform/tauri/init";
 
@@ -80,8 +80,7 @@ export function useWorkItemOrchestrator(
     null
   );
 
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const worktreePath = currentRepo?.path ?? null;
+  const worktreePath = useAtomValue(activeWorkspaceRootPathAtom) || null;
 
   const projectRepoPath = repoPath ?? null;
   const accountId =

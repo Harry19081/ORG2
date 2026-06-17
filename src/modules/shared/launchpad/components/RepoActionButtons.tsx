@@ -16,7 +16,7 @@ import { repoApi } from "@src/api/tauri/repo";
 import Button, { type ButtonProps } from "@src/components/Button";
 import Message from "@src/components/Message";
 import { ROUTES } from "@src/config/routes";
-import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
+import { useRepoLoader } from "@src/hooks/git/useRepoSelection";
 import { createLogger } from "@src/hooks/logger";
 import { useValidatedLastPair } from "@src/hooks/models/useValidatedLastPair";
 import { useRepoDetection } from "@src/modules/shared/launchpad/hooks/useRepoDetection";
@@ -67,7 +67,7 @@ const RepoActionButtons: React.FC<RepoActionButtonsProps> = ({
 }) => {
   const { t } = useTranslation(["navigation", "common"]);
   const setSelectedRepoId = useSetAtom(selectedRepoIdAtom);
-  const { forceRefreshRepos } = useRepoSelection({ autoLoad: false });
+  const { forceRefreshRepos } = useRepoLoader();
 
   const { launching, launchSetup } = useRepoSetup();
   const lastModel = useValidatedLastPair();

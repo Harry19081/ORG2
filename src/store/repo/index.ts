@@ -25,7 +25,7 @@
  *   // Core atoms
  *   reposAtom, selectedRepoIdAtom,
  *   // Derived atoms
- *   currentRepoAtom, repoMapAtom,
+ *   selectedRepoAtom, selectedRepoPathAtom, repoMapAtom,
  *   // Cache helpers
  *   isBranchCacheFresh, setBranchCacheWithLRU,
  *   // Storage
@@ -86,7 +86,8 @@ export {
 export {
   // Lookups
   repoMapAtom,
-  currentRepoAtom,
+  selectedRepoAtom,
+  selectedRepoPathAtom,
   currentRepoIsGitAtom,
   isValidRepoIdAtom,
   // Filtered & search
