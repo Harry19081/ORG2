@@ -125,20 +125,50 @@ pub async fn orgtrack_get_session_summaries(
         let final_diffs = store.list_final_diffs(None, None)?;
         let commit_links = store.list_commit_links()?;
         let mut summaries = session_summaries(sessions, final_diffs, commit_links);
-        for summary in &mut summaries {
-            if summary.source != SOURCE_ORGII_RUST_AGENTS {
-                continue;
-            }
-            if let Some(impact) = impact_indexer::get_session_impact(&summary.session_id)? {
-                summary.files_changed = impact.files_changed.max(0) as usize;
-                summary.lines_added = impact.lines_added.max(0) as i32;
-                summary.lines_removed = impact.lines_removed.max(0) as i32;
-            }
-        }
+        apply_runtime_impact_overrides(&mut summaries)?;
         Ok(summaries)
     })
     .await
     .map_err(|err| err.to_string())?
+}
+
+#[tauri::command]
+pub async fn orgtrack_get_session_summary(
+    session_id: String,
+) -> Result<Option<CoreSessionSummary>, String> {
+    tokio::task::spawn_blocking(move || {
+        let conn = get_connection().map_err(|err| err.to_string())?;
+        let store = SqliteRecordStore::new(&conn);
+        let sessions: Vec<_> = store
+            .list_sessions(None)?
+            .into_iter()
+            .filter(|session| session.session_id == session_id)
+            .collect();
+        if sessions.is_empty() {
+            return Ok(None);
+        }
+        let final_diffs = store.list_final_diffs(None, Some(&session_id))?;
+        let commit_links = store.list_commit_links_for_session(&session_id)?;
+        let mut summaries = session_summaries(sessions, final_diffs, commit_links);
+        apply_runtime_impact_overrides(&mut summaries)?;
+        Ok(summaries.pop())
+    })
+    .await
+    .map_err(|err| err.to_string())?
+}
+
+fn apply_runtime_impact_overrides(summaries: &mut [CoreSessionSummary]) -> Result<(), String> {
+    for summary in summaries {
+        if summary.source != SOURCE_ORGII_RUST_AGENTS {
+            continue;
+        }
+        if let Some(impact) = impact_indexer::get_session_impact(&summary.session_id)? {
+            summary.files_changed = impact.files_changed.max(0) as usize;
+            summary.lines_added = impact.lines_added.max(0) as i32;
+            summary.lines_removed = impact.lines_removed.max(0) as i32;
+        }
+    }
+    Ok(())
 }
 
 #[tauri::command]
