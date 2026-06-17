@@ -347,8 +347,7 @@ fn apply_desktop_operation_visibility(app_handle: &tauri::AppHandle) {
 
     warn!(
         "[peekaboo-visibility] apply start hide_main_window={}, monitor_index={:?}",
-        hide_main_window,
-        monitor_index
+        hide_main_window, monitor_index
     );
 
     if hide_main_window {
@@ -419,9 +418,7 @@ fn restore_desktop_operation_visibility_if_idle(app_handle: &tauri::AppHandle, g
     restore_desktop_operation_visibility_snapshot(app_handle, snapshot);
 }
 
-fn take_visibility_snapshot(
-    state: &mut DesktopOperationVisibilityState,
-) -> (bool, bool, bool) {
+fn take_visibility_snapshot(state: &mut DesktopOperationVisibilityState) -> (bool, bool, bool) {
     let snapshot = (
         state.hide_main_window,
         state.main_window_was_visible,
