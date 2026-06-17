@@ -8,6 +8,7 @@ import { useFilteredItems } from "@src/hooks/search";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { benchmarkAgentBatchStatusAtom } from "@src/store/benchmark";
 import {
+  DEFAULT_SESSION_ORG_ID,
   type Session,
   type SessionListCategory,
   sessionPaginationAtom,
@@ -52,6 +53,7 @@ export function useSessionMenuItems({
   groupByMode,
   untitledSession,
   searchQuery = "",
+  selectedOrgId,
   groupVisibleCounts,
 }: UseSessionMenuItemsParams): UseSessionMenuItemsResult {
   const { t: tCommon } = useTranslation();
@@ -107,17 +109,21 @@ export function useSessionMenuItems({
 
   const visibleSessions = useMemo(
     () =>
-      sortedSessions.filter(
-        (session) =>
+      sortedSessions.filter((session) => {
+        const sessionOrgId = session.orgId ?? DEFAULT_SESSION_ORG_ID;
+        return (
           isPrimarySessionListSession(session) &&
+          (!selectedOrgId || sessionOrgId === selectedOrgId) &&
           !benchmarkChildSessionIds.has(session.session_id) &&
           !benchmarkHistoryChildSessionIds.has(session.session_id) &&
           !benchmarkCoordinatorSessionIds.has(session.parentSessionId ?? "")
-      ),
+        );
+      }),
     [
       benchmarkChildSessionIds,
       benchmarkCoordinatorSessionIds,
       benchmarkHistoryChildSessionIds,
+      selectedOrgId,
       sortedSessions,
     ]
   );

@@ -68,6 +68,7 @@ export function useProjectsWorkItemMenuItems({
   enabled,
   groupVisibleCounts,
   searchQuery = "",
+  selectedOrgId,
 }: UseProjectsWorkItemMenuItemsParams): UseProjectsWorkItemMenuItemsResult {
   const { t } = useTranslation(["projects", "common", "navigation"]);
   const setLayout = useSetAtom(workstationLayoutAtom);
@@ -83,6 +84,28 @@ export function useProjectsWorkItemMenuItems({
     Map<string, LinearOrgLoadState>
   >(new Map());
   const [loading, setLoading] = useState(false);
+
+  const scopedLocalProjects = useMemo(
+    () =>
+      selectedOrgId
+        ? localProjects.filter((project) => project.orgId === selectedOrgId)
+        : localProjects,
+    [localProjects, selectedOrgId]
+  );
+  const scopedWorkItems = useMemo(
+    () =>
+      selectedOrgId
+        ? workItems.filter((workItem) => workItem.orgId === selectedOrgId)
+        : workItems,
+    [selectedOrgId, workItems]
+  );
+  const scopedLocalOrgs = useMemo(
+    () =>
+      selectedOrgId
+        ? localOrgs.filter((org) => org.id === selectedOrgId)
+        : localOrgs,
+    [localOrgs, selectedOrgId]
+  );
 
   const loadLocalWorkItems = useCallback(async () => {
     if (!enabled) return;
@@ -253,19 +276,19 @@ export function useProjectsWorkItemMenuItems({
 
   const projectMap = useMemo(() => {
     const map = new Map<string, SidebarProject>();
-    for (const project of localProjects) {
+    for (const project of scopedLocalProjects) {
       map.set(project.projectData.slug, project);
     }
     return map;
-  }, [localProjects]);
+  }, [scopedLocalProjects]);
 
   const workItemMap = useMemo(() => {
     const map = new Map<string, SidebarWorkItem>();
-    for (const workItem of workItems) {
+    for (const workItem of scopedWorkItems) {
       map.set(workItem.id, workItem);
     }
     return map;
-  }, [workItems]);
+  }, [scopedWorkItems]);
 
   const linearWorkItemMap = useMemo(() => {
     const map = new Map<string, SidebarLinearWorkItem>();
@@ -281,14 +304,14 @@ export function useProjectsWorkItemMenuItems({
       id: STORY_PERSONAL_ORG_FILTER_ID,
       name: t("projects:orgs.personalOrg"),
     });
-    for (const org of localOrgs) {
+    for (const org of scopedLocalOrgs) {
       map.set(org.id, {
         id: org.id,
         name: org.name,
         sync_provider: org.sync_provider,
       });
     }
-    for (const project of localProjects) {
+    for (const project of scopedLocalProjects) {
       if (map.has(project.orgId)) continue;
       map.set(project.orgId, {
         id: project.orgId,
@@ -296,7 +319,7 @@ export function useProjectsWorkItemMenuItems({
       });
     }
     return map;
-  }, [localOrgs, localProjects, t]);
+  }, [scopedLocalOrgs, scopedLocalProjects, t]);
 
   const cloudOrgMap = useMemo(() => {
     const map = new Map<string, { id: string; name: string }>();
@@ -315,8 +338,8 @@ export function useProjectsWorkItemMenuItems({
   }, [linearOrgs]);
 
   const allWorkItems = useMemo<SidebarAnyWorkItem[]>(
-    () => [...workItems],
-    [workItems]
+    () => [...scopedWorkItems],
+    [scopedWorkItems]
   );
 
   const menuItems = useMemo(
@@ -326,19 +349,9 @@ export function useProjectsWorkItemMenuItems({
         groupVisibleCounts,
         searchQuery,
         t,
-        cloudOrgs: collabOrgs,
-        localOrgs,
-        localProjects,
+        localProjects: scopedLocalProjects,
       }),
-    [
-      allWorkItems,
-      groupVisibleCounts,
-      searchQuery,
-      t,
-      collabOrgs,
-      localOrgs,
-      localProjects,
-    ]
+    [allWorkItems, groupVisibleCounts, searchQuery, t, scopedLocalProjects]
   );
 
   const openLocalOrg = useCallback(

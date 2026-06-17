@@ -3,7 +3,6 @@ import type { TFunction } from "i18next";
 import { WORK_ITEM_PRIORITY_OPTIONS } from "@src/modules/ProjectManager/config/manage";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { SESSION_SIDEBAR_PAGE_SIZE } from "@src/store/session";
-import { STORY_PERSONAL_ORG_FILTER_ID } from "@src/store/workstation/tabs/factories/project";
 import type {
   WorkItemPriority,
   WorkItemStatus,
@@ -20,9 +19,7 @@ import {
   buildProjectOverviewRow,
   buildProjectRow,
   buildWorkItemRow,
-  cloudOrgRow,
   groupLoadMoreRow,
-  localOrgRow,
   separator,
 } from "./menuRows";
 import type {
@@ -45,8 +42,6 @@ interface GroupingBuilderContext {
 }
 
 interface OrgGroupingBuilderContext extends GroupingBuilderContext {
-  cloudOrgs: readonly { id: string; name: string }[];
-  localOrgs: readonly { id: string; name: string }[];
   localProjects: readonly SidebarProject[];
 }
 
@@ -67,34 +62,6 @@ function appendGroupItems(
   }
 }
 
-function getLocalOrgKeys(
-  groups: ReadonlyMap<string, SidebarAnyWorkItem[]>,
-  localOrgs: readonly { id: string }[],
-  localProjects: readonly SidebarProject[],
-  localOrgNameById: ReadonlyMap<string, string>
-): string[] {
-  const localKeySet = new Set(
-    Array.from(groups.keys()).filter((key) => !key.startsWith("linear:"))
-  );
-  for (const org of localOrgs) {
-    localKeySet.add(org.id);
-  }
-  for (const project of localProjects) {
-    localKeySet.add(project.orgId);
-  }
-  return Array.from(localKeySet).sort((keyA, keyB) => {
-    if (keyA === STORY_PERSONAL_ORG_FILTER_ID) return -1;
-    if (keyB === STORY_PERSONAL_ORG_FILTER_ID) return 1;
-    if (keyA === UNKNOWN_ORG_KEY) return 1;
-    if (keyB === UNKNOWN_ORG_KEY) return -1;
-    const labelA =
-      groups.get(keyA)?.[0]?.orgName ?? localOrgNameById.get(keyA) ?? keyA;
-    const labelB =
-      groups.get(keyB)?.[0]?.orgName ?? localOrgNameById.get(keyB) ?? keyB;
-    return labelA.localeCompare(labelB);
-  });
-}
-
 export function buildByOrgMenuItems(
   context: OrgGroupingBuilderContext
 ): NavigationMenuItem[] {
@@ -103,39 +70,9 @@ export function buildByOrgMenuItems(
     pushGroupedItems(groups, workItem.orgId || UNKNOWN_ORG_KEY, workItem);
   }
 
-  const localOrgNameById = new Map(
-    context.localOrgs.map((org) => [
-      org.id,
-      org.id === STORY_PERSONAL_ORG_FILTER_ID
-        ? context.t("projects:orgs.personalOrg")
-        : org.name,
-    ])
-  );
-  const localKeys = getLocalOrgKeys(
-    groups,
-    context.localOrgs,
-    context.localProjects,
-    localOrgNameById
-  );
   const query = context.searchQuery.trim().toLowerCase();
 
   const items: NavigationMenuItem[] = [];
-  items.push(separator("orgs", context.t("projects:orgs.sectionTitle")));
-
-  for (const key of localKeys) {
-    const title =
-      localOrgNameById.get(key) ??
-      (key === STORY_PERSONAL_ORG_FILTER_ID
-        ? context.t("projects:orgs.personalOrg")
-        : key);
-    items.push(localOrgRow(key, title));
-  }
-
-  for (const org of [...context.cloudOrgs].sort((orgA, orgB) =>
-    orgA.name.localeCompare(orgB.name)
-  )) {
-    items.push(cloudOrgRow(org.id, org.name));
-  }
 
   if (!query) {
     items.push(

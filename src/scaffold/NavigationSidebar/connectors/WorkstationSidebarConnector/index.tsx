@@ -1,10 +1,11 @@
 import { RenameModal } from "@/src/scaffold/ModalSystem/variants";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Search } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { type ProjectOrg, projectApi } from "@src/api/http/project";
 import type { WorkspaceRecord } from "@src/api/tauri/workspace";
 import { ROUTES } from "@src/config/routes";
 import { JoinSharedSessionDialog } from "@src/features/SessionSharing/JoinSharedSessionDialog";
@@ -12,16 +13,20 @@ import { ShareSessionDialog } from "@src/features/SessionSharing/ShareSessionDia
 import { useCollaborationMetadataSync } from "@src/features/TeamCollaboration/useCollaborationMetadataSync";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { useKeyVault } from "@src/hooks/keyVault";
+import { createLogger } from "@src/hooks/logger";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
+import { useProjectDataChanged } from "@src/hooks/project";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import { useAgentOrgs } from "@src/modules/MainApp/AgentOrgs/hooks/useAgentOrgs";
 import { useLaunchpadAgentCatalog } from "@src/modules/shared/launchpad/hooks";
 import { openWorkspaceSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { benchmarkAgentBatchStatusAtom } from "@src/store/benchmark";
+import { collabOrgsAtom } from "@src/store/collaboration/collabOrgsAtom";
 import type { Repo } from "@src/store/repo";
 import { repoMapAtom, reposAtom } from "@src/store/repo";
 import {
+  DEFAULT_SESSION_ORG_ID,
   activeSessionCreatorDraftIdAtom,
   deleteSessionCreatorDraftAtom,
   loadSidebarSessions,
@@ -34,6 +39,7 @@ import {
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
 import {
+  CHAT_PANEL_SURFACE_KIND,
   activeStationChatVisibleAtom,
   chatPanelContentModeAtom,
   chatPanelCreateTargetAtom,
@@ -59,6 +65,8 @@ import {
 
 import { SidebarBottomBar } from "../../blocks";
 import NavigationSidebar from "../../variants/NavigationSidebar";
+import SidebarOrgSelector from "../SidebarOrgSelector";
+import { COLLAB_ADD_ORG_MENU_ITEM_ID } from "../sidebarConnectorUtils";
 import { sidebarGroupByAtom } from "../sidebarGroupByAtom";
 import { useProjectsWorkItemMenuItems } from "../useProjectsWorkItemMenuItems";
 import { useRenameSessionModal } from "../useRenameSessionModal";
@@ -108,6 +116,8 @@ import {
 import { useFoldersSidebarContextMenu } from "./useFoldersSidebarContextMenu";
 import { useProjectsMenuItemClick } from "./useProjectsMenuItemClick";
 
+const logger = createLogger("WorkstationSidebar");
+
 export const WorkstationSidebarConnector: React.FC = () => {
   const { t } = useTranslation("navigation");
   const { t: tProjects } = useTranslation("projects");
@@ -120,6 +130,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const navigate = useNavigate();
   const sessions = useAtomValue(sessionsAtom);
   const sessionsLoading = useAtomValue(sessionLoadingAtom);
+  const collabOrgs = useAtomValue(collabOrgsAtom);
   const visitedSessions = useAtomValue(visitedSessionsAtom);
   const sessionCreatorDrafts = useAtomValue(sessionCreatorDraftListAtom);
   const activeSessionCreatorDraftId = useAtomValue(
@@ -159,6 +170,8 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const [activeFolderMoreMenuId, setActiveFolderMoreMenuId] = useState("");
   const [projectsSelectedMenuItemId, setProjectsSelectedMenuItemId] =
     useState("");
+  const [selectedOrgId, setSelectedOrgId] = useState(DEFAULT_SESSION_ORG_ID);
+  const [projectOrgs, setProjectOrgs] = useState<ProjectOrg[]>([]);
   const [sidebarSearchQueries, setSidebarSearchQueries] = useState<
     Record<WorkstationSidebarKey, string>
   >({ folders: "", workstation: "", projects: "" });
@@ -174,6 +187,33 @@ export const WorkstationSidebarConnector: React.FC = () => {
     }
     setActiveSidebarKey(key);
   }, []);
+
+  const fetchProjectOrgs = useCallback(async (): Promise<ProjectOrg[]> => {
+    try {
+      return await projectApi.readOrgs();
+    } catch (error) {
+      logger.error("Failed to load sidebar org selector options:", error);
+      return [];
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchProjectOrgs().then((orgs) => {
+      if (!cancelled) {
+        setProjectOrgs(orgs);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchProjectOrgs]);
+
+  useProjectDataChanged(
+    useCallback(() => {
+      void fetchProjectOrgs().then(setProjectOrgs);
+    }, [fetchProjectOrgs])
+  );
 
   const handleSidebarSearchChange = useCallback(
     (value: string) => {
@@ -250,6 +290,34 @@ export const WorkstationSidebarConnector: React.FC = () => {
         ? t("sidebar.search.folders")
         : t("sidebar.search.sessions");
   const noSearchResultsTitle = t("sidebar.empty.noSearchResults");
+  const orgSelectorOptions = useMemo(() => {
+    const options = [
+      {
+        value: DEFAULT_SESSION_ORG_ID,
+        label: tProjects("orgs.personalOrg"),
+      },
+    ];
+    const seenOrgIds = new Set([DEFAULT_SESSION_ORG_ID]);
+    for (const org of projectOrgs) {
+      if (seenOrgIds.has(org.id)) continue;
+      seenOrgIds.add(org.id);
+      options.push({ value: org.id, label: org.name });
+    }
+    for (const org of collabOrgs) {
+      if (seenOrgIds.has(org.id)) continue;
+      seenOrgIds.add(org.id);
+      options.push({ value: org.id, label: org.name });
+    }
+    return options;
+  }, [collabOrgs, projectOrgs, tProjects]);
+
+  const activeOrgId = useMemo(
+    () =>
+      orgSelectorOptions.some((option) => option.value === selectedOrgId)
+        ? selectedOrgId
+        : DEFAULT_SESSION_ORG_ID,
+    [orgSelectorOptions, selectedOrgId]
+  );
 
   const { menuItems, sessionMap, isLoadMoreId, getLoadMoreGroupId } =
     useSessionMenuItems({
@@ -259,6 +327,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       groupByMode,
       untitledSession,
       searchQuery: sidebarSearchQueries.workstation,
+      selectedOrgId: activeOrgId,
       groupVisibleCounts,
     });
   const {
@@ -280,6 +349,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     enabled: activeSidebarKey === "projects",
     groupVisibleCounts: projectsGroupVisibleCounts,
     searchQuery: sidebarSearchQueries.projects,
+    selectedOrgId: activeOrgId,
   });
 
   useCollaborationMetadataSync();
@@ -295,7 +365,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
 
   const { pinnedMenuItems } = usePinnedMenuItems({
     activeSidebarKey,
-    addOrgLabel,
     createProjectLabel,
     createWorkItemLabel,
     newSessionLabel,
@@ -581,6 +650,11 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const handleOpenSpotlight = useCallback(() => {
     setSpotlightOpen(true);
   }, [setSpotlightOpen]);
+  const handleAddOrgFromSelector = useCallback(() => {
+    resetOpsControlStateForProjectsContent();
+    setProjectsSelectedMenuItemId(COLLAB_ADD_ORG_MENU_ITEM_ID);
+    navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.NEW_COLLAB_ORG });
+  }, [navigateChatPanel, resetOpsControlStateForProjectsContent]);
   const renderSessionMenuItemWrapper =
     useRenderSessionMenuItemWrapper(sessionMap);
   const renderProjectsMenuItemWrapper = useRenderProjectsMenuItemWrapper({
@@ -715,6 +789,15 @@ export const WorkstationSidebarConnector: React.FC = () => {
           placeholder: searchPlaceholder,
           noResultsTitle: noSearchResultsTitle,
         }}
+        preListContent={
+          <SidebarOrgSelector
+            value={activeOrgId}
+            options={orgSelectorOptions}
+            addOrgLabel={addOrgLabel}
+            onChange={setSelectedOrgId}
+            onAddOrg={handleAddOrgFromSelector}
+          />
+        }
         listTopPadding
         bottomContent={
           <SidebarBottomBar rightActions={sidebarBottomRightActions} />

@@ -74,6 +74,8 @@ export interface NavigationSidebarProps {
   listTopPadding?: boolean;
   /** Optional ghost search row rendered above the scrollable menu list. */
   search?: NavigationSidebarSearchConfig;
+  /** Optional control row rendered between search and pinned/list content. */
+  preListContent?: React.ReactNode;
   /** Show loading placeholder instead of menu items */
   isLoading?: boolean;
   /** Enable collapse/expand on section headers (separator-based groups) */
@@ -171,6 +173,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
     headerActions,
     listTopPadding = false,
     search,
+    preListContent,
     isLoading = false,
     collapsibleSections = false,
     collapsedSectionIds,
@@ -328,6 +331,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
         beforeAddNewActions={beforeAddNewActions}
         headerActions={headerActions}
       >
+        {preListContent}
+
         {/* Tab Header */}
         {items.length > 0 && (
           <div
