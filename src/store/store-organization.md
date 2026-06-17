@@ -128,8 +128,8 @@ Repository and branch management.
 ```typescript
 import {
   branchesAtom,
-  currentRepoAtom,
   reposAtom,
+  selectedRepoAtom,
   selectedRepoIdAtom,
 } from "@src/store/repo";
 ```
@@ -248,7 +248,7 @@ Main app-level tabs (not Workstation tabs).
 // Session
 // Workstation
 // Repo
-import { currentRepoAtom, reposAtom } from "@src/store/repo";
+import { reposAtom, selectedRepoAtom } from "@src/store/repo";
 import { sessionViewAtom, sessionsAtom } from "@src/store/session";
 import { terminalSessionsAtom } from "@src/store/workstation/codeEditor/terminal";
 import { workstationLayoutAtom } from "@src/store/workstation/tabs";

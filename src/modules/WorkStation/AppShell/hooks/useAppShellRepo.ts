@@ -1,11 +1,9 @@
 import { exists } from "@tauri-apps/plugin-fs";
 import { useAtomValue } from "jotai";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouteAppMode } from "@src/config/routeViewModeConfig";
-import { currentRepoAtom } from "@src/store/repo";
-import { isMultiRootWorkspaceAtom } from "@src/store/ui/workspaceFoldersAtom";
-import { primaryFolderAtom } from "@src/store/workspace/derived";
+import { activeWorkspaceRootAtom } from "@src/store/workspace";
 
 const getFolderName = (path: string): string => {
   if (!path) return "";
@@ -28,15 +26,9 @@ export interface AppShellRepoState {
 }
 
 export function useAppShellRepo(): AppShellRepoState {
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const repoPath = currentRepo?.path ?? currentRepo?.fs_uri ?? "";
-  const isMultiRoot = useAtomValue(isMultiRootWorkspaceAtom);
-  const primaryFolder = useAtomValue(primaryFolderAtom);
-  const repoName = useMemo(() => {
-    if (isMultiRoot && primaryFolder) return primaryFolder.name;
-    if (currentRepo?.name) return currentRepo.name;
-    return getFolderName(repoPath);
-  }, [isMultiRoot, primaryFolder, currentRepo?.name, repoPath]);
+  const activeWorkspaceRoot = useAtomValue(activeWorkspaceRootAtom);
+  const repoPath = activeWorkspaceRoot?.path ?? "";
+  const repoName = activeWorkspaceRoot?.name ?? getFolderName(repoPath);
 
   const appMode = useRouteAppMode();
 

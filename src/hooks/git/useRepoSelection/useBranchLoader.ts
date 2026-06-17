@@ -11,8 +11,7 @@ import {
   REPO_KIND,
   branchesAtom,
   currentBranchAtom,
-  currentRepoAtom,
-  repoMapAtom,
+  selectedRepoAtom,
   selectedRepoIdAtom,
 } from "@src/store/repo";
 import { debounce } from "@src/util/core/debounce";
@@ -26,8 +25,7 @@ export function useBranchLoader(): UseBranchLoaderReturn {
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
   const [branches, setBranches] = useAtom(branchesAtom);
   const [_currentBranch, setCurrentBranch] = useAtom(currentBranchAtom);
-  const repoMap = useAtomValue(repoMapAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const selectedRepo = useAtomValue(selectedRepoAtom);
 
   const [branchLoading, setBranchLoading] = useState(false);
 
@@ -56,7 +54,7 @@ export function useBranchLoader(): UseBranchLoaderReturn {
     if (loadingFastBranchRef.current) return;
     if (lastFastBranchRepoRef.current === selectedRepoId) return;
 
-    const repo = repoMap.get(selectedRepoId) || currentRepo;
+    const repo = selectedRepo;
     if (repo?.kind === REPO_KIND.FOLDER) return;
 
     // Pass repo_path as a hint when available; the Rust backend falls back to
@@ -81,7 +79,7 @@ export function useBranchLoader(): UseBranchLoaderReturn {
     } finally {
       loadingFastBranchRef.current = false;
     }
-  }, [selectedRepoId, repoMap, currentRepo, setCurrentBranch]);
+  }, [selectedRepoId, selectedRepo, setCurrentBranch]);
 
   // ============================================
   // Load Full Branch List (SLOW - for branch dropdown)
@@ -93,7 +91,7 @@ export function useBranchLoader(): UseBranchLoaderReturn {
     if (loadingBranchesRef.current) return;
     if (lastBranchRepoRef.current === selectedRepoId) return;
 
-    const repo = repoMap.get(selectedRepoId) || currentRepo;
+    const repo = selectedRepo;
     if (repo?.kind === REPO_KIND.FOLDER) return;
     const repoPath = repo?.path || repo?.fs_uri;
 
@@ -133,7 +131,7 @@ export function useBranchLoader(): UseBranchLoaderReturn {
       setBranchLoading(false);
       loadingBranchesRef.current = false;
     }
-  }, [selectedRepoId, repoMap, currentRepo, setBranches, setCurrentBranch]);
+  }, [selectedRepoId, selectedRepo, setBranches, setCurrentBranch]);
 
   // Keep ref updated with latest loadBranchesImmediate
   loadBranchesImmediateRef.current = loadBranchesImmediate;

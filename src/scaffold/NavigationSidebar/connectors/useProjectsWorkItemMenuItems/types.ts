@@ -66,6 +66,7 @@ export interface UseProjectsWorkItemMenuItemsParams {
   enabled: boolean;
   groupVisibleCounts: ReadonlyMap<string, number>;
   searchQuery: string;
+  selectedOrgId?: string;
 }
 
 export interface SidebarLocalOrgRecord {

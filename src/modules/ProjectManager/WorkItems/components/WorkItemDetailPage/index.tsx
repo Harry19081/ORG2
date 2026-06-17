@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 
 import { projectApi, workItemDataToUI } from "@src/api/http/project";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { WorkItem as WorkItemExtended } from "@src/types/core/workItem";
 
 import { useWorkItems } from "../../hooks/useWorkItems";
@@ -51,7 +51,7 @@ const ProjectScopedWorkItemDetailPage: React.FC<WorkItemDetailPageProps> = ({
   onWorkItemNameUpdated,
 }) => {
   const { t } = useTranslation("projects");
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
   const { data, projectData, handlers } = useWorkItems({
     projectId: projectId ?? "",
     cachedProjectSlug: tabProjectSlug,
@@ -90,7 +90,7 @@ const ProjectScopedWorkItemDetailPage: React.FC<WorkItemDetailPageProps> = ({
     [workItemIndex, data.workItems, handlers]
   );
 
-  const resolvedRepoPath = currentRepo?.path ?? null;
+  const resolvedRepoPath = activeWorkspaceRootPath || null;
   const resolvedProjectSlug = projectData.project?.slug ?? null;
 
   const shortId = workItem
@@ -184,7 +184,7 @@ const StandaloneWorkItemDetailPage: React.FC<WorkItemDetailPageProps> = ({
   onWorkItemNameUpdated,
 }) => {
   const { t } = useTranslation("projects");
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
   const [workItem, setWorkItem] = useState<WorkItemExtended | null>(null);
   const [loading, setLoading] = useState(true);
   const [propertiesOpen, setPropertiesOpen] = useState(true);
@@ -271,7 +271,7 @@ const StandaloneWorkItemDetailPage: React.FC<WorkItemDetailPageProps> = ({
       availableLabels={[]}
       showTime={true}
       onRegisterActions={handleRegisterActions}
-      repoPath={currentRepo?.path ?? null}
+      repoPath={activeWorkspaceRootPath || null}
       projectSlug={null}
       shortId={workItemId}
       onRefreshWorkItem={loadWorkItem}

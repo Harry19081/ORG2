@@ -108,6 +108,20 @@
   }
 }
 
+.thinking-header-preview {
+  color: var(--color-text-1);
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &--expanded {
+    font-weight: 700;
+  }
+}
+
 // ThinkingBlock expanded content - tight spacing, no extra margins
 .thinking-block-content {
   color: var(--color-text-2);

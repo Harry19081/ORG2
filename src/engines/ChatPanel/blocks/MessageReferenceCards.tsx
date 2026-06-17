@@ -24,7 +24,6 @@ import { replayModeAtom } from "@src/engines/SessionCore";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import { parseGitArtifactsFromText } from "@src/shared/git/sessionGitArtifacts";
-import { currentRepoAtom } from "@src/store/repo";
 import { sessionByIdAtom } from "@src/store/session";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
 import {
@@ -32,6 +31,7 @@ import {
   simulatorSelectedAppAtom,
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { copyText } from "@src/util/data/clipboard";
 import {
   SESSION_REFERENCE_FILE_MANAGER_REVEAL_KEYS,
@@ -694,14 +694,14 @@ const MessageReferenceCards: React.FC<MessageReferenceCardsProps> = ({
   excludeUrls,
   sessionId,
 }) => {
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
   const session = useAtomValue(sessionByIdAtom(sessionId ?? ""));
   const references = useMemo(
     () =>
       items ?? (enabled ? extractMessageReferences(content, excludeUrls) : []),
     [content, enabled, excludeUrls, items]
   );
-  const metadataRepoPath = session?.repoPath || currentRepo?.path;
+  const metadataRepoPath = session?.repoPath || activeWorkspaceRootPath;
   const resolvedReferences = useCommitMetadataReferences(
     references,
     metadataRepoPath

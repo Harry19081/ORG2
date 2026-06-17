@@ -36,7 +36,6 @@ import SettingsSlot from "@src/modules/MainApp/Settings/SettingsSlot";
 import GlobalSessionSync from "@src/modules/shared/components/GlobalSessionSync";
 import { GlobalSpotlightPortal } from "@src/modules/shared/components/GlobalSpotlightPortal";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/GeneralLayoutTour";
-import { currentRepoAtom } from "@src/store/repo";
 import {
   type ChatPanelMode,
   DEFAULT_CHAT_WIDTH,
@@ -44,6 +43,7 @@ import {
 } from "@src/store/ui/chatPanelAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import { GlobalModals } from "./GlobalModals";
 import { MainContentArea } from "./MainContentArea";
@@ -88,6 +88,21 @@ const AdeAwareSessionCreatorSlot: React.FC<SessionCreatorChatPanelProps> = (
     <SessionCreatorChatPanel {...props} onSessionStart={handleSessionStart} />
   );
 };
+
+function WorkbenchActionSystemScope({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactNode {
+  const repoPath = useAtomValue(activeWorkspaceRootPathAtom);
+
+  return (
+    <ActionSystemProvider repoPath={repoPath}>
+      {children}
+      <GlobalSpotlightPortal />
+    </ActionSystemProvider>
+  );
+}
 
 // ============================================
 // Types
@@ -156,9 +171,6 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
   sessionSidebarWidth: _sessionSidebarWidth = 0,
   children,
 }) => {
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const repoPath = currentRepo?.path ?? currentRepo?.fs_uri ?? "";
-
   const rawChatWidth = useAtomValue(chatWidthAtom);
   // Settings-in-slot must always have a usable width even if the user
   // previously dragged the chat to zero. Fall back to the configured
@@ -335,7 +347,9 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
                   className={`relative z-0 h-full min-h-0 min-w-0 overflow-hidden ${chatPanelMaximized ? "w-0 flex-none" : "flex-1"}`}
                   data-workbench-surface
                 >
-                  {children}
+                  <WorkbenchActionSystemScope>
+                    {children}
+                  </WorkbenchActionSystemScope>
                 </div>
                 {!isChatOnLeft && isSlotVisible && (
                   <div
@@ -380,7 +394,9 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
                 className={`relative h-full min-h-0 min-w-0 ${chatPanelMaximized ? "w-0" : "w-full"}`}
                 data-workbench-surface
               >
-                {children}
+                <WorkbenchActionSystemScope>
+                  {children}
+                </WorkbenchActionSystemScope>
               </div>
               <div
                 style={insetChatStyle}
@@ -411,19 +427,11 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
       )}
 
       <div className="flex h-full min-w-0 flex-1 flex-col">
-        <ActionSystemProvider repoPath={repoPath}>
-          <MainContentArea className="relative min-h-0 flex-1">
-            {contentArea}
-          </MainContentArea>
+        <MainContentArea className="relative min-h-0 flex-1">
+          {contentArea}
+        </MainContentArea>
 
-          <GlobalModals />
-
-          {/* GlobalSpotlight lives inside the ActionSystemProvider so that
-              palettes which dispatch editor/file actions (e.g. EditorPalette's
-              go-to-line / file.openAtLine) can resolve the provider context.
-              Portal rendering means it still escapes this DOM subtree. */}
-          <GlobalSpotlightPortal />
-        </ActionSystemProvider>
+        <GlobalModals />
       </div>
     </div>
   );

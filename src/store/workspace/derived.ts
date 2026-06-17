@@ -16,6 +16,8 @@
 import { atom } from "jotai";
 
 import { reposAtom } from "@src/store/repo/atoms";
+import { matchRepoByPath } from "@src/store/repo/matchRepoByPath";
+import type { Repo } from "@src/store/repo/types";
 import { fileSelectedPathAtom } from "@src/store/workstation/codeEditor/file";
 import type { WorkspaceFolder } from "@src/types/workspace";
 
@@ -86,6 +88,83 @@ export const activeFolderAtom = atom<WorkspaceFolder | null>((get) => {
   return get(primaryFolderAtom);
 });
 activeFolderAtom.debugLabel = "activeFolderAtom";
+
+export interface WorkspaceRootContext {
+  id: string;
+  name: string;
+  path: string;
+  uri?: string;
+  kind?: WorkspaceFolder["kind"];
+  repoId?: string;
+  repo?: Repo;
+}
+
+function resolveFolderRepo(
+  folder: WorkspaceFolder | null,
+  repos: readonly Repo[]
+): Repo | undefined {
+  if (!folder) return undefined;
+  if (folder.repoId) {
+    const linked = repos.find((repo) => repo.id === folder.repoId);
+    if (linked) return linked;
+  }
+  return matchRepoByPath(repos, folder.path);
+}
+
+function rootContextFromFolder(
+  folder: WorkspaceFolder | null,
+  repos: readonly Repo[]
+): WorkspaceRootContext | null {
+  if (!folder) return null;
+  const repo = resolveFolderRepo(folder, repos);
+  return {
+    id: folder.id,
+    name: repo?.name ?? folder.name,
+    path: folder.path,
+    uri: folder.uri,
+    kind: folder.kind,
+    repoId: folder.repoId,
+    repo,
+  };
+}
+
+export const activeWorkspaceFolderRepoAtom = atom<Repo | undefined>((get) => {
+  return resolveFolderRepo(get(activeFolderAtom), get(reposAtom));
+});
+activeWorkspaceFolderRepoAtom.debugLabel = "activeWorkspaceFolderRepoAtom";
+
+export const activeWorkspaceRootAtom = atom<WorkspaceRootContext | null>(
+  (get) => rootContextFromFolder(get(activeFolderAtom), get(reposAtom))
+);
+activeWorkspaceRootAtom.debugLabel = "activeWorkspaceRootAtom";
+
+export const activeWorkspaceRootPathAtom = atom<string>((get) => {
+  return get(activeWorkspaceRootAtom)?.path ?? "";
+});
+activeWorkspaceRootPathAtom.debugLabel = "activeWorkspaceRootPathAtom";
+
+export const primaryWorkspaceRootAtom = atom<WorkspaceRootContext | null>(
+  (get) => rootContextFromFolder(get(primaryFolderAtom), get(reposAtom))
+);
+primaryWorkspaceRootAtom.debugLabel = "primaryWorkspaceRootAtom";
+
+export const primaryWorkspaceRootPathAtom = atom<string>((get) => {
+  return get(primaryWorkspaceRootAtom)?.path ?? "";
+});
+primaryWorkspaceRootPathAtom.debugLabel = "primaryWorkspaceRootPathAtom";
+
+export const workspaceFolderRepoMapAtom = atom<Map<string, Repo | undefined>>(
+  (get) => {
+    const repos = get(reposAtom);
+    return new Map(
+      get(workspaceFoldersAtom).map((folder) => [
+        folder.id,
+        resolveFolderRepo(folder, repos),
+      ])
+    );
+  }
+);
+workspaceFolderRepoMapAtom.debugLabel = "workspaceFolderRepoMapAtom";
 
 /**
  * Display name for the current workspace.

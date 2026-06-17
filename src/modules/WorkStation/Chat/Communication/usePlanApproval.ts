@@ -11,7 +11,6 @@ import {
   isPlanDisplayEvent,
   planAliasesContain,
 } from "@src/engines/SessionCore/derived/planDisplayEvents";
-import { currentRepoAtom } from "@src/store/repo";
 import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefaultModelAtom";
 import {
@@ -21,6 +20,7 @@ import {
 } from "@src/store/session/planApprovalAtom";
 import { sessionMapAtom } from "@src/store/session/sessionAtom";
 import { activeSessionIdAtom } from "@src/store/session/viewAtom";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { resolveModelForMessage } from "@src/util/session/resolveModelForMessage";
 
 import type { MessageEntry } from "./types";
@@ -124,7 +124,7 @@ export function usePlanApproval({
   const creatorDefaultSelection = useAtomValue(
     creatorDefaultModelSelectionAtom
   );
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
 
   const [isPreviewMode, setIsPreviewMode] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -247,11 +247,7 @@ export function usePlanApproval({
           }
         : creatorDefaultSelection;
       const { model, accountId } = resolveModelForMessage(sessionSelection);
-      const workspacePath =
-        planSession?.repoPath ??
-        currentRepo?.path ??
-        currentRepo?.fs_uri ??
-        undefined;
+      const workspacePath = planSession?.repoPath ?? activeWorkspaceRootPath;
       const contentOverride =
         isEditing && editedContent !== planRawContent
           ? editedContent
@@ -290,7 +286,7 @@ export function usePlanApproval({
     planRawContent,
     sessionMap,
     creatorDefaultSelection,
-    currentRepo,
+    activeWorkspaceRootPath,
     setPendingPlanApprovals,
     currentPendingPlan,
     t,

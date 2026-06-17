@@ -4,9 +4,7 @@
     "signedOut": "로그아웃되었습니다",
     "logoutFailed": "로그아웃에 실패했습니다. 다시 시도하세요.",
     "customCommandUpdated": "사용자 지정 명령이 업데이트되었습니다",
-    "shellSettingUpdated": "셸 설정이 업데이트되었습니다",
-    "idesDetected": "{{count}}개의 IDE를 감지했습니다",
-    "ideDetectFailed": "IDE를 감지할 수 없습니다. IDE가 설치되어 있는지 확인한 후 다시 시도하세요."
+    "shellSettingUpdated": "셸 설정이 업데이트되었습니다"
   },
   "noSettingsFound": "\"{{query}}\"에 대한 설정을 찾을 수 없습니다",
   "searchPlaceholder": "설정 검색...",
@@ -715,11 +713,6 @@
     "customShell": "사용자 지정 Shell",
     "customCommand": "사용자 지정 명령",
     "customCommandDesc": "Shell 실행 파일 경로",
-    "externalIde": "외부 IDE",
-    "preferredExternalIde": "선호 외부 IDE",
-    "preferredExternalIdeDesc": "외부 편집기에서 파일을 열 때 사용",
-    "selectIde": "IDE 선택",
-    "runDetect": "감지 실행하여 IDE 가져오기",
     "workspaceDefaults": "Workspace 기본값",
     "defaultRepoFolder": "기본 Repo 폴더",
     "defaultRepoFolderDesc": "Repo clone 및 생성 양식을 미리 채웁니다",

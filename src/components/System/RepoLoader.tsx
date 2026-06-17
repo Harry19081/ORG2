@@ -26,7 +26,6 @@ import {
   recordRecentWorkspace,
   saveWorkspaceAs,
 } from "@src/services/workspace";
-import { currentRepoAtom } from "@src/store/repo";
 import {
   activeWorkspaceIdAtom,
   addWorkspaceFolderAtom,
@@ -44,11 +43,11 @@ function normalizeToFsPath(path: string): string {
 }
 
 export const RepoLoader: FC = () => {
-  const { repos, selectRepo, forceRefreshRepos } = useRepoSelection({
-    autoLoad: true,
-  });
+  const { repos, currentRepo, selectRepo, forceRefreshRepos } =
+    useRepoSelection({
+      autoLoad: true,
+    });
 
-  const currentRepo = useAtomValue(currentRepoAtom);
   const workspaceFolders = useAtomValue(workspaceFoldersAtom);
   const activeWorkspaceId = useAtomValue(activeWorkspaceIdAtom);
   const dispatchAddFolder = useSetAtom(addWorkspaceFolderAtom);

@@ -300,8 +300,8 @@ jumpToSessionAtom.debugLabel = "jumpToSessionAtom";
  * so the file tree / editor / git panels show the session's project.
  *
  * Multi-root: if the path matches a workspace folder, point the
- * active-folder override at it (currentRepoAtom follows activeFolder
- * in multi-root mode). Unknown paths are left alone — the status-bar
+ * active-folder override at it so active workspace-root surfaces follow.
+ * Unknown paths are left alone — the status-bar
  * "Switch to" hint (sessionRepoHintAtom) stays as the degraded path.
  */
 function followSessionRepo(

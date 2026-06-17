@@ -26,7 +26,6 @@ import {
   shouldDefaultCollapsePlanCard,
 } from "@src/engines/SessionCore/derived/planDisplayEvents";
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
-import { currentRepoAtom } from "@src/store/repo";
 import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefaultModelAtom";
 import {
@@ -35,6 +34,7 @@ import {
 } from "@src/store/session/planApprovalAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom";
 import { activeSessionIdAtom } from "@src/store/session/viewAtom";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { resolveModelForMessage } from "@src/util/session/resolveModelForMessage";
 
 import {
@@ -136,7 +136,7 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
     const creatorDefaultSelection = useAtomValue(
       creatorDefaultModelSelectionAtom
     );
-    const currentRepo = useAtomValue(currentRepoAtom);
+    const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
     const isCurrentSurface = surface === "current";
     const ownsActions =
       surfaceState?.ownsActions ?? (isCurrentSurface || ownsPendingPlan);
@@ -225,17 +225,8 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
               }
             : creatorDefaultSelection;
           const { model, accountId } = resolveModelForMessage(sessionSelection);
-          // Plan approval uses the plan's own session row for repo path —
-          // the global repo selection atom is only a fallback for older rows.
-          // The session row's persisted repo is what `workspace_root` was set
-          // to at create time; reading global selection would let two open
-          // sessions on different repos collide whenever the user approves
-          // a plan from the older one.
           const workspacePath =
-            planSession?.repoPath ??
-            currentRepo?.path ??
-            currentRepo?.fs_uri ??
-            undefined;
+            planSession?.repoPath ?? activeWorkspaceRootPath;
           // Build kicks off a synthetic turn on the backend without going
           // through useMessageDispatch — optimistically flip to running
           // BEFORE the RPC await so the planning indicator appears
@@ -284,7 +275,7 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
         interactive,
         planSession,
         creatorDefaultSelection,
-        currentRepo,
+        activeWorkspaceRootPath,
         setPendingPlanApprovals,
         cardRevisionId,
         t,

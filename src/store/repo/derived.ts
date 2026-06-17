@@ -7,8 +7,6 @@ import { atom } from "jotai";
 
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
-import { activeFolderAtom } from "@src/store/workspace/derived";
 
 import {
   branchesAtom,
@@ -22,6 +20,10 @@ import {
 import { matchRepoByPath } from "./matchRepoByPath";
 import { REPO_KIND, type Repo } from "./types";
 
+function repoPath(repo: Repo | undefined): string {
+  return repo?.path ?? repo?.fs_uri ?? "";
+}
+
 // ============================================
 // Repo Lookups
 // ============================================
@@ -33,70 +35,33 @@ export const repoMapAtom = atom<Map<string, Repo>>((get) => {
 });
 repoMapAtom.debugLabel = "repoMapAtom";
 
-/**
- * Get current repo by selected ID (now O(1) instead of O(n))
- * Falls back to cached repo data if main repos haven't loaded yet.
- *
- * Multi-root behavior: when the workspace has 2+ folders, the active folder
- * (derived from the focused editor, explicit user override, or the primary)
- * is projected onto its corresponding repo. This keeps status bar / toolbar
- * pill / git panels following the user's focus instead of the static
- * selectedRepoIdAtom.
- */
-export const currentRepoAtom = atom<Repo | undefined>((get) => {
-  const repoMap = get(repoMapAtom);
-  const folders = get(workspaceFoldersAtom);
-
-  if (folders.length > 1) {
-    const active = get(activeFolderAtom);
-    if (active) {
-      // Prefer the explicit Repo link stored on the folder
-      if (active.repoId) {
-        const linked = repoMap.get(active.repoId);
-        if (linked) return linked;
-      }
-      // Fall back to matching by path (handles folders that haven't been
-      // imported yet or whose repoId is stale)
-      const normalized = active.path.replace(/\/+$/, "");
-      for (const repo of repoMap.values()) {
-        const repoPath = (repo.path ?? repo.fs_uri ?? "").replace(/\/+$/, "");
-        if (repoPath === normalized) return repo;
-      }
-      // Synthesize a minimal Repo so downstream consumers still get a path
-      // (e.g. non-git workspace folder added via "Add Folder to Workspace").
-      return {
-        id: active.repoId ?? active.id,
-        name: active.name,
-        path: active.path,
-        fs_uri: active.path,
-        kind: active.kind === "folder" ? REPO_KIND.FOLDER : REPO_KIND.GIT,
-      } as Repo;
-    }
-  }
-
+export const selectedRepoAtom = atom<Repo | undefined>((get) => {
   const selectedId = get(selectedRepoIdAtom);
+  if (!selectedId) return undefined;
 
-  // First try the main repo map
-  const mainRepo = repoMap.get(selectedId);
+  const mainRepo = get(repoMapAtom).get(selectedId);
   if (mainRepo) return mainRepo;
 
-  // Fall back to cached repos (for hot reload / quick restore)
-  const cachedRepos = get(cachedReposAtom);
-  const cachedRepo = cachedRepos.find((repo) => repo.id === selectedId);
-  if (cachedRepo) {
-    // Convert CachedRepo to Repo format
-    return {
-      id: cachedRepo.id,
-      name: cachedRepo.name,
-      path: cachedRepo.path,
-      fs_uri: cachedRepo.path,
-      repo_url: cachedRepo.repo_url,
-    } as Repo;
-  }
+  const cachedRepo = get(cachedReposAtom).find(
+    (repo) => repo.id === selectedId
+  );
+  if (!cachedRepo) return undefined;
 
-  return undefined;
+  return {
+    id: cachedRepo.id,
+    name: cachedRepo.name,
+    path: cachedRepo.path,
+    fs_uri: cachedRepo.path,
+    repo_url: cachedRepo.repo_url,
+    kind: REPO_KIND.GIT,
+  } as Repo;
 });
-currentRepoAtom.debugLabel = "currentRepoAtom";
+selectedRepoAtom.debugLabel = "selectedRepoAtom";
+
+export const selectedRepoPathAtom = atom<string>((get) => {
+  return repoPath(get(selectedRepoAtom));
+});
+selectedRepoPathAtom.debugLabel = "selectedRepoPathAtom";
 
 /** Check if a repo ID is valid */
 export const isValidRepoIdAtom = atom((get) => {
@@ -183,7 +148,7 @@ workFoldersAtom.debugLabel = "workFoldersAtom";
 
 /** Whether the currently selected repo is a git repository (not a work folder) */
 export const currentRepoIsGitAtom = atom((get) => {
-  const repo = get(currentRepoAtom);
+  const repo = get(selectedRepoAtom);
   return repo?.kind !== REPO_KIND.FOLDER;
 });
 currentRepoIsGitAtom.debugLabel = "currentRepoIsGitAtom";

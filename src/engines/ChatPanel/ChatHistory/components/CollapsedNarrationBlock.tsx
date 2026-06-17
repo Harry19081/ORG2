@@ -12,13 +12,13 @@
  * as the same class of "reasoning trace" content.
  */
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Markdown from "@src/components/MarkDown";
 import { getEventIcon } from "@src/config/toolIcons";
 import {
   EventBlockHeader,
   EventBlockHeaderIcon,
-  EventBlockHeaderTitle,
   getEventBlockContainerClasses,
   getEventBlockContentClasses,
   useEventBlockHeader,
@@ -41,6 +41,7 @@ function buildPreview(content: string): string {
 const CollapsedNarrationBlock: React.FC<CollapsedNarrationBlockProps> = ({
   content,
 }) => {
+  const { t } = useTranslation("sessions");
   const {
     isCollapsed,
     isHeaderHovered,
@@ -53,6 +54,7 @@ const CollapsedNarrationBlock: React.FC<CollapsedNarrationBlockProps> = ({
   });
 
   const preview = buildPreview(content);
+  const headerText = isCollapsed ? preview : t("tools.thought");
 
   return (
     <div className={getEventBlockContainerClasses(false)}>
@@ -70,9 +72,12 @@ const CollapsedNarrationBlock: React.FC<CollapsedNarrationBlockProps> = ({
           onToggle={handleHeaderClick}
           hasContent={true}
         />
-        <EventBlockHeaderTitle>
-          <span className="text-text-3">{preview}</span>
-        </EventBlockHeaderTitle>
+        <span
+          className={`thinking-header-preview ${isCollapsed ? "" : "thinking-header-preview--expanded"}`.trim()}
+          title={isCollapsed ? preview : undefined}
+        >
+          {headerText}
+        </span>
       </EventBlockHeader>
 
       {!isCollapsed && (

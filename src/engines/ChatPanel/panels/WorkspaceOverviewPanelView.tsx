@@ -1,10 +1,9 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
-import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import WorkItemContentStack from "@src/modules/ProjectManager/WorkItems/components/WorkItemContentStack";
 import { RepoDetailPage } from "@src/modules/shared/launchpad/components";
 import { CodeMapWorkspaceStatusPanel } from "@src/modules/shared/launchpad/components/CodeMapWorkspaceStatus";
@@ -16,6 +15,8 @@ import {
   DetailPanelContainer,
   PanelFooter,
 } from "@src/modules/shared/layouts/blocks";
+import { reposAtom } from "@src/store/repo";
+import type { Repo } from "@src/store/repo/types";
 import {
   type ChatPanelSelectedWorkspace,
   WORKSPACE_OVERVIEW_TAB,
@@ -30,13 +31,61 @@ interface WorkspaceOverviewPanelViewProps {
   selectedWorkspace: ChatPanelSelectedWorkspace;
 }
 
+interface WorkspaceOverviewBodyProps {
+  repoPath: string;
+}
+
+const WorkspaceOverviewBody = memo(
+  ({ repoPath }: WorkspaceOverviewBodyProps) => {
+    const { repoType, configFiles, hasDocker, hasMakefile } =
+      useRepoDetection(repoPath);
+
+    return (
+      <>
+        <CodeMapWorkspaceStatusPanel workspacePath={repoPath} />
+        <WorkspaceToolsReadiness
+          workspacePath={repoPath}
+          repoType={repoType}
+          configFiles={configFiles}
+          hasDocker={hasDocker}
+          hasMakefile={hasMakefile}
+        />
+      </>
+    );
+  }
+);
+WorkspaceOverviewBody.displayName = "WorkspaceOverviewBody";
+
+interface WorkspaceOverviewFooterProps {
+  repo: Repo;
+  onOpenDetails: () => void;
+}
+
+const WorkspaceOverviewFooter = memo(
+  ({ repo, onOpenDetails }: WorkspaceOverviewFooterProps) => (
+    <PanelFooter
+      left={
+        <RepoActionButtons
+          repo={repo}
+          onOpenDetails={onOpenDetails}
+          shape="square"
+          showDetails={false}
+          showClose={false}
+          className="overflow-x-auto scrollbar-hide"
+        />
+      }
+    />
+  )
+);
+WorkspaceOverviewFooter.displayName = "WorkspaceOverviewFooter";
+
 const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
   memo(({ selectedWorkspace }) => {
     const { t } = useTranslation(["navigation", "common"]);
     const [activeTab, setActiveTab] = useAtom(
       chatPanelWorkspaceOverviewTabAtom
     );
-    const { repos } = useRepoSelection({ autoLoad: true });
+    const repos = useAtomValue(reposAtom);
 
     const selectedRepo = useMemo(
       () =>
@@ -48,9 +97,6 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
 
     const isRepo = selectedWorkspace.kind === "repo";
     const detailsTabAvailable = isRepo && Boolean(selectedRepo);
-    const { repoType, configFiles, hasDocker, hasMakefile } = useRepoDetection(
-      selectedRepo?.path
-    );
 
     // Force back to Overview when the selected workspace cannot show details
     // (workspace-kind, or repo not yet hydrated). Prevents a stale "details"
@@ -129,31 +175,14 @@ const WorkspaceOverviewPanelView: React.FC<WorkspaceOverviewPanelViewProps> =
 
     const overviewBody =
       resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.OVERVIEW && selectedRepo ? (
-        <>
-          <CodeMapWorkspaceStatusPanel workspacePath={selectedRepo.path} />
-          <WorkspaceToolsReadiness
-            workspacePath={selectedRepo.path}
-            repoType={repoType}
-            configFiles={configFiles}
-            hasDocker={hasDocker}
-            hasMakefile={hasMakefile}
-          />
-        </>
+        <WorkspaceOverviewBody repoPath={selectedRepo.path} />
       ) : null;
 
     const actionFooter =
       selectedRepo && resolvedActiveTab === WORKSPACE_OVERVIEW_TAB.OVERVIEW ? (
-        <PanelFooter
-          left={
-            <RepoActionButtons
-              repo={selectedRepo}
-              onOpenDetails={handleOpenDetails}
-              shape="square"
-              showDetails={false}
-              showClose={false}
-              className="overflow-x-auto scrollbar-hide"
-            />
-          }
+        <WorkspaceOverviewFooter
+          repo={selectedRepo}
+          onOpenDetails={handleOpenDetails}
         />
       ) : null;
 

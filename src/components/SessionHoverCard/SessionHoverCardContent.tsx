@@ -17,11 +17,7 @@ import ModelIcon from "@src/components/ModelIcon";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { useResolvedModelLabel } from "@src/hooks/models";
 import { useValidatedLastPair } from "@src/hooks/models/useValidatedLastPair";
-import {
-  currentGitStatusAtom,
-  workspaceGitStatusMapAtom,
-} from "@src/store/git/gitStatusAtom";
-import { currentRepoAtom } from "@src/store/repo";
+import { workspaceGitStatusMapAtom } from "@src/store/git/gitStatusAtom";
 import type { LastModelSelection } from "@src/store/session/creatorDefaultModelAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom/atoms";
 import {
@@ -97,8 +93,6 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
   memo(({ sessionId }) => {
     const { t, i18n } = useTranslation(["sessions", "common"]);
     const session = useAtomValue(sessionByIdAtom(sessionId));
-    const currentRepo = useAtomValue(currentRepoAtom);
-    const gitStatus = useAtomValue(currentGitStatusAtom);
     const workspaceGitStatusMap = useAtomValue(workspaceGitStatusMapAtom);
     const creatorDefaultLastModel = useValidatedLastPair();
     const turnOverview: SessionTurnOverview | null =
@@ -138,19 +132,11 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
     const workspaceGitStatus = normalizedRepoPath
       ? workspaceGitStatusMap.get(normalizedRepoPath)
       : undefined;
-    const currentRepoPath = currentRepo?.path ?? currentRepo?.fs_uri;
-    const currentRepoMatchesSession =
-      normalizedRepoPath &&
-      currentRepoPath &&
-      normalizedRepoPath === normalizePath(currentRepoPath);
     const branchLabel =
       formatBranchLabel(session.worktreeBranch) ||
       formatBranchLabel(session.branch) ||
       formatBranchLabel(session.baseBranch) ||
-      formatBranchLabel(workspaceGitStatus?.current_branch) ||
-      formatBranchLabel(
-        currentRepoMatchesSession ? gitStatus?.current_branch : undefined
-      );
+      formatBranchLabel(workspaceGitStatus?.current_branch);
     const modelIconName =
       lastModel?.listingModel || lastModel?.model || undefined;
     const modelIconAgent = lastModel?.listingModelType || undefined;

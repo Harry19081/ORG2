@@ -19,7 +19,6 @@ export type SettingsCategory =
   | "terminal"
   | "notifications"
   | "chat"
-  | "externalIde"
   | "workspace"
   | "git"
   | "agent"

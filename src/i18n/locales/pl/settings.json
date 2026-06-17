@@ -4,9 +4,7 @@
     "signedOut": "Wylogowano pomyślnie",
     "logoutFailed": "Wylogowanie nie powiodło się. Spróbuj ponownie.",
     "customCommandUpdated": "Zaktualizowano polecenie niestandardowe",
-    "shellSettingUpdated": "Zaktualizowano ustawienie powłoki",
-    "idesDetected": "Wykryto {{count}} IDE",
-    "ideDetectFailed": "Nie można wykryć IDE. Upewnij się, że IDE jest zainstalowane, i spróbuj ponownie."
+    "shellSettingUpdated": "Zaktualizowano ustawienie powłoki"
   },
   "noSettingsFound": "Nie znaleziono ustawień dla \"{{query}}\"",
   "searchPlaceholder": "Szukaj w ustawieniach...",
@@ -715,11 +713,6 @@
     "customShell": "Własny Shell",
     "customCommand": "Własne polecenie",
     "customCommandDesc": "Ścieżka do wykonywalnego pliku Shell",
-    "externalIde": "Zewnętrzne IDE",
-    "preferredExternalIde": "Preferowane zewnętrzne IDE",
-    "preferredExternalIdeDesc": "Używane podczas otwierania plików w zewnętrznym edytorze",
-    "selectIde": "Wybierz IDE",
-    "runDetect": "Uruchom wykrywanie, aby wypełnić listę IDE",
     "workspaceDefaults": "Domyślne ustawienia Workspace",
     "defaultRepoFolder": "Domyślny folder Repo",
     "defaultRepoFolderDesc": "Wstępnie wypełnia formularze klonowania i tworzenia Repo",

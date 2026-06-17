@@ -10,14 +10,13 @@ import React, { useMemo } from "react";
 
 import { useLintTools } from "@src/modules/MainApp/Integrations/hooks/lsp";
 import { TerminalService } from "@src/services/terminal/TerminalService";
-import { currentRepoAtom } from "@src/store";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import type { LintHandlers } from "./Table/LintToolInlineExpandedCard";
 import LintToolsTable from "./Table/LintToolsTable";
 
 const LintToolsPage: React.FC = () => {
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const workspacePath = currentRepo?.path ?? null;
+  const workspacePath = useAtomValue(activeWorkspaceRootPathAtom) || null;
   const executeInTerminal = TerminalService.execute;
 
   const {

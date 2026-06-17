@@ -10,6 +10,7 @@ export interface UseSessionMenuItemsParams {
   groupByMode: GroupByMode;
   untitledSession: string;
   searchQuery?: string;
+  selectedOrgId?: string;
   groupVisibleCounts: ReadonlyMap<string, number>;
 }
 
