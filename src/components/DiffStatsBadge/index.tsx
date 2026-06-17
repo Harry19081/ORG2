@@ -2,12 +2,24 @@ import { type ReactNode, memo } from "react";
 
 import { DIFF_STATS } from "@src/config/workstation/tokens";
 
+import {
+  type DiffStatsBadgeSize,
+  getDiffStatsSizeClass,
+} from "./diffStatsBadgeHelpers";
+
 type DiffStatsBadgeVariant = "default" | "compact" | "chat" | "plain";
 
 export interface DiffStatsBadgeProps {
   additions?: number;
   deletions?: number;
   variant?: DiffStatsBadgeVariant;
+  /**
+   * Intrinsic font-size for the badge. Defaults to `"inherit"` (no font-size
+   * class), preserving each variant's baked-in size and any inherited sizing.
+   * Use `"xs"` (11px) / `"sm"` (12px) / `"md"` (13px) on `plain` badges instead
+   * of re-specifying `text-[Npx]` externally.
+   */
+  size?: DiffStatsBadgeSize;
   className?: string;
   valueClassName?: string;
   formatValue?: (value: number) => ReactNode;
@@ -33,6 +45,7 @@ const DiffStatsBadge = memo(function DiffStatsBadge({
   additions = 0,
   deletions = 0,
   variant = "default",
+  size = "inherit",
   className,
   valueClassName,
   formatValue = String,
@@ -47,7 +60,13 @@ const DiffStatsBadge = memo(function DiffStatsBadge({
   }
 
   return (
-    <span className={joinClasses(CONTAINER_CLASSES[variant], className)}>
+    <span
+      className={joinClasses(
+        CONTAINER_CLASSES[variant],
+        getDiffStatsSizeClass(size),
+        className
+      )}
+    >
       {hasAdditions && (
         <span
           className={joinClasses(

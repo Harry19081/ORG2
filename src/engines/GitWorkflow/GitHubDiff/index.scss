@@ -77,11 +77,13 @@
 }
 
 .github-diff-stat {
-  font-size: 12px;
+  // Badge font-size now supplied by DiffStatsBadge `size="sm"` (12px); the
+  // empty-state span below keeps an explicit size since it is plain text.
   font-weight: 600;
 
   &.github-diff-stat-empty {
     color: var(--color-text-3);
+    font-size: 12px;
     font-weight: 400;
   }
 }

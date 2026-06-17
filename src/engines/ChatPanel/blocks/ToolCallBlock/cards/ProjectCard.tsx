@@ -10,6 +10,7 @@ import {
 import React from "react";
 
 import type { ProjectCardData, WorkItemStatus } from "../types";
+import { ToolResultCardFrame } from "./ToolResultCardFrame";
 
 function getStatusIcon(status: WorkItemStatus | string): React.ReactNode {
   switch (status) {
@@ -58,7 +59,7 @@ interface ProjectCardProps {
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ card }) => {
   return (
-    <div className="mx-3 my-2 rounded-lg border border-fill-4 bg-fill-2 px-3 py-2.5 transition-colors hover:bg-fill-3">
+    <ToolResultCardFrame>
       <div className="flex items-start gap-2">
         <span className="mt-0.5 shrink-0 text-primary-6">
           <BookOpen size={13} />
@@ -118,7 +119,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ card }) => {
           </div>
         </div>
       </div>
-    </div>
+    </ToolResultCardFrame>
   );
 };
 

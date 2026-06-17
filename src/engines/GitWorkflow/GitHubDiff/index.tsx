@@ -205,6 +205,7 @@ const GitHubDiffComponent: React.FC<GitHubDiffProps> = ({
             additions={stats.additions}
             deletions={stats.deletions}
             variant="plain"
+            size="sm"
             className="github-diff-stat"
           />
           {stats.totalChanges === 0 && (

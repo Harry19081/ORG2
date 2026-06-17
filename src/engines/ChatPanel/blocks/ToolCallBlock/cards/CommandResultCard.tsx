@@ -2,6 +2,7 @@ import { CheckCircle2, Terminal, XCircle } from "lucide-react";
 import React from "react";
 
 import type { CommandResultData } from "../types";
+import { ToolResultCardFrame } from "./ToolResultCardFrame";
 
 interface CommandResultCardProps {
   card: CommandResultData;
@@ -11,7 +12,11 @@ const CommandResultCard: React.FC<CommandResultCardProps> = ({ card }) => {
   const isSuccess = card.exitCode === 0;
 
   return (
-    <div className="mx-3 my-2 overflow-hidden rounded-lg border border-fill-4 bg-fill-2">
+    <ToolResultCardFrame
+      padded={false}
+      hoverable={false}
+      className="overflow-hidden"
+    >
       {/* Header row: command + exit status */}
       <div className="flex items-center gap-2 border-b border-fill-4 px-3 py-2">
         <Terminal size={12} className="shrink-0 text-text-4" />
@@ -49,7 +54,7 @@ const CommandResultCard: React.FC<CommandResultCardProps> = ({ card }) => {
           ))}
         </div>
       )}
-    </div>
+    </ToolResultCardFrame>
   );
 };
 

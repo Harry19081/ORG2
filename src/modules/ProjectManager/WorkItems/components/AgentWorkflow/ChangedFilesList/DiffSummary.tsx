@@ -13,7 +13,7 @@ const DiffSummary: React.FC<DiffSummaryProps> = ({ added, removed }) => (
     additions={added}
     deletions={removed}
     variant="plain"
-    className="text-[11px]"
+    size="xs"
     formatValue={formatStatNumber}
   />
 );

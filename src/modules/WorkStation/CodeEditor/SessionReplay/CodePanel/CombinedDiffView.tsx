@@ -31,7 +31,8 @@ const ChangeStats: React.FC<{
       additions={linesAdded}
       deletions={linesRemoved}
       variant="plain"
-      className="ml-auto text-[11px]"
+      size="xs"
+      className="ml-auto"
     />
   );
 });
