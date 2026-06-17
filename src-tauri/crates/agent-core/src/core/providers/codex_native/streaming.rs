@@ -63,14 +63,15 @@ impl LLMProvider for CodexNativeClient {
         use futures_util::StreamExt;
 
         let (instructions, input) = Self::convert_messages(messages);
-        let converted_tools = Self::convert_tools(tools);
+        let (converted_tools, tool_choice) =
+            crate::providers::responses_common::convert_tools_with_choice(tools);
 
         let request_body = ResponsesRequest {
             model: model.to_string(),
             input,
             instructions: Self::required_instructions(instructions),
             tools: converted_tools,
-            tool_choice: tools.map(|_| JsonValue::String("auto".to_string())),
+            tool_choice,
             store: false,
             stream: true,
         };

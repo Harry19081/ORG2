@@ -231,6 +231,45 @@ pub fn convert_tools(tools: Option<&[Value]>) -> Option<Vec<Value>> {
     })
 }
 
+/// Convert Chat Completions tools to Responses API tool definitions and the
+/// matching `tool_choice` value, honoring any `side_query` structured-output
+/// override sentinel.
+///
+/// `side_query` appends a `{ "_orgii_tool_choice_override": {...} }` element
+/// to the tools array to force a specific tool call. That sentinel has no
+/// `"function"` key, so passing it through `convert_tools` verbatim leaks a
+/// `type`-less object into the request and the Responses backend rejects it
+/// with `Unsupported tool type: None`. This helper strips the sentinel before
+/// conversion and maps it to the Responses `tool_choice` shape
+/// (`{"type":"function","name":"x"}`), mirroring how `openai_compat` and
+/// `anthropic_native` handle the same sentinel. With no override present,
+/// `tool_choice` defaults to `"auto"`.
+pub fn convert_tools_with_choice(tools: Option<&[Value]>) -> (Option<Vec<Value>>, Option<Value>) {
+    let Some(tool_list) = tools else {
+        return (None, None);
+    };
+
+    let (override_val, cleaned) =
+        crate::core::side_query::extract_tool_choice_override(tool_list);
+    let converted = convert_tools(Some(&cleaned));
+    let tool_choice = match override_val {
+        Some(ovr) => Some(translate_tool_choice_for_responses(&ovr)),
+        None => Some(Value::String("auto".to_string())),
+    };
+    (converted, tool_choice)
+}
+
+/// Map an Anthropic-style forced-tool override `{"type":"tool","name":"x"}`
+/// (as minted by `side_query`) to the Responses API `tool_choice` shape
+/// `{"type":"function","name":"x"}`. Anything that isn't a recognizable
+/// forced-tool override falls back to `"auto"`.
+fn translate_tool_choice_for_responses(override_val: &Value) -> Value {
+    if let Some(name) = override_val.get("name").and_then(Value::as_str) {
+        return serde_json::json!({ "type": "function", "name": name });
+    }
+    Value::String("auto".to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -415,5 +454,62 @@ mod tests {
             converted[0]["parameters"]["additionalProperties"],
             Value::Bool(false)
         );
+    }
+
+    #[test]
+    fn convert_tools_with_choice_strips_sidequery_override_sentinel() {
+        // side_query appends a sentinel that is NOT a function definition.
+        // It must never reach the wire as a tool, or the Responses backend
+        // rejects the request with "Unsupported tool type: None".
+        use crate::core::side_query::TOOL_CHOICE_OVERRIDE_KEY;
+        let tools = vec![
+            serde_json::json!({
+                "type": "function",
+                "function": {
+                    "name": "emit_session_title",
+                    "description": "Emit structured output",
+                    "parameters": { "type": "object", "properties": {} }
+                }
+            }),
+            serde_json::json!({
+                TOOL_CHOICE_OVERRIDE_KEY: { "type": "tool", "name": "emit_session_title" }
+            }),
+        ];
+
+        let (converted, tool_choice) = convert_tools_with_choice(Some(&tools));
+        let converted = converted.unwrap();
+
+        assert_eq!(converted.len(), 1, "sentinel must be stripped from tools");
+        assert_eq!(converted[0]["type"], "function");
+        assert_eq!(converted[0]["name"], "emit_session_title");
+        assert!(
+            converted
+                .iter()
+                .all(|t| t.get(TOOL_CHOICE_OVERRIDE_KEY).is_none()),
+            "no tool may carry the override sentinel"
+        );
+        assert_eq!(
+            tool_choice,
+            Some(serde_json::json!({ "type": "function", "name": "emit_session_title" })),
+            "override must map to Responses tool_choice shape"
+        );
+    }
+
+    #[test]
+    fn convert_tools_with_choice_defaults_to_auto_without_override() {
+        let tools = vec![serde_json::json!({
+            "type": "function",
+            "function": { "name": "get_weather", "parameters": {} }
+        })];
+        let (converted, tool_choice) = convert_tools_with_choice(Some(&tools));
+        assert_eq!(converted.unwrap().len(), 1);
+        assert_eq!(tool_choice, Some(Value::String("auto".to_string())));
+    }
+
+    #[test]
+    fn convert_tools_with_choice_none_tools_yields_none() {
+        let (converted, tool_choice) = convert_tools_with_choice(None);
+        assert!(converted.is_none());
+        assert!(tool_choice.is_none());
     }
 }

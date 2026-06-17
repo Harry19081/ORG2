@@ -326,6 +326,7 @@ export function useChatHistoryOptimization(
   const basePipelineItems = useMemo(() => {
     const optimized = processChatItems(optimizationEvents, {
       consolidatePartialObservations: true,
+      collapseInterToolNarration: true,
       shouldSkipEvent: skipDiffEvents ? isDiffEventForFilter : undefined,
     });
     return optimized.items;
