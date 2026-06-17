@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import React, { type ReactNode, memo } from "react";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 
 export interface StatCardDelta {
@@ -82,9 +83,13 @@ export function DiffValue({
   loading?: boolean;
 }) {
   return (
-    <span className="inline-flex flex-wrap items-center gap-x-1 gap-y-0 tabular-nums">
-      <span className="text-green-500">+{added.toLocaleString()}</span>
-      <span className="text-red-400">-{removed.toLocaleString()}</span>
+    <span className="inline-flex flex-wrap items-center gap-x-1 gap-y-0">
+      <DiffStatsBadge
+        additions={added}
+        deletions={removed}
+        variant="plain"
+        formatValue={(value) => value.toLocaleString()}
+      />
       {loading && (
         <Loader2
           size={SPINNER_TOKENS.small}

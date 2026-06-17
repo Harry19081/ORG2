@@ -2,6 +2,7 @@ import { ExternalLink, GitMerge, GitPullRequest, XCircle } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { formatStatNumber } from "@src/shared/pr/formatStatNumber";
 import {
   type PrStatusIconName,
@@ -99,20 +100,19 @@ const SessionLinkCard: React.FC<SessionLinkCardProps> = ({ card }) => {
                   </span>
                 </>
               )}
-              {card.additions !== undefined && (
+              {(card.additions !== undefined ||
+                card.deletions !== undefined) && (
                 <>
                   {(card.sourceBranch || card.filesChanged !== undefined) && (
                     <span>·</span>
                   )}
-                  <span className="shrink-0 text-success-6">
-                    +{formatStatNumber(card.additions)}
-                  </span>
+                  <DiffStatsBadge
+                    additions={card.additions}
+                    deletions={card.deletions}
+                    variant="plain"
+                    formatValue={formatStatNumber}
+                  />
                 </>
-              )}
-              {card.deletions !== undefined && (
-                <span className="shrink-0 text-danger-6">
-                  -{formatStatNumber(card.deletions)}
-                </span>
               )}
             </div>
           )}

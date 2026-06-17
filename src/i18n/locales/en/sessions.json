@@ -704,6 +704,32 @@
     "multipleChoice": "Multiple Choice",
     "typeYourAnswer": "Type your answer…",
     "newSession": "New Session",
+    "startPage": {
+      "title": "What would you like to do?",
+      "back": "Back to start page",
+      "newSession": {
+        "title": "New session"
+      },
+      "newWorkItem": {
+        "title": "New work item"
+      },
+      "setupRepo": {
+        "title": "Set up repo"
+      },
+      "addApiKey": {
+        "title": "Add API key"
+      },
+      "agents": {
+        "title": "Agents"
+      },
+      "tabs": {
+        "work": "Work",
+        "explore": "Explore"
+      },
+      "exploreRepos": {
+        "title": "Explore repos"
+      }
+    },
     "defaultTitle": "Chat",
     "hideChatPanel": "Hide chat panel",
     "compactDisplayMode": "Compact mode",

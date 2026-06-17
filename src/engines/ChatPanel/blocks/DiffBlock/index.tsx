@@ -13,6 +13,7 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
@@ -307,12 +308,11 @@ const CompactSegmentView: React.FC<CompactSegmentViewProps> = ({
             isLoading={isLoading}
             className="inline-flex items-center gap-1 whitespace-nowrap"
           >
-            {linesAdded > 0 && (
-              <span className="text-success-6">+{linesAdded}</span>
-            )}
-            {linesRemoved > 0 && (
-              <span className="text-danger-6">-{linesRemoved}</span>
-            )}
+            <DiffStatsBadge
+              additions={linesAdded}
+              deletions={linesRemoved}
+              variant="plain"
+            />
             {segment.isDeleted && (
               <span className="text-danger-6">{t("tools.deleted")}</span>
             )}

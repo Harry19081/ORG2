@@ -20,6 +20,7 @@ import React, {
   useRef,
 } from "react";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { getLanguageFromPath } from "@src/config/languageMap";
 import { useDiff } from "@src/hooks/workStation/git/useDiff";
 
@@ -200,16 +201,12 @@ const GitHubDiffComponent: React.FC<GitHubDiffProps> = ({
       {/* Stats Header */}
       <div className="github-diff-header">
         <div className="github-diff-stats">
-          {stats.additions > 0 && (
-            <span className="github-diff-stat github-diff-stat-add">
-              +{stats.additions}
-            </span>
-          )}
-          {stats.deletions > 0 && (
-            <span className="github-diff-stat github-diff-stat-remove">
-              -{stats.deletions}
-            </span>
-          )}
+          <DiffStatsBadge
+            additions={stats.additions}
+            deletions={stats.deletions}
+            variant="plain"
+            className="github-diff-stat"
+          />
           {stats.totalChanges === 0 && (
             <span className="github-diff-stat github-diff-stat-empty">
               No changes

@@ -25,6 +25,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { SessionService } from "@src/engines/SessionCore/services/SessionService";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import type {
@@ -270,14 +271,12 @@ const SessionDiffWindow: React.FC<SessionDiffWindowProps> = ({
                   }`}
                 >
                   <span className="min-w-0 flex-1 truncate">{file.name}</span>
-                  <span className="flex shrink-0 gap-1 text-[10px]">
-                    {file.addCount > 0 && (
-                      <span className="text-green-400">+{file.addCount}</span>
-                    )}
-                    {file.removeCount > 0 && (
-                      <span className="text-red-400">-{file.removeCount}</span>
-                    )}
-                  </span>
+                  <DiffStatsBadge
+                    additions={file.addCount}
+                    deletions={file.removeCount}
+                    variant="plain"
+                    className="text-[10px]"
+                  />
                 </button>
               );
             })}

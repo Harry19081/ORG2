@@ -131,6 +131,8 @@ const LINE_PREFIX_REGEX = /^\s*\d+[│→]/;
 // `read_image` / `read_pdf`). The marker is purely an LLM hint and must
 // never reach the renderer.
 const ACTION_MARKER_REGEX = /^\[action:[^\]]*\]$/;
+const READ_FILE_FOOTER_REGEX =
+  /^\[Showing lines \d+-\d+ of \d+ total \([^)]+\)(?:\. Use offset and limit to read other sections\.)?\]$/;
 const MAX_STRIP_CACHE = 500;
 
 const stripCache = new LRUCache<
@@ -159,13 +161,19 @@ export function stripLineNumberPrefixes(content: string): {
   const lines = content.split("\n");
   const hasActionMarker =
     lines.length > 0 && ACTION_MARKER_REGEX.test(lines[0]);
-  const body = hasActionMarker ? lines.slice(1) : lines;
+  const bodyWithFooter = hasActionMarker ? lines.slice(1) : lines;
+  const hasReadFileFooter =
+    bodyWithFooter.length > 0 &&
+    READ_FILE_FOOTER_REGEX.test(
+      bodyWithFooter[bodyWithFooter.length - 1].trim()
+    );
+  const body = hasReadFileFooter ? bodyWithFooter.slice(0, -1) : bodyWithFooter;
 
   const firstNonEmpty = body.find((line) => line.trim().length > 0);
   const numbered =
     firstNonEmpty !== undefined && LINE_PREFIX_REGEX.test(firstNonEmpty);
 
-  if (!numbered && !hasActionMarker) {
+  if (!numbered && !hasActionMarker && !hasReadFileFooter) {
     const result = { content, lineCount: lines.length };
     stripCache.set(key, result);
     return result;

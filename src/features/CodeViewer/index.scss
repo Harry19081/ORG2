@@ -84,24 +84,6 @@ $font-mono: var(
     gap: 12px;
     flex-shrink: 0;
   }
-
-  .stats-additions {
-    font-size: 12px;
-    font-weight: 600;
-    color: #2ea043;
-    padding: 2px 8px;
-    background: rgba(63, 185, 80, 0.1);
-    border-radius: 6px;
-  }
-
-  .stats-deletions {
-    font-size: 12px;
-    font-weight: 600;
-    color: #f85149;
-    padding: 2px 8px;
-    background: rgba(248, 81, 73, 0.1);
-    border-radius: 6px;
-  }
 }
 
 // ============================================

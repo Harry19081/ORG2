@@ -21,9 +21,16 @@ import {
 
 export function extractFileData(props: UniversalEventProps): ExtractedFileData {
   if (props.rustExtracted?.kind === "file" && props.rustExtracted.filePath) {
-    const { filePath, fileName, content, language, lineCount, startLine } =
-      props.rustExtracted;
-    return { filePath, fileName, content, language, lineCount, startLine };
+    const { filePath, fileName, content, language } = props.rustExtracted;
+    const stripped = content ? stripLineNumberPrefixes(content) : undefined;
+    return {
+      filePath,
+      fileName,
+      content: stripped?.content,
+      language,
+      lineCount: stripped?.lineCount ?? props.rustExtracted.lineCount,
+      startLine: stripped?.startLine ?? props.rustExtracted.startLine,
+    };
   }
 
   const { args, result } = props;

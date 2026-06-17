@@ -17,6 +17,7 @@ import {
   ChatBubbleHeader,
   ChatBubbleLayout,
 } from "@src/components/ChatBubble";
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 
@@ -195,10 +196,11 @@ const CommitFilesBlock: React.FC<{ messageId: string }> = ({ messageId }) => {
           {commitFiles.length} file{commitFiles.length !== 1 ? "s" : ""}
         </span>
         {totalStats && (
-          <span>
-            <span className="text-green-500">+{totalStats.additions}</span>{" "}
-            <span className="text-red-500">-{totalStats.deletions}</span>
-          </span>
+          <DiffStatsBadge
+            additions={totalStats.additions}
+            deletions={totalStats.deletions}
+            variant="plain"
+          />
         )}
       </button>
 
@@ -234,15 +236,12 @@ const CommitFilesBlock: React.FC<{ messageId: string }> = ({ messageId }) => {
                     </span>
                   ) : null}
                 </div>
-                <span className="shrink-0 text-[12px] tabular-nums text-text-3">
-                  {file.additions > 0 && (
-                    <span className="text-green-500">+{file.additions}</span>
-                  )}
-                  {file.additions > 0 && file.deletions > 0 && " "}
-                  {file.deletions > 0 && (
-                    <span className="text-red-500">-{file.deletions}</span>
-                  )}
-                </span>
+                <DiffStatsBadge
+                  additions={file.additions}
+                  deletions={file.deletions}
+                  variant="plain"
+                  className="text-[12px]"
+                />
                 <span
                   className={`shrink-0 text-[12px] font-semibold ${status.color}`}
                 >
