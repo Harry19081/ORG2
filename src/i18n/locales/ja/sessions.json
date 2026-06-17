@@ -697,16 +697,19 @@
       "title": "何をしますか？",
       "back": "スタートページに戻る",
       "newSession": {
-        "title": "新しいセッション",
-        "description": "コーディングタスク用の新しい Agent チャットを開始します"
+        "title": "新しいセッション"
       },
       "newWorkItem": {
-        "title": "新しい work item",
-        "description": "タスクを記録し、必要に応じて Agent を起動して作業します"
+        "title": "新しい work item"
       },
       "setupRepo": {
-        "title": "Repo をセットアップ",
-        "description": "Repo を選び、Agent にセットアップ手順、ツール、アプリ起動を確認させます"
+        "title": "Repo をセットアップ"
+      },
+      "addApiKey": {
+        "title": "API キーを追加"
+      },
+      "agents": {
+        "title": "Agents"
       }
     },
     "defaultTitle": "チャット",

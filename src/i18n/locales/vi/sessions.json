@@ -697,16 +697,19 @@
       "title": "Bạn muốn làm gì?",
       "back": "Quay lại trang bắt đầu",
       "newSession": {
-        "title": "Phiên mới",
-        "description": "Bắt đầu một cuộc chat Agent mới cho tác vụ lập trình"
+        "title": "Phiên mới"
       },
       "newWorkItem": {
-        "title": "Work item mới",
-        "description": "Ghi lại tác vụ và tùy chọn khởi chạy Agent để xử lý"
+        "title": "Work item mới"
       },
       "setupRepo": {
-        "title": "Thiết lập Repo",
-        "description": "Chọn Repo và để Agent kiểm tra các bước thiết lập, công cụ và khởi chạy app"
+        "title": "Thiết lập Repo"
+      },
+      "addApiKey": {
+        "title": "Thêm API key"
+      },
+      "agents": {
+        "title": "Agents"
       }
     },
     "defaultTitle": "Chat",

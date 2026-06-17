@@ -697,16 +697,19 @@
       "title": "¿Qué quieres hacer?",
       "back": "Volver a la página inicial",
       "newSession": {
-        "title": "Nueva sesión",
-        "description": "Inicia un nuevo chat Agent para tareas de código"
+        "title": "Nueva sesión"
       },
       "newWorkItem": {
-        "title": "Nuevo work item",
-        "description": "Registra una tarea y, si quieres, inicia un Agent para trabajar en ella"
+        "title": "Nuevo work item"
       },
       "setupRepo": {
-        "title": "Configurar Repo",
-        "description": "Elige un Repo y deja que un Agent inspeccione configuración, herramientas e inicio de la app"
+        "title": "Configurar Repo"
+      },
+      "addApiKey": {
+        "title": "Añadir clave API"
+      },
+      "agents": {
+        "title": "Agents"
       }
     },
     "defaultTitle": "Chat",

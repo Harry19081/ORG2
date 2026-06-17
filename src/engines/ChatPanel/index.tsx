@@ -1,8 +1,15 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import { DISPATCH_CATEGORY } from "@src/api/tauri/session";
+import {
+  WIZARD_IDS,
+  buildAgentOrgsPath,
+  buildIntegrationsPath,
+  buildWizardPath,
+} from "@src/config/mainAppPaths";
 import { useRouteViewMode } from "@src/config/routeViewModeConfig";
 import {
   MAX_WIDTH as CHAT_MAX_WIDTH,
@@ -131,6 +138,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const shouldOffsetHeaderForCollapsedSidebar =
       useShouldOffsetChatPanelHeader({ position, useExternalWidth });
     const isCompactLayout = useIsCompactLayout();
+    const navigate = useNavigate();
     const viewMode = useRouteViewMode();
 
     const { currentSessionId, panelTitle, currentSession } = usePanelTitle();
@@ -420,6 +428,17 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       setWorkstationActiveSessionId,
     ]);
 
+    const handleStartPageAddApiKey = useCallback(() => {
+      setStartPageOpen(false);
+      const accountsPath = `${buildIntegrationsPath({ category: "models" })}?modelsTab=my-accounts`;
+      navigate(buildWizardPath(accountsPath, WIZARD_IDS.KEY_ADD));
+    }, [navigate, setStartPageOpen]);
+
+    const handleStartPageAgents = useCallback(() => {
+      setStartPageOpen(false);
+      navigate(buildWizardPath(buildAgentOrgsPath(), WIZARD_IDS.AGENT_ADD));
+    }, [navigate, setStartPageOpen]);
+
     const shareSessionAvailable =
       activeSession?.category === DISPATCH_CATEGORY.CLI_AGENT ||
       activeSession?.category === DISPATCH_CATEGORY.RUST_AGENT;
@@ -627,6 +646,8 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         handleChatPanelCollabOrgCreated={handleChatPanelCollabOrgCreated}
         handleChatPanelWorkItemCreated={handleChatPanelWorkItemCreated}
         handleRegionNoticeChange={handleRegionNoticeChange}
+        handleStartPageAddApiKey={handleStartPageAddApiKey}
+        handleStartPageAgents={handleStartPageAgents}
         handleStartPageNewSession={handleNewSession}
         handleStartPageNewWorkItem={handleStartPageNewWorkItem}
         handleStartPageSetupRepo={handleStartPageSetupRepo}

@@ -705,16 +705,19 @@
       "title": "Co chcesz zrobić?",
       "back": "Wróć do strony startowej",
       "newSession": {
-        "title": "Nowa sesja",
-        "description": "Uruchom nowy czat Agent do zadań kodowania"
+        "title": "Nowa sesja"
       },
       "newWorkItem": {
-        "title": "Nowy work item",
-        "description": "Zapisz zadanie i opcjonalnie uruchom Agent do pracy nad nim"
+        "title": "Nowy work item"
       },
       "setupRepo": {
-        "title": "Skonfiguruj Repo",
-        "description": "Wybierz Repo i pozwól Agent sprawdzić konfigurację, narzędzia oraz start aplikacji"
+        "title": "Skonfiguruj Repo"
+      },
+      "addApiKey": {
+        "title": "Dodaj API key"
+      },
+      "agents": {
+        "title": "Agents"
       }
     },
     "defaultTitle": "Czat",

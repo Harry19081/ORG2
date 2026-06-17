@@ -708,16 +708,19 @@
       "title": "What would you like to do?",
       "back": "Back to start page",
       "newSession": {
-        "title": "New session",
-        "description": "Start a fresh Agent chat for coding tasks"
+        "title": "New session"
       },
       "newWorkItem": {
-        "title": "New work item",
-        "description": "Capture a task and optionally launch an Agent to work on it"
+        "title": "New work item"
       },
       "setupRepo": {
-        "title": "Set up repo",
-        "description": "Pick a repository and let an Agent inspect setup steps, tools, and app launch"
+        "title": "Set up repo"
+      },
+      "addApiKey": {
+        "title": "Add API key"
+      },
+      "agents": {
+        "title": "Agents"
       }
     },
     "defaultTitle": "Chat",

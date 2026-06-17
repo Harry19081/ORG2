@@ -699,16 +699,19 @@
       "title": "Что вы хотите сделать?",
       "back": "Назад к стартовой странице",
       "newSession": {
-        "title": "Новая сессия",
-        "description": "Запустите новый Agent-чат для задач по коду"
+        "title": "Новая сессия"
       },
       "newWorkItem": {
-        "title": "Новый work item",
-        "description": "Зафиксируйте задачу и при необходимости запустите Agent для работы над ней"
+        "title": "Новый work item"
       },
       "setupRepo": {
-        "title": "Настроить Repo",
-        "description": "Выберите Repo и позвольте Agent проверить настройку, инструменты и запуск приложения"
+        "title": "Настроить Repo"
+      },
+      "addApiKey": {
+        "title": "Добавить API key"
+      },
+      "agents": {
+        "title": "Agents"
       }
     },
     "defaultTitle": "Чат",

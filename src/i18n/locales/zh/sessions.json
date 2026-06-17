@@ -702,16 +702,19 @@
       "title": "你想做什么？",
       "back": "返回起始页",
       "newSession": {
-        "title": "新建会话",
-        "description": "为编码任务启动新的 Agent 聊天"
+        "title": "新建会话"
       },
       "newWorkItem": {
-        "title": "新建工作项",
-        "description": "记录任务，并可选择启动 Agent 处理它"
+        "title": "新建工作项"
       },
       "setupRepo": {
-        "title": "设置 Repo",
-        "description": "选择 Repo，让 Agent 检查设置步骤、工具和应用启动"
+        "title": "设置 Repo"
+      },
+      "addApiKey": {
+        "title": "添加 API 密钥"
+      },
+      "agents": {
+        "title": "Agents"
       }
     },
     "defaultTitle": "Session",
