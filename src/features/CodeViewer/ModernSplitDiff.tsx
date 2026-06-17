@@ -82,6 +82,7 @@ const ModernSplitDiffComponent: React.FC<ModernSplitDiffProps> = ({
             <DiffStatsBadge
               deletions={stats.deletions}
               variant="plain"
+              size="xs"
               className="header-stats"
               showAdditions={false}
             />
@@ -104,6 +105,7 @@ const ModernSplitDiffComponent: React.FC<ModernSplitDiffProps> = ({
             <DiffStatsBadge
               additions={stats.additions}
               variant="plain"
+              size="xs"
               className="header-stats"
               showDeletions={false}
             />

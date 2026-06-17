@@ -349,7 +349,8 @@ const DiffView: React.FC<DiffViewProps> = ({
           additions={addedCount}
           deletions={removedCount}
           variant="plain"
-          className="ml-auto text-xs"
+          size="sm"
+          className="ml-auto"
         />
       </div>
       {/* diff lines */}

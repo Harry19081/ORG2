@@ -240,7 +240,7 @@ const CommitFilesBlock: React.FC<{ messageId: string }> = ({ messageId }) => {
                   additions={file.additions}
                   deletions={file.deletions}
                   variant="plain"
-                  className="text-[12px]"
+                  size="sm"
                 />
                 <span
                   className={`shrink-0 text-[12px] font-semibold ${status.color}`}
