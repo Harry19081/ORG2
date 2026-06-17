@@ -428,6 +428,20 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       setWorkstationActiveSessionId,
     ]);
 
+    const handleStartPageExploreRepos = useCallback(() => {
+      setStartPageOpen(false);
+      navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE });
+      dispatchClearSession();
+      setWorkstationActiveSessionId(null);
+      setActiveSessionId(null);
+    }, [
+      dispatchClearSession,
+      navigateChatPanel,
+      setActiveSessionId,
+      setStartPageOpen,
+      setWorkstationActiveSessionId,
+    ]);
+
     const handleStartPageAddApiKey = useCallback(() => {
       setStartPageOpen(false);
       const accountsPath = `${buildIntegrationsPath({ category: "models" })}?modelsTab=my-accounts`;
@@ -648,6 +662,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         handleRegionNoticeChange={handleRegionNoticeChange}
         handleStartPageAddApiKey={handleStartPageAddApiKey}
         handleStartPageAgents={handleStartPageAgents}
+        handleStartPageExploreRepos={handleStartPageExploreRepos}
         handleStartPageNewSession={handleNewSession}
         handleStartPageNewWorkItem={handleStartPageNewWorkItem}
         handleStartPageSetupRepo={handleStartPageSetupRepo}
