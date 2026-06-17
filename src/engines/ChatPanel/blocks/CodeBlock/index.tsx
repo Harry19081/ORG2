@@ -15,6 +15,7 @@ import { Eye, EyeOff } from "lucide-react";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import ExpandOverlay from "@src/components/ExpandOverlay";
 import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
@@ -290,15 +291,12 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                 {(shouldShowLineCount ||
                   (trailingTags && trailingTags.length > 0)) && (
                   <span className="flex shrink-0 items-center gap-1.5">
-                    {shouldShowLineCount && addedLines > 0 && (
-                      <span className={TRAILING_TAG_TONE_CLASS.success}>
-                        +{addedLines}
-                      </span>
-                    )}
-                    {shouldShowLineCount && removedLines > 0 && (
-                      <span className={TRAILING_TAG_TONE_CLASS.danger}>
-                        -{removedLines}
-                      </span>
+                    {shouldShowLineCount && (
+                      <DiffStatsBadge
+                        additions={addedLines}
+                        deletions={removedLines}
+                        variant="plain"
+                      />
                     )}
                     {trailingTags?.map((tag, idx) => (
                       <span

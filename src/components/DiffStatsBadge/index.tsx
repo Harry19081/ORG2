@@ -1,46 +1,73 @@
-import { memo } from "react";
+import { type ReactNode, memo } from "react";
 
 import { DIFF_STATS } from "@src/config/workstation/tokens";
 
-type DiffStatsBadgeVariant = "default" | "compact" | "chat";
+type DiffStatsBadgeVariant = "default" | "compact" | "chat" | "plain";
 
 export interface DiffStatsBadgeProps {
   additions?: number;
   deletions?: number;
   variant?: DiffStatsBadgeVariant;
+  className?: string;
+  valueClassName?: string;
+  formatValue?: (value: number) => ReactNode;
+  showAdditions?: boolean;
+  showDeletions?: boolean;
 }
 
 const CONTAINER_CLASSES: Record<DiffStatsBadgeVariant, string> = {
-  default: DIFF_STATS.container,
-  compact: DIFF_STATS.containerCompact,
+  default: `${DIFF_STATS.container} font-mono font-medium leading-none tabular-nums`,
+  compact: `${DIFF_STATS.containerCompact} font-mono font-medium leading-none tabular-nums`,
   chat: "chat-block-xs flex shrink-0 items-center gap-1 font-mono font-medium leading-none tabular-nums",
+  plain:
+    "inline-flex shrink-0 items-center gap-1 font-mono font-medium leading-none tabular-nums",
 };
 
-const VALUE_CLASSES: Record<DiffStatsBadgeVariant, string> = {
-  default: "",
-  compact: "",
-  chat: "inline-flex min-w-[3ch] justify-end",
-};
+const VALUE_CLASSES = "inline-flex min-w-[3ch] justify-end";
+
+function joinClasses(...classes: Array<string | undefined>): string {
+  return classes.filter(Boolean).join(" ");
+}
 
 const DiffStatsBadge = memo(function DiffStatsBadge({
   additions = 0,
   deletions = 0,
   variant = "default",
+  className,
+  valueClassName,
+  formatValue = String,
+  showAdditions = true,
+  showDeletions = true,
 }: DiffStatsBadgeProps) {
-  if (additions <= 0 && deletions <= 0) {
+  const hasAdditions = showAdditions && additions > 0;
+  const hasDeletions = showDeletions && deletions > 0;
+
+  if (!hasAdditions && !hasDeletions) {
     return null;
   }
 
   return (
-    <span className={CONTAINER_CLASSES[variant]}>
-      {additions > 0 && (
-        <span className={`${VALUE_CLASSES[variant]} ${DIFF_STATS.additions}`}>
-          +{additions}
+    <span className={joinClasses(CONTAINER_CLASSES[variant], className)}>
+      {hasAdditions && (
+        <span
+          className={joinClasses(
+            VALUE_CLASSES,
+            DIFF_STATS.additions,
+            valueClassName
+          )}
+        >
+          +{formatValue(additions)}
         </span>
       )}
-      {deletions > 0 && (
-        <span className={`${VALUE_CLASSES[variant]} ${DIFF_STATS.deletions}`}>
-          -{deletions}
+      {hasDeletions && (
+        <span
+          className={joinClasses(
+            VALUE_CLASSES,
+            DIFF_STATS.deletions,
+            valueClassName
+          )}
+        >
+          -{formatValue(deletions)}
         </span>
       )}
     </span>

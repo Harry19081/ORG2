@@ -80,14 +80,6 @@
   font-size: 12px;
   font-weight: 600;
 
-  &.github-diff-stat-add {
-    color: var(--diff-add-text);
-  }
-
-  &.github-diff-stat-remove {
-    color: var(--diff-remove-text);
-  }
-
   &.github-diff-stat-empty {
     color: var(--color-text-3);
     font-weight: 400;

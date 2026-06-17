@@ -15,6 +15,7 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import ModelIcon from "@src/components/ModelIcon";
 import Tag from "@src/components/Tag";
 import { resolveAgentIcon } from "@src/config/agentIcons";
@@ -144,14 +145,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <div className="kanban-task-card__impact-line">
             {hasOrgtrackImpactMetadata && task.orgtrackMetadata ? (
               <>
-                <span className="kanban-task-card__impact-diff">
-                  <span className="text-success-6">
-                    +{task.orgtrackMetadata.linesAdded.toLocaleString()}
-                  </span>
-                  <span className="text-danger-6">
-                    -{task.orgtrackMetadata.linesRemoved.toLocaleString()}
-                  </span>
-                </span>
+                <DiffStatsBadge
+                  additions={task.orgtrackMetadata.linesAdded}
+                  deletions={task.orgtrackMetadata.linesRemoved}
+                  variant="plain"
+                  className="kanban-task-card__impact-diff"
+                  formatValue={(value) => value.toLocaleString()}
+                />
                 <span className="kanban-task-card__impact-dot" />
                 <span className="kanban-task-card__impact-item">
                   <Diff size={12} strokeWidth={1.75} />

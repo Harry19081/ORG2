@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -96,14 +97,13 @@ export function ContributorStatsSection({
         renderCell: (row) => {
           const metrics = excludeRenames ? row.contentOnly : row.all;
           return metrics.additions > 0 || metrics.deletions > 0 ? (
-            <span className="inline-grid grid-cols-[1fr_1fr] gap-x-3 text-right tabular-nums">
-              <span className="text-green-500">
-                +{metrics.additions.toLocaleString()}
-              </span>
-              <span className="text-red-400">
-                -{metrics.deletions.toLocaleString()}
-              </span>
-            </span>
+            <DiffStatsBadge
+              additions={metrics.additions}
+              deletions={metrics.deletions}
+              variant="plain"
+              className="justify-end gap-x-3"
+              formatValue={(value) => value.toLocaleString()}
+            />
           ) : (
             <span className={SETTINGS_TABLE_CELL.muted}>—</span>
           );

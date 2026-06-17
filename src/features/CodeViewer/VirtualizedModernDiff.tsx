@@ -13,6 +13,7 @@ import { Check } from "lucide-react";
 import React, { useCallback, useRef } from "react";
 import { Components, Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 import { DiffLineComponent } from "./DiffLineComponent";
@@ -247,14 +248,12 @@ const VirtualizedModernDiffComponent: React.FC<ModernDiffProps> = ({
               <span className="stats-path">{filePath}</span>
             )}
           </div>
-          <div className="stats-right">
-            {stats.additions > 0 && (
-              <span className="stats-additions">+{stats.additions}</span>
-            )}
-            {stats.deletions > 0 && (
-              <span className="stats-deletions">-{stats.deletions}</span>
-            )}
-          </div>
+          <DiffStatsBadge
+            additions={stats.additions}
+            deletions={stats.deletions}
+            variant="plain"
+            className="stats-right"
+          />
         </div>
       )}
 

@@ -13,6 +13,8 @@
 import { Check } from "lucide-react";
 import React, { useRef } from "react";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
+
 import "./ModernSplitDiff.scss";
 import { CollapseRow } from "./components/CollapseRow";
 import { SplitRow } from "./components/SplitRow";
@@ -77,9 +79,12 @@ const ModernSplitDiffComponent: React.FC<ModernSplitDiffProps> = ({
         <div className="split-diff-header">
           <div className="split-diff-header-left">
             <span className="header-label">Original</span>
-            {stats.deletions > 0 && (
-              <span className="header-stats deletions">-{stats.deletions}</span>
-            )}
+            <DiffStatsBadge
+              deletions={stats.deletions}
+              variant="plain"
+              className="header-stats"
+              showAdditions={false}
+            />
           </div>
           <div className="split-diff-header-center">
             {cherrypicking && (
@@ -96,9 +101,12 @@ const ModernSplitDiffComponent: React.FC<ModernSplitDiffProps> = ({
           </div>
           <div className="split-diff-header-right">
             <span className="header-label">Modified</span>
-            {stats.additions > 0 && (
-              <span className="header-stats additions">+{stats.additions}</span>
-            )}
+            <DiffStatsBadge
+              additions={stats.additions}
+              variant="plain"
+              className="header-stats"
+              showDeletions={false}
+            />
           </div>
         </div>
       )}

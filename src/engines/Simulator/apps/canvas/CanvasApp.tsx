@@ -26,6 +26,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import IconButton from "@src/components/IconButton";
 import TabPill from "@src/components/TabPill";
 import { SIMULATOR_PRIMARY_SIDEBAR } from "@src/config/simulatorPrimarySidebar";
@@ -344,8 +345,12 @@ const DiffView: React.FC<DiffViewProps> = ({
         <span className="truncate text-text-2">{olderTitle}</span>
         <span className="shrink-0 text-text-4">→</span>
         <span className="truncate text-text-2">{newerTitle}</span>
-        <span className="ml-auto shrink-0 text-green-400">+{addedCount}</span>
-        <span className="shrink-0 text-red-400">-{removedCount}</span>
+        <DiffStatsBadge
+          additions={addedCount}
+          deletions={removedCount}
+          variant="plain"
+          className="ml-auto text-xs"
+        />
       </div>
       {/* diff lines */}
       <div className="min-h-0 flex-1 overflow-y-auto">

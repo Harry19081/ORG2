@@ -13,6 +13,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import { VirtualizedModernDiff } from "@src/features/CodeViewer/VirtualizedModernDiff";
 
 import { resolveFileOperationPayload } from "../resolveFilePayload";
@@ -26,12 +27,12 @@ const ChangeStats: React.FC<{
   if (linesAdded === 0 && linesRemoved === 0) return null;
 
   return (
-    <span className="ml-auto flex shrink-0 items-center gap-1.5 text-[11px] font-medium tabular-nums">
-      {linesAdded > 0 && <span className="text-success-6">+{linesAdded}</span>}
-      {linesRemoved > 0 && (
-        <span className="text-danger-6">-{linesRemoved}</span>
-      )}
-    </span>
+    <DiffStatsBadge
+      additions={linesAdded}
+      deletions={linesRemoved}
+      variant="plain"
+      className="ml-auto text-[11px]"
+    />
   );
 });
 

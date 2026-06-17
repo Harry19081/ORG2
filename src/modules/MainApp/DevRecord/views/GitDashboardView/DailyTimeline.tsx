@@ -8,6 +8,7 @@ import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitCommitInfo } from "@src/api/http/git/types";
+import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -158,14 +159,13 @@ const DailyTimeline: React.FC<DailyTimelineProps> = memo(
             (rowB.insertions + rowB.deletions),
           renderCell: (row) =>
             row.insertions > 0 || row.deletions > 0 ? (
-              <span className="inline-grid grid-cols-[1fr_1fr] gap-x-3 text-right tabular-nums">
-                <span className="text-green-500">
-                  +{row.insertions.toLocaleString()}
-                </span>
-                <span className="text-red-400">
-                  -{row.deletions.toLocaleString()}
-                </span>
-              </span>
+              <DiffStatsBadge
+                additions={row.insertions}
+                deletions={row.deletions}
+                variant="plain"
+                className="justify-end gap-x-3"
+                formatValue={(value) => value.toLocaleString()}
+              />
             ) : (
               <span className={SETTINGS_TABLE_CELL.muted}>—</span>
             ),
