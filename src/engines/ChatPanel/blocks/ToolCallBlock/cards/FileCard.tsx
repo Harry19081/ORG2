@@ -6,6 +6,7 @@ import FileTypeIcon from "@src/components/FileTypeIcon";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 
 import type { FileCardData } from "../types";
+import { ToolResultCardFrame } from "./ToolResultCardFrame";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -25,7 +26,7 @@ const FileCard: React.FC<FileCardProps> = ({ card }) => {
   }
 
   return (
-    <div className="mx-3 my-2 flex items-center gap-3 rounded-lg border border-fill-4 bg-fill-2 px-3 py-2.5 transition-colors hover:bg-fill-3">
+    <ToolResultCardFrame className="flex items-center gap-3">
       <div className="shrink-0">
         <FileTypeIcon fileName={card.name} size="medium" />
       </div>
@@ -57,7 +58,7 @@ const FileCard: React.FC<FileCardProps> = ({ card }) => {
       >
         <ExternalLink size={13} />
       </button>
-    </div>
+    </ToolResultCardFrame>
   );
 };
 

@@ -1,15 +1,11 @@
-import { ExternalLink, GitMerge, GitPullRequest, XCircle } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
+import PrStatusBadge from "@src/components/PrStatusBadge";
 import { formatStatNumber } from "@src/shared/pr/formatStatNumber";
-import {
-  type PrStatusIconName,
-  getPrStatusIconName,
-  getPrStatusLabelKey,
-  getPrStatusVariant,
-} from "@src/shared/pr/prStatus";
+
+import { ToolResultCardFrameLink } from "./ToolResultCardFrame";
 
 export interface SessionLinkCardData {
   prUrl: string;
@@ -24,49 +20,23 @@ export interface SessionLinkCardData {
   deletions?: number;
 }
 
-/** Map the shared semantic icon name onto a lucide glyph. */
-function StatusIcon({ name }: { name: PrStatusIconName }): React.ReactElement {
-  switch (name) {
-    case "merge":
-      return <GitMerge size={10} />;
-    case "closed":
-      return <XCircle size={10} />;
-    case "pull-request":
-    default:
-      return <GitPullRequest size={10} />;
-  }
-}
-
 interface SessionLinkCardProps {
   card: SessionLinkCardData;
 }
 
 const SessionLinkCard: React.FC<SessionLinkCardProps> = ({ card }) => {
-  const { t } = useTranslation("common");
-  const badgeClassName = getPrStatusVariant(card.prStatus).badgeClass;
-  const badgeLabel = t(
-    getPrStatusLabelKey(card.prStatus),
-    card.prStatus.charAt(0).toUpperCase() + card.prStatus.slice(1)
-  );
-  const badgeIconName = getPrStatusIconName(card.prStatus);
-
   return (
-    <a
+    <ToolResultCardFrameLink
       href={card.prUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="mx-3 my-2 block cursor-pointer rounded-lg border border-fill-4 bg-fill-2 px-3 py-2.5 transition-colors hover:bg-fill-3"
+      className="block cursor-pointer"
       aria-label={`PR #${card.prNumber}: ${card.prTitle}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span
-              className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${badgeClassName}`}
-            >
-              <StatusIcon name={badgeIconName} />
-              {badgeLabel}
-            </span>
+            <PrStatusBadge status={card.prStatus} showIcon />
             <span className="truncate text-xs text-text-3">
               {card.repoFullName}
             </span>
@@ -124,7 +94,7 @@ const SessionLinkCard: React.FC<SessionLinkCardProps> = ({ card }) => {
           aria-hidden="true"
         />
       </div>
-    </a>
+    </ToolResultCardFrameLink>
   );
 };
 

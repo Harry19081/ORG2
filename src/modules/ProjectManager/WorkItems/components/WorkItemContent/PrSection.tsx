@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import InlineAlert from "@src/components/InlineAlert";
-import { getPrStatusVariant } from "@src/shared/pr/prStatus";
+import PrStatusBadge from "@src/components/PrStatusBadge";
 
 import type { PrCreationState, PrSectionProps } from "./types";
 
@@ -58,7 +58,6 @@ const PrSection: React.FC<PrSectionProps> = ({
   }, [readyToCreate]);
 
   if (prUrl) {
-    const statusColor = getPrStatusVariant(prStatus ?? "").badgeClass;
     return (
       <div className="rounded-lg bg-fill-2 px-4 py-3">
         <div className="flex items-center justify-between">
@@ -74,16 +73,15 @@ const PrSection: React.FC<PrSectionProps> = ({
             </a>
             <div className="mt-1 flex items-center gap-2">
               {prStatus && (
-                <span
-                  className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${statusColor}`}
-                >
-                  {t(
+                <PrStatusBadge
+                  status={prStatus}
+                  label={t(
                     `workItems.outputTab.pr${prStatus.charAt(0).toUpperCase()}${prStatus.slice(1)}` as never,
                     {
                       defaultValue: prStatus,
                     }
                   )}
-                </span>
+                />
               )}
               {branch && (
                 <code className="text-[11px] text-text-3">{branch}</code>

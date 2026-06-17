@@ -15,6 +15,7 @@ import type {
   WorkItemPriority,
   WorkItemStatus,
 } from "../types";
+import { ToolResultCardFrame } from "./ToolResultCardFrame";
 
 interface StatusConfig {
   icon: React.ReactNode;
@@ -119,7 +120,7 @@ const WorkItemCard: React.FC<WorkItemCardProps> = ({ card }) => {
     : null;
 
   return (
-    <div className="mx-3 my-2 rounded-lg border border-fill-4 bg-fill-2 px-3 py-2.5 transition-colors hover:bg-fill-3">
+    <ToolResultCardFrame>
       <div className="flex items-start gap-2">
         <span className={`mt-0.5 shrink-0 ${statusConfig.className}`}>
           {statusConfig.icon}
@@ -173,7 +174,7 @@ const WorkItemCard: React.FC<WorkItemCardProps> = ({ card }) => {
           </div>
         </div>
       </div>
-    </div>
+    </ToolResultCardFrame>
   );
 };
 

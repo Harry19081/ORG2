@@ -3,6 +3,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitCommitInfo } from "@src/api/http/git/types";
+import PrStatusBadge from "@src/components/PrStatusBadge";
 import type { ExtractedGitArtifactData } from "@src/engines/SessionCore/core/types";
 import GitCommitRow from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/GitHistoryContent/GitCommitRow";
 import { truncateBranchLabel } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/PullRequestContent/prCardHelpers";
@@ -11,7 +12,6 @@ import {
   TYPOGRAPHY,
 } from "@src/modules/WorkStation/shared/tokens";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { getPrStatusLabelKey } from "@src/shared/pr/prStatus";
 
 export type SubmissionArtifact = ExtractedGitArtifactData & {
   repoId?: string;
@@ -145,10 +145,7 @@ const PullRequestSubmissionRow: React.FC<{
   return (
     <div className="border-b border-fill-2 px-3 py-2">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="text-success-7 inline-flex shrink-0 items-center gap-1 rounded-full bg-success-2 px-2 py-0.5 text-[11px] font-medium capitalize">
-          <span className="h-1.5 w-1.5 rounded-full bg-success-6" aria-hidden />
-          {t(getPrStatusLabelKey(statusKey), statusKey)}
-        </span>
+        <PrStatusBadge status={statusKey} showDot size="sm" />
         {numberLabel && (
           <span
             className={`${TYPOGRAPHY.secondary} font-medium tabular-nums text-text-3`}
