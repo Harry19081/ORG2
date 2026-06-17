@@ -765,22 +765,6 @@ pub fn run() {
                 }
             }
 
-            // Prewarm the Wingman floating windows (hidden) so the first
-            // "Share screen" click opens them instantly (Zoom/Feishu-style).
-            // Done after a short delay so it doesn't compete with main-window
-            // paint, and on the main thread because Tauri window builders
-            // must run there.
-            {
-                let app_for_prewarm = app.handle().clone();
-                std::thread::spawn(move || {
-                    std::thread::sleep(std::time::Duration::from_secs(2));
-                    let app_for_main = app_for_prewarm.clone();
-                    let _ = app_for_prewarm.run_on_main_thread(move || {
-                        agent_core::session::wingman::prewarm_wingman_windows(&app_for_main);
-                    });
-                });
-            }
-
             // tauri_plugin_log removed — tracing_subscriber handles file logging.
             Ok(())
         })
