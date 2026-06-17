@@ -483,11 +483,13 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
       };
       const handlePasteEvent = (event: ClipboardEvent) => {
         ops.markHistoryBoundary();
-        handlePaste(event);
-        ops.commitHistoryBoundary();
-        handleInput();
+        if (handlePaste(event)) {
+          ops.commitHistoryBoundary();
+          handleInput();
+        }
       };
       const handleDropEvent = (event: DragEvent) => {
+        ops.markHistoryBoundary();
         if (handleDrop(event)) {
           ops.commitHistoryBoundary();
           handleInput();
