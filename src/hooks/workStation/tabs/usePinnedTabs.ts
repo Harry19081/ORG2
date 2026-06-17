@@ -10,7 +10,7 @@
  * It is intentionally idempotent — calling it from multiple places is safe.
  */
 import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import {
   type WorkStationTab,
@@ -43,6 +43,7 @@ export function usePinnedTabs({
   const tabs = useAtomValue(mainPaneTabsAtom);
   const activeTabId = useAtomValue(mainPaneActiveTabIdAtom);
   const setLayout = useSetAtom(workstationLayoutAtom);
+  const preferredInitialTabAppliedRef = useRef(false);
 
   const pinnedKey = useMemo(
     () => pinnedTabs.map((tab) => tab.id).join("|"),
@@ -90,6 +91,7 @@ export function usePinnedTabs({
     );
 
     const shouldPreferInitialTab = Boolean(
+      !preferredInitialTabAppliedRef.current &&
       preferInitialTabWhenActivePinned &&
       initialActiveTabId &&
       activeTabId &&
@@ -101,6 +103,9 @@ export function usePinnedTabs({
     );
 
     if (!orderChanged && !refreshed && !shouldPreferInitialTab) return;
+    if (shouldPreferInitialTab) {
+      preferredInitialTabAppliedRef.current = true;
+    }
 
     setLayout((prev) => {
       const nextTabs = [...desiredPinned, ...nonPinned];
@@ -108,13 +113,7 @@ export function usePinnedTabs({
       const hasActiveTab = Boolean(
         prevActiveTabId && nextTabs.some((tab) => tab.id === prevActiveTabId)
       );
-      const activePinnedTabIsOnlyPinnedState = Boolean(
-        preferInitialTabWhenActivePinned &&
-        initialActiveTabId &&
-        prevActiveTabId &&
-        pinnedIdSet.has(prevActiveTabId) &&
-        nonPinned.length === 0
-      );
+      const activePinnedTabIsOnlyPinnedState = shouldPreferInitialTab;
       return {
         ...prev,
         mainPane: {
