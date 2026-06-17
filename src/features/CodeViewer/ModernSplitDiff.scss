@@ -85,16 +85,6 @@ $font-mono:
     padding: 2px 8px;
     border-radius: 4px;
     flex-shrink: 0;
-
-    &.additions {
-      color: #2ea043;
-      background: rgba(46, 160, 67, 0.12);
-    }
-
-    &.deletions {
-      color: #f85149;
-      background: rgba(248, 81, 73, 0.12);
-    }
   }
 }
 
