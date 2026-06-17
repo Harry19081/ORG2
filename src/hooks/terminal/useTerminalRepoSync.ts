@@ -9,7 +9,7 @@ import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 
 import { createLogger } from "@src/hooks/logger";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import {
   initializedTerminalIdsAtom,
   terminalSessionsAtom,
@@ -27,19 +27,18 @@ function shellEscapePath(path: string): string {
 }
 
 export function useTerminalRepoSync(): void {
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
   const sessions = useAtomValue(terminalSessionsAtom);
   const initialized = useAtomValue(initializedTerminalIdsAtom);
 
   const prevRepoPathRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const rawPath = currentRepo?.path ?? currentRepo?.fs_uri;
-    if (!rawPath) return;
+    if (!activeWorkspaceRootPath) return;
 
-    const repoPath = rawPath.startsWith("file://")
-      ? rawPath.replace("file://", "")
-      : rawPath;
+    const repoPath = activeWorkspaceRootPath.startsWith("file://")
+      ? activeWorkspaceRootPath.replace("file://", "")
+      : activeWorkspaceRootPath;
 
     if (prevRepoPathRef.current === null) {
       prevRepoPathRef.current = repoPath;
@@ -65,5 +64,5 @@ export function useTerminalRepoSync(): void {
         }
       );
     }
-  }, [currentRepo, sessions, initialized]);
+  }, [activeWorkspaceRootPath, sessions, initialized]);
 }

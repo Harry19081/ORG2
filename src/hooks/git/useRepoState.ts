@@ -33,10 +33,10 @@ import {
   branchLoadingAtom,
   branchesAtom,
   currentBranchAtom,
-  currentRepoAtom,
   filteredReposAtom,
   repoLoadingAtom,
   reposAtom,
+  selectedRepoAtom,
   selectedRepoIdAtom,
   validRepoIdsAtom,
 } from "@src/store/repo";
@@ -95,7 +95,7 @@ export function useRepoState(): UseRepoStateReturn {
   const repos = useAtomValue(reposAtom);
   const filteredRepos = useAtomValue(filteredReposAtom);
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const currentRepo = useAtomValue(selectedRepoAtom);
 
   // Branch state - currentBranch is the SINGLE source of truth
   const currentBranch = useAtomValue(currentBranchAtom);

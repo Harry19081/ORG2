@@ -20,7 +20,7 @@ import {
   SectionRow,
 } from "@src/modules/shared/layouts/SectionLayout";
 import { TerminalService } from "@src/services/terminal/TerminalService";
-import { currentRepoAtom } from "@src/store";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import type { LspHandlers } from "./Table/LanguageServerInlineExpandedCard";
 import LanguageServersTable from "./Table/LanguageServersTable";
@@ -29,8 +29,7 @@ const log = createLogger("LanguageServersPage");
 
 const LanguageServersPage: React.FC = () => {
   const { t } = useTranslation("settings");
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const workspacePath = currentRepo?.path ?? null;
+  const workspacePath = useAtomValue(activeWorkspaceRootPathAtom) || null;
   const executeInTerminal = TerminalService.execute;
 
   const {

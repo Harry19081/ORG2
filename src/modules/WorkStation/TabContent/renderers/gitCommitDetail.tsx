@@ -3,7 +3,7 @@
  *
  * The leaf `GitCommitDetailContent` accepts repoPath / repoId / commit
  * metadata as plain props, so this wrapper can be self-contained once
- * we pull `repoPath` from `currentRepoAtom`. Phase 1b still defers the
+ * tab data carries an explicit `repoPath`. Phase 1b still defers the
  * actual render to the host renderers (editor + project) — this stub
  * stays a placeholder so verification step 4 (no imports) holds.
  */

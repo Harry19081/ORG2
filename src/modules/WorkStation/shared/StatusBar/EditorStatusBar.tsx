@@ -33,7 +33,8 @@ import {
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
 import { useRepoGitInitialization } from "@src/hooks/git";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
-import { currentRepoAtom, sessionRepoHintAtom } from "@src/store/repo";
+import { sessionRepoHintAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { diagnosticHealthAtom } from "@src/store/workstation/codeEditor/diagnostics";
 import {
   indexingProgressAtom,
@@ -96,8 +97,7 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
       checkoutLoading,
     } = useEditorStatusBarGit({ repoName, branchName });
 
-    const currentRepo = useAtomValue(currentRepoAtom);
-    const repoPath = currentRepo?.path ?? currentRepo?.fs_uri;
+    const repoPath = useAtomValue(activeWorkspaceRootPathAtom);
     const { isGitInitialized } = useRepoGitInitialization(repoPath);
 
     const sessionRepoHint = useAtomValue(sessionRepoHintAtom);

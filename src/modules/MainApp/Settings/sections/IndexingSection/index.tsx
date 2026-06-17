@@ -28,8 +28,8 @@ import {
 } from "@src/modules/shared/layouts/SectionLayout";
 import {
   type Repo,
-  currentRepoAtom,
   reposAtom,
+  selectedRepoAtom,
   selectedRepoIdAtom,
 } from "@src/store/repo";
 
@@ -95,7 +95,7 @@ const AdvancedSearchUnavailable: React.FC = () => {
 
 const AdvancedIndexingControls: React.FC = () => {
   const { t } = useTranslation("settings");
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const selectedRepo = useAtomValue(selectedRepoAtom);
   const repos = useAtomValue(reposAtom);
   const selectedRepoId = useAtomValue(selectedRepoIdAtom);
   const [loading, setLoading] = useState(false);
@@ -109,8 +109,8 @@ const AdvancedIndexingControls: React.FC = () => {
   const [modelDir, setModelDir] = useState<string>("");
 
   const selectedRepoPath = useMemo(
-    () => normalizeRepoPath(currentRepo),
-    [currentRepo]
+    () => normalizeRepoPath(selectedRepo),
+    [selectedRepo]
   );
 
   const refresh = useCallback(async () => {
@@ -259,7 +259,7 @@ const AdvancedIndexingControls: React.FC = () => {
 
       <SectionContainer title={t("indexing.currentRepo")}>
         <SectionRow
-          label={currentRepo?.name ?? t("indexing.noRepoSelected")}
+          label={selectedRepo?.name ?? t("indexing.noRepoSelected")}
           description={selectedRepoPath ?? t("indexing.repoPathNotAvailable")}
         >
           <div className={SECTION_ACTION_GAP_CLASSES}>

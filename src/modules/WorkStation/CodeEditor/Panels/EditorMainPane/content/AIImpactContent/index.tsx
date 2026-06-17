@@ -31,7 +31,7 @@ import {
   PanelRefreshButton,
   Placeholder,
 } from "@src/modules/shared/layouts/blocks";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootAtom } from "@src/store/workspace";
 
 const MAX_SESSIONS_TO_QUERY = 20;
 const MAX_RECENT_COMMITS = 200;
@@ -264,7 +264,7 @@ FileList.displayName = "FileList";
 
 const AIImpactContent: React.FC = () => {
   const { t } = useTranslation();
-  const repo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRoot = useAtomValue(activeWorkspaceRootAtom);
   const [aggregated, setAggregated] = useState<AggregatedImpact | null>(null);
   const [baseline, setBaseline] = useState<GitBaseline | null>(null);
   const [loading, setLoading] = useState(true);
@@ -303,8 +303,12 @@ const AIImpactContent: React.FC = () => {
       const agg = aggregateImpacts(impacts);
       setAggregated(agg);
 
-      if (repo?.path) {
-        const gitData = await fetchGitBaseline(repo.id, repo.path, cancelled);
+      if (activeWorkspaceRoot?.path) {
+        const gitData = await fetchGitBaseline(
+          activeWorkspaceRoot.repoId ?? activeWorkspaceRoot.id,
+          activeWorkspaceRoot.path,
+          cancelled
+        );
         if (!cancelled.current) setBaseline(gitData);
       }
     } catch {
@@ -312,7 +316,7 @@ const AIImpactContent: React.FC = () => {
     } finally {
       if (!cancelled.current) setLoading(false);
     }
-  }, [repo]);
+  }, [activeWorkspaceRoot]);
 
   useEffect(() => {
     const cancelled = { current: false };

@@ -33,7 +33,7 @@ import {
   PANEL_HEADER_TOKENS,
   Placeholder,
 } from "@src/modules/shared/layouts/blocks";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import {
   getAgentDetailTabs,
@@ -122,8 +122,7 @@ const CustomAgentDetailView: React.FC<CustomAgentDetailViewProps> = ({
     [agent.id, refresh]
   );
 
-  const currentRepo = useAtomValue(currentRepoAtom);
-  const workspacePath = currentRepo?.path;
+  const workspacePath = useAtomValue(activeWorkspaceRootPathAtom) || undefined;
 
   const configHandle = useCustomAgentConfig({ agent, onPersist: persist });
   const { config, loaded, update } = configHandle;

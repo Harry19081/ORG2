@@ -16,10 +16,10 @@ import Message from "@src/components/Message";
 import { PlanExecutionService } from "@src/engines/SessionCore/services/PlanExecutionService";
 import { createLogger } from "@src/hooks/logger";
 import { useSessionExecModeField } from "@src/hooks/session/useSessionPatch";
-import { currentRepoAtom } from "@src/store/repo";
 import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefaultModelAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom";
 import { activeSessionIdAtom } from "@src/store/session/viewAtom";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { isAgentSession } from "@src/util/session/sessionDispatch";
 
 const log = createLogger("PlanFileActions");
@@ -39,7 +39,7 @@ export const PlanFileActions: React.FC<PlanFileActionsProps> = memo(
     const creatorDefaultSelection = useAtomValue(
       creatorDefaultModelSelectionAtom
     );
-    const currentRepo = useAtomValue(currentRepoAtom);
+    const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
 
     const handleExecute = useCallback(() => {
       if (!sessionId || !isAgentSession(sessionId)) {
@@ -77,16 +77,7 @@ export const PlanFileActions: React.FC<PlanFileActionsProps> = memo(
             isOwnKey(creatorDefaultSelection.keySource)
           ? creatorDefaultSelection.selectedAccountId
           : undefined;
-      // The session row's persisted repo path is the source of truth for
-      // `workspace_root`. The global repo selection atom is only a fallback
-      // for older rows without the per-session column — using it first would
-      // let two open sessions on different repos collide whenever global
-      // selection is focused on the "wrong" repo at dispatch time.
-      const activeRepoPath =
-        session?.repoPath ??
-        currentRepo?.path ??
-        currentRepo?.fs_uri ??
-        undefined;
+      const activeRepoPath = session?.repoPath ?? activeWorkspaceRootPath;
 
       PlanExecutionService.executePlanDocument({
         sessionId,
@@ -106,7 +97,7 @@ export const PlanFileActions: React.FC<PlanFileActionsProps> = memo(
       planContent,
       setSessionExecMode,
       creatorDefaultSelection,
-      currentRepo,
+      activeWorkspaceRootPath,
       t,
     ]);
 

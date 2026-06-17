@@ -34,7 +34,7 @@ import {
   PRIMARY_SIDEBAR_HOVER,
   getCountBadgeSizeClass,
 } from "@src/modules/WorkStation/shared/tokens";
-import { currentRepoAtom } from "@src/store/repo";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 
 import { SHORTCUTS } from "../../../hooks/useSourceControlShortcuts";
 import { GIT_LABELS } from "../config";
@@ -68,7 +68,7 @@ export interface SourceControlTreeRowProps {
   onStageResolved?: (fileId: string) => Promise<void>;
   /** Show parent path hint after filename (flat list mode) */
   showPathHint?: boolean;
-  /** Override repo path for multi-root workspaces (bypasses global currentRepoAtom) */
+  /** Override repo path for multi-root workspaces. */
   overrideRepoPath?: string;
 }
 
@@ -262,11 +262,11 @@ const FileDirectoryRow: React.FC<FileDirectoryRowProps> = memo(
     const isConflictFile = node.section === "merge";
     const isStaged = node.file?.staged ?? false;
     const rowRef = useRef<HTMLDivElement>(null);
-    const currentRepo = useAtomValue(currentRepoAtom);
+    const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
     const actionSystem = useActionSystemOptional();
     const [showContextMenu, setShowContextMenu] = useState(false);
 
-    const effectiveRepoPath = overrideRepoPath ?? currentRepo?.path;
+    const effectiveRepoPath = overrideRepoPath ?? activeWorkspaceRootPath;
 
     // Build absolute path for drag operations
     const absolutePath = useMemo(() => {

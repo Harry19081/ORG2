@@ -4,9 +4,7 @@
     "signedOut": "Sessão encerrada com sucesso",
     "logoutFailed": "Falha ao sair. Tente novamente.",
     "customCommandUpdated": "Comando personalizado atualizado",
-    "shellSettingUpdated": "Configuração do shell atualizada",
-    "idesDetected": "{{count}} IDE detectado(s)",
-    "ideDetectFailed": "Não foi possível detectar IDEs. Verifique se o seu IDE está instalado e tente novamente."
+    "shellSettingUpdated": "Configuração do shell atualizada"
   },
   "noSettingsFound": "Nenhuma configuração encontrada para \"{{query}}\"",
   "searchPlaceholder": "Pesquisar configurações...",
@@ -715,11 +713,6 @@
     "customShell": "Shell personalizado",
     "customCommand": "Comando personalizado",
     "customCommandDesc": "Caminho para o executável do Shell",
-    "externalIde": "IDE Externa",
-    "preferredExternalIde": "IDE externa preferida",
-    "preferredExternalIdeDesc": "Usada ao abrir arquivos em um editor externo",
-    "selectIde": "Selecione uma IDE",
-    "runDetect": "Execute Detectar para popular as IDEs",
     "workspaceDefaults": "Padrões do Workspace",
     "defaultRepoFolder": "Pasta de Repo padrão",
     "defaultRepoFolderDesc": "Preenche formulários de clonar e criar Repo",

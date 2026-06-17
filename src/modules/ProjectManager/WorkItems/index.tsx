@@ -13,8 +13,9 @@ import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
 import type { LinkedRepoOption } from "@src/modules/ProjectManager/shared";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { ContentSearchPalette } from "@src/scaffold/GlobalSpotlight/palettes";
-import { currentRepoAtom, reposAtom } from "@src/store/repo";
+import { reposAtom } from "@src/store/repo";
 import { syncDeepLinkAtom } from "@src/store/sync";
+import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import {
   PROJECT_DETAIL_SURFACE_VIEW,
   type ProjectDetailSurfaceView,
@@ -144,7 +145,7 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
   workstationHeaderHost = "project",
 }) => {
   const { t } = useTranslation("projects");
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
   const allRepos = useAtomValue(reposAtom);
   const availableRepos = useMemo<LinkedRepoOption[]>(
     () =>
@@ -263,7 +264,7 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
   }, [handlers]);
 
   const linkedRepoPath = sourceProject?.linkedRepos?.[0]?.id;
-  const resolvedRepoPath = linkedRepoPath ?? currentRepo?.path ?? null;
+  const resolvedRepoPath = linkedRepoPath ?? activeWorkspaceRootPath ?? null;
   const resolvedProjectSlug = projectData.project?.slug ?? null;
   const selectedShortId = data.selectedWorkItem
     ? (data.getShortId(data.selectedWorkItem.session_id) ?? null)

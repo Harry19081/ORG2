@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Message from "@src/components/Message";
-import { currentRepoAtom } from "@src/store/repo/derived";
+import { selectedRepoPathAtom } from "@src/store/repo";
 
 export interface GitProxyInfo {
   http_proxy: string | null;
@@ -14,7 +14,7 @@ export interface GitProxyInfo {
 
 export function useGitProxySettings() {
   const { t } = useTranslation("settings");
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const selectedRepoPath = useAtomValue(selectedRepoPathAtom);
   const proxyLoadingRef = useRef(false);
   const [proxyInfo, setProxyInfo] = useState<GitProxyInfo | null>(null);
   const [proxyHttpDraft, setProxyHttpDraft] = useState("");
@@ -32,7 +32,7 @@ export function useGitProxySettings() {
       proxyLoadingRef.current = true;
       try {
         const info = await invoke<GitProxyInfo>("get_git_proxy_config", {
-          repoPath: currentRepo?.path ?? null,
+          repoPath: selectedRepoPath || null,
         });
         if (!cancelled?.current) {
           setProxyInfo(info);
@@ -42,7 +42,7 @@ export function useGitProxySettings() {
         proxyLoadingRef.current = false;
       }
     },
-    [currentRepo?.path, syncProxyDrafts]
+    [selectedRepoPath, syncProxyDrafts]
   );
 
   const handleProxyCancel = useCallback(() => {

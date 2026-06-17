@@ -4,9 +4,7 @@
     "signedOut": "Выход выполнен успешно",
     "logoutFailed": "Не удалось выйти. Повторите попытку.",
     "customCommandUpdated": "Пользовательская команда обновлена",
-    "shellSettingUpdated": "Настройка оболочки обновлена",
-    "idesDetected": "Обнаружено IDE: {{count}}",
-    "ideDetectFailed": "Не удалось обнаружить IDE. Убедитесь, что IDE установлена, и повторите попытку."
+    "shellSettingUpdated": "Настройка оболочки обновлена"
   },
   "noSettingsFound": "Настройки для \"{{query}}\" не найдены",
   "searchPlaceholder": "Поиск настроек...",
@@ -715,11 +713,6 @@
     "customShell": "Пользовательский Shell",
     "customCommand": "Пользовательская команда",
     "customCommandDesc": "Путь к исполняемому файлу Shell",
-    "externalIde": "Внешняя IDE",
-    "preferredExternalIde": "Предпочитаемая внешняя IDE",
-    "preferredExternalIdeDesc": "Используется при открытии файлов во внешнем редакторе",
-    "selectIde": "Выберите IDE",
-    "runDetect": "Запустите обнаружение для получения IDE",
     "workspaceDefaults": "Значения Workspace по умолчанию",
     "defaultRepoFolder": "Папка Repo по умолчанию",
     "defaultRepoFolderDesc": "Заполняет формы клонирования и создания Repo",

@@ -4,9 +4,7 @@
     "signedOut": "已成功登出",
     "logoutFailed": "登出失敗，請重試。",
     "customCommandUpdated": "自訂命令已更新",
-    "shellSettingUpdated": "Shell 設定已更新",
-    "idesDetected": "偵測到 {{count}} 個 IDE",
-    "ideDetectFailed": "無法偵測到 IDE。請確認已安裝 IDE 後再試一次。"
+    "shellSettingUpdated": "Shell 設定已更新"
   },
   "noSettingsFound": "未找到\"{{query}}\"相關設置",
   "searchPlaceholder": "搜索設置...",
@@ -715,11 +713,6 @@
     "customShell": "自定義 Shell",
     "customCommand": "自定義命令",
     "customCommandDesc": "Shell 可執行文件的路徑",
-    "externalIde": "外部 IDE",
-    "preferredExternalIde": "首選外部 IDE",
-    "preferredExternalIdeDesc": "在外部編輯器中打開文件時使用",
-    "selectIde": "選擇 IDE",
-    "runDetect": "運行檢測以填充 IDE",
     "workspaceDefaults": "工作區預設值",
     "defaultRepoFolder": "預設 Repo 資料夾",
     "defaultRepoFolderDesc": "用於預填 clone 和建立 Repo 表單",

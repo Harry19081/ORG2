@@ -9,12 +9,12 @@ import React, { memo, useCallback, useEffect, useMemo } from "react";
 
 import SimulatorFrame from "@src/engines/Simulator/components/SimulatorFrame";
 import { useWorkStationTabs } from "@src/hooks/workStation";
-import { currentRepoAtom } from "@src/store/repo";
 import {
   perAppStatusBarCallbacksAtom,
   workStationStatusBarHiddenAtom,
   workStationTitleBarHiddenAtom,
 } from "@src/store/ui/workStationAtom";
+import { activeWorkspaceRootAtom } from "@src/store/workspace";
 import { createProjectSettingsTab } from "@src/store/workstation/tabs";
 
 import { StatusBarRenderer } from "../WorkStation/shared";
@@ -38,12 +38,12 @@ const ProjectManagerShell: React.FC<ProjectManagerShellProps> = memo(
     const titleBarHidden = useAtomValue(workStationTitleBarHiddenAtom);
     const statusBarHidden = useAtomValue(workStationStatusBarHiddenAtom);
 
-    const currentRepo = useAtomValue(currentRepoAtom);
-    const repoPath = currentRepo?.path ?? currentRepo?.fs_uri ?? "";
+    const activeWorkspaceRoot = useAtomValue(activeWorkspaceRootAtom);
+    const repoPath = activeWorkspaceRoot?.path ?? "";
     const repoName = useMemo(() => {
-      if (currentRepo?.name) return currentRepo.name;
+      if (activeWorkspaceRoot?.name) return activeWorkspaceRoot.name;
       return getFolderName(repoPath) || "Project Manager";
-    }, [currentRepo?.name, repoPath]);
+    }, [activeWorkspaceRoot?.name, repoPath]);
 
     const { openTab: openProjectTab } = useWorkStationTabs();
 

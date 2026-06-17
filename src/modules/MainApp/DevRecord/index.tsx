@@ -12,7 +12,7 @@ import React, { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { currentRepoAtom } from "@src/store/repo/derived";
+import { selectedRepoAtom } from "@src/store/repo";
 import { devRecordActiveViewAtom } from "@src/store/ui/devRecordToolbarAtom";
 
 const GitDashboardView = React.lazy(() => import("./views/GitDashboardView"));
@@ -26,7 +26,7 @@ const SUSPENSE_FALLBACK = (
 const DevRecordPage: React.FC = () => {
   const { t } = useTranslation();
   const activeView = useAtomValue(devRecordActiveViewAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const currentRepo = useAtomValue(selectedRepoAtom);
 
   const repoId = currentRepo?.id ?? currentRepo?.path;
 

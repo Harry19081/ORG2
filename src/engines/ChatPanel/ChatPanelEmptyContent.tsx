@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { useAtomValue } from "jotai";
 import React from "react";
 
 import { SESSION_CREATOR_LAUNCH_MODE } from "@src/features/SessionCreator/types";
@@ -13,6 +14,7 @@ import {
   type ChatPanelCreateProjectContext,
   type ChatPanelCreateTarget,
 } from "@src/store/ui/chatPanelAtom";
+import { primaryWorkspaceRootAtom } from "@src/store/workspace";
 import {
   PROJECT_CREATOR_DRAFT_ID,
   type WorkItemDraft,
@@ -31,6 +33,23 @@ interface DefaultAiWorkItemAssignee {
   agentDefinitionId?: string;
 }
 
+interface WorkspaceScopedCreateContext {
+  workspaceName: string | undefined;
+  workspacePath: string | null;
+}
+
+function WorkspaceScopedContent({
+  children,
+}: {
+  children: (context: WorkspaceScopedCreateContext) => React.ReactNode;
+}): React.ReactNode {
+  const workspaceRoot = useAtomValue(primaryWorkspaceRootAtom);
+  const workspacePath = workspaceRoot?.path ?? null;
+  const workspaceName = workspaceRoot?.name ?? undefined;
+
+  return <>{children({ workspaceName, workspacePath })}</>;
+}
+
 interface ChatPanelEmptyContentProps {
   benchmarkFooter: React.ReactNode;
   benchmarkPanel: React.ReactNode;
@@ -38,8 +57,6 @@ interface ChatPanelEmptyContentProps {
   createTarget: ChatPanelCreateTarget;
   creatorClassName: string;
   creatorVariant: "default" | "fullScreen";
-  currentRepoName: string | undefined;
-  currentRepoPath: string | null;
   defaultAiWorkItemAssignee: DefaultAiWorkItemAssignee | null;
   handleAiWorkItemSessionStart: NonNullable<
     React.ComponentProps<SessionCreatorSlot>["onSessionStart"]
@@ -68,8 +85,6 @@ export function ChatPanelEmptyContent({
   createTarget,
   creatorClassName,
   creatorVariant,
-  currentRepoName,
-  currentRepoPath,
   defaultAiWorkItemAssignee,
   handleAiWorkItemSessionStart,
   handleCancelWorkItemCreate,
@@ -100,28 +115,34 @@ export function ChatPanelEmptyContent({
       ) : null;
 
     return (
-      <div className={`flex flex-col overflow-hidden ${creatorClassName}`}>
-        <div className="shrink-0 overflow-hidden">
-          <CreateProjectView
-            tabId={PROJECT_CREATOR_DRAFT_ID}
-            repoPath={currentRepoPath ?? undefined}
-            repoName={currentRepoName}
-            scopeBreadcrumbLabel={
-              createProjectContext?.scopeBreadcrumbLabel ??
-              t("projects:orgs.personalOrg")
-            }
-            orgId={createProjectContext?.orgId ?? STORY_PERSONAL_ORG_FILTER_ID}
-            onSetUnsaved={() => undefined}
-            onProjectCreated={handleChatPanelProjectCreated}
-            aiGenerateMode={showProjectAgentCreator}
-          />
-        </div>
-        {sessionCreatorContent ? (
-          <div className="min-h-0 flex-1 overflow-hidden pt-6">
-            {sessionCreatorContent}
+      <WorkspaceScopedContent>
+        {({ workspaceName, workspacePath }) => (
+          <div className={`flex flex-col overflow-hidden ${creatorClassName}`}>
+            <div className="shrink-0 overflow-hidden">
+              <CreateProjectView
+                tabId={PROJECT_CREATOR_DRAFT_ID}
+                repoPath={workspacePath ?? undefined}
+                repoName={workspaceName}
+                scopeBreadcrumbLabel={
+                  createProjectContext?.scopeBreadcrumbLabel ??
+                  t("projects:orgs.personalOrg")
+                }
+                orgId={
+                  createProjectContext?.orgId ?? STORY_PERSONAL_ORG_FILTER_ID
+                }
+                onSetUnsaved={() => undefined}
+                onProjectCreated={handleChatPanelProjectCreated}
+                aiGenerateMode={showProjectAgentCreator}
+              />
+            </div>
+            {sessionCreatorContent ? (
+              <div className="min-h-0 flex-1 overflow-hidden pt-6">
+                {sessionCreatorContent}
+              </div>
+            ) : null}
           </div>
-        ) : null}
-      </div>
+        )}
+      </WorkspaceScopedContent>
     );
   }
 
@@ -140,40 +161,50 @@ export function ChatPanelEmptyContent({
         />
       ) : null;
 
-    const workItemCreator = (
-      <CreateWorkItemView
-        repoPath={currentRepoPath}
-        onCancel={handleCancelWorkItemCreate}
-        onSetUnsaved={() => undefined}
-        onWorkItemCreated={handleChatPanelWorkItemCreated}
-        onDraftChange={setWorkItemCreateDraft}
-        showCloseAction={false}
-        propertiesOpen={false}
-        showPropertiesAction={false}
-        aiGenerateMode={showWorkItemAgentCreator}
-        onAiGenerateModeChange={handleWorkItemAgentCreatorToggle}
-        showAiModePanel={false}
-        showFooter
-        chatPanelFooter
-        defaultAiAssignee={defaultAiWorkItemAssignee}
-      />
-    );
-
-    if (sessionCreatorContent) {
-      return (
-        <div className={`flex flex-col overflow-hidden ${creatorClassName}`}>
-          <div className="shrink-0 overflow-hidden">{workItemCreator}</div>
-          <div className="min-h-0 flex-1 overflow-hidden pt-6">
-            {sessionCreatorContent}
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <div className={`flex overflow-hidden ${creatorClassName}`}>
-        {workItemCreator}
-      </div>
+      <WorkspaceScopedContent>
+        {({ workspacePath }) => {
+          const workItemCreator = (
+            <CreateWorkItemView
+              repoPath={workspacePath}
+              onCancel={handleCancelWorkItemCreate}
+              onSetUnsaved={() => undefined}
+              onWorkItemCreated={handleChatPanelWorkItemCreated}
+              onDraftChange={setWorkItemCreateDraft}
+              showCloseAction={false}
+              propertiesOpen={false}
+              showPropertiesAction={false}
+              aiGenerateMode={showWorkItemAgentCreator}
+              onAiGenerateModeChange={handleWorkItemAgentCreatorToggle}
+              showAiModePanel={false}
+              showFooter
+              chatPanelFooter
+              defaultAiAssignee={defaultAiWorkItemAssignee}
+            />
+          );
+
+          if (sessionCreatorContent) {
+            return (
+              <div
+                className={`flex flex-col overflow-hidden ${creatorClassName}`}
+              >
+                <div className="shrink-0 overflow-hidden">
+                  {workItemCreator}
+                </div>
+                <div className="min-h-0 flex-1 overflow-hidden pt-6">
+                  {sessionCreatorContent}
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className={`flex overflow-hidden ${creatorClassName}`}>
+              {workItemCreator}
+            </div>
+          );
+        }}
+      </WorkspaceScopedContent>
     );
   }
 

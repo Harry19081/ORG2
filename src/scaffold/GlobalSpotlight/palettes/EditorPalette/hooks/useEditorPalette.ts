@@ -4,14 +4,14 @@
  * Main orchestration hook for EditorPalette - combines all mode-specific hooks
  */
 import { useAtomValue } from "jotai";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ACTION_ID, useActionSystem } from "@src/ActionSystem";
 import { ROUTES } from "@src/config/routes";
 import { FileOperationsService } from "@src/services/file";
-import { currentRepoAtom } from "@src/store/repo/derived";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
+import { activeWorkspaceRootAtom } from "@src/store/workspace";
 import { activeWorkStationFilePathAtom } from "@src/store/workstation/tabs";
 
 import type { SpotlightItem } from "../../../shared";
@@ -65,8 +65,18 @@ export function useEditorPalette({
   }
 
   const currentFile = useAtomValue(activeWorkStationFilePathAtom);
-  const currentRepo = useAtomValue(currentRepoAtom);
+  const activeWorkspaceRoot = useAtomValue(activeWorkspaceRootAtom);
   const workspaceFolders = useAtomValue(workspaceFoldersAtom);
+  const currentRepo = useMemo(
+    () =>
+      activeWorkspaceRoot
+        ? {
+            name: activeWorkspaceRoot.name,
+            path: activeWorkspaceRoot.path,
+          }
+        : null,
+    [activeWorkspaceRoot]
+  );
 
   // Get dispatch for actions
   const { dispatch, isValidAction } = useActionSystem();

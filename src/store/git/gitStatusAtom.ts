@@ -16,7 +16,7 @@
 import { atom } from "jotai";
 
 import { type GitFileStatus, normalizeGitStatus } from "@src/config/gitStatus";
-import { currentRepoAtom, selectedRepoIdAtom } from "@src/store/repo";
+import { selectedRepoIdAtom, selectedRepoPathAtom } from "@src/store/repo";
 import {
   GitRepositoryStatus,
   GitSuggestedAction,
@@ -45,13 +45,12 @@ scopedGitStatusAtom.debugLabel = "scopedGitStatusAtom";
 export const currentGitStatusAtom = atom<GitRepositoryStatus | null>((get) => {
   const scopedStatus = get(scopedGitStatusAtom);
   const selectedRepoId = get(selectedRepoIdAtom);
-  const currentRepo = get(currentRepoAtom);
-  const currentRepoPath = currentRepo?.path || currentRepo?.fs_uri || null;
+  const selectedRepoPath = get(selectedRepoPathAtom) || null;
 
   if (
     !scopedStatus ||
     scopedStatus.repoId !== selectedRepoId ||
-    scopedStatus.repoPath !== currentRepoPath
+    scopedStatus.repoPath !== selectedRepoPath
   ) {
     return null;
   }
