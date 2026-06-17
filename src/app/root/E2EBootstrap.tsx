@@ -153,6 +153,10 @@ export const E2EBootstrap: FC = () => {
       clearWorkspaceRepos,
       setActiveWorkspaceFolderForTest,
       readSessionWorkspaceFromDb,
+      getGitStatusForPath,
+      pinFolderWorkspace,
+      getCodeMapStatusForPath,
+      startCodeMapIndexForPath,
     } = createWorkspaceHelpers(store);
 
     const { readSessionPromptEnvironmentBlock, readSdeTranscript } =
@@ -341,6 +345,10 @@ export const E2EBootstrap: FC = () => {
       clearWorkspaceRepos,
       setActiveWorkspaceFolderForTest,
       readSessionWorkspaceFromDb,
+      getGitStatusForPath,
+      pinFolderWorkspace,
+      getCodeMapStatusForPath,
+      startCodeMapIndexForPath,
       readSessionPromptEnvironmentBlock,
       readSdeTranscript,
       writeProject,
