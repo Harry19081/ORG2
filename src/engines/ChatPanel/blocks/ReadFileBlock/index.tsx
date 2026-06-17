@@ -9,7 +9,6 @@
 import { Briefcase } from "lucide-react";
 import React, { useMemo } from "react";
 
-import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
 import { extractFileData } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
@@ -22,6 +21,7 @@ import { getFileName } from "@src/util/file/pathUtils";
 import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
 import { extractSkillNameFromPath } from "@src/util/skills/skillPath";
 
+import EventFileHoverPreview from "../EventFileHoverPreview";
 import {
   EVENT_LOADING_SHIMMER_TEXT_CLASSES,
   EventBlockHeader,
@@ -145,15 +145,9 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
   if (isSkill || !filePath) return content;
 
   return (
-    <FileTreeHoverPreview
-      path={filePath}
-      itemType="file"
-      repoPath={props.repoPath}
-      as="div"
-      display="block"
-    >
+    <EventFileHoverPreview path={filePath} repoPath={props.repoPath}>
       {content}
-    </FileTreeHoverPreview>
+    </EventFileHoverPreview>
   );
 };
 

@@ -14,7 +14,6 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
-import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
 import {
@@ -31,6 +30,7 @@ import { getFileName } from "@src/util/file/pathUtils";
 
 import { useChatHistoryDisplayMode } from "../../ChatHistory/chatDisplayModeContext";
 import ChatCodeBlock from "../CodeBlock";
+import EventFileHoverPreview from "../EventFileHoverPreview";
 import {
   EventBlockHeader,
   EventBlockHeaderIcon,
@@ -176,14 +176,7 @@ const SegmentView: React.FC<SegmentViewProps> = ({
     if (!filePath) return content;
 
     return (
-      <FileTreeHoverPreview
-        path={filePath}
-        itemType="file"
-        as="div"
-        display="block"
-      >
-        {content}
-      </FileTreeHoverPreview>
+      <EventFileHoverPreview path={filePath}>{content}</EventFileHoverPreview>
     );
   }
 
@@ -205,14 +198,7 @@ const SegmentView: React.FC<SegmentViewProps> = ({
     if (!filePath) return content;
 
     return (
-      <FileTreeHoverPreview
-        path={filePath}
-        itemType="file"
-        as="div"
-        display="block"
-      >
-        {content}
-      </FileTreeHoverPreview>
+      <EventFileHoverPreview path={filePath}>{content}</EventFileHoverPreview>
     );
   }
 
@@ -325,14 +311,9 @@ const CompactSegmentView: React.FC<CompactSegmentViewProps> = ({
   if (!segment.filePath) return content;
 
   return (
-    <FileTreeHoverPreview
-      path={segment.filePath}
-      itemType="file"
-      as="div"
-      display="block"
-    >
+    <EventFileHoverPreview path={segment.filePath}>
       {content}
-    </FileTreeHoverPreview>
+    </EventFileHoverPreview>
   );
 };
 
