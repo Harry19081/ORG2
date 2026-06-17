@@ -74,7 +74,7 @@ const WizardShell: React.FC<WizardShellProps> = ({
 
   return (
     <div
-      className="flex h-full w-full flex-col overflow-hidden"
+      className="flex h-full w-full flex-col overflow-hidden pt-2"
       data-testid={testId}
     >
       {afterHeader}
