@@ -444,6 +444,48 @@ describe("extractFileData", () => {
       expect(data.content).toBe("Image: foo.png (image/png, 12kb)");
     });
 
+    it("strips read_file pagination footer from numbered content", () => {
+      const rawContent =
+        "[action: read_text]\n     1│const x = 1;\n     2│export default x;\n\n[Showing lines 1-2 of 10 total (1.2 KB). Use offset and limit to read other sections.]";
+      const props = makeUniversalProps({
+        args: { file_path: "x.ts" },
+        result: { content: rawContent },
+      });
+      const data = extractFileData(props);
+      expect(data.content).toBe("const x = 1;\nexport default x;\n");
+      expect(data.lineCount).toBe(3);
+      expect(data.startLine).toBe(1);
+    });
+
+    it("strips read_file pagination footer from rust-extracted content", () => {
+      const props = makeUniversalProps({
+        rustExtracted: {
+          kind: "file",
+          filePath: "x.ts",
+          fileName: "x.ts",
+          content:
+            "     5│const x = 1;\n     6│export default x;\n\n[Showing lines 5-6 of 10 total (1.2 KB). Use offset and limit to read other sections.]",
+          language: "typescript",
+        },
+      });
+      const data = extractFileData(props);
+      expect(data.content).toBe("const x = 1;\nexport default x;\n");
+      expect(data.lineCount).toBe(3);
+      expect(data.startLine).toBe(5);
+    });
+
+    it("strips read_file pagination footer without offset hint", () => {
+      const rawContent =
+        "line one\nline two\n[Showing lines 1-2 of 10 total (1.2 KB)]";
+      const props = makeUniversalProps({
+        args: { file_path: "notes.txt" },
+        result: { content: rawContent },
+      });
+      const data = extractFileData(props);
+      expect(data.content).toBe("line one\nline two");
+      expect(data.lineCount).toBe(2);
+    });
+
     it("does not strip content without line prefixes", () => {
       const plainContent = "const x = 1;\nconst y = 2;";
       const props = makeUniversalProps({
