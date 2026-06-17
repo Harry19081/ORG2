@@ -1,36 +1,36 @@
 # ORG-II
 
-ORGII is a self-evolving agentic development framework for coding with agents and Agentic Orgs.
+[English](README.md) · [Français](docs/readmes/README.fr.md) · [简体中文](docs/readmes/README.zh.md) · [繁體中文](docs/readmes/README.zh-Hant.md) · [Español](docs/readmes/README.es.md) · [Русский](docs/readmes/README.ru.md) · [Português](docs/readmes/README.pt.md) · [Deutsch](docs/readmes/README.de.md) · [日本語](docs/readmes/README.ja.md) · [한국어](docs/readmes/README.ko.md) · [Türkçe](docs/readmes/README.tr.md) · [Tiếng Việt](docs/readmes/README.vi.md) · [Polski](docs/readmes/README.pl.md)
 
-- Lightweight Tauri + Rust architecture; < 100MB on disk.
-- Rust agents that work with your existing API keys and agent subscriptions.
-- Livestream and replay agent trajectories for auditing, review, and debugging.
-- GUI compatible with both ORGII Rust and CLI agents
-- Local-first architecture with group issue and session collaboration via self-hosted Supabase (early stage).
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a" controls width="720"></video>
+</p>
 
-Agents:
+ORG-II is an open-source agentic development framework built with Rust and Tauri for local-first execution under 100MB on disk.
 
-- Resource-aware, understanding system state (RAM, CPU, and human attention avialability).
+It is not just another AI coding tool; it is an experiment in human/agent organizations and org-level alignment. Agents are getting better, but collaboration, observability, structure, and shared accountability are not keeping up — and in some cases are getting worse. Cursor, Claude Code, and similar tools often treat agents as outsourced assistants: useful for output, but hard to audit, coordinate, align, or evolve at a system level.
+
+ORG-II explores a different model: agents as persistent, observable colleagues inside a structured organization. Instead of stateless, hard-to-review AI IDE sessions, it introduces replayable agent execution, cross-session memory, AI blame, and a local-first Rust-based runtime so humans, agents, and teams can collaborate around shared context and aligned goals.
+
+## Key capabilities
+
+- Long-running sessions with replayable execution traces for auditing, review, and debugging.
+- Rust-based agents that work with your existing API keys and agent subscriptions.
+- GUI, CLI, terminal, Git, browser, LSP, timeline, and database tooling.
+- Cross-session memory, cross-agent knowledge sharing, and shared workspace state.
+- Resource-aware execution that can react to CPU, RAM, and human attention availability.
 - Agent-powered GUI end-to-end testing for supervised self-evolution.
-- Cross-agent memory and knowledge sharing.
-- AI blame system that attributes actions to the original agent and restores that agent in any new session.
-- Designed for long-running agent sessions and organizational-scale development.
+- Scheduling and auto-started sessions so agents can run overnight or continue work when you are away.
+- Org-level alignment surfaces (issues/projects management) for coordinating humans, agents, goals, and accountability (WIP).
+- Session collaboration and group issue workflows via self-hosted Supabase (WIP).
 
-Built-in tools:
+<p align="center">
+  <img src="assets/github-browser-demo.png" alt="ORGII GitHub browser demo" width="720" />
+</p>
 
-- Skills, MCPs, Plugins, Rules.
-- Routine builder.
-- Code Editor, LSP, Prolems, Terminal, Source control, Timeline, Git History, etc.
-- Built-in browsers / element inspecors
-- Database manager (early stage).
-
-## Demo
-
-![ORGII desktop app demo preview](assets/demo-preview.jpg)
-
-![ORGII GitHub browser demo](assets/github-browser-demo.png)
-
-https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a
+<p align="center">
+  <img src="assets/agent-scheduling-demo.png" alt="ORGII agent scheduling demo" width="720" />
+</p>
 
 ## Download
 

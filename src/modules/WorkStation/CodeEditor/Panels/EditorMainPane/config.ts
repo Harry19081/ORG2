@@ -111,15 +111,15 @@ export function createEditorQuickActions(
 
   return [
     {
+      id: "add-workspace",
+      label: t("commands.switchWorkspace"),
+      onAction: onAddWorkspace,
+    },
+    {
       id: "search-files",
       label: t("commands.searchFiles"),
       shortcut: getShortcutKeys("quick_open"),
       onAction: () => openEditorSpotlight(""),
-    },
-    {
-      id: "add-workspace",
-      label: t("commands.switchWorkspace"),
-      onAction: onAddWorkspace,
     },
     {
       id: "toggle-primary-sidebar",

@@ -26,6 +26,7 @@ import AgentChatItemDefault from "../ChatItems/AgentChatItemDefault";
 import AgentErrorChatItem from "../ChatItems/AgentErrorChatItem";
 import "./ActivityRouter.scss";
 import { isAgentErrorEvent } from "./chatItemPipeline/classifiers";
+import CollapsedNarrationBlock from "./components/CollapsedNarrationBlock";
 import UserMessageContent from "./components/UserMessageContent";
 
 const log = createLogger("ActivityRouter");
@@ -38,6 +39,12 @@ export interface ActivityChatItemProps {
   status?: ActivityStatus;
   /** Pass true when the caller is in live-playback mode (e.g. subagent grid replay). */
   isStreaming?: boolean;
+  /**
+   * Main-chat only: when true this assistant message is mid-turn narration
+   * (followed by a tool call) and should render de-emphasised inside a
+   * collapsible think-style block instead of full-brightness prose.
+   */
+  collapsedNarration?: boolean;
 }
 
 // ============================================
@@ -81,6 +88,9 @@ function arePropsEqual(
   if (prevProps.itemIndex !== nextProps.itemIndex) return false;
   if (prevProps.status !== nextProps.status) return false;
   if (prevProps.isStreaming !== nextProps.isStreaming) return false;
+  if (prevProps.collapsedNarration !== nextProps.collapsedNarration) {
+    return false;
+  }
 
   const prevEvent = prevProps.event;
   const nextEvent = nextProps.event;
@@ -216,7 +226,13 @@ class ActivityErrorBoundary extends React.Component<
 // ============================================
 
 const ActivityChatItem: React.FC<ActivityChatItemProps> = memo(
-  ({ event, itemIndex = 0, status = "agent", isStreaming = false }) => {
+  ({
+    event,
+    itemIndex = 0,
+    status = "agent",
+    isStreaming = false,
+    collapsedNarration = false,
+  }) => {
     const userMessageText = useMemo((): string | null => {
       const actionType = event.actionType;
       if (actionType !== "raw" && actionType !== "raw_event") return null;
@@ -260,6 +276,9 @@ const ActivityChatItem: React.FC<ActivityChatItemProps> = memo(
       if (isAssistantMessageLikeEvent(event, eventType)) {
         const assistantContent = getAssistantMessageContent(event);
         if (assistantContent) {
+          if (collapsedNarration && !isStreaming) {
+            return <CollapsedNarrationBlock content={assistantContent} />;
+          }
           return (
             <AgentMessageBlock>
               <AgentChatItemDefault

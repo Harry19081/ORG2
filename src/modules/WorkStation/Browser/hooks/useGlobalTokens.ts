@@ -6,7 +6,7 @@
  * - Token values and sources
  * - Token categories for the browser design panel
  *
- * @see Documentation/Architecture-Guide/orgii-editor/orgii-project-format-0130.md
+ * @see docs/architecture-guide/orgii-editor/orgii-project-format-0130.md
  */
 import { invoke } from "@tauri-apps/api/core";
 import { useSetAtom } from "jotai";

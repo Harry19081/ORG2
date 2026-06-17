@@ -146,6 +146,7 @@ const SessionCreatorChatPanelSingle: React.FC<
     currentBranch,
     branchLoading,
     loadBranchList,
+    forceRefreshRepos,
   } = useRepoSelection({ autoLoad: true });
   const [attachedWorkItemContext, setAttachedWorkItemContext] =
     useState<SessionLaunchWorkItemContext | null>(null);
@@ -281,6 +282,7 @@ const SessionCreatorChatPanelSingle: React.FC<
     advancedConfig,
     setAdvancedConfig,
     selectRepo,
+    forceRefreshRepos,
   });
 
   const handleAdvancedConfigChange = useCallback(

@@ -202,6 +202,8 @@
     "sort": "排序",
     "openFolder": "開啟資料夾",
     "addWorkspace": "新增工作區",
+    "openSpotlight": "開啟 Spotlight",
+    "openWorkspace": "開啟工作區",
     "skipThisVersion": "跳過此版本",
     "later": "稍後",
     "updateAiBlame": "更新 AI Blame",
@@ -942,6 +944,8 @@
     "loadingAccountStatus": "正在加載賬戶狀態...",
     "noRepositorySelected": "未選擇倉庫",
     "selectRepositoryFromHome": "請從首頁選擇一個倉庫以打開。",
+    "noWorkspaceExplorerTitle": "未開啟 Workspace",
+    "noWorkspaceExplorerSubtitle": "開啟工作區以查看檔案",
     "cannotFindRepo": "找不到 {{repoName}}",
     "lastSeenAtPath": "上次路徑：{{path}}",
     "unsupportedFileType": "不支持的文件類型",
@@ -1237,7 +1241,7 @@
         "current": "當前",
         "repo": "倉庫",
         "systemPaths": "系統路徑",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "在其他位置使用",
         "workspace": "工作區"
       },
       "tabs": {
@@ -2177,7 +2181,8 @@
       "repoTooltip": "倉庫：{{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} 個倉庫：{{names}}",
       "branchTooltip": "Branch：{{branch}}",
-      "branchSwitching": "（切換中...）"
+      "branchSwitching": "（切換中...）",
+      "noRepo": "無倉庫"
     }
   },
   "globalToolbar": {

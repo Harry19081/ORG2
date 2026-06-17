@@ -16,7 +16,7 @@
  * Related Files:
  * - webpack.config.js - Build configuration
  * - .eslintrc.js - Linting configuration
- * - types/ - Global type definitions
+ * - src/types/ambient/ - Global type definitions
  */
 
 {
@@ -94,8 +94,7 @@
   // ============================================
 
   "include": [
-    "src/**/*", // All source files
-    "types/**/*.d.ts" // Global type definitions
+    "src/**/*" // Source files and global type definitions
   ],
 
   "exclude": [
@@ -103,6 +102,6 @@
     "**/node_modules/**", // Explicitly exclude node_modules at any level
     "dist", // Build output
     "build", // Webpack build output
-    ".market" // Archived market business; not part of any build (see Documentation/Shared/oss-market-extraction--0507.md)
+    ".market" // Archived market business; not part of any build (see docs/shared/oss-market-extraction--0507.md)
   ]
 }

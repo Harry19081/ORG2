@@ -3,7 +3,7 @@
 > 全局只读审计的结果。不动源码，分类登记。Phase 2 起按本目录的 findings 分阶段清理。
 >
 > **审计范围**：`src/`（前端 TS / React）+ `src-tauri/`（后端 Rust + Tauri 命令注册）。
-> 跳过：`packages/`、`mobile-pwa/`、`build/`、`node_modules/`、`target/`、`gen/`、`Documentation/`。
+> 跳过：`packages/`、`mobile-pwa/`、`build/`、`node_modules/`、`target/`、`gen/`、`docs/`。
 
 ## TL;DR
 
@@ -130,7 +130,7 @@
 
 - 不动 `src/hooks/workStation/browser/useOpenUrlInBrowser.ts` 和 `src/modules/WorkStation/.../DomComponentPreviewContent/index.tsx`（用户其它在飞 dirty 工作）。
 - 不动 `packages/`、`mobile-pwa/`（不在桌面构建里，见 memory `workspace_packages_and_mobile_split.md`）。
-- 不动 `Documentation/Shared/cla-process--0602.md`（Rust 字符串字面量引用）。
+- 不动 `docs/shared/cla-process--0602.md`（Rust 字符串字面量引用）。
 - 不引入 `knip` / `madge` / `depcheck`（仓库未装）。
 - 不删 `build/`（已 `.gitignore`）。
 

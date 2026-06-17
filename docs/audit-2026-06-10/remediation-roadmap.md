@@ -47,7 +47,7 @@
 | P3-3  | chore(schema): canonicalize pre-user-stage CREATE TABLE               | `cli/mod.rs`、`session_snapshots.rs`、`session-persistence/schema.rs`、`housekeeping.rs` | #43       |
 | P3-4  | feat(types): Rust → TS enum generation pipeline                       | build script + `types/wire/`                                                             | —         |
 | P3-5  | fix(resume): cli_agent_resume runs ensure_cli_account_key_fresh       | `cli/commands.rs:592`                                                                    | #9        |
-| P3-6  | docs: glossary.md for 17 重载词                                       | `Documentation/glossary.md`（新文件）                                                    | #4        |
+| P3-6  | docs: glossary.md for 17 重载词                                       | `docs/glossary.md`（新文件）                                                             | #4        |
 | P3-7  | chore(diag): consolidate dangerouslySetInnerHTML sanitizer            | 6 高风险点                                                                               | #15 OWASP |
 | P3-8  | chore(rust): unwrap reduction phase 1                                 | hot path 30 处 → `Result`                                                                | #33       |
 | P3-9  | chore(rust): unwrap reduction phase 2                                 | 剩余 147 处                                                                              | #33       |

@@ -57,7 +57,7 @@ const ALLOWED_PEEKABOO_COMMANDS: &[&str] = &[
 /// event ever reaches the WindowServer. Forcing `--input-strategy synthFirst`
 /// on these commands makes Peekaboo post genuine CGEvent mouse/keyboard events
 /// first (falling back to AX only on failure), which presents as real hardware
-/// input. See `Documentation/Agent/peekaboo-learnings/`.
+/// input. See `docs/agent/peekaboo-learnings/`.
 const INPUT_COMMANDS: &[&str] = &[
     "click",
     "drag",
@@ -536,7 +536,7 @@ fn has_arg(args: &[String], name: &str) -> bool {
 /// - **Anti-automation-detection** (`DesktopConfig::anti_detection`). Input
 ///   subcommands (`click`, `type`, …) get `--input-strategy synthFirst` so
 ///   Peekaboo posts real CGEvent (HID) input rather than pure Accessibility
-///   actions. See `Documentation/Agent/peekaboo-learnings/`.
+///   actions. See `docs/agent/peekaboo-learnings/`.
 /// - **Human input cadence** (`DesktopConfig::human_input_profile`). The `type`
 ///   subcommand gets `--profile human` for human-like keystroke timing.
 /// - **Machine-stable output.** Observation subcommands (`see`, `list`, …) get

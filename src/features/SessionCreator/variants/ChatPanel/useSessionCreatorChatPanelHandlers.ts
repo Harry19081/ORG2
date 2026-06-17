@@ -27,6 +27,7 @@ import {
   useAgentCompatibility,
 } from "@src/hooks/models/useAgentCompatibility";
 import { preloadWingmanWindows } from "@src/router/lazy/preload";
+import { useWorkspaceForm } from "@src/scaffold/GlobalSpotlight/hooks/forms";
 import type { AgentSelection } from "@src/scaffold/GlobalSpotlight/palettes/DispatchCategoryPalette";
 import type { RepoItem } from "@src/scaffold/GlobalSpotlight/types";
 import { REPO_KIND, type RepoKind } from "@src/store/repo/types";
@@ -51,6 +52,7 @@ interface UseSessionCreatorHandlersOptions {
   advancedConfig: AdvancedConfig;
   setAdvancedConfig: (config: AdvancedConfig) => void;
   selectRepo: (repoId: string) => void;
+  forceRefreshRepos: () => Promise<void>;
 }
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
@@ -61,11 +63,18 @@ export function useSessionCreatorChatPanelHandlers({
   advancedConfig,
   setAdvancedConfig,
   selectRepo,
+  forceRefreshRepos,
 }: UseSessionCreatorHandlersOptions) {
   const { t } = useTranslation();
   const { registry } = useAgentCompatibility();
   const setCreatorState = useSetAtom(sessionCreatorStateAtom);
   const setSessionSource = useSetAtom(sessionSourceAtom);
+  const { handleImportWorkspace } = useWorkspaceForm({
+    onSuccess: async (workspaceId?: string) => {
+      await forceRefreshRepos();
+      if (workspaceId) selectRepo(workspaceId);
+    },
+  });
 
   // ── Screen sharing ────────────────────────────────────────────────────────
 
@@ -128,15 +137,30 @@ export function useSessionCreatorChatPanelHandlers({
   const handleRepoSelectForSession = useCallback(
     (selectedRepoId: string, repo: RepoItem) => {
       if (isSystemPathSourceId(repo.id)) {
+        const repoPath = getSystemPathSourcePath(repo);
         setSessionSource(
           createSystemPathSessionSource({
             systemPathId: getSystemPathIdFromRepoItem(repo),
             t,
             repoId: selectedRepoId,
             repoName: repo.name,
-            repoPath: getSystemPathSourcePath(repo),
+            repoPath,
           })
         );
+        if (repoPath) {
+          void handleImportWorkspace(repoPath, {
+            promptForGitInit: false,
+          }).then((workspaceId) => {
+            if (!workspaceId) return;
+            setSessionSource({
+              type: "local",
+              repoId: workspaceId,
+              repoName: repo.name,
+              repoPath,
+              branch: undefined,
+            });
+          });
+        }
         return;
       }
 
@@ -148,7 +172,7 @@ export function useSessionCreatorChatPanelHandlers({
         branch: undefined,
       });
     },
-    [setSessionSource, t]
+    [handleImportWorkspace, setSessionSource, t]
   );
 
   // ── Agent category selection ──────────────────────────────────────────────

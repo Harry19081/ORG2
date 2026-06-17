@@ -4,7 +4,7 @@
 //! 1. **`.git/` directory watching** — instant detection of git operations
 //! 2. **Adaptive polling (5–8 s)** — catches working-directory file changes
 //!
-//! See: `Documentation/Architecture-Guide/git-watcher-architecture-0124.md`
+//! See: `docs/architecture-guide/git-watcher-architecture-0124.md`
 //!
 //! The global singleton `REPO_WATCH_MANAGER` owns the [`RepoStateStore`],
 //! [`RepoWatcher`], and [`EventEmitter`] and is initialised once at app start.

@@ -17,5 +17,5 @@ open-sourced — it contains matching algorithms, key validators
 with provider-specific error parsing, MITM CA logic, and billing
 integration that must remain closed.
 
-See `Documentation/RustBackend/oss-boundary--0506.md` for the full
+See `docs/rust-backend/oss-boundary--0506.md` for the full
 boundary design and the rationale for keeping this layer private.

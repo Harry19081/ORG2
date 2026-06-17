@@ -219,7 +219,7 @@ uuid = { version = "1", features = ["v4"] }
 cursor_bridge_app = { path = "crates/cursor-bridge-app" }
 
 # Shared cross-crate type definitions (Phase 1 of workspace migration).
-# See `Documentation/RustBackend/modularization-plan--0504.md`.
+# See `docs/rust-backend/modularization-plan--0504.md`.
 core_types = { path = "crates/types" }
 
 # Filesystem path resolution (`~/.orgii/`, sensitive-file permissions).

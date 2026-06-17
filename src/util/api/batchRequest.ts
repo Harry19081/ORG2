@@ -267,7 +267,7 @@ export class BatchRequestManager<T = unknown> {
  * FIXED (Jan 21, 2026): Reduced batchSize from 10 → 2
  * Prevents "bad file descriptor" errors by coordinating with
  * MAX_CONCURRENT limits in GitStatusContext and MultiRepoGitStatusContext.
- * See: Documentation/Development/startup-bad-descriptor-investigation-0121.md
+ * See: docs/development/startup-bad-descriptor-investigation-0121.md
  */
 export const gitStatusBatchManager = new BatchRequestManager({
   batchSize: 2, // ✅ Align with MAX_CONCURRENT_GIT_OPERATIONS (was 10)

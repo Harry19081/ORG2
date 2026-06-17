@@ -200,6 +200,8 @@
     "sort": "Sortuj",
     "openFolder": "Otwórz folder",
     "addWorkspace": "Dodaj workspace",
+    "openSpotlight": "Otwórz Spotlight",
+    "openWorkspace": "Otwórz Workspace",
     "skipThisVersion": "Pomiń tę wersję",
     "later": "Później",
     "updateAiBlame": "Zaktualizuj AI Blame",
@@ -930,6 +932,8 @@
     "loadingAccountStatus": "Ładowanie statusu konta...",
     "noRepositorySelected": "Nie wybrano Repo",
     "selectRepositoryFromHome": "Wybierz Repo ze strony głównej, aby otworzyć.",
+    "noWorkspaceExplorerTitle": "Brak otwartego Workspace",
+    "noWorkspaceExplorerSubtitle": "Otwórz Workspace, aby wyświetlić pliki",
     "cannotFindRepo": "Nie można znaleźć {{repoName}}",
     "lastSeenAtPath": "Ostatnio widziano w {{path}}",
     "unsupportedFileType": "Nieobsługiwany typ pliku",
@@ -1224,7 +1228,7 @@
         "current": "Bieżące",
         "repo": "Repozytoria",
         "systemPaths": "Ścieżki systemowe",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "Używane gdzie indziej",
         "workspace": "Workspace"
       },
       "tabs": {
@@ -2159,7 +2163,8 @@
       "repoTooltip": "Repo: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} Repo: {{names}}",
       "branchTooltip": "Gałąź: {{branch}}",
-      "branchSwitching": " (przełączanie...)"
+      "branchSwitching": " (przełączanie...)",
+      "noRepo": "Brak repo"
     }
   },
   "globalToolbar": {

@@ -16,7 +16,7 @@ The `ContextMenu` component provides a Cursor-like file search experience integr
 
 - **Unified File Search**: Combined files and folders search in a single menu option
 - **Keyboard Navigation**: Full keyboard support (↑↓ to navigate, Enter to select, Esc to close)
-- **Native File Search**: Uses Rust backend for fast fuzzy matching (see [Native File Search](../../../Documentation/Features/feature-native-file-search.md))
+- **Native File Search**: Uses Rust backend for fast fuzzy matching (see [Native File Search](../../../docs/features/feature-native-file-search.md))
 - **Session-Aware**: Automatically uses the repo path linked to the current session
 - **Recent Files**: Shows recently accessed files at the top (when available)
 - **File Type Icons**: Displays specific icons based on file extension (TypeScript, Python, Rust, etc.)
@@ -298,8 +298,8 @@ const {
 
 ## Related Documentation
 
-- [Native File Search](../../../Documentation/Features/feature-native-file-search.md) - Backend file search implementation
-- [Global Spotlight](../../../Documentation/Features/feature-global-spotlight.md) - Similar search UI patterns
+- [Native File Search](../../../docs/features/feature-native-file-search.md) - Backend file search implementation
+- [Global Spotlight](../../../docs/features/feature-global-spotlight.md) - Similar search UI patterns
 
 ## Migration Notes
 

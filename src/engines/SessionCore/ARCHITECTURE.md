@@ -282,7 +282,7 @@ Workspace atoms manage session-scoped UI state:
 3. **Registry**: Add lazy loader in `registry/events/index.ts`
 4. **Test**: Add to `registryCompleteness.test.ts`
 
-See `Documentation/Shared/ui-canonical-component-mapping--0330.md` for details.
+See `docs/shared/ui-canonical-component-mapping--0330.md` for details.
 
 ---
 

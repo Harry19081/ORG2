@@ -1,7 +1,7 @@
 {
   "name": "@orgii/orgii-core",
   "version": "0.1.0",
-  "description": "OSS-eligible portion of the ORGII desktop app (skeleton, see Documentation/RustBackend/oss-boundary--0506.md)",
+  "description": "OSS-eligible portion of the ORGII desktop app (skeleton, see docs/rust-backend/oss-boundary--0506.md)",
   "license": "MIT",
   "scripts": {},
   "dependencies": {}

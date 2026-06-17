@@ -1,7 +1,7 @@
 # Agent-as-Service + Blackboard Multi-Agent POC
 
 Proof-of-concept for the multi-agent architecture described in
-`Documentation/Agent/multi-agent/index--0315.md`.
+`docs/agent/multi-agent/index--0315.md`.
 
 **Key insight:** Agent = persistent service (identity + memory). Session = ephemeral
 reaction (fresh LLM conversation per event).

@@ -164,7 +164,7 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
     const leftContent = useMemo(
       () => (
         <>
-          {repoName && (
+          {repoName ? (
             <StatusBarButton
               onClick={onRepoClick}
               title={workspaceTooltip}
@@ -176,6 +176,17 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
                 <Code size={13} className="text-text-1" />
               )}
               <span className="font-medium text-text-1">{workspaceLabel}</span>
+            </StatusBarButton>
+          ) : (
+            <StatusBarButton
+              onClick={onRepoClick}
+              title={t("actions.openWorkspace")}
+              dataTestId="status-bar-no-repo"
+            >
+              <Code size={13} className="text-primary-6" />
+              <span className="font-medium text-primary-6">
+                {t("actions.addWorkspace")}
+              </span>
             </StatusBarButton>
           )}
 

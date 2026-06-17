@@ -200,6 +200,8 @@
     "sort": "Сортировать",
     "openFolder": "Открыть папку",
     "addWorkspace": "Добавить workspace",
+    "openSpotlight": "Открыть Spotlight",
+    "openWorkspace": "Открыть workspace",
     "skipThisVersion": "Пропустить эту версию",
     "later": "Позже",
     "updateAiBlame": "Обновить AI Blame",
@@ -930,6 +932,8 @@
     "loadingAccountStatus": "Загрузка статуса аккаунта...",
     "noRepositorySelected": "Репо не выбран",
     "selectRepositoryFromHome": "Выберите репо на главной странице, чтобы открыть его.",
+    "noWorkspaceExplorerTitle": "Workspace не открыт",
+    "noWorkspaceExplorerSubtitle": "Откройте workspace, чтобы просмотреть файлы",
     "cannotFindRepo": "Не удалось найти {{repoName}}",
     "lastSeenAtPath": "Последний раз был по пути {{path}}",
     "unsupportedFileType": "Неподдерживаемый тип файла",
@@ -1224,7 +1228,7 @@
         "current": "Текущий",
         "repo": "Репозитории",
         "systemPaths": "Системные пути",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "Используется в других местах",
         "workspace": "Workspace"
       },
       "tabs": {
@@ -2159,7 +2163,8 @@
       "repoTooltip": "Repo: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} repos: {{names}}",
       "branchTooltip": "Branch: {{branch}}",
-      "branchSwitching": " (переключение...)"
+      "branchSwitching": " (переключение...)",
+      "noRepo": "Нет repo"
     }
   },
   "globalToolbar": {

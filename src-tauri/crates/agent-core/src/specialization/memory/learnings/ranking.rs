@@ -146,7 +146,7 @@ pub fn load_active_learnings_ranked(
 /// wrong for the consolidation write path: a pending row that finds itself
 /// as its own "similar neighbour" produces a self-UPDATE/MERGE and the
 /// entire pending batch collapses into `merged` status, never reaching
-/// `active`. See `Documentation/Agent/audit-fallbacks-0421.md` for the
+/// `active`. See `docs/agent/audit-fallbacks-0421.md` for the
 /// 14 polluted rows this caused on `agent:builtin:sde` before 0421.
 pub fn search_similar(
     conn: &Connection,

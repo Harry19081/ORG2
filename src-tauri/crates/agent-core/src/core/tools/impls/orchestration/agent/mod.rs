@@ -686,7 +686,7 @@ impl Tool for AgentTool {
         // `helpers::resolve_subagent_model` for the full precedence
         // ladder, mirrored in the model-priority editor's
         // `subagentOnlyNote` i18n string and
-        // `Documentation/Agent/claude-code-learnings/08-subagent.md`).
+        // `docs/agent/claude-code-learnings/08-subagent.md`).
         //
         // We then build a fresh provider bound to the sub-agent's
         // primary model + chain. The sub-agent's account follows the

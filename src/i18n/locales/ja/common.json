@@ -200,6 +200,8 @@
     "sort": "並べ替え",
     "openFolder": "フォルダを開く",
     "addWorkspace": "Workspace を追加",
+    "openSpotlight": "Spotlight を開く",
+    "openWorkspace": "Workspace を開く",
     "skipThisVersion": "このバージョンをスキップ",
     "later": "後で",
     "updateAiBlame": "AI Blame を更新",
@@ -930,6 +932,8 @@
     "loadingAccountStatus": "アカウントステータスを読み込み中...",
     "noRepositorySelected": "リポジトリが選択されていません",
     "selectRepositoryFromHome": "ホームページからリポジトリを選択して開いてください。",
+    "noWorkspaceExplorerTitle": "Workspace が開かれていません",
+    "noWorkspaceExplorerSubtitle": "ファイルを表示するには Workspace を開く",
     "cannotFindRepo": "{{repoName}} が見つかりません",
     "lastSeenAtPath": "最後に確認されたパス: {{path}}",
     "unsupportedFileType": "サポートされていないファイル形式",
@@ -1225,7 +1229,7 @@
         "current": "現在",
         "repo": "リポジトリ",
         "systemPaths": "システムパス",
-        "usedElsewhere": "Used elsewhere",
+        "usedElsewhere": "他の場所で使用",
         "workspace": "Workspace"
       },
       "tabs": {
@@ -2165,7 +2169,8 @@
       "repoTooltip": "リポジトリ: {{name}}",
       "multiRepoTooltip": "{{label}}\n{{count}} リポジトリ: {{names}}",
       "branchTooltip": "Branch: {{branch}}",
-      "branchSwitching": "（切り替え中...）"
+      "branchSwitching": "（切り替え中...）",
+      "noRepo": "Repo なし"
     }
   },
   "globalToolbar": {

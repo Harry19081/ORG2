@@ -6,19 +6,19 @@ last_updated: 2026-06-02
 
 # CLA Signing Process
 
-This document describes how ORGII maintainers operate the repository Contributor License Agreement process. Contributor-facing instructions live in `CONTRIBUTING.md`, and the agreement text lives in `CLA.md`.
+This document describes how ORGII maintainers operate the repository Contributor License Agreement process. Contributor-facing instructions live in `CONTRIBUTING.md`, and the agreement text lives in `docs/contributing/CLA.md`.
 
 ## Enforcement model
 
 ORGII uses GitHub CLA Assistant as the pull request enforcement mechanism.
 
-The repository stores the canonical CLA text in `CLA.md`. CLA Assistant should be linked to a GitHub Gist that contains the approved agreement text used for signatures. Keep the Gist content aligned with `CLA.md` whenever the agreement changes.
+The repository stores the canonical CLA text in `docs/contributing/CLA.md`. CLA Assistant should be linked to a GitHub Gist that contains the approved agreement text used for signatures. Keep the Gist content aligned with `docs/contributing/CLA.md` whenever the agreement changes.
 
 ## Initial setup
 
 A GitHub organization or repository admin must complete these steps:
 
-1. Review and approve the legal text in `CLA.md`.
+1. Review and approve the legal text in `docs/contributing/CLA.md`.
 2. Create a GitHub Gist containing the approved CLA text.
 3. Install or enable the CLA Assistant GitHub App for the ORGII repository or owning organization.
 4. Link the ORGII repository to the CLA Gist in CLA Assistant.
@@ -48,7 +48,7 @@ If authority is unclear, ask the contributor to provide confirmation before merg
 
 When the CLA text changes materially:
 
-1. Update `CLA.md` in the repository.
+1. Update `docs/contributing/CLA.md` in the repository.
 2. Update the CLA Assistant Gist to match the approved text.
 3. Decide whether existing contributors must re-sign.
 4. If re-signing is required, reset or invalidate signatures through the CLA Assistant administration flow.

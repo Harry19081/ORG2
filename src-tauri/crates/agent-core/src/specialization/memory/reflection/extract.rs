@@ -2,7 +2,7 @@
 //!
 //! Asks the session's model for a JSON array of behavioral insights, then
 //! filters environment-specific noise that slips past the prompt — see the
-//! `Documentation/Agent/audit-fallbacks-0421.md` post-mortem for why the
+//! `docs/agent/audit-fallbacks-0421.md` post-mortem for why the
 //! second-line guard exists.
 
 use serde::Deserialize;
@@ -122,7 +122,7 @@ fn extract_json_array(text: &str) -> String {
 /// These patterns are the distilled signature of the 14 polluted rows the
 /// reflection pipeline produced for `agent:builtin:sde` before 0421 (all of
 /// which came from truncated tool_input / tool_output bytes — see
-/// `Documentation/Agent/audit-fallbacks-0421.md`). The check is a pure
+/// `docs/agent/audit-fallbacks-0421.md`). The check is a pure
 /// substring scan on the final insight strings, not on the transcript, so it
 /// still bites when the model paraphrases a bad signal from the input.
 const REJECT_PATTERNS: &[&str] = &[
