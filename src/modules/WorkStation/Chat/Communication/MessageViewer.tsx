@@ -304,8 +304,8 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
         <div
           className={
             viewMode === "chat"
-              ? "flex flex-col gap-2 pb-4 pt-3"
-              : "flex flex-col gap-6 pb-6 pt-4"
+              ? "flex flex-col gap-2 pb-[120px] pt-3"
+              : "flex flex-col gap-6 pb-[120px] pt-4"
           }
         >
           {canLoadMoreMessages && (
