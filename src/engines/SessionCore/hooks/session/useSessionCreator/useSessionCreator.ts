@@ -33,11 +33,11 @@ import {
   selectedAgentDefinitionIdAtom,
   sessionSourceAtom,
 } from "@src/store/session/creatorStateAtom";
-import { isMultiRootWorkspaceAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { primaryFolderAtom } from "@src/store/workspace/derived";
 import type { SlashItem } from "@src/types/extensions";
 import { getRustAgentType } from "@src/util/session/sessionDispatch";
 
+import { resolveEffectiveSource } from "./resolveEffectiveSource";
 import type { UseSessionCreatorReturn } from "./types";
 import { useAdvancedConfig } from "./useAdvancedConfig";
 import { useDraftManagement } from "./useDraftManagement";
@@ -190,7 +190,6 @@ export function useSessionCreator(
   const sessionSource = useAtomValue(sessionSourceAtom);
   const setSessionSource = useSetAtom(sessionSourceAtom);
 
-  const isMultiRoot = useAtomValue(isMultiRootWorkspaceAtom);
   const primaryFolder = useAtomValue(primaryFolderAtom);
 
   // When the global repo selection changes, clear any session-specific
@@ -221,33 +220,16 @@ export function useSessionCreator(
       });
     }
 
-    // Workspace mode: use the primary folder so launch gets the stable
-    // workspace root rather than a stale selectedRepoIdAtom value.
-    if (isMultiRoot && primaryFolder) {
-      return {
-        type: "local",
-        repoId: primaryFolder.repoId ?? primaryFolder.id,
-        repoName: primaryFolder.name,
-        repoPath: primaryFolder.path,
-        branch: globalBranch || undefined,
-      };
-    }
-
-    if (!globalRepoId) return null;
-    const repo = repos.find((repoItem) => repoItem.id === globalRepoId);
-    if (!repo) return null;
-    return {
-      type: "local",
-      repoId: globalRepoId,
-      repoName: repo.name,
-      repoPath: repo.path || repo.fs_uri,
-      branch: globalBranch || undefined,
-    };
+    return resolveEffectiveSource({
+      primaryFolder,
+      globalRepoId,
+      globalBranch,
+      repos,
+    });
   }, [
     sessionSource,
     isOSMode,
     t,
-    isMultiRoot,
     primaryFolder,
     globalRepoId,
     globalBranch,
@@ -345,6 +327,7 @@ export function useSessionCreator(
   // repo selection. The user may pick a different repo than the active workspace.
   const { validateSessionConfig } = useSessionValidation({
     effectiveRepoId: effectiveSource?.repoId ?? "",
+    effectiveRepoPath: effectiveSource?.repoPath ?? "",
     editorContent,
     advancedConfig,
     providers,

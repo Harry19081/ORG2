@@ -694,6 +694,12 @@ pub(crate) async fn launch_rust_agent_run(
                 state.app_handle.as_ref(),
             )
             .await;
+            // The session row was already created by `create_session_impl`
+            // above. Workspace preparation failing (e.g. empty workspace_path
+            // for a non personal-workspace agent) means this session can never
+            // run — delete it so we don't leave a workspace-less orphan that
+            // would fail again on its first message.
+            cleanup_session_after_org_run_create_failure(session_id.clone()).await;
             return Err(err);
         }
     };
