@@ -41,18 +41,38 @@ async fn run_sidecar_setup() -> Result<(), String> {
     let os = std::env::consts::OS;
     let arch = std::env::consts::ARCH;
 
-    install_agent_browser(&client, &bin_dir, os, arch).await?;
+    // Each sidecar is installed best-effort and independently: a failure in one
+    // (e.g. the dugite/git download stalling on a flaky network) must NOT
+    // prevent the others from installing. Git in particular is optional —
+    // git resolution defaults to `Auto`, which prefers system git, so a failed
+    // bundled-git download is a non-event on any machine that has system git.
+    install_best_effort(
+        "agent-browser",
+        install_agent_browser(&client, &bin_dir, os, arch).await,
+    );
 
     #[cfg(target_os = "macos")]
-    install_peekaboo(&client, &bin_dir).await?;
+    install_best_effort("peekaboo", install_peekaboo(&client, &bin_dir).await);
 
-    install_bundled_git(&client, &bin_dir, os, arch).await?;
+    install_best_effort(
+        "bundled-git",
+        install_bundled_git(&client, &bin_dir, os, arch).await,
+    );
 
     info!(
-        "[sidecar_setup] all sidecars ready in {}",
+        "[sidecar_setup] sidecar setup pass complete in {}",
         bin_dir.display()
     );
     Ok(())
+}
+
+/// Log the outcome of a single sidecar install without propagating its error,
+/// so one failing download never aborts the rest of the setup pass.
+fn install_best_effort(name: &str, result: Result<(), String>) {
+    match result {
+        Ok(()) => info!("[sidecar_setup] {name}: ok"),
+        Err(err) => warn!("[sidecar_setup] {name}: failed (non-fatal): {err}"),
+    }
 }
 
 fn build_client() -> Result<reqwest::Client, String> {
@@ -230,6 +250,14 @@ fn git_binary_name() -> &'static str {
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
+/// Max time to wait for a single body chunk before declaring the connection
+/// stalled. GitHub release-asset connections to `release-assets.github
+/// usercontent.com` frequently establish a TCP session, stream part of the
+/// body, then hang indefinitely without closing — reqwest's request-level
+/// `.timeout()` does not reliably fire on an already-streaming body, so we
+/// guard each chunk read explicitly.
+const CHUNK_STALL_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(30);
+
 async fn download_to(client: &reqwest::Client, url: &str, dest: &Path) -> Result<(), String> {
     info!("[sidecar_setup] downloading {url}");
 
@@ -247,18 +275,40 @@ async fn download_to(client: &reqwest::Client, url: &str, dest: &Path) -> Result
         .error_for_status()
         .map_err(|err| format!("GET {url} HTTP error: {err}"))?;
 
-    let bytes = resp
-        .bytes()
-        .await
-        .map_err(|err| format!("reading body {url}: {err}"))?;
-
     let mut file = tokio::fs::File::create(dest)
         .await
         .map_err(|err| format!("create {}: {err}", dest.display()))?;
 
-    file.write_all(&bytes)
+    // Stream the body chunk-by-chunk. Each `next()` is wrapped in a 30s
+    // timeout so a half-dead connection fails fast instead of hanging for
+    // hours (observed: a single dugite-native download stalled 2h+ before
+    // erroring). On stall we bail with a clear error; callers treat sidecar
+    // download failure as non-fatal.
+    use futures_util::StreamExt;
+    let mut stream = resp.bytes_stream();
+    loop {
+        match tokio::time::timeout(CHUNK_STALL_TIMEOUT, stream.next()).await {
+            Ok(Some(Ok(chunk))) => {
+                file.write_all(&chunk)
+                    .await
+                    .map_err(|err| format!("write {}: {err}", dest.display()))?;
+            }
+            Ok(Some(Err(err))) => {
+                return Err(format!("reading body {url}: {err}"));
+            }
+            Ok(None) => break, // stream finished
+            Err(_) => {
+                return Err(format!(
+                    "download stalled (no data for {}s): {url}",
+                    CHUNK_STALL_TIMEOUT.as_secs()
+                ));
+            }
+        }
+    }
+
+    file.flush()
         .await
-        .map_err(|err| format!("write {}: {err}", dest.display()))?;
+        .map_err(|err| format!("flush {}: {err}", dest.display()))?;
 
     Ok(())
 }

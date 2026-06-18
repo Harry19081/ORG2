@@ -43,21 +43,37 @@ export function generateWindowId(): string {
 /**
  * Get or create window ID from sessionStorage
  * sessionStorage is window-scoped, so each window gets its own ID
+ *
+ * Defensive: this runs at module-eval time via `windowIdAtom` (and
+ * `getWindowScopedKey` in repo/atoms), which is inside the App's synchronous
+ * import graph. Some WKWebView privacy states throw `SecurityError` on any
+ * storage access — an unguarded throw here would abort first render and strand
+ * the user on the splash. We fall back to a fresh in-memory id instead.
  */
+let inMemoryWindowId: string | null = null;
+
 export function getWindowId(): string {
   if (typeof window === "undefined") {
     return "window-ssr";
   }
 
   const key = "orgii-window-id";
-  let windowId = sessionStorage.getItem(key);
+  try {
+    let windowId = sessionStorage.getItem(key);
 
-  if (!windowId) {
-    windowId = generateWindowId();
-    sessionStorage.setItem(key, windowId);
+    if (!windowId) {
+      windowId = generateWindowId();
+      sessionStorage.setItem(key, windowId);
+    }
+
+    return windowId;
+  } catch {
+    // sessionStorage unavailable/blocked — use a stable per-session fallback.
+    if (!inMemoryWindowId) {
+      inMemoryWindowId = generateWindowId();
+    }
+    return inMemoryWindowId;
   }
-
-  return windowId;
 }
 
 // ============================================

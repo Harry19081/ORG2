@@ -18,6 +18,7 @@
  */
 import { useLayoutEffect, useRef } from "react";
 
+import { resetChunkReloadCount } from "@src/util/core/init/chunkReload";
 import { signalFirstPaintComplete } from "@src/util/core/init/deferredInit";
 
 export function useFirstPaintSignal(): void {
@@ -34,6 +35,17 @@ export function useFirstPaintSignal(): void {
 
         hasSignaledFirstPaint.current = true;
         signalFirstPaintComplete();
+
+        // The app committed its first paint — cancel the pre-bundle splash
+        // watchdog (index.html) and clear the chunk-reload retry budget so a
+        // later transient chunk failure still gets a fresh set of retries.
+        const splashDone = (
+          window as unknown as { __ORGII_SPLASH_DONE__?: () => void }
+        ).__ORGII_SPLASH_DONE__;
+        if (typeof splashDone === "function") {
+          splashDone();
+        }
+        resetChunkReloadCount();
 
         const splash = document.getElementById("splash");
         if (splash) {
