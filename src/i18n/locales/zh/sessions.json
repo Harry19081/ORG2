@@ -391,7 +391,17 @@
           "empty": "暂无提交",
           "selectSubmission": "选择一项提交以查看详情",
           "noCommits": "暂无 Commits",
-          "noPullRequests": "暂无 Pull Requests"
+          "noPullRequests": "暂无 Pull Requests",
+          "labels": {
+            "created": {
+              "commit": "已创建 commit",
+              "pullRequest": "已创建 PR"
+            },
+            "mentioned": {
+              "commit": "提及的 commit",
+              "pullRequest": "提及的 PR"
+            }
+          }
         }
       },
       "channelsSidebar": {

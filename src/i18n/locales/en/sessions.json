@@ -397,7 +397,17 @@
           "empty": "No submissions yet",
           "selectSubmission": "Select a submission to view details",
           "noCommits": "No Commits yet",
-          "noPullRequests": "No Pull Requests yet"
+          "noPullRequests": "No Pull Requests yet",
+          "labels": {
+            "created": {
+              "commit": "Created commit",
+              "pullRequest": "Created PR"
+            },
+            "mentioned": {
+              "commit": "Mentioned commit",
+              "pullRequest": "Mentioned PR"
+            }
+          }
         }
       },
       "channelsSidebar": {
