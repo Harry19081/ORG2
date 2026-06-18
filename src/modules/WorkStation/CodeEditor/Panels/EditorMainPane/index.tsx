@@ -55,6 +55,7 @@ import {
   TabBarBottomPanelToggle,
 } from "@src/modules/WorkStation/shared";
 import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
+import { useStickyMount } from "@src/modules/shared/hooks/useStickyMount";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationAtom";
 import { gitReviewNavigationAtom } from "@src/store/workstation/codeEditor/gitReviewNavigationAtom";
 import {
@@ -71,6 +72,8 @@ import type { GitFile } from "@src/types/git/types";
 import { CodeEditorDefaultHeader } from "./components/CodeEditorDefaultHeader";
 import { createEditorQuickActions } from "./config";
 import { TabContentRenderer } from "./content";
+import SourceControlMainPane from "./content/SourceControlMainPane";
+import type { SourceControlMainTabData } from "./content/sourceControlMainProps";
 import {
   SOURCE_CONTROL_OTHER_SESSIONS_FILTER,
   useEditorPaneState,
@@ -307,13 +310,36 @@ const EditorContent: React.FC<EditorContentProps> = memo(
     const { tabs, activeTabId, activeTab, closeTab, updatePaneState } =
       useEditorPaneState(fileContentStateRef, forceRefreshRef);
     const isTerminalTabActive = activeTab?.type === "terminal";
+    const isSourceControlActive = activeTab?.type === "source-control";
 
+    // The Source Control tab is pinned, so this is normally always present. We
+    // drive the keep-alive main pane from the persisted tab (not `activeTab`)
+    // so its diff/scroll survive navigating to a file tab and back (issue #16).
+    const sourceControlTab = useMemo(
+      () => tabs.find((tab) => tab.type === "source-control") ?? null,
+      [tabs]
+    );
+
+    // Mount the keep-alive Source Control pane lazily — only after the user has
+    // opened it at least once — so users who never touch Source Control don't
+    // pay the heavy chunk's parse/render cost. Once visited it stays mounted.
+    const hasVisitedSourceControl = useStickyMount(isSourceControlActive);
+
+    // Computed whenever the Source Control pane is (or has been) mounted so the
+    // attributed file list stays populated while the pane is hidden — otherwise
+    // returning to it would flash empty and reset scroll.
     const sourceControlBaseFiles = useMemo(() => {
-      if (activeTab?.type !== "source-control") return [];
+      if (!sourceControlTab) return [];
+      if (!isSourceControlActive && !hasVisitedSourceControl) return [];
       const gitStatusFiles = Array.from(gitFilesByPath.values());
       if (gitStatusFiles.length > 0) return gitStatusFiles;
-      return (activeTab.data.files ?? []) as GitFile[];
-    }, [activeTab, gitFilesByPath]);
+      return (sourceControlTab.data.files ?? []) as GitFile[];
+    }, [
+      sourceControlTab,
+      isSourceControlActive,
+      hasVisitedSourceControl,
+      gitFilesByPath,
+    ]);
 
     const {
       attributedFiles: sourceControlAttributedFiles,
@@ -881,6 +907,40 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                   editorQuickActions={editorQuickActions}
                 />
               )}
+            </div>
+          )}
+
+          {/*
+            Keep-alive Source Control main pane. Mounted once the tab has been
+            visited, then shown/hidden (instead of unmounted) so the diff view,
+            scroll position, and lazy chunk survive navigating to a file tab and
+            back. Sits above the TabContentRenderer layer when active; the
+            `source-control` case in TabContentRenderer is a no-op so this owns
+            the rendering. (Issue #16)
+          */}
+          {hasVisitedSourceControl && sourceControlTab && (
+            <div
+              className={`absolute inset-0 flex min-h-0 flex-col ${
+                isSourceControlActive && !isTerminalTabActive
+                  ? "z-20 opacity-100"
+                  : "pointer-events-none z-0 opacity-0"
+              }`}
+              aria-hidden={!(isSourceControlActive && !isTerminalTabActive)}
+            >
+              <SourceControlMainPane
+                tabData={sourceControlTab.data as SourceControlMainTabData}
+                repoPath={repoPath}
+                repoId={repoId ?? null}
+                gitFilesByPath={gitFilesByPath}
+                sourceControlAttributedFiles={sourceControlAttributedFiles}
+                sourceControlFilterMode={sourceControlFilterMode}
+                gitDiffLoading={gitDiffLoading}
+                sourceControlCollapseAllSignal={sourceControlCollapseAllSignal}
+                editorQuickActions={editorQuickActions}
+                onForceReload={forceRefresh}
+                onFileSelect={onFileSelect}
+                onGitDiffUnsavedChange={handleGitDiffUnsavedChange}
+              />
             </div>
           )}
         </div>
