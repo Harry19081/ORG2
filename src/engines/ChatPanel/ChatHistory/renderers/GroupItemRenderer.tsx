@@ -1,3 +1,4 @@
+import { useAtomValue } from "jotai";
 import { MailOpen } from "lucide-react";
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,6 +15,7 @@ import {
 } from "@src/engines/ChatPanel/blocks/primitives";
 import { useBlockHeader } from "@src/engines/ChatPanel/blocks/useBlockLocate";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { hasLoadedMoreActivitiesAtom } from "@src/store/ui/sessionPaginationAtom";
 
 import {
   AgentTurnContext,
@@ -203,6 +205,7 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     const chatItem = flatItems[flatIndex];
     const groupChat = useGroupChatContext();
     const { filesByTurnId, turnIdByGroupIndex } = useTurnFiles();
+    const hasLoadedMoreActivities = useAtomValue(hasLoadedMoreActivitiesAtom);
     const event = chatItem?.event;
 
     const simpleMessage = useMemo(() => {
@@ -400,6 +403,7 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
               modifiedFiles={turnModifiedFiles}
               sessionId={event?.sessionId ?? null}
               turnId={turnId}
+              isPagedHistoryRound={hasLoadedMoreActivities && !isLastGroup}
             />
           )}
         </div>

@@ -892,6 +892,8 @@
     "turnFiles": {
       "filesChangedCount_one": "本輪變更了 {{count}} 個檔案",
       "filesChangedCount_other": "本輪變更了 {{count}} 個檔案",
+      "historicalRoundDiffFiles_one": "歷史輪次 Diff · {{count}} 個檔案",
+      "historicalRoundDiffFiles_other": "歷史輪次 Diff · {{count}} 個檔案",
       "review": "檢視",
       "showLess": "收合",
       "showMore_one": "顯示其餘 {{count}} 個",

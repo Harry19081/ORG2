@@ -888,6 +888,8 @@
     "turnFiles": {
       "filesChangedCount_one": "Đã thay đổi {{count}} tệp trong vòng này",
       "filesChangedCount_other": "Đã thay đổi {{count}} tệp trong vòng này",
+      "historicalRoundDiffFiles_one": "Diff vòng trước · {{count}} tệp",
+      "historicalRoundDiffFiles_other": "Diff vòng trước · {{count}} tệp",
       "review": "Xem lại",
       "showLess": "Thu gọn",
       "showMore_one": "Hiển thị thêm {{count}}",

@@ -888,6 +888,8 @@
     "turnFiles": {
       "filesChangedCount_one": "このラウンドで {{count}} 件のファイルを変更",
       "filesChangedCount_other": "このラウンドで {{count}} 件のファイルを変更",
+      "historicalRoundDiffFiles_one": "過去のラウンド Diff · {{count}} ファイル",
+      "historicalRoundDiffFiles_other": "過去のラウンド Diff · {{count}} ファイル",
       "review": "確認",
       "showLess": "表示を減らす",
       "showMore_one": "他 {{count}} 件を表示",

@@ -47,10 +47,11 @@ export interface TurnFilesFooterProps {
   sessionId?: string | null;
   /** The round's turn id — carried on the scope request for traceability. */
   turnId?: string | null;
+  isPagedHistoryRound?: boolean;
 }
 
 const TurnFilesFooter: React.FC<TurnFilesFooterProps> = memo(
-  ({ modifiedFiles, sessionId, turnId }) => {
+  ({ modifiedFiles, sessionId, turnId, isPagedHistoryRound = false }) => {
     const { t } = useTranslation("sessions");
     const [expanded, setExpanded] = useState(false);
 
@@ -117,10 +118,17 @@ const TurnFilesFooter: React.FC<TurnFilesFooterProps> = memo(
         >
           <div className="flex h-8 items-center justify-between gap-2 px-2.5">
             <span className="min-w-0 truncate text-[13px] font-medium text-text-2">
-              {t("chat.turnFiles.filesChangedCount", {
-                count: files.length,
-                defaultValue: "{{count}} files changed this round",
-              })}
+              {t(
+                isPagedHistoryRound
+                  ? "chat.turnFiles.historicalRoundDiffFiles"
+                  : "chat.turnFiles.filesChangedCount",
+                {
+                  count: files.length,
+                  defaultValue: isPagedHistoryRound
+                    ? "Earlier round diff · {{count}} files"
+                    : "{{count}} files changed this round",
+                }
+              )}
             </span>
             <TextButton
               onClick={handleReviewClick}

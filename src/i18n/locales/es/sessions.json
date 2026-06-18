@@ -888,6 +888,8 @@
     "turnFiles": {
       "filesChangedCount_one": "{{count}} archivo cambiado en esta ronda",
       "filesChangedCount_other": "{{count}} archivos cambiados en esta ronda",
+      "historicalRoundDiffFiles_one": "Diff de ronda anterior · {{count}} archivo",
+      "historicalRoundDiffFiles_other": "Diff de ronda anterior · {{count}} archivos",
       "review": "Revisar",
       "showLess": "Mostrar menos",
       "showMore_one": "Mostrar {{count}} más",

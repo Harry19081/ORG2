@@ -894,6 +894,8 @@
     "turnFiles": {
       "filesChangedCount_one": "{{count}} arquivo alterado nesta rodada",
       "filesChangedCount_other": "{{count}} arquivos alterados nesta rodada",
+      "historicalRoundDiffFiles_one": "Diff de rodada anterior · {{count}} arquivo",
+      "historicalRoundDiffFiles_other": "Diff de rodada anterior · {{count}} arquivos",
       "review": "Revisar",
       "showLess": "Mostrar menos",
       "showMore_one": "Mostrar mais {{count}}",

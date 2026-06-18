@@ -888,6 +888,8 @@
     "turnFiles": {
       "filesChangedCount_one": "이번 라운드에서 파일 {{count}}개 변경됨",
       "filesChangedCount_other": "이번 라운드에서 파일 {{count}}개 변경됨",
+      "historicalRoundDiffFiles_one": "이전 라운드 Diff · 파일 {{count}}개",
+      "historicalRoundDiffFiles_other": "이전 라운드 Diff · 파일 {{count}}개",
       "review": "검토",
       "showLess": "간략히 보기",
       "showMore_one": "{{count}}개 더 보기",

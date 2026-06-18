@@ -893,6 +893,8 @@
     "turnFiles": {
       "filesChangedCount_one": "本轮更改了 {{count}} 个文件",
       "filesChangedCount_other": "本轮更改了 {{count}} 个文件",
+      "historicalRoundDiffFiles_one": "历史轮次 Diff · {{count}} 个文件",
+      "historicalRoundDiffFiles_other": "历史轮次 Diff · {{count}} 个文件",
       "review": "查看",
       "showLess": "收起",
       "showMore_one": "显示其余 {{count}} 个",

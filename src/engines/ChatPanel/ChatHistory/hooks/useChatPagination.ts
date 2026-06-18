@@ -7,12 +7,13 @@
  * - End-reached handler
  * - Auto-load when the initial list is too short to scroll
  */
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useRef } from "react";
 
 import { useDebouncedCallback } from "@src/hooks/perf";
 import {
   ACTIVITY_PREFETCH_CONFIG,
+  hasLoadedMoreActivitiesAtom,
   hasMoreActivitiesAtom,
   isLoadingMoreActivitiesAtom,
   loadMoreActivitiesCallbackAtom,
@@ -58,6 +59,12 @@ export function useChatPagination({
   const hasMoreActivities = useAtomValue(hasMoreActivitiesAtom);
   const isLoadingMore = useAtomValue(isLoadingMoreActivitiesAtom);
   const loadMoreActivities = useAtomValue(loadMoreActivitiesCallbackAtom);
+  const setHasLoadedMoreActivities = useSetAtom(hasLoadedMoreActivitiesAtom);
+
+  const loadMorePagedActivities = useCallback(() => {
+    setHasLoadedMoreActivities(true);
+    loadMoreActivities?.();
+  }, [loadMoreActivities, setHasLoadedMoreActivities]);
 
   const debouncedSetVisibleRange = useDebouncedCallback(
     (range: { startIndex: number; endIndex: number }) => {
@@ -96,7 +103,7 @@ export function useChatPagination({
           !isLoadingMore &&
           loadMoreActivities
         ) {
-          loadMoreActivities();
+          loadMorePagedActivities();
         }
       }
     },
@@ -107,6 +114,7 @@ export function useChatPagination({
       hasMoreActivities,
       isLoadingMore,
       loadMoreActivities,
+      loadMorePagedActivities,
     ]
   );
 
@@ -114,13 +122,14 @@ export function useChatPagination({
   const handleEndReached = useCallback(() => {
     if (optimizedChatHistoryLength === 0) return;
     if (hasMoreActivities && !isLoadingMore && loadMoreActivities) {
-      loadMoreActivities();
+      loadMorePagedActivities();
     }
   }, [
     hasMoreActivities,
     isLoadingMore,
     loadMoreActivities,
     optimizedChatHistoryLength,
+    loadMorePagedActivities,
   ]);
 
   // Auto-load counter — reset when chat history is cleared (new session)
@@ -129,8 +138,9 @@ export function useChatPagination({
   useEffect(() => {
     if (optimizedChatHistoryLength === 0) {
       autoLoadAttemptsRef.current = 0;
+      setHasLoadedMoreActivities(false);
     }
-  }, [optimizedChatHistoryLength]);
+  }, [optimizedChatHistoryLength, setHasLoadedMoreActivities]);
 
   // Auto-load when list is too short to scroll but has more data
   useEffect(() => {
@@ -144,7 +154,7 @@ export function useChatPagination({
     ) {
       autoLoadAttemptsRef.current += 1;
       const timer = setTimeout(() => {
-        loadMoreActivities();
+        loadMorePagedActivities();
       }, 500);
       return () => clearTimeout(timer);
     }
@@ -153,6 +163,7 @@ export function useChatPagination({
     hasMoreActivities,
     isLoadingMore,
     loadMoreActivities,
+    loadMorePagedActivities,
   ]);
 
   return {

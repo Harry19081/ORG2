@@ -10,7 +10,9 @@ import { useTranslation } from "react-i18next";
 
 import type { GitHubIssue, GitHubIssueComment } from "@src/api/tauri/github";
 import Avatar from "@src/components/Avatar";
+import AvatarChip from "@src/components/AvatarChip";
 import Button from "@src/components/Button";
+import Tag from "@src/components/Tag";
 import Textarea from "@src/components/Textarea";
 import {
   HEADER_BUTTON,
@@ -115,13 +117,15 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
               {issue.labels.map((label) => {
                 const style = getLabelColorStyle(label.color);
                 return (
-                  <span
+                  <Tag
                     key={label.id}
-                    className={`rounded-full px-2 py-[2px] ${TYPOGRAPHY.badge} leading-tight`}
+                    size="mini"
+                    pill
+                    className={`${TYPOGRAPHY.badge} !px-2 !py-[2px] !leading-tight`}
                     style={style}
                   >
                     {label.name}
-                  </span>
+                  </Tag>
                 );
               })}
             </div>
@@ -135,13 +139,13 @@ export const IssueDetailPanel: React.FC<IssueDetailPanelProps> = memo(
               <span>Assigned to</span>
               <div className="flex items-center gap-1">
                 {issue.assignees.map((user) => (
-                  <span
+                  <AvatarChip
                     key={user.login}
-                    className="flex items-center gap-1 rounded-full bg-fill-2 px-1.5 py-[2px]"
-                  >
-                    <Avatar size={12} src={user.avatar_url} />
-                    <span className="text-text-2">{user.login}</span>
-                  </span>
+                    size="xs"
+                    avatarSize={12}
+                    avatarSrc={user.avatar_url}
+                    label={user.login}
+                  />
                 ))}
               </div>
             </div>

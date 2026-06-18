@@ -739,6 +739,8 @@
     "turnFiles": {
       "filesChangedCount_one": "{{count}} file changed this round",
       "filesChangedCount_other": "{{count}} files changed this round",
+      "historicalRoundDiffFiles_one": "Earlier round diff · {{count}} file",
+      "historicalRoundDiffFiles_other": "Earlier round diff · {{count}} files",
       "review": "Review",
       "showLess": "Show less",
       "showMore_one": "Show {{count}} more",

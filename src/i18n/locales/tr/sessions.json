@@ -888,6 +888,8 @@
     "turnFiles": {
       "filesChangedCount_one": "Bu turda {{count}} dosya değişti",
       "filesChangedCount_other": "Bu turda {{count}} dosya değişti",
+      "historicalRoundDiffFiles_one": "Önceki tur diff’i · {{count}} dosya",
+      "historicalRoundDiffFiles_other": "Önceki tur diff’i · {{count}} dosya",
       "review": "İncele",
       "showLess": "Daha az göster",
       "showMore_one": "{{count}} tane daha göster",
