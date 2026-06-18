@@ -19,7 +19,6 @@ import { getRustAgentType } from "@src/util/session/sessionDispatch";
 
 export interface UseSessionValidationOptions {
   effectiveRepoId: string;
-  effectiveRepoPath: string;
   editorContent: string;
   advancedConfig: AdvancedConfig;
   providers: ProviderInfo[];
@@ -33,14 +32,8 @@ export interface SessionValidationResult {
 }
 
 export function useSessionValidation(options: UseSessionValidationOptions) {
-  const {
-    effectiveRepoId,
-    effectiveRepoPath,
-    editorContent,
-    advancedConfig,
-    providers,
-    agents,
-  } = options;
+  const { effectiveRepoId, editorContent, advancedConfig, providers, agents } =
+    options;
 
   const dispatchCategory = useAtomValue(dispatchCategoryAtom);
   const selectedAgentDefinitionId = useAtomValue(selectedAgentDefinitionIdAtom);
@@ -82,15 +75,6 @@ export function useSessionValidation(options: UseSessionValidationOptions) {
     const needsRepo = !usingHostedKey && !isOSMode;
     if (needsRepo && !effectiveRepoId) {
       errors.push("Please select a repo");
-    }
-
-    // A repoId can be selected while its path is still empty — this happens
-    // in the narrow window after "Open Folder" imports a new repo but before
-    // the repo/workspace atoms settle. Launching here would persist a
-    // workspace-less session that dies on its first message ("workspace_root
-    // is empty"), so block the send and ask the user to retry.
-    if (needsRepo && effectiveRepoId && !effectiveRepoPath) {
-      errors.push("Workspace is still loading — please retry in a moment");
     }
 
     // Content always required
@@ -176,7 +160,6 @@ export function useSessionValidation(options: UseSessionValidationOptions) {
     dispatchCategory,
     selectedAgentDefinitionId,
     effectiveRepoId,
-    effectiveRepoPath,
     editorContent,
     advancedConfig,
     providers,

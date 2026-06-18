@@ -255,50 +255,6 @@ export function createWorkspaceHelpers(store: E2EStore) {
     }
   };
 
-  /**
-   * Reproduce the narrow "Open Folder" race: a repo is selected
-   * (`selectedRepoIdAtom` set) but its path has not landed yet, so the
-   * matching `reposAtom` row carries an empty path/fs_uri. In this window
-   * `effectiveSource` resolves to a source with a `repoId` but an empty
-   * `repoPath`. Launching here would persist a workspace-less session that
-   * dies on its first message — the guard under test must block the send.
-   */
-  const seedRepoIdWithoutPath = async (
-    repoId = "e2e-pending-repo"
-  ): Promise<Result<{ repoId: string }>> => {
-    try {
-      const repo: Repo = {
-        id: repoId,
-        name: "E2E Pending Repo",
-        path: "",
-        fs_uri: "",
-        kind: REPO_KIND.GIT,
-      };
-      const existingRepos = store.get(reposAtom);
-      store.set(reposAtom, [
-        repo,
-        ...existingRepos.filter((existingRepo) => existingRepo.id !== repoId),
-      ]);
-      store.set(selectedRepoIdAtom, repoId);
-      // Single-root, no workspace folder — keep the creator on the
-      // `globalRepoId + repos.find` branch of `effectiveSource` so the
-      // empty-path row is what gets resolved.
-      store.set(workspaceFoldersAtom, []);
-      store.set(activeWorkspaceIdAtom, null);
-      store.set(activeWorkspaceNameAtom, null);
-      store.set(activeFolderIdAtom, null);
-      // Clear any stored session-creator divergence so the creator mirrors
-      // the global (pending) repo selection.
-      store.set(sessionCreatorStateAtom, {
-        ...store.get(sessionCreatorStateAtom),
-        source: null,
-      });
-      return { ok: true, repoId };
-    } catch (err) {
-      return asError(err);
-    }
-  };
-
   const setActiveWorkspaceFolderForTest = async (
     folderIdOrPath: string | null
   ): Promise<
@@ -481,7 +437,6 @@ export function createWorkspaceHelpers(store: E2EStore) {
     ensureRepoSelected,
     seedMultiRootWorkspace,
     clearWorkspaceRepos,
-    seedRepoIdWithoutPath,
     setActiveWorkspaceFolderForTest,
     readSessionWorkspaceFromDb,
     getGitStatusForPath,
