@@ -1,25 +1,19 @@
 /**
  * diffScope
  *
- * Pure (React-free) logic backing the per-round Diff scoping introduced for
- * the chat `TurnFilesFooter` "Review" affordance. Kept separate from the
- * `SessionReplayDiff` component so the "is this scope active?" / "filter the
- * file list to the scoped paths" decisions are unit-testable without
- * rendering the diff app.
+ * Pure (React-free) logic backing the chat `TurnFilesFooter` "Review"
+ * affordance. The Agent Station diff is always cumulative (issue #24): a
+ * "Review"/file click no longer narrows the file list to one round, it only
+ * scrolls the cumulative list to the clicked file. These helpers decide
+ * whether such a scroll request applies to the session on screen and which
+ * file (if any) to scroll to — unit-testable without rendering the diff app.
  *
  * Scope semantics (see `simulatorDiffScopeRequestAtom`):
- * - `null` scope, empty `filePaths`, or a session mismatch → inactive, and
- *   the diff app behaves exactly as before (whole-session diff).
- * - active scope → the file list is narrowed to the scoped paths. If none of
- *   the scoped files survive in the current working diff (e.g. all reverted)
- *   we fall back to the full list rather than showing an empty review.
+ * - `null` scope, empty `filePaths`, or a session mismatch → inactive (no
+ *   scroll target).
+ * - active scope with a `selectedPath` in its set → scroll to that file.
  */
 import type { SimulatorDiffScopeRequest } from "@src/store/ui/simulatorAtom";
-
-/** Minimal shape the filter needs from a diff navigation/section item. */
-export interface DiffScopeItemLike {
-  file: { path: string };
-}
 
 /**
  * A scope is active only when it carries at least one path AND (when it
@@ -41,27 +35,6 @@ export function isDiffScopeActive(
     return false;
   }
   return true;
-}
-
-/**
- * Narrow a diff file list to the scoped path set. Returns a new array.
- *
- * - inactive scope → the list unchanged (full-session diff).
- * - active scope with matches → only the matching items.
- * - active scope with zero matches → the full list (graceful degradation;
- *   avoids a confusing empty "Review" when scoped files were reverted).
- */
-export function filterDiffSectionsByScope<T extends DiffScopeItemLike>(
-  items: readonly T[],
-  scope: SimulatorDiffScopeRequest | null | undefined,
-  currentSessionId: string | null | undefined
-): T[] {
-  if (!isDiffScopeActive(scope, currentSessionId)) {
-    return [...items];
-  }
-  const scopedPaths = new Set(scope!.filePaths);
-  const matched = items.filter((item) => scopedPaths.has(item.file.path));
-  return matched.length > 0 ? matched : [...items];
 }
 
 /**

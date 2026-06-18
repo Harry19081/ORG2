@@ -67,9 +67,10 @@ const TurnFilesFooter: React.FC<TurnFilesFooterProps> = memo(
     );
 
     // Mirror ChatView's `openAgentStationDiff` so the card can route to the
-    // Agent Station Diff app without prop-threading a callback down here, but
-    // first publish a per-round scope so the Diff app narrows to just this
-    // round's files. `selectedPath` (a clicked row) is scrolled into view.
+    // Agent Station Diff app without prop-threading a callback down here. The
+    // Diff app stays cumulative (issue #24) — the published scope no longer
+    // narrows it to this round; `selectedPath` (a clicked row) is only
+    // scrolled into view within the whole-session diff.
     const openDiff = useCallback(
       (selectedPath?: string | null) => {
         setDiffScope({
@@ -118,7 +119,7 @@ const TurnFilesFooter: React.FC<TurnFilesFooterProps> = memo(
             <span className="min-w-0 truncate text-[13px] font-medium text-text-2">
               {t("chat.turnFiles.filesChangedCount", {
                 count: files.length,
-                defaultValue: "{{count}} Files Changed",
+                defaultValue: "{{count}} files changed this round",
               })}
             </span>
             <TextButton

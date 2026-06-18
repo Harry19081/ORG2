@@ -14,12 +14,12 @@ indexer) and renders read-only `FileChangeRow`s. No frontend aggregation.
 
 ## Happy Path
 
-| #   | Steps                                                 | Expected Result                                                                                                             |
-| --- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Open a session where round N edited 2 files           | Footer appears below round N's last item, header "Files changed" + count badge "2", two rows with icon, filename, +/- stats |
-| 2   | Click the footer header                               | List collapses/expands; chevron toggles                                                                                     |
-| 3   | Scroll to an earlier loaded round that modified files | That round shows its own footer with only its files                                                                         |
-| 4   | Agent finishes a new round that edits a file          | After the agent goes idle, the new round's footer appears (reload keyed on idle transition)                                 |
+| #   | Steps                                                 | Expected Result                                                                                                        |
+| --- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1   | Open a session where round N edited 2 files           | Footer appears below round N's last item, header "2 files changed this round", two rows with icon, filename, +/- stats |
+| 2   | Click the footer header                               | List collapses/expands; chevron toggles                                                                                |
+| 3   | Scroll to an earlier loaded round that modified files | That round shows its own footer with only its files                                                                    |
+| 4   | Agent finishes a new round that edits a file          | After the agent goes idle, the new round's footer appears (reload keyed on idle transition)                            |
 
 ## Edge Cases
 
@@ -43,14 +43,15 @@ indexer) and renders read-only `FileChangeRow`s. No frontend aggregation.
 | 3   | Errored tool call        | Edit tool returned "Error…"       | File excluded (backend skips error results) |
 | 4   | Group-chat / collab pane | Open a collab group-chat session  | No footer (suppressed in group-chat layout) |
 
-## Per-Round Diff Scoping ("Review" / file-row click)
+## Diff navigation ("Review" / file-row click) — cumulative (issue #24)
 
-The footer scopes the Agent Station Diff app to **just this round's files**
-via `simulatorDiffScopeRequestAtom`. The Diff app reads the scope and narrows
-its file list (`filterDiffSectionsByScope`); the bare composer "files" pill
-(`ChatView.openAgentStationDiff`) clears the scope and still shows the whole
-session diff. Pure scope logic lives in
-`src/modules/WorkStation/Diff/SessionReplay/diffScope.ts` (unit-tested in
+The Agent Station Diff app is always **cumulative** (whole-session). A footer
+"Review" / file-row click no longer narrows the Diff to this round's files; it
+opens the cumulative diff and (for a file-row click) scrolls to the clicked
+file. The bare composer "files" pill (`ChatView.openAgentStationDiff`) behaves
+the same. The scroll-target logic lives in
+`src/modules/WorkStation/Diff/SessionReplay/diffScope.ts`
+(`isDiffScopeActive` + `resolveScopedSelectedPath`, unit-tested in
 `diffScope.test.ts`).
 
 Both entry points also bump `simulatorDiffRefreshNonceAtom`
@@ -64,30 +65,28 @@ refetch loop.
 
 ### Happy Path
 
-| #   | Steps                                                                        | Expected Result                                                                                               |
-| --- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| 1   | Round edited 3 files; click "Review"                                         | Diff app opens (Agent Station, all-changes view) showing exactly those 3 files                                |
-| 2   | Click a specific file row                                                    | Diff app opens scoped to the round's files AND scrolls to / focuses the clicked file                          |
-| 3   | After (1), open the composer "files" pill                                    | Scope cleared — full session working diff shown                                                               |
-| 4   | Re-click the same file row                                                   | Diff app re-focuses that file (scope `nonce` bumps each open)                                                 |
-| 5   | Round 1 appends `test1`; round 2 appends `test2`; click round 2 "Review"/row | Diff reflects the latest working tree — `test2` is visible, not just `test1` (refresh nonce forces a re-read) |
-| 6   | Open Diff, make another edit, re-open via footer or pill                     | Diff re-reads and shows the new edit (no stale cache)                                                         |
+| #   | Steps                                                                        | Expected Result                                                                                           |
+| --- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 1   | Round edited 3 files; click "Review"                                         | Diff app opens (Agent Station) showing the **cumulative** whole-session diff (not just those 3 files)     |
+| 2   | Click a specific file row                                                    | Diff app opens the cumulative diff AND scrolls to / focuses the clicked file                              |
+| 3   | After (1), open the composer "files" pill                                    | Same cumulative whole-session diff                                                                        |
+| 4   | Re-click the same file row                                                   | Diff app re-focuses that file (scope `nonce` bumps each open)                                             |
+| 5   | Round 1 appends `test1`; round 2 appends `test2`; click round 2 "Review"/row | Diff reflects the latest working tree — both `test1` and `test2` visible (refresh nonce forces a re-read) |
+| 6   | Open Diff, make another edit, re-open via footer or pill                     | Diff re-reads and shows the new edit (no stale cache)                                                     |
 
 ### Edge Cases
 
-| #   | Scenario                      | Steps                                              | Expected Result                                                             |
-| --- | ----------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------- |
-| 1   | Empty scope                   | (cannot occur — footer hidden when 0 files)        | `isDiffScopeActive` returns false; full diff                                |
-| 2   | Scoped file reverted          | All scoped paths absent from working diff          | Graceful fallback to full list (no empty "Review")                          |
-| 3   | Partial match                 | Some scoped paths still present                    | List narrows to the surviving subset                                        |
-| 4   | Session switch                | Open Diff scoped to session A, switch to session B | Scope's `sessionId` no longer matches → full diff for B (scope self-clears) |
-| 5   | Clicked path not in scope set | `selectedPath` not in `filePaths`                  | No focus applied; list still scoped                                         |
+| #   | Scenario                      | Steps                                        | Expected Result                                                           |
+| --- | ----------------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
+| 1   | No scroll target              | "Review" with no specific file row           | `resolveScopedSelectedPath` returns null; cumulative diff, no auto-scroll |
+| 2   | Session switch                | Open Diff via session A, switch to session B | Scope's `sessionId` no longer matches → no stale scroll target for B      |
+| 3   | Clicked path not in scope set | `selectedPath` not in `filePaths`            | No focus applied; cumulative list still shown                             |
 
 ### Error / Degraded States
 
-| #   | Scenario                    | Steps                                          | Expected Result                                                                    |
-| --- | --------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------- |
-| 1   | Session has no diffs at all | Click "Review" on a round whose files are gone | Falls back to full list which is also empty → existing empty placeholder; no crash |
+| #   | Scenario                    | Steps                                     | Expected Result                                                 |
+| --- | --------------------------- | ----------------------------------------- | --------------------------------------------------------------- |
+| 1   | Session has no diffs at all | Click "Review" on a session with no edits | Cumulative list is empty → existing empty placeholder; no crash |
 
 ## Accessibility
 
@@ -103,8 +102,8 @@ refetch loop.
 - [ ] Footer data comes from the backend (`session_turns.modified_files_json`), not frontend aggregation
 - [ ] Reuses composer `FileChangeRow` + `ComposerStackHeader` + `composerStackTokens`
 - [ ] Read-only — no accept/reject controls
-- [ ] "Review" scopes the Diff app to the round's files; a file-row click also pre-focuses the clicked file
-- [ ] The composer "files" pill still opens the full-session diff (scope cleared)
-- [ ] Scope self-clears on session switch and degrades gracefully when scoped files no longer exist
+- [ ] Header copy explicitly says it is a per-round summary ("N files changed this round"), localized in all 13 languages
+- [ ] "Review" opens the cumulative whole-session diff (issue #24 — no per-round narrowing); a file-row click also scrolls to the clicked file
+- [ ] The Agent Station Diff has no Focus/replay pill — it always shows the cumulative diff
 - [ ] `pnpm test` passes for `turnFilesMapping` and `diffScope`
 - [ ] No TypeScript errors

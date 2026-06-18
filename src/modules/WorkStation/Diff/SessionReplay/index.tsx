@@ -8,10 +8,10 @@
  * as CodeEditor / Browser session replays, so collapse / position (left ↔
  * right) / resize all share the same chrome and persisted state.
  *
- * Filter chrome lives in the shared `SimulatorReplayChrome` as three
- * `ReplayTab`s — All changes / Code / Other deliverables. The trailing
- * Focus / All Changes pill reuses the Source Control `TabPill` component
- * and `common:sourceControl.pill.*` i18n keys.
+ * The diff always shows the cumulative whole-session state (no per-event
+ * replay focus and no per-round narrowing — see issue #24). A chat
+ * `TurnFilesFooter` "Review"/file click still scrolls the cumulative list to
+ * the clicked file, but never filters it down to a single round.
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GitBranch, ListChevronsDownUp, RotateCcw, Send } from "lucide-react";
@@ -27,7 +27,6 @@ import {
   getOrgtrackSessionFinalDiffs,
 } from "@src/api/tauri/lineage";
 import Button from "@src/components/Button";
-import TabPill from "@src/components/TabPill";
 import { SIMULATOR_PRIMARY_SIDEBAR } from "@src/config/simulatorPrimarySidebar";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { simulatorEventsAtom } from "@src/engines/SessionCore/derived/simulatorEvents";
@@ -46,7 +45,6 @@ import {
   WorkStationShell,
   buildConsolidatedSessionReplayDiffSectionItems,
   buildPrimarySidebarConfig,
-  buildSessionReplayDiffSectionItems,
   useSimulatorAwaitingAgentCaption,
   useSimulatorPlaceholderActions,
 } from "@src/modules/WorkStation/shared";
@@ -79,15 +77,9 @@ import {
   SubmissionPullRequestsContent,
   deriveSubmissionsData,
 } from "./SubmissionsContent";
-import {
-  filterDiffSectionsByScope,
-  isDiffScopeActive,
-  resolveScopedSelectedPath,
-} from "./diffScope";
+import { isDiffScopeActive, resolveScopedSelectedPath } from "./diffScope";
 import type { DiffReplayTab } from "./types";
 import { useDiff } from "./useDiff";
-
-type DiffPillMode = "focus" | "all-changes";
 
 const SUBMISSION_COMMIT_RESOLVE_LIMIT = 200;
 const logger = createLogger("SessionReplayDiff");
@@ -295,7 +287,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   const { t } = useTranslation("sessions");
   const { t: tCommon } = useTranslation("common");
   const [activeTab, setActiveTab] = useState<DiffReplayTab>("diff");
-  const [pillMode, setPillMode] = useState<DiffPillMode>("all-changes");
   const [historySelection, setHistorySelection] =
     useState<SourceControlHistorySelection | null>(null);
   const [historyRepoContext, setHistoryRepoContext] = useState<{
@@ -321,7 +312,9 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   // Bumped on every chat→Diff navigation; forces a fresh read of the canonical
   // final diffs below so a just-edited file isn't shown with a stale diff.
   const diffRefreshNonce = useAtomValue(simulatorDiffRefreshNonceAtom);
-  const { entries, displayEntry, selectedEntryId, selectEntry } = useDiff();
+  // Replay-cursor entries feed only the cumulative fallback consolidation
+  // below; the per-event "focus" view was removed for issue #24.
+  const { entries } = useDiff();
   const [orgtrackFinalDiffs, setOrgtrackFinalDiffs] = useState<
     OrgtrackSessionFinalDiff[]
   >([]);
@@ -406,16 +399,11 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   );
   const hasSimulatorDiffs = simulatorConsolidatedSections.length > 0;
 
-  // When the chat `TurnFilesFooter` requested a per-round scope (and it
-  // targets the session on screen), narrow the file list to that round's
-  // files; otherwise this is the whole-session diff exactly as before.
-  const baseSections =
+  // The Agent Station diff is always cumulative (whole-session). The chat
+  // `TurnFilesFooter` no longer narrows it to a single round (issue #24); it
+  // only scrolls the cumulative list to a clicked file (see the scope effect).
+  const sidebarItems =
     finalDiffCount > 0 ? canonicalFinalSections : simulatorConsolidatedSections;
-
-  const sidebarItems = useMemo(
-    () => filterDiffSectionsByScope(baseSections, diffScopeRequest, sessionId),
-    [baseSections, diffScopeRequest, sessionId]
-  );
 
   const consolidatedSections = sidebarItems;
 
@@ -442,10 +430,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
   const handleTabClick = useCallback((eventId: string) => {
     const next = TAB_BY_ID[eventId];
     if (next) setActiveTab(next);
-  }, []);
-
-  const handlePillModeChange = useCallback((key: string) => {
-    if (key === "focus" || key === "all-changes") setPillMode(key);
   }, []);
 
   const handleCollapseAll = useCallback(() => {
@@ -478,28 +462,9 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
 
   const diffHeaderContent = useMemo(
     () => ({
-      content:
-        activeTab === "diff" ? (
-          <div className="flex min-w-0 flex-1 items-center gap-1.5">
-            <TabPill
-              activeTab={pillMode}
-              tabs={[
-                { key: "focus", label: tCommon("sourceControl.pill.focus") },
-                {
-                  key: "all-changes",
-                  label: tCommon("sourceControl.pill.allChanges"),
-                },
-              ]}
-              onChange={handlePillModeChange}
-              variant="pill"
-              color="fill"
-              fillWidth={false}
-              size="small"
-            />
-          </div>
-        ) : null,
+      content: null,
       trailing:
-        activeTab === "diff" && pillMode === "all-changes" ? (
+        activeTab === "diff" ? (
           <div className="flex items-center gap-px">
             {canUndoAll ? (
               <Button
@@ -527,15 +492,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
           </div>
         ) : undefined,
     }),
-    [
-      activeTab,
-      pillMode,
-      handlePillModeChange,
-      handleUndoAll,
-      canUndoAll,
-      handleCollapseAll,
-      tCommon,
-    ]
+    [activeTab, handleUndoAll, canUndoAll, handleCollapseAll, tCommon]
   );
 
   const fallbackRepoContext = useMemo(() => {
@@ -875,14 +832,13 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     setDiffCommitNavigationRequest,
   ]);
 
-  // Per-round scope from the chat `TurnFilesFooter`. When a new scope arrives
-  // for this session, drop into the all-changes diff view (the only mode that
-  // renders the filtered consolidated list) and scroll to the clicked row, if
-  // any. `nonce` is part of the dep set so re-clicking the same file refocuses.
+  // A chat `TurnFilesFooter` "Review"/file click switches to the (cumulative)
+  // diff tab and scrolls to the clicked row, if any. The list is never
+  // narrowed to the round (issue #24). `nonce` is part of the dep set so
+  // re-clicking the same file refocuses.
   useEffect(() => {
     if (!isDiffScopeActive(diffScopeRequest, sessionId)) return;
     setActiveTab("diff");
-    setPillMode("all-changes");
     setHistorySelection(null);
     setHistoryRepoContext(null);
     const selected = resolveScopedSelectedPath(diffScopeRequest, sessionId);
@@ -898,17 +854,10 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     (item: DiffFileNavigationItem<DiffFileSectionData>) => {
       setHistorySelection(null);
       setHistoryRepoContext(null);
-      if (pillMode === "all-changes") {
-        setFocusedDiffPath(item.file.path);
-        setFocusedDiffNonce((prev) => prev + 1);
-        return;
-      }
-
-      const entryIds = item.entryIds ?? [];
-      const targetEntryId = entryIds[entryIds.length - 1];
-      if (targetEntryId) selectEntry(targetEntryId);
+      setFocusedDiffPath(item.file.path);
+      setFocusedDiffNonce((prev) => prev + 1);
     },
-    [pillMode, selectEntry]
+    []
   );
 
   const sidebarTab = useMemo<PrimarySidebarTab>(() => {
@@ -980,16 +929,8 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
           content: (
             <DiffFileNavigationList
               items={sidebarItems}
-              selectedEntryId={
-                historySelection || pillMode === "all-changes"
-                  ? null
-                  : (selectedEntryId ?? displayEntry?.entryId ?? null)
-              }
-              selectedPath={
-                historySelection || pillMode !== "all-changes"
-                  ? null
-                  : focusedDiffPath
-              }
+              selectedEntryId={null}
+              selectedPath={historySelection ? null : focusedDiffPath}
               onSelectItem={handleSidebarItemSelect}
             />
           ),
@@ -1006,9 +947,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     handleSubmissionCommitSelect,
     sidebarItems,
     historySelection,
-    selectedEntryId,
-    displayEntry,
-    pillMode,
     focusedDiffPath,
     handleSidebarItemSelect,
     t,
@@ -1043,12 +981,6 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       primarySidebarWidth,
       handlePrimarySidebarWidthChange,
     ]
-  );
-
-  const focusedSections = useMemo(
-    () =>
-      displayEntry ? buildSessionReplayDiffSectionItems(displayEntry) : [],
-    [displayEntry]
   );
 
   useEffect(() => {
@@ -1140,34 +1072,18 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
       );
     }
 
-    if (pillMode === "all-changes") {
-      return (
-        <DiffSectionList
-          sections={consolidatedSections}
-          loading={orgtrackFinalDiffsLoading}
-          emptyTitle={t(
-            "simulator.replay.diffApp.emptyForFilter",
-            "No diffs yet"
-          )}
-          focusedPath={focusedDiffPath}
-          focusedNonce={focusedDiffNonce}
-          collapseSignal={collapseAllSignal}
-          collapseThreshold={3}
-          hideBottomPadding
-        />
-      );
-    }
-
     return (
       <DiffSectionList
-        sections={focusedSections}
+        sections={consolidatedSections}
+        loading={orgtrackFinalDiffsLoading}
         emptyTitle={t(
-          "simulator.replay.diffApp.emptyDetail",
-          "Select a change to view the diff."
+          "simulator.replay.diffApp.emptyForFilter",
+          "No diffs yet"
         )}
-        collapseThreshold={Number.POSITIVE_INFINITY}
-        showBottomBorder={false}
-        flat
+        focusedPath={focusedDiffPath}
+        focusedNonce={focusedDiffNonce}
+        collapseSignal={collapseAllSignal}
+        collapseThreshold={3}
         hideBottomPadding
       />
     );
@@ -1178,9 +1094,7 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     tCommon,
     activeTab,
     hasSubmissions,
-    pillMode,
     consolidatedSections,
-    focusedSections,
     orgtrackFinalDiffsLoading,
     focusedDiffPath,
     focusedDiffNonce,
