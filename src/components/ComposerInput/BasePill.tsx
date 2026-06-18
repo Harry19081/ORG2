@@ -32,12 +32,28 @@ export interface BasePillProps {
   suppressContentEditableWarning?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  title?: string;
   role?: string;
   tabIndex?: number;
   /** Forwarded ref for position calculations (e.g. preview portal in ComposerPill) */
   pillRef?: React.RefObject<HTMLSpanElement | null>;
   /** Arbitrary data-* attributes */
   [key: `data-${string}`]: unknown;
+}
+
+function applySpanRef(
+  ref:
+    | React.Ref<HTMLSpanElement>
+    | React.RefObject<HTMLSpanElement | null>
+    | undefined,
+  value: HTMLSpanElement | null
+): void {
+  if (!ref) return;
+  if (typeof ref === "function") {
+    ref(value);
+    return;
+  }
+  (ref as React.MutableRefObject<HTMLSpanElement | null>).current = value;
 }
 
 const BasePill = React.forwardRef<HTMLSpanElement, BasePillProps>(
@@ -54,6 +70,7 @@ const BasePill = React.forwardRef<HTMLSpanElement, BasePillProps>(
       suppressContentEditableWarning: _suppressContentEditableWarning,
       className,
       style,
+      title,
       role,
       tabIndex,
       pillRef,
@@ -67,13 +84,16 @@ const BasePill = React.forwardRef<HTMLSpanElement, BasePillProps>(
     const iconStyle = isEditor ? EDITOR_FILE_PILL_ICON_STYLE : PILL_ICON_STYLE;
 
     const resolvedRef =
-      pillRef ?? (ref as React.RefObject<HTMLSpanElement> | null) ?? undefined;
+      pillRef ??
+      (ref as React.RefObject<HTMLSpanElement | null> | null) ??
+      undefined;
 
     return (
       <span
-        ref={resolvedRef}
+        ref={(node) => applySpanRef(resolvedRef, node)}
         className={className}
         style={{ ...baseStyle, ...style }}
+        title={title}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}

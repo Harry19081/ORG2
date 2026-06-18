@@ -119,6 +119,14 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
 
     const { isDark } = useCurrentTheme();
     const installedSkills = useAtomValue(installedSkillsAtom);
+    const skillPathByName = useMemo(() => {
+      const map = new Map<string, string>();
+      for (const skill of installedSkills) {
+        map.set(skill.name, skill.path);
+        map.set(`/${skill.name}`, skill.path);
+      }
+      return map;
+    }, [installedSkills]);
     const installedSkillsRef = useRef(installedSkills);
     installedSkillsRef.current = installedSkills;
 
@@ -733,6 +741,12 @@ const ComposerInput = forwardRef<ComposerInputRef, ComposerInputProps>(
       return createPortal(
         <ComposerPill
           attrs={entry.attrs}
+          skillPath={
+            entry.attrs.iconType === "skill"
+              ? (skillPathByName.get(entry.attrs.filePath) ??
+                skillPathByName.get(entry.attrs.fileName))
+              : undefined
+          }
           onDelete={() => {
             ops.markHistoryBoundary();
             const host = ops.hostRef.current;

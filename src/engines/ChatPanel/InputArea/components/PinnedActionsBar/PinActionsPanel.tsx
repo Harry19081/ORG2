@@ -58,6 +58,7 @@ function slashItemToAction(item: SlashItem): PinnedAction {
   return {
     name: item.name,
     skillName: item.skillName,
+    skillPath: item.skillPath,
     category: item.category,
     source: item.source,
     serverName: item.serverName,

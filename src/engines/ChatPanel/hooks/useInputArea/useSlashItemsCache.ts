@@ -89,6 +89,7 @@ export function useSlashItemsCache(
         .map((s) => ({
           name: s.name,
           skillName: s.name,
+          skillPath: s.path,
           description: normalizeSkillDescription(s),
           category: "skill" as const,
           source: resolveSkillGroup(s),

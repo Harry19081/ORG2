@@ -11,11 +11,12 @@
  */
 import { useAtom, useAtomValue } from "jotai";
 import { Layout, MoreHorizontal } from "lucide-react";
-import React, { memo, useCallback, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
+import Tooltip from "@src/components/Tooltip";
 import UserActionButton from "@src/engines/ChatPanel/InputArea/components/UserActionButton";
 import { useSlashItemsCache } from "@src/engines/ChatPanel/hooks/useInputArea/useSlashItemsCache";
 import { EditorTabService } from "@src/services/workStation";
@@ -55,19 +56,35 @@ interface ActionPillProps {
 }
 
 const ActionPill: React.FC<ActionPillProps> = memo(
-  ({ action, onClick, buttonRef }) => (
-    <Button
-      ref={buttonRef}
-      variant="secondary"
-      size="small"
-      shape="round"
-      title={action.name}
-      onClick={(event) => onClick(action, event)}
-      className="max-w-[180px] shrink-0 select-none"
-    >
-      {action.name}
-    </Button>
-  )
+  ({ action, onClick, buttonRef }) => {
+    const button = (
+      <Button
+        ref={buttonRef}
+        variant="secondary"
+        size="small"
+        shape="round"
+        title={action.name}
+        onClick={(event) => onClick(action, event)}
+        className="max-w-[180px] shrink-0 select-none"
+      >
+        {action.name}
+      </Button>
+    );
+
+    if (action.category !== "skill" || !action.skillPath) return button;
+
+    return (
+      <Tooltip
+        content={<span className="break-all">{action.skillPath}</span>}
+        position="top"
+        mouseEnterDelay={200}
+        framedPanel
+        smartPlacement
+      >
+        {button}
+      </Tooltip>
+    );
+  }
 );
 
 ActionPill.displayName = "ActionPill";
@@ -147,6 +164,17 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
       fetchFresh,
     } = useSlashItemsCache({ builtinItems: BUILTIN_SLASH_ITEMS });
 
+    const skillPathByName = useMemo(() => {
+      const map = new Map<string, string>();
+      for (const item of availableItems) {
+        if (item.category === "skill" && item.skillName && item.skillPath) {
+          map.set(item.skillName, item.skillPath);
+          map.set(item.name, item.skillPath);
+        }
+      }
+      return map;
+    }, [availableItems]);
+
     // ── "..." panel state ─────────────────────────────────────────────────────
 
     const [panelOpen, setPanelOpen] = useState(false);
@@ -162,6 +190,17 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     }, []);
 
     const hasPinnedActions = pinnedActions.length > 0;
+    const resolvedPinnedActions = useMemo(
+      () =>
+        pinnedActions.map((action) => {
+          if (action.category !== "skill" || action.skillPath) return action;
+          const skillPath = skillPathByName.get(
+            action.skillName ?? action.name
+          );
+          return skillPath ? { ...action, skillPath } : action;
+        }),
+      [pinnedActions, skillPathByName]
+    );
     const showCanvasAction = showCanvasPill && !isCanvasTabOpen;
     const hasActionPills = showCanvasAction || hasPinnedActions;
     const hasTrailingContent = Boolean(trailingContent);
@@ -263,7 +302,7 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
           </div>
         )}
 
-        {pinnedActions.map((action) => (
+        {resolvedPinnedActions.map((action) => (
           <ActionPill
             key={actionKey(action)}
             action={action}
