@@ -876,8 +876,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Historia zewnętrzna",
-        "remoteShared": "Zdalnie udostępniona Session"
+        "externalHistory": "Historia zewnętrzna"
       },
       "fields": {
         "session": "Session",
@@ -893,6 +892,22 @@
         "importReadFailed": "Nie udało się odczytać pliku JSON.",
         "importFailed": "Nie udało się zaimportować Session JSON."
       }
+    },
+    "turnFiles": {
+      "filesChangedCount_one": "Zmieniono {{count}} plik w tej rundzie",
+      "filesChangedCount_few": "Zmieniono {{count}} pliki w tej rundzie",
+      "filesChangedCount_many": "Zmieniono {{count}} plików w tej rundzie",
+      "filesChangedCount_other": "Zmieniono {{count}} pliku w tej rundzie",
+      "historicalRoundDiffFiles_one": "Diff poprzedniej rundy · {{count}} plik",
+      "historicalRoundDiffFiles_few": "Diff poprzedniej rundy · {{count}} pliki",
+      "historicalRoundDiffFiles_many": "Diff poprzedniej rundy · {{count}} plików",
+      "historicalRoundDiffFiles_other": "Diff poprzedniej rundy · {{count}} pliku",
+      "review": "Przejrzyj",
+      "showLess": "Pokaż mniej",
+      "showMore_one": "Pokaż {{count}} więcej",
+      "showMore_few": "Pokaż {{count}} więcej",
+      "showMore_many": "Pokaż {{count}} więcej",
+      "showMore_other": "Pokaż {{count}} więcej"
     }
   },
   "chatStatus": {
@@ -1776,6 +1791,10 @@
     "start": "Start",
     "assign": "Przypisz",
     "send": "Wyślij",
+    "missingGit": {
+      "title": "Brakuje Git",
+      "body": "Git nie jest zainstalowany albo nie można go znaleźć. Poproś ADE Manager lub SDE Agent o zainstalowanie Git na tym komputerze, a następnie uruchom ponownie ORGII."
+    },
     "noProvidersAvailable": "Brak dostępnych dostawców",
     "enterPublicRepoUrl": "Wprowadź publiczny URL Repo",
     "repoUrlPlaceholder": "https://github.com/owner/repo",
@@ -2159,6 +2178,7 @@
     "build": "Buduj",
     "skip": "Pomiń",
     "buildFailed": "Nie udało się uruchomić budowania",
+    "saveFailed": "Nie udało się zapisać planu",
     "emptyPlan": "(plan jest pusty)",
     "edit": "Edytuj",
     "cancelEdit": "Anuluj",
@@ -2520,26 +2540,5 @@
     "summarize": "Podsumuj z Agent",
     "waiting": "Oczekiwanie na treść…",
     "empty": "Brak treści"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Lustrzana kopia udostępnionej sesji jest tylko do odczytu. W tej lokalnej kopii wykonanie Agent i zwykłe wejście sesji są wyłączone.",
-    "shareSession": "Udostępnij sesję…",
-    "shareDialogTitle": "Udostępnij sesję",
-    "sharePrivacyWarning": "Każda osoba z tym kodem i PIN-em może zobaczyć widoczne wiadomości sesji, wynik narzędzi i wyświetlane ścieżki. Dla widza udostępnianie jest tylko do odczytu.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Wpisz PIN z 4–8 cyfr",
-    "generateOffer": "Wygeneruj kod oferty",
-    "offerCodeLabel": "Kod oferty",
-    "offerCodePlaceholder": "Wklej kod oferty hosta",
-    "answerCodeLabel": "Kod odpowiedzi",
-    "answerCodePlaceholder": "Wklej kod odpowiedzi widza",
-    "acceptAnswer": "Zaakceptuj odpowiedź",
-    "joinDialogTitle": "Dołącz do udostępnionej sesji",
-    "joinDialogDescription": "Wklej kod oferty hosta i PIN. Wyślij wygenerowany kod odpowiedzi hostowi, aby zakończyć połączenie.",
-    "joinSharedSession": "Dołącz do udostępnionej sesji",
-    "viewerMessages": "Wiadomości widza",
-    "viewerLabel": "Widz",
-    "viewerMessagePlaceholder": "Wyślij wiadomość widza do hosta…",
-    "sendViewerMessage": "Wyślij"
   }
 }

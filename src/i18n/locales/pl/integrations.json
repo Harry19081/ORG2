@@ -1061,7 +1061,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Ścieżka Agent Browser CLI",
-    "agentBrowserCliPathDesc": "Opcjonalna ścieżka do pliku binarnego Agent Browser CLI. Pozostaw puste, aby użyć wbudowanego pliku binarnego lub PATH",
+    "agentBrowserCliPathDesc": "Opcjonalna ścieżka do pliku binarnego Agent Browser CLI. Pozostaw puste, aby użyć pliku instalowanego na żądanie lub PATH",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Ścieżka Playwright CLI",
     "playwrightCliPathDesc": "Opcjonalna ścieżka do polecenia lub skryptu Playwright CLI. Pozostaw puste, aby użyć checkoutu deweloperskiego lub PATH",
@@ -1076,7 +1076,20 @@
     "actionDetailsTab": "Szczegóły poleceń",
     "agentAppLabel": "Aplikacja Agent",
     "agentBrowserRestartPromptTitle": "Uruchomić ponownie ORGII?",
-    "agentBrowserRestartPromptMessage": "Zmiana dostawcy Browser CLI wymaga ponownego uruchomienia ORGII, zanim agenci zobaczą wybrane narzędzie. Uruchomić ponownie teraz?"
+    "agentBrowserRestartPromptMessage": "Zmiana dostawcy Browser CLI wymaga ponownego uruchomienia ORGII, zanim agenci zobaczą wybrane narzędzie. Uruchomić ponownie teraz?",
+    "sidecarDownloadsSectionTitle": "Pobieranie sidecarów",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Pobiera plik binarny Agent Browser dla tej platformy do ~/.orgii/bin. ORGII nigdy nie pobiera go podczas uruchamiania.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Pobiera binarkę macOS Peekaboo do automatyzacji pulpitu do ~/.orgii/bin. Nieobsługiwane platformy pozostają wyłączone.",
+    "sidecarUnsupported": "Nieobsługiwane",
+    "sidecarInstalled": "Zainstalowano",
+    "sidecarNotInstalled": "Nie zainstalowano",
+    "sidecarDownloadAction": "Pobierz",
+    "sidecarInstalledAction": "Zainstalowano",
+    "sidecarRefreshStatus": "Odśwież status",
+    "sidecarRefreshStatusDesc": "Sprawdź ponownie, które opcjonalne sidecars są już zainstalowane na tej maszynie",
+    "sidecarLastError": "Ostatni błąd"
   },
   "toolsArea": {
     "builtin": "Wbudowane narzędzia",

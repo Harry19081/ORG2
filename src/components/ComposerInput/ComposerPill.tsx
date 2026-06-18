@@ -35,6 +35,7 @@ import { createPortal } from "react-dom";
 
 import FileTreePreview from "@src/components/FileTreePreview";
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import Tooltip from "@src/components/Tooltip";
 import { PILL_SIZE, readPillText } from "@src/config/pillTokens";
 
 import BasePill from "./BasePill";
@@ -80,11 +81,17 @@ function isLikelyFolder(path: string, name: string): boolean {
 
 export interface ComposerPillProps {
   attrs: ComposerPillAttrs;
+  /** Absolute path to the skill directory when this pill references a skill. */
+  skillPath?: string;
   /** Called when the user clicks the X icon to remove the pill */
   onDelete: () => void;
 }
 
-const ComposerPill: React.FC<ComposerPillProps> = ({ attrs, onDelete }) => {
+const ComposerPill: React.FC<ComposerPillProps> = ({
+  attrs,
+  skillPath,
+  onDelete,
+}) => {
   const {
     filePath,
     fileName,
@@ -292,32 +299,51 @@ const ComposerPill: React.FC<ComposerPillProps> = ({ attrs, onDelete }) => {
     }
   })();
 
+  const pillNode = (
+    <BasePill
+      variant="editor"
+      iconNode={iconNode}
+      pillRef={pillRef}
+      className="composer-pill"
+      style={{
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        cursor: "pointer",
+        backgroundColor: "transparent",
+        outline: "none",
+      }}
+      onClick={handlePillClick}
+      onMouseDown={handlePillMouseDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <span>{fileName}</span>
+      {lineRangeDisplay && (
+        <span style={{ color: "var(--color-text-3)", fontSize: "12px" }}>
+          {lineRangeDisplay}
+        </span>
+      )}
+    </BasePill>
+  );
+
+  const pillWithTooltip =
+    iconType === "skill" && skillPath ? (
+      <Tooltip
+        content={<span className="break-all">{skillPath}</span>}
+        position="top"
+        mouseEnterDelay={200}
+        framedPanel
+        smartPlacement
+      >
+        {pillNode}
+      </Tooltip>
+    ) : (
+      pillNode
+    );
+
   return (
     <>
-      <BasePill
-        variant="editor"
-        iconNode={iconNode}
-        pillRef={pillRef}
-        className="composer-pill"
-        style={{
-          userSelect: "none",
-          WebkitUserSelect: "none",
-          cursor: "pointer",
-          backgroundColor: "transparent",
-          outline: "none",
-        }}
-        onClick={handlePillClick}
-        onMouseDown={handlePillMouseDown}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <span>{fileName}</span>
-        {lineRangeDisplay && (
-          <span style={{ color: "var(--color-text-3)", fontSize: "12px" }}>
-            {lineRangeDisplay}
-          </span>
-        )}
-      </BasePill>
+      {pillWithTooltip}
 
       {showPreview &&
         shouldShowTreePreview &&

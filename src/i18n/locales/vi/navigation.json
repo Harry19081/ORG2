@@ -133,8 +133,7 @@
       "collapseAll": "Thu gọn tất cả",
       "markAllRead": "Đánh dấu tất cả đã đọc",
       "openHome": "Mở Home",
-      "openWorkstation": "Mở Workstation",
-      "joinSharedSession": "Tham gia phiên chia sẻ…"
+      "openWorkstation": "Mở Workstation"
     },
     "search": {
       "folders": "Tìm kiếm Workspace...",

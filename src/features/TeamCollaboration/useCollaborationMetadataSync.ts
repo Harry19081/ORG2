@@ -1,8 +1,6 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useMemo } from "react";
 
-import { rpc } from "@src/api/tauri/rpc";
-import type { DispatchCategory } from "@src/api/tauri/session";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
@@ -37,10 +35,11 @@ import type {
   CollabWorkItemMetadataRecord,
   RemoteTeammateSessionMetadata,
 } from "@src/store/collaboration/types";
-import { sessionsAtom } from "@src/store/session";
+import { sessionsAtom, upsertSession } from "@src/store/session";
+import { persistSessions } from "@src/store/session/sessionAtom/persistence";
 import type { Session } from "@src/store/session/sessionAtom/types";
+import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
-import { MIRROR_STATUS, SHARE_MODE } from "../SessionSharing/types";
 import { supabaseSyncClient } from "./sync/supabaseSyncClient";
 
 const SYNC_INTERVAL_MS = 10_000;
@@ -93,27 +92,19 @@ function isRemoteSessionAllowedByAccessSettings(
   return settings.workspacePaths.map(normalizeWorkspacePath).includes(repoPath);
 }
 
-function createLocalMirrorSessionId(): string {
+function createImportedSnapshotSessionId(): string {
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
-  return `sharedsession-${Array.from(bytes, (byte) =>
+  return `imported-session-${Array.from(bytes, (byte) =>
     byte.toString(16).padStart(2, "0")
   ).join("")}`;
 }
 
-function rewriteEventsForLocalMirror(
+function rewriteEventsForImportedSnapshot(
   events: SessionEvent[],
   localSessionId: string
 ): SessionEvent[] {
   return events.map((event) => ({ ...event, sessionId: localSessionId }));
-}
-
-function toWireSourceCategory(
-  category: DispatchCategory | undefined
-): "cli" | "agent" | "os" | "remote_shared" {
-  if (category === "cli_agent") return "cli";
-  if (category === "remote_shared_session") return "remote_shared";
-  return "agent";
 }
 
 function toRemoteMetadata(
@@ -506,30 +497,37 @@ export function useCollaborationMetadataSync(): void {
           snapshotRequests.find((item) => item.requestId === request.requestId)
             ?.status !== "completed"
         ) {
-          const localSessionId = createLocalMirrorSessionId();
-          const localEvents = rewriteEventsForLocalMirror(
+          const localSessionId = createImportedSnapshotSessionId();
+          const localEvents = rewriteEventsForImportedSnapshot(
             request.events,
             localSessionId
           );
-          await rpc.remoteSharedSession.create({
-            request: {
-              sessionId: localSessionId,
-              sourceSessionId: request.sourceSessionId,
-              shareId: request.requestId,
-              sourceCategory: toWireSourceCategory(undefined),
-              shareMode: SHARE_MODE.READONLY,
-              name: request.session.title,
-              status: MIRROR_STATUS.LIVE,
-              repoName: undefined,
-              repoPath: request.session.repoPath,
-              sourcePeerLabel: request.session.ownerDisplayName,
-              metadataJson: JSON.stringify({
-                orgId: request.orgId,
-                ownerMemberId: request.session.ownerMemberId,
-                snapshotRequestId: request.requestId,
-              }),
-            },
+          const now = new Date().toISOString();
+          upsertSession({
+            session_id: localSessionId,
+            status: "completed",
+            created_at: now,
+            updated_at: now,
+            completed_at: now,
+            name: request.session.title,
+            repoPath: request.session.repoPath,
+            category: "external_history",
+            model: "Collaboration Snapshot",
+            agentIconId: "archive",
+            agentDisplayName: "Collaboration Snapshot",
+            pinned: false,
+            error_message: JSON.stringify({
+              originalSessionId: request.sourceSessionId,
+              originalCategory: "rust_agent",
+              exportedAt: now,
+              eventCount: localEvents.length,
+              orgId: request.orgId,
+              ownerMemberId: request.session.ownerMemberId,
+              snapshotRequestId: request.requestId,
+              ownerDisplayName: request.session.ownerDisplayName,
+            }),
           });
+          persistSessions(getInstrumentedStore().get(sessionsAtom));
           await eventStoreProxy.set(localEvents, localSessionId);
           setSnapshotRequests((current) =>
             current.map((item) =>

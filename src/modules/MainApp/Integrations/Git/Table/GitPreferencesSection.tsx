@@ -19,15 +19,12 @@ import {
   ORGII_COAUTHOR_NAME,
 } from "@src/services/git/operations/commitAttribution";
 import {
-  GIT_EXECUTABLE_MODES,
   GIT_PULL_STRATEGIES,
-  type GitExecutableMode,
   type GitPullStrategy,
   gitAutoCreatePrAtom,
   gitAutoFetchAtom,
   gitAutoFetchIntervalAtom,
   gitCoauthorAttributionEnabledAtom,
-  gitExecutableModeAtom,
   gitPrAttributionEnabledAtom,
   gitPullStrategyAtom,
   gitWorktreeCleanupIntervalHoursAtom,
@@ -66,9 +63,6 @@ const GitPreferencesSection: React.FC = () => {
   const { t } = useTranslation("integrations");
   const { t: tSettings } = useTranslation("settings");
   const { t: tCommon } = useTranslation("common");
-  const [gitExecutableMode, setGitExecutableMode] = useAtom(
-    gitExecutableModeAtom
-  );
   const [pullStrategy, setPullStrategy] = useAtom(gitPullStrategyAtom);
   const [autoFetch, setAutoFetch] = useAtom(gitAutoFetchAtom);
   const [autoFetchInterval, setAutoFetchInterval] = useAtom(
@@ -155,24 +149,6 @@ const GitPreferencesSection: React.FC = () => {
           description={t("git.autoCreatePrDesc")}
         >
           <Switch checked={autoCreatePr} onChange={setAutoCreatePr} />
-        </SectionRow>
-
-        <SectionRow
-          label={tSettings("editor.git.executableMode")}
-          description={tSettings("editor.git.executableModeDesc")}
-        >
-          <Select
-            value={gitExecutableMode}
-            size="default"
-            onChange={(value) =>
-              setGitExecutableMode(value as GitExecutableMode)
-            }
-            options={GIT_EXECUTABLE_MODES.map((mode) => ({
-              label: tSettings(mode.labelKey),
-              value: mode.value,
-            }))}
-            style={SECTION_CONTROL_STYLE}
-          />
         </SectionRow>
       </SectionContainer>
 

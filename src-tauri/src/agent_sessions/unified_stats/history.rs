@@ -156,14 +156,6 @@ mod tests {
             lines_added: None,
             lines_removed: None,
             touched_files: None,
-            source_session_id: None,
-            share_id: None,
-            source_category: None,
-            share_mode: None,
-            mirror_status: None,
-            source_peer_label: None,
-            last_connected_at: None,
-            ended_at: None,
         }
     }
 

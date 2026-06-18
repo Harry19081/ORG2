@@ -19,23 +19,18 @@
  *   via `cursorIdeAdapter.sendMessage`. Read history; write follow-ups.
  * - `"external_history"` — Imported read-only history owned by an external
  *   agent CLI database/log (Codex first, Claude Code / Windsurf later).
- * - `"remote_shared_session"` — Read-only mirror of another peer's ORGII
- *   session. Stored locally for viewing/searching, never dispatched to a
- *   local agent runtime.
  */
 export type DispatchCategory =
   | "cli_agent"
   | "rust_agent"
   | "cursor_ide"
-  | "external_history"
-  | "remote_shared_session";
+  | "external_history";
 
 export const DISPATCH_CATEGORY = {
   CLI_AGENT: "cli_agent",
   RUST_AGENT: "rust_agent",
   CURSOR_IDE: "cursor_ide",
   EXTERNAL_HISTORY: "external_history",
-  REMOTE_SHARED_SESSION: "remote_shared_session",
 } as const;
 
 /**

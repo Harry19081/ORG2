@@ -12,7 +12,6 @@
  * - terminal, output: Empty placeholders (rendered via Placeholder component)
  * - settings: Editor settings panel
  */
-import { useAtomValue } from "jotai";
 import React, { Suspense, memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -20,16 +19,10 @@ import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabCon
 import { REGISTRY } from "@src/modules/WorkStation/TabContent/registry";
 import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import type { SearchOptions as StoreSearchOptions } from "@src/store/workstation/codeEditor/search";
-import {
-  SOURCE_CONTROL_ALL_SESSIONS_FILTER,
-  sourceControlSessionFilterAtom,
-} from "@src/store/workstation/codeEditor/sourceControlSessionFilterAtom";
-import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { SubagentDetailTabData } from "@src/store/workstation/tabs/types";
-import type { GitFile } from "@src/types/git/types";
 import { requiresFilePreviewRoute as shouldUseDedicatedPreviewRoute } from "@src/util/file/previewTypes";
 
-import { SOURCE_CONTROL_OTHER_SESSIONS_FILTER } from "../../hooks";
+import { getGitFileForPath } from "../sourceControlMainProps";
 import type { TabContentRendererProps } from "./types";
 
 // Lazy-load heavy components to avoid parsing on initial load
@@ -37,7 +30,6 @@ const CodeViewerContent = React.lazy(() => import("../CodeViewerContent"));
 const loadSourceControlMainContent = () =>
   import("../SourceControlMainContent");
 const loadGitDiffContent = () => import("../GitDiffContent");
-const SourceControlMainContent = React.lazy(loadSourceControlMainContent);
 const GitDiffContent = React.lazy(loadGitDiffContent);
 const SearchEditorContent = React.lazy(() => import("../SearchEditorContent"));
 const GitCommitDetailContent = React.lazy(
@@ -81,33 +73,6 @@ function isCsvTableFile(filePath: string): boolean {
   return lowerPath.endsWith(".csv") || lowerPath.endsWith(".tsv");
 }
 
-function getGitFileForPath(
-  filePath: string,
-  repoPath: string,
-  gitFilesByPath: Map<string, GitFile>
-): GitFile | undefined {
-  const exactMatch = gitFilesByPath.get(filePath);
-  if (exactMatch) return exactMatch;
-
-  const hostRelative = filePath.startsWith(`${repoPath}/`)
-    ? filePath.slice(repoPath.length + 1)
-    : null;
-  if (hostRelative) {
-    const hostMatch = gitFilesByPath.get(hostRelative);
-    if (hostMatch) return hostMatch;
-  }
-
-  for (const file of gitFilesByPath.values()) {
-    if (!file.repoRoot) continue;
-    const prefix = `${file.repoRoot}/`;
-    if (!filePath.startsWith(prefix)) continue;
-    const relativePath = filePath.slice(prefix.length);
-    if (file.path === relativePath) return file;
-  }
-
-  return undefined;
-}
-
 // ============================================
 // Component Implementation
 // ============================================
@@ -119,7 +84,6 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
     repoId,
     fileContentState,
     gitFilesByPath,
-    sourceControlAttributedFiles,
     gitDiffLoading,
     forceRefresh,
     onFileSelect,
@@ -129,15 +93,9 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
     onSearchTabTitleChange,
     onGitDiffUnsavedChange,
     onBinaryUnsavedChange,
-    sourceControlCollapseAllSignal,
-    sourceControlFilterMode = "uncommitted",
     terminalState,
-    editorQuickActions,
   }) => {
     const { t } = useTranslation();
-    const sourceControlSessionFilter = useAtomValue(
-      sourceControlSessionFilterAtom
-    );
     // ============================================
     // Memoized values for git-diff tab
     // ============================================
@@ -326,70 +284,12 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = memo(
       }
 
       case "source-control": {
-        const mode = (activeTab.data.mode ?? "focus") as
-          | "focus"
-          | "all-changes";
-        const staged = Boolean(activeTab.data.staged);
-        const focusPath = (activeTab.data.focusPath ?? null) as string | null;
-        const historySelection =
-          (activeTab.data.historySelection as
-            | SourceControlHistorySelection
-            | null
-            | undefined) ?? null;
-
-        const gitStatusFiles = Array.from(gitFilesByPath.values());
-        const embeddedFiles = (activeTab.data.files ?? []) as GitFile[];
-        const unfilteredFiles =
-          sourceControlAttributedFiles.length > 0
-            ? sourceControlAttributedFiles
-            : gitStatusFiles.length > 0
-              ? gitStatusFiles
-              : embeddedFiles;
-        const allFiles = unfilteredFiles.filter((file) => {
-          if (sourceControlFilterMode === "staged" && !file.staged)
-            return false;
-          if (sourceControlFilterMode === "unstaged" && file.staged)
-            return false;
-          if (
-            sourceControlFilterMode !== "uncommitted" ||
-            sourceControlSessionFilter === SOURCE_CONTROL_ALL_SESSIONS_FILTER
-          ) {
-            return true;
-          }
-          if (
-            sourceControlSessionFilter === SOURCE_CONTROL_OTHER_SESSIONS_FILTER
-          ) {
-            return !file.sourceSessionId;
-          }
-          return file.sourceSessionId === sourceControlSessionFilter;
-        });
-
-        const focusGitFile = focusPath
-          ? (getGitFileForPath(focusPath, repoPath, gitFilesByPath) ?? null)
-          : null;
-
-        return (
-          <div className="flex h-full min-h-0 flex-col overflow-hidden">
-            <Suspense fallback={<LazyFallback />}>
-              <SourceControlMainContent
-                mode={mode}
-                focusGitFile={focusGitFile}
-                hasFocus={Boolean(focusPath)}
-                onForceReload={forceRefresh}
-                onFileSelect={onFileSelect}
-                onGitDiffUnsavedChange={onGitDiffUnsavedChange}
-                historySelection={historySelection}
-                files={allFiles}
-                loading={gitDiffLoading && allFiles.length === 0}
-                staged={staged}
-                repoId={repoId ?? undefined}
-                repoPath={repoPath}
-                collapseAllSignal={sourceControlCollapseAllSignal}
-                emptyFocusActions={editorQuickActions}
-              />
-            </Suspense>
-          </div>
-        );
+        // The Source Control main pane is rendered by a keep-alive overlay in
+        // `EditorMainPane` (mounted once visited, then shown/hidden) so its diff
+        // view + scroll survive navigating away and back (issue #16). Rendering
+        // it here too would double-mount it, so this case is intentionally a
+        // no-op — the overlay sits above this (empty) layer when SC is active.
+        return null;
       }
 
       case "git-commit-detail": {

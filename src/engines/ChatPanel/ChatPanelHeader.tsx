@@ -13,7 +13,6 @@ import {
   Plus,
   RefreshCw,
   Search,
-  Share2,
 } from "lucide-react";
 import React from "react";
 import { createPortal } from "react-dom";
@@ -79,7 +78,6 @@ interface ChatPanelHeaderProps {
   handleOpenExportSessionJson: () => void;
   handleOpenLinkWorkItem: () => void;
   handleOpenSearch: () => void;
-  handleOpenShareSession: () => void;
   handleNewSession: () => void;
   handleOpenStartPage: () => void;
   handlePaginationToggle: (checked: boolean) => void;
@@ -101,7 +99,6 @@ interface ChatPanelHeaderProps {
   isProjectTarget: boolean;
   paginationEnabled: boolean;
   showStartPageBackButton: boolean;
-  shareSessionAvailable: boolean;
   selectedProjectVisible: boolean;
   selectedWorkItemVisible: boolean;
   shouldOffsetHeaderForCollapsedSidebar: boolean;
@@ -142,7 +139,6 @@ export function ChatPanelHeader({
   handleOpenExportSessionJson,
   handleOpenLinkWorkItem,
   handleOpenSearch,
-  handleOpenShareSession,
   handleNewSession,
   handleOpenStartPage,
   handlePaginationToggle,
@@ -164,7 +160,6 @@ export function ChatPanelHeader({
   isProjectTarget,
   paginationEnabled,
   showStartPageBackButton,
-  shareSessionAvailable,
   selectedProjectVisible,
   selectedWorkItemVisible,
   shouldOffsetHeaderForCollapsedSidebar,
@@ -410,17 +405,6 @@ export function ChatPanelHeader({
             >
               <Link2 size={DROPDOWN_ITEM.iconSize} strokeWidth={1.75} />
               <span className="flex-1 truncate">Link to Work Item…</span>
-            </button>
-            <button
-              type="button"
-              className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full text-left disabled:cursor-not-allowed disabled:opacity-50`}
-              onClick={handleOpenShareSession}
-              disabled={!shareSessionAvailable}
-            >
-              <Share2 size={DROPDOWN_ITEM.iconSize} strokeWidth={1.75} />
-              <span className="flex-1 truncate">
-                {t("sharing.shareSession")}
-              </span>
             </button>
             <button
               type="button"

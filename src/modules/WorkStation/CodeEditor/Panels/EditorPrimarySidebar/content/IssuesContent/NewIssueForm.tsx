@@ -3,9 +3,10 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubIssueLabel, GitHubIssueUser } from "@src/api/tauri/github";
-import Avatar from "@src/components/Avatar";
+import AvatarChip from "@src/components/AvatarChip";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import Tag from "@src/components/Tag";
 import Textarea from "@src/components/Textarea";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
 import { getLabelColorStyle } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
@@ -103,22 +104,28 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
               {repoLabels.map((label) => {
                 const isSelected = selectedLabels.includes(label.name);
                 const style = isSelected
-                  ? getLabelColorStyle(label.color)
-                  : undefined;
+                  ? {
+                      ...getLabelColorStyle(label.color),
+                      borderColor: "transparent",
+                    }
+                  : { backgroundColor: "transparent" };
                 return (
-                  <button
+                  <Tag
                     key={label.id}
-                    type="button"
-                    onClick={() => handleLabelToggle(label.name)}
-                    className={`rounded-full px-1.5 py-[1px] ${TYPOGRAPHY.badge} leading-tight transition-opacity ${
+                    size="mini"
+                    pill
+                    checkable
+                    checked={isSelected}
+                    onCheck={() => handleLabelToggle(label.name)}
+                    className={`${TYPOGRAPHY.badge} !px-1.5 !py-[1px] !leading-tight transition-opacity ${
                       isSelected
                         ? "opacity-100"
                         : "border border-border-2 text-text-2 opacity-60 hover:opacity-100"
                     }`}
-                    style={isSelected ? style : undefined}
+                    style={style}
                   >
                     {label.name}
-                  </button>
+                  </Tag>
                 );
               })}
             </div>
@@ -135,19 +142,16 @@ export const NewIssueForm: React.FC<NewIssueFormProps> = memo(
               {collaborators.slice(0, 20).map((user) => {
                 const isSelected = selectedAssignees.includes(user.login);
                 return (
-                  <button
+                  <AvatarChip
                     key={user.login}
-                    type="button"
+                    variant="selectable"
+                    selected={isSelected}
+                    avatarSize={14}
+                    avatarSrc={user.avatar_url}
+                    label={user.login}
+                    className={TYPOGRAPHY.secondary}
                     onClick={() => handleAssigneeToggle(user.login)}
-                    className={`flex items-center gap-1 rounded px-1.5 py-0.5 ${TYPOGRAPHY.secondary} transition-colors ${
-                      isSelected
-                        ? "bg-primary-1 text-primary-6"
-                        : "text-text-2 hover:bg-fill-2"
-                    }`}
-                  >
-                    <Avatar size={14} src={user.avatar_url} />
-                    {user.login}
-                  </button>
+                  />
                 );
               })}
             </div>

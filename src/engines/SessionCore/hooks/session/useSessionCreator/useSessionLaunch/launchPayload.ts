@@ -272,7 +272,7 @@ export function buildSessionFromLaunchResult(options: {
     category: result.category as
       | typeof DISPATCH_CATEGORY.RUST_AGENT
       | typeof DISPATCH_CATEGORY.CLI_AGENT,
-    model: result.model,
+    model: result.model ?? undefined,
     agentExecMode,
     ...(result.agentOrgId
       ? { agentIconId: AGENT_ORG_ICON_ID, agentOrgId: result.agentOrgId }

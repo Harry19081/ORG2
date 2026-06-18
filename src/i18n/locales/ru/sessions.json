@@ -870,8 +870,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Внешняя история",
-        "remoteShared": "Удалённая общая Session"
+        "externalHistory": "Внешняя история"
       },
       "fields": {
         "session": "Session",
@@ -887,6 +886,22 @@
         "importReadFailed": "Не удалось прочитать JSON-файл.",
         "importFailed": "Не удалось импортировать Session JSON."
       }
+    },
+    "turnFiles": {
+      "filesChangedCount_one": "{{count}} файл изменён в этом раунде",
+      "filesChangedCount_few": "{{count}} файла изменено в этом раунде",
+      "filesChangedCount_many": "{{count}} файлов изменено в этом раунде",
+      "filesChangedCount_other": "{{count}} файла изменено в этом раунде",
+      "historicalRoundDiffFiles_one": "Diff предыдущего раунда · {{count}} файл",
+      "historicalRoundDiffFiles_few": "Diff предыдущего раунда · {{count}} файла",
+      "historicalRoundDiffFiles_many": "Diff предыдущего раунда · {{count}} файлов",
+      "historicalRoundDiffFiles_other": "Diff предыдущего раунда · {{count}} файла",
+      "review": "Просмотреть",
+      "showLess": "Показать меньше",
+      "showMore_one": "Показать ещё {{count}}",
+      "showMore_few": "Показать ещё {{count}}",
+      "showMore_many": "Показать ещё {{count}}",
+      "showMore_other": "Показать ещё {{count}}"
     }
   },
   "chatStatus": {
@@ -1759,6 +1774,10 @@
     "start": "Начать",
     "assign": "Назначить",
     "send": "Отправить",
+    "missingGit": {
+      "title": "Git отсутствует",
+      "body": "Git не установлен или не найден. Попросите ADE Manager или SDE Agent установить Git на этот компьютер, затем перезапустите ORGII."
+    },
     "noProvidersAvailable": "Нет доступных провайдеров",
     "enterPublicRepoUrl": "Введите URL публичного репо",
     "repoUrlPlaceholder": "https://github.com/owner/repo",
@@ -2143,6 +2162,7 @@
     "build": "Запустить сборку",
     "skip": "Пропустить",
     "buildFailed": "Не удалось запустить сборку",
+    "saveFailed": "Не удалось сохранить план",
     "emptyPlan": "(план пуст)",
     "edit": "Редактировать",
     "cancelEdit": "Отмена",
@@ -2525,26 +2545,5 @@
     "summarize": "Обобщить с Agent",
     "waiting": "Ожидание контента…",
     "empty": "Нет содержимого"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Зеркало общего сеанса доступно только для чтения. Выполнение Agent и обычный ввод сеанса отключены для этой локальной копии.",
-    "shareSession": "Поделиться сеансом…",
-    "shareDialogTitle": "Поделиться сеансом",
-    "sharePrivacyWarning": "Любой, у кого есть этот код и PIN, сможет видеть видимые сообщения сеанса, вывод инструментов и показанные пути. Для зрителя доступ только для чтения.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Введите PIN из 4–8 цифр",
-    "generateOffer": "Создать код предложения",
-    "offerCodeLabel": "Код предложения",
-    "offerCodePlaceholder": "Вставьте код предложения хоста",
-    "answerCodeLabel": "Код ответа",
-    "answerCodePlaceholder": "Вставьте код ответа зрителя",
-    "acceptAnswer": "Принять ответ",
-    "joinDialogTitle": "Присоединиться к общему сеансу",
-    "joinDialogDescription": "Вставьте код предложения хоста и PIN. Отправьте созданный код ответа хосту, чтобы завершить подключение.",
-    "joinSharedSession": "Присоединиться к общему сеансу",
-    "viewerMessages": "Сообщения зрителя",
-    "viewerLabel": "Зритель",
-    "viewerMessagePlaceholder": "Отправить сообщение зрителя хосту…",
-    "sendViewerMessage": "Отправить"
   }
 }

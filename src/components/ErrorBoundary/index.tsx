@@ -46,6 +46,20 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     log.error("React Error Boundary caught an error:", error, errorInfo);
 
+    // Reveal the error UI: the HTML splash (z-index 99999) would otherwise
+    // cover the rendered ErrorPage until the index.html watchdog fires. Hiding
+    // it here surfaces the error immediately instead of looking like a hang.
+    const splash = document.getElementById("splash");
+    if (splash) {
+      splash.style.display = "none";
+    }
+    const splashDone = (
+      window as unknown as { __ORGII_SPLASH_DONE__?: () => void }
+    ).__ORGII_SPLASH_DONE__;
+    if (typeof splashDone === "function") {
+      splashDone();
+    }
+
     if (
       error.message?.includes("Loading chunk") ||
       error.message?.includes("ChunkLoadError") ||

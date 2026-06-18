@@ -5,7 +5,6 @@
 //! and computes statistics.
 
 use crate::agent_sessions::cli::persistence as cli_session_persistence;
-use crate::agent_sessions::remote_shared;
 use agent_core::coordination::agent_org_runs::{AgentOrgRunRecord, AgentOrgRunStore};
 use agent_core::definitions::orgs::OrgDefinition;
 use agent_core::session::persistence::{self as session_persistence, session_type};
@@ -40,8 +39,6 @@ pub fn list_all_sessions(filter: Option<&SessionFilter>) -> Result<SessionListRe
     let load_cli = wants_category("cli");
     let load_agent = wants_category("agent");
     let load_os = wants_category("os");
-    let load_remote_shared = wants_category("remote_shared");
-
     let mut all_sessions: Vec<SessionAggregateRecord> = Vec::new();
     let mut metadata_resolver = (load_agent || load_os).then(AgentMetadataResolver::new);
 
@@ -101,18 +98,6 @@ pub fn list_all_sessions(filter: Option<&SessionFilter>) -> Result<SessionListRe
             all_sessions.push(os_session_to_aggregate_record(session, resolver));
         }
     }
-
-    if load_remote_shared {
-        let remote_sessions = remote_shared::list_remote_shared_sessions()
-            .map_err(|err| format!("Failed to load remote shared sessions: {err}"))?;
-        all_sessions.reserve(remote_sessions.len());
-        for session in remote_sessions {
-            all_sessions.push(remote_shared::remote_shared_session_to_aggregate_record(
-                session,
-            ));
-        }
-    }
-
     if let Err(err) = super::orgtrack_adapter::upsert_aggregate_sessions(&all_sessions) {
         tracing::warn!(error = %err, "unified_stats: failed to upsert orgtrack core sessions");
     }
@@ -324,7 +309,6 @@ pub fn compute_stats(sessions: &[SessionAggregateRecord]) -> SessionStats {
             SessionCategory::Cli => by_category.cli += 1,
             SessionCategory::Agent => by_category.agent += 1,
             SessionCategory::Os => by_category.os += 1,
-            SessionCategory::RemoteShared => by_category.remote_shared += 1,
         }
 
         // Key source counts
@@ -406,14 +390,6 @@ mod tests {
             lines_added: None,
             lines_removed: None,
             touched_files: None,
-            source_session_id: None,
-            share_id: None,
-            source_category: None,
-            share_mode: None,
-            mirror_status: None,
-            source_peer_label: None,
-            last_connected_at: None,
-            ended_at: None,
         }
     }
 

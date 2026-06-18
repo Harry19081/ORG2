@@ -24,6 +24,19 @@ pub(super) async fn prepare_rust_agent_workspace_for_launch(
                 additional_directories.join(", ")
             ));
         }
+        // Empty workspace_path is only legitimate for personal-workspace
+        // sessions (OS Agent), which fall back to ~/.orgii/personal/workspace/.
+        // For every other agent (SDE, Wingman, …) an empty workspace means the
+        // launch caller's repo/workspace state was not ready — fail HERE at
+        // launch time rather than persisting a workspace-less session that
+        // dies cryptically on its first message ("workspace_root is empty").
+        if !crate::definitions::prefix_lookup::uses_personal_workspace(session_id) {
+            return Err(format!(
+                "workspace_path is required for session {session_id} \
+                 (non personal-workspace agent). The workspace was not ready \
+                 at launch time — retry once the folder finishes loading."
+            ));
+        }
         return Ok(None);
     }
 

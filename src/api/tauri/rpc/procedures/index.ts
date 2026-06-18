@@ -8,7 +8,6 @@ export { integrations } from "./integrations";
 export { learning } from "./learning";
 export { lineage } from "./lineage";
 export { mcp } from "./mcp";
-export { remoteSharedSession } from "./remoteSharedSession";
 export { searchRegex } from "./searchRegex";
 export { searchSymbol } from "./searchSymbol";
 export { sessionAggregate } from "./sessionAggregate";

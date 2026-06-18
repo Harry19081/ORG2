@@ -736,6 +736,16 @@
     "replay": {
       "follow": "Follow"
     },
+    "turnFiles": {
+      "filesChangedCount_one": "{{count}} file changed this round",
+      "filesChangedCount_other": "{{count}} files changed this round",
+      "historicalRoundDiffFiles_one": "Earlier round diff · {{count}} file",
+      "historicalRoundDiffFiles_other": "Earlier round diff · {{count}} files",
+      "review": "Review",
+      "showLess": "Show less",
+      "showMore_one": "Show {{count}} more",
+      "showMore_other": "Show {{count}} more"
+    },
     "readOnlyBannerCursorIde": "Read-only Cursor IDE history. Open Cursor to continue this chat.",
     "cursorControl": {
       "enableButton": "Enable sending",
@@ -879,8 +889,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "External History",
-        "remoteShared": "Remote Shared Session"
+        "externalHistory": "External History"
       },
       "fields": {
         "session": "Session",
@@ -1778,6 +1787,10 @@
     "start": "Start",
     "assign": "Assign",
     "send": "Send",
+    "missingGit": {
+      "title": "Git is missing",
+      "body": "Git is not installed or could not be found. Ask ADE Manager or SDE Agent to install Git for this machine, then restart ORGII."
+    },
     "noProvidersAvailable": "No providers available",
     "enterPublicRepoUrl": "Enter a public repo URL",
     "repoUrlPlaceholder": "https://github.com/owner/repo",
@@ -2161,6 +2174,7 @@
     "build": "Build",
     "skip": "Skip",
     "buildFailed": "Failed to start Build",
+    "saveFailed": "Failed to save plan",
     "emptyPlan": "(plan is empty)",
     "edit": "Edit",
     "cancelEdit": "Cancel",
@@ -2532,26 +2546,5 @@
     "empty": "No canvas rendered yet",
     "sidebarTitle": "Canvases",
     "noCanvases": "No canvases yet"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Shared session mirror is read-only. Agent execution and normal session input are disabled for this local copy.",
-    "shareSession": "Share Session…",
-    "shareDialogTitle": "Share Session",
-    "sharePrivacyWarning": "Anyone with this code and PIN can view visible session messages, tool output, and displayed paths. Sharing is read-only for the viewer.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Enter the 4–8 digit PIN",
-    "generateOffer": "Generate offer code",
-    "offerCodeLabel": "Offer code",
-    "offerCodePlaceholder": "Paste the host offer code",
-    "answerCodeLabel": "Answer code",
-    "answerCodePlaceholder": "Paste the viewer answer code",
-    "acceptAnswer": "Accept answer",
-    "joinDialogTitle": "Join Shared Session",
-    "joinDialogDescription": "Paste the host offer code and PIN. Send the generated answer code back to the host to complete the connection.",
-    "joinSharedSession": "Join shared session",
-    "viewerMessages": "Viewer messages",
-    "viewerLabel": "Viewer",
-    "viewerMessagePlaceholder": "Send a viewer message to the host…",
-    "sendViewerMessage": "Send"
   }
 }

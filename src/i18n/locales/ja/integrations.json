@@ -1064,7 +1064,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Agent Browser CLI パス",
-    "agentBrowserCliPathDesc": "Agent Browser CLI バイナリへの任意のパス。空のままにすると同梱バイナリまたは PATH を使用します",
+    "agentBrowserCliPathDesc": "Agent Browser CLI バイナリへの任意のパス。空のままにするとオンデマンドでインストールされたバイナリまたは PATH を使用します",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Playwright CLI パス",
     "playwrightCliPathDesc": "Playwright CLI コマンドまたはスクリプトへの任意のパス。空のままにすると開発チェックアウトまたは PATH を使用します",
@@ -1079,7 +1079,20 @@
     "actionDetailsTab": "コマンドの詳細",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "ORGII を再起動しますか？",
-    "agentBrowserRestartPromptMessage": "Browser CLI プロバイダーを変更した場合、Agent が選択したツールを認識するには ORGII の再起動が必要です。今すぐ再起動しますか？"
+    "agentBrowserRestartPromptMessage": "Browser CLI プロバイダーを変更した場合、Agent が選択したツールを認識するには ORGII の再起動が必要です。今すぐ再起動しますか？",
+    "sidecarDownloadsSectionTitle": "Sidecar ダウンロード",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "このプラットフォーム用の Agent Browser バイナリを ~/.orgii/bin にダウンロードします。ORGII は起動時に自動ダウンロードしません。",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "デスクトップ自動化用の macOS Peekaboo バイナリを ~/.orgii/bin にダウンロードします。未対応プラットフォームでは無効のままです。",
+    "sidecarUnsupported": "未対応",
+    "sidecarInstalled": "インストール済み",
+    "sidecarNotInstalled": "未インストール",
+    "sidecarDownloadAction": "ダウンロード",
+    "sidecarInstalledAction": "インストール済み",
+    "sidecarRefreshStatus": "状態を更新",
+    "sidecarRefreshStatusDesc": "このマシンにインストール済みの任意 sidecars を再確認します",
+    "sidecarLastError": "直近のエラー"
   },
   "toolsArea": {
     "builtin": "組み込みツール",

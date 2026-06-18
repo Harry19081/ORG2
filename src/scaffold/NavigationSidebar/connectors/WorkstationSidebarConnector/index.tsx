@@ -8,8 +8,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { type ProjectOrg, projectApi } from "@src/api/http/project";
 import type { WorkspaceRecord } from "@src/api/tauri/workspace";
 import { ROUTES } from "@src/config/routes";
-import { JoinSharedSessionDialog } from "@src/features/SessionSharing/JoinSharedSessionDialog";
-import { ShareSessionDialog } from "@src/features/SessionSharing/ShareSessionDialog";
 import { useCollaborationMetadataSync } from "@src/features/TeamCollaboration/useCollaborationMetadataSync";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { useKeyVault } from "@src/hooks/keyVault";
@@ -163,10 +161,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const [activeSidebarKey, setActiveSidebarKey] =
     useState<WorkstationSidebarKey>("workstation");
   const [activeSessionMoreMenuId, setActiveSessionMoreMenuId] = useState("");
-  const [shareDialogSessionId, setShareDialogSessionId] = useState<
-    string | null
-  >(null);
-  const [joinSharedSessionOpen, setJoinSharedSessionOpen] = useState(false);
   const [activeFolderMoreMenuId, setActiveFolderMoreMenuId] = useState("");
   const [projectsSelectedMenuItemId, setProjectsSelectedMenuItemId] =
     useState("");
@@ -557,14 +551,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     setChatPanelCreateTarget,
   });
 
-  const handleOpenShareDialog = useCallback((sessionId: string) => {
-    setShareDialogSessionId(sessionId);
-  }, []);
-
-  const handleOpenJoinSharedSession = useCallback(() => {
-    setJoinSharedSessionOpen(true);
-  }, []);
-
   const {
     handleDeleteSession,
     handleExportMarkdown,
@@ -591,7 +577,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     handleDeleteDraft: deleteSessionCreatorDraft,
     handleExportMarkdown,
     handleTogglePin,
-    onShareSession: handleOpenShareDialog,
     tCommon,
   });
 
@@ -735,7 +720,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     handleCollapseAllActiveSections,
     handleMarkAllRead,
     handleRefreshSessions,
-    onJoinSharedSession: handleOpenJoinSharedSession,
     setGroupByMode,
     t,
   });
@@ -817,17 +801,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
         onCancel={rename.onCancel}
         onConfirm={(newName) => rename.onConfirm(newName, sessionMap)}
       />
-      {shareDialogSessionId && (
-        <ShareSessionDialog
-          sessionId={shareDialogSessionId}
-          onClose={() => setShareDialogSessionId(null)}
-        />
-      )}
-      {joinSharedSessionOpen && (
-        <JoinSharedSessionDialog
-          onClose={() => setJoinSharedSessionOpen(false)}
-        />
-      )}
     </>
   );
 };

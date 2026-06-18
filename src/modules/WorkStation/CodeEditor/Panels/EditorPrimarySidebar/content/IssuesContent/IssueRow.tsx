@@ -2,6 +2,7 @@ import { CircleDot, MessageSquare, XCircle } from "lucide-react";
 import React, { memo, useMemo } from "react";
 
 import type { GitHubIssue } from "@src/api/tauri/github";
+import Tag from "@src/components/Tag";
 import { TreeRowBase, type TreeRowNode } from "@src/components/TreeRow";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
 import { getLabelColorStyle } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
@@ -48,13 +49,15 @@ export const IssueRow: React.FC<IssueRowProps> = memo(
           {issue.labels.slice(0, 2).map((label) => {
             const style = getLabelColorStyle(label.color);
             return (
-              <span
+              <Tag
                 key={label.id}
-                className={`rounded-full px-1 py-[1px] ${TYPOGRAPHY.badge} leading-tight`}
+                size="mini"
+                pill
+                className={`${TYPOGRAPHY.badge} !px-1 !py-[1px] !leading-tight`}
                 style={style}
               >
                 {label.name}
-              </span>
+              </Tag>
             );
           })}
 

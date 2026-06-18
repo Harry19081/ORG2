@@ -13,9 +13,8 @@ use std::path::{Path, PathBuf};
 
 const OPTIONAL_SIDECAR_PLACEHOLDER_MARKER: &str = "ORGII_GENERATED_OPTIONAL_SIDECAR_PLACEHOLDER";
 
-// Peekaboo, agent-browser, and dugite/git are downloaded at runtime into
-// ~/.orgii/bin/ (post-notarized download strategy) and are no longer bundled
-// inside the .app. No placeholder generation is needed for them.
+// Peekaboo and agent-browser are installed lazily into ~/.orgii/bin/ and are
+// no longer bundled inside the .app. No placeholder generation is needed.
 const OPTIONAL_SIDECAR_RESOURCES: &[&str] = &[];
 
 fn main() {

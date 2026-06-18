@@ -11,6 +11,7 @@ import "@src/util/platform/tauri";
 import "./index.scss";
 import { clearAllOpenedRepos } from "./store/repo";
 import { initBackgroundImage } from "./util/core/init/backgroundInit";
+import { reloadForChunkError as reloadChunk } from "./util/core/init/chunkReload";
 import { initTheme } from "./util/core/init/themeInit";
 import { initializeTauriAPIs, invokeTauri } from "./util/platform/tauri/init";
 
@@ -37,10 +38,22 @@ const isChunkError = (msg?: string) =>
   msg?.includes("Loading chunk") ||
   msg?.includes("dynamically imported module");
 
+// Bounded reload on chunk failure (see chunkReload.ts). Falls back to the
+// emergency error UI when the retry budget is exhausted and the inline
+// startup-error panel is unavailable.
+const reloadForChunkError = () =>
+  reloadChunk(() =>
+    showEmergencyError(
+      "Failed to Load Application Assets",
+      "An app asset could not be loaded after several attempts. Check your network connection, then retry. If this persists, reinstalling may help.",
+      true
+    )
+  );
+
 // Early chunk error handling (before React mounts)
 window.onerror = (message) => {
   if (typeof message === "string" && isChunkError(message)) {
-    window.location.reload();
+    reloadForChunkError();
     return true;
   }
   return false;
@@ -48,7 +61,7 @@ window.onerror = (message) => {
 
 window.onunhandledrejection = (event) => {
   if (isChunkError(event.reason?.message)) {
-    window.location.reload();
+    reloadForChunkError();
     event.preventDefault();
   }
 };
@@ -61,12 +74,12 @@ window.addEventListener(
     if (target instanceof HTMLScriptElement) {
       const src = target.src || "";
       if (src.includes("chunk") || src.includes("vendor")) {
-        window.location.reload();
+        reloadForChunkError();
       }
     }
     if (target instanceof HTMLLinkElement) {
       if (target.rel === "stylesheet" && target.href?.includes("chunk")) {
-        window.location.reload();
+        reloadForChunkError();
       }
     }
   },

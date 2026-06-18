@@ -874,8 +874,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Histórico externo",
-        "remoteShared": "Session compartilhada remota"
+        "externalHistory": "Histórico externo"
       },
       "fields": {
         "session": "Session",
@@ -891,6 +890,16 @@
         "importReadFailed": "Não foi possível ler o arquivo JSON.",
         "importFailed": "Não foi possível importar a Session JSON."
       }
+    },
+    "turnFiles": {
+      "filesChangedCount_one": "{{count}} arquivo alterado nesta rodada",
+      "filesChangedCount_other": "{{count}} arquivos alterados nesta rodada",
+      "historicalRoundDiffFiles_one": "Diff de rodada anterior · {{count}} arquivo",
+      "historicalRoundDiffFiles_other": "Diff de rodada anterior · {{count}} arquivos",
+      "review": "Revisar",
+      "showLess": "Mostrar menos",
+      "showMore_one": "Mostrar mais {{count}}",
+      "showMore_other": "Mostrar mais {{count}}"
     }
   },
   "chatStatus": {
@@ -1772,6 +1781,10 @@
     "start": "Iniciar",
     "assign": "Atribuir",
     "send": "Enviar",
+    "missingGit": {
+      "title": "Git ausente",
+      "body": "O Git não está instalado ou não foi encontrado. Peça ao ADE Manager ou ao SDE Agent para instalar o Git nesta máquina e depois reinicie o ORGII."
+    },
     "noProvidersAvailable": "Nenhum provedor disponível",
     "enterPublicRepoUrl": "Digite uma URL pública de Repo",
     "repoUrlPlaceholder": "https://github.com/owner/repo",
@@ -2155,6 +2168,7 @@
     "build": "Construir",
     "skip": "Ignorar",
     "buildFailed": "Falha ao iniciar a construção",
+    "saveFailed": "Falha ao salvar o plano",
     "emptyPlan": "(o plano está vazio)",
     "edit": "Editar",
     "cancelEdit": "Cancelar",
@@ -2516,26 +2530,5 @@
     "summarize": "Resumir com Agent",
     "waiting": "Aguardando conteúdo…",
     "empty": "Sem conteúdo"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "O espelho da sessão compartilhada é somente leitura. A execução do Agent e a entrada normal da sessão estão desativadas para esta cópia local.",
-    "shareSession": "Compartilhar sessão…",
-    "shareDialogTitle": "Compartilhar sessão",
-    "sharePrivacyWarning": "Qualquer pessoa com este código e PIN pode ver mensagens visíveis da sessão, saída de ferramentas e caminhos exibidos. Para o visualizador, o compartilhamento é somente leitura.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Digite o PIN de 4–8 dígitos",
-    "generateOffer": "Gerar código de oferta",
-    "offerCodeLabel": "Código de oferta",
-    "offerCodePlaceholder": "Cole o código de oferta do host",
-    "answerCodeLabel": "Código de resposta",
-    "answerCodePlaceholder": "Cole o código de resposta do visualizador",
-    "acceptAnswer": "Aceitar resposta",
-    "joinDialogTitle": "Entrar em sessão compartilhada",
-    "joinDialogDescription": "Cole o código de oferta do host e o PIN. Envie o código de resposta gerado ao host para concluir a conexão.",
-    "joinSharedSession": "Entrar na sessão compartilhada",
-    "viewerMessages": "Mensagens do visualizador",
-    "viewerLabel": "Visualizador",
-    "viewerMessagePlaceholder": "Enviar uma mensagem de visualizador ao host…",
-    "sendViewerMessage": "Enviar"
   }
 }

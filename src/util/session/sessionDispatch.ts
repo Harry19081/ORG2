@@ -124,12 +124,6 @@ export const SESSION_PREFIX_REGISTRY: readonly SessionPrefixConfig[] = [
     iconId: "windsurf",
     externalHistorySourceId: "windsurf",
   },
-  {
-    prefix: "sharedsession-",
-    category: "remote_shared_session",
-    variant: undefined,
-    iconId: "radio",
-  },
 ] as const;
 
 // ============================================
@@ -226,13 +220,6 @@ export function isExternalHistorySession(
 ): boolean {
   const config = findPrefixConfig(sessionId);
   return config?.category === "external_history";
-}
-
-export function isRemoteSharedSession(
-  sessionId: string | null | undefined
-): boolean {
-  const config = findPrefixConfig(sessionId);
-  return config?.category === "remote_shared_session";
 }
 
 export function isImportedHistorySession(

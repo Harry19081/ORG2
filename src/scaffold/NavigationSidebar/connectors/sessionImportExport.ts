@@ -409,8 +409,6 @@ export function formatCategoryLabel(
       return t("chat.importExport.categories.cursorIde");
     case "external_history":
       return t("chat.importExport.categories.externalHistory");
-    case "remote_shared_session":
-      return t("chat.importExport.categories.remoteShared");
   }
 }
 

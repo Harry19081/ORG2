@@ -4,6 +4,8 @@ use std::process::Stdio;
 use std::sync::{Mutex, OnceLock};
 use std::time::Duration;
 
+use tokio::io::AsyncWriteExt;
+
 use async_trait::async_trait;
 use serde_json::{json, Value};
 use tauri::Manager;
@@ -15,8 +17,9 @@ use crate::tools::names as tool_names;
 use crate::tools::traits::{required_string, Tool, ToolError};
 use shared_state::split_browser_cli_command;
 
-const BUNDLED_PEEKABOO_RESOURCE: &str = "bin/peekaboo";
 const OPTIONAL_SIDECAR_PLACEHOLDER_MARKER: &str = "ORGII_GENERATED_OPTIONAL_SIDECAR_PLACEHOLDER";
+const PEEKABOO_VERSION: &str = "v3.2.3";
+const PEEKABOO_STALL_TIMEOUT: Duration = Duration::from_secs(30);
 const PEEKABOO_COMMAND_TIMEOUT: Duration = Duration::from_secs(120);
 /// Wall-clock cap for the `sleep` subcommand, which intentionally blocks for a
 /// caller-specified duration. The generic 120 s timeout would falsely kill a
@@ -161,7 +164,8 @@ impl Tool for PeekabooCliTool {
             crate::state::commands::desktop::DesktopConfig::default()
         });
         apply_managed_args(&mut args, &config);
-        let executable = resolve_peekaboo_executable(self.app_handle.as_ref())
+        let executable = resolve_or_install_peekaboo_executable()
+            .await
             .map_err(ToolError::ExecutionFailed)?;
         let visibility_guard = self
             .app_handle
@@ -633,47 +637,36 @@ async fn run_peekaboo_cli_command(
     })
 }
 
-fn resolve_peekaboo_executable(app_handle: Option<&tauri::AppHandle>) -> Result<PathBuf, String> {
-    // 1. Runtime-downloaded binary (post-notarized download): ~/.orgii/bin/peekaboo
+async fn resolve_or_install_peekaboo_executable() -> Result<PathBuf, String> {
+    match resolve_peekaboo_executable() {
+        Ok(path) => Ok(path),
+        Err(missing_error) => {
+            install_peekaboo_sidecar().await?;
+            resolve_peekaboo_executable().map_err(|err| {
+                format!(
+                    "Peekaboo was installed but could not be resolved: {err}. Original error: {missing_error}"
+                )
+            })
+        }
+    }
+}
+
+fn resolve_peekaboo_executable() -> Result<PathBuf, String> {
     let downloaded_path = app_paths::sidecar_bin_dir().join("peekaboo");
     if is_real_sidecar_file(&downloaded_path) {
         return Ok(downloaded_path);
     }
 
-    // 2. Bundled inside .app Resources (legacy / dev builds that include it)
-    if let Some(handle) = app_handle {
-        match handle.path().resolve(
-            BUNDLED_PEEKABOO_RESOURCE,
-            tauri::path::BaseDirectory::Resource,
-        ) {
-            Ok(resource_path) if is_real_sidecar_file(&resource_path) => return Ok(resource_path),
-            Ok(resource_path) => {
-                warn!(
-                    "[peekaboo] bundled resource path is placeholder: {}",
-                    resource_path.display()
-                );
-            }
-            Err(err) => {
-                warn!(
-                    "[peekaboo] failed to resolve bundled resource '{}': {}",
-                    BUNDLED_PEEKABOO_RESOURCE, err
-                );
-            }
-        }
-    }
-
-    // 3. Development path: src-tauri/bin/peekaboo
+    // Development path: src-tauri/bin/peekaboo
     let dev_path = dev_peekaboo_path(env!("CARGO_MANIFEST_DIR"));
     if is_real_sidecar_file(&dev_path) {
         return Ok(dev_path);
     }
 
     Err(format!(
-        "Peekaboo CLI not found. Run the app once to trigger automatic download, \
-         or install manually to '{}'. Checked: '{}', '{}', '{}'.",
+        "Peekaboo CLI not found. Install manually to '{}'. Checked: '{}', '{}'.",
         downloaded_path.display(),
         downloaded_path.display(),
-        BUNDLED_PEEKABOO_RESOURCE,
         dev_path.display(),
     ))
 }
@@ -695,6 +688,155 @@ fn dev_peekaboo_path(agent_core_manifest_dir: &str) -> PathBuf {
         .and_then(Path::parent)
         .unwrap_or(manifest_dir);
     src_tauri_dir.join("bin").join("peekaboo")
+}
+
+async fn install_peekaboo_sidecar() -> Result<(), String> {
+    if !cfg!(target_os = "macos") {
+        return Err("Peekaboo sidecar is only supported on macOS".to_string());
+    }
+
+    let bin_dir = app_paths::sidecar_bin_dir();
+    tokio::fs::create_dir_all(&bin_dir)
+        .await
+        .map_err(|err| format!("failed to create sidecar bin dir: {err}"))?;
+
+    let dest = bin_dir.join("peekaboo");
+    let dest_aarch64 = bin_dir.join("peekaboo-aarch64-apple-darwin");
+    let dest_x86 = bin_dir.join("peekaboo-x86_64-apple-darwin");
+
+    if is_real_sidecar_file(&dest) && is_real_sidecar_file(&dest_aarch64) {
+        return Ok(());
+    }
+
+    let client = reqwest::Client::builder()
+        .user_agent("orgii-peekaboo-lazy-install/1.0")
+        .timeout(Duration::from_secs(600))
+        .redirect(reqwest::redirect::Policy::limited(10))
+        .build()
+        .map_err(|err| format!("failed to build HTTP client: {err}"))?;
+    let url = format!(
+        "https://github.com/steipete/peekaboo/releases/download/{PEEKABOO_VERSION}/peekaboo-macos-universal.tar.gz"
+    );
+
+    let tmp_dir = temp_dir_in(&bin_dir, "peekaboo")?;
+    let archive = tmp_dir.join("peekaboo-macos-universal.tar.gz");
+    download_to(&client, &url, &archive).await?;
+    run_tar_extract(&archive, &tmp_dir)?;
+
+    let binary = find_file_named(&tmp_dir, "peekaboo")
+        .ok_or_else(|| "peekaboo binary not found in archive".to_string())?;
+    let bytes = tokio::fs::read(&binary)
+        .await
+        .map_err(|err| format!("read extracted peekaboo: {err}"))?;
+
+    for dest_path in [&dest, &dest_aarch64, &dest_x86] {
+        tokio::fs::write(dest_path, &bytes)
+            .await
+            .map_err(|err| format!("write {}: {err}", dest_path.display()))?;
+        set_executable(dest_path)?;
+    }
+
+    tokio::fs::write(
+        bin_dir.join("peekaboo-VERSION"),
+        format!("{PEEKABOO_VERSION}\n"),
+    )
+    .await
+    .map_err(|err| format!("write peekaboo-VERSION: {err}"))?;
+
+    let _ = tokio::fs::remove_dir_all(&tmp_dir).await;
+    Ok(())
+}
+
+async fn download_to(client: &reqwest::Client, url: &str, dest: &Path) -> Result<(), String> {
+    let response = client
+        .get(url)
+        .send()
+        .await
+        .map_err(|err| format!("GET {url}: {err}"))?
+        .error_for_status()
+        .map_err(|err| format!("GET {url} HTTP error: {err}"))?;
+
+    let mut file = tokio::fs::File::create(dest)
+        .await
+        .map_err(|err| format!("create {}: {err}", dest.display()))?;
+    use futures_util::StreamExt;
+    let mut stream = response.bytes_stream();
+    loop {
+        match tokio::time::timeout(PEEKABOO_STALL_TIMEOUT, stream.next()).await {
+            Ok(Some(Ok(chunk))) => {
+                file.write_all(&chunk)
+                    .await
+                    .map_err(|err| format!("write {}: {err}", dest.display()))?;
+            }
+            Ok(Some(Err(err))) => return Err(format!("reading body {url}: {err}")),
+            Ok(None) => break,
+            Err(_) => {
+                return Err(format!(
+                    "download stalled (no data for {}s): {url}",
+                    PEEKABOO_STALL_TIMEOUT.as_secs()
+                ));
+            }
+        }
+    }
+    file.flush()
+        .await
+        .map_err(|err| format!("flush {}: {err}", dest.display()))?;
+    Ok(())
+}
+
+fn temp_dir_in(parent: &Path, prefix: &str) -> Result<PathBuf, String> {
+    let tmp = parent.join(format!(".tmp-{prefix}-{}", std::process::id()));
+    std::fs::create_dir_all(&tmp).map_err(|err| format!("mkdir tmp {}: {err}", tmp.display()))?;
+    Ok(tmp)
+}
+
+fn find_file_named(dir: &Path, name: &str) -> Option<PathBuf> {
+    let Ok(entries) = fs::read_dir(dir) else {
+        return None;
+    };
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.is_dir() {
+            if let Some(found) = find_file_named(&path, name) {
+                return Some(found);
+            }
+        } else if path.file_name().and_then(|file_name| file_name.to_str()) == Some(name) {
+            return Some(path);
+        }
+    }
+    None
+}
+
+fn run_tar_extract(archive: &Path, dest_dir: &Path) -> Result<(), String> {
+    let mut command = std::process::Command::new("tar");
+    command.arg("-xzf").arg(archive).arg("-C").arg(dest_dir);
+    app_platform::hide_console(&mut command);
+    let status = command
+        .status()
+        .map_err(|err| format!("tar failed to start: {err}"))?;
+
+    if !status.success() {
+        return Err(format!(
+            "tar -xzf {} -C {} exited with {}",
+            archive.display(),
+            dest_dir.display(),
+            status
+        ));
+    }
+    Ok(())
+}
+
+fn set_executable(path: &Path) -> Result<(), String> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let meta = fs::metadata(path).map_err(|err| format!("metadata {}: {err}", path.display()))?;
+        let mut permissions = meta.permissions();
+        permissions.set_mode(permissions.mode() | 0o755);
+        fs::set_permissions(path, permissions)
+            .map_err(|err| format!("chmod {}: {err}", path.display()))?;
+    }
+    Ok(())
 }
 
 fn format_peekaboo_output(output: &PeekabooCliOutput) -> String {

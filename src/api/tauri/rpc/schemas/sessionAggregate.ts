@@ -18,25 +18,16 @@ import {
 // ── Enums ──
 
 /**
- * Wire category from Rust (cli | agent | os | remote_shared).
+ * Wire category from Rust (cli | agent | os).
  * Transformed at parse time to `DispatchCategory` so consumers never see the
  * wire value — only the routing value used by the frontend.
  */
 const WireCategorySchema = z
-  .enum(["cli", "agent", "os", "remote_shared"])
-  .transform((cat): "cli_agent" | "rust_agent" | "remote_shared_session" => {
+  .enum(["cli", "agent", "os"])
+  .transform((cat): "cli_agent" | "rust_agent" => {
     if (cat === "cli") return "cli_agent";
-    if (cat === "remote_shared") return "remote_shared_session";
     return "rust_agent";
   });
-
-const RemoteShareModeSchema = z.enum(["readonly"]);
-const RemoteMirrorStatusSchema = z.enum([
-  "connecting",
-  "live",
-  "disconnected",
-  "ended",
-]);
 
 // Schema for wire validation only — canonical KeySource type lives in dispatchTypes.ts
 const KeySourceSchema = z.enum(["own_key", "hosted_key"]);
@@ -189,14 +180,6 @@ export const SessionAggregateRecordSchema = z.object({
   linesAdded: z.number().int().optional(),
   linesRemoved: z.number().int().optional(),
   touchedFiles: z.array(z.string()).optional(),
-  sourceSessionId: z.string().optional(),
-  shareId: z.string().optional(),
-  sourceCategory: WireCategorySchema.optional(),
-  shareMode: RemoteShareModeSchema.optional(),
-  mirrorStatus: RemoteMirrorStatusSchema.optional(),
-  sourcePeerLabel: z.string().optional(),
-  lastConnectedAt: z.string().optional(),
-  endedAt: z.string().optional(),
 });
 
 export const CategoryStatsSchema = z
@@ -204,12 +187,10 @@ export const CategoryStatsSchema = z
     cli: z.number().int(),
     agent: z.number().int(),
     os: z.number().int().optional(),
-    remoteShared: z.number().int().optional(),
   })
   .transform((raw) => ({
     cliAgent: raw.cli,
     rustAgent: raw.agent + (raw.os ?? 0),
-    remoteSharedSession: raw.remoteShared ?? 0,
   }));
 
 export const KeySourceStatsSchema = z.object({

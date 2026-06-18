@@ -1064,7 +1064,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Caminho do Agent Browser CLI",
-    "agentBrowserCliPathDesc": "Caminho opcional para o binário Agent Browser CLI. Deixe vazio para usar o binário integrado ou PATH",
+    "agentBrowserCliPathDesc": "Caminho opcional para o binário Agent Browser CLI. Deixe vazio para usar o binário instalado sob demanda ou PATH",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Caminho do Playwright CLI",
     "playwrightCliPathDesc": "Caminho opcional para o comando ou script Playwright CLI. Deixe vazio para usar o checkout de desenvolvimento ou PATH",
@@ -1079,7 +1079,20 @@
     "actionDetailsTab": "Detalhes dos comandos",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "Reiniciar ORGII?",
-    "agentBrowserRestartPromptMessage": "Alterar o provedor Browser CLI exige reiniciar o ORGII antes que os agentes vejam a ferramenta selecionada. Reiniciar agora?"
+    "agentBrowserRestartPromptMessage": "Alterar o provedor Browser CLI exige reiniciar o ORGII antes que os agentes vejam a ferramenta selecionada. Reiniciar agora?",
+    "sidecarDownloadsSectionTitle": "Downloads de sidecars",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Baixa o binário do Agent Browser para esta plataforma em ~/.orgii/bin. O ORGII nunca baixa isso na inicialização.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Baixa o binário macOS do Peekaboo para automação de desktop em ~/.orgii/bin. Plataformas sem suporte permanecem desativadas.",
+    "sidecarUnsupported": "Sem suporte",
+    "sidecarInstalled": "Instalado",
+    "sidecarNotInstalled": "Não instalado",
+    "sidecarDownloadAction": "Baixar",
+    "sidecarInstalledAction": "Instalado",
+    "sidecarRefreshStatus": "Atualizar status",
+    "sidecarRefreshStatusDesc": "Verificar novamente quais sidecars opcionais já estão instalados nesta máquina",
+    "sidecarLastError": "Último erro"
   },
   "toolsArea": {
     "builtin": "Ferramentas integradas",

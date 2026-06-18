@@ -68,6 +68,7 @@ const ListView: React.FC<ListViewProps> = ({
       ) : (
         <SessionTable
           items={sessionTableItems}
+          className="[&_.table-fixed-header]:scrollbar-hide [&_.table-scroll]:scrollbar-hide"
           onSelect={(item) => {
             const task = sortedTasks.find(
               (candidate) => candidate.id === item.id

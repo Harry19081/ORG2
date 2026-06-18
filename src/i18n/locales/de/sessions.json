@@ -868,8 +868,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Externer Verlauf",
-        "remoteShared": "Remote geteilte Session"
+        "externalHistory": "Externer Verlauf"
       },
       "fields": {
         "session": "Session",
@@ -885,6 +884,16 @@
         "importReadFailed": "Die JSON-Datei konnte nicht gelesen werden.",
         "importFailed": "Session JSON konnte nicht importiert werden."
       }
+    },
+    "turnFiles": {
+      "filesChangedCount_one": "{{count}} Datei in dieser Runde geändert",
+      "filesChangedCount_other": "{{count}} Dateien in dieser Runde geändert",
+      "historicalRoundDiffFiles_one": "Frühere Runde Diff · {{count}} Datei",
+      "historicalRoundDiffFiles_other": "Frühere Runde Diff · {{count}} Dateien",
+      "review": "Überprüfen",
+      "showLess": "Weniger anzeigen",
+      "showMore_one": "{{count}} weitere anzeigen",
+      "showMore_other": "{{count}} weitere anzeigen"
     }
   },
   "chatStatus": {
@@ -1752,6 +1761,10 @@
     "start": "Starten",
     "assign": "Zuweisen",
     "send": "Senden",
+    "missingGit": {
+      "title": "Git fehlt",
+      "body": "Git ist nicht installiert oder konnte nicht gefunden werden. Bitte ADE Manager oder SDE Agent bitten, Git auf diesem Gerät zu installieren, und ORGII anschließend neu starten."
+    },
     "noProvidersAvailable": "Keine Anbieter verfügbar",
     "enterPublicRepoUrl": "Öffentliche Repo-URL eingeben",
     "repoUrlPlaceholder": "https://github.com/owner/repo",
@@ -2135,6 +2148,7 @@
     "build": "Build starten",
     "skip": "Überspringen",
     "buildFailed": "Build konnte nicht gestartet werden",
+    "saveFailed": "Plan konnte nicht gespeichert werden",
     "emptyPlan": "(Plan ist leer)",
     "edit": "Bearbeiten",
     "cancelEdit": "Abbrechen",
@@ -2517,26 +2531,5 @@
     "summarize": "Mit Agent zusammenfassen",
     "waiting": "Warte auf Inhalt…",
     "empty": "Kein Inhalt"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Der Spiegel der geteilten Sitzung ist schreibgeschützt. Agent-Ausführung und normale Sitzungseingaben sind für diese lokale Kopie deaktiviert.",
-    "shareSession": "Sitzung teilen…",
-    "shareDialogTitle": "Sitzung teilen",
-    "sharePrivacyWarning": "Jede Person mit diesem Code und der PIN kann sichtbare Sitzungsnachrichten, Tool-Ausgaben und angezeigte Pfade sehen. Für Betrachter ist die Freigabe schreibgeschützt.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "4–8-stellige PIN eingeben",
-    "generateOffer": "Angebotscode erstellen",
-    "offerCodeLabel": "Angebotscode",
-    "offerCodePlaceholder": "Angebotscode des Hosts einfügen",
-    "answerCodeLabel": "Antwortcode",
-    "answerCodePlaceholder": "Antwortcode des Betrachters einfügen",
-    "acceptAnswer": "Antwort akzeptieren",
-    "joinDialogTitle": "Geteilter Sitzung beitreten",
-    "joinDialogDescription": "Fügen Sie den Angebotscode des Hosts und die PIN ein. Senden Sie den generierten Antwortcode an den Host, um die Verbindung abzuschließen.",
-    "joinSharedSession": "Geteilter Sitzung beitreten",
-    "viewerMessages": "Betrachter-Nachrichten",
-    "viewerLabel": "Betrachter",
-    "viewerMessagePlaceholder": "Betrachter-Nachricht an den Host senden…",
-    "sendViewerMessage": "Senden"
   }
 }

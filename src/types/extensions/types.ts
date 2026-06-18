@@ -149,6 +149,8 @@ export interface SlashItem {
    * which is the human-readable display label.
    */
   skillName?: string;
+  /** Absolute path to the skill directory when available. */
+  skillPath?: string;
 }
 
 /** Built-in slash action names. */

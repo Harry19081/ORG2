@@ -31,7 +31,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
 
 import {
   type CoreSessionSummary,
@@ -46,7 +45,6 @@ import { replayModeAtom } from "@src/engines/SessionCore";
 import { chatEventsAtom } from "@src/engines/SessionCore/derived/chatEvents";
 import { derivePlanApprovalViewState } from "@src/engines/SessionCore/derived/planDisplayEvents";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
-import { activeGuestShareConnectionsAtom } from "@src/features/SessionSharing/state";
 import { useFileReviewSync } from "@src/hooks/fileReview";
 import { createLogger } from "@src/hooks/logger";
 import { useSessionWorkspaceSync } from "@src/hooks/session/useSessionWorkspaceSync";
@@ -80,7 +78,6 @@ import { getFileName } from "@src/util/file/pathUtils";
 import {
   isCursorIdeSession,
   isExternalHistorySession,
-  isRemoteSharedSession,
 } from "@src/util/session/sessionDispatch";
 
 import ChatFloatingComposer from "./ChatFloatingComposer";
@@ -210,7 +207,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
     readOnly = false,
     secondary = false,
   }) => {
-    const { t } = useTranslation("sessions");
     const setActiveSessionId = useSetAtom(activeSessionIdAtom);
     const store = useStore();
     const rootRef = useRef<HTMLDivElement>(null);
@@ -218,7 +214,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
     const inputBoxRef = useRef<HTMLDivElement>(null);
     const [pinnedHeaderHost, setPinnedHeaderHost] =
       useState<HTMLDivElement | null>(null);
-    const [viewerMessageText, setViewerMessageText] = useState("");
     const handlePinnedHeaderHostRef = useCallback(
       (node: HTMLDivElement | null) => {
         setPinnedHeaderHost(node);
@@ -249,14 +244,9 @@ const ChatView: React.FC<ChatViewProps> = memo(
 
     useFileReviewSync(sessionId, !readOnly && !secondary);
 
-    const activeGuestShareConnections = useAtomValue(
-      activeGuestShareConnectionsAtom
-    );
-    const activeGuestShareConnection = activeGuestShareConnections[sessionId];
     const isCursorIde = isCursorIdeSession(sessionId);
     const isExternalHistory = isExternalHistorySession(sessionId);
-    const isRemoteShared = isRemoteSharedSession(sessionId);
-    const isReadOnlySurface = readOnly || isExternalHistory || isRemoteShared;
+    const isReadOnlySurface = readOnly || isExternalHistory;
     const currentSession = useAtomValue(sessionByIdAtom(sessionId));
     const [orgtrackSummary, setOrgtrackSummary] =
       useState<CoreSessionSummary | null>(null);
@@ -435,13 +425,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
 
     const handleAgentOrgMemberSessionJump =
       useAgentOrgMemberSessionJump(sessionId);
-
-    const handleSendViewerMessage = useCallback(() => {
-      const text = viewerMessageText.trim();
-      if (!text || !activeGuestShareConnection) return;
-      activeGuestShareConnection.sendViewerMessage(text);
-      setViewerMessageText("");
-    }, [activeGuestShareConnection, viewerMessageText]);
 
     // Message queue — keep this aligned with InputArea.sessionId so queued
     // follow-ups written by the composer are visible on the same surface.
@@ -744,36 +727,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
               </GroupChatProvider>
             </ChatHistoryOverrideContext.Provider>
           </div>
-          {showInteractArea && isRemoteShared && (
-            <div className="border-border/70 bg-surface-elevated/80 text-muted-foreground mx-4 mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm">
-              <div>{t("sharing.remoteReadOnlyBanner")}</div>
-              {activeGuestShareConnection && (
-                <div className="mt-3 flex gap-2">
-                  <input
-                    className="border-border bg-surface text-text-primary min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm"
-                    value={viewerMessageText}
-                    onChange={(event) =>
-                      setViewerMessageText(event.target.value)
-                    }
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        event.preventDefault();
-                        handleSendViewerMessage();
-                      }
-                    }}
-                    placeholder={t("sharing.viewerMessagePlaceholder")}
-                  />
-                  <button
-                    className="bg-primary text-primary-foreground rounded-lg px-3 py-2 text-sm font-medium disabled:opacity-60"
-                    disabled={!viewerMessageText.trim()}
-                    onClick={handleSendViewerMessage}
-                  >
-                    {t("sharing.sendViewerMessage")}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
           {showInteractArea && !isReadOnlySurface && (
             <ChatFloatingComposer
               composerRef={floatingComposerRef}

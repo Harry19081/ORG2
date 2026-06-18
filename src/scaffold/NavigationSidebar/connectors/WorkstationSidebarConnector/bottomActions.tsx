@@ -13,7 +13,6 @@ interface UseSidebarBottomRightActionsParams {
   handleCollapseAllActiveSections: () => void;
   handleMarkAllRead: () => void;
   handleRefreshSessions: () => void;
-  onJoinSharedSession: () => void;
   setGroupByMode: (mode: GroupByMode) => void;
   t: TFunction<"navigation">;
 }
@@ -25,7 +24,6 @@ export function useSidebarBottomRightActions({
   handleCollapseAllActiveSections,
   handleMarkAllRead,
   handleRefreshSessions,
-  onJoinSharedSession,
   setGroupByMode,
   t,
 }: UseSidebarBottomRightActionsParams): React.ReactNode {
@@ -64,7 +62,6 @@ export function useSidebarBottomRightActions({
       onCollapseAll={handleCollapseAll}
       onMarkAllRead={handleMarkAllRead}
       onRefreshSessions={handleRefreshSessions}
-      onJoinSharedSession={onJoinSharedSession}
     />
   );
 }

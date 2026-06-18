@@ -422,21 +422,21 @@ export interface SessionLaunchResult {
   status: string;
   createdAt: string;
   userInput: string;
-  workspacePath?: string;
-  branch?: string;
+  workspacePath?: string | null;
+  branch?: string | null;
   background: boolean;
-  model?: string;
-  cliAgentType?: string;
-  accountId?: string;
-  agentOrgId?: string;
-  agentOrgRunId?: string;
-  orgId?: string;
-  projectId?: string;
-  projectName?: string;
-  projectSlug?: string;
-  workItemId?: string;
-  agentRole?: string;
-  worktreePath?: string;
+  model?: string | null;
+  cliAgentType?: string | null;
+  accountId?: string | null;
+  agentOrgId?: string | null;
+  agentOrgRunId?: string | null;
+  orgId?: string | null;
+  projectId?: string | null;
+  projectName?: string | null;
+  projectSlug?: string | null;
+  workItemId?: string | null;
+  agentRole?: string | null;
+  worktreePath?: string | null;
 }
 
 export async function sessionLaunch(

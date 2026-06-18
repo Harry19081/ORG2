@@ -240,12 +240,6 @@ fn configure_git_environment(cmd: &mut tokio::process::Command) {
             }
         }
     }
-
-    if resolved.is_bundled {
-        if let Some(git_exec_path) = git::resolved_git_exec_path(&resolved.path) {
-            cmd.env("GIT_EXEC_PATH", git_exec_path);
-        }
-    }
 }
 
 fn finish_cancelled_process(

@@ -32,6 +32,8 @@ import type { RepoItem } from "@src/scaffold/GlobalSpotlight/types";
 import { REPO_KIND, type RepoKind } from "@src/store/repo/types";
 import { sessionCreatorStateAtom, sessionSourceAtom } from "@src/store/session";
 
+import { resolveRepoChangePath } from "./resolveRepoChangePath";
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface UseSessionCreatorHandlersOptions {
@@ -111,11 +113,22 @@ export function useSessionCreatorChatPanelHandlers({
       const isFolder =
         options?.repoKind === REPO_KIND.FOLDER ||
         repo?.kind === REPO_KIND.FOLDER;
+      // `reposList` can lag right after "Open Folder" imports a new repo, so the
+      // find() above may miss. Never write an empty repoPath in that window —
+      // it would clobber the valid path that `onRepoSelect`
+      // (handleRepoSelectForSession) just set and strand the creator on
+      // "Workspace is still loading".
+      const resolvedRepoPath = resolveRepoChangePath({
+        repoId,
+        matchedRepo: repo,
+        currentSourceRepoId: effectiveSource?.repoId,
+        currentSourceRepoPath: effectiveSource?.repoPath,
+      });
       setSessionSource({
         type: "local",
         repoId,
         repoName: repo?.name,
-        repoPath: repo?.path || repo?.fs_uri,
+        repoPath: resolvedRepoPath,
         branch:
           isFolder || effectiveSource?.repoId !== repoId
             ? undefined
@@ -126,6 +139,7 @@ export function useSessionCreatorChatPanelHandlers({
       selectRepo,
       reposList,
       effectiveSource?.repoId,
+      effectiveSource?.repoPath,
       effectiveSource?.branch,
       setSessionSource,
     ]

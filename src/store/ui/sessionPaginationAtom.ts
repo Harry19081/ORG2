@@ -40,6 +40,9 @@ hasMoreActivitiesAtom.debugLabel = "hasMoreActivitiesAtom";
 export const isLoadingMoreActivitiesAtom = atom<boolean>(false);
 isLoadingMoreActivitiesAtom.debugLabel = "isLoadingMoreActivitiesAtom";
 
+export const hasLoadedMoreActivitiesAtom = atom<boolean>(false);
+hasLoadedMoreActivitiesAtom.debugLabel = "hasLoadedMoreActivitiesAtom";
+
 /**
  * Callback to load older activities (set by useSessionSync)
  * This is stored as a ref-like atom so components can call it

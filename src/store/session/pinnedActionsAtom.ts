@@ -17,6 +17,8 @@ export interface PinnedAction {
   name: string;
   /** Skill name used as the slash-command token (skills only). */
   skillName?: string;
+  /** Absolute path to the skill directory when available. */
+  skillPath?: string;
   /** Item category — determines how it is dispatched when clicked. */
   category: SlashItem["category"];
   /** The source group (builtin / skill source / MCP server name). */

@@ -1064,7 +1064,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Agent Browser CLI-Pfad",
-    "agentBrowserCliPathDesc": "Optionaler Pfad zur Agent Browser CLI-Binärdatei. Leer lassen, um die integrierte Binärdatei oder PATH zu verwenden",
+    "agentBrowserCliPathDesc": "Optionaler Pfad zur Agent Browser CLI-Binärdatei. Leer lassen, um die bei Bedarf installierte Binärdatei oder PATH zu verwenden",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Playwright CLI-Pfad",
     "playwrightCliPathDesc": "Optionaler Pfad zum Playwright CLI-Befehl oder -Skript. Leer lassen, um den Entwicklungs-Checkout oder PATH zu verwenden",
@@ -1079,7 +1079,20 @@
     "actionDetailsTab": "Befehlsdetails",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "ORGII neu starten?",
-    "agentBrowserRestartPromptMessage": "Nach dem Ändern des Browser CLI-Anbieters muss ORGII neu gestartet werden, bevor Agents das ausgewählte Tool sehen. Jetzt neu starten?"
+    "agentBrowserRestartPromptMessage": "Nach dem Ändern des Browser CLI-Anbieters muss ORGII neu gestartet werden, bevor Agents das ausgewählte Tool sehen. Jetzt neu starten?",
+    "sidecarDownloadsSectionTitle": "Sidecar-Downloads",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Lädt die Agent Browser-Binärdatei für diese Plattform nach ~/.orgii/bin herunter. ORGII lädt sie nie beim Start herunter.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Lädt die macOS-Peekaboo-Binärdatei für Desktop-Automatisierung nach ~/.orgii/bin herunter. Nicht unterstützte Plattformen bleiben deaktiviert.",
+    "sidecarUnsupported": "Nicht unterstützt",
+    "sidecarInstalled": "Installiert",
+    "sidecarNotInstalled": "Nicht installiert",
+    "sidecarDownloadAction": "Herunterladen",
+    "sidecarInstalledAction": "Installiert",
+    "sidecarRefreshStatus": "Status aktualisieren",
+    "sidecarRefreshStatusDesc": "Erneut prüfen, welche optionalen sidecars auf diesem Gerät installiert sind",
+    "sidecarLastError": "Letzter Fehler"
   },
   "toolsArea": {
     "builtin": "Integrierte Tools",

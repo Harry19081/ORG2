@@ -1064,7 +1064,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Đường dẫn Agent Browser CLI",
-    "agentBrowserCliPathDesc": "Đường dẫn tùy chọn tới tệp nhị phân Agent Browser CLI. Để trống để dùng tệp nhị phân tích hợp hoặc PATH",
+    "agentBrowserCliPathDesc": "Đường dẫn tùy chọn tới tệp nhị phân Agent Browser CLI. Để trống để dùng tệp nhị phân cài đặt theo yêu cầu hoặc PATH",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Đường dẫn Playwright CLI",
     "playwrightCliPathDesc": "Đường dẫn tùy chọn tới lệnh hoặc script Playwright CLI. Để trống để dùng checkout phát triển hoặc PATH",
@@ -1079,7 +1079,20 @@
     "actionDetailsTab": "Chi tiết lệnh",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "Khởi động lại ORGII?",
-    "agentBrowserRestartPromptMessage": "Việc đổi nhà cung cấp Browser CLI yêu cầu khởi động lại ORGII trước khi Agent thấy công cụ đã chọn. Khởi động lại ngay?"
+    "agentBrowserRestartPromptMessage": "Việc đổi nhà cung cấp Browser CLI yêu cầu khởi động lại ORGII trước khi Agent thấy công cụ đã chọn. Khởi động lại ngay?",
+    "sidecarDownloadsSectionTitle": "Tải xuống sidecar",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Tải tệp nhị phân Agent Browser cho nền tảng này vào ~/.orgii/bin. ORGII không bao giờ tải khi khởi động.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Tải tệp nhị phân macOS Peekaboo cho tự động hóa desktop vào ~/.orgii/bin. Nền tảng không hỗ trợ sẽ bị tắt.",
+    "sidecarUnsupported": "Không hỗ trợ",
+    "sidecarInstalled": "Đã cài đặt",
+    "sidecarNotInstalled": "Chưa cài đặt",
+    "sidecarDownloadAction": "Tải xuống",
+    "sidecarInstalledAction": "Đã cài đặt",
+    "sidecarRefreshStatus": "Làm mới trạng thái",
+    "sidecarRefreshStatusDesc": "Kiểm tra lại sidecars tùy chọn nào đã được cài trên máy này",
+    "sidecarLastError": "Lỗi gần nhất"
   },
   "toolsArea": {
     "builtin": "Công cụ tích hợp",

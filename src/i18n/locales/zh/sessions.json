@@ -873,8 +873,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "外部历史",
-        "remoteShared": "远程共享 Session"
+        "externalHistory": "外部历史"
       },
       "fields": {
         "session": "Session",
@@ -890,6 +889,16 @@
         "importReadFailed": "无法读取 JSON 文件。",
         "importFailed": "无法导入 Session JSON。"
       }
+    },
+    "turnFiles": {
+      "filesChangedCount_one": "本轮更改了 {{count}} 个文件",
+      "filesChangedCount_other": "本轮更改了 {{count}} 个文件",
+      "historicalRoundDiffFiles_one": "历史轮次 Diff · {{count}} 个文件",
+      "historicalRoundDiffFiles_other": "历史轮次 Diff · {{count}} 个文件",
+      "review": "查看",
+      "showLess": "收起",
+      "showMore_one": "显示其余 {{count}} 个",
+      "showMore_other": "显示其余 {{count}} 个"
     }
   },
   "chatStatus": {
@@ -1758,6 +1767,10 @@
     "start": "开始",
     "assign": "分配",
     "send": "发送",
+    "missingGit": {
+      "title": "缺少 Git",
+      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORGII。"
+    },
     "noProvidersAvailable": "没有可用的提供者",
     "enterPublicRepoUrl": "输入公共仓库 URL",
     "repoUrlPlaceholder": "https://github.com/owner/repo",
@@ -2142,6 +2155,7 @@
     "build": "开始构建",
     "skip": "跳过",
     "buildFailed": "开始构建失败",
+    "saveFailed": "保存计划失败",
     "emptyPlan": "（计划为空）",
     "edit": "编辑",
     "cancelEdit": "取消",
@@ -2527,26 +2541,5 @@
     "summarize": "让 Agent 总结",
     "waiting": "等待内容中…",
     "empty": "无内容"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "共享会话镜像为只读。此本地副本已禁用 Agent 执行和普通会话输入。",
-    "shareSession": "分享会话…",
-    "shareDialogTitle": "分享会话",
-    "sharePrivacyWarning": "拥有此代码和 PIN 的任何人都可以查看可见的会话消息、工具输出和显示的路径。对观看者而言，分享是只读的。",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "输入 4–8 位数字 PIN",
-    "generateOffer": "生成邀请代码",
-    "offerCodeLabel": "邀请代码",
-    "offerCodePlaceholder": "粘贴主持方的邀请代码",
-    "answerCodeLabel": "应答代码",
-    "answerCodePlaceholder": "粘贴观看者的应答代码",
-    "acceptAnswer": "接受应答",
-    "joinDialogTitle": "加入共享会话",
-    "joinDialogDescription": "粘贴主持方的邀请代码和 PIN。将生成的应答代码发回主持方以完成连接。",
-    "joinSharedSession": "加入共享会话",
-    "viewerMessages": "观看者消息",
-    "viewerLabel": "观看者",
-    "viewerMessagePlaceholder": "向主持方发送观看者消息…",
-    "sendViewerMessage": "发送"
   }
 }

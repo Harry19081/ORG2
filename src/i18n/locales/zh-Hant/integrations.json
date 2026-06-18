@@ -1061,7 +1061,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Agent Browser CLI 路徑",
-    "agentBrowserCliPathDesc": "Agent Browser CLI 二進位檔案的選用路徑。留空則使用內建二進位檔或 PATH",
+    "agentBrowserCliPathDesc": "Agent Browser CLI 二進位檔案的選用路徑。留空則使用按需安裝的二進位檔或 PATH",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Playwright CLI 路徑",
     "playwrightCliPathDesc": "Playwright CLI 命令或腳本的選用路徑。留空則使用開發 checkout 或 PATH",
@@ -1076,7 +1076,20 @@
     "actionDetailsTab": "命令詳細資訊",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "重新啟動 ORGII？",
-    "agentBrowserRestartPromptMessage": "變更 Browser CLI 提供者後，需要重新啟動 ORGII，Agent 才能看到所選工具。現在重新啟動嗎？"
+    "agentBrowserRestartPromptMessage": "變更 Browser CLI 提供者後，需要重新啟動 ORGII，Agent 才能看到所選工具。現在重新啟動嗎？",
+    "sidecarDownloadsSectionTitle": "Sidecar 下載",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "將適用於目前平台的 Agent Browser 二進位檔下載到 ~/.orgii/bin。ORGII 啟動時絕不會自動下載。",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "將 macOS Peekaboo 桌面自動化二進位檔下載到 ~/.orgii/bin。不支援的平台會保持停用。",
+    "sidecarUnsupported": "不支援",
+    "sidecarInstalled": "已安裝",
+    "sidecarNotInstalled": "未安裝",
+    "sidecarDownloadAction": "下載",
+    "sidecarInstalledAction": "已安裝",
+    "sidecarRefreshStatus": "重新整理狀態",
+    "sidecarRefreshStatusDesc": "重新檢查這台機器上已安裝的選用 sidecars",
+    "sidecarLastError": "最近錯誤"
   },
   "toolsArea": {
     "builtin": "內置工具",

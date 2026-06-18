@@ -133,8 +133,7 @@
       "collapseAll": "全部折叠",
       "markAllRead": "全部标为已读",
       "openHome": "打开主页",
-      "openWorkstation": "打开工作站",
-      "joinSharedSession": "加入共享会话…"
+      "openWorkstation": "打开工作站"
     },
     "search": {
       "folders": "搜索工作区...",

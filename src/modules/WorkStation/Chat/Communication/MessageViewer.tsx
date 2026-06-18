@@ -252,10 +252,10 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
     controlledActivePlanMessage ?? selectedPlanMessage ?? latestPlanMessage;
 
   if (viewMode === "preview" && activePlanMessage) {
-    const plan = getPlanDocViewModel(activePlanMessage.event);
     const pendingPlan = approvalMap.get(
       activePlanMessage.event.sessionId
     )?.current;
+    const plan = getPlanDocViewModel(activePlanMessage.event, pendingPlan);
     const statusView = getPlanDocStatusViewModel(
       activePlanMessage.event,
       pendingPlan,
@@ -304,8 +304,8 @@ export const MessageViewer: React.FC<MessageViewerProps> = ({
         <div
           className={
             viewMode === "chat"
-              ? "flex flex-col gap-2 pb-4 pt-3"
-              : "flex flex-col gap-6 pb-6 pt-4"
+              ? "flex flex-col gap-2 pb-[120px] pt-3"
+              : "flex flex-col gap-6 pb-[120px] pt-4"
           }
         >
           {canLoadMoreMessages && (

@@ -38,7 +38,6 @@ export const procedures = {
   integrations: p.integrations,
   sessionAggregate: p.sessionAggregate,
   sessionCore: p.sessionCore,
-  remoteSharedSession: p.remoteSharedSession,
   learning: p.learning,
   workspaceMemory: p.workspaceMemory,
   lineage: p.lineage,

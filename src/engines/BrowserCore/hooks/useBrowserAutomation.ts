@@ -11,6 +11,10 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 
 import {
+  OPTIONAL_SIDECAR,
+  ensureSidecarInstalled,
+} from "@src/api/tauri/sidecars";
+import {
   browserAutomationAtom,
   browserFrameEventAtom,
   browserStatusEventAtom,
@@ -122,6 +126,7 @@ export function useBrowserAutomation(
   const start = useCallback(async () => {
     dispatchStatus({ status: "starting" });
     try {
+      await ensureSidecarInstalled(OPTIONAL_SIDECAR.AGENT_BROWSER);
       const result = await invokeTauri<{ running: boolean; port: number }>(
         "browser_automation_start"
       );

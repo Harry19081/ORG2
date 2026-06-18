@@ -738,11 +738,6 @@
     "lineHeightDouble": "Podwójny",
     "git": {
       "title": "Git",
-      "executableMode": "Plik wykonywalny Git",
-      "executableModeDesc": "Wybierz, czy operacje Git używają systemowego Git, czy Git dołączonego do ORGII",
-      "executableModeAuto": "Auto (systemowy, jeśli dostępny)",
-      "executableModeSystem": "Systemowy Git",
-      "executableModeBundled": "Dołączony Git",
       "pullStrategy": "Strategia pull",
       "pullStrategyDesc": "Jak git pull integruje zmiany zdalne podczas synchronizacji",
       "pullStrategyHint": "Rebase (domyślnie): Odtwarza Twoje commity na szczycie zdalnego. Tworzy liniową historię.\n\nMerge: Tworzy commit scalający, gdy gałęzie się rozeszły. Zachowuje pełną historię.\n\nFast-forward only: Pozwala na pull tylko, gdy scalanie nie jest potrzebne. Odmawia, jeśli gałęzie się rozeszły.",
