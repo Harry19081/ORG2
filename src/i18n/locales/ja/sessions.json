@@ -868,8 +868,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "外部履歴",
-        "remoteShared": "リモート共有 Session"
+        "externalHistory": "外部履歴"
       },
       "fields": {
         "session": "Session",
@@ -2517,26 +2516,5 @@
     "summarize": "Agent で要約",
     "waiting": "コンテンツを待機中…",
     "empty": "コンテンツなし"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "共有セッションのミラーは読み取り専用です。このローカルコピーでは Agent の実行と通常のセッション入力が無効です。",
-    "shareSession": "セッションを共有…",
-    "shareDialogTitle": "セッションを共有",
-    "sharePrivacyWarning": "このコードと PIN を持つ人は、表示されているセッションメッセージ、ツール出力、表示パスを閲覧できます。閲覧者側は読み取り専用です。",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "4〜8 桁の PIN を入力",
-    "generateOffer": "オファーコードを生成",
-    "offerCodeLabel": "オファーコード",
-    "offerCodePlaceholder": "ホストのオファーコードを貼り付け",
-    "answerCodeLabel": "回答コード",
-    "answerCodePlaceholder": "閲覧者の回答コードを貼り付け",
-    "acceptAnswer": "回答を承認",
-    "joinDialogTitle": "共有セッションに参加",
-    "joinDialogDescription": "ホストのオファーコードと PIN を貼り付けてください。生成された回答コードをホストへ送信すると接続が完了します。",
-    "joinSharedSession": "共有セッションに参加",
-    "viewerMessages": "閲覧者メッセージ",
-    "viewerLabel": "閲覧者",
-    "viewerMessagePlaceholder": "ホストへ閲覧者メッセージを送信…",
-    "sendViewerMessage": "送信"
   }
 }

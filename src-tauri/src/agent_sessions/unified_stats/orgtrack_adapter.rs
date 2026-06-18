@@ -21,22 +21,19 @@ pub fn upsert_aggregate_sessions(records: &[SessionAggregateRecord]) -> Result<(
 
 fn aggregate_to_core_session(record: &SessionAggregateRecord) -> SessionRecord {
     let source = match record.category {
-        SessionCategory::Cli | SessionCategory::RemoteShared => SOURCE_ORGII_CLI_SESSIONS,
+        SessionCategory::Cli => SOURCE_ORGII_CLI_SESSIONS,
         SessionCategory::Agent | SessionCategory::Os => SOURCE_ORGII_RUST_AGENTS,
     };
     SessionRecord {
         schema_version: ORGTRACK_SCHEMA_VERSION,
         source: source.to_string(),
-        source_session_id: record
-            .source_session_id
-            .clone()
-            .unwrap_or_else(|| record.session_id.clone()),
+        source_session_id: record.session_id.clone(),
         session_id: record.session_id.clone(),
         title: record.name.clone(),
         status: Some(record.status.clone()),
         created_at: Some(record.created_at.clone()),
         updated_at: Some(record.updated_at.clone()),
-        completed_at: record.ended_at.clone(),
+        completed_at: None,
         workspace_path: record
             .repo_path
             .clone()
@@ -68,7 +65,7 @@ fn aggregate_to_core_session(record: &SessionAggregateRecord) -> SessionRecord {
 
 fn dispatch_category_for(category: SessionCategory) -> &'static str {
     match category {
-        SessionCategory::Cli | SessionCategory::RemoteShared => "cli_agent",
+        SessionCategory::Cli => "cli_agent",
         SessionCategory::Agent | SessionCategory::Os => "rust_agent",
     }
 }
@@ -85,6 +82,6 @@ fn rust_agent_type_for(record: &SessionAggregateRecord) -> Option<String> {
                 Some("custom".to_string())
             }
         }
-        SessionCategory::Cli | SessionCategory::RemoteShared => None,
+        SessionCategory::Cli => None,
     }
 }

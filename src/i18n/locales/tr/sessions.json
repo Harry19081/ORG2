@@ -868,8 +868,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Harici Geçmiş",
-        "remoteShared": "Uzak paylaşılan Session"
+        "externalHistory": "Harici Geçmiş"
       },
       "fields": {
         "session": "Session",
@@ -2518,26 +2517,5 @@
     "summarize": "Agent ile özetle",
     "waiting": "İçerik bekleniyor…",
     "empty": "İçerik yok"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Paylaşılan oturum aynası salt okunurdur. Bu yerel kopyada Agent yürütmesi ve normal oturum girişi devre dışıdır.",
-    "shareSession": "Oturumu paylaş…",
-    "shareDialogTitle": "Oturumu paylaş",
-    "sharePrivacyWarning": "Bu koda ve PIN’e sahip herkes görünen oturum mesajlarını, araç çıktısını ve görüntülenen yolları görebilir. İzleyici için paylaşım salt okunurdur.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "4–8 haneli PIN’i girin",
-    "generateOffer": "Teklif kodu oluştur",
-    "offerCodeLabel": "Teklif kodu",
-    "offerCodePlaceholder": "Hostun teklif kodunu yapıştırın",
-    "answerCodeLabel": "Yanıt kodu",
-    "answerCodePlaceholder": "İzleyicinin yanıt kodunu yapıştırın",
-    "acceptAnswer": "Yanıtı kabul et",
-    "joinDialogTitle": "Paylaşılan oturuma katıl",
-    "joinDialogDescription": "Host teklif kodunu ve PIN’i yapıştırın. Bağlantıyı tamamlamak için oluşturulan yanıt kodunu hosta gönderin.",
-    "joinSharedSession": "Paylaşılan oturuma katıl",
-    "viewerMessages": "İzleyici mesajları",
-    "viewerLabel": "İzleyici",
-    "viewerMessagePlaceholder": "Hosta izleyici mesajı gönder…",
-    "sendViewerMessage": "Gönder"
   }
 }

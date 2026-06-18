@@ -3,7 +3,6 @@ import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { DISPATCH_CATEGORY } from "@src/api/tauri/session";
 import {
   WIZARD_IDS,
   buildIntegrationsPath,
@@ -19,7 +18,6 @@ import {
   eventCountAtom,
   eventsAtom,
 } from "@src/engines/SessionCore/core/atoms";
-import { ShareSessionDialog } from "@src/features/SessionSharing/ShareSessionDialog";
 import type { CreatedOrgResult } from "@src/features/TeamCollaboration/components/CreateCollabOrgView";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
@@ -153,10 +151,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const [showProjectAgentCreator, setShowProjectAgentCreator] = useState(
       Boolean(SessionCreatorSlot)
     );
-    const [shareDialogSessionId, setShareDialogSessionId] = useState<
-      string | null
-    >(null);
-
     const selectedWorkItem = useAtomValue(chatPanelSelectedWorkItemAtom);
     const selectedProject = useAtomValue(chatPanelSelectedProjectAtom);
     const selectedProjectOrg = useAtomValue(chatPanelSelectedProjectOrgAtom);
@@ -269,12 +263,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       handleReloadSession();
       closeHeaderActionsMenu();
     }, [closeHeaderActionsMenu, handleReloadSession]);
-
-    const handleOpenShareSession = useCallback(() => {
-      if (!currentSessionId) return;
-      setShareDialogSessionId(currentSessionId);
-      closeHeaderActionsMenu();
-    }, [closeHeaderActionsMenu, currentSessionId]);
 
     const handlePaginationToggle = useCallback(
       (checked: boolean) => {
@@ -441,9 +429,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       navigate(buildWizardPath(accountsPath, WIZARD_IDS.KEY_ADD));
     }, [navigate]);
 
-    const shareSessionAvailable =
-      activeSession?.category === DISPATCH_CATEGORY.CLI_AGENT ||
-      activeSession?.category === DISPATCH_CATEGORY.RUST_AGENT;
     const sessionSidebarVisible = sessionSidebarWidth > 0;
     const collabOrgHeader = React.useMemo(() => {
       if (!selectedCollabOrg) return null;
@@ -679,7 +664,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           handleOpenExportSessionJson={handleOpenExportSessionJson}
           handleOpenLinkWorkItem={handleOpenLinkWorkItem}
           handleOpenSearch={handleOpenSearch}
-          handleOpenShareSession={handleOpenShareSession}
           handleNewSession={handleNewSession}
           handleOpenStartPage={handleOpenStartPage}
           handlePaginationToggle={handlePaginationToggle}
@@ -703,7 +687,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           showStartPageBackButton={
             !startPageOpen && !contentState.showSessionContent
           }
-          shareSessionAvailable={shareSessionAvailable}
           selectedProjectVisible={Boolean(selectedProject)}
           selectedWorkItemVisible={Boolean(selectedWorkItem)}
           shouldOffsetHeaderForCollapsedSidebar={
@@ -807,12 +790,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           {panelChildren}
         </div>
         {sessionModals}
-        {shareDialogSessionId && (
-          <ShareSessionDialog
-            sessionId={shareDialogSessionId}
-            onClose={() => setShareDialogSessionId(null)}
-          />
-        )}
       </>
     );
   }

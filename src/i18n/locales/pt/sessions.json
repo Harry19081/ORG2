@@ -874,8 +874,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Histórico externo",
-        "remoteShared": "Session compartilhada remota"
+        "externalHistory": "Histórico externo"
       },
       "fields": {
         "session": "Session",
@@ -2516,26 +2515,5 @@
     "summarize": "Resumir com Agent",
     "waiting": "Aguardando conteúdo…",
     "empty": "Sem conteúdo"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "O espelho da sessão compartilhada é somente leitura. A execução do Agent e a entrada normal da sessão estão desativadas para esta cópia local.",
-    "shareSession": "Compartilhar sessão…",
-    "shareDialogTitle": "Compartilhar sessão",
-    "sharePrivacyWarning": "Qualquer pessoa com este código e PIN pode ver mensagens visíveis da sessão, saída de ferramentas e caminhos exibidos. Para o visualizador, o compartilhamento é somente leitura.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Digite o PIN de 4–8 dígitos",
-    "generateOffer": "Gerar código de oferta",
-    "offerCodeLabel": "Código de oferta",
-    "offerCodePlaceholder": "Cole o código de oferta do host",
-    "answerCodeLabel": "Código de resposta",
-    "answerCodePlaceholder": "Cole o código de resposta do visualizador",
-    "acceptAnswer": "Aceitar resposta",
-    "joinDialogTitle": "Entrar em sessão compartilhada",
-    "joinDialogDescription": "Cole o código de oferta do host e o PIN. Envie o código de resposta gerado ao host para concluir a conexão.",
-    "joinSharedSession": "Entrar na sessão compartilhada",
-    "viewerMessages": "Mensagens do visualizador",
-    "viewerLabel": "Visualizador",
-    "viewerMessagePlaceholder": "Enviar uma mensagem de visualizador ao host…",
-    "sendViewerMessage": "Enviar"
   }
 }

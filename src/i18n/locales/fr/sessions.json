@@ -868,8 +868,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Historique externe",
-        "remoteShared": "Session partagée distante"
+        "externalHistory": "Historique externe"
       },
       "fields": {
         "session": "Session",
@@ -2517,26 +2516,5 @@
     "summarize": "Résumer avec Agent",
     "waiting": "En attente de contenu…",
     "empty": "Aucun contenu"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Le miroir de session partagée est en lecture seule. L’exécution de l’Agent et la saisie de session normale sont désactivées pour cette copie locale.",
-    "shareSession": "Partager la session…",
-    "shareDialogTitle": "Partager la session",
-    "sharePrivacyWarning": "Toute personne disposant de ce code et du PIN peut voir les messages visibles, les sorties d’outils et les chemins affichés. Le partage est en lecture seule pour le spectateur.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Saisissez le PIN de 4 à 8 chiffres",
-    "generateOffer": "Générer le code d’offre",
-    "offerCodeLabel": "Code d’offre",
-    "offerCodePlaceholder": "Collez le code d’offre de l’hôte",
-    "answerCodeLabel": "Code de réponse",
-    "answerCodePlaceholder": "Collez le code de réponse du spectateur",
-    "acceptAnswer": "Accepter la réponse",
-    "joinDialogTitle": "Rejoindre une session partagée",
-    "joinDialogDescription": "Collez le code d’offre de l’hôte et le PIN. Envoyez le code de réponse généré à l’hôte pour terminer la connexion.",
-    "joinSharedSession": "Rejoindre la session partagée",
-    "viewerMessages": "Messages du spectateur",
-    "viewerLabel": "Spectateur",
-    "viewerMessagePlaceholder": "Envoyer un message de spectateur à l’hôte…",
-    "sendViewerMessage": "Envoyer"
   }
 }

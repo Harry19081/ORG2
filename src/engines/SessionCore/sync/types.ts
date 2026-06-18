@@ -22,7 +22,6 @@ import {
   isCliSession,
   isCursorIdeSession,
   isExternalHistorySession,
-  isRemoteSharedSession,
 } from "@src/util/session/sessionDispatch";
 
 import type { SessionEvent } from "../core/types";
@@ -324,9 +323,6 @@ export function getAdapterForSession(
   }
   if (isExternalHistorySession(sessionId)) {
     return adapterRegistry.get("external_history");
-  }
-  if (isRemoteSharedSession(sessionId)) {
-    return adapterRegistry.get("remote_shared_session");
   }
   return undefined;
 }

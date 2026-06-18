@@ -4,7 +4,6 @@ import {
   FolderOutput,
   ListChevronsDownUp,
   ListFilter,
-  Radio,
   RefreshCw,
 } from "lucide-react";
 import React, { type FC, useCallback } from "react";
@@ -37,8 +36,6 @@ interface SessionFilterButtonProps {
   onMarkAllRead?: () => void;
   /** Refresh the sidebar session list from the backing stores. */
   onRefreshSessions?: () => void;
-  /** Open the shared-session join modal. */
-  onJoinSharedSession?: () => void;
   /** Open the JSON Session export modal for the active Session. */
   onExportSessionJson?: () => void;
   /** Open the JSON Session import modal. */
@@ -55,7 +52,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
     onCollapseAll,
     onMarkAllRead,
     onRefreshSessions,
-    onJoinSharedSession,
     onExportSessionJson,
     onImportSessionJson,
     canExportSessionJson = true,
@@ -99,11 +95,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
       close();
     }, [onRefreshSessions, close]);
 
-    const handleJoinSharedSession = useCallback(() => {
-      onJoinSharedSession?.();
-      close();
-    }, [onJoinSharedSession, close]);
-
     const handleExportSessionJson = useCallback(() => {
       onExportSessionJson?.();
       close();
@@ -118,7 +109,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
       onCollapseAll ||
       onMarkAllRead ||
       onRefreshSessions ||
-      onJoinSharedSession ||
       onExportSessionJson ||
       onImportSessionJson
     );
@@ -204,20 +194,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
                           className="shrink-0 text-text-2"
                         />
                         <span>{tCommon("actions.refresh")}</span>
-                      </button>
-                    )}
-                    {onJoinSharedSession && (
-                      <button
-                        type="button"
-                        className={DROPDOWN_CLASSES.menuActionItem}
-                        onClick={handleJoinSharedSession}
-                      >
-                        <Radio
-                          size={DROPDOWN_ITEM.iconSize}
-                          strokeWidth={2}
-                          className="shrink-0 text-text-2"
-                        />
-                        <span>{t("sidebar.actions.joinSharedSession")}</span>
                       </button>
                     )}
                     {onExportSessionJson && (

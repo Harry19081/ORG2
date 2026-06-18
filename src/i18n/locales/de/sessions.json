@@ -868,8 +868,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Externer Verlauf",
-        "remoteShared": "Remote geteilte Session"
+        "externalHistory": "Externer Verlauf"
       },
       "fields": {
         "session": "Session",
@@ -2517,26 +2516,5 @@
     "summarize": "Mit Agent zusammenfassen",
     "waiting": "Warte auf Inhalt…",
     "empty": "Kein Inhalt"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Der Spiegel der geteilten Sitzung ist schreibgeschützt. Agent-Ausführung und normale Sitzungseingaben sind für diese lokale Kopie deaktiviert.",
-    "shareSession": "Sitzung teilen…",
-    "shareDialogTitle": "Sitzung teilen",
-    "sharePrivacyWarning": "Jede Person mit diesem Code und der PIN kann sichtbare Sitzungsnachrichten, Tool-Ausgaben und angezeigte Pfade sehen. Für Betrachter ist die Freigabe schreibgeschützt.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "4–8-stellige PIN eingeben",
-    "generateOffer": "Angebotscode erstellen",
-    "offerCodeLabel": "Angebotscode",
-    "offerCodePlaceholder": "Angebotscode des Hosts einfügen",
-    "answerCodeLabel": "Antwortcode",
-    "answerCodePlaceholder": "Antwortcode des Betrachters einfügen",
-    "acceptAnswer": "Antwort akzeptieren",
-    "joinDialogTitle": "Geteilter Sitzung beitreten",
-    "joinDialogDescription": "Fügen Sie den Angebotscode des Hosts und die PIN ein. Senden Sie den generierten Antwortcode an den Host, um die Verbindung abzuschließen.",
-    "joinSharedSession": "Geteilter Sitzung beitreten",
-    "viewerMessages": "Betrachter-Nachrichten",
-    "viewerLabel": "Betrachter",
-    "viewerMessagePlaceholder": "Betrachter-Nachricht an den Host senden…",
-    "sendViewerMessage": "Senden"
   }
 }

@@ -133,8 +133,7 @@
       "collapseAll": "Alle einklappen",
       "markAllRead": "Alle als gelesen markieren",
       "openHome": "Home öffnen",
-      "openWorkstation": "Workstation öffnen",
-      "joinSharedSession": "Geteilter Sitzung beitreten…"
+      "openWorkstation": "Workstation öffnen"
     },
     "search": {
       "folders": "Workspace suchen...",

@@ -161,8 +161,7 @@
       "collapseAll": "Collapse All",
       "markAllRead": "Mark All Read",
       "openHome": "Open Home",
-      "openWorkstation": "Open Workstation",
-      "joinSharedSession": "Join Shared Session…"
+      "openWorkstation": "Open Workstation"
     },
     "search": {
       "folders": "Search Workspace...",

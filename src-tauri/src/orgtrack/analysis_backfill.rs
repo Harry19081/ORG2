@@ -287,7 +287,7 @@ fn hydrate_external_session_records() -> Result<(), String> {
     let mut conn = get_connection().map_err(|err| err.to_string())?;
 
     let cursor_sessions = cursor_ide_history::list_cursor_ide_sessions_paginated(
-        &conn,
+        &mut conn,
         ANALYSIS_HYDRATION_PAGE_SIZE,
         0,
     )?;

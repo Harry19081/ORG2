@@ -870,8 +870,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Внешняя история",
-        "remoteShared": "Удалённая общая Session"
+        "externalHistory": "Внешняя история"
       },
       "fields": {
         "session": "Session",
@@ -2525,26 +2524,5 @@
     "summarize": "Обобщить с Agent",
     "waiting": "Ожидание контента…",
     "empty": "Нет содержимого"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Зеркало общего сеанса доступно только для чтения. Выполнение Agent и обычный ввод сеанса отключены для этой локальной копии.",
-    "shareSession": "Поделиться сеансом…",
-    "shareDialogTitle": "Поделиться сеансом",
-    "sharePrivacyWarning": "Любой, у кого есть этот код и PIN, сможет видеть видимые сообщения сеанса, вывод инструментов и показанные пути. Для зрителя доступ только для чтения.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Введите PIN из 4–8 цифр",
-    "generateOffer": "Создать код предложения",
-    "offerCodeLabel": "Код предложения",
-    "offerCodePlaceholder": "Вставьте код предложения хоста",
-    "answerCodeLabel": "Код ответа",
-    "answerCodePlaceholder": "Вставьте код ответа зрителя",
-    "acceptAnswer": "Принять ответ",
-    "joinDialogTitle": "Присоединиться к общему сеансу",
-    "joinDialogDescription": "Вставьте код предложения хоста и PIN. Отправьте созданный код ответа хосту, чтобы завершить подключение.",
-    "joinSharedSession": "Присоединиться к общему сеансу",
-    "viewerMessages": "Сообщения зрителя",
-    "viewerLabel": "Зритель",
-    "viewerMessagePlaceholder": "Отправить сообщение зрителя хосту…",
-    "sendViewerMessage": "Отправить"
   }
 }

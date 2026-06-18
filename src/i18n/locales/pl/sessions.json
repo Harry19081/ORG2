@@ -876,8 +876,7 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Historia zewnętrzna",
-        "remoteShared": "Zdalnie udostępniona Session"
+        "externalHistory": "Historia zewnętrzna"
       },
       "fields": {
         "session": "Session",
@@ -2520,26 +2519,5 @@
     "summarize": "Podsumuj z Agent",
     "waiting": "Oczekiwanie na treść…",
     "empty": "Brak treści"
-  },
-  "sharing": {
-    "remoteReadOnlyBanner": "Lustrzana kopia udostępnionej sesji jest tylko do odczytu. W tej lokalnej kopii wykonanie Agent i zwykłe wejście sesji są wyłączone.",
-    "shareSession": "Udostępnij sesję…",
-    "shareDialogTitle": "Udostępnij sesję",
-    "sharePrivacyWarning": "Każda osoba z tym kodem i PIN-em może zobaczyć widoczne wiadomości sesji, wynik narzędzi i wyświetlane ścieżki. Dla widza udostępnianie jest tylko do odczytu.",
-    "pinLabel": "PIN",
-    "pinPlaceholder": "Wpisz PIN z 4–8 cyfr",
-    "generateOffer": "Wygeneruj kod oferty",
-    "offerCodeLabel": "Kod oferty",
-    "offerCodePlaceholder": "Wklej kod oferty hosta",
-    "answerCodeLabel": "Kod odpowiedzi",
-    "answerCodePlaceholder": "Wklej kod odpowiedzi widza",
-    "acceptAnswer": "Zaakceptuj odpowiedź",
-    "joinDialogTitle": "Dołącz do udostępnionej sesji",
-    "joinDialogDescription": "Wklej kod oferty hosta i PIN. Wyślij wygenerowany kod odpowiedzi hostowi, aby zakończyć połączenie.",
-    "joinSharedSession": "Dołącz do udostępnionej sesji",
-    "viewerMessages": "Wiadomości widza",
-    "viewerLabel": "Widz",
-    "viewerMessagePlaceholder": "Wyślij wiadomość widza do hosta…",
-    "sendViewerMessage": "Wyślij"
   }
 }
