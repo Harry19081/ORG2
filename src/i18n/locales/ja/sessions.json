@@ -1761,6 +1761,10 @@
     "start": "開始",
     "assign": "割り当て",
     "send": "送信",
+    "missingGit": {
+      "title": "Git が見つかりません",
+      "body": "Git がインストールされていないか、見つかりません。ADE Manager または SDE Agent にこのマシンへ Git をインストールしてもらい、その後 ORGII を再起動してください。"
+    },
     "noProvidersAvailable": "利用可能なプロバイダーがありません",
     "enterPublicRepoUrl": "公開リポジトリの URL を入力",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

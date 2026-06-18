@@ -1761,6 +1761,10 @@
     "start": "Bắt đầu",
     "assign": "Gán",
     "send": "Gửi",
+    "missingGit": {
+      "title": "Thiếu Git",
+      "body": "Git chưa được cài đặt hoặc không tìm thấy. Hãy yêu cầu ADE Manager hoặc SDE Agent cài đặt Git cho máy này, rồi khởi động lại ORGII."
+    },
     "noProvidersAvailable": "Không có nhà cung cấp nào khả dụng",
     "enterPublicRepoUrl": "Nhập URL kho lưu trữ công khai",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

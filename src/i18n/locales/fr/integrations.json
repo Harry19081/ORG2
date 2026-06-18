@@ -1064,7 +1064,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Chemin Agent Browser CLI",
-    "agentBrowserCliPathDesc": "Chemin facultatif vers le binaire Agent Browser CLI. Laissez vide pour utiliser le binaire intégré ou PATH",
+    "agentBrowserCliPathDesc": "Chemin facultatif vers le binaire Agent Browser CLI. Laissez vide pour utiliser le binaire installé à la demande ou PATH",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Chemin Playwright CLI",
     "playwrightCliPathDesc": "Chemin facultatif vers la commande ou le script Playwright CLI. Laissez vide pour utiliser le checkout de développement ou PATH",
@@ -1079,7 +1079,20 @@
     "actionDetailsTab": "Détail des commandes",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "Redémarrer ORGII ?",
-    "agentBrowserRestartPromptMessage": "Changer le fournisseur Browser CLI nécessite de redémarrer ORGII avant que les agents voient l'outil sélectionné. Redémarrer maintenant ?"
+    "agentBrowserRestartPromptMessage": "Changer le fournisseur Browser CLI nécessite de redémarrer ORGII avant que les agents voient l'outil sélectionné. Redémarrer maintenant ?",
+    "sidecarDownloadsSectionTitle": "Téléchargements de sidecars",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Télécharge le binaire Agent Browser pour cette plateforme dans ~/.orgii/bin. ORGII ne le télécharge jamais au démarrage.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Télécharge le binaire macOS Peekaboo pour l’automatisation du bureau dans ~/.orgii/bin. Les plateformes non prises en charge restent désactivées.",
+    "sidecarUnsupported": "Non pris en charge",
+    "sidecarInstalled": "Installé",
+    "sidecarNotInstalled": "Non installé",
+    "sidecarDownloadAction": "Télécharger",
+    "sidecarInstalledAction": "Installé",
+    "sidecarRefreshStatus": "Actualiser l’état",
+    "sidecarRefreshStatusDesc": "Revérifier quels sidecars optionnels sont déjà installés sur cette machine",
+    "sidecarLastError": "Dernière erreur"
   },
   "toolsArea": {
     "builtin": "Outils intégrés",

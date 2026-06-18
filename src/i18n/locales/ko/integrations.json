@@ -1061,7 +1061,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Agent Browser CLI 경로",
-    "agentBrowserCliPathDesc": "Agent Browser CLI 바이너리의 선택적 경로입니다. 비워 두면 번들 바이너리 또는 PATH를 사용합니다",
+    "agentBrowserCliPathDesc": "Agent Browser CLI 바이너리의 선택적 경로입니다. 비워 두면 필요할 때 설치된 바이너리 또는 PATH를 사용합니다",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Playwright CLI 경로",
     "playwrightCliPathDesc": "Playwright CLI 명령 또는 스크립트의 선택적 경로입니다. 비워 두면 개발 checkout 또는 PATH를 사용합니다",
@@ -1076,7 +1076,20 @@
     "actionDetailsTab": "명령 세부 정보",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "ORGII를 다시 시작할까요?",
-    "agentBrowserRestartPromptMessage": "Browser CLI 제공자를 변경하면 Agent가 선택한 도구를 보려면 ORGII를 다시 시작해야 합니다. 지금 다시 시작할까요?"
+    "agentBrowserRestartPromptMessage": "Browser CLI 제공자를 변경하면 Agent가 선택한 도구를 보려면 ORGII를 다시 시작해야 합니다. 지금 다시 시작할까요?",
+    "sidecarDownloadsSectionTitle": "Sidecar 다운로드",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "현재 플랫폼용 Agent Browser 바이너리를 ~/.orgii/bin에 다운로드합니다. ORGII는 시작 시 자동으로 다운로드하지 않습니다.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "데스크톱 자동화를 위한 macOS Peekaboo 바이너리를 ~/.orgii/bin에 다운로드합니다. 지원하지 않는 플랫폼에서는 비활성화됩니다.",
+    "sidecarUnsupported": "지원 안 됨",
+    "sidecarInstalled": "설치됨",
+    "sidecarNotInstalled": "설치되지 않음",
+    "sidecarDownloadAction": "다운로드",
+    "sidecarInstalledAction": "설치됨",
+    "sidecarRefreshStatus": "상태 새로고침",
+    "sidecarRefreshStatusDesc": "이 머신에 이미 설치된 선택적 sidecars를 다시 확인합니다",
+    "sidecarLastError": "최근 오류"
   },
   "toolsArea": {
     "builtin": "기본 제공 도구",

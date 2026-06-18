@@ -25,6 +25,7 @@ tauri-plugin-notification = "2"
 app_paths = { path = "../app-paths" }       # ~/.orgii/dependencies cache path
 app_platform = { path = "../app-platform" } # hide_console / CREATE_NO_WINDOW (Windows)
 app_window = { path = "../app-window" }     # main-window recreate from tray
+git = { path = "../git" }                    # system Git resolution
 integrations = { path = "../integrations" } # external IDE detection
 
 # Async + concurrency

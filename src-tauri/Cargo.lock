@@ -7923,6 +7923,7 @@ dependencies = [
  "core-foundation",
  "dispatch2",
  "futures",
+ "git",
  "integrations",
  "objc2",
  "objc2-app-kit",

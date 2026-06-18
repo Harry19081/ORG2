@@ -1761,6 +1761,10 @@
     "start": "Starten",
     "assign": "Zuweisen",
     "send": "Senden",
+    "missingGit": {
+      "title": "Git fehlt",
+      "body": "Git ist nicht installiert oder konnte nicht gefunden werden. Bitte ADE Manager oder SDE Agent bitten, Git auf diesem Gerät zu installieren, und ORGII anschließend neu starten."
+    },
     "noProvidersAvailable": "Keine Anbieter verfügbar",
     "enterPublicRepoUrl": "Öffentliche Repo-URL eingeben",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

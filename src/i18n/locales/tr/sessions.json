@@ -1761,6 +1761,10 @@
     "start": "Başlat",
     "assign": "Ata",
     "send": "Gönder",
+    "missingGit": {
+      "title": "Git eksik",
+      "body": "Git yüklü değil veya bulunamadı. ADE Manager ya da SDE Agent’tan bu makineye Git kurmasını isteyin, ardından ORGII’yi yeniden başlatın."
+    },
     "noProvidersAvailable": "Kullanılabilir sağlayıcı yok",
     "enterPublicRepoUrl": "Herkese açık bir depo URL'si girin",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

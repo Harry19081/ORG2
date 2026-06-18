@@ -147,84 +147,25 @@ fn operation_name_empty() {
 // ============================================
 
 #[test]
-fn resolved_git_exec_path_uses_bundled_libexec() {
-    let root = std::env::temp_dir().join(format!("orgii-git-util-test-{}", std::process::id()));
-    let git_bin = root.join("git").join("bin");
-    let git_core = root.join("git").join("libexec").join("git-core");
-    std::fs::create_dir_all(&git_bin).unwrap();
-    std::fs::create_dir_all(&git_core).unwrap();
-
-    let git_executable = git_bin.join("git");
-    assert_eq!(resolved_git_exec_path(&git_executable), Some(git_core));
-
-    std::fs::remove_dir_all(root).unwrap();
-}
-
-#[test]
-fn resolved_git_exec_path_requires_existing_libexec() {
-    let git_executable = std::path::Path::new("/app/Resources/git/bin/git");
-    assert_eq!(resolved_git_exec_path(git_executable), None);
-}
-
-#[test]
-fn auto_mode_prefers_system_git() {
+fn system_git_resolution_uses_system_git() {
     let system_git = std::path::PathBuf::from("/usr/local/bin/git");
-    let bundled_git = std::path::PathBuf::from("/app/Resources/git/bin/git");
 
     let resolved = resolve_git_executable_from_candidates(
-        GitExecutableMode::Auto,
         Some(system_git.clone()),
-        Some(bundled_git),
         vec![system_git.clone()],
-        Vec::new(),
     )
     .unwrap();
 
     assert_eq!(resolved.path, system_git);
-    assert!(!resolved.is_bundled);
 }
 
 #[test]
-fn auto_mode_falls_back_to_bundled_git() {
-    let bundled_git = std::path::PathBuf::from("/app/Resources/git/bin/git");
-
-    let resolved = resolve_git_executable_from_candidates(
-        GitExecutableMode::Auto,
-        None,
-        Some(bundled_git.clone()),
-        Vec::new(),
-        vec![bundled_git.clone()],
-    )
-    .unwrap();
-
-    assert_eq!(resolved.path, bundled_git);
-    assert!(resolved.is_bundled);
-}
-
-#[test]
-fn system_mode_requires_system_git() {
+fn system_git_resolution_requires_system_git() {
     let err = resolve_git_executable_from_candidates(
-        GitExecutableMode::System,
         None,
-        Some(std::path::PathBuf::from("/app/Resources/git/bin/git")),
         vec![std::path::PathBuf::from("/missing/git")],
-        Vec::new(),
     )
     .unwrap_err();
 
     assert!(err.contains("System Git executable not found"));
-}
-
-#[test]
-fn bundled_mode_requires_bundled_git() {
-    let err = resolve_git_executable_from_candidates(
-        GitExecutableMode::Bundled,
-        Some(std::path::PathBuf::from("/usr/local/bin/git")),
-        None,
-        Vec::new(),
-        vec![std::path::PathBuf::from("/missing/bundled/git")],
-    )
-    .unwrap_err();
-
-    assert!(err.contains("Bundled Git executable not found"));
 }

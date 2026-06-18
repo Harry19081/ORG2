@@ -1061,7 +1061,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Agent Browser CLI yolu",
-    "agentBrowserCliPathDesc": "Agent Browser CLI ikili dosyası için isteğe bağlı yol. Paketli ikili dosyayı veya PATH'i kullanmak için boş bırakın",
+    "agentBrowserCliPathDesc": "Agent Browser CLI ikili dosyasına isteğe bağlı yol. Boş bırakırsanız gerektiğinde yüklenen ikili dosya veya PATH kullanılır",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Playwright CLI yolu",
     "playwrightCliPathDesc": "Playwright CLI komutu veya betiği için isteğe bağlı yol. Geliştirme checkout'unu veya PATH'i kullanmak için boş bırakın",
@@ -1076,7 +1076,20 @@
     "actionDetailsTab": "Komut ayrıntıları",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "ORGII yeniden başlatılsın mı?",
-    "agentBrowserRestartPromptMessage": "Browser CLI sağlayıcısını değiştirmek, Agent'ların seçilen aracı görmesi için ORGII'nin yeniden başlatılmasını gerektirir. Şimdi yeniden başlatılsın mı?"
+    "agentBrowserRestartPromptMessage": "Browser CLI sağlayıcısını değiştirmek, Agent'ların seçilen aracı görmesi için ORGII'nin yeniden başlatılmasını gerektirir. Şimdi yeniden başlatılsın mı?",
+    "sidecarDownloadsSectionTitle": "Sidecar indirmeleri",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Bu platform için Agent Browser ikili dosyasını ~/.orgii/bin içine indirir. ORGII bunu başlangıçta asla indirmez.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Masaüstü otomasyonu için macOS Peekaboo ikili dosyasını ~/.orgii/bin içine indirir. Desteklenmeyen platformlar devre dışı kalır.",
+    "sidecarUnsupported": "Desteklenmiyor",
+    "sidecarInstalled": "Yüklü",
+    "sidecarNotInstalled": "Yüklü değil",
+    "sidecarDownloadAction": "İndir",
+    "sidecarInstalledAction": "Yüklü",
+    "sidecarRefreshStatus": "Durumu yenile",
+    "sidecarRefreshStatusDesc": "Bu makinede hangi isteğe bağlı sidecars kurulu yeniden kontrol et",
+    "sidecarLastError": "Son hata"
   },
   "toolsArea": {
     "builtin": "Yerleşik araçlar",

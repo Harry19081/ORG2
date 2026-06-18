@@ -1767,6 +1767,10 @@
     "start": "开始",
     "assign": "分配",
     "send": "发送",
+    "missingGit": {
+      "title": "缺少 Git",
+      "body": "未安装 Git 或无法找到 Git。请让 ADE Manager 或 SDE Agent 为这台机器安装 Git，然后重启 ORGII。"
+    },
     "noProvidersAvailable": "没有可用的提供者",
     "enterPublicRepoUrl": "输入公共仓库 URL",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

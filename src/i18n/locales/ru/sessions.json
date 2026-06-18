@@ -1774,6 +1774,10 @@
     "start": "Начать",
     "assign": "Назначить",
     "send": "Отправить",
+    "missingGit": {
+      "title": "Git отсутствует",
+      "body": "Git не установлен или не найден. Попросите ADE Manager или SDE Agent установить Git на этот компьютер, затем перезапустите ORGII."
+    },
     "noProvidersAvailable": "Нет доступных провайдеров",
     "enterPublicRepoUrl": "Введите URL публичного репо",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

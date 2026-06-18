@@ -17,6 +17,9 @@ app_window::commands::focus_app_window,
 app_window::commands::set_window_vibrancy,
 app_window::commands::set_main_webview_zoom,
 app_window::commands::remove_window_background,
+// Optional sidecar commands - lazy install after first paint
+crate::setup::sidecar_setup::sidecar_list_status,
+crate::setup::sidecar_setup::sidecar_install,
 // Integration commands - External IDE
 integrations::external_ide::open_in_external_ide,
 integrations::external_ide::show_in_folder,
@@ -347,6 +350,7 @@ git_api::commands::ai::generate_commit_message,
 system_services::network::detect_vpn,
 system_services::network::fetch_geo_info,
 // System dependency detection
+system_services::dependencies::detect_git_dependency,
 system_services::dependencies::detect_system_dependencies,
 system_services::dependencies::get_cached_dependencies,
 // Test Runner commands

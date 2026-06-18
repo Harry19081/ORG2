@@ -1,7 +1,7 @@
 //! System dependency detection with persistence
 //!
 //! Checks whether common development tools (brew, node, npm, python, etc.)
-//! are available on the user's PATH, plus app-bundled tools such as Bundled Git.
+//! are available on the user's PATH.
 //! Results are cached to `~/.orgii/dependencies.json`
 //! so that other subsystems (lint, LSP) can read them without re-scanning.
 
@@ -43,7 +43,6 @@ pub enum DependencyCategory {
 #[derive(Clone, Copy)]
 enum ProbeSource {
     SystemPath,
-    BundledGit,
 }
 
 struct Probe {
@@ -346,13 +345,6 @@ const PROBES: &[Probe] = &[
     },
     // ── Version Control ─────────────────────────
     Probe {
-        name: "Bundled Git",
-        binary: "bundled-git",
-        version_flag: "--version",
-        category: DependencyCategory::VersionControl,
-        source: ProbeSource::BundledGit,
-    },
-    Probe {
         name: "Git",
         binary: "git",
         version_flag: "--version",
@@ -546,18 +538,6 @@ const PROBES: &[Probe] = &[
     },
 ];
 
-fn missing_dependency_status(probe: &Probe) -> DependencyStatus {
-    DependencyStatus {
-        name: probe.name.to_string(),
-        binary: probe.binary.to_string(),
-        installed: false,
-        version: None,
-        category: probe.category.clone(),
-        last_used: None,
-        install_hint: lookup_install_hint(probe.binary),
-    }
-}
-
 /// Extract the first meaningful version string from command output.
 fn parse_version(raw: &str) -> Option<String> {
     for line in raw.lines() {
@@ -601,10 +581,6 @@ async fn probe_one(probe: &Probe) -> DependencyStatus {
     let current_path = std::env::var("PATH").unwrap_or_default();
 
     let mut command = match probe.source {
-        ProbeSource::BundledGit => match app_paths::bundled_git_executable() {
-            Some(path) => tokio::process::Command::new(path),
-            None => return missing_dependency_status(probe),
-        },
         ProbeSource::SystemPath => tokio::process::Command::new(probe.binary),
     };
 
@@ -644,7 +620,6 @@ async fn probe_one(probe: &Probe) -> DependencyStatus {
             // Version flag failed — fallback to which/where to detect presence
             // without version info (e.g. JetBrains IDE launchers).
             let found = match probe.source {
-                ProbeSource::BundledGit => false,
                 ProbeSource::SystemPath => {
                     let which_cmd = if cfg!(windows) { "where" } else { "which" };
                     let mut which_command = tokio::process::Command::new(which_cmd);
@@ -695,6 +670,12 @@ pub struct SystemDependencies {
     pub scan_duration_ms: u64,
     pub scanned_at: String,
     pub from_cache: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GitDependencyStatus {
+    pub dependency: DependencyStatus,
 }
 
 fn cache_path() -> std::path::PathBuf {
@@ -790,10 +771,6 @@ fn load_cache() -> Option<SystemDependencies> {
 /// otherwise the UI says "binary not installed" while the binary is
 /// actually present and the cache is just torn.
 pub fn is_binary_available(binary: &str) -> bool {
-    if binary == "bundled-git" {
-        return app_paths::bundled_git_executable().is_some();
-    }
-
     let path = cache_path();
     let contents = match std::fs::read_to_string(&path) {
         Ok(c) => c,
@@ -830,6 +807,21 @@ pub fn is_binary_available(binary: &str) -> bool {
 // ============================================
 // Tauri commands
 // ============================================
+
+#[tauri::command]
+pub async fn detect_git_dependency() -> Result<GitDependencyStatus, String> {
+    let git_probe = Probe {
+        name: "Git",
+        binary: "git",
+        version_flag: "--version",
+        category: DependencyCategory::VersionControl,
+        source: ProbeSource::SystemPath,
+    };
+
+    let mut dependency = probe_one(&git_probe).await;
+    dependency.installed = git::resolved_git_executable_details().is_ok();
+    Ok(GitDependencyStatus { dependency })
+}
 
 /// Scan all dependencies, persist results, and return them.
 ///

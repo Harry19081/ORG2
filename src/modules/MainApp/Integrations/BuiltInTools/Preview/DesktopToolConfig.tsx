@@ -16,7 +16,7 @@ import { ask } from "@tauri-apps/plugin-dialog";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { open as shellOpen } from "@tauri-apps/plugin-shell";
 import { useAtomValue, useSetAtom } from "jotai";
-import { ExternalLink, Loader2, RefreshCw } from "lucide-react";
+import { Download, ExternalLink, Loader2, RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -27,6 +27,13 @@ import {
   requestDesktopPermissions,
 } from "@src/api/tauri/agent";
 import type { DesktopPermission } from "@src/api/tauri/agent";
+import {
+  OPTIONAL_SIDECAR,
+  type OptionalSidecar,
+  type SidecarStatus,
+  installSidecar,
+  listSidecarStatus,
+} from "@src/api/tauri/sidecars";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
@@ -69,6 +76,25 @@ const KNOWN_PERMISSIONS: KnownPermission[] = [
     descriptionKey: "osAgent.desktopAccessibilityDesc",
     deepLink:
       "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
+  },
+];
+
+interface SidecarDownloadRow {
+  sidecar: OptionalSidecar;
+  labelKey: string;
+  descriptionKey: string;
+}
+
+const SIDECAR_DOWNLOAD_ROWS: SidecarDownloadRow[] = [
+  {
+    sidecar: OPTIONAL_SIDECAR.AGENT_BROWSER,
+    labelKey: "builtInTools.sidecarAgentBrowserLabel",
+    descriptionKey: "builtInTools.sidecarAgentBrowserDesc",
+  },
+  {
+    sidecar: OPTIONAL_SIDECAR.PEEKABOO,
+    labelKey: "builtInTools.sidecarPeekabooLabel",
+    descriptionKey: "builtInTools.sidecarPeekabooDesc",
   },
 ];
 
@@ -177,6 +203,171 @@ const AgentBrowserProviderConfig: React.FC = () => {
   );
 };
 
+const SidecarDownloadsConfig: React.FC = () => {
+  const { t } = useTranslation("integrations");
+  const [statuses, setStatuses] = useState<SidecarStatus[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [installing, setInstalling] = useState<OptionalSidecar | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const refreshStatuses = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await listSidecarStatus();
+      setStatuses(result);
+      setError(null);
+    } catch (err) {
+      setStatuses(null);
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    listSidecarStatus()
+      .then((result) => {
+        if (cancelled) return;
+        setStatuses(result);
+        setError(null);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setStatuses(null);
+        setError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleInstall = useCallback(async (sidecar: OptionalSidecar) => {
+    setInstalling(sidecar);
+    try {
+      const installed = await installSidecar(sidecar);
+      setStatuses((current) => {
+        const next = current ?? [];
+        const existingIndex = next.findIndex(
+          (entry) => entry.sidecar === sidecar
+        );
+        if (existingIndex === -1) {
+          return [...next, installed];
+        }
+        return next.map((entry) =>
+          entry.sidecar === sidecar ? installed : entry
+        );
+      });
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setInstalling(null);
+    }
+  }, []);
+
+  const { spinClass, handleClick: handleRefreshClick } = useRefreshSpin(
+    refreshStatuses,
+    loading
+  );
+
+  const statusMap = useMemo(() => {
+    if (!statuses) return new Map<OptionalSidecar, SidecarStatus>();
+    return new Map(statuses.map((status) => [status.sidecar, status]));
+  }, [statuses]);
+
+  return (
+    <SectionContainer title={t("builtInTools.sidecarDownloadsSectionTitle")}>
+      {SIDECAR_DOWNLOAD_ROWS.map((row) => {
+        const status = statusMap.get(row.sidecar);
+        const isInstalling = installing === row.sidecar;
+        const unsupported = status?.supported === false;
+        const installed = status?.installed === true;
+
+        let statusContent: React.ReactNode;
+        if (loading && !status) {
+          statusContent = (
+            <Loader2 size={14} className="animate-spin text-text-3" />
+          );
+        } else if (unsupported) {
+          statusContent = (
+            <span className="whitespace-nowrap text-xs text-text-3">
+              {t("builtInTools.sidecarUnsupported")}
+            </span>
+          );
+        } else if (installed) {
+          statusContent = (
+            <span className="whitespace-nowrap text-xs text-success-6">
+              {t("builtInTools.sidecarInstalled")}
+            </span>
+          );
+        } else {
+          statusContent = (
+            <span className="whitespace-nowrap text-xs text-warning-6">
+              {t("builtInTools.sidecarNotInstalled")}
+            </span>
+          );
+        }
+
+        return (
+          <SectionRow
+            key={row.sidecar}
+            label={t(row.labelKey)}
+            description={t(row.descriptionKey)}
+          >
+            <div className="flex items-center gap-2">
+              {statusContent}
+              <Button
+                size="default"
+                icon={
+                  isInstalling ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Download size={14} />
+                  )
+                }
+                disabled={loading || unsupported || installed || isInstalling}
+                onClick={() => handleInstall(row.sidecar)}
+              >
+                {installed
+                  ? t("builtInTools.sidecarInstalledAction")
+                  : t("builtInTools.sidecarDownloadAction")}
+              </Button>
+            </div>
+          </SectionRow>
+        );
+      })}
+
+      <SectionRow
+        label={t("builtInTools.sidecarRefreshStatus")}
+        description={t("builtInTools.sidecarRefreshStatusDesc")}
+      >
+        <Button
+          size="default"
+          icon={<RefreshCw size={14} className={spinClass} />}
+          onClick={handleRefreshClick}
+          disabled={installing !== null}
+        >
+          {t("builtInTools.sidecarRefreshStatus")}
+        </Button>
+      </SectionRow>
+
+      {error && (
+        <SectionRow
+          label={t("builtInTools.sidecarLastError")}
+          description={error}
+        />
+      )}
+    </SectionContainer>
+  );
+};
+
 const ComputerUseConfig: React.FC = () => {
   const { t } = useTranslation("settings");
   const { t: tIntegrations } = useTranslation("integrations");
@@ -263,6 +454,7 @@ const ComputerUseConfig: React.FC = () => {
     return (
       <div className={SECTION_GAP_CLASSES}>
         <AgentBrowserProviderConfig />
+        <SidecarDownloadsConfig />
         <SectionContainer
           title={tIntegrations(
             "builtInTools.computerUsePermissionsSectionTitle"
@@ -282,6 +474,7 @@ const ComputerUseConfig: React.FC = () => {
   return (
     <div className={SECTION_GAP_CLASSES}>
       <AgentBrowserProviderConfig />
+      <SidecarDownloadsConfig />
       <SectionContainer
         title={tIntegrations("builtInTools.computerUsePermissionsSectionTitle")}
       >

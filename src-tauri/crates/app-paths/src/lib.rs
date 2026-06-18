@@ -284,16 +284,7 @@ pub fn file_history_dir(session_id: &str) -> PathBuf {
     file_history_root().join(session_id)
 }
 
-const BUNDLED_GIT_RELATIVE_PATH: &[&str] = &["git", "bin", "git"];
-const DEV_DUGITE_GIT_RELATIVE_PATH: &[&str] = &["node_modules", "dugite", "git", "bin", "git"];
 const SYSTEM_GIT_PROBE_TIMEOUT: Duration = Duration::from_millis(750);
-
-/// Resolve the Git executable shipped with ORGII.
-pub fn bundled_git_executable() -> Option<PathBuf> {
-    bundled_git_candidate_paths()
-        .into_iter()
-        .find(|path| is_executable_file(path))
-}
 
 pub fn system_git_executable() -> Option<PathBuf> {
     system_git_candidate_paths()
@@ -322,50 +313,6 @@ pub fn system_git_candidate_paths() -> Vec<PathBuf> {
     }
 
     dedupe_paths(paths)
-}
-
-/// Candidate paths for diagnostics and tests, ordered by runtime preference.
-pub fn bundled_git_candidate_paths() -> Vec<PathBuf> {
-    let mut paths = Vec::new();
-
-    if let Ok(explicit_path) = std::env::var("ORGII_BUNDLED_GIT") {
-        paths.push(PathBuf::from(explicit_path));
-    }
-
-    // Runtime-downloaded git (post-notarized download): ~/.orgii/bin/git/bin/git
-    paths.push(join_segments(sidecar_bin_dir(), BUNDLED_GIT_RELATIVE_PATH));
-
-    if let Ok(current_exe) = std::env::current_exe() {
-        if let Some(macos_dir) = current_exe.parent() {
-            if let Some(contents_dir) = macos_dir.parent() {
-                paths.push(join_segments(
-                    contents_dir.join("Resources"),
-                    BUNDLED_GIT_RELATIVE_PATH,
-                ));
-            }
-        }
-    }
-
-    if let Ok(current_dir) = std::env::current_dir() {
-        paths.push(join_segments(current_dir, DEV_DUGITE_GIT_RELATIVE_PATH));
-    }
-
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    if let Some(repo_root) = manifest_dir.ancestors().nth(3) {
-        paths.push(join_segments(
-            repo_root.to_path_buf(),
-            DEV_DUGITE_GIT_RELATIVE_PATH,
-        ));
-    }
-
-    paths
-}
-
-fn join_segments(mut base: PathBuf, segments: &[&str]) -> PathBuf {
-    for segment in segments {
-        base.push(segment);
-    }
-    base
 }
 
 fn git_binary_name() -> &'static str {

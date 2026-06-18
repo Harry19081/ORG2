@@ -1064,7 +1064,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Путь к Agent Browser CLI",
-    "agentBrowserCliPathDesc": "Необязательный путь к бинарному файлу Agent Browser CLI. Оставьте пустым, чтобы использовать встроенный бинарный файл или PATH",
+    "agentBrowserCliPathDesc": "Необязательный путь к бинарному файлу Agent Browser CLI. Оставьте пустым, чтобы использовать бинарный файл, установленный по запросу, или PATH",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Путь к Playwright CLI",
     "playwrightCliPathDesc": "Необязательный путь к команде или скрипту Playwright CLI. Оставьте пустым, чтобы использовать checkout разработки или PATH",
@@ -1079,7 +1079,20 @@
     "actionDetailsTab": "Сведения о командах",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "Перезапустить ORGII?",
-    "agentBrowserRestartPromptMessage": "После смены провайдера Browser CLI нужно перезапустить ORGII, чтобы агенты увидели выбранный инструмент. Перезапустить сейчас?"
+    "agentBrowserRestartPromptMessage": "После смены провайдера Browser CLI нужно перезапустить ORGII, чтобы агенты увидели выбранный инструмент. Перезапустить сейчас?",
+    "sidecarDownloadsSectionTitle": "Загрузки sidecar",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Загрузить бинарный файл Agent Browser для этой платформы в ~/.orgii/bin. ORGII никогда не загружает его при запуске.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Загрузить macOS-бинарный файл Peekaboo для автоматизации рабочего стола в ~/.orgii/bin. Неподдерживаемые платформы остаются отключенными.",
+    "sidecarUnsupported": "Не поддерживается",
+    "sidecarInstalled": "Установлено",
+    "sidecarNotInstalled": "Не установлено",
+    "sidecarDownloadAction": "Загрузить",
+    "sidecarInstalledAction": "Установлено",
+    "sidecarRefreshStatus": "Обновить статус",
+    "sidecarRefreshStatusDesc": "Повторно проверить, какие опциональные sidecars уже установлены на этой машине",
+    "sidecarLastError": "Последняя ошибка"
   },
   "toolsArea": {
     "builtin": "Встроенные инструменты",

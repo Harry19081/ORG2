@@ -1761,6 +1761,10 @@
     "start": "시작",
     "assign": "할당",
     "send": "보내기",
+    "missingGit": {
+      "title": "Git 없음",
+      "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORGII를 다시 시작하세요."
+    },
     "noProvidersAvailable": "사용 가능한 제공자가 없습니다",
     "enterPublicRepoUrl": "공개 저장소 URL을 입력하세요",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

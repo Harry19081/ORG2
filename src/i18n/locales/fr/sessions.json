@@ -1761,6 +1761,10 @@
     "start": "Démarrer",
     "assign": "Assigner",
     "send": "Envoyer",
+    "missingGit": {
+      "title": "Git est manquant",
+      "body": "Git n’est pas installé ou est introuvable. Demandez à ADE Manager ou à SDE Agent d’installer Git sur cette machine, puis redémarrez ORGII."
+    },
     "noProvidersAvailable": "Aucun fournisseur disponible",
     "enterPublicRepoUrl": "Entrez une URL de dépôt public",
     "repoUrlPlaceholder": "https://github.com/owner/repo",

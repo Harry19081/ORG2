@@ -22,6 +22,7 @@ import {
   MultiRepoGitStatusProvider,
 } from "@src/contexts/git";
 import { useDiagnosticsBootstrap } from "@src/diagnostics";
+import { usePostPaintGitProbe } from "@src/hooks/dependencies/usePostPaintGitProbe";
 import { useGlobalFlowTracker } from "@src/hooks/flowAwareness";
 import { useModelAliasRegistry } from "@src/hooks/models";
 import {
@@ -67,6 +68,7 @@ export const AppBootstrap: FC = () => {
   useSleepInhibitor();
   useAppShellEffects();
   useFirstPaintSignal();
+  usePostPaintGitProbe();
   useGlobalFlowTracker(); // Track user activities for agent context
   useModelAliasRegistry();
   useDiagnosticsBootstrap();

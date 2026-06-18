@@ -143,7 +143,7 @@ export function upsertAdeManagerSession(result: SessionLaunchResult): void {
     branch: result.branch ?? "",
     is_active: true,
     category: DISPATCH_CATEGORY.RUST_AGENT,
-    model: result.model,
+    model: result.model ?? undefined,
     agentExecMode: ADE_MANAGER_AGENT_EXEC_MODE,
     agentDefinitionId: BUILTIN_ADE_MANAGER_DEF_ID,
     agentIconId: ADE_MANAGER_AGENT_ICON_ID,

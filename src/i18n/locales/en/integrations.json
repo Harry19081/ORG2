@@ -1079,7 +1079,7 @@
       "playwright": "Playwright CLI"
     },
     "agentBrowserCliPath": "Agent Browser CLI Path",
-    "agentBrowserCliPathDesc": "Optional path to the Agent Browser CLI binary. Leave empty to use the vendored binary or PATH",
+    "agentBrowserCliPathDesc": "Optional path to the Agent Browser CLI binary. Leave empty to use the lazy-installed binary or PATH",
     "agentBrowserCliPathPlaceholder": "agent-browser",
     "playwrightCliPath": "Playwright CLI Path",
     "playwrightCliPathDesc": "Optional path to the Playwright CLI command or script. Leave empty to use the development checkout or PATH",
@@ -1094,7 +1094,20 @@
     "actionDetailsTab": "Commands detail",
     "agentAppLabel": "Agent App",
     "agentBrowserRestartPromptTitle": "Restart ORGII?",
-    "agentBrowserRestartPromptMessage": "Changing the Browser CLI provider requires restarting ORGII before agents see the selected tool. Restart now?"
+    "agentBrowserRestartPromptMessage": "Changing the Browser CLI provider requires restarting ORGII before agents see the selected tool. Restart now?",
+    "sidecarDownloadsSectionTitle": "Sidecar Downloads",
+    "sidecarAgentBrowserLabel": "Agent Browser CLI",
+    "sidecarAgentBrowserDesc": "Download the Agent Browser binary for this platform into ~/.orgii/bin. ORGII never downloads it during startup.",
+    "sidecarPeekabooLabel": "Peekaboo CLI",
+    "sidecarPeekabooDesc": "Download the macOS Peekaboo desktop automation binary into ~/.orgii/bin. Unsupported platforms stay disabled.",
+    "sidecarUnsupported": "Unsupported",
+    "sidecarInstalled": "Installed",
+    "sidecarNotInstalled": "Not installed",
+    "sidecarDownloadAction": "Download",
+    "sidecarInstalledAction": "Installed",
+    "sidecarRefreshStatus": "Refresh status",
+    "sidecarRefreshStatusDesc": "Re-check which optional sidecars are already installed on this machine",
+    "sidecarLastError": "Last error"
   },
   "toolsArea": {
     "builtin": "Built-in tools",

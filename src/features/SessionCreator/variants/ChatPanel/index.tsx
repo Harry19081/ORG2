@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import type { ModelType } from "@src/api/tauri/rpc/schemas/validation";
 import Button from "@src/components/Button";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
+import InlineAlert from "@src/components/InlineAlert";
 import ModelIcon from "@src/components/ModelIcon";
 import SelectorPill from "@src/components/SelectorPill";
 import { resolveAgentIcon } from "@src/config/agentIcons";
@@ -40,6 +41,7 @@ import { useCliAgents } from "@src/modules/MainApp/Integrations/KeyVault/CliClie
 import { DispatchCategoryPalette } from "@src/scaffold/GlobalSpotlight/palettes/DispatchCategoryPalette";
 import { DispatchCategoryDropdown } from "@src/scaffold/GlobalSpotlight/palettes/DispatchCategoryPalette/DispatchCategoryDropdown";
 import { PresenceMenuButton } from "@src/scaffold/NavigationSidebar/blocks/SidebarBottomBar";
+import { gitDependencyInstalledAtom } from "@src/store/platform/gitDependencyAtom";
 import { REPO_KIND } from "@src/store/repo/types";
 import {
   SESSION_TARGET_KIND,
@@ -221,6 +223,8 @@ const SessionCreatorChatPanelSingle: React.FC<
   });
 
   const setCreatorState = useSetAtom(sessionCreatorStateAtom);
+  const gitInstalled = useAtomValue(gitDependencyInstalledAtom);
+  const showMissingGitAlert = gitInstalled === false;
   const dispatchCategory = useAtomValue(dispatchCategoryAtom);
   const targetKind = useAtomValue(sessionTargetKindAtom);
   const selectedAgentDefId = useAtomValue(selectedAgentDefinitionIdAtom);
@@ -748,6 +752,16 @@ const SessionCreatorChatPanelSingle: React.FC<
               </div>
             )}
           </div>
+
+          {showMissingGitAlert && (
+            <div
+              className={`mx-auto w-full ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+            >
+              <InlineAlert type="warning" title={t("creator.missingGit.title")}>
+                {t("creator.missingGit.body")}
+              </InlineAlert>
+            </div>
+          )}
 
           <div
             className={`mx-auto flex w-full items-center ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
