@@ -21,13 +21,7 @@ import {
   MessageCircleMore,
   Terminal,
 } from "lucide-react";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import type { InlineSection } from "../components/CollapsedInlineRow";
 import {
@@ -68,9 +62,65 @@ export interface UseComposerSectionsOptions {
    * (e.g. the DevTools playground) keep the plain expand behavior.
    */
   filesMenu?: React.ReactNode;
+  includeFileSections?: boolean;
 }
 
 const NOOP = () => {};
+
+export function createFileInlineSection({
+  fileChangeStats,
+  onFilesExpand,
+  filesMenu,
+}: {
+  fileChangeStats: FileChangeStats;
+  onFilesExpand: () => void;
+  filesMenu?: React.ReactNode;
+}): InlineSection | null {
+  if (fileChangeStats.count <= 0) return null;
+
+  const diffStatNodes: React.ReactNode[] = [];
+  if (fileChangeStats.additions > 0) {
+    diffStatNodes.push(
+      React.createElement(
+        "span",
+        { key: "additions", className: "font-normal text-green-500" },
+        `+${fileChangeStats.additions}`
+      )
+    );
+  }
+  if (fileChangeStats.deletions > 0) {
+    diffStatNodes.push(
+      React.createElement(
+        "span",
+        { key: "deletions", className: "font-normal text-red-500" },
+        `-${fileChangeStats.deletions}`
+      )
+    );
+  }
+
+  return {
+    key: "files",
+    icon: React.createElement(Diff, { size: 13 }),
+    count: fileChangeStats.count,
+    content: React.createElement(
+      "span",
+      { className: "inline-flex items-center gap-2" },
+      React.createElement("span", null, fileChangeStats.count),
+      diffStatNodes.length > 0
+        ? React.createElement("span", {
+            className:
+              "inline-block h-0.5 w-0.5 shrink-0 rounded-full bg-text-4",
+            "aria-hidden": true,
+          })
+        : null,
+      ...diffStatNodes
+    ),
+    active: false,
+    onExpand: filesMenu ? NOOP : onFilesExpand,
+    droplist: filesMenu,
+    testId: "composer-section-files",
+  };
+}
 
 export function useComposerSections({
   sessionId,
@@ -83,6 +133,7 @@ export function useComposerSections({
   gitArtifactStats = { commitCount: 0, pullRequestCount: 0 },
   onFilesExpand,
   filesMenu,
+  includeFileSections = true,
 }: UseComposerSectionsOptions) {
   // Primary card collapsed states
   const [questionCollapsed, setQuestionCollapsed] = useState(false);
@@ -95,8 +146,8 @@ export function useComposerSections({
   // return after the turn has completed.
   const [activeSection, setActiveSection] =
     useState<ComposerActiveSection>(null);
-  const activeSectionBySessionRef = useRef(
-    new Map<string, ComposerActiveSection>()
+  const [activeSectionBySession, setActiveSectionBySession] = useState(
+    () => new Map<string, ComposerActiveSection>()
   );
 
   // Counts reported by child components
@@ -125,14 +176,15 @@ export function useComposerSections({
         currentActiveSection: activeSection,
         queueCount,
         previouslyStoredSection: sessionId
-          ? activeSectionBySessionRef.current.get(sessionId)
+          ? activeSectionBySession.get(sessionId)
           : undefined,
       });
     if (prevSessionId && storedSectionForPrevious !== undefined) {
-      activeSectionBySessionRef.current.set(
-        prevSessionId,
-        storedSectionForPrevious
-      );
+      setActiveSectionBySession((current) => {
+        const next = new Map(current);
+        next.set(prevSessionId, storedSectionForPrevious);
+        return next;
+      });
     }
     setPrevSessionId(sessionId);
     setActiveSection(nextActiveSection);
@@ -144,31 +196,31 @@ export function useComposerSections({
   // counter when it is available, but also react to count growth so the queue
   // stays visible if the counter update and queue filter land in different
   // render passes or a session switch restores a non-empty queue.
-  const prevEnqueueCountRef = useRef(enqueueCount);
-  const prevQueueCountRef = useRef(queueCount);
-  const queueAutoOpenedForCountRef = useRef(queueCount > 0 ? queueCount : 0);
-  useEffect(() => {
-    const previousEnqueueCount = prevEnqueueCountRef.current;
-    const previousQueueCount = prevQueueCountRef.current;
-    prevEnqueueCountRef.current = enqueueCount;
-    prevQueueCountRef.current = queueCount;
-
-    if (queueCount === 0) {
-      queueAutoOpenedForCountRef.current = 0;
-      return;
-    }
-
+  const [prevEnqueueCount, setPrevEnqueueCount] = useState(enqueueCount);
+  const [prevQueueCount, setPrevQueueCount] = useState(queueCount);
+  const [queueAutoOpenedForCount, setQueueAutoOpenedForCount] = useState(
+    queueCount > 0 ? queueCount : 0
+  );
+  if (prevEnqueueCount !== enqueueCount || prevQueueCount !== queueCount) {
     const hasNewQueueWork =
-      enqueueCount > previousEnqueueCount || queueCount > previousQueueCount;
-    if (
-      hasNewQueueWork ||
-      (activeSection !== "queue" &&
-        queueAutoOpenedForCountRef.current < queueCount)
-    ) {
-      queueAutoOpenedForCountRef.current = queueCount;
+      queueCount > 0 &&
+      (enqueueCount > prevEnqueueCount || queueCount > prevQueueCount);
+    setPrevEnqueueCount(enqueueCount);
+    setPrevQueueCount(queueCount);
+    setQueueAutoOpenedForCount(hasNewQueueWork ? queueCount : 0);
+    if (hasNewQueueWork) {
       setActiveSection("queue");
     }
-  }, [activeSection, enqueueCount, queueCount]);
+  } else if (queueCount === 0 && queueAutoOpenedForCount !== 0) {
+    setQueueAutoOpenedForCount(0);
+  } else if (
+    queueCount > 0 &&
+    activeSection !== "queue" &&
+    queueAutoOpenedForCount < queueCount
+  ) {
+    setQueueAutoOpenedForCount(queueCount);
+    setActiveSection("queue");
+  }
 
   // Restore collapsed → expanded when the card's data resets (new question, new permission, etc.)
   const [prevHasQuestion, setPrevHasQuestion] = useState(hasQuestion);
@@ -220,8 +272,7 @@ export function useComposerSections({
 
   const hasQueue = queueCount > 0;
   const hasProcess = processVisibleCount > 0;
-  const fileSectionCount = fileChangeStats.count;
-  const hasFiles = fileSectionCount > 0;
+  const hasFiles = includeFileSections && fileChangeStats.count > 0;
   const gitArtifactCount =
     gitArtifactStats.commitCount + gitArtifactStats.pullRequestCount;
   const hasGitArtifacts = gitArtifactCount > 0;
@@ -307,48 +358,15 @@ export function useComposerSections({
         testId: "composer-section-process",
       });
     }
-    if (hasFiles) {
-      const diffStatNodes: React.ReactNode[] = [];
-      if (fileChangeStats.additions > 0) {
-        diffStatNodes.push(
-          React.createElement(
-            "span",
-            { key: "additions", className: "font-normal text-green-500" },
-            `+${fileChangeStats.additions}`
-          )
-        );
-      }
-      if (fileChangeStats.deletions > 0) {
-        diffStatNodes.push(
-          React.createElement(
-            "span",
-            { key: "deletions", className: "font-normal text-red-500" },
-            `-${fileChangeStats.deletions}`
-          )
-        );
-      }
-      sections.push({
-        key: "files",
-        icon: React.createElement(Diff, { size: 13 }),
-        count: fileSectionCount,
-        content: React.createElement(
-          "span",
-          { className: "inline-flex items-center gap-2" },
-          React.createElement("span", null, fileSectionCount),
-          diffStatNodes.length > 0
-            ? React.createElement("span", {
-                className:
-                  "inline-block h-0.5 w-0.5 shrink-0 rounded-full bg-text-4",
-                "aria-hidden": true,
-              })
-            : null,
-          ...diffStatNodes
-        ),
-        active: false,
-        onExpand: filesMenu ? NOOP : onFilesExpand,
-        droplist: filesMenu,
-        testId: "composer-section-files",
+    if (includeFileSections) {
+      const fileSection = createFileInlineSection({
+        fileChangeStats,
+        onFilesExpand,
+        filesMenu,
       });
+      if (fileSection) {
+        sections.push(fileSection);
+      }
     }
     if (hasGitArtifacts) {
       sections.push({
@@ -378,13 +396,10 @@ export function useComposerSections({
     expandPlan,
     hasQueue,
     hasProcess,
-    hasFiles,
     hasGitArtifacts,
     queueCount,
     processVisibleCount,
-    fileSectionCount,
-    fileChangeStats.additions,
-    fileChangeStats.deletions,
+    fileChangeStats,
     gitArtifactCount,
     queueExpanded,
     processExpanded,
@@ -392,6 +407,7 @@ export function useComposerSections({
     toggleProcess,
     onFilesExpand,
     filesMenu,
+    includeFileSections,
   ]);
 
   return {

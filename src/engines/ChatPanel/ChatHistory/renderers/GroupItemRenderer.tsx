@@ -1,4 +1,3 @@
-import { useAtomValue } from "jotai";
 import { MailOpen } from "lucide-react";
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,7 +14,6 @@ import {
 } from "@src/engines/ChatPanel/blocks/primitives";
 import { useBlockHeader } from "@src/engines/ChatPanel/blocks/useBlockLocate";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
-import { hasLoadedMoreActivitiesAtom } from "@src/store/ui/sessionPaginationAtom";
 
 import {
   AgentTurnContext,
@@ -29,10 +27,8 @@ import {
   resolveGroupChatMessageBubble,
   resolveGroupChatToolUseSummary,
 } from "../GroupChatView/groupChatUtils";
-import { useTurnFiles } from "../TurnFilesContext";
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
 import { NewEventDivider } from "../components/NewEventDivider";
-import TurnFilesFooter from "../components/TurnFilesFooter";
 import { getUnloadedTurnMeta } from "../hooks/useChatGroups";
 import { ChatItemRenderer } from "./ChatItemRenderer";
 import ChatItemWrap from "./ChatItemWrap";
@@ -204,8 +200,6 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
     const { t } = useTranslation("sessions");
     const chatItem = flatItems[flatIndex];
     const groupChat = useGroupChatContext();
-    const { filesByTurnId, turnIdByGroupIndex } = useTurnFiles();
-    const hasLoadedMoreActivities = useAtomValue(hasLoadedMoreActivitiesAtom);
     const event = chatItem?.event;
 
     const simpleMessage = useMemo(() => {
@@ -376,21 +370,6 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
       !isStructuralUnloadedTurnItem &&
       !isStructuralOnlyItem;
 
-    // Per-round file list. Painted once, below the group's last rendered
-    // body item, sourced from the DB-materialized turn index keyed by
-    // turnId. Suppressed in group-chat panes (bubble layout) and for
-    // structural/unloaded rows that have nothing to anchor to.
-    const turnId = turnIdByGroupIndex[groupIndex] ?? null;
-    const turnModifiedFiles =
-      turnId !== null ? filesByTurnId.get(turnId) : undefined;
-    const showTurnFilesFooter =
-      isLastItemInGroup &&
-      renderedItem !== null &&
-      !groupChat?.enabled &&
-      !isStructuralUnloadedTurnItem &&
-      !isStructuralOnlyItem &&
-      Boolean(turnModifiedFiles && turnModifiedFiles.length > 0);
-
     return (
       <AgentTurnContext.Provider value={turnContext}>
         <div className={turnGapClass || undefined} style={{ minHeight: 1 }}>
@@ -398,14 +377,6 @@ export const GroupItemRenderer: React.FC<GroupItemRendererProps> = memo(
             <NewEventDivider label={newEventDividerLabel as string} />
           )}
           {renderedItem}
-          {showTurnFilesFooter && (
-            <TurnFilesFooter
-              modifiedFiles={turnModifiedFiles}
-              sessionId={event?.sessionId ?? null}
-              turnId={turnId}
-              isPagedHistoryRound={hasLoadedMoreActivities && !isLastGroup}
-            />
-          )}
         </div>
       </AgentTurnContext.Provider>
     );

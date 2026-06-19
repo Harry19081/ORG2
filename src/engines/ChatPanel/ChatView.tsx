@@ -594,7 +594,6 @@ const ChatView: React.FC<ChatViewProps> = memo(
       hasAny,
       inlineSections,
       setProcessVisibleCount,
-      setFileChangeStats,
     } = useComposerSections({
       sessionId,
       queueCount: sessionMessageQueue.length,
@@ -606,11 +605,8 @@ const ChatView: React.FC<ChatViewProps> = memo(
       gitArtifactStats,
       onFilesExpand: openAgentStationDiff,
       filesMenu,
+      includeFileSections: false,
     });
-
-    useEffect(() => {
-      setFileChangeStats({ count: 0, additions: 0, deletions: 0 });
-    }, [sessionId, setFileChangeStats]);
 
     const hasAgentOrgIntervention =
       agentOrgInterventionError !== null || agentOrgIntervention !== null;
@@ -757,7 +753,8 @@ const ChatView: React.FC<ChatViewProps> = memo(
               onToggleQueue={toggleQueue}
               onToggleProcess={toggleProcess}
               onProcessVisibleCountChange={setProcessVisibleCount}
-              onFileChangeStatsChange={setFileChangeStats}
+              onFilesExpand={openAgentStationDiff}
+              filesMenu={filesMenu}
               initialFileChanges={initialFileChanges}
               filesReloadKey={composerFilesReloadKey}
               groupChatPendingMessage={groupChatPendingMessage}

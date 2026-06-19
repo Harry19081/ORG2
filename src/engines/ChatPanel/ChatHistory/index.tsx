@@ -51,7 +51,6 @@ import {
   isAgentOrgInboxTranscriptEvent,
   isCoordinatorHumanUserEvent,
 } from "./GroupChatView/groupChatUtils";
-import { TurnFilesContext } from "./TurnFilesContext";
 import { ChatHistoryDisplayModeProvider } from "./chatDisplayModeContext";
 import type { OptimizedChatItem } from "./chatItemPipeline/types";
 import ChatHistoryEmptyState from "./components/ChatHistoryEmptyState";
@@ -76,7 +75,6 @@ import {
   useGroupHeaderRenderer,
   useReloadSession,
   useRestoreCheckpoint,
-  useTurnModifiedFiles,
   useTurnPageNavigation,
   useTurnPageSelectionState,
 } from "./hooks";
@@ -488,25 +486,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const virtuosoDataKey = `${activeId ?? "no-session"}:${
     turnPaginationEnabled ? `page-${currentPageIndex}` : "all"
   }:${virtuosoGroupShapeKey}`;
-
-  // --- Per-round file list (turn index store) ---
-  // Reload the DB-materialized turn index when the session changes, a new
-  // round appears, or the agent transitions idle — never per streamed event.
-  const turnFilesReloadKey = `${activeId ?? ""}:${displayGroupCounts.length}:${
-    isAgentWorking ? "working" : "idle"
-  }`;
-  const turnFilesByTurnId = useTurnModifiedFiles(activeId, turnFilesReloadKey);
-  const turnIdByGroupIndex = useMemo(
-    () => displayGroupMeta.map((meta) => meta.turnId),
-    [displayGroupMeta]
-  );
-  const turnFilesContextValue = useMemo(
-    () => ({
-      filesByTurnId: turnFilesByTurnId,
-      turnIdByGroupIndex,
-    }),
-    [turnFilesByTurnId, turnIdByGroupIndex]
-  );
 
   // --- Empty-state grace period ---
   const optimizedLen = chatHistory.length;
@@ -1062,7 +1041,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
                 className={`mx-auto h-full w-full ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
               >
                 {optimizedChatHistory.length > 0 ? (
-                  <TurnFilesContext.Provider value={turnFilesContextValue}>
+                  <>
                     <ChatHistoryList
                       flatItems={displayFlatItems}
                       groupCounts={displayGroupCounts}
@@ -1098,7 +1077,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
                       staticScrollerRef={staticScrollerRef}
                       newEventDividerLabel={newEventDividerLabel}
                     />
-                  </TurnFilesContext.Provider>
+                  </>
                 ) : (
                   <div className="flex h-full min-h-0 flex-col">
                     {hasPinnedContent && (
