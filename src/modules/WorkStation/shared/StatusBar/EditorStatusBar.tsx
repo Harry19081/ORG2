@@ -282,7 +282,7 @@ export const EditorStatusBar: React.FC<EditorStatusBarProps> = memo(
               title={t("workstation.switchToSessionRepo", {
                 name: sessionRepoHint.repoName,
               })}
-              variant="primary"
+              className="pl-2 text-primary-6"
               dataTestId="status-bar-switch-to-session-repo"
             >
               <ArrowRightLeft size={13} />
