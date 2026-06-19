@@ -122,7 +122,7 @@ function isFinalAssistantDuplicate(
   );
 }
 
-function appendLiveAssistantEvent(
+export function appendLiveAssistantEvent(
   events: SessionEvent[],
   sessionId: string | null,
   content: string | null
