@@ -173,7 +173,7 @@ strong {
 // Global text selection color — use the same neutral fill tone across
 // code, terminal, chat, markdown, and form surfaces.
 ::selection {
-  background: var(--color-fill-2);
+  background: var(--terminal-selection, var(--color-fill-2));
 }
 
 .cm-editor .cm-content {

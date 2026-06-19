@@ -212,8 +212,11 @@
   pre span::selection,
   code::selection,
   code span::selection {
-    background: var(--color-primary-1) !important;
-    background-color: var(--color-primary-1) !important;
+    background: var(--terminal-selection, var(--color-primary-1)) !important;
+    background-color: var(
+      --terminal-selection,
+      var(--color-primary-1)
+    ) !important;
   }
 
   .chat-markdown-body {
