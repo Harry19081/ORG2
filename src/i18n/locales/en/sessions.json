@@ -1825,7 +1825,9 @@
       "uploadImage": "Upload image",
       "mode": "Mode",
       "models": "Models",
-      "skills": "Skills"
+      "skills": "Skills",
+      "workspaceSkills": "Workspace Skills",
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Git Actions",
