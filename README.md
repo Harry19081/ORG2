@@ -34,6 +34,8 @@ ORG-II explores a different model: agents as persistent, observable colleagues i
 
 ## Download
 
+Current build version: v1.0.1.20 (2026-06-19)
+
 Get the latest ORGII desktop app from the [Releases](https://github.com/YORG-AI/ORGII/releases) page. Open the newest release, download the installer or app bundle for your platform, and follow the OS prompts to install ORGII.
 
 ## Develop from source
