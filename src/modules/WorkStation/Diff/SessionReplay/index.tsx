@@ -355,7 +355,10 @@ const SessionReplayDiff: React.FC<SimulatorAppProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [sessionId]);
+    // `diffRefreshNonce` re-runs this load on each chat→Diff navigation so files
+    // edited after the first load (the canonical final diffs grow as the agent
+    // keeps working) appear without needing a session switch.
+  }, [sessionId, diffRefreshNonce]);
 
   useEffect(() => {
     if (!sessionId) {
