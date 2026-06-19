@@ -112,6 +112,9 @@
       "byAgent": "Nach Agent",
       "byWorkspace": "Nach Workspace"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "Unbenannte Session",
       "enterSessionName": "Sessionsname eingeben"

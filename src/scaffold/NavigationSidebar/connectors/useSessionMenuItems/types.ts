@@ -11,6 +11,7 @@ export interface UseSessionMenuItemsParams {
   untitledSession: string;
   searchQuery?: string;
   selectedOrgId?: string;
+  includeExternal: boolean;
   groupVisibleCounts: ReadonlyMap<string, number>;
 }
 

@@ -112,6 +112,9 @@
       "byAgent": "Por Agent",
       "byWorkspace": "Por Workspace"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "Session sin título",
       "enterSessionName": "Ingrese el nombre de la Session"

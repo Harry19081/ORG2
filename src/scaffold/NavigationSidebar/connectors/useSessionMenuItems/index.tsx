@@ -13,6 +13,7 @@ import {
   type SessionListCategory,
   sessionPaginationAtom,
 } from "@src/store/session";
+import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 import { getSessionSearchText } from "@src/util/session/sessionSearch";
 import { isPrimarySessionListSession } from "@src/util/session/sessionVisibility";
 
@@ -54,6 +55,7 @@ export function useSessionMenuItems({
   untitledSession,
   searchQuery = "",
   selectedOrgId,
+  includeExternal,
   groupVisibleCounts,
 }: UseSessionMenuItemsParams): UseSessionMenuItemsResult {
   const { t: tCommon } = useTranslation();
@@ -113,6 +115,7 @@ export function useSessionMenuItems({
         const sessionOrgId = session.orgId ?? DEFAULT_SESSION_ORG_ID;
         return (
           isPrimarySessionListSession(session) &&
+          (includeExternal || !isImportedHistorySession(session.session_id)) &&
           (!selectedOrgId || sessionOrgId === selectedOrgId) &&
           !benchmarkChildSessionIds.has(session.session_id) &&
           !benchmarkHistoryChildSessionIds.has(session.session_id) &&
@@ -123,6 +126,7 @@ export function useSessionMenuItems({
       benchmarkChildSessionIds,
       benchmarkCoordinatorSessionIds,
       benchmarkHistoryChildSessionIds,
+      includeExternal,
       selectedOrgId,
       sortedSessions,
     ]

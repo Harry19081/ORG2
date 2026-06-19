@@ -112,6 +112,9 @@
       "byAgent": "Według Agenta",
       "byWorkspace": "Według Workspace"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "Sesja bez nazwy",
       "enterSessionName": "Wpisz nazwę sesji"

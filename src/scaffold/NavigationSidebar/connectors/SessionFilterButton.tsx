@@ -27,9 +27,11 @@ import { GROUP_BY_MODES } from "./types";
 
 interface SessionFilterButtonProps {
   groupByMode: string;
+  includeExternal: boolean;
   groupByModes?: readonly string[];
   getGroupByLabel?: (mode: string) => string;
   onSelect: (mode: string) => void;
+  onToggleIncludeExternal: (includeExternal: boolean) => void;
   /** Collapse every section in the sidebar. */
   onCollapseAll?: () => void;
   /** Mark all currently-loaded sessions as visited. */
@@ -46,9 +48,11 @@ interface SessionFilterButtonProps {
 export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
   ({
     groupByMode,
+    includeExternal,
     groupByModes = GROUP_BY_MODES,
     getGroupByLabel,
     onSelect,
+    onToggleIncludeExternal,
     onCollapseAll,
     onMarkAllRead,
     onRefreshSessions,
@@ -79,6 +83,10 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
       },
       [onSelect, close]
     );
+
+    const handleToggleIncludeExternal = useCallback(() => {
+      onToggleIncludeExternal(!includeExternal);
+    }, [includeExternal, onToggleIncludeExternal]);
 
     const handleCollapseAll = useCallback(() => {
       onCollapseAll?.();
@@ -179,6 +187,15 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
                     </button>
                   );
                 })}
+                <div className={DROPDOWN_CLASSES.menuSeparator} />
+                <button
+                  type="button"
+                  className={`${DROPDOWN_CLASSES.item} ${includeExternal ? DROPDOWN_CLASSES.itemSelected : DROPDOWN_CLASSES.itemHover} w-full justify-between text-left`}
+                  onClick={handleToggleIncludeExternal}
+                >
+                  <span>{t("sidebar.filters.includeExternal")}</span>
+                  {includeExternal && <DropdownSelectedCheck />}
+                </button>
                 {hasExtraActions && (
                   <>
                     <div className={DROPDOWN_CLASSES.menuSeparator} />

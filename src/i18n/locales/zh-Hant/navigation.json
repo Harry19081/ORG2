@@ -112,6 +112,9 @@
       "byAgent": "按 Agent",
       "byWorkspace": "按工作區"
     },
+    "filters": {
+      "includeExternal": "包含外部"
+    },
     "defaults": {
       "untitledSession": "未命名 Session",
       "enterSessionName": "輸入 Session 名稱"

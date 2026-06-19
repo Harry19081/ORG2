@@ -17,8 +17,10 @@ import {
 
 const STORAGE_KEY = "orgii:sidebarGroupBy";
 const PROJECTS_STORAGE_KEY = "orgii:projectsSidebarGroupBy";
+const INCLUDE_EXTERNAL_STORAGE_KEY = "orgii:sidebarIncludeExternal";
 const DEFAULT_MODE: GroupByMode = "byTime";
 const DEFAULT_PROJECTS_MODE: ProjectsGroupByMode = "byOrg";
+const DEFAULT_INCLUDE_EXTERNAL = true;
 
 const KNOWN_MODES = new Set<GroupByMode>(GROUP_BY_MODES);
 const KNOWN_PROJECTS_MODES = new Set<ProjectsGroupByMode>(
@@ -37,6 +39,10 @@ function parseStoredProjects(raw: unknown): ProjectsGroupByMode {
     return raw as ProjectsGroupByMode;
   }
   return DEFAULT_PROJECTS_MODE;
+}
+
+function parseStoredBoolean(raw: unknown): boolean {
+  return typeof raw === "boolean" ? raw : DEFAULT_INCLUDE_EXTERNAL;
 }
 
 function createStorage<T>(parseValue: (raw: unknown) => T) {
@@ -77,3 +83,11 @@ export const projectsSidebarGroupByAtom = atomWithStorage<ProjectsGroupByMode>(
   { getOnInit: true }
 );
 projectsSidebarGroupByAtom.debugLabel = "projectsSidebarGroupByAtom";
+
+export const sidebarIncludeExternalAtom = atomWithStorage<boolean>(
+  INCLUDE_EXTERNAL_STORAGE_KEY,
+  DEFAULT_INCLUDE_EXTERNAL,
+  createStorage(parseStoredBoolean),
+  { getOnInit: true }
+);
+sidebarIncludeExternalAtom.debugLabel = "sidebarIncludeExternalAtom";
