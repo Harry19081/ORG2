@@ -41,16 +41,14 @@ import {
   type SubmissionsData,
   deriveSubmissionsData,
 } from "./SubmissionsContent";
-import { collectSubmissionArtifacts } from "./submissionsArtifacts";
+import {
+  type SubmissionRepoContext,
+  collectSubmissionArtifacts,
+} from "./submissionsArtifacts";
 
 const logger = createLogger("useSubmissionsData");
 
 const SUBMISSION_COMMIT_RESOLVE_LIMIT = 200;
-
-export interface SubmissionRepoContext {
-  repoId?: string;
-  repoPath?: string;
-}
 
 interface UseSubmissionsDataParams {
   sessionId: string | undefined;

@@ -19,7 +19,11 @@ import type {
   SubmissionArtifact,
   SubmissionArtifactOrigin,
 } from "./SubmissionsContent";
-import type { SubmissionRepoContext } from "./useSubmissionsData";
+
+export interface SubmissionRepoContext {
+  repoId?: string;
+  repoPath?: string;
+}
 
 function hasRepoContext(context: SubmissionRepoContext | null): boolean {
   return Boolean(context?.repoId || context?.repoPath);
