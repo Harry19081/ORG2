@@ -9,22 +9,26 @@ import type { WorkstationSidebarKey } from "./types";
 interface UseSidebarBottomRightActionsParams {
   activeSidebarKey: WorkstationSidebarKey;
   groupByMode: GroupByMode;
+  includeExternal: boolean;
   handleCollapseAll: () => void;
   handleCollapseAllActiveSections: () => void;
   handleMarkAllRead: () => void;
   handleRefreshSessions: () => void;
   setGroupByMode: (mode: GroupByMode) => void;
+  setIncludeExternal: (includeExternal: boolean) => void;
   t: TFunction<"navigation">;
 }
 
 export function useSidebarBottomRightActions({
   activeSidebarKey,
   groupByMode,
+  includeExternal,
   handleCollapseAll,
   handleCollapseAllActiveSections,
   handleMarkAllRead,
   handleRefreshSessions,
   setGroupByMode,
+  setIncludeExternal,
   t,
 }: UseSidebarBottomRightActionsParams): React.ReactNode {
   const handleSessionGroupBySelect = useCallback(
@@ -58,7 +62,9 @@ export function useSidebarBottomRightActions({
   return (
     <SessionFilterButton
       groupByMode={groupByMode}
+      includeExternal={includeExternal}
       onSelect={handleSessionGroupBySelect}
+      onToggleIncludeExternal={setIncludeExternal}
       onCollapseAll={handleCollapseAll}
       onMarkAllRead={handleMarkAllRead}
       onRefreshSessions={handleRefreshSessions}

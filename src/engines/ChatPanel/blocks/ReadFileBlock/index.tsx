@@ -18,7 +18,6 @@ import {
 } from "@src/engines/SessionCore/rendering/registry";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
 import { getFileName } from "@src/util/file/pathUtils";
-import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
 import { extractSkillNameFromPath } from "@src/util/skills/skillPath";
 
 import EventFileHoverPreview from "../EventFileHoverPreview";
@@ -40,12 +39,15 @@ export type ReadFileBlockProps = UniversalEventProps & {
 export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
   const { eventId, status } = props;
 
-  const { filePath, fileName } = useMemo(() => extractFileData(props), [props]);
+  const { filePath, fileName, lineCount, startLine } = useMemo(
+    () => extractFileData(props),
+    [props]
+  );
 
-  const displayPath = formatRepoPathForDisplay({
-    path: filePath,
-    repoPath: props.repoPath,
-  });
+  const lineRange =
+    startLine !== undefined && lineCount !== undefined
+      ? `${startLine}-${startLine + lineCount - 1}`
+      : undefined;
   const baseName = fileName || getFileName(filePath) || "file";
   const skillName = useMemo(
     () => extractSkillNameFromPath(filePath),
@@ -53,7 +55,6 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
   );
   const isSkill = Boolean(skillName);
   const displayName = skillName || baseName;
-  const fullPathTitle = displayPath.title || filePath || fileName || "file";
   const iconName = baseName;
   const isLoading =
     status === "running" && props.showActiveEventPainting === true;
@@ -92,10 +93,7 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
   );
 
   const content = (
-    <div
-      className={`${getEventBlockContainerClasses(false)} animate-fade-in`}
-      title={fullPathTitle}
-    >
+    <div className={`${getEventBlockContainerClasses(false)} animate-fade-in`}>
       <EventBlockHeader
         isCollapsed
         withHover={false}
@@ -121,7 +119,6 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
         </EventBlockHeaderTitle>
         <EventBlockHeaderSubtitle
           isLoading={isLoading}
-          title={displayName}
           className={isFailed ? "text-text-3" : "text-text-1"}
         >
           {!isSkill && (
@@ -137,6 +134,14 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
           >
             {displayName}
           </span>
+          {lineRange && !isSkill && (
+            <span
+              data-testid="read-file-line-range"
+              className={`ml-2 shrink-0 ${isLoading ? EVENT_LOADING_SHIMMER_TEXT_CLASSES : "text-text-4"}`.trim()}
+            >
+              {lineRange}
+            </span>
+          )}
         </EventBlockHeaderSubtitle>
       </EventBlockHeader>
     </div>

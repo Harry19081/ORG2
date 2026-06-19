@@ -112,6 +112,9 @@
       "byAgent": "По Agent",
       "byWorkspace": "По Workspace"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "Session без названия",
       "enterSessionName": "Введите название Session"

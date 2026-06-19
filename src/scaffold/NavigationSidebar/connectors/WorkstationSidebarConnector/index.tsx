@@ -65,7 +65,10 @@ import { SidebarBottomBar } from "../../blocks";
 import NavigationSidebar from "../../variants/NavigationSidebar";
 import SidebarOrgSelector from "../SidebarOrgSelector";
 import { COLLAB_ADD_ORG_MENU_ITEM_ID } from "../sidebarConnectorUtils";
-import { sidebarGroupByAtom } from "../sidebarGroupByAtom";
+import {
+  sidebarGroupByAtom,
+  sidebarIncludeExternalAtom,
+} from "../sidebarGroupByAtom";
 import { useProjectsWorkItemMenuItems } from "../useProjectsWorkItemMenuItems";
 import { useRenameSessionModal } from "../useRenameSessionModal";
 import { useSessionMenuItems } from "../useSessionMenuItems";
@@ -248,6 +251,9 @@ export const WorkstationSidebarConnector: React.FC = () => {
   );
 
   const [groupByMode, setGroupByMode] = useAtom(sidebarGroupByAtom);
+  const [includeExternal, setIncludeExternal] = useAtom(
+    sidebarIncludeExternalAtom
+  );
   const [groupVisibleCounts, setGroupVisibleCounts] = useState<
     Map<string, number>
   >(new Map());
@@ -322,6 +328,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       untitledSession,
       searchQuery: sidebarSearchQueries.workstation,
       selectedOrgId: activeOrgId,
+      includeExternal,
       groupVisibleCounts,
     });
   const {
@@ -716,11 +723,13 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const sidebarBottomRightActions = useSidebarBottomRightActions({
     activeSidebarKey,
     groupByMode,
+    includeExternal,
     handleCollapseAll,
     handleCollapseAllActiveSections,
     handleMarkAllRead,
     handleRefreshSessions,
     setGroupByMode,
+    setIncludeExternal,
     t,
   });
 

@@ -1,5 +1,5 @@
 import { ArrowDown } from "lucide-react";
-import React, { memo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { AgentOrgMemberIntervention } from "@src/api/tauri/agent";
@@ -29,6 +29,7 @@ import CompactFileChanges, {
 import CursorIdeFocusPoller from "./InputArea/components/CursorIdeFocusPoller";
 import QueueEditModeCard from "./InputArea/components/QueueEditModeCard";
 import QueuedMessages from "./InputArea/components/QueuedMessages";
+import { createFileInlineSection } from "./InputArea/hooks/useComposerSections";
 import type { QueueEditInputAreaProps } from "./InputArea/hooks/useQueueEditMode";
 import CreatePlanCard from "./blocks/CreatePlanCard";
 import type {
@@ -83,7 +84,8 @@ interface ChatFloatingComposerProps {
   onToggleQueue: () => void;
   onToggleProcess: () => void;
   onProcessVisibleCountChange: (count: number) => void;
-  onFileChangeStatsChange: (stats: FileChangeVisibleStats) => void;
+  onFilesExpand: () => void;
+  filesMenu?: React.ReactNode;
   initialFileChanges?: FileChangesResult;
   /** Idle-reload signal for the files pill (session/round/idle transitions). */
   filesReloadKey: string;
@@ -132,7 +134,8 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     onToggleQueue,
     onToggleProcess,
     onProcessVisibleCountChange,
-    onFileChangeStatsChange,
+    onFilesExpand,
+    filesMenu,
     initialFileChanges,
     filesReloadKey,
     groupChatPendingMessage,
@@ -150,7 +153,40 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     disableStopWhenEmpty = false,
   }) => {
     const { t } = useTranslation("sessions");
-    const showTopRowPills = hasAnyInlineSection || scrollNav?.showFollowAgent;
+    const [fileChangeStats, setFileChangeStatsState] =
+      useState<FileChangeVisibleStats>({
+        count: 0,
+        additions: 0,
+        deletions: 0,
+      });
+    const [prevInputAreaSessionId, setPrevInputAreaSessionId] =
+      useState(inputAreaSessionId);
+    if (inputAreaSessionId !== prevInputAreaSessionId) {
+      setPrevInputAreaSessionId(inputAreaSessionId);
+      setFileChangeStatsState({ count: 0, additions: 0, deletions: 0 });
+    }
+    const setFileChangeStats = useCallback((next: FileChangeVisibleStats) => {
+      setFileChangeStatsState((current) =>
+        current.count === next.count &&
+        current.additions === next.additions &&
+        current.deletions === next.deletions
+          ? current
+          : next
+      );
+    }, []);
+
+    const localInlineSections = useMemo<InlineSection[]>(() => {
+      const fileSection = createFileInlineSection({
+        fileChangeStats,
+        onFilesExpand,
+        filesMenu,
+      });
+      return fileSection ? [...inlineSections, fileSection] : inlineSections;
+    }, [fileChangeStats, filesMenu, inlineSections, onFilesExpand]);
+
+    const hasLocalInlineSection =
+      hasAnyInlineSection || fileChangeStats.count > 0;
+    const showTopRowPills = hasLocalInlineSection || scrollNav?.showFollowAgent;
     const trailingScrollButton = scrollNav?.showScrollToBottom ? (
       <Button
         variant="secondary"
@@ -245,7 +281,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             sessionIdOverride={inputAreaSessionId}
             initialData={initialFileChanges}
             reloadKey={filesReloadKey}
-            onVisibleStatsChange={onFileChangeStatsChange}
+            onVisibleStatsChange={setFileChangeStats}
           />
 
           <QueueEditModeCard />
@@ -275,7 +311,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             topRowPills={
               showTopRowPills ? (
                 <CollapsedInlineRow
-                  sections={inlineSections}
+                  sections={localInlineSections}
                   scrollNav={scrollNav}
                 />
               ) : null

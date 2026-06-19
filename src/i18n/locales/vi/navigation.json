@@ -112,6 +112,9 @@
       "byAgent": "Theo Agent",
       "byWorkspace": "Theo Workspace"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "Session chưa đặt tên",
       "enterSessionName": "Nhập tên Session"

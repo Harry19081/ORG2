@@ -112,6 +112,9 @@
       "byAgent": "Agent 別",
       "byWorkspace": "Workspace 別"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "無題のSession",
       "enterSessionName": "Session名を入力"

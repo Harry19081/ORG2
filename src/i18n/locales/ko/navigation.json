@@ -112,6 +112,9 @@
       "byAgent": "Agent 별",
       "byWorkspace": "Workspace 별"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "제목 없는 Session",
       "enterSessionName": "Session 이름 입력"

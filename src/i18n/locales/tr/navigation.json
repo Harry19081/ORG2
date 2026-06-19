@@ -112,6 +112,9 @@
       "byAgent": "Agent'a göre",
       "byWorkspace": "Workspace'e göre"
     },
+    "filters": {
+      "includeExternal": "Include External"
+    },
     "defaults": {
       "untitledSession": "Başlıksız Session",
       "enterSessionName": "Session adını girin"
