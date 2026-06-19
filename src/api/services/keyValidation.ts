@@ -71,10 +71,12 @@ export async function validateKey(
 ): Promise<ValidationResult> {
   return rpc.validation.validateKey({
     agentType,
-    apiKey,
-    baseUrl: baseUrl ?? null,
-    sessionToken: sessionToken ?? null,
-    testModel: testModel ?? null,
+    // Trim the mandatory API key
+    apiKey: apiKey.trim(),
+    // Safely trim optional strings before falling back to null
+    baseUrl: baseUrl?.trim() ?? null,
+    sessionToken: sessionToken?.trim() ?? null,
+    testModel: testModel?.trim() ?? null,
   });
 }
 
@@ -89,9 +91,10 @@ export async function testModelAvailability(
   agentType: ModelType
 ): Promise<{ available: boolean; message: string }> {
   return rpc.validation.testModelAvailability({
-    apiKey,
-    baseUrl,
-    model,
+    // Trim all incoming string parameters
+    apiKey: apiKey.trim(),
+    baseUrl: baseUrl.trim(),
+    model: model.trim(),
     agentType,
   });
 }
@@ -103,7 +106,7 @@ export async function fetchKeyQuota(
 ): Promise<QuotaInfo> {
   return rpc.validation.fetchKeyQuota({
     agentType,
-    apiKey,
+    apiKey: apiKey.trim(),
   });
 }
 
