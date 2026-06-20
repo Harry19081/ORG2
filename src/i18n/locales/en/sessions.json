@@ -383,15 +383,6 @@
           "viewStructured": "Structured",
           "viewRaw": "Raw",
           "emptySelectCommand": "Select a command to view"
-        },
-        "eventFilters": {
-          "all": "All events",
-          "keyInteractions": "Key interactions",
-          "fileChanges": "File changes",
-          "terminal": "Terminal events",
-          "explore": "Explore",
-          "other": "Other",
-          "selectedCount": "{{count}} filters"
         }
       },
       "diffApp": {
