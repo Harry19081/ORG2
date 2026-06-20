@@ -198,6 +198,7 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                     categories={categories}
                     maxTokens={maxTokens}
                     hoveredKey={hoveredKey}
+                    fallbackPercentage={percentage}
                   />
                 </div>
               </div>
