@@ -1,4 +1,4 @@
-# ORG-II
+# ORG-2
 
 **Open-source Cursor-style agent IDE — but built for reviewability, traceability, and control, not just faster coding.**
 
