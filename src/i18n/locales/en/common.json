@@ -1304,6 +1304,7 @@
         "nonCoding": "Workspace",
         "pinned": "Pinned",
         "current": "Current",
+        "recent": "Recent",
         "repo": "Repositories",
         "systemPaths": "System Paths",
         "usedElsewhere": "Used elsewhere",

@@ -377,15 +377,6 @@
           "viewStructured": "结构化",
           "viewRaw": "原始",
           "emptySelectCommand": "选择一条命令以查看"
-        },
-        "eventFilters": {
-          "all": "全部事件",
-          "keyInteractions": "关键交互",
-          "fileChanges": "文件变更",
-          "terminal": "终端事件",
-          "explore": "探索",
-          "other": "其他",
-          "selectedCount": "{{count}} 个筛选"
         }
       },
       "diffApp": {

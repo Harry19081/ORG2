@@ -1240,6 +1240,7 @@
         "nonCoding": "工作区",
         "pinned": "固定",
         "current": "当前",
+        "recent": "最近",
         "repo": "仓库",
         "systemPaths": "系统路径",
         "usedElsewhere": "在其他位置使用",
