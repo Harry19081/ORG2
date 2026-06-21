@@ -46,11 +46,6 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
   );
   const totalTerminalBufferBytes =
     snapshot.terminalBufferBytes + terminalPtyBufferBytes;
-  const webkitCategories = new Set<string>([
-    CHILD_PROCESS_CATEGORY.WEBVIEW,
-    CHILD_PROCESS_CATEGORY.GPU,
-    CHILD_PROCESS_CATEGORY.NETWORK,
-  ]);
   const tauriWebViewRendererMemoryMb = snapshot.childProcesses
     .filter(
       (childProcess) => childProcess.category === CHILD_PROCESS_CATEGORY.WEBVIEW
@@ -68,9 +63,6 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
     .reduce((sum, childProcess) => sum + childProcess.memory_mb, 0);
   const webkitProcessMemoryMb =
     tauriWebViewRendererMemoryMb + tauriGpuMemoryMb + tauriNetworkMemoryMb;
-  const toolProcessMemoryMb = snapshot.childProcesses
-    .filter((childProcess) => !webkitCategories.has(childProcess.category))
-    .reduce((sum, childProcess) => sum + childProcess.memory_mb, 0);
   const totalAppRamMb = appMemoryMb + webkitProcessMemoryMb;
   const webViewDiagnostics = snapshot.webViewDiagnostics;
   const webViewEstimateBytes =
@@ -101,12 +93,6 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
       label: "WebKit / WebView helpers",
       value: formatMegabytes(webkitProcessMemoryMb),
       bytes: webkitProcessMemoryMb * 1024 * 1024,
-    },
-    {
-      key: "toolHelpersGroup",
-      label: "Terminal & tool helpers",
-      value: formatMegabytes(toolProcessMemoryMb),
-      bytes: toolProcessMemoryMb * 1024 * 1024,
     },
     {
       key: "attributionHintsGroup",
