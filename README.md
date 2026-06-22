@@ -6,6 +6,7 @@
     <a href="https://github.com/yorgai/ORG2/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/yorgai/ORG2/total?style=flat-square&label=downloads" /></a>
     <a href="https://github.com/yorgai/ORG2/commits/develop"><img alt="Last commit" src="https://img.shields.io/github/last-commit/yorgai/ORG2?style=flat-square&label=last%20commit" /></a>
     <a href="https://github.com/yorgai/ORG2/graphs/commit-activity"><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/yorgai/ORG2?style=flat-square&label=commit%20activity" /></a>
+    <a href="https://discord.gg/tvWgAqhCzs"><img alt="Discord" src="https://img.shields.io/badge/Discord-join%20chat-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
   </p>
 </div>
 
@@ -84,6 +85,17 @@ Browser Use and Computer Use features rely on optional native helpers for browse
 Computer Use is currently available on macOS only. Browser Use can use `agent-browser` on supported platforms.
 
 If a sidecar is missing, the Rust build creates a small placeholder resource so development builds can continue. The related capability may fall back to `PATH` or remain unavailable until you run `pnpm run download:sidecars`.
+
+## Community
+
+Have questions, feedback, or want to follow along as ORG-2 evolves? Join us on Discord:
+
+👉 **[discord.gg/tvWgAqhCzs](https://discord.gg/tvWgAqhCzs)**
+
+- **#how-to-use-org2** and **#faq** — get up and running
+- **#announcement** — release news and updates
+- **#lets-chat** — share what you're building and meet the community
+- **#feedback** — ideas, feature requests, and bug reports
 
 ## License
 
