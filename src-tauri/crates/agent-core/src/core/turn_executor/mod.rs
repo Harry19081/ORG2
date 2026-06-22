@@ -703,7 +703,34 @@ pub async fn execute_turn(
                 }
             }
         } else {
-            final_content = response.content;
+            // Terminal non-tool, non-length, non-stream-error iteration.
+            // Normally `response.content` carries the model's final text.
+            // But some stop reasons end the turn with an EMPTY body — most
+            // notably Anthropic `stop_reason=refusal` (mapped to
+            // CONTENT_FILTER), which returns zero content and zero tool calls.
+            // Without a fail-safe here the turn breaks with `final_content =
+            // None`, nothing is persisted, no assistant row is written, and
+            // the UI spinner runs forever. Substitute a user-visible notice so
+            // the turn terminates cleanly and the user knows to retry.
+            let is_empty = response
+                .content
+                .as_ref()
+                .map(|c| c.trim().is_empty())
+                .unwrap_or(true);
+            if is_empty {
+                let notice = if response.finish_reason == finish::CONTENT_FILTER {
+                    "The model declined to respond to this turn (no output was \
+                     produced). This is usually triggered by the content of the \
+                     request — try rephrasing, splitting a large paste into \
+                     smaller parts, or resending."
+                } else {
+                    "The model ended this turn without producing any output. \
+                     You can send a follow-up message to continue."
+                };
+                final_content = Some(notice.to_string());
+            } else {
+                final_content = response.content;
+            }
             break;
         }
     }

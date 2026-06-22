@@ -17,7 +17,15 @@ import {
   isStreamingPlanDraftEvent,
   isSubmittedCreatePlanEvent,
 } from "@src/engines/SessionCore/derived/planDisplayEvents";
+import {
+  extractThinkContent,
+  stripThinkTags,
+} from "@src/engines/SessionCore/sync/adapters/shared/streamingParsers";
 import { normalizeFunctionName } from "@src/lib/activityData/activityNormalizers";
+import {
+  extractAssistantMessageContent,
+  extractTextFromContent,
+} from "@src/lib/activityData/textExtractors";
 
 /**
  * Check if event will render content (pre-filter to avoid wasted renders).
@@ -38,35 +46,51 @@ function hasShellCommand(event: SessionEvent): boolean {
  * suppress empty agent_message wrappers.
  */
 function hasAgentMessageBody(event: SessionEvent): boolean {
-  if (event.isDelta) return true;
-  if (event.displayText && event.displayText.trim()) return true;
-  const result = event.result;
-  if (result) {
-    const observation = result["observation"];
-    if (typeof observation === "string" && observation.trim()) return true;
-    if (
-      observation &&
-      typeof observation === "object" &&
-      typeof (observation as Record<string, unknown>).content === "string" &&
-      ((observation as Record<string, unknown>).content as string).trim()
-    ) {
-      return true;
-    }
-    const content = result["content"];
-    if (typeof content === "string" && content.trim()) return true;
-    if (
-      content &&
-      typeof content === "object" &&
-      typeof (content as Record<string, unknown>).content === "string" &&
-      ((content as Record<string, unknown>).content as string).trim()
-    ) {
-      return true;
-    }
+  const assistantContent = extractAssistantMessageContent(event);
+  if (assistantContent) {
+    const visibleContent = stripThinkTags(assistantContent).trim();
+    const thinkingContent = extractThinkContent(assistantContent);
+    return Boolean(visibleContent || thinkingContent);
   }
   const taskDescription = event.args?.["task_description"];
   if (typeof taskDescription === "string" && taskDescription.trim())
     return true;
   return false;
+}
+
+function hasRawUserBody(event: SessionEvent): boolean {
+  const messageText = extractTextFromContent(event.result?.["message"]);
+  const contentText = extractTextFromContent(event.result?.["content"]);
+  if (messageText || contentText) return true;
+  const images = event.result?.["images"];
+  return Array.isArray(images) && images.length > 0;
+}
+
+function hasThinkingBody(event: SessionEvent): boolean {
+  const thought = event.result?.["thought"];
+  const content = event.result?.["content"];
+  const observation = event.result?.["observation"];
+  const argsContent = event.args?.["content"];
+
+  return !!(
+    (typeof thought === "string" && thought.trim()) ||
+    (typeof content === "string" && content.trim()) ||
+    (typeof observation === "string" && observation.trim()) ||
+    (typeof argsContent === "string" && argsContent.trim()) ||
+    event.displayText.trim()
+  );
+}
+
+export function hasThinkingEventType(
+  event: SessionEvent,
+  normalized = event.uiCanonical || normalizeFunctionName(event.functionName)
+): boolean {
+  const normalizedActionType = normalizeFunctionName(event.actionType);
+  return (
+    event.displayVariant === "thinking" ||
+    normalized === "thinking" ||
+    normalizedActionType === "thinking"
+  );
 }
 
 function hasShellOutput(result: Record<string, unknown>): boolean {
@@ -105,6 +129,13 @@ export function willEventRenderContent(event: SessionEvent): boolean {
   const actionType = event.actionType;
   const functionName = event.functionName;
 
+  // Use pre-computed uiCanonical from ingestion (already normalized)
+  const normalized = event.uiCanonical || normalizeFunctionName(functionName);
+
+  if (hasThinkingEventType(event, normalized)) {
+    return hasThinkingBody(event);
+  }
+
   // Assistant/agent messages render only when they actually carry text
   // (either streaming, displayText, a result body, or a task_description arg).
   // Without this guard, an agent_message whose payload landed only in <think>
@@ -112,8 +143,10 @@ export function willEventRenderContent(event: SessionEvent): boolean {
   // bubble between real messages.
   if (
     actionType === "assistant" ||
+    event.uiCanonical === "assistant_message" ||
     functionName === "assistant_message" ||
-    functionName === "agent_message"
+    functionName === "agent_message" ||
+    (event.source === "assistant" && event.displayVariant === "message")
   ) {
     return hasAgentMessageBody(event);
   }
@@ -122,15 +155,12 @@ export function willEventRenderContent(event: SessionEvent): boolean {
   // message/type in result are suppressed (they'd render as null in ActivityRouter).
   if (actionType === "raw" || actionType === "raw_event") {
     if (event.result?.["type"] === "user" || event.result?.["message"]) {
-      return true;
+      return hasRawUserBody(event);
     }
     if (!functionName) {
       return false;
     }
   }
-
-  // Use pre-computed uiCanonical from ingestion (already normalized)
-  const normalized = event.uiCanonical || normalizeFunctionName(functionName);
 
   // Plan cards have two renderable shapes:
   // - running raw create_plan tool-call args for streaming draft UI

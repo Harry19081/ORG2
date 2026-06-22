@@ -6,13 +6,13 @@ import { willEventRenderContent } from "../filters";
 
 describe("willEventRenderContent", () => {
   describe("raw_event handling", () => {
-    it("returns true for raw_event with result.type=user", () => {
+    it("returns false for raw_event with result.type=user but no body", () => {
       const event = makeSessionEvent({
         action_type: "raw_event",
         function: "",
         result: { type: "user" },
       });
-      expect(willEventRenderContent(event)).toBe(true);
+      expect(willEventRenderContent(event)).toBe(false);
     });
 
     it("returns true for raw_event with result.message", () => {
@@ -21,6 +21,18 @@ describe("willEventRenderContent", () => {
         function: "",
         result: {
           message: { role: "user", content: "hello" },
+        },
+      });
+      expect(willEventRenderContent(event)).toBe(true);
+    });
+
+    it("returns true for raw_event with user images", () => {
+      const event = makeSessionEvent({
+        action_type: "raw_event",
+        function: "",
+        result: {
+          type: "user",
+          images: ["data:image/png;base64,abc"],
         },
       });
       expect(willEventRenderContent(event)).toBe(true);
@@ -40,6 +52,103 @@ describe("willEventRenderContent", () => {
         action_type: "raw_event",
         function: "read_file",
         result: {},
+      });
+      expect(willEventRenderContent(event)).toBe(true);
+    });
+  });
+
+  describe("assistant message handling", () => {
+    it("returns false for assistant message display events without body", () => {
+      const event = makeSessionEvent({
+        action_type: "raw_event",
+        function: "",
+        source: "assistant",
+        displayVariant: "message",
+        result: {},
+      });
+      expect(willEventRenderContent(event)).toBe(false);
+    });
+
+    it("returns true for assistant message display events with body", () => {
+      const event = makeSessionEvent({
+        action_type: "raw_event",
+        function: "",
+        source: "assistant",
+        displayVariant: "message",
+        result: { content: "assistant reply" },
+      });
+      expect(willEventRenderContent(event)).toBe(true);
+    });
+  });
+
+  describe("thinking events", () => {
+    it("returns false for empty thinking events", () => {
+      const event = makeSessionEvent({
+        action_type: "llm_thinking",
+        function: "thinking",
+        displayVariant: "thinking",
+        result: {},
+      });
+      expect(willEventRenderContent(event)).toBe(false);
+    });
+
+    it("returns false for whitespace-only thinking events", () => {
+      const event = makeSessionEvent({
+        action_type: "llm_thinking",
+        function: "thinking",
+        displayVariant: "thinking",
+        result: { thought: "  \n  ", content: "" },
+      });
+      expect(willEventRenderContent(event)).toBe(false);
+    });
+
+    it("returns false for empty actionType-only thinking delta events", () => {
+      const event = makeSessionEvent({
+        action_type: "llm_thinking_delta",
+        function: "",
+        result: {},
+      });
+      expect(willEventRenderContent(event)).toBe(false);
+    });
+
+    it("returns false for empty thinking events even when source is assistant", () => {
+      const event = makeSessionEvent({
+        action_type: "llm_thinking_delta",
+        function: "thinking",
+        source: "assistant",
+        displayVariant: "thinking",
+        result: {},
+      });
+      expect(willEventRenderContent(event)).toBe(false);
+    });
+
+    it("returns false for whitespace-only assistant thinking events", () => {
+      const event = makeSessionEvent({
+        action_type: "llm_thinking_delta",
+        function: "thinking",
+        source: "assistant",
+        displayText: "  \n  ",
+        displayVariant: "thinking",
+        result: { observation: "  \n  " },
+      });
+      expect(willEventRenderContent(event)).toBe(false);
+    });
+
+    it("returns true for actionType-only thinking delta events with content", () => {
+      const event = makeSessionEvent({
+        action_type: "llm_thinking_delta",
+        function: "",
+        result: { observation: "I should inspect git history." },
+      });
+      expect(willEventRenderContent(event)).toBe(true);
+    });
+
+    it("returns true for thinking events with thought content", () => {
+      const event = makeSessionEvent({
+        action_type: "llm_thinking",
+        function: "thinking",
+        displayVariant: "thinking",
+        result: { thought: "I should inspect git history." },
       });
       expect(willEventRenderContent(event)).toBe(true);
     });
@@ -339,7 +448,7 @@ describe("willEventRenderContent", () => {
       expect(willEventRenderContent(event)).toBe(true);
     });
 
-    it("returns true for streaming delta even without body", () => {
+    it("returns false for streaming delta without body", () => {
       const event = {
         ...makeSessionEvent({
           action_type: "assistant",
@@ -348,7 +457,7 @@ describe("willEventRenderContent", () => {
         }),
         isDelta: true,
       };
-      expect(willEventRenderContent(event)).toBe(true);
+      expect(willEventRenderContent(event)).toBe(false);
     });
 
     it("returns true when only result.content is populated", () => {
@@ -388,9 +497,25 @@ describe("willEventRenderContent", () => {
       expect(willEventRenderContent(event)).toBe(false);
     });
 
-    it("returns false for an agent_message whose only text was inside <think> tags", () => {
-      // After stripping <think>...</think> the rendered content is empty, so
-      // displayText that consists only of whitespace should still be filtered.
+    it("returns false for an agent_message whose only text is empty <think> content", () => {
+      const event = makeSessionEvent({
+        action_type: "assistant",
+        function: "agent_message",
+        result: { observation: "<think>  \n  </think>" },
+      });
+      expect(willEventRenderContent(event)).toBe(false);
+    });
+
+    it("returns true for an agent_message whose only text is non-empty <think> content", () => {
+      const event = makeSessionEvent({
+        action_type: "assistant",
+        function: "agent_message",
+        result: { observation: "<think>I need to inspect the repo.</think>" },
+      });
+      expect(willEventRenderContent(event)).toBe(true);
+    });
+
+    it("returns false for an agent_message whose visible text is whitespace", () => {
       const event = makeSessionEvent({
         action_type: "assistant",
         function: "agent_message",

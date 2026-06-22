@@ -18,6 +18,7 @@ import {
 import { createLogger } from "@src/hooks/logger";
 import { getRegistryEventType } from "@src/lib/activityData/activityNormalizers";
 import {
+  extractAssistantMessageContent,
   extractTextFromContent,
   isOrchestratorSystemPrompt,
 } from "@src/lib/activityData/textExtractors";
@@ -26,7 +27,6 @@ import AgentChatItemDefault from "../ChatItems/AgentChatItemDefault";
 import AgentErrorChatItem from "../ChatItems/AgentErrorChatItem";
 import "./ActivityRouter.scss";
 import { isAgentErrorEvent } from "./chatItemPipeline/classifiers";
-import CollapsedNarrationBlock from "./components/CollapsedNarrationBlock";
 import UserMessageContent from "./components/UserMessageContent";
 
 const log = createLogger("ActivityRouter");
@@ -39,12 +39,6 @@ export interface ActivityChatItemProps {
   status?: ActivityStatus;
   /** Pass true when the caller is in live-playback mode (e.g. subagent grid replay). */
   isStreaming?: boolean;
-  /**
-   * Main-chat only: when true this assistant message is mid-turn narration
-   * (followed by a tool call) and should render de-emphasised inside a
-   * collapsible think-style block instead of full-brightness prose.
-   */
-  collapsedNarration?: boolean;
 }
 
 // ============================================
@@ -88,9 +82,6 @@ function arePropsEqual(
   if (prevProps.itemIndex !== nextProps.itemIndex) return false;
   if (prevProps.status !== nextProps.status) return false;
   if (prevProps.isStreaming !== nextProps.isStreaming) return false;
-  if (prevProps.collapsedNarration !== nextProps.collapsedNarration) {
-    return false;
-  }
 
   const prevEvent = prevProps.event;
   const nextEvent = nextProps.event;
@@ -144,15 +135,6 @@ const ActivityLoadingFallback: React.FC = () => (
   <div className="h-8 animate-pulse rounded bg-fill-2" />
 );
 
-function getAssistantMessageContent(event: SessionEvent): string | null {
-  const text =
-    extractTextFromContent(event.result?.message) ||
-    extractTextFromContent(event.result?.observation) ||
-    extractTextFromContent(event.result?.content) ||
-    extractTextFromContent(event.displayText);
-  return text?.trim() ? text : null;
-}
-
 /**
  * uiCanonical values that carry their own dedicated chat renderer AND are
  * NOT assistant prose, even though the producing event is stamped
@@ -163,6 +145,10 @@ function getAssistantMessageContent(event: SessionEvent): string | null {
  * registered card component.
  */
 const DEDICATED_NON_MESSAGE_CANONICALS = new Set(["rate_limit_hint"]);
+
+function isSyntheticLiveAssistantEvent(event: SessionEvent): boolean {
+  return event.args?.syntheticLive === true;
+}
 
 function isAssistantMessageLikeEvent(
   event: SessionEvent,
@@ -226,13 +212,7 @@ class ActivityErrorBoundary extends React.Component<
 // ============================================
 
 const ActivityChatItem: React.FC<ActivityChatItemProps> = memo(
-  ({
-    event,
-    itemIndex = 0,
-    status = "agent",
-    isStreaming = false,
-    collapsedNarration = false,
-  }) => {
+  ({ event, itemIndex = 0, status = "agent", isStreaming = false }) => {
     const userMessageText = useMemo((): string | null => {
       const actionType = event.actionType;
       if (actionType !== "raw" && actionType !== "raw_event") return null;
@@ -273,12 +253,12 @@ const ActivityChatItem: React.FC<ActivityChatItemProps> = memo(
         );
       }
 
-      if (isAssistantMessageLikeEvent(event, eventType)) {
-        const assistantContent = getAssistantMessageContent(event);
+      if (
+        isAssistantMessageLikeEvent(event, eventType) &&
+        !isSyntheticLiveAssistantEvent(event)
+      ) {
+        const assistantContent = extractAssistantMessageContent(event);
         if (assistantContent) {
-          if (collapsedNarration && !isStreaming) {
-            return <CollapsedNarrationBlock content={assistantContent} />;
-          }
           return (
             <AgentMessageBlock>
               <AgentChatItemDefault
@@ -302,10 +282,10 @@ const ActivityChatItem: React.FC<ActivityChatItemProps> = memo(
       }
 
       if (actionType === "raw" || actionType === "raw_event") {
-        if (userMessageText) {
+        if (userMessageText || userMessageImages?.length) {
           return (
             <UserMessageContent
-              text={userMessageText}
+              text={userMessageText ?? ""}
               images={userMessageImages}
             />
           );

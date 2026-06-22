@@ -37,6 +37,30 @@ import type {
 
 const log = createLogger("useSubmitMessage");
 
+/**
+ * Strip the `::<base64>` payload from serialized context pills
+ * (`[paste:path::encoded]` → `[paste:path]`).
+ *
+ * `serializePillNode` embeds the pill's stored text as a base64 blob so the
+ * composer can round-trip it back into an editable pill (drafts / edit mode).
+ * That blob is editor-internal — the LLM must never see it. The submit flow
+ * already re-attaches each context pill's *plaintext* as a fenced ```block```
+ * (see `contextBlocks` below), so leaving the base64 in the agent content both
+ * duplicates the payload AND feeds the model a multi-KB opaque token soup —
+ * which has triggered Anthropic `stop_reason=refusal` (empty response, turn
+ * ends with no output). We keep the lightweight `[paste:path]` reference so the
+ * fenced block still has an anchor, but drop the blob.
+ */
+const CONTEXT_PILL_TYPE_ALTERNATION =
+  "paste|terminal|browser|workitem|dom-element|pr";
+const CONTEXT_PILL_BASE64_REGEX = new RegExp(
+  `\\[(${CONTEXT_PILL_TYPE_ALTERNATION}):([^\\]]+?)::[A-Za-z0-9+/=]+\\]`,
+  "g"
+);
+export function stripContextPillBase64(text: string): string {
+  return text.replace(CONTEXT_PILL_BASE64_REGEX, "[$1:$2]");
+}
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -184,7 +208,12 @@ export function useSubmitMessage({
         refs.composerInputRef.current.getTerminalPillTexts();
       const terminalEntries = Object.entries(terminalTexts);
       let agentContent: string | undefined;
-      const base = hasSkillPills ? skillExpanded : displayText;
+      // The text the LLM sees must not carry the editor-internal `::base64`
+      // pill payload. `displayText` keeps the full serialized form for history
+      // rendering / re-editing; `base` is the agent-facing copy.
+      const base = stripContextPillBase64(
+        hasSkillPills ? skillExpanded : displayText
+      );
       const contextBlocks: string[] = [];
 
       if (terminalEntries.length > 0) {
@@ -223,7 +252,10 @@ export function useSubmitMessage({
 
       if (contextBlocks.length > 0) {
         agentContent = base + "\n\n" + contextBlocks.join("\n\n");
-      } else if (hasSkillPills) {
+      } else if (hasSkillPills || base !== displayText) {
+        // `base !== displayText` means base64 pill payload was stripped — send
+        // the cleaned copy so the LLM never receives the raw blob even if no
+        // context/skill block was produced.
         agentContent = base;
       }
 

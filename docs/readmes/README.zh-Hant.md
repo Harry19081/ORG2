@@ -1,8 +1,36 @@
-# ORG-II
+<div align="center">
+  <h1>ORG-2</h1>
+  <p><strong>開源的 Cursor 風格 Agent IDE——但它為可審查性、可追蹤性與控制而建構，而不只是為了更快寫程式。</strong></p>
+  <p>基於 Rust 與 Tauri 建構，面向 local-first 執行，磁碟占用低於 100MB。支援 Agent 軌跡直播與重播，易於追蹤與審查。</p>
+  <p>
+    <a href="../../LICENSE"><img alt="License" src="https://img.shields.io/github/license/yorgai/ORG2?style=flat-square" /></a>
+    <a href="https://github.com/yorgai/ORG2/releases/latest"><img alt="Downloads" src="https://img.shields.io/github/downloads/yorgai/ORG2/total?style=flat-square&label=downloads" /></a>
+    <a href="https://github.com/yorgai/ORG2/commits/develop"><img alt="Last commit" src="https://img.shields.io/github/last-commit/yorgai/ORG2?style=flat-square&label=last%20commit" /></a>
+    <a href="https://github.com/yorgai/ORG2/graphs/commit-activity"><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/yorgai/ORG2?style=flat-square&label=commit%20activity" /></a>
+  </p>
+</div>
 
-[English](../../README.md) · [Français](README.fr.md) · [简体中文](README.zh.md) · [繁體中文](README.zh-Hant.md) · [Español](README.es.md) · [Русский](README.ru.md) · [Português](README.pt.md) · [Deutsch](README.de.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · [Polski](README.pl.md)
+---
 
-ORG-II 是一個開源的 Agentic 開發框架，基於 Rust 和 Tauri 建構，面向 local-first 執行，磁碟占用低於 100MB。
+<p align="center">
+  <a href="https://github.com/yorgai/ORG2/releases/latest/download/ORG2-latest-mac-apple-silicon.dmg"><strong>macOS Apple Silicon</strong></a>
+  ·
+  <a href="https://github.com/yorgai/ORG2/releases/latest/download/ORG2-latest-windows-x64-setup.exe"><strong>Windows installer</strong></a>
+  ·
+  <a href="https://github.com/yorgai/ORG2/releases/latest/download/ORG2-latest-windows-x64.msi"><strong>Windows MSI</strong></a>
+  ·
+  <a href="https://github.com/yorgai/ORG2/releases/latest"><strong>All latest release assets</strong></a>
+</p>
+
+---
+
+<p align="center">
+  <a href="../../README.md">English</a> · <a href="README.fr.md">Français</a> · <a href="README.zh.md">简体中文</a> · <a href="README.zh-Hant.md">繁體中文</a> · <a href="README.es.md">Español</a> · <a href="README.ru.md">Русский</a> · <a href="README.pt.md">Português</a> · <a href="README.de.md">Deutsch</a> · <a href="README.ja.md">日本語</a> · <a href="README.ko.md">한국어</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.pl.md">Polski</a>
+</p>
+
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a" controls width="720"></video>
+</p>
 
 它不只是另一個 AI 程式開發工具；它是一次關於人類/Agent 組織與組織級對齊的實驗。Agent 正在變得更強，但協作、可觀測性、結構化流程與共享責任並沒有同步跟上——在某些情況下甚至變得更差。Cursor、Claude Code 與類似工具通常把 Agent 當成外包助手：它們對產出很有幫助，但很難在系統層級進行稽核、協調、對齊或演進。
 
@@ -19,14 +47,6 @@ ORG-II 探索另一種模式：把 Agent 視為結構化組織中持久且可觀
 - 支援排程與自動啟動會話，讓 Agent 可以通宵執行，或在你離開時繼續工作。
 - 面向組織級對齊的介面，用於協調人類、Agent、目標與責任歸屬（WIP）。
 - 透過自託管 Supabase 支援會話協作與群組 issue 工作流（WIP）。
-
-## 示範
-
-https://github.com/user-attachments/assets/bd4833d2-4cc4-4971-9805-84529b14d01a
-
-![ORGII GitHub 瀏覽器示範](../../assets/github-browser-demo.png)
-
-![ORGII Agent 排程示範](../../assets/agent-scheduling-demo.png)
 
 ## 下載
 

@@ -31,6 +31,12 @@ const ANTHROPIC_STOP_TOOL_USE: &str = "tool_use";
 // never fires and a mid-thought cut is treated as a normal completion,
 // ending the turn (and flushing any queued messages) prematurely.
 const ANTHROPIC_STOP_MAX_TOKENS: &str = "max_tokens";
+// Model declined to respond (content-safety / refusal stop). Anthropic
+// returns an empty content body with this reason. Map to the unified
+// `finish::CONTENT_FILTER` value so the turn executor's empty-response
+// fail-safe surfaces a user-visible notice instead of ending the turn
+// silently (which leaves the UI spinner running forever).
+const ANTHROPIC_STOP_REFUSAL: &str = "refusal";
 
 /// Per-index accumulator for Anthropic streaming content blocks.
 ///
@@ -138,6 +144,7 @@ pub(super) fn handle_event(
                     ANTHROPIC_STOP_END_TURN => finish::STOP.to_string(),
                     ANTHROPIC_STOP_TOOL_USE => finish::TOOL_CALLS.to_string(),
                     ANTHROPIC_STOP_MAX_TOKENS => finish::LENGTH.to_string(),
+                    ANTHROPIC_STOP_REFUSAL => finish::CONTENT_FILTER.to_string(),
                     other => other.to_string(),
                 };
             }
@@ -490,5 +497,29 @@ mod error_event_tests {
             EventOutcome::StreamDone => "StreamDone",
             EventOutcome::HardError(_) => "HardError",
         }
+    }
+
+    #[test]
+    fn refusal_stop_reason_maps_to_content_filter() {
+        let mut state = StreamState::default();
+        let noop = |_: StreamDelta| {};
+        let event = StreamEvent::MessageDelta {
+            delta: json!({ "stop_reason": "refusal" }),
+            usage: None,
+        };
+        let _ = handle_event(event, &mut state, &noop, "claude-opus-4-8");
+        assert_eq!(state.finish_reason, finish::CONTENT_FILTER);
+    }
+
+    #[test]
+    fn end_turn_stop_reason_maps_to_stop() {
+        let mut state = StreamState::default();
+        let noop = |_: StreamDelta| {};
+        let event = StreamEvent::MessageDelta {
+            delta: json!({ "stop_reason": "end_turn" }),
+            usage: None,
+        };
+        let _ = handle_event(event, &mut state, &noop, "claude-opus-4-8");
+        assert_eq!(state.finish_reason, finish::STOP);
     }
 }

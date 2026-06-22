@@ -498,6 +498,9 @@ fn build_non_streaming_response(parsed: MessagesResponse) -> LLMResponse {
         // Map `max_tokens` to the unified LENGTH value so the turn
         // executor's truncation recovery fires (see stream_parser.rs).
         Some("max_tokens") => finish::LENGTH,
+        // Refusal / content-safety stop: empty body. Map to CONTENT_FILTER so
+        // the turn executor's empty-response fail-safe emits a visible notice.
+        Some("refusal") => finish::CONTENT_FILTER,
         Some(other) => other,
         None => finish::STOP,
     };

@@ -634,7 +634,7 @@
     "selectSource": "Select source",
     "selectAgent": "Select agent",
     "agentOrAgentOrg": "Session agent",
-    "searchAgentOrOrg": "Select an agent or Agent org...",
+    "searchAgentOrOrg": "Select an agent or Agent team...",
     "tplSelectAgentOrOrg": "Select {agent}",
     "cliAgent": "CLI agent",
     "placeholderModel": "model",
@@ -2068,6 +2068,7 @@
     "willInclude": "Workspace would include {{count}} repos",
     "statusSelectAtLeastTwo": "Select at least 2 repos",
     "statusReadyToCreate": "Ready to create workspace",
+    "statusMaxRepos": "Maximum 5 repos selected",
     "defaultName": "Workspace",
     "defaultNameWithRepo": "{{repo}} Workspace",
     "windowTitle": "Workspace"

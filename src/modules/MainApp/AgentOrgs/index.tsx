@@ -1,8 +1,8 @@
 /**
- * Agent Orgs — main page module.
+ * Agent Teams — main page module.
  *
- * The Agent Orgs surface uses one top-level settings route with an internal
- * table switcher for Agents, Orgs, and CLIs. Entity rows open their full
+ * The Agent Teams surface uses one top-level settings route with an internal
+ * table switcher for Agents, Teams, and CLIs. Entity rows open their full
  * configuration detail UI inside WorkStation `agent-config` tabs.
  */
 import { useAtomValue } from "jotai";
@@ -31,7 +31,7 @@ import {
   ScrollPreservation,
 } from "@src/modules/shared/layouts/blocks";
 import AgentWizard from "@src/scaffold/WizardSystem/variants/Agent/AgentWizard";
-import OrgWizard from "@src/scaffold/WizardSystem/variants/AgentOrg/OrgWizard";
+import AgentTeamWizard from "@src/scaffold/WizardSystem/variants/AgentOrg/AgentTeamWizard";
 import { reposAtom } from "@src/store/repo/atoms";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
@@ -152,7 +152,7 @@ const AgentOrgsPage: React.FC = () => {
   }, [fetchInstalledCliAgents]);
 
   const { wizard, entityId, openWizard, closeWizard } = useWizardParam();
-  const orgWizardMode =
+  const teamWizardMode =
     wizard === WIZARD_IDS.ORG_ADD || wizard === WIZARD_IDS.ORG_EDIT;
   const orgEditId = wizard === WIZARD_IDS.ORG_EDIT ? entityId : null;
   const agentWizardMode = wizard === WIZARD_IDS.AGENT_ADD;
@@ -191,7 +191,7 @@ const AgentOrgsPage: React.FC = () => {
     openWizard(WIZARD_IDS.ORG_ADD);
   }, [openWizard]);
 
-  const handleOrgWizardSave = useCallback(
+  const handleTeamWizardSave = useCallback(
     async (org: OrgMember) => {
       const isUpdate = orgs.some((existing) => existing.id === org.id);
       const orgJson = JSON.stringify(org);
@@ -228,11 +228,11 @@ const AgentOrgsPage: React.FC = () => {
       const target = orgs.find((org) => org.id === orgId);
       const confirmed = await confirmDestructiveAction({
         title: t("agentOrgs.deleteOrgTitle", {
-          defaultValue: "Delete organization?",
+          defaultValue: "Delete team?",
         }),
         message: t("agentOrgs.deleteOrgMessage", {
-          name: target?.name ?? "this organization",
-          defaultValue: `"${target?.name ?? "this organization"}" will be permanently removed. This cannot be undone.`,
+          name: target?.name ?? "this team",
+          defaultValue: `"${target?.name ?? "this team"}" will be permanently removed. This cannot be undone.`,
         }),
         okLabel: t("common:actions.delete", { defaultValue: "Delete" }),
         cancelLabel: t("common:actions.cancel", { defaultValue: "Cancel" }),
@@ -244,13 +244,13 @@ const AgentOrgsPage: React.FC = () => {
         const refreshed = await loadOrgs();
         setOrgs(refreshed);
         Message.success(
-          t("agentOrgs.orgDeleted", { defaultValue: "Organization deleted" })
+          t("agentOrgs.orgDeleted", { defaultValue: "Team deleted" })
         );
       } catch (err) {
         logger.error("delete failed", err);
         Message.error(
           t("agentOrgs.orgDeleteFailed", {
-            defaultValue: "Failed to delete organization",
+            defaultValue: "Failed to delete team",
           })
         );
       }
@@ -315,11 +315,11 @@ const AgentOrgsPage: React.FC = () => {
   };
 
   const renderWizardContent = () => {
-    if (orgWizardMode) {
+    if (teamWizardMode) {
       return (
-        <OrgWizard
+        <AgentTeamWizard
           key={editingOrg?.id ?? "new"}
-          onSave={handleOrgWizardSave}
+          onSave={handleTeamWizardSave}
           onCancel={closeWizard}
           initialOrg={editingOrg}
           customAgents={customAgents}

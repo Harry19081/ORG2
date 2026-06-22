@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 
 import Markdown from "@src/components/MarkDown";
 import { getEventIcon } from "@src/config/toolIcons";
+import { hasThinkingEventType } from "@src/engines/ChatPanel/ChatHistory/chatItemPipeline/filters";
 import {
   EventBlockHeader,
   EventBlockHeaderIcon,
@@ -88,6 +89,7 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
   }, [eventId, replayEventById]);
 
   const hasContent = Boolean(content);
+  const title = t(isLoading ? "tools.thinkingRunning" : "tools.thinkingDone");
 
   return (
     <div className={getEventBlockContainerClasses(false)}>
@@ -108,7 +110,7 @@ const ChatVariant: React.FC<ChatVariantProps> = ({
           isLoading={isLoading}
         />
         <EventBlockHeaderTitle isLoading={isLoading}>
-          {t("tools.thinkingRunning")}
+          {title}
         </EventBlockHeaderTitle>
       </EventBlockHeader>
 
@@ -151,9 +153,15 @@ export const ThinkingEvent: React.FC<ThinkingEventProps> = (props) => {
 
   const { content } = extractThinkingData(normalizedProps);
   const displayContent = props.streamingContent || content;
+  const hasContent = Boolean(displayContent?.trim());
+  const isThinkingEvent = props.event
+    ? hasThinkingEventType(props.event, normalizedProps.eventType)
+    : false;
   const isLoading = normalizedProps.status === "running";
 
   if (normalizedProps.variant === "chat") {
+    if (isThinkingEvent && !hasContent) return null;
+
     return (
       <ChatVariant
         content={displayContent}
