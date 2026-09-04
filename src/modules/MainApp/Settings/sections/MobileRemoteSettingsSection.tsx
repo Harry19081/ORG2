@@ -48,7 +48,6 @@ import {
   isMobileRemoteLanHostPlaceholder,
   isMobileRemoteRelayReady,
   resolveMobileRemoteLanHostWithIp,
-  usesLocalRelayDesktopToken,
 } from "./mobileRemoteSettingsHelpers";
 import { suggestOutdoorPairingPhoneLabel } from "./pairedDeviceDisplay";
 
@@ -66,9 +65,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
     "mobileRemote.relayEnabled"
   );
   const [relayUrl, setRelayUrl] = useSetting("mobileRemote.relayUrl");
-  const [desktopToken, setDesktopToken] = useSetting(
-    "mobileRemote.desktopToken"
-  );
   const [allowLanExposure, setAllowLanExposure] = useSetting(
     "mobileRemote.allowLanExposure"
   );
@@ -98,7 +94,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
     () => resolveMobileRemoteRelayPreset(relayUrl),
     [relayUrl]
   );
-  const usesLocalDesktopToken = usesLocalRelayDesktopToken(relayUrl);
   const cloudSignedIn = cloudAuth != null;
   const cloudSignedInIdentity =
     cloudAuth?.profile?.displayName ??
@@ -108,10 +103,9 @@ const MobileRemoteSettingsSection: React.FC = () => {
 
   const relayConfigured = isMobileRemoteRelayReady({
     relayUrl,
-    desktopToken,
     cloudSignedIn,
   });
-  const relayQueryKey = `${enabled}:${relayEnabled}:${relayUrl}:${usesLocalDesktopToken ? desktopToken.length : (cloudAuth?.userId ?? "signed-out")}`;
+  const relayQueryKey = `${enabled}:${relayEnabled}:${relayUrl}:${cloudAuth?.userId ?? "signed-out"}`;
   const {
     data: relayStatus,
     loading: relayStatusLoading,
@@ -156,30 +150,23 @@ const MobileRemoteSettingsSection: React.FC = () => {
   const relayStatusDescription = useMemo(() => {
     const formatted = formatMobileRemoteRelayStatusMessage(
       relayStatus?.message,
-      relayUrl,
       cloudSignedIn,
       t
     );
     if (formatted) {
       return formatted;
     }
-    if (!usesLocalDesktopToken && !cloudSignedIn) {
+    if (!cloudSignedIn) {
       return t("mobileRemote.cloudLoginDescSignedOut");
     }
     return t("mobileRemote.relayEnabledDesc");
-  }, [cloudSignedIn, relayStatus?.message, relayUrl, t, usesLocalDesktopToken]);
+  }, [cloudSignedIn, relayStatus?.message, t]);
 
   useEffect(() => {
     pairingRequestIdRef.current += 1;
     setPairing(null);
     setPairingLoading(false);
-  }, [
-    cloudAuth?.userId,
-    enabled,
-    relayEnabled,
-    relayUrl,
-    usesLocalDesktopToken,
-  ]);
+  }, [cloudAuth?.userId, enabled, relayEnabled, relayUrl]);
 
   useEffect(
     () => () => {
@@ -261,37 +248,31 @@ const MobileRemoteSettingsSection: React.FC = () => {
 
       {enabled ? (
         <>
-          {usesLocalDesktopToken ? (
-            <InlineBanner tone="info">
-              {t("mobileRemote.relaySetupNoticeLocal")}
-            </InlineBanner>
-          ) : (
-            <SectionRow
-              label={t("mobileRemote.cloudLoginTitle")}
-              description={
-                cloudSignedIn
-                  ? t("mobileRemote.cloudLoginDescSignedIn", {
-                      identity: cloudSignedInIdentity,
-                    })
-                  : t("mobileRemote.cloudLoginDescSignedOut")
-              }
-              indent
-            >
-              {cloudSignedIn ? (
-                <span className="text-sm text-text-2">
-                  {cloudSignedInIdentity}
-                </span>
-              ) : (
-                <Button
-                  size="default"
-                  onClick={handleCloudSignIn}
-                  data-testid="mobile-remote-cloud-sign-in"
-                >
-                  {t("navigation:cloud.signIn")}
-                </Button>
-              )}
-            </SectionRow>
-          )}
+          <SectionRow
+            label={t("mobileRemote.cloudLoginTitle")}
+            description={
+              cloudSignedIn
+                ? t("mobileRemote.cloudLoginDescSignedIn", {
+                    identity: cloudSignedInIdentity,
+                  })
+                : t("mobileRemote.cloudLoginDescSignedOut")
+            }
+            indent
+          >
+            {cloudSignedIn ? (
+              <span className="text-sm text-text-2">
+                {cloudSignedInIdentity}
+              </span>
+            ) : (
+              <Button
+                size="default"
+                onClick={handleCloudSignIn}
+                data-testid="mobile-remote-cloud-sign-in"
+              >
+                {t("navigation:cloud.signIn")}
+              </Button>
+            )}
+          </SectionRow>
 
           <SectionRow
             label={t("mobileRemote.outdoorTitle")}
@@ -335,23 +316,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
                   />
                 </div>
               </SectionRow>
-
-              {usesLocalDesktopToken ? (
-                <SectionRow
-                  label={t("mobileRemote.desktopToken")}
-                  description={t("mobileRemote.desktopTokenDesc")}
-                  layout="vertical"
-                  indent
-                >
-                  <Input
-                    type="password"
-                    value={desktopToken}
-                    onChange={setDesktopToken}
-                    spellCheck={false}
-                    autoComplete="off"
-                  />
-                </SectionRow>
-              ) : null}
 
               <SectionRow
                 label={t("mobileRemote.relayStatus")}
