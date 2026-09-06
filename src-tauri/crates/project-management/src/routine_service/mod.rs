@@ -1404,6 +1404,31 @@ pub fn finish_queued_activation(event_id: &str, error: Option<&str>) -> Result<(
     Ok(())
 }
 
+/// Persisted wakeup hint, independent of the bounded due-candidate page.
+/// Queued activations also wake the existing scheduler, including manual fires
+/// recorded by another process without a routine configuration change.
+pub fn next_evaluation_at(now: i64) -> Result<Option<i64>, String> {
+    let connection = project_io::helpers::conn()?;
+    connection
+        .query_row(
+            "SELECT MIN(deadline) FROM (
+           SELECT COALESCE(next_fire_at, ?1) AS deadline FROM pm_routines
+           WHERE enabled = 1
+             AND (instr(spec_json, '\"type\":\"schedule\"') > 0
+                  OR instr(spec_json, '\"type\":\"one_time\"') > 0)
+           UNION ALL
+           SELECT ?1 WHERE EXISTS (
+             SELECT 1 FROM pm_routine_activation_events event
+             JOIN pm_routines routine ON routine.name = event.routine_name
+             WHERE event.status = 'queued'
+           )
+         )",
+            rusqlite::params![now],
+            |row| row.get(0),
+        )
+        .map_err(|err| format!("routine next evaluation: {err}"))
+}
+
 /// Enabled routines with schedule activations, for the host scheduler.
 pub fn scheduled_candidates(evaluate_before: i64) -> Result<Vec<ScheduledCandidate>, String> {
     let connection = project_io::helpers::conn()?;

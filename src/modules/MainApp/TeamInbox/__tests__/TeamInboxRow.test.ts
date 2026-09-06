@@ -168,8 +168,7 @@ describe("TeamInboxRow", () => {
         element.className.includes("text-text-2")
     );
     expect(secondaryText).toHaveLength(1);
-    // `formatRelativeTime("nano")` renders the localized immediate label
-    // ("Now"), not the old hand-rolled "Now".
+    // The shared formatter uses sentence-case localized relative labels.
     const time = Array.from(container.querySelectorAll("span")).find(
       (element) => element.textContent === "Now"
     );

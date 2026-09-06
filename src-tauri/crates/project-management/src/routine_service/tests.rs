@@ -751,6 +751,9 @@ fn activation_policies_are_durable_and_queue_promotes_exactly_once() {
     crate::work_service::tests_support::seed_project("demo", "p1");
     let file = fixture();
     apply(&file).expect("apply");
+    mark_evaluated(&file.metadata.name, 0, Some(10_000)).unwrap();
+    assert_eq!(next_evaluation_at(100).unwrap(), Some(10_000));
+    let revision_before_queue = schedule_revision::read().unwrap();
     let target = RoutineInvocationTarget::project("demo");
     let mut inputs = std::collections::BTreeMap::new();
     inputs.insert("requirement_id".to_string(), "REQ-QUEUE".to_string());
@@ -782,6 +785,8 @@ fn activation_policies_are_durable_and_queue_promotes_exactly_once() {
         RoutineActivationOutcome::Invoked(run) => panic!("unexpected {run:?}"),
     };
     assert_eq!(queued.status, "queued");
+    assert_eq!(schedule_revision::read().unwrap(), revision_before_queue);
+    assert_eq!(next_evaluation_at(100).unwrap(), Some(100));
     let queued_replay = match request_activation(
         &file.metadata.name,
         &target,
@@ -861,6 +866,7 @@ fn activation_policies_are_durable_and_queue_promotes_exactly_once() {
     .expect("promotion replay");
     assert_eq!(promoted.run_id, replay.run_id);
     assert!(queued_activations(256).expect("queue drained").is_empty());
+    assert_eq!(next_evaluation_at(100).unwrap(), Some(10_000));
     let connection = crate::projects::io::helpers::conn().expect("conn");
     let runs: i64 = connection
         .query_row("SELECT COUNT(*) FROM pm_routine_runs", [], |row| row.get(0))

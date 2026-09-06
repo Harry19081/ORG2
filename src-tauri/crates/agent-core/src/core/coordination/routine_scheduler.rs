@@ -19,13 +19,22 @@ pub fn spawn(app_handle: tauri::AppHandle) {
         let mut revision = None;
         let mut next_evaluation: Option<DateTime<Utc>> = None;
         loop {
-            let observed = tokio::task::spawn_blocking(
-                project_management::routine_service::schedule_revision::read,
-            )
+            let probe_at = Utc::now().timestamp_millis();
+            let observed = tokio::task::spawn_blocking(move || {
+                use project_management::routine_service as routines;
+                Ok::<_, String>((
+                    routines::schedule_revision::read()?,
+                    routines::next_evaluation_at(probe_at)?,
+                ))
+            })
             .await;
             let now = Utc::now();
             match observed {
-                Ok(Ok(observed)) => {
+                Ok(Ok((observed, persisted_deadline))) => {
+                    earliest(
+                        &mut next_evaluation,
+                        persisted_deadline.and_then(DateTime::<Utc>::from_timestamp_millis),
+                    );
                     if revision.as_ref() != Some(&observed)
                         || next_evaluation.is_some_and(|deadline| deadline <= now)
                     {
@@ -262,6 +271,24 @@ async fn portable_tick(now: DateTime<Utc>) -> Result<Option<DateTime<Utc>>, Stri
         .await
         .map_err(|err| format!("Task join error: {err}"))??;
     }
+    // The processed page excludes future schedules and can leave due work
+    // behind. Read the durable hint after writes, not just this page's marks.
+    let persisted =
+        tokio::task::spawn_blocking(move || routines::next_evaluation_at(now.timestamp_millis()))
+            .await
+            .map_err(|err| format!("Task join error: {err}"))??;
+    earliest(
+        &mut next_evaluation,
+        persisted
+            .and_then(DateTime::<Utc>::from_timestamp_millis)
+            .map(|deadline| {
+                if deadline <= now {
+                    now + chrono::Duration::seconds(POLL_INTERVAL_SECS as i64)
+                } else {
+                    deadline
+                }
+            }),
+    );
     Ok(next_evaluation)
 }
 
@@ -429,6 +456,37 @@ mod tests {
             apply_catch_up_policy(&due, CatchUpPolicy::RunAllLimited, 2),
             vec![at(2026, 6, 9, 9, 0), at(2026, 6, 10, 9, 0)]
         );
+    }
+
+    #[tokio::test]
+    async fn persisted_future_schedule_survives_scheduler_restart() {
+        let _sandbox = test_helpers::test_env::sandbox();
+        init_project_schema();
+        let now = DateTime::<Utc>::from_timestamp_millis(Utc::now().timestamp_millis()).unwrap();
+        let due = now + chrono::Duration::hours(1);
+        let file = one_time_fixture("restart-future", due);
+        project_management::routine_service::apply(&file).unwrap();
+        assert_eq!(portable_tick(now).await.unwrap(), Some(due));
+        let revision = project_management::routine_service::schedule_revision::read().unwrap();
+        // A new scheduler has no in-memory deadline. Its first pass must recover
+        // the persisted deadline even though the due-only candidate page is empty.
+        assert_eq!(
+            portable_tick(now + chrono::Duration::minutes(1))
+                .await
+                .unwrap(),
+            Some(due)
+        );
+        assert_eq!(portable_run_count(), 0);
+        assert_eq!(
+            revision,
+            project_management::routine_service::schedule_revision::read().unwrap()
+        );
+        assert_eq!(portable_tick(due).await.unwrap(), None);
+        assert_eq!(portable_run_count(), 1);
+        portable_tick(due + chrono::Duration::minutes(1))
+            .await
+            .unwrap();
+        assert_eq!(portable_run_count(), 1);
     }
 
     #[tokio::test]
