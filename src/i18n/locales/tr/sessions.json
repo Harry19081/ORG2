@@ -2543,7 +2543,8 @@
     "failedToInterrupt": "Session kesintiye uğratılamadı",
     "failedToStop": "Agent durdurulamadı",
     "failedToCheckChanges": "Dosya değişiklikleri kontrol edilemedi. Geri alma işlemi gerçekleştirilecek.",
-    "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin."
+    "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin.",
+    "runQueuedBehindCheckout": "Kuyrukta: başka bir çalıştırma bu checkout'u kullanıyor. O bitince başlayacak."
   },
   "planning": {
     "agentTyping": "Agent yazıyor...",
