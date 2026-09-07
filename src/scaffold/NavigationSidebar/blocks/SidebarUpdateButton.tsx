@@ -5,11 +5,11 @@ import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 import { Download01Icon, HugeiconsIcon } from "@src/icons";
+import { installAvailableAppUpdate } from "@src/scaffold/AppUpdater/actions";
 import {
-  installAvailableAppUpdate,
   useAvailableAppUpdate,
   useIsAppUpdateInstalling,
-} from "@src/scaffold/AppUpdater";
+} from "@src/scaffold/AppUpdater/state";
 
 import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "../config";
 

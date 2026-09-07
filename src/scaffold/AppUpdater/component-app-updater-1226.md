@@ -1,13 +1,18 @@
 # AppUpdater
 
 **Location:** `src/scaffold/AppUpdater/`
-**Last updated:** July 13, 2026
+**Last updated:** September 7, 2026
 
 ## Overview
 
-`AppUpdater` is the headless Tauri update service mounted by
-`AppDeferredServices`. It uses one coordinator for check, download, and install
-state, and one scheduler for automatic triggers.
+`AppUpdater` is the update confirmation and progress UI mounted by
+`AppDeferredServices`. It starts the automatic scheduler through `service.tsx`,
+which owns the shared coordinator for check, download, and install state.
+
+Small consumers import actions from `actions.ts` and read hooks from `state.ts`.
+Actions load `service.tsx` on demand; they do not import the confirmation UI or
+start automatic scheduling. The mounted UI and manual actions share the same
+service singleton.
 
 Update checks and package downloads are always automatic. Installation and
 relaunch remain explicit user actions.
@@ -38,6 +43,8 @@ save ongoing work before confirming the restart.
 
 ## Public API
 
+Import commands from `./actions` and read hooks from `./state`.
+
 ```ts
 checkForAppUpdates({ notify?: boolean, force?: boolean }): Promise<Update | null>
 checkForUpdatesManually(): Promise<Update | null>
@@ -65,7 +72,7 @@ available → downloading → downloaded
 available | downloaded → installing → relaunching
 ```
 
-`appUpdaterCoordinator.ts` owns this lifecycle. Jotai atoms in `index.tsx` are
+`appUpdaterCoordinator.ts` owns this lifecycle. Jotai atoms in `state.ts` are
 read-only UI projections and are not independent sources of truth.
 
 ## Entry points

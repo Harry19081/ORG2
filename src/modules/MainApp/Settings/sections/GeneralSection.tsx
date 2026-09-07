@@ -63,9 +63,9 @@ import { NAV_BUTTON_PROPS } from "@src/modules/MainApp/Settings/config";
 import {
   checkForAppUpdates,
   checkForUpdatesManually,
-  useAppBuildProvenance,
-} from "@src/scaffold/AppUpdater";
+} from "@src/scaffold/AppUpdater/actions";
 import { formatAppBuildRevision } from "@src/scaffold/AppUpdater/buildProvenance";
+import { useAppBuildProvenance } from "@src/scaffold/AppUpdater/state";
 import { chatAppearancePersistAtom } from "@src/store/config/configAtom";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { preventSleepWhileRunningAtom } from "@src/store/platform/preventSleepAtom";
