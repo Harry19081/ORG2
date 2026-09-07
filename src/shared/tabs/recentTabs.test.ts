@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   RECENT_TABS_LIMIT,
   recordRecentItem,
-  recordRecentTab,
   recordRecentTransition,
   removeRecentTab,
 } from "./recentTabs";
@@ -57,10 +56,14 @@ describe("recent tab history", () => {
     }));
 
     expect(
-      recordRecentTab(initial, { id: "tab-1" }).map((tab) => tab.id)
+      recordRecentItem(initial, { id: "tab-1" }, (a, b) => a.id === b.id).map(
+        (tab) => tab.id
+      )
     ).toEqual(["tab-1", "tab-0", "tab-2", "tab-3", "tab-4"]);
     expect(
-      recordRecentTab(initial, { id: "tab-new" }).map((tab) => tab.id)
+      recordRecentItem(initial, { id: "tab-new" }, (a, b) => a.id === b.id).map(
+        (tab) => tab.id
+      )
     ).toEqual(["tab-new", "tab-0", "tab-1", "tab-2", "tab-3"]);
   });
 

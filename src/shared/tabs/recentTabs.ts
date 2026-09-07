@@ -4,14 +4,6 @@ interface TabIdentity {
   id: string;
 }
 
-/** Put one tab at the front of a bounded, de-duplicated MRU history. */
-export function recordRecentTab<T extends TabIdentity>(
-  current: readonly T[],
-  tab: T
-): T[] {
-  return recordRecentItem(current, tab, (left, right) => left.id === right.id);
-}
-
 /** Identity belongs to the surface; ordering and the retention bound are shared. */
 export function recordRecentItem<T>(
   current: readonly T[],
