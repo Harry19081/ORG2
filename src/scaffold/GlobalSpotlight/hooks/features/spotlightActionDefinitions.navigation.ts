@@ -8,7 +8,7 @@
  * hooks. Split out of `spotlightActionDefinitions.ts`.
  *
  * - `AGENT_SESSION_ACTIONS`    — top-level agent/session entry points.
- * - `WORKSPACE_ACTIONS`        — workspace / repo switching and management.
+ * - `WORKING_DIRECTORY_ACTIONS` — working-directory / repo switching and management.
  * - `ORGANIZATION_ACTIONS`     — organization create / join entry points.
  * - `STATION_MODE_ACTIONS`     — my-station / agent-station / kanban switchers.
  * - `APP_ACTIONS`              — app-level actions (update detection, etc).
@@ -193,12 +193,20 @@ export const AGENT_SESSION_ACTIONS = [
   },
 ] satisfies SpotlightStaticActionDefinition[];
 
-export const WORKSPACE_ACTIONS = [
+export const WORKING_DIRECTORY_ACTIONS = [
   {
     id: "switch-workspace",
     labelKey: "selectors.spotlight.actions.switchWorkspace.label",
     icon: FolderGitTwoIcon,
-    keywords: ["switch workspace", "workspace", "repo", "repository", "folder"],
+    keywords: [
+      "switch working directory",
+      "working directory",
+      "switch workspace",
+      "workspace",
+      "repo",
+      "repository",
+      "folder",
+    ],
     actionId: ACTION_ID.SPOTLIGHT_OPEN_WORKSPACE_PICKER,
     payload: { mode: "switch" },
     fallback: "workspace-switch",
@@ -220,7 +228,14 @@ export const WORKSPACE_ACTIONS = [
     id: "add-workspace",
     labelKey: "selectors.spotlight.actions.addWorkspace.label",
     icon: FolderAddIcon,
-    keywords: ["add workspace", "add repo", "add folder", "import workspace"],
+    keywords: [
+      "add working directory",
+      "working directory",
+      "add workspace",
+      "add repo",
+      "add folder",
+      "import workspace",
+    ],
     actionId: ACTION_ID.SPOTLIGHT_OPEN_WORKSPACE_PICKER,
     payload: { mode: "add" },
     fallback: "workspace-add",
@@ -232,6 +247,8 @@ export const WORKSPACE_ACTIONS = [
     labelKey: "selectors.spotlight.actions.createMultiRepoWorkspace.label",
     icon: FolderLibraryIcon,
     keywords: [
+      "create working directory",
+      "multi repo working directory",
       "create workspace",
       "multi repo workspace",
       "Multi-repo Workspace",

@@ -30,7 +30,7 @@ export function createEditorSpotlightRequest(
   };
 }
 
-function createWorkspaceSpotlightRequest(
+function createWorkingDirectorySpotlightRequest(
   mode: "switch" | "open" | "add" | "create"
 ): SpotlightInitialQuery {
   return {
@@ -104,12 +104,15 @@ export function openEditorSpotlight(
   store.set(spotlightOpenAtom, true);
 }
 
-export function openWorkspaceSpotlight(
+export function openWorkingDirectorySpotlight(
   mode: "switch" | "open" | "add" | "create"
 ): void {
   if (!isStoreInitialized()) return;
   const store = getInstrumentedStore();
-  store.set(spotlightInitialQueryAtom, createWorkspaceSpotlightRequest(mode));
+  store.set(
+    spotlightInitialQueryAtom,
+    createWorkingDirectorySpotlightRequest(mode)
+  );
   store.set(spotlightOpenAtom, true);
 }
 
