@@ -152,5 +152,10 @@
       "truncated": "内容较长，手机端仅显示摘要"
     }
   },
-  "connectionFailed": "连接失败"
+  "connectionFailed": "连接失败",
+  "sessions": {
+    "limit": "最多显示最近 1,000 条会话",
+    "loadMore": "加载更多",
+    "retry": "重试加载"
+  }
 }

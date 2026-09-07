@@ -75,6 +75,9 @@ export interface MobileSidebarSessionSnapshotRow {
   id: string;
   name: string;
   status: "running" | "idle";
+  repoPath?: string | null;
+  repoName?: string | null;
+  updatedAtMs?: number | null;
 }
 
 // ============================================================

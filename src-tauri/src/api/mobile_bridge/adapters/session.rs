@@ -186,6 +186,9 @@ fn session_list_from_sidebar_snapshot(
                 "name": session.name,
                 "status": session.status,
                 "category": "live",
+                "repoPath": session.repo_path,
+                "repoName": session.repo_name,
+                "updatedAtMs": session.updated_at_ms,
                 "sendCapability": send_capability,
             })
         })
@@ -247,9 +250,9 @@ fn parse_mobile_send_attachments(params: &Value) -> Result<Vec<String>, RpcError
     let Some(attachments) = params.get("attachments") else {
         return Ok(Vec::new());
     };
-    let items = attachments.as_array().ok_or_else(|| {
-        RpcError::invalid_params("attachments must be an array")
-    })?;
+    let items = attachments
+        .as_array()
+        .ok_or_else(|| RpcError::invalid_params("attachments must be an array"))?;
     if items.len() > MAX_MOBILE_ATTACHMENTS {
         return Err(RpcError::invalid_params("too many attachments"));
     }
@@ -275,7 +278,7 @@ fn parse_mobile_send_attachments(params: &Value) -> Result<Vec<String>, RpcError
         }
         let decoded = base64::engine::general_purpose::STANDARD
             .decode(payload)
-        .map_err(|_| RpcError::invalid_params("attachment dataUrl is invalid"))?;
+            .map_err(|_| RpcError::invalid_params("attachment dataUrl is invalid"))?;
         if decoded.len() > MAX_MOBILE_ATTACHMENT_DECODED_BYTES {
             return Err(RpcError::invalid_params("attachment is too large"));
         }
@@ -325,6 +328,7 @@ pub fn parse_session_round_params(params: &Value) -> Result<SessionRoundParams, 
 
 /// List sessions from the cross-backend directory, mapped to the mobile wire shape.
 pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
+    let offset = params.get("offset").and_then(Value::as_u64).unwrap_or(0) as usize;
     let limit = params
         .get("limit")
         .and_then(|value| value.as_u64())
@@ -347,6 +351,7 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
     {
         let candidate_ids = snapshot
             .iter()
+            .skip(offset)
             .filter(|session| status_filter != "running" || session.status == "running")
             .take(limit)
             .filter(|session| {
@@ -362,16 +367,21 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
             )
             .await
             .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?;
-        return Ok(session_list_from_sidebar_snapshot(
-            snapshot,
+        let total = snapshot.len();
+        let mut result = session_list_from_sidebar_snapshot(
+            snapshot.into_iter().skip(offset).collect(),
             status_filter,
             limit,
             &writable_codex_session_ids,
-        ));
+        );
+        result["nextOffset"] = json!(offset.saturating_add(limit));
+        result["hasMore"] = json!(offset.saturating_add(limit) < total);
+        return Ok(result);
     }
 
     let filter = SessionFilter {
         limit: Some(limit),
+        offset: Some(offset),
         ..Default::default()
     };
 
@@ -380,6 +390,7 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
         .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, format!("task join: {err}")))?
         .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?;
 
+    let consumed = response.sessions.len();
     let session_rows = response
         .sessions
         .into_iter()
@@ -390,7 +401,17 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
                 return None;
             }
             let mobile_name = mobile_session_name(&record.name, record.display_label.as_deref());
-            Some((record.session_id, mobile_name, mobile_status))
+            let updated_at_ms = chrono::DateTime::parse_from_rfc3339(&record.updated_at)
+                .ok()
+                .map(|date| date.timestamp_millis());
+            Some((
+                record.session_id,
+                mobile_name,
+                mobile_status,
+                record.repo_path,
+                record.repo_name,
+                updated_at_ms,
+            ))
         })
         .take(limit)
         .collect::<Vec<_>>();
@@ -399,27 +420,34 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
         crate::orgtrack::history_commands::external_history_mobile_writable_codex_session_ids(
             session_rows
                 .iter()
-                .filter(|(id, _, _)| id.starts_with(orgtrack_core::sources::codex::SESSION_PREFIX))
-                .map(|(id, _, _)| id.clone())
+                .filter(|(id, ..)| id.starts_with(orgtrack_core::sources::codex::SESSION_PREFIX))
+                .map(|(id, ..)| id.clone())
                 .collect(),
         )
         .await
         .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?;
     let sessions = session_rows
         .into_iter()
-        .map(|(session_id, mobile_name, mobile_status)| {
-            let send_capability =
-                external_send::mobile_send_capability(&session_id, &writable_codex_session_ids);
-            json!({
-                "id": session_id,
-                "name": mobile_name,
-                "status": mobile_status,
-                "sendCapability": send_capability,
-            })
-        })
+        .map(
+            |(session_id, mobile_name, mobile_status, repo_path, repo_name, updated_at_ms)| {
+                let send_capability =
+                    external_send::mobile_send_capability(&session_id, &writable_codex_session_ids);
+                json!({
+                    "id": session_id,
+                    "name": mobile_name,
+                    "repoPath": repo_path,
+                    "repoName": repo_name,
+                    "updatedAtMs": updated_at_ms,
+                    "status": mobile_status,
+                    "sendCapability": send_capability,
+                })
+            },
+        )
         .collect::<Vec<_>>();
 
-    Ok(json!({ "sessions": sessions }))
+    Ok(
+        json!({ "sessions": sessions, "nextOffset": offset.saturating_add(consumed), "hasMore": consumed == limit }),
+    )
 }
 
 /// Submit a user message from mobile — enqueues a turn and returns immediately.
@@ -2068,11 +2096,15 @@ mod tests {
                 id: "second-by-time".to_string(),
                 name: "Desktop first".to_string(),
                 status: "idle".to_string(),
+                repo_path: Some("/projects/repo".to_string()),
+                repo_name: Some("repo".to_string()),
+                updated_at_ms: Some(123),
             },
             MobileSidebarSessionSnapshotRow {
                 id: "first-by-time".to_string(),
                 name: "Desktop second".to_string(),
                 status: "running".to_string(),
+                ..Default::default()
             },
         ];
 
@@ -2096,6 +2128,11 @@ mod tests {
             Some("desktop_sidebar")
         );
 
+        assert_eq!(
+            all.pointer("/sessions/0/repoPath"),
+            Some(&json!("/projects/repo"))
+        );
+        assert_eq!(all.pointer("/sessions/0/updatedAtMs"), Some(&json!(123)));
         let running = session_list_from_sidebar_snapshot(
             snapshot,
             "running",
