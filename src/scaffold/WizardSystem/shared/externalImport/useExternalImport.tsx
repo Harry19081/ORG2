@@ -31,11 +31,11 @@ import Checkbox from "@src/components/Checkbox";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
 import ModelIcon from "@src/components/ModelIcon";
+import type { SettingsTableColumn } from "@src/components/SettingsTable";
 import {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
-  type SettingsTableColumn,
-} from "@src/components/SettingsTable";
+} from "@src/components/SettingsTable/tokens";
 import SplitButton from "@src/components/SplitButton";
 import { createLogger } from "@src/hooks/logger";
 import type { CursorRepo } from "@src/hooks/policies";

@@ -6,7 +6,7 @@
  *
  * Edit triggers the main input box via queueEditTargetAtom.
  *
- * Exports `reorderActiveRef` — a module-level flag so the parent file drop zone
+ * Shares `reorderActiveRef` — a module-level flag so the parent file drop zone
  * can check synchronously whether a queue reorder drag is in progress and skip
  * showing the file drop overlay.
  */
@@ -38,15 +38,10 @@ import {
   type QueuedMessage,
   queueEditTargetAtom,
 } from "@src/store/ui/messageQueueAtom";
+import { reorderActiveRef } from "@src/store/ui/queueReorderState";
 
 import ComposerStackHeader from "./ComposerStackHeader";
 import QueuedMessageItem from "./QueuedMessageItem";
-
-/**
- * Module-level flag — set synchronously in onDragStart, cleared in onDragEnd.
- * Accessible by global drag detection to skip file drop overlay during reorder.
- */
-export const reorderActiveRef = { current: false };
 
 export interface QueuedMessagesProps {
   messages: QueuedMessage[];

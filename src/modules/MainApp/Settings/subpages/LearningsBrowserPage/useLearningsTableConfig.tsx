@@ -9,12 +9,14 @@ import type {
 } from "@src/api/tauri/rpc/schemas/learning";
 import Button from "@src/components/Button";
 import type { SelectOption } from "@src/components/Select";
+import type {
+  SettingsTableColumn,
+  SettingsTableSelectFilter,
+} from "@src/components/SettingsTable";
 import {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
-  type SettingsTableColumn,
-  type SettingsTableSelectFilter,
-} from "@src/components/SettingsTable";
+} from "@src/components/SettingsTable/tokens";
 import type { LearningsBrowserFilters } from "@src/hooks/settings/useLearningsBrowser";
 import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 

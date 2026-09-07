@@ -25,11 +25,11 @@ import { rpc } from "@src/api/tauri/rpc";
 import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import ModelIcon from "@src/components/ModelIcon";
+import type { SettingsTableColumn } from "@src/components/SettingsTable";
 import {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
-  type SettingsTableColumn,
-} from "@src/components/SettingsTable";
+} from "@src/components/SettingsTable/tokens";
 import { createLogger } from "@src/hooks/logger";
 import { FolderOpenIcon, HugeiconsIcon } from "@src/icons";
 import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";

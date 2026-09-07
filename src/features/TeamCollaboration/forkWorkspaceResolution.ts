@@ -21,15 +21,15 @@ import {
 import { toFsPluginPath } from "@src/util/file/pathUtils";
 
 import { normalizeRepoScopeKey } from "./collabSyncUtils";
-import { forkCheckoutRequestAtom } from "./components/ForkCheckoutPickerDialog";
-import {
-  type ForkSessionSetupSelection,
-  forkSessionSetupRequestAtom,
-} from "./components/ForkSessionSetupDialog";
 import type {
   ForkExecutionSelection,
   RemoteSessionFetchOptions,
 } from "./engine/collabSyncEngineHelpers";
+import {
+  type ForkSessionSetupSelection,
+  forkCheckoutRequestAtom,
+  forkSessionSetupRequestAtom,
+} from "./forkDialogState";
 import {
   resolveLocalCheckoutForScopeKey,
   resolveMatchingOrgRepoScope,

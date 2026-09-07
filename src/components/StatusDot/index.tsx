@@ -23,7 +23,7 @@
  */
 import React, { memo } from "react";
 
-import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable";
+import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable/tokens";
 
 type StatusDotSize = "table" | "inline" | "sm";
 
