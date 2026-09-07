@@ -100,7 +100,7 @@ export interface SettingsTableProps<RowData> {
     onExpandedRowsChange?: (keys: string[]) => void;
     onSubRowClick?: (parentRecord: RowData, subRowIndex: number) => void;
   };
-  /** Table-level loading overlay; keeps header, toolbar, and columns visible. */
+  /** Body-only loading state; keeps header, toolbar, columns, and footer visible. */
   loading?: boolean;
   /** Custom title for the empty state Placeholder. */
   emptyTitle?: string;
@@ -577,17 +577,14 @@ export default function SettingsTable<RowData>({
         rowDataTestId={rowDataTestId}
         rowDataAttributes={rowDataAttributes}
         noDataElement={
-          noDataElement ??
-          (loading ? (
-            <div className="min-h-[120px]" />
-          ) : (
+          noDataElement ?? (
             <Placeholder
               variant="empty"
               title={emptyTitle}
               subtitle={emptySubtitle}
               action={emptyAction}
             />
-          ))
+          )
         }
       />
       {resolvedFooter}

@@ -941,7 +941,7 @@
     "loadZeroRows": "クリックしてさらに {{count}} 件を読み込む"
   },
   "dependencies": {
-    "systemDependencies": "システム Dependencies",
+    "systemDependencies": "システム依存関係",
     "refreshSuccess": "依存関係を更新しました",
     "scanning": "スキャン中...",
     "detectingDependencies": "依存関係を検出中...",

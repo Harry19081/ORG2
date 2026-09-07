@@ -966,7 +966,7 @@
     "browserCacheCleanFailed": "No se pudo limpiar la caché del navegador"
   },
   "dependencies": {
-    "systemDependencies": "Dependencies del sistema",
+    "systemDependencies": "Dependencias del sistema",
     "refreshSuccess": "Dependencias actualizadas",
     "scanning": "Escaneando...",
     "detectingDependencies": "Detectando dependencias...",

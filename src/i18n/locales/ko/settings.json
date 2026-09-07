@@ -966,7 +966,7 @@
     "browserCacheCleanFailed": "브라우저 캐시를 정리하지 못했습니다"
   },
   "dependencies": {
-    "systemDependencies": "시스템 Dependencies",
+    "systemDependencies": "시스템 종속성",
     "refreshSuccess": "의존성 새로고침됨",
     "scanning": "스캔 중...",
     "detectingDependencies": "의존성 감지 중...",
