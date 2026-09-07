@@ -13,7 +13,6 @@ export type SettingsSectionSegment =
   | "security"
   | "mobile-remote"
   | "update"
-  | "monitor"
   | "harness-connections";
 
 export type SettingsSubpageSegment = "editor-appearance";
@@ -25,7 +24,6 @@ export const SETTINGS_SECTIONS: readonly SettingsSectionSegment[] = [
   "security",
   "mobile-remote",
   "update",
-  "monitor",
   "harness-connections",
 ] as const;
 
@@ -34,10 +32,9 @@ export const SETTINGS_SUBPAGES: readonly SettingsSubpageSegment[] = [
 ] as const;
 
 export const SETTINGS_SECTION_TABS = {
-  general: ["general", "notifications", "shortcuts", "self-hosted"],
+  general: ["general", "notifications", "shortcuts", "storage", "self-hosted"],
   appearance: ["app", "code-editor", "chat-panel"],
   editor: ["editor"],
-  monitor: ["resources", "network", "storage"],
 } as const satisfies Partial<Record<SettingsSectionSegment, readonly string[]>>;
 
 export type SettingsSectionWithTabs = keyof typeof SETTINGS_SECTION_TABS;
@@ -99,6 +96,10 @@ export function parseCoreSettingsItem(pathname: string): {
 
   if (!itemPart) return { section: null, category: null };
 
+  if (itemPart === "monitor") {
+    return { section: "general", category: null };
+  }
+
   if (itemPart === LEGACY_COLLABORATION_SECTION) {
     return { section: "general", category: null };
   }
@@ -141,6 +142,13 @@ export function parseSettingsSectionTab(pathname: string): {
 
   if (itemPart === "notifications" || itemPart === "shortcuts") {
     return { section: "general", tab: itemPart };
+  }
+
+  if (itemPart === "monitor") {
+    return {
+      section: "general",
+      tab: tabPart === "storage" ? "storage" : "general",
+    };
   }
 
   if (itemPart === LEGACY_COLLABORATION_SECTION) {

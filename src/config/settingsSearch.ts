@@ -216,7 +216,7 @@ const CATEGORY_OWNER: Record<SettingsCategory, SettingsSearchOwner> = {
   agent: { navigationItemId: "agent-orgs" },
   agentBrowser: { navigationItemId: "computerUse" },
   housekeeper: { navigationItemId: "housekeeper" },
-  network: { navigationItemId: "monitor", tab: "network" },
+  network: { navigationItemId: "general", tab: "general" },
   privacy: { navigationItemId: "general", tab: "general" },
   mobileRemote: { navigationItemId: "connections" },
 };

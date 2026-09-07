@@ -278,7 +278,6 @@ git::util::set_git_global_profile,
 git_api::commands::ai::generate_commit_message,
 // Network detection
 system_services::network::get_local_lan_ip,
-system_services::network::detect_vpn,
 system_services::network::fetch_geo_info,
 // Workspace listening-port detection (status bar)
 system_services::workspace_ports::commands::workspace_ports_scan,
@@ -610,7 +609,6 @@ perf_utils::local_model_hardware::detect_local_model_hardware,
 perf_utils::system_runtime::system_runtime_snapshot,
 perf_utils::get_memory_breakdown,
 perf_utils::get_app_memory_snapshot_v1,
-perf_utils::get_tool_process_memory_diagnostics_v1,
 // Disk usage
 infrastructure::storage_commands::get_disk_usage,
 infrastructure::storage_commands::get_memory_storage_path,

@@ -206,7 +206,6 @@ fn macos_webkit_descriptor(pid: u32, name: &str) -> ProcessDescriptor {
                 "/System/Library/Frameworks/WebKit.framework/XPCServices/{name}.xpc/Contents/MacOS/{name}"
             )),
             rss_bytes: 1,
-            virtual_memory_bytes: 1,
             belongs_to_current_user: true,
         }
 }
