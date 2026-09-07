@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { expect, it, vi } from "vitest";
 
-import { trackGitPollingVisibility } from "./gitPollingVisibility";
+import { trackGitPollingVisibility } from "../gitPollingVisibility";
 
 it("clears the native owner while hidden and restores it once on return", () => {
   let hidden = false;
