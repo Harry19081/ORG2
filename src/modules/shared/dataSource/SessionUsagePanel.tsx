@@ -20,7 +20,6 @@ import {
   usageDashboardOverview,
 } from "@src/api/tauri/usageDashboard";
 import { Placeholder } from "@src/components/Placeholder";
-import Select from "@src/components/Select";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
 import { StartPageQuotaGrid } from "@src/engines/ChatPanel/StartPageQuotaGrid";
 import { DEBOUNCE_DELAYS, useDebouncedCallback } from "@src/hooks/perf";
@@ -35,16 +34,13 @@ import {
   RuntimeRefreshButton,
   RuntimeSectionHeader,
 } from "./RuntimeSectionHeader";
+import UsageRangePicker from "./UsageRangePicker";
 import UsageRoundsTable, {
   USAGE_ROUNDS_DEFAULT_PAGE_SIZE,
 } from "./UsageRoundsTable";
 import UsageStatCards from "./UsageStatCards";
 import { BucketIcon, bucketLabelKey } from "./usageBuckets";
-import {
-  USAGE_RANGE_PRESETS,
-  type UsageRangePreset,
-  resolveUsageRange,
-} from "./usageRange";
+import { type UsageRange, resolveUsageRange } from "./usageRange";
 
 const SOURCE_ALL = "all";
 const UsageTrendChart = lazy(() => import("./UsageTrendChart"));
@@ -62,7 +58,7 @@ export default function SessionUsagePanel() {
   const language = i18n.resolvedLanguage || i18n.language || "en";
 
   const [bucket, setBucket] = useState<UsageBucket | null>(null);
-  const [range, setRange] = useState<UsageRangePreset>("today");
+  const [range, setRange] = useState<UsageRange>("today");
   const [sort, setSort] = useState<UsageSessionSort>("recent");
   const [session, setSession] = useState<SelectedSession | null>(null);
 
@@ -102,7 +98,11 @@ export default function SessionUsagePanel() {
     return { bucket, startMs, endMs, sessionId: session?.id ?? null };
   }, [bucket, range, session]);
 
-  const hourly = range === "today" || range === "24h";
+  const hourly =
+    scope.startMs !== null &&
+    scope.startMs !== undefined &&
+    scope.endMs != null &&
+    scope.endMs - scope.startMs <= 86_400_000;
   const trendEndMs = useMemo(() => {
     if (range !== "today" || scope.startMs == null) {
       return scope.endMs ?? null;
@@ -374,15 +374,6 @@ export default function SessionUsagePanel() {
     [t]
   );
 
-  const rangeOptions = useMemo(
-    () =>
-      USAGE_RANGE_PRESETS.map((preset) => ({
-        value: preset,
-        label: t(`usage.range.${preset}`),
-      })),
-    [t]
-  );
-
   const isEmpty =
     !headlineLoading && !headlineError && (summary?.sessionCount ?? 0) === 0;
 
@@ -400,7 +391,7 @@ export default function SessionUsagePanel() {
       >
         <div className="flex min-h-9 flex-wrap items-center justify-between gap-2">
           <div
-            className="flex min-w-0 items-center gap-2"
+            className="flex min-w-0 flex-wrap items-center gap-2"
             data-testid="usage-source-range-controls"
           >
             <TabPill
@@ -422,16 +413,13 @@ export default function SessionUsagePanel() {
               aria-hidden
               className="pointer-events-none h-4 w-px shrink-0 bg-border-2"
             />
-            <Select
+            <UsageRangePicker
               value={range}
               onChange={(value) => {
-                setRange(value as UsageRangePreset);
+                setRange(value);
                 setRoundModelFilter(undefined);
                 setRoundPageIndex(0);
               }}
-              options={rangeOptions}
-              appearance="ghost"
-              size="small"
             />
           </div>
           <RuntimeRefreshButton

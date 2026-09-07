@@ -157,7 +157,16 @@
           "24h": "24 saat",
           "7d": "7 gün",
           "30d": "30 gün",
-          "all": "Tüm zamanlar"
+          "all": "Tüm zamanlar",
+          "custom": "Özel aralık…"
+        },
+        "customRange": {
+          "start": "Başlangıç",
+          "end": "Bitiş",
+          "hint": "Yerel saat · {{zone}} · Saniye hassasiyeti, bitiş dahil",
+          "invalid": "Bitiş zamanı başlangıçtan önce olamaz",
+          "apply": "Aralığı uygula",
+          "cancel": "İptal"
         },
         "bucket": {
           "claude": "Claude",
