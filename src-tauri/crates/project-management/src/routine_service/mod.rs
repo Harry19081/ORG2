@@ -513,14 +513,14 @@ pub fn scheduled_candidates() -> Result<Vec<ScheduledCandidate>, String> {
              FROM pm_routines WHERE enabled = 1",
         )
         .map_err(|err| format!("scheduled candidates: {err}"))?;
-    let rows: Vec<(String, String, Option<String>, Option<i64>, Option<i64>)> = statement
+    let rows = statement
         .query_map([], |row| {
             Ok((
-                row.get(0)?,
-                row.get(1)?,
-                row.get(2)?,
-                row.get(3)?,
-                row.get(4)?,
+                row.get::<_, String>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, Option<String>>(2)?,
+                row.get::<_, Option<i64>>(3)?,
+                row.get::<_, Option<i64>>(4)?,
             ))
         })
         .map_err(|err| format!("scheduled candidates: {err}"))?
