@@ -20,7 +20,6 @@ import {
 } from "@/src/store/git";
 import { useAtomValue, useSetAtom } from "jotai";
 import React, {
-  createContext,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -45,6 +44,7 @@ import type {
 } from "@src/types/session/steps";
 
 import { REPO_SWITCH_DEBOUNCE_MS } from "./constants";
+import { GitStatusContext } from "./context";
 import { useGitEventListeners } from "./hooks/useGitEventListeners";
 import { useGitStatusFetch } from "./hooks/useGitStatusFetch";
 import { useWatcherRegistration } from "./hooks/useWatcherRegistration";
@@ -54,13 +54,7 @@ import type {
   StartupState,
 } from "./types";
 
-// ============================================
-// Context
-// ============================================
-
-export const GitStatusContext = createContext<GitStatusContextValue | null>(
-  null
-);
+export { GitStatusContext } from "./context";
 
 // ============================================
 // Provider

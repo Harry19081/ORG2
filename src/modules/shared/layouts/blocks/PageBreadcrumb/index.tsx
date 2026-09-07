@@ -23,7 +23,7 @@ import {
 import { hoverSidebarOpenAtom } from "@src/store/ui/hoverSidebarAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 
-import { PANEL_HEADER_TOKENS } from "../PanelHeader";
+import { PANEL_HEADER_TOKENS } from "../PanelHeader/tokens";
 
 // ============================================
 // Component

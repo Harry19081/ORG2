@@ -24,7 +24,7 @@ import type { GitWorktreeEntry } from "@src/api/http/git/types";
 import AnyIcon from "@src/components/AnyIcon";
 import { Placeholder } from "@src/components/Placeholder";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { sessionIdAtom } from "@src/engines/SessionCore";
 import { useFileReviewBatchActions } from "@src/hooks/fileReview";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";

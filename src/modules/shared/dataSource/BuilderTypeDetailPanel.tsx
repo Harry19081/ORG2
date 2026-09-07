@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { ArrowLeft01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks";
+import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 import Modal from "@src/scaffold/ModalSystem";
 
 import BuilderTypeAvatar from "./BuilderTypeAvatar";

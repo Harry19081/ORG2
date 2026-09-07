@@ -33,7 +33,7 @@ import { useTranslation } from "react-i18next";
 
 import { useActionSystem } from "@src/ActionSystem";
 import { Placeholder } from "@src/components/Placeholder";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { useSourceControlAttention } from "@src/hooks/git/useSourceControlAttention";
 import { useWorkStationTabShortcutBridge } from "@src/hooks/tabHost/useWorkStationTabShortcutBridge";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
