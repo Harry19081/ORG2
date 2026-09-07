@@ -186,12 +186,3 @@ closeMiniTerminalAtom.debugLabel = "chatPanel/miniTerminal/close";
 /** Panel folded to just its header row; the PTY stays mounted behind it. */
 export const miniTerminalCollapsedAtom = atom<boolean>(false);
 miniTerminalCollapsedAtom.debugLabel = "chatPanel/miniTerminal/collapsed";
-
-export const toggleMiniTerminalAtom = atom(null, (get, set) => {
-  if (get(miniTerminalVisibleAtom)) {
-    set(closeMiniTerminalAtom);
-    return;
-  }
-  set(openMiniTerminalAtom, get(miniTerminalClaimedIdsAtom)[0] ?? null);
-});
-toggleMiniTerminalAtom.debugLabel = "chatPanel/miniTerminal/toggle";
