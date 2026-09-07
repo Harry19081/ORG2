@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
@@ -15,7 +15,6 @@ import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollaps
 import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import {
   openRuntimeInChatPanelTabAtom,
-  patchChatPanelWorkItemTabAtom,
   syncActiveChatPanelTabStateAtom,
   toggleActiveChatPanelMaximizedAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
@@ -32,15 +31,13 @@ import { tuiModeAtom } from "@src/store/session/tuiModeAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import {
   chatPanelContentModeAtom,
-  chatPanelExploreOpenAtom,
   chatPanelSelectedCloudOrgAtom,
-  chatPanelSelectedProjectAtom,
-  chatPanelSelectedProjectOrgAtom,
-  chatPanelSelectedWorkItemAtom,
-  chatPanelSelectedWorkspaceAtom,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import {
+  activeChatPanelSurfaceAtom,
+  chatPanelMaximizedAtom,
+} from "@src/store/ui/chatPanel/surfaceAtoms";
 import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { openSideChatAtom } from "@src/store/ui/sideChatAtom";
 import { isHumanSession } from "@src/util/session/sessionDispatch";
@@ -75,8 +72,8 @@ import {
   shouldCollapseChatPanelTabRow,
   shouldOverlayChatSessionHeaders,
 } from "./header/chatPanelHeaderLayout";
+import { resolveChatPanelContentState } from "./hooks/chatPanelContentState";
 import { useChatPanelAccessReconciliation } from "./hooks/useChatPanelAccessReconciliation";
-import { useChatPanelContentState } from "./hooks/useChatPanelContentState";
 import { useChatPanelCreationContent } from "./hooks/useChatPanelCreationContent";
 import { useChatPanelHeaderActions } from "./hooks/useChatPanelHeaderActions";
 import { useChatPanelNavigationActions } from "./hooks/useChatPanelNavigationActions";
@@ -120,21 +117,8 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
 
     const contentMode = useAtomValue(chatPanelContentModeAtom);
     const startPageOpen = useAtomValue(chatPanelStartPageOpenAtom);
-    const selectedWorkItem = useAtomValue(chatPanelSelectedWorkItemAtom);
-    const selectedProject = useAtomValue(chatPanelSelectedProjectAtom);
-    const selectedProjectOrg = useAtomValue(chatPanelSelectedProjectOrgAtom);
-    const selectedWorkspace = useAtomValue(chatPanelSelectedWorkspaceAtom);
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
-    const exploreOpen = useAtomValue(chatPanelExploreOpenAtom);
-    const patchWorkItemTab = useSetAtom(patchChatPanelWorkItemTabAtom);
-
-    // Work-item edits flow through `chatPanelSelectedWorkItemAtom`; mirror them
-    // back onto the owning work-item tab so re-activating the tab does not
-    // replay a stale payload. No-ops when the payload reference is unchanged
-    // (e.g. the seed written on tab activation).
-    useEffect(() => {
-      if (selectedWorkItem) patchWorkItemTab(selectedWorkItem);
-    }, [selectedWorkItem, patchWorkItemTab]);
+    const surface = useAtomValue(activeChatPanelSurfaceAtom);
 
     const userChatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
     const syncActiveTabState = useSetAtom(syncActiveChatPanelTabStateAtom);
@@ -279,16 +263,11 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
       openSideChat(null);
     }, [openSideChat]);
 
-    const contentState = useChatPanelContentState({
+    const contentState = resolveChatPanelContentState({
       active,
       contentMode,
       currentSessionId: currentSessionId ?? null,
-      exploreOpen,
-      selectedCloudOrg,
-      selectedProject,
-      selectedProjectOrg,
-      selectedWorkItem,
-      selectedWorkspace,
+      surface,
     });
     const showFocusedWorkstationControls =
       shouldMountFocusedChatWorkstationControls({
