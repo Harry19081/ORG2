@@ -7,10 +7,8 @@ import {
   chatPanelTabsAtom,
   openRuntimeInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import {
-  chatPanelMaximizedAtom,
-  stationChatVisibilityAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   createInstrumentedStore,

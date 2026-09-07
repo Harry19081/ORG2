@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import { creatorLaunchpadActionsVisibleAtom } from "@src/store/session/creatorLaunchpadActionsVisibleAtom";
-import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanelAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { ChatPanelStartPage } from "./ChatPanelStartPage";
 

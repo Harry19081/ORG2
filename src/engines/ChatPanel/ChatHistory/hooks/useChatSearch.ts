@@ -20,7 +20,7 @@ import { useDebouncedCallback } from "@src/hooks/perf";
 import {
   chatFindInChatOpenAtomFamily,
   chatSearchSyncAtomFamily,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/miscAtoms";
 
 import type { OptimizedChatItem } from "../chatItemPipeline/types";
 import type { ChatHistoryListHandle } from "../components/ChatHistoryList";

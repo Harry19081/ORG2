@@ -11,7 +11,7 @@ import {
   goForwardChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { isMacOS } from "@src/util/platform/tauri";
 
 import { resolveChatPanelShortcutOwnership } from "./chatPanelShortcutOwnership";

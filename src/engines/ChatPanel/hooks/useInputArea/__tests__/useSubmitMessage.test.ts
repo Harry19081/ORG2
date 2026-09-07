@@ -8,7 +8,7 @@ import type {
   ComposerSnapshot,
 } from "@src/components/ComposerInput";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
-import { wpReadOnlyAtom } from "@src/store/ui/chatPanelAtom";
+import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
 import { type SmokeRoot, createSmokeRoot } from "@src/test/reactSmokeHarness";
 
 import type { InputAreaRefs } from "../types";
@@ -61,7 +61,7 @@ vi.mock("@src/store/session", async () => {
   return { sessionByIdAtom: () => atom(null) };
 });
 
-vi.mock("@src/store/ui/chatPanelAtom", async () => {
+vi.mock("@src/store/ui/chatPanel/miscAtoms", async () => {
   const { atom } = await import("jotai/vanilla");
   return { wpReadOnlyAtom: atom(false) };
 });

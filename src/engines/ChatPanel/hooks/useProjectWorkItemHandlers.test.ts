@@ -19,7 +19,7 @@ import {
   activeChatPanelTabAtom,
   chatPanelTabsAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanelAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { useProjectWorkItemHandlers } from "./useProjectWorkItemHandlers";
 

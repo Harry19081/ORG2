@@ -6,7 +6,7 @@ import { openWorkspaceSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotli
 import { openWorkspaceOverviewInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import type { Repo } from "@src/store/repo";
 import { repoLoadingAtom, reposAtom } from "@src/store/repo";
-import { WORKSPACE_OVERVIEW_TAB } from "@src/store/ui/chatPanelAtom";
+import { WORKSPACE_OVERVIEW_TAB } from "@src/store/ui/chatPanel/selectionAtoms";
 
 function repoDisplayName(repo: Repo): string {
   return repo.name || repo.path?.split("/").pop() || "Repo";

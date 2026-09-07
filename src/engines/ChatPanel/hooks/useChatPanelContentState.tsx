@@ -6,7 +6,7 @@ import {
   type ChatPanelSelectedProjectOrg,
   type ChatPanelSelectedWorkItem,
   type ChatPanelSelectedWorkspace,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 interface UseChatPanelContentStateOptions {
   active: boolean;

@@ -80,7 +80,7 @@ import { activeSessionIdAtom } from "@src/store/session/viewAtom";
 import {
   chatPanelSelectedCloudOrgAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import { isTerminalStatus } from "@src/types/session/session";
 
 import { asError } from "../result";

@@ -13,7 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelCreateTarget,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { ChatPanelStartPage } from "./ChatPanelStartPage";
 

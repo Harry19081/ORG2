@@ -8,7 +8,7 @@ import {
   chatPanelSelectedProjectAtom,
   chatPanelSelectedProjectOrgAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkManagementSection } from "@src/store/workstation";
 
 import {

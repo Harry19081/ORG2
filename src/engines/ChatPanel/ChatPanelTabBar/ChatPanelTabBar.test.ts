@@ -7,11 +7,11 @@ import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import type {
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import {
   CHAT_PANEL_CREATE_TARGET,
   chatPanelCreateTargetAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { ChatPanelTabBar, PlusMenuContent } from "./index";
 

@@ -30,7 +30,7 @@ import {
   sessionViewAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session/viewAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   type QueuedMessage,
   messageQueueAtom,

@@ -12,10 +12,10 @@ import {
 } from "@src/store/session";
 import {
   CHAT_PANEL_CREATE_TARGET,
-  CHAT_PANEL_SURFACE_KIND,
-  chatPanelNavigateAtom,
   chatPanelStartPageOpenAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 
 export function useChatPanelNavigationActions() {
   const setStartPageOpen = useSetAtom(chatPanelStartPageOpenAtom);

@@ -189,7 +189,7 @@ export function useSpotlight(
               const { openCreateTargetInChatPanelStartPageAtom } =
                 await import("@src/store/chatPanel/chatPanelTabsAtom");
               const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanelAtom");
+                await import("@src/store/ui/chatPanel/selectionAtoms");
               getInstrumentedStore().set(
                 openCreateTargetInChatPanelStartPageAtom,
                 {
@@ -205,7 +205,7 @@ export function useSpotlight(
               const { openCreateTargetInChatPanelStartPageAtom } =
                 await import("@src/store/chatPanel/chatPanelTabsAtom");
               const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanelAtom");
+                await import("@src/store/ui/chatPanel/selectionAtoms");
               getInstrumentedStore().set(
                 openCreateTargetInChatPanelStartPageAtom,
                 {

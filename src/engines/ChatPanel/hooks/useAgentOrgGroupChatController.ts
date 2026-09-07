@@ -26,7 +26,7 @@ import type {
 } from "@src/engines/ChatPanel/hooks/useInputArea/types";
 import { createLogger } from "@src/hooks/logger";
 import { activeSessionIdAtom } from "@src/store/session";
-import { groupChatViewSessionIdAtom } from "@src/store/ui/chatPanelAtom";
+import { groupChatViewSessionIdAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 const logger = createLogger("ChatView");
 

@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 import { SESSION_SIDEBAR_PAGE_SIZE } from "@src/store/session";
-import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanelAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
 import { STORY_ORG_SCOPE } from "@src/store/workstation/tabs";
 
 import { PROJECTS_NEW_WORK_ITEM_MENU_ITEM_ID } from "../sidebarConnectorUtils";

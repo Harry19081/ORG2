@@ -29,7 +29,7 @@ import {
   planAliasesContain,
 } from "@src/engines/SessionCore/derived/planDisplayEvents";
 import { createLogger } from "@src/hooks/logger";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   simulatorFollowAppLockAtom,
   simulatorSelectedAppAtom,

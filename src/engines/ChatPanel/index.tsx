@@ -31,15 +31,15 @@ import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom
 import {
   chatPanelContentModeAtom,
   chatPanelExploreOpenAtom,
-  chatPanelMaximizedAtom,
   chatPanelSelectedCloudOrgAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedProjectOrgAtom,
   chatPanelSelectedWorkItemAtom,
   chatPanelSelectedWorkspaceAtom,
   chatPanelStartPageOpenAtom,
-  chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { openSideChatAtom } from "@src/store/ui/sideChatAtom";
 import { isHumanSession } from "@src/util/session/sessionDispatch";
 

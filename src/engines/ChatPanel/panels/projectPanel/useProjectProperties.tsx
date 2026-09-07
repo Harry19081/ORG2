@@ -36,7 +36,7 @@ import {
   WorkstationTrailSurface,
 } from "@src/modules/shared/layouts/blocks";
 import { openProjectInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import type { ChatPanelSelectedProject } from "@src/store/ui/chatPanelAtom";
+import type { ChatPanelSelectedProject } from "@src/store/ui/chatPanel/selectionAtoms";
 
 const logger = createLogger("ProjectPanelView");
 

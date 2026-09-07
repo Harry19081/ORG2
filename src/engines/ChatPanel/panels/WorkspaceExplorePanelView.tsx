@@ -44,7 +44,7 @@ import {
   effectiveWorkspaceDefaultRepoLocationAtom,
   workspaceCustomDefaultRepoPathAtom,
 } from "@src/store/config/configAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { resolveDefaultRepoParentPath } from "@src/util/workspace/defaultRepoPath";
 

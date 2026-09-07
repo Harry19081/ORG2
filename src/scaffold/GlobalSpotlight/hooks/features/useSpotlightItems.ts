@@ -30,11 +30,11 @@ import {
   visitedSessionsAtom,
 } from "@src/store/session";
 import {
-  chatPanelMaximizedAtom,
   chatTurnPaginationEnabledAtom,
-  chatVisibleAtom,
   modelPickerStyleAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { chatVisibleAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { languageAtom } from "@src/store/ui/languageAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 import { spotlightRecentActionsAtom } from "@src/store/ui/spotlightRecentActionsAtom";

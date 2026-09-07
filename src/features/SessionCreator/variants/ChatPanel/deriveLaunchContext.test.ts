@@ -1,7 +1,7 @@
 import type {
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type { Project } from "@src/types/core/project";
 import type { WorkItem } from "@src/types/core/workItem";
 
