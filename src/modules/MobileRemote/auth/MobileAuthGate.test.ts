@@ -132,6 +132,38 @@ describe("MobileAuthGate", () => {
     };
   }
 
+  it("cancels pending login preparation without navigating and allows a fresh login", async () => {
+    const pending = deferred<string>();
+    const authClient = client({
+      buildLoginUrl: vi
+        .fn()
+        .mockReturnValueOnce(pending.promise)
+        .mockResolvedValue("https://login.example/fresh"),
+    });
+    const navigate = vi.fn();
+    await act(async () => {
+      root.render(createGate(authClient, () => null, { navigate }));
+    });
+    await act(async () => {
+      container.querySelector<HTMLButtonElement>("button")!.click();
+    });
+    expect(container.textContent).toContain("auth.cancel");
+    await act(async () => {
+      container.querySelector<HTMLButtonElement>("button")!.click();
+    });
+    expect(container.textContent).toContain("auth.signIn");
+    await act(async () => {
+      container.querySelector<HTMLButtonElement>("button")!.click();
+    });
+    expect(authClient.buildLoginUrl).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      pending.resolve("https://login.example/stale");
+    });
+    expect(navigate).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith("https://login.example/fresh");
+    expect(authClient.exchangeCallback).not.toHaveBeenCalled();
+  });
+
   it("does not mount protected children while signed out", async () => {
     const authClient = client();
     let protectedMounts = 0;
@@ -553,6 +585,52 @@ describe("MobileAuthGate", () => {
     expect(container.textContent).not.toContain("protected");
     expect(localStorage.getItem("orgii:org2-cloud-v1:auth")).toBeNull();
     expect(authClient.establishServerSession).toHaveBeenCalledTimes(1);
+  });
+
+  it("shares connection-triggered refresh and returns only the persisted rotated session", async () => {
+    writeMobileAuthSession(session, localStorage);
+    let auth: ReturnType<typeof useMobileAuth> | undefined;
+    function Protected() {
+      const current = useMobileAuth();
+      React.useEffect(() => {
+        auth = current;
+      }, [current]);
+      return React.createElement("div", null, "protected");
+    }
+    const refresh = deferred<MobileAuthSession>();
+    const restoreSession = vi
+      .fn()
+      .mockResolvedValueOnce(session)
+      .mockImplementationOnce(() => refresh.promise);
+    const authClient = client({ restoreSession });
+    await act(async () => {
+      root.render(createGate(authClient, () => React.createElement(Protected)));
+    });
+    documentHidden = true;
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    documentHidden = false;
+    let first!: Promise<MobileAuthSession>;
+    let second!: Promise<MobileAuthSession>;
+    await act(async () => {
+      document.dispatchEvent(new Event("visibilitychange"));
+      first = auth!.getConnectionSession!();
+      second = auth!.getConnectionSession!();
+      await Promise.resolve();
+    });
+    expect(restoreSession).toHaveBeenCalledTimes(2);
+    const rotated = {
+      ...session,
+      accessToken: "rotated-access",
+      refreshToken: "rotated-refresh",
+    };
+    await act(async () => {
+      refresh.resolve(rotated);
+      expect(await first).toEqual(rotated);
+      expect(await second).toEqual(rotated);
+      expect(localStorage.getItem("orgii:org2-cloud-v1:auth")).toContain(
+        "rotated-refresh"
+      );
+    });
   });
 
   it("makes sign-out cleanup win after refresh reaches the server-session side effect", async () => {

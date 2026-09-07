@@ -6,7 +6,9 @@
     "redirecting": "正在打开安全登录",
     "exchanging": "正在完成登录",
     "wait": "这通常只需要一点时间",
-    "signIn": "使用 GitHub 继续",
+    "signIn": "登录 ORG2 Cloud",
+    "cancel": "取消并返回登录",
+    "browserWait": "请在浏览器完成登录，或取消后重新登录",
     "errorTitle": "无法完成登录",
     "retry": "重试"
   },
@@ -98,12 +100,6 @@
       "unsupportedType": "仅支持图片文件",
       "processFailed": "无法处理所选图片"
     }
-  },
-  "modelPicker": {
-    "title": "选择模型",
-    "selectModel": "选择模型",
-    "loading": "正在加载模型…",
-    "empty": "桌面上没有可用模型"
   },
   "modelPicker": {
     "title": "选择模型",
