@@ -173,7 +173,7 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
               selectorClassName={`h-8 px-2! [&_.select-arrow]:text-text-2! ${
                 menuOpen
                   ? "[&_.select-arrow]:opacity-100 bg-sidebar-selected!"
-                  : "[&_.select-arrow]:opacity-0 hover:[&_.select-arrow]:opacity-100 hover:bg-sidebar-selected!"
+                  : "[&_.select-arrow]:opacity-0 group-hover/sidebar:[&_.select-arrow]:opacity-100 hover:[&_.select-arrow]:opacity-100 hover:bg-sidebar-selected!"
               } [&_.select-suffix]:ml-2 [&_.select-value]:flex-initial! [&_.select-value]:gap-3 [&_.select-value]:text-[13px] [&_.select-value]:font-semibold`}
               dataTestId="sidebar-org-selector"
             />
