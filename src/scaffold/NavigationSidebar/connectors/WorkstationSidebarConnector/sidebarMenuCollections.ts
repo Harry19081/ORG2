@@ -150,7 +150,9 @@ export function addActionsToFirstSessionSection({
   const sectionWithActions: NavigationMenuItem = {
     ...section,
     rowActions: [
+      ...(section.rowActions ?? []),
       {
+        showOnSidebarHover: true,
         icon: Search01Icon,
         dataIcon: "search",
         label: searchLabel,
@@ -158,6 +160,7 @@ export function addActionsToFirstSessionSection({
         onClick: onSearch,
       },
       {
+        showOnSidebarHover: true,
         icon: Refresh04Icon,
         dataIcon: "refresh-cw",
         iconClassName: refreshIconClassName,
@@ -165,7 +168,6 @@ export function addActionsToFirstSessionSection({
         dataTestId: "sidebar-sessions-refresh",
         onClick: onRefresh,
       },
-      ...(section.rowActions ?? []),
     ],
   };
 

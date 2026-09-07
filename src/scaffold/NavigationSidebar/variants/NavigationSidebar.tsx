@@ -398,7 +398,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                         <span className="min-w-0 truncate text-[11px] font-medium tracking-wider text-text-2 uppercase">
                           {section.title}
                         </span>
-                        <span className="hidden shrink-0 items-center leading-none text-text-2 group-hover/section-title:inline-flex group-hover/sidebar:inline-flex">
+                        <span className="hidden shrink-0 items-center leading-none text-text-2 group-hover/section-title:inline-flex">
                           <NavigationMenuRowActionButton
                             icon={
                               isSectionCollapsed
@@ -476,7 +476,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                         <span className="min-w-0 truncate text-[11px] font-medium tracking-wider text-text-2 uppercase">
                           {section.title}
                         </span>
-                        <span className="hidden shrink-0 items-center leading-none text-text-2 group-hover/section-title:inline-flex group-hover/sidebar:inline-flex">
+                        <span className="hidden shrink-0 items-center leading-none text-text-2 group-hover/section-title:inline-flex">
                           <NavigationMenuRowActionButton
                             icon={
                               isSectionCollapsed
@@ -491,19 +491,19 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                         </span>
                       </span>
                       {section.headerActions && (
-                        <span
-                          className={`ml-auto shrink-0 items-center gap-1 leading-none text-text-2 ${
-                            section.headerActions.some(
-                              (action) => action.active
-                            )
-                              ? "inline-flex"
-                              : "hidden group-hover/section-title:inline-flex group-hover/sidebar:inline-flex"
-                          }`}
-                        >
-                          {section.headerActions.map((action) => {
-                            return (
+                        <span className="ml-auto inline-flex shrink-0 items-center gap-1 leading-none text-text-2">
+                          {section.headerActions.map((action) => (
+                            <span
+                              key={action.label}
+                              className={
+                                action.active
+                                  ? "inline-flex"
+                                  : action.showOnSidebarHover
+                                    ? "hidden group-focus-within/section-title:inline-flex group-hover/sidebar:inline-flex"
+                                    : "hidden group-focus-within/section-title:inline-flex group-hover/section-title:inline-flex"
+                              }
+                            >
                               <NavigationMenuRowActionButton
-                                key={action.label}
                                 icon={action.icon}
                                 iconClassName={action.iconClassName}
                                 label={action.label}
@@ -511,8 +511,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                                 dataTestId={action.dataTestId}
                                 onClick={action.onClick}
                               />
-                            );
-                          })}
+                            </span>
+                          ))}
                         </span>
                       )}
                     </div>

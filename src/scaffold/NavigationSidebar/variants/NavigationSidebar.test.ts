@@ -97,12 +97,19 @@ describe("NavigationSidebar", () => {
             label: "Today",
             rowActions: [
               {
+                label: "More",
+                dataTestId: "section-more",
+                onClick: vi.fn(),
+              },
+              {
                 label: "Search sessions",
+                showOnSidebarHover: true,
                 dataTestId: "sidebar-sessions-search",
                 onClick: vi.fn(),
               },
               {
                 label: "Refresh",
+                showOnSidebarHover: true,
                 dataTestId: "sidebar-sessions-refresh",
                 onClick: vi.fn(),
               },
@@ -120,6 +127,12 @@ describe("NavigationSidebar", () => {
     expect(markup).toContain('title="Search sessions"');
     expect(markup).toContain('data-testid="sidebar-sessions-refresh"');
     expect(markup).toContain('title="Refresh"');
+    expect(markup).toContain(
+      '<span class="hidden group-focus-within/section-title:inline-flex group-hover/section-title:inline-flex"><button type="button" aria-label="More"'
+    );
+    expect(markup.indexOf('data-testid="section-more"')).toBeLessThan(
+      markup.indexOf('data-testid="sidebar-sessions-search"')
+    );
     expect(markup.match(/group-hover\/sidebar:inline-flex/g)).toHaveLength(2);
     expect(
       markup.indexOf('data-testid="sidebar-sessions-search"')

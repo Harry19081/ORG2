@@ -15,6 +15,8 @@ export interface NavigationMenuRowAction {
   iconClassName?: string;
   label: string;
   active?: boolean;
+  /** Reveal this section action when the pointer is anywhere in the sidebar. */
+  showOnSidebarHover?: boolean;
   /** Stable rendered selector for high-value header/row actions. */
   dataTestId?: string;
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
