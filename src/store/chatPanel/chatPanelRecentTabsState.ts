@@ -1,6 +1,10 @@
 import { atom } from "jotai";
 
-import { recordRecentTab, removeRecentTab } from "@src/shared/tabs/recentTabs";
+import {
+  recordRecentItem,
+  recordRecentTransition,
+  removeRecentTab,
+} from "@src/shared/tabs/recentTabs";
 
 import type { ChatPanelTab } from "./chatPanelTabsModel";
 
@@ -27,9 +31,11 @@ function recordRecentChatPanelTab(
   current: readonly ChatPanelTab[],
   tab: ChatPanelTab
 ): ChatPanelTab[] {
-  return recordRecentTab(
-    current.filter((candidate) => !isSameRecentChatPanelTab(candidate, tab)),
-    tab
+  return recordRecentItem(
+    current,
+    tab,
+    (left, right) =>
+      left.id === right.id || isSameRecentChatPanelTab(left, right)
   );
 }
 
@@ -38,19 +44,16 @@ export const recordChatPanelTabTransitionAtom = atom(
   null,
   (_get, set, transition: ChatPanelTabTransition) => {
     const { previousTab, nextTab } = transition;
-    set(recentChatPanelTabsAtom, (current) => {
-      const withoutDestination = current.filter(
-        (candidate) => !isSameRecentChatPanelTab(candidate, nextTab)
-      );
-      if (
-        !previousTab ||
-        isSameRecentChatPanelTab(previousTab, nextTab) ||
-        previousTab.type === "start-page"
-      ) {
-        return withoutDestination;
-      }
-      return recordRecentChatPanelTab(withoutDestination, previousTab);
-    });
+    set(recentChatPanelTabsAtom, (current) =>
+      recordRecentTransition(
+        current,
+        previousTab,
+        (candidate) => isSameRecentChatPanelTab(candidate, nextTab),
+        (candidate) => candidate.type !== "start-page",
+        (left, right) =>
+          left.id === right.id || isSameRecentChatPanelTab(left, right)
+      )
+    );
   }
 );
 recordChatPanelTabTransitionAtom.debugLabel =

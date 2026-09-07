@@ -2,11 +2,55 @@ import { describe, expect, it } from "vitest";
 
 import {
   RECENT_TABS_LIMIT,
+  recordRecentItem,
   recordRecentTab,
+  recordRecentTransition,
   removeRecentTab,
 } from "./recentTabs";
 
 describe("recent tab history", () => {
+  it("supports scoped identities without merging histories or mutating inputs", () => {
+    const same = (
+      a: { scope: string; id: string },
+      b: { scope: string; id: string }
+    ) => a.scope === b.scope && a.id === b.id;
+    const initial = Object.freeze([
+      { scope: "a", id: "1" },
+      { scope: "b", id: "1" },
+    ]);
+    expect(recordRecentItem(initial, { scope: "b", id: "1" }, same)).toEqual([
+      initial[1],
+      initial[0],
+    ]);
+    expect(
+      recordRecentTransition(
+        initial,
+        { scope: "a", id: "2" },
+        (item) => item.scope === "b",
+        () => true,
+        same
+      )
+    ).toEqual([{ scope: "a", id: "2" }, initial[0]]);
+    expect(initial).toHaveLength(2);
+  });
+
+  it("removes destinations even when leaving no item, the destination itself, or an excluded item", () => {
+    const current = [{ id: "a" }, { id: "b" }];
+    const destination = (item: { id: string }) => item.id === "a";
+    const same = (a: { id: string }, b: { id: string }) => a.id === b.id;
+    for (const previous of [null, undefined, { id: "a" }, { id: "start" }]) {
+      expect(
+        recordRecentTransition(
+          current,
+          previous,
+          destination,
+          (item) => item.id !== "start",
+          same
+        )
+      ).toEqual([{ id: "b" }]);
+    }
+  });
+
   it("keeps most recently visited unique entries first and enforces the bound", () => {
     const initial = Array.from({ length: RECENT_TABS_LIMIT }, (_, index) => ({
       id: `tab-${index}`,
