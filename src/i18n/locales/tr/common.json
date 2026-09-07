@@ -162,7 +162,7 @@
       "commandPalette": "Komut Paleti",
       "goToFile": "Dosyaya Git...",
       "selectModel": "Model Seç...",
-      "switchWorkspace": "Çalışma Alanını Değiştir...",
+      "switchWorkspace": "Çalışma Dizinini Değiştir...",
       "switchBranch": "Dal Değiştir...",
       "switchRunningLocation": "Çalışma Konumunu Değiştir...",
       "settings": "Ayarlar...",
@@ -195,13 +195,13 @@
     "openSessionBeforeLinking": "Bir iş öğesini bağlamadan önce bir oturum açın.",
     "sessionLinkedToWorkItem": "Oturum iş öğesine bağlandı.",
     "sessionLinkFailed": "Oturum bağlanamadı: {{message}}",
-    "chooseFolderNewWorkspace": "Çalışma alanı oluşturmak için klasör seçin",
-    "chooseExistingWorkspace": "Mevcut çalışma alanını seçin",
+    "chooseFolderNewWorkspace": "Çalışma dizini için üst klasör seçin",
+    "chooseExistingWorkspace": "Mevcut çalışma dizinini seçin",
     "selectDirectoryFailed": "Dizin seçilemedi",
-    "workspaceCreated": "Çalışma alanı oluşturuldu",
-    "workspaceCreateFailed": "Çalışma alanı oluşturulamadı",
-    "workspaceImported": "Çalışma alanı içe aktarıldı",
-    "workspaceImportFailed": "Çalışma alanı içe aktarılamadı",
+    "workspaceCreated": "Çalışma dizini oluşturuldu",
+    "workspaceCreateFailed": "Çalışma dizini oluşturulamadı",
+    "workspaceImported": "Çalışma dizini içe aktarıldı",
+    "workspaceImportFailed": "Çalışma dizini içe aktarılamadı",
     "chooseFolderCloneRepo": "Depoyu klonlamak için klasör seçin",
     "repositoryCloned": "Depo klonlandı",
     "repositoryCloneFailed": "Depo klonlanamadı"
@@ -376,9 +376,9 @@
     "moreSettings": "Daha fazla ayar",
     "sort": "Sırala",
     "openFolder": "Klasör aç",
-    "addWorkspace": "Workspace ekle",
+    "addWorkspace": "Çalışma dizini ekle",
     "openSpotlight": "Spotlight'ı aç",
-    "openWorkspace": "Workspace aç",
+    "openWorkspace": "Çalışma dizini aç",
     "skipThisVersion": "Bu sürümü atla",
     "later": "Daha sonra",
     "link": "Bağla",
@@ -990,8 +990,8 @@
     "retryToScanAgain": "Tekrar taramak için yeniden deneyin",
     "noTokensFound": "Token bulunamadı",
     "addCssVariables": "Projenize CSS değişkenleri ekleyin",
-    "noWorkspaceExplorerTitle": "Açık Workspace yok",
-    "noWorkspaceExplorerSubtitle": "Dosyaları görmek için çalışma alanını açın",
+    "noWorkspaceExplorerTitle": "Açık çalışma dizini yok",
+    "noWorkspaceExplorerSubtitle": "Dosyaları görmek için çalışma dizinini açın",
     "cannotFindRepo": "{{repoName}} bulunamıyor",
     "lastSeenAtPath": "Son görüldüğü konum: {{path}}",
     "unsupportedFileType": "Desteklenmeyen dosya türü",
@@ -1062,13 +1062,13 @@
     "publishingBranch": "Publishing...",
     "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git başlatılmadı",
-    "notGitInitializedTooltip": "Bu Workspace henüz .git dizinine sahip değil.",
+    "notGitInitializedTooltip": "Bu çalışma dizini henüz .git dizinine sahip değil.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
     "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
     "branchTooltip": "Dal: {{branch}}",
     "branchTooltipSwitching": "Dal: {{branch}} (geçiş yapılıyor…)",
-    "switchWorkspaceTooltip": "Workspace değiştir",
+    "switchWorkspaceTooltip": "Çalışma dizinini değiştir",
     "switchWorktreeTooltip": "Worktree değiştir",
     "switchBranchTooltip": "Dal değiştir",
     "switchLocalBranchTooltip": "Yerel dalı değiştir",
@@ -1625,23 +1625,23 @@
         "current": "Geçerli",
         "repo": "Depolar",
         "systemPaths": "Sistem Yolları",
-        "usedElsewhere": "Başka yerde kullanıldı",
-        "workspace": "Workspace",
-        "thisOrg": "Bu çalışma alanı",
-        "outsideOrg": "Bu çalışma alanının dışında"
+        "usedElsewhere": "Diğer uygulamalarda kullanıldı",
+        "workspace": "Çalışma dizini",
+        "thisOrg": "Bu çalışma dizini",
+        "outsideOrg": "Bu çalışma dizininin dışında"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "GitHub URL'sinden klonla",
         "cloneFromMyGitHub": "GitHub hesabımdan klonla",
-        "createWorkspace": "Yeni Workspace oluştur"
+        "createWorkspace": "Yeni çalışma dizini oluştur"
       },
       "sources": {
         "cloningFromGitHub": "GitHub'dan klonlanıyor",
         "cloningFromGitHubUrl": "GitHub URL'sinden klonla",
         "cloningFromMyGitHub": "GitHub hesabımdan klonla",
-        "creatingWorkspace": "yeni Workspace oluşturuluyor",
-        "creatingMultiRepoWorkspace": "multi-repo Workspace oluşturuluyor"
+        "creatingWorkspace": "yeni çalışma dizini oluşturuluyor",
+        "creatingMultiRepoWorkspace": "çok depolu çalışma dizini oluşturuluyor"
       },
       "forms": {
         "repoName": "Repo adı",
@@ -1649,19 +1649,19 @@
         "chooseDestinationPath": "Hedef yolu seçin",
         "choose": "Seç",
         "createAt": "{{path}} içinde oluştur",
-        "createWorkspaceTitle": "Yeni Workspace",
-        "creatingWorkspace": "Workspace oluşturuluyor...",
-        "readyToCreateWorkspace": "Workspace oluşturmaya hazır",
-        "workspaceName": "Workspace adı",
-        "workspaceNamePlaceholder": "Workspace’im"
+        "createWorkspaceTitle": "Yeni Çalışma Dizini",
+        "creatingWorkspace": "Çalışma dizini oluşturuluyor...",
+        "readyToCreateWorkspace": "Çalışma dizini oluşturmaya hazır",
+        "workspaceName": "Dizin adı",
+        "workspaceNamePlaceholder": "Çalışma dizinim"
       },
       "path": {
         "switchTo": "Şuna geç",
         "switchToTemplate": "{workspace} konumuna geç",
         "search": "Ara",
-        "manageWorkspace": "Çalışma alanını yönet",
-        "addBy": "Workspace ekleme yöntemi",
-        "addByTemplate": "{source} ile Workspace ekle"
+        "manageWorkspace": "Çalışma dizinini yönet",
+        "addBy": "Çalışma dizini ekleme yöntemi",
+        "addByTemplate": "{source} ile çalışma dizini ekle"
       },
       "pathImport": {
         "addLabel": "Ekle",
@@ -1670,7 +1670,7 @@
       },
       "gitInitPrompt": {
         "title": "Git başlatılsın mı?",
-        "message": "Bu Workspace içinde .git klasörü yok. Git deposu olarak başlatılsın mı?",
+        "message": "Bu çalışma dizininde .git klasörü yok. Git deposu olarak başlatılsın mı?",
         "ok": "Git başlat",
         "cancel": "Klasör olarak tut"
       }
@@ -1749,10 +1749,10 @@
       "sourceAria": "Çalışma alanı kaynağını seç",
       "on": "üzerinde",
       "branchAria": "Branch seç",
-      "switchWorkspace": "Workspace değiştir",
+      "switchWorkspace": "Çalışma dizinini değiştir",
       "switchBranch": "Branch değiştir",
       "switchLocation": "Çalıştırma konumunu değiştir",
-      "sessionWorkspace": "Oturum Workspace'ini değiştir",
+      "sessionWorkspace": "Oturum çalışma dizinini değiştir",
       "locationAria": "Çalıştırma konumunu seç",
       "systemPaths": {
         "home": {
@@ -1873,16 +1873,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Workspace değiştir"
+          "label": "Çalışma dizinini değiştir"
         },
         "switchBranch": {
           "label": "Dal değiştir"
         },
         "addWorkspace": {
-          "label": "Workspace ekle"
+          "label": "Çalışma dizini ekle"
         },
         "createMultiRepoWorkspace": {
-          "label": "Multi-repo Workspace ekle"
+          "label": "Çok depolu çalışma dizini ekle"
         },
         "showSourceControl": {
           "label": "Source Control göster"
@@ -2021,7 +2021,7 @@
     "hidePrimarySidebar": "Kenar çubuğunu gizle",
     "searchFiles": "Dosya ara",
     "openBrowser": "Tarayıcıyı aç",
-    "switchWorkspace": "Workspace değiştir / ekle",
+    "switchWorkspace": "Çalışma dizinini değiştir / ekle",
     "openEditor": "Düzenleyiciyi aç",
     "hideTerminal": "Terminali gizle",
     "hideFiles": "Dosyaları gizle",
@@ -2115,10 +2115,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Git başlatılmadı",
-    "notGitInitializedSubtitle": "Bu Workspace içinde değişiklikleri izlemek, commit oluşturmak ve branch araçlarını kullanmak için Git'i başlatın.",
+    "notGitInitializedSubtitle": "Bu çalışma dizininde değişiklikleri izlemek, commit oluşturmak ve branch araçlarını kullanmak için Git'i başlatın.",
     "initializeGit": "Git'i başlat",
     "initializingGit": "Git başlatılıyor...",
-    "noRemoteForPublish": "Bu Workspace artık bir Git deposu, ancak henüz remote yok. Bu branch'i yayınlamadan önce origin gibi bir remote ekleyin.",
+    "noRemoteForPublish": "Bu çalışma dizini artık bir Git deposu, ancak henüz remote yok. Bu branch'i yayınlamadan önce origin gibi bir remote ekleyin.",
     "generateCommitMessage": "AI ile commit mesajı oluştur",
     "pull": "Pull",
     "push": "Push",
@@ -2208,24 +2208,24 @@
     "parentFolderPlaceholder": "Parent folder seçin"
   },
   "workspaceForm": {
-    "title": "Çoklu Repo Workspace Oluştur",
-    "editTitle": "Workspace Düzenle",
-    "createWorkspace": "Çoklu repo Workspace oluştur",
-    "multiRepoWorkspace": "Çoklu repo Workspace",
-    "createWorkspaceDesc": "Birden fazla repodan Workspace oluştur",
+    "title": "Çok depolu çalışma dizini oluştur",
+    "editTitle": "Çalışma dizinini düzenle",
+    "createWorkspace": "Çok depolu çalışma dizini oluştur",
+    "multiRepoWorkspace": "Çok depolu çalışma dizini",
+    "createWorkspaceDesc": "Birden fazla repodan çalışma dizini oluştur",
     "filterPlaceholder": "Repo filtrele...",
-    "selectRepos": "Workspace için repo seçin",
+    "selectRepos": "Çalışma dizini için repo seçin",
     "noReposFound": "Eşleşen repo bulunamadı",
     "noRepos": "Kullanılabilir repo yok",
     "current": "mevcut",
-    "workspaceName": "Workspace Adı",
-    "workspaceNamePlaceholder": "Workspace'im",
-    "willInclude": "Workspace {{count}} repo içerecek",
+    "workspaceName": "Çalışma dizini adı",
+    "workspaceNamePlaceholder": "Çalışma dizinim",
+    "willInclude": "Çalışma dizini {{count}} repo içerecek",
     "statusSelectAtLeastTwo": "En az 2 repo seçin",
-    "statusReadyToCreate": "Workspace oluşturmaya hazır",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "{{repo}} Workspace",
-    "windowTitle": "Workspace"
+    "statusReadyToCreate": "Çalışma dizini oluşturmaya hazır",
+    "defaultName": "Çalışma dizini",
+    "defaultNameWithRepo": "{{repo}} çalışma dizini",
+    "windowTitle": "Çalışma dizini"
   },
   "database": {
     "addConnection": "Add Database Connection",

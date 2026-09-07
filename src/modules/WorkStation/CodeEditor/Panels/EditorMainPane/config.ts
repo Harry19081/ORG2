@@ -10,7 +10,7 @@ import type { QuickAction } from "@src/modules/WorkStation/shared";
 import type { SourceControlFilterMode } from "@src/modules/WorkStation/shared/SidebarModules";
 import {
   openEditorSpotlight,
-  openWorkspaceSpotlight,
+  openWorkingDirectorySpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import type { PanelState } from "@src/store/workstation/tabs";
 
@@ -68,7 +68,7 @@ export function createEditorQuickActions(
     {
       id: "add-workspace",
       label: t("commands.switchWorkspace"),
-      onAction: () => openWorkspaceSpotlight("switch"),
+      onAction: () => openWorkingDirectorySpotlight("switch"),
     },
     {
       id: "search-files",

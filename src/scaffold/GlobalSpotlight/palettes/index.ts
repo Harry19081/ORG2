@@ -8,9 +8,9 @@
  * `SpotlightShell` / `PaletteBody` from "../shell".
  */
 
-export { WorkspacePalette } from "./WorkspacePalette";
+export { WorkingDirectoryPalette } from "./WorkingDirectoryPalette";
 
-export { WorkspaceDropdown } from "./WorkspacePalette/WorkspaceDropdown";
+export { WorkingDirectoryDropdown } from "./WorkingDirectoryPalette/WorkingDirectoryDropdown";
 
 export { BranchPalette, WorktreePalette } from "./BranchPalette";
 

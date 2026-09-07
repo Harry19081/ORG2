@@ -22,37 +22,78 @@ use project_management::projects::types::{
 
 const POLL_INTERVAL_SECS: u64 = 30;
 
-/// Spawn the routine scheduler background task. Polls every 30 seconds.
+/// Wake at the next occurrence. A narrow 30s configuration check preserves
+/// CLI/other-process edits; unchanged, not-yet-due plans do no evaluation work.
 pub fn spawn(app_handle: tauri::AppHandle) {
     tauri::async_runtime::spawn(async move {
-        info!("[routine-scheduler] started (poll={}s)", POLL_INTERVAL_SECS);
+        let mut revision = None;
+        let mut next_evaluation: Option<DateTime<Utc>> = None;
         loop {
-            tokio::time::sleep(std::time::Duration::from_secs(POLL_INTERVAL_SECS)).await;
-            if let Err(err) = tick(&app_handle, Utc::now()).await {
-                warn!("[routine-scheduler] tick error: {}", err);
+            let observed = tokio::task::spawn_blocking(
+                project_management::routine_service::schedule_revision::read,
+            )
+            .await;
+            let now = Utc::now();
+            match observed {
+                Ok(Ok(observed)) => {
+                    if revision.as_ref() != Some(&observed)
+                        || next_evaluation.is_some_and(|deadline| deadline <= now)
+                    {
+                        revision = Some(observed);
+                        next_evaluation = match tick(&app_handle, now).await {
+                            Ok(next) => next,
+                            Err(err) => {
+                                warn!("[routine-scheduler] tick error: {}", err);
+                                Some(now + chrono::Duration::seconds(POLL_INTERVAL_SECS as i64))
+                            }
+                        };
+                    }
+                }
+                error => {
+                    warn!(
+                        "[routine-scheduler] configuration probe failed: {:?}",
+                        error
+                    );
+                    next_evaluation =
+                        Some(now + chrono::Duration::seconds(POLL_INTERVAL_SECS as i64));
+                }
             }
+            let now = Utc::now();
+            let wait_ms = next_evaluation
+                .map(|at| (at - now).num_milliseconds())
+                .unwrap_or(i64::MAX)
+                .clamp(1000, POLL_INTERVAL_SECS as i64 * 1000);
+            tokio::time::sleep(std::time::Duration::from_millis(wait_ms as u64)).await;
         }
     });
 }
 
 /// Run one scheduler evaluation pass (e2e/debug hook).
 pub async fn debug_run_once(app: &tauri::AppHandle) -> Result<(), String> {
-    tick(app, Utc::now()).await
+    tick(app, Utc::now()).await.map(|_| ())
 }
 
-async fn tick(app: &tauri::AppHandle, now: DateTime<Utc>) -> Result<(), String> {
+async fn tick(app: &tauri::AppHandle, now: DateTime<Utc>) -> Result<Option<DateTime<Utc>>, String> {
     let routines = match tokio::task::spawn_blocking(io::list_enabled_routines).await {
         Ok(Ok(routines)) => routines,
         Ok(Err(err)) => return Err(err),
         Err(err) => return Err(format!("Task join error: {err}")),
     };
 
+    let mut next_evaluation = None;
     for routine in routines {
-        if let Err(err) = evaluate_routine(app, &routine, now).await {
-            warn!(
-                "[routine-scheduler] evaluation of {} failed: {}",
-                routine.id, err
-            );
+        match evaluate_routine(app, &routine, now).await {
+            Ok(next) => earliest(&mut next_evaluation, next),
+            Err(err) => {
+                earliest(
+                    &mut next_evaluation,
+                    Some(now + chrono::Duration::seconds(POLL_INTERVAL_SECS as i64)),
+                );
+                warn!(
+                    "[routine-scheduler] evaluation of {} failed: {}",
+                    routine.id, err
+                );
+            }
         }
     }
 
@@ -60,23 +101,31 @@ async fn tick(app: &tauri::AppHandle, now: DateTime<Utc>) -> Result<(), String> 
     // canonical routine.invoke — the same entry manual CLI runs use.
     // Converted legacy rows are disabled at conversion time, so a routine
     // is only ever driven by ONE of the two passes.
-    if let Err(err) = portable_tick(now).await {
-        warn!("[routine-scheduler] portable tick error: {}", err);
+    earliest(&mut next_evaluation, portable_tick(now).await?);
+    Ok(next_evaluation)
+}
+
+fn earliest(current: &mut Option<DateTime<Utc>>, candidate: Option<DateTime<Utc>>) {
+    if let Some(candidate) = candidate {
+        *current = Some(current.map_or(candidate, |current| current.min(candidate)));
     }
-    Ok(())
 }
 
 /// Evaluate the portable `pm_routines` schedule activations (design
 /// §10.4). Cron is evaluated in the timezone declared by the portable spec.
 /// Catch-up: both portable policies (`none`, `fire_once`) reduce to
 /// "fire the latest missed tick once", matching the legacy collapse.
-async fn portable_tick(now: DateTime<Utc>) -> Result<(), String> {
+async fn portable_tick(now: DateTime<Utc>) -> Result<Option<DateTime<Utc>>, String> {
     use project_management::routine_service as routines;
 
     let candidates = tokio::task::spawn_blocking(routines::scheduled_candidates)
         .await
         .map_err(|err| format!("Task join error: {err}"))??;
 
+    let mut next_evaluation = None;
+    // A routine may have several activations; persist one earliest deadline.
+    let mut marks =
+        std::collections::HashMap::<String, (bool, Option<DateTime<Utc>>, Option<i64>)>::new();
     for candidate in candidates {
         let window_start = candidate
             .last_evaluated_at
@@ -143,24 +192,32 @@ async fn portable_tick(now: DateTime<Utc>) -> Result<(), String> {
         )
         .ok()
         .flatten();
-        let name = candidate.name.clone();
-        let _ = tokio::task::spawn_blocking(move || {
-            routines::mark_evaluated(
-                &name,
-                now.timestamp_millis(),
-                next.map(|at| at.timestamp_millis()),
-            )
-        })
-        .await;
+        earliest(&mut next_evaluation, next);
+        let mark =
+            marks
+                .entry(candidate.name.clone())
+                .or_insert((false, None, candidate.next_fire_at));
+        mark.0 |= !due.is_empty() || candidate.last_evaluated_at.is_none();
+        earliest(&mut mark.1, next);
     }
-    Ok(())
+    for (name, (evaluated, next, previous_next)) in marks {
+        let next_ms = next.map(|at| at.timestamp_millis());
+        if evaluated || next_ms != previous_next {
+            tokio::task::spawn_blocking(move || {
+                routines::mark_evaluated(&name, now.timestamp_millis(), next_ms)
+            })
+            .await
+            .map_err(|err| format!("Task join error: {err}"))??;
+        }
+    }
+    Ok(next_evaluation)
 }
 
 async fn evaluate_routine(
     app: &tauri::AppHandle,
     routine: &RoutineDefinition,
     now: DateTime<Utc>,
-) -> Result<(), String> {
+) -> Result<Option<DateTime<Utc>>, String> {
     let window_start = watermark(routine, now);
     let due = due_times(&routine.trigger, &window_start, &now)?;
     let to_fire = apply_catch_up_policy(
@@ -185,18 +242,22 @@ async fn evaluate_routine(
         RoutineTrigger::OneTime { .. } if !due.is_empty() => None,
         trigger => next_occurrence(trigger, &now)?,
     };
-    let routine_id = routine.id.clone();
-    tokio::task::spawn_blocking(move || {
-        io::update_routine_schedule_marks(
-            &routine_id,
-            now.timestamp_millis(),
-            next_fire_at.map(|at| at.timestamp_millis()),
-        )
-    })
-    .await
-    .map_err(|err| format!("Task join error: {err}"))??;
-
-    Ok(())
+    if !due.is_empty()
+        || routine.last_evaluated_at.is_none()
+        || routine.next_fire_at != next_fire_at.map(|at| at.to_rfc3339())
+    {
+        let routine_id = routine.id.clone();
+        tokio::task::spawn_blocking(move || {
+            io::update_routine_schedule_marks(
+                &routine_id,
+                now.timestamp_millis(),
+                next_fire_at.map(|at| at.timestamp_millis()),
+            )
+        })
+        .await
+        .map_err(|err| format!("Task join error: {err}"))??;
+    }
+    Ok(next_fire_at)
 }
 
 async fn fire(app: &tauri::AppHandle, routine: &RoutineDefinition, scheduled_at: &DateTime<Utc>) {
@@ -279,6 +340,61 @@ fn apply_catch_up_policy(
 mod tests {
     use super::*;
     use chrono::TimeZone;
+
+    #[tokio::test]
+    async fn portable_deadlines_do_not_rewrite_not_due_watermarks() {
+        let _sandbox = test_helpers::test_env::sandbox();
+        let connection = database::db::get_projects_connection().unwrap();
+        project_management::projects::schema::init_project_tables(&connection).unwrap();
+        let raw = std::fs::read_to_string(
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../../docs/orgtrack-pm-protocol/fixtures/routine-spec.json"),
+        )
+        .unwrap();
+        let mut fixture: serde_json::Value = serde_json::from_str(&raw).unwrap();
+        fixture["spec"]["activations"] = serde_json::json!([
+            {"type": "schedule", "cron": "0 0 * * *", "timezone": "UTC"},
+            {"type": "schedule", "cron": "0 6 * * *", "timezone": "UTC"}
+        ]);
+        let file = serde_json::from_value(fixture).unwrap();
+        let applied = project_management::routine_service::apply(&file).unwrap();
+        let now = at(2026, 9, 7, 12, 0);
+        let next = at(2026, 9, 8, 0, 0);
+        assert_eq!(portable_tick(now).await.unwrap(), Some(next));
+        let read_marks = || {
+            connection
+                .query_row(
+                    "SELECT last_evaluated_at, next_fire_at FROM pm_routines WHERE name = ?1",
+                    [&applied.name],
+                    |row| Ok((row.get::<_, i64>(0)?, row.get::<_, i64>(1)?)),
+                )
+                .unwrap()
+        };
+        assert_eq!(
+            read_marks(),
+            (now.timestamp_millis(), next.timestamp_millis())
+        );
+        for i in 1..=120 {
+            assert_eq!(
+                portable_tick(now + chrono::Duration::seconds(i * 30))
+                    .await
+                    .unwrap(),
+                Some(next)
+            );
+        }
+        assert_eq!(
+            read_marks(),
+            (now.timestamp_millis(), next.timestamp_millis())
+        );
+        // A due occurrence advances once; another activation's earlier deadline
+        // cannot be overwritten by iteration order. Missing scope is audited by
+        // the existing production path rather than launching a real agent.
+        assert_eq!(
+            portable_tick(next).await.unwrap(),
+            Some(at(2026, 9, 8, 6, 0))
+        );
+        assert_eq!(read_marks().0, next.timestamp_millis());
+    }
 
     fn at(y: i32, mo: u32, d: u32, h: u32, mi: u32) -> DateTime<Utc> {
         Utc.with_ymd_and_hms(y, mo, d, h, mi, 0).unwrap()

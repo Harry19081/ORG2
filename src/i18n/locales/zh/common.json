@@ -24,7 +24,7 @@
       "commandPalette": "命令面板",
       "goToFile": "转到文件...",
       "selectModel": "选择模型...",
-      "switchWorkspace": "切换工作区...",
+      "switchWorkspace": "切换工作目录...",
       "switchBranch": "切换分支...",
       "switchRunningLocation": "切换运行位置...",
       "settings": "设置...",
@@ -57,13 +57,13 @@
     "openSessionBeforeLinking": "请先打开一个会话再关联工作项。",
     "sessionLinkedToWorkItem": "会话已关联到工作项。",
     "sessionLinkFailed": "关联会话失败：{{message}}",
-    "chooseFolderNewWorkspace": "选择用于创建工作区的文件夹",
-    "chooseExistingWorkspace": "选择已有工作区",
+    "chooseFolderNewWorkspace": "选择工作目录的父文件夹",
+    "chooseExistingWorkspace": "选择已有工作目录",
     "selectDirectoryFailed": "选择目录失败",
-    "workspaceCreated": "工作区已创建",
-    "workspaceCreateFailed": "创建工作区失败",
-    "workspaceImported": "工作区已导入",
-    "workspaceImportFailed": "导入工作区失败",
+    "workspaceCreated": "工作目录已创建",
+    "workspaceCreateFailed": "创建工作目录失败",
+    "workspaceImported": "工作目录已导入",
+    "workspaceImportFailed": "导入工作目录失败",
     "chooseFolderCloneRepo": "选择用于克隆仓库的文件夹",
     "repositoryCloned": "仓库已克隆",
     "repositoryCloneFailed": "克隆仓库失败"
@@ -241,9 +241,9 @@
     "moreSettings": "更多设置",
     "sort": "排序",
     "openFolder": "打开文件夹",
-    "addWorkspace": "添加工作区",
+    "addWorkspace": "添加工作目录",
     "openSpotlight": "打开 Spotlight",
-    "openWorkspace": "打开工作区",
+    "openWorkspace": "打开工作目录",
     "skipThisVersion": "跳过此版本",
     "later": "稍后",
     "link": "链接",
@@ -877,8 +877,8 @@
     "retryToScanAgain": "重试以重新扫描",
     "noTokensFound": "未找到 Token",
     "addCssVariables": "向项目添加 CSS 变量",
-    "noWorkspaceExplorerTitle": "未打开 Workspace",
-    "noWorkspaceExplorerSubtitle": "打开工作区以查看文件",
+    "noWorkspaceExplorerTitle": "未打开工作目录",
+    "noWorkspaceExplorerSubtitle": "打开工作目录以查看文件",
     "cannotFindRepo": "找不到 {{repoName}}",
     "lastSeenAtPath": "上次路径：{{path}}",
     "unsupportedFileType": "不支持的文件类型",
@@ -949,13 +949,13 @@
     "publishingBranch": "正在 Publish...",
     "refreshGitStatus": "刷新 Git 状态",
     "notGitInitialized": "未初始化 Git",
-    "notGitInitializedTooltip": "此工作区还没有 .git 目录。",
+    "notGitInitializedTooltip": "此工作目录还没有 .git 目录。",
     "publishBranchToOrigin": "Publish 分支 \"{{branch}}\" 到 origin",
     "syncWithRemote": "与远程同步（{{behind}} 待拉取，{{ahead}} 待推送）",
     "scanningFiles": "正在扫描文件...",
     "branchTooltip": "分支：{{branch}}",
     "branchTooltipSwitching": "分支：{{branch}}（切换中…）",
-    "switchWorkspaceTooltip": "切换工作区",
+    "switchWorkspaceTooltip": "切换工作目录",
     "switchWorktreeTooltip": "切换 Worktree",
     "switchBranchTooltip": "切换分支",
     "switchLocalBranchTooltip": "切换本地分支",
@@ -1543,23 +1543,23 @@
         "recent": "最近",
         "repo": "仓库",
         "systemPaths": "系统路径",
-        "usedElsewhere": "在其他位置使用",
-        "workspace": "工作区",
-        "thisOrg": "本工作空间",
-        "outsideOrg": "工作空间外"
+        "usedElsewhere": "在其他应用中使用",
+        "workspace": "工作目录",
+        "thisOrg": "此工作目录",
+        "outsideOrg": "此工作目录之外"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "通过 GitHub URL 克隆",
         "cloneFromMyGitHub": "从已连接的 GitHub 克隆",
-        "createWorkspace": "创建新工作区"
+        "createWorkspace": "创建新工作目录"
       },
       "sources": {
         "cloningFromGitHub": "正在从 GitHub 克隆",
         "cloningFromGitHubUrl": "通过 GitHub URL 克隆",
         "cloningFromMyGitHub": "从已连接的 GitHub 克隆",
-        "creatingWorkspace": "正在创建新工作区",
-        "creatingMultiRepoWorkspace": "正在组合多仓库工作区"
+        "creatingWorkspace": "正在创建新工作目录",
+        "creatingMultiRepoWorkspace": "正在组合多仓库工作目录"
       },
       "forms": {
         "repoName": "仓库名称",
@@ -1567,19 +1567,19 @@
         "chooseDestinationPath": "选择目标路径",
         "choose": "选择",
         "createAt": "创建于 {{path}}",
-        "createWorkspaceTitle": "新工作区",
-        "creatingWorkspace": "正在创建工作区...",
-        "readyToCreateWorkspace": "准备创建工作区",
-        "workspaceName": "工作区名称",
-        "workspaceNamePlaceholder": "我的工作区"
+        "createWorkspaceTitle": "新工作目录",
+        "creatingWorkspace": "正在创建工作目录...",
+        "readyToCreateWorkspace": "准备创建工作目录",
+        "workspaceName": "目录名称",
+        "workspaceNamePlaceholder": "我的目录"
       },
       "path": {
         "switchTo": "切换到",
         "switchToTemplate": "切换到 {workspace}",
         "search": "搜索",
-        "manageWorkspace": "管理工作区",
-        "addBy": "通过以下方式添加工作区",
-        "addByTemplate": "通过 {source} 添加工作区"
+        "manageWorkspace": "管理工作目录",
+        "addBy": "通过以下方式添加工作目录",
+        "addByTemplate": "通过 {source} 添加工作目录"
       },
       "pathImport": {
         "addLabel": "添加",
@@ -1588,7 +1588,7 @@
       },
       "gitInitPrompt": {
         "title": "初始化 Git？",
-        "message": "此工作区没有 .git 文件夹。要将它初始化为 Git 仓库吗？",
+        "message": "此工作目录没有 .git 文件夹。要将它初始化为 Git 仓库吗？",
         "ok": "初始化 Git",
         "cancel": "保留为文件夹"
       }
@@ -1667,10 +1667,10 @@
       "sourceAria": "选择工作区来源",
       "on": "在",
       "branchAria": "选择分支",
-      "switchWorkspace": "切换工作区",
+      "switchWorkspace": "切换工作目录",
       "switchBranch": "切换分支",
       "switchLocation": "切换运行位置",
-      "sessionWorkspace": "切换 Session 工作区",
+      "sessionWorkspace": "切换会话工作目录",
       "locationAria": "选择运行位置",
       "systemPaths": {
         "home": {
@@ -1792,16 +1792,16 @@
           "placeholder": "全局搜索会话内容..."
         },
         "switchWorkspace": {
-          "label": "切换工作区"
+          "label": "切换工作目录"
         },
         "switchBranch": {
           "label": "切换分支"
         },
         "addWorkspace": {
-          "label": "添加工作区"
+          "label": "添加工作目录"
         },
         "createMultiRepoWorkspace": {
-          "label": "添加多仓库工作区"
+          "label": "添加多仓库工作目录"
         },
         "showSourceControl": {
           "label": "显示 Source Control"
@@ -1941,7 +1941,7 @@
     "hidePrimarySidebar": "隐藏侧边栏",
     "searchFiles": "搜索文件",
     "openBrowser": "打开浏览器",
-    "switchWorkspace": "切换 / 添加工作区",
+    "switchWorkspace": "切换 / 添加工作目录",
     "openEditor": "打开编辑器",
     "hideTerminal": "隐藏终端",
     "hideFiles": "隐藏文件",
@@ -2035,10 +2035,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "未初始化 Git",
-    "notGitInitializedSubtitle": "初始化 Git 后即可在此工作区跟踪更改、创建提交并使用分支工具。",
+    "notGitInitializedSubtitle": "初始化 Git 后即可在此工作目录跟踪更改、创建提交并使用分支工具。",
     "initializeGit": "初始化 Git",
     "initializingGit": "正在初始化 Git...",
-    "noRemoteForPublish": "此工作区现在是 Git 仓库，但还没有 remote。请先添加 origin 等 remote，然后再发布此分支。",
+    "noRemoteForPublish": "此工作目录现在是 Git 仓库，但还没有 remote。请先添加 origin 等 remote，然后再发布此分支。",
     "generateCommitMessage": "使用 AI 生成 commit message",
     "pull": "Pull",
     "push": "Push",
@@ -2142,24 +2142,24 @@
     "parentFolderPlaceholder": "选择 Parent folder"
   },
   "workspaceForm": {
-    "title": "多仓库工作区",
-    "editTitle": "编辑工作区",
-    "createWorkspace": "创建多仓库工作区",
-    "multiRepoWorkspace": "多仓库工作区",
-    "createWorkspaceDesc": "从多个 Repo 组合工作区",
+    "title": "创建多仓库工作目录",
+    "editTitle": "编辑工作目录",
+    "createWorkspace": "创建多仓库工作目录",
+    "multiRepoWorkspace": "多仓库工作目录",
+    "createWorkspaceDesc": "从多个 Repo 组合工作目录",
     "filterPlaceholder": "筛选 Repo...",
-    "selectRepos": "选择工作区中的 Repo",
+    "selectRepos": "选择工作目录中的 Repo",
     "noReposFound": "没有匹配的 Repo",
     "noRepos": "没有可用的 Repo",
     "current": "当前",
-    "workspaceName": "工作区名称",
-    "workspaceNamePlaceholder": "我的工作区",
-    "willInclude": "工作区将包含 {{count}} 个 Repo",
+    "workspaceName": "工作目录名称",
+    "workspaceNamePlaceholder": "我的工作目录",
+    "willInclude": "工作目录将包含 {{count}} 个 Repo",
     "statusSelectAtLeastTwo": "请至少选择 2 个 Repo",
-    "statusReadyToCreate": "可以创建工作区",
-    "defaultName": "工作区",
-    "defaultNameWithRepo": "{{repo}} 工作区",
-    "windowTitle": "工作区"
+    "statusReadyToCreate": "可以创建工作目录",
+    "defaultName": "工作目录",
+    "defaultNameWithRepo": "{{repo}} 工作目录",
+    "windowTitle": "工作目录"
   },
   "database": {
     "addConnection": "添加数据库连接",

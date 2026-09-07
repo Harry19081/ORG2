@@ -112,13 +112,16 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
   <>
     {repoName ? (
       <StatusBarTooltip
-        label={t("workstation.switchWorkspaceTooltip", "Switch workspace")}
+        label={t(
+          "workstation.switchWorkspaceTooltip",
+          "Switch working directory"
+        )}
       >
         <StatusBarButton
           onClick={onRepoClick}
           ariaLabel={t(
             "workstation.switchWorkspaceTooltip",
-            "Switch workspace"
+            "Switch working directory"
           )}
           className="max-w-48 min-w-0"
           dataTestId="status-bar-repo-name"

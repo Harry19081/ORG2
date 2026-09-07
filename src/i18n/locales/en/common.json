@@ -24,7 +24,7 @@
       "commandPalette": "Command Palette",
       "goToFile": "Go to File...",
       "selectModel": "Select Model...",
-      "switchWorkspace": "Switch Workspace...",
+      "switchWorkspace": "Switch Working Directory...",
       "switchBranch": "Switch Branch...",
       "switchRunningLocation": "Switch Running Location...",
       "settings": "Settings...",
@@ -57,13 +57,13 @@
     "openSessionBeforeLinking": "Open a session before linking a Work Item.",
     "sessionLinkedToWorkItem": "Session linked to Work Item.",
     "sessionLinkFailed": "Failed to link session: {{message}}",
-    "chooseFolderNewWorkspace": "Choose folder to create workspace",
-    "chooseExistingWorkspace": "Choose existing workspace",
+    "chooseFolderNewWorkspace": "Choose parent folder for working directory",
+    "chooseExistingWorkspace": "Choose existing working directory",
     "selectDirectoryFailed": "Failed to select directory",
-    "workspaceCreated": "Workspace created",
-    "workspaceCreateFailed": "Failed to create workspace",
-    "workspaceImported": "Workspace imported",
-    "workspaceImportFailed": "Failed to import workspace",
+    "workspaceCreated": "Working directory created",
+    "workspaceCreateFailed": "Failed to create working directory",
+    "workspaceImported": "Working directory imported",
+    "workspaceImportFailed": "Failed to import working directory",
     "chooseFolderCloneRepo": "Choose folder to clone repo",
     "repositoryCloned": "Repository cloned",
     "repositoryCloneFailed": "Failed to clone repository"
@@ -240,9 +240,9 @@
     "moreSettings": "More settings",
     "sort": "Sort",
     "openFolder": "Open Folder",
-    "addWorkspace": "Add Workspace",
+    "addWorkspace": "Add Working Directory",
     "openSpotlight": "Open Spotlight",
-    "openWorkspace": "Open Workspace",
+    "openWorkspace": "Open Working Directory",
     "newIssue": "New issue",
     "closeIssue": "Close issue",
     "reopenIssue": "Reopen issue",
@@ -890,8 +890,8 @@
     "retryToScanAgain": "Retry to scan again",
     "noTokensFound": "No tokens found",
     "addCssVariables": "Add CSS variables to your project",
-    "noWorkspaceExplorerTitle": "No workspace open",
-    "noWorkspaceExplorerSubtitle": "Open a workspace to view files",
+    "noWorkspaceExplorerTitle": "No working directory open",
+    "noWorkspaceExplorerSubtitle": "Open a working directory to view files",
     "cannotFindRepo": "Cannot find {{repoName}}",
     "lastSeenAtPath": "It was last seen at {{path}}",
     "unsupportedFileType": "Unsupported file type",
@@ -961,13 +961,13 @@
     "publishingBranch": "Publishing...",
     "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Not git initialized",
-    "notGitInitializedTooltip": "This workspace does not have a .git directory yet.",
+    "notGitInitializedTooltip": "This working directory does not have a .git directory yet.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
     "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
     "branchTooltip": "Branch: {{branch}}",
     "branchTooltipSwitching": "Branch: {{branch}} (switching...)",
-    "switchWorkspaceTooltip": "Switch workspace",
+    "switchWorkspaceTooltip": "Switch working directory",
     "switchWorktreeTooltip": "Switch worktree",
     "switchBranchTooltip": "Switch branch",
     "switchLocalBranchTooltip": "Switch local branch",
@@ -1589,23 +1589,23 @@
         "recent": "Recent",
         "repo": "Repositories",
         "systemPaths": "System Paths",
-        "usedElsewhere": "Used elsewhere",
-        "workspace": "Workspace",
-        "thisOrg": "This workspace",
-        "outsideOrg": "Outside this workspace"
+        "usedElsewhere": "Used in other apps",
+        "workspace": "Working Directory",
+        "thisOrg": "This working directory",
+        "outsideOrg": "Outside this working directory"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "Clone from GitHub URL",
         "cloneFromMyGitHub": "Clone from my GitHub",
-        "createWorkspace": "Create new workspace"
+        "createWorkspace": "Create new working directory"
       },
       "sources": {
         "cloningFromGitHub": "cloning from GitHub",
         "cloningFromGitHubUrl": "clone from GitHub URL",
         "cloningFromMyGitHub": "clone from my GitHub",
-        "creatingWorkspace": "creating new workspace",
-        "creatingMultiRepoWorkspace": "composing multi-repo workspace"
+        "creatingWorkspace": "creating new working directory",
+        "creatingMultiRepoWorkspace": "composing multi-repo working directory"
       },
       "forms": {
         "repoName": "Repo Name",
@@ -1613,19 +1613,19 @@
         "chooseDestinationPath": "Choose destination path",
         "choose": "Choose",
         "createAt": "Create at {{path}}",
-        "createWorkspaceTitle": "New Workspace",
-        "creatingWorkspace": "Creating workspace...",
-        "readyToCreateWorkspace": "Ready to create workspace",
-        "workspaceName": "Workspace Name",
-        "workspaceNamePlaceholder": "My Workspace"
+        "createWorkspaceTitle": "New Working Directory",
+        "creatingWorkspace": "Creating working directory...",
+        "readyToCreateWorkspace": "Ready to create working directory",
+        "workspaceName": "Directory Name",
+        "workspaceNamePlaceholder": "My Directory"
       },
       "path": {
         "switchTo": "Switch to",
         "switchToTemplate": "Switch to {workspace}",
         "search": "Search",
-        "manageWorkspace": "Manage workspace",
-        "addBy": "Add workspace by",
-        "addByTemplate": "Add workspace by {source}"
+        "manageWorkspace": "Manage working directory",
+        "addBy": "Add working directory by",
+        "addByTemplate": "Add working directory by {source}"
       },
       "pathImport": {
         "addLabel": "Add",
@@ -1634,7 +1634,7 @@
       },
       "gitInitPrompt": {
         "title": "Initialize Git?",
-        "message": "This workspace does not have a .git folder. Initialize it as a Git repository?",
+        "message": "This working directory does not have a .git folder. Initialize it as a Git repository?",
         "ok": "Initialize Git",
         "cancel": "Keep as folder"
       }
@@ -1713,10 +1713,10 @@
       "sourceAria": "Select workspace source",
       "on": "on",
       "branchAria": "Select branch",
-      "switchWorkspace": "Switch workspace",
+      "switchWorkspace": "Switch working directory",
       "switchBranch": "Switch branch",
       "switchLocation": "Switch running location",
-      "sessionWorkspace": "Switch Session Workspace",
+      "sessionWorkspace": "Switch Session Working Directory",
       "locationAria": "Select running location",
       "systemPaths": {
         "home": {
@@ -1838,16 +1838,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Switch workspace"
+          "label": "Switch working directory"
         },
         "switchBranch": {
           "label": "Switch branch"
         },
         "addWorkspace": {
-          "label": "Add workspace"
+          "label": "Add working directory"
         },
         "createMultiRepoWorkspace": {
-          "label": "Add Multi-repo Workspace"
+          "label": "Add Multi-repo Working Directory"
         },
         "showSourceControl": {
           "label": "Show Source Control"
@@ -1982,7 +1982,7 @@
     "hidePrimarySidebar": "Hide Sidebar",
     "searchFiles": "Search Files",
     "openBrowser": "Open Browser",
-    "switchWorkspace": "Switch / Add Workspace",
+    "switchWorkspace": "Switch / Add Working Directory",
     "openEditor": "Open Editor",
     "hideTerminal": "Hide Terminal",
     "hideFiles": "Hide Files",
@@ -2077,10 +2077,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Not git initialized",
-    "notGitInitializedSubtitle": "Initialize Git to track changes, create commits, and use branch tools in this workspace.",
+    "notGitInitializedSubtitle": "Initialize Git to track changes, create commits, and use branch tools in this working directory.",
     "initializeGit": "Initialize Git",
     "initializingGit": "Initializing Git...",
-    "noRemoteForPublish": "This workspace is now a Git repository, but it has no remote yet. Add a remote such as origin before publishing this branch.",
+    "noRemoteForPublish": "This working directory is now a Git repository, but it has no remote yet. Add a remote such as origin before publishing this branch.",
     "generateCommitMessage": "Generate commit message with AI",
     "pull": "Pull",
     "push": "Push",
@@ -2185,25 +2185,25 @@
     "parentFolderPlaceholder": "Choose parent folder"
   },
   "workspaceForm": {
-    "title": "Create Multi-repo Workspace",
-    "editTitle": "Edit Workspace",
-    "createWorkspace": "Create Multi-repo Workspace",
-    "multiRepoWorkspace": "Multi-Repo Workspace",
-    "createWorkspaceDesc": "Compose a workspace from multiple repos",
-    "workspaceName": "Workspace Name",
-    "workspaceNamePlaceholder": "My Workspace",
+    "title": "Create Multi-repo Working Directory",
+    "editTitle": "Edit Working Directory",
+    "createWorkspace": "Create Multi-repo Working Directory",
+    "multiRepoWorkspace": "Multi-Repo Working Directory",
+    "createWorkspaceDesc": "Compose a working directory from multiple repos",
+    "workspaceName": "Working Directory Name",
+    "workspaceNamePlaceholder": "My Working Directory",
     "filterPlaceholder": "Filter repos...",
-    "selectRepos": "Select repos for workspace",
+    "selectRepos": "Select repos for working directory",
     "noReposFound": "No repos match filter",
     "noRepos": "No repos available",
     "current": "current",
-    "willInclude": "Workspace would include {{count}} repos",
+    "willInclude": "Working directory would include {{count}} repos",
     "statusSelectAtLeastTwo": "Select at least 2 repos",
-    "statusReadyToCreate": "Ready to create workspace",
+    "statusReadyToCreate": "Ready to create working directory",
     "statusMaxRepos": "Maximum 5 repos selected",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "{{repo}} Workspace",
-    "windowTitle": "Workspace"
+    "defaultName": "Working Directory",
+    "defaultNameWithRepo": "{{repo}} Working Directory",
+    "windowTitle": "Working Directory"
   },
   "database": {
     "addConnection": "Add Database Connection",

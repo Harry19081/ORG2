@@ -1,9 +1,9 @@
 import { ICONS } from "../../config";
 import type { SpotlightItem } from "../../types";
 import {
-  getWorkspacePathCandidate,
-  getWorkspacePathDisplayName,
-} from "./pathImport";
+  getWorkingDirectoryPathCandidate,
+  getWorkingDirectoryPathDisplayName,
+} from "./workingDirectoryPathImport";
 
 interface BuildOpenPathItemArgs {
   searchQuery: string;
@@ -16,10 +16,10 @@ export function buildOpenPathItem({
   addLabel,
   onOpenPath,
 }: BuildOpenPathItemArgs): SpotlightItem | null {
-  const candidatePath = getWorkspacePathCandidate(searchQuery);
+  const candidatePath = getWorkingDirectoryPathCandidate(searchQuery);
   if (!candidatePath) return null;
 
-  const folderName = getWorkspacePathDisplayName(candidatePath);
+  const folderName = getWorkingDirectoryPathDisplayName(candidatePath);
 
   return {
     id: "repo-open-path-candidate",

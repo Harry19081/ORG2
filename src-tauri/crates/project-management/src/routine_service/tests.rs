@@ -583,3 +583,19 @@ fn invoke_rolls_back_the_whole_graph_when_a_node_fails_mid_write() {
     assert_eq!(count("SELECT COUNT(*) FROM pm_routine_runs"), 1);
     assert_eq!(count("SELECT COUNT(*) FROM pm_idempotency"), 1);
 }
+
+#[test]
+fn scheduler_revision_tracks_config_but_ignores_evaluation_watermarks() {
+    let _sandbox = test_env::sandbox();
+    let mut file = fixture();
+    apply(&file).unwrap();
+    let initial = schedule_revision::read().unwrap();
+    mark_evaluated(&file.metadata.name, 123, Some(456)).unwrap();
+    assert_eq!(schedule_revision::read().unwrap(), initial);
+    set_enabled(&file.metadata.name, false).unwrap();
+    assert_ne!(schedule_revision::read().unwrap(), initial);
+    set_enabled(&file.metadata.name, true).unwrap();
+    file.spec.root_work.title = "new revision".into();
+    apply(&file).unwrap();
+    assert_ne!(schedule_revision::read().unwrap(), initial);
+}

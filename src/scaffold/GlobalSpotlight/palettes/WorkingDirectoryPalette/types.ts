@@ -1,30 +1,30 @@
 import type React from "react";
 
-import type { AddWorkspaceModalStage } from "../../hooks";
+import type { AddWorkingDirectoryModalStage } from "../../hooks";
 import type { BasePaletteProps } from "../../shared";
 import type { RepoItem } from "../../types";
 
 export type AddMenuKind = "add" | null;
 
-export const WORKSPACE_PALETTE_SECTION_KEY = {
+export const WORKING_DIRECTORY_PALETTE_SECTION_KEY = {
   CURRENT: "current",
   RECENT: "recent",
   SYSTEM_PATH: "systemPath",
   EXTERNAL_RECENT: "externalRecent",
   REPO: "repo",
-  FOLDER_WORKSPACE: "folderWorkspace",
+  WORKING_DIRECTORY: "workingDirectory",
   MULTI_REPO_WORKSPACE: "multiRepoWorkspace",
   THIS_ORG: "thisOrg",
   OUTSIDE_ORG: "outsideOrg",
 } as const;
 
-export type WorkspacePaletteSectionKey =
-  (typeof WORKSPACE_PALETTE_SECTION_KEY)[keyof typeof WORKSPACE_PALETTE_SECTION_KEY];
+export type WorkingDirectoryPaletteSectionKey =
+  (typeof WORKING_DIRECTORY_PALETTE_SECTION_KEY)[keyof typeof WORKING_DIRECTORY_PALETTE_SECTION_KEY];
 
-export interface WorkspacePaletteProps extends BasePaletteProps {
+export interface WorkingDirectoryPaletteProps extends BasePaletteProps {
   onSelect: (repoId: string, repo: RepoItem) => void;
   currentRepoId?: string;
-  initialAddStage?: AddWorkspaceModalStage;
+  initialAddStage?: AddWorkingDirectoryModalStage;
   initialAddMenu?: boolean;
   initialManageMode?: boolean;
   topSlot?: React.ReactNode;
@@ -43,7 +43,7 @@ export interface WorkspacePaletteProps extends BasePaletteProps {
   }) => boolean;
 }
 
-export interface WorkspacePaletteText {
+export interface WorkingDirectoryPaletteText {
   switchPathLabel: string;
   switchPathTemplate: string;
   switchPlaceholder: string;
@@ -60,8 +60,8 @@ export interface WorkspacePaletteText {
   sectionSystemPathsLabel: string;
   sectionExternalRecentLabel: string;
   sectionRepoLabel: string;
-  sectionFolderWorkspaceLabel: string;
-  sectionMultiRepoWorkspaceLabel: string;
+  sectionWorkingDirectoryLabel: string;
+  sectionMultiRepoWorkingDirectoryLabel: string;
   sectionThisOrgLabel: string;
   sectionOutsideOrgLabel: string;
 }

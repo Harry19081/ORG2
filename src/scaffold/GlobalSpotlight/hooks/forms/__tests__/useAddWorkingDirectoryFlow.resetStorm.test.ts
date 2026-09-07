@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 /**
- * useAddWorkspaceFlow — form-reset commit-storm regression.
+ * useAddWorkingDirectoryFlow — form-reset commit-storm regression.
  *
  * 2026-06 incident: the reset effect listed the form-hook return objects as
  * deps. They are fresh objects every render, and resetForm()'s setState batch
  * (object-typed form state gets a fresh default object, so React cannot bail)
- * always schedules one more render — so a mounted-but-CLOSED WorkspacePalette
+ * always schedules one more render — so a mounted-but-CLOSED WorkingDirectoryPalette
  * re-fired the effect on every render, a self-sustaining ~1000 commits/s loop
  * that pegged the webview at ~90% CPU on the session-creator page.
  *
@@ -27,9 +27,9 @@ import {
 } from "@src/test/reactSmokeHarness";
 
 import {
-  type AddWorkspaceModalStage,
-  useAddWorkspaceFlow,
-} from "../useAddWorkspaceFlow";
+  type AddWorkingDirectoryModalStage,
+  useAddWorkingDirectoryFlow,
+} from "../useAddWorkingDirectoryFlow";
 
 const resetCalls = vi.hoisted(() => ({ local: 0, clone: 0, multi: 0 }));
 
@@ -60,10 +60,10 @@ vi.mock("../../../config", () => ({
 // Form-hook mimics preserving what powered the storm: a FRESH return object
 // every render, and a resetForm whose object-typed setState can never be
 // eagerly bailed (fresh default object each call).
-vi.mock("../useWorkspaceForm", async () => {
+vi.mock("../useWorkingDirectoryForm", async () => {
   const { useState } = await import("react");
   return {
-    useWorkspaceForm: () => {
+    useWorkingDirectoryForm: () => {
       const [values, setValues] = useState<{ name: string }>({ name: "" });
       const [loading, setLoading] = useState(false);
       return {
@@ -74,7 +74,7 @@ vi.mock("../useWorkspaceForm", async () => {
           setValues({ name: "" });
           setLoading(false);
         },
-        handleOpenLocalWorkspace: async () => {},
+        handleOpenWorkingDirectory: async () => {},
       };
     },
   };
@@ -124,12 +124,12 @@ vi.mock("../useCreateWorkspaceForm", async () => {
 
 let commits = 0;
 const controls: {
-  setStage: (stage: AddWorkspaceModalStage) => void;
+  setStage: (stage: AddWorkingDirectoryModalStage) => void;
   churn: () => void;
 } = { setStage: () => {}, churn: () => {} };
 
 /**
- * Stands in for WorkspacePalette: owns the modal stage, mounts the flow hook,
+ * Stands in for WorkingDirectoryPalette: owns the modal stage, mounts the flow hook,
  * and exposes a churn setState so tests can force parent re-renders the way
  * the session-creator page did.
  */
@@ -144,17 +144,17 @@ function Harness(): null {
       "commit storm: Harness exceeded 400 commits — a self-sustaining render loop is back"
     );
   }
-  const [stage, setStage] = useState<AddWorkspaceModalStage>(null);
+  const [stage, setStage] = useState<AddWorkingDirectoryModalStage>(null);
   const [, setChurn] = useState(0);
   useEffect(() => {
     controls.setStage = setStage;
     controls.churn = () => setChurn((value) => value + 1);
   }, []);
-  useAddWorkspaceFlow({ modalStage: stage, setModalStage: setStage });
+  useAddWorkingDirectoryFlow({ modalStage: stage, setModalStage: setStage });
   return null;
 }
 
-describe("useAddWorkspaceFlow reset storm", () => {
+describe("useAddWorkingDirectoryFlow reset storm", () => {
   let root: SmokeRoot;
 
   beforeEach(async () => {

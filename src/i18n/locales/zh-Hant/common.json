@@ -160,7 +160,7 @@
       "commandPalette": "命令選擇區",
       "goToFile": "前往檔案...",
       "selectModel": "選擇模型...",
-      "switchWorkspace": "切換工作區...",
+      "switchWorkspace": "切換工作目錄...",
       "switchBranch": "切換分支...",
       "switchRunningLocation": "切換執行位置...",
       "settings": "設定...",
@@ -193,13 +193,13 @@
     "openSessionBeforeLinking": "請先開啟一個 Session 再連結工作項。",
     "sessionLinkedToWorkItem": "Session 已連結至工作項。",
     "sessionLinkFailed": "連結 Session 失敗：{{message}}",
-    "chooseFolderNewWorkspace": "選擇用於建立工作區的資料夾",
-    "chooseExistingWorkspace": "選擇現有工作區",
+    "chooseFolderNewWorkspace": "選擇工作目錄的上層資料夾",
+    "chooseExistingWorkspace": "選擇現有工作目錄",
     "selectDirectoryFailed": "選擇目錄失敗",
-    "workspaceCreated": "工作區已建立",
-    "workspaceCreateFailed": "建立工作區失敗",
-    "workspaceImported": "工作區已匯入",
-    "workspaceImportFailed": "匯入工作區失敗",
+    "workspaceCreated": "工作目錄已建立",
+    "workspaceCreateFailed": "建立工作目錄失敗",
+    "workspaceImported": "工作目錄已匯入",
+    "workspaceImportFailed": "匯入工作目錄失敗",
     "chooseFolderCloneRepo": "選擇用於複製儲存庫的資料夾",
     "repositoryCloned": "儲存庫已複製",
     "repositoryCloneFailed": "複製儲存庫失敗"
@@ -376,9 +376,9 @@
     "moreSettings": "更多設定",
     "sort": "排序",
     "openFolder": "開啟資料夾",
-    "addWorkspace": "新增工作區",
+    "addWorkspace": "新增工作目錄",
     "openSpotlight": "開啟 Spotlight",
-    "openWorkspace": "開啟工作區",
+    "openWorkspace": "開啟工作目錄",
     "skipThisVersion": "跳過此版本",
     "later": "稍後",
     "link": "連結",
@@ -1001,8 +1001,8 @@
     "retryToScanAgain": "重試以重新掃描",
     "noTokensFound": "未找到 Token",
     "addCssVariables": "向項目添加 CSS 變量",
-    "noWorkspaceExplorerTitle": "未開啟 Workspace",
-    "noWorkspaceExplorerSubtitle": "開啟工作區以查看檔案",
+    "noWorkspaceExplorerTitle": "未開啟工作目錄",
+    "noWorkspaceExplorerSubtitle": "開啟工作目錄以查看檔案",
     "cannotFindRepo": "找不到 {{repoName}}",
     "lastSeenAtPath": "上次路徑：{{path}}",
     "unsupportedFileType": "不支持的文件類型",
@@ -1073,13 +1073,13 @@
     "publishingBranch": "正在 Publish...",
     "refreshGitStatus": "刷新 Git 狀態",
     "notGitInitialized": "尚未初始化 Git",
-    "notGitInitializedTooltip": "此工作區尚未有 .git 目錄。",
+    "notGitInitializedTooltip": "此工作目錄尚未有 .git 目錄。",
     "publishBranchToOrigin": "Publish 分支 \"{{branch}}\" 到 origin",
     "syncWithRemote": "與遠程同步（{{behind}} 待拉取，{{ahead}} 待推送）",
     "scanningFiles": "正在掃描文件...",
     "branchTooltip": "分支：{{branch}}",
     "branchTooltipSwitching": "分支：{{branch}}（切換中…）",
-    "switchWorkspaceTooltip": "切換工作區",
+    "switchWorkspaceTooltip": "切換工作目錄",
     "switchWorktreeTooltip": "切換 Worktree",
     "switchBranchTooltip": "切換分支",
     "switchLocalBranchTooltip": "切換本地分支",
@@ -1638,23 +1638,23 @@
         "current": "當前",
         "repo": "倉庫",
         "systemPaths": "系統路徑",
-        "usedElsewhere": "在其他位置使用",
-        "workspace": "工作區",
-        "thisOrg": "本工作空間",
-        "outsideOrg": "工作空間外"
+        "usedElsewhere": "在其他應用程式中使用",
+        "workspace": "工作目錄",
+        "thisOrg": "此工作目錄",
+        "outsideOrg": "此工作目錄之外"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "通過 GitHub URL 克隆",
         "cloneFromMyGitHub": "從已連接的 GitHub 克隆",
-        "createWorkspace": "建立新工作區"
+        "createWorkspace": "建立新工作目錄"
       },
       "sources": {
         "cloningFromGitHub": "正在從 GitHub 克隆",
         "cloningFromGitHubUrl": "通過 GitHub URL 克隆",
         "cloningFromMyGitHub": "從已連接的 GitHub 克隆",
-        "creatingWorkspace": "正在建立新工作區",
-        "creatingMultiRepoWorkspace": "正在組合多 Repo 工作區"
+        "creatingWorkspace": "正在建立新工作目錄",
+        "creatingMultiRepoWorkspace": "正在組合多倉庫工作目錄"
       },
       "forms": {
         "repoName": "倉庫名稱",
@@ -1662,19 +1662,19 @@
         "chooseDestinationPath": "選擇目標路徑",
         "choose": "選擇",
         "createAt": "建立於 {{path}}",
-        "createWorkspaceTitle": "新工作區",
-        "creatingWorkspace": "正在建立工作區...",
-        "readyToCreateWorkspace": "準備建立工作區",
-        "workspaceName": "工作區名稱",
-        "workspaceNamePlaceholder": "我的工作區"
+        "createWorkspaceTitle": "新工作目錄",
+        "creatingWorkspace": "正在建立工作目錄...",
+        "readyToCreateWorkspace": "準備建立工作目錄",
+        "workspaceName": "目錄名稱",
+        "workspaceNamePlaceholder": "我的目錄"
       },
       "path": {
         "switchTo": "切換到",
         "switchToTemplate": "切換到 {workspace}",
         "search": "搜索",
-        "manageWorkspace": "管理工作區",
-        "addBy": "透過以下方式新增工作區",
-        "addByTemplate": "透過 {source} 新增工作區"
+        "manageWorkspace": "管理工作目錄",
+        "addBy": "透過以下方式新增工作目錄",
+        "addByTemplate": "透過 {source} 新增工作目錄"
       },
       "pathImport": {
         "addLabel": "新增",
@@ -1683,7 +1683,7 @@
       },
       "gitInitPrompt": {
         "title": "初始化 Git？",
-        "message": "此工作區沒有 .git 資料夾。要將它初始化為 Git Repo 嗎？",
+        "message": "此工作目錄沒有 .git 資料夾。要將它初始化為 Git Repo 嗎？",
         "ok": "初始化 Git",
         "cancel": "保留為資料夾"
       }
@@ -1762,10 +1762,10 @@
       "sourceAria": "選擇工作區來源",
       "on": "在",
       "branchAria": "選擇分支",
-      "switchWorkspace": "切換工作區",
+      "switchWorkspace": "切換工作目錄",
       "switchBranch": "切換分支",
       "switchLocation": "切換運行位置",
-      "sessionWorkspace": "切換 Session 工作區",
+      "sessionWorkspace": "切換工作階段工作目錄",
       "locationAria": "選擇運行位置",
       "systemPaths": {
         "home": {
@@ -1886,16 +1886,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "切換工作區"
+          "label": "切換工作目錄"
         },
         "switchBranch": {
           "label": "切換分支"
         },
         "addWorkspace": {
-          "label": "新增工作區"
+          "label": "新增工作目錄"
         },
         "createMultiRepoWorkspace": {
-          "label": "新增多倉庫工作區"
+          "label": "新增多倉庫工作目錄"
         },
         "showSourceControl": {
           "label": "顯示 Source Control"
@@ -2035,7 +2035,7 @@
     "hidePrimarySidebar": "隱藏側邊欄",
     "searchFiles": "搜索文件",
     "openBrowser": "打開瀏覽器",
-    "switchWorkspace": "切換 / 添加工作區",
+    "switchWorkspace": "切換 / 新增工作目錄",
     "openEditor": "打開編輯器",
     "hideTerminal": "隱藏終端",
     "hideFiles": "隱藏文件",
@@ -2129,10 +2129,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "尚未初始化 Git",
-    "notGitInitializedSubtitle": "初始化 Git 後即可在此工作區追蹤變更、建立提交並使用分支工具。",
+    "notGitInitializedSubtitle": "初始化 Git 後即可在此工作目錄追蹤變更、建立提交並使用分支工具。",
     "initializeGit": "初始化 Git",
     "initializingGit": "正在初始化 Git...",
-    "noRemoteForPublish": "此工作區現在是 Git 倉庫，但還沒有 remote。請先新增 origin 等 remote，然後再發布此分支。",
+    "noRemoteForPublish": "此工作目錄現在是 Git 倉庫，但還沒有 remote。請先新增 origin 等 remote，然後再發布此分支。",
     "generateCommitMessage": "使用 AI 生成 commit message",
     "pull": "Pull",
     "push": "Push",
@@ -2224,24 +2224,24 @@
     "parentFolderPlaceholder": "選擇 Parent folder"
   },
   "workspaceForm": {
-    "title": "多倉庫工作區",
-    "editTitle": "編輯工作區",
-    "createWorkspace": "創建多倉庫工作區",
-    "multiRepoWorkspace": "多倉庫工作區",
-    "createWorkspaceDesc": "從多個 Repo 組合工作區",
+    "title": "建立多倉庫工作目錄",
+    "editTitle": "編輯工作目錄",
+    "createWorkspace": "建立多倉庫工作目錄",
+    "multiRepoWorkspace": "多倉庫工作目錄",
+    "createWorkspaceDesc": "從多個 Repo 組合工作目錄",
     "filterPlaceholder": "篩選 Repo...",
-    "selectRepos": "選擇工作區中的 Repo",
+    "selectRepos": "選擇工作目錄中的 Repo",
     "noReposFound": "沒有匹配的 Repo",
     "noRepos": "沒有可用的 Repo",
     "current": "當前",
-    "workspaceName": "工作區名稱",
-    "workspaceNamePlaceholder": "我的工作區",
-    "willInclude": "工作區將包含 {{count}} 個 Repo",
+    "workspaceName": "工作目錄名稱",
+    "workspaceNamePlaceholder": "我的工作目錄",
+    "willInclude": "工作目錄將包含 {{count}} 個 Repo",
     "statusSelectAtLeastTwo": "請至少選擇 2 個 Repo",
-    "statusReadyToCreate": "可以創建工作區",
-    "defaultName": "工作區",
-    "defaultNameWithRepo": "{{repo}} 工作區",
-    "windowTitle": "工作區"
+    "statusReadyToCreate": "可以建立工作目錄",
+    "defaultName": "工作目錄",
+    "defaultNameWithRepo": "{{repo}} 工作目錄",
+    "windowTitle": "工作目錄"
   },
   "database": {
     "addConnection": "添加數據庫連接",
