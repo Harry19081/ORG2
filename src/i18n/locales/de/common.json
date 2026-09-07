@@ -2483,5 +2483,10 @@
   "notifications": {
     "taskCancelledToast": "„{{name}}“ wurde abgebrochen",
     "taskCompletedToast": "„{{name}}“ abgeschlossen. Öffne die Sitzung, um das Ergebnis zu prüfen."
+  },
+  "documentOpen": {
+    "openInDefault": "In {{name}} öffnen",
+    "openDefaultApp": "In Standard-App öffnen",
+    "openExternally": "In externer App öffnen"
   }
 }

@@ -14,9 +14,11 @@ vi.mock("@src/util/platform/tauri", () => ({
   isMacOS: () => mocks.mac,
   isTauriDesktop: () => true,
 }));
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}));
+vi.mock("react-i18next", () => {
+  const t = (key: string, options?: { name?: string }) =>
+    options?.name ? `${key}: ${options.name}` : key;
+  return { useTranslation: () => ({ t }) };
+});
 vi.mock("@src/components/Message", () => ({ default: { error: vi.fn() } }));
 vi.mock("@src/components/Button", () => ({
   default: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) =>
@@ -71,6 +73,9 @@ beforeEach(() => {
     globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
   ).IS_REACT_ACT_ENVIRONMENT = true;
   mocks.load.mockReset();
+  mocks.load.mockResolvedValue([
+    { path: "/Applications/Numbers.app", name: "Numbers", isDefault: true },
+  ]);
   mocks.open.mockReset();
   mocks.mac = true;
   mocks.open.mockResolvedValue(undefined);
@@ -94,11 +99,13 @@ async function render(filePath = "/a.pdf", dirty = false) {
 }
 async function toggle() {
   await act(async () =>
-    container.querySelector<HTMLButtonElement>("[data-trigger]")!.click()
+    container
+      .querySelector<HTMLButtonElement>('[aria-haspopup="menu"]')!
+      .click()
   );
 }
 
-it("loads only on expansion and discards a late result after file switch", async () => {
+it("loads on mount and discards a late result after file switch", async () => {
   let resolve!: (apps: unknown[]) => void;
   mocks.load.mockImplementation(
     () =>
@@ -107,15 +114,15 @@ it("loads only on expansion and discards a late result after file switch", async
       })
   );
   await render();
-  expect(mocks.load).not.toHaveBeenCalled();
-  await toggle();
   expect(mocks.load).toHaveBeenCalledWith("/a.pdf");
+  expect(container.querySelector("img")).toBeNull();
+  const resolveOld = resolve;
   await render("/b.pdf");
   await act(async () =>
-    resolve([{ path: "/Old.app", name: "Old app", isDefault: false }])
+    resolveOld([{ path: "/Old.app", name: "Old app", isDefault: false }])
   );
   expect(container.textContent).not.toContain("Old app");
-  expect(mocks.load).toHaveBeenCalledTimes(1);
+  expect(mocks.load).toHaveBeenCalledTimes(2);
 });
 
 it("does not detect applications on other platforms and opens the exact current file", async () => {
@@ -133,6 +140,24 @@ it("does not detect applications on other platforms and opens the exact current 
 it("prevents opening unsaved spreadsheet contents", async () => {
   await render("/b.xlsx", true);
   await toggle();
-  expect(mocks.load).not.toHaveBeenCalled();
+  expect(mocks.load).toHaveBeenCalledTimes(1);
   expect(mocks.open).not.toHaveBeenCalled();
+});
+
+it("shows the default app and icon before expansion and keeps them when toggled", async () => {
+  await render("/a.numbers");
+  const button = container.querySelector<HTMLButtonElement>("button")!;
+  expect(button.textContent).toContain("documentOpen.openInDefault: Numbers");
+  const icon = button.querySelector("img")!;
+  expect(icon.getAttribute("src")).toContain("numbers.svg");
+  await toggle();
+  expect(container.textContent).not.toContain("documentOpen.defaultApp");
+  await toggle();
+  expect(button.textContent).toContain("Numbers");
+  expect(button.querySelector("img")!.getAttribute("src")).toBe(
+    icon.getAttribute("src")
+  );
+  expect(mocks.load).toHaveBeenCalledTimes(1);
+  await act(async () => button.click());
+  expect(mocks.open).toHaveBeenCalledWith("/a.numbers");
 });

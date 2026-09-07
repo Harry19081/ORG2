@@ -175,6 +175,7 @@ export { default as Edit03Icon } from "@hugeicons/core-free-icons/Edit03Icon";
 export { default as Edit04Icon } from "@hugeicons/core-free-icons/Edit04Icon";
 export { default as EllipsisIcon } from "@hugeicons/core-free-icons/EllipsisIcon";
 export { default as ExpandIcon } from "@hugeicons/core-free-icons/ExpandIcon";
+export { default as ExternalLinkIcon } from "@hugeicons/core-free-icons/ExternalLinkIcon";
 export { default as FavouriteIcon } from "@hugeicons/core-free-icons/FavouriteIcon";
 export { default as FeatherIcon } from "@hugeicons/core-free-icons/FeatherIcon";
 export { default as File01Icon } from "@hugeicons/core-free-icons/File01Icon";

@@ -2478,5 +2478,10 @@
   "notifications": {
     "taskCancelledToast": "« {{name}} » a été annulée",
     "taskCompletedToast": "« {{name}} » est terminée. Ouvrez la session pour consulter le résultat."
+  },
+  "documentOpen": {
+    "openInDefault": "Ouvrir dans {{name}}",
+    "openDefaultApp": "Ouvrir dans l’application par défaut",
+    "openExternally": "Ouvrir dans une application externe"
   }
 }

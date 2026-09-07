@@ -2473,5 +2473,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” đã bị hủy",
     "taskCompletedToast": "“{{name}}” đã hoàn tất. Mở phiên để xem kết quả."
+  },
+  "documentOpen": {
+    "openInDefault": "Mở bằng {{name}}",
+    "openDefaultApp": "Mở bằng ứng dụng mặc định",
+    "openExternally": "Mở bằng ứng dụng bên ngoài"
   }
 }

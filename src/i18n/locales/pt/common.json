@@ -2475,5 +2475,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” foi cancelada",
     "taskCompletedToast": "“{{name}}” concluída. Abra a sessão para conferir o resultado."
+  },
+  "documentOpen": {
+    "openInDefault": "Abrir em {{name}}",
+    "openDefaultApp": "Abrir no aplicativo padrão",
+    "openExternally": "Abrir em aplicativo externo"
   }
 }

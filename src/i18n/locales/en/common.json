@@ -2636,6 +2636,9 @@
     }
   },
   "documentOpen": {
+    "openInDefault": "Open in {{name}}",
+    "openDefaultApp": "Open in default app",
+    "openExternally": "Open externally",
     "label": "Open in…",
     "defaultApp": "Default application",
     "appDefault": "{{name}} (default)",
