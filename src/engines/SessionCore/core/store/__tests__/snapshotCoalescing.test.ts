@@ -249,6 +249,9 @@ describe("EventStoreProxy snapshot coalescing", () => {
       makeDeltaEnvelope(sessionId, 3, 4, [{ ...e1, displayText: "abc" }], ids)
     );
     expect(listener).not.toHaveBeenCalled();
+    // A diagnostic read must not defeat the pending frame's coalescing.
+    expect(eventStoreProxy.getMemoryStats().bytes).toBeGreaterThan(0);
+    expect(listener).not.toHaveBeenCalled();
 
     await advanceFrame();
     expect(listener).toHaveBeenCalledTimes(1);
