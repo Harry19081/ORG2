@@ -1,13 +1,13 @@
 /**
- * WorkspaceDropdown
+ * WorkingDirectoryDropdown
  *
- * Anchored, compact variant of `WorkspacePalette` for the core switch path
+ * Anchored, compact variant of `WorkingDirectoryPalette` for the core switch path
  * (pick a repo / workspace). Add-source / Manage / multi-root flows are
  * intentionally absent — those remain in the Spotlight variant because
  * they include nested modal stages that don't fit a 320px anchored panel.
  *
  * Chosen by `general.modelPickerStyle === "dropdown"`. Falls through to
- * `WorkspacePalette` (Spotlight) otherwise.
+ * `WorkingDirectoryPalette` (Spotlight) otherwise.
  */
 import { useAtomValue, useSetAtom } from "jotai";
 import React, {
@@ -54,10 +54,10 @@ import {
   useSharedRepoList,
   useWorkspaceSwitch,
 } from "../../hooks";
-import { useWorkspaceForm } from "../../hooks/forms";
+import { useWorkingDirectoryForm } from "../../hooks/forms";
 import type { RepoItem, SpotlightItem } from "../../types";
 import { buildOpenPathItem } from "./pathActionItem";
-import { importWorkspacePath } from "./pathImport";
+import { importWorkingDirectoryPath } from "./workingDirectoryPathImport";
 
 const LIST_MAX_HEIGHT = 360;
 const MIN_DROPDOWN_WIDTH = 320;
@@ -74,7 +74,7 @@ type DropdownWorkspaceRowItem = Extract<
   { kind: "workspace" }
 >;
 
-type WorkspaceDropdownSectionKey =
+type WorkingDirectoryDropdownSectionKey =
   | "openPath"
   | "current"
   | "recent"
@@ -86,8 +86,8 @@ type WorkspaceDropdownSectionKey =
   | "thisOrg"
   | "outsideOrg";
 
-interface WorkspaceDropdownSection {
-  key: WorkspaceDropdownSectionKey;
+interface WorkingDirectoryDropdownSection {
+  key: WorkingDirectoryDropdownSectionKey;
   label: string | null;
   items: DropdownRepoItem[];
 }
@@ -244,7 +244,7 @@ const OpenPathRow: React.FC<OpenPathRowProps> = ({ item, keyboardProps }) => {
   );
 };
 
-interface WorkspaceDropdownProps {
+interface WorkingDirectoryDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (repoId: string, repo: RepoItem) => void;
@@ -262,7 +262,9 @@ interface WorkspaceDropdownProps {
   }) => boolean;
 }
 
-export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
+export const WorkingDirectoryDropdown: React.FC<
+  WorkingDirectoryDropdownProps
+> = ({
   isOpen,
   onClose,
   onSelect,
@@ -282,10 +284,10 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
     if (!isOpen && searchQuery) setSearchQuery("");
   }
 
-  const workspaceForm = useWorkspaceForm({
-    onSuccess: async (workspaceId?: string) => {
-      if (!workspaceId) return;
-      const result = await repoApi.getRepoById(workspaceId);
+  const workingDirectoryForm = useWorkingDirectoryForm({
+    onSuccess: async (repoId?: string) => {
+      if (!repoId) return;
+      const result = await repoApi.getRepoById(repoId);
       const repo = result.data;
       onSelect(repo.repo_id, {
         id: repo.repo_id,
@@ -373,16 +375,17 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
         searchQuery,
         addLabel: t("selectors.repo.pathImport.addLabel"),
         onOpenPath: (candidatePath) => {
-          void importWorkspacePath({
+          void importWorkingDirectoryPath({
             candidatePath,
             invalidPathTitle,
             invalidPathMessage,
-            onImportWorkspace: workspaceForm.handleImportWorkspace,
+            onImportWorkingDirectory:
+              workingDirectoryForm.handleImportWorkingDirectory,
           });
         },
       }),
     [
-      workspaceForm.handleImportWorkspace,
+      workingDirectoryForm.handleImportWorkingDirectory,
       invalidPathMessage,
       invalidPathTitle,
       searchQuery,
@@ -390,14 +393,14 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
     ]
   );
 
-  const sections = useMemo<WorkspaceDropdownSection[]>(() => {
+  const sections = useMemo<WorkingDirectoryDropdownSection[]>(() => {
     const allRepos = [...leadingRepos, ...filteredRepos];
     const currentItems: DropdownRepoRowItem[] = [];
     const systemItems: DropdownRepoRowItem[] = [];
     const externalRecentItems: DropdownRepoRowItem[] = externalRecentRepos.map(
       (repo) => ({ kind: "repo", repo })
     );
-    const folderWorkspaceItems: DropdownRepoRowItem[] = [];
+    const workingDirectoryItems: DropdownRepoRowItem[] = [];
     const repoItems: DropdownRepoRowItem[] = [];
 
     for (const repo of allRepos) {
@@ -407,7 +410,7 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
       } else if (isSystemPathRepoItem(repo)) {
         systemItems.push(item);
       } else if (repo.kind === REPO_KIND.FOLDER) {
-        folderWorkspaceItems.push(item);
+        workingDirectoryItems.push(item);
       } else {
         repoItems.push(item);
       }
@@ -420,7 +423,7 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
     // rows appear only under "Outside this org", never in Recent.
     const recentRepoItems = [
       ...repoItems,
-      ...folderWorkspaceItems,
+      ...workingDirectoryItems,
       ...systemItems,
     ]
       .filter(
@@ -472,7 +475,7 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
         .map((item) => item.entry.workspace.workspaceId)
     );
 
-    const nextSections: WorkspaceDropdownSection[] = [];
+    const nextSections: WorkingDirectoryDropdownSection[] = [];
     if (searchQuery.trim() && openPathItem) {
       nextSections.push({
         key: "openPath",
@@ -504,7 +507,7 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
     const regularInactiveWorkspaceItems = inactiveWorkspaceItems.filter(
       (item) => !recentWorkspaceIds.has(item.entry.workspace.workspaceId)
     );
-    const regularFolderWorkspaceItems = folderWorkspaceItems.filter(
+    const regularFolderWorkspaceItems = workingDirectoryItems.filter(
       (item) => !recentRepoIds.has(item.repo.id)
     );
     if (outsideOrgRepoIds) {
@@ -546,7 +549,10 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
       if (regularInactiveWorkspaceItems.length > 0) {
         nextSections.push({
           key: "multiRepoWorkspace",
-          label: t("workspaceForm.multiRepoWorkspace", "Multi-Repo Workspace"),
+          label: t(
+            "workspaceForm.multiRepoWorkspace",
+            "Multi-Repo Working Directory"
+          ),
           items: regularInactiveWorkspaceItems,
         });
       }
@@ -613,9 +619,11 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
       if (item.repo.id.startsWith("external-recent:")) {
         const path = item.repo.fs_uri;
         if (!path) return;
-        void workspaceForm.handleImportWorkspace(path).then(() => {
-          void refreshReposForce();
-        });
+        void workingDirectoryForm
+          .handleImportWorkingDirectory(path)
+          .then(() => {
+            void refreshReposForce();
+          });
         return;
       }
       onSelect(item.repo.id, item.repo);
@@ -627,7 +635,7 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
       onSelect,
       onClose,
       activateWorkspace,
-      workspaceForm,
+      workingDirectoryForm,
       refreshReposForce,
     ]
   );
@@ -746,4 +754,4 @@ export const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
   );
 };
 
-WorkspaceDropdown.displayName = "WorkspaceDropdown";
+WorkingDirectoryDropdown.displayName = "WorkingDirectoryDropdown";

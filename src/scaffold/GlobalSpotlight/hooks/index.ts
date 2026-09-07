@@ -15,8 +15,8 @@ export { useSpotlight } from "./useSpotlight";
 export { useSpotlightEffects } from "./features/useSpotlightEffects";
 
 // Form hooks (used by palettes)
-export { useAddWorkspaceFlow } from "./forms/useAddWorkspaceFlow";
-export type { AddWorkspaceModalStage } from "./forms/useAddWorkspaceFlow";
+export { useAddWorkingDirectoryFlow } from "./forms/useAddWorkingDirectoryFlow";
+export type { AddWorkingDirectoryModalStage } from "./forms/useAddWorkingDirectoryFlow";
 
 // Shared data hooks (used by palettes and main Spotlight)
 export {

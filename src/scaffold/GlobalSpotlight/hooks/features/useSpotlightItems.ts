@@ -74,7 +74,7 @@ import {
   STATION_MODE_ACTIONS,
   type SpotlightEditorActionId,
   type SpotlightStaticActionDefinition,
-  WORKSPACE_ACTIONS,
+  WORKING_DIRECTORY_ACTIONS,
   buildChatPanelSettingsActions,
   buildViewActions,
 } from "./spotlightActionDefinitions";
@@ -291,7 +291,7 @@ export function useSpotlightItems(
         isEditorRoute,
         staticCommandActions: [
           ...AGENT_SESSION_ACTIONS,
-          ...WORKSPACE_ACTIONS,
+          ...WORKING_DIRECTORY_ACTIONS,
           ...ORGANIZATION_ACTIONS,
           ...chatPanelSettingsActions,
           ...quickNavigationActions,
@@ -372,7 +372,7 @@ export function useSpotlightItems(
     );
     const workspaceItems = [
       ...buildStaticActionItems(
-        WORKSPACE_ACTIONS,
+        WORKING_DIRECTORY_ACTIONS,
         onSelectStaticAction,
         translate
       ),
@@ -411,7 +411,7 @@ export function useSpotlightItems(
     const recentItems = buildStaticActionItems(
       resolveRecentDefinitions(recentActionIds, [
         ...AGENT_SESSION_ACTIONS,
-        ...WORKSPACE_ACTIONS,
+        ...WORKING_DIRECTORY_ACTIONS,
         ...ORGANIZATION_ACTIONS,
         ...chatPanelSettingsActions,
         ...quickNavigationActions,

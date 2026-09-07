@@ -1,8 +1,8 @@
 /**
- * useWorkspaceForm Hook
+ * useWorkingDirectoryForm Hook
  *
- * Manages local workspace creation and import form state and actions.
- * Uses .git presence to decide whether a directory is a Git workspace.
+ * Manages local working-directory creation and import state and actions.
+ * Uses .git presence to decide whether a directory is a Git repository.
  */
 import { open } from "@tauri-apps/plugin-dialog";
 import { useAtomValue } from "jotai";
@@ -20,12 +20,8 @@ import {
 import { askNativeDialogSafely } from "@src/util/dialogs/nativeDialog";
 import { resolveDefaultRepoParentPath } from "@src/util/workspace/defaultRepoPath";
 
-const logger = createLogger("WorkspaceForm");
-const SYSTEM_WORKSPACE_FOLDER_NAMES = new Set([
-  "desktop",
-  "documents",
-  "downloads",
-]);
+const logger = createLogger("WorkingDirectoryForm");
+const SYSTEM_DIRECTORY_NAMES = new Set(["desktop", "documents", "downloads"]);
 
 function getNormalizedPathSegments(path: string): string[] {
   return path
@@ -34,41 +30,41 @@ function getNormalizedPathSegments(path: string): string[] {
     .filter(Boolean);
 }
 
-function isSystemWorkspaceRoot(path: string): boolean {
+function isSystemDirectory(path: string): boolean {
   const segments = getNormalizedPathSegments(path);
   const lastSegment = segments.at(-1)?.toLowerCase();
-  return Boolean(lastSegment && SYSTEM_WORKSPACE_FOLDER_NAMES.has(lastSegment));
+  return Boolean(lastSegment && SYSTEM_DIRECTORY_NAMES.has(lastSegment));
 }
 
-interface UseWorkspaceFormOptions {
-  onSuccess?: (workspaceId?: string) => Promise<void>;
+interface UseWorkingDirectoryFormOptions {
+  onSuccess?: (repoId?: string) => Promise<void>;
   onClose?: () => void;
 }
 
-export interface UseWorkspaceFormReturn {
-  workspaceName: string;
-  setWorkspaceName: (name: string) => void;
-  workspacePath: string;
-  setWorkspacePath: (path: string) => void;
+export interface UseWorkingDirectoryFormReturn {
+  directoryName: string;
+  setDirectoryName: (name: string) => void;
+  parentDirectoryPath: string;
+  setParentDirectoryPath: (path: string) => void;
   loading: boolean;
   handleChoosePath: (mode: "new" | "existing") => Promise<string | null>;
-  handleCreateWorkspace: (
+  handleCreateWorkingDirectory: (
     name: string,
     path: string
   ) => Promise<string | undefined>;
-  handleImportWorkspace: (
+  handleImportWorkingDirectory: (
     path: string,
     options?: { promptForGitInit?: boolean }
   ) => Promise<string | undefined>;
-  handleOpenLocalWorkspace: (
+  handleOpenWorkingDirectory: (
     initialPath?: string
   ) => Promise<string | undefined>;
   resetForm: () => void;
 }
 
-export function useWorkspaceForm(
-  options: UseWorkspaceFormOptions = {}
-): UseWorkspaceFormReturn {
+export function useWorkingDirectoryForm(
+  options: UseWorkingDirectoryFormOptions = {}
+): UseWorkingDirectoryFormReturn {
   const { t } = useTranslation();
   const { onSuccess, onClose } = options;
   const defaultRepoLocation = useAtomValue(
@@ -78,18 +74,18 @@ export function useWorkspaceForm(
     workspaceCustomDefaultRepoPathAtom
   );
 
-  const [workspaceName, setWorkspaceName] = useState("");
-  const [workspacePath, setWorkspacePath] = useState("");
+  const [directoryName, setDirectoryName] = useState("");
+  const [parentDirectoryPath, setParentDirectoryPath] = useState("");
   const [loading, setLoading] = useState(false);
 
   const resetForm = useCallback(() => {
-    setWorkspaceName("");
-    setWorkspacePath("");
+    setDirectoryName("");
+    setParentDirectoryPath("");
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (workspacePath.trim()) return;
+    if (parentDirectoryPath.trim()) return;
 
     let cancelled = false;
     resolveDefaultRepoParentPath({
@@ -98,7 +94,7 @@ export function useWorkspaceForm(
     })
       .then((path) => {
         if (!cancelled && path.trim()) {
-          setWorkspacePath(path);
+          setParentDirectoryPath(path);
         }
       })
       .catch(() => undefined);
@@ -106,7 +102,7 @@ export function useWorkspaceForm(
     return () => {
       cancelled = true;
     };
-  }, [customDefaultRepoPath, defaultRepoLocation, workspacePath]);
+  }, [customDefaultRepoPath, defaultRepoLocation, parentDirectoryPath]);
 
   const handleChoosePath = useCallback(
     async (mode: "new" | "existing"): Promise<string | null> => {
@@ -132,7 +128,7 @@ export function useWorkspaceForm(
 
   const shouldInitializeGit = useCallback(
     async (path: string): Promise<boolean> => {
-      if (isSystemWorkspaceRoot(path)) return false;
+      if (isSystemDirectory(path)) return false;
 
       return askNativeDialogSafely(t("selectors.repo.gitInitPrompt.message"), {
         title: t("selectors.repo.gitInitPrompt.title"),
@@ -144,7 +140,7 @@ export function useWorkspaceForm(
     [t]
   );
 
-  const handleCreateWorkspace = useCallback(
+  const handleCreateWorkingDirectory = useCallback(
     async (name: string, path: string): Promise<string | undefined> => {
       if (!name.trim() || !path.trim()) return undefined;
 
@@ -177,13 +173,13 @@ export function useWorkspaceForm(
         });
 
         if (result.success) {
-          const workspaceId = (result.data as { repo_id?: string } | undefined)
+          const repoId = (result.data as { repo_id?: string } | undefined)
             ?.repo_id;
           Message.success(t("toasts.workspaceCreated"));
           resetForm();
           onClose?.();
-          await onSuccess?.(workspaceId);
-          return workspaceId;
+          await onSuccess?.(repoId);
+          return repoId;
         }
 
         Message.error(result.message || t("toasts.workspaceCreateFailed"));
@@ -210,7 +206,7 @@ export function useWorkspaceForm(
     ]
   );
 
-  const handleImportWorkspace = useCallback(
+  const handleImportWorkingDirectory = useCallback(
     async (
       path: string,
       options: { promptForGitInit?: boolean } = {}
@@ -220,20 +216,20 @@ export function useWorkspaceForm(
       setLoading(true);
       try {
         const fsPath = path.trim();
-        const isGitWorkspace = await repoApi.checkIsGitRepo(fsPath);
+        const isGitRepository = await repoApi.checkIsGitRepo(fsPath);
         const promptForGitInit = options.promptForGitInit ?? true;
-        const initializeGit = isGitWorkspace
+        const initializeGit = isGitRepository
           ? true
           : promptForGitInit && (await shouldInitializeGit(fsPath));
         const result = initializeGit
           ? await repoApi.importLocalRepo({ fs_path: fsPath })
           : await repoApi.importWorkFolder({ fs_path: fsPath });
-        const workspaceId = result.data.repo_id;
+        const repoId = result.data.repo_id;
         Message.success(t("toasts.workspaceImported"));
         resetForm();
         onClose?.();
-        await onSuccess?.(workspaceId);
-        return workspaceId;
+        await onSuccess?.(repoId);
+        return repoId;
       } catch (error) {
         Message.error(
           error instanceof Error
@@ -248,27 +244,27 @@ export function useWorkspaceForm(
     [resetForm, onClose, onSuccess, shouldInitializeGit, t]
   );
 
-  const handleOpenLocalWorkspace = useCallback(
+  const handleOpenWorkingDirectory = useCallback(
     async (initialPath?: string): Promise<string | undefined> => {
       const selectedPath = initialPath ?? (await handleChoosePath("existing"));
       if (!selectedPath) return undefined;
-      return handleImportWorkspace(selectedPath);
+      return handleImportWorkingDirectory(selectedPath);
     },
-    [handleChoosePath, handleImportWorkspace]
+    [handleChoosePath, handleImportWorkingDirectory]
   );
 
   return {
-    workspaceName,
-    setWorkspaceName,
-    workspacePath,
-    setWorkspacePath,
+    directoryName,
+    setDirectoryName,
+    parentDirectoryPath,
+    setParentDirectoryPath,
     loading,
     handleChoosePath,
-    handleCreateWorkspace,
-    handleImportWorkspace,
-    handleOpenLocalWorkspace,
+    handleCreateWorkingDirectory,
+    handleImportWorkingDirectory,
+    handleOpenWorkingDirectory,
     resetForm,
   };
 }
 
-export default useWorkspaceForm;
+export default useWorkingDirectoryForm;

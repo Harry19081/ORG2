@@ -30,7 +30,9 @@ export interface UseSpotlightEffectsOptions {
   isOpen: boolean;
   dispatch: Dispatch<SpotlightAction>;
   closeModal: () => void;
-  onOpenWorkspaceLayer?: (mode: "switch" | "open" | "add" | "create") => void;
+  onOpenWorkingDirectoryLayer?: (
+    mode: "switch" | "open" | "add" | "create"
+  ) => void;
   onOpenCollabOrgLayer?: (context?: SpotlightCollabOrgContext) => void;
   onOpenGitHubIssuesImportLayer?: (
     context?: SpotlightGitHubIssuesImportContext
@@ -58,7 +60,7 @@ export function useSpotlightEffects(options: UseSpotlightEffectsOptions): void {
     onOpenBranchLayer,
     onOpenWorktreeLayer,
     onOpenEditorLayer,
-    onOpenWorkspaceLayer,
+    onOpenWorkingDirectoryLayer,
     onOpenCollabOrgLayer,
     onOpenGitHubIssuesImportLayer,
     onOpenAgentSessionSearchLayer,
@@ -110,7 +112,7 @@ export function useSpotlightEffects(options: UseSpotlightEffectsOptions): void {
     if (!isOpen || !initialQuery) return;
 
     if (initialQuery.layer?.kind === "workspace") {
-      onOpenWorkspaceLayer?.(initialQuery.layer.mode);
+      onOpenWorkingDirectoryLayer?.(initialQuery.layer.mode);
     } else if (initialQuery.layer?.kind === "collabOrg") {
       onOpenCollabOrgLayer?.(initialQuery.layer.context);
     } else if (initialQuery.layer?.kind === "githubIssuesImport") {
@@ -148,7 +150,7 @@ export function useSpotlightEffects(options: UseSpotlightEffectsOptions): void {
     onOpenEditorLayer,
     onOpenCollabOrgLayer,
     onOpenGitHubIssuesImportLayer,
-    onOpenWorkspaceLayer,
+    onOpenWorkingDirectoryLayer,
     onOpenSessionCreatorLayer,
     setInitialQuery,
     dispatch,
