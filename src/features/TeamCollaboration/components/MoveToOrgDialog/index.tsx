@@ -22,7 +22,7 @@ import Message from "@src/components/Message";
 import Tooltip from "@src/components/Tooltip";
 import { createLogger } from "@src/hooks/logger";
 import { HugeiconsIcon, InformationCircleIcon } from "@src/icons";
-import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader";
+import { PANEL_HEADER_TOKENS } from "@src/modules/shared/layouts/blocks/PanelHeader/tokens";
 import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
 import type { Session } from "@src/store/session/sessionAtom/types";
 

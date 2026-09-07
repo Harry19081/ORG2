@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import { PushRejectedDialog } from "@src/components/GitDialogs";
 import Message from "@src/components/Message";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { showGitErrorAndHandle } from "@src/hooks/git/gitErrorDialog";
 import {
   type GitOperationResult,

@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next";
 
 import { Message } from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import {
   CodeMirrorConflictEditor,
   CodeMirrorDiff,
