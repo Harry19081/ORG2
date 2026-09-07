@@ -1117,9 +1117,7 @@ describe("TeamRuntimePanel org load stall", () => {
     const error = container.querySelector('[data-testid="placeholder-error"]');
     expect(error).not.toBeNull();
     expect(error?.textContent).toContain("loadError");
-    expect(error?.textContent).toContain(
-      "Couldn't load your cloud organizations"
-    );
+    expect(error?.textContent).toContain("Couldn't load your cloud workspaces");
     expect(container.querySelector('[data-testid="retry"]')).not.toBeNull();
   });
 

@@ -152,6 +152,8 @@ vi.mock("@src/engines/ChatPanel/header", () => ({
   },
 }));
 vi.mock("@src/icons", () => ({
+  CloudIcon: "cloud",
+  LaptopIcon: "laptop",
   UserCircleIcon: "user",
   CancelCircleIcon: "cancel",
   CheckmarkCircle01Icon: "check",

@@ -20,7 +20,10 @@ import {
   InformationCircleIcon,
   LaptopIcon,
 } from "@src/icons";
-import { filterSelectableProjectOrgs } from "@src/modules/ProjectManager/projectOrgVisibility";
+import {
+  DEFAULT_PERSONAL_PROJECT_ORG_ID,
+  filterSelectableProjectOrgs,
+} from "@src/modules/ProjectManager/projectOrgVisibility";
 import {
   type ProjectData,
   ProjectOrganizationField,
@@ -33,7 +36,6 @@ import {
   WorkstationTrailSurface,
 } from "@src/modules/shared/layouts/blocks";
 import { openProjectInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
 import type { ChatPanelSelectedProject } from "@src/store/ui/chatPanelAtom";
 
 const logger = createLogger("ProjectPanelView");
@@ -171,7 +173,9 @@ export function useProjectProperties(
             cloud.orgId === org.id || cloud.orgId === org.external_org_id
         );
         const name =
-          org.id === DEFAULT_SESSION_ORG_ID ? t("orgs.personalOrg") : org.name;
+          org.id === DEFAULT_PERSONAL_PROJECT_ORG_ID
+            ? t("orgs.personalOrg")
+            : org.name;
         const label = name;
         return {
           value: org.id,
