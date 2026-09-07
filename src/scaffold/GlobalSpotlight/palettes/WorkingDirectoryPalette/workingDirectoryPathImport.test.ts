@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { repoApi } from "@src/api/tauri/repo";
 
-import { importWorkspacePath } from "./pathImport";
+import { importWorkingDirectoryPath } from "./workingDirectoryPathImport";
 
 vi.mock("@tauri-apps/api/path", () => ({ homeDir: vi.fn() }));
 vi.mock("@tauri-apps/plugin-dialog", () => ({ message: vi.fn() }));
@@ -16,37 +16,37 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("importWorkspacePath", () => {
+describe("importWorkingDirectoryPath", () => {
   it("validates pasted paths through the backend and imports the canonical path", async () => {
     validateWorkspacePath.mockResolvedValue("/canonical/repo");
-    const onImportWorkspace = vi.fn().mockResolvedValue(undefined);
+    const onImportWorkingDirectory = vi.fn().mockResolvedValue(undefined);
 
     await expect(
-      importWorkspacePath({
+      importWorkingDirectoryPath({
         candidatePath: "  /workspace/repo  ",
         invalidPathTitle: "Invalid path",
         invalidPathMessage: (path) => `Invalid: ${path}`,
-        onImportWorkspace,
+        onImportWorkingDirectory,
       })
     ).resolves.toBe(true);
 
     expect(validateWorkspacePath).toHaveBeenCalledWith("/workspace/repo");
-    expect(onImportWorkspace).toHaveBeenCalledWith("/canonical/repo");
+    expect(onImportWorkingDirectory).toHaveBeenCalledWith("/canonical/repo");
   });
 
   it("reports a backend validation failure as an invalid path", async () => {
     validateWorkspacePath.mockRejectedValue(new Error("not a directory"));
-    const onImportWorkspace = vi.fn();
+    const onImportWorkingDirectory = vi.fn();
 
     await expect(
-      importWorkspacePath({
+      importWorkingDirectoryPath({
         candidatePath: "/workspace/missing",
         invalidPathTitle: "Invalid path",
         invalidPathMessage: (path) => `Invalid: ${path}`,
-        onImportWorkspace,
+        onImportWorkingDirectory,
       })
     ).resolves.toBe(true);
 
-    expect(onImportWorkspace).not.toHaveBeenCalled();
+    expect(onImportWorkingDirectory).not.toHaveBeenCalled();
   });
 });

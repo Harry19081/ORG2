@@ -160,7 +160,7 @@
       "commandPalette": "コマンドパレット",
       "goToFile": "ファイルに移動...",
       "selectModel": "モデルを選択...",
-      "switchWorkspace": "ワークスペースを切り替え...",
+      "switchWorkspace": "作業ディレクトリを切り替え...",
       "switchBranch": "ブランチを切り替え...",
       "switchRunningLocation": "実行場所を切り替え...",
       "settings": "設定...",
@@ -193,13 +193,13 @@
     "openSessionBeforeLinking": "作業項目をリンクする前にセッションを開いてください。",
     "sessionLinkedToWorkItem": "セッションを作業項目にリンクしました。",
     "sessionLinkFailed": "セッションのリンクに失敗しました：{{message}}",
-    "chooseFolderNewWorkspace": "ワークスペースを作成するフォルダーを選択",
-    "chooseExistingWorkspace": "既存のワークスペースを選択",
+    "chooseFolderNewWorkspace": "作業ディレクトリの親フォルダーを選択",
+    "chooseExistingWorkspace": "既存の作業ディレクトリを選択",
     "selectDirectoryFailed": "ディレクトリの選択に失敗しました",
-    "workspaceCreated": "ワークスペースを作成しました",
-    "workspaceCreateFailed": "ワークスペースの作成に失敗しました",
-    "workspaceImported": "ワークスペースをインポートしました",
-    "workspaceImportFailed": "ワークスペースのインポートに失敗しました",
+    "workspaceCreated": "作業ディレクトリを作成しました",
+    "workspaceCreateFailed": "作業ディレクトリの作成に失敗しました",
+    "workspaceImported": "作業ディレクトリをインポートしました",
+    "workspaceImportFailed": "作業ディレクトリのインポートに失敗しました",
     "chooseFolderCloneRepo": "リポジトリをクローンするフォルダーを選択",
     "repositoryCloned": "リポジトリをクローンしました",
     "repositoryCloneFailed": "リポジトリのクローンに失敗しました"
@@ -374,9 +374,9 @@
     "moreSettings": "その他の設定",
     "sort": "並べ替え",
     "openFolder": "フォルダを開く",
-    "addWorkspace": "Workspace を追加",
+    "addWorkspace": "作業ディレクトリを追加",
     "openSpotlight": "Spotlight を開く",
-    "openWorkspace": "Workspace を開く",
+    "openWorkspace": "作業ディレクトリを開く",
     "skipThisVersion": "このバージョンをスキップ",
     "later": "後で",
     "link": "リンク",
@@ -988,8 +988,8 @@
     "retryToScanAgain": "再試行してスキャン",
     "noTokensFound": "Token が見つかりません",
     "addCssVariables": "プロジェクトに CSS 変数を追加してください",
-    "noWorkspaceExplorerTitle": "Workspace が開かれていません",
-    "noWorkspaceExplorerSubtitle": "Workspace を開いてファイルを表示",
+    "noWorkspaceExplorerTitle": "作業ディレクトリが開かれていません",
+    "noWorkspaceExplorerSubtitle": "作業ディレクトリを開いてファイルを表示",
     "cannotFindRepo": "{{repoName}} が見つかりません",
     "lastSeenAtPath": "最後に確認されたパス: {{path}}",
     "unsupportedFileType": "サポートされていないファイル形式",
@@ -1060,13 +1060,13 @@
     "publishingBranch": "Publishing...",
     "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git 未初期化",
-    "notGitInitializedTooltip": "この Workspace にはまだ .git ディレクトリがありません。",
+    "notGitInitializedTooltip": "この作業ディレクトリにはまだ .git ディレクトリがありません。",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
     "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
     "branchTooltip": "ブランチ: {{branch}}",
     "branchTooltipSwitching": "ブランチ: {{branch}}（切り替え中…）",
-    "switchWorkspaceTooltip": "Workspace を切り替え",
+    "switchWorkspaceTooltip": "作業ディレクトリを切り替え",
     "switchWorktreeTooltip": "Worktree を切り替え",
     "switchBranchTooltip": "ブランチを切り替え",
     "switchLocalBranchTooltip": "ローカルブランチを切り替え",
@@ -1623,23 +1623,23 @@
         "current": "現在",
         "repo": "リポジトリ",
         "systemPaths": "システムパス",
-        "usedElsewhere": "他の場所で使用",
-        "workspace": "Workspace",
-        "thisOrg": "このワークスペース",
-        "outsideOrg": "このワークスペースの外"
+        "usedElsewhere": "他のアプリで使用",
+        "workspace": "作業ディレクトリ",
+        "thisOrg": "この作業ディレクトリ",
+        "outsideOrg": "この作業ディレクトリの外"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "GitHub URL からクローン",
         "cloneFromMyGitHub": "自分の GitHub からクローン",
-        "createWorkspace": "新しい Workspace を作成"
+        "createWorkspace": "新しい作業ディレクトリを作成"
       },
       "sources": {
         "cloningFromGitHub": "GitHub からクローン中",
         "cloningFromGitHubUrl": "GitHub URL からクローン",
         "cloningFromMyGitHub": "自分の GitHub からクローン",
-        "creatingWorkspace": "新しい Workspace を作成中",
-        "creatingMultiRepoWorkspace": "Multi-repo Workspace を構成中"
+        "creatingWorkspace": "新しい作業ディレクトリを作成中",
+        "creatingMultiRepoWorkspace": "マルチリポジトリ作業ディレクトリを構成中"
       },
       "forms": {
         "repoName": "リポジトリ名",
@@ -1647,19 +1647,19 @@
         "chooseDestinationPath": "保存先のパスを選択",
         "choose": "選択",
         "createAt": "{{path}} に作成",
-        "createWorkspaceTitle": "新しい Workspace",
-        "creatingWorkspace": "Workspace を作成中...",
-        "readyToCreateWorkspace": "Workspace を作成できます",
-        "workspaceName": "Workspace 名",
-        "workspaceNamePlaceholder": "My Workspace"
+        "createWorkspaceTitle": "新しい作業ディレクトリ",
+        "creatingWorkspace": "作業ディレクトリを作成中...",
+        "readyToCreateWorkspace": "作業ディレクトリを作成できます",
+        "workspaceName": "ディレクトリ名",
+        "workspaceNamePlaceholder": "マイディレクトリ"
       },
       "path": {
         "switchTo": "切り替え先",
         "switchToTemplate": "{workspace} に切り替え",
         "search": "検索",
-        "manageWorkspace": "ワークスペースを管理",
-        "addBy": "Workspace の追加方法",
-        "addByTemplate": "{source} で Workspace を追加"
+        "manageWorkspace": "作業ディレクトリを管理",
+        "addBy": "作業ディレクトリの追加方法",
+        "addByTemplate": "{source} で作業ディレクトリを追加"
       },
       "pathImport": {
         "addLabel": "追加",
@@ -1668,7 +1668,7 @@
       },
       "gitInitPrompt": {
         "title": "Git を初期化しますか？",
-        "message": "この Workspace には .git フォルダーがありません。Git リポジトリとして初期化しますか？",
+        "message": "この作業ディレクトリには .git フォルダーがありません。Git リポジトリとして初期化しますか？",
         "ok": "Git を初期化",
         "cancel": "フォルダーのままにする"
       }
@@ -1747,10 +1747,10 @@
       "sourceAria": "Workspace ソースを選択",
       "on": "で",
       "branchAria": "ブランチを選択",
-      "switchWorkspace": "Workspace を切り替え",
+      "switchWorkspace": "作業ディレクトリを切り替え",
       "switchBranch": "Branch を切り替え",
       "switchLocation": "実行場所を切り替え",
-      "sessionWorkspace": "セッション Workspace を切り替え",
+      "sessionWorkspace": "セッションの作業ディレクトリを切り替え",
       "locationAria": "実行場所を選択",
       "systemPaths": {
         "home": {
@@ -1871,16 +1871,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Workspace を切り替え"
+          "label": "作業ディレクトリを切り替え"
         },
         "switchBranch": {
           "label": "ブランチを切り替え"
         },
         "addWorkspace": {
-          "label": "Workspace を追加"
+          "label": "作業ディレクトリを追加"
         },
         "createMultiRepoWorkspace": {
-          "label": "Multi-repo Workspace を追加"
+          "label": "マルチリポジトリ作業ディレクトリを追加"
         },
         "showSourceControl": {
           "label": "Source Control を表示"
@@ -2020,7 +2020,7 @@
     "hidePrimarySidebar": "サイドバーを非表示",
     "searchFiles": "ファイルを検索",
     "openBrowser": "ブラウザを開く",
-    "switchWorkspace": "Workspace を切り替え / 追加",
+    "switchWorkspace": "作業ディレクトリを切り替え / 追加",
     "openEditor": "エディタを開く",
     "hideTerminal": "Terminal を非表示",
     "hideFiles": "ファイルを非表示",
@@ -2114,10 +2114,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Git 未初期化",
-    "notGitInitializedSubtitle": "Git を初期化すると、この Workspace で変更の追跡、コミット作成、ブランチツールを使用できます。",
+    "notGitInitializedSubtitle": "Git を初期化すると、この作業ディレクトリで変更の追跡、コミット作成、ブランチツールを使用できます。",
     "initializeGit": "Git を初期化",
     "initializingGit": "Git を初期化中...",
-    "noRemoteForPublish": "この Workspace は Git リポジトリになりましたが、まだ remote がありません。このブランチを公開する前に origin などの remote を追加してください。",
+    "noRemoteForPublish": "この作業ディレクトリは Git リポジトリになりましたが、まだ remote がありません。このブランチを公開する前に origin などの remote を追加してください。",
     "generateCommitMessage": "AI で commit message を生成",
     "pull": "Pull",
     "push": "Push",
@@ -2206,24 +2206,24 @@
     "parentFolderPlaceholder": "選択 Parent folder"
   },
   "workspaceForm": {
-    "title": "マルチ Repo Workspace を作成",
-    "editTitle": "Workspace を編集",
-    "createWorkspace": "マルチリポ Workspace を作成",
-    "multiRepoWorkspace": "マルチ Repo Workspace",
-    "createWorkspaceDesc": "複数の Repo から Workspace を構成",
+    "title": "マルチリポジトリ作業ディレクトリを作成",
+    "editTitle": "作業ディレクトリを編集",
+    "createWorkspace": "マルチリポジトリ作業ディレクトリを作成",
+    "multiRepoWorkspace": "マルチリポジトリ作業ディレクトリ",
+    "createWorkspaceDesc": "複数の Repo から作業ディレクトリを構成",
     "filterPlaceholder": "Repo を検索...",
-    "selectRepos": "Workspace の Repo を選択",
+    "selectRepos": "作業ディレクトリの Repo を選択",
     "noReposFound": "一致する Repo がありません",
     "noRepos": "利用可能な Repo がありません",
     "current": "現在",
-    "workspaceName": "Workspace 名",
-    "workspaceNamePlaceholder": "マイ Workspace",
-    "willInclude": "Workspace には {{count}} 個の Repo が含まれます",
+    "workspaceName": "作業ディレクトリ名",
+    "workspaceNamePlaceholder": "マイ作業ディレクトリ",
+    "willInclude": "作業ディレクトリには {{count}} 個の Repo が含まれます",
     "statusSelectAtLeastTwo": "2つ以上の Repo を選択してください",
-    "statusReadyToCreate": "Workspace を作成する準備ができました",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "{{repo}} Workspace",
-    "windowTitle": "Workspace"
+    "statusReadyToCreate": "作業ディレクトリを作成する準備ができました",
+    "defaultName": "作業ディレクトリ",
+    "defaultNameWithRepo": "{{repo}} 作業ディレクトリ",
+    "windowTitle": "作業ディレクトリ"
   },
   "database": {
     "addConnection": "Add Database Connection",

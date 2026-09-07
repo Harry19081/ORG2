@@ -29,8 +29,8 @@ import {
   OnboardingLayout,
   OnboardingLoadingVideo,
 } from "@src/modules/shared/layouts";
-import type { AddWorkspaceModalStage } from "@src/scaffold/GlobalSpotlight/hooks";
-import { WorkspacePalette } from "@src/scaffold/GlobalSpotlight/palettes";
+import type { AddWorkingDirectoryModalStage } from "@src/scaffold/GlobalSpotlight/hooks";
+import { WorkingDirectoryPalette } from "@src/scaffold/GlobalSpotlight/palettes";
 import type { RepoItem } from "@src/scaffold/GlobalSpotlight/types";
 import {
   REPO_KIND,
@@ -79,16 +79,16 @@ function workspaceMatchesQuery(
 }
 
 // ============================================
-// Left column — vertical action list (same spotlight entry points as WorkspacePalette)
+// Left column — vertical action list (same spotlight entry points as WorkingDirectoryPalette)
 // ============================================
-interface SelectWorkspacePaletteLaunch {
-  initialAddStage?: AddWorkspaceModalStage;
+interface SelectWorkingDirectoryPaletteLaunch {
+  initialAddStage?: AddWorkingDirectoryModalStage;
   initialAddMenu?: boolean;
   initialManageMode?: boolean;
 }
 
 interface SelectRepoActionsListProps {
-  onOpenPalette: (launch: SelectWorkspacePaletteLaunch) => void;
+  onOpenPalette: (launch: SelectWorkingDirectoryPaletteLaunch) => void;
 }
 
 const SelectRepoActionsList: React.FC<SelectRepoActionsListProps> = ({
@@ -161,7 +161,7 @@ const SelectRepoActionsList: React.FC<SelectRepoActionsListProps> = ({
 // Left Column Content
 // ============================================
 interface LeftColumnContentProps {
-  onOpenPalette: (launch: SelectWorkspacePaletteLaunch) => void;
+  onOpenPalette: (launch: SelectWorkingDirectoryPaletteLaunch) => void;
 }
 
 const LeftColumnContent: React.FC<LeftColumnContentProps> = ({
@@ -351,7 +351,7 @@ const SelectRepoPage: React.FC = () => {
   // Local state for RepoSelector
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [paletteLaunch, setPaletteLaunch] =
-    useState<SelectWorkspacePaletteLaunch | null>(null);
+    useState<SelectWorkingDirectoryPaletteLaunch | null>(null);
 
   // Listen for toolbar click to open selector
   useEffect(() => {
@@ -472,8 +472,8 @@ const SelectRepoPage: React.FC = () => {
     [selectRepo, navigate]
   );
 
-  const handleOpenWorkspacePalette = useCallback(
-    (launch: SelectWorkspacePaletteLaunch) => {
+  const handleOpenWorkingDirectoryPalette = useCallback(
+    (launch: SelectWorkingDirectoryPaletteLaunch) => {
       setPaletteLaunch(launch);
       setIsSelectorOpen(true);
     },
@@ -501,7 +501,9 @@ const SelectRepoPage: React.FC = () => {
       <OnboardingLayout
         variant="contained"
         leftContent={
-          <LeftColumnContent onOpenPalette={handleOpenWorkspacePalette} />
+          <LeftColumnContent
+            onOpenPalette={handleOpenWorkingDirectoryPalette}
+          />
         }
         rightContent={
           <RepoListContent
@@ -516,8 +518,8 @@ const SelectRepoPage: React.FC = () => {
         }
       />
 
-      {/* WorkspacePalette - rendered directly for add actions */}
-      <WorkspacePalette
+      {/* WorkingDirectoryPalette - rendered directly for add actions */}
+      <WorkingDirectoryPalette
         isOpen={isSelectorOpen}
         onClose={() => {
           setIsSelectorOpen(false);

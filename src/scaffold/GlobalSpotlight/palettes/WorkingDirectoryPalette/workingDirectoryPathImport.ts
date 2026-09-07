@@ -5,23 +5,23 @@ import { repoApi } from "@src/api/tauri/repo";
 
 const ABSOLUTE_PATH_PATTERN = /^(?:~\/|\/|[A-Za-z]:[\\/])/;
 
-interface ImportWorkspacePathArgs {
+interface ImportWorkingDirectoryPathArgs {
   candidatePath: string;
   invalidPathTitle: string;
   invalidPathMessage: (path: string) => string;
-  onImportWorkspace: (path: string) => Promise<unknown>;
+  onImportWorkingDirectory: (path: string) => Promise<unknown>;
 }
 
-export function looksLikeWorkspacePath(value: string): boolean {
+export function looksLikeWorkingDirectoryPath(value: string): boolean {
   return ABSOLUTE_PATH_PATTERN.test(value.trim());
 }
 
-export function getWorkspacePathCandidate(value: string): string | null {
+export function getWorkingDirectoryPathCandidate(value: string): string | null {
   const candidatePath = value.trim();
-  return looksLikeWorkspacePath(candidatePath) ? candidatePath : null;
+  return looksLikeWorkingDirectoryPath(candidatePath) ? candidatePath : null;
 }
 
-export function getWorkspacePathDisplayName(path: string): string {
+export function getWorkingDirectoryPathDisplayName(path: string): string {
   const normalizedPath = path.trim().replace(/[\\/]+$/, "");
   if (!normalizedPath) return path.trim();
   const segments = normalizedPath.split(/[\\/]+/).filter(Boolean);
@@ -36,7 +36,7 @@ export async function expandHomePath(path: string): Promise<string> {
   return `${home.replace(/[\\/]$/, "")}/${trimmedPath.slice(2)}`;
 }
 
-async function showInvalidWorkspacePathDialog(
+async function showInvalidWorkingDirectoryPathDialog(
   title: string,
   dialogMessage: string
 ): Promise<void> {
@@ -47,24 +47,24 @@ async function showInvalidWorkspacePathDialog(
   });
 }
 
-export async function importWorkspacePath({
+export async function importWorkingDirectoryPath({
   candidatePath,
   invalidPathTitle,
   invalidPathMessage,
-  onImportWorkspace,
-}: ImportWorkspacePathArgs): Promise<boolean> {
-  const workspacePath = getWorkspacePathCandidate(candidatePath);
-  if (!workspacePath) return false;
+  onImportWorkingDirectory,
+}: ImportWorkingDirectoryPathArgs): Promise<boolean> {
+  const workingDirectoryPath = getWorkingDirectoryPathCandidate(candidatePath);
+  if (!workingDirectoryPath) return false;
 
   try {
-    const expandedPath = await expandHomePath(workspacePath);
+    const expandedPath = await expandHomePath(workingDirectoryPath);
     const validatedPath = await repoApi.validateWorkspacePath(expandedPath);
-    await onImportWorkspace(validatedPath);
+    await onImportWorkingDirectory(validatedPath);
     return true;
   } catch {
-    await showInvalidWorkspacePathDialog(
+    await showInvalidWorkingDirectoryPathDialog(
       invalidPathTitle,
-      invalidPathMessage(workspacePath)
+      invalidPathMessage(workingDirectoryPath)
     );
     return true;
   }

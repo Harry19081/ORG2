@@ -1,44 +1,47 @@
 /**
- * AddWorkspaceModalShell Component
+ * AddWorkingDirectoryModalShell Component
  *
- * Shared modal shell for the add workspace flow used by WorkspacePalette.
+ * Shared modal shell for the add-working-directory flow used by
+ * WorkingDirectoryPalette.
  */
 import React from "react";
 
 import { SpotlightSearchBar } from "../components";
 import type {
-  AddWorkspaceModalStage,
-  UseAddWorkspaceFlowReturn,
-} from "../hooks/forms/useAddWorkspaceFlow";
+  AddWorkingDirectoryModalStage,
+  UseAddWorkingDirectoryFlowReturn,
+} from "../hooks/forms/useAddWorkingDirectoryFlow";
 import { SpotlightShell } from "../shell";
 import { SpotlightModalView } from "../views";
 
-interface AddWorkspaceModalShellProps {
+interface AddWorkingDirectoryModalShellProps {
   isOpen: boolean;
   onClose: () => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  modalStage: AddWorkspaceModalStage;
-  addWorkspaceFlow: UseAddWorkspaceFlowReturn;
+  modalStage: AddWorkingDirectoryModalStage;
+  workingDirectoryFlow: UseAddWorkingDirectoryFlowReturn;
   currentRepoId?: string;
   onGoBack?: () => void;
   asBody?: boolean;
 }
 
-export const AddWorkspaceModalShell: React.FC<AddWorkspaceModalShellProps> = ({
+export const AddWorkingDirectoryModalShell: React.FC<
+  AddWorkingDirectoryModalShellProps
+> = ({
   isOpen,
   onClose,
   inputRef,
   handleKeyDown,
   modalStage,
-  addWorkspaceFlow,
+  workingDirectoryFlow,
   currentRepoId,
   onGoBack,
   asBody = false,
 }) => {
   if (!modalStage) return null;
 
-  const rawSourceSegment = addWorkspaceFlow.getSourceSegment(modalStage);
+  const rawSourceSegment = workingDirectoryFlow.getSourceSegment(modalStage);
   if (!rawSourceSegment) return null;
 
   const sourceSegment = {
@@ -50,7 +53,7 @@ export const AddWorkspaceModalShell: React.FC<AddWorkspaceModalShellProps> = ({
     {
       ...sourceSegment,
       type: "action" as const,
-      label: addWorkspaceFlow.getModalActionLabel(modalStage),
+      label: workingDirectoryFlow.getModalActionLabel(modalStage),
       icon: rawSourceSegment.icon ?? "",
     },
   ];
@@ -63,23 +66,23 @@ export const AddWorkspaceModalShell: React.FC<AddWorkspaceModalShellProps> = ({
         onSearchQueryChange={() => {}}
         onKeyDown={handleKeyDown}
         placeholder=""
-        isLoading={addWorkspaceFlow.isLoading}
+        isLoading={workingDirectoryFlow.isLoading}
         isCountingDown={false}
         hideActionClose={false}
         hideInput
         path={searchPath}
         onRemoveSegment={(index) => {
           if (index === 0) (onGoBack ?? onClose)();
-          if (index === 1) addWorkspaceFlow.handleGoBack();
+          if (index === 1) workingDirectoryFlow.handleGoBack();
         }}
       />
       <SpotlightModalView
         sourceSegment={sourceSegment}
-        localWorkspaceForm={addWorkspaceFlow.localWorkspaceForm}
-        cloneForm={addWorkspaceFlow.cloneForm}
-        multiRepoWorkspaceForm={addWorkspaceFlow.multiRepoWorkspaceForm}
+        workingDirectoryForm={workingDirectoryFlow.workingDirectoryForm}
+        cloneForm={workingDirectoryFlow.cloneForm}
+        multiRepoWorkspaceForm={workingDirectoryFlow.multiRepoWorkspaceForm}
         currentRepoId={currentRepoId}
-        onCancel={onGoBack ?? addWorkspaceFlow.handleGoBack}
+        onCancel={onGoBack ?? workingDirectoryFlow.handleGoBack}
       />
     </>
   );

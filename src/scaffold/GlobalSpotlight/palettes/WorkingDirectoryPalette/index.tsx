@@ -1,5 +1,5 @@
 /**
- * WorkspacePalette Component
+ * WorkingDirectoryPalette Component
  *
  * Flat palette listing repos, folders, and workspaces as peers.
  * A workspace (multi-repo preset) renders as a single row showing
@@ -18,7 +18,7 @@ import Message from "@src/components/Message";
 import { HugeiconsIcon } from "@src/icons";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { cachedReposAtom } from "@src/store/repo";
-import { addWorkspaceInitialStageAtom } from "@src/store/ui/overlayAtom";
+import { workingDirectoryInitialStageAtom } from "@src/store/ui/overlayAtom";
 import { spotlightShowPathAtom } from "@src/store/ui/spotlightShowPathAtom";
 import {
   isMultiRootWorkspaceAtom,
@@ -33,31 +33,33 @@ import {
 } from "../../components";
 import { ICONS } from "../../config";
 import {
-  type AddWorkspaceModalStage,
+  type AddWorkingDirectoryModalStage,
   EXTERNAL_RECENT_PATH_WORKSPACE_THRESHOLD,
-  useAddWorkspaceFlow,
+  useAddWorkingDirectoryFlow,
   useExternalRecentPaths,
   useSharedRepoList,
 } from "../../hooks";
 import { usePathSegment } from "../../hooks/usePathSegment";
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { RepoItem, SpotlightItem } from "../../types";
-import { AddWorkspaceModalShell } from "../AddWorkspaceModalShell";
+import { AddWorkingDirectoryModalShell } from "../AddWorkingDirectoryModalShell";
 import { REPO_PALETTE_CONFIG } from "../config";
 import { buildOpenPathItem } from "./pathActionItem";
-import { importWorkspacePath } from "./pathImport";
-import { buildPinnedWorkspaceActions } from "./pinnedActions";
-import type { AddMenuKind, WorkspacePaletteProps } from "./types";
-import { useWorkspacePaletteNavigation } from "./useWorkspacePaletteNavigation";
-import { useWorkspacePaletteWorkspace } from "./useWorkspacePaletteWorkspace";
+import { buildPinnedWorkingDirectoryActions } from "./pinnedActions";
+import type { AddMenuKind, WorkingDirectoryPaletteProps } from "./types";
+import { useWorkingDirectoryPaletteNavigation } from "./useWorkingDirectoryPaletteNavigation";
+import { useWorkingDirectoryPaletteWorkspaces } from "./useWorkingDirectoryPaletteWorkspaces";
 import {
   buildSectionedAddItems,
-  buildSectionedWorkspaceItems,
-} from "./workspacePaletteItems";
+  buildSectionedWorkingDirectoryItems,
+} from "./workingDirectoryPaletteItems";
+import { importWorkingDirectoryPath } from "./workingDirectoryPathImport";
 
 // ============ COMPONENT ============
 
-export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
+export const WorkingDirectoryPalette: React.FC<
+  WorkingDirectoryPaletteProps
+> = ({
   isOpen,
   onClose,
   onSelect,
@@ -77,14 +79,14 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
 
   // ============ GLOBAL STATE ============
   const [initialAddStageAtom, setInitialAddStageAtom] = useAtom(
-    addWorkspaceInitialStageAtom
+    workingDirectoryInitialStageAtom
   );
   const [showPath, setShowPath] = useAtom(spotlightShowPathAtom);
   const effectiveInitialStage = initialAddStageProp ?? initialAddStageAtom;
 
   // ============ LOCAL STATE ============
   const [searchQuery, setSearchQuery] = useState("");
-  const [modalStage, setModalStage] = useState<AddWorkspaceModalStage>(
+  const [modalStage, setModalStage] = useState<AddWorkingDirectoryModalStage>(
     effectiveInitialStage ?? null
   );
   const [addMenuKind, setAddMenuKind] = useState<AddMenuKind>(
@@ -120,10 +122,10 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
       sectionSystemPathsLabel: t("selectors.repo.sections.systemPaths"),
       sectionExternalRecentLabel: t("selectors.repo.sections.usedElsewhere"),
       sectionRepoLabel: t("selectors.repo.sections.repo"),
-      sectionFolderWorkspaceLabel: t("selectors.repo.sections.workspace"),
-      sectionMultiRepoWorkspaceLabel: t(
+      sectionWorkingDirectoryLabel: t("selectors.repo.sections.workspace"),
+      sectionMultiRepoWorkingDirectoryLabel: t(
         "workspaceForm.multiRepoWorkspace",
-        "Multi-Repo Workspace"
+        "Multi-Repo Working Directory"
       ),
       sectionThisOrgLabel: t("selectors.repo.sections.thisOrg", "This org"),
       sectionOutsideOrgLabel: t(
@@ -244,7 +246,7 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
   );
 
   // ============ ADD WORKSPACE FLOW ============
-  const addWorkspaceFlow = useAddWorkspaceFlow({
+  const workingDirectoryFlow = useAddWorkingDirectoryFlow({
     modalStage,
     setModalStage,
     onSuccess: handleAddedRepoSelect,
@@ -260,11 +262,13 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
       if (isMultiRoot) {
         dispatchSetFolders([], null);
       }
-      await addWorkspaceFlow.localWorkspaceForm.handleImportWorkspace(path);
+      await workingDirectoryFlow.workingDirectoryForm.handleImportWorkingDirectory(
+        path
+      );
       await refreshReposForce();
     },
     [
-      addWorkspaceFlow.localWorkspaceForm,
+      workingDirectoryFlow.workingDirectoryForm,
       dispatchSetFolders,
       isMultiRoot,
       refreshReposForce,
@@ -274,8 +278,8 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
   // ============ ITEMS ============
   const sectionedAddItems = useMemo(
     (): SpotlightItem[] =>
-      buildSectionedAddItems(addWorkspaceFlow.addWorkspaceItems),
-    [addWorkspaceFlow.addWorkspaceItems]
+      buildSectionedAddItems(workingDirectoryFlow.addWorkingDirectoryItems),
+    [workingDirectoryFlow.addWorkingDirectoryItems]
   );
 
   const toggleManageMode = useCallback(() => {
@@ -306,20 +310,21 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
   const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
 
   // ============ WORKSPACE MANAGEMENT ============
-  const { workspaceItems, handleBulkDelete } = useWorkspacePaletteWorkspace({
-    repos,
-    isManageMode,
-    selectedIds,
-    toggleSelection,
-    clearSelection,
-    setModalStage,
-    onClose,
-    refreshReposForce,
-    searchQuery,
-    repoFilter,
-    setEditingWorkspace:
-      addWorkspaceFlow.multiRepoWorkspaceForm.setEditingWorkspace,
-  });
+  const { workspaceItems, handleBulkDelete } =
+    useWorkingDirectoryPaletteWorkspaces({
+      repos,
+      isManageMode,
+      selectedIds,
+      toggleSelection,
+      clearSelection,
+      setModalStage,
+      onClose,
+      refreshReposForce,
+      searchQuery,
+      repoFilter,
+      setEditingWorkspace:
+        workingDirectoryFlow.multiRepoWorkspaceForm.setEditingWorkspace,
+    });
 
   const addPathSegment = usePathSegment(
     REPO_PALETTE_CONFIG.modes?.find((mode) => mode.id === "add")?.path,
@@ -379,17 +384,18 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
         searchQuery,
         addLabel: paletteText.addFolderLabel,
         onOpenPath: (candidatePath) => {
-          void importWorkspacePath({
+          void importWorkingDirectoryPath({
             candidatePath,
             invalidPathTitle: paletteText.invalidPathTitle,
             invalidPathMessage: paletteText.invalidPathMessage,
-            onImportWorkspace:
-              addWorkspaceFlow.localWorkspaceForm.handleImportWorkspace,
+            onImportWorkingDirectory:
+              workingDirectoryFlow.workingDirectoryForm
+                .handleImportWorkingDirectory,
           });
         },
       }),
     [
-      addWorkspaceFlow.localWorkspaceForm.handleImportWorkspace,
+      workingDirectoryFlow.workingDirectoryForm.handleImportWorkingDirectory,
       paletteText.invalidPathMessage,
       paletteText.invalidPathTitle,
       paletteText.addFolderLabel,
@@ -399,20 +405,20 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
 
   const pinnedActionItems = useMemo(
     (): SpotlightItem[] =>
-      buildPinnedWorkspaceActions({
+      buildPinnedWorkingDirectoryActions({
         isManageMode,
         selectedCount,
         paletteText,
         t,
-        onOpenLocalWorkspace: () =>
-          void addWorkspaceFlow.localWorkspaceForm.handleOpenLocalWorkspace(),
+        onOpenWorkingDirectory: () =>
+          void workingDirectoryFlow.workingDirectoryForm.handleOpenWorkingDirectory(),
         onOpenAddMenu: () => setAddMenuKind("add"),
         onCreateWorkspace: () => setModalStage("create-workspace"),
         onBulkDelete: () => void handleBulkDelete(),
         onToggleManageMode: toggleManageMode,
       }),
     [
-      addWorkspaceFlow.localWorkspaceForm,
+      workingDirectoryFlow.workingDirectoryForm,
       handleBulkDelete,
       isManageMode,
       paletteText,
@@ -440,7 +446,7 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
   );
 
   const mainItems = useMemo((): SpotlightItem[] => {
-    return buildSectionedWorkspaceItems({
+    return buildSectionedWorkingDirectoryItems({
       addMenuActive: !!addMenuKind,
       sectionedAddItems,
       workspaceItems,
@@ -546,8 +552,8 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
     ]
   );
 
-  const { handleGoBack, handleExternalKeyDown } = useWorkspacePaletteNavigation(
-    {
+  const { handleGoBack, handleExternalKeyDown } =
+    useWorkingDirectoryPaletteNavigation({
       modalStage,
       addMenuKind,
       asBody,
@@ -558,11 +564,10 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
       setModalStage,
       setAddMenuKind,
       setSearchQuery,
-      addWorkspaceFlow,
+      workingDirectoryFlow,
       searchQuery,
       paletteText,
-    }
-  );
+    });
 
   const kernel = useSelectorKernel({
     isOpen,
@@ -596,13 +601,13 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
   // ============ RENDER: MODAL VIEW ============
   if (modalStage && modalStage !== "add-workspace-existing") {
     return (
-      <AddWorkspaceModalShell
+      <AddWorkingDirectoryModalShell
         isOpen={isOpen}
         onClose={onClose}
         inputRef={kernel.inputRef}
         handleKeyDown={kernel.handleKeyDown}
         modalStage={modalStage}
-        addWorkspaceFlow={addWorkspaceFlow}
+        workingDirectoryFlow={workingDirectoryFlow}
         currentRepoId={currentRepoId}
         onGoBack={handleGoBack}
         asBody={asBody}
@@ -692,4 +697,4 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
   );
 };
 
-WorkspacePalette.displayName = "WorkspacePalette";
+WorkingDirectoryPalette.displayName = "WorkingDirectoryPalette";
