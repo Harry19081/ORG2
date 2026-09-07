@@ -4,7 +4,6 @@
  */
 import {
   SECTION_CONTROL_STYLE,
-  SectionContainer,
   SectionRow,
 } from "@/src/modules/shared/layouts/SectionLayout";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -12,6 +11,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Select from "@src/components/Select";
+import { HintWithInfo } from "@src/modules/shared/layouts/blocks/HintWithInfo";
 import {
   settingsAtom,
   updateSettingAtom,
@@ -32,21 +32,26 @@ const HttpVersionSettingsBlock: React.FC = () => {
   }));
 
   return (
-    <SectionContainer>
-      <SectionRow
-        label={t("monitor.httpVersion")}
-        description={t("monitor.httpVersionDesc")}
-      >
-        <Select
-          value={httpVersion}
-          onChange={(value) =>
-            updateSetting({ key: "network.httpVersion", value })
-          }
-          options={options}
-          style={SECTION_CONTROL_STYLE}
-        />
-      </SectionRow>
-    </SectionContainer>
+    <SectionRow
+      label={
+        <span className="inline-flex items-center gap-1">
+          {t("monitor.httpVersion")}
+          <HintWithInfo
+            content={t("monitor.httpVersionDesc")}
+            position="right"
+          />
+        </span>
+      }
+    >
+      <Select
+        value={httpVersion}
+        onChange={(value) =>
+          updateSetting({ key: "network.httpVersion", value })
+        }
+        options={options}
+        style={SECTION_CONTROL_STYLE}
+      />
+    </SectionRow>
   );
 };
 

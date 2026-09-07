@@ -15,8 +15,9 @@
  */
 import {
   PathCopyOpenRow,
+  SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
-  SECTION_VALUE_TEXT_CLASSES,
+  SECTION_PATH_TEXT_CLASSES,
   SectionContainer,
   SectionRow,
 } from "@/src/modules/shared/layouts/SectionLayout";
@@ -61,11 +62,11 @@ import {
 } from "@src/i18n";
 import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import { NAV_BUTTON_PROPS } from "@src/modules/MainApp/Settings/config";
+import { HintWithInfo } from "@src/modules/shared/layouts/blocks/HintWithInfo";
 import {
   checkForAppUpdates,
   checkForUpdatesManually,
 } from "@src/scaffold/AppUpdater/actions";
-import { formatAppBuildRevision } from "@src/scaffold/AppUpdater/buildProvenance";
 import { useAppBuildProvenance } from "@src/scaffold/AppUpdater/state";
 import { chatAppearancePersistAtom } from "@src/store/config/configAtom";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
@@ -359,6 +360,7 @@ const GeneralTabBody: React.FC = () => {
         <SectionRow label={t("common:common.timezone")}>
           <Select {...timezoneSelectProps} />
         </SectionRow>
+        <HttpVersionSettingsBlock />
       </SectionContainer>
       <SectionContainer>
         <SectionRow
@@ -408,31 +410,34 @@ const GeneralTabBody: React.FC = () => {
 
       <SectionContainer>
         <SectionRow
-          label={t("general.preventSleep")}
-          description={t("general.preventSleepDesc")}
+          label={
+            <span className="inline-flex items-center gap-1">
+              {t("general.preventSleep")}
+              <HintWithInfo
+                content={t("general.preventSleepDesc")}
+                position="right"
+              />
+            </span>
+          }
         >
           <Switch
             checked={preventSleepWhileRunning}
             onCheckedChange={setPreventSleepWhileRunning}
           />
         </SectionRow>
-        <SectionRow
-          label={t("general.devMode")}
-          description={t("general.devModeDesc")}
-        >
-          <Switch
-            checked={devModeEnabled}
-            onCheckedChange={setDevModeEnabled}
-          />
-        </SectionRow>
       </SectionContainer>
-
-      <HttpVersionSettingsBlock />
 
       <SectionContainer>
         <SectionRow
-          label={t("update.channel")}
-          description={t("update.channelDesc")}
+          label={
+            <span className="inline-flex items-center gap-1">
+              {t("update.channel")}
+              <HintWithInfo
+                content={t("update.channelDesc")}
+                position="right"
+              />
+            </span>
+          }
         >
           <Select
             value={resolveUpdateChannel(
@@ -445,29 +450,48 @@ const GeneralTabBody: React.FC = () => {
             style={SECTION_CONTROL_STYLE}
           />
         </SectionRow>
-        <SectionRow label={t("update.detectUpdate")}>
-          <Button
-            size="default"
-            onClick={checkForUpdatesManually}
-            icon={
-              <HugeiconsIcon
-                icon={Refresh04Icon}
-                data-icon="refresh-cw"
-                size={14}
-              />
-            }
-          >
-            {t("update.detectUpdate")}
-          </Button>
-        </SectionRow>
         <SectionRow label={t("update.currentVersion")}>
-          <span className={SECTION_VALUE_TEXT_CLASSES}>
-            {appVersion
-              ? buildProvenance?.kind === "local"
-                ? `v${appVersion} · ${t("update.localBuild")} · ${formatAppBuildRevision(buildProvenance)}`
-                : `v${appVersion}`
-              : "—"}
-          </span>
+          <div className={SECTION_ACTION_GAP_CLASSES}>
+            <span className={SECTION_PATH_TEXT_CLASSES}>
+              {appVersion
+                ? buildProvenance?.kind === "local"
+                  ? `v${appVersion} · ${t("update.localBuild")}`
+                  : `v${appVersion}`
+                : "—"}
+            </span>
+            <Button
+              size="default"
+              onClick={checkForUpdatesManually}
+              icon={
+                <HugeiconsIcon
+                  icon={Refresh04Icon}
+                  data-icon="refresh-cw"
+                  size={14}
+                />
+              }
+            >
+              {t("update.detectUpdate")}
+            </Button>
+          </div>
+        </SectionRow>
+      </SectionContainer>
+
+      <SectionContainer>
+        <SectionRow
+          label={
+            <span className="inline-flex items-center gap-1">
+              {t("general.devMode")}
+              <HintWithInfo
+                content={t("general.devModeDesc")}
+                position="right"
+              />
+            </span>
+          }
+        >
+          <Switch
+            checked={devModeEnabled}
+            onCheckedChange={setDevModeEnabled}
+          />
         </SectionRow>
       </SectionContainer>
 

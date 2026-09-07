@@ -196,6 +196,9 @@ export const Org2CloudLoginRows: React.FC = () => {
                 }}
               />
               <Button
+                className="shrink-0"
+                variant="secondary"
+                shape="square"
                 size="default"
                 iconOnly
                 icon={
@@ -213,6 +216,9 @@ export const Org2CloudLoginRows: React.FC = () => {
                 data-testid="org2-cloud-rename-save"
               />
               <Button
+                className="shrink-0"
+                variant="secondary"
+                shape="square"
                 size="default"
                 iconOnly
                 icon={
