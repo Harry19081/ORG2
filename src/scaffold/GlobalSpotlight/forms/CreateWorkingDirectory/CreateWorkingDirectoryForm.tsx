@@ -1,7 +1,7 @@
 /**
- * CreateWorkspaceFolderForm
+ * CreateWorkingDirectoryForm
  *
- * Form for creating a new local workspace folder.
+ * Form for creating a new local working directory.
  */
 import Button from "@/src/components/Button";
 import React, { useEffect } from "react";
@@ -19,11 +19,11 @@ import {
   SpotlightModalHeader,
 } from "../shared";
 
-interface CreateWorkspaceFolderFormProps {
-  workspaceName: string;
-  onWorkspaceNameChange: (name: string) => void;
-  workspacePath: string;
-  onWorkspacePathChange: (path: string) => void;
+interface CreateWorkingDirectoryFormProps {
+  directoryName: string;
+  onDirectoryNameChange: (name: string) => void;
+  parentDirectoryPath: string;
+  onParentDirectoryPathChange: (path: string) => void;
   onChoosePath: () => Promise<string | null>;
   onCancel: () => void;
   onSubmit: () => void;
@@ -33,11 +33,11 @@ interface CreateWorkspaceFolderFormProps {
   initialName?: string;
 }
 
-const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
-  workspaceName,
-  onWorkspaceNameChange,
-  workspacePath,
-  onWorkspacePathChange,
+const CreateWorkingDirectoryForm: React.FC<CreateWorkingDirectoryFormProps> = ({
+  directoryName,
+  onDirectoryNameChange,
+  parentDirectoryPath,
+  onParentDirectoryPathChange,
   onChoosePath,
   onCancel,
   onSubmit,
@@ -49,24 +49,24 @@ const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (initialPath && !workspacePath) {
-      onWorkspacePathChange(initialPath);
+    if (initialPath && !parentDirectoryPath) {
+      onParentDirectoryPathChange(initialPath);
     }
-    if (initialName && !workspaceName) {
-      onWorkspaceNameChange(initialName);
+    if (initialName && !directoryName) {
+      onDirectoryNameChange(initialName);
     }
   }, [
     initialPath,
     initialName,
-    workspacePath,
-    workspaceName,
-    onWorkspacePathChange,
-    onWorkspaceNameChange,
+    parentDirectoryPath,
+    directoryName,
+    onParentDirectoryPathChange,
+    onDirectoryNameChange,
   ]);
 
-  const handleWorkspaceNameChange = (value: string) => {
+  const handleDirectoryNameChange = (value: string) => {
     const sanitized = value.replace(/\s+/g, "");
-    onWorkspaceNameChange(sanitized);
+    onDirectoryNameChange(sanitized);
   };
 
   return (
@@ -93,8 +93,8 @@ const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
             </label>
             <Input
               placeholder={t("selectors.repo.forms.workspaceNamePlaceholder")}
-              value={workspaceName}
-              onChange={handleWorkspaceNameChange}
+              value={directoryName}
+              onChange={handleDirectoryNameChange}
               className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
               prefix={
                 <HugeiconsIcon
@@ -117,8 +117,8 @@ const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
             <div className="flex gap-3">
               <div className="flex-1">
                 <Input
-                  value={workspacePath}
-                  onChange={onWorkspacePathChange}
+                  value={parentDirectoryPath}
+                  onChange={onParentDirectoryPathChange}
                   placeholder={t("selectors.repo.forms.chooseDestinationPath")}
                   className="h-[32px] rounded-lg bg-fill-1 text-[14px]"
                   prefix={
@@ -134,7 +134,7 @@ const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
               <Button
                 onClick={async () => {
                   const path = await onChoosePath();
-                  if (path) onWorkspacePathChange(path);
+                  if (path) onParentDirectoryPathChange(path);
                 }}
                 className="h-[32px] rounded-lg border border-border-2 bg-bg-2 px-4 text-[14px] text-text-1 hover:bg-bg-3"
               >
@@ -148,10 +148,10 @@ const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
           secondaryButtonSize="default"
           primaryButtonSize="default"
           left={
-            workspacePath && workspaceName ? (
+            parentDirectoryPath && directoryName ? (
               <span className="truncate text-[14px] text-text-1">
                 {t("selectors.repo.forms.createAt", {
-                  path: joinPathForDisplay(workspacePath, workspaceName),
+                  path: joinPathForDisplay(parentDirectoryPath, directoryName),
                 })}
               </span>
             ) : undefined
@@ -167,7 +167,7 @@ const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
           primaryAction={{
             label: loading ? `${t("actions.create")}...` : t("actions.create"),
             onClick: onSubmit,
-            disabled: !workspaceName.trim() || !workspacePath.trim(),
+            disabled: !directoryName.trim() || !parentDirectoryPath.trim(),
             loading,
             variant: "primary",
           }}
@@ -177,4 +177,4 @@ const CreateWorkspaceFolderForm: React.FC<CreateWorkspaceFolderFormProps> = ({
   );
 };
 
-export default CreateWorkspaceFolderForm;
+export default CreateWorkingDirectoryForm;

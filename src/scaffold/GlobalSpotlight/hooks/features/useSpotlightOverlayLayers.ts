@@ -23,7 +23,7 @@ import type {
 
 import {
   type EmbeddedEditorPaletteState,
-  type WorkspacePickerMode,
+  type WorkingDirectoryPickerMode,
   getEditorPaletteMode,
 } from "../../globalSpotlight.helpers";
 import type {
@@ -37,8 +37,10 @@ import type { EditorPaletteMode } from "../../palettes/EditorPalette/types";
 // ============================================
 
 interface UseSpotlightOverlayLayersResult {
-  workspacePickerMode: WorkspacePickerMode | null;
-  setWorkspacePickerMode: Dispatch<SetStateAction<WorkspacePickerMode | null>>;
+  workingDirectoryPickerMode: WorkingDirectoryPickerMode | null;
+  setWorkingDirectoryPickerMode: Dispatch<
+    SetStateAction<WorkingDirectoryPickerMode | null>
+  >;
   collabOrgContext: SpotlightCollabOrgContext | null;
   githubIssuesImportContext: SpotlightGitHubIssuesImportContext | null;
   embeddedBranchMode: BranchPaletteMode;
@@ -58,7 +60,7 @@ interface UseSpotlightOverlayLayersResult {
   pendingRestoreItemId: string | null;
   setPendingRestoreItemId: Dispatch<SetStateAction<string | null>>;
   restoreLastActivatedItem: () => void;
-  handleOpenWorkspacePicker: (mode: WorkspacePickerMode) => void;
+  handleOpenWorkingDirectoryPicker: (mode: WorkingDirectoryPickerMode) => void;
   handleOpenCollabOrg: (context?: SpotlightCollabOrgContext) => void;
   handleOpenGitHubIssuesImport: (
     context?: SpotlightGitHubIssuesImportContext
@@ -70,7 +72,7 @@ interface UseSpotlightOverlayLayersResult {
   handleOpenAgentControl: () => void;
   handleOpenSessionCreator: () => void;
   handleOpenEditorPalette: (query: string, mode?: EditorPaletteMode) => void;
-  handleCloseWorkspacePicker: () => void;
+  handleCloseWorkingDirectoryPicker: () => void;
   handleCloseCollabOrg: () => void;
   handleCloseGitHubIssuesImport: () => void;
   handleCloseBranchPicker: () => void;
@@ -89,8 +91,8 @@ interface UseSpotlightOverlayLayersResult {
 export function useSpotlightOverlayLayers(
   isOpen: boolean
 ): UseSpotlightOverlayLayersResult {
-  const [workspacePickerMode, setWorkspacePickerMode] =
-    useState<WorkspacePickerMode | null>(null);
+  const [workingDirectoryPickerMode, setWorkingDirectoryPickerMode] =
+    useState<WorkingDirectoryPickerMode | null>(null);
   const [collabOrgContext, setCollabOrgContext] =
     useState<SpotlightCollabOrgContext | null>(null);
   const [githubIssuesImportContext, setGitHubIssuesImportContext] =
@@ -112,9 +114,12 @@ export function useSpotlightOverlayLayers(
     string | null
   >(null);
 
-  const handleOpenWorkspacePicker = useCallback((mode: WorkspacePickerMode) => {
-    setWorkspacePickerMode(mode);
-  }, []);
+  const handleOpenWorkingDirectoryPicker = useCallback(
+    (mode: WorkingDirectoryPickerMode) => {
+      setWorkingDirectoryPickerMode(mode);
+    },
+    []
+  );
 
   const handleOpenCollabOrg = useCallback(
     (context: SpotlightCollabOrgContext = {}) => {
@@ -169,8 +174,8 @@ export function useSpotlightOverlayLayers(
     setPendingRestoreItemId(lastActivatedItemIdRef.current);
   }, []);
 
-  const handleCloseWorkspacePicker = useCallback(() => {
-    setWorkspacePickerMode(null);
+  const handleCloseWorkingDirectoryPicker = useCallback(() => {
+    setWorkingDirectoryPickerMode(null);
     restoreLastActivatedItem();
   }, [restoreLastActivatedItem]);
 
@@ -225,7 +230,7 @@ export function useSpotlightOverlayLayers(
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
-      setWorkspacePickerMode(null);
+      setWorkingDirectoryPickerMode(null);
       setCollabOrgContext(null);
       setGitHubIssuesImportContext(null);
       setBranchPickerOpen(false);
@@ -245,8 +250,8 @@ export function useSpotlightOverlayLayers(
   }, [isOpen]);
 
   return {
-    workspacePickerMode,
-    setWorkspacePickerMode,
+    workingDirectoryPickerMode,
+    setWorkingDirectoryPickerMode,
     collabOrgContext,
     githubIssuesImportContext,
     embeddedBranchMode,
@@ -266,7 +271,7 @@ export function useSpotlightOverlayLayers(
     pendingRestoreItemId,
     setPendingRestoreItemId,
     restoreLastActivatedItem,
-    handleOpenWorkspacePicker,
+    handleOpenWorkingDirectoryPicker,
     handleOpenCollabOrg,
     handleOpenGitHubIssuesImport,
     handleOpenBranchPicker,
@@ -276,7 +281,7 @@ export function useSpotlightOverlayLayers(
     handleOpenAgentControl,
     handleOpenSessionCreator,
     handleOpenEditorPalette,
-    handleCloseWorkspacePicker,
+    handleCloseWorkingDirectoryPicker,
     handleCloseCollabOrg,
     handleCloseGitHubIssuesImport,
     handleCloseBranchPicker,

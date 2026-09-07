@@ -1,27 +1,33 @@
 import type React from "react";
 import { useCallback } from "react";
 
-import type { AddWorkspaceModalStage, useAddWorkspaceFlow } from "../../hooks";
-import { importWorkspacePath, looksLikeWorkspacePath } from "./pathImport";
-import type { AddMenuKind, WorkspacePaletteText } from "./types";
+import type {
+  AddWorkingDirectoryModalStage,
+  useAddWorkingDirectoryFlow,
+} from "../../hooks";
+import type { AddMenuKind, WorkingDirectoryPaletteText } from "./types";
+import {
+  importWorkingDirectoryPath,
+  looksLikeWorkingDirectoryPath,
+} from "./workingDirectoryPathImport";
 
-interface UseWorkspacePaletteNavigationArgs {
-  modalStage: AddWorkspaceModalStage;
+interface UseWorkingDirectoryPaletteNavigationArgs {
+  modalStage: AddWorkingDirectoryModalStage;
   addMenuKind: AddMenuKind;
   asBody: boolean;
-  effectiveInitialStage: AddWorkspaceModalStage;
+  effectiveInitialStage: AddWorkingDirectoryModalStage;
   initialAddMenu: boolean;
   onClose: () => void;
   onGoBackToParent?: () => void;
-  setModalStage: (stage: AddWorkspaceModalStage) => void;
+  setModalStage: (stage: AddWorkingDirectoryModalStage) => void;
   setAddMenuKind: (kind: AddMenuKind) => void;
   setSearchQuery: (query: string) => void;
-  addWorkspaceFlow: ReturnType<typeof useAddWorkspaceFlow>;
+  workingDirectoryFlow: ReturnType<typeof useAddWorkingDirectoryFlow>;
   searchQuery: string;
-  paletteText: WorkspacePaletteText;
+  paletteText: WorkingDirectoryPaletteText;
 }
 
-export function useWorkspacePaletteNavigation({
+export function useWorkingDirectoryPaletteNavigation({
   modalStage,
   addMenuKind,
   asBody,
@@ -32,10 +38,10 @@ export function useWorkspacePaletteNavigation({
   setModalStage,
   setAddMenuKind,
   setSearchQuery,
-  addWorkspaceFlow,
+  workingDirectoryFlow,
   searchQuery,
   paletteText,
-}: UseWorkspacePaletteNavigationArgs) {
+}: UseWorkingDirectoryPaletteNavigationArgs) {
   const shouldReturnInitialStageToParent =
     !!onGoBackToParent && !!effectiveInitialStage;
   const shouldReturnInitialAddMenuToParent =
@@ -58,7 +64,7 @@ export function useWorkspacePaletteNavigation({
         return;
       }
 
-      addWorkspaceFlow.handleGoBack();
+      workingDirectoryFlow.handleGoBack();
       return;
     }
 
@@ -83,7 +89,7 @@ export function useWorkspacePaletteNavigation({
     }
   }, [
     addMenuKind,
-    addWorkspaceFlow,
+    workingDirectoryFlow,
     asBody,
     effectiveInitialStage,
     modalStage,
@@ -99,16 +105,16 @@ export function useWorkspacePaletteNavigation({
   const handlePathImportSubmit = useCallback(async () => {
     if (modalStage || addMenuKind) return false;
 
-    return importWorkspacePath({
+    return importWorkingDirectoryPath({
       candidatePath: searchQuery,
       invalidPathTitle: paletteText.invalidPathTitle,
       invalidPathMessage: paletteText.invalidPathMessage,
-      onImportWorkspace:
-        addWorkspaceFlow.localWorkspaceForm.handleImportWorkspace,
+      onImportWorkingDirectory:
+        workingDirectoryFlow.workingDirectoryForm.handleImportWorkingDirectory,
     });
   }, [
     addMenuKind,
-    addWorkspaceFlow.localWorkspaceForm.handleImportWorkspace,
+    workingDirectoryFlow.workingDirectoryForm.handleImportWorkingDirectory,
     modalStage,
     paletteText.invalidPathMessage,
     paletteText.invalidPathTitle,
@@ -130,7 +136,7 @@ export function useWorkspacePaletteNavigation({
         return;
       }
 
-      if (event.key === "Enter" && looksLikeWorkspacePath(searchQuery)) {
+      if (event.key === "Enter" && looksLikeWorkingDirectoryPath(searchQuery)) {
         event.preventDefault();
         void handlePathImportSubmit();
         return;
