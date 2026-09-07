@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, createElement, createRef } from "react";
+import { type ComponentProps, act, createElement, createRef } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import {
   afterAll,
@@ -19,9 +19,34 @@ import { WorkingDirectoryDropdown } from "./WorkingDirectoryDropdown";
 const discovery = vi.hoisted(() => ({ enabled: vi.fn() }));
 
 const EXTERNAL_RECENT_PATH = "/Users/tester/Documents/GitHub/business-plan";
+const SAVED_REPOS = [
+  ...Array.from({ length: 8 }, (_, index) => ({
+    id: `saved-${index}`,
+    name: `Saved ${index}`,
+    fs_uri: `/saved/${index}`,
+    kind: REPO_KIND.GIT,
+  })),
+  {
+    id: "inside-org",
+    name: "Inside org",
+    fs_uri: "/inside-org",
+    kind: REPO_KIND.GIT,
+  },
+  {
+    id: "outside-org",
+    name: "Outside org",
+    fs_uri: "/outside-org",
+    kind: REPO_KIND.GIT,
+  },
+];
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: { org?: string }) =>
+      key === "selectors.repo.sections.outsideNamedOrg"
+        ? `Outside ${options?.org}`
+        : key,
+  }),
 }));
 
 vi.mock("@src/api/tauri/repo", () => ({
@@ -30,12 +55,8 @@ vi.mock("@src/api/tauri/repo", () => ({
 
 vi.mock("@src/scaffold/GlobalSpotlight/hooks", () => ({
   useSharedRepoList: () => ({
-    repos: Array.from({ length: 10 }, (_, index) => ({
-      id: `saved-${index}`,
-      name: `Saved ${index}`,
-      fs_uri: `/saved/${index}`,
-    })),
-    filteredRepos: [],
+    repos: SAVED_REPOS,
+    filteredRepos: SAVED_REPOS,
     repoLoading: false,
     refreshReposForce: vi.fn(),
   }),
@@ -91,7 +112,9 @@ describe("WorkingDirectoryDropdown rows", () => {
     IS_REACT_ACT_ENVIRONMENT?: boolean;
   };
 
-  const renderDropdown = () => {
+  const renderDropdown = (
+    overrides: Partial<ComponentProps<typeof WorkingDirectoryDropdown>> = {}
+  ) => {
     act(() => {
       root.render(
         createElement(WorkingDirectoryDropdown, {
@@ -99,6 +122,7 @@ describe("WorkingDirectoryDropdown rows", () => {
           onClose: vi.fn(),
           onSelect: vi.fn(),
           anchorRef: createRef<HTMLElement>(),
+          ...overrides,
         })
       );
     });
@@ -183,5 +207,16 @@ describe("WorkingDirectoryDropdown rows", () => {
     const panel = document.querySelector('[role="menu"]');
     expect(panel).not.toBeNull();
     expect(externalRecentRow()?.closest('[role="menu"]')).toBe(panel);
+  });
+
+  it("labels organization-scoped sections with the selected org name", () => {
+    renderDropdown({
+      orgScopeName: "ORG2 OSS",
+      repoFilter: (repo) => repo.fs_uri === "/inside-org",
+    });
+
+    expect(document.body.textContent).toContain("ORG2 OSS");
+    expect(document.body.textContent).toContain("Outside ORG2 OSS");
+    expect(document.body.textContent).not.toContain("working directory");
   });
 });
