@@ -22,7 +22,7 @@ import type {
 } from "@src/features/CodeMirror";
 import { hasConflictMarkers } from "@src/features/CodeMirror";
 import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanelAtom";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { editorAutoSaveAtom } from "@src/store/ui/editorSettingsAtom";
 import { askNativeDialogSafely } from "@src/util/dialogs/nativeDialog";
 

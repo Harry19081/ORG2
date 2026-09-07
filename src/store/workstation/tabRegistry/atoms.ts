@@ -9,7 +9,7 @@
  */
 import { type Getter, type Setter, atom } from "jotai";
 
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 
 import {

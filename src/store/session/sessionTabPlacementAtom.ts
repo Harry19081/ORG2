@@ -5,7 +5,7 @@ import type { SessionTabTransfer } from "@src/shared/dnd/sessionTabDrag";
 import { closeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabLifecycleAtoms";
 import { openOrFocusSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpenAtoms";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { STATION_MODE, stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   closeTab,

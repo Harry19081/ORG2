@@ -37,7 +37,7 @@ import {
   activeExternalSessionRefreshFrequencyAtom,
 } from "@src/store/session/dataSourceConfigAtom";
 import { pendingPlanApprovalsAtom } from "@src/store/session/planApprovalAtom";
-import { wpReadOnlyAtom } from "@src/store/ui/chatPanelAtom";
+import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
 
 import "./adapters";
 import { useExternalHistoryAutoRefresh } from "./externalHistoryAutoRefresh";

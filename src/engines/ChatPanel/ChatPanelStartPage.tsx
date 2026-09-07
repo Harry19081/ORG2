@@ -26,7 +26,7 @@ import { creatorLaunchpadActionsVisibleAtom } from "@src/store/session/creatorLa
 import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelCreateTarget,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { StartPageQuotaModal } from "./StartPageQuotaModal";
 

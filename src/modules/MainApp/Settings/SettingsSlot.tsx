@@ -70,7 +70,7 @@ import { AgentOrgsPage, MyRolePage } from "@src/router/lazy/pages";
 import { VerticalResizeHandle } from "@src/scaffold/Resize";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
-import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";

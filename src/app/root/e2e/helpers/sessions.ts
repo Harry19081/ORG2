@@ -60,10 +60,10 @@ import {
   DEFAULT_CHAT_PANEL_CREATE_TARGET,
   chatPanelContentModeAtom,
   chatPanelCreateTargetAtom,
-  chatPanelMaximizedAtom,
   chatPanelSelectedWorkItemAtom,
-  chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   messageQueueAtom,
   queueEditTargetAtom,

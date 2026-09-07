@@ -15,7 +15,7 @@ import {
 
 import { chatPanelTabHistoriesAtom } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   createInstrumentedStore,
   resetInstrumentedStore,

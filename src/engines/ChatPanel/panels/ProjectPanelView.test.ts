@@ -13,7 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { EnrichedWorkItem } from "@src/api/http/project";
 import type { ProjectDataChange } from "@src/hooks/project/useProjectDataChanged";
-import type { ChatPanelSelectedProject } from "@src/store/ui/chatPanelAtom";
+import type { ChatPanelSelectedProject } from "@src/store/ui/chatPanel/selectionAtoms";
 
 import ProjectPanelView from "./ProjectPanelView";
 

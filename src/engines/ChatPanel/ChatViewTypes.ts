@@ -4,7 +4,7 @@
  * full `ChatView` component.
  */
 import type { SessionContinuation } from "@src/store/session/sessionTabPlacementAtom";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 export interface ChatViewProps {
   /** Session ID to display. Sync bridges and events load for this session. */

@@ -23,7 +23,7 @@ import type { SessionCreatorState } from "@src/store/session/creatorStateAtom";
 import {
   type ChatPanelCreateProjectContext,
   type ChatPanelSelectedProject,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import { STATION_MODE, stationModeAtom } from "@src/store/ui/simulatorAtom";
 import type { WorkItemDraft } from "@src/store/workstation/projectManager";
 import { createWorkItemDetailTab } from "@src/store/workstation/tabs";

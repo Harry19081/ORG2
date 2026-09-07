@@ -49,7 +49,7 @@ import type {
   WorktreeLaunchSelection,
   WorktreeLaunchSource,
 } from "@src/store/session/worktreeLaunchSourceAtom";
-import { modelPickerStyleAtom } from "@src/store/ui/chatPanelAtom";
+import { modelPickerStyleAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import {
   branchSelectorOpenAtom,
   locationSelectorOpenAtom,

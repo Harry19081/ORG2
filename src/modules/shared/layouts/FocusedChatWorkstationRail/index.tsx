@@ -48,7 +48,7 @@ import {
 import { openBranchSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { workspaceGitStatusMapAtom } from "@src/store/git";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   closeMiniTerminalAtom,
   miniTerminalClaimedIdsAtom,

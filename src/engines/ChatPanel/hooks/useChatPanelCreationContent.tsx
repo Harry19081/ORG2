@@ -19,7 +19,7 @@ import {
   chatPanelCreateTargetAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkItemDraft } from "@src/store/workstation/projectManager";
 
 import { ChatPanelEmptyContent } from "../ChatPanelEmptyContent";

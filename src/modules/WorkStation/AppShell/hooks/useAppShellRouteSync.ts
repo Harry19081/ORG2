@@ -3,10 +3,8 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { ROUTES } from "@src/config/routes";
-import {
-  restoreChatWidthAtom,
-  stationChatVisibilityAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { restoreChatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { STATION_MODE, stationModeAtom } from "@src/store/ui/simulatorAtom";
 
 /**
