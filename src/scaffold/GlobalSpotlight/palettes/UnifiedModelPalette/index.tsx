@@ -13,7 +13,7 @@
  *
  * Thin UI wrapper — business logic lives in useUnifiedModelPalette.
  */
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import React, {
   useCallback,
   useEffect,
@@ -24,11 +24,10 @@ import React, {
 
 import { useFilteredItems } from "@src/hooks/search";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
-import { GripIcon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
+import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { agentNameAtom } from "@src/store/session/creatorStateAtom";
 import { spotlightModelKeyFirstAtom } from "@src/store/ui/spotlightModelKeyFirstAtom";
-import { spotlightOpenAtom } from "@src/store/ui/uiAtom";
 
 import {
   ManageKeysFooterAction,
@@ -38,7 +37,6 @@ import {
 } from "../../components";
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { SpotlightItem } from "../../types";
-import { buildPathSegment } from "../config";
 import { TwoColumnModelBody } from "./TwoColumnModelBody";
 import { advancePaletteSearchState } from "./searchState";
 import type { UnifiedModelPaletteProps } from "./types";
@@ -61,7 +59,6 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
   cliAgentTypeOverride,
 }) => {
   const agentName = useAtomValue(agentNameAtom);
-  const setDefaultSpotlightOpen = useSetAtom(spotlightOpenAtom);
   const [keyFirst, setKeyFirst] = useAtom(spotlightModelKeyFirstAtom);
 
   const {
@@ -339,35 +336,12 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
     focusModelInput();
   }, [activeColumn, focusModelInput, isOpen]);
 
-  const handleRemovePathSegment = useCallback(() => {
-    onClose();
-    Promise.resolve().then(() => setDefaultSpotlightOpen(true));
-  }, [onClose, setDefaultSpotlightOpen]);
-
-  // ============ PATH ============
-  const selectModelLabel = tCommonHook("filters.model");
   // When we know the target agent, surface it in the search placeholder
   // (e.g. "Select a model for Builder...") instead of the generic
   // "Search model..." label.
   const placeholderModel = agentName
     ? tCommonHook("filters.searchModelFor", { target: agentName })
     : tCommonHook("filters.searchModel");
-
-  const path = useMemo(() => {
-    const modelTemplate = agentName
-      ? tCommonHook("filters.tplSelectModelFor", { target: agentName })
-      : tCommonHook("filters.tplSelectModel");
-
-    return [
-      buildPathSegment({
-        id: "unified-model-model",
-        label: selectModelLabel,
-        icon: GripIcon,
-        template: modelTemplate,
-        requiredParams: ["model"],
-      }),
-    ];
-  }, [agentName, tCommonHook, selectModelLabel]);
 
   // ============ FOOTER ACTION ============
   // Offer "Manage Keys" while the keys column owns the cursor and
@@ -471,9 +445,7 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
       <PaletteBody
         kernel={kernel}
         items={filteredItems}
-        path={path}
-        onRemoveSegment={handleRemovePathSegment}
-        hideActionClose={false}
+        path={[]}
         placeholder={placeholderModel}
         contentOverride={content}
         inputTrailingSlot={refreshModelsButton}

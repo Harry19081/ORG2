@@ -659,7 +659,9 @@ export const WorkspacePalette: React.FC<WorkspacePaletteProps> = ({
       placeholder={
         addMenuKind ? paletteText.addPlaceholder : paletteText.switchPlaceholder
       }
-      path={addMenuKind ? addPathSegment : switchPathSegment}
+      path={
+        addMenuKind ? addPathSegment : isManageMode ? switchPathSegment : []
+      }
       onRemoveSegment={handleRemovePathSegment}
       isLoading={repoLoading}
       hideActionClose={hideActionClose && !addMenuKind && !isManageMode}
