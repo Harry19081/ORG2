@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
+import { DROPDOWN_WIDTHS } from "@src/components/Dropdown/tokens";
 import Message from "@src/components/Message";
 import { isMacOS, isTauriDesktop } from "@src/util/platform/tauri";
 
@@ -45,6 +46,7 @@ function DocumentOpenMenuContent({ filePath, hasUnsavedChanges }: Props) {
 
   return (
     <Dropdown
+      className={`${DROPDOWN_WIDTHS.menuClass} w-max`}
       popupVisible={visible}
       onVisibleChange={(nextVisible) => {
         if (nextVisible) {
