@@ -83,10 +83,9 @@ pub(crate) fn spawn_background_workers(app: &tauri::App) {
         });
     }
 
-    // Cross-process PM change watermark poller: external writers
-    // (the org2 PM CLI) bump pm_change_seq inside every mutation
-    // transaction; the desktop notices via this cheap single-row
-    // poll and refreshes the UI (design 13.0).
+    // Cross-process PM watermark: native DB/WAL notifications wake the
+    // committed sequence reader. A slow safety check recovers missed events;
+    // watcher failures retain the original two-second discovery cadence.
     {
         let watermark_handle = app.handle().clone();
         tauri::async_runtime::spawn(async move {
@@ -111,8 +110,12 @@ pub(crate) fn spawn_background_workers(app: &tauri::App) {
             .ok()
             .and_then(Result::ok)
             .unwrap_or(initial_seq);
+            let mut wake = project_management::projects::watermark_watch::WatermarkWake::new(
+                app_paths::projects_db(),
+            )
+            .await;
             loop {
-                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+                wake.wait().await;
                 let seq = tokio::task::spawn_blocking(
                     project_management::projects::io::read_pm_change_seq,
                 )
@@ -168,6 +171,9 @@ pub(crate) fn spawn_background_workers(app: &tauri::App) {
                 }
                 if seq >= 0 {
                     last_seq = seq;
+                }
+                if seq < 0 || stage_cursor < seq {
+                    wake.retry_soon();
                 }
             }
         });
