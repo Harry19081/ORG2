@@ -69,7 +69,7 @@ describe("SidebarOrgSelector", () => {
     expect(markup).toContain("hover:bg-sidebar-selected!");
   });
 
-  it("keeps its chevron hidden until the selector is active", () => {
+  it("keeps its chevron hidden until the sidebar or selector is active", () => {
     const markup = renderToStaticMarkup(
       React.createElement(SidebarOrgSelector, {
         ...baseProps,
@@ -80,7 +80,7 @@ describe("SidebarOrgSelector", () => {
     );
 
     expect(markup).toContain("[&amp;_.select-arrow]:opacity-0");
-    expect(markup).not.toContain(
+    expect(markup).toContain(
       "group-hover/sidebar:[&amp;_.select-arrow]:opacity-100"
     );
     expect(markup).toContain("hover:[&amp;_.select-arrow]:opacity-100");
