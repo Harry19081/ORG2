@@ -1,6 +1,6 @@
 /**
  * HTTP version preference for LLM provider connections.
- * Shown in General and Monitor (Network) settings; uses `network.httpVersion` in settings.jsonc.
+ * Shown in General settings; uses `network.httpVersion` in settings.jsonc.
  */
 import {
   SECTION_CONTROL_STYLE,

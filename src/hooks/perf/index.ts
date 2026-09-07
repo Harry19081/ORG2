@@ -3,11 +3,9 @@
  *
  * Provides React hooks for:
  * - Debouncing callbacks (useDebouncedCallback)
- * - Network monitoring (useNetworkMonitor)
  */
 
 export { useDebouncedCallback, DEBOUNCE_DELAYS } from "./useDebouncedCallback";
-export { useNetworkMonitor } from "./useNetworkMonitor";
 export { formatRuntimeBytes, useRuntimeRamStats } from "./useRuntimeRamStats";
 export {
   SIDEBAR_MEMORY_KIND,
@@ -25,5 +23,4 @@ export {
   useAppMemorySnapshot,
   type AppMemorySnapshotState,
   type AppMemorySnapshot,
-  type ToolProcessMemoryDiagnostic,
 } from "./appMemorySnapshot";
