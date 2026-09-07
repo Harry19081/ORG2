@@ -157,7 +157,16 @@
           "24h": "24 giờ",
           "7d": "7 ngày",
           "30d": "30 ngày",
-          "all": "Toàn bộ thời gian"
+          "all": "Toàn bộ thời gian",
+          "custom": "Khoảng tùy chỉnh…"
+        },
+        "customRange": {
+          "start": "Bắt đầu",
+          "end": "Kết thúc",
+          "hint": "Giờ địa phương · {{zone}} · Chính xác đến giây, gồm giây kết thúc",
+          "invalid": "Giờ kết thúc không được trước giờ bắt đầu",
+          "apply": "Áp dụng khoảng",
+          "cancel": "Hủy"
         },
         "bucket": {
           "claude": "Claude",

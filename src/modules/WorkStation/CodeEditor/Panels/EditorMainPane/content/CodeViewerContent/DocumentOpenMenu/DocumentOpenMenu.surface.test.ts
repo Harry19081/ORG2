@@ -73,7 +73,17 @@ it.each(["standalone", "placeholder"])(
       );
       const list = container.querySelector('[role="listbox"]');
       expect(list).not.toBeNull();
-      const surface = container.querySelector<HTMLElement>(".w-max");
+      const surface = list!.closest<HTMLElement>(".bg-bg-2");
+      expect(surface).not.toBeNull();
+      for (const token of [
+        "border",
+        "border-border-2",
+        "rounded-lg",
+        "shadow-dropdown",
+        "w-max",
+      ]) {
+        expect(surface!.classList.contains(token)).toBe(true);
+      }
       expect(surface?.style.minWidth).toBe("100%");
       expect(surface?.classList.contains("w-max")).toBe(true);
       expect(list!.textContent).toContain("documentOpen.defaultApp");

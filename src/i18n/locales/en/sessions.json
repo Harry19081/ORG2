@@ -174,7 +174,16 @@
           "24h": "24h",
           "7d": "7 days",
           "30d": "30 days",
-          "all": "All time"
+          "all": "All time",
+          "custom": "Custom range…"
+        },
+        "customRange": {
+          "start": "Start",
+          "end": "End",
+          "hint": "Local time · {{zone}} · Second precision, inclusive end",
+          "invalid": "End time cannot be before start time",
+          "apply": "Apply range",
+          "cancel": "Cancel"
         },
         "bucket": {
           "claude": "Claude",

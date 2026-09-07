@@ -157,7 +157,16 @@
           "24h": "24 Stunden",
           "7d": "7 Tage",
           "30d": "30 Tage",
-          "all": "Gesamter Zeitraum"
+          "all": "Gesamter Zeitraum",
+          "custom": "Benutzerdefinierter Zeitraum…"
+        },
+        "customRange": {
+          "start": "Beginn",
+          "end": "Ende",
+          "hint": "Ortszeit · {{zone}} · Sekundengenau, einschließlich Endsekunde",
+          "invalid": "Endzeit darf nicht vor Startzeit liegen",
+          "apply": "Zeitraum anwenden",
+          "cancel": "Abbrechen"
         },
         "bucket": {
           "claude": "Claude",
