@@ -34,7 +34,7 @@ import { currentGitStatusAtom } from "@src/store/git";
 import { currentBranchAtom } from "@src/store/repo/atoms";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import { settingsAtom } from "@src/store/settings";
-import { globalStatusBarStateAtom } from "@src/store/ui/workStationAtom";
+import { globalStatusBarStateAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { userPresenceWireAtom } from "@src/store/user/userPresenceAtom";
 import { activeWorkspaceRootAtom } from "@src/store/workspace";

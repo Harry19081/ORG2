@@ -223,7 +223,7 @@ export const WorkStationViewService = {
       { workStationPrimarySidebarCollapsedPersistAtom },
     ] = await Promise.all([
       import("@src/store/ui/workStationLayout/statusBarAtoms"),
-      import("@src/store/ui/workStationAtom"),
+      import("@src/store/ui/workStationLayout/primarySidebarAtoms"),
     ]);
 
     const store = getStore();
@@ -323,7 +323,7 @@ export const WorkStationViewService = {
       { searchQueryAtom },
     ] = await Promise.all([
       import("@src/store/ui/simulatorAtom"),
-      import("@src/store/ui/workStationAtom"),
+      import("@src/store/ui/workStationLayout/primarySidebarAtoms"),
       import("@src/store/workstation/codeEditor/search"),
     ]);
 

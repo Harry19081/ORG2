@@ -9,7 +9,7 @@ import { ACTION_ID } from "@src/ActionSystem/actionIds";
 import { defineZodAction } from "@src/ActionSystem/schema/defineZodAction";
 import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { PanelService } from "@src/services/panel";
-import type { PrimarySidebarTabKey } from "@src/store/ui/workStationAtom";
+import type { PrimarySidebarTabKey } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 
 // Source Control is no longer a regular sidebar tab — it lives in the
 // tab-specific Diff sidebar — so it's not exposed as a panel.show target.

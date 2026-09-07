@@ -10,9 +10,11 @@ import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import {
   workStationEditorSecondaryCollapsedAtom,
   workStationEditorSecondaryCollapsedPersistAtom,
+} from "@src/store/ui/workStationLayout/bottomPanelAtoms";
+import {
   workStationPrimarySidebarCollapsedAtom,
   workStationPrimarySidebarCollapsedPersistAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 
 import type { QuickAction } from "./QuickActionsPanel/types";
 

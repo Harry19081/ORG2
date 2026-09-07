@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import {
   type StatusBarAppType,
   activeStatusBarAppAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { activeHostAtom } from "@src/store/workstation";
 import type { WorkstationTabHost } from "@src/store/workstation/tabHost";
 

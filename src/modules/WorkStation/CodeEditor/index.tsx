@@ -17,7 +17,7 @@ import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
 import { useWorkStationTabs } from "@src/hooks/tabHost/useWorkStationTabs";
 import { useEditorRepoCacheSync } from "@src/hooks/ui/tabs/useEditorRepoCacheSync";
 import { CODE_EDITOR_CONFIG } from "@src/modules/WorkStation/CodeEditor/config";
-import { type PrimarySidebarTabKey } from "@src/store/ui/workStationAtom";
+import { type PrimarySidebarTabKey } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import {
   CODE_EDITOR_MAIN_TERMINAL_SESSION_ID,

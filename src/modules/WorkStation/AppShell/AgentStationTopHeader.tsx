@@ -49,7 +49,7 @@ import {
   simulatorCaptionBarEnabledAtom,
   simulatorEffectiveDockAppAtom,
 } from "@src/store/ui/simulatorAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { SimulatorAgentChip, StationModeChip } from "../shared";

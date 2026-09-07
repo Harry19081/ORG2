@@ -15,7 +15,7 @@ import {
   spotlightInitialQueryAtom,
   spotlightOpenAtom,
 } from "@src/store/ui/uiAtom";
-import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
+import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import { createSmokeRoot, dispatch } from "../../../../test/reactSmokeHarness";

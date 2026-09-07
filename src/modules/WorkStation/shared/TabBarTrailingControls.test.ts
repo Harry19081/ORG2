@@ -7,7 +7,7 @@ import { I18nextProvider, initReactI18next } from "react-i18next";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import enSessions from "@src/i18n/locales/en/sessions.json";
-import { workStationEditorSecondaryCollapsedAtom } from "@src/store/ui/workStationAtom";
+import { workStationEditorSecondaryCollapsedAtom } from "@src/store/ui/workStationLayout/bottomPanelAtoms";
 import {
   activeStatusBarAppAtom,
   perAppStatusBarCallbacksAtom,

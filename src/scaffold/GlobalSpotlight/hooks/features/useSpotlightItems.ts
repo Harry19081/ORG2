@@ -44,12 +44,10 @@ import {
   skinVariantAtom,
   systemColorSchemeAtom,
 } from "@src/store/ui/uiAtom";
-import {
-  chatPanelPositionAtom,
-  workStationEditorSecondaryCollapsedAtom,
-  workStationLayoutModeAtom,
-  workStationPrimarySidebarCollapsedAtom,
-} from "@src/store/ui/workStationAtom";
+import { workStationEditorSecondaryCollapsedAtom } from "@src/store/ui/workStationLayout/bottomPanelAtoms";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
+import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { getSessionSearchText } from "@src/util/session/sessionSearch";
 

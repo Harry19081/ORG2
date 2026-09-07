@@ -52,7 +52,7 @@ import {
   sidebarWidthAtom,
 } from "@src/store/ui/sidebarAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
 import { useRouteLayoutType, useWorkspaceEvents } from "./shared/hooks";
 import { AppLayout } from "./shared/layouts";

@@ -39,7 +39,7 @@ import { useWorkStationTabShortcutBridge } from "@src/hooks/tabHost/useWorkStati
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabContent";
 import { NoTabsPlaceholder } from "@src/modules/WorkStation/shared";
-import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationAtom";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 import { workstationSelectedIssueAtomFamily } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";

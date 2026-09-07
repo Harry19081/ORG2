@@ -20,7 +20,7 @@ import {
   simulatorSelectedAppAtom,
   stationModeAtom,
 } from "@src/store/ui/simulatorAtom";
-import "@src/store/ui/workStationAtom";
+import "@src/store/ui/workStationLayout";
 import { activeHostAtom } from "@src/store/workstation";
 import type { AgentConfigTabVariant } from "@src/store/workstation/tabs";
 import {

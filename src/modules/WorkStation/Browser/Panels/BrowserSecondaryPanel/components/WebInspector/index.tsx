@@ -17,7 +17,7 @@ import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip"
 import { HEADER_BUTTON } from "@src/config/workstation/tokens";
 import { HugeiconsIcon, PanelRightOpenIcon } from "@src/icons";
 import type { ElementInfo } from "@src/modules/WorkStation/Browser/hooks/useWebviewInspector";
-import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
+import type { SecondaryPanelPosition } from "@src/store/ui/workStationLayout/secondaryPanelPositionAtoms";
 
 import WebDevTools, {
   type ConsoleEntry,

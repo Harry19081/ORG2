@@ -8,7 +8,7 @@ import {
   ArrowBigRightDashIcon,
   HugeiconsIcon,
 } from "@src/icons";
-import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
+import type { SecondaryPanelPosition } from "@src/store/ui/workStationLayout/secondaryPanelPositionAtoms";
 
 interface PanelPositionToggleProps {
   position: SecondaryPanelPosition;

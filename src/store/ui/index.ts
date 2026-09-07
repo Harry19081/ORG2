@@ -42,7 +42,6 @@ export * from "./overlayLayerAtom";
 export * from "./timezoneAtom";
 export * from "./notificationAtom";
 export * from "./inboxAtom";
-export * from "./workStationAtom";
 export * from "./routeToolbarAtom";
 export * from "./dragDropAtom";
 export * from "./todoAtom";

@@ -33,7 +33,7 @@ import {
   simulatorSelectedAppAtom,
   simulatorShowDockAtom,
 } from "@src/store/ui/simulatorAtom";
-import { workStationLayoutModeAtom } from "@src/store/ui/workStationAtom";
+import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 
 import ActivitySimulatorGrid from "./ActivitySimulatorGrid";
 import {

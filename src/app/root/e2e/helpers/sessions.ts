@@ -73,7 +73,7 @@ import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   workStationPrimarySidebarCollapsedAtom,
   workStationPrimarySidebarTabAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import {
   type WorkStationLayoutState,

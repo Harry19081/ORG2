@@ -17,7 +17,7 @@ import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { mainPaneHasRealTabsAtom } from "@src/store/workstation/tabHost";
 import type { StationMode } from "@src/types/ui/workstation";
 import { isMacOS } from "@src/util/platform/tauri";
