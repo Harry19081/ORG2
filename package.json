@@ -67,7 +67,9 @@
     "check:unused-exports": "knip",
     "check:unused-exports:all": "knip --include files,dependencies,devDependencies,exports,types,nsExports,nsTypes",
     "check:e2e-oauth-guards": "node scripts/quality/check-e2e-oauth-guards.mjs",
-    "check:i18n:cloud": "node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix cloud && node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix collaboration.forkImported"
+    "check:i18n:cloud": "node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix cloud && node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix collaboration.forkImported",
+    "check:queue-authority": "node scripts/quality/queue-authority/check.mjs",
+    "test:queue-authority": "node --test scripts/quality/queue-authority/*.test.mjs"
   },
   "keywords": [
     "orgii",
