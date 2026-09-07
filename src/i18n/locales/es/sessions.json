@@ -157,7 +157,16 @@
           "24h": "24 horas",
           "7d": "7 días",
           "30d": "30 días",
-          "all": "Todo el tiempo"
+          "all": "Todo el tiempo",
+          "custom": "Intervalo personalizado…"
+        },
+        "customRange": {
+          "start": "Inicio",
+          "end": "Fin",
+          "hint": "Hora local · {{zone}} · Precisión de segundos, fin incluido",
+          "invalid": "El fin no puede ser anterior al inicio",
+          "apply": "Aplicar intervalo",
+          "cancel": "Cancelar"
         },
         "bucket": {
           "claude": "Claude",
