@@ -160,6 +160,7 @@ system_services::notifications::request_notification_permission,
 system_services::notifications::set_dock_badge,
 // Platform commands - App Menu (File > Open Recent)
 system_services::app_menu::menu_add_recent,
+system_services::app_menu::menu_set_shortcut_overrides,
 system_services::app_menu::confirm_quit_app,
 system_services::app_menu::cancel_quit_confirmation,
 // Platform commands - Power management (prevent sleep while sessions run)

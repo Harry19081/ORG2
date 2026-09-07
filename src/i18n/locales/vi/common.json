@@ -864,7 +864,7 @@
     "moreActions": "Thao tác khác...",
     "formatSql": "Định dạng SQL",
     "queryHistory": "Lịch sử truy vấn",
-    "executeQuery": "Thực thi truy vấn (Ctrl+Enter)",
+    "executeQuery": "Thực thi truy vấn ({{shortcut}})",
     "startVoiceInput": "Bắt đầu nhập bằng giọng nói",
     "cancelRecording": "Hủy ghi âm",
     "stopAndTranscribe": "Dừng và chuyển thành văn bản",

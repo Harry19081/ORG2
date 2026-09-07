@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Сочетания с областью \"Editor\" работают только при фокусе в редакторе кода",
     "tipsContextual": "Поведение некоторых сочетаний зависит от контекста",
-    "tipsSearchHint": "Используйте поиск, чтобы быстро найти нужное сочетание"
+    "tipsSearchHint": "Используйте поиск, чтобы быстро найти нужное сочетание",
+    "pressShortcut": "Нажмите сочетание клавиш",
+    "editCommand": "Изменить сочетание для {{command}}",
+    "requireModifier": "Используйте Control, Command или Alt с клавишей либо функциональную клавишу",
+    "conflict": "Уже используется для {{command}}",
+    "saveFailed": "Не удалось сохранить сочетания клавиш",
+    "reset": "Сбросить",
+    "resetAll": "Восстановить исходные настройки",
+    "resetAllDesc": "Восстановить стандартные сочетания клавиш для macOS, Windows и Linux",
+    "nativeSyncFailed": "Не удалось обновить сочетания клавиш системного меню"
   },
   "languageServersPage": {
     "installing": "Установка",

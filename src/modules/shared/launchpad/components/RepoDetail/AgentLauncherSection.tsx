@@ -21,7 +21,6 @@ import {
   INPUT_AREA,
   INPUT_AREA_PADDING_COMPACT,
 } from "@src/config/inputAreaTokens";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import {
   WORK_MANAGEMENT_SESSION_CREATOR_OVERLAY_CLASS,
   WORK_MANAGEMENT_SESSION_CREATOR_SURFACE_CLASS,
@@ -258,7 +257,7 @@ const AgentLauncherSection: React.FC<AgentLauncherSectionProps> = ({
                       modelLabel={modelTitle}
                       modelId={modelIconName}
                       modelType={modelTooltipType}
-                      shortcut={getShortcutKeys("open_model_selector")}
+                      shortcutId={"open_model_selector"}
                     />
                   }
                   tooltipFramed

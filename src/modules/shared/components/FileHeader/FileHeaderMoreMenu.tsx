@@ -34,7 +34,7 @@ import {
 import Switch from "@src/components/Switch";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import Tooltip from "@src/components/Tooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
@@ -149,9 +149,9 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
       autoKeyboardNavigation: false,
       closeOnEsc: false,
     });
-  const searchShortcut = getShortcutKeys("find");
-  const goToLineShortcut = getShortcutKeys("go_to_line");
-  const saveShortcut = getShortcutKeys("save_file");
+  const searchShortcut = useShortcutKeys("find");
+  const goToLineShortcut = useShortcutKeys("go_to_line");
+  const saveShortcut = useShortcutKeys("save_file");
   const revealInFileManagerLabelKey = getFileManagerRevealLabelKey();
   const fileChangeActionsDisabled = !hasUnsavedChanges || loading;
   const saveDisabled = !showSaveAction || fileChangeActionsDisabled;

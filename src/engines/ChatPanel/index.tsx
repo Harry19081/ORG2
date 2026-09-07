@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
   CHAT_WIDTH_CSS_VAR,
   clampChatWidth,
@@ -98,6 +98,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     resizeIndicatorHost,
     sessionCreatorSlot: SessionCreatorSlot,
   }) => {
+    const maximizeShortcut = useShortcutKeys("maximize_chat");
     const { t } = useTranslation([
       "sessions",
       "common",
@@ -530,7 +531,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
           panelOverlay={<SessionSwipeIndicator {...swipeIndicator} />}
           resizeIndicatorHost={resizeIndicatorHost}
           resizeTooltipLabel={t("chat.hideWorkstation")}
-          resizeTooltipShortcut={getShortcutKeys("maximize_chat")}
+          resizeTooltipShortcut={maximizeShortcut}
           sessionModals={sessionModals}
           showResizeHandle={showResizeHandle}
           terminalTabs={terminalTabs}

@@ -56,7 +56,9 @@ const spotlightOpen = defineZodAction(
     description: "Open the global spotlight search",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("spotlight_open"),
+    get shortcut() {
+      return getShortcutKeys("spotlight_open");
+    },
     examples: ["open spotlight", "search anything", "quick search"],
   },
   async () => {
@@ -88,7 +90,9 @@ const spotlightToggle = defineZodAction(
     description: "Toggle the global spotlight search",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("spotlight_open"),
+    get shortcut() {
+      return getShortcutKeys("spotlight_open");
+    },
   },
   async () => {
     const store = getInstrumentedStore();
@@ -152,7 +156,9 @@ const spotlightOpenEditorFile = defineZodAction(
     description: "Open Spotlight's Code Editor file search flow",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("quick_open"),
+    get shortcut() {
+      return getShortcutKeys("quick_open");
+    },
     examples: ["open file", "quick open file", "find file"],
   },
   async () => {
@@ -168,7 +174,9 @@ const spotlightOpenEditorCommand = defineZodAction(
     description: "Open Spotlight's Code Editor command flow",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("spotlight_open"),
+    get shortcut() {
+      return getShortcutKeys("spotlight_open");
+    },
     examples: ["open command palette", "run editor command"],
   },
   async () => {
@@ -184,7 +192,9 @@ const spotlightOpenEditorSymbol = defineZodAction(
     description: "Open Spotlight's Code Editor symbol search flow",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("go_to_symbol"),
+    get shortcut() {
+      return getShortcutKeys("go_to_symbol");
+    },
     examples: ["go to symbol", "open symbol search", "find editor symbol"],
   },
   async () => {
@@ -200,7 +210,9 @@ const spotlightOpenAgentSessionSearch = defineZodAction(
     description: "Open Spotlight's Agent session search flow",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("agent_session_search"),
+    get shortcut() {
+      return getShortcutKeys("agent_session_search");
+    },
     examples: ["search agent sessions", "open session", "find session"],
   },
   async () => {
@@ -235,7 +247,9 @@ const spotlightOpenAgentControl = defineZodAction(
     description: "Open Spotlight's Agent Control flow",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("toggle_ade_manager"),
+    get shortcut() {
+      return getShortcutKeys("toggle_ade_manager");
+    },
     examples: ["ade manager", "open ADE Manager", "manage agents"],
   },
   async () => {
@@ -251,7 +265,9 @@ const spotlightOpenSessionCreator = defineZodAction(
     description: "Open Spotlight's inline session creator",
     params: z.object({}),
     layer: "gui",
-    shortcut: getShortcutKeys("new_session"),
+    get shortcut() {
+      return getShortcutKeys("new_session");
+    },
     examples: ["new session", "create session", "open session creator"],
   },
   async () => {
