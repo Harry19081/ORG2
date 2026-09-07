@@ -332,17 +332,6 @@ export function useBranchPalette(options: UseBranchPaletteOptions) {
       );
     }
 
-    if (effectiveShowRemoveMode && onDeleteBranch) {
-      actions.push({
-        id: "pinned-branch-delete",
-        label: t("selectors.branch.actions.deleteBranch", "Delete Branch"),
-        icon: GitBranchMinusIcon,
-        type: "action",
-        data: { showDisclosureChevron: true },
-        action: () => setActiveMode("remove"),
-      });
-    }
-
     actions.push({
       id: "pinned-branch-refresh",
       label: t("selectors.branch.actions.refresh", "Refresh"),
@@ -353,6 +342,17 @@ export function useBranchPalette(options: UseBranchPaletteOptions) {
       },
       action: handleRefreshBranches,
     });
+
+    if (effectiveShowRemoveMode && onDeleteBranch) {
+      actions.push({
+        id: "pinned-branch-delete",
+        label: t("selectors.branch.actions.deleteBranch", "Delete Branch"),
+        icon: GitBranchMinusIcon,
+        type: "action",
+        data: { showDisclosureChevron: true },
+        action: () => setActiveMode("remove"),
+      });
+    }
 
     return actions;
   }, [
