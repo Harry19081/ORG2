@@ -219,7 +219,7 @@ export { isExploringAtom } from "./workspace/atoms";
 
 // Workspace hooks (replace useSessionContext, useUIContext)
 // Note: For chat UI state, use useChatContext from contexts/workspace/ChatContext
-export { useRepositoryInfo } from "./workspace/hooks";
+export { useRepositoryInfo } from "./workspace/hooks/useRepositoryInfo";
 
 // ============================================
 // Session Service (singleton operations API)

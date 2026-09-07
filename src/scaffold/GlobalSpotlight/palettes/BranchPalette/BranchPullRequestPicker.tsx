@@ -20,6 +20,7 @@ import {
 import { Placeholder } from "@src/components/Placeholder";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { ArrowDown01Icon, Refresh04Icon } from "@src/icons";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { preparePullRequestBranch } from "@src/services/git/operations/preparePullRequestBranch";
 import { spotlightShowBranchInfoAtom } from "@src/store/ui/spotlightShowBranchInfoAtom";
 import { getViewportSize } from "@src/util/ui/window/viewport";
@@ -31,7 +32,6 @@ import {
 import { useRefreshSpin } from "../../shared";
 import { PaletteBody, ShellFooterAction } from "../../shell";
 import type { SpotlightItem } from "../../types";
-import { useSelectorKernel } from "../core";
 import { BranchDropdownList } from "./BranchDropdownList";
 import { type BranchPickerTab, BranchPickerTabs } from "./BranchPickerTabs";
 import { BranchPullRequestChecks } from "./BranchPullRequestChecks";

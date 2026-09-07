@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 
 import { ROUTES } from "@src/config/routes";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { currentBranchAtom } from "@src/store/repo";
 import {
   activeWorktreeAtom,
@@ -39,7 +40,6 @@ import {
   WorkspacePalette,
   WorktreePalette,
 } from "./palettes";
-import { useSelectorKernel } from "./palettes/core";
 import { PaletteBody, SpotlightShell } from "./shell";
 import type { GlobalSpotlightProps } from "./types";
 import { SpotlightConfirmationView } from "./views";

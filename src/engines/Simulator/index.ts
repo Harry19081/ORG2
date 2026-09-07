@@ -7,5 +7,5 @@
  * import { ActivitySimulator, useSimEventRenderer } from "@src/engines/Simulator";
  */
 
-export { ActivitySimulator } from "./exports";
+export { default as ActivitySimulator } from "./ActivitySimulator";
 export { useSimEventRenderer } from "./hooks/useSimEventRenderer";

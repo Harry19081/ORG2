@@ -33,6 +33,7 @@ import {
 } from "@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom";
 import type { OrgMember } from "@src/modules/MainApp/AgentOrgs/types";
 import { useCliAgents } from "@src/modules/MainApp/Integrations/KeyVault/CliClients/hooks/useCliAgents";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import {
   CLI_LAUNCH_MODE,
   type CliLaunchMode,
@@ -49,7 +50,6 @@ import { ManageAgentsFooterAction } from "../../components";
 import { useAccountFooterForHovered } from "../../hooks";
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { PathSegment, SpotlightItem } from "../../types";
-import { useSelectorKernel } from "../core";
 import { CliAgentListFilterSwitch } from "./CliAgentListFilterSwitch";
 import { createHumanSessionOption } from "./humanSessionOption";
 import type { AgentOption, DispatchCategoryPaletteProps } from "./types";
