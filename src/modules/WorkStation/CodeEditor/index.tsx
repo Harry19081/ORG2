@@ -38,6 +38,7 @@ import { EditorIntegrations } from "./EditorLayout/components/EditorIntegrations
 import FileSearchPanel from "./EditorLayout/overlays/FileSearchPanel";
 import EditorContent from "./Panels/EditorMainPane";
 import { EditorPrimarySidebar } from "./Panels/EditorPrimarySidebar";
+import { trackGitPollingVisibility } from "./gitPollingVisibility";
 import { useCodeEditor } from "./hooks/useCodeEditor";
 import { useCodeEditorEvents } from "./hooks/useCodeEditorEvents";
 import { useCodeEditorHandlers } from "./hooks/useCodeEditorHandlers";
@@ -386,12 +387,13 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
 
     const isSourceControlActive = activeTab?.type === "source-control";
     useEffect(() => {
-      const repoId = isActive && isSourceControlActive ? selectedRepoId : null;
-      void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId });
-
-      return () => {
-        void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId: null });
-      };
+      return trackGitPollingVisibility(
+        document,
+        isActive && isSourceControlActive ? selectedRepoId : null,
+        (repoId) => {
+          void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId });
+        }
+      );
     }, [isActive, isSourceControlActive, selectedRepoId]);
 
     const editorSourceControlScopePicker = isSourceControlActive
