@@ -13,6 +13,7 @@
 //! express portably, with a written report.
 
 pub mod convert;
+pub mod schedule_revision;
 pub mod spec;
 
 use crate::projects::io as project_io;
@@ -500,6 +501,7 @@ pub struct ScheduledCandidate {
     pub catch_up: spec::CatchUpPolicy,
     pub default_scope: Option<String>,
     pub last_evaluated_at: Option<i64>,
+    pub next_fire_at: Option<i64>,
 }
 
 /// Enabled routines with schedule activations, for the host scheduler.
@@ -507,19 +509,25 @@ pub fn scheduled_candidates() -> Result<Vec<ScheduledCandidate>, String> {
     let connection = project_io::helpers::conn()?;
     let mut statement = connection
         .prepare(
-            "SELECT name, spec_json, default_scope, last_evaluated_at
+            "SELECT name, spec_json, default_scope, last_evaluated_at, next_fire_at
              FROM pm_routines WHERE enabled = 1",
         )
         .map_err(|err| format!("scheduled candidates: {err}"))?;
-    let rows: Vec<(String, String, Option<String>, Option<i64>)> = statement
+    let rows = statement
         .query_map([], |row| {
-            Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))
+            Ok((
+                row.get::<_, String>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, Option<String>>(2)?,
+                row.get::<_, Option<i64>>(3)?,
+                row.get::<_, Option<i64>>(4)?,
+            ))
         })
         .map_err(|err| format!("scheduled candidates: {err}"))?
         .collect::<Result<Vec<_>, _>>()
         .map_err(|err| format!("scheduled candidates: {err}"))?;
     let mut candidates = Vec::new();
-    for (name, spec_json, default_scope, last_evaluated_at) in rows {
+    for (name, spec_json, default_scope, last_evaluated_at, next_fire_at) in rows {
         let Ok(file) = serde_json::from_str::<spec::RoutineSpecFile>(&spec_json) else {
             continue;
         };
@@ -540,6 +548,7 @@ pub fn scheduled_candidates() -> Result<Vec<ScheduledCandidate>, String> {
                     catch_up: policies.catch_up.unwrap_or(spec::CatchUpPolicy::None),
                     default_scope: default_scope.clone(),
                     last_evaluated_at,
+                    next_fire_at,
                 });
             }
         }
