@@ -10,7 +10,6 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import {
   activateChatPanelTabAtom,
-  activeWorkManagementSectionAtom,
   closeAndDestroyChatPanelTabAtom,
   closeOtherThanActiveChatPanelTabsAtom,
   openOrFocusChatPanelStartPageTabAtom,
@@ -21,6 +20,7 @@ import {
   openTeamInboxInChatPanelTabAtom,
   openWorkManagementChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { activeWorkManagementSectionAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   openSessionInNewWindowAtom,
   openSessionInWorkstationAtom,

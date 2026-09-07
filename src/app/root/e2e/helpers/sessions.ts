@@ -23,10 +23,10 @@ import {
 import { cliAdapter } from "@src/engines/SessionCore/sync/adapters";
 import { getAdapterForSession } from "@src/engines/SessionCore/sync/types";
 import {
-  chatPanelTabsAtom,
   openOrFocusChatPanelStartPageTabAtom,
   openOrFocusSessionInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { reposAtom, selectedRepoIdAtom } from "@src/store/repo/atoms";
 import {
   type ContextUsageSnapshot,

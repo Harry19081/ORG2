@@ -13,7 +13,7 @@ import {
 } from "@src/api/services/notification";
 import Message from "@src/components/Message";
 import { createLogger } from "@src/hooks/logger";
-import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpenAtoms";
+import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/integrations";
 import { notificationSettingsAtom } from "@src/store/ui/notificationAtom";
 
 import { getTeamInboxItemKey } from "./domain";

@@ -20,10 +20,8 @@ import FactoryViewPill from "@src/features/TaskKanban/components/FactoryViewPill
 import KanbanOrgScopeSelect from "@src/features/TaskKanban/components/KanbanOrgScopeSelect";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
-import {
-  activeWorkManagementSectionAtom,
-  setActiveWorkManagementSectionAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { setActiveWorkManagementSectionAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { activeWorkManagementSectionAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   WORK_MANAGEMENT_PROJECTS_VIEW,
   WORK_MANAGEMENT_SECTION,

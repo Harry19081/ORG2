@@ -1,5 +1,44 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  activateChatPanelTabAtom,
+  activeChatPanelTabHistoryAtom,
+  addChatPanelLaunchpadTabAtom,
+  addChatPanelTerminalTabAtom,
+  closeChatPanelTabAtom,
+  closeOtherChatPanelTabsAtom,
+  closeOtherThanActiveChatPanelTabsAtom,
+  closeProjectOrgChatPanelTabsAtom,
+  closeWorkItemChatPanelTabAtom,
+  openCreateTargetInChatPanelStartPageAtom,
+  openGitHubIssueInChatPanelTabAtom,
+  openGitHubPrInChatPanelTabAtom,
+  openOrFocusChatPanelStartPageTabAtom,
+  openOrFocusSessionInChatPanelTabAtom,
+  openOrReplaceSessionInChatPanelTabAtom,
+  openOrganizationInChatPanelTabAtom,
+  openProjectInChatPanelTabAtom,
+  openRuntimeInChatPanelTabAtom,
+  openSessionInNewChatTabAtom,
+  openTeamInboxInChatPanelTabAtom,
+  openWorkItemInChatPanelTabAtom,
+  openWorkManagementChatPanelTabAtom,
+  prevChatPanelTabAtom,
+  setActiveWorkManagementSectionAtom,
+  setChatPanelTabTitleAtom,
+  syncActiveChatPanelTabStateAtom,
+  toggleActiveChatPanelMaximizedAtom,
+} from "@src/store/chatPanel/chatPanelTabsAtom";
+import {
+  isChatPanelTabStationAvailable,
+  normalizePersistedChatPanelTabsState,
+  resolveChatPanelMaximizedForLayout,
+} from "@src/store/chatPanel/chatPanelTabsModel";
+import {
+  activeChatPanelTabAtom,
+  activeWorkManagementSectionAtom,
+  chatPanelTabsAtom,
+} from "@src/store/chatPanel/chatPanelTabsState";
 import { sessionsAtom } from "@src/store/session/sessionAtom";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import {
@@ -35,41 +74,6 @@ import {
   resetInstrumentedStore,
 } from "@src/util/core/state/instrumentedStore";
 
-import {
-  activateChatPanelTabAtom,
-  activeChatPanelTabAtom,
-  activeChatPanelTabHistoryAtom,
-  activeWorkManagementSectionAtom,
-  addChatPanelLaunchpadTabAtom,
-  addChatPanelTerminalTabAtom,
-  chatPanelTabsAtom,
-  closeChatPanelTabAtom,
-  closeOtherChatPanelTabsAtom,
-  closeOtherThanActiveChatPanelTabsAtom,
-  closeProjectOrgChatPanelTabsAtom,
-  closeWorkItemChatPanelTabAtom,
-  isChatPanelTabStationAvailable,
-  normalizePersistedChatPanelTabsState,
-  openCreateTargetInChatPanelStartPageAtom,
-  openGitHubIssueInChatPanelTabAtom,
-  openGitHubPrInChatPanelTabAtom,
-  openOrFocusChatPanelStartPageTabAtom,
-  openOrFocusSessionInChatPanelTabAtom,
-  openOrReplaceSessionInChatPanelTabAtom,
-  openOrganizationInChatPanelTabAtom,
-  openProjectInChatPanelTabAtom,
-  openRuntimeInChatPanelTabAtom,
-  openSessionInNewChatTabAtom,
-  openTeamInboxInChatPanelTabAtom,
-  openWorkItemInChatPanelTabAtom,
-  openWorkManagementChatPanelTabAtom,
-  prevChatPanelTabAtom,
-  resolveChatPanelMaximizedForLayout,
-  setActiveWorkManagementSectionAtom,
-  setChatPanelTabTitleAtom,
-  syncActiveChatPanelTabStateAtom,
-  toggleActiveChatPanelMaximizedAtom,
-} from "../chatPanelTabsAtom";
 import {
   createChatPanelTerminalAtom,
   terminalSessionsAtom,

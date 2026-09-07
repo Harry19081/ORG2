@@ -2,7 +2,7 @@ import {
   FOCUSED_CHAT_WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
   WORKSTATION_TRAIL_WIDTH,
 } from "@src/modules/shared/layouts/blocks/workstationTrailTokens";
-import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 
 /**
  * Width at which a maximized chat pane is wide enough to give the

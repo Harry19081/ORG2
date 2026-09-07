@@ -39,7 +39,7 @@ import {
   SquareTerminalIcon,
 } from "@src/icons";
 import { isGitHubIssueStatus } from "@src/modules/ProjectManager/WorkItems/workItemIdentity";
-import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import { terminalSessionsAtom } from "@src/store/chatPanel/chatPanelTerminalAtom";
 import { sessionByIdAtom } from "@src/store/session";
 import {

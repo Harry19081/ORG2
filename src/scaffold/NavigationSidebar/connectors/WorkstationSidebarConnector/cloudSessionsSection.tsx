@@ -79,7 +79,7 @@ import {
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
-import { openOrReplaceSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpenAtoms";
+import { openOrReplaceSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/session";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { loadSidebarSessionById, removeSession } from "@src/store/session";
 import { copyText } from "@src/util/data/clipboard";

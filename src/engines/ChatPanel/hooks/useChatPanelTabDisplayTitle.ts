@@ -9,7 +9,7 @@
 import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
 
-import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import { sessionByIdAtom } from "@src/store/session";
 import {
   CHAT_PANEL_CREATE_TARGET,

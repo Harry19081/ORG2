@@ -32,10 +32,10 @@ import {
 } from "@src/icons";
 import { shouldShowInRecentTabsMenu } from "@src/shared/tabs/recentTabsMenu";
 import {
-  type ChatPanelTab,
   openRecentChatPanelTabAtom,
   recentChatPanelTabsAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { type ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 
 import { SessionIdentityIconById } from "../components/SessionIdentityIcon";
 import { CHAT_PANEL_HEADER_NO_DRAG_STYLE } from "../header";

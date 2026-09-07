@@ -58,7 +58,7 @@ import {
 } from "@src/shared/dnd/sessionTabDrag";
 import { useSessionTabDropTarget } from "@src/shared/dnd/useSessionTabDropTarget";
 import { useTabInsertionIndicator } from "@src/shared/dnd/useTabInsertionIndicator";
-import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpenAtoms";
+import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/integrations";
 import {
   canMoveWorkstationPrTabToChatPanel,
   moveWorkstationPrTabToChatPanelAtom,

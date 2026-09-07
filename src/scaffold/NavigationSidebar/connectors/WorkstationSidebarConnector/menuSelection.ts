@@ -1,4 +1,4 @@
-import type { ChatPanelTabType } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTabType } from "@src/store/chatPanel/chatPanelTabsModel";
 import type { SessionCreatorDraft } from "@src/store/session";
 import {
   CHAT_PANEL_CONTENT_MODE,

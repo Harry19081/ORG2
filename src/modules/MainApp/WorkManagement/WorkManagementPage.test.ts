@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { chatPanelHeaderSlotsAtom } from "@src/engines/ChatPanel/header/chatPanelHeaderSlots";
-import { activeWorkManagementSectionAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { activeWorkManagementSectionAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   WORK_MANAGEMENT_SECTION,
   workstationTabHeaderAtomByHost,
@@ -30,9 +30,14 @@ vi.mock("@src/store/chatPanel/chatPanelTabsAtom", async (importOriginal) => {
   const { atom } = await import("jotai");
   return {
     ...original,
-    activeWorkManagementSectionAtom: atom("kanban"),
     setActiveWorkManagementSectionAtom: atom(null, () => {}),
   };
+});
+
+vi.mock("@src/store/chatPanel/chatPanelTabsState", async (importOriginal) => {
+  const original = await importOriginal<Record<string, unknown>>();
+  const { atom } = await import("jotai");
+  return { ...original, activeWorkManagementSectionAtom: atom("kanban") };
 });
 
 vi.mock("@src/features/TaskKanban/components/FactoryViewPill", () => ({
