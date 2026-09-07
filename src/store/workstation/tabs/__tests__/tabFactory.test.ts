@@ -332,7 +332,7 @@ describe("Project Manager Factories", () => {
       });
 
       expect(tab.id).toBe("project-dashboard:org:personal-org");
-      expect(tab.title).toBe("Personal Org Projects");
+      expect(tab.title).toBe("My workspace Projects");
     });
   });
 
@@ -354,7 +354,7 @@ describe("Project Manager Factories", () => {
       });
 
       expect(tab.id).toBe("project-work-items:org:personal-org");
-      expect(tab.title).toBe("Personal Org Work Items");
+      expect(tab.title).toBe("My workspace Work Items");
     });
   });
 

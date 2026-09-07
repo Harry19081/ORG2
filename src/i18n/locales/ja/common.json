@@ -1625,8 +1625,8 @@
         "systemPaths": "システムパス",
         "usedElsewhere": "他の場所で使用",
         "workspace": "Workspace",
-        "thisOrg": "この組織",
-        "outsideOrg": "この組織の外"
+        "thisOrg": "このワークスペース",
+        "outsideOrg": "このワークスペースの外"
       },
       "tabs": {},
       "addOptions": {
@@ -1934,10 +1934,10 @@
           "label": "Work Item を作成"
         },
         "createOrganization": {
-          "label": "組織を作成"
+          "label": "ワークスペースを作成"
         },
         "joinOrganization": {
-          "label": "組織に参加"
+          "label": "ワークスペースに参加"
         }
       },
       "toast": {

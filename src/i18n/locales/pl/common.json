@@ -1644,7 +1644,7 @@
         "systemPaths": "Ścieżki systemowe",
         "usedElsewhere": "Używane gdzie indziej",
         "workspace": "Workspace",
-        "thisOrg": "Ta organizacja",
+        "thisOrg": "Ten obszar roboczy",
         "outsideOrg": "Poza tą organizacją"
       },
       "tabs": {},
@@ -1953,10 +1953,10 @@
           "label": "Utwórz zadanie"
         },
         "createOrganization": {
-          "label": "Utwórz organizację"
+          "label": "Utwórz obszar roboczy"
         },
         "joinOrganization": {
-          "label": "Dołącz do organizacji"
+          "label": "Dołącz do obszaru roboczego"
         }
       },
       "toast": {

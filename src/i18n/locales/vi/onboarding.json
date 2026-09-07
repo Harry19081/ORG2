@@ -25,7 +25,7 @@
         },
         "runtime": {
           "title": "Thời gian chạy",
-          "body": "Xem mức sử dụng và trạng thái chạy của bạn tại đây. Trong tổ chức, bạn cũng có thể kiểm tra trạng thái đồng bộ của thành viên và mở chi tiết sử dụng Codex, Claude và Cursor."
+          "body": "Xem mức sử dụng và trạng thái chạy của bạn tại đây. Trong không gian làm việc, bạn cũng có thể kiểm tra trạng thái đồng bộ của thành viên và mở chi tiết sử dụng Codex, Claude và Cursor."
         },
         "station-mode-pill": {
           "title": "Chuyển trạm chế độ",

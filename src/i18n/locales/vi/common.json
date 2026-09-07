@@ -1625,8 +1625,8 @@
         "systemPaths": "Đường dẫn hệ thống",
         "usedElsewhere": "Được dùng ở nơi khác",
         "workspace": "Workspace",
-        "thisOrg": "Tổ chức này",
-        "outsideOrg": "Ngoài tổ chức này"
+        "thisOrg": "Không gian làm việc này",
+        "outsideOrg": "Ngoài không gian làm việc này"
       },
       "tabs": {},
       "addOptions": {
@@ -1934,10 +1934,10 @@
           "label": "Tạo Work Item"
         },
         "createOrganization": {
-          "label": "Tạo tổ chức"
+          "label": "Tạo không gian làm việc"
         },
         "joinOrganization": {
-          "label": "Tham gia tổ chức"
+          "label": "Tham gia không gian làm việc"
         }
       },
       "toast": {

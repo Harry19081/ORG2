@@ -1625,8 +1625,8 @@
         "systemPaths": "시스템 경로",
         "usedElsewhere": "다른 곳에서 사용됨",
         "workspace": "Workspace",
-        "thisOrg": "이 조직",
-        "outsideOrg": "이 조직 외부"
+        "thisOrg": "이 워크스페이스",
+        "outsideOrg": "이 워크스페이스 외부"
       },
       "tabs": {},
       "addOptions": {
@@ -1934,10 +1934,10 @@
           "label": "Work Item 생성"
         },
         "createOrganization": {
-          "label": "조직 만들기"
+          "label": "워크스페이스 만들기"
         },
         "joinOrganization": {
-          "label": "조직 참여"
+          "label": "워크스페이스 참여"
         }
       },
       "toast": {

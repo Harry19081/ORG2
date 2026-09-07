@@ -18,7 +18,7 @@ describe("deriveChatPanelLaunchContext", () => {
       })
     ).toEqual({
       orgId: "personal-org",
-      orgName: "Personal Org",
+      orgName: "My workspace",
     });
   });
 

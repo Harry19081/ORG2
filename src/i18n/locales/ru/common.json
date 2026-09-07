@@ -1644,8 +1644,8 @@
         "systemPaths": "Системные пути",
         "usedElsewhere": "Используется в других местах",
         "workspace": "Workspace",
-        "thisOrg": "Эта организация",
-        "outsideOrg": "Вне этой организации"
+        "thisOrg": "Эта рабочее пространство",
+        "outsideOrg": "Вне этого рабочего пространства"
       },
       "tabs": {},
       "addOptions": {
@@ -1953,10 +1953,10 @@
           "label": "Создать Work Item"
         },
         "createOrganization": {
-          "label": "Создать организацию"
+          "label": "Создать рабочее пространство"
         },
         "joinOrganization": {
-          "label": "Присоединиться к организации"
+          "label": "Присоединиться к рабочего пространства"
         }
       },
       "toast": {

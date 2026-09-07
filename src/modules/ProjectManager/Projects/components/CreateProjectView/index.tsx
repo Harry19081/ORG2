@@ -36,6 +36,7 @@ import LaunchButton from "@src/features/SessionCreator/components/LaunchButton";
 import { useKeyboardSave } from "@src/hooks/keyboard";
 import { createLogger } from "@src/hooks/logger";
 import { useUndoStackWithRestore } from "@src/hooks/ui/useUndoableState";
+import { CloudIcon, HugeiconsIcon, LaptopIcon } from "@src/icons";
 import {
   CreateComposerHeader,
   CreateComposerPinnedActions,
@@ -54,6 +55,7 @@ import type { MarkdownEditorMode } from "@src/modules/shared/components/Markdown
 import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
 import { CreatorContentLayout } from "@src/modules/shared/layouts/blocks";
 import { reposAtom } from "@src/store/repo";
+import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
 import {
   type ProjectDraft,
   createDefaultProjectDraft,
@@ -398,13 +400,31 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
 
   const orgOptions = useMemo<SelectOption[]>(
     () =>
-      selectableOrgs.map((org) => ({
-        value: org.id,
-        label: org.name,
-        triggerLabel: org.name,
-        dataTestId: `create-project-org-option-${org.id}`,
-      })),
-    [selectableOrgs]
+      selectableOrgs.map((org) => {
+        const isCloud = cloudOrgs.some(
+          (cloud) =>
+            cloud.orgId === org.id || cloud.orgId === org.external_org_id
+        );
+        const name =
+          org.id === DEFAULT_SESSION_ORG_ID ? t("orgs.personalOrg") : org.name;
+        const source = t(isCloud ? "orgs.sources.cloud" : "orgs.sources.local");
+        return {
+          value: org.id,
+          label: name,
+          triggerLabel: name,
+          icon: (
+            <HugeiconsIcon
+              icon={isCloud ? CloudIcon : LaptopIcon}
+              aria-label={source}
+              role="img"
+              size={14}
+              strokeWidth={1.75}
+            />
+          ),
+          dataTestId: `create-project-org-option-${org.id}`,
+        };
+      }),
+    [selectableOrgs, cloudOrgs, t]
   );
 
   const selectedOrgLabel =

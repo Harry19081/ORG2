@@ -1626,8 +1626,8 @@
         "systemPaths": "Systempfade",
         "usedElsewhere": "Andernorts verwendet",
         "workspace": "Workspace",
-        "thisOrg": "Diese Organisation",
-        "outsideOrg": "Außerhalb dieser Organisation"
+        "thisOrg": "Diese Arbeitsbereich",
+        "outsideOrg": "Außerhalb dieses Arbeitsbereichs"
       },
       "tabs": {},
       "addOptions": {
@@ -1935,10 +1935,10 @@
           "label": "Work Item erstellen"
         },
         "createOrganization": {
-          "label": "Organisation erstellen"
+          "label": "Arbeitsbereich erstellen"
         },
         "joinOrganization": {
-          "label": "Organisation beitreten"
+          "label": "Arbeitsbereich beitreten"
         }
       },
       "toast": {

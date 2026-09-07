@@ -160,7 +160,7 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
               onVisibleChange={setMenuOpen}
               popupVisible={menuOpen}
               dropdownRender={renderDropdown}
-              showTriggerIcon={false}
+              showTriggerIcon
               // This selector owns its sidebar-specific hover/open surface.
               // `ghost` also applies the generic (and opaque on translucent
               // sidebars) surface-hover color before that override settles.

@@ -25,7 +25,7 @@
         },
         "runtime": {
           "title": "Çalışma zamanı",
-          "body": "Kendi kullanımınızı ve çalışma durumunu burada görün. Bir kuruluşta üye eşitleme durumunu da inceleyebilir ve Codex, Claude ile Cursor kullanım ayrıntılarını açabilirsiniz."
+          "body": "Kendi kullanımınızı ve çalışma durumunu burada görün. Bir çalışma alanıta üye eşitleme durumunu da inceleyebilir ve Codex, Claude ile Cursor kullanım ayrıntılarını açabilirsiniz."
         },
         "station-mode-pill": {
           "title": "İstasyon değiştir modlar",

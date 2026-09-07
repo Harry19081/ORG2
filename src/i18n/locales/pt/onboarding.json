@@ -25,7 +25,7 @@
         },
         "runtime": {
           "title": "Runtime",
-          "body": "Veja aqui seu uso e o status de execução. Em uma organização, você também pode conferir a sincronização dos membros e abrir os detalhes de uso do Codex, Claude e Cursor."
+          "body": "Veja aqui seu uso e o status de execução. Em um espaço de trabalho, você também pode conferir a sincronização dos membros e abrir os detalhes de uso do Codex, Claude e Cursor."
         },
         "station-mode-pill": {
           "title": "Alternar estação modos",
