@@ -140,7 +140,8 @@ describe("TeamInboxRow", () => {
         element.className.includes("text-text-2")
     );
     expect(secondaryText).toHaveLength(1);
-    // Shared relative-time labels use sentence case, including the immediate label.
+    // `formatRelativeTime("nano")` renders the localized immediate label
+    // ("Now"), not the old hand-rolled "Now".
     const time = Array.from(container.querySelectorAll("span")).find(
       (element) => element.textContent === "Now"
     );

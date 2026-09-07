@@ -166,7 +166,7 @@
       "commandPalette": "Paleta poleceń",
       "goToFile": "Przejdź do pliku...",
       "selectModel": "Wybierz model...",
-      "switchWorkspace": "Przełącz obszar roboczy...",
+      "switchWorkspace": "Zmień katalog roboczy...",
       "switchBranch": "Przełącz gałąź...",
       "switchRunningLocation": "Przełącz lokalizację uruchomienia...",
       "settings": "Ustawienia...",
@@ -199,13 +199,13 @@
     "openSessionBeforeLinking": "Otwórz sesję przed powiązaniem elementu pracy.",
     "sessionLinkedToWorkItem": "Sesja powiązana z elementem pracy.",
     "sessionLinkFailed": "Nie udało się powiązać sesji: {{message}}",
-    "chooseFolderNewWorkspace": "Wybierz folder, aby utworzyć obszar roboczy",
-    "chooseExistingWorkspace": "Wybierz istniejący obszar roboczy",
+    "chooseFolderNewWorkspace": "Wybierz folder nadrzędny katalogu roboczego",
+    "chooseExistingWorkspace": "Wybierz istniejący katalog roboczy",
     "selectDirectoryFailed": "Nie udało się wybrać katalogu",
-    "workspaceCreated": "Obszar roboczy utworzony",
-    "workspaceCreateFailed": "Nie udało się utworzyć obszaru roboczego",
-    "workspaceImported": "Obszar roboczy zaimportowany",
-    "workspaceImportFailed": "Nie udało się zaimportować obszaru roboczego",
+    "workspaceCreated": "Katalog roboczy utworzony",
+    "workspaceCreateFailed": "Nie udało się utworzyć katalogu roboczego",
+    "workspaceImported": "Katalog roboczy zaimportowany",
+    "workspaceImportFailed": "Nie udało się zaimportować katalogu roboczego",
     "chooseFolderCloneRepo": "Wybierz folder, aby sklonować repozytorium",
     "repositoryCloned": "Repozytorium sklonowane",
     "repositoryCloneFailed": "Nie udało się sklonować repozytorium"
@@ -380,9 +380,9 @@
     "moreSettings": "Więcej ustawień",
     "sort": "Sortuj",
     "openFolder": "Otwórz folder",
-    "addWorkspace": "Dodaj workspace",
+    "addWorkspace": "Dodaj katalog roboczy",
     "openSpotlight": "Otwórz Spotlight",
-    "openWorkspace": "Otwórz Workspace",
+    "openWorkspace": "Otwórz katalog roboczy",
     "skipThisVersion": "Pomiń tę wersję",
     "later": "Później",
     "link": "Połącz",
@@ -994,8 +994,8 @@
     "retryToScanAgain": "Ponów próbę, aby ponownie zeskanować",
     "noTokensFound": "Nie znaleziono Tokenów",
     "addCssVariables": "Dodaj zmienne CSS do swojego projektu",
-    "noWorkspaceExplorerTitle": "Brak otwartego Workspace",
-    "noWorkspaceExplorerSubtitle": "Otwórz obszar roboczy, aby wyświetlić pliki",
+    "noWorkspaceExplorerTitle": "Brak otwartego katalogu roboczego",
+    "noWorkspaceExplorerSubtitle": "Otwórz katalog roboczy, aby wyświetlić pliki",
     "cannotFindRepo": "Nie można znaleźć {{repoName}}",
     "lastSeenAtPath": "Ostatnio widziano w {{path}}",
     "unsupportedFileType": "Nieobsługiwany typ pliku",
@@ -1065,13 +1065,13 @@
     "publishingBranch": "Publikowanie...",
     "refreshGitStatus": "Odśwież status Git",
     "notGitInitialized": "Git nie został zainicjowany",
-    "notGitInitializedTooltip": "Ten Workspace nie ma jeszcze katalogu .git.",
+    "notGitInitializedTooltip": "Ten katalog roboczy nie ma jeszcze katalogu .git.",
     "publishBranchToOrigin": "Opublikuj gałąź \"{{branch}}\" do origin",
     "syncWithRemote": "Synchronizuj ze zdalnym ({{behind}} do pull, {{ahead}} do push)",
     "scanningFiles": "Skanowanie plików...",
     "branchTooltip": "Gałąź: {{branch}}",
     "branchTooltipSwitching": "Gałąź: {{branch}} (przełączanie...)",
-    "switchWorkspaceTooltip": "Przełącz workspace",
+    "switchWorkspaceTooltip": "Zmień katalog roboczy",
     "switchWorktreeTooltip": "Przełącz worktree",
     "switchBranchTooltip": "Przełącz gałąź",
     "switchLocalBranchTooltip": "Przełącz lokalną gałąź",
@@ -1642,23 +1642,23 @@
         "current": "Bieżące",
         "repo": "Repozytoria",
         "systemPaths": "Ścieżki systemowe",
-        "usedElsewhere": "Używane gdzie indziej",
-        "workspace": "Workspace",
-        "thisOrg": "Ten obszar roboczy",
-        "outsideOrg": "Poza tą organizacją"
+        "usedElsewhere": "Używane w innych aplikacjach",
+        "workspace": "Katalog roboczy",
+        "thisOrg": "Ten katalog roboczy",
+        "outsideOrg": "Poza tym katalogiem roboczym"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "Klonuj z URL GitHub",
         "cloneFromMyGitHub": "Klonuj z mojego GitHub",
-        "createWorkspace": "Utwórz nowy workspace"
+        "createWorkspace": "Utwórz nowy katalog roboczy"
       },
       "sources": {
         "cloningFromGitHub": "klonowanie z GitHub",
         "cloningFromGitHubUrl": "klonowanie z URL GitHub",
         "cloningFromMyGitHub": "klonowanie z mojego GitHub",
-        "creatingWorkspace": "tworzenie nowego workspace",
-        "creatingMultiRepoWorkspace": "składanie multi-repo workspace"
+        "creatingWorkspace": "tworzenie nowego katalogu roboczego",
+        "creatingMultiRepoWorkspace": "składanie katalogu roboczego z wieloma repozytoriami"
       },
       "forms": {
         "repoName": "Nazwa Repo",
@@ -1666,19 +1666,19 @@
         "chooseDestinationPath": "Wybierz ścieżkę docelową",
         "choose": "Wybierz",
         "createAt": "Utwórz w {{path}}",
-        "createWorkspaceTitle": "Nowy workspace",
-        "creatingWorkspace": "Tworzenie workspace...",
-        "readyToCreateWorkspace": "Gotowe do utworzenia workspace",
-        "workspaceName": "Nazwa workspace",
-        "workspaceNamePlaceholder": "Mój workspace"
+        "createWorkspaceTitle": "Nowy katalog roboczy",
+        "creatingWorkspace": "Tworzenie katalogu roboczego...",
+        "readyToCreateWorkspace": "Gotowe do utworzenia katalogu roboczego",
+        "workspaceName": "Nazwa katalogu",
+        "workspaceNamePlaceholder": "Mój katalog"
       },
       "path": {
         "switchTo": "Przełącz na",
         "switchToTemplate": "Przełącz na {workspace}",
         "search": "Szukaj",
-        "manageWorkspace": "Zarządzaj Workspace",
-        "addBy": "Dodaj workspace przez",
-        "addByTemplate": "Dodaj workspace przez {source}"
+        "manageWorkspace": "Zarządzaj katalogiem roboczym",
+        "addBy": "Dodaj katalog roboczy przez",
+        "addByTemplate": "Dodaj katalog roboczy przez {source}"
       },
       "pathImport": {
         "addLabel": "Dodaj",
@@ -1687,7 +1687,7 @@
       },
       "gitInitPrompt": {
         "title": "Zainicjować Git?",
-        "message": "Ten workspace nie ma folderu .git. Zainicjować go jako repozytorium Git?",
+        "message": "Ten katalog roboczy nie ma folderu .git. Zainicjować go jako repozytorium Git?",
         "ok": "Zainicjuj Git",
         "cancel": "Zostaw jako folder"
       }
@@ -1766,10 +1766,10 @@
       "sourceAria": "Wybierz źródło Workspace",
       "on": "w",
       "branchAria": "Wybierz gałąź",
-      "switchWorkspace": "Przełącz Workspace",
+      "switchWorkspace": "Zmień katalog roboczy",
       "switchBranch": "Przełącz gałąź",
       "switchLocation": "Przełącz lokalizację uruchamiania",
-      "sessionWorkspace": "Przełącz Workspace sesji",
+      "sessionWorkspace": "Zmień katalog roboczy sesji",
       "locationAria": "Wybierz lokalizację uruchamiania",
       "systemPaths": {
         "home": {
@@ -1890,16 +1890,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Przełącz workspace"
+          "label": "Zmień katalog roboczy"
         },
         "switchBranch": {
           "label": "Przełącz gałąź"
         },
         "addWorkspace": {
-          "label": "Dodaj workspace"
+          "label": "Dodaj katalog roboczy"
         },
         "createMultiRepoWorkspace": {
-          "label": "Dodaj Multi-repo Workspace"
+          "label": "Dodaj katalog roboczy z wieloma repozytoriami"
         },
         "showSourceControl": {
           "label": "Pokaż Source Control"
@@ -2034,7 +2034,7 @@
     "hidePrimarySidebar": "Ukryj pasek boczny",
     "searchFiles": "Szukaj plików",
     "openBrowser": "Otwórz przeglądarkę",
-    "switchWorkspace": "Przełącz / dodaj Workspace",
+    "switchWorkspace": "Zmień / dodaj katalog roboczy",
     "openEditor": "Otwórz edytor",
     "hideTerminal": "Ukryj terminal",
     "hideFiles": "Ukryj pliki",
@@ -2128,10 +2128,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Git nie został zainicjowany",
-    "notGitInitializedSubtitle": "Zainicjuj Git, aby śledzić zmiany, tworzyć commity i używać narzędzi gałęzi w tym Workspace.",
+    "notGitInitializedSubtitle": "Zainicjuj Git, aby śledzić zmiany, tworzyć commity i używać narzędzi gałęzi w tym katalogu roboczym.",
     "initializeGit": "Zainicjuj Git",
     "initializingGit": "Inicjowanie Git...",
-    "noRemoteForPublish": "Ten Workspace jest teraz repozytorium Git, ale nie ma jeszcze remote. Dodaj remote, na przykład origin, przed opublikowaniem tej gałęzi.",
+    "noRemoteForPublish": "Ten katalog roboczy jest teraz repozytorium Git, ale nie ma jeszcze remote. Dodaj remote, na przykład origin, przed opublikowaniem tej gałęzi.",
     "generateCommitMessage": "Wygeneruj wiadomość commita z AI",
     "pull": "Pull",
     "push": "Push",
@@ -2223,24 +2223,24 @@
     "parentFolderPlaceholder": "Wybierz folder nadrzędny"
   },
   "workspaceForm": {
-    "title": "Utwórz Workspace z wieloma Repo",
-    "editTitle": "Edytuj Workspace",
-    "createWorkspace": "Utwórz Workspace z wieloma Repo",
-    "multiRepoWorkspace": "Workspace z wieloma Repo",
-    "createWorkspaceDesc": "Skomponuj Workspace z wielu Repo",
-    "workspaceName": "Nazwa Workspace",
-    "workspaceNamePlaceholder": "Mój Workspace",
+    "title": "Utwórz katalog roboczy z wieloma repozytoriami",
+    "editTitle": "Edytuj katalog roboczy",
+    "createWorkspace": "Utwórz katalog roboczy z wieloma repozytoriami",
+    "multiRepoWorkspace": "Katalog roboczy z wieloma repozytoriami",
+    "createWorkspaceDesc": "Skomponuj katalog roboczy z wielu repozytoriów",
+    "workspaceName": "Nazwa katalogu roboczego",
+    "workspaceNamePlaceholder": "Mój katalog roboczy",
     "filterPlaceholder": "Filtruj Repo...",
-    "selectRepos": "Wybierz Repo dla Workspace",
+    "selectRepos": "Wybierz repozytoria dla katalogu roboczego",
     "noReposFound": "Brak Repo pasujących do filtra",
     "noRepos": "Brak dostępnych Repo",
     "current": "bieżący",
-    "willInclude": "Workspace będzie zawierał {{count}} Repo",
+    "willInclude": "Katalog roboczy będzie zawierał {{count}} repozytoriów",
     "statusSelectAtLeastTwo": "Wybierz co najmniej 2 Repo",
-    "statusReadyToCreate": "Gotowy do utworzenia Workspace",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "Workspace {{repo}}",
-    "windowTitle": "Workspace"
+    "statusReadyToCreate": "Gotowy do utworzenia katalogu roboczego",
+    "defaultName": "Katalog roboczy",
+    "defaultNameWithRepo": "Katalog roboczy {{repo}}",
+    "windowTitle": "Katalog roboczy"
   },
   "database": {
     "addConnection": "Dodaj połączenie bazy danych",

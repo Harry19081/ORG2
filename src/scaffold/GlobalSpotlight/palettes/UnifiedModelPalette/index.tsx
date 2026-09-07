@@ -331,7 +331,7 @@ export const UnifiedModelPalette: React.FC<UnifiedModelPaletteProps> = ({
   useEffect(() => {
     // Never steal focus while closed — a closed palette focusing its input
     // yanks the caret from the composer (same class of bug as the
-    // WorkspacePalette focus loop).
+    // WorkingDirectoryPalette focus loop).
     if (!isOpen) return;
     focusModelInput();
   }, [activeColumn, focusModelInput, isOpen]);

@@ -2,31 +2,31 @@ import type { TFunction } from "i18next";
 
 import { ICONS } from "../../config";
 import type { SpotlightItem } from "../../types";
-import type { WorkspacePaletteText } from "./types";
+import type { WorkingDirectoryPaletteText } from "./types";
 
-interface BuildPinnedWorkspaceActionsArgs {
+interface BuildPinnedWorkingDirectoryActionsArgs {
   isManageMode: boolean;
   selectedCount: number;
-  paletteText: WorkspacePaletteText;
+  paletteText: WorkingDirectoryPaletteText;
   t: TFunction;
-  onOpenLocalWorkspace: () => void;
+  onOpenWorkingDirectory: () => void;
   onOpenAddMenu: () => void;
   onCreateWorkspace: () => void;
   onBulkDelete: () => void;
   onToggleManageMode: () => void;
 }
 
-export function buildPinnedWorkspaceActions({
+export function buildPinnedWorkingDirectoryActions({
   isManageMode,
   selectedCount,
   paletteText,
   t,
-  onOpenLocalWorkspace,
+  onOpenWorkingDirectory,
   onOpenAddMenu,
   onCreateWorkspace,
   onBulkDelete,
   onToggleManageMode,
-}: BuildPinnedWorkspaceActionsArgs): SpotlightItem[] {
+}: BuildPinnedWorkingDirectoryActionsArgs): SpotlightItem[] {
   const actions: SpotlightItem[] = [];
 
   if (!isManageMode) {
@@ -36,13 +36,13 @@ export function buildPinnedWorkspaceActions({
         label: paletteText.openFolderLabel,
         icon: ICONS.folderOpen,
         type: "action",
-        action: onOpenLocalWorkspace,
+        action: onOpenWorkingDirectory,
       },
       {
         id: "pinned-create-workspace-entry",
         label: t(
           "workspaceForm.createWorkspace",
-          "Create Multi-repo Workspace"
+          "Create Multi-repo Working Directory"
         ),
         icon: ICONS.workspace,
         type: "action",

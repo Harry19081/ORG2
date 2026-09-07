@@ -9,13 +9,13 @@ import {
   sortRepoItemsSelectedFirst,
 } from "../adapters";
 import {
-  WORKSPACE_PALETTE_SECTION_KEY,
-  type WorkspacePaletteSectionKey,
-  type WorkspacePaletteText,
+  WORKING_DIRECTORY_PALETTE_SECTION_KEY,
+  type WorkingDirectoryPaletteSectionKey,
+  type WorkingDirectoryPaletteText,
 } from "./types";
 
 function buildSectionHeader(
-  key: WorkspacePaletteSectionKey,
+  key: WorkingDirectoryPaletteSectionKey,
   label: string
 ): SpotlightItem {
   return {
@@ -31,7 +31,7 @@ function buildSectionHeader(
 
 function appendSection(
   target: SpotlightItem[],
-  key: WorkspacePaletteSectionKey,
+  key: WorkingDirectoryPaletteSectionKey,
   label: string,
   sectionItems: SpotlightItem[]
 ) {
@@ -39,7 +39,7 @@ function appendSection(
   target.push(buildSectionHeader(key, label), ...sectionItems);
 }
 
-interface BuildSectionedWorkspaceItemsArgs {
+interface BuildSectionedWorkingDirectoryItemsArgs {
   addMenuActive: boolean;
   sectionedAddItems: SpotlightItem[];
   workspaceItems: SpotlightItem[];
@@ -53,12 +53,12 @@ interface BuildSectionedWorkspaceItemsArgs {
   leadingRepos?: readonly RepoItem[];
   selectedIds: Set<string>;
   searchQuery: string;
-  paletteText: WorkspacePaletteText;
+  paletteText: WorkingDirectoryPaletteText;
   /**
    * Org-scope membership predicate. When set, repo/workspace sections are
    * replaced by a "This org" / "Outside this org" split instead of hiding
    * non-matching rows. Workspace items carry their own `outsideOrgScope`
-   * data flag (set by useWorkspacePaletteWorkspace).
+   * data flag (set by useWorkingDirectoryPaletteWorkspaces).
    */
   orgScopeFilter?: ((repo: RepoItem) => boolean) | null;
   /** Renders each repo row's filesystem path under its name (footer toggle). */
@@ -69,7 +69,7 @@ interface BuildSectionedWorkspaceItemsArgs {
   renderRepoTrashAction?: (repo: RepoItem) => React.ReactNode;
 }
 
-export function buildSectionedWorkspaceItems({
+export function buildSectionedWorkingDirectoryItems({
   addMenuActive,
   sectionedAddItems,
   workspaceItems,
@@ -90,7 +90,7 @@ export function buildSectionedWorkspaceItems({
   onLeadingRepoAction,
   toggleSelection,
   renderRepoTrashAction,
-}: BuildSectionedWorkspaceItemsArgs): SpotlightItem[] {
+}: BuildSectionedWorkingDirectoryItemsArgs): SpotlightItem[] {
   if (addMenuActive) {
     return sectionedAddItems;
   }
@@ -131,7 +131,7 @@ export function buildSectionedWorkspaceItems({
     buildRepoSpotlightItems(persistedGitRepos, repoItemOptions)
   );
 
-  const folderWorkspaceItems = sortRepoItemsSelectedFirst(
+  const workingDirectoryItems = sortRepoItemsSelectedFirst(
     buildRepoSpotlightItems(persistedFolderRepos, repoItemOptions)
   );
 
@@ -166,7 +166,7 @@ export function buildSectionedWorkspaceItems({
   const recentItems = !isManageMode
     ? [
         ...repoItems.filter(recentEligible),
-        ...folderWorkspaceItems.filter(recentEligible),
+        ...workingDirectoryItems.filter(recentEligible),
         ...leadingRepoItems.filter(recentEligible),
         ...workspaceItems.filter((item) => !isOutsideOrgItem(item)),
       ]
@@ -190,7 +190,7 @@ export function buildSectionedWorkspaceItems({
   const sourceItems = [
     ...leadingRepoItems,
     ...externalRecentItems,
-    ...folderWorkspaceItems,
+    ...workingDirectoryItems,
     ...repoItems,
   ];
 
@@ -204,7 +204,7 @@ export function buildSectionedWorkspaceItems({
   const regularExternalRecentItems = externalRecentItems.filter(
     (item) => !currentIds.has(item.id)
   );
-  const regularFolderWorkspaceItems = folderWorkspaceItems.filter(
+  const regularWorkingDirectoryItems = workingDirectoryItems.filter(
     (item) => !currentIds.has(item.id) && !recentIds.has(item.id)
   );
   const regularRepoItems = repoItems.filter(
@@ -221,13 +221,13 @@ export function buildSectionedWorkspaceItems({
 
   appendSection(
     sectionedItems,
-    WORKSPACE_PALETTE_SECTION_KEY.CURRENT,
+    WORKING_DIRECTORY_PALETTE_SECTION_KEY.CURRENT,
     paletteText.sectionCurrentLabel,
     currentItems
   );
   appendSection(
     sectionedItems,
-    WORKSPACE_PALETTE_SECTION_KEY.RECENT,
+    WORKING_DIRECTORY_PALETTE_SECTION_KEY.RECENT,
     paletteText.sectionRecentLabel,
     recentItems.filter((item) => !currentIds.has(item.id))
   );
@@ -239,53 +239,53 @@ export function buildSectionedWorkspaceItems({
 
     appendSection(
       sectionedItems,
-      WORKSPACE_PALETTE_SECTION_KEY.THIS_ORG,
+      WORKING_DIRECTORY_PALETTE_SECTION_KEY.THIS_ORG,
       paletteText.sectionThisOrgLabel,
       [
         ...inThisOrg(regularRepoItems),
         ...inThisOrg(regularWorkspaceItems),
-        ...inThisOrg(regularFolderWorkspaceItems),
+        ...inThisOrg(regularWorkingDirectoryItems),
       ]
     );
     appendSection(
       sectionedItems,
-      WORKSPACE_PALETTE_SECTION_KEY.OUTSIDE_ORG,
+      WORKING_DIRECTORY_PALETTE_SECTION_KEY.OUTSIDE_ORG,
       paletteText.sectionOutsideOrgLabel,
       [
         ...outsideOrg(regularRepoItems),
         ...outsideOrg(regularWorkspaceItems),
-        ...outsideOrg(regularFolderWorkspaceItems),
+        ...outsideOrg(regularWorkingDirectoryItems),
       ]
     );
   } else {
     appendSection(
       sectionedItems,
-      WORKSPACE_PALETTE_SECTION_KEY.REPO,
+      WORKING_DIRECTORY_PALETTE_SECTION_KEY.REPO,
       paletteText.sectionRepoLabel,
       regularRepoItems
     );
     appendSection(
       sectionedItems,
-      WORKSPACE_PALETTE_SECTION_KEY.MULTI_REPO_WORKSPACE,
-      paletteText.sectionMultiRepoWorkspaceLabel,
+      WORKING_DIRECTORY_PALETTE_SECTION_KEY.MULTI_REPO_WORKSPACE,
+      paletteText.sectionMultiRepoWorkingDirectoryLabel,
       regularWorkspaceItems
     );
     appendSection(
       sectionedItems,
-      WORKSPACE_PALETTE_SECTION_KEY.FOLDER_WORKSPACE,
-      paletteText.sectionFolderWorkspaceLabel,
-      regularFolderWorkspaceItems
+      WORKING_DIRECTORY_PALETTE_SECTION_KEY.WORKING_DIRECTORY,
+      paletteText.sectionWorkingDirectoryLabel,
+      regularWorkingDirectoryItems
     );
   }
   appendSection(
     sectionedItems,
-    WORKSPACE_PALETTE_SECTION_KEY.SYSTEM_PATH,
+    WORKING_DIRECTORY_PALETTE_SECTION_KEY.SYSTEM_PATH,
     paletteText.sectionSystemPathsLabel,
     regularSystemPathItems
   );
   appendSection(
     sectionedItems,
-    WORKSPACE_PALETTE_SECTION_KEY.EXTERNAL_RECENT,
+    WORKING_DIRECTORY_PALETTE_SECTION_KEY.EXTERNAL_RECENT,
     paletteText.sectionExternalRecentLabel,
     regularExternalRecentItems
   );
@@ -294,7 +294,7 @@ export function buildSectionedWorkspaceItems({
 }
 
 export function buildSectionedAddItems(
-  addWorkspaceItems: SpotlightItem[]
+  addWorkingDirectoryItems: SpotlightItem[]
 ): SpotlightItem[] {
-  return addWorkspaceItems;
+  return addWorkingDirectoryItems;
 }

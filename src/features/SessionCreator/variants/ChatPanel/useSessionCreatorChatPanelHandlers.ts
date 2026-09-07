@@ -26,7 +26,7 @@ import {
   isSourceCompatibleWithAgent,
   useAgentCompatibility,
 } from "@src/hooks/models/useAgentCompatibility";
-import { useWorkspaceForm } from "@src/scaffold/GlobalSpotlight/hooks/forms";
+import { useWorkingDirectoryForm } from "@src/scaffold/GlobalSpotlight/hooks/forms";
 import type { AgentSelection } from "@src/scaffold/GlobalSpotlight/palettes/DispatchCategoryPalette";
 import type { RepoItem } from "@src/scaffold/GlobalSpotlight/types";
 import { REPO_KIND, type RepoKind } from "@src/store/repo/types";
@@ -73,10 +73,10 @@ export function useSessionCreatorChatPanelHandlers({
   const { registry } = useAgentCompatibility();
   const setCreatorState = useSetAtom(sessionCreatorStateAtom);
   const setSessionSource = useSetAtom(sessionSourceAtom);
-  const { handleImportWorkspace } = useWorkspaceForm({
-    onSuccess: async (workspaceId?: string) => {
+  const { handleImportWorkingDirectory } = useWorkingDirectoryForm({
+    onSuccess: async (repoId?: string) => {
       await forceRefreshRepos();
-      if (workspaceId) selectRepo(workspaceId);
+      if (repoId) selectRepo(repoId);
     },
   });
 
@@ -167,18 +167,18 @@ export function useSessionCreatorChatPanelHandlers({
           })
         );
         if (repoPath) {
-          void handleImportWorkspace(repoPath, {
+          void handleImportWorkingDirectory(repoPath, {
             promptForGitInit: false,
-          }).then((workspaceId) => {
-            if (!workspaceId) return;
+          }).then((repoId) => {
+            if (!repoId) return;
             // Align the repo-selection store with the imported workspace.
             // Without this, selectedRepoId keeps pointing at the previous
             // repo, useChatPanelBranchSync bails on the repoId mismatch, and
             // the branch pill stays icon-only until an unrelated refresh.
-            selectRepo(workspaceId);
+            selectRepo(repoId);
             setSessionSource({
               type: "local",
-              repoId: workspaceId,
+              repoId,
               repoName: repo.name,
               repoPath,
               branch: undefined,
@@ -196,7 +196,13 @@ export function useSessionCreatorChatPanelHandlers({
         branch: undefined,
       });
     },
-    [handleImportWorkspace, onRepoScopeChange, selectRepo, setSessionSource, t]
+    [
+      handleImportWorkingDirectory,
+      onRepoScopeChange,
+      selectRepo,
+      setSessionSource,
+      t,
+    ]
   );
 
   // ── Agent category selection ──────────────────────────────────────────────

@@ -162,7 +162,7 @@
       "commandPalette": "Palette de commandes",
       "goToFile": "Accéder au fichier...",
       "selectModel": "Sélectionner un modèle...",
-      "switchWorkspace": "Changer d’espace de travail...",
+      "switchWorkspace": "Changer de répertoire de travail...",
       "switchBranch": "Changer de branche...",
       "switchRunningLocation": "Changer d’emplacement d’exécution...",
       "settings": "Paramètres...",
@@ -195,13 +195,13 @@
     "openSessionBeforeLinking": "Ouvrez une session avant de lier un élément de travail.",
     "sessionLinkedToWorkItem": "Session liée à l'élément de travail.",
     "sessionLinkFailed": "Échec de la liaison de la session : {{message}}",
-    "chooseFolderNewWorkspace": "Choisir un dossier pour créer l'espace de travail",
-    "chooseExistingWorkspace": "Choisir un espace de travail existant",
+    "chooseFolderNewWorkspace": "Choisir le dossier parent du répertoire de travail",
+    "chooseExistingWorkspace": "Choisir un répertoire de travail existant",
     "selectDirectoryFailed": "Échec de la sélection du répertoire",
-    "workspaceCreated": "Espace de travail créé",
-    "workspaceCreateFailed": "Échec de la création de l'espace de travail",
-    "workspaceImported": "Espace de travail importé",
-    "workspaceImportFailed": "Échec de l'importation de l'espace de travail",
+    "workspaceCreated": "Répertoire de travail créé",
+    "workspaceCreateFailed": "Échec de la création du répertoire de travail",
+    "workspaceImported": "Répertoire de travail importé",
+    "workspaceImportFailed": "Échec de l'importation du répertoire de travail",
     "chooseFolderCloneRepo": "Choisir un dossier pour cloner le dépôt",
     "repositoryCloned": "Dépôt cloné",
     "repositoryCloneFailed": "Échec du clonage du dépôt"
@@ -376,9 +376,9 @@
     "moreSettings": "Plus de paramètres",
     "sort": "Trier",
     "openFolder": "Ouvrir un dossier",
-    "addWorkspace": "Ajouter un espace de travail",
+    "addWorkspace": "Ajouter un répertoire de travail",
     "openSpotlight": "Ouvrir Spotlight",
-    "openWorkspace": "Ouvrir le workspace",
+    "openWorkspace": "Ouvrir le répertoire de travail",
     "skipThisVersion": "Ignorer cette version",
     "later": "Plus tard",
     "link": "Lier",
@@ -990,8 +990,8 @@
     "retryToScanAgain": "Réessayer pour analyser à nouveau",
     "noTokensFound": "Aucun token trouvé",
     "addCssVariables": "Ajoutez des variables CSS à votre projet",
-    "noWorkspaceExplorerTitle": "Aucun workspace ouvert",
-    "noWorkspaceExplorerSubtitle": "Ouvrez un espace de travail pour voir les fichiers",
+    "noWorkspaceExplorerTitle": "Aucun répertoire de travail ouvert",
+    "noWorkspaceExplorerSubtitle": "Ouvrez un répertoire de travail pour voir les fichiers",
     "cannotFindRepo": "Impossible de trouver {{repoName}}",
     "lastSeenAtPath": "Dernière fois vu à l'emplacement {{path}}",
     "unsupportedFileType": "Type de fichier non pris en charge",
@@ -1061,13 +1061,13 @@
     "publishingBranch": "Publishing...",
     "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git non initialisé",
-    "notGitInitializedTooltip": "Cet espace de travail n’a pas encore de dossier .git.",
+    "notGitInitializedTooltip": "Ce répertoire de travail n’a pas encore de dossier .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
     "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
     "branchTooltip": "Branche : {{branch}}",
     "branchTooltipSwitching": "Branche : {{branch}} (changement en cours…)",
-    "switchWorkspaceTooltip": "Changer d'espace de travail",
+    "switchWorkspaceTooltip": "Changer de répertoire de travail",
     "switchWorktreeTooltip": "Changer de worktree",
     "switchBranchTooltip": "Changer de branche",
     "switchLocalBranchTooltip": "Changer de branche locale",
@@ -1624,23 +1624,23 @@
         "current": "Actuel",
         "repo": "Dépôts",
         "systemPaths": "Chemins système",
-        "usedElsewhere": "Utilisé ailleurs",
-        "workspace": "Espace de travail",
-        "thisOrg": "Cet espace de travail",
-        "outsideOrg": "En dehors de cet espace de travail"
+        "usedElsewhere": "Utilisé dans d’autres applications",
+        "workspace": "Répertoire de travail",
+        "thisOrg": "Ce répertoire de travail",
+        "outsideOrg": "En dehors de ce répertoire de travail"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "Cloner depuis une URL GitHub",
         "cloneFromMyGitHub": "Cloner depuis mon GitHub",
-        "createWorkspace": "Créer un nouvel espace de travail"
+        "createWorkspace": "Créer un nouveau répertoire de travail"
       },
       "sources": {
         "cloningFromGitHub": "clonage depuis GitHub",
         "cloningFromGitHubUrl": "clonage depuis une URL GitHub",
         "cloningFromMyGitHub": "clonage depuis mon GitHub",
-        "creatingWorkspace": "création d’un nouvel espace de travail",
-        "creatingMultiRepoWorkspace": "composition d’un espace de travail multi-dépôts"
+        "creatingWorkspace": "création d’un nouveau répertoire de travail",
+        "creatingMultiRepoWorkspace": "composition d’un répertoire de travail multi-dépôts"
       },
       "forms": {
         "repoName": "Nom du dépôt",
@@ -1648,19 +1648,19 @@
         "chooseDestinationPath": "Choisir le chemin de destination",
         "choose": "Choisir",
         "createAt": "Créer dans {{path}}",
-        "createWorkspaceTitle": "Nouvel espace de travail",
-        "creatingWorkspace": "Création de l’espace de travail...",
-        "readyToCreateWorkspace": "Prêt à créer l’espace de travail",
-        "workspaceName": "Nom de l’espace de travail",
-        "workspaceNamePlaceholder": "Mon espace de travail"
+        "createWorkspaceTitle": "Nouveau répertoire de travail",
+        "creatingWorkspace": "Création du répertoire de travail...",
+        "readyToCreateWorkspace": "Prêt à créer le répertoire de travail",
+        "workspaceName": "Nom du répertoire",
+        "workspaceNamePlaceholder": "Mon répertoire"
       },
       "path": {
         "switchTo": "Basculer vers",
         "switchToTemplate": "Basculer vers {workspace}",
         "search": "Rechercher",
-        "manageWorkspace": "Gérer l’espace de travail",
-        "addBy": "Ajouter un espace de travail par",
-        "addByTemplate": "Ajouter un espace de travail par {source}"
+        "manageWorkspace": "Gérer le répertoire de travail",
+        "addBy": "Ajouter un répertoire de travail par",
+        "addByTemplate": "Ajouter un répertoire de travail par {source}"
       },
       "pathImport": {
         "addLabel": "Ajouter",
@@ -1669,7 +1669,7 @@
       },
       "gitInitPrompt": {
         "title": "Initialiser Git ?",
-        "message": "Cet espace de travail n’a pas de dossier .git. L’initialiser comme dépôt Git ?",
+        "message": "Ce répertoire de travail n’a pas de dossier .git. L’initialiser comme dépôt Git ?",
         "ok": "Initialiser Git",
         "cancel": "Garder comme dossier"
       }
@@ -1748,10 +1748,10 @@
       "sourceAria": "Sélectionner la source de l’espace de travail",
       "on": "sur",
       "branchAria": "Sélectionner la branche",
-      "switchWorkspace": "Changer d'espace de travail",
+      "switchWorkspace": "Changer de répertoire de travail",
       "switchBranch": "Changer de branche",
       "switchLocation": "Changer l'emplacement d'exécution",
-      "sessionWorkspace": "Changer l'espace de travail de session",
+      "sessionWorkspace": "Changer le répertoire de travail de la session",
       "locationAria": "Sélectionner l'emplacement d'exécution",
       "systemPaths": {
         "home": {
@@ -1872,16 +1872,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Changer de workspace"
+          "label": "Changer de répertoire de travail"
         },
         "switchBranch": {
           "label": "Changer de branche"
         },
         "addWorkspace": {
-          "label": "Ajouter un workspace"
+          "label": "Ajouter un répertoire de travail"
         },
         "createMultiRepoWorkspace": {
-          "label": "Ajouter un workspace multi-repo"
+          "label": "Ajouter un répertoire de travail multi-dépôts"
         },
         "showSourceControl": {
           "label": "Afficher Source Control"
@@ -2019,7 +2019,7 @@
     "hidePrimarySidebar": "Masquer la barre latérale",
     "searchFiles": "Rechercher des fichiers",
     "openBrowser": "Ouvrir le navigateur",
-    "switchWorkspace": "Changer / Ajouter un espace de travail",
+    "switchWorkspace": "Changer / ajouter un répertoire de travail",
     "openEditor": "Ouvrir l'éditeur",
     "hideTerminal": "Masquer le terminal",
     "hideFiles": "Masquer les fichiers",
@@ -2113,10 +2113,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Git non initialisé",
-    "notGitInitializedSubtitle": "Initialisez Git pour suivre les changements, créer des commits et utiliser les outils de branche dans cet espace de travail.",
+    "notGitInitializedSubtitle": "Initialisez Git pour suivre les changements, créer des commits et utiliser les outils de branche dans ce répertoire de travail.",
     "initializeGit": "Initialiser Git",
     "initializingGit": "Initialisation de Git...",
-    "noRemoteForPublish": "Cet espace de travail est maintenant un dépôt Git, mais il n'a pas encore de remote. Ajoutez un remote comme origin avant de publier cette branche.",
+    "noRemoteForPublish": "Ce répertoire de travail est maintenant un dépôt Git, mais il n'a pas encore de remote. Ajoutez un remote comme origin avant de publier cette branche.",
     "generateCommitMessage": "Générer le message de commit avec l'IA",
     "pull": "Pull",
     "push": "Push",
@@ -2206,24 +2206,24 @@
     "parentFolderPlaceholder": "Choisir Parent folder"
   },
   "workspaceForm": {
-    "title": "Créer un Workspace multi-Repo",
-    "editTitle": "Modifier le Workspace",
-    "createWorkspace": "Créer un Workspace multi-repo",
-    "multiRepoWorkspace": "Workspace multi-Repo",
-    "createWorkspaceDesc": "Composer un Workspace à partir de plusieurs Repos",
+    "title": "Créer un répertoire de travail multi-dépôts",
+    "editTitle": "Modifier le répertoire de travail",
+    "createWorkspace": "Créer un répertoire de travail multi-dépôts",
+    "multiRepoWorkspace": "Répertoire de travail multi-dépôts",
+    "createWorkspaceDesc": "Composer un répertoire de travail à partir de plusieurs dépôts",
     "filterPlaceholder": "Filtrer les repos...",
-    "selectRepos": "Sélectionner les repos pour le Workspace",
+    "selectRepos": "Sélectionner les dépôts du répertoire de travail",
     "noReposFound": "Aucun repo correspondant",
     "noRepos": "Aucun repo disponible",
     "current": "actuel",
-    "workspaceName": "Nom du Workspace",
-    "workspaceNamePlaceholder": "Mon Workspace",
-    "willInclude": "Le Workspace inclura {{count}} repos",
+    "workspaceName": "Nom du répertoire de travail",
+    "workspaceNamePlaceholder": "Mon répertoire de travail",
+    "willInclude": "Le répertoire de travail inclura {{count}} dépôts",
     "statusSelectAtLeastTwo": "Sélectionnez au moins 2 repos",
-    "statusReadyToCreate": "Prêt à créer le Workspace",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "Workspace {{repo}}",
-    "windowTitle": "Workspace"
+    "statusReadyToCreate": "Prêt à créer le répertoire de travail",
+    "defaultName": "Répertoire de travail",
+    "defaultNameWithRepo": "Répertoire de travail {{repo}}",
+    "windowTitle": "Répertoire de travail"
   },
   "database": {
     "addConnection": "Add Database Connection",

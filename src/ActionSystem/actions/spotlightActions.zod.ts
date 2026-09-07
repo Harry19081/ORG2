@@ -23,7 +23,7 @@ import {
   openCollabOrgSpotlight,
   openEditorSpotlight,
   openSessionCreatorSpotlight,
-  openWorkspaceSpotlight,
+  openWorkingDirectorySpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { spotlightOpenAtom } from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
@@ -32,7 +32,12 @@ import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 // Actions
 // ============================================
 
-const workspacePickerModeSchema = z.enum(["switch", "open", "add", "create"]);
+const workingDirectoryPickerModeSchema = z.enum([
+  "switch",
+  "open",
+  "add",
+  "create",
+]);
 const collabOrgContextSchema = z.discriminatedUnion("mode", [
   z.object({
     mode: z.literal("create"),
@@ -96,27 +101,32 @@ const spotlightToggle = defineZodAction(
   }
 );
 
-const spotlightOpenWorkspacePicker = defineZodAction(
+const spotlightOpenWorkingDirectoryPicker = defineZodAction(
   {
     id: ACTION_ID.SPOTLIGHT_OPEN_WORKSPACE_PICKER,
     category: "spotlight",
-    description: "Open Spotlight's workspace picker flow",
+    description: "Open Spotlight's working-directory picker flow",
     params: z.object({
-      mode: workspacePickerModeSchema.describe(
-        "Workspace picker mode: switch, open, add, or create"
+      mode: workingDirectoryPickerModeSchema.describe(
+        "Working-directory picker mode: switch, open, add, or create"
       ),
     }),
     layer: "gui",
     examples: [
+      "switch working directory",
+      "add working directory",
+      "create Multi-repo Working Directory",
       "switch workspace",
       "open folder",
       "add workspace",
-      "create Multi-repo Workspace",
     ],
   },
   async ({ mode }) => {
-    openWorkspaceSpotlight(mode);
-    return { success: true, message: `Opened workspace picker: ${mode}` };
+    openWorkingDirectorySpotlight(mode);
+    return {
+      success: true,
+      message: `Opened working-directory picker: ${mode}`,
+    };
   }
 );
 
@@ -284,7 +294,7 @@ export const spotlightZodActions: ZodAction<ZodTypeAny>[] = [
   spotlightOpen,
   spotlightClose,
   spotlightToggle,
-  spotlightOpenWorkspacePicker,
+  spotlightOpenWorkingDirectoryPicker,
   spotlightOpenBranchPicker,
   spotlightOpenEditorFile,
   spotlightOpenEditorCommand,

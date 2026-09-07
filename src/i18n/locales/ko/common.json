@@ -160,7 +160,7 @@
       "commandPalette": "명령 팔레트",
       "goToFile": "파일로 이동...",
       "selectModel": "모델 선택...",
-      "switchWorkspace": "작업 영역 전환...",
+      "switchWorkspace": "작업 디렉터리 전환...",
       "switchBranch": "브랜치 전환...",
       "switchRunningLocation": "실행 위치 전환...",
       "settings": "설정...",
@@ -193,13 +193,13 @@
     "openSessionBeforeLinking": "작업 항목을 연결하기 전에 세션을 여세요.",
     "sessionLinkedToWorkItem": "세션을 작업 항목에 연결했습니다.",
     "sessionLinkFailed": "세션 연결에 실패했습니다: {{message}}",
-    "chooseFolderNewWorkspace": "작업 공간을 만들 폴더 선택",
-    "chooseExistingWorkspace": "기존 작업 공간 선택",
+    "chooseFolderNewWorkspace": "작업 디렉터리의 상위 폴더 선택",
+    "chooseExistingWorkspace": "기존 작업 디렉터리 선택",
     "selectDirectoryFailed": "디렉터리 선택에 실패했습니다",
-    "workspaceCreated": "작업 공간을 만들었습니다",
-    "workspaceCreateFailed": "작업 공간 생성에 실패했습니다",
-    "workspaceImported": "작업 공간을 가져왔습니다",
-    "workspaceImportFailed": "작업 공간 가져오기에 실패했습니다",
+    "workspaceCreated": "작업 디렉터리를 만들었습니다",
+    "workspaceCreateFailed": "작업 디렉터리 생성에 실패했습니다",
+    "workspaceImported": "작업 디렉터리를 가져왔습니다",
+    "workspaceImportFailed": "작업 디렉터리 가져오기에 실패했습니다",
     "chooseFolderCloneRepo": "리포지토리를 클론할 폴더 선택",
     "repositoryCloned": "리포지토리를 클론했습니다",
     "repositoryCloneFailed": "리포지토리 클론에 실패했습니다"
@@ -374,9 +374,9 @@
     "moreSettings": "더 많은 설정",
     "sort": "정렬",
     "openFolder": "폴더 열기",
-    "addWorkspace": "Workspace 추가",
+    "addWorkspace": "작업 디렉터리 추가",
     "openSpotlight": "Spotlight 열기",
-    "openWorkspace": "Workspace 열기",
+    "openWorkspace": "작업 디렉터리 열기",
     "skipThisVersion": "이 버전 건너뛰기",
     "later": "나중에",
     "link": "연결",
@@ -988,8 +988,8 @@
     "retryToScanAgain": "다시 스캔하려면 재시도",
     "noTokensFound": "Token을 찾을 수 없습니다",
     "addCssVariables": "프로젝트에 CSS 변수를 추가하세요",
-    "noWorkspaceExplorerTitle": "열린 Workspace가 없습니다",
-    "noWorkspaceExplorerSubtitle": "Workspace를 열어 파일 보기",
+    "noWorkspaceExplorerTitle": "열린 작업 디렉터리가 없습니다",
+    "noWorkspaceExplorerSubtitle": "작업 디렉터리를 열어 파일 보기",
     "cannotFindRepo": "{{repoName}}을(를) 찾을 수 없습니다",
     "lastSeenAtPath": "마지막으로 확인된 경로: {{path}}",
     "unsupportedFileType": "지원되지 않는 파일 형식",
@@ -1060,13 +1060,13 @@
     "publishingBranch": "Publishing...",
     "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git 초기화 안 됨",
-    "notGitInitializedTooltip": "이 Workspace에는 아직 .git 디렉터리가 없습니다.",
+    "notGitInitializedTooltip": "이 작업 디렉터리에는 아직 .git 디렉터리가 없습니다.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
     "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
     "branchTooltip": "브랜치: {{branch}}",
     "branchTooltipSwitching": "브랜치: {{branch}} (전환 중…)",
-    "switchWorkspaceTooltip": "Workspace 전환",
+    "switchWorkspaceTooltip": "작업 디렉터리 전환",
     "switchWorktreeTooltip": "Worktree 전환",
     "switchBranchTooltip": "브랜치 전환",
     "switchLocalBranchTooltip": "로컬 브랜치 전환",
@@ -1623,23 +1623,23 @@
         "current": "Current",
         "repo": "리포지토리",
         "systemPaths": "시스템 경로",
-        "usedElsewhere": "다른 곳에서 사용됨",
-        "workspace": "Workspace",
-        "thisOrg": "이 워크스페이스",
-        "outsideOrg": "이 워크스페이스 외부"
+        "usedElsewhere": "다른 앱에서 사용됨",
+        "workspace": "작업 디렉터리",
+        "thisOrg": "이 작업 디렉터리",
+        "outsideOrg": "이 작업 디렉터리 외부"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "GitHub URL에서 클론",
         "cloneFromMyGitHub": "내 GitHub에서 클론",
-        "createWorkspace": "새 Workspace 만들기"
+        "createWorkspace": "새 작업 디렉터리 만들기"
       },
       "sources": {
         "cloningFromGitHub": "GitHub에서 클론 중",
         "cloningFromGitHubUrl": "GitHub URL에서 클론",
         "cloningFromMyGitHub": "내 GitHub에서 클론",
-        "creatingWorkspace": "새 Workspace 만드는 중",
-        "creatingMultiRepoWorkspace": "Multi-repo Workspace 구성 중"
+        "creatingWorkspace": "새 작업 디렉터리 만드는 중",
+        "creatingMultiRepoWorkspace": "다중 리포지토리 작업 디렉터리 구성 중"
       },
       "forms": {
         "repoName": "저장소 이름",
@@ -1647,19 +1647,19 @@
         "chooseDestinationPath": "대상 경로 선택",
         "choose": "선택",
         "createAt": "{{path}}에 생성",
-        "createWorkspaceTitle": "새 Workspace",
-        "creatingWorkspace": "Workspace 만드는 중...",
-        "readyToCreateWorkspace": "Workspace 생성 준비 완료",
-        "workspaceName": "Workspace 이름",
-        "workspaceNamePlaceholder": "내 Workspace"
+        "createWorkspaceTitle": "새 작업 디렉터리",
+        "creatingWorkspace": "작업 디렉터리 만드는 중...",
+        "readyToCreateWorkspace": "작업 디렉터리 생성 준비 완료",
+        "workspaceName": "디렉터리 이름",
+        "workspaceNamePlaceholder": "내 디렉터리"
       },
       "path": {
         "switchTo": "다음으로 전환",
         "switchToTemplate": "{workspace}(으)로 전환",
         "search": "검색",
-        "manageWorkspace": "워크스페이스 관리",
-        "addBy": "Workspace 추가 방식",
-        "addByTemplate": "{source}(으)로 Workspace 추가"
+        "manageWorkspace": "작업 디렉터리 관리",
+        "addBy": "작업 디렉터리 추가 방식",
+        "addByTemplate": "{source}(으)로 작업 디렉터리 추가"
       },
       "pathImport": {
         "addLabel": "추가",
@@ -1668,7 +1668,7 @@
       },
       "gitInitPrompt": {
         "title": "Git 초기화?",
-        "message": "이 Workspace에는 .git 폴더가 없습니다. Git 저장소로 초기화할까요?",
+        "message": "이 작업 디렉터리에는 .git 폴더가 없습니다. Git 저장소로 초기화할까요?",
         "ok": "Git 초기화",
         "cancel": "폴더로 유지"
       }
@@ -1747,10 +1747,10 @@
       "sourceAria": "Workspace 소스 선택",
       "on": "에서",
       "branchAria": "브랜치 선택",
-      "switchWorkspace": "Workspace 전환",
+      "switchWorkspace": "작업 디렉터리 전환",
       "switchBranch": "Branch 전환",
       "switchLocation": "실행 위치 전환",
-      "sessionWorkspace": "세션 Workspace 전환",
+      "sessionWorkspace": "세션 작업 디렉터리 전환",
       "locationAria": "실행 위치 선택",
       "systemPaths": {
         "home": {
@@ -1871,16 +1871,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Workspace 전환"
+          "label": "작업 디렉터리 전환"
         },
         "switchBranch": {
           "label": "브랜치 전환"
         },
         "addWorkspace": {
-          "label": "Workspace 추가"
+          "label": "작업 디렉터리 추가"
         },
         "createMultiRepoWorkspace": {
-          "label": "Multi-repo Workspace 추가"
+          "label": "다중 리포지토리 작업 디렉터리 추가"
         },
         "showSourceControl": {
           "label": "Source Control 표시"
@@ -2018,7 +2018,7 @@
     "hidePrimarySidebar": "사이드바 숨기기",
     "searchFiles": "파일 검색",
     "openBrowser": "브라우저 열기",
-    "switchWorkspace": "Workspace 전환 / 추가",
+    "switchWorkspace": "작업 디렉터리 전환 / 추가",
     "openEditor": "편집기 열기",
     "hideTerminal": "터미널 숨기기",
     "hideFiles": "파일 숨기기",
@@ -2112,10 +2112,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Git 초기화 안 됨",
-    "notGitInitializedSubtitle": "Git을 초기화하면 이 Workspace에서 변경 사항 추적, 커밋 생성, 브랜치 도구를 사용할 수 있습니다.",
+    "notGitInitializedSubtitle": "Git을 초기화하면 이 작업 디렉터리에서 변경 사항 추적, 커밋 생성, 브랜치 도구를 사용할 수 있습니다.",
     "initializeGit": "Git 초기화",
     "initializingGit": "Git 초기화 중...",
-    "noRemoteForPublish": "이 Workspace는 이제 Git 저장소이지만 아직 remote가 없습니다. 이 브랜치를 게시하기 전에 origin 같은 remote를 추가하세요.",
+    "noRemoteForPublish": "이 작업 디렉터리는 이제 Git 저장소이지만 아직 remote가 없습니다. 이 브랜치를 게시하기 전에 origin 같은 remote를 추가하세요.",
     "generateCommitMessage": "AI로 커밋 메시지 생성",
     "pull": "Pull",
     "push": "Push",
@@ -2204,24 +2204,24 @@
     "parentFolderPlaceholder": "선택 Parent folder"
   },
   "workspaceForm": {
-    "title": "멀티 Repo Workspace 만들기",
-    "editTitle": "Workspace 편집",
-    "createWorkspace": "멀티 Repo Workspace 만들기",
-    "multiRepoWorkspace": "멀티 Repo Workspace",
-    "createWorkspaceDesc": "여러 Repo로 Workspace 구성",
+    "title": "다중 리포지토리 작업 디렉터리 만들기",
+    "editTitle": "작업 디렉터리 편집",
+    "createWorkspace": "다중 리포지토리 작업 디렉터리 만들기",
+    "multiRepoWorkspace": "다중 리포지토리 작업 디렉터리",
+    "createWorkspaceDesc": "여러 Repo로 작업 디렉터리 구성",
     "filterPlaceholder": "Repo 필터...",
-    "selectRepos": "Workspace에 포함할 Repo 선택",
+    "selectRepos": "작업 디렉터리에 포함할 Repo 선택",
     "noReposFound": "일치하는 Repo 없음",
     "noRepos": "사용 가능한 Repo 없음",
     "current": "현재",
-    "workspaceName": "Workspace 이름",
-    "workspaceNamePlaceholder": "내 Workspace",
-    "willInclude": "Workspace에 {{count}}개의 Repo가 포함됩니다",
+    "workspaceName": "작업 디렉터리 이름",
+    "workspaceNamePlaceholder": "내 작업 디렉터리",
+    "willInclude": "작업 디렉터리에 {{count}}개의 Repo가 포함됩니다",
     "statusSelectAtLeastTwo": "최소 2개의 Repo를 선택하세요",
-    "statusReadyToCreate": "Workspace 생성 준비 완료",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "{{repo}} Workspace",
-    "windowTitle": "Workspace"
+    "statusReadyToCreate": "작업 디렉터리 생성 준비 완료",
+    "defaultName": "작업 디렉터리",
+    "defaultNameWithRepo": "{{repo}} 작업 디렉터리",
+    "windowTitle": "작업 디렉터리"
   },
   "database": {
     "addConnection": "Add Database Connection",
