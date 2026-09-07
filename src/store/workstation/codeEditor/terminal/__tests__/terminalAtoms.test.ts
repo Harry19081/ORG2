@@ -157,6 +157,28 @@ describe("terminal atoms", () => {
   });
 
   describe("setActiveTerminalAtom", () => {
+    it("derives flags from the ID even for direct writes and stale metadata", () => {
+      store.set(terminalSessionsAtom, [
+        { id: "initial-1", name: "One", isActive: false },
+        { id: "two", name: "Two", isActive: true },
+      ]);
+      expect(
+        store.get(terminalSessionsAtom).map((session) => session.isActive)
+      ).toEqual([true, false]);
+      store.set(activeTerminalIdAtom, "two");
+      expect(
+        store.get(terminalSessionsAtom).map((session) => session.isActive)
+      ).toEqual([false, true]);
+      store.set(terminalSessionsAtom, (sessions) =>
+        sessions.map((session) => ({ ...session, isActive: !session.isActive }))
+      );
+      expect(
+        store.get(terminalSessionsAtom).map((session) => session.isActive)
+      ).toEqual([false, true]);
+      expect(store.get(editorActiveTerminalSessionAtom)?.id).toBe("two");
+      expect(createStore().get(activeTerminalIdAtom)).not.toBe("two");
+    });
+
     it("switches the active session", () => {
       const secondId = store.set(editorAddTerminalSessionAtom, undefined);
 
