@@ -941,7 +941,7 @@
     "loadZeroRows": "Klicken, um {{count}} weitere zu laden"
   },
   "dependencies": {
-    "systemDependencies": "System-Dependencies",
+    "systemDependencies": "Systemabhängigkeiten",
     "refreshSuccess": "Abhängigkeiten aktualisiert",
     "scanning": "Wird gescannt...",
     "detectingDependencies": "Abhängigkeiten werden erkannt...",

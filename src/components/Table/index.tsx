@@ -65,7 +65,7 @@ function TableComponent<T = unknown>(
     columns,
     data = [],
     rowKey: _rowKey = "id",
-    loading: _loading = false,
+    loading = false,
     showHeader = true,
     pagination,
     onChange,
@@ -435,6 +435,7 @@ function TableComponent<T = unknown>(
               />
             )}
             <TableBody
+              loading={loading}
               rows={tableRows}
               columns={columns}
               hasRowSelection={!!rowSelection}

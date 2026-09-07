@@ -966,7 +966,7 @@
     "browserCacheCleanFailed": "Tarayıcı önbelleği temizlenemedi"
   },
   "dependencies": {
-    "systemDependencies": "Sistem Dependencies",
+    "systemDependencies": "Sistem bağımlılıkları",
     "refreshSuccess": "Bağımlılıklar yenilendi",
     "scanning": "Taranıyor...",
     "detectingDependencies": "Bağımlılıklar tespit ediliyor...",

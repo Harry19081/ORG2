@@ -966,7 +966,7 @@
     "browserCacheCleanFailed": "Impossible de nettoyer le cache du navigateur"
   },
   "dependencies": {
-    "systemDependencies": "Dependencies système",
+    "systemDependencies": "Dépendances système",
     "refreshSuccess": "Dépendances actualisées",
     "scanning": "Analyse en cours...",
     "detectingDependencies": "Détection des dépendances...",
