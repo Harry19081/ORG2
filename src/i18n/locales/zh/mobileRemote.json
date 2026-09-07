@@ -20,6 +20,14 @@
     "tryDemo": "体验演示"
   },
   "pairing": {
+    "scanCamera": "扫描二维码",
+    "cameraPreview": "相机预览",
+    "scanning": "将电脑上的配对二维码放入画面中",
+    "cancelScan": "取消扫描",
+    "cameraDenied": "未获得相机权限，请在系统设置中允许 ORG2 Remote 使用相机，或粘贴配对码",
+    "cameraUnavailable": "无法使用相机，模拟器请使用粘贴配对码",
+    "scanTimeout": "扫描已超时，相机已关闭，请重新扫描或粘贴配对码",
+    "scanFailed": "扫描失败，请重试或粘贴配对码",
     "scanTitle": "与桌面对齐",
     "scanHint": "扫描桌面设置中的二维码，或粘贴二维码载荷文本。公网 Relay 支持手机使用 4G/5G",
     "urlPlaceholder": "粘贴桌面生成的配对载荷，或 ws:// / wss:// URL",

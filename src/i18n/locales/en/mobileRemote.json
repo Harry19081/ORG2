@@ -20,6 +20,14 @@
     "tryDemo": "Try demo"
   },
   "pairing": {
+    "scanCamera": "Scan QR code",
+    "cameraPreview": "Camera preview",
+    "scanning": "Point the camera at the pairing QR code on your desktop",
+    "cancelScan": "Cancel scan",
+    "cameraDenied": "Camera access was denied. Allow camera access for ORG2 Remote in Settings, or paste the pairing code",
+    "cameraUnavailable": "Camera unavailable. In the simulator, paste the pairing code instead",
+    "scanTimeout": "Scan timed out and the camera was closed. Scan again or paste the pairing code",
+    "scanFailed": "Scan failed. Try again or paste the pairing code",
     "scanTitle": "Pair with desktop",
     "scanHint": "Scan the QR code in desktop Settings or paste its payload. The public relay works over 4G and 5G",
     "urlPlaceholder": "Paste the desktop pairing payload, or a ws:// / wss:// URL",

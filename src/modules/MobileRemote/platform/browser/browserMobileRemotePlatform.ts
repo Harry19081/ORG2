@@ -19,6 +19,7 @@ import {
   saveScopedMobileConnectionConfig,
   selectScopedMobilePairedDesktop,
 } from "../../connection/mobileConnectionStorage";
+import { scanCameraQr } from "../scanCameraQr";
 import type { MobileRemotePlatform } from "../types";
 import { createBrowserMobileAuthClient } from "./browserMobileAuthClient";
 
@@ -41,6 +42,7 @@ export function createBrowserMobileRemotePlatform(): MobileRemotePlatform {
 
   return {
     kind: "browser",
+    scanQr: scanCameraQr,
     openExternal: (url) => window.location.assign(url),
     clientInfo: {
       name: "orgii-mobile-pwa",

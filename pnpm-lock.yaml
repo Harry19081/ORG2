@@ -217,6 +217,9 @@ importers:
       jotai-family:
         specifier: ^1.0.2
         version: 1.0.2(jotai@2.18.1(@babel/core@7.29.0)(@babel/template@8.0.0)(@types/react@19.2.15)(react@19.2.6))
+      jsqr:
+        specifier: 1.4.0
+        version: 1.4.0
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -6050,6 +6053,9 @@ packages:
   jsonparse@1.3.1:
     resolution: {integrity: sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==}
     engines: {'0': node >= 0.2.0}
+
+  jsqr@1.4.0:
+    resolution: {integrity: sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==}
 
   jsx-ast-utils@3.3.5:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
@@ -15054,6 +15060,8 @@ snapshots:
   json5@2.2.3: {}
 
   jsonparse@1.3.1: {}
+
+  jsqr@1.4.0: {}
 
   jsx-ast-utils@3.3.5:
     dependencies:
