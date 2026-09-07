@@ -141,9 +141,9 @@ describe("TeamInboxRow", () => {
     );
     expect(secondaryText).toHaveLength(1);
     // `formatRelativeTime("nano")` renders the localized immediate label
-    // ("now"), not the old hand-rolled "Now".
+    // ("Now"), not the old hand-rolled "Now".
     const time = Array.from(container.querySelectorAll("span")).find(
-      (element) => element.textContent === "now"
+      (element) => element.textContent === "Now"
     );
     expect(time?.className).toContain("text-text-3");
     expect(time?.className).not.toContain("text-text-2");
