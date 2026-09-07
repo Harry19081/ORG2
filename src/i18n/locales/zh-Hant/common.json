@@ -1640,8 +1640,8 @@
         "systemPaths": "系統路徑",
         "usedElsewhere": "在其他位置使用",
         "workspace": "工作區",
-        "thisOrg": "本組織",
-        "outsideOrg": "組織外"
+        "thisOrg": "本工作空間",
+        "outsideOrg": "工作空間外"
       },
       "tabs": {},
       "addOptions": {
@@ -1949,10 +1949,10 @@
           "label": "創建 Work Item"
         },
         "createOrganization": {
-          "label": "建立組織"
+          "label": "建立工作空間"
         },
         "joinOrganization": {
-          "label": "加入組織"
+          "label": "加入工作空間"
         }
       },
       "toast": {

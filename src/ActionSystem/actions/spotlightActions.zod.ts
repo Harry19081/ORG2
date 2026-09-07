@@ -254,7 +254,7 @@ const spotlightOpenCollabOrg = defineZodAction(
   {
     id: ACTION_ID.SPOTLIGHT_OPEN_COLLAB_ORG,
     category: "spotlight",
-    description: "Open Spotlight's organization create or join flow",
+    description: "Open Spotlight's workspace create or join flow",
     params: collabOrgContextSchema,
     layer: "gui",
     examples: [

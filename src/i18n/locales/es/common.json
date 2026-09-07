@@ -1626,8 +1626,8 @@
         "systemPaths": "Rutas del sistema",
         "usedElsewhere": "Usado en otros lugares",
         "workspace": "Espacio de trabajo",
-        "thisOrg": "Esta organización",
-        "outsideOrg": "Fuera de esta organización"
+        "thisOrg": "Este espacio de trabajo",
+        "outsideOrg": "Fuera de este espacio de trabajo"
       },
       "tabs": {},
       "addOptions": {
@@ -1935,10 +1935,10 @@
           "label": "Crear Work Item"
         },
         "createOrganization": {
-          "label": "Crear organización"
+          "label": "Crear espacio de trabajo"
         },
         "joinOrganization": {
-          "label": "Unirse a una organización"
+          "label": "Unirse a un espacio de trabajo"
         }
       },
       "toast": {

@@ -25,7 +25,7 @@
         },
         "runtime": {
           "title": "Exécution",
-          "body": "Consultez ici votre utilisation et l’état d’exécution. Dans une organisation, vous pouvez aussi vérifier la synchronisation des membres et ouvrir leurs détails d’utilisation de Codex, Claude et Cursor."
+          "body": "Consultez ici votre utilisation et l’état d’exécution. Dans un espace de travail, vous pouvez aussi vérifier la synchronisation des membres et ouvrir leurs détails d’utilisation de Codex, Claude et Cursor."
         },
         "station-mode-pill": {
           "title": "Changer de station modes",

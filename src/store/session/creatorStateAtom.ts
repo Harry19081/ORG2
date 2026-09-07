@@ -60,7 +60,7 @@ export type SessionSourceType =
 export type SystemPathId = (typeof SYSTEM_PATH_ID)[keyof typeof SYSTEM_PATH_ID];
 
 export const DEFAULT_SESSION_ORG_ID = "personal-org";
-export const DEFAULT_SESSION_ORG_NAME = "Personal Org";
+export const DEFAULT_SESSION_ORG_NAME = "My workspace";
 
 export interface SessionLaunchOrgContext {
   orgId: string;

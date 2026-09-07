@@ -25,7 +25,7 @@
         },
         "runtime": {
           "title": "Laufzeit",
-          "body": "Hier siehst du deine Nutzung und den Laufzeitstatus. In einer Organisation kannst du außerdem den Synchronisierungsstatus der Mitglieder prüfen und ihre Codex-, Claude- und Cursor-Nutzung öffnen."
+          "body": "Hier siehst du deine Nutzung und den Laufzeitstatus. In einem Arbeitsbereich kannst du außerdem den Synchronisierungsstatus der Mitglieder prüfen und ihre Codex-, Claude- und Cursor-Nutzung öffnen."
         },
         "station-mode-pill": {
           "title": "Wechseln Sie die Station Modi",

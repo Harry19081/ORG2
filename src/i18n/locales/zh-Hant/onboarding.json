@@ -25,7 +25,7 @@
         },
         "runtime": {
           "title": "執行階段",
-          "body": "在這裡查看個人用量與執行狀態；切換到組織後，還可以查看成員同步狀態，並進入成員詳情查看 Codex、Claude 和 Cursor 用量。"
+          "body": "在這裡查看個人用量與執行狀態；切換到工作空間後，還可以查看成員同步狀態，並進入成員詳情查看 Codex、Claude 和 Cursor 用量。"
         },
         "station-mode-pill": {
           "title": "切換工作站模式",

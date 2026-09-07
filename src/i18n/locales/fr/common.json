@@ -1626,8 +1626,8 @@
         "systemPaths": "Chemins système",
         "usedElsewhere": "Utilisé ailleurs",
         "workspace": "Espace de travail",
-        "thisOrg": "Cette organisation",
-        "outsideOrg": "En dehors de cette organisation"
+        "thisOrg": "Cet espace de travail",
+        "outsideOrg": "En dehors de cet espace de travail"
       },
       "tabs": {},
       "addOptions": {
@@ -1935,10 +1935,10 @@
           "label": "Créer un Work Item"
         },
         "createOrganization": {
-          "label": "Créer une organisation"
+          "label": "Créer un espace de travail"
         },
         "joinOrganization": {
-          "label": "Rejoindre une organisation"
+          "label": "Rejoindre un espace de travail"
         }
       },
       "toast": {

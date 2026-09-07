@@ -1627,8 +1627,8 @@
         "systemPaths": "Sistem Yolları",
         "usedElsewhere": "Başka yerde kullanıldı",
         "workspace": "Workspace",
-        "thisOrg": "Bu organizasyon",
-        "outsideOrg": "Bu organizasyonun dışında"
+        "thisOrg": "Bu çalışma alanı",
+        "outsideOrg": "Bu çalışma alanının dışında"
       },
       "tabs": {},
       "addOptions": {
@@ -1937,10 +1937,10 @@
           "label": "Work Item Oluştur"
         },
         "createOrganization": {
-          "label": "Kuruluş oluştur"
+          "label": "Çalışma alanı oluştur"
         },
         "joinOrganization": {
-          "label": "Kuruluşa katıl"
+          "label": "Çalışma alanıa katıl"
         }
       },
       "toast": {

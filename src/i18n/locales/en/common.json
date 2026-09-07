@@ -1591,8 +1591,8 @@
         "systemPaths": "System Paths",
         "usedElsewhere": "Used elsewhere",
         "workspace": "Workspace",
-        "thisOrg": "This org",
-        "outsideOrg": "Outside this org"
+        "thisOrg": "This workspace",
+        "outsideOrg": "Outside this workspace"
       },
       "tabs": {},
       "addOptions": {
@@ -1901,10 +1901,10 @@
           "label": "Create work item"
         },
         "createOrganization": {
-          "label": "Create ORG"
+          "label": "Create Workspace"
         },
         "joinOrganization": {
-          "label": "Join ORG"
+          "label": "Join Workspace"
         }
       },
       "toast": {

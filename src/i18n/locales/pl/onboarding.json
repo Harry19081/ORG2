@@ -25,7 +25,7 @@
         },
         "runtime": {
           "title": "Środowisko uruchomieniowe",
-          "body": "Tutaj sprawdzisz własne użycie i stan działania. W organizacji możesz też sprawdzić synchronizację członków oraz otworzyć szczegóły użycia Codex, Claude i Cursor."
+          "body": "Tutaj sprawdzisz własne użycie i stan działania. W obszaru roboczego możesz też sprawdzić synchronizację członków oraz otworzyć szczegóły użycia Codex, Claude i Cursor."
         },
         "station-mode-pill": {
           "title": "Stacja przełączania tryby",
