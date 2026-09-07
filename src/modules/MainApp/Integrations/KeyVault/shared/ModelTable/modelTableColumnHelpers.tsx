@@ -4,7 +4,7 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import ModelIcon from "@src/components/ModelIcon";
 import Select from "@src/components/Select";
-import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable";
+import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable/tokens";
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_CONTROL_SIZE } from "@src/config/modelTable";
 import {

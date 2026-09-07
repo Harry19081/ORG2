@@ -1,9 +1,11 @@
 import {
   DEFAULT_KANBAN_COLUMNS,
   GITHUB_ISSUE_KANBAN_COLUMNS,
-  type KanbanColumnConfig,
-  type KanbanTask,
-} from "@src/features/KanbanBoard";
+} from "@src/features/KanbanBoard/config";
+import type {
+  KanbanColumnConfig,
+  KanbanTask,
+} from "@src/features/KanbanBoard/types";
 import { UserCircleIcon } from "@src/icons";
 import type {
   StatusCounts,

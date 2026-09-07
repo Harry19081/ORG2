@@ -11,7 +11,7 @@ import {
 import type { LinearProjectSelection } from "../../Panels/ProjectManagerSidebar/content/WorkspaceTreeContent";
 import { useProjectOrgCatalogData } from "../hooks/useProjectOrgCatalogData";
 import type { ExpandWorkItemToTabHandler } from "../types";
-import { STORY_MANAGER_SUSPENSE_LOADING_FALLBACK } from "./ProjectManagerContentRouter";
+import { STORY_MANAGER_SUSPENSE_LOADING_FALLBACK } from "./ProjectManagerLoadingFallback";
 import { ProjectOrgHubHeader } from "./ProjectOrgHubHeader";
 import { ProjectOrgSettingsPane } from "./ProjectOrgSettingsPane";
 import { ProjectOrgSurfacePillSwitch } from "./ProjectOrgSurfacePillSwitch";

@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import { ImportCookiesModal } from "@src/modules/WorkStation/Browser/ImportCookies";
+import { focusBrowserUrlBar } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
 import { getSiteNameFromUrl } from "@src/store/ui/navigationSidebarTabsAtom";
 import {
   closeBrowserTabAtom,
@@ -23,7 +24,7 @@ import {
 } from "@src/store/workstation/browser/tabs";
 
 import { useWebviewScreenshot } from "../../../../hooks/useWebviewScreenshot";
-import WebUrlBar, { focusBrowserUrlBar } from "../../components/WebUrlBar";
+import WebUrlBar from "../../components/WebUrlBar";
 import BrowserBlankTabPlaceholder from "./BrowserBlankTabPlaceholder";
 
 // ============================================

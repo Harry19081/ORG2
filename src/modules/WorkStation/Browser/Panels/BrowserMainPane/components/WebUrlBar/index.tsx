@@ -31,6 +31,7 @@ import {
   PencilRulerIcon,
   Refresh04Icon,
 } from "@src/icons";
+import { BROWSER_URL_BAR_FOCUS_EVENT } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
 import {
   FILE_BAR_ROW_CLASSES,
   HEADER_ICON_SIZE,
@@ -92,7 +93,6 @@ interface WebUrlBarProps {
 
 /** After pointer leaves the URL toolbar, blur the input if still focused (inline webview does not take focus from the address field). */
 const AUTO_BLUR_MS_AFTER_LEAVE = 2000;
-const BROWSER_URL_BAR_FOCUS_EVENT = "browser-url-bar-focus";
 const NO_DRAG_STYLE = { WebkitAppRegion: "no-drag" } as React.CSSProperties;
 const TEXT_DRAG_THRESHOLD_PX = 4;
 
@@ -101,14 +101,6 @@ interface UrlInputPointerState {
   startY: number;
   moved: boolean;
   wasFocused: boolean;
-}
-
-export function focusBrowserUrlBar(): void {
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      window.dispatchEvent(new Event(BROWSER_URL_BAR_FOCUS_EVENT));
-    });
-  });
 }
 
 // ============================================

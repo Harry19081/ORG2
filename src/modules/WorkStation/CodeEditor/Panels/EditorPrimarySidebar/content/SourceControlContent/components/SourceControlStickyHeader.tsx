@@ -22,7 +22,7 @@ import {
   CHEVRON_SIZE,
   STICKY_ROW,
   stickyRowPadding,
-} from "@src/components/VirtualizedStickyTree";
+} from "@src/components/VirtualizedStickyTree/tokens";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import {
   COUNT_BADGE,

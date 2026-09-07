@@ -1,6 +1,6 @@
 import type { TFunction } from "i18next";
 
-import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable";
+import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable/tokens";
 import type { CursorRepo } from "@src/hooks/policies";
 import { CodeXmlIcon, Home01Icon, HugeiconsIcon, UserIcon } from "@src/icons";
 import { SKILL_SOURCE } from "@src/types/extensions";

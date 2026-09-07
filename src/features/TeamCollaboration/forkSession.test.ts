@@ -17,10 +17,12 @@ import type {
 } from "@src/store/session/sessionAtom/types";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
-import { forkCheckoutRequestAtom } from "./components/ForkCheckoutPickerDialog";
-import { forkSessionSetupRequestAtom } from "./components/ForkSessionSetupDialog";
 import { forkSession } from "./engine/collabSyncEngineHelpers";
 import type { ForkSessionResult } from "./engine/collabSyncEngineHelpers";
+import {
+  forkCheckoutRequestAtom,
+  forkSessionSetupRequestAtom,
+} from "./forkDialogState";
 import {
   ForkCancelledError,
   __FORK_RELAY_INTERNALS,

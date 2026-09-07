@@ -17,7 +17,7 @@ import type {
 import {
   WORK_ITEM_DETAIL_SURFACE,
   type WorkItemDetailActions,
-} from "../WorkItemDetail";
+} from "../WorkItemDetail/types";
 
 const WorkItemDetail = React.lazy(() => import("../WorkItemDetail"));
 
