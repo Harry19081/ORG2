@@ -10,10 +10,10 @@ import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom
 import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
 import {
   workStationFollowAgentHighlightEnabledAtom,
-  workStationPrimarySidebarCollapsedAtom,
   workStationStatusBarHiddenAtom,
   workStationTitleBarHiddenAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/chromeAtoms";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 
 import { StatusBarRenderer } from "../shared/StatusBar/StatusBarRenderer";

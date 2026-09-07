@@ -36,7 +36,7 @@ import {
   LinkSquare02Icon,
 } from "@src/icons";
 import { HUMANTOOLS_TEXT_KEYS } from "@src/modules/WorkStation/shared";
-import { workStationSearchFocusSignalAtom } from "@src/store/ui/workStationAtom";
+import { workStationSearchFocusSignalAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import {
   searchOptionsAtom,
   searchQueryAtom,

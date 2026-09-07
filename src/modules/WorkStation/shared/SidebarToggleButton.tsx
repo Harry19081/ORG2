@@ -37,10 +37,10 @@ import {
   simulatorPrimarySidebarPositionAtom,
 } from "@src/store/ui/simulatorAtom";
 import {
-  workStationLayoutModeAtom,
   workStationPrimarySidebarCollapsedAtom,
   workStationPrimarySidebarCollapsedPersistAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/primarySidebarAtoms";
+import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 import {
   activeStatusBarAppAtom,
   activeStatusBarCallbacksAtom,

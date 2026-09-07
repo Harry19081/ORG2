@@ -21,7 +21,7 @@ import {
   activeStationChatVisibleAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
-import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationAtom";
+import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import {
   PROJECT_CREATOR_DRAFT_ID,
   WORK_ITEM_CREATOR_DRAFT_ID,

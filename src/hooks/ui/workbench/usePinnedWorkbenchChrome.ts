@@ -19,7 +19,7 @@ import {
   stationChatVisibilityAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { mainPaneHasRealTabsAtom } from "@src/store/workstation/tabHost";
 import type { StationMode } from "@src/types/ui/workstation";
 import { isMacOS } from "@src/util/platform/tauri";

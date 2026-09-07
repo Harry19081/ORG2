@@ -20,7 +20,7 @@ import { useWorkStationTabShortcutBridge } from "@src/hooks/tabHost/useWorkStati
 import { useBrowserPaneState } from "@src/modules/WorkStation/Browser/hooks/useBrowserPaneState";
 import { useBrowserSessions } from "@src/modules/WorkStation/Browser/hooks/useBrowserSessions";
 import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
-import { workStationDevToolsCollapsedPersistAtom } from "@src/store/ui/workStationAtom";
+import { workStationDevToolsCollapsedPersistAtom } from "@src/store/ui/workStationLayout/devToolsCollapsedAtoms";
 import {
   browserTabsAtom,
   createBrowserSessionTabId,

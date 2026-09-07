@@ -18,7 +18,7 @@ import {
   openGitHubIssuesImportSpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { projectListRefreshAtom } from "@src/store/project/projectAtom";
-import { projectStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
+import { projectStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import {
   STORY_ORG_SCOPE,
   getProjectWorkItemsTabChrome,

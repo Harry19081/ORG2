@@ -33,7 +33,7 @@ import {
   chatWidthAtom,
   toggleChatPanelMaximizedAtom,
 } from "@src/store/ui/chatPanelAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { workstationProjectTabBarAtom } from "@src/store/workstation";
 import type { WorkstationTabHost } from "@src/store/workstation/tabHost";

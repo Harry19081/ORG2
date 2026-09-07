@@ -15,11 +15,11 @@ import {
   modelPickerStyleAtom,
 } from "@src/store/ui/chatPanelAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import {
-  chatPanelPositionAtom,
   workStationLayoutModeAtom,
   workStationLayoutModePersistAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 
 interface SidebarLayoutSettingsSubmenuProps {
   panelRef: React.Ref<HTMLDivElement>;

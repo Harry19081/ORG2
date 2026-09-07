@@ -38,7 +38,7 @@ import {
   chatPanelMaximizedAtom,
   toggleChatPanelMaximizedAtom,
 } from "@src/store/ui/chatPanelAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
 import { WorkstationMaximizeChatIcon } from "./useWorkstationTrailingSlot";
 

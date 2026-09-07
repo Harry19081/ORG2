@@ -7,7 +7,7 @@ import {
   openWorkspaceSpotlight,
   openWorktreeSpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
-import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationAtom";
+import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 
 /**
  * Workspace / branch / worktree buttons in the code status bar. They are pure
