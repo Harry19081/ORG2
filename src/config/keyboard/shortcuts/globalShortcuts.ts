@@ -120,7 +120,7 @@ export const GLOBAL_SHORTCUTS: ShortcutEntry[] = [
   },
   {
     id: "open_workspace_selector",
-    command: "Open workspace selector",
+    command: "Open working directory selector",
     macKeys: "⌘.",
     winKeys: "Ctrl+.",
     accelerator: "Ctrl+.",

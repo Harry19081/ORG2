@@ -37,17 +37,18 @@ componentIssueModalOpenAtom.debugLabel = "componentIssueModalOpenAtom";
 export const toolbarDropdownOpenAtom = atom<boolean>(false);
 toolbarDropdownOpenAtom.debugLabel = "toolbarDropdownOpenAtom";
 
-// Track initial add workspace mode - allows SelectRepoPage to open selector with a specific add form.
-// Value: null (default), or one of the add workspace stages
-export type AddWorkspaceInitialStage =
+// Track the initial add-working-directory mode so SelectRepoPage can open a
+// specific form. String values remain stable because they are route-stage IDs.
+export type WorkingDirectoryInitialStage =
   | "add-workspace-new"
   | "add-workspace-clone-url"
   | "add-workspace-clone-github"
   | "add-workspace-existing"
   | null;
-export const addWorkspaceInitialStageAtom =
-  atom<AddWorkspaceInitialStage>(null);
-addWorkspaceInitialStageAtom.debugLabel = "addWorkspaceInitialStageAtom";
+export const workingDirectoryInitialStageAtom =
+  atom<WorkingDirectoryInitialStage>(null);
+workingDirectoryInitialStageAtom.debugLabel =
+  "workingDirectoryInitialStageAtom";
 
 // Track when the repo selector is open so modules like useRouteToolbarConfig can trigger it.
 export const repoSelectorOpenAtom = atom<boolean>(false);

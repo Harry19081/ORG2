@@ -13,7 +13,7 @@ import {
 import type { RepoItem } from "@src/scaffold/GlobalSpotlight/types";
 import { REPO_KIND } from "@src/store/repo";
 
-import { getWorkspacePathDisplayName } from "../../palettes/WorkspacePalette/pathImport";
+import { getWorkingDirectoryPathDisplayName } from "../../palettes/WorkingDirectoryPalette/workingDirectoryPathImport";
 
 export const EXTERNAL_RECENT_PATH_WORKSPACE_THRESHOLD = 5;
 const EXTERNAL_RECENT_PATH_LIMIT = 12;
@@ -140,7 +140,8 @@ export function useExternalRecentPaths({
       .filter((recentPath) => {
         if (!normalizedQuery) return true;
         const name =
-          recentPath.name ?? getWorkspacePathDisplayName(recentPath.path);
+          recentPath.name ??
+          getWorkingDirectoryPathDisplayName(recentPath.path);
         return [name, recentPath.path].some((value) =>
           value.toLowerCase().includes(normalizedQuery)
         );
@@ -148,7 +149,8 @@ export function useExternalRecentPaths({
       .slice(0, EXTERNAL_RECENT_PATH_LIMIT)
       .map((recentPath): RepoItem => {
         const name =
-          recentPath.name ?? getWorkspacePathDisplayName(recentPath.path);
+          recentPath.name ??
+          getWorkingDirectoryPathDisplayName(recentPath.path);
         return {
           id: `external-recent:${recentPath.path}`,
           name,

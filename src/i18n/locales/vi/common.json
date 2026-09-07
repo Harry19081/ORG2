@@ -160,7 +160,7 @@
       "commandPalette": "Bảng lệnh",
       "goToFile": "Đi tới tệp...",
       "selectModel": "Chọn mô hình...",
-      "switchWorkspace": "Chuyển không gian làm việc...",
+      "switchWorkspace": "Chuyển thư mục làm việc...",
       "switchBranch": "Chuyển nhánh...",
       "switchRunningLocation": "Chuyển vị trí chạy...",
       "settings": "Cài đặt...",
@@ -193,13 +193,13 @@
     "openSessionBeforeLinking": "Hãy mở một phiên trước khi liên kết hạng mục công việc.",
     "sessionLinkedToWorkItem": "Đã liên kết phiên với hạng mục công việc.",
     "sessionLinkFailed": "Không thể liên kết phiên: {{message}}",
-    "chooseFolderNewWorkspace": "Chọn thư mục để tạo không gian làm việc",
-    "chooseExistingWorkspace": "Chọn không gian làm việc hiện có",
+    "chooseFolderNewWorkspace": "Chọn thư mục mẹ cho thư mục làm việc",
+    "chooseExistingWorkspace": "Chọn thư mục làm việc hiện có",
     "selectDirectoryFailed": "Không thể chọn thư mục",
-    "workspaceCreated": "Đã tạo không gian làm việc",
-    "workspaceCreateFailed": "Không thể tạo không gian làm việc",
-    "workspaceImported": "Đã nhập không gian làm việc",
-    "workspaceImportFailed": "Không thể nhập không gian làm việc",
+    "workspaceCreated": "Đã tạo thư mục làm việc",
+    "workspaceCreateFailed": "Không thể tạo thư mục làm việc",
+    "workspaceImported": "Đã nhập thư mục làm việc",
+    "workspaceImportFailed": "Không thể nhập thư mục làm việc",
     "chooseFolderCloneRepo": "Chọn thư mục để sao chép kho lưu trữ",
     "repositoryCloned": "Đã sao chép kho lưu trữ",
     "repositoryCloneFailed": "Không thể sao chép kho lưu trữ"
@@ -374,9 +374,9 @@
     "moreSettings": "Cài đặt khác",
     "sort": "Sắp xếp",
     "openFolder": "Mở thư mục",
-    "addWorkspace": "Thêm Workspace",
+    "addWorkspace": "Thêm thư mục làm việc",
     "openSpotlight": "Mở Spotlight",
-    "openWorkspace": "Mở Workspace",
+    "openWorkspace": "Mở thư mục làm việc",
     "skipThisVersion": "Bỏ qua phiên bản này",
     "later": "Để sau",
     "link": "Liên kết",
@@ -988,8 +988,8 @@
     "retryToScanAgain": "Thử lại để quét lần nữa",
     "noTokensFound": "Không tìm thấy Token",
     "addCssVariables": "Thêm biến CSS vào dự án của bạn",
-    "noWorkspaceExplorerTitle": "Chưa mở Workspace",
-    "noWorkspaceExplorerSubtitle": "Mở không gian làm việc để xem tệp",
+    "noWorkspaceExplorerTitle": "Chưa mở thư mục làm việc",
+    "noWorkspaceExplorerSubtitle": "Mở thư mục làm việc để xem tệp",
     "cannotFindRepo": "Không tìm thấy {{repoName}}",
     "lastSeenAtPath": "Lần cuối thấy tại {{path}}",
     "unsupportedFileType": "Loại tệp không được hỗ trợ",
@@ -1060,13 +1060,13 @@
     "publishingBranch": "Publishing...",
     "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git chưa được khởi tạo",
-    "notGitInitializedTooltip": "Workspace này chưa có thư mục .git.",
+    "notGitInitializedTooltip": "Thư mục làm việc này chưa có thư mục .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
     "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
     "branchTooltip": "Nhánh: {{branch}}",
     "branchTooltipSwitching": "Nhánh: {{branch}} (đang chuyển…)",
-    "switchWorkspaceTooltip": "Chuyển Workspace",
+    "switchWorkspaceTooltip": "Chuyển thư mục làm việc",
     "switchWorktreeTooltip": "Chuyển Worktree",
     "switchBranchTooltip": "Chuyển nhánh",
     "switchLocalBranchTooltip": "Chuyển nhánh cục bộ",
@@ -1623,23 +1623,23 @@
         "current": "Hiện tại",
         "repo": "Kho lưu trữ",
         "systemPaths": "Đường dẫn hệ thống",
-        "usedElsewhere": "Được dùng ở nơi khác",
-        "workspace": "Workspace",
-        "thisOrg": "Không gian làm việc này",
-        "outsideOrg": "Ngoài không gian làm việc này"
+        "usedElsewhere": "Được dùng trong các ứng dụng khác",
+        "workspace": "Thư mục làm việc",
+        "thisOrg": "Thư mục làm việc này",
+        "outsideOrg": "Ngoài thư mục làm việc này"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "Sao chép từ URL GitHub",
         "cloneFromMyGitHub": "Sao chép từ GitHub của tôi",
-        "createWorkspace": "Tạo Workspace mới"
+        "createWorkspace": "Tạo thư mục làm việc mới"
       },
       "sources": {
         "cloningFromGitHub": "đang sao chép từ GitHub",
         "cloningFromGitHubUrl": "sao chép từ URL GitHub",
         "cloningFromMyGitHub": "sao chép từ GitHub của tôi",
-        "creatingWorkspace": "đang tạo Workspace mới",
-        "creatingMultiRepoWorkspace": "đang ghép Workspace multi-repo"
+        "creatingWorkspace": "đang tạo thư mục làm việc mới",
+        "creatingMultiRepoWorkspace": "đang ghép thư mục làm việc đa kho lưu trữ"
       },
       "forms": {
         "repoName": "Tên repo",
@@ -1647,19 +1647,19 @@
         "chooseDestinationPath": "Chọn đường dẫn đích",
         "choose": "Chọn",
         "createAt": "Tạo tại {{path}}",
-        "createWorkspaceTitle": "Workspace mới",
-        "creatingWorkspace": "Đang tạo Workspace...",
-        "readyToCreateWorkspace": "Sẵn sàng tạo Workspace",
-        "workspaceName": "Tên Workspace",
-        "workspaceNamePlaceholder": "Workspace của tôi"
+        "createWorkspaceTitle": "Thư mục làm việc mới",
+        "creatingWorkspace": "Đang tạo thư mục làm việc...",
+        "readyToCreateWorkspace": "Sẵn sàng tạo thư mục làm việc",
+        "workspaceName": "Tên thư mục",
+        "workspaceNamePlaceholder": "Thư mục của tôi"
       },
       "path": {
         "switchTo": "Chuyển sang",
         "switchToTemplate": "Chuyển sang {workspace}",
         "search": "Tìm kiếm",
-        "manageWorkspace": "Quản lý Workspace",
-        "addBy": "Thêm Workspace bằng",
-        "addByTemplate": "Thêm Workspace bằng {source}"
+        "manageWorkspace": "Quản lý thư mục làm việc",
+        "addBy": "Thêm thư mục làm việc bằng",
+        "addByTemplate": "Thêm thư mục làm việc bằng {source}"
       },
       "pathImport": {
         "addLabel": "Thêm",
@@ -1668,7 +1668,7 @@
       },
       "gitInitPrompt": {
         "title": "Khởi tạo Git?",
-        "message": "Workspace này chưa có thư mục .git. Khởi tạo thành Git repository?",
+        "message": "Thư mục làm việc này chưa có thư mục .git. Khởi tạo thành kho lưu trữ Git?",
         "ok": "Khởi tạo Git",
         "cancel": "Giữ dạng thư mục"
       }
@@ -1747,10 +1747,10 @@
       "sourceAria": "Chọn nguồn Workspace",
       "on": "trên",
       "branchAria": "Chọn nhánh",
-      "switchWorkspace": "Chuyển Workspace",
+      "switchWorkspace": "Chuyển thư mục làm việc",
       "switchBranch": "Chuyển Branch",
       "switchLocation": "Chuyển vị trí chạy",
-      "sessionWorkspace": "Chuyển Workspace của phiên",
+      "sessionWorkspace": "Chuyển thư mục làm việc của phiên",
       "locationAria": "Chọn vị trí chạy",
       "systemPaths": {
         "home": {
@@ -1871,16 +1871,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Chuyển workspace"
+          "label": "Chuyển thư mục làm việc"
         },
         "switchBranch": {
           "label": "Chuyển nhánh"
         },
         "addWorkspace": {
-          "label": "Thêm workspace"
+          "label": "Thêm thư mục làm việc"
         },
         "createMultiRepoWorkspace": {
-          "label": "Thêm workspace multi-repo"
+          "label": "Thêm thư mục làm việc đa kho lưu trữ"
         },
         "showSourceControl": {
           "label": "Hiển thị Source Control"
@@ -2015,7 +2015,7 @@
     "hidePrimarySidebar": "Ẩn thanh bên",
     "searchFiles": "Tìm kiếm tệp",
     "openBrowser": "Mở trình duyệt",
-    "switchWorkspace": "Chuyển / Thêm Workspace",
+    "switchWorkspace": "Chuyển / thêm thư mục làm việc",
     "openEditor": "Mở trình soạn thảo",
     "hideTerminal": "Ẩn terminal",
     "hideFiles": "Ẩn tệp",
@@ -2109,10 +2109,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Git chưa được khởi tạo",
-    "notGitInitializedSubtitle": "Khởi tạo Git để theo dõi thay đổi, tạo commit và dùng công cụ branch trong Workspace này.",
+    "notGitInitializedSubtitle": "Khởi tạo Git để theo dõi thay đổi, tạo commit và dùng công cụ branch trong thư mục làm việc này.",
     "initializeGit": "Khởi tạo Git",
     "initializingGit": "Đang khởi tạo Git...",
-    "noRemoteForPublish": "Workspace này hiện là một kho Git, nhưng chưa có remote. Hãy thêm remote như origin trước khi publish branch này.",
+    "noRemoteForPublish": "Thư mục làm việc này hiện là một kho Git, nhưng chưa có remote. Hãy thêm remote như origin trước khi publish branch này.",
     "generateCommitMessage": "Tạo commit message bằng AI",
     "pull": "Pull",
     "push": "Push",
@@ -2201,24 +2201,24 @@
     "parentFolderPlaceholder": "Chọn Parent folder"
   },
   "workspaceForm": {
-    "title": "Tạo Workspace đa Repo",
-    "editTitle": "Chỉnh sửa Workspace",
-    "createWorkspace": "Tạo Workspace đa Repo",
-    "multiRepoWorkspace": "Workspace đa Repo",
-    "createWorkspaceDesc": "Tổ hợp Workspace từ nhiều Repo",
+    "title": "Tạo thư mục làm việc đa kho lưu trữ",
+    "editTitle": "Chỉnh sửa thư mục làm việc",
+    "createWorkspace": "Tạo thư mục làm việc đa kho lưu trữ",
+    "multiRepoWorkspace": "Thư mục làm việc đa kho lưu trữ",
+    "createWorkspaceDesc": "Tổ hợp thư mục làm việc từ nhiều kho lưu trữ",
     "filterPlaceholder": "Lọc repo...",
-    "selectRepos": "Chọn repo cho Workspace",
+    "selectRepos": "Chọn kho lưu trữ cho thư mục làm việc",
     "noReposFound": "Không tìm thấy repo phù hợp",
     "noRepos": "Không có repo khả dụng",
     "current": "hiện tại",
-    "workspaceName": "Tên Workspace",
-    "workspaceNamePlaceholder": "Workspace của tôi",
-    "willInclude": "Workspace sẽ bao gồm {{count}} repo",
+    "workspaceName": "Tên thư mục làm việc",
+    "workspaceNamePlaceholder": "Thư mục làm việc của tôi",
+    "willInclude": "Thư mục làm việc sẽ bao gồm {{count}} kho lưu trữ",
     "statusSelectAtLeastTwo": "Chọn ít nhất 2 repo",
-    "statusReadyToCreate": "Sẵn sàng tạo Workspace",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "Workspace {{repo}}",
-    "windowTitle": "Workspace"
+    "statusReadyToCreate": "Sẵn sàng tạo thư mục làm việc",
+    "defaultName": "Thư mục làm việc",
+    "defaultNameWithRepo": "Thư mục làm việc {{repo}}",
+    "windowTitle": "Thư mục làm việc"
   },
   "database": {
     "addConnection": "Add Database Connection",

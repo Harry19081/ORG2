@@ -1,12 +1,12 @@
 /**
- * Workspace management logic for WorkspacePalette.
+ * Workspace management logic for WorkingDirectoryPalette.
  *
  * Handles:
  *   - Saved workspaces atom reads/writes
  *   - Workspace selection, edit, delete, and bulk-delete handlers
  *   - Derivation of workspace SpotlightItems (including manage-mode JSX)
  *
- * Extracted to keep WorkspacePalette/index.tsx under the UI component line limit.
+ * Extracted to keep WorkingDirectoryPalette/index.tsx under the UI component line limit.
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo } from "react";
@@ -33,27 +33,27 @@ import type { WorkspaceFolder } from "@src/types/workspace";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import { ICONS } from "../../config";
-import type { AddWorkspaceModalStage } from "../../hooks";
+import type { AddWorkingDirectoryModalStage } from "../../hooks";
 import type { RepoItem, SpotlightItem } from "../../types";
 
-const log = createLogger("WorkspacePalette");
+const log = createLogger("WorkingDirectoryPalette");
 
 // ============================================================================
 // Types
 // ============================================================================
 
-interface UseWorkspacePaletteWorkspaceOptions {
+interface UseWorkingDirectoryPaletteWorkspacesOptions {
   repos: RepoItem[];
   isManageMode: boolean;
   selectedIds: Set<string>;
   toggleSelection: (id: string) => void;
   clearSelection: () => void;
-  setModalStage: (stage: AddWorkspaceModalStage) => void;
+  setModalStage: (stage: AddWorkingDirectoryModalStage) => void;
   onClose: () => void;
   refreshReposForce: () => Promise<void>;
   /** Free-text search query used to filter workspace items by name + member repos. */
   searchQuery: string;
-  /** multiRepoWorkspaceForm from useAddWorkspaceFlow — only `setEditingWorkspace` is needed */
+  /** multiRepoWorkspaceForm from useAddWorkingDirectoryFlow — only `setEditingWorkspace` is needed */
   setEditingWorkspace: (ws: WorkspaceRecord) => void;
   /**
    * Org-scope membership predicate (e.g. active cloud org repo scope).
@@ -64,7 +64,7 @@ interface UseWorkspacePaletteWorkspaceOptions {
   repoFilter?: (repo: { fs_uri?: string | null }) => boolean;
 }
 
-interface UseWorkspacePaletteWorkspaceReturn {
+interface UseWorkingDirectoryPaletteWorkspacesReturn {
   workspaceItems: SpotlightItem[];
   handleBulkDelete: () => Promise<void>;
 }
@@ -105,7 +105,7 @@ function buildWorkspaceRepoNameResolver(repos: RepoItem[]) {
 // Hook
 // ============================================================================
 
-export function useWorkspacePaletteWorkspace({
+export function useWorkingDirectoryPaletteWorkspaces({
   repos,
   isManageMode,
   selectedIds,
@@ -117,7 +117,7 @@ export function useWorkspacePaletteWorkspace({
   searchQuery,
   setEditingWorkspace,
   repoFilter,
-}: UseWorkspacePaletteWorkspaceOptions): UseWorkspacePaletteWorkspaceReturn {
+}: UseWorkingDirectoryPaletteWorkspacesOptions): UseWorkingDirectoryPaletteWorkspacesReturn {
   const { t } = useTranslation();
   const [savedWorkspaces, setSavedWorkspaces] = useAtom(savedWorkspacesAtom);
   const activeWorkspaceId = useAtomValue(activeWorkspaceIdAtom);
@@ -348,7 +348,7 @@ export function useWorkspacePaletteWorkspace({
 
     return orderedWorkspaces.map((ws: WorkspaceRecord) => {
       const names = ws.folders.map(resolveWorkspaceRepoName);
-      const workspacePath =
+      const workingDirectoryPath =
         ws.folders.find((folder) => folder.isPrimary)?.folderPath ??
         ws.folders[0]?.folderPath;
       const isActive = ws.workspaceId === activeWorkspaceId;
@@ -401,7 +401,7 @@ export function useWorkspacePaletteWorkspace({
           updatedAt: ws.updatedAt,
           contextMenuCopy: {
             name: ws.name,
-            path: workspacePath || undefined,
+            path: workingDirectoryPath || undefined,
           },
           rightContent: isManageMode ? manageActions : repoCountBadge,
           selectionState: isManageMode
