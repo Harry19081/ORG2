@@ -966,7 +966,7 @@
     "browserCacheCleanFailed": "Không thể dọn bộ nhớ đệm trình duyệt"
   },
   "dependencies": {
-    "systemDependencies": "Dependencies hệ thống",
+    "systemDependencies": "Các thành phần phụ thuộc hệ thống",
     "refreshSuccess": "Đã làm mới dependencies",
     "scanning": "Đang quét...",
     "detectingDependencies": "Đang phát hiện phụ thuộc...",

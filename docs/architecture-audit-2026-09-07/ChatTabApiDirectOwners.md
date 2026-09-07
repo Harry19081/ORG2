@@ -40,3 +40,10 @@ This phase is published independently against develop `bc396d4d8` as Harry19081.
 - `pnpm check:test-placement` — passed across 516 directories.
 - `git diff --check` — passed; no old references to the removed compatibility paths found in source/test/tool/config searches.
 - Combined integration checkout on develop `bc396d4d8`: `pnpm test` — 1,570 files / 11,664 tests passed with all three reviewed phases together. This is separate evidence from the independent branch checks above. Runtime desktop/multi-window startup, GUI/E2E and release bundling are not exercised; no computer control was used.
+
+## Latest develop integration
+
+Merged develop `ee2c184f5` and resolved three adjacent test-import conflicts. Keep tab state/factory imports on their canonical owners and preserve upstream chat-panel surface/selection/visibility imports. Test assertions and production function bodies are unchanged by the conflict resolution; existing published history is preserved.
+
+- After integrating develop `ee2c184f5`, `pnpm test src/store/chatPanel src/store/session src/services/workStation src/features/DiscussionChannels src/modules/MainApp/WorkManagement src/modules/MainApp/TeamInbox src/scaffold/NavigationSidebar src/engines/ChatPanel src/modules/WorkStation/shared/TabBar` — 366 files / 2,393 tests passed.
+- `pnpm typecheck:fast`, changed-file ESLint and Prettier, `pnpm check:circular`, `pnpm check:test-placement`, and `git diff --check` — passed. No remaining source imports of the deleted forwarding paths or ui/chatPanelAtom.

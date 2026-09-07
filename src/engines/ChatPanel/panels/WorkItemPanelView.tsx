@@ -66,7 +66,7 @@ import {
 import {
   type ChatPanelSelectedWorkItem,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { WORK_ITEM_STATUS, type WorkItem } from "@src/types/core/workItem";
 import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";

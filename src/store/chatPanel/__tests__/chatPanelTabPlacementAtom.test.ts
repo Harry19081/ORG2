@@ -5,7 +5,7 @@ import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { sessionsAtom } from "@src/store/session/sessionAtom";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { STATION_MODE, stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   githubPrDetailTabFactory,

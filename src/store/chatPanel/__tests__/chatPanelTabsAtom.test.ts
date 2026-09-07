@@ -47,15 +47,16 @@ import {
 } from "@src/store/session/viewAtom";
 import {
   CHAT_PANEL_CREATE_TARGET,
-  CHAT_PANEL_SURFACE_KIND,
-  activeChatPanelSurfaceAtom,
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
-  chatPanelMaximizedAtom,
-  chatPanelNavigateAtom,
   chatPanelSelectedWorkItemAtom,
   chatPanelStartPageOpenAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import {
+  activeChatPanelSurfaceAtom,
+  chatPanelMaximizedAtom,
+  chatPanelNavigateAtom,
+} from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   kanbanDetailPanelVisibleAtom,
   kanbanSelectedTaskIdAtom,
@@ -67,6 +68,7 @@ import {
   workManagementProjectsViewAtom,
   workstationTabHeaderAtomByHost,
 } from "@src/store/workstation/workstationTabBarAtoms";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 import {
   createInstrumentedStore,
   resetInstrumentedStore,

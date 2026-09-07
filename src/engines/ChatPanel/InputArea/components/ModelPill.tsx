@@ -42,7 +42,7 @@ import {
   extractModelPair,
 } from "@src/store/session/creatorDefaultModelAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom";
-import { modelPickerStyleAtom } from "@src/store/ui/chatPanelAtom";
+import { modelPickerStyleAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import { modelSelectorAtom } from "@src/store/ui/modelSelectorAtom";
 import { isActiveStatus } from "@src/types/session/session";
 import { getDispatchCategory } from "@src/util/session/sessionDispatch";

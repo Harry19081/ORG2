@@ -941,7 +941,7 @@
     "loadZeroRows": "Click to load {{count}} more"
   },
   "dependencies": {
-    "systemDependencies": "Системные Dependencies",
+    "systemDependencies": "Системные зависимости",
     "refreshSuccess": "Зависимости обновлены",
     "scanning": "Сканирование...",
     "detectingDependencies": "Обнаружение зависимостей...",

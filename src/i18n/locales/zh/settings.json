@@ -1080,7 +1080,7 @@
     "browserCacheCleanFailed": "清理浏览器缓存失败"
   },
   "dependencies": {
-    "systemDependencies": "系统 Dependencies",
+    "systemDependencies": "系统依赖项",
     "refreshSuccess": "依赖已刷新",
     "scanning": "扫描中...",
     "detectingDependencies": "正在检测依赖...",

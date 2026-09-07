@@ -7,7 +7,7 @@ import {
   type ChatPanelCreateTarget,
   type ChatPanelSelectedProject,
   type ChatPanelSelectedWorkItem,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import {
   KANBAN_MENU_ITEM_ID,

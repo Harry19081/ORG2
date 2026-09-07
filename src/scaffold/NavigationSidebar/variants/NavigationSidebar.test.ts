@@ -139,6 +139,36 @@ describe("NavigationSidebar", () => {
     ).toBeLessThan(markup.indexOf('data-testid="sidebar-sessions-refresh"'));
   });
 
+  it("keeps every header action visible when the filter is active outside sidebar hover", () => {
+    const markup = renderToStaticMarkup(
+      createElement(NavigationSidebar, {
+        items: [],
+        activeKey: "",
+        onChange: vi.fn(),
+        menuItems: [
+          {
+            id: "separator-team",
+            key: "separator-team",
+            label: "Team",
+            rowActions: ["Search", "Refresh", "Filter"].map((label) => ({
+              label,
+              active: label === "Filter",
+              showOnSidebarHover: true,
+              onClick: vi.fn(),
+            })),
+          },
+        ],
+        collapsibleSections: true,
+      })
+    );
+    for (const label of ["Search", "Refresh", "Filter"]) {
+      expect(markup).toContain(
+        `<span class="inline-flex"><button type="button" aria-label="${label}"`
+      );
+    }
+    expect(markup).not.toContain("group-hover/sidebar:inline-flex");
+  });
+
   it("renders the standard loading state without dummy rows", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {

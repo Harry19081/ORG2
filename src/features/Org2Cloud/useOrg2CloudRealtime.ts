@@ -49,7 +49,7 @@ import { createLogger } from "@src/hooks/logger";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import { activeSessionIdAtom } from "@src/store/session/viewAtom";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { isMainAppWindow } from "@src/util/platform/tauri/windowIdentity";
 
 import {

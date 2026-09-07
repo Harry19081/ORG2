@@ -24,7 +24,7 @@ import { createLogger } from "@src/hooks/logger";
 import { useSecretScanGuard } from "@src/hooks/security/useSecretScanGuard";
 import { sessionByIdAtom } from "@src/store/session";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
-import { wpReadOnlyAtom } from "@src/store/ui/chatPanelAtom";
+import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
 import { isCliSession } from "@src/util/session/sessionDispatch";
 
 import { clearImageDraft } from "../../InputArea/utils/imageDraftCache";

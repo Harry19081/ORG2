@@ -26,13 +26,13 @@ import {
   openSessionInWorkstationAtom,
 } from "@src/store/session/sessionTabPlacementAtom";
 import {
-  activeStationChatVisibleAtom,
   chatPanelContentModeAtom,
   chatPanelCreateTargetAtom,
-  chatPanelNavigateAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workManagementProjectsViewAtom } from "@src/store/workstation";
 

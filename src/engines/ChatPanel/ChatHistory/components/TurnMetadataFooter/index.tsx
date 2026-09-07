@@ -27,7 +27,7 @@ import {
   InternetIcon,
   MoreHorizontalIcon,
 } from "@src/icons";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   STATION_MODE,
   bumpSimulatorDiffRefreshNonceAtom,

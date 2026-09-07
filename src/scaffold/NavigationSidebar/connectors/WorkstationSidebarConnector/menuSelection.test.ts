@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   CHAT_PANEL_CONTENT_MODE,
   CHAT_PANEL_CREATE_TARGET,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { resolveSelectedMenuItemIds } from "./menuSelection";
 

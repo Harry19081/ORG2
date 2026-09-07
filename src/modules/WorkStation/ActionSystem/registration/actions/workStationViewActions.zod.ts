@@ -260,7 +260,7 @@ export const workstationCreateProject = defineZodAction(
     const { openCreateTargetInChatPanelStartPageAtom } =
       await import("@src/store/chatPanel/chatPanelTabsAtom");
     const { CHAT_PANEL_CREATE_TARGET } =
-      await import("@src/store/ui/chatPanelAtom");
+      await import("@src/store/ui/chatPanel/selectionAtoms");
     const { getInstrumentedStore } =
       await import("@src/util/core/state/instrumentedStore");
     getInstrumentedStore().set(openCreateTargetInChatPanelStartPageAtom, {
@@ -290,7 +290,7 @@ export const workstationCreateWorkItem = defineZodAction(
     const { openCreateTargetInChatPanelStartPageAtom } =
       await import("@src/store/chatPanel/chatPanelTabsAtom");
     const { CHAT_PANEL_CREATE_TARGET } =
-      await import("@src/store/ui/chatPanelAtom");
+      await import("@src/store/ui/chatPanel/selectionAtoms");
     const { getInstrumentedStore } =
       await import("@src/util/core/state/instrumentedStore");
     getInstrumentedStore().set(openCreateTargetInChatPanelStartPageAtom, {

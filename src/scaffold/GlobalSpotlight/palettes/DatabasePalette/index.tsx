@@ -16,11 +16,11 @@ import {
   FolderSearchIcon,
   Link01Icon,
 } from "@src/icons";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 
 import type { BasePaletteProps } from "../../shared";
 import { PaletteBody, SpotlightShell } from "../../shell";
 import type { SpotlightItem } from "../../types";
-import { useSelectorKernel } from "../core";
 
 const log = createLogger("DatabasePalette");
 

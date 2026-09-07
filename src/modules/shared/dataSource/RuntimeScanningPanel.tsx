@@ -24,7 +24,6 @@ import { useAtom } from "jotai";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
 import SettingsTable from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
@@ -149,127 +148,123 @@ const RuntimeScanningPanel: React.FC = () => {
         className="-mx-4 bg-chat-pane px-4 pt-2 pb-1"
         dataTestId="runtime-scanning-title"
       />
-      {rows === null ? (
-        <Placeholder variant="loading" placement="detail-panel" />
-      ) : (
-        <>
-          {importableCount > 0 && (
-            <SectionContainer>
-              <SectionRow
-                label={t("externalSessionsToggle")}
-                description={t("externalSessionsToggleDesc")}
-              >
-                <Switch
-                  checked={externalSessionsEnabled}
-                  onCheckedChange={(checked) =>
-                    setExternalSessionsEnabled(checked)
+      <>
+        {importableCount > 0 && (
+          <SectionContainer>
+            <SectionRow
+              label={t("externalSessionsToggle")}
+              description={t("externalSessionsToggleDesc")}
+            >
+              <Switch
+                checked={externalSessionsEnabled}
+                onCheckedChange={(checked) =>
+                  setExternalSessionsEnabled(checked)
+                }
+                ariaLabel={t("externalSessionsToggle")}
+              />
+            </SectionRow>
+            <SectionRow
+              label={t("globalFrequency")}
+              description={t("globalFrequencyDesc")}
+            >
+              <Select
+                value={globalFrequency}
+                onChange={(value) => {
+                  if (typeof value === "string") {
+                    setGlobalFrequency(value as ScanFrequency);
                   }
-                  ariaLabel={t("externalSessionsToggle")}
-                />
-              </SectionRow>
-              <SectionRow
-                label={t("globalFrequency")}
-                description={t("globalFrequencyDesc")}
-              >
-                <Select
-                  value={globalFrequency}
-                  onChange={(value) => {
-                    if (typeof value === "string") {
-                      setGlobalFrequency(value as ScanFrequency);
-                    }
-                  }}
-                  options={globalFrequencyOptions}
-                  size="default"
-                  style={SECTION_CONTROL_STYLE}
-                  aria-label={t("globalFrequency")}
-                  disabled={!externalSessionsEnabled}
-                />
-              </SectionRow>
-              <SectionRow
-                label={t("activeSessionRefresh")}
-                description={t("activeSessionRefreshDesc")}
-              >
-                <Select
-                  value={activeSessionRefreshFrequency}
-                  onChange={(value) => {
-                    if (typeof value === "string") {
-                      setActiveSessionRefreshFrequency(
-                        value as ActiveExternalSessionRefreshFrequency
-                      );
-                    }
-                  }}
-                  options={activeSessionRefreshFrequencyOptions}
-                  size="default"
-                  style={SECTION_CONTROL_STYLE}
-                  aria-label={t("activeSessionRefresh")}
-                  disabled={!externalSessionsEnabled}
-                />
-              </SectionRow>
-            </SectionContainer>
-          )}
+                }}
+                options={globalFrequencyOptions}
+                size="default"
+                style={SECTION_CONTROL_STYLE}
+                aria-label={t("globalFrequency")}
+                disabled={!externalSessionsEnabled}
+              />
+            </SectionRow>
+            <SectionRow
+              label={t("activeSessionRefresh")}
+              description={t("activeSessionRefreshDesc")}
+            >
+              <Select
+                value={activeSessionRefreshFrequency}
+                onChange={(value) => {
+                  if (typeof value === "string") {
+                    setActiveSessionRefreshFrequency(
+                      value as ActiveExternalSessionRefreshFrequency
+                    );
+                  }
+                }}
+                options={activeSessionRefreshFrequencyOptions}
+                size="default"
+                style={SECTION_CONTROL_STYLE}
+                aria-label={t("activeSessionRefresh")}
+                disabled={!externalSessionsEnabled}
+              />
+            </SectionRow>
+          </SectionContainer>
+        )}
 
-          <SettingsTable<SourceRow>
-            columns={columns}
-            rows={searchedRows}
-            getRowKey={(row) => row.probe.sourceId}
-            headerHeight="tall"
-            // Keep search + tabs + rescan inline when space allows; the shared
-            // toolbar stacks search/actions above the tabs in narrow panels.
-            inlineHeaderToolbar
-            className="table-expanded-no-hover table-settings-expanded-compact"
-            hover
-            loading={false}
-            emptyTitle={searchTerm ? tCommon("status.noResults") : undefined}
-            searchBar={{
-              searchValue: searchQuery,
-              searchPlaceholder: tCommon("common.searchPlaceholder"),
-              onSearchChange: setSearchQuery,
-              onSearchClear: () => setSearchQuery(""),
-              rightContent:
-                rows.length > 0 ? (
-                  <RuntimeRefreshButton
-                    label={t("rescanAll")}
-                    onRefresh={() => void handleRescanAll()}
-                    refreshing={rescanningAll}
-                    disabled={!externalSessionsEnabled}
-                    dataTestId="runtime-scanning-rescan-all"
-                  />
-                ) : undefined,
-              tabPills: (
-                <TabPill
-                  activeTab={tab}
-                  tabs={tabs}
-                  onChange={(key) => setTab(key as DataSourceTab)}
-                  variant="pill"
-                  color="fill"
-                  className="h-8 [&>button]:h-full!"
-                  fillWidth={false}
-                  size="small"
-                  buttonStyle
+        <SettingsTable<SourceRow>
+          columns={columns}
+          rows={searchedRows}
+          getRowKey={(row) => row.probe.sourceId}
+          headerHeight="tall"
+          // Keep search + tabs + rescan inline when space allows; the shared
+          // toolbar stacks search/actions above the tabs in narrow panels.
+          inlineHeaderToolbar
+          className="table-expanded-no-hover table-settings-expanded-compact"
+          hover
+          loading={rows === null}
+          emptyTitle={searchTerm ? tCommon("status.noResults") : undefined}
+          searchBar={{
+            searchValue: searchQuery,
+            searchPlaceholder: tCommon("common.searchPlaceholder"),
+            onSearchChange: setSearchQuery,
+            onSearchClear: () => setSearchQuery(""),
+            rightContent:
+              (rows?.length ?? 0) > 0 ? (
+                <RuntimeRefreshButton
+                  label={t("rescanAll")}
+                  onRefresh={() => void handleRescanAll()}
+                  refreshing={rescanningAll}
+                  disabled={!externalSessionsEnabled}
+                  dataTestId="runtime-scanning-rescan-all"
                 />
-              ),
-              searchInputSize: "default",
-              searchCountText:
-                searchTerm && searchedRows.length !== visibleRows.length
-                  ? `${searchedRows.length} / ${visibleRows.length}`
-                  : undefined,
-            }}
-            expandable={{
-              expandedRowRender: (row) => (
-                <DataSourceDetailsCard
-                  probe={row.probe}
-                  stats={row.stats}
-                  onOpenFolder={openFolder}
-                  onCopyPath={(path) => void copyText(path)}
-                />
-              ),
-              rowExpandable: (row) => row.probe.historyPaths.length > 0,
-              expandedRowKeys,
-              onExpandedRowsChange: setExpandedRowKeys,
-            }}
-          />
-        </>
-      )}
+              ) : undefined,
+            tabPills: (
+              <TabPill
+                activeTab={tab}
+                tabs={tabs}
+                onChange={(key) => setTab(key as DataSourceTab)}
+                variant="pill"
+                color="fill"
+                className="h-8 [&>button]:h-full!"
+                fillWidth={false}
+                size="small"
+                buttonStyle
+              />
+            ),
+            searchInputSize: "default",
+            searchCountText:
+              searchTerm && searchedRows.length !== visibleRows.length
+                ? `${searchedRows.length} / ${visibleRows.length}`
+                : undefined,
+          }}
+          expandable={{
+            expandedRowRender: (row) => (
+              <DataSourceDetailsCard
+                probe={row.probe}
+                stats={row.stats}
+                onOpenFolder={openFolder}
+                onCopyPath={(path) => void copyText(path)}
+              />
+            ),
+            rowExpandable: (row) => row.probe.historyPaths.length > 0,
+            expandedRowKeys,
+            onExpandedRowsChange: setExpandedRowKeys,
+          }}
+        />
+      </>
     </div>
   );
 };

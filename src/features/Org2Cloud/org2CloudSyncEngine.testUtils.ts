@@ -12,7 +12,7 @@ import { processChunksRust } from "@src/engines/SessionCore/ingestion/rustBridge
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import {

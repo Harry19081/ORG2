@@ -17,7 +17,7 @@ import {
 } from "@src/features/TeamCollaboration/sessionOrgTagsAtom";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 
 import type { Org2CloudOrg } from "./org2CloudOrgsAtom";
 import {

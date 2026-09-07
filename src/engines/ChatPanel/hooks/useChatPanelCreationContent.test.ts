@@ -5,7 +5,7 @@ import { type Root, createRoot } from "react-dom/client";
 import { useTranslation } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanelAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkItemDraft } from "@src/store/workstation/projectManager";
 
 import type { ChatPanelEmptyContent } from "../ChatPanelEmptyContent";
@@ -43,7 +43,7 @@ vi.mock("@src/store/project/projectAtom", async () => {
   const { atom } = await import("jotai");
   return { projectListRefreshAtom: atom(0) };
 });
-vi.mock("@src/store/ui/chatPanelAtom", async () => {
+vi.mock("@src/store/ui/chatPanel/selectionAtoms", async () => {
   const { atom } = await import("jotai");
   return {
     CHAT_PANEL_CREATE_TARGET: {

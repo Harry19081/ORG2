@@ -59,7 +59,14 @@ export * from "./guideHighlightAtom";
 // WorkStation / Chat / Simulator / Workspace Folders (formerly workspaceAtom barrel)
 export * from "./simulatorAtom";
 export * from "./overlayAtom";
-export * from "./chatPanelAtom";
+export { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
+
+export * from "./chatPanel/widthAtoms";
+export * from "./chatPanel/visibilityAtoms";
+export * from "./chatPanel/displayPrefsAtoms";
+export * from "./chatPanel/selectionAtoms";
+export * from "./chatPanel/surfaceAtoms";
+export * from "./chatPanel/miscAtoms";
 export * from "./chatImageAtom";
 export * from "./messageQueueAtom";
 export * from "./sessionPaginationAtom";

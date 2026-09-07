@@ -496,7 +496,9 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                             <span
                               key={action.label}
                               className={
-                                action.active
+                                section.headerActions?.some(
+                                  (headerAction) => headerAction.active
+                                )
                                   ? "inline-flex"
                                   : action.showOnSidebarHover
                                     ? "hidden group-focus-within/section-title:inline-flex group-hover/sidebar:inline-flex"

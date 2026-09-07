@@ -5,10 +5,8 @@ import { ROUTES } from "@src/config/routes";
 import { buildInitialChatPanelTabsState } from "@src/store/chatPanel/chatPanelTabFactories";
 import { openRuntimeInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
-import {
-  chatPanelMaximizedAtom,
-  stationChatVisibilityAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   createInstrumentedStore,

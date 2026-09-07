@@ -44,7 +44,7 @@ export type { NavigationMenuItem } from "./components/NavigationMenu/config";
 export {
   useForceVisibleSidebar,
   ForceVisibleSidebarProvider,
-} from "./contexts";
+} from "./contexts/ForceVisibleContext";
 
 // ============================================
 // Configuration

@@ -13,7 +13,7 @@ import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelCreateProjectContext,
   type ChatPanelCreateTarget,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import { primaryWorkspaceRootAtom } from "@src/store/workspace";
 import {
   PROJECT_CREATOR_DRAFT_ID,

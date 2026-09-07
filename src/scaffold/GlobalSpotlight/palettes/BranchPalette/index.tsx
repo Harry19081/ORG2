@@ -23,6 +23,7 @@ import {
   Refresh04Icon,
   Tick01Icon,
 } from "@src/icons";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import type { WorktreeLaunchSource } from "@src/store/session/worktreeLaunchSourceAtom";
 import { spotlightShowPathAtom } from "@src/store/ui/spotlightShowPathAtom";
 import { compactRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
@@ -36,7 +37,6 @@ import { ICONS } from "../../config";
 import { useRefreshSpin } from "../../shared";
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { SpotlightItem } from "../../types";
-import { useSelectorKernel } from "../core";
 import type { WorktreePaletteMode, WorktreePaletteProps } from "./types";
 import {
   refreshWorktreeMap,

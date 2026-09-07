@@ -17,7 +17,7 @@ import {
   hasCompletedSetupGuideMilestone,
 } from "@src/store/settings/setupGuideProgress";
 import { saveSetupGuideProgressAtom } from "@src/store/settings/setupGuideProgressAtom";
-import { CLOUD_ORG_MANAGEMENT_VIEW } from "@src/store/ui/chatPanelAtom";
+import { CLOUD_ORG_MANAGEMENT_VIEW } from "@src/store/ui/chatPanel/selectionAtoms";
 import { showGuideHighlightAtom } from "@src/store/ui/guideHighlightAtom";
 import { runtimeNavigationIntentAtom } from "@src/store/ui/runtimeNavigationAtom";
 

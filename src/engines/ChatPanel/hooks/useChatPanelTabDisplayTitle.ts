@@ -14,7 +14,7 @@ import { sessionByIdAtom } from "@src/store/session";
 import {
   CHAT_PANEL_CREATE_TARGET,
   chatPanelCreateTargetAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { resolveChatPanelTabDisplayTitle } from "../chatPanelTabDisplay";
 

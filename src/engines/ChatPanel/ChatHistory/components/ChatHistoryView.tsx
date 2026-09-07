@@ -8,7 +8,7 @@ import { ChatLoadingBlock } from "@src/engines/ChatPanel/blocks/primitives";
 import { resolveTranscriptTopPaddingPx } from "@src/engines/ChatPanel/header/chatPanelHeaderLayout";
 import CloudSessionDownloadProgressCard from "@src/features/Org2Cloud/CloudSessionDownloadProgressCard";
 import { useCloudSessionHasDownloadSurface } from "@src/features/Org2Cloud/useCloudSessionDownloadSurface";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 import SessionHeader from "../../ChatItems/SessionHeader";
 import { ChatHistoryDisplayModeProvider } from "../chatDisplayModeContext";

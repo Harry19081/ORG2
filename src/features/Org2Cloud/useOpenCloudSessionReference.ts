@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import Message from "@src/components/Message";
 import { ROUTES } from "@src/config/routes";
 import i18n from "@src/i18n";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanelAtom";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { requestSessionSidebarRevealAtom } from "@src/store/ui/sidebarAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 

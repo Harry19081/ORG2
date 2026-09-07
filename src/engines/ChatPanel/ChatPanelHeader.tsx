@@ -23,7 +23,7 @@ import {
 } from "@src/icons";
 import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { isWindows } from "@src/util/platform/tauri";
 

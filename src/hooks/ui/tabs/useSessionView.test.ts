@@ -8,7 +8,7 @@ import {
   activeSessionIdAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 import { type UseSessionViewReturn, useSessionView } from "./useSessionView";

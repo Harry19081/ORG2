@@ -978,7 +978,7 @@
     "browserCacheCleanFailed": "清理瀏覽器快取失敗"
   },
   "dependencies": {
-    "systemDependencies": "系統 Dependencies",
+    "systemDependencies": "系統相依套件",
     "refreshSuccess": "依賴已刷新",
     "scanning": "掃描中...",
     "detectingDependencies": "正在檢測依賴...",

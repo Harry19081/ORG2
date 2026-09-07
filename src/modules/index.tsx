@@ -38,13 +38,13 @@ import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { resolveChatPanelMaximizedForLayout } from "@src/store/chatPanel/chatPanelTabsModel";
 import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { useSyncStatusBridge } from "@src/store/sync";
+import { type ChatPanelMode } from "@src/store/ui/chatPanel/selectionAtoms";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import {
-  type ChatPanelMode,
-  chatPanelMaximizedAtom,
   chatWidthAtom,
   restoreChatWidthAtom,
-  stationChatVisibilityAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/widthAtoms";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 import {
   DEFAULT_SIDEBAR_WIDTH,

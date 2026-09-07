@@ -46,6 +46,8 @@ export function RuntimeSectionHeader({
 
 interface RuntimeRefreshButtonProps {
   label: string;
+  variant?: "secondary" | "tertiary";
+  iconOnly?: boolean;
   onRefresh: () => void;
   refreshing: boolean;
   disabled?: boolean;
@@ -55,6 +57,8 @@ interface RuntimeRefreshButtonProps {
 /** Standard page and table-toolbar refresh action for Runtime. */
 export function RuntimeRefreshButton({
   label,
+  iconOnly = false,
+  variant = "tertiary",
   onRefresh,
   refreshing,
   disabled = false,
@@ -65,8 +69,11 @@ export function RuntimeRefreshButton({
   return (
     <Button
       htmlType="button"
-      {...TEXT_HOVER_REFRESH_BUTTON_PROPS}
-      size="small"
+      {...(variant === "tertiary"
+        ? TEXT_HOVER_REFRESH_BUTTON_PROPS
+        : { variant })}
+      iconOnly={iconOnly}
+      size={variant === "secondary" ? "default" : "small"}
       disabled={disabled || refreshing}
       aria-label={label}
       title={label}
@@ -81,7 +88,7 @@ export function RuntimeRefreshButton({
       }
       data-testid={dataTestId}
     >
-      {label}
+      {iconOnly ? null : label}
     </Button>
   );
 }

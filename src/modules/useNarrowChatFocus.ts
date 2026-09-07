@@ -41,12 +41,12 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef } from "react";
 
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   chatPanelDraggingAtom,
-  chatPanelMaximizedAtom,
   chatVisibleAtom,
   chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/widthAtoms";
 
 /**
  * Below this *workbench* width the chat panel takes over the entire
