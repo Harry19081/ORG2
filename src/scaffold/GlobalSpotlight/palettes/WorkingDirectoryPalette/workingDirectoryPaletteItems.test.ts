@@ -4,10 +4,10 @@ import type { CachedRepo } from "@src/store/repo";
 import { REPO_KIND } from "@src/store/repo";
 
 import type { RepoItem, SpotlightItem } from "../../types";
-import type { WorkspacePaletteText } from "./types";
-import { buildSectionedWorkspaceItems } from "./workspacePaletteItems";
+import type { WorkingDirectoryPaletteText } from "./types";
+import { buildSectionedWorkingDirectoryItems } from "./workingDirectoryPaletteItems";
 
-const paletteText: WorkspacePaletteText = {
+const paletteText: WorkingDirectoryPaletteText = {
   switchPathLabel: "Switch",
   switchPathTemplate: "Switch",
   switchPlaceholder: "Search",
@@ -24,8 +24,8 @@ const paletteText: WorkspacePaletteText = {
   sectionSystemPathsLabel: "System Paths",
   sectionExternalRecentLabel: "Used elsewhere",
   sectionRepoLabel: "Repositories",
-  sectionFolderWorkspaceLabel: "Workspace",
-  sectionMultiRepoWorkspaceLabel: "Multi-Repo Workspace",
+  sectionWorkingDirectoryLabel: "Workspace",
+  sectionMultiRepoWorkingDirectoryLabel: "Multi-Repo Working Directory",
   sectionThisOrgLabel: "This org",
   sectionOutsideOrgLabel: "Outside this org",
 };
@@ -86,9 +86,11 @@ function bySection(items: SpotlightItem[]): Record<string, string[]> {
 }
 
 function build(
-  overrides: Partial<Parameters<typeof buildSectionedWorkspaceItems>[0]> = {}
+  overrides: Partial<
+    Parameters<typeof buildSectionedWorkingDirectoryItems>[0]
+  > = {}
 ) {
-  return buildSectionedWorkspaceItems({
+  return buildSectionedWorkingDirectoryItems({
     addMenuActive: false,
     sectionedAddItems: [],
     workspaceItems: [],
@@ -106,7 +108,7 @@ function build(
   });
 }
 
-describe("buildSectionedWorkspaceItems org scope grouping", () => {
+describe("buildSectionedWorkingDirectoryItems org scope grouping", () => {
   it("keeps the plain repo/workspace sections when no org scope is active", () => {
     // Three ranked cached repos fill the top-3 Recent pool so the workspace
     // item stays in its own section instead of being pulled into Recent.
@@ -169,7 +171,7 @@ describe("buildSectionedWorkspaceItems org scope grouping", () => {
     ]);
     expect(sections.repo).toBeUndefined();
     expect(sections.multiRepoWorkspace).toBeUndefined();
-    expect(sections.folderWorkspace).toBeUndefined();
+    expect(sections.workingDirectory).toBeUndefined();
   });
 
   it("keeps system-path rows in their own section without running the org predicate on them", () => {

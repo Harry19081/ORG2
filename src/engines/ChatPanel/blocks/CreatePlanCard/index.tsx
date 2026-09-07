@@ -37,6 +37,7 @@ import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { usePendingPlanApproval } from "@src/hooks/session/usePendingPlanApproval";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import { FileService } from "@src/services/file";
+import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefaultModelAtom";
 import {
@@ -200,8 +201,12 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
 
     useEffect(() => {
       if (!autoApproveAt || submitting) return;
-      const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
-      return () => window.clearInterval(timer);
+      const timer = startVisibilityAwareInterval(
+        document,
+        () => setNowMs(Date.now()),
+        1000
+      );
+      return () => timer();
     }, [autoApproveAt, submitting]);
 
     const autoApproveRemaining =

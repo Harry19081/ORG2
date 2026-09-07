@@ -166,7 +166,7 @@
       "commandPalette": "Палитра команд",
       "goToFile": "Перейти к файлу...",
       "selectModel": "Выбрать модель...",
-      "switchWorkspace": "Сменить рабочую область...",
+      "switchWorkspace": "Сменить рабочий каталог...",
       "switchBranch": "Сменить ветку...",
       "switchRunningLocation": "Сменить место выполнения...",
       "settings": "Настройки...",
@@ -199,13 +199,13 @@
     "openSessionBeforeLinking": "Откройте сессию перед привязкой рабочего элемента.",
     "sessionLinkedToWorkItem": "Сессия привязана к рабочему элементу.",
     "sessionLinkFailed": "Не удалось привязать сессию: {{message}}",
-    "chooseFolderNewWorkspace": "Выберите папку для создания рабочей области",
-    "chooseExistingWorkspace": "Выберите существующую рабочую область",
+    "chooseFolderNewWorkspace": "Выберите родительскую папку рабочего каталога",
+    "chooseExistingWorkspace": "Выберите существующий рабочий каталог",
     "selectDirectoryFailed": "Не удалось выбрать каталог",
-    "workspaceCreated": "Рабочая область создана",
-    "workspaceCreateFailed": "Не удалось создать рабочую область",
-    "workspaceImported": "Рабочая область импортирована",
-    "workspaceImportFailed": "Не удалось импортировать рабочую область",
+    "workspaceCreated": "Рабочий каталог создан",
+    "workspaceCreateFailed": "Не удалось создать рабочий каталог",
+    "workspaceImported": "Рабочий каталог импортирован",
+    "workspaceImportFailed": "Не удалось импортировать рабочий каталог",
     "chooseFolderCloneRepo": "Выберите папку для клонирования репозитория",
     "repositoryCloned": "Репозиторий клонирован",
     "repositoryCloneFailed": "Не удалось клонировать репозиторий"
@@ -380,9 +380,9 @@
     "moreSettings": "Больше настроек",
     "sort": "Сортировать",
     "openFolder": "Открыть папку",
-    "addWorkspace": "Добавить workspace",
+    "addWorkspace": "Добавить рабочий каталог",
     "openSpotlight": "Открыть Spotlight",
-    "openWorkspace": "Открыть workspace",
+    "openWorkspace": "Открыть рабочий каталог",
     "skipThisVersion": "Пропустить эту версию",
     "later": "Позже",
     "link": "Связать",
@@ -994,8 +994,8 @@
     "retryToScanAgain": "Повторить сканирование",
     "noTokensFound": "Token не найдены",
     "addCssVariables": "Добавьте CSS-переменные в проект",
-    "noWorkspaceExplorerTitle": "Workspace не открыт",
-    "noWorkspaceExplorerSubtitle": "Откройте рабочее пространство для просмотра файлов",
+    "noWorkspaceExplorerTitle": "Рабочий каталог не открыт",
+    "noWorkspaceExplorerSubtitle": "Откройте рабочий каталог для просмотра файлов",
     "cannotFindRepo": "Не удалось найти {{repoName}}",
     "lastSeenAtPath": "Последний раз был по пути {{path}}",
     "unsupportedFileType": "Неподдерживаемый тип файла",
@@ -1065,13 +1065,13 @@
     "publishingBranch": "Publishing...",
     "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git не инициализирован",
-    "notGitInitializedTooltip": "В этом Workspace пока нет каталога .git.",
+    "notGitInitializedTooltip": "В этом рабочем каталоге пока нет каталога .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
     "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
     "branchTooltip": "Ветка: {{branch}}",
     "branchTooltipSwitching": "Ветка: {{branch}} (переключение…)",
-    "switchWorkspaceTooltip": "Сменить workspace",
+    "switchWorkspaceTooltip": "Сменить рабочий каталог",
     "switchWorktreeTooltip": "Сменить worktree",
     "switchBranchTooltip": "Сменить ветку",
     "switchLocalBranchTooltip": "Сменить локальную ветку",
@@ -1642,23 +1642,23 @@
         "current": "Текущий",
         "repo": "Репозитории",
         "systemPaths": "Системные пути",
-        "usedElsewhere": "Используется в других местах",
-        "workspace": "Workspace",
-        "thisOrg": "Эта рабочее пространство",
-        "outsideOrg": "Вне этого рабочего пространства"
+        "usedElsewhere": "Используется в других приложениях",
+        "workspace": "Рабочий каталог",
+        "thisOrg": "Этот рабочий каталог",
+        "outsideOrg": "За пределами этого рабочего каталога"
       },
       "tabs": {},
       "addOptions": {
         "cloneFromGitHubUrl": "Клонировать по URL GitHub",
         "cloneFromMyGitHub": "Клонировать из моего GitHub",
-        "createWorkspace": "Создать новый workspace"
+        "createWorkspace": "Создать новый рабочий каталог"
       },
       "sources": {
         "cloningFromGitHub": "клонирование из GitHub",
         "cloningFromGitHubUrl": "клонирование по URL GitHub",
         "cloningFromMyGitHub": "клонирование из моего GitHub",
-        "creatingWorkspace": "создание нового workspace",
-        "creatingMultiRepoWorkspace": "сборка multi-repo workspace"
+        "creatingWorkspace": "создание нового рабочего каталога",
+        "creatingMultiRepoWorkspace": "сборка рабочего каталога с несколькими репозиториями"
       },
       "forms": {
         "repoName": "Имя репозитория",
@@ -1666,19 +1666,19 @@
         "chooseDestinationPath": "Выберите путь назначения",
         "choose": "Выбрать",
         "createAt": "Создать в {{path}}",
-        "createWorkspaceTitle": "Новый workspace",
-        "creatingWorkspace": "Создание workspace...",
-        "readyToCreateWorkspace": "Готово к созданию workspace",
-        "workspaceName": "Название workspace",
-        "workspaceNamePlaceholder": "Мой workspace"
+        "createWorkspaceTitle": "Новый рабочий каталог",
+        "creatingWorkspace": "Создание рабочего каталога...",
+        "readyToCreateWorkspace": "Готово к созданию рабочего каталога",
+        "workspaceName": "Название каталога",
+        "workspaceNamePlaceholder": "Мой каталог"
       },
       "path": {
         "switchTo": "Переключиться на",
         "switchToTemplate": "Переключиться на {workspace}",
         "search": "Поиск",
-        "manageWorkspace": "Управление рабочим пространством",
-        "addBy": "Добавить workspace через",
-        "addByTemplate": "Добавить workspace через {source}"
+        "manageWorkspace": "Управление рабочим каталогом",
+        "addBy": "Добавить рабочий каталог через",
+        "addByTemplate": "Добавить рабочий каталог через {source}"
       },
       "pathImport": {
         "addLabel": "Добавить",
@@ -1687,7 +1687,7 @@
       },
       "gitInitPrompt": {
         "title": "Инициализировать Git?",
-        "message": "В этом workspace нет папки .git. Инициализировать его как Git-репозиторий?",
+        "message": "В этом рабочем каталоге нет папки .git. Инициализировать его как Git-репозиторий?",
         "ok": "Инициализировать Git",
         "cancel": "Оставить как папку"
       }
@@ -1766,10 +1766,10 @@
       "sourceAria": "Выбрать источник рабочей области",
       "on": "на",
       "branchAria": "Выбрать ветку",
-      "switchWorkspace": "Сменить Workspace",
+      "switchWorkspace": "Сменить рабочий каталог",
       "switchBranch": "Сменить Branch",
       "switchLocation": "Изменить место выполнения",
-      "sessionWorkspace": "Сменить Workspace сессии",
+      "sessionWorkspace": "Сменить рабочий каталог сессии",
       "locationAria": "Выбрать место выполнения",
       "systemPaths": {
         "home": {
@@ -1890,16 +1890,16 @@
           "placeholder": "Search across all sessions..."
         },
         "switchWorkspace": {
-          "label": "Переключить Workspace"
+          "label": "Сменить рабочий каталог"
         },
         "switchBranch": {
           "label": "Переключить ветку"
         },
         "addWorkspace": {
-          "label": "Добавить Workspace"
+          "label": "Добавить рабочий каталог"
         },
         "createMultiRepoWorkspace": {
-          "label": "Добавить Multi-repo Workspace"
+          "label": "Добавить рабочий каталог с несколькими репозиториями"
         },
         "showSourceControl": {
           "label": "Показать Source Control"
@@ -2034,7 +2034,7 @@
     "hidePrimarySidebar": "Скрыть боковую панель",
     "searchFiles": "Поиск файлов",
     "openBrowser": "Открыть браузер",
-    "switchWorkspace": "Переключить / добавить Workspace",
+    "switchWorkspace": "Сменить / добавить рабочий каталог",
     "openEditor": "Открыть редактор",
     "hideTerminal": "Скрыть терминал",
     "hideFiles": "Скрыть файлы",
@@ -2128,10 +2128,10 @@
   },
   "sourceControl": {
     "notGitInitialized": "Git не инициализирован",
-    "notGitInitializedSubtitle": "Инициализируйте Git, чтобы отслеживать изменения, создавать коммиты и использовать инструменты веток в этом Workspace.",
+    "notGitInitializedSubtitle": "Инициализируйте Git, чтобы отслеживать изменения, создавать коммиты и использовать инструменты веток в этом рабочем каталоге.",
     "initializeGit": "Инициализировать Git",
     "initializingGit": "Инициализация Git...",
-    "noRemoteForPublish": "Этот Workspace теперь является Git-репозиторием, но у него еще нет remote. Добавьте remote, например origin, перед публикацией этой ветки.",
+    "noRemoteForPublish": "Этот рабочий каталог теперь является Git-репозиторием, но у него еще нет remote. Добавьте remote, например origin, перед публикацией этой ветки.",
     "generateCommitMessage": "Сгенерировать сообщение коммита с помощью ИИ",
     "pull": "Pull",
     "push": "Push",
@@ -2223,24 +2223,24 @@
     "parentFolderPlaceholder": "Выбрать Parent folder"
   },
   "workspaceForm": {
-    "title": "Создать мульти-Repo Workspace",
-    "editTitle": "Редактировать Workspace",
-    "createWorkspace": "Создать мульти-Repo Workspace",
-    "multiRepoWorkspace": "Мульти-Repo Workspace",
-    "createWorkspaceDesc": "Составить Workspace из нескольких репо",
+    "title": "Создать рабочий каталог с несколькими репозиториями",
+    "editTitle": "Редактировать рабочий каталог",
+    "createWorkspace": "Создать рабочий каталог с несколькими репозиториями",
+    "multiRepoWorkspace": "Рабочий каталог с несколькими репозиториями",
+    "createWorkspaceDesc": "Составить рабочий каталог из нескольких репозиториев",
     "filterPlaceholder": "Фильтр репо...",
-    "selectRepos": "Выберите репо для Workspace",
+    "selectRepos": "Выберите репозитории для рабочего каталога",
     "noReposFound": "Репо не найдены",
     "noRepos": "Нет доступных репо",
     "current": "текущий",
-    "workspaceName": "Название Workspace",
-    "workspaceNamePlaceholder": "Мой Workspace",
-    "willInclude": "Workspace будет включать {{count}} репо",
+    "workspaceName": "Название рабочего каталога",
+    "workspaceNamePlaceholder": "Мой рабочий каталог",
+    "willInclude": "Рабочий каталог будет включать {{count}} репозиториев",
     "statusSelectAtLeastTwo": "Выберите минимум 2 репо",
-    "statusReadyToCreate": "Готово к созданию Workspace",
-    "defaultName": "Workspace",
-    "defaultNameWithRepo": "Workspace {{repo}}",
-    "windowTitle": "Workspace"
+    "statusReadyToCreate": "Готово к созданию рабочего каталога",
+    "defaultName": "Рабочий каталог",
+    "defaultNameWithRepo": "Рабочий каталог {{repo}}",
+    "windowTitle": "Рабочий каталог"
   },
   "database": {
     "addConnection": "Add Database Connection",

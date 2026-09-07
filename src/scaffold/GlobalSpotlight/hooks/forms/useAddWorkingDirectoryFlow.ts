@@ -1,8 +1,8 @@
 /**
- * useAddWorkspaceFlow Hook
+ * useAddWorkingDirectoryFlow Hook
  *
- * Consolidates the add workspace modal flow used by RepoSelector and SessionSourceSelector.
- * Manages modal stages, form hooks, and provides shared add workspace menu items.
+ * Consolidates the add-working-directory modal flow used by the repo and
+ * session-source selectors. It also exposes the saved multi-repo workspace form.
  */
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,9 +18,9 @@ import {
   useCreateWorkspaceForm,
 } from "./useCreateWorkspaceForm";
 import {
-  type UseWorkspaceFormReturn,
-  useWorkspaceForm,
-} from "./useWorkspaceForm";
+  type UseWorkingDirectoryFormReturn,
+  useWorkingDirectoryForm,
+} from "./useWorkingDirectoryForm";
 
 interface DragDropData {
   initialPath?: unknown;
@@ -41,11 +41,11 @@ function consumeDragDropInitialPath(): string | undefined {
   }
 }
 
-function isDirectOpenStage(stage: AddWorkspaceModalStage): boolean {
+function isDirectOpenStage(stage: AddWorkingDirectoryModalStage): boolean {
   return stage === "add-workspace-existing";
 }
 
-export type AddWorkspaceModalStage =
+export type AddWorkingDirectoryModalStage =
   | "add-workspace-new"
   | "add-workspace-clone"
   | "add-workspace-clone-url"
@@ -54,22 +54,22 @@ export type AddWorkspaceModalStage =
   | "create-workspace"
   | null;
 
-interface UseAddWorkspaceFlowOptions {
-  modalStage: AddWorkspaceModalStage;
-  setModalStage: (stage: AddWorkspaceModalStage) => void;
-  onSuccess?: (workspaceId?: string) => void | Promise<void>;
+interface UseAddWorkingDirectoryFlowOptions {
+  modalStage: AddWorkingDirectoryModalStage;
+  setModalStage: (stage: AddWorkingDirectoryModalStage) => void;
+  onSuccess?: (repoId?: string) => void | Promise<void>;
   onClose?: () => void;
   onModalClose?: () => void;
   inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
-export interface UseAddWorkspaceFlowReturn {
-  localWorkspaceForm: UseWorkspaceFormReturn;
+export interface UseAddWorkingDirectoryFlowReturn {
+  workingDirectoryForm: UseWorkingDirectoryFormReturn;
   cloneForm: UseCloneFormReturn;
   multiRepoWorkspaceForm: UseCreateWorkspaceFormReturn;
-  addWorkspaceItems: SpotlightItem[];
-  getModalSourceLabel: (stage: AddWorkspaceModalStage) => string;
-  getModalActionLabel: (stage: AddWorkspaceModalStage) => string;
+  addWorkingDirectoryItems: SpotlightItem[];
+  getModalSourceLabel: (stage: AddWorkingDirectoryModalStage) => string;
+  getModalActionLabel: (stage: AddWorkingDirectoryModalStage) => string;
   handleGoBack: () => void;
   isLoading: boolean;
   actionPathSegment: {
@@ -83,7 +83,7 @@ export interface UseAddWorkspaceFlowReturn {
       requiredParams: string[];
     };
   };
-  getSourceSegment: (stage: AddWorkspaceModalStage) => {
+  getSourceSegment: (stage: AddWorkingDirectoryModalStage) => {
     id: string;
     type: "source";
     label: string;
@@ -92,9 +92,9 @@ export interface UseAddWorkspaceFlowReturn {
   } | null;
 }
 
-export function useAddWorkspaceFlow(
-  options: UseAddWorkspaceFlowOptions
-): UseAddWorkspaceFlowReturn {
+export function useAddWorkingDirectoryFlow(
+  options: UseAddWorkingDirectoryFlowOptions
+): UseAddWorkingDirectoryFlowReturn {
   const { t } = useTranslation();
   const {
     modalStage,
@@ -109,13 +109,13 @@ export function useAddWorkspaceFlow(
     autoLoad: false,
   });
 
-  const localWorkspaceForm = useWorkspaceForm({
-    onSuccess: async (workspaceId?: string) => {
+  const workingDirectoryForm = useWorkingDirectoryForm({
+    onSuccess: async (repoId?: string) => {
       await forceRefreshRepos();
-      if (workspaceId) selectRepo(workspaceId);
+      if (repoId) selectRepo(repoId);
       setModalStage(null);
       onModalClose?.();
-      await onSuccess?.(workspaceId);
+      await onSuccess?.(repoId);
     },
     onClose: () => {
       setModalStage(null);
@@ -124,12 +124,12 @@ export function useAddWorkspaceFlow(
   });
 
   const cloneForm = useCloneForm({
-    onSuccess: async (workspaceId?: string) => {
+    onSuccess: async (repoId?: string) => {
       await forceRefreshRepos();
-      if (workspaceId) selectRepo(workspaceId);
+      if (repoId) selectRepo(repoId);
       setModalStage(null);
       onModalClose?.();
-      await onSuccess?.(workspaceId);
+      await onSuccess?.(repoId);
     },
     onClose: () => {
       setModalStage(null);
@@ -148,7 +148,7 @@ export function useAddWorkspaceFlow(
     },
   });
 
-  const addWorkspaceText = useMemo(
+  const workingDirectoryText = useMemo(
     () => ({
       options: {
         openWorkspace: t("actions.openFolder"),
@@ -158,7 +158,7 @@ export function useAddWorkspaceFlow(
         cloneFromMyGitHub: t("selectors.repo.addOptions.cloneFromMyGitHub"),
         createMultiRepoWorkspace: t(
           "workspaceForm.createWorkspace",
-          "Create Multi-repo Workspace"
+          "Create Multi-repo Working Directory"
         ),
       },
       sources: {
@@ -179,19 +179,19 @@ export function useAddWorkspaceFlow(
     [t]
   );
 
-  const addWorkspaceItems = useMemo(
+  const addWorkingDirectoryItems = useMemo(
     (): SpotlightItem[] => [
       {
         id: "add-workspace-existing",
-        label: addWorkspaceText.options.openWorkspace,
+        label: workingDirectoryText.options.openWorkspace,
         icon: ICONS.folderOpen,
         type: "repo" as const,
         data: { isSelector: true },
-        action: () => void localWorkspaceForm.handleOpenLocalWorkspace(),
+        action: () => void workingDirectoryForm.handleOpenWorkingDirectory(),
       },
       {
         id: "add-workspace-new",
-        label: addWorkspaceText.options.createWorkspace,
+        label: workingDirectoryText.options.createWorkspace,
         icon: ICONS.newRepo,
         type: "repo" as const,
         data: { isSelector: true },
@@ -199,7 +199,7 @@ export function useAddWorkspaceFlow(
       },
       {
         id: "add-workspace-clone-url",
-        label: addWorkspaceText.options.cloneFromGitHubUrl,
+        label: workingDirectoryText.options.cloneFromGitHubUrl,
         icon: ICONS.cloneRepoUrl,
         type: "repo" as const,
         data: { isSelector: true },
@@ -207,54 +207,54 @@ export function useAddWorkspaceFlow(
       },
       {
         id: "add-workspace-clone-github",
-        label: addWorkspaceText.options.cloneFromMyGitHub,
+        label: workingDirectoryText.options.cloneFromMyGitHub,
         icon: ICONS.cloneRepo,
         type: "repo" as const,
         data: { isSelector: true },
         action: () => setModalStage("add-workspace-clone-github"),
       },
     ],
-    [addWorkspaceText, localWorkspaceForm, setModalStage]
+    [workingDirectoryText, workingDirectoryForm, setModalStage]
   );
 
   const getModalSourceLabel = useCallback(
-    (stage: AddWorkspaceModalStage): string => {
+    (stage: AddWorkingDirectoryModalStage): string => {
       switch (stage) {
         case "add-workspace-new":
-          return addWorkspaceText.sources.creatingWorkspace;
+          return workingDirectoryText.sources.creatingWorkspace;
         case "add-workspace-clone":
-          return addWorkspaceText.sources.cloningFromGitHub;
+          return workingDirectoryText.sources.cloningFromGitHub;
         case "add-workspace-clone-url":
-          return addWorkspaceText.sources.cloningFromGitHubUrl;
+          return workingDirectoryText.sources.cloningFromGitHubUrl;
         case "add-workspace-clone-github":
-          return addWorkspaceText.sources.cloningFromMyGitHub;
+          return workingDirectoryText.sources.cloningFromMyGitHub;
         case "create-workspace":
-          return addWorkspaceText.sources.creatingMultiRepoWorkspace;
+          return workingDirectoryText.sources.creatingMultiRepoWorkspace;
         default:
           return "";
       }
     },
-    [addWorkspaceText]
+    [workingDirectoryText]
   );
 
   const getModalActionLabel = useCallback(
-    (stage: AddWorkspaceModalStage): string => {
+    (stage: AddWorkingDirectoryModalStage): string => {
       switch (stage) {
         case "add-workspace-new":
-          return addWorkspaceText.options.createWorkspace;
+          return workingDirectoryText.options.createWorkspace;
         case "add-workspace-clone":
-          return addWorkspaceText.options.cloneFromGitHub;
+          return workingDirectoryText.options.cloneFromGitHub;
         case "add-workspace-clone-url":
-          return addWorkspaceText.options.cloneFromGitHubUrl;
+          return workingDirectoryText.options.cloneFromGitHubUrl;
         case "add-workspace-clone-github":
-          return addWorkspaceText.options.cloneFromMyGitHub;
+          return workingDirectoryText.options.cloneFromMyGitHub;
         case "create-workspace":
-          return addWorkspaceText.options.createMultiRepoWorkspace;
+          return workingDirectoryText.options.createMultiRepoWorkspace;
         default:
           return "";
       }
     },
-    [addWorkspaceText]
+    [workingDirectoryText]
   );
 
   const handleGoBack = useCallback(() => {
@@ -265,19 +265,19 @@ export function useAddWorkspaceFlow(
     () => ({
       type: "action" as const,
       id: "add-workspace",
-      label: addWorkspaceText.actionPath.label,
+      label: workingDirectoryText.actionPath.label,
       icon: FolderAddIcon,
       color: "",
       data: {
-        template: addWorkspaceText.actionPath.template,
+        template: workingDirectoryText.actionPath.template,
         requiredParams: ["source"],
       },
     }),
-    [addWorkspaceText]
+    [workingDirectoryText]
   );
 
   const getSourceSegment = useCallback(
-    (stage: AddWorkspaceModalStage) => {
+    (stage: AddWorkingDirectoryModalStage) => {
       if (!stage) return null;
       const icon =
         stage === "add-workspace-new" ? ICONS.newRepo : FolderAddIcon;
@@ -300,15 +300,15 @@ export function useAddWorkspaceFlow(
   // (React can't eagerly bail a multi-setState batch even when all values
   // are unchanged), which re-created the form objects and re-fired the
   // effect — pegging the webview at ~90% CPU whenever a closed
-  // WorkspacePalette was mounted (e.g. the session-creator repo pill).
+  // WorkingDirectoryPalette was mounted (e.g. the session-creator repo pill).
   const formsRef = useRef({
-    localWorkspaceForm,
+    workingDirectoryForm,
     cloneForm,
     multiRepoWorkspaceForm,
   });
   useEffect(() => {
     formsRef.current = {
-      localWorkspaceForm,
+      workingDirectoryForm,
       cloneForm,
       multiRepoWorkspaceForm,
     };
@@ -319,20 +319,20 @@ export function useAddWorkspaceFlow(
 
     const initialPath = consumeDragDropInitialPath();
     setModalStage(null);
-    void formsRef.current.localWorkspaceForm.handleOpenLocalWorkspace(
+    void formsRef.current.workingDirectoryForm.handleOpenWorkingDirectory(
       initialPath
     );
   }, [modalStage, setModalStage]);
 
   // Reset the forms when the modal CLOSES (stage transitions to null) — not
   // on every render while it is closed (see formsRef comment above).
-  const prevModalStageRef = useRef<AddWorkspaceModalStage>(modalStage);
+  const prevModalStageRef = useRef<AddWorkingDirectoryModalStage>(modalStage);
 
   useEffect(() => {
     const previousStage = prevModalStageRef.current;
     prevModalStageRef.current = modalStage;
     if (modalStage === null && previousStage !== null) {
-      formsRef.current.localWorkspaceForm.resetForm();
+      formsRef.current.workingDirectoryForm.resetForm();
       formsRef.current.cloneForm.resetForm();
       formsRef.current.multiRepoWorkspaceForm.resetForm();
     }
@@ -378,15 +378,15 @@ export function useAddWorkspaceFlow(
   }, [modalStage, inputRef]);
 
   return {
-    localWorkspaceForm,
+    workingDirectoryForm,
     cloneForm,
     multiRepoWorkspaceForm,
-    addWorkspaceItems,
+    addWorkingDirectoryItems,
     getModalSourceLabel,
     getModalActionLabel,
     handleGoBack,
     isLoading:
-      localWorkspaceForm.loading ||
+      workingDirectoryForm.loading ||
       cloneForm.isLoadingRepos ||
       multiRepoWorkspaceForm.loading,
     actionPathSegment,
@@ -394,4 +394,4 @@ export function useAddWorkspaceFlow(
   };
 }
 
-export default useAddWorkspaceFlow;
+export default useAddWorkingDirectoryFlow;

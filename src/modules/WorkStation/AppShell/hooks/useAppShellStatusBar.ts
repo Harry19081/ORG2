@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
 import {
   openBranchSpotlight,
-  openWorkspaceSpotlight,
+  openWorkingDirectorySpotlight,
   openWorktreeSpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
@@ -19,7 +19,7 @@ import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/st
  * Module-level so the identity is stable across renders.
  */
 const SPOTLIGHT_CALLBACKS = {
-  onRepoClick: () => openWorkspaceSpotlight("switch"),
+  onRepoClick: () => openWorkingDirectorySpotlight("switch"),
   onBranchClick: openBranchSpotlight,
   onWorktreeClick: openWorktreeSpotlight,
 } as const;

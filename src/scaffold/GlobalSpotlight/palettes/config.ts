@@ -138,13 +138,13 @@ export const REPO_PALETTE_CONFIG: SelectorConfig = {
     {
       id: "add",
       label: "Add",
-      title: "Add workspace...",
+      title: "Add working directory...",
       icon: FolderAddIcon,
       path: {
         id: "add-workspace",
-        label: "Add workspace by",
+        label: "Add working directory by",
         icon: FolderAddIcon,
-        template: "Add workspace by {source}",
+        template: "Add working directory by {source}",
         requiredParams: ["source"],
         i18nLabel: "selectors.repo.path.addBy",
         i18nTemplate: "selectors.repo.path.addByTemplate",
