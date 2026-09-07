@@ -462,7 +462,6 @@ export function ChatPanelHeader({
       slots={effectivePublishedHeaderSlots}
       windowsHost={windowsHost}
       hideBottomBorder={!tabRowCollapsed}
-      trailingInsetPx={trailingInsetPx}
     />
   );
 
