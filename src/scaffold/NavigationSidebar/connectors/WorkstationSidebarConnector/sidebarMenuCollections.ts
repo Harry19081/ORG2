@@ -6,7 +6,7 @@ import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { getTerminalDisplayTitle } from "@src/engines/TerminalCore/types";
 import { Refresh04Icon, Search01Icon, SquareTerminalIcon } from "@src/icons";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
-import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { terminalSessionsAtom } from "@src/store/chatPanel/chatPanelTerminalAtom";
 import type { Session, SessionCreatorDraft } from "@src/store/session";
 import { toChatPanelTuiSessionId } from "@src/util/ui/terminal/chatPanelTuiSessionId";

@@ -58,16 +58,16 @@ import {
 } from "@src/shared/dnd/sessionTabDrag";
 import { useSessionTabDropTarget } from "@src/shared/dnd/useSessionTabDropTarget";
 import { useTabInsertionIndicator } from "@src/shared/dnd/useTabInsertionIndicator";
-import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpenAtoms";
+import { openTeamInboxInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/integrations";
 import {
   activateChatPanelTabAtom,
   canMoveChatPanelTabToWorkstation,
-  chatPanelTabsAtom,
   closeAndDestroyChatPanelTabAtom,
   closeOtherChatPanelTabsAtom,
   moveChatPanelTabToWorkstationAtom,
   reorderChatPanelTabsAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { moveSessionTabAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { openSideChatAtom } from "@src/store/ui/sideChatAtom";
 

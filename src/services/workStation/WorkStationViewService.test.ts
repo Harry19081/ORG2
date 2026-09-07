@@ -2,11 +2,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { ROUTES } from "@src/config/routes";
-import {
-  buildInitialChatPanelTabsState,
-  chatPanelTabsAtom,
-  openRuntimeInChatPanelTabAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { buildInitialChatPanelTabsState } from "@src/store/chatPanel/chatPanelTabFactories";
+import { openRuntimeInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   chatPanelMaximizedAtom,
   stationChatVisibilityAtom,

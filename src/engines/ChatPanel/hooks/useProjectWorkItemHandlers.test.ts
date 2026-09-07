@@ -18,7 +18,7 @@ import type { CreatedWorkItemResult } from "@src/modules/ProjectManager/WorkItem
 import {
   activeChatPanelTabAtom,
   chatPanelTabsAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+} from "@src/store/chatPanel/chatPanelTabsState";
 import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanelAtom";
 
 import { useProjectWorkItemHandlers } from "./useProjectWorkItemHandlers";

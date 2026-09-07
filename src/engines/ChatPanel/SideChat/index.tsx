@@ -49,10 +49,8 @@ import {
   LinkSquare02Icon,
   PencilEdit02Icon,
 } from "@src/icons";
-import {
-  activeChatPanelTabTypeAtom,
-  openOrFocusSessionInChatPanelTabAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { openOrFocusSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { activeChatPanelTabTypeAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { sessionMapAtom } from "@src/store/session";
 import {
   chatTurnPaginationEnabledAtom,

@@ -29,11 +29,9 @@ import {
   PanelRightOpenIcon,
 } from "@src/icons";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import {
-  activeChatPanelTabAtom,
-  isChatPanelTabStationAvailable,
-  toggleActiveChatPanelMaximizedAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { toggleActiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { isChatPanelTabStationAvailable } from "@src/store/chatPanel/chatPanelTabsModel";
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   chatPanelMaximizedAtom,
   toggleChatPanelMaximizedAtom,

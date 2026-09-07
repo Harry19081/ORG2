@@ -35,10 +35,8 @@ import {
 } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
-import {
-  activeChatPanelTabAtom,
-  resolveChatPanelMaximizedForLayout,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { resolveChatPanelMaximizedForLayout } from "@src/store/chatPanel/chatPanelTabsModel";
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { useSyncStatusBridge } from "@src/store/sync";
 import {
   type ChatPanelMode,

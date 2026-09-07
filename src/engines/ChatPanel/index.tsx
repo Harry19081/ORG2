@@ -14,14 +14,16 @@ import SessionForkHeaderExtras from "@src/features/TeamCollaboration/components/
 import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import {
-  chatPanelTabCountAtom,
-  isChatPanelTabStationAvailable,
   openRuntimeInChatPanelTabAtom,
   patchChatPanelWorkItemTabAtom,
-  resolveChatPanelMaximizedForLayout,
   syncActiveChatPanelTabStateAtom,
   toggleActiveChatPanelMaximizedAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
+import {
+  isChatPanelTabStationAvailable,
+  resolveChatPanelMaximizedForLayout,
+} from "@src/store/chatPanel/chatPanelTabsModel";
+import { chatPanelTabCountAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   type SessionContinuation,
   retargetChatPanelSessionTabAtom,

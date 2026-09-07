@@ -1,7 +1,7 @@
 /** Shared selection precedence and session collapse pagination. Work-item state stays in its surface. */
 import { useCallback } from "react";
 
-import type { ChatPanelTabType } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTabType } from "@src/store/chatPanel/chatPanelTabsModel";
 import type { SessionCreatorDraft } from "@src/store/session";
 import type {
   ChatPanelContentMode,

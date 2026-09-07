@@ -3,7 +3,7 @@ import { useSetAtom } from "jotai";
 import { type ComponentProps, useCallback } from "react";
 
 import { SessionImportExportModal } from "@src/scaffold/NavigationSidebar/connectors/SessionImportExportModal";
-import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import { moveSessionTabAtom } from "@src/store/session/sessionTabPlacementAtom";
 

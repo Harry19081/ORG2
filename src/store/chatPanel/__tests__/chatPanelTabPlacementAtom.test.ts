@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import {
-  type ChatPanelTabsState,
-  chatPanelTabsAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { type ChatPanelTabsState } from "@src/store/chatPanel/chatPanelTabsModel";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { sessionsAtom } from "@src/store/session/sessionAtom";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";

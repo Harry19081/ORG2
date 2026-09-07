@@ -1,10 +1,8 @@
 import { useAtomValue } from "jotai";
 import React, { memo } from "react";
 
-import {
-  type ChatPanelTab,
-  activeChatPanelTabAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { type ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 
 import { useChatPanelTabDisplayTitle } from "../hooks/useChatPanelTabDisplayTitle";
 

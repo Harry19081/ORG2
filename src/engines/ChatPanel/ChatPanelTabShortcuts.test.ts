@@ -14,7 +14,7 @@ import {
 } from "vitest";
 
 import { chatPanelTabHistoriesAtom } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
-import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
 import {
   createInstrumentedStore,

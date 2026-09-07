@@ -9,7 +9,7 @@ import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
-import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import type { SessionCreatorDraft } from "@src/store/session";
 import { toChatPanelTuiSessionId } from "@src/util/ui/terminal/chatPanelTuiSessionId";
 

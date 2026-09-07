@@ -3,7 +3,7 @@ import { type ReactNode, createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import type {
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
