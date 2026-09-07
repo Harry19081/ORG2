@@ -10,7 +10,7 @@
 | `src/modules/ProjectManager/shared/components/ProjectOrganizationField.tsx:87`   | Keyboard and dropdown behavior  | keep with reason | Existing FieldRow, SearchableDropdown and Option primitives retain interaction semantics                           | None                                                                                                 |
 | `src/modules/ProjectManager/Projects/components/CreateProjectView/index.tsx:413` | Option labels                   | keep with reason | User requested icon-only source indication, so ordinary option labels contain names without Local/Cloud suffixes   | None                                                                                                 |
 
-Verdict totals: **4 fix**, **3 keep with reason**, **0 abstract**.
+Verdict totals: **3 fix**, **4 keep with reason**, **0 abstract**.
 
 The copy sweep updates workspace-container terminology across 13 locales. Agent teams, provider organization fields, product branding, translation keys, interpolation variables, stored IDs and RPC names retain their separate meanings. The default personal display name becomes “My workspace” without database cleanup or renaming custom workspaces.
 
