@@ -334,9 +334,11 @@ export default function ModelSettingsMenu({
                       />
                     }
                     iconPosition="right"
-                    aria-expanded={false}
-                    data-testid="model-settings-advanced"
-                    onClick={() => showAdvanced(true)}
+                    data-testid="model-settings-switch-model"
+                    onClick={() => {
+                      closeDropdown();
+                      onModelClick();
+                    }}
                   >
                     {t("sessions:creator.switchModel")}
                   </Button>
