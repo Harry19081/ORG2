@@ -23,9 +23,9 @@ export { QueryResults } from "./SqlEditor/QueryResults";
 export { createCodeMirrorTheme, getCodeMirrorTheme } from "./config";
 
 // Shared language utilities
+export { getLanguageExtension } from "./shared/languageExtensions";
+export { getLanguageKey } from "./shared/languageDetection";
 export {
-  getLanguageExtension,
   getLanguageExtensionSync,
-  getLanguageKey,
   loadLanguageExtension,
-} from "./shared/languageExtensions";
+} from "./shared/lazyLanguageExtensions";
