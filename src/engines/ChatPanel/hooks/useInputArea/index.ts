@@ -47,7 +47,7 @@ import {
   sessionRuntimeStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom/atoms";
-import { wpReadOnlyAtom } from "@src/store/ui/chatPanelAtom";
+import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { getCompactPathLabel } from "@src/util/file/pathUtils";

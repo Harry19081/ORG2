@@ -13,11 +13,9 @@ import { useLocation } from "react-router-dom";
 
 import { ROUTES, isWorkbenchPath } from "@src/config/routes";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import {
-  chatPanelMaximizedAtom,
-  chatWidthAtom,
-  stationChatVisibilityAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { mainPaneHasRealTabsAtom } from "@src/store/workstation/tabHost";

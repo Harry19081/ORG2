@@ -34,3 +34,9 @@ This phase is published independently against develop `bc396d4d8` as Harry19081.
 - `pnpm check:test-placement` — passed across 516 directories.
 - `git diff --check` — passed; no old references to the removed compatibility paths found in source/test/tool/config searches.
 - Combined integration checkout on develop `bc396d4d8`: `pnpm test` — 1,570 files / 11,664 tests passed with all three reviewed phases together. This is separate evidence from the independent branch checks above. Runtime desktop/multi-window startup, GUI/E2E and release bundling are not exercised; no computer control was used.
+
+## Integration after #1361
+
+Latest integration: merged develop `f00ee7da2` after #1361 landed. Resolved adjacent import conflicts in PinnedWorkbenchChrome and useWorkstationTrailingSlot by keeping both sets of direct owners; no function logic changed. Published history is preserved with a merge commit.
+
+- After integrating develop `f00ee7da2`, reran the targeted `pnpm test` command above — 151 files / 976 tests passed. `pnpm typecheck:fast`, changed-file ESLint and Prettier, `pnpm check:circular`, `pnpm check:test-placement`, and `git diff --check` all passed. Source scan found no references to workStationAtom or ui/chatPanelAtom.

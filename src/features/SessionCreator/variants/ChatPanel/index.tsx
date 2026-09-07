@@ -41,12 +41,12 @@ import {
 import { creatorComposerPositionAtom } from "@src/store/session/creatorComposerPositionAtom";
 import { openCategoryPickerSignalAtom } from "@src/store/session/openCategoryPickerAtom";
 import { tuiModeAtom } from "@src/store/session/tuiModeAtom";
+import { modelPickerStyleAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import {
   chatPanelSelectedProjectAtom,
   chatPanelSelectedProjectOrgAtom,
   chatPanelSelectedWorkItemAtom,
-  modelPickerStyleAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import { getRustAgentType } from "@src/util/session/sessionDispatch";
 
 import { CliLaunchModeSwitch } from "../../components";

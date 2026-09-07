@@ -22,11 +22,9 @@ import {
   shouldShowPinnedWorkbenchChrome,
 } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import {
-  activeStationChatVisibleAtom,
-  chatPanelMaximizedAtom,
-  chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workstationLayoutAtom } from "@src/store/workstation/tabs";
 import { createFileTab } from "@src/store/workstation/tabs/factories";

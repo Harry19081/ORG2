@@ -22,12 +22,12 @@ import {
   visitedSessionsAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import { CHAT_PANEL_SURFACE_KIND } from "@src/store/ui/chatPanelAtom";
 import {
   clearSessionSidebarRevealAtom,
   sessionSidebarRevealRequestAtom,
   sidebarCollapsedAtom,
 } from "@src/store/ui/sidebarAtom";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 import { isMacOS } from "@src/util/platform/tauri";
 
 import { SidebarBottomBar } from "../../blocks";

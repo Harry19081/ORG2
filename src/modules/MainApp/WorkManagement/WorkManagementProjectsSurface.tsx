@@ -19,10 +19,8 @@ import {
   openWorkItemInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { projectListRefreshAtom } from "@src/store/project/projectAtom";
-import {
-  CHAT_PANEL_CREATE_TARGET,
-  activeStationChatVisibleAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
   STORY_ORG_SCOPE,

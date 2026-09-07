@@ -28,11 +28,9 @@ import {
 import ProjectManagerWorkItemsTabBarTrailing from "@src/modules/ProjectManager/ProjectManagerLayout/components/ProjectManagerWorkItemsTabBarTrailing";
 import { TabBarPlusMenu } from "@src/modules/WorkStation/AppShell/TabBarPlusMenu";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import {
-  activeStationChatVisibleAtom,
-  chatWidthAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { workstationProjectTabBarAtom } from "@src/store/workstation";

@@ -57,7 +57,7 @@ import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { createLogger } from "@src/hooks/logger";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 
 import type { ProjectSyncBridge } from "../TeamCollaboration/engine/projectSyncBridge";

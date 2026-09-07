@@ -6,7 +6,7 @@ import { type Root, createRoot } from "react-dom/client";
 import { I18nextProvider } from "react-i18next";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 
 import { ConversationModePill } from "./ConversationModePill";
 import { conversationComposerModeAtomFamily } from "./conversationComposerMode";

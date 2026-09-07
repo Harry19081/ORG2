@@ -54,11 +54,11 @@ import {
   openOrFocusSessionInChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { sessionMapAtom } from "@src/store/session";
+import { chatTurnPaginationEnabledAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import {
-  chatTurnPaginationEnabledAtom,
   chatVisibleAtom,
   restoreChatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/widthAtoms";
 import {
   closeSideChatAtom,
   openSideChatAtom,

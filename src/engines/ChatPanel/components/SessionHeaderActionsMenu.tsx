@@ -41,7 +41,7 @@ import {
 import { sessionByIdAtom, upsertSession } from "@src/store/session";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import { isAgentSession } from "@src/util/session/sessionDispatch";
 
 import { SessionOpenInAppMenuItem } from "./SessionOpenInAppMenuItem";

@@ -42,7 +42,7 @@ function dispatchOpenCodeTab(tabId: string) {
 
 async function unmaximizeChatPanel(): Promise<void> {
   const { chatPanelMaximizedAtom } =
-    await import("@src/store/ui/chatPanelAtom");
+    await import("@src/store/ui/chatPanel/surfaceAtoms");
   const store = getStore();
   store.set(chatPanelMaximizedAtom, false);
 }
@@ -128,15 +128,13 @@ export const WorkStationViewService = {
     const [
       { activeChatPanelTabAtom, isChatPanelTabStationAvailable },
       { stationModeAtom },
-      {
-        activeStationChatVisibleAtom,
-        chatPanelMaximizedAtom,
-        stationChatVisibilityAtom,
-      },
+      { activeStationChatVisibleAtom, stationChatVisibilityAtom },
+      { chatPanelMaximizedAtom },
     ] = await Promise.all([
       import("@src/store/chatPanel/chatPanelTabsAtom"),
       import("@src/store/ui/simulatorAtom"),
-      import("@src/store/ui/chatPanelAtom"),
+      import("@src/store/ui/chatPanel/visibilityAtoms"),
+      import("@src/store/ui/chatPanel/surfaceAtoms"),
     ]);
 
     const store = getStore();
@@ -157,7 +155,7 @@ export const WorkStationViewService = {
   async openKanbanTab(): Promise<boolean> {
     const [{ activeStationChatVisibleAtom }, { stationModeAtom }] =
       await Promise.all([
-        import("@src/store/ui/chatPanelAtom"),
+        import("@src/store/ui/chatPanel/visibilityAtoms"),
         import("@src/store/ui/simulatorAtom"),
       ]);
 
@@ -183,7 +181,7 @@ export const WorkStationViewService = {
       { stationModeAtom },
     ] = await Promise.all([
       import("@src/store/chatPanel/chatPanelTabsAtom"),
-      import("@src/store/ui/chatPanelAtom"),
+      import("@src/store/ui/chatPanel/visibilityAtoms"),
       import("@src/store/ui/simulatorAtom"),
     ]);
 
@@ -370,7 +368,7 @@ export const WorkStationViewService = {
       import("@src/store/workstation/tabs"),
       import("@src/engines/Simulator/types/appTypes"),
       import("@src/store/ui/simulatorAtom"),
-      import("@src/store/ui/chatPanelAtom"),
+      import("@src/store/ui/chatPanel/surfaceAtoms"),
     ]);
 
     if (

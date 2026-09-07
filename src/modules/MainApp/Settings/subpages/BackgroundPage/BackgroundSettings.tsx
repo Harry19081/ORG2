@@ -26,8 +26,8 @@ import {
   MIN_SIDEBAR_OPACITY,
 } from "@src/store/ui/backgroundConfigAtom";
 
-import { ColorSection } from "./components";
-import { useBackgroundSettings } from "./hooks";
+import { ColorSection } from "./components/ColorSection";
+import { useBackgroundSettings } from "./hooks/useBackgroundSettings";
 import type { BackgroundSettingsProps } from "./types";
 
 export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({

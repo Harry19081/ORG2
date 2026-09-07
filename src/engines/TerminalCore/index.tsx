@@ -21,7 +21,7 @@ import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import { useTerminalProcessPoller } from "@src/hooks/terminal";
 import { addToAgentAtom } from "@src/store/ui/addToAgentAtom";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanelAtom";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import {
   commandCwdChangedAtom,
   commandExecutedAtom,

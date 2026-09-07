@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { SessionContinuation } from "@src/store/session/sessionTabPlacementAtom";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 import SessionContentView from "./SessionContentView";
 import type { SessionViewMode } from "./hooks/useSessionViewMode";

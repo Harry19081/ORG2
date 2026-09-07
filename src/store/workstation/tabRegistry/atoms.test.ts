@@ -2,7 +2,7 @@ import { createStore } from "jotai/vanilla";
 import { describe, expect, it } from "vitest";
 
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { createBrowserSessionTab } from "@src/store/workstation/browser/tabs";
 import {

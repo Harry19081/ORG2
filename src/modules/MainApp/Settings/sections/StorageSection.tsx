@@ -2,7 +2,7 @@
  * Storage Settings Section
  *
  * Displays disk usage breakdown for app data directories.
- * Auto-scans on mount (non-blocking) and allows manual rescan.
+ * Auto-scans on mount (non-blocking).
  * Per-category: open folder + clear (with confirmation).
  */
 import {
@@ -14,7 +14,6 @@ import {
   SectionRow,
 } from "@/src/modules/shared/layouts/SectionLayout";
 import { invoke } from "@tauri-apps/api/core";
-import { useAtomValue, useSetAtom } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -33,10 +32,6 @@ import {
   Refresh04Icon,
 } from "@src/icons";
 import { flushGitHubListCachePersistence } from "@src/services/git/githubListCache";
-import {
-  monitorScanningAtom,
-  storageRefreshTriggerAtom,
-} from "@src/store/ui/settingsPanelAtoms";
 import {
   type BrowserStorageUsage,
   cleanUpBrowserStorage,
@@ -88,34 +83,6 @@ const StorageSection: React.FC = () => {
     useState<BrowserStorageUsage>(() => inspectBrowserStorage());
   const [isCleaningBrowserStorage, setIsCleaningBrowserStorage] =
     useState(false);
-
-  const setScanning = useSetAtom(monitorScanningAtom);
-  const storageRefreshTrigger = useAtomValue(storageRefreshTriggerAtom);
-
-  const handleDiskScan = useCallback(async () => {
-    setIsScanning(true);
-    setScanning(true);
-    try {
-      const report = await invoke<DiskUsageReport>("get_disk_usage");
-      setDiskUsage(report);
-      setBrowserStorageUsage(inspectBrowserStorage());
-      Message.success(
-        t("common:refreshToast.successName", { name: t("sections.storage") })
-      );
-    } catch (error) {
-      log.error("[Storage] Failed to fetch disk usage:", error);
-      Message.error(t("storage.scanFailed"));
-    } finally {
-      setIsScanning(false);
-      setScanning(false);
-    }
-  }, [setScanning, t]);
-
-  useEffect(() => {
-    if (storageRefreshTrigger > 0) {
-      handleDiskScan();
-    }
-  }, [storageRefreshTrigger, handleDiskScan]);
 
   const handleOpenStorageDir = useCallback(
     async (path?: string) => {

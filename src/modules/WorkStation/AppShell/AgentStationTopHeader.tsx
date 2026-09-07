@@ -42,11 +42,9 @@ import {
   sessionMapAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import {
-  activeStationChatVisibleAtom,
-  chatWidthAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   simulatorCaptionBarEnabledAtom,
   simulatorEffectiveDockAppAtom,

@@ -16,10 +16,8 @@ import type { ProjectOrg } from "@src/api/http/project";
 import type { QuickAction } from "@src/modules/WorkStation/shared";
 import { openCreateTargetInChatPanelStartPageAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { openOrFocusSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import {
-  CHAT_PANEL_CREATE_TARGET,
-  activeStationChatVisibleAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import {

@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import { replayModeAtom } from "@src/engines/SessionCore";
 import type { ReplayMode } from "@src/engines/SessionCore/core/types";
-import { chatVisibleAtom } from "@src/store/ui/chatPanelAtom";
+import { chatVisibleAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   bumpSimulatorDiffRefreshNonceAtom,
   simulatorAutoLayoutAtom,

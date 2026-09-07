@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import { activeSessionIdAtom } from "@src/store/session/viewAtom";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { type SmokeRoot, createSmokeRoot } from "@src/test/reactSmokeHarness";
 
 import { org2CloudAuthAtom } from "./org2CloudAuthAtom";

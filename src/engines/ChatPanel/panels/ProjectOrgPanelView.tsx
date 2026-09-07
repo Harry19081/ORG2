@@ -22,7 +22,7 @@ import {
 import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelSelectedProjectOrg,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import {
   PROJECT_ORG_SURFACE_VIEW,
   type ProjectOrgSurfaceView,

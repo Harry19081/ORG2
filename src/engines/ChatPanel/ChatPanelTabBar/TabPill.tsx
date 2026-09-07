@@ -45,7 +45,7 @@ import { sessionByIdAtom } from "@src/store/session";
 import {
   CHAT_PANEL_CREATE_TARGET,
   chatPanelCreateTargetAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import { WORK_MANAGEMENT_SECTION } from "@src/store/workstation";
 
 import SessionIdentityIcon from "../components/SessionIdentityIcon";

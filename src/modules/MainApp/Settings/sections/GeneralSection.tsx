@@ -1,11 +1,12 @@
 /**
  * General Settings Section
  *
- * Hosts four tabs:
+ * Hosts five tabs:
  *   - `general` — ORG2 login, language/date, input, app behavior, update,
  *     settings file
  *   - `notifications` — master toggle + advanced blocks (lazy)
  *   - `shortcuts` — keyboard shortcuts viewer (lazy)
+ *   - `storage` — disk usage and cleanup
  *   - `self-hosted` — custom ORG2 Cloud backend endpoint
  *
  * The General tab is rendered eagerly; the heavier Notifications and
@@ -79,13 +80,17 @@ import { languageAtom } from "@src/store/ui/languageAtom";
 import { timezoneAtom } from "@src/store/ui/timezoneAtom";
 import { copyText } from "@src/util/data/clipboard";
 
+import HttpVersionSettingsBlock from "./HttpVersionSettingsBlock";
+
 export const GENERAL_TAB_KEYS = {
   GENERAL: "general",
   NOTIFICATIONS: "notifications",
   SHORTCUTS: "shortcuts",
+  STORAGE: "storage",
   SELF_HOSTED: "self-hosted",
 } as const;
 
+const StorageTab = lazy(() => import("./StorageSection"));
 const NotificationsTab = lazy(() => import("./NotificationsTab"));
 const ShortcutsTab = lazy(() => import("./ShortcutsSection"));
 
@@ -112,6 +117,16 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
         fallback={<Placeholder variant="loading" placement="detail-panel" />}
       >
         <ShortcutsTab />
+      </Suspense>
+    );
+  }
+
+  if (activeTab === GENERAL_TAB_KEYS.STORAGE) {
+    return (
+      <Suspense
+        fallback={<Placeholder variant="loading" placement="detail-panel" />}
+      >
+        <StorageTab />
       </Suspense>
     );
   }
@@ -411,6 +426,8 @@ const GeneralTabBody: React.FC = () => {
           />
         </SectionRow>
       </SectionContainer>
+
+      <HttpVersionSettingsBlock />
 
       <SectionContainer>
         <SectionRow

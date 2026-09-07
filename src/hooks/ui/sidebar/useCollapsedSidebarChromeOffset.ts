@@ -4,10 +4,8 @@ import {
   SESSION_HISTORY_NAV_GAP,
   SESSION_HISTORY_NAV_WIDTH,
 } from "@src/components/SessionHistoryNav";
-import {
-  chatPanelMaximizedAtom,
-  chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 import {
   type ChatPanelPosition,

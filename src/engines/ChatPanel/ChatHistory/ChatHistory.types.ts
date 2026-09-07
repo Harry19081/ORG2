@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { AgentOrgRunMemberView } from "@src/api/tauri/agent";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 export interface FollowAgentNavState {
   showFollowAgent: boolean;

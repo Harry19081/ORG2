@@ -2,11 +2,14 @@
 // Agent Type Configuration
 // ============================================
 import { CLI_AGENT } from "@src/api/tauri/rpc/schemas/validation";
+import type { ApiProviderType } from "@src/api/types/keys";
 
-import type { ApiProviderType } from "./types";
-
-// Re-export model types from types to maintain API
-export type { CliAgentType, ApiProviderType, ModelType } from "./types";
+// Preserve the provider API while exporting types from their owner
+export type {
+  CliAgentType,
+  ApiProviderType,
+  ModelType,
+} from "@src/api/types/keys";
 export { ORGII_ORCHESTRATOR } from "./types";
 
 /**

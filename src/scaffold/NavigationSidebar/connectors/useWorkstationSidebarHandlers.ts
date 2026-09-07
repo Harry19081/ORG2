@@ -43,16 +43,14 @@ import {
   syncSidebarSessionRoster,
   upsertSession,
 } from "@src/store/session";
-import {
-  CHAT_PANEL_SURFACE_KIND,
-  chatPanelNavigateAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   clearPendingFileOpensForSession,
   disposeEditorCacheForSessionAtom,
   disposeWorkstationWorkspaceAtom,
 } from "@src/store/workstation/tabs";
 import { clearPendingCodeEditorTabForSession } from "@src/store/workstation/tabs/pendingCodeEditorTab";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 import { invokeTauri } from "@src/util/platform/tauri/init";
 import {
   isCliSession,

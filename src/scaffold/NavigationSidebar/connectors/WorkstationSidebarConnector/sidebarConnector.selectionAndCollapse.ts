@@ -8,7 +8,7 @@ import type {
   ChatPanelCreateTarget,
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type {
   WorkManagementProjectsView,
   WorkManagementSection,
