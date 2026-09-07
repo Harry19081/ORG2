@@ -25,6 +25,7 @@ import React, {
 import { useFilteredItems } from "@src/hooks/search";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { GripIcon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { agentNameAtom } from "@src/store/session/creatorStateAtom";
 import { spotlightModelKeyFirstAtom } from "@src/store/ui/spotlightModelKeyFirstAtom";
 import { spotlightOpenAtom } from "@src/store/ui/uiAtom";
@@ -38,7 +39,6 @@ import {
 import { PaletteBody, ShellFooterAction, SpotlightShell } from "../../shell";
 import type { SpotlightItem } from "../../types";
 import { buildPathSegment } from "../config";
-import { useSelectorKernel } from "../core";
 import { TwoColumnModelBody } from "./TwoColumnModelBody";
 import { advancePaletteSearchState } from "./searchState";
 import type { UnifiedModelPaletteProps } from "./types";

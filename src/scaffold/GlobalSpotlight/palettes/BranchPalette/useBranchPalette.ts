@@ -22,6 +22,7 @@ import {
   HugeiconsIcon,
   Tick01Icon,
 } from "@src/icons";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 
 import { ICONS } from "../../config";
 import { useRefreshSpin } from "../../shared";
@@ -31,7 +32,6 @@ import {
   buildPathSegment,
   getModePath,
 } from "../config";
-import { useSelectorKernel } from "../core";
 import type { BranchPaletteMode, UseBranchPaletteOptions } from "./types";
 import { useBranchFetch } from "./useBranchFetch";
 import { useBranchItems } from "./useBranchItems";
