@@ -337,7 +337,7 @@ describe("formatBranchTimestamp", () => {
   it("formats a recent commit with the shared 'short' relative style", () => {
     // `formatRelativeTime("short")` is Intl-backed, so the exact strings
     // ("1 hr. ago", "yesterday") belong to the runtime's ICU data. Derive the
-    // expectations the same way rather than pinning one ICU's spelling.
+    // expectations from ICU and apply the shared sentence-case display contract.
     const short = (value: number, unit: Intl.RelativeTimeFormatUnit) =>
       new Intl.RelativeTimeFormat("en", { style: "short" }).format(value, unit);
     const shortAuto = (value: number, unit: Intl.RelativeTimeFormatUnit) =>
@@ -351,7 +351,11 @@ describe("formatBranchTimestamp", () => {
     ).toBe(short(-1, "hour"));
     expect(
       formatBranchTimestamp(option({ lastCommitDate: "2026-07-10T12:00:00Z" }))
-    ).toBe(shortAuto(-1, "day"));
+    ).toBe(
+      shortAuto(-1, "day").replace(/^./u, (first) =>
+        first.toLocaleUpperCase("en")
+      )
+    );
     expect(
       formatBranchTimestamp(option({ lastCommitDate: "2026-07-09T12:00:00Z" }))
     ).toBe(short(-2, "day"));
