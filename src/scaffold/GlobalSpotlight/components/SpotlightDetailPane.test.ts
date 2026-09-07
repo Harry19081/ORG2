@@ -118,17 +118,19 @@ describe("Spotlight row detail panes", () => {
     expect(pane()?.textContent).not.toContain("2026-09-07");
     expect(select).not.toHaveBeenCalled();
   });
-  it("shows multi-folder names as separate chips instead of the primary path", () => {
+  it("stacks each repository name and visible path without a workspace heading", () => {
     hover("folders");
-    const chips = pane()?.querySelector("[data-spotlight-folder-chips]");
-    expect(chips?.children).toHaveLength(2);
-    expect(chips?.textContent).toContain("client");
-    expect(chips?.textContent).toContain("server");
-    expect(pane()?.textContent).not.toContain("/work/client");
-    expect(chips?.firstElementChild?.getAttribute("title")).toBe(
-      "/work/client"
-    );
-    expect(pane()?.children).toHaveLength(2);
+    const repos = pane()?.querySelector("[data-spotlight-repo-details]");
+    expect(repos?.children).toHaveLength(2);
+    for (const [index, name] of ["client", "server"].entries()) {
+      const detail = repos!.children[index];
+      expect(detail.children[0].textContent).toBe(name);
+      expect(detail.children[0].querySelector("svg")).not.toBeNull();
+      expect(detail.children[1].textContent).toBe(`/work/${name}`);
+      expect(detail.children[1].getAttribute("title")).toBe(`/work/${name}`);
+    }
+    expect(pane()?.textContent).not.toContain("Workspace");
+    expect(pane()?.querySelector("[data-spotlight-folder-chips]")).toBeNull();
   });
   it("lets the pointer enter the pane without dismissing or selecting the row", () => {
     hover("repo");

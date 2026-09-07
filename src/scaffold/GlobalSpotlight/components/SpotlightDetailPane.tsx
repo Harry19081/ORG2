@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
 import HoverCardBase from "@src/components/SessionHoverCard/HoverCardBase";
-import Tag from "@src/components/Tag";
 
 import { ICONS } from "../config";
 import { SPOTLIGHT_CONFIG, SPOTLIGHT_TOKENS } from "../constants";
@@ -71,38 +70,43 @@ export function SpotlightDetailPane({ item, children }: Props) {
           data-spotlight-detail-pane
           className={`w-80 max-w-[calc(100vw-16px)] p-4 text-text-1 select-text ${SPOTLIGHT_TOKENS.subFontSize}`}
         >
-          <div className="flex items-start gap-2 font-medium">
-            {item.icon && (
-              <AnyIcon
-                icon={item.icon}
-                size={SPOTLIGHT_TOKENS.iconSize}
-                className="shrink-0 text-text-2"
-              />
-            )}
-            <span className="min-w-0 truncate">{item.label}</span>
-          </div>
           {folders?.length ? (
-            <div
-              className="mt-2 flex gap-1.5 overflow-x-auto pb-1"
-              data-spotlight-folder-chips
-            >
+            <div className="flex flex-col gap-4" data-spotlight-repo-details>
               {folders.map((folder, index) => (
-                <span key={index} className="shrink-0" title={folder.path}>
-                  <Tag
-                    size="small"
-                    icon={<AnyIcon icon={ICONS.folder} size={12} />}
+                <div key={index}>
+                  <div className="flex items-start gap-2 font-medium">
+                    <AnyIcon
+                      icon={ICONS.repo}
+                      size={SPOTLIGHT_TOKENS.iconSize}
+                      className="shrink-0 text-text-2"
+                    />
+                    <span className="min-w-0 truncate">{folder.name}</span>
+                  </div>
+                  <div
+                    className="mt-2 truncate text-text-2"
+                    title={folder.path}
                   >
-                    <span className="block max-w-48 truncate">
-                      {folder.name}
-                    </span>
-                  </Tag>
-                </span>
+                    {folder.path}
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
-            <div className="mt-2 truncate text-text-2" title={summary}>
-              {summary}
-            </div>
+            <>
+              <div className="flex items-start gap-2 font-medium">
+                {item.icon && (
+                  <AnyIcon
+                    icon={item.icon}
+                    size={SPOTLIGHT_TOKENS.iconSize}
+                    className="shrink-0 text-text-2"
+                  />
+                )}
+                <span className="min-w-0 truncate">{item.label}</span>
+              </div>
+              <div className="mt-2 truncate text-text-2" title={summary}>
+                {summary}
+              </div>
+            </>
           )}
         </section>
       )}
