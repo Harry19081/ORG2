@@ -41,8 +41,8 @@ import { useActiveCloudOrgRepoFilter } from "@src/features/TeamCollaboration/use
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { BranchPalette } from "@src/scaffold/GlobalSpotlight/palettes/BranchPalette";
 import { BranchDropdown } from "@src/scaffold/GlobalSpotlight/palettes/BranchPalette/BranchDropdown";
-import { WorkspacePalette } from "@src/scaffold/GlobalSpotlight/palettes/WorkspacePalette";
-import { WorkspaceDropdown } from "@src/scaffold/GlobalSpotlight/palettes/WorkspacePalette/WorkspaceDropdown";
+import { WorkingDirectoryPalette } from "@src/scaffold/GlobalSpotlight/palettes/WorkingDirectoryPalette";
+import { WorkingDirectoryDropdown } from "@src/scaffold/GlobalSpotlight/palettes/WorkingDirectoryPalette/WorkingDirectoryDropdown";
 import { runGuardedCheckout } from "@src/services/git/operations/guardedCheckout";
 import { REPO_KIND, type RepoKind } from "@src/store/repo/types";
 import type {
@@ -631,7 +631,7 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
 
       {/* Repo Selector */}
       {useDropdownPicker ? (
-        <WorkspaceDropdown
+        <WorkingDirectoryDropdown
           isOpen={isRepoSelectorOpen}
           onClose={handleRepoClose}
           onSelect={handleRepoSelected}
@@ -642,7 +642,7 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
           repoFilter={orgScopeRepoFilter ?? undefined}
         />
       ) : (
-        <WorkspacePalette
+        <WorkingDirectoryPalette
           isOpen={isRepoSelectorOpen}
           onClose={handleRepoClose}
           onSelect={handleRepoSelected}

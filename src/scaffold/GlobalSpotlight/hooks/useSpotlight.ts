@@ -87,7 +87,7 @@ export function useSpotlight(
   props: GlobalSpotlightProps & {
     isOpen: boolean;
     closeModal?: () => void;
-    onOpenWorkspacePicker?: (
+    onOpenWorkingDirectoryPicker?: (
       mode: "switch" | "open" | "add" | "create"
     ) => void;
     onOpenBranchPicker?: () => void;
@@ -102,7 +102,7 @@ export function useSpotlight(
   const {
     isOpen,
     closeModal,
-    onOpenWorkspacePicker,
+    onOpenWorkingDirectoryPicker,
     onOpenBranchPicker,
     onOpenEditorPalette,
     onOpenAgentSessionSearch,
@@ -126,7 +126,7 @@ export function useSpotlight(
 
   // Shared repo list is only needed for action flows that ask the user to
   // choose a repo. The default Spotlight view no longer renders the repo list;
-  // workspace switching is delegated to WorkspacePalette.
+  // workspace switching is delegated to WorkingDirectoryPalette.
   const shouldFetchRepos = isOpen && state.missingParam === "repo";
 
   const activeRepoId = currentRepoId ?? currentRepo?.id;
@@ -218,9 +218,9 @@ export function useSpotlight(
         "search-agent-sessions": () => onOpenAgentSessionSearch?.(),
         "search-all-sessions": () => onOpenAllSessionsSearch?.(),
         "agent-control": openAgentControlSpotlight,
-        "workspace-switch": () => onOpenWorkspacePicker?.("switch"),
-        "workspace-add": () => onOpenWorkspacePicker?.("add"),
-        "workspace-create": () => onOpenWorkspacePicker?.("create"),
+        "workspace-switch": () => onOpenWorkingDirectoryPicker?.("switch"),
+        "workspace-add": () => onOpenWorkingDirectoryPicker?.("add"),
+        "workspace-create": () => onOpenWorkingDirectoryPicker?.("create"),
         "organization-create": () => {
           openCollabOrgSpotlight({ mode: "create" });
         },
@@ -293,7 +293,7 @@ export function useSpotlight(
       onOpenAgentSessionSearch,
       onOpenAllSessionsSearch,
       onOpenBranchPicker,
-      onOpenWorkspacePicker,
+      onOpenWorkingDirectoryPicker,
     ]
   );
 

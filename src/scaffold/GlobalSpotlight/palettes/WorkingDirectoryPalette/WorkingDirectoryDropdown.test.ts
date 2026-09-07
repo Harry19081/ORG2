@@ -14,7 +14,7 @@ import {
 
 import { REPO_KIND } from "@src/store/repo";
 
-import { WorkspaceDropdown } from "./WorkspaceDropdown";
+import { WorkingDirectoryDropdown } from "./WorkingDirectoryDropdown";
 
 const EXTERNAL_RECENT_PATH = "/Users/tester/Documents/GitHub/business-plan";
 
@@ -52,7 +52,7 @@ vi.mock("@src/scaffold/GlobalSpotlight/hooks", () => ({
 }));
 
 vi.mock("@src/scaffold/GlobalSpotlight/hooks/forms", () => ({
-  useWorkspaceForm: () => ({ handleImportWorkspace: vi.fn() }),
+  useWorkingDirectoryForm: () => ({ handleImportWorkingDirectory: vi.fn() }),
 }));
 
 vi.mock("@src/hooks/dropdown", () => ({
@@ -76,7 +76,7 @@ vi.mock("@src/hooks/dropdown", () => ({
   }),
 }));
 
-describe("WorkspaceDropdown rows", () => {
+describe("WorkingDirectoryDropdown rows", () => {
   let container: HTMLDivElement;
   let root: Root;
   const actEnvironment = globalThis as typeof globalThis & {
@@ -86,7 +86,7 @@ describe("WorkspaceDropdown rows", () => {
   const renderDropdown = () => {
     act(() => {
       root.render(
-        createElement(WorkspaceDropdown, {
+        createElement(WorkingDirectoryDropdown, {
           isOpen: true,
           onClose: vi.fn(),
           onSelect: vi.fn(),
