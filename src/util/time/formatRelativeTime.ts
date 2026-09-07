@@ -32,6 +32,13 @@ function resolveLocale(locale: string | undefined): string {
   return locale ?? i18n.language ?? i18n.resolvedLanguage ?? "en";
 }
 
+/** Relative-time labels are displayed as standalone UI text, so sentence-case
+ * the first Unicode code point while preserving locale-specific casing. */
+function capitalizeRelativeLabel(value: string, locale: string): string {
+  const [first, ...rest] = Array.from(value);
+  return first ? `${first.toLocaleUpperCase(locale)}${rest.join("")}` : value;
+}
+
 function formatRelative(
   locale: string,
   value: number,
@@ -39,9 +46,9 @@ function formatRelative(
   style: Intl.RelativeTimeFormatStyle,
   numeric: Intl.RelativeTimeFormatNumeric = "always"
 ): string {
-  return new Intl.RelativeTimeFormat(locale, { numeric, style }).format(
-    value,
-    unit
+  return capitalizeRelativeLabel(
+    new Intl.RelativeTimeFormat(locale, { numeric, style }).format(value, unit),
+    locale
   );
 }
 
@@ -51,9 +58,12 @@ function formatImmediate(
   useAppTranslation: boolean
 ): string {
   const fallback = formatRelative(locale, 0, "second", style, "auto");
-  return useAppTranslation
-    ? i18n.t("common:relativeDate.justNow", { defaultValue: fallback })
-    : fallback;
+  return capitalizeRelativeLabel(
+    useAppTranslation
+      ? i18n.t("common:relativeDate.justNow", { defaultValue: fallback })
+      : fallback,
+    locale
+  );
 }
 
 /**
