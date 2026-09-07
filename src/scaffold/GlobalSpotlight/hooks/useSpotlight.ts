@@ -28,7 +28,7 @@ import { useFilteredItems } from "@src/hooks/search";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import type { LanguagePreference } from "@src/i18n";
 import type { IconSvgElement } from "@src/icons";
-import { checkForUpdatesManually } from "@src/scaffold/AppUpdater";
+import { checkForUpdatesManually } from "@src/scaffold/AppUpdater/actions";
 import {
   openAgentControlSpotlight,
   openCollabOrgSpotlight,

@@ -28,7 +28,7 @@ vi.mock("react-i18next", () => ({
 }));
 vi.mock("react-router-dom", () => ({ useNavigate: () => mocks.navigate }));
 vi.mock("@src/api/http/project", () => ({ workItemDataToUI: vi.fn() }));
-vi.mock("@src/scaffold/AppUpdater", () => ({
+vi.mock("@src/scaffold/AppUpdater/actions", () => ({
   installAvailableAppUpdate: mocks.installUpdate,
 }));
 vi.mock("@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom", async () => {

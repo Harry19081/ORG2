@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => ({
   useAvailableAppUpdate: vi.fn(),
 }));
 
-vi.mock("@src/scaffold/AppUpdater", () => ({
+vi.mock("@src/scaffold/AppUpdater/state", () => ({
   useAvailableAppUpdate: mocks.useAvailableAppUpdate,
 }));
 

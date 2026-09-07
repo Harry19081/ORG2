@@ -5,15 +5,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   AppUpdateDownloadNoticeContent,
-  type AppUpdateDownloadProgress,
   DownloadProgressOrb,
 } from "./DownloadProgress";
+import { AppUpdater } from "./index";
 import {
-  AppUpdater,
   checkForUpdatesManually,
   installAvailableAppUpdate,
   resetAppUpdaterForTests,
-} from "./index";
+} from "./service";
+import type { AppUpdateDownloadProgress } from "./state";
 
 interface CapturedButtonProps {
   children?: ReactNode;
