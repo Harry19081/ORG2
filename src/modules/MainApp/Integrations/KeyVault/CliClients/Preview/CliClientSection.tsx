@@ -18,6 +18,7 @@ import {
   HugeiconsIcon,
 } from "@src/icons";
 import { usePrerequisiteCheck } from "@src/modules/MainApp/Integrations/hooks/usePrerequisiteCheck";
+import { copyText } from "@src/util/data/clipboard";
 
 import {
   InlineCardColumnStack,
@@ -205,11 +206,9 @@ export const CliClientSection: React.FC<CliClientSectionProps> = ({
                   <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={12} />
                 }
                 onClick={() => {
-                  navigator.clipboard
-                    .writeText(selectedMethod.command)
-                    .then(() => {
-                      Message.success({ content: copySuccessMessage });
-                    });
+                  copyText(selectedMethod.command).then(() => {
+                    Message.success({ content: copySuccessMessage });
+                  });
                 }}
               >
                 {tSettings("common:actions.copy")}
