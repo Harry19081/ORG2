@@ -2129,8 +2129,7 @@
     "terminalProcesses": "Процессы терминала",
     "chatPreview": "Просмотр чата",
     "scenario": "Сценарий",
-    "selectScenario": "Выберите сценарий",
-    "sessionSimulation": "Симуляция сессии"
+    "selectScenario": "Выберите сценарий"
   },
   "rulesTabs": {
     "rules": "Правила",

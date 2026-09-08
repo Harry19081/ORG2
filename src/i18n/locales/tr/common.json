@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "İlk yanıtla mesajlar görünür; o zamana kadar araç çubuğu boşta görünebilir",
     "pleaseSelect": "Lütfen seçin",
     "noSessionsFound": "Session bulunamadı",
-    "noBrowsingHistory": "Gezinti geçmişi yok",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
     "failedToLoadHistory": "Geçmiş yüklenemedi",

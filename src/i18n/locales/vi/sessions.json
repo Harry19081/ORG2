@@ -475,11 +475,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Hiện bảng trajectory và todo",
-        "placeholderTrajectoryTitle": "Chưa có sự kiện",
-        "placeholderTrajectorySubtitle": "Hoạt động phiên sẽ hiển thị khi Agent chạy",
-        "placeholderTodoTitle": "Chưa có danh sách việc",
-        "placeholderTodoSubtitle": "Cập nhật todo sẽ hiện khi Agent ghi việc cần làm"
+        "expandPanel": "Hiện bảng trajectory và todo"
       },
       "previousEvent": "Sự kiện trước",
       "nextEvent": "Sự kiện tiếp theo",

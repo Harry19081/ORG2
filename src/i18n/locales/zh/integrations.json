@@ -2195,8 +2195,7 @@
     "terminalProcesses": "终端进程",
     "chatPreview": "聊天预览",
     "scenario": "场景",
-    "selectScenario": "选择场景",
-    "sessionSimulation": "会话模拟"
+    "selectScenario": "选择场景"
   },
   "rulesTabs": {
     "rules": "规则",

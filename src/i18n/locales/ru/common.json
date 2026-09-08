@@ -948,7 +948,6 @@
     "chatHistoryAgentWorkingHint": "Сообщения появятся с первым ответом; до этого панель может выглядеть неактивной",
     "pleaseSelect": "Пожалуйста, выберите",
     "noSessionsFound": "Session не найдены",
-    "noBrowsingHistory": "История просмотра пуста",
     "typeToSearchFiles": "Введите для поиска файлов...",
     "selectFileToViewChanges": "Выберите файл для просмотра изменений",
     "failedToLoadHistory": "Не удалось загрузить историю",

@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import { ImportCookiesModal } from "@src/modules/WorkStation/Browser/ImportCookies";
 import { focusBrowserUrlBar } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
-import { getSiteNameFromUrl } from "@src/store/ui/navigationSidebarTabsAtom";
 import {
   closeBrowserTabAtom,
   extractSessionId,
@@ -42,7 +41,7 @@ interface WebViewportProps {
   devToolsPaneCollapsed?: boolean;
   /** Hide the tab bar (when using shared tab bar) */
   hideTabBar?: boolean;
-  /** Hide webviews (e.g., when designer mode is active) */
+  /** Hide webviews when their host or viewport is inactive */
   hideWebviews?: boolean;
   /** Header host to publish the URL bar into. Defaults to My Station Browser. */
   publishUrlBarToHost?: WorkstationTabHeaderHost;
@@ -213,14 +212,6 @@ export const WebViewport: React.FC<WebViewportProps> = memo(
             isLoading: true,
             history: newHistory,
             historyIndex: newHistory.length - 1,
-            historyEntries: [
-              ...(activeSession.historyEntries ?? []),
-              {
-                url,
-                title: getSiteNameFromUrl(url),
-                visitedAt: Date.now(),
-              },
-            ],
           });
         }
       },

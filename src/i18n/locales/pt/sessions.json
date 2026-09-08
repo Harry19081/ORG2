@@ -484,11 +484,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajetória",
         "tabTodo": "Tarefas",
-        "expandPanel": "Mostrar painel de trajetória e tarefas",
-        "placeholderTrajectoryTitle": "Ainda não há eventos",
-        "placeholderTrajectorySubtitle": "A atividade da sessão aparecerá aqui quando o Agent for executado",
-        "placeholderTodoTitle": "Sem listas de tarefas",
-        "placeholderTodoSubtitle": "As atualizações de tarefas aparecerão aqui quando o Agent registrar tarefas"
+        "expandPanel": "Mostrar painel de trajetória e tarefas"
       },
       "previousEvent": "Evento anterior",
       "nextEvent": "Próximo evento",

@@ -844,7 +844,6 @@
     "chatHistoryAgentWorkingHint": "Messages appear with the first response; the toolbar may look idle until then",
     "pleaseSelect": "Please select",
     "noSessionsFound": "No sessions found",
-    "noBrowsingHistory": "No browsing history",
     "typeToSearchFiles": "Type to search files...",
     "selectFileToViewChanges": "Select a file to view changes",
     "failedToLoadHistory": "Failed to load history",

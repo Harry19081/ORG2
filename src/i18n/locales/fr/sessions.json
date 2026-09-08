@@ -478,11 +478,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectoire",
         "tabTodo": "Todo",
-        "expandPanel": "Afficher le panneau trajectoire et todo",
-        "placeholderTrajectoryTitle": "Aucun événement pour l’instant",
-        "placeholderTrajectorySubtitle": "L’activité de session apparaîtra ici une fois l’Agent lancé",
-        "placeholderTodoTitle": "Aucune liste de tâches",
-        "placeholderTodoSubtitle": "Les mises à jour todo apparaîtront lorsque l’Agent écrit des tâches"
+        "expandPanel": "Afficher le panneau trajectoire et todo"
       },
       "previousEvent": "Événement précédent",
       "nextEvent": "Événement suivant",

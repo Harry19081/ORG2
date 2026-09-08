@@ -2129,8 +2129,7 @@
     "terminalProcesses": "Tiến trình terminal",
     "chatPreview": "Xem trước trò chuyện",
     "scenario": "Kịch bản",
-    "selectScenario": "Chọn một kịch bản",
-    "sessionSimulation": "Mô phỏng phiên"
+    "selectScenario": "Chọn một kịch bản"
   },
   "rulesTabs": {
     "rules": "Quy tắc",

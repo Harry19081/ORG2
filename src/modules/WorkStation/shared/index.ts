@@ -58,15 +58,7 @@ export type { PrimarySidebarTab } from "./PrimarySidebarLayout";
 // CodeEditor/index.tsx, which also carries the side-effect import).
 
 // Property editor components
-export {
-  ColorInput,
-  EditableField,
-  LinkedInputPair,
-  SpacingBottom,
-  SpacingLeft,
-  SpacingRight,
-  SpacingTop,
-} from "./PropertyEditor";
+export { EditableField, LinkedInputPair } from "./PropertyEditor";
 
 // Tab bar
 export { TabBar } from "./TabBar";

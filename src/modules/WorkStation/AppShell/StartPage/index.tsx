@@ -136,5 +136,3 @@ export const WorkStationStartPage: React.FC = memo(() => {
 });
 
 WorkStationStartPage.displayName = "WorkStationStartPage";
-
-export default WorkStationStartPage;

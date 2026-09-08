@@ -504,11 +504,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Show trajectory and todo panel",
-        "placeholderTrajectoryTitle": "No events yet",
-        "placeholderTrajectorySubtitle": "Session activity will appear here once the agent runs",
-        "placeholderTodoTitle": "No todo lists",
-        "placeholderTodoSubtitle": "Todo updates appear here when the agent writes tasks"
+        "expandPanel": "Show trajectory and todo panel"
       },
       "previousEvent": "Previous event",
       "nextEvent": "Next event",

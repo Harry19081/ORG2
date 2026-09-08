@@ -477,11 +477,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Trajectory 및 Todo 패널 표시",
-        "placeholderTrajectoryTitle": "아직 이벤트 없음",
-        "placeholderTrajectorySubtitle": "Agent가 실행되면 세션 활동이 여기에 표시됩니다",
-        "placeholderTodoTitle": "Todo 목록 없음",
-        "placeholderTodoSubtitle": "Agent가 작업을 작성하면 Todo 업데이트가 여기에 표시됩니다"
+        "expandPanel": "Trajectory 및 Todo 패널 표시"
       },
       "previousEvent": "이전 이벤트",
       "nextEvent": "다음 이벤트",

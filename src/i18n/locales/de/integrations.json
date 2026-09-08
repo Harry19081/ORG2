@@ -2129,8 +2129,7 @@
     "terminalProcesses": "Terminalprozesse",
     "chatPreview": "Chat-Vorschau",
     "scenario": "Szenario",
-    "selectScenario": "Szenario auswählen",
-    "sessionSimulation": "Sitzungssimulation"
+    "selectScenario": "Szenario auswählen"
   },
   "rulesTabs": {
     "rules": "Regeln",

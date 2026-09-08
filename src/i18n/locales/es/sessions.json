@@ -478,11 +478,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trayectoria",
         "tabTodo": "Tareas",
-        "expandPanel": "Mostrar panel de trayectoria y tareas",
-        "placeholderTrajectoryTitle": "Aún no hay eventos",
-        "placeholderTrajectorySubtitle": "La actividad de la sesión aparecerá aquí cuando el Agent ejecute",
-        "placeholderTodoTitle": "Sin listas de tareas",
-        "placeholderTodoSubtitle": "Las actualizaciones de tareas aparecerán cuando el Agent las escriba"
+        "expandPanel": "Mostrar panel de trayectoria y tareas"
       },
       "previousEvent": "Evento anterior",
       "nextEvent": "Siguiente evento",

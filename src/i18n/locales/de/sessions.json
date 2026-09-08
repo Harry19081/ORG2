@@ -476,11 +476,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Trajectory- und Todo-Panel einblenden",
-        "placeholderTrajectoryTitle": "Noch keine Ereignisse",
-        "placeholderTrajectorySubtitle": "Sitzungsaktivität erscheint hier, sobald der Agent läuft",
-        "placeholderTodoTitle": "Keine Todo-Listen",
-        "placeholderTodoSubtitle": "Todo-Updates erscheinen hier, wenn der Agent Aufgaben schreibt"
+        "expandPanel": "Trajectory- und Todo-Panel einblenden"
       },
       "previousEvent": "Vorheriges Ereignis",
       "nextEvent": "Nächstes Ereignis",

@@ -22,6 +22,7 @@ import { listSessionWorkspace } from "@src/api/tauri/agent/sessionWorkspace";
 import Message from "@src/components/Message";
 import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { ROUTES } from "@src/config/routes";
+import { navigateApp } from "@src/router/navigateApp";
 import { createEditorSpotlightRequest } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { FileOperationsService } from "@src/services/file/FileOperationsService";
 import { PanelService } from "@src/services/panel";
@@ -130,11 +131,7 @@ export function useCodeEditorEvents(options: CodeEditorEventsOptions): void {
     const focusCodeEditor = () => {
       const store = getInstrumentedStore();
       store.set(stationModeAtom, "my-station");
-      window.dispatchEvent(
-        new CustomEvent("action-system-navigate", {
-          detail: { path: ROUTES.workStation.code.path },
-        })
-      );
+      navigateApp(ROUTES.workStation.code.path);
     };
 
     const switchPrimaryTab = (tabId: string) => {

@@ -480,11 +480,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Показать панель trajectory и todo",
-        "placeholderTrajectoryTitle": "Пока нет событий",
-        "placeholderTrajectorySubtitle": "Активность сессии появится здесь после запуска Agent",
-        "placeholderTodoTitle": "Нет списков задач",
-        "placeholderTodoSubtitle": "Обновления todo появятся, когда Agent запишет задачи"
+        "expandPanel": "Показать панель trajectory и todo"
       },
       "previousEvent": "Предыдущее событие",
       "nextEvent": "Следующее событие",

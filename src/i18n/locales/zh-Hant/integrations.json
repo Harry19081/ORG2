@@ -2159,8 +2159,7 @@
     "terminalProcesses": "終端進程",
     "chatPreview": "聊天預覽",
     "scenario": "場景",
-    "selectScenario": "選擇場景",
-    "sessionSimulation": "工作階段模擬"
+    "selectScenario": "選擇場景"
   },
   "rulesTabs": {
     "rules": "規則",

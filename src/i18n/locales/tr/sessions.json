@@ -478,11 +478,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Trajectory ve todo panelini göster",
-        "placeholderTrajectoryTitle": "Henüz olay yok",
-        "placeholderTrajectorySubtitle": "Agent çalıştığında oturum etkinliği burada görünür",
-        "placeholderTodoTitle": "Yapılacak listesi yok",
-        "placeholderTodoSubtitle": "Agent görev yazdığında todo güncellemeleri burada görünür"
+        "expandPanel": "Trajectory ve todo panelini göster"
       },
       "previousEvent": "Önceki olay",
       "nextEvent": "Sonraki olay",

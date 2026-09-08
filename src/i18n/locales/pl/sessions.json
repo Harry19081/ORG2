@@ -484,11 +484,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajektoria",
         "tabTodo": "Lista zadań",
-        "expandPanel": "Pokaż panel trajektorii i listy zadań",
-        "placeholderTrajectoryTitle": "Brak zdarzeń",
-        "placeholderTrajectorySubtitle": "Aktywność sesji pojawi się tutaj, gdy Agent zacznie działać",
-        "placeholderTodoTitle": "Brak list zadań",
-        "placeholderTodoSubtitle": "Aktualizacje listy zadań pojawią się tutaj, gdy Agent zapisze zadania"
+        "expandPanel": "Pokaż panel trajektorii i listy zadań"
       },
       "previousEvent": "Poprzednie zdarzenie",
       "nextEvent": "Następne zdarzenie",

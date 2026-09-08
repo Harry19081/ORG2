@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import { ROUTES } from "@src/config/routes";
 import { createLogger } from "@src/hooks/logger";
+import { navigateApp } from "@src/router/navigateApp";
 import {
   openOrFocusSessionInChatPanelTabAtom,
   openRuntimeInChatPanelTabAtom,
@@ -118,11 +119,7 @@ export function useTraySessions() {
         }
         // This bootstrap owner is a sibling of RouterProvider. Send the same
         // navigation event as AppViewService; do not require router context.
-        window.dispatchEvent(
-          new CustomEvent("action-system-navigate", {
-            detail: { path: ROUTES.workStation.base.path },
-          })
-        );
+        navigateApp(ROUTES.workStation.base.path);
       } catch (error) {
         log.error("Failed to open tray action", error);
       }

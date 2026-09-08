@@ -948,7 +948,6 @@
     "chatHistoryAgentWorkingHint": "Wiadomości pojawią się z pierwszą odpowiedzią; do tego czasu pasek może wyglądać na bezczynny",
     "pleaseSelect": "Wybierz",
     "noSessionsFound": "Nie znaleziono sesji",
-    "noBrowsingHistory": "Brak historii przeglądania",
     "typeToSearchFiles": "Wpisz, aby wyszukać pliki...",
     "selectFileToViewChanges": "Wybierz plik, aby zobaczyć zmiany",
     "failedToLoadHistory": "Nie udało się załadować historii",
