@@ -114,12 +114,6 @@ const ClaudeCodeSetup: React.FC<ClaudeCodeSetupProps> = ({
         </SectionContainer>
       )}
 
-      {(tokenDetected || data.validated) && selectedMethod !== "signin" && (
-        <PageNotice type="success">
-          {t("keyVault.claudeCodeConnected")}
-        </PageNotice>
-      )}
-
       {tokenError && selectedMethod !== "signin" && (
         <PageNotice
           type="danger"
