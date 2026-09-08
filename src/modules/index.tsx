@@ -50,6 +50,7 @@ import {
   DEFAULT_SIDEBAR_WIDTH,
   sidebarCollapsedAtom,
   sidebarWidthAtom,
+  updateSidebarViewportAtom,
 } from "@src/store/ui/sidebarAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
@@ -157,6 +158,10 @@ const AppShell = () => {
   const stationMode = useAtomValue(stationModeAtom);
   const chatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
   const viewportWidth = useViewportWidth();
+  const updateSidebarViewport = useSetAtom(updateSidebarViewportAtom);
+  useEffect(() => {
+    if (viewportWidth !== undefined) updateSidebarViewport(viewportWidth);
+  }, [viewportWidth, updateSidebarViewport]);
   const stationChatVisibility = useAtomValue(stationChatVisibilityAtom);
   const sidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
   const sidebarWidth = useAtomValue(sidebarWidthAtom);
