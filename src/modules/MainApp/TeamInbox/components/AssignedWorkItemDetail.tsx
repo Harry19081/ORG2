@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getGitRemotes } from "@src/api/http/git/remotes";
 import type { WorkItemHandoffTransition } from "@src/api/http/project";
 import type { GitHubIssue } from "@src/api/tauri/github";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import {
   ClipboardListIcon,
   HugeiconsIcon,
@@ -141,13 +141,13 @@ const AssignedWorkItemThread: React.FC<AssignedWorkItemThreadProps> = ({
         // In normal flow above the thread, not floated over it: as an absolute
         // overlay this notice sat on top of the Work Item title.
         <div className="shrink-0 px-4 pt-4">
-          <InlineAlert
+          <PageNotice
             type={issueTone === "warning" ? "warning" : "danger"}
             role="status"
             dataTestId="team-inbox-work-item-alert"
           >
             {issueMessage}
-          </InlineAlert>
+          </PageNotice>
         </div>
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

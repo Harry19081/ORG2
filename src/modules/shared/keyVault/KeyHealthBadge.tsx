@@ -9,7 +9,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { HealthStatus } from "@src/api/types/keys";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 
 export interface KeyHealthBadgeProps {
   /** Health status: valid, degraded, invalid */
@@ -77,12 +77,12 @@ const KeyHealthBadge: React.FC<KeyHealthBadgeProps> = ({
         : t("keyVault.health.cloudDegradedMessage");
 
     return (
-      <InlineAlert type="warning" title={title}>
+      <PageNotice type="warning" title={title}>
         <p className="text-sm">{message}</p>
         {lastFailureMessage && (
           <p className="mt-1 text-xs wrap-break-word">{lastFailureMessage}</p>
         )}
-      </InlineAlert>
+      </PageNotice>
     );
   }
 
@@ -93,7 +93,7 @@ const KeyHealthBadge: React.FC<KeyHealthBadgeProps> = ({
       : t("keyVault.health.invalidKeyMessage");
 
     return (
-      <InlineAlert type="danger" title={titleWithFailureCount(message)}>
+      <PageNotice type="danger" title={titleWithFailureCount(message)}>
         {lastFailureMessage && (
           <p className="text-xs wrap-break-word">
             {t("keyVault.health.errorWithMessage", {
@@ -101,7 +101,7 @@ const KeyHealthBadge: React.FC<KeyHealthBadgeProps> = ({
             })}
           </p>
         )}
-      </InlineAlert>
+      </PageNotice>
     );
   }
 
@@ -130,7 +130,7 @@ const KeyHealthBadge: React.FC<KeyHealthBadgeProps> = ({
     }
 
     return (
-      <InlineAlert type="warning" title={titleWithFailureCount(title)}>
+      <PageNotice type="warning" title={titleWithFailureCount(title)}>
         <p className="text-sm">{message}</p>
         {cooldownUntil && (
           <p className="mt-1 text-xs">
@@ -144,14 +144,12 @@ const KeyHealthBadge: React.FC<KeyHealthBadgeProps> = ({
         {lastFailureMessage && (
           <p className="mt-1 text-xs wrap-break-word">{lastFailureMessage}</p>
         )}
-      </InlineAlert>
+      </PageNotice>
     );
   }
 
   // Valid state (green) - typically not shown, but available if needed
-  return (
-    <InlineAlert type="success" title={t("keyVault.quickActions.valid")} />
-  );
+  return <PageNotice type="success" title={t("keyVault.quickActions.valid")} />;
 };
 
 export default KeyHealthBadge;

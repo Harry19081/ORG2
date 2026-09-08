@@ -1,5 +1,5 @@
 /**
- * InlineAlert — Shared inline alert/result card component.
+ * PageNotice — Shared notice/result card for page and panel content.
  *
  * Single neutral treatment for every type: a 1px `border-border-1` outline, the
  * Workstation-trail radius and a half-strength dropdown shadow, with no
@@ -11,7 +11,7 @@
  * Padding (p-3, or py-1 pl-3 pr-1 when compact), icon size 14.
  * Header row: icon + title + optional action + close;
  * body (children) and subtitle render below the header.
- * When action is an object, InlineAlert builds a secondary Button at 28px height.
+ * When action is an object, PageNotice builds a secondary Button at 28px height.
  */
 import React from "react";
 
@@ -78,19 +78,19 @@ const DEFAULT_ICONS: Record<string, React.ReactNode> = {
  */
 const SELECTABLE_TEXT_CLASS = "allow-select-deep";
 
-const INLINE_ALERT_BASE_TEXT = {
+const PAGE_NOTICE_BASE_TEXT = {
   title: "block text-[13px] font-medium leading-[14px]",
   body: "text-[12px] font-normal leading-snug",
   subtitle: "mt-1 block text-[11px] opacity-70",
 } as const;
 
-const INLINE_ALERT_TOKENS = {
-  titleText: `${INLINE_ALERT_BASE_TEXT.title} ${SELECTABLE_TEXT_CLASS}`,
-  bodyText: `${INLINE_ALERT_BASE_TEXT.body} ${SELECTABLE_TEXT_CLASS}`,
-  subtitleText: `${INLINE_ALERT_BASE_TEXT.subtitle} ${SELECTABLE_TEXT_CLASS}`,
+const PAGE_NOTICE_TOKENS = {
+  titleText: `${PAGE_NOTICE_BASE_TEXT.title} ${SELECTABLE_TEXT_CLASS}`,
+  bodyText: `${PAGE_NOTICE_BASE_TEXT.body} ${SELECTABLE_TEXT_CLASS}`,
+  subtitleText: `${PAGE_NOTICE_BASE_TEXT.subtitle} ${SELECTABLE_TEXT_CLASS}`,
 } as const;
 
-interface InlineAlertActionConfig {
+interface PageNoticeActionConfig {
   label: string;
   href?: string;
   onClick?: () => void;
@@ -100,8 +100,8 @@ interface InlineAlertActionConfig {
 }
 
 function isActionConfig(
-  action: InlineAlertActionConfig | React.ReactNode
-): action is InlineAlertActionConfig {
+  action: PageNoticeActionConfig | React.ReactNode
+): action is PageNoticeActionConfig {
   return (
     typeof action === "object" &&
     action !== null &&
@@ -110,7 +110,7 @@ function isActionConfig(
   );
 }
 
-interface InlineAlertProps {
+interface PageNoticeProps {
   /**
    * Selects the default leading icon only — all types share one neutral style.
    * Defaults to "info".
@@ -133,7 +133,7 @@ interface InlineAlertProps {
   /** Compact expandable pill that shows only title until expanded */
   presentation?: "default" | "pill";
   /** Optional action — object builds a 28px secondary Button; ReactNode for custom */
-  action?: InlineAlertActionConfig | React.ReactNode;
+  action?: PageNoticeActionConfig | React.ReactNode;
   /** Show a close icon button when provided */
   onClose?: () => void;
   /** Optional close icon override */
@@ -148,7 +148,7 @@ interface InlineAlertProps {
   dataTestId?: string;
 }
 
-const InlineAlert: React.FC<InlineAlertProps> = ({
+const PageNotice: React.FC<PageNoticeProps> = ({
   type = "info",
   children,
   title,
@@ -241,8 +241,8 @@ const InlineAlert: React.FC<InlineAlertProps> = ({
           <span
             className={
               isPill
-                ? INLINE_ALERT_BASE_TEXT.title
-                : INLINE_ALERT_TOKENS.titleText
+                ? PAGE_NOTICE_BASE_TEXT.title
+                : PAGE_NOTICE_TOKENS.titleText
             }
           >
             {title}
@@ -250,11 +250,11 @@ const InlineAlert: React.FC<InlineAlertProps> = ({
         ) : (
           showContent &&
           children && (
-            <span
-              className={`block ${isPill ? INLINE_ALERT_BASE_TEXT.body : INLINE_ALERT_TOKENS.bodyText}`}
+            <div
+              className={`block ${isPill ? PAGE_NOTICE_BASE_TEXT.body : PAGE_NOTICE_TOKENS.bodyText}`}
             >
               {children}
-            </span>
+            </div>
           )
         )}
       </div>
@@ -298,13 +298,13 @@ const InlineAlert: React.FC<InlineAlertProps> = ({
         )}
       </div>
       {showContent && hasTitle && children && (
-        <div className={`mt-2 ${INLINE_ALERT_TOKENS.bodyText}`}>{children}</div>
+        <div className={`mt-2 ${PAGE_NOTICE_TOKENS.bodyText}`}>{children}</div>
       )}
       {showContent && subtitle && (
-        <span className={INLINE_ALERT_TOKENS.subtitleText}>{subtitle}</span>
+        <span className={PAGE_NOTICE_TOKENS.subtitleText}>{subtitle}</span>
       )}
     </div>
   );
 };
 
-export default InlineAlert;
+export default PageNotice;

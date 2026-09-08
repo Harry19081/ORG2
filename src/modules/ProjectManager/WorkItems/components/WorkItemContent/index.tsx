@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import React, { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import PersonAvatar from "@src/components/PersonAvatar";
 import TabPill from "@src/components/TabPill";
 import { useWorkItemImageInsert } from "@src/hooks/project";
@@ -178,7 +178,7 @@ const WorkItemContent: React.FC<WorkItemContentProps> = ({
     githubIssueTimeline?.error ?? loadedGitHubTimeline.timelineError;
   const githubTimelineAlert =
     isGitHubWorkItem && !githubTimelineLoading && githubTimelineError ? (
-      <InlineAlert
+      <PageNotice
         type="danger"
         role="status"
         dataTestId="work-item-github-timeline-alert"
@@ -187,7 +187,7 @@ const WorkItemContent: React.FC<WorkItemContentProps> = ({
         })}
       >
         {githubTimelineError}
-      </InlineAlert>
+      </PageNotice>
     ) : null;
   const {
     descriptionDraft,
