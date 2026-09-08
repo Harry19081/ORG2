@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Atalhos com escopo \"Editor\" só funcionam quando o editor de código está focado",
     "tipsContextual": "Alguns atalhos têm comportamento diferente dependendo do contexto",
-    "tipsSearchHint": "Use a barra de pesquisa para encontrar atalhos específicos rapidamente"
+    "tipsSearchHint": "Use a barra de pesquisa para encontrar atalhos específicos rapidamente",
+    "pressShortcut": "Pressione um atalho",
+    "editCommand": "Editar atalho de {{command}}",
+    "requireModifier": "Use Control, Command ou Alt com uma tecla, ou uma tecla de função",
+    "conflict": "Já usado por {{command}}",
+    "saveFailed": "Não foi possível salvar os atalhos",
+    "reset": "Redefinir",
+    "resetAll": "Restaurar as configurações originais",
+    "resetAllDesc": "Restaurar os atalhos padrão do macOS, Windows e Linux",
+    "nativeSyncFailed": "Não foi possível atualizar os atalhos do menu do sistema"
   },
   "languageServersPage": {
     "installing": "Instalando",

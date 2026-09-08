@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Skróty z zakresem „Editor\" działają tylko, gdy edytor kodu jest aktywny",
     "tipsContextual": "Niektóre skróty mają różne działanie w zależności od kontekstu",
-    "tipsSearchHint": "Użyj paska wyszukiwania, aby szybko znaleźć konkretne skróty"
+    "tipsSearchHint": "Użyj paska wyszukiwania, aby szybko znaleźć konkretne skróty",
+    "pressShortcut": "Naciśnij skrót",
+    "editCommand": "Edytuj skrót dla {{command}}",
+    "requireModifier": "Użyj Control, Command lub Alt z klawiszem albo klawisza funkcyjnego",
+    "conflict": "Już używany przez {{command}}",
+    "saveFailed": "Nie udało się zapisać skrótów",
+    "reset": "Resetuj",
+    "resetAll": "Przywróć pierwotne ustawienia",
+    "resetAllDesc": "Przywróć domyślne skróty dla macOS, Windows i Linux",
+    "nativeSyncFailed": "Nie udało się zaktualizować skrótów menu systemowego"
   },
   "languageServersPage": {
     "installing": "Instalowanie",

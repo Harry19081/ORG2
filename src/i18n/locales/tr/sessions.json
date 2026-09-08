@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Tümünü okundu olarak işaretle",
+    "showKanban": "Kanban’ı göster",
+    "showRuntime": "Runtime’ı göster",
+    "pinned": "Sabitlenenler",
+    "unread": "Okunmamış",
+    "running": "Çalışıyor",
+    "recent": "Son",
+    "empty": "Oturum yok — Uygulamayı aç",
+    "quit": "ORG2’den çık"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token bağlam",
     "followup": "{{tokenCount}} Token follow-up",

@@ -69,7 +69,8 @@
     "check:e2e-oauth-guards": "node scripts/quality/check-e2e-oauth-guards.mjs",
     "check:i18n:cloud": "node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix cloud && node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix collaboration.forkImported",
     "check:queue-authority": "node scripts/quality/queue-authority/check.mjs",
-    "test:queue-authority": "node --test scripts/quality/queue-authority/*.test.mjs"
+    "test:queue-authority": "node --test scripts/quality/queue-authority/*.test.mjs",
+    "test:mutation": "stryker run config/stryker.config.mjs"
   },
   "keywords": [
     "orgii",
@@ -236,7 +237,9 @@
     "webpack": "^5.91.0",
     "webpack-bundle-analyzer": "^5.1.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^4.15.1",
+    "@stryker-mutator/core": "8.7.1",
+    "@stryker-mutator/vitest-runner": "8.7.1"
   },
   "eslintConfig": {
     "root": true,

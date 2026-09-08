@@ -64,9 +64,13 @@ export function usePinnedMenuItems({
     () =>
       buildPinnedMenuItems({
         newSessionLabel,
-        newSessionShortcut: getShortcutKeys("new_session"),
+        get newSessionShortcut() {
+          return getShortcutKeys("new_session");
+        },
         kanbanLabel,
-        kanbanShortcut: getShortcutKeys("open_kanban"),
+        get kanbanShortcut() {
+          return getShortcutKeys("open_kanban");
+        },
         runtimeLabel,
         teamInboxLabel,
         teamInboxUnreadCount,

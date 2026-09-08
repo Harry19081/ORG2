@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "全部标为已读",
+    "showKanban": "显示看板",
+    "showRuntime": "显示运行时",
+    "pinned": "已置顶",
+    "unread": "未读",
+    "running": "运行中",
+    "recent": "最近",
+    "empty": "暂无会话 — 打开应用",
+    "quit": "退出 ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token 上下文",
     "followup": "{{tokenCount}} Token follow-up",

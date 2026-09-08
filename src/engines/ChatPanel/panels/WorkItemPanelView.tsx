@@ -216,12 +216,9 @@ export const WorkItemPanelView: React.FC<WorkItemPanelViewProps> = ({
     [currentUser, onUpdateWorkItem, selectedWorkItem, setSelectedWorkItem]
   );
 
-  // The owning work-item tab's stored payload is mirrored from
-  // `chatPanelSelectedWorkItemAtom` by ChatPanel's patch effect. Refresh must
-  // therefore write only the selection atom: writing the tab here as well
-  // seeds a second, content-equal object into the tab slot, and the
-  // selection<->tab mirror then shuffles the two distinct references forever
-  // (React "maximum update depth"). One writer, one reference.
+  // The selection atom reads and updates the owning tab directly. Refresh
+  // uses a functional update so a late response cannot replace a newly
+  // selected item. No render effect or second payload copy is involved.
   const refreshSelectedWorkItemOnce = useCallback(async () => {
     try {
       if (selectedWorkItem.projectSlug) {

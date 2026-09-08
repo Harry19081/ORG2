@@ -20,6 +20,7 @@ import { useEffect, useRef } from "react";
 
 import { listSessionWorkspace } from "@src/api/tauri/agent/sessionWorkspace";
 import Message from "@src/components/Message";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { ROUTES } from "@src/config/routes";
 import { createEditorSpotlightRequest } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { FileOperationsService } from "@src/services/file/FileOperationsService";
@@ -205,27 +206,25 @@ export function useCodeEditorEvents(options: CodeEditorEventsOptions): void {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!optionsRef.current.isActive) return;
 
-      const isModKey = event.metaKey || event.ctrlKey;
-
-      if (isModKey && event.key === "p" && !event.shiftKey) {
+      if (matchesShortcut(event, "quick_open")) {
         event.preventDefault();
         openEditorSpotlightRef.current("");
         return;
       }
 
-      if (isModKey && event.shiftKey && event.key.toLowerCase() === "p") {
+      if (matchesShortcut(event, "toggle_spotlight")) {
         event.preventDefault();
         openRegularSpotlightRef.current();
         return;
       }
 
-      if (isModKey && event.shiftKey && event.key.toLowerCase() === "f") {
+      if (matchesShortcut(event, "search_files")) {
         event.preventDefault();
         void WorkStationViewService.openSearchSidebar();
         return;
       }
 
-      if (isModKey && event.key === "b") {
+      if (matchesShortcut(event, "toggle_sidebar")) {
         const target = event.target;
         if (
           target instanceof HTMLElement &&

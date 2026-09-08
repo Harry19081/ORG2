@@ -4,7 +4,6 @@ import React from "react";
 import AnyIcon from "@src/components/AnyIcon";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import type { PillGroupSegment } from "@src/components/PillGroup";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import {
   RUNNING_LOCATIONS,
   type RunningLocation,
@@ -133,7 +132,7 @@ export function buildSessionInfoSegments({
       tooltip: disabled ? undefined : (
         <KeyboardShortcutTooltipContent
           label={t("selectors.sessionInfo.switchWorkspace")}
-          shortcut={getShortcutKeys("open_workspace_selector")}
+          shortcutId={"open_workspace_selector"}
         />
       ),
       tooltipFramed: true,
@@ -161,7 +160,7 @@ export function buildSessionInfoSegments({
       tooltip: disabled ? undefined : (
         <KeyboardShortcutTooltipContent
           label={t("selectors.sessionInfo.switchLocation")}
-          shortcut={getShortcutKeys("open_location_selector")}
+          shortcutId={"open_location_selector"}
         />
       ),
       tooltipFramed: true,
@@ -200,7 +199,7 @@ export function buildSessionInfoSegments({
               ? t("selectors.sessionInfo.selectWorktreeSource")
               : t("selectors.sessionInfo.switchBranch")
           }
-          shortcut={getShortcutKeys("open_branch_selector")}
+          shortcutId={"open_branch_selector"}
         />
       ),
       tooltipFramed: true,

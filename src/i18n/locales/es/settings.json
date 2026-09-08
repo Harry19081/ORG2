@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Los atajos con ámbito \"Editor\" solo funcionan cuando el editor de código tiene el foco",
     "tipsContextual": "Algunos atajos se comportan de forma distinta según el contexto",
-    "tipsSearchHint": "Usa la barra de búsqueda para encontrar atajos rápidamente"
+    "tipsSearchHint": "Usa la barra de búsqueda para encontrar atajos rápidamente",
+    "pressShortcut": "Pulsa un atajo",
+    "editCommand": "Editar atajo de {{command}}",
+    "requireModifier": "Usa Control, Command o Alt con una tecla, o una tecla de función",
+    "conflict": "Ya lo usa {{command}}",
+    "saveFailed": "No se pudieron guardar los atajos",
+    "reset": "Restablecer",
+    "resetAll": "Restaurar la configuración original",
+    "resetAllDesc": "Restaurar los atajos predeterminados de macOS, Windows y Linux",
+    "nativeSyncFailed": "No se pudieron actualizar los atajos del menú del sistema"
   },
   "languageServersPage": {
     "installing": "Instalando",

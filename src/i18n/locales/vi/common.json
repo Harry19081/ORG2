@@ -864,7 +864,7 @@
     "moreActions": "Thao tác khác...",
     "formatSql": "Định dạng SQL",
     "queryHistory": "Lịch sử truy vấn",
-    "executeQuery": "Thực thi truy vấn (Ctrl+Enter)",
+    "executeQuery": "Thực thi truy vấn ({{shortcut}})",
     "startVoiceInput": "Bắt đầu nhập bằng giọng nói",
     "cancelRecording": "Hủy ghi âm",
     "stopAndTranscribe": "Dừng và chuyển thành văn bản",
@@ -2473,5 +2473,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” đã bị hủy",
     "taskCompletedToast": "“{{name}}” đã hoàn tất. Mở phiên để xem kết quả."
+  },
+  "documentOpen": {
+    "openInDefault": "Mở bằng {{name}}",
+    "openDefaultApp": "Mở bằng ứng dụng mặc định",
+    "openExternally": "Mở bằng ứng dụng bên ngoài"
   }
 }

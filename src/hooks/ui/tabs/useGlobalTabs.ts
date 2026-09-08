@@ -9,16 +9,12 @@ import { selectAtom } from "jotai/utils";
 
 import {
   addBrowserTabAtom,
-  addTerminalSessionAtom,
   removeBrowserTabAtom,
-  removeTerminalSessionAtom,
   setActiveBrowserTabAtom,
-  setActiveTerminalSessionAtom,
   updateBrowserTabAtom,
 } from "@src/store/ui/globalTabsActions";
 import {
   activeBrowserTabAtom,
-  activeTerminalSessionAtom,
   navigationSidebarTabsAtom,
 } from "@src/store/ui/navigationSidebarTabsAtom";
 
@@ -29,10 +25,6 @@ import {
 const browserTabsAtom = selectAtom(
   navigationSidebarTabsAtom,
   (tabs) => tabs.browser
-);
-const terminalTabsAtom = selectAtom(
-  navigationSidebarTabsAtom,
-  (tabs) => tabs.terminal
 );
 
 // ============================================
@@ -58,25 +50,5 @@ export const useGlobalBrowserTabs = () => {
     removeBrowserTab,
     setActiveBrowserTab,
     updateBrowserTab,
-  };
-};
-
-/**
- * Hook for terminal sessions only.
- * Only re-renders when terminal sessions change.
- */
-export const useGlobalTerminalTabs = () => {
-  const terminalTabs = useAtomValue(terminalTabsAtom);
-  const activeTerminal = useAtomValue(activeTerminalSessionAtom);
-  const addTerminalSession = useSetAtom(addTerminalSessionAtom);
-  const removeTerminalSession = useSetAtom(removeTerminalSessionAtom);
-  const setActiveTerminalSession = useSetAtom(setActiveTerminalSessionAtom);
-
-  return {
-    terminalTabs,
-    activeTerminal,
-    addTerminalSession,
-    removeTerminalSession,
-    setActiveTerminalSession,
   };
 };

@@ -765,7 +765,7 @@
     "moreActions": "More Actions...",
     "formatSql": "Format SQL (prettify)",
     "queryHistory": "Query history",
-    "executeQuery": "Execute query (Ctrl+Enter)",
+    "executeQuery": "Execute query ({{shortcut}})",
     "startVoiceInput": "Start voice input",
     "cancelRecording": "Cancel recording",
     "stopAndTranscribe": "Stop and transcribe",
@@ -2636,6 +2636,9 @@
     }
   },
   "documentOpen": {
+    "openInDefault": "Open in {{name}}",
+    "openDefaultApp": "Open in default app",
+    "openExternally": "Open externally",
     "label": "Open in…",
     "defaultApp": "Default application",
     "appDefault": "{{name}} (default)",
