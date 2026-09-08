@@ -90,6 +90,9 @@ jobs:
         run: |
           pnpm exec tsc --noEmit
           pnpm test src/modules/MobileRemote
+          # The native crate embeds frontendDist with its default custom-protocol feature.
+          # Plain cargo does not run Tauri's beforeBuildCommand.
+          pnpm build:mobile-native
           cargo check --locked --manifest-path apps/remote-ios/src-tauri/Cargo.toml --target aarch64-apple-ios
 
       - name: Build signed release with bundled frontend
