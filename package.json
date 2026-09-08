@@ -68,6 +68,8 @@
     "check:unused-exports:all": "knip --include files,dependencies,devDependencies,exports,types,nsExports,nsTypes",
     "check:e2e-oauth-guards": "node scripts/quality/check-e2e-oauth-guards.mjs",
     "check:i18n:cloud": "node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix cloud && node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix collaboration.forkImported",
+    "check:boundaries": "node scripts/quality/dependency-boundaries/check.mjs",
+    "test:boundaries": "node --test scripts/quality/dependency-boundaries/*.test.mjs",
     "check:queue-authority": "node scripts/quality/queue-authority/check.mjs",
     "test:queue-authority": "node --test scripts/quality/queue-authority/*.test.mjs",
     "test:mutation": "stryker run config/stryker.config.mjs"
@@ -238,6 +240,7 @@
     "webpack-bundle-analyzer": "^5.1.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
+    "dependency-cruiser": "16.10.4",
     "@stryker-mutator/core": "8.7.1",
     "@stryker-mutator/vitest-runner": "8.7.1"
   },
