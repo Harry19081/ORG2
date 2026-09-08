@@ -866,7 +866,7 @@
     "moreActions": "Daha fazla işlem...",
     "formatSql": "SQL'i formatla",
     "queryHistory": "Sorgu geçmişi",
-    "executeQuery": "Sorguyu çalıştır (Ctrl+Enter)",
+    "executeQuery": "Sorguyu çalıştır ({{shortcut}})",
     "startVoiceInput": "Sesli girişi başlat",
     "cancelRecording": "Kaydı iptal et",
     "stopAndTranscribe": "Durdur ve yazıya dök",

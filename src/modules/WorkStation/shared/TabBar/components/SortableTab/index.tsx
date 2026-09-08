@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { TabPillCloseButton } from "@src/components/TabPill/TabPillCloseButton";
 import { TabPillSurface } from "@src/components/TabPill/TabPillSurface";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
 import type { GitFileInfo } from "@src/store/git";
@@ -113,7 +113,7 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
           : tab.type === "source-control"
             ? "open_source_control_tab"
             : null;
-    const shortcut = shortcutId ? getShortcutKeys(shortcutId) : "";
+    const shortcut = useShortcutKeys(shortcutId ?? "");
     const shortcutTooltipLabel = getWorkstationTabDisplayTitle(tab, t);
 
     const hasUnsaved = !!tab.hasUnsavedChanges;

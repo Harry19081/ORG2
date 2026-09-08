@@ -1,3 +1,9 @@
+import {
+  getOverride,
+  isRecordingShortcut,
+  matchesShortcut,
+} from "@src/config/keyboard/shortcutBindings";
+
 /**
  * Keyboard handling for ComposerInput.
  *
@@ -436,7 +442,7 @@ function removePillForDeleteKey(
 
 export function createKeyDownHandler(ctx: KeyDownHandlerContext) {
   return (event: KeyboardEvent): void => {
-    if (ctx.isComposing(event)) return;
+    if (ctx.isComposing(event) || isRecordingShortcut()) return;
     const host = ctx.host();
     if (!host) return;
 
@@ -554,6 +560,23 @@ export function createKeyDownHandler(ctx: KeyDownHandlerContext) {
       }, 0);
     }
 
+    if (
+      getOverride("chat_send") &&
+      !ctx.getAtMention().active &&
+      !ctx.getSlashCommand().active
+    ) {
+      if (matchesShortcut(event, "chat_send")) {
+        event.preventDefault();
+        const text = ctx.getText();
+        if (text.trim()) ctx.getOnSubmit()?.(text);
+        return;
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        ctx.insertNewline();
+        return;
+      }
+    }
     if (
       event.key === "Enter" &&
       !ctx.getAtMention().active &&

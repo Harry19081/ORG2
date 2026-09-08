@@ -866,7 +866,7 @@
     "moreActions": "Más acciones...",
     "formatSql": "Formatear SQL (embellecer)",
     "queryHistory": "Historial de consultas",
-    "executeQuery": "Ejecutar consulta (Ctrl+Enter)",
+    "executeQuery": "Ejecutar consulta ({{shortcut}})",
     "startVoiceInput": "Iniciar entrada de voz",
     "cancelRecording": "Cancelar grabación",
     "stopAndTranscribe": "Detener y transcribir",

@@ -27,7 +27,7 @@ import {
 } from "@src/components/KeyboardShortcut";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import type { AppearanceMode } from "@src/config/appearance/globalThemes";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import { resetOrgEntitlementCoordinator } from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
 import {
@@ -164,7 +164,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
   const { appearanceMode, appearanceModeOptions, handleAppearanceModeChange } =
     useAppearanceState();
 
-  const openSettingsShortcut = getShortcutKeys("open_settings");
+  const openSettingsShortcut = useShortcutKeys("open_settings");
   const settingsButtonClassName = isOpen ? "text-text-1" : "text-text-2";
 
   useEffect(() => {

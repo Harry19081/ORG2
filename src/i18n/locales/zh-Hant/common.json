@@ -877,7 +877,7 @@
     "moreActions": "更多操作...",
     "formatSql": "格式化 SQL",
     "queryHistory": "查詢歷史",
-    "executeQuery": "執行查詢 (Ctrl+Enter)",
+    "executeQuery": "執行查詢 ({{shortcut}})",
     "startVoiceInput": "開始語音輸入",
     "cancelRecording": "取消錄製",
     "stopAndTranscribe": "停止並轉錄",

@@ -864,7 +864,7 @@
     "moreActions": "その他の操作...",
     "formatSql": "SQL をフォーマット",
     "queryHistory": "クエリ履歴",
-    "executeQuery": "クエリを実行 (Ctrl+Enter)",
+    "executeQuery": "クエリを実行 ({{shortcut}})",
     "startVoiceInput": "音声入力を開始",
     "cancelRecording": "録音をキャンセル",
     "stopAndTranscribe": "停止して文字起こし",

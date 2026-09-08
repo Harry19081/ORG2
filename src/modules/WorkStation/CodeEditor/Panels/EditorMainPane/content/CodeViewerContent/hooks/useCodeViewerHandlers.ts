@@ -15,6 +15,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { Message } from "@src/components/Message";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import type {
   ConflictResolutionChoice,
   CursorPosition,
@@ -438,16 +439,12 @@ export function useCodeViewerHandlers(
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Save: Cmd/Ctrl+S
-      if ((event.metaKey || event.ctrlKey) && event.key === "s") {
+      if (matchesShortcut(event, "save_file")) {
         event.preventDefault();
         handleSave();
       }
       // Reload: Cmd/Ctrl+Shift+R
-      else if (
-        (event.metaKey || event.ctrlKey) &&
-        event.shiftKey &&
-        event.key === "r"
-      ) {
+      else if (matchesShortcut(event, "reload_file")) {
         event.preventDefault();
         handleReload();
       }

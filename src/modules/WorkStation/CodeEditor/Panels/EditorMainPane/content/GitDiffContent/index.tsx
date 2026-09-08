@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 
 import { Message } from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import {
   CodeMirrorConflictEditor,
@@ -467,7 +468,7 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
   // Keyboard shortcut for save (Cmd/Ctrl+S)
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+      if (matchesShortcut(e, "save_file")) {
         e.preventDefault();
         handleSave();
       }

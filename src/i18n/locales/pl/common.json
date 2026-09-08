@@ -870,7 +870,7 @@
     "moreActions": "Więcej akcji...",
     "formatSql": "Formatuj SQL (upiększ)",
     "queryHistory": "Historia zapytań",
-    "executeQuery": "Wykonaj zapytanie (Ctrl+Enter)",
+    "executeQuery": "Wykonaj zapytanie ({{shortcut}})",
     "startVoiceInput": "Rozpocznij wprowadzanie głosowe",
     "cancelRecording": "Anuluj nagrywanie",
     "stopAndTranscribe": "Zatrzymaj i transkrybuj",

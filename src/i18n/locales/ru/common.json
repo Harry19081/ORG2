@@ -870,7 +870,7 @@
     "moreActions": "Дополнительные действия...",
     "formatSql": "Форматировать SQL",
     "queryHistory": "История запросов",
-    "executeQuery": "Выполнить запрос (Ctrl+Enter)",
+    "executeQuery": "Выполнить запрос ({{shortcut}})",
     "startVoiceInput": "Начать голосовой ввод",
     "cancelRecording": "Отменить запись",
     "stopAndTranscribe": "Остановить и транскрибировать",
