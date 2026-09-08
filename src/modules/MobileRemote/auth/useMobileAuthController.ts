@@ -126,16 +126,18 @@ export function useMobileAuthController({
         }
       })();
       inFlightRef.current = operation;
-      void operation.finally(() => {
-        if (inFlightRef.current === operation) inFlightRef.current = null;
-      });
+      void operation
+        .finally(() => {
+          if (inFlightRef.current === operation) inFlightRef.current = null;
+        })
+        .catch(() => undefined);
       return operation;
     },
     [platform.auth, platform.runtime]
   );
 
   useEffect(() => {
-    void authenticate();
+    void authenticate().catch(() => undefined);
     return () => {
       generationRef.current += 1;
       intentGenerationRef.current += 1;
@@ -147,11 +149,13 @@ export function useMobileAuthController({
         signOutCleanupRef.current,
       ]).then(() => undefined);
       retiredAuthOwners.set(platform.auth, drained);
-      void drained.then(() => {
-        if (retiredAuthOwners.get(platform.auth) === drained) {
-          retiredAuthOwners.delete(platform.auth);
-        }
-      });
+      void drained
+        .then(() => {
+          if (retiredAuthOwners.get(platform.auth) === drained) {
+            retiredAuthOwners.delete(platform.auth);
+          }
+        })
+        .catch(() => undefined);
       inFlightRef.current = null;
     };
   }, [authenticate, clearExpiryTimer, platform.auth]);
@@ -173,11 +177,13 @@ export function useMobileAuthController({
       void Promise.allSettled([
         pendingAuthentication ?? Promise.resolve(),
         signOutCleanupRef.current ?? Promise.resolve(),
-      ]).then(() => {
-        if (!disposed && intentGeneration === intentGenerationRef.current) {
-          void authenticate();
-        }
-      });
+      ])
+        .then(() => {
+          if (!disposed && intentGeneration === intentGenerationRef.current) {
+            void authenticate().catch(() => undefined);
+          }
+        })
+        .catch(() => undefined);
     });
     return () => {
       disposed = true;
@@ -216,10 +222,12 @@ export function useMobileAuthController({
         });
       });
     signInPreparationRef.current = preparation;
-    void preparation.finally(() => {
-      if (signInPreparationRef.current === preparation)
-        signInPreparationRef.current = null;
-    });
+    void preparation
+      .finally(() => {
+        if (signInPreparationRef.current === preparation)
+          signInPreparationRef.current = null;
+      })
+      .catch(() => undefined);
   }, [
     clearExpiryTimer,
     navigate,
@@ -270,11 +278,13 @@ export function useMobileAuthController({
       ]);
     })();
     signOutCleanupRef.current = cleanup;
-    void cleanup.finally(() => {
-      if (signOutCleanupRef.current === cleanup) {
-        signOutCleanupRef.current = null;
-      }
-    });
+    void cleanup
+      .finally(() => {
+        if (signOutCleanupRef.current === cleanup) {
+          signOutCleanupRef.current = null;
+        }
+      })
+      .catch(() => undefined);
   }, [clearExpiryTimer, platform.auth]);
 
   useEffect(() => {
@@ -291,7 +301,7 @@ export function useMobileAuthController({
     );
     expiryTimerRef.current = platform.runtime.setTimeout(() => {
       expiryTimerRef.current = null;
-      void authenticate({ forceRefresh: true });
+      void authenticate({ forceRefresh: true }).catch(() => undefined);
     }, delay);
     return clearExpiryTimer;
   }, [authenticate, clearExpiryTimer, platform.runtime, state]);
@@ -303,7 +313,7 @@ export function useMobileAuthController({
         !platform.runtime.isHidden() &&
         stateRef.current.phase === "signed_in"
       ) {
-        void authenticate({ forceRefresh: true });
+        void authenticate({ forceRefresh: true }).catch(() => undefined);
       }
     };
     const unsubscribe = platform.runtime.subscribeVisibility(handleVisibility);
