@@ -38,7 +38,10 @@ import {
 import { turnIntentIdOf } from "@src/engines/SessionCore/sync/utils/activityIds";
 import { createLogger } from "@src/hooks/logger";
 import { invokeTauri } from "@src/util/platform/tauri/init";
-import { isCliSession } from "@src/util/session/sessionDispatch";
+import {
+  isAgentSession,
+  isCliSession,
+} from "@src/util/session/sessionDispatch";
 
 import type {
   ConversationRootLocator,
@@ -324,11 +327,19 @@ async function listExecutionCandidates(
   const children = await listExecutionChildren(
     conversationExecutionParentId(locator)
   );
-  if (locator.authority !== "local-session") return children;
+  const canOwnLocalExecution =
+    locator.authority === "local-session" ||
+    (locator.authority === "org2-cloud" &&
+      (isCliSession(locator.conversationId) ||
+        isAgentSession(locator.conversationId)));
+  if (!canOwnLocalExecution) return children;
 
   // The ordinary source Session is already a fully native execution episode.
   // Include it next to provider-switch children so returning to the source
   // provider reuses its native UUID instead of creating a duplicate copy.
+  // Sharing changes the conversation authority, not the owner's execution
+  // identity. On a receiving device this source has no local execution row;
+  // only its own children can contribute account identities there.
   let root: ExecutionRow | null;
   try {
     root = await readExecutionRow(locator.conversationId);
@@ -340,13 +351,34 @@ async function listExecutionCandidates(
     );
   }
   if (!root?.updatedAt) return children;
-  return [
-    {
-      sessionId: locator.conversationId,
-      updatedAt: root.updatedAt,
-    },
+  // Sharing can promote the locator after an owner already switched runtime.
+  // Those durable children still belong to its local root. Consult that
+  // namespace only after the owner's actual execution row was found above;
+  // a receiving device must never infer the remote owner's account history.
+  const beforeSharingChildren =
+    locator.authority === "org2-cloud"
+      ? await listExecutionChildren(
+          conversationExecutionParentId({
+            authority: "local-session",
+            authorityScope: [],
+            conversationId: locator.conversationId,
+          })
+        )
+      : [];
+  const candidates = new Map<string, ExecutionCandidate>();
+  for (const candidate of [
+    { sessionId: locator.conversationId, updatedAt: root.updatedAt },
     ...children,
-  ].sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+    ...beforeSharingChildren,
+  ]) {
+    const previous = candidates.get(candidate.sessionId);
+    if (!previous || candidate.updatedAt > previous.updatedAt) {
+      candidates.set(candidate.sessionId, candidate);
+    }
+  }
+  return [...candidates.values()].sort((left, right) =>
+    right.updatedAt.localeCompare(left.updatedAt)
+  );
 }
 
 function sameOptional(left: unknown, right: string | undefined): boolean {

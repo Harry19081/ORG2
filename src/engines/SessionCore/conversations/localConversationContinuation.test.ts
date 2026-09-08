@@ -343,6 +343,96 @@ function mockCompatibleCliEpisode(
 }
 
 describe("durable execution target hydration", () => {
+  it("retains the owner's explicit account when its native session becomes shared", async () => {
+    const sharedRoot = {
+      authority: "org2-cloud",
+      authorityScope: ["org-1"],
+      conversationId: "cliagent-owner-root",
+    } as const;
+    mocks.invokeTauri.mockResolvedValue([]);
+    mocks.cliStatus.mockResolvedValue({
+      cliAgentType: "claude_code",
+      accountId: "anthropic-1",
+      model: "claude-opus-5-high",
+      repoPath: "/repo",
+      updatedAt: "2026-09-08T12:00:00.000Z",
+    });
+
+    await expect(
+      loadLocalConversationExecutionTargets(sharedRoot)
+    ).resolves.toEqual([
+      {
+        sessionId: sharedRoot.conversationId,
+        updatedAt: "2026-09-08T12:00:00.000Z",
+        target: {
+          cliAgentType: "claude_code",
+          accountId: "anthropic-1",
+          model: "claude-opus-5-high",
+          workspaceRepoPath: "/repo",
+        },
+      },
+    ]);
+  });
+
+  it("restores the owner's pre-sharing runtime child through the cloud root", async () => {
+    const sharedRoot = {
+      authority: "org2-cloud",
+      authorityScope: ["org-1"],
+      conversationId: "sdeagent-owner-root",
+    } as const;
+    const oldParent = conversationExecutionParentId({
+      authority: "local-session",
+      authorityScope: [],
+      conversationId: sharedRoot.conversationId,
+    });
+    mocks.invokeTauri.mockImplementation(async (_command, args) =>
+      args?.parentSessionId === oldParent
+        ? [
+            {
+              sessionId: "cliagent-before-share",
+              updatedAt: "2026-09-08T14:00:00Z",
+            },
+          ]
+        : []
+    );
+    mocks.getAgentSession.mockResolvedValue({
+      agentDefinitionId: "builtin:sde",
+      accountId: "agent-account",
+      model: "agent-model",
+      workspacePath: "/repo",
+      updatedAt: "2026-09-08T13:00:00Z",
+    });
+    mocks.cliStatus.mockResolvedValue({
+      cliAgentType: "claude_code",
+      accountId: "anthropic-original",
+      model: "claude-opus-5-high",
+      repoPath: "/repo",
+      updatedAt: "2026-09-08T14:00:00Z",
+    });
+    const targets = await loadLocalConversationExecutionTargets(sharedRoot);
+    expect(targets.map((entry) => entry.sessionId)).toEqual([
+      "cliagent-before-share",
+      sharedRoot.conversationId,
+    ]);
+    expect(targets[0]?.target).toMatchObject({
+      cliAgentType: "claude_code",
+      accountId: "anthropic-original",
+    });
+  });
+
+  it("does not invent the remote owner's account on a receiving device", async () => {
+    mocks.invokeTauri.mockResolvedValue([]);
+    mocks.cliStatus.mockResolvedValue(null);
+    await expect(
+      loadLocalConversationExecutionTargets({
+        authority: "org2-cloud",
+        authorityScope: ["org-1"],
+        conversationId: "cliagent-remote-root",
+      })
+    ).resolves.toEqual([]);
+    expect(mocks.invokeTauri).toHaveBeenCalledTimes(1);
+  });
+
   it("restores the newest hidden continuation child without an in-memory roster", async () => {
     const localRoot = {
       authority: "local-session",

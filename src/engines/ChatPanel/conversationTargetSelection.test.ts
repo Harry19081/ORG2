@@ -51,6 +51,26 @@ const registry = {
 } as unknown as AgentRegistry;
 
 describe("canonical conversation target selection", () => {
+  it("does not replace an unavailable explicit Claude account with ambient auth", () => {
+    expect(
+      resolveDefaultConversationTarget({
+        preferredTarget: {
+          cliAgentType: "claude_code",
+          accountId: "anthropic-1",
+          model: "opus",
+          workspaceRepoPath: "/repo",
+        },
+        initialTarget: null,
+        sourceCliAgentType: "claude_code",
+        sourceModel: "opus",
+        workspaceRepoPath: "/repo",
+        accounts: [],
+        registry,
+        nativeCliTargets: ["claude_code", "codex"],
+      })
+    ).toBeNull();
+  });
+
   it("uses the selected Rust agent's existing preferred account and model", () => {
     expect(
       resolveConversationRuntimeTarget({
@@ -280,7 +300,7 @@ describe("canonical conversation target selection", () => {
     });
   });
 
-  it("uses Claude ambient only when the conversation has no valid explicit pair", () => {
+  it("requires an account choice when the prior Claude account was disabled", () => {
     const selection = {
       category: "cli_agent",
       targetKind: "cli_agent",
@@ -313,10 +333,7 @@ describe("canonical conversation target selection", () => {
         registry,
         nativeCliTargets: ["claude_code", "codex"],
       })
-    ).toEqual({
-      cliAgentType: "claude_code",
-      workspaceRepoPath: "/repo",
-    });
+    ).toBeNull();
   });
 
   it("keeps an explicit composer provider switch", () => {

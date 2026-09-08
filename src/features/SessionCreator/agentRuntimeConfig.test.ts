@@ -44,6 +44,27 @@ const registry = {
 } as unknown as AgentRegistry;
 
 describe("agent runtime selection coordinator", () => {
+  it("requires a new choice when an explicit Claude account is unavailable", () => {
+    expect(
+      resolveAgentRuntimeSelection({
+        selection: { category: "cli_agent", cliAgentType: "claude_code" },
+        candidates: [
+          {
+            keySource: "own_key",
+            cliAgentType: "claude_code",
+            selectedAccountId: "anthropic-1",
+            model: "opus",
+          },
+        ],
+        accounts: [],
+        registry,
+        allowedCliAgentTypes: ["claude_code", "codex"],
+        allowHosted: false,
+        allowAmbientClaude: true,
+      })
+    ).toEqual({ status: "needs_model_picker" });
+  });
+
   it("requires an explicit Codex pair instead of choosing the first account", () => {
     const resolution = resolveAgentRuntimeSelection({
       selection: { category: "cli_agent", cliAgentType: "codex" },

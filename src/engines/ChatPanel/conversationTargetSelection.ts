@@ -223,6 +223,9 @@ export function resolveDefaultConversationTarget({
       nativeCliTargets,
     });
     if (resolved) return resolved;
+    // A persisted/explicit account must not fall through to source-only
+    // defaults when its credentials or model inventory are unavailable.
+    if (candidate.accountId) return null;
   }
 
   const parsedSource = CliAgentTypeSchema.safeParse(sourceCliAgentType);

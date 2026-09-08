@@ -243,6 +243,17 @@ export function resolveAgentRuntimeSelection({
       (candidate) =>
         !isHostedKey(candidate.keySource) && !candidate.selectedAccountId
     );
+    const hasExplicitClaudeAccount = candidates.some(
+      (candidate) =>
+        !isHostedKey(candidate.keySource) &&
+        Boolean(cleanValue(candidate.selectedAccountId)) &&
+        (!candidate.cliAgentType || candidate.cliAgentType === "claude_code")
+    );
+    // An unavailable saved account is not consent to use the CLI's ambient
+    // credentials. Preserve the choice boundary rather than silently rebinding.
+    if (hasExplicitClaudeAccount && !ambientCandidate) {
+      return { status: "needs_model_picker" };
+    }
     const ambientModel = cleanValue(ambientCandidate?.model);
     return {
       status: "ready",
