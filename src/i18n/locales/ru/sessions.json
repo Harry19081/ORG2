@@ -2857,6 +2857,10 @@
     },
     "url": {
       "open": "Открыть",
+      "changesCount_one": "{{count}} изменение",
+      "changesCount_few": "{{count}} изменения",
+      "changesCount_many": "{{count}} изменений",
+      "changesCount_other": "{{count}} изменения",
       "copyUrl": "Скопировать URL",
       "copied": "URL скопирован",
       "openExternalFailed": "Не удалось открыть URL в браузере по умолчанию",

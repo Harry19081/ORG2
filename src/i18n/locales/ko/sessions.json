@@ -2813,6 +2813,7 @@
     },
     "url": {
       "open": "열기",
+      "changesCount": "변경 {{count}}개",
       "copyUrl": "URL 복사",
       "copied": "URL이 복사되었습니다",
       "openExternalFailed": "기본 브라우저에서 URL을 열지 못했습니다",

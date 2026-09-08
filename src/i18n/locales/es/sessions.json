@@ -2813,6 +2813,8 @@
     },
     "url": {
       "open": "Abrir",
+      "changesCount_one": "{{count}} cambio",
+      "changesCount_other": "{{count}} cambios",
       "copyUrl": "Copiar URL",
       "copied": "URL copiada",
       "openExternalFailed": "No se pudo abrir la URL en el navegador predeterminado",

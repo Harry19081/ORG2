@@ -2943,6 +2943,8 @@
     },
     "url": {
       "open": "Open",
+      "changesCount_one": "{{count}} change",
+      "changesCount_other": "{{count}} changes",
       "copyUrl": "Copy URL",
       "copied": "URL copied",
       "openExternalFailed": "Failed to open URL in default browser",

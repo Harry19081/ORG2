@@ -66,6 +66,7 @@ interface HoverCardPortalProps {
 }
 
 interface HoverCardPanelProps {
+  width?: "default" | "wide";
   title?: string;
   children: React.ReactNode;
   /** Allow anchored child menus to extend beyond short hover-card panels. */
@@ -366,9 +367,10 @@ export const HoverCardPanel: React.FC<HoverCardPanelProps> = ({
   title,
   children,
   allowOverflow = false,
+  width = "default",
 }) => (
   <div
-    className={`w-[280px] rounded-xl border border-border-2 bg-bg-2 p-3 shadow-dropdown ${
+    className={`${width === "wide" ? "w-96 max-w-[calc(100vw-16px)]" : "w-[280px]"} rounded-xl border border-border-2 bg-bg-2 p-3 shadow-dropdown ${
       allowOverflow ? "overflow-visible" : "overflow-y-auto"
     }`}
     style={{ maxHeight: `calc(100vh - ${VIEWPORT_PADDING_PX * 2}px)` }}

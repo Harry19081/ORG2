@@ -2814,6 +2814,7 @@
     },
     "url": {
       "open": "Aç",
+      "changesCount": "{{count}} değişiklik",
       "copyUrl": "URL'yi kopyala",
       "copied": "URL kopyalandı",
       "openExternalFailed": "URL varsayılan tarayıcıda açılamadı",

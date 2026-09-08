@@ -2812,6 +2812,8 @@
     },
     "url": {
       "open": "Abrir",
+      "changesCount_one": "{{count}} alteração",
+      "changesCount_other": "{{count}} alterações",
       "copyUrl": "Copiar URL",
       "copied": "URL copiado",
       "openExternalFailed": "Falha ao abrir URL no navegador padrão",

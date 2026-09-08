@@ -2812,6 +2812,7 @@
     },
     "url": {
       "open": "開く",
+      "changesCount": "{{count}} 件の変更",
       "copyUrl": "URL をコピー",
       "copied": "URL をコピーしました",
       "openExternalFailed": "既定のブラウザで URL を開けませんでした",
