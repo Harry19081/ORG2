@@ -21,7 +21,6 @@ import {
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
 import { REFRESH_ICON_TOKENS } from "@src/components/RefreshIcon/tokens";
-import { resolveTimeZoneForIntl } from "@src/config/timezone";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { useActiveRepoRef } from "@src/hooks/git/useActiveRepoRef";
 import { useBranchPullRequestStatus } from "@src/hooks/git/useBranchPullRequestStatus";
@@ -44,7 +43,6 @@ import {
   countCheckStates,
   flattenChecks,
 } from "@src/services/git/ciCheckState";
-import { toIntlLocaleTag } from "@src/util/data/formatters/date";
 import { openExternalLink } from "@src/util/platform/ipcRenderer";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { classNames } from "@src/util/ui/classNames";
@@ -52,25 +50,13 @@ import { classNames } from "@src/util/ui/classNames";
 import { StatusBarButton, StatusBarLabel } from "./StatusBarBase";
 import { StatusBarTooltip } from "./StatusBarTooltip";
 import { STATUS_BAR_TOKENS } from "./statusBarTokens";
+import { formatClockTime } from "./utils/formatClockTime";
 
 const MENU_ICON_SIZE = DROPDOWN_ITEM.iconSize;
 
 interface CiStatusMenuProps {
   branchName?: string;
   headRevision?: string;
-}
-
-/** Clock time of the last successful CI fetch in the user's preferred zone. */
-function formatFetchClockTime(timestamp: number, language: string): string {
-  try {
-    return new Date(timestamp).toLocaleTimeString(toIntlLocaleTag(language), {
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: resolveTimeZoneForIntl(),
-    });
-  } catch {
-    return "";
-  }
 }
 
 function CheckStateIcon({
@@ -319,7 +305,7 @@ export const CiStatusMenu: React.FC<CiStatusMenuProps> = memo(
     });
     const lastFetchLabel =
       lastFetchedAt != null && !refreshing
-        ? formatFetchClockTime(lastFetchedAt, i18n.language)
+        ? formatClockTime(lastFetchedAt, i18n.language)
         : "";
 
     return (
