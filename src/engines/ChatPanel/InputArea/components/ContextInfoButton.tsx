@@ -20,8 +20,10 @@ import {
   PILL_CONTROL_HOVER_CLASS,
 } from "@src/components/CompoundPill/config";
 import Textarea from "@src/components/Textarea";
+import { useConversationExecutionBinding } from "@src/engines/ChatPanel/ConversationExecutionBindingContext";
 import {
   manualCompactInFlightSessionAtom,
+  resolveManualCompactSessionId,
   useManualCompact,
 } from "@src/engines/ChatPanel/hooks/useManualCompact";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
@@ -32,6 +34,7 @@ import {
   Cancel01Icon,
   ChevronsDownUpIcon,
   HugeiconsIcon,
+  Refresh04Icon,
   UnfoldMoreIcon,
 } from "@src/icons";
 
@@ -42,6 +45,7 @@ import ProgressRing from "./ProgressRing";
 import { type PanelCategory, ringToneForPercentage } from "./contextInfoTypes";
 import { useContextPanel } from "./useContextPanel";
 import { formatTokenCount, useContextUsageInfo } from "./useContextUsageInfo";
+import { useRefreshContextUsage } from "./useRefreshContextUsage";
 
 export interface ContextInfoButtonProps {
   repoPath?: string;
@@ -161,7 +165,13 @@ function applyCategoryPercents(
 const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
   ({ variant = "toolbar", compact = false }) => {
     const { t } = useTranslation();
+    const {
+      refresh,
+      refreshing,
+      error: refreshError,
+    } = useRefreshContextUsage();
     const { sessionId } = useSessionId();
+    const executionBinding = useConversationExecutionBinding();
     const [housekeeperEnabled] = useSetting("housekeeper.enabled");
     const [contextCompactEnabled] = useSetting(
       "housekeeper.features.contextCompact"
@@ -305,7 +315,9 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
       [runManualCompact]
     );
 
-    const compactDisabled = manualCompacting;
+    const manualCompactSupported =
+      resolveManualCompactSessionId(sessionId, executionBinding) !== null;
+    const compactDisabled = manualCompacting || !manualCompactSupported;
     const triggerSurfaceClass =
       panelPos !== null
         ? PILL_CONTROL_ACTIVE_SURFACE_CLASS
@@ -357,19 +369,36 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                   <span className="text-[13px] font-semibold text-text-1">
                     {t("contextInfo.title")}
                   </span>
-                  <button
-                    type="button"
-                    onClick={close}
-                    className="flex h-5 w-5 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-text-2"
-                    aria-label={t("common:actions.close")}
-                  >
-                    <HugeiconsIcon
-                      icon={Cancel01Icon}
-                      data-icon="x"
-                      size={12}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      aria-label={t("common:actions.refresh")}
+                      title={t("common:actions.refresh")}
+                      loading={refreshing}
+                      disabled={!sessionId || refreshing}
+                      onClick={refresh}
+                      icon={<HugeiconsIcon icon={Refresh04Icon} size={14} />}
                     />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={close}
+                      className="flex h-5 w-5 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-text-2"
+                      aria-label={t("common:actions.close")}
+                    >
+                      <HugeiconsIcon
+                        icon={Cancel01Icon}
+                        data-icon="x"
+                        size={12}
+                      />
+                    </button>
+                  </div>
                 </div>
+                {refreshError && (
+                  <p role="alert" className="mt-1 text-xs text-text-3">
+                    {refreshError}
+                  </p>
+                )}
 
                 <p className="mt-0.5 text-[13px] text-text-3">{tokenLabel}</p>
 
@@ -463,6 +492,14 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
 
                 {manualCompactOpen && (
                   <div className="mt-2">
+                    {!manualCompactSupported && (
+                      <p className="mb-2 text-xs text-text-3">
+                        {t("contextInfo.manualCompactNativeProvider", {
+                          defaultValue:
+                            "Manual compaction here supports built-in Agent sessions. Compact native CLI history in its provider app.",
+                        })}
+                      </p>
+                    )}
                     <Textarea
                       size="small"
                       autoSize={{ minRows: 2, maxRows: 5 }}

@@ -866,7 +866,7 @@
     "moreActions": "Plus d'actions...",
     "formatSql": "Formater le SQL",
     "queryHistory": "Historique des requêtes",
-    "executeQuery": "Exécuter la requête (Ctrl+Enter)",
+    "executeQuery": "Exécuter la requête ({{shortcut}})",
     "startVoiceInput": "Démarrer la saisie vocale",
     "cancelRecording": "Annuler l'enregistrement",
     "stopAndTranscribe": "Arrêter et transcrire",
@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "Les messages apparaissent avec la première réponse ; jusque-là, la barre peut sembler inactive",
     "pleaseSelect": "Veuillez sélectionner",
     "noSessionsFound": "Aucune Session trouvée",
-    "noBrowsingHistory": "Aucun historique de navigation",
     "typeToSearchFiles": "Tapez pour rechercher des fichiers...",
     "selectFileToViewChanges": "Sélectionnez un fichier pour voir les modifications",
     "failedToLoadHistory": "Échec du chargement de l'historique",
@@ -1626,8 +1625,9 @@
         "systemPaths": "Chemins système",
         "usedElsewhere": "Utilisé dans d’autres applications",
         "workspace": "Répertoire de travail",
-        "thisOrg": "Ce répertoire de travail",
-        "outsideOrg": "En dehors de ce répertoire de travail"
+        "thisOrg": "Cette organisation",
+        "outsideOrg": "En dehors de cette organisation",
+        "outsideNamedOrg": "En dehors de {{org}}"
       },
       "tabs": {},
       "addOptions": {
@@ -2052,17 +2052,7 @@
     "showLess": "Afficher Moins"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Aucune donnée d'impact de session AI",
-    "sessions": "Sessions",
-    "files": "Fichiers",
-    "functions": "Fonctions",
-    "commits": "Commits",
-    "lines": "Lignes",
-    "sessionBreakdown": "Détail des sessions",
-    "human": "Human",
-    "completed": "Terminé",
-    "incomplete": "Incomplet"
+    "lines": "Lignes"
   },
   "sessions": {
     "title": "Sessions",
@@ -2477,5 +2467,10 @@
   "notifications": {
     "taskCancelledToast": "« {{name}} » a été annulée",
     "taskCompletedToast": "« {{name}} » est terminée. Ouvrez la session pour consulter le résultat."
+  },
+  "documentOpen": {
+    "openInDefault": "Ouvrir dans {{name}}",
+    "openDefaultApp": "Ouvrir dans l’application par défaut",
+    "openExternally": "Ouvrir dans une application externe"
   }
 }

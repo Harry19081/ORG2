@@ -51,7 +51,7 @@ describe("LaunchpadActionGrid", () => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  it("starts collapsed and expands, collapses, and restores cards with tertiary controls", () => {
+  it("starts expanded and lets users collapse and restore cards with tertiary controls", () => {
     act(() => {
       root.render(
         createElement(
@@ -71,15 +71,9 @@ describe("LaunchpadActionGrid", () => {
       );
     });
 
-    const initialExpandButton = container.querySelector<HTMLButtonElement>(
-      '[data-testid="launchpad-action-grid-expand"]'
-    );
-    expect(initialExpandButton?.getAttribute("aria-expanded")).toBe("false");
     expect(
-      container.querySelector<HTMLElement>(".launchpad-action-grid-content")
-        ?.hidden
-    ).toBe(true);
-    act(() => initialExpandButton?.click());
+      container.querySelector('[data-testid="launchpad-action-grid-expand"]')
+    ).toBeNull();
     expect(
       container.querySelector<HTMLElement>(".launchpad-action-grid-content")
         ?.hidden
@@ -89,15 +83,17 @@ describe("LaunchpadActionGrid", () => {
       '[data-testid="launchpad-action-grid-collapse"]'
     );
     expect(collapseButton).not.toBeNull();
+    expect(collapseButton?.getAttribute("aria-expanded")).toBe("true");
     expect(collapseButton?.getAttribute("aria-label")).toBe("Hide suggestions");
     expect(collapseButton?.className).toContain("text-text-2");
     const collapseZone = container.querySelector<HTMLElement>(
       '[data-testid="launchpad-action-grid-collapse-zone"]'
     );
     expect(collapseZone?.className).toContain("top-full");
-    expect(collapseZone?.className).toContain("left-1/2");
-    expect(collapseZone?.className).toContain("-translate-x-1/2");
-    expect(collapseZone?.className).toContain("pt-1");
+    expect(collapseZone?.className).toContain("left-0");
+    expect(collapseZone?.className).toContain("flex w-full");
+    expect(collapseZone?.className).toContain("justify-center");
+    expect(collapseZone?.className).toContain("py-1");
     expect(collapseZone?.className).not.toContain("pointer-events-none");
     expect(container.textContent).toContain("Test action");
 
@@ -173,14 +169,6 @@ describe("LaunchpadActionGrid", () => {
         )
       );
     });
-
-    act(() =>
-      container
-        .querySelector<HTMLButtonElement>(
-          '[data-testid="launchpad-action-grid-expand"]'
-        )
-        ?.click()
-    );
 
     // The launchpad block is positioned on a fractional device pixel, so a
     // compositor layer that is created and destroyed on hover re-rounds every

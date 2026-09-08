@@ -864,7 +864,7 @@
     "moreActions": "Thao tác khác...",
     "formatSql": "Định dạng SQL",
     "queryHistory": "Lịch sử truy vấn",
-    "executeQuery": "Thực thi truy vấn (Ctrl+Enter)",
+    "executeQuery": "Thực thi truy vấn ({{shortcut}})",
     "startVoiceInput": "Bắt đầu nhập bằng giọng nói",
     "cancelRecording": "Hủy ghi âm",
     "stopAndTranscribe": "Dừng và chuyển thành văn bản",
@@ -942,7 +942,6 @@
     "chatHistoryAgentWorkingHint": "Tin nhắn xuất hiện từ phản hồi đầu tiên; trước đó thanh công cụ có thể trông như đang rảnh",
     "pleaseSelect": "Vui lòng chọn",
     "noSessionsFound": "Không tìm thấy Session nào",
-    "noBrowsingHistory": "Không có lịch sử duyệt web",
     "typeToSearchFiles": "Nhập để tìm kiếm tệp...",
     "selectFileToViewChanges": "Chọn tệp để xem thay đổi",
     "failedToLoadHistory": "Không thể tải lịch sử",
@@ -1625,8 +1624,9 @@
         "systemPaths": "Đường dẫn hệ thống",
         "usedElsewhere": "Được dùng trong các ứng dụng khác",
         "workspace": "Thư mục làm việc",
-        "thisOrg": "Thư mục làm việc này",
-        "outsideOrg": "Ngoài thư mục làm việc này"
+        "thisOrg": "Tổ chức này",
+        "outsideOrg": "Bên ngoài tổ chức này",
+        "outsideNamedOrg": "Bên ngoài {{org}}"
       },
       "tabs": {},
       "addOptions": {
@@ -2048,17 +2048,7 @@
     "showLess": "Thu Gọn"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Chưa có dữ liệu tác động phiên AI",
-    "sessions": "Phiên",
-    "files": "Tệp",
-    "functions": "Hàm",
-    "commits": "Commit",
-    "lines": "Dòng",
-    "sessionBreakdown": "Chi tiết phiên",
-    "human": "Human",
-    "completed": "Hoàn thành",
-    "incomplete": "Chưa hoàn thành"
+    "lines": "Dòng"
   },
   "sessions": {
     "title": "Phiên",
@@ -2472,5 +2462,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” đã bị hủy",
     "taskCompletedToast": "“{{name}}” đã hoàn tất. Mở phiên để xem kết quả."
+  },
+  "documentOpen": {
+    "openInDefault": "Mở bằng {{name}}",
+    "openDefaultApp": "Mở bằng ứng dụng mặc định",
+    "openExternally": "Mở bằng ứng dụng bên ngoài"
   }
 }

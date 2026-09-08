@@ -3,9 +3,8 @@
  *
  * Centralized tab system for the Browser surface:
  * - Browser sessions (webview tabs)
- * - Token categories (design tokens)
  *
- * Browser-session and token-category tabs are shared WorkStation resources.
+ * Browser-session tabs are shared WorkStation resources.
  * `workstationLayoutAtom` is the compatibility projection for the currently
  * presented agent workspace; its split writer routes browser-family changes
  * back to the canonical shared partition. Consequently, changing the

@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
 import { AccountInlineDetails } from "@src/modules/shared/keyVault/AccountInlineDetails";
 
@@ -334,13 +334,13 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
         return (
           <>
             {refreshModelsError ? (
-              <InlineAlert
+              <PageNotice
                 type="danger"
                 onClose={() => setRefreshModelsError(null)}
                 closeAriaLabel={tCommon("actions.close")}
               >
                 {refreshModelsError}
-              </InlineAlert>
+              </PageNotice>
             ) : null}
             <AccountModelsInlineSplit
               account={account}

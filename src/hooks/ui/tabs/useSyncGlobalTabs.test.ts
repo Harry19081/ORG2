@@ -7,10 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { navigationSidebarTabsAtom } from "@src/store/ui/navigationSidebarTabsAtom";
 import { createInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
-import {
-  useSyncBrowserTabs,
-  useSyncTerminalSessions,
-} from "./useSyncGlobalTabs";
+import { useSyncBrowserTabs } from "./useSyncGlobalTabs";
 
 vi.mock("@src/util/platform/tauri", () => ({ isTauriDesktop: () => false }));
 
@@ -19,14 +16,11 @@ describe("global tab context sync", () => {
   let store: ReturnType<typeof createInstrumentedStore>;
   type Props = {
     browsers: Parameters<typeof useSyncBrowserTabs>[0];
-    terminals: Parameters<typeof useSyncTerminalSessions>[0];
     activeBrowser: string;
-    activeTerminal: string;
   };
 
   function Harness(props: Props) {
     useSyncBrowserTabs(props.browsers, props.activeBrowser);
-    useSyncTerminalSessions(props.terminals, props.activeTerminal);
     return null;
   }
 
@@ -57,21 +51,20 @@ describe("global tab context sync", () => {
 
   it("syncs additions, selection, metadata and removals while preserving stored non-context tabs", () => {
     const editor = [{ id: "repo", name: "Repo", isActive: true, timestamp: 1 }];
+    const terminal = [
+      { id: "legacy", name: "Legacy", isActive: true, timestamp: 1 },
+    ];
     store.set(navigationSidebarTabsAtom, {
       ...store.get(navigationSidebarTabsAtom),
       editor,
+      terminal,
     });
     const initial: Props = {
       browsers: [
         { id: "b1", title: "One", url: "https://example.com", incognito: true },
         { id: "b2", title: "Two" },
       ],
-      terminals: [
-        { id: "t1", name: "One" },
-        { id: "t2", name: "Two" },
-      ],
       activeBrowser: "b1",
-      activeTerminal: "t1",
     };
     render(initial);
     let state = store.get(navigationSidebarTabsAtom);
@@ -80,18 +73,14 @@ describe("global tab context sync", () => {
       id: "b1",
       isPrivate: true,
     });
-    expect(state.terminal.find((tab) => tab.isActive)?.id).toBe("t1");
 
-    render({ ...initial, activeBrowser: "b2", activeTerminal: "t2" });
+    render({ ...initial, activeBrowser: "b2" });
     state = store.get(navigationSidebarTabsAtom);
     expect(state.browser.find((tab) => tab.isActive)?.id).toBe("b2");
-    expect(state.terminal.find((tab) => tab.isActive)?.id).toBe("t2");
 
     const updated: Props = {
       browsers: [{ id: "b2", title: "Updated", url: "https://example.org" }],
-      terminals: [{ id: "t2", name: "Two" }],
       activeBrowser: "b2",
-      activeTerminal: "t2",
     };
     render(updated);
     state = store.get(navigationSidebarTabsAtom);
@@ -103,9 +92,6 @@ describe("global tab context sync", () => {
         isActive: true,
       }),
     ]);
-    expect(state.terminal).toEqual([
-      expect.objectContaining({ id: "t2", isActive: true }),
-    ]);
     expect(state.editor).toEqual(editor);
 
     const onChange = vi.fn();
@@ -113,24 +99,20 @@ describe("global tab context sync", () => {
     render({
       ...updated,
       browsers: [...updated.browsers],
-      terminals: [...updated.terminals],
     });
     expect(onChange).not.toHaveBeenCalled();
     unsubscribe();
 
     render({
       browsers: [],
-      terminals: [],
       activeBrowser: "",
-      activeTerminal: "",
     });
     expect(store.get(navigationSidebarTabsAtom)).toMatchObject({
       browser: [],
-      terminal: [],
+      terminal,
       editor,
     });
     render(initial);
     expect(store.get(navigationSidebarTabsAtom).browser).toHaveLength(2);
-    expect(store.get(navigationSidebarTabsAtom).terminal).toHaveLength(2);
   });
 });

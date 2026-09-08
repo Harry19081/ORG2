@@ -864,7 +864,7 @@
     "moreActions": "추가 작업...",
     "formatSql": "SQL 포맷",
     "queryHistory": "쿼리 기록",
-    "executeQuery": "쿼리 실행 (Ctrl+Enter)",
+    "executeQuery": "쿼리 실행 ({{shortcut}})",
     "startVoiceInput": "음성 입력 시작",
     "cancelRecording": "녹음 취소",
     "stopAndTranscribe": "중지하고 전사",
@@ -942,7 +942,6 @@
     "chatHistoryAgentWorkingHint": "첫 응답부터 메시지가 표시되며 그전에는 도구 모음이 유휴 상태로 보일 수 있습니다",
     "pleaseSelect": "선택해 주세요",
     "noSessionsFound": "Session을 찾을 수 없습니다",
-    "noBrowsingHistory": "방문 기록 없음",
     "typeToSearchFiles": "파일을 검색하려면 입력...",
     "selectFileToViewChanges": "변경사항을 보려면 파일을 선택하세요",
     "failedToLoadHistory": "기록 로드 실패",
@@ -1625,8 +1624,9 @@
         "systemPaths": "시스템 경로",
         "usedElsewhere": "다른 앱에서 사용됨",
         "workspace": "작업 디렉터리",
-        "thisOrg": "이 작업 디렉터리",
-        "outsideOrg": "이 작업 디렉터리 외부"
+        "thisOrg": "이 조직",
+        "outsideOrg": "이 조직 외부",
+        "outsideNamedOrg": "{{org}} 외부"
       },
       "tabs": {},
       "addOptions": {
@@ -2051,17 +2051,7 @@
     "showLess": "접기"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "AI 세션 영향 데이터가 없습니다",
-    "sessions": "세션",
-    "files": "관련 파일",
-    "functions": "함수",
-    "commits": "Commit",
-    "lines": "코드 행",
-    "sessionBreakdown": "세션 상세",
-    "human": "Human",
-    "completed": "완료",
-    "incomplete": "미완료"
+    "lines": "코드 행"
   },
   "sessions": {
     "title": "세션",
@@ -2475,5 +2465,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” 취소됨",
     "taskCompletedToast": "“{{name}}” 완료. 세션을 열어 결과를 확인하세요."
+  },
+  "documentOpen": {
+    "openInDefault": "{{name}}에서 열기",
+    "openDefaultApp": "기본 앱에서 열기",
+    "openExternally": "외부 앱에서 열기"
   }
 }

@@ -94,11 +94,6 @@ const SearchEntry: RendererEntry = {
   debugLabel: "search",
 };
 
-const AIImpactEntry: RendererEntry = {
-  Component: lazy(() => import("./renderers/aiImpact")),
-  debugLabel: "ai-impact",
-};
-
 const SearchSessionsEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/searchSessions")),
   debugLabel: "search-sessions",
@@ -239,7 +234,6 @@ export const REGISTRY: TabContentRegistry = {
   "dom-component-preview": DomComponentPreviewEntry,
   terminal: TerminalEntry,
   search: SearchEntry,
-  "ai-impact": AIImpactEntry,
   "search-sessions": SearchSessionsEntry,
   "url-preview": UrlPreviewEntry,
 

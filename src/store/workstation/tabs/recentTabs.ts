@@ -1,6 +1,9 @@
 import { atom } from "jotai";
 
-import { RECENT_TABS_LIMIT } from "@src/shared/tabs/recentTabs";
+import {
+  recordRecentItem,
+  recordRecentTransition,
+} from "@src/shared/tabs/recentTabs";
 
 import type { WorkStationTab, WorkstationWorkspaceKey } from "./types";
 
@@ -36,10 +39,11 @@ function recordRecentEntry(
   current: readonly RecentWorkstationTabEntry[],
   entry: RecentWorkstationTabEntry
 ): RecentWorkstationTabEntry[] {
-  return [
+  return recordRecentItem(
+    current,
     entry,
-    ...current.filter((candidate) => entryId(candidate) !== entryId(entry)),
-  ].slice(0, RECENT_TABS_LIMIT);
+    (left, right) => entryId(left) === entryId(right)
+  );
 }
 
 interface WorkstationTabTransition {
@@ -52,24 +56,18 @@ export const recordWorkstationTabTransitionAtom = atom(
   null,
   (_get, set, transition: WorkstationTabTransition) => {
     const { workspace, previousTab, nextTabId } = transition;
-    set(recentWorkstationTabEntriesAtom, (current) => {
-      const withoutDestination = nextTabId
-        ? current.filter(
-            (entry) =>
-              !isSameWorkstationWorkspace(entry.workspace, workspace) ||
-              entry.tab.id !== nextTabId
-          )
-        : [...current];
-      if (
-        !previousTab ||
-        previousTab.id === nextTabId ||
-        previousTab.type === "start"
-      ) {
-        return withoutDestination;
-      }
-      const entry = { workspace, tab: previousTab };
-      return recordRecentEntry(withoutDestination, entry);
-    });
+    set(recentWorkstationTabEntriesAtom, (current) =>
+      recordRecentTransition(
+        current,
+        previousTab ? { workspace, tab: previousTab } : null,
+        (entry) =>
+          Boolean(nextTabId) &&
+          isSameWorkstationWorkspace(entry.workspace, workspace) &&
+          entry.tab.id === nextTabId,
+        (entry) => entry.tab.type !== "start",
+        (left, right) => entryId(left) === entryId(right)
+      )
+    );
   }
 );
 recordWorkstationTabTransitionAtom.debugLabel =

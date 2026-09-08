@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Tümünü okundu olarak işaretle",
+    "showKanban": "Kanban’ı göster",
+    "showRuntime": "Runtime’ı göster",
+    "pinned": "Sabitlenenler",
+    "unread": "Okunmamış",
+    "running": "Çalışıyor",
+    "recent": "Son",
+    "empty": "Oturum yok — Uygulamayı aç",
+    "quit": "ORG2’den çık"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token bağlam",
     "followup": "{{tokenCount}} Token follow-up",
@@ -157,7 +168,16 @@
           "24h": "24 saat",
           "7d": "7 gün",
           "30d": "30 gün",
-          "all": "Tüm zamanlar"
+          "all": "Tüm zamanlar",
+          "custom": "Özel aralık…"
+        },
+        "customRange": {
+          "start": "Başlangıç",
+          "end": "Bitiş",
+          "hint": "Yerel saat · {{zone}} · Saniye hassasiyeti, bitiş dahil",
+          "invalid": "Bitiş zamanı başlangıçtan önce olamaz",
+          "apply": "Aralığı uygula",
+          "cancel": "İptal"
         },
         "bucket": {
           "claude": "Claude",
@@ -458,11 +478,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Trajectory ve todo panelini göster",
-        "placeholderTrajectoryTitle": "Henüz olay yok",
-        "placeholderTrajectorySubtitle": "Agent çalıştığında oturum etkinliği burada görünür",
-        "placeholderTodoTitle": "Yapılacak listesi yok",
-        "placeholderTodoSubtitle": "Agent görev yazdığında todo güncellemeleri burada görünür"
+        "expandPanel": "Trajectory ve todo panelini göster"
       },
       "previousEvent": "Önceki olay",
       "nextEvent": "Sonraki olay",
@@ -2527,7 +2543,8 @@
     "failedToInterrupt": "Session kesintiye uğratılamadı",
     "failedToStop": "Agent durdurulamadı",
     "failedToCheckChanges": "Dosya değişiklikleri kontrol edilemedi. Geri alma işlemi gerçekleştirilecek.",
-    "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin."
+    "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin.",
+    "runQueuedBehindCheckout": "Kuyrukta: başka bir çalıştırma bu checkout'u kullanıyor. O bitince başlayacak."
   },
   "planning": {
     "agentTyping": "Agent yazıyor...",
@@ -2794,6 +2811,7 @@
     },
     "url": {
       "open": "Aç",
+      "changesCount": "{{count}} değişiklik",
       "copyUrl": "URL'yi kopyala",
       "copied": "URL kopyalandı",
       "openExternalFailed": "URL varsayılan tarayıcıda açılamadı",

@@ -344,7 +344,16 @@
     "tipsModifiersWin": "Ctrl = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Shortcuts with scope \"Editor\" only work when the code editor is focused",
     "tipsContextual": "Some shortcuts have different behavior depending on context",
-    "tipsSearchHint": "Use the search bar to quickly find specific shortcuts"
+    "tipsSearchHint": "Use the search bar to quickly find specific shortcuts",
+    "pressShortcut": "Press shortcut",
+    "editCommand": "Edit shortcut for {{command}}",
+    "requireModifier": "Use Control, Command, or Alt with a key, or a function key",
+    "conflict": "Already used by {{command}}",
+    "saveFailed": "Could not save shortcut settings",
+    "reset": "Reset",
+    "resetAll": "Reset to original settings",
+    "resetAllDesc": "Restore default shortcuts for macOS, Windows, and Linux",
+    "nativeSyncFailed": "Could not update native menu shortcuts"
   },
   "languageServersPage": {
     "installing": "Installing",

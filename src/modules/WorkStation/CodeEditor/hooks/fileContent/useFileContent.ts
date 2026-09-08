@@ -156,6 +156,8 @@ export function useFileContent(
       setHasUnsavedChanges(false);
       setLoading(false);
       loadingRef.current = false;
+      // This cache hit bypasses finally; publish it as the current file's result.
+      setLoadedFilePath(filePath);
       return;
     }
 

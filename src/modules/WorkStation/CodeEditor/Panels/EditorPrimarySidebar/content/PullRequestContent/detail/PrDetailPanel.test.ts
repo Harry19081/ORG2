@@ -16,7 +16,6 @@ import {
 import {
   initialPrDetailViewState,
   initialSelectedPrState,
-  workstationPrDetailTabAtomFamily,
   workstationPrScopeKey,
   workstationSelectedPrAtomFamily,
 } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
@@ -317,9 +316,9 @@ describe("PrDetailPanel tabs", () => {
     act(() => {
       tabs[3]?.click();
     });
-    expect(store.get(workstationPrDetailTabAtomFamily(scopeKey))).toBe(
-      "changes"
-    );
+    expect(
+      store.get(workstationSelectedPrAtomFamily(scopeKey)).viewState.activeTab
+    ).toBe("changes");
     expect(tabs[3]?.getAttribute("aria-selected")).toBe("true");
     expect(
       container.querySelector('[role="tabpanel"][aria-hidden="false"]')?.id

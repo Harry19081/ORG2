@@ -67,4 +67,18 @@ describe("sidebar session ordering", () => {
     expect(fresh.get(sidebarSessionOrderAtom)).toEqual(["b", "a"]);
     unsub();
   });
+  it("falls back to defaults for corrupt or unknown persisted values", () => {
+    localStorage.setItem("orgii:sidebarSessionSort", '"alphabetical"');
+    localStorage.setItem("orgii:sidebarSessionOrder", "[corrupt");
+    const store = createStore();
+    const unsubs = [
+      store.sub(sidebarSessionSortAtom, () => undefined),
+      store.sub(sidebarSessionOrderAtom, () => undefined),
+    ];
+    expect(store.get(sidebarSessionSortAtom)).toBe("updated");
+    expect(store.get(sidebarSessionOrderAtom)).toEqual([]);
+    for (const unsub of unsubs) unsub();
+    localStorage.removeItem("orgii:sidebarSessionSort");
+    localStorage.removeItem("orgii:sidebarSessionOrder");
+  });
 });

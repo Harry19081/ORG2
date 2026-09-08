@@ -347,9 +347,11 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
               {/* Global floating side chat: hosted over the whole pane
                   surface (chat slot + workbench), so it stays usable when
                   the chat pane is hidden and a station fills the view. */}
-              <ChatPanelSideChat
-                SessionCreatorSlot={AdeAwareSessionCreatorSlot}
-              />
+              {!isSettingsSlot && (
+                <ChatPanelSideChat
+                  SessionCreatorSlot={AdeAwareSessionCreatorSlot}
+                />
+              )}
             </div>
           </div>
         </SessionSyncProvider>

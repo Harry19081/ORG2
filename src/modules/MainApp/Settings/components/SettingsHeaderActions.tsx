@@ -156,6 +156,7 @@ const CompactPlusDropdown: React.FC<CompactPlusDropdownProps> = ({
         <TabBarTrailingIconButton
           title={title}
           nativeTitle={false}
+          tooltipDisabled
           aria-label={title}
           aria-expanded={open}
           active={open}
@@ -198,6 +199,7 @@ const SettingsHeaderActions: React.FC = () => {
           <TabBarTrailingIconButton
             title={plusTitle}
             nativeTitle={false}
+            tooltipDisabled
             onClick={onPlusClick}
             aria-label={plusTitle}
           >

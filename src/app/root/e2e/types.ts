@@ -328,7 +328,8 @@ export interface E2EHelpers {
   agentOrgSendGroupChatMessage: (
     sessionId: string,
     targetMemberId: string | null,
-    content: string
+    content: string,
+    messageId?: string
   ) => Promise<Result<{ result: Json }>>;
   agentOrgPauseRun: (
     sessionId: string
@@ -662,7 +663,6 @@ export interface E2EHelpers {
       isPendingCancel: boolean;
       isQueueEditing: boolean;
       userInitiatedCancel: boolean;
-      queueFlushRequest: number;
       queuedMessages: Array<{ id: string; sessionId: string; content: string }>;
       runtimeError: string | null;
       rawEvents: Array<{

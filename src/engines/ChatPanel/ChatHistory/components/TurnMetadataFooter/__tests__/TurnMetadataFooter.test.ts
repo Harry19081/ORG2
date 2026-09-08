@@ -81,7 +81,9 @@ describe("TurnMetadataFooter tabs", () => {
 
     expect(markup).not.toContain('data-testid="turn-metadata-edits-tab"');
     expect(markup).toContain('data-testid="turn-metadata-reads-tab"');
-    expect(markup).toContain("flex gap-1.5 items-baseline");
+    expect(markup).toContain(
+      'data-testid="turn-metadata-reads-count">1</span>'
+    );
   });
 
   it("keeps the larger expansion control pinned outside the hidden-scroll list", () => {

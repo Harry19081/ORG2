@@ -5,8 +5,7 @@
  * Renders events using SubagentEventPane — which routes to the same pane
  * components as the main simulator (CodePanel for file/shell/explore,
  * CompactEventView for messages, etc.) via pure deriveState functions.
- * No global session atom dependencies. No SimulatorTitleBar — the cell
- * uses a fixed top header (task + dock app on the right) and a bottom replay
+ * No global session atom dependencies. The cell uses a fixed top header (task + dock app on the right) and a bottom replay
  * bar that appears only while the pointer is over this cell’s pane/footer
  * region (not the header). Visibility uses local state per cell — not Tailwind
  * `group-hover`, so ancestor `group` classes cannot keep the bar stuck open.

@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import PersonAvatar from "@src/components/PersonAvatar";
 import Select from "@src/components/Select";
 import Tag from "@src/components/Tag";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import type {
   MemberRuntimeListEntry,
   OrgRuntimeTelemetry,
@@ -55,7 +56,7 @@ interface TodayMetricProps {
 function TodayMetric({ label, value, secondary, testId }: TodayMetricProps) {
   return (
     <div
-      className="flex min-w-0 flex-col gap-1.5 rounded-xl border border-border-1 bg-primary-container p-4"
+      className={`flex min-w-0 flex-col gap-1.5 ${DETAIL_PANEL_TOKENS.primaryContainer}`}
       data-testid={testId}
     >
       <span className="truncate text-xs text-text-2">{label}</span>

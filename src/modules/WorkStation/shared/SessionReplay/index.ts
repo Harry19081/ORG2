@@ -21,6 +21,4 @@ export {
   type ReplayShellLayoutMode,
 } from "./replayShellHelpers";
 
-export { useReplayShell, type UseReplayShellResult } from "./useReplayShell";
-
 export { ReplayShellLayout, ReplayShellPlaceholder } from "./ReplayShellLayout";

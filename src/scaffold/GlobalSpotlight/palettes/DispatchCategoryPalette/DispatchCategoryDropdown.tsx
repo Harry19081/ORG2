@@ -40,7 +40,10 @@ import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import type { SpotlightItem } from "../../types";
 import type { DispatchCategoryPaletteProps } from "./types";
-import { useDispatchCategoryOptions } from "./useDispatchCategoryOptions";
+import {
+  buildGroupedSpotlightItems,
+  useDispatchCategoryOptions,
+} from "./useDispatchCategoryOptions";
 
 const LIST_MAX_HEIGHT = 360;
 const VIEWPORT_MARGIN = 12;
@@ -106,6 +109,8 @@ const DropdownRow: React.FC<DropdownRowProps> = ({ item, keyboardProps }) => {
   const rightContent = data.rightContent as React.ReactNode | undefined;
   const availableKeys = data.availableKeys as KeyVaultAccount[] | undefined;
   const isCurrent = data.isCurrentSelection === true;
+  const isDisabled = data.disabled === true;
+  const tagLabel = typeof data.tagLabel === "string" ? data.tagLabel : null;
   const testId = typeof data.testId === "string" ? data.testId : undefined;
 
   const renderedIcon = useMemo(() => {
@@ -128,9 +133,10 @@ const DropdownRow: React.FC<DropdownRowProps> = ({ item, keyboardProps }) => {
       type="button"
       data-testid={testId}
       {...keyboardProps}
+      disabled={isDisabled}
       className={`${DROPDOWN_CLASSES.item} ${DROPDOWN_CLASSES.itemHover} w-full justify-start ${
         isCurrent ? DROPDOWN_CLASSES.itemSelected : ""
-      }`}
+      } ${isDisabled ? "cursor-not-allowed opacity-50" : ""}`}
     >
       {renderedIcon && (
         <span className="flex h-5 w-5 shrink-0 items-center justify-center">
@@ -147,6 +153,9 @@ const DropdownRow: React.FC<DropdownRowProps> = ({ item, keyboardProps }) => {
           <span className="truncate text-[11px] text-text-3">{item.desc}</span>
         )}
       </div>
+      {tagLabel && (
+        <span className="shrink-0 text-[11px] text-text-3">{tagLabel}</span>
+      )}
       {availableKeys ? (
         <AvailableKeyCount keys={availableKeys} />
       ) : (
@@ -159,6 +168,7 @@ const DropdownRow: React.FC<DropdownRowProps> = ({ item, keyboardProps }) => {
 interface DispatchCategoryDropdownProps extends DispatchCategoryPaletteProps {
   /** Element the dropdown is anchored to. */
   anchorRef: React.RefObject<HTMLElement | null>;
+  placement?: "top" | "bottom";
 }
 
 export const DispatchCategoryDropdown: React.FC<
@@ -173,9 +183,11 @@ export const DispatchCategoryDropdown: React.FC<
   currentCliAgentType,
   hideOrgs = false,
   hideCliAgents = false,
+  allowedCliAgentTypes,
   cliOnly = false,
   includeHumanSession = false,
   anchorRef,
+  placement = "bottom",
 }) => {
   const { t: tCommon } = useTranslation("common");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -184,6 +196,7 @@ export const DispatchCategoryDropdown: React.FC<
     isOpen,
     hideOrgs,
     hideCliAgents,
+    allowedCliAgentTypes,
     cliOnly,
     includeHumanSession,
     currentCategory,
@@ -206,27 +219,13 @@ export const DispatchCategoryDropdown: React.FC<
 
   // Build a flat list of items + headers for rendering. When searching
   // we drop headers since the grouping no longer holds.
-  const items = useMemo((): SpotlightItem[] => {
-    if (isSearching) {
-      return filteredOptions.map((option) => optionToItem(option));
-    }
-    const result: SpotlightItem[] = [];
-    for (const group of groups) {
-      result.push({
-        id: group.headerId,
-        label: group.headerLabel,
-        desc: "",
-        icon: "",
-        type: "option" as const,
-        data: { isHeader: true },
-        action: () => {},
-      });
-      for (const option of group.options) {
-        result.push(optionToItem(option, group.headerId));
-      }
-    }
-    return result;
-  }, [isSearching, filteredOptions, groups, optionToItem]);
+  const items = useMemo(
+    (): SpotlightItem[] =>
+      isSearching
+        ? filteredOptions.map((option) => optionToItem(option))
+        : buildGroupedSpotlightItems(groups, optionToItem),
+    [isSearching, filteredOptions, groups, optionToItem]
+  );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -239,7 +238,7 @@ export const DispatchCategoryDropdown: React.FC<
 
   const handleSelect = useCallback((item: SpotlightItem) => {
     const data = getItemData(item);
-    if (data.isHeader === true) return;
+    if (data.isHeader === true || data.disabled === true) return;
     item.action?.();
   }, []);
 
@@ -252,12 +251,15 @@ export const DispatchCategoryDropdown: React.FC<
       if (!open) onClose();
     },
     anchorRef,
-    placement: "bottom",
+    placement,
     gap: DROPDOWN_PANEL.triggerGap,
     listNavigation: {
       items,
       onSelect: handleSelect,
-      isItemSelectable: (item) => getItemData(item).isHeader !== true,
+      isItemSelectable: (item) => {
+        const data = getItemData(item);
+        return data.isHeader !== true && data.disabled !== true;
+      },
       initialSelectedIndex: -1,
     },
   });

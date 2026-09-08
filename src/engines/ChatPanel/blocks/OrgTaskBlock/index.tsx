@@ -10,7 +10,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import { getToolIconComponent } from "@src/config/toolIcons";
 import type { ToolUsageMetadata } from "@src/engines/SessionCore/core/types";
 import type { ResolvedOrgTaskOperationOutcome } from "@src/engines/SessionCore/rendering/orgTaskOutcome";
@@ -238,7 +238,7 @@ function CompactTaskCard({
       )}
 
       {!operationAccepted && (
-        <InlineAlert
+        <PageNotice
           type={
             operationOutcome === "failed"
               ? "danger"
@@ -250,7 +250,7 @@ function CompactTaskCard({
           className="mt-2"
         >
           {operationMessage}
-        </InlineAlert>
+        </PageNotice>
       )}
 
       {/* Meta rows: Assigned to / Updated at / Status — inline with vertical separators when there is room, wraps to multiple lines otherwise. */}
