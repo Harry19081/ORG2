@@ -252,6 +252,11 @@ function eventsFor(sessionId = SESSION_ID) {
   return store.list(sessionId);
 }
 
+const { readContext } = vi.hoisted(() => ({ readContext: vi.fn() }));
+vi.mock("@src/api/tauri/session/contextUsage", () => ({
+  cliSessionContextUsage: readContext,
+}));
+
 interface RecordingCallbacks extends EventHandlerCallbacks {
   agentCompletes: number;
   tokenUpdates: number[];
@@ -283,6 +288,14 @@ describe("createCliEventHandler ingestion boundary", () => {
   let handler: ReturnType<typeof createCliEventHandler>;
 
   beforeEach(() => {
+    readContext.mockReset();
+    readContext.mockResolvedValue({
+      usedTokens: 110,
+      maxTokens: null,
+      sections: [],
+      warnings: [],
+      updatedAt: "now",
+    });
     vi.clearAllMocks();
     store.reset();
     rustBridge.normalizeChunkRust.mockImplementation(
@@ -341,7 +354,8 @@ describe("createCliEventHandler ingestion boundary", () => {
         total_tokens: 42,
       });
 
-      expect(callbacks.tokenUpdates).toEqual([42]);
+      await flush();
+      expect(callbacks.tokenUpdates).toEqual([110]);
     });
   });
 
@@ -1842,7 +1856,44 @@ describe("createCliEventHandler ingestion boundary", () => {
   // -------------------------------------------------------------------------
 
   describe("token usage", () => {
-    it("forwards only numeric totals", () => {
+    it("drops a pending context read after dispose", async () => {
+      let resolve!: (value: { usedTokens: number }) => void;
+      readContext.mockReturnValue(
+        new Promise((done) => {
+          resolve = done;
+        })
+      );
+      handler.handleEvent({
+        type: "code_session.token_usage_updated",
+        session_id: SESSION_ID,
+        total_tokens: 999999,
+      });
+      handler.dispose();
+      resolve({ usedTokens: 110 });
+      await flush();
+      expect(callbacks.tokenUpdates).toEqual([]);
+    });
+    it("coalesces bursts into one pending read and one follow-up", async () => {
+      let resolve!: (value: { usedTokens: number }) => void;
+      readContext.mockReturnValueOnce(
+        new Promise((done) => {
+          resolve = done;
+        })
+      );
+      for (let i = 0; i < 10; i++)
+        handler.handleEvent({
+          type: "code_session.token_usage_updated",
+          session_id: SESSION_ID,
+          total_tokens: i,
+        });
+      expect(readContext).toHaveBeenCalledTimes(1);
+      resolve({ usedTokens: 100 });
+      await flush();
+      expect(readContext).toHaveBeenCalledTimes(2);
+      expect(callbacks.tokenUpdates).toEqual([100, 110]);
+    });
+
+    it("uses numeric billing events to refresh context without forwarding totals", async () => {
       handler.handleEvent({
         type: "code_session.token_usage_updated",
         session_id: SESSION_ID,
@@ -1858,7 +1909,8 @@ describe("createCliEventHandler ingestion boundary", () => {
         session_id: SESSION_ID,
       });
 
-      expect(callbacks.tokenUpdates).toEqual([1234]);
+      await flush();
+      expect(callbacks.tokenUpdates).toEqual([110]);
     });
   });
 

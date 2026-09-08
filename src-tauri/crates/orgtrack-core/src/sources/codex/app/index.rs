@@ -833,6 +833,34 @@ pub(crate) fn codex_sessions_dir_candidates(home: &Path) -> Vec<PathBuf> {
         .collect()
 }
 
+/// Context refresh only follows indexed source paths. Unlike transcript recovery,
+/// missing telemetry must not initiate a recursive history-directory scan.
+pub fn load_codex_context_usage_for_session(
+    conn: &Connection,
+    session_id: &str,
+) -> Result<Option<crate::sources::imported_history::context_usage::ImportedContextUsage>, String> {
+    let file_stem = codex_file_stem_from_session_id(session_id)?;
+    let store = SqliteRecordStore::new(conn);
+    let actor_path = store
+        .get_session_actor_by_transcript_session_id(
+            SOURCE_CODEX_APP,
+            &canonical_session_id(file_stem),
+        )?
+        .and_then(|actor| actor.transcript_path);
+    let path = match actor_path {
+        Some(path) => Some(path),
+        None => imported_cache::get_cached_source_path_by_suffix_from_conn(
+            conn,
+            SOURCE_CODEX_APP,
+            file_stem,
+        )?,
+    };
+    match path {
+        Some(path) => super::context_usage::read_context_usage(Path::new(&path)),
+        None => Ok(None),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

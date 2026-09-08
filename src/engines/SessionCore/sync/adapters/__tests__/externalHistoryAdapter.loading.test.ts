@@ -215,3 +215,49 @@ describe("external history loading", () => {
     expect(getTranscriptSignature("codexapp-large")).toBe("100:0");
   });
 });
+
+describe("external context hydration", () => {
+  it("hydrates source telemetry independently of billing totals", async () => {
+    const usage = {
+      usedTokens: 120,
+      maxTokens: 1000,
+      updatedAt: "now",
+      sections: [],
+      warnings: [],
+    };
+    mocks.getSource.mockReturnValue({
+      loadContextUsage: vi.fn().mockResolvedValue(usage),
+    });
+    expect(
+      await externalHistoryAdapter.postLoad?.(
+        "codexapp-a",
+        new AbortController().signal
+      )
+    ).toEqual({
+      runStatus: "completed",
+      contextTokens: 120,
+      contextUsage: usage,
+    });
+  });
+  it("keeps replay usable when optional context telemetry is unavailable", async () => {
+    mocks.getSource.mockReturnValue({
+      loadContextUsage: vi.fn().mockRejectedValue(new Error("missing source")),
+    });
+    expect(
+      await externalHistoryAdapter.postLoad?.(
+        "codexapp-a",
+        new AbortController().signal
+      )
+    ).toEqual({ runStatus: "completed", contextTokens: 0, contextUsage: null });
+  });
+  it("does not apply telemetry after switching away", async () => {
+    mocks.getSource.mockReturnValue({
+      loadContextUsage: vi.fn().mockResolvedValue({ usedTokens: 120 }),
+    });
+    const controller = new AbortController();
+    controller.abort();
+    expect(
+      await externalHistoryAdapter.postLoad?.("codexapp-a", controller.signal)
+    ).toEqual({});
+  });
+});

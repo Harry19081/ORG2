@@ -1,6 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 
 import { rpc } from "@src/api/tauri/rpc";
+import { cliSessionContextUsage } from "@src/api/tauri/session/contextUsage";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { processChunksRust } from "@src/engines/SessionCore/ingestion/rustBridge";
 import { createLogger } from "@src/hooks/logger";
@@ -16,7 +17,6 @@ const log = createLogger("CliAdapter");
 interface StoredSession {
   status: string;
   errorMessage?: string | null;
-  totalTokens?: number;
   /** 'chunks' (legacy DB transcript) or 'native' (CLI's own store). */
   transcriptSource?: string;
 }
@@ -70,10 +70,6 @@ export async function postLoadCliSession(
       result.transcriptSource = storedSession.transcriptSource;
     }
 
-    if (typeof storedSession.totalTokens === "number") {
-      result.contextTokens = storedSession.totalTokens;
-    }
-
     const status = storedSession.status as CliSessionStatus;
     if (status !== "idle") {
       result.runStatus = status;
@@ -86,6 +82,17 @@ export async function postLoadCliSession(
     }
   } catch (error) {
     log.warn("[CliAdapter] postLoad status fetch failed:", error);
+  }
+  if (signal.aborted) return {};
+  try {
+    const usage = await cliSessionContextUsage(sessionId);
+    if (signal.aborted) return {};
+    result.contextUsage = usage;
+    result.contextTokens = usage?.usedTokens ?? 0;
+  } catch (error) {
+    log.warn("[CliAdapter] context telemetry unavailable:", error);
+    result.contextUsage = null;
+    result.contextTokens = 0;
   }
   return result;
 }

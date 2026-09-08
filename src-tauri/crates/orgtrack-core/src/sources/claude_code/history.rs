@@ -5,6 +5,8 @@
 //! replay.
 
 mod cache_sync;
+mod context_usage;
+pub use context_usage::load_claude_context_usage_for_session;
 mod discovery;
 mod metadata;
 mod replay;
