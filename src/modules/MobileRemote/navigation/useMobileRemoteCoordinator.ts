@@ -17,7 +17,8 @@ type CoordinatorState = {
 };
 type CoordinatorAction =
   | MobileRemoteNavAction
-  | { type: "stop_pending" | "stop_failed" };
+  | { type: "stop_pending" }
+  | { type: "stop_failed" };
 function reduceCoordinator(
   state: CoordinatorState,
   action: CoordinatorAction
