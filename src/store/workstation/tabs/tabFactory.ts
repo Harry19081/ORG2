@@ -21,7 +21,7 @@ import type {
   WorkStationTabType,
 } from "./types";
 
-export { getFileName } from "@src/util/file/pathUtils";
+export { getFileExtension, getFileName } from "@src/util/file/pathUtils";
 
 // ============================================
 // Types
@@ -170,9 +170,4 @@ export function defineTabFactory<TData>(
       hideWhenOthersExist: config.hideWhenOthersExist ?? false,
     };
   };
-}
-
-export function getFileExtension(name: string): string {
-  const parts = name.split(".");
-  return parts.length > 1 ? parts[parts.length - 1] : "";
 }
