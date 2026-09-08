@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Oznacz wszystkie jako przeczytane",
+    "showKanban": "Pokaż Kanban",
+    "showRuntime": "Pokaż Runtime",
+    "pinned": "Przypięte",
+    "unread": "Nieprzeczytane",
+    "running": "W toku",
+    "recent": "Ostatnie",
+    "empty": "Brak sesji — Otwórz aplikację",
+    "quit": "Zamknij ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token kontekstu",
     "followup": "{{tokenCount}} Token follow-up",

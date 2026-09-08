@@ -4,6 +4,9 @@
 //! via `tauri::generate_handler![…]` in `main.rs`. Every Tauri command exposed
 //! to the frontend must appear here; commands not listed are silently unreachable.
 
+system_services::tray::tray_update_sessions,
+system_services::tray::tray_take_pending_action,
+
 // Diagnostics commands
 usage_diagnostics::commands::diagnostics_initialize,
 usage_diagnostics::commands::diagnostics_submit_usage_snapshot,
