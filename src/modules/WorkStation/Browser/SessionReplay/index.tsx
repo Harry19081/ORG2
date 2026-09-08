@@ -172,7 +172,6 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
     handleNewPrivateMyTabsSession,
     handleSelectMyTabsSession,
     handleCloseMyTabsSession,
-    handleOpenMyTabsHistoryUrl,
   } = useBrowserReplayTabs({
     browserEntries,
     internalBrowserEntries,
@@ -274,7 +273,6 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
                 onNewSession={handleNewMyTabsSession}
                 onNewPrivateSession={handleNewPrivateMyTabsSession}
                 onCloseSession={handleCloseMyTabsSession}
-                onOpenHistoryUrl={handleOpenMyTabsHistoryUrl}
               />
             </div>
             <div
@@ -316,7 +314,6 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
       handleCloseMyTabsSession,
       handleNewMyTabsSession,
       handleNewPrivateMyTabsSession,
-      handleOpenMyTabsHistoryUrl,
       handleSelectAgentEntry,
       primarySidebarCollapsed,
       primarySidebarWidth,

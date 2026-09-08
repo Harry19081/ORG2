@@ -2139,8 +2139,7 @@
     "terminalProcesses": "Processos de terminal",
     "chatPreview": "Pré-visualização do chat",
     "scenario": "Cenário",
-    "selectScenario": "Selecione um cenário",
-    "sessionSimulation": "Simulação de sessão"
+    "selectScenario": "Selecione um cenário"
   },
   "agentTools": {
     "enabled": "Ativado",

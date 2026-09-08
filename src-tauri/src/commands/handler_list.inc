@@ -51,7 +51,6 @@ browser::cookie_import::preview_cookie_import,
 browser::cookie_import::import_browser_cookies,
 // Browser commands - Element Inspector
 browser::toggle_webview_inspect_mode,
-browser::enable_webview_inspect_mode,
 browser::disable_webview_inspect_mode,
 browser::get_selected_element_info,
 browser::clear_element_selection,
@@ -318,7 +317,6 @@ terminal::pty_commands::pty::get_pty_foreground_process,
 terminal::pty_commands::pty::ack_pty_data,
 terminal::pty_commands::shells::detect_available_shells,
 // Stateless CSS variable scan used by the browser design-token panel.
-browser::scan_global_tokens,
 // Validation commands (key validation for AI providers)
 key_vault::validate_key,
 key_vault::test_model_availability,

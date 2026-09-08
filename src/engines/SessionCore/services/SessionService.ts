@@ -32,6 +32,7 @@ import {
   markForkHandoffConsumed,
 } from "@src/features/TeamCollaboration/forkSession";
 import { createLogger } from "@src/hooks/logger";
+import { navigateApp } from "@src/router/navigateApp";
 import { collectAdeContext } from "@src/services/context/collectors";
 import {
   type Session,
@@ -524,11 +525,7 @@ export const SessionService = {
     const store = getInstrumentedStore();
     store.set(workstationActiveSessionIdAtom, sessionId);
     store.set(activeSessionIdAtom, sessionId);
-    window.dispatchEvent(
-      new CustomEvent("action-system-navigate", {
-        detail: { path: ROUTES.workStation.base.path },
-      })
-    );
+    navigateApp(ROUTES.workStation.base.path);
     logger.info(`Opened session: ${sessionId}`);
   },
 

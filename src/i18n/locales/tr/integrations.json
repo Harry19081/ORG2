@@ -2126,8 +2126,7 @@
     "terminalProcesses": "Terminal İşlemleri",
     "chatPreview": "Sohbet önizleme",
     "scenario": "Senaryo",
-    "selectScenario": "Bir senaryo seçin",
-    "sessionSimulation": "Oturum simülasyonu"
+    "selectScenario": "Bir senaryo seçin"
   },
   "rulesTabs": {
     "rules": "Kurallar",

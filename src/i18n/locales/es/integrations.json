@@ -2126,8 +2126,7 @@
     "terminalProcesses": "Procesos de terminal",
     "chatPreview": "Vista previa del chat",
     "scenario": "Escenario",
-    "selectScenario": "Selecciona un escenario",
-    "sessionSimulation": "Simulación de sesión"
+    "selectScenario": "Selecciona un escenario"
   },
   "rulesTabs": {
     "rules": "Reglas",

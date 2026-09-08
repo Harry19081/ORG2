@@ -500,11 +500,7 @@
       "bottomPanel": {
         "tabTrajectory": "轨迹",
         "tabTodo": "待办",
-        "expandPanel": "显示轨迹与待办面板",
-        "placeholderTrajectoryTitle": "暂无事件",
-        "placeholderTrajectorySubtitle": "Agent 运行后，会话活动将显示在这里",
-        "placeholderTodoTitle": "暂无待办列表",
-        "placeholderTodoSubtitle": "Agent 写入任务后，待办更新将显示在这里"
+        "expandPanel": "显示轨迹与待办面板"
       },
       "previousEvent": "上一个事件",
       "nextEvent": "下一个事件",

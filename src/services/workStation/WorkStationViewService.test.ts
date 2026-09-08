@@ -9,6 +9,11 @@ import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import {
+  createSourceControlTab,
+  openTab,
+  workstationLayoutAtom,
+} from "@src/store/workstation/tabs";
+import {
   createInstrumentedStore,
   getInstrumentedStore,
 } from "@src/util/core/state/instrumentedStore";
@@ -31,6 +36,7 @@ describe("WorkStationViewService work-management tabs", () => {
     });
     createInstrumentedStore();
     const store = getInstrumentedStore();
+    store.set(chatPanelMaximizedAtom, false);
     store.set(stationModeAtom, "agent-station");
     store.set(stationChatVisibilityAtom, {
       "my-station": true,
@@ -52,6 +58,30 @@ describe("WorkStationViewService work-management tabs", () => {
     await WorkStationViewService.openKanbanTab();
 
     expect(navigationEvents).toEqual([{ path: ROUTES.workStation.base.path }]);
+  });
+
+  it.each([
+    ROUTES.workStation.base.path,
+    ROUTES.workStation.code.path,
+    ROUTES.workStation.browser.path,
+  ])("toggles the active editor tab independently of URL %s", async (path) => {
+    const store = getInstrumentedStore();
+    store.set(stationModeAtom, "my-station");
+    const layout = store.get(workstationLayoutAtom);
+    store.set(workstationLayoutAtom, {
+      ...layout,
+      mainPane: openTab(
+        layout.mainPane,
+        createSourceControlTab(0, { mode: "all-changes" })
+      ),
+    });
+    store.set(chatPanelMaximizedAtom, false);
+    window.history.replaceState({}, "", path);
+    await WorkStationViewService.openSourceControlTab({
+      toggleChatPanelMaximizedWhenActive: true,
+    });
+    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+    expect(navigationEvents).toEqual([]);
   });
 
   it("rejects Station-opening actions for Station-excluded tabs", async () => {

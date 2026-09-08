@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "As mensagens aparecem com a primeira resposta; até lá, a barra pode parecer inativa",
     "pleaseSelect": "Selecione",
     "noSessionsFound": "Nenhuma sessão encontrada",
-    "noBrowsingHistory": "Nenhum histórico de navegação",
     "typeToSearchFiles": "Digite para pesquisar arquivos...",
     "selectFileToViewChanges": "Selecione um arquivo para ver as alterações",
     "failedToLoadHistory": "Falha ao carregar histórico",

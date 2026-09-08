@@ -495,11 +495,7 @@
       "bottomPanel": {
         "tabTrajectory": "軌跡",
         "tabTodo": "待辦",
-        "expandPanel": "顯示軌跡與待辦面板",
-        "placeholderTrajectoryTitle": "暫無事件",
-        "placeholderTrajectorySubtitle": "Agent 運行後，會話活動將顯示在這裏",
-        "placeholderTodoTitle": "暫無待辦列表",
-        "placeholderTodoSubtitle": "Agent 寫入任務後，待辦更新將顯示在這裏"
+        "expandPanel": "顯示軌跡與待辦面板"
       },
       "previousEvent": "上一個事件",
       "nextEvent": "下一個事件",

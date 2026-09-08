@@ -2126,8 +2126,7 @@
     "terminalProcesses": "터미널 프로세스",
     "chatPreview": "채팅 미리보기",
     "scenario": "시나리오",
-    "selectScenario": "시나리오 선택",
-    "sessionSimulation": "세션 시뮬레이션"
+    "selectScenario": "시나리오 선택"
   },
   "rulesTabs": {
     "rules": "규칙",

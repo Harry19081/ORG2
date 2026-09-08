@@ -2204,8 +2204,7 @@
     "terminalProcesses": "Terminal Processes",
     "chatPreview": "Chat Preview",
     "scenario": "Scenario",
-    "selectScenario": "Select a scenario",
-    "sessionSimulation": "Session Simulation"
+    "selectScenario": "Select a scenario"
   },
   "agentTools": {
     "enabled": "Enabled",

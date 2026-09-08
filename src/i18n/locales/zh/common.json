@@ -831,7 +831,6 @@
     "chatHistoryAgentWorkingHint": "首条回复到达后会显示消息，此前工具栏可能显示空闲",
     "pleaseSelect": "请选择",
     "noSessionsFound": "未找到 Session",
-    "noBrowsingHistory": "暂无浏览历史",
     "typeToSearchFiles": "输入以搜索文件...",
     "selectFileToViewChanges": "选择文件以查看变更",
     "failedToLoadHistory": "加载历史记录失败",
