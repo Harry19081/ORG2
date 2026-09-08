@@ -183,10 +183,6 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
         </SectionContainer>
       )}
 
-      {(tokenDetected || data.validated) && selectedMethod !== "signin" && (
-        <InlineAlert type="success">{t("keyVault.codexConnected")}</InlineAlert>
-      )}
-
       {tokenError && selectedMethod !== "signin" && (
         <InlineAlert
           type="danger"

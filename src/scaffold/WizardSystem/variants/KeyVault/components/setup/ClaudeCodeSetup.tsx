@@ -114,12 +114,6 @@ const ClaudeCodeSetup: React.FC<ClaudeCodeSetupProps> = ({
         </SectionContainer>
       )}
 
-      {(tokenDetected || data.validated) && selectedMethod !== "signin" && (
-        <InlineAlert type="success">
-          {t("keyVault.claudeCodeConnected")}
-        </InlineAlert>
-      )}
-
       {tokenError && selectedMethod !== "signin" && (
         <InlineAlert
           type="danger"
