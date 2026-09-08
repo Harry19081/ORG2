@@ -171,12 +171,19 @@ fn is_mobile_list_category(category: SessionCategory) -> bool {
 fn session_list_from_sidebar_snapshot(
     snapshot: Vec<MobileSidebarSessionSnapshotRow>,
     status_filter: &str,
+    offset: usize,
     limit: usize,
     writable_codex_session_ids: &HashSet<String>,
 ) -> Value {
-    let sessions = snapshot
+    // Offsets address the filtered roster, not the raw sidebar snapshot.
+    let filtered = snapshot
         .into_iter()
         .filter(|session| status_filter != "running" || session.status == "running")
+        .collect::<Vec<_>>();
+    let total = filtered.len();
+    let sessions = filtered
+        .into_iter()
+        .skip(offset)
         .take(limit)
         .map(|session| {
             let send_capability =
@@ -194,7 +201,13 @@ fn session_list_from_sidebar_snapshot(
         })
         .collect::<Vec<_>>();
 
-    json!({ "sessions": sessions, "source": "desktop_sidebar" })
+    let next_offset = offset.saturating_add(sessions.len());
+    json!({
+        "sessions": sessions,
+        "source": "desktop_sidebar",
+        "nextOffset": next_offset,
+        "hasMore": next_offset < total,
+    })
 }
 
 /// Validate `session/send` params without touching desktop state.
@@ -351,8 +364,8 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
     {
         let candidate_ids = snapshot
             .iter()
-            .skip(offset)
             .filter(|session| status_filter != "running" || session.status == "running")
+            .skip(offset)
             .take(limit)
             .filter(|session| {
                 session
@@ -367,16 +380,13 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
             )
             .await
             .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?;
-        let total = snapshot.len();
-        let mut result = session_list_from_sidebar_snapshot(
-            snapshot.into_iter().skip(offset).collect(),
+        return Ok(session_list_from_sidebar_snapshot(
+            snapshot,
             status_filter,
+            offset,
             limit,
             &writable_codex_session_ids,
-        );
-        result["nextOffset"] = json!(offset.saturating_add(limit));
-        result["hasMore"] = json!(offset.saturating_add(limit) < total);
-        return Ok(result);
+        ));
     }
 
     let filter = SessionFilter {
@@ -2112,6 +2122,7 @@ mod tests {
         let all = session_list_from_sidebar_snapshot(
             snapshot.clone(),
             "all",
+            0,
             10,
             &writable_codex_session_ids,
         );
@@ -2136,6 +2147,7 @@ mod tests {
         let running = session_list_from_sidebar_snapshot(
             snapshot,
             "running",
+            0,
             10,
             &writable_codex_session_ids,
         );
@@ -2150,6 +2162,66 @@ mod tests {
                 .map(Vec::len),
             Some(1)
         );
+    }
+
+    #[test]
+    fn sidebar_snapshot_list_paginates_filtered_rows_without_duplicates() {
+        let snapshot = [
+            ("idle-a", "idle"),
+            ("a", "running"),
+            ("idle-b", "idle"),
+            ("b", "running"),
+            ("c", "running"),
+        ]
+        .into_iter()
+        .map(|(id, status)| MobileSidebarSessionSnapshotRow {
+            id: id.to_string(),
+            name: id.to_string(),
+            status: status.to_string(),
+            ..Default::default()
+        })
+        .collect::<Vec<_>>();
+        let writable = HashSet::new();
+        let first =
+            session_list_from_sidebar_snapshot(snapshot.clone(), "running", 0, 2, &writable);
+        assert_eq!(first["nextOffset"], json!(2));
+        assert_eq!(first["hasMore"], json!(true));
+        assert_eq!(
+            first["sessions"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|row| row["id"].as_str().unwrap())
+                .collect::<Vec<_>>(),
+            vec!["a", "b"]
+        );
+        let second = session_list_from_sidebar_snapshot(
+            snapshot.clone(),
+            "running",
+            first["nextOffset"].as_u64().unwrap() as usize,
+            2,
+            &writable,
+        );
+        assert_eq!(second["nextOffset"], json!(3));
+        assert_eq!(second["hasMore"], json!(false));
+        assert_eq!(
+            second["sessions"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|row| row["id"].as_str().unwrap())
+                .collect::<Vec<_>>(),
+            vec!["c"]
+        );
+        let empty =
+            session_list_from_sidebar_snapshot(snapshot.clone(), "running", 3, 2, &writable);
+        assert_eq!(empty["sessions"], json!([]));
+        assert_eq!(empty["nextOffset"], json!(3));
+        assert_eq!(empty["hasMore"], json!(false));
+        let all = session_list_from_sidebar_snapshot(snapshot, "all", 2, 2, &writable);
+        assert_eq!(all["sessions"][0]["id"], json!("idle-b"));
+        assert_eq!(all["nextOffset"], json!(4));
+        assert_eq!(all["hasMore"], json!(true));
     }
 
     #[test]

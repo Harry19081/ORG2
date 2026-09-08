@@ -7,19 +7,19 @@
 
 Totals: fix 0; keep with reason 2; abstract 0. Light/dark/physical-device screenshots were not captured.
 
-## Architecture findings — not ready
+## Architecture review corrections
 
-Audited ingress snapshot → RPC adapter → provider pagination → flat list (ownership, types/wire, state machine, transformations, bounds). Provider history ingestion, database schema migrations and unrelated tooling were skipped because unchanged. Optional workspace metadata preserves older callers; no persistent migration. Rollback reverts additive fields and pagination together; old clients ignore new fields and new clients stop after one page if hasMore is absent.
+Snapshot offsets now address the filtered roster: filter first, skip offset, take limit; nextOffset advances by the returned row count, and hasMore compares with filtered total. Writable-Codex capability lookup uses the same filtered page. The RPC response builder owns the invariant; the UI does not hide duplicate producer rows.
 
-**P1: filtered snapshot offsets are inconsistent.** In `session.rs`, snapshot is skipped by raw offset, then filtered and limited, but nextOffset advances by limit instead of raw consumed rows. Example [idle,A-running,idle,B-running,C-running], limit 2: first page returns A/B; offset 2 returns B/C. This is a producing-boundary bug, not a UI-filter problem. The current UI requests the unfiltered list, but the RPC running filter is affected. Require source-level regression and corrected cursor semantics before ready. No persisted data was modified or cleaned.
+A backend regression exercises [idle,A-running,idle,B-running,C-running] with a page size of two, verifies A/B then C, checks the exhausted page, and verifies unfiltered offsets. Optional metadata remains additive and old clients can ignore pagination fields. No persisted data was modified; no historical cleanup is necessary.
 
-**P2: parent roster refresh is not single-flight.** Concurrent invalidations issue duplicate requests; a generation guard only discards stale completion. See runtime audit in #1380.
+| Area               | Verdict | Evidence                                            | Change or reason kept                               | Verification                         |
+| ------------------ | ------- | --------------------------------------------------- | --------------------------------------------------- | ------------------------------------ |
+| Background work    | keep    | Parent #1380 coalesces roster reads                 | One flight plus trailing intent                     | Parent burst/reset/retry tests       |
+| Memory             | keep    | UI offset ceiling and server page-size cap retained | Demand-driven loading                               | Pagination tests; no RSS measurement |
+| Scope/isolation    | keep    | Client and generation guards retained               | Old transport results cannot overwrite a new roster | Parent stale-client regression       |
+| Rendering/hot path | keep    | Flat list unchanged                                 | No grouping/filter UI restored                      | SessionsScreen test                  |
 
-| Area               | Verdict | Evidence                                                            | Change or reason kept                     | Verification                                |
-| ------------------ | ------- | ------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------- |
-| Background work    | fix     | Parent hook starts a request per invalidation                       | Needs single-flight/coalescing            | Static trace; not fixed here                |
-| Memory             | keep    | UI stops advertising more after offset 1000; server limit is capped | No eager full history load                | Unit coverage only; physical RSS unmeasured |
-| Scope/isolation    | keep    | Client identity and generation checked after calls                  | Old transport cannot overwrite new roster | Parent tests                                |
-| Rendering/hot path | keep    | Flat list retained, no grouping/sort introduced                     | User-requested filter removal preserved   | SessionsScreen regression                   |
+Verification: `cargo test --locked --manifest-path src-tauri/Cargo.toml -p org2 --lib sidebar_snapshot_list -- --nocapture` compiled the Desktop library and passed both backend tests (1294 filtered out). The first attempt lacked the process-manager sidecar; the isolated worktree then reused the existing local sidecar and the rerun passed. Frontend session/roster tests passed, as did typecheck, scoped ESLint and git diff --check. Physical-device measurements and screenshots were not run.
 
-Verification: targeted SessionsScreen test passed; full Rust desktop adapter tests/build and device measurements have not run. Narrow protocol-crate tests from the parent do not validate this adapter. Performance verdict: fail — duplicate invalidations remain, plus filtered pagination correctness is blocked. This is a Draft inventory of existing changes, not a release approval.
+Performance verdict: blocked on physical-device measurements; filtered producer correctness and overlapping parent roster requests are corrected and regression-tested. Provider raw history ingestion is unchanged.
