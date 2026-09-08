@@ -1,5 +1,5 @@
 /**
- * useChatGroups — turn-collapse survivor tests.
+ * projectChatGroups — turn-collapse survivor tests.
  *
  * Focus: the structural collapse transform must keep terminal error cards
  * (quota exhausted / rate limited / stream retry budget exhausted) visible.
@@ -7,17 +7,14 @@
  * (2026-06-10): a collapsed turn whose tail was tool calls + error event
  * previously dropped the error and survived as a structural-only row.
  *
- * Runs in the node environment by mocking React's useMemo as a
- * pass-through (same pattern as useWebviewCommands.test.ts — the host
- * project doesn't ship @testing-library/react).
+ * Exercises the pure projection used by the production chat pipeline.
  */
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 
 import { processChatItems } from "../../chatItemPipeline/pipeline";
 import type { OptimizedChatItem } from "../../chatItemPipeline/types";
-import { useChatGroups } from "../useChatGroups";
 import {
   type ChatGroupMeta,
   isTurnCollapseEligible,
@@ -25,10 +22,6 @@ import {
   projectChatGroups,
   resolveTurnDefaultCollapsed,
 } from "../useChatGroupsProjection";
-
-vi.mock("react", () => ({
-  useMemo: <Value>(factory: () => Value) => factory(),
-}));
 
 let counter = 0;
 
@@ -217,22 +210,6 @@ function flatTexts(items: OptimizedChatItem[]): string[] {
 }
 
 describe("projectChatGroups", () => {
-  it("matches the React hook adapter without requiring React state", () => {
-    const history = [
-      userItem("first turn"),
-      toolItem(),
-      assistantItem("first reply"),
-      userItem("current turn"),
-      assistantItem("current reply"),
-    ];
-    const options = { allTurnsCollapsed: true };
-
-    const projected = projectChatGroups(history, options);
-    const hooked = useChatGroups(history, options);
-
-    expect(projected).toEqual(hooked);
-  });
-
   it("accepts custom turn callbacks as plain function inputs", () => {
     const boundary = boundaryItem("new logical turn");
     const history = [toolItem(), boundary, assistantItem("reply")];
@@ -247,7 +224,7 @@ describe("projectChatGroups", () => {
   });
 });
 
-describe("useChatGroups collapse — terminal error survival", () => {
+describe("projectChatGroups collapse — terminal error survival", () => {
   it("collapses completed historical turns by default", () => {
     const history = [
       userItem("first turn"),
@@ -258,7 +235,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("current reply"),
     ];
 
-    const result = useChatGroups(history);
+    const result = projectChatGroups(history);
 
     // The prior turn defaults to the compact summary, while the live tail
     // remains expanded while its round is still running.
@@ -279,7 +256,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("current reply"),
     ];
 
-    const result = useChatGroups(history);
+    const result = projectChatGroups(history);
 
     expect(result.groupCounts).toEqual([1, 1]);
     expect(flatTexts(result.flatItems)).toEqual([
@@ -298,7 +275,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("current reply"),
     ];
 
-    const result = useChatGroups(history);
+    const result = projectChatGroups(history);
 
     expect(result.groupMeta[0].unloadedTurn?.turnId).toBe(firstTurn.event!.id);
     expect(flatTexts(result.flatItems)).toContain("unloaded final reply");
@@ -319,7 +296,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("current reply"),
     ];
 
-    const result = useChatGroups(history);
+    const result = projectChatGroups(history);
 
     expect(isTurnPreviewItem(preview)).toBe(true);
     expect(result.groupMeta[0].unloadedTurn?.turnId).toBe(firstTurn.event!.id);
@@ -338,7 +315,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("second reply"),
     ];
 
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     const texts = flatTexts(result.flatItems);
     expect(texts).toContain("Error: rate limit exceeded");
@@ -357,7 +334,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("second reply"),
     ];
 
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     expect(flatTexts(result.flatItems)).toContain(
       "unexpected status 402 Payment Required"
@@ -374,7 +351,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("second reply"),
     ];
 
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     const texts = flatTexts(result.flatItems);
     expect(texts).toContain("found the bug");
@@ -391,7 +368,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("second reply"),
     ];
 
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     const texts = flatTexts(result.flatItems);
     expect(texts).toContain("Error: transient blip");
@@ -408,7 +385,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("second reply"),
     ];
 
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     expect(result.groupCounts[0]).toBe(1);
     expect(flatTexts(result.flatItems)).toContain("all done");
@@ -423,7 +400,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("second reply"), // orig 4 (flat 1)
     ];
 
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     expect(result.flatItems[0]?.event?.displayText).toBe("Error: quota gone");
     expect(result.originalToFlatIndex.get(1)).toBe(0);
@@ -446,7 +423,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
 
     // `allTurnsCollapsed` force-collapses every eligible (multi-item, non-tail)
     // turn, exactly the state a user reaches via collapse-all or the pin-bar.
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     const texts = flatTexts(result.flatItems);
     // The final assistant reply and the boundary both survive the collapse.
@@ -466,7 +443,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
       assistantItem("second reply"),
     ];
 
-    const result = useChatGroups(history, { allTurnsCollapsed: true });
+    const result = projectChatGroups(history, { allTurnsCollapsed: true });
 
     const texts = flatTexts(result.flatItems);
     expect(texts).toContain("summary without a trailing reply");
@@ -484,7 +461,7 @@ describe("useChatGroups collapse — terminal error survival", () => {
     ];
 
     const firstTurnId = history[0].event!.id;
-    const result = useChatGroups(history, {
+    const result = projectChatGroups(history, {
       collapseOverrides: new Map([[firstTurnId, false]]),
     });
 
