@@ -1974,17 +1974,7 @@
     "showLess": "收起"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "暂无 AI 会话影响数据",
-    "sessions": "会话",
-    "files": "涉及文件",
-    "functions": "函数",
-    "commits": "Commit",
-    "lines": "代码行",
-    "sessionBreakdown": "会话明细",
-    "human": "Human",
-    "completed": "已完成",
-    "incomplete": "未完成"
+    "lines": "代码行"
   },
   "sessions": {
     "title": "会话",

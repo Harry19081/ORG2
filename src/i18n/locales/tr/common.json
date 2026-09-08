@@ -2054,17 +2054,7 @@
     "showLess": "Daha Az Göster"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Henüz AI oturum etki verisi yok",
-    "sessions": "Oturumlar",
-    "files": "Dosyalar",
-    "functions": "Fonksiyonlar",
-    "commits": "Commit",
-    "lines": "Satırlar",
-    "sessionBreakdown": "Oturum Detayları",
-    "human": "Human",
-    "completed": "Tamamlandı",
-    "incomplete": "Eksik"
+    "lines": "Satırlar"
   },
   "sessions": {
     "title": "Oturumlar",

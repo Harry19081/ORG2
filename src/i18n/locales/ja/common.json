@@ -2053,17 +2053,7 @@
     "showLess": "折りたたむ"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "AI セッション影響データがありません",
-    "sessions": "セッション",
-    "files": "関連ファイル",
-    "functions": "関数",
-    "commits": "Commit",
-    "lines": "コード行",
-    "sessionBreakdown": "セッション内訳",
-    "human": "Human",
-    "completed": "完了",
-    "incomplete": "未完了"
+    "lines": "コード行"
   },
   "sessions": {
     "title": "セッション",

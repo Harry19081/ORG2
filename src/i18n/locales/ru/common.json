@@ -2067,17 +2067,7 @@
     "showLess": "Скрыть"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Нет данных о влиянии AI-сессий",
-    "sessions": "Сессии",
-    "files": "Файлы",
-    "functions": "Функции",
-    "commits": "Commit",
-    "lines": "Строки",
-    "sessionBreakdown": "Детали сессий",
-    "human": "Human",
-    "completed": "Завершено",
-    "incomplete": "Не завершено"
+    "lines": "Строки"
   },
   "sessions": {
     "title": "Сессии",

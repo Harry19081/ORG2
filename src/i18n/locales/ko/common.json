@@ -2051,17 +2051,7 @@
     "showLess": "접기"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "AI 세션 영향 데이터가 없습니다",
-    "sessions": "세션",
-    "files": "관련 파일",
-    "functions": "함수",
-    "commits": "Commit",
-    "lines": "코드 행",
-    "sessionBreakdown": "세션 상세",
-    "human": "Human",
-    "completed": "완료",
-    "incomplete": "미완료"
+    "lines": "코드 행"
   },
   "sessions": {
     "title": "세션",

@@ -43,7 +43,6 @@ const EXPECTED_OWNERSHIP: Record<WorkStationTabType, WorkstationTabOwnership> =
     "dom-component-preview": "workspace-local",
     terminal: "shared-resource",
     search: "workspace-local",
-    "ai-impact": "workspace-local",
     "search-sessions": "workspace-local",
     "url-preview": "workspace-local",
     "browser-session": "shared-resource",
@@ -115,7 +114,7 @@ describe("WorkStation tab ownership policy", () => {
       })
     );
 
-    expect(results).toHaveLength(35);
+    expect(results).toHaveLength(34);
     expect(results.every(({ actual, expected }) => actual === expected)).toBe(
       true
     );
