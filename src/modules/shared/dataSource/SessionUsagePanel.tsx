@@ -39,6 +39,7 @@ import UsageRoundsTable, {
   USAGE_ROUNDS_DEFAULT_PAGE_SIZE,
 } from "./UsageRoundsTable";
 import UsageStatCards from "./UsageStatCards";
+import WeeklyQuotaHistoryPanel from "./WeeklyQuotaHistoryPanel";
 import { BucketIcon, bucketLabelKey } from "./usageBuckets";
 import { type UsageRange, resolveUsageRange } from "./usageRange";
 
@@ -380,6 +381,7 @@ export default function SessionUsagePanel() {
   return (
     <div className={SECTION_GAP_CLASSES}>
       <StartPageQuotaGrid />
+      <WeeklyQuotaHistoryPanel />
       <RuntimeSectionHeader
         title={t("views.usage")}
         dataTestId="usage-title-controls"

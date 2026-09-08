@@ -3100,5 +3100,21 @@
   "titleBar": {
     "showDevTools": "显示 DevTools",
     "hideDevTools": "隐藏 DevTools"
+  },
+  "weeklyQuotaHistory": {
+    "title": "每周额度历史",
+    "description": "剩余额度 · 最近 28 天 · 应用可见且联网时每小时采样 · 缺失数据保留为空白",
+    "error": "暂时无法读取额度历史，返回此窗口时将重试",
+    "empty": "在密钥库中连接 Claude Code、Codex 或 OpenCode Go 账户以开始记录",
+    "loading": "正在加载额度历史…",
+    "unsupported": "此账户未提供每周额度",
+    "unavailable": "最新采样不可用，请检查密钥库中的账户连接",
+    "pending": "等待下一次每小时采样",
+    "remaining": "剩余 %",
+    "refresh": "刷新",
+    "account": "账户",
+    "stale": "最近一次采样已超过两小时",
+    "disabled": "此账户已停用，采样已暂停",
+    "limit": "最多显示 128 个账户"
   }
 }
