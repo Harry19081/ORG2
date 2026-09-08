@@ -47,7 +47,7 @@ const APPROVAL: AgentOrgPlanApprovalSummary = {
 };
 
 describe("AgentOrgPlanApprovalCard", () => {
-  it("renders detail-load failures as a compact danger InlineAlert with retry", () => {
+  it("renders detail-load failures as a compact danger PageNotice with retry", () => {
     const markup = renderToStaticMarkup(
       createElement(AgentOrgPlanApprovalCard, {
         approval: APPROVAL,

@@ -10,6 +10,7 @@ import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import Markdown from "@src/components/MarkDown";
+import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { NestedActivityListForSession } from "@src/engines/ChatPanel/blocks/SubagentBlock/NestedActivityList";
 import { ArrowRight01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
@@ -163,9 +164,9 @@ const SubagentDetailTab: React.FC<SubagentDetailTabProps> = memo(({ data }) => {
               />
               <span>Error</span>
             </div>
-            <div className="rounded-lg border border-danger-5/30 bg-danger-5/5 px-4 py-3 text-[13px] leading-relaxed text-danger-5">
+            <PageNotice type="danger" role="alert">
               <span className="whitespace-pre-wrap">{errorMessage}</span>
-            </div>
+            </PageNotice>
           </div>
         )}
 
