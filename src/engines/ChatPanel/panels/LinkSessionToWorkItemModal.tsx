@@ -8,6 +8,7 @@ import { linkSessionToWorkItem } from "@src/api/tauri/agent/session";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
+import PageNotice from "@src/components/PageNotice";
 import {
   Cancel01Icon,
   HugeiconsIcon,
@@ -197,9 +198,9 @@ const LinkSessionToWorkItemModal: React.FC<LinkSessionToWorkItemModalProps> = ({
               {t("chat.linkWorkItem.loading")}
             </div>
           ) : error ? (
-            <div className="border-danger/30 bg-danger/10 text-danger rounded-xl border border-solid px-4 py-3 text-[12px]">
+            <PageNotice type="danger" role="alert">
               {error}
-            </div>
+            </PageNotice>
           ) : filteredItems.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border-2 bg-fill-1 px-4 py-8 text-center text-[12px] text-text-3">
               {t("chat.linkWorkItem.empty")}

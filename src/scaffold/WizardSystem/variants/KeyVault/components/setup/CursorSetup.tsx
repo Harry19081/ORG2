@@ -10,8 +10,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import { CursorSessionSetup } from "@src/features/SessionSetup";
 import { InternetIcon, KeyboardIcon, SearchAreaIcon } from "@src/icons";
 import {
@@ -114,14 +114,14 @@ const CursorSetup: React.FC<CursorSetupProps> = ({
   const isGuided = selectedMethod === "guided";
   const hideSelector = !!preselectedMethod;
   const apiKeyInfoAlert = showApiKeyInfo ? (
-    <InlineAlert
+    <PageNotice
       type="info"
       title={t("keyVault.cursorApiKeyRecommendedTitle")}
       onClose={() => setApiKeyAlertDismissed(true)}
     >
       <div>{t("keyVault.cursorApiKeyRecommendedDesc")}</div>
       <div>{t("keyVault.cursorApiKeyRecommendedAction")}</div>
-    </InlineAlert>
+    </PageNotice>
   ) : null;
   const apiKeyInputSection = (
     <SectionContainer>
@@ -225,13 +225,13 @@ const CursorSetup: React.FC<CursorSetupProps> = ({
             </SectionRow>
           </SectionContainer>
           {tokenError && (
-            <InlineAlert
+            <PageNotice
               type="danger"
               title={tokenError}
               onClose={onClearTokenError}
             >
               {t("keyVault.cursorDetectErrorHint")}
-            </InlineAlert>
+            </PageNotice>
           )}
           {apiKeyInputSection}
           {apiKeyInfoAlert}

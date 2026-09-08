@@ -10,8 +10,8 @@ import {
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import Select, { type SelectOption } from "@src/components/Select";
 import {
   Add01Icon,
@@ -351,14 +351,14 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
     >
       <div className="flex flex-col gap-2">
         {error ? (
-          <InlineAlert
+          <PageNotice
             type="danger"
             title={t("workItems.properties.updateFailed", {
               defaultValue: "Property update failed",
             })}
           >
             {error}
-          </InlineAlert>
+          </PageNotice>
         ) : null}
 
         {showCreate ? (
