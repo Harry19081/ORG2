@@ -23,7 +23,7 @@ import { type UnlistenFn, listen } from "@tauri-apps/api/event";
 import { useEffect, useRef } from "react";
 
 import { createLogger } from "@src/hooks/logger";
-import { safeUnlisten } from "@src/util/platform/tauri";
+import { safeUnlisten } from "@src/util/platform/tauri/safeUnlisten";
 
 const log = createLogger("useTauriListen");
 

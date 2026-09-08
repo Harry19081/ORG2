@@ -4,6 +4,10 @@ import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { type SmokeRoot, createSmokeRoot } from "@src/test/reactSmokeHarness";
+import {
+  reachableFilesMatching,
+  walkStaticImports,
+} from "@src/test/staticImportGraph";
 
 import { useTauriListen } from "./useTauriListen";
 
@@ -155,5 +159,19 @@ describe("useTauriListen", () => {
     await flushMicrotasks();
     expect(onError).toHaveBeenCalledWith(failure);
     expect(mocks.error).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("useTauriListen static import graph", () => {
+  it("does not reach the tauri platform index and its import-time patch timers", () => {
+    // `util/platform/tauri/index.ts` runs patchTauriInternals() at import and
+    // re-arms setTimeout retries for ~1.7s when the Tauri globals are absent.
+    // A test that installs fake timers mid-chain then sees a phantom pending
+    // timer. Every hook consumer would inherit that, so the hook must only
+    // import the side-effect-free leaf module.
+    const graph = walkStaticImports(["hooks/platform/useTauriListen.ts"]);
+    expect(
+      reachableFilesMatching(graph, /^util\/platform\/tauri\/index\.ts$/)
+    ).toEqual([]);
   });
 });

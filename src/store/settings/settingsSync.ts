@@ -18,6 +18,7 @@ import {
   normalizeGlobalThemePreference,
   resolveGlobalThemePreference,
 } from "@src/config/appearance/globalThemes";
+import { createLogger } from "@src/hooks/logger";
 import { useTauriListen } from "@src/hooks/platform/useTauriListen";
 import {
   LANGUAGE_PREFERENCE,
@@ -36,6 +37,8 @@ import {
   settingsAtom,
   settingsLoadedAtom,
 } from "./settingsAtom";
+
+const log = createLogger("useSettingsSync");
 
 /** Tauri event names (must match the Rust constants) */
 const SETTINGS_CHANGED_EVENT = "settings-file-changed";
@@ -72,7 +75,11 @@ export function useSettingsSync(): void {
     SETTINGS_CHANGED_EVENT,
     handleExternalChange
   );
-  useTauriListen(SETTINGS_DELETED_EVENT, handleFileDeleted);
+  useTauriListen(SETTINGS_DELETED_EVENT, () => {
+    handleFileDeleted().catch((error: unknown) => {
+      log.error("[Settings] Failed to handle deleted settings file:", error);
+    });
+  });
 
   // Sync theme to resolved CSS after settings load from disk or external edits.
   useEffect(() => {

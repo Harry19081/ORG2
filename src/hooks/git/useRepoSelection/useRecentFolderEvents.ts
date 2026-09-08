@@ -22,6 +22,10 @@ function reportListenerError(error: unknown): void {
   );
 }
 
+function reportHandlerError(error: unknown): void {
+  log.error("[useRecentFolderEvents] Menu event handler failed:", error);
+}
+
 interface UseRecentFolderEventsOptions {
   repos: Repo[];
   selectRepo: (repoId: string) => void;
@@ -200,7 +204,7 @@ export function useRecentFolderEvents({
   useTauriListen<unknown>(
     "menu-open-recent",
     (payload) => {
-      void openRecentFolder(payload);
+      openRecentFolder(payload).catch(reportHandlerError);
     },
     listenOptions
   );
@@ -208,7 +212,7 @@ export function useRecentFolderEvents({
   useTauriListen(
     "menu-file-open-folder",
     () => {
-      void (async () => {
+      (async () => {
         const selectedPath = await open({
           directory: true,
           multiple: false,
@@ -221,7 +225,7 @@ export function useRecentFolderEvents({
           return;
         }
         await openRecentFolder(selectedPath);
-      })();
+      })().catch(reportHandlerError);
     },
     listenOptions
   );
@@ -229,7 +233,7 @@ export function useRecentFolderEvents({
   useTauriListen(
     "menu-add-folder-to-workspace",
     () => {
-      void addFolderToWorkspace();
+      addFolderToWorkspace().catch(reportHandlerError);
     },
     listenOptions
   );
