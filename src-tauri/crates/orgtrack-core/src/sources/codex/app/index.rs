@@ -318,7 +318,7 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
             SOURCE_CODEX_APP,
         )?;
     for record in &mut discovered {
-        crate::sources::imported_history::managed_mirror::append_managed_fingerprint(
+        crate::sources::imported_history::managed_mirror::append_managed_origin_fingerprint(
             &mut record.source_fingerprint,
             // Suffix match: the imported key is the rollout stem while the
             // runner binds the bare thread uuid.
@@ -368,15 +368,13 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
             &parse.watermark,
         )?;
         if let Some(mut meta) = parse.meta {
-            let is_managed_history_mirror =
-                crate::sources::imported_history::managed_mirror::is_managed_source_session_id(
-                    &managed_ids,
-                    &meta.source_session_id,
-                );
             reparsed_ids.push(meta.session_id.clone());
             rounds.append(&mut meta.rounds);
             let mut input = session_meta_to_cache_input(meta);
-            input.listable = input.listable && !is_managed_history_mirror;
+            crate::sources::imported_history::managed_mirror::apply_managed_history_mirror(
+                &mut input,
+                &managed_ids,
+            );
             inputs.push(input);
         }
     }
@@ -385,6 +383,10 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
         SOURCE_CODEX_APP,
         imported_cache::live_ids_from_signatures(&signatures),
         inputs,
+    )?;
+    crate::sources::imported_history::managed_mirror::demote_org2_origin_mirrors_from_conn(
+        conn,
+        SOURCE_CODEX_APP,
     )?;
     imported_cache::write_session_rounds_from_conn(conn, &reparsed_ids, &rounds)
 }

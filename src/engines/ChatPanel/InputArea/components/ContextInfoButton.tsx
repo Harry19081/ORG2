@@ -20,8 +20,10 @@ import {
   PILL_CONTROL_HOVER_CLASS,
 } from "@src/components/CompoundPill/config";
 import Textarea from "@src/components/Textarea";
+import { useConversationExecutionBinding } from "@src/engines/ChatPanel/ConversationExecutionBindingContext";
 import {
   manualCompactInFlightSessionAtom,
+  resolveManualCompactSessionId,
   useManualCompact,
 } from "@src/engines/ChatPanel/hooks/useManualCompact";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
@@ -162,6 +164,7 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
   ({ variant = "toolbar", compact = false }) => {
     const { t } = useTranslation();
     const { sessionId } = useSessionId();
+    const executionBinding = useConversationExecutionBinding();
     const [housekeeperEnabled] = useSetting("housekeeper.enabled");
     const [contextCompactEnabled] = useSetting(
       "housekeeper.features.contextCompact"
@@ -305,7 +308,9 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
       [runManualCompact]
     );
 
-    const compactDisabled = manualCompacting;
+    const manualCompactSupported =
+      resolveManualCompactSessionId(sessionId, executionBinding) !== null;
+    const compactDisabled = manualCompacting || !manualCompactSupported;
     const triggerSurfaceClass =
       panelPos !== null
         ? PILL_CONTROL_ACTIVE_SURFACE_CLASS
@@ -463,6 +468,14 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
 
                 {manualCompactOpen && (
                   <div className="mt-2">
+                    {!manualCompactSupported && (
+                      <p className="mb-2 text-xs text-text-3">
+                        {t("contextInfo.manualCompactNativeProvider", {
+                          defaultValue:
+                            "Manual compaction here supports built-in Agent sessions. Compact native CLI history in its provider app.",
+                        })}
+                      </p>
+                    )}
                     <Textarea
                       size="small"
                       autoSize={{ minRows: 2, maxRows: 5 }}

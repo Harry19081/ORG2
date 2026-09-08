@@ -3,9 +3,13 @@ import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { SessionFollowUpSuggestion } from "@src/api/services/sessionFollowUpSuggestions";
-import type { ComposerInputRef } from "@src/components/ComposerInput";
+import type {
+  ComposerInputRef,
+  ComposerSnapshot,
+} from "@src/components/ComposerInput";
 import ComposerShell from "@src/components/ComposerShell";
 import Message from "@src/components/Message";
+import { useConversationExecutionBinding } from "@src/engines/ChatPanel/ConversationExecutionBindingContext";
 import { useInputArea } from "@src/engines/ChatPanel/hooks/useInputArea";
 import type {
   CustomMentionOption,
@@ -58,7 +62,11 @@ interface InputAreaProps {
   placeholder?: string;
   isEditMode?: boolean;
   initialContent?: string;
-  onEditSubmit?: (text: string, imageDataUrls?: string[]) => void;
+  onEditSubmit?: (
+    text: string,
+    imageDataUrls?: string[],
+    composerSnapshot?: ComposerSnapshot
+  ) => void;
   onEditSendNow?: (text: string, imageDataUrls?: string[]) => void;
   onEditCancel?: () => void;
   editLabel?: string;
@@ -71,6 +79,8 @@ interface InputAreaProps {
   omitChatHeader?: boolean;
   chatPanelPosition?: "left" | "right";
   sessionId?: string;
+  /** Optional native execution episode for Stop/status; messages stay on sessionId. */
+  controlSessionId?: string | null;
   onSubmitOverride?: (input: SubmitOverrideInput) => Promise<boolean>;
   customMentionOptions?: ReadonlyArray<CustomMentionOption>;
   topRowPills?: React.ReactNode;
@@ -147,6 +157,7 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     surfaceBg = false,
     omitChatHeader = false,
     sessionId: propSessionId,
+    controlSessionId,
     onSubmitOverride,
     customMentionOptions,
     topRowPills,
@@ -167,6 +178,7 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     slashItemCategories,
     presentation = "default",
   }) => {
+    const conversationExecutionBinding = useConversationExecutionBinding();
     const { t } = useTranslation("sessions");
 
     const { sessionId } = useSessionId({ propSessionId });
@@ -196,10 +208,18 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     const mergedCustomMentionOptions = useMemo(
       () => [
         ...openedTabMentionOptions,
-        ...(customMentionOptions ?? []),
+        // Agent/Agent Org audience pills are a different address space from
+        // Cloud members. They must not enter a Team Chat snapshot where an
+        // identically-shaped id could be persisted as a human recipient.
+        ...(teamChatActive ? [] : (customMentionOptions ?? [])),
         ...teamChatMentionOptions,
       ],
-      [openedTabMentionOptions, customMentionOptions, teamChatMentionOptions]
+      [
+        openedTabMentionOptions,
+        customMentionOptions,
+        teamChatActive,
+        teamChatMentionOptions,
+      ]
     );
 
     const {
@@ -264,15 +284,25 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     } = useInputArea({
       placeholder,
       sessionId: propSessionId,
+      controlSessionId,
       sessionScope,
       submitDisabled,
       onSubmitOverride: conversationSubmitOverride,
       customMentionOptions: mergedCustomMentionOptions,
-      enableAgentInterceptors,
+      // Team Chat is a human comment surface. It keeps shared composer
+      // validation/attachments, but Agent-only slash commands, pending
+      // questions, MCP prompts, and skill expansion must not mutate or consume
+      // the backing Agent transcript before the comment router sees the text.
+      enableAgentInterceptors: enableAgentInterceptors && !teamChatActive,
+      executionControlsEnabled: !teamChatActive,
     });
 
     const currentTextEmpty = isInputEmpty();
     const currentInputEmpty = currentTextEmpty && !hasImages;
+    // Canonical conversations own resume/retry through the canonical queue;
+    // the generic CLI Resume action would target the hidden runner directly.
+    const genericResumeAvailable =
+      canResume && !teamChatActive && conversationExecutionBinding === null;
     const stopSuppressedForEmptyInput =
       disableStopWhenEmpty && currentInputEmpty && !isWpGeneWorking;
     const voiceFeatureEnabled = useAtomValue(voiceInputEnabledAtom);
@@ -545,7 +575,7 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
                 hasImages={hasImages}
                 isHosted={isHosted}
                 canStopAgent={canStopAgent}
-                canResume={canResume}
+                canResume={genericResumeAvailable}
                 onInterrupt={interruptSession}
                 onResume={resumeSession}
                 isCursorIde={isCursorIde}
@@ -582,7 +612,7 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
                 modelPill={modelPill}
                 isHosted={isHosted}
                 canStopAgent={canStopAgent}
-                canResume={canResume}
+                canResume={genericResumeAvailable}
                 onInterrupt={interruptSession}
                 onResume={resumeSession}
                 isCursorIde={isCursorIde}
