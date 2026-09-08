@@ -13,7 +13,7 @@ import type {
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
   ChatPanelSelectedWorkspace,
-} from "@src/store/ui/chatPanel/selectionAtoms";
+} from "@src/store/ui/chatPanel/selectionTypes";
 import type { WorkManagementSection } from "@src/store/workstation/workstationTabBarAtoms";
 import type {
   GitHubIssueDetailTabData,
