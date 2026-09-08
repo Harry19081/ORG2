@@ -91,6 +91,12 @@ pub async fn prepare_session_for_scheduler_maintenance(
     state: &AgentAppState,
     session_id: &str,
 ) -> Result<Arc<AgentSession>, String> {
+    // CLI transcripts belong to their provider. They must never initialize
+    // an unrelated Agent runtime merely because the shared composer invoked
+    // this maintenance entry point with a CLI conversation root.
+    if session_id.starts_with(core_types::session::CLI_SESSION_PREFIX) {
+        return Err("Native CLI compaction is owned by the provider runtime".to_string());
+    }
     let needs_init = match state.get_session(session_id).await {
         Some(session) => session.get_runtime().await.is_none(),
         None => true,
@@ -577,5 +583,28 @@ fn already_compact_result(
         tokens_before: Some(tokens_before),
         tokens_after: Some(tokens_before),
         boundary: None,
+    }
+}
+
+#[cfg(test)]
+mod runtime_ownership_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn cli_compaction_cannot_initialize_an_agent_runtime() {
+        let _sandbox = test_helpers::test_env::sandbox();
+        let conn = database::db::get_connection().expect("sandbox database");
+        crate::persistence::test_schema::ensure_agent_sessions_schema(&conn);
+        unified_persistence::init(&conn).expect("session schema");
+        let state = AgentAppState::new();
+        let session_id = "cliagent-manual-compact-owner";
+        let result = prepare_session_for_scheduler_maintenance(&state, session_id).await;
+        assert!(
+            matches!(result, Err(ref error) if error.contains("owned by the provider runtime"))
+        );
+        assert!(state.get_session(session_id).await.is_none());
+        assert!(unified_persistence::get_session(session_id)
+            .unwrap()
+            .is_none());
     }
 }
