@@ -63,6 +63,12 @@ export function createCliEventHandler(
   let contextReadPending = false;
   let contextReadQueued = false;
 
+  function requestContextRefresh(): void {
+    refreshContext().catch((error: unknown) => {
+      log.warn("CLI context refresh failed", error);
+    });
+  }
+
   async function refreshContext(): Promise<void> {
     if (disposed) return;
     if (contextReadPending) {
@@ -77,11 +83,9 @@ export function createCliEventHandler(
       if (!disposed && generation === contextGeneration) {
         callbacks.onTokenUpdate?.(usage?.usedTokens ?? 0, usage);
       }
-    } catch (error) {
-      log.warn("CLI context refresh failed", error);
     } finally {
       contextReadPending = false;
-      if (contextReadQueued && !disposed) void refreshContext();
+      if (contextReadQueued && !disposed) requestContextRefresh();
     }
   }
 
@@ -607,7 +611,7 @@ export function createCliEventHandler(
       } else if (raw.type === "code_session.token_usage_updated") {
         const total = raw.total_tokens;
         // Billing events invalidate telemetry; their cumulative total is not context.
-        if (typeof total === "number") void refreshContext();
+        if (typeof total === "number") requestContextRefresh();
       } else if (raw.type === "code_session.worktree_created") {
         // Neither `code_session.worktree_created`
         // (src-tauri/src/agent_sessions/cli/commands/create.rs) nor

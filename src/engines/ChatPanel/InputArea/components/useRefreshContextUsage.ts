@@ -28,17 +28,17 @@ export function useRefreshContextUsage() {
     return () => controller.current?.abort();
   }, [sessionId]);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(() => {
     if (!sessionId || store.get(refreshingAtom)) return;
     const request = new AbortController();
     controller.current = request;
     setError(null);
-    try {
-      await refreshSessionContextUsage(store, sessionId, request.signal);
-    } catch (cause) {
-      if (!request.signal.aborted)
-        setError({ sessionId, message: String(cause) });
-    }
+    refreshSessionContextUsage(store, sessionId, request.signal).catch(
+      (cause: unknown) => {
+        if (!request.signal.aborted)
+          setError({ sessionId, message: String(cause) });
+      }
+    );
   }, [sessionId, store]);
 
   return {
