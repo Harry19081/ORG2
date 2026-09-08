@@ -36,17 +36,11 @@ import HoverCardBase, {
   type HoverCardPosition,
   HoverCardRow,
 } from "./HoverCardBase";
+import { COPIED_FLASH_MS, formatCompactSessionId } from "./sessionIdFormat";
 
 const logger = createLogger("CloudSessionHoverCard");
-const COPIED_FLASH_MS = 1500;
-const COMPACT_ID_EDGE_CHARS = 8;
 const SESSION_ID_BUTTON_CLASS_NAME =
   "block max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-left text-text-2 underline-offset-2 transition-colors hover:text-accent-9 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-8";
-
-function formatCompactSessionId(id: string): string {
-  if (id.length <= COMPACT_ID_EDGE_CHARS * 2 + 2) return id;
-  return `${id.slice(0, COMPACT_ID_EDGE_CHARS)}…${id.slice(-COMPACT_ID_EDGE_CHARS)}`;
-}
 
 /**
  * Hover metadata card for "Team sessions" rows (cloudremote-* sidebar ids).

@@ -206,8 +206,24 @@ export const externalHistoryAdapter: ExternalHistorySessionAdapter = {
   loadHistoryFromObservedSignature: (sessionId, signal, observedSignature) =>
     loadExternalHistory(sessionId, signal, observedSignature),
 
-  async postLoad() {
-    return { runStatus: "completed" };
+  async postLoad(sessionId, signal) {
+    const source = getImportedHistorySourceBySessionId(sessionId);
+    try {
+      const contextUsage =
+        (await source?.loadContextUsage?.(sessionId)) ?? null;
+      if (signal.aborted) return {};
+      return {
+        runStatus: "completed",
+        contextTokens: contextUsage?.usedTokens ?? 0,
+        contextUsage,
+      };
+    } catch (error) {
+      // Telemetry is optional: an unavailable rollout must not break history replay.
+      logger.warn("Context telemetry unavailable", error);
+      return signal.aborted
+        ? {}
+        : { runStatus: "completed", contextTokens: 0, contextUsage: null };
+    }
   },
 
   createEventHandler(

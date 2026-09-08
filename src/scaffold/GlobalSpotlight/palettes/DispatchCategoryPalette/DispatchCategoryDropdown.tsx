@@ -40,7 +40,10 @@ import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import type { SpotlightItem } from "../../types";
 import type { DispatchCategoryPaletteProps } from "./types";
-import { useDispatchCategoryOptions } from "./useDispatchCategoryOptions";
+import {
+  buildGroupedSpotlightItems,
+  useDispatchCategoryOptions,
+} from "./useDispatchCategoryOptions";
 
 const LIST_MAX_HEIGHT = 360;
 const VIEWPORT_MARGIN = 12;
@@ -216,27 +219,13 @@ export const DispatchCategoryDropdown: React.FC<
 
   // Build a flat list of items + headers for rendering. When searching
   // we drop headers since the grouping no longer holds.
-  const items = useMemo((): SpotlightItem[] => {
-    if (isSearching) {
-      return filteredOptions.map((option) => optionToItem(option));
-    }
-    const result: SpotlightItem[] = [];
-    for (const group of groups) {
-      result.push({
-        id: group.headerId,
-        label: group.headerLabel,
-        desc: "",
-        icon: "",
-        type: "option" as const,
-        data: { isHeader: true },
-        action: () => {},
-      });
-      for (const option of group.options) {
-        result.push(optionToItem(option, group.headerId));
-      }
-    }
-    return result;
-  }, [isSearching, filteredOptions, groups, optionToItem]);
+  const items = useMemo(
+    (): SpotlightItem[] =>
+      isSearching
+        ? filteredOptions.map((option) => optionToItem(option))
+        : buildGroupedSpotlightItems(groups, optionToItem),
+    [isSearching, filteredOptions, groups, optionToItem]
+  );
 
   useEffect(() => {
     if (!isOpen) return;

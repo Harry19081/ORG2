@@ -1,4 +1,5 @@
 import type { MergeStatus } from "@src/api/tauri/rpc/schemas/validation";
+import { cliSessionContextUsage } from "@src/api/tauri/session/contextUsage";
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { normalizeChunkRust } from "@src/engines/SessionCore/ingestion/rustBridge";
@@ -57,6 +58,36 @@ export function createCliEventHandler(
 ): SessionEventHandler {
   let streaming = false;
   let cancelled = false;
+  let disposed = false;
+  let contextGeneration = 0;
+  let contextReadPending = false;
+  let contextReadQueued = false;
+
+  function requestContextRefresh(): void {
+    refreshContext().catch((error: unknown) => {
+      log.warn("CLI context refresh failed", error);
+    });
+  }
+
+  async function refreshContext(): Promise<void> {
+    if (disposed) return;
+    if (contextReadPending) {
+      contextReadQueued = true;
+      return;
+    }
+    contextReadPending = true;
+    contextReadQueued = false;
+    const generation = contextGeneration;
+    try {
+      const usage = await cliSessionContextUsage(sessionId);
+      if (!disposed && generation === contextGeneration) {
+        callbacks.onTokenUpdate?.(usage?.usedTokens ?? 0, usage);
+      }
+    } finally {
+      contextReadPending = false;
+      if (contextReadQueued && !disposed) requestContextRefresh();
+    }
+  }
 
   // Lightweight local accumulators for the typewriter effect only.
   // Rust's StreamingBuffer is authoritative and replaces these when
@@ -553,6 +584,7 @@ export function createCliEventHandler(
 
   return {
     handleEvent(raw: RawSessionEvent): void {
+      if (disposed) return;
       const msgSessionId =
         (raw.session_id as string) || (raw.sessionId as string);
       if (msgSessionId !== sessionId) return;
@@ -578,7 +610,8 @@ export function createCliEventHandler(
         handleStatusChange(raw.status as string);
       } else if (raw.type === "code_session.token_usage_updated") {
         const total = raw.total_tokens;
-        if (typeof total === "number") callbacks.onTokenUpdate?.(total);
+        // Billing events invalidate telemetry; their cumulative total is not context.
+        if (typeof total === "number") requestContextRefresh();
       } else if (raw.type === "code_session.worktree_created") {
         // Neither `code_session.worktree_created`
         // (src-tauri/src/agent_sessions/cli/commands/create.rs) nor
@@ -618,6 +651,8 @@ export function createCliEventHandler(
     },
 
     reset(): void {
+      contextGeneration += 1;
+      contextReadQueued = false;
       clearMessageStream();
       clearThinkingStream();
       clearToolCallDeltaBuffers();
@@ -631,6 +666,7 @@ export function createCliEventHandler(
     },
 
     dispose(): void {
+      disposed = true;
       this.reset();
     },
   };

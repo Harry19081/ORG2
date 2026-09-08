@@ -17,6 +17,7 @@ import SettingsTable, {
 import Tag, { type TagProps } from "@src/components/Tag";
 import { parseUnifiedDiffToOldNew } from "@src/engines/SessionCore/rendering/props/extractorShared";
 import { CodeMirrorDiff } from "@src/features/CodeMirror/Diff";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
 import {
   SECTION_GAP_CLASSES,
@@ -212,6 +213,7 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const requestGenerationRef = useRef(0);
   const inFlightRef = useRef<
     Promise<SessionProvenanceRecentSignal[]> | undefined
@@ -267,11 +269,9 @@ const SessionProvenanceRecentSignalsTable: React.FC = () => {
   }, [load, open, signals]);
 
   useEffect(() => {
-    mountedRef.current = true;
     return () => {
       // Tauri invokes are not abortable. Invalidate late completions so an
       // unmounted Hooks view cannot retain or publish stale signal rows.
-      mountedRef.current = false;
       requestGenerationRef.current += 1;
     };
   }, []);

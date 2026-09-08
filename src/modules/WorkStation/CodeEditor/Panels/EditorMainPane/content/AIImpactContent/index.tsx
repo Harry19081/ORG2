@@ -160,7 +160,9 @@ const StatItem: React.FC<StatItemProps> = memo(
     const humanPct = hasRatio ? 100 - aiPct : 0;
 
     return (
-      <div className="flex flex-col gap-1.5 rounded-xl border border-border-1 bg-fill-2 p-4">
+      <div
+        className={`flex flex-col gap-1.5 ${DETAIL_PANEL_TOKENS.primaryContainer}`}
+      >
         <div className="flex items-center gap-1.5 text-[12px] font-medium text-text-3">
           {icon}
           {label}

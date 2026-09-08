@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { type ScopePropertyValue, projectApi } from "@src/api/http/project";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { createLogger } from "@src/hooks/logger";
 import { useProjectDataChanged } from "@src/hooks/project";
 
@@ -42,6 +43,7 @@ export function useWorkItemPropertyView({
   const generationRef = useRef(0);
   const inFlightRef = useRef<PropertyViewRefresh | null>(null);
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const activeRef = useRef(isActive);
   const scopeKeyRef = useRef(scopeKey);
 
@@ -100,9 +102,7 @@ export function useWorkItemPropertyView({
   }, [isActive, orgId, projectSlug, scopeKey]);
 
   useEffect(() => {
-    mountedRef.current = true;
     return () => {
-      mountedRef.current = false;
       generationRef.current += 1;
     };
   }, []);
