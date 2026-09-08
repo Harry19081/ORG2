@@ -2850,6 +2850,10 @@
     },
     "url": {
       "open": "Otwórz",
+      "changesCount_one": "{{count}} zmiana",
+      "changesCount_few": "{{count}} zmiany",
+      "changesCount_many": "{{count}} zmian",
+      "changesCount_other": "{{count}} zmiany",
       "copyUrl": "Kopiuj URL",
       "copied": "Skopiowano URL",
       "openExternalFailed": "Nie udało się otworzyć URL w domyślnej przeglądarce",

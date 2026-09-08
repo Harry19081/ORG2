@@ -2810,6 +2810,7 @@
     },
     "url": {
       "open": "Mở",
+      "changesCount": "{{count}} thay đổi",
       "copyUrl": "Sao chép URL",
       "copied": "Đã sao chép URL",
       "openExternalFailed": "Không thể mở URL trong trình duyệt mặc định",

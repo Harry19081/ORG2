@@ -2811,6 +2811,8 @@
     },
     "url": {
       "open": "Öffnen",
+      "changesCount_one": "{{count}} Änderung",
+      "changesCount_other": "{{count}} Änderungen",
       "copyUrl": "URL kopieren",
       "copied": "URL kopiert",
       "openExternalFailed": "URL konnte nicht im Standardbrowser geöffnet werden",

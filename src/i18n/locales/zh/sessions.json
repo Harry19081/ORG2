@@ -2932,6 +2932,7 @@
     },
     "url": {
       "open": "打开",
+      "changesCount": "{{count}} 项更改",
       "copyUrl": "复制 URL",
       "copied": "URL 复制",
       "openExternalFailed": "无法用默认浏览器打开 URL",

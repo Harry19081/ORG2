@@ -2828,6 +2828,7 @@
     },
     "url": {
       "open": "開啟",
+      "changesCount": "{{count}} 項變更",
       "copyUrl": "複製 URL",
       "copied": "URL 複製",
       "openExternalFailed": "無法用預設瀏覽器開啟 URL",
