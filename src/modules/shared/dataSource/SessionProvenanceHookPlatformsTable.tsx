@@ -24,6 +24,7 @@ import SettingsTable, {
 import Switch from "@src/components/Switch";
 import Tag, { type TagProps } from "@src/components/Tag";
 import { INFO_CARD_TOKENS } from "@src/config/detailPanelTokens";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { ComputerTerminal01Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
@@ -107,6 +108,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
     new Set()
   );
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const statusRequestRef = useRef(0);
 
   const [masterEnabled, setMasterEnabled] = useState(true);
@@ -196,10 +198,8 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    mountedRef.current = true;
     void loadStatuses();
     return () => {
-      mountedRef.current = false;
       statusRequestRef.current += 1;
     };
   }, [loadStatuses]);

@@ -8,6 +8,8 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
+
 import type {
   LoadState,
   TeamInboxDataSource,
@@ -50,14 +52,8 @@ export function useTeamInboxMutePreferences({
   const mutePreferencesLoading =
     mutePreferencesAreCurrent && mutePreferences.loading;
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const activeDataSourceRef = useRef(dataSource);
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
 
   useEffect(() => {
     activeDataSourceRef.current = dataSource;

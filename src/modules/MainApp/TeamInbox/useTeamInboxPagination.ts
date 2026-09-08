@@ -8,6 +8,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
+
 import {
   type LoadState,
   type TeamInboxDataSource,
@@ -68,12 +70,11 @@ export function useTeamInboxPagination({
   );
   const [loadingMore, setLoadingMore] = useState(false);
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const loadMoreAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    mountedRef.current = true;
     return () => {
-      mountedRef.current = false;
       loadMoreAbortRef.current?.abort();
       loadMoreAbortRef.current = null;
     };

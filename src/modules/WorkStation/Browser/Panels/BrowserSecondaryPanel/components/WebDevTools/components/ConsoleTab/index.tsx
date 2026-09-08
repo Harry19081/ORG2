@@ -24,6 +24,7 @@ import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
 } from "@src/config/workstation/tokens";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import {
   BrushCleaningIcon,
   Copy01Icon,
@@ -243,11 +244,10 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const mountedRef = useRef(true);
+    useMountedCleanup(mountedRef);
 
     useEffect(() => {
-      mountedRef.current = true;
       return () => {
-        mountedRef.current = false;
         if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
       };
     }, []);
