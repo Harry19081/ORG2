@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Các phím tắt phạm vi \"Editor\" chỉ hoạt động khi trình biên tập mã đang được tập trung",
     "tipsContextual": "Một số phím tắt có hành vi khác nhau tuỳ ngữ cảnh",
-    "tipsSearchHint": "Dùng thanh tìm kiếm để tìm phím tắt nhanh chóng"
+    "tipsSearchHint": "Dùng thanh tìm kiếm để tìm phím tắt nhanh chóng",
+    "pressShortcut": "Nhấn phím tắt",
+    "editCommand": "Sửa phím tắt cho {{command}}",
+    "requireModifier": "Dùng Control, Command hoặc Alt cùng một phím, hoặc phím chức năng",
+    "conflict": "Đã được dùng cho {{command}}",
+    "saveFailed": "Không thể lưu cài đặt phím tắt",
+    "reset": "Đặt lại",
+    "resetAll": "Khôi phục cài đặt gốc",
+    "resetAllDesc": "Khôi phục phím tắt mặc định cho macOS, Windows và Linux",
+    "nativeSyncFailed": "Không thể cập nhật phím tắt của menu hệ thống"
   },
   "languageServersPage": {
     "installing": "Đang cài đặt",

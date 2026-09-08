@@ -17,7 +17,6 @@ import {
 } from "@src/components/KeyboardShortcut";
 import { RecentTabsMenuSection } from "@src/components/RecentTabsMenuSection";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import {
@@ -173,7 +172,7 @@ export function PlusMenuContent({
             </span>
             {"shortcutId" in item && item.shortcutId ? (
               <KeyboardShortcut
-                shortcut={getShortcutKeys(item.shortcutId)}
+                shortcutId={item.shortcutId}
                 variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
                 size="sm"
                 className="ml-4"

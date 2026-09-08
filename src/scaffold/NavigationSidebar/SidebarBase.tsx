@@ -22,7 +22,7 @@ import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
 import { SIDEBAR_CHROME_BUTTON_HOVER_CLASS } from "@src/components/SidebarChromeIconButton";
 import Tooltip from "@src/components/Tooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
   HOST_DESKTOP,
   resolveHostDesktop,
@@ -114,7 +114,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
         `${sidebarSelectedRowOpacity}%`
       );
     }, [sidebarSelectedRowOpacity]);
-    const hideSidebarShortcut = getShortcutKeys("toggle_sidebar");
+    const hideSidebarShortcut = useShortcutKeys("toggle_sidebar");
     const isFullscreen = useAtomValue(windowFullscreenAtom);
     const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
     const sidebarOpacityStyle = useMemo(

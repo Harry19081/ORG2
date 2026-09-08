@@ -4,15 +4,30 @@ interface TabIdentity {
   id: string;
 }
 
-/** Put one tab at the front of a bounded, de-duplicated MRU history. */
-export function recordRecentTab<T extends TabIdentity>(
+/** Identity belongs to the surface; ordering and the retention bound are shared. */
+export function recordRecentItem<T>(
   current: readonly T[],
-  tab: T
+  item: T,
+  isSame: (left: T, right: T) => boolean
 ): T[] {
-  return [tab, ...current.filter((candidate) => candidate.id !== tab.id)].slice(
-    0,
-    RECENT_TABS_LIMIT
-  );
+  return [
+    item,
+    ...current.filter((candidate) => !isSame(candidate, item)),
+  ].slice(0, RECENT_TABS_LIMIT);
+}
+
+/** Remove the destination and remember the eligible item being left. */
+export function recordRecentTransition<T>(
+  current: readonly T[],
+  previous: T | null | undefined,
+  isDestination: (item: T) => boolean,
+  canRecord: (item: T) => boolean,
+  isSame: (left: T, right: T) => boolean
+): T[] {
+  const remaining = current.filter((item) => !isDestination(item));
+  return previous && !isDestination(previous) && canRecord(previous)
+    ? recordRecentItem(remaining, previous, isSame)
+    : remaining;
 }
 
 export function removeRecentTab<T extends TabIdentity>(

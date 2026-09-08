@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "すべて既読にする",
+    "showKanban": "カンバンを表示",
+    "showRuntime": "ランタイムを表示",
+    "pinned": "ピン留め",
+    "unread": "未読",
+    "running": "実行中",
+    "recent": "最近",
+    "empty": "セッションなし — アプリを開く",
+    "quit": "ORG2 を終了"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token コンテキスト",
     "followup": "{{tokenCount}} Token follow-up",

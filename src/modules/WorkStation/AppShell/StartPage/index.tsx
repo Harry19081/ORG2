@@ -18,7 +18,6 @@ import {
   KEYBOARD_SHORTCUT_VARIANT,
   KeyboardShortcut,
 } from "@src/components/KeyboardShortcut";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
 import { useActiveRepoRef } from "@src/hooks/git/useActiveRepoRef";
@@ -36,6 +35,7 @@ interface StartActionRowProps {
   icon: IconSvgElement;
   label: string;
   shortcut?: string;
+  shortcutId?: string;
   /** Working-tree diff totals shown beside the label (Review row only). */
   additions?: number;
   deletions?: number;
@@ -43,7 +43,7 @@ interface StartActionRowProps {
 }
 
 const StartActionRow = memo<StartActionRowProps>(
-  ({ icon, label, shortcut, additions, deletions, onClick }) => {
+  ({ icon, label, shortcut, shortcutId, additions, deletions, onClick }) => {
     const showDiff =
       additions !== undefined &&
       deletions !== undefined &&
@@ -75,9 +75,10 @@ const StartActionRow = memo<StartActionRowProps>(
             />
           ) : null}
         </span>
-        {shortcut ? (
+        {shortcut || shortcutId ? (
           <KeyboardShortcut
             shortcut={shortcut}
+            shortcutId={shortcutId}
             variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
           />
         ) : null}
@@ -111,7 +112,7 @@ export const WorkStationStartPage: React.FC = memo(() => {
               <StartActionRow
                 icon={Infinity01Icon}
                 label={t("spotlightActions.openAgentStation")}
-                shortcut={getShortcutKeys("open_agent_station")}
+                shortcutId={"open_agent_station"}
                 onClick={() => setStationMode("agent-station")}
               />
               <div role="separator" className="mx-3 my-1 h-px bg-border-2" />
@@ -122,11 +123,7 @@ export const WorkStationStartPage: React.FC = memo(() => {
               key={action.id}
               icon={action.icon}
               label={action.label}
-              shortcut={
-                action.shortcutId
-                  ? getShortcutKeys(action.shortcutId)
-                  : undefined
-              }
+              shortcutId={action.shortcutId}
               additions={action.id === "sourceControl" ? additions : undefined}
               deletions={action.id === "sourceControl" ? deletions : undefined}
               onClick={action.onClick}

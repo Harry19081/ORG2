@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Отметить всё как прочитанное",
+    "showKanban": "Показать Канбан",
+    "showRuntime": "Показать Runtime",
+    "pinned": "Закреплённые",
+    "unread": "Непрочитанные",
+    "running": "Выполняются",
+    "recent": "Недавние",
+    "empty": "Нет сеансов — Открыть приложение",
+    "quit": "Выйти из ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token контекста",
     "followup": "{{tokenCount}} Token follow-up",

@@ -300,12 +300,26 @@ export const EDITOR_PALETTE_CONFIG = {
   } as Record<string, string>,
   /** Keyboard shortcuts */
   shortcuts: {
-    open: getShortcutKeys("quick_open"),
-    openCommand: getShortcutKeys("spotlight_open"),
-    openSymbol: getShortcutKeys("go_to_symbol"),
-    close: getShortcutKeys("spotlight_close"),
-    selectNext: getShortcutKeys("spotlight_down"),
-    selectPrev: getShortcutKeys("spotlight_up"),
-    confirm: getShortcutKeys("spotlight_select"),
+    get open() {
+      return getShortcutKeys("quick_open");
+    },
+    get openCommand() {
+      return getShortcutKeys("spotlight_open");
+    },
+    get openSymbol() {
+      return getShortcutKeys("go_to_symbol");
+    },
+    get close() {
+      return getShortcutKeys("spotlight_close");
+    },
+    get selectNext() {
+      return getShortcutKeys("spotlight_down");
+    },
+    get selectPrev() {
+      return getShortcutKeys("spotlight_up");
+    },
+    get confirm() {
+      return getShortcutKeys("spotlight_select");
+    },
   },
 };

@@ -6,7 +6,7 @@ import Button from "@src/components/Button";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import SessionHistoryNav from "@src/components/SessionHistoryNav";
 import Tooltip from "@src/components/Tooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
   COLLAPSED_SIDEBAR_CHROME_CENTER_TOP,
   getCollapsedSidebarButtonLeft,
@@ -22,7 +22,7 @@ const CollapsedSidebarButtonComponent: React.FC = () => {
   const collapsed = useAtomValue(sidebarCollapsedAtom);
   const setSidebarCollapsed = useSetAtom(sidebarCollapsedAtom);
   const label = t("common:tooltips.showSidebar");
-  const shortcut = getShortcutKeys("toggle_sidebar");
+  const shortcut = useShortcutKeys("toggle_sidebar");
   const tooltipContent = (
     <KeyboardShortcutTooltipContent label={label} shortcut={shortcut} />
   );

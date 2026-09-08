@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Đánh dấu tất cả là đã đọc",
+    "showKanban": "Hiển thị Kanban",
+    "showRuntime": "Hiển thị Runtime",
+    "pinned": "Đã ghim",
+    "unread": "Chưa đọc",
+    "running": "Đang chạy",
+    "recent": "Gần đây",
+    "empty": "Chưa có phiên — Mở ứng dụng",
+    "quit": "Thoát ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token ngữ cảnh",
     "followup": "{{tokenCount}} Token follow-up",
