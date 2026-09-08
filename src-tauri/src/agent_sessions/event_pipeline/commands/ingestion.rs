@@ -2,9 +2,11 @@
 //!
 //! Raw chunk ingestion: consolidate → normalize → merge tool calls → store.
 
+
 use crate::agent_sessions::event_pipeline::ingestion;
 use crate::agent_sessions::event_pipeline::ingestion::types::{IngestionResult, RawActivityChunk};
 use crate::agent_sessions::event_pipeline::types::SessionEvent;
+
 
 /// Process raw activity chunks through the full pipeline (consolidate → normalize →
 /// merge tool calls) WITHOUT storing in the EventStore.
