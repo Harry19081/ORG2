@@ -7,8 +7,8 @@ import SettingsTable from "@src/components/SettingsTable";
 import type { CursorRepo } from "@src/hooks/policies";
 import {
   ChevronsDownUpIcon,
-  Download01Icon,
   HugeiconsIcon,
+  ImportIcon,
   UnfoldMoreIcon,
 } from "@src/icons";
 import {
@@ -197,8 +197,8 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
                   size="small"
                   icon={
                     <HugeiconsIcon
-                      icon={Download01Icon}
-                      data-icon="download"
+                      icon={ImportIcon}
+                      data-icon="import"
                       size={14}
                     />
                   }

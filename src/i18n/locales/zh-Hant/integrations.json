@@ -1770,7 +1770,7 @@
     "markdownContentDesc": "注入 Agent 系統提示詞的 Markdown 指令",
     "markdownContentPlaceholder": "在此編寫 Markdown 政策...",
     "noMarkdownContent": "暫無內容",
-    "importSelected": "導入 ({{count}})",
+    "importSelected": "匯入{{count}}個",
     "importRuleColumn": "規則",
     "allImported": "所有{{item}}均已導入",
     "importedItemRules": "規則",

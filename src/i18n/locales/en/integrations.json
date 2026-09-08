@@ -1727,7 +1727,7 @@
     "markdownContentPlaceholder": "Write markdown rules here…",
     "editRule": "Edit rule",
     "noMarkdownContent": "No content",
-    "importSelected": "Import ({{count}})",
+    "importSelected": "Import {{count}}",
     "importRuleColumn": "Rule",
     "allImported": "All {{item}} have been imported",
     "importedItemRules": "rules",

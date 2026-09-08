@@ -15,8 +15,8 @@ import Button from "@src/components/Button";
 import SettingsTable from "@src/components/SettingsTable";
 import {
   ChevronsDownUpIcon,
-  Download01Icon,
   HugeiconsIcon,
+  ImportIcon,
   UnfoldMoreIcon,
 } from "@src/icons";
 import {
@@ -154,8 +154,8 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
                   size="small"
                   icon={
                     <HugeiconsIcon
-                      icon={Download01Icon}
-                      data-icon="download"
+                      icon={ImportIcon}
+                      data-icon="import"
                       size={14}
                     />
                   }
