@@ -8,8 +8,12 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
+
+import { org2CloudRetentionParkedAtom } from "./org2CloudSyncAtoms";
 import { Org2CloudSyncError } from "./org2CloudSyncClient";
 import {
+  SESSION,
   cleanupEngineFixture,
   createEngineFixture,
 } from "./org2CloudSyncEngine.testUtils";
@@ -61,5 +65,52 @@ describe("Org2CloudSyncEngine retention parking", () => {
     await engine.runSyncPass();
     await engine.runSyncPass();
     expect(fixture.client.upsertSessionMetadata).toHaveBeenCalledTimes(2);
+  });
+
+  it("persists the park so a fresh engine on the next boot does not retry the same local state", async () => {
+    fixture.client.upsertSessionMetadata.mockRejectedValue(
+      new Org2CloudSyncError("ORG2_RETENTION_EXPIRED", 400)
+    );
+    await engine.runSyncPass();
+    expect(fixture.client.upsertSessionMetadata).toHaveBeenCalledTimes(1);
+    expect(fixture.store.get(org2CloudRetentionParkedAtom)).toEqual({
+      [`corg-1|${SESSION.session_id}`]: SESSION.updated_at,
+    });
+
+    const persisted = fixture.store.get(org2CloudRetentionParkedAtom);
+    cleanupEngineFixture(engine);
+    const rebooted = createEngineFixture();
+    engine = rebooted.engine;
+    rebooted.store.set(org2CloudRetentionParkedAtom, persisted);
+    rebooted.client.upsertSessionMetadata.mockRejectedValue(
+      new Org2CloudSyncError("ORG2_RETENTION_EXPIRED", 400)
+    );
+    await engine.runSyncPass();
+    expect(rebooted.client.upsertSessionMetadata).not.toHaveBeenCalled();
+
+    rebooted.store.set(org2CloudRetentionParkedAtom, {});
+    await engine.runSyncPass();
+    expect(rebooted.client.upsertSessionMetadata).toHaveBeenCalledTimes(1);
+  });
+
+  it("releases a persisted park once the session has new local activity", async () => {
+    fixture.store.set(org2CloudRetentionParkedAtom, {
+      [`corg-1|${SESSION.session_id}`]: SESSION.updated_at,
+    });
+    fixture.client.upsertSessionMetadata.mockRejectedValue(
+      new Org2CloudSyncError("ORG2_RETENTION_EXPIRED", 400)
+    );
+
+    await engine.runSyncPass();
+    expect(fixture.client.upsertSessionMetadata).not.toHaveBeenCalled();
+
+    fixture.store.set(sessionsAtom, [
+      { ...SESSION, updated_at: "2026-07-02T00:00:00.000Z" },
+    ]);
+    await engine.runSyncPass();
+    expect(fixture.client.upsertSessionMetadata).toHaveBeenCalledTimes(1);
+    expect(fixture.store.get(org2CloudRetentionParkedAtom)).toEqual({
+      [`corg-1|${SESSION.session_id}`]: "2026-07-02T00:00:00.000Z",
+    });
   });
 });

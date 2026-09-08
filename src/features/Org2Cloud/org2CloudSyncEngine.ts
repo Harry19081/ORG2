@@ -109,7 +109,9 @@ import {
   org2CloudPushCursorsAtom,
   org2CloudPushedMetadataAtom,
   org2CloudRepoScopesAtom,
+  org2CloudRetentionParkedAtom,
   org2CloudSyncEnabledAtom,
+  pruneRetentionParked,
 } from "./org2CloudSyncAtoms";
 import * as org2CloudSyncClient from "./org2CloudSyncClient";
 import {
@@ -192,7 +194,9 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
    * Retention only recedes further within a signed-in run, so the push is
    * doomed until the org's entitlement changes — parked until the next
    * resetSyncState() (sign-in cycle / endpoint switch / app restart)
-   * instead of re-walking the full upload chain every pass. */
+   * instead of re-walking the full upload chain every pass. The durable
+   * twin (`org2CloudRetentionParkedAtom`) carries the park across restarts
+   * until the session's local `updated_at` changes. */
   private readonly retentionParked = new Set<string>();
   /** TTL-gated `org2CloudRepoScopesAtom` mirror hydration, split out to
    * `Org2CloudRepoScopeSync`. */
@@ -328,6 +332,22 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
     }
     // One timer coalesces every changed imported session into one cloud pass.
     this.scheduleActivityPass(changedSessionIds[0]!);
+  }
+
+  private isRetentionParked(orgId: string, session: Session): boolean {
+    const key = `${orgId}|${session.session_id}`;
+    if (this.retentionParked.has(key)) return true;
+    const store = this.store;
+    if (!store) return false;
+    return store.get(org2CloudRetentionParkedAtom)[key] === session.updated_at;
+  }
+
+  private parkRetentionExpired(orgId: string, session: Session): void {
+    const key = `${orgId}|${session.session_id}`;
+    this.retentionParked.add(key);
+    this.store?.set(org2CloudRetentionParkedAtom, (current) =>
+      pruneRetentionParked({ ...current, [key]: session.updated_at })
+    );
   }
 
   protected override resetSyncState(): void {
@@ -499,7 +519,7 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
       for (const session of store.get(sessionsAtom)) {
         if (this.generation !== generation) return;
         if (!isCloudPushCandidate(session)) continue;
-        if (this.retentionParked.has(`${org.orgId}|${session.session_id}`)) {
+        if (this.isRetentionParked(org.orgId, session)) {
           continue;
         }
         // A fork is a continuation inside the source collaboration boundary,
@@ -766,7 +786,7 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
               "ORG2_RETENTION_EXPIRED"
             )
           ) {
-            this.retentionParked.add(`${org.orgId}|${session.session_id}`);
+            this.parkRetentionExpired(org.orgId, session);
             recordSyncEvent({
               level: "warn",
               kind: "session_retention_parked",

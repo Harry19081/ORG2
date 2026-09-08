@@ -58,6 +58,7 @@ import {
   org2CloudPushCursorsAtom,
   org2CloudPushedMetadataAtom,
   org2CloudRepoScopesAtom,
+  org2CloudRetentionParkedAtom,
   org2CloudSyncEnabledAtom,
 } from "./org2CloudSyncAtoms";
 import type {
@@ -350,6 +351,7 @@ export function createEngineFixture() {
   store.set(org2CloudSyncEnabledAtom, {});
   store.set(org2CloudPushCursorsAtom, {});
   store.set(org2CloudPushedMetadataAtom, {});
+  store.set(org2CloudRetentionParkedAtom, {});
   store.set(org2CloudCollabStateCursorsAtom, {});
   store.set(sessionOrgTagsAtom, {});
   store.set(org2CloudAccessSettingsAtom, {

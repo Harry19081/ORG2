@@ -203,6 +203,45 @@ export const org2CloudPushedMetadataAtom = atomWithStorage<
 );
 org2CloudPushedMetadataAtom.debugLabel = "org2CloudPushedMetadataAtom";
 
+const RetentionParkedSchema = tolerantRecordSchema(
+  "retention parked session",
+  z.string()
+);
+
+/**
+ * Sessions whose push failed with ORG2_RETENTION_EXPIRED, keyed
+ * `${orgId}|${sessionId}` and stamped with the local `updated_at` that was
+ * rejected. Retention is a server-side window over last activity, so the
+ * same local state is refused on every later boot; persisting the park stops
+ * each cold start from re-walking the upload chain (and re-raising the same
+ * server error) for every expired session. New local activity changes
+ * `updated_at`, which releases the park for exactly one more attempt.
+ */
+export const org2CloudRetentionParkedAtom = atomWithStorage<
+  Record<string, string>
+>(
+  cloudStorageKey("retentionParked"),
+  {},
+  createZodJsonStorage(RetentionParkedSchema),
+  { getOnInit: true }
+);
+org2CloudRetentionParkedAtom.debugLabel = "org2CloudRetentionParkedAtom";
+
+export const RETENTION_PARKED_MAX_ENTRIES = 512;
+
+/** Keep the newest parks; entries iterate in insertion order. */
+export function pruneRetentionParked(
+  parked: Record<string, string>
+): Record<string, string> {
+  const keys = Object.keys(parked);
+  if (keys.length <= RETENTION_PARKED_MAX_ENTRIES) return parked;
+  const kept: Record<string, string> = {};
+  for (const key of keys.slice(keys.length - RETENTION_PARKED_MAX_ENTRIES)) {
+    kept[key] = parked[key]!;
+  }
+  return kept;
+}
+
 const CollabStateCursorsSchema = tolerantRecordSchema(
   "collab state cursor",
   z.string()
