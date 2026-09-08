@@ -316,6 +316,12 @@
       "colorful": "Colorful",
       "monochrome": "Monochrome"
     },
+    "appIcon": "App icon",
+    "appIconDesc": "Icon the running app shows in the Dock or taskbar. The installed app keeps its own icon in Finder",
+    "appIconOptions": {
+      "dark": "Dark tile",
+      "light": "Light tile"
+    },
     "translucentSidebar": "Translucent sidebar",
     "skin": "Skin",
     "accent": "Accent",

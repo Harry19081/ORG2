@@ -20,6 +20,7 @@ import { useModelAliasRegistry } from "@src/hooks/models";
 import {
   useCrossWindowSettingsSync,
   useDevModeGuard,
+  useDockIconPreference,
   useEditorAppearanceStyles,
   usePointerCursorPreference,
   useSleepInhibitor,
@@ -77,6 +78,7 @@ export const AppBootstrap: FC = () => {
   useEditorAppearanceStyles();
   useAppSkin();
   usePointerCursorPreference();
+  useDockIconPreference();
   useDevModeGuard();
   useSleepInhibitor();
   useAppShellEffects();

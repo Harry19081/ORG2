@@ -316,6 +316,12 @@
       "colorful": "彩色",
       "monochrome": "单色"
     },
+    "appIcon": "应用图标",
+    "appIconDesc": "运行中的应用在程序坞或任务栏中显示的图标；访达中的安装图标保持不变",
+    "appIconOptions": {
+      "dark": "深色",
+      "light": "浅色"
+    },
     "translucentSidebar": "半透明侧边栏",
     "skin": "皮肤",
     "accent": "强调色",

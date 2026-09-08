@@ -21,6 +21,7 @@ mod macos_material;
 #[cfg(windows)]
 mod windows_corner;
 
+pub mod dock_icon;
 pub mod root_tint;
 pub mod shortcut_preferences;
 pub mod startup_backdrop;
@@ -242,7 +243,7 @@ pub fn show_after_queued_native_layout(window: &tauri::WebviewWindow) {
 }
 
 #[cfg(target_os = "macos")]
-fn is_main_thread() -> bool {
+pub(crate) fn is_main_thread() -> bool {
     unsafe {
         let Some(cls) = AnyClass::get(c"NSThread") else {
             return false;

@@ -174,6 +174,19 @@ export const GENERAL_SETTINGS_REGISTRY = {
       monochrome: "Monochrome",
     },
   },
+  "general.dockIcon": {
+    schema: z.enum(["dark", "light"]),
+    default: "dark",
+    description:
+      "Icon the running app shows in the macOS Dock and app switcher, or the Windows/Linux taskbar. " +
+      "dark is the bundled icon (dark tile, light mark); light is its inverse. " +
+      "Per-process only: the installed bundle keeps its signed icon in Finder and Launchpad.",
+    category: "general",
+    enumLabels: {
+      dark: "Dark",
+      light: "Light",
+    },
+  },
   "general.uiScale": {
     schema: z.number().min(75).max(150),
     default: 100,

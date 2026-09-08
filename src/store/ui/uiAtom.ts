@@ -236,6 +236,14 @@ export const iconStyleAtom = atom(
 );
 iconStyleAtom.debugLabel = "iconStyleAtom";
 
+export const dockIconAtom = atom(
+  (get) => get(settingsAtom)["general.dockIcon"],
+  (_get, set, value: "dark" | "light") => {
+    set(updateSettingAtom, { key: "general.dockIcon", value });
+  }
+);
+dockIconAtom.debugLabel = "dockIconAtom";
+
 // ============================================
 // UI Scale
 // ============================================
