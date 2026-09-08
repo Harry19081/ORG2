@@ -276,11 +276,10 @@ pub(super) fn parse_codex_app_from_path_with_mode<'a>(
             continue;
         }
 
-        // `token_count` is the only provider-owned padding observed between a
-        // compact checkpoint and its UI mirror. Any conversational/lifecycle
-        // record closes the batch, so a later nearby compaction remains a
-        // distinct canonical boundary.
-        if payload_type != "token_count" {
+        // Usage and applied-settings notifications can separate the checkpoint
+        // from its UI mirror. Conversational/lifecycle records close the batch,
+        // so a later independent compaction remains a distinct boundary.
+        if !matches!(payload_type, "token_count" | "thread_settings_applied") {
             pending_compacted_mirror = None;
         }
 

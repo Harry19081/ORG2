@@ -5,7 +5,7 @@ use serde_json::{json, Value};
 use crate::sources::imported_history::{self, strip_orgii_exec_mode_bridge};
 
 use super::super::CodexJsonlLine;
-use super::CODEX_PROVIDER_SLUG;
+use super::{CODEX_PROVIDER_SLUG, NATIVE_SOURCE_EVENT_ID_PREFIX};
 
 const CODEX_EMBEDDED_IMAGE_MARKER: &str = "\"image_url\":\"data:image/";
 const CODEX_OMITTED_IMAGE_VALUE: &str = "[embedded image omitted]";
@@ -174,9 +174,10 @@ pub(super) fn user_image_data_urls_from_response_message(payload: &Value) -> Vec
 
 /// User rows injected through Codex app-server's supported
 /// `thread/inject_items` API have no later `event_msg/UserMessage` mirror.
-/// Injected response items carry Codex's native stable `id`; the user-role
-/// system/context prefix rows do not. Use that provider-owned distinction
-/// instead of adding ORG2-only metadata to the transcript.
+/// Current Codex also assigns IDs to provider context and mirrored user rows.
+/// Its structured content kinds distinguish those from injected history;
+/// ordinary user text is owned by the later UI message, with images staged by
+/// the caller. Older injected rows without these kinds remain supported.
 pub(super) fn injected_user_message_chunk_from_response_message(
     session_id: &str,
     sequence: usize,
@@ -192,6 +193,19 @@ pub(super) fn injected_user_message_chunk_from_response_message(
         || payload.get("role").and_then(Value::as_str) != Some("user")
     {
         return None;
+    }
+
+    let id = payload.get("id").and_then(Value::as_str).unwrap_or_default();
+    let is_orgii_injected = id.starts_with(NATIVE_SOURCE_EVENT_ID_PREFIX)
+        || id.strip_prefix("msg_").is_some_and(|id| id.starts_with(NATIVE_SOURCE_EVENT_ID_PREFIX));
+    if !is_orgii_injected {
+        if let Some(kinds) = payload.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds").and_then(Value::as_array) {
+            let has_user_mirror = kinds.iter().any(|kind| kind.as_str().is_some_and(|kind| kind.starts_with("user.")));
+            let only_provider_context = !kinds.is_empty() && kinds.iter().all(|kind| matches!(kind.as_str(), Some("plugins.recommendations" | "agents_md.instructions" | "environments.environment_context")));
+            if has_user_mirror || only_provider_context {
+                return None;
+            }
+        }
     }
 
     let raw_text = content_text_from_payload(payload).unwrap_or_default();

@@ -11,6 +11,38 @@ use super::{
 };
 
 #[test]
+fn current_codex_model_switch_context_and_user_mirrors_are_not_conversation_turns() {
+    let dir = std::env::temp_dir().join(format!("orgii-codex-current-user-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("rollout.jsonl");
+    let rows = serde_json::json!([
+        {"type":"turn_context","payload":{}},
+        {"type":"response_item","payload":{"type":"message","id":"msg_orgii_evt_seed","role":"user","content":[{"type":"input_text","text":"Copy title"}]}},
+        {"type":"response_item","payload":{"type":"message","id":"msg_orgii_evt_reply","role":"assistant","content":[{"type":"output_text","text":"Copy plain text"}]}},
+        {"type":"compacted","payload":{"message":""}},
+        {"type":"event_msg","payload":{"type":"thread_settings_applied"}},
+        {"type":"event_msg","payload":{"type":"token_count"}},
+        {"type":"event_msg","payload":{"type":"context_compacted"}},
+        {"type":"response_item","payload":{"type":"message","id":"msg_context","role":"user","content":[{"type":"input_text","text":"Provider environment refresh"}],"internal_chat_message_metadata_passthrough":{"content_item_kinds":["plugins.recommendations","agents_md.instructions","environments.environment_context"]}}},
+        {"type":"turn_context","payload":{}},
+        {"type":"response_item","payload":{"type":"message","id":"msg_user","role":"user","content":[{"type":"input_text","text":"Disable placeholder titles"},{"type":"input_image","image_url":"data:image/png;base64,QUJD"}],"internal_chat_message_metadata_passthrough":{"content_item_kinds":["user.text","user.image"]}}},
+        {"type":"event_msg","payload":{"type":"user_message","message":"Disable placeholder titles","images":[],"local_images":[]}},
+        {"type":"event_msg","payload":{"type":"agent_message","message":"Keep disabled"}},
+        {"type":"response_item","payload":{"type":"message","id":"msg_reply","role":"assistant","content":[{"type":"output_text","text":"Keep disabled"}]}}
+    ]);
+    let lines = rows.as_array().unwrap().iter().map(|row| serde_json::to_string(row).unwrap()).collect::<Vec<_>>().join("\n");
+    std::fs::write(&path, lines + "\n").unwrap();
+    let chunks = load_codex_app_from_path("codexapp-current-user", &path).unwrap();
+    let users = chunks.iter().filter(|c| c.function == "user_message").collect::<Vec<_>>();
+    assert_eq!(users.len(), 2, "provider context and UI mirrors must not create user turns");
+    assert_eq!(users[0].result["message"]["content"], "Copy title");
+    assert_eq!(users[1].result["message"]["content"], "Disable placeholder titles");
+    assert_eq!(users[1].result["images"][0], "data:image/png;base64,QUJD");
+    assert_eq!(chunks.iter().filter(|c| c.function == "context_compacted").count(), 1);
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
 fn preserves_codex_user_image_data_url_for_native_transfer() {
     let temp_dir = std::env::temp_dir().join(format!(
         "orgii-codex-user-image-test-{}",
