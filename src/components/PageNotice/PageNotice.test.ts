@@ -4,16 +4,28 @@ import { describe, expect, it } from "vitest";
 
 import Button from "@src/components/Button";
 
-import InlineAlert from ".";
+import PageNotice from ".";
 
-describe("InlineAlert", () => {
+describe("PageNotice", () => {
   it("forwards an explicit live-region role", () => {
     const markup = renderToStaticMarkup(
-      createElement(InlineAlert, { type: "danger", role: "alert" }, "Failed")
+      createElement(PageNotice, { type: "danger", role: "alert" }, "Failed")
     );
 
     expect(markup).toContain('role="alert"');
     expect(markup).toContain("Failed");
+  });
+
+  it("supports structured details without nesting block content in a span", () => {
+    const markup = renderToStaticMarkup(
+      createElement(
+        PageNotice,
+        { type: "danger" },
+        createElement("pre", null, "First line\nSecond line")
+      )
+    );
+    expect(markup).toContain("<pre>First line\nSecond line</pre></div>");
+    expect(markup).not.toContain("</pre></span>");
   });
 
   it("renders one neutral surface for every type", () => {
@@ -21,7 +33,7 @@ describe("InlineAlert", () => {
 
     for (const type of types) {
       const markup = renderToStaticMarkup(
-        createElement(InlineAlert, { type }, "Body")
+        createElement(PageNotice, { type }, "Body")
       );
 
       expect(markup).toContain("border-border-1");
@@ -36,7 +48,7 @@ describe("InlineAlert", () => {
   it("makes title, body and subtitle text selectable", () => {
     const markup = renderToStaticMarkup(
       createElement(
-        InlineAlert,
+        PageNotice,
         { type: "danger", title: "Failed", subtitle: "Retry later" },
         "Stack trace"
       )
@@ -48,7 +60,7 @@ describe("InlineAlert", () => {
 
   it("lets the icon inherit the alert title color", () => {
     const markup = renderToStaticMarkup(
-      createElement(InlineAlert, { type: "danger", title: "Failed" }, "Details")
+      createElement(PageNotice, { type: "danger", title: "Failed" }, "Details")
     );
 
     expect(markup).toContain('class="flex h-[14px] shrink-0 items-center"');
@@ -58,7 +70,7 @@ describe("InlineAlert", () => {
   it("groups the action and tertiary close button with a one-pixel gap", () => {
     const markup = renderToStaticMarkup(
       createElement(
-        InlineAlert,
+        PageNotice,
         {
           title: "Upgrade required",
           action: createElement(Button, {

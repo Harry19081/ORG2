@@ -9,6 +9,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import PageNotice from "@src/components/PageNotice";
 import { createLogger } from "@src/hooks/logger";
 import {
   DatabaseIcon,
@@ -202,9 +203,9 @@ export const DatabasePalette: React.FC<DatabasePaletteProps> = ({
       : t("database.spotlight.placeholderSelect");
 
   const errorDisplay = error ? (
-    <div className="mx-3 my-2 rounded bg-danger-6/10 px-3 py-2 text-xs text-danger-6">
+    <PageNotice type="danger" role="alert" className="mx-3 my-2">
       {error}
-    </div>
+    </PageNotice>
   ) : null;
 
   return (

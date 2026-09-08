@@ -10,13 +10,13 @@ import { useTranslation } from "react-i18next";
 import AnyIcon from "@src/components/AnyIcon";
 import Avatar from "@src/components/Avatar";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import {
   LIST_PANEL_SECTIONS,
   ListPanelItem,
   ListPanelSkeletonRows,
 } from "@src/components/ListPanel";
+import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { WORKSTATION_TRAIL_SECTION_LABEL } from "@src/config/workstation/tokens";
 import {
@@ -517,7 +517,7 @@ const TeamInboxList: React.FC<TeamInboxListProps> = ({
             {PULL_REQUEST_LOAD_WARNING_ENABLED &&
             showPullRequestsError &&
             pullRequestsError ? (
-              <InlineAlert
+              <PageNotice
                 type="warning"
                 className="mx-3 mb-2"
                 title={t("teamInbox.errors.pullRequestsPartialLoad")}
@@ -566,7 +566,7 @@ const TeamInboxList: React.FC<TeamInboxListProps> = ({
                     </div>
                   </div>
                 ) : null}
-              </InlineAlert>
+              </PageNotice>
             ) : null}
             {showPullRequests &&
             pullRequestSections.reviewRequested.length > 0 ? (
