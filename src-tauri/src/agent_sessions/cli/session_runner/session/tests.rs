@@ -5,7 +5,9 @@ use super::super::env_setup::{
     validate_codex_own_key_provider,
 };
 use super::super::input_assembly::cli_exec_mode_bridge;
-use super::super::oauth_setup::{is_api_overloaded_message, is_retryable_overloaded_chunk};
+use super::super::oauth_setup::{
+    is_api_overloaded_message, is_retryable_cli_oauth_failure_chunk, is_retryable_overloaded_chunk,
+};
 use super::super::plan_approval::{
     create_plan_content_from_chunk, looks_like_buildable_plan_body,
     plan_content_from_successful_write_chunk, synthetic_cli_plan_path,
@@ -1061,6 +1063,35 @@ fn overloaded_chunk_detection() {
         "text": "Hello world"
     }));
     assert!(is_retryable_overloaded_chunk(&no_error).is_none());
+}
+
+#[test]
+fn retry_detection_requires_explicit_provider_failure() {
+    for action in [
+        "assistant", "assistant_delta", "message", "tool_call", "user", "session_end",
+    ] {
+        let mut chunk = core_types::activity::ActivityChunk::new("s", action, "message");
+        chunk.result = serde_json::json!({
+            "success": true,
+            "message": "SessionFilterButton 第 429–444 行；529 overloaded；OAuth access token expired",
+            "error": "429 is an example in a tool result"
+        });
+        assert!(is_retryable_overloaded_chunk(&chunk).is_none(), "{action}");
+        assert!(
+            is_retryable_cli_oauth_failure_chunk(true, &chunk).is_none(),
+            "{action}"
+        );
+    }
+    for action in ["error", "session_end"] {
+        let mut chunk = core_types::activity::ActivityChunk::new("s", action, action);
+        chunk.result = serde_json::json!({"success": false, "error_message": "429 Too Many Requests"});
+        assert!(is_retryable_overloaded_chunk(&chunk).is_some(), "{action}");
+        chunk.result = serde_json::json!({"success": false, "error_message": "OAuth access token expired"});
+        assert!(
+            is_retryable_cli_oauth_failure_chunk(true, &chunk).is_some(),
+            "{action}"
+        );
+    }
 }
 
 /// The whole point of the collector: a child can exit with its stderr still
