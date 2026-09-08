@@ -98,6 +98,6 @@ export async function scanCameraQr(
       } catch (error) {
         finish(undefined, error);
       }
-    })();
+    })().catch((error: unknown) => finish(undefined, error));
   });
 }
