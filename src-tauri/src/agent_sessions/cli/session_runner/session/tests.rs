@@ -1213,3 +1213,32 @@ async fn draining_an_unattached_stderr_collector_returns_immediately() {
         .expect("drain of an unattached collector must not block");
     assert!(collector.lines().lock().await.is_empty());
 }
+
+#[test]
+fn native_codex_store_uses_catalog_binary_and_index_without_changing_auth_home() {
+    let mut command = vec![
+        "codex".into(),
+        "app-server".into(),
+        "-c".into(),
+        "model_reasoning_effort=\"low\"".into(),
+    ];
+    scope_native_codex_store(
+        &mut command,
+        Path::new("/Applications/Codex.app/codex"),
+        Path::new("/native home/.codex"),
+    );
+    assert_eq!(
+        command,
+        vec![
+            "/Applications/Codex.app/codex",
+            "app-server",
+            "-c",
+            "model_reasoning_effort=\"low\"",
+            "-c",
+            "sqlite_home=\"/native home/.codex\"",
+        ]
+    );
+    assert!(!command
+        .iter()
+        .any(|arg| arg.contains("CODEX_HOME") || arg.contains("auth")));
+}

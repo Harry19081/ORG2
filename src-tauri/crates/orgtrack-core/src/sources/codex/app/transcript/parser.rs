@@ -61,7 +61,13 @@ fn attach_native_source_event_id(chunk: &mut ActivityChunk, payload: &Value) {
     };
     args.insert(
         NATIVE_SOURCE_EVENT_ID_ARG.to_string(),
-        Value::String(source_event_id.to_string()),
+        Value::String(
+            source_event_id
+                .strip_prefix("msg_")
+                .filter(|id| id.starts_with(NATIVE_SOURCE_EVENT_ID_PREFIX))
+                .unwrap_or(source_event_id)
+                .to_string(),
+        ),
     );
 }
 
@@ -374,7 +380,12 @@ pub(super) fn parse_codex_app_from_path_with_mode<'a>(
                         .payload
                         .get("id")
                         .and_then(Value::as_str)
-                        .is_some_and(|id| id.starts_with(NATIVE_SOURCE_EVENT_ID_PREFIX));
+                        .is_some_and(|id| {
+                            id.starts_with(NATIVE_SOURCE_EVENT_ID_PREFIX)
+                                || id.strip_prefix("msg_").is_some_and(|id| {
+                                    id.starts_with(NATIVE_SOURCE_EVENT_ID_PREFIX)
+                                })
+                        });
                     let has_portable_user_images =
                         !user_image_data_urls_from_response_message(&parsed.payload).is_empty();
                     if before_first_turn_context && !is_orgii_injected && !has_portable_user_images

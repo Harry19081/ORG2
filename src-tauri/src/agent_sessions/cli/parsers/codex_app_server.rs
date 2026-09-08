@@ -73,7 +73,9 @@ use super::types::{CliAgentType, TokenUsage};
 use crate::agent_sessions::cli::session_runner::launch_profiles::CliPermissionMode;
 
 mod catalog;
-pub(crate) use catalog::{archive_thread, register_thread, synchronize_thread};
+pub(crate) use catalog::{
+    archive_thread, native_codex_app_server_command, register_thread, synchronize_thread,
+};
 
 /// How long to keep draining after `turn/interrupt` before giving up on a
 /// graceful `turn/completed`.

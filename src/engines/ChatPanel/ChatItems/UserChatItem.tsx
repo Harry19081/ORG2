@@ -415,7 +415,9 @@ const UserChatItem = ({
     !isAgentOrgInboxTranscript &&
     !isPlanApproved &&
     (!event?.args?.["sessionDiscussion"] || deliveryStatus === "failed") &&
-    (!conversationSenderStampOf(event) || deliveryActions.canEditFailed)
+    (!conversationSenderStampOf(event) ||
+      senderResolution.relationship === "viewer" ||
+      deliveryActions.canEditFailed)
   );
   const hasDisplayContent = Boolean(
     fullContent.trim() ||

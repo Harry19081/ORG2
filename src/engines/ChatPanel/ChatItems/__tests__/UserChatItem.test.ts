@@ -448,3 +448,42 @@ describe("UserChatItem parent-agent attribution", () => {
     expect(markup).not.toContain("parent-agent-sender-avatar");
   });
 });
+
+describe("stamped user message editing", () => {
+  it.each([
+    [{ status: "known", userId: "viewer-user" }, true],
+    [{ status: "known", userId: "other-user" }, false],
+    [{ status: "loading" }, false],
+  ] as const)(
+    "keeps editing scoped to the known author: %j",
+    (viewer, editable) => {
+      const event = makeSessionEvent({
+        id: "native-replay-user",
+        sessionId: "agentsession-local",
+        source: "user",
+        actionType: "raw",
+        functionName: "user_message",
+        displayText: "Keep the title search scope visible",
+        displayVariant: "message",
+        args: { [CONVERSATION_SENDER_ARG]: { userId: "viewer-user" } },
+      });
+      const markup = renderToStaticMarkup(
+        createElement(
+          ConversationSenderMetadataProvider,
+          { value: { viewer, resolveSender: (_event, stamp) => stamp } },
+          createElement(UserChatItem, {
+            chatItem: makeChatItem(event),
+            onEditSubmit: () => undefined,
+            onRestoreCheckpoint: () => undefined,
+          })
+        )
+      );
+      expect(
+        markup.includes('data-testid="chat-message-user-edit-button"')
+      ).toBe(editable);
+      expect(
+        markup.includes('data-testid="chat-message-restore-checkpoint"')
+      ).toBe(editable);
+    }
+  );
+});

@@ -92,7 +92,7 @@ fn drops_pre_turn_app_server_bootstrap_without_trimming_later_native_turns() {
     let path = temp_dir.join("rollout-app-server-bootstrap.jsonl");
     let content = r#"{"timestamp":"2026-08-30T01:00:00Z","type":"session_meta","payload":{"id":"native-1"}}
 {"timestamp":"2026-08-30T01:00:01Z","type":"response_item","payload":{"type":"message","id":"msg-bootstrap","role":"user","content":[{"type":"input_text","text":"<recommended_plugins>provider bootstrap</recommended_plugins>"}]}}
-{"timestamp":"2026-08-30T01:00:02Z","type":"response_item","payload":{"type":"message","id":"orgii_evt_fedcba9876543210fedcba9876543210","role":"user","content":[{"type":"input_text","text":"early canonical team message"}]}}
+{"timestamp":"2026-08-30T01:00:02Z","type":"response_item","payload":{"type":"message","id":"msg_orgii_evt_fedcba9876543210fedcba9876543210","role":"user","content":[{"type":"input_text","text":"early canonical team message"}]}}
 {"timestamp":"2026-08-30T01:00:03Z","type":"turn_context","payload":{"turn_id":"turn-native"}}
 {"timestamp":"2026-08-30T01:00:04Z","type":"event_msg","payload":{"type":"user_message","message":"real native question","images":[],"local_images":[]}}
 {"timestamp":"2026-08-30T01:00:05Z","type":"event_msg","payload":{"type":"agent_message","message":"real native answer"}}

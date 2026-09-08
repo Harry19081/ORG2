@@ -79,7 +79,7 @@ function stampPlaneMetadata(
  *
  * - A plane row whose twin exists locally renders the LOCAL event (stable
  *   ids, stable collapse state, the viewer's own rows stay editable) at the
- *   plane's position; other authors' user rows get the author stamp.
+ *   plane's position; user rows get the authoritative plane author stamp.
  * - A plane row without a twin renders as a namespaced plane row.
  * - Plane order is seq order, made monotone in time so a skewed sender
  *   clock can never reorder it; unclaimed local events (pre-plane history,
@@ -155,10 +155,12 @@ export function mergePlaneIntoTranscript(
     let event: SessionEvent;
     if (twin && !claimed.has(twin)) {
       claimed.add(twin);
+      // An imported/native replay may carry the root owner's fallback stamp
+      // even for this viewer's own turn. Correct both sides from the plane;
+      // preserving that stale stamp misattributes self turns after a cold
+      // import and can incorrectly remove owner actions.
       event =
-        row.event.source === "user" &&
-        viewer.status !== "loading" &&
-        (viewer.status === "signed_out" || row.authorUserId !== viewer.userId)
+        row.event.source === "user" && viewer.status !== "loading"
           ? stampPlaneMetadata(twin, row, true)
           : twin;
     } else {

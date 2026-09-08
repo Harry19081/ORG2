@@ -394,6 +394,19 @@ fn scope_codex_transport_to_turn(
     }
 }
 
+fn scope_native_codex_store(
+    command: &mut Vec<String>,
+    binary: &std::path::Path,
+    native_home: &std::path::Path,
+) {
+    command[0] = binary.to_string_lossy().into_owned();
+    command.push("-c".into());
+    command.push(format!(
+        "sqlite_home={}",
+        serde_json::to_string(&native_home.to_string_lossy()).expect("path serializes")
+    ));
+}
+
 /// Run a code session: spawn CLI, parse stdout, broadcast events.
 ///
 /// This is spawned as a background Tokio task.
@@ -704,6 +717,18 @@ pub(crate) async fn run_session_with_ide_context(
             .as_ref()
             .map(|profile| profile.profile_name()),
     });
+
+    if use_codex_app_server {
+        // Native rollouts and their pagination index belong to the same store.
+        // Keep CODEX_HOME account-scoped for auth/config, but use the native
+        // catalog's binary and SQLite home so an App migration cannot leave
+        // the runner reading a stale legacy index through its profile symlink.
+        scope_native_codex_store(
+            &mut cmd_parts,
+            &super::super::parsers::codex_app_server::native_codex_app_server_command(),
+            &app_paths::native_transcript_home_dir().join(".codex"),
+        );
+    }
 
     if matches!(agent, ModelType::Codex) && session.key_source == KeySource::HostedKey {
         if use_codex_app_server {

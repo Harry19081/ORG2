@@ -16,7 +16,7 @@ use serde_json::{json, Value};
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(20);
 const CODEX_NATIVE_MODEL_PROVIDER: &str = "openai";
 
-fn native_codex_app_server_command() -> PathBuf {
+pub(crate) fn native_codex_app_server_command() -> PathBuf {
     let mut preferred = Vec::new();
     if let Some(explicit) = std::env::var_os("ORGII_NATIVE_CODEX_APP_BINARY") {
         preferred.push(PathBuf::from(explicit));

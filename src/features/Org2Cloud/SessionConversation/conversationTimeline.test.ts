@@ -147,7 +147,11 @@ describe("mergePlaneIntoTranscript", () => {
         { status: "known", userId: "owner" }
       );
 
-      expect(merged).toEqual([failed]);
+      expect(merged).toHaveLength(1);
+      expect(merged[0]).toMatchObject(failed);
+      expect(merged[0].args[CONVERSATION_SENDER_ARG]).toMatchObject({
+        userId: "owner",
+      });
     }
   });
 
@@ -185,11 +189,14 @@ describe("mergePlaneIntoTranscript", () => {
       userId: "owner",
     });
     expect(merged).toHaveLength(2);
-    expect(merged[0]).toBe(ownerUser);
+    expect(merged[0]).toMatchObject(ownerUser);
+    expect(merged[0].args[CONVERSATION_SENDER_ARG]).toMatchObject({
+      userId: "owner",
+    });
     expect(merged[1]).toBe(ownerReply);
   });
 
-  it("stamps other authors' user rows on the twin but leaves the viewer's own untouched", () => {
+  it("stamps authoritative authorship while preserving local event identity", () => {
     const copyUser = userEvent({
       id: "imported-session-x~user-input-1",
       sessionId: "imported-session-x",
@@ -213,7 +220,10 @@ describe("mergePlaneIntoTranscript", () => {
       "owner-session",
       { status: "known", userId: "owner" }
     );
-    expect(asOwner[0]).toBe(ownerUser);
+    expect(asOwner[0]).toMatchObject(ownerUser);
+    expect(asOwner[0].args[CONVERSATION_SENDER_ARG]).toMatchObject({
+      userId: "owner",
+    });
   });
 
   it("does not stamp a local self twin while viewer auth is loading", () => {
@@ -233,8 +243,43 @@ describe("mergePlaneIntoTranscript", () => {
     );
 
     expect(loading[0]).toBe(ownerUser);
-    expect(hydrated[0]).toBe(ownerUser);
+    expect(hydrated[0]).toMatchObject(ownerUser);
+    expect(hydrated[0].args[CONVERSATION_SENDER_ARG]).toMatchObject({
+      userId: "owner",
+    });
     expect(loading[0].args[CONVERSATION_SENDER_ARG]).toBeUndefined();
+  });
+
+  it("restores the viewer's plane authorship after importing an owner's native replay", () => {
+    const imported = userEvent({
+      id: "imported-session-x~claudecode-user-48",
+      sessionId: "imported-session-x",
+      displayText: "Discuss the session title search acceptance criteria",
+      args: { [CONVERSATION_SENDER_ARG]: { userId: "owner" } },
+    });
+    const plane = userEvent({
+      id: "member-user-input",
+      displayText: imported.displayText,
+      result: { turnIntentId: "member-turn" },
+    });
+    const merged = mergePlaneIntoTranscript(
+      [imported],
+      [
+        row(1, plane, {
+          authorUserId: "member",
+          authorDisplayName: "Member",
+          turnId: "member-turn",
+        }),
+      ],
+      "imported-session-x",
+      { status: "known", userId: "member" }
+    );
+    expect(merged).toHaveLength(1);
+    expect(merged[0].id).toBe(imported.id);
+    expect(merged[0].args[CONVERSATION_SENDER_ARG]).toEqual({
+      userId: "member",
+      displayName: "Member",
+    });
   });
 
   it("preserves an existing remote stamp while viewer auth is loading", () => {
@@ -449,7 +494,7 @@ describe("mergePlaneIntoTranscript", () => {
       merged.filter(
         (item) => item.args[NATIVE_SOURCE_EVENT_ID_ARG] === sourceId
       )
-    ).toEqual([nativeUser]);
+    ).toMatchObject([nativeUser]);
     expect(
       merged.filter((item) => item.displayText === "retry me")
     ).toHaveLength(2);

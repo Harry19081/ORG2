@@ -1029,6 +1029,53 @@ fn claude_discovery_skips_broken_transcript_symlink() {
     std::fs::remove_dir_all(&temp_dir).expect("remove temp dir");
 }
 
+#[cfg(unix)]
+#[test]
+fn claude_native_profile_alias_has_one_stable_discovery_signature() {
+    use std::os::unix::fs::symlink;
+    let temp = std::env::temp_dir().join(format!("orgii-claude-alias-{}", std::process::id()));
+    std::fs::remove_dir_all(&temp).ok();
+    let native = temp.join("native/projects/project");
+    let profile = temp.join("profile/projects/project");
+    std::fs::create_dir_all(&native).unwrap();
+    std::fs::create_dir_all(&profile).unwrap();
+    let path = native.join("session.jsonl");
+    std::fs::write(&path, "{\"type\":\"user\"}\n").unwrap();
+    symlink(&path, profile.join("session.jsonl")).unwrap();
+    let discover = |roots: &[std::path::PathBuf]| {
+        let snapshots = HashMap::new();
+        let mut walker =
+            imported_history::scan_snapshot::SnapshotDirWalker::new(&snapshots, "jsonl", "Claude");
+        discover_claude_code_history_records(roots, &mut walker)
+            .unwrap()
+            .records
+    };
+    let first = discover(&[profile.clone(), native.clone()]);
+    assert_eq!(
+        first.len(),
+        1,
+        "native and profile alias must not alternate cache writers"
+    );
+    let second = discover(&[native.clone(), profile.clone()]);
+    assert_eq!(second.len(), 1);
+    assert!(imported_history::cache::record_matches_cached_signature(
+        &first[0].signature(),
+        &second[0].signature()
+    ));
+    std::fs::OpenOptions::new()
+        .append(true)
+        .open(&path)
+        .and_then(|mut f| std::io::Write::write_all(&mut f, b"{\"type\":\"assistant\"}\n"))
+        .unwrap();
+    let appended = discover(&[profile, native]);
+    assert_eq!(appended.len(), 1);
+    assert!(!imported_history::cache::record_matches_cached_signature(
+        &second[0].signature(),
+        &appended[0].signature()
+    ));
+    std::fs::remove_dir_all(temp).unwrap();
+}
+
 #[test]
 fn claude_subagent_metadata_change_invalidates_fingerprint() {
     let temp_dir = std::env::temp_dir().join(format!(

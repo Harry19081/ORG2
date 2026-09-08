@@ -1884,13 +1884,15 @@ fn codex_response_items(items: &[NativeConversationItem]) -> Vec<Value> {
                             .map(|image| json!({"type": "input_image", "image_url": image})),
                     );
                 }
+                // Responses API item IDs require a type prefix. The canonical
+                // message ID remains recoverable after the `msg_` prefix.
                 // `id` is part of Codex's native response-item schema and is
                 // preserved by `thread/inject_items`. Unlike Codex's
                 // user-role system/context prefix rows, an injected canonical
                 // user message therefore has a stable native item id without
                 // needing ORG2-only metadata inside the provider transcript.
                 projected
-                    .push(json!({"type": "message", "id": id, "role": role, "content": content}));
+                    .push(json!({"type": "message", "id": format!("msg_{id}"), "role": role, "content": content}));
             }
             NativeConversationItem::ToolCall {
                 id,
@@ -1900,7 +1902,7 @@ fn codex_response_items(items: &[NativeConversationItem]) -> Vec<Value> {
                 ..
             } => projected.push(json!({
                 "type": "function_call",
-                "id": id,
+                "id": format!("fc_{}", stable_uuid("orgii-codex-function-item", "", id).replace('-', "")),
                 "name": name,
                 "arguments": arguments,
                 "call_id": call_id
@@ -1918,7 +1920,7 @@ fn codex_response_items(items: &[NativeConversationItem]) -> Vec<Value> {
             })),
             NativeConversationItem::ContextSummary { id, summary, .. } => projected.push(json!({
                 "type": "message",
-                "id": id,
+                "id": format!("msg_{id}"),
                 "role": "user",
                 "content": [{"type": "input_text", "text": summary}]
             })),
@@ -3201,6 +3203,29 @@ mod tests {
             .iter()
             .zip(&round_tripped)
             .all(|(left, right)| native_item_semantically_equal(left, right)));
+    }
+
+    #[test]
+    fn codex_injected_items_use_provider_typed_ids() {
+        let source_id = "orgii_evt_fedcba9876543210fedcba9876543210";
+        let items = vec![
+            message(source_id, "user", "Search titles"),
+            message("orgii_evt_assistant", "assistant", "Keep the scope visible"),
+            tool_call("call_read", "read_file", "{}"),
+            NativeConversationItem::ContextSummary {
+                id: "orgii_evt_summary".to_string(),
+                summary: "Search only loaded titles".to_string(),
+                created_at: "2026-09-08T00:00:00Z".to_string(),
+            },
+        ];
+        let projected = codex_response_items(&items);
+        assert_eq!(projected[0]["id"], format!("msg_{source_id}"));
+        assert!(projected[1]["id"].as_str().unwrap().starts_with("msg_"));
+        let call_id = projected[2]["id"].as_str().unwrap();
+        assert!(call_id.starts_with("fc_"));
+        assert!(call_id.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '_'));
+        assert_eq!(projected[2]["call_id"], "call_read");
+        assert!(projected[3]["id"].as_str().unwrap().starts_with("msg_"));
     }
 
     #[test]
