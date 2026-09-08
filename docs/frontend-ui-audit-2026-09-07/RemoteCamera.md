@@ -6,7 +6,7 @@ Scope: QRScanScreen and the shared platform camera adapter. Audit only; source i
 | -------------------- | ------------------- | ---------------- | ---------------------------------------------------------------------------------------------------- | ---------------- |
 | QRScanScreen.tsx:109 | Video preview       | keep with reason | Square black preview is a camera surface, not a replacement design token; it has an accessible label | None             |
 | QRScanScreen.tsx:123 | Cancel/scan buttons | keep with reason | Reuses MobileActionButton and keeps paste disabled during capture                                    | None             |
-| QRScanScreen.tsx:147 | Paste and error     | keep with reason | Shared Textarea and InlineAlert; camera and paste use the same parser                                | None             |
+| QRScanScreen.tsx:147 | Paste and error     | keep with reason | Shared Textarea and PageNotice; camera and paste use the same parser                                 | None             |
 
 Totals: fix 0; keep with reason 3; abstract 0. No cross-file design-system sweep proposed.
 
@@ -24,3 +24,7 @@ Reviewed UI intent → platform port → getUserMedia → local decoder → cano
 Verification: `pnpm exec vitest run --config config/vitest.config.ts src/modules/MobileRemote/platform/scanCameraQr.test.ts src/modules/MobileRemote/platform/scanCameraQr.decoder.test.ts src/modules/MobileRemote/screens/QRScanScreen.test.ts src/modules/MobileRemote/connection/parseMobileRemoteWsUrl.test.ts`; see PR for outcome. Native permission prompt, denied-permission Settings recovery, real-camera images, light/dark screenshots and physical CPU/RSS are not validated in this audit. Draft must remain until physical verification is complete.
 
 Performance verdict: blocked — real iPhone visible/hidden/post-close measurements are missing; unit tests do not prove device performance.
+
+## Develop integration correction
+
+The removed InlineAlert import is replaced with the canonical PageNotice so this branch compiles against current develop. The alert role and camera/paste validation behavior are preserved. After parent integration: 272 MobileRemote tests in 48 files passed, typecheck and scoped ESLint passed. Real iPhone permission/camera/CPU/RSS remain unverified; no new visual acceptance claim.
