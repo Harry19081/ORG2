@@ -864,7 +864,7 @@
     "moreActions": "その他の操作...",
     "formatSql": "SQL をフォーマット",
     "queryHistory": "クエリ履歴",
-    "executeQuery": "クエリを実行 (Ctrl+Enter)",
+    "executeQuery": "クエリを実行 ({{shortcut}})",
     "startVoiceInput": "音声入力を開始",
     "cancelRecording": "録音をキャンセル",
     "stopAndTranscribe": "停止して文字起こし",
@@ -942,7 +942,6 @@
     "chatHistoryAgentWorkingHint": "最初の応答でメッセージが表示されます。それまではツールバーがアイドル表示になる場合があります",
     "pleaseSelect": "選択してください",
     "noSessionsFound": "Sessionが見つかりません",
-    "noBrowsingHistory": "閲覧履歴がありません",
     "typeToSearchFiles": "ファイルを検索するには入力...",
     "selectFileToViewChanges": "ファイルを選択して変更を表示",
     "failedToLoadHistory": "履歴の読み込みに失敗しました",
@@ -1625,8 +1624,9 @@
         "systemPaths": "システムパス",
         "usedElsewhere": "他のアプリで使用",
         "workspace": "作業ディレクトリ",
-        "thisOrg": "この作業ディレクトリ",
-        "outsideOrg": "この作業ディレクトリの外"
+        "thisOrg": "この組織",
+        "outsideOrg": "この組織の外",
+        "outsideNamedOrg": "{{org}} の外"
       },
       "tabs": {},
       "addOptions": {
@@ -2053,17 +2053,7 @@
     "showLess": "折りたたむ"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "AI セッション影響データがありません",
-    "sessions": "セッション",
-    "files": "関連ファイル",
-    "functions": "関数",
-    "commits": "Commit",
-    "lines": "コード行",
-    "sessionBreakdown": "セッション内訳",
-    "human": "Human",
-    "completed": "完了",
-    "incomplete": "未完了"
+    "lines": "コード行"
   },
   "sessions": {
     "title": "セッション",
@@ -2477,5 +2467,10 @@
   "notifications": {
     "taskCancelledToast": "「{{name}}」はキャンセルされました",
     "taskCompletedToast": "「{{name}}」が完了しました。セッションを開いて結果を確認してください。"
+  },
+  "documentOpen": {
+    "openInDefault": "{{name}} で開く",
+    "openDefaultApp": "デフォルトのアプリで開く",
+    "openExternally": "外部アプリで開く"
   }
 }

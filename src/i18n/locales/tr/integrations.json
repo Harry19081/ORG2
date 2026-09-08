@@ -2126,8 +2126,7 @@
     "terminalProcesses": "Terminal İşlemleri",
     "chatPreview": "Sohbet önizleme",
     "scenario": "Senaryo",
-    "selectScenario": "Bir senaryo seçin",
-    "sessionSimulation": "Oturum simülasyonu"
+    "selectScenario": "Bir senaryo seçin"
   },
   "rulesTabs": {
     "rules": "Kurallar",
@@ -2214,7 +2213,10 @@
     "fireHistory": "Run history",
     "noFires": "No runs yet",
     "openSession": "Open session",
-    "openWorkItem": "Open work item"
+    "openWorkItem": "Open work item",
+    "fireError": "Rutin başlatılamadı: {{detail}}",
+    "provider": "Sağlayıcı",
+    "eventKind": "Olay"
   },
   "cursorPlugins": {
     "noPlugins": "Cursor eklentisi yüklü değil",

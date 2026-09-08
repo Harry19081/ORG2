@@ -66,32 +66,6 @@ export type RenderContext = "chat" | "simulator" | "trajectory";
 /** Rendering mode */
 export type RenderMode = "interactive" | "simulation";
 
-/**
- * Context accepted by `useUnifiedEventRenderer`.
- *
- * Today the only caller is `useSimulatorAdapter`, which always passes
- * `"simulator"`. Chat goes through `ActivityRouter` → `getChatLazyComponent`,
- * and trajectory rendering uses the normalizer's `variant` field directly
- * — neither flows through this hook. The single-value union keeps the call
- * site explicit and prevents accidental misuse.
- */
-export type UnifiedRenderContext = "simulator";
-
-/** Unified render options */
-export interface UnifiedRenderOptions {
-  /** Current rendering context (currently always "simulator"). */
-  context: UnifiedRenderContext;
-
-  /** Rendering mode */
-  mode?: RenderMode;
-
-  /** Enable virtualization for large lists */
-  enableVirtualization?: boolean;
-
-  /** Cache key for render memoization */
-  cacheKey?: string;
-}
-
 // ============================================
 // CLI Agent Alias Types (from Rust cli_agents/alias_map.rs)
 // ============================================

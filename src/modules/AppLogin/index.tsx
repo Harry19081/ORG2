@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import { MOBILE_REMOTE_ROUTE, ROUTES } from "@src/config/routes";
 import { HOSTED_LOGIN_ENABLED, setAuthSkipped } from "@src/config/serviceAuth";
 import {
@@ -116,19 +116,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
           className={`flex flex-col items-center gap-2 ${LOGIN_COLUMN_WIDTH_CLASS}`}
         >
           {sessionExpired && (
-            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            <PageNotice type="warning" role="alert" className="mb-4">
               {t("login.sessionExpired")}
-            </div>
+            </PageNotice>
           )}
 
           {callbackError && (
-            <InlineAlert
+            <PageNotice
               type="danger"
               title={t("common:status.error")}
               className="mb-4"
             >
               {callbackError}
-            </InlineAlert>
+            </PageNotice>
           )}
 
           <Button

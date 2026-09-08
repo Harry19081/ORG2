@@ -480,6 +480,10 @@ export function useCloudOrgRemoteSessions(
   }, [
     orgId,
     signedIn,
+    // A visible window may not own keyboard focus (for example beside the
+    // other instance). Resume deferred initial/invalidation work on reveal;
+    // the focused recovery below remains the full-refresh owner.
+    documentVisible,
     invalidationVersion,
     fullRefreshVersion,
     entrySnapshot,

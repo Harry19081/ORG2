@@ -877,7 +877,7 @@
     "moreActions": "更多操作...",
     "formatSql": "格式化 SQL",
     "queryHistory": "查詢歷史",
-    "executeQuery": "執行查詢 (Ctrl+Enter)",
+    "executeQuery": "執行查詢 ({{shortcut}})",
     "startVoiceInput": "開始語音輸入",
     "cancelRecording": "取消錄製",
     "stopAndTranscribe": "停止並轉錄",
@@ -955,7 +955,6 @@
     "chatHistoryAgentWorkingHint": "首則回覆到達後會顯示訊息，此前工具列可能顯示閒置",
     "pleaseSelect": "請選擇",
     "noSessionsFound": "未找到 Session",
-    "noBrowsingHistory": "暫無瀏覽記錄",
     "typeToSearchFiles": "輸入以搜索文件...",
     "selectFileToViewChanges": "選擇文件以查看變更",
     "failedToLoadHistory": "加載歷史記錄失敗",
@@ -1640,8 +1639,9 @@
         "systemPaths": "系統路徑",
         "usedElsewhere": "在其他應用程式中使用",
         "workspace": "工作目錄",
-        "thisOrg": "此工作目錄",
-        "outsideOrg": "此工作目錄之外"
+        "thisOrg": "此組織",
+        "outsideOrg": "此組織之外",
+        "outsideNamedOrg": "{{org}}之外"
       },
       "tabs": {},
       "addOptions": {
@@ -2068,17 +2068,7 @@
     "showLess": "收起"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "暫無 AI 會話影響數據",
-    "sessions": "會話",
-    "files": "涉及文件",
-    "functions": "函數",
-    "commits": "Commit",
-    "lines": "代碼行",
-    "sessionBreakdown": "會話明細",
-    "human": "Human",
-    "completed": "已完成",
-    "incomplete": "未完成"
+    "lines": "代碼行"
   },
   "sessions": {
     "title": "會話",
@@ -2495,5 +2485,17 @@
   "notifications": {
     "taskCancelledToast": "「{{name}}」已取消",
     "taskCompletedToast": "「{{name}}」已完成。開啟工作階段以檢視結果。"
+  },
+  "documentOpen": {
+    "openInDefault": "在 {{name}} 中開啟",
+    "openDefaultApp": "在預設應用程式中開啟",
+    "openExternally": "在外部應用程式中開啟",
+    "label": "開啟方式…",
+    "defaultApp": "預設應用程式",
+    "appDefault": "{{name}}（預設）",
+    "loading": "正在載入應用程式…",
+    "loadFailed": "無法載入應用程式，請重新展開重試",
+    "openFailed": "無法開啟文件",
+    "saveFirst": "請先儲存或捨棄修改，再使用其他應用程式開啟"
   }
 }

@@ -2,7 +2,7 @@
  * BrowserLayout
  *
  * Layout orchestrator for Browser mode. Composes:
- * - Left: BrowserPrimarySidebar (sessions + design + settings tabs)
+ * - Left: Collapsed; webpages are managed through the top tab bar
  * - Center: WebViewport (webview)
  * - Right: WebInspector (DevTools) or DOM Editor panel
  * - Bottom: BrowserStatusBar

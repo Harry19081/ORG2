@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Contrôle, Alt = Alt, Shift = Maj",
     "tipsEditorScope": "Les raccourcis dont la portée est « Editor » ne fonctionnent que lorsque l'éditeur de code a le focus",
     "tipsContextual": "Certains raccourcis ont un comportement différent selon le contexte",
-    "tipsSearchHint": "Utilisez la barre de recherche pour trouver rapidement un raccourci"
+    "tipsSearchHint": "Utilisez la barre de recherche pour trouver rapidement un raccourci",
+    "pressShortcut": "Appuyez sur un raccourci",
+    "editCommand": "Modifier le raccourci de {{command}}",
+    "requireModifier": "Utilisez Contrôle, Commande ou Alt avec une touche, ou une touche de fonction",
+    "conflict": "Déjà utilisé par {{command}}",
+    "saveFailed": "Impossible d’enregistrer les raccourcis",
+    "reset": "Réinitialiser",
+    "resetAll": "Rétablir les paramètres d’origine",
+    "resetAllDesc": "Rétablir les raccourcis par défaut pour macOS, Windows et Linux",
+    "nativeSyncFailed": "Impossible de mettre à jour les raccourcis du menu système"
   },
   "languageServersPage": {
     "installing": "Installation",

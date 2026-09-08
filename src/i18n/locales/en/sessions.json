@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Mark all as read",
+    "showKanban": "Show Kanban",
+    "showRuntime": "Show Runtime",
+    "pinned": "Pinned",
+    "unread": "Unread",
+    "running": "Running",
+    "recent": "Recent",
+    "empty": "No sessions — Open App",
+    "quit": "Quit ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token context",
     "followup": "{{tokenCount}} Token follow-up",
@@ -174,7 +185,16 @@
           "24h": "24h",
           "7d": "7 days",
           "30d": "30 days",
-          "all": "All time"
+          "all": "All time",
+          "custom": "Custom range…"
+        },
+        "customRange": {
+          "start": "Start",
+          "end": "End",
+          "hint": "Local time · {{zone}} · Second precision, inclusive end",
+          "invalid": "End time cannot be before start time",
+          "apply": "Apply range",
+          "cancel": "Cancel"
         },
         "bucket": {
           "claude": "Claude",
@@ -484,11 +504,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Show trajectory and todo panel",
-        "placeholderTrajectoryTitle": "No events yet",
-        "placeholderTrajectorySubtitle": "Session activity will appear here once the agent runs",
-        "placeholderTodoTitle": "No todo lists",
-        "placeholderTodoSubtitle": "Todo updates appear here when the agent writes tasks"
+        "expandPanel": "Show trajectory and todo panel"
       },
       "previousEvent": "Previous event",
       "nextEvent": "Next event",
@@ -895,7 +911,10 @@
     "compactCommandDescription": "Summarize older context to free space. Optional: /compact <focus for the summary>",
     "canvasCommandDescription": "Create a new interactive Canvas. Optional: /canvas <what to build>",
     "canvasArgHint": "what to build",
-    "newCanvasAction": "New Canvas"
+    "newCanvasAction": "New Canvas",
+    "followUpSuggestions": {
+      "label": "Suggested next steps"
+    }
   },
   "listPanel": {
     "showingOf": "Showing {{filtered}} of {{total}}",
@@ -2661,7 +2680,8 @@
     "failedToInterrupt": "Failed to interrupt session",
     "failedToStop": "Failed to stop agent",
     "failedToCheckChanges": "Could not check file changes. Proceeding with revert.",
-    "insufficientBalance": "Insufficient balance for the hosted ORGII service. Top up at orgii.ai/wallet."
+    "insufficientBalance": "Insufficient balance for the hosted ORGII service. Top up at orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "Queued: another run is using this checkout. It will start as soon as that run finishes."
   },
   "revertConfirm": {
     "title": "Unsaved file changes",
@@ -2923,6 +2943,8 @@
     },
     "url": {
       "open": "Open",
+      "changesCount_one": "{{count}} change",
+      "changesCount_other": "{{count}} changes",
       "copyUrl": "Copy URL",
       "copied": "URL copied",
       "openExternalFailed": "Failed to open URL in default browser",
@@ -3090,5 +3112,21 @@
   "titleBar": {
     "showDevTools": "Show DevTools",
     "hideDevTools": "Hide DevTools"
+  },
+  "weeklyQuotaHistory": {
+    "title": "Weekly quota history",
+    "description": "Quota remaining · Last 28 days · Sampled hourly while the app is visible and online · Missing readings are gaps",
+    "error": "Quota history is unavailable. It will retry when you return to this window",
+    "empty": "Connect a Claude Code, Codex, or OpenCode Go account in Key Vault to start tracking",
+    "loading": "Loading quota history…",
+    "unsupported": "This account does not report a weekly quota",
+    "unavailable": "Latest reading unavailable; check the account connection in Key Vault",
+    "pending": "Waiting for the next hourly sample",
+    "remaining": "Remaining %",
+    "refresh": "Refresh",
+    "account": "Account",
+    "stale": "Last observation is over two hours old",
+    "disabled": "Sampling paused for this disabled account",
+    "limit": "Showing up to 128 accounts"
   }
 }

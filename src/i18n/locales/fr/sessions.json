@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Tout marquer comme lu",
+    "showKanban": "Afficher Kanban",
+    "showRuntime": "Afficher Runtime",
+    "pinned": "Épinglées",
+    "unread": "Non lues",
+    "running": "En cours",
+    "recent": "Récentes",
+    "empty": "Aucune session — Ouvrir l’application",
+    "quit": "Quitter ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token context",
     "followup": "{{tokenCount}} Token follow-up",
@@ -157,7 +168,16 @@
           "24h": "24 heures",
           "7d": "7 jours",
           "30d": "30 jours",
-          "all": "Toute la période"
+          "all": "Toute la période",
+          "custom": "Période personnalisée…"
+        },
+        "customRange": {
+          "start": "Début",
+          "end": "Fin",
+          "hint": "Heure locale · {{zone}} · Précision à la seconde, fin incluse",
+          "invalid": "La fin ne peut pas précéder le début",
+          "apply": "Appliquer la période",
+          "cancel": "Annuler"
         },
         "bucket": {
           "claude": "Claude",
@@ -458,11 +478,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectoire",
         "tabTodo": "Todo",
-        "expandPanel": "Afficher le panneau trajectoire et todo",
-        "placeholderTrajectoryTitle": "Aucun événement pour l’instant",
-        "placeholderTrajectorySubtitle": "L’activité de session apparaîtra ici une fois l’Agent lancé",
-        "placeholderTodoTitle": "Aucune liste de tâches",
-        "placeholderTodoSubtitle": "Les mises à jour todo apparaîtront lorsque l’Agent écrit des tâches"
+        "expandPanel": "Afficher le panneau trajectoire et todo"
       },
       "previousEvent": "Événement précédent",
       "nextEvent": "Événement suivant",
@@ -2526,7 +2542,8 @@
     "failedToInterrupt": "Échec de l'interruption de la Session",
     "failedToStop": "Échec de l'arrêt de l'Agent",
     "failedToCheckChanges": "Impossible de vérifier les modifications de fichiers. La restauration sera effectuée.",
-    "insufficientBalance": "Solde insuffisant pour le service ORGII hébergé. Rechargez sur orgii.ai/wallet."
+    "insufficientBalance": "Solde insuffisant pour le service ORGII hébergé. Rechargez sur orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "En file d'attente : une autre exécution utilise ce checkout. Elle démarrera dès que celle-ci sera terminée."
   },
   "planning": {
     "agentTyping": "Agent est en train d’écrire...",
@@ -2793,6 +2810,8 @@
     },
     "url": {
       "open": "Ouvrir",
+      "changesCount_one": "{{count}} modification",
+      "changesCount_other": "{{count}} modifications",
       "copyUrl": "Copier l'URL",
       "copied": "URL copiée",
       "openExternalFailed": "Impossible d’ouvrir l’URL dans le navigateur par défaut",

@@ -2,7 +2,6 @@
  * SimulatorContentArea Component
  *
  * Main content area for the simulator with header and app surface.
- * Pairs with SimulatorTitleBar to create the complete simulator window experience.
  * Renders simulator content for the active app.
  *
  * Refactored structure:

@@ -8,6 +8,7 @@ import {
   DROPDOWN_CLASSES,
   DROPDOWN_PANEL,
 } from "@src/components/Dropdown/tokens";
+import PageNotice from "@src/components/PageNotice";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
   describeAppMemoryMeasurement,
@@ -306,10 +307,10 @@ export const SidebarRamMonitorPanel: React.FC<SidebarRamMonitorPanelProps> = ({
               )}
 
               {(snapshot.errorMessage || appMemoryState.errorMessage) && (
-                <div className="text-danger-7 rounded-md border border-danger-3 bg-danger-1 px-2 py-1.5 text-[11px] leading-snug">
+                <PageNotice type="danger" role="alert">
                   {tCommon("status.error")} ·{" "}
                   {snapshot.errorMessage || appMemoryState.errorMessage}
-                </div>
+                </PageNotice>
               )}
             </div>
           </div>,

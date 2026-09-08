@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Control、Alt = Alt、Shift = Shift",
     "tipsEditorScope": "スコープが「Editor」のショートカットはコードエディタにフォーカスがあるときのみ動作します",
     "tipsContextual": "一部のショートカットはコンテキストによって動作が異なります",
-    "tipsSearchHint": "検索バーで特定のショートカットを素早く検索できます"
+    "tipsSearchHint": "検索バーで特定のショートカットを素早く検索できます",
+    "pressShortcut": "ショートカットを入力",
+    "editCommand": "「{{command}}」のショートカットを編集",
+    "requireModifier": "Control、Command、Alt とキーの組み合わせ、またはファンクションキーを使用してください",
+    "conflict": "「{{command}}」で使用されています",
+    "saveFailed": "ショートカット設定を保存できませんでした",
+    "reset": "リセット",
+    "resetAll": "元の設定に戻す",
+    "resetAllDesc": "macOS、Windows、Linux のショートカットを既定値に戻す",
+    "nativeSyncFailed": "システムメニューのショートカットを更新できませんでした"
   },
   "languageServersPage": {
     "installing": "インストール中",

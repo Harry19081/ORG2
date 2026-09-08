@@ -14,6 +14,7 @@ mod quota;
 mod validator;
 
 pub use validator::CodexValidator;
+pub(crate) use id_token::extract_account_id_from_id_token;
 
 #[cfg(test)]
 #[path = "../tests/codex_tests.rs"]
