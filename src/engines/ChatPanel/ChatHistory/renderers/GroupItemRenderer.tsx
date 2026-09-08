@@ -83,6 +83,13 @@ const RESULT_RENDER_KEYS = [
   "linesAdded",
   "linesRemoved",
   "status",
+  // Keep retry actions current even when the visible message body is unchanged.
+  "queueMessageId",
+  "deliveryOwnerRetired",
+  "deliveryStatus",
+  "deliveryError",
+  "turnIntentId",
+  "syntheticUserInput",
 ] as const;
 
 const ARG_RENDER_KEYS = [

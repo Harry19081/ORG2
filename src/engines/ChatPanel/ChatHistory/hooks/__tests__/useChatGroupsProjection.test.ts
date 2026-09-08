@@ -25,6 +25,86 @@ import {
 
 let counter = 0;
 
+it.each([false, true])(
+  "uses native timing without rendering lifecycle rows (collapsed=%s)",
+  (collapsed) => {
+    const user = userItem("retry this request");
+    user.event!.createdAt = "2026-09-08T04:59:09.964Z";
+    const failure = cliErrorItem("database is locked");
+    failure.event!.createdAt = "2026-09-08T04:59:12.170Z";
+    const start = item(
+      makeEvent({
+        actionType: "task_start",
+        functionName: "task_start",
+        createdAt: "2026-09-08T06:09:11.351Z",
+      })
+    );
+    const end = item(
+      makeEvent({
+        actionType: "task_completed",
+        functionName: "task_completed",
+        createdAt: "2026-09-08T06:09:14.496Z",
+      })
+    );
+    const answer = assistantItem("recovered");
+    answer.event!.createdAt = "2026-09-08T06:09:14.475Z";
+    const projected = projectChatGroups([user, failure, start, answer, end], {
+      tailTurnPhase: "complete",
+      allTurnsCollapsed: collapsed,
+    });
+    expect(projected.groupMeta[0]).toMatchObject({
+      startMs: Date.parse(start.event!.createdAt),
+      endMs: Date.parse(end.event!.createdAt),
+      durationMs: 3145,
+    });
+    expect(user.event!.createdAt).toBe("2026-09-08T04:59:09.964Z");
+    expect(projected.flatItems.map((entry) => entry.event?.id)).not.toContain(
+      start.event!.id
+    );
+    expect(projected.flatItems.map((entry) => entry.event?.id)).not.toContain(
+      end.event!.id
+    );
+    expect(projected.flatItems.map((entry) => entry.event?.id)).toContain(
+      failure.event!.id
+    );
+    expect(projected.flatItems.map((entry) => entry.event?.id)).toContain(
+      answer.event!.id
+    );
+    expect(projected.flatItems.map((entry) => entry.event?.id)).toEqual([
+      failure.event!.id,
+      answer.event!.id,
+    ]);
+    expect(projected.originalToFlatIndex.size).toBe(5);
+    for (const index of projected.originalToFlatIndex.values()) {
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(index).toBeLessThan(projected.totalFlatItems);
+    }
+  }
+);
+
+it.each([undefined, "invalid", "2026-09-08T03:00:00Z"])(
+  "keeps legacy timing without a valid execution start (%s)",
+  (timestamp) => {
+    const user = userItem("request");
+    user.event!.createdAt = "2026-09-08T04:00:00Z";
+    const answer = assistantItem("answer");
+    answer.event!.createdAt = "2026-09-08T04:00:05Z";
+    const events = [user];
+    if (timestamp !== undefined) {
+      events.push(
+        item(
+          makeEvent({
+            actionType: "task_start",
+            createdAt: timestamp,
+          })
+        )
+      );
+    }
+    events.push(answer);
+    expect(projectChatGroups(events).groupMeta[0].durationMs).toBe(5000);
+  }
+);
+
 function makeEvent(overrides: Partial<SessionEvent>): SessionEvent {
   counter++;
   return {
