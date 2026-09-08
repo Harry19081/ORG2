@@ -381,8 +381,10 @@ export function createSessionEventHandlerCallbacks(
         actions.dismissCanvasAtNewTurn(sessionId);
       }
     },
-    onTokenUpdate: (tokens) => {
+    onTokenUpdate: (tokens, contextUsage) => {
       actions.setSessionContextTokens(tokens);
+      if (contextUsage !== undefined)
+        actions.setSessionContextUsage(contextUsage);
     },
     onStreamingDelta: (info) => {
       updateStreamingDeltaContent(

@@ -486,3 +486,27 @@ describe("getLatestContextUsageSnapshot", () => {
     ).toEqual(contextUsage);
   });
 });
+
+describe("CLI source context projection", () => {
+  it("applies a full source snapshot and clears it when source telemetry is invalidated", () => {
+    const actions = createActions();
+    const callbacks = createSessionEventHandlerCallbacks(
+      "cliagent-a",
+      actions,
+      vi.fn()
+    );
+    const usage = {
+      usedTokens: 110,
+      maxTokens: null,
+      updatedAt: "now",
+      sections: [],
+      warnings: [],
+      cacheReadTokens: 80,
+    };
+    callbacks.onTokenUpdate?.(110, usage);
+    expect(actions.setSessionContextUsage).toHaveBeenLastCalledWith(usage);
+    callbacks.onTokenUpdate?.(0, null);
+    expect(actions.setSessionContextTokens).toHaveBeenLastCalledWith(0);
+    expect(actions.setSessionContextUsage).toHaveBeenLastCalledWith(null);
+  });
+});

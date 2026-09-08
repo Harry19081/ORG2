@@ -58,7 +58,7 @@ export interface PostLoadResult {
   /** Context token fill level (sets sessionContextTokensAtom). */
   contextTokens?: number;
   /** Full context usage snapshot (sets sessionContextUsageAtom). */
-  contextUsage?: ContextUsageSnapshot;
+  contextUsage?: ContextUsageSnapshot | null;
   /** Session engine run status (sets sessionRuntimeStatusAtom). */
   runStatus?: string;
   /** Session error message (sets sessionRuntimeErrorAtom). */
@@ -98,7 +98,10 @@ export interface EventHandlerCallbacks {
     }
   ) => void;
   /** Called when CLI token usage updates. */
-  onTokenUpdate?: (tokens: number) => void;
+  onTokenUpdate?: (
+    tokens: number,
+    contextUsage?: ContextUsageSnapshot | null
+  ) => void;
 }
 
 /**
