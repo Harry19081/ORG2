@@ -34,7 +34,6 @@ Contexts for Workstation pages. Each provides session/state management.
 | `BrowserContext`    | Browser tab sessions         |
 | `EditorContext`     | Editor repo selection        |
 | `FilesContext`      | Document files management    |
-| `TerminalContext`   | Terminal sessions            |
 
 ### `session/` - Session Contexts
 

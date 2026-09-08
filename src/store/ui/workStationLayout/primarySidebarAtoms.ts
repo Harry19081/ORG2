@@ -68,37 +68,6 @@ export const workStationPrimarySidebarCollapsedPersistAtom = atom(
   }
 );
 
-/**
- * Browser-specific primary sidebar collapsed state.
- *
- * Independent of the shared `workStationPrimarySidebarCollapsedAtom` so that
- * toggling the sidebar in the Browser tool does not affect Code Editor / Database
- * Manager, and vice versa. Defaults to `true` (hidden) because the browser
- * sidebar is an optional panel rather than a primary navigation surface.
- */
-function getStoredBrowserSidebarCollapsed(): boolean {
-  const stored = getStoredValue("browser_primary_sidebar_collapsed");
-  // Explicit stored value takes precedence; default to true (hidden).
-  if (stored !== null) return stored === "true";
-  return true;
-}
-
-export const workStationBrowserSidebarCollapsedAtom = atom<boolean>(
-  getStoredBrowserSidebarCollapsed()
-);
-workStationBrowserSidebarCollapsedAtom.debugLabel =
-  "workStationBrowserSidebarCollapsedAtom";
-
-export const workStationBrowserSidebarCollapsedPersistAtom = atom(
-  (get) => get(workStationBrowserSidebarCollapsedAtom),
-  (get, set, value: boolean | "toggle") => {
-    const next =
-      value === "toggle" ? !get(workStationBrowserSidebarCollapsedAtom) : value;
-    set(workStationBrowserSidebarCollapsedAtom, next);
-    setStoredValue("browser_primary_sidebar_collapsed", String(next));
-  }
-);
-
 function getStoredPrimarySidebarWidth(): number {
   const { minWidth, maxWidth, defaultWidth } = WORK_STATION_PRIMARY_SIDEBAR;
   const stored = getStoredValue("primary_sidebar_width");

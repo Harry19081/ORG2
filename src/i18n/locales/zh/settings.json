@@ -350,7 +350,16 @@
     "tipsModifiersWin": "Ctrl = Control，Alt = Alt，Shift = Shift",
     "tipsEditorScope": "作用域为 \"Editor\" 的快捷键仅在代码编辑器获得焦点时生效",
     "tipsContextual": "部分快捷键的行为会因上下文而异",
-    "tipsSearchHint": "使用搜索栏可快速定位特定快捷键"
+    "tipsSearchHint": "使用搜索栏可快速定位特定快捷键",
+    "pressShortcut": "请按快捷键",
+    "editCommand": "编辑“{{command}}”的快捷键",
+    "requireModifier": "请使用 Control、Command 或 Alt 加按键，或使用功能键",
+    "conflict": "已被“{{command}}”使用",
+    "saveFailed": "无法保存快捷键设置",
+    "reset": "重置",
+    "resetAll": "恢复原始设置",
+    "resetAllDesc": "恢复 macOS、Windows 和 Linux 的默认快捷键",
+    "nativeSyncFailed": "无法更新系统菜单快捷键"
   },
   "languageServersPage": {
     "installing": "安装中",

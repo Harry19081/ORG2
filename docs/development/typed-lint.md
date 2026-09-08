@@ -6,7 +6,7 @@ Rules: no-floating-promises, no-misused-promises, switch-exhaustiveness-check. F
 
 ## Existing backlog
 
-The initial inventory contains 1,381 occurrences across 1,244 fingerprints: 1,002 floating promises, 372 misused promise callbacks, and seven incomplete switches. This is a grandfathered backlog, not certification that the code is correct. Representative review found unhandled service initialization and async store writes, promise-returning UI callbacks supplied to void slots, and switches missing current union members. Fixes need owner-specific error behavior; this PR deliberately does not insert empty catches or bulk `void` casts.
+The baseline contains 1,386 allowed occurrences across 1,248 fingerprints: 1,007 floating promises, 372 misused promise callbacks, and seven incomplete switches. Removed findings are retained as historical allowances until a reviewed pruning pass. This is a grandfathered backlog, not certification that the code is correct. Representative review found unhandled service initialization and async store writes, promise-returning UI callbacks supplied to void slots, and switches missing current union members. Fixes need owner-specific error behavior; this PR deliberately does not insert empty catches or bulk `void` casts.
 
 `config/typed-lint-baseline.json` records file, rule, message, source expression, and occurrence count. Identity uses a hash of those fields (except count), with whitespace normalized and line numbers excluded. Moving lines does not invalidate the baseline; changing the expression, moving it to another file, or duplicating it fails the gate. Removed findings are allowed so independent cleanup PRs can land. Parser/configuration failures cannot enter the baseline.
 
@@ -17,3 +17,5 @@ Run `pnpm test:typed-lint` for the fingerprint and real-rule fixtures. After int
 The current installed ESLint/parser versions are reused: no dependency or application behavior change. The full scan has a material CI memory/time cost (CI allows a 6 GiB Node heap); it is separate from fast editor/pre-commit lint. Revert the workflow, script/config, baseline and package scripts to roll back. No runtime performance improvement is claimed.
 
 Architecture coverage: compiler-assisted validation and error boundaries at the lint runner; no wire, persistence, session initialization, domain ownership or application lifecycle changes.
+
+Integration baseline review: four fingerprints (five occurrences) were added from already-merged shortcut and tray code on develop. Two dynamic-import shortcut actions have no rejection handlers; tray `openPending` and `flush` handle errors internally but still use explicitly disallowed `void` calls. The three source files were verified byte-for-byte against develop. This records pre-gate debt without changing rules or application behavior.

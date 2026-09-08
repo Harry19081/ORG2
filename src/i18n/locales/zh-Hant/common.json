@@ -877,7 +877,7 @@
     "moreActions": "更多操作...",
     "formatSql": "格式化 SQL",
     "queryHistory": "查詢歷史",
-    "executeQuery": "執行查詢 (Ctrl+Enter)",
+    "executeQuery": "執行查詢 ({{shortcut}})",
     "startVoiceInput": "開始語音輸入",
     "cancelRecording": "取消錄製",
     "stopAndTranscribe": "停止並轉錄",
@@ -2498,6 +2498,9 @@
     "taskCompletedToast": "「{{name}}」已完成。開啟工作階段以檢視結果。"
   },
   "documentOpen": {
+    "openInDefault": "在 {{name}} 中開啟",
+    "openDefaultApp": "在預設應用程式中開啟",
+    "openExternally": "在外部應用程式中開啟",
     "label": "開啟方式…",
     "defaultApp": "預設應用程式",
     "appDefault": "{{name}}（預設）",

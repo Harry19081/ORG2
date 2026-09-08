@@ -2880,11 +2880,27 @@
     "count": 1
   },
   {
+    "key": "1c9bb3b5570fa15694724b3d51bc745d2329772692a66ade87fd3d0835fff8a5",
+    "file": "src/hooks/navigation/useGlobalShortcuts/useGlobalKeydownShortcuts.ts",
+    "rule": "@typescript-eslint/no-floating-promises",
+    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
+    "source": "void import(\"@tauri-apps/api/event\").then(({ emit }) => emit(\"menu-file-open-folder\") );",
+    "count": 1
+  },
+  {
     "key": "2aa95878d441ee0ad316e4c15e806cae556216d322e12443c3076aa001221084",
     "file": "src/hooks/navigation/useGlobalShortcuts/useGlobalKeydownShortcuts.ts",
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "handleInspectToggleLabels();",
+    "count": 1
+  },
+  {
+    "key": "754eb2466464a53b83841b14c989ad04542290f5a38136815aa4b3995ff1ecf4",
+    "file": "src/hooks/navigation/useGlobalShortcuts/useGlobalKeydownShortcuts.ts",
+    "rule": "@typescript-eslint/no-floating-promises",
+    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
+    "source": "void import(\"@tauri-apps/api/window\").then(({ getCurrentWindow }) => getCurrentWindow().close() );",
     "count": 1
   },
   {
@@ -3181,6 +3197,22 @@
     "rule": "@typescript-eslint/no-floating-promises",
     "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
     "source": "(async () => { const fn = await listen<T>(event, (e) => { handlerRef.current(e.payload); }); if (cancelled) { fn(); return; } unlisten = fn; })();",
+    "count": 1
+  },
+  {
+    "key": "11be93a9baa067bc3cc8be3286d797f3297625161ee444870081ccd8a1c3d663",
+    "file": "src/hooks/platform/useTraySessions/index.ts",
+    "rule": "@typescript-eslint/no-floating-promises",
+    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
+    "source": "void openPending();",
+    "count": 2
+  },
+  {
+    "key": "e86613e1520b2130adef5223f13cbd467669c7ed78c30d118b6d7051618a08e2",
+    "file": "src/hooks/platform/useTraySessions/sync.ts",
+    "rule": "@typescript-eslint/no-floating-promises",
+    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
+    "source": "void flush();",
     "count": 1
   },
   {

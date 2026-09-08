@@ -103,7 +103,9 @@ export const AGENT_SESSION_ACTIONS = [
       "manage agents",
       "manage workspaces",
     ],
-    shortcut: getShortcutKeys("toggle_ade_manager"),
+    get shortcut() {
+      return getShortcutKeys("toggle_ade_manager");
+    },
     actionId: ACTION_ID.SPOTLIGHT_OPEN_AGENT_CONTROL,
     payload: {},
     fallback: "agent-control",
@@ -121,7 +123,9 @@ export const AGENT_SESSION_ACTIONS = [
       "start agent",
       "open session creator",
     ],
-    shortcut: getShortcutKeys("new_session"),
+    get shortcut() {
+      return getShortcutKeys("new_session");
+    },
     actionId: ACTION_ID.SPOTLIGHT_OPEN_SESSION_CREATOR,
     payload: {},
     fallback: "open-session-creator",
@@ -167,7 +171,9 @@ export const AGENT_SESSION_ACTIONS = [
       "find session",
       "session history",
     ],
-    shortcut: getShortcutKeys("agent_session_search"),
+    get shortcut() {
+      return getShortcutKeys("agent_session_search");
+    },
     actionId: ACTION_ID.SPOTLIGHT_OPEN_AGENT_SESSION_SEARCH,
     payload: {},
     fallback: "search-agent-sessions",
@@ -326,7 +332,9 @@ export const STATION_MODE_ACTIONS = [
     labelKey: "common:spotlightActions.openKanban",
     icon: KanbanIcon,
     keywords: ["kanban", "project", "work items"],
-    shortcut: getShortcutKeys("open_kanban"),
+    get shortcut() {
+      return getShortcutKeys("open_kanban");
+    },
     actionId: ACTION_ID.WORKSTATION_OPEN_KANBAN,
     payload: {},
     fallback: "open-kanban",
@@ -362,21 +370,27 @@ export const EDITOR_ACTIONS = [
     modeKey: "file",
     labelKey: "label",
     prefix: "",
-    shortcut: getShortcutKeys("quick_open"),
+    get shortcut() {
+      return getShortcutKeys("quick_open");
+    },
   },
   {
     id: "run-editor-command",
     modeKey: "command",
     labelKey: "label",
     prefix: ">",
-    shortcut: getShortcutKeys("spotlight_command_mode"),
+    get shortcut() {
+      return getShortcutKeys("spotlight_command_mode");
+    },
   },
   {
     id: "go-to-editor-symbol",
     modeKey: "symbol",
     labelKey: "label",
     prefix: "@",
-    shortcut: getShortcutKeys("go_to_symbol"),
+    get shortcut() {
+      return getShortcutKeys("go_to_symbol");
+    },
   },
 ] satisfies SpotlightEditorActionDefinition[];
 
@@ -393,7 +407,9 @@ export const QUICK_NAVIGATION_ACTIONS = [
       "code search",
       "code editor",
     ],
-    shortcut: getShortcutKeys("search_files"),
+    get shortcut() {
+      return getShortcutKeys("search_files");
+    },
     actionId: ACTION_ID.WORKSTATION_OPEN_SEARCH_SIDEBAR,
     payload: {},
     fallback: "open-search-sidebar",
@@ -411,7 +427,9 @@ export const QUICK_NAVIGATION_ACTIONS = [
       "changes",
       "code editor",
     ],
-    shortcut: getShortcutKeys("open_source_control_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_source_control_tab");
+    },
     actionId: ACTION_ID.WORKSTATION_OPEN_SOURCE_CONTROL_TAB,
     payload: {},
     fallback: "open-source-control-tab",
@@ -429,7 +447,9 @@ export const QUICK_NAVIGATION_ACTIONS = [
       "command line",
       "code editor",
     ],
-    shortcut: getShortcutKeys("open_terminal_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_terminal_tab");
+    },
     actionId: ACTION_ID.WORKSTATION_OPEN_TERMINAL_TAB,
     payload: {},
     fallback: "open-terminal-tab",

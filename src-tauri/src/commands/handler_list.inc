@@ -4,6 +4,9 @@
 //! via `tauri::generate_handler![…]` in `main.rs`. Every Tauri command exposed
 //! to the frontend must appear here; commands not listed are silently unreachable.
 
+system_services::tray::tray_update_sessions,
+system_services::tray::tray_take_pending_action,
+
 // Diagnostics commands
 usage_diagnostics::commands::diagnostics_initialize,
 usage_diagnostics::commands::diagnostics_submit_usage_snapshot,
@@ -160,6 +163,7 @@ system_services::notifications::request_notification_permission,
 system_services::notifications::set_dock_badge,
 // Platform commands - App Menu (File > Open Recent)
 system_services::app_menu::menu_add_recent,
+system_services::app_menu::menu_set_shortcut_overrides,
 system_services::app_menu::confirm_quit_app,
 system_services::app_menu::cancel_quit_confirmation,
 // Platform commands - Power management (prevent sleep while sessions run)
@@ -567,7 +571,6 @@ project_management::projects::commands::linear_issue_archive,
 file_ops::is_binary_by_extension,
 file_ops::is_binary_content,
 file_ops::is_binary_file,
-file_ops::convert_pages_to_html,
 file_ops::allow_preview_asset,
 file_ops::should_ignore_path,
 file_ops::should_ignore_paths_batch,

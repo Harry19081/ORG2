@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { type RefObject, useCallback, useEffect, useRef } from "react";
 
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import {
   closeAndDestroyChatPanelTabAtom,
   nextChatPanelTabAtom,
@@ -105,9 +106,8 @@ export function useChatPanelTabShortcuts({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (!isChatPanelMaximized && !paneOwnsShortcutsRef.current) return;
-      if (!isChatPanelPrimaryModifierPressed(event)) return;
 
-      if (event.key.toLowerCase() === "w" && !event.shiftKey) {
+      if (matchesShortcut(event, "close_tab")) {
         const active = tabsRef.current.tabs.find(
           (tab) => tab.id === tabsRef.current.activeTabId
         );
@@ -118,21 +118,20 @@ export function useChatPanelTabShortcuts({
         }
         return;
       }
-      const bracket = resolveChatPanelBracketKey(event);
-      if (bracket !== null) {
+      const navigation = [
+        ["chat_next_tab", nextTab],
+        ["chat_prev_tab", prevTab],
+        ["chat_go_forward", goForward],
+        ["chat_go_back", goBack],
+      ] as const;
+      const action = navigation.find(([id]) => matchesShortcut(event, id));
+      if (action) {
         event.preventDefault();
         event.stopPropagation();
-        if (bracket === "]") {
-          if (event.shiftKey) nextTab();
-          else goForward();
-        } else if (event.shiftKey) {
-          prevTab();
-        } else {
-          goBack();
-        }
+        action[1]();
         return;
       }
-      if (event.key.toLowerCase() === "n" && !event.shiftKey) {
+      if (matchesShortcut(event, "new_session")) {
         event.preventDefault();
         event.stopPropagation();
         onNewSession();
