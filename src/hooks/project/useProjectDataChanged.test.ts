@@ -103,8 +103,7 @@ describe("project data-change scoping", () => {
     expect(store.get(projectRosterChangedSignalAtom)).toBe(1);
 
     await root.unmount();
-    await Promise.resolve();
-    expect(mocks.unlisten).toHaveBeenCalledTimes(3);
+    await vi.waitFor(() => expect(mocks.unlisten).toHaveBeenCalledTimes(3));
   });
 
   it("reports registration failure before unmount and cleans up the other listeners", async () => {
