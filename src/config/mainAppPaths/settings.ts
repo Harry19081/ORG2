@@ -27,10 +27,6 @@ export const SETTINGS_SECTIONS: readonly SettingsSectionSegment[] = [
   "harness-connections",
 ] as const;
 
-export const SETTINGS_SUBPAGES: readonly SettingsSubpageSegment[] = [
-  "editor-appearance",
-] as const;
-
 export const SETTINGS_SECTION_TABS = {
   general: ["general", "notifications", "shortcuts", "storage", "self-hosted"],
   appearance: ["app", "code-editor", "chat-panel"],
@@ -183,25 +179,6 @@ export function getDefaultSettingsSectionTab(
 ): string | null {
   if (!(section in SETTINGS_SECTION_TABS)) return null;
   return SETTINGS_SECTION_TABS[section as SettingsSectionWithTabs][0];
-}
-
-export function parseSettingsPath(pathname: string): {
-  section: SettingsSectionSegment | null;
-  subpage: SettingsSubpageSegment | null;
-} {
-  const parts = settingsPathParts(pathname);
-
-  if (parts[0] === "subpage") {
-    const rawSubpage = parts[1];
-    const subpage: SettingsSubpageSegment | null = (
-      SETTINGS_SUBPAGES as readonly string[]
-    ).includes(rawSubpage ?? "")
-      ? (rawSubpage as SettingsSubpageSegment)
-      : null;
-    return { section: null, subpage };
-  }
-
-  return { section: parseCoreSettingsItem(pathname).section, subpage: null };
 }
 
 export function parseSettingsTopTab(pathname: string): SettingsTopTabSegment {

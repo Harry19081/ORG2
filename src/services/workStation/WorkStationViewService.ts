@@ -1,5 +1,8 @@
 import { ROUTES, isWorkbenchPath } from "@src/config/routes";
+import { navigateApp as dispatchNavigate } from "@src/router/navigateApp";
+import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import type { StationMode } from "@src/store/ui/simulatorAtom";
+import { activeHostAtom } from "@src/store/workstation/tabHost";
 import type {
   WorkStationTab,
   WorkStationTabType,
@@ -20,15 +23,12 @@ function isWorkStationRoute() {
   );
 }
 
-function isCodeEditorRoute() {
-  return window.location.pathname === ROUTES.workStation.code.path;
-}
-
-function dispatchNavigate(path: string) {
-  window.dispatchEvent(
-    new CustomEvent("action-system-navigate", {
-      detail: { path },
-    })
+function isCodeEditorActive() {
+  const store = getStore();
+  return (
+    isWorkStationRoute() &&
+    store.get(stationModeAtom) === "my-station" &&
+    store.get(activeHostAtom) === "code"
   );
 }
 
@@ -93,7 +93,7 @@ async function shouldToggleMaximizedForActiveTab(
   tabId: string,
   options?: NavigationOptions
 ): Promise<boolean> {
-  if (!options?.toggleChatPanelMaximizedWhenActive || !isCodeEditorRoute()) {
+  if (!options?.toggleChatPanelMaximizedWhenActive || !isCodeEditorActive()) {
     return false;
   }
   const { EditorTabService } =
@@ -247,13 +247,13 @@ export const WorkStationViewService = {
     ]);
 
     const store = getStore();
-    const isAlreadyOnCodeEditorRoute = isCodeEditorRoute();
+    const isCodeEditorAlreadyActive = isCodeEditorActive();
     await unmaximizeChatPanel();
     store.set(stationModeAtom, "my-station");
     const workspace = store.get(presentedWorkstationWorkspaceKeyAtom);
     queuePendingCodeEditorTab(workspace, tabId);
     dispatchNavigate(ROUTES.workStation.code.path);
-    if (isAlreadyOnCodeEditorRoute) {
+    if (isCodeEditorAlreadyActive) {
       dispatchOpenCodeTab(tabId);
     }
     return true;
@@ -273,7 +273,7 @@ export const WorkStationViewService = {
     const { EditorTabService } =
       await import("@src/services/workStation/EditorTabService");
     const targetTabId = EditorTabService.getLastFileOrExplorerTabId();
-    if (options?.toggleChatPanelMaximizedWhenActive && isCodeEditorRoute()) {
+    if (options?.toggleChatPanelMaximizedWhenActive && isCodeEditorActive()) {
       const activeTab = EditorTabService.getActiveTab();
       if (
         activeTab &&
@@ -331,7 +331,7 @@ export const WorkStationViewService = {
     if (
       options?.toggleChatPanelMaximizedWhenActive &&
       query === undefined &&
-      isCodeEditorRoute() &&
+      isCodeEditorActive() &&
       store.get(workStationPrimarySidebarTabAtom) ===
         PRIMARY_SIDEBAR_TABS.SEARCH
     ) {

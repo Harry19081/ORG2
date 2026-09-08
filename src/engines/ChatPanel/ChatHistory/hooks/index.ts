@@ -15,7 +15,7 @@ export {
 } from "./useChatNavigationController";
 export { useChatViewportController } from "./useChatViewportController";
 
-export { isTurnCollapseEligible, useChatGroups } from "./useChatGroups";
+export { isTurnCollapseEligible } from "./useChatGroups";
 export type { ChatGroupMeta, UseChatGroupsReturn } from "./useChatGroups";
 
 export { useChatSearch } from "./useChatSearch";

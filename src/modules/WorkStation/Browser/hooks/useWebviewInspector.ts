@@ -34,8 +34,6 @@ export interface UseWebviewInspectorOptions {
   webviewLabel: string;
   /** Poll interval for checking selected element (ms) */
   pollInterval?: number;
-  /** Callback when element is selected */
-  onElementSelected?: (element: ElementInfo) => void;
   /** Whether inspector is enabled (for conditional polling) */
   enabled?: boolean;
 }
@@ -45,8 +43,6 @@ export interface UseWebviewInspectorReturn {
   isInspectMode: boolean;
   /** Toggle inspect mode on/off */
   toggleInspectMode: () => Promise<void>;
-  /** Enable inspect mode */
-  enableInspectMode: () => Promise<void>;
   /** Disable inspect mode */
   disableInspectMode: () => Promise<void>;
   /** Currently selected element info */
@@ -66,12 +62,7 @@ export interface UseWebviewInspectorReturn {
 export function useWebviewInspector(
   options: UseWebviewInspectorOptions
 ): UseWebviewInspectorReturn {
-  const {
-    webviewLabel,
-    pollInterval = 500,
-    onElementSelected,
-    enabled = true,
-  } = options;
+  const { webviewLabel, pollInterval = 500, enabled = true } = options;
 
   const [isInspectMode, setIsInspectMode] = useState(false);
   const [selectedElement, setSelectedElement] = useState<ElementInfo | null>(
@@ -81,12 +72,6 @@ export function useWebviewInspector(
 
   // Track previous selection to detect changes
   const prevSelectionRef = useRef<string | null>(null);
-  const onElementSelectedRef = useRef(onElementSelected);
-
-  // Keep callback ref up to date
-  useEffect(() => {
-    onElementSelectedRef.current = onElementSelected;
-  }, [onElementSelected]);
 
   // Toggle inspect mode
   const toggleInspectMode = useCallback(async () => {
@@ -108,18 +93,6 @@ export function useWebviewInspector(
       log.error("[useWebviewInspector] Toggle failed:", error);
     } finally {
       setIsLoading(false);
-    }
-  }, [webviewLabel]);
-
-  // Enable inspect mode
-  const enableInspectMode = useCallback(async () => {
-    if (!webviewLabel) return;
-
-    try {
-      await invoke("enable_webview_inspect_mode", { label: webviewLabel });
-      setIsInspectMode(true);
-    } catch (error) {
-      log.error("[useWebviewInspector] Enable failed:", error);
     }
   }, [webviewLabel]);
 
@@ -155,7 +128,6 @@ export function useWebviewInspector(
         if (selectionKey !== prevSelectionRef.current) {
           prevSelectionRef.current = selectionKey;
           setSelectedElement(element);
-          onElementSelectedRef.current?.(element);
         }
       }
     } catch (error) {
@@ -203,7 +175,6 @@ export function useWebviewInspector(
   return {
     isInspectMode,
     toggleInspectMode,
-    enableInspectMode,
     disableInspectMode,
     selectedElement,
     clearSelection,

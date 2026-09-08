@@ -15,19 +15,22 @@ Scope: native ticket admission and the shared runtime/auth owners required for r
 | 9 Entry parity            | Native entry uses real auth; browser cookie/native ticket converge at shared initialize. Development root remains explicitly separate                                         |
 | 10 Resolver symmetry      | Native admission reads the refreshed persisted account session and checks user, Cloud origin and expiry; no QR-selected endpoint receives a Cloud token unless allowlisted    |
 
-## Findings requiring follow-up before ready
+## Review corrections
 
-1. `auth/useMobileAuthController.ts`: authentication generation is invalidated on sign-out/cancel, but the mount authentication effect has no unmount invalidation. A pending restore can reach persistence after owner unmount. Add an unmount/remount persistence regression before considering the lifecycle complete.
-2. `app/useMobileSessionList.ts`: generation checks protect final roster state, but repeated invalidations start concurrent reads rather than coalescing them. Add single-flight + one trailing refresh and a burst test. This is a performance guard failure, not evidence that current tests cover bursts.
-3. `app/useMobileSend.ts`: `receiveSendStatus` maps any unknown status to failure. Prefer explicit terminal-value validation and a producing/ingestion-boundary negative case before extending the protocol.
+- Native ticket admission now has its exact production HTTPS Relay origin in the iOS CSP. The production endpoint/CSP regression checks the shipped configuration.
+- Auth-owner cleanup invalidates generations and drains already-issued SDK/Keychain operations before a replacement owner authenticates. Tests cover stale successful/failed restores and a remount during an active persistence write.
+- Roster reads now share one in-flight promise, with bounded trailing refresh/load-more intent. Burst, reset/client replacement and rejected-flight retry tests cover request ownership.
+- Unknown send-status fallback remains a pre-existing protocol-hardening follow-up. Current desktop producers emit only completed/failed/cancelled; no new status is introduced by this PR.
 
-No historical pairing data is deleted by this client patch. Persisted connection writes remain serialized and account-scoped. The old development checkout's unconditional auth-session success stub is excluded.
+No historical pairing data was deleted. No schema migration is needed. Rollback reverts the native admission and runtime changes together; the ticket-capable Worker remains a rollout dependency.
 
-| Area               | Verdict | Evidence                                                           | Change or reason kept         | Verification                     |
-| ------------------ | ------- | ------------------------------------------------------------------ | ----------------------------- | -------------------------------- |
-| Background work    | fix     | roster invalidations can overlap                                   | Coalescing follow-up required | Burst test missing               |
-| Memory             | keep    | one reconnect timer/flight, transcript refresh has one queued slot | Preserve bounded ownership    | Existing stale/reset tests       |
-| Scope/isolation    | watch   | auth unmount does not invalidate pending persistence               | Add owner lifetime guard      | Unmount persistence test missing |
-| Rendering/hot path | keep    | refactor retains public Provider API                               | No runtime speed claim        | Shared behavior tests            |
+| Area               | Verdict | Evidence                                                                            | Change or reason kept                                  | Verification                                          |
+| ------------------ | ------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
+| Background work    | keep    | One roster flight with coalesced trailing intent; one reconnect timer               | Generation/client/reset cleanup retained               | Burst and retry regressions; existing reconnect suite |
+| Memory             | keep    | Weak auth-owner map only retains pending drain; one roster flight                   | Settled drains are deleted; reset/unmount drops flight | Remount/reset tests; no RSS measurement               |
+| Scope/isolation    | keep    | Retired auth owner cannot initiate stale persistence; new owner waits active writes | Auth and transport generations remain separate         | Success/failure/remount persistence tests             |
+| Rendering/hot path | keep    | Existing provider API retained                                                      | No runtime speed claim                                 | Full MobileRemote suite                               |
 
-Performance verdict: fail for roster single-flight; physical-device visible/hidden CPU/RSS measurements also not run. Keep Draft. This audit is not a claim of production acceptance.
+Verification after integration with develop: `pnpm exec vitest run --config config/vitest.config.ts src/modules/MobileRemote` passed 262 tests in 45 files; `pnpm typecheck:fast` passed; scoped ESLint and `git diff --check` passed. Full Rust/device builds and physical visible/hidden CPU/RSS measurements were not run for this corrective pass. Existing clean worktree lacks Husky bootstrap; commits use explicitly run checks instead.
+
+Performance verdict: blocked pending real-device lifecycle measurements; the reproduced duplicate-request and stale-owner-write failures are fixed and regression-tested. Provider ingestion/raw-source transitions are unchanged and outside this audit.

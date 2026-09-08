@@ -223,7 +223,6 @@ export function useShortcutRegistration(options: ShortcutRegistrationOptions) {
 
       const menuHandlers: Record<string, () => void> = {
         "menu-new-session": handleCreateNewSession,
-        "tray-new-session": handleCreateNewSession,
         "menu-zoom-in": handleZoomIn,
         "menu-zoom-out": handleZoomOut,
         "menu-zoom-reset": handleZoomReset,

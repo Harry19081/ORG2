@@ -23,6 +23,7 @@ pub mod key_extractor;
 pub mod key_store;
 pub mod provider_config;
 pub mod providers;
+pub mod quota_history;
 pub mod quota_runtime;
 #[cfg(test)]
 pub(crate) mod test_support;

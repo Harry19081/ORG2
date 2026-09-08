@@ -19,7 +19,9 @@ export const workstationToggleChatFocus = defineZodAction(
     category: "view",
     description: "Focus the Workstation chat panel or restore Workstation",
     params: z.object({}),
-    shortcut: getShortcutKeys("maximize_chat"),
+    get shortcut() {
+      return getShortcutKeys("maximize_chat");
+    },
     tags: ["workstation", "chat", "view"],
     examples: [
       "focus chat panel",
@@ -43,7 +45,9 @@ export const workstationToggleChatPanelVisibility = defineZodAction(
     category: "view",
     description: "Maximize Workstation or restore the Chat Panel",
     params: z.object({}),
-    shortcut: getShortcutKeys("maximize_work_station"),
+    get shortcut() {
+      return getShortcutKeys("maximize_work_station");
+    },
     tags: ["workstation", "chat", "view"],
     examples: [
       "maximize work station",
@@ -116,7 +120,9 @@ export const workstationOpenKanban = defineZodAction(
     category: "navigation",
     description: "Open Kanban in the chat pane",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_kanban"),
+    get shortcut() {
+      return getShortcutKeys("open_kanban");
+    },
     tags: ["workstation", "chat", "kanban", "navigation"],
     examples: ["open kanban", "go to kanban", "show kanban"],
   },
@@ -136,7 +142,9 @@ export const workstationToggleSidebar = defineZodAction(
     description:
       "Toggle the Workstation sidebar between collapsed and expanded",
     params: z.object({}),
-    shortcut: getShortcutKeys("toggle_workstation_sidebar"),
+    get shortcut() {
+      return getShortcutKeys("toggle_workstation_sidebar");
+    },
     tags: ["workstation", "work-station-sidebar", "tool-sidebar", "view"],
     examples: [
       "toggle work station sidebar",
@@ -181,7 +189,9 @@ export const workstationOpenFileFolderTab = defineZodAction(
     description:
       "Open the last visited regular file tab or the default File Folder tab",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_file_folder_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_file_folder_tab");
+    },
     tags: ["workstation", "code-editor", "file", "folder"],
     examples: ["open file folder", "go to last file", "show explorer"],
   },
@@ -202,7 +212,9 @@ export const workstationOpenSourceControlTab = defineZodAction(
     category: "navigation",
     description: "Open the Code Editor Source Control tab",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_source_control_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_source_control_tab");
+    },
     tags: ["workstation", "code-editor", "source-control", "git"],
     examples: ["open source control", "show git changes"],
   },
@@ -229,7 +241,9 @@ export const workstationOpenSearchSidebar = defineZodAction(
         .optional()
         .describe("Optional search query to populate"),
     }),
-    shortcut: getShortcutKeys("search_files"),
+    get shortcut() {
+      return getShortcutKeys("search_files");
+    },
     tags: ["workstation", "code-editor", "search", "sidebar"],
     examples: ["open search sidebar", "search in files", "focus search"],
   },
@@ -306,7 +320,9 @@ export const workstationOpenTerminalTab = defineZodAction(
     category: "navigation",
     description: "Open the WorkStation terminal view",
     params: z.object({}),
-    shortcut: getShortcutKeys("open_terminal_tab"),
+    get shortcut() {
+      return getShortcutKeys("open_terminal_tab");
+    },
     tags: ["workstation", "code-editor", "terminal"],
     examples: ["open terminal tab", "show terminal"],
   },

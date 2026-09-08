@@ -468,8 +468,8 @@ pub fn init_session_tables(conn: &Connection) -> SqliteResult<()> {
 ///
 /// Triggers must go in the same batch: an insert into `events` with a
 /// surviving trigger referencing the dropped vtable would fail. `DROP TABLE`
-/// on an FTS5 vtable removes all of its shadow tables. Marker-gated so the
-/// batch runs once (a failed attempt retries next startup); best-effort —
+/// on an FTS5 vtable removes all of its shadow tables. Skip cleanup only when
+/// the marker and actual schema agree (failed attempts retry); best-effort —
 /// schema init must never fail over cleanup.
 fn drop_events_fts(conn: &Connection) {
     const MARKER: &str = "events_fts_dropped_2026_07";
@@ -483,7 +483,17 @@ fn drop_events_fts(conn: &Connection) {
         .and_then(|mut stmt| stmt.query_row([MARKER], |row| row.get::<_, i64>(0)))
         .unwrap_or(0)
         > 0;
-    if already_dropped {
+    // An older executable can recreate these objects after the marker was
+    // recorded. The schema, not the historical marker, owns this invariant.
+    let legacy_objects_remain = conn
+        .query_row(
+            "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE name IN
+             ('events_fts', 'events_ai', 'events_ad', 'events_au'))",
+            [],
+            |row| row.get::<_, bool>(0),
+        )
+        .unwrap_or(true);
+    if already_dropped && !legacy_objects_remain {
         return;
     }
 
@@ -695,6 +705,43 @@ mod tests {
             |row| row.get::<_, bool>(0),
         )
         .expect("query trigger existence")
+    }
+
+    #[test]
+    fn drop_events_fts_rechecks_schema_after_recorded_migration() {
+        let conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(
+            "CREATE TABLE events (id TEXT PRIMARY KEY, content TEXT);
+             INSERT INTO events VALUES ('retained', 'keep this conversation');
+             CREATE TABLE _migrations (name TEXT PRIMARY KEY, applied_at TEXT NOT NULL);
+             INSERT INTO _migrations VALUES ('events_fts_dropped_2026_07', 'old');
+             CREATE VIRTUAL TABLE events_fts USING fts5(
+                 content, content='events', content_rowid='rowid'
+             );
+             CREATE TRIGGER events_ad AFTER DELETE ON events BEGIN
+                 INSERT INTO events_fts(events_fts, rowid, content)
+                 VALUES ('delete', OLD.rowid, OLD.content);
+             END;",
+        )
+        .unwrap();
+
+        // Recreated external-content FTS has no entry for the existing row.
+        // Its delete trigger breaks ordinary cache eviction before recovery.
+        assert!(conn.execute("DELETE FROM events", []).is_err());
+        drop_events_fts(&conn);
+
+        assert!(!table_exists(&conn, "events_fts"));
+        assert!(!trigger_exists(&conn, "events_ad"));
+        let content: String = conn
+            .query_row(
+                "SELECT content FROM events WHERE id = 'retained'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(content, "keep this conversation");
+        drop_events_fts(&conn);
+        assert_eq!(conn.execute("DELETE FROM events", []).unwrap(), 1);
     }
 
     #[test]

@@ -13,6 +13,7 @@ import {
   vi,
 } from "vitest";
 
+import { CURRENT_SHORTCUT_PLATFORM } from "@src/config/keyboard/shortcutBindings";
 import { chatPanelTabHistoriesAtom } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
@@ -20,7 +21,6 @@ import {
   createInstrumentedStore,
   resetInstrumentedStore,
 } from "@src/util/core/state/instrumentedStore";
-import { isMacOS } from "@src/util/platform/tauri";
 
 import { resolveChatPanelShortcutOwnership } from "./hooks/chatPanelShortcutOwnership";
 import {
@@ -127,8 +127,8 @@ describe("useChatPanelTabShortcuts", () => {
     const event = new KeyboardEvent("keydown", {
       key: "w",
       code: "KeyW",
-      metaKey: isMacOS(),
-      ctrlKey: !isMacOS(),
+      metaKey: CURRENT_SHORTCUT_PLATFORM === "mac",
+      ctrlKey: CURRENT_SHORTCUT_PLATFORM !== "mac",
       bubbles: true,
       cancelable: true,
     });
@@ -153,8 +153,8 @@ describe("useChatPanelTabShortcuts", () => {
       key: shiftKey ? (bracket === "[" ? "{" : "}") : bracket,
       code: bracket === "[" ? "BracketLeft" : "BracketRight",
       shiftKey,
-      metaKey: isMacOS(),
-      ctrlKey: !isMacOS(),
+      metaKey: CURRENT_SHORTCUT_PLATFORM === "mac",
+      ctrlKey: CURRENT_SHORTCUT_PLATFORM !== "mac",
       bubbles: true,
       cancelable: true,
     });

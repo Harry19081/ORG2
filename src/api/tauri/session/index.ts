@@ -147,6 +147,8 @@ export function toFrontendSession(record: SessionAggregateRecord): Session {
     repoRootPath: record.repoRootPath,
     repoRemoteUrls: record.repoRemoteUrls,
     storagePath: record.storagePath,
+    clientOrigin: record.clientOrigin,
+    clientOriginRaw: record.clientOriginRaw,
     worktreePath: record.worktreePath,
     worktreeBranch: record.worktreeBranch,
     baseBranch: record.baseBranch,

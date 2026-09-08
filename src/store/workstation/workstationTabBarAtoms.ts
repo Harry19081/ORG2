@@ -120,8 +120,8 @@ workManagementProjectsViewAtom.debugLabel = "workManagementProjectsViewAtom";
 // the {@link WorkstationTabBar}; the header reads the active app's slot and
 // renders it next to the sidebar toggle.
 //
-// Why per-host slots (not one shared slot): app modes are kept-alive (display:
-// none) so multiple panes are mounted concurrently. Writing into a shared slot
+// Why per-host slots (not one shared slot): retained hosts can stay mounted
+// while hidden, so multiple panes can coexist. Writing into a shared slot
 // would race; per-host slots let each pane keep its content current
 // independently.
 // ============================================

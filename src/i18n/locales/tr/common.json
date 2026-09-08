@@ -866,7 +866,7 @@
     "moreActions": "Daha fazla işlem...",
     "formatSql": "SQL'i formatla",
     "queryHistory": "Sorgu geçmişi",
-    "executeQuery": "Sorguyu çalıştır (Ctrl+Enter)",
+    "executeQuery": "Sorguyu çalıştır ({{shortcut}})",
     "startVoiceInput": "Sesli girişi başlat",
     "cancelRecording": "Kaydı iptal et",
     "stopAndTranscribe": "Durdur ve yazıya dök",
@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "İlk yanıtla mesajlar görünür; o zamana kadar araç çubuğu boşta görünebilir",
     "pleaseSelect": "Lütfen seçin",
     "noSessionsFound": "Session bulunamadı",
-    "noBrowsingHistory": "Gezinti geçmişi yok",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
     "failedToLoadHistory": "Geçmiş yüklenemedi",
@@ -1627,8 +1626,9 @@
         "systemPaths": "Sistem Yolları",
         "usedElsewhere": "Diğer uygulamalarda kullanıldı",
         "workspace": "Çalışma dizini",
-        "thisOrg": "Bu çalışma dizini",
-        "outsideOrg": "Bu çalışma dizininin dışında"
+        "thisOrg": "Bu kuruluş",
+        "outsideOrg": "Bu kuruluşun dışında",
+        "outsideNamedOrg": "{{org}} dışında"
       },
       "tabs": {},
       "addOptions": {
@@ -2054,17 +2054,7 @@
     "showLess": "Daha Az Göster"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Henüz AI oturum etki verisi yok",
-    "sessions": "Oturumlar",
-    "files": "Dosyalar",
-    "functions": "Fonksiyonlar",
-    "commits": "Commit",
-    "lines": "Satırlar",
-    "sessionBreakdown": "Oturum Detayları",
-    "human": "Human",
-    "completed": "Tamamlandı",
-    "incomplete": "Eksik"
+    "lines": "Satırlar"
   },
   "sessions": {
     "title": "Oturumlar",
@@ -2479,5 +2469,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” iptal edildi",
     "taskCompletedToast": "“{{name}}” tamamlandı. Sonucu incelemek için oturumu açın."
+  },
+  "documentOpen": {
+    "openInDefault": "{{name}} ile aç",
+    "openDefaultApp": "Varsayılan uygulamada aç",
+    "openExternally": "Harici uygulamada aç"
   }
 }

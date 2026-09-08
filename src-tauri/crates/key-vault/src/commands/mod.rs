@@ -2,6 +2,9 @@
 //!
 //! Exposes validation functions to the frontend via Tauri's invoke system.
 
+mod quota_history;
+mod quota_history_identity;
+pub use quota_history::*;
 mod batch;
 mod cli_version;
 mod crud;

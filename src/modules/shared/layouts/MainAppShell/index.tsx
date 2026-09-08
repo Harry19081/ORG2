@@ -48,31 +48,3 @@ const MainAppShell: React.FC = () => {
 };
 
 export default MainAppShell;
-
-// ============================================
-// ShellFallback Component
-// ============================================
-
-/**
- * ShellFallback - standalone fallback for routes not using MainAppShell
- * Shows the same container structure during loading (always default variant)
- */
-export const ShellFallback: React.FC = () => {
-  const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
-  const pageOpacityStyle = getPagePanelBackgroundStyle(
-    backgroundConfig.pageOpacity
-  );
-  return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden">
-      <div
-        className="min-h-0 flex-1 overflow-hidden"
-        style={
-          {
-            ...pageOpacityStyle,
-            WebkitAppRegion: "no-drag",
-          } as React.CSSProperties
-        }
-      />
-    </div>
-  );
-};

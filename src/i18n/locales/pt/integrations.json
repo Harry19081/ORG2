@@ -2139,8 +2139,7 @@
     "terminalProcesses": "Processos de terminal",
     "chatPreview": "Pré-visualização do chat",
     "scenario": "Cenário",
-    "selectScenario": "Selecione um cenário",
-    "sessionSimulation": "Simulação de sessão"
+    "selectScenario": "Selecione um cenário"
   },
   "agentTools": {
     "enabled": "Ativado",
@@ -2217,7 +2216,10 @@
     "fireHistory": "Run history",
     "noFires": "No runs yet",
     "openSession": "Open session",
-    "openWorkItem": "Open work item"
+    "openWorkItem": "Open work item",
+    "fireError": "Não foi possível iniciar a rotina: {{detail}}",
+    "provider": "Provedor",
+    "eventKind": "Evento"
   },
   "cursorPlugins": {
     "noPlugins": "Nenhum plugin do Cursor instalado",

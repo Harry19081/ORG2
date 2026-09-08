@@ -866,7 +866,7 @@
     "moreActions": "Más acciones...",
     "formatSql": "Formatear SQL (embellecer)",
     "queryHistory": "Historial de consultas",
-    "executeQuery": "Ejecutar consulta (Ctrl+Enter)",
+    "executeQuery": "Ejecutar consulta ({{shortcut}})",
     "startVoiceInput": "Iniciar entrada de voz",
     "cancelRecording": "Cancelar grabación",
     "stopAndTranscribe": "Detener y transcribir",
@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "Los mensajes aparecen con la primera respuesta; hasta entonces la barra puede parecer inactiva",
     "pleaseSelect": "Por favor selecciona",
     "noSessionsFound": "No se encontraron Session",
-    "noBrowsingHistory": "Sin historial de navegación",
     "typeToSearchFiles": "Escribe para buscar archivos...",
     "selectFileToViewChanges": "Selecciona un archivo para ver los cambios",
     "failedToLoadHistory": "Error al cargar el historial",
@@ -1626,8 +1625,9 @@
         "systemPaths": "Rutas del sistema",
         "usedElsewhere": "Usado en otras aplicaciones",
         "workspace": "Directorio de trabajo",
-        "thisOrg": "Este directorio de trabajo",
-        "outsideOrg": "Fuera de este directorio de trabajo"
+        "thisOrg": "Esta organización",
+        "outsideOrg": "Fuera de esta organización",
+        "outsideNamedOrg": "Fuera de {{org}}"
       },
       "tabs": {},
       "addOptions": {
@@ -2049,17 +2049,7 @@
     "showLess": "Mostrar Menos"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Sin datos de impacto de sesiones de AI",
-    "sessions": "Sesiones",
-    "files": "Archivos",
-    "functions": "Funciones",
-    "commits": "Commits",
-    "lines": "Líneas",
-    "sessionBreakdown": "Desglose de sesiones",
-    "human": "Human",
-    "completed": "Completado",
-    "incomplete": "Incompleto"
+    "lines": "Líneas"
   },
   "sessions": {
     "title": "Sesiones",
@@ -2474,5 +2464,10 @@
   "notifications": {
     "taskCancelledToast": "«{{name}}» se canceló",
     "taskCompletedToast": "«{{name}}» completada. Abre la sesión para revisar el resultado."
+  },
+  "documentOpen": {
+    "openInDefault": "Abrir en {{name}}",
+    "openDefaultApp": "Abrir en la aplicación predeterminada",
+    "openExternally": "Abrir en una aplicación externa"
   }
 }
