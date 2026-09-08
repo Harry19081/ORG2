@@ -18,6 +18,7 @@ use std::collections::HashSet;
 use rusqlite::Connection;
 
 use super::client_origin::ImportedClientOrigin;
+use super::metadata::ImportedHistoryCacheInput;
 
 fn table_exists(conn: &Connection, name: &str) -> bool {
     conn.query_row(
@@ -121,6 +122,35 @@ pub fn is_managed_history_mirror(
 ) -> bool {
     is_managed_source_session_id(managed_ids, source_session_id)
         || client_origin == Some(ImportedClientOrigin::Org2)
+}
+
+/// Apply durable managed ownership before persisting an imported projection.
+pub fn apply_managed_history_mirror(
+    input: &mut ImportedHistoryCacheInput,
+    managed_ids: &HashSet<String>,
+) {
+    let managed = is_managed_history_mirror(
+        managed_ids,
+        &input.source_session_id,
+        input.client_origin,
+    );
+    if managed {
+        input.listable = false;
+        // Provider apps can rewrite their header after a managed launch. The
+        // durable binding still owns the conversation. Preserve the raw header
+        // for diagnostics, but exact-ID hydration must carry the same ownership
+        // as the primary-list decision or it becomes independently publishable.
+        input.client_origin = Some(ImportedClientOrigin::Org2);
+    }
+}
+
+/// Invalidate only ledger-managed cached rows from before origin propagation.
+/// Ordinary native histories keep their existing fingerprint and parse budget.
+pub fn append_managed_origin_fingerprint(fingerprint: &mut String, is_managed: bool) {
+    append_managed_fingerprint(fingerprint, is_managed);
+    if is_managed {
+        fingerprint.push_str("|managed-origin=org2-v1");
+    }
 }
 
 /// Repair already-cached ORGII mirrors without requiring their native file to
@@ -239,6 +269,23 @@ mod tests {
                 ("terminal-session".to_string(), 1),
             ]
         );
+    }
+
+    #[test]
+    fn origin_upgrade_invalidates_only_managed_cache_fingerprints() {
+        let mut old_managed = "native-file-unchanged".to_string();
+        append_managed_fingerprint(&mut old_managed, true);
+        let mut upgraded = "native-file-unchanged".to_string();
+        append_managed_origin_fingerprint(&mut upgraded, true);
+        assert_ne!(old_managed, upgraded);
+        let mut next_scan = "native-file-unchanged".to_string();
+        append_managed_origin_fingerprint(&mut next_scan, true);
+        assert_eq!(upgraded, next_scan);
+        let mut ordinary_old = "native-file-unchanged".to_string();
+        append_managed_fingerprint(&mut ordinary_old, false);
+        let mut ordinary_new = "native-file-unchanged".to_string();
+        append_managed_origin_fingerprint(&mut ordinary_new, false);
+        assert_eq!(ordinary_old, ordinary_new);
     }
 
     #[test]

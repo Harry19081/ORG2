@@ -1,5 +1,5 @@
 import { createStore } from "jotai";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getImportedHistorySourceBySessionId } from "@src/api/tauri/externalHistory";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
@@ -96,6 +96,7 @@ function client() {
 }
 
 describe("Org2CloudSessionSync local continuation replay", () => {
+  afterEach(() => vi.restoreAllMocks());
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.childRevision.mockResolvedValue("[]");
@@ -284,21 +285,87 @@ describe("Org2CloudSessionSync local continuation replay", () => {
     ).toBeGreaterThan(1);
   });
 
-  it("never marks a canonical snapshot clean when a native child revision is unstable", async () => {
+  it("revalidates a persisted continuation cursor across two cold engines without rewriting", async () => {
+    const store = createStore();
+    const cloud = client();
+    const combined = [event("root", "root"), event("child", "child")];
+    mocks.childRevision.mockResolvedValue("stable-1");
+    mocks.canonicalSnapshot.mockResolvedValue({
+      events: combined,
+      childRevision: "stable-1",
+    });
+    await pushPass(new Org2CloudSessionSync(() => store, cloud));
+    const cursorBefore = store.get(org2CloudPushCursorsAtom)[
+      `org-1:${SESSION.session_id}`
+    ];
+    cloud.rewriteSessionEvents.mockClear();
+    cloud.appendSessionEvents.mockClear();
+    mocks.canonicalSnapshot.mockClear();
+
+    for (let boot = 0; boot < 2; boot += 1) {
+      const sync = new Org2CloudSessionSync(() => store, cloud);
+      for (let pass = 0; pass < 3; pass += 1) await pushPass(sync);
+    }
+    // Each cold owner really reads the snapshot once; clean later passes are
+    // bounded. Zero mutations are paired with this positive liveness proof.
+    expect(mocks.canonicalSnapshot).toHaveBeenCalledTimes(2);
+    expect(cloud.rewriteSessionEvents).not.toHaveBeenCalled();
+    expect(cloud.appendSessionEvents).not.toHaveBeenCalled();
+    expect(
+      store.get(org2CloudPushCursorsAtom)[`org-1:${SESSION.session_id}`]
+    ).toEqual(cursorBefore);
+  });
+
+  it("refuses unstable child snapshots before any cloud mutation and recovers after stabilization", async () => {
+    let now = Date.now();
+    vi.spyOn(Date, "now").mockImplementation(() => now);
     const store = createStore();
     const cloud = client();
     const sync = new Org2CloudSessionSync(() => store, cloud);
     const combined = [event("root", "root"), event("child", "child")];
-    mocks.childRevision.mockResolvedValue(null);
+    mocks.childRevision.mockResolvedValue("stable-1");
     mocks.canonicalSnapshot.mockResolvedValue({
       events: combined,
+      childRevision: "stable-1",
+    });
+    await pushPass(sync);
+    const cursorBefore = store.get(org2CloudPushCursorsAtom)[
+      `org-1:${SESSION.session_id}`
+    ];
+    cloud.rewriteSessionEvents.mockClear();
+    cloud.appendSessionEvents.mockClear();
+
+    // A provider transcript is replaced while it is read. Repeated partial
+    // reads are still not authoritative truncation, even with a nonzero count.
+    mocks.childRevision.mockResolvedValue(null);
+    mocks.canonicalSnapshot.mockResolvedValue({
+      events: combined.slice(0, 1),
       childRevision: null,
     });
+    for (let pass = 0; pass < 3; pass += 1) {
+      now += 600_000;
+      await expect(pushPass(sync)).rejects.toThrow(
+        "changed while preparing cloud replay"
+      );
+    }
+    expect(cloud.rewriteSessionEvents).not.toHaveBeenCalled();
+    expect(cloud.appendSessionEvents).not.toHaveBeenCalled();
+    expect(
+      store.get(org2CloudPushCursorsAtom)[`org-1:${SESSION.session_id}`]
+    ).toEqual(cursorBefore);
 
+    mocks.childRevision.mockResolvedValue("stable-2");
+    now += 600_000;
+    mocks.canonicalSnapshot.mockResolvedValue({
+      events: [...combined, event("next", "next")],
+      childRevision: "stable-2",
+    });
     await pushPass(sync);
-    await pushPass(sync);
-
-    expect(mocks.canonicalSnapshot).toHaveBeenCalledTimes(2);
-    expect(mocks.persistedEvents).not.toHaveBeenCalled();
+    expect(cloud.rewriteSessionEvents).not.toHaveBeenCalled();
+    expect(cloud.appendSessionEvents).toHaveBeenCalledTimes(1);
+    expect(
+      store.get(org2CloudPushCursorsAtom)[`org-1:${SESSION.session_id}`]
+        ?.pushedCount
+    ).toBe(3);
   });
 });

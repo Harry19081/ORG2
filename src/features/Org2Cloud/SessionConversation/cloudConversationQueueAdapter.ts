@@ -7,6 +7,7 @@ import {
   conversationTurnIdOf,
   localConversationRootForSession,
 } from "@src/engines/SessionCore/conversations/localConversationContinuation";
+import { loadLocalCanonicalConversationTimeline } from "@src/engines/SessionCore/conversations/localConversationExecutionTail";
 import type {
   QueuedConversationDispatchCallbacks,
   QueuedConversationExecutionMessage,
@@ -475,7 +476,20 @@ export async function dispatchQueuedCloudConversation(
         localSessionId = imported?.localSessionId;
       }
       if (!localSessionId) return null;
-      return (await loadCanonicalConversationEvents(localSessionId)).events;
+      // The owner may already have native execution children from before
+      // sharing. The plane contains new turns, not every provider-native row
+      // in those children; reading only the root would drop that history and
+      // make its existing native UUID fail prefix verification on continuation.
+      const localRoot = !local?.importedFrom
+        ? localConversationRootForSession(
+            localSessionId,
+            local?.cliAgentType,
+            local?.agentDefinitionId
+          )
+        : null;
+      return localRoot
+        ? loadLocalCanonicalConversationTimeline(localRoot)
+        : (await loadCanonicalConversationEvents(localSessionId)).events;
     };
     try {
       return {

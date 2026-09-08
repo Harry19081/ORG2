@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   runConversationTurn: vi.fn(),
   listComments: vi.fn(),
   loadCanonical: vi.fn(),
+  loadLocalTimeline: vi.fn(),
   importRemote: vi.fn(),
   buildFetchClient: vi.fn(),
   cloudDeviceIdentity: vi.fn(),
@@ -38,6 +39,13 @@ vi.mock("@src/api/tauri/cloudDevice", () => ({
 vi.mock(
   "@src/engines/SessionCore/conversations/canonicalConversationEvents",
   () => ({ loadCanonicalConversationEvents: mocks.loadCanonical })
+);
+
+vi.mock(
+  "@src/engines/SessionCore/conversations/localConversationExecutionTail",
+  () => ({
+    loadLocalCanonicalConversationTimeline: mocks.loadLocalTimeline,
+  })
 );
 
 vi.mock("@src/features/Org2Cloud/org2CloudCommentsClient", () => ({
@@ -287,6 +295,45 @@ const ASSISTANT_TAIL_EVENT = {
 } as const;
 
 describe("dispatchQueuedCloudConversation coordination", () => {
+  it("loads the owner's verified child history before overlaying Cloud turns", async () => {
+    const store = readyStore();
+    store.set(sessionsAtom, [
+      {
+        session_id: "shared-root",
+        name: "Root",
+        status: "completed",
+        created_at: "2026-08-20T09:00:00Z",
+        updated_at: "2026-08-20T09:00:00Z",
+        agentDefinitionId: "builtin:sde",
+      },
+    ]);
+    const nativeOnlyReply = {
+      ...ASSISTANT_TAIL_EVENT,
+      id: "native-before-first-plane-turn",
+      chunk_id: "native-before-first-plane-turn",
+      displayText: "No response requested.",
+    };
+    mocks.loadLocalTimeline.mockResolvedValueOnce([nativeOnlyReply]);
+    mocks.runConversationTurn.mockResolvedValueOnce({
+      runnerSessionId: "runner",
+      terminalStatus: "completed",
+    });
+    await dispatchQueuedCloudConversation(
+      store,
+      { ...MESSAGE, sessionId: "shared-root" },
+      ROOT,
+      { onAccepted: vi.fn() }
+    );
+    expect(mocks.loadLocalTimeline).toHaveBeenCalledWith({
+      authority: "local-session",
+      authorityScope: [],
+      conversationId: "shared-root",
+    });
+    expect(mocks.runConversationTurn.mock.calls[0]?.[0].timeline).toEqual(
+      expect.arrayContaining([nativeOnlyReply])
+    );
+  });
+
   it("refreshes the execution timeline after acquiring the Cloud FIFO head", async () => {
     enableTurnCoordination();
     mocks.runConversationTurn.mockResolvedValueOnce({

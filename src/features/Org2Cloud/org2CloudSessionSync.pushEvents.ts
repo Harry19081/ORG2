@@ -151,6 +151,14 @@ export class Org2CloudSessionSyncPushEvents extends Org2CloudSessionSyncState {
       const root = this.localConversationRoot(sessionId);
       if (root) {
         const snapshot = await loadLocalCanonicalConversationSnapshot(root);
+        if (snapshot.childRevision === null) {
+          // A repeated partial read is not evidence of an intentional shrink.
+          // Refuse it before the planner can replace any cloud segments; the
+          // sync engine's existing retry gate handles the transient failure.
+          throw new Error(
+            `Native conversation ${sessionId} changed while preparing cloud replay`
+          );
+        }
         return {
           events: snapshot.events,
           localExecutionRevision: snapshot.childRevision,

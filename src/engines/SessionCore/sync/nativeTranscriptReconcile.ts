@@ -23,11 +23,13 @@ import {
   closeObservedCliTerminalEvents,
   isCliTerminalStatus,
 } from "@src/engines/SessionCore/sync/adapters/cli/cliLifecycle";
+import { createLogger } from "@src/hooks/logger";
 
 import { loadAuthoritativeSessionEvents } from "./authoritativeSessionEvents";
 import { mergeFailedUserDeliveryProjection } from "./sessionSyncUtils";
 
 const MISMATCH_RECOVERY_DELAYS_MS = [250, 750] as const;
+const log = createLogger("NativeTranscriptReconcile");
 
 async function hasDurableNativeTranscript(sessionId: string): Promise<boolean> {
   const session = await rpc.cli.status({ sessionId });
@@ -267,9 +269,15 @@ export function scheduleNativeTranscriptReconcile(
     .then((isNative) =>
       isNative ? reconcileNativeTranscript(sessionId, options) : undefined
     )
-    .catch(() => {
+    .catch((error: unknown) => {
       // The ephemeral projection stays visible and a later open/recovery can
       // retry from the provider transcript. Scheduling must never throw into a
       // status event handler.
+      log.rateLimited(
+        `native-reconcile-${sessionId}`,
+        60_000,
+        `Native transcript reconciliation deferred for ${sessionId}`,
+        error
+      );
     });
 }

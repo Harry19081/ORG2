@@ -222,9 +222,8 @@ export class Org2CloudSessionSyncState {
   ): void {
     const sessionId = session.session_id;
     if ((this.eventActivityStamps.get(sessionId) ?? 0) !== stampAtRead) return;
-    // A child was created or updated while the canonical replay was being
-    // read. The upload is still safe, but it is not a clean-plane proof; the
-    // next activity pass must take another authoritative snapshot.
+    // Defense in depth: the push loader rejects unstable child snapshots
+    // before upload. Other callers must not stamp an unstable read clean.
     if (localExecutionRevision === null) return;
     let byOrg = this.cleanEventPlanes.get(sessionId);
     if (!byOrg) {
