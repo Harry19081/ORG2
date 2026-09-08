@@ -2565,6 +2565,9 @@
     }
   },
   "documentOpen": {
+    "openInDefault": "在 {{name}} 中打开",
+    "openDefaultApp": "在默认应用中打开",
+    "openExternally": "在外部应用中打开",
     "label": "打开方式…",
     "defaultApp": "默认应用",
     "appDefault": "{{name}}（默认）",

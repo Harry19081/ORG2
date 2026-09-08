@@ -2478,5 +2478,10 @@
   "notifications": {
     "taskCancelledToast": "「{{name}}」はキャンセルされました",
     "taskCompletedToast": "「{{name}}」が完了しました。セッションを開いて結果を確認してください。"
+  },
+  "documentOpen": {
+    "openInDefault": "{{name}} で開く",
+    "openDefaultApp": "デフォルトのアプリで開く",
+    "openExternally": "外部アプリで開く"
   }
 }

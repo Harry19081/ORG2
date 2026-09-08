@@ -2476,5 +2476,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” 취소됨",
     "taskCompletedToast": "“{{name}}” 완료. 세션을 열어 결과를 확인하세요."
+  },
+  "documentOpen": {
+    "openInDefault": "{{name}}에서 열기",
+    "openDefaultApp": "기본 앱에서 열기",
+    "openExternally": "외부 앱에서 열기"
   }
 }

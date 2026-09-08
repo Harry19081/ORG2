@@ -83,9 +83,6 @@ const LazyXlsxPreview = React.lazy(
 const LazyPptxPreview = React.lazy(
   () => import("../FilePreviewContent/PptxPreview")
 );
-const LazyPagesPreview = React.lazy(
-  () => import("../FilePreviewContent/PagesPreview")
-);
 
 // ============================================
 // Types
@@ -621,11 +618,6 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
         case "pptx":
           PreviewEl = (
             <LazyPptxPreview filePath={absoluteFilePath} className="flex-1" />
-          );
-          break;
-        case "pages":
-          PreviewEl = (
-            <LazyPagesPreview filePath={absoluteFilePath} className="flex-1" />
           );
           break;
         default:
