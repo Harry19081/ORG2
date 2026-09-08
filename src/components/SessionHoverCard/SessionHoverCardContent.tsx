@@ -55,6 +55,7 @@ import {
 import { formatDuration } from "@src/util/time/formatDuration";
 
 import { HoverCardPanel, HoverCardRow } from "./HoverCardBase";
+import { COPIED_FLASH_MS, formatCompactSessionId } from "./sessionIdFormat";
 import {
   type SessionTurnOverview,
   useSessionTurnOverview,
@@ -120,20 +121,6 @@ function formatCompactPath(path: string): string {
 
 function normalizePath(path: string): string {
   return path.replace(/\/+$/u, "");
-}
-
-/** How long the copied-check flash stays visible on the session-id row. */
-const COPIED_FLASH_MS = 1500;
-/** Characters kept on each side when middle-truncating a session id. */
-const COMPACT_ID_EDGE_CHARS = 8;
-
-/**
- * Middle-truncate a session id so both the distinctive head and tail stay
- * visible (UUIDs differ at both ends; opencode `ses_` ids differ at the tail).
- */
-function formatCompactSessionId(id: string): string {
-  if (id.length <= COMPACT_ID_EDGE_CHARS * 2 + 2) return id;
-  return `${id.slice(0, COMPACT_ID_EDGE_CHARS)}…${id.slice(-COMPACT_ID_EDGE_CHARS)}`;
 }
 
 /**
