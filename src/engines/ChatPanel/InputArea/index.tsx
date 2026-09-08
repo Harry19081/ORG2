@@ -2,8 +2,10 @@ import { useAtom, useAtomValue } from "jotai";
 import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import type { SessionFollowUpSuggestion } from "@src/api/services/sessionFollowUpSuggestions";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
 import ComposerShell from "@src/components/ComposerShell";
+import Message from "@src/components/Message";
 import { useInputArea } from "@src/engines/ChatPanel/hooks/useInputArea";
 import type {
   CustomMentionOption,
@@ -24,6 +26,7 @@ import type { SlashItemCategory } from "@src/types/extensions";
 import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
 import EditModeHeader from "./components/EditModeHeader";
+import FollowUpSuggestionBar from "./components/FollowUpSuggestionBar";
 import {
   EditImagePreviews,
   InputAreaTopRows,
@@ -73,6 +76,8 @@ interface InputAreaProps {
   topRowPills?: React.ReactNode;
   topRowTrailingContent?: React.ReactNode;
   statusBanners?: React.ReactNode;
+  followUpSuggestions?: ReadonlyArray<SessionFollowUpSuggestion>;
+  onFollowUpSuggestionSent?: () => void;
   composerShellRef?: React.Ref<HTMLDivElement>;
   /**
    * Mirror of the live editor handle for surfaces that insert into this
@@ -147,6 +152,8 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     topRowPills,
     topRowTrailingContent,
     statusBanners,
+    followUpSuggestions = [],
+    onFollowUpSuggestionSent,
     composerShellRef,
     composerInputRef: externalComposerInputRef,
     acceptDraggedPills = true,
@@ -400,9 +407,23 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     // turn-lifecycle FSM — the composer just forwards the captured text.
     const submitMessage = useCallback(
       (capturedText?: string) => {
-        void handleDivSubmit({ capturedText });
+        void handleDivSubmit({ capturedText }).catch((error: unknown) => {
+          Message.error(String(error));
+        });
       },
       [handleDivSubmit]
+    );
+    const submitFollowUpSuggestion = useCallback(
+      (suggestion: SessionFollowUpSuggestion) => {
+        void handleDivSubmit({
+          capturedText: suggestion.prompt,
+          source: "explicit-action",
+          onSubmitted: onFollowUpSuggestionSent,
+        }).catch((error: unknown) => {
+          Message.error(String(error));
+        });
+      },
+      [handleDivSubmit, onFollowUpSuggestionSent]
     );
 
     return (
@@ -442,6 +463,14 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
             editLabel={editLabel}
           />
           {!isEditMode && statusBanners}
+
+          {!isEditMode && (
+            <FollowUpSuggestionBar
+              suggestions={followUpSuggestions}
+              disabled={submitDisabled || isWpGeneWorking || isPendingCancel}
+              onSelect={submitFollowUpSuggestion}
+            />
+          )}
 
           <ComposerShell
             ref={isEditMode ? editContainerRef : composerShellRef}
