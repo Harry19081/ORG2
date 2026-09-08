@@ -24,6 +24,7 @@ import {
 } from "@src/components/Dropdown/tokens";
 import IconButton from "@src/components/IconButton";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import Switch from "@src/components/Switch";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import {
   ArrowRight01Icon,
@@ -237,10 +238,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
       [close, closeSubmenu, onSelectGroupVisibleCount]
     );
 
-    const handleToggleIncludeExternal = useCallback(() => {
-      onToggleIncludeExternal(!includeExternal);
-    }, [includeExternal, onToggleIncludeExternal]);
-
     const handleConfigureExternalSources = useCallback(() => {
       onConfigureExternalSources?.();
       close();
@@ -451,7 +448,17 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
                 <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                 <DropdownItem
                   dataTestId="sidebar-include-external"
-                  selected={includeExternal}
+                  role="none"
+                  suffix={
+                    <span onKeyDown={(event) => event.stopPropagation()}>
+                      <Switch
+                        size="small"
+                        checked={includeExternal}
+                        onCheckedChange={onToggleIncludeExternal}
+                        ariaLabel={t("sidebar.filters.includeExternal")}
+                      />
+                    </span>
+                  }
                   icon={
                     <HugeiconsIcon
                       icon={FolderSymlinkIcon}
@@ -461,7 +468,6 @@ export const SessionFilterButton: FC<SessionFilterButtonProps> = React.memo(
                     />
                   }
                   onMouseEnter={closeSubmenu}
-                  onClick={handleToggleIncludeExternal}
                 >
                   {t("sidebar.filters.includeExternal")}
                 </DropdownItem>
