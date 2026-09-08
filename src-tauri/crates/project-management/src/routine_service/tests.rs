@@ -1389,6 +1389,46 @@ fn scheduled_candidate_scan_is_due_only_and_hard_bounded() {
 }
 
 #[test]
+fn scheduled_candidate_page_keeps_each_routines_activations_together() {
+    let _sandbox = test_env::sandbox();
+    let due_at = 1_800_000_000_000_i64;
+    for (name, count) in [
+        ("page-a", MAX_SCHEDULE_CANDIDATES_PER_TICK - 1),
+        ("page-b", 2),
+        ("page-c", 1),
+    ] {
+        let mut file = named_fixture(name);
+        file.spec.activations = (0..count)
+            .map(|index| spec::Activation::OneTime {
+                at: chrono::DateTime::<chrono::Utc>::from_timestamp_millis(
+                    due_at + index as i64 * 1000,
+                )
+                .unwrap()
+                .to_rfc3339(),
+                policies: Default::default(),
+            })
+            .collect();
+        apply(&file).expect("apply routine");
+    }
+    let evaluate_at = due_at + 1_000_000;
+    let candidates = scheduled_candidates(evaluate_at).expect("first page");
+    assert_eq!(
+        candidates.iter().filter(|item| item.name == "page-b").count(),
+        2,
+        "the scheduler advances one watermark per routine, so a page must include all its activations"
+    );
+    assert_eq!(candidates.len(), MAX_SCHEDULE_CANDIDATES_PER_TICK + 1);
+    assert!(!candidates.iter().any(|item| item.name == "page-c"));
+
+    for name in ["page-a", "page-b"] {
+        mark_evaluated(name, evaluate_at, Some(evaluate_at + 60_000)).unwrap();
+    }
+    let remaining = scheduled_candidates(evaluate_at).expect("next page");
+    assert_eq!(remaining.len(), 1);
+    assert_eq!(remaining[0].name, "page-c");
+}
+
+#[test]
 fn apply_rejects_invalid_specs_with_structured_violations() {
     let _sandbox = test_env::sandbox();
     let mut file = fixture();

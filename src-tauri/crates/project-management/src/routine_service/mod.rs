@@ -912,9 +912,12 @@ pub enum ScheduledTrigger {
     OneTime { at: String },
 }
 
-/// A single durable tick never parses or starts more than this many
-/// activations. Additional due rows retain their watermark and are picked up
-/// by the next 30-second pass.
+/// Routine-row scan limit and activation-page target. A page finishes the
+/// current routine even when its activations cross this target: the scheduler
+/// commits one shared watermark per routine. Thus a page contains at most
+/// this target minus one plus the final routine's activation count. Remaining
+/// routines retain their watermark for the next pass. The durable queue uses
+/// this as a strict limit because its entries have independent completion.
 pub const MAX_SCHEDULE_CANDIDATES_PER_TICK: usize = 256;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -1493,9 +1496,12 @@ pub fn scheduled_candidates(evaluate_before: i64) -> Result<Vec<ScheduledCandida
                 target: target.clone(),
                 last_evaluated_at,
             });
-            if candidates.len() == MAX_SCHEDULE_CANDIDATES_PER_TICK {
-                return Ok(candidates);
-            }
+        }
+        // Never split a routine at the page boundary. Advancing its shared
+        // watermark after evaluating only a prefix would lose sibling fires
+        // (and could disable a one-time routine before its remaining fires).
+        if candidates.len() >= MAX_SCHEDULE_CANDIDATES_PER_TICK {
+            break;
         }
     }
     Ok(candidates)
