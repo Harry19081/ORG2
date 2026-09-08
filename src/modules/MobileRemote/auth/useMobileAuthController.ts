@@ -14,6 +14,10 @@ import {
 const EXPIRY_REFRESH_SKEW_MS = 60_000;
 const MAX_TIMEOUT_MS = 2_147_000_000;
 
+// A replacement owner must wait for already-issued SDK/Keychain operations.
+// Generation checks prevent new stale writes, but cannot cancel a write in progress.
+const retiredAuthOwners = new WeakMap<object, Promise<void>>();
+
 /** Owns authentication episodes independently of the rendered gate. */
 export function useMobileAuthController({
   client: providedClient,
@@ -64,8 +68,11 @@ export function useMobileAuthController({
         dispatch({ type: "begin", phase: "checking", generation });
       }
 
+      const predecessor = retiredAuthOwners.get(platform.auth);
       const operation = (async () => {
         try {
+          await predecessor;
+          if (generation !== generationRef.current) return;
           let session;
           if (callback) {
             if (!(await platform.auth.consumeOAuthAttempt())) {
@@ -74,9 +81,11 @@ export function useMobileAuthController({
                 false
               );
             }
+            if (generation !== generationRef.current) return;
             session = await clientRef.current!.exchangeCallback(callbackUrl);
           } else {
             const stored = await platform.auth.readSession();
+            if (generation !== generationRef.current) return;
             if (!stored) {
               dispatch({ type: "signed_out", generation });
               return;
@@ -93,16 +102,20 @@ export function useMobileAuthController({
           await clientRef.current!.establishServerSession(session.accessToken);
           if (generation !== generationRef.current) return;
 
+          const recoveredPairingIntent =
+            await platform.auth.consumePairingIntent();
+          if (generation !== generationRef.current) return;
           dispatch({
             type: "signed_in",
             generation,
             session,
-            recoveredPairingIntent: await platform.auth.consumePairingIntent(),
+            recoveredPairingIntent,
           });
         } catch (error) {
           if (generation !== generationRef.current) return;
           const retryable = isRetryableMobileAuthError(error);
           if (!retryable) await platform.auth.clearSession();
+          if (generation !== generationRef.current) return;
           dispatch({
             type: "failed",
             generation,
@@ -123,7 +136,25 @@ export function useMobileAuthController({
 
   useEffect(() => {
     void authenticate();
-  }, [authenticate]);
+    return () => {
+      generationRef.current += 1;
+      intentGenerationRef.current += 1;
+      clearExpiryTimer();
+      const drained = Promise.allSettled([
+        retiredAuthOwners.get(platform.auth),
+        inFlightRef.current,
+        signInPreparationRef.current,
+        signOutCleanupRef.current,
+      ]).then(() => undefined);
+      retiredAuthOwners.set(platform.auth, drained);
+      void drained.then(() => {
+        if (retiredAuthOwners.get(platform.auth) === drained) {
+          retiredAuthOwners.delete(platform.auth);
+        }
+      });
+      inFlightRef.current = null;
+    };
+  }, [authenticate, clearExpiryTimer, platform.auth]);
 
   useEffect(() => {
     let disposed = false;

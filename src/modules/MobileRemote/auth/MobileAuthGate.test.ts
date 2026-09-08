@@ -707,4 +707,63 @@ describe("MobileAuthGate", () => {
     expect(localStorage.getItem("orgii:org2-cloud-v1:auth")).toBeNull();
     expect(authClient.signOut).toHaveBeenCalledWith(session);
   });
+  it.each(["success", "failure"])(
+    "does not let an unmounted restore %s change a newer stored account",
+    async (outcome) => {
+      let reject!: (error: unknown) => void;
+      let resolve!: (value: MobileAuthSession) => void;
+      const pending = new Promise<MobileAuthSession>((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+      const platform = createBrowserMobileRemotePlatform();
+      await platform.auth.writeSession(session);
+      const authClient = client({
+        restoreSession: vi.fn().mockReturnValue(pending),
+      });
+      await act(async () =>
+        root.render(createGate(authClient, () => null, {}, platform))
+      );
+      expect(authClient.restoreSession).toHaveBeenCalledTimes(1);
+      await act(async () => root.render(null));
+      await platform.auth.writeSession({ ...session, userId: "new-account" });
+      await act(async () => {
+        if (outcome === "success") resolve(session);
+        else reject(new MobileAuthClientError("expired", false));
+      });
+      expect((await platform.auth.readSession())?.userId).toBe("new-account");
+      expect(authClient.establishServerSession).not.toHaveBeenCalled();
+    }
+  );
+
+  it("waits for an already-issued persistence write before restoring a replacement owner", async () => {
+    const platform = createBrowserMobileRemotePlatform();
+    await platform.auth.writeSession(session);
+    const finishWrite = deferred<void>();
+    const originalWrite = platform.auth.writeSession;
+    const write = vi
+      .spyOn(platform.auth, "writeSession")
+      .mockImplementationOnce(async (value) => {
+        await finishWrite.promise;
+        await originalWrite(value);
+      });
+    const oldClient = client();
+    await act(async () =>
+      root.render(createGate(oldClient, () => null, {}, platform))
+    );
+    expect(write).toHaveBeenCalledTimes(1);
+    await act(async () => root.render(null));
+    const newSession = { ...session, userId: "new-account" };
+    const newClient = client({
+      restoreSession: vi.fn().mockResolvedValue(newSession),
+    });
+    await act(async () =>
+      root.render(createGate(newClient, () => null, {}, platform))
+    );
+    expect(newClient.restoreSession).not.toHaveBeenCalled();
+    await act(async () => finishWrite.resolve());
+    expect(newClient.restoreSession).toHaveBeenCalledTimes(1);
+    expect((await platform.auth.readSession())?.userId).toBe("new-account");
+    expect(oldClient.establishServerSession).not.toHaveBeenCalled();
+  });
 });
