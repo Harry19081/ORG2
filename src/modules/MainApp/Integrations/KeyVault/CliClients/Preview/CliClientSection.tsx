@@ -206,7 +206,7 @@ export const CliClientSection: React.FC<CliClientSectionProps> = ({
                   <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={12} />
                 }
                 onClick={() => {
-                  copyText(selectedMethod.command).then(() => {
+                  void copyText(selectedMethod.command).then(() => {
                     Message.success({ content: copySuccessMessage });
                   });
                 }}
