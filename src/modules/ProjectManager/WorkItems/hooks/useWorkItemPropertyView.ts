@@ -117,7 +117,9 @@ export function useWorkItemPropertyView({
       generationRef.current += 1;
       return;
     }
-    void refresh();
+    void refresh().catch((error: unknown) => {
+      logger.error("Property view refresh failed", error);
+    });
     return () => {
       generationRef.current += 1;
     };
@@ -130,7 +132,9 @@ export function useWorkItemPropertyView({
           isActive &&
           (!change?.projectSlug || change.projectSlug === projectSlug)
         ) {
-          void refresh();
+          void refresh().catch((error: unknown) => {
+            logger.error("Property view invalidation refresh failed", error);
+          });
         }
       },
       [isActive, projectSlug, refresh]

@@ -24,6 +24,7 @@ import {
   type ProjectStatusDefinitionsChangedPayload,
   invalidateProjectCache,
 } from "@src/api/http/project";
+import { createLogger } from "@src/hooks/logger";
 
 export interface ProjectDataChange {
   projectSlug?: string;
@@ -31,6 +32,8 @@ export interface ProjectDataChange {
   repoPath?: string;
   source?: string;
 }
+
+const log = createLogger("ProjectDataChanged");
 
 type ProjectDataChangedWirePayload =
   | {
@@ -125,9 +128,15 @@ export function useProjectDataChangedListener(): void {
         setChange(change);
         bumpSignal((prev) => prev + 1);
       }
-    );
+    ).catch((error: unknown) => {
+      log.error("Project data listener registration failed", error);
+      return undefined;
+    });
     const unlistenRosterPromise = listen(PROJECT_ROSTER_CHANGED_EVENT, () => {
       bumpRosterSignal((previous) => previous + 1);
+    }).catch((error: unknown) => {
+      log.error("Project roster listener registration failed", error);
+      return undefined;
     });
     const unlistenStatusDefinitionsPromise =
       listen<ProjectStatusDefinitionsChangedPayload>(
@@ -141,12 +150,23 @@ export function useProjectDataChangedListener(): void {
             [orgId]: (previous[orgId] ?? 0) + 1,
           }));
         }
-      );
+      ).catch((error: unknown) => {
+        log.error("Project status listener registration failed", error);
+        return undefined;
+      });
 
     return () => {
-      unlistenPromise.then((unlisten) => unlisten());
-      unlistenRosterPromise.then((unlisten) => unlisten());
-      unlistenStatusDefinitionsPromise.then((unlisten) => unlisten());
+      for (const registration of [
+        unlistenPromise,
+        unlistenRosterPromise,
+        unlistenStatusDefinitionsPromise,
+      ]) {
+        void registration
+          .then((unlisten) => unlisten?.())
+          .catch((error: unknown) => {
+            log.error("Project listener cleanup failed", error);
+          });
+      }
     };
   }, [
     bumpRosterSignal,

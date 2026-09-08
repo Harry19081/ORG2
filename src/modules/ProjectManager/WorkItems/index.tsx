@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { STORY_SYNC_ADAPTER } from "@src/api/http/integrations/syncConnections";
 import type { SavedView, SavedViewDisplay } from "@src/api/http/project";
 import { projectSyncApi } from "@src/api/http/project/sync";
+import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
 import TabPill from "@src/components/TabPill";
@@ -1154,8 +1155,12 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
         onClose={() => setBatchPropertyOpen(false)}
         onApplied={() => {
           handleUnselectAll();
-          data.refresh();
-          void propertyView.refresh();
+          void data
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
+          void propertyView
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
         }}
       />
       <BatchQuickFieldDialog
@@ -1168,8 +1173,12 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
         onClose={() => setBatchQuickField(null)}
         onApplied={() => {
           handleUnselectAll();
-          data.refresh();
-          void propertyView.refresh();
+          void data
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
+          void propertyView
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
         }}
       />
       <RevisionConflictModal

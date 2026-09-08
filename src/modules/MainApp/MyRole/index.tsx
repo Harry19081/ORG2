@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import Message from "@src/components/Message";
 import NumberInput from "@src/components/NumberInput";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
@@ -432,12 +433,12 @@ const MyRolePage: React.FC = () => {
             >
               <Switch
                 checked={followUpSuggestionsEnabled}
-                onCheckedChange={(checked) =>
-                  updateSetting({
+                onCheckedChange={(checked) => {
+                  void updateSetting({
                     key: "agent.sde.followUpSuggestionsEnabled",
                     value: checked,
-                  })
-                }
+                  }).catch((error: unknown) => Message.error(String(error)));
+                }}
                 ariaLabel={t("myRole.followUpSuggestionsLabel", {
                   defaultValue: "Agent follow-up suggestions",
                 })}

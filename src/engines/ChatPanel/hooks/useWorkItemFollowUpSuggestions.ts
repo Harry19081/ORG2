@@ -14,11 +14,13 @@ import {
   turnLifecycleSignalAtom,
 } from "@src/engines/SessionCore/control/turnLifecycle";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
+import { createLogger } from "@src/hooks/logger";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import { settingAtom } from "@src/store/settings/settingsAtom";
 
 const FOLLOW_UP_CONTEXT_MESSAGES = 6;
 const FOLLOW_UP_MAX_CONCURRENT_SESSIONS = 4;
+const log = createLogger("WorkItemFollowUpSuggestions");
 
 interface WorkItemFollowUpScope {
   sessionId: string;
@@ -145,7 +147,7 @@ export function createFollowUpRequestCoordinator(
     }
     state.pending = null;
     const next = startActive(state, pending.request, pending.generate);
-    void next.then(pending.resolve);
+    void next.then(pending.resolve, () => pending.resolve(null));
   }
 
   function startActive(
@@ -160,9 +162,15 @@ export function createFollowUpRequestCoordinator(
     const nextState = state ?? { active, pending: null };
     nextState.active = active;
     inFlight.set(request.sessionId, nextState);
-    void active.promise.then(() =>
-      finishActive(request.sessionId, nextState, active)
-    );
+    void active.promise
+      .then(() => finishActive(request.sessionId, nextState, active))
+      .catch((error: unknown) => {
+        if (inFlight.get(request.sessionId) === nextState) {
+          inFlight.delete(request.sessionId);
+          nextState.pending?.resolve(null);
+        }
+        log.error("Follow-up completion failed", error);
+      });
     return active.promise;
   }
 
@@ -531,6 +539,9 @@ export function useWorkItemFollowUpSuggestions({
           return;
         }
         setSuggestions(nextSuggestions);
+      })
+      .catch((error: unknown) => {
+        log.error("Follow-up suggestion projection failed", error);
       });
     // `events` is intentionally represented by the completed assistant
     // fingerprint. Running stream deltas cannot make this pass eligible and

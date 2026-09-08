@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { listen } from "@tauri-apps/api/event";
 import { Provider, createStore } from "jotai";
 import { act, createElement } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -17,6 +18,11 @@ const mocks = vi.hoisted(() => ({
   invalidateProjectCache: vi.fn(),
   listeners: new Map<string, (event: { payload: unknown }) => void>(),
   unlisten: vi.fn(),
+  error: vi.fn(),
+}));
+
+vi.mock("@src/hooks/logger", () => ({
+  createLogger: () => ({ error: mocks.error }),
 }));
 
 vi.mock("@src/api/http/project", () => ({
@@ -99,6 +105,30 @@ describe("project data-change scoping", () => {
     await root.unmount();
     await Promise.resolve();
     expect(mocks.unlisten).toHaveBeenCalledTimes(3);
+  });
+
+  it("reports registration failure before unmount and cleans up the other listeners", async () => {
+    vi.mocked(listen).mockRejectedValueOnce(new Error("registration failed"));
+    const root = createSmokeRoot();
+    await root.render(createElement(ListenerHarness));
+    await vi.waitFor(() => expect(mocks.error).toHaveBeenCalledTimes(1));
+    await root.unmount();
+    await vi.waitFor(() => expect(mocks.unlisten).toHaveBeenCalledTimes(2));
+  });
+
+  it("does not hold completed listener cleanup behind a pending registration", async () => {
+    let resolve!: (unlisten: () => void) => void;
+    vi.mocked(listen).mockReturnValueOnce(
+      new Promise((done) => {
+        resolve = done;
+      })
+    );
+    const root = createSmokeRoot();
+    await root.render(createElement(ListenerHarness));
+    await root.unmount();
+    await vi.waitFor(() => expect(mocks.unlisten).toHaveBeenCalledTimes(2));
+    resolve(mocks.unlisten);
+    await vi.waitFor(() => expect(mocks.unlisten).toHaveBeenCalledTimes(3));
   });
 
   it("bumps only the addressed org's status catalog version", async () => {

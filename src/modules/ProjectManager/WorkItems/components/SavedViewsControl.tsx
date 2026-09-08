@@ -86,7 +86,7 @@ export const SavedViewsControl: React.FC<SavedViewsControlProps> = ({
   }, [orgId, projectSlug, scopeKey]);
 
   useEffect(() => {
-    void refresh();
+    void refresh().catch((error: unknown) => Message.error(String(error)));
     return () => {
       refreshGenerationRef.current += 1;
     };
@@ -203,7 +203,7 @@ export const SavedViewsControl: React.FC<SavedViewsControlProps> = ({
         ],
       }));
       setActiveView(view.id);
-      void refresh();
+      void refresh().catch((error: unknown) => Message.error(String(error)));
     } catch (error) {
       Message.error(String(error));
     } finally {
@@ -225,7 +225,7 @@ export const SavedViewsControl: React.FC<SavedViewsControlProps> = ({
     try {
       await projectApi.archiveSavedView(orgId, selectedId);
       setActiveView(null, true);
-      void refresh();
+      void refresh().catch((error: unknown) => Message.error(String(error)));
     } catch (error) {
       Message.error(String(error));
     }

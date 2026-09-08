@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { SessionFollowUpSuggestion } from "@src/api/services/sessionFollowUpSuggestions";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
 import ComposerShell from "@src/components/ComposerShell";
+import Message from "@src/components/Message";
 import { useInputArea } from "@src/engines/ChatPanel/hooks/useInputArea";
 import type {
   CustomMentionOption,
@@ -406,7 +407,9 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
     // turn-lifecycle FSM — the composer just forwards the captured text.
     const submitMessage = useCallback(
       (capturedText?: string) => {
-        void handleDivSubmit({ capturedText });
+        void handleDivSubmit({ capturedText }).catch((error: unknown) => {
+          Message.error(String(error));
+        });
       },
       [handleDivSubmit]
     );
@@ -416,6 +419,8 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
           capturedText: suggestion.prompt,
           source: "explicit-action",
           onSubmitted: onFollowUpSuggestionSent,
+        }).catch((error: unknown) => {
+          Message.error(String(error));
         });
       },
       [handleDivSubmit, onFollowUpSuggestionSent]
