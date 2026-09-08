@@ -153,6 +153,7 @@ const CodexSetup: React.FC<CodexSetupProps> = ({
         <SectionContainer>
           <SectionRow
             label={t("keyVault.codexCredentialLabel")}
+            layout="vertical"
             description={t("keyVault.codexCredentialDesc")}
             required
           >
