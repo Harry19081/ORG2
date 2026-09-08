@@ -1,15 +1,10 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
 import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
   type ManagedPrItem,
@@ -185,13 +180,7 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
     [initialCombinedLoadPending, pullRequests]
   );
   const mountedRef = useRef(true);
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
+  useMountedCleanup(mountedRef);
 
   const loadNoticeKey =
     (loadState.status === "error" || loadState.status === "warning") &&

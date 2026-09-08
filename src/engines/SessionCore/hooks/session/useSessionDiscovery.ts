@@ -21,6 +21,7 @@ import type {
   KeyInfo,
 } from "@src/api/tauri/rpc/schemas/validation";
 import { loadSharedLocalKeys } from "@src/hooks/keyVault/sharedLocalKeyStore";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { createLogger } from "@src/hooks/logger";
 import {
   agentRegistryAtom,
@@ -161,18 +162,12 @@ export function useSessionDiscovery(
   const [error, setError] = useState<string | null>(null);
   const hasLoadedRef = useRef(false);
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
 
   const setAgentRegistry = useSetAtom(agentRegistryAtom);
   const setAgentRegistryDiscoveryState = useSetAtom(
     agentRegistryDiscoveryStateAtom
   );
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
 
   const availableAgents = useMemo(
     () => agents.filter((agent) => agent.available),
