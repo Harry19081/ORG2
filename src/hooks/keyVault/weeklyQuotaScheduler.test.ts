@@ -6,7 +6,11 @@ import {
   startWeeklyQuotaScheduler,
 } from "./weeklyQuotaScheduler";
 
+const warn = vi.hoisted(() => vi.fn());
+vi.mock("@src/hooks/logger", () => ({ createLogger: () => ({ warn }) }));
+
 beforeEach(() => {
+  warn.mockClear();
   vi.useFakeTimers();
   vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
   vi.spyOn(navigator, "onLine", "get").mockReturnValue(true);
@@ -71,6 +75,25 @@ describe("weekly quota scheduler", () => {
     await vi.advanceTimersByTimeAsync(1);
     expect(run).toHaveBeenCalledTimes(2);
     stop();
+  });
+  it("contains error callback failures and retains hourly scheduling", async () => {
+    const run = vi.fn().mockRejectedValue(new Error("offline"));
+    const onError = vi.fn(() => {
+      throw new Error("callback failed");
+    });
+    const stop = startWeeklyQuotaScheduler(run, onError);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(1);
+    await vi.advanceTimersByTimeAsync(QUOTA_SAMPLE_INTERVAL_MS);
+    expect(run).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledTimes(2);
+    window.dispatchEvent(new Event("online"));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(run).toHaveBeenCalledTimes(3);
+    expect(warn).toHaveBeenCalledTimes(3);
+    stop();
+    expect(vi.getTimerCount()).toBe(0);
   });
   it("coalesces account changes during a request into one immediate follow-up", async () => {
     let complete!: () => void;

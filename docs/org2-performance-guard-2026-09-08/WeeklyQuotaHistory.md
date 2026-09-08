@@ -24,3 +24,11 @@ Lifecycle evidence:
 Verification: **399 Key Vault Rust tests**, **22 targeted frontend tests**, TypeScript and changed-file ESLint pass. Existing Claude Code, Codex and OpenCode Go adapter fixtures are included in the Rust suite. Whole-app check and build passed in the original checkout after rebuilding stale dependency artifacts. Isolated PR verification is recorded in the PR description. The scoped diff passes.
 
 Performance verdict: **blocked for live validation** — automated lifecycle and component/call-count evidence passes, but authenticated endpoint behavior, actual WebView interactions, CPU/RSS and direct secondary isolation were not measured. Computer control was not authorized. No measured runtime latency, memory or frame-rate improvement is claimed.
+
+## CI promise-handling correction
+
+| Area            | Verdict | Evidence                                                                                             | Change or reason kept                                                                                                                      | Verification                                                                                                           |
+| --------------- | ------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Background work | fix     | Type-aware CI rejected three unhandled tick promises; an error callback could itself reject the tick | All startup, timer, and wake paths use one rejection-handling launcher; diagnostics omit raw errors, and cadence/disposal remain unchanged | Scheduler and history-hook tests: 9 passed, including throwing-error-callback coverage across startup, timer, and wake |
+
+Live UI/CPU/RSS validation remains unmeasured; this correction makes no performance improvement claim.

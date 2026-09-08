@@ -1,3 +1,7 @@
+import { createLogger } from "@src/hooks/logger";
+
+const logger = createLogger("weeklyQuotaScheduler");
+
 export const QUOTA_SAMPLE_INTERVAL_MS = 60 * 60 * 1000;
 
 /** One disposable timer; no overlap, catch-up loops or hidden/offline work. */
@@ -27,14 +31,15 @@ export function startWeeklyQuotaScheduler(
     } finally {
       running = false;
       if (isActive())
-        timer = setTimeout(
-          () => {
-            void tick();
-          },
-          rerun ? 0 : QUOTA_SAMPLE_INTERVAL_MS
-        );
+        timer = setTimeout(runTick, rerun ? 0 : QUOTA_SAMPLE_INTERVAL_MS);
       rerun = false;
     }
+  };
+  const runTick = () => {
+    void tick().catch(() => {
+      // Provider failures are handled inside tick; contain callback failures too.
+      logger.warn("Weekly quota scheduler callback failed");
+    });
   };
   const wake = () => {
     clear();
@@ -42,13 +47,13 @@ export function startWeeklyQuotaScheduler(
       rerun = true;
       return;
     }
-    if (isActive()) void tick();
+    if (isActive()) runTick();
   };
   document.addEventListener("visibilitychange", wake);
   window.addEventListener("online", wake);
   window.addEventListener("offline", wake);
   const unsubscribe = subscribeChanges?.(wake);
-  void tick();
+  runTick();
   return () => {
     stopped = true;
     unsubscribe?.();
