@@ -14,7 +14,6 @@
  * The Tauri event channel name "orgii-data-changed" is the wire format emitted
  * by the Rust backend and is not renamed here.
  */
-import { listen } from "@tauri-apps/api/event";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef } from "react";
 
@@ -25,6 +24,7 @@ import {
   invalidateProjectCache,
 } from "@src/api/http/project";
 import { createLogger } from "@src/hooks/logger";
+import { useTauriListen } from "@src/hooks/platform/useTauriListen";
 
 export interface ProjectDataChange {
   projectSlug?: string;
@@ -34,6 +34,18 @@ export interface ProjectDataChange {
 }
 
 const log = createLogger("ProjectDataChanged");
+
+function reportDataListenerError(error: unknown): void {
+  log.error("Project data listener registration failed", error);
+}
+
+function reportRosterListenerError(error: unknown): void {
+  log.error("Project roster listener registration failed", error);
+}
+
+function reportStatusListenerError(error: unknown): void {
+  log.error("Project status listener registration failed", error);
+}
 
 type ProjectDataChangedWirePayload =
   | {
@@ -116,65 +128,40 @@ export function useProjectDataChangedListener(): void {
     projectStatusDefinitionsVersionAtom
   );
 
-  useEffect(() => {
-    const unlistenPromise = listen<ProjectDataChangedWirePayload>(
-      "orgii-data-changed",
-      (event) => {
-        const payload = event.payload;
-        const change = parseProjectDataChange(payload);
+  useTauriListen<ProjectDataChangedWirePayload>(
+    "orgii-data-changed",
+    (payload) => {
+      const change = parseProjectDataChange(payload);
 
-        invalidateProjectDataChangeCaches(change);
-        setRepoPath(change?.repoPath ?? null);
-        setChange(change);
-        bumpSignal((prev) => prev + 1);
-      }
-    ).catch((error: unknown) => {
-      log.error("Project data listener registration failed", error);
-      return undefined;
-    });
-    const unlistenRosterPromise = listen(PROJECT_ROSTER_CHANGED_EVENT, () => {
+      invalidateProjectDataChangeCaches(change);
+      setRepoPath(change?.repoPath ?? null);
+      setChange(change);
+      bumpSignal((prev) => prev + 1);
+    },
+    { onError: reportDataListenerError }
+  );
+
+  useTauriListen(
+    PROJECT_ROSTER_CHANGED_EVENT,
+    () => {
       bumpRosterSignal((previous) => previous + 1);
-    }).catch((error: unknown) => {
-      log.error("Project roster listener registration failed", error);
-      return undefined;
-    });
-    const unlistenStatusDefinitionsPromise =
-      listen<ProjectStatusDefinitionsChangedPayload>(
-        PROJECT_STATUS_DEFINITIONS_CHANGED_EVENT,
-        (event) => {
-          const orgId = event.payload.org_id;
-          if (!orgId) return;
-          invalidateProjectCache(orgId);
-          bumpStatusDefinitionsVersion((previous) => ({
-            ...previous,
-            [orgId]: (previous[orgId] ?? 0) + 1,
-          }));
-        }
-      ).catch((error: unknown) => {
-        log.error("Project status listener registration failed", error);
-        return undefined;
-      });
+    },
+    { onError: reportRosterListenerError }
+  );
 
-    return () => {
-      for (const registration of [
-        unlistenPromise,
-        unlistenRosterPromise,
-        unlistenStatusDefinitionsPromise,
-      ]) {
-        void registration
-          .then((unlisten) => unlisten?.())
-          .catch((error: unknown) => {
-            log.error("Project listener cleanup failed", error);
-          });
-      }
-    };
-  }, [
-    bumpRosterSignal,
-    bumpSignal,
-    bumpStatusDefinitionsVersion,
-    setChange,
-    setRepoPath,
-  ]);
+  useTauriListen<ProjectStatusDefinitionsChangedPayload>(
+    PROJECT_STATUS_DEFINITIONS_CHANGED_EVENT,
+    (payload) => {
+      const orgId = payload.org_id;
+      if (!orgId) return;
+      invalidateProjectCache(orgId);
+      bumpStatusDefinitionsVersion((previous) => ({
+        ...previous,
+        [orgId]: (previous[orgId] ?? 0) + 1,
+      }));
+    },
+    { onError: reportStatusListenerError }
+  );
 }
 
 /**
