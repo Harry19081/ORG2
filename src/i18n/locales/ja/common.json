@@ -942,7 +942,6 @@
     "chatHistoryAgentWorkingHint": "最初の応答でメッセージが表示されます。それまではツールバーがアイドル表示になる場合があります",
     "pleaseSelect": "選択してください",
     "noSessionsFound": "Sessionが見つかりません",
-    "noBrowsingHistory": "閲覧履歴がありません",
     "typeToSearchFiles": "ファイルを検索するには入力...",
     "selectFileToViewChanges": "ファイルを選択して変更を表示",
     "failedToLoadHistory": "履歴の読み込みに失敗しました",
@@ -2054,17 +2053,7 @@
     "showLess": "折りたたむ"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "AI セッション影響データがありません",
-    "sessions": "セッション",
-    "files": "関連ファイル",
-    "functions": "関数",
-    "commits": "Commit",
-    "lines": "コード行",
-    "sessionBreakdown": "セッション内訳",
-    "human": "Human",
-    "completed": "完了",
-    "incomplete": "未完了"
+    "lines": "コード行"
   },
   "sessions": {
     "title": "セッション",

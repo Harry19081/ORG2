@@ -2129,8 +2129,7 @@
     "terminalProcesses": "Processus du terminal",
     "chatPreview": "Aperçu du chat",
     "scenario": "Scénario",
-    "selectScenario": "Sélectionner un scénario",
-    "sessionSimulation": "Simulation de session"
+    "selectScenario": "Sélectionner un scénario"
   },
   "rulesTabs": {
     "rules": "Règles",
@@ -2217,7 +2216,10 @@
     "fireHistory": "Run history",
     "noFires": "No runs yet",
     "openSession": "Open session",
-    "openWorkItem": "Open work item"
+    "openWorkItem": "Open work item",
+    "fireError": "Impossible de démarrer la routine : {{detail}}",
+    "provider": "Fournisseur",
+    "eventKind": "Événement"
   },
   "cursorPlugins": {
     "noPlugins": "Aucun plugin Cursor installé",

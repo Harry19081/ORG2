@@ -484,11 +484,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajektoria",
         "tabTodo": "Lista zadań",
-        "expandPanel": "Pokaż panel trajektorii i listy zadań",
-        "placeholderTrajectoryTitle": "Brak zdarzeń",
-        "placeholderTrajectorySubtitle": "Aktywność sesji pojawi się tutaj, gdy Agent zacznie działać",
-        "placeholderTodoTitle": "Brak list zadań",
-        "placeholderTodoSubtitle": "Aktualizacje listy zadań pojawią się tutaj, gdy Agent zapisze zadania"
+        "expandPanel": "Pokaż panel trajektorii i listy zadań"
       },
       "previousEvent": "Poprzednie zdarzenie",
       "nextEvent": "Następne zdarzenie",
@@ -2608,7 +2604,8 @@
     "failedToInterrupt": "Nie udało się przerwać sesji",
     "failedToStop": "Nie udało się zatrzymać Agenta",
     "failedToCheckChanges": "Nie można sprawdzić zmian w plikach. Kontynuowanie cofania.",
-    "insufficientBalance": "Niewystarczające środki dla hostowanej usługi ORGII. Doładuj na orgii.ai/wallet."
+    "insufficientBalance": "Niewystarczające środki dla hostowanej usługi ORGII. Doładuj na orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "W kolejce: inne uruchomienie korzysta z tego checkoutu. Rozpocznie się, gdy tamto się zakończy."
   },
   "revertConfirm": {
     "title": "Niezapisane zmiany w plikach",

@@ -6752,22 +6752,6 @@
     "count": 1
   },
   {
-    "key": "05f59c53a15ac975693c2c7503dc449a36a15266c377851ecfcb446a7fe339f6",
-    "file": "src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/AIImpactContent/index.tsx",
-    "rule": "@typescript-eslint/no-misused-promises",
-    "message": "Promise-returning function provided to attribute where a void return was expected.",
-    "source": "{loadData}",
-    "count": 1
-  },
-  {
-    "key": "4829896c56e501286273b3485ed33737969bf5e814cc08143f24a46056cb3185",
-    "file": "src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/AIImpactContent/index.tsx",
-    "rule": "@typescript-eslint/no-floating-promises",
-    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "loadData();",
-    "count": 1
-  },
-  {
     "key": "5d42ebd3d945fc0a04a5a54eef9fc0a8e0f86aafc386b9d1deeb937d0e14a5f6",
     "file": "src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/CodeViewerContent/hooks/autoSaveScheduler.ts",
     "rule": "@typescript-eslint/no-floating-promises",
@@ -8056,10 +8040,10 @@
     "count": 1
   },
   {
-    "key": "1915ed6b80cc9ff95758f2cfa1b6afb4e4551faef701aad5e7809ef7fabbeeb3",
+    "key": "e3f51da2c7a2c9def04d239b540cb4c7c7f8152a378468c26191eb30df057c47",
     "file": "src/modules/WorkStation/shared/TabBar/components/WorkstationTabContent.tsx",
     "rule": "@typescript-eslint/switch-exhaustiveness-check",
-    "message": "Switch is not exhaustive. Cases not matched: \"search\" | \"file\" | \"devtools\" | \"directory\" | \"git-diff\" | \"timeline-diff\" | \"git-log\" | \"git-commit-detail\" | \"git-stash-detail\" | \"terminal-content\" | \"dom-component-preview\" | \"ai-impact\" | \"url-preview\" | \"browser-session\" | \"project-settings\" | \"project-org\" | \"project-org-settings\" | \"project-git-sync-review\" | \"project-workitems\" | \"workItem-detail\" | \"chat-session\" | \"subagent-detail\" | \"agent-config\" | \"canvas-preview\" | \"github-issue-detail\" | \"github-pr-detail\"",
+    "message": "Switch is not exhaustive. Cases not matched: \"search\" | \"file\" | \"devtools\" | \"directory\" | \"git-diff\" | \"timeline-diff\" | \"git-log\" | \"git-commit-detail\" | \"git-stash-detail\" | \"terminal-content\" | \"dom-component-preview\" | \"url-preview\" | \"browser-session\" | \"project-settings\" | \"project-org\" | \"project-org-settings\" | \"project-git-sync-review\" | \"project-workitems\" | \"workItem-detail\" | \"chat-session\" | \"subagent-detail\" | \"agent-config\" | \"canvas-preview\" | \"github-issue-detail\" | \"github-pr-detail\"",
     "source": "tab.type",
     "count": 1
   },

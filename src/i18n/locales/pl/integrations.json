@@ -2136,8 +2136,7 @@
     "terminalProcesses": "Procesy terminala",
     "chatPreview": "Podgląd czatu",
     "scenario": "Scenariusz",
-    "selectScenario": "Wybierz scenariusz",
-    "sessionSimulation": "Symulacja sesji"
+    "selectScenario": "Wybierz scenariusz"
   },
   "agentTools": {
     "enabled": "Włączone",
@@ -2214,7 +2213,10 @@
     "fireHistory": "Run history",
     "noFires": "No runs yet",
     "openSession": "Open session",
-    "openWorkItem": "Open work item"
+    "openWorkItem": "Open work item",
+    "fireError": "Nie udało się uruchomić rutyny: {{detail}}",
+    "provider": "Dostawca",
+    "eventKind": "Zdarzenie"
   },
   "cursorPlugins": {
     "noPlugins": "Brak zainstalowanych wtyczek Cursor",

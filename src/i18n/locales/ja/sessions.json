@@ -477,11 +477,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Trajectory / Todo パネルを表示",
-        "placeholderTrajectoryTitle": "イベントがありません",
-        "placeholderTrajectorySubtitle": "Agent が実行されると、セッションの活動がここに表示されます",
-        "placeholderTodoTitle": "Todo リストがありません",
-        "placeholderTodoSubtitle": "Agent がタスクを書き込むと、Todo の更新がここに表示されます"
+        "expandPanel": "Trajectory / Todo パネルを表示"
       },
       "previousEvent": "前のイベント",
       "nextEvent": "次のイベント",
@@ -2545,7 +2541,8 @@
     "failedToInterrupt": "Session の中断に失敗しました",
     "failedToStop": "Agent の停止に失敗しました",
     "failedToCheckChanges": "ファイルの変更を確認できませんでした。変更を元に戻して続行します。",
-    "insufficientBalance": "ホスト型 ORGII サービスの残高が不足しています。orgii.ai/wallet でチャージしてください。"
+    "insufficientBalance": "ホスト型 ORGII サービスの残高が不足しています。orgii.ai/wallet でチャージしてください。",
+    "runQueuedBehindCheckout": "キュー待ち: 別の実行がこのチェックアウトを使用中です。完了次第開始します。"
   },
   "planning": {
     "agentTyping": "Agent が入力中...",

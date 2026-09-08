@@ -21,7 +21,7 @@ import type {
   WorkStationTabType,
 } from "./types";
 
-export { getFileName } from "@src/util/file/pathUtils";
+export { getFileExtension, getFileName } from "@src/util/file/pathUtils";
 
 // ============================================
 // Types
@@ -83,7 +83,6 @@ const DEFAULT_CATEGORY_BY_TYPE: Record<
   "dom-component-preview": "preview",
   terminal: "terminal",
   search: "search",
-  "ai-impact": "ai-impact",
   "search-sessions": "search-sessions",
   "url-preview": "preview",
   "browser-session": "browser",
@@ -170,9 +169,4 @@ export function defineTabFactory<TData>(
       hideWhenOthersExist: config.hideWhenOthersExist ?? false,
     };
   };
-}
-
-export function getFileExtension(name: string): string {
-  const parts = name.split(".");
-  return parts.length > 1 ? parts[parts.length - 1] : "";
 }

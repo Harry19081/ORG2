@@ -67,6 +67,11 @@ vi.mock("./UsageRoundsTable", () => ({
 }));
 
 vi.mock("./UsageStatCards", () => ({ default: () => null }));
+vi.mock("./WeeklyQuotaHistoryPanel", () => ({
+  default: () =>
+    createElement("div", { "data-testid": "weekly-quota-history" }),
+}));
+
 vi.mock("@src/engines/ChatPanel/StartPageQuotaGrid", () => ({
   StartPageQuotaGrid: () =>
     createElement("div", { "data-testid": "quota-summary" }),
@@ -244,6 +249,7 @@ describe("SessionUsagePanel", () => {
     );
 
     expect(quotaSummary).toBeGreaterThanOrEqual(0);
+    expect(markup).toContain('data-testid="weekly-quota-history"');
     expect(quotaSummary).toBeLessThan(sourceControls);
     expect(titleControls).toBeGreaterThan(quotaSummary);
     expect(titleControls).toBeLessThan(sourceControls);

@@ -29,7 +29,6 @@ export type WorkStationTabType =
   | "dom-component-preview" // Pasted DOM-component JSON viewer (Raw / Preview iframe)
   | "terminal"
   | "search" // Repository-wide search tab
-  | "ai-impact" // AI session impact dashboard
   | "search-sessions" // Session search + table (reuses SessionTable; launchpad tab)
   | "url-preview" // URL preview (agent-triggered webview in editor)
   // Browser tabs
@@ -89,7 +88,6 @@ export type WorkStationTabCategory =
   | "git" // git-diff, source-control, git-commit-detail, git-stash-detail, git-log
   | "search"
   | "terminal"
-  | "ai-impact"
   | "search-sessions"
   | "preview"
   | "subagent"
@@ -231,7 +229,6 @@ export function getWorkstationTabOwnership(
     case "terminal-content":
     case "dom-component-preview":
     case "search":
-    case "ai-impact":
     case "search-sessions":
     case "url-preview":
     case "subagent-detail":

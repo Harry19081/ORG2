@@ -127,6 +127,7 @@ const CursorSetup: React.FC<CursorSetupProps> = ({
     <SectionContainer>
       <SectionRow
         label={t("keyVault.apiKeyLabel")}
+        layout="vertical"
         description={
           isGuided
             ? t("keyVault.cursorApiKeyBrowserHint")
@@ -247,6 +248,7 @@ const CursorSetup: React.FC<CursorSetupProps> = ({
             <SectionRow
               label={t("keyVault.sessionTokenLabel")}
               description={t("keyVault.sessionTokenManualHint")}
+              layout="vertical"
               required
             >
               <Input

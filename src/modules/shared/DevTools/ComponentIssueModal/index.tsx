@@ -18,6 +18,7 @@ import {
   getPreviousElement,
   setLastHoveredElement,
 } from "@src/util/core/error/componentIssueTracker/";
+import { copyText } from "@src/util/data/clipboard";
 
 import { ComponentIssuePayloadView } from "./ComponentIssueModalContent";
 import "./index.scss";
@@ -71,8 +72,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
         viewport: payload.viewport,
       },
     };
-    navigator.clipboard
-      .writeText(JSON.stringify(copyData, null, 2))
+    copyText(JSON.stringify(copyData, null, 2))
       .then(() => Message.success("Component issue payload copied"))
       .catch(() => Message.error("Failed to copy payload"));
   }, [payload]);
@@ -82,8 +82,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
       Message.warning(`No ${label.toLowerCase()} to copy.`);
       return;
     }
-    navigator.clipboard
-      .writeText(value)
+    copyText(value)
       .then(() => Message.success(`${label} copied`))
       .catch(() => Message.error(`Failed to copy ${label.toLowerCase()}`));
   }, []);

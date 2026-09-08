@@ -2129,8 +2129,7 @@
     "terminalProcesses": "Tiến trình terminal",
     "chatPreview": "Xem trước trò chuyện",
     "scenario": "Kịch bản",
-    "selectScenario": "Chọn một kịch bản",
-    "sessionSimulation": "Mô phỏng phiên"
+    "selectScenario": "Chọn một kịch bản"
   },
   "rulesTabs": {
     "rules": "Quy tắc",
@@ -2217,7 +2216,10 @@
     "fireHistory": "Run history",
     "noFires": "No runs yet",
     "openSession": "Open session",
-    "openWorkItem": "Open work item"
+    "openWorkItem": "Open work item",
+    "fireError": "Không thể bắt đầu Routine: {{detail}}",
+    "provider": "Nhà cung cấp",
+    "eventKind": "Sự kiện"
   },
   "cursorPlugins": {
     "noPlugins": "Không có plugin Cursor nào được cài đặt",

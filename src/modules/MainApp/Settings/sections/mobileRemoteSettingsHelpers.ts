@@ -1,7 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { TFunction } from "i18next";
 
-import { resolveMobileRemoteRelayPreset } from "@src/config/mobileRemoteRelay";
 import { MOBILE_REMOTE_DEFAULT_LAN_PORT } from "@src/config/settingsSchema/registry/mobileRemote";
 
 /** Shown in the WS URL when LAN exposure is on but no host has been resolved yet. */
@@ -68,27 +67,15 @@ export function isMobileRemoteLanHostPlaceholder(host: string): boolean {
   return host.trim() === MOBILE_REMOTE_LAN_HOST_PLACEHOLDER;
 }
 
-/** Local `orgii-mobile-relay` dev still authenticates with a shared desktop token. */
-export function usesLocalRelayDesktopToken(relayUrl: string): boolean {
-  return resolveMobileRemoteRelayPreset(relayUrl) === "local";
-}
-
 export function isMobileRemoteRelayUrlConfigured(relayUrl: string): boolean {
   return /^wss?:\/\//.test(relayUrl.trim());
 }
 
 export function isMobileRemoteRelayReady(args: {
   relayUrl: string;
-  desktopToken: string;
   cloudSignedIn: boolean;
 }): boolean {
-  if (!isMobileRemoteRelayUrlConfigured(args.relayUrl)) {
-    return false;
-  }
-  if (usesLocalRelayDesktopToken(args.relayUrl)) {
-    return args.desktopToken.trim().length >= 24;
-  }
-  return args.cloudSignedIn;
+  return isMobileRemoteRelayUrlConfigured(args.relayUrl) && args.cloudSignedIn;
 }
 
 function isRelayAuthFailureMessage(message: string): boolean {
@@ -103,10 +90,9 @@ function isRelayAuthFailureMessage(message: string): boolean {
   );
 }
 
-/** Map relay broker errors to ORG2 Cloud vs local-token guidance in Settings. */
+/** Map relay authentication errors to actionable ORG2 Cloud guidance. */
 export function formatMobileRemoteRelayStatusMessage(
   message: string | null | undefined,
-  relayUrl: string,
   cloudSignedIn: boolean,
   t: TFunction<"settings">
 ): string | null {
@@ -114,23 +100,6 @@ export function formatMobileRemoteRelayStatusMessage(
     return null;
   }
   const trimmed = message.trim();
-  if (usesLocalRelayDesktopToken(relayUrl)) {
-    if (
-      trimmed.toLowerCase().includes("token") &&
-      trimmed.toLowerCase().includes("invalid")
-    ) {
-      return t("mobileRemote.relayStatusLocalTokenInvalid");
-    }
-    return trimmed;
-  }
-
-  const lower = trimmed.toLowerCase();
-  if (
-    lower.includes("desktop relay token") ||
-    (lower.includes("desktop token") && lower.includes("24"))
-  ) {
-    return t("mobileRemote.relayStatusCloudLoginRequired");
-  }
   if (isRelayAuthFailureMessage(trimmed)) {
     return cloudSignedIn
       ? t("mobileRemote.relayStatusAuthFailedSignedIn")

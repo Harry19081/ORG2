@@ -1,5 +1,7 @@
 import type React from "react";
 
+import type { SessionFollowUpSuggestion } from "@src/api/services/sessionFollowUpSuggestions";
+
 import type { ScrollNavState } from "./ChatHistory";
 import type { InlineSection } from "./InputArea/components/CollapsedInlineRow";
 import type { FileChangesResult } from "./InputArea/components/compactFileChangesHelpers";
@@ -32,6 +34,8 @@ interface GroupChatPendingMessageView {
 export interface ChatViewComposerSectionProps {
   sessionId: string;
   inputAreaSessionId: string;
+  /** Native execution episode controlled by Stop while the source stays visible. */
+  controlSessionId?: string | null;
   showMainComposer: boolean;
   composerRef: React.Ref<HTMLDivElement>;
   inputBoxRef?: React.Ref<HTMLDivElement>;
@@ -51,6 +55,7 @@ export interface ChatViewComposerSectionProps {
   processExpanded: boolean;
   queuedMessages: import("@src/store/ui/messageQueueAtom").QueuedMessage[];
   onCancelQueuedMessage: (messageId: string) => void;
+  onClearQueuedMessages: () => void;
   onSendQueuedMessageNow: (messageId: string) => void;
   onReorderQueuedMessages: (fromIndex: number, toIndex: number) => void;
   onToggleQueue: () => void;
@@ -72,4 +77,6 @@ export interface ChatViewComposerSectionProps {
   customMentionOptions: ReadonlyArray<CustomMentionOption>;
   queueEditProps: QueueEditInputAreaProps;
   disableStopWhenEmpty?: boolean;
+  followUpSuggestions: ReadonlyArray<SessionFollowUpSuggestion>;
+  onFollowUpSuggestionSent: () => void;
 }

@@ -61,6 +61,7 @@ const CopilotPinnedSection: React.FC<CopilotPinnedSectionProps> = ({
         <SectionContainer>
           <SectionRow
             label={t("keyVault.pasteToken")}
+            layout="vertical"
             description={t("keyVault.copilotTokenHint")}
             required
           >

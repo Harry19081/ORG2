@@ -13,21 +13,9 @@ import Markdown from "@src/components/MarkDown";
 import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { NestedActivityListForSession } from "@src/engines/ChatPanel/blocks/SubagentBlock/NestedActivityList";
+import { formatElapsedTime } from "@src/engines/ChatPanel/blocks/SubagentBlock/SubagentHelpers";
 import { ArrowRight01Icon, HugeiconsIcon, Tick01Icon } from "@src/icons";
 import type { SubagentDetailTabData } from "@src/store/workstation/tabs/types";
-
-// ============================================
-// Helpers
-// ============================================
-
-function formatElapsedTime(ms: number): string {
-  if (ms < 1000) return `${ms}ms`;
-  const seconds = Math.round(ms / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}m ${remainingSeconds}s`;
-}
 
 // ============================================
 // Main Component

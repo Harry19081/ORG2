@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "Nachrichten erscheinen mit der ersten Antwort; bis dahin kann die Leiste inaktiv wirken",
     "pleaseSelect": "Bitte auswählen",
     "noSessionsFound": "Keine Session gefunden",
-    "noBrowsingHistory": "Kein Browserverlauf",
     "typeToSearchFiles": "Zum Suchen von Dateien eingeben...",
     "selectFileToViewChanges": "Wählen Sie eine Datei, um Änderungen anzuzeigen",
     "failedToLoadHistory": "Verlauf konnte nicht geladen werden",
@@ -2058,17 +2057,7 @@
     "showLess": "Weniger Anzeigen"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Keine AI-Sitzungs-Wirkungsdaten vorhanden",
-    "sessions": "Sitzungen",
-    "files": "Dateien",
-    "functions": "Funktionen",
-    "commits": "Commits",
-    "lines": "Zeilen",
-    "sessionBreakdown": "Sitzungsdetails",
-    "human": "Human",
-    "completed": "Abgeschlossen",
-    "incomplete": "Unvollständig"
+    "lines": "Zeilen"
   },
   "sessions": {
     "title": "Sitzungen",

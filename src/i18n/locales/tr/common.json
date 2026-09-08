@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "İlk yanıtla mesajlar görünür; o zamana kadar araç çubuğu boşta görünebilir",
     "pleaseSelect": "Lütfen seçin",
     "noSessionsFound": "Session bulunamadı",
-    "noBrowsingHistory": "Gezinti geçmişi yok",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
     "failedToLoadHistory": "Geçmiş yüklenemedi",
@@ -2055,17 +2054,7 @@
     "showLess": "Daha Az Göster"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Henüz AI oturum etki verisi yok",
-    "sessions": "Oturumlar",
-    "files": "Dosyalar",
-    "functions": "Fonksiyonlar",
-    "commits": "Commit",
-    "lines": "Satırlar",
-    "sessionBreakdown": "Oturum Detayları",
-    "human": "Human",
-    "completed": "Tamamlandı",
-    "incomplete": "Eksik"
+    "lines": "Satırlar"
   },
   "sessions": {
     "title": "Oturumlar",

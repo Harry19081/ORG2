@@ -955,7 +955,6 @@
     "chatHistoryAgentWorkingHint": "首則回覆到達後會顯示訊息，此前工具列可能顯示閒置",
     "pleaseSelect": "請選擇",
     "noSessionsFound": "未找到 Session",
-    "noBrowsingHistory": "暫無瀏覽記錄",
     "typeToSearchFiles": "輸入以搜索文件...",
     "selectFileToViewChanges": "選擇文件以查看變更",
     "failedToLoadHistory": "加載歷史記錄失敗",
@@ -2069,17 +2068,7 @@
     "showLess": "收起"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "暫無 AI 會話影響數據",
-    "sessions": "會話",
-    "files": "涉及文件",
-    "functions": "函數",
-    "commits": "Commit",
-    "lines": "代碼行",
-    "sessionBreakdown": "會話明細",
-    "human": "Human",
-    "completed": "已完成",
-    "incomplete": "未完成"
+    "lines": "代碼行"
   },
   "sessions": {
     "title": "會話",

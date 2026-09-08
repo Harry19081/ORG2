@@ -480,11 +480,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Показать панель trajectory и todo",
-        "placeholderTrajectoryTitle": "Пока нет событий",
-        "placeholderTrajectorySubtitle": "Активность сессии появится здесь после запуска Agent",
-        "placeholderTodoTitle": "Нет списков задач",
-        "placeholderTodoSubtitle": "Обновления todo появятся, когда Agent запишет задачи"
+        "expandPanel": "Показать панель trajectory и todo"
       },
       "previousEvent": "Предыдущее событие",
       "nextEvent": "Следующее событие",
@@ -2590,7 +2586,8 @@
     "failedToInterrupt": "Не удалось прервать Session",
     "failedToStop": "Не удалось остановить Agent",
     "failedToCheckChanges": "Не удалось проверить изменения файлов. Будет выполнен откат.",
-    "insufficientBalance": "Недостаточно средств для использования хостингового сервиса ORGII. Пополните счёт на orgii.ai/wallet."
+    "insufficientBalance": "Недостаточно средств для использования хостингового сервиса ORGII. Пополните счёт на orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "В очереди: этот checkout занят другим запуском. Запуск начнётся, как только он завершится."
   },
   "planning": {
     "agentTyping": "Agent печатает...",

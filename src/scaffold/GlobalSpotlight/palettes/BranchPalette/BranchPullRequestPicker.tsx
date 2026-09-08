@@ -19,6 +19,7 @@ import {
 } from "@src/components/Dropdown/tokens";
 import { Placeholder } from "@src/components/Placeholder";
 import { useDropdownEngine } from "@src/hooks/dropdown";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { ArrowDown01Icon, Refresh04Icon } from "@src/icons";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { preparePullRequestBranch } from "@src/services/git/operations/preparePullRequestBranch";
@@ -84,14 +85,9 @@ export function BranchPullRequestPicker({
   const [selectionError, setSelectionError] = useState<string | null>(null);
   const pendingRef = useRef(false);
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const inputRef = useRef<HTMLInputElement>(null);
   const fallbackAnchor = useRef<HTMLElement>(null);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
 
   const select = useCallback(
     async (pr: OpenPRItem) => {

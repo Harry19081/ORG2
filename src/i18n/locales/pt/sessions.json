@@ -484,11 +484,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajetória",
         "tabTodo": "Tarefas",
-        "expandPanel": "Mostrar painel de trajetória e tarefas",
-        "placeholderTrajectoryTitle": "Ainda não há eventos",
-        "placeholderTrajectorySubtitle": "A atividade da sessão aparecerá aqui quando o Agent for executado",
-        "placeholderTodoTitle": "Sem listas de tarefas",
-        "placeholderTodoSubtitle": "As atualizações de tarefas aparecerão aqui quando o Agent registrar tarefas"
+        "expandPanel": "Mostrar painel de trajetória e tarefas"
       },
       "previousEvent": "Evento anterior",
       "nextEvent": "Próximo evento",
@@ -2570,7 +2566,8 @@
     "failedToInterrupt": "Falha ao interromper a sessão",
     "failedToStop": "Falha ao parar o Agent",
     "failedToCheckChanges": "Não foi possível verificar as alterações de arquivo. Prosseguindo com a reversão.",
-    "insufficientBalance": "Saldo insuficiente para o serviço hospedado ORGII. Recarregue em orgii.ai/wallet."
+    "insufficientBalance": "Saldo insuficiente para o serviço hospedado ORGII. Recarregue em orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "Na fila: outra execução está usando este checkout. Começará assim que ela terminar."
   },
   "revertConfirm": {
     "title": "Alterações de arquivo não salvas",

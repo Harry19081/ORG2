@@ -478,11 +478,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Trajectory ve todo panelini göster",
-        "placeholderTrajectoryTitle": "Henüz olay yok",
-        "placeholderTrajectorySubtitle": "Agent çalıştığında oturum etkinliği burada görünür",
-        "placeholderTodoTitle": "Yapılacak listesi yok",
-        "placeholderTodoSubtitle": "Agent görev yazdığında todo güncellemeleri burada görünür"
+        "expandPanel": "Trajectory ve todo panelini göster"
       },
       "previousEvent": "Önceki olay",
       "nextEvent": "Sonraki olay",
@@ -2547,7 +2543,8 @@
     "failedToInterrupt": "Session kesintiye uğratılamadı",
     "failedToStop": "Agent durdurulamadı",
     "failedToCheckChanges": "Dosya değişiklikleri kontrol edilemedi. Geri alma işlemi gerçekleştirilecek.",
-    "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin."
+    "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin.",
+    "runQueuedBehindCheckout": "Kuyrukta: başka bir çalıştırma bu checkout'u kullanıyor. O bitince başlayacak."
   },
   "planning": {
     "agentTyping": "Agent yazıyor...",

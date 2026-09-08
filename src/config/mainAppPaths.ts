@@ -28,7 +28,6 @@ export {
   buildSettingsPath,
   getDefaultSettingsSectionTab,
   parseCoreSettingsItem,
-  parseSettingsPath,
   parseSettingsSectionTab,
   parseSettingsTopTab,
   SETTINGS_SECTION_TABS,

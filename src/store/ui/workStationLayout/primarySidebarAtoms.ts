@@ -15,17 +15,6 @@ export const PRIMARY_SIDEBAR_TABS = {
 export type PrimarySidebarTabKey =
   (typeof PRIMARY_SIDEBAR_TABS)[keyof typeof PRIMARY_SIDEBAR_TABS];
 
-export const PRIMARY_SIDEBAR_TAB_ORDER = [
-  PRIMARY_SIDEBAR_TABS.FILES,
-  PRIMARY_SIDEBAR_TABS.SEARCH,
-] as const;
-
-export const PRIMARY_SIDEBAR_TAB_LABELS: Record<PrimarySidebarTabKey, string> =
-  {
-    [PRIMARY_SIDEBAR_TABS.FILES]: "Files",
-    [PRIMARY_SIDEBAR_TABS.SEARCH]: "Search",
-  };
-
 /**
  * Primary sidebar selected tab. Session-only — not persisted across
  * restarts because the default Search tab is the active primary sidebar entry.

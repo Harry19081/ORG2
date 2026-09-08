@@ -948,7 +948,6 @@
     "chatHistoryAgentWorkingHint": "Wiadomości pojawią się z pierwszą odpowiedzią; do tego czasu pasek może wyglądać na bezczynny",
     "pleaseSelect": "Wybierz",
     "noSessionsFound": "Nie znaleziono sesji",
-    "noBrowsingHistory": "Brak historii przeglądania",
     "typeToSearchFiles": "Wpisz, aby wyszukać pliki...",
     "selectFileToViewChanges": "Wybierz plik, aby zobaczyć zmiany",
     "failedToLoadHistory": "Nie udało się załadować historii",
@@ -2068,17 +2067,7 @@
     "showLess": "Pokaż mniej"
   },
   "aiImpact": {
-    "title": "Wpływ AI",
-    "noData": "Brak danych o wpływie sesji AI",
-    "sessions": "Sesje",
-    "files": "Dotknięte pliki",
-    "functions": "Funkcje",
-    "commits": "Commity",
-    "lines": "Linie",
-    "sessionBreakdown": "Podział sesji",
-    "human": "Człowiek",
-    "completed": "Ukończone",
-    "incomplete": "Nieukończone"
+    "lines": "Linie"
   },
   "sessions": {
     "title": "Sesje",
