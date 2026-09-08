@@ -3108,5 +3108,21 @@
   "titleBar": {
     "showDevTools": "Show DevTools",
     "hideDevTools": "Hide DevTools"
+  },
+  "weeklyQuotaHistory": {
+    "title": "Weekly quota history",
+    "description": "Quota remaining · Last 28 days · Sampled hourly while the app is visible and online · Missing readings are gaps",
+    "error": "Quota history is unavailable. It will retry when you return to this window",
+    "empty": "Connect a Claude Code, Codex, or OpenCode Go account in Key Vault to start tracking",
+    "loading": "Loading quota history…",
+    "unsupported": "This account does not report a weekly quota",
+    "unavailable": "Latest reading unavailable; check the account connection in Key Vault",
+    "pending": "Waiting for the next hourly sample",
+    "remaining": "Remaining %",
+    "refresh": "Refresh",
+    "account": "Account",
+    "stale": "Last observation is over two hours old",
+    "disabled": "Sampling paused for this disabled account",
+    "limit": "Showing up to 128 accounts"
   }
 }

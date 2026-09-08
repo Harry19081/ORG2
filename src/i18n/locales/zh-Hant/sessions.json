@@ -2956,5 +2956,21 @@
   "titleBar": {
     "showDevTools": "顯示 DevTools",
     "hideDevTools": "隱藏 DevTools"
+  },
+  "weeklyQuotaHistory": {
+    "title": "每週額度歷史",
+    "description": "剩餘額度 · 最近 28 天 · 應用程式可見且連線時每小時取樣 · 缺失資料保留為空白",
+    "error": "暫時無法讀取額度歷史，返回此視窗時將重試",
+    "empty": "在金鑰庫中連接 Claude Code、Codex 或 OpenCode Go 帳戶以開始記錄",
+    "loading": "正在載入額度歷史…",
+    "unsupported": "此帳戶未提供每週額度",
+    "unavailable": "最新取樣無法取得，請檢查金鑰庫中的帳戶連線",
+    "pending": "等待下一次每小時取樣",
+    "remaining": "剩餘 %",
+    "refresh": "刷新",
+    "account": "帳戶",
+    "stale": "最近一次取樣已超過兩小時",
+    "disabled": "此帳戶已停用，取樣已暫停",
+    "limit": "最多顯示 128 個帳戶"
   }
 }
