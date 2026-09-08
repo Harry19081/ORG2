@@ -8,13 +8,13 @@
 
 Totals: fix 0; keep with reason 3; abstract 0 (visual patterns only).
 
-**Control-flow blocker:** `handleConfirmStop` rethrows RPC failure, while StopConfirmModal calls the async callback without awaiting/catching it. A failed stop closes the modal through finally and has no error feedback. The direct hook test catches the rejection but does not verify the rendered action. Require error ownership and a rendered rejection regression before ready; this existing behavior was not silently broadened during the audit.
+**Control-flow correction:** Stop rejection is owned by the coordinator reducer. Failure keeps the dialog open, clears the in-flight lock, displays a localized PageNotice, and permits retry. A rendered regression clicks the real modal button, rejects the desktop call, checks the error, and retries successfully. Navigation and unmount still invalidate old modal completions.
 
 ## Architecture
 
 Reviewed ownership, route FSM, typed pairing intent, async stop lifecycle, errors and test coverage. Authentication, socket lifetime and persistent schema remain in their existing owners and are not changed here. The main app explicitly disables demo default; internal demo fixtures remain for test/development use. The old development-root test expected the removed Try demo action; its assertion is updated to require real pairing and reject that action.
 
-Pairing progresses welcome → payload validation → SAS (when required) → connecting → sessions. Consumed links are guarded against repeated route resets. Stop is single-flight; changing route or unmounting invalidates only UI completion, not the already-issued remote command. Account/runtime defects documented in parent #1380 still apply. Physical navigation/focus/light-dark screenshots and actual stop/offline interactions are not reverified.
+Pairing progresses welcome → payload validation → SAS (when required) → connecting → sessions. Consumed links are guarded against repeated route resets. Stop is single-flight; changing route or unmounting invalidates only UI completion, not the already-issued remote command. Parent #1380 now contains the auth-owner and roster corrections. Physical navigation/focus/light-dark screenshots and actual stop/offline interactions are not reverified.
 
 | Area               | Verdict | Evidence                                     | Change or reason kept                              | Verification                 |
 | ------------------ | ------- | -------------------------------------------- | -------------------------------------------------- | ---------------------------- |
@@ -23,4 +23,4 @@ Pairing progresses welcome → payload validation → SAS (when required) → co
 | Scope/isolation    | keep    | Route changes invalidate operation symbol    | Late stop cannot close a different session's modal | Regression test              |
 | Rendering/hot path | keep    | No new streaming subscriber                  | Existing context use retained                      | No runtime performance claim |
 
-Verification: 9 tests passed across MobileRemoteApp, useMobileRemoteCoordinator and MobileRemoteDevelopmentRoot. Performance verdict: blocked — no physical-device lifecycle measurements; this does not clear parent runtime blockers.
+Verification: full MobileRemote suite passed 267 tests in 46 files; the final reducer correction passed all 5 coordinator tests, typecheck, scoped ESLint and git diff --check. The existing audit keeps 3 visual patterns; PageNotice supplies the error state. Performance verdict: blocked — physical-device lifecycle measurements and screenshots were not run. No visual approval is inferred from jsdom.

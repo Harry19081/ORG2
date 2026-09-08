@@ -3,6 +3,7 @@ import React, { act } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { StopConfirmModal } from "../components/modals/StopConfirmModal";
 import { useMobileRemoteCoordinator } from "./useMobileRemoteCoordinator";
 
 const mocks = vi.hoisted(() => ({ stopSession: vi.fn(), disconnect: vi.fn() }));
@@ -14,6 +15,10 @@ vi.mock("../app", () => ({
   }),
 }));
 
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
+
 describe("useMobileRemoteCoordinator", () => {
   let root: Root;
   let container: HTMLDivElement;
@@ -22,11 +27,25 @@ describe("useMobileRemoteCoordinator", () => {
     IS_REACT_ACT_ENVIRONMENT?: boolean;
   };
   let previous: boolean | undefined;
-  function Probe({ intent = null }: { intent?: string | null }) {
+  function Probe({
+    intent = null,
+    modal = false,
+  }: {
+    intent?: string | null;
+    modal?: boolean;
+  }) {
     const value = useMobileRemoteCoordinator(intent);
     React.useEffect(() => {
       current = value;
     });
+    if (modal)
+      return React.createElement(StopConfirmModal, {
+        visible: value.nav.stopModalOpen,
+        confirming: value.stopConfirming,
+        failed: value.stopFailed,
+        onConfirm: () => void value.handleConfirmStop(),
+        onCancel: () => value.dispatch({ type: "close_stop_modal" }),
+      });
     return React.createElement("div", null, value.nav.screen);
   }
   beforeEach(() => {
@@ -102,12 +121,41 @@ describe("useMobileRemoteCoordinator", () => {
     act(() => current.dispatch({ type: "select_session", sessionId: "a" }));
     mocks.stopSession.mockRejectedValueOnce(new Error("offline"));
     await act(async () => {
-      await expect(current.handleConfirmStop()).rejects.toThrow("offline");
+      await expect(current.handleConfirmStop()).resolves.toBeUndefined();
     });
     expect(current.stopConfirming).toBe(false);
+    expect(current.stopFailed).toBe(true);
     await act(async () => {
       await current.handleConfirmStop();
     });
     expect(mocks.stopSession).toHaveBeenCalledTimes(2);
+  });
+  it("keeps the rendered stop dialog open on failure and retries the desktop command", async () => {
+    await act(async () =>
+      root.render(React.createElement(Probe, { modal: true }))
+    );
+    act(() => {
+      current.dispatch({ type: "select_session", sessionId: "a" });
+      current.dispatch({ type: "open_stop_modal" });
+    });
+    mocks.stopSession.mockRejectedValueOnce(new Error("offline"));
+    const clickStop = async () => {
+      const button = document.querySelector<HTMLButtonElement>(
+        "[data-modal-primary-action]"
+      );
+      expect(button).not.toBeNull();
+      await act(async () => button!.click());
+    };
+    await clickStop();
+    expect(current.nav.stopModalOpen).toBe(true);
+    expect(document.querySelector('[role="alert"]')?.textContent).toContain(
+      "stopConfirm.failed"
+    );
+    expect(mocks.stopSession).toHaveBeenCalledTimes(1);
+    await clickStop();
+    expect(mocks.stopSession).toHaveBeenCalledTimes(2);
+    expect(mocks.stopSession).toHaveBeenLastCalledWith("a");
+    expect(current.nav.stopModalOpen).toBe(false);
+    expect(document.querySelector('[role="alert"]')).toBeNull();
   });
 });

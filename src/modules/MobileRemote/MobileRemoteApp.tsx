@@ -35,6 +35,7 @@ function MobileRemoteRoutes({
     nav,
     dispatch,
     stopConfirming,
+    stopFailed,
     showTabBar,
     selectedSessionName,
     selectedSessionSendCapability,
@@ -105,8 +106,9 @@ function MobileRemoteRoutes({
             <StopConfirmModal
               visible={nav.stopModalOpen}
               confirming={stopConfirming}
+              failed={stopFailed}
               onCancel={() => dispatch({ type: "close_stop_modal" })}
-              onConfirm={() => void handleConfirmStop()}
+              onConfirm={() => void handleConfirmStop().catch(() => undefined)}
             />
           </>
         );

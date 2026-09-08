@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 
 import { useMobileRemote } from "../app";
 import { parseMobileRemoteWsUrl } from "../connection/parseMobileRemoteWsUrl";
@@ -10,23 +10,48 @@ import {
   reduceMobileRemoteNav,
 } from "./mobileRemoteNavigation";
 
+type CoordinatorState = {
+  nav: ReturnType<typeof createInitialMobileRemoteNavState>;
+  stopConfirming: boolean;
+  stopFailed: boolean;
+};
+type CoordinatorAction =
+  | MobileRemoteNavAction
+  | { type: "stop_pending" | "stop_failed" };
+function reduceCoordinator(
+  state: CoordinatorState,
+  action: CoordinatorAction
+): CoordinatorState {
+  if (action.type === "stop_pending")
+    return { ...state, stopConfirming: true, stopFailed: false };
+  if (action.type === "stop_failed")
+    return { ...state, stopConfirming: false, stopFailed: true };
+  return {
+    nav: reduceMobileRemoteNav(state.nav, action),
+    stopConfirming: action.type === "open_stop_modal" && state.stopConfirming,
+    stopFailed: false,
+  };
+}
+
 /** Route intent owner; connection execution remains in ConnectingLiveBridge. */
 export function useMobileRemoteCoordinator(
   recoveredPairingIntent: string | null
 ) {
   const { connection, sessions, stopSession, disconnect } = useMobileRemote();
-  const [nav, reduce] = useReducer(
-    reduceMobileRemoteNav,
+  const [{ nav, stopConfirming, stopFailed }, reduce] = useReducer(
+    reduceCoordinator,
     undefined,
-    createInitialMobileRemoteNavState
+    () => ({
+      nav: createInitialMobileRemoteNavState(),
+      stopConfirming: false,
+      stopFailed: false,
+    })
   );
-  const [stopConfirming, setStopConfirming] = useState(false);
   const stopAttemptRef = useRef<symbol | null>(null);
   const dispatch = useCallback((action: MobileRemoteNavAction) => {
     // Navigation supersedes modal-local work, but does not cancel the remote command.
     if (action.type !== "open_stop_modal") {
       stopAttemptRef.current = null;
-      setStopConfirming(false);
     }
     reduce(action);
   }, []);
@@ -93,18 +118,22 @@ export function useMobileRemoteCoordinator(
     if (!nav.selectedSessionId || stopAttemptRef.current) return;
     const attempt = Symbol("mobile-stop");
     stopAttemptRef.current = attempt;
-    setStopConfirming(true);
+    reduce({ type: "stop_pending" });
     try {
       await stopSession(nav.selectedSessionId);
-    } finally {
       if (stopAttemptRef.current === attempt) {
         dispatch({ type: "close_stop_modal" });
+      }
+    } catch {
+      if (stopAttemptRef.current === attempt) {
+        stopAttemptRef.current = null;
+        reduce({ type: "stop_failed" });
       }
     }
   }, [nav.selectedSessionId, stopSession, dispatch]);
 
   const handleConnectionRetry = useCallback(() => {
-    void disconnect();
+    void disconnect().catch(() => undefined);
     dispatch({ type: "back_to_welcome" });
   }, [disconnect, dispatch]);
 
@@ -113,6 +142,7 @@ export function useMobileRemoteCoordinator(
     nav,
     dispatch,
     stopConfirming,
+    stopFailed,
     showTabBar,
     selectedSessionName,
     selectedSessionSendCapability,

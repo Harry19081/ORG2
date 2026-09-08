@@ -78,6 +78,7 @@
     "notAvailable": "—"
   },
   "stopConfirm": {
+    "failed": "Could not stop the turn. It may still be running. Try again or check the desktop.",
     "title": "Stop current Agent turn?",
     "body": "Sends a cancel command to the desktop. Whether running shell processes terminate depends on Agent policy.",
     "cancel": "Cancel",
