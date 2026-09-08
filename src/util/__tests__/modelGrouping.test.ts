@@ -196,13 +196,13 @@ describe("isLegacyGroup", () => {
     expect(isLegacyGroup(group)).toBe(true);
   });
 
-  it("treats Claude 4.6 (406) as current", () => {
+  it("treats Claude 4.6 (406) as older", () => {
     const group: ModelGroup = {
       label: "Sonnet 4.6",
       sortVersion: 406,
       models: [],
     };
-    expect(isLegacyGroup(group)).toBe(false);
+    expect(isLegacyGroup(group)).toBe(true);
   });
 
   it("treats GPT 4 (400) as legacy (< 540)", () => {
