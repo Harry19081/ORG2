@@ -32,7 +32,8 @@
     "tauri:build:fast:local": "node scripts/tauri/build-fast-local.cjs",
     "tauri:build:fast:open": "node scripts/tauri/build-fast-open.cjs",
     "tauri:build:release": "node scripts/tauri/run-with-features.cjs build",
-    "tauri:ios:init": "cd apps/remote-ios && ../../node_modules/.bin/tauri ios init --ci",
+    "tauri:ios:icons": "node scripts/tauri/ios-icons.mjs",
+    "tauri:ios:init": "cd apps/remote-ios && ../../node_modules/.bin/tauri ios init --ci && cd ../.. && pnpm tauri:ios:icons",
     "tauri:ios:dev": "cd apps/remote-ios && ../../node_modules/.bin/tauri ios dev",
     "tauri:ios:build": "cd apps/remote-ios && ../../node_modules/.bin/tauri ios build",
     "clean:cache": "node scripts/dev/clean-cache-if-large.js --node-cache",
@@ -67,7 +68,14 @@
     "check:unused-exports": "knip",
     "check:unused-exports:all": "knip --include files,dependencies,devDependencies,exports,types,nsExports,nsTypes",
     "check:e2e-oauth-guards": "node scripts/quality/check-e2e-oauth-guards.mjs",
-    "check:i18n:cloud": "node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix cloud && node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix collaboration.forkImported"
+    "check:i18n:cloud": "node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix cloud && node scripts/quality/check-missing-i18n-keys.mjs --namespace navigation --prefix collaboration.forkImported",
+    "check:typed-lint": "node scripts/quality/typed-lint/check.mjs",
+    "test:typed-lint": "node --test scripts/quality/typed-lint/*.test.mjs",
+    "check:boundaries": "node scripts/quality/dependency-boundaries/check.mjs",
+    "test:boundaries": "node --test scripts/quality/dependency-boundaries/*.test.mjs",
+    "check:queue-authority": "node scripts/quality/queue-authority/check.mjs",
+    "test:queue-authority": "node --test scripts/quality/queue-authority/*.test.mjs",
+    "test:mutation": "stryker run config/stryker.config.mjs"
   },
   "keywords": [
     "orgii",
@@ -235,7 +243,10 @@
     "webpack": "^5.91.0",
     "webpack-bundle-analyzer": "^5.1.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^4.15.1",
+    "dependency-cruiser": "16.10.4",
+    "@stryker-mutator/core": "8.7.1",
+    "@stryker-mutator/vitest-runner": "8.7.1"
   },
   "eslintConfig": {
     "root": true,

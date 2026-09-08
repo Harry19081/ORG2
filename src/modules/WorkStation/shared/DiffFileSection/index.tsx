@@ -53,10 +53,6 @@ const LazyPptxPreview = React.lazy(
   () =>
     import("@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/FilePreviewContent/PptxPreview")
 );
-const LazyPagesPreview = React.lazy(
-  () =>
-    import("@src/modules/WorkStation/CodeEditor/Panels/EditorMainPane/content/FilePreviewContent/PagesPreview")
-);
 const LazyCodeMirrorDiff = React.lazy(
   () => import("@src/features/CodeMirror/Diff")
 );
@@ -264,10 +260,6 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
       case "pptx":
         return (
           <LazyPptxPreview filePath={absoluteFilePath} className="h-full" />
-        );
-      case "pages":
-        return (
-          <LazyPagesPreview filePath={absoluteFilePath} className="h-full" />
         );
       default:
         return null;

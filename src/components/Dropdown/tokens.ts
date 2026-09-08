@@ -28,7 +28,7 @@ export const DROPDOWN_PANEL = {
   shadowDark: "0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)",
 
   /**
-   * Half-strength shadow for in-flow cards (e.g. InlineAlert) that want the
+   * Half-strength shadow for in-flow cards (e.g. PageNotice) that want the
    * same lift as a floating panel at half the intensity.
    */
   shadowSoftClass: "shadow-dropdown-soft",

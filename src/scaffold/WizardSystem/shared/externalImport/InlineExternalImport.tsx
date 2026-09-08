@@ -3,12 +3,13 @@ import { useTranslation } from "react-i18next";
 
 import type { ItemKind } from "@src/api/types/externalImport";
 import Button from "@src/components/Button";
+import PageNotice from "@src/components/PageNotice";
 import SettingsTable from "@src/components/SettingsTable";
 import type { CursorRepo } from "@src/hooks/policies";
 import {
   ChevronsDownUpIcon,
-  Download01Icon,
   HugeiconsIcon,
+  ImportIcon,
   UnfoldMoreIcon,
 } from "@src/icons";
 import {
@@ -168,17 +169,18 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
             )}
 
             {importError && (
-              <div className="rounded border border-solid border-danger-3 bg-danger-1 px-3 py-2 text-[12px] text-danger-6">
+              <PageNotice type="danger" role="alert">
                 {t("agentOrgs.externalImport.applyFailed", {
                   message: importError,
                 })}
-              </div>
+              </PageNotice>
             )}
             {importErrors.length > 0 && (
-              <div className="rounded border border-solid border-warning-3 bg-warning-1 px-3 py-2 text-[12px] text-warning-6">
-                <div className="mb-1 font-bold">
-                  {t("agentOrgs.externalImport.partialFailure")}
-                </div>
+              <PageNotice
+                type="warning"
+                role="alert"
+                title={t("agentOrgs.externalImport.partialFailure")}
+              >
                 <ul className="list-inside list-disc">
                   {importErrors.map((entry) => (
                     <li key={`${entry.sourcePath}:${entry.targetName}`}>
@@ -187,7 +189,7 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </PageNotice>
             )}
 
             {hasImportable && (
@@ -197,8 +199,8 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
                   size="small"
                   icon={
                     <HugeiconsIcon
-                      icon={Download01Icon}
-                      data-icon="download"
+                      icon={ImportIcon}
+                      data-icon="import"
                       size={14}
                     />
                   }

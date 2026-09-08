@@ -870,7 +870,7 @@
     "moreActions": "Więcej akcji...",
     "formatSql": "Formatuj SQL (upiększ)",
     "queryHistory": "Historia zapytań",
-    "executeQuery": "Wykonaj zapytanie (Ctrl+Enter)",
+    "executeQuery": "Wykonaj zapytanie ({{shortcut}})",
     "startVoiceInput": "Rozpocznij wprowadzanie głosowe",
     "cancelRecording": "Anuluj nagrywanie",
     "stopAndTranscribe": "Zatrzymaj i transkrybuj",
@@ -948,7 +948,6 @@
     "chatHistoryAgentWorkingHint": "Wiadomości pojawią się z pierwszą odpowiedzią; do tego czasu pasek może wyglądać na bezczynny",
     "pleaseSelect": "Wybierz",
     "noSessionsFound": "Nie znaleziono sesji",
-    "noBrowsingHistory": "Brak historii przeglądania",
     "typeToSearchFiles": "Wpisz, aby wyszukać pliki...",
     "selectFileToViewChanges": "Wybierz plik, aby zobaczyć zmiany",
     "failedToLoadHistory": "Nie udało się załadować historii",
@@ -1644,8 +1643,9 @@
         "systemPaths": "Ścieżki systemowe",
         "usedElsewhere": "Używane w innych aplikacjach",
         "workspace": "Katalog roboczy",
-        "thisOrg": "Ten katalog roboczy",
-        "outsideOrg": "Poza tym katalogiem roboczym"
+        "thisOrg": "Ta organizacja",
+        "outsideOrg": "Poza tą organizacją",
+        "outsideNamedOrg": "Poza {{org}}"
       },
       "tabs": {},
       "addOptions": {
@@ -2067,17 +2067,7 @@
     "showLess": "Pokaż mniej"
   },
   "aiImpact": {
-    "title": "Wpływ AI",
-    "noData": "Brak danych o wpływie sesji AI",
-    "sessions": "Sesje",
-    "files": "Dotknięte pliki",
-    "functions": "Funkcje",
-    "commits": "Commity",
-    "lines": "Linie",
-    "sessionBreakdown": "Podział sesji",
-    "human": "Człowiek",
-    "completed": "Ukończone",
-    "incomplete": "Nieukończone"
+    "lines": "Linie"
   },
   "sessions": {
     "title": "Sesje",
@@ -2494,5 +2484,10 @@
   "notifications": {
     "taskCancelledToast": "Anulowano „{{name}}”",
     "taskCompletedToast": "Ukończono „{{name}}”. Otwórz sesję, aby sprawdzić wynik."
+  },
+  "documentOpen": {
+    "openInDefault": "Otwórz w {{name}}",
+    "openDefaultApp": "Otwórz w domyślnej aplikacji",
+    "openExternally": "Otwórz w zewnętrznej aplikacji"
   }
 }

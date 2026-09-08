@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "모두 읽음으로 표시",
+    "showKanban": "칸반 표시",
+    "showRuntime": "런타임 표시",
+    "pinned": "고정됨",
+    "unread": "읽지 않음",
+    "running": "실행 중",
+    "recent": "최근",
+    "empty": "세션 없음 — 앱 열기",
+    "quit": "ORG2 종료"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token context",
     "followup": "{{tokenCount}} Token follow-up",
@@ -157,7 +168,16 @@
           "24h": "24시간",
           "7d": "7일",
           "30d": "30일",
-          "all": "전체 기간"
+          "all": "전체 기간",
+          "custom": "사용자 지정 기간…"
+        },
+        "customRange": {
+          "start": "시작",
+          "end": "종료",
+          "hint": "현지 시간 · {{zone}} · 초 단위, 종료 초 포함",
+          "invalid": "종료 시간은 시작 시간보다 빠를 수 없습니다",
+          "apply": "기간 적용",
+          "cancel": "취소"
         },
         "bucket": {
           "claude": "Claude",
@@ -457,11 +477,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Trajectory 및 Todo 패널 표시",
-        "placeholderTrajectoryTitle": "아직 이벤트 없음",
-        "placeholderTrajectorySubtitle": "Agent가 실행되면 세션 활동이 여기에 표시됩니다",
-        "placeholderTodoTitle": "Todo 목록 없음",
-        "placeholderTodoSubtitle": "Agent가 작업을 작성하면 Todo 업데이트가 여기에 표시됩니다"
+        "expandPanel": "Trajectory 및 Todo 패널 표시"
       },
       "previousEvent": "이전 이벤트",
       "nextEvent": "다음 이벤트",
@@ -2526,7 +2542,8 @@
     "failedToInterrupt": "Session 중단에 실패했습니다",
     "failedToStop": "Agent 중지에 실패했습니다",
     "failedToCheckChanges": "파일 변경사항을 확인할 수 없습니다. 변경사항을 되돌립니다.",
-    "insufficientBalance": "ORGII 호스팅 서비스의 잔액이 부족합니다. orgii.ai/wallet에서 충전하세요."
+    "insufficientBalance": "ORGII 호스팅 서비스의 잔액이 부족합니다. orgii.ai/wallet에서 충전하세요.",
+    "runQueuedBehindCheckout": "대기 중: 다른 실행이 이 체크아웃을 사용 중입니다. 해당 실행이 끝나면 시작됩니다."
   },
   "planning": {
     "agentTyping": "Agent 입력 중...",
@@ -2793,6 +2810,7 @@
     },
     "url": {
       "open": "열기",
+      "changesCount": "변경 {{count}}개",
       "copyUrl": "URL 복사",
       "copied": "URL이 복사되었습니다",
       "openExternalFailed": "기본 브라우저에서 URL을 열지 못했습니다",

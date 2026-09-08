@@ -450,5 +450,3 @@ export const DesignPanel: React.FC<DesignPanelProps> = memo(
 );
 
 DesignPanel.displayName = "DesignPanel";
-
-export default DesignPanel;

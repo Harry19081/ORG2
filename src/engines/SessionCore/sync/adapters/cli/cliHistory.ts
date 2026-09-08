@@ -1,6 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 
 import { rpc } from "@src/api/tauri/rpc";
+import { cliSessionContextUsage } from "@src/api/tauri/session/contextUsage";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { processChunksRust } from "@src/engines/SessionCore/ingestion/rustBridge";
 import { createLogger } from "@src/hooks/logger";
@@ -9,7 +10,6 @@ import type {
   CliSessionStatus,
 } from "@src/types/session/session";
 
-import { registerSessionTranscriptSource } from "../../nativeTranscriptReconcile";
 import type { PostLoadResult } from "../../types";
 
 const log = createLogger("CliAdapter");
@@ -17,7 +17,6 @@ const log = createLogger("CliAdapter");
 interface StoredSession {
   status: string;
   errorMessage?: string | null;
-  totalTokens?: number;
   /** 'chunks' (legacy DB transcript) or 'native' (CLI's own store). */
   transcriptSource?: string;
 }
@@ -42,6 +41,20 @@ export async function loadCliHistory(
   return events.map(convertResultImages);
 }
 
+/**
+ * Read the provider file set's opaque revision through the same Rust binding
+ * that owns CLI transcript replay. `undefined` means this is a legacy DB
+ * transcript; `null` means a native transcript is currently
+ * unbound/unavailable and must not be cached as a stable canonical snapshot.
+ */
+export async function loadCliTranscriptRevision(
+  sessionId: string
+): Promise<string | null | undefined> {
+  const result = await rpc.cli.transcriptRevision({ sessionId });
+  if (!result.native) return undefined;
+  return result.revision ?? null;
+}
+
 export async function postLoadCliSession(
   sessionId: string,
   signal: AbortSignal
@@ -53,10 +66,8 @@ export async function postLoadCliSession(
     })) as StoredSession | null;
     if (signal.aborted || !storedSession) return result;
 
-    registerSessionTranscriptSource(sessionId, storedSession.transcriptSource);
-
-    if (typeof storedSession.totalTokens === "number") {
-      result.contextTokens = storedSession.totalTokens;
+    if (storedSession.transcriptSource) {
+      result.transcriptSource = storedSession.transcriptSource;
     }
 
     const status = storedSession.status as CliSessionStatus;
@@ -71,6 +82,17 @@ export async function postLoadCliSession(
     }
   } catch (error) {
     log.warn("[CliAdapter] postLoad status fetch failed:", error);
+  }
+  if (signal.aborted) return {};
+  try {
+    const usage = await cliSessionContextUsage(sessionId);
+    if (signal.aborted) return {};
+    result.contextUsage = usage;
+    result.contextTokens = usage?.usedTokens ?? 0;
+  } catch (error) {
+    log.warn("[CliAdapter] context telemetry unavailable:", error);
+    result.contextUsage = null;
+    result.contextTokens = 0;
   }
   return result;
 }

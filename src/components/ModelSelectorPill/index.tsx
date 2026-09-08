@@ -20,7 +20,6 @@ import ModelPillTooltipContent from "@src/components/ModelPillTooltipContent";
 import ModelPropertiesDropdown from "@src/components/ModelPropertiesDropdown";
 import PillGroup, { type PillGroupSegment } from "@src/components/PillGroup";
 import SelectorPill from "@src/components/SelectorPill";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import {
   resolveModelDisplaySelection,
   useModelAccountLookup,
@@ -64,6 +63,8 @@ interface ModelSelectorPillProps {
   settingsMenuDefaultAdvanced?: boolean;
   /** Mobile uses the combined settings menu whenever variant rows exist. */
   preferCombinedSettingsMenu?: boolean;
+  /** Prevent opening a picker while its execution inventory is unresolved. */
+  disabled?: boolean;
 }
 
 const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
@@ -85,6 +86,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
       effortSegmentOverride,
       settingsMenuDefaultAdvanced = false,
       preferCombinedSettingsMenu = false,
+      disabled = false,
     },
     ref
   ) => {
@@ -176,14 +178,15 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
               displayParts.rawValue ? undefined : displayParts.variantInfo
             }
             thinking={displayParts.rawValue ? false : displayParts.thinking}
-            shortcut={getShortcutKeys("open_model_selector")}
+            shortcutId={"open_model_selector"}
           />
         ),
         tooltipFramed: true,
         tooltipFramedWide: true,
         ariaLabel: ariaLabel ?? defaultLabel,
         active,
-        danger: !hasModelSelection,
+        danger: !disabled && !hasModelSelection,
+        disabled,
         onClick,
         dataTestId: dataTestId,
         buttonRef: modelSegmentRef,
@@ -191,7 +194,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
         leadingFlush: triggerLeadingFlush,
       };
 
-      if (!effortEditable || !effortModelId) {
+      if (disabled || !effortEditable || !effortModelId) {
         return [modelSegment];
       }
 
@@ -249,6 +252,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
       ariaLabel,
       dataTestId,
       defaultLabel,
+      disabled,
       displayParts.label,
       displayParts.rawValue,
       displayParts.thinking,
@@ -280,14 +284,18 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
       variantOptions.fastAvailableAnywhere ||
       variantOptions.thinkingToggleable;
     const useCombinedSettingsMenu =
-      preferCombinedSettingsMenu && effortModelId && canEditVariants;
+      !disabled &&
+      preferCombinedSettingsMenu &&
+      Boolean(effortModelId) &&
+      canEditVariants;
     const useSliderSettingsMenu =
+      !disabled &&
       !preferCombinedSettingsMenu &&
       effortEditable &&
-      effortModelId &&
-      variant &&
+      Boolean(effortModelId) &&
+      Boolean(variant) &&
       variantOptions.availableLevels.length > 1;
-    if (useCombinedSettingsMenu || useSliderSettingsMenu) {
+    if ((useCombinedSettingsMenu || useSliderSettingsMenu) && effortModelId) {
       return (
         <ModelSettingsMenu
           anchorRef={modelSegmentRef}

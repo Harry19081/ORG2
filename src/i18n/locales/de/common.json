@@ -866,7 +866,7 @@
     "moreActions": "Weitere Aktionen...",
     "formatSql": "SQL formatieren",
     "queryHistory": "Abfrageverlauf",
-    "executeQuery": "Abfrage ausführen (Ctrl+Enter)",
+    "executeQuery": "Abfrage ausführen ({{shortcut}})",
     "startVoiceInput": "Spracheingabe starten",
     "cancelRecording": "Aufnahme abbrechen",
     "stopAndTranscribe": "Stoppen und transkribieren",
@@ -944,7 +944,6 @@
     "chatHistoryAgentWorkingHint": "Nachrichten erscheinen mit der ersten Antwort; bis dahin kann die Leiste inaktiv wirken",
     "pleaseSelect": "Bitte auswählen",
     "noSessionsFound": "Keine Session gefunden",
-    "noBrowsingHistory": "Kein Browserverlauf",
     "typeToSearchFiles": "Zum Suchen von Dateien eingeben...",
     "selectFileToViewChanges": "Wählen Sie eine Datei, um Änderungen anzuzeigen",
     "failedToLoadHistory": "Verlauf konnte nicht geladen werden",
@@ -1626,8 +1625,9 @@
         "systemPaths": "Systempfade",
         "usedElsewhere": "In anderen Apps verwendet",
         "workspace": "Arbeitsverzeichnis",
-        "thisOrg": "Dieses Arbeitsverzeichnis",
-        "outsideOrg": "Außerhalb dieses Arbeitsverzeichnisses"
+        "thisOrg": "Diese Organisation",
+        "outsideOrg": "Außerhalb dieser Organisation",
+        "outsideNamedOrg": "Außerhalb von {{org}}"
       },
       "tabs": {},
       "addOptions": {
@@ -2057,17 +2057,7 @@
     "showLess": "Weniger Anzeigen"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Keine AI-Sitzungs-Wirkungsdaten vorhanden",
-    "sessions": "Sitzungen",
-    "files": "Dateien",
-    "functions": "Funktionen",
-    "commits": "Commits",
-    "lines": "Zeilen",
-    "sessionBreakdown": "Sitzungsdetails",
-    "human": "Human",
-    "completed": "Abgeschlossen",
-    "incomplete": "Unvollständig"
+    "lines": "Zeilen"
   },
   "sessions": {
     "title": "Sitzungen",
@@ -2482,5 +2472,10 @@
   "notifications": {
     "taskCancelledToast": "„{{name}}“ wurde abgebrochen",
     "taskCompletedToast": "„{{name}}“ abgeschlossen. Öffne die Sitzung, um das Ergebnis zu prüfen."
+  },
+  "documentOpen": {
+    "openInDefault": "In {{name}} öffnen",
+    "openDefaultApp": "In Standard-App öffnen",
+    "openExternally": "In externer App öffnen"
   }
 }

@@ -416,6 +416,7 @@ export function processChatItems(
     runningArgsMap,
     duplicateAssistantIds,
     duplicateUserIds,
+    duplicateDeliveryFailureIds,
   } = buildDedupMaps(events);
 
   // ------------------------------------------
@@ -429,7 +430,8 @@ export function processChatItems(
     if (
       runningChunksToSkip.has(event.id) ||
       duplicateAssistantIds.has(event.id) ||
-      duplicateUserIds.has(event.id)
+      duplicateUserIds.has(event.id) ||
+      duplicateDeliveryFailureIds.has(event.id)
     ) {
       continue;
     }

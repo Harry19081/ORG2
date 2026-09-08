@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Đánh dấu tất cả là đã đọc",
+    "showKanban": "Hiển thị Kanban",
+    "showRuntime": "Hiển thị Runtime",
+    "pinned": "Đã ghim",
+    "unread": "Chưa đọc",
+    "running": "Đang chạy",
+    "recent": "Gần đây",
+    "empty": "Chưa có phiên — Mở ứng dụng",
+    "quit": "Thoát ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token ngữ cảnh",
     "followup": "{{tokenCount}} Token follow-up",
@@ -157,7 +168,16 @@
           "24h": "24 giờ",
           "7d": "7 ngày",
           "30d": "30 ngày",
-          "all": "Toàn bộ thời gian"
+          "all": "Toàn bộ thời gian",
+          "custom": "Khoảng tùy chỉnh…"
+        },
+        "customRange": {
+          "start": "Bắt đầu",
+          "end": "Kết thúc",
+          "hint": "Giờ địa phương · {{zone}} · Chính xác đến giây, gồm giây kết thúc",
+          "invalid": "Giờ kết thúc không được trước giờ bắt đầu",
+          "apply": "Áp dụng khoảng",
+          "cancel": "Hủy"
         },
         "bucket": {
           "claude": "Claude",
@@ -455,11 +475,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Hiện bảng trajectory và todo",
-        "placeholderTrajectoryTitle": "Chưa có sự kiện",
-        "placeholderTrajectorySubtitle": "Hoạt động phiên sẽ hiển thị khi Agent chạy",
-        "placeholderTodoTitle": "Chưa có danh sách việc",
-        "placeholderTodoSubtitle": "Cập nhật todo sẽ hiện khi Agent ghi việc cần làm"
+        "expandPanel": "Hiện bảng trajectory và todo"
       },
       "previousEvent": "Sự kiện trước",
       "nextEvent": "Sự kiện tiếp theo",
@@ -2523,7 +2539,8 @@
     "failedToInterrupt": "Ngắt Session thất bại",
     "failedToStop": "Dừng Agent thất bại",
     "failedToCheckChanges": "Không thể kiểm tra thay đổi tệp. Sẽ tiến hành hoàn tác.",
-    "insufficientBalance": "Số dư không đủ cho dịch vụ ORGII được lưu trữ. Nạp tiền tại orgii.ai/wallet."
+    "insufficientBalance": "Số dư không đủ cho dịch vụ ORGII được lưu trữ. Nạp tiền tại orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "Đang xếp hàng: một lần chạy khác đang dùng checkout này. Sẽ bắt đầu ngay khi lần chạy đó kết thúc."
   },
   "planning": {
     "agentTyping": "Agent đang nhập...",
@@ -2790,6 +2807,7 @@
     },
     "url": {
       "open": "Mở",
+      "changesCount": "{{count}} thay đổi",
       "copyUrl": "Sao chép URL",
       "copied": "Đã sao chép URL",
       "openExternalFailed": "Không thể mở URL trong trình duyệt mặc định",

@@ -164,6 +164,7 @@ vi.mock("@src/icons", () => ({
   AlertCircleIcon: "alert-circle",
   MinusSignIcon: "minus",
   Alert01Icon: "alert",
+  BanIcon: "ban",
   HugeiconsIcon: (props: Props) =>
     createElement("i", { "data-icon": props["data-icon"] }),
   ArrowRightDoubleIcon: "right",
@@ -280,6 +281,7 @@ function item(
     labels: [],
     createdAt: "2026-01-01",
     updatedAt: "2026-01-01",
+    revision: 1,
     assignee: { id: "member-1", name: "Ada", color: "#3b82f6" },
     todos: [],
     comments: [],

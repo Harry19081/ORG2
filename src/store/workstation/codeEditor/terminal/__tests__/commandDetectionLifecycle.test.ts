@@ -9,8 +9,6 @@ import {
 import {
   activeTerminalIdAtom,
   closeTerminalSessionAtom,
-  createAgentSessionTerminalAtom,
-  removeAgentSessionTerminalAtom,
   terminalSessionsAtom,
 } from "../index";
 
@@ -61,16 +59,26 @@ describe("command detection lifecycle", () => {
     expect(store.get(commandDetectionMapAtom).has("t-1")).toBe(true);
   });
 
-  it("drops the history of a removed agent-session terminal tab", () => {
-    const tabId = store.set(createAgentSessionTerminalAtom, {
-      agentSessionId: "agent-1",
-      label: "Agent",
-    });
+  it("closes an existing read-only agent tab through the normal terminal action", async () => {
+    const tabId = "agent-session-legacy-1";
+    store.set(terminalSessionsAtom, (sessions) => [
+      ...sessions,
+      {
+        id: tabId,
+        name: "Agent",
+        isActive: false,
+        readOnly: true,
+        agentSessionId: "legacy-1",
+      },
+    ]);
     store.set(commandPromptStartAtom, tabId);
-    expect(store.get(commandDetectionMapAtom).has(tabId)).toBe(true);
 
-    // Takes the agent session id (the tab id is derived from it).
-    store.set(removeAgentSessionTerminalAtom, "agent-1");
+    await store.set(closeTerminalSessionAtom, tabId);
+
+    expect(
+      store.get(terminalSessionsAtom).map((session) => session.id)
+    ).toEqual(["t-1", "t-2"]);
+    expect(store.get(activeTerminalIdAtom)).toBe("t-1");
     expect(store.get(commandDetectionMapAtom).has(tabId)).toBe(false);
   });
 });

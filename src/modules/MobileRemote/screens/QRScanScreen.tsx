@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import Textarea from "@src/components/Textarea";
 
 import { MobileActionButton } from "../components/MobileActionButton";
@@ -140,9 +140,9 @@ export function QRScanScreen({ onBack, onAcceptPairing }: QRScanScreenProps) {
           aria-label={t("pairing.urlPlaceholder")}
         />
         {errorKey ? (
-          <InlineAlert type="danger" role="alert" className="mt-2">
+          <PageNotice type="danger" role="alert" className="mt-2">
             {t(errorKey)}
-          </InlineAlert>
+          </PageNotice>
         ) : null}
         <div className="mt-4">
           <MobileActionButton

@@ -2,8 +2,19 @@ import { z } from "zod/v4";
 
 import { defineProcedure } from "../invoke";
 import * as schemas from "../schemas";
+import { WeeklyQuotaHistorySchema } from "../schemas/weeklyQuotaHistory";
 
 export const validation = {
+  listDueWeeklyQuotaAccounts: defineProcedure("list_due_weekly_quota_accounts")
+    .output(z.array(z.string()))
+    .build(),
+  getWeeklyQuotaHistory: defineProcedure("get_weekly_quota_history")
+    .output(WeeklyQuotaHistorySchema)
+    .build(),
+  sampleWeeklyQuota: defineProcedure("sample_weekly_quota")
+    .input(z.object({ keyId: z.string() }))
+    .output(z.null())
+    .build(),
   validateKey: defineProcedure("validate_key")
     .input(schemas.validation.ValidateKeyInput)
     .output(schemas.validation.ValidationResultSchema)

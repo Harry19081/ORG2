@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { Infinity01Icon, type IconSvgElement, LaptopIcon } from "@src/icons";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { type StationMode, stationModeAtom } from "@src/store/ui/simulatorAtom";
@@ -72,8 +72,8 @@ const StationModePill: React.FC = () => {
   const mySegment = t("terminology.myStation");
   const agentSegment = t("terminology.agentStation");
 
-  const myStationShortcut = getShortcutKeys(MY_STATION_SHORTCUT_ID);
-  const agentStationShortcut = getShortcutKeys(AGENT_STATION_SHORTCUT_ID);
+  const myStationShortcut = useShortcutKeys(MY_STATION_SHORTCUT_ID);
+  const agentStationShortcut = useShortcutKeys(AGENT_STATION_SHORTCUT_ID);
   const handleChange = useCallback(
     (mode: StationMode) => {
       setStationMode(mode);

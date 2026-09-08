@@ -169,9 +169,11 @@ export function renderGroupSummaryCell(
         <span className={`${SETTINGS_TABLE_CELL.primary} truncate font-medium`}>
           {row.groupLabel}
         </span>
-        <span className="shrink-0 text-[12px] text-text-3">
-          · {t("modelsTable.variantCount", { count: versionCount })}
-        </span>
+        {versionCount > 1 && (
+          <span className="shrink-0 text-[12px] text-text-3">
+            · {t("modelsTable.variantCount", { count: versionCount })}
+          </span>
+        )}
       </div>
       <GroupRowEraTag era={row.type === "current" ? "current" : "older"} />
     </div>

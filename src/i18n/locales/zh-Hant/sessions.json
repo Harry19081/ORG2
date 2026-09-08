@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "全部標為已讀",
+    "showKanban": "顯示看板",
+    "showRuntime": "顯示執行階段",
+    "pinned": "已釘選",
+    "unread": "未讀",
+    "running": "執行中",
+    "recent": "最近",
+    "empty": "尚無工作階段 — 開啟應用程式",
+    "quit": "結束 ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token 上下文",
     "followup": "{{tokenCount}} Token follow-up",
@@ -168,7 +179,16 @@
           "24h": "24 小時",
           "7d": "7 天",
           "30d": "30 天",
-          "all": "所有時間"
+          "all": "所有時間",
+          "custom": "自訂範圍…"
+        },
+        "customRange": {
+          "start": "開始",
+          "end": "結束",
+          "hint": "本地時間 · {{zone}} · 精確到秒，包含結束秒",
+          "invalid": "結束時間不能早於開始時間",
+          "apply": "套用範圍",
+          "cancel": "取消"
         },
         "bucket": {
           "claude": "Claude",
@@ -475,11 +495,7 @@
       "bottomPanel": {
         "tabTrajectory": "軌跡",
         "tabTodo": "待辦",
-        "expandPanel": "顯示軌跡與待辦面板",
-        "placeholderTrajectoryTitle": "暫無事件",
-        "placeholderTrajectorySubtitle": "Agent 運行後，會話活動將顯示在這裏",
-        "placeholderTodoTitle": "暫無待辦列表",
-        "placeholderTodoSubtitle": "Agent 寫入任務後，待辦更新將顯示在這裏"
+        "expandPanel": "顯示軌跡與待辦面板"
       },
       "previousEvent": "上一個事件",
       "nextEvent": "下一個事件",
@@ -2541,7 +2557,8 @@
     "failedToInterrupt": "中斷 Session 失敗",
     "failedToStop": "停止 Agent 失敗",
     "failedToCheckChanges": "無法檢查文件變更，將自動還原。",
-    "insufficientBalance": "ORGII 托管服務餘額不足，請前往 orgii.ai/wallet 儲值。"
+    "insufficientBalance": "ORGII 托管服務餘額不足，請前往 orgii.ai/wallet 儲值。",
+    "runQueuedBehindCheckout": "已排隊：另一個執行正在使用此檢出目錄，待其結束後將自動開始。"
   },
   "planning": {
     "agentTyping": "Agent 正在輸入...",
@@ -2808,6 +2825,7 @@
     },
     "url": {
       "open": "開啟",
+      "changesCount": "{{count}} 項變更",
       "copyUrl": "複製 URL",
       "copied": "URL 複製",
       "openExternalFailed": "無法用預設瀏覽器開啟 URL",
@@ -2939,5 +2957,21 @@
   "titleBar": {
     "showDevTools": "顯示 DevTools",
     "hideDevTools": "隱藏 DevTools"
+  },
+  "weeklyQuotaHistory": {
+    "title": "每週額度歷史",
+    "description": "剩餘額度 · 最近 28 天 · 應用程式可見且連線時每小時取樣 · 缺失資料保留為空白",
+    "error": "暫時無法讀取額度歷史，返回此視窗時將重試",
+    "empty": "在金鑰庫中連接 Claude Code、Codex 或 OpenCode Go 帳戶以開始記錄",
+    "loading": "正在載入額度歷史…",
+    "unsupported": "此帳戶未提供每週額度",
+    "unavailable": "最新取樣無法取得，請檢查金鑰庫中的帳戶連線",
+    "pending": "等待下一次每小時取樣",
+    "remaining": "剩餘 %",
+    "refresh": "刷新",
+    "account": "帳戶",
+    "stale": "最近一次取樣已超過兩小時",
+    "disabled": "此帳戶已停用，取樣已暫停",
+    "limit": "最多顯示 128 個帳戶"
   }
 }

@@ -1,10 +1,4 @@
-import React, {
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { type ReactNode, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -14,6 +8,7 @@ import Select from "@src/components/Select";
 import type { SelectOption, SelectProps } from "@src/components/Select";
 import Table, { type TableColumn } from "@src/components/Table";
 import Tooltip from "@src/components/Tooltip";
+import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
 import {
   FilterIcon,
   HugeiconsIcon,
@@ -376,22 +371,13 @@ export default function SettingsTable<RowData>({
   rootClassName = "",
 }: SettingsTableProps<RowData>) {
   const searchRef = useRef<HTMLDivElement>(null);
-  const [searchHeight, setSearchHeight] = useState(0);
   const hasSelectFilterRow =
     (!!selectFilters && selectFilters.length > 0) || !!selectFiltersExtra;
   const hasSearchBar = !!searchBar || hasSelectFilterRow;
-
-  useEffect(() => {
-    const el = searchRef.current;
-    if (!el) return;
-
-    const measure = () => setSearchHeight(el.offsetHeight);
-    measure();
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [hasSearchBar]);
+  const searchHeight = useElementDimensions(searchRef, {
+    dimension: "height",
+    deps: [hasSearchBar],
+  });
 
   const resolvedFooter =
     footer ??

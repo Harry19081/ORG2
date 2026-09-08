@@ -41,11 +41,14 @@ function groupHasAnyEnabled(
 
 /** Minimum sortVersion to be considered "current" per family */
 const CURRENT_THRESHOLDS: Record<string, number> = {
-  claude: 406, // Claude 4.6+
-  gpt: 540, // GPT 5.4+
+  claude: 408, // Claude 4.8+
+  gpt: 550, // GPT 5.5+
   gemini: 200, // Gemini 2+
-  sonnet: 406, // Sonnet 4.6+
-  opus: 406, // Opus 4.6+
+  sonnet: 408, // Sonnet 4.8+
+  opus: 408, // Opus 4.8+
+  haiku: 408, // Haiku 4.8+
+  fable: 500, // Fable 5 / 5.1+
+  mythos: 500, // Mythos 5+
   composer: 150, // Composer 1.5+
   o: 540, // O-series: o5.4+ current; o5 / o4 / o3 / o1 older
   glm: 510, // Zhipu GLM 5.1+ current; GLM 5.0 / 4.x older

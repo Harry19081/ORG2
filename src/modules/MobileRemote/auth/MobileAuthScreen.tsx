@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { HugeiconsIcon, Login02Icon } from "@src/icons";
 
@@ -79,7 +79,7 @@ export function MobileAuthScreen({
                 </p>
               </div>
               {state.phase === "error" ? (
-                <InlineAlert
+                <PageNotice
                   type="danger"
                   role="alert"
                   title={t("auth.errorTitle")}
@@ -90,7 +90,7 @@ export function MobileAuthScreen({
                   }
                 >
                   {state.message}
-                </InlineAlert>
+                </PageNotice>
               ) : null}
               <MobileActionButton
                 htmlType="button"

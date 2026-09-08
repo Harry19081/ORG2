@@ -1,8 +1,9 @@
 import { atomWithStorage } from "jotai/utils";
+import { z } from "zod/v4";
 
 import type { Session } from "@src/store/session";
+import { createZodJsonStorage } from "@src/util/core/storage/zodStorage";
 
-import { createStorage } from "./sidebarGroupByAtom";
 import { sortSessionsByActivity } from "./workstationSidebarData";
 
 export const SESSION_SORT_MODES = ["priority", "updated", "manual"] as const;
@@ -23,17 +24,13 @@ export function parseSessionOrder(raw: unknown): string[] {
 export const sidebarSessionSortAtom = atomWithStorage<SessionSortMode>(
   "orgii:sidebarSessionSort",
   "updated",
-  createStorage((raw) =>
-    SESSION_SORT_MODES.includes(raw as SessionSortMode)
-      ? (raw as SessionSortMode)
-      : "updated"
-  ),
+  createZodJsonStorage(z.enum(SESSION_SORT_MODES)),
   { getOnInit: true }
 );
 export const sidebarSessionOrderAtom = atomWithStorage<string[]>(
   "orgii:sidebarSessionOrder",
   [],
-  createStorage(parseSessionOrder),
+  createZodJsonStorage(z.array(z.unknown()).transform(parseSessionOrder)),
   { getOnInit: true }
 );
 

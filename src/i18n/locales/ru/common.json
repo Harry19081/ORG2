@@ -870,7 +870,7 @@
     "moreActions": "Дополнительные действия...",
     "formatSql": "Форматировать SQL",
     "queryHistory": "История запросов",
-    "executeQuery": "Выполнить запрос (Ctrl+Enter)",
+    "executeQuery": "Выполнить запрос ({{shortcut}})",
     "startVoiceInput": "Начать голосовой ввод",
     "cancelRecording": "Отменить запись",
     "stopAndTranscribe": "Остановить и транскрибировать",
@@ -948,7 +948,6 @@
     "chatHistoryAgentWorkingHint": "Сообщения появятся с первым ответом; до этого панель может выглядеть неактивной",
     "pleaseSelect": "Пожалуйста, выберите",
     "noSessionsFound": "Session не найдены",
-    "noBrowsingHistory": "История просмотра пуста",
     "typeToSearchFiles": "Введите для поиска файлов...",
     "selectFileToViewChanges": "Выберите файл для просмотра изменений",
     "failedToLoadHistory": "Не удалось загрузить историю",
@@ -1644,8 +1643,9 @@
         "systemPaths": "Системные пути",
         "usedElsewhere": "Используется в других приложениях",
         "workspace": "Рабочий каталог",
-        "thisOrg": "Этот рабочий каталог",
-        "outsideOrg": "За пределами этого рабочего каталога"
+        "thisOrg": "Эта организация",
+        "outsideOrg": "Вне этой организации",
+        "outsideNamedOrg": "Вне {{org}}"
       },
       "tabs": {},
       "addOptions": {
@@ -2067,17 +2067,7 @@
     "showLess": "Скрыть"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Нет данных о влиянии AI-сессий",
-    "sessions": "Сессии",
-    "files": "Файлы",
-    "functions": "Функции",
-    "commits": "Commit",
-    "lines": "Строки",
-    "sessionBreakdown": "Детали сессий",
-    "human": "Human",
-    "completed": "Завершено",
-    "incomplete": "Не завершено"
+    "lines": "Строки"
   },
   "sessions": {
     "title": "Сессии",
@@ -2494,5 +2484,10 @@
   "notifications": {
     "taskCancelledToast": "«{{name}}» отменена",
     "taskCompletedToast": "«{{name}}» завершена. Откройте сеанс, чтобы просмотреть результат."
+  },
+  "documentOpen": {
+    "openInDefault": "Открыть в {{name}}",
+    "openDefaultApp": "Открыть в приложении по умолчанию",
+    "openExternally": "Открыть во внешнем приложении"
   }
 }
