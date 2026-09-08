@@ -2,7 +2,7 @@
  * TerminalCore Component
  *
  * Reusable terminal component that can work with:
- * 1. TerminalContext (for main terminal page)
+ * 1. Canonical terminal atoms via useTerminalState (for main terminal page)
  * 2. Prop-based state (for simulator or standalone use)
  *
  * Features:

@@ -15,7 +15,6 @@ import { PILL_SM_ICON_SIZE } from "@src/components/CompoundPill/config";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelPillTooltipContent from "@src/components/ModelPillTooltipContent";
 import SelectorPill from "@src/components/SelectorPill";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import type { AdvancedConfig } from "@src/features/SessionCreator/types";
 import { useModelPillLabel } from "@src/hooks/models";
 import { AiSettingIcon, HugeiconsIcon } from "@src/icons";
@@ -99,7 +98,7 @@ const SessionCreatorInstall: React.FC<SessionCreatorInstallProps> = memo(
               modelLabel={modelTitle}
               modelId={modelIconName}
               modelType={modelTooltipType}
-              shortcut={getShortcutKeys("open_model_selector")}
+              shortcutId={"open_model_selector"}
             />
           }
           tooltipFramed

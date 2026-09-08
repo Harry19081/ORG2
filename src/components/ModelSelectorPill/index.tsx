@@ -20,7 +20,6 @@ import ModelPillTooltipContent from "@src/components/ModelPillTooltipContent";
 import ModelPropertiesDropdown from "@src/components/ModelPropertiesDropdown";
 import PillGroup, { type PillGroupSegment } from "@src/components/PillGroup";
 import SelectorPill from "@src/components/SelectorPill";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
 import {
   resolveModelDisplaySelection,
   useModelAccountLookup,
@@ -176,7 +175,7 @@ const ModelSelectorPill = forwardRef<HTMLButtonElement, ModelSelectorPillProps>(
               displayParts.rawValue ? undefined : displayParts.variantInfo
             }
             thinking={displayParts.rawValue ? false : displayParts.thinking}
-            shortcut={getShortcutKeys("open_model_selector")}
+            shortcutId={"open_model_selector"}
           />
         ),
         tooltipFramed: true,

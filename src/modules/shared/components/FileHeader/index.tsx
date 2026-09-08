@@ -72,6 +72,7 @@ export interface FileHeaderProps {
   additions?: number;
   /** Optional deletions count (for diffs) */
   deletions?: number;
+  renderFileActions?: (close: () => void) => React.ReactNode;
   /** Extra actions to render on the right */
   extraActions?: React.ReactNode;
   /** Optional control rendered immediately before the trailing more menu. */
@@ -181,6 +182,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     additions,
     deletions,
     extraActions,
+    renderFileActions,
     beforeMoreMenuSlot,
     viewMode,
     onViewModeChange,
@@ -355,6 +357,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
     const showHighlightActiveLineToggle = !!onHighlightActiveLineChange;
     const showMoreSettingsAction = !!onMoreSettings;
     const showMoreMenu =
+      !!renderFileActions ||
       showReloadButton ||
       showSearchAction ||
       showGoToLineAction ||
@@ -534,6 +537,7 @@ export const FileHeader: React.FC<FileHeaderProps> = memo(
                 {/* More actions */}
                 {showMoreMenu && (
                   <FileHeaderMoreMenu
+                    renderFileActions={renderFileActions}
                     showReloadButton={showReloadButton}
                     showSearchAction={showSearchAction}
                     showGoToLineAction={showGoToLineAction}

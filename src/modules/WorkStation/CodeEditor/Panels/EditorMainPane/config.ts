@@ -73,7 +73,9 @@ export function createEditorQuickActions(
     {
       id: "search-files",
       label: t("commands.searchFiles"),
-      shortcut: getShortcutKeys("quick_open"),
+      get shortcut() {
+        return getShortcutKeys("quick_open");
+      },
       onAction: () => openEditorSpotlight(""),
     },
     {
@@ -81,7 +83,9 @@ export function createEditorQuickActions(
       label: sidebarCollapsed
         ? t("commands.showPrimarySidebar")
         : t("commands.hidePrimarySidebar"),
-      shortcut: getShortcutKeys("toggle_workstation_sidebar"),
+      get shortcut() {
+        return getShortcutKeys("toggle_workstation_sidebar");
+      },
       onAction: () => dispatch("panel.togglePrimary", {}, "user"),
     },
   ];

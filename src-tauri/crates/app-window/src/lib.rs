@@ -22,6 +22,7 @@ mod macos_material;
 mod windows_corner;
 
 pub mod root_tint;
+pub mod shortcut_preferences;
 pub mod startup_backdrop;
 
 // ============================================
