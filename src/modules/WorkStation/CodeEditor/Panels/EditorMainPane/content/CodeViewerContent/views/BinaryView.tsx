@@ -9,11 +9,14 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
 import {
   FileHeader,
   TabBarBottomPanelToggle,
 } from "@src/modules/WorkStation/shared";
+import { FileOperationsService } from "@src/services/file/FileOperationsService";
+import { isTauriDesktop } from "@src/util/platform/tauri";
 
 import {
   ImagePreview,
@@ -21,6 +24,7 @@ import {
   VideoPreview,
 } from "../../FilePreviewContent";
 import DocumentOpenMenu from "../DocumentOpenMenu";
+import DocumentOpenSubmenu from "../DocumentOpenMenu/DocumentOpenSubmenu";
 import { isExternalDocument } from "../DocumentOpenMenu/documentApplications";
 import type { BinaryViewProps } from "../types";
 
@@ -35,9 +39,6 @@ const LazyXlsxPreview = React.lazy(
 );
 const LazyPptxPreview = React.lazy(
   () => import("../../FilePreviewContent/PptxPreview")
-);
-const LazyPagesPreview = React.lazy(
-  () => import("../../FilePreviewContent/PagesPreview")
 );
 
 const LAZY_FALLBACK = (
@@ -77,6 +78,11 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
     [onUnsavedChange, selectedFile]
   );
 
+  const handleReveal = useCallback(async () => {
+    const result = await FileOperationsService.revealInFinder(selectedFile);
+    if (!result.success) Message.error(result.message);
+  }, [selectedFile]);
+
   const headerProps = {
     publishToHost: "code",
     filePath: relativePath,
@@ -85,17 +91,17 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
     onReload,
     loading: false,
     hasUnsavedChanges: hasPreviewUnsavedChanges,
-    beforeMoreMenuSlot: (
-      <>
-        {isExternalDocument(selectedFile) && (
-          <DocumentOpenMenu
-            filePath={selectedFile}
-            hasUnsavedChanges={hasPreviewUnsavedChanges}
-          />
-        )}
-        <TabBarBottomPanelToggle />
-      </>
-    ),
+    relativePathToCopy: relativePath,
+    onRevealInFileManager: isTauriDesktop() ? handleReveal : undefined,
+    renderFileActions:
+      isTauriDesktop() &&
+      isExternalDocument(selectedFile) &&
+      !hasPreviewUnsavedChanges
+        ? (close: () => void) => (
+            <DocumentOpenSubmenu filePath={selectedFile} onClose={close} />
+          )
+        : undefined,
+    beforeMoreMenuSlot: <TabBarBottomPanelToggle />,
     isMarkdownFile: false,
     isPreviewMode: true,
     onTogglePreview: undefined,
@@ -162,16 +168,6 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
         </>
       );
 
-    case "pages":
-      return (
-        <>
-          <FileHeader {...headerProps} />
-          <Suspense fallback={LAZY_FALLBACK}>
-            <LazyPagesPreview filePath={selectedFile} className="flex-1" />
-          </Suspense>
-        </>
-      );
-
     case "database":
       return (
         <>
@@ -191,6 +187,22 @@ export const BinaryView: React.FC<BinaryViewProps> = ({
             placement="detail-panel"
             title={t("placeholders.unsupportedFileType")}
             subtitle={t("placeholders.binaryUnsupportedEncoding")}
+            action={
+              isTauriDesktop() && isExternalDocument(selectedFile)
+                ? {
+                    label: t("documentOpen.label"),
+                    renderButton: (button) => (
+                      <DocumentOpenMenu
+                        position="bottom-start"
+                        filePath={selectedFile}
+                        hasUnsavedChanges={hasPreviewUnsavedChanges}
+                      >
+                        {button}
+                      </DocumentOpenMenu>
+                    ),
+                  }
+                : undefined
+            }
             fillParentHeight
           />
         </>

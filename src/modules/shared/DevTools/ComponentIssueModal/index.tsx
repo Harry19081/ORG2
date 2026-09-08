@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { Cancel01Icon, Copy01Icon, HugeiconsIcon } from "@src/icons";
 import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import { componentIssueModalOpenAtom } from "@src/store/ui/overlayAtom";
@@ -38,6 +38,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
   onClose,
   onNavigate,
 }) => {
+  const captureShortcut = useShortcutKeys("capture_component");
   const [searchState, setSearchState] = useState({
     query: "",
     currentMatchIndex: 0,
@@ -269,9 +270,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
           <div className="component-issue-modal-content" ref={contentRef}>
             <div className="component-issue-empty">
               Hover over the UI element first, then press{" "}
-              <span className="component-issue-kbd">
-                {getShortcutKeys("capture_component")}
-              </span>
+              <span className="component-issue-kbd">{captureShortcut}</span>
             </div>
           </div>
         ) : (

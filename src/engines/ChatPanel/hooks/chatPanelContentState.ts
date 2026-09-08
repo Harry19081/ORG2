@@ -1,23 +1,15 @@
 import {
   CHAT_PANEL_CONTENT_MODE,
   type ChatPanelContentMode,
-  type ChatPanelSelectedCloudOrg,
-  type ChatPanelSelectedProject,
-  type ChatPanelSelectedProjectOrg,
-  type ChatPanelSelectedWorkItem,
-  type ChatPanelSelectedWorkspace,
 } from "@src/store/ui/chatPanel/selectionAtoms";
+import type { ChatPanelSurfaceState } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 
-interface UseChatPanelContentStateOptions {
+interface ChatPanelContentStateOptions {
   active: boolean;
   contentMode: ChatPanelContentMode;
   currentSessionId: string | null;
-  exploreOpen: boolean;
-  selectedCloudOrg: ChatPanelSelectedCloudOrg | null;
-  selectedProject: ChatPanelSelectedProject | null;
-  selectedProjectOrg: ChatPanelSelectedProjectOrg | null;
-  selectedWorkItem: ChatPanelSelectedWorkItem | null;
-  selectedWorkspace: ChatPanelSelectedWorkspace | null;
+  surface: ChatPanelSurfaceState;
 }
 
 export interface ChatPanelContentState {
@@ -33,50 +25,28 @@ export interface ChatPanelContentState {
   showWorkspaceOverviewContent: boolean;
 }
 
-export function useChatPanelContentState({
+export function resolveChatPanelContentState({
   active,
   contentMode,
   currentSessionId,
-  exploreOpen,
-  selectedCloudOrg,
-  selectedProject,
-  selectedProjectOrg,
-  selectedWorkItem,
-  selectedWorkspace,
-}: UseChatPanelContentStateOptions): ChatPanelContentState {
+  surface,
+}: ChatPanelContentStateOptions): ChatPanelContentState {
   const showSessionContent =
     active &&
+    surface.kind === CHAT_PANEL_SURFACE_KIND.SESSION &&
     contentMode === CHAT_PANEL_CONTENT_MODE.SESSION &&
     Boolean(currentSessionId);
-  const showWorkItemContent = Boolean(selectedWorkItem) && !showSessionContent;
-  const showProjectContent =
-    Boolean(selectedProject) && !showSessionContent && !showWorkItemContent;
+  const showWorkItemContent =
+    surface.kind === CHAT_PANEL_SURFACE_KIND.WORK_ITEM;
+  const showProjectContent = surface.kind === CHAT_PANEL_SURFACE_KIND.PROJECT;
   const showProjectOrgContent =
-    Boolean(selectedProjectOrg) &&
-    !showSessionContent &&
-    !showWorkItemContent &&
-    !showProjectContent;
+    surface.kind === CHAT_PANEL_SURFACE_KIND.PROJECT_ORG;
   const showExploreContent =
-    exploreOpen &&
-    !showSessionContent &&
-    !showWorkItemContent &&
-    !showProjectContent &&
-    !showProjectOrgContent;
+    surface.kind === CHAT_PANEL_SURFACE_KIND.WORKSPACE_EXPLORE;
   const showCloudOrgContent =
-    Boolean(selectedCloudOrg) &&
-    !showSessionContent &&
-    !showWorkItemContent &&
-    !showProjectContent &&
-    !showProjectOrgContent &&
-    !showExploreContent;
+    surface.kind === CHAT_PANEL_SURFACE_KIND.CLOUD_ORG;
   const showWorkspaceOverviewContent =
-    Boolean(selectedWorkspace) &&
-    !showSessionContent &&
-    !showWorkItemContent &&
-    !showProjectContent &&
-    !showProjectOrgContent &&
-    !showExploreContent &&
-    !showCloudOrgContent;
+    surface.kind === CHAT_PANEL_SURFACE_KIND.WORKSPACE_OVERVIEW;
   const showExplicitNonSessionContent =
     contentMode === CHAT_PANEL_CONTENT_MODE.NON_SESSION;
   const showPanelContent =

@@ -864,7 +864,7 @@
     "moreActions": "추가 작업...",
     "formatSql": "SQL 포맷",
     "queryHistory": "쿼리 기록",
-    "executeQuery": "쿼리 실행 (Ctrl+Enter)",
+    "executeQuery": "쿼리 실행 ({{shortcut}})",
     "startVoiceInput": "음성 입력 시작",
     "cancelRecording": "녹음 취소",
     "stopAndTranscribe": "중지하고 전사",
@@ -2476,5 +2476,10 @@
   "notifications": {
     "taskCancelledToast": "“{{name}}” 취소됨",
     "taskCompletedToast": "“{{name}}” 완료. 세션을 열어 결과를 확인하세요."
+  },
+  "documentOpen": {
+    "openInDefault": "{{name}}에서 열기",
+    "openDefaultApp": "기본 앱에서 열기",
+    "openExternally": "외부 앱에서 열기"
   }
 }

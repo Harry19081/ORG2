@@ -752,7 +752,7 @@
     "moreActions": "更多操作...",
     "formatSql": "格式化 SQL",
     "queryHistory": "查询历史",
-    "executeQuery": "执行查询 (Ctrl+Enter)",
+    "executeQuery": "执行查询 ({{shortcut}})",
     "startVoiceInput": "开始语音输入",
     "cancelRecording": "取消录制",
     "stopAndTranscribe": "停止并转录",
@@ -2565,6 +2565,9 @@
     }
   },
   "documentOpen": {
+    "openInDefault": "在 {{name}} 中打开",
+    "openDefaultApp": "在默认应用中打开",
+    "openExternally": "在外部应用中打开",
     "label": "打开方式…",
     "defaultApp": "默认应用",
     "appDefault": "{{name}}（默认）",

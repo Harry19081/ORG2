@@ -15,5 +15,3 @@ export { JsonTreeView } from "./JsonTreeView";
 export { DbPreviewView } from "./DbPreviewView";
 
 export { PdfPreview } from "./PdfPreview";
-
-export { PagesPreview } from "./PagesPreview";
