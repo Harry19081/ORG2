@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
@@ -355,7 +355,7 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
     loadNoticeKey &&
     dismissedLoadNoticeKey !== loadNoticeKey &&
     (presentedItems.length > 0 || presentedPullRequests.length > 0) ? (
-      <InlineAlert
+      <PageNotice
         type={loadState.status === "warning" ? "warning" : "danger"}
         hideIcon
         onClose={dismissLoadNotice}
@@ -368,7 +368,7 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
         }`}
       >
         {loadState.message}
-      </InlineAlert>
+      </PageNotice>
     ) : null;
 
   const listHeaderControls = useMemo(

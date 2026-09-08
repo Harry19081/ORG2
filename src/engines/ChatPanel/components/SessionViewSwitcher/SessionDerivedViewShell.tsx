@@ -5,7 +5,7 @@
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 import { CHAT_PANEL_HEADER_SURFACE_CLASS } from "@src/engines/ChatPanel/header/chatPanelHeaderLayout";
 
@@ -41,14 +41,14 @@ export const SessionDerivedViewShell: React.FC<SessionDerivedViewShellProps> =
       if (error) {
         return (
           <div className="flex min-h-0 flex-1 flex-col" style={insetStyle}>
-            <InlineAlert
+            <PageNotice
               type="danger"
               role="alert"
               dataTestId={`${testId}-error`}
               className="m-3"
             >
               {error}
-            </InlineAlert>
+            </PageNotice>
           </div>
         );
       }

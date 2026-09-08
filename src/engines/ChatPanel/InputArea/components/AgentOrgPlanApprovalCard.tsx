@@ -6,8 +6,8 @@ import {
   respondAgentOrgPlanApproval,
 } from "@src/api/tauri/agent";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Markdown from "@src/components/MarkDown";
+import PageNotice from "@src/components/PageNotice";
 import Textarea from "@src/components/Textarea";
 import { createLogger } from "@src/hooks/logger";
 import { Edit04Icon, HugeiconsIcon } from "@src/icons";
@@ -125,7 +125,7 @@ const AgentOrgPlanApprovalCard: React.FC<AgentOrgPlanApprovalCardProps> = memo(
             {t("common:status.loading", { defaultValue: "Loading plan…" })}
           </div>
         ) : loadError ? (
-          <InlineAlert
+          <PageNotice
             type="danger"
             role="alert"
             compact
@@ -141,7 +141,7 @@ const AgentOrgPlanApprovalCard: React.FC<AgentOrgPlanApprovalCardProps> = memo(
             }
           >
             {loadError}
-          </InlineAlert>
+          </PageNotice>
         ) : mode === "edit" ? (
           <Textarea
             value={content}
@@ -174,9 +174,9 @@ const AgentOrgPlanApprovalCard: React.FC<AgentOrgPlanApprovalCardProps> = memo(
         )}
 
         {error ? (
-          <InlineAlert type="danger" role="alert" compact className="mt-2">
+          <PageNotice type="danger" role="alert" compact className="mt-2">
             {error}
-          </InlineAlert>
+          </PageNotice>
         ) : null}
         {disabled ? (
           <div className="mt-2 text-[11px] text-text-3">

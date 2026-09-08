@@ -37,7 +37,7 @@ vi.mock("@src/components/Button", () => ({
   }) => React.createElement("button", { onClick }, children),
 }));
 
-vi.mock("@src/components/InlineAlert", () => ({
+vi.mock("@src/components/PageNotice", () => ({
   default: () => null,
 }));
 

@@ -6,7 +6,7 @@ import type { CliAgentType } from "@src/api/types/keys";
 import Button from "@src/components/Button";
 import type { ComposerInputRef } from "@src/components/ComposerInput";
 import { pillControlStateClass } from "@src/components/CompoundPill/config";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import SelectorPill from "@src/components/SelectorPill";
 import { COMPOSER_HORIZONTAL_GUTTER_CLASS } from "@src/config/composerStackTokens";
 import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
@@ -320,7 +320,7 @@ const SessionCreatorChatPanelView: React.FC<
       <div
         className={`mx-auto w-full ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
       >
-        <InlineAlert
+        <PageNotice
           type="warning"
           compact
           icon={
@@ -594,9 +594,9 @@ const SessionCreatorChatPanelView: React.FC<
             <div
               className={`mx-auto w-full ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
             >
-              <InlineAlert type="warning" title={t("creator.missingGit.title")}>
+              <PageNotice type="warning" title={t("creator.missingGit.title")}>
                 {t("creator.missingGit.body")}
-              </InlineAlert>
+              </PageNotice>
             </div>
           )}
 

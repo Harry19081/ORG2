@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
 import TabPill from "@src/components/TabPill";
@@ -289,9 +290,9 @@ const AgentTeamFormSections: React.FC<AgentTeamFormSectionsProps> = ({
           <>
             {hierarchyMode === "strict" ? (
               <SectionRow label="" showHeader={false}>
-                <div className="rounded-md border border-solid border-warning-3 bg-warning-1 px-3 py-2 text-xs text-warning-6">
+                <PageNotice type="warning" role="status">
                   {t("agentOrgs.orgWizard.strictBanner")}
-                </div>
+                </PageNotice>
               </SectionRow>
             ) : null}
             <SectionRow label="" showHeader={false}>
