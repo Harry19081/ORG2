@@ -49,9 +49,3 @@ export const activeBrowserTabAtom = atom((get) => {
   return state.browser.find((b) => b.isActive);
 });
 activeBrowserTabAtom.debugLabel = "activeBrowserTabAtom";
-
-export const activeTerminalSessionAtom = atom((get) => {
-  const state = get(navigationSidebarTabsAtom);
-  return state.terminal.find((t) => t.isActive);
-});
-activeTerminalSessionAtom.debugLabel = "activeTerminalSessionAtom";

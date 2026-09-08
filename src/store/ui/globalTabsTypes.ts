@@ -104,7 +104,6 @@ export const getSiteNameFromUrl = (url: string | undefined): string => {
 
 // Max size limits per tab type (FIFO eviction for oldest inactive items)
 export const MAX_BROWSER_TABS = 50;
-export const MAX_TERMINAL_SESSIONS = 20;
 
 /** Evict oldest inactive items when array exceeds maxSize. Keeps active items. */
 export function evictOldest<T extends { isActive: boolean; timestamp: number }>(
