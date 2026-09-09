@@ -169,8 +169,8 @@ const SidebarOrgSelector: React.FC<SidebarOrgSelectorProps> = React.memo(
               radius="lg"
               dropdownWidth={250}
               dropdownAlign="left"
-              className="h-8 w-full"
-              selectorClassName={`h-8 px-2! [&_.select-arrow]:text-text-2! ${
+              className="h-7 w-full"
+              selectorClassName={`h-7 px-2! [&_.select-arrow]:text-text-2! ${
                 menuOpen
                   ? "[&_.select-arrow]:opacity-100 bg-sidebar-selected!"
                   : "[&_.select-arrow]:opacity-0 group-hover/sidebar:[&_.select-arrow]:opacity-100 hover:[&_.select-arrow]:opacity-100 hover:bg-sidebar-selected!"

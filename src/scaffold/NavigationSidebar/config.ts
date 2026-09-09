@@ -21,7 +21,7 @@ export const SIDEBAR_STYLE = {
   /** Action button size */
   actionButtonSize: 28,
   /** Shared navigation row height */
-  rowHeight: 32,
+  rowHeight: 28,
   /** Border radius */
   borderRadius: 20,
   /** Item border radius */
