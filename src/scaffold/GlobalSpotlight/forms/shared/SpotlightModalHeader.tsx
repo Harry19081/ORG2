@@ -88,7 +88,7 @@ const SpotlightModalHeader: React.FC<SpotlightModalHeaderProps> = ({
         <button
           onClick={onClose}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-text-2 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500"
-          title={t("close")}
+          title={t("actions.close")}
         >
           <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={18} />
         </button>

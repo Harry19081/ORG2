@@ -102,7 +102,7 @@ export function useWorkstationSidebarContextMenu({
             action: () => handleOpenDraftInNewTab(item),
           },
           {
-            text: tCommon("sessions:sidebar.removeDraft", "Remove draft"),
+            text: tCommon("sessions:kanban.sidebar.removeDraft"),
             action: () => handleDeleteDraft(draftId),
           },
         ];

@@ -353,7 +353,20 @@
       "hoursAgo": "{{count}} hours ago",
       "inDays": "in {{count}} days",
       "inHours": "in {{count}} hours",
-      "membersGroup": "Members"
+      "membersGroup": "Members",
+      "archiveNamed": "Archive {{name}}",
+      "add": "Add property",
+      "archive": "Archive property",
+      "datePlaceholder": "YYYY-MM-DD",
+      "empty": "No custom properties yet.",
+      "loading": "Loading properties…",
+      "namePlaceholder": "Property name",
+      "no": "No",
+      "optionsPlaceholder": "Options, comma separated",
+      "optionsRequired": "Select properties require comma-separated options.",
+      "type": "Property type",
+      "updateFailed": "Property update failed",
+      "yes": "Yes"
     },
     "history": {
       "noHistory": "No history yet"
@@ -441,7 +454,18 @@
       "edited": "(edited)",
       "commentDeleted": "This comment was deleted.",
       "deleteComment": "Delete comment",
-      "deleteCommentConfirm": "Delete this comment? Replies stay, the comment body is removed."
+      "deleteCommentConfirm": "Delete this comment? Replies stay, the comment body is removed.",
+      "messageCount_one": "{{count}} message",
+      "messageCount_other": "{{count}} messages",
+      "cancelReply": "Cancel reply",
+      "conclusion": "Conclusion",
+      "reopen": "Reopen",
+      "reply": "Reply",
+      "replyingInThread": "Replying in thread",
+      "resolve": "Resolve",
+      "resolved": "Resolved",
+      "submitComment": "Submit comment",
+      "openedWorkItem": "opened this work item"
     },
     "contextMenu": {
       "status": "Status",
@@ -545,7 +569,8 @@
       "emptyOverview": "No sessions yet",
       "emptyOverviewHint": "Start an Agent session to track execution here.",
       "originTitle": "Creation session",
-      "originStatus": "Created this item"
+      "originStatus": "Created this item",
+      "runsCount": "{{count}} runs"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -566,7 +591,9 @@
       "costSummary": "Cost Summary",
       "totalCost": "Total",
       "tokens": "tokens",
-      "cycles": "cycles"
+      "cycles": "cycles",
+      "prBlocked": "Completion is blocked",
+      "prReady": "Ready to complete"
     },
     "viewWorkItems": "View work items",
     "fromRoutine": "From routine: {{name}}",
@@ -654,7 +681,17 @@
       "archive": "Archive action",
       "scopeChanged": "Quick action is no longer in this Work Item scope",
       "started": "Quick action “{{name}}” started"
-    }
+    },
+    "detailNavigation": "Work Item navigation",
+    "linkedSessions": {
+      "title": "Sessions"
+    },
+    "detail": {
+      "conversation": "Conversation",
+      "linked": "Linked"
+    },
+    "detailSummary": "Work Item summary",
+    "navigationTrail": "Work item navigation"
   },
   "settings": {
     "sidebarGeneral": "General",

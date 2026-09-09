@@ -132,7 +132,7 @@ export default function ShortcutRecorder({
             appearance="ghost"
             onClick={() => onRecord(null)}
           >
-            {t("common:cancel")}
+            {t("common:actions.cancel")}
           </Button>
         ) : (
           getOverride(id, platform) && (

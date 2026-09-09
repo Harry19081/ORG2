@@ -197,7 +197,8 @@
       "duration30m": "30 minutes",
       "duration1h": "1 hour",
       "duration2h": "2 hours",
-      "durationTomorrow": "Tomorrow"
+      "durationTomorrow": "Tomorrow",
+      "unknownRole": "Unknown role"
     },
     "guide": {
       "trigger": "Open guide",
@@ -300,7 +301,38 @@
   "myRole": {
     "tabs": {
       "status": "My status"
-    }
+    },
+    "deleteRoleMessage": "\"{{name}}\" will be removed. This cannot be undone.",
+    "activeBadge": "Active",
+    "addRole": "Add custom role",
+    "builtInTitle": "Built-in roles",
+    "customEmpty": "No custom roles yet. Add one to capture a stance the built-in three don't cover — e.g. \"Deep work\", \"Pairing\", or \"On call\".",
+    "customTitle": "Custom roles",
+    "deleteRoleCancel": "Cancel",
+    "deleteRoleOk": "Delete",
+    "deleteRoleTitle": "Delete role?",
+    "followUpSuggestionsDesc": "Suggest possible next steps after a completed Work Item turn. This uses an additional model request.",
+    "followUpSuggestionsLabel": "Agent follow-up suggestions",
+    "goalMaxTurnsDesc": "Keep working toward my last request for up to N extra turns after the agent would normally stop (0 = off).",
+    "goalMaxTurnsLabel": "Goal continuation budget",
+    "guidanceLabel": "Agent guidance",
+    "guidancePlaceholder": "How should the agent adapt its behavior when this role is active?",
+    "modeSwitchAutoPlanDesc": "Auto-switch pending Plan mode suggestions when their confirmation timer expires.",
+    "modeSwitchAutoPlanLabel": "Mode switch auto-plan",
+    "newRoleDefaultLabel": "Custom role",
+    "pageDescription": "Define the role you're playing right now. The agent reads the active role's guidance and adapts its behavior accordingly — for example, asking fewer clarifying questions when you're heads-down, or batching summaries when you're away.",
+    "pageTitle": "My Roles",
+    "planAutoApproveDesc": "Auto-approve pending plans after N seconds (0 = wait for me).",
+    "planAutoApproveLabel": "Plan auto-approve",
+    "questionAutoSkipDesc": "Auto-skip pending agent questions after N seconds (0 = wait for me).",
+    "questionAutoSkipLabel": "Question auto-skip",
+    "roleNameLabel": "Name",
+    "roleNamePlaceholder": "Role name",
+    "stanceAutonomous": "Autonomous — never wait for me",
+    "stanceDeferAndBatch": "Defer & batch — work first, ask later",
+    "stanceDesc": "How the agent treats blocking decisions while this role is active.",
+    "stanceInteractive": "Interactive — ask me freely",
+    "stanceLabel": "Behavior stance"
   },
   "launchpad": {
     "sections": {

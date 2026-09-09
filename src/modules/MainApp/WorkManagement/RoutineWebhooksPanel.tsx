@@ -197,7 +197,7 @@ const WebhookDetailPane: React.FC<WebhookDetailPaneProps> = ({
       {t("webhooks.disabled", { defaultValue: "Disabled" })}
     </span>
   );
-  const copyLabel = t("webhooks.copy", { defaultValue: "Copy" });
+  const copyLabel = t("common:actions.copy");
 
   return (
     <DetailPaneLayout

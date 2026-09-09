@@ -610,10 +610,10 @@ export function useCloudSessionsSection({
         onCopyUrl: () => {
           void copyText(buildCloudSessionReference(row))
             .then(() => {
-              Message.success(tCommon("actions.copied", "Copied"));
+              Message.success(tCommon("status.copied"));
             })
             .catch(() => {
-              Message.error(tCommon("actions.copyFailed", "Copy failed"));
+              Message.error(tCommon("status.copyFailed"));
             });
         },
         onTogglePin: () => toggleRemoteSessionPin(row.orgId, row.id),

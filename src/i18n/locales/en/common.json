@@ -547,7 +547,9 @@
     "appliedCommits": "Applied commits",
     "noAppliedCommit": "No linked commit yet",
     "noSessionsForFile": "No sessions found for this file",
-    "email": "Email"
+    "email": "Email",
+    "actions": "Actions",
+    "all": "All"
   },
   "searchModes": {},
   "tabs": {
@@ -643,7 +645,10 @@
     },
     "imageUploadFailed": "Failed to upload image",
     "imageTooLarge": "Image is too large",
-    "unknownError": "Unknown error occurred"
+    "unknownError": "Unknown error occurred",
+    "componentLoadingFailed": "Component failed to load",
+    "noLocalPath": "No local path available",
+    "openInFinderFailed": "Failed to open in Finder"
   },
   "confirmation": {
     "delete": "Are you sure you want to delete this?",
@@ -915,7 +920,9 @@
     "noRepoSelected": "No repository selected",
     "previewUnavailable": "Preview unavailable",
     "selectRepositoryFromWorkspace": "Choose a workspace repository",
-    "noData": "No data"
+    "noData": "No data",
+    "noSessionHistoryForFile": "No session activity found for {{file}}",
+    "noSessionHistory": "No session history"
   },
   "inbox": {
     "searchPlaceholder": "Search messages...",
@@ -1406,7 +1413,10 @@
         "noLabelCandidates": "No labels available",
         "labelsLoadFailed": "Could not load labels",
         "labelsUpdated": "Labels updated"
-      }
+      },
+      "navigationTrail": "Pull request navigation",
+      "failedToLoad": "Failed to load pull requests",
+      "label": "Pull request"
     },
     "issues": {
       "title": "Issues",
@@ -1534,8 +1544,13 @@
         "count_other": "{{count}} related items",
         "unavailable": "Details unavailable",
         "unavailableCount_one": "{{count}} related item could not be resolved",
-        "unavailableCount_other": "{{count}} related items could not be resolved"
-      }
+        "unavailableCount_other": "{{count}} related items could not be resolved",
+        "reference": "GitHub reference"
+      },
+      "loadingTimeline": "Loading activity…",
+      "label": "Issue",
+      "linkedLoading": "Loading linked items",
+      "detailNavigation": "Issue navigation"
     },
     "commit": {
       "copySha": "Copy SHA",
@@ -1694,7 +1709,8 @@
         "noGithubRemote": "No GitHub remote configured",
         "prSearchScope": "Search covers {{count}} loaded Pull requests",
         "prLimit": "Showing up to {{count}} open PRs",
-        "noPullRequests": "No matching Pull requests"
+        "noPullRequests": "No matching Pull requests",
+        "mainWorktree": "Main"
       },
       "placeholders": {
         "checkout": "branch",
@@ -2112,7 +2128,8 @@
       "tools": "Tools",
       "skills": "Skills",
       "mcp": "MCP",
-      "subagents": "Subagents"
+      "subagents": "Subagents",
+      "unattributed": "Unattributed"
     },
     "cacheSaved": "Cache saved: {{read}} read, {{write}} write",
     "cacheHero": "{{pct}}% served from cache · ~{{tokens}} reused this turn",
@@ -2136,7 +2153,8 @@
     "manualCompactSectionTitle": "Manual compaction",
     "miniCpmCompactTitle": "MiniCPM silent auto-compaction",
     "miniCpmCompactDescription": "Processes older context asynchronously",
-    "miniCpmCompactToggleAria": "Enable MiniCPM silent auto-compaction"
+    "miniCpmCompactToggleAria": "Enable MiniCPM silent auto-compaction",
+    "manualCompactNativeProvider": "Manual compaction here supports built-in Agent sessions. Compact native CLI history in its provider app."
   },
   "relativeDate": {
     "justNow": "just now",
@@ -2659,5 +2677,10 @@
     "loadFailed": "Applications unavailable — reopen to retry",
     "openFailed": "Could not open the document",
     "saveFirst": "Save or discard changes before opening in another application"
+  },
+  "navigation": {
+    "goToSection": "Go to {{label}}, section {{current}} of {{total}}",
+    "section": "Section {{current}}",
+    "sectionPosition": "Section {{current}} of {{total}}"
   }
 }

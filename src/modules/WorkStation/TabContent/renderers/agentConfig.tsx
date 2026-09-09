@@ -223,8 +223,8 @@ const AgentConfigInner: React.FC<AgentConfigInnerProps> = ({ data }) => {
           name: target?.name ?? "this team",
           defaultValue: `"${target?.name ?? "this team"}" will be permanently removed. This cannot be undone.`,
         }),
-        okLabel: t("common.delete", { defaultValue: "Delete" }),
-        cancelLabel: t("common.cancel", { defaultValue: "Cancel" }),
+        okLabel: t("common:actions.delete"),
+        cancelLabel: t("common:actions.cancel"),
       });
       if (!confirmed) return;
       try {
