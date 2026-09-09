@@ -351,6 +351,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     });
     const tabRowCollapsed = shouldCollapseChatPanelTabRow({
       tabCount,
+      splitPaneWidth: !isChatFocus && !useExternalWidth ? chatWidth : undefined,
     });
     const chromeTopInsetPx = resolveChatPanelChromeTopInsetPx(
       overlayChatHeaders,

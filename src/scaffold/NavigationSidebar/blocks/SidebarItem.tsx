@@ -68,7 +68,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
   return (
     <div
-      className={`group flex h-8 min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-2 transition-colors duration-150 ${rowStateClasses} ${className}`}
+      className={`group flex h-7 min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-lg px-2 transition-colors duration-150 ${rowStateClasses} ${className}`}
       onClick={onClick}
       onContextMenu={handleContextMenu}
       onAuxClick={handleAuxClick}
