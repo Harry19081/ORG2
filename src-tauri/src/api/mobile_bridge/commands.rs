@@ -6,7 +6,8 @@ use std::time::Duration;
 
 use mobile_relay_protocol::{
     PairedDeviceInfo, PairingCompleteRequest, PairingInitRequest, PairingInitResponse,
-    PermissionTier, RevokeDeviceRequest, SetPrimaryDesktopRequest,
+    PermissionTier, RevokeDeviceRequest, SetPrimaryDesktopRequest, DEVICES_PATH,
+    DEVICE_REVOKE_PATH, PAIRINGS_PATH, PAIRING_COMPLETE_PATH, PRIMARY_DESKTOP_PATH,
 };
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
@@ -150,7 +151,7 @@ pub async fn mobile_remote_pair_init(
     relay_json(
         &config,
         reqwest::Method::POST,
-        "/v1/pairings",
+        PAIRINGS_PATH,
         Some(&PairingInitRequest {
             desktop_id: config.desktop_id.clone(),
             label,
@@ -170,7 +171,7 @@ pub async fn mobile_remote_pair_complete(
     let _: PairedDeviceInfo = relay_json(
         &config,
         reqwest::Method::POST,
-        "/v1/pairings/complete",
+        PAIRING_COMPLETE_PATH,
         Some(&PairingCompleteRequest { pairing_code, tier }),
     )
     .await?;
@@ -186,7 +187,7 @@ pub async fn mobile_remote_list_devices() -> Result<Vec<PairedDeviceInfo>, Strin
 pub async fn mobile_remote_sync_devices() -> Result<Vec<PairedDeviceInfo>, String> {
     let config = RelaySettings::load();
     let query = format!(
-        "/v1/devices?desktopId={}",
+        "{DEVICES_PATH}?desktopId={}",
         url::form_urlencoded::byte_serialize(config.desktop_id.as_bytes()).collect::<String>()
     );
     relay_json::<(), Vec<PairedDeviceInfo>>(&config, reqwest::Method::GET, &query, None).await
@@ -198,7 +199,7 @@ pub async fn mobile_remote_revoke_device(device_id: String) -> Result<(), String
     let _: Value = relay_json(
         &config,
         reqwest::Method::POST,
-        "/v1/devices/revoke",
+        DEVICE_REVOKE_PATH,
         Some(&RevokeDeviceRequest { device_id }),
     )
     .await?;
@@ -211,7 +212,7 @@ pub async fn mobile_remote_set_primary_desktop(desktop_id: String) -> Result<(),
     let _: Value = relay_json(
         &config,
         reqwest::Method::POST,
-        "/v1/desktops/primary",
+        PRIMARY_DESKTOP_PATH,
         Some(&SetPrimaryDesktopRequest { desktop_id }),
     )
     .await?;
