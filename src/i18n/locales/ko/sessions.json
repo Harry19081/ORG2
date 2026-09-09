@@ -11,9 +11,6 @@
     "quit": "ORG2 종료"
   },
   "toolUsage": {
-    "estimatedContext": "{{tokenCount}} Token context",
-    "followup": "{{tokenCount}} Token follow-up",
-    "decision": "{{tokenCount}} Token decision",
     "tooltip": "Estimated tool attribution. Method: {{method}}. Input: {{inputBytes}} bytes. Output: {{outputBytes}} bytes. Decision: {{decisionTokens}} Token. Context: {{contextTokens}} Token. Follow-up: {{followupTokens}} Token. 관련 LLM cache read: {{cacheReadTokens}} Token. 관련 LLM cache write: {{cacheWriteTokens}} Token."
   },
   "humanSession": {
@@ -21,88 +18,24 @@
   },
   "history": {
     "untitledSession": "제목 없는 Session",
-    "prStatus": {
-      "merged": "병합됨",
-      "open": "열림",
-      "draft": "초안"
-    },
     "detail": {
-      "sessionInfo": "Session 정보",
-      "repository": "저장소",
-      "branch": "브랜치",
       "created": "생성일",
-      "updated": "업데이트됨",
       "lastUpdated": "마지막 업데이트",
       "external": "외부",
       "internal": "내부",
       "rounds": "라운드",
       "roundCount_one": "{{count}} 라운드",
       "roundCount_other": "{{count}} 라운드",
-      "agentWorked": "Agent 작업",
-      "reasoningModel": "Reasoning Model",
-      "codingModel": "Coding Model",
-      "sessionMode": "Session 모드",
-      "fileChanges": "파일 변경",
-      "filesChanged": "변경된 파일",
-      "files": "파일",
-      "summary": "요약",
-      "workflow": "워크플로우",
-      "agent": "Agent:",
-      "pilotSession": "Pilot Session",
-      "openSession": "Session 열기",
-      "viewPR": "PR 보기",
-      "rawData": "원시 데이터",
-      "analytics": {
-        "title": "Event 분석",
-        "toolUsage": "도구 사용",
-        "filesTouched": "관련 파일",
-        "conversation": "대화",
-        "tokenUsage": "Token 사용량",
-        "errors": "오류",
-        "duration": "소요 시간",
-        "events": "이벤트 수",
-        "toolCalls": "도구 호출",
-        "files": "파일",
-        "tool": "도구",
-        "calls": "호출 수",
-        "done": "완료",
-        "userMessages": "사용자 메시지",
-        "assistantMessages": "Agent 메시지",
-        "userChars": "사용자 문자 수",
-        "assistantChars": "Agent 문자 수",
-        "avgResponseTime": "평균 응답 시간",
-        "thinkingEvents": "사고 이벤트",
-        "inputTokens": "입력 Token",
-        "outputTokens": "출력 Token",
-        "totalTokens": "총 Token",
-        "model": "모델",
-        "input": "입력",
-        "output": "출력",
-        "totalErrors": "오류",
-        "totalFailures": "실패",
-        "errorRate": "오류율"
-      },
-      "impact": {
-        "title": "Impact Graph",
-        "files": "파일",
-        "functions": "함수",
-        "commits": "Commit",
-        "lines": "줄",
-        "filesTouched": "관련 파일",
-        "functionsCreated": "생성된 함수",
-        "commitsInfluenced": "영향받은 Commit"
-      }
+      "agentWorked": "Agent 작업"
     }
   },
   "kanban": {
     "card": {
       "openAsFloatingPane": "플로팅 패널로 열기"
     },
-    "sessions": "Session",
     "view": {
       "list": "List",
       "diary": "다이어리",
-      "kanban": "Kanban",
       "dataSource": "데이터 소스"
     },
     "dataSource": {
@@ -277,12 +210,8 @@
       }
     },
     "list": {
-      "updated": "Updated",
-      "timeRange": "Time Range",
       "started": "Started",
       "lastUpdated": "Last Updated",
-      "agentModel": "Agent · Model",
-      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "No sessions match these filters",
       "emptyDescription": "Try a different status, Agent type, or time window."
     },
@@ -298,7 +227,6 @@
     },
     "autoArchive": {
       "label": "자동 보관",
-      "shortLabel": "보관",
       "never": "안 함",
       "12h": "12h",
       "24h": "24h",
@@ -310,9 +238,7 @@
       "inProgress": "진행 중",
       "blocking": "차단 중",
       "turnFinished": "턴 완료",
-      "archived": "보관됨",
-      "yourTurn": "당신 차례",
-      "finished": "종료됨"
+      "archived": "보관됨"
     },
     "boardColumns": {
       "todo": "할 일",
@@ -324,43 +250,17 @@
       "cancelled": "실패"
     },
     "sidebar": {
-      "agentTypes": "Agent 유형",
-      "manageItems": "항목 관리",
-      "sessionsView": "Sessions View",
-      "workitemView": "Workitem View",
-      "views": "보기",
-      "cliAgent": "CLI Agent",
-      "rustAgent": "Rust Agent",
       "removeDraft": "초안 제거",
       "showSubagents": "subagent 표시",
       "hideSubagents": "subagent 숨기기"
     },
-    "resultStatus": {
-      "completed": "완료",
-      "failed": "실패",
-      "archived": "보관됨"
-    },
     "detail": {
       "title": "제목",
-      "description": "설명",
-      "tags": "태그",
-      "status": "상태"
+      "tags": "태그"
     },
-    "addContent": "콘텐츠 추가",
     "merge": {
       "conflictsIn": "충돌 파일: {{files}}",
       "failed": "병합 실패",
-      "failedToLoadDiff": "차이 로드 실패",
-      "noChanges": "변경 없음",
-      "worktree": "Worktree",
-      "branch": "브랜치：",
-      "base": "베이스：",
-      "mergeLabel": "병합：",
-      "statusPending": "대기 중",
-      "statusMerged": "병합 완료",
-      "statusConflict": "충돌",
-      "statusSkipped": "건너뜀",
-      "statusFailed": "실패",
       "retryMerge": "병합 재시도",
       "dirtyRepo": "병합할 수 없습니다: 저장소에 커밋되지 않은 변경 사항이 있습니다. 먼저 커밋하거나 스태시하세요.",
       "strategyLabel": "병합 전략",
@@ -368,45 +268,16 @@
       "strategyFf": "패스트포워드",
       "strategyLeave": "브랜치로 남기기",
       "discardConfirmTitle": "Worktree를 삭제하시겠습니까?",
-      "discardConfirmMessage": "브랜치와 모든 변경 사항이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.",
-      "merge": "병합",
-      "merging": "병합 중…",
-      "merged": "병합됨"
-    },
-    "discard": {
-      "discard": "버리기",
-      "discarding": "버리는 중…",
-      "confirmMessage": "이 Worktree의 모든 변경 사항을 버리겠습니까? 이 작업은 취소할 수 없습니다."
+      "discardConfirmMessage": "브랜치와 모든 변경 사항이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다."
     },
     "diary": {
-      "title": "Diary",
       "previousDay": "이전 날",
       "nextDay": "다음 날",
-      "subtitle": "일일 Agent 활동",
-      "engineeringHours": "Engineering hours",
-      "engineeringHoursHint": "누적 Agent 시간",
-      "onlineHours": "Online hours",
-      "onlineHoursHint": "중복 제거된 병렬 시간",
-      "activeSessions": "활성 Session",
-      "completedSessions": "완료됨",
-      "timeline": "이벤트 타임라인",
       "commits": "Commits",
       "emptyTitle": "Diary 이벤트 없음",
       "emptySubtitle": "이 날짜의 Agent 활동이 여기에 표시됩니다.",
-      "event": {
-        "started": "Session 시작",
-        "completed": "Session 완료",
-        "stillWorking": "아직 작업 중"
-      },
       "commitsTo": "{{repo}} Commits",
       "commitsToMultiple": "{{repos}} Commits"
-    },
-    "orgtrack": {
-      "filesChanged_one": "{{count}} file",
-      "filesChanged_other": "{{count}} files",
-      "commits_one": "{{count}} commit",
-      "commits_other": "{{count}} commits",
-      "committedRateShort": "{{percent}}% committed"
     },
     "detailView": {
       "trajectory": "Trajectory",
@@ -414,83 +285,22 @@
       "noTouchedFiles": "No files touched"
     }
   },
-  "changes": {
-    "scope": {
-      "thisSession": "이 Session",
-      "allUncommitted": "커밋되지 않은 전체"
-    },
-    "empty": {
-      "workingTreeClean": "작업 트리가 깨끗합니다",
-      "noChangesYet": "아직 변경 사항 없음",
-      "noUncommittedChanges": "저장소에 커밋되지 않은 변경 사항 없음",
-      "changesWillAppear": "AI가 만든 변경 사항이 여기에 표시됩니다"
-    },
-    "noChangesToReview": "검토할 변경 사항 없음"
-  },
-  "sync": {
-    "preparing": "파일 준비 중...",
-    "uploading": "파일 동기화 중...",
-    "processing": "마켓에서 처리 중...",
-    "complete": "파일 동기화 성공!",
-    "error": "동기화 실패",
-    "default": "동기화 중...",
-    "files": "{{count}}개 파일"
-  },
   "simulator": {
     "captionBarToggleTooltip": "Agent 메시지 표시줄 표시",
-    "parentSession": "메인 Agent",
-    "backgroundTasks": "Background Tasks",
-    "backgroundTasksEmpty": "Background Tasks 없음",
     "noActiveSession": "활성 세션 없음",
     "tabs": {
-      "desktop": "데스크톱",
-      "tasks": "작업",
-      "kanban": "칸반",
-      "changes": "변경 사항",
-      "conflicts": "충돌",
-      "plan": "Plan"
-    },
-    "settings": {
-      "title": "Simulator 보기",
-      "showDock": "Dock 표시",
-      "playback": "재생",
-      "speed": "속도",
-      "autoScroll": "자동 스크롤"
-    },
-    "tasks": {
-      "noTasksFound": "작업을 찾을 수 없습니다",
-      "tasksWillAppear": "작업이 실행되면 여기에 표시됩니다",
-      "selectTask": "작업을 선택하여 활동 보기"
-    },
-    "kanban": {
-      "noTasksYet": "아직 작업 없음",
-      "tasksWillAppear": "이 세션에서 작업이 시작되면 여기에 작업이 표시됩니다"
+      "kanban": "칸반"
     },
     "replay": {
-      "following": "따라가기",
-      "freeBrowsing": "자유 탐색",
-      "replaying": "재생 중",
       "freeBrowse": "자유 탐색",
       "follow": "따라가기",
       "dockShowChatInput": "채팅 입력 표시",
-      "dockHideChatInput": "채팅 입력 숨기기",
-      "bottomPanel": {
-        "tabTrajectory": "Trajectory",
-        "tabTodo": "Todo",
-        "expandPanel": "Trajectory 및 Todo 패널 표시"
-      },
       "previousEvent": "이전 이벤트",
       "nextEvent": "다음 이벤트",
       "play": "재생",
       "pause": "일시정지",
-      "playbackSpeed": "재생 속도",
-      "noEvents": "이벤트 없음",
-      "agentHasNotUsedTool": "Agent가 아직 이 도구를 사용하지 않았습니다",
       "browser": {
         "tabs": {
-          "browser": "브라우저",
-          "search": "검색",
-          "fetch": "가져오기",
           "agentBrowser": "Agent 브라우저",
           "searchFetch": "검색 및 가져오기"
         },
@@ -504,8 +314,7 @@
           "noBrowserActivity": "브라우저 활동 없음",
           "noBrowserInteractions": "브라우저 상호작용 없음",
           "noWebSearches": "웹 검색 없음",
-          "noPagesFetched": "가져온 페이지 없음",
-          "noBrowserActivityYet": "아직 브라우저 활동이 없습니다"
+          "noPagesFetched": "가져온 페이지 없음"
         },
         "header": {
           "categoryBrowser": "브라우저",
@@ -523,13 +332,10 @@
           "exitCode": "[종료 코드: {{code}}]"
         },
         "codePanel": {
-          "hiddenLines": "{{count}}줄 숨김",
           "editHeader": "편집 {{index}}",
           "startingAtLine": "({{line}}번째 줄부터)",
           "fileEditedSuccess": "✓ 파일이 성공적으로 편집되었습니다",
           "truncatedSuffix": "\n... (잘림)",
-          "headerDirectory": "디렉터리",
-          "headerSearchPrefix": "검색: {{query}}",
           "searchResultLinePrefix": "L{{line}}",
           "resultCount_one": "결과 {{count}}개",
           "resultCount_other": "결과 {{count}}개",
@@ -549,23 +355,12 @@
           "emptyNoFilesEdited": "편집한 파일 없음",
           "emptyNoExploreOperations": "탐색 작업 없음",
           "emptyNoCommands": "명령 없음",
-          "emptyNoToolCalls": "도구 호출 없음",
-          "searchDisplayListDir": "list_dir",
-          "searchDisplaySearch": "검색",
-          "searchSecondaryResults": "{{count}}개 결과"
-        },
-        "terminal": {
-          "tabTerminal": "터미널",
-          "viewStructured": "구조화",
-          "viewRaw": "원시",
-          "emptySelectCommand": "볼 명령을 선택하세요"
+          "emptyNoToolCalls": "도구 호출 없음"
         }
       },
       "diffApp": {
-        "allTabLabel": "전체",
         "tabLabel": "Diff",
         "emptyForFilter": "아직 Diff가 없습니다",
-        "emptyDetail": "변경 사항을 선택하여 Diff를 확인하세요.",
         "submissions": {
           "tabLabel": "제출",
           "commits": "Commits",
@@ -577,53 +372,11 @@
         }
       },
       "channelsSidebar": {
-        "chatHistoryTab": "채팅 기록",
         "messages": "메시지",
         "interactions": "상호작용",
-        "todoList": "할 일 목록",
-        "kanban": "칸반",
-        "todoUpdate": "할 일 업데이트",
-        "noMessages": "아직 메시지가 없습니다",
-        "noInteractions": "아직 상호작용이 없습니다",
-        "noTodos": "아직 할 일 이벤트가 없습니다",
-        "interactionAskQuestion": "질문",
-        "interactionAskPermission": "권한 요청",
-        "interactionModeSwitch": "모드 전환",
-        "interactionPlanDoc": "Plan 문서",
-        "interactionGeneric": "상호작용"
+        "kanban": "칸반"
       },
       "messages": {
-        "viewer": {
-          "think": {
-            "title": "내부 대화",
-            "subtitle_one": "생각 {{count}}개 표시 중",
-            "subtitle_other": "생각 {{count}}개 표시 중"
-          },
-          "todo": {
-            "title": "할 일 목록",
-            "subtitle": "최신 작업 목록"
-          },
-          "chat": {
-            "title": "사용자와 채팅",
-            "subtitle_one": "메시지 {{count}}개",
-            "subtitle_other": "메시지 {{count}}개"
-          },
-          "interaction": {
-            "title": "상호작용",
-            "subtitle_one": "상호작용 {{count}}개",
-            "subtitle_other": "상호작용 {{count}}개"
-          }
-        },
-        "empty": {
-          "think": {
-            "title": "아직 생각 없음",
-            "subtitle": "Agent의 생각이 여기에 표시됩니다"
-          },
-          "todo": {
-            "title": "아직 할 일 목록 없음",
-            "subtitle": "작업 목록이 여기에 표시됩니다"
-          }
-        },
         "bubble": {
           "smartDateYesterday": "어제",
           "senderTitle": {
@@ -658,21 +411,8 @@
             "출력 없음. 가끔은 조용합니다. [생각 미리보기 없음]",
             "메시지 없음. 미리보기가 안 나왔어요. [생각 미리보기 없음]"
           ],
-          "labelLatest": "최근 생각",
           "labelThought": "생각"
         }
-      },
-      "database": {
-        "operation": {
-          "explore": "탐색",
-          "runSql": "SQL 실행"
-        },
-        "row": {
-          "tablePrefix": "테이블: {{name}}",
-          "resultErrorPrefix": "오류: ",
-          "resultArrowPrefix": "→ "
-        },
-        "headerTitle": "데이터베이스 작업"
       },
       "project": {
         "operation": {
@@ -697,12 +437,6 @@
           "list_contributors": "기여자 목록",
           "add_delegation": "위임 추가"
         },
-        "row": {
-          "projectPrefix": "Project: {{name}}",
-          "workItemPrefix": "작업 항목: {{title}}",
-          "resultErrorPrefix": "오류: ",
-          "resultArrowPrefix": "→ "
-        },
         "headerTitle": "Project 작업"
       },
       "canvas": {
@@ -713,34 +447,9 @@
         "tooltipCloseCanvas": "Canvas 닫기",
         "iframeTitle": "Agent Canvas"
       },
-      "trajectory": {
-        "closeSidebar": "사이드바 닫기",
-        "toggleSidebar": "Trajectory 사이드바 전환",
-        "fallbackUnknownStep": "알 수 없는 단계",
-        "stepHeader": {
-          "actionsCount": "액션 {{count}}개"
-        },
-        "event": {
-          "unknownFile": "알 수 없는 파일",
-          "noCommand": "명령 없음",
-          "todoMoreSuffix": "{{first}} (+{{count}}개 더)",
-          "todosCount": "할 일 {{count}}개",
-          "todosUpdated": "할 일 {{count}}개 업데이트됨",
-          "noQuery": "쿼리 없음",
-          "activityFallback": "활동",
-          "processing": "처리 중...",
-          "messageEllipsis": "메시지...",
-          "readUserMessage": "사용자 메시지 읽기",
-          "sessionFallback": "Session"
-        }
-      },
-      "followingApp": "팔로우 중: {{appName}}",
       "followingAgent": "Agent 팔로우 중",
       "trajectoryAgent": "Agent 궤적 팔로우",
-      "trajectoryThisApp": "이 앱 팔로우",
-      "followAgent": "Agent 팔로우",
-      "followThisApp": "현재 앱 팔로우",
-      "followApp": "{{appName}} 팔로우"
+      "trajectoryThisApp": "이 앱 팔로우"
     },
     "codeEditor": {
       "switchToListView": "목록 보기로 전환",
@@ -754,42 +463,17 @@
       "title": "시스템 부팅 중",
       "subtitle": "워크스페이스 환경을 초기화하는 중..."
     },
-    "awaitingActivity": "활동 대기 중...",
-    "askUser": {
-      "agentQuestion": "Agent 질문",
-      "submitResponse": "응답 제출",
-      "responseReceived": "응답 수신됨",
-      "optional": "선택 사항",
-      "defaultQuestion": "Agent가 질문이 있습니다",
-      "enterField": "{{field}} 입력..."
-    },
-    "askUserPending": {
-      "incomingRequest": "수신된 요청이 있습니다",
-      "respondInChat": "채팅에서 Agent의 요청에 응답해 주세요"
-    },
     "titleBar": {
-      "switchToRight": "오른쪽 모드로 전환",
-      "switchToLeft": "왼쪽 모드로 전환",
       "showSidebar": "사이드바 표시",
       "hideSidebar": "사이드바 숨기기",
-      "showBottomPanel": "하단 패널 표시",
-      "hideBottomPanel": "하단 패널 숨기기"
+      "showBottomPanel": "하단 패널 표시"
     },
     "multiTask": {
       "monitoringProgress": "{{count}}개 Subagent의 진행 상황 모니터링 중",
-      "expandView": "확장 보기",
-      "compactView": "간결 보기",
       "closePanel": "Subagent 패널 닫기",
-      "minimizePanel": "화면 속 화면으로 최소화",
-      "expandPanel": "패널 확장",
-      "moreTasks": "+{{count}}개 더"
+      "minimizePanel": "화면 속 화면으로 최소화"
     },
     "gridCell": {
-      "copyEventsJson": "이벤트 JSON 복사",
-      "detachedTooltip": "메인 커서에서 분리됨 — 클릭하여 다시 동기화",
-      "syncedTooltip": "메인 커서에 동기화됨",
-      "detached": "분리됨",
-      "live": "실시간",
       "expand": "확대",
       "collapse": "축소"
     },
@@ -836,7 +520,6 @@
   "input": {
     "editPlaceholder": "메시지 편집...",
     "defaultPlaceholder": "Agent와 채팅",
-    "finishNextStep": "완료. 다음 단계!",
     "editingQueuedMessage": "대기 메시지 편집 중",
     "editingSentMessage": "보낸 메시지 편집 중",
     "voiceErrorPermission": "마이크 권한이 거부되었습니다. OS 설정에서 활성화하세요.",
@@ -856,10 +539,6 @@
     "canvasCommandDescription": "새로운 대화형 Canvas를 만듭니다. 선택: /canvas <만들 내용>",
     "canvasArgHint": "만들 내용",
     "newCanvasAction": "새 Canvas"
-  },
-  "listPanel": {
-    "showingOf": "{{total}}개 중 {{filtered}}개 표시",
-    "selectedOf": "{{total}}개 중 {{selected}}개 선택"
   },
   "chat": {
     "planApprovedLabel": "승인된 계획 실행 중",
@@ -1265,31 +944,6 @@
     },
     "parentAgentSender": "상위 에이전트"
   },
-  "chatStatus": {
-    "approved": "승인됨",
-    "skipped": "건너뜀",
-    "responded": "응답됨",
-    "ignored": "무시됨",
-    "pending": "대기 중",
-    "denied": "거부됨"
-  },
-  "conflicts": {
-    "title": "충돌",
-    "noConflicts": "충돌 없음",
-    "noMergeConflicts": "병합 충돌 없음",
-    "cleanState": "저장소가 깨끗한 상태이며 해결할 충돌이 없습니다.",
-    "detecting": "충돌 감지 중...",
-    "allResolved": "이 파일의 모든 충돌이 해결되었습니다",
-    "saveAndMark": "저장하고 해결됨으로 표시하여 계속",
-    "keepCurrent": "현재 유지",
-    "keepIncoming": "수신 유지",
-    "keepBoth": "둘 다 유지",
-    "aiResolve": "AI 해결",
-    "previousConflict": "이전 충돌 (⌘↑)",
-    "nextConflict": "다음 충돌 (⌘↓)",
-    "abort": "중단",
-    "complete": "완료"
-  },
   "tools": {
     "noResultsFound": "결과를 찾을 수 없습니다",
     "noResult": "결과 없음",
@@ -1503,9 +1157,6 @@
     "askUserSkipped": "건너뜀",
     "askUserQuestionsAnswered": "질문에 답변함",
     "askUserQuestionsSkipped": "질문 건너뜀",
-    "skillLoading": "Reading skill",
-    "skillLoaded": "Skill loaded",
-    "skillFailed": "Skill not found",
     "killProcessRunning": "프로세스 종료 중",
     "killProcessDone": "프로세스 종료됨",
     "killProcessFailed": "프로세스 종료 실패",
@@ -2105,12 +1756,6 @@
     "nFiles_one": "파일 {{count}}개",
     "nFiles_other": "파일 {{count}}개"
   },
-  "hoverCard": {
-    "commits": "커밋",
-    "filesChanged_one": "{{count}}개 파일 변경",
-    "filesChanged_other": "{{count}}개 파일 변경",
-    "branchesTouched": "브랜치"
-  },
   "modelPill": {
     "immutableInSession": "키 소스, Agent 유형 및 가격 티어는 세션 시작 시 고정됩니다. 변경하려면 새 세션을 시작하세요."
   },
@@ -2122,26 +1767,19 @@
       "hidePinnedActions": "고정된 작업 숨기기"
     },
     "createTarget": {
-      "agentSession": "Agent 세션",
       "project": "프로젝트 만들기",
       "parallelRun": "병렬 실행",
       "workItem": "Work Item 만들기"
     },
     "worktreeSource": {
       "title": "워크트리 만들기",
-      "confirm": "워크트리 사용",
       "resolving": "PR 확인 중…",
       "selectRepository": "워크트리 소스를 선택하기 전에 저장소를 선택하세요.",
       "sourceTabs": "워크트리 소스",
       "tabs": {
-        "smart": "스마트",
         "github": "GitHub",
-        "branch": "브랜치",
-        "name": "이름"
+        "branch": "브랜치"
       },
-      "smartPlaceholder": "이름, #1234, 브랜치 또는 GitHub/GitLab URL",
-      "smartAria": "이름, PR 번호, 브랜치 또는 GitHub/GitLab URL 입력",
-      "smartHint": "이름, PR 번호, 브랜치를 입력하거나 PR/MR URL을 붙여넣으세요.",
       "refreshGithub": "GitHub 목록 새로 고침",
       "githubSearch": "GitHub PR 및 이슈 검색",
       "githubSearchAria": "GitHub 풀 리퀘스트 및 이슈 검색",
@@ -2155,14 +1793,8 @@
       "branchEmpty": "이 저장소에서 브랜치를 찾을 수 없습니다.",
       "branchNoMatches": "일치하는 브랜치가 없습니다.",
       "branchUseAsRef": "“{{value}}”을(를) ref로 사용",
-      "branchCustomRefHint": "태그, 커밋 또는 임의의 Git ref",
-      "worktreeLabel": "워크트리 레이블",
-      "namePlaceholder": "feature-name",
-      "nameBase": "기준: {{branch}}",
-      "nameBaseHead": "기준: HEAD"
+      "branchCustomRefHint": "태그, 커밋 또는 임의의 Git ref"
     },
-    "searchModels": "모델 검색...",
-    "newItem": "새 항목",
     "solveWorkItem": "작업 항목 해결",
     "launchpadQuestion": "",
     "launchpadQuestionSuffix": "와 함께 무엇을 만들고 싶으신가요?",
@@ -2171,36 +1803,20 @@
     "planLaunchpadQuestionSuffix": "와 함께 무엇을 계획하고 싶으신가요?",
     "manualPlanLaunchpadQuestion": "무엇을 계획하고 싶으신가요?",
     "start": "시작",
-    "assign": "할당",
-    "send": "보내기",
     "missingGit": {
       "title": "Git 없음",
       "body": "Git이 설치되어 있지 않거나 찾을 수 없습니다. ADE Manager 또는 SDE Agent에게 이 컴퓨터에 Git을 설치하도록 요청한 뒤 ORGII를 다시 시작하세요."
     },
-    "noProvidersAvailable": "사용 가능한 제공자가 없습니다",
-    "enterPublicRepoUrl": "공개 저장소 URL을 입력하세요",
-    "repoUrlPlaceholder": "https://github.com/owner/repo",
-    "noModelsMatchSearch": "검색과 일치하는 모델이 없습니다",
-    "noModelsAvailable": "사용 가능한 모델이 없습니다",
-    "noTiersAvailable": "사용 가능한 티어가 없습니다",
     "model": "모델",
-    "source": "계정",
-    "addContext": "컨텍스트 추가",
     "contextMenu": {
       "filesAndFolders": "파일 및 폴더",
-      "agentSession": "Agent 세션",
       "workItems": "작업 항목",
       "back": "뒤로",
       "recent": "최근 항목",
       "showMore": "{{remaining}}개 더 보기"
     },
-    "slashSearchPlaceholder": "명령 검색…",
     "slashMenu": {
-      "image": "이미지",
-      "uploadImage": "이미지 업로드",
       "mode": "모드",
-      "models": "모델",
-      "skills": "Skills",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",
       "commands": "명령어"
@@ -2216,13 +1832,6 @@
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",
-    "cliAgent": "CLI Agent",
-    "cliAgentDesc": "CLI 기반 Agent에 연결",
-    "agentDesc": "코딩 Agent 세션 시작",
-    "osAgentDesc": "컴퓨터 자동화 Agent",
-    "categoryLabel": "세션 카테고리",
-    "categoryTemplate": "{category} 선택",
-    "categoryPlaceholder": "Agent",
     "builtIns": "기본 제공",
     "humanSession": {
       "name": "작업 기록"
@@ -2232,81 +1841,29 @@
     "agentOrgs": "Agent 팀",
     "orgMembers": {
       "configButton": "멤버 관리",
-      "count": "멤버 {{count}}명",
-      "defaultColumn": "모델",
       "empty": "이 팀에는 아직 멤버가 없습니다",
       "selectAgent": "Agent 선택",
       "applyForFutureLabel": "향후 사용에도 적용",
       "selectBaseAgentForRole": "{{role}} 의 기본 Agent 선택"
     },
     "externalIdes": "외부 Agent",
-    "cursorIde": {
-      "label": "Cursor IDE"
-    },
-    "addModel": "모델 추가",
-    "myAgents": "내 Agent",
-    "session": "Session",
-    "cloneFromGitHub": "GitHub에서 클론",
-    "repoUrl": "저장소 URL",
-    "pleaseEnterGitHubUrl": "GitHub URL을 입력해주세요",
-    "pleaseEnterValidGitHubUrl": "유효한 GitHub 저장소 URL을 입력해주세요",
-    "cloning": "클론 중...",
-    "cloneRepo": "저장소 클론",
-    "repoCloneHelperText": "저장소가 Session용 임시 워크스페이스에 클론됩니다.",
-    "yourPrice": "내 가격",
-    "inputPerM": "입력 /M",
-    "outputPerM": "출력 /M",
-    "continueWithTier": "{{tier}}로 계속",
-    "quota": "할당량: {{value}}",
-    "officialApiPrice": "공식 API 가격",
-    "input": "입력",
-    "output": "출력",
-    "marketPrice": "마켓 가격",
-    "yourPriceType": "내 가격 ({{type}})",
-    "cacheRead": "Cache Read",
-    "cacheWrite": "Cache Write",
-    "saveDiscount": "{{discount}} 절약",
-    "standard": "Standard",
-    "global": "Global",
-    "goldUnlocksGlobal": "Gold+로 Global 가격 잠금 해제",
-    "limitReached": "한도 도달",
-    "remainingLimit": "{{remaining}}/{{limit}} 남음",
-    "busy": "사용 중",
-    "ofOfficialPrice": "공식 가격의",
     "shortInputTitle": "짧은 입력",
     "shortInputMessage": "입력 내용이 매우 짧습니다. 이 내용으로 세션을 시작하시겠습니까?",
     "selectModel": "모델 선택",
     "switchModel": "모델 전환",
-    "switchSource": "계정 전환",
-    "switchRunner": "Runner 전환",
-    "runnerLockedToWorktree": "Worktree에 고정됨 — 시작 후에는 Runner를 변경할 수 없습니다",
     "switchMode": "모드 전환",
     "switchAgent": "Agent 전환",
-    "manageKeys": "Keys 관리",
-    "manageModels": "모델 관리",
-    "changeSource": "계정 변경",
-    "clearSelection": "선택 지우기",
     "toolbar": {
       "bold": "굵게 (⌘B)",
       "italic": "기울임꼴 (⌘I)",
       "strikethrough": "취소선",
-      "underline": "밑줄 (⌘U)",
       "link": "링크",
-      "enterUrl": "URL 입력...",
       "quote": "인용",
-      "clearFormatting": "서식 지우기",
       "inlineCode": "인라인 코드",
-      "highlight": "하이라이트",
-      "insertImage": "이미지 삽입",
-      "lists": "목록",
-      "normalText": "일반 텍스트",
-      "heading1": "제목 1",
       "heading2": "제목 2",
-      "heading3": "제목 3",
       "bulletList": "글머리 기호 목록",
       "numberedList": "번호 매기기 목록",
-      "taskList": "작업 목록",
-      "divider": "구분선"
+      "taskList": "작업 목록"
     },
     "regionNoticeTitle": "지역 제한 가능성",
     "regionNoticeBodyProvider": "위치: {{location}}. 일부 모델은 해당 지역에서 사용할 수 없을 수 있습니다.",
@@ -2314,38 +1871,11 @@
     "regionNoticeBodyBoth": "위치: {{location}}. 지역 정책 및 무역 규제로 인해 일부 모델과 GitHub, npm, Docker Hub 등 서비스가 사용할 수 없을 수 있습니다.",
     "selectAgent": "에이전트 선택",
     "placeholderDefault": "메시지를 입력하고 @로 파일 추가, /로 skills 사용",
-    "agentHeaderPromptVariants": [
-      {
-        "before": "",
-        "after": "와 무엇을 진행할까요?"
-      },
-      {
-        "before": "오늘",
-        "after": "가 무엇을 도와드릴까요?"
-      },
-      {
-        "before": "",
-        "after": "가 먼저 무엇을 처리할까요?"
-      }
-    ],
     "wingmanPlaceholder": "미션을 설명하세요 — Wingman이 무엇을 감시해야 하나요?",
     "screenPicker": {
       "title": "화면 선택",
-      "screen": "화면 {{index}}",
-      "primary": "(기본)",
-      "cancel": "취소"
+      "primary": "(기본)"
     },
-    "viewDiff": "Diff 보기",
-    "contextBar": {
-      "thisMac": "이 Mac",
-      "worktree": "Worktree",
-      "lockedHint": "이 세션에서 Worktree가 잠겨 있습니다"
-    },
-    "skillsAndTools": "Skills 및 도구",
-    "agentSpotlightViewMode": "Agent view mode",
-    "agentSpotlightListView": "List view",
-    "agentSpotlightCardView": "Card view",
-    "agentSpotlightCardHint": "Use ←/→ or ↑/↓ to shuffle Agents. Press Enter to select.",
     "multiRunner": {
       "exit": "단일 에이전트로 돌아가기",
       "addRunner": "러너 추가",
@@ -2371,62 +1901,37 @@
     }
   },
   "planner": {
-    "tabs": {
-      "plan": "플랜",
-      "timeline": "타임라인"
-    },
     "modes": {
       "build": "Build",
       "ask": "Ask",
-      "plan": "Plan",
-      "debug": "Debug",
-      "review": "Review",
-      "wingman": "윙맨"
+      "plan": "Plan"
     },
     "runningLocation": {
       "local": "This Mac",
-      "worktree": "New Worktree",
-      "cloud": "Cloud"
+      "worktree": "New Worktree"
     },
     "plan": {
-      "stepsCompleted": "{{total}}개 중 {{completed}}개 완료",
-      "noStepsYet": "플랜 단계가 없습니다",
       "executePlan": "플랜 실행",
-      "noActiveSession": "활성 Agent Session이 없습니다",
-      "replan": "재계획",
-      "viewPlan": "계획 보기",
-      "saveToWorkspace": "워크스페이스에 저장",
-      "savedToWorkspace": "계획이 워크스페이스에 저장되었습니다",
-      "noRepoOpen": "열린 리포지토리가 없습니다",
-      "collapse": "접기",
-      "expand": "펼치기"
+      "noActiveSession": "활성 Agent Session이 없습니다"
     },
     "todoList": {
       "title": "To-do",
       "completedCount": "{{total}}개 중 {{completed}}개 완료",
       "countOnly": "{{total}}개 To-do",
-      "doneOf": "{{total}}개 중 {{done}}개 완료",
-      "createdAt": "생성: {{time}}",
-      "updatedAt": "수정: {{time}}",
       "justNow": "방금",
       "minutesAgo": "{{count}}분 전",
       "yesterday": "어제",
       "columnOpen": "미완료",
       "status": {
-        "pending": "대기 중",
-        "in_progress": "진행 중",
         "completed": "완료",
         "cancelled": "취소됨"
       }
     },
     "agentOrgTasks": {
       "title": "팀 작업",
-      "doneOf": "{{total}}개 중 {{done}}개 완료",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
-      "loadFailed": "작업을 불러오지 못했습니다",
       "statusPending": "대기 중",
-      "statusAssigned": "할당됨",
       "statusInProgress": "진행 중",
       "statusCompleted": "완료됨",
       "statusBlocked": "차단됨"
@@ -2441,24 +1946,9 @@
       "activeOf": "{{active}} / {{total}} active",
       "inbox": "Inbox",
       "unreadCount": "{{count}} unread",
-      "coordinator": "Coordinator",
-      "currentSession": "현재",
-      "inProgressTasks": "{{count}} in progress 작업",
-      "pendingTasks": "{{count}} pending 작업",
-      "unreadMessages": "{{count}} unread 메시지",
-      "taskBoard": "Task 보드",
-      "memberSessions": "Member 세션",
       "pauseRun": "실행 일시 중지",
       "resumeRun": "실행 재개",
       "viewCoordinatorHistory": "View coordinator chat history"
-    },
-    "agentOrgInbox": {
-      "title": "Agent 메시지",
-      "unreadCount": "읽지 않음 {{count}}개",
-      "from": "{{sender}}에서",
-      "kindFallback": "{{kind}} 메시지",
-      "loadFailed": "메시지를 불러오지 못했습니다",
-      "overviewOnly": "읽지 않은 팀 메시지 {{count}}개가 있습니다. 자세한 기록은 run replay에서 확인할 수 있습니다."
     },
     "agentOrgIntervention": {
       "title": "{{member}}와 채팅 중",
@@ -2468,34 +1958,6 @@
       "loadFailed": "개입 상태를 불러오지 못했습니다",
       "busyShort": "사용자 채팅",
       "teammateBusy": "이 teammate는 직접 사용자 채팅 중입니다"
-    },
-    "timeline": {
-      "askUser": "사용자에게 질문",
-      "noQuestionProvided": "질문이 제공되지 않았습니다.",
-      "action": "작업",
-      "thought": "사고：",
-      "arguments": "인수：",
-      "content": "내용：",
-      "resultLabel": "결과：",
-      "createFile": "파일 생성",
-      "fileDiff": "파일 차이",
-      "planHint": "플랜 힌트",
-      "readFile": "파일 읽기",
-      "runCommandLine": "명령줄 실행",
-      "searchInFile": "파일 내 검색",
-      "searchCodebase": "코드베이스 검색",
-      "searchDirectory": "디렉토리 검색",
-      "searchLabel": "검색：",
-      "inDirectory": "{{directory}} 내",
-      "foundResults": "{{files}}개 파일에서 {{count}}개 결과",
-      "lineRange": "행 {{start}}-{{end}}",
-      "clickToViewContent": "클릭하여 내용 보기",
-      "noResult": "결과 없음",
-      "event": "이벤트",
-      "functionLabel": "함수：",
-      "noTimelineEvents": "타임라인 이벤트가 없습니다",
-      "file": "파일",
-      "atlas": "Atlas"
     },
     "agentOrgMemberStatus": {
       "idle": "Idle",
@@ -2509,7 +1971,6 @@
     }
   },
   "planDoc": {
-    "plan": "계획",
     "untitled": "제목 없는 계획",
     "drafting": "계획 작성 중…",
     "readyForReview": "검토 준비 완료",
@@ -2524,9 +1985,6 @@
     "emptyPlan": "(계획이 비어 있습니다)",
     "edit": "편집",
     "cancelEdit": "취소",
-    "editAndBuild": "편집 후 빌드",
-    "openInSimulator": "Simulator에서 열기",
-    "close": "닫기",
     "collapse": "접기"
   },
   "workspace": {
@@ -2537,10 +1995,7 @@
     "errorOccurred": "오류가 발생했습니다",
     "failedToSendMessage": "메시지 전송에 실패했습니다",
     "noSessionIdFound": "Session ID를 찾을 수 없습니다",
-    "failedToContinue": "Session 계속에 실패했습니다",
     "failedToResume": "Session 재개에 실패했습니다",
-    "failedToInterrupt": "Session 중단에 실패했습니다",
-    "failedToStop": "Agent 중지에 실패했습니다",
     "failedToCheckChanges": "파일 변경사항을 확인할 수 없습니다. 변경사항을 되돌립니다.",
     "insufficientBalance": "ORGII 호스팅 서비스의 잔액이 부족합니다. orgii.ai/wallet에서 충전하세요.",
     "runQueuedBehindCheckout": "대기 중: 다른 실행이 이 체크아웃을 사용 중입니다. 해당 실행이 끝나면 시작됩니다."
@@ -2552,12 +2007,6 @@
       "생각 중...",
       "작업 중...",
       "다음에 무엇을 할지 고민 중..."
-    ],
-    "nextStepSlowVariants": [
-      "다음 단계 계획 중, 평소보다 오래 걸리고 있습니다...",
-      "여전히 생각 중, 평소보다 오래 걸리고 있습니다...",
-      "작업 중, 평소보다 오래 걸리고 있습니다...",
-      "다음에 무엇을 할지 고민 중, 평소보다 오래 걸리고 있습니다..."
     ],
     "compacting": "컨텍스트 압축 중...",
     "statusTrail": {
@@ -2577,41 +2026,14 @@
     "keepChanges": "변경사항 유지"
   },
   "controlTower": {
-    "welcomeMessages": [
-      "오늘 무엇을 만드시겠습니까?",
-      "오늘 무엇을 배포하시겠습니까?",
-      "오늘 무엇을 해결하시겠습니까?",
-      "다음에 만들 것은?",
-      "다음 계획은?"
-    ],
-    "quickActions": "빠른 작업",
-    "recentSessions": "최근 세션",
-    "viewAllSessions": "모든 세션 보기",
-    "noSessionsYet": "아직 세션이 없습니다",
     "myAgents": "내 Agent {{count}}개",
-    "myAgentOrgs": "내 Agent 팀 {{count}}개",
     "noAgentsAvailable": "사용 가능한 Agent가 없습니다",
     "newAgentSession": "새 {{agent}} 세션",
     "addAgent": "Agent 추가",
     "myApiKeys": "내 Key {{count}}개",
     "addApiKey": "API Key 추가",
-    "noRepoSelected": "저장소가 선택되지 않았습니다",
     "diff": {
-      "untitledSession": "제목 없는 세션",
-      "singleFile": "단일 파일",
-      "unified": "통합 보기",
-      "allChanges": "모든 변경",
-      "failedToLoadDiffFor": "{{path}}의 Diff를 로드하지 못했습니다",
-      "failedToLoadFileContent": "파일 내용을 로드하지 못했습니다",
-      "binaryFile": "바이너리 파일",
-      "selectFileToView": "파일을 선택하여 Diff 보기",
-      "openProjectToViewDiff": "Project를 열어 Diff 보기",
-      "failedToLoadDiff": "Diff 로드 실패",
-      "changes": "변경",
-      "refresh": "새로고침",
-      "noUncommittedChanges": "커밋되지 않은 변경이 없습니다",
-      "noSessionChanges": "이 세션에 커밋되지 않은 변경이 없습니다",
-      "fileCount": "{{count}}개 파일"
+      "refresh": "새로고침"
     },
     "git": {
       "filterUncommitted": "미커밋",
@@ -2619,54 +2041,17 @@
       "filterStaged": "스테이지됨",
       "filterStashed": "스태시됨",
       "filterCountLabel_one": "{{count}}개 {{label}} 변경",
-      "filterCountLabel_other": "{{count}}개 {{label}} 변경",
-      "failedToLoad": "Git 상태 로드 실패",
-      "noBranchChanges": "푸시되지 않은 커밋 없음",
-      "unknownAuthor": "알 수 없음"
-    },
-    "groups": {
-      "home": "홈",
-      "sessions": "세션",
-      "git": "Git",
-      "terminal": "터미널"
+      "filterCountLabel_other": "{{count}}개 {{label}} 변경"
     },
     "history": {
-      "wingmanAgent": "Wingman Agent",
       "agentFallback": "Agent"
     },
     "sidebar": {
       "stopAgentProcess": "Agent 프로세스 중지",
-      "closeSession": "세션 닫기",
-      "openInBrowser": "브라우저에서 열기",
-      "closeTab": "탭 닫기",
-      "private": "비공개",
-      "newTab": "새 탭",
-      "overview": "개요",
-      "homeBrowsers": "브라우저 탭",
-      "homeTerminals": "터미널 세션",
-      "openInMyStation": "My Station 에서 열기",
-      "openInTerminalTab": "Terminal 탭에서 열기"
-    },
-    "workspaceTools": {
-      "title": "Workspace 도구",
-      "description": "이 workspace에 권장되는 LSP servers와 lint 도구를 확인합니다.",
-      "summary": "{{ready}}/{{total}} 준비됨",
-      "noRecommendations": "권장 도구 없음",
-      "refresh": "새로고침",
-      "lsp": "LSP servers",
-      "lint": "Lint 도구",
-      "ready": "권장 도구 {{total}}개가 모두 준비되었습니다",
-      "needsSetup": "권장 도구 {{total}}개 중 {{ready}}개가 준비되었습니다",
-      "notApplicable": "Workspace별 권장 사항 없음",
-      "missing": "없음",
-      "disabled": "비활성화됨"
+      "openInMyStation": "My Station 에서 열기"
     }
   },
   "groupChat": {
-    "senderTitle": {
-      "message": "{{sender}} sent a message",
-      "said": "{{sender}} said"
-    },
     "taskHeader": {
       "createWithOwner": "{{sender}} assigned task to {{ownerName}}",
       "create": "{{sender}} assigned task",
@@ -2674,14 +2059,6 @@
       "updateDetail": "{{sender}} updated task detail",
       "get": "{{sender}} viewed task details",
       "list": "{{sender}} viewed task list"
-    },
-    "messageHeader": {
-      "running": "{{sender}} messaging {{recipient}}",
-      "done": "{{sender}} messaged {{recipient}}",
-      "failed": "{{sender}} couldn't message {{recipient}}",
-      "broadcastRunning": "{{sender}} messaging multiple agents",
-      "broadcastDone": "{{sender}} messaged multiple agents",
-      "broadcastFailed": "{{sender}} couldn't message multiple agents"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator read messages sent by other agents"
@@ -2735,9 +2112,6 @@
       "completed": "완료"
     }
   },
-  "manageProject": {
-    "inProject": "{{project}} 에서"
-  },
   "manageAgentDef": {
     "action": {
       "create": "생성됨",
@@ -2752,23 +2126,11 @@
       "get_org": "조직 조회"
     }
   },
-  "cursorIde": {
-    "restart": {
-      "title": "ORGII 제어를 위해 Cursor를 다시 시작할까요?",
-      "message": "follow-up이 동일한 Cursor 대화로 전달되도록 ORGII가 원격 제어를 활성화한 상태로 Cursor를 다시 시작해야 합니다. Cursor를 종료한 뒤 --remote-debugging-port=9230 옵션으로 숨긴 상태로 다시 엽니다.",
-      "okLabel": "Cursor 다시 시작",
-      "success": "원격 제어를 활성화한 상태로 Cursor를 숨겨 다시 시작했습니다. 다시 시도 중…",
-      "failed": "Cursor를 다시 시작하지 못했습니다: {{reason}}"
-    }
-  },
   "cards": {
     "openFile": "에디터에서 열기",
     "openLink": "링크 열기",
-    "broadcast": "→ 모든 Agent",
     "agentMessage": {
       "fallbackTitle": "메시지",
-      "accepted": "수락됨",
-      "rejected": "거부됨",
       "empty": "(메시지 본문 없음)",
       "status": {
         "sending": "전송 중…",
@@ -2790,44 +2152,25 @@
       },
       "emailBubble": {
         "noSubject": "(제목 없음)",
-        "expand": "전체 메시지 표시",
-        "collapse": "메시지 숨기기",
         "userInbox": "사용자 받은편지함",
         "currentChannel": "현재 채널",
-        "subagentMessages": "Subagent messages",
-        "readMessagesFromSubagents": "{{agent}} read messages from subagents"
+        "subagentMessages": "Subagent messages"
       }
     },
     "actions": {
       "moreOpenOptions": "추가 열기 옵션",
       "openAsPullRequest": "PR 탭",
       "openAsWebPage": "웹 페이지",
-      "openInApp": "앱에서 열기",
-      "openWithDefaultBrowser": "기본 브라우저로 열기",
-      "revealInFinder": "Finder에서 보기",
-      "revealInExplorer": "Explorer에서 보기",
-      "revealInFileManager": "파일 관리자에서 보기"
+      "openWithDefaultBrowser": "기본 브라우저로 열기"
     },
     "url": {
-      "open": "열기",
-      "changesCount": "변경 {{count}}개",
       "copyUrl": "URL 복사",
       "copied": "URL이 복사되었습니다",
       "openExternalFailed": "기본 브라우저에서 URL을 열지 못했습니다",
-      "openPullRequestFailed": "풀 리퀘스트 탭을 열지 못했습니다",
-      "groupTitle": "웹 페이지"
+      "openPullRequestFailed": "풀 리퀘스트 탭을 열지 못했습니다"
     },
     "path": {
-      "open": "열기",
-      "copyPath": "경로 복사",
-      "copied": "경로가 복사되었습니다",
-      "copyFailed": "경로를 복사하지 못했습니다",
       "openFailed": "경로를 열지 못했습니다",
-      "revealFailed": "파일 관리자에서 경로를 표시하지 못했습니다",
-      "name": "이름",
-      "type": "유형",
-      "directory": "디렉터리",
-      "file": "파일",
       "emptyDirectory": "빈 디렉터리"
     }
   },
@@ -2848,10 +2191,6 @@
     "titleA2ui": "Agent 미리보기",
     "reload": "새로고침",
     "openExternal": "브라우저에서 열기",
-    "expand": "확장",
-    "shrink": "축소",
-    "close": "닫기",
-    "summarize": "Agent로 요약",
     "waiting": "콘텐츠 대기 중…",
     "empty": "콘텐츠 없음"
   },

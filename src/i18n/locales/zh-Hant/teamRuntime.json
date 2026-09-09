@@ -6,7 +6,6 @@
     "today": "今天",
     "everyone": "所有人",
     "activeMembers": "活躍成員",
-    "systemsCurrent": "{{total}} 台系統中有 {{current}} 台狀態為最新",
     "usageByAgent": "依代理程式統計用量",
     "recentSessions": "最近共享的工作階段",
     "recentLoading": "正在載入共享工作階段…",
@@ -71,10 +70,6 @@
     "appVersion": "ORGII 版本",
     "totalSessions": "工作階段總數",
     "lastSynced": "最後同步"
-  },
-  "selfService": {
-    "hint": "共享開啟期間，你自己的執行狀態會共享給此工作空間。",
-    "action": "停止共享並刪除我的資料"
   },
   "orgSettings": {
     "label": "團隊執行狀態共享",

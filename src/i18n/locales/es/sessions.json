@@ -11,9 +11,6 @@
     "quit": "Salir de ORG2"
   },
   "toolUsage": {
-    "estimatedContext": "{{tokenCount}} Token de contexto",
-    "followup": "{{tokenCount}} Token follow-up",
-    "decision": "{{tokenCount}} Token de decisión",
     "tooltip": "Atribución estimada de la herramienta. Método: {{method}}. Entrada: {{inputBytes}} bytes. Salida: {{outputBytes}} bytes. Decisión: {{decisionTokens}} Token. Contexto: {{contextTokens}} Token. Follow-up: {{followupTokens}} Token. Lectura de cache LLM relacionada: {{cacheReadTokens}} Token. Escritura de cache LLM relacionada: {{cacheWriteTokens}} Token."
   },
   "humanSession": {
@@ -21,88 +18,24 @@
   },
   "history": {
     "untitledSession": "Session sin título",
-    "prStatus": {
-      "merged": "Fusionado",
-      "open": "Abierto",
-      "draft": "Borrador"
-    },
     "detail": {
-      "sessionInfo": "Información de la Session",
-      "repository": "Repo",
-      "branch": "Rama",
       "created": "Creado",
-      "updated": "Actualizado",
       "lastUpdated": "Última actualización",
       "external": "Externa",
       "internal": "Interna",
       "rounds": "Rondas",
       "roundCount_one": "{{count}} ronda",
       "roundCount_other": "{{count}} rondas",
-      "agentWorked": "Agent trabajó",
-      "reasoningModel": "Reasoning Model",
-      "codingModel": "Coding Model",
-      "sessionMode": "Modo de Session",
-      "fileChanges": "Cambios de archivos",
-      "filesChanged": "Archivos modificados",
-      "files": "archivos",
-      "summary": "Resumen",
-      "workflow": "Workflow",
-      "agent": "Agent:",
-      "pilotSession": "Session Pilot",
-      "openSession": "Abrir Session",
-      "viewPR": "Ver PR",
-      "rawData": "Datos sin procesar",
-      "analytics": {
-        "title": "Event Analytics",
-        "toolUsage": "Uso de herramientas",
-        "filesTouched": "Archivos involucrados",
-        "conversation": "Conversación",
-        "tokenUsage": "Uso de Token",
-        "errors": "Errores",
-        "duration": "Duración",
-        "events": "Eventos",
-        "toolCalls": "Llamadas de herramienta",
-        "files": "Archivos",
-        "tool": "Herramienta",
-        "calls": "Llamadas",
-        "done": "Completo",
-        "userMessages": "Mensajes del usuario",
-        "assistantMessages": "Mensajes del agente",
-        "userChars": "Caracteres del usuario",
-        "assistantChars": "Caracteres del agente",
-        "avgResponseTime": "Tiempo de respuesta promedio",
-        "thinkingEvents": "Eventos de pensamiento",
-        "inputTokens": "Token de entrada",
-        "outputTokens": "Token de salida",
-        "totalTokens": "Token totales",
-        "model": "Modelo",
-        "input": "Entrada",
-        "output": "Salida",
-        "totalErrors": "Errores",
-        "totalFailures": "Fallos",
-        "errorRate": "Tasa de error"
-      },
-      "impact": {
-        "title": "Impact Graph",
-        "files": "Archivos",
-        "functions": "Funciones",
-        "commits": "Commits",
-        "lines": "Líneas",
-        "filesTouched": "Archivos afectados",
-        "functionsCreated": "Funciones creadas",
-        "commitsInfluenced": "Commits influenciados"
-      }
+      "agentWorked": "Agent trabajó"
     }
   },
   "kanban": {
     "card": {
       "openAsFloatingPane": "Abrir como panel flotante"
     },
-    "sessions": "Session",
     "view": {
       "list": "Lista",
       "diary": "Diario",
-      "kanban": "Kanban",
       "dataSource": "Fuentes de datos"
     },
     "dataSource": {
@@ -278,12 +211,8 @@
       }
     },
     "list": {
-      "updated": "Actualizado",
-      "timeRange": "Rango de tiempo",
       "started": "Iniciado",
       "lastUpdated": "Última actualización",
-      "agentModel": "Agent · Modelo",
-      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Ninguna sesión coincide con estos filtros",
       "emptyDescription": "Prueba otro estado, tipo de Agent o intervalo de tiempo."
     },
@@ -299,7 +228,6 @@
     },
     "autoArchive": {
       "label": "Archivado automático",
-      "shortLabel": "Archivo",
       "never": "Nunca",
       "12h": "12h",
       "24h": "24h",
@@ -311,9 +239,7 @@
       "inProgress": "En progreso",
       "blocking": "Bloqueado",
       "turnFinished": "Turno finalizado",
-      "archived": "Archivado",
-      "yourTurn": "Tu turno",
-      "finished": "Finalizado"
+      "archived": "Archivado"
     },
     "boardColumns": {
       "todo": "Por hacer",
@@ -325,43 +251,17 @@
       "cancelled": "Fallido"
     },
     "sidebar": {
-      "agentTypes": "Tipos de Agent",
-      "manageItems": "Gestionar elementos",
-      "sessionsView": "Sessions View",
-      "workitemView": "Workitem View",
-      "views": "Vistas",
-      "cliAgent": "CLI Agent",
-      "rustAgent": "Rust Agent",
       "removeDraft": "Eliminar borrador",
       "showSubagents": "Mostrar subagents",
       "hideSubagents": "Ocultar subagents"
     },
-    "resultStatus": {
-      "completed": "Completado",
-      "failed": "Fallido",
-      "archived": "Archivado"
-    },
     "detail": {
       "title": "Título",
-      "tags": "Etiquetas",
-      "description": "Descripción",
-      "status": "Estado"
+      "tags": "Etiquetas"
     },
-    "addContent": "Agregar contenido",
     "merge": {
       "conflictsIn": "Conflictos en: {{files}}",
       "failed": "Error de fusión",
-      "failedToLoadDiff": "Error al cargar diff",
-      "noChanges": "Sin cambios",
-      "worktree": "Worktree",
-      "branch": "Rama:",
-      "base": "Base:",
-      "mergeLabel": "Fusión:",
-      "statusPending": "Pendiente",
-      "statusMerged": "Fusionado",
-      "statusConflict": "Conflicto",
-      "statusSkipped": "Omitido",
-      "statusFailed": "Fallido",
       "retryMerge": "Reintentar fusión",
       "dirtyRepo": "No se puede fusionar: hay cambios sin confirmar en el repositorio. Confírmalos o guárdalos primero.",
       "strategyLabel": "Estrategia de fusión",
@@ -369,45 +269,16 @@
       "strategyFf": "Avance rápido",
       "strategyLeave": "Dejar como rama",
       "discardConfirmTitle": "¿Descartar Worktree?",
-      "discardConfirmMessage": "Esto eliminará permanentemente la rama y todos los cambios. Esta acción no se puede deshacer.",
-      "merge": "Fusionar",
-      "merging": "Fusionando…",
-      "merged": "Fusionado"
-    },
-    "discard": {
-      "discard": "Descartar",
-      "discarding": "Descartando…",
-      "confirmMessage": "¿Descartar todos los cambios de este worktree? Esta acción no se puede deshacer."
+      "discardConfirmMessage": "Esto eliminará permanentemente la rama y todos los cambios. Esta acción no se puede deshacer."
     },
     "diary": {
-      "title": "Diario",
       "previousDay": "Día anterior",
       "nextDay": "Día siguiente",
-      "subtitle": "Actividad diaria del Agent",
-      "engineeringHours": "Horas de ingeniería",
-      "engineeringHoursHint": "Tiempo Agent acumulado",
-      "onlineHours": "Horas en línea",
-      "onlineHoursHint": "Tiempo paralelo deduplicado",
-      "activeSessions": "Sessions activas",
-      "completedSessions": "Completadas",
-      "timeline": "Línea de tiempo de eventos",
       "commits": "Commits",
       "emptyTitle": "Sin eventos del diario",
       "emptySubtitle": "La actividad del Agent para este día aparecerá aquí.",
-      "event": {
-        "started": "Session iniciada",
-        "completed": "Session completada",
-        "stillWorking": "Sigue trabajando"
-      },
       "commitsTo": "Commits en {{repo}}",
       "commitsToMultiple": "Commits en {{repos}}"
-    },
-    "orgtrack": {
-      "filesChanged_one": "{{count}} archivo",
-      "filesChanged_other": "{{count}} archivos",
-      "commits_one": "{{count}} commit",
-      "commits_other": "{{count}} commits",
-      "committedRateShort": "{{percent}}% confirmado"
     },
     "detailView": {
       "trajectory": "Trajectory",
@@ -415,83 +286,22 @@
       "noTouchedFiles": "No files touched"
     }
   },
-  "changes": {
-    "scope": {
-      "thisSession": "Esta Session",
-      "allUncommitted": "Todos sin confirmar"
-    },
-    "empty": {
-      "workingTreeClean": "Árbol de trabajo limpio",
-      "noChangesYet": "Sin cambios aún",
-      "noUncommittedChanges": "Sin cambios no confirmados en el repo",
-      "changesWillAppear": "Los cambios realizados por la IA aparecerán aquí"
-    },
-    "noChangesToReview": "Sin cambios para revisar"
-  },
-  "sync": {
-    "preparing": "Preparando archivos...",
-    "uploading": "Sincronizando tus archivos...",
-    "processing": "Procesando en el mercado...",
-    "complete": "¡Archivos sincronizados exitosamente!",
-    "error": "Error de sincronización",
-    "default": "Sincronizando...",
-    "files": "{{count}} archivos"
-  },
   "simulator": {
     "captionBarToggleTooltip": "Mostrar barra de mensajes del agente",
-    "parentSession": "Agent principal",
-    "backgroundTasks": "Background Tasks",
-    "backgroundTasksEmpty": "Sin Background Tasks",
     "noActiveSession": "Sin sesión activa",
     "tabs": {
-      "desktop": "Escritorio",
-      "tasks": "Tareas",
-      "kanban": "Kanban",
-      "changes": "Cambios",
-      "conflicts": "Conflictos",
-      "plan": "Plan"
-    },
-    "settings": {
-      "title": "Vista del Simulator",
-      "showDock": "Mostrar Dock",
-      "playback": "Reproducción",
-      "speed": "Velocidad",
-      "autoScroll": "Desplazamiento automático"
-    },
-    "tasks": {
-      "noTasksFound": "No se encontraron tareas",
-      "tasksWillAppear": "Las tareas aparecerán aquí cuando comiencen a ejecutarse",
-      "selectTask": "Seleccione una tarea para ver sus actividades"
-    },
-    "kanban": {
-      "noTasksYet": "Sin tareas aún",
-      "tasksWillAppear": "Las tareas aparecerán aquí cuando comience el trabajo en esta sesión"
+      "kanban": "Kanban"
     },
     "replay": {
-      "following": "Siguiendo",
-      "freeBrowsing": "Navegación libre",
-      "replaying": "Reproduciendo",
       "freeBrowse": "Navegar libremente",
       "follow": "Seguir",
       "dockShowChatInput": "Mostrar entrada de chat",
-      "dockHideChatInput": "Ocultar entrada de chat",
-      "bottomPanel": {
-        "tabTrajectory": "Trayectoria",
-        "tabTodo": "Tareas",
-        "expandPanel": "Mostrar panel de trayectoria y tareas"
-      },
       "previousEvent": "Evento anterior",
       "nextEvent": "Siguiente evento",
       "play": "Reproducir",
       "pause": "Pausar",
-      "playbackSpeed": "Velocidad de reproducción",
-      "noEvents": "Sin eventos",
-      "agentHasNotUsedTool": "El Agent aún no ha usado esta herramienta",
       "browser": {
         "tabs": {
-          "browser": "Navegador",
-          "search": "Buscar",
-          "fetch": "Obtener",
           "agentBrowser": "Navegador del Agent",
           "searchFetch": "Buscar y obtener"
         },
@@ -505,8 +315,7 @@
           "noBrowserActivity": "Sin actividad del navegador",
           "noBrowserInteractions": "Sin interacciones del navegador",
           "noWebSearches": "Sin búsquedas web",
-          "noPagesFetched": "Sin páginas obtenidas",
-          "noBrowserActivityYet": "Aún no hay actividad del navegador"
+          "noPagesFetched": "Sin páginas obtenidas"
         },
         "header": {
           "categoryBrowser": "Navegador",
@@ -524,13 +333,10 @@
           "exitCode": "[código de salida: {{code}}]"
         },
         "codePanel": {
-          "hiddenLines": "{{count}} líneas ocultas",
           "editHeader": "Editar {{index}}",
           "startingAtLine": "(a partir de la línea {{line}})",
           "fileEditedSuccess": "✓ Archivo editado correctamente",
           "truncatedSuffix": "\n... (truncado)",
-          "headerDirectory": "Directorio",
-          "headerSearchPrefix": "Buscar: {{query}}",
           "searchResultLinePrefix": "L{{line}}",
           "resultCount_one": "{{count}} resultado",
           "resultCount_other": "{{count}} resultados",
@@ -550,23 +356,12 @@
           "emptyNoFilesEdited": "No hay archivos editados",
           "emptyNoExploreOperations": "Sin exploraciones aún",
           "emptyNoCommands": "Sin comandos",
-          "emptyNoToolCalls": "Sin llamadas a herramientas",
-          "searchDisplayListDir": "list_dir",
-          "searchDisplaySearch": "Buscar",
-          "searchSecondaryResults": "{{count}} resultados"
-        },
-        "terminal": {
-          "tabTerminal": "Terminal",
-          "viewStructured": "Estructurado",
-          "viewRaw": "Sin formato",
-          "emptySelectCommand": "Selecciona un comando para verlo"
+          "emptyNoToolCalls": "Sin llamadas a herramientas"
         }
       },
       "diffApp": {
-        "allTabLabel": "Todo",
         "tabLabel": "Diff",
         "emptyForFilter": "Aún no hay Diff",
-        "emptyDetail": "Selecciona un cambio para ver el Diff.",
         "submissions": {
           "tabLabel": "Envíos",
           "commits": "Commits",
@@ -578,53 +373,11 @@
         }
       },
       "channelsSidebar": {
-        "chatHistoryTab": "Historial de chat",
         "messages": "Mensajes",
         "interactions": "Interacciones",
-        "todoList": "Lista de tareas",
-        "kanban": "Kanban",
-        "todoUpdate": "Actualización de tareas",
-        "noMessages": "Sin mensajes aún",
-        "noInteractions": "Sin interacciones aún",
-        "noTodos": "Sin eventos de tareas aún",
-        "interactionAskQuestion": "Pregunta",
-        "interactionAskPermission": "Solicitud de permiso",
-        "interactionModeSwitch": "Cambio de modo",
-        "interactionPlanDoc": "Documento de plan",
-        "interactionGeneric": "Interacción"
+        "kanban": "Kanban"
       },
       "messages": {
-        "viewer": {
-          "think": {
-            "title": "Diálogo interno",
-            "subtitle_one": "Mostrando {{count}} pensamiento",
-            "subtitle_other": "Mostrando {{count}} pensamientos"
-          },
-          "todo": {
-            "title": "Lista de tareas",
-            "subtitle": "Última lista de tareas"
-          },
-          "chat": {
-            "title": "Chat con el usuario",
-            "subtitle_one": "{{count}} mensaje",
-            "subtitle_other": "{{count}} mensajes"
-          },
-          "interaction": {
-            "title": "Interacciones",
-            "subtitle_one": "{{count}} interacción",
-            "subtitle_other": "{{count}} interacciones"
-          }
-        },
-        "empty": {
-          "think": {
-            "title": "Aún no hay pensamientos",
-            "subtitle": "Los pensamientos del Agent aparecerán aquí"
-          },
-          "todo": {
-            "title": "Aún no hay listas de tareas",
-            "subtitle": "Las listas de tareas aparecerán aquí"
-          }
-        },
         "bubble": {
           "smartDateYesterday": "Ayer",
           "senderTitle": {
@@ -659,21 +412,8 @@
             "Sin salida. A veces solo hay silencio. [Sin vista previa de pensamiento]",
             "Sin mensaje. Si hubo vista previa, no llegó. [Sin vista previa de pensamiento]"
           ],
-          "labelLatest": "Último pensamiento",
           "labelThought": "Pensamiento"
         }
-      },
-      "database": {
-        "operation": {
-          "explore": "Explorar",
-          "runSql": "Ejecutar SQL"
-        },
-        "row": {
-          "tablePrefix": "Tabla: {{name}}",
-          "resultErrorPrefix": "Error: ",
-          "resultArrowPrefix": "→ "
-        },
-        "headerTitle": "Operaciones de base de datos"
       },
       "project": {
         "operation": {
@@ -698,12 +438,6 @@
           "list_contributors": "Listar contribuidores",
           "add_delegation": "Añadir delegación"
         },
-        "row": {
-          "projectPrefix": "Project: {{name}}",
-          "workItemPrefix": "Elemento: {{title}}",
-          "resultErrorPrefix": "Error: ",
-          "resultArrowPrefix": "→ "
-        },
         "headerTitle": "Operaciones de Project"
       },
       "canvas": {
@@ -714,34 +448,9 @@
         "tooltipCloseCanvas": "Cerrar lienzo",
         "iframeTitle": "Agent Canvas"
       },
-      "trajectory": {
-        "closeSidebar": "Cerrar barra lateral",
-        "toggleSidebar": "Alternar barra lateral de trayectoria",
-        "fallbackUnknownStep": "Paso desconocido",
-        "stepHeader": {
-          "actionsCount": "{{count}} acciones"
-        },
-        "event": {
-          "unknownFile": "Archivo desconocido",
-          "noCommand": "Sin comando",
-          "todoMoreSuffix": "{{first}} (+{{count}} más)",
-          "todosCount": "{{count}} tareas",
-          "todosUpdated": "{{count}} tareas actualizadas",
-          "noQuery": "Sin consulta",
-          "activityFallback": "Actividad",
-          "processing": "Procesando...",
-          "messageEllipsis": "Mensaje...",
-          "readUserMessage": "Leer mensaje del usuario",
-          "sessionFallback": "Session"
-        }
-      },
-      "followingApp": "Siguiendo: {{appName}}",
       "followingAgent": "Siguiendo al Agent",
       "trajectoryAgent": "Seguir la trayectoria del Agent",
-      "trajectoryThisApp": "Seguir esta app",
-      "followAgent": "Seguir al Agent",
-      "followThisApp": "Seguir esta app",
-      "followApp": "Seguir {{appName}}"
+      "trajectoryThisApp": "Seguir esta app"
     },
     "codeEditor": {
       "switchToListView": "Cambiar a vista de lista",
@@ -755,42 +464,17 @@
       "title": "Iniciando sistema",
       "subtitle": "Inicializando entorno de trabajo..."
     },
-    "awaitingActivity": "Esperando actividad...",
-    "askUser": {
-      "agentQuestion": "Pregunta del Agent",
-      "submitResponse": "Enviar respuesta",
-      "responseReceived": "Respuesta recibida",
-      "optional": "Opcional",
-      "defaultQuestion": "El Agent tiene una pregunta para ti",
-      "enterField": "Ingresa {{field}}..."
-    },
-    "askUserPending": {
-      "incomingRequest": "Solicitud entrante",
-      "respondInChat": "Por favor responde a las solicitudes del Agent en el chat"
-    },
     "titleBar": {
-      "switchToRight": "Cambiar a modo derecho",
-      "switchToLeft": "Cambiar a modo izquierdo",
       "showSidebar": "Mostrar barra lateral",
       "hideSidebar": "Ocultar barra lateral",
-      "showBottomPanel": "Mostrar panel inferior",
-      "hideBottomPanel": "Ocultar panel inferior"
+      "showBottomPanel": "Mostrar panel inferior"
     },
     "multiTask": {
       "monitoringProgress": "Supervisando el progreso de {{count}} subagents",
-      "expandView": "Vista expandida",
-      "compactView": "Vista compacta",
       "closePanel": "Cerrar panel de Subagent",
-      "minimizePanel": "Minimizar a imagen en imagen",
-      "expandPanel": "Expandir panel",
-      "moreTasks": "+{{count}} más"
+      "minimizePanel": "Minimizar a imagen en imagen"
     },
     "gridCell": {
-      "copyEventsJson": "Copiar eventos JSON",
-      "detachedTooltip": "Separado del cursor principal — clic para resincronizar",
-      "syncedTooltip": "Sincronizado con el cursor principal",
-      "detached": "Separado",
-      "live": "En vivo",
       "expand": "Expandir",
       "collapse": "Contraer"
     },
@@ -837,7 +521,6 @@
   "input": {
     "editPlaceholder": "Editar tu mensaje...",
     "defaultPlaceholder": "Chatear con el Agent",
-    "finishNextStep": "¡Terminar. Siguiente paso!",
     "editingQueuedMessage": "Editando mensaje en cola",
     "editingSentMessage": "Editando mensaje enviado",
     "voiceErrorPermission": "Permiso de micrófono denegado. Actívalo en la configuración del sistema.",
@@ -857,10 +540,6 @@
     "canvasCommandDescription": "Crea un nuevo Canvas interactivo. Opcional: /canvas <qué crear>",
     "canvasArgHint": "qué crear",
     "newCanvasAction": "Nuevo Canvas"
-  },
-  "listPanel": {
-    "showingOf": "Mostrando {{filtered}} de {{total}}",
-    "selectedOf": "{{selected}} de {{total}} seleccionados"
   },
   "chat": {
     "planApprovedLabel": "Ejecutando plan aprobado",
@@ -1266,31 +945,6 @@
     },
     "parentAgentSender": "Agente principal"
   },
-  "chatStatus": {
-    "approved": "Aprobado",
-    "skipped": "Omitido",
-    "responded": "Respondido",
-    "ignored": "Ignorado",
-    "pending": "Pendiente",
-    "denied": "Rechazado"
-  },
-  "conflicts": {
-    "title": "Conflictos",
-    "noConflicts": "Sin conflictos",
-    "noMergeConflicts": "Sin conflictos de fusión",
-    "cleanState": "Su repo está en un estado limpio sin conflictos que resolver.",
-    "detecting": "Detectando conflictos...",
-    "allResolved": "Todos los conflictos resueltos en este archivo",
-    "saveAndMark": "Guardar y marcar como resuelto para continuar",
-    "keepCurrent": "Mantener actual",
-    "keepIncoming": "Mantener entrante",
-    "keepBoth": "Mantener ambos",
-    "aiResolve": "AI resolver",
-    "previousConflict": "Conflicto anterior (⌘↑)",
-    "nextConflict": "Conflicto siguiente (⌘↓)",
-    "abort": "Cancelar",
-    "complete": "Completar"
-  },
   "tools": {
     "noResultsFound": "No se encontraron resultados",
     "noResult": "Sin resultado",
@@ -1504,9 +1158,6 @@
     "askUserSkipped": "Omitida",
     "askUserQuestionsAnswered": "Preguntas respondidas",
     "askUserQuestionsSkipped": "Preguntas omitidas",
-    "skillLoading": "Reading skill",
-    "skillLoaded": "Skill loaded",
-    "skillFailed": "Skill not found",
     "killProcessRunning": "Terminando proceso",
     "killProcessDone": "Proceso terminado",
     "killProcessFailed": "Error al terminar proceso",
@@ -2106,12 +1757,6 @@
     "nFiles_one": "{{count}} archivo",
     "nFiles_other": "{{count}} archivos"
   },
-  "hoverCard": {
-    "commits": "Commits",
-    "filesChanged_one": "{{count}} archivo modificado",
-    "filesChanged_other": "{{count}} archivos modificados",
-    "branchesTouched": "Ramas"
-  },
   "modelPill": {
     "immutableInSession": "La fuente de clave, el tipo de Agent y el nivel de precio se fijan al iniciar la sesión. Inicia una nueva sesión para cambiarlos."
   },
@@ -2123,26 +1768,19 @@
       "hidePinnedActions": "Ocultar acciones fijadas"
     },
     "createTarget": {
-      "agentSession": "Sesión de Agent",
       "project": "Crear proyecto",
       "parallelRun": "Ejecución paralela",
       "workItem": "Crear Work Item"
     },
     "worktreeSource": {
       "title": "Crear árbol de trabajo",
-      "confirm": "Usar árbol de trabajo",
       "resolving": "Resolviendo PR…",
       "selectRepository": "Selecciona un repositorio antes de elegir el origen del árbol de trabajo.",
       "sourceTabs": "Origen del árbol de trabajo",
       "tabs": {
-        "smart": "Inteligente",
         "github": "GitHub",
-        "branch": "Rama",
-        "name": "Nombre"
+        "branch": "Rama"
       },
-      "smartPlaceholder": "Nombre, #1234, rama o URL de GitHub/GitLab",
-      "smartAria": "Introduce un nombre, número de PR, rama o URL de GitHub/GitLab",
-      "smartHint": "Escribe un nombre, número de PR o rama, o pega una URL de PR/MR.",
       "refreshGithub": "Actualizar lista de GitHub",
       "githubSearch": "Buscar PR e incidencias de GitHub",
       "githubSearchAria": "Buscar solicitudes de incorporación e incidencias de GitHub",
@@ -2156,14 +1794,8 @@
       "branchEmpty": "No se encontraron ramas en este repositorio.",
       "branchNoMatches": "No hay ramas coincidentes.",
       "branchUseAsRef": "Usar «{{value}}» como referencia",
-      "branchCustomRefHint": "Etiqueta, commit o cualquier referencia de Git",
-      "worktreeLabel": "Etiqueta del árbol de trabajo",
-      "namePlaceholder": "nombre-funcionalidad",
-      "nameBase": "Base: {{branch}}",
-      "nameBaseHead": "Base: HEAD"
+      "branchCustomRefHint": "Etiqueta, commit o cualquier referencia de Git"
     },
-    "searchModels": "Buscar modelos...",
-    "newItem": "Nuevo elemento",
     "solveWorkItem": "Resolver elemento de trabajo",
     "launchpadQuestion": "¿Qué quieres crear con",
     "launchpadQuestionSuffix": "?",
@@ -2172,36 +1804,20 @@
     "planLaunchpadQuestionSuffix": "?",
     "manualPlanLaunchpadQuestion": "¿Qué quieres planificar?",
     "start": "Iniciar",
-    "assign": "Asignar",
-    "send": "Enviar",
     "missingGit": {
       "title": "Falta Git",
       "body": "Git no está instalado o no se pudo encontrar. Pide a ADE Manager o a SDE Agent que instale Git en esta máquina y luego reinicia ORGII."
     },
-    "noProvidersAvailable": "No hay proveedores disponibles",
-    "enterPublicRepoUrl": "Ingrese una URL de repo público",
-    "repoUrlPlaceholder": "https://github.com/owner/repo",
-    "noModelsMatchSearch": "Ningún modelo coincide con su búsqueda",
-    "noModelsAvailable": "No hay modelos disponibles",
-    "noTiersAvailable": "No hay niveles disponibles",
     "model": "Modelo",
-    "source": "Cuenta",
-    "addContext": "Agregar contexto",
     "contextMenu": {
       "filesAndFolders": "Archivos y carpetas",
-      "agentSession": "Sesión de agente",
       "workItems": "Elementos de trabajo",
       "back": "Atrás",
       "recent": "Recientes",
       "showMore": "Mostrar {{remaining}} más"
     },
-    "slashSearchPlaceholder": "Buscar comandos…",
     "slashMenu": {
-      "image": "Imagen",
-      "uploadImage": "Subir imagen",
       "mode": "Modo",
-      "models": "Modelos",
-      "skills": "Skills",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",
       "commands": "Comandos"
@@ -2217,13 +1833,6 @@
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",
-    "cliAgent": "CLI Agent",
-    "cliAgentDesc": "Conectar con Agent basados en CLI",
-    "agentDesc": "Iniciar una sesión de Agent de codificación",
-    "osAgentDesc": "Agent de automatización de computadora",
-    "categoryLabel": "Categoría de sesión",
-    "categoryTemplate": "Seleccionar {category}",
-    "categoryPlaceholder": "Agent",
     "builtIns": "Integrados",
     "humanSession": {
       "name": "Registro de trabajo"
@@ -2233,81 +1842,29 @@
     "agentOrgs": "Equipos Agent",
     "orgMembers": {
       "configButton": "Gestionar miembros",
-      "count": "{{count}} miembros",
-      "defaultColumn": "Modelo",
       "empty": "Aún no hay miembros en este equipo",
       "selectAgent": "Seleccionar Agent",
       "applyForFutureLabel": "Aplicar para usos futuros",
       "selectBaseAgentForRole": "Selecciona el Agent base para {{role}}"
     },
     "externalIdes": "Agente externo",
-    "cursorIde": {
-      "label": "Cursor IDE"
-    },
-    "addModel": "Añadir modelo",
-    "myAgents": "Mis Agents",
-    "session": "Session",
-    "cloneFromGitHub": "Clonar desde GitHub",
-    "repoUrl": "URL del repo",
-    "pleaseEnterGitHubUrl": "Por favor ingrese una URL de GitHub",
-    "pleaseEnterValidGitHubUrl": "Por favor ingrese una URL válida de repo GitHub",
-    "cloning": "Clonando...",
-    "cloneRepo": "Clonar repo",
-    "repoCloneHelperText": "El repo será clonado en un espacio de trabajo temporal para su Session.",
-    "yourPrice": "Su precio",
-    "inputPerM": "Entrada /M",
-    "outputPerM": "Salida /M",
-    "continueWithTier": "Continuar con {{tier}}",
-    "quota": "Cuota: {{value}}",
-    "officialApiPrice": "Precio oficial de API",
-    "input": "Entrada",
-    "output": "Salida",
-    "marketPrice": "Precio de mercado",
-    "yourPriceType": "Su precio ({{type}})",
-    "cacheRead": "Cache Read",
-    "cacheWrite": "Cache Write",
-    "saveDiscount": "Ahorre {{discount}}",
-    "standard": "Standard",
-    "global": "Global",
-    "goldUnlocksGlobal": "Gold+ desbloquea precios Global",
-    "limitReached": "Límite alcanzado",
-    "remainingLimit": "{{remaining}}/{{limit}} restantes",
-    "busy": "Ocupado",
-    "ofOfficialPrice": "del precio oficial",
     "shortInputTitle": "Entrada corta",
     "shortInputMessage": "Tu entrada parece muy corta. ¿Estás seguro de que deseas iniciar una sesión con esto?",
     "selectModel": "Seleccionar modelo",
     "switchModel": "Cambiar modelo",
-    "switchSource": "Cambiar cuenta",
-    "switchRunner": "Cambiar Runner",
-    "runnerLockedToWorktree": "Bloqueado al Worktree — el Runner no se puede cambiar tras el lanzamiento",
     "switchMode": "Cambiar modo",
     "switchAgent": "Cambiar Agent",
-    "manageKeys": "Gestionar Keys",
-    "manageModels": "Gestionar modelos",
-    "changeSource": "Cambiar cuenta",
-    "clearSelection": "Borrar selección",
     "toolbar": {
       "bold": "Negrita (⌘B)",
       "italic": "Cursiva (⌘I)",
       "strikethrough": "Tachado",
-      "underline": "Subrayado (⌘U)",
       "link": "Enlace",
-      "enterUrl": "Ingrese URL...",
       "quote": "Cita",
-      "clearFormatting": "Limpiar formato",
       "inlineCode": "Código en línea",
-      "highlight": "Resaltado",
-      "insertImage": "Insertar imagen",
-      "lists": "Listas",
-      "normalText": "Texto normal",
-      "heading1": "Título 1",
       "heading2": "Título 2",
-      "heading3": "Título 3",
       "bulletList": "Lista con viñetas",
       "numberedList": "Lista numerada",
-      "taskList": "Lista de tareas",
-      "divider": "Separador"
+      "taskList": "Lista de tareas"
     },
     "regionNoticeTitle": "Posibles limitaciones regionales",
     "regionNoticeBodyProvider": "Estás en {{location}}. Algunos modelos pueden no estar disponibles en tu región.",
@@ -2315,38 +1872,11 @@
     "regionNoticeBodyBoth": "Estás en {{location}}. Algunos modelos y servicios como GitHub, npm y Docker Hub pueden no estar disponibles por políticas regionales y restricciones comerciales.",
     "selectAgent": "Seleccionar un agente",
     "placeholderDefault": "Escribe un mensaje, @ para añadir archivos, / para usar skills",
-    "agentHeaderPromptVariants": [
-      {
-        "before": "¿En qué trabajamos con",
-        "after": "?"
-      },
-      {
-        "before": "¿Con qué debería ayudar",
-        "after": "hoy?"
-      },
-      {
-        "before": "¿Qué debería abordar primero",
-        "after": "?"
-      }
-    ],
     "wingmanPlaceholder": "Describe tu misión — ¿qué debe vigilar Wingman?",
     "screenPicker": {
       "title": "Elegir pantalla",
-      "screen": "Pantalla {{index}}",
-      "primary": "(principal)",
-      "cancel": "Cancelar"
+      "primary": "(principal)"
     },
-    "viewDiff": "Ver diff",
-    "contextBar": {
-      "thisMac": "Este Mac",
-      "worktree": "Worktree",
-      "lockedHint": "El Worktree está bloqueado para esta sesión"
-    },
-    "skillsAndTools": "Skills y herramientas",
-    "agentSpotlightViewMode": "Modo de vista de Agent",
-    "agentSpotlightListView": "Vista de lista",
-    "agentSpotlightCardView": "Vista de tarjeta",
-    "agentSpotlightCardHint": "Usa ←/→ o ↑/↓ para cambiar de Agent. Pulsa Enter para seleccionar.",
     "multiRunner": {
       "exit": "Volver a un solo agente",
       "addRunner": "Añadir runner",
@@ -2372,60 +1902,36 @@
     }
   },
   "planner": {
-    "tabs": {
-      "plan": "Plan",
-      "timeline": "Cronología"
-    },
     "modes": {
       "build": "Build",
       "ask": "Ask",
-      "plan": "Plan",
-      "debug": "Debug",
-      "review": "Review",
-      "wingman": "Asistente"
+      "plan": "Plan"
     },
     "runningLocation": {
       "local": "This Mac",
-      "worktree": "New Worktree",
-      "cloud": "Cloud"
+      "worktree": "New Worktree"
     },
     "plan": {
-      "stepsCompleted": "{{completed}} de {{total}} pasos completados",
-      "noStepsYet": "Aún no hay pasos del plan",
       "executePlan": "Ejecutar plan",
-      "noActiveSession": "No hay una sesión de Agent activa",
-      "replan": "Re-planificar",
-      "viewPlan": "Ver Plan",
-      "saveToWorkspace": "Guardar en el espacio de trabajo",
-      "savedToWorkspace": "Plan guardado en el espacio de trabajo",
-      "noRepoOpen": "No hay repositorio abierto",
-      "collapse": "Contraer",
-      "expand": "Expandir"
+      "noActiveSession": "No hay una sesión de Agent activa"
     },
     "todoList": {
       "title": "To-do",
       "completedCount": "{{completed}}/{{total}} To-dos",
       "countOnly": "{{total}} To-dos",
-      "doneOf": "{{done}} de {{total}} completado",
-      "createdAt": "Creado {{time}}",
-      "updatedAt": "Actualizado {{time}}",
       "justNow": "ahora mismo",
       "minutesAgo": "hace {{count}} min",
       "yesterday": "Ayer",
       "columnOpen": "Abiertas",
       "status": {
-        "pending": "Pendiente",
-        "in_progress": "En progreso",
         "completed": "Completado",
         "cancelled": "Cancelado"
       }
     },
     "agentOrgTasks": {
       "title": "Tareas del equipo",
-      "doneOf": "{{done}} de {{total}} completado",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
-      "loadFailed": "No se pudieron cargar las tareas",
       "statusPending": "Pendiente",
       "statusInProgress": "En curso",
       "statusCompleted": "Completado",
@@ -2441,24 +1947,9 @@
       "activeOf": "{{active}} / {{total}} activos",
       "inbox": "Inbox",
       "unreadCount": "{{count}} sin leer",
-      "coordinator": "Coordinador",
-      "currentSession": "Actual",
-      "inProgressTasks": "{{count}} tareas en curso",
-      "pendingTasks": "{{count}} tareas pendientes",
-      "unreadMessages": "{{count}} mensajes sin leer",
-      "taskBoard": "Tablero de tareas",
-      "memberSessions": "Sesiones de miembros",
       "pauseRun": "Pausar ejecución",
       "resumeRun": "Reanudar ejecución",
       "viewCoordinatorHistory": "View coordinator chat history"
-    },
-    "agentOrgInbox": {
-      "title": "Mensajes Agent",
-      "unreadCount": "{{count}} sin leer",
-      "from": "De {{sender}}",
-      "kindFallback": "Mensaje {{kind}}",
-      "loadFailed": "No se pudieron cargar los mensajes",
-      "overviewOnly": "{{count}} mensajes de equipo sin leer. El historial detallado está disponible en la reproducción del run."
     },
     "agentOrgIntervention": {
       "title": "Conversando con {{member}}",
@@ -2468,34 +1959,6 @@
       "loadFailed": "No se pudo cargar el estado de intervención",
       "busyShort": "Chat usuario",
       "teammateBusy": "Este teammate está en chat directo con usuario"
-    },
-    "timeline": {
-      "askUser": "Preguntar al usuario",
-      "noQuestionProvided": "No se proporcionó pregunta.",
-      "action": "Acción",
-      "thought": "Pensamiento:",
-      "arguments": "Argumentos:",
-      "content": "Contenido:",
-      "resultLabel": "Resultado:",
-      "createFile": "Crear archivo",
-      "fileDiff": "Diferencia de archivo",
-      "planHint": "Pista del plan",
-      "readFile": "Leer archivo",
-      "runCommandLine": "Ejecutar línea de comandos",
-      "searchInFile": "Buscar en archivo",
-      "searchCodebase": "Buscar en código",
-      "searchDirectory": "Buscar en directorio",
-      "searchLabel": "Buscar:",
-      "inDirectory": "en {{directory}}",
-      "foundResults": "Encontrados {{count}} resultados en {{files}} archivos",
-      "lineRange": "Línea {{start}}-{{end}}",
-      "clickToViewContent": "Clic para ver contenido",
-      "noResult": "sin resultado",
-      "event": "Evento",
-      "functionLabel": "Función:",
-      "noTimelineEvents": "No hay eventos de línea de tiempo",
-      "file": "Archivo",
-      "atlas": "Atlas"
     },
     "agentOrgMemberStatus": {
       "idle": "Inactivo",
@@ -2509,7 +1972,6 @@
     }
   },
   "planDoc": {
-    "plan": "Plan",
     "untitled": "Plan sin título",
     "drafting": "Redactando plan…",
     "readyForReview": "Listo para revisión",
@@ -2524,9 +1986,6 @@
     "emptyPlan": "(el plan está vacío)",
     "edit": "Editar",
     "cancelEdit": "Cancelar",
-    "editAndBuild": "Editar y construir",
-    "openInSimulator": "Abrir en el Simulator",
-    "close": "Cerrar",
     "collapse": "Contraer"
   },
   "workspace": {
@@ -2537,10 +1996,7 @@
     "errorOccurred": "Ocurrió un error",
     "failedToSendMessage": "Error al enviar mensaje",
     "noSessionIdFound": "No se encontró ID de Session",
-    "failedToContinue": "Error al continuar la Session",
     "failedToResume": "Error al reanudar la Session",
-    "failedToInterrupt": "Error al interrumpir la Session",
-    "failedToStop": "Error al detener el Agent",
     "failedToCheckChanges": "No se pudieron verificar los cambios de archivo. Se procederá con la reversión.",
     "insufficientBalance": "Saldo insuficiente para el servicio alojado de ORGII. Recarga en orgii.ai/wallet.",
     "runQueuedBehindCheckout": "En cola: otra ejecución está usando este checkout. Comenzará en cuanto termine."
@@ -2552,12 +2008,6 @@
       "Pensándolo bien...",
       "Trabajando en ello...",
       "Decidiendo el siguiente paso..."
-    ],
-    "nextStepSlowVariants": [
-      "Planificando el siguiente paso, tardando más de lo habitual...",
-      "Aún pensándolo, tardando más de lo habitual...",
-      "Trabajando en ello, tardando más de lo habitual...",
-      "Decidiendo el siguiente paso, tardando más de lo habitual..."
     ],
     "compacting": "Compactando contexto...",
     "statusTrail": {
@@ -2577,41 +2027,14 @@
     "keepChanges": "Conservar cambios"
   },
   "controlTower": {
-    "welcomeMessages": [
-      "¿Qué estás construyendo hoy?",
-      "¿Qué vas a lanzar hoy?",
-      "¿Qué resolvemos hoy?",
-      "¿Qué es lo siguiente por construir?",
-      "¿Cuál es el siguiente paso?"
-    ],
-    "quickActions": "Acciones rápidas",
-    "recentSessions": "Sesiones recientes",
-    "viewAllSessions": "Ver todas las sesiones",
-    "noSessionsYet": "Aún no hay sesiones",
     "myAgents": "Mis {{count}} Agents",
-    "myAgentOrgs": "Mis {{count}} Equipos Agent",
     "noAgentsAvailable": "No hay Agents disponibles",
     "newAgentSession": "Nueva sesión de {{agent}}",
     "addAgent": "Agregar Agent",
     "myApiKeys": "Mis {{count}} Keys",
     "addApiKey": "Agregar clave API",
-    "noRepoSelected": "Ningún repositorio seleccionado",
     "diff": {
-      "untitledSession": "Sesión sin título",
-      "singleFile": "Archivo único",
-      "unified": "Vista unificada",
-      "allChanges": "Todos los cambios",
-      "failedToLoadDiffFor": "No se pudo cargar el diff de {{path}}",
-      "failedToLoadFileContent": "No se pudo cargar el contenido del archivo",
-      "binaryFile": "Archivo binario",
-      "selectFileToView": "Selecciona un archivo para ver el diff",
-      "openProjectToViewDiff": "Abre un Project para ver el diff",
-      "failedToLoadDiff": "No se pudo cargar el diff",
-      "changes": "Cambios",
-      "refresh": "Actualizar",
-      "noUncommittedChanges": "No hay cambios sin confirmar",
-      "noSessionChanges": "No hay cambios sin confirmar para esta sesión",
-      "fileCount": "{{count}} archivos"
+      "refresh": "Actualizar"
     },
     "git": {
       "filterUncommitted": "Sin confirmar",
@@ -2619,54 +2042,17 @@
       "filterStaged": "Preparado",
       "filterStashed": "Guardado",
       "filterCountLabel_one": "{{count}} cambio {{label}}",
-      "filterCountLabel_other": "{{count}} cambios {{label}}",
-      "failedToLoad": "Error al cargar el estado de Git",
-      "noBranchChanges": "Sin commits sin enviar",
-      "unknownAuthor": "Desconocido"
-    },
-    "groups": {
-      "home": "Inicio",
-      "sessions": "Sesiones",
-      "git": "Git",
-      "terminal": "Terminal"
+      "filterCountLabel_other": "{{count}} cambios {{label}}"
     },
     "history": {
-      "wingmanAgent": "Wingman Agent",
       "agentFallback": "Agent"
     },
     "sidebar": {
       "stopAgentProcess": "Detener proceso del Agent",
-      "closeSession": "Cerrar sesión",
-      "openInBrowser": "Abrir en navegador",
-      "closeTab": "Cerrar pestaña",
-      "private": "privado",
-      "newTab": "Nueva pestaña",
-      "overview": "Descripción general",
-      "homeBrowsers": "Pestañas del navegador",
-      "homeTerminals": "Sesiones de terminal",
-      "openInMyStation": "Abrir en My Station",
-      "openInTerminalTab": "Abrir en pestaña Terminal"
-    },
-    "workspaceTools": {
-      "title": "Herramientas del workspace",
-      "description": "Comprueba los LSP servers y herramientas lint recomendados para este workspace.",
-      "summary": "{{ready}}/{{total}} listos",
-      "noRecommendations": "Sin herramientas recomendadas",
-      "refresh": "Actualizar",
-      "lsp": "LSP servers",
-      "lint": "Herramientas lint",
-      "ready": "Las {{total}} herramientas recomendadas están listas",
-      "needsSetup": "{{ready}} de {{total}} herramientas recomendadas están listas",
-      "notApplicable": "Sin recomendaciones específicas del workspace",
-      "missing": "Falta",
-      "disabled": "Desactivado"
+      "openInMyStation": "Abrir en My Station"
     }
   },
   "groupChat": {
-    "senderTitle": {
-      "message": "{{sender}} envió un mensaje",
-      "said": "{{sender}} dijo"
-    },
     "taskHeader": {
       "createWithOwner": "{{sender}} asignó una tarea a {{ownerName}}",
       "create": "{{sender}} asignó una tarea",
@@ -2674,14 +2060,6 @@
       "updateDetail": "{{sender}} actualizó el detalle de la tarea",
       "get": "{{sender}} consultó los detalles de la tarea",
       "list": "{{sender}} consultó la lista de tareas"
-    },
-    "messageHeader": {
-      "running": "{{sender}} escribiendo a {{recipient}}",
-      "done": "{{sender}} escribió a {{recipient}}",
-      "failed": "{{sender}} no pudo escribir a {{recipient}}",
-      "broadcastRunning": "{{sender}} escribiendo a varios agents",
-      "broadcastDone": "{{sender}} escribió a varios agents",
-      "broadcastFailed": "{{sender}} no pudo escribir a varios agents"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator leyó los mensajes enviados por otros agents"
@@ -2735,9 +2113,6 @@
       "completed": "Completada"
     }
   },
-  "manageProject": {
-    "inProject": "en {{project}}"
-  },
   "manageAgentDef": {
     "action": {
       "create": "Creado",
@@ -2752,23 +2127,11 @@
       "get_org": "Org obtenida"
     }
   },
-  "cursorIde": {
-    "restart": {
-      "title": "¿Reiniciar Cursor para el control de ORGII?",
-      "message": "ORGII necesita reiniciar Cursor con el control remoto activado para que los follow-ups lleguen a la misma conversación de Cursor. Esto cerrará Cursor y lo volverá a abrir oculto con --remote-debugging-port=9230.",
-      "okLabel": "Reiniciar Cursor",
-      "success": "Cursor se reinició oculto con el control remoto activado. Reintentando…",
-      "failed": "No se pudo reiniciar Cursor: {{reason}}"
-    }
-  },
   "cards": {
     "openFile": "Abrir en editor",
     "openLink": "Abrir enlace",
-    "broadcast": "→ Todos los agentes",
     "agentMessage": {
       "fallbackTitle": "Mensaje",
-      "accepted": "Aceptado",
-      "rejected": "Rechazado",
       "empty": "(sin contenido del mensaje)",
       "status": {
         "sending": "Enviando…",
@@ -2790,45 +2153,27 @@
       },
       "emailBubble": {
         "noSubject": "(sin asunto)",
-        "expand": "Mostrar mensaje completo",
-        "collapse": "Ocultar mensaje",
         "userInbox": "Bandeja del usuario",
         "currentChannel": "Canal actual",
-        "subagentMessages": "Mensajes de subagents",
-        "readMessagesFromSubagents": "{{agent}} leyó mensajes de subagents"
+        "subagentMessages": "Mensajes de subagents"
       }
     },
     "actions": {
       "moreOpenOptions": "Más opciones de apertura",
       "openAsPullRequest": "Pestaña PR",
       "openAsWebPage": "Página web",
-      "openInApp": "Abrir en la app",
-      "openWithDefaultBrowser": "Abrir con el navegador predeterminado",
-      "revealInFinder": "Mostrar en Finder",
-      "revealInExplorer": "Mostrar en Explorer",
-      "revealInFileManager": "Mostrar en el gestor de archivos"
+      "openWithDefaultBrowser": "Abrir con el navegador predeterminado"
     },
     "url": {
-      "open": "Abrir",
       "changesCount_one": "{{count}} cambio",
       "changesCount_other": "{{count}} cambios",
       "copyUrl": "Copiar URL",
       "copied": "URL copiada",
       "openExternalFailed": "No se pudo abrir la URL en el navegador predeterminado",
-      "openPullRequestFailed": "No se pudo abrir la pestaña de pull request",
-      "groupTitle": "Páginas web"
+      "openPullRequestFailed": "No se pudo abrir la pestaña de pull request"
     },
     "path": {
-      "open": "Abrir",
-      "copyPath": "Copiar ruta",
-      "copied": "Ruta copiada",
-      "copyFailed": "No se pudo copiar la ruta",
       "openFailed": "No se pudo abrir la ruta",
-      "revealFailed": "No se pudo mostrar la ruta en el gestor de archivos",
-      "name": "Nombre",
-      "type": "Tipo",
-      "directory": "Directorio",
-      "file": "Archivo",
       "emptyDirectory": "Directorio vacío"
     }
   },
@@ -2849,10 +2194,6 @@
     "titleA2ui": "Vista previa del Agent",
     "reload": "Recargar",
     "openExternal": "Abrir en navegador",
-    "expand": "Ampliar",
-    "shrink": "Reducir",
-    "close": "Cerrar",
-    "summarize": "Resumir con Agent",
     "waiting": "Esperando contenido…",
     "empty": "Sin contenido"
   },

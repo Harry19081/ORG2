@@ -16,7 +16,6 @@
     "title": "Mobile Remote",
     "subtitle": "Control Agents on your desktop",
     "scanQr": "Scan or paste pairing code",
-    "manualUrl": "Enter WebSocket URL",
     "tryDemo": "Try demo"
   },
   "pairing": {
@@ -119,7 +118,6 @@
     }
   },
   "modelPicker": {
-    "title": "Choose model",
     "selectModel": "Select model",
     "loading": "Loading models…",
     "empty": "No models available on desktop"

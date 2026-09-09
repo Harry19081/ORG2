@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "Registro de Dev",
     "workItems": "Itens de Trabalho",
     "codeSearch": "Busca de Código",
     "dbManager": "Gerenciador de BD",
@@ -46,9 +45,6 @@
     "diff": "Diff",
     "colleagues": "Colegas",
     "terminals": "Terminais"
-  },
-  "trajectoryPanel": {
-    "title": "Trajetória"
   },
   "routes": {
     "session": "Chat",
@@ -187,30 +183,8 @@
       "dismiss": "Dispensar guia"
     }
   },
-  "myRole": {
-    "tabs": {
-      "status": "Meu status"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "Outros"
-    },
-    "searchPlaceholder": "Buscar áreas de trabalho...",
-    "emptyTitle": "Nenhuma área de trabalho",
-    "emptyDescription": "Adicione um repo para começar",
-    "emptyWorkspaces": "Nenhuma área de trabalho corresponde",
-    "myRepos": "Meus Repos",
-    "myMultiRepoWorkspaces": "Meus Workspaces multi-repo",
-    "dashboard": "Painel",
     "myWorkspaces": "Minhas áreas de trabalho",
-    "workspaces": "Áreas de trabalho",
-    "dashboardTitle": "Áreas de trabalho",
-    "dashboardSubtitle": "Escolha uma área de trabalho para lançar ou inspecionar",
-    "addRepo": "Adicionar área de trabalho",
-    "activeBadge": "Ativo",
-    "exploreTitle": "Explorar",
-    "exploreDescription": "Descubra modelos e repos públicos (em breve)",
     "preview": {
       "repoType": "Tipo de project",
       "tools": "Ferramentas",
@@ -219,11 +193,7 @@
       "statusNotAnalyzed": "Não analisado",
       "statusReady": "Pronto",
       "statusParamsMissing": "Parâmetros faltando",
-      "statusNoEnvConfig": "Sem config de env",
-      "setupWithAI": "Transformar em app",
-      "trustRepo": "Confiar neste repo",
-      "launchpadPlaceholder": "Instruções adicionais para esta execução...",
-      "launchpadLaunch": "Iniciar"
+      "statusNoEnvConfig": "Sem config de env"
     },
     "containers": {
       "title": "Containers",
@@ -232,8 +202,6 @@
       "emptySubtitle": "Inicie o Docker Desktop, Colima ou Rancher Desktop e atualize para ver containers locais.",
       "repoEmptyTitle": "Nenhum container para este repo",
       "repoEmptySubtitle": "Containers são associados por labels de diretório de trabalho do Docker Compose ou bind mounts dentro deste repo.",
-      "repoNoDockerTitle": "Nenhuma configuração Docker detectada",
-      "repoNoDockerSubtitle": "Adicione um Dockerfile ou arquivo docker-compose para associar containers a este repo.",
       "dockerUnavailable": "Docker indisponível",
       "name": "Nome",
       "image": "Imagem",
@@ -269,15 +237,9 @@
       "categoryBuild": "Build",
       "categoryTest": "Testes",
       "categoryLint": "Lint e Formato",
-      "categoryOther": "Outros",
-      "noScripts": "Nenhum script encontrado",
-      "noScriptsHint": "Adicione um package.json, Makefile ou config similar",
-      "run": "Executar",
-      "launched": "Executando {{name}}",
-      "launchFailed": "Falha ao iniciar script"
+      "categoryOther": "Outros"
     },
     "detail": {
-      "title": "Detalhes do Repo",
       "path": "Caminho",
       "envVarsTitle": "Variáveis de Ambiente",
       "envKey": "Chave",
@@ -294,16 +256,10 @@
       "scriptName": "Nome",
       "scriptCommand": "Comando",
       "scriptCategory": "Categoria",
-      "scriptSource": "Origem",
       "scriptNamePlaceholder": "Nome do script",
       "searchScripts": "Buscar scripts…",
       "noScripts": "Nenhum script encontrado",
       "addScript": "Adicionar Script",
-      "sourceCustom": "Personalizado",
-      "sourceDiscovered": "Descoberto",
-      "analysisTitle": "Análise",
-      "clearAnalysis": "Limpar Análise",
-      "clearAnalysisHint": "Redefinir cache de análise e re-escanear na próxima visita",
       "analysisCleared": "Análise limpa"
     },
     "containerEngines": {
@@ -328,15 +284,11 @@
       "switchToRepo": "Abrir",
       "startSession": "Iniciar sessão",
       "openDetails": "Mostrar detalhes",
-      "locateInFinder": "Mostrar no Finder",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Adicionar workspace"
-  },
-  "explore": {
-    "title": "Explorar"
   },
   "workstation": {
     "agentComputer": {
@@ -354,7 +306,6 @@
       "title": "Nova aba",
       "searchFile": "Buscar arquivo",
       "searchSessions": "Quadro Kanban",
-      "newBrowserTab": "Nova aba do navegador",
       "newPrivateBrowserTab": "Nova aba privada do navegador",
       "workItems": "Itens de trabalho",
       "projects": "Projetos",
@@ -372,8 +323,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Link ou código de convite",
     "inviteCodePlaceholder": "Cole um link orgii:// ou código de convite",
-    "copyInvite": "Copiar convite",
-    "copiedInvite": "Copiado",
     "setupMode": "Modo de configuração",
     "manageOrg": "Gerenciar espaço de trabalho",
     "session": {
@@ -392,7 +341,6 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -407,16 +355,10 @@
     "forkImported": {
       "headerButton": "Fork",
       "headerTooltip": "Faça um fork desta sessão importada como sua própria sessão editável",
-      "confirmTitle": "Fazer fork e continuar?",
-      "confirmBody": "Esta é a sessão de {{name}} — sua cópia é uma importação somente leitura. Ao continuar, ela será bifurcada como sua própria sessão e sua mensagem será enviada lá.",
-      "confirm": "Fazer fork e continuar",
-      "cancel": "Cancelar",
       "retentionError": "Esta sessão está fora da janela de replay do seu plano — faça upgrade para bifurcá-la",
       "goneError": "Esta sessão compartilhada não está mais disponível (excluída ou expirada)",
       "error": "Falha ao fazer fork da sessão",
-      "sendFailed": "Fork concluído, mas o envio da mensagem falhou — ela foi restaurada no editor",
       "forkedChipTooltip": "Fork de {{name}}",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -430,8 +372,7 @@
       "notInstalled": "{{agent}} não está instalado nesta máquina",
       "missingWorkspace": "A pasta original da sessão não existe mais — o {{agent}} só pode retomá-la a partir dela",
       "sourceMissing": "Os dados originais da sessão não estão mais no disco",
-      "launchFailed": "Falha ao abrir o terminal do {{agent}}",
-      "composerPlaceholder": "Escreva para continuar em uma nova sessão…"
+      "launchFailed": "Falha ao abrir o terminal do {{agent}}"
     },
     "openInApp": {
       "headerButton": "Abrir no {{app}}",
@@ -441,13 +382,11 @@
     }
   },
   "cloud": {
-    "title": "ORG2 Cloud",
     "signIn": "Entrar",
     "signOut": "Sair",
     "signedInAs": "Sessão iniciada como {{name}}",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "Sua sessão do ORG2 Cloud expirou. Entre novamente para continuar.",
-    "recommendedDesc": "Managed session sharing, replay storage, team permissions, and secure share links. No Supabase setup required. ORG2 manages Auth, database migrations, RLS policies, billing, retention, quota, and backend upgrades for you",
     "customEndpoint": {
       "title": "Backend do ORG2 Cloud personalizado",
       "toggleDesc": "Use sua própria implantação do ORG2 Cloud",
@@ -544,7 +483,6 @@
     "sidebar": {
       "teamSessions": "Sessões da equipe",
       "mySessions": "Minhas sessões",
-      "memberFilter": "Filtrar por membro",
       "sessionFilter": "Filtrar sessões",
       "copyUrl": "Copiar URL",
       "directlySharedWithMe": "Compartilhadas diretamente comigo",
@@ -670,14 +608,11 @@
         "confirm": "Entrar",
         "cancel": "Agora não",
         "signInFirst": "Entre no ORG2 Cloud para aceitar este convite — ele fica pendente enquanto isso.",
-        "openSettings": "Abrir configurações de login",
-        "joinedToast": "Você entrou em {{org}}",
-        "joinedFallbackToast": "Você entrou no espaço de trabalho na nuvem"
+        "joinedToast": "Você entrou em {{org}}"
       },
       "create": {
         "sourceCloud": "Nuvem",
         "signInFirst": "Entre no ORG2 Cloud para criar ou entrar em um espaço de trabalho gerenciado.",
-        "openSettings": "Abrir configurações de login",
         "createdToast": "Espaço de trabalho na nuvem criado"
       },
       "errors": {
@@ -736,7 +671,6 @@
       "importEntry": "Importar sessão",
       "importDialogTitle": "Importar uma sessão compartilhada",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "Colar da área de transferência",
       "importSubmit": "Importar",
       "importInvalidInput": "Isto não parece um link de compartilhamento ou token válido.",
       "selectAll": "Todos ({{count}})",
@@ -749,53 +683,9 @@
       "incomingRetry": "Tentar novamente"
     },
     "comments": {
-      "task": {
-        "assignFailed": "O comentário foi publicado, mas a atribuição do agente falhou — tente novamente pela thread",
-        "assignUnavailableHere": "O comentário foi publicado — a atribuição do agente não está disponível nesta visualização",
-        "addressingChip": "Tratando o comentário: “{{excerpt}}”",
-        "addressingChipGeneric": "Tratando um comentário",
-        "addressingChipTooltip": "Fork criado para tratar uma thread de comentários da sessão de origem",
-        "mentionSuggestion": "Atribuir este comentário a um agente"
-      },
-      "toggleLabel": "Comentários",
-      "notesButton": "Notas da sessão",
-      "notesTitle": "Notas da sessão",
-      "empty": "Ainda não há comentários",
-      "loadError": "Não foi possível carregar os comentários",
-      "addPlaceholder": "Adicionar um comentário…",
-      "replyPlaceholder": "Responder…",
-      "send": "Comentar",
-      "reply": "Responder",
-      "edit": "Editar",
-      "save": "Salvar",
-      "cancel": "Cancelar",
-      "delete": "Excluir",
-      "resolve": "Resolver",
-      "unresolve": "Reabrir",
-      "resolved": "Resolvido",
-      "statusActive": "Ativo",
-      "wontFix": "Não será corrigido",
-      "agentAddressing": "O agente está tratando…",
-      "resolvedToggle": "Resolvidos ({{count}})",
-      "deletedComment": "Comentário excluído",
-      "editedMarker": "editado",
-      "earlierVersion": "De uma versão anterior desta sessão",
-      "replayRequired": "Comentários de turno exigem acesso completo ao replay",
-      "addError": "Não foi possível publicar — seu rascunho foi mantido",
       "actionError": "A ação falhou — tente novamente",
       "unresolvedBadge_one": "{{count}} comentário não resolvido",
-      "unresolvedBadge": "{{count}} comentários não resolvidos",
-      "addressButton": "Atender comentários",
-      "addressPill_one": "atender {{count}} comentário",
-      "addressPill_other": "atender {{count}} comentários",
-      "addressSelectAll": "Selecionar tudo",
-      "addressConfirm_one": "Atender {{count}} comentário",
-      "addressConfirm_other": "Atender {{count}} comentários",
-      "agentAuthor": "Agente @{{name}}",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "mentionMembers": "Mencionar",
-      "searchMembers": "Pesquisar membros"
+      "unresolvedBadge": "{{count}} comentários não resolvidos"
     },
     "sharingFloor": {
       "label": "Nível mínimo de compartilhamento",
@@ -851,7 +741,6 @@
         "nameLabel": "Nome",
         "namePlaceholder": "ex.: revisao-de-codigo",
         "topicLabel": "Tópico",
-        "topicOptional": "(opcional)",
         "topicPlaceholder": "Sobre o que é este canal?",
         "visibilityLabel": "Visibilidade",
         "publicTitle": "Público",
@@ -913,7 +802,6 @@
         "today": "Hoje",
         "yesterday": "Ontem",
         "you": "Você",
-        "memberCount": "{{memberCount}} membros",
         "emptyTitle": "Este é o começo de #{{name}}",
         "emptySubtitle": "Envie a primeira mensagem para iniciar a conversa",
         "missingTitle": "Canal não está mais disponível",
@@ -926,15 +814,7 @@
         "errorQuota": "Este canal atingiu o limite de mensagens neste dispositivo",
         "errorGeneric": "Não foi possível enviar a mensagem. Tente novamente.",
         "dropSessionHint": "Solte para adicionar esta sessão como referência",
-        "messageBodyLabel": "Mensagem do canal",
-        "sessionCardMissing": "Indisponível neste dispositivo",
         "sessionCardOpen": "Abrir a sessão {{name}}",
-        "workItemCardMissing": "Indisponível neste dispositivo",
-        "workItemCardLoading": "Carregando…",
-        "workItemCardOpen": "Abrir o item de trabalho {{name}}",
-        "githubCardOpen": "Abrir {{name}} no GitHub",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull request",
         "archivedComposerDisabled": "Este canal está arquivado. Desarquive-o para publicar.",
         "errorPostForbidden": "Somente gerentes do canal podem publicar aqui",
         "errorArchived": "Este canal está arquivado, então o envio está desativado",

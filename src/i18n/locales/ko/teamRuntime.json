@@ -6,7 +6,6 @@
     "today": "오늘",
     "everyone": "모두",
     "activeMembers": "활성 구성원",
-    "systemsCurrent": "{{total}}개 시스템 중 {{current}}개가 최신 상태",
     "usageByAgent": "에이전트별 사용량",
     "recentSessions": "최근 공유 세션",
     "recentLoading": "공유 세션을 불러오는 중…",
@@ -71,10 +70,6 @@
     "appVersion": "ORGII 버전",
     "totalSessions": "총 세션 수",
     "lastSynced": "마지막 동기화"
-  },
-  "selfService": {
-    "hint": "공유가 켜져 있는 동안 내 런타임이 이 워크스페이스과 공유됩니다.",
-    "action": "공유 중지 및 내 데이터 삭제"
   },
   "orgSettings": {
     "label": "팀 런타임 공유",

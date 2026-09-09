@@ -6,7 +6,6 @@
     "today": "今日",
     "everyone": "全員",
     "activeMembers": "アクティブなメンバー",
-    "systemsCurrent": "{{total}} 台中 {{current}} 台が最新",
     "usageByAgent": "エージェント別の使用量",
     "recentSessions": "最近共有されたセッション",
     "recentLoading": "共有セッションを読み込み中…",
@@ -71,10 +70,6 @@
     "appVersion": "ORGII バージョン",
     "totalSessions": "合計セッション数",
     "lastSynced": "最終同期"
-  },
-  "selfService": {
-    "hint": "共有が有効な間、自分のランタイムはこのワークスペースと共有されます。",
-    "action": "共有を停止して自分のデータを削除"
   },
   "orgSettings": {
     "label": "チームランタイム共有",

@@ -7,7 +7,6 @@
     "allRead": "Todo al día",
     "loadMore": "Cargar más",
     "filters": {
-      "all": "Todos",
       "mentions": "Menciones",
       "assigned": "Asignados"
     },
@@ -254,12 +253,10 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
-    "deleteCount": "Eliminar ({{count}})",
     "removeFromOrgii": "Quitar de ORGII",
     "removeFromOrgiiCount": "Quitar de ORGII ({{count}})",
     "edit": "Editar",
     "write": "Escribir",
-    "reply": "Responder",
     "close": "Cerrar",
     "expand": "Expandir",
     "confirm": "Confirmar",
@@ -269,16 +266,13 @@
     "add": "Agregar",
     "remove": "Quitar",
     "create": "Crear",
-    "update": "Actualizar",
     "submit": "Enviar",
     "loadMore": "Cargar más",
-    "load": "Cargar",
     "back": "Atrás",
     "next": "Siguiente",
     "previous": "Anterior",
     "done": "Listo",
     "retry": "Reintentar",
-    "regenerate": "Regenerar",
     "refresh": "Actualizar",
     "rescan": "Volver a escanear",
     "reload": "Recargar",
@@ -286,35 +280,20 @@
     "reviewPreviousFile": "Revisar archivo anterior",
     "copy": "Copiar",
     "paste": "Pegar",
-    "cut": "Cortar",
     "undo": "Deshacer",
-    "redo": "Rehacer",
-    "keep": "Conservar",
-    "reject": "Rechazar",
-    "accept": "Aceptar",
     "review": "Revisar",
     "undoAll": "Deshacer todo",
-    "redoAll": "Rehacer todo",
-    "keepAll": "Conservar todo",
-    "select": "Seleccionar",
     "selectAll": "Seleccionar todo",
     "unselectAll": "Deseleccionar todo",
     "clear": "Limpiar",
     "open": "Abrir",
     "view": "Ver",
-    "openInApp": "Abrir en la app",
     "openToRight": "Abrir a la derecha",
-    "new": "Nuevo",
     "rename": "Renombrar",
     "duplicate": "Duplicar",
-    "export": "Exportar",
-    "import": "Importar",
     "download": "Descargar",
     "upload": "Subir",
-    "insertImage": "Insertar imagen",
     "browse": "Explorar",
-    "discover": "Descubrir",
-    "discoverTests": "Descubrir pruebas",
     "newFile": "Nuevo archivo",
     "newFolder": "Nueva carpeta",
     "copyPath": "Copiar ruta",
@@ -334,16 +313,9 @@
     "configure": "Configurar",
     "manage": "Administrar",
     "uninstall": "Desinstalar",
-    "connect": "Conectar",
-    "customize": "Personalizar",
-    "goToSettings": "Ir a Configuración",
     "restart": "Reiniciar",
     "switchToStation": "Cambiar a {{station}}",
-    "rate": "Calificar",
-    "openInTab": "Abrir en pestaña",
-    "insert": "Insertar",
     "discard": "Descartar",
-    "disable": "Desactivar",
     "run": "Ejecutar",
     "clone": "Clonar",
     "send": "Enviar",
@@ -355,20 +327,12 @@
     "filter": "Filtrar",
     "loading": "Cargando...",
     "replace": "Reemplazar",
-    "publish": "Publish",
-    "acceptAll": "Aceptar todo",
-    "rejectAll": "Rechazar todo",
-    "install": "Instalar",
-    "expandAll": "Expandir todo",
     "collapseAll": "Contraer todo",
     "viewOnGitHub": "Ver en GitHub",
     "selectRepository": "Seleccionar repo",
     "all": "Todos",
     "collapse": "Colapsar",
     "toggle": "Alternar hilo",
-    "addRepo": "Agregar repo",
-    "addFolder": "Agregar carpeta",
-    "resume": "Reanudar",
     "yes": "Sí",
     "more": "Más acciones",
     "advanced": "Avanzado",
@@ -377,9 +341,7 @@
     "sort": "Ordenar",
     "openFolder": "Abrir carpeta",
     "addWorkspace": "Añadir directorio de trabajo",
-    "openSpotlight": "Abrir Spotlight",
     "openWorkspace": "Abrir directorio de trabajo",
-    "skipThisVersion": "Omitir esta versión",
     "later": "Más tarde",
     "link": "Vincular",
     "copyName": "Copiar nombre",
@@ -389,9 +351,6 @@
     "clearSelection": "Borrar selección",
     "uiSettings": "Ajustes de interfaz",
     "clearAll": "Limpiar todo"
-  },
-  "refreshToast": {
-    "successName": "{{name}} actualizado"
   },
   "status": {
     "yes": "Sí",
@@ -467,18 +426,13 @@
     "lastPage": "Última página",
     "selectPage": "Seleccionar página",
     "title": "Paginación",
-    "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
     "previousRound": "Ronda anterior",
     "nextRound": "Siguiente ronda",
-    "latestRound": "Ronda más reciente",
-    "searchRounds": "Buscar rounds"
+    "latestRound": "Ronda más reciente"
   },
   "optional": "opcional",
   "common": {
-    "yes": "Sí",
-    "no": "No",
-    "ok": "Aceptar",
     "on": "Activado",
     "off": "Desactivado",
     "default": "Predeterminado",
@@ -487,32 +441,20 @@
     "s": "s",
     "multiplier": "×",
     "spaces": "espacios",
-    "font": "Fuente",
     "name": "Nombre",
     "description": "Descripción",
     "type": "Tipo",
     "date": "Fecha",
     "time": "Hora",
-    "size": "Tamaño",
-    "path": "Ruta",
     "status": "Estado",
     "actions": "Acciones",
-    "options": "Opciones",
     "details": "Detalles",
     "more": "Más",
-    "less": "Menos",
-    "all": "Todo",
     "none": "Ninguno",
-    "selected": "Seleccionado",
-    "items": "elementos",
-    "item": "elemento",
-    "empty": "Vacío",
     "noResults": "No se encontraron resultados",
     "searchPlaceholder": "Buscar...",
     "properties": "Propiedades",
     "overview": "Resumen",
-    "appearance": "Apariencia",
-    "theme": "Tema",
     "timezone": "Zona horaria",
     "language": "Idioma",
     "preview": "Vista previa",
@@ -520,17 +462,11 @@
     "sourceCode": "Código fuente",
     "raw": "Sin procesar",
     "table": "Tabla",
-    "filter": "Filtro",
-    "filters": "Filtros",
     "selectDate": "Seleccionar fecha",
-    "files": "archivos",
-    "required": "obligatorio",
-    "pending": "pendiente",
     "error": "Error",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Origen",
-    "filterByLanguage": "Filtrar por lenguaje"
+    "source": "Origen"
   },
   "labels": {
     "accounts": "Cuentas",
@@ -653,14 +589,9 @@
   "searchModes": {},
   "tabs": {
     "terminal": "Terminal",
-    "problems": "Problemas",
-    "output": "Salida",
-    "testResults": "Resultados de pruebas",
     "explorer": "Explorador",
     "search": "Buscar",
     "sourceControl": "Control de código fuente",
-    "testing": "Pruebas",
-    "extensions": "Extensiones",
     "sessions": "Session",
     "myTabs": "Mis pestañas ({{count}})",
     "design": "Diseño",
@@ -669,23 +600,12 @@
     "console": "Consola",
     "network": "Red",
     "css": "CSS",
-    "source": "Fuente",
-    "connections": "Conexiones",
-    "queryHistory": "Historial de consultas",
-    "table": "Tabla",
-    "sql": "SQL",
-    "tools": "Herramientas",
-    "overview": "Resumen"
+    "source": "Fuente"
   },
   "errors": {
     "generic": "Algo salió mal",
-    "networkError": "Error de red. Por favor, verifica tu conexión.",
     "notFound": "No encontrado",
-    "unauthorized": "No autorizado. Por favor, inicia sesión.",
     "forbidden": "Acceso denegado",
-    "serverError": "Error del servidor. Por favor, inténtalo más tarde.",
-    "timeout": "Tiempo de espera agotado",
-    "validation": "Error de validación",
     "pageNotFound": "Página no encontrada",
     "failedToLoadComponent": "Error al cargar el componente",
     "networkErrorShort": "Error de red",
@@ -694,8 +614,6 @@
     "couldntConnect": "No se pudo conectar al servidor. Verifica tu conexión a internet.",
     "failedToLoadProperly": "Un componente no se cargó correctamente.",
     "requiredFileCouldntLoad": "No se pudo cargar un archivo requerido. Esto generalmente se soluciona al reiniciar.",
-    "failedToRenderActivity": "Error al renderizar la actividad",
-    "failedToRenderEvent": "Error al renderizar el evento",
     "unknown": "Error desconocido",
     "agentRequestFailed": "Error en la solicitud del Agent",
     "codexLoginExpired": "La sesión de Codex ha caducado",
@@ -741,14 +659,11 @@
       },
       "workflow": "El servicio de flujos de trabajo no está disponible. Inténtalo más tarde."
     },
-    "imageUploadFailed": "Error al subir la imagen",
-    "imageTooLarge": "La imagen es demasiado grande",
     "failedToLoad": "Error al cargar",
     "unknownError": "Se produjo un error desconocido"
   },
   "confirmation": {
     "delete": "¿Estás seguro de que quieres eliminar esto?",
-    "discard": "¿Descartar cambios?",
     "removeTitle": "¿Quitar \"{{name}}\" de ORGII?",
     "removeMessage": "Esto solo elimina su vínculo con ORGII. No se eliminará nada del disco.",
     "deleteWorkspaceTitle": "¿Eliminar el Workspace \"{{name}}\"?",
@@ -766,32 +681,15 @@
     "unsavedCloseMultipleMessage": "{{count}} archivo(s) tienen cambios sin guardar. ¿Cerrarlos de todos modos?",
     "undoAllChanges": "Esto revertirá los {{count}} cambios de archivo realizados por el Agent. Esta acción no se puede deshacer. ¿Continuar?"
   },
-  "dateRange": {
-    "1d": "1D",
-    "7d": "7D",
-    "1w": "1S",
-    "30d": "30D",
-    "1m": "1M",
-    "3m": "3M",
-    "1y": "1A"
-  },
   "filters": {
     "all": "Todos",
     "source": "Fuente",
     "local": "Local",
     "member": "Miembro",
-    "model": "Modelo",
-    "custom": "Personalizado",
     "tokenMarket": "Token Market",
-    "market": "Mercado",
-    "agentOrAgentOrg": "Session agent",
     "searchAgentOrOrg": "Seleccionar un Agent o Equipo Agent...",
-    "tplSelectAgentOrOrg": "Seleccionar {agent}",
-    "cliAgent": "CLI Agent",
     "searchModel": "Buscar modelo...",
-    "searchModelFor": "Selecciona un modelo para {{target}}...",
-    "tplSelectModel": "Seleccionar {model}",
-    "tplSelectModelFor": "Seleccionar {model} para {{target}}"
+    "searchModelFor": "Selecciona un modelo para {{target}}..."
   },
   "prerequisite": {
     "missingTitle": "Requisito previo faltante",
@@ -801,29 +699,15 @@
     "agent": "Agent",
     "you": "Tú",
     "session": "Session",
-    "agentSession": "Session de Agent",
     "workStation": "Workstation",
-    "osAgent": "OS Agent",
-    "coding": "Coding",
     "agentTerminal": "Agent Terminal",
     "myStation": "Mi estación",
     "agentStation": "Estación del Agent",
-    "projectManager": "Project Manager",
     "myTerminal": "Mi terminal",
     "myTerminalInfo": "Información de mi terminal"
   },
-  "pageSearch": {
-    "placeholder": "Buscar páginas...",
-    "tooltip": "Buscar páginas",
-    "categories": {
-      "workspace": "Espacio de trabajo",
-      "tools": "Herramientas",
-      "market": "Mercado"
-    }
-  },
   "tooltips": {
     "closeEsc": "Cerrar (Esc)",
-    "hidePanel": "Ocultar panel (⌘J)",
     "refreshTree": "Actualizar árbol",
     "copy": "Copiar",
     "previous": "Anterior",
@@ -861,8 +745,6 @@
     "searchInOpenEditors": "Buscar solo en editores abiertos",
     "replace": "Reemplazar (Ctrl+Shift+1)",
     "replaceAll": "Reemplazar todo (Ctrl+Alt+Enter)",
-    "uninstall": "Desinstalar",
-    "dismiss": "Descartar",
     "moreActions": "Más acciones...",
     "formatSql": "Formatear SQL (embellecer)",
     "queryHistory": "Historial de consultas",
@@ -872,13 +754,11 @@
     "stopAndTranscribe": "Detener y transcribir",
     "htmlPreview": "Vista previa HTML",
     "manual": "Manual",
-    "scrollLeft": "Desplazar pestañas a la izquierda",
     "toggleFileFilters": "Alternar filtros de archivo",
     "closeDevTools": "Cerrar DevTools",
     "movePanelToRight": "Mover panel a la derecha",
     "movePanelToBottom": "Mover panel abajo",
     "domTree": "Árbol DOM",
-    "clearUiIndex": "Limpiar índice de componentes",
     "closeSession": "Cerrar Session",
     "clearNetworkLogs": "Limpiar registros de red",
     "clearConsole": "Limpiar consola",
@@ -913,7 +793,6 @@
     "failedToParseSymbols": "Error al analizar símbolos",
     "outlineParseError": "Esquema no disponible para este archivo",
     "runQueryToSeeResults": "Ejecuta una consulta para ver resultados",
-    "noProjectsFound": "No se encontraron Projects",
     "failedToLoad": "Error al cargar",
     "noItems": "No hay elementos para mostrar",
     "nothingHereYet": "No hay elementos para mostrar",
@@ -981,14 +860,7 @@
     "noStyles": "Sin estilos",
     "noDomTree": "Sin árbol DOM",
     "noSourceDetected": "No se detectó código fuente",
-    "notIndexed": "Not indexed",
-    "indexedInspectElement": "Indexado, inspecciona un elemento",
-    "buildIndexToStart": "Construir índice para comenzar",
     "noMatchingFilesFound": "No se encontraron archivos coincidentes",
-    "scanning": "Escaneando...",
-    "retryToScanAgain": "Reintentar para escanear de nuevo",
-    "noTokensFound": "No se encontraron tokens",
-    "addCssVariables": "Agrega variables CSS a tu proyecto",
     "noWorkspaceExplorerTitle": "No hay ningún directorio de trabajo abierto",
     "noWorkspaceExplorerSubtitle": "Abre un directorio de trabajo para ver archivos",
     "cannotFindRepo": "No se encuentra {{repoName}}",
@@ -1018,53 +890,31 @@
     "noData": "Sin datos"
   },
   "inbox": {
-    "searchPlaceholder": "Buscar mensajes...",
-    "channels": {
-      "title": "Canales",
-      "git": "Git",
-      "workItems": "Elementos de trabajo",
-      "promotions": "Promociones"
-    },
-    "selectChannel": "Selecciona un canal",
-    "noMessages": "Aún no hay mensajes",
-    "noMessagesSubtitle": "Los mensajes aparecerán aquí cuando ocurran eventos",
-    "composerPlaceholder": "Escribe una nota…",
     "scrollToBottom": "Ir al final",
-    "markAllAsRead": "Marcar todo como leído",
-    "scrollToUnread": "Ir a no leídos"
+    "markAllAsRead": "Marcar todo como leído"
   },
   "placeholderTypes": {
     "mcpServer": "servidor MCP",
-    "connection": "conexión",
-    "policy": "Policy",
-    "skill": "skill",
-    "message": "mensaje"
+    "connection": "conexión"
   },
   "workstation": {
     "expandReplace": "Expandir reemplazo",
     "collapseReplace": "Contraer reemplazo",
     "tooltipRefreshExplorer": "Actualizar explorador",
-    "deleteSelectedRows": "Eliminar {{count}} fila(s) seleccionada(s)",
     "agentBrowser": "Agent Browser",
     "userInControl": "User in control",
     "agentControlling": "Agent controlling",
     "returnToAgent": "Return to Agent",
     "takeOver": "Take Over",
-    "chromeInForeground": "Chrome window is in the foreground — interact directly",
     "chromeWindowOpen": "La ventana de Chrome está abierta — interactúa directamente, luego regresa al Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
     "split": "Split",
-    "reloadFromDiskConfirm": "Reload from disk (will prompt to confirm)",
-    "reloadFromDisk": "Reload from disk",
     "publishingBranch": "Publishing...",
-    "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git no inicializado",
     "notGitInitializedTooltip": "Este directorio de trabajo aún no tiene un directorio .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
-    "branchTooltip": "Rama: {{branch}}",
     "branchTooltipSwitching": "Rama: {{branch}} (cambiando…)",
     "switchWorkspaceTooltip": "Cambiar directorio de trabajo",
     "switchWorktreeTooltip": "Cambiar de worktree",
@@ -1081,14 +931,11 @@
     "embeddingLabel": "Embedding",
     "indexingProgress": "Indexando: {{processed}}/{{total}} archivos ({{percent}}%)",
     "indexingProgressWithFile": "Indexando: {{processed}}/{{total}} archivos ({{percent}}%)\nActual: {{file}}",
-    "languageServices": "Language Services",
     "ports": {
       "workspaceSection": "Espacio de trabajo actual",
       "externalSection": "Externos",
-      "tooltip": "Puertos: {{workspace}} workspace, {{external}} externos",
       "viewPortsTooltip": "Ver puertos en uso",
       "noWorkspacePorts": "No se detectaron puertos del workspace",
-      "externalLabel": "externo",
       "unknownProcess": "Proceso desconocido",
       "pidLabel": "PID {{pid}}",
       "openInBrowser": "Abrir en el navegador",
@@ -1102,62 +949,28 @@
       "rescanTooltip": "Buscar de nuevo puertos en escucha",
       "lastScannedAt": "Último escaneo a las {{time}}"
     },
-    "noLanguageServicesActive": "No language services active",
     "linesSelected": "{{count}} lines selected",
     "charsSelected": "{{count}} selected",
     "nLines": "{{count}} lines",
-    "blameOn": "Blame: On",
-    "blameOff": "Blame: Off",
     "hideFilter": "Hide filter",
     "filterFilesAction": "Filter files",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
-    "stagedChangesCount": "{{count}} Staged Changes",
-    "changesCount": "{{count}} Changes",
     "acceptAllMergeChanges": "Accept All Merge Changes (Stage resolved files)",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
     "discardAllUnstagedConfirm": "Discard all unstaged changes? This cannot be undone.",
     "addedToAgent": "{{fileName}} added to agent",
-    "privateBrowsing": "Private",
-    "standardBrowsing": "Estándar",
-    "openNativeDevTools": "Open native browser DevTools (Safari Inspector / Edge DevTools)",
-    "extractingProps": "Extracting props...",
-    "initializingPreview": "Initializing preview...",
-    "buildUiIndex": "Build component index",
     "componentLabel": "Component",
     "definitionLabel": "Definition",
     "findSource": "Find Source",
     "preserveConsole": "Preserve",
     "consoleShowStackTrace": "Mostrar traza de pila",
     "consoleHideStackTrace": "Ocultar traza de pila",
-    "loadingData": "Loading data...",
-    "noData": "No data",
-    "tokenName": "token-name",
-    "manualMode": "Manual",
-    "position": "Position",
-    "flow": "Flow",
-    "size": "Size",
-    "paddingLabel": "Padding",
-    "marginLabel": "Margin",
-    "boxModel": "Box Model",
-    "opacityLabel": "Opacity",
-    "cornersLabel": "Corners",
-    "textLabel": "Text",
-    "weightLabel": "Weight",
-    "lineLabel": "Line",
-    "borderLabel": "Border",
-    "widthLabel": "Width",
-    "heightLabel": "Height",
-    "colorLabel": "Color",
-    "shadowAndBlur": "Shadow & Blur",
-    "blurLabel": "Blur",
-    "spreadLabel": "Spread",
     "styleEditsCount_one": "{{count}} cambio",
     "styleEditsCount_other": "{{count}} cambios",
     "sendStyleEdits": "Enviar",
-    "addToChat": "Agregar al chat",
     "browserCore": {
       "desktopOnlyTitle": "Navegador disponible en la app de escritorio",
       "desktopOnlyBody": "El navegador integrado solo está disponible en la aplicación de escritorio Tauri.",
@@ -1165,28 +978,15 @@
       "debugTauriInternals": "__TAURI_INTERNALS__: {{value}}",
       "debugTauriIpc": "__TAURI_IPC__: {{value}}",
       "debugTauri": "__TAURI__: {{value}}",
-      "privateBrowsingLabel": "Navegación privada:",
       "enterUrlToStart": "Introduce una URL para empezar",
       "privateBrowsingEmptyTitle": "Navegación privada: Introduce una URL para empezar",
       "simulatorBrowserNotice": "Este navegador es solo para reproducción de sesión. Para navegar de forma persistente, usa el navegador de la app principal (Herramientas → Navegador).",
       "tlsDevNote": "Nota: algunos sitios HTTPS (como GitHub) pueden mostrar errores TLS en modo desarrollo por la validación del certificado. Prueba sitios HTTP o HTTPS sencillos como example.com.",
       "siteUnreachableTitle": "No se puede acceder a este sitio",
-      "errorTls": "La conexión con este sitio no es segura. Suele ocurrir con sitios HTTPS en modo desarrollo.",
-      "errorTimeout": "Se agotó el tiempo de espera. El servidor tardó demasiado en responder.",
-      "errorDns": "No se encontró la dirección DNS del servidor. Comprueba la URL.",
-      "errorRefused": "El servidor rechazó la conexión.",
-      "errorGeneric": "No se puede conectar al servidor. El sitio puede estar caído o hay un problema de red.",
-      "technicalDetails": "Detalles técnicos",
-      "tryHeading": "Prueba:",
-      "tryCheckConnection": "Comprobar tu conexión a Internet",
-      "tryVerifyUrl": "Verificar que la URL sea correcta",
-      "tryAgainLater": "Intentar de nuevo más tarde",
       "webviewHiddenTitle": "Vista web oculta temporalmente",
       "webviewHiddenBody": "Cierra el menú o el diálogo para volver a mostrarla."
     },
-    "unsavedChangesTitle": "Unsaved Changes",
-    "prkPlaceholder": "PRJ",
-    "gitSyncMenuTitle": "Acciones de sincronización Git"
+    "unsavedChangesTitle": "Unsaved Changes"
   },
   "git": {
     "loading": "Cargando estado de Git...",
@@ -1588,12 +1388,7 @@
   },
   "selectors": {
     "shared": {
-      "repo": "repo",
-      "workspace": "Espacio de trabajo",
-      "folder": "carpeta",
-      "source": "origen",
-      "branch": "rama",
-      "name": "nombre"
+      "workspace": "Espacio de trabajo"
     },
     "labels": {
       "recent": "Reciente"
@@ -1615,10 +1410,8 @@
       "default": "Predeterminado"
     },
     "repo": {
-      "workspaceFolders": "Carpetas del Workspace",
       "addEntry": "Más opciones de importación",
       "sections": {
-        "coding": "Espacio de trabajo",
         "pinned": "Fijado",
         "current": "Actual",
         "repo": "Repositorios",
@@ -1643,7 +1436,6 @@
         "creatingMultiRepoWorkspace": "componiendo directorio de trabajo multirrepositorio"
       },
       "forms": {
-        "repoName": "Nombre del repositorio",
         "localPath": "Ruta local",
         "chooseDestinationPath": "Elegir ruta de destino",
         "choose": "Elegir",
@@ -1657,7 +1449,6 @@
       "path": {
         "switchTo": "Cambiar a",
         "switchToTemplate": "Cambiar a {workspace}",
-        "search": "Buscar",
         "manageWorkspace": "Gestionar directorio de trabajo",
         "addBy": "Añadir directorio de trabajo por",
         "addByTemplate": "Añadir directorio de trabajo por {source}"
@@ -1675,14 +1466,8 @@
       }
     },
     "folder": {
-      "path": {
-        "switchTo": "Cambiar a"
-      },
       "addOptions": {},
-      "sources": {},
-      "forms": {
-        "choose": "Elegir"
-      }
+      "sources": {}
     },
     "branch": {
       "path": {
@@ -1732,9 +1517,7 @@
         "noPullRequests": "No hay Pull requests coincidentes"
       },
       "placeholders": {
-        "checkout": "rama",
         "add": "nombre de nueva rama...",
-        "remove": "rama",
         "pullRequests": "Buscar Pull requests..."
       },
       "tabs": {
@@ -1744,9 +1527,7 @@
     },
     "sessionInfo": {
       "sourcePlaceholder": "Selecciona una fuente",
-      "start": "Iniciar",
       "sourceAria": "Seleccionar origen del espacio de trabajo",
-      "on": "en",
       "branchAria": "Seleccionar rama",
       "switchWorkspace": "Cambiar directorio de trabajo",
       "switchBranch": "Cambiar rama",
@@ -1858,9 +1639,6 @@
           "label": "Localizar repo en Finder",
           "pillLabel": "Localizar"
         },
-        "createSession": {
-          "label": "Crear nueva sesión"
-        },
         "searchAgentSessions": {
           "label": "Buscar sesiones Agent",
           "pillLabel": "Buscar sesiones",
@@ -1956,8 +1734,6 @@
     "chatPanelLocation": "Panel de chat",
     "chatLeft": "Chat a la izquierda",
     "chatRight": "Chat a la derecha",
-    "full": "Completo",
-    "theme": "Tema",
     "sidebarPosition": "Barra lateral de Workstation",
     "modelPickerStyle": "Selector",
     "paginateChatHistory": "Paginar historial del chat",
@@ -1988,9 +1764,6 @@
     "ramCodeMirrors": "Renderizado de archivos"
   },
   "spotlightActions": {
-    "switchToLightTheme": "Cambiar al tema claro",
-    "switchToDarkTheme": "Cambiar al tema oscuro",
-    "switchToHighContrastTheme": "Cambiar al tema de alto contraste",
     "enableChatPagination": "Activar paginación del chat",
     "disableChatPagination": "Desactivar paginación del chat",
     "useModelPickerSpotlight": "Usar selector de modelos Spotlight",
@@ -2005,7 +1778,6 @@
     "changeSkin": "Cambiar apariencia",
     "searchThemes": "Buscar temas...",
     "searchSkins": "Buscar apariencias...",
-    "switchToSystemTheme": "Seguir el tema del sistema",
     "detectUpdate": "Buscar actualizaciones",
     "recentlyUsed": "Usados recientemente"
   },
@@ -2015,88 +1787,18 @@
     "showPrimarySidebar": "Mostrar barra lateral",
     "hidePrimarySidebar": "Ocultar barra lateral",
     "searchFiles": "Buscar archivos",
-    "openBrowser": "Abrir navegador",
     "switchWorkspace": "Cambiar / añadir directorio de trabajo",
-    "openEditor": "Abrir editor",
-    "hideTerminal": "Ocultar terminal",
-    "hideFiles": "Ocultar archivos",
-    "maximizeChat": "Enfocar panel de chat",
-    "toggleSidebar": "Alternar barra lateral",
-    "openDevTools": "Abrir DevTools",
-    "showDevTools": "Mostrar DevTools",
-    "hideDevTools": "Ocultar DevTools",
-    "connections": "Conexiones",
-    "newTab": "Nueva pestaña",
-    "newPrivateTab": "Nueva pestaña privada",
-    "openDashboard": "Abrir Dashboard",
-    "runQuery": "Ejecutar consulta",
-    "newProject": "Nuevo Project"
-  },
-  "lsp": {
-    "installPrompt": "El Language Server para \"{{language}}\" no está instalado. ¿Desea instalarlo?",
-    "installing": "Instalando Language Server..."
+    "newTab": "Nueva pestaña"
   },
   "gitDashboard": {
-    "title": "Panel de Git",
     "author": "Autor",
-    "commits": "Commits",
-    "additions": "Adiciones",
-    "deletions": "Eliminaciones",
-    "filesChanged": "Archivos Cambiados",
-    "files": "archivos",
-    "other": "Otros",
-    "showMore": "Mostrar Más",
-    "showLess": "Mostrar Menos"
+    "commits": "Commits"
   },
   "aiImpact": {
     "lines": "Líneas"
   },
   "sessions": {
-    "title": "Sesiones",
-    "myUsage": "Mi uso",
-    "teamUsage": "Uso del equipo"
-  },
-  "otherUsage": {
-    "title": "Otro uso",
-    "sessions": "Sesiones",
-    "completed": "Completado",
-    "incomplete": "Incompleto",
-    "tabs": {
-      "overview": "Resumen",
-      "cursor": "Cursor",
-      "cli": "CLI"
-    }
-  },
-  "devActivity": {
-    "title": "Perfil de Desarrollo",
-    "sessions": "Sesiones",
-    "source": "Fuente",
-    "commits": "Commits",
-    "active": "Activo"
-  },
-  "devRecord": {
-    "loading": "Cargando…",
-    "custom": "Personalizado",
-    "startDate": "Fecha de inicio",
-    "endDate": "Fecha de fin",
-    "statCards": {
-      "commits": "Commits",
-      "filesChanged": "Archivos Cambiados",
-      "sessions": "Sesiones",
-      "projects": "Mapa de calor"
-    },
-    "team": {
-      "title": "Actividad del Equipo",
-      "member": "Miembro",
-      "email": "Correo electrónico",
-      "model": "Modelo",
-      "sessions": "Sesiones",
-      "tokens": "Token",
-      "days": "días"
-    }
-  },
-  "actionSummary": {
-    "read": "Leído"
+    "title": "Sesiones"
   },
   "sourceControl": {
     "notGitInitialized": "Git no inicializado",
@@ -2104,11 +1806,9 @@
     "initializeGit": "Inicializar Git",
     "initializingGit": "Inicializando Git...",
     "noRemoteForPublish": "Este directorio de trabajo ahora es un repositorio Git, pero aún no tiene un remote. Agrega un remote como origin antes de publicar esta rama.",
-    "generateCommitMessage": "Generar mensaje de commit con IA",
     "pull": "Pull",
     "push": "Push",
     "fetch": "Fetch",
-    "sync": "Sync",
     "worktreeActions": "Acciones de Worktree",
     "removeWorktree": "Eliminar Worktree",
     "removeWorktreeTitle": "¿Eliminar Worktree {{name}}?",
@@ -2129,16 +1829,7 @@
   "contextInfo": {
     "contextUsed": "contexto utilizado",
     "title": "Context",
-    "full": "Usado",
     "ariaLabel": "Uso del contexto",
-    "categories": {
-      "rules": "Rules",
-      "conversation": "Conversación",
-      "tools": "Herramientas",
-      "skills": "Habilidades",
-      "mcp": "MCP",
-      "subagents": "Subagents"
-    },
     "autoCompactNote": "El contexto se resumirá pronto",
     "compactBoundaryTitle": "Contexto compactado",
     "compactBoundarySubtitle_one": "{{count}} mensaje anterior resumido",
@@ -2160,9 +1851,7 @@
     "justNow": "ahora mismo",
     "today": "Hoy",
     "yesterday": "Ayer",
-    "tomorrow": "Mañana",
-    "last7Days": "Últimos 7 días",
-    "last30Days": "Últimos 30 días"
+    "tomorrow": "Mañana"
   },
   "cloneForm": {
     "titleCloneFromGitHub": "Clonar desde GitHub",
@@ -2213,34 +1902,11 @@
     "windowTitle": "Directorio de trabajo"
   },
   "database": {
-    "addConnection": "Add Database Connection",
-    "databaseType": "Database Type",
-    "connectionName": "Connection Name",
     "databaseFile": "Database File",
     "projectUrl": "Project URL",
     "accessToken": "Access Token",
     "databaseUrl": "Database URL",
     "authToken": "Auth Token",
-    "testingConnection": "Testing connection...",
-    "addingConnection": "Adding connection...",
-    "connectionSuccessful": "Connection successful!",
-    "testConnection": "Test Connection",
-    "addConnectionAction": "Añadir",
-    "testing": "Testing...",
-    "adding": "Adding...",
-    "notValidSqlite": "Not a valid SQLite database file",
-    "connectionFailed": "Connection failed",
-    "failedToAddConnection": "Failed to add connection",
-    "supabaseHint": "Found in Supabase Dashboard → Project Settings → API",
-    "supabaseTokenHint": "Personal Access Token (PAT). Generate at",
-    "tursoTokenHint": "Generate at Turso CLI: turso db tokens create",
-    "neonHint": "Cadena de conexión desde Neon Console → Detalles de conexión",
-    "sqliteDescription": "Local .sqlite file",
-    "supabaseDescription": "PostgreSQL in the cloud",
-    "tursoDescription": "SQLite at the edge",
-    "neonDescription": "Serverless PostgreSQL",
-    "postgresDescription": "PostgreSQL directo",
-    "mysqlDescription": "MySQL / MariaDB",
     "connectionString": "Cadena de conexión",
     "host": "Host",
     "port": "Puerto",
@@ -2248,10 +1914,6 @@
     "user": "Usuario",
     "password": "Contraseña",
     "ssl": "Requerir SSL",
-    "requireSsl": "Requerir conexión SSL",
-    "newConnection": "New {{type}} connection",
-    "changePending": "change",
-    "changesPending": "changes",
     "spotlight": {
       "scanFolder": "Escanear carpeta",
       "scanFolderDesc": "Buscar todos los archivos .sqlite, .db en una carpeta",
@@ -2271,25 +1933,13 @@
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
   },
-  "contextList": {
-    "task": "Task",
-    "repo": "Repo",
-    "ref": "Ref",
-    "key": "Key",
-    "image": "Image",
-    "group": "Group",
-    "unknown": "Unknown"
-  },
   "showMore": "Ver más",
   "showLess": "Ver menos",
   "schedule": {
     "recurring": "Recurrente",
     "oneShot": "Una vez",
     "noSchedule": "Sin programación",
-    "active": "Activo",
-    "inactive": "Inactivo",
     "scheduleType": "Tipo de programación",
-    "dateAndTime": "Fecha y hora",
     "frequency": "Frecuencia",
     "time": "Hora",
     "dayOfWeek": "Día de la semana",
@@ -2298,7 +1948,6 @@
     "hideCustomCron": "Ocultar cron personalizado",
     "cronHelp": "ej. 0 9 * * 1 = cada lunes a las 9:00",
     "lastRun": "Última ejecución",
-    "enableSchedule": "Activar programación",
     "freq": {
       "daily": "Cada día",
       "weekday": "Días laborables (lun-vie)",
@@ -2313,16 +1962,9 @@
       "thu": "Jueves",
       "fri": "Viernes",
       "sat": "Sábado"
-    },
-    "humanReadable": {
-      "daily": "Cada día a las {{time}}",
-      "weekday": "Días laborables a las {{time}}",
-      "weekly": "Cada {{day}} a las {{time}}",
-      "monthly": "Mensual el día {{day}} a las {{time}}"
     }
   },
   "selectionMenu": {
-    "title": "Agregar al chat",
     "addToChat": "Agregar al chat",
     "addThisFile": "Agregar este archivo",
     "addLines": "Agregar líneas {{from}} – {{to}}"
@@ -2340,27 +1982,8 @@
     "openedInBrowser": "Abierto en el navegador",
     "goToBrowser": "Ir al navegador"
   },
-  "ideaArea": {
-    "menu": {
-      "shared": "Compartidas"
-    },
-    "trending": {
-      "title": "Ideas en tendencia"
-    },
-    "shared": {
-      "title": "Ideas compartidas",
-      "searchPlaceholder": "Buscar ideas..."
-    },
-    "myIdeas": {
-      "title": "Mis ideas",
-      "empty": "Aún no has compartido ninguna idea"
-    }
-  },
   "controlTower": {
     "sidebar": {
-      "terminal": "Terminal",
-      "browser": "Navegador",
-      "settings": "Configuración",
       "newTab": "Nueva pestaña",
       "newPrivateTab": "Nueva pestaña privada",
       "newTerminal": "Nueva terminal",
@@ -2375,18 +1998,6 @@
     "cancel": "Cancelar",
     "confirm": "Salir"
   },
-  "projects": {
-    "title": "Mapa de calor",
-    "workspace": "Espacio de trabajo",
-    "duration": "Duración",
-    "codingTime": "Tiempo de codificación",
-    "noData": "Aún no hay datos de proyectos",
-    "topLanguage": "Lenguaje principal",
-    "editCount": "Ediciones"
-  },
-  "dashboard": {
-    "other": "Otro"
-  },
   "imagePreview": {
     "dialogLabel": "Vista previa de imagen",
     "copyImage": "Copiar imagen",
@@ -2394,14 +2005,6 @@
     "closePreview": "Cerrar vista previa",
     "copiedToClipboard": "Imagen copiada al portapapeles",
     "previewAlt": "Vista previa"
-  },
-  "update": {
-    "downloading": "Descargando actualización",
-    "installing": "Instalando actualización",
-    "progressPercent": "{{percent}} %",
-    "downloadedOfTotal": "{{downloaded}} de {{total}}",
-    "preparingDownload": "Preparando descarga…",
-    "downloadingAndInstalling": "Descargando e instalando actualización (v{{version}})…"
   },
   "workManagementTable": {
     "columns": {

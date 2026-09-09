@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "개발 기록",
     "workItems": "작업 항목",
     "codeSearch": "코드 검색",
     "dbManager": "DB 관리자",
@@ -46,9 +45,6 @@
     "diff": "Diff",
     "colleagues": "Colleagues",
     "terminals": "터미널"
-  },
-  "trajectoryPanel": {
-    "title": "트래젝터리"
   },
   "routes": {
     "session": "채팅",
@@ -185,30 +181,8 @@
       "dismiss": "가이드 닫기"
     }
   },
-  "myRole": {
-    "tabs": {
-      "status": "내 상태"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "기타"
-    },
-    "searchPlaceholder": "워크스페이스 검색...",
-    "emptyTitle": "워크스페이스가 없습니다",
-    "emptyDescription": "리포지토리를 추가하여 시작하세요",
-    "emptyWorkspaces": "일치하는 워크스페이스가 없습니다",
-    "myRepos": "내 저장소",
-    "myMultiRepoWorkspaces": "멀티 리포 Workspaces",
-    "dashboard": "대시보드",
     "myWorkspaces": "내 Workspaces",
-    "workspaces": "워크스페이스",
-    "dashboardTitle": "워크스페이스",
-    "dashboardSubtitle": "워크스페이스를 선택하여 실행하거나 검토하세요",
-    "addRepo": "Workspace 추가",
-    "activeBadge": "활성",
-    "exploreTitle": "탐색",
-    "exploreDescription": "템플릿과 공개 저장소 탐색 (곧 출시)",
     "preview": {
       "repoType": "Project 유형",
       "tools": "도구",
@@ -217,11 +191,7 @@
       "statusNotAnalyzed": "미분석",
       "statusReady": "준비 완료",
       "statusParamsMissing": "파라미터 누락",
-      "statusNoEnvConfig": "Env 설정 불필요",
-      "setupWithAI": "앱으로 만들기",
-      "trustRepo": "이 저장소를 신뢰",
-      "launchpadPlaceholder": "이 실행에 대한 추가 지침...",
-      "launchpadLaunch": "실행"
+      "statusNoEnvConfig": "Env 설정 불필요"
     },
     "containers": {
       "title": "Containers",
@@ -230,8 +200,6 @@
       "emptySubtitle": "Docker Desktop, Colima 또는 Rancher Desktop을 시작한 뒤 새로고침하면 로컬 Container를 볼 수 있습니다.",
       "repoEmptyTitle": "이 Repo의 Container 없음",
       "repoEmptySubtitle": "Container는 Docker Compose 작업 디렉터리 label 또는 이 Repo 안의 bind mount로 매칭됩니다.",
-      "repoNoDockerTitle": "Docker 설정이 감지되지 않음",
-      "repoNoDockerSubtitle": "Dockerfile 또는 docker-compose 파일을 추가하면 Container를 이 Repo와 연결할 수 있습니다.",
       "dockerUnavailable": "Docker를 사용할 수 없음",
       "name": "이름",
       "image": "Image",
@@ -267,15 +235,9 @@
       "categoryBuild": "빌드",
       "categoryTest": "테스트",
       "categoryLint": "Lint & 포맷",
-      "categoryOther": "기타",
-      "noScripts": "스크립트를 찾을 수 없습니다",
-      "noScriptsHint": "package.json, Makefile 또는 유사한 설정을 추가하세요",
-      "run": "실행",
-      "launched": "{{name}} 실행 중",
-      "launchFailed": "스크립트 실행 실패"
+      "categoryOther": "기타"
     },
     "detail": {
-      "title": "Repo 상세",
       "path": "경로",
       "envVarsTitle": "환경 변수",
       "envKey": "키",
@@ -292,16 +254,10 @@
       "scriptName": "이름",
       "scriptCommand": "명령어",
       "scriptCategory": "카테고리",
-      "scriptSource": "소스",
       "scriptNamePlaceholder": "스크립트 이름",
       "searchScripts": "스크립트 검색…",
       "noScripts": "스크립트를 찾을 수 없습니다",
       "addScript": "스크립트 추가",
-      "sourceCustom": "사용자 정의",
-      "sourceDiscovered": "탐색됨",
-      "analysisTitle": "분석",
-      "clearAnalysis": "분석 초기화",
-      "clearAnalysisHint": "분석 캐시를 초기화하고 다음 방문 시 재스캔",
       "analysisCleared": "분석이 초기화되었습니다"
     },
     "containerEngines": {
@@ -326,15 +282,11 @@
       "switchToRepo": "열기",
       "startSession": "세션 시작",
       "openDetails": "세부 정보 표시",
-      "locateInFinder": "Finder에서 보기",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Workspace 추가"
-  },
-  "explore": {
-    "title": "탐색"
   },
   "workstation": {
     "agentComputer": {
@@ -352,7 +304,6 @@
       "title": "새 탭",
       "searchFile": "파일 검색",
       "searchSessions": "칸반",
-      "newBrowserTab": "새 브라우저 탭",
       "newPrivateBrowserTab": "새 시크릿 브라우저 탭",
       "workItems": "작업 항목",
       "projects": "프로젝트",
@@ -370,8 +321,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "초대 링크 또는 코드",
     "inviteCodePlaceholder": "orgii:// 초대 링크 또는 초대 코드를 붙여넣기",
-    "copyInvite": "초대 복사",
-    "copiedInvite": "복사됨",
     "setupMode": "설정 모드",
     "manageOrg": "워크스페이스 관리",
     "session": {
@@ -390,7 +339,6 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -405,16 +353,10 @@
     "forkImported": {
       "headerButton": "포크",
       "headerTooltip": "가져온 이 세션을 내 쓰기 가능한 세션으로 포크합니다",
-      "confirmTitle": "포크하고 계속할까요?",
-      "confirmBody": "이 세션은 {{name}} 님의 세션입니다. 내 사본은 읽기 전용 가져오기입니다. 계속하면 내 세션으로 포크되고 메시지가 그 세션으로 전송됩니다.",
-      "confirm": "포크하고 계속",
-      "cancel": "취소",
       "retentionError": "이 세션은 요금제의 재생 보존 기간을 벗어났습니다. 포크하려면 업그레이드하세요",
       "goneError": "이 공유 세션은 더 이상 사용할 수 없습니다(삭제되었거나 만료됨)",
       "error": "세션 포크에 실패했습니다",
-      "sendFailed": "포크했지만 메시지 전송에 실패했습니다. 내용이 입력창에 복원되었습니다",
       "forkedChipTooltip": "{{name}} 님에게서 포크됨",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -428,8 +370,7 @@
       "notInstalled": "{{agent}}이(가) 이 컴퓨터에 설치되어 있지 않습니다",
       "missingWorkspace": "세션의 원래 폴더가 없습니다 — {{agent}}은(는) 원래 폴더에서만 재개할 수 있습니다",
       "sourceMissing": "원본 세션 데이터가 디스크에 없습니다",
-      "launchFailed": "{{agent}} 터미널을 열지 못했습니다",
-      "composerPlaceholder": "메시지를 보내 새 세션에서 계속하세요…"
+      "launchFailed": "{{agent}} 터미널을 열지 못했습니다"
     },
     "openInApp": {
       "headerButton": "{{app}}에서 열기",
@@ -439,13 +380,11 @@
     }
   },
   "cloud": {
-    "title": "ORG2 클라우드",
     "signIn": "로그인",
     "signOut": "로그아웃",
     "signedInAs": "로그인 계정: {{name}}",
     "signedInToast": "ORG2 클라우드에 로그인했습니다",
     "sessionExpired": "ORG2 Cloud 세션이 만료되었습니다. 계속하려면 다시 로그인하세요.",
-    "recommendedDesc": "관리형 세션 공유, 리플레이 저장, 팀 권한, 안전한 공유 링크를 제공합니다. Supabase 설정이 필요 없습니다. Auth, 데이터베이스 마이그레이션, RLS 정책, 결제, 보존 기간, 할당량, 백엔드 업그레이드는 ORG2가 관리합니다",
     "customEndpoint": {
       "title": "사용자 지정 ORG2 Cloud 백엔드",
       "toggleDesc": "직접 배포한 ORG2 Cloud 사용",
@@ -542,7 +481,6 @@
     "sidebar": {
       "teamSessions": "팀 세션",
       "mySessions": "내 세션",
-      "memberFilter": "멤버별 필터",
       "sessionFilter": "세션 필터",
       "copyUrl": "URL 복사",
       "directlySharedWithMe": "나에게 직접 공유됨",
@@ -668,14 +606,11 @@
         "confirm": "참여",
         "cancel": "나중에",
         "signInFirst": "이 초대를 수락하려면 ORG2 Cloud에 로그인하세요 — 초대는 대기 상태로 유지됩니다.",
-        "openSettings": "로그인 설정 열기",
-        "joinedToast": "{{org}}에 참여했습니다",
-        "joinedFallbackToast": "클라우드 워크스페이스에 참여했습니다"
+        "joinedToast": "{{org}}에 참여했습니다"
       },
       "create": {
         "sourceCloud": "클라우드",
         "signInFirst": "관리형 워크스페이스를 만들거나 참여하려면 ORG2 Cloud에 로그인하세요.",
-        "openSettings": "로그인 설정 열기",
         "createdToast": "클라우드 워크스페이스가 생성되었습니다"
       },
       "errors": {
@@ -734,7 +669,6 @@
       "importEntry": "세션 가져오기",
       "importDialogTitle": "공유된 세션 가져오기",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "클립보드에서 붙여넣기",
       "importSubmit": "가져오기",
       "importInvalidInput": "유효한 공유 링크나 토큰이 아닌 것 같습니다.",
       "selectAll": "전원 ({{count}})",
@@ -747,53 +681,9 @@
       "incomingRetry": "다시 시도"
     },
     "comments": {
-      "task": {
-        "assignFailed": "댓글은 등록되었지만 에이전트 할당에 실패했습니다 — 스레드에서 다시 시도하세요",
-        "assignUnavailableHere": "댓글은 등록되었습니다 — 이 보기에서는 에이전트 할당을 사용할 수 없습니다",
-        "addressingChip": "처리 중인 댓글: “{{excerpt}}”",
-        "addressingChipGeneric": "댓글 처리 중",
-        "addressingChipTooltip": "원본 세션의 댓글 스레드를 처리하기 위해 포크되었습니다",
-        "mentionSuggestion": "이 댓글을 에이전트에게 할당"
-      },
-      "toggleLabel": "댓글",
-      "notesButton": "세션 노트",
-      "notesTitle": "세션 노트",
-      "empty": "아직 댓글이 없습니다",
-      "loadError": "댓글을 불러오지 못했습니다",
-      "addPlaceholder": "댓글 추가…",
-      "replyPlaceholder": "답글…",
-      "send": "등록",
-      "reply": "답글",
-      "edit": "수정",
-      "save": "저장",
-      "cancel": "취소",
-      "delete": "삭제",
-      "resolve": "해결됨으로 표시",
-      "unresolve": "다시 열기",
-      "resolved": "해결됨",
-      "statusActive": "진행 중",
-      "wontFix": "수정 안 함",
-      "agentAddressing": "에이전트가 처리 중…",
-      "resolvedToggle": "해결됨 ({{count}})",
-      "deletedComment": "삭제된 댓글입니다",
-      "editedMarker": "수정됨",
-      "earlierVersion": "이 세션의 이전 버전에서",
-      "replayRequired": "턴 댓글에는 전체 리플레이 권한이 필요합니다",
-      "addError": "등록하지 못했습니다 — 초안은 유지됩니다",
       "actionError": "작업에 실패했습니다. 다시 시도해 주세요",
       "unresolvedBadge_one": "미해결 댓글 {{count}}개",
-      "unresolvedBadge": "미해결 댓글 {{count}}개",
-      "addressButton": "댓글 처리",
-      "addressPill_one": "댓글 {{count}}개 처리",
-      "addressPill_other": "댓글 {{count}}개 처리",
-      "addressSelectAll": "모두 선택",
-      "addressConfirm_one": "댓글 {{count}}개 처리",
-      "addressConfirm_other": "댓글 {{count}}개 처리",
-      "agentAuthor": "에이전트 @{{name}}",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "mentionMembers": "멤버 언급",
-      "searchMembers": "멤버 검색"
+      "unresolvedBadge": "미해결 댓글 {{count}}개"
     },
     "sharingFloor": {
       "label": "최소 공유 수준",
@@ -849,7 +739,6 @@
         "nameLabel": "이름",
         "namePlaceholder": "예: code-review",
         "topicLabel": "주제",
-        "topicOptional": "(선택)",
         "topicPlaceholder": "이 채널은 무엇에 관한 것인가요?",
         "visibilityLabel": "공개 범위",
         "publicTitle": "공개",
@@ -911,7 +800,6 @@
         "today": "오늘",
         "yesterday": "어제",
         "you": "나",
-        "memberCount": "멤버 {{memberCount}}명",
         "emptyTitle": "여기가 #{{name}}의 시작입니다",
         "emptySubtitle": "첫 메시지를 보내 대화를 시작하세요",
         "missingTitle": "채널을 더 이상 사용할 수 없음",
@@ -924,15 +812,7 @@
         "errorQuota": "이 채널은 이 기기에서 메시지 한도에 도달했습니다",
         "errorGeneric": "메시지를 보내지 못했습니다. 다시 시도해 주세요.",
         "dropSessionHint": "놓으면 이 세션이 참조로 추가됩니다",
-        "messageBodyLabel": "채널 메시지",
-        "sessionCardMissing": "이 기기에서는 사용할 수 없음",
         "sessionCardOpen": "세션 {{name}} 열기",
-        "workItemCardMissing": "이 기기에서는 사용할 수 없음",
-        "workItemCardLoading": "불러오는 중…",
-        "workItemCardOpen": "작업 항목 {{name}} 열기",
-        "githubCardOpen": "GitHub에서 {{name}} 열기",
-        "githubIssue": "이슈",
-        "githubPullRequest": "Pull request",
         "archivedComposerDisabled": "이 채널은 보관 처리되었습니다. 게시하려면 보관을 해제하세요.",
         "errorPostForbidden": "채널 관리자만 이 채널에 글을 올릴 수 있습니다",
         "errorArchived": "이 채널은 보관되어 새 메시지를 보낼 수 없습니다",

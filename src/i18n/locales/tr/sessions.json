@@ -11,9 +11,6 @@
     "quit": "ORG2’den çık"
   },
   "toolUsage": {
-    "estimatedContext": "{{tokenCount}} Token bağlam",
-    "followup": "{{tokenCount}} Token follow-up",
-    "decision": "{{tokenCount}} Token karar",
     "tooltip": "Tahmini araç atfı. Yöntem: {{method}}. Girdi: {{inputBytes}} bytes. Çıktı: {{outputBytes}} bytes. Karar: {{decisionTokens}} Token. Bağlam: {{contextTokens}} Token. Follow-up: {{followupTokens}} Token. İlgili LLM cache read: {{cacheReadTokens}} Token. İlgili LLM cache write: {{cacheWriteTokens}} Token."
   },
   "humanSession": {
@@ -21,88 +18,24 @@
   },
   "history": {
     "untitledSession": "Adsız Session",
-    "prStatus": {
-      "merged": "Birleştirildi",
-      "open": "Açık",
-      "draft": "Taslak"
-    },
     "detail": {
-      "sessionInfo": "Session bilgileri",
-      "repository": "Depo",
-      "branch": "Dal",
       "created": "Oluşturulma",
-      "updated": "Güncellendi",
       "lastUpdated": "Son güncelleme",
       "external": "Harici",
       "internal": "Dahili",
       "rounds": "Turlar",
       "roundCount_one": "{{count}} tur",
       "roundCount_other": "{{count}} tur",
-      "agentWorked": "Agent çalıştı",
-      "reasoningModel": "Reasoning Model",
-      "codingModel": "Coding Model",
-      "sessionMode": "Session modu",
-      "fileChanges": "Dosya değişiklikleri",
-      "filesChanged": "Değişen dosyalar",
-      "files": "dosya",
-      "summary": "Özet",
-      "workflow": "Workflow",
-      "agent": "Agent:",
-      "pilotSession": "Pilot Session",
-      "openSession": "Session aç",
-      "viewPR": "PR'ı görüntüle",
-      "rawData": "Ham veri",
-      "analytics": {
-        "title": "Event Analytics",
-        "toolUsage": "Araç kullanımı",
-        "filesTouched": "Etkilenen dosyalar",
-        "conversation": "Konuşma",
-        "tokenUsage": "Token kullanımı",
-        "errors": "Hatalar",
-        "duration": "Süre",
-        "events": "Olaylar",
-        "toolCalls": "Araç çağrıları",
-        "files": "Dosyalar",
-        "tool": "Araç",
-        "calls": "Çağrı",
-        "done": "Tamamlandı",
-        "userMessages": "Kullanıcı mesajları",
-        "assistantMessages": "Agent mesajları",
-        "userChars": "Kullanıcı karakterleri",
-        "assistantChars": "Agent karakterleri",
-        "avgResponseTime": "Ort. yanıt süresi",
-        "thinkingEvents": "Düşünme olayları",
-        "inputTokens": "Giriş Token",
-        "outputTokens": "Çıkış Token",
-        "totalTokens": "Toplam Token",
-        "model": "Model",
-        "input": "Giriş",
-        "output": "Çıkış",
-        "totalErrors": "Hatalar",
-        "totalFailures": "Başarısızlıklar",
-        "errorRate": "Hata oranı"
-      },
-      "impact": {
-        "title": "Impact Graph",
-        "files": "Dosyalar",
-        "functions": "Fonksiyonlar",
-        "commits": "Commit",
-        "lines": "Satırlar",
-        "filesTouched": "Etkilenen dosyalar",
-        "functionsCreated": "Oluşturulan fonksiyonlar",
-        "commitsInfluenced": "Etkilenen Commit"
-      }
+      "agentWorked": "Agent çalıştı"
     }
   },
   "kanban": {
     "card": {
       "openAsFloatingPane": "Yüzen Panelde Aç"
     },
-    "sessions": "Session",
     "view": {
       "list": "Liste",
       "diary": "Günlük",
-      "kanban": "Kanban",
       "dataSource": "Veri kaynakları"
     },
     "dataSource": {
@@ -278,12 +211,8 @@
       }
     },
     "list": {
-      "updated": "Güncellendi",
-      "timeRange": "Zaman aralığı",
       "started": "Başlatıldı",
       "lastUpdated": "Son güncelleme",
-      "agentModel": "Agent · Model",
-      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "Bu filtrelerle eşleşen oturum yok",
       "emptyDescription": "Farklı bir durum, Agent türü veya zaman aralığı deneyin."
     },
@@ -299,7 +228,6 @@
     },
     "autoArchive": {
       "label": "Oto arşivle",
-      "shortLabel": "Arşiv",
       "never": "Asla",
       "12h": "12s",
       "24h": "24s",
@@ -311,9 +239,7 @@
       "inProgress": "Devam ediyor",
       "blocking": "Engelliyor",
       "turnFinished": "Tur bitti",
-      "archived": "Arşivlendi",
-      "yourTurn": "Sıra Sende",
-      "finished": "Bitti"
+      "archived": "Arşivlendi"
     },
     "boardColumns": {
       "todo": "Yapılacak",
@@ -325,43 +251,17 @@
       "cancelled": "Başarısız"
     },
     "sidebar": {
-      "agentTypes": "Agent Türleri",
-      "manageItems": "Öğeleri yönet",
-      "sessionsView": "Sessions View",
-      "workitemView": "Workitem View",
-      "views": "Görünümler",
-      "cliAgent": "CLI Agent",
-      "rustAgent": "Rust Agent",
       "removeDraft": "Taslağı kaldır",
       "showSubagents": "subagent'ları göster",
       "hideSubagents": "subagent'ları gizle"
     },
-    "resultStatus": {
-      "completed": "Tamamlandı",
-      "failed": "Başarısız",
-      "archived": "Arşivlendi"
-    },
     "detail": {
       "title": "Başlık",
-      "tags": "Etiketler",
-      "description": "Açıklama",
-      "status": "Durum"
+      "tags": "Etiketler"
     },
-    "addContent": "İçerik Ekle",
     "merge": {
       "conflictsIn": "Çakışmalar: {{files}}",
       "failed": "Birleştirme başarısız",
-      "failedToLoadDiff": "Diff yüklenemedi",
-      "noChanges": "Değişiklik yok",
-      "worktree": "Worktree",
-      "branch": "Dal:",
-      "base": "Taban:",
-      "mergeLabel": "Birleştirme:",
-      "statusPending": "Beklemede",
-      "statusMerged": "Birleştirildi",
-      "statusConflict": "Çakışma",
-      "statusSkipped": "Atlandı",
-      "statusFailed": "Başarısız",
       "retryMerge": "Birleştirmeyi Yeniden Dene",
       "dirtyRepo": "Birleştirme yapılamıyor: depoda teslim edilmemiş değişiklikler var. Önce bunları teslim edin veya saklayın.",
       "strategyLabel": "Birleştirme stratejisi",
@@ -369,45 +269,16 @@
       "strategyFf": "Hızlı ileri sarma",
       "strategyLeave": "Dal olarak bırak",
       "discardConfirmTitle": "Worktree silinsin mi?",
-      "discardConfirmMessage": "Dal ve tüm değişiklikler kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
-      "merge": "Birleştir",
-      "merging": "Birleştiriliyor…",
-      "merged": "Birleştirildi"
-    },
-    "discard": {
-      "discard": "Sil",
-      "discarding": "Siliniyor…",
-      "confirmMessage": "Bu worktree'deki tüm değişiklikler silinsin mi? Bu işlem geri alınamaz."
+      "discardConfirmMessage": "Dal ve tüm değişiklikler kalıcı olarak silinecektir. Bu işlem geri alınamaz."
     },
     "diary": {
-      "title": "Günlük",
       "previousDay": "Önceki gün",
       "nextDay": "Sonraki gün",
-      "subtitle": "Günlük Agent etkinliği",
-      "engineeringHours": "Mühendislik saatleri",
-      "engineeringHoursHint": "Birikimli Agent süresi",
-      "onlineHours": "Çevrimiçi saatler",
-      "onlineHoursHint": "Tekilleştirilmiş paralel süre",
-      "activeSessions": "Aktif Sessions",
-      "completedSessions": "Tamamlandı",
-      "timeline": "Olay zaman çizelgesi",
       "commits": "Commits",
       "emptyTitle": "Günlük olayı yok",
       "emptySubtitle": "Bu güne ait Agent etkinliği burada görünür.",
-      "event": {
-        "started": "Session başlatıldı",
-        "completed": "Session tamamlandı",
-        "stillWorking": "Hâlâ çalışıyor"
-      },
       "commitsTo": "{{repo}} için Commits",
       "commitsToMultiple": "{{repos}} için Commits"
-    },
-    "orgtrack": {
-      "filesChanged_one": "{{count}} dosya",
-      "filesChanged_other": "{{count}} dosya",
-      "commits_one": "{{count}} commit",
-      "commits_other": "{{count}} commit",
-      "committedRateShort": "%{{percent}} commitlendi"
     },
     "detailView": {
       "trajectory": "Trajectory",
@@ -415,83 +286,22 @@
       "noTouchedFiles": "No files touched"
     }
   },
-  "changes": {
-    "scope": {
-      "thisSession": "Bu Session",
-      "allUncommitted": "Tüm kaydedilmemiş"
-    },
-    "empty": {
-      "workingTreeClean": "Çalışma ağacı temiz",
-      "noChangesYet": "Henüz değişiklik yok",
-      "noUncommittedChanges": "Depoda kaydedilmemiş değişiklik yok",
-      "changesWillAppear": "AI tarafından yapılan değişiklikler burada görünecek"
-    },
-    "noChangesToReview": "İncelenecek değişiklik yok"
-  },
-  "sync": {
-    "preparing": "Dosyalar hazırlanıyor...",
-    "uploading": "Dosyalarınız senkronize ediliyor...",
-    "processing": "Pazarda işleniyor...",
-    "complete": "Dosyalar başarıyla senkronize edildi!",
-    "error": "Senkronizasyon başarısız",
-    "default": "Senkronize ediliyor...",
-    "files": "{{count}} dosya"
-  },
   "simulator": {
     "captionBarToggleTooltip": "Agent mesaj çubuğunu göster",
-    "parentSession": "Ana Agent",
-    "backgroundTasks": "Background Tasks",
-    "backgroundTasksEmpty": "Background Tasks yok",
     "noActiveSession": "Aktif oturum yok",
     "tabs": {
-      "desktop": "Masaüstü",
-      "tasks": "Görevler",
-      "kanban": "Kanban",
-      "changes": "Değişiklikler",
-      "conflicts": "Çakışmalar",
-      "plan": "Plan"
-    },
-    "settings": {
-      "title": "Simulator Görünümü",
-      "showDock": "Dock'u göster",
-      "playback": "Oynatma",
-      "speed": "Hız",
-      "autoScroll": "Otomatik kaydırma"
-    },
-    "tasks": {
-      "noTasksFound": "Görev bulunamadı",
-      "tasksWillAppear": "Görevler çalışmaya başladığında burada görünecek",
-      "selectTask": "Etkinliklerini görmek için bir görev seçin"
-    },
-    "kanban": {
-      "noTasksYet": "Henüz görev yok",
-      "tasksWillAppear": "Bu oturumda çalışma başladığında görevler burada görünür"
+      "kanban": "Kanban"
     },
     "replay": {
-      "following": "Takip ediliyor",
-      "freeBrowsing": "Serbest gezinme",
-      "replaying": "Oynatılıyor",
       "freeBrowse": "Serbest gezin",
       "follow": "Takip et",
       "dockShowChatInput": "Sohbet girişini göster",
-      "dockHideChatInput": "Sohbet girişini gizle",
-      "bottomPanel": {
-        "tabTrajectory": "Trajectory",
-        "tabTodo": "Todo",
-        "expandPanel": "Trajectory ve todo panelini göster"
-      },
       "previousEvent": "Önceki olay",
       "nextEvent": "Sonraki olay",
       "play": "Oynat",
       "pause": "Duraklat",
-      "playbackSpeed": "Oynatma hızı",
-      "noEvents": "Olay yok",
-      "agentHasNotUsedTool": "Agent henüz bu aracı kullanmadı",
       "browser": {
         "tabs": {
-          "browser": "Tarayıcı",
-          "search": "Ara",
-          "fetch": "Getir",
           "agentBrowser": "Agent Tarayıcısı",
           "searchFetch": "Ara ve Getir"
         },
@@ -505,8 +315,7 @@
           "noBrowserActivity": "Tarayıcı etkinliği yok",
           "noBrowserInteractions": "Tarayıcı etkileşimi yok",
           "noWebSearches": "Web araması yok",
-          "noPagesFetched": "Getirilen sayfa yok",
-          "noBrowserActivityYet": "Henüz tarayıcı etkinliği yok"
+          "noPagesFetched": "Getirilen sayfa yok"
         },
         "header": {
           "categoryBrowser": "Tarayıcı",
@@ -524,13 +333,10 @@
           "exitCode": "[çıkış kodu: {{code}}]"
         },
         "codePanel": {
-          "hiddenLines": "{{count}} gizli satır",
           "editHeader": "Düzenle {{index}}",
           "startingAtLine": "({{line}}. satırdan başlayarak)",
           "fileEditedSuccess": "✓ Dosya başarıyla düzenlendi",
           "truncatedSuffix": "\n... (kesildi)",
-          "headerDirectory": "Dizin",
-          "headerSearchPrefix": "Ara: {{query}}",
           "searchResultLinePrefix": "L{{line}}",
           "resultCount_one": "{{count}} sonuç",
           "resultCount_other": "{{count}} sonuç",
@@ -550,23 +356,12 @@
           "emptyNoFilesEdited": "Düzenlenen dosya yok",
           "emptyNoExploreOperations": "Henüz keşif yok",
           "emptyNoCommands": "Komut yok",
-          "emptyNoToolCalls": "Henüz araç çağrısı yok",
-          "searchDisplayListDir": "list_dir",
-          "searchDisplaySearch": "Ara",
-          "searchSecondaryResults": "{{count}} sonuç"
-        },
-        "terminal": {
-          "tabTerminal": "Terminal",
-          "viewStructured": "Yapılandırılmış",
-          "viewRaw": "Ham",
-          "emptySelectCommand": "Görüntülemek için bir komut seçin"
+          "emptyNoToolCalls": "Henüz araç çağrısı yok"
         }
       },
       "diffApp": {
-        "allTabLabel": "Tümü",
         "tabLabel": "Diff",
         "emptyForFilter": "Henüz Diff yok",
-        "emptyDetail": "Diff'i görüntülemek için bir değişiklik seçin.",
         "submissions": {
           "tabLabel": "Gönderimler",
           "commits": "Commits",
@@ -578,53 +373,11 @@
         }
       },
       "channelsSidebar": {
-        "chatHistoryTab": "Sohbet Geçmişi",
         "messages": "Mesajlar",
         "interactions": "Etkileşimler",
-        "todoList": "Yapılacaklar Listesi",
-        "kanban": "Kanban",
-        "todoUpdate": "Yapılacaklar güncellemesi",
-        "noMessages": "Henüz mesaj yok",
-        "noInteractions": "Henüz etkileşim yok",
-        "noTodos": "Henüz yapılacak olayı yok",
-        "interactionAskQuestion": "Soru",
-        "interactionAskPermission": "İzin isteği",
-        "interactionModeSwitch": "Mod değişimi",
-        "interactionPlanDoc": "Plan belgesi",
-        "interactionGeneric": "Etkileşim"
+        "kanban": "Kanban"
       },
       "messages": {
-        "viewer": {
-          "think": {
-            "title": "İç diyalog",
-            "subtitle_one": "{{count}} düşünce gösteriliyor",
-            "subtitle_other": "{{count}} düşünce gösteriliyor"
-          },
-          "todo": {
-            "title": "Yapılacaklar listesi",
-            "subtitle": "En son görev listesi"
-          },
-          "chat": {
-            "title": "Kullanıcıyla sohbet",
-            "subtitle_one": "{{count}} mesaj",
-            "subtitle_other": "{{count}} mesaj"
-          },
-          "interaction": {
-            "title": "Etkileşimler",
-            "subtitle_one": "{{count}} etkileşim",
-            "subtitle_other": "{{count}} etkileşim"
-          }
-        },
-        "empty": {
-          "think": {
-            "title": "Henüz düşünce yok",
-            "subtitle": "Agent düşünceleri burada görünecek"
-          },
-          "todo": {
-            "title": "Henüz yapılacak listesi yok",
-            "subtitle": "Görev listeleri burada görünecek"
-          }
-        },
         "bubble": {
           "smartDateYesterday": "Dün",
           "senderTitle": {
@@ -659,21 +412,8 @@
             "Çıktı yok. Bazen sessizlik. [Düşünce önizlemesi yok]",
             "Mesaj yok. Önizleme gelmedi. [Düşünce önizlemesi yok]"
           ],
-          "labelLatest": "Son düşünce",
           "labelThought": "Düşünce"
         }
-      },
-      "database": {
-        "operation": {
-          "explore": "Keşfet",
-          "runSql": "SQL çalıştır"
-        },
-        "row": {
-          "tablePrefix": "Tablo: {{name}}",
-          "resultErrorPrefix": "Hata: ",
-          "resultArrowPrefix": "→ "
-        },
-        "headerTitle": "Veritabanı işlemleri"
       },
       "project": {
         "operation": {
@@ -698,12 +438,6 @@
           "list_contributors": "Katkıda bulunanları listele",
           "add_delegation": "Devir ekle"
         },
-        "row": {
-          "projectPrefix": "Project: {{name}}",
-          "workItemPrefix": "İş öğesi: {{title}}",
-          "resultErrorPrefix": "Hata: ",
-          "resultArrowPrefix": "→ "
-        },
         "headerTitle": "Project işlemleri"
       },
       "canvas": {
@@ -714,34 +448,9 @@
         "tooltipCloseCanvas": "Tuvali kapat",
         "iframeTitle": "Agent Canvas"
       },
-      "trajectory": {
-        "closeSidebar": "Kenar çubuğunu kapat",
-        "toggleSidebar": "Trajectory kenar çubuğunu aç/kapat",
-        "fallbackUnknownStep": "Bilinmeyen adım",
-        "stepHeader": {
-          "actionsCount": "{{count}} eylem"
-        },
-        "event": {
-          "unknownFile": "Bilinmeyen dosya",
-          "noCommand": "Komut yok",
-          "todoMoreSuffix": "{{first}} (+{{count}} daha)",
-          "todosCount": "{{count}} görev",
-          "todosUpdated": "{{count}} görev güncellendi",
-          "noQuery": "Sorgu yok",
-          "activityFallback": "Etkinlik",
-          "processing": "İşleniyor...",
-          "messageEllipsis": "Mesaj...",
-          "readUserMessage": "Kullanıcı mesajını oku",
-          "sessionFallback": "Session"
-        }
-      },
-      "followingApp": "Takip ediliyor: {{appName}}",
       "followingAgent": "Agent takip ediliyor",
       "trajectoryAgent": "Agent yörüngesini takip et",
-      "trajectoryThisApp": "Bu uygulamayı takip et",
-      "followAgent": "Agent'ı takip et",
-      "followThisApp": "Bu uygulamayı takip et",
-      "followApp": "{{appName}} takip et"
+      "trajectoryThisApp": "Bu uygulamayı takip et"
     },
     "codeEditor": {
       "switchToListView": "Liste görünümüne geç",
@@ -755,42 +464,17 @@
       "title": "Sistem Başlatılıyor",
       "subtitle": "Çalışma alanı ortamı başlatılıyor..."
     },
-    "awaitingActivity": "Etkinlik bekleniyor...",
-    "askUser": {
-      "agentQuestion": "Agent Sorusu",
-      "submitResponse": "Yanıt Gönder",
-      "responseReceived": "Yanıt Alındı",
-      "optional": "İsteğe bağlı",
-      "defaultQuestion": "Agent'ın size bir sorusu var",
-      "enterField": "{{field}} girin..."
-    },
-    "askUserPending": {
-      "incomingRequest": "Gelen istek var",
-      "respondInChat": "Lütfen sohbette Agent'ın isteğine yanıt verin"
-    },
     "titleBar": {
-      "switchToRight": "Sağ moda geç",
-      "switchToLeft": "Sol moda geç",
       "showSidebar": "Kenar çubuğunu göster",
       "hideSidebar": "Kenar çubuğunu gizle",
-      "showBottomPanel": "Alt paneli göster",
-      "hideBottomPanel": "Alt paneli gizle"
+      "showBottomPanel": "Alt paneli göster"
     },
     "multiTask": {
       "monitoringProgress": "{{count}} subagent'in ilerlemesi izleniyor",
-      "expandView": "Genişletilmiş görünüm",
-      "compactView": "Kompakt görünüm",
       "closePanel": "Subagent panelini kapat",
-      "minimizePanel": "Resim içinde resime küçült",
-      "expandPanel": "Paneli genişlet",
-      "moreTasks": "+{{count}} daha"
+      "minimizePanel": "Resim içinde resime küçült"
     },
     "gridCell": {
-      "copyEventsJson": "Olayları JSON olarak kopyala",
-      "detachedTooltip": "Ana imlecten ayrıldı — tıklayarak yeniden senkronize edin",
-      "syncedTooltip": "Ana imleçle senkronize",
-      "detached": "Ayrılmış",
-      "live": "Canlı",
       "expand": "Genişlet",
       "collapse": "Daralt"
     },
@@ -837,7 +521,6 @@
   "input": {
     "editPlaceholder": "Mesajınızı düzenleyin...",
     "defaultPlaceholder": "Agent ile sohbet edin",
-    "finishNextStep": "Tamam. Sonraki adım!",
     "editingQueuedMessage": "Sıradaki mesaj düzenleniyor",
     "editingSentMessage": "Gönderilmiş mesaj düzenleniyor",
     "voiceErrorPermission": "Mikrofon izni reddedildi. İşletim sistemi ayarlarından etkinleştirin.",
@@ -857,10 +540,6 @@
     "canvasCommandDescription": "Yeni bir etkileşimli Canvas oluşturur. İsteğe bağlı: /canvas <oluşturulacak içerik>",
     "canvasArgHint": "oluşturulacak içerik",
     "newCanvasAction": "Yeni Canvas"
-  },
-  "listPanel": {
-    "showingOf": "{{total}} içinden {{filtered}} gösteriliyor",
-    "selectedOf": "{{total}} içinden {{selected}} seçildi"
   },
   "chat": {
     "planApprovedLabel": "Onaylanan plan uygulanıyor",
@@ -1266,31 +945,6 @@
     },
     "parentAgentSender": "Üst aracı"
   },
-  "chatStatus": {
-    "approved": "Onaylandı",
-    "skipped": "Atlandı",
-    "responded": "Yanıtlandı",
-    "ignored": "Yok sayıldı",
-    "pending": "Beklemede",
-    "denied": "Reddedildi"
-  },
-  "conflicts": {
-    "title": "Çakışmalar",
-    "noConflicts": "Çakışma yok",
-    "noMergeConflicts": "Birleştirme çakışması yok",
-    "cleanState": "Deponuz temiz durumda ve çözülecek çakışma yok.",
-    "detecting": "Çakışmalar tespit ediliyor...",
-    "allResolved": "Bu dosyadaki tüm çakışmalar çözüldü",
-    "saveAndMark": "Kaydet ve devam etmek için çözüldü olarak işaretle",
-    "keepCurrent": "Mevcut olanı koru",
-    "keepIncoming": "Gelen olanı koru",
-    "keepBoth": "İkisini de koru",
-    "aiResolve": "AI çöz",
-    "previousConflict": "Önceki çakışma (⌘↑)",
-    "nextConflict": "Sonraki çakışma (⌘↓)",
-    "abort": "İptal",
-    "complete": "Tamamla"
-  },
   "tools": {
     "noResultsFound": "Sonuç bulunamadı",
     "noResult": "Sonuç yok",
@@ -1504,9 +1158,6 @@
     "awaitOutputKilled": "Sonlandırıldı",
     "awaitOutputNotFound": "Arka plan görevi izlenmiyor",
     "awaitOutputExitCode": "exit {{exitCode}}",
-    "skillLoading": "Reading skill",
-    "skillLoaded": "Skill loaded",
-    "skillFailed": "Skill not found",
     "killProcessRunning": "İşlem sonlandırılıyor",
     "killProcessDone": "İşlem sonlandırıldı",
     "killProcessFailed": "İşlem sonlandırılamadı",
@@ -2106,12 +1757,6 @@
     "nFiles_one": "{{count}} dosya",
     "nFiles_other": "{{count}} dosya"
   },
-  "hoverCard": {
-    "commits": "Commit",
-    "filesChanged_one": "{{count}} dosya değişti",
-    "filesChanged_other": "{{count}} dosya değişti",
-    "branchesTouched": "Branch'ler"
-  },
   "modelPill": {
     "immutableInSession": "Anahtar kaynağı, Agent türü ve fiyat kademesi oturum başlangıcında sabittir. Değiştirmek için yeni bir oturum başlatın."
   },
@@ -2123,26 +1768,19 @@
       "hidePinnedActions": "Sabitlenmiş eylemleri gizle"
     },
     "createTarget": {
-      "agentSession": "Agent oturumu",
       "project": "Proje oluştur",
       "parallelRun": "Paralel çalıştırma",
       "workItem": "Work Item oluştur"
     },
     "worktreeSource": {
       "title": "Çalışma ağacı oluştur",
-      "confirm": "Çalışma ağacını kullan",
       "resolving": "PR çözümleniyor…",
       "selectRepository": "Çalışma ağacı kaynağını seçmeden önce bir depo seçin.",
       "sourceTabs": "Çalışma ağacı kaynağı",
       "tabs": {
-        "smart": "Akıllı",
         "github": "GitHub",
-        "branch": "Dal",
-        "name": "Ad"
+        "branch": "Dal"
       },
-      "smartPlaceholder": "Ad, #1234, dal veya GitHub/GitLab URL’si",
-      "smartAria": "Ad, PR numarası, dal veya GitHub/GitLab URL’si girin",
-      "smartHint": "Bir ad, PR numarası veya dal girin ya da PR/MR URL’si yapıştırın.",
       "refreshGithub": "GitHub listesini yenile",
       "githubSearch": "GitHub PR ve sorunlarını ara",
       "githubSearchAria": "GitHub pull request ve sorunlarını ara",
@@ -2156,14 +1794,8 @@
       "branchEmpty": "Bu depoda dal bulunamadı.",
       "branchNoMatches": "Eşleşen dal yok.",
       "branchUseAsRef": "“{{value}}” değerini ref olarak kullan",
-      "branchCustomRefHint": "Etiket, commit veya herhangi bir Git ref’i",
-      "worktreeLabel": "Çalışma ağacı etiketi",
-      "namePlaceholder": "ozellik-adi",
-      "nameBase": "Taban: {{branch}}",
-      "nameBaseHead": "Taban: HEAD"
+      "branchCustomRefHint": "Etiket, commit veya herhangi bir Git ref’i"
     },
-    "searchModels": "Model ara...",
-    "newItem": "Yeni öğe",
     "solveWorkItem": "İş öğesini çöz",
     "launchpadQuestion": "",
     "launchpadQuestionSuffix": "ile ne oluşturmak istersiniz?",
@@ -2172,36 +1804,20 @@
     "planLaunchpadQuestionSuffix": "ile ne planlamak istersiniz?",
     "manualPlanLaunchpadQuestion": "Ne planlamak istersiniz?",
     "start": "Başlat",
-    "assign": "Ata",
-    "send": "Gönder",
     "missingGit": {
       "title": "Git eksik",
       "body": "Git yüklü değil veya bulunamadı. ADE Manager ya da SDE Agent’tan bu makineye Git kurmasını isteyin, ardından ORGII’yi yeniden başlatın."
     },
-    "noProvidersAvailable": "Kullanılabilir sağlayıcı yok",
-    "enterPublicRepoUrl": "Herkese açık bir depo URL'si girin",
-    "repoUrlPlaceholder": "https://github.com/owner/repo",
-    "noModelsMatchSearch": "Aramanızla eşleşen model yok",
-    "noModelsAvailable": "Kullanılabilir model yok",
-    "noTiersAvailable": "Kullanılabilir seviye yok",
     "model": "Model",
-    "source": "Hesap",
-    "addContext": "Bağlam ekle",
     "contextMenu": {
       "filesAndFolders": "Dosyalar ve Klasörler",
-      "agentSession": "Agent Oturumu",
       "workItems": "İş Öğeleri",
       "back": "Geri",
       "recent": "Son Kullanılanlar",
       "showMore": "{{remaining}} tane daha göster"
     },
-    "slashSearchPlaceholder": "Komut ara…",
     "slashMenu": {
-      "image": "Görsel",
-      "uploadImage": "Görsel yükle",
       "mode": "Mod",
-      "models": "Modeller",
-      "skills": "Skills",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",
       "commands": "Komutlar"
@@ -2217,13 +1833,6 @@
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",
-    "cliAgent": "CLI Agent",
-    "cliAgentDesc": "CLI tabanlı Agent'lere bağlanın",
-    "agentDesc": "Kodlama Agent oturumu başlatın",
-    "osAgentDesc": "Bilgisayar otomasyon Agent",
-    "categoryLabel": "Oturum kategorisi",
-    "categoryTemplate": "{category} seçin",
-    "categoryPlaceholder": "Agent",
     "builtIns": "Yerleşik",
     "humanSession": {
       "name": "Çalışma günlüğü"
@@ -2233,81 +1842,29 @@
     "agentOrgs": "Agent Ekipleri",
     "orgMembers": {
       "configButton": "Üyeleri yönet",
-      "count": "{{count}} üye",
-      "defaultColumn": "Model",
       "empty": "Bu ekipte henüz üye yok",
       "selectAgent": "Agent seç",
       "applyForFutureLabel": "Sonraki kullanımlara uygula",
       "selectBaseAgentForRole": "{{role}} için temel Agent seç"
     },
     "externalIdes": "Harici Agent",
-    "cursorIde": {
-      "label": "Cursor IDE"
-    },
-    "addModel": "Model Ekle",
-    "myAgents": "Agent'larım",
-    "session": "Session",
-    "cloneFromGitHub": "GitHub'dan klonla",
-    "repoUrl": "Depo URL'si",
-    "pleaseEnterGitHubUrl": "Lütfen bir GitHub URL'si girin",
-    "pleaseEnterValidGitHubUrl": "Lütfen geçerli bir GitHub depo URL'si girin",
-    "cloning": "Klonlanıyor...",
-    "cloneRepo": "Depoyu klonla",
-    "repoCloneHelperText": "Depo, Session'ınız için geçici bir çalışma alanına klonlanacaktır.",
-    "yourPrice": "Fiyatınız",
-    "inputPerM": "Giriş /M",
-    "outputPerM": "Çıkış /M",
-    "continueWithTier": "{{tier}} ile devam et",
-    "quota": "Kota: {{value}}",
-    "officialApiPrice": "Resmi API fiyatı",
-    "input": "Giriş",
-    "output": "Çıkış",
-    "marketPrice": "Piyasa fiyatı",
-    "yourPriceType": "Fiyatınız ({{type}})",
-    "cacheRead": "Cache Read",
-    "cacheWrite": "Cache Write",
-    "saveDiscount": "{{discount}} tasarruf",
-    "standard": "Standard",
-    "global": "Global",
-    "goldUnlocksGlobal": "Gold+ Global fiyatların kilidini açar",
-    "limitReached": "Limite ulaşıldı",
-    "remainingLimit": "{{remaining}}/{{limit}} kaldı",
-    "busy": "Meşgul",
-    "ofOfficialPrice": "resmi fiyatın",
     "shortInputTitle": "Kısa Giriş",
     "shortInputMessage": "Girişiniz çok kısa görünüyor. Bu içerikle bir oturum başlatmak istediğinizden emin misiniz?",
     "selectModel": "Model seç",
     "switchModel": "Model değiştir",
-    "switchSource": "Hesap değiştir",
-    "switchRunner": "Runner değiştir",
-    "runnerLockedToWorktree": "Worktree'ye sabitlendi — başlatıldıktan sonra Runner değiştirilemez",
     "switchMode": "Mod değiştir",
     "switchAgent": "Agent değiştir",
-    "manageKeys": "Keys yönet",
-    "manageModels": "Modelleri yönet",
-    "changeSource": "Hesabı değiştir",
-    "clearSelection": "Seçimi temizle",
     "toolbar": {
       "bold": "Kalın (⌘B)",
       "italic": "İtalik (⌘I)",
       "strikethrough": "Üstü çizili",
-      "underline": "Altı çizili (⌘U)",
       "link": "Bağlantı",
-      "enterUrl": "URL girin...",
       "quote": "Alıntı",
-      "clearFormatting": "Biçimlendirmeyi temizle",
       "inlineCode": "Satır içi kod",
-      "highlight": "Vurgula",
-      "insertImage": "Resim ekle",
-      "lists": "Listeler",
-      "normalText": "Normal metin",
-      "heading1": "Başlık 1",
       "heading2": "Başlık 2",
-      "heading3": "Başlık 3",
       "bulletList": "Madde işaretli liste",
       "numberedList": "Numaralı liste",
-      "taskList": "Görev listesi",
-      "divider": "Ayırıcı"
+      "taskList": "Görev listesi"
     },
     "regionNoticeTitle": "Olası bölgesel kısıtlamalar",
     "regionNoticeBodyProvider": "Bulunduğunuz yer: {{location}}. Bazı modeller bölgenizde kullanılamayabilir.",
@@ -2315,38 +1872,11 @@
     "regionNoticeBodyBoth": "Bulunduğunuz yer: {{location}}. Bölgesel kurallar ve ticaret kısıtlamaları nedeniyle bazı modeller ve GitHub, npm, Docker Hub gibi hizmetler kullanılamayabilir.",
     "selectAgent": "Bir ajan seçin",
     "placeholderDefault": "Mesaj yazın, dosya eklemek için @ kullanın, skills kullanmak için / kullanın",
-    "agentHeaderPromptVariants": [
-      {
-        "before": "",
-        "after": "ile ne üzerinde çalışıyoruz?"
-      },
-      {
-        "before": "",
-        "after": "bugün neye yardımcı olsun?"
-      },
-      {
-        "before": "",
-        "after": "önce neyi ele alsın?"
-      }
-    ],
     "wingmanPlaceholder": "Görevinizi tanımlayın — Wingman neyi izlemeli?",
     "screenPicker": {
       "title": "Ekran seçin",
-      "screen": "Ekran {{index}}",
-      "primary": "(ana)",
-      "cancel": "İptal"
+      "primary": "(ana)"
     },
-    "viewDiff": "Diff’i göster",
-    "contextBar": {
-      "thisMac": "Bu Mac",
-      "worktree": "Worktree",
-      "lockedHint": "Bu oturum için Worktree kilitli"
-    },
-    "skillsAndTools": "Skills ve araçlar",
-    "agentSpotlightViewMode": "Agent görünüm modu",
-    "agentSpotlightListView": "Liste görünümü",
-    "agentSpotlightCardView": "Kart görünümü",
-    "agentSpotlightCardHint": "Agent değiştirmek için ←/→ veya ↑/↓ kullanın. Seçmek için Enter’a basın.",
     "multiRunner": {
       "exit": "Tek ajana geri dön",
       "addRunner": "Çalıştırıcı ekle",
@@ -2372,62 +1902,37 @@
     }
   },
   "planner": {
-    "tabs": {
-      "plan": "Plan",
-      "timeline": "Zaman Çizelgesi"
-    },
     "modes": {
       "build": "Build",
       "ask": "Ask",
-      "plan": "Plan",
-      "debug": "Debug",
-      "review": "Review",
-      "wingman": "Yardımcı"
+      "plan": "Plan"
     },
     "runningLocation": {
       "local": "This Mac",
-      "worktree": "New Worktree",
-      "cloud": "Cloud"
+      "worktree": "New Worktree"
     },
     "plan": {
-      "stepsCompleted": "{{total}} adımdan {{completed}} adım tamamlandı",
-      "noStepsYet": "Henüz plan adımı yok",
       "executePlan": "Planı çalıştır",
-      "noActiveSession": "Aktif Agent oturumu yok",
-      "replan": "Yeniden planla",
-      "viewPlan": "Planı Görüntüle",
-      "saveToWorkspace": "Çalışma alanına kaydet",
-      "savedToWorkspace": "Plan çalışma alanına kaydedildi",
-      "noRepoOpen": "Açık depo yok",
-      "collapse": "Daralt",
-      "expand": "Genişlet"
+      "noActiveSession": "Aktif Agent oturumu yok"
     },
     "todoList": {
       "title": "To-do",
       "completedCount": "{{total}} görevden {{completed}} tamamlandı",
       "countOnly": "{{total}} görev",
-      "doneOf": "{{total}} görevden {{done}} tamamlandı",
-      "createdAt": "Oluşturuldu {{time}}",
-      "updatedAt": "Güncellendi {{time}}",
       "justNow": "az önce",
       "minutesAgo": "{{count}} dk önce",
       "yesterday": "Dün",
       "columnOpen": "Açık",
       "status": {
-        "pending": "Bekliyor",
-        "in_progress": "Devam ediyor",
         "completed": "Tamamlandı",
         "cancelled": "İptal edildi"
       }
     },
     "agentOrgTasks": {
       "title": "Ekip görevleri",
-      "doneOf": "{{total}} görevden {{done}} tamamlandı",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
-      "loadFailed": "Görevler yüklenemedi",
       "statusPending": "Beklemede",
-      "statusAssigned": "Atandı",
       "statusInProgress": "Devam ediyor",
       "statusCompleted": "Tamamlandı",
       "statusBlocked": "Engelli"
@@ -2442,24 +1947,9 @@
       "activeOf": "{{active}} / {{total}} aktif",
       "inbox": "Inbox",
       "unreadCount": "{{count}} okunmadı",
-      "coordinator": "Koordinatör",
-      "currentSession": "Geçerli",
-      "inProgressTasks": "{{count}} devam eden görev",
-      "pendingTasks": "{{count}} bekleyen görev",
-      "unreadMessages": "{{count}} okunmamış mesaj",
-      "taskBoard": "Görev panosu",
-      "memberSessions": "Üye oturumları",
       "pauseRun": "Çalıştırmayı duraklat",
       "resumeRun": "Çalıştırmayı devam ettir",
       "viewCoordinatorHistory": "View coordinator chat history"
-    },
-    "agentOrgInbox": {
-      "title": "Agent mesajları",
-      "unreadCount": "{{count}} okunmamış",
-      "from": "{{sender}} tarafından",
-      "kindFallback": "{{kind}} mesajı",
-      "loadFailed": "Mesajlar yüklenemedi",
-      "overviewOnly": "{{count}} okunmamış ekip mesajı var. Ayrıntılı geçmiş run replay içinde görülebilir."
     },
     "agentOrgIntervention": {
       "title": "{{member}} ile sohbet ediliyor",
@@ -2469,34 +1959,6 @@
       "loadFailed": "Müdahale durumu yüklenemedi",
       "busyShort": "Kullanıcı sohbeti",
       "teammateBusy": "Bu teammate doğrudan kullanıcı sohbetinde"
-    },
-    "timeline": {
-      "askUser": "Kullanıcıya sor",
-      "noQuestionProvided": "Soru sağlanmadı.",
-      "action": "Eylem",
-      "thought": "Düşünce:",
-      "arguments": "Argümanlar:",
-      "content": "İçerik:",
-      "resultLabel": "Sonuç:",
-      "createFile": "Dosya oluştur",
-      "fileDiff": "Dosya farkı",
-      "planHint": "Plan ipucu",
-      "readFile": "Dosya oku",
-      "runCommandLine": "Komut satırı çalıştır",
-      "searchInFile": "Dosyada ara",
-      "searchCodebase": "Kod tabanında ara",
-      "searchDirectory": "Dizinde ara",
-      "searchLabel": "Ara:",
-      "inDirectory": "{{directory}} içinde",
-      "foundResults": "{{files}} dosyada {{count}} sonuç bulundu",
-      "lineRange": "Satır {{start}}-{{end}}",
-      "clickToViewContent": "İçeriği görüntülemek için tıklayın",
-      "noResult": "sonuç yok",
-      "event": "Olay",
-      "functionLabel": "Fonksiyon:",
-      "noTimelineEvents": "Zaman çizelgesi olayı yok",
-      "file": "Dosya",
-      "atlas": "Atlas"
     },
     "agentOrgMemberStatus": {
       "idle": "Boşta",
@@ -2510,7 +1972,6 @@
     }
   },
   "planDoc": {
-    "plan": "Plan",
     "untitled": "Başlıksız plan",
     "drafting": "Plan hazırlanıyor…",
     "readyForReview": "İnceleme için hazır",
@@ -2525,9 +1986,6 @@
     "emptyPlan": "(plan boş)",
     "edit": "Düzenle",
     "cancelEdit": "İptal",
-    "editAndBuild": "Düzenle ve oluştur",
-    "openInSimulator": "Simulator'da aç",
-    "close": "Kapat",
     "collapse": "Daralt"
   },
   "workspace": {
@@ -2538,10 +1996,7 @@
     "errorOccurred": "Bir hata oluştu",
     "failedToSendMessage": "Mesaj gönderilemedi",
     "noSessionIdFound": "Session ID bulunamadı",
-    "failedToContinue": "Session devam ettirilemedi",
     "failedToResume": "Session sürdürülemedi",
-    "failedToInterrupt": "Session kesintiye uğratılamadı",
-    "failedToStop": "Agent durdurulamadı",
     "failedToCheckChanges": "Dosya değişiklikleri kontrol edilemedi. Geri alma işlemi gerçekleştirilecek.",
     "insufficientBalance": "Barındırılan ORGII hizmeti için yetersiz bakiye. orgii.ai/wallet adresinden yükleyin.",
     "runQueuedBehindCheckout": "Kuyrukta: başka bir çalıştırma bu checkout'u kullanıyor. O bitince başlayacak."
@@ -2553,12 +2008,6 @@
       "Düşünülüyor...",
       "Üzerinde çalışılıyor...",
       "Sırada ne olacağı değerlendiriliyor..."
-    ],
-    "nextStepSlowVariants": [
-      "Sonraki adım planlanıyor, olağandan uzun sürüyor...",
-      "Hâlâ düşünülüyor, olağandan uzun sürüyor...",
-      "Üzerinde çalışılıyor, olağandan uzun sürüyor...",
-      "Sırada ne olacağı değerlendiriliyor, olağandan uzun sürüyor..."
     ],
     "compacting": "Bağlam sıkıştırılıyor...",
     "statusTrail": {
@@ -2578,41 +2027,14 @@
     "keepChanges": "Değişiklikleri koru"
   },
   "controlTower": {
-    "welcomeMessages": [
-      "Bugün ne inşa ediyorsunuz?",
-      "Bugün ne yayınlayacaksınız?",
-      "Bugün ne çözeceğiz?",
-      "Sıradaki ne?",
-      "Bir sonraki adım ne?"
-    ],
-    "quickActions": "Hızlı Eylemler",
-    "recentSessions": "Son oturumlar",
-    "viewAllSessions": "Tüm oturumları görüntüle",
-    "noSessionsYet": "Henüz oturum yok",
     "myAgents": "{{count}} Agent'ım",
-    "myAgentOrgs": "{{count}} Agent ekibim",
     "noAgentsAvailable": "Kullanılabilir Agent yok",
     "newAgentSession": "Yeni {{agent}} oturumu",
     "addAgent": "Agent ekle",
     "myApiKeys": "{{count}} Key'im",
     "addApiKey": "API Anahtarı ekle",
-    "noRepoSelected": "Depo seçilmedi",
     "diff": {
-      "untitledSession": "İsimsiz oturum",
-      "singleFile": "Tek dosya",
-      "unified": "Birleşik görünüm",
-      "allChanges": "Tüm değişiklikler",
-      "failedToLoadDiffFor": "{{path}} için diff yüklenemedi",
-      "failedToLoadFileContent": "Dosya içeriği yüklenemedi",
-      "binaryFile": "İkili dosya",
-      "selectFileToView": "Diff'i görmek için dosya seçin",
-      "openProjectToViewDiff": "Diff'i görmek için Project açın",
-      "failedToLoadDiff": "Diff yüklenemedi",
-      "changes": "Değişiklikler",
-      "refresh": "Yenile",
-      "noUncommittedChanges": "Kaydedilmemiş değişiklik yok",
-      "noSessionChanges": "Bu oturum için kaydedilmemiş değişiklik yok",
-      "fileCount": "{{count}} dosya"
+      "refresh": "Yenile"
     },
     "git": {
       "filterUncommitted": "Commit edilmemiş",
@@ -2620,54 +2042,17 @@
       "filterStaged": "Stage edilmiş",
       "filterStashed": "Stash'e alınmış",
       "filterCountLabel_one": "{{count}} {{label}} değişiklik",
-      "filterCountLabel_other": "{{count}} {{label}} değişiklik",
-      "failedToLoad": "Git durumu yüklenemedi",
-      "noBranchChanges": "Push edilmemiş commit yok",
-      "unknownAuthor": "Bilinmiyor"
-    },
-    "groups": {
-      "home": "Ana Sayfa",
-      "sessions": "Oturumlar",
-      "git": "Git",
-      "terminal": "Terminal"
+      "filterCountLabel_other": "{{count}} {{label}} değişiklik"
     },
     "history": {
-      "wingmanAgent": "Wingman Agent",
       "agentFallback": "Agent"
     },
     "sidebar": {
       "stopAgentProcess": "Agent sürecini durdur",
-      "closeSession": "Oturumu kapat",
-      "openInBrowser": "Tarayıcıda aç",
-      "closeTab": "Sekmeyi kapat",
-      "private": "gizli",
-      "newTab": "Yeni sekme",
-      "overview": "Genel Bakış",
-      "homeBrowsers": "Tarayıcı sekmeleri",
-      "homeTerminals": "Terminal oturumları",
-      "openInMyStation": "My Station'da aç",
-      "openInTerminalTab": "Terminal sekmesinde aç"
-    },
-    "workspaceTools": {
-      "title": "Workspace araçları",
-      "description": "Bu workspace için önerilen LSP servers ve lint araçlarını kontrol eder.",
-      "summary": "{{ready}}/{{total}} hazır",
-      "noRecommendations": "Önerilen araç yok",
-      "refresh": "Yenile",
-      "lsp": "LSP servers",
-      "lint": "Lint araçları",
-      "ready": "Önerilen {{total}} aracın tümü hazır",
-      "needsSetup": "Önerilen {{total}} araçtan {{ready}} tanesi hazır",
-      "notApplicable": "Workspace özelinde öneri yok",
-      "missing": "Eksik",
-      "disabled": "Devre dışı"
+      "openInMyStation": "My Station'da aç"
     }
   },
   "groupChat": {
-    "senderTitle": {
-      "message": "{{sender}} bir mesaj gönderdi",
-      "said": "{{sender}} dedi"
-    },
     "taskHeader": {
       "createWithOwner": "{{sender}}, {{ownerName}} için görev atadı",
       "create": "{{sender}} görev atadı",
@@ -2675,14 +2060,6 @@
       "updateDetail": "{{sender}} görev detayını güncelledi",
       "get": "{{sender}} görev detaylarını görüntüledi",
       "list": "{{sender}} görev listesini görüntüledi"
-    },
-    "messageHeader": {
-      "running": "{{sender}}, {{recipient}} kişisine yazıyor",
-      "done": "{{sender}}, {{recipient}} kişisine yazdı",
-      "failed": "{{sender}}, {{recipient}} kişisine yazamadı",
-      "broadcastRunning": "{{sender}} birden fazla Agent'a yazıyor",
-      "broadcastDone": "{{sender}} birden fazla Agent'a yazdı",
-      "broadcastFailed": "{{sender}} birden fazla Agent'a yazamadı"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator diğer agents tarafından gönderilen mesajları okudu"
@@ -2736,9 +2113,6 @@
       "completed": "Tamamlandı"
     }
   },
-  "manageProject": {
-    "inProject": "{{project}} içinde"
-  },
   "manageAgentDef": {
     "action": {
       "create": "Oluşturuldu",
@@ -2753,23 +2127,11 @@
       "get_org": "Org alındı"
     }
   },
-  "cursorIde": {
-    "restart": {
-      "title": "ORGII denetimi için Cursor yeniden başlatılsın mı?",
-      "message": "Follow-up mesajlarının aynı Cursor konuşmasına gitmesi için ORGII, Cursor’u uzaktan denetim etkin olarak yeniden başlatmalıdır. Bu işlem Cursor’u kapatıp --remote-debugging-port=9230 ile gizli olarak yeniden açar.",
-      "okLabel": "Cursor’u yeniden başlat",
-      "success": "Cursor uzaktan denetim etkin olarak gizli yeniden başlatıldı. Yeniden deneniyor…",
-      "failed": "Cursor yeniden başlatılamadı: {{reason}}"
-    }
-  },
   "cards": {
     "openFile": "Düzenleyicide aç",
     "openLink": "Bağlantıyı aç",
-    "broadcast": "→ Tüm ajanlar",
     "agentMessage": {
       "fallbackTitle": "Mesaj",
-      "accepted": "Kabul edildi",
-      "rejected": "Reddedildi",
       "empty": "(mesaj içeriği yok)",
       "status": {
         "sending": "Gönderiliyor…",
@@ -2791,44 +2153,25 @@
       },
       "emailBubble": {
         "noSubject": "(konu yok)",
-        "expand": "Mesajın tamamını göster",
-        "collapse": "Mesajı gizle",
         "userInbox": "Kullanıcı gelen kutusu",
         "currentChannel": "Geçerli kanal",
-        "subagentMessages": "Subagent mesajları",
-        "readMessagesFromSubagents": "{{agent}} subagent mesajlarını okudu"
+        "subagentMessages": "Subagent mesajları"
       }
     },
     "actions": {
       "moreOpenOptions": "Daha fazla açma seçeneği",
       "openAsPullRequest": "PR sekmesi",
       "openAsWebPage": "Web sayfası",
-      "openInApp": "Uygulamada aç",
-      "openWithDefaultBrowser": "Varsayılan tarayıcıyla aç",
-      "revealInFinder": "Finder'da göster",
-      "revealInExplorer": "Explorer'da göster",
-      "revealInFileManager": "Dosya yöneticisinde göster"
+      "openWithDefaultBrowser": "Varsayılan tarayıcıyla aç"
     },
     "url": {
-      "open": "Aç",
-      "changesCount": "{{count}} değişiklik",
       "copyUrl": "URL'yi kopyala",
       "copied": "URL kopyalandı",
       "openExternalFailed": "URL varsayılan tarayıcıda açılamadı",
-      "openPullRequestFailed": "Pull request sekmesi açılamadı",
-      "groupTitle": "Web sayfaları"
+      "openPullRequestFailed": "Pull request sekmesi açılamadı"
     },
     "path": {
-      "open": "Aç",
-      "copyPath": "Yolu kopyala",
-      "copied": "Yol kopyalandı",
-      "copyFailed": "Yol kopyalanamadı",
       "openFailed": "Yol açılamadı",
-      "revealFailed": "Yol dosya yöneticisinde gösterilemedi",
-      "name": "Ad",
-      "type": "Tür",
-      "directory": "Dizin",
-      "file": "Dosya",
       "emptyDirectory": "Boş dizin"
     }
   },
@@ -2849,10 +2192,6 @@
     "titleA2ui": "Agent Önizleme",
     "reload": "Yenile",
     "openExternal": "Tarayıcıda aç",
-    "expand": "Genişlet",
-    "shrink": "Küçült",
-    "close": "Kapat",
-    "summarize": "Agent ile özetle",
     "waiting": "İçerik bekleniyor…",
     "empty": "İçerik yok"
   },

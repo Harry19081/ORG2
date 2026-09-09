@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "開發記錄",
     "workItems": "工作項",
     "codeSearch": "代碼搜索",
     "dbManager": "數據庫管理",
@@ -47,9 +46,6 @@
     "colleagues": "同事",
     "terminals": "終端機"
   },
-  "trajectoryPanel": {
-    "title": "軌跡"
-  },
   "routes": {
     "session": "聊天",
     "startSession": "開始會話",
@@ -65,7 +61,6 @@
     "models": "模型目錄",
     "signingIn": "正在登錄...",
     "launchpad": "啟動台",
-    "appLauncher": "應用啓動器",
     "ideaArea": "想法廣場",
     "changelog": "更新日誌"
   },
@@ -186,121 +181,8 @@
       "dismiss": "關閉指南"
     }
   },
-  "appLauncher": {
-    "sections": {
-      "other": "其他"
-    },
-    "tabs": {
-      "myApps": "我的應用",
-      "myRepos": "我的倉庫"
-    },
-    "searchPlaceholder": "搜索專案...",
-    "emptyTitle": "暫無專案",
-    "emptyDescription": "添加一個專案以開始",
-    "emptyWorkspaces": "無匹配的專案",
-    "dashboard": "儀表板",
-    "workspaces": "專案",
-    "dashboardTitle": "專案",
-    "dashboardSubtitle": "選擇一個專案來啟動或查看",
-    "activeBadge": "運行中",
-    "exploreTitle": "探索",
-    "exploreDescription": "發現模板和公開倉庫（即將推出）",
-    "preview": {
-      "title": "預覽",
-      "projectType": "專案類型",
-      "path": "路徑",
-      "tools": "工具",
-      "availableScripts": "可用腳本",
-      "configFiles": "配置文件",
-      "status": "狀態",
-      "launch": "啓動",
-      "setup": "Agent 配置分析",
-      "noSetup": "未檢測到設置",
-      "noSetupHint": "AI 將自動選擇最佳運行方式",
-      "statusNotAnalyzed": "未分析",
-      "statusReady": "就緒",
-      "statusParamsMissing": "參數缺失",
-      "statusNoEnvConfig": "無需 Env 配置",
-      "envVars": "環境變量",
-      "envPlaceholder": "輸入值…",
-      "envMissing": "{{count}} 個缺失",
-      "envSave": "保存 .env",
-      "tabSetup": "設置",
-      "tabUse": "使用",
-      "launcherPlaceholder": "本次運行的額外說明...",
-      "launcherLaunch": "啓動",
-      "setupWithAI": "轉成應用",
-      "trustRepo": "信任此倉庫",
-      "usePlaceholder": "啓動腳本將在設置完成後顯示"
-    },
-    "scripts": {
-      "categoryDev": "開發",
-      "categoryStart": "啓動",
-      "categoryBuild": "構建",
-      "categoryTest": "測試",
-      "categoryLint": "Lint & 格式化",
-      "categoryOther": "其他",
-      "noScripts": "未發現腳本",
-      "noScriptsHint": "添加 package.json、Makefile 或類似配置",
-      "run": "運行",
-      "launched": "正在運行 {{name}}",
-      "launchFailed": "啓動腳本失敗"
-    },
-    "detail": {
-      "title": "Repo 詳情",
-      "path": "路徑",
-      "envVarsTitle": "環境變量",
-      "envKey": "鍵",
-      "envValue": "值",
-      "envSource": "來源",
-      "envEmpty": "(空)",
-      "noEnvVars": "無環境變量",
-      "addEnvVar": "添加變量",
-      "newEnvKey": "鍵",
-      "newEnvValue": "值",
-      "valuePlaceholder": "輸入值…",
-      "scriptsTitle": "腳本",
-      "scriptName": "名稱",
-      "scriptCommand": "命令",
-      "scriptCategory": "分類",
-      "scriptSource": "來源",
-      "scriptNamePlaceholder": "腳本名稱",
-      "searchScripts": "搜索腳本…",
-      "noScripts": "未發現腳本",
-      "addScript": "添加腳本",
-      "sourceCustom": "自定義",
-      "sourceDiscovered": "已發現",
-      "analysisTitle": "分析",
-      "clearAnalysis": "清除分析",
-      "clearAnalysisHint": "重置分析緩存，下次訪問時重新掃描",
-      "analysisCleared": "分析已清除"
-    },
-    "addRepo": "添加工作區"
-  },
-  "myRole": {
-    "tabs": {
-      "status": "我的狀態"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "其他"
-    },
-    "searchPlaceholder": "搜索工作區...",
-    "emptyTitle": "尚無工作區",
-    "emptyDescription": "新增一個倉庫以開始",
-    "emptyWorkspaces": "無符合的工作區",
-    "myRepos": "我的倉庫",
-    "myMultiRepoWorkspaces": "我的多倉庫 Workspaces",
-    "dashboard": "儀表板",
     "myWorkspaces": "我的工作區",
-    "workspaces": "工作區",
-    "dashboardTitle": "工作區",
-    "dashboardSubtitle": "選擇一個工作區來啟動或查看",
-    "addRepo": "新增工作區",
-    "activeBadge": "執行中",
-    "exploreTitle": "探索",
-    "exploreDescription": "探索範本和公開倉庫（即將推出）",
     "preview": {
       "repoType": "專案類型",
       "tools": "工具",
@@ -309,11 +191,7 @@
       "statusNotAnalyzed": "未分析",
       "statusReady": "就緒",
       "statusParamsMissing": "參數缺失",
-      "statusNoEnvConfig": "無需 Env 設定",
-      "setupWithAI": "轉成應用",
-      "trustRepo": "信任此倉庫",
-      "launchpadPlaceholder": "本次執行的額外說明...",
-      "launchpadLaunch": "啟動"
+      "statusNoEnvConfig": "無需 Env 設定"
     },
     "containers": {
       "title": "容器",
@@ -322,8 +200,6 @@
       "emptySubtitle": "啟動 Docker Desktop、Colima 或 Rancher Desktop 後重新整理以查看本地容器。",
       "repoEmptyTitle": "此倉庫無關聯容器",
       "repoEmptySubtitle": "容器透過 Docker Compose 工作目錄標籤或此倉庫內的綁定掛載匹配。",
-      "repoNoDockerTitle": "未偵測到 Docker 設定",
-      "repoNoDockerSubtitle": "新增 Dockerfile 或 docker-compose 檔案以將容器關聯到此倉庫。",
       "dockerUnavailable": "Docker 不可用",
       "name": "名稱",
       "image": "映像",
@@ -359,15 +235,9 @@
       "categoryBuild": "建置",
       "categoryTest": "測試",
       "categoryLint": "Lint & 格式化",
-      "categoryOther": "其他",
-      "noScripts": "未發現腳本",
-      "noScriptsHint": "新增 package.json、Makefile 或類似設定",
-      "run": "執行",
-      "launched": "正在執行 {{name}}",
-      "launchFailed": "啟動腳本失敗"
+      "categoryOther": "其他"
     },
     "detail": {
-      "title": "倉庫詳情",
       "path": "路徑",
       "envVarsTitle": "環境變數",
       "envKey": "鍵",
@@ -384,16 +254,10 @@
       "scriptName": "名稱",
       "scriptCommand": "命令",
       "scriptCategory": "分類",
-      "scriptSource": "來源",
       "scriptNamePlaceholder": "腳本名稱",
       "searchScripts": "搜尋腳本…",
       "noScripts": "未發現腳本",
       "addScript": "新增腳本",
-      "sourceCustom": "自訂",
-      "sourceDiscovered": "已發現",
-      "analysisTitle": "分析",
-      "clearAnalysis": "清除分析",
-      "clearAnalysisHint": "重置分析快取，下次訪問時重新掃描",
       "analysisCleared": "分析已清除"
     },
     "containerEngines": {
@@ -418,15 +282,11 @@
       "switchToRepo": "切換",
       "startSession": "開始會話",
       "openDetails": "開啟詳情",
-      "locateInFinder": "在 Finder 中顯示",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "新增工作區"
-  },
-  "explore": {
-    "title": "探索"
   },
   "workstation": {
     "agentComputer": {
@@ -444,7 +304,6 @@
       "title": "新增分頁",
       "searchFile": "搜尋檔案",
       "searchSessions": "看板",
-      "newBrowserTab": "新增瀏覽器分頁",
       "newPrivateBrowserTab": "新增私密瀏覽器分頁",
       "workItems": "工作項目",
       "projects": "專案",
@@ -462,8 +321,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "邀請連結或代碼",
     "inviteCodePlaceholder": "貼上 orgii:// 邀請連結或邀請代碼",
-    "copyInvite": "複製邀請",
-    "copiedInvite": "已複製",
     "setupMode": "設定模式",
     "manageOrg": "管理工作空間",
     "session": {
@@ -482,7 +339,6 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "雲端快照不完整。請讓擁有者完成同步後重試。",
       "forkAgentUnavailable": "請先選擇本機 Agent 再分叉。",
       "forkBackendRegistrationFailed": "歷史已複製，但可執行的分叉工作階段註冊失敗。請重試。",
@@ -497,16 +353,10 @@
     "forkImported": {
       "headerButton": "分叉",
       "headerTooltip": "把這個匯入的工作階段分叉為你自己的可寫工作階段",
-      "confirmTitle": "分叉並繼續？",
-      "confirmBody": "這是 {{name}} 的工作階段——你的副本是唯讀匯入。繼續將把它分叉為你自己的工作階段，並把訊息傳送到新的工作階段。",
-      "confirm": "分叉並繼續",
-      "cancel": "取消",
       "retentionError": "此工作階段已超出方案的重播期限——升級後才能分叉",
       "goneError": "此共享工作階段已不可用（已刪除或已過期）",
       "error": "分叉工作階段失敗",
-      "sendFailed": "已分叉，但訊息傳送失敗——內容已還原到輸入框",
       "forkedChipTooltip": "分叉自 {{name}}",
-      "continuePlaceholder": "傳送訊息，Fork 後在 ORGII 中繼續…",
       "snapshotError": "雲端快照不完整。請讓擁有者完成同步後重試。",
       "agentError": "請先選擇本機 Agent 再分叉。",
       "backendError": "歷史已複製，但可執行的分叉工作階段註冊失敗。請重試。",
@@ -520,8 +370,7 @@
       "notInstalled": "此裝置未安裝 {{agent}}",
       "missingWorkspace": "工作階段的原始資料夾已不存在，{{agent}} 只能在原資料夾中恢復",
       "sourceMissing": "原始工作階段資料已不在磁碟上",
-      "launchFailed": "開啟 {{agent}} 終端失敗",
-      "composerPlaceholder": "傳送訊息，在新工作階段中繼續…"
+      "launchFailed": "開啟 {{agent}} 終端失敗"
     },
     "openInApp": {
       "headerButton": "在 {{app}} 中開啟",
@@ -531,12 +380,10 @@
     }
   },
   "cloud": {
-    "title": "ORG2 雲端",
     "signIn": "登入",
     "signOut": "登出",
     "signedInToast": "已登入 ORG2 雲端",
     "sessionExpired": "ORG2 雲端登入已過期，請重新登入後繼續。",
-    "recommendedDesc": "託管式工作階段共享、重播儲存、團隊權限與安全分享連結，無需自行架設 Supabase。ORG2 為你管理 Auth、資料庫遷移、RLS 政策、計費、資料保留、配額與後端升級",
     "customEndpoint": {
       "title": "自訂 ORG2 Cloud 後端",
       "toggleDesc": "使用你自行部署的 ORG2 Cloud 服務",
@@ -633,7 +480,6 @@
     "sidebar": {
       "teamSessions": "團隊工作階段",
       "mySessions": "我的工作階段",
-      "memberFilter": "依成員篩選",
       "sessionFilter": "篩選工作階段",
       "copyUrl": "複製 URL",
       "directlySharedWithMe": "指定分享給我的",
@@ -759,14 +605,11 @@
         "confirm": "加入工作空間",
         "cancel": "暫不",
         "signInFirst": "請先登入 ORG2 Cloud 再接受此邀請——邀請會保持待處理狀態。",
-        "openSettings": "開啟登入設定",
-        "joinedToast": "已加入 {{org}}",
-        "joinedFallbackToast": "已加入雲端工作空間"
+        "joinedToast": "已加入 {{org}}"
       },
       "create": {
         "sourceCloud": "雲端",
         "signInFirst": "登入 ORG2 Cloud 以建立或加入託管工作空間。",
-        "openSettings": "開啟登入設定",
         "createdToast": "雲端工作空間已建立"
       },
       "errors": {
@@ -825,7 +668,6 @@
       "importEntry": "匯入 Session",
       "importDialogTitle": "匯入分享的 session",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "從剪貼簿貼上",
       "importSubmit": "匯入",
       "importInvalidInput": "這不是有效的分享連結或權杖。",
       "selectAll": "所有人（{{count}}）",
@@ -838,53 +680,9 @@
       "incomingRetry": "重試"
     },
     "comments": {
-      "task": {
-        "assignFailed": "評論已發布，但指派 Agent 失敗——請從討論串重試",
-        "assignUnavailableHere": "評論已發布——目前檢視不支援指派 Agent",
-        "addressingChip": "正在處理評論：「{{excerpt}}」",
-        "addressingChipGeneric": "正在處理一則評論",
-        "addressingChipTooltip": "為處理來源工作階段的評論討論串而分叉",
-        "mentionSuggestion": "將這則評論指派給 Agent"
-      },
-      "toggleLabel": "評論",
-      "notesButton": "工作階段備註",
-      "notesTitle": "工作階段備註",
-      "empty": "尚無評論",
-      "loadError": "評論載入失敗",
-      "addPlaceholder": "新增評論…",
-      "replyPlaceholder": "回覆…",
-      "send": "發表",
-      "reply": "回覆",
-      "edit": "編輯",
-      "save": "儲存",
-      "cancel": "取消",
-      "delete": "刪除",
-      "resolve": "標記已解決",
-      "unresolve": "重新開啟",
-      "resolved": "已解決",
-      "statusActive": "進行中",
-      "wontFix": "不修復",
-      "agentAddressing": "Agent 正在處理…",
-      "resolvedToggle": "已解決（{{count}}）",
-      "deletedComment": "評論已刪除",
-      "editedMarker": "已編輯",
-      "earlierVersion": "來自此工作階段的較早版本",
-      "replayRequired": "回合評論需要完整重播權限",
-      "addError": "發送失敗——草稿已保留",
       "actionError": "操作失敗，請重試",
       "unresolvedBadge_one": "{{count}} 則未解決評論",
-      "unresolvedBadge": "{{count}} 則未解決評論",
-      "addressButton": "處理評論",
-      "addressPill_one": "處理 {{count}} 條評論",
-      "addressPill_other": "處理 {{count}} 條評論",
-      "addressSelectAll": "全選",
-      "addressSessionScope": "工作階段備註",
-      "addressRoundScope": "逐輪評論",
-      "addressConfirm_one": "處理 {{count}} 條評論",
-      "addressConfirm_other": "處理 {{count}} 條評論",
-      "agentAuthor": "Agent @{{name}}",
-      "mentionMembers": "提及成員",
-      "searchMembers": "搜尋成員"
+      "unresolvedBadge": "{{count}} 則未解決評論"
     },
     "billing": {
       "openFailed": "無法開啟帳單頁，請重試。"
@@ -941,7 +739,6 @@
         "nameLabel": "名稱",
         "namePlaceholder": "例如：code-review",
         "topicLabel": "主題",
-        "topicOptional": "（選填）",
         "topicPlaceholder": "這個頻道要聊什麼？",
         "visibilityLabel": "可見性",
         "publicTitle": "公開",
@@ -1003,7 +800,6 @@
         "today": "今天",
         "yesterday": "昨天",
         "you": "你",
-        "memberCount": "{{memberCount}} 位成員",
         "emptyTitle": "這裡是 #{{name}} 的開始",
         "emptySubtitle": "傳送第一則訊息，開啟對話",
         "missingTitle": "頻道已不存在",
@@ -1016,15 +812,7 @@
         "errorQuota": "此頻道在這台裝置上的訊息數量已達上限",
         "errorGeneric": "訊息傳送失敗，請再試一次。",
         "dropSessionHint": "放開以將該工作階段加入為參考",
-        "messageBodyLabel": "頻道訊息",
-        "sessionCardMissing": "此裝置上不可用",
         "sessionCardOpen": "開啟工作階段 {{name}}",
-        "workItemCardMissing": "此裝置上不可用",
-        "workItemCardLoading": "正在載入…",
-        "workItemCardOpen": "開啟工作項目 {{name}}",
-        "githubCardOpen": "在 GitHub 中開啟 {{name}}",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull Request",
         "archivedComposerDisabled": "該頻道已封存,取消封存後才能發言。",
         "errorPostForbidden": "只有頻道管理員才能在此頻道發訊息",
         "errorArchived": "此頻道已封存，無法傳送新訊息",

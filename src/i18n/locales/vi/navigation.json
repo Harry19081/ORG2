@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "Hồ sơ phát triển",
     "workItems": "Mục công việc",
     "codeSearch": "Tìm kiếm mã",
     "dbManager": "Quản lý CSDL",
@@ -46,9 +45,6 @@
     "diff": "Diff",
     "colleagues": "Đồng nghiệp",
     "terminals": "Terminal"
-  },
-  "trajectoryPanel": {
-    "title": "Quỹ đạo"
   },
   "routes": {
     "session": "Trò chuyện",
@@ -185,30 +181,8 @@
       "dismiss": "Ẩn hướng dẫn"
     }
   },
-  "myRole": {
-    "tabs": {
-      "status": "Trạng thái của tôi"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "Khác"
-    },
-    "searchPlaceholder": "Tìm kiếm workspace...",
-    "emptyTitle": "Chưa có workspace",
-    "emptyDescription": "Thêm một repo để bắt đầu",
-    "emptyWorkspaces": "Không có workspace nào khớp",
-    "myRepos": "Repo của tôi",
-    "myMultiRepoWorkspaces": "Workspaces đa-repo của tôi",
-    "dashboard": "Bảng điều khiển",
     "myWorkspaces": "Workspaces của tôi",
-    "workspaces": "Workspaces",
-    "dashboardTitle": "Workspaces",
-    "dashboardSubtitle": "Chọn một workspace để khởi chạy hoặc xem chi tiết",
-    "addRepo": "Thêm workspace",
-    "activeBadge": "Đang hoạt động",
-    "exploreTitle": "Khám phá",
-    "exploreDescription": "Khám phá mẫu và repo công khai (sắp ra mắt)",
     "preview": {
       "repoType": "Loại project",
       "tools": "Công cụ",
@@ -217,11 +191,7 @@
       "statusNotAnalyzed": "Chưa phân tích",
       "statusReady": "Sẵn sàng",
       "statusParamsMissing": "Thiếu tham số",
-      "statusNoEnvConfig": "Không cần cấu hình env",
-      "setupWithAI": "Biến thành ứng dụng",
-      "trustRepo": "Tin tưởng kho lưu trữ này",
-      "launchpadPlaceholder": "Hướng dẫn bổ sung cho lần chạy này...",
-      "launchpadLaunch": "Khởi chạy"
+      "statusNoEnvConfig": "Không cần cấu hình env"
     },
     "containers": {
       "title": "Containers",
@@ -230,8 +200,6 @@
       "emptySubtitle": "Khởi động Docker Desktop, Colima hoặc Rancher Desktop rồi làm mới để xem container cục bộ.",
       "repoEmptyTitle": "Không có container cho repo này",
       "repoEmptySubtitle": "Container được khớp bằng label thư mục làm việc Docker Compose hoặc bind mount bên trong repo này.",
-      "repoNoDockerTitle": "Không phát hiện thiết lập Docker",
-      "repoNoDockerSubtitle": "Thêm Dockerfile hoặc file docker-compose để liên kết container với repo này.",
       "dockerUnavailable": "Docker không khả dụng",
       "name": "Tên",
       "image": "Image",
@@ -267,15 +235,9 @@
       "categoryBuild": "Build",
       "categoryTest": "Kiểm thử",
       "categoryLint": "Lint & Định dạng",
-      "categoryOther": "Khác",
-      "noScripts": "Không tìm thấy script",
-      "noScriptsHint": "Thêm package.json, Makefile hoặc cấu hình tương tự",
-      "run": "Chạy",
-      "launched": "Đang chạy {{name}}",
-      "launchFailed": "Không thể chạy script"
+      "categoryOther": "Khác"
     },
     "detail": {
-      "title": "Chi tiết Repo",
       "path": "Đường dẫn",
       "envVarsTitle": "Biến Môi trường",
       "envKey": "Khóa",
@@ -292,16 +254,10 @@
       "scriptName": "Tên",
       "scriptCommand": "Lệnh",
       "scriptCategory": "Danh mục",
-      "scriptSource": "Nguồn",
       "scriptNamePlaceholder": "Tên script",
       "searchScripts": "Tìm kiếm script…",
       "noScripts": "Không tìm thấy script",
       "addScript": "Thêm Script",
-      "sourceCustom": "Tùy chỉnh",
-      "sourceDiscovered": "Đã phát hiện",
-      "analysisTitle": "Phân tích",
-      "clearAnalysis": "Xóa Phân tích",
-      "clearAnalysisHint": "Đặt lại bộ nhớ cache phân tích và quét lại vào lần truy cập tiếp theo",
       "analysisCleared": "Đã xóa phân tích"
     },
     "containerEngines": {
@@ -326,15 +282,11 @@
       "switchToRepo": "Mở",
       "startSession": "Bắt đầu phiên",
       "openDetails": "Hiển thị chi tiết",
-      "locateInFinder": "Hiện trong Finder",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Thêm Workspace"
-  },
-  "explore": {
-    "title": "Khám phá"
   },
   "workstation": {
     "agentComputer": {
@@ -352,7 +304,6 @@
       "title": "Thẻ mới",
       "searchFile": "Tìm tệp",
       "searchSessions": "Bảng Kanban",
-      "newBrowserTab": "Thẻ trình duyệt mới",
       "newPrivateBrowserTab": "Thẻ trình duyệt ẩn danh mới",
       "workItems": "Mục công việc",
       "projects": "Dự án",
@@ -370,8 +321,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Liên kết hoặc mã mời",
     "inviteCodePlaceholder": "Dán liên kết orgii:// hoặc mã mời",
-    "copyInvite": "Sao chép lời mời",
-    "copiedInvite": "Đã sao chép",
     "setupMode": "Chế độ thiết lập",
     "manageOrg": "Quản lý không gian làm việc",
     "session": {
@@ -390,7 +339,6 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -405,16 +353,10 @@
     "forkImported": {
       "headerButton": "Fork",
       "headerTooltip": "Fork phiên đã nhập này thành phiên có thể chỉnh sửa của riêng bạn",
-      "confirmTitle": "Fork và tiếp tục?",
-      "confirmBody": "Đây là phiên của {{name}} — bản sao của bạn là bản nhập chỉ đọc. Tiếp tục sẽ fork nó thành phiên của riêng bạn và tin nhắn sẽ được gửi vào đó.",
-      "confirm": "Fork và tiếp tục",
-      "cancel": "Hủy",
       "retentionError": "Phiên này nằm ngoài thời hạn phát lại của gói — hãy nâng cấp để fork",
       "goneError": "Phiên chia sẻ này không còn khả dụng (đã bị xóa hoặc hết hạn)",
       "error": "Fork phiên thất bại",
-      "sendFailed": "Đã fork nhưng gửi tin nhắn thất bại — nội dung đã được khôi phục vào ô nhập",
       "forkedChipTooltip": "Fork từ {{name}}",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -428,8 +370,7 @@
       "notInstalled": "{{agent}} chưa được cài đặt trên máy này",
       "missingWorkspace": "Thư mục gốc của phiên không còn tồn tại — {{agent}} chỉ có thể tiếp tục phiên từ thư mục đó",
       "sourceMissing": "Dữ liệu gốc của phiên không còn trên ổ đĩa",
-      "launchFailed": "Không thể mở terminal {{agent}}",
-      "composerPlaceholder": "Nhập tin nhắn để tiếp tục trong phiên mới…"
+      "launchFailed": "Không thể mở terminal {{agent}}"
     },
     "openInApp": {
       "headerButton": "Mở trong {{app}}",
@@ -439,13 +380,11 @@
     }
   },
   "cloud": {
-    "title": "ORG2 Cloud",
     "signIn": "Đăng nhập",
     "signOut": "Đăng xuất",
     "signedInAs": "Đã đăng nhập: {{name}}",
     "signedInToast": "Đã đăng nhập ORG2 Cloud",
     "sessionExpired": "Phiên ORG2 Cloud đã hết hạn. Hãy đăng nhập lại để tiếp tục.",
-    "recommendedDesc": "Chia sẻ phiên được quản lý, lưu trữ phát lại, phân quyền nhóm và liên kết chia sẻ an toàn. Không cần cài đặt Supabase. ORG2 quản lý giúp bạn Auth, di trú cơ sở dữ liệu, chính sách RLS, thanh toán, thời gian lưu trữ, hạn mức và nâng cấp backend",
     "customEndpoint": {
       "title": "Backend ORG2 Cloud tùy chỉnh",
       "toggleDesc": "Dùng bản triển khai ORG2 Cloud của riêng bạn",
@@ -542,7 +481,6 @@
     "sidebar": {
       "teamSessions": "Phiên của nhóm",
       "mySessions": "Phiên của tôi",
-      "memberFilter": "Lọc theo thành viên",
       "sessionFilter": "Lọc phiên",
       "copyUrl": "Sao chép URL",
       "directlySharedWithMe": "Được chia sẻ trực tiếp với tôi",
@@ -668,14 +606,11 @@
         "confirm": "Tham gia",
         "cancel": "Để sau",
         "signInFirst": "Đăng nhập ORG2 Cloud để chấp nhận lời mời — lời mời sẽ được giữ ở trạng thái chờ.",
-        "openSettings": "Mở cài đặt đăng nhập",
-        "joinedToast": "Đã tham gia {{org}}",
-        "joinedFallbackToast": "Đã tham gia không gian làm việc đám mây"
+        "joinedToast": "Đã tham gia {{org}}"
       },
       "create": {
         "sourceCloud": "Đám mây",
         "signInFirst": "Đăng nhập ORG2 Cloud để tạo hoặc tham gia không gian làm việc được quản lý.",
-        "openSettings": "Mở cài đặt đăng nhập",
         "createdToast": "Đã tạo không gian làm việc đám mây"
       },
       "errors": {
@@ -734,7 +669,6 @@
       "importEntry": "Nhập phiên",
       "importDialogTitle": "Nhập phiên được chia sẻ",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "Dán từ bộ nhớ tạm",
       "importSubmit": "Nhập",
       "importInvalidInput": "Đây có vẻ không phải là liên kết chia sẻ hoặc mã token hợp lệ.",
       "selectAll": "Tất cả ({{count}})",
@@ -747,53 +681,9 @@
       "incomingRetry": "Thử lại"
     },
     "comments": {
-      "task": {
-        "assignFailed": "Đã đăng bình luận, nhưng giao cho agent thất bại — thử lại từ luồng",
-        "assignUnavailableHere": "Đã đăng bình luận — không thể giao cho agent trong chế độ xem này",
-        "addressingChip": "Đang xử lý bình luận: “{{excerpt}}”",
-        "addressingChipGeneric": "Đang xử lý một bình luận",
-        "addressingChipTooltip": "Được fork để xử lý một luồng bình luận trên phiên gốc",
-        "mentionSuggestion": "Giao bình luận này cho agent"
-      },
-      "toggleLabel": "Bình luận",
-      "notesButton": "Ghi chú phiên",
-      "notesTitle": "Ghi chú phiên",
-      "empty": "Chưa có bình luận nào",
-      "loadError": "Không thể tải bình luận",
-      "addPlaceholder": "Thêm bình luận…",
-      "replyPlaceholder": "Trả lời…",
-      "send": "Đăng",
-      "reply": "Trả lời",
-      "edit": "Sửa",
-      "save": "Lưu",
-      "cancel": "Hủy",
-      "delete": "Xóa",
-      "resolve": "Đánh dấu đã giải quyết",
-      "unresolve": "Mở lại",
-      "resolved": "Đã giải quyết",
-      "statusActive": "Đang mở",
-      "wontFix": "Sẽ không sửa",
-      "agentAddressing": "Agent đang xử lý…",
-      "resolvedToggle": "Đã giải quyết ({{count}})",
-      "deletedComment": "Bình luận đã bị xóa",
-      "editedMarker": "đã chỉnh sửa",
-      "earlierVersion": "Từ phiên bản trước của phiên này",
-      "replayRequired": "Bình luận theo lượt cần quyền phát lại đầy đủ",
-      "addError": "Không thể đăng — bản nháp đã được giữ lại",
       "actionError": "Thao tác thất bại — vui lòng thử lại",
       "unresolvedBadge_one": "{{count}} bình luận chưa giải quyết",
-      "unresolvedBadge": "{{count}} bình luận chưa giải quyết",
-      "addressButton": "Xử lý bình luận",
-      "addressPill_one": "xử lý {{count}} bình luận",
-      "addressPill_other": "xử lý {{count}} bình luận",
-      "addressSelectAll": "Chọn tất cả",
-      "addressConfirm_one": "Xử lý {{count}} bình luận",
-      "addressConfirm_other": "Xử lý {{count}} bình luận",
-      "agentAuthor": "Agent @{{name}}",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "mentionMembers": "Nhắc đến",
-      "searchMembers": "Tìm thành viên"
+      "unresolvedBadge": "{{count}} bình luận chưa giải quyết"
     },
     "sharingFloor": {
       "label": "Mức chia sẻ tối thiểu",
@@ -849,7 +739,6 @@
         "nameLabel": "Tên",
         "namePlaceholder": "vd: ra-soat-ma-nguon",
         "topicLabel": "Chủ đề",
-        "topicOptional": "(không bắt buộc)",
         "topicPlaceholder": "Kênh này nói về điều gì?",
         "visibilityLabel": "Chế độ hiển thị",
         "publicTitle": "Công khai",
@@ -911,7 +800,6 @@
         "today": "Hôm nay",
         "yesterday": "Hôm qua",
         "you": "Bạn",
-        "memberCount": "{{memberCount}} thành viên",
         "emptyTitle": "Đây là khởi đầu của #{{name}}",
         "emptySubtitle": "Gửi tin nhắn đầu tiên để bắt đầu cuộc trò chuyện",
         "missingTitle": "Kênh không còn khả dụng",
@@ -924,15 +812,7 @@
         "errorQuota": "Kênh này đã đạt giới hạn tin nhắn trên thiết bị này",
         "errorGeneric": "Không gửi được tin nhắn. Vui lòng thử lại.",
         "dropSessionHint": "Thả để thêm phiên này làm tham chiếu",
-        "messageBodyLabel": "Tin nhắn kênh",
-        "sessionCardMissing": "Không khả dụng trên thiết bị này",
         "sessionCardOpen": "Mở phiên {{name}}",
-        "workItemCardMissing": "Không khả dụng trên thiết bị này",
-        "workItemCardLoading": "Đang tải…",
-        "workItemCardOpen": "Mở mục công việc {{name}}",
-        "githubCardOpen": "Mở {{name}} trên GitHub",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull request",
         "archivedComposerDisabled": "Kênh này đã được lưu trữ. Bỏ lưu trữ để đăng bài.",
         "errorPostForbidden": "Chỉ người quản lý kênh mới có thể đăng vào kênh này",
         "errorArchived": "Kênh này đã lưu trữ nên không thể đăng tin nhắn",

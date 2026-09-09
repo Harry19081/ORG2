@@ -27,7 +27,6 @@
       "localRemoved": "{{name}} を削除しました",
       "deleteError": "{{name}} の削除に失敗しました"
     },
-    "configure": "{{provider}} を設定",
     "providerGroups": {
       "cloud": "Cloud",
       "local": "Local"
@@ -41,7 +40,6 @@
       "verifying": "検証中",
       "verifyingKeys": "認証情報を検証中...",
       "verificationFailedMismatch": "検証失敗 - 認証情報が一致しません",
-      "failed": "失敗",
       "suspendedApiKey": "停止中 - API Key 検証失敗",
       "suspended": "停止中",
       "validationFailed": "検証失敗：{{error}}",
@@ -50,9 +48,6 @@
       "validating": "検証中"
     },
     "info": {
-      "title": "アカウント情報",
-      "enable": "有効",
-      "authMethod": "認証方法",
       "oauthLogin": "OAuth",
       "apiKey": "API Key",
       "configured": "✓ 設定済み",
@@ -61,7 +56,6 @@
       "cursorApiKeyAccess": "Cursor API Key",
       "cursorApiKeyReady": "Cursor CLI/API 呼び出し用に提供済み",
       "cursorApiKeyNotProvided": "未提供 — Cursor CLI/API 呼び出しは利用不可",
-      "sessionToken": "Session Token",
       "baseUrl": "Base URL",
       "connectedAt": "接続日",
       "availableModels": "利用可能なモデル",
@@ -70,27 +64,15 @@
       "supportOrgiiAgents": "ORGII Agents をサポート",
       "supportCliAgents": "CLI Agents をサポート",
       "noCliAgentSupport": "このプロバイダーは CLI Agent をサポートしていません",
-      "accountEmail": "アカウントメール",
-      "organization": "組織"
-    },
-    "inlineDetailTabs": {
-      "info": "情報"
-    },
-    "manualModels": {
-      "notice": "このプロキシから利用可能なモデルを自動検出できませんでした。下記で手動でモデルを追加するか、Validate を再度クリックしてください。"
+      "accountEmail": "アカウントメール"
     },
     "customModels": {
-      "notice": "モデル名 = LLM 呼び出しに使う id。表示名 = セレクターに表示されるラベル。",
       "modelNamePlaceholder": "モデル id を入力...",
-      "displayName": "表示名",
       "displayNamePlaceholder": "任意のラベル",
-      "optional": "任意",
       "emptyHint": "カスタムモデルはまだ追加されていません。",
-      "addModel": "モデルを追加",
-      "icon": "アイコン"
+      "addModel": "モデルを追加"
     },
     "quickActions": {
-      "title": "クイックアクション",
       "multipleKeysFound": "複数の認証情報が見つかりました",
       "useSelected": "選択したものを使用",
       "valid": "有効",
@@ -106,7 +88,6 @@
       "saved": "変更を保存しました"
     },
     "quota": {
-      "title": "クォータ情報",
       "plan": "プラン",
       "balance": "残高",
       "payAsYouGo": "従量課金",
@@ -120,8 +101,6 @@
       "monthlyUsage": "月次使用量",
       "percentLeft": "{{percent}}% 残り",
       "refreshUsage": "使用量を更新",
-      "used": "使用済み",
-      "limit": "上限",
       "resets": "{{date}} にリセット",
       "availableNow": "今すぐ利用可",
       "nextUsePlusFiveHours": "次回使用 +5時間"
@@ -266,7 +245,6 @@
     "sessionTokenLabel": "Session Token",
     "sessionTokenAutoHint": "クリックして検出、または Agent がセッション中に自動検出",
     "sessionTokenManualHint": "Cursor の Session Token を user_id::jwt_token の形式で貼り付けてください",
-    "baseUrl": "Base URL",
     "pasteConfiguration": "設定を貼り付け",
     "extractParseHint": "Extractをクリックして key と設定を解析します",
     "switchMethod": "方法を切り替え",
@@ -274,7 +252,6 @@
     "quotaUsageLabel": "クォータ使用量",
     "quotaUsageDesc": "現在のプラン使用量と残り枠",
     "providerRequired": "{{label}}（プロバイダー登録が必要）",
-    "creating": "完了中...",
     "keysFoundForAgent": "この Agent の{{count}}件の憑証が見つかりました。使用するものを選択してください：",
     "fromCodexAuthLogin": "Codex 認証ログインから",
     "openBrowser": "内蔵ブラウザを開く",
@@ -311,11 +288,6 @@
     "filterAllProviders": "すべてのプロバイダー",
     "filterAllKeyTypes": "すべてのキータイプ",
     "filterAllEnabled": "すべての有効状態",
-    "regionWarning": {
-      "title": "地域利用可能性に関するお知らせ",
-      "message": "{{provider}} は検出された地域で公式にサポートされていない可能性があります。一部のモデルが表示されない場合があります。OpenAI、Anthropic、Google のモデルを使用するには地域を変更してください。セットアップは続行できます。"
-    },
-    "auth": "Auth",
     "cursorSessionTokenCapturedTitle": "Cursor が接続されました",
     "cursorSessionTokenCapturedDesc": "{{user}} としてサインインしました…",
     "cursorLoginBrowserTitle": "Cursor ログイン",
@@ -341,12 +313,10 @@
     "codexCredentialLabel": "Codex 認証情報",
     "codexCredentialDesc": "Codex OAuth access token または OpenAI API key を貼り付けます",
     "codexCredentialPlaceholder": "eyJ... または sk-...",
-    "codexConnected": "Codex 接続済み",
     "codexDetectErrorHint": "内蔵ブラウザでサインインするか、OpenAI API key を手動で貼り付けてください",
     "codexValidationErrorHint": "token または API key が有効か確認して、もう一度お試しください",
     "claudeCodeAutodetectTitle": "Claude Code セッションを検出",
     "claudeCodeAutodetectDesc": "macOS Keychain または ~/.claude/.credentials.json からローカルの Claude Code ログインを読み取ります",
-    "claudeCodeConnected": "Claude Code 接続済み",
     "claudeCodeDetectErrorHint": "内蔵ブラウザでサインインするか、claude auth login を実行してから再検出してください",
     "refreshModels": {
       "button": "Cursor モデル一覧を更新",
@@ -355,52 +325,23 @@
     "revalidate": "再検証"
   },
   "integrations": {
-    "title": "統合",
-    "description": "チャンネル、メッセージング連携、ノード制御",
     "searchPlaceholder": "接続を検索...",
     "noConnections": "接続がまだありません",
-    "noConnectionsDesc": "統合を追加して始めましょう",
-    "active": "有効",
-    "available": "利用可能",
-    "enabled": "有効",
     "disabled": "無効",
-    "enableChannel": "有効",
-    "enableChannelDesc": "このチャンネルのオン/オフを切り替え",
     "testConnection": "接続テスト",
     "testConnectionDesc": "作成前にキーを検証",
     "addAccount": "接続を追加",
-    "removeAccount": "アカウントを削除",
     "removeAccountTitle": "「{{name}}」を削除しますか？",
     "removeAccountConfirm": "接続とその設定が削除されます。この操作は元に戻せません。",
-    "descriptionDesc": "この接続の用途に関するメモ（任意）",
-    "descriptionPlaceholder": "カスタマーサポート、チーム通知など",
-    "selectChannelType": "Channel タイプ",
-    "selectChannelTypeDesc": "接続するチャットプラットフォーム",
-    "selectServiceType": "サービス",
-    "selectServiceTypeDesc": "統合するサードパーティサービス",
-    "selectCategory": "接続タイプ",
-    "selectGitProvider": "Git Provider",
-    "selectGitProviderDesc": "リポジトリのホスト先",
-    "selectProjectAdapter": "Project 同期アダプター",
-    "selectProjectAdapterDesc": "Project 同期用に接続する外部トラッカー",
-    "configured": "設定済み",
     "connected": "接続済み",
     "connecting": "接続中",
     "reconnecting": "再接続中",
     "connectionError": "接続エラー",
     "reconnect": "再接続",
-    "gitProviderRequired": "Git プロバイダーを選択してください",
-    "defaultAccount": "default",
-    "readyToCreate": "作成準備完了",
     "accountNameDuplicate": "同じ名前のアカウントが既に存在します",
-    "channelTypeRequired": "Channel タイプを選択してください",
     "probeSuccess": "接続成功",
     "probeFailed": "接続失敗",
-    "verified": "検証済み",
-    "sanctionWarning": {
-      "title": "サービス利用制限の警告",
-      "message": "貿易制限により、{{services}} はお住まいの地域で利用できない可能性があります"
-    }
+    "verified": "検証済み"
   },
   "channels": {
     "github": "GitHub",
@@ -632,23 +573,15 @@
       "groupPerUserDesc": "グループチャットの各参加者が独自のセッションコンテキストを持ちます。"
     }
   },
-  "tabs": {
-    "current": "現在",
-    "add": "追加",
-    "discover": "発見"
-  },
   "modelsTabs": {
     "myAccounts": "マイ Keys",
     "models": "モデル",
-    "available": "利用可能",
-    "preferred": "お気に入り",
     "comingSoon": "近日公開",
     "installedClis": "CLI クライアント",
     "myRoles": "マイロール"
   },
   "wizard": {
     "pickProvider": "プロバイダー",
-    "pickProviderDesc": "プロバイダーを選択",
     "selectVariant": "接続方法",
     "variantSubscription": "サブスクリプション",
     "variantApiKey": "API Key",
@@ -662,7 +595,6 @@
     "groupView": "グループ表示",
     "showMoreOlder": "さらに表示",
     "showLessOlder": "折りたたむ",
-    "includeOlder": "旧モデルを含める",
     "scopeSelectCurrentModels": "最新のみ",
     "scopeSelectIncludeOlder": "すべてのモデル",
     "filterAllProvider": "すべてのプロバイダー",
@@ -695,10 +627,7 @@
     "sortAlphabetical": "並べ替え：A–Z"
   },
   "modelPreview": {
-    "title": "モデル詳細",
-    "noSources": "このモデルを持つアカウントがありません",
-    "specs": "仕様",
-    "capabilities": "機能"
+    "noSources": "このモデルを持つアカウントがありません"
   },
   "cliPreview": {
     "clientSection": "クライアント",
@@ -732,20 +661,7 @@
     "filterReady": "準備完了",
     "filterNoSubscriptions": "サブスクリプションなし"
   },
-  "lspPreview": {
-    "enable": "有効",
-    "status": "ステータス",
-    "language": "言語",
-    "command": "コマンド",
-    "documentation": "ドキュメント",
-    "install": "インストール",
-    "uninstall": "アンインストール"
-  },
-  "lintPreview": {
-    "version": "バージョン"
-  },
   "mcpPreview": {
-    "title": "サーバー情報",
     "status": "ステータス",
     "transport": "トランスポート",
     "tools": "ツール",
@@ -756,20 +672,15 @@
     "toolsList": "ツール ({{count}})"
   },
   "skillPreview": {
-    "title": "Skill 情報",
     "source": "ソース",
-    "path": "パス",
     "status": "ステータス",
     "issues": "問題あり",
-    "ready": "準備完了",
     "version": "バージョン",
-    "dependencies": "依存関係",
     "binaries": "バイナリ",
     "envVars": "環境変数",
     "location": "場所"
   },
   "gitPreview": {
-    "title": "Provider 情報",
     "provider": "Provider",
     "connections": "接続"
   },
@@ -779,41 +690,27 @@
     "discover": "探索",
     "comingSoon": "近日公開"
   },
-  "mcpTabs": {
-    "installed": "インストール済み",
-    "discover": "発見"
-  },
-  "skillsTabs": {
-    "installed": "インストール済み",
-    "discover": "発見"
-  },
   "externalSkillsets": {
     "tabs": {
       "skills": "Skills",
       "mcp": "MCP",
-      "cursorPlugins": "Plugins",
-      "discoverMcp": "発見 MCP",
-      "discoverSkills": "発見 Skills"
+      "cursorPlugins": "Plugins"
     }
   },
   "rulesImport": {
     "title": "読み込み可能なルール",
-    "description": "Cursor、Claude Code、Copilot、Kiro、Codex、Gemini のソースから検出されたルールをインポートします",
-    "scanning": "外部ルールソースをスキャン中…",
     "empty": "読み込み可能なルールは見つかりませんでした。",
     "allImported": "検出されたすべてのルールはすでにインポート済みです"
   },
   "skillsImport": {
     "title": "他の apps から Skills をインポート",
     "itemColumn": "Skill",
-    "scanning": "外部 Skill ソースをスキャン中…",
     "empty": "インポートできる Skills は見つかりませんでした。",
     "allImported": "検出されたすべての Skills はすでにインポート済みです"
   },
   "mcpImport": {
     "title": "他の apps から MCP servers をインポート",
     "itemColumn": "MCP server",
-    "scanning": "外部 MCP 設定をスキャン中…",
     "empty": "インポートできる MCP servers は見つかりませんでした。",
     "allImported": "検出されたすべての MCP servers はすでにインポート済みです"
   },
@@ -841,7 +738,6 @@
   },
   "projectConnections": {
     "linear": "Linear",
-    "authMethod": "認証",
     "personalAccessToken": "Personal Access Token",
     "personalAccessTokenDesc": "この Project 同期接続用にローカル保存されます",
     "personalAccessTokenPlaceholder": "token を貼り付け...",
@@ -857,7 +753,6 @@
     "methodOAuth": "GitHub でサインイン"
   },
   "builtInTools": {
-    "title": "組み込みツール",
     "tabTools": "組み込みツール",
     "tabDesktopControl": "Computer Use",
     "computerUsePermissionsSectionTitle": "権限",
@@ -898,12 +793,8 @@
     "sidecarLastError": "直近のエラー"
   },
   "toolsArea": {
-    "builtin": "組み込みツール",
     "mcp": "MCP",
     "devtools": "プレイグラウンド"
-  },
-  "toolsAddMenu": {
-    "title": "追加"
   },
   "toolbarPlusMenu": {
     "addProviderKey": "プロバイダーキーを追加",
@@ -918,46 +809,11 @@
     "addAgent": "Agent を追加"
   },
   "toolbarEllipsis": {},
-  "webharness": {
-    "title": "Web Apps",
-    "searchPlaceholder": "コマンドを検索…",
-    "installed": "インストール済み",
-    "notInstalled": "未インストール",
-    "install": "インストール",
-    "pipeline": "出力カラム",
-    "optional": "任意",
-    "defaultValue": "デフォルト: {{value}}",
-    "domain": "ドメイン",
-    "source": "ソース",
-    "strategy": "戦略",
-    "desktopStatus": {
-      "not_installed": "未インストール",
-      "installed": "インストール済み",
-      "running": "実行中",
-      "connected": "接続済み"
-    },
-    "desktopActions": {
-      "launch": "起動",
-      "connect": "接続"
-    }
-  },
-  "webharnessWizard": {
-    "title": "Web App コマンドを作成",
-    "description": "説明",
-    "domain": "ドメイン",
-    "strategy": "戦略",
-    "columns": "カラム",
-    "limit": "制限"
-  },
   "tableHeaders": {
-    "agentType": "Agent タイプ",
-    "cli": "CLI",
     "type": "タイプ",
     "transport": "Transport",
     "tools": "ツール",
-    "category": "カテゴリー",
-    "added": "追加日",
-    "enabledModels": "有効なモデル"
+    "added": "追加日"
   },
   "status": {
     "ready": "準備完了",
@@ -983,14 +839,6 @@
   "routines": {
     "searchPlaceholder": "Search Routines...",
     "noRoutines": "No Routines defined"
-  },
-  "services": {
-    "smithery": "Smithery",
-    "apiKeySection": "API Key",
-    "currentKey": "Current key",
-    "smitheryApiKey": "Smithery API Key",
-    "smitheryApiKeyPlaceholder": "smi_...",
-    "smitheryApiKeyDesc": "Smithery で MCP サーバーを閲覧するための API key。Get your key at smithery.ai/account/api-keys"
   },
   "git": {
     "searchPlaceholder": "Git プロバイダーを検索...",
@@ -1069,26 +917,8 @@
     "oauthFailed": "認証に失敗しました"
   },
   "skillsHub": {
-    "title": "Skills Hub",
-    "tab": "Skills",
     "searchPlaceholder": "Skill を検索...",
-    "install": "インストール",
-    "installing": "インストール中...",
-    "downloads": "ダウンロード",
-    "stars": "スター",
-    "version": "バージョン",
     "noInstalled": "Skill がインストールされていません",
-    "marketplace": "Marketplace",
-    "author": "作成者",
-    "createdAt": "作成日",
-    "updatedAt": "更新日",
-    "source": "ソース",
-    "path": "パス",
-    "available": "利用可能",
-    "notInstalled": "未インストール",
-    "sources": {
-      "github": "GitHub"
-    },
     "createSkill": "Skill を作成",
     "editSkill": "Skill を編集",
     "nameLabel": "名前",
@@ -1103,7 +933,6 @@
     "previewEmpty": "プレビューする内容がありません",
     "tokenEstimate": "~{{count}} Token",
     "saveSkill": "保存",
-    "nameTaken": "同名の Skill が既に存在します",
     "descriptionQualityGood": "説明：良好",
     "descriptionQualityShort": "説明が短すぎます",
     "descriptionQualityMissing": "説明なし — Agent がこの Skill を発見できません",
@@ -1128,8 +957,6 @@
     "compatibilityDesc": "環境要件（例: Python 3.14+ と uv が必要）",
     "compatibilityPlaceholder": "例: Python 3.14+ と uv が必要",
     "tokenWarning": "推奨の 5 000 を超えています",
-    "license": "ライセンス",
-    "compatibility": "互換性",
     "bundledFilesLabel": "バンドルファイル",
     "bundledFilesDesc": "スクリプト、リファレンス、またはアセットを追加します。スクリプトは実行されますが、コンテキストウィンドウには読み込まれません",
     "addFileButton": "ファイルを追加",
@@ -1144,7 +971,6 @@
   "mcp": {
     "tab": "MCP",
     "searchPlaceholder": "MCP サーバーを検索...",
-    "serversLabel": "サーバー",
     "noServers": "MCP サーバーが設定されていません",
     "noServersDesc": "MCP サーバーを追加して、外部ツールで Agent の機能を拡張しましょう。",
     "addServer": "MCP サーバーを追加",
@@ -1169,7 +995,6 @@
     "enabled": "有効",
     "enabledDesc": "この MCP サーバーを有効または無効にする",
     "reconnect": "再接続",
-    "connecting": "接続中...",
     "connectingTitle": "{{count}} 個の MCP サーバーを起動中…(初回は数秒かかる場合があります)",
     "connectingSlow": "まだ接続中…",
     "connectingSlowBody": "初回起動は少し時間がかかることがあります。サーバーがスタックしているように見える場合は、詳細パネルから再接続してください",
@@ -1181,52 +1006,17 @@
     "toolsLabel": "ツール",
     "noTools": "利用可能なツールがありません",
     "infoSection": "Server 情報",
-    "saved": "サーバーを保存しました",
-    "savedDesc": "MCP 設定に追加されました。",
-    "testHint": "保存前に接続をテストして、サーバーに到達可能か確認してください。",
-    "discoverServers": "MCP サーバーを探す",
-    "hubSearchPlaceholder": "MCP サーバーを検索...",
-    "hubNoResults": "MCP サーバーが見つかりません",
-    "hubNoResultsDesc": "別の検索語をお試しください",
-    "addToConfig": "設定に追加",
-    "addingToConfig": "追加中...",
-    "addedToConfig": "サーバーを追加しました",
-    "addedToConfigDesc": "MCP 設定に追加されました。",
-    "alreadyConfigured": "設定済み",
-    "publishedAt": "公開日",
-    "website": "ウェブサイト",
-    "source": "ソースコード",
-    "viewOnGlama": "Glama で表示",
-    "remotes": "リモートエンドポイント",
-    "packages": "パッケージ",
-    "sourceOfficial": "MCP Registry",
-    "sourceSmithery": "Smithery",
-    "sourceMcpBar": "MCP.Bar",
-    "sourceGlama": "Glama",
-    "selectRegistry": "Registry",
-    "selectRegistryDesc": "参照する MCP サーバー Registry を選択",
-    "connections": "接続",
-    "securityPassed": "スキャン合格",
-    "securityFailed": "スキャン不合格",
-    "serverCommand": "サーバーコマンド",
-    "requiredInputs": "必須入力",
-    "smitheryApiKeyRequired": "Smithery API key が必要です。Integrations → Connections → 追加 → サービス で追加してください。",
-    "smitheryGetKey": "smithery.ai/account/api-keysでKeyを取得",
     "envVars": "環境変数",
     "envVarsHint": "例: GITHUB_PERSONAL_ACCESS_TOKEN",
     "envKey": "KEY",
     "envValue": "値",
     "addEnvVar": "変数を追加",
-    "envVarCount": "個の環境変数",
     "headers": "Headers",
     "headersHint": "例: Authorization",
     "headerKey": "Header",
     "headerValue": "値",
     "addHeader": "Header を追加",
-    "headerCount": "個のカスタム Header",
     "restart": "再起動",
-    "enable": "有効にする",
-    "disable": "無効にする",
     "uptime": "稼働時間",
     "bulkSelected": "{{count}} 件選択中",
     "bulkRestart": "再起動",
@@ -1252,76 +1042,26 @@
     "scopeWorkspace": "Repo-specific",
     "userScopeLabel": "User",
     "workspaceScopeLabel": "Repo-specific",
-    "userServersLabel": "ユーザー MCP サーバー",
-    "workspaceServersLabel": "Repo-specific MCP サーバー",
     "noUserServers": "ユーザーレベルの MCP サーバーが設定されていません",
     "noWorkspaceServers": "Repo-specific MCP サーバーは設定されていません",
     "deleteConfirmTitle": "MCP サーバー「{{name}}」を削除しますか？",
     "deleteConfirmMessage": "設定ファイルからサーバーが削除されます。実行中のセッションは切断されます。"
   },
   "agentOrgs": {
-    "title": "Agentチーム",
-    "running": "実行中",
-    "fires": "回発火",
-    "addRoutine": "Routine を追加",
-    "trigger": "トリガー",
-    "triggerDesc": "このポリシーを開始するイベント",
-    "scopeDesc": "このポリシーが適用されるリポジトリ",
-    "advancedDesc": "クールダウンとポリシーごとの最大発火回数",
-    "action": "アクション",
-    "interval": "間隔",
-    "cooldown": "クールダウン",
-    "cooldownDesc": "連続発火間の最小秒数",
-    "maxFires": "最大発火回数",
-    "maxFiresDesc": "このルールが発火できる最大回数（0 = 無制限）",
-    "advanced": "詳細設定",
-    "advancedSettings": "詳細設定",
-    "applicableAgent": "担当 Agent",
-    "applicableAgentDesc": "このルーティンを実行する Agent（空欄 = 任意の Agent）",
-    "selectAgent": "Agent を選択…",
     "scope": "対象リポジトリ",
     "allRepos": "すべてのリポジトリ",
-    "allReposDesc": "すべてのリポジトリに適用",
-    "specificRepos": "特定のリポジトリ",
-    "specificReposDesc": "選択したリポジトリにのみ適用",
-    "selectRepos": "リポジトリを選択...",
-    "includeRepos": "含める",
-    "includeReposDesc": "このポリシーが適用されるリポジトリ",
-    "excludeRepos": "除外",
-    "excludeReposDesc": "このポリシーから除外するリポジトリ",
-    "includeReposPlaceholder": "リポジトリを選択…",
-    "excludeReposPlaceholder": "除外するリポジトリを選択…",
-    "step1": "ステップ 1 — 設定",
-    "step2": "ステップ 2 — アクション",
-    "promptPlaceholder": "Agent に送信するプロンプトを入力...",
-    "sessionPrompt": "Sessionプロンプト",
-    "repoPath": "リポジトリパス（任意）",
-    "sessionId": "Session ID",
-    "channel": "チャンネル名",
-    "messageContent": "メッセージ内容",
     "enabled": "有効",
     "enabledDesc": "このポリシーを有効または無効にする",
-    "disabled": "無効",
-    "noTemplates": "テンプレートがありません",
     "addOrg": "Agentチームを追加",
     "addAgent": "Agent を追加",
-    "agentSections": {
-      "builtInAgents": "ビルトイン Agents",
-      "customAgents": "カスタム Agents",
-      "cli": "CLI Agents",
-      "orgs": "チーム"
-    },
     "memorySections": {
       "personalMemory": "パーソナル",
-      "workspaceMemory": "ワークスペース",
-      "title": "メモリ"
+      "workspaceMemory": "ワークスペース"
     },
-    "importAgent": "Import",
     "agentDetail": {
       "type": "タイプ",
       "builtIn": "ビルトイン",
-      "custom": "カスタム",
-      "noModel": "(未設定)"
+      "custom": "カスタム"
     },
     "cliAgentDetail": {
       "installed": "インストール済み",
@@ -1330,19 +1070,12 @@
       "keyStatus": "認証情報の状態",
       "keysConfigured": "設定済み",
       "noKeys": "未設定",
-      "authMethod": "認証方式",
-      "baseUrl": "Base URL",
-      "availableModels": "利用可能なモデル",
-      "noModels": "利用可能なモデルなし",
-      "editKeys": "認証情報を編集",
       "detectKeys": "認証情報を検出",
       "detectSuccess": "認証情報の検出に成功しました",
       "keys": "認証情報",
       "docs": "ドキュメント",
       "tabCore": "コア",
-      "tabConfig": "設定",
       "addKey": "認証情報を追加",
-      "compatibility": "互換性",
       "bringYourOwnKeys": "自前のキーを使用",
       "supported": "対応",
       "notSupported": "非対応",
@@ -1352,15 +1085,13 @@
       "keyType": "タイプ",
       "typePlan": "Plan",
       "typeApiKey": "API Key",
-      "keyPreview": "キー",
       "addedTime": "追加日",
       "secretBearingConfig": "API key または Token が含まれる可能性があります",
       "revealConfigFile": "ファイルマネージャーで表示",
       "launchConfiguration": "起動設定",
       "configFiles": "設定ファイル",
       "configFile": "設定ファイル",
-      "tokenCount": "~{{count}} Token",
-      "emptyConfigPreview": "設定内容がありません"
+      "tokenCount": "~{{count}} Token"
     },
     "sessionProvenance": {
       "masterToggle": "プロベナンス hooks",
@@ -1370,10 +1101,8 @@
       "title": "セッションの来歴",
       "capture": "ファイル操作を記録",
       "description": "ファイルの読み取りと書き込みをメタデータとして記録します。プロンプト、ツール出力、ファイル内容は保存されません。",
-      "configPath": "ファイルの読み取りと書き込みをメタデータとして記録します。プロンプト、ツール出力、ファイル内容は保存されません。設定: {{path}}",
       "installDrift": "保存された設定とインストール済み hook が一致しません。記録を切り替えて管理対象の hook を修復してください。設定: {{path}}",
       "copyPath": "コピー",
-      "reveal": "表示",
       "col": {
         "source": "ツール",
         "config": "設定",
@@ -1421,227 +1150,8 @@
         }
       }
     },
-    "codexConfig": {
-      "sectionTitle": "設定",
-      "model": "モデル",
-      "modelDesc": "Codex CLI セッションで使用するデフォルトモデル",
-      "approvalPolicyLabel": "承認ポリシー",
-      "approvalPolicyDesc": "コマンド実行前に Codex が確認を求めるタイミング",
-      "approvalPolicy": {
-        "untrusted": "信頼しない",
-        "on-request": "リクエスト時",
-        "never": "なし"
-      },
-      "sandboxModeLabel": "サンドボックスモード",
-      "sandboxModeDesc": "コマンド実行時のファイルシステムとネットワークアクセス",
-      "sandboxMode": {
-        "read-only": "読み取り専用",
-        "workspace-write": "ワークスペース書き込み",
-        "danger-full-access": "フルアクセス (危険)"
-      },
-      "webSearchLabel": "Web 検索",
-      "webSearchDesc": "Codex が Web 検索リクエストを処理する方法",
-      "webSearch": {
-        "disabled": "無効",
-        "cached": "キャッシュ",
-        "live": "ライブ"
-      },
-      "reasoningTitle": "推論とスタイル",
-      "reasoningEffortLabel": "推論強度",
-      "reasoningEffortDesc": "モデルが適用する推論の程度",
-      "reasoningEffort": {
-        "none": "なし",
-        "minimal": "最小",
-        "low": "低",
-        "medium": "中",
-        "high": "高",
-        "xhigh": "最高"
-      },
-      "personalityLabel": "パーソナリティ",
-      "personalityDesc": "レスポンスのコミュニケーションスタイル",
-      "personality": {
-        "friendly": "フレンドリー",
-        "pragmatic": "実用的",
-        "none": "なし"
-      },
-      "unset": "(未設定)",
-      "featuresTitle": "機能フラグ",
-      "features": {
-        "shell_snapshot": "Shell スナップショット",
-        "shell_snapshotDesc": "Shell 環境をスナップショットして繰り返しコマンドを高速化",
-        "multi_agent": "マルチ Agent",
-        "multi_agentDesc": "マルチ Agent コラボレーションツールを有効にする",
-        "collaboration_modes": "コラボレーションモード",
-        "collaboration_modesDesc": "プランモードなどのコラボレーションモードを有効にする",
-        "undo": "元に戻す",
-        "undoDesc": "ターンごとの git スナップショットで元に戻す機能を有効にする",
-        "shell_tool": "Shell ツール",
-        "shell_toolDesc": "デフォルトの Shell ツールを有効にする",
-        "personality": "パーソナリティ設定",
-        "personalityDesc": "CLI でパーソナリティ選択を有効にする"
-      }
-    },
-    "cursorConfig": {
-      "sectionTitle": "設定",
-      "vimMode": "Vim モード",
-      "vimModeDesc": "CLI エディタで Vim キーバインドを有効にする",
-      "http1Fallback": "HTTP/1.1 フォールバック",
-      "http1FallbackDesc": "Agent 接続に HTTP/2 ではなく HTTP/1.1 を使用（企業プロキシ向け）",
-      "attributionTitle": "帰属",
-      "attributeCommits": "Commit への帰属",
-      "attributeCommitsDesc": "Agent の Commit に 'Made with Cursor' トレーラーを追加",
-      "attributePRs": "PR への帰属",
-      "attributePRsDesc": "Agent の Pull Request に 'Made with Cursor' フッターを追加",
-      "permissionsTitle": "権限",
-      "permissionsAllow": "許可",
-      "permissionsDeny": "拒否",
-      "noPermissions": "権限ルールが設定されていません",
-      "sandboxTitle": "サンドボックス",
-      "sandboxTypeLabel": "サンドボックスモード",
-      "sandboxTypeDesc": "サンドボックスコマンドのファイルシステムアクセスを制御",
-      "sandboxType": {
-        "workspace_readwrite": "ワークスペース読み書き",
-        "workspace_readonly": "ワークスペース読み取り専用",
-        "insecure_none": "無効（非セキュア）"
-      },
-      "disableTmpWrite": "/tmp 書き込み無効",
-      "disableTmpWriteDesc": "一時ディレクトリへのデフォルト書き込みアクセスを削除",
-      "sharedBuildCache": "共有ビルドキャッシュ",
-      "sharedBuildCacheDesc": "サンドボックスと非サンドボックスコマンド間でビルドキャッシュ（npm、cargo、pip）を共有",
-      "networkPolicyTitle": "ネットワークポリシー",
-      "networkDefaultPolicy": "デフォルトポリシー",
-      "networkDefaultPolicyDesc": "許可/拒否ルールが一致しない場合のアクション",
-      "networkDefault": {
-        "allow": "許可",
-        "deny": "拒否"
-      },
-      "networkAllow": "許可ドメイン",
-      "networkDeny": "拒否ドメイン"
-    },
-    "claudeCodeConfig": {
-      "sectionTitle": "設定",
-      "noItems": "設定項目がありません",
-      "model": "デフォルトモデル",
-      "modelDesc": "Claude Code セッションのデフォルトモデルを上書き",
-      "thinkingMode": "Extended Thinking",
-      "thinkingModeDesc": "すべてのセッションでデフォルトで Extended Thinking（思考モード）を有効にする",
-      "gitInstructions": "Git 指示",
-      "gitInstructionsDesc": "システムプロンプトに組み込みの commit と PR ワークフロー指示を含める",
-      "cleanupPeriod": "クリーンアップ期間",
-      "cleanupPeriodDesc": "この期間以上非アクティブなセッションは起動時に削除されます",
-      "days": "日",
-      "language": "応答言語",
-      "languageDesc": "Claude の優先応答言語を設定（例: japanese、spanish）",
-      "attributionTitle": "帰属情報",
-      "commitAttribution": "Commit メッセージ",
-      "commitAttributionDesc": "Claude Code が行った git commit に追加されるカスタムメッセージ",
-      "prAttribution": "PR メッセージ",
-      "prAttributionDesc": "Claude Code が作成した PR に追加されるカスタムメッセージ",
-      "coAuthoredBy": "Co-authored-by",
-      "coAuthoredByDesc": "git commit と PR に 'co-authored-by Claude' を含める",
-      "permissionsTitle": "権限",
-      "defaultMode": "デフォルト権限モード",
-      "defaultModeDesc": "Claude Code を開いたときのデフォルト権限モード",
-      "permissionMode": {
-        "default": "デフォルト",
-        "plan": "プラン",
-        "acceptEdits": "編集を承認",
-        "bypassPermissions": "権限をバイパス"
-      },
-      "permAllow": "許可",
-      "permAsk": "確認",
-      "permDeny": "拒否",
-      "sandboxTitle": "Sandbox",
-      "sandboxEnabled": "Sandbox を有効化",
-      "sandboxEnabledDesc": "Bash コマンドをファイルシステムとネットワークから隔離",
-      "autoAllowBash": "Bash を自動承認",
-      "autoAllowBashDesc": "Sandbox 有効時に Bash コマンドを自動承認",
-      "allowLocalBinding": "Localhost バインドを許可",
-      "allowLocalBindingDesc": "Sandbox 内で localhost ポートへのバインドを許可（macOS のみ）",
-      "excludedCommands": "除外コマンド",
-      "allowedDomains": "許可ドメイン",
-      "fsAllowWrite": "ファイルシステム書き込み許可",
-      "fsDenyWrite": "ファイルシステム書き込み拒否",
-      "fsDenyRead": "ファイルシステム読み取り拒否"
-    },
-    "noMemory": "Memory がまだありません",
-    "memoryDescription": "Memory はメンバーがセッション間で参照できる知識とコンテキストを保存します。",
-    "tabs": {
-      "org": "チーム",
-      "agents": "メンバー",
-      "integrations": "連携",
-      "rules": "ルール",
-      "orgs": "チーム"
-    },
-    "searchPlaceholder": "ルールを検索…",
-    "searchOrgsPlaceholder": "チームを検索...",
-    "searchAgentsPlaceholder": "メンバーを検索...",
-    "searchMemoryPlaceholder": "Memory を検索...",
-    "searchIntegrationsPlaceholder": "Integrations を検索...",
-    "integrationsSections": {
-      "core": "コア",
-      "tools": "エージェントツール",
-      "connections": "接続",
-      "customization": "カスタマイズ"
-    },
-    "triggerNotConfigurable": "このトリガーには追加設定はありません",
     "sections": {
-      "quickActions": "クイックアクション",
-      "trigger": "トリガー設定",
-      "actions": "Action チェーン"
-    },
-    "quickActions": {
-      "editDesc": "トリガー、アクション、設定を変更",
-      "delete": "ポリシーを削除",
-      "deleteDesc": "このポリシーを完全に削除"
-    },
-    "overview": {
-      "triggerConfig": "トリガー設定",
-      "fireCount": "発火回数",
-      "lastFired": "最終発火",
-      "maxFires": "最大発火回数",
-      "actions": "Actions"
-    },
-    "cronExpression": "Cron 式（例: 0 9 * * *）",
-    "cronHint": "標準 5 フィールド Cron: 分 時 日 月 曜日",
-    "patternRegex": "正規表現パターン（任意）",
-    "filePathPlaceholder": "監視するファイルまたはディレクトリのパス",
-    "debounce": "デバウンス",
-    "webhookRoute": "Webhook ルート（例: /automation/webhook/deploy）",
-    "webhookHint": "このルートへの POST リクエストでトリガーが発火します",
-    "scheduleTimezone": "タイムゾーン",
-    "scheduleTimezoneDesc": "既定では現在のタイムゾーンを使用します。オフセットは UTC 形式で表示されます。",
-    "triggerConfig": {
-      "timer": {
-        "label": "間隔",
-        "desc": "ポリシーが発火する頻度（秒）"
-      },
-      "scheduledTime": {
-        "label": "スケジュール時刻",
-        "desc": "頻度、時刻、タイムゾーンを指定するカレンダー形式のスケジュール"
-      },
-      "cron": {
-        "label": "スケジュール",
-        "desc": "ポリシーの発火タイミングを定義する Cron 式"
-      },
-      "gitActivity": {
-        "label": "Git イベント",
-        "desc": "どの Git 操作がこのポリシーをトリガーするか"
-      },
-      "channelMessage": {
-        "label": "チャンネル",
-        "desc": "メッセージを受信するチャンネル名",
-        "patternDesc": "メッセージをフィルタする正規表現（任意）"
-      },
-      "fileWatch": {
-        "label": "監視パス",
-        "desc": "変更を監視するファイルとディレクトリ",
-        "debounceDesc": "最後の変更後の待機時間"
-      },
-      "webhook": {
-        "label": "Webhook エンドポイント",
-        "desc": "受信 POST リクエストを受け付ける HTTP ルート"
-      }
+      "quickActions": "クイックアクション"
     },
     "orgWizard": {
       "title": "Org を追加",
@@ -1651,9 +1161,7 @@
       "orgDescription": "説明",
       "orgDescriptionDesc": "この組織の役割についての任意の概要",
       "orgDescriptionPlaceholder": "この組織は何をしますか？",
-      "members": "メンバー",
       "addMember": "メンバーを追加",
-      "editMember": "メンバーを編集",
       "noMembers": "メンバーを追加して Org の階層を構築してください",
       "previewEmpty": "Agent を追加してプレビューを表示",
       "hierarchyMode": {
@@ -1693,7 +1201,6 @@
       "agent": "Agent",
       "reportsTo": "報告先",
       "reportsToCoordinator": "Coordinator（最上位）",
-      "status": "ステータス",
       "coordinator": "コーディネーター",
       "coordinatorDesc": "この組織実行のコーディネーターセッションを担う主導 Agent",
       "coordinatorPlaceholder": "コーディネーター Agent を選択",
@@ -1714,11 +1221,7 @@
       "namePlaceholder": "例: レビュー Bot",
       "descriptionLabel": "説明",
       "descriptionPlaceholder": "この Agent は何をしますか？（任意）",
-      "defaultModelLabel": "デフォルトモデル",
-      "defaultModelDesc": "この Agent が使用する AI モデル",
-      "defaultModelPlaceholder": "モデルを選択...",
       "subAgentsTab": "Subagents",
-      "subAgentConcurrencyTitle": "同時実行制御",
       "maxToolUseConcurrencyLabel": "Max tool-use concurrency",
       "maxToolUseConcurrencyDesc": "メッセージごとの同時 Tool 呼び出し数。デフォルト：10。",
       "subAgentWorktreeIsolationLabel": "Worktree isolation",
@@ -1726,27 +1229,13 @@
       "addSubAgent": "Sub-Agent を追加...",
       "noSubAgents": "Sub-Agent は設定されていません。"
     },
-    "ruleActions": {
-      "create": "新規作成",
-      "import": "インポート"
-    },
-    "ruleActionsDesc": {
-      "create": "新しい Markdown ルールを作成",
-      "import": "この Workspace の .cursor/rules をインポート"
-    },
-    "ruleActionLabel": "方法",
-    "ruleActionDesc": "ゼロから作成するか既存のソースからインポート",
     "markdownContent": "ポリシー内容",
     "markdownContentDesc": "Agent システムプロンプトに注入される Markdown 指示",
-    "markdownContentPlaceholder": "Markdown ポリシーをここに記述...",
     "noMarkdownContent": "コンテンツなし",
     "importSelected": "インポート ({{count}})",
     "importRuleColumn": "ルール",
     "allImported": "すべての{{item}}はインポート済みです",
-    "importedItemRules": "ルール",
     "externalImport": {
-      "noResults": "インポート可能なルールが見つかりません。.cursor/rules、CLAUDE.md、.github/copilot-instructions.md、.kiro/steering、およびホームディレクトリを検索しました。",
-      "globalScope": "（グローバル）",
       "applyFailed": "インポートに失敗しました: {{message}}",
       "partialFailure": "一部の項目をインポートできませんでした:",
       "sources": {
@@ -1756,38 +1245,15 @@
         "kiro": "Kiro",
         "codex": "Codex"
       },
-      "noSkillsResults": "インポート可能な Skill が見つかりません。~/.claude/skills と ~/.claude/commands を検索しました。",
       "noAgentResults": "インポートできる Agent がまだありません",
-      "addManually": "手動で Agent を追加",
       "readonlyDowngradedBadge": "読み取り専用 — 書き込みツールを無効化",
-      "readonlyDowngradedTooltip": "ソースが readonly:true を宣言。無効化: {{tools}}。",
-      "workspaceScope": "（Workspace）"
+      "readonlyDowngradedTooltip": "ソースが readonly:true を宣言。無効化: {{tools}}。"
     },
-    "previewEmpty": "プレビューするコンテンツがありません",
-    "editorTabs": {
-      "edit": "編集",
-      "preview": "プレビュー"
-    },
-    "activeRules": "アクティブ",
     "addRule": "ルールを追加",
-    "editRoutine": "ポリシーを編集",
     "ruleName": "ポリシー名",
     "ruleNameDesc": "このポリシーを識別する一意の名前",
-    "routineNamePlaceholder": "例：コミット時に自動デプロイ",
-    "ruleNameRequired": "ポリシー名は必須です",
-    "routineName": "ポリシー名",
-    "routineNameDesc": "このポリシーを識別する一意の名前",
-    "routineNameRequired": "ポリシー名は必須です",
-    "noRulesOrRoutines": "ポリシーがありません",
-    "ruleKindLabel": "ポリシータイプ",
-    "ruleKindDesc": "このポリシーの定義方法",
     "ruleKinds": {
-      "rule": "Rules",
-      "routine": "Routines"
-    },
-    "ruleKindsDesc": {
-      "rule": "Agent プロンプトに注入される Markdown 指示",
-      "routine": "自動トリガー + アクションチェーン"
+      "rule": "Rules"
     },
     "markdownRuleNamePlaceholder": "例：コードスタイルガイド",
     "editRule": "ポリシーを編集",
@@ -1803,22 +1269,11 @@
     "ruleRepo": "Repo",
     "ruleRepoDesc": "このガイドラインを適用する唯一の Repo",
     "selectRepo": "Repo を選択…",
-    "ruleSourceGlobal": "User",
-    "ruleSourceGlobalDesc": "~/.orgii/rules/ に保存。すべての Repo に適用。",
     "ruleSourcePersonal": "パーソナル",
     "ruleSourcePersonalDesc": "~/.orgii/personal/rules/ に保存。OS Agent / channel セッション専用。",
-    "importSkillTitle": "他のエージェントから Skill をインポート",
-    "importSkillColumn": "Skill",
-    "importedItemSkills": "skills",
     "findSkills": {
       "title": "Skillsを検索",
-      "description": "Search skills.sh and press Enter to show matching ORGII skills. Click a result to preview its SKILL.md in WorkStation.",
-      "openDirectory": "skills.sh を開く",
-      "hint": "Paste a skills.sh URL or id like vercel-labs/skills/find-skills. ORGII downloads the skill snapshot directly from skills.sh.",
       "placeholder": "Skillsを検索...",
-      "install": "Install skill",
-      "installing": "Installing...",
-      "installSuccess": "Installed {{name}}",
       "installs": "Installs",
       "emptyTitle": "Skillsを検索",
       "emptySubtitle": "2文字以上入力してEnterキーを押すと、Skillsを検索できます。",
@@ -1828,193 +1283,6 @@
     "importAgentTitle": "他の apps から Agents をインポート",
     "importAgentColumn": "Agent",
     "importedItemAgents": "agents",
-    "importAgentButton": "他のプラットフォームからインポート",
-    "workflowActions": {
-      "categories": {
-        "all": "All",
-        "controls": "Controls",
-        "sessionWorkflow": "Session Workflow",
-        "actions": "Actions"
-      },
-      "inline": {
-        "runWith": "実行",
-        "using": "使用モデル",
-        "retryMax": "最大リトライ",
-        "times": "回",
-        "timeout": "タイムアウト",
-        "transitionTo": "遷移先",
-        "stage": "ステージ",
-        "configureAutoApprove": "ワークフロー設定：自動承認",
-        "onFailure": "失敗時",
-        "open": "開く",
-        "inExternalEditor": "外部エディターで",
-        "waitFor": "待機",
-        "ifOutput": "出力が",
-        "agentPlaceholder": "Agent",
-        "modelPlaceholder": "モデル",
-        "stagePlaceholder": "ステージ",
-        "stagesPlaceholder": "ステージ",
-        "actionPlaceholder": "アクション",
-        "repoPlaceholder": "リポジトリ",
-        "conditionPlaceholder": "条件",
-        "valuePlaceholder": "値",
-        "autoApproveNone": "なし（手動）",
-        "autoApproveIntake": "Intake のみ",
-        "autoApproveIntakeSpec": "Intake + Spec",
-        "autoApproveExceptReview": "Review 以外すべて",
-        "autoApproveAll": "すべて（自動）",
-        "failurePause": "一時停止",
-        "failureRetry": "リトライ",
-        "failureRollback": "ロールバック",
-        "failureSkip": "スキップ",
-        "condEquals": "等しい",
-        "condNotEquals": "等しくない",
-        "condContains": "含む",
-        "condIsEmpty": "空である",
-        "condIsNotEmpty": "空でない",
-        "emptyTitle": "アクションがありません",
-        "emptySubtitle": "パネルからアクションを選択して開始します。"
-      },
-      "fields": {
-        "session": "Session",
-        "model": "Model",
-        "agent": "Agent",
-        "timeout": "Timeout",
-        "maxRetries": "Max Retries",
-        "customPrompt": "Custom Prompt",
-        "prompt": "Prompt",
-        "sessionConfig": "Session Configuration",
-        "channel": "Channel",
-        "content": "Content",
-        "message": "Message",
-        "targetStage": "Target Stage",
-        "transitionType": "Transition Type",
-        "stageTimeout": "Stage timeout"
-      },
-      "placeholders": {
-        "selectSession": "Select a session",
-        "selectModel": "Select AI model",
-        "selectAgent": "Select agent",
-        "stageTimeout": "Stage timeout",
-        "maxRetries": "Maximum retry attempts",
-        "customPrompt": "Optional: Override default prompt...",
-        "compareValue": "Compare value",
-        "iterations": "Number of times to repeat",
-        "injectPrompt": "Enter prompt to inject...",
-        "selectSessionOptional": "Select target session (optional)",
-        "selectSessionToStop": "Select session to stop",
-        "channelName": "Channel name",
-        "messageContent": "Message content...",
-        "selectTargetSession": "Select target session",
-        "injectMessage": "Message to inject...",
-        "selectTargetStage": "Select target stage"
-      },
-      "units": {
-        "second": "second"
-      },
-      "stages": {
-        "intake": {
-          "title": "Intake Stage",
-          "description": "Gather initial requirements and clarifications"
-        },
-        "spec": {
-          "title": "Specification Stage",
-          "description": "Define detailed specifications and requirements"
-        },
-        "planning": {
-          "title": "Planning Stage",
-          "description": "Break down work into tasks and milestones"
-        },
-        "execution": {
-          "title": "Execution Stage",
-          "description": "Execute planned tasks with AI agents"
-        },
-        "review": {
-          "title": "Review Stage",
-          "description": "Review changes and validate results"
-        },
-        "merge": {
-          "title": "Merge Stage",
-          "description": "Merge approved changes to target branch"
-        }
-      },
-      "wait": {
-        "title": "Wait",
-        "description": "Pause execution for a specified time"
-      },
-      "if": {
-        "title": "If",
-        "description": "Conditional logic based on output",
-        "condition": "Condition"
-      },
-      "loop": {
-        "title": "Loop",
-        "description": "Repeat actions multiple times",
-        "loopType": "Loop Type",
-        "iterations": "Iterations",
-        "types": {
-          "count": "Fixed Count",
-          "foreach": "For Each Item",
-          "while": "While Condition"
-        }
-      },
-      "operators": {
-        "equals": "Equals",
-        "notEquals": "Not Equals",
-        "contains": "Contains",
-        "greaterThan": "Greater Than",
-        "lessThan": "Less Than",
-        "isEmpty": "Is Empty",
-        "isNotEmpty": "Is Not Empty"
-      },
-      "injectPrompt": {
-        "title": "Inject Prompt",
-        "description": "Send a prompt to the agent"
-      },
-      "startSession": {
-        "title": "Start Session",
-        "description": "Start a new coding agent session"
-      },
-      "killSession": {
-        "title": "Kill Session",
-        "description": "Stop an existing session"
-      },
-      "sendMessage": {
-        "title": "Send Message",
-        "description": "Send a message to a channel"
-      },
-      "injectToSession": {
-        "title": "Inject to Session",
-        "description": "Send a message into a specific session"
-      },
-      "stageTransition": {
-        "title": "Stage Transition",
-        "description": "Configure conditional or unconditional stage transitions"
-      },
-      "workflowConfig": {
-        "title": "Session Workflow Config",
-        "description": "Configure the full session workflow pipeline",
-        "autoApprove": "Auto-approve stages",
-        "onFailure": "On failure"
-      },
-      "transitionTypes": {
-        "unconditional": "Unconditional (always)",
-        "conditional": "Conditional (based on output)"
-      },
-      "autoApproveOptions": {
-        "none": "None (manual approval)",
-        "intake": "Intake only",
-        "intakeSpec": "Intake + Spec",
-        "allExceptReview": "All except Review",
-        "all": "All (fully automated)"
-      },
-      "onFailureOptions": {
-        "pause": "Pause and notify",
-        "retry": "Retry (max 3)",
-        "rollback": "Rollback to previous stage",
-        "skip": "Skip and continue"
-      }
-    },
     "emptySelectionTitle": "メンバーまたは Agent チームを選択",
     "emptySelectionSubtitle": "サイドバーから Agent または Agent チームを選択して表示・設定します。",
     "applicableWorkspace": "適用 Workspace",
@@ -2053,34 +1321,20 @@
       "turso": "Turso 分散 SQLite (libSQL)",
       "neon": "Neon サーバーレス PostgreSQL",
       "postgres": "PostgreSQL",
-      "postgresDesc": "PostgreSQL 直接接続",
-      "mysql": "MySQL",
-      "mysqlDesc": "MySQL / MariaDB データベース",
-      "sqliteDesc": "Local SQLite database file",
-      "supabaseDesc": "Supabase PostgreSQL cloud database",
-      "tursoDesc": "Turso distributed SQLite (libSQL)",
-      "neonDesc": "Neon serverless PostgreSQL"
+      "mysql": "MySQL"
     },
     "detail": {
       "type": "タイプ",
       "url": "URL",
       "status": "ステータス",
-      "enabled": "有効",
-      "disabled": "無効",
-      "connectionInfo": "接続情報",
-      "actions": "アクション",
       "testConnection": "接続テスト",
       "probeSuccess": "接続に成功しました",
-      "probeFailed": "接続に失敗しました",
-      "disableAgent": "Agent アクセスを無効にする",
-      "enableAgent": "Agent アクセスを有効にする"
+      "probeFailed": "接続に失敗しました"
     },
     "wizard": {
       "title": "データベース接続を追加",
       "providerType": "データベースタイプ",
       "providerTypeDesc": "この接続のデータベースエンジンを選択",
-      "connectionDetails": "接続詳細",
-      "connectionNameDesc": "サイドバーと Agent ツールに表示される接続名",
       "databaseFileDesc": "ローカルの .sqlite、.sqlite3、または .db ファイルのパス",
       "projectUrlDesc": "ダッシュボードの Supabase プロジェクト URL",
       "accessTokenDesc": "API アクセス用の Service Role または Anon Key",
@@ -2092,7 +1346,6 @@
       "mysqlHostDesc": "MySQL サーバーのホスト名または IP アドレス",
       "testConnectionDesc": "保存前に接続を検証",
       "addConnection": "追加",
-      "testPassed": "接続テスト成功",
       "saved": "接続を追加しました",
       "savedDesc": "データベース接続が保存されました。このウィザードを閉じることができます",
       "connectionNameOptional": "接続名（任意）",
@@ -2101,7 +1354,6 @@
     }
   },
   "devTools": {
-    "mode": "モード",
     "modeUi": "UI プレビュー",
     "modeTool": "ツール",
     "modeInput": "入力",
@@ -2113,12 +1365,9 @@
     "toolTypeFilterPlaceholder": "ツールを検索…",
     "commands": "コマンド",
     "status": "ステータス",
-    "statusRunning": "実行中",
-    "variant": "バリアント",
     "variantChat": "Chat Panel",
     "variantSimulator": "Simulator",
     "reset": "リセット",
-    "activityData": "ActivityData (JSON)",
     "activityDataPlaceholder": "ActivityData JSON を入力...",
     "preview": "プレビュー",
     "jsonParseError": "JSON パースエラー",
@@ -2126,10 +1375,7 @@
     "chatExtras": "チャット拡張",
     "queuedMessages": "キューメッセージ",
     "fileReview": "ファイルレビュー",
-    "terminalProcesses": "ターミナルプロセス",
-    "chatPreview": "チャットプレビュー",
-    "scenario": "シナリオ",
-    "selectScenario": "シナリオを選択"
+    "terminalProcesses": "ターミナルプロセス"
   },
   "rulesTabs": {
     "rules": "ルール",
@@ -2142,33 +1388,15 @@
     "noRules": "ルールがありません"
   },
   "agentTools": {
-    "enabled": "有効",
-    "systemPinned": "システムピン留め",
-    "searchPlaceholder": "ツールを検索...",
-    "toolColumn": "ツール",
-    "typeColumn": "タイプ"
+    "enabled": "有効"
   },
   "dependencies": {
-    "installed": "インストール済み",
-    "notFound": "見つかりません",
-    "noDbClientsFound": "データベースクライアントが見つかりません",
-    "tableClient": "クライアント",
-    "tableName": "名前",
-    "tableStatus": "ステータス",
-    "tableVersion": "バージョン",
-    "tableBinary": "バイナリ",
-    "tableCategory": "カテゴリ",
     "categoryDatabase": "データベース",
     "categoryPackageManager": "パッケージマネージャー",
     "categoryRuntime": "ランタイム",
     "categoryShellUtility": "シェルユーティリティ",
     "categoryToolchain": "ツールチェーン",
-    "categoryVersionControl": "バージョン管理",
-    "installHintNote": "この機能を有効にするには不足している依存関係をインストールしてください",
-    "installSection": "インストール"
-  },
-  "creator": {
-    "assign": "割り当て"
+    "categoryVersionControl": "バージョン管理"
   },
   "routineFields": {
     "addRoutine": "Routine を追加",
@@ -2233,23 +1461,6 @@
     "searchPlaceholder": "プラグインを検索...",
     "mcpConfigured": "MCP 設定済み"
   },
-  "localModels": {
-    "title": "On prem",
-    "description": "このデバイスを検出し、軽量なハードウェア適合スコアで Ollama / llama.cpp 向けローカルモデルを順位付けします。",
-    "searchPlaceholder": "ローカルモデルを検索...",
-    "hardware": {
-      "system": "システム",
-      "cpu": "CPU",
-      "memory": "メモリ",
-      "gpu": "GPU / Backend"
-    },
-    "fit": {
-      "good": "良い"
-    },
-    "runMode": {
-      "gpu": "GPU"
-    }
-  },
   "housekeeper": {
     "addModel": "モデルを追加",
     "sections": {
@@ -2274,7 +1485,6 @@
   },
   "cliLaunchProfiles": {
     "title": "起動プロファイル",
-    "plain": "ベース",
     "plan": "計画",
     "fullPermission": "フル権限",
     "autoEdit": "自動編集",

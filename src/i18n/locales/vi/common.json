@@ -7,7 +7,6 @@
     "allRead": "Đã xem hết",
     "loadMore": "Tải thêm",
     "filters": {
-      "all": "Tất cả",
       "mentions": "Được nhắc đến",
       "assigned": "Được giao"
     },
@@ -252,12 +251,10 @@
     "save": "Lưu",
     "cancel": "Hủy",
     "delete": "Xóa",
-    "deleteCount": "Xóa ({{count}})",
     "removeFromOrgii": "Xóa khỏi ORGII",
     "removeFromOrgiiCount": "Xóa khỏi ORGII ({{count}})",
     "edit": "Chỉnh sửa",
     "write": "Ghi",
-    "reply": "Trả lời",
     "close": "Đóng",
     "expand": "Mở rộng",
     "confirm": "Xác nhận",
@@ -267,16 +264,13 @@
     "add": "Thêm",
     "remove": "Xóa",
     "create": "Tạo",
-    "update": "Cập nhật",
     "submit": "Gửi",
     "loadMore": "Tải thêm",
-    "load": "Tải",
     "back": "Quay lại",
     "next": "Tiếp theo",
     "previous": "Trước đó",
     "done": "Xong",
     "retry": "Thử lại",
-    "regenerate": "Tạo lại",
     "refresh": "Làm mới",
     "rescan": "Quét lại",
     "reload": "Tải lại",
@@ -284,35 +278,20 @@
     "reviewPreviousFile": "Xem tệp trước",
     "copy": "Sao chép",
     "paste": "Dán",
-    "cut": "Cắt",
     "undo": "Hoàn tác",
-    "redo": "Làm lại",
-    "keep": "Giữ lại",
-    "reject": "Từ chối",
-    "accept": "Chấp nhận",
     "review": "Xem lại",
     "undoAll": "Hoàn tác tất cả",
-    "redoAll": "Làm lại tất cả",
-    "keepAll": "Giữ lại tất cả",
-    "select": "Chọn",
     "selectAll": "Chọn tất cả",
     "unselectAll": "Bỏ chọn tất cả",
     "clear": "Xóa",
     "open": "Mở",
     "view": "Xem",
-    "openInApp": "Mở trong ứng dụng",
     "openToRight": "Mở ở bên phải",
-    "new": "Mới",
     "rename": "Đổi tên",
     "duplicate": "Nhân bản",
-    "export": "Xuất",
-    "import": "Nhập",
     "download": "Tải xuống",
     "upload": "Tải lên",
-    "insertImage": "Chèn hình ảnh",
     "browse": "Duyệt",
-    "discover": "Khám phá",
-    "discoverTests": "Khám phá bài kiểm tra",
     "newFile": "Tệp mới",
     "newFolder": "Thư mục mới",
     "copyPath": "Sao chép đường dẫn",
@@ -332,16 +311,9 @@
     "configure": "Cấu hình",
     "manage": "Quản lý",
     "uninstall": "Gỡ cài đặt",
-    "connect": "Kết nối",
-    "customize": "Tùy chỉnh",
-    "goToSettings": "Đi đến Cài đặt",
     "restart": "Khởi động lại",
     "switchToStation": "Chuyển sang {{station}}",
-    "rate": "Đánh giá",
-    "openInTab": "Mở trong tab",
-    "insert": "Chèn",
     "discard": "Hủy bỏ",
-    "disable": "Tắt",
     "run": "Chạy",
     "clone": "Sao chép",
     "send": "Gửi",
@@ -353,20 +325,12 @@
     "filter": "Lọc",
     "loading": "Đang tải...",
     "replace": "Thay thế",
-    "publish": "Publish",
-    "acceptAll": "Chấp nhận tất cả",
-    "rejectAll": "Từ chối tất cả",
-    "install": "Cài đặt",
-    "expandAll": "Mở rộng tất cả",
     "collapseAll": "Thu gọn tất cả",
     "viewOnGitHub": "Xem trên GitHub",
     "selectRepository": "Chọn kho lưu trữ",
     "all": "Tất cả",
     "collapse": "Thu gọn",
     "toggle": "Bật/tắt luồng",
-    "addRepo": "Thêm repo",
-    "addFolder": "Thêm thư mục",
-    "resume": "Tiếp tục",
     "yes": "Có",
     "more": "Thêm hành động",
     "advanced": "Nâng cao",
@@ -375,9 +339,7 @@
     "sort": "Sắp xếp",
     "openFolder": "Mở thư mục",
     "addWorkspace": "Thêm thư mục làm việc",
-    "openSpotlight": "Mở Spotlight",
     "openWorkspace": "Mở thư mục làm việc",
-    "skipThisVersion": "Bỏ qua phiên bản này",
     "later": "Để sau",
     "link": "Liên kết",
     "copyName": "Sao chép tên",
@@ -387,9 +349,6 @@
     "clearSelection": "Xóa lựa chọn",
     "uiSettings": "Cài đặt giao diện",
     "clearAll": "Xóa tất cả"
-  },
-  "refreshToast": {
-    "successName": "Đã làm mới {{name}}"
   },
   "status": {
     "yes": "Có",
@@ -465,18 +424,13 @@
     "lastPage": "Trang cuối",
     "selectPage": "Chọn trang",
     "title": "Phân trang",
-    "roundOf": "Round {{current}} / {{total}}",
     "round": "Round {{current}}",
     "previousRound": "Round trước",
     "nextRound": "Round tiếp theo",
-    "latestRound": "Round mới nhất",
-    "searchRounds": "Tìm kiếm rounds"
+    "latestRound": "Round mới nhất"
   },
   "optional": "tùy chọn",
   "common": {
-    "yes": "Có",
-    "no": "Không",
-    "ok": "OK",
     "on": "Bật",
     "off": "Tắt",
     "default": "Mặc định",
@@ -485,32 +439,20 @@
     "s": "s",
     "multiplier": "×",
     "spaces": "dấu cách",
-    "font": "Phông chữ",
     "name": "Tên",
     "description": "Mô tả",
     "type": "Loại",
     "date": "Ngày",
     "time": "Thời gian",
-    "size": "Kích thước",
-    "path": "Đường dẫn",
     "status": "Trạng thái",
     "actions": "Hành động",
-    "options": "Tùy chọn",
     "details": "Chi tiết",
     "more": "Thêm",
-    "less": "Ít hơn",
-    "all": "Tất cả",
     "none": "Không có",
-    "selected": "Đã chọn",
-    "items": "mục",
-    "item": "mục",
-    "empty": "Trống",
     "noResults": "Không tìm thấy kết quả",
     "searchPlaceholder": "Tìm kiếm...",
     "properties": "Thuộc tính",
     "overview": "Tổng quan",
-    "appearance": "Giao diện",
-    "theme": "Chủ đề",
     "timezone": "Múi giờ",
     "language": "Ngôn ngữ",
     "preview": "Xem trước",
@@ -518,17 +460,11 @@
     "sourceCode": "Mã nguồn",
     "raw": "Thô",
     "table": "Bảng",
-    "filter": "Bộ lọc",
-    "filters": "Bộ lọc",
     "selectDate": "Chọn ngày",
-    "files": "tệp",
-    "required": "bắt buộc",
-    "pending": "đang chờ",
     "error": "Lỗi",
     "pid": "PID",
     "shell": "Shell",
-    "source": "Nguồn",
-    "filterByLanguage": "Lọc theo ngôn ngữ"
+    "source": "Nguồn"
   },
   "labels": {
     "accounts": "Tài khoản",
@@ -651,14 +587,9 @@
   "searchModes": {},
   "tabs": {
     "terminal": "Terminal",
-    "problems": "Vấn đề",
-    "output": "Đầu ra",
-    "testResults": "Kết quả kiểm thử",
     "explorer": "Trình duyệt tệp",
     "search": "Tìm kiếm",
     "sourceControl": "Quản lý mã nguồn",
-    "testing": "Kiểm thử",
-    "extensions": "Tiện ích mở rộng",
     "sessions": "Session",
     "myTabs": "Tab của tôi ({{count}})",
     "design": "Thiết kế",
@@ -667,23 +598,12 @@
     "console": "Bảng điều khiển",
     "network": "Mạng",
     "css": "CSS",
-    "source": "Nguồn",
-    "connections": "Kết nối",
-    "queryHistory": "Lịch sử truy vấn",
-    "table": "Bảng",
-    "sql": "SQL",
-    "tools": "Công cụ",
-    "overview": "Tổng quan"
+    "source": "Nguồn"
   },
   "errors": {
     "generic": "Đã xảy ra lỗi",
-    "networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối của bạn.",
     "notFound": "Không tìm thấy",
-    "unauthorized": "Không được phép. Vui lòng đăng nhập.",
     "forbidden": "Truy cập bị từ chối",
-    "serverError": "Lỗi máy chủ. Vui lòng thử lại sau.",
-    "timeout": "Yêu cầu đã hết thời gian",
-    "validation": "Lỗi xác thực",
     "pageNotFound": "Không tìm thấy trang",
     "failedToLoadComponent": "Không thể tải thành phần",
     "networkErrorShort": "Lỗi mạng",
@@ -692,8 +612,6 @@
     "couldntConnect": "Không thể kết nối đến máy chủ. Kiểm tra kết nối internet của bạn.",
     "failedToLoadProperly": "Một thành phần không thể tải đúng cách.",
     "requiredFileCouldntLoad": "Không thể tải tệp cần thiết. Thường khởi động lại sẽ khắc phục.",
-    "failedToRenderActivity": "Không thể hiển thị hoạt động",
-    "failedToRenderEvent": "Không thể hiển thị sự kiện",
     "unknown": "Lỗi không xác định",
     "agentRequestFailed": "Yêu cầu Agent thất bại",
     "codexLoginExpired": "Phiên đăng nhập Codex đã hết hạn",
@@ -739,14 +657,11 @@
       },
       "workflow": "Dịch vụ quy trình làm việc tạm thời không khả dụng. Thử lại sau."
     },
-    "imageUploadFailed": "Tải lên hình ảnh thất bại",
-    "imageTooLarge": "Hình ảnh quá lớn",
     "failedToLoad": "Tải thất bại",
     "unknownError": "Đã xảy ra lỗi không xác định"
   },
   "confirmation": {
     "delete": "Bạn có chắc muốn xóa không?",
-    "discard": "Bỏ thay đổi?",
     "removeTitle": "Xóa \"{{name}}\" khỏi ORGII?",
     "removeMessage": "Thao tác này chỉ xóa liên kết của mục này với ORGII. Không có nội dung nào bị xóa khỏi đĩa.",
     "deleteWorkspaceTitle": "Xóa Workspace \"{{name}}\"?",
@@ -764,32 +679,15 @@
     "unsavedCloseMultipleMessage": "{{count}} tệp có thay đổi chưa lưu. Vẫn đóng?",
     "undoAllChanges": "Thao tác này sẽ hoàn tác tất cả {{count}} thay đổi tệp do Agent thực hiện. Hành động này không thể hoàn tác. Tiếp tục?"
   },
-  "dateRange": {
-    "1d": "1N",
-    "7d": "7N",
-    "1w": "1T",
-    "30d": "30N",
-    "1m": "1Th",
-    "3m": "3Th",
-    "1y": "1Năm"
-  },
   "filters": {
     "all": "Tất cả",
     "source": "Nguồn",
     "local": "Cục bộ",
     "member": "Thành viên",
-    "model": "Mô hình",
-    "custom": "Tùy chỉnh",
     "tokenMarket": "Token Market",
-    "market": "Chợ",
-    "agentOrAgentOrg": "Session agent",
     "searchAgentOrOrg": "Chọn Agent hoặc Nhóm Agent...",
-    "tplSelectAgentOrOrg": "Chọn {agent}",
-    "cliAgent": "CLI Agent",
     "searchModel": "Tìm mô hình...",
-    "searchModelFor": "Chọn một mô hình cho {{target}}...",
-    "tplSelectModel": "Chọn {model}",
-    "tplSelectModelFor": "Chọn {model} cho {{target}}"
+    "searchModelFor": "Chọn một mô hình cho {{target}}..."
   },
   "prerequisite": {
     "missingTitle": "Thiếu điều kiện tiên quyết",
@@ -799,29 +697,15 @@
     "agent": "Agent",
     "you": "Bạn",
     "session": "Session",
-    "agentSession": "Session Agent",
     "workStation": "Workstation",
-    "osAgent": "OS Agent",
-    "coding": "Coding",
     "agentTerminal": "Agent Terminal",
     "myStation": "Trạm của tôi",
     "agentStation": "Trạm của Agent",
-    "projectManager": "Project Manager",
     "myTerminal": "Terminal của tôi",
     "myTerminalInfo": "Thông tin terminal của tôi"
   },
-  "pageSearch": {
-    "placeholder": "Tìm kiếm trang...",
-    "tooltip": "Tìm kiếm trang",
-    "categories": {
-      "workspace": "Không gian làm việc",
-      "tools": "Công cụ",
-      "market": "Thị trường"
-    }
-  },
   "tooltips": {
     "closeEsc": "Đóng (Esc)",
-    "hidePanel": "Ẩn bảng điều khiển (⌘J)",
     "refreshTree": "Làm mới cây",
     "copy": "Sao chép",
     "previous": "Trước",
@@ -859,8 +743,6 @@
     "searchInOpenEditors": "Chỉ tìm trong trình soạn thảo đang mở",
     "replace": "Thay thế (Ctrl+Shift+1)",
     "replaceAll": "Thay thế tất cả (Ctrl+Alt+Enter)",
-    "uninstall": "Gỡ cài đặt",
-    "dismiss": "Bỏ qua",
     "moreActions": "Thao tác khác...",
     "formatSql": "Định dạng SQL",
     "queryHistory": "Lịch sử truy vấn",
@@ -870,13 +752,11 @@
     "stopAndTranscribe": "Dừng và chuyển thành văn bản",
     "htmlPreview": "Xem trước HTML",
     "manual": "Thủ công",
-    "scrollLeft": "Cuộn tab sang trái",
     "toggleFileFilters": "Bật/tắt bộ lọc tệp",
     "closeDevTools": "Đóng DevTools",
     "movePanelToRight": "Chuyển bảng sang phải",
     "movePanelToBottom": "Chuyển bảng xuống dưới",
     "domTree": "Cây DOM",
-    "clearUiIndex": "Xóa chỉ mục thành phần",
     "closeSession": "Đóng Session",
     "clearNetworkLogs": "Xóa nhật ký mạng",
     "clearConsole": "Xóa bảng điều khiển",
@@ -911,7 +791,6 @@
     "failedToParseSymbols": "Không thể phân tích ký hiệu",
     "outlineParseError": "Không có outline cho tệp này",
     "runQueryToSeeResults": "Chạy truy vấn để xem kết quả",
-    "noProjectsFound": "Không tìm thấy Project",
     "failedToLoad": "Tải thất bại",
     "noItems": "Không có mục nào để hiển thị",
     "nothingHereYet": "Không có mục nào để hiển thị",
@@ -979,14 +858,7 @@
     "noStyles": "Không có kiểu",
     "noDomTree": "Không có cây DOM",
     "noSourceDetected": "Không phát hiện mã nguồn",
-    "notIndexed": "Chưa Index",
-    "indexedInspectElement": "Đã lập chỉ mục, hãy kiểm tra phần tử",
-    "buildIndexToStart": "Tạo chỉ mục để bắt đầu",
     "noMatchingFilesFound": "Không tìm thấy tệp phù hợp",
-    "scanning": "Đang quét...",
-    "retryToScanAgain": "Thử lại để quét lần nữa",
-    "noTokensFound": "Không tìm thấy Token",
-    "addCssVariables": "Thêm biến CSS vào dự án của bạn",
     "noWorkspaceExplorerTitle": "Chưa mở thư mục làm việc",
     "noWorkspaceExplorerSubtitle": "Mở thư mục làm việc để xem tệp",
     "cannotFindRepo": "Không tìm thấy {{repoName}}",
@@ -1016,54 +888,31 @@
     "noData": "Không có dữ liệu"
   },
   "inbox": {
-    "searchPlaceholder": "Tìm kiếm tin nhắn...",
-    "channels": {
-      "title": "Kênh",
-      "git": "Git",
-      "workItems": "Mục công việc",
-      "promotions": "Khuyến mãi"
-    },
-    "selectChannel": "Chọn một kênh",
-    "noMessages": "Chưa có tin nhắn",
-    "noMessagesSubtitle": "Tin nhắn sẽ xuất hiện ở đây khi có sự kiện xảy ra",
-    "composerPlaceholder": "Viết ghi chú…",
     "scrollToBottom": "Cuộn xuống cuối",
-    "markAllAsRead": "Đánh dấu tất cả đã đọc",
-    "scrollToUnread": "Đến tin chưa đọc"
+    "markAllAsRead": "Đánh dấu tất cả đã đọc"
   },
   "placeholderTypes": {
     "mcpServer": "máy chủ MCP",
-    "connection": "kết nối",
-    "policy": "chính sách",
-    "skill": "skill",
-    "message": "tin nhắn"
+    "connection": "kết nối"
   },
   "workstation": {
     "expandReplace": "Mở rộng thay thế",
     "collapseReplace": "Thu gọn thay thế",
     "tooltipRefreshExplorer": "Làm mới trình khám phá",
-    "refreshFiles": "Làm mới tệp",
-    "deleteSelectedRows": "Xóa {{count}} hàng đã chọn",
     "agentBrowser": "Agent Browser",
     "userInControl": "User in control",
     "agentControlling": "Agent controlling",
     "returnToAgent": "Return to Agent",
     "takeOver": "Take Over",
-    "chromeInForeground": "Chrome window is in the foreground — interact directly",
     "chromeWindowOpen": "Cửa sổ Chrome đang mở — tương tác trực tiếp, sau đó quay lại Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
     "split": "Split",
-    "reloadFromDiskConfirm": "Reload from disk (will prompt to confirm)",
-    "reloadFromDisk": "Reload from disk",
     "publishingBranch": "Publishing...",
-    "refreshGitStatus": "Refresh git status",
     "notGitInitialized": "Git chưa được khởi tạo",
     "notGitInitializedTooltip": "Thư mục làm việc này chưa có thư mục .git.",
     "publishBranchToOrigin": "Publish branch \"{{branch}}\" to origin",
-    "syncWithRemote": "Sync with remote ({{behind}} to pull, {{ahead}} to push)",
     "scanningFiles": "Scanning files...",
-    "branchTooltip": "Nhánh: {{branch}}",
     "branchTooltipSwitching": "Nhánh: {{branch}} (đang chuyển…)",
     "switchWorkspaceTooltip": "Chuyển thư mục làm việc",
     "switchWorktreeTooltip": "Chuyển Worktree",
@@ -1080,14 +929,11 @@
     "embeddingLabel": "Embedding",
     "indexingProgress": "Đang index: {{processed}}/{{total}} tệp ({{percent}}%)",
     "indexingProgressWithFile": "Đang index: {{processed}}/{{total}} tệp ({{percent}}%)\nHiện tại: {{file}}",
-    "languageServices": "Language Services",
     "ports": {
       "workspaceSection": "Không gian làm việc hiện tại",
       "externalSection": "Bên ngoài",
-      "tooltip": "Cổng: {{workspace}} workspace, {{external}} bên ngoài",
       "viewPortsTooltip": "Xem các cổng đang dùng",
       "noWorkspacePorts": "Không phát hiện cổng workspace",
-      "externalLabel": "bên ngoài",
       "unknownProcess": "Tiến trình không xác định",
       "pidLabel": "PID {{pid}}",
       "openInBrowser": "Mở trong trình duyệt",
@@ -1101,62 +947,28 @@
       "rescanTooltip": "Tìm lại các cổng đang lắng nghe",
       "lastScannedAt": "Quét lần cuối lúc {{time}}"
     },
-    "noLanguageServicesActive": "No language services active",
     "linesSelected": "{{count}} lines selected",
     "charsSelected": "{{count}} selected",
     "nLines": "{{count}} lines",
-    "blameOn": "Blame: On",
-    "blameOff": "Blame: Off",
     "hideFilter": "Hide filter",
     "filterFilesAction": "Filter files",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
-    "stagedChangesCount": "{{count}} Staged Changes",
-    "changesCount": "{{count}} Changes",
     "acceptAllMergeChanges": "Accept All Merge Changes (Stage resolved files)",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
     "discardAllUnstagedConfirm": "Discard all unstaged changes? This cannot be undone.",
     "addedToAgent": "{{fileName}} added to agent",
-    "privateBrowsing": "Private",
-    "standardBrowsing": "Tiêu chuẩn",
-    "openNativeDevTools": "Open native browser DevTools (Safari Inspector / Edge DevTools)",
-    "extractingProps": "Extracting props...",
-    "initializingPreview": "Initializing preview...",
-    "buildUiIndex": "Build component index",
     "componentLabel": "Component",
     "definitionLabel": "Definition",
     "findSource": "Find Source",
     "preserveConsole": "Preserve",
     "consoleShowStackTrace": "Hiển thị stack trace",
     "consoleHideStackTrace": "Ẩn stack trace",
-    "loadingData": "Loading data...",
-    "noData": "No data",
-    "tokenName": "token-name",
-    "manualMode": "Manual",
-    "position": "Position",
-    "flow": "Flow",
-    "size": "Size",
-    "paddingLabel": "Padding",
-    "marginLabel": "Margin",
-    "boxModel": "Box Model",
-    "opacityLabel": "Opacity",
-    "cornersLabel": "Corners",
-    "textLabel": "Text",
-    "weightLabel": "Weight",
-    "lineLabel": "Line",
-    "borderLabel": "Border",
-    "widthLabel": "Width",
-    "heightLabel": "Height",
-    "colorLabel": "Color",
-    "shadowAndBlur": "Shadow & Blur",
-    "blurLabel": "Blur",
-    "spreadLabel": "Spread",
     "styleEditsCount_one": "{{count}} chỉnh sửa",
     "styleEditsCount_other": "{{count}} chỉnh sửa",
     "sendStyleEdits": "Gửi",
-    "addToChat": "Thêm vào trò chuyện",
     "browserCore": {
       "desktopOnlyTitle": "Trình duyệt chỉ khả dụng trên ứng dụng desktop",
       "desktopOnlyBody": "Trình duyệt nhúng chỉ khả dụng trong ứng dụng desktop Tauri.",
@@ -1164,28 +976,15 @@
       "debugTauriInternals": "__TAURI_INTERNALS__: {{value}}",
       "debugTauriIpc": "__TAURI_IPC__: {{value}}",
       "debugTauri": "__TAURI__: {{value}}",
-      "privateBrowsingLabel": "Duyệt web riêng tư:",
       "enterUrlToStart": "Nhập URL để bắt đầu",
       "privateBrowsingEmptyTitle": "Duyệt web riêng tư: Nhập URL để bắt đầu",
       "simulatorBrowserNotice": "Trình duyệt này chỉ để phát lại phiên. Để duyệt lâu dài, hãy dùng trình duyệt trong ứng dụng chính (Công cụ → Trình duyệt).",
       "tlsDevNote": "Lưu ý: Một số trang HTTPS (như GitHub) có thể báo lỗi TLS ở chế độ phát triển do xác thực chứng chỉ. Hãy thử HTTP hoặc HTTPS đơn giản như example.com.",
       "siteUnreachableTitle": "Không thể truy cập trang web này",
-      "errorTls": "Kết nối tới trang này không an toàn. Thường gặp với HTTPS ở chế độ phát triển.",
-      "errorTimeout": "Hết thời gian chờ. Máy chủ phản hồi quá lâu.",
-      "errorDns": "Không tìm thấy địa chỉ DNS của máy chủ. Kiểm tra URL.",
-      "errorRefused": "Máy chủ từ chối kết nối.",
-      "errorGeneric": "Không thể kết nối tới máy chủ. Trang có thể gặp sự cố hoặc có vấn đề mạng.",
-      "technicalDetails": "Chi tiết kỹ thuật",
-      "tryHeading": "Thử:",
-      "tryCheckConnection": "Kiểm tra kết nối internet",
-      "tryVerifyUrl": "Xác minh URL đúng",
-      "tryAgainLater": "Thử lại sau",
       "webviewHiddenTitle": "Chế độ xem web tạm thời bị ẩn",
       "webviewHiddenBody": "Đóng menu hoặc hộp thoại để hiển thị lại."
     },
-    "unsavedChangesTitle": "Unsaved Changes",
-    "prkPlaceholder": "PRJ",
-    "gitSyncMenuTitle": "Git sync actions"
+    "unsavedChangesTitle": "Unsaved Changes"
   },
   "git": {
     "loading": "Đang tải trạng thái Git...",
@@ -1587,12 +1386,7 @@
   },
   "selectors": {
     "shared": {
-      "repo": "repo",
-      "workspace": "Không gian làm việc",
-      "folder": "thư mục",
-      "source": "nguồn",
-      "branch": "nhánh",
-      "name": "tên"
+      "workspace": "Không gian làm việc"
     },
     "labels": {
       "recent": "Gần đây"
@@ -1614,10 +1408,8 @@
       "default": "Mặc định"
     },
     "repo": {
-      "workspaceFolders": "Thư mục Workspace",
       "addEntry": "Tùy chọn import khác",
       "sections": {
-        "coding": "Workspace",
         "pinned": "Đã ghim",
         "current": "Hiện tại",
         "repo": "Kho lưu trữ",
@@ -1642,7 +1434,6 @@
         "creatingMultiRepoWorkspace": "đang ghép thư mục làm việc đa kho lưu trữ"
       },
       "forms": {
-        "repoName": "Tên repo",
         "localPath": "Đường dẫn cục bộ",
         "chooseDestinationPath": "Chọn đường dẫn đích",
         "choose": "Chọn",
@@ -1656,7 +1447,6 @@
       "path": {
         "switchTo": "Chuyển sang",
         "switchToTemplate": "Chuyển sang {workspace}",
-        "search": "Tìm kiếm",
         "manageWorkspace": "Quản lý thư mục làm việc",
         "addBy": "Thêm thư mục làm việc bằng",
         "addByTemplate": "Thêm thư mục làm việc bằng {source}"
@@ -1674,14 +1464,8 @@
       }
     },
     "folder": {
-      "path": {
-        "switchTo": "Chuyển đến"
-      },
       "addOptions": {},
-      "sources": {},
-      "forms": {
-        "choose": "Chọn"
-      }
+      "sources": {}
     },
     "branch": {
       "path": {
@@ -1731,9 +1515,7 @@
         "noPullRequests": "Không có Pull requests phù hợp"
       },
       "placeholders": {
-        "checkout": "nhánh",
         "add": "tên nhánh mới...",
-        "remove": "nhánh",
         "pullRequests": "Tìm kiếm Pull requests..."
       },
       "tabs": {
@@ -1743,9 +1525,7 @@
     },
     "sessionInfo": {
       "sourcePlaceholder": "Chọn một nguồn",
-      "start": "Bắt đầu",
       "sourceAria": "Chọn nguồn Workspace",
-      "on": "trên",
       "branchAria": "Chọn nhánh",
       "switchWorkspace": "Chuyển thư mục làm việc",
       "switchBranch": "Chuyển Branch",
@@ -1857,9 +1637,6 @@
           "label": "Xác định repo trong Finder",
           "pillLabel": "Xác định"
         },
-        "createSession": {
-          "label": "Tạo phiên mới"
-        },
         "searchAgentSessions": {
           "label": "Tìm kiếm phiên Agent",
           "pillLabel": "Tìm kiếm phiên",
@@ -1955,8 +1732,6 @@
     "chatPanelLocation": "Bảng chat",
     "chatLeft": "Chat trái",
     "chatRight": "Chat phải",
-    "full": "Toàn bộ",
-    "theme": "Giao diện",
     "sidebarPosition": "Thanh bên Workstation",
     "modelPickerStyle": "Bộ chọn",
     "paginateChatHistory": "Phân trang lịch sử trò chuyện",
@@ -1987,9 +1762,6 @@
     "ramCodeMirrors": "File rendering"
   },
   "spotlightActions": {
-    "switchToLightTheme": "Chuyển sang giao diện sáng",
-    "switchToDarkTheme": "Chuyển sang giao diện tối",
-    "switchToHighContrastTheme": "Chuyển sang giao diện tương phản cao",
     "enableChatPagination": "Bật phân trang chat",
     "disableChatPagination": "Tắt phân trang chat",
     "useModelPickerSpotlight": "Dùng bộ chọn mô hình Spotlight",
@@ -2004,7 +1776,6 @@
     "changeSkin": "Thay đổi phong cách",
     "searchThemes": "Tìm kiếm giao diện...",
     "searchSkins": "Tìm kiếm phong cách...",
-    "switchToSystemTheme": "Theo chủ đề hệ thống",
     "detectUpdate": "Kiểm tra cập nhật",
     "recentlyUsed": "Đã dùng gần đây"
   },
@@ -2014,88 +1785,18 @@
     "showPrimarySidebar": "Hiện thanh bên",
     "hidePrimarySidebar": "Ẩn thanh bên",
     "searchFiles": "Tìm kiếm tệp",
-    "openBrowser": "Mở trình duyệt",
     "switchWorkspace": "Chuyển / thêm thư mục làm việc",
-    "openEditor": "Mở trình soạn thảo",
-    "hideTerminal": "Ẩn terminal",
-    "hideFiles": "Ẩn tệp",
-    "maximizeChat": "Tập trung bảng chat",
-    "toggleSidebar": "Chuyển đổi thanh bên",
-    "openDevTools": "Mở DevTools",
-    "showDevTools": "Hiện DevTools",
-    "hideDevTools": "Ẩn DevTools",
-    "connections": "Kết nối",
-    "newTab": "Tab mới",
-    "newPrivateTab": "Tab riêng tư mới",
-    "openDashboard": "Mở Dashboard",
-    "runQuery": "Chạy truy vấn",
-    "newProject": "Project mới"
-  },
-  "lsp": {
-    "installPrompt": "Language Server cho \"{{language}}\" chưa được cài đặt. Bạn có muốn cài đặt không?",
-    "installing": "Đang cài đặt Language Server..."
+    "newTab": "Tab mới"
   },
   "gitDashboard": {
-    "title": "Git Bảng điều khiển",
     "author": "Tác giả",
-    "commits": "Commit",
-    "additions": "Thêm",
-    "deletions": "Xóa",
-    "filesChanged": "Tệp Thay Đổi",
-    "files": "tệp",
-    "other": "Khác",
-    "showMore": "Xem Thêm",
-    "showLess": "Thu Gọn"
+    "commits": "Commit"
   },
   "aiImpact": {
     "lines": "Dòng"
   },
   "sessions": {
-    "title": "Phiên",
-    "myUsage": "Sử dụng của tôi",
-    "teamUsage": "Sử dụng nhóm"
-  },
-  "otherUsage": {
-    "title": "Sử dụng khác",
-    "sessions": "Phiên",
-    "completed": "Hoàn thành",
-    "incomplete": "Chưa hoàn thành",
-    "tabs": {
-      "overview": "Tổng quan",
-      "cursor": "Cursor",
-      "cli": "CLI"
-    }
-  },
-  "devActivity": {
-    "title": "Hồ Sơ Lập Trình",
-    "sessions": "Phiên",
-    "source": "Nguồn",
-    "commits": "Commits",
-    "active": "Hoạt động"
-  },
-  "devRecord": {
-    "loading": "Đang tải…",
-    "custom": "Tùy chỉnh",
-    "startDate": "Ngày bắt đầu",
-    "endDate": "Ngày kết thúc",
-    "statCards": {
-      "commits": "Commit",
-      "filesChanged": "Tệp Thay Đổi",
-      "sessions": "Phiên",
-      "projects": "Bản đồ nhiệt"
-    },
-    "team": {
-      "title": "Hoạt Động Nhóm",
-      "member": "Thành viên",
-      "email": "Email",
-      "model": "Mô hình",
-      "sessions": "Phiên",
-      "tokens": "Token",
-      "days": "ngày"
-    }
-  },
-  "actionSummary": {
-    "read": "Đọc"
+    "title": "Phiên"
   },
   "sourceControl": {
     "notGitInitialized": "Git chưa được khởi tạo",
@@ -2103,11 +1804,9 @@
     "initializeGit": "Khởi tạo Git",
     "initializingGit": "Đang khởi tạo Git...",
     "noRemoteForPublish": "Thư mục làm việc này hiện là một kho Git, nhưng chưa có remote. Hãy thêm remote như origin trước khi publish branch này.",
-    "generateCommitMessage": "Tạo commit message bằng AI",
     "pull": "Pull",
     "push": "Push",
     "fetch": "Fetch",
-    "sync": "Sync",
     "worktreeActions": "Thao tác Worktree",
     "removeWorktree": "Xóa Worktree",
     "removeWorktreeTitle": "Xóa Worktree {{name}}?",
@@ -2128,16 +1827,7 @@
   "contextInfo": {
     "contextUsed": "ngữ cảnh đã sử dụng",
     "title": "Context",
-    "full": "Đã dùng",
     "ariaLabel": "Mức dùng Context",
-    "categories": {
-      "rules": "Rules",
-      "conversation": "Cuộc trò chuyện",
-      "tools": "Công cụ",
-      "skills": "Kỹ năng",
-      "mcp": "MCP",
-      "subagents": "Subagents"
-    },
     "autoCompactNote": "Ngữ cảnh sẽ sớm được tóm tắt",
     "compactBoundaryTitle": "Đã nén ngữ cảnh",
     "compactBoundarySubtitle_other": "Đã tóm tắt {{count}} tin nhắn trước đó",
@@ -2158,9 +1848,7 @@
     "justNow": "vừa xong",
     "today": "Hôm nay",
     "yesterday": "Hôm qua",
-    "tomorrow": "Ngày mai",
-    "last7Days": "7 ngày qua",
-    "last30Days": "30 ngày qua"
+    "tomorrow": "Ngày mai"
   },
   "cloneForm": {
     "titleCloneFromGitHub": "Clone từ GitHub",
@@ -2211,34 +1899,11 @@
     "windowTitle": "Thư mục làm việc"
   },
   "database": {
-    "addConnection": "Add Database Connection",
-    "databaseType": "Database Type",
-    "connectionName": "Connection Name",
     "databaseFile": "Database File",
     "projectUrl": "Project URL",
     "accessToken": "Access Token",
     "databaseUrl": "Database URL",
     "authToken": "Auth Token",
-    "testingConnection": "Testing connection...",
-    "addingConnection": "Adding connection...",
-    "connectionSuccessful": "Connection successful!",
-    "testConnection": "Test Connection",
-    "addConnectionAction": "Thêm",
-    "testing": "Testing...",
-    "adding": "Adding...",
-    "notValidSqlite": "Not a valid SQLite database file",
-    "connectionFailed": "Connection failed",
-    "failedToAddConnection": "Failed to add connection",
-    "supabaseHint": "Found in Supabase Dashboard → Project Settings → API",
-    "supabaseTokenHint": "Personal Access Token (PAT). Generate at",
-    "tursoTokenHint": "Generate at Turso CLI: turso db tokens create",
-    "neonHint": "Chuỗi kết nối từ Neon Console → Chi tiết kết nối",
-    "sqliteDescription": "Local .sqlite file",
-    "supabaseDescription": "PostgreSQL in the cloud",
-    "tursoDescription": "SQLite at the edge",
-    "neonDescription": "Serverless PostgreSQL",
-    "postgresDescription": "Kết nối trực tiếp PostgreSQL",
-    "mysqlDescription": "MySQL / MariaDB",
     "connectionString": "Chuỗi kết nối",
     "host": "Máy chủ",
     "port": "Cổng",
@@ -2246,10 +1911,6 @@
     "user": "Người dùng",
     "password": "Mật khẩu",
     "ssl": "Yêu cầu SSL",
-    "requireSsl": "Yêu cầu kết nối SSL",
-    "newConnection": "New {{type}} connection",
-    "changePending": "change",
-    "changesPending": "changes",
     "spotlight": {
       "scanFolder": "Quét thư mục",
       "scanFolderDesc": "Tìm tất cả tệp .sqlite, .db trong một thư mục",
@@ -2269,25 +1930,13 @@
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
   },
-  "contextList": {
-    "task": "Task",
-    "repo": "Repo",
-    "ref": "Ref",
-    "key": "Key",
-    "image": "Image",
-    "group": "Group",
-    "unknown": "Unknown"
-  },
   "showMore": "Xem thêm",
   "showLess": "Thu gọn",
   "schedule": {
     "recurring": "Định kỳ",
     "oneShot": "Một lần",
     "noSchedule": "Không có lịch trình",
-    "active": "Hoạt động",
-    "inactive": "Không hoạt động",
     "scheduleType": "Loại lịch trình",
-    "dateAndTime": "Ngày và giờ",
     "frequency": "Tần suất",
     "time": "Thời gian",
     "dayOfWeek": "Ngày trong tuần",
@@ -2296,7 +1945,6 @@
     "hideCustomCron": "Ẩn cron tùy chỉnh",
     "cronHelp": "vd. 0 9 * * 1 = mỗi thứ Hai lúc 9:00",
     "lastRun": "Lần chạy cuối",
-    "enableSchedule": "Bật lịch trình",
     "freq": {
       "daily": "Hàng ngày",
       "weekday": "Ngày trong tuần (T2-T6)",
@@ -2311,16 +1959,9 @@
       "thu": "Thứ Năm",
       "fri": "Thứ Sáu",
       "sat": "Thứ Bảy"
-    },
-    "humanReadable": {
-      "daily": "Hàng ngày lúc {{time}}",
-      "weekday": "Ngày trong tuần lúc {{time}}",
-      "weekly": "Mỗi {{day}} lúc {{time}}",
-      "monthly": "Hàng tháng ngày {{day}} lúc {{time}}"
     }
   },
   "selectionMenu": {
-    "title": "Thêm vào chat",
     "addToChat": "Thêm vào chat",
     "addThisFile": "Thêm tệp này",
     "addLines": "Thêm dòng {{from}} – {{to}}"
@@ -2338,27 +1979,8 @@
     "openedInBrowser": "Đã mở trong trình duyệt",
     "goToBrowser": "Đến trình duyệt"
   },
-  "ideaArea": {
-    "menu": {
-      "shared": "Được chia sẻ"
-    },
-    "trending": {
-      "title": "Ý tưởng thịnh hành"
-    },
-    "shared": {
-      "title": "Ý tưởng được chia sẻ",
-      "searchPlaceholder": "Tìm kiếm ý tưởng..."
-    },
-    "myIdeas": {
-      "title": "Ý tưởng của tôi",
-      "empty": "Bạn chưa chia sẻ ý tưởng nào"
-    }
-  },
   "controlTower": {
     "sidebar": {
-      "terminal": "Terminal",
-      "browser": "Trình duyệt",
-      "settings": "Cài đặt",
       "newTab": "Tab mới",
       "newPrivateTab": "Tab riêng tư mới",
       "newTerminal": "Terminal mới",
@@ -2373,18 +1995,6 @@
     "cancel": "Hủy",
     "confirm": "Thoát"
   },
-  "projects": {
-    "title": "Bản đồ nhiệt",
-    "workspace": "Khu vực làm việc",
-    "duration": "Thời lượng",
-    "codingTime": "Thời gian lập trình",
-    "noData": "Chưa có dữ liệu dự án",
-    "topLanguage": "Ngôn ngữ chính",
-    "editCount": "Chỉnh sửa"
-  },
-  "dashboard": {
-    "other": "Khác"
-  },
   "imagePreview": {
     "dialogLabel": "Xem trước hình ảnh",
     "copyImage": "Sao chép hình ảnh",
@@ -2392,14 +2002,6 @@
     "closePreview": "Đóng xem trước",
     "copiedToClipboard": "Đã sao chép hình ảnh vào bảng nhớ tạm",
     "previewAlt": "Xem trước"
-  },
-  "update": {
-    "downloading": "Đang tải bản cập nhật",
-    "installing": "Đang cài đặt bản cập nhật",
-    "progressPercent": "{{percent}}%",
-    "downloadedOfTotal": "{{downloaded}} trên {{total}}",
-    "preparingDownload": "Đang chuẩn bị tải xuống…",
-    "downloadingAndInstalling": "Đang tải và cài đặt bản cập nhật (v{{version}})…"
   },
   "workManagementTable": {
     "columns": {

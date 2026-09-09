@@ -6,7 +6,6 @@
     "today": "Dzisiaj",
     "everyone": "Wszyscy",
     "activeMembers": "Aktywni członkowie",
-    "systemsCurrent": "Aktualne systemy: {{current}} z {{total}}",
     "usageByAgent": "Użycie według agenta",
     "recentSessions": "Najnowsze udostępnione sesje",
     "recentLoading": "Wczytywanie udostępnionych sesji…",
@@ -71,10 +70,6 @@
     "appVersion": "Wersja ORGII",
     "totalSessions": "Łącznie sesji",
     "lastSynced": "Ostatnia synchronizacja"
-  },
-  "selfService": {
-    "hint": "Gdy udostępnianie jest włączone, Twój własny runtime jest udostępniany tego obszaru roboczego.",
-    "action": "Przestań udostępniać i usuń moje dane"
   },
   "orgSettings": {
     "label": "Udostępnianie runtime zespołu",
