@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "Tìm kiếm hoặc nhập lệnh…",
       "placeholders": {
-        "workspace": "Tìm kiếm hoặc nhập đường dẫn thư mục",
+        "workspace": "Tìm kiếm hoặc nhập đường dẫn thư mục...",
         "branch": "Tìm kiếm nhánh...",
         "source": "Tìm kiếm nguồn...",
         "actions": "Tìm kiếm hành động...",

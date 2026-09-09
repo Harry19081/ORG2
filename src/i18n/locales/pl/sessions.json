@@ -2482,8 +2482,10 @@
     "mentionGroup": "Członkowie zespołu"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Poprzedni tydzień",
+    "nextWeek": "Następny tydzień",
+    "emptyWeek": "Brak odczytów w tym tygodniu",
     "title": "Historia tygodniowego limitu",
-    "description": "Pozostały limit · Ostatnie 28 dni · Próbkowanie co godzinę, gdy aplikacja jest widoczna i online · Brakujące odczyty to luki",
     "error": "Historia limitu jest niedostępna. Próba zostanie ponowiona po powrocie do tego okna",
     "empty": "Połącz konto Claude Code, Codex lub OpenCode Go w Key Vault, aby rozpocząć śledzenie",
     "loading": "Wczytywanie historii limitu…",

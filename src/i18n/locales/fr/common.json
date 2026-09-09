@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "Rechercher ou saisir une commande…",
       "placeholders": {
-        "workspace": "Rechercher ou saisir un chemin de dossier",
+        "workspace": "Rechercher ou saisir un chemin de dossier...",
         "branch": "Rechercher une branche...",
         "source": "Rechercher une source...",
         "actions": "Rechercher des actions...",

@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "検索するかコマンドを入力…",
       "placeholders": {
-        "workspace": "検索またはフォルダパスを入力",
+        "workspace": "検索またはフォルダパスを入力...",
         "branch": "ブランチを検索...",
         "source": "ソースを検索...",
         "actions": "アクションを検索...",

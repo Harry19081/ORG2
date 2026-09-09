@@ -2482,8 +2482,10 @@
     "mentionGroup": "チームメイト"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "前の週",
+    "nextWeek": "次の週",
+    "emptyWeek": "この週の記録はありません",
     "title": "週間クォータ履歴",
-    "description": "残りクォータ · 過去 28 日間 · アプリが表示中かつオンラインの間に 1 時間ごとにサンプリング · 欠損した計測は空白で表示",
     "error": "クォータ履歴を取得できません。このウィンドウに戻ったときに再試行します",
     "empty": "Key Vault で Claude Code、Codex、または OpenCode Go のアカウントを接続すると追跡を開始します",
     "loading": "クォータ履歴を読み込み中…",

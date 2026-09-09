@@ -2482,8 +2482,10 @@
     "mentionGroup": "Takım arkadaşları"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Önceki hafta",
+    "nextWeek": "Sonraki hafta",
+    "emptyWeek": "Bu hafta için kayıt yok",
     "title": "Haftalık kota geçmişi",
-    "description": "Kalan kota · Son 28 gün · Uygulama görünür ve çevrimiçiyken saatlik örneklenir · Eksik okumalar boşluk olarak gösterilir",
     "error": "Kota geçmişi kullanılamıyor. Bu pencereye döndüğünüzde yeniden denenecek",
     "empty": "İzlemeye başlamak için Key Vault'ta bir Claude Code, Codex veya OpenCode Go hesabı bağlayın",
     "loading": "Kota geçmişi yükleniyor…",

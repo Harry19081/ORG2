@@ -1591,7 +1591,7 @@
     "spotlight": {
       "placeholder": "Search or type a command...",
       "placeholders": {
-        "workspace": "Search or enter folder path",
+        "workspace": "Search or enter folder path...",
         "branch": "Search branch...",
         "source": "Search source...",
         "actions": "Search actions...",

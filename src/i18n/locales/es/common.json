@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "Buscar o escribir un comando…",
       "placeholders": {
-        "workspace": "Buscar o introducir ruta de carpeta",
+        "workspace": "Buscar o introducir ruta de carpeta...",
         "branch": "Buscar rama...",
         "source": "Buscar origen...",
         "actions": "Buscar acciones...",

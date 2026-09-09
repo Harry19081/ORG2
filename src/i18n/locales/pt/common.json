@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "Pesquise ou digite um comando...",
       "placeholders": {
-        "workspace": "Pesquisar ou inserir caminho da pasta",
+        "workspace": "Pesquisar ou inserir caminho da pasta...",
         "branch": "Pesquisar branch...",
         "source": "Pesquisar origem...",
         "actions": "Pesquisar ações...",

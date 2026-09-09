@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "Szukaj lub wpisz polecenie...",
       "placeholders": {
-        "workspace": "Szukaj lub wpisz ścieżkę folderu",
+        "workspace": "Szukaj lub wpisz ścieżkę folderu...",
         "branch": "Szukaj gałęzi...",
         "source": "Szukaj źródła...",
         "actions": "Szukaj akcji...",

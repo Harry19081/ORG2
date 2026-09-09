@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "搜索或輸入命令…",
       "placeholders": {
-        "workspace": "搜尋或輸入資料夾路徑",
+        "workspace": "搜尋或輸入資料夾路徑...",
         "branch": "搜索分支...",
         "source": "搜索來源...",
         "actions": "搜索操作...",

@@ -1760,7 +1760,7 @@
     "spotlight": {
       "placeholder": "Suchen oder Befehl eingeben…",
       "placeholders": {
-        "workspace": "Suchen oder Ordnerpfad eingeben",
+        "workspace": "Suchen oder Ordnerpfad eingeben...",
         "branch": "Branch suchen...",
         "source": "Quelle suchen...",
         "actions": "Aktionen suchen...",
