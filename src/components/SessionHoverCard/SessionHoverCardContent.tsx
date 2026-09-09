@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useAtomValue } from "jotai";
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { IMPORTED_HISTORY_SOURCE_DESCRIPTORS } from "@src/api/tauri/externalHistory/imported/descriptors";
@@ -19,6 +19,7 @@ import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { createLogger } from "@src/hooks/logger";
 import { useResolvedModelLabel } from "@src/hooks/models";
 import { useValidatedLastPair } from "@src/hooks/models/useValidatedLastPair";
+import { useKeyedCopyCheck } from "@src/hooks/ui/useCopyCheck";
 import {
   Clock01Icon,
   FileDiffIcon,
@@ -191,11 +192,22 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
       sessionId: string;
       cliSessionId: string | null;
     } | null>(null);
-    // Keyed on session id so switching cards never shows a stale check.
-    const [copiedForSessionId, setCopiedForSessionId] = useState<string | null>(
-      null
+    const copyUnderlyingId = useCallback(
+      async (value: string) => {
+        try {
+          await copyText(value);
+        } catch (error) {
+          logger.warn("failed to copy session id", { error, sessionId });
+          throw error;
+        }
+      },
+      [sessionId]
     );
-    const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Keyed on the copied id so switching cards never shows a stale check.
+    const {
+      copiedKey: copiedUnderlyingId,
+      handleCopy: handleCopyUnderlyingId,
+    } = useKeyedCopyCheck(copyUnderlyingId, { durationMs: COPIED_FLASH_MS });
 
     useEffect(() => {
       let cancelled = false;
@@ -266,16 +278,6 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
         cancelled = true;
       };
     }, [sessionId]);
-
-    // Clear any pending copied-flash timer on unmount.
-    useEffect(() => {
-      return () => {
-        if (copiedTimerRef.current !== null) {
-          clearTimeout(copiedTimerRef.current);
-          copiedTimerRef.current = null;
-        }
-      };
-    }, []);
 
     const transcriptLocation =
       transcriptLocationState?.sessionId === sessionId
@@ -391,23 +393,6 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
     const resolvedSessionDisplay =
       sessionDisplay ??
       resolveSessionDisplayMetadata({ kind: "local", session });
-
-    const handleCopyUnderlyingId = (value: string): void => {
-      void copyText(value)
-        .then(() => {
-          setCopiedForSessionId(sessionId);
-          if (copiedTimerRef.current !== null) {
-            clearTimeout(copiedTimerRef.current);
-          }
-          copiedTimerRef.current = setTimeout(() => {
-            copiedTimerRef.current = null;
-            setCopiedForSessionId(null);
-          }, COPIED_FLASH_MS);
-        })
-        .catch((error: unknown) => {
-          logger.warn("failed to copy session id", { error, sessionId });
-        });
-    };
 
     const repoName = session.repo_name || (repoPath ? basename(repoPath) : "");
     const worktreePath = session.worktreePath;
@@ -620,7 +605,7 @@ export const SessionHoverCardContent: React.FC<SessionHoverCardContentProps> =
                   </span>
                   <span className="mx-1 text-text-4">·</span>
                   <span>{formatCompactSessionId(underlyingSessionId)}</span>
-                  {copiedForSessionId === sessionId && (
+                  {copiedUnderlyingId === underlyingSessionId && (
                     <HugeiconsIcon
                       icon={Tick01Icon}
                       data-icon="check"
