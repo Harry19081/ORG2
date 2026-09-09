@@ -168,5 +168,10 @@
       "truncated": "Long content is summarized on mobile"
     }
   },
-  "connectionFailed": "Connection failed"
+  "connectionFailed": "Connection failed",
+  "sessions": {
+    "limit": "Showing up to 1,000 recent sessions",
+    "loadMore": "Load more",
+    "retry": "Retry loading"
+  }
 }

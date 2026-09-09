@@ -19,12 +19,15 @@ const MAX_MOBILE_SIDEBAR_SESSIONS: usize = 200;
 const MAX_MOBILE_SIDEBAR_SESSION_ID_BYTES: usize = 256;
 const MAX_MOBILE_SIDEBAR_SESSION_NAME_BYTES: usize = 1_024;
 
-#[derive(Debug, Clone, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MobileSidebarSessionSnapshotRow {
     pub id: String,
     pub name: String,
     pub status: String,
+    pub repo_path: Option<String>,
+    pub repo_name: Option<String>,
+    pub updated_at_ms: Option<i64>,
 }
 
 static MOBILE_SIDEBAR_SESSION_SNAPSHOT: OnceLock<
@@ -47,6 +50,17 @@ fn validate_mobile_sidebar_sessions(
 
     let mut seen_ids = HashSet::with_capacity(sessions.len());
     for session in sessions {
+        if session
+            .repo_path
+            .as_ref()
+            .is_some_and(|path| path.len() > 4096)
+            || session
+                .repo_name
+                .as_ref()
+                .is_some_and(|name| name.len() > 1024)
+        {
+            return Err("mobile sidebar workspace metadata is too long".to_string());
+        }
         if session.id.trim().is_empty() {
             return Err("mobile sidebar session id cannot be empty".to_string());
         }
@@ -271,9 +285,7 @@ where
         .timeout(Duration::from_secs(10))
         .build()
         .map_err(|err| format!("create relay client: {err}"))?;
-    let mut request = client
-        .request(method, endpoint)
-        .bearer_auth(&access_token);
+    let mut request = client.request(method, endpoint).bearer_auth(&access_token);
     if let Some(body) = body {
         request = request.json(body);
     }
@@ -359,11 +371,13 @@ mod tests {
                 id: "session-b".to_string(),
                 name: "Second by storage, first in Sidebar".to_string(),
                 status: "running".to_string(),
+                ..Default::default()
             },
             MobileSidebarSessionSnapshotRow {
                 id: "session-a".to_string(),
                 name: "Session A".to_string(),
                 status: "idle".to_string(),
+                ..Default::default()
             },
         ];
 
@@ -376,6 +390,7 @@ mod tests {
             id: "session-a".to_string(),
             name: "Session A".to_string(),
             status: "idle".to_string(),
+            ..Default::default()
         };
         assert!(validate_mobile_sidebar_sessions(&[duplicate.clone(), duplicate]).is_err());
 
@@ -384,6 +399,7 @@ mod tests {
                 id: "session-b".to_string(),
                 name: "Session B".to_string(),
                 status: "offline".to_string(),
+                ..Default::default()
             }])
             .is_err()
         );
