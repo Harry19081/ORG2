@@ -833,7 +833,9 @@ export function MobileRemoteProviders({
         return;
       }
       if (config && !clientRef.current) {
-        void reconnect.run(config, generationRef.current);
+        void reconnect
+          .run(config, generationRef.current)
+          .catch(() => undefined);
       }
     };
     return platform.runtime.subscribeVisibility(handleVisible);
