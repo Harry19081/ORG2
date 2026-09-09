@@ -2057,17 +2057,7 @@
     "showLess": "Weniger Anzeigen"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Keine AI-Sitzungs-Wirkungsdaten vorhanden",
-    "sessions": "Sitzungen",
-    "files": "Dateien",
-    "functions": "Funktionen",
-    "commits": "Commits",
-    "lines": "Zeilen",
-    "sessionBreakdown": "Sitzungsdetails",
-    "human": "Human",
-    "completed": "Abgeschlossen",
-    "incomplete": "Unvollständig"
+    "lines": "Zeilen"
   },
   "sessions": {
     "title": "Sitzungen",

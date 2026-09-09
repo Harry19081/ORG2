@@ -2068,17 +2068,7 @@
     "showLess": "收起"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "暫無 AI 會話影響數據",
-    "sessions": "會話",
-    "files": "涉及文件",
-    "functions": "函數",
-    "commits": "Commit",
-    "lines": "代碼行",
-    "sessionBreakdown": "會話明細",
-    "human": "Human",
-    "completed": "已完成",
-    "incomplete": "未完成"
+    "lines": "代碼行"
   },
   "sessions": {
     "title": "會話",

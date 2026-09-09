@@ -2048,17 +2048,7 @@
     "showLess": "Thu Gọn"
   },
   "aiImpact": {
-    "title": "AI Impact",
-    "noData": "Chưa có dữ liệu tác động phiên AI",
-    "sessions": "Phiên",
-    "files": "Tệp",
-    "functions": "Hàm",
-    "commits": "Commit",
-    "lines": "Dòng",
-    "sessionBreakdown": "Chi tiết phiên",
-    "human": "Human",
-    "completed": "Hoàn thành",
-    "incomplete": "Chưa hoàn thành"
+    "lines": "Dòng"
   },
   "sessions": {
     "title": "Phiên",

@@ -2049,17 +2049,7 @@
     "showLess": "Mostrar menos"
   },
   "aiImpact": {
-    "title": "Impacto da IA",
-    "noData": "Ainda não há dados de impacto de sessão de IA",
-    "sessions": "Sessões",
-    "files": "Arquivos modificados",
-    "functions": "Funções",
-    "commits": "Commits",
-    "lines": "Linhas",
-    "sessionBreakdown": "Detalhamento da sessão",
-    "human": "Humano",
-    "completed": "Concluído",
-    "incomplete": "Incompleto"
+    "lines": "Linhas"
   },
   "sessions": {
     "title": "Sessões",
