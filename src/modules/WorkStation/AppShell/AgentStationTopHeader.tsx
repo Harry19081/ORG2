@@ -20,7 +20,7 @@ import CaptionBar from "@src/engines/Simulator/components/CaptionBar";
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import {
-  getCollapsedSidebarChromeOffset,
+  useCollapsedSidebarChromeOffset,
   useShouldOffsetWorkStationTopBar,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import {
@@ -58,6 +58,7 @@ import { SimulatorAgentChip, StationModeChip } from "../shared";
 const AgentStationTopHeader: React.FC = memo(() => {
   const { t } = useTranslation("sessions");
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
+  const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const pinnedChrome = usePinnedWorkbenchChromeVisible();
   const rightEdge = useWorkbenchRightEdgeReservation();
   const getStationChatVisible = useAtomValue(activeStationChatVisibleAtom);
@@ -150,7 +151,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
         style={
           {
             paddingLeft: shouldOffsetLeftChrome
-              ? getCollapsedSidebarChromeOffset()
+              ? collapsedSidebarChromeOffset
               : undefined,
             // The trailing group keeps its own `pr-2`; only the remainder of
             // the pinned-chrome reservation goes here.

@@ -7,13 +7,13 @@ import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut
 import SessionHistoryNav from "@src/components/SessionHistoryNav";
 import Tooltip from "@src/components/Tooltip";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { hasMacWindowChrome } from "@src/config/windowChromeRadius";
 import {
   COLLAPSED_SIDEBAR_CHROME_CENTER_TOP,
-  getCollapsedSidebarButtonLeft,
+  useCollapsedSidebarButtonLeft,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { HugeiconsIcon, LayoutAlignLeftIcon, PanelLeftIcon } from "@src/icons";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
-import { isMacOS } from "@src/util/platform/tauri";
 
 import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "./config";
 
@@ -23,6 +23,7 @@ const CollapsedSidebarButtonComponent: React.FC = () => {
   const setSidebarCollapsed = useSetAtom(sidebarCollapsedAtom);
   const label = t("common:tooltips.showSidebar");
   const shortcut = useShortcutKeys("toggle_sidebar");
+  const left = useCollapsedSidebarButtonLeft();
   const tooltipContent = (
     <KeyboardShortcutTooltipContent label={label} shortcut={shortcut} />
   );
@@ -33,7 +34,7 @@ const CollapsedSidebarButtonComponent: React.FC = () => {
 
   // On macOS the group is drawn once, pinned in window space by
   // `PinnedSidebarChrome`; hosts only reserve the space under it.
-  if (!collapsed || isMacOS()) return null;
+  if (!collapsed || hasMacWindowChrome()) return null;
 
   // Back / Forward ride along so they hold the spot they had in the sidebar
   // header; `getCollapsedSidebarChromeOffset` reserves room for both.
@@ -43,7 +44,7 @@ const CollapsedSidebarButtonComponent: React.FC = () => {
       data-collapsed-sidebar-button
       style={
         {
-          left: getCollapsedSidebarButtonLeft(),
+          left,
           top: COLLAPSED_SIDEBAR_CHROME_CENTER_TOP,
           WebkitAppRegion: "no-drag",
         } as React.CSSProperties & { WebkitAppRegion: string }

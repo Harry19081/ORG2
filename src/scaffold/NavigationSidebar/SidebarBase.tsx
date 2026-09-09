@@ -2,7 +2,8 @@
  * SidebarBase
  *
  * The foundational wrapper for all sidebar components.
- * Handles: transparent sidebar surface, resize, collapse, traffic lights spacing.
+ * Handles: transparent sidebar surface, resize, collapse, and the chrome row
+ * (traffic-light spacing on macOS, the in-flow toggle group elsewhere).
  *
  * @example
  * ```tsx
@@ -20,6 +21,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 import AnyIcon from "@src/components/AnyIcon";
 import Button from "@src/components/Button";
+import SessionHistoryNav from "@src/components/SessionHistoryNav";
 import { SIDEBAR_CHROME_BUTTON_HOVER_CLASS } from "@src/components/SidebarChromeIconButton";
 import Tooltip from "@src/components/Tooltip";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
@@ -29,7 +31,7 @@ import {
 } from "@src/config/windowChromeRadius";
 import { createLogger } from "@src/hooks/logger";
 import { useSettingValue } from "@src/hooks/settings/useSettings";
-import { getCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
+import { useCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useSidebarState } from "@src/hooks/ui/sidebar/useSidebarState";
 import { Add01Icon } from "@src/icons";
 import {
@@ -42,9 +44,9 @@ import {
   DEFAULT_SIDEBAR_WIDTH,
   MIN_SIDEBAR_WIDTH,
 } from "@src/store/ui/sidebarAtom";
-import { windowFullscreenAtom } from "@src/store/ui/uiAtom";
 import { popupNativeMenu } from "@src/util/platform/tauri/nativeMenuPopup";
 
+import { SidebarChromeToggle } from "./SidebarChromeToggle";
 import { SIDEBAR_STYLE, SIDEBAR_TOOLTIP_HOVER_DELAY } from "./config";
 import { useForceVisibleSidebar } from "./contexts/ForceVisibleContext";
 import type { SidebarBaseProps } from "./types";
@@ -53,9 +55,6 @@ const log = createLogger("SidebarBase");
 
 const HOST_DESKTOP_KIND = resolveHostDesktop();
 const IS_MACOS_HOST = HOST_DESKTOP_KIND === HOST_DESKTOP.MACOS;
-/** Footprint of `PinnedSidebarChrome` past the traffic lights (inset + arrows + toggle). */
-const PINNED_CHROME_RESERVED_WIDTH =
-  getCollapsedSidebarChromeOffset() - SIDEBAR_STYLE.trafficLightsPadding;
 const IS_WINDOWS_HOST = HOST_DESKTOP_KIND === HOST_DESKTOP.WINDOWS;
 const IS_WINDOWS_OR_LINUX_HOST =
   HOST_DESKTOP_KIND === HOST_DESKTOP.WINDOWS ||
@@ -88,8 +87,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     addTooltipContent,
     beforeAddNewActions,
     headerActions,
-    hostTopBarLeadingContent,
-    macTopBarFollowingContent,
+    topBarFollowingContent,
   }) => {
     const sidebarContainerRef = useRef<HTMLDivElement>(null);
     const {
@@ -115,7 +113,9 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       );
     }, [sidebarSelectedRowOpacity]);
     const hideSidebarShortcut = useShortcutKeys("toggle_sidebar");
-    const isFullscreen = useAtomValue(windowFullscreenAtom);
+    // macOS: traffic lights (or the full-screen edge inset) plus the pinned
+    // toggle + Back / Forward group the row only reserves space under.
+    const pinnedChromeOffset = useCollapsedSidebarChromeOffset();
     const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
     const sidebarOpacityStyle = useMemo(
       () => getSidebarSurfaceBackgroundStyle(backgroundConfig.sidebarOpacity),
@@ -238,53 +238,51 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
 
     const sidebarTopChromeClassName = SIDEBAR_TOP_CHROME_CLASS_NAME;
 
-    // Traffic lights section
-    const renderTrafficLightsSpace = () => {
+    // Chrome row: the 36px title-bar row every host places its sidebar chrome
+    // in. macOS keeps the traffic lights and the pinned toggle group on the
+    // left in window space and only reserves the space under them; every
+    // other host draws the same toggle + Back / Forward group in flow at the
+    // 8px inset the collapsed-sidebar hosts use, so it holds its spot across
+    // both states. Add-new and the extra actions sit at the right edge.
+    const renderChromeRow = () => {
       if (!includeTrafficLightSpace) return null;
 
-      // In fullscreen mode, traffic lights are hidden, so no padding needed
-      const trafficLightPadding =
-        IS_WINDOWS_OR_LINUX_HOST || isFullscreen
-          ? 0
-          : SIDEBAR_STYLE.trafficLightsPadding;
       const alignmentClassName = IS_WINDOWS_OR_LINUX_HOST
-        ? hostTopBarLeadingContent
-          ? "justify-between pl-3 pr-2"
-          : "justify-between pl-5 pr-2"
+        ? "justify-between pl-2 pr-2"
         : "justify-end pr-2";
 
       return (
         <div
           className={`flex flex-nowrap items-center gap-1 ${alignmentClassName}`}
           data-tauri-drag-region
+          data-testid="sidebar-chrome-row"
           style={
             {
               height: `${SIDEBAR_STYLE.topBarHeight}px`,
               // Only macOS needs an inline reserve for the traffic lights.
               // Windows/Linux (and browser mode, which resolves to Linux) must
               // fall through to the alignment class above — an inline `0px`
-              // would beat `pl-3` and pull the top bar flush to the sidebar
-              // edge, out of line with the list rows below it.
+              // would beat `pl-2` and pull the group flush to the sidebar
+              // edge, out of line with the collapsed-sidebar hosts.
               paddingLeft: IS_WINDOWS_OR_LINUX_HOST
                 ? undefined
-                : `${trafficLightPadding + PINNED_CHROME_RESERVED_WIDTH}px`,
+                : `${pinnedChromeOffset}px`,
               WebkitAppRegion: IS_WINDOWS_HOST ? "no-drag" : "drag",
             } as React.CSSProperties
           }
         >
           {IS_WINDOWS_OR_LINUX_HOST ? (
-            hostTopBarLeadingContent ? (
-              <div
-                className="min-w-0 flex-1"
-                style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-              >
-                {hostTopBarLeadingContent}
-              </div>
-            ) : (
-              <span className="text-[13px] font-semibold tracking-wide text-text-2 select-none">
-                ORG2
-              </span>
-            )
+            <div
+              className="flex shrink-0 items-center gap-px"
+              data-testid="sidebar-chrome-leading-group"
+              style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+            >
+              <SidebarChromeToggle variant="sidebar" />
+              <SessionHistoryNav
+                variant="sidebar"
+                tooltipMouseEnterDelay={SIDEBAR_TOOLTIP_HOVER_DELAY}
+              />
+            </div>
           ) : null}
           <div
             className={`flex shrink-0 items-center gap-px ${sidebarTopChromeClassName}`}
@@ -348,11 +346,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
                 {headerActions}
               </div>
             ) : null}
-
-            {/* macOS: the toggle lives in `PinnedSidebarChrome`, pinned in
-                window space after the traffic lights; this row only keeps
-                the space under it clear. */}
-            {IS_MACOS_HOST ? null : <div className="h-[28px] w-[28px]" />}
           </div>
         </div>
       );
@@ -392,8 +385,8 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
             aria-hidden
           />
         )}
-        {renderTrafficLightsSpace()}
-        {IS_MACOS_HOST ? macTopBarFollowingContent : null}
+        {renderChromeRow()}
+        {topBarFollowingContent}
         {header}
         <div className="flex flex-1 flex-col overflow-hidden">
           {resolvedChildren}

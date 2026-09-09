@@ -70,10 +70,8 @@ export interface NavigationSidebarProps {
   beforeAddNewActions?: React.ReactNode;
   /** Extra controls next to add-new (passed to SidebarBase) */
   headerActions?: React.ReactNode;
-  /** Leading content in the Windows/Linux sidebar chrome row. */
-  hostTopBarLeadingContent?: React.ReactNode;
-  /** Equivalent content rendered below the traffic-light row on macOS. */
-  macTopBarFollowingContent?: React.ReactNode;
+  /** Content rendered in its own row directly below the chrome row. */
+  topBarFollowingContent?: React.ReactNode;
   /** Preserve top padding for the scrollable menu list. */
   listTopPadding?: boolean;
   /** Optional control row rendered before pinned/list content. */
@@ -197,8 +195,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
     addTooltipContent,
     beforeAddNewActions,
     headerActions,
-    hostTopBarLeadingContent,
-    macTopBarFollowingContent,
+    topBarFollowingContent,
     listTopPadding = false,
     preListContent,
     isLoading = false,
@@ -337,8 +334,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
         addTooltipContent={addTooltipContent}
         beforeAddNewActions={beforeAddNewActions}
         headerActions={headerActions}
-        hostTopBarLeadingContent={hostTopBarLeadingContent}
-        macTopBarFollowingContent={macTopBarFollowingContent}
+        topBarFollowingContent={topBarFollowingContent}
         solidSurface={solidSurface}
       >
         {preListContent}

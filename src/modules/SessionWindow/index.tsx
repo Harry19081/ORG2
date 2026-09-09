@@ -26,6 +26,7 @@ import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { hasMacWindowChrome } from "@src/config/windowChromeRadius";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { DataProvider } from "@src/contexts/workspace/DataContext";
 import { useReloadSession } from "@src/engines/ChatPanel/ChatHistory/hooks/useReloadSession";
@@ -56,7 +57,8 @@ import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewC
 import { sessionByIdAtom } from "@src/store/session";
 import type { SessionContinuation } from "@src/store/session/sessionTabPlacementAtom";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
-import { isMacOS, isWindows } from "@src/util/platform/tauri";
+import { windowFullscreenAtom } from "@src/store/ui/uiAtom";
+import { isWindows } from "@src/util/platform/tauri";
 import { isHumanSession } from "@src/util/session/sessionDispatch";
 
 /** Path the detached window navigates to for one session. Must stay in sync
@@ -145,6 +147,8 @@ const SessionWindowContent: React.FC<{ sessionId: string }> = memo(
     }, [sessionName]);
 
     const windowsHost = isWindows();
+    // Native full screen hides the macOS traffic lights; drop their reserve.
+    const isFullscreen = useAtomValue(windowFullscreenAtom);
 
     // The `data-tauri-drag-region` attribute only reacts to mousedowns whose
     // TARGET carries the attribute — child elements swallow most of the row.
@@ -180,7 +184,10 @@ const SessionWindowContent: React.FC<{ sessionId: string }> = memo(
           data-tauri-drag-region={windowsHost ? undefined : true}
           onMouseDown={handleHeaderMouseDown}
           style={{
-            paddingLeft: isMacOS() ? MACOS_TRAFFIC_LIGHTS_INSET_PX : 12,
+            paddingLeft:
+              hasMacWindowChrome() && !isFullscreen
+                ? MACOS_TRAFFIC_LIGHTS_INSET_PX
+                : 12,
             ...(windowsHost
               ? CHAT_PANEL_HEADER_NO_DRAG_STYLE
               : CHAT_PANEL_HEADER_DRAG_STYLE),
