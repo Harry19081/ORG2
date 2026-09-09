@@ -44,7 +44,8 @@
     "projectManager": "Project Manager",
     "diff": "Diff",
     "colleagues": "Collègues",
-    "terminals": "Terminaux"
+    "terminals": "Terminaux",
+    "openSourceRepo": "Ouvrir le repo source"
   },
   "routes": {
     "session": "Chat",
@@ -163,7 +164,8 @@
       "duration30m": "30 minutes",
       "duration1h": "1 heure",
       "duration2h": "2 heures",
-      "durationTomorrow": "Demain"
+      "durationTomorrow": "Demain",
+      "unknownRole": "Rôle inconnu"
     },
     "guide": {
       "trigger": "Ouvrir le guide",
@@ -344,7 +346,8 @@
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
-      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry."
+      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
+      "forkSetupReused": "Reprise avec votre dernière configuration · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -685,7 +688,9 @@
     "comments": {
       "actionError": "L'action a échoué — veuillez réessayer",
       "unresolvedBadge_one": "{{count}} commentaire non résolu",
-      "unresolvedBadge": "{{count}} commentaires non résolus"
+      "unresolvedBadge": "{{count}} commentaires non résolus",
+      "unreadBadge_one": "{{count}} message non lu",
+      "unreadBadge": "{{count}} messages non lus"
     },
     "sharingFloor": {
       "label": "Niveau de partage minimal",
@@ -835,5 +840,60 @@
       "memberNote": "Activé par un administrateur — les sessions éligibles sont envoyées en arrière-plan sans devoir ouvrir cet espace de travail."
     },
     "userName": "Nom d’utilisateur"
+  },
+  "myRole": {
+    "deleteRoleMessage": "« {{name}} » sera supprimé. Cette action est irréversible.",
+    "activeBadge": "Actif",
+    "addRole": "Ajouter un rôle personnalisé",
+    "builtInTitle": "Rôles intégrés",
+    "customEmpty": "Aucun rôle personnalisé pour l’instant. Ajoutez-en un pour décrire une posture que les trois rôles intégrés ne couvrent pas — ex. « Travail profond », « Pair programming » ou « D’astreinte ».",
+    "customTitle": "Rôles personnalisés",
+    "deleteRoleCancel": "Annuler",
+    "deleteRoleOk": "Supprimer",
+    "deleteRoleTitle": "Supprimer le rôle ?",
+    "followUpSuggestionsDesc": "Suggérer de possibles prochaines étapes après un tour d’élément de travail terminé. Cela utilise une requête modèle supplémentaire.",
+    "followUpSuggestionsLabel": "Suggestions de suite de l’Agent",
+    "goalMaxTurnsDesc": "Continuer à travailler sur ma dernière demande pendant jusqu’à N tours supplémentaires après le moment où l’agent s’arrêterait normalement (0 = désactivé).",
+    "goalMaxTurnsLabel": "Budget de poursuite de l’objectif",
+    "guidanceLabel": "Consignes pour l’Agent",
+    "guidancePlaceholder": "Comment l’agent doit-il adapter son comportement quand ce rôle est actif ?",
+    "modeSwitchAutoPlanDesc": "Basculer automatiquement les suggestions de mode Plan en attente à l’expiration de leur délai de confirmation.",
+    "modeSwitchAutoPlanLabel": "Plan automatique au changement de mode",
+    "newRoleDefaultLabel": "Rôle personnalisé",
+    "pageDescription": "Définissez le rôle que vous jouez en ce moment. L’agent lit les consignes du rôle actif et adapte son comportement en conséquence — par exemple en posant moins de questions de clarification quand vous êtes concentré, ou en regroupant les résumés quand vous êtes absent.",
+    "pageTitle": "Mes rôles",
+    "planAutoApproveDesc": "Approuver automatiquement les plans en attente après N secondes (0 = m’attendre).",
+    "planAutoApproveLabel": "Approbation automatique des plans",
+    "questionAutoSkipDesc": "Ignorer automatiquement les questions de l’agent en attente après N secondes (0 = m’attendre).",
+    "questionAutoSkipLabel": "Saut automatique des questions",
+    "roleNameLabel": "Nom",
+    "roleNamePlaceholder": "Nom du rôle",
+    "stanceAutonomous": "Autonome — ne jamais m’attendre",
+    "stanceDeferAndBatch": "Différer et regrouper — travailler d’abord, demander ensuite",
+    "stanceDesc": "Comment l’agent gère les décisions bloquantes quand ce rôle est actif.",
+    "stanceInteractive": "Interactif — me demander librement",
+    "stanceLabel": "Posture de comportement"
+  },
+  "explore": {
+    "search": "Rechercher",
+    "searching": "Recherche...",
+    "searchPlaceholder": "Rechercher des dépôts GitHub (ex. language:rust tauri)",
+    "clone": "Cloner",
+    "cloning": "Clonage...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "{{name}} cloné",
+    "cloneFailed": "Échec du clonage",
+    "cloneNoTarget": "Aucun dossier d’espace de travail par défaut configuré. Définissez-en un dans les Paramètres.",
+    "errorTitle": "Échec de la recherche",
+    "noResultsTitle": "Aucun dépôt correspondant",
+    "noResultsSubtitle": "Essayez une autre requête ou un autre tri.",
+    "resultsCount": "{{shown}} sur {{total}} dépôts",
+    "partial": "(partiel — délai de recherche dépassé)",
+    "sort": {
+      "bestMatch": "Meilleure correspondance",
+      "stars": "Étoiles",
+      "updated": "Mis à jour récemment",
+      "forks": "Forks"
+    }
   }
 }

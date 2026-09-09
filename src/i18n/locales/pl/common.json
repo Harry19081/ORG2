@@ -12,14 +12,17 @@
     },
     "sections": {
       "reviewRequested": "Prośba o przegląd",
-      "authoredByMe": "Utworzone przeze mnie"
+      "authoredByMe": "Utworzone przeze mnie",
+      "updates": "Aktualizacje"
     },
     "status": {
       "read": "Przeczytane",
       "unread": "Nieprzeczytane"
     },
     "row": {
-      "ariaLabel": "{{title}}, {{status}}"
+      "ariaLabel": "{{title}}, {{status}}",
+      "issueSource": "Issue {{repository}}",
+      "issueSourceFallback": "Issue"
     },
     "empty": {
       "title": "Nic tu jeszcze nie ma",
@@ -37,6 +40,10 @@
       "noResults": {
         "title": "Brak wyników",
         "subtitle": "Żaden element nie pasuje do „{{query}}”."
+      },
+      "archived": {
+        "title": "Brak zarchiwizowanych elementów",
+        "subtitle": "Zarchiwizowane elementy pojawią się tutaj."
       }
     },
     "loading": "Wczytywanie skrzynki zespołu…",
@@ -87,7 +94,17 @@
       "identityUnavailable": "Nie udało się zweryfikować Twojej tożsamości zespołowej. Sprawdź swój profil projektu przed odpowiedzią.",
       "rowPending": "Od {{name}} · Oczekuje na odpowiedź",
       "rowAccepted": "Przekazanie zaakceptowane · {{status}} · {{priority}}",
-      "rowReturned": "Zwrócone przez {{name}} · {{status}} · {{priority}}"
+      "rowReturned": "Zwrócone przez {{name}} · {{status}} · {{priority}}",
+      "destination": "Miejsce docelowe",
+      "chooseDestination": "Wybierz miejsce docelowe",
+      "cloudDestination": "{{name}} · Skrzynka zespołu",
+      "validation": {
+        "title_required": "Wpisz tytuł elementu pracy.",
+        "project_required": "Wybierz miejsce docelowe.",
+        "project_unavailable": "To miejsce docelowe nie jest już dostępne. Wybierz inne.",
+        "recipient_required": "Wybierz odbiorcę.",
+        "recipient_unavailable": "Ten odbiorca nie jest już dostępny. Wybierz innego odbiorcę."
+      }
     },
     "errors": {
       "loadTitle": "Nie można wczytać skrzynki zespołu",
@@ -104,7 +121,10 @@
       "workItemContext": "Część kontekstu projektu jest niedostępna. Element pracy jest nadal użyteczny.",
       "workItemLoad": "Nie można wczytać tego elementu pracy. Spróbuj ponownie.",
       "githubIssueLoad": "Nie można załadować zgłoszenia GitHub dla tego elementu pracy. Dane lokalne są nadal wyświetlane.",
-      "workItemUpdate": "Nie można zapisać ostatniej zmiany elementu pracy. Spróbuj ponownie."
+      "workItemUpdate": "Nie można zapisać ostatniej zmiany elementu pracy. Spróbuj ponownie.",
+      "archive": "Nie można zarchiwizować tego elementu. Spróbuj ponownie.",
+      "unarchive": "Nie można przywrócić tego elementu. Spróbuj ponownie.",
+      "mutePreferences": "Nie można zaktualizować kategorii powiadomień. Spróbuj ponownie."
     },
     "detail": {
       "assignedSubtitle": "Przypisany element pracy",
@@ -117,7 +137,9 @@
     "actions": {
       "markRead": "Oznacz jako przeczytane",
       "markUnread": "Oznacz jako nieprzeczytane",
-      "openWorkItem": "Otwórz element pracy"
+      "openWorkItem": "Otwórz element pracy",
+      "archive": "Archiwizuj",
+      "unarchive": "Przywróć do skrzynki"
     },
     "workItemStatus": {
       "backlog": "Zaległości",
@@ -134,6 +156,26 @@
       "medium": "Średni",
       "high": "Wysoki",
       "urgent": "Pilny"
+    },
+    "notifications": {
+      "assignmentTitle": "Przypisano Ci nowy element pracy",
+      "mentionTitle": "{{name}} wspomniał(a) o Tobie",
+      "handoffTitle": "Przekazanie od {{name}}",
+      "multipleTitle": "{{count}} nowych aktualizacji w skrzynce zespołu",
+      "multipleBody": "Otwórz skrzynkę zespołu, aby przejrzeć przypisania i wzmianki."
+    },
+    "mute": {
+      "title": "Wycisz kategorie aktualizacji"
+    },
+    "events": {
+      "mention": "Wzmianka w komentarzu",
+      "discussion_updated": "Zaktualizowano dyskusję",
+      "run_failed": "Uruchomienie nie powiodło się",
+      "status_changed": "Zmieniono status",
+      "assignee_changed": "Zmieniono osobę przypisaną",
+      "priority_changed": "Zmieniono priorytet",
+      "dates_changed": "Zmieniono daty",
+      "child_completed": "Ukończono podrzędny element pracy"
     }
   },
   "windowChrome": {
@@ -350,7 +392,9 @@
     "comingSoon": "Wkrótce",
     "clearSelection": "Wyczyść zaznaczenie",
     "uiSettings": "Ustawienia interfejsu",
-    "clearAll": "Wyczyść wszystko"
+    "clearAll": "Wyczyść wszystko",
+    "openOnGitHub": "Otwórz na GitHub",
+    "createPullRequest": "Utwórz pull request"
   },
   "status": {
     "yes": "Tak",
@@ -584,7 +628,29 @@
     "noAppliedCommit": "No linked commit yet",
     "noSessionsForFile": "No sessions found for this file",
     "committedRate": "Scommitowane",
-    "email": "Email"
+    "email": "Email",
+    "noPullRequestForBranch": "Dla tej gałęzi nie ma jeszcze pull requesta.",
+    "creatingPullRequest": "Tworzenie…",
+    "failedToLoadPullRequest": "Nie udało się wczytać pull requesta",
+    "noCommitsInPullRequest": "Brak commitów w tym pull requeście",
+    "prStatus": {
+      "open": "Otwarty",
+      "merged": "Scalony",
+      "closed": "Zamknięty",
+      "draft": "Szkic",
+      "unknown": "Nieznany"
+    },
+    "sendingNow": "wysyłanie…",
+    "issues": "Issues",
+    "noIssues": "Brak issues",
+    "openIssues": "Otwarte",
+    "closedIssues": "Zamknięte",
+    "issueComments": "{{count}} komentarz",
+    "issueComments_one": "1 komentarz",
+    "issueComments_other": "{{count}} komentarze",
+    "tokens": "Tokeny",
+    "actions": "Akcje",
+    "all": "Wszystkie"
   },
   "searchModes": {},
   "tabs": {
@@ -660,7 +726,10 @@
       },
       "workflow": "Usługa workflow jest chwilowo niedostępna. Spróbuj ponownie później."
     },
-    "unknownError": "Wystąpił nieznany błąd"
+    "unknownError": "Wystąpił nieznany błąd",
+    "componentLoadingFailed": "Nie udało się wczytać komponentu",
+    "noLocalPath": "Brak dostępnej ścieżki lokalnej",
+    "openInFinderFailed": "Nie udało się otworzyć w Finderze"
   },
   "confirmation": {
     "delete": "Czy na pewno chcesz to usunąć?",
@@ -887,7 +956,10 @@
     "noRepoSelected": "Nie wybrano Repo",
     "previewUnavailable": "Podgląd niedostępny",
     "selectRepositoryFromWorkspace": "Wybierz repozytorium z obszaru roboczego",
-    "noData": "Brak danych"
+    "noData": "Brak danych",
+    "noResults": "Brak wyników",
+    "noSessionHistoryForFile": "Nie znaleziono aktywności sesji dla {{file}}",
+    "noSessionHistory": "Brak historii sesji"
   },
   "inbox": {
     "scrollToBottom": "Przewiń na dół",
@@ -984,9 +1056,26 @@
       "tlsDevNote": "Uwaga: Niektóre strony HTTPS (jak GitHub) mogą wyświetlać błędy TLS w trybie deweloperskim z powodu weryfikacji certyfikatu. Spróbuj witryn HTTP lub prostych HTTPS, takich jak example.com.",
       "siteUnreachableTitle": "Nie można dotrzeć do tej witryny",
       "webviewHiddenTitle": "Widok sieciowy tymczasowo ukryty",
-      "webviewHiddenBody": "Zamknij menu lub okno dialogowe, aby wyświetlić go ponownie."
+      "webviewHiddenBody": "Zamknij menu lub okno dialogowe, aby wyświetlić go ponownie.",
+      "embeddedFallbackTitle": "Ta witryna może nie działać we wbudowanej przeglądarce",
+      "embeddedFallbackBody": "Niektóre witryny blokują lub nie renderują się w WebView aplikacji. Jeśli strona pozostaje pusta, otwórz ją w przeglądarce systemowej.",
+      "currentUrl": "Bieżący URL"
     },
-    "unsavedChangesTitle": "Niezapisane zmiany"
+    "unsavedChangesTitle": "Niezapisane zmiany",
+    "ci": {
+      "openPullRequest": "Otwórz pull request na GitHub",
+      "viewDetails": "Zobacz szczegóły sprawdzenia",
+      "refresh": "Odśwież sprawdzenia",
+      "refreshing": "Odświeżanie…",
+      "lastFetchedAt": "Ostatnio pobrano o {{time}}",
+      "unavailable": "Nie udało się odczytać sprawdzeń",
+      "sections": {
+        "failed": "Niepowodzenie",
+        "running": "W toku",
+        "skipped": "Pominięte",
+        "passed": "Zaliczone"
+      }
+    }
   },
   "git": {
     "loading": "Ładowanie statusu Git...",
@@ -1080,7 +1169,8 @@
         "approved": "zatwierdził(a) te zmiany",
         "changesRequested": "poprosił(a) o zmiany",
         "reviewDismissed": "odrzucił(a) przegląd",
-        "reviewed": "przejrzał(a)"
+        "reviewed": "przejrzał(a)",
+        "appendedSession": "dołączył(a) sesję"
       },
       "summary": {
         "label": "Podsumowanie pull requestu"
@@ -1206,7 +1296,9 @@
           "mergeBlocked": "GitHub zgłasza niespełnione wymagania scalania"
         },
         "convertToDraft": "Zmień w szkic",
-        "convertedToDraft": "Pull request zmieniony w szkic"
+        "convertedToDraft": "Pull request zmieniony w szkic",
+        "markReady": "Oznacz jako gotowy do recenzji",
+        "markedReady": "Pull request oznaczony jako gotowy do recenzji"
       },
       "flow": {
         "wantsToMergeCommitsInto_one": "chce scalić {{count}} commit do",
@@ -1237,7 +1329,23 @@
         "noLabelCandidates": "Brak dostępnych etykiet",
         "labelsLoadFailed": "Nie udało się wczytać etykiet",
         "labelsUpdated": "Zaktualizowano etykiety"
-      }
+      },
+      "creating": "Tworzenie pull requesta…",
+      "createError": "Nie udało się utworzyć pull requesta",
+      "readyHint": "Gałąź została wypchnięta i jest gotowa na pull request",
+      "neutralHint": "Wypchnij gałąź, aby utworzyć pull request",
+      "noBranch": "Nie wybrano gałęzi",
+      "noRepoPath": "Brak dostępnej ścieżki repozytorium",
+      "notAuthenticated": "Zaloguj się, aby tworzyć pull requesty",
+      "noOriginRemote": "Nie skonfigurowano remote origin",
+      "cannotParseRepoName": "Nie udało się odczytać nazwy repozytorium z remote origin",
+      "authRequired": {
+        "title": "Połącz GitHub",
+        "description": "Przejdź do Ustawienia → Połączenia, aby połączyć konto GitHub."
+      },
+      "navigationTrail": "Nawigacja pull requesta",
+      "failedToLoad": "Nie udało się wczytać pull requestów",
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Pomyślnie wypchnięto zmiany do zdalnego",
@@ -1350,7 +1458,8 @@
         "reviewRequestRemoved": "usunął(-ęła) prośbę o przegląd",
         "reviewed": "przejrzał(a) te zmiany",
         "reviewDismissed": "odrzucił(a) przegląd",
-        "userBlocked": "zablokował(a) tego użytkownika"
+        "userBlocked": "zablokował(a) tego użytkownika",
+        "appendedSession": "dołączył(a) sesję"
       },
       "composer": {
         "addComment": "Dodaj komentarz",
@@ -1382,8 +1491,35 @@
         "count_other": "{{count}} powiązane elementy",
         "unavailable": "Szczegóły niedostępne",
         "unavailableCount_one": "Nie można rozwiązać {{count}} powiązanego elementu",
-        "unavailableCount_other": "Nie można rozwiązać {{count}} powiązanych elementów"
-      }
+        "unavailableCount_other": "Nie można rozwiązać {{count}} powiązanych elementów",
+        "reference": "Odwołanie GitHub"
+      },
+      "title": "Issues",
+      "loading": "Wczytywanie issues…",
+      "empty": "Brak issues ({{state}})",
+      "failedToLoad": "Nie udało się wczytać issues",
+      "failedToCreate": "Nie udało się utworzyć issue",
+      "failedToUpdate": "Nie udało się zaktualizować issue",
+      "failedToComment": "Nie udało się dodać komentarza",
+      "filterAll": "Wszystkie",
+      "filterOpen": "Otwarte",
+      "filterClosed": "Zamknięte",
+      "noGitHubRepo": "Połącz repozytorium GitHub, aby zarządzać issues",
+      "commentPlaceholder": "Dodaj komentarz…",
+      "submitComment": "Komentuj",
+      "newIssueTitlePlaceholder": "Tytuł issue",
+      "newIssueBodyPlaceholder": "Opisz issue (opcjonalnie)…",
+      "authRequired": {
+        "title": "Połącz GitHub",
+        "description": "Przejdź do Ustawienia → Połączenia, aby połączyć konto GitHub."
+      },
+      "reAuthRequired": "Wymagana autoryzacja GitHub",
+      "reAuthDescription": "Twój token GitHub wygasł. Przejdź do Ustawienia → Połączenia, aby połączyć ponownie.",
+      "goToSettings": "Przejdź do ustawień",
+      "loadingTimeline": "Wczytywanie aktywności…",
+      "label": "Issue",
+      "linkedLoading": "Wczytywanie powiązanych elementów",
+      "detailNavigation": "Nawigacja issue"
     }
   },
   "selectors": {
@@ -1404,7 +1540,15 @@
     },
     "modelProperties": {
       "effort": "Wysiłek",
-      "default": "Domyślnie"
+      "default": "Domyślnie",
+      "settings": "Ustawienia modelu",
+      "model": "Model",
+      "speed": "Szybkość",
+      "standard": "Standardowa",
+      "fast": "Szybka",
+      "thinking": "Myślenie",
+      "on": "Wł.",
+      "off": "Wył."
     },
     "shared": {
       "workspace": "Workspace"
@@ -1420,7 +1564,8 @@
         "workspace": "Katalog roboczy",
         "thisOrg": "Ta organizacja",
         "outsideOrg": "Poza tą organizacją",
-        "outsideNamedOrg": "Poza {{org}}"
+        "outsideNamedOrg": "Poza {{org}}",
+        "recent": "Ostatnie"
       },
       "tabs": {},
       "addOptions": {
@@ -1514,7 +1659,8 @@
         "noGithubRemote": "Nie skonfigurowano zdalnego repozytorium GitHub",
         "prSearchScope": "Wyszukiwanie wśród {{count}} wczytanych Pull requests",
         "prLimit": "Wyświetlono do {{count}} otwartych PR",
-        "noPullRequests": "Brak pasujących Pull requests"
+        "noPullRequests": "Brak pasujących Pull requests",
+        "mainWorktree": "Główna"
       },
       "placeholders": {
         "add": "nazwa nowej gałęzi...",
@@ -1543,7 +1689,8 @@
           "label": "Dokumenty",
           "description": "Folder Dokumenty"
         }
-      }
+      },
+      "selectWorktreeSource": "Wybierz gałąź lub pull request dla Worktree"
     },
     "spotlightFooter": {
       "navigate": "Nawiguj",
@@ -1824,6 +1971,12 @@
     "pill": {
       "focus": "Skupienie",
       "allChanges": "Wszystkie zmiany"
+    },
+    "scope": {
+      "main": "Główny checkout",
+      "worktrees": "Worktree",
+      "searchPlaceholder": "Filtruj Worktree…",
+      "switchScopeActive": "Zmień zakres kontroli źródła: {{repo}}, {{branch}}"
     }
   },
   "contextInfo": {
@@ -1845,7 +1998,18 @@
     "manualCompactNoRuntime": "Wyślij wiadomość przed kompaktowaniem",
     "manualCompactFailed": "Kompaktowanie nie powiodło się: {{message}}",
     "manualCompactChannelAttached": "Ta sesja jest zarządzana przez kanał — użyj tam /compact",
-    "manualCompactInstructionsPlaceholder": "Opcjonalnie: na czym skupić podsumowanie"
+    "manualCompactInstructionsPlaceholder": "Opcjonalnie: na czym skupić podsumowanie",
+    "categories": {
+      "unattributed": "Nieprzypisane"
+    },
+    "cacheSaved": "Oszczędność pamięci podręcznej: {{read}} odczyt, {{write}} zapis",
+    "cacheHero": "{{pct}}% z pamięci podręcznej · ~{{tokens}} ponownie użytych w tej turze",
+    "cacheHeroSub": "Buforowanie promptów może obniżyć koszt nawet o 90%",
+    "manualCompactSectionTitle": "Ręczne kompaktowanie",
+    "miniCpmCompactTitle": "Ciche automatyczne kompaktowanie MiniCPM",
+    "miniCpmCompactDescription": "Przetwarza starszy kontekst asynchronicznie",
+    "miniCpmCompactToggleAria": "Włącz ciche automatyczne kompaktowanie MiniCPM",
+    "manualCompactNativeProvider": "Ręczne kompaktowanie obsługuje tu sesje wbudowanego Agenta. Historię natywnego CLI kompaktuj w aplikacji dostawcy."
   },
   "relativeDate": {
     "justNow": "przed chwilą",
@@ -1899,7 +2063,8 @@
     "statusReadyToCreate": "Gotowy do utworzenia katalogu roboczego",
     "defaultName": "Katalog roboczy",
     "defaultNameWithRepo": "Katalog roboczy {{repo}}",
-    "windowTitle": "Katalog roboczy"
+    "windowTitle": "Katalog roboczy",
+    "statusMaxRepos": "Wybrano maksymalnie 5 Repo"
   },
   "database": {
     "databaseFile": "Plik bazy danych",
@@ -2066,11 +2231,51 @@
   },
   "notifications": {
     "taskCancelledToast": "Anulowano „{{name}}”",
-    "taskCompletedToast": "Ukończono „{{name}}”. Otwórz sesję, aby sprawdzić wynik."
+    "taskCompletedToast": "Ukończono „{{name}}”. Otwórz sesję, aby sprawdzić wynik.",
+    "backgroundSession": "Sesja w tle",
+    "taskCompletedTitle": "Zadanie ukończone",
+    "taskCompletedBody": "„{{name}}” ukończono — gotowe do przeglądu",
+    "openSessionAction": "Otwórz sesję",
+    "taskFailedTitle": "Zadanie nie powiodło się",
+    "taskFailedBody": "„{{name}}” nie powiodło się{{detail}}"
   },
   "documentOpen": {
     "openInDefault": "Otwórz w {{name}}",
     "openDefaultApp": "Otwórz w domyślnej aplikacji",
-    "openExternally": "Otwórz w zewnętrznej aplikacji"
+    "openExternally": "Otwórz w zewnętrznej aplikacji",
+    "label": "Otwórz w…",
+    "defaultApp": "Domyślna aplikacja",
+    "appDefault": "{{name}} (domyślna)",
+    "loading": "Wczytywanie aplikacji…",
+    "loadFailed": "Aplikacje niedostępne — otwórz ponownie, aby spróbować jeszcze raz",
+    "openFailed": "Nie udało się otworzyć dokumentu",
+    "saveFirst": "Zapisz lub odrzuć zmiany przed otwarciem w innej aplikacji"
+  },
+  "sqlEditor": {
+    "placeholder": "Wpisz zapytanie SQL...",
+    "format": "Formatuj",
+    "runQueryToSeeResults": "Uruchom zapytanie, aby zobaczyć wyniki",
+    "executingQuery": "Wykonywanie zapytania...",
+    "queryFailed": "Zapytanie nie powiodło się",
+    "queryCompleted": "Zapytanie ukończone",
+    "noResults": "Zapytanie nie zwróciło wyników",
+    "rowCount_one": "{{count}} wiersz",
+    "rowCount_other": "{{count}} wierszy",
+    "press": "Naciśnij",
+    "toRun": "aby uruchomić",
+    "nullValue": "NULL",
+    "booleanTrue": "true",
+    "booleanFalse": "false"
+  },
+  "chatImage": {
+    "maxReached": "Dozwolone maksymalnie {{max}} obrazów",
+    "remainingWarning": "Można dodać jeszcze tylko {{remaining}} obraz(ów) (maks. {{max}})",
+    "processFailed": "Nie udało się przetworzyć obrazu",
+    "loadFailed": "Nie udało się wczytać obrazu: {{fileName}}"
+  },
+  "navigation": {
+    "goToSection": "Przejdź do {{label}}, sekcja {{current}} z {{total}}",
+    "section": "Sekcja {{current}}",
+    "sectionPosition": "Sekcja {{current}} z {{total}}"
   }
 }

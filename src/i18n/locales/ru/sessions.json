@@ -14,7 +14,15 @@
     "tooltip": "Оценочная атрибуция инструмента. Метод: {{method}}. Ввод: {{inputBytes}} bytes. Вывод: {{outputBytes}} bytes. Решение: {{decisionTokens}} Token. Контекст: {{contextTokens}} Token. Follow-up: {{followupTokens}} Token. Связанный LLM cache read: {{cacheReadTokens}} Token. Связанный LLM cache write: {{cacheWriteTokens}} Token."
   },
   "humanSession": {
-    "titlePlaceholder": "Название (необязательно)"
+    "titlePlaceholder": "Название (необязательно)",
+    "createPlaceholder": "Добавьте первую заметку… Введите / для Skills или @, чтобы упомянуть сессию.",
+    "createAction": "Создать рабочий журнал",
+    "entryLabel": "Запись рабочего журнала",
+    "appendPlaceholder": "Добавьте заметку… Введите / для Skills, @ для упоминания сессии или перетащите её сюда.",
+    "loading": "Загрузка рабочего журнала",
+    "createFailed": "Не удалось создать рабочий журнал",
+    "loadFailed": "Не удалось загрузить рабочий журнал",
+    "appendFailed": "Не удалось добавить заметку"
   },
   "history": {
     "untitledSession": "Session без названия",
@@ -26,7 +34,9 @@
       "rounds": "Раунды",
       "roundCount_one": "{{count}} раунд",
       "roundCount_other": "{{count}} раундов",
-      "agentWorked": "Agent работал"
+      "agentWorked": "Agent работал",
+      "cliNativeStore": "Нативное хранилище CLI",
+      "sessionId": "ID сессии"
     }
   },
   "kanban": {
@@ -208,7 +218,11 @@
         "installed": "Установлено",
         "notInstalled": "Не обнаружено",
         "disabled": "Отключено"
-      }
+      },
+      "rescanUpdate": "Обновить",
+      "rescanClear": "Очистить и пересканировать",
+      "externalSessionsToggle": "Внешние сессии",
+      "externalSessionsToggleDesc": "Когда выключено, внешние источники не сканируются и их сессии не загружаются"
     },
     "list": {
       "started": "Начато",
@@ -253,7 +267,10 @@
     "sidebar": {
       "removeDraft": "Удалить черновик",
       "showSubagents": "Показать subagents",
-      "hideSubagents": "Скрыть subagents"
+      "hideSubagents": "Скрыть subagents",
+      "githubIssues": "GitHub Issues",
+      "githubPrs": "GitHub PR",
+      "runs": "Запуски"
     },
     "detail": {
       "title": "Название",
@@ -284,7 +301,9 @@
       "trajectory": "Trajectory",
       "touchedFiles": "Touched files",
       "noTouchedFiles": "No files touched"
-    }
+    },
+    "openRoutineWorkItemError": "Не удалось открыть рабочий элемент",
+    "runsEmpty": "Запусков Routine пока нет"
   },
   "simulator": {
     "captionBarToggleTooltip": "Показать панель сообщений Agent",
@@ -369,7 +388,17 @@
           "empty": "Отправок пока нет",
           "selectSubmission": "Выберите отправку, чтобы посмотреть детали",
           "noCommits": "Commits пока нет",
-          "noPullRequests": "Pull Requests пока нет"
+          "noPullRequests": "Pull Requests пока нет",
+          "labels": {
+            "created": {
+              "commit": "Создан коммит",
+              "pullRequest": "Создан PR"
+            },
+            "mentioned": {
+              "commit": "Упомянут коммит",
+              "pullRequest": "Упомянут PR"
+            }
+          }
         }
       },
       "channelsSidebar": {
@@ -392,7 +421,14 @@
             "requestedInput": "{{subject}} запросил ввод",
             "sentTo": "{{subject}} отправил сообщение {{recipient}}",
             "sentBroadcast": "{{subject}} отправил сообщение нескольким Agent",
-            "sentMessage": "{{subject}} отправил сообщение"
+            "sentMessage": "{{subject}} отправил сообщение",
+            "taskCreateRunning": "{{subject}} создаёт задачу",
+            "taskCreateRejected": "Создание задачи от {{subject}} требует исправления",
+            "taskCreateFailed": "{{subject}} не удалось создать задачу",
+            "taskOperationRunning": "{{subject}} выполняет операцию с задачей",
+            "taskOperationRejected": "Операция с задачей от {{subject}} требует исправления",
+            "taskOperationFailed": "Операция с задачей от {{subject}} не выполнена",
+            "turnLoading": "Сообщение от {{subject}} загружается…"
           }
         },
         "divider": {
@@ -413,6 +449,10 @@
             "Сообщения нет. Превью не дошло. [Нет превью мысли]"
           ],
           "labelThought": "Мысль"
+        },
+        "unloadedTurn": {
+          "loadingBody": "Загрузка сообщения…",
+          "retryBody": "Сообщение не загрузилось — нажмите, чтобы повторить"
         }
       },
       "project": {
@@ -450,7 +490,20 @@
       },
       "followingAgent": "Отслеживание Agent",
       "trajectoryAgent": "Следовать траектории Agent",
-      "trajectoryThisApp": "Следовать за этим приложением"
+      "trajectoryThisApp": "Следовать за этим приложением",
+      "filters": {
+        "tooltip": "Фильтр событий",
+        "allEvents": "Все события",
+        "keyInteractions": "Ключевые взаимодействия",
+        "fileChanges": "Изменения файлов",
+        "terminalEvents": "События терминала",
+        "explore": "Исследование",
+        "other": "Другое",
+        "selectedCount": "Фильтров: {{count}}"
+      },
+      "next": "Следующее событие",
+      "previous": "Предыдущее событие",
+      "scrub": "Полоса прокрутки реплея"
     },
     "codeEditor": {
       "switchToListView": "Переключить на список",
@@ -482,7 +535,9 @@
       "waitingForActivity": "Ожидание активности…",
       "viewTaskPrompt": "Показать запрос задачи",
       "taskPromptTitle": "Запрос задачи",
-      "newEventDivider": "Новое событие"
+      "newEventDivider": "Новое событие",
+      "loadingHistory": "Загрузка истории…",
+      "retryHistory": "Не удалось загрузить историю — Повторить"
     },
     "dock": {
       "switchTo": "Переключиться на",
@@ -539,7 +594,15 @@
     "compactCommandDescription": "Обобщить старый контекст, чтобы освободить место. Необязательно: /compact <фокус резюме>",
     "canvasCommandDescription": "Создать новый интерактивный Canvas. Необязательно: /canvas <что создать>",
     "canvasArgHint": "что создать",
-    "newCanvasAction": "Новый Canvas"
+    "newCanvasAction": "Новый Canvas",
+    "pr": {
+      "open": "Открыть PR"
+    },
+    "followUpSuggestions": {
+      "label": "Предлагаемые следующие шаги"
+    },
+    "voicePermissionSheetRetry": "Попробовать снова",
+    "voicePermissionSheetTitle": "Требуется доступ к микрофону"
   },
   "chat": {
     "planApprovedLabel": "Выполняется утверждённый план",
@@ -695,7 +758,9 @@
     "tabs": {
       "newTerminal": "Новый Терминал",
       "newTab": "Новая вкладка",
-      "terminals": "Терминалы"
+      "terminals": "Терминалы",
+      "goBack": "Назад",
+      "goForward": "Вперёд"
     },
     "sideChat": {
       "title": "Боковой чат",
@@ -852,7 +917,8 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Внешняя история"
+        "externalHistory": "Внешняя история",
+        "human": "Рабочий журнал"
       },
       "fields": {
         "session": "Session",
@@ -926,7 +992,15 @@
         "assignedToMe": "Назначенные мне",
         "createdByMe": "Созданные мной",
         "filters": "Filters",
-        "openInGitHub": "Open in GitHub"
+        "openInGitHub": "Open in GitHub",
+        "pullRequests": {
+          "reviewRequested": "Запрошено ревью",
+          "authoredByMe": "Созданные мной",
+          "otherTodos": "Другие задачи"
+        },
+        "assigneeUpdateNotApplied": "GitHub не применил изменение исполнителя",
+        "assigneeUpdateSuccess": "Исполнители обновлены на GitHub",
+        "updateIssueFailed": "Не удалось обновить issue GitHub"
       }
     },
     "sessionViews": {
@@ -941,9 +1015,25 @@
       "fileCount_one": "{{count}} файл",
       "fileCount_other": "{{count}} файлов",
       "turnCount_one": "{{count}} раунд",
-      "turnCount_other": "{{count}} раундов"
+      "turnCount_other": "{{count}} раундов",
+      "inferredTiming": "Окончание определено по следующему раунду"
     },
-    "parentAgentSender": "Родительский агент"
+    "parentAgentSender": "Родительский агент",
+    "restoreCheckpoint": "Восстановить контрольную точку",
+    "trackAsProject": {
+      "menuItem": "Отслеживать как Project",
+      "success": "Сессия теперь отслеживается как Project"
+    },
+    "permissionDismiss": "Скрыть на этом устройстве",
+    "remoteExecutionNotice": "Это действие будет выполнено на {{desktopName}}.",
+    "conversationNavigator": "Навигатор по разговору",
+    "goToConversationTurn": "Перейти к раунду {{current}} из {{total}}: {{preview}}",
+    "send": "Отправить",
+    "sendFailed": "Не удалось отправить сообщение",
+    "sending": "Отправка…",
+    "typeMessage": "Введите сообщение…",
+    "session": "Сессия",
+    "history": "Сессии"
   },
   "tools": {
     "noResultsFound": "Результатов не найдено",
@@ -982,7 +1072,11 @@
       "toolCalls_one": "{{count}} вызов инструмента",
       "toolCalls": "{{count}} вызовов инструментов",
       "filesChanged_one": "{{count}} файл изменён",
-      "filesChanged": "{{count}} файлов изменены"
+      "filesChanged": "{{count}} файлов изменены",
+      "segmentAria": "Раунд реплея {{number}}",
+      "turnBreakpointsAria": "Точки останова раундов реплея",
+      "segmentTooltip": "Раунд {{number}} · {{duration}} · {{start}}–{{end}}",
+      "segmentTooltipNoRange": "Раунд {{number}} · {{duration}}"
     },
     "turnCollapse": {
       "agentWorkedFor": "Agent работал {{value}}",
@@ -1758,7 +1852,8 @@
     "nFiles_other": "{{count}} файлов"
   },
   "modelPill": {
-    "immutableInSession": "Источник ключа, тип Agent и тарифный уровень фиксируются при запуске сессии. Чтобы изменить их, начните новую сессию."
+    "immutableInSession": "Источник ключа, тип Agent и тарифный уровень фиксируются при запуске сессии. Чтобы изменить их, начните новую сессию.",
+    "appliesNextTurn": "Аккаунт переключён. Текущий ответ по-прежнему выполняется на предыдущем аккаунте; новый аккаунт вступит в силу со следующего раунда."
   },
   "creator": {
     "repoChromeMenu": {
@@ -1779,7 +1874,8 @@
       "sourceTabs": "Источник рабочего дерева",
       "tabs": {
         "github": "GitHub",
-        "branch": "Ветка"
+        "branch": "Ветка",
+        "pr": "PR"
       },
       "refreshGithub": "Обновить список GitHub",
       "githubSearch": "Поиск PR и задач GitHub",
@@ -1794,7 +1890,11 @@
       "branchEmpty": "В этом репозитории ветки не найдены.",
       "branchNoMatches": "Подходящих веток нет.",
       "branchUseAsRef": "Использовать «{{value}}» как ref",
-      "branchCustomRefHint": "Тег, коммит или любой Git ref"
+      "branchCustomRefHint": "Тег, коммит или любой Git ref",
+      "sourceTypeAria": "Выберите ветку или pull request",
+      "prSearch": "Поиск pull requests",
+      "prSearchAria": "Поиск pull requests",
+      "prNoMatches": "Подходящих pull requests нет."
     },
     "solveWorkItem": "Решить рабочий элемент",
     "launchpadQuestion": "Что вы хотите создать с помощью",
@@ -1814,7 +1914,8 @@
       "workItems": "Рабочие элементы",
       "back": "Назад",
       "recent": "Недавние",
-      "showMore": "Показать ещё: {{remaining}}"
+      "showMore": "Показать ещё: {{remaining}}",
+      "session": "Сессия"
     },
     "slashMenu": {
       "mode": "Режим",
@@ -1864,7 +1965,8 @@
       "heading2": "Заголовок 2",
       "bulletList": "Маркированный список",
       "numberedList": "Нумерованный список",
-      "taskList": "Список задач"
+      "taskList": "Список задач",
+      "formatting": "Форматирование текста"
     },
     "regionNoticeTitle": "Возможные региональные ограничения",
     "regionNoticeBodyProvider": "Вы находитесь в {{location}}. Некоторые модели могут быть недоступны в вашем регионе.",
@@ -1899,13 +2001,21 @@
         "noRepo": "Выберите репозиторий — каждому раннеру нужно собственное рабочее дерево",
         "notEnoughRunners": "Настройте не менее двух готовых к запуску раннеров"
       }
-    }
+    },
+    "cliVersionOutdated": {
+      "title": "{{cli}} требует обновления ({{installed}} > {{latest}})",
+      "muteUntilNextVersion": "Не уведомлять до следующей версии",
+      "refresh": "Перепроверить версию {{cli}} CLI",
+      "unknownVersion": "неизвестно"
+    },
+    "mode": "Режим редактора"
   },
   "planner": {
     "modes": {
       "build": "Build",
       "ask": "Ask",
-      "plan": "Plan"
+      "plan": "Plan",
+      "project": "Project"
     },
     "runningLocation": {
       "local": "This Mac",
@@ -1949,7 +2059,35 @@
       "unreadCount": "{{count}} непрочитано",
       "pauseRun": "Приостановить выполнение",
       "resumeRun": "Возобновить выполнение",
-      "viewCoordinatorHistory": "View coordinator chat history"
+      "viewCoordinatorHistory": "View coordinator chat history",
+      "taskWindowTruncated": "Показаны первые {{visible}} из {{total}} задач. Откройте детали задачи для полных результатов.",
+      "planApproval": {
+        "title": "План готов к утверждению",
+        "from": "Представлен: {{member}}",
+        "approve": "Утвердить план",
+        "approveEdits": "Утвердить правки",
+        "requestChanges": "Запросить изменения",
+        "sendFeedback": "Отправить отзыв",
+        "editLabel": "Редактировать представленный план",
+        "feedbackLabel": "Отзыв о доработке плана",
+        "feedbackPlaceholder": "Сообщите Planner, что именно нужно изменить…",
+        "paused": "Возобновите выполнение, прежде чем отвечать на этот план.",
+        "staleError": "Этот план уже обработан или заменён. Обновите, чтобы увидеть последнюю ревизию",
+        "submitFailed": "Не удалось сохранить ответ на план. Попробуйте ещё раз"
+      },
+      "phase": {
+        "coordinating": "Координация",
+        "dispatching": "Распределение",
+        "members_working": "Участники работают",
+        "waiting": "Ожидание работы",
+        "awaiting_plan_approval": "Ожидание утверждения плана",
+        "finalizing": "Завершение",
+        "paused": "Приостановлено",
+        "completed": "Завершено",
+        "failed": "Ошибка",
+        "cancelled": "Отменено",
+        "abandoned": "Прервано"
+      }
     },
     "agentOrgIntervention": {
       "title": "Чат с {{member}}",
@@ -2059,7 +2197,13 @@
       "updateStatus": "{{sender}} обновил статус задачи",
       "updateDetail": "{{sender}} обновил детали задачи",
       "get": "{{sender}} просмотрел детали задачи",
-      "list": "{{sender}} просмотрел список задач"
+      "list": "{{sender}} просмотрел список задач",
+      "createRunning": "{{sender}} создаёт задачу",
+      "createRejected": "Создание задачи от {{sender}} требует исправления",
+      "createFailed": "{{sender}} не удалось создать задачу",
+      "updateRunning": "{{sender}} обновляет задачу",
+      "updateRejected": "Обновление задачи от {{sender}} требует исправления",
+      "updateFailed": "{{sender}} не удалось обновить задачу"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator прочитал сообщения, отправленные другими agents"
@@ -2082,18 +2226,27 @@
       "explorations_other": "{{count}} исследований",
       "otherTools_one": "{{count}} другой вызов инструмента",
       "otherTools_other": "{{count}} других вызовов инструментов"
-    }
+    },
+    "loadOlder": "Загрузить более ранние сообщения",
+    "historyLoadFailed": "История недоступна",
+    "triggerLabel": "Групповой чат"
   },
   "orgTask": {
     "create": {
       "title": "Задача назначена",
-      "titleWithOwner": "Назначить задачу: {{ownerName}}"
+      "titleWithOwner": "Назначить задачу: {{ownerName}}",
+      "runningTitle": "Создание задачи",
+      "rejectedTitle": "Создание задачи требует исправления",
+      "failedTitle": "Не удалось создать задачу"
     },
     "update": {
       "titleStatus": "Обновить статус задачи",
       "titleDetail": "Обновить детали задачи",
       "markedAs": "Отмечено как {{status}}",
-      "title": "Задача обновлена"
+      "title": "Задача обновлена",
+      "runningTitle": "Обновление задачи",
+      "rejectedTitle": "Обновление задачи требует исправления",
+      "failedTitle": "Не удалось обновить задачу"
     },
     "get": {
       "title": "Просмотр деталей задачи"
@@ -2101,7 +2254,8 @@
     "list": {
       "title": "Просмотр списка задач",
       "count": "{{taskCount}} задач",
-      "empty": "Нет задач"
+      "empty": "Нет задач",
+      "countLabel": "Задачи"
     },
     "statusLabel": "Статус",
     "assignedBadge": "Назначено",
@@ -2111,6 +2265,11 @@
       "pending": "Ожидает",
       "in_progress": "В работе",
       "completed": "Завершена"
+    },
+    "outcome": {
+      "pending": "В работе",
+      "rejected": "Требует исправления",
+      "failed": "Ошибка"
     }
   },
   "manageAgentDef": {
@@ -2144,7 +2303,8 @@
       "meta": {
         "sender": "От",
         "recipient": "Кому",
-        "subject": "Тема"
+        "subject": "Тема",
+        "status": "Статус"
       },
       "broadcastTitle": {
         "running": "Отправка сообщения нескольким агентам",
@@ -2195,7 +2355,11 @@
     "reload": "Перезагрузить",
     "openExternal": "Открыть в браузере",
     "waiting": "Ожидание контента…",
-    "empty": "Нет содержимого"
+    "empty": "Нет содержимого",
+    "openUrlDescription": "Внешние URL не встраиваются, чтобы избежать расхода памяти на iframe.",
+    "openUrlTitle": "Предпросмотр не встроен",
+    "streaming": "потоковая передача",
+    "titleReact": "Предпросмотр React"
   },
   "runGroup": {
     "open": "Открыть",
@@ -2224,5 +2388,111 @@
   "titleBar": {
     "showDevTools": "Показать DevTools",
     "hideDevTools": "Скрыть DevTools"
+  },
+  "canvasApp": {
+    "empty": "Canvas ещё не отрисован",
+    "sidebarTitle": "Canvas",
+    "noCanvases": "Canvas пока нет",
+    "revisionCanvas": "Canvas",
+    "revisionTitle": "Обновление {{title}}",
+    "revisionReceiving": "Генерация изменения · {{amount}} символов",
+    "revisionApplying": "Применение проверенного изменения…",
+    "revisionDoneTitle": "Обновлено: {{title}}",
+    "revisionFailedTitle": "Не удалось обновить {{title}}",
+    "revisionTargetedSummary": "Точечные изменения: {{amount}} · тот же Canvas",
+    "revisionTargetedSummary_one": "{{count}} точечное изменение · тот же Canvas",
+    "revisionTargetedSummary_other": "{{count}} точечных изменений · тот же Canvas",
+    "revisionReplacementSummary": "Полная замена · {{amount}} символов · тот же Canvas",
+    "revisionUrlSummary": "URL обновлён · тот же Canvas",
+    "revisionGenericSummary": "Существующий Canvas обновлён на месте",
+    "revisionStepsLabel": "Ход обновления Canvas",
+    "compareToggle": "Сравнить",
+    "compareMark": "и",
+    "compareHint": "Выбрано 2 — показан diff",
+    "design": "Дизайн",
+    "designHint": "Выберите элемент для изменения",
+    "designUnavailable": "Дизайн недоступен",
+    "designPromptLabel": "Опишите изменение Canvas",
+    "designPromptPlaceholder": "Опишите, что изменить…",
+    "clearDesignSelection": "Снять выделение в Canvas",
+    "compareTooLarge": "Эти версии слишком велики для сравнения",
+    "revisionReceivingLabel": "Генерация изменения…",
+    "designHoverHint": "Нажмите, чтобы выбрать; перетащите, чтобы нарисовать",
+    "share": "Поделиться",
+    "shareHint": "Поделиться снимком этого Canvas",
+    "shareWaitForRevision": "Дождитесь завершения обновления Canvas",
+    "shareLocalUrlUnavailable": "Локальные URL не могут быть открыты другими людьми",
+    "shareTooLarge": "Этот Canvas слишком велик для ссылки-приглашения",
+    "shareEmpty": "В этом Canvas нет содержимого для публикации",
+    "shareDialogTitle": "Поделиться Canvas",
+    "shareDialogScope": "Включён только снимок этого Canvas. Разговор, репозиторий, сессия и последующие ревизии не публикуются.",
+    "shareDialogPreparing": "Создание ссылки…",
+    "shareDialogLink": "Ссылка на Canvas",
+    "shareDialogCopyFailed": "Не удалось скопировать. Выделите ссылку и скопируйте её вручную.",
+    "shareDialogPublic": "Любой, у кого есть эта ссылка, может просмотреть снимок.",
+    "shareDialogShortExpiry": "Короткая ссылка · действует до {{date}}",
+    "shareDialogFallback": "Сервис коротких ссылок недоступен, поэтому вместо неё создана полная ссылка.",
+    "shareDialogOpen": "Открыть",
+    "shareDialogCopied": "Скопировано",
+    "shareDialogCopy": "Копировать ссылку",
+    "shareDialogTooLarge": "Этот Canvas слишком велик для надёжной автономной ссылки.",
+    "shareDialogShortUnavailable": "Сервис публикации временно недоступен, а этот Canvas слишком велик для автономной ссылки. Повторите попытку чуть позже.",
+    "shareDialogUnsupported": "Эта версия приложения не может создавать сжатые ссылки на Canvas.",
+    "shareDialogInvalid": "Этот Canvas не содержит снимка, пригодного для публикации.",
+    "shareDialogError": "Не удалось создать ссылку на Canvas.",
+    "shareDialogRetryShort": "Повторить короткую ссылку",
+    "shareDialogRetryingShort": "Повтор…",
+    "retry": "Повторить",
+    "reactArtifactFrame": "Предпросмотр React canvas"
+  },
+  "domSelection": {
+    "previewTitle": "Предпросмотр выделения в Canvas",
+    "elementsCount_one": "{{count}} элемент",
+    "elementsCount_other": "{{count}} элементов",
+    "regionLabel": "Область · {{label}}"
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "empty": "Routine пока нет — сначала примените одну из CLI",
+    "notInstalled": "Не установлен",
+    "enabled": "Включён",
+    "disabled": "Отключён",
+    "paused": "Приостановлен после {{count}} сбоев",
+    "install": "Установить Webhook",
+    "rotate": "Сменить секрет",
+    "enable": "Включить",
+    "disable": "Отключить",
+    "secretHint": "Секрет",
+    "secretShownOnce": "Секрет показывается один раз — сохраните его у провайдера сейчас.",
+    "noDeliveries": "Доставок ещё не было",
+    "replay": "Повторить",
+    "replayQueued": "Доставка повторена",
+    "copied": "Скопировано",
+    "copyFailed": "Не удалось скопировать"
+  },
+  "conversation": {
+    "promptMode": "Agent",
+    "teamChatMode": "Чат команды",
+    "promptTooltip": "Отправить агенту",
+    "teamChatTooltip": "Сообщение коллегам — не запускает агента",
+    "imagesUnsupported": "Сообщения чата команды не могут содержать изображения",
+    "participantsTooltip": "Участники разговора и сообщения обсуждения",
+    "mentionGroup": "Коллеги"
+  },
+  "weeklyQuotaHistory": {
+    "title": "История недельной квоты",
+    "description": "Остаток квоты · Последние 28 дней · Замеры ежечасно, пока приложение видимо и в сети · Пропущенные замеры отображаются как пробелы",
+    "error": "История квоты недоступна. Попытка повторится, когда вы вернётесь в это окно",
+    "empty": "Подключите аккаунт Claude Code, Codex или OpenCode Go в Key Vault, чтобы начать отслеживание",
+    "loading": "Загрузка истории квоты…",
+    "unsupported": "Этот аккаунт не сообщает недельную квоту",
+    "unavailable": "Последний замер недоступен; проверьте подключение аккаунта в Key Vault",
+    "pending": "Ожидание следующего ежечасного замера",
+    "remaining": "Остаток, %",
+    "refresh": "Обновить",
+    "account": "Аккаунт",
+    "stale": "Последнему замеру больше двух часов",
+    "disabled": "Замеры приостановлены для этого отключённого аккаунта",
+    "limit": "Показано до 128 аккаунтов"
   }
 }

@@ -183,7 +183,8 @@
       "kanban": "Kanban",
       "gantt": "Gantt",
       "calendar": "Takvim",
-      "settings": "Ayarlar"
+      "settings": "Ayarlar",
+      "table": "Tablo"
     },
     "statusFilters": {
       "all": "Tümü",
@@ -252,7 +253,23 @@
       "hoursAgo": "{{count}} saat önce",
       "inDays": "{{count}} gün içinde",
       "inHours": "{{count}} saat içinde",
-      "membersGroup": "Üyeler"
+      "membersGroup": "Üyeler",
+      "filter": "Özellik filtresi",
+      "filterValue": "Özellik filtresi değeri",
+      "noValue": "Değer yok",
+      "archiveNamed": "{{name}} özelliğini arşivle",
+      "add": "Özellik ekle",
+      "archive": "Özelliği arşivle",
+      "datePlaceholder": "YYYY-AA-GG",
+      "empty": "Henüz özel özellik yok.",
+      "loading": "Özellikler yükleniyor…",
+      "namePlaceholder": "Özellik adı",
+      "no": "Hayır",
+      "optionsPlaceholder": "Seçenekler, virgülle ayrılmış",
+      "optionsRequired": "Seçim özellikleri virgülle ayrılmış seçenekler gerektirir.",
+      "type": "Özellik türü",
+      "updateFailed": "Özellik güncellenemedi",
+      "yes": "Evet"
     },
     "activity": {
       "discussionTitle": "Tartışma",
@@ -305,7 +322,27 @@
         "schedule": "zamanlama",
         "orchestratorConfig": "Orchestrator yapılandırması",
         "handoff": "devir"
-      }
+      },
+      "mentionPeople": "Kişilerden bahset",
+      "mentionAll": "@all — bu öğedeki herkes",
+      "mentionAgentOption": "{{name}} (agent)",
+      "mentionAgentOrgOption": "{{name}} (agent org)",
+      "appendedSession": "bir oturum ekledi",
+      "edited": "(düzenlendi)",
+      "commentDeleted": "Bu yorum silindi.",
+      "deleteComment": "Yorumu sil",
+      "deleteCommentConfirm": "Bu yorum silinsin mi? Yanıtlar kalır, yorum gövdesi kaldırılır.",
+      "messageCount_one": "{{count}} mesaj",
+      "messageCount_other": "{{count}} mesaj",
+      "cancelReply": "Yanıtı iptal et",
+      "conclusion": "Sonuç",
+      "reopen": "Yeniden aç",
+      "reply": "Yanıtla",
+      "replyingInThread": "Konuda yanıtlanıyor",
+      "resolve": "Çöz",
+      "resolved": "Çözüldü",
+      "submitComment": "Yorumu gönder",
+      "openedWorkItem": "bu iş öğesini açtı"
     },
     "contextMenu": {
       "status": "Durum",
@@ -347,7 +384,10 @@
       "cannotParseRepoName": "Depo adı çözümlenemiyor: {{url}}"
     },
     "sessions": {
-      "emptyOverview": "Henüz Sessions yok"
+      "emptyOverview": "Henüz Sessions yok",
+      "originTitle": "Oluşturma oturumu",
+      "originStatus": "Bu öğeyi oluşturdu",
+      "runsCount": "{{count}} çalıştırma"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -366,7 +406,9 @@
       "fileDiffCleanHint": "Dosya değişikliği algılanmadı.",
       "costSummary": "Maliyet özeti",
       "totalCost": "Toplam",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "Tamamlama engellendi",
+      "prReady": "Tamamlanmaya hazır"
     },
     "viewWorkItems": "Work Item'ları görüntüle",
     "fromRoutine": "From routine: {{name}}",
@@ -381,7 +423,98 @@
     },
     "batchAssignee": {
       "title": "Atanan kişiyi ayarla"
-    }
+    },
+    "discussion": {
+      "previewWillWake": "Yanıtlaması için agent uyandırılacak",
+      "previewNoteOnly": "Yalnızca not — agent tetiklenmeyecek",
+      "previewNoSession": "Bağlı agent oturumu yok — hiçbir şey tetiklenmeyecek",
+      "previewMentionResume": "Bahsedilen agent uyandırılacak",
+      "previewMentionStart": "Bahsedilen agent başlatılacak",
+      "previewMentionUnroutable": "Bahsedilen agent bu öğede yapılandırılmamış — hiçbir şey tetiklenmeyecek",
+      "previewThread": "Agent bu konudan uyandırılacak",
+      "previewAssignee": "Atanan agent uyandırılacak",
+      "previewAssigneeStart": "Atanan agent başlatılacak",
+      "previewCoalesce": "bekleyen uyandırmaya katılır",
+      "previewMemberThread": "Üye konusu — hiçbir agent uyandırılmayacak"
+    },
+    "subItems": {
+      "title": "Alt öğeler",
+      "parent": "Üst öğe",
+      "progress": "{{total}} öğeden {{completed}} tanesi tamamlandı",
+      "add": "Alt öğe ekle",
+      "addFirst": "İlk alt öğeyi ekle",
+      "titlePlaceholder": "Alt öğe başlığı ekleyin",
+      "stagePicker": "Alt öğe aşaması",
+      "noStage": "Aşama yok",
+      "stage": "Aşama {{stage}}",
+      "openStatus": "Açık",
+      "completedStatus": "Tamamlandı",
+      "cancelledStatus": "İptal edildi",
+      "createError": "Alt öğe oluşturulamadı. Tekrar deneyin."
+    },
+    "savedViews": {
+      "placeholder": "Görünümler",
+      "save": "Geçerli görünümü kaydet",
+      "saveTitle": "Görünümü kaydet",
+      "namePlaceholder": "Görünüm adı",
+      "saveHint": "Geçerli filtreleri yakalar; düzen ilk açılışı belirler.",
+      "delete": "Görünümü sil"
+    },
+    "table": {
+      "columnsPicker": "Sütunlar",
+      "groupByProperty": "Özelliğe göre grupla",
+      "columns": {
+        "shortId": "ID",
+        "title": "Başlık",
+        "status": "Durum",
+        "priority": "Öncelik",
+        "assignee": "Atanan",
+        "targetDate": "Son tarih",
+        "labels": "Etiketler"
+      }
+    },
+    "batchProperty": {
+      "title": "Özellik ayarla",
+      "hint": "Seçili {{count}} öğeye tek bir özellik değeri uygular. Temizlemek için değeri boş bırakın.",
+      "propertyPlaceholder": "Özellik",
+      "valuePlaceholder": "Değer",
+      "applied": "{{count}} öğe güncellendi"
+    },
+    "revisionConflict": {
+      "title": "Düzenleme çakışmasını çöz",
+      "description": "{{field}}, {{expected}} revizyonundan sonra değişti. Düzenlemenizi {{actual}} revizyonuyla karşılaştırın, ardından hangi sürümün korunacağını seçin.",
+      "mine": "Benim sürümüm",
+      "latest": "En son sürüm",
+      "useLatest": "En sonu kullan",
+      "keepMine": "Benimkini koru",
+      "titleField": "Başlık",
+      "descriptionField": "Açıklama",
+      "commentField": "Yorum",
+      "reloadNotice": "Bu iş öğesi başka bir yerde değişti. En son sürüm yeniden yüklendi.",
+      "retryFailed": "En son sürüm yeniden değişti. Tekrar denemeden önce her iki sürümü inceleyin."
+    },
+    "quickActions": {
+      "title": "Hızlı eylemler",
+      "empty": "Henüz hızlı eylem yok. Bir agent için yeniden kullanılabilir bir istem kaydedin.",
+      "emptyManage": "Henüz kaydedilmiş bir şey yok.",
+      "manageTitle": "Hızlı eylemleri yönet",
+      "namePlaceholder": "Eylem adı (örn. CI'ı düzelt)",
+      "targetPlaceholder": "Hedef agent",
+      "promptPlaceholder": "Agent ne yapmalı?",
+      "archive": "Eylemi arşivle",
+      "scopeChanged": "Hızlı eylem artık bu iş öğesinin kapsamında değil",
+      "started": "“{{name}}” hızlı eylemi başlatıldı"
+    },
+    "detailNavigation": "İş öğesi gezinmesi",
+    "linkedSessions": {
+      "title": "Oturumlar"
+    },
+    "detail": {
+      "conversation": "Konuşma",
+      "linked": "Bağlı"
+    },
+    "detailSummary": "İş öğesi özeti",
+    "navigationTrail": "İş öğesi gezinmesi"
   },
   "settings": {
     "sidebarGeneral": "Genel",
@@ -446,7 +579,12 @@
         "notAttached": "Bağlı değil",
         "attach": "Bağla",
         "detach": "Ayır",
-        "changeWarning": "Yeni bir adaptör bağlamadan önce mevcut adaptörü ayırın."
+        "changeWarning": "Yeni bir adaptör bağlamadan önce mevcut adaptörü ayırın.",
+        "detachProjectMenuLabel": "GitHub bağlantısını kaldır",
+        "detachProjectTitle": "{{project}} için GitHub bağlantısı kaldırılsın mı?",
+        "detachProjectDescription": "GitHub Issues senkronizasyonu duracak. Yerel proje ve içe aktarılan iş öğeleri ORGII'de kalacak.",
+        "detachProjectAction": "{{project}} için GitHub bağlantısını kaldır",
+        "detachProjectSuccess": "{{project}} için GitHub bağlantısı kaldırıldı"
       },
       "accountPicker": {
         "title": "Hesap",
@@ -596,7 +734,16 @@
           "dismissFailed": "Çakışma yok sayılamadı: {{error}}"
         }
       }
-    }
+    },
+    "sidebarStatuses": "Durumlar",
+    "statusesBuiltin": "Yerleşik durumlar",
+    "statusesBuiltinDescription": "Standart iş akışı grupları. Her zaman kullanılabilir.",
+    "statusesCustom": "Özel durumlar",
+    "statusesCustomDescription": "Yerleşik bir grup üzerindeki adlandırılmış takma adlar. Filtreler, sayımlar ve panolar bunları grupları gibi ele alır.",
+    "statusNamePlaceholder": "Durum adı",
+    "noCustomStatuses": "Henüz özel durum yok.",
+    "statusArchive": "Durumu arşivle",
+    "statusRestore": "Durumu geri yükle"
   },
   "statusBar": {
     "workItemCount": "{{count}} öğe",

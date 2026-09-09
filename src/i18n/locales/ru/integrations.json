@@ -23,7 +23,7 @@
       "refreshPartial": "Модели обновлены: +{{added}} / -{{removed}}, но произошла ошибка для {{failed}} из {{total}} аккаунтов",
       "refreshedNoChange": "Модели обновлены: без изменений",
       "refreshedDelta": "Модели обновлены: добавлено {{added}}, удалено {{removed}}",
-      "refreshError": "Не удалось обновить {{name}}",
+      "refreshError": "Не удалось обновить {{name}}: {{error}}",
       "localRemoved": "{{name}} удалён",
       "deleteError": "Не удалось удалить {{name}}"
     },
@@ -322,7 +322,9 @@
       "button": "Обновить список моделей Cursor",
       "failed": "Сбой обновления из Cursor: {{error}}"
     },
-    "revalidate": "Перепроверить"
+    "revalidate": "Перепроверить",
+    "confirmRemoveActiveSessions_one": "{{count}} активная сессия всё ещё использует этот аккаунт и завершится ошибкой на следующем ходе:",
+    "confirmRemoveActiveSessions_other": "{{count}} активных сессий всё ещё используют этот аккаунт и завершатся ошибкой на следующем ходе:"
   },
   "integrations": {
     "searchPlaceholder": "Поиск подключений...",
@@ -571,7 +573,8 @@
       "modelPlaceholder": "Выбрать модель",
       "groupPerUser": "Изолировать сессии группового чата по пользователям",
       "groupPerUserDesc": "Каждый участник группового чата получает собственный контекст сессии."
-    }
+    },
+    "emailProtocol": "Протокол"
   },
   "modelsTabs": {
     "myAccounts": "Мои Keys",
@@ -734,7 +737,8 @@
     "tools": "Встроенные инструменты",
     "computerUse": "Computer Use",
     "rulesMemoryEvolution": "Правила, Память & Эволюция",
-    "externalSkillsets": "Skills, MCPs & Plugins"
+    "externalSkillsets": "Skills, MCPs & Plugins",
+    "housekeeper": "MiniCPM Housekeeper"
   },
   "projectConnections": {
     "linear": "Linear",
@@ -750,7 +754,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "Автообнаружение",
-    "methodOAuth": "Войти через GitHub"
+    "methodOAuth": "Войти через GitHub",
+    "methodPickerDesc": "Выберите способ аутентификации в GitHub.",
+    "oauthDeviceDesc": "Откройте URL подтверждения и введите этот код, чтобы авторизовать GitHub.",
+    "scanCredHelper": "Git credential helper ({{name}})",
+    "scanEmpty": "Ничего не обнаружено",
+    "scanEmptyDesc": "Token gh CLI, credential helpers или SSH-ключи не найдены. Выберите другой способ выше.",
+    "scanGhCli": "GitHub CLI (gh)",
+    "scanResults": "Обнаруженные учётные данные",
+    "scanResultsDesc": "Выберите одни для импорта. Перед сохранением мы проверяем token в GitHub.",
+    "scanSshKey": "SSH-ключ — {{name}}",
+    "scanning": "Сканирование…",
+    "scanningDesc": "Поиск token gh CLI, credential helpers и SSH-ключей на этом компьютере.",
+    "sshKeyPath": "Путь к SSH-ключу",
+    "sshKeyPathDesc": "Абсолютный путь к закрытому ключу (напр. ~/.ssh/id_ed25519). Соответствующий открытый ключ уже должен быть зарегистрирован на GitHub.",
+    "scanSelectRequired": "Выберите обнаруженные учётные данные для импорта.",
+    "sshKeyPathRequired": "Путь к SSH-ключу обязателен."
   },
   "builtInTools": {
     "tabTools": "Встроенные инструменты",
@@ -914,7 +933,9 @@
     "oauthDeviceCodeDesc": "Откройте URL ниже и введите этот код",
     "oauthOpenGithub": "Открыть GitHub",
     "oauthCancel": "Отмена",
-    "oauthFailed": "Ошибка авторизации"
+    "oauthFailed": "Ошибка авторизации",
+    "autoCreatePr": "Автоматически создавать pull requests",
+    "autoCreatePrDesc": "Автоматически создавать pull request в Source Control рабочей станции, когда feature-ветка полностью отправлена и чиста"
   },
   "skillsHub": {
     "searchPlaceholder": "Поиск skills...",
@@ -1211,7 +1232,23 @@
       "dangerZone": "Опасная зона",
       "deleteOrg": "Удалить этот Org",
       "deleteOrgDesc": "Безвозвратно удалить эту Команду Agent. Agent-участники не будут затронуты. Это действие нельзя отменить",
-      "deleteThisOrg": "Удалить этот Org"
+      "deleteThisOrg": "Удалить этот Org",
+      "planApprovalPolicy": {
+        "label": "Утверждение плана",
+        "description": "Кто решает, что представленный Planner план готов для разблокировки зависимых задач",
+        "coordinator": {
+          "label": "Координатор (рекомендуется)",
+          "description": "Координатор проверяет план внутри запуска, затем утверждает его или запрашивает у Planner изменения"
+        },
+        "user": {
+          "label": "Пользователь",
+          "description": "Групповой чат ждёт и показывает вам план с действиями «Утвердить», «Редактировать» и «Запросить изменения»"
+        },
+        "automatic": {
+          "label": "Автоматически",
+          "description": "Корректный представленный план принимается немедленно, а его зависимые задачи разблокируются"
+        }
+      }
     },
     "agentWizard": {
       "title": "Настройка Agent",
@@ -1309,7 +1346,40 @@
     "orgSaveFailed": "Не удалось сохранить команду",
     "orgDeleteFailed": "Не удалось удалить команду",
     "deleteOrgTitle": "Удалить команду?",
-    "deleteOrgMessage": "\"{{name}}\" будет удалена навсегда. Это действие нельзя отменить."
+    "deleteOrgMessage": "\"{{name}}\" будет удалена навсегда. Это действие нельзя отменить.",
+    "cliUpdateAlerts": {
+      "label": "Уведомлять об обновлениях CLI",
+      "description": "Проверять версии CLI и уведомлять о доступных обновлениях. «Выкл.» отключает проверки"
+    },
+    "cliManagedConfig": {
+      "title": "Переключение конфигурации CLI",
+      "modeLabel": "Режим",
+      "modeDesc": "«По умолчанию» восстанавливает собственную конфигурацию CLI. «Управляется ORGII» записывает прокси-конфигурацию с резервной копией.",
+      "modeDefault": "По умолчанию",
+      "modeOrgii": "Управляется ORGII",
+      "conflict": "Внешнее изменение",
+      "conflictTitle": "Конфликт",
+      "conflictDesc": "Активная конфигурация CLI изменилась после того, как ORGII записал её.",
+      "proxyStatus": "Прокси",
+      "proxyDefault": "Режим по умолчанию",
+      "proxyReady": "Прокси готов",
+      "proxyNotReady": "Прокси не готов",
+      "keyLabel": "Ключ",
+      "keyDesc": "Показаны только API-ключи, совместимые с этим CLI и управляемым прокси.",
+      "selectKey": "Выберите ключ",
+      "modelLabel": "Модель",
+      "selectModel": "Выберите модель",
+      "configFile": "Файлы конфигурации",
+      "actions": "Действия",
+      "addKey": "Добавить ключ",
+      "apply": "Применить",
+      "restore": "Восстановить по умолчанию",
+      "forceApply": "Применить принудительно",
+      "forceRestore": "Восстановить принудительно",
+      "applySuccess": "Управляемая конфигурация ORGII применена",
+      "restoreSuccess": "Конфигурация по умолчанию восстановлена",
+      "proxyLifecycleDesc": "Не закрывайте ORGII, пока используете этот режим. При закрытии окна прокси остаётся в трее; при выходе из ORGII конфигурация по умолчанию безопасно восстанавливается, если она не была изменена извне."
+    }
   },
   "databases": {
     "title": "Базы данных",
@@ -1375,7 +1445,8 @@
     "chatExtras": "Дополнения чата",
     "queuedMessages": "Сообщения в очереди",
     "fileReview": "Обзор файлов",
-    "terminalProcesses": "Процессы терминала"
+    "terminalProcesses": "Процессы терминала",
+    "modeSessionLink": "Ссылка на сессию"
   },
   "rulesTabs": {
     "rules": "Правила",
@@ -1447,7 +1518,18 @@
     "openWorkItem": "Open work item",
     "fireError": "Не удалось запустить рутину: {{detail}}",
     "provider": "Провайдер",
-    "eventKind": "Событие"
+    "eventKind": "Событие",
+    "extraActivations": "Дополнительные активации",
+    "activationSchedule": "Расписание",
+    "activationOneTime": "Однократно",
+    "activationProviderEvent": "Событие провайдера",
+    "activationManual": "Вручную",
+    "providerPlaceholder": "github",
+    "eventKindPlaceholder": "pull_request",
+    "fireAccepted": "Запуск: {{status}}",
+    "openSessionError": "Не удалось открыть сессию",
+    "openWorkItemError": "Не удалось открыть рабочую задачу",
+    "fireStarted": "Запуск Routine начат"
   },
   "cursorPlugins": {
     "noPlugins": "Плагины Cursor не установлены",
@@ -1469,7 +1551,14 @@
       "diagnostics": "Диагностика"
     },
     "health": {
-      "status": "Не проверено"
+      "status": "Не проверено",
+      "title": "Проверка работоспособности",
+      "idle": "Проверяет /v1/models и отправляет один небольшой запрос в чат.",
+      "checking": "Проверка локального сервиса vLLM MiniCPM...",
+      "checkButton": "Проверить подключение",
+      "configureFirst": "Сначала настройте аккаунт vLLM MiniCPM.",
+      "connectedTo": "Подключено к {{baseUrl}}",
+      "failed": "Проверка работоспособности MiniCPM не пройдена."
     },
     "benchmark": {
       "title": "Скорость вывода MiniCPM",
@@ -1481,6 +1570,50 @@
       "tokensPerSecond": "Скорость вывода: {{value}} tokens/s",
       "completionTokens": "Выходные tokens: {{value}}",
       "elapsed": "Общее время: {{value}}s"
+    },
+    "title": "Резидентный Housekeeper",
+    "description": "Локальный MiniCPM выполняет доработку промптов, короткие пояснения шагов и лёгкое управление UI. Задачи кодирования и сложная настройка ADE по-прежнему используют основную модель агента.",
+    "autoAccount": "Автовыбор аккаунта MiniCPM vLLM",
+    "tiles": {
+      "model": "Модель",
+      "endpoint": "Эндпоинт",
+      "safeContext": "Безопасный контекст"
+    },
+    "settings": {
+      "enabled": {
+        "title": "Включить Housekeeper",
+        "description": "Когда отключено, доработка промптов, пояснения шагов и лёгкое управление UI не будут использовать MiniCPM."
+      },
+      "account": {
+        "title": "Аккаунт vLLM MiniCPM",
+        "description": "Повторно использует существующий аккаунт KeyVault vllm_api; отдельное хранилище учётных данных не создаётся."
+      },
+      "model": {
+        "title": "ID модели",
+        "description": "Docker vLLM MiniCPM5-1B по умолчанию использует openbmb/MiniCPM5-1B."
+      },
+      "context": {
+        "title": "Безопасный бюджет контекста",
+        "description": "Использовать консервативный бюджет в 10000 token на GPU с 4 ГБ вместо теоретического лимита 32k."
+      }
+    },
+    "features": {
+      "promptPolish": {
+        "title": "Доработка промптов",
+        "description": "Вручную дорабатывать ввод перед отправкой более сильной модели для кодирования."
+      },
+      "stepExplain": {
+        "title": "Пояснения шагов Agent",
+        "description": "Генерировать одно-два коротких пояснения на китайском для шагов воспроизведения сессии."
+      },
+      "uiControl": {
+        "title": "Лёгкое управление ADE/UI",
+        "description": "MiniCPM может только классифицировать запросы по строгому локальному белому списку действий."
+      },
+      "contextCompact": {
+        "title": "Автоматическое обслуживание контекста",
+        "description": "Позволить MiniCPM поддерживать изолированное скользящее резюме старого контекста, пока включённые сессии простаивают."
+      }
     }
   },
   "cliLaunchProfiles": {
@@ -1496,5 +1629,68 @@
     "unavailable": "Профиль запуска недоступен",
     "saved": "Профиль запуска сохранён",
     "resetDone": "Профиль запуска сброшен"
+  },
+  "gitProfiles": {
+    "tab": "Профили Git",
+    "title": "Профили Git",
+    "add": "Добавить профиль",
+    "refresh": "Обновить профили",
+    "refreshed": "Глобальный профиль Git обновлён",
+    "loading": "Загрузка вашего глобального профиля Git…",
+    "defaultProfile": "Профиль по умолчанию",
+    "newProfile": "Новый профиль",
+    "copyName": "{{name}} (копия)",
+    "profileName": "Название профиля",
+    "authorName": "Имя автора",
+    "email": "Email",
+    "selectEmail": "Выберите email",
+    "signingKey": "Ключ подписи",
+    "signingKeyPlaceholder": "ID ключа подписи GPG или SSH",
+    "signCommits": "Подписывать коммиты",
+    "active": "Активен",
+    "activate": "Активировать профиль",
+    "activated": "{{name}} теперь глобальный профиль Git",
+    "editRaw": "Редактировать исходную конфигурацию",
+    "hideRaw": "Скрыть исходную конфигурацию",
+    "rawTitle": "Исходный профиль Git",
+    "rawConfig": "Конфигурация Git",
+    "updateFromRaw": "Обновить профиль из конфигурации",
+    "rawUpdated": "Профиль обновлён из исходной конфигурации Git",
+    "rawInvalid": "Исходный профиль Git недействителен",
+    "nameEmailRequired": "Имя автора и email обязательны",
+    "deleteTitle": "Удалить профиль Git",
+    "deleteMessage": "Удалить профиль «{{name}}»? Это не изменит вашу текущую глобальную конфигурацию Git.",
+    "loadFailed": "Не удалось загрузить глобальный профиль Git",
+    "applyFailed": "Не удалось активировать профиль Git"
+  },
+  "credentialImport": {
+    "title": "Импорт учётных данных из других приложений",
+    "titleWithCount": "Импорт учётных данных из других приложений (найдено: {{count}})",
+    "itemColumn": "Учётные данные",
+    "sourceColumn": "Найдено в",
+    "empty": "Учётные данные для импорта не найдены. Проверены переменные окружения, профили shell, настройки Claude Code, профили cc-switch и хранилища входа Claude Code, Codex, Cursor, GitHub CLI, Kiro и OpenCode.",
+    "allImported": "Все обнаруженные учётные данные уже импортированы",
+    "authMethod": {
+      "api_key": "API-ключ",
+      "oauth": "Token входа"
+    },
+    "sourceKind": {
+      "env": "Переменная окружения",
+      "shell_profile": "Профиль shell",
+      "config_file": "Файл конфигурации",
+      "oauth_store": "Хранилище входа",
+      "keychain": "Keychain",
+      "state_db": "Состояние приложения",
+      "cc_switch": "cc-switch"
+    },
+    "applyFailed": "Ошибка импорта: {{message}}",
+    "partialFailure": "Некоторые учётные данные не удалось импортировать:"
+  },
+  "skills": {
+    "shareToOrg": "Поделиться с организацией",
+    "share": "Поделиться",
+    "sharedToOrg": "Skill доступен организации",
+    "shareToOrgHint": "Участники организации получат текущий снимок этого Skill; после редактирования поделитесь снова, чтобы опубликовать обновление.",
+    "shareOrgPlaceholder": "Организация"
   }
 }

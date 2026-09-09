@@ -12,14 +12,17 @@
     },
     "sections": {
       "reviewRequested": "Revisión solicitada",
-      "authoredByMe": "Creadas por mí"
+      "authoredByMe": "Creadas por mí",
+      "updates": "Actualizaciones"
     },
     "status": {
       "read": "Leído",
       "unread": "Sin leer"
     },
     "row": {
-      "ariaLabel": "{{title}}, {{status}}"
+      "ariaLabel": "{{title}}, {{status}}",
+      "issueSource": "Issue de {{repository}}",
+      "issueSourceFallback": "Issue"
     },
     "empty": {
       "title": "Todavía no hay nada aquí",
@@ -37,6 +40,10 @@
       "noResults": {
         "title": "Sin coincidencias",
         "subtitle": "Ningún elemento coincide con «{{query}}»."
+      },
+      "archived": {
+        "title": "No hay elementos archivados",
+        "subtitle": "Los elementos que archives aparecerán aquí."
       }
     },
     "loading": "Cargando la bandeja del equipo…",
@@ -87,7 +94,17 @@
       "identityUnavailable": "No se pudo verificar tu identidad de equipo. Revisa tu perfil de proyecto antes de responder.",
       "rowPending": "De {{name}} · Esperando respuesta",
       "rowAccepted": "Traspaso aceptado · {{status}} · {{priority}}",
-      "rowReturned": "Devuelto por {{name}} · {{status}} · {{priority}}"
+      "rowReturned": "Devuelto por {{name}} · {{status}} · {{priority}}",
+      "destination": "Destino",
+      "chooseDestination": "Elige un destino",
+      "cloudDestination": "{{name}} · Bandeja del equipo",
+      "validation": {
+        "title_required": "Escribe un título para el elemento de trabajo.",
+        "project_required": "Elige un destino.",
+        "project_unavailable": "Este destino ya no está disponible. Elige otro destino.",
+        "recipient_required": "Elige un destinatario.",
+        "recipient_unavailable": "Este destinatario ya no está disponible. Elige otro destinatario."
+      }
     },
     "errors": {
       "loadTitle": "No se pudo cargar la bandeja del equipo",
@@ -104,7 +121,10 @@
       "workItemContext": "Parte del contexto del proyecto no está disponible. El elemento de trabajo sigue siendo utilizable.",
       "workItemLoad": "No se pudo cargar este elemento de trabajo. Inténtalo de nuevo.",
       "githubIssueLoad": "No se pudo cargar la incidencia de GitHub de este elemento de trabajo. Se siguen mostrando los detalles locales.",
-      "workItemUpdate": "No se pudo guardar el último cambio del elemento de trabajo. Inténtalo de nuevo."
+      "workItemUpdate": "No se pudo guardar el último cambio del elemento de trabajo. Inténtalo de nuevo.",
+      "archive": "No se pudo archivar este elemento. Inténtalo de nuevo.",
+      "unarchive": "No se pudo restaurar este elemento. Inténtalo de nuevo.",
+      "mutePreferences": "No se pudieron actualizar las categorías de notificaciones. Inténtalo de nuevo."
     },
     "detail": {
       "assignedSubtitle": "Elemento de trabajo asignado",
@@ -117,7 +137,9 @@
     "actions": {
       "markRead": "Marcar como leído",
       "markUnread": "Marcar como no leído",
-      "openWorkItem": "Abrir elemento de trabajo"
+      "openWorkItem": "Abrir elemento de trabajo",
+      "archive": "Archivar",
+      "unarchive": "Restaurar a la bandeja"
     },
     "workItemStatus": {
       "backlog": "Pendiente",
@@ -134,6 +156,26 @@
       "medium": "Media",
       "high": "Alta",
       "urgent": "Urgente"
+    },
+    "notifications": {
+      "assignmentTitle": "Nuevo elemento de trabajo asignado a ti",
+      "mentionTitle": "{{name}} te mencionó",
+      "handoffTitle": "Traspaso de {{name}}",
+      "multipleTitle": "{{count}} actualizaciones nuevas en la bandeja del equipo",
+      "multipleBody": "Abre la bandeja del equipo para revisar asignaciones y menciones."
+    },
+    "mute": {
+      "title": "Silenciar categorías de actualizaciones"
+    },
+    "events": {
+      "mention": "Mencionado en un comentario",
+      "discussion_updated": "Discusión actualizada",
+      "run_failed": "Ejecución fallida",
+      "status_changed": "Estado cambiado",
+      "assignee_changed": "Asignado cambiado",
+      "priority_changed": "Prioridad cambiada",
+      "dates_changed": "Fechas cambiadas",
+      "child_completed": "Elemento de trabajo hijo completado"
     }
   },
   "windowChrome": {
@@ -350,7 +392,9 @@
     "comingSoon": "Próximamente",
     "clearSelection": "Borrar selección",
     "uiSettings": "Ajustes de interfaz",
-    "clearAll": "Limpiar todo"
+    "clearAll": "Limpiar todo",
+    "openOnGitHub": "Abrir en GitHub",
+    "createPullRequest": "Crear pull request"
   },
   "status": {
     "yes": "Sí",
@@ -584,7 +628,29 @@
     "noAppliedCommit": "No linked commit yet",
     "noSessionsForFile": "No sessions found for this file",
     "committedRate": "Confirmado",
-    "email": "Correo electrónico"
+    "email": "Correo electrónico",
+    "noPullRequestForBranch": "Todavía no hay ningún pull request para esta rama.",
+    "creatingPullRequest": "Creando…",
+    "failedToLoadPullRequest": "No se pudo cargar el pull request",
+    "noCommitsInPullRequest": "No hay commits en este pull request",
+    "prStatus": {
+      "open": "Abierto",
+      "merged": "Fusionado",
+      "closed": "Cerrado",
+      "draft": "Borrador",
+      "unknown": "Desconocido"
+    },
+    "sendingNow": "enviando ahora…",
+    "issues": "Issues",
+    "noIssues": "Sin issues",
+    "openIssues": "Abiertos",
+    "closedIssues": "Cerrados",
+    "issueComments": "{{count}} comentario",
+    "issueComments_one": "1 comentario",
+    "issueComments_other": "{{count}} comentarios",
+    "tokens": "Tokens",
+    "actions": "Acciones",
+    "all": "Todos"
   },
   "searchModes": {},
   "tabs": {
@@ -660,7 +726,10 @@
       "workflow": "El servicio de flujos de trabajo no está disponible. Inténtalo más tarde."
     },
     "failedToLoad": "Error al cargar",
-    "unknownError": "Se produjo un error desconocido"
+    "unknownError": "Se produjo un error desconocido",
+    "componentLoadingFailed": "No se pudo cargar el componente",
+    "noLocalPath": "No hay ninguna ruta local disponible",
+    "openInFinderFailed": "No se pudo abrir en Finder"
   },
   "confirmation": {
     "delete": "¿Estás seguro de que quieres eliminar esto?",
@@ -887,7 +956,10 @@
     "noRepoSelected": "No repository selected",
     "previewUnavailable": "Vista previa no disponible",
     "selectRepositoryFromWorkspace": "Elige un repositorio del espacio de trabajo",
-    "noData": "Sin datos"
+    "noData": "Sin datos",
+    "noResults": "Sin resultados",
+    "noSessionHistoryForFile": "No se encontró actividad de sesión para {{file}}",
+    "noSessionHistory": "Sin historial de sesiones"
   },
   "inbox": {
     "scrollToBottom": "Ir al final",
@@ -984,9 +1056,26 @@
       "tlsDevNote": "Nota: algunos sitios HTTPS (como GitHub) pueden mostrar errores TLS en modo desarrollo por la validación del certificado. Prueba sitios HTTP o HTTPS sencillos como example.com.",
       "siteUnreachableTitle": "No se puede acceder a este sitio",
       "webviewHiddenTitle": "Vista web oculta temporalmente",
-      "webviewHiddenBody": "Cierra el menú o el diálogo para volver a mostrarla."
+      "webviewHiddenBody": "Cierra el menú o el diálogo para volver a mostrarla.",
+      "embeddedFallbackTitle": "Es posible que este sitio no funcione en el navegador integrado",
+      "embeddedFallbackBody": "Algunos sitios bloquean o no se muestran dentro de los WebViews de la app. Ábrelo en el navegador del sistema si la página sigue en blanco.",
+      "currentUrl": "URL actual"
     },
-    "unsavedChangesTitle": "Unsaved Changes"
+    "unsavedChangesTitle": "Unsaved Changes",
+    "ci": {
+      "openPullRequest": "Abrir pull request en GitHub",
+      "viewDetails": "Ver detalles de la comprobación",
+      "refresh": "Actualizar comprobaciones",
+      "refreshing": "Actualizando…",
+      "lastFetchedAt": "Última consulta: {{time}}",
+      "unavailable": "No se pudieron leer las comprobaciones",
+      "sections": {
+        "failed": "Fallidas",
+        "running": "En ejecución",
+        "skipped": "Omitidas",
+        "passed": "Superadas"
+      }
+    }
   },
   "git": {
     "loading": "Cargando estado de Git...",
@@ -1080,7 +1169,8 @@
         "approved": "aprobó estos cambios",
         "changesRequested": "solicitó cambios",
         "reviewDismissed": "descartó una revisión",
-        "reviewed": "revisó"
+        "reviewed": "revisó",
+        "appendedSession": "añadió una sesión"
       },
       "summary": {
         "label": "Resumen de la pull request"
@@ -1206,7 +1296,9 @@
           "mergeBlocked": "GitHub informa de requisitos de fusión pendientes"
         },
         "convertToDraft": "Convertir en borrador",
-        "convertedToDraft": "Pull request convertido en borrador"
+        "convertedToDraft": "Pull request convertido en borrador",
+        "markReady": "Marcar como listo para revisión",
+        "markedReady": "Pull request marcado como listo para revisión"
       },
       "flow": {
         "wantsToMergeCommitsInto_one": "quiere fusionar {{count}} commit en",
@@ -1237,7 +1329,23 @@
         "noLabelCandidates": "No hay etiquetas disponibles",
         "labelsLoadFailed": "No se pudieron cargar las etiquetas",
         "labelsUpdated": "Etiquetas actualizadas"
-      }
+      },
+      "creating": "Creando pull request…",
+      "createError": "No se pudo crear el pull request",
+      "readyHint": "La rama está subida y lista para un pull request",
+      "neutralHint": "Sube tu rama para crear un pull request",
+      "noBranch": "Ninguna rama seleccionada",
+      "noRepoPath": "No hay ninguna ruta de repositorio disponible",
+      "notAuthenticated": "Inicia sesión para crear pull requests",
+      "noOriginRemote": "No hay ningún remoto origin configurado",
+      "cannotParseRepoName": "No se pudo obtener el nombre del repositorio a partir del remoto origin",
+      "authRequired": {
+        "title": "Conectar GitHub",
+        "description": "Ve a Ajustes → Conexiones para conectar tu cuenta de GitHub."
+      },
+      "navigationTrail": "Navegación de pull requests",
+      "failedToLoad": "No se pudieron cargar los pull requests",
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Push exitoso",
@@ -1350,7 +1458,8 @@
         "reviewRequestRemoved": "eliminó una solicitud de revisión",
         "reviewed": "revisó estos cambios",
         "reviewDismissed": "descartó una revisión",
-        "userBlocked": "bloqueó a este usuario"
+        "userBlocked": "bloqueó a este usuario",
+        "appendedSession": "añadió una sesión"
       },
       "composer": {
         "addComment": "Añadir un comentario",
@@ -1382,8 +1491,35 @@
         "count_other": "{{count}} elementos relacionados",
         "unavailable": "Detalles no disponibles",
         "unavailableCount_one": "No se pudo resolver {{count}} elemento relacionado",
-        "unavailableCount_other": "No se pudieron resolver {{count}} elementos relacionados"
-      }
+        "unavailableCount_other": "No se pudieron resolver {{count}} elementos relacionados",
+        "reference": "Referencia de GitHub"
+      },
+      "title": "Issues",
+      "loading": "Cargando issues…",
+      "empty": "No hay issues {{state}}",
+      "failedToLoad": "No se pudieron cargar los issues",
+      "failedToCreate": "No se pudo crear el issue",
+      "failedToUpdate": "No se pudo actualizar el issue",
+      "failedToComment": "No se pudo añadir el comentario",
+      "filterAll": "Todos",
+      "filterOpen": "Abiertos",
+      "filterClosed": "Cerrados",
+      "noGitHubRepo": "Conecta un repositorio de GitHub para gestionar issues",
+      "commentPlaceholder": "Dejar un comentario…",
+      "submitComment": "Comentar",
+      "newIssueTitlePlaceholder": "Título del issue",
+      "newIssueBodyPlaceholder": "Describe el issue (opcional)…",
+      "authRequired": {
+        "title": "Conectar GitHub",
+        "description": "Ve a Ajustes → Conexiones para conectar tu cuenta de GitHub."
+      },
+      "reAuthRequired": "Se requiere autorización de GitHub",
+      "reAuthDescription": "Tu token de GitHub ha caducado. Ve a Ajustes → Conexiones para volver a conectarte.",
+      "goToSettings": "Ir a Ajustes",
+      "loadingTimeline": "Cargando actividad…",
+      "label": "Issue",
+      "linkedLoading": "Cargando elementos vinculados",
+      "detailNavigation": "Navegación de issues"
     }
   },
   "selectors": {
@@ -1407,7 +1543,15 @@
     },
     "modelProperties": {
       "effort": "Esfuerzo",
-      "default": "Predeterminado"
+      "default": "Predeterminado",
+      "settings": "Ajustes del modelo",
+      "model": "Modelo",
+      "speed": "Velocidad",
+      "standard": "Estándar",
+      "fast": "Rápido",
+      "thinking": "Razonamiento",
+      "on": "Activado",
+      "off": "Desactivado"
     },
     "repo": {
       "addEntry": "Más opciones de importación",
@@ -1420,7 +1564,8 @@
         "workspace": "Directorio de trabajo",
         "thisOrg": "Esta organización",
         "outsideOrg": "Fuera de esta organización",
-        "outsideNamedOrg": "Fuera de {{org}}"
+        "outsideNamedOrg": "Fuera de {{org}}",
+        "recent": "Recientes"
       },
       "tabs": {},
       "addOptions": {
@@ -1514,7 +1659,8 @@
         "noGithubRemote": "No hay un remoto de GitHub configurado",
         "prSearchScope": "Buscar en {{count}} Pull requests cargadas",
         "prLimit": "Se muestran hasta {{count}} PR abiertas",
-        "noPullRequests": "No hay Pull requests coincidentes"
+        "noPullRequests": "No hay Pull requests coincidentes",
+        "mainWorktree": "Principal"
       },
       "placeholders": {
         "add": "nombre de nueva rama...",
@@ -1543,7 +1689,8 @@
           "label": "Documentos",
           "description": "Carpeta Documentos"
         }
-      }
+      },
+      "selectWorktreeSource": "Seleccionar rama o pull request del worktree"
     },
     "spotlightFooter": {
       "navigate": "Navegar",
@@ -1824,6 +1971,12 @@
     "pill": {
       "focus": "Foco",
       "allChanges": "Todos los cambios"
+    },
+    "scope": {
+      "main": "Checkout principal",
+      "worktrees": "Worktrees",
+      "searchPlaceholder": "Filtrar worktrees…",
+      "switchScopeActive": "Cambiar ámbito de control de código fuente: {{repo}}, {{branch}}"
     }
   },
   "contextInfo": {
@@ -1845,7 +1998,18 @@
     "manualCompactNoRuntime": "Envía un mensaje antes de compactar",
     "manualCompactFailed": "Error al compactar: {{message}}",
     "manualCompactChannelAttached": "Esta sesión la gestiona un canal — usa /compact allí",
-    "manualCompactInstructionsPlaceholder": "Opcional: en qué centrarse al resumir"
+    "manualCompactInstructionsPlaceholder": "Opcional: en qué centrarse al resumir",
+    "categories": {
+      "unattributed": "Sin atribuir"
+    },
+    "cacheSaved": "Caché ahorrada: {{read}} de lectura, {{write}} de escritura",
+    "cacheHero": "{{pct}} % servido desde caché · ~{{tokens}} reutilizados en este turno",
+    "cacheHeroSub": "La caché de prompts puede reducir el coste hasta un 90 %",
+    "manualCompactSectionTitle": "Compactación manual",
+    "miniCpmCompactTitle": "Compactación automática silenciosa con MiniCPM",
+    "miniCpmCompactDescription": "Procesa el contexto antiguo de forma asíncrona",
+    "miniCpmCompactToggleAria": "Activar la compactación automática silenciosa con MiniCPM",
+    "manualCompactNativeProvider": "La compactación manual aquí solo admite sesiones de Agent integradas. Compacta el historial de CLI nativas en la app de su proveedor."
   },
   "relativeDate": {
     "justNow": "ahora mismo",
@@ -1899,7 +2063,8 @@
     "statusReadyToCreate": "Listo para crear el directorio de trabajo",
     "defaultName": "Directorio de trabajo",
     "defaultNameWithRepo": "Directorio de trabajo {{repo}}",
-    "windowTitle": "Directorio de trabajo"
+    "windowTitle": "Directorio de trabajo",
+    "statusMaxRepos": "Máximo 5 repos seleccionados"
   },
   "database": {
     "databaseFile": "Database File",
@@ -2066,11 +2231,51 @@
   },
   "notifications": {
     "taskCancelledToast": "«{{name}}» se canceló",
-    "taskCompletedToast": "«{{name}}» completada. Abre la sesión para revisar el resultado."
+    "taskCompletedToast": "«{{name}}» completada. Abre la sesión para revisar el resultado.",
+    "backgroundSession": "Sesión en segundo plano",
+    "taskCompletedTitle": "Tarea completada",
+    "taskCompletedBody": "«{{name}}» se completó — lista para revisión",
+    "openSessionAction": "Abrir sesión",
+    "taskFailedTitle": "Tarea fallida",
+    "taskFailedBody": "«{{name}}» falló{{detail}}"
   },
   "documentOpen": {
     "openInDefault": "Abrir en {{name}}",
     "openDefaultApp": "Abrir en la aplicación predeterminada",
-    "openExternally": "Abrir en una aplicación externa"
+    "openExternally": "Abrir en una aplicación externa",
+    "label": "Abrir en…",
+    "defaultApp": "Aplicación predeterminada",
+    "appDefault": "{{name}} (predeterminada)",
+    "loading": "Cargando aplicaciones…",
+    "loadFailed": "Aplicaciones no disponibles — vuelve a abrir para reintentar",
+    "openFailed": "No se pudo abrir el documento",
+    "saveFirst": "Guarda o descarta los cambios antes de abrir en otra aplicación"
+  },
+  "sqlEditor": {
+    "placeholder": "Escribe una consulta SQL...",
+    "format": "Formatear",
+    "runQueryToSeeResults": "Ejecuta una consulta para ver los resultados",
+    "executingQuery": "Ejecutando consulta...",
+    "queryFailed": "La consulta falló",
+    "queryCompleted": "Consulta completada",
+    "noResults": "La consulta no devolvió resultados",
+    "rowCount_one": "{{count}} fila",
+    "rowCount_other": "{{count}} filas",
+    "press": "Pulsa",
+    "toRun": "para ejecutar",
+    "nullValue": "NULL",
+    "booleanTrue": "true",
+    "booleanFalse": "false"
+  },
+  "chatImage": {
+    "maxReached": "Se permiten {{max}} imágenes como máximo",
+    "remainingWarning": "Solo se pueden añadir {{remaining}} imagen(es) más (máx. {{max}})",
+    "processFailed": "No se pudo procesar la imagen",
+    "loadFailed": "No se pudo cargar la imagen: {{fileName}}"
+  },
+  "navigation": {
+    "goToSection": "Ir a {{label}}, sección {{current}} de {{total}}",
+    "section": "Sección {{current}}",
+    "sectionPosition": "Sección {{current}} de {{total}}"
   }
 }

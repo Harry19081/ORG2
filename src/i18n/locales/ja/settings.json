@@ -20,7 +20,8 @@
     "storage": "ストレージ",
     "agentMemory": "Agent メモリ",
     "agentOrg": "Agent チーム",
-    "harnessConnections": "CLI ルーティング"
+    "harnessConnections": "CLI ルーティング",
+    "mobileRemote": "Mobile Remote"
   },
   "coreSidebar": {
     "groups": {
@@ -164,7 +165,8 @@
       "gold": "ゴールド",
       "red": "赤",
       "rose": "ローズ",
-      "mono": "モノクロ"
+      "mono": "モノクロ",
+      "matchSkin": "スキンに合わせる"
     },
     "security": "セキュリティ",
     "voiceInput": "音声入力",
@@ -189,7 +191,28 @@
     "presenceGuidanceOnlineDefault": "私はキーボードの前にいます。不明点はいつでも確認し、破壊的な操作を実行する前に必ず確認してください",
     "presenceGuidanceInvisibleDefault": "近くにいますがオフライン表示です。基本的には自律的に進め、高リスクな操作や大きなリファクタリングのときだけ通知してください。その他の質問は一つずつではなく、まとめてください",
     "presenceGuidanceAwayDefault": "私は席を外しています。私の返答を待たず、手元の情報で最善の判断をして、完了できることを進め、戻ったとき用に結果と未解決の質問を簡潔に残してください",
-    "followSystem": "システムに従う"
+    "followSystem": "システムに従う",
+    "skins": "スキン",
+    "skinsDesc": "ライトとダークは別々のパレットを使用します。それぞれアプリがそのモードで描画されるときに適用されます",
+    "lightSkin": "ライトスキン",
+    "darkSkin": "ダークスキン",
+    "lightAccent": "ライトのアクセント",
+    "darkAccent": "ダークのアクセント",
+    "skinGroups": {
+      "orgii": "ORGII",
+      "codex": "Codex"
+    },
+    "iconStyle": "アイコンスタイル",
+    "iconStyleDesc": "モノクロはファイル種別とモデルのアイコンの彩度を落とし、ロゴではなくインターフェースとして見えるようにします",
+    "iconStyleOptions": {
+      "colorful": "カラー",
+      "monochrome": "モノクロ"
+    },
+    "translucentSidebar": "半透明のサイドバー",
+    "skin": "スキン",
+    "accent": "アクセント",
+    "linkSkinVariants": "ライトとダークを連動",
+    "linkSkinVariantsDesc": "両方のモードで 1 つのスキンとアクセントを使用します。ライトとダークの両バリアントを備えたスキンのみ連動できます"
   },
   "background": {
     "title": "背景",
@@ -463,7 +486,8 @@
       "permissionWarning": "テスト通知の送信に失敗しました。権限を確認してください。",
       "sendFailed": "テスト通知を送信できません。通知の権限を確認してから再試行してください。",
       "soundFailed": "通知音を再生できません。システムの音量を確認してください。"
-    }
+    },
+    "teamInboxDesc": "チームメイトからの割り当て、メンション、引き継ぎ"
   },
   "editor": {
     "tabEditor": "エディタ",
@@ -558,7 +582,19 @@
   },
   "update": {
     "detectUpdate": "更新を検出",
-    "currentVersion": "現在のバージョン"
+    "currentVersion": "現在のバージョン",
+    "channel": "更新チャンネル",
+    "channelDesc": "ベータは安定版リリースに先立ってプレリリースビルドを受け取ります。安定版に戻してもダウングレードはされず、次の安定版リリースから有効になります",
+    "channelStable": "安定版",
+    "channelBeta": "ベータ",
+    "installConfirmTitle": "更新をインストールできます",
+    "installConfirmDesc": "バージョン {{version}} をダウンロードしました。ORGII をインストールして再起動する前に、進行中の作業を保存してください",
+    "installAndRestart": "インストールして再起動",
+    "installOfficialConfirmTitle": "公式アプリをインストールできます",
+    "installOfficialConfirmDesc": "公式バージョン {{version}} を /Applications/ORG2.app にインストールします。このローカルビルドは開いたまま変更されません",
+    "installOfficial": "公式アプリをインストール",
+    "localBuild": "ローカル",
+    "skipVersion": "このバージョンをスキップ"
   },
   "monitor": {
     "appMemory": "App memory",
@@ -633,7 +669,19 @@
     "diskCategory_sessionImages": "チャット画像",
     "diskCategory_screenshots": "ブラウザスクリーンショット",
     "diskCategory_agentWorktrees": "Agent Session Worktrees",
-    "diskCategory_lspBin": "LSP Server バイナリ"
+    "diskCategory_lspBin": "LSP Server バイナリ",
+    "cacheRegistry": "キャッシュレジストリ",
+    "loadedScriptSources": "読み込み済み JS ソース（{{modules}} モジュール / {{chunks}} チャンク）",
+    "cacheRegistryEmpty": "登録されたキャッシュはありません",
+    "cacheRegistryEntries": "{{count}} 件のエントリ",
+    "diskCategory_toolResults": "サイズ超過のツール結果",
+    "diskCategory_diagnostics": "診断キュー",
+    "diskCategory_models": "ダウンロード済みモデル",
+    "diskCategory_semanticIndex": "セマンティック検索インデックス",
+    "diskCategory_cursorCliProfiles": "Cursor CLI プロファイル",
+    "diskCategory_kiroCliProfiles": "Kiro CLI プロファイル",
+    "diskCategory_opencodeCliProfiles": "OpenCode CLI プロファイル",
+    "diskCategory_sidecarBin": "ダウンロード済み Sidecar バイナリ"
   },
   "dependencies": {
     "systemDependencies": "システム依存関係",
@@ -852,5 +900,81 @@
     "conflict": "ORGII 外で設定が変更されました。適用または復元前に変更を確認してください。変更は上書きされません",
     "credentialsNote": "直接接続ではアクセスを制限した CLI 設定に認証情報を書き込みます。保管庫のキーを削除しても、書き出した認証情報は失効しません",
     "notInstalled": "接続のテストや適用の前に、このツールをインストールしてください"
+  },
+  "mobileRemote": {
+    "enabled": "Mobile Remote",
+    "enabledDesc": "ペアリングしたスマートフォンから、同じ Wi‑Fi LAN または公開リレー経由でこのデスクトップの Agent セッションを操作できるようにします",
+    "securityNotice": "LAN 公開がオンの場合、接続 URL とトークンを知っているネットワーク上の誰もがセッションを操作できます。漏洩が疑われる場合はトークンを再生成してください",
+    "outdoorTitle": "外出先からの接続",
+    "outdoorDesc": "デスクトップから公開リレーへ外向きに接続し、4G、5G、または別のネットワークからスマートフォンで利用できるようにします",
+    "relayEnabled": "公開リレーに接続",
+    "relayEnabledDesc": "デスクトップが外向きの WSS 接続を開くため、ルーターのポート転送は不要です",
+    "relayUrl": "リレーアドレス",
+    "relayUrlDesc": "デプロイ済みの ws:// または wss:// URL を入力してください（例: wss://relay.example.com/v1/mobile/ws）",
+    "relayPresetAria": "リレー環境のプリセットを選択",
+    "relayPresetLocal": "ローカル",
+    "relayPresetProduction": "本番",
+    "cloudLoginTitle": "ORG2 Cloud ログイン",
+    "cloudLoginDescSignedIn": "{{identity}} としてログイン中 — リレーはこのアカウントを外出先ペアリングに使用します",
+    "cloudLoginDescSignedOut": "公開リレー経由でペアリングする前に ORG2 Cloud にログインしてください",
+    "relayStatusCloudLoginRequired": "設定 → 一般で ORG2 Cloud にログインしてから、リレーの状態を更新してください",
+    "relayStatusAuthFailedSignedIn": "リレーが接続を拒否しました — 設定 → 一般でログアウトして再度ログインしてください",
+    "relayStatus": "リレーの状態",
+    "relayStatus_online": "接続済み",
+    "relayStatus_connecting": "接続中",
+    "relayStatus_backoff": "再接続待ち",
+    "relayStatus_disabled": "無効",
+    "relayStatus_config_error": "設定エラー",
+    "relayStatus_stopped": "停止",
+    "startOutdoorPairing": "外出先用ペアリングコードを生成",
+    "phoneLabel": "スマートフォン名",
+    "phoneLabelDesc": "この名前はペアリング済みデバイスの一覧に表示されます",
+    "fullAccess": "操作を許可",
+    "fullAccessDesc": "オンにすると、スマートフォンからメッセージの送信、セッションの停止、権限への応答ができます。オフの場合は閲覧のみです",
+    "pairingExpires": "ペアリングコードは {{seconds}} 秒後に期限切れになります",
+    "sasPhrase": "セキュリティフレーズ",
+    "sasDesktopHint": "スキャン後にスマートフォンにも同じフレーズが表示されます。両方が一致する場合のみ確認してください",
+    "pairingPayload": "ペアリングペイロード",
+    "pairingPayloadHint": "このコンピューターでテストする場合は、これをコピーして Mobile Remote の接続画面に貼り付けてください",
+    "copyPairingPayload": "ペアリングペイロードをコピー",
+    "pairingPayloadCopied": "ペアリングペイロードをコピーしました",
+    "pairingPayloadCopyFailed": "ペアリングペイロードをコピーできませんでした",
+    "regeneratePairing": "新しいコードを生成",
+    "confirmPairing": "フレーズが一致、ペアリングを確認",
+    "pairingConfirmed": "スマートフォンをペアリングしました",
+    "pairingFailed": "ペアリングを作成できませんでした",
+    "revokeDevice": "取り消す",
+    "lanAdvanced": "LAN フォールバック",
+    "lanAdvancedDesc": "公開リレーを使わず、同じ Wi-Fi 上で直接接続します",
+    "allowLanExposure": "LAN 接続を許可",
+    "allowLanExposureDesc": "オフの場合、ブリッジはこのコンピューター（127.0.0.1）からの接続のみ受け付けます。オンにすると、同じ Wi-Fi 上の他のデバイスから接続できます",
+    "lanToken": "接続トークン",
+    "lanTokenDesc": "共有シークレットとして WebSocket URL に付加されます。コピー／貼り付けや QR エンコード用にここに表示します",
+    "regenerateToken": "再生成",
+    "pairing": "スマートフォンでペアリング",
+    "pairingDesc": "QR コードをスキャンするか、WebSocket URL をスマートフォンのブラウザにコピーして、同じ Wi-Fi 上で接続してください",
+    "connectionUrl": "WebSocket URL",
+    "connectionUrlDesc": "この URL をスマートフォンのブラウザで開くか、QR コードにエンコードしてペアリングしてください",
+    "copyConnectionUrl": "WebSocket URL をコピー",
+    "connectionUrlCopied": "WebSocket URL をコピーしました",
+    "qrAriaLabel": "Mobile Remote の WebSocket URL の QR コード",
+    "qrScanHint": "同じネットワーク上で、スマートフォンのカメラまたは QR リーダーアプリでスキャンしてください",
+    "lanIpUnresolved": "このコンピューターの LAN アドレスを検出できませんでした。URL をコピーして <local-ip> を Wi-Fi の IP に置き換えるか、「LAN IP を更新」をタップしてください",
+    "refreshLanIp": "LAN IP を更新",
+    "pairedDevices": "ペアリング済みデバイス",
+    "pairedDevicesDesc": "リレー経由で認可されたスマートフォン。アクセスはいつでも取り消せます",
+    "devicesLoadFailed": "ペアリング済みデバイスを読み込めませんでした",
+    "noDevices": "ペアリング済みデバイスはありません",
+    "noDevicesDesc": "外出先用ペアリングコードを生成し、Mobile Remote PWA でスキャンまたは貼り付けてください",
+    "deviceLabel": "デバイス",
+    "deviceTier": "権限",
+    "deviceTierFull": "フルアクセス",
+    "deviceTierReadOnly": "閲覧のみ",
+    "deviceLastSeen": "最終接続",
+    "devicePairedAt": "ペアリング {{time}}",
+    "deviceLastSeenValue": "最終接続 {{time}}",
+    "deviceNeverSeen": "未接続",
+    "deviceOnline": "オンライン",
+    "deviceOffline": "オフライン"
   }
 }

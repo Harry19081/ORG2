@@ -219,7 +219,10 @@
         "installed": "已安装",
         "notInstalled": "未检测到",
         "disabled": "已禁用"
-      }
+      },
+      "rescanUpdate": "更新",
+      "rescanClear": "清空并重新扫描",
+      "sessions_one": "{{count}} 个会话"
     },
     "list": {
       "started": "开始时间",
@@ -265,7 +268,9 @@
       "runs": "运行记录",
       "removeDraft": "删除草稿",
       "showSubagents": "显示subagent",
-      "hideSubagents": "隐藏subagent"
+      "hideSubagents": "隐藏subagent",
+      "githubIssues": "GitHub Issues",
+      "githubPrs": "GitHub PRs"
     },
     "detail": {
       "title": "标题",
@@ -296,7 +301,9 @@
       "emptySubtitle": "此日期的 Agent 活动会显示在这里。",
       "commitsTo": "提交至 {{repo}}",
       "commitsToMultiple": "提交至 {{repos}}"
-    }
+    },
+    "openRoutineWorkItemError": "无法打开该工作项",
+    "runsEmpty": "暂无 Routine 运行记录"
   },
   "simulator": {
     "captionBarToggleTooltip": "显示 Agent 消息浮窗",
@@ -433,7 +440,8 @@
             "requestedInput": "{{subject}} 请求了输入",
             "sentTo": "{{subject}} 向 {{recipient}} 发送了消息",
             "sentBroadcast": "{{subject}} 向多个 Agent 发送了消息",
-            "sentMessage": "{{subject}} 发送了消息"
+            "sentMessage": "{{subject}} 发送了消息",
+            "turnLoading": "{{subject}} 的消息正在加载…"
           }
         },
         "divider": {
@@ -454,6 +462,10 @@
             "没有消息。就算有预览也没传出来。[无思考预览]"
           ],
           "labelThought": "思考"
+        },
+        "unloadedTurn": {
+          "loadingBody": "正在加载消息…",
+          "retryBody": "消息未能加载 — 点击重试"
         }
       },
       "project": {
@@ -488,7 +500,10 @@
         "tooltipFullscreen": "全屏",
         "tooltipCloseCanvas": "关闭画布",
         "iframeTitle": "Agent Canvas"
-      }
+      },
+      "next": "下一个事件",
+      "previous": "上一个事件",
+      "scrub": "回放进度条"
     },
     "codeEditor": {
       "switchToListView": "切换到列表视图",
@@ -520,7 +535,9 @@
       "waitingForActivity": "等待活动…",
       "viewTaskPrompt": "查看任务提示",
       "taskPromptTitle": "任务提示",
-      "newEventDivider": "新事件"
+      "newEventDivider": "新事件",
+      "loadingHistory": "正在加载历史…",
+      "retryHistory": "无法加载历史 — 重试"
     },
     "dock": {
       "switchTo": "切换到",
@@ -583,7 +600,9 @@
     "newCanvasAction": "新建 Canvas",
     "followUpSuggestions": {
       "label": "建议的下一步"
-    }
+    },
+    "voicePermissionSheetRetry": "重试",
+    "voicePermissionSheetTitle": "需要麦克风权限"
   },
   "chat": {
     "planApprovedLabel": "执行已批准的计划",
@@ -903,7 +922,8 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "外部历史"
+        "externalHistory": "外部历史",
+        "human": "工作日志"
       },
       "fields": {
         "session": "Session",
@@ -977,7 +997,15 @@
         "assignedToMe": "分配给我的",
         "createdByMe": "由我创建",
         "filters": "Filters",
-        "openInGitHub": "Open in GitHub"
+        "openInGitHub": "Open in GitHub",
+        "pullRequests": {
+          "reviewRequested": "待我评审",
+          "authoredByMe": "由我创建",
+          "otherTodos": "其他待办"
+        },
+        "assigneeUpdateNotApplied": "GitHub 未应用指派人变更",
+        "assigneeUpdateSuccess": "已在 GitHub 上更新指派人",
+        "updateIssueFailed": "更新 GitHub issue 失败"
       }
     },
     "sessionViews": {
@@ -992,9 +1020,20 @@
       "fileCount_one": "{{count}} 个文件",
       "fileCount_other": "{{count}} 个文件",
       "turnCount_one": "{{count}} 轮",
-      "turnCount_other": "{{count}} 轮"
+      "turnCount_other": "{{count}} 轮",
+      "inferredTiming": "结束时间由下一轮推断"
     },
-    "parentAgentSender": "上级 Agent"
+    "parentAgentSender": "上级 Agent",
+    "permissionDismiss": "在此设备上忽略",
+    "remoteExecutionNotice": "此操作将在 {{desktopName}} 上运行。",
+    "conversationNavigator": "对话导航",
+    "goToConversationTurn": "前往第 {{current}} 轮，共 {{total}} 轮：{{preview}}",
+    "send": "发送",
+    "sendFailed": "消息发送失败",
+    "sending": "正在发送…",
+    "typeMessage": "输入消息…",
+    "session": "会话",
+    "history": "会话"
   },
   "tools": {
     "noResultsFound": "未找到结果",
@@ -1932,7 +1971,8 @@
       "heading2": "标题 2",
       "bulletList": "无序列表",
       "numberedList": "有序列表",
-      "taskList": "任务列表"
+      "taskList": "任务列表",
+      "formatting": "文本格式"
     },
     "regionNoticeTitle": "可能存在地区限制",
     "regionNoticeBodyProvider": "您所在位置：{{location}}。某些模型在您所在地区可能不可用。",
@@ -1967,7 +2007,8 @@
         "noRepo": "请选择仓库——每个执行器都需要独立的工作树",
         "notEnoughRunners": "请至少配置两个可运行的执行器"
       }
-    }
+    },
+    "mode": "编辑器模式"
   },
   "planner": {
     "modes": {
@@ -2187,7 +2228,8 @@
       "explorations_other": "{{count}} 次探索",
       "otherTools_one": "{{count}} 次其他工具调用",
       "otherTools_other": "{{count}} 次其他工具调用"
-    }
+    },
+    "triggerLabel": "群聊"
   },
   "orgTask": {
     "create": {
@@ -2212,7 +2254,8 @@
     "list": {
       "title": "查看任务列表",
       "count": "{{taskCount}} 个任务",
-      "empty": "暂无任务"
+      "empty": "暂无任务",
+      "countLabel": "任务"
     },
     "statusLabel": "状态",
     "assignedBadge": "已分配",
@@ -2260,7 +2303,8 @@
       "meta": {
         "sender": "发件人",
         "recipient": "收件人",
-        "subject": "主题"
+        "subject": "主题",
+        "status": "状态"
       },
       "broadcastTitle": {
         "running": "正在向多个 Agent 发消息",
@@ -2284,7 +2328,9 @@
       "copyUrl": "复制 URL",
       "copied": "URL 复制",
       "openExternalFailed": "无法用默认浏览器打开 URL",
-      "openPullRequestFailed": "无法打开 Pull Request 标签页"
+      "openPullRequestFailed": "无法打开 Pull Request 标签页",
+      "changesCount_one": "{{count}} 处变更",
+      "changesCount_other": "{{count}} 处变更"
     },
     "path": {
       "openFailed": "无法打开路径",
@@ -2311,7 +2357,9 @@
     "openUrlTitle": "未内嵌预览",
     "openUrlDescription": "外部 URL 不再嵌入聊天里，避免 iframe 占用大量内存。",
     "waiting": "等待内容中…",
-    "empty": "无内容"
+    "empty": "无内容",
+    "streaming": "生成中",
+    "titleReact": "React 预览"
   },
   "canvasApp": {
     "empty": "尚未渲染任何 Canvas",
@@ -2365,12 +2413,15 @@
     "shareDialogError": "无法创建 Canvas 链接。",
     "shareDialogRetryShort": "重试短链接",
     "shareDialogRetryingShort": "正在重试…",
-    "retry": "重试"
+    "retry": "重试",
+    "revisionTargetedSummary_one": "{{count}} 处精确修改 · 保留原 Canvas",
+    "reactArtifactFrame": "React Canvas 预览"
   },
   "domSelection": {
     "previewTitle": "Canvas 选区预览",
     "elementsCount_other": "{{count}} 个元素",
-    "regionLabel": "区域 · {{label}}"
+    "regionLabel": "区域 · {{label}}",
+    "elementsCount_one": "{{count}} 个元素"
   },
   "webhooks": {
     "title": "Webhooks",

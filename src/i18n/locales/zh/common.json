@@ -471,7 +471,17 @@
     "noAppliedCommit": "No linked commit yet",
     "noSessionsForFile": "No sessions found for this file",
     "committedRate": "已提交",
-    "email": "邮箱"
+    "email": "邮箱",
+    "issues": "Issues",
+    "noIssues": "暂无 issue",
+    "openIssues": "开放",
+    "closedIssues": "已关闭",
+    "issueComments": "{{count}} 条评论",
+    "issueComments_one": "1 条评论",
+    "issueComments_other": "{{count}} 条评论",
+    "tokens": "Token",
+    "actions": "操作",
+    "all": "全部"
   },
   "searchModes": {},
   "tabs": {
@@ -547,7 +557,10 @@
       },
       "workflow": "工作流服务暂时不可用，请稍后重试。"
     },
-    "unknownError": "发生未知错误"
+    "unknownError": "发生未知错误",
+    "componentLoadingFailed": "组件加载失败",
+    "noLocalPath": "没有可用的本地路径",
+    "openInFinderFailed": "在 Finder 中打开失败"
   },
   "confirmation": {
     "delete": "确定要删除吗？",
@@ -775,7 +788,9 @@
     "noRepoSelected": "No repository selected",
     "previewUnavailable": "预览不可用",
     "selectRepositoryFromWorkspace": "选择工作区仓库",
-    "noData": "无数据"
+    "noData": "无数据",
+    "noSessionHistoryForFile": "未找到 {{file}} 的会话活动",
+    "noSessionHistory": "暂无会话历史"
   },
   "inbox": {
     "scrollToBottom": "滚动到底部",
@@ -1145,7 +1160,23 @@
         "noLabelCandidates": "暂无可用标签",
         "labelsLoadFailed": "无法加载标签",
         "labelsUpdated": "已更新标签"
-      }
+      },
+      "creating": "正在创建 pull request…",
+      "createError": "创建 pull request 失败",
+      "readyHint": "分支已推送，可以创建 pull request",
+      "neutralHint": "推送分支后即可创建 pull request",
+      "noBranch": "未选择分支",
+      "noRepoPath": "没有可用的仓库路径",
+      "notAuthenticated": "登录后即可创建 pull request",
+      "noOriginRemote": "未配置 origin 远程仓库",
+      "cannotParseRepoName": "无法从 origin 远程仓库解析仓库名",
+      "authRequired": {
+        "title": "连接 GitHub",
+        "description": "前往 设置 → 连接 以连接你的 GitHub 账号。"
+      },
+      "navigationTrail": "Pull request 导航",
+      "failedToLoad": "加载 pull request 失败",
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Successfully pushed changes to remote",
@@ -1292,8 +1323,34 @@
         "count_other": "{{count}} 个相关项目",
         "unavailable": "详情不可用",
         "unavailableCount_one": "无法解析 {{count}} 个相关项目",
-        "unavailableCount_other": "无法解析 {{count}} 个相关项目"
-      }
+        "unavailableCount_other": "无法解析 {{count}} 个相关项目",
+        "reference": "GitHub 引用"
+      },
+      "loading": "正在加载 issues…",
+      "empty": "没有{{state}}的 issue",
+      "failedToLoad": "加载 issues 失败",
+      "failedToCreate": "创建 issue 失败",
+      "failedToUpdate": "更新 issue 失败",
+      "failedToComment": "添加评论失败",
+      "filterAll": "全部",
+      "filterOpen": "开放",
+      "filterClosed": "已关闭",
+      "noGitHubRepo": "连接 GitHub 仓库以管理 issues",
+      "commentPlaceholder": "发表评论…",
+      "submitComment": "评论",
+      "newIssueTitlePlaceholder": "Issue 标题",
+      "newIssueBodyPlaceholder": "描述该 issue（可选）…",
+      "authRequired": {
+        "title": "连接 GitHub",
+        "description": "前往 设置 → 连接 以连接你的 GitHub 账号。"
+      },
+      "reAuthRequired": "需要 GitHub 授权",
+      "reAuthDescription": "你的 GitHub token 已过期。请前往 设置 → 连接 重新连接。",
+      "goToSettings": "前往设置",
+      "loadingTimeline": "正在加载活动…",
+      "label": "Issue",
+      "linkedLoading": "正在加载关联项目",
+      "detailNavigation": "Issue 导航"
     }
   },
   "selectors": {
@@ -1433,7 +1490,8 @@
         "noGithubRemote": "未配置 GitHub 远程仓库",
         "prSearchScope": "搜索范围为已加载的 {{count}} 个 Pull requests",
         "prLimit": "最多显示 {{count}} 个未关闭的 PR",
-        "noPullRequests": "没有匹配的 Pull requests"
+        "noPullRequests": "没有匹配的 Pull requests",
+        "mainWorktree": "主"
       },
       "placeholders": {
         "add": "新分支名称...",
@@ -1776,7 +1834,13 @@
     "manualCompactSectionTitle": "手动压缩",
     "miniCpmCompactTitle": "MiniCPM 静默自动压缩",
     "miniCpmCompactDescription": "自动异步处理旧上下文",
-    "miniCpmCompactToggleAria": "开启 MiniCPM 静默自动压缩"
+    "miniCpmCompactToggleAria": "开启 MiniCPM 静默自动压缩",
+    "categories": {
+      "unattributed": "未归因"
+    },
+    "compactBoundarySubtitle_one": "已总结 {{count}} 条较早的消息",
+    "compactBoundarySubtitle_other": "已总结 {{count}} 条较早的消息",
+    "manualCompactNativeProvider": "此处的手动压缩仅支持内置 Agent 会话。原生 CLI 的历史请在其提供方应用中压缩。"
   },
   "relativeDate": {
     "justNow": "刚刚",
@@ -1830,7 +1894,8 @@
     "statusReadyToCreate": "可以创建工作目录",
     "defaultName": "工作目录",
     "defaultNameWithRepo": "{{repo}} 工作目录",
-    "windowTitle": "工作目录"
+    "windowTitle": "工作目录",
+    "statusMaxRepos": "最多选择 5 个 Repo"
   },
   "database": {
     "databaseFile": "数据库文件",
@@ -1960,7 +2025,9 @@
       "multipleBody": "打开团队收件箱查看新的分配和提及。"
     },
     "row": {
-      "ariaLabel": "{{title}}，{{status}}"
+      "ariaLabel": "{{title}}，{{status}}",
+      "issueSource": "{{repository}} issue",
+      "issueSourceFallback": "Issue"
     },
     "empty": {
       "title": "暂无事项",
@@ -2040,7 +2107,9 @@
       "identityUnavailable": "无法验证你的团队身份，请先检查项目个人资料再处理交接。",
       "rowPending": "来自 {{name}} · 等待你处理",
       "rowAccepted": "已接收交接 · {{status}} · {{priority}}",
-      "rowReturned": "{{name}} 已退回 · {{status}} · {{priority}}"
+      "rowReturned": "{{name}} 已退回 · {{status}} · {{priority}}",
+      "todoCount_one": "{{count}} 项待办",
+      "todoCount_other": "{{count}} 项待办"
     },
     "errors": {
       "loadTitle": "无法加载团队收件箱",
@@ -2066,7 +2135,9 @@
       "assignedSubtitle": "分配给你的工作项",
       "standaloneProject": "独立工作项",
       "mentionSubtitle": "评论中提及了你",
-      "mentionedYou": "提及了你"
+      "mentionedYou": "提及了你",
+      "threadComments_one": "此话题中有 {{count}} 条评论",
+      "threadComments_other": "此话题中有 {{count}} 条评论"
     },
     "actions": {
       "markRead": "标记已读",
@@ -2179,5 +2250,32 @@
     "loadFailed": "无法加载应用，请重新展开重试",
     "openFailed": "无法打开文档",
     "saveFirst": "请先保存或放弃修改，再使用其他应用打开"
+  },
+  "sqlEditor": {
+    "placeholder": "输入 SQL 查询...",
+    "format": "格式化",
+    "runQueryToSeeResults": "运行查询以查看结果",
+    "executingQuery": "正在执行查询...",
+    "queryFailed": "查询失败",
+    "queryCompleted": "查询完成",
+    "noResults": "查询未返回结果",
+    "rowCount_one": "{{count}} 行",
+    "rowCount_other": "{{count}} 行",
+    "press": "按",
+    "toRun": "运行",
+    "nullValue": "NULL",
+    "booleanTrue": "true",
+    "booleanFalse": "false"
+  },
+  "chatImage": {
+    "maxReached": "最多允许 {{max}} 张图片",
+    "remainingWarning": "只能再添加 {{remaining}} 张图片（最多 {{max}} 张）",
+    "processFailed": "处理图片失败",
+    "loadFailed": "加载图片失败：{{fileName}}"
+  },
+  "navigation": {
+    "goToSection": "前往 {{label}}，第 {{current}} 节，共 {{total}} 节",
+    "section": "第 {{current}} 节",
+    "sectionPosition": "第 {{current}} 节，共 {{total}} 节"
   }
 }

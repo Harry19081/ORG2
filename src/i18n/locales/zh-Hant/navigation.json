@@ -44,7 +44,8 @@
     "projectManager": "專案管理器",
     "diff": "Diff",
     "colleagues": "同事",
-    "terminals": "終端機"
+    "terminals": "終端機",
+    "openSourceRepo": "開啟原始碼倉庫"
   },
   "routes": {
     "session": "聊天",
@@ -126,7 +127,9 @@
     },
     "folderCounts": {
       "repo": "{{count}}個倉庫",
-      "multiRepoWorkspace": "{{count}}個多倉庫工作區"
+      "multiRepoWorkspace": "{{count}}個多倉庫工作區",
+      "repo_plural": "{{count}}個倉庫",
+      "multiRepoWorkspace_plural": "{{count}}個多倉庫工作區"
     },
     "bottomBar": {
       "settings": "設定",
@@ -161,7 +164,8 @@
       "duration30m": "30 分鐘",
       "duration1h": "1 小時",
       "duration2h": "2 小時",
-      "durationTomorrow": "明天"
+      "durationTomorrow": "明天",
+      "unknownRole": "未知角色"
     },
     "guide": {
       "trigger": "開啟使用引導",
@@ -342,7 +346,8 @@
       "forkSnapshotIncomplete": "雲端快照不完整。請讓擁有者完成同步後重試。",
       "forkAgentUnavailable": "請先選擇本機 Agent 再分叉。",
       "forkBackendRegistrationFailed": "歷史已複製，但可執行的分叉工作階段註冊失敗。請重試。",
-      "forkReplayUnavailable": "此工作階段尚無完整回放。請讓擁有者共享完整回放後重試。"
+      "forkReplayUnavailable": "此工作階段尚無完整回放。請讓擁有者共享完整回放後重試。",
+      "forkSetupReused": "以上次的設定繼續 · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -682,7 +687,9 @@
     "comments": {
       "actionError": "操作失敗，請重試",
       "unresolvedBadge_one": "{{count}} 則未解決評論",
-      "unresolvedBadge": "{{count}} 則未解決評論"
+      "unresolvedBadge": "{{count}} 則未解決評論",
+      "unreadBadge_one": "{{count}} 則未讀訊息",
+      "unreadBadge": "{{count}} 則未讀訊息"
     },
     "billing": {
       "openFailed": "無法開啟帳單頁，請重試。"
@@ -833,5 +840,60 @@
       "memberNote": "由管理員開啟——無需開啟該工作空間，符合條件的會話也會在背景上傳。"
     },
     "userName": "使用者名稱"
+  },
+  "myRole": {
+    "deleteRoleMessage": "「{{name}}」將被移除。此操作無法復原。",
+    "activeBadge": "使用中",
+    "addRole": "新增自訂角色",
+    "builtInTitle": "內建角色",
+    "customEmpty": "尚無自訂角色。新增一個來描述內建三種角色未涵蓋的狀態 — 例如「深度工作」、「結對」或「值班」。",
+    "customTitle": "自訂角色",
+    "deleteRoleCancel": "取消",
+    "deleteRoleOk": "刪除",
+    "deleteRoleTitle": "刪除角色？",
+    "followUpSuggestionsDesc": "工作項目的一輪完成後，建議可能的後續步驟。這會額外發出一次模型請求。",
+    "followUpSuggestionsLabel": "Agent 後續建議",
+    "goalMaxTurnsDesc": "在 Agent 通常會停下的時候，繼續朝我最近的請求最多再工作 N 輪（0 = 關閉）。",
+    "goalMaxTurnsLabel": "目標續跑額度",
+    "guidanceLabel": "Agent 指引",
+    "guidancePlaceholder": "此角色生效時，Agent 應如何調整行為？",
+    "modeSwitchAutoPlanDesc": "待確認的 Plan 模式建議在確認計時結束後自動切換。",
+    "modeSwitchAutoPlanLabel": "模式切換自動進入 Plan",
+    "newRoleDefaultLabel": "自訂角色",
+    "pageDescription": "定義你目前扮演的角色。Agent 會讀取目前角色的指引並相應調整行為 — 例如在你專注工作時少問釐清問題，或在你離開時批次彙整摘要。",
+    "pageTitle": "我的角色",
+    "planAutoApproveDesc": "N 秒後自動核准待確認的計畫（0 = 等我確認）。",
+    "planAutoApproveLabel": "計畫自動核准",
+    "questionAutoSkipDesc": "N 秒後自動跳過 Agent 的待答問題（0 = 等我回答）。",
+    "questionAutoSkipLabel": "問題自動跳過",
+    "roleNameLabel": "名稱",
+    "roleNamePlaceholder": "角色名稱",
+    "stanceAutonomous": "自主 — 從不等我",
+    "stanceDeferAndBatch": "延後並批次 — 先做事，稍後再問",
+    "stanceDesc": "此角色生效時，Agent 如何處理需要阻塞等待的決策。",
+    "stanceInteractive": "互動 — 隨時問我",
+    "stanceLabel": "行為姿態"
+  },
+  "explore": {
+    "search": "搜尋",
+    "searching": "搜尋中...",
+    "searchPlaceholder": "搜尋 GitHub 倉庫（例如 language:rust tauri）",
+    "clone": "克隆",
+    "cloning": "克隆中...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "已克隆 {{name}}",
+    "cloneFailed": "克隆失敗",
+    "cloneNoTarget": "未設定預設工作區資料夾。請在設定中設定一個。",
+    "errorTitle": "搜尋失敗",
+    "noResultsTitle": "沒有符合的倉庫",
+    "noResultsSubtitle": "請嘗試其他查詢或排序方式。",
+    "resultsCount": "顯示 {{shown}} 個，共 {{total}} 個倉庫",
+    "partial": "（部分結果 — 搜尋逾時）",
+    "sort": {
+      "bestMatch": "最佳符合",
+      "stars": "Star 數",
+      "updated": "最近更新",
+      "forks": "Fork 數"
+    }
   }
 }

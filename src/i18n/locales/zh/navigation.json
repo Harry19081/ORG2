@@ -44,7 +44,8 @@
     "projectManager": "项目管理器",
     "diff": "Diff",
     "colleagues": "同事",
-    "terminals": "终端"
+    "terminals": "终端",
+    "openSourceRepo": "打开源码仓库"
   },
   "routes": {
     "session": "聊天",
@@ -126,7 +127,9 @@
     },
     "folderCounts": {
       "repo": "{{count}}个仓库",
-      "multiRepoWorkspace": "{{count}}个多仓库工作区"
+      "multiRepoWorkspace": "{{count}}个多仓库工作区",
+      "repo_plural": "{{count}}个仓库",
+      "multiRepoWorkspace_plural": "{{count}}个多仓库工作区"
     },
     "bottomBar": {
       "settings": "设置",
@@ -161,7 +164,8 @@
       "duration30m": "30 分钟",
       "duration1h": "1 小时",
       "duration2h": "2 小时",
-      "durationTomorrow": "明天"
+      "durationTomorrow": "明天",
+      "unknownRole": "未知角色"
     },
     "guide": {
       "trigger": "打开使用引导",
@@ -836,5 +840,60 @@
       "memberNote": "由管理员开启——无需打开该工作空间，符合条件的会话也会在后台上传。"
     },
     "userName": "用户名"
+  },
+  "myRole": {
+    "deleteRoleMessage": "「{{name}}」将被移除。此操作无法撤销。",
+    "activeBadge": "当前",
+    "addRole": "添加自定义角色",
+    "builtInTitle": "内置角色",
+    "customEmpty": "暂无自定义角色。添加一个来描述内置三种角色未涵盖的状态 — 例如「深度工作」「结对」或「值班」。",
+    "customTitle": "自定义角色",
+    "deleteRoleCancel": "取消",
+    "deleteRoleOk": "删除",
+    "deleteRoleTitle": "删除角色？",
+    "followUpSuggestionsDesc": "工作项的一轮完成后，建议可能的后续步骤。这会额外发起一次模型请求。",
+    "followUpSuggestionsLabel": "Agent 后续建议",
+    "goalMaxTurnsDesc": "在 Agent 通常会停下的时候，继续朝我最近的请求最多再工作 N 轮（0 = 关闭）。",
+    "goalMaxTurnsLabel": "目标续跑额度",
+    "guidanceLabel": "Agent 指引",
+    "guidancePlaceholder": "此角色生效时，Agent 应如何调整行为？",
+    "modeSwitchAutoPlanDesc": "待确认的 Plan 模式建议在确认计时结束后自动切换。",
+    "modeSwitchAutoPlanLabel": "模式切换自动进入 Plan",
+    "newRoleDefaultLabel": "自定义角色",
+    "pageDescription": "定义你当前扮演的角色。Agent 会读取当前角色的指引并相应调整行为 — 例如在你专注工作时少问澄清问题，或在你离开时批量汇总。",
+    "pageTitle": "我的角色",
+    "planAutoApproveDesc": "N 秒后自动批准待确认的计划（0 = 等我确认）。",
+    "planAutoApproveLabel": "计划自动批准",
+    "questionAutoSkipDesc": "N 秒后自动跳过 Agent 的待答问题（0 = 等我回答）。",
+    "questionAutoSkipLabel": "问题自动跳过",
+    "roleNameLabel": "名称",
+    "roleNamePlaceholder": "角色名称",
+    "stanceAutonomous": "自主 — 从不等我",
+    "stanceDeferAndBatch": "延后并批量 — 先干活，稍后再问",
+    "stanceDesc": "此角色生效时，Agent 如何处理需要阻塞等待的决策。",
+    "stanceInteractive": "交互 — 随时问我",
+    "stanceLabel": "行为姿态"
+  },
+  "explore": {
+    "search": "搜索",
+    "searching": "搜索中...",
+    "searchPlaceholder": "搜索 GitHub 仓库（例如 language:rust tauri）",
+    "clone": "克隆",
+    "cloning": "克隆中...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "已克隆 {{name}}",
+    "cloneFailed": "克隆失败",
+    "cloneNoTarget": "未配置默认工作区文件夹。请在设置中设置一个。",
+    "errorTitle": "搜索失败",
+    "noResultsTitle": "没有匹配的仓库",
+    "noResultsSubtitle": "请尝试其他查询或排序方式。",
+    "resultsCount": "显示 {{shown}} 个，共 {{total}} 个仓库",
+    "partial": "（部分结果 — 搜索超时）",
+    "sort": {
+      "bestMatch": "最佳匹配",
+      "stars": "Star 数",
+      "updated": "最近更新",
+      "forks": "Fork 数"
+    }
   }
 }

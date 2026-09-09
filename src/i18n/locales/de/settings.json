@@ -20,7 +20,8 @@
     "storage": "Speicher",
     "agentMemory": "Agent-Speicher",
     "agentOrg": "Agent-Team",
-    "harnessConnections": "CLI-Routing"
+    "harnessConnections": "CLI-Routing",
+    "mobileRemote": "Mobile Remote"
   },
   "coreSidebar": {
     "groups": {
@@ -164,7 +165,8 @@
       "gold": "Gold",
       "red": "Rot",
       "rose": "Rosa",
-      "mono": "Mono"
+      "mono": "Mono",
+      "matchSkin": "An Skin anpassen"
     },
     "security": "Sicherheit",
     "voiceInput": "Spracheingabe",
@@ -189,7 +191,28 @@
     "presenceGuidanceOnlineDefault": "Ich bin an der Tastatur. Du kannst mir jederzeit Rückfragen stellen und destruktive Aktionen vor der Ausführung von mir bestätigen lassen",
     "presenceGuidanceInvisibleDefault": "Ich bin in der Nähe, erscheine aber offline. Arbeite standardmäßig autonom und benachrichtige mich nur bei riskanten Aktionen oder größeren Refactorings; fasse alle anderen Fragen gesammelt zusammen, statt sie einzeln zu stellen",
     "presenceGuidanceAwayDefault": "Ich bin nicht an der Tastatur. Warte nicht auf mich, sondern triff mit den vorhandenen Informationen die beste Entscheidung, erledige alles Mögliche und hinterlasse eine knappe Zusammenfassung mit offenen Fragen für meine Rückkehr",
-    "followSystem": "System folgen"
+    "followSystem": "System folgen",
+    "skins": "Skins",
+    "skinsDesc": "Hell und Dunkel verwenden getrennte Paletten. Jede gilt, sobald die App in diesem Modus zeichnet",
+    "lightSkin": "Heller Skin",
+    "darkSkin": "Dunkler Skin",
+    "lightAccent": "Heller Akzent",
+    "darkAccent": "Dunkler Akzent",
+    "skinGroups": {
+      "orgii": "ORGII",
+      "codex": "Codex"
+    },
+    "iconStyle": "Symbolstil",
+    "iconStyleDesc": "Monochrom entsättigt Dateityp- und Modellsymbole, sodass sie als Oberfläche und nicht als Logos wirken",
+    "iconStyleOptions": {
+      "colorful": "Farbig",
+      "monochrome": "Monochrom"
+    },
+    "translucentSidebar": "Transluzente Seitenleiste",
+    "skin": "Skin",
+    "accent": "Akzent",
+    "linkSkinVariants": "Hell und Dunkel koppeln",
+    "linkSkinVariantsDesc": "Verwendet einen Skin und Akzent für beide Modi. Nur Skins mit heller und dunkler Variante können gekoppelt werden"
   },
   "background": {
     "title": "Hintergrund",
@@ -463,7 +486,8 @@
       "permissionWarning": "Testbenachrichtigung konnte nicht gesendet werden. Berechtigungen prüfen.",
       "sendFailed": "Testbenachrichtigung konnte nicht gesendet werden. Bitte Berechtigungen prüfen und erneut versuchen.",
       "soundFailed": "Der Benachrichtigungston konnte nicht wiedergegeben werden. Prüfen Sie die Systemlautstärke."
-    }
+    },
+    "teamInboxDesc": "Zuweisungen, Erwähnungen und Übergaben von Teammitgliedern"
   },
   "editor": {
     "tabEditor": "Editor",
@@ -558,7 +582,19 @@
   },
   "update": {
     "detectUpdate": "Update erkennen",
-    "currentVersion": "Aktuelle Version"
+    "currentVersion": "Aktuelle Version",
+    "channel": "Update-Kanal",
+    "channelDesc": "Beta erhält Vorabversionen vor dem stabilen Release. Ein Wechsel zurück zu Stabil führt nie zu einem Downgrade — er wirkt sich beim nächsten stabilen Release aus",
+    "channelStable": "Stabil",
+    "channelBeta": "Beta",
+    "installConfirmTitle": "Update bereit zur Installation",
+    "installConfirmDesc": "Version {{version}} wurde heruntergeladen. Speichere laufende Arbeit, bevor du ORGII installierst und neu startest",
+    "installAndRestart": "Installieren und neu starten",
+    "installOfficialConfirmTitle": "Offizielle App bereit zur Installation",
+    "installOfficialConfirmDesc": "Installiert die offizielle Version {{version}} unter /Applications/ORG2.app. Dieser lokale Build bleibt geöffnet und unverändert",
+    "installOfficial": "Offizielle App installieren",
+    "localBuild": "Lokal",
+    "skipVersion": "Diese Version überspringen"
   },
   "monitor": {
     "appMemory": "App memory",
@@ -633,7 +669,19 @@
     "diskCategory_sessionImages": "Chat-Bilder",
     "diskCategory_screenshots": "Browser-Screenshots",
     "diskCategory_agentWorktrees": "Agent Session Worktrees",
-    "diskCategory_lspBin": "LSP Server Binaries"
+    "diskCategory_lspBin": "LSP Server Binaries",
+    "cacheRegistry": "Cache-Registry",
+    "loadedScriptSources": "Geladener JS-Quellcode ({{modules}} Module / {{chunks}} Chunks)",
+    "cacheRegistryEmpty": "Keine registrierten Caches",
+    "cacheRegistryEntries": "{{count}} Einträge",
+    "diskCategory_toolResults": "Übergroße Tool-Ergebnisse",
+    "diskCategory_diagnostics": "Diagnose-Warteschlange",
+    "diskCategory_models": "Heruntergeladene Modelle",
+    "diskCategory_semanticIndex": "Semantischer Suchindex",
+    "diskCategory_cursorCliProfiles": "Cursor-CLI-Profile",
+    "diskCategory_kiroCliProfiles": "Kiro-CLI-Profile",
+    "diskCategory_opencodeCliProfiles": "OpenCode-CLI-Profile",
+    "diskCategory_sidecarBin": "Heruntergeladene Sidecar-Binaries"
   },
   "dependencies": {
     "systemDependencies": "Systemabhängigkeiten",
@@ -852,5 +900,81 @@
     "conflict": "Konfiguration außerhalb von ORGII geändert. Änderungen vor dem Anwenden oder Wiederherstellen prüfen; sie werden nicht überschrieben",
     "credentialsNote": "Der Direktmodus schreibt Zugangsdaten in die CLI-Konfiguration mit eingeschränktem Dateizugriff; das Löschen eines Tresorschlüssels widerruft die exportierten Zugangsdaten nicht",
     "notInstalled": "Dieses Werkzeug vor dem Testen oder Anwenden einer Verbindung installieren"
+  },
+  "mobileRemote": {
+    "enabled": "Mobile Remote",
+    "enabledDesc": "Erlaubt einem gekoppelten Telefon, Agent-Sessions auf diesem Desktop über dasselbe WLAN oder über das öffentliche Relay zu steuern",
+    "securityNotice": "Bei aktivierter LAN-Freigabe kann jeder in deinem Netzwerk mit Verbindungs-URL und Token Sessions steuern. Erzeuge das Token neu, wenn du vermutest, dass es durchgesickert ist",
+    "outdoorTitle": "Verbindung von unterwegs",
+    "outdoorDesc": "Verbindet den Desktop ausgehend mit einem öffentlichen Relay, damit dein Telefon über 4G, 5G oder ein anderes Netzwerk funktioniert",
+    "relayEnabled": "Mit öffentlichem Relay verbinden",
+    "relayEnabledDesc": "Der Desktop öffnet eine ausgehende WSS-Verbindung; keine Portweiterleitung am Router nötig",
+    "relayUrl": "Relay-Adresse",
+    "relayUrlDesc": "Gib die bereitgestellte ws://- oder wss://-URL ein, z. B. wss://relay.example.com/v1/mobile/ws",
+    "relayPresetAria": "Voreinstellung für Relay-Umgebung auswählen",
+    "relayPresetLocal": "Lokal",
+    "relayPresetProduction": "Produktion",
+    "cloudLoginTitle": "ORG2 Cloud-Anmeldung",
+    "cloudLoginDescSignedIn": "Angemeldet als {{identity}} — das Relay verwendet dieses Konto für die Kopplung von unterwegs",
+    "cloudLoginDescSignedOut": "Melde dich bei ORG2 Cloud an, bevor du über das öffentliche Relay koppelst",
+    "relayStatusCloudLoginRequired": "Melde dich unter Einstellungen → Allgemein bei ORG2 Cloud an und aktualisiere dann den Relay-Status",
+    "relayStatusAuthFailedSignedIn": "Relay hat die Verbindung abgelehnt — melde dich unter Einstellungen → Allgemein ab und erneut an",
+    "relayStatus": "Relay-Status",
+    "relayStatus_online": "Verbunden",
+    "relayStatus_connecting": "Verbindung wird hergestellt",
+    "relayStatus_backoff": "Warte auf erneute Verbindung",
+    "relayStatus_disabled": "Deaktiviert",
+    "relayStatus_config_error": "Konfigurationsfehler",
+    "relayStatus_stopped": "Gestoppt",
+    "startOutdoorPairing": "Kopplungscode für unterwegs erzeugen",
+    "phoneLabel": "Telefonname",
+    "phoneLabelDesc": "Dieser Name erscheint in der Liste der gekoppelten Geräte",
+    "fullAccess": "Aktionen erlauben",
+    "fullAccessDesc": "Wenn ein, kann das Telefon Nachrichten senden, Sessions stoppen und Berechtigungen beantworten; wenn aus, ist es nur lesend",
+    "pairingExpires": "Kopplungscode läuft in {{seconds}} Sekunden ab",
+    "sasPhrase": "Sicherheitsphrase",
+    "sasDesktopHint": "Das Telefon zeigt nach dem Scannen dieselbe Phrase; bestätige nur, wenn beide übereinstimmen",
+    "pairingPayload": "Kopplungsdaten",
+    "pairingPayloadHint": "Kopiere dies und füge es beim Testen auf diesem Computer in den Abgleichsbildschirm von Mobile Remote ein",
+    "copyPairingPayload": "Kopplungsdaten kopieren",
+    "pairingPayloadCopied": "Kopplungsdaten kopiert",
+    "pairingPayloadCopyFailed": "Kopplungsdaten konnten nicht kopiert werden",
+    "regeneratePairing": "Neuen Code erzeugen",
+    "confirmPairing": "Phrasen stimmen überein, Kopplung bestätigen",
+    "pairingConfirmed": "Telefon gekoppelt",
+    "pairingFailed": "Kopplung konnte nicht erstellt werden",
+    "revokeDevice": "Widerrufen",
+    "lanAdvanced": "LAN-Fallback",
+    "lanAdvancedDesc": "Direkt im selben WLAN verbinden, ohne das öffentliche Relay zu nutzen",
+    "allowLanExposure": "LAN-Verbindungen erlauben",
+    "allowLanExposureDesc": "Wenn aus, akzeptiert die Bridge nur Verbindungen von diesem Computer (127.0.0.1). Wenn ein, können sich andere Geräte in deinem WLAN verbinden",
+    "lanToken": "Verbindungstoken",
+    "lanTokenDesc": "Wird als gemeinsames Geheimnis an die WebSocket-URL angehängt. Hier zum Kopieren/Einfügen oder zur QR-Codierung angezeigt",
+    "regenerateToken": "Neu erzeugen",
+    "pairing": "Auf deinem Telefon koppeln",
+    "pairingDesc": "Scanne den QR-Code oder kopiere die WebSocket-URL in den Browser deines Telefons, um dich im selben WLAN zu verbinden",
+    "connectionUrl": "WebSocket-URL",
+    "connectionUrlDesc": "Öffne diese URL im Browser deines Telefons oder codiere sie zum Koppeln in einen QR-Code",
+    "copyConnectionUrl": "WebSocket-URL kopieren",
+    "connectionUrlCopied": "WebSocket-URL kopiert",
+    "qrAriaLabel": "QR-Code für die WebSocket-URL von Mobile Remote",
+    "qrScanHint": "Scanne mit der Kamera deines Telefons oder einer QR-Reader-App, während du im selben Netzwerk bist",
+    "lanIpUnresolved": "Die LAN-Adresse dieses Computers konnte nicht ermittelt werden. Kopiere die URL und ersetze <local-ip> durch deine WLAN-IP, oder tippe auf LAN-IP aktualisieren",
+    "refreshLanIp": "LAN-IP aktualisieren",
+    "pairedDevices": "Gekoppelte Geräte",
+    "pairedDevicesDesc": "Über das Relay autorisierte Telefone; der Zugriff kann jederzeit widerrufen werden",
+    "devicesLoadFailed": "Gekoppelte Geräte konnten nicht geladen werden",
+    "noDevices": "Keine gekoppelten Geräte",
+    "noDevicesDesc": "Erzeuge einen Kopplungscode für unterwegs und scanne ihn oder füge ihn in der Mobile Remote PWA ein",
+    "deviceLabel": "Gerät",
+    "deviceTier": "Stufe",
+    "deviceTierFull": "Vollzugriff",
+    "deviceTierReadOnly": "Nur lesen",
+    "deviceLastSeen": "Zuletzt gesehen",
+    "devicePairedAt": "Gekoppelt {{time}}",
+    "deviceLastSeenValue": "Zuletzt gesehen {{time}}",
+    "deviceNeverSeen": "Nie verbunden",
+    "deviceOnline": "Online",
+    "deviceOffline": "Offline"
   }
 }

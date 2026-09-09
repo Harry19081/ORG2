@@ -14,7 +14,15 @@
     "tooltip": "Tahmini araç atfı. Yöntem: {{method}}. Girdi: {{inputBytes}} bytes. Çıktı: {{outputBytes}} bytes. Karar: {{decisionTokens}} Token. Bağlam: {{contextTokens}} Token. Follow-up: {{followupTokens}} Token. İlgili LLM cache read: {{cacheReadTokens}} Token. İlgili LLM cache write: {{cacheWriteTokens}} Token."
   },
   "humanSession": {
-    "titlePlaceholder": "Başlık (isteğe bağlı)"
+    "titlePlaceholder": "Başlık (isteğe bağlı)",
+    "createPlaceholder": "İlk notu ekleyin… Skill'ler için / yazın veya bir oturumdan bahsetmek için @ kullanın.",
+    "createAction": "Çalışma günlüğü oluştur",
+    "entryLabel": "Çalışma günlüğü girdisi",
+    "appendPlaceholder": "Not ekleyin… Skill'ler için / yazın, bir oturumdan bahsetmek için @ kullanın veya buraya bir tane sürükleyin.",
+    "loading": "Çalışma günlüğü yükleniyor",
+    "createFailed": "Çalışma günlüğü oluşturulamadı",
+    "loadFailed": "Çalışma günlüğü yüklenemedi",
+    "appendFailed": "Not eklenemedi"
   },
   "history": {
     "untitledSession": "Adsız Session",
@@ -26,7 +34,9 @@
       "rounds": "Turlar",
       "roundCount_one": "{{count}} tur",
       "roundCount_other": "{{count}} tur",
-      "agentWorked": "Agent çalıştı"
+      "agentWorked": "Agent çalıştı",
+      "cliNativeStore": "CLI yerel deposu",
+      "sessionId": "Oturum kimliği"
     }
   },
   "kanban": {
@@ -208,7 +218,11 @@
         "installed": "Kurulu",
         "notInstalled": "Algılanmadı",
         "disabled": "Devre dışı"
-      }
+      },
+      "rescanUpdate": "Güncelle",
+      "rescanClear": "Temizle + yeniden tara",
+      "externalSessionsToggle": "Harici oturumlar",
+      "externalSessionsToggleDesc": "Kapalıyken hiçbir harici kaynak taranmaz ve oturumları yüklenmez"
     },
     "list": {
       "started": "Başlatıldı",
@@ -253,7 +267,10 @@
     "sidebar": {
       "removeDraft": "Taslağı kaldır",
       "showSubagents": "subagent'ları göster",
-      "hideSubagents": "subagent'ları gizle"
+      "hideSubagents": "subagent'ları gizle",
+      "githubIssues": "GitHub Issues",
+      "githubPrs": "GitHub PR'ları",
+      "runs": "Çalıştırmalar"
     },
     "detail": {
       "title": "Başlık",
@@ -284,7 +301,9 @@
       "trajectory": "Trajectory",
       "touchedFiles": "Touched files",
       "noTouchedFiles": "No files touched"
-    }
+    },
+    "openRoutineWorkItemError": "İş öğesi açılamadı",
+    "runsEmpty": "Henüz routine çalıştırması yok"
   },
   "simulator": {
     "captionBarToggleTooltip": "Agent mesaj çubuğunu göster",
@@ -369,7 +388,17 @@
           "empty": "Henüz gönderim yok",
           "selectSubmission": "Ayrıntıları görüntülemek için bir gönderim seçin",
           "noCommits": "Henüz Commits yok",
-          "noPullRequests": "Henüz Pull Requests yok"
+          "noPullRequests": "Henüz Pull Requests yok",
+          "labels": {
+            "created": {
+              "commit": "Commit oluşturuldu",
+              "pullRequest": "PR oluşturuldu"
+            },
+            "mentioned": {
+              "commit": "Bahsedilen commit",
+              "pullRequest": "Bahsedilen PR"
+            }
+          }
         }
       },
       "channelsSidebar": {
@@ -392,7 +421,14 @@
             "requestedInput": "{{subject}} girdi istedi",
             "sentTo": "{{subject}}, {{recipient}} kişisine bir mesaj gönderdi",
             "sentBroadcast": "{{subject}} birden fazla Agent'a bir mesaj gönderdi",
-            "sentMessage": "{{subject}} bir mesaj gönderdi"
+            "sentMessage": "{{subject}} bir mesaj gönderdi",
+            "taskCreateRunning": "{{subject}} bir görev oluşturuyor",
+            "taskCreateRejected": "{{subject}} tarafından oluşturulan görevin düzeltilmesi gerekiyor",
+            "taskCreateFailed": "{{subject}} görev oluşturamadı",
+            "taskOperationRunning": "{{subject}} bir görev işlemi çalıştırıyor",
+            "taskOperationRejected": "{{subject}} tarafından yapılan görev işleminin düzeltilmesi gerekiyor",
+            "taskOperationFailed": "{{subject}} tarafından yapılan görev işlemi başarısız oldu",
+            "turnLoading": "{{subject}} mesajı yükleniyor…"
           }
         },
         "divider": {
@@ -413,6 +449,10 @@
             "Mesaj yok. Önizleme gelmedi. [Düşünce önizlemesi yok]"
           ],
           "labelThought": "Düşünce"
+        },
+        "unloadedTurn": {
+          "loadingBody": "Mesaj yükleniyor…",
+          "retryBody": "Mesaj yüklenemedi — tekrar denemek için dokunun"
         }
       },
       "project": {
@@ -450,7 +490,20 @@
       },
       "followingAgent": "Agent takip ediliyor",
       "trajectoryAgent": "Agent yörüngesini takip et",
-      "trajectoryThisApp": "Bu uygulamayı takip et"
+      "trajectoryThisApp": "Bu uygulamayı takip et",
+      "filters": {
+        "tooltip": "Olayları filtrele",
+        "allEvents": "Tüm olaylar",
+        "keyInteractions": "Önemli etkileşimler",
+        "fileChanges": "Dosya değişiklikleri",
+        "terminalEvents": "Terminal olayları",
+        "explore": "Keşif",
+        "other": "Diğer",
+        "selectedCount": "{{count}} filtre"
+      },
+      "next": "Sonraki olay",
+      "previous": "Önceki olay",
+      "scrub": "Tekrar oynatma kaydırma çubuğu"
     },
     "codeEditor": {
       "switchToListView": "Liste görünümüne geç",
@@ -482,7 +535,9 @@
       "waitingForActivity": "Etkinlik bekleniyor…",
       "viewTaskPrompt": "Görev istemini görüntüle",
       "taskPromptTitle": "Görev istemi",
-      "newEventDivider": "Yeni olay"
+      "newEventDivider": "Yeni olay",
+      "loadingHistory": "Geçmiş yükleniyor…",
+      "retryHistory": "Geçmiş yüklenemedi — Tekrar dene"
     },
     "dock": {
       "switchTo": "Geçiş yap",
@@ -539,7 +594,15 @@
     "compactCommandDescription": "Eski bağlamı özetleyerek yer açar. İsteğe bağlı: /compact <özet odağı>",
     "canvasCommandDescription": "Yeni bir etkileşimli Canvas oluşturur. İsteğe bağlı: /canvas <oluşturulacak içerik>",
     "canvasArgHint": "oluşturulacak içerik",
-    "newCanvasAction": "Yeni Canvas"
+    "newCanvasAction": "Yeni Canvas",
+    "pr": {
+      "open": "PR'ı aç"
+    },
+    "followUpSuggestions": {
+      "label": "Önerilen sonraki adımlar"
+    },
+    "voicePermissionSheetRetry": "Tekrar dene",
+    "voicePermissionSheetTitle": "Mikrofon erişimi gerekli"
   },
   "chat": {
     "planApprovedLabel": "Onaylanan plan uygulanıyor",
@@ -695,7 +758,9 @@
     "tabs": {
       "newTerminal": "Yeni Terminal",
       "newTab": "Yeni sekme",
-      "terminals": "Terminaller"
+      "terminals": "Terminaller",
+      "goBack": "Geri",
+      "goForward": "İleri"
     },
     "sideChat": {
       "title": "Yan sohbet",
@@ -852,7 +917,8 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "Harici Geçmiş"
+        "externalHistory": "Harici Geçmiş",
+        "human": "Çalışma günlüğü"
       },
       "fields": {
         "session": "Session",
@@ -926,7 +992,15 @@
         "assignedToMe": "Bana atananlar",
         "createdByMe": "Benim oluşturduklarım",
         "filters": "Filters",
-        "openInGitHub": "Open in GitHub"
+        "openInGitHub": "Open in GitHub",
+        "pullRequests": {
+          "reviewRequested": "İnceleme istendi",
+          "authoredByMe": "Benim oluşturduklarım",
+          "otherTodos": "Diğer yapılacaklar"
+        },
+        "assigneeUpdateNotApplied": "GitHub atanan kişi değişikliğini uygulamadı",
+        "assigneeUpdateSuccess": "Atananlar GitHub'da güncellendi",
+        "updateIssueFailed": "GitHub issue güncellenemedi"
       }
     },
     "sessionViews": {
@@ -941,9 +1015,25 @@
       "fileCount_one": "{{count}} dosya",
       "fileCount_other": "{{count}} dosya",
       "turnCount_one": "{{count}} tur",
-      "turnCount_other": "{{count}} tur"
+      "turnCount_other": "{{count}} tur",
+      "inferredTiming": "Bitiş sonraki turdan çıkarıldı"
     },
-    "parentAgentSender": "Üst aracı"
+    "parentAgentSender": "Üst aracı",
+    "restoreCheckpoint": "Kontrol noktasını geri yükle",
+    "trackAsProject": {
+      "menuItem": "Proje olarak izle",
+      "success": "Oturum artık Project olarak izleniyor"
+    },
+    "permissionDismiss": "Bu cihazda kapat",
+    "remoteExecutionNotice": "Bu eylem {{desktopName}} üzerinde çalışacak.",
+    "conversationNavigator": "Konuşma gezgini",
+    "goToConversationTurn": "{{total}} turdan {{current}}. tura git: {{preview}}",
+    "send": "Gönder",
+    "sendFailed": "Mesaj gönderilemedi",
+    "sending": "Gönderiliyor…",
+    "typeMessage": "Bir mesaj yazın…",
+    "session": "Oturum",
+    "history": "Oturumlar"
   },
   "tools": {
     "noResultsFound": "Sonuç bulunamadı",
@@ -982,7 +1072,11 @@
       "toolCalls": "{{count}} araç çağrısı",
       "filesChanged": "{{count}} dosya değişti",
       "toolCalls_one": "{{count}} araç çağrısı",
-      "filesChanged_one": "{{count}} dosya değişti"
+      "filesChanged_one": "{{count}} dosya değişti",
+      "segmentAria": "{{number}}. turu tekrar oynat",
+      "turnBreakpointsAria": "Tekrar oynatma tur kesme noktaları",
+      "segmentTooltip": "Tur {{number}} · {{duration}} · {{start}}–{{end}}",
+      "segmentTooltipNoRange": "Tur {{number}} · {{duration}}"
     },
     "turnCollapse": {
       "agentWorkedFor": "Agent {{value}} süre çalıştı",
@@ -1758,7 +1852,8 @@
     "nFiles_other": "{{count}} dosya"
   },
   "modelPill": {
-    "immutableInSession": "Anahtar kaynağı, Agent türü ve fiyat kademesi oturum başlangıcında sabittir. Değiştirmek için yeni bir oturum başlatın."
+    "immutableInSession": "Anahtar kaynağı, Agent türü ve fiyat kademesi oturum başlangıcında sabittir. Değiştirmek için yeni bir oturum başlatın.",
+    "appliesNextTurn": "Hesap değiştirildi. Geçerli yanıt önceki hesapta çalışmaya devam eder; yeni hesap sonraki turdan itibaren geçerli olur."
   },
   "creator": {
     "repoChromeMenu": {
@@ -1779,7 +1874,8 @@
       "sourceTabs": "Çalışma ağacı kaynağı",
       "tabs": {
         "github": "GitHub",
-        "branch": "Dal"
+        "branch": "Dal",
+        "pr": "PR"
       },
       "refreshGithub": "GitHub listesini yenile",
       "githubSearch": "GitHub PR ve sorunlarını ara",
@@ -1794,7 +1890,11 @@
       "branchEmpty": "Bu depoda dal bulunamadı.",
       "branchNoMatches": "Eşleşen dal yok.",
       "branchUseAsRef": "“{{value}}” değerini ref olarak kullan",
-      "branchCustomRefHint": "Etiket, commit veya herhangi bir Git ref’i"
+      "branchCustomRefHint": "Etiket, commit veya herhangi bir Git ref’i",
+      "sourceTypeAria": "Dal veya pull request seç",
+      "prSearch": "Pull request ara",
+      "prSearchAria": "Pull request ara",
+      "prNoMatches": "Eşleşen pull request yok."
     },
     "solveWorkItem": "İş öğesini çöz",
     "launchpadQuestion": "",
@@ -1814,7 +1914,8 @@
       "workItems": "İş Öğeleri",
       "back": "Geri",
       "recent": "Son Kullanılanlar",
-      "showMore": "{{remaining}} tane daha göster"
+      "showMore": "{{remaining}} tane daha göster",
+      "session": "Oturum"
     },
     "slashMenu": {
       "mode": "Mod",
@@ -1864,7 +1965,8 @@
       "heading2": "Başlık 2",
       "bulletList": "Madde işaretli liste",
       "numberedList": "Numaralı liste",
-      "taskList": "Görev listesi"
+      "taskList": "Görev listesi",
+      "formatting": "Metin biçimlendirme"
     },
     "regionNoticeTitle": "Olası bölgesel kısıtlamalar",
     "regionNoticeBodyProvider": "Bulunduğunuz yer: {{location}}. Bazı modeller bölgenizde kullanılamayabilir.",
@@ -1899,13 +2001,21 @@
         "noRepo": "Bir depo seçin — her çalıştırıcı kendi worktree'sine ihtiyaç duyar",
         "notEnoughRunners": "En az iki çalıştırılabilir çalıştırıcı ayarlayın"
       }
-    }
+    },
+    "cliVersionOutdated": {
+      "title": "{{cli}} için yükseltme gerekiyor ({{installed}} > {{latest}})",
+      "muteUntilNextVersion": "Sonraki sürüme kadar uyarı gösterme",
+      "refresh": "{{cli}} CLI sürümünü yeniden denetle",
+      "unknownVersion": "bilinmiyor"
+    },
+    "mode": "Düzenleyici modu"
   },
   "planner": {
     "modes": {
       "build": "Build",
       "ask": "Ask",
-      "plan": "Plan"
+      "plan": "Plan",
+      "project": "Proje"
     },
     "runningLocation": {
       "local": "This Mac",
@@ -1949,7 +2059,35 @@
       "unreadCount": "{{count}} okunmadı",
       "pauseRun": "Çalıştırmayı duraklat",
       "resumeRun": "Çalıştırmayı devam ettir",
-      "viewCoordinatorHistory": "View coordinator chat history"
+      "viewCoordinatorHistory": "View coordinator chat history",
+      "taskWindowTruncated": "{{total}} görevden ilk {{visible}} tanesi gösteriliyor. Tüm sonuçlar için görev ayrıntısını açın.",
+      "planApproval": {
+        "title": "Plan onaya hazır",
+        "from": "{{member}} tarafından gönderildi",
+        "approve": "Planı onayla",
+        "approveEdits": "Düzenlemeleri onayla",
+        "requestChanges": "Değişiklik iste",
+        "sendFeedback": "Geri bildirim gönder",
+        "editLabel": "Gönderilen planı düzenle",
+        "feedbackLabel": "Plan revizyonu geri bildirimi",
+        "feedbackPlaceholder": "Planner'a tam olarak neyin değişmesi gerektiğini söyleyin…",
+        "paused": "Bu plana yanıt vermeden önce çalıştırmayı devam ettirin.",
+        "staleError": "Bu plan zaten çözüldü veya değiştirildi. En son revizyonu görmek için yenileyin",
+        "submitFailed": "Plan yanıtı kaydedilemedi. Lütfen tekrar deneyin"
+      },
+      "phase": {
+        "coordinating": "Koordine ediliyor",
+        "dispatching": "Dağıtılıyor",
+        "members_working": "Üyeler çalışıyor",
+        "waiting": "İş bekleniyor",
+        "awaiting_plan_approval": "Plan onayı bekleniyor",
+        "finalizing": "Sonlandırılıyor",
+        "paused": "Duraklatıldı",
+        "completed": "Tamamlandı",
+        "failed": "Başarısız",
+        "cancelled": "İptal edildi",
+        "abandoned": "Vazgeçildi"
+      }
     },
     "agentOrgIntervention": {
       "title": "{{member}} ile sohbet ediliyor",
@@ -2059,7 +2197,13 @@
       "updateStatus": "{{sender}} görev durumunu güncelledi",
       "updateDetail": "{{sender}} görev detayını güncelledi",
       "get": "{{sender}} görev detaylarını görüntüledi",
-      "list": "{{sender}} görev listesini görüntüledi"
+      "list": "{{sender}} görev listesini görüntüledi",
+      "createRunning": "{{sender}} bir görev oluşturuyor",
+      "createRejected": "{{sender}} tarafından oluşturulan görevin düzeltilmesi gerekiyor",
+      "createFailed": "{{sender}} görev oluşturamadı",
+      "updateRunning": "{{sender}} bir görevi güncelliyor",
+      "updateRejected": "{{sender}} tarafından yapılan görev güncellemesinin düzeltilmesi gerekiyor",
+      "updateFailed": "{{sender}} görevi güncelleyemedi"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator diğer agents tarafından gönderilen mesajları okudu"
@@ -2082,18 +2226,27 @@
       "explorations_other": "{{count}} keşif",
       "otherTools_one": "{{count}} diğer araç çağrısı",
       "otherTools_other": "{{count}} diğer araç çağrısı"
-    }
+    },
+    "loadOlder": "Eski mesajları yükle",
+    "historyLoadFailed": "Geçmiş kullanılamıyor",
+    "triggerLabel": "Grup sohbeti"
   },
   "orgTask": {
     "create": {
       "title": "Görev atandı",
-      "titleWithOwner": "Görevi {{ownerName}} kullanıcısına ata"
+      "titleWithOwner": "Görevi {{ownerName}} kullanıcısına ata",
+      "runningTitle": "Görev oluşturuluyor",
+      "rejectedTitle": "Görev oluşturmanın düzeltilmesi gerekiyor",
+      "failedTitle": "Görev oluşturulamadı"
     },
     "update": {
       "titleStatus": "Görev durumunu güncelle",
       "titleDetail": "Görev detayını güncelle",
       "markedAs": "{{status}} olarak işaretlendi",
-      "title": "Görev güncellendi"
+      "title": "Görev güncellendi",
+      "runningTitle": "Görev güncelleniyor",
+      "rejectedTitle": "Görev güncellemesinin düzeltilmesi gerekiyor",
+      "failedTitle": "Görev güncellenemedi"
     },
     "get": {
       "title": "Görev ayrıntılarını görüntüle"
@@ -2101,7 +2254,8 @@
     "list": {
       "title": "Görev listesini görüntüle",
       "count": "{{taskCount}} görev",
-      "empty": "Görev yok"
+      "empty": "Görev yok",
+      "countLabel": "Görevler"
     },
     "statusLabel": "Durum",
     "assignedBadge": "Atandı",
@@ -2111,6 +2265,11 @@
       "pending": "Beklemede",
       "in_progress": "Devam ediyor",
       "completed": "Tamamlandı"
+    },
+    "outcome": {
+      "pending": "Devam ediyor",
+      "rejected": "Düzeltme gerekiyor",
+      "failed": "Başarısız"
     }
   },
   "manageAgentDef": {
@@ -2144,7 +2303,8 @@
       "meta": {
         "sender": "Kimden",
         "recipient": "Kime",
-        "subject": "Konu"
+        "subject": "Konu",
+        "status": "Durum"
       },
       "broadcastTitle": {
         "running": "Birden çok Agent'a mesaj gönderiliyor",
@@ -2168,7 +2328,9 @@
       "copyUrl": "URL'yi kopyala",
       "copied": "URL kopyalandı",
       "openExternalFailed": "URL varsayılan tarayıcıda açılamadı",
-      "openPullRequestFailed": "Pull request sekmesi açılamadı"
+      "openPullRequestFailed": "Pull request sekmesi açılamadı",
+      "changesCount_one": "{{count}} değişiklik",
+      "changesCount_other": "{{count}} değişiklik"
     },
     "path": {
       "openFailed": "Yol açılamadı",
@@ -2193,7 +2355,11 @@
     "reload": "Yenile",
     "openExternal": "Tarayıcıda aç",
     "waiting": "İçerik bekleniyor…",
-    "empty": "İçerik yok"
+    "empty": "İçerik yok",
+    "openUrlDescription": "Harici URL'ler iframe bellek yükünden kaçınmak için gömülmez.",
+    "openUrlTitle": "Önizleme gömülmedi",
+    "streaming": "akış",
+    "titleReact": "React Önizlemesi"
   },
   "runGroup": {
     "open": "Aç",
@@ -2222,5 +2388,111 @@
   "titleBar": {
     "showDevTools": "DevTools'u göster",
     "hideDevTools": "DevTools'u gizle"
+  },
+  "canvasApp": {
+    "empty": "Henüz Canvas oluşturulmadı",
+    "sidebarTitle": "Canvas'lar",
+    "noCanvases": "Henüz Canvas yok",
+    "revisionCanvas": "Canvas",
+    "revisionTitle": "{{title}} güncelleniyor",
+    "revisionReceiving": "Değişiklik oluşturuluyor · {{amount}} karakter",
+    "revisionApplying": "Doğrulanan değişiklik uygulanıyor…",
+    "revisionDoneTitle": "{{title}} güncellendi",
+    "revisionFailedTitle": "{{title}} güncellenemedi",
+    "revisionTargetedSummary": "Hedefli değişiklikler: {{amount}} · aynı Canvas",
+    "revisionTargetedSummary_one": "{{count}} hedefli değişiklik · aynı Canvas",
+    "revisionTargetedSummary_other": "{{count}} hedefli değişiklik · aynı Canvas",
+    "revisionReplacementSummary": "Tam değiştirme · {{amount}} karakter · aynı Canvas",
+    "revisionUrlSummary": "URL güncellendi · aynı Canvas",
+    "revisionGenericSummary": "Mevcut Canvas yerinde güncellendi",
+    "revisionStepsLabel": "Canvas güncelleme ilerlemesi",
+    "compareToggle": "Karşılaştır",
+    "compareMark": "vs",
+    "compareHint": "2 seçildi — fark gösteriliyor",
+    "design": "Tasarım",
+    "designHint": "Değiştirmek için bir öğe seçin",
+    "designUnavailable": "Tasarım kullanılamıyor",
+    "designPromptLabel": "Bir Canvas değişikliği tanımlayın",
+    "designPromptPlaceholder": "Neyin değişeceğini tanımlayın…",
+    "clearDesignSelection": "Canvas seçimini temizle",
+    "compareTooLarge": "Bu sürümler karşılaştırılamayacak kadar büyük",
+    "revisionReceivingLabel": "Değişiklik oluşturuluyor…",
+    "designHoverHint": "Seçmek için tıklayın, çizmek için sürükleyin",
+    "share": "Paylaş",
+    "shareHint": "Bu Canvas anlık görüntüsünü paylaş",
+    "shareWaitForRevision": "Canvas güncellemesinin bitmesini bekleyin",
+    "shareLocalUrlUnavailable": "Yerel URL'ler başkaları tarafından açılamaz",
+    "shareTooLarge": "Bu Canvas paylaşım bağlantısı için çok büyük",
+    "shareEmpty": "Bu Canvas'ta paylaşılabilir içerik yok",
+    "shareDialogTitle": "Canvas'ı paylaş",
+    "shareDialogScope": "Yalnızca bu Canvas anlık görüntüsü dahil edilir. Konuşma, depo, oturum ve sonraki revizyonlar paylaşılmaz.",
+    "shareDialogPreparing": "Bağlantı oluşturuluyor…",
+    "shareDialogLink": "Canvas paylaşım bağlantısı",
+    "shareDialogCopyFailed": "Kopyalama başarısız. Bağlantıyı seçip manuel olarak kopyalayın.",
+    "shareDialogPublic": "Bu bağlantıya sahip herkes anlık görüntüyü görüntüleyebilir.",
+    "shareDialogShortExpiry": "Kısa bağlantı · {{date}} tarihine kadar geçerli",
+    "shareDialogFallback": "Kısa bağlantı servisi kullanılamıyor, bu yüzden bunun yerine tam bir bağlantı oluşturuldu.",
+    "shareDialogOpen": "Aç",
+    "shareDialogCopied": "Kopyalandı",
+    "shareDialogCopy": "Bağlantıyı kopyala",
+    "shareDialogTooLarge": "Bu Canvas güvenilir, kendi kendine yeten bir bağlantı için çok büyük.",
+    "shareDialogShortUnavailable": "Paylaşım servisine geçici olarak ulaşılamıyor ve bu Canvas kendi kendine yeten bir bağlantı için çok büyük. Birazdan tekrar deneyin.",
+    "shareDialogUnsupported": "Bu uygulama sürümü sıkıştırılmış Canvas bağlantıları oluşturamaz.",
+    "shareDialogInvalid": "Bu Canvas yayınlanabilir bir anlık görüntü içermiyor.",
+    "shareDialogError": "Canvas bağlantısı oluşturulamadı.",
+    "shareDialogRetryShort": "Kısa bağlantıyı yeniden dene",
+    "shareDialogRetryingShort": "Yeniden deneniyor…",
+    "retry": "Tekrar dene",
+    "reactArtifactFrame": "React canvas önizlemesi"
+  },
+  "domSelection": {
+    "previewTitle": "Canvas seçim önizlemesi",
+    "elementsCount_one": "{{count}} öğe",
+    "elementsCount_other": "{{count}} öğe",
+    "regionLabel": "Bölge · {{label}}"
+  },
+  "webhooks": {
+    "title": "Webhook'lar",
+    "empty": "Henüz routine yok — önce CLI'dan bir tane uygulayın",
+    "notInstalled": "Kurulu değil",
+    "enabled": "Etkin",
+    "disabled": "Devre dışı",
+    "paused": "{{count}} başarısızlıktan sonra duraklatıldı",
+    "install": "Webhook'u kur",
+    "rotate": "Gizli anahtarı yenile",
+    "enable": "Etkinleştir",
+    "disable": "Devre dışı bırak",
+    "secretHint": "Gizli anahtar",
+    "secretShownOnce": "Gizli anahtar yalnızca bir kez gösterilir — şimdi sağlayıcınıza kaydedin.",
+    "noDeliveries": "Henüz teslim yok",
+    "replay": "Yeniden oynat",
+    "replayQueued": "Teslim yeniden oynatıldı",
+    "copied": "Kopyalandı",
+    "copyFailed": "Kopyalama başarısız"
+  },
+  "conversation": {
+    "promptMode": "Agent",
+    "teamChatMode": "Ekip sohbeti",
+    "promptTooltip": "Agent'a gönder",
+    "teamChatTooltip": "Takım arkadaşlarına mesaj gönder — agent'ı tetiklemez",
+    "imagesUnsupported": "Ekip sohbeti mesajları görsel içeremez",
+    "participantsTooltip": "Konuşma katılımcıları ve tartışma mesajları",
+    "mentionGroup": "Takım arkadaşları"
+  },
+  "weeklyQuotaHistory": {
+    "title": "Haftalık kota geçmişi",
+    "description": "Kalan kota · Son 28 gün · Uygulama görünür ve çevrimiçiyken saatlik örneklenir · Eksik okumalar boşluk olarak gösterilir",
+    "error": "Kota geçmişi kullanılamıyor. Bu pencereye döndüğünüzde yeniden denenecek",
+    "empty": "İzlemeye başlamak için Key Vault'ta bir Claude Code, Codex veya OpenCode Go hesabı bağlayın",
+    "loading": "Kota geçmişi yükleniyor…",
+    "unsupported": "Bu hesap haftalık kota bildirmiyor",
+    "unavailable": "Son okuma kullanılamıyor; Key Vault'ta hesap bağlantısını kontrol edin",
+    "pending": "Sonraki saatlik örnek bekleniyor",
+    "remaining": "Kalan %",
+    "refresh": "Yenile",
+    "account": "Hesap",
+    "stale": "Son gözlem iki saatten eski",
+    "disabled": "Bu devre dışı hesap için örnekleme duraklatıldı",
+    "limit": "En fazla 128 hesap gösteriliyor"
   }
 }

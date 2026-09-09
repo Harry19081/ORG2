@@ -23,7 +23,7 @@
       "refreshPartial": "Modeller yenilendi: +{{added}} / -{{removed}}, ancak {{total}} hesaptan {{failed}} tanesi başarısız oldu",
       "refreshedNoChange": "Modeller yenilendi: değişiklik yok",
       "refreshedDelta": "Modeller yenilendi: {{added}} eklendi, {{removed}} kaldırıldı",
-      "refreshError": "{{name}} yenilenemedi",
+      "refreshError": "{{name}} yenilenemedi: {{error}}",
       "localRemoved": "{{name}} kaldırıldı",
       "deleteError": "{{name}} silinemedi"
     },
@@ -322,7 +322,9 @@
       "button": "Cursor model listesini yenile",
       "failed": "Cursor'dan yenileme başarısız: {{error}}"
     },
-    "revalidate": "Yeniden doğrula"
+    "revalidate": "Yeniden doğrula",
+    "confirmRemoveActiveSessions_one": "{{count}} etkin oturum hâlâ bu hesabı kullanıyor ve bir sonraki turunda başarısız olacak:",
+    "confirmRemoveActiveSessions_other": "{{count}} etkin oturum hâlâ bu hesabı kullanıyor ve bir sonraki turlarında başarısız olacak:"
   },
   "integrations": {
     "searchPlaceholder": "Bağlantıları ara...",
@@ -571,7 +573,8 @@
       "modelPlaceholder": "Model seçin",
       "groupPerUser": "Grup sohbet oturumlarını kullanıcı başına izole et",
       "groupPerUserDesc": "Grup sohbetindeki her katılımcı kendi oturum bağlamına sahip olur."
-    }
+    },
+    "emailProtocol": "Protokol"
   },
   "modelsTabs": {
     "myAccounts": "Keys'im",
@@ -734,7 +737,8 @@
     "tools": "Yerleşik araçlar",
     "computerUse": "Computer Use",
     "rulesMemoryEvolution": "Kurallar, Bellek & Evrim",
-    "externalSkillsets": "Skills, MCPs & Plugins"
+    "externalSkillsets": "Skills, MCPs & Plugins",
+    "housekeeper": "MiniCPM Housekeeper"
   },
   "projectConnections": {
     "linear": "Linear",
@@ -750,7 +754,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "Otomatik algıla",
-    "methodOAuth": "GitHub ile oturum aç"
+    "methodOAuth": "GitHub ile oturum aç",
+    "methodPickerDesc": "GitHub'da nasıl kimlik doğrulamak istediğinizi seçin.",
+    "oauthDeviceDesc": "Doğrulama URL'sini açın ve GitHub'ı yetkilendirmek için bu kodu girin.",
+    "scanCredHelper": "Git kimlik yardımcısı ({{name}})",
+    "scanEmpty": "Hiçbir şey algılanmadı",
+    "scanEmptyDesc": "gh CLI token'ı, kimlik yardımcısı veya SSH anahtarı bulunamadı. Yukarıdan başka bir yöntem seçin.",
+    "scanGhCli": "GitHub CLI (gh)",
+    "scanResults": "Algılanan kimlik bilgileri",
+    "scanResultsDesc": "İçe aktarmak için birini seçin. Token'lar kaydedilmeden önce GitHub'da doğrulanır.",
+    "scanSshKey": "SSH anahtarı — {{name}}",
+    "scanning": "Taranıyor…",
+    "scanningDesc": "Bu makinede gh CLI token'ları, kimlik yardımcıları ve SSH anahtarları aranıyor.",
+    "sshKeyPath": "SSH anahtarı yolu",
+    "sshKeyPathDesc": "Özel anahtarın mutlak yolu (örn. ~/.ssh/id_ed25519). Eşleşen genel anahtar GitHub'da zaten kayıtlı olmalıdır.",
+    "scanSelectRequired": "İçe aktarmak için algılanan bir kimlik bilgisi seçin.",
+    "sshKeyPathRequired": "SSH anahtarı yolu gerekli."
   },
   "builtInTools": {
     "tabTools": "Yerleşik araçlar",
@@ -914,7 +933,9 @@
     "oauthDeviceCodeDesc": "Aşağıdaki URL'yi açın ve bu kodu girin",
     "oauthOpenGithub": "GitHub'ı aç",
     "oauthCancel": "İptal",
-    "oauthFailed": "Yetkilendirme başarısız"
+    "oauthFailed": "Yetkilendirme başarısız",
+    "autoCreatePr": "Pull request'leri otomatik oluştur",
+    "autoCreatePrDesc": "Bir özellik branch'i tamamen push edilip temiz olduğunda Workstation Kaynak Denetimi'nde otomatik olarak pull request oluştur"
   },
   "skillsHub": {
     "searchPlaceholder": "Skills ara...",
@@ -1211,7 +1232,23 @@
       "dangerZone": "Tehlikeli Bölge",
       "deleteOrg": "Bu Org'u sil",
       "deleteOrgDesc": "Bu Agent Ekibi’ni kalıcı olarak siler. Üye Agent’lar etkilenmez. Bu işlem geri alınamaz",
-      "deleteThisOrg": "Bu Org'u sil"
+      "deleteThisOrg": "Bu Org'u sil",
+      "planApprovalPolicy": {
+        "label": "Plan onayı",
+        "description": "Bir Planner'ın gönderdiği planın bağımlı görevlerin kilidini açmaya hazır olduğuna kimin karar vereceği",
+        "coordinator": {
+          "label": "Koordinatör (önerilen)",
+          "description": "Koordinatör planı çalıştırma içinde inceler, ardından onaylar veya Planner'dan değişiklik ister"
+        },
+        "user": {
+          "label": "Kullanıcı",
+          "description": "Grup sohbeti sessizce bekler ve planı Onayla, Düzenle ve Değişiklik iste eylemleriyle size gösterir"
+        },
+        "automatic": {
+          "label": "Otomatik",
+          "description": "Geçerli bir gönderilmiş plan hemen kabul edilir ve bağımlı görevlerinin kilidi açılır"
+        }
+      }
     },
     "agentWizard": {
       "title": "Agent Yapılandır",
@@ -1309,7 +1346,40 @@
     "orgSaveFailed": "Ekip kaydedilemedi",
     "orgDeleteFailed": "Ekip silinemedi",
     "deleteOrgTitle": "Ekip silinsin mi?",
-    "deleteOrgMessage": "\"{{name}}\" kalıcı olarak kaldırılacak. Bu işlem geri alınamaz."
+    "deleteOrgMessage": "\"{{name}}\" kalıcı olarak kaldırılacak. Bu işlem geri alınamaz.",
+    "cliUpdateAlerts": {
+      "label": "CLI güncellemelerini bildir",
+      "description": "CLI sürümlerini denetle ve güncelleme olduğunda bildir. Kapalı, denetimleri devre dışı bırakır"
+    },
+    "cliManagedConfig": {
+      "title": "CLI yapılandırma anahtarı",
+      "modeLabel": "Mod",
+      "modeDesc": "Varsayılan, CLI'ın kendi yapılandırmasını geri yükler. ORGII Yönetimli, yedeklenmiş bir proxy yapılandırması yazar.",
+      "modeDefault": "Varsayılan",
+      "modeOrgii": "ORGII Yönetimli",
+      "conflict": "Harici değişiklik",
+      "conflictTitle": "Çakışma",
+      "conflictDesc": "Etkin CLI yapılandırması ORGII yazdıktan sonra değişti.",
+      "proxyStatus": "Proxy",
+      "proxyDefault": "Varsayılan mod",
+      "proxyReady": "Proxy hazır",
+      "proxyNotReady": "Proxy hazır değil",
+      "keyLabel": "Anahtar",
+      "keyDesc": "Yalnızca bu CLI ve yönetimli proxy ile uyumlu API anahtarları gösterilir.",
+      "selectKey": "Anahtar seç",
+      "modelLabel": "Model",
+      "selectModel": "Model seç",
+      "configFile": "Yapılandırma dosyaları",
+      "actions": "Eylemler",
+      "addKey": "Anahtar ekle",
+      "apply": "Uygula",
+      "restore": "Varsayılanı Geri Yükle",
+      "forceApply": "Zorla Uygula",
+      "forceRestore": "Zorla Geri Yükle",
+      "applySuccess": "ORGII yönetimli yapılandırma uygulandı",
+      "restoreSuccess": "Varsayılan yapılandırma geri yüklendi",
+      "proxyLifecycleDesc": "Bu modu kullanırken ORGII'yi çalışır durumda tutun. Pencereyi kapatmak proxy'yi tepside tutar; ORGII'den çıkmak, yapılandırma harici olarak değişmediği sürece Varsayılanı güvenle geri yükler."
+    }
   },
   "databases": {
     "title": "Veritabanları",
@@ -1375,7 +1445,8 @@
     "chatExtras": "Sohbet Eklentileri",
     "queuedMessages": "Kuyruktaki Mesajlar",
     "fileReview": "Dosya İncelemesi",
-    "terminalProcesses": "Terminal İşlemleri"
+    "terminalProcesses": "Terminal İşlemleri",
+    "modeSessionLink": "Oturum Bağlantısı"
   },
   "rulesTabs": {
     "rules": "Kurallar",
@@ -1447,7 +1518,18 @@
     "openWorkItem": "Open work item",
     "fireError": "Rutin başlatılamadı: {{detail}}",
     "provider": "Sağlayıcı",
-    "eventKind": "Olay"
+    "eventKind": "Olay",
+    "extraActivations": "Ek etkinleştirmeler",
+    "activationSchedule": "Zamanlama",
+    "activationOneTime": "Tek seferlik",
+    "activationProviderEvent": "Sağlayıcı olayı",
+    "activationManual": "Manuel",
+    "providerPlaceholder": "github",
+    "eventKindPlaceholder": "pull_request",
+    "fireAccepted": "Çalıştırma {{status}}",
+    "openSessionError": "Oturum açılamadı",
+    "openWorkItemError": "İş öğesi açılamadı",
+    "fireStarted": "Routine çalıştırması başladı"
   },
   "cursorPlugins": {
     "noPlugins": "Cursor eklentisi yüklü değil",
@@ -1469,7 +1551,14 @@
       "diagnostics": "Tanılama"
     },
     "health": {
-      "status": "Kontrol edilmedi"
+      "status": "Kontrol edilmedi",
+      "title": "Sağlık denetimi",
+      "idle": "/v1/models uç noktasını denetler ve küçük bir sohbet isteği gönderir.",
+      "checking": "Yerel vLLM MiniCPM servisi denetleniyor...",
+      "checkButton": "Bağlantıyı denetle",
+      "configureFirst": "Önce bir vLLM MiniCPM hesabı yapılandırın.",
+      "connectedTo": "{{baseUrl}} adresine bağlandı",
+      "failed": "MiniCPM sağlık denetimi başarısız."
     },
     "benchmark": {
       "title": "MiniCPM çıktı hızı",
@@ -1481,6 +1570,50 @@
       "tokensPerSecond": "Çıktı hızı: {{value}} tokens/s",
       "completionTokens": "Çıktı tokens: {{value}}",
       "elapsed": "Toplam süre: {{value}}s"
+    },
+    "title": "Yerleşik Housekeeper",
+    "description": "Yerel MiniCPM istem düzeltme, kısa adım açıklamaları ve hafif UI denetimini üstlenir. Kodlama görevleri ve karmaşık ADE kurulumu yine ana agent modelini kullanır.",
+    "autoAccount": "MiniCPM vLLM hesabını otomatik seç",
+    "tiles": {
+      "model": "Model",
+      "endpoint": "Uç nokta",
+      "safeContext": "Güvenli Bağlam"
+    },
+    "settings": {
+      "enabled": {
+        "title": "Housekeeper'ı etkinleştir",
+        "description": "Devre dışı bırakıldığında istem düzeltme, adım açıklamaları ve hafif UI denetimi MiniCPM kullanmaz."
+      },
+      "account": {
+        "title": "vLLM MiniCPM hesabı",
+        "description": "Mevcut bir KeyVault vllm_api hesabını yeniden kullanır; ayrı bir kimlik bilgisi deposu oluşturulmaz."
+      },
+      "model": {
+        "title": "Model kimliği",
+        "description": "Docker vLLM MiniCPM5-1B varsayılan olarak openbmb/MiniCPM5-1B kullanır."
+      },
+      "context": {
+        "title": "Güvenli bağlam bütçesi",
+        "description": "4GB GPU'larda teorik 32k sınırına güvenmek yerine ihtiyatlı bir 10000 token bütçesi kullan."
+      }
+    },
+    "features": {
+      "promptPolish": {
+        "title": "İstem düzeltme",
+        "description": "Girdiyi daha güçlü kodlama modeline göndermeden önce manuel olarak düzeltin."
+      },
+      "stepExplain": {
+        "title": "Agent adım açıklamaları",
+        "description": "Oturum tekrarı adımları için bir veya iki kısa Çince açıklama oluştur."
+      },
+      "uiControl": {
+        "title": "Hafif ADE/UI denetimi",
+        "description": "MiniCPM istekleri yalnızca katı bir yerel eylem beyaz listesine göre sınıflandırabilir."
+      },
+      "contextCompact": {
+        "title": "Otomatik bağlam bakımı",
+        "description": "Etkin oturumlar boştayken MiniCPM'in eski bağlamın yalıtılmış, kayan bir özetini tutmasına izin ver."
+      }
     }
   },
   "cliLaunchProfiles": {
@@ -1496,5 +1629,68 @@
     "unavailable": "Başlatma profili kullanılamıyor",
     "saved": "Başlatma profili kaydedildi",
     "resetDone": "Başlatma profili sıfırlandı"
+  },
+  "gitProfiles": {
+    "tab": "Git profilleri",
+    "title": "Git profilleri",
+    "add": "Profil ekle",
+    "refresh": "Profilleri yenile",
+    "refreshed": "Genel Git profili yenilendi",
+    "loading": "Genel Git profiliniz yükleniyor…",
+    "defaultProfile": "Varsayılan profil",
+    "newProfile": "Yeni profil",
+    "copyName": "{{name}} kopyası",
+    "profileName": "Profil adı",
+    "authorName": "Yazar adı",
+    "email": "E-posta",
+    "selectEmail": "Bir e-posta seçin",
+    "signingKey": "İmzalama anahtarı",
+    "signingKeyPlaceholder": "GPG veya SSH imzalama anahtarı kimliği",
+    "signCommits": "Commit'leri imzala",
+    "active": "Etkin",
+    "activate": "Profili etkinleştir",
+    "activated": "{{name}} artık genel Git profili",
+    "editRaw": "Ham yapılandırmayı düzenle",
+    "hideRaw": "Ham yapılandırmayı gizle",
+    "rawTitle": "Ham Git profili",
+    "rawConfig": "Git yapılandırması",
+    "updateFromRaw": "Profili yapılandırmadan güncelle",
+    "rawUpdated": "Profil ham Git yapılandırmasından güncellendi",
+    "rawInvalid": "Ham Git profili geçersiz",
+    "nameEmailRequired": "Yazar adı ve e-posta gerekli",
+    "deleteTitle": "Git profilini sil",
+    "deleteMessage": "“{{name}}” profili silinsin mi? Bu, geçerli genel Git yapılandırmanızı değiştirmez.",
+    "loadFailed": "Genel Git profili yüklenemedi",
+    "applyFailed": "Git profili etkinleştirilemedi"
+  },
+  "credentialImport": {
+    "title": "Diğer uygulamalardan kimlik bilgilerini içe aktar",
+    "titleWithCount": "Diğer uygulamalardan kimlik bilgilerini içe aktar ({{count}} bulundu)",
+    "itemColumn": "Kimlik bilgisi",
+    "sourceColumn": "Bulunduğu yer",
+    "empty": "İçe aktarılacak kimlik bilgisi bulunamadı. Ortam değişkenleri, kabuk profilleri, Claude Code ayarları, cc-switch profilleri ve Claude Code, Codex, Cursor, GitHub CLI, Kiro ve OpenCode oturum açma depoları kontrol edildi.",
+    "allImported": "Algılanan tüm kimlik bilgileri zaten içe aktarılmış",
+    "authMethod": {
+      "api_key": "API anahtarı",
+      "oauth": "Oturum açma token'ı"
+    },
+    "sourceKind": {
+      "env": "Ortam değişkeni",
+      "shell_profile": "Kabuk profili",
+      "config_file": "Yapılandırma dosyası",
+      "oauth_store": "Oturum açma deposu",
+      "keychain": "Anahtar zinciri",
+      "state_db": "Uygulama durumu",
+      "cc_switch": "cc-switch"
+    },
+    "applyFailed": "İçe aktarma başarısız: {{message}}",
+    "partialFailure": "Bazı kimlik bilgileri içe aktarılamadı:"
+  },
+  "skills": {
+    "shareToOrg": "Organizasyonla paylaş",
+    "share": "Paylaş",
+    "sharedToOrg": "Skill organizasyonla paylaşıldı",
+    "shareToOrgHint": "Organizasyon üyeleri bu Skill'in geçerli anlık görüntüsünü alır; düzenledikten sonra güncelleme yayınlamak için yeniden paylaşın.",
+    "shareOrgPlaceholder": "Organizasyon"
   }
 }

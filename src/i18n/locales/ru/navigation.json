@@ -44,7 +44,8 @@
     "projectManager": "Project Manager",
     "diff": "Diff",
     "colleagues": "Коллеги",
-    "terminals": "Терминалы"
+    "terminals": "Терминалы",
+    "openSourceRepo": "Open Source репо"
   },
   "routes": {
     "session": "Чат",
@@ -126,7 +127,9 @@
     },
     "folderCounts": {
       "repo": "{{count}} репо",
-      "multiRepoWorkspace": "{{count}} мульти-Repo Workspace"
+      "multiRepoWorkspace": "{{count}} мульти-Repo Workspace",
+      "repo_plural": "{{count}} репо",
+      "multiRepoWorkspace_plural": "{{count}} мульти-Repo Workspace"
     },
     "bottomBar": {
       "settings": "Настройки",
@@ -161,7 +164,8 @@
       "duration30m": "30 минут",
       "duration1h": "1 час",
       "duration2h": "2 часа",
-      "durationTomorrow": "Завтра"
+      "durationTomorrow": "Завтра",
+      "unknownRole": "Неизвестная роль"
     },
     "guide": {
       "trigger": "Открыть руководство",
@@ -342,7 +346,8 @@
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
-      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry."
+      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
+      "forkSetupReused": "Продолжаем с вашей последней настройкой · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -683,7 +688,9 @@
     "comments": {
       "actionError": "Действие не выполнено — попробуйте ещё раз",
       "unresolvedBadge_one": "Нерешённых комментариев: {{count}}",
-      "unresolvedBadge": "Нерешённых комментариев: {{count}}"
+      "unresolvedBadge": "Нерешённых комментариев: {{count}}",
+      "unreadBadge_one": "Непрочитанных сообщений: {{count}}",
+      "unreadBadge": "Непрочитанных сообщений: {{count}}"
     },
     "sharingFloor": {
       "label": "Минимальный уровень доступа",
@@ -833,5 +840,60 @@
       "memberNote": "Включено администратором — подходящие сессии отправляются в фоне без необходимости открывать это рабочее пространство."
     },
     "userName": "Имя пользователя"
+  },
+  "myRole": {
+    "deleteRoleMessage": "«{{name}}» будет удалена. Это действие нельзя отменить.",
+    "activeBadge": "Активна",
+    "addRole": "Добавить свою роль",
+    "builtInTitle": "Встроенные роли",
+    "customEmpty": "Своих ролей пока нет. Добавьте роль, чтобы описать режим, который не покрывают три встроенные — например «Глубокая работа», «Парная работа» или «Дежурство».",
+    "customTitle": "Свои роли",
+    "deleteRoleCancel": "Отмена",
+    "deleteRoleOk": "Удалить",
+    "deleteRoleTitle": "Удалить роль?",
+    "followUpSuggestionsDesc": "Предлагать возможные следующие шаги после завершённого хода по рабочему элементу. Использует дополнительный запрос к модели.",
+    "followUpSuggestionsLabel": "Предложения Agent по следующим шагам",
+    "goalMaxTurnsDesc": "Продолжать работу над моим последним запросом до N дополнительных ходов после того, как агент обычно остановился бы (0 = выкл.).",
+    "goalMaxTurnsLabel": "Бюджет продолжения цели",
+    "guidanceLabel": "Указания для Agent",
+    "guidancePlaceholder": "Как агент должен менять своё поведение, когда эта роль активна?",
+    "modeSwitchAutoPlanDesc": "Автоматически применять ожидающие предложения перехода в режим Plan по истечении таймера подтверждения.",
+    "modeSwitchAutoPlanLabel": "Автопереход в режим Plan",
+    "newRoleDefaultLabel": "Своя роль",
+    "pageDescription": "Определите роль, в которой вы сейчас находитесь. Агент читает указания активной роли и соответственно меняет поведение — например, задаёт меньше уточняющих вопросов, когда вы сосредоточены, или объединяет сводки, когда вас нет.",
+    "pageTitle": "Мои роли",
+    "planAutoApproveDesc": "Автоматически утверждать ожидающие планы через N секунд (0 = ждать меня).",
+    "planAutoApproveLabel": "Автоутверждение планов",
+    "questionAutoSkipDesc": "Автоматически пропускать ожидающие вопросы агента через N секунд (0 = ждать меня).",
+    "questionAutoSkipLabel": "Автопропуск вопросов",
+    "roleNameLabel": "Название",
+    "roleNamePlaceholder": "Название роли",
+    "stanceAutonomous": "Автономно — никогда не ждать меня",
+    "stanceDeferAndBatch": "Отложить и объединить — сначала работа, вопросы потом",
+    "stanceDesc": "Как агент обрабатывает блокирующие решения, пока эта роль активна.",
+    "stanceInteractive": "Интерактивно — спрашивать меня свободно",
+    "stanceLabel": "Модель поведения"
+  },
+  "explore": {
+    "search": "Поиск",
+    "searching": "Поиск...",
+    "searchPlaceholder": "Поиск репозиториев GitHub (напр. language:rust tauri)",
+    "clone": "Клонировать",
+    "cloning": "Клонирование...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "Клонирован {{name}}",
+    "cloneFailed": "Не удалось клонировать",
+    "cloneNoTarget": "Папка рабочего пространства по умолчанию не настроена. Задайте её в настройках.",
+    "errorTitle": "Ошибка поиска",
+    "noResultsTitle": "Репозитории не найдены",
+    "noResultsSubtitle": "Попробуйте другой запрос или сортировку.",
+    "resultsCount": "{{shown}} из {{total}} репозиториев",
+    "partial": "(частично — время поиска истекло)",
+    "sort": {
+      "bestMatch": "Лучшее совпадение",
+      "stars": "Звёзды",
+      "updated": "Недавно обновлённые",
+      "forks": "Форки"
+    }
   }
 }

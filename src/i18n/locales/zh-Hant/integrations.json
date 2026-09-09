@@ -322,7 +322,9 @@
       "button": "重新整理模型",
       "failed": "重新整理模型失敗：{{error}}"
     },
-    "revalidate": "重新驗證"
+    "revalidate": "重新驗證",
+    "confirmRemoveActiveSessions_one": "仍有 {{count}} 個使用中的工作階段在使用此帳號，移除後它的下一輪將會失敗：",
+    "confirmRemoveActiveSessions_other": "仍有 {{count}} 個使用中的工作階段在使用此帳號，移除後它們的下一輪將會失敗："
   },
   "integrations": {
     "searchPlaceholder": "搜索連接...",
@@ -571,7 +573,8 @@
       "modelPlaceholder": "選擇模型",
       "groupPerUser": "按用戶隔離羣聊會話",
       "groupPerUserDesc": "羣聊中每位參與者都有獨立的會話上下文。"
-    }
+    },
+    "emailProtocol": "通訊協定"
   },
   "modelsTabs": {
     "myAccounts": "我的 Keys",
@@ -751,7 +754,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "自動偵測",
-    "methodOAuth": "使用 GitHub 登入"
+    "methodOAuth": "使用 GitHub 登入",
+    "methodPickerDesc": "選擇向 GitHub 進行驗證的方式。",
+    "oauthDeviceDesc": "開啟驗證 URL 並輸入此代碼以授權 GitHub。",
+    "scanCredHelper": "Git 憑證助手（{{name}}）",
+    "scanEmpty": "未偵測到任何憑證",
+    "scanEmptyDesc": "找不到 gh CLI token、憑證助手或 SSH 金鑰。請在上方選擇其他方式。",
+    "scanGhCli": "GitHub CLI（gh）",
+    "scanResults": "偵測到的憑證",
+    "scanResultsDesc": "選擇一項匯入。儲存前我們會向 GitHub 驗證 token。",
+    "scanSshKey": "SSH 金鑰 — {{name}}",
+    "scanning": "正在掃描…",
+    "scanningDesc": "正在本機尋找 gh CLI token、憑證助手和 SSH 金鑰。",
+    "sshKeyPath": "SSH 金鑰路徑",
+    "sshKeyPathDesc": "私鑰的絕對路徑（例如 ~/.ssh/id_ed25519）。對應的公鑰必須已在 GitHub 上註冊。",
+    "scanSelectRequired": "請選擇一個偵測到的憑證進行匯入。",
+    "sshKeyPathRequired": "SSH 金鑰路徑為必填。"
   },
   "builtInTools": {
     "tabTools": "內置工具",
@@ -1243,7 +1261,23 @@
       "dangerZone": "危險區域",
       "deleteOrg": "刪除此 Org",
       "deleteOrgDesc": "永久刪除此 Agent 團隊。成員 Agent 不會受影響。此操作無法撤銷",
-      "deleteThisOrg": "刪除此 Org"
+      "deleteThisOrg": "刪除此 Org",
+      "planApprovalPolicy": {
+        "label": "計畫核准",
+        "description": "Planner 提交計畫後，由誰決定計畫可以解鎖相依任務",
+        "coordinator": {
+          "label": "協調者（建議）",
+          "description": "協調者在本次執行中審閱計畫，然後核准或要求 Planner 修改"
+        },
+        "user": {
+          "label": "使用者",
+          "description": "Group chat 會安靜等待，並顯示計畫與核准、編輯、要求修改等操作"
+        },
+        "automatic": {
+          "label": "自動",
+          "description": "Planner 提交有效計畫後立即接受，並解鎖依賴它的任務"
+        }
+      }
     },
     "agentWizard": {
       "title": "配置 Agent",
@@ -1341,7 +1375,11 @@
     "orgSaveFailed": "儲存團隊失敗",
     "orgDeleteFailed": "刪除團隊失敗",
     "deleteOrgTitle": "刪除團隊？",
-    "deleteOrgMessage": "\"{{name}}\" 將被永久移除。此操作無法復原。"
+    "deleteOrgMessage": "\"{{name}}\" 將被永久移除。此操作無法復原。",
+    "cliUpdateAlerts": {
+      "label": "提醒 CLI 更新",
+      "description": "檢查 CLI 版本並在有更新時提醒。關閉後不再檢查"
+    }
   },
   "databases": {
     "title": "數據庫",
@@ -1407,7 +1445,8 @@
     "chatExtras": "聊天附加組件",
     "queuedMessages": "消息隊列",
     "fileReview": "文件審查",
-    "terminalProcesses": "終端進程"
+    "terminalProcesses": "終端進程",
+    "modeSessionLink": "工作階段連結"
   },
   "rulesTabs": {
     "rules": "規則",
@@ -1479,7 +1518,18 @@
     "openWorkItem": "打开工作项",
     "fireError": "無法啟動例程：{{detail}}",
     "provider": "提供方",
-    "eventKind": "事件"
+    "eventKind": "事件",
+    "extraActivations": "額外觸發",
+    "activationSchedule": "排程",
+    "activationOneTime": "一次性",
+    "activationProviderEvent": "Provider 事件",
+    "activationManual": "手動",
+    "providerPlaceholder": "github",
+    "eventKindPlaceholder": "pull_request",
+    "fireAccepted": "執行{{status}}",
+    "openSessionError": "無法開啟該工作階段",
+    "openWorkItemError": "無法開啟該工作項目",
+    "fireStarted": "Routine 已開始執行"
   },
   "cursorPlugins": {
     "noPlugins": "未安裝任何 Cursor 插件",
@@ -1579,5 +1629,68 @@
     "unavailable": "啟動設定無法使用",
     "saved": "啟動設定已儲存",
     "resetDone": "啟動設定已重設"
+  },
+  "gitProfiles": {
+    "tab": "Git 設定檔",
+    "title": "Git 設定檔",
+    "add": "新增設定檔",
+    "refresh": "重新整理設定檔",
+    "refreshed": "已重新整理全域 Git 設定檔",
+    "loading": "正在載入全域 Git 設定檔…",
+    "defaultProfile": "預設設定檔",
+    "newProfile": "新設定檔",
+    "copyName": "{{name}} 副本",
+    "profileName": "設定檔名稱",
+    "authorName": "作者名稱",
+    "email": "電子郵件",
+    "selectEmail": "選擇電子郵件",
+    "signingKey": "簽署金鑰",
+    "signingKeyPlaceholder": "GPG 或 SSH 簽署金鑰 ID",
+    "signCommits": "簽署 commit",
+    "active": "使用中",
+    "activate": "啟用設定檔",
+    "activated": "{{name}} 已設為全域 Git 設定檔",
+    "editRaw": "編輯原始設定",
+    "hideRaw": "隱藏原始設定",
+    "rawTitle": "原始 Git 設定檔",
+    "rawConfig": "Git 設定",
+    "updateFromRaw": "從設定更新設定檔",
+    "rawUpdated": "已從原始 Git 設定更新設定檔",
+    "rawInvalid": "原始 Git 設定檔無效",
+    "nameEmailRequired": "作者名稱和電子郵件為必填",
+    "deleteTitle": "刪除 Git 設定檔",
+    "deleteMessage": "刪除設定檔「{{name}}」？這不會變更你目前的全域 Git 設定。",
+    "loadFailed": "載入全域 Git 設定檔失敗",
+    "applyFailed": "啟用 Git 設定檔失敗"
+  },
+  "credentialImport": {
+    "title": "從其他應用程式匯入憑證",
+    "titleWithCount": "從其他應用程式匯入憑證（找到 {{count}} 個）",
+    "itemColumn": "憑證",
+    "sourceColumn": "來源",
+    "empty": "找不到可匯入的憑證。已檢查環境變數、shell 設定檔、Claude Code 設定、cc-switch 設定檔，以及 Claude Code、Codex、Cursor、GitHub CLI、Kiro 和 OpenCode 的登入儲存。",
+    "allImported": "所有偵測到的憑證均已匯入",
+    "authMethod": {
+      "api_key": "API 金鑰",
+      "oauth": "登入權杖"
+    },
+    "sourceKind": {
+      "env": "環境變數",
+      "shell_profile": "Shell 設定檔",
+      "config_file": "設定檔案",
+      "oauth_store": "登入儲存",
+      "keychain": "鑰匙圈",
+      "state_db": "應用程式狀態",
+      "cc_switch": "cc-switch"
+    },
+    "applyFailed": "匯入失敗：{{message}}",
+    "partialFailure": "部分憑證無法匯入："
+  },
+  "skills": {
+    "shareToOrg": "共享至組織",
+    "share": "共享",
+    "sharedToOrg": "技能已共享至組織",
+    "shareToOrgHint": "組織成員會收到此技能目前的快照；編輯後再次共享即可發布更新。",
+    "shareOrgPlaceholder": "組織"
   }
 }

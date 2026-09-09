@@ -183,7 +183,8 @@
       "kanban": "カンバン",
       "gantt": "ガントチャート",
       "calendar": "カレンダー",
-      "settings": "設定"
+      "settings": "設定",
+      "table": "テーブル"
     },
     "statusFilters": {
       "all": "すべて",
@@ -252,7 +253,23 @@
       "hoursAgo": "{{count}} 時間前",
       "inDays": "{{count}} 日後",
       "inHours": "{{count}} 時間後",
-      "membersGroup": "メンバー"
+      "membersGroup": "メンバー",
+      "filter": "プロパティフィルター",
+      "filterValue": "プロパティフィルターの値",
+      "noValue": "値なし",
+      "archiveNamed": "{{name}} をアーカイブ",
+      "add": "プロパティを追加",
+      "archive": "プロパティをアーカイブ",
+      "datePlaceholder": "YYYY-MM-DD",
+      "empty": "カスタムプロパティはまだありません。",
+      "loading": "プロパティを読み込み中…",
+      "namePlaceholder": "プロパティ名",
+      "no": "いいえ",
+      "optionsPlaceholder": "選択肢（カンマ区切り）",
+      "optionsRequired": "選択型プロパティにはカンマ区切りの選択肢が必要です。",
+      "type": "プロパティの種類",
+      "updateFailed": "プロパティの更新に失敗しました",
+      "yes": "はい"
     },
     "activity": {
       "discussionTitle": "ディスカッション",
@@ -305,7 +322,27 @@
         "schedule": "スケジュール",
         "orchestratorConfig": "Orchestrator 設定",
         "handoff": "引き継ぎ"
-      }
+      },
+      "mentionPeople": "メンバーをメンション",
+      "mentionAll": "@all — この項目の全員",
+      "mentionAgentOption": "{{name}}（Agent）",
+      "mentionAgentOrgOption": "{{name}}（Agent 組織）",
+      "appendedSession": "セッションを追加しました",
+      "edited": "（編集済み）",
+      "commentDeleted": "このコメントは削除されました。",
+      "deleteComment": "コメントを削除",
+      "deleteCommentConfirm": "このコメントを削除しますか？返信は残り、コメント本文のみ削除されます。",
+      "messageCount_one": "{{count}} 件のメッセージ",
+      "messageCount_other": "{{count}} 件のメッセージ",
+      "cancelReply": "返信をキャンセル",
+      "conclusion": "結論",
+      "reopen": "再オープン",
+      "reply": "返信",
+      "replyingInThread": "スレッドに返信中",
+      "resolve": "解決",
+      "resolved": "解決済み",
+      "submitComment": "コメントを送信",
+      "openedWorkItem": "この作業項目をオープンしました"
     },
     "contextMenu": {
       "status": "状態",
@@ -347,7 +384,10 @@
       "cannotParseRepoName": "リポジトリ名を解析できません: {{url}}"
     },
     "sessions": {
-      "emptyOverview": "Sessions はまだありません"
+      "emptyOverview": "Sessions はまだありません",
+      "originTitle": "作成元セッション",
+      "originStatus": "この項目を作成",
+      "runsCount": "{{count}} 回の実行"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -366,7 +406,9 @@
       "fileDiffCleanHint": "ファイルの変更は検出されませんでした。",
       "costSummary": "コスト概要",
       "totalCost": "合計",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "完了がブロックされています",
+      "prReady": "完了できます"
     },
     "viewWorkItems": "Work Item を表示",
     "fromRoutine": "From routine: {{name}}",
@@ -381,7 +423,98 @@
     },
     "batchAssignee": {
       "title": "担当者を設定"
-    }
+    },
+    "discussion": {
+      "previewWillWake": "Agent を起こして返信させます",
+      "previewNoteOnly": "メモのみ — Agent はトリガーされません",
+      "previewNoSession": "リンクされた Agent セッションがありません — 何もトリガーされません",
+      "previewMentionResume": "メンションされた Agent を起こします",
+      "previewMentionStart": "メンションされた Agent を開始します",
+      "previewMentionUnroutable": "メンションされた Agent はこの項目に設定されていません — 何もトリガーされません",
+      "previewThread": "このスレッドから Agent を起こします",
+      "previewAssignee": "担当の Agent を起こします",
+      "previewAssigneeStart": "担当の Agent を開始します",
+      "previewCoalesce": "保留中の起動に合流します",
+      "previewMemberThread": "メンバーのスレッド — Agent は起こされません"
+    },
+    "subItems": {
+      "title": "サブ項目",
+      "parent": "親",
+      "progress": "{{total}} 件中 {{completed}} 件完了",
+      "add": "サブ項目を追加",
+      "addFirst": "最初のサブ項目を追加",
+      "titlePlaceholder": "サブ項目のタイトルを入力",
+      "stagePicker": "サブ項目のステージ",
+      "noStage": "ステージなし",
+      "stage": "ステージ {{stage}}",
+      "openStatus": "オープン",
+      "completedStatus": "完了",
+      "cancelledStatus": "キャンセル済み",
+      "createError": "サブ項目を作成できませんでした。再試行してください。"
+    },
+    "savedViews": {
+      "placeholder": "ビュー",
+      "save": "現在のビューを保存",
+      "saveTitle": "ビューを保存",
+      "namePlaceholder": "ビュー名",
+      "saveHint": "現在のフィルターを保存します。レイアウトは初回に開くときの初期値になります。",
+      "delete": "ビューを削除"
+    },
+    "table": {
+      "columnsPicker": "列",
+      "groupByProperty": "プロパティでグループ化",
+      "columns": {
+        "shortId": "ID",
+        "title": "タイトル",
+        "status": "ステータス",
+        "priority": "優先度",
+        "assignee": "担当者",
+        "targetDate": "期限",
+        "labels": "ラベル"
+      }
+    },
+    "batchProperty": {
+      "title": "プロパティを設定",
+      "hint": "選択した {{count}} 件の項目に 1 つのプロパティ値を適用します。値を空にするとクリアされます。",
+      "propertyPlaceholder": "プロパティ",
+      "valuePlaceholder": "値",
+      "applied": "{{count}} 件の項目を更新しました"
+    },
+    "revisionConflict": {
+      "title": "編集の競合を解決",
+      "description": "{{field}} はリビジョン {{expected}} の後に変更されました。あなたの編集をリビジョン {{actual}} と比較し、どちらを残すか選択してください。",
+      "mine": "自分のバージョン",
+      "latest": "最新バージョン",
+      "useLatest": "最新を使用",
+      "keepMine": "自分のを残す",
+      "titleField": "タイトル",
+      "descriptionField": "説明",
+      "commentField": "コメント",
+      "reloadNotice": "この作業項目は別の場所で変更されました。最新バージョンを再読み込みしました。",
+      "retryFailed": "最新バージョンが再び変更されました。再試行する前に両方のバージョンを確認してください。"
+    },
+    "quickActions": {
+      "title": "クイックアクション",
+      "empty": "クイックアクションはまだありません。Agent 用の再利用可能なプロンプトを保存してください。",
+      "emptyManage": "まだ何も保存されていません。",
+      "manageTitle": "クイックアクションを管理",
+      "namePlaceholder": "アクション名（例: CI を修正）",
+      "targetPlaceholder": "対象の Agent",
+      "promptPlaceholder": "Agent に何をさせますか？",
+      "archive": "アクションをアーカイブ",
+      "scopeChanged": "クイックアクションはこの作業項目のスコープ外になりました",
+      "started": "クイックアクション「{{name}}」を開始しました"
+    },
+    "detailNavigation": "作業項目ナビゲーション",
+    "linkedSessions": {
+      "title": "セッション"
+    },
+    "detail": {
+      "conversation": "会話",
+      "linked": "リンク済み"
+    },
+    "detailSummary": "作業項目の概要",
+    "navigationTrail": "作業項目ナビゲーション"
   },
   "settings": {
     "sidebarGeneral": "一般",
@@ -446,7 +579,12 @@
         "notAttached": "未接続",
         "attach": "接続",
         "detach": "切断",
-        "changeWarning": "新しいアダプターを接続する前に、現在のアダプターを切断してください。"
+        "changeWarning": "新しいアダプターを接続する前に、現在のアダプターを切断してください。",
+        "detachProjectMenuLabel": "GitHub のリンクを解除",
+        "detachProjectTitle": "{{project}} から GitHub のリンクを解除しますか？",
+        "detachProjectDescription": "GitHub Issues の同期が停止します。ローカルの Project とインポート済みの作業項目は ORGII に残ります。",
+        "detachProjectAction": "{{project}} から GitHub のリンクを解除",
+        "detachProjectSuccess": "{{project}} から GitHub のリンクを解除しました"
       },
       "accountPicker": {
         "title": "アカウント",
@@ -596,7 +734,16 @@
           "dismissFailed": "コンフリクトの破棄に失敗しました: {{error}}"
         }
       }
-    }
+    },
+    "sidebarStatuses": "ステータス",
+    "statusesBuiltin": "組み込みステータス",
+    "statusesBuiltinDescription": "標準のワークフロー区分です。常に利用できます。",
+    "statusesCustom": "カスタムステータス",
+    "statusesCustomDescription": "組み込み区分に付けた別名です。フィルター、件数、ボードでは元の区分として扱われます。",
+    "statusNamePlaceholder": "ステータス名",
+    "noCustomStatuses": "カスタムステータスはまだありません。",
+    "statusArchive": "ステータスをアーカイブ",
+    "statusRestore": "ステータスを復元"
   },
   "statusBar": {
     "workItemCount": "{{count}}件",

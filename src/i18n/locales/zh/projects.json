@@ -256,7 +256,20 @@
       "hoursAgo": "{{count}} 小时前",
       "inDays": "{{count}} 天后",
       "inHours": "{{count}} 小时后",
-      "membersGroup": "成员"
+      "membersGroup": "成员",
+      "archiveNamed": "归档 {{name}}",
+      "add": "添加属性",
+      "archive": "归档属性",
+      "datePlaceholder": "YYYY-MM-DD",
+      "empty": "暂无自定义属性。",
+      "loading": "正在加载属性…",
+      "namePlaceholder": "属性名称",
+      "no": "否",
+      "optionsPlaceholder": "选项，以逗号分隔",
+      "optionsRequired": "选择类属性需要以逗号分隔的选项。",
+      "type": "属性类型",
+      "updateFailed": "属性更新失败",
+      "yes": "是"
     },
     "discussion": {
       "previewWillWake": "将唤醒 agent 回复",
@@ -331,7 +344,18 @@
       "edited": "（已编辑）",
       "commentDeleted": "该评论已删除。",
       "deleteComment": "删除评论",
-      "deleteCommentConfirm": "确定删除该评论？回复会保留，评论内容将被移除。"
+      "deleteCommentConfirm": "确定删除该评论？回复会保留，评论内容将被移除。",
+      "messageCount_one": "{{count}} 条消息",
+      "messageCount_other": "{{count}} 条消息",
+      "cancelReply": "取消回复",
+      "conclusion": "结论",
+      "reopen": "重新打开",
+      "reply": "回复",
+      "replyingInThread": "正在话题中回复",
+      "resolve": "标记已解决",
+      "resolved": "已解决",
+      "submitComment": "提交评论",
+      "openedWorkItem": "创建了此工作项"
     },
     "contextMenu": {
       "status": "状态",
@@ -375,7 +399,8 @@
     "sessions": {
       "emptyOverview": "暂无 Sessions",
       "originTitle": "创建来源 Session",
-      "originStatus": "由此 Session 创建"
+      "originStatus": "由此 Session 创建",
+      "runsCount": "{{count}} 次运行"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -394,7 +419,9 @@
       "fileDiffCleanHint": "未检测到文件变更。",
       "costSummary": "费用摘要",
       "totalCost": "总计",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "完成受阻",
+      "prReady": "可以完成"
     },
     "viewWorkItems": "查看 Work Items",
     "fromRoutine": "来自 Routine：{{name}}",
@@ -477,7 +504,17 @@
     },
     "batchAssignee": {
       "title": "设置负责人"
-    }
+    },
+    "detailNavigation": "工作项导航",
+    "linkedSessions": {
+      "title": "会话"
+    },
+    "detail": {
+      "conversation": "对话",
+      "linked": "关联"
+    },
+    "detailSummary": "工作项摘要",
+    "navigationTrail": "工作项导航"
   },
   "settings": {
     "sidebarGeneral": "常规",
