@@ -80,8 +80,8 @@ const SETTINGS_NAVIGATION_GROUP_DEFINITIONS: readonly SettingsNavigationGroupDef
       id: "core",
       labelKey: "settings:coreSidebar.groups.core",
       itemIds: [
-        AGENT_ORGS_SETTINGS_NAVIGATION_ID,
         "models",
+        AGENT_ORGS_SETTINGS_NAVIGATION_ID,
         "harness-connections",
         "rulesMemoryEvolution",
         "routines",

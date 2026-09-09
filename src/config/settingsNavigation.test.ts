@@ -24,8 +24,8 @@ describe("settingsNavigation", () => {
       {
         id: "core",
         items: [
-          "agent-orgs",
           "models",
+          "agent-orgs",
           "harness-connections",
           "rulesMemoryEvolution",
           "routines",

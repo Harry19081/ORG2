@@ -731,7 +731,7 @@
     "servicesDesc": "외부 서비스 API Keys",
     "projects": "Projects",
     "projectsDesc": "Issue 트래커 및 Project 동기화",
-    "models": "모델 & Keys",
+    "models": "모델 & 키",
     "myRoles": "내 역할",
     "clis": "CLI",
     "connections": "연결",
