@@ -1,6 +1,5 @@
 {
   "projects": {
-    "searchPlaceholder": "Rechercher des Projects...",
     "loading": "Chargement des Projects...",
     "emptyState": "Aucun Project pour le moment",
     "emptyStateSubtitle": "Créez votre premier Project pour commencer",
@@ -8,11 +7,9 @@
     "noResults": "Aucun Project trouvé",
     "dashboardTitle": "Projects",
     "groupBy": {
-      "org": "Par espace de travail",
       "project": "Par projet",
       "status": "Par statut",
       "priority": "Par priorité",
-      "person": "Par personne",
       "assignedTo": "Assigné à",
       "createdBy": "Créé par",
       "targetDate": "Par date cible",
@@ -29,44 +26,17 @@
       "later": "Plus tard",
       "noTargetDate": "Aucune date cible"
     },
-    "allProjects": "Tous les projets",
-    "otherRepos": "Autres Repos",
-    "noOtherRepos": "Aucun autre repo avec des Projects",
-    "personalWorkspace": "Personal Workspace",
-    "personalEmpty": "Pas encore de Projects personnels",
-    "addProject": "Nouvelle project",
-    "repoFallback": "Repo",
     "loadProjectsFailed": "Échec du chargement des Projects",
-    "deleteProject": "Supprimer le Project",
     "createProject": "Créer le Project",
     "createMore": "Créer plus",
     "newProject": "Nouveau Project",
     "columns": {
-      "name": "Nom",
       "workItems": "Éléments de travail"
-    },
-    "viewModes": {
-      "list": "Liste",
-      "settings": "Paramètres"
-    },
-    "syncMethod": {
-      "title": "Méthode de synchronisation",
-      "storage": "Stockage",
-      "git": "Git (via .orgii)"
-    },
-    "errors": {
-      "initFailed": "Échec de l'initialisation du stockage du Project : {{error}}"
     },
     "editor": {
       "titlePlaceholder": "Nom du nouveau Project",
       "summaryPlaceholder": "Ajoutez un bref résumé...",
       "descriptionPlaceholder": "Rédigez une description, un résumé du Project ou collectez des idées..."
-    },
-    "tooltips": {
-      "dashboard": "Tableau de bord",
-      "filter": "Filtrer",
-      "selectPeople": "Sélectionner des personnes",
-      "searchPeople": "Rechercher des personnes..."
     },
     "priorityGroups": {
       "unprioritized": "Non priorisé"
@@ -76,9 +46,6 @@
   "githubIssuesImport": {
     "title": "Importer GitHub Issues",
     "menuLabel": "Importer GitHub Issues",
-    "createTarget": "Project GitHub Issues",
-    "heading": "Créer un Project depuis GitHub Issues",
-    "description": "Choisissez un dépôt GitHub, créez un Project ORGII et gardez ses GitHub Issues synchronisées comme work items.",
     "importButton": "Importer GitHub Issues",
     "projectDescription": "GitHub Issues · {{owner}}/{{repo}}",
     "fields": {
@@ -97,38 +64,20 @@
     "linkedRepoHint": "Ce Project sera aussi lié au repo du Workspace actuel : {{repoName}}",
     "errors": {
       "invalidRepo": "Utilisez owner/repo ou une URL de dépôt GitHub."
-    },
-    "importStatus": {
-      "title": "Statut de l'import",
-      "state": {
-        "pending": "En attente",
-        "running": "En cours",
-        "completed": "Terminé",
-        "failed": "Échec",
-        "cancelled": "Annulé"
-      }
     }
   },
   "orgs": {
     "yourOrgs": "Vos espaces de travail",
-    "sectionTitle": "Espaces de travail",
     "recentProjects": "Projets récents",
     "personalOrg": "Mon espace de travail",
     "linearOrg": "Espace de travail Linear",
     "noLinearOrgs": "Aucun espace de travail connectée pour le moment",
     "sources": {
       "local": "Local",
-      "cloud": "Cloud",
-      "linear": "Linear"
+      "cloud": "Cloud"
     },
     "addOrg": "Ajouter un espace de travail",
-    "importOrgs": "Importer des espaces de travail",
     "importLinearOrgs": "Importer des espaces de travail Linear",
-    "createOrg": "Créer un espace de travail",
-    "createOrgHint": "Créez un espace de travail ORGII natif pour regrouper les projets et les éléments de travail séparément de Linear.",
-    "createOrgFailed": "Échec de la création de l'espace de travail",
-    "orgName": "Nom de l'espace de travail",
-    "orgNamePlaceholder": "Équipe plateforme",
     "gitFolderPath": "Chemin du dossier Git (facultatif)",
     "gitFolderPathPlaceholder": "/path/to/repo",
     "gitFolderPathHint": "Liez cet espace de travail à un arbre de travail Git existant pour la synchronisation de dossier.",
@@ -136,14 +85,8 @@
     "gitFolderSynced": "Synchronisé avec un dossier Git",
     "pendingSync": "Synchronisation en attente",
     "management": {
-      "breadcrumb": "Paramètres de l'espace de travail",
       "overview": "Aperçu",
-      "profile": "Profil",
       "syncMethods": "Méthodes de synchronisation",
-      "orgNameDescription": "Nom d'affichage de cet espace de travail de projets",
-      "orgKey": "Clé d'espace de travail",
-      "orgKeyDescription": "Clé courte stable utilisée pour les ID de projets limités à l'espace de travail",
-      "projectCountDescription": "Projets natifs actuellement affectés à cet espace de travail",
       "gitFolderSync": "Synchronisation du dossier Git",
       "gitFolderSyncDescription": "Miroir des projets et éléments de travail de cet espace de travail via un arbre de travail Git",
       "notConfigured": "Non configuré",
@@ -174,28 +117,20 @@
     "targetDate": "Date cible",
     "repos": "Dépôt(s)",
     "completion": "Achèvement",
-    "statusBreakdown": "Répartition des statuts",
     "addLead": "Ajouter un responsable",
     "noLead": "Aucun responsable",
     "addMembers": "Ajouter des membres",
     "addTeams": "Ajouter des équipes",
     "addLabels": "Ajouter des étiquettes",
     "addRepos": "Lier des dépôts",
-    "searchRepos": "Rechercher des dépôts...",
     "noReposHint": "Aucun dépôt disponible. Ajoutez d'abord un dépôt au workspace.",
     "addDate": "Ajouter une date",
     "clearDate": "Effacer la date",
     "noStatus": "Aucun statut",
     "noUpdates": "Aucune mise à jour",
     "noPriority": "Aucune priorité",
-    "searchMembers": "Rechercher des membres...",
     "searchAssignee": "Rechercher un assigné...",
-    "searchTeams": "Rechercher des équipes...",
     "noTeamsHint": "Aucune équipe pour le moment. Ajoutez des membres au Project et organisez-les en équipes",
-    "searchLabels": "Rechercher des étiquettes...",
-    "searchStatus": "Rechercher un statut...",
-    "searchHealth": "Rechercher un état...",
-    "searchPriority": "Rechercher une priorité...",
     "memberCount_one": "{{count}} membre",
     "memberCount_other": "{{count}} membres",
     "statusOptions": {
@@ -216,8 +151,7 @@
       "onTrack": "En bonne voie",
       "atRisk": "À risque",
       "offTrack": "Hors piste"
-    },
-    "noProjectSelected": "Aucun Project sélectionné"
+    }
   },
   "workItems": {
     "label": "Work items",
@@ -233,22 +167,6 @@
     "newWorkItem": "Nouveau Work Item",
     "newWorkItemName": "Nouveau Work Item",
     "createWorkItem": "Créer un Work Item",
-    "createModes": {
-      "generateWithAi": "Créer avec l’IA",
-      "generateWithAgent": "Générer avec Agent",
-      "manualCreation": "Création manuelle",
-      "sessionCreatorPrompt": {
-        "promptNameQuestion": "Commence par demander à l’utilisateur s’il souhaite spécifier un nom de Work Item précis.",
-        "promptInstruction": "Crée des Work Items pour ce projet.",
-        "promptProject": "Projet : {{project}}",
-        "promptDraftTitle": "Nom de Work Item demandé : {{title}}",
-        "promptDraftDetails": "Détails du brouillon :\n{{details}}"
-      }
-    },
-    "linkExisting": {
-      "label": "Lier un Work Item existant",
-      "placeholder": "Sélectionner un Work Item à lier"
-    },
     "titlePlaceholder": "Titre du Work Item",
     "descriptionPlaceholder": "Décrire le Work Item...",
     "deleteWorkItem": "Supprimer l'élément",
@@ -257,8 +175,7 @@
     "showProperties": "Afficher les propriétés",
     "addStatusItem": "Ajouter un élément {{status}}",
     "deleteBin": {
-      "title": "Corbeille",
-      "subtitle": "Récupérable pendant 7 jours"
+      "title": "Corbeille"
     },
     "tabs": {
       "overview": "Aperçu",
@@ -298,21 +215,9 @@
       "medium": "Moyenne",
       "low": "Basse"
     },
-    "toolLabels": {
-      "edit": "modifier",
-      "new": "nouveau",
-      "patch": "correctif"
-    },
     "overview": {
       "projectNamePlaceholder": "Nom du Project",
-      "descriptionPlaceholder": "Rédigez une description du Project...",
-      "stats": "Statistiques",
-      "totalItems": "Total",
-      "completionRate": "Taux d'achèvement",
-      "recentUpdates": "Mises à jour récentes",
-      "name": "Nom",
-      "assignee": "Responsable",
-      "lastUpdated": "Mis à jour"
+      "descriptionPlaceholder": "Rédigez une description du Project..."
     },
     "properties": {
       "title": "Propriétés de l'élément de travail",
@@ -321,8 +226,6 @@
       "noAssignee": "Non assigné",
       "noMembersHint": "Aucun membre. Allez dans Settings > Members pour synchroniser depuis git",
       "noProject": "Aucun Project lié",
-      "selectProject": "Choisir une project",
-      "noProjectsHint": "Aucun Project disponible.",
       "noMilestone": "Aucun jalon",
       "noDueDate": "Pas de date d'échéance",
       "noDueDay": "Aucun jour d'échéance",
@@ -343,7 +246,6 @@
       "inHours_other": "Dans {{count}} heures",
       "inLessThanHour": "Dans < 1 heure",
       "searchProjects": "Rechercher des Projects...",
-      "searchMilestones": "Rechercher des jalons...",
       "delegations": "Délégations",
       "delegationsCompleted": "terminées",
       "daysAgo": "il y a {{count}} jours",
@@ -352,11 +254,7 @@
       "inHours": "dans {{count}} heures",
       "membersGroup": "Membres"
     },
-    "history": {
-      "noHistory": "Pas encore d'historique"
-    },
     "activity": {
-      "title": "Activité",
       "discussionTitle": "Discussion",
       "activityHistory": "Historique d’activité",
       "activityHistoryCount": "{{count}} événements",
@@ -364,17 +262,12 @@
       "subscribe": "S'abonner",
       "unsubscribe": "Se désabonner",
       "commentPlaceholder": "Laisser un commentaire...",
-      "you": "Vous",
       "createdWorkItem": "a créé la tâche",
       "deletedWorkItem": "a supprimé la tâche",
       "restoredWorkItem": "a restauré la tâche",
       "movedFromTo": "a déplacé de {{from}} à {{to}}",
       "commented": "a commenté",
       "system": "Système",
-      "wasAssigned": "a été assigné",
-      "wasUnassigned": "a été désassigné",
-      "addedLabel": "a ajouté une étiquette",
-      "removedLabel": "a supprimé une étiquette",
       "madeChange": "a effectué un changement",
       "changedField": "a changé {{field}} de {{from}} à {{to}}",
       "changedFieldShort": "a mis à jour {{field}}",
@@ -392,10 +285,6 @@
       "todoMarkedPending": "a marqué « {{todo}} » comme en attente",
       "todoRenamed": "a renommé « {{from}} » en « {{to}} »",
       "todoUpdated": "a mis à jour « {{todo}} »",
-      "justNow": "à l'instant",
-      "daysAgo": "il y a {{count}}j",
-      "hoursAgo": "il y a {{count}}h",
-      "minutesAgo": "il y a {{count}}m",
       "agent": "Agent",
       "fields": {
         "title": "titre",
@@ -429,8 +318,6 @@
       "milestone": "Jalon",
       "setDueDate": "Définir la date d'échéance",
       "rename": "Renommer...",
-      "addLink": "Ajouter un lien...",
-      "favorite": "Favori",
       "moreProperties": "Plus de propriétés"
     },
     "propertyFields": {
@@ -441,63 +328,10 @@
     },
     "addWorkItem": "Ajouter un élément de travail",
     "agentWorkflow": {
-      "title": "Flux de Travail Agent",
-      "running": "En cours...",
-      "completed": "Terminé",
-      "failed": "Échoué",
-      "interrupted": "Interrompu",
-      "retry": "Réessayer",
-      "resume": "Reprendre",
-      "openSession": "Ouvrir la Session",
-      "viewLiveChat": "Voir le Chat en direct",
-      "viewConversation": "Voir la conversation",
-      "noWorkflowRun": "Aucun flux de travail Agent n'a encore été exécuté",
-      "confirmStart": "Démarrer l'Agent SDE sur cet élément de travail ?",
-      "sdePhase": "Développement SDE",
-      "totalCost": "Coût Total",
-      "totalTokens": "Total Token",
-      "proofOfWork": "Preuve de Travail",
-      "branch": "Branche",
-      "pullRequest": "Pull Request",
-      "filesChanged": "Fichiers Modifiés",
-      "linesAdded": "Lignes Ajoutées",
-      "linesRemoved": "Lignes Supprimées",
-      "approved": "Approuvé",
-      "changesRequested": "Modifications Demandées",
-      "inconclusive": "Non Concluant",
-      "failedError": "Session échouée",
-      "retryWithContext": "Réessayer avec le contexte de l'échec précédent",
-      "interruptedMessage": "Le flux de travail a été interrompu lors de la fermeture de l'application",
-      "selectAccount": "Sélectionner un code account",
-      "noAccountsReady": "Aucun compte local disponible",
-      "sessionOutput": "Sortie de Session",
-      "noOutputYet": "Pas encore de sortie",
-      "cycles": "{{count}} cycles",
-      "whatNext": "Que souhaitez-vous faire ?",
-      "acceptAsIs": "Accepter Tel Quel",
-      "fixAndRerun": "Corriger et Relancer",
-      "roleSde": "SDE",
-      "roleReview": "Review",
-      "roleFollowUp": "Follow-up",
-      "roleAssistant": "Assistant",
-      "roleUser": "User",
       "statusRunning": "En cours",
       "statusCompleted": "Terminé",
       "statusFailed": "Échoué",
-      "statusCancelled": "Annulé",
-      "sessionFiles": "Fichiers",
-      "noFilesModified": "Aucun fichier modifié",
-      "subAgents": "Sub-Agents",
-      "subAgentSpawn": "Génération de {{name}} #{{instance}}",
-      "subAgentComplete": "{{name}} #{{instance}} terminé",
-      "subAgentFailed": "{{name}} #{{instance}} échoué",
-      "tokens": "tokens",
-      "subAgentDefault": "Sub-Agent",
-      "toolResult": "résultat de {{tool}}",
-      "collabLockRunning": "{{name}} is running",
-      "collabLockHeld": "{{name}}'s agent is already working on this item",
-      "collabLockConflict": "Another member just started an agent on this item",
-      "collabLockUnresolved": "Could not verify this work item's collaboration status. Check your connection and try again."
+      "statusCancelled": "Annulé"
     },
     "changedFiles": {
       "title": "Fichiers Modifiés",
@@ -510,15 +344,10 @@
       "notAuthenticated": "Non authentifié. Veuillez vous connecter au marketplace.",
       "noRepoPath": "Aucun chemin de dépôt disponible",
       "noOriginRemote": "Aucun remote origin trouvé dans le dépôt",
-      "cannotParseRepoName": "Impossible d'analyser le nom du dépôt depuis : {{url}}",
-      "defaultPrTitle": "[{{shortId}}] Modifications du work item"
+      "cannotParseRepoName": "Impossible d'analyser le nom du dépôt depuis : {{url}}"
     },
     "sessions": {
-      "linkedSessions": "Sessions liées",
-      "newSession": "Nouvelle session",
-      "starting": "Démarrage...",
-      "emptyOverview": "Aucune session pour le moment",
-      "emptyOverviewHint": "Démarrez une session Agent pour suivre l'exécution ici."
+      "emptyOverview": "Aucune session pour le moment"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -532,14 +361,12 @@
       "prMerged": "Merged",
       "prClosed": "Closed",
       "prDraft": "Draft",
-      "openPr": "Ouvrir le PR",
       "changedFilesSection": "Changed Files",
       "fileDiffClean": "Aucun changement de fichier",
       "fileDiffCleanHint": "Aucun changement détecté.",
       "costSummary": "Résumé des coûts",
       "totalCost": "Total",
-      "tokens": "Token",
-      "cycles": "cycles"
+      "tokens": "Token"
     },
     "viewWorkItems": "Voir les Work Items",
     "fromRoutine": "From routine: {{name}}",
@@ -573,35 +400,19 @@
     "githubUsernameDesc": "Associe votre identité aux listes de membres une fois lié",
     "profileNotFound": "Impossible d'associer votre identité à un membre de l'équipe",
     "profileNotFoundHint": "Votre email git ({{email}}) n'a pas été trouvé dans la liste des membres. Synchronisez les membres pour mettre à jour",
-    "teamMembers": "Membres de l'équipe",
-    "memberCount": "{{active}} sur {{total}} actifs",
-    "activeBadge": "Actif",
-    "inactiveBadge": "Inactif",
-    "activateMember": "Activer le membre",
-    "deactivateMember": "Désactiver le membre",
-    "syncFromGit": "Synchroniser depuis Git",
-    "membersDescription": "Gérez les membres de l'équipe. Les membres inactifs n'apparaîtront pas dans les menus d'assignation",
     "activeMembers": "Actuels",
     "activeMembersDescription": "Membres qui apparaissent dans les menus d'assignation et les rapports",
     "inactiveMembers": "Non actuels",
     "inactiveMembersDescription": "Masqués des menus. Réactivez pour les inclure à nouveau",
     "noActiveMembers": "Aucun membre actif",
-    "repoTab": "Repo",
-    "projectTab": "Project",
     "workItemIdTitle": "ID de l'élément de travail",
     "workItemIdPrefix": "Préfixe d'ID",
     "workItemIdPrefixDescription": "1 à 3 lettres ou chiffres. Les nouveaux IDs utilisent ce préfixe",
     "customPrefix": "Préfixe personnalisé",
-    "customPrefixDescription": "Si désactivé, le préfixe est dérivé automatiquement des 3 premiers caractères du nom du Project",
     "customPrefixCurrentValue": "Valeur actuelle : {{value}}",
-    "manageInRepoSettings": "Gérer dans les paramètres du repo",
-    "projectMemberList": "Membres du Project",
     "projectMemberListDescription": "Sélectionnez les membres du repo qui appartiennent à ce Project",
     "labelsDescription": "Gérez les étiquettes pour catégoriser les éléments de travail",
-    "addLabel": "Ajouter une étiquette",
     "noLabels": "Cliquez sur + pour ajouter un label",
-    "deleteLabel": "Supprimer l'étiquette",
-    "changeColor": "Changer la couleur",
     "labelNamePlaceholder": "Nom de l'étiquette...",
     "memberRecentlyActive": "Actif",
     "linkedIdentities": "Identités liées",
@@ -620,9 +431,7 @@
     "claimIdentityShowAsAuthor": "Vous afficher comme auteur dans l'historique des éléments de travail",
     "claimIdentityWarning": "Ne revendiquez que les identités qui vous appartiennent",
     "confirmClaim": "Confirmer la revendication",
-    "alreadyClaimed": "Déjà lié à un autre membre",
     "dangerZone": "Zone de danger",
-    "dangerZoneDescription": "Actions irréversibles pour ce Project",
     "deleteProject": "Supprimer ce Project",
     "deleteProjectWarning": "Cela supprimera définitivement le dossier du Project et tous ses éléments de travail de .orgii. Cette action est irréversible",
     "deleteThisProject": "Supprimer ce Project...",
@@ -643,41 +452,6 @@
         "title": "Compte",
         "empty": "Aucun compte global de synchronisation pour cet adaptateur",
         "previewNote": "Sélectionnez le compte global que cette Project utilisera pour la synchronisation."
-      },
-      "token": {
-        "title": "API Token",
-        "placeholder": "Collez votre Token d'accès personnel",
-        "save": "Enregistrer le Token",
-        "saved": "Token enregistré",
-        "tabs": {
-          "oauth": "OAuth",
-          "personalToken": "Token personnel"
-        },
-        "bothMethodsNote": "Les deux méthodes fonctionnent — la connexion la plus récente l'emporte.",
-        "oauth": {
-          "connectButton": "Se connecter avec {{adapter}}",
-          "instructions": "Saisissez le code ci-dessous dans l'onglet du navigateur que nous venons d'ouvrir, puis approuvez l'accès.",
-          "userCodeLabel": "Code",
-          "openLinkButton": "Ouvrir la page de vérification",
-          "waitingForConfirmation": "En attente de votre approbation dans le navigateur…",
-          "cancel": "Annuler",
-          "connected": "Connecté via OAuth",
-          "reconnect": "Reconnecter",
-          "codeCopied": "Code copié dans le presse-papiers",
-          "errors": {
-            "startFailed": "Impossible de démarrer OAuth : {{error}}",
-            "accessDenied": "Connexion OAuth refusée.",
-            "expired": "Le code a expiré avant l'approbation. Veuillez réessayer.",
-            "pollFailed": "Échec de la connexion : {{detail}}",
-            "unknown": "Erreur de connexion inattendue : {{error}}"
-          },
-          "browserOpened": "Ouverture de {{adapter}} dans votre navigateur…",
-          "redirect": {
-            "openButton": "Ouvrir la page d'autorisation {{adapter}}",
-            "instructions": "Approuvez la requête dans votre navigateur pour terminer la connexion à {{adapter}}.",
-            "expiresAt": "Le lien expire à {{time}}"
-          }
-        }
       },
       "status": {
         "title": "État",
@@ -754,7 +528,6 @@
       },
       "problems": {
         "title": "Entrées en échec",
-        "empty": "Aucune entrée en échec.",
         "op": {
           "create": "create",
           "update": "update",
@@ -784,10 +557,6 @@
       },
       "conflicts": {
         "title": "Conflits de synchronisation",
-        "loading": "Chargement des conflits…",
-        "empty": "Aucun conflit.",
-        "openCount_one": "{{count}} conflit ouvert",
-        "openCount_other": "{{count}} conflits ouverts",
         "detectedAt": "détecté {{time}}",
         "resolvedAt": "résolu {{time}}",
         "fields_one": "{{count}} champ",
@@ -822,7 +591,6 @@
         },
         "errors": {
           "listFailed": "Échec du chargement des conflits : {{error}}",
-          "countFailed": "Échec du chargement du nombre de conflits : {{error}}",
           "useLocalFailed": "Échec de la conservation des valeurs locales : {{error}}",
           "useRemoteFailed": "Échec de l'adoption des valeurs distantes : {{error}}",
           "dismissFailed": "Échec de l'ignorance du conflit : {{error}}"
@@ -869,29 +637,13 @@
     "views": "Views",
     "more": "More"
   },
-  "teams": {
-    "title": "Vos équipes",
-    "localTeams": "Équipes locales",
-    "linearTeams": "Équipes Linear",
-    "personalOrg": "Mon espace de travail",
-    "agentOrgs": "Équipes Agent",
-    "emptyLinearTeams": "Aucune équipe Linear trouvée",
-    "empty": "Aucune équipe trouvée"
-  },
   "linearProjects": {
-    "title": "Linear Projects",
-    "open": "Open Linear Projects",
-    "subtitle": "Browse and edit Linear Projects in real time without importing them into ORGII.",
-    "refresh": "Refresh",
     "createProject": "Create Project",
-    "archive": "Archive",
-    "searchPlaceholder": "Search Linear Projects...",
     "loadingProjects": "Loading Linear Projects...",
     "loadingIssues": "Loading Linear Issues...",
     "emptyProjects": "No Linear Projects found",
     "emptyIssues": "No Linear Issues in this Project",
     "unknownState": "Unknown state",
-    "updated": "Updated {{date}}",
     "emptyConnections": {
       "title": "No Linear connections",
       "description": "Create a Linear connection in Integrations, then return here to browse Projects directly from Linear."
@@ -900,14 +652,9 @@
       "title": "Select a Linear Project",
       "description": "Choose a Project from the left to view live Linear Issues and edit Project details."
     },
-    "issues": {
-      "title": "Linear Issues",
-      "subtitle": "Issues are read and mutated directly through the Linear API."
-    },
     "forms": {
       "createProjectTitle": "Create Linear Project",
       "projectName": "Project name",
-      "issueTitle": "Issue title",
       "description": "Description"
     },
     "statusPanel": {

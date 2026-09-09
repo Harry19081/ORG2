@@ -6,7 +6,6 @@
     "today": "Today",
     "everyone": "Everyone",
     "activeMembers": "Active members",
-    "systemsCurrent": "{{current}} of {{total}} systems current",
     "usageByAgent": "Usage by agent",
     "recentSessions": "Latest shared sessions",
     "recentLoading": "Loading shared sessions…",
@@ -71,10 +70,6 @@
     "appVersion": "ORGII version",
     "totalSessions": "Total sessions",
     "lastSynced": "Last synced"
-  },
-  "selfService": {
-    "hint": "Your own runtime is shared with this workspace while sharing is on.",
-    "action": "Stop sharing & remove my data"
   },
   "orgSettings": {
     "label": "Team runtime sharing",

@@ -11,9 +11,6 @@
     "quit": "ORG2 を終了"
   },
   "toolUsage": {
-    "estimatedContext": "{{tokenCount}} Token コンテキスト",
-    "followup": "{{tokenCount}} Token follow-up",
-    "decision": "{{tokenCount}} Token 判断",
     "tooltip": "推定ツール属性。方法: {{method}}。入力: {{inputBytes}} bytes。出力: {{outputBytes}} bytes。判断: {{decisionTokens}} Token。コンテキスト: {{contextTokens}} Token。Follow-up: {{followupTokens}} Token。関連 LLM cache read: {{cacheReadTokens}} Token。関連 LLM cache write: {{cacheWriteTokens}} Token。"
   },
   "humanSession": {
@@ -21,88 +18,24 @@
   },
   "history": {
     "untitledSession": "無題のSession",
-    "prStatus": {
-      "merged": "マージ済み",
-      "open": "オープン",
-      "draft": "ドラフト"
-    },
     "detail": {
-      "sessionInfo": "Session情報",
-      "repository": "リポジトリ",
-      "branch": "ブランチ",
       "created": "作成日時",
-      "updated": "更新日時",
       "lastUpdated": "最終更新",
       "external": "外部",
       "internal": "内部",
       "rounds": "ラウンド",
       "roundCount_one": "{{count}} ラウンド",
       "roundCount_other": "{{count}} ラウンド",
-      "agentWorked": "Agent 稼働",
-      "reasoningModel": "Reasoning Model",
-      "codingModel": "Coding Model",
-      "sessionMode": "Sessionモード",
-      "fileChanges": "ファイル変更",
-      "filesChanged": "変更ファイル",
-      "files": "ファイル",
-      "summary": "概要",
-      "workflow": "ワークフロー",
-      "agent": "Agent:",
-      "pilotSession": "Pilot Session",
-      "openSession": "Sessionを開く",
-      "viewPR": "PR を表示",
-      "rawData": "生データ",
-      "analytics": {
-        "title": "Event 分析",
-        "toolUsage": "ツール使用状況",
-        "filesTouched": "対象ファイル",
-        "conversation": "会話",
-        "tokenUsage": "Token 使用量",
-        "errors": "エラー",
-        "duration": "所要時間",
-        "events": "イベント数",
-        "toolCalls": "ツール呼び出し",
-        "files": "ファイル",
-        "tool": "ツール",
-        "calls": "呼び出し数",
-        "done": "完了",
-        "userMessages": "ユーザーメッセージ",
-        "assistantMessages": "Agent メッセージ",
-        "userChars": "ユーザー文字数",
-        "assistantChars": "Agent 文字数",
-        "avgResponseTime": "平均応答時間",
-        "thinkingEvents": "思考イベント",
-        "inputTokens": "入力 Token",
-        "outputTokens": "出力 Token",
-        "totalTokens": "合計 Token",
-        "model": "モデル",
-        "input": "入力",
-        "output": "出力",
-        "totalErrors": "エラー",
-        "totalFailures": "失敗",
-        "errorRate": "エラー率"
-      },
-      "impact": {
-        "title": "Impact Graph",
-        "files": "ファイル",
-        "functions": "関数",
-        "commits": "Commit",
-        "lines": "行",
-        "filesTouched": "関連ファイル",
-        "functionsCreated": "作成された関数",
-        "commitsInfluenced": "影響を受けた Commit"
-      }
+      "agentWorked": "Agent 稼働"
     }
   },
   "kanban": {
     "card": {
       "openAsFloatingPane": "フローティングパネルで開く"
     },
-    "sessions": "Session",
     "view": {
       "list": "リスト",
       "diary": "日誌",
-      "kanban": "Kanban",
       "dataSource": "データソース"
     },
     "dataSource": {
@@ -277,12 +210,8 @@
       }
     },
     "list": {
-      "updated": "更新済み",
-      "timeRange": "時間範囲",
       "started": "開始時刻",
       "lastUpdated": "最終更新",
-      "agentModel": "Agent · モデル",
-      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "これらのフィルターに一致するセッションはありません",
       "emptyDescription": "別のステータス、Agent タイプ、または時間範囲を試してください。"
     },
@@ -298,7 +227,6 @@
     },
     "autoArchive": {
       "label": "自動アーカイブ",
-      "shortLabel": "保存",
       "never": "なし",
       "12h": "12h",
       "24h": "24h",
@@ -310,9 +238,7 @@
       "inProgress": "進行中",
       "blocking": "ブロック中",
       "turnFinished": "ターン完了",
-      "archived": "アーカイブ済み",
-      "yourTurn": "あなたの番",
-      "finished": "終了"
+      "archived": "アーカイブ済み"
     },
     "boardColumns": {
       "todo": "Todo",
@@ -324,43 +250,17 @@
       "cancelled": "失敗"
     },
     "sidebar": {
-      "agentTypes": "Agent タイプ",
-      "manageItems": "項目を管理",
-      "sessionsView": "Sessions View",
-      "workitemView": "Workitem View",
-      "views": "ビュー",
-      "cliAgent": "CLI Agent",
-      "rustAgent": "Rust Agent",
       "removeDraft": "ドラフトを削除",
       "showSubagents": "subagentを表示",
       "hideSubagents": "subagentを非表示"
     },
-    "resultStatus": {
-      "completed": "完了",
-      "failed": "失敗",
-      "archived": "アーカイブ済み"
-    },
     "detail": {
       "title": "タイトル",
-      "description": "説明",
-      "tags": "タグ",
-      "status": "ステータス"
+      "tags": "タグ"
     },
-    "addContent": "コンテンツを追加",
     "merge": {
       "conflictsIn": "競合ファイル：{{files}}",
       "failed": "マージ失敗",
-      "failedToLoadDiff": "差分の読み込みに失敗",
-      "noChanges": "変更なし",
-      "worktree": "Worktree",
-      "branch": "ブランチ：",
-      "base": "ベース：",
-      "mergeLabel": "マージ：",
-      "statusPending": "保留中",
-      "statusMerged": "マージ済み",
-      "statusConflict": "コンフリクト",
-      "statusSkipped": "スキップ済み",
-      "statusFailed": "失敗",
       "retryMerge": "マージを再試行",
       "dirtyRepo": "マージできません：リポジトリにコミットされていない変更があります。先にコミットまたは退避してください。",
       "strategyLabel": "マージ戦略",
@@ -368,45 +268,16 @@
       "strategyFf": "ファストフォワード",
       "strategyLeave": "ブランチとして残す",
       "discardConfirmTitle": "Worktree を破棄しますか？",
-      "discardConfirmMessage": "ブランチとすべての変更が完全に削除されます。この操作は元に戻せません。",
-      "merge": "マージ",
-      "merging": "マージ中…",
-      "merged": "マージ済み"
-    },
-    "discard": {
-      "discard": "破棄",
-      "discarding": "破棄中…",
-      "confirmMessage": "このWorktreeの変更をすべて破棄しますか？この操作は元に戻せません。"
+      "discardConfirmMessage": "ブランチとすべての変更が完全に削除されます。この操作は元に戻せません。"
     },
     "diary": {
-      "title": "日記",
       "previousDay": "前日",
       "nextDay": "翌日",
-      "subtitle": "毎日の Agent アクティビティ",
-      "engineeringHours": "エンジニアリング時間",
-      "engineeringHoursHint": "累積 Agent 時間",
-      "onlineHours": "オンライン時間",
-      "onlineHoursHint": "並列時間を重複除外",
-      "activeSessions": "アクティブな Session",
-      "completedSessions": "完了",
-      "timeline": "イベントのタイムライン",
       "commits": "Commits",
       "emptyTitle": "日記イベントはありません",
       "emptySubtitle": "この日の Agent アクティビティがここに表示されます。",
-      "event": {
-        "started": "Session を開始",
-        "completed": "Session を完了",
-        "stillWorking": "作業中"
-      },
       "commitsTo": "{{repo}} への Commits",
       "commitsToMultiple": "{{repos}} への Commits"
-    },
-    "orgtrack": {
-      "filesChanged_one": "{{count}} ファイル",
-      "filesChanged_other": "{{count}} ファイル",
-      "commits_one": "{{count}} Commit",
-      "commits_other": "{{count}} Commit",
-      "committedRateShort": "{{percent}}% コミット済み"
     },
     "detailView": {
       "trajectory": "Trajectory",
@@ -414,83 +285,22 @@
       "noTouchedFiles": "No files touched"
     }
   },
-  "changes": {
-    "scope": {
-      "thisSession": "この Session",
-      "allUncommitted": "未コミット全体"
-    },
-    "empty": {
-      "workingTreeClean": "作業ツリーはクリーンです",
-      "noChangesYet": "まだ変更はありません",
-      "noUncommittedChanges": "リポジトリに未コミットの変更はありません",
-      "changesWillAppear": "AIによる変更がここに表示されます"
-    },
-    "noChangesToReview": "レビューする変更はありません"
-  },
-  "sync": {
-    "preparing": "ファイルを準備中...",
-    "uploading": "ファイルを同期中...",
-    "processing": "マーケットで処理中...",
-    "complete": "ファイルの同期が完了しました！",
-    "error": "同期に失敗しました",
-    "default": "同期中...",
-    "files": "{{count}} 個のファイル"
-  },
   "simulator": {
     "captionBarToggleTooltip": "Agent メッセージバーを表示",
-    "parentSession": "メイン Agent",
-    "backgroundTasks": "Background Tasks",
-    "backgroundTasksEmpty": "Background Tasks なし",
     "noActiveSession": "アクティブなセッションがありません",
     "tabs": {
-      "desktop": "デスクトップ",
-      "tasks": "タスク",
-      "kanban": "カンバン",
-      "changes": "変更",
-      "conflicts": "コンフリクト",
-      "plan": "Plan"
-    },
-    "settings": {
-      "title": "Simulator ビュー",
-      "showDock": "Dock を表示",
-      "playback": "再生",
-      "speed": "速度",
-      "autoScroll": "自動スクロール"
-    },
-    "tasks": {
-      "noTasksFound": "タスクが見つかりません",
-      "tasksWillAppear": "タスクが実行開始されるとここに表示されます",
-      "selectTask": "タスクを選択してアクティビティを表示"
-    },
-    "kanban": {
-      "noTasksYet": "まだタスクはありません",
-      "tasksWillAppear": "このセッションで作業が始まると、ここにタスクが表示されます"
+      "kanban": "カンバン"
     },
     "replay": {
-      "following": "フォロー中",
-      "freeBrowsing": "自由閲覧",
-      "replaying": "再生中",
       "freeBrowse": "自由閲覧",
       "follow": "フォロー",
       "dockShowChatInput": "チャット入力を表示",
-      "dockHideChatInput": "チャット入力を隠す",
-      "bottomPanel": {
-        "tabTrajectory": "Trajectory",
-        "tabTodo": "Todo",
-        "expandPanel": "Trajectory / Todo パネルを表示"
-      },
       "previousEvent": "前のイベント",
       "nextEvent": "次のイベント",
       "play": "再生",
       "pause": "一時停止",
-      "playbackSpeed": "再生速度",
-      "noEvents": "イベントなし",
-      "agentHasNotUsedTool": "Agent はまだこのツールを使用していません",
       "browser": {
         "tabs": {
-          "browser": "ブラウザ",
-          "search": "検索",
-          "fetch": "取得",
           "agentBrowser": "Agent ブラウザ",
           "searchFetch": "検索と取得"
         },
@@ -504,8 +314,7 @@
           "noBrowserActivity": "ブラウザのアクティビティはありません",
           "noBrowserInteractions": "ブラウザのインタラクションはありません",
           "noWebSearches": "ウェブ検索はありません",
-          "noPagesFetched": "取得したページはありません",
-          "noBrowserActivityYet": "まだブラウザのアクティビティはありません"
+          "noPagesFetched": "取得したページはありません"
         },
         "header": {
           "categoryBrowser": "ブラウザ",
@@ -523,13 +332,10 @@
           "exitCode": "[終了コード: {{code}}]"
         },
         "codePanel": {
-          "hiddenLines": "{{count}} 行を非表示",
           "editHeader": "編集 {{index}}",
           "startingAtLine": "（{{line}} 行目から）",
           "fileEditedSuccess": "✓ ファイルを編集しました",
           "truncatedSuffix": "\n... （省略）",
-          "headerDirectory": "ディレクトリ",
-          "headerSearchPrefix": "検索: {{query}}",
           "searchResultLinePrefix": "L{{line}}",
           "resultCount_one": "{{count}} 件の結果",
           "resultCount_other": "{{count}} 件の結果",
@@ -549,23 +355,12 @@
           "emptyNoFilesEdited": "編集したファイルはありません",
           "emptyNoExploreOperations": "探索操作はまだありません",
           "emptyNoCommands": "コマンドがありません",
-          "emptyNoToolCalls": "ツール呼び出しはまだありません",
-          "searchDisplayListDir": "list_dir",
-          "searchDisplaySearch": "検索",
-          "searchSecondaryResults": "{{count}} 件の結果"
-        },
-        "terminal": {
-          "tabTerminal": "ターミナル",
-          "viewStructured": "構造化",
-          "viewRaw": "生",
-          "emptySelectCommand": "表示するコマンドを選択"
+          "emptyNoToolCalls": "ツール呼び出しはまだありません"
         }
       },
       "diffApp": {
-        "allTabLabel": "すべて",
         "tabLabel": "Diff",
         "emptyForFilter": "Diff はまだありません",
-        "emptyDetail": "変更を選択して Diff を表示します。",
         "submissions": {
           "tabLabel": "提出",
           "commits": "Commits",
@@ -577,53 +372,11 @@
         }
       },
       "channelsSidebar": {
-        "chatHistoryTab": "チャット履歴",
         "messages": "メッセージ",
         "interactions": "インタラクション",
-        "todoList": "Todoリスト",
-        "kanban": "カンバン",
-        "todoUpdate": "Todo更新",
-        "noMessages": "メッセージはまだありません",
-        "noInteractions": "インタラクションはまだありません",
-        "noTodos": "Todoイベントはまだありません",
-        "interactionAskQuestion": "質問",
-        "interactionAskPermission": "権限リクエスト",
-        "interactionModeSwitch": "モード切替",
-        "interactionPlanDoc": "Plan ドキュメント",
-        "interactionGeneric": "インタラクション"
+        "kanban": "カンバン"
       },
       "messages": {
-        "viewer": {
-          "think": {
-            "title": "内部ダイアログ",
-            "subtitle_one": "{{count}} 件の思考を表示",
-            "subtitle_other": "{{count}} 件の思考を表示"
-          },
-          "todo": {
-            "title": "To-do リスト",
-            "subtitle": "最新のタスクリスト"
-          },
-          "chat": {
-            "title": "ユーザーとのチャット",
-            "subtitle_one": "{{count}} 件のメッセージ",
-            "subtitle_other": "{{count}} 件のメッセージ"
-          },
-          "interaction": {
-            "title": "インタラクション",
-            "subtitle_one": "{{count}} 件のインタラクション",
-            "subtitle_other": "{{count}} 件のインタラクション"
-          }
-        },
-        "empty": {
-          "think": {
-            "title": "思考はまだありません",
-            "subtitle": "Agent の思考がここに表示されます"
-          },
-          "todo": {
-            "title": "To-do リストはまだありません",
-            "subtitle": "タスクリストがここに表示されます"
-          }
-        },
         "bubble": {
           "smartDateYesterday": "昨日",
           "senderTitle": {
@@ -658,21 +411,8 @@
             "出力なし。時々は静かなだけ。[思考プレビューなし]",
             "メッセージなし。プレビューが届かなかった。[思考プレビューなし]"
           ],
-          "labelLatest": "最新の思考",
           "labelThought": "思考"
         }
-      },
-      "database": {
-        "operation": {
-          "explore": "探索",
-          "runSql": "SQL を実行"
-        },
-        "row": {
-          "tablePrefix": "テーブル: {{name}}",
-          "resultErrorPrefix": "エラー: ",
-          "resultArrowPrefix": "→ "
-        },
-        "headerTitle": "データベース操作"
       },
       "project": {
         "operation": {
@@ -697,12 +437,6 @@
           "list_contributors": "コントリビューター一覧",
           "add_delegation": "委任追加"
         },
-        "row": {
-          "projectPrefix": "Project: {{name}}",
-          "workItemPrefix": "作業項目: {{title}}",
-          "resultErrorPrefix": "エラー: ",
-          "resultArrowPrefix": "→ "
-        },
         "headerTitle": "Project操作"
       },
       "canvas": {
@@ -713,34 +447,9 @@
         "tooltipCloseCanvas": "Canvas を閉じる",
         "iframeTitle": "Agent Canvas"
       },
-      "trajectory": {
-        "closeSidebar": "サイドバーを閉じる",
-        "toggleSidebar": "Trajectory サイドバーの切り替え",
-        "fallbackUnknownStep": "不明なステップ",
-        "stepHeader": {
-          "actionsCount": "{{count}} 件のアクション"
-        },
-        "event": {
-          "unknownFile": "不明なファイル",
-          "noCommand": "コマンドなし",
-          "todoMoreSuffix": "{{first}}（他 {{count}} 件）",
-          "todosCount": "To-do {{count}} 件",
-          "todosUpdated": "To-do {{count}} 件を更新",
-          "noQuery": "クエリなし",
-          "activityFallback": "アクティビティ",
-          "processing": "処理中...",
-          "messageEllipsis": "メッセージ...",
-          "readUserMessage": "ユーザーメッセージを読む",
-          "sessionFallback": "Session"
-        }
-      },
-      "followingApp": "フォロー中: {{appName}}",
       "followingAgent": "Agent をフォロー中",
       "trajectoryAgent": "Agent の軌跡をフォロー",
-      "trajectoryThisApp": "このアプリをフォロー",
-      "followAgent": "Agent をフォロー",
-      "followThisApp": "このアプリをフォロー",
-      "followApp": "{{appName}} をフォロー"
+      "trajectoryThisApp": "このアプリをフォロー"
     },
     "codeEditor": {
       "switchToListView": "リスト表示に切り替え",
@@ -754,42 +463,17 @@
       "title": "システム起動中",
       "subtitle": "ワークスペース環境を初期化しています..."
     },
-    "awaitingActivity": "アクティビティ待ち...",
-    "askUser": {
-      "agentQuestion": "Agent からの質問",
-      "submitResponse": "回答を送信",
-      "responseReceived": "回答を受信",
-      "optional": "任意",
-      "defaultQuestion": "Agent からの質問があります",
-      "enterField": "{{field}}を入力..."
-    },
-    "askUserPending": {
-      "incomingRequest": "リクエストが届いています",
-      "respondInChat": "チャットで Agent のリクエストに回答してください"
-    },
     "titleBar": {
-      "switchToRight": "右側モードに切替",
-      "switchToLeft": "左側モードに切替",
       "showSidebar": "サイドバーを表示",
       "hideSidebar": "サイドバーを非表示",
-      "showBottomPanel": "下部パネルを表示",
-      "hideBottomPanel": "下部パネルを非表示"
+      "showBottomPanel": "下部パネルを表示"
     },
     "multiTask": {
       "monitoringProgress": "{{count}} 体の Subagent の進捗を監視中",
-      "expandView": "展開表示",
-      "compactView": "コンパクト表示",
       "closePanel": "Subagent パネルを閉じる",
-      "minimizePanel": "ピクチャーインピクチャーに最小化",
-      "expandPanel": "パネルを展開",
-      "moreTasks": "他{{count}}件"
+      "minimizePanel": "ピクチャーインピクチャーに最小化"
     },
     "gridCell": {
-      "copyEventsJson": "イベント JSON をコピー",
-      "detachedTooltip": "メインカーソルから切断 — クリックで再同期",
-      "syncedTooltip": "メインカーソルに同期中",
-      "detached": "切断",
-      "live": "ライブ",
       "expand": "拡大",
       "collapse": "縮小"
     },
@@ -836,7 +520,6 @@
   "input": {
     "editPlaceholder": "メッセージを編集...",
     "defaultPlaceholder": "Agent とチャット",
-    "finishNextStep": "完了。次のステップへ！",
     "editingQueuedMessage": "キューメッセージを編集中",
     "editingSentMessage": "送信済みメッセージを編集中",
     "voiceErrorPermission": "マイクの権限が拒否されました。OS の設定で有効にしてください。",
@@ -856,10 +539,6 @@
     "canvasCommandDescription": "新しいインタラクティブ Canvas を作成します。任意: /canvas <作成する内容>",
     "canvasArgHint": "作成する内容",
     "newCanvasAction": "新しい Canvas"
-  },
-  "listPanel": {
-    "showingOf": "{{total}} 件中 {{filtered}} 件を表示",
-    "selectedOf": "{{total}} 件中 {{selected}} 件を選択"
   },
   "chat": {
     "planApprovedLabel": "承認された計画を実行中",
@@ -1265,31 +944,6 @@
     },
     "parentAgentSender": "親エージェント"
   },
-  "chatStatus": {
-    "approved": "承認済み",
-    "skipped": "スキップ済み",
-    "responded": "回答済み",
-    "ignored": "無視済み",
-    "pending": "保留中",
-    "denied": "拒否済み"
-  },
-  "conflicts": {
-    "title": "コンフリクト",
-    "noConflicts": "コンフリクトなし",
-    "noMergeConflicts": "マージコンフリクトなし",
-    "cleanState": "リポジトリはクリーンな状態で、解決すべきコンフリクトはありません。",
-    "detecting": "コンフリクトを検出中...",
-    "allResolved": "このファイルのすべてのコンフリクトが解決されました",
-    "saveAndMark": "保存して解決済みとしてマークして続行",
-    "keepCurrent": "現在を保持",
-    "keepIncoming": "受信を保持",
-    "keepBoth": "両方を保持",
-    "aiResolve": "AI で解決",
-    "previousConflict": "前のコンフリクト (⌘↑)",
-    "nextConflict": "次のコンフリクト (⌘↓)",
-    "abort": "中止",
-    "complete": "完了"
-  },
   "tools": {
     "noResultsFound": "結果が見つかりません",
     "noResult": "結果なし",
@@ -1507,9 +1161,6 @@
     "askUserSkipped": "スキップ済み",
     "askUserQuestionsAnswered": "質問に回答済み",
     "askUserQuestionsSkipped": "質問をスキップ",
-    "skillLoading": "Reading skill",
-    "skillLoaded": "Skill loaded",
-    "skillFailed": "Skill not found",
     "killProcessRunning": "プロセスを終了中",
     "killProcessDone": "プロセスを終了しました",
     "killProcessFailed": "プロセスの終了に失敗しました",
@@ -2105,12 +1756,6 @@
     "nFiles_one": "ファイル {{count}} 件",
     "nFiles_other": "ファイル {{count}} 件"
   },
-  "hoverCard": {
-    "commits": "コミット",
-    "filesChanged_one": "{{count}} ファイル変更",
-    "filesChanged_other": "{{count}} ファイル変更",
-    "branchesTouched": "ブランチ"
-  },
   "modelPill": {
     "immutableInSession": "キーソース、Agent タイプ、料金ティアはセッション開始時に固定されます。変更するには新しいセッションを開始してください。"
   },
@@ -2122,26 +1767,19 @@
       "hidePinnedActions": "ピン留めしたアクションを非表示"
     },
     "createTarget": {
-      "agentSession": "Agent セッション",
       "project": "プロジェクトを作成",
       "parallelRun": "並列実行",
       "workItem": "Work Item を作成"
     },
     "worktreeSource": {
       "title": "ワークツリーを作成",
-      "confirm": "ワークツリーを使用",
       "resolving": "PR を解決中…",
       "selectRepository": "ワークツリーのソースを選ぶ前にリポジトリを選択してください。",
       "sourceTabs": "ワークツリーのソース",
       "tabs": {
-        "smart": "スマート",
         "github": "GitHub",
-        "branch": "ブランチ",
-        "name": "名前"
+        "branch": "ブランチ"
       },
-      "smartPlaceholder": "名前、#1234、ブランチ、または GitHub/GitLab URL",
-      "smartAria": "名前、PR 番号、ブランチ、または GitHub/GitLab URL を入力",
-      "smartHint": "名前、PR 番号、ブランチを入力するか、PR/MR URL を貼り付けてください。",
       "refreshGithub": "GitHub リストを更新",
       "githubSearch": "GitHub の PR と Issue を検索",
       "githubSearchAria": "GitHub のプルリクエストと Issue を検索",
@@ -2155,14 +1793,8 @@
       "branchEmpty": "このリポジトリにブランチがありません。",
       "branchNoMatches": "一致するブランチはありません。",
       "branchUseAsRef": "「{{value}}」を ref として使用",
-      "branchCustomRefHint": "タグ、コミット、または任意の Git ref",
-      "worktreeLabel": "ワークツリーのラベル",
-      "namePlaceholder": "feature-name",
-      "nameBase": "ベース: {{branch}}",
-      "nameBaseHead": "ベース: HEAD"
+      "branchCustomRefHint": "タグ、コミット、または任意の Git ref"
     },
-    "searchModels": "モデルを検索...",
-    "newItem": "新しいアイテム",
     "solveWorkItem": "作業項目を解決",
     "launchpadQuestion": "",
     "launchpadQuestionSuffix": "で何を作りますか？",
@@ -2171,36 +1803,20 @@
     "planLaunchpadQuestionSuffix": "で何を計画しますか？",
     "manualPlanLaunchpadQuestion": "何を計画しますか？",
     "start": "開始",
-    "assign": "割り当て",
-    "send": "送信",
     "missingGit": {
       "title": "Git が見つかりません",
       "body": "Git がインストールされていないか、見つかりません。ADE Manager または SDE Agent にこのマシンへ Git をインストールしてもらい、その後 ORGII を再起動してください。"
     },
-    "noProvidersAvailable": "利用可能なプロバイダーがありません",
-    "enterPublicRepoUrl": "公開リポジトリの URL を入力",
-    "repoUrlPlaceholder": "https://github.com/owner/repo",
-    "noModelsMatchSearch": "検索に一致するモデルがありません",
-    "noModelsAvailable": "利用可能なモデルがありません",
-    "noTiersAvailable": "利用可能なティアがありません",
     "model": "モデル",
-    "source": "アカウント",
-    "addContext": "コンテキストを追加",
     "contextMenu": {
       "filesAndFolders": "ファイルとフォルダー",
-      "agentSession": "Agent セッション",
       "workItems": "作業項目",
       "back": "戻る",
       "recent": "最近使用した項目",
       "showMore": "あと{{remaining}}件を表示"
     },
-    "slashSearchPlaceholder": "コマンドを検索…",
     "slashMenu": {
-      "image": "画像",
-      "uploadImage": "画像をアップロード",
       "mode": "モード",
-      "models": "モデル",
-      "skills": "Skills",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",
       "commands": "コマンド"
@@ -2216,13 +1832,6 @@
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",
-    "cliAgent": "CLI Agent",
-    "cliAgentDesc": "CLI ベースの Agent に接続",
-    "agentDesc": "コーディング Agent セッションを開始",
-    "osAgentDesc": "コンピュータ操作 Agent",
-    "categoryLabel": "セッションカテゴリ",
-    "categoryTemplate": "{category} を選択",
-    "categoryPlaceholder": "Agent",
     "builtIns": "組み込み",
     "humanSession": {
       "name": "作業ログ"
@@ -2232,81 +1841,29 @@
     "agentOrgs": "Agent チーム",
     "orgMembers": {
       "configButton": "メンバーを管理",
-      "count": "メンバー {{count}} 名",
-      "defaultColumn": "モデル",
       "empty": "このチームにはまだメンバーがいません",
       "selectAgent": "Agent を選択",
       "applyForFutureLabel": "今後の利用にも適用",
       "selectBaseAgentForRole": "{{role}} のベース Agent を選択"
     },
     "externalIdes": "外部 Agent",
-    "cursorIde": {
-      "label": "Cursor IDE"
-    },
-    "addModel": "モデルを追加",
-    "myAgents": "マイ Agent",
-    "session": "Session",
-    "cloneFromGitHub": "GitHub からクローン",
-    "repoUrl": "リポジトリ URL",
-    "pleaseEnterGitHubUrl": "GitHub URL を入力してください",
-    "pleaseEnterValidGitHubUrl": "有効な GitHub リポジトリ URL を入力してください",
-    "cloning": "クローン中...",
-    "cloneRepo": "リポジトリをクローン",
-    "repoCloneHelperText": "リポジトリは Session 用の一時ワークスペースにクローンされます。",
-    "yourPrice": "あなたの価格",
-    "inputPerM": "入力 /M",
-    "outputPerM": "出力 /M",
-    "continueWithTier": "{{tier}} で続行",
-    "quota": "クォータ：{{value}}",
-    "officialApiPrice": "公式 API 価格",
-    "input": "入力",
-    "output": "出力",
-    "marketPrice": "マーケット価格",
-    "yourPriceType": "あなたの価格（{{type}}）",
-    "cacheRead": "Cache Read",
-    "cacheWrite": "Cache Write",
-    "saveDiscount": "{{discount}} 節約",
-    "standard": "Standard",
-    "global": "Global",
-    "goldUnlocksGlobal": "Gold+ で Global 価格を解除",
-    "limitReached": "上限に達しました",
-    "remainingLimit": "残り {{remaining}}/{{limit}}",
-    "busy": "混雑中",
-    "ofOfficialPrice": "公式価格の",
     "shortInputTitle": "短い入力",
     "shortInputMessage": "入力内容が非常に短いようです。この内容でセッションを開始しますか？",
     "selectModel": "モデルを選択",
     "switchModel": "モデルを切り替え",
-    "switchSource": "アカウントを切り替え",
-    "switchRunner": "Runner を切り替え",
-    "runnerLockedToWorktree": "Worktree に固定 — 起動後は Runner を切り替えできません",
     "switchMode": "モードを切り替え",
     "switchAgent": "Agent を切り替え",
-    "manageKeys": "Keys を管理",
-    "manageModels": "モデルを管理",
-    "changeSource": "アカウントを変更",
-    "clearSelection": "選択をクリア",
     "toolbar": {
       "bold": "太字 (⌘B)",
       "italic": "斜体 (⌘I)",
       "strikethrough": "取り消し線",
-      "underline": "下線 (⌘U)",
       "link": "リンク",
-      "enterUrl": "URL を入力...",
       "quote": "引用",
-      "clearFormatting": "書式をクリア",
       "inlineCode": "インラインコード",
-      "highlight": "ハイライト",
-      "insertImage": "画像を挿入",
-      "lists": "リスト",
-      "normalText": "標準テキスト",
-      "heading1": "見出し 1",
       "heading2": "見出し 2",
-      "heading3": "見出し 3",
       "bulletList": "箇条書きリスト",
       "numberedList": "番号付きリスト",
-      "taskList": "タスクリスト",
-      "divider": "区切り線"
+      "taskList": "タスクリスト"
     },
     "regionNoticeTitle": "地域制限の可能性",
     "regionNoticeBodyProvider": "お住まいの地域：{{location}}。一部のモデルはお住まいの地域で利用できない場合があります。",
@@ -2314,38 +1871,11 @@
     "regionNoticeBodyBoth": "お住まいの地域：{{location}}。地域政策と貿易規制により、一部のモデルや GitHub、npm、Docker Hub などのサービスが利用できない場合があります。",
     "selectAgent": "エージェントを選択",
     "placeholderDefault": "メッセージを入力、@ でファイルを追加、/ で skills を使用",
-    "agentHeaderPromptVariants": [
-      {
-        "before": "",
-        "after": "と何に取り組みますか？"
-      },
-      {
-        "before": "今日は",
-        "after": "に何を手伝ってもらいますか？"
-      },
-      {
-        "before": "",
-        "after": "はまず何に取り組むべきですか？"
-      }
-    ],
     "wingmanPlaceholder": "ミッションを説明してください — Wingman は何を監視すべきですか？",
     "screenPicker": {
       "title": "画面を選択",
-      "screen": "画面 {{index}}",
-      "primary": "（メイン）",
-      "cancel": "キャンセル"
+      "primary": "（メイン）"
     },
-    "viewDiff": "Diff を表示",
-    "contextBar": {
-      "thisMac": "この Mac",
-      "worktree": "Worktree",
-      "lockedHint": "このセッションでは Worktree がロックされています"
-    },
-    "skillsAndTools": "Skills とツール",
-    "agentSpotlightViewMode": "Agent 表示モード",
-    "agentSpotlightListView": "リスト表示",
-    "agentSpotlightCardView": "カード表示",
-    "agentSpotlightCardHint": "←/→ または ↑/↓ で Agent を切り替えます。Enter で選択します。",
     "multiRunner": {
       "exit": "単一エージェントに戻る",
       "addRunner": "ランナーを追加",
@@ -2371,60 +1901,36 @@
     }
   },
   "planner": {
-    "tabs": {
-      "plan": "プラン",
-      "timeline": "タイムライン"
-    },
     "modes": {
       "build": "Build",
       "ask": "Ask",
-      "plan": "Plan",
-      "debug": "Debug",
-      "review": "Review",
-      "wingman": "ウィングマン"
+      "plan": "Plan"
     },
     "runningLocation": {
       "local": "This Mac",
-      "worktree": "New Worktree",
-      "cloud": "Cloud"
+      "worktree": "New Worktree"
     },
     "plan": {
-      "stepsCompleted": "{{total}} 件中 {{completed}} 件完了",
-      "noStepsYet": "プランステップがありません",
       "executePlan": "プランを実行",
-      "noActiveSession": "アクティブな Agent Session がありません",
-      "replan": "再プランニング",
-      "viewPlan": "プランを表示",
-      "saveToWorkspace": "ワークスペースに保存",
-      "savedToWorkspace": "プランをワークスペースに保存しました",
-      "noRepoOpen": "リポジトリが開かれていません",
-      "collapse": "折りたたむ",
-      "expand": "展開する"
+      "noActiveSession": "アクティブな Agent Session がありません"
     },
     "todoList": {
       "title": "To-do",
       "completedCount": "{{total}}件中{{completed}}件完了",
       "countOnly": "{{total}}件のTo-do",
-      "doneOf": "{{total}} 件中 {{done}} 件完了",
-      "createdAt": "作成: {{time}}",
-      "updatedAt": "更新: {{time}}",
       "justNow": "たった今",
       "minutesAgo": "{{count}}分前",
       "yesterday": "昨日",
       "columnOpen": "未完了",
       "status": {
-        "pending": "未着手",
-        "in_progress": "進行中",
         "completed": "完了",
         "cancelled": "キャンセル"
       }
     },
     "agentOrgTasks": {
       "title": "チームタスク",
-      "doneOf": "{{total}} 件中 {{done}} 件完了",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
-      "loadFailed": "タスクを読み込めませんでした",
       "statusPending": "保留中",
       "statusInProgress": "進行中",
       "statusCompleted": "完了",
@@ -2440,24 +1946,9 @@
       "activeOf": "{{active}} / {{total}} active",
       "inbox": "Inbox",
       "unreadCount": "{{count}} unread",
-      "coordinator": "コーディネーター",
-      "currentSession": "現在",
-      "inProgressTasks": "{{count}} in progress タスク",
-      "pendingTasks": "{{count}} pending タスク",
-      "unreadMessages": "{{count}} unread メッセージ",
-      "taskBoard": "タスクボード",
-      "memberSessions": "メンバーセッション",
       "pauseRun": "実行を一時停止",
       "resumeRun": "実行を再開",
       "viewCoordinatorHistory": "View coordinator chat history"
-    },
-    "agentOrgInbox": {
-      "title": "Agent メッセージ",
-      "unreadCount": "未読 {{count}} 件",
-      "from": "{{sender}} から",
-      "kindFallback": "{{kind}} メッセージ",
-      "loadFailed": "メッセージを読み込めませんでした",
-      "overviewOnly": "未読のチームメッセージが {{count}} 件あります。詳細な履歴は run のリプレイで確認できます。"
     },
     "agentOrgIntervention": {
       "title": "{{member}} とチャット中",
@@ -2467,34 +1958,6 @@
       "loadFailed": "介入状態を読み込めませんでした",
       "busyShort": "ユーザーチャット",
       "teammateBusy": "この teammate は直接ユーザーチャット中です"
-    },
-    "timeline": {
-      "askUser": "ユーザーに質問",
-      "noQuestionProvided": "質問が提供されていません。",
-      "action": "アクション",
-      "thought": "思考：",
-      "arguments": "引数：",
-      "content": "内容：",
-      "resultLabel": "結果：",
-      "createFile": "ファイル作成",
-      "fileDiff": "ファイル差分",
-      "planHint": "プランヒント",
-      "readFile": "ファイル読み取り",
-      "runCommandLine": "コマンドライン実行",
-      "searchInFile": "ファイル内検索",
-      "searchCodebase": "コードベース検索",
-      "searchDirectory": "ディレクトリ検索",
-      "searchLabel": "検索：",
-      "inDirectory": "{{directory}} 内",
-      "foundResults": "{{files}} ファイルで {{count}} 件の結果",
-      "lineRange": "行 {{start}}-{{end}}",
-      "clickToViewContent": "クリックして内容を表示",
-      "noResult": "結果なし",
-      "event": "イベント",
-      "functionLabel": "関数：",
-      "noTimelineEvents": "タイムラインイベントがありません",
-      "file": "ファイル",
-      "atlas": "Atlas"
     },
     "agentOrgMemberStatus": {
       "idle": "待機中",
@@ -2508,7 +1971,6 @@
     }
   },
   "planDoc": {
-    "plan": "プラン",
     "untitled": "無題のプラン",
     "drafting": "プランを作成中…",
     "readyForReview": "レビュー可能",
@@ -2523,9 +1985,6 @@
     "emptyPlan": "（プランは空です）",
     "edit": "編集",
     "cancelEdit": "キャンセル",
-    "editAndBuild": "編集してビルド",
-    "openInSimulator": "Simulator で開く",
-    "close": "閉じる",
     "collapse": "折りたたむ"
   },
   "workspace": {
@@ -2536,10 +1995,7 @@
     "errorOccurred": "エラーが発生しました",
     "failedToSendMessage": "メッセージの送信に失敗しました",
     "noSessionIdFound": "Session ID が見つかりません",
-    "failedToContinue": "Session の続行に失敗しました",
     "failedToResume": "Session の再開に失敗しました",
-    "failedToInterrupt": "Session の中断に失敗しました",
-    "failedToStop": "Agent の停止に失敗しました",
     "failedToCheckChanges": "ファイルの変更を確認できませんでした。変更を元に戻して続行します。",
     "insufficientBalance": "ホスト型 ORGII サービスの残高が不足しています。orgii.ai/wallet でチャージしてください。",
     "runQueuedBehindCheckout": "キュー待ち: 別の実行がこのチェックアウトを使用中です。完了次第開始します。"
@@ -2551,12 +2007,6 @@
       "考え中...",
       "作業中...",
       "次に何をするか検討中..."
-    ],
-    "nextStepSlowVariants": [
-      "次のステップを計画中、いつもより時間がかかっています...",
-      "引き続き考え中、いつもより時間がかかっています...",
-      "作業中、いつもより時間がかかっています...",
-      "次に何をするか検討中、いつもより時間がかかっています..."
     ],
     "compacting": "コンテキストを圧縮中...",
     "statusTrail": {
@@ -2576,41 +2026,14 @@
     "keepChanges": "変更を保持する"
   },
   "controlTower": {
-    "welcomeMessages": [
-      "今日は何を構築しますか？",
-      "今日は何をリリースしますか？",
-      "今日は何を解決しますか？",
-      "次に構築するものは？",
-      "次のステップは？"
-    ],
-    "quickActions": "クイックアクション",
-    "recentSessions": "最近のセッション",
-    "viewAllSessions": "すべてのセッションを表示",
-    "noSessionsYet": "セッションはまだありません",
     "myAgents": "マイ Agent {{count}} 件",
-    "myAgentOrgs": "マイ Agent チーム {{count}} 件",
     "noAgentsAvailable": "利用可能な Agent がありません",
     "newAgentSession": "新しい {{agent}} セッション",
     "addAgent": "Agent を追加",
     "myApiKeys": "マイ Key {{count}} 件",
     "addApiKey": "API Key を追加",
-    "noRepoSelected": "リポジトリが選択されていません",
     "diff": {
-      "untitledSession": "無題のセッション",
-      "singleFile": "単一ファイル",
-      "unified": "統合ビュー",
-      "allChanges": "すべての変更",
-      "failedToLoadDiffFor": "{{path}} の Diff を読み込めませんでした",
-      "failedToLoadFileContent": "ファイル内容を読み込めませんでした",
-      "binaryFile": "バイナリファイル",
-      "selectFileToView": "ファイルを選択して Diff を表示",
-      "openProjectToViewDiff": "Projectを開いて Diff を表示",
-      "failedToLoadDiff": "Diff の読み込みに失敗",
-      "changes": "変更",
-      "refresh": "更新",
-      "noUncommittedChanges": "未コミットの変更はありません",
-      "noSessionChanges": "このセッションに未コミットの変更はありません",
-      "fileCount": "{{count}} ファイル"
+      "refresh": "更新"
     },
     "git": {
       "filterUncommitted": "未コミット",
@@ -2618,54 +2041,17 @@
       "filterStaged": "ステージ済み",
       "filterStashed": "スタッシュ済み",
       "filterCountLabel_one": "{{count}}件の{{label}}変更",
-      "filterCountLabel_other": "{{count}}件の{{label}}変更",
-      "failedToLoad": "Git ステータスの読み込みに失敗",
-      "noBranchChanges": "未プッシュのコミットなし",
-      "unknownAuthor": "不明"
-    },
-    "groups": {
-      "home": "ホーム",
-      "sessions": "セッション",
-      "git": "Git",
-      "terminal": "ターミナル"
+      "filterCountLabel_other": "{{count}}件の{{label}}変更"
     },
     "history": {
-      "wingmanAgent": "Wingman Agent",
       "agentFallback": "Agent"
     },
     "sidebar": {
       "stopAgentProcess": "Agent プロセスを停止",
-      "closeSession": "セッションを閉じる",
-      "openInBrowser": "ブラウザで開く",
-      "closeTab": "タブを閉じる",
-      "private": "プライベート",
-      "newTab": "新しいタブ",
-      "overview": "概要",
-      "homeBrowsers": "ブラウザタブ",
-      "homeTerminals": "ターミナルセッション",
-      "openInMyStation": "My Station で開く",
-      "openInTerminalTab": "Terminal タブで開く"
-    },
-    "workspaceTools": {
-      "title": "Workspace ツール",
-      "description": "この workspace に推奨される LSP servers と lint ツールを確認します。",
-      "summary": "{{ready}}/{{total}} 準備完了",
-      "noRecommendations": "推奨ツールはありません",
-      "refresh": "更新",
-      "lsp": "LSP servers",
-      "lint": "Lint ツール",
-      "ready": "推奨ツール {{total}} 件はすべて準備完了です",
-      "needsSetup": "推奨ツール {{total}} 件中 {{ready}} 件が準備完了です",
-      "notApplicable": "Workspace 固有の推奨はありません",
-      "missing": "未インストール",
-      "disabled": "無効"
+      "openInMyStation": "My Station で開く"
     }
   },
   "groupChat": {
-    "senderTitle": {
-      "message": "{{sender}} がメッセージを送信しました",
-      "said": "{{sender}} が言いました"
-    },
     "taskHeader": {
       "createWithOwner": "{{sender}} が {{ownerName}} にタスクを割り当てました",
       "create": "{{sender}} がタスクを割り当てました",
@@ -2673,14 +2059,6 @@
       "updateDetail": "{{sender}} がタスクの詳細を更新しました",
       "get": "{{sender}} がタスクの詳細を表示しました",
       "list": "{{sender}} がタスクリストを表示しました"
-    },
-    "messageHeader": {
-      "running": "{{sender}} が {{recipient}} にメッセージ中",
-      "done": "{{sender}} が {{recipient}} にメッセージ",
-      "failed": "{{sender}} が {{recipient}} にメッセージできませんでした",
-      "broadcastRunning": "{{sender}} が複数の Agent にメッセージ中",
-      "broadcastDone": "{{sender}} が複数の Agent にメッセージ",
-      "broadcastFailed": "{{sender}} が複数の Agent にメッセージできませんでした"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator が他の Agent から送信されたメッセージを読みました"
@@ -2734,9 +2112,6 @@
       "completed": "完了"
     }
   },
-  "manageProject": {
-    "inProject": "{{project}} 内"
-  },
   "manageAgentDef": {
     "action": {
       "create": "作成",
@@ -2751,23 +2126,11 @@
       "get_org": "組織取得"
     }
   },
-  "cursorIde": {
-    "restart": {
-      "title": "ORGII 制御のために Cursor を再起動しますか？",
-      "message": "follow-up が同じ Cursor 会話に届くように、ORGII はリモート制御を有効にして Cursor を再起動する必要があります。Cursor を終了し、--remote-debugging-port=9230 付きで非表示のまま再度開きます。",
-      "okLabel": "Cursor を再起動",
-      "success": "リモート制御を有効にして Cursor を非表示で再起動しました。再試行しています…",
-      "failed": "Cursor の再起動に失敗しました: {{reason}}"
-    }
-  },
   "cards": {
     "openFile": "エディタで開く",
     "openLink": "リンクを開く",
-    "broadcast": "→ 全 Agent",
     "agentMessage": {
       "fallbackTitle": "メッセージ",
-      "accepted": "承認",
-      "rejected": "却下",
       "empty": "(メッセージ本文なし)",
       "status": {
         "sending": "送信中…",
@@ -2789,44 +2152,25 @@
       },
       "emailBubble": {
         "noSubject": "(件名なし)",
-        "expand": "メッセージ全文を表示",
-        "collapse": "メッセージを隠す",
         "userInbox": "ユーザー受信箱",
         "currentChannel": "現在のチャンネル",
-        "subagentMessages": "Subagent メッセージ",
-        "readMessagesFromSubagents": "{{agent}} が subagent メッセージを読みました"
+        "subagentMessages": "Subagent メッセージ"
       }
     },
     "actions": {
       "moreOpenOptions": "その他の開くオプション",
       "openAsPullRequest": "PR タブ",
       "openAsWebPage": "ウェブページ",
-      "openInApp": "アプリ内で開く",
-      "openWithDefaultBrowser": "既定のブラウザで開く",
-      "revealInFinder": "Finder に表示",
-      "revealInExplorer": "Explorer に表示",
-      "revealInFileManager": "ファイルマネージャーに表示"
+      "openWithDefaultBrowser": "既定のブラウザで開く"
     },
     "url": {
-      "open": "開く",
-      "changesCount": "{{count}} 件の変更",
       "copyUrl": "URL をコピー",
       "copied": "URL をコピーしました",
       "openExternalFailed": "既定のブラウザで URL を開けませんでした",
-      "openPullRequestFailed": "Pull Request タブを開けませんでした",
-      "groupTitle": "Web ページ"
+      "openPullRequestFailed": "Pull Request タブを開けませんでした"
     },
     "path": {
-      "open": "開く",
-      "copyPath": "パスをコピー",
-      "copied": "パスをコピーしました",
-      "copyFailed": "パスをコピーできませんでした",
       "openFailed": "パスを開けませんでした",
-      "revealFailed": "ファイルマネージャーにパスを表示できませんでした",
-      "name": "名前",
-      "type": "種類",
-      "directory": "ディレクトリ",
-      "file": "ファイル",
       "emptyDirectory": "空のディレクトリ"
     }
   },
@@ -2847,10 +2191,6 @@
     "titleA2ui": "Agent プレビュー",
     "reload": "再読み込み",
     "openExternal": "ブラウザで開く",
-    "expand": "拡大",
-    "shrink": "縮小",
-    "close": "閉じる",
-    "summarize": "Agent で要約",
     "waiting": "コンテンツを待機中…",
     "empty": "コンテンツなし"
   },

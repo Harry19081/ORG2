@@ -6,7 +6,6 @@
     "today": "Bugün",
     "everyone": "Herkes",
     "activeMembers": "Aktif üyeler",
-    "systemsCurrent": "{{total}} sistemin {{current}} tanesi güncel",
     "usageByAgent": "Aracıya göre kullanım",
     "recentSessions": "Son paylaşılan oturumlar",
     "recentLoading": "Paylaşılan oturumlar yükleniyor…",
@@ -71,10 +70,6 @@
     "appVersion": "ORGII sürümü",
     "totalSessions": "Toplam oturum",
     "lastSynced": "Son eşitleme"
-  },
-  "selfService": {
-    "hint": "Paylaşım açıkken kendi çalışma zamanınız bu çalışma alanıla paylaşılır.",
-    "action": "Paylaşımı durdur ve verilerimi kaldır"
   },
   "orgSettings": {
     "label": "Ekip çalışma zamanı paylaşımı",

@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "開発記録",
     "workItems": "作業項目",
     "codeSearch": "コード検索",
     "dbManager": "DBマネージャー",
@@ -46,9 +45,6 @@
     "diff": "Diff",
     "colleagues": "同僚",
     "terminals": "ターミナル"
-  },
-  "trajectoryPanel": {
-    "title": "トラジェクトリ"
   },
   "routes": {
     "session": "チャット",
@@ -185,30 +181,8 @@
       "dismiss": "ガイドを閉じる"
     }
   },
-  "myRole": {
-    "tabs": {
-      "status": "自分のステータス"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "その他"
-    },
-    "searchPlaceholder": "ワークスペースを検索...",
-    "emptyTitle": "ワークスペースがありません",
-    "emptyDescription": "リポジトリを追加して始めましょう",
-    "emptyWorkspaces": "一致するワークスペースがありません",
-    "myRepos": "マイリポジトリ",
-    "myMultiRepoWorkspaces": "マルチリポ Workspaces",
-    "dashboard": "ダッシュボード",
     "myWorkspaces": "マイ Workspaces",
-    "workspaces": "ワークスペース",
-    "dashboardTitle": "ワークスペース",
-    "dashboardSubtitle": "ワークスペースを選んで起動または確認",
-    "addRepo": "Workspaceを追加",
-    "activeBadge": "アクティブ",
-    "exploreTitle": "探索",
-    "exploreDescription": "テンプレートと公開リポジトリを発見（近日公開）",
     "preview": {
       "repoType": "Project タイプ",
       "tools": "ツール",
@@ -217,11 +191,7 @@
       "statusNotAnalyzed": "未分析",
       "statusReady": "準備完了",
       "statusParamsMissing": "パラメータ不足",
-      "statusNoEnvConfig": "Env 設定不要",
-      "setupWithAI": "アプリ化",
-      "trustRepo": "このリポジトリを信頼する",
-      "launchpadPlaceholder": "この実行の追加指示...",
-      "launchpadLaunch": "起動"
+      "statusNoEnvConfig": "Env 設定不要"
     },
     "containers": {
       "title": "Containers",
@@ -230,8 +200,6 @@
       "emptySubtitle": "Docker Desktop、Colima、または Rancher Desktop を起動して更新すると、ローカル Container が表示されます。",
       "repoEmptyTitle": "この Repo の Container はありません",
       "repoEmptySubtitle": "Container は Docker Compose の作業ディレクトリ label またはこの Repo 内の bind mount で照合されます。",
-      "repoNoDockerTitle": "Docker 設定が検出されません",
-      "repoNoDockerSubtitle": "Dockerfile または docker-compose ファイルを追加すると、この Repo に Container を関連付けられます。",
       "dockerUnavailable": "Docker を利用できません",
       "name": "名前",
       "image": "Image",
@@ -267,15 +235,9 @@
       "categoryBuild": "ビルド",
       "categoryTest": "テスト",
       "categoryLint": "Lint & フォーマット",
-      "categoryOther": "その他",
-      "noScripts": "スクリプトが見つかりません",
-      "noScriptsHint": "package.json、Makefile などの設定を追加してください",
-      "run": "実行",
-      "launched": "{{name}} を実行中",
-      "launchFailed": "スクリプトの起動に失敗しました"
+      "categoryOther": "その他"
     },
     "detail": {
-      "title": "Repo 詳細",
       "path": "パス",
       "envVarsTitle": "環境変数",
       "envKey": "キー",
@@ -292,16 +254,10 @@
       "scriptName": "名前",
       "scriptCommand": "コマンド",
       "scriptCategory": "カテゴリ",
-      "scriptSource": "ソース",
       "scriptNamePlaceholder": "スクリプト名",
       "searchScripts": "スクリプトを検索…",
       "noScripts": "スクリプトが見つかりません",
       "addScript": "スクリプトを追加",
-      "sourceCustom": "カスタム",
-      "sourceDiscovered": "検出済み",
-      "analysisTitle": "分析",
-      "clearAnalysis": "分析をクリア",
-      "clearAnalysisHint": "分析キャッシュをリセットし、次回訪問時に再スキャン",
       "analysisCleared": "分析がクリアされました"
     },
     "containerEngines": {
@@ -326,15 +282,11 @@
       "switchToRepo": "開く",
       "startSession": "セッションを開始",
       "openDetails": "詳細を表示",
-      "locateInFinder": "Finder で表示",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Workspace を追加"
-  },
-  "explore": {
-    "title": "探す"
   },
   "workstation": {
     "agentComputer": {
@@ -352,7 +304,6 @@
       "title": "新しいタブ",
       "searchFile": "ファイルを検索",
       "searchSessions": "カンバン",
-      "newBrowserTab": "新しいブラウザタブ",
       "newPrivateBrowserTab": "新しいプライベートブラウザタブ",
       "workItems": "作業項目",
       "projects": "プロジェクト",
@@ -370,8 +321,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "招待リンクまたはコード",
     "inviteCodePlaceholder": "orgii:// 招待リンクまたは招待コードを貼り付け",
-    "copyInvite": "招待をコピー",
-    "copiedInvite": "コピー済み",
     "setupMode": "セットアップモード",
     "manageOrg": "ワークスペースを管理",
     "session": {
@@ -390,7 +339,6 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -405,16 +353,10 @@
     "forkImported": {
       "headerButton": "フォーク",
       "headerTooltip": "このインポート済みセッションを自分の書き込み可能なセッションとしてフォークします",
-      "confirmTitle": "フォークして続行しますか？",
-      "confirmBody": "これは {{name}} さんのセッションです。あなたのコピーは読み取り専用のインポートです。続行すると自分のセッションとしてフォークされ、メッセージはそちらに送信されます。",
-      "confirm": "フォークして続行",
-      "cancel": "キャンセル",
       "retentionError": "このセッションはプランのリプレイ保持期間外です。フォークするにはアップグレードしてください",
       "goneError": "この共有セッションは利用できなくなりました（削除または期限切れ）",
       "error": "セッションのフォークに失敗しました",
-      "sendFailed": "フォークしましたが、メッセージの送信に失敗しました。内容は入力欄に復元されました",
       "forkedChipTooltip": "{{name}} さんからフォーク",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -428,8 +370,7 @@
       "notInstalled": "{{agent}} はこのマシンにインストールされていません",
       "missingWorkspace": "セッションの元のフォルダが存在しません — {{agent}} は元のフォルダからのみ再開できます",
       "sourceMissing": "元のセッションデータがディスク上に見つかりません",
-      "launchFailed": "{{agent}} ターミナルの起動に失敗しました",
-      "composerPlaceholder": "メッセージを送って新しいセッションで続行…"
+      "launchFailed": "{{agent}} ターミナルの起動に失敗しました"
     },
     "openInApp": {
       "headerButton": "{{app}} で開く",
@@ -439,13 +380,11 @@
     }
   },
   "cloud": {
-    "title": "ORG2 クラウド",
     "signIn": "ログイン",
     "signOut": "ログアウト",
     "signedInAs": "{{name}} としてログイン中",
     "signedInToast": "ORG2 クラウドにサインインしました",
     "sessionExpired": "ORG2 Cloud のセッションが期限切れです。続行するには再度サインインしてください。",
-    "recommendedDesc": "マネージドなセッション共有、リプレイ保存、チーム権限、安全な共有リンク。Supabase のセットアップは不要です。Auth、データベースマイグレーション、RLS ポリシー、課金、保持期間、クォータ、バックエンドのアップグレードは ORG2 が管理します",
     "customEndpoint": {
       "title": "カスタム ORG2 Cloud バックエンド",
       "toggleDesc": "自分でデプロイした ORG2 Cloud を使用",
@@ -542,7 +481,6 @@
     "sidebar": {
       "teamSessions": "チームセッション",
       "mySessions": "自分のセッション",
-      "memberFilter": "メンバーで絞り込み",
       "sessionFilter": "セッションを絞り込み",
       "copyUrl": "URLをコピー",
       "directlySharedWithMe": "自分に直接共有",
@@ -668,14 +606,11 @@
         "confirm": "参加",
         "cancel": "後で",
         "signInFirst": "この招待を受け入れるには ORG2 Cloud にサインインしてください——招待は保留されます。",
-        "openSettings": "サインイン設定を開く",
-        "joinedToast": "{{org}} に参加しました",
-        "joinedFallbackToast": "クラウドワークスペースに参加しました"
+        "joinedToast": "{{org}} に参加しました"
       },
       "create": {
         "sourceCloud": "クラウド",
         "signInFirst": "マネージドワークスペースを作成・参加するには ORG2 Cloud にサインインしてください。",
-        "openSettings": "サインイン設定を開く",
         "createdToast": "クラウドワークスペースを作成しました"
       },
       "errors": {
@@ -734,7 +669,6 @@
       "importEntry": "セッションをインポート",
       "importDialogTitle": "共有セッションをインポート",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "クリップボードから貼り付け",
       "importSubmit": "インポート",
       "importInvalidInput": "有効な共有リンクまたはトークンではないようです。",
       "selectAll": "全員（{{count}}）",
@@ -747,53 +681,9 @@
       "incomingRetry": "再試行"
     },
     "comments": {
-      "task": {
-        "assignFailed": "コメントは投稿されましたが、エージェントの割り当てに失敗しました — スレッドから再試行してください",
-        "assignUnavailableHere": "コメントは投稿されました — このビューではエージェントの割り当ては利用できません",
-        "addressingChip": "対応中のコメント:「{{excerpt}}」",
-        "addressingChipGeneric": "コメントに対応中",
-        "addressingChipTooltip": "元セッションのコメントスレッドに対応するためにフォークされました",
-        "mentionSuggestion": "このコメントをエージェントに割り当てる"
-      },
-      "toggleLabel": "コメント",
-      "notesButton": "セッションノート",
-      "notesTitle": "セッションノート",
-      "empty": "コメントはまだありません",
-      "loadError": "コメントを読み込めませんでした",
-      "addPlaceholder": "コメントを追加…",
-      "replyPlaceholder": "返信…",
-      "send": "投稿",
-      "reply": "返信",
-      "edit": "編集",
-      "save": "保存",
-      "cancel": "キャンセル",
-      "delete": "削除",
-      "resolve": "解決済みにする",
-      "unresolve": "再オープン",
-      "resolved": "解決済み",
-      "statusActive": "対応中",
-      "wontFix": "修正しない",
-      "agentAddressing": "エージェントが対応中…",
-      "resolvedToggle": "解決済み（{{count}}）",
-      "deletedComment": "コメントは削除されました",
-      "editedMarker": "編集済み",
-      "earlierVersion": "このセッションの以前のバージョンより",
-      "replayRequired": "ターンへのコメントには完全リプレイ権限が必要です",
-      "addError": "投稿できませんでした — 下書きは保持されています",
       "actionError": "操作に失敗しました。もう一度お試しください",
       "unresolvedBadge_one": "未解決のコメント {{count}} 件",
-      "unresolvedBadge": "未解決のコメント {{count}} 件",
-      "addressButton": "コメントに対応",
-      "addressPill_one": "{{count}} 件のコメントに対応",
-      "addressPill_other": "{{count}} 件のコメントに対応",
-      "addressSelectAll": "すべて選択",
-      "addressConfirm_one": "{{count}} 件のコメントに対応",
-      "addressConfirm_other": "{{count}} 件のコメントに対応",
-      "agentAuthor": "エージェント @{{name}}",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "mentionMembers": "メンバーをメンション",
-      "searchMembers": "メンバーを検索"
+      "unresolvedBadge": "未解決のコメント {{count}} 件"
     },
     "sharingFloor": {
       "label": "最小共有レベル",
@@ -849,7 +739,6 @@
         "nameLabel": "名前",
         "namePlaceholder": "例: code-review",
         "topicLabel": "トピック",
-        "topicOptional": "（任意）",
         "topicPlaceholder": "このチャンネルの目的は？",
         "visibilityLabel": "公開範囲",
         "publicTitle": "パブリック",
@@ -911,7 +800,6 @@
         "today": "今日",
         "yesterday": "昨日",
         "you": "あなた",
-        "memberCount": "メンバー {{memberCount}} 人",
         "emptyTitle": "ここが #{{name}} の始まりです",
         "emptySubtitle": "最初のメッセージを送って会話を始めましょう",
         "missingTitle": "チャンネルは利用できません",
@@ -924,15 +812,7 @@
         "errorQuota": "このチャンネルはこの端末でのメッセージ上限に達しました",
         "errorGeneric": "メッセージを送信できませんでした。もう一度お試しください。",
         "dropSessionHint": "ドロップしてこのセッションを参照として追加",
-        "messageBodyLabel": "チャンネルメッセージ",
-        "sessionCardMissing": "このデバイスでは利用できません",
         "sessionCardOpen": "セッション {{name}} を開く",
-        "workItemCardMissing": "このデバイスでは利用できません",
-        "workItemCardLoading": "読み込み中…",
-        "workItemCardOpen": "作業項目 {{name}} を開く",
-        "githubCardOpen": "{{name}} を GitHub で開く",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull request",
         "archivedComposerDisabled": "このチャンネルはアーカイブされています。投稿するにはアーカイブを解除してください。",
         "errorPostForbidden": "このチャンネルに投稿できるのはチャンネル管理者のみです",
         "errorArchived": "このチャンネルはアーカイブ済みのため投稿できません",

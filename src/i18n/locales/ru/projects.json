@@ -1,6 +1,5 @@
 {
   "projects": {
-    "searchPlaceholder": "Поиск Projects...",
     "loading": "Загрузка Projects...",
     "emptyState": "Projectов пока нет",
     "emptyStateSubtitle": "Создайте первый Project, чтобы начать",
@@ -8,11 +7,9 @@
     "noResults": "Projects не найдены",
     "dashboardTitle": "Projects",
     "groupBy": {
-      "org": "По рабочему пространству",
       "project": "По проекту",
       "status": "По статусу",
       "priority": "По приоритету",
-      "person": "По человеку",
       "assignedTo": "Назначено",
       "createdBy": "Создано",
       "targetDate": "По целевой дате",
@@ -29,44 +26,17 @@
       "later": "Позже",
       "noTargetDate": "Нет целевой даты"
     },
-    "allProjects": "Все проекты",
-    "otherRepos": "Другие репозитории",
-    "noOtherRepos": "Нет других репозиториев с Projectми",
-    "personalWorkspace": "Personal Workspace",
-    "personalEmpty": "Пока нет личных Projects",
-    "addProject": "Добавить Project",
-    "repoFallback": "Repo",
     "loadProjectsFailed": "Не удалось загрузить Projects",
-    "deleteProject": "Удалить Project",
     "createProject": "Создать Project",
     "createMore": "Создавать ещё",
     "newProject": "Новый Project",
     "columns": {
-      "name": "Название",
       "workItems": "Рабочие элементы"
-    },
-    "viewModes": {
-      "list": "Список",
-      "settings": "Настройки"
-    },
-    "syncMethod": {
-      "title": "Метод синхронизации",
-      "storage": "Хранилище",
-      "git": "Git (через .orgii)"
-    },
-    "errors": {
-      "initFailed": "Не удалось инициализировать хранилище Project: {{error}}"
     },
     "editor": {
       "titlePlaceholder": "Название нового Project",
       "summaryPlaceholder": "Добавьте краткое описание...",
       "descriptionPlaceholder": "Напишите описание, краткое изложение Project или соберите идеи..."
-    },
-    "tooltips": {
-      "dashboard": "Панель",
-      "filter": "Фильтр",
-      "selectPeople": "Выбрать участников",
-      "searchPeople": "Поиск участников..."
     },
     "priorityGroups": {
       "unprioritized": "Без приоритета"
@@ -76,9 +46,6 @@
   "githubIssuesImport": {
     "title": "Импорт GitHub Issues",
     "menuLabel": "Импорт GitHub Issues",
-    "createTarget": "GitHub Issues Project",
-    "heading": "Создать Project из GitHub Issues",
-    "description": "Выберите репозиторий GitHub, создайте ORGII Project и синхронизируйте GitHub Issues как work items.",
     "importButton": "Импортировать GitHub Issues",
     "projectDescription": "GitHub Issues · {{owner}}/{{repo}}",
     "fields": {
@@ -97,38 +64,20 @@
     "linkedRepoHint": "Этот Project также будет связан с текущим Workspace repo: {{repoName}}",
     "errors": {
       "invalidRepo": "Используйте owner/repo или URL репозитория GitHub."
-    },
-    "importStatus": {
-      "title": "Статус импорта",
-      "state": {
-        "pending": "Ожидание",
-        "running": "Выполняется",
-        "completed": "Завершено",
-        "failed": "Ошибка",
-        "cancelled": "Отменено"
-      }
     }
   },
   "orgs": {
     "yourOrgs": "Ваши рабочие пространства",
-    "sectionTitle": "Рабочие пространства",
     "recentProjects": "Недавние проекты",
     "personalOrg": "Моё рабочее пространство",
     "linearOrg": "Рабочее пространство Linear",
     "noLinearOrgs": "Подключенных рабочих пространств пока нет",
     "sources": {
       "local": "Local",
-      "cloud": "Cloud",
-      "linear": "Linear"
+      "cloud": "Cloud"
     },
     "addOrg": "Добавить рабочее пространство",
-    "importOrgs": "Импортировать рабочие пространства",
     "importLinearOrgs": "Импортировать рабочие пространства Linear",
-    "createOrg": "Создать рабочее пространство",
-    "createOrgHint": "Создайте нативное рабочее пространство ORGII, чтобы группировать проекты и work items отдельно от Linear.",
-    "createOrgFailed": "Не удалось создать рабочее пространство",
-    "orgName": "Название рабочего пространства",
-    "orgNamePlaceholder": "Команда платформы",
     "gitFolderPath": "Путь к папке Git (необязательно)",
     "gitFolderPathPlaceholder": "/path/to/repo",
     "gitFolderPathHint": "Свяжите это рабочее пространство с существующим рабочим деревом Git для синхронизации папки.",
@@ -136,14 +85,8 @@
     "gitFolderSynced": "Синхронизируется с папкой Git",
     "pendingSync": "Ожидает синхронизации",
     "management": {
-      "breadcrumb": "Настройки рабочего пространства",
       "overview": "Обзор",
-      "profile": "Профиль",
       "syncMethods": "Методы синхронизации",
-      "orgNameDescription": "Отображаемое имя этого рабочего пространства",
-      "orgKey": "Ключ рабочего пространства",
-      "orgKeyDescription": "Стабильный короткий ключ для ID проектов в рамках рабочего пространства",
-      "projectCountDescription": "Нативные проекты, сейчас назначенные этому рабочему пространству",
       "gitFolderSync": "Синхронизация папки Git",
       "gitFolderSyncDescription": "Зеркалирует проекты и work items этого рабочего пространства через Git worktree",
       "notConfigured": "Не настроено",
@@ -174,28 +117,20 @@
     "targetDate": "Целевая дата",
     "repos": "Репо",
     "completion": "Выполнение",
-    "statusBreakdown": "Распределение статусов",
     "addLead": "Добавить руководителя",
     "noLead": "Нет руководителя",
     "addMembers": "Добавить участников",
     "addTeams": "Добавить команды",
     "addLabels": "Добавить метки",
     "addRepos": "Привязать репо",
-    "searchRepos": "Поиск репо...",
     "noReposHint": "Нет доступных репо. Сначала добавьте репо в рабочее пространство.",
     "addDate": "Добавить дату",
     "clearDate": "Очистить дату",
     "noStatus": "Нет статуса",
     "noUpdates": "Нет обновлений",
     "noPriority": "Нет приоритета",
-    "searchMembers": "Поиск участников...",
     "searchAssignee": "Поиск исполнителя...",
-    "searchTeams": "Поиск команд...",
     "noTeamsHint": "Команд пока нет. Добавьте участников в Project и организуйте их в команды",
-    "searchLabels": "Поиск меток...",
-    "searchStatus": "Поиск статуса...",
-    "searchHealth": "Поиск состояния...",
-    "searchPriority": "Поиск приоритета...",
     "memberCount_one": "{{count}} участник",
     "memberCount_other": "{{count}} участников",
     "statusOptions": {
@@ -216,8 +151,7 @@
       "onTrack": "По плану",
       "atRisk": "Под угрозой",
       "offTrack": "Отклонение"
-    },
-    "noProjectSelected": "Project не выбран"
+    }
   },
   "workItems": {
     "label": "Work items",
@@ -233,22 +167,6 @@
     "newWorkItem": "Новый Work Item",
     "newWorkItemName": "Новый Work Item",
     "createWorkItem": "Создать Work Item",
-    "createModes": {
-      "generateWithAi": "Создать с AI",
-      "generateWithAgent": "Создать с Agent",
-      "manualCreation": "Ручное создание",
-      "sessionCreatorPrompt": {
-        "promptNameQuestion": "Сначала спроси пользователя, хочет ли он указать конкретное имя Work Item.",
-        "promptInstruction": "Создай Work Items для этого проекта.",
-        "promptProject": "Проект: {{project}}",
-        "promptDraftTitle": "Запрошенное имя Work Item: {{title}}",
-        "promptDraftDetails": "Детали черновика:\n{{details}}"
-      }
-    },
-    "linkExisting": {
-      "label": "Связать существующий Work Item",
-      "placeholder": "Выберите Work Item для связи"
-    },
     "titlePlaceholder": "Название Work Item",
     "descriptionPlaceholder": "Описание Work Item...",
     "deleteWorkItem": "Удалить рабочий элемент",
@@ -257,8 +175,7 @@
     "showProperties": "Показать свойства",
     "addStatusItem": "Добавить элемент {{status}}",
     "deleteBin": {
-      "title": "Корзина",
-      "subtitle": "Можно восстановить в течение 7 дней"
+      "title": "Корзина"
     },
     "tabs": {
       "overview": "Обзор",
@@ -298,21 +215,9 @@
       "medium": "Средний",
       "low": "Низкий"
     },
-    "toolLabels": {
-      "edit": "изменить",
-      "new": "новый",
-      "patch": "патч"
-    },
     "overview": {
       "projectNamePlaceholder": "Название Project",
-      "descriptionPlaceholder": "Напишите описание Project...",
-      "stats": "Статистика",
-      "totalItems": "Всего",
-      "completionRate": "Процент выполнения",
-      "recentUpdates": "Последние обновления",
-      "name": "Название",
-      "assignee": "Ответственный",
-      "lastUpdated": "Обновлено"
+      "descriptionPlaceholder": "Напишите описание Project..."
     },
     "properties": {
       "title": "Свойства рабочего элемента",
@@ -321,8 +226,6 @@
       "noAssignee": "Не назначен",
       "noMembersHint": "Нет участников. Перейдите в Settings > Members для синхронизации из git",
       "noProject": "Нет связанного Project",
-      "selectProject": "Выберите Project",
-      "noProjectsHint": "Нет доступных Projects.",
       "noMilestone": "Нет этапа",
       "noDueDate": "Нет срока",
       "noDueDay": "Нет дня срока",
@@ -343,7 +246,6 @@
       "inHours_other": "Через {{count}} часов",
       "inLessThanHour": "Менее 1 часа",
       "searchProjects": "Поиск Projects...",
-      "searchMilestones": "Поиск этапов...",
       "delegations": "Делегирования",
       "delegationsCompleted": "завершено",
       "daysAgo": "{{count}} дней назад",
@@ -352,11 +254,7 @@
       "inHours": "через {{count}} часов",
       "membersGroup": "Участники"
     },
-    "history": {
-      "noHistory": "История пока пуста"
-    },
     "activity": {
-      "title": "Активность",
       "discussionTitle": "Обсуждение",
       "activityHistory": "История активности",
       "activityHistoryCount": "{{count}} событий",
@@ -364,17 +262,12 @@
       "subscribe": "Подписаться",
       "unsubscribe": "Отписаться",
       "commentPlaceholder": "Оставить комментарий...",
-      "you": "Вы",
       "createdWorkItem": "создал задачу",
       "deletedWorkItem": "удалил задачу",
       "restoredWorkItem": "восстановил задачу",
       "movedFromTo": "переместил из {{from}} в {{to}}",
       "commented": "прокомментировал",
       "system": "Система",
-      "wasAssigned": "был назначен",
-      "wasUnassigned": "был снят с назначения",
-      "addedLabel": "добавил метку",
-      "removedLabel": "удалил метку",
       "madeChange": "внёс изменение",
       "changedField": "изменил {{field}} с {{from}} на {{to}}",
       "changedFieldShort": "обновил {{field}}",
@@ -392,10 +285,6 @@
       "todoMarkedPending": "пометил «{{todo}}» как ожидающее",
       "todoRenamed": "переименовал «{{from}}» в «{{to}}»",
       "todoUpdated": "обновил «{{todo}}»",
-      "justNow": "только что",
-      "daysAgo": "{{count}}д назад",
-      "hoursAgo": "{{count}}ч назад",
-      "minutesAgo": "{{count}}м назад",
       "agent": "Agent",
       "fields": {
         "title": "название",
@@ -429,8 +318,6 @@
       "milestone": "Веха",
       "setDueDate": "Установить срок",
       "rename": "Переименовать...",
-      "addLink": "Добавить ссылку...",
-      "favorite": "Избранное",
       "moreProperties": "Больше свойств"
     },
     "propertyFields": {
@@ -441,63 +328,10 @@
     },
     "addWorkItem": "Добавить рабочий элемент",
     "agentWorkflow": {
-      "title": "Agent Workflow",
-      "running": "Выполняется...",
-      "completed": "Завершено",
-      "failed": "Ошибка",
-      "interrupted": "Прервано",
-      "retry": "Повторить",
-      "resume": "Возобновить",
-      "openSession": "Открыть сессию",
-      "viewLiveChat": "Смотреть Chat в реальном времени",
-      "viewConversation": "Просмотреть разговор",
-      "noWorkflowRun": "Agent Workflow ещё не запускался",
-      "confirmStart": "Запустить SDE Agent для этой задачи?",
-      "sdePhase": "SDE Разработка",
-      "totalCost": "Общая стоимость",
-      "totalTokens": "Всего Token",
-      "proofOfWork": "Результат работы",
-      "branch": "Ветка",
-      "pullRequest": "Pull Request",
-      "filesChanged": "Изменённые файлы",
-      "linesAdded": "Добавленные строки",
-      "linesRemoved": "Удалённые строки",
-      "approved": "Одобрено",
-      "changesRequested": "Запрошены изменения",
-      "inconclusive": "Неопределённо",
-      "failedError": "Сессия завершилась с ошибкой",
-      "retryWithContext": "Повторить с контекстом предыдущей ошибки",
-      "interruptedMessage": "Workflow был прерван при закрытии приложения",
-      "selectAccount": "Выбрать code account",
-      "noAccountsReady": "Нет доступных локальных аккаунтов",
-      "sessionOutput": "Вывод сессии",
-      "noOutputYet": "Вывод пока отсутствует",
-      "cycles": "{{count}} циклов",
-      "whatNext": "Что вы хотите сделать?",
-      "acceptAsIs": "Принять Как Есть",
-      "fixAndRerun": "Исправить и Перезапустить",
-      "roleSde": "SDE",
-      "roleReview": "Review",
-      "roleFollowUp": "Follow-up",
-      "roleAssistant": "Assistant",
-      "roleUser": "User",
       "statusRunning": "Выполняется",
       "statusCompleted": "Завершено",
       "statusFailed": "Ошибка",
-      "statusCancelled": "Отменено",
-      "sessionFiles": "Файлы",
-      "noFilesModified": "Нет изменённых файлов",
-      "subAgents": "Sub-Agents",
-      "subAgentSpawn": "Запуск {{name}} #{{instance}}",
-      "subAgentComplete": "{{name}} #{{instance}} завершён",
-      "subAgentFailed": "{{name}} #{{instance}} не удалось",
-      "tokens": "Token",
-      "subAgentDefault": "Sub-Agent",
-      "toolResult": "результат {{tool}}",
-      "collabLockRunning": "{{name}} is running",
-      "collabLockHeld": "{{name}}'s agent is already working on this item",
-      "collabLockConflict": "Another member just started an agent on this item",
-      "collabLockUnresolved": "Could not verify this work item's collaboration status. Check your connection and try again."
+      "statusCancelled": "Отменено"
     },
     "changedFiles": {
       "title": "Изменённые Файлы",
@@ -510,15 +344,10 @@
       "notAuthenticated": "Не авторизован. Пожалуйста, войдите на маркетплейс.",
       "noRepoPath": "Путь к репозиторию недоступен",
       "noOriginRemote": "Remote origin не найден в репозитории",
-      "cannotParseRepoName": "Не удалось извлечь имя репозитория из: {{url}}",
-      "defaultPrTitle": "[{{shortId}}] Изменения work item"
+      "cannotParseRepoName": "Не удалось извлечь имя репозитория из: {{url}}"
     },
     "sessions": {
-      "linkedSessions": "Связанные Sessions",
-      "newSession": "Новая сессия",
-      "starting": "Запуск...",
-      "emptyOverview": "Sessions пока нет",
-      "emptyOverviewHint": "Запустите Agent Session, чтобы отслеживать выполнение здесь."
+      "emptyOverview": "Sessions пока нет"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -532,14 +361,12 @@
       "prMerged": "Merged",
       "prClosed": "Closed",
       "prDraft": "Draft",
-      "openPr": "Открыть PR",
       "changedFilesSection": "Changed Files",
       "fileDiffClean": "Нет изменений файлов",
       "fileDiffCleanHint": "Изменения файлов не обнаружены.",
       "costSummary": "Итого по затратам",
       "totalCost": "Итого",
-      "tokens": "Token",
-      "cycles": "циклов"
+      "tokens": "Token"
     },
     "viewWorkItems": "Смотреть Work Items",
     "fromRoutine": "From routine: {{name}}",
@@ -573,41 +400,24 @@
     "githubUsernameDesc": "Сопоставляет вашу личность в списках участников при связывании",
     "profileNotFound": "Не удалось сопоставить вашу личность с участниками команды",
     "profileNotFoundHint": "Ваш git email ({{email}}) не найден в списке участников. Синхронизируйте участников для обновления",
-    "teamMembers": "Участники команды",
-    "memberCount": "{{active}} из {{total}} активных",
-    "activeBadge": "Активен",
-    "inactiveBadge": "Неактивен",
-    "activateMember": "Активировать участника",
-    "deactivateMember": "Деактивировать участника",
-    "syncFromGit": "Синхронизировать из Git",
-    "membersDescription": "Управление участниками команды. Неактивные участники не будут отображаться в выпадающих списках назначения",
     "activeMembers": "Текущие",
     "activeMembersDescription": "Участники, отображаемые в выпадающих списках назначения и отчётах",
     "inactiveMembers": "Неактивные",
     "inactiveMembersDescription": "Скрыты из выпадающих списков. Активируйте повторно для включения",
     "noActiveMembers": "Нет активных участников",
-    "repoTab": "Repo",
-    "projectTab": "Project",
     "workItemIdTitle": "ID рабочего элемента",
     "workItemIdPrefix": "Префикс ID",
     "workItemIdPrefixDescription": "1–3 буквы или цифры. Новые ID используют этот префикс",
     "customPrefix": "Пользовательский префикс",
-    "customPrefixDescription": "Если выключено, префикс автоматически создаётся из первых 3 символов названия Project",
     "customPrefixCurrentValue": "Текущее значение: {{value}}",
-    "manageInRepoSettings": "Управление в настройках Repo",
-    "projectMemberList": "Участники Project",
     "projectMemberListDescription": "Выберите, какие участники Repo принадлежат этому Projectу",
     "labelsDescription": "Управление метками для категоризации рабочих элементов",
-    "addLabel": "Добавить метку",
     "noLabels": "Нажмите + чтобы добавить метку",
-    "deleteLabel": "Удалить метку",
-    "changeColor": "Изменить цвет",
     "labelNamePlaceholder": "Название метки...",
     "memberRecentlyActive": "Активен",
     "claimIdentityCombineStats": "Объединить данные активности",
     "claimIdentityShowAsAuthor": "Отображать вас как автора в истории рабочих элементов",
     "dangerZone": "Опасная зона",
-    "dangerZoneDescription": "Необратимые действия для этого Project",
     "deleteProject": "Удалить этот Project",
     "deleteProjectWarning": "Это навсегда удалит папку Project и все рабочие элементы из .orgii. Это действие нельзя отменить",
     "deleteThisProject": "Удалить этот Project...",
@@ -627,7 +437,6 @@
     "claimIdentityLinkEmail": "Link this email to your profile",
     "claimIdentityWarning": "Only claim identities that belong to you",
     "confirmClaim": "Confirm Claim",
-    "alreadyClaimed": "Already linked to another member",
     "sidebarSync": "Синхронизация",
     "sync": {
       "title": "Внешняя синхронизация",
@@ -643,41 +452,6 @@
         "title": "Аккаунт",
         "empty": "Нет глобальных аккаунтов синхронизации для этого адаптера",
         "previewNote": "Выберите глобальный аккаунт, который эта Project будет использовать для синхронизации."
-      },
-      "token": {
-        "title": "API Token",
-        "placeholder": "Вставьте ваш персональный Token доступа",
-        "save": "Сохранить Token",
-        "saved": "Token сохранён",
-        "tabs": {
-          "oauth": "OAuth",
-          "personalToken": "Личный Token"
-        },
-        "bothMethodsNote": "Подходит любой способ — побеждает самый последний вход.",
-        "oauth": {
-          "connectButton": "Подключить {{adapter}}",
-          "instructions": "Введите указанный ниже код в открывшейся вкладке браузера и подтвердите доступ.",
-          "userCodeLabel": "Код",
-          "openLinkButton": "Открыть страницу подтверждения",
-          "waitingForConfirmation": "Ожидание подтверждения в браузере…",
-          "cancel": "Отмена",
-          "connected": "Подключено через OAuth",
-          "reconnect": "Переподключить",
-          "codeCopied": "Код скопирован в буфер обмена",
-          "errors": {
-            "startFailed": "Не удалось запустить OAuth: {{error}}",
-            "accessDenied": "OAuth-вход отклонён.",
-            "expired": "Срок действия кода истёк до подтверждения. Попробуйте ещё раз.",
-            "pollFailed": "Ошибка входа: {{detail}}",
-            "unknown": "Непредвиденная ошибка входа: {{error}}"
-          },
-          "browserOpened": "Открываем {{adapter}} в браузере…",
-          "redirect": {
-            "openButton": "Открыть страницу авторизации {{adapter}}",
-            "instructions": "Подтвердите запрос в браузере, чтобы завершить подключение к {{adapter}}.",
-            "expiresAt": "Срок действия ссылки истекает в {{time}}"
-          }
-        }
       },
       "status": {
         "title": "Состояние",
@@ -754,7 +528,6 @@
       },
       "problems": {
         "title": "Неудачные записи",
-        "empty": "Нет неудачных записей.",
         "op": {
           "create": "create",
           "update": "update",
@@ -784,10 +557,6 @@
       },
       "conflicts": {
         "title": "Конфликты синхронизации",
-        "loading": "Загрузка конфликтов…",
-        "empty": "Конфликтов нет.",
-        "openCount_one": "{{count}} открытый конфликт",
-        "openCount_other": "{{count}} открытых конфликтов",
         "detectedAt": "обнаружено {{time}}",
         "resolvedAt": "разрешено {{time}}",
         "fields_one": "{{count}} поле",
@@ -822,7 +591,6 @@
         },
         "errors": {
           "listFailed": "Не удалось загрузить конфликты: {{error}}",
-          "countFailed": "Не удалось загрузить количество конфликтов: {{error}}",
           "useLocalFailed": "Не удалось сохранить локальные значения: {{error}}",
           "useRemoteFailed": "Не удалось принять удалённые значения: {{error}}",
           "dismissFailed": "Не удалось отклонить конфликт: {{error}}"
@@ -869,29 +637,13 @@
     "views": "Views",
     "more": "More"
   },
-  "teams": {
-    "title": "Ваши команды",
-    "localTeams": "Локальные команды",
-    "linearTeams": "Команды Linear",
-    "personalOrg": "Моё рабочее пространство",
-    "agentOrgs": "Команды Agent",
-    "emptyLinearTeams": "Команды Linear не найдены",
-    "empty": "Команды не найдены"
-  },
   "linearProjects": {
-    "title": "Linear Projects",
-    "open": "Open Linear Projects",
-    "subtitle": "Browse and edit Linear Projects in real time without importing them into ORGII.",
-    "refresh": "Refresh",
     "createProject": "Create Project",
-    "archive": "Archive",
-    "searchPlaceholder": "Search Linear Projects...",
     "loadingProjects": "Loading Linear Projects...",
     "loadingIssues": "Loading Linear Issues...",
     "emptyProjects": "No Linear Projects found",
     "emptyIssues": "No Linear Issues in this Project",
     "unknownState": "Unknown state",
-    "updated": "Updated {{date}}",
     "emptyConnections": {
       "title": "No Linear connections",
       "description": "Create a Linear connection in Integrations, then return here to browse Projects directly from Linear."
@@ -900,14 +652,9 @@
       "title": "Select a Linear Project",
       "description": "Choose a Project from the left to view live Linear Issues and edit Project details."
     },
-    "issues": {
-      "title": "Linear Issues",
-      "subtitle": "Issues are read and mutated directly through the Linear API."
-    },
     "forms": {
       "createProjectTitle": "Create Linear Project",
       "projectName": "Project name",
-      "issueTitle": "Issue title",
       "description": "Description"
     },
     "statusPanel": {

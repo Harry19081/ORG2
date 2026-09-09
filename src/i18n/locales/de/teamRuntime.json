@@ -6,7 +6,6 @@
     "today": "Heute",
     "everyone": "Alle",
     "activeMembers": "Aktive Mitglieder",
-    "systemsCurrent": "{{current}} von {{total}} Systemen aktuell",
     "usageByAgent": "Nutzung nach Agent",
     "recentSessions": "Neueste geteilte Sessions",
     "recentLoading": "Geteilte Sessions werden geladen…",
@@ -71,10 +70,6 @@
     "appVersion": "ORGII-Version",
     "totalSessions": "Sitzungen gesamt",
     "lastSynced": "Zuletzt synchronisiert"
-  },
-  "selfService": {
-    "hint": "Solange die Freigabe aktiv ist, wird deine eigene Runtime mit dieses Arbeitsbereichs geteilt.",
-    "action": "Freigabe beenden & meine Daten entfernen"
   },
   "orgSettings": {
     "label": "Team-Runtime-Freigabe",

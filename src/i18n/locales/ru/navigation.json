@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "Журнал разработки",
     "workItems": "Рабочие элементы",
     "codeSearch": "Поиск кода",
     "dbManager": "Менеджер БД",
@@ -46,9 +45,6 @@
     "diff": "Diff",
     "colleagues": "Коллеги",
     "terminals": "Терминалы"
-  },
-  "trajectoryPanel": {
-    "title": "Траектория"
   },
   "routes": {
     "session": "Чат",
@@ -185,30 +181,8 @@
       "dismiss": "Скрыть руководство"
     }
   },
-  "myRole": {
-    "tabs": {
-      "status": "Мой статус"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "Другое"
-    },
-    "searchPlaceholder": "Поиск рабочих областей...",
-    "emptyTitle": "Нет рабочих областей",
-    "emptyDescription": "Добавьте репозиторий, чтобы начать",
-    "emptyWorkspaces": "Нет подходящих рабочих областей",
-    "myRepos": "Мои репозитории",
-    "myMultiRepoWorkspaces": "Мои мульти-репо Workspaces",
-    "dashboard": "Панель управления",
     "myWorkspaces": "Мои рабочие области",
-    "workspaces": "Рабочие области",
-    "dashboardTitle": "Рабочие области",
-    "dashboardSubtitle": "Выберите рабочую область для запуска или просмотра",
-    "addRepo": "Добавить рабочую область",
-    "activeBadge": "Активна",
-    "exploreTitle": "Обзор",
-    "exploreDescription": "Шаблоны и публичные репозитории (скоро)",
     "preview": {
       "repoType": "Тип project",
       "tools": "Инструменты",
@@ -217,11 +191,7 @@
       "statusNotAnalyzed": "Не проанализировано",
       "statusReady": "Готово",
       "statusParamsMissing": "Параметры отсутствуют",
-      "statusNoEnvConfig": "Env не требуется",
-      "setupWithAI": "Превратить в приложение",
-      "trustRepo": "Доверять этому репозиторию",
-      "launchpadPlaceholder": "Дополнительные инструкции для этого запуска...",
-      "launchpadLaunch": "Запустить"
+      "statusNoEnvConfig": "Env не требуется"
     },
     "containers": {
       "title": "Containers",
@@ -230,8 +200,6 @@
       "emptySubtitle": "Запустите Docker Desktop, Colima или Rancher Desktop и обновите список, чтобы увидеть локальные containers.",
       "repoEmptyTitle": "Нет containers для этого repo",
       "repoEmptySubtitle": "Containers сопоставляются по labels рабочего каталога Docker Compose или bind mounts внутри этого repo.",
-      "repoNoDockerTitle": "Конфигурация Docker не обнаружена",
-      "repoNoDockerSubtitle": "Добавьте Dockerfile или файл docker-compose, чтобы связать containers с этим repo.",
       "dockerUnavailable": "Docker недоступен",
       "name": "Имя",
       "image": "Image",
@@ -267,15 +235,9 @@
       "categoryBuild": "Сборка",
       "categoryTest": "Тесты",
       "categoryLint": "Lint и форматирование",
-      "categoryOther": "Другое",
-      "noScripts": "Скрипты не найдены",
-      "noScriptsHint": "Добавьте package.json, Makefile или аналогичный конфиг",
-      "run": "Запустить",
-      "launched": "Запуск {{name}}",
-      "launchFailed": "Не удалось запустить скрипт"
+      "categoryOther": "Другое"
     },
     "detail": {
-      "title": "Подробности Repo",
       "path": "Путь",
       "envVarsTitle": "Переменные окружения",
       "envKey": "Ключ",
@@ -292,16 +254,10 @@
       "scriptName": "Имя",
       "scriptCommand": "Команда",
       "scriptCategory": "Категория",
-      "scriptSource": "Источник",
       "scriptNamePlaceholder": "Имя скрипта",
       "searchScripts": "Поиск скриптов…",
       "noScripts": "Скрипты не найдены",
       "addScript": "Добавить скрипт",
-      "sourceCustom": "Пользовательский",
-      "sourceDiscovered": "Обнаружен",
-      "analysisTitle": "Анализ",
-      "clearAnalysis": "Очистить анализ",
-      "clearAnalysisHint": "Сбросить кэш анализа и повторить сканирование при следующем посещении",
       "analysisCleared": "Анализ очищен"
     },
     "containerEngines": {
@@ -326,15 +282,11 @@
       "switchToRepo": "Открыть",
       "startSession": "Запустить сессию",
       "openDetails": "Показать детали",
-      "locateInFinder": "Показать в Finder",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Добавить workspace"
-  },
-  "explore": {
-    "title": "Обзор"
   },
   "workstation": {
     "agentComputer": {
@@ -352,7 +304,6 @@
       "title": "Новая вкладка",
       "searchFile": "Найти файл",
       "searchSessions": "Канбан-доска",
-      "newBrowserTab": "Новая вкладка браузера",
       "newPrivateBrowserTab": "Новая приватная вкладка браузера",
       "workItems": "Рабочие задачи",
       "projects": "Проекты",
@@ -370,8 +321,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Ссылка или код приглашения",
     "inviteCodePlaceholder": "Вставьте ссылку orgii:// или код приглашения",
-    "copyInvite": "Копировать приглашение",
-    "copiedInvite": "Скопировано",
     "setupMode": "Режим настройки",
     "manageOrg": "Управление рабочим пространством",
     "session": {
@@ -390,7 +339,6 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -405,16 +353,10 @@
     "forkImported": {
       "headerButton": "Форк",
       "headerTooltip": "Сделать форк этой импортированной сессии в собственную редактируемую сессию",
-      "confirmTitle": "Сделать форк и продолжить?",
-      "confirmBody": "Это сессия {{name}} — ваша копия импортирована только для чтения. Продолжение создаст форк как вашу собственную сессию, и сообщение будет отправлено туда.",
-      "confirm": "Форк и продолжить",
-      "cancel": "Отмена",
       "retentionError": "Сессия вне окна воспроизведения вашего тарифа — обновите план, чтобы сделать форк",
       "goneError": "Эта общая сессия больше недоступна (удалена или устарела)",
       "error": "Не удалось сделать форк сессии",
-      "sendFailed": "Форк создан, но сообщение не отправилось — текст восстановлен в поле ввода",
       "forkedChipTooltip": "Форк от {{name}}",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -428,8 +370,7 @@
       "notInstalled": "{{agent}} не установлен на этом компьютере",
       "missingWorkspace": "Исходная папка сессии не найдена — {{agent}} может возобновить её только из этой папки",
       "sourceMissing": "Исходные данные сессии больше не находятся на диске",
-      "launchFailed": "Не удалось открыть терминал {{agent}}",
-      "composerPlaceholder": "Напишите, чтобы продолжить в новой сессии…"
+      "launchFailed": "Не удалось открыть терминал {{agent}}"
     },
     "openInApp": {
       "headerButton": "Открыть в {{app}}",
@@ -439,13 +380,11 @@
     }
   },
   "cloud": {
-    "title": "ORG2 Cloud",
     "signIn": "Войти",
     "signOut": "Выйти",
     "signedInAs": "Выполнен вход как {{name}}",
     "signedInToast": "Выполнен вход в ORG2 Cloud",
     "sessionExpired": "Сеанс ORG2 Cloud истёк. Войдите снова, чтобы продолжить.",
-    "recommendedDesc": "Управляемое совместное использование сессий, хранение реплеев, командные права и безопасные ссылки. Настройка Supabase не нужна. ORG2 берёт на себя Auth, миграции базы данных, политики RLS, оплату, сроки хранения, квоты и обновления бэкенда",
     "customEndpoint": {
       "title": "Собственный бэкенд ORG2 Cloud",
       "toggleDesc": "Использовать собственное развёртывание ORG2 Cloud",
@@ -542,7 +481,6 @@
     "sidebar": {
       "teamSessions": "Сессии команды",
       "mySessions": "Мои сессии",
-      "memberFilter": "Фильтр по участнику",
       "sessionFilter": "Фильтр сеансов",
       "copyUrl": "Копировать URL",
       "directlySharedWithMe": "Доступ предоставлен лично мне",
@@ -668,14 +606,11 @@
         "confirm": "Присоединиться",
         "cancel": "Не сейчас",
         "signInFirst": "Войдите в ORG2 Cloud, чтобы принять приглашение — оно останется в ожидании.",
-        "openSettings": "Открыть настройки входа",
-        "joinedToast": "Вы присоединились к {{org}}",
-        "joinedFallbackToast": "Вы присоединились к облачному рабочему пространству"
+        "joinedToast": "Вы присоединились к {{org}}"
       },
       "create": {
         "sourceCloud": "Облако",
         "signInFirst": "Войдите в ORG2 Cloud, чтобы создать управляемое рабочее пространство или присоединиться к нему.",
-        "openSettings": "Открыть настройки входа",
         "createdToast": "Облачное рабочее пространство создано"
       },
       "errors": {
@@ -734,7 +669,6 @@
       "importEntry": "Импортировать сессию",
       "importDialogTitle": "Импортировать общую сессию",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "Вставить из буфера обмена",
       "importSubmit": "Импортировать",
       "importInvalidInput": "Это не похоже на действительную ссылку для доступа или токен.",
       "selectAll": "Все ({{count}})",
@@ -747,53 +681,9 @@
       "incomingRetry": "Повторить"
     },
     "comments": {
-      "task": {
-        "assignFailed": "Комментарий опубликован, но назначить агента не удалось — повторите из ветки",
-        "assignUnavailableHere": "Комментарий опубликован — назначение агента недоступно в этом представлении",
-        "addressingChip": "В работе комментарий: «{{excerpt}}»",
-        "addressingChipGeneric": "Работа над комментарием",
-        "addressingChipTooltip": "Форк создан для работы с веткой комментариев исходной сессии",
-        "mentionSuggestion": "Назначить этот комментарий агенту"
-      },
-      "toggleLabel": "Комментарии",
-      "notesButton": "Заметки сессии",
-      "notesTitle": "Заметки сессии",
-      "empty": "Комментариев пока нет",
-      "loadError": "Не удалось загрузить комментарии",
-      "addPlaceholder": "Добавить комментарий…",
-      "replyPlaceholder": "Ответить…",
-      "send": "Отправить",
-      "reply": "Ответить",
-      "edit": "Изменить",
-      "save": "Сохранить",
-      "cancel": "Отмена",
-      "delete": "Удалить",
-      "resolve": "Отметить решённым",
-      "unresolve": "Открыть заново",
-      "resolved": "Решено",
-      "statusActive": "Активно",
-      "wontFix": "Не будет исправлено",
-      "agentAddressing": "Агент работает над этим…",
-      "resolvedToggle": "Решённые ({{count}})",
-      "deletedComment": "Комментарий удалён",
-      "editedMarker": "изменено",
-      "earlierVersion": "Из более ранней версии этой сессии",
-      "replayRequired": "Комментарии к ходам требуют полного доступа к реплею",
-      "addError": "Не удалось отправить — черновик сохранён",
       "actionError": "Действие не выполнено — попробуйте ещё раз",
       "unresolvedBadge_one": "Нерешённых комментариев: {{count}}",
-      "unresolvedBadge": "Нерешённых комментариев: {{count}}",
-      "addressButton": "Обработать комментарии",
-      "addressPill_one": "обработать {{count}} комментарий",
-      "addressPill_other": "обработать {{count}} комментариев",
-      "addressSelectAll": "Выбрать все",
-      "addressConfirm_one": "Обработать {{count}} комментарий",
-      "addressConfirm_other": "Обработать {{count}} комментариев",
-      "agentAuthor": "Агент @{{name}}",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "mentionMembers": "Упомянуть",
-      "searchMembers": "Поиск участников"
+      "unresolvedBadge": "Нерешённых комментариев: {{count}}"
     },
     "sharingFloor": {
       "label": "Минимальный уровень доступа",
@@ -849,7 +739,6 @@
         "nameLabel": "Название",
         "namePlaceholder": "например, code-review",
         "topicLabel": "Тема",
-        "topicOptional": "(необязательно)",
         "topicPlaceholder": "О чём этот канал?",
         "visibilityLabel": "Видимость",
         "publicTitle": "Открытый",
@@ -911,7 +800,6 @@
         "today": "Сегодня",
         "yesterday": "Вчера",
         "you": "Вы",
-        "memberCount": "участников: {{memberCount}}",
         "emptyTitle": "Это начало канала #{{name}}",
         "emptySubtitle": "Отправьте первое сообщение, чтобы начать разговор",
         "missingTitle": "Канал больше недоступен",
@@ -924,15 +812,7 @@
         "errorQuota": "В этом канале на этом устройстве достигнут лимит сообщений",
         "errorGeneric": "Не удалось отправить сообщение. Попробуйте ещё раз.",
         "dropSessionHint": "Отпустите, чтобы добавить эту сессию как ссылку",
-        "messageBodyLabel": "Сообщение канала",
-        "sessionCardMissing": "Недоступно на этом устройстве",
         "sessionCardOpen": "Открыть сессию {{name}}",
-        "workItemCardMissing": "Недоступно на этом устройстве",
-        "workItemCardLoading": "Загрузка…",
-        "workItemCardOpen": "Открыть рабочую задачу {{name}}",
-        "githubCardOpen": "Открыть {{name}} на GitHub",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull request",
         "archivedComposerDisabled": "Этот канал в архиве. Разархивируйте его, чтобы писать.",
         "errorPostForbidden": "Писать в этот канал могут только его менеджеры",
         "errorArchived": "Канал архивирован, поэтому отправка отключена",

@@ -63,22 +63,11 @@
       "title": "New tab",
       "searchFile": "Search file",
       "searchSessions": "Kanban",
-      "newBrowserTab": "New browser tab",
       "newPrivateBrowserTab": "New private browser tab",
       "workItems": "Work items",
       "projects": "Projects",
       "recent": "Recent"
-    },
-    "startPage": {
-      "title": "Start",
-      "subtitle": "Open a tab to get started.",
-      "explorer": "Explorer",
-      "sourceControl": "Source Control",
-      "terminal": "Terminal"
     }
-  },
-  "trajectoryPanel": {
-    "title": "Trajectory"
   },
   "routes": {
     "session": "Chat",
@@ -229,8 +218,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Invite link or code",
     "inviteCodePlaceholder": "Paste an orgii:// invite link or invite code",
-    "copyInvite": "Copy invite",
-    "copiedInvite": "Copied",
     "setupMode": "Setup mode",
     "manageOrg": "Manage workspace",
     "session": {
@@ -249,7 +236,6 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -265,16 +251,10 @@
     "forkImported": {
       "headerButton": "Fork",
       "headerTooltip": "Fork this imported session into your own writable session",
-      "confirmTitle": "Fork & continue?",
-      "confirmBody": "This is {{name}}'s session — your copy is a read-only import. Continuing forks it into your own session and sends your message there.",
-      "confirm": "Fork & continue",
-      "cancel": "Cancel",
       "retentionError": "This session is outside your plan's replay window — upgrade to fork it",
       "goneError": "This shared session is no longer available (deleted or aged out)",
       "error": "Failed to fork the session",
-      "sendFailed": "Forked, but the message failed to send — it was restored to the composer",
       "forkedChipTooltip": "Forked from {{name}}",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -288,8 +268,7 @@
       "notInstalled": "{{agent}} is not installed on this machine",
       "missingWorkspace": "The session's original folder is gone — {{agent}} can only resume it from there",
       "sourceMissing": "The original session data is no longer on disk",
-      "launchFailed": "Failed to open the {{agent}} terminal",
-      "composerPlaceholder": "Send a message to continue in a new session…"
+      "launchFailed": "Failed to open the {{agent}} terminal"
     },
     "openInApp": {
       "headerButton": "Open in {{app}}",
@@ -299,9 +278,6 @@
     }
   },
   "myRole": {
-    "tabs": {
-      "status": "My status"
-    },
     "deleteRoleMessage": "\"{{name}}\" will be removed. This cannot be undone.",
     "activeBadge": "Active",
     "addRole": "Add custom role",
@@ -335,24 +311,7 @@
     "stanceLabel": "Behavior stance"
   },
   "launchpad": {
-    "sections": {
-      "other": "Other"
-    },
-    "searchPlaceholder": "Search workspaces...",
-    "emptyTitle": "No workspaces yet",
-    "emptyDescription": "Add a repo to get started",
-    "emptyWorkspaces": "No workspaces match",
-    "myRepos": "My Repos",
-    "myMultiRepoWorkspaces": "My Multi-Repo Workspaces",
-    "dashboard": "Dashboard",
     "myWorkspaces": "My Workspaces",
-    "workspaces": "Workspaces",
-    "dashboardTitle": "Workspaces",
-    "dashboardSubtitle": "Pick a workspace to launch or inspect",
-    "addRepo": "Add workspace",
-    "activeBadge": "Active",
-    "exploreTitle": "Explore",
-    "exploreDescription": "Discover templates and public repos (coming soon)",
     "preview": {
       "repoType": "Project Type",
       "tools": "Tools",
@@ -361,11 +320,7 @@
       "statusNotAnalyzed": "Not analyzed",
       "statusReady": "Ready",
       "statusParamsMissing": "Params missing",
-      "statusNoEnvConfig": "No env config needed",
-      "setupWithAI": "Turn into an app",
-      "trustRepo": "Trust this repo",
-      "launchpadPlaceholder": "Additional instructions for this run...",
-      "launchpadLaunch": "Launch"
+      "statusNoEnvConfig": "No env config needed"
     },
     "containers": {
       "title": "Containers",
@@ -374,8 +329,6 @@
       "emptySubtitle": "Start Docker Desktop, Colima, or Rancher Desktop and refresh to see local containers.",
       "repoEmptyTitle": "No containers for this repo",
       "repoEmptySubtitle": "Containers are matched by Docker Compose working directory labels or bind mounts inside this repo.",
-      "repoNoDockerTitle": "No Docker setup detected",
-      "repoNoDockerSubtitle": "Add a Dockerfile or docker-compose file to associate containers with this repo.",
       "dockerUnavailable": "Docker is unavailable",
       "name": "Name",
       "image": "Image",
@@ -411,15 +364,9 @@
       "categoryBuild": "Build",
       "categoryTest": "Test",
       "categoryLint": "Lint & Format",
-      "categoryOther": "Other",
-      "noScripts": "No scripts found",
-      "noScriptsHint": "Add a package.json, Makefile, or similar config",
-      "run": "Run",
-      "launched": "Running {{name}}",
-      "launchFailed": "Failed to launch script"
+      "categoryOther": "Other"
     },
     "detail": {
-      "title": "Repo Details",
       "path": "Path",
       "envVarsTitle": "Environment Variables",
       "envKey": "Key",
@@ -436,16 +383,10 @@
       "scriptName": "Name",
       "scriptCommand": "Command",
       "scriptCategory": "Category",
-      "scriptSource": "Source",
       "scriptNamePlaceholder": "Script name",
       "searchScripts": "Search scripts…",
       "noScripts": "No scripts found",
       "addScript": "Add Script",
-      "sourceCustom": "Custom",
-      "sourceDiscovered": "Discovered",
-      "analysisTitle": "Analysis",
-      "clearAnalysis": "Clear Analysis",
-      "clearAnalysisHint": "Reset analysis cache and re-scan on next visit",
       "analysisCleared": "Analysis cleared"
     },
     "containerEngines": {
@@ -470,7 +411,6 @@
       "switchToRepo": "Open",
       "startSession": "Start session",
       "openDetails": "Show details",
-      "locateInFinder": "Locate in Finder",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
@@ -478,7 +418,6 @@
     "addWorkspace": "Add workspace"
   },
   "explore": {
-    "title": "Explore",
     "search": "Search",
     "searching": "Searching...",
     "searchPlaceholder": "Search GitHub repositories (e.g. language:rust tauri)",
@@ -501,12 +440,10 @@
     }
   },
   "cloud": {
-    "title": "ORG2 Cloud",
     "signIn": "Login",
     "signOut": "Logout",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "Your ORG2 Cloud session expired. Sign in again to continue.",
-    "recommendedDesc": "Managed session sharing, replay storage, team permissions, and secure share links. No Supabase setup required. ORG2 manages Auth, database migrations, RLS policies, billing, retention, quota, and backend upgrades for you",
     "customEndpoint": {
       "title": "Custom ORG2 Cloud backend",
       "toggleDesc": "Use your own ORG2 Cloud deployment",
@@ -603,7 +540,6 @@
     "sidebar": {
       "teamSessions": "Team sessions",
       "mySessions": "My sessions",
-      "memberFilter": "Filter by member",
       "sessionFilter": "Filter sessions",
       "copyUrl": "Copy URL",
       "directlySharedWithMe": "Shared directly with me",
@@ -729,14 +665,11 @@
         "confirm": "Join workspace",
         "cancel": "Not now",
         "signInFirst": "Sign in to ORG2 Cloud to accept this invite — it stays pending while you sign in.",
-        "openSettings": "Open sign-in settings",
-        "joinedToast": "Joined {{org}}",
-        "joinedFallbackToast": "Joined the cloud workspace"
+        "joinedToast": "Joined {{org}}"
       },
       "create": {
         "sourceCloud": "Cloud",
         "signInFirst": "Sign in to ORG2 Cloud to create or join a managed workspace.",
-        "openSettings": "Open sign-in settings",
         "createdToast": "Cloud workspace created"
       },
       "errors": {
@@ -795,7 +728,6 @@
       "importEntry": "Import Session",
       "importDialogTitle": "Import a shared session",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "Paste from clipboard",
       "importSubmit": "Import",
       "importInvalidInput": "This doesn't look like a valid share link or token.",
       "selectAll": "Everyone ({{count}})",
@@ -808,55 +740,11 @@
       "incomingRetry": "Try again"
     },
     "comments": {
-      "task": {
-        "assignFailed": "Comment posted, but assigning the agent failed — retry from the thread",
-        "assignUnavailableHere": "Comment posted — agent assignment isn't available in this view",
-        "addressingChip": "Addressing comment: “{{excerpt}}”",
-        "addressingChipGeneric": "Addressing a comment",
-        "addressingChipTooltip": "Forked to address a comment thread on the source session",
-        "mentionSuggestion": "Assign this comment to an agent"
-      },
-      "toggleLabel": "Comments",
-      "notesButton": "Session notes",
-      "notesTitle": "Session notes",
-      "empty": "No comments yet",
-      "loadError": "Couldn't load comments",
-      "addPlaceholder": "Add a comment…",
-      "replyPlaceholder": "Reply…",
-      "send": "Comment",
-      "reply": "Reply",
-      "edit": "Edit",
-      "save": "Save",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "resolve": "Resolve",
-      "unresolve": "Reopen",
-      "resolved": "Resolved",
-      "statusActive": "Active",
-      "wontFix": "Won't fix",
-      "agentAddressing": "Agent is addressing…",
-      "resolvedToggle": "Resolved ({{count}})",
-      "deletedComment": "Comment deleted",
-      "editedMarker": "edited",
-      "earlierVersion": "From an earlier version of this session",
-      "replayRequired": "Turn comments require full replay access",
-      "addError": "Couldn't post — your draft was kept",
       "actionError": "Action failed — please try again",
       "unresolvedBadge_one": "{{count}} unresolved comment",
       "unresolvedBadge": "{{count}} unresolved comments",
       "unreadBadge_one": "{{count}} unread message",
-      "unreadBadge": "{{count}} unread messages",
-      "addressButton": "Address comments",
-      "addressPill_one": "address {{count}} comment",
-      "addressPill_other": "address {{count}} comments",
-      "addressSelectAll": "Select all",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "addressConfirm_one": "Address {{count}} comment",
-      "addressConfirm_other": "Address {{count}} comments",
-      "agentAuthor": "Agent @{{name}}",
-      "mentionMembers": "Mention",
-      "searchMembers": "Search members"
+      "unreadBadge": "{{count}} unread messages"
     },
     "billing": {
       "openFailed": "Couldn't open billing. Please try again."
@@ -913,7 +801,6 @@
         "nameLabel": "Name",
         "namePlaceholder": "e.g. code-review",
         "topicLabel": "Topic",
-        "topicOptional": "(optional)",
         "topicPlaceholder": "What's this about?",
         "visibilityLabel": "Visibility",
         "publicTitle": "Public",
@@ -975,7 +862,6 @@
         "today": "Today",
         "yesterday": "Yesterday",
         "you": "You",
-        "memberCount": "{{memberCount}} members",
         "emptyTitle": "This is the start of #{{name}}",
         "emptySubtitle": "Send the first message to start the conversation",
         "missingTitle": "Channel no longer available",
@@ -988,15 +874,7 @@
         "errorQuota": "This channel has reached its message limit on this device",
         "errorGeneric": "Couldn't post the message. Please try again.",
         "dropSessionHint": "Drop to add this session as a reference",
-        "messageBodyLabel": "Channel message",
-        "sessionCardMissing": "Not available on this device",
         "sessionCardOpen": "Open session {{name}}",
-        "workItemCardMissing": "Not available on this device",
-        "workItemCardLoading": "Loading…",
-        "workItemCardOpen": "Open work item {{name}}",
-        "githubCardOpen": "Open {{name}} on GitHub",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull request",
         "archivedComposerDisabled": "This channel is archived. Unarchive it to post again.",
         "errorPostForbidden": "Only channel managers can post in this channel",
         "errorArchived": "This channel is archived, so posting is turned off",
