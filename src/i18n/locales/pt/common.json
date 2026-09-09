@@ -687,7 +687,7 @@
     "agentRequestFailed": "A requisição ao Agent falhou",
     "codexLoginExpired": "A sessão do Codex expirou",
     "codexLoginExpiredDescription": "Reconecte o Codex para reparar esta conta. Você retornará a esta sessão quando o novo login for salvo",
-    "reconnectCodex": "Reconectar o Codex",
+    "reconnectCodex": "Reconectar",
     "technicalDetails": "Detalhes técnicos",
     "failedToCopy": "Falha ao copiar",
     "api": {

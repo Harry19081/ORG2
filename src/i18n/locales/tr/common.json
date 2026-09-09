@@ -686,7 +686,7 @@
     "agentRequestFailed": "Agent isteği başarısız oldu",
     "codexLoginExpired": "Codex oturumunun süresi doldu",
     "codexLoginExpiredDescription": "Bu hesabı onarmak için Codex'e yeniden bağlanın. Yeni oturum kaydedildiğinde bu oturuma geri döneceksiniz",
-    "reconnectCodex": "Codex'e yeniden bağlan",
+    "reconnectCodex": "Yeniden bağlan",
     "technicalDetails": "Teknik ayrıntılar",
     "failedToCopy": "Kopyalanamadı",
     "api": {
