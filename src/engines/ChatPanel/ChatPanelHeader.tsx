@@ -10,7 +10,7 @@ import Tooltip from "@src/components/Tooltip";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
-import { getCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
+import { useCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import {
   ArrowExpand01Icon,
@@ -166,6 +166,7 @@ export function ChatPanelHeader({
   // chat on the left the pinned group is over the workstation, so the
   // header keeps its own toggle right of "+" exactly as before.
   const rightEdge = useWorkbenchRightEdgeReservation();
+  const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const pinnedChromeInThisHeader = rightEdge.owner === "chat";
   const trailingInsetPx = pinnedChromeInThisHeader
     ? rightEdge.reservedRight
@@ -455,7 +456,7 @@ export function ChatPanelHeader({
         trailingInsetPx={trailingInsetPx}
         leadingInsetPx={
           shouldOffsetHeaderForCollapsedSidebar
-            ? getCollapsedSidebarChromeOffset()
+            ? collapsedSidebarChromeOffset
             : undefined
         }
       />
@@ -497,7 +498,7 @@ export function ChatPanelHeader({
           style={
             {
               paddingLeft: shouldOffsetHeaderForCollapsedSidebar
-                ? getCollapsedSidebarChromeOffset()
+                ? collapsedSidebarChromeOffset
                 : undefined,
               paddingRight: trailingInsetPx,
               ...(windowsHost

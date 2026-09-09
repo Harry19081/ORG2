@@ -14,8 +14,6 @@ export const SIDEBAR_TOOLTIP_HOVER_DELAY = CHROME_TOOLTIP_HOVER_DELAY;
 // ============================================
 
 export const SIDEBAR_STYLE = {
-  /** Traffic lights reserved space */
-  trafficLightsPadding: 80,
   /** Top bar height */
   topBarHeight: WINDOW_CHROME_TOKENS.titleBarHeight,
   /** Search input height */

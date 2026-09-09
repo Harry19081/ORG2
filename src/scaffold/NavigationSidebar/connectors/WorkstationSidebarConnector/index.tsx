@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Message from "@src/components/Message";
-import SessionHistoryNav from "@src/components/SessionHistoryNav";
 import { ROUTES } from "@src/config/routes";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
@@ -28,7 +27,6 @@ import {
   sidebarCollapsedAtom,
 } from "@src/store/ui/sidebarAtom";
 import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
-import { isMacOS } from "@src/util/platform/tauri";
 
 import { SidebarBottomBar } from "../../blocks";
 import SidebarSettingsMenuButton from "../../blocks/SidebarSettingsMenuButton";
@@ -654,8 +652,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
         onMenuItemClick={resolvedMenuItemClick}
         onMenuItemContextMenu={resolvedMenuItemContextMenu}
         renderMenuItemWrapper={renderOrderedMenuItem}
-        hostTopBarLeadingContent={sidebarOrgSelector}
-        macTopBarFollowingContent={
+        topBarFollowingContent={
           <div className="shrink-0 px-3 pt-1">{sidebarOrgSelector}</div>
         }
         preListContent={
@@ -663,9 +660,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
             activeKey={activeViewKey}
             onChange={handleViewChange}
           />
-        }
-        headerActions={
-          isMacOS() ? undefined : <SessionHistoryNav variant="sidebar" />
         }
         listTopPadding
         bottomContent={

@@ -38,7 +38,7 @@ vi.mock("@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage", () => ({
   useCurrentTurnLastAgentMessage: () => null,
 }));
 vi.mock("@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset", () => ({
-  getCollapsedSidebarChromeOffset: () => 0,
+  useCollapsedSidebarChromeOffset: () => 0,
   useShouldOffsetWorkStationTopBar: () => false,
 }));
 vi.mock("@src/services/workStation/WorkStationViewService", () => ({

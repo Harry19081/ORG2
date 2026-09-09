@@ -186,8 +186,7 @@ const SettingsSidebar: React.FC = () => {
 
   return (
     <SidebarBase
-      hostTopBarLeadingContent={settingsReturnItem}
-      macTopBarFollowingContent={
+      topBarFollowingContent={
         <div className="shrink-0 px-3">{settingsReturnItem}</div>
       }
     >

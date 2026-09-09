@@ -148,10 +148,8 @@ export interface SidebarBaseProps {
   beforeAddNewActions?: ReactNode;
   /** Extra controls to the right of the add button (e.g. session group-by filter) */
   headerActions?: ReactNode;
-  /** Leading content in the Windows/Linux sidebar chrome row. */
-  hostTopBarLeadingContent?: ReactNode;
-  /** Equivalent content rendered below the traffic-light row on macOS. */
-  macTopBarFollowingContent?: ReactNode;
+  /** Content rendered in its own row directly below the chrome row. */
+  topBarFollowingContent?: ReactNode;
 }
 
 /** SidebarHeader props */
