@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub nie zastosował zmiany osoby przypisanej",
         "assigneeUpdateSuccess": "Zaktualizowano osoby przypisane w GitHub",
-        "updateIssueFailed": "Nie udało się zaktualizować issue GitHub"
+        "updateIssueFailed": "Nie udało się zaktualizować issue GitHub",
+        "refreshIssues": "Odśwież zgłoszenia",
+        "refreshPullRequests": "Odśwież pull requesty"
       }
     },
     "sessionViews": {

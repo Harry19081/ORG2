@@ -394,7 +394,9 @@
     "uiSettings": "Cài đặt giao diện",
     "clearAll": "Xóa tất cả",
     "openOnGitHub": "Mở trên GitHub",
-    "createPullRequest": "Tạo pull request"
+    "createPullRequest": "Tạo pull request",
+    "expandView": "Mở rộng chế độ xem",
+    "restoreSplitView": "Khôi phục chế độ xem chia đôi"
   },
   "status": {
     "yes": "Có",

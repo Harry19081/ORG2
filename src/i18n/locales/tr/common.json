@@ -394,7 +394,9 @@
     "uiSettings": "Arayüz ayarları",
     "clearAll": "Tümünü temizle",
     "openOnGitHub": "GitHub'da aç",
-    "createPullRequest": "Pull request oluştur"
+    "createPullRequest": "Pull request oluştur",
+    "expandView": "Görünümü genişlet",
+    "restoreSplitView": "Bölünmüş görünümü geri yükle"
   },
   "status": {
     "yes": "Evet",

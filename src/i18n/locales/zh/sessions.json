@@ -1005,7 +1005,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub 未应用指派人变更",
         "assigneeUpdateSuccess": "已在 GitHub 上更新指派人",
-        "updateIssueFailed": "更新 GitHub issue 失败"
+        "updateIssueFailed": "更新 GitHub issue 失败",
+        "refreshIssues": "刷新议题",
+        "refreshPullRequests": "刷新拉取请求"
       }
     },
     "sessionViews": {

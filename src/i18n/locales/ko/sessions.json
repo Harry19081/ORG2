@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub에서 담당자 변경을 적용하지 않았습니다",
         "assigneeUpdateSuccess": "GitHub에서 담당자를 업데이트했습니다",
-        "updateIssueFailed": "GitHub issue를 업데이트하지 못했습니다"
+        "updateIssueFailed": "GitHub issue를 업데이트하지 못했습니다",
+        "refreshIssues": "이슈 새로고침",
+        "refreshPullRequests": "풀 리퀘스트 새로고침"
       }
     },
     "sessionViews": {

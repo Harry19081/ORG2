@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub は担当者の変更を適用しませんでした",
         "assigneeUpdateSuccess": "GitHub で担当者を更新しました",
-        "updateIssueFailed": "GitHub issue を更新できませんでした"
+        "updateIssueFailed": "GitHub issue を更新できませんでした",
+        "refreshIssues": "Issue を更新",
+        "refreshPullRequests": "プルリクエストを更新"
       }
     },
     "sessionViews": {

@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub n’a pas appliqué le changement de responsable",
         "assigneeUpdateSuccess": "Responsables mis à jour sur GitHub",
-        "updateIssueFailed": "Échec de la mise à jour de l’issue GitHub"
+        "updateIssueFailed": "Échec de la mise à jour de l’issue GitHub",
+        "refreshIssues": "Actualiser les tickets",
+        "refreshPullRequests": "Actualiser les pull requests"
       }
     },
     "sessionViews": {

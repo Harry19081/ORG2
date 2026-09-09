@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub atanan kişi değişikliğini uygulamadı",
         "assigneeUpdateSuccess": "Atananlar GitHub'da güncellendi",
-        "updateIssueFailed": "GitHub issue güncellenemedi"
+        "updateIssueFailed": "GitHub issue güncellenemedi",
+        "refreshIssues": "Issue listesini yenile",
+        "refreshPullRequests": "Pull request listesini yenile"
       }
     },
     "sessionViews": {

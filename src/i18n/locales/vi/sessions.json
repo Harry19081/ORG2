@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub chưa áp dụng thay đổi người được giao",
         "assigneeUpdateSuccess": "Đã cập nhật người được giao trên GitHub",
-        "updateIssueFailed": "Không thể cập nhật GitHub issue"
+        "updateIssueFailed": "Không thể cập nhật GitHub issue",
+        "refreshIssues": "Làm mới vấn đề",
+        "refreshPullRequests": "Làm mới yêu cầu hợp nhất"
       }
     },
     "sessionViews": {

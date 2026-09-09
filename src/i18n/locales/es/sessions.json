@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub no aplicó el cambio de asignados",
         "assigneeUpdateSuccess": "Asignados actualizados en GitHub",
-        "updateIssueFailed": "No se pudo actualizar el issue de GitHub"
+        "updateIssueFailed": "No se pudo actualizar el issue de GitHub",
+        "refreshIssues": "Actualizar incidencias",
+        "refreshPullRequests": "Actualizar solicitudes de incorporación"
       }
     },
     "sessionViews": {

@@ -394,7 +394,9 @@
     "uiSettings": "Ajustes de interfaz",
     "clearAll": "Limpiar todo",
     "openOnGitHub": "Abrir en GitHub",
-    "createPullRequest": "Crear pull request"
+    "createPullRequest": "Crear pull request",
+    "expandView": "Expandir vista",
+    "restoreSplitView": "Restaurar vista dividida"
   },
   "status": {
     "yes": "Sí",

@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub не применил изменение исполнителя",
         "assigneeUpdateSuccess": "Исполнители обновлены на GitHub",
-        "updateIssueFailed": "Не удалось обновить issue GitHub"
+        "updateIssueFailed": "Не удалось обновить issue GitHub",
+        "refreshIssues": "Обновить задачи",
+        "refreshPullRequests": "Обновить пул-реквесты"
       }
     },
     "sessionViews": {

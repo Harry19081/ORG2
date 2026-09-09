@@ -1000,7 +1000,9 @@
         },
         "assigneeUpdateNotApplied": "GitHub hat die Änderung der Zuweisung nicht übernommen",
         "assigneeUpdateSuccess": "Zuweisungen auf GitHub aktualisiert",
-        "updateIssueFailed": "GitHub issue konnte nicht aktualisiert werden"
+        "updateIssueFailed": "GitHub issue konnte nicht aktualisiert werden",
+        "refreshIssues": "Issues aktualisieren",
+        "refreshPullRequests": "Pull Requests aktualisieren"
       }
     },
     "sessionViews": {

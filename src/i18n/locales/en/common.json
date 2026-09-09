@@ -215,7 +215,9 @@
     "comingSoon": "Coming soon",
     "clearSelection": "Clear selection",
     "uiSettings": "UI settings",
-    "clearAll": "Clear All"
+    "clearAll": "Clear All",
+    "expandView": "Expand view",
+    "restoreSplitView": "Restore split view"
   },
   "status": {
     "yes": "Yes",

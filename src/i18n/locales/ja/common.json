@@ -394,7 +394,9 @@
     "uiSettings": "UI 設定",
     "clearAll": "すべてクリア",
     "openOnGitHub": "GitHub で開く",
-    "createPullRequest": "Pull request を作成"
+    "createPullRequest": "Pull request を作成",
+    "expandView": "ビューを展開",
+    "restoreSplitView": "分割ビューに戻す"
   },
   "status": {
     "yes": "はい",

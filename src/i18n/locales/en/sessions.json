@@ -1005,7 +1005,9 @@
         "openInGitHub": "Open in GitHub",
         "assigneeUpdateNotApplied": "GitHub did not apply the assignee change",
         "assigneeUpdateSuccess": "Assignees updated on GitHub",
-        "updateIssueFailed": "Failed to update GitHub issue"
+        "updateIssueFailed": "Failed to update GitHub issue",
+        "refreshIssues": "Refresh issues",
+        "refreshPullRequests": "Refresh pull requests"
       }
     },
     "sessionViews": {

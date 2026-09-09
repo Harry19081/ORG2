@@ -394,7 +394,9 @@
     "uiSettings": "Oberflächeneinstellungen",
     "clearAll": "Alles löschen",
     "openOnGitHub": "Auf GitHub öffnen",
-    "createPullRequest": "Pull Request erstellen"
+    "createPullRequest": "Pull Request erstellen",
+    "expandView": "Ansicht erweitern",
+    "restoreSplitView": "Geteilte Ansicht wiederherstellen"
   },
   "status": {
     "yes": "Ja",

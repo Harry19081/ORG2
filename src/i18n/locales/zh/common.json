@@ -215,7 +215,9 @@
     "comingSoon": "即将推出",
     "clearSelection": "清除选择",
     "uiSettings": "界面设置",
-    "clearAll": "全部清除"
+    "clearAll": "全部清除",
+    "expandView": "展开视图",
+    "restoreSplitView": "恢复分栏视图"
   },
   "status": {
     "yes": "是",
