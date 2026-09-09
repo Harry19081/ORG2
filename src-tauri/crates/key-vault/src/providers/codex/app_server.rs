@@ -56,7 +56,7 @@ pub(super) async fn write_temporary_codex_home(
 
 #[cfg(test)]
 pub(super) async fn read_temporary_codex_auth(
-    codex_home: &PathBuf,
+    codex_home: &std::path::Path,
 ) -> Result<serde_json::Value, String> {
     let auth_path = codex_home.join("auth.json");
     let auth_bytes = tokio::fs::read(&auth_path)
