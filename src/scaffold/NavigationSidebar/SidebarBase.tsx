@@ -5,15 +5,6 @@
  * Handles: transparent sidebar surface, resize, collapse, and the chrome row
  * (traffic-light spacing on macOS, the in-flow toggle group elsewhere).
  *
- * @example
- * ```tsx
- * <SidebarBase sidebarId="terminal">
- *   <SidebarHeader title="Terminal" />
- *   <SidebarList>
- *     <SidebarItem ... />
- *   </SidebarList>
- * </SidebarBase>
- * ```
  */
 import i18next from "i18next";
 import { useAtomValue } from "jotai";
@@ -64,8 +55,6 @@ const SHOW_RESTING_SIDEBAR_EDGE = HOST_DESKTOP_KIND === HOST_DESKTOP.LINUX;
 const IDLE_SIDEBAR_RESIZE_HANDLE_CLASS_NAME =
   "h-full [&>div:first-child]:origin-right [&>div:first-child]:scale-x-50 [&>div:first-child]:transition-transform hover:[&>div:first-child]:scale-x-100";
 
-const SIDEBAR_TOP_CHROME_CLASS_NAME = "pointer-events-auto opacity-100";
-
 // ============================================
 // SidebarBase Component
 // ============================================
@@ -73,14 +62,7 @@ const SIDEBAR_TOP_CHROME_CLASS_NAME = "pointer-events-auto opacity-100";
 const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
   ({
     children,
-    header,
     className = "",
-    innerClassName = "",
-    includeTrafficLightSpace = true,
-    wrapInSurface = true,
-    solidSurface = false,
-    forceVisible: forceVisibleProp = false,
-    theme,
     onAddNew,
     addIcon: AddIcon = Add01Icon,
     addLabel,
@@ -123,8 +105,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     );
 
     // Check for force visible from context (for hover sidebar)
-    const forceVisibleFromContext = useForceVisibleSidebar();
-    const shouldForceVisible = forceVisibleProp || forceVisibleFromContext;
+    const shouldForceVisible = useForceVisibleSidebar();
     useEffect(() => {
       if (!isCollapsed || shouldForceVisible) return;
       const activeElement = document.activeElement;
@@ -184,31 +165,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       [sidebarWidth, setWidth, collapse]
     );
 
-    // Theme-aware styles — memoized to keep stable reference (must be before early return)
-    const themeStyles = useMemo(
-      () =>
-        theme
-          ? {
-              backgroundColor: theme.background,
-              borderColor: theme.border || `${theme.foreground}20`,
-            }
-          : undefined,
-      [theme]
-    );
-
-    // Icon color style — memoized for all icon instances
-    const iconThemeStyle = useMemo(
-      () => (theme ? { color: `${theme.foreground}80` } : undefined),
-      [theme]
-    );
-
-    // Resolve children (support render function pattern) — memoized
-    const resolvedChildren = useMemo(
-      () =>
-        typeof children === "function" ? children(sidebarWidth) : children,
-      [children, sidebarWidth]
-    );
-
     // When forceVisible and collapsed, use default width instead of 0
     const effectiveWidth =
       shouldForceVisible && isCollapsed ? DEFAULT_SIDEBAR_WIDTH : sidebarWidth;
@@ -236,8 +192,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       ]
     );
 
-    const sidebarTopChromeClassName = SIDEBAR_TOP_CHROME_CLASS_NAME;
-
     // Chrome row: the 36px title-bar row every host places its sidebar chrome
     // in. macOS keeps the traffic lights and the pinned toggle group on the
     // left in window space and only reserves the space under them; every
@@ -245,8 +199,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     // 8px inset the collapsed-sidebar hosts use, so it holds its spot across
     // both states. Add-new and the extra actions sit at the right edge.
     const renderChromeRow = () => {
-      if (!includeTrafficLightSpace) return null;
-
       const alignmentClassName = IS_WINDOWS_OR_LINUX_HOST
         ? "justify-between pl-2 pr-2"
         : "justify-end pr-2";
@@ -284,9 +236,7 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
               />
             </div>
           ) : null}
-          <div
-            className={`flex shrink-0 items-center gap-px ${sidebarTopChromeClassName}`}
-          >
+          <div className="pointer-events-auto flex shrink-0 items-center gap-px opacity-100">
             {beforeAddNewActions ? (
               <div
                 style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
@@ -330,7 +280,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
                           size={16}
                           strokeWidth={2}
                           className="text-text-2"
-                          style={iconThemeStyle}
                         />
                       }
                     />
@@ -377,20 +326,15 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     // as the previous alternatives while letting the surface cover the full sidebar column.
     const content = (
       <>
-        {wrapInSurface && (
-          <div
-            className="h-2 shrink-0"
-            data-tauri-drag-region
-            style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-            aria-hidden
-          />
-        )}
+        <div
+          className="h-2 shrink-0"
+          data-tauri-drag-region
+          style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
+          aria-hidden
+        />
         {renderChromeRow()}
         {topBarFollowingContent}
-        {header}
-        <div className="flex flex-1 flex-col overflow-hidden">
-          {resolvedChildren}
-        </div>
+        <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
       </>
     );
 
@@ -419,39 +363,24 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
     //
     // A floating/hover sidebar overlays workspace content and is always solid,
     // regardless of this preference, so it stays legible over whatever it covers.
-    const isTranslucentSurface =
-      translucentSidebar && !shouldForceVisible && !solidSurface;
+    const isTranslucentSurface = translucentSidebar && !shouldForceVisible;
     const sidebarBackdropFilter = isTranslucentSurface
       ? "var(--sidebar-backdrop)"
       : "none";
-    const floatingSurfaceOverride: React.CSSProperties = shouldForceVisible
-      ? { backgroundColor: "var(--color-bg-1)" }
-      : {};
     const opaqueSurfaceOverride: React.CSSProperties = isTranslucentSurface
       ? {}
       : { backgroundColor: "var(--color-bg-1)" };
-    const surfaceStyle = themeStyles
-      ? {
-          ...themeStyles,
-          boxShadow: sidebarBoxShadow,
-          backdropFilter: sidebarBackdropFilter,
-          WebkitBackdropFilter: sidebarBackdropFilter,
-          ...floatingSurfaceOverride,
-        }
-      : {
-          backgroundColor: IS_WINDOWS_HOST
-            ? "color-mix(in srgb, var(--color-bg-2) var(--windows-native-chrome-opacity, 30%), transparent)"
-            : "var(--sidebar-bg)",
-          borderColor: "var(--sidebar-border)",
-          boxShadow: sidebarBoxShadow,
-          backdropFilter: sidebarBackdropFilter,
-          WebkitBackdropFilter: sidebarBackdropFilter,
-          ...(IS_WINDOWS_HOST || !isTranslucentSurface
-            ? {}
-            : sidebarOpacityStyle),
-          ...opaqueSurfaceOverride,
-          ...floatingSurfaceOverride,
-        };
+    const surfaceStyle = {
+      backgroundColor: IS_WINDOWS_HOST
+        ? "color-mix(in srgb, var(--color-bg-2) var(--windows-native-chrome-opacity, 30%), transparent)"
+        : "var(--sidebar-bg)",
+      borderColor: "var(--sidebar-border)",
+      boxShadow: sidebarBoxShadow,
+      backdropFilter: sidebarBackdropFilter,
+      WebkitBackdropFilter: sidebarBackdropFilter,
+      ...(IS_WINDOWS_HOST || !isTranslucentSurface ? {} : sidebarOpacityStyle),
+      ...opaqueSurfaceOverride,
+    };
 
     // Wrapped content
     // Modern layout: sidebar is flush with the top/left/bottom window edge —
@@ -476,10 +405,8 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
       borderBottomWidth: 0,
       borderRightWidth: SHOW_RESTING_SIDEBAR_EDGE ? 1 : 0,
     } as const;
-    const wrappedContent = wrapInSurface ? (
-      <div
-        className={`sidebar-base flex h-full w-full flex-col overflow-hidden ${innerClassName}`}
-      >
+    const wrappedContent = (
+      <div className="sidebar-base flex h-full w-full flex-col overflow-hidden">
         <div
           className="flex h-full flex-none flex-col overflow-hidden"
           style={{
@@ -490,13 +417,6 @@ const SidebarBase: React.FC<SidebarBaseProps> = React.memo(
         >
           {content}
         </div>
-      </div>
-    ) : (
-      <div
-        className={`sidebar-base flex h-full w-full flex-col ${innerClassName}`}
-        style={themeStyles}
-      >
-        {content}
       </div>
     );
 

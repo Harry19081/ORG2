@@ -1,8 +1,7 @@
 /**
  * NavigationSidebar
  *
- * Main navigation sidebar with tabs and menu items.
- * Used by Settings and Workstation navigation surfaces.
+ * Sectioned menu layout for the session sidebar.
  */
 import React, {
   type ReactNode,
@@ -13,8 +12,6 @@ import React, {
   useState,
 } from "react";
 
-import AnyIcon from "@src/components/AnyIcon";
-import TabPill from "@src/components/TabPill";
 import {
   ArrowDown01Icon,
   ArrowRight01Icon,
@@ -23,7 +20,6 @@ import {
 
 import SidebarBase from "../SidebarBase";
 import { SidebarList } from "../blocks";
-import HoverAnimatedIcon from "../components/HoverAnimatedIcon";
 import NavigationMenu from "../components/NavigationMenu";
 import { NavigationMenuRowActionButton } from "../components/NavigationMenu/NavigationMenu/RowActionButton";
 import type { NavigationMenuItemClickHandler } from "../components/NavigationMenu/NavigationMenu/types";
@@ -31,16 +27,12 @@ import type {
   NavigationMenuItem,
   NavigationMenuRowAction,
 } from "../components/NavigationMenu/config";
-import type { SidebarTab } from "../types";
 
 // ============================================
 // Types
 // ============================================
 
 export interface NavigationSidebarProps {
-  items: SidebarTab[];
-  activeKey: string;
-  onChange: (key: string) => void;
   menuItems: NavigationMenuItem[];
   pinnedMenuItems?: NavigationMenuItem[];
   selectedKey?: string;
@@ -57,7 +49,6 @@ export interface NavigationSidebarProps {
   ) => React.ReactElement;
   defaultOpenKeys?: string[];
   bottomContent?: React.ReactNode;
-  enableHoverIconAnimation?: boolean;
   /** Add-new button in the traffic lights area (passed to SidebarBase) */
   onAddNew?: () => void;
   /** Icon for the add-new button */
@@ -80,8 +71,6 @@ export interface NavigationSidebarProps {
   isLoading?: boolean;
   /** Optional loading UI that mirrors the current sidebar surface. */
   loadingContent?: React.ReactNode;
-  /** Paint an opaque sidebar surface instead of honoring sidebar transparency. */
-  solidSurface?: boolean;
   /** Enable collapse/expand on section headers (separator-based groups) */
   collapsibleSections?: boolean;
   /**
@@ -176,9 +165,6 @@ function NavigationSidebarSectionHeader({
 
 const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
   ({
-    items,
-    activeKey,
-    onChange,
     menuItems,
     pinnedMenuItems = [],
     selectedKey,
@@ -188,7 +174,6 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
     renderMenuItemWrapper,
     defaultOpenKeys = [],
     bottomContent,
-    enableHoverIconAnimation = false,
     onAddNew,
     addIcon,
     addLabel,
@@ -200,7 +185,6 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
     preListContent,
     isLoading = false,
     loadingContent,
-    solidSurface = false,
     collapsibleSections = false,
     collapsedSectionIds,
     onCollapsedSectionsChange,
@@ -300,32 +284,6 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
       [onMenuItemContextMenu]
     );
 
-    // Memoize TabPill tabs array
-    const tabPillTabs = useMemo(
-      () =>
-        items.map((tab) => ({
-          key: tab.key,
-          label: tab.label,
-          icon: tab.icon
-            ? enableHoverIconAnimation && tab.iconName
-              ? React.createElement(HoverAnimatedIcon, {
-                  icon: tab.icon,
-                  iconName: tab.iconName,
-                  className: "h-[14px] w-[14px]",
-                  strokeWidth: 2,
-                })
-              : React.createElement(AnyIcon, {
-                  icon: tab.icon,
-                  size: 14,
-                  strokeWidth: 2,
-                  className: "h-[14px] w-[14px]",
-                  "data-icon": tab.iconName ?? tab.key,
-                })
-            : undefined,
-        })),
-      [enableHoverIconAnimation, items]
-    );
-
     return (
       <SidebarBase
         onAddNew={onAddNew}
@@ -335,30 +293,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
         beforeAddNewActions={beforeAddNewActions}
         headerActions={headerActions}
         topBarFollowingContent={topBarFollowingContent}
-        solidSurface={solidSurface}
       >
         {preListContent}
-
-        {/* Tab Header */}
-        {items.length > 0 && (
-          <div
-            className="flex h-9 items-center px-3"
-            data-tauri-drag-region
-            style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-          >
-            <div
-              className="flex w-full min-w-0"
-              style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-            >
-              <TabPill
-                activeTab={activeKey}
-                tabs={tabPillTabs}
-                onChange={onChange}
-                iconOnly
-              />
-            </div>
-          </div>
-        )}
 
         {pinnedSections.length > 0 && (
           <div className="flex flex-col gap-2 px-3 pt-1">

@@ -2,9 +2,9 @@
  * SidebarList
  *
  * Scrollable list container for sidebar content.
- * Contains SidebarSections with consistent gap between them.
+ * Keeps consistent spacing between sections.
  */
-import React, { useMemo } from "react";
+import React from "react";
 
 import { Placeholder } from "@src/components/Placeholder";
 
@@ -24,16 +24,9 @@ const SidebarList: React.FC<SidebarListProps> = React.memo(
     scrollContainerRef,
     isLoading = false,
     loadingContent,
-    theme,
     className = "",
     topPadding = false,
   }) => {
-    // Theme-aware loading style — memoized
-    const loadingStyle = useMemo(
-      () => (theme ? { color: `${theme.foreground}60` } : undefined),
-      [theme]
-    );
-
     if (isLoading) {
       if (loadingContent) {
         return (
@@ -46,7 +39,6 @@ const SidebarList: React.FC<SidebarListProps> = React.memo(
       return (
         <div
           className={`flex flex-1 flex-col items-center justify-center ${className}`}
-          style={loadingStyle}
         >
           <Placeholder variant="loading" />
         </div>
