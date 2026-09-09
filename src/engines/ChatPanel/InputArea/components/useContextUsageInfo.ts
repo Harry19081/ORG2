@@ -12,7 +12,52 @@ import {
   sessionContextUsageAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { getModelInfo } from "@src/types/model/info";
+import {
+  type ResolvedModelVariantFields,
+  getModelVariantBaseModel,
+} from "@src/util/modelVariants";
 import { isCliSession } from "@src/util/session/sessionDispatch";
+
+type ContextWindowVariant = Pick<
+  ResolvedModelVariantFields,
+  "model" | "base_model" | "context_window"
+>;
+
+function positiveContextWindow(
+  variant: ContextWindowVariant | undefined
+): number | null {
+  const contextWindow = variant?.context_window;
+  return typeof contextWindow === "number" && contextWindow > 0
+    ? contextWindow
+    : null;
+}
+
+/**
+ * Resolve provider metadata for an ORG2 model variant. A variant-specific
+ * value wins; otherwise synthetic effort variants inherit the base model's
+ * provider-reported window.
+ */
+export function resolveAccountContextWindow(
+  modelName: string,
+  variants: readonly ContextWindowVariant[] | undefined
+): number | null {
+  if (!modelName || !variants) return null;
+
+  const exactVariant = variants.find((variant) => variant.model === modelName);
+  const exactContextWindow = positiveContextWindow(exactVariant);
+  if (exactContextWindow !== null) return exactContextWindow;
+
+  const metadataBaseModel = exactVariant?.base_model;
+  const baseModel =
+    metadataBaseModel && metadataBaseModel !== modelName
+      ? metadataBaseModel
+      : getModelVariantBaseModel(modelName);
+  if (baseModel === modelName) return null;
+
+  return positiveContextWindow(
+    variants.find((variant) => variant.model === baseModel)
+  );
+}
 
 export interface ContextUsageInfo {
   percentage: number;
@@ -91,12 +136,7 @@ export function useContextUsageInfo(): ContextUsageInfo {
     const accountId = lastModel?.selectedAccountId;
     if (!modelName || !accountId) return null;
     const account = accounts.find((entry) => entry.id === accountId);
-    const contextWindow = account?.modelVariants?.find(
-      (variant) => variant.model === modelName
-    )?.context_window;
-    return typeof contextWindow === "number" && contextWindow > 0
-      ? contextWindow
-      : null;
+    return resolveAccountContextWindow(modelName, account?.modelVariants);
   }, [accounts, lastModel?.selectedAccountId, modelName]);
   const contextWindowK = modelInfo?.contextWindow ?? 200;
   const modelMaxTokens = accountContextWindow ?? contextWindowK * 1000;

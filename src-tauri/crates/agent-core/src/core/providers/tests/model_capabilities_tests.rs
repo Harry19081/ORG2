@@ -195,6 +195,16 @@ fn glm_modern_windows() {
 }
 
 #[test]
+fn glm_5_3_has_a_1m_window_including_effort_variants() {
+    for model in ["glm-5.3", "glm-5.3-high", "zai/glm-5.3-max"] {
+        assert_eq!(resolve(model, None).context_window, 1_000_000, "{model}");
+    }
+
+    assert_eq!(resolve("glm-5.1", None).context_window, 200_000);
+    assert_eq!(resolve("glm-5", None).context_window, 200_000);
+}
+
+#[test]
 fn grok_and_mistral_windows() {
     assert_eq!(resolve("grok-build-0.1", None).context_window, 256_000);
     assert_eq!(resolve("grok-4.3", None).context_window, 1_000_000);
@@ -482,11 +492,35 @@ fn keyvault_empty_variant_list_falls_back_to_family() {
 }
 
 #[test]
-fn keyvault_override_only_matches_exact_model() {
-    // Variant for "claude-opus-4.6" must not override a query for "claude-opus-4".
+fn keyvault_override_does_not_leak_to_another_base_model() {
+    // A row for 4.6 must not override a query for the distinct 4.0 base model.
     let variants = vec![variant_with_context("claude-opus-4.6", Some(300_000))];
     let caps = super::resolve_with_keyvault_variants("claude-opus-4", &variants);
     assert_eq!(caps.context_window, 200_000);
+}
+
+#[test]
+fn keyvault_base_context_window_applies_to_org2_variants() {
+    let variants = vec![variant_with_context("glm-5.3", Some(256_000))];
+    let caps = super::resolve_with_keyvault_variants("glm-5.3-max", &variants);
+    assert_eq!(caps.context_window, 256_000);
+}
+
+#[test]
+fn keyvault_legacy_variant_without_context_inherits_parsed_base_model() {
+    let base = variant_with_context("glm-5.3", Some(256_000));
+    let legacy_exact = variant_with_context("glm-5.3-high", None);
+    let caps = super::resolve_with_keyvault_variants("glm-5.3-high", &[base, legacy_exact]);
+    assert_eq!(caps.context_window, 256_000);
+}
+
+#[test]
+fn keyvault_exact_variant_context_window_beats_base_model() {
+    let base = variant_with_context("glm-5.3", Some(256_000));
+    let mut exact = variant_with_context("glm-5.3-high", Some(128_000));
+    exact.base_model = "glm-5.3".to_string();
+    let caps = super::resolve_with_keyvault_variants("glm-5.3-high", &[base, exact]);
+    assert_eq!(caps.context_window, 128_000);
 }
 
 #[test]

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   computeCacheHitRate,
   formatTokenCount,
+  resolveAccountContextWindow,
   resolveContextMaxTokens,
 } from "./useContextUsageInfo";
 
@@ -19,6 +20,47 @@ describe("useContextUsageInfo helpers", () => {
     expect(computeCacheHitRate(0, 100)).toBe(0);
     // Negative noise is clamped, never produces NaN or a value outside [0,1].
     expect(computeCacheHitRate(-5, -5)).toBe(0);
+  });
+
+  it("inherits a provider context window from the base model", () => {
+    const variants = [
+      {
+        model: "glm-5.3",
+        base_model: "glm-5.3",
+        context_window: 256_000,
+      },
+    ];
+
+    expect(resolveAccountContextWindow("glm-5.3-max", variants)).toBe(256_000);
+
+    expect(
+      resolveAccountContextWindow("glm-5.3-high", [
+        ...variants,
+        {
+          model: "glm-5.3-high",
+          // Legacy rows may not have recorded the parsed base correctly.
+          base_model: "glm-5.3-high",
+          context_window: null,
+        },
+      ])
+    ).toBe(256_000);
+  });
+
+  it("prefers an exact variant context window over its base model", () => {
+    const variants = [
+      {
+        model: "glm-5.3",
+        base_model: "glm-5.3",
+        context_window: 256_000,
+      },
+      {
+        model: "glm-5.3-high",
+        base_model: "glm-5.3",
+        context_window: 128_000,
+      },
+    ];
+
+    expect(resolveAccountContextWindow("glm-5.3-high", variants)).toBe(128_000);
   });
 });
 
