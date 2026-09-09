@@ -2482,8 +2482,10 @@
     "mentionGroup": "Coéquipiers"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "emptyWeek": "Aucun relevé pour cette semaine",
     "title": "Historique du quota hebdomadaire",
-    "description": "Quota restant · 28 derniers jours · Échantillonné chaque heure quand l’app est visible et en ligne · Les relevés manquants apparaissent comme des trous",
     "error": "L’historique du quota est indisponible. Une nouvelle tentative aura lieu à votre retour dans cette fenêtre",
     "empty": "Connectez un compte Claude Code, Codex ou OpenCode Go dans le Key Vault pour commencer le suivi",
     "loading": "Chargement de l’historique du quota…",

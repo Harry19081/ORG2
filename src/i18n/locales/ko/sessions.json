@@ -2482,8 +2482,10 @@
     "mentionGroup": "팀원"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "이전 주",
+    "nextWeek": "다음 주",
+    "emptyWeek": "이번 주 기록이 없습니다",
     "title": "주간 할당량 기록",
-    "description": "남은 할당량 · 최근 28일 · 앱이 표시되고 온라인일 때 매시간 샘플링 · 누락된 측정값은 공백으로 표시",
     "error": "할당량 기록을 사용할 수 없습니다. 이 창으로 돌아오면 다시 시도합니다",
     "empty": "Key Vault에서 Claude Code, Codex 또는 OpenCode Go 계정을 연결하면 추적을 시작합니다",
     "loading": "할당량 기록 불러오는 중…",

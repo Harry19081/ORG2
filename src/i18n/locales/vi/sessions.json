@@ -2482,8 +2482,10 @@
     "mentionGroup": "Đồng đội"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Tuần trước",
+    "nextWeek": "Tuần sau",
+    "emptyWeek": "Không có dữ liệu cho tuần này",
     "title": "Lịch sử quota hàng tuần",
-    "description": "Quota còn lại · 28 ngày qua · Lấy mẫu mỗi giờ khi ứng dụng hiển thị và trực tuyến · Các lần đọc thiếu là khoảng trống",
     "error": "Lịch sử quota không khả dụng. Sẽ thử lại khi bạn quay lại cửa sổ này",
     "empty": "Kết nối tài khoản Claude Code, Codex hoặc OpenCode Go trong Key Vault để bắt đầu theo dõi",
     "loading": "Đang tải lịch sử quota…",

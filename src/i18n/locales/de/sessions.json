@@ -2482,8 +2482,10 @@
     "mentionGroup": "Teammitglieder"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "emptyWeek": "Keine Messwerte für diese Woche",
     "title": "Verlauf des Wochenkontingents",
-    "description": "Verbleibendes Kontingent · Letzte 28 Tage · Stündlich erfasst, solange die App sichtbar und online ist · Fehlende Messwerte sind Lücken",
     "error": "Der Kontingentverlauf ist nicht verfügbar. Es wird erneut versucht, wenn du zu diesem Fenster zurückkehrst",
     "empty": "Verbinde ein Claude Code-, Codex- oder OpenCode Go-Konto im Key Vault, um mit der Erfassung zu beginnen",
     "loading": "Kontingentverlauf wird geladen…",

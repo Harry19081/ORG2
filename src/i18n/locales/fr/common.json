@@ -774,8 +774,7 @@
     "agentTerminal": "Agent Terminal",
     "myStation": "Ma station",
     "agentStation": "Station de l'Agent",
-    "myTerminal": "Mon terminal",
-    "myTerminalInfo": "Infos de mon terminal"
+    "myTerminal": "Mon terminal"
   },
   "tooltips": {
     "closeEsc": "Fermer (Esc)",
@@ -1760,7 +1759,7 @@
     "spotlight": {
       "placeholder": "Rechercher ou saisir une commande…",
       "placeholders": {
-        "workspace": "Rechercher ou saisir un chemin de dossier",
+        "workspace": "Rechercher ou saisir un chemin de dossier...",
         "branch": "Rechercher une branche...",
         "source": "Rechercher une source...",
         "actions": "Rechercher des actions...",

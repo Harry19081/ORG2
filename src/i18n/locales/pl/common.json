@@ -774,8 +774,7 @@
     "agentTerminal": "Shell Agenta",
     "myStation": "Moja stacja",
     "agentStation": "Stacja Agenta",
-    "myTerminal": "Mój Shell",
-    "myTerminalInfo": "Informacje o moim Shellu"
+    "myTerminal": "Mój Shell"
   },
   "tooltips": {
     "closeEsc": "Zamknij (Esc)",
@@ -1760,7 +1759,7 @@
     "spotlight": {
       "placeholder": "Szukaj lub wpisz polecenie...",
       "placeholders": {
-        "workspace": "Szukaj lub wpisz ścieżkę folderu",
+        "workspace": "Szukaj lub wpisz ścieżkę folderu...",
         "branch": "Szukaj gałęzi...",
         "source": "Szukaj źródła...",
         "actions": "Szukaj akcji...",

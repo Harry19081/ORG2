@@ -79,7 +79,6 @@ const MessageItem = ({
   }, [duration, handleClose]);
 
   const typeStyle = TYPE_STYLES[type];
-  const hasDescription = Boolean(title || download || cancel || action);
   const handleDownload = useCallback(() => {
     const blob =
       download?.content instanceof Blob
@@ -125,10 +124,10 @@ const MessageItem = ({
         duration: 0.2,
         ease: "easeOut",
       }}
-      className={`pointer-events-auto relative flex w-full cursor-default gap-3 overflow-hidden rounded-xl border bg-bg-2 p-[14px_16px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_12px_24px_rgba(0,0,0,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.12)] max-[480px]:gap-2.5 max-[480px]:rounded-[10px] max-[480px]:p-[12px_14px] ${hasDescription ? "items-start" : "items-center"} ${typeStyle.border} ${className}`}
+      className={`pointer-events-auto relative flex w-full cursor-default items-start gap-3 overflow-hidden rounded-xl border bg-bg-2 p-[14px_16px] shadow-[0_2px_4px_rgba(0,0,0,0.04),0_12px_24px_rgba(0,0,0,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_16px_32px_rgba(0,0,0,0.12)] max-[480px]:gap-2.5 max-[480px]:rounded-[10px] max-[480px]:p-[12px_14px] ${typeStyle.border} ${className}`}
     >
       {/* Content */}
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div className="flex min-h-6 min-w-0 flex-1 flex-col justify-center gap-0.5">
         {title && (
           <div className="text-[13px] leading-[1.4] font-semibold tracking-[-0.01em] text-text-1 max-[480px]:text-xs">
             {title}
@@ -177,7 +176,7 @@ const MessageItem = ({
       {/* Close button */}
       {closable && (
         <button
-          className="my-[-2px] mr-[-4px] ml-1 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0 text-text-3 opacity-60 transition-all duration-150 ease-out hover:bg-white/10 hover:text-text-1 hover:opacity-100 active:scale-95"
+          className="ml-1 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-0 text-text-3 opacity-60 transition-all duration-150 ease-out hover:bg-white/10 hover:text-text-1 hover:opacity-100 active:scale-95"
           onClick={handleClose}
           aria-label={t("actions.close")}
         >

@@ -2482,8 +2482,10 @@
     "hideDevTools": "Hide DevTools"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "emptyWeek": "No readings for this week",
     "title": "Weekly quota history",
-    "description": "Quota remaining · Last 28 days · Sampled hourly while the app is visible and online · Missing readings are gaps",
     "error": "Quota history is unavailable. It will retry when you return to this window",
     "empty": "Connect a Claude Code, Codex, or OpenCode Go account in Key Vault to start tracking",
     "loading": "Loading quota history…",

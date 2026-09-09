@@ -2482,8 +2482,10 @@
     "mentionGroup": "Compañeros"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
+    "emptyWeek": "No hay lecturas para esta semana",
     "title": "Historial de cuota semanal",
-    "description": "Cuota restante · Últimos 28 días · Muestreada cada hora mientras la app está visible y en línea · Las lecturas faltantes son huecos",
     "error": "El historial de cuota no está disponible. Se reintentará cuando vuelvas a esta ventana",
     "empty": "Conecta una cuenta de Claude Code, Codex u OpenCode Go en Key Vault para empezar el seguimiento",
     "loading": "Cargando historial de cuota…",

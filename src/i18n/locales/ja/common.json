@@ -774,8 +774,7 @@
     "agentTerminal": "Agent ターミナル",
     "myStation": "自分のステーション",
     "agentStation": "Agent のステーション",
-    "myTerminal": "My Terminal",
-    "myTerminalInfo": "My Terminal 情報"
+    "myTerminal": "My Terminal"
   },
   "tooltips": {
     "closeEsc": "閉じる (Esc)",
@@ -1760,7 +1759,7 @@
     "spotlight": {
       "placeholder": "検索するかコマンドを入力…",
       "placeholders": {
-        "workspace": "検索またはフォルダパスを入力",
+        "workspace": "検索またはフォルダパスを入力...",
         "branch": "ブランチを検索...",
         "source": "ソースを検索...",
         "actions": "アクションを検索...",
