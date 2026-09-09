@@ -629,7 +629,8 @@
       "modelPlaceholder": "Select a model",
       "groupPerUser": "Isolate group chat sessions per user",
       "groupPerUserDesc": "Each participant in a group chat gets their own session context."
-    }
+    },
+    "emailProtocol": "Protocol"
   },
   "tabs": {
     "current": "Current",
@@ -866,7 +867,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "Auto Detect",
-    "methodOAuth": "Sign in with GitHub"
+    "methodOAuth": "Sign in with GitHub",
+    "methodPickerDesc": "Pick how you want to authenticate to GitHub.",
+    "oauthDeviceDesc": "Open the verification URL and enter this code to authorize GitHub.",
+    "scanCredHelper": "Git credential helper ({{name}})",
+    "scanEmpty": "Nothing detected",
+    "scanEmptyDesc": "No gh CLI tokens, credential helpers, or SSH keys were found. Pick another method above.",
+    "scanGhCli": "GitHub CLI (gh)",
+    "scanResults": "Detected credentials",
+    "scanResultsDesc": "Pick one to import. We validate tokens against GitHub before saving.",
+    "scanSshKey": "SSH key — {{name}}",
+    "scanning": "Scanning…",
+    "scanningDesc": "Looking for gh CLI tokens, credential helpers, and SSH keys on this machine.",
+    "sshKeyPath": "SSH key path",
+    "sshKeyPathDesc": "Absolute path to the private key (e.g. ~/.ssh/id_ed25519). The matching public key must already be registered on GitHub.",
+    "scanSelectRequired": "Pick a detected credential to import.",
+    "sshKeyPathRequired": "SSH key path is required."
   },
   "builtInTools": {
     "title": "Built-in tools",
@@ -2291,7 +2307,11 @@
     "eventKindPlaceholder": "pull_request",
     "fireError": "Could not start the Routine: {{detail}}",
     "provider": "Provider",
-    "eventKind": "Event"
+    "eventKind": "Event",
+    "fireAccepted": "Run {{status}}",
+    "openSessionError": "Could not open the session",
+    "openWorkItemError": "Could not open the Work Item",
+    "fireStarted": "Routine run started"
   },
   "localModels": {
     "title": "On prem",

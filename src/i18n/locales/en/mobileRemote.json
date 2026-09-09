@@ -174,5 +174,10 @@
     "limit": "Showing up to 1,000 recent sessions",
     "loadMore": "Load more",
     "retry": "Retry loading"
+  },
+  "rounds": {
+    "incomplete": "Earlier rounds are not loaded",
+    "truncated": "Transcript is truncated",
+    "navigationLabel": "Round navigation"
   }
 }

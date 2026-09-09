@@ -433,7 +433,9 @@
         "completed": "Completed session",
         "stillWorking": "Still working"
       }
-    }
+    },
+    "openRoutineWorkItemError": "Could not open the Work Item",
+    "runsEmpty": "No routine runs yet"
   },
   "changes": {
     "scope": {
@@ -791,7 +793,10 @@
           "readUserMessage": "Read User Message",
           "sessionFallback": "Session"
         }
-      }
+      },
+      "next": "Next event",
+      "previous": "Previous event",
+      "scrub": "Replay scrub bar"
     },
     "codeEditor": {
       "switchToListView": "Switch to list view",
@@ -848,7 +853,9 @@
       "waitingForActivity": "Waiting for activity…",
       "viewTaskPrompt": "View task prompt",
       "taskPromptTitle": "Task prompt",
-      "newEventDivider": "New event"
+      "newEventDivider": "New event",
+      "loadingHistory": "Loading history…",
+      "retryHistory": "Couldn’t load history — Retry"
     },
     "dock": {
       "switchTo": "Switch to",
@@ -914,7 +921,9 @@
     "newCanvasAction": "New Canvas",
     "followUpSuggestions": {
       "label": "Suggested next steps"
-    }
+    },
+    "voicePermissionSheetRetry": "Try again",
+    "voicePermissionSheetTitle": "Microphone access needed"
   },
   "listPanel": {
     "showingOf": "Showing {{filtered}} of {{total}}",
@@ -1238,7 +1247,8 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "External History"
+        "externalHistory": "External History",
+        "human": "Work log"
       },
       "fields": {
         "session": "Session",
@@ -1317,7 +1327,10 @@
           "otherTodos": "Other todos"
         },
         "filters": "Filters",
-        "openInGitHub": "Open in GitHub"
+        "openInGitHub": "Open in GitHub",
+        "assigneeUpdateNotApplied": "GitHub did not apply the assignee change",
+        "assigneeUpdateSuccess": "Assignees updated on GitHub",
+        "updateIssueFailed": "Failed to update GitHub issue"
       }
     },
     "sessionViews": {
@@ -1332,9 +1345,20 @@
       "fileCount_one": "{{count}} file",
       "fileCount_other": "{{count}} files",
       "turnCount_one": "{{count}} turn",
-      "turnCount_other": "{{count}} turns"
+      "turnCount_other": "{{count}} turns",
+      "inferredTiming": "End inferred from the next turn"
     },
-    "parentAgentSender": "Parent agent"
+    "parentAgentSender": "Parent agent",
+    "permissionDismiss": "Dismiss on this device",
+    "remoteExecutionNotice": "This action will run on {{desktopName}}.",
+    "conversationNavigator": "Conversation navigator",
+    "goToConversationTurn": "Go to turn {{current}} of {{total}}: {{preview}}",
+    "send": "Send",
+    "sendFailed": "Message could not be sent",
+    "sending": "Sending…",
+    "typeMessage": "Type a message…",
+    "session": "Session",
+    "history": "Sessions"
   },
   "chatStatus": {
     "approved": "Approved",
@@ -2421,7 +2445,8 @@
       "bulletList": "Bullet list",
       "numberedList": "Numbered list",
       "taskList": "Task list",
-      "divider": "Divider"
+      "divider": "Divider",
+      "formatting": "Text formatting"
     },
     "regionNoticeTitle": "Possible regional limitations",
     "regionNoticeBodyProvider": "You are in {{location}}. Certain models may be unavailable in your region.",
@@ -2478,7 +2503,8 @@
         "noRepo": "Select a repo — each runner needs its own worktree",
         "notEnoughRunners": "Set up at least two runnable runners"
       }
-    }
+    },
+    "mode": "Editor mode"
   },
   "planner": {
     "tabs": {
@@ -2825,7 +2851,8 @@
       "explorations_other": "{{count}} explorations",
       "otherTools_one": "{{count}} other tool call",
       "otherTools_other": "{{count}} other tool calls"
-    }
+    },
+    "triggerLabel": "Group chat"
   },
   "orgTask": {
     "create": {
@@ -2914,7 +2941,8 @@
       "meta": {
         "sender": "From",
         "recipient": "To",
-        "subject": "Subject"
+        "subject": "Subject",
+        "status": "Status"
       },
       "broadcastTitle": {
         "running": "Sending message to multiple agents",
@@ -2993,7 +3021,11 @@
     "empty": "No content",
     "reactDisabledTitle": "React preview runs in Simulator",
     "reactDisabledDescription": "Agent JavaScript is not executed inside chat. Open it in Simulator to run the sandboxed React preview.",
-    "viewInSimulator": "View in Simulator"
+    "viewInSimulator": "View in Simulator",
+    "openUrlDescription": "External URLs are not embedded to avoid iframe memory overhead.",
+    "openUrlTitle": "Preview not embedded",
+    "streaming": "streaming",
+    "titleReact": "React Preview"
   },
   "canvasApp": {
     "empty": "No canvas rendered yet",
@@ -3049,7 +3081,8 @@
     "shareDialogError": "The Canvas link could not be created.",
     "shareDialogRetryShort": "Retry short link",
     "shareDialogRetryingShort": "Retrying…",
-    "retry": "Retry"
+    "retry": "Retry",
+    "reactArtifactFrame": "React canvas preview"
   },
   "domSelection": {
     "previewTitle": "Canvas selection preview",
