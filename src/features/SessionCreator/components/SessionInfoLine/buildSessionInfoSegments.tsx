@@ -22,7 +22,7 @@ import { LOCATION_ICONS } from "./locationConfig";
 
 /**
  * Safety cap for source/location labels. The branch segment intentionally has
- * no fixed cap so its flex item can use the remaining row width before the
+ * no fixed cap so its flexible item can use the remaining row width before the
  * shared pill styles apply overflow ellipsis.
  */
 const SESSION_INFO_FIXED_LABEL_MAX_WIDTH = 180;
@@ -180,6 +180,7 @@ export function buildSessionInfoSegments({
   if (showBranchRow) {
     segments.push({
       id: "branch",
+      flexible: true,
       icon: (
         <HugeiconsIcon
           icon={WorkflowCircle05Icon}

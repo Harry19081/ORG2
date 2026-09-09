@@ -97,6 +97,11 @@ describe("buildSessionInfoSegments", () => {
       180,
       undefined,
     ]);
+    expect(
+      segments
+        .filter((segment) => segment.flexible)
+        .map((segment) => segment.id)
+    ).toEqual(["branch"]);
   });
 
   it("shows the worktree source on the branch segment", () => {
