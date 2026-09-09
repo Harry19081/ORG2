@@ -6,7 +6,9 @@
     "redirecting": "Opening secure sign-in",
     "exchanging": "Finishing sign-in",
     "wait": "This should only take a moment",
-    "signIn": "Continue with GitHub",
+    "signIn": "Sign in to ORG2 Cloud",
+    "cancel": "Cancel and return to sign-in",
+    "browserWait": "Complete sign-in in your browser, or cancel to try again",
     "errorTitle": "Sign-in could not be completed",
     "retry": "Try again"
   },

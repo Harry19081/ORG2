@@ -29,7 +29,6 @@ export interface MobileRemoteAuthPort {
   currentUrl(): string;
   callbackUrl(): string;
   scrubCallback(): void;
-  navigate(url: string): void | Promise<void>;
   beginOAuthAttempt(attemptId: string): Promise<void>;
   consumeOAuthAttempt(): Promise<boolean>;
   consumePairingIntent(): Promise<string | null>;
@@ -44,6 +43,15 @@ export interface MobileRemoteAuthPort {
 }
 
 export interface MobileRemoteConnectionPort {
+  /** Shell-specific authentication; the shared app never assembles a ticket. */
+  prepareSocketUrl(
+    config: MobileConnectionConfig,
+    context: {
+      authUserId: string;
+      signal: AbortSignal;
+      getSession(): Promise<MobileAuthSession>;
+    }
+  ): Promise<string>;
   createSocket(url: string): WebSocket;
   load(userId: string): Promise<MobileConnectionConfig | null>;
   listPairedDesktops(userId: string): Promise<MobilePairedDesktopSummary[]>;
@@ -60,6 +68,8 @@ export interface MobileRemoteConnectionPort {
  * Tauri globals. Platform shells own credentials, navigation and lifecycle.
  */
 export interface MobileRemotePlatform {
+  /** Opens an external page using the shell's navigation implementation. */
+  openExternal(url: string): void | Promise<void>;
   readonly kind: "browser" | "ios";
   readonly clientInfo: {
     readonly name: string;
