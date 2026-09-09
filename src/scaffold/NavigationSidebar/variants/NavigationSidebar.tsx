@@ -163,7 +163,7 @@ function NavigationSidebarSectionHeader({
   titleIcon?: ReactNode;
 }) {
   return (
-    <div className="mb-2 flex items-center gap-1.5 px-2 text-[11px] font-medium tracking-wider text-text-2 uppercase">
+    <div className="mb-1 flex items-center gap-1.5 px-2 text-[11px] font-medium tracking-wider text-text-2 uppercase">
       {titleIcon}
       <span className="min-w-0 truncate">{title}</span>
     </div>
@@ -361,7 +361,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
         )}
 
         {pinnedSections.length > 0 && (
-          <div className="flex flex-col gap-3 px-3 pt-1">
+          <div className="flex flex-col gap-2 px-3 pt-1">
             {pinnedSections.map((section) => {
               const isSectionCollapsed =
                 collapsibleSections && collapsedSections.has(section.id);
