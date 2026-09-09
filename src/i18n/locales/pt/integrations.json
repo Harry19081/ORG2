@@ -102,6 +102,8 @@
       "monthlyUsage": "Uso mensal",
       "resetsAvailable": "{{count}} redefinições disponíveis",
       "resetsAvailable_one": "{{count}} redefinição disponível",
+      "resetsAvailable_few": "{{count}} redefinições disponíveis",
+      "resetsAvailable_many": "{{count}} redefinições disponíveis",
       "resetsAvailable_other": "{{count}} redefinições disponíveis",
       "percentLeft": "{{percent}}% restante",
       "refreshUsage": "Atualizar uso",

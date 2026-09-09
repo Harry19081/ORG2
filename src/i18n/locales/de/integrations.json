@@ -101,6 +101,8 @@
       "monthlyUsage": "Monatliche Nutzung",
       "resetsAvailable": "{{count}} Zurücksetzungen verfügbar",
       "resetsAvailable_one": "{{count}} Zurücksetzung verfügbar",
+      "resetsAvailable_few": "{{count}} Zurücksetzungen verfügbar",
+      "resetsAvailable_many": "{{count}} Zurücksetzungen verfügbar",
       "resetsAvailable_other": "{{count}} Zurücksetzungen verfügbar",
       "percentLeft": "{{percent}}% übrig",
       "refreshUsage": "Nutzung aktualisieren",

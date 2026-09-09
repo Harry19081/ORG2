@@ -101,6 +101,8 @@
       "monthlyUsage": "Utilisation mensuelle",
       "resetsAvailable": "{{count}} réinitialisations disponibles",
       "resetsAvailable_one": "{{count}} réinitialisation disponible",
+      "resetsAvailable_few": "{{count}} réinitialisations disponibles",
+      "resetsAvailable_many": "{{count}} réinitialisations disponibles",
       "resetsAvailable_other": "{{count}} réinitialisations disponibles",
       "percentLeft": "{{percent}}% restant",
       "refreshUsage": "Actualiser l’utilisation",

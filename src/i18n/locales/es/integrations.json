@@ -101,6 +101,8 @@
       "monthlyUsage": "Uso mensual",
       "resetsAvailable": "{{count}} restablecimientos disponibles",
       "resetsAvailable_one": "{{count}} restablecimiento disponible",
+      "resetsAvailable_few": "{{count}} restablecimientos disponibles",
+      "resetsAvailable_many": "{{count}} restablecimientos disponibles",
       "resetsAvailable_other": "{{count}} restablecimientos disponibles",
       "percentLeft": "{{percent}}% restante",
       "refreshUsage": "Actualizar uso",

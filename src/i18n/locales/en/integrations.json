@@ -104,6 +104,8 @@
       "monthlyUsage": "Monthly usage",
       "resetsAvailable": "{{count}} resets available",
       "resetsAvailable_one": "{{count}} reset available",
+      "resetsAvailable_few": "{{count}} resets available",
+      "resetsAvailable_many": "{{count}} resets available",
       "resetsAvailable_other": "{{count}} resets available",
       "percentLeft": "{{percent}}% left",
       "refreshUsage": "Refresh usage",
