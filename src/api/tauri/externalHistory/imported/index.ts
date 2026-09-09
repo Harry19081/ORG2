@@ -1,3 +1,4 @@
+import type { ContextUsageSnapshot } from "@src/store/session/cliSessionStatusAtom";
 import type { ActivityChunk } from "@src/types/session/session";
 
 import type { DispatchCategory } from "../../session";
@@ -5,10 +6,12 @@ import { cursorIdeChunks, cursorIdeInitialWindow } from "../cursorIde";
 import type { ExternalCliSourceProbe } from "../detection";
 import {
   type ImportedTranscriptStat,
+  claudeCodeContextUsage,
   claudeCodeHistoryChunks,
   claudeCodeHistoryStat,
 } from "../sources/claudeCode";
 import { clineHistoryChunks } from "../sources/cline";
+import { codexAppContextUsage } from "../sources/codexApp";
 import { codexAppChunks, codexAppInitialWindow } from "../sources/codexApp";
 import { copilotHistoryChunks } from "../sources/copilot";
 import { cursorCliHistoryChunks } from "../sources/cursorCli";
@@ -52,6 +55,7 @@ export type { ImportedTranscriptStat };
 
 export interface ImportedHistorySource extends ImportedHistorySourceDescriptor {
   dispatchCategory: Extract<DispatchCategory, "external_history">;
+  loadContextUsage?(sessionId: string): Promise<ContextUsageSnapshot | null>;
   /** Fast/windowed transcript used when the user opens the local history. */
   loadPreviewChunks(sessionId: string): Promise<ActivityChunk[]>;
   /** Complete source transcript used for cloud replay/fork publication. */
@@ -129,6 +133,7 @@ export const IMPORTED_HISTORY_SOURCES: readonly ImportedHistorySource[] = [
   },
   {
     ...descriptorFor("codex_app"),
+    loadContextUsage: codexAppContextUsage,
     dispatchCategory: "external_history",
     statTranscript: (sessionId) => importedHistoryStat("codex_app", sessionId),
     async loadPreviewChunks(sessionId) {
@@ -141,6 +146,7 @@ export const IMPORTED_HISTORY_SOURCES: readonly ImportedHistorySource[] = [
   },
   {
     ...descriptorFor("claude_code"),
+    loadContextUsage: claudeCodeContextUsage,
     dispatchCategory: "external_history",
     loadPreviewChunks: loadGenericPreviewChunks,
     loadFullTranscriptChunks: claudeCodeHistoryChunks,

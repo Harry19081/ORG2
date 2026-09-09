@@ -17,6 +17,7 @@ import { SessionFilterButton } from "../SessionFilterButton";
 const mocks = vi.hoisted(() => ({
   closeDropdown: vi.fn(),
   toggleDropdown: vi.fn(),
+  toggleIncludeExternal: vi.fn(),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -73,7 +74,7 @@ describe("SessionFilterButton", () => {
           includeExternal: true,
           onSelect,
           onSelectGroupVisibleCount,
-          onToggleIncludeExternal: vi.fn(),
+          onToggleIncludeExternal: mocks.toggleIncludeExternal,
           onRefreshSessions: vi.fn(),
           onCollapseAll: vi.fn(),
           onMarkAllRead: vi.fn(),
@@ -135,8 +136,24 @@ describe("SessionFilterButton", () => {
     expect(
       includeExternal?.querySelector('[data-icon="folder-symlink"]')
     ).not.toBeNull();
-    // Selected, so the trailing check still marks the state the icon labels.
-    expect(includeExternal?.getAttribute("aria-selected")).toBe("true");
+    const toggle = includeExternal?.querySelector('[role="switch"]');
+    expect(toggle?.getAttribute("aria-checked")).toBe("true");
+    expect(toggle?.getAttribute("aria-label")).toBe(
+      "sidebar.filters.includeExternal"
+    );
+  });
+
+  it("toggles Include External once and keeps the menu open", async () => {
+    const toggle = queryTestId(
+      "sidebar-include-external"
+    )?.querySelector<HTMLButtonElement>('[role="switch"]');
+    await act(async () => toggle?.click());
+    expect(mocks.toggleIncludeExternal).toHaveBeenCalledTimes(1);
+    expect(mocks.toggleIncludeExternal).toHaveBeenCalledWith(
+      false,
+      expect.anything()
+    );
+    expect(mocks.closeDropdown).not.toHaveBeenCalled();
   });
 
   it("opens the icon-free second level with the active mode checked", async () => {

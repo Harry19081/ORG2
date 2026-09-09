@@ -57,7 +57,9 @@ export function useSimulatorPlaceholderActions(
         label: bottomPanelCollapsed
           ? t("commands.showBottomPanel")
           : t("commands.hideBottomPanel"),
-        shortcut: getShortcutKeys("toggle_bottom_panel"),
+        get shortcut() {
+          return getShortcutKeys("toggle_bottom_panel");
+        },
         onAction: () => setBottomPanel("toggle"),
       },
       {
@@ -65,7 +67,9 @@ export function useSimulatorPlaceholderActions(
         label: sidebarCollapsed
           ? t("commands.showPrimarySidebar")
           : t("commands.hidePrimarySidebar"),
-        shortcut: getShortcutKeys("toggle_workstation_sidebar"),
+        get shortcut() {
+          return getShortcutKeys("toggle_workstation_sidebar");
+        },
         onAction: () => setPrimarySidebar("toggle"),
       },
     ];

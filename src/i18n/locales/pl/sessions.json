@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Oznacz wszystkie jako przeczytane",
+    "showKanban": "Pokaż Kanban",
+    "showRuntime": "Pokaż Runtime",
+    "pinned": "Przypięte",
+    "unread": "Nieprzeczytane",
+    "running": "W toku",
+    "recent": "Ostatnie",
+    "empty": "Brak sesji — Otwórz aplikację",
+    "quit": "Zamknij ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token kontekstu",
     "followup": "{{tokenCount}} Token follow-up",
@@ -157,7 +168,16 @@
           "24h": "24 godziny",
           "7d": "7 dni",
           "30d": "30 dni",
-          "all": "Cały okres"
+          "all": "Cały okres",
+          "custom": "Własny zakres…"
+        },
+        "customRange": {
+          "start": "Początek",
+          "end": "Koniec",
+          "hint": "Czas lokalny · {{zone}} · Dokładność do sekundy, koniec włącznie",
+          "invalid": "Koniec nie może poprzedzać początku",
+          "apply": "Zastosuj zakres",
+          "cancel": "Anuluj"
         },
         "bucket": {
           "claude": "Claude",
@@ -464,11 +484,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajektoria",
         "tabTodo": "Lista zadań",
-        "expandPanel": "Pokaż panel trajektorii i listy zadań",
-        "placeholderTrajectoryTitle": "Brak zdarzeń",
-        "placeholderTrajectorySubtitle": "Aktywność sesji pojawi się tutaj, gdy Agent zacznie działać",
-        "placeholderTodoTitle": "Brak list zadań",
-        "placeholderTodoSubtitle": "Aktualizacje listy zadań pojawią się tutaj, gdy Agent zapisze zadania"
+        "expandPanel": "Pokaż panel trajektorii i listy zadań"
       },
       "previousEvent": "Poprzednie zdarzenie",
       "nextEvent": "Następne zdarzenie",
@@ -2588,7 +2604,8 @@
     "failedToInterrupt": "Nie udało się przerwać sesji",
     "failedToStop": "Nie udało się zatrzymać Agenta",
     "failedToCheckChanges": "Nie można sprawdzić zmian w plikach. Kontynuowanie cofania.",
-    "insufficientBalance": "Niewystarczające środki dla hostowanej usługi ORGII. Doładuj na orgii.ai/wallet."
+    "insufficientBalance": "Niewystarczające środki dla hostowanej usługi ORGII. Doładuj na orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "W kolejce: inne uruchomienie korzysta z tego checkoutu. Rozpocznie się, gdy tamto się zakończy."
   },
   "revertConfirm": {
     "title": "Niezapisane zmiany w plikach",
@@ -2830,6 +2847,10 @@
     },
     "url": {
       "open": "Otwórz",
+      "changesCount_one": "{{count}} zmiana",
+      "changesCount_few": "{{count}} zmiany",
+      "changesCount_many": "{{count}} zmian",
+      "changesCount_other": "{{count}} zmiany",
       "copyUrl": "Kopiuj URL",
       "copied": "Skopiowano URL",
       "openExternalFailed": "Nie udało się otworzyć URL w domyślnej przeglądarce",

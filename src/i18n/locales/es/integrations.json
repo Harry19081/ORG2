@@ -2126,8 +2126,7 @@
     "terminalProcesses": "Procesos de terminal",
     "chatPreview": "Vista previa del chat",
     "scenario": "Escenario",
-    "selectScenario": "Selecciona un escenario",
-    "sessionSimulation": "Simulación de sesión"
+    "selectScenario": "Selecciona un escenario"
   },
   "rulesTabs": {
     "rules": "Reglas",
@@ -2214,7 +2213,10 @@
     "fireHistory": "Run history",
     "noFires": "No runs yet",
     "openSession": "Open session",
-    "openWorkItem": "Open work item"
+    "openWorkItem": "Open work item",
+    "fireError": "No se pudo iniciar la rutina: {{detail}}",
+    "provider": "Proveedor",
+    "eventKind": "Evento"
   },
   "cursorPlugins": {
     "noPlugins": "No hay plugins de Cursor instalados",

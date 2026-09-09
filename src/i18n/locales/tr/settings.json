@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Ctrl = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Kapsamı \"Editor\" olan kısayollar yalnızca kod düzenleyici odakta iken çalışır",
     "tipsContextual": "Bazı kısayollar bağlama göre farklı davranır",
-    "tipsSearchHint": "Belirli bir kısayolu hızlıca bulmak için arama çubuğunu kullanın"
+    "tipsSearchHint": "Belirli bir kısayolu hızlıca bulmak için arama çubuğunu kullanın",
+    "pressShortcut": "Kısayola basın",
+    "editCommand": "{{command}} kısayolunu düzenle",
+    "requireModifier": "Bir tuşla Control, Command veya Alt ya da bir işlev tuşu kullanın",
+    "conflict": "{{command}} tarafından kullanılıyor",
+    "saveFailed": "Kısayol ayarları kaydedilemedi",
+    "reset": "Sıfırla",
+    "resetAll": "Orijinal ayarları geri yükle",
+    "resetAllDesc": "macOS, Windows ve Linux için varsayılan kısayolları geri yükle",
+    "nativeSyncFailed": "Sistem menüsü kısayolları güncellenemedi"
   },
   "languageServersPage": {
     "installing": "Kuruluyor",

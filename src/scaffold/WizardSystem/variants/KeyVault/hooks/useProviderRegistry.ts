@@ -309,7 +309,6 @@ function buildUnifiedProviders(
         usedAgents.add(cli.name);
         usedApiProviders.add(api.name);
 
-        const isOpenAiBrand = api.name === "openai_api";
         const variants: UnifiedProviderVariant[] = [
           {
             modelType: api.name,
@@ -323,9 +322,7 @@ function buildUnifiedProviders(
           },
           {
             modelType: cli.name,
-            label: isOpenAiBrand
-              ? "Codex Subscription"
-              : `${cli.displayName} Plan`,
+            label: t("wizard.variantSubscription", "Subscription"),
             mode: "cli",
             apiKeyEnvVar: cli.envConfig?.apiKeyEnvVar ?? "",
             supportsBaseUrl: cli.envConfig?.supportsBaseUrl ?? false,
@@ -396,7 +393,7 @@ function buildUnifiedProviders(
       variants: [
         {
           modelType: cli.name,
-          label: `${cli.displayName} Subscription`,
+          label: t("wizard.variantSubscription", "Subscription"),
           mode: "cli",
           apiKeyEnvVar: cli.envConfig?.apiKeyEnvVar ?? "",
           supportsBaseUrl: cli.envConfig?.supportsBaseUrl ?? false,

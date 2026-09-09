@@ -142,28 +142,6 @@ export const codeStatusBarStateAtom = makeStatusBarStateAtom("code");
 export const browserStatusBarStateAtom = makeStatusBarStateAtom("browser");
 export const projectStatusBarStateAtom = makeStatusBarStateAtom("project");
 
-/**
- * @deprecated Use the per-app atom (codeStatusBarStateAtom, etc.) so writes
- * always target the correct slot regardless of which app is currently active.
- */
-export const globalStatusBarStateAtom = atom(
-  (get) => get(activeStatusBarStateAtom),
-  (
-    get,
-    set,
-    update:
-      | GlobalStatusBarState
-      | ((prev: GlobalStatusBarState) => GlobalStatusBarState)
-  ) => {
-    const perApp = get(perAppStatusBarStateAtom);
-    const activeApp = get(activeStatusBarAppAtom);
-    const prev = perApp[activeApp];
-    const newState = typeof update === "function" ? update(prev) : update;
-    set(perAppStatusBarStateAtom, { ...perApp, [newState.appType]: newState });
-  }
-);
-globalStatusBarStateAtom.debugLabel = "globalStatusBarState";
-
 // ============================================
 // Per-App Callbacks
 // ============================================

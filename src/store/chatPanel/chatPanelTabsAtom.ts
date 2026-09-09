@@ -17,7 +17,6 @@ export {
   closeRevokedCloudChannelChatPanelTabsAtom,
   closeWorkItemChatPanelTabAtom,
   nextChatPanelTabAtom,
-  patchChatPanelWorkItemTabAtom,
   prevChatPanelTabAtom,
   reconcileDiscussionChannelTabsAtom,
   reorderChatPanelTabsAtom,

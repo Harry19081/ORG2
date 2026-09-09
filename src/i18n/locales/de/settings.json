@@ -261,7 +261,16 @@
     "tipsModifiersWin": "Strg = Control, Alt = Alt, Shift = Shift",
     "tipsEditorScope": "Kürzel mit Bereich „Editor\" funktionieren nur, wenn der Code-Editor fokussiert ist",
     "tipsContextual": "Einige Kürzel verhalten sich je nach Kontext unterschiedlich",
-    "tipsSearchHint": "Verwenden Sie die Suchleiste, um Kürzel schnell zu finden"
+    "tipsSearchHint": "Verwenden Sie die Suchleiste, um Kürzel schnell zu finden",
+    "pressShortcut": "Tastenkürzel drücken",
+    "editCommand": "Tastenkürzel für {{command}} bearbeiten",
+    "requireModifier": "Control, Command oder Alt mit einer Taste oder eine Funktionstaste verwenden",
+    "conflict": "Bereits von {{command}} verwendet",
+    "saveFailed": "Tastenkürzel konnten nicht gespeichert werden",
+    "reset": "Zurücksetzen",
+    "resetAll": "Ursprüngliche Einstellungen wiederherstellen",
+    "resetAllDesc": "Standardtastenkürzel für macOS, Windows und Linux wiederherstellen",
+    "nativeSyncFailed": "Tastenkürzel im Systemmenü konnten nicht aktualisiert werden"
   },
   "languageServersPage": {
     "installing": "Installieren",

@@ -17,13 +17,13 @@
  * outside this hook (e.g. the agent editing its own definition) propagate
  * without manual refresh calls.
  */
-import { listen } from "@tauri-apps/api/event";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { rpc } from "@src/api/tauri/rpc";
 import { useMounted } from "@src/hooks/lifecycle/useMounted";
 import { createLogger } from "@src/hooks/logger";
+import { useTauriListen } from "@src/hooks/platform/useTauriListen";
 
 import { INTERNAL_AGENT_IDS } from "../config/agentConstants";
 import {
@@ -118,11 +118,22 @@ export function useAgentDefinitions() {
   }, [loaded, refresh]);
 
   // Backend-driven invalidation: any store mutation (including LLM-tool
-  // writes that never touch this hook) re-syncs the atoms.
+  // writes that never touch this hook) re-syncs the atoms. The first mounted
+  // instance claims the single listener slot; it is released on unmount.
+  const [ownsChangeListener, setOwnsChangeListener] = useState(false);
   useEffect(() => {
     if (changeListenerInstalled) return;
     changeListenerInstalled = true;
-    const unlistenPromise = listen("orgii-agent-defs-changed", () => {
+    setOwnsChangeListener(true);
+    return () => {
+      changeListenerInstalled = false;
+      setOwnsChangeListener(false);
+    };
+  }, []);
+
+  useTauriListen(
+    "orgii-agent-defs-changed",
+    () => {
       void fetchAllDefs(true)
         .then((result) => applyResult(result))
         .catch((error) => {
@@ -131,12 +142,9 @@ export function useAgentDefinitions() {
             error
           );
         });
-    });
-    return () => {
-      changeListenerInstalled = false;
-      void unlistenPromise.then((unlisten) => unlisten());
-    };
-  }, [applyResult]);
+    },
+    { enabled: ownsChangeListener }
+  );
 
   const builtInAgents = useMemo(
     () =>
