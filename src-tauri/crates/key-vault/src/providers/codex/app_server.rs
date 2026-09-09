@@ -31,11 +31,13 @@ pub(super) async fn write_temporary_codex_home(
     // that token inside this disposable directory, which would strand Key
     // Vault with the already-consumed value when the directory is removed.
     // Refreshes must go through KeyService's per-account lock and persistence.
+    // Codex deserializes refresh_token as a String: an empty string withholds
+    // the secret while keeping this auth file readable; JSON null does not.
     let auth_json = serde_json::json!({
         "OPENAI_API_KEY": serde_json::Value::Null,
         "tokens": {
             "access_token": access_token,
-            "refresh_token": serde_json::Value::Null,
+            "refresh_token": "",
             "id_token": id_token,
             "account_id": account_id,
         },
