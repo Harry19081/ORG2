@@ -94,6 +94,7 @@
     "notAvailable": "—"
   },
   "stopConfirm": {
+    "failed": "未能停止当前轮次，它可能仍在运行。请重试或检查桌面端。",
     "title": "停止当前 Agent turn？",
     "body": "会向桌面发送 cancel 指令。已运行的 shell 进程是否终止取决于 Agent 策略。",
     "cancel": "取消",
