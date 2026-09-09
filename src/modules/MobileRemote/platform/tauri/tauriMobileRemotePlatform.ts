@@ -212,6 +212,10 @@ export async function createTauriMobileRemotePlatformWithBridge({
 
   const platform: MobileRemotePlatform = {
     kind: "ios",
+    scanQr: (video, signal) =>
+      import("../scanCameraQr").then(({ scanCameraQr }) =>
+        scanCameraQr(video, signal)
+      ),
     openExternal: (url) => bridge.openExternal(url),
     clientInfo,
     runtime,

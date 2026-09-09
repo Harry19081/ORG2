@@ -68,6 +68,8 @@ export interface MobileRemoteConnectionPort {
  * Tauri globals. Platform shells own credentials, navigation and lifecycle.
  */
 export interface MobileRemotePlatform {
+  /** User-initiated, one-shot scan. Aborting must release the camera. */
+  scanQr?(video: HTMLVideoElement, signal: AbortSignal): Promise<string>;
   /** Opens an external page using the shell's navigation implementation. */
   openExternal(url: string): void | Promise<void>;
   readonly kind: "browser" | "ios";
