@@ -99,6 +99,8 @@
       "sessionUsage": "5h 用量",
       "weeklyUsage": "每週用量",
       "monthlyUsage": "每月用量",
+      "resetsAvailable": "{{count}}個可用重設",
+      "resetsAvailable_other": "{{count}}個可用重設",
       "percentLeft": "剩餘 {{percent}}%",
       "refreshUsage": "刷新用量",
       "resets": "{{date}} 重置",

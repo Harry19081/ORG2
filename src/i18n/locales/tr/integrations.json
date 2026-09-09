@@ -99,6 +99,8 @@
       "sessionUsage": "5h kullanımı",
       "weeklyUsage": "Haftalık kullanım",
       "monthlyUsage": "Aylık kullanım",
+      "resetsAvailable": "{{count}} sıfırlama kullanılabilir",
+      "resetsAvailable_other": "{{count}} sıfırlama kullanılabilir",
       "percentLeft": "%{{percent}} kaldı",
       "refreshUsage": "Kullanımı yenile",
       "resets": "{{date}} tarihinde sıfırlanır",

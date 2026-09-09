@@ -99,6 +99,8 @@
       "sessionUsage": "5h 사용량",
       "weeklyUsage": "주간 사용량",
       "monthlyUsage": "월간 사용량",
+      "resetsAvailable": "초기화 {{count}}회 사용 가능",
+      "resetsAvailable_other": "초기화 {{count}}회 사용 가능",
       "percentLeft": "{{percent}}% 남음",
       "refreshUsage": "사용량 새로고침",
       "resets": "{{date}} 리셋",
