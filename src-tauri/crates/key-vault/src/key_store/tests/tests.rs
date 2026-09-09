@@ -1277,6 +1277,33 @@ fn test_permanent_oauth_refresh_failure_disables_key_immediately() {
 }
 
 #[test]
+fn test_reused_codex_refresh_token_disables_key_immediately() {
+    let temp_dir = tempdir().unwrap();
+    let service = KeyService::new(Some(temp_dir.path().to_path_buf()));
+
+    let mut key = ModelKey::new(ModelType::Codex);
+    key.auth_method = AuthMethod::Oauth;
+    let key_id = key.id.clone();
+    service.save_key(key).unwrap();
+
+    let disabled = service
+        .record_oauth_refresh_failure(
+            &key_id,
+            r#"Codex OAuth refresh failed with HTTP 401 Unauthorized: {"code":"refresh_token_reused","message":"Your refresh token has already been used to generate a new access token."}"#,
+        )
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(disabled.oauth_refresh_failure_count, 1);
+    assert_eq!(disabled.health_status, HealthStatus::Invalid);
+    assert!(!disabled.enabled);
+    assert_eq!(
+        disabled.temporary_unavailable_reason.as_deref(),
+        Some("oauth_refresh_failed")
+    );
+}
+
+#[test]
 fn test_oauth_refresh_reset_clears_failure_state_without_reenabling_key() {
     let temp_dir = tempdir().unwrap();
     let service = KeyService::new(Some(temp_dir.path().to_path_buf()));

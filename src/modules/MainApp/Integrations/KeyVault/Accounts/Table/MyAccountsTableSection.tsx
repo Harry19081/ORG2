@@ -60,7 +60,8 @@ interface MyAccountsTableSectionProps {
   onRefreshAccounts?: () => Promise<void>;
   onRefreshAccountUsage?: (accountId: string) => Promise<void>;
   onRevalidateAccount?: (accountId: string) => Promise<void>;
-  refreshingAccountId?: string | null;
+  refreshingUsageAccountIds?: ReadonlySet<string>;
+  refreshingModelsAccountIds?: ReadonlySet<string>;
   onToggleAccount: (account: KeyVaultAccount, enabled: boolean) => void;
   isAccountEnabled: (account: KeyVaultAccount) => boolean;
   onToggleModel?: (
@@ -116,7 +117,8 @@ export default function MyAccountsTableSection({
   onRefreshAccounts,
   onRefreshAccountUsage,
   onRevalidateAccount,
-  refreshingAccountId,
+  refreshingUsageAccountIds,
+  refreshingModelsAccountIds,
   onToggleAccount,
   isAccountEnabled,
   onToggleModel,
@@ -333,7 +335,8 @@ export default function MyAccountsTableSection({
             : onRefreshAccounts
         }
         onRevalidateAccount={onRevalidateAccount}
-        refreshing={refreshingAccountId === account.id}
+        refreshingUsage={refreshingUsageAccountIds?.has(account.id) ?? false}
+        refreshingModels={refreshingModelsAccountIds?.has(account.id) ?? false}
         onEditSave={onEditAccountSave}
         editRequested={editRequestedAccountId === account.id}
         onEditCancel={handleEditCancel}
@@ -353,7 +356,8 @@ export default function MyAccountsTableSection({
       onToggleModel,
       onUpdateAccountEnabledModels,
       onUpdateAccountDefaultVariant,
-      refreshingAccountId,
+      refreshingUsageAccountIds,
+      refreshingModelsAccountIds,
     ]
   );
 
