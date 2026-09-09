@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { MOBILE_REMOTE_RELAY_PRODUCTION_URL } from "@src/config/mobileRemoteRelay";
 
 import type { MobileAuthSession } from "../../auth/mobileAuthState";
 import { createNativeSocketPreparation } from "./nativeSocketPreparation";
@@ -126,4 +129,16 @@ describe("native Relay admission", () => {
     await ok.prepare(config, ok.context);
     expect(vi.getTimerCount()).toBe(0);
   });
+});
+
+it("allows native ticket fetches to the configured production Relay in the bundled CSP", () => {
+  const config = JSON.parse(
+    readFileSync("apps/remote-ios/src-tauri/tauri.conf.json", "utf8")
+  );
+  const relay = new URL(MOBILE_REMOTE_RELAY_PRODUCTION_URL);
+  relay.protocol = relay.protocol === "wss:" ? "https:" : "http:";
+  const connect = config.app.security.csp
+    .split(";")
+    .find((directive: string) => directive.trim().startsWith("connect-src "));
+  expect(connect.trim().split(/\s+/)).toContain(relay.origin);
 });

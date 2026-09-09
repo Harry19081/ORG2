@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { NoDragRegion } from "@src/components/WindowChrome";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
@@ -113,12 +114,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.isComposing) return;
-      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-      const isCaptionsShortcut = isMac
-        ? event.metaKey && event.altKey && !event.ctrlKey && !event.shiftKey
-        : event.ctrlKey && event.altKey && !event.metaKey && !event.shiftKey;
-      if (!isCaptionsShortcut || event.code !== "KeyC") return;
+      if (!matchesShortcut(event, "toggle_captions")) return;
       event.preventDefault();
       event.stopPropagation();
       handleToggleCaption();

@@ -41,10 +41,17 @@ import {
   recordRecentAgentSelectionAtom,
 } from "@src/store/session";
 import { agentRegistryAtom } from "@src/store/session/agentRegistryAtom";
-import { SESSION_TARGET_KIND } from "@src/store/session/creatorStateAtom";
+import {
+  CLI_LAUNCH_MODE,
+  type CliLaunchMode,
+  SESSION_TARGET_KIND,
+} from "@src/store/session/creatorStateAtom";
 import { invokeTauri } from "@src/util/platform/tauri/init";
 
 import type { SpotlightItem } from "../../types";
+import { cliAgentCapabilityDisabled } from "./cliAgentCapability";
+import { isCliAgentHiddenByLaunchMode } from "./cliLaunchModeFilter";
+import { credentialedAccounts } from "./credentialedAccounts";
 import { createHumanSessionOption } from "./humanSessionOption";
 import type { AgentOption, AgentSelection } from "./types";
 
@@ -58,8 +65,17 @@ interface UseDispatchCategoryOptionsArgs {
   isOpen: boolean;
   hideOrgs: boolean;
   hideCliAgents?: boolean;
+  allowedCliAgentTypes?: readonly CliAgentType[];
   /** When true, only CLI agent entries are included (Rust-native agents and orgs are hidden). */
   cliOnly?: boolean;
+  /**
+   * Launch-mode filter owned by the Spotlight's GUI/TUI switch. TUI narrows
+   * the list to CLI agents like `cliOnly`; GUI drops installed CLI agents that
+   * cannot launch a GUI run unless `allowedCliAgentTypes` admits them. CLI
+   * selections carry the mode as `cliLaunchMode`. Surfaces without the switch
+   * (the anchored dropdown) leave it undefined and get the unfiltered list.
+   */
+  cliLaunchMode?: CliLaunchMode;
   includeHumanSession?: boolean;
   currentCategory: DispatchCategory;
   currentAgentDefinitionId?: string;
@@ -79,23 +95,51 @@ interface UseDispatchCategoryOptionsResult {
   optionToItem: (option: AgentOption, itemIdPrefix?: string) => SpotlightItem;
 }
 
+/**
+ * Flattens option groups into the header + row items both pickers render.
+ * Rows are prefixed with their group id so the same option can appear under
+ * "Recent" and under its own group without colliding.
+ */
+export function buildGroupedSpotlightItems(
+  groups: DispatchCategoryOptionGroup[],
+  optionToItem: UseDispatchCategoryOptionsResult["optionToItem"]
+): SpotlightItem[] {
+  const result: SpotlightItem[] = [];
+  for (const group of groups) {
+    result.push({
+      id: group.headerId,
+      label: group.headerLabel,
+      desc: "",
+      icon: "",
+      type: "option" as const,
+      data: { isHeader: true },
+      action: () => {},
+    });
+    for (const option of group.options) {
+      result.push(optionToItem(option, group.headerId));
+    }
+  }
+  return result;
+}
+
 function buildCredentialBadge(
   compatibleAccounts: KeyVaultAccount[]
 ): React.ReactNode {
-  const totalCount = compatibleAccounts.length;
+  const availableAccounts = credentialedAccounts(compatibleAccounts);
+  const totalCount = availableAccounts.length;
   const dotColor = totalCount > 0 ? "bg-success-6" : "bg-danger-6";
   const textColor = totalCount > 0 ? "text-text-2" : "text-text-3";
 
   const uniquePlanTypes = [
     ...new Set(
-      compatibleAccounts
+      availableAccounts
         .filter((acc) => !isApiKeyProvider(acc.modelType))
         .map((acc) => acc.modelType)
     ),
   ];
   const uniqueKeyTypes = [
     ...new Set(
-      compatibleAccounts
+      availableAccounts
         .filter((acc) => isApiKeyProvider(acc.modelType))
         .map((acc) => acc.modelType)
     ),
@@ -131,7 +175,9 @@ export function useDispatchCategoryOptions(
     isOpen,
     hideOrgs,
     hideCliAgents = false,
+    allowedCliAgentTypes,
     cliOnly = false,
+    cliLaunchMode,
     includeHumanSession = false,
     currentCategory,
     currentAgentDefinitionId,
@@ -140,6 +186,8 @@ export function useDispatchCategoryOptions(
     onSelect,
     onClose,
   } = args;
+
+  const showCliOnly = cliOnly || cliLaunchMode === CLI_LAUNCH_MODE.TUI;
 
   const { t } = useTranslation("sessions");
   const { t: tCommon } = useTranslation("common");
@@ -208,7 +256,7 @@ export function useDispatchCategoryOptions(
   }, [cliAgentList, setAgentRegistry]);
 
   const rustCompatibleAccounts = useMemo(
-    () => getRustCompatibleAccounts(registry, accounts),
+    () => credentialedAccounts(getRustCompatibleAccounts(registry, accounts)),
     [registry, accounts]
   );
 
@@ -217,7 +265,8 @@ export function useDispatchCategoryOptions(
     return accounts.filter(
       (acc) =>
         acc.status === "ready" &&
-        (acc.hasKey ?? true) &&
+        acc.enabled &&
+        acc.hasKey &&
         !compatibleSet.has(acc.id)
     );
   }, [accounts, rustCompatibleAccounts]);
@@ -252,15 +301,32 @@ export function useDispatchCategoryOptions(
 
   const cliOptions = useMemo((): AgentOption[] => {
     return installedCliAgents.flatMap((agent) => {
+      // `agent.name` is a wire-format string; reject any value that isn't
+      // in the canonical CLI agent set rather than smuggling it through
+      // a `as CliAgentType` cast (which used to crash downstream consumers
+      // when a stale registry entry slipped in).
       const parsed = CliAgentTypeSchema.safeParse(agent.name);
       if (!parsed.success) return [];
       const agentType = parsed.data;
-      // CLI agents only show plan (subscription) accounts in the badge.
-      const compatibleAccounts = getCliCompatibleAccounts(
-        registry,
+      if (
+        isCliAgentHiddenByLaunchMode({
+          cliLaunchMode,
+          agentType,
+          supportsGui: agent.supportsGui,
+          allowedCliAgentTypes,
+        })
+      ) {
+        return [];
+      }
+      const disabled = cliAgentCapabilityDisabled(
         agentType,
-        accounts
-      ).filter((acc) => !isApiKeyProvider(acc.modelType));
+        allowedCliAgentTypes
+      );
+      // CLI agents only show plan (subscription) accounts in the badge —
+      // API key accounts are not relevant for the session-launch decision.
+      const compatibleAccounts = credentialedAccounts(
+        getCliCompatibleAccounts(registry, agentType, accounts)
+      ).filter((account) => !isApiKeyProvider(account.modelType));
       return [
         {
           id: `cli:${agent.name}`,
@@ -273,11 +339,20 @@ export function useDispatchCategoryOptions(
           isCli: true,
           isOrg: false,
           availableKeys: compatibleAccounts,
+          disabled,
+          disabledLabel: disabled ? tCommon("status.notSupported") : undefined,
           rightContent: buildCredentialBadge(compatibleAccounts),
         },
       ];
     });
-  }, [installedCliAgents, accounts, registry]);
+  }, [
+    allowedCliAgentTypes,
+    cliLaunchMode,
+    installedCliAgents,
+    accounts,
+    registry,
+    tCommon,
+  ]);
 
   const customAgentOptions = useMemo((): AgentOption[] => {
     const rustBadge = buildCredentialBadge(rustCompatibleAccounts);
@@ -317,6 +392,16 @@ export function useDispatchCategoryOptions(
     }));
   }, [allOrgs, rustCompatibleAccounts]);
 
+  // External IDE: drives a separate Cursor.app instance via CDP. No
+  // key vault entry, no Rust agent, no CLI process — Cursor manages
+  // its own auth + model. We surface it as a distinct group so users
+  // don't conflate it with "Cursor CLI" (which IS a CLI agent and
+  // does need a key).
+  //
+  // `cliAgentType: CLI_AGENT.CURSOR` here is purely for icon rendering
+  // parity with the Cursor CLI row — the dispatch routing checks
+  // `category === "cursor_ide"` (not `cliAgentType`), so this is
+  // safe and avoids the `text-text-2`-dimmed brand-icon adapter.
   const externalIdeOptions = useMemo((): AgentOption[] => {
     return [
       // {
@@ -336,7 +421,7 @@ export function useDispatchCategoryOptions(
 
   const allOptions = useMemo(
     () =>
-      cliOnly
+      showCliOnly
         ? [...cliOptions]
         : [
             ...humanOptions,
@@ -347,7 +432,7 @@ export function useDispatchCategoryOptions(
             ...(hideOrgs ? [] : orgOptions),
           ],
     [
-      cliOnly,
+      showCliOnly,
       humanOptions,
       builtInRustOptions,
       cliOptions,
@@ -395,7 +480,7 @@ export function useDispatchCategoryOptions(
       tCommon("selectors.labels.recent"),
       recentOptions
     );
-    if (!cliOnly) {
+    if (!showCliOnly) {
       push("__header_builtin__", t("creator.builtIns"), [
         ...humanOptions,
         ...builtInRustOptions,
@@ -404,7 +489,7 @@ export function useDispatchCategoryOptions(
     if (!hideCliAgents) {
       push("__header_cli__", t("creator.cliAgents"), cliOptions);
     }
-    if (!cliOnly) {
+    if (!showCliOnly) {
       push(
         "__header_external_ide__",
         t("creator.externalIdes"),
@@ -417,7 +502,7 @@ export function useDispatchCategoryOptions(
     }
     return result;
   }, [
-    cliOnly,
+    showCliOnly,
     recentOptions,
     humanOptions,
     builtInRustOptions,
@@ -445,6 +530,10 @@ export function useDispatchCategoryOptions(
             : currentCategory === "rust_agent" &&
               option.agentDefinitionId === currentAgentDefinitionId;
 
+      // Render through ModelIcon (raw brand SVG) whenever we have a
+      // `cliAgentType` — both CLI agent rows and the Cursor IDE row
+      // (which carries `cursor_cli` purely for icon parity). Other
+      // rows fall back to the icon adapter via `resolveAgentIcon`.
       const icon = option.cliAgentType
         ? (iconProps: Record<string, unknown>) => (
             <ModelIcon
@@ -472,6 +561,8 @@ export function useDispatchCategoryOptions(
               ? getCliTransportLabel(option.cliAgentType)
               : undefined,
           availableKeys: option.availableKeys,
+          disabled: option.disabled,
+          tagLabel: option.disabledLabel,
           rightContent: option.rightContent,
           testId: option.isOrg
             ? `session-creator-agent-option-org-${option.agentOrgId}`
@@ -484,6 +575,7 @@ export function useDispatchCategoryOptions(
                   : undefined,
         },
         action: () => {
+          if (option.disabled) return;
           recordRecentAgentSelection({
             category: option.category,
             targetKind: option.targetKind,
@@ -497,6 +589,7 @@ export function useDispatchCategoryOptions(
             agentDefinitionId: option.agentDefinitionId,
             agentOrgId: option.agentOrgId,
             cliAgentType: option.cliAgentType,
+            cliLaunchMode: option.isCli ? cliLaunchMode : undefined,
             agentName: option.name,
             agentIconId: option.iconId,
           });
@@ -509,6 +602,7 @@ export function useDispatchCategoryOptions(
       currentAgentDefinitionId,
       currentAgentOrgId,
       currentCliAgentType,
+      cliLaunchMode,
       recordRecentAgentSelection,
       onSelect,
       onClose,

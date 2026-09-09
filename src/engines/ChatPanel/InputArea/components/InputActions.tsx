@@ -23,7 +23,7 @@ import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut
 import Message from "@src/components/Message";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
   ArrowUp02Icon,
   HugeiconsIcon,
@@ -79,6 +79,9 @@ const InputActions: React.FC<InputActionsProps> = memo(
   }) => {
     const { t } = useTranslation();
     const { sendOnEnter } = useAtomValue(chatAppearanceAtom);
+    const sendShortcut = useShortcutKeys("chat_send", {
+      chatSendOnEnter: sendOnEnter,
+    });
     const lastInputActionRef = useRef<InputActionGuardState | null>(null);
 
     // Non-empty input ALWAYS wins over the working indicator: the user can
@@ -252,9 +255,7 @@ const InputActions: React.FC<InputActionsProps> = memo(
     const tooltipContent = isSendLike ? (
       <KeyboardShortcutTooltipContent
         label={sendTooltipLabel}
-        shortcut={getShortcutKeys("chat_send", {
-          chatSendOnEnter: sendOnEnter,
-        })}
+        shortcut={sendShortcut}
       />
     ) : (
       title

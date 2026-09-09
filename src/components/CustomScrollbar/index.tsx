@@ -14,6 +14,7 @@
  */
 import React, { useCallback, useEffect, useRef } from "react";
 
+import { listenForDrag } from "@src/shared/interaction/dragLifecycle";
 import {
   clearTransientScrollbar,
   revealTransientScrollbar,
@@ -148,6 +149,7 @@ export const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
 
   const handleThumbMouseDown = useCallback(
     (event: React.MouseEvent) => {
+      if (event.button !== 0) return;
       event.preventDefault();
       event.stopPropagation();
       dragListenerCleanupRef.current?.();
@@ -162,13 +164,11 @@ export const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
         handleThumbDrag(moveEvent.clientY);
       };
       const handleMouseUp = () => stopThumbDrag();
-      const cleanupDragListeners = () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      };
-      dragListenerCleanupRef.current = cleanupDragListeners;
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
+      dragListenerCleanupRef.current = listenForDrag({
+        onMove: handleMouseMove,
+        onEnd: handleMouseUp,
+        onCancel: stopThumbDrag,
+      });
     },
     [handleThumbDrag, stopThumbDrag]
   );

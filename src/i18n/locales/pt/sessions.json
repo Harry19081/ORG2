@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Marcar tudo como lido",
+    "showKanban": "Mostrar Kanban",
+    "showRuntime": "Mostrar Runtime",
+    "pinned": "Fixadas",
+    "unread": "Não lidas",
+    "running": "Em execução",
+    "recent": "Recentes",
+    "empty": "Nenhuma sessão — Abrir aplicativo",
+    "quit": "Sair do ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token de contexto",
     "followup": "{{tokenCount}} Token follow-up",
@@ -157,7 +168,16 @@
           "24h": "24 horas",
           "7d": "7 dias",
           "30d": "30 dias",
-          "all": "Todo o período"
+          "all": "Todo o período",
+          "custom": "Intervalo personalizado…"
+        },
+        "customRange": {
+          "start": "Início",
+          "end": "Fim",
+          "hint": "Hora local · {{zone}} · Precisão de segundos, fim incluído",
+          "invalid": "O fim não pode ser anterior ao início",
+          "apply": "Aplicar intervalo",
+          "cancel": "Cancelar"
         },
         "bucket": {
           "claude": "Claude",
@@ -464,11 +484,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajetória",
         "tabTodo": "Tarefas",
-        "expandPanel": "Mostrar painel de trajetória e tarefas",
-        "placeholderTrajectoryTitle": "Ainda não há eventos",
-        "placeholderTrajectorySubtitle": "A atividade da sessão aparecerá aqui quando o Agent for executado",
-        "placeholderTodoTitle": "Sem listas de tarefas",
-        "placeholderTodoSubtitle": "As atualizações de tarefas aparecerão aqui quando o Agent registrar tarefas"
+        "expandPanel": "Mostrar painel de trajetória e tarefas"
       },
       "previousEvent": "Evento anterior",
       "nextEvent": "Próximo evento",
@@ -2550,7 +2566,8 @@
     "failedToInterrupt": "Falha ao interromper a sessão",
     "failedToStop": "Falha ao parar o Agent",
     "failedToCheckChanges": "Não foi possível verificar as alterações de arquivo. Prosseguindo com a reversão.",
-    "insufficientBalance": "Saldo insuficiente para o serviço hospedado ORGII. Recarregue em orgii.ai/wallet."
+    "insufficientBalance": "Saldo insuficiente para o serviço hospedado ORGII. Recarregue em orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "Na fila: outra execução está usando este checkout. Começará assim que ela terminar."
   },
   "revertConfirm": {
     "title": "Alterações de arquivo não salvas",
@@ -2792,6 +2809,8 @@
     },
     "url": {
       "open": "Abrir",
+      "changesCount_one": "{{count}} alteração",
+      "changesCount_other": "{{count}} alterações",
       "copyUrl": "Copiar URL",
       "copied": "URL copiado",
       "openExternalFailed": "Falha ao abrir URL no navegador padrão",

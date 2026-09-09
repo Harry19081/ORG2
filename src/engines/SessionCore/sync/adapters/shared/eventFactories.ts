@@ -277,6 +277,8 @@ export function createSyntheticUserEvent(
   sessionId: string,
   content: string,
   options?: {
+    /** Reuse one optimistic row while retrying the same logical turn. */
+    id?: string;
     createdAt?: string;
     imageDataUrls?: string[];
     /**
@@ -288,14 +290,23 @@ export function createSyntheticUserEvent(
      * Send Now).
      */
     turnIntentId?: string;
+    /** Frontend delivery state for an optimistic user turn. */
+    deliveryStatus?: "pending" | "sent" | "failed";
+    deliveryError?: string;
+    queueMessageId?: string;
+    /** Terminal delivery transferred retry ownership to this durable row. */
+    deliveryOwnerRetired?: boolean;
   }
 ): SessionEvent {
   // Synthetic user placeholders are distinguished by their frontend-only
   // event shape, not by ID prefix. CLI backend user events can also use
   // user-input-* IDs, so consumers must use isSyntheticUserInputEvent().
-  const id = `${ID_PREFIX.USER_INPUT}${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  const id =
+    options?.id ??
+    `${ID_PREFIX.USER_INPUT}${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   const images = options?.imageDataUrls;
   const turnIntentId = options?.turnIntentId;
+  const deliveryStatus = options?.deliveryStatus;
   return {
     id,
     chunk_id: null,
@@ -312,9 +323,24 @@ export function createSyntheticUserEvent(
       syntheticUserInput: true,
       ...(images && images.length > 0 ? { images } : {}),
       ...(turnIntentId ? { turnIntentId } : {}),
+      ...(deliveryStatus ? { deliveryStatus } : {}),
+      ...(options?.deliveryError
+        ? { deliveryError: options.deliveryError }
+        : {}),
+      ...(options?.queueMessageId
+        ? { queueMessageId: options.queueMessageId }
+        : {}),
+      ...(options?.deliveryOwnerRetired === true
+        ? { deliveryOwnerRetired: true }
+        : {}),
     },
     displayText: content,
-    displayStatus: "completed",
+    displayStatus:
+      deliveryStatus === "pending"
+        ? "pending"
+        : deliveryStatus === "failed"
+          ? "failed"
+          : "completed",
     displayVariant: "message",
     activityStatus: "agent",
     isDelta: false,

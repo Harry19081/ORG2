@@ -41,11 +41,8 @@ export function useAppShellStatusBar({
 
   useEffect(() => {
     // Panel callbacks tied to the shared `workStationPrimarySidebarCollapsedAtom`.
-    // Browser has its own sidebar atom (`workStationBrowserSidebarCollapsedAtom`)
-    // and registers its own panel callbacks from useBrowserLayoutState — do NOT
-    // overwrite the browser slot here, otherwise toggling Code Editor's sidebar
-    // would clobber Browser's primaryPanelCollapsed and make the Browser tab bar
-    // app-switcher flicker based on an unrelated app's state.
+    // Browser registers its own status-bar callbacks from useBrowserLayoutState;
+    // leave its independently owned slot untouched.
     const sharedPanelCallbacks = {
       onTogglePrimaryPanel: workStationPanels.togglePrimarySidebar,
       primaryPanelCollapsed,

@@ -1,3 +1,5 @@
+import { isInternalLifecycleEvent } from "@src/engines/SessionCore/ingestion/visibilityFilters";
+
 import {
   isAgentOrgGroupChatUserMessage,
   isAgentOrgInboxTranscriptEvent,
@@ -116,6 +118,10 @@ export function getUnloadedTurnMeta(
 
 function isUnloadedTurnItem(item: OptimizedChatItem | undefined): boolean {
   return getUnloadedTurnMeta(item) !== null;
+}
+
+function isLifecycleItem(item: OptimizedChatItem): boolean {
+  return Boolean(item.event && isInternalLifecycleEvent(item.event));
 }
 
 export function isTurnPreviewItem(
@@ -327,7 +333,22 @@ export function projectChatGroups(
   const groupMeta: ChatGroupMeta[] = groups.map((group) => {
     const headerEvent = group.header?.event;
     const turnId = headerEvent?.id ?? null;
-    const startMs = parseEpochMs(headerEvent?.createdAt);
+    const messageMs = parseEpochMs(headerEvent?.createdAt);
+    // Native runtimes can accept a queued/retried message long after it was
+    // written. Their execution boundary, when available, owns worked-for
+    // timing; the user-message timestamp remains unchanged.
+    let executionStartMs: number | null = null;
+    for (const item of group.items) {
+      if (item.event?.actionType !== "task_start") continue;
+      const candidate = parseEpochMs(item.event.createdAt);
+      if (
+        candidate !== null &&
+        (messageMs === null || candidate >= messageMs)
+      ) {
+        executionStartMs = candidate;
+      }
+    }
+    const startMs = executionStartMs ?? messageMs;
     let endMs: number | null = null;
     for (let i = group.items.length - 1; i >= 0; i--) {
       const itemMs = parseEpochMs(group.items[i].event?.createdAt);
@@ -396,14 +417,13 @@ export function projectChatGroups(
 
     if (!isCollapsed) {
       const keepStructuralPlaceholder = meta.unloadedTurn !== null;
-      const surviving = keepStructuralPlaceholder
-        ? group.items
-        : group.items.filter((item) => !isUnloadedTurnItem(item));
+      const shouldKeep = (item: OptimizedChatItem) =>
+        !isLifecycleItem(item) &&
+        (keepStructuralPlaceholder || !isUnloadedTurnItem(item));
+      const surviving = group.items.filter(shouldKeep);
       survivingPerGroup[groupIndex] = surviving;
       droppedItemTargetByGroup[groupIndex] = group.items.map((item) =>
-        !keepStructuralPlaceholder && isUnloadedTurnItem(item)
-          ? runningFlatIdx
-          : null
+        shouldKeep(item) ? null : runningFlatIdx
       );
       groupCounts[groupIndex] = surviving.length;
       runningFlatIdx += surviving.length;
@@ -424,10 +444,13 @@ export function projectChatGroups(
         groupCounts[groupIndex] = previews.length;
         runningFlatIdx += previews.length;
       } else {
-        survivingPerGroup[groupIndex] = group.items;
-        droppedItemTargetByGroup[groupIndex] = group.items.map(() => null);
-        groupCounts[groupIndex] = group.items.length;
-        runningFlatIdx += group.items.length;
+        const surviving = group.items.filter((item) => !isLifecycleItem(item));
+        survivingPerGroup[groupIndex] = surviving;
+        droppedItemTargetByGroup[groupIndex] = group.items.map((item) =>
+          isLifecycleItem(item) ? runningFlatIdx : null
+        );
+        groupCounts[groupIndex] = surviving.length;
+        runningFlatIdx += surviving.length;
       }
       continue;
     }
@@ -465,7 +488,7 @@ export function projectChatGroups(
 
     if (keepIndex === -1) {
       const structuralSourceIndex = group.items.findIndex(
-        (item) => !isUnloadedTurnItem(item)
+        (item) => !isUnloadedTurnItem(item) && !isLifecycleItem(item)
       );
       const structuralSource = group.items[structuralSourceIndex];
       if (!structuralSource) {
@@ -488,7 +511,9 @@ export function projectChatGroups(
       continue;
     }
 
-    const keptIndices = [keepIndex, ...pinnedIndices];
+    // Collapse changes visibility, not chronology: a failed attempt before
+    // a successful retry must not become the apparent final result.
+    const keptIndices = [keepIndex, ...pinnedIndices].sort((a, b) => a - b);
     const keptIndexSet = new Set(keptIndices);
     const kept = keptIndices.map((index) => group.items[index]);
     survivingPerGroup[groupIndex] = kept;

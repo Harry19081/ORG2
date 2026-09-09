@@ -8,7 +8,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { DetectedKey, ModelType } from "@src/api/types/keys";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import {
   AlertCircleIcon,
   Cancel01Icon,
@@ -200,9 +200,9 @@ const KeySelectionModal: React.FC<KeySelectionModalProps> = ({
                       )}
                     </div>
                     {cred.validated === false && cred.validation_message && (
-                      <InlineAlert type="danger">
+                      <PageNotice type="danger">
                         {cred.validation_message}
-                      </InlineAlert>
+                      </PageNotice>
                     )}
                     {cred.validated &&
                       cred.available_models &&

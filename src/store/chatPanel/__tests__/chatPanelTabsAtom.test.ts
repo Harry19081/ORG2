@@ -50,6 +50,7 @@ import {
   chatPanelCreateProjectContextAtom,
   chatPanelCreateTargetAtom,
   chatPanelSelectedWorkItemAtom,
+  chatPanelSelectionStateAtom,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
 import {
@@ -405,6 +406,116 @@ describe("closeWorkItemChatPanelTabAtom", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it("updates the tab-owned work item synchronously without a mounted ChatPanel or mirror effect", async () => {
+    const {
+      store,
+      openWorkItemInChatPanelTabAtom,
+      chatPanelSelectedWorkItemAtom,
+      chatPanelTabsAtom,
+    } = await loadChatPanelTabAtoms();
+    // Mount storage before seeding; its first subscription intentionally resets
+    // persisted tabs to Launchpad, matching application startup.
+    const onTabsChange = vi.fn();
+    const unsubscribe = store.sub(chatPanelTabsAtom, onTabsChange);
+    const workItem = {
+      shortId: "W-1",
+      projectSlug: "project",
+      projectId: "project",
+      projectName: "Project",
+      orgId: "org-a",
+      workItem: { session_id: "W-1", name: "Before" },
+    } as never;
+    store.set(openWorkItemInChatPanelTabAtom, workItem);
+    const tabId = store.get(activeChatPanelTabAtom)!.id;
+    store.set(
+      chatPanelSelectedWorkItemAtom,
+      (current) =>
+        current && {
+          ...current,
+          workItem: { ...current.workItem, name: "After" },
+        }
+    );
+    const edited = store.get(chatPanelSelectedWorkItemAtom);
+    expect(
+      store.get(chatPanelTabsAtom).tabs.find((tab) => tab.id === tabId)
+    ).toMatchObject({ title: "After", workItem: edited });
+    expect(store.get(chatPanelSelectionStateAtom)).toEqual({
+      kind: "workItem",
+      target: { tabId },
+    });
+    onTabsChange.mockClear();
+    store.set(chatPanelSelectedWorkItemAtom, (current) => current);
+    expect(onTabsChange).not.toHaveBeenCalled();
+    unsubscribe();
+    store.set(chatPanelNavigateAtom, { kind: CHAT_PANEL_SURFACE_KIND.SESSION });
+    store.set(activateChatPanelTabAtom, tabId);
+    expect(store.get(chatPanelSelectedWorkItemAtom)).toBe(edited);
+    const refreshed = {
+      ...edited!,
+      workItem: { ...edited!.workItem, name: "Refreshed" },
+    };
+    store.set(chatPanelTabsAtom, (state) => ({
+      ...state,
+      tabs: state.tabs.map((tab) =>
+        tab.id === tabId ? { ...tab, workItem: refreshed } : tab
+      ),
+    }));
+    expect(store.get(chatPanelSelectedWorkItemAtom)).toBe(refreshed);
+  });
+
+  it("keeps matching short IDs in different orgs isolated and ignores stale functional refreshes", async () => {
+    const {
+      store,
+      openWorkItemInChatPanelTabAtom,
+      chatPanelSelectedWorkItemAtom,
+      chatPanelTabsAtom,
+    } = await loadChatPanelTabAtoms();
+    const first = {
+      shortId: "W-1",
+      projectId: "p",
+      projectSlug: "p",
+      projectName: "Project",
+      orgId: "org-a",
+      workItem: { session_id: "W-1", name: "A" },
+    } as never;
+    const second = {
+      shortId: "W-1",
+      projectId: "p",
+      projectSlug: "p",
+      projectName: "Project",
+      orgId: "org-b",
+      workItem: { session_id: "W-1", name: "B" },
+    } as never;
+    store.set(openWorkItemInChatPanelTabAtom, first);
+    store.set(openWorkItemInChatPanelTabAtom, second);
+    const before = store.get(chatPanelTabsAtom);
+    store.set(chatPanelSelectedWorkItemAtom, (current) =>
+      current?.orgId === "org-a"
+        ? { ...current, workItem: { ...current.workItem, name: "Late A" } }
+        : current
+    );
+    expect(store.get(chatPanelTabsAtom)).toBe(before);
+    expect(store.get(chatPanelSelectedWorkItemAtom)).toBe(second);
+    store.set(
+      chatPanelSelectedWorkItemAtom,
+      (current) =>
+        current && {
+          ...current,
+          workItem: { ...current.workItem, name: "Updated B" },
+        }
+    );
+    expect(
+      store
+        .get(chatPanelTabsAtom)
+        .tabs.find((tab) => tab.workItem?.orgId === "org-a")?.workItem
+    ).toBe(first);
+    expect(
+      store
+        .get(chatPanelTabsAtom)
+        .tabs.find((tab) => tab.workItem?.orgId === "org-b")?.title
+    ).toBe("Updated B");
   });
 
   it("removes the tab-owned payload and clears the active selection", async () => {

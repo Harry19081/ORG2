@@ -2129,8 +2129,7 @@
     "terminalProcesses": "Процессы терминала",
     "chatPreview": "Просмотр чата",
     "scenario": "Сценарий",
-    "selectScenario": "Выберите сценарий",
-    "sessionSimulation": "Симуляция сессии"
+    "selectScenario": "Выберите сценарий"
   },
   "rulesTabs": {
     "rules": "Правила",
@@ -2217,7 +2216,10 @@
     "fireHistory": "Run history",
     "noFires": "No runs yet",
     "openSession": "Open session",
-    "openWorkItem": "Open work item"
+    "openWorkItem": "Open work item",
+    "fireError": "Не удалось запустить рутину: {{detail}}",
+    "provider": "Провайдер",
+    "eventKind": "Событие"
   },
   "cursorPlugins": {
     "noPlugins": "Плагины Cursor не установлены",

@@ -13,12 +13,15 @@ use crate::sources::imported_history::{
     ImportedHistoryRecentPath, ImportedHistorySessionPage, ImportedHistorySessionRow,
 };
 
+mod context_usage;
 mod desktop_exec;
 mod impact;
 mod index;
 mod meta;
 mod normalize;
 mod transcript;
+
+pub use index::load_codex_context_usage_for_session;
 
 // Public API — preserved at `...::sources::codex::app::*`.
 pub use index::{

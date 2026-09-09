@@ -1,4 +1,15 @@
 {
+  "tray": {
+    "markAllRead": "Отметить всё как прочитанное",
+    "showKanban": "Показать Канбан",
+    "showRuntime": "Показать Runtime",
+    "pinned": "Закреплённые",
+    "unread": "Непрочитанные",
+    "running": "Выполняются",
+    "recent": "Недавние",
+    "empty": "Нет сеансов — Открыть приложение",
+    "quit": "Выйти из ORG2"
+  },
   "toolUsage": {
     "estimatedContext": "{{tokenCount}} Token контекста",
     "followup": "{{tokenCount}} Token follow-up",
@@ -157,7 +168,16 @@
           "24h": "24 часа",
           "7d": "7 дней",
           "30d": "30 дней",
-          "all": "За всё время"
+          "all": "За всё время",
+          "custom": "Свой период…"
+        },
+        "customRange": {
+          "start": "Начало",
+          "end": "Конец",
+          "hint": "Местное время · {{zone}} · До секунды, включая конечную секунду",
+          "invalid": "Конец не может быть раньше начала",
+          "apply": "Применить период",
+          "cancel": "Отмена"
         },
         "bucket": {
           "claude": "Claude",
@@ -460,11 +480,7 @@
       "bottomPanel": {
         "tabTrajectory": "Trajectory",
         "tabTodo": "Todo",
-        "expandPanel": "Показать панель trajectory и todo",
-        "placeholderTrajectoryTitle": "Пока нет событий",
-        "placeholderTrajectorySubtitle": "Активность сессии появится здесь после запуска Agent",
-        "placeholderTodoTitle": "Нет списков задач",
-        "placeholderTodoSubtitle": "Обновления todo появятся, когда Agent запишет задачи"
+        "expandPanel": "Показать панель trajectory и todo"
       },
       "previousEvent": "Предыдущее событие",
       "nextEvent": "Следующее событие",
@@ -2570,7 +2586,8 @@
     "failedToInterrupt": "Не удалось прервать Session",
     "failedToStop": "Не удалось остановить Agent",
     "failedToCheckChanges": "Не удалось проверить изменения файлов. Будет выполнен откат.",
-    "insufficientBalance": "Недостаточно средств для использования хостингового сервиса ORGII. Пополните счёт на orgii.ai/wallet."
+    "insufficientBalance": "Недостаточно средств для использования хостингового сервиса ORGII. Пополните счёт на orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "В очереди: этот checkout занят другим запуском. Запуск начнётся, как только он завершится."
   },
   "planning": {
     "agentTyping": "Agent печатает...",
@@ -2837,6 +2854,10 @@
     },
     "url": {
       "open": "Открыть",
+      "changesCount_one": "{{count}} изменение",
+      "changesCount_few": "{{count}} изменения",
+      "changesCount_many": "{{count}} изменений",
+      "changesCount_other": "{{count}} изменения",
       "copyUrl": "Скопировать URL",
       "copied": "URL скопирован",
       "openExternalFailed": "Не удалось открыть URL в браузере по умолчанию",

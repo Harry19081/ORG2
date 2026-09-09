@@ -1770,7 +1770,7 @@
     "markdownContentDesc": "注入 Agent 系統提示詞的 Markdown 指令",
     "markdownContentPlaceholder": "在此編寫 Markdown 政策...",
     "noMarkdownContent": "暫無內容",
-    "importSelected": "導入 ({{count}})",
+    "importSelected": "匯入{{count}}個",
     "importRuleColumn": "規則",
     "allImported": "所有{{item}}均已導入",
     "importedItemRules": "規則",
@@ -2159,8 +2159,7 @@
     "terminalProcesses": "終端進程",
     "chatPreview": "聊天預覽",
     "scenario": "場景",
-    "selectScenario": "選擇場景",
-    "sessionSimulation": "工作階段模擬"
+    "selectScenario": "選擇場景"
   },
   "rulesTabs": {
     "rules": "規則",
@@ -2247,7 +2246,10 @@
     "fireHistory": "运行历史",
     "noFires": "暂无运行记录",
     "openSession": "打开会话",
-    "openWorkItem": "打开工作项"
+    "openWorkItem": "打开工作项",
+    "fireError": "無法啟動例程：{{detail}}",
+    "provider": "提供方",
+    "eventKind": "事件"
   },
   "cursorPlugins": {
     "noPlugins": "未安裝任何 Cursor 插件",

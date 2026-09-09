@@ -33,6 +33,8 @@ import {
   markForkHandoffConsumed,
   resolveForkWorkspacePath,
 } from "./forkSession";
+import { clearForkSetupMemory, saveForkSetupMemory } from "./forkSetupMemory";
+import { ForkOperationError } from "./forkSnapshotIntegrity";
 import {
   resolveLocalCheckoutForScopeKey,
   resolveMatchingOrgRepoScope,
@@ -250,6 +252,39 @@ describe("resolveForkWorkspacePath", () => {
 });
 
 describe("forkTeammateSession (design §16.11 relay completion)", () => {
+  it("reopens setup once when a remembered account is unavailable", async () => {
+    const options = makeForkOptions({ repoScopeKey: undefined });
+    saveForkSetupMemory(options.remoteSession.repoScopeKey, {
+      workspaceRepoPath: "/old/checkout",
+      execution: { ...options.execution, accountId: "removed-account" },
+    });
+    forkSessionMock.mockRejectedValueOnce(
+      new ForkOperationError("agent_unavailable", "remote-1", "Account removed")
+    );
+    const pending = forkTeammateSession({
+      ...options,
+      promptForExecution: true,
+    });
+    await vi.waitFor(() =>
+      expect(store.get(forkSessionSetupRequestAtom)).not.toBeNull()
+    );
+    expect(forkSessionMock).toHaveBeenCalledTimes(1);
+    store.get(forkSessionSetupRequestAtom)?.resolve({
+      workspaceRepoPath: "/new/checkout",
+      execution: options.execution,
+    });
+    await pending;
+    expect(forkSessionMock).toHaveBeenCalledTimes(2);
+    expect(forkSessionMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        workspaceRepoPath: "/new/checkout",
+        execution: options.execution,
+      })
+    );
+    expect(saveSessionMock).toHaveBeenCalledTimes(1);
+    clearForkSetupMemory(options.remoteSession.repoScopeKey);
+  });
+
   it("waits for one explicit workspace/account/model setup before fetching the fork", async () => {
     const forkPromise = forkTeammateSession({
       ...makeForkOptions({ repoScopeKey: undefined }),

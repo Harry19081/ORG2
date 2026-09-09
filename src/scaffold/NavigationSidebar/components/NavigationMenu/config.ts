@@ -25,12 +25,8 @@ export interface NavigationMenuRowAction {
 type NavigationMenuIconAction = NavigationMenuRowAction;
 
 /**
- * Navigation menu item configuration
- * Defines structure for menu items used in sidebar navigation
- *
- * Tab Types:
- * - mainApp: app, terminal, browser
- * - code: editor
+ * Sidebar navigation item configuration, including optional route targets,
+ * nested items, and row actions.
  */
 export interface NavigationMenuItem {
   id: string;
@@ -84,8 +80,6 @@ export interface NavigationMenuItem {
   /** This row opens a chat-panel tab and supports explicit new-tab navigation. */
   opensChatPanelTab?: boolean;
   routePath?: string;
-  /** Tab type for proper tab handling */
-  tabType?: "app" | "terminal" | "browser" | "editor";
   children?: NavigationMenuItem[];
   /**
    * For a row that has `children` (renders as an expandable parent): the row

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import PageNotice from "@src/components/PageNotice";
 import type { OrgMember } from "@src/modules/MainApp/AgentOrgs/types";
 import { truncate } from "@src/util/string/truncate";
 
@@ -63,7 +64,7 @@ export function ReachabilityPreview({
   return (
     <div className="space-y-3">
       {isolatedIds.length > 0 ? (
-        <div className="rounded-md border border-solid border-warning-3 bg-warning-1 px-3 py-2 text-xs text-warning-6">
+        <PageNotice type="warning" role="status">
           {t("agentOrgs.orgWizard.reachability.isolatedWarn", {
             names: isolatedIds
               .map(
@@ -71,7 +72,7 @@ export function ReachabilityPreview({
               )
               .join(", "),
           })}
-        </div>
+        </PageNotice>
       ) : null}
 
       <div className="overflow-x-auto">

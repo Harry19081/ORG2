@@ -28,12 +28,12 @@ import { useAppShellActions } from "./hooks/useAppShellActions";
 import { useAppShellDerivedState } from "./hooks/useAppShellDerivedState";
 import { useAppShellDock } from "./hooks/useAppShellDock";
 import { useAppShellRepo } from "./hooks/useAppShellRepo";
-import { useAppShellRouteSync } from "./hooks/useAppShellRouteSync";
 import { useAppShellSimulatorPanelSync } from "./hooks/useAppShellSimulatorPanelSync";
 import { useAppShellStationMode } from "./hooks/useAppShellStationMode";
 import { useAppShellStatusBar } from "./hooks/useAppShellStatusBar";
 import { useLaunchpadTab } from "./hooks/useLaunchpadTab";
 import { useTerminalTabTeardown } from "./hooks/useTerminalTabTeardown";
+import { useWorkstationRouteEntry } from "./hooks/useWorkstationRouteEntry";
 import { shouldShowWorkStationStatusBar } from "./statusBarVisibility";
 import { shouldEnableWorkspacePortScan } from "./workspacePortScanVisibility";
 
@@ -65,7 +65,7 @@ const AppShell = React.memo(
     const { visitedModes } = useAppShellDock();
     // Called for its side effects on the workstation base path (station mode /
     // chat visibility / chat width); the content host follows the active tab.
-    useAppShellRouteSync();
+    useWorkstationRouteEntry();
 
     const { isAgentStation, illuminateAgentStationChrome } =
       useAppShellStationMode({ followAgentHighlightEnabled });

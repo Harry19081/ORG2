@@ -8,6 +8,7 @@ import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreP
 import { getLoadedPayloadStats } from "@src/engines/SessionCore/payloads";
 import { getLoadedTurnRegistryStats } from "@src/engines/SessionCore/turns/loadedTurnRegistry";
 import { getHydratedEventStats } from "@src/engines/Simulator/apps/core/fullEventHydrationRegistry";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import { screenshotCacheStatsAtom } from "@src/store/workstation/browser/browserAutomationAtom";
 
@@ -122,6 +123,7 @@ export function useRuntimeRamStats(enabled: boolean): UseRuntimeRamStatsResult {
   const sampleAbortRef = useRef<AbortController | null>(null);
   const sampleGenerationRef = useRef(0);
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
 
   const collectRows = useCallback((): RuntimeRamPartRow[] => {
     const events = store.get(eventsAtom);
@@ -271,7 +273,6 @@ export function useRuntimeRamStats(enabled: boolean): UseRuntimeRamStatsResult {
   }, [store, t]);
 
   useEffect(() => {
-    mountedRef.current = true;
     const cancel = () => {
       sampleGenerationRef.current += 1;
       sampleAbortRef.current?.abort();
@@ -284,7 +285,6 @@ export function useRuntimeRamStats(enabled: boolean): UseRuntimeRamStatsResult {
     };
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
-      mountedRef.current = false;
       cancel();
       document.removeEventListener("visibilitychange", onVisibility);
     };
