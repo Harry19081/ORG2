@@ -44,7 +44,7 @@ export const SpotlightPillBar: React.FC<SpotlightPillBarProps> = ({
           return (
             <div
               key={`${segment.type}-${segment.id}`}
-              className={`${SPOTLIGHT_CLASSES.primaryPill} ${canRemove ? "cursor-pointer" : ""}`}
+              className={`${SPOTLIGHT_CLASSES.primaryPill} ${canRemove ? SPOTLIGHT_CLASSES.interactivePill : ""}`}
               onClick={
                 canRemove
                   ? (event) => handlePillRemove(index, event)
@@ -58,7 +58,7 @@ export const SpotlightPillBar: React.FC<SpotlightPillBarProps> = ({
                   data-icon="chevron-left"
                   size={13}
                   strokeWidth={2.5}
-                  className="shrink-0"
+                  className="block shrink-0 self-center"
                 />
               )}
               <span
