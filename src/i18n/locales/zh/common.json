@@ -605,8 +605,7 @@
     "agentTerminal": "Agent 终端",
     "myStation": "我的工作站",
     "agentStation": "Agent的工作站",
-    "myTerminal": "我的终端",
-    "myTerminalInfo": "我的终端信息"
+    "myTerminal": "我的终端"
   },
   "tooltips": {
     "closeEsc": "关闭 (Esc)",
@@ -1591,7 +1590,7 @@
     "spotlight": {
       "placeholder": "搜索或输入命令…",
       "placeholders": {
-        "workspace": "搜索或输入文件夹路径",
+        "workspace": "搜索或输入文件夹路径...",
         "branch": "搜索分支...",
         "source": "搜索来源...",
         "actions": "搜索操作...",

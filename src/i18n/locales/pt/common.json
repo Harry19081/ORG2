@@ -774,8 +774,7 @@
     "agentTerminal": "Agent Terminal",
     "myStation": "Minha estação",
     "agentStation": "Estação do Agent",
-    "myTerminal": "My Terminal",
-    "myTerminalInfo": "Informações do My Terminal"
+    "myTerminal": "My Terminal"
   },
   "tooltips": {
     "closeEsc": "Fechar (Esc)",
@@ -1760,7 +1759,7 @@
     "spotlight": {
       "placeholder": "Pesquise ou digite um comando...",
       "placeholders": {
-        "workspace": "Pesquisar ou inserir caminho da pasta",
+        "workspace": "Pesquisar ou inserir caminho da pasta...",
         "branch": "Pesquisar branch...",
         "source": "Pesquisar origem...",
         "actions": "Pesquisar ações...",

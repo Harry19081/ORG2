@@ -605,8 +605,7 @@
     "agentTerminal": "Agent Terminal",
     "myStation": "My Station",
     "agentStation": "Agent's Station",
-    "myTerminal": "My Terminal",
-    "myTerminalInfo": "My Terminal Info"
+    "myTerminal": "My Terminal"
   },
   "tooltips": {
     "closeEsc": "Close (Esc)",
@@ -1591,7 +1590,7 @@
     "spotlight": {
       "placeholder": "Search or type a command...",
       "placeholders": {
-        "workspace": "Search or enter folder path",
+        "workspace": "Search or enter folder path...",
         "branch": "Search branch...",
         "source": "Search source...",
         "actions": "Search actions...",

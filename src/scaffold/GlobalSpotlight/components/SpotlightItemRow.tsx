@@ -353,6 +353,21 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
       );
     }
 
+    const tagBadge =
+      !data.statusContent && data.tagLabel && item.type !== "branch" ? (
+        <span
+          className={`${TAG_BASE_CLASSES} shrink-0 px-[10px] py-1.5 text-[11px] ${
+            isDisabled ? "bg-fill-2 text-text-3" : "text-slate-600"
+          }`}
+        >
+          {isDisabled && (
+            <HugeiconsIcon icon={LockIcon} data-icon="lock" size={10} />
+          )}
+          {data.tagLabel}
+        </span>
+      ) : null;
+    const showSecondaryStatus = isDisabled && data.isSelector === true;
+
     const row = (
       <div
         data-testid={testId}
@@ -477,6 +492,11 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
                 {data.inlineTag}
               </span>
             )}
+            {showSecondaryStatus && !data.statusContent && data.tagLabel && (
+              <span className="shrink-0 text-[10px] text-text-3">
+                {data.tagLabel}
+              </span>
+            )}
           </div>
           {item.desc && (
             <DescLine desc={item.desc} descTitle={data.descTitle} />
@@ -503,25 +523,15 @@ export const SpotlightItemRow = memo<SpotlightItemRowProps>(
               {data.statusContent as React.ReactNode}
             </span>
           ) : (
-            data.tagLabel &&
-            item.type !== "branch" && (
-              <span
-                className={`${TAG_BASE_CLASSES} px-[10px] py-1.5 text-[11px] ${
-                  isDisabled ? "bg-fill-2 text-text-3" : "text-slate-600"
-                }`}
-              >
-                {isDisabled && (
-                  <HugeiconsIcon icon={LockIcon} data-icon="lock" size={10} />
-                )}
-                {data.tagLabel}
-              </span>
-            )
+            !showSecondaryStatus && tagBadge
           )}
 
           {(item.type === "action" ||
             item.type === "command" ||
             item.type === "hint") &&
-            item.shortcut && <KeyboardShortcut shortcut={item.shortcut} />}
+            item.shortcut && (
+              <KeyboardShortcut shortcut={item.shortcut} rendering="original" />
+            )}
 
           {hasDisclosureChevron && (
             <span className="spotlight-disclosure-chevron pointer-events-none inline-flex h-5 shrink-0 items-center justify-center overflow-hidden text-primary-6">

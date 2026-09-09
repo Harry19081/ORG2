@@ -2482,8 +2482,10 @@
     "mentionGroup": "Colegas de equipe"
   },
   "weeklyQuotaHistory": {
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Próxima semana",
+    "emptyWeek": "Sem registros para esta semana",
     "title": "Histórico de cota semanal",
-    "description": "Cota restante · Últimos 28 dias · Amostrada a cada hora enquanto o app está visível e online · Leituras ausentes são lacunas",
     "error": "O histórico de cota está indisponível. Uma nova tentativa será feita quando você voltar a esta janela",
     "empty": "Conecte uma conta do Claude Code, Codex ou OpenCode Go no Key Vault para começar a acompanhar",
     "loading": "Carregando histórico de cota…",

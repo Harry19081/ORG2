@@ -774,8 +774,7 @@
     "agentTerminal": "Agent Terminal",
     "myStation": "İstasyonum",
     "agentStation": "Agent istasyonu",
-    "myTerminal": "Terminalim",
-    "myTerminalInfo": "Terminalim bilgisi"
+    "myTerminal": "Terminalim"
   },
   "tooltips": {
     "closeEsc": "Kapat (Esc)",
@@ -1760,7 +1759,7 @@
     "spotlight": {
       "placeholder": "Ara veya komut yaz…",
       "placeholders": {
-        "workspace": "Ara veya klasör yolu gir",
+        "workspace": "Ara veya klasör yolu gir...",
         "branch": "Dal ara...",
         "source": "Kaynak ara...",
         "actions": "Eylem ara...",

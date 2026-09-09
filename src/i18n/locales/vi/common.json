@@ -774,8 +774,7 @@
     "agentTerminal": "Agent Terminal",
     "myStation": "Trạm của tôi",
     "agentStation": "Trạm của Agent",
-    "myTerminal": "Terminal của tôi",
-    "myTerminalInfo": "Thông tin terminal của tôi"
+    "myTerminal": "Terminal của tôi"
   },
   "tooltips": {
     "closeEsc": "Đóng (Esc)",
@@ -1760,7 +1759,7 @@
     "spotlight": {
       "placeholder": "Tìm kiếm hoặc nhập lệnh…",
       "placeholders": {
-        "workspace": "Tìm kiếm hoặc nhập đường dẫn thư mục",
+        "workspace": "Tìm kiếm hoặc nhập đường dẫn thư mục...",
         "branch": "Tìm kiếm nhánh...",
         "source": "Tìm kiếm nguồn...",
         "actions": "Tìm kiếm hành động...",
