@@ -76,9 +76,30 @@ describe("transcript top padding under floating chrome", () => {
 });
 
 describe("collapsing the tab row into the published header", () => {
-  it("folds a pane that holds a single tab regardless of maximization", () => {
+  it("folds a single tab on maximized or externally sized surfaces", () => {
     expect(shouldCollapseChatPanelTabRow({ tabCount: 1 })).toBe(true);
   });
+
+  it.each([
+    [420, false],
+    [639, false],
+    [640, true],
+    [800, true],
+  ])(
+    "uses the compact layout at split width %ipx: %s",
+    (splitPaneWidth, collapsed) => {
+      const actual = shouldCollapseChatPanelTabRow({
+        tabCount: 1,
+        splitPaneWidth,
+      });
+      expect(actual).toBe(collapsed);
+      expect(resolveChatPanelChromeTopInsetPx(true, actual)).toBe(
+        collapsed
+          ? CHAT_PANEL_COLLAPSED_HEADER_HEIGHT_PX
+          : CHAT_PANEL_HEADER_STACK_HEIGHT_PX
+      );
+    }
+  );
 
   it("keeps the row whenever a second tab exists to switch to", () => {
     expect(shouldCollapseChatPanelTabRow({ tabCount: 2 })).toBe(false);
