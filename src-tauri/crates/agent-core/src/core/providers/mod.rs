@@ -18,6 +18,7 @@ pub mod factory;
 pub mod http_error_body;
 pub mod model_capabilities;
 pub mod model_hints;
+pub(crate) mod model_variant;
 pub mod openai_adaptive;
 pub mod openai_compat;
 pub mod openai_policy;
