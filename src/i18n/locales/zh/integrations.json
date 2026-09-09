@@ -718,8 +718,8 @@
     "mcpConfigured": "已配置 MCP"
   },
   "rulesImport": {
-    "title": "可加载规则",
-    "empty": "未找到可加载规则。",
+    "title": "从其他应用导入规则",
+    "empty": "未找到可导入的规则。",
     "allImported": "所有检测到的规则均已导入"
   },
   "skillsImport": {
@@ -1670,7 +1670,6 @@
   },
   "credentialImport": {
     "title": "从其他应用导入凭据",
-    "titleWithCount": "从其他应用导入凭据（发现 {{count}} 个）",
     "itemColumn": "凭据",
     "sourceColumn": "来源",
     "empty": "未找到可导入的凭据。已检查环境变量、Shell 配置文件、Claude Code 设置、cc-switch 配置，以及 Claude Code、Codex、Cursor、GitHub CLI、Kiro 和 OpenCode 的登录存储。",

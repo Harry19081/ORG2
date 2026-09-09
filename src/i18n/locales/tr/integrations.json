@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "Yüklenebilir kurallar",
-    "empty": "Yüklenebilir kural bulunamadı.",
+    "title": "Diğer uygulamalardan kuralları içe aktar",
+    "empty": "İçe aktarılacak kural bulunamadı.",
     "allImported": "Algılanan tüm kurallar zaten içe aktarıldı"
   },
   "skillsImport": {
@@ -1670,7 +1670,6 @@
   },
   "credentialImport": {
     "title": "Diğer uygulamalardan kimlik bilgilerini içe aktar",
-    "titleWithCount": "Diğer uygulamalardan kimlik bilgilerini içe aktar ({{count}} bulundu)",
     "itemColumn": "Kimlik bilgisi",
     "sourceColumn": "Bulunduğu yer",
     "empty": "İçe aktarılacak kimlik bilgisi bulunamadı. Ortam değişkenleri, kabuk profilleri, Claude Code ayarları, cc-switch profilleri ve Claude Code, Codex, Cursor, GitHub CLI, Kiro ve OpenCode oturum açma depoları kontrol edildi.",

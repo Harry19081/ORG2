@@ -718,8 +718,8 @@
     "mcpConfigured": "MCP Configured"
   },
   "rulesImport": {
-    "title": "Loadable rules",
-    "empty": "No loadable rules found.",
+    "title": "Import rules from other apps",
+    "empty": "No rules found to import.",
     "allImported": "All detected rules have already been imported"
   },
   "skillsImport": {
@@ -1670,7 +1670,6 @@
   },
   "credentialImport": {
     "title": "Import credentials from other apps",
-    "titleWithCount": "Import credentials from other apps ({{count}} found)",
     "itemColumn": "Credential",
     "sourceColumn": "Found in",
     "empty": "No credentials found to import. Looked at environment variables, shell profiles, Claude Code settings, cc-switch profiles, and the login stores of Claude Code, Codex, Cursor, GitHub CLI, Kiro, and OpenCode.",

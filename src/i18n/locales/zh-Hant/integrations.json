@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "可載入規則",
-    "empty": "未找到可載入規則。",
+    "title": "從其他應用程式匯入規則",
+    "empty": "找不到可匯入的規則。",
     "allImported": "所有偵測到的規則均已匯入"
   },
   "skillsImport": {
@@ -1670,7 +1670,6 @@
   },
   "credentialImport": {
     "title": "從其他應用程式匯入憑證",
-    "titleWithCount": "從其他應用程式匯入憑證（找到 {{count}} 個）",
     "itemColumn": "憑證",
     "sourceColumn": "來源",
     "empty": "找不到可匯入的憑證。已檢查環境變數、shell 設定檔、Claude Code 設定、cc-switch 設定檔，以及 Claude Code、Codex、Cursor、GitHub CLI、Kiro 和 OpenCode 的登入儲存。",

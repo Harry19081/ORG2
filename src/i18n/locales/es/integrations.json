@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "Reglas cargables",
-    "empty": "No se encontraron reglas cargables.",
+    "title": "Importar reglas de otras apps",
+    "empty": "No se encontraron reglas para importar.",
     "allImported": "Todas las reglas detectadas ya se han importado"
   },
   "skillsImport": {
@@ -1670,7 +1670,6 @@
   },
   "credentialImport": {
     "title": "Importar credenciales de otras apps",
-    "titleWithCount": "Importar credenciales de otras apps ({{count}} encontradas)",
     "itemColumn": "Credencial",
     "sourceColumn": "Encontrada en",
     "empty": "No se encontraron credenciales para importar. Se revisaron variables de entorno, perfiles de shell, ajustes de Claude Code, perfiles de cc-switch y los almacenes de inicio de sesión de Claude Code, Codex, Cursor, GitHub CLI, Kiro y OpenCode.",

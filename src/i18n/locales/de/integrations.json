@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "Ladbare Regeln",
-    "empty": "Keine ladbaren Regeln gefunden.",
+    "title": "Regeln aus anderen Apps importieren",
+    "empty": "Keine Regeln zum Importieren gefunden.",
     "allImported": "Alle erkannten Regeln wurden bereits importiert"
   },
   "skillsImport": {
@@ -1670,7 +1670,6 @@
   },
   "credentialImport": {
     "title": "Zugangsdaten aus anderen Apps importieren",
-    "titleWithCount": "Zugangsdaten aus anderen Apps importieren ({{count}} gefunden)",
     "itemColumn": "Zugangsdaten",
     "sourceColumn": "Gefunden in",
     "empty": "Keine Zugangsdaten zum Importieren gefunden. Geprüft wurden Umgebungsvariablen, Shell-Profile, Claude Code-Einstellungen, cc-switch-Profile sowie die Anmeldespeicher von Claude Code, Codex, Cursor, GitHub CLI, Kiro und OpenCode.",

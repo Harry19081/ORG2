@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "Quy tắc có thể tải",
-    "empty": "Không tìm thấy quy tắc có thể tải.",
+    "title": "Nhập quy tắc từ ứng dụng khác",
+    "empty": "Không tìm thấy quy tắc để nhập.",
     "allImported": "Tất cả quy tắc được phát hiện đã được nhập"
   },
   "skillsImport": {
@@ -1670,7 +1670,6 @@
   },
   "credentialImport": {
     "title": "Nhập thông tin xác thực từ ứng dụng khác",
-    "titleWithCount": "Nhập thông tin xác thực từ ứng dụng khác (tìm thấy {{count}})",
     "itemColumn": "Thông tin xác thực",
     "sourceColumn": "Tìm thấy trong",
     "empty": "Không tìm thấy thông tin xác thực nào để nhập. Đã kiểm tra biến môi trường, shell profile, cài đặt Claude Code, hồ sơ cc-switch và kho đăng nhập của Claude Code, Codex, Cursor, GitHub CLI, Kiro và OpenCode.",
