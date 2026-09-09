@@ -126,7 +126,6 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
       "mobileRemote.relayUrl",
       MOBILE_REMOTE_RELAY_PRODUCTION_URL
     );
-    mocks.settings.set("mobileRemote.desktopToken", "");
     mocks.settings.set("mobileRemote.allowLanExposure", false);
     mocks.settings.set("mobileRemote.lanToken", "lan-token");
     mocks.settings.set("mobileRemote.lanPort", 13847);
@@ -236,15 +235,18 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     expect(container.textContent).not.toContain("mobileRemote.desktopToken");
   });
 
-  it("shows the desktop token field for the local preset", async () => {
+  it("uses the same ORG2 Cloud login row for the local preset", async () => {
     mocks.settings.set("mobileRemote.relayUrl", MOBILE_REMOTE_RELAY_LOCAL_URL);
-    mocks.settings.set("mobileRemote.desktopToken", "123456789012345678901234");
     await renderSection();
 
-    expect(container.textContent).toContain("mobileRemote.desktopToken");
+    expect(container.textContent).toContain("mobileRemote.cloudLoginTitle");
+    expect(container.textContent).toContain(
+      "mobileRemote.cloudLoginDescSignedOut"
+    );
     expect(
       container.querySelector('[data-testid="mobile-remote-cloud-sign-in"]')
-    ).toBeNull();
+    ).not.toBeNull();
+    expect(container.textContent).not.toContain("mobileRemote.desktopToken");
   });
 
   it("disables outdoor pairing until ORG2 Cloud login on production preset", async () => {
@@ -255,5 +257,34 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
         candidate.textContent?.trim() === "mobileRemote.startOutdoorPairing"
     );
     expect(pairingButton?.disabled).toBe(true);
+  });
+
+  it("disables outdoor pairing until ORG2 Cloud login on the local preset", async () => {
+    mocks.settings.set("mobileRemote.relayUrl", MOBILE_REMOTE_RELAY_LOCAL_URL);
+    await renderSection();
+
+    const pairingButton = Array.from(container.querySelectorAll("button")).find(
+      (candidate) =>
+        candidate.textContent?.trim() === "mobileRemote.startOutdoorPairing"
+    );
+    expect(pairingButton?.disabled).toBe(true);
+  });
+
+  it("enables outdoor pairing on the local preset after ORG2 Cloud login", async () => {
+    mocks.cloudAuth = {
+      userId: "user-1",
+      profile: { displayName: "Junyu" },
+    };
+    mocks.settings.set("mobileRemote.relayUrl", MOBILE_REMOTE_RELAY_LOCAL_URL);
+    await renderSection();
+
+    const pairingButton = Array.from(container.querySelectorAll("button")).find(
+      (candidate) =>
+        candidate.textContent?.trim() === "mobileRemote.startOutdoorPairing"
+    );
+    expect(pairingButton?.disabled).toBe(false);
+    expect(container.textContent).toContain(
+      "mobileRemote.cloudLoginDescSignedIn:Junyu"
+    );
   });
 });
