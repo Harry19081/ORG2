@@ -23,7 +23,7 @@
       "refreshPartial": "Modèles actualisés : +{{added}} / -{{removed}}, mais {{failed}} comptes sur {{total}} ont échoué",
       "refreshedNoChange": "Modèles actualisés : aucun changement",
       "refreshedDelta": "Modèles actualisés : {{added}} ajoutés, {{removed}} supprimés",
-      "refreshError": "Échec de l'actualisation de {{name}}",
+      "refreshError": "Échec de l’actualisation de {{name}} : {{error}}",
       "localRemoved": "{{name}} supprimé",
       "deleteError": "Échec de la suppression de {{name}}"
     },
@@ -322,7 +322,9 @@
       "button": "Actualiser la liste des modèles Cursor",
       "failed": "Échec de l'actualisation depuis Cursor : {{error}}"
     },
-    "revalidate": "Revalider"
+    "revalidate": "Revalider",
+    "confirmRemoveActiveSessions_one": "{{count}} session active utilise encore ce compte et échouera à son prochain tour :",
+    "confirmRemoveActiveSessions_other": "{{count}} sessions actives utilisent encore ce compte et échoueront à leur prochain tour :"
   },
   "integrations": {
     "searchPlaceholder": "Rechercher des connexions...",
@@ -571,7 +573,8 @@
       "modelPlaceholder": "Sélectionner un modèle",
       "groupPerUser": "Isoler les sessions de discussion de groupe par utilisateur",
       "groupPerUserDesc": "Chaque participant d'un groupe obtient son propre contexte de session."
-    }
+    },
+    "emailProtocol": "Protocole"
   },
   "modelsTabs": {
     "myAccounts": "Mes Keys",
@@ -734,7 +737,8 @@
     "tools": "Outils intégrés",
     "computerUse": "Computer Use",
     "rulesMemoryEvolution": "Règles, Mémoire & Évolution",
-    "externalSkillsets": "Skills, MCPs & Plugins"
+    "externalSkillsets": "Skills, MCPs & Plugins",
+    "housekeeper": "Housekeeper MiniCPM"
   },
   "projectConnections": {
     "linear": "Linear",
@@ -750,7 +754,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "Détection automatique",
-    "methodOAuth": "Se connecter avec GitHub"
+    "methodOAuth": "Se connecter avec GitHub",
+    "methodPickerDesc": "Choisissez comment vous authentifier auprès de GitHub.",
+    "oauthDeviceDesc": "Ouvrez l’URL de vérification et saisissez ce code pour autoriser GitHub.",
+    "scanCredHelper": "Git credential helper ({{name}})",
+    "scanEmpty": "Rien détecté",
+    "scanEmptyDesc": "Aucun token gh CLI, credential helper ou clé SSH trouvé. Choisissez une autre méthode ci-dessus.",
+    "scanGhCli": "GitHub CLI (gh)",
+    "scanResults": "Identifiants détectés",
+    "scanResultsDesc": "Choisissez-en un à importer. Les tokens sont validés auprès de GitHub avant l’enregistrement.",
+    "scanSshKey": "Clé SSH — {{name}}",
+    "scanning": "Analyse…",
+    "scanningDesc": "Recherche de tokens gh CLI, de credential helpers et de clés SSH sur cette machine.",
+    "sshKeyPath": "Chemin de la clé SSH",
+    "sshKeyPathDesc": "Chemin absolu vers la clé privée (ex. ~/.ssh/id_ed25519). La clé publique correspondante doit déjà être enregistrée sur GitHub.",
+    "scanSelectRequired": "Choisissez un identifiant détecté à importer.",
+    "sshKeyPathRequired": "Le chemin de la clé SSH est requis."
   },
   "builtInTools": {
     "tabTools": "Outils intégrés",
@@ -914,7 +933,9 @@
     "oauthDeviceCodeDesc": "Ouvrez l'URL ci-dessous et entrez ce code",
     "oauthOpenGithub": "Ouvrir GitHub",
     "oauthCancel": "Annuler",
-    "oauthFailed": "Échec de l'autorisation"
+    "oauthFailed": "Échec de l'autorisation",
+    "autoCreatePr": "Créer automatiquement les pull requests",
+    "autoCreatePrDesc": "Créer automatiquement une pull request dans le Source control de la Workstation lorsqu’une branche de fonctionnalité est entièrement poussée et propre"
   },
   "skillsHub": {
     "searchPlaceholder": "Rechercher des skills...",
@@ -1211,7 +1232,23 @@
       "dangerZone": "Zone de danger",
       "deleteOrg": "Supprimer cet Org",
       "deleteOrgDesc": "Supprimer définitivement cette Équipe Agent. Les Agents membres ne sont pas affectés. Cette action est irréversible",
-      "deleteThisOrg": "Supprimer cet Org"
+      "deleteThisOrg": "Supprimer cet Org",
+      "planApprovalPolicy": {
+        "label": "Approbation du plan",
+        "description": "Qui décide quand le plan soumis par un Planner est prêt à débloquer les tâches dépendantes",
+        "coordinator": {
+          "label": "Coordinateur (recommandé)",
+          "description": "Le coordinateur relit le plan dans l’exécution, puis l’approuve ou demande des modifications au Planner"
+        },
+        "user": {
+          "label": "Utilisateur",
+          "description": "Le chat de groupe attend silencieusement et vous présente le plan avec les actions Approuver, Modifier et Demander des modifications"
+        },
+        "automatic": {
+          "label": "Automatique",
+          "description": "Un plan soumis valide est accepté immédiatement et ses tâches dépendantes sont débloquées"
+        }
+      }
     },
     "agentWizard": {
       "title": "Configurer l'Agent",
@@ -1309,7 +1346,40 @@
     "orgSaveFailed": "Échec de l’enregistrement de l’équipe",
     "orgDeleteFailed": "Échec de la suppression de l’équipe",
     "deleteOrgTitle": "Supprimer l’équipe ?",
-    "deleteOrgMessage": "\"{{name}}\" sera supprimée définitivement. Cette action est irréversible."
+    "deleteOrgMessage": "\"{{name}}\" sera supprimée définitivement. Cette action est irréversible.",
+    "cliUpdateAlerts": {
+      "label": "Alerter des mises à jour CLI",
+      "description": "Vérifie les versions des CLI et alerte lorsqu’une mise à jour est disponible. Désactivé : aucune vérification"
+    },
+    "cliManagedConfig": {
+      "title": "Bascule de config CLI",
+      "modeLabel": "Mode",
+      "modeDesc": "Par défaut restaure la config propre du CLI. Géré par ORGII écrit une config proxy sauvegardée au préalable.",
+      "modeDefault": "Par défaut",
+      "modeOrgii": "Géré par ORGII",
+      "conflict": "Modification externe",
+      "conflictTitle": "Conflit",
+      "conflictDesc": "La config CLI active a changé après son écriture par ORGII.",
+      "proxyStatus": "Proxy",
+      "proxyDefault": "Mode par défaut",
+      "proxyReady": "Proxy prêt",
+      "proxyNotReady": "Proxy non prêt",
+      "keyLabel": "Key",
+      "keyDesc": "Seules les API Keys compatibles avec ce CLI et le proxy géré sont affichées.",
+      "selectKey": "Sélectionner une key",
+      "modelLabel": "Modèle",
+      "selectModel": "Sélectionner un modèle",
+      "configFile": "Fichiers de config",
+      "actions": "Actions",
+      "addKey": "Ajouter une key",
+      "apply": "Appliquer",
+      "restore": "Restaurer par défaut",
+      "forceApply": "Forcer l’application",
+      "forceRestore": "Forcer la restauration",
+      "applySuccess": "Config gérée par ORGII appliquée",
+      "restoreSuccess": "Config par défaut restaurée",
+      "proxyLifecycleDesc": "Laissez ORGII ouvert tant que vous utilisez ce mode. Fermer la fenêtre garde le proxy dans la barre d’état ; quitter ORGII restaure le mode Par défaut en toute sécurité, sauf si la config a été modifiée en externe."
+    }
   },
   "databases": {
     "title": "Bases de données",
@@ -1375,7 +1445,8 @@
     "chatExtras": "Extras du chat",
     "queuedMessages": "Messages en file d'attente",
     "fileReview": "Revue de fichiers",
-    "terminalProcesses": "Processus du terminal"
+    "terminalProcesses": "Processus du terminal",
+    "modeSessionLink": "Lien de session"
   },
   "rulesTabs": {
     "rules": "Règles",
@@ -1447,7 +1518,18 @@
     "openWorkItem": "Open work item",
     "fireError": "Impossible de démarrer la routine : {{detail}}",
     "provider": "Fournisseur",
-    "eventKind": "Événement"
+    "eventKind": "Événement",
+    "extraActivations": "Activations supplémentaires",
+    "activationSchedule": "Planification",
+    "activationOneTime": "Une seule fois",
+    "activationProviderEvent": "Événement du fournisseur",
+    "activationManual": "Manuelle",
+    "providerPlaceholder": "github",
+    "eventKindPlaceholder": "pull_request",
+    "fireAccepted": "Exécution {{status}}",
+    "openSessionError": "Impossible d’ouvrir la session",
+    "openWorkItemError": "Impossible d’ouvrir l’élément de travail",
+    "fireStarted": "Exécution de la Routine démarrée"
   },
   "cursorPlugins": {
     "noPlugins": "Aucun plugin Cursor installé",
@@ -1469,7 +1551,14 @@
       "diagnostics": "Diagnostics"
     },
     "health": {
-      "status": "Non vérifié"
+      "status": "Non vérifié",
+      "title": "Vérification de l’état",
+      "idle": "Vérifie /v1/models et envoie une petite requête de chat.",
+      "checking": "Vérification du service vLLM MiniCPM local...",
+      "checkButton": "Vérifier la connexion",
+      "configureFirst": "Configurez d’abord un compte vLLM MiniCPM.",
+      "connectedTo": "Connecté à {{baseUrl}}",
+      "failed": "Échec de la vérification de l’état de MiniCPM."
     },
     "benchmark": {
       "title": "Vitesse de sortie MiniCPM",
@@ -1481,6 +1570,50 @@
       "tokensPerSecond": "Vitesse de sortie : {{value}} tokens/s",
       "completionTokens": "Tokens de sortie : {{value}}",
       "elapsed": "Durée totale : {{value}}s"
+    },
+    "title": "Housekeeper résident",
+    "description": "MiniCPM en local gère le polissage des prompts, les courtes explications d’étapes et le contrôle léger de l’UI. Les tâches de codage et la configuration ADE complexe utilisent toujours le modèle agent principal.",
+    "autoAccount": "Sélectionner automatiquement le compte vLLM MiniCPM",
+    "tiles": {
+      "model": "Modèle",
+      "endpoint": "Endpoint",
+      "safeContext": "Contexte sûr"
+    },
+    "settings": {
+      "enabled": {
+        "title": "Activer le housekeeper",
+        "description": "Lorsqu’il est désactivé, le polissage des prompts, les explications d’étapes et le contrôle léger de l’UI n’utiliseront pas MiniCPM."
+      },
+      "account": {
+        "title": "Compte vLLM MiniCPM",
+        "description": "Réutilise un compte vllm_api existant du KeyVault ; aucun stockage d’identifiants séparé n’est créé."
+      },
+      "model": {
+        "title": "ID du modèle",
+        "description": "Docker vLLM MiniCPM5-1B utilise openbmb/MiniCPM5-1B par défaut."
+      },
+      "context": {
+        "title": "Budget de contexte sûr",
+        "description": "Utiliser un budget prudent de 10000 tokens sur les GPU 4 Go plutôt que de se fier à la limite théorique de 32k."
+      }
+    },
+    "features": {
+      "promptPolish": {
+        "title": "Polissage des prompts",
+        "description": "Polir manuellement l’entrée avant de l’envoyer au modèle de codage plus puissant."
+      },
+      "stepExplain": {
+        "title": "Explications des étapes de l’Agent",
+        "description": "Générer une ou deux courtes explications en chinois pour les étapes de relecture de session."
+      },
+      "uiControl": {
+        "title": "Contrôle léger ADE/UI",
+        "description": "MiniCPM ne peut que classer les requêtes dans une liste blanche stricte d’actions locales."
+      },
+      "contextCompact": {
+        "title": "Maintenance automatique du contexte",
+        "description": "Laisser MiniCPM maintenir un résumé glissant isolé du contexte ancien pendant que les sessions activées sont inactives."
+      }
     }
   },
   "cliLaunchProfiles": {
@@ -1496,5 +1629,68 @@
     "unavailable": "Profil de lancement indisponible",
     "saved": "Profil de lancement enregistré",
     "resetDone": "Profil de lancement réinitialisé"
+  },
+  "gitProfiles": {
+    "tab": "Profils Git",
+    "title": "Profils Git",
+    "add": "Ajouter un profil",
+    "refresh": "Actualiser les profils",
+    "refreshed": "Profil Git global actualisé",
+    "loading": "Chargement de votre profil Git global…",
+    "defaultProfile": "Profil par défaut",
+    "newProfile": "Nouveau profil",
+    "copyName": "{{name}} copie",
+    "profileName": "Nom du profil",
+    "authorName": "Nom de l’auteur",
+    "email": "Email",
+    "selectEmail": "Sélectionner un email",
+    "signingKey": "Clé de signature",
+    "signingKeyPlaceholder": "ID de clé de signature GPG ou SSH",
+    "signCommits": "Signer les commits",
+    "active": "Actif",
+    "activate": "Activer le profil",
+    "activated": "{{name}} est désormais le profil Git global",
+    "editRaw": "Modifier la config brute",
+    "hideRaw": "Masquer la config brute",
+    "rawTitle": "Profil Git brut",
+    "rawConfig": "Config Git",
+    "updateFromRaw": "Mettre à jour le profil depuis la config",
+    "rawUpdated": "Profil mis à jour depuis la config Git brute",
+    "rawInvalid": "Le profil Git brut est invalide",
+    "nameEmailRequired": "Le nom de l’auteur et l’email sont requis",
+    "deleteTitle": "Supprimer le profil Git",
+    "deleteMessage": "Supprimer le profil « {{name}} » ? Cela ne modifie pas votre config Git globale actuelle.",
+    "loadFailed": "Échec du chargement du profil Git global",
+    "applyFailed": "Échec de l’activation du profil Git"
+  },
+  "credentialImport": {
+    "title": "Importer des identifiants depuis d’autres apps",
+    "titleWithCount": "Importer des identifiants depuis d’autres apps ({{count}} trouvés)",
+    "itemColumn": "Identifiant",
+    "sourceColumn": "Trouvé dans",
+    "empty": "Aucun identifiant à importer. Ont été examinés : les variables d’environnement, les profils shell, les paramètres de Claude Code, les profils cc-switch et les stores de connexion de Claude Code, Codex, Cursor, GitHub CLI, Kiro et OpenCode.",
+    "allImported": "Tous les identifiants détectés ont déjà été importés",
+    "authMethod": {
+      "api_key": "API Key",
+      "oauth": "Token de connexion"
+    },
+    "sourceKind": {
+      "env": "Variable d’environnement",
+      "shell_profile": "Profil shell",
+      "config_file": "Fichier de config",
+      "oauth_store": "Store de connexion",
+      "keychain": "Trousseau",
+      "state_db": "État de l’app",
+      "cc_switch": "cc-switch"
+    },
+    "applyFailed": "Échec de l’import : {{message}}",
+    "partialFailure": "Certains identifiants n’ont pas pu être importés :"
+  },
+  "skills": {
+    "shareToOrg": "Partager avec l’organisation",
+    "share": "Partager",
+    "sharedToOrg": "Skill partagé avec l’organisation",
+    "shareToOrgHint": "Les membres de l’organisation reçoivent l’instantané actuel de ce skill ; partagez à nouveau après modification pour publier une mise à jour.",
+    "shareOrgPlaceholder": "Organisation"
   }
 }

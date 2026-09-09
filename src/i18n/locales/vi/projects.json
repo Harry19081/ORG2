@@ -183,7 +183,8 @@
       "kanban": "Kanban",
       "gantt": "Gantt",
       "calendar": "Lịch",
-      "settings": "Cài đặt"
+      "settings": "Cài đặt",
+      "table": "Bảng"
     },
     "statusFilters": {
       "all": "Tất cả",
@@ -252,7 +253,23 @@
       "hoursAgo": "{{count}} giờ trước",
       "inDays": "trong {{count}} ngày",
       "inHours": "trong {{count}} giờ",
-      "membersGroup": "Thành viên"
+      "membersGroup": "Thành viên",
+      "filter": "Bộ lọc thuộc tính",
+      "filterValue": "Giá trị bộ lọc thuộc tính",
+      "noValue": "Không có giá trị",
+      "archiveNamed": "Lưu trữ {{name}}",
+      "add": "Thêm thuộc tính",
+      "archive": "Lưu trữ thuộc tính",
+      "datePlaceholder": "YYYY-MM-DD",
+      "empty": "Chưa có thuộc tính tùy chỉnh.",
+      "loading": "Đang tải thuộc tính…",
+      "namePlaceholder": "Tên thuộc tính",
+      "no": "Không",
+      "optionsPlaceholder": "Các tùy chọn, phân cách bằng dấu phẩy",
+      "optionsRequired": "Thuộc tính kiểu chọn cần các tùy chọn phân cách bằng dấu phẩy.",
+      "type": "Kiểu thuộc tính",
+      "updateFailed": "Cập nhật thuộc tính thất bại",
+      "yes": "Có"
     },
     "activity": {
       "discussionTitle": "Thảo luận",
@@ -305,7 +322,27 @@
         "schedule": "lịch trình",
         "orchestratorConfig": "cấu hình Orchestrator",
         "handoff": "bàn giao"
-      }
+      },
+      "mentionPeople": "Nhắc đến người",
+      "mentionAll": "@all — mọi người trên mục này",
+      "mentionAgentOption": "{{name}} (agent)",
+      "mentionAgentOrgOption": "{{name}} (agent org)",
+      "appendedSession": "đã đính kèm một phiên",
+      "edited": "(đã chỉnh sửa)",
+      "commentDeleted": "Bình luận này đã bị xóa.",
+      "deleteComment": "Xóa bình luận",
+      "deleteCommentConfirm": "Xóa bình luận này? Các trả lời vẫn được giữ, chỉ nội dung bình luận bị xóa.",
+      "messageCount_one": "{{count}} tin nhắn",
+      "messageCount_other": "{{count}} tin nhắn",
+      "cancelReply": "Hủy trả lời",
+      "conclusion": "Kết luận",
+      "reopen": "Mở lại",
+      "reply": "Trả lời",
+      "replyingInThread": "Đang trả lời trong chuỗi",
+      "resolve": "Giải quyết",
+      "resolved": "Đã giải quyết",
+      "submitComment": "Gửi bình luận",
+      "openedWorkItem": "đã mở mục công việc này"
     },
     "contextMenu": {
       "status": "Trạng thái",
@@ -347,7 +384,10 @@
       "cannotParseRepoName": "Không thể phân tích tên kho từ: {{url}}"
     },
     "sessions": {
-      "emptyOverview": "Chưa có Sessions"
+      "emptyOverview": "Chưa có Sessions",
+      "originTitle": "Phiên khởi tạo",
+      "originStatus": "Đã tạo mục này",
+      "runsCount": "{{count}} lần chạy"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -366,7 +406,9 @@
       "fileDiffCleanHint": "Không phát hiện thay đổi tệp nào.",
       "costSummary": "Tổng chi phí",
       "totalCost": "Tổng",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "Hoàn tất đang bị chặn",
+      "prReady": "Sẵn sàng hoàn tất"
     },
     "viewWorkItems": "Xem Work Items",
     "fromRoutine": "From routine: {{name}}",
@@ -381,7 +423,98 @@
     },
     "batchAssignee": {
       "title": "Đặt người được giao"
-    }
+    },
+    "discussion": {
+      "previewWillWake": "Sẽ đánh thức agent để trả lời",
+      "previewNoteOnly": "Chỉ là ghi chú — agent sẽ không được kích hoạt",
+      "previewNoSession": "Không có phiên agent liên kết — sẽ không kích hoạt gì",
+      "previewMentionResume": "Sẽ đánh thức agent được nhắc đến",
+      "previewMentionStart": "Sẽ khởi động agent được nhắc đến",
+      "previewMentionUnroutable": "Agent được nhắc đến chưa được cấu hình trên mục này — sẽ không kích hoạt gì",
+      "previewThread": "Sẽ đánh thức agent từ chuỗi này",
+      "previewAssignee": "Sẽ đánh thức agent được giao",
+      "previewAssigneeStart": "Sẽ khởi động agent được giao",
+      "previewCoalesce": "gộp vào lượt đánh thức đang chờ",
+      "previewMemberThread": "Chuỗi của thành viên — sẽ không đánh thức agent nào"
+    },
+    "subItems": {
+      "title": "Mục con",
+      "parent": "Mục cha",
+      "progress": "Đã hoàn tất {{completed}} trên {{total}}",
+      "add": "Thêm mục con",
+      "addFirst": "Thêm mục con đầu tiên",
+      "titlePlaceholder": "Nhập tiêu đề mục con",
+      "stagePicker": "Giai đoạn mục con",
+      "noStage": "Không có giai đoạn",
+      "stage": "Giai đoạn {{stage}}",
+      "openStatus": "Đang mở",
+      "completedStatus": "Đã hoàn tất",
+      "cancelledStatus": "Đã hủy",
+      "createError": "Không thể tạo mục con. Hãy thử lại."
+    },
+    "savedViews": {
+      "placeholder": "Chế độ xem",
+      "save": "Lưu chế độ xem hiện tại",
+      "saveTitle": "Lưu chế độ xem",
+      "namePlaceholder": "Tên chế độ xem",
+      "saveHint": "Ghi lại các bộ lọc hiện tại; bố cục được dùng cho lần mở đầu tiên.",
+      "delete": "Xóa chế độ xem"
+    },
+    "table": {
+      "columnsPicker": "Cột",
+      "groupByProperty": "Nhóm theo thuộc tính",
+      "columns": {
+        "shortId": "ID",
+        "title": "Tiêu đề",
+        "status": "Trạng thái",
+        "priority": "Độ ưu tiên",
+        "assignee": "Người được giao",
+        "targetDate": "Hạn",
+        "labels": "Nhãn"
+      }
+    },
+    "batchProperty": {
+      "title": "Đặt thuộc tính",
+      "hint": "Áp dụng một giá trị thuộc tính cho {{count}} mục đã chọn. Để trống giá trị để xóa.",
+      "propertyPlaceholder": "Thuộc tính",
+      "valuePlaceholder": "Giá trị",
+      "applied": "Đã cập nhật {{count}} mục"
+    },
+    "revisionConflict": {
+      "title": "Giải quyết xung đột chỉnh sửa",
+      "description": "{{field}} đã thay đổi sau bản sửa {{expected}}. Hãy so sánh chỉnh sửa của bạn với bản sửa {{actual}}, rồi chọn phiên bản muốn giữ.",
+      "mine": "Phiên bản của tôi",
+      "latest": "Phiên bản mới nhất",
+      "useLatest": "Dùng bản mới nhất",
+      "keepMine": "Giữ bản của tôi",
+      "titleField": "Tiêu đề",
+      "descriptionField": "Mô tả",
+      "commentField": "Bình luận",
+      "reloadNotice": "Work Item này đã thay đổi ở nơi khác. Phiên bản mới nhất đã được tải lại.",
+      "retryFailed": "Phiên bản mới nhất lại thay đổi. Hãy xem lại cả hai phiên bản trước khi thử lại."
+    },
+    "quickActions": {
+      "title": "Thao tác nhanh",
+      "empty": "Chưa có thao tác nhanh. Hãy lưu một prompt có thể dùng lại cho agent.",
+      "emptyManage": "Chưa lưu gì.",
+      "manageTitle": "Quản lý thao tác nhanh",
+      "namePlaceholder": "Tên thao tác (vd. Sửa CI)",
+      "targetPlaceholder": "Agent đích",
+      "promptPlaceholder": "Agent nên làm gì?",
+      "archive": "Lưu trữ thao tác",
+      "scopeChanged": "Thao tác nhanh không còn trong phạm vi Work Item này",
+      "started": "Đã bắt đầu thao tác nhanh “{{name}}”"
+    },
+    "detailNavigation": "Điều hướng Work Item",
+    "linkedSessions": {
+      "title": "Phiên"
+    },
+    "detail": {
+      "conversation": "Trò chuyện",
+      "linked": "Đã liên kết"
+    },
+    "detailSummary": "Tóm tắt Work Item",
+    "navigationTrail": "Điều hướng Work Item"
   },
   "settings": {
     "sidebarGeneral": "Chung",
@@ -446,7 +579,12 @@
         "notAttached": "Chưa kết nối",
         "attach": "Kết nối",
         "detach": "Ngắt kết nối",
-        "changeWarning": "Hãy ngắt kết nối bộ chuyển đổi hiện tại trước khi kết nối bộ chuyển đổi mới."
+        "changeWarning": "Hãy ngắt kết nối bộ chuyển đổi hiện tại trước khi kết nối bộ chuyển đổi mới.",
+        "detachProjectMenuLabel": "Hủy liên kết GitHub",
+        "detachProjectTitle": "Hủy liên kết GitHub khỏi {{project}}?",
+        "detachProjectDescription": "Đồng bộ GitHub Issues sẽ dừng. Dự án cục bộ và các mục công việc đã nhập vẫn ở lại trong ORGII.",
+        "detachProjectAction": "Hủy liên kết GitHub khỏi {{project}}",
+        "detachProjectSuccess": "Đã hủy liên kết GitHub khỏi {{project}}"
       },
       "accountPicker": {
         "title": "Tài khoản",
@@ -596,7 +734,16 @@
           "dismissFailed": "Không bỏ qua được xung đột: {{error}}"
         }
       }
-    }
+    },
+    "sidebarStatuses": "Trạng thái",
+    "statusesBuiltin": "Trạng thái tích hợp",
+    "statusesBuiltinDescription": "Các nhóm quy trình tiêu chuẩn. Luôn khả dụng.",
+    "statusesCustom": "Trạng thái tùy chỉnh",
+    "statusesCustomDescription": "Tên gọi khác đặt trên một nhóm tích hợp. Bộ lọc, số đếm và bảng coi chúng như nhóm gốc.",
+    "statusNamePlaceholder": "Tên trạng thái",
+    "noCustomStatuses": "Chưa có trạng thái tùy chỉnh.",
+    "statusArchive": "Lưu trữ trạng thái",
+    "statusRestore": "Khôi phục trạng thái"
   },
   "statusBar": {
     "workItemCount": "{{count}} mục",

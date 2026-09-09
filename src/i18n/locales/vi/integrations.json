@@ -23,7 +23,7 @@
       "refreshPartial": "Đã làm mới mô hình: +{{added}} / -{{removed}}, nhưng {{failed}} trên {{total}} tài khoản bị lỗi",
       "refreshedNoChange": "Đã làm mới mô hình: không có thay đổi",
       "refreshedDelta": "Đã làm mới mô hình: thêm {{added}}, xóa {{removed}}",
-      "refreshError": "Không thể làm mới {{name}}",
+      "refreshError": "Không thể làm mới {{name}}: {{error}}",
       "localRemoved": "{{name}} đã xóa",
       "deleteError": "Không thể xóa {{name}}"
     },
@@ -322,7 +322,9 @@
       "button": "Làm mới danh sách mô hình Cursor",
       "failed": "Làm mới từ Cursor thất bại: {{error}}"
     },
-    "revalidate": "Xác thực lại"
+    "revalidate": "Xác thực lại",
+    "confirmRemoveActiveSessions_one": "{{count}} phiên đang hoạt động vẫn dùng tài khoản này và sẽ thất bại ở lượt tiếp theo:",
+    "confirmRemoveActiveSessions_other": "{{count}} phiên đang hoạt động vẫn dùng tài khoản này và sẽ thất bại ở lượt tiếp theo:"
   },
   "integrations": {
     "searchPlaceholder": "Tìm kiếm kết nối...",
@@ -571,7 +573,8 @@
       "modelPlaceholder": "Chọn mô hình",
       "groupPerUser": "Cô lập phiên chat nhóm theo người dùng",
       "groupPerUserDesc": "Mỗi người tham gia trong chat nhóm có ngữ cảnh phiên riêng."
-    }
+    },
+    "emailProtocol": "Giao thức"
   },
   "modelsTabs": {
     "myAccounts": "Keys của tôi",
@@ -734,7 +737,8 @@
     "tools": "Công cụ tích hợp",
     "computerUse": "Computer Use",
     "rulesMemoryEvolution": "Quy tắc, Bộ nhớ & Tiến hóa",
-    "externalSkillsets": "Skills, MCPs & Plugins"
+    "externalSkillsets": "Skills, MCPs & Plugins",
+    "housekeeper": "MiniCPM Housekeeper"
   },
   "projectConnections": {
     "linear": "Linear",
@@ -750,7 +754,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "Tự động phát hiện",
-    "methodOAuth": "Đăng nhập bằng GitHub"
+    "methodOAuth": "Đăng nhập bằng GitHub",
+    "methodPickerDesc": "Chọn cách bạn muốn xác thực với GitHub.",
+    "oauthDeviceDesc": "Mở URL xác minh và nhập mã này để ủy quyền GitHub.",
+    "scanCredHelper": "Git credential helper ({{name}})",
+    "scanEmpty": "Không phát hiện gì",
+    "scanEmptyDesc": "Không tìm thấy token gh CLI, credential helper hay khóa SSH nào. Hãy chọn phương thức khác ở trên.",
+    "scanGhCli": "GitHub CLI (gh)",
+    "scanResults": "Thông tin xác thực đã phát hiện",
+    "scanResultsDesc": "Chọn một mục để nhập. Chúng tôi xác minh token với GitHub trước khi lưu.",
+    "scanSshKey": "Khóa SSH — {{name}}",
+    "scanning": "Đang quét…",
+    "scanningDesc": "Đang tìm token gh CLI, credential helper và khóa SSH trên máy này.",
+    "sshKeyPath": "Đường dẫn khóa SSH",
+    "sshKeyPathDesc": "Đường dẫn tuyệt đối đến khóa riêng (vd. ~/.ssh/id_ed25519). Khóa công khai tương ứng phải đã được đăng ký trên GitHub.",
+    "scanSelectRequired": "Chọn một thông tin xác thực đã phát hiện để nhập.",
+    "sshKeyPathRequired": "Cần nhập đường dẫn khóa SSH."
   },
   "builtInTools": {
     "tabTools": "Công cụ tích hợp",
@@ -914,7 +933,9 @@
     "oauthDeviceCodeDesc": "Mở URL bên dưới và nhập mã này",
     "oauthOpenGithub": "Mở GitHub",
     "oauthCancel": "Hủy",
-    "oauthFailed": "Cấp quyền thất bại"
+    "oauthFailed": "Cấp quyền thất bại",
+    "autoCreatePr": "Tự động tạo pull request",
+    "autoCreatePrDesc": "Tự động tạo pull request trong Source Control của Workstation khi nhánh tính năng đã được push đầy đủ và sạch"
   },
   "skillsHub": {
     "searchPlaceholder": "Tìm kiếm skill...",
@@ -1211,7 +1232,23 @@
       "dangerZone": "Vùng nguy hiểm",
       "deleteOrg": "Xóa Org này",
       "deleteOrgDesc": "Xóa vĩnh viễn Nhóm Agent này. Các Agent thành viên không bị ảnh hưởng. Không thể hoàn tác hành động này",
-      "deleteThisOrg": "Xóa Org này"
+      "deleteThisOrg": "Xóa Org này",
+      "planApprovalPolicy": {
+        "label": "Phê duyệt kế hoạch",
+        "description": "Ai quyết định khi nào kế hoạch do Planner gửi đã sẵn sàng để mở khóa các tác vụ phụ thuộc",
+        "coordinator": {
+          "label": "Điều phối viên (khuyến nghị)",
+          "description": "Điều phối viên xem xét kế hoạch ngay trong lần chạy, rồi phê duyệt hoặc yêu cầu Planner thay đổi"
+        },
+        "user": {
+          "label": "Người dùng",
+          "description": "Trò chuyện nhóm sẽ chờ yên lặng và hiển thị kế hoạch cho bạn với các thao tác Phê duyệt, Chỉnh sửa và Yêu cầu thay đổi"
+        },
+        "automatic": {
+          "label": "Tự động",
+          "description": "Kế hoạch hợp lệ được gửi sẽ được chấp nhận ngay lập tức và các tác vụ phụ thuộc được mở khóa"
+        }
+      }
     },
     "agentWizard": {
       "title": "Cấu hình Agent",
@@ -1309,7 +1346,40 @@
     "orgSaveFailed": "Không thể lưu nhóm",
     "orgDeleteFailed": "Không thể xóa nhóm",
     "deleteOrgTitle": "Xóa nhóm?",
-    "deleteOrgMessage": "\"{{name}}\" sẽ bị xóa vĩnh viễn. Không thể hoàn tác thao tác này."
+    "deleteOrgMessage": "\"{{name}}\" sẽ bị xóa vĩnh viễn. Không thể hoàn tác thao tác này.",
+    "cliUpdateAlerts": {
+      "label": "Cảnh báo cập nhật CLI",
+      "description": "Kiểm tra phiên bản CLI và cảnh báo khi có bản cập nhật. Tắt sẽ vô hiệu hóa việc kiểm tra"
+    },
+    "cliManagedConfig": {
+      "title": "Chuyển đổi cấu hình CLI",
+      "modeLabel": "Chế độ",
+      "modeDesc": "Mặc định khôi phục cấu hình riêng của CLI. ORGII quản lý sẽ ghi một cấu hình proxy đã được sao lưu.",
+      "modeDefault": "Mặc định",
+      "modeOrgii": "ORGII quản lý",
+      "conflict": "Thay đổi bên ngoài",
+      "conflictTitle": "Xung đột",
+      "conflictDesc": "Cấu hình CLI đang hoạt động đã thay đổi sau khi ORGII ghi nó.",
+      "proxyStatus": "Proxy",
+      "proxyDefault": "Chế độ mặc định",
+      "proxyReady": "Proxy đã sẵn sàng",
+      "proxyNotReady": "Proxy chưa sẵn sàng",
+      "keyLabel": "Khóa",
+      "keyDesc": "Chỉ hiển thị các API key tương thích với CLI này và proxy được quản lý.",
+      "selectKey": "Chọn khóa",
+      "modelLabel": "Mô hình",
+      "selectModel": "Chọn mô hình",
+      "configFile": "Tệp cấu hình",
+      "actions": "Thao tác",
+      "addKey": "Thêm khóa",
+      "apply": "Áp dụng",
+      "restore": "Khôi phục mặc định",
+      "forceApply": "Buộc áp dụng",
+      "forceRestore": "Buộc khôi phục",
+      "applySuccess": "Đã áp dụng cấu hình do ORGII quản lý",
+      "restoreSuccess": "Đã khôi phục cấu hình mặc định",
+      "proxyLifecycleDesc": "Hãy giữ ORGII chạy khi dùng chế độ này. Đóng cửa sổ vẫn giữ proxy trong khay hệ thống; thoát ORGII sẽ khôi phục an toàn về Mặc định trừ khi cấu hình đã bị thay đổi từ bên ngoài."
+    }
   },
   "databases": {
     "title": "Cơ sở dữ liệu",
@@ -1375,7 +1445,8 @@
     "chatExtras": "Tiện ích trò chuyện",
     "queuedMessages": "Tin nhắn đang chờ",
     "fileReview": "Xem lại tệp",
-    "terminalProcesses": "Tiến trình terminal"
+    "terminalProcesses": "Tiến trình terminal",
+    "modeSessionLink": "Liên kết phiên"
   },
   "rulesTabs": {
     "rules": "Quy tắc",
@@ -1447,7 +1518,18 @@
     "openWorkItem": "Open work item",
     "fireError": "Không thể bắt đầu Routine: {{detail}}",
     "provider": "Nhà cung cấp",
-    "eventKind": "Sự kiện"
+    "eventKind": "Sự kiện",
+    "extraActivations": "Kích hoạt bổ sung",
+    "activationSchedule": "Lịch trình",
+    "activationOneTime": "Một lần",
+    "activationProviderEvent": "Sự kiện nhà cung cấp",
+    "activationManual": "Thủ công",
+    "providerPlaceholder": "github",
+    "eventKindPlaceholder": "pull_request",
+    "fireAccepted": "Lần chạy {{status}}",
+    "openSessionError": "Không thể mở phiên",
+    "openWorkItemError": "Không thể mở Work Item",
+    "fireStarted": "Đã bắt đầu chạy Routine"
   },
   "cursorPlugins": {
     "noPlugins": "Không có plugin Cursor nào được cài đặt",
@@ -1469,7 +1551,14 @@
       "diagnostics": "Chẩn đoán"
     },
     "health": {
-      "status": "Chưa kiểm tra"
+      "status": "Chưa kiểm tra",
+      "title": "Kiểm tra tình trạng",
+      "idle": "Kiểm tra /v1/models và gửi một yêu cầu trò chuyện nhỏ.",
+      "checking": "Đang kiểm tra dịch vụ vLLM MiniCPM cục bộ...",
+      "checkButton": "Kiểm tra kết nối",
+      "configureFirst": "Hãy cấu hình tài khoản vLLM MiniCPM trước.",
+      "connectedTo": "Đã kết nối tới {{baseUrl}}",
+      "failed": "Kiểm tra tình trạng MiniCPM thất bại."
     },
     "benchmark": {
       "title": "Tốc độ đầu ra MiniCPM",
@@ -1481,6 +1570,50 @@
       "tokensPerSecond": "Tốc độ đầu ra: {{value}} tokens/s",
       "completionTokens": "Tokens đầu ra: {{value}}",
       "elapsed": "Tổng thời gian: {{value}}s"
+    },
+    "title": "Housekeeper thường trú",
+    "description": "MiniCPM cục bộ xử lý việc trau chuốt prompt, giải thích ngắn các bước và điều khiển UI nhẹ. Tác vụ lập trình và thiết lập ADE phức tạp vẫn dùng mô hình agent chính.",
+    "autoAccount": "Tự động chọn tài khoản MiniCPM vLLM",
+    "tiles": {
+      "model": "Mô hình",
+      "endpoint": "Endpoint",
+      "safeContext": "Ngữ cảnh an toàn"
+    },
+    "settings": {
+      "enabled": {
+        "title": "Bật housekeeper",
+        "description": "Khi tắt, việc trau chuốt prompt, giải thích bước và điều khiển UI nhẹ sẽ không dùng MiniCPM."
+      },
+      "account": {
+        "title": "Tài khoản vLLM MiniCPM",
+        "description": "Dùng lại tài khoản vllm_api hiện có trong KeyVault; không tạo kho thông tin xác thực riêng."
+      },
+      "model": {
+        "title": "ID mô hình",
+        "description": "Docker vLLM MiniCPM5-1B mặc định là openbmb/MiniCPM5-1B."
+      },
+      "context": {
+        "title": "Ngân sách ngữ cảnh an toàn",
+        "description": "Dùng ngân sách thận trọng 10000 token trên GPU 4GB thay vì tin vào giới hạn lý thuyết 32k."
+      }
+    },
+    "features": {
+      "promptPolish": {
+        "title": "Trau chuốt prompt",
+        "description": "Trau chuốt đầu vào theo cách thủ công trước khi gửi tới mô hình lập trình mạnh hơn."
+      },
+      "stepExplain": {
+        "title": "Giải thích bước của Agent",
+        "description": "Tạo một hoặc hai lời giải thích ngắn bằng tiếng Trung cho các bước phát lại phiên."
+      },
+      "uiControl": {
+        "title": "Điều khiển ADE/UI nhẹ",
+        "description": "MiniCPM chỉ được phép phân loại yêu cầu vào một danh sách trắng thao tác cục bộ nghiêm ngặt."
+      },
+      "contextCompact": {
+        "title": "Tự động bảo trì ngữ cảnh",
+        "description": "Cho phép MiniCPM duy trì một bản tóm tắt cuốn chiếu riêng biệt của ngữ cảnh cũ khi các phiên đã bật đang rảnh."
+      }
     }
   },
   "cliLaunchProfiles": {
@@ -1496,5 +1629,68 @@
     "unavailable": "Hồ sơ khởi chạy không khả dụng",
     "saved": "Đã lưu hồ sơ khởi chạy",
     "resetDone": "Đã đặt lại hồ sơ khởi chạy"
+  },
+  "gitProfiles": {
+    "tab": "Hồ sơ Git",
+    "title": "Hồ sơ Git",
+    "add": "Thêm hồ sơ",
+    "refresh": "Làm mới hồ sơ",
+    "refreshed": "Đã làm mới hồ sơ Git toàn cục",
+    "loading": "Đang tải hồ sơ Git toàn cục của bạn…",
+    "defaultProfile": "Hồ sơ mặc định",
+    "newProfile": "Hồ sơ mới",
+    "copyName": "Bản sao {{name}}",
+    "profileName": "Tên hồ sơ",
+    "authorName": "Tên tác giả",
+    "email": "Email",
+    "selectEmail": "Chọn một email",
+    "signingKey": "Khóa ký",
+    "signingKeyPlaceholder": "ID khóa ký GPG hoặc SSH",
+    "signCommits": "Ký commit",
+    "active": "Đang hoạt động",
+    "activate": "Kích hoạt hồ sơ",
+    "activated": "{{name}} hiện là hồ sơ Git toàn cục",
+    "editRaw": "Chỉnh sửa cấu hình thô",
+    "hideRaw": "Ẩn cấu hình thô",
+    "rawTitle": "Hồ sơ Git thô",
+    "rawConfig": "Cấu hình Git",
+    "updateFromRaw": "Cập nhật hồ sơ từ cấu hình",
+    "rawUpdated": "Đã cập nhật hồ sơ từ cấu hình Git thô",
+    "rawInvalid": "Hồ sơ Git thô không hợp lệ",
+    "nameEmailRequired": "Cần nhập tên tác giả và email",
+    "deleteTitle": "Xóa hồ sơ Git",
+    "deleteMessage": "Xóa hồ sơ “{{name}}”? Thao tác này không thay đổi cấu hình Git toàn cục hiện tại của bạn.",
+    "loadFailed": "Không thể tải hồ sơ Git toàn cục",
+    "applyFailed": "Không thể kích hoạt hồ sơ Git"
+  },
+  "credentialImport": {
+    "title": "Nhập thông tin xác thực từ ứng dụng khác",
+    "titleWithCount": "Nhập thông tin xác thực từ ứng dụng khác (tìm thấy {{count}})",
+    "itemColumn": "Thông tin xác thực",
+    "sourceColumn": "Tìm thấy trong",
+    "empty": "Không tìm thấy thông tin xác thực nào để nhập. Đã kiểm tra biến môi trường, shell profile, cài đặt Claude Code, hồ sơ cc-switch và kho đăng nhập của Claude Code, Codex, Cursor, GitHub CLI, Kiro và OpenCode.",
+    "allImported": "Tất cả thông tin xác thực đã phát hiện đều đã được nhập",
+    "authMethod": {
+      "api_key": "API key",
+      "oauth": "Token đăng nhập"
+    },
+    "sourceKind": {
+      "env": "Biến môi trường",
+      "shell_profile": "Shell profile",
+      "config_file": "Tệp cấu hình",
+      "oauth_store": "Kho đăng nhập",
+      "keychain": "Keychain",
+      "state_db": "Trạng thái ứng dụng",
+      "cc_switch": "cc-switch"
+    },
+    "applyFailed": "Nhập thất bại: {{message}}",
+    "partialFailure": "Một số thông tin xác thực không thể nhập:"
+  },
+  "skills": {
+    "shareToOrg": "Chia sẻ với tổ chức",
+    "share": "Chia sẻ",
+    "sharedToOrg": "Đã chia sẻ Skill với tổ chức",
+    "shareToOrgHint": "Thành viên của tổ chức nhận được ảnh chụp hiện tại của skill này; hãy chia sẻ lại sau khi chỉnh sửa để phát hành bản cập nhật.",
+    "shareOrgPlaceholder": "Tổ chức"
   }
 }

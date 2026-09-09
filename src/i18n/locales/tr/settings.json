@@ -20,7 +20,8 @@
     "storage": "Depolama",
     "agentMemory": "Agent Belleği",
     "agentOrg": "Agent Ekibi",
-    "harnessConnections": "CLI Yönlendirmesi"
+    "harnessConnections": "CLI Yönlendirmesi",
+    "mobileRemote": "Mobil Uzaktan Erişim"
   },
   "coreSidebar": {
     "groups": {
@@ -164,7 +165,8 @@
       "gold": "Altın",
       "red": "Kırmızı",
       "rose": "Pembe",
-      "mono": "Mono"
+      "mono": "Mono",
+      "matchSkin": "Skin ile eşleştir"
     },
     "security": "Güvenlik",
     "voiceInput": "Sesli giriş",
@@ -189,7 +191,28 @@
     "presenceGuidanceOnlineDefault": "Klavyenin başındayım. İstediğin zaman netleştirici sorular sorabilir ve yıkıcı işlemleri çalıştırmadan önce bana onaylatabilirsin",
     "presenceGuidanceInvisibleDefault": "Yakındayım ama çevrimdışı görünüyorum. Varsayılan olarak otonom ilerle ve yalnızca yüksek riskli işlemler ya da önemli refaktörler için beni bilgilendir; diğer soruları tek tek sormak yerine tek bir özette topla",
     "presenceGuidanceAwayDefault": "Klavyeden uzaktayım. Beni bekleyip takılma; elindeki bilgilerle en iyi kararı ver, bitirebildiklerini bitir ve döndüğümde bakmam için olanları ve açık soruları kısa bir özet olarak bırak",
-    "followSystem": "Sistemi izle"
+    "followSystem": "Sistemi izle",
+    "skins": "Skin'ler",
+    "skinsDesc": "Açık ve koyu modlar ayrı paletler kullanır. Her biri uygulama o modda çizim yaparken uygulanır",
+    "lightSkin": "Açık skin",
+    "darkSkin": "Koyu skin",
+    "lightAccent": "Açık vurgu rengi",
+    "darkAccent": "Koyu vurgu rengi",
+    "skinGroups": {
+      "orgii": "ORGII",
+      "codex": "Codex"
+    },
+    "iconStyle": "Simge stili",
+    "iconStyleDesc": "Tek renkli, dosya türü ve model simgelerinin doygunluğunu azaltarak logo yerine arayüz gibi görünmelerini sağlar",
+    "iconStyleOptions": {
+      "colorful": "Renkli",
+      "monochrome": "Tek renkli"
+    },
+    "translucentSidebar": "Yarı saydam kenar çubuğu",
+    "skin": "Skin",
+    "accent": "Vurgu rengi",
+    "linkSkinVariants": "Açık ve koyuyu bağla",
+    "linkSkinVariantsDesc": "Her iki mod için tek bir skin ve vurgu rengi kullan. Yalnızca hem açık hem koyu varyantı olan skin'ler bağlanabilir"
   },
   "background": {
     "title": "Arka Plan",
@@ -463,7 +486,8 @@
       "permissionWarning": "Test bildirimi gönderilemedi. İzinleri kontrol edin.",
       "sendFailed": "Test bildirimi gönderilemiyor. Bildirim izinlerinizi kontrol edip yeniden deneyin.",
       "soundFailed": "Bildirim sesi çalınamıyor. Sistem ses düzeyini kontrol edin."
-    }
+    },
+    "teamInboxDesc": "Takım arkadaşlarından gelen atamalar, bahsetmeler ve devirler"
   },
   "editor": {
     "tabEditor": "Editör",
@@ -558,7 +582,19 @@
   },
   "update": {
     "detectUpdate": "Güncelleme Algıla",
-    "currentVersion": "Mevcut Sürüm"
+    "currentVersion": "Mevcut Sürüm",
+    "channel": "Güncelleme kanalı",
+    "channelDesc": "Beta, kararlı sürümden önce ön sürüm yapılarını alır. Kararlı sürüme geri dönmek asla sürüm düşürmez — bir sonraki kararlı sürümde geçerli olur",
+    "channelStable": "Kararlı",
+    "channelBeta": "Beta",
+    "installConfirmTitle": "Güncelleme yüklenmeye hazır",
+    "installConfirmDesc": "{{version}} sürümü indirildi. ORGII'yi yükleyip yeniden başlatmadan önce devam eden çalışmalarınızı kaydedin",
+    "installAndRestart": "Yükle ve yeniden başlat",
+    "installOfficialConfirmTitle": "Resmi uygulama yüklenmeye hazır",
+    "installOfficialConfirmDesc": "Resmi {{version}} sürümünü /Applications/ORG2.app konumuna yükleyin. Bu yerel yapı açık ve değişmeden kalır",
+    "installOfficial": "Resmi uygulamayı yükle",
+    "localBuild": "Yerel",
+    "skipVersion": "Bu sürümü atla"
   },
   "monitor": {
     "appMemory": "App memory",
@@ -633,7 +669,19 @@
     "diskCategory_sessionImages": "Sohbet Görselleri",
     "diskCategory_screenshots": "Tarayıcı Ekran Görüntüleri",
     "diskCategory_agentWorktrees": "Agent Session Worktrees",
-    "diskCategory_lspBin": "LSP Server İkili Dosyaları"
+    "diskCategory_lspBin": "LSP Server İkili Dosyaları",
+    "cacheRegistry": "Önbellek kaydı",
+    "loadedScriptSources": "Yüklenen JS kaynağı ({{modules}} modül / {{chunks}} parça)",
+    "cacheRegistryEmpty": "Kayıtlı önbellek yok",
+    "cacheRegistryEntries": "{{count}} girdi",
+    "diskCategory_toolResults": "Aşırı Büyük Araç Sonuçları",
+    "diskCategory_diagnostics": "Tanılama Kuyruğu",
+    "diskCategory_models": "İndirilen Modeller",
+    "diskCategory_semanticIndex": "Anlamsal Arama Dizini",
+    "diskCategory_cursorCliProfiles": "Cursor CLI Profilleri",
+    "diskCategory_kiroCliProfiles": "Kiro CLI Profilleri",
+    "diskCategory_opencodeCliProfiles": "OpenCode CLI Profilleri",
+    "diskCategory_sidecarBin": "İndirilen Sidecar İkili Dosyaları"
   },
   "storage": {
     "dataDirectory": "Veri Dizini",
@@ -852,5 +900,81 @@
     "conflict": "Yapılandırma ORGII dışında değiştirildi. Uygulamadan veya geri yüklemeden önce değişiklikleri inceleyin; üzerlerine yazılmayacak",
     "credentialsNote": "Doğrudan mod, kimlik bilgilerini kısıtlı dosya erişimiyle CLI yapılandırmasına yazar; kasadan anahtar silmek dışa aktarılan kimlik bilgisini iptal etmez",
     "notInstalled": "Bağlantıyı test etmeden veya uygulamadan önce bu aracı yükleyin"
+  },
+  "mobileRemote": {
+    "enabled": "Mobil Uzaktan Erişim",
+    "enabledDesc": "Eşleştirilmiş bir telefonun bu masaüstündeki agent oturumlarını aynı Wi‑Fi LAN üzerinden veya genel aktarıcı aracılığıyla yönetmesine izin ver",
+    "securityNotice": "LAN erişimi açıkken ağınızdaki bağlantı URL'si ve token'ına sahip herkes oturumları kontrol edebilir. Sızdığını düşünüyorsanız token'ı yeniden oluşturun",
+    "outdoorTitle": "Dış bağlantı",
+    "outdoorDesc": "Telefonunuzun 4G, 5G veya başka bir ağ üzerinden çalışması için masaüstünü genel bir aktarıcıya giden yönde bağlayın",
+    "relayEnabled": "Genel aktarıcıya bağlan",
+    "relayEnabledDesc": "Masaüstü giden bir WSS bağlantısı açar; yönlendiricide port yönlendirme gerekmez",
+    "relayUrl": "Aktarıcı adresi",
+    "relayUrlDesc": "Dağıtılan ws:// veya wss:// URL'sini girin, örneğin wss://relay.example.com/v1/mobile/ws",
+    "relayPresetAria": "Aktarıcı ortamı ön ayarını seç",
+    "relayPresetLocal": "Yerel",
+    "relayPresetProduction": "Üretim",
+    "cloudLoginTitle": "ORG2 Cloud girişi",
+    "cloudLoginDescSignedIn": "{{identity}} olarak giriş yapıldı — aktarıcı dış eşleştirme için bu hesabı kullanır",
+    "cloudLoginDescSignedOut": "Genel aktarıcı üzerinden eşleştirmeden önce ORG2 Cloud'a giriş yapın",
+    "relayStatusCloudLoginRequired": "Ayarlar → Genel bölümünden ORG2 Cloud'a giriş yapın, ardından aktarıcı durumunu yenileyin",
+    "relayStatusAuthFailedSignedIn": "Aktarıcı bağlantıyı reddetti — Ayarlar → Genel altında çıkış yapıp yeniden giriş yapın",
+    "relayStatus": "Aktarıcı durumu",
+    "relayStatus_online": "Bağlandı",
+    "relayStatus_connecting": "Bağlanıyor",
+    "relayStatus_backoff": "Yeniden bağlanmak için bekleniyor",
+    "relayStatus_disabled": "Devre dışı",
+    "relayStatus_config_error": "Yapılandırma hatası",
+    "relayStatus_stopped": "Durduruldu",
+    "startOutdoorPairing": "Dış eşleştirme kodu oluştur",
+    "phoneLabel": "Telefon adı",
+    "phoneLabelDesc": "Bu ad eşleştirilmiş cihaz listesinde görünür",
+    "fullAccess": "Eylemlere izin ver",
+    "fullAccessDesc": "Açıkken telefon mesaj gönderebilir, oturumları durdurabilir ve izinleri yanıtlayabilir; kapalıyken yalnızca görüntüleme yapabilir",
+    "pairingExpires": "Eşleştirme kodunun süresi {{seconds}} saniye içinde doluyor",
+    "sasPhrase": "Güvenlik ifadesi",
+    "sasDesktopHint": "Telefon taramadan sonra aynı ifadeyi gösterir; yalnızca ikisi eşleşiyorsa onaylayın",
+    "pairingPayload": "Eşleştirme verisi",
+    "pairingPayloadHint": "Bu bilgisayarda test ederken bunu kopyalayıp Mobil Uzaktan Erişim eşleştirme ekranına yapıştırın",
+    "copyPairingPayload": "Eşleştirme verisini kopyala",
+    "pairingPayloadCopied": "Eşleştirme verisi kopyalandı",
+    "pairingPayloadCopyFailed": "Eşleştirme verisi kopyalanamadı",
+    "regeneratePairing": "Yeni kod oluştur",
+    "confirmPairing": "İfadeler eşleşiyor, eşleştirmeyi onayla",
+    "pairingConfirmed": "Telefon eşleştirildi",
+    "pairingFailed": "Eşleştirme oluşturulamadı",
+    "revokeDevice": "İptal et",
+    "lanAdvanced": "LAN yedeği",
+    "lanAdvancedDesc": "Genel aktarıcıyı kullanmadan aynı Wi-Fi üzerinden doğrudan bağlanın",
+    "allowLanExposure": "LAN bağlantılarına izin ver",
+    "allowLanExposureDesc": "Kapalıyken köprü yalnızca bu bilgisayardan (127.0.0.1) bağlantı kabul eder. Açıkken Wi-Fi ağınızdaki diğer cihazlar bağlanabilir",
+    "lanToken": "Bağlantı token'ı",
+    "lanTokenDesc": "Paylaşılan gizli anahtar olarak WebSocket URL'sine eklenir. Kopyalama/yapıştırma veya QR kodlaması için burada gösterilir",
+    "regenerateToken": "Yeniden oluştur",
+    "pairing": "Telefonunuzda eşleştirin",
+    "pairingDesc": "Aynı Wi-Fi üzerinden bağlanmak için QR kodu tarayın veya WebSocket URL'sini telefonunuzun tarayıcısına kopyalayın",
+    "connectionUrl": "WebSocket URL'si",
+    "connectionUrlDesc": "Bu URL'yi telefonunuzun tarayıcısında açın veya eşleştirme için bir QR koduna kodlayın",
+    "copyConnectionUrl": "WebSocket URL'sini kopyala",
+    "connectionUrlCopied": "WebSocket URL'si kopyalandı",
+    "qrAriaLabel": "Mobil Uzaktan Erişim WebSocket URL'si için QR kodu",
+    "qrScanHint": "Aynı ağdayken telefon kameranızla veya bir QR okuyucu uygulamasıyla tarayın",
+    "lanIpUnresolved": "Bu bilgisayarın LAN adresi algılanamadı. URL'yi kopyalayıp <local-ip> yerine Wi-Fi IP'nizi yazın veya LAN IP'yi yenile'ye dokunun",
+    "refreshLanIp": "LAN IP'yi yenile",
+    "pairedDevices": "Eşleştirilmiş cihazlar",
+    "pairedDevicesDesc": "Aktarıcı üzerinden yetkilendirilen telefonlar; erişim istediğiniz zaman iptal edilebilir",
+    "devicesLoadFailed": "Eşleştirilmiş cihazlar yüklenemedi",
+    "noDevices": "Eşleştirilmiş cihaz yok",
+    "noDevicesDesc": "Bir dış eşleştirme kodu oluşturun, ardından Mobil Uzaktan Erişim PWA'sında tarayın veya yapıştırın",
+    "deviceLabel": "Cihaz",
+    "deviceTier": "Düzey",
+    "deviceTierFull": "Tam erişim",
+    "deviceTierReadOnly": "Salt okunur",
+    "deviceLastSeen": "Son görülme",
+    "devicePairedAt": "Eşleştirilme: {{time}}",
+    "deviceLastSeenValue": "Son görülme: {{time}}",
+    "deviceNeverSeen": "Hiç bağlanmadı",
+    "deviceOnline": "Çevrimiçi",
+    "deviceOffline": "Çevrimdışı"
   }
 }

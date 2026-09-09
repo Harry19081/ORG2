@@ -183,7 +183,8 @@
       "kanban": "칸반",
       "gantt": "간트",
       "calendar": "캘린더",
-      "settings": "설정"
+      "settings": "설정",
+      "table": "테이블"
     },
     "statusFilters": {
       "all": "전체",
@@ -252,7 +253,23 @@
       "hoursAgo": "{{count}}시간 전",
       "inDays": "{{count}}일 후",
       "inHours": "{{count}}시간 후",
-      "membersGroup": "멤버"
+      "membersGroup": "멤버",
+      "filter": "속성 필터",
+      "filterValue": "속성 필터 값",
+      "noValue": "값 없음",
+      "archiveNamed": "{{name}} 보관",
+      "add": "속성 추가",
+      "archive": "속성 보관",
+      "datePlaceholder": "YYYY-MM-DD",
+      "empty": "아직 사용자 지정 속성이 없습니다.",
+      "loading": "속성 불러오는 중…",
+      "namePlaceholder": "속성 이름",
+      "no": "아니요",
+      "optionsPlaceholder": "옵션, 쉼표로 구분",
+      "optionsRequired": "선택 속성에는 쉼표로 구분된 옵션이 필요합니다.",
+      "type": "속성 유형",
+      "updateFailed": "속성 업데이트 실패",
+      "yes": "예"
     },
     "activity": {
       "discussionTitle": "토론",
@@ -305,7 +322,27 @@
         "schedule": "일정",
         "orchestratorConfig": "Orchestrator 설정",
         "handoff": "인계"
-      }
+      },
+      "mentionPeople": "사람 멘션",
+      "mentionAll": "@all — 이 항목의 모든 사람",
+      "mentionAgentOption": "{{name}} (Agent)",
+      "mentionAgentOrgOption": "{{name}} (Agent 팀)",
+      "appendedSession": "세션을 추가했습니다",
+      "edited": "(수정됨)",
+      "commentDeleted": "이 댓글은 삭제되었습니다.",
+      "deleteComment": "댓글 삭제",
+      "deleteCommentConfirm": "이 댓글을 삭제할까요? 답글은 유지되고 댓글 본문만 제거됩니다.",
+      "messageCount_one": "메시지 {{count}}개",
+      "messageCount_other": "메시지 {{count}}개",
+      "cancelReply": "답글 취소",
+      "conclusion": "결론",
+      "reopen": "다시 열기",
+      "reply": "답글",
+      "replyingInThread": "스레드에 답글 작성 중",
+      "resolve": "해결",
+      "resolved": "해결됨",
+      "submitComment": "댓글 작성",
+      "openedWorkItem": "이 작업 항목을 열었습니다"
     },
     "contextMenu": {
       "status": "상태",
@@ -347,7 +384,10 @@
       "cannotParseRepoName": "저장소 이름을 구문 분석할 수 없습니다: {{url}}"
     },
     "sessions": {
-      "emptyOverview": "아직 Sessions가 없습니다"
+      "emptyOverview": "아직 Sessions가 없습니다",
+      "originTitle": "생성 세션",
+      "originStatus": "이 항목을 생성함",
+      "runsCount": "실행 {{count}}회"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -366,7 +406,9 @@
       "fileDiffCleanHint": "파일 변경이 감지되지 않았습니다.",
       "costSummary": "비용 요약",
       "totalCost": "총계",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "완료가 차단되었습니다",
+      "prReady": "완료 준비됨"
     },
     "viewWorkItems": "Work Item 보기",
     "fromRoutine": "From routine: {{name}}",
@@ -381,7 +423,98 @@
     },
     "batchAssignee": {
       "title": "담당자 설정"
-    }
+    },
+    "discussion": {
+      "previewWillWake": "Agent를 깨워 답변하게 합니다",
+      "previewNoteOnly": "메모만 — Agent는 트리거되지 않습니다",
+      "previewNoSession": "연결된 Agent 세션 없음 — 아무것도 트리거되지 않습니다",
+      "previewMentionResume": "멘션된 Agent를 깨웁니다",
+      "previewMentionStart": "멘션된 Agent를 시작합니다",
+      "previewMentionUnroutable": "멘션된 Agent가 이 항목에 구성되어 있지 않음 — 아무것도 트리거되지 않습니다",
+      "previewThread": "이 스레드에서 Agent를 깨웁니다",
+      "previewAssignee": "담당 Agent를 깨웁니다",
+      "previewAssigneeStart": "담당 Agent를 시작합니다",
+      "previewCoalesce": "대기 중인 깨우기에 합쳐집니다",
+      "previewMemberThread": "멤버 스레드 — Agent를 깨우지 않습니다"
+    },
+    "subItems": {
+      "title": "하위 항목",
+      "parent": "상위",
+      "progress": "{{total}}개 중 {{completed}}개 완료",
+      "add": "하위 항목 추가",
+      "addFirst": "첫 번째 하위 항목 추가",
+      "titlePlaceholder": "하위 항목 제목 입력",
+      "stagePicker": "하위 항목 단계",
+      "noStage": "단계 없음",
+      "stage": "{{stage}}단계",
+      "openStatus": "열림",
+      "completedStatus": "완료됨",
+      "cancelledStatus": "취소됨",
+      "createError": "하위 항목을 만들 수 없습니다. 다시 시도해 주세요."
+    },
+    "savedViews": {
+      "placeholder": "보기",
+      "save": "현재 보기 저장",
+      "saveTitle": "보기 저장",
+      "namePlaceholder": "보기 이름",
+      "saveHint": "현재 필터를 저장합니다. 레이아웃은 처음 열 때의 기본값이 됩니다.",
+      "delete": "보기 삭제"
+    },
+    "table": {
+      "columnsPicker": "열",
+      "groupByProperty": "속성별 그룹화",
+      "columns": {
+        "shortId": "ID",
+        "title": "제목",
+        "status": "상태",
+        "priority": "우선순위",
+        "assignee": "담당자",
+        "targetDate": "기한",
+        "labels": "라벨"
+      }
+    },
+    "batchProperty": {
+      "title": "속성 설정",
+      "hint": "선택한 {{count}}개 항목에 하나의 속성 값을 적용합니다. 값을 비워 두면 지워집니다.",
+      "propertyPlaceholder": "속성",
+      "valuePlaceholder": "값",
+      "applied": "{{count}}개 항목을 업데이트했습니다"
+    },
+    "revisionConflict": {
+      "title": "편집 충돌 해결",
+      "description": "{{field}}이(가) 리비전 {{expected}} 이후에 변경되었습니다. 내 편집을 리비전 {{actual}}과(와) 비교한 뒤 유지할 버전을 선택하세요.",
+      "mine": "내 버전",
+      "latest": "최신 버전",
+      "useLatest": "최신 버전 사용",
+      "keepMine": "내 버전 유지",
+      "titleField": "제목",
+      "descriptionField": "설명",
+      "commentField": "댓글",
+      "reloadNotice": "이 작업 항목이 다른 곳에서 변경되었습니다. 최신 버전을 다시 불러왔습니다.",
+      "retryFailed": "최신 버전이 다시 변경되었습니다. 재시도하기 전에 두 버전을 검토하세요."
+    },
+    "quickActions": {
+      "title": "빠른 작업",
+      "empty": "아직 빠른 작업이 없습니다. Agent용으로 재사용할 프롬프트를 저장하세요.",
+      "emptyManage": "아직 저장된 항목이 없습니다.",
+      "manageTitle": "빠른 작업 관리",
+      "namePlaceholder": "작업 이름 (예: CI 수정)",
+      "targetPlaceholder": "대상 Agent",
+      "promptPlaceholder": "Agent가 무엇을 해야 하나요?",
+      "archive": "작업 보관",
+      "scopeChanged": "빠른 작업이 더 이상 이 작업 항목 범위에 없습니다",
+      "started": "빠른 작업 “{{name}}”을(를) 시작했습니다"
+    },
+    "detailNavigation": "작업 항목 탐색",
+    "linkedSessions": {
+      "title": "세션"
+    },
+    "detail": {
+      "conversation": "대화",
+      "linked": "연결됨"
+    },
+    "detailSummary": "작업 항목 요약",
+    "navigationTrail": "작업 항목 탐색"
   },
   "settings": {
     "sidebarGeneral": "일반",
@@ -446,7 +579,12 @@
         "notAttached": "연결되지 않음",
         "attach": "연결",
         "detach": "해제",
-        "changeWarning": "새 어댑터를 연결하기 전에 현재 어댑터를 해제하세요."
+        "changeWarning": "새 어댑터를 연결하기 전에 현재 어댑터를 해제하세요.",
+        "detachProjectMenuLabel": "GitHub 연결 해제",
+        "detachProjectTitle": "{{project}}에서 GitHub 연결을 해제할까요?",
+        "detachProjectDescription": "GitHub Issues 동기화가 중지됩니다. 로컬 프로젝트와 가져온 작업 항목은 ORGII에 남습니다.",
+        "detachProjectAction": "{{project}}에서 GitHub 연결 해제",
+        "detachProjectSuccess": "{{project}}에서 GitHub 연결을 해제했습니다"
       },
       "accountPicker": {
         "title": "계정",
@@ -596,7 +734,16 @@
           "dismissFailed": "충돌을 무시하지 못했습니다: {{error}}"
         }
       }
-    }
+    },
+    "sidebarStatuses": "상태",
+    "statusesBuiltin": "기본 제공 상태",
+    "statusesBuiltinDescription": "표준 워크플로 버킷입니다. 항상 사용할 수 있습니다.",
+    "statusesCustom": "사용자 지정 상태",
+    "statusesCustomDescription": "기본 제공 버킷 위에 붙인 이름 별칭입니다. 필터, 개수, 보드는 이를 해당 버킷으로 취급합니다.",
+    "statusNamePlaceholder": "상태 이름",
+    "noCustomStatuses": "아직 사용자 지정 상태가 없습니다.",
+    "statusArchive": "상태 보관",
+    "statusRestore": "상태 복원"
   },
   "statusBar": {
     "workItemCount": "{{count}}개",

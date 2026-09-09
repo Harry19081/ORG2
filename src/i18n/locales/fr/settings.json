@@ -20,7 +20,8 @@
     "storage": "Stockage",
     "agentMemory": "Mémoire de l'Agent",
     "agentOrg": "Équipe Agent",
-    "harnessConnections": "Routage CLI"
+    "harnessConnections": "Routage CLI",
+    "mobileRemote": "Mobile Remote"
   },
   "coreSidebar": {
     "groups": {
@@ -164,7 +165,8 @@
       "gold": "Or",
       "red": "Rouge",
       "rose": "Rose",
-      "mono": "Mono"
+      "mono": "Mono",
+      "matchSkin": "Selon le skin"
     },
     "security": "Sécurité",
     "voiceInput": "Entrée vocale",
@@ -189,7 +191,28 @@
     "presenceGuidanceOnlineDefault": "Je suis au clavier. Tu peux me poser des questions de clarification à tout moment et confirmer avec moi toute action destructive avant de l'exécuter",
     "presenceGuidanceInvisibleDefault": "Je suis disponible mais affiché hors ligne. Par défaut, travaille de façon autonome et préviens-moi seulement pour les actions à risque élevé ou les refactorisations importantes ; regroupe les autres questions dans un seul résumé au lieu de les poser une par une",
     "presenceGuidanceAwayDefault": "Je suis loin du clavier. Ne bloque pas en m'attendant ; prends la meilleure décision avec les informations disponibles, termine ce qui peut l'être et laisse un bref résumé de ce qui s'est passé avec les questions ouvertes pour mon retour",
-    "followSystem": "Suivre le système"
+    "followSystem": "Suivre le système",
+    "skins": "Skins",
+    "skinsDesc": "Les modes clair et sombre utilisent des palettes distinctes. Chacune s’applique lorsque l’app s’affiche dans ce mode",
+    "lightSkin": "Skin clair",
+    "darkSkin": "Skin sombre",
+    "lightAccent": "Accent clair",
+    "darkAccent": "Accent sombre",
+    "skinGroups": {
+      "orgii": "ORGII",
+      "codex": "Codex"
+    },
+    "iconStyle": "Style des icônes",
+    "iconStyleDesc": "Monochrome désature les icônes de type de fichier et de modèle pour qu’elles se lisent comme de l’interface, pas comme des logos",
+    "iconStyleOptions": {
+      "colorful": "Colorées",
+      "monochrome": "Monochrome"
+    },
+    "translucentSidebar": "Barre latérale translucide",
+    "skin": "Skin",
+    "accent": "Accent",
+    "linkSkinVariants": "Lier clair et sombre",
+    "linkSkinVariantsDesc": "Utiliser un seul skin et un seul accent pour les deux modes. Seuls les skins proposant une variante claire et une variante sombre peuvent être liés"
   },
   "background": {
     "title": "Arrière-plan",
@@ -463,7 +486,8 @@
       "permissionWarning": "Échec de l'envoi de la notification de test. Vérifiez les autorisations.",
       "sendFailed": "Impossible d'envoyer la notification de test. Veuillez vérifier vos autorisations de notification et réessayer.",
       "soundFailed": "Impossible de lire le son de notification. Vérifiez le volume du système."
-    }
+    },
+    "teamInboxDesc": "Assignations, mentions et passations de vos coéquipiers"
   },
   "editor": {
     "tabEditor": "Éditeur",
@@ -558,7 +582,19 @@
   },
   "update": {
     "detectUpdate": "Détecter les mises à jour",
-    "currentVersion": "Version actuelle"
+    "currentVersion": "Version actuelle",
+    "channel": "Canal de mise à jour",
+    "channelDesc": "Bêta reçoit les préversions avant la sortie stable. Revenir à Stable ne rétrograde jamais — cela prend effet à la prochaine version stable",
+    "channelStable": "Stable",
+    "channelBeta": "Bêta",
+    "installConfirmTitle": "Mise à jour prête à installer",
+    "installConfirmDesc": "La version {{version}} a été téléchargée. Enregistrez tout travail en cours avant d’installer et de redémarrer ORGII",
+    "installAndRestart": "Installer et redémarrer",
+    "installOfficialConfirmTitle": "App officielle prête à installer",
+    "installOfficialConfirmDesc": "Installer la version officielle {{version}} dans /Applications/ORG2.app. Cette build locale reste ouverte et inchangée",
+    "installOfficial": "Installer l’app officielle",
+    "localBuild": "Locale",
+    "skipVersion": "Ignorer cette version"
   },
   "monitor": {
     "appMemory": "App memory",
@@ -633,7 +669,19 @@
     "diskCategory_sessionImages": "Images de chat",
     "diskCategory_screenshots": "Captures d'écran du navigateur",
     "diskCategory_agentWorktrees": "Worktrees de Session Agent",
-    "diskCategory_lspBin": "Binaires LSP Server"
+    "diskCategory_lspBin": "Binaires LSP Server",
+    "cacheRegistry": "Registre des caches",
+    "loadedScriptSources": "Source JS chargée ({{modules}} modules / {{chunks}} chunks)",
+    "cacheRegistryEmpty": "Aucun cache enregistré",
+    "cacheRegistryEntries": "{{count}} entrées",
+    "diskCategory_toolResults": "Résultats d’outils surdimensionnés",
+    "diskCategory_diagnostics": "File d’attente des diagnostics",
+    "diskCategory_models": "Modèles téléchargés",
+    "diskCategory_semanticIndex": "Index de recherche sémantique",
+    "diskCategory_cursorCliProfiles": "Profils Cursor CLI",
+    "diskCategory_kiroCliProfiles": "Profils Kiro CLI",
+    "diskCategory_opencodeCliProfiles": "Profils OpenCode CLI",
+    "diskCategory_sidecarBin": "Binaires sidecar téléchargés"
   },
   "storage": {
     "dataDirectory": "Répertoire de données",
@@ -852,5 +900,81 @@
     "conflict": "La configuration a été modifiée en dehors d’ORGII. Vérifiez ces modifications avant d’appliquer ou de rétablir ; elles ne seront pas écrasées",
     "credentialsNote": "Le mode direct écrit les identifiants dans la configuration CLI avec un accès restreint ; supprimer une clé du coffre ne révoque pas l’identifiant exporté",
     "notInstalled": "Installez cet outil avant de tester ou d’appliquer une connexion"
+  },
+  "mobileRemote": {
+    "enabled": "Mobile Remote",
+    "enabledDesc": "Permettre à un téléphone appairé de piloter les sessions d’agent sur cet ordinateur via le même réseau Wi‑Fi ou via le relais public",
+    "securityNotice": "Toute personne sur votre réseau disposant de l’URL de connexion et du token peut contrôler les sessions lorsque l’exposition LAN est activée. Régénérez le token si vous pensez qu’il a fuité",
+    "outdoorTitle": "Connexion à distance",
+    "outdoorDesc": "Connecter l’ordinateur en sortie à un relais public pour que votre téléphone fonctionne en 4G, 5G ou sur un autre réseau",
+    "relayEnabled": "Se connecter au relais public",
+    "relayEnabledDesc": "L’ordinateur ouvre une connexion WSS sortante ; aucune redirection de port n’est nécessaire sur le routeur",
+    "relayUrl": "Adresse du relais",
+    "relayUrlDesc": "Saisissez l’URL ws:// ou wss:// déployée, par exemple wss://relay.example.com/v1/mobile/ws",
+    "relayPresetAria": "Sélectionner un préréglage d’environnement de relais",
+    "relayPresetLocal": "Local",
+    "relayPresetProduction": "Production",
+    "cloudLoginTitle": "Connexion ORG2 Cloud",
+    "cloudLoginDescSignedIn": "Connecté en tant que {{identity}} — le relais utilise ce compte pour l’appairage à distance",
+    "cloudLoginDescSignedOut": "Connectez-vous à ORG2 Cloud avant d’appairer via le relais public",
+    "relayStatusCloudLoginRequired": "Connectez-vous à ORG2 Cloud dans Paramètres → Général, puis actualisez l’état du relais",
+    "relayStatusAuthFailedSignedIn": "Le relais a refusé la connexion — déconnectez-vous puis reconnectez-vous dans Paramètres → Général",
+    "relayStatus": "État du relais",
+    "relayStatus_online": "Connecté",
+    "relayStatus_connecting": "Connexion",
+    "relayStatus_backoff": "En attente de reconnexion",
+    "relayStatus_disabled": "Désactivé",
+    "relayStatus_config_error": "Erreur de configuration",
+    "relayStatus_stopped": "Arrêté",
+    "startOutdoorPairing": "Générer un code d’appairage à distance",
+    "phoneLabel": "Nom du téléphone",
+    "phoneLabelDesc": "Ce nom apparaît dans la liste des appareils appairés",
+    "fullAccess": "Autoriser les actions",
+    "fullAccessDesc": "Lorsque activé, le téléphone peut envoyer des messages, arrêter des sessions et répondre aux demandes de permission ; lorsque désactivé, il est en lecture seule",
+    "pairingExpires": "Le code d’appairage expire dans {{seconds}} secondes",
+    "sasPhrase": "Phrase de sécurité",
+    "sasDesktopHint": "Le téléphone affiche la même phrase après le scan ; ne confirmez que si les deux correspondent",
+    "pairingPayload": "Données d’appairage",
+    "pairingPayloadHint": "Copiez-collez ceci dans l’écran d’alignement de Mobile Remote lors des tests sur cet ordinateur",
+    "copyPairingPayload": "Copier les données d’appairage",
+    "pairingPayloadCopied": "Données d’appairage copiées",
+    "pairingPayloadCopyFailed": "Impossible de copier les données d’appairage",
+    "regeneratePairing": "Générer un nouveau code",
+    "confirmPairing": "Les phrases correspondent, confirmer l’appairage",
+    "pairingConfirmed": "Téléphone appairé",
+    "pairingFailed": "Impossible de créer l’appairage",
+    "revokeDevice": "Révoquer",
+    "lanAdvanced": "Repli LAN",
+    "lanAdvancedDesc": "Se connecter directement sur le même Wi-Fi sans passer par le relais public",
+    "allowLanExposure": "Autoriser les connexions LAN",
+    "allowLanExposureDesc": "Lorsque désactivé, le pont n’accepte que les connexions depuis cet ordinateur (127.0.0.1). Lorsque activé, les autres appareils de votre Wi-Fi peuvent se connecter",
+    "lanToken": "Token de connexion",
+    "lanTokenDesc": "Ajouté à l’URL WebSocket comme secret partagé. Affiché ici pour copier-coller ou encoder en QR",
+    "regenerateToken": "Régénérer",
+    "pairing": "Appairer sur votre téléphone",
+    "pairingDesc": "Scannez le QR code ou copiez l’URL WebSocket dans le navigateur de votre téléphone pour vous connecter sur le même Wi-Fi",
+    "connectionUrl": "URL WebSocket",
+    "connectionUrlDesc": "Ouvrez cette URL dans le navigateur de votre téléphone ou encodez-la en QR code pour l’appairage",
+    "copyConnectionUrl": "Copier l’URL WebSocket",
+    "connectionUrlCopied": "URL WebSocket copiée",
+    "qrAriaLabel": "QR code de l’URL WebSocket de Mobile Remote",
+    "qrScanHint": "Scannez avec l’appareil photo de votre téléphone ou une app de lecture de QR code sur le même réseau",
+    "lanIpUnresolved": "Impossible de détecter l’adresse LAN de cet ordinateur. Copiez l’URL et remplacez <local-ip> par votre IP Wi-Fi, ou touchez Actualiser l’IP LAN",
+    "refreshLanIp": "Actualiser l’IP LAN",
+    "pairedDevices": "Appareils appairés",
+    "pairedDevicesDesc": "Téléphones autorisés via le relais ; l’accès peut être révoqué à tout moment",
+    "devicesLoadFailed": "Impossible de charger les appareils appairés",
+    "noDevices": "Aucun appareil appairé",
+    "noDevicesDesc": "Générez un code d’appairage à distance, puis scannez-le ou collez-le dans la PWA Mobile Remote",
+    "deviceLabel": "Appareil",
+    "deviceTier": "Niveau",
+    "deviceTierFull": "Accès complet",
+    "deviceTierReadOnly": "Lecture seule",
+    "deviceLastSeen": "Dernière activité",
+    "devicePairedAt": "Appairé {{time}}",
+    "deviceLastSeenValue": "Dernière activité {{time}}",
+    "deviceNeverSeen": "Jamais connecté",
+    "deviceOnline": "En ligne",
+    "deviceOffline": "Hors ligne"
   }
 }

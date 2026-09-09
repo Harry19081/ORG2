@@ -44,7 +44,8 @@
     "projectManager": "Project マネージャー",
     "diff": "Diff",
     "colleagues": "同僚",
-    "terminals": "ターミナル"
+    "terminals": "ターミナル",
+    "openSourceRepo": "ソース Repo を開く"
   },
   "routes": {
     "session": "チャット",
@@ -126,7 +127,9 @@
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
-      "multiRepoWorkspace": "{{count}} マルチ Repo Workspace"
+      "multiRepoWorkspace": "{{count}} マルチ Repo Workspace",
+      "repo_plural": "{{count}} Repo",
+      "multiRepoWorkspace_plural": "{{count}} マルチ Repo Workspace"
     },
     "bottomBar": {
       "settings": "設定",
@@ -161,7 +164,8 @@
       "duration30m": "30 分",
       "duration1h": "1 時間",
       "duration2h": "2 時間",
-      "durationTomorrow": "明日"
+      "durationTomorrow": "明日",
+      "unknownRole": "不明なロール"
     },
     "guide": {
       "trigger": "ガイドを開く",
@@ -342,7 +346,8 @@
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
-      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry."
+      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
+      "forkSetupReused": "前回の設定で続行 · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -683,7 +688,9 @@
     "comments": {
       "actionError": "操作に失敗しました。もう一度お試しください",
       "unresolvedBadge_one": "未解決のコメント {{count}} 件",
-      "unresolvedBadge": "未解決のコメント {{count}} 件"
+      "unresolvedBadge": "未解決のコメント {{count}} 件",
+      "unreadBadge_one": "未読メッセージ {{count}} 件",
+      "unreadBadge": "未読メッセージ {{count}} 件"
     },
     "sharingFloor": {
       "label": "最小共有レベル",
@@ -833,5 +840,60 @@
       "memberNote": "管理者が有効化 — このワークスペースを開かなくても、対象セッションがバックグラウンドでアップロードされます。"
     },
     "userName": "ユーザー名"
+  },
+  "myRole": {
+    "deleteRoleMessage": "「{{name}}」を削除します。この操作は元に戻せません。",
+    "activeBadge": "アクティブ",
+    "addRole": "カスタムロールを追加",
+    "builtInTitle": "組み込みロール",
+    "customEmpty": "カスタムロールはまだありません。組み込みの 3 つでは表せない姿勢を追加してください — 例:「集中作業」「ペアリング」「オンコール」。",
+    "customTitle": "カスタムロール",
+    "deleteRoleCancel": "キャンセル",
+    "deleteRoleOk": "削除",
+    "deleteRoleTitle": "ロールを削除しますか？",
+    "followUpSuggestionsDesc": "作業項目のターン完了後に次のステップの候補を提案します。追加のモデルリクエストを使用します。",
+    "followUpSuggestionsLabel": "Agent のフォローアップ提案",
+    "goalMaxTurnsDesc": "Agent が通常停止する時点から、最後の要求に向けて最大 N ターン追加で作業を続けます（0 = オフ）。",
+    "goalMaxTurnsLabel": "目標継続の予算",
+    "guidanceLabel": "Agent へのガイダンス",
+    "guidancePlaceholder": "このロールがアクティブなとき、Agent はどのように振る舞いを変えるべきですか？",
+    "modeSwitchAutoPlanDesc": "確認タイマーが切れたとき、保留中の Plan モード提案を自動的に切り替えます。",
+    "modeSwitchAutoPlanLabel": "モード切り替えの自動 Plan",
+    "newRoleDefaultLabel": "カスタムロール",
+    "pageDescription": "今あなたが担っているロールを定義します。Agent はアクティブなロールのガイダンスを読み、それに合わせて振る舞いを調整します — 例えば、集中しているときは確認の質問を減らし、離席中は要約をまとめて送ります。",
+    "pageTitle": "マイロール",
+    "planAutoApproveDesc": "保留中の計画を N 秒後に自動承認します（0 = 自分を待つ）。",
+    "planAutoApproveLabel": "計画の自動承認",
+    "questionAutoSkipDesc": "保留中の Agent の質問を N 秒後に自動スキップします（0 = 自分を待つ）。",
+    "questionAutoSkipLabel": "質問の自動スキップ",
+    "roleNameLabel": "名前",
+    "roleNamePlaceholder": "ロール名",
+    "stanceAutonomous": "自律 — 私を待たない",
+    "stanceDeferAndBatch": "後回しでまとめる — まず作業し、あとで質問",
+    "stanceDesc": "このロールがアクティブな間、Agent がブロッキングな判断をどう扱うか。",
+    "stanceInteractive": "対話的 — 自由に質問してよい",
+    "stanceLabel": "行動の姿勢"
+  },
+  "explore": {
+    "search": "検索",
+    "searching": "検索中...",
+    "searchPlaceholder": "GitHub リポジトリを検索（例: language:rust tauri）",
+    "clone": "クローン",
+    "cloning": "クローン中...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "{{name}} をクローンしました",
+    "cloneFailed": "クローンに失敗しました",
+    "cloneNoTarget": "デフォルトの Workspace フォルダーが設定されていません。設定で指定してください。",
+    "errorTitle": "検索に失敗しました",
+    "noResultsTitle": "一致するリポジトリがありません",
+    "noResultsSubtitle": "別のクエリや並び順をお試しください。",
+    "resultsCount": "{{total}} 件中 {{shown}} 件のリポジトリ",
+    "partial": "（一部 — 検索がタイムアウトしました）",
+    "sort": {
+      "bestMatch": "関連度順",
+      "stars": "スター数",
+      "updated": "最近の更新",
+      "forks": "フォーク数"
+    }
   }
 }

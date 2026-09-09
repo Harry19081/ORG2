@@ -183,7 +183,8 @@
       "kanban": "看板",
       "gantt": "甘特圖",
       "calendar": "日曆",
-      "settings": "設置"
+      "settings": "設置",
+      "table": "表格"
     },
     "statusFilters": {
       "all": "全部",
@@ -252,7 +253,23 @@
       "hoursAgo": "{{count}} 小時前",
       "inDays": "{{count}} 天后",
       "inHours": "{{count}} 小時後",
-      "membersGroup": "成員"
+      "membersGroup": "成員",
+      "filter": "屬性篩選",
+      "filterValue": "屬性篩選值",
+      "noValue": "無值",
+      "archiveNamed": "封存 {{name}}",
+      "add": "新增屬性",
+      "archive": "封存屬性",
+      "datePlaceholder": "YYYY-MM-DD",
+      "empty": "尚無自訂屬性。",
+      "loading": "正在載入屬性…",
+      "namePlaceholder": "屬性名稱",
+      "no": "否",
+      "optionsPlaceholder": "選項，以逗號分隔",
+      "optionsRequired": "選擇類屬性需要以逗號分隔的選項。",
+      "type": "屬性類型",
+      "updateFailed": "屬性更新失敗",
+      "yes": "是"
     },
     "activity": {
       "discussionTitle": "討論",
@@ -305,7 +322,27 @@
         "schedule": "計劃",
         "orchestratorConfig": "Orchestrator 配置",
         "handoff": "工作交接"
-      }
+      },
+      "mentionPeople": "提及成員",
+      "mentionAll": "@all — 此工作項的所有人",
+      "mentionAgentOption": "{{name}}（agent）",
+      "mentionAgentOrgOption": "{{name}}（agent org）",
+      "appendedSession": "附加了一個工作階段",
+      "edited": "（已編輯）",
+      "commentDeleted": "此評論已刪除。",
+      "deleteComment": "刪除評論",
+      "deleteCommentConfirm": "刪除此評論？回覆會保留，評論內容將被移除。",
+      "messageCount_one": "{{count}} 則訊息",
+      "messageCount_other": "{{count}} 則訊息",
+      "cancelReply": "取消回覆",
+      "conclusion": "結論",
+      "reopen": "重新開啟",
+      "reply": "回覆",
+      "replyingInThread": "正在討論串中回覆",
+      "resolve": "標記為已解決",
+      "resolved": "已解決",
+      "submitComment": "送出評論",
+      "openedWorkItem": "建立了此工作項"
     },
     "contextMenu": {
       "status": "狀態",
@@ -347,7 +384,10 @@
       "cannotParseRepoName": "無法解析倉庫名：{{url}}"
     },
     "sessions": {
-      "emptyOverview": "暫無 Sessions"
+      "emptyOverview": "暫無 Sessions",
+      "originTitle": "建立來源工作階段",
+      "originStatus": "由此工作階段建立",
+      "runsCount": "{{count}} 次執行"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -366,7 +406,9 @@
       "fileDiffCleanHint": "未檢測到文件變更。",
       "costSummary": "費用摘要",
       "totalCost": "總計",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "完成受阻",
+      "prReady": "可以完成"
     },
     "viewWorkItems": "查看 Work Items",
     "fromRoutine": "来自 Routine：{{name}}",
@@ -396,7 +438,83 @@
     },
     "batchAssignee": {
       "title": "設定負責人"
-    }
+    },
+    "discussion": {
+      "previewWillWake": "將喚醒 agent 回覆",
+      "previewNoteOnly": "僅記錄 — 不會觸發 agent",
+      "previewNoSession": "沒有關聯的 agent 工作階段 — 不會觸發任何動作",
+      "previewMentionResume": "將喚醒被提及的 agent",
+      "previewMentionStart": "將啟動被提及的 agent",
+      "previewMentionUnroutable": "被提及的 agent 未設定在此工作項上 — 不會觸發",
+      "previewThread": "將從此討論串喚醒 agent",
+      "previewAssignee": "將喚醒被指派的 agent",
+      "previewAssigneeStart": "將啟動被指派的 agent",
+      "previewCoalesce": "併入待處理的喚醒",
+      "previewMemberThread": "成員討論串 — 不會喚醒任何 agent"
+    },
+    "savedViews": {
+      "placeholder": "檢視",
+      "save": "儲存目前檢視",
+      "saveTitle": "儲存檢視",
+      "namePlaceholder": "檢視名稱",
+      "saveHint": "儲存目前的篩選條件；版面配置只作為首次開啟的初始值。",
+      "delete": "刪除檢視"
+    },
+    "table": {
+      "columnsPicker": "欄位",
+      "groupByProperty": "依屬性分組",
+      "columns": {
+        "shortId": "編號",
+        "title": "標題",
+        "status": "狀態",
+        "priority": "優先順序",
+        "assignee": "負責人",
+        "targetDate": "截止",
+        "labels": "標籤"
+      }
+    },
+    "batchProperty": {
+      "title": "設定屬性",
+      "hint": "將一個屬性值套用到選取的 {{count}} 個工作項；留空表示清除該屬性。",
+      "propertyPlaceholder": "屬性",
+      "valuePlaceholder": "值",
+      "applied": "已更新 {{count}} 個工作項"
+    },
+    "revisionConflict": {
+      "title": "處理編輯衝突",
+      "description": "{{field}} 在版本 {{expected}} 之後已被修改。請將你的編輯與版本 {{actual}} 比較，再選擇要保留哪一版。",
+      "mine": "我的版本",
+      "latest": "最新版本",
+      "useLatest": "使用最新版本",
+      "keepMine": "保留我的版本",
+      "titleField": "標題",
+      "descriptionField": "描述",
+      "commentField": "評論",
+      "reloadNotice": "此工作項已在其他位置變更，現已重新載入最新版本。",
+      "retryFailed": "最新版本又發生了變化，請重新比較兩個版本後再試。"
+    },
+    "quickActions": {
+      "title": "快速操作",
+      "empty": "尚無快速操作。為 agent 儲存一則可重複使用的提示。",
+      "emptyManage": "尚未儲存任何項目。",
+      "manageTitle": "管理快速操作",
+      "namePlaceholder": "操作名稱（例如：修復 CI）",
+      "targetPlaceholder": "目標 agent",
+      "promptPlaceholder": "希望 agent 做什麼？",
+      "archive": "封存操作",
+      "scopeChanged": "快速操作已不在此工作項的範圍內",
+      "started": "快速操作「{{name}}」已啟動"
+    },
+    "detailNavigation": "工作項導覽",
+    "linkedSessions": {
+      "title": "工作階段"
+    },
+    "detail": {
+      "conversation": "對話",
+      "linked": "關聯"
+    },
+    "detailSummary": "工作項摘要",
+    "navigationTrail": "工作項導覽"
   },
   "settings": {
     "sidebarGeneral": "常規",
@@ -616,7 +734,16 @@
           "dismissFailed": "忽略衝突失敗：{{error}}"
         }
       }
-    }
+    },
+    "sidebarStatuses": "狀態",
+    "statusesBuiltin": "內建狀態",
+    "statusesBuiltinDescription": "標準工作流程分類，始終可用。",
+    "statusesCustom": "自訂狀態",
+    "statusesCustomDescription": "對應到某個內建分類的別名；篩選、計數與看板會按其所屬分類處理。",
+    "statusNamePlaceholder": "狀態名稱",
+    "noCustomStatuses": "尚無自訂狀態。",
+    "statusArchive": "封存狀態",
+    "statusRestore": "恢復狀態"
   },
   "statusBar": {
     "workItemCount": "{{count}}個專案",

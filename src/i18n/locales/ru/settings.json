@@ -20,7 +20,8 @@
     "storage": "Хранилище",
     "agentMemory": "Память Agent",
     "agentOrg": "Команда Agent",
-    "harnessConnections": "Маршрутизация CLI"
+    "harnessConnections": "Маршрутизация CLI",
+    "mobileRemote": "Mobile Remote"
   },
   "coreSidebar": {
     "groups": {
@@ -164,7 +165,8 @@
       "gold": "Золотой",
       "red": "Красный",
       "rose": "Розовый",
-      "mono": "Моно"
+      "mono": "Моно",
+      "matchSkin": "Как у скина"
     },
     "security": "Безопасность",
     "voiceInput": "Голосовой ввод",
@@ -189,7 +191,28 @@
     "presenceGuidanceOnlineDefault": "Я у клавиатуры. Можешь в любой момент задавать уточняющие вопросы и согласовывать со мной разрушительные действия перед запуском",
     "presenceGuidanceInvisibleDefault": "Я рядом, но отображаюсь офлайн. По умолчанию действуй автономно и уведомляй меня только о действиях с высоким риском или значительном рефакторинге; остальные вопросы собирай в одно резюме, а не задавай по одному",
     "presenceGuidanceAwayDefault": "Я отошёл от клавиатуры. Не жди моего ответа; прими лучшее решение по имеющейся информации, заверши всё возможное и оставь краткое резюме произошедшего и открытые вопросы к моему возвращению",
-    "followSystem": "Следовать системе"
+    "followSystem": "Следовать системе",
+    "skins": "Скины",
+    "skinsDesc": "Светлый и тёмный режимы используют отдельные палитры. Каждая применяется, когда приложение отрисовывается в соответствующем режиме",
+    "lightSkin": "Светлый скин",
+    "darkSkin": "Тёмный скин",
+    "lightAccent": "Светлый акцент",
+    "darkAccent": "Тёмный акцент",
+    "skinGroups": {
+      "orgii": "ORGII",
+      "codex": "Codex"
+    },
+    "iconStyle": "Стиль иконок",
+    "iconStyleDesc": "Монохромный режим обесцвечивает иконки типов файлов и моделей, чтобы они читались как интерфейс, а не как логотипы",
+    "iconStyleOptions": {
+      "colorful": "Цветные",
+      "monochrome": "Монохромные"
+    },
+    "translucentSidebar": "Полупрозрачная боковая панель",
+    "skin": "Скин",
+    "accent": "Акцент",
+    "linkSkinVariants": "Связать светлый и тёмный",
+    "linkSkinVariantsDesc": "Использовать один скин и акцент для обоих режимов. Связать можно только скины, имеющие светлый и тёмный варианты"
   },
   "background": {
     "title": "Фон",
@@ -463,7 +486,8 @@
       "permissionWarning": "Не удалось отправить тестовое уведомление. Проверьте разрешения.",
       "sendFailed": "Не удалось отправить тестовое уведомление. Проверьте разрешения на уведомления и повторите попытку.",
       "soundFailed": "Не удалось воспроизвести звук уведомления. Проверьте системную громкость."
-    }
+    },
+    "teamInboxDesc": "Назначения, упоминания и передачи от коллег"
   },
   "editor": {
     "tabEditor": "Редактор",
@@ -558,7 +582,19 @@
   },
   "update": {
     "detectUpdate": "Обнаружить обновление",
-    "currentVersion": "Текущая версия"
+    "currentVersion": "Текущая версия",
+    "channel": "Канал обновлений",
+    "channelDesc": "Beta получает предварительные сборки раньше стабильного выпуска. Возврат на Stable никогда не откатывает версию — он вступит в силу при следующем стабильном выпуске",
+    "channelStable": "Stable",
+    "channelBeta": "Beta",
+    "installConfirmTitle": "Обновление готово к установке",
+    "installConfirmDesc": "Версия {{version}} загружена. Сохраните текущую работу перед установкой и перезапуском ORGII",
+    "installAndRestart": "Установить и перезапустить",
+    "installOfficialConfirmTitle": "Официальное приложение готово к установке",
+    "installOfficialConfirmDesc": "Установить официальную версию {{version}} в /Applications/ORG2.app. Эта локальная сборка останется открытой и без изменений",
+    "installOfficial": "Установить официальное приложение",
+    "localBuild": "Локальная",
+    "skipVersion": "Пропустить эту версию"
   },
   "monitor": {
     "appMemory": "App memory",
@@ -633,7 +669,19 @@
     "diskCategory_sessionImages": "Изображения чата",
     "diskCategory_screenshots": "Скриншоты браузера",
     "diskCategory_agentWorktrees": "Worktree Session Agent",
-    "diskCategory_lspBin": "Бинарники LSP Server"
+    "diskCategory_lspBin": "Бинарники LSP Server",
+    "cacheRegistry": "Реестр кешей",
+    "loadedScriptSources": "Загруженный JS-код ({{modules}} модулей / {{chunks}} чанков)",
+    "cacheRegistryEmpty": "Нет зарегистрированных кешей",
+    "cacheRegistryEntries": "Записей: {{count}}",
+    "diskCategory_toolResults": "Крупные результаты инструментов",
+    "diskCategory_diagnostics": "Очередь диагностики",
+    "diskCategory_models": "Загруженные модели",
+    "diskCategory_semanticIndex": "Индекс семантического поиска",
+    "diskCategory_cursorCliProfiles": "Профили Cursor CLI",
+    "diskCategory_kiroCliProfiles": "Профили Kiro CLI",
+    "diskCategory_opencodeCliProfiles": "Профили OpenCode CLI",
+    "diskCategory_sidecarBin": "Загруженные бинарные файлы Sidecar"
   },
   "dependencies": {
     "systemDependencies": "Системные зависимости",
@@ -852,5 +900,81 @@
     "conflict": "Настройки изменены вне ORGII. Проверьте изменения перед применением или восстановлением; они не будут перезаписаны",
     "credentialsNote": "Прямой режим записывает учётные данные в конфигурацию CLI с ограниченным доступом; удаление ключа из хранилища не отзывает экспортированные данные",
     "notInstalled": "Установите этот инструмент перед проверкой или применением подключения"
+  },
+  "mobileRemote": {
+    "enabled": "Mobile Remote",
+    "enabledDesc": "Разрешить сопряжённому телефону управлять сессиями агентов на этом компьютере через ту же Wi‑Fi-сеть или через публичный relay",
+    "securityNotice": "Любой в вашей сети, у кого есть URL подключения и token, может управлять сессиями, когда включён доступ по LAN. Перегенерируйте token, если считаете, что он утёк",
+    "outdoorTitle": "Внешнее подключение",
+    "outdoorDesc": "Подключить компьютер к публичному relay исходящим соединением, чтобы телефон работал через 4G, 5G или другую сеть",
+    "relayEnabled": "Подключаться к публичному relay",
+    "relayEnabledDesc": "Компьютер открывает исходящее WSS-соединение; проброс портов на роутере не требуется",
+    "relayUrl": "Адрес relay",
+    "relayUrlDesc": "Введите развёрнутый ws:// или wss:// URL, например wss://relay.example.com/v1/mobile/ws",
+    "relayPresetAria": "Выберите предустановку окружения relay",
+    "relayPresetLocal": "Локальное",
+    "relayPresetProduction": "Production",
+    "cloudLoginTitle": "Вход в ORG2 Cloud",
+    "cloudLoginDescSignedIn": "Выполнен вход как {{identity}} — relay использует этот аккаунт для внешнего сопряжения",
+    "cloudLoginDescSignedOut": "Войдите в ORG2 Cloud перед сопряжением через публичный relay",
+    "relayStatusCloudLoginRequired": "Войдите в ORG2 Cloud в Настройки → Общие, затем обновите статус relay",
+    "relayStatusAuthFailedSignedIn": "Relay отклонил подключение — выйдите и войдите снова в Настройки → Общие",
+    "relayStatus": "Статус relay",
+    "relayStatus_online": "Подключено",
+    "relayStatus_connecting": "Подключение",
+    "relayStatus_backoff": "Ожидание переподключения",
+    "relayStatus_disabled": "Отключено",
+    "relayStatus_config_error": "Ошибка конфигурации",
+    "relayStatus_stopped": "Остановлено",
+    "startOutdoorPairing": "Сгенерировать код внешнего сопряжения",
+    "phoneLabel": "Название телефона",
+    "phoneLabelDesc": "Это название отображается в списке сопряжённых устройств",
+    "fullAccess": "Разрешить действия",
+    "fullAccessDesc": "Когда включено, телефон может отправлять сообщения, останавливать сессии и отвечать на запросы разрешений; когда выключено — только просмотр",
+    "pairingExpires": "Код сопряжения истекает через {{seconds}} с",
+    "sasPhrase": "Фраза безопасности",
+    "sasDesktopHint": "После сканирования телефон покажет ту же фразу; подтверждайте, только если они совпадают",
+    "pairingPayload": "Данные сопряжения",
+    "pairingPayloadHint": "Скопируйте и вставьте это на экран сопряжения Mobile Remote при тестировании на этом компьютере",
+    "copyPairingPayload": "Копировать данные сопряжения",
+    "pairingPayloadCopied": "Данные сопряжения скопированы",
+    "pairingPayloadCopyFailed": "Не удалось скопировать данные сопряжения",
+    "regeneratePairing": "Сгенерировать новый код",
+    "confirmPairing": "Фразы совпадают, подтвердить сопряжение",
+    "pairingConfirmed": "Телефон сопряжён",
+    "pairingFailed": "Не удалось создать сопряжение",
+    "revokeDevice": "Отозвать",
+    "lanAdvanced": "Резервное подключение по LAN",
+    "lanAdvancedDesc": "Подключаться напрямую в той же Wi-Fi-сети без использования публичного relay",
+    "allowLanExposure": "Разрешить подключения по LAN",
+    "allowLanExposureDesc": "Когда выключено, мост принимает подключения только с этого компьютера (127.0.0.1). Когда включено, могут подключаться другие устройства в вашей Wi-Fi-сети",
+    "lanToken": "Token подключения",
+    "lanTokenDesc": "Добавляется к WebSocket URL как общий секрет. Показан здесь для копирования или кодирования в QR",
+    "regenerateToken": "Перегенерировать",
+    "pairing": "Сопряжение на телефоне",
+    "pairingDesc": "Отсканируйте QR-код или скопируйте WebSocket URL в браузер телефона, чтобы подключиться в той же Wi-Fi-сети",
+    "connectionUrl": "WebSocket URL",
+    "connectionUrlDesc": "Откройте этот URL в браузере телефона или закодируйте его в QR-код для сопряжения",
+    "copyConnectionUrl": "Копировать WebSocket URL",
+    "connectionUrlCopied": "WebSocket URL скопирован",
+    "qrAriaLabel": "QR-код с WebSocket URL для Mobile Remote",
+    "qrScanHint": "Отсканируйте камерой телефона или приложением для чтения QR, находясь в той же сети",
+    "lanIpUnresolved": "Не удалось определить LAN-адрес этого компьютера. Скопируйте URL и замените <local-ip> на ваш Wi-Fi IP или нажмите «Обновить LAN IP»",
+    "refreshLanIp": "Обновить LAN IP",
+    "pairedDevices": "Сопряжённые устройства",
+    "pairedDevicesDesc": "Телефоны, авторизованные через relay; доступ можно отозвать в любой момент",
+    "devicesLoadFailed": "Не удалось загрузить сопряжённые устройства",
+    "noDevices": "Нет сопряжённых устройств",
+    "noDevicesDesc": "Сгенерируйте код внешнего сопряжения, затем отсканируйте или вставьте его в PWA Mobile Remote",
+    "deviceLabel": "Устройство",
+    "deviceTier": "Уровень",
+    "deviceTierFull": "Полный доступ",
+    "deviceTierReadOnly": "Только чтение",
+    "deviceLastSeen": "Последняя активность",
+    "devicePairedAt": "Сопряжено {{time}}",
+    "deviceLastSeenValue": "Последняя активность {{time}}",
+    "deviceNeverSeen": "Никогда не подключалось",
+    "deviceOnline": "В сети",
+    "deviceOffline": "Не в сети"
   }
 }

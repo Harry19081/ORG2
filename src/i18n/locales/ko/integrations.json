@@ -23,7 +23,7 @@
       "refreshPartial": "모델 새로고침 완료: {{added}}개 추가, {{removed}}개 제거. 단, {{total}}개 계정 중 {{failed}}개 실패",
       "refreshedNoChange": "모델 새로고침 완료: 변경 사항 없음",
       "refreshedDelta": "모델 새로고침 완료: {{added}}개 추가, {{removed}}개 제거",
-      "refreshError": "{{name}} 새로고침 실패",
+      "refreshError": "{{name}} 새로고침 실패: {{error}}",
       "localRemoved": "{{name}} 제거됨",
       "deleteError": "{{name}} 삭제 실패"
     },
@@ -322,7 +322,9 @@
       "button": "Cursor 모델 목록 새로고침",
       "failed": "Cursor에서 새로고침 실패: {{error}}"
     },
-    "revalidate": "재검증"
+    "revalidate": "재검증",
+    "confirmRemoveActiveSessions_one": "활성 세션 {{count}}개가 아직 이 계정을 사용 중이며 다음 턴에서 실패합니다:",
+    "confirmRemoveActiveSessions_other": "활성 세션 {{count}}개가 아직 이 계정을 사용 중이며 다음 턴에서 실패합니다:"
   },
   "integrations": {
     "searchPlaceholder": "연결 검색...",
@@ -571,7 +573,8 @@
       "modelPlaceholder": "모델 선택",
       "groupPerUser": "사용자별 그룹 채팅 세션 격리",
       "groupPerUserDesc": "그룹 채팅의 각 참가자는 자신만의 세션 컨텍스트를 갖습니다."
-    }
+    },
+    "emailProtocol": "프로토콜"
   },
   "modelsTabs": {
     "myAccounts": "내 Keys",
@@ -734,7 +737,8 @@
     "tools": "기본 제공 도구",
     "computerUse": "Computer Use",
     "rulesMemoryEvolution": "규칙, 메모리 & 진화",
-    "externalSkillsets": "Skills, MCPs & Plugins"
+    "externalSkillsets": "Skills, MCPs & Plugins",
+    "housekeeper": "MiniCPM Housekeeper"
   },
   "projectConnections": {
     "linear": "Linear",
@@ -750,7 +754,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "자동 감지",
-    "methodOAuth": "GitHub로 로그인"
+    "methodOAuth": "GitHub로 로그인",
+    "methodPickerDesc": "GitHub 인증 방법을 선택하세요.",
+    "oauthDeviceDesc": "인증 URL을 열고 이 코드를 입력하여 GitHub를 승인하세요.",
+    "scanCredHelper": "Git credential helper ({{name}})",
+    "scanEmpty": "감지된 항목 없음",
+    "scanEmptyDesc": "gh CLI token, credential helper, SSH 키를 찾지 못했습니다. 위에서 다른 방법을 선택하세요.",
+    "scanGhCli": "GitHub CLI (gh)",
+    "scanResults": "감지된 자격 증명",
+    "scanResultsDesc": "가져올 항목을 하나 선택하세요. 저장 전에 GitHub에서 token을 검증합니다.",
+    "scanSshKey": "SSH 키 — {{name}}",
+    "scanning": "검색 중…",
+    "scanningDesc": "이 컴퓨터에서 gh CLI token, credential helper, SSH 키를 찾는 중입니다.",
+    "sshKeyPath": "SSH 키 경로",
+    "sshKeyPathDesc": "개인 키의 절대 경로 (예: ~/.ssh/id_ed25519). 대응하는 공개 키가 GitHub에 이미 등록되어 있어야 합니다.",
+    "scanSelectRequired": "가져올 감지된 자격 증명을 선택하세요.",
+    "sshKeyPathRequired": "SSH 키 경로는 필수입니다."
   },
   "builtInTools": {
     "tabTools": "기본 제공 도구",
@@ -914,7 +933,9 @@
     "oauthDeviceCodeDesc": "아래 URL을 열고 이 코드를 입력하세요",
     "oauthOpenGithub": "GitHub 열기",
     "oauthCancel": "취소",
-    "oauthFailed": "인증 실패"
+    "oauthFailed": "인증 실패",
+    "autoCreatePr": "Pull request 자동 생성",
+    "autoCreatePrDesc": "기능 브랜치가 완전히 푸시되고 깨끗한 상태가 되면 Workstation Source Control에서 자동으로 pull request를 만듭니다"
   },
   "skillsHub": {
     "searchPlaceholder": "Skill 검색...",
@@ -1211,7 +1232,23 @@
       "dangerZone": "위험 구역",
       "deleteOrg": "이 Org 삭제",
       "deleteOrgDesc": "이 Agent 팀을 영구적으로 삭제합니다. 멤버 Agent는 영향을 받지 않습니다. 이 작업은 되돌릴 수 없습니다",
-      "deleteThisOrg": "이 Org 삭제"
+      "deleteThisOrg": "이 Org 삭제",
+      "planApprovalPolicy": {
+        "label": "계획 승인",
+        "description": "Planner가 제출한 계획이 종속 작업을 잠금 해제할 준비가 되었는지 누가 결정할지 정합니다",
+        "coordinator": {
+          "label": "Coordinator (권장)",
+          "description": "Coordinator가 실행 중에 계획을 검토한 뒤 승인하거나 Planner에게 수정을 요청합니다"
+        },
+        "user": {
+          "label": "사용자",
+          "description": "그룹 채팅이 조용히 대기하며 승인, 편집, 변경 요청 작업과 함께 계획을 보여줍니다"
+        },
+        "automatic": {
+          "label": "자동",
+          "description": "유효한 제출 계획은 즉시 수락되고 종속 작업이 잠금 해제됩니다"
+        }
+      }
     },
     "agentWizard": {
       "title": "Agent 설정",
@@ -1309,7 +1346,40 @@
     "orgSaveFailed": "팀 저장 실패",
     "orgDeleteFailed": "팀 삭제 실패",
     "deleteOrgTitle": "팀을 삭제할까요?",
-    "deleteOrgMessage": "\"{{name}}\"이(가) 영구적으로 제거됩니다. 이 작업은 취소할 수 없습니다."
+    "deleteOrgMessage": "\"{{name}}\"이(가) 영구적으로 제거됩니다. 이 작업은 취소할 수 없습니다.",
+    "cliUpdateAlerts": {
+      "label": "CLI 업데이트 알림",
+      "description": "CLI 버전을 확인하고 업데이트가 있으면 알립니다. 끄면 확인하지 않습니다"
+    },
+    "cliManagedConfig": {
+      "title": "CLI 설정 전환",
+      "modeLabel": "모드",
+      "modeDesc": "기본은 CLI 자체 설정을 복원합니다. ORGII 관리는 백업된 프록시 설정을 기록합니다.",
+      "modeDefault": "기본",
+      "modeOrgii": "ORGII 관리",
+      "conflict": "외부 변경",
+      "conflictTitle": "충돌",
+      "conflictDesc": "ORGII가 기록한 뒤 활성 CLI 설정이 변경되었습니다.",
+      "proxyStatus": "프록시",
+      "proxyDefault": "기본 모드",
+      "proxyReady": "프록시 준비됨",
+      "proxyNotReady": "프록시 준비 안 됨",
+      "keyLabel": "키",
+      "keyDesc": "이 CLI 및 관리 프록시와 호환되는 API 키만 표시됩니다.",
+      "selectKey": "키 선택",
+      "modelLabel": "모델",
+      "selectModel": "모델 선택",
+      "configFile": "설정 파일",
+      "actions": "작업",
+      "addKey": "키 추가",
+      "apply": "적용",
+      "restore": "기본값 복원",
+      "forceApply": "강제 적용",
+      "forceRestore": "강제 복원",
+      "applySuccess": "ORGII 관리 설정을 적용했습니다",
+      "restoreSuccess": "기본 설정을 복원했습니다",
+      "proxyLifecycleDesc": "이 모드를 사용하는 동안 ORGII를 실행 상태로 유지하세요. 창을 닫아도 프록시는 트레이에 남아 있으며, ORGII를 종료하면 설정이 외부에서 변경되지 않은 한 기본값을 안전하게 복원합니다."
+    }
   },
   "databases": {
     "title": "데이터베이스",
@@ -1375,7 +1445,8 @@
     "chatExtras": "채팅 추가 기능",
     "queuedMessages": "대기 메시지",
     "fileReview": "파일 검토",
-    "terminalProcesses": "터미널 프로세스"
+    "terminalProcesses": "터미널 프로세스",
+    "modeSessionLink": "세션 링크"
   },
   "rulesTabs": {
     "rules": "규칙",
@@ -1447,7 +1518,18 @@
     "openWorkItem": "Open work item",
     "fireError": "루틴을 시작할 수 없습니다: {{detail}}",
     "provider": "제공자",
-    "eventKind": "이벤트"
+    "eventKind": "이벤트",
+    "extraActivations": "추가 활성화",
+    "activationSchedule": "일정",
+    "activationOneTime": "1회",
+    "activationProviderEvent": "제공자 이벤트",
+    "activationManual": "수동",
+    "providerPlaceholder": "github",
+    "eventKindPlaceholder": "pull_request",
+    "fireAccepted": "실행 {{status}}",
+    "openSessionError": "세션을 열 수 없습니다",
+    "openWorkItemError": "작업 항목을 열 수 없습니다",
+    "fireStarted": "Routine 실행을 시작했습니다"
   },
   "cursorPlugins": {
     "noPlugins": "설치된 Cursor 플러그인 없음",
@@ -1469,7 +1551,14 @@
       "diagnostics": "Diagnostics"
     },
     "health": {
-      "status": "Not checked"
+      "status": "Not checked",
+      "title": "상태 확인",
+      "idle": "/v1/models를 확인하고 작은 채팅 요청을 하나 보냅니다.",
+      "checking": "로컬 vLLM MiniCPM 서비스 확인 중...",
+      "checkButton": "연결 확인",
+      "configureFirst": "먼저 vLLM MiniCPM 계정을 구성하세요.",
+      "connectedTo": "{{baseUrl}}에 연결됨",
+      "failed": "MiniCPM 상태 확인에 실패했습니다."
     },
     "benchmark": {
       "title": "MiniCPM output speed",
@@ -1481,6 +1570,50 @@
       "tokensPerSecond": "Output speed: {{value}} tokens/s",
       "completionTokens": "Output tokens: {{value}}",
       "elapsed": "Total time: {{value}}s"
+    },
+    "title": "상주 Housekeeper",
+    "description": "로컬 MiniCPM이 프롬프트 다듬기, 짧은 단계 설명, 가벼운 UI 제어를 처리합니다. 코딩 작업과 복잡한 ADE 설정은 계속 메인 Agent 모델을 사용합니다.",
+    "autoAccount": "MiniCPM vLLM 계정 자동 선택",
+    "tiles": {
+      "model": "모델",
+      "endpoint": "Endpoint",
+      "safeContext": "안전 컨텍스트"
+    },
+    "settings": {
+      "enabled": {
+        "title": "Housekeeper 활성화",
+        "description": "비활성화하면 프롬프트 다듬기, 단계 설명, 가벼운 UI 제어에 MiniCPM을 사용하지 않습니다."
+      },
+      "account": {
+        "title": "vLLM MiniCPM 계정",
+        "description": "기존 KeyVault vllm_api 계정을 재사용하며, 별도의 자격 증명 저장소를 만들지 않습니다."
+      },
+      "model": {
+        "title": "모델 ID",
+        "description": "Docker vLLM MiniCPM5-1B의 기본값은 openbmb/MiniCPM5-1B입니다."
+      },
+      "context": {
+        "title": "안전 컨텍스트 예산",
+        "description": "이론상 32k 한도를 믿는 대신 4GB GPU에서는 보수적인 10000 토큰 예산을 사용합니다."
+      }
+    },
+    "features": {
+      "promptPolish": {
+        "title": "프롬프트 다듬기",
+        "description": "더 강력한 코딩 모델에 보내기 전에 입력을 수동으로 다듬습니다."
+      },
+      "stepExplain": {
+        "title": "Agent 단계 설명",
+        "description": "세션 재생 단계에 대해 한두 개의 짧은 중국어 설명을 생성합니다."
+      },
+      "uiControl": {
+        "title": "가벼운 ADE/UI 제어",
+        "description": "MiniCPM은 요청을 엄격한 로컬 작업 허용 목록으로만 분류할 수 있습니다."
+      },
+      "contextCompact": {
+        "title": "자동 컨텍스트 유지 관리",
+        "description": "활성화된 세션이 유휴 상태일 때 MiniCPM이 오래된 컨텍스트의 격리된 롤링 요약을 유지하도록 합니다."
+      }
     }
   },
   "cliLaunchProfiles": {
@@ -1496,5 +1629,68 @@
     "unavailable": "실행 프로필을 사용할 수 없음",
     "saved": "실행 프로필 저장됨",
     "resetDone": "실행 프로필 재설정됨"
+  },
+  "gitProfiles": {
+    "tab": "Git 프로필",
+    "title": "Git 프로필",
+    "add": "프로필 추가",
+    "refresh": "프로필 새로 고침",
+    "refreshed": "전역 Git 프로필을 새로 고쳤습니다",
+    "loading": "전역 Git 프로필 불러오는 중…",
+    "defaultProfile": "기본 프로필",
+    "newProfile": "새 프로필",
+    "copyName": "{{name}} 복사본",
+    "profileName": "프로필 이름",
+    "authorName": "작성자 이름",
+    "email": "이메일",
+    "selectEmail": "이메일 선택",
+    "signingKey": "서명 키",
+    "signingKeyPlaceholder": "GPG 또는 SSH 서명 키 ID",
+    "signCommits": "커밋 서명",
+    "active": "활성",
+    "activate": "프로필 활성화",
+    "activated": "{{name}}이(가) 이제 전역 Git 프로필입니다",
+    "editRaw": "원본 설정 편집",
+    "hideRaw": "원본 설정 숨기기",
+    "rawTitle": "원본 Git 프로필",
+    "rawConfig": "Git 설정",
+    "updateFromRaw": "설정에서 프로필 업데이트",
+    "rawUpdated": "원본 Git 설정에서 프로필을 업데이트했습니다",
+    "rawInvalid": "원본 Git 프로필이 올바르지 않습니다",
+    "nameEmailRequired": "작성자 이름과 이메일은 필수입니다",
+    "deleteTitle": "Git 프로필 삭제",
+    "deleteMessage": "프로필 “{{name}}”을(를) 삭제할까요? 현재 전역 Git 설정은 변경되지 않습니다.",
+    "loadFailed": "전역 Git 프로필을 불러오지 못했습니다",
+    "applyFailed": "Git 프로필을 활성화하지 못했습니다"
+  },
+  "credentialImport": {
+    "title": "다른 앱에서 자격 증명 가져오기",
+    "titleWithCount": "다른 앱에서 자격 증명 가져오기 ({{count}}개 발견)",
+    "itemColumn": "자격 증명",
+    "sourceColumn": "발견 위치",
+    "empty": "가져올 자격 증명을 찾지 못했습니다. 환경 변수, 셸 프로필, Claude Code 설정, cc-switch 프로필, 그리고 Claude Code, Codex, Cursor, GitHub CLI, Kiro, OpenCode의 로그인 저장소를 확인했습니다.",
+    "allImported": "감지된 자격 증명은 모두 이미 가져왔습니다",
+    "authMethod": {
+      "api_key": "API 키",
+      "oauth": "로그인 token"
+    },
+    "sourceKind": {
+      "env": "환경 변수",
+      "shell_profile": "셸 프로필",
+      "config_file": "설정 파일",
+      "oauth_store": "로그인 저장소",
+      "keychain": "Keychain",
+      "state_db": "앱 상태",
+      "cc_switch": "cc-switch"
+    },
+    "applyFailed": "가져오기 실패: {{message}}",
+    "partialFailure": "일부 자격 증명을 가져오지 못했습니다:"
+  },
+  "skills": {
+    "shareToOrg": "조직에 공유",
+    "share": "공유",
+    "sharedToOrg": "Skill을 조직에 공유했습니다",
+    "shareToOrgHint": "조직 멤버는 이 Skill의 현재 스냅샷을 받습니다. 편집 후 업데이트를 게시하려면 다시 공유하세요.",
+    "shareOrgPlaceholder": "조직"
   }
 }

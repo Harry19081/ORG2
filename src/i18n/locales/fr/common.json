@@ -12,14 +12,17 @@
     },
     "sections": {
       "reviewRequested": "Révision demandée",
-      "authoredByMe": "Créées par moi"
+      "authoredByMe": "Créées par moi",
+      "updates": "Mises à jour"
     },
     "status": {
       "read": "Lu",
       "unread": "Non lu"
     },
     "row": {
-      "ariaLabel": "{{title}}, {{status}}"
+      "ariaLabel": "{{title}}, {{status}}",
+      "issueSource": "Issue {{repository}}",
+      "issueSourceFallback": "Issue"
     },
     "empty": {
       "title": "Rien ici pour l’instant",
@@ -37,6 +40,10 @@
       "noResults": {
         "title": "Aucun résultat",
         "subtitle": "Aucun élément ne correspond à « {{query}} »."
+      },
+      "archived": {
+        "title": "Aucun élément archivé",
+        "subtitle": "Les éléments que vous archivez apparaîtront ici."
       }
     },
     "loading": "Chargement de la boîte de réception d’équipe…",
@@ -87,7 +94,17 @@
       "identityUnavailable": "Votre identité d’équipe n’a pas pu être vérifiée. Vérifiez votre profil de projet avant de répondre.",
       "rowPending": "De {{name}} · En attente de réponse",
       "rowAccepted": "Transfert accepté · {{status}} · {{priority}}",
-      "rowReturned": "Renvoyé par {{name}} · {{status}} · {{priority}}"
+      "rowReturned": "Renvoyé par {{name}} · {{status}} · {{priority}}",
+      "destination": "Destination",
+      "chooseDestination": "Choisissez une destination",
+      "cloudDestination": "{{name}} · Boîte de réception d’équipe",
+      "validation": {
+        "title_required": "Saisissez un titre d’élément de travail.",
+        "project_required": "Choisissez une destination.",
+        "project_unavailable": "Cette destination n’est plus disponible. Choisissez-en une autre.",
+        "recipient_required": "Choisissez un destinataire.",
+        "recipient_unavailable": "Ce destinataire n’est plus disponible. Choisissez-en un autre."
+      }
     },
     "errors": {
       "loadTitle": "Impossible de charger la boîte de réception d’équipe",
@@ -104,7 +121,10 @@
       "workItemContext": "Une partie du contexte du projet n’est pas disponible. L’élément de travail reste utilisable.",
       "workItemLoad": "Impossible de charger cet élément de travail. Réessayez.",
       "githubIssueLoad": "Impossible de charger le ticket GitHub de cet élément de travail. Les détails locaux restent affichés.",
-      "workItemUpdate": "Impossible d’enregistrer la dernière modification de l’élément de travail. Réessayez."
+      "workItemUpdate": "Impossible d’enregistrer la dernière modification de l’élément de travail. Réessayez.",
+      "archive": "Impossible d’archiver cet élément. Réessayez.",
+      "unarchive": "Impossible de restaurer cet élément. Réessayez.",
+      "mutePreferences": "Impossible de mettre à jour les catégories de notification. Réessayez."
     },
     "detail": {
       "assignedSubtitle": "Élément de travail assigné",
@@ -117,7 +137,9 @@
     "actions": {
       "markRead": "Marquer comme lu",
       "markUnread": "Marquer comme non lu",
-      "openWorkItem": "Ouvrir l’élément de travail"
+      "openWorkItem": "Ouvrir l’élément de travail",
+      "archive": "Archiver",
+      "unarchive": "Restaurer dans la boîte de réception"
     },
     "workItemStatus": {
       "backlog": "Backlog",
@@ -134,6 +156,26 @@
       "medium": "Moyenne",
       "high": "Haute",
       "urgent": "Urgente"
+    },
+    "notifications": {
+      "assignmentTitle": "Nouvel élément de travail qui vous est assigné",
+      "mentionTitle": "{{name}} vous a mentionné",
+      "handoffTitle": "Passation de {{name}}",
+      "multipleTitle": "{{count}} nouvelles mises à jour dans la boîte de réception d’équipe",
+      "multipleBody": "Ouvrez la boîte de réception d’équipe pour consulter les assignations et les mentions."
+    },
+    "mute": {
+      "title": "Mettre en sourdine des catégories de mises à jour"
+    },
+    "events": {
+      "mention": "Mentionné dans un commentaire",
+      "discussion_updated": "Discussion mise à jour",
+      "run_failed": "Exécution échouée",
+      "status_changed": "Statut modifié",
+      "assignee_changed": "Assigné modifié",
+      "priority_changed": "Priorité modifiée",
+      "dates_changed": "Dates modifiées",
+      "child_completed": "Élément de travail enfant terminé"
     }
   },
   "windowChrome": {
@@ -350,7 +392,9 @@
     "comingSoon": "Bientôt",
     "clearSelection": "Effacer la sélection",
     "uiSettings": "Paramètres d’interface",
-    "clearAll": "Tout effacer"
+    "clearAll": "Tout effacer",
+    "openOnGitHub": "Ouvrir sur GitHub",
+    "createPullRequest": "Créer une pull request"
   },
   "status": {
     "yes": "Oui",
@@ -584,7 +628,29 @@
     "noAppliedCommit": "No linked commit yet",
     "noSessionsForFile": "No sessions found for this file",
     "committedRate": "Validé",
-    "email": "E-mail"
+    "email": "E-mail",
+    "noPullRequestForBranch": "Il n’y a pas encore de pull request pour cette branche.",
+    "creatingPullRequest": "Création…",
+    "failedToLoadPullRequest": "Échec du chargement de la pull request",
+    "noCommitsInPullRequest": "Aucun commit dans cette pull request",
+    "prStatus": {
+      "open": "Ouverte",
+      "merged": "Fusionnée",
+      "closed": "Fermée",
+      "draft": "Brouillon",
+      "unknown": "Inconnu"
+    },
+    "sendingNow": "envoi en cours…",
+    "issues": "Issues",
+    "noIssues": "Aucune issue",
+    "openIssues": "Ouvertes",
+    "closedIssues": "Fermées",
+    "issueComments": "{{count}} commentaire",
+    "issueComments_one": "1 commentaire",
+    "issueComments_other": "{{count}} commentaires",
+    "tokens": "Tokens",
+    "actions": "Actions",
+    "all": "Tous"
   },
   "searchModes": {},
   "tabs": {
@@ -660,7 +726,10 @@
       "workflow": "Le service de flux de travail est temporairement indisponible. Réessayez plus tard."
     },
     "failedToLoad": "Échec du chargement",
-    "unknownError": "Une erreur inconnue s'est produite"
+    "unknownError": "Une erreur inconnue s'est produite",
+    "componentLoadingFailed": "Échec du chargement du composant",
+    "noLocalPath": "Aucun chemin local disponible",
+    "openInFinderFailed": "Échec de l’ouverture dans le Finder"
   },
   "confirmation": {
     "delete": "Êtes-vous sûr de vouloir supprimer ?",
@@ -887,7 +956,10 @@
     "noRepoSelected": "No repository selected",
     "previewUnavailable": "Aperçu indisponible",
     "selectRepositoryFromWorkspace": "Choisissez un dépôt dans l’espace de travail",
-    "noData": "Aucune donnée"
+    "noData": "Aucune donnée",
+    "noResults": "Aucun résultat",
+    "noSessionHistoryForFile": "Aucune activité de session trouvée pour {{file}}",
+    "noSessionHistory": "Aucun historique de session"
   },
   "inbox": {
     "scrollToBottom": "Aller en bas",
@@ -984,9 +1056,26 @@
       "tlsDevNote": "Remarque : certains sites HTTPS (comme GitHub) peuvent afficher des erreurs TLS en mode développement à cause de la validation des certificats. Essayez des sites HTTP ou des HTTPS simples comme example.com.",
       "siteUnreachableTitle": "Impossible d’accéder à ce site",
       "webviewHiddenTitle": "Vue web temporairement masquée",
-      "webviewHiddenBody": "Fermez le menu ou la boîte de dialogue pour l’afficher à nouveau."
+      "webviewHiddenBody": "Fermez le menu ou la boîte de dialogue pour l’afficher à nouveau.",
+      "embeddedFallbackTitle": "Ce site risque de ne pas fonctionner dans le navigateur intégré",
+      "embeddedFallbackBody": "Certains sites bloquent l’affichage ou échouent à se rendre dans les WebViews de l’app. Ouvrez-le dans votre navigateur système si la page reste vide.",
+      "currentUrl": "URL actuelle"
     },
-    "unsavedChangesTitle": "Unsaved Changes"
+    "unsavedChangesTitle": "Unsaved Changes",
+    "ci": {
+      "openPullRequest": "Ouvrir la pull request sur GitHub",
+      "viewDetails": "Voir les détails du check",
+      "refresh": "Actualiser les checks",
+      "refreshing": "Actualisation…",
+      "lastFetchedAt": "Dernière récupération à {{time}}",
+      "unavailable": "Impossible de lire les checks",
+      "sections": {
+        "failed": "Échoués",
+        "running": "En cours",
+        "skipped": "Ignorés",
+        "passed": "Réussis"
+      }
+    }
   },
   "git": {
     "loading": "Chargement du statut Git...",
@@ -1080,7 +1169,8 @@
         "approved": "a approuvé ces modifications",
         "changesRequested": "a demandé des modifications",
         "reviewDismissed": "a rejeté une revue",
-        "reviewed": "a effectué une revue"
+        "reviewed": "a effectué une revue",
+        "appendedSession": "a ajouté une session"
       },
       "summary": {
         "label": "Résumé de la pull request"
@@ -1206,7 +1296,9 @@
           "mergeBlocked": "GitHub signale des exigences de fusion non satisfaites"
         },
         "convertToDraft": "Convertir en brouillon",
-        "convertedToDraft": "Pull request convertie en brouillon"
+        "convertedToDraft": "Pull request convertie en brouillon",
+        "markReady": "Marquer comme prête pour revue",
+        "markedReady": "Pull request marquée comme prête pour revue"
       },
       "flow": {
         "wantsToMergeCommitsInto_one": "souhaite fusionner {{count}} commit dans",
@@ -1237,7 +1329,23 @@
         "noLabelCandidates": "Aucune étiquette disponible",
         "labelsLoadFailed": "Impossible de charger les étiquettes",
         "labelsUpdated": "Étiquettes mises à jour"
-      }
+      },
+      "creating": "Création de la pull request…",
+      "createError": "Échec de la création de la pull request",
+      "readyHint": "La branche est poussée et prête pour une pull request",
+      "neutralHint": "Poussez votre branche pour créer une pull request",
+      "noBranch": "Aucune branche sélectionnée",
+      "noRepoPath": "Aucun chemin de dépôt disponible",
+      "notAuthenticated": "Connectez-vous pour créer des pull requests",
+      "noOriginRemote": "Aucun remote origin configuré",
+      "cannotParseRepoName": "Impossible d’extraire le nom du dépôt depuis le remote origin",
+      "authRequired": {
+        "title": "Connecter GitHub",
+        "description": "Allez dans Paramètres → Connexions pour connecter votre compte GitHub."
+      },
+      "navigationTrail": "Navigation dans la pull request",
+      "failedToLoad": "Échec du chargement des pull requests",
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Push réussi",
@@ -1350,7 +1458,8 @@
         "reviewRequestRemoved": "a supprimé une demande de révision",
         "reviewed": "a révisé ces modifications",
         "reviewDismissed": "a rejeté une révision",
-        "userBlocked": "a bloqué cet utilisateur"
+        "userBlocked": "a bloqué cet utilisateur",
+        "appendedSession": "a ajouté une session"
       },
       "composer": {
         "addComment": "Ajouter un commentaire",
@@ -1382,8 +1491,35 @@
         "count_other": "{{count}} éléments associés",
         "unavailable": "Détails indisponibles",
         "unavailableCount_one": "Impossible de résoudre {{count}} élément associé",
-        "unavailableCount_other": "Impossible de résoudre {{count}} éléments associés"
-      }
+        "unavailableCount_other": "Impossible de résoudre {{count}} éléments associés",
+        "reference": "Référence GitHub"
+      },
+      "title": "Issues",
+      "loading": "Chargement des issues…",
+      "empty": "Aucune issue {{state}}",
+      "failedToLoad": "Échec du chargement des issues",
+      "failedToCreate": "Échec de la création de l’issue",
+      "failedToUpdate": "Échec de la mise à jour de l’issue",
+      "failedToComment": "Échec de l’ajout du commentaire",
+      "filterAll": "Toutes",
+      "filterOpen": "Ouvertes",
+      "filterClosed": "Fermées",
+      "noGitHubRepo": "Connectez un dépôt GitHub pour gérer les issues",
+      "commentPlaceholder": "Laisser un commentaire…",
+      "submitComment": "Commenter",
+      "newIssueTitlePlaceholder": "Titre de l’issue",
+      "newIssueBodyPlaceholder": "Décrivez l’issue (facultatif)…",
+      "authRequired": {
+        "title": "Connecter GitHub",
+        "description": "Allez dans Paramètres → Connexions pour connecter votre compte GitHub."
+      },
+      "reAuthRequired": "Autorisation GitHub requise",
+      "reAuthDescription": "Votre token GitHub a expiré. Allez dans Paramètres → Connexions pour vous reconnecter.",
+      "goToSettings": "Aller aux paramètres",
+      "loadingTimeline": "Chargement de l’activité…",
+      "label": "Issue",
+      "linkedLoading": "Chargement des éléments liés",
+      "detailNavigation": "Navigation dans l’issue"
     }
   },
   "selectors": {
@@ -1407,7 +1543,15 @@
     },
     "modelProperties": {
       "effort": "Effort",
-      "default": "Par défaut"
+      "default": "Par défaut",
+      "settings": "Paramètres du modèle",
+      "model": "Modèle",
+      "speed": "Vitesse",
+      "standard": "Standard",
+      "fast": "Rapide",
+      "thinking": "Réflexion",
+      "on": "Activé",
+      "off": "Désactivé"
     },
     "repo": {
       "addEntry": "Plus d’options d’importation",
@@ -1420,7 +1564,8 @@
         "workspace": "Répertoire de travail",
         "thisOrg": "Cette organisation",
         "outsideOrg": "En dehors de cette organisation",
-        "outsideNamedOrg": "En dehors de {{org}}"
+        "outsideNamedOrg": "En dehors de {{org}}",
+        "recent": "Récents"
       },
       "tabs": {},
       "addOptions": {
@@ -1514,7 +1659,8 @@
         "noGithubRemote": "Aucun dépôt distant GitHub configuré",
         "prSearchScope": "La recherche porte sur les {{count}} Pull requests chargées",
         "prLimit": "Affichage de {{count}} PR ouvertes au maximum",
-        "noPullRequests": "Aucune Pull requests correspondante"
+        "noPullRequests": "Aucune Pull requests correspondante",
+        "mainWorktree": "Principal"
       },
       "placeholders": {
         "add": "nom de nouvelle branche...",
@@ -1543,7 +1689,8 @@
           "label": "Documents",
           "description": "Dossier Documents"
         }
-      }
+      },
+      "selectWorktreeSource": "Sélectionner la branche ou la pull request du worktree"
     },
     "spotlightFooter": {
       "navigate": "Naviguer",
@@ -1824,6 +1971,12 @@
     "pill": {
       "focus": "Focus",
       "allChanges": "Toutes les modifications"
+    },
+    "scope": {
+      "main": "Checkout principal",
+      "worktrees": "Worktrees",
+      "searchPlaceholder": "Filtrer les worktrees…",
+      "switchScopeActive": "Changer la portée du source control : {{repo}}, {{branch}}"
     }
   },
   "contextInfo": {
@@ -1845,7 +1998,18 @@
     "manualCompactNoRuntime": "Envoyez un message avant de compacter",
     "manualCompactFailed": "Échec du compactage : {{message}}",
     "manualCompactChannelAttached": "Cette session est gérée par un canal — utilisez /compact là-bas",
-    "manualCompactInstructionsPlaceholder": "Facultatif : sur quoi concentrer le résumé"
+    "manualCompactInstructionsPlaceholder": "Facultatif : sur quoi concentrer le résumé",
+    "categories": {
+      "unattributed": "Non attribué"
+    },
+    "cacheSaved": "Cache économisé : {{read}} en lecture, {{write}} en écriture",
+    "cacheHero": "{{pct}} % servis depuis le cache · ~{{tokens}} réutilisés ce tour",
+    "cacheHeroSub": "Le prompt caching peut réduire le coût jusqu’à 90 %",
+    "manualCompactSectionTitle": "Compactage manuel",
+    "miniCpmCompactTitle": "Auto-compactage silencieux MiniCPM",
+    "miniCpmCompactDescription": "Traite le contexte ancien de manière asynchrone",
+    "miniCpmCompactToggleAria": "Activer l’auto-compactage silencieux MiniCPM",
+    "manualCompactNativeProvider": "Le compactage manuel ici ne concerne que les sessions Agent intégrées. Compactez l’historique des CLI natifs dans l’app de leur fournisseur."
   },
   "relativeDate": {
     "justNow": "à l'instant",
@@ -1899,7 +2063,8 @@
     "statusReadyToCreate": "Prêt à créer le répertoire de travail",
     "defaultName": "Répertoire de travail",
     "defaultNameWithRepo": "Répertoire de travail {{repo}}",
-    "windowTitle": "Répertoire de travail"
+    "windowTitle": "Répertoire de travail",
+    "statusMaxRepos": "Maximum 5 repos sélectionnés"
   },
   "database": {
     "databaseFile": "Database File",
@@ -2066,11 +2231,51 @@
   },
   "notifications": {
     "taskCancelledToast": "« {{name}} » a été annulée",
-    "taskCompletedToast": "« {{name}} » est terminée. Ouvrez la session pour consulter le résultat."
+    "taskCompletedToast": "« {{name}} » est terminée. Ouvrez la session pour consulter le résultat.",
+    "backgroundSession": "Session en arrière-plan",
+    "taskCompletedTitle": "Tâche terminée",
+    "taskCompletedBody": "« {{name}} » est terminée — prête pour revue",
+    "openSessionAction": "Ouvrir la session",
+    "taskFailedTitle": "Tâche échouée",
+    "taskFailedBody": "« {{name}} » a échoué{{detail}}"
   },
   "documentOpen": {
     "openInDefault": "Ouvrir dans {{name}}",
     "openDefaultApp": "Ouvrir dans l’application par défaut",
-    "openExternally": "Ouvrir dans une application externe"
+    "openExternally": "Ouvrir dans une application externe",
+    "label": "Ouvrir dans…",
+    "defaultApp": "Application par défaut",
+    "appDefault": "{{name}} (par défaut)",
+    "loading": "Chargement des applications…",
+    "loadFailed": "Applications indisponibles — rouvrez pour réessayer",
+    "openFailed": "Impossible d’ouvrir le document",
+    "saveFirst": "Enregistrez ou annulez les modifications avant d’ouvrir dans une autre application"
+  },
+  "sqlEditor": {
+    "placeholder": "Saisissez une requête SQL...",
+    "format": "Formater",
+    "runQueryToSeeResults": "Exécutez une requête pour voir les résultats",
+    "executingQuery": "Exécution de la requête...",
+    "queryFailed": "Échec de la requête",
+    "queryCompleted": "Requête terminée",
+    "noResults": "La requête n’a renvoyé aucun résultat",
+    "rowCount_one": "{{count}} ligne",
+    "rowCount_other": "{{count}} lignes",
+    "press": "Appuyez sur",
+    "toRun": "pour exécuter",
+    "nullValue": "NULL",
+    "booleanTrue": "true",
+    "booleanFalse": "false"
+  },
+  "chatImage": {
+    "maxReached": "Maximum {{max}} images autorisées",
+    "remainingWarning": "Seulement {{remaining}} image(s) supplémentaire(s) possible(s) (max {{max}})",
+    "processFailed": "Échec du traitement de l’image",
+    "loadFailed": "Échec du chargement de l’image : {{fileName}}"
+  },
+  "navigation": {
+    "goToSection": "Aller à {{label}}, section {{current}} sur {{total}}",
+    "section": "Section {{current}}",
+    "sectionPosition": "Section {{current}} sur {{total}}"
   }
 }

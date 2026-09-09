@@ -44,7 +44,8 @@
     "projectManager": "Project Manager",
     "diff": "Diff",
     "colleagues": "Colegas",
-    "terminals": "Terminais"
+    "terminals": "Terminais",
+    "openSourceRepo": "Abrir repo de código-fonte"
   },
   "routes": {
     "session": "Chat",
@@ -163,7 +164,8 @@
       "duration30m": "30 minutos",
       "duration1h": "1 hora",
       "duration2h": "2 horas",
-      "durationTomorrow": "Amanhã"
+      "durationTomorrow": "Amanhã",
+      "unknownRole": "Papel desconhecido"
     },
     "guide": {
       "trigger": "Abrir guia",
@@ -344,7 +346,8 @@
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
-      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry."
+      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
+      "forkSetupReused": "Continuando com sua última configuração · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -685,7 +688,9 @@
     "comments": {
       "actionError": "A ação falhou — tente novamente",
       "unresolvedBadge_one": "{{count}} comentário não resolvido",
-      "unresolvedBadge": "{{count}} comentários não resolvidos"
+      "unresolvedBadge": "{{count}} comentários não resolvidos",
+      "unreadBadge_one": "{{count}} mensagem não lida",
+      "unreadBadge": "{{count}} mensagens não lidas"
     },
     "sharingFloor": {
       "label": "Nível mínimo de compartilhamento",
@@ -835,5 +840,60 @@
       "memberNote": "Ativado por um administrador — as sessões elegíveis são enviadas em segundo plano sem precisar abrir este espaço de trabalho."
     },
     "userName": "Nome de usuário"
+  },
+  "myRole": {
+    "deleteRoleMessage": "\"{{name}}\" será removida. Isso não pode ser desfeito.",
+    "activeBadge": "Ativa",
+    "addRole": "Adicionar função personalizada",
+    "builtInTitle": "Funções integradas",
+    "customEmpty": "Ainda não há funções personalizadas. Adicione uma para capturar uma postura que as três integradas não cobrem — ex.: \"Trabalho focado\", \"Em dupla\" ou \"De plantão\".",
+    "customTitle": "Funções personalizadas",
+    "deleteRoleCancel": "Cancelar",
+    "deleteRoleOk": "Excluir",
+    "deleteRoleTitle": "Excluir função?",
+    "followUpSuggestionsDesc": "Sugere possíveis próximos passos após um turno concluído de item de trabalho. Isso usa uma solicitação adicional ao modelo.",
+    "followUpSuggestionsLabel": "Sugestões de follow-up do Agent",
+    "goalMaxTurnsDesc": "Continuar trabalhando na minha última solicitação por até N turnos extras depois que o agent normalmente pararia (0 = desativado).",
+    "goalMaxTurnsLabel": "Orçamento de continuação do objetivo",
+    "guidanceLabel": "Orientação do Agent",
+    "guidancePlaceholder": "Como o agent deve adaptar seu comportamento quando esta função estiver ativa?",
+    "modeSwitchAutoPlanDesc": "Alterna automaticamente as sugestões pendentes de modo Planejar quando o temporizador de confirmação expira.",
+    "modeSwitchAutoPlanLabel": "Plano automático na troca de modo",
+    "newRoleDefaultLabel": "Função personalizada",
+    "pageDescription": "Defina a função que você está exercendo agora. O agent lê a orientação da função ativa e adapta seu comportamento — por exemplo, fazendo menos perguntas de esclarecimento quando você está concentrado ou agrupando resumos quando você está ausente.",
+    "pageTitle": "Minhas funções",
+    "planAutoApproveDesc": "Aprova automaticamente planos pendentes após N segundos (0 = esperar por mim).",
+    "planAutoApproveLabel": "Aprovação automática de planos",
+    "questionAutoSkipDesc": "Pula automaticamente perguntas pendentes do agent após N segundos (0 = esperar por mim).",
+    "questionAutoSkipLabel": "Pular perguntas automaticamente",
+    "roleNameLabel": "Nome",
+    "roleNamePlaceholder": "Nome da função",
+    "stanceAutonomous": "Autônomo — nunca esperar por mim",
+    "stanceDeferAndBatch": "Adiar e agrupar — trabalhar primeiro, perguntar depois",
+    "stanceDesc": "Como o agent trata decisões bloqueantes enquanto esta função está ativa.",
+    "stanceInteractive": "Interativo — perguntar à vontade",
+    "stanceLabel": "Postura de comportamento"
+  },
+  "explore": {
+    "search": "Buscar",
+    "searching": "Buscando...",
+    "searchPlaceholder": "Buscar repositórios no GitHub (ex.: language:rust tauri)",
+    "clone": "Clonar",
+    "cloning": "Clonando...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "{{name}} clonado",
+    "cloneFailed": "Falha ao clonar",
+    "cloneNoTarget": "Nenhuma pasta de workspace padrão configurada. Defina uma nas Configurações.",
+    "errorTitle": "Falha na busca",
+    "noResultsTitle": "Nenhum repositório corresponde",
+    "noResultsSubtitle": "Tente outra consulta ou ordenação.",
+    "resultsCount": "{{shown}} de {{total}} repositórios",
+    "partial": "(parcial — a busca expirou)",
+    "sort": {
+      "bestMatch": "Melhor correspondência",
+      "stars": "Estrelas",
+      "updated": "Atualizados recentemente",
+      "forks": "Forks"
+    }
   }
 }

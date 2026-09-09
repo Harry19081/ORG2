@@ -183,7 +183,8 @@
       "kanban": "Канбан",
       "gantt": "Гант",
       "calendar": "Календарь",
-      "settings": "Настройки"
+      "settings": "Настройки",
+      "table": "Таблица"
     },
     "statusFilters": {
       "all": "Все",
@@ -252,7 +253,23 @@
       "hoursAgo": "{{count}} часов назад",
       "inDays": "через {{count}} дней",
       "inHours": "через {{count}} часов",
-      "membersGroup": "Участники"
+      "membersGroup": "Участники",
+      "filter": "Фильтр по свойству",
+      "filterValue": "Значение фильтра по свойству",
+      "noValue": "Нет значения",
+      "archiveNamed": "Архивировать {{name}}",
+      "add": "Добавить свойство",
+      "archive": "Архивировать свойство",
+      "datePlaceholder": "ГГГГ-ММ-ДД",
+      "empty": "Пользовательских свойств пока нет.",
+      "loading": "Загрузка свойств…",
+      "namePlaceholder": "Название свойства",
+      "no": "Нет",
+      "optionsPlaceholder": "Варианты через запятую",
+      "optionsRequired": "Для свойств типа «выбор» нужны варианты через запятую.",
+      "type": "Тип свойства",
+      "updateFailed": "Не удалось обновить свойство",
+      "yes": "Да"
     },
     "activity": {
       "discussionTitle": "Обсуждение",
@@ -305,7 +322,27 @@
         "schedule": "расписание",
         "orchestratorConfig": "конфигурация Orchestrator",
         "handoff": "передача"
-      }
+      },
+      "mentionPeople": "Упомянуть людей",
+      "mentionAll": "@all — все участники этого элемента",
+      "mentionAgentOption": "{{name}} (агент)",
+      "mentionAgentOrgOption": "{{name}} (команда агентов)",
+      "appendedSession": "добавил сессию",
+      "edited": "(изменено)",
+      "commentDeleted": "Этот комментарий был удалён.",
+      "deleteComment": "Удалить комментарий",
+      "deleteCommentConfirm": "Удалить этот комментарий? Ответы сохранятся, текст комментария будет удалён.",
+      "messageCount_one": "{{count}} сообщение",
+      "messageCount_other": "{{count}} сообщений",
+      "cancelReply": "Отменить ответ",
+      "conclusion": "Заключение",
+      "reopen": "Открыть снова",
+      "reply": "Ответить",
+      "replyingInThread": "Ответ в ветке",
+      "resolve": "Решить",
+      "resolved": "Решено",
+      "submitComment": "Отправить комментарий",
+      "openedWorkItem": "открыл этот рабочий элемент"
     },
     "contextMenu": {
       "status": "Статус",
@@ -347,7 +384,10 @@
       "cannotParseRepoName": "Не удалось извлечь имя репозитория из: {{url}}"
     },
     "sessions": {
-      "emptyOverview": "Sessions пока нет"
+      "emptyOverview": "Sessions пока нет",
+      "originTitle": "Сессия создания",
+      "originStatus": "Создала этот элемент",
+      "runsCount": "Запусков: {{count}}"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -366,7 +406,9 @@
       "fileDiffCleanHint": "Изменения файлов не обнаружены.",
       "costSummary": "Итого по затратам",
       "totalCost": "Итого",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "Завершение заблокировано",
+      "prReady": "Готово к завершению"
     },
     "viewWorkItems": "Смотреть Work Items",
     "fromRoutine": "From routine: {{name}}",
@@ -381,7 +423,98 @@
     },
     "batchAssignee": {
       "title": "Назначить исполнителя"
-    }
+    },
+    "discussion": {
+      "previewWillWake": "Разбудит агента для ответа",
+      "previewNoteOnly": "Только заметка — агент не будет запущен",
+      "previewNoSession": "Нет связанной сессии агента — ничего не будет запущено",
+      "previewMentionResume": "Разбудит упомянутого агента",
+      "previewMentionStart": "Запустит упомянутого агента",
+      "previewMentionUnroutable": "Упомянутый агент не настроен для этого элемента — ничего не будет запущено",
+      "previewThread": "Разбудит агента из этой ветки",
+      "previewAssignee": "Разбудит назначенного агента",
+      "previewAssigneeStart": "Запустит назначенного агента",
+      "previewCoalesce": "присоединится к ожидающему пробуждению",
+      "previewMemberThread": "Ветка участника — агент не будет разбужен"
+    },
+    "subItems": {
+      "title": "Подэлементы",
+      "parent": "Родительский",
+      "progress": "Завершено {{completed}} из {{total}}",
+      "add": "Добавить подэлемент",
+      "addFirst": "Добавить первый подэлемент",
+      "titlePlaceholder": "Введите название подэлемента",
+      "stagePicker": "Этап подэлемента",
+      "noStage": "Без этапа",
+      "stage": "Этап {{stage}}",
+      "openStatus": "Открыт",
+      "completedStatus": "Завершён",
+      "cancelledStatus": "Отменён",
+      "createError": "Не удалось создать подэлемент. Повторите попытку."
+    },
+    "savedViews": {
+      "placeholder": "Представления",
+      "save": "Сохранить текущее представление",
+      "saveTitle": "Сохранить представление",
+      "namePlaceholder": "Название представления",
+      "saveHint": "Сохраняет текущие фильтры; компоновка задаёт вид при первом открытии.",
+      "delete": "Удалить представление"
+    },
+    "table": {
+      "columnsPicker": "Столбцы",
+      "groupByProperty": "Группировать по свойству",
+      "columns": {
+        "shortId": "ID",
+        "title": "Название",
+        "status": "Статус",
+        "priority": "Приоритет",
+        "assignee": "Исполнитель",
+        "targetDate": "Срок",
+        "labels": "Метки"
+      }
+    },
+    "batchProperty": {
+      "title": "Задать свойство",
+      "hint": "Применяет одно значение свойства к выбранным элементам ({{count}}). Оставьте значение пустым, чтобы очистить его.",
+      "propertyPlaceholder": "Свойство",
+      "valuePlaceholder": "Значение",
+      "applied": "Обновлено элементов: {{count}}"
+    },
+    "revisionConflict": {
+      "title": "Разрешить конфликт правок",
+      "description": "{{field}} изменилось после ревизии {{expected}}. Сравните вашу правку с ревизией {{actual}} и выберите, какую версию сохранить.",
+      "mine": "Моя версия",
+      "latest": "Последняя версия",
+      "useLatest": "Использовать последнюю",
+      "keepMine": "Оставить мою",
+      "titleField": "Название",
+      "descriptionField": "Описание",
+      "commentField": "Комментарий",
+      "reloadNotice": "Этот рабочий элемент был изменён в другом месте. Последняя версия перезагружена.",
+      "retryFailed": "Последняя версия снова изменилась. Просмотрите обе версии, прежде чем повторить попытку."
+    },
+    "quickActions": {
+      "title": "Быстрые действия",
+      "empty": "Быстрых действий пока нет. Сохраните повторно используемый промпт для агента.",
+      "emptyManage": "Пока ничего не сохранено.",
+      "manageTitle": "Управление быстрыми действиями",
+      "namePlaceholder": "Название действия (напр. Починить CI)",
+      "targetPlaceholder": "Целевой агент",
+      "promptPlaceholder": "Что должен сделать агент?",
+      "archive": "Архивировать действие",
+      "scopeChanged": "Быстрое действие больше не входит в область этого рабочего элемента",
+      "started": "Быстрое действие «{{name}}» запущено"
+    },
+    "detailNavigation": "Навигация по рабочему элементу",
+    "linkedSessions": {
+      "title": "Сессии"
+    },
+    "detail": {
+      "conversation": "Разговор",
+      "linked": "Связанные"
+    },
+    "detailSummary": "Сводка рабочего элемента",
+    "navigationTrail": "Навигация по рабочему элементу"
   },
   "settings": {
     "sidebarGeneral": "Общие",
@@ -446,7 +579,12 @@
         "notAttached": "Не подключён",
         "attach": "Подключить",
         "detach": "Отключить",
-        "changeWarning": "Отключите текущий адаптер перед подключением нового."
+        "changeWarning": "Отключите текущий адаптер перед подключением нового.",
+        "detachProjectMenuLabel": "Отвязать GitHub",
+        "detachProjectTitle": "Отвязать GitHub от {{project}}?",
+        "detachProjectDescription": "Синхронизация GitHub Issues остановится. Локальный Project и импортированные рабочие элементы останутся в ORGII.",
+        "detachProjectAction": "Отвязать GitHub от {{project}}",
+        "detachProjectSuccess": "GitHub отвязан от {{project}}"
       },
       "accountPicker": {
         "title": "Аккаунт",
@@ -596,7 +734,16 @@
           "dismissFailed": "Не удалось отклонить конфликт: {{error}}"
         }
       }
-    }
+    },
+    "sidebarStatuses": "Статусы",
+    "statusesBuiltin": "Встроенные статусы",
+    "statusesBuiltinDescription": "Стандартные категории рабочего процесса. Доступны всегда.",
+    "statusesCustom": "Пользовательские статусы",
+    "statusesCustomDescription": "Именованные псевдонимы для встроенной категории. Фильтры, счётчики и доски считают их своей категорией.",
+    "statusNamePlaceholder": "Название статуса",
+    "noCustomStatuses": "Пользовательских статусов пока нет.",
+    "statusArchive": "Архивировать статус",
+    "statusRestore": "Восстановить статус"
   },
   "statusBar": {
     "workItemCount": "{{count}} элементов",

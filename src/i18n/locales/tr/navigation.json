@@ -44,7 +44,8 @@
     "projectManager": "Project Manager",
     "diff": "Diff",
     "colleagues": "Ekip arkadaşları",
-    "terminals": "Terminaller"
+    "terminals": "Terminaller",
+    "openSourceRepo": "Açık Kaynak Depo"
   },
   "routes": {
     "session": "Sohbet",
@@ -126,7 +127,9 @@
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
-      "multiRepoWorkspace": "{{count}} çoklu repo Workspace"
+      "multiRepoWorkspace": "{{count}} çoklu repo Workspace",
+      "repo_plural": "{{count}} repo",
+      "multiRepoWorkspace_plural": "{{count}} çoklu repo Workspace"
     },
     "bottomBar": {
       "settings": "Ayarlar",
@@ -161,7 +164,8 @@
       "duration30m": "30 dakika",
       "duration1h": "1 saat",
       "duration2h": "2 saat",
-      "durationTomorrow": "Yarın"
+      "durationTomorrow": "Yarın",
+      "unknownRole": "Bilinmeyen rol"
     },
     "guide": {
       "trigger": "Kılavuzu aç",
@@ -342,7 +346,8 @@
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
-      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry."
+      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
+      "forkSetupReused": "Son kurulumunuzla devam ediliyor · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -683,7 +688,9 @@
     "comments": {
       "actionError": "İşlem başarısız — lütfen tekrar deneyin",
       "unresolvedBadge_one": "{{count}} çözülmemiş yorum",
-      "unresolvedBadge": "{{count}} çözülmemiş yorum"
+      "unresolvedBadge": "{{count}} çözülmemiş yorum",
+      "unreadBadge_one": "{{count}} okunmamış mesaj",
+      "unreadBadge": "{{count}} okunmamış mesaj"
     },
     "sharingFloor": {
       "label": "En düşük paylaşım düzeyi",
@@ -833,5 +840,60 @@
       "memberNote": "Bir yönetici etkinleştirdi — bu çalışma alanını açmanız gerekmeden uygun oturumlar arka planda yüklenir."
     },
     "userName": "Kullanıcı adı"
+  },
+  "myRole": {
+    "deleteRoleMessage": "\"{{name}}\" kaldırılacak. Bu işlem geri alınamaz.",
+    "activeBadge": "Etkin",
+    "addRole": "Özel rol ekle",
+    "builtInTitle": "Yerleşik roller",
+    "customEmpty": "Henüz özel rol yok. Yerleşik üç rolün kapsamadığı bir duruşu yakalamak için bir tane ekleyin — örn. \"Derin çalışma\", \"Eşli çalışma\" veya \"Nöbette\".",
+    "customTitle": "Özel roller",
+    "deleteRoleCancel": "İptal",
+    "deleteRoleOk": "Sil",
+    "deleteRoleTitle": "Rol silinsin mi?",
+    "followUpSuggestionsDesc": "Tamamlanan bir iş öğesi turundan sonra olası sonraki adımları öner. Bu, ek bir model isteği kullanır.",
+    "followUpSuggestionsLabel": "Agent takip önerileri",
+    "goalMaxTurnsDesc": "Agent normalde duracağı noktadan sonra son isteğim için en fazla N ek tur daha çalışmaya devam et (0 = kapalı).",
+    "goalMaxTurnsLabel": "Hedef sürdürme bütçesi",
+    "guidanceLabel": "Agent yönlendirmesi",
+    "guidancePlaceholder": "Bu rol etkinken agent davranışını nasıl uyarlamalı?",
+    "modeSwitchAutoPlanDesc": "Bekleyen Plan modu önerilerini onay süresi dolduğunda otomatik olarak değiştir.",
+    "modeSwitchAutoPlanLabel": "Mod değişimi otomatik plan",
+    "newRoleDefaultLabel": "Özel rol",
+    "pageDescription": "Şu anda üstlendiğiniz rolü tanımlayın. Agent, etkin rolün yönlendirmesini okur ve davranışını buna göre uyarlar — örneğin siz odaklanmışken daha az açıklayıcı soru sorar veya siz uzaktayken özetleri toplu halde sunar.",
+    "pageTitle": "Rollerim",
+    "planAutoApproveDesc": "Bekleyen planları N saniye sonra otomatik onayla (0 = beni bekle).",
+    "planAutoApproveLabel": "Plan otomatik onayı",
+    "questionAutoSkipDesc": "Bekleyen agent sorularını N saniye sonra otomatik atla (0 = beni bekle).",
+    "questionAutoSkipLabel": "Soru otomatik atlama",
+    "roleNameLabel": "Ad",
+    "roleNamePlaceholder": "Rol adı",
+    "stanceAutonomous": "Özerk — beni asla bekleme",
+    "stanceDeferAndBatch": "Ertele ve topla — önce çalış, sonra sor",
+    "stanceDesc": "Bu rol etkinken agent'ın engelleyici kararları nasıl ele alacağı.",
+    "stanceInteractive": "Etkileşimli — bana serbestçe sor",
+    "stanceLabel": "Davranış duruşu"
+  },
+  "explore": {
+    "search": "Ara",
+    "searching": "Aranıyor...",
+    "searchPlaceholder": "GitHub depolarında ara (örn. language:rust tauri)",
+    "clone": "Klonla",
+    "cloning": "Klonlanıyor...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "{{name}} klonlandı",
+    "cloneFailed": "Klonlama başarısız",
+    "cloneNoTarget": "Varsayılan çalışma alanı klasörü yapılandırılmamış. Ayarlar'dan bir tane belirleyin.",
+    "errorTitle": "Arama başarısız",
+    "noResultsTitle": "Eşleşen depo yok",
+    "noResultsSubtitle": "Farklı bir sorgu veya sıralama deneyin.",
+    "resultsCount": "{{total}} depodan {{shown}} tanesi",
+    "partial": "(kısmi — arama zaman aşımına uğradı)",
+    "sort": {
+      "bestMatch": "En iyi eşleşme",
+      "stars": "Yıldızlar",
+      "updated": "Son güncellenen",
+      "forks": "Fork'lar"
+    }
   }
 }

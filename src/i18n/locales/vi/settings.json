@@ -20,7 +20,8 @@
     "storage": "Lưu trữ",
     "agentMemory": "Bộ nhớ Agent",
     "agentOrg": "Nhóm Agent",
-    "harnessConnections": "Định tuyến CLI"
+    "harnessConnections": "Định tuyến CLI",
+    "mobileRemote": "Điều khiển từ điện thoại"
   },
   "coreSidebar": {
     "groups": {
@@ -164,7 +165,8 @@
       "gold": "Vàng kim",
       "red": "Đỏ",
       "rose": "Hồng",
-      "mono": "Đơn sắc"
+      "mono": "Đơn sắc",
+      "matchSkin": "Theo skin"
     },
     "security": "Bảo mật",
     "voiceInput": "Nhập bằng giọng nói",
@@ -189,7 +191,28 @@
     "presenceGuidanceOnlineDefault": "Tôi đang ở bàn phím. Bạn có thể hỏi tôi để làm rõ bất cứ lúc nào và xác nhận với tôi trước khi chạy bất kỳ hành động phá hủy nào",
     "presenceGuidanceInvisibleDefault": "Tôi đang ở gần nhưng hiển thị ngoại tuyến. Mặc định hãy tự chủ thực hiện và chỉ báo cho tôi khi có hành động rủi ro cao hoặc tái cấu trúc lớn; gom các câu hỏi khác vào một bản tóm tắt thay vì hỏi từng câu",
     "presenceGuidanceAwayDefault": "Tôi đang rời bàn phím. Đừng chờ tôi; hãy đưa ra quyết định tốt nhất với thông tin hiện có, hoàn thành những gì có thể và để lại bản tóm tắt ngắn gọn về những gì đã xảy ra cùng các câu hỏi còn mở khi tôi quay lại",
-    "followSystem": "Theo hệ thống"
+    "followSystem": "Theo hệ thống",
+    "skins": "Skin",
+    "skinsDesc": "Chế độ sáng và tối dùng bảng màu riêng. Mỗi bảng được áp dụng khi ứng dụng hiển thị ở chế độ đó",
+    "lightSkin": "Skin sáng",
+    "darkSkin": "Skin tối",
+    "lightAccent": "Màu nhấn sáng",
+    "darkAccent": "Màu nhấn tối",
+    "skinGroups": {
+      "orgii": "ORGII",
+      "codex": "Codex"
+    },
+    "iconStyle": "Kiểu biểu tượng",
+    "iconStyleDesc": "Đơn sắc làm giảm bão hòa các biểu tượng loại tệp và mô hình để chúng trông như giao diện, không phải logo",
+    "iconStyleOptions": {
+      "colorful": "Nhiều màu",
+      "monochrome": "Đơn sắc"
+    },
+    "translucentSidebar": "Thanh bên trong mờ",
+    "skin": "Skin",
+    "accent": "Màu nhấn",
+    "linkSkinVariants": "Liên kết sáng và tối",
+    "linkSkinVariantsDesc": "Dùng một skin và màu nhấn cho cả hai chế độ. Chỉ các skin có cả biến thể sáng và tối mới có thể liên kết"
   },
   "background": {
     "title": "Hình nền",
@@ -463,7 +486,8 @@
       "permissionWarning": "Không gửi được thông báo thử nghiệm. Kiểm tra quyền truy cập.",
       "sendFailed": "Không thể gửi thông báo thử nghiệm. Vui lòng kiểm tra quyền thông báo và thử lại.",
       "soundFailed": "Không thể phát âm thanh thông báo. Hãy kiểm tra âm lượng hệ thống."
-    }
+    },
+    "teamInboxDesc": "Việc được giao, lượt nhắc đến và bàn giao từ đồng đội"
   },
   "editor": {
     "tabEditor": "Editor",
@@ -558,7 +582,19 @@
   },
   "update": {
     "detectUpdate": "Phát hiện cập nhật",
-    "currentVersion": "Phiên bản hiện tại"
+    "currentVersion": "Phiên bản hiện tại",
+    "channel": "Kênh cập nhật",
+    "channelDesc": "Beta nhận các bản dựng tiền phát hành trước bản ổn định. Chuyển về Ổn định không bao giờ hạ cấp — có hiệu lực ở bản phát hành ổn định tiếp theo",
+    "channelStable": "Ổn định",
+    "channelBeta": "Beta",
+    "installConfirmTitle": "Bản cập nhật sẵn sàng cài đặt",
+    "installConfirmDesc": "Phiên bản {{version}} đã được tải xuống. Hãy lưu mọi công việc đang làm trước khi cài đặt và khởi động lại ORGII",
+    "installAndRestart": "Cài đặt và khởi động lại",
+    "installOfficialConfirmTitle": "Ứng dụng chính thức sẵn sàng cài đặt",
+    "installOfficialConfirmDesc": "Cài đặt phiên bản chính thức {{version}} tại /Applications/ORG2.app. Bản dựng cục bộ này vẫn mở và không thay đổi",
+    "installOfficial": "Cài đặt ứng dụng chính thức",
+    "localBuild": "Cục bộ",
+    "skipVersion": "Bỏ qua phiên bản này"
   },
   "monitor": {
     "appMemory": "App memory",
@@ -633,7 +669,19 @@
     "diskCategory_sessionImages": "Hình ảnh chat",
     "diskCategory_screenshots": "Ảnh chụp trình duyệt",
     "diskCategory_agentWorktrees": "Agent Session Worktrees",
-    "diskCategory_lspBin": "Nhị phân LSP Server"
+    "diskCategory_lspBin": "Nhị phân LSP Server",
+    "cacheRegistry": "Sổ đăng ký bộ nhớ đệm",
+    "loadedScriptSources": "Mã nguồn JS đã tải ({{modules}} module / {{chunks}} chunk)",
+    "cacheRegistryEmpty": "Không có bộ nhớ đệm nào được đăng ký",
+    "cacheRegistryEntries": "{{count}} mục",
+    "diskCategory_toolResults": "Kết quả công cụ quá lớn",
+    "diskCategory_diagnostics": "Hàng đợi chẩn đoán",
+    "diskCategory_models": "Mô hình đã tải xuống",
+    "diskCategory_semanticIndex": "Chỉ mục tìm kiếm ngữ nghĩa",
+    "diskCategory_cursorCliProfiles": "Hồ sơ Cursor CLI",
+    "diskCategory_kiroCliProfiles": "Hồ sơ Kiro CLI",
+    "diskCategory_opencodeCliProfiles": "Hồ sơ OpenCode CLI",
+    "diskCategory_sidecarBin": "Tệp nhị phân Sidecar đã tải xuống"
   },
   "storage": {
     "dataDirectory": "Thư mục dữ liệu",
@@ -852,5 +900,81 @@
     "conflict": "Cấu hình đã thay đổi bên ngoài ORGII. Xem lại thay đổi trước khi áp dụng hoặc khôi phục; chúng sẽ không bị ghi đè",
     "credentialsNote": "Chế độ trực tiếp ghi thông tin xác thực vào cấu hình CLI với quyền truy cập hạn chế; xóa khóa trong kho không thu hồi thông tin xác thực đã xuất",
     "notInstalled": "Cài đặt công cụ này trước khi kiểm tra hoặc áp dụng kết nối"
+  },
+  "mobileRemote": {
+    "enabled": "Điều khiển từ điện thoại",
+    "enabledDesc": "Cho phép điện thoại đã ghép nối điều khiển các phiên agent trên máy tính này qua cùng mạng Wi‑Fi LAN hoặc qua relay công cộng",
+    "securityNotice": "Khi bật phơi bày LAN, bất kỳ ai trong mạng của bạn có URL kết nối và token đều có thể điều khiển phiên. Hãy tạo lại token nếu bạn nghi ngờ nó bị lộ",
+    "outdoorTitle": "Kết nối từ xa",
+    "outdoorDesc": "Kết nối máy tính ra ngoài tới một relay công cộng để điện thoại của bạn hoạt động qua 4G, 5G hoặc mạng khác",
+    "relayEnabled": "Kết nối tới relay công cộng",
+    "relayEnabledDesc": "Máy tính mở một kết nối WSS đi ra; không cần chuyển tiếp cổng trên router",
+    "relayUrl": "Địa chỉ relay",
+    "relayUrlDesc": "Nhập URL ws:// hoặc wss:// đã triển khai, ví dụ wss://relay.example.com/v1/mobile/ws",
+    "relayPresetAria": "Chọn cấu hình môi trường relay",
+    "relayPresetLocal": "Cục bộ",
+    "relayPresetProduction": "Production",
+    "cloudLoginTitle": "Đăng nhập ORG2 Cloud",
+    "cloudLoginDescSignedIn": "Đã đăng nhập với tư cách {{identity}} — relay dùng tài khoản này để ghép nối từ xa",
+    "cloudLoginDescSignedOut": "Đăng nhập ORG2 Cloud trước khi ghép nối qua relay công cộng",
+    "relayStatusCloudLoginRequired": "Đăng nhập ORG2 Cloud trong Cài đặt → Chung, rồi làm mới trạng thái relay",
+    "relayStatusAuthFailedSignedIn": "Relay đã từ chối kết nối — hãy đăng xuất rồi đăng nhập lại trong Cài đặt → Chung",
+    "relayStatus": "Trạng thái relay",
+    "relayStatus_online": "Đã kết nối",
+    "relayStatus_connecting": "Đang kết nối",
+    "relayStatus_backoff": "Đang chờ kết nối lại",
+    "relayStatus_disabled": "Đã tắt",
+    "relayStatus_config_error": "Lỗi cấu hình",
+    "relayStatus_stopped": "Đã dừng",
+    "startOutdoorPairing": "Tạo mã ghép nối từ xa",
+    "phoneLabel": "Tên điện thoại",
+    "phoneLabelDesc": "Tên này xuất hiện trong danh sách thiết bị đã ghép nối",
+    "fullAccess": "Cho phép thao tác",
+    "fullAccessDesc": "Khi bật, điện thoại có thể gửi tin nhắn, dừng phiên và trả lời yêu cầu quyền; khi tắt, chỉ được xem",
+    "pairingExpires": "Mã ghép nối hết hạn sau {{seconds}} giây",
+    "sasPhrase": "Cụm từ bảo mật",
+    "sasDesktopHint": "Điện thoại sẽ hiển thị cùng cụm từ sau khi quét; chỉ xác nhận khi cả hai khớp nhau",
+    "pairingPayload": "Dữ liệu ghép nối",
+    "pairingPayloadHint": "Sao chép và dán vào màn hình ghép nối của Điều khiển từ điện thoại khi thử nghiệm trên máy tính này",
+    "copyPairingPayload": "Sao chép dữ liệu ghép nối",
+    "pairingPayloadCopied": "Đã sao chép dữ liệu ghép nối",
+    "pairingPayloadCopyFailed": "Không thể sao chép dữ liệu ghép nối",
+    "regeneratePairing": "Tạo mã mới",
+    "confirmPairing": "Cụm từ khớp, xác nhận ghép nối",
+    "pairingConfirmed": "Đã ghép nối điện thoại",
+    "pairingFailed": "Không thể tạo ghép nối",
+    "revokeDevice": "Thu hồi",
+    "lanAdvanced": "Dự phòng LAN",
+    "lanAdvancedDesc": "Kết nối trực tiếp trong cùng mạng Wi-Fi mà không dùng relay công cộng",
+    "allowLanExposure": "Cho phép kết nối LAN",
+    "allowLanExposureDesc": "Khi tắt, cầu nối chỉ chấp nhận kết nối từ máy tính này (127.0.0.1). Khi bật, các thiết bị khác trong mạng Wi-Fi của bạn có thể kết nối",
+    "lanToken": "Token kết nối",
+    "lanTokenDesc": "Được gắn vào URL WebSocket làm secret dùng chung. Hiển thị ở đây để sao chép/dán hoặc mã hóa thành QR",
+    "regenerateToken": "Tạo lại",
+    "pairing": "Ghép nối trên điện thoại",
+    "pairingDesc": "Quét mã QR hoặc sao chép URL WebSocket vào trình duyệt điện thoại để kết nối trong cùng mạng Wi-Fi",
+    "connectionUrl": "URL WebSocket",
+    "connectionUrlDesc": "Mở URL này trên trình duyệt điện thoại hoặc mã hóa thành mã QR để ghép nối",
+    "copyConnectionUrl": "Sao chép URL WebSocket",
+    "connectionUrlCopied": "Đã sao chép URL WebSocket",
+    "qrAriaLabel": "Mã QR cho URL WebSocket của Điều khiển từ điện thoại",
+    "qrScanHint": "Quét bằng camera điện thoại hoặc ứng dụng đọc QR khi ở cùng mạng",
+    "lanIpUnresolved": "Không thể phát hiện địa chỉ LAN của máy tính này. Hãy sao chép URL và thay <local-ip> bằng IP Wi-Fi của bạn, hoặc nhấn Làm mới IP LAN",
+    "refreshLanIp": "Làm mới IP LAN",
+    "pairedDevices": "Thiết bị đã ghép nối",
+    "pairedDevicesDesc": "Các điện thoại được ủy quyền qua relay; có thể thu hồi quyền truy cập bất cứ lúc nào",
+    "devicesLoadFailed": "Không thể tải thiết bị đã ghép nối",
+    "noDevices": "Không có thiết bị đã ghép nối",
+    "noDevicesDesc": "Tạo mã ghép nối từ xa, rồi quét hoặc dán vào PWA Điều khiển từ điện thoại",
+    "deviceLabel": "Thiết bị",
+    "deviceTier": "Cấp độ",
+    "deviceTierFull": "Toàn quyền",
+    "deviceTierReadOnly": "Chỉ xem",
+    "deviceLastSeen": "Lần cuối hoạt động",
+    "devicePairedAt": "Đã ghép nối {{time}}",
+    "deviceLastSeenValue": "Lần cuối hoạt động {{time}}",
+    "deviceNeverSeen": "Chưa từng kết nối",
+    "deviceOnline": "Trực tuyến",
+    "deviceOffline": "Ngoại tuyến"
   }
 }

@@ -12,14 +12,17 @@
     },
     "sections": {
       "reviewRequested": "レビュー依頼",
-      "authoredByMe": "自分が作成"
+      "authoredByMe": "自分が作成",
+      "updates": "更新"
     },
     "status": {
       "read": "既読",
       "unread": "未読"
     },
     "row": {
-      "ariaLabel": "{{title}}、{{status}}"
+      "ariaLabel": "{{title}}、{{status}}",
+      "issueSource": "{{repository}} の issue",
+      "issueSourceFallback": "Issue"
     },
     "empty": {
       "title": "まだ何もありません",
@@ -37,6 +40,10 @@
       "noResults": {
         "title": "一致する項目がありません",
         "subtitle": "「{{query}}」に一致する項目はありません。"
+      },
+      "archived": {
+        "title": "アーカイブ済みの項目はありません",
+        "subtitle": "アーカイブした項目がここに表示されます。"
       }
     },
     "loading": "チーム受信トレイを読み込んでいます…",
@@ -86,7 +93,18 @@
       "identityUnavailable": "チームでの本人確認ができませんでした。返信する前にプロジェクトのプロフィールを確認してください。",
       "rowPending": "{{name}} から · 返信待ち",
       "rowAccepted": "引き継ぎ受諾済み · {{status}} · {{priority}}",
-      "rowReturned": "{{name}} が差し戻し · {{status}} · {{priority}}"
+      "rowReturned": "{{name}} が差し戻し · {{status}} · {{priority}}",
+      "destination": "送信先",
+      "chooseDestination": "送信先を選択",
+      "cloudDestination": "{{name}} · チーム受信トレイ",
+      "todoCount_one": "To-do {{count}} 件",
+      "validation": {
+        "title_required": "作業項目のタイトルを入力してください。",
+        "project_required": "送信先を選択してください。",
+        "project_unavailable": "この送信先は利用できなくなりました。別の送信先を選択してください。",
+        "recipient_required": "受信者を選択してください。",
+        "recipient_unavailable": "この受信者は利用できなくなりました。別の受信者を選択してください。"
+      }
     },
     "errors": {
       "loadTitle": "チーム受信トレイを読み込めませんでした",
@@ -103,19 +121,25 @@
       "workItemContext": "一部のプロジェクト情報が利用できません。作業項目は引き続き使用できます。",
       "workItemLoad": "この作業項目を読み込めませんでした。再試行してください。",
       "githubIssueLoad": "この作業項目の GitHub issue を読み込めませんでした。ローカルの作業項目情報は引き続き表示されます。",
-      "workItemUpdate": "作業項目への最新の変更を保存できませんでした。再試行してください。"
+      "workItemUpdate": "作業項目への最新の変更を保存できませんでした。再試行してください。",
+      "archive": "この項目をアーカイブできませんでした。再試行してください。",
+      "unarchive": "この項目を復元できませんでした。再試行してください。",
+      "mutePreferences": "通知カテゴリを更新できませんでした。再試行してください。"
     },
     "detail": {
       "assignedSubtitle": "割り当てられた作業項目",
       "standaloneProject": "単独",
       "mentionSubtitle": "コメントでメンションされました",
       "mentionedYou": "があなたをメンションしました",
-      "threadComments_other": "このスレッドには {{count}} 件のコメントがあります"
+      "threadComments_other": "このスレッドには {{count}} 件のコメントがあります",
+      "threadComments_one": "このスレッドには {{count}} 件のコメントがあります"
     },
     "actions": {
       "markRead": "既読にする",
       "markUnread": "未読にする",
-      "openWorkItem": "作業項目を開く"
+      "openWorkItem": "作業項目を開く",
+      "archive": "アーカイブ",
+      "unarchive": "受信トレイに戻す"
     },
     "workItemStatus": {
       "backlog": "バックログ",
@@ -132,6 +156,26 @@
       "medium": "中",
       "high": "高",
       "urgent": "緊急"
+    },
+    "notifications": {
+      "assignmentTitle": "新しい作業項目が割り当てられました",
+      "mentionTitle": "{{name}} があなたをメンションしました",
+      "handoffTitle": "{{name}} からの引き継ぎ",
+      "multipleTitle": "チーム受信トレイに {{count}} 件の新しい更新",
+      "multipleBody": "チーム受信トレイを開いて割り当てとメンションを確認してください。"
+    },
+    "mute": {
+      "title": "更新カテゴリをミュート"
+    },
+    "events": {
+      "mention": "コメントでメンションされました",
+      "discussion_updated": "ディスカッションが更新されました",
+      "run_failed": "実行が失敗しました",
+      "status_changed": "ステータスが変更されました",
+      "assignee_changed": "担当者が変更されました",
+      "priority_changed": "優先度が変更されました",
+      "dates_changed": "日付が変更されました",
+      "child_completed": "子作業項目が完了しました"
     }
   },
   "windowChrome": {
@@ -348,7 +392,9 @@
     "comingSoon": "近日公開",
     "clearSelection": "選択をクリア",
     "uiSettings": "UI 設定",
-    "clearAll": "すべてクリア"
+    "clearAll": "すべてクリア",
+    "openOnGitHub": "GitHub で開く",
+    "createPullRequest": "Pull request を作成"
   },
   "status": {
     "yes": "はい",
@@ -582,7 +628,29 @@
     "noAppliedCommit": "No linked commit yet",
     "noSessionsForFile": "No sessions found for this file",
     "committedRate": "コミット済み",
-    "email": "メール"
+    "email": "メール",
+    "noPullRequestForBranch": "このブランチにはまだ pull request がありません。",
+    "creatingPullRequest": "作成中…",
+    "failedToLoadPullRequest": "pull request を読み込めませんでした",
+    "noCommitsInPullRequest": "この pull request にはコミットがありません",
+    "prStatus": {
+      "open": "オープン",
+      "merged": "マージ済み",
+      "closed": "クローズ",
+      "draft": "下書き",
+      "unknown": "不明"
+    },
+    "sendingNow": "送信中…",
+    "issues": "Issues",
+    "noIssues": "issue はありません",
+    "openIssues": "オープン",
+    "closedIssues": "クローズ",
+    "issueComments": "{{count}} 件のコメント",
+    "issueComments_one": "1 件のコメント",
+    "issueComments_other": "{{count}} 件のコメント",
+    "tokens": "トークン",
+    "actions": "操作",
+    "all": "すべて"
   },
   "searchModes": {},
   "tabs": {
@@ -658,7 +726,10 @@
       "workflow": "ワークフローサービスは一時的に利用できません。後で再試行してください。"
     },
     "failedToLoad": "読み込みに失敗しました",
-    "unknownError": "不明なエラーが発生しました"
+    "unknownError": "不明なエラーが発生しました",
+    "componentLoadingFailed": "コンポーネントの読み込みに失敗しました",
+    "noLocalPath": "ローカルパスがありません",
+    "openInFinderFailed": "Finder で開けませんでした"
   },
   "confirmation": {
     "delete": "本当に削除しますか？",
@@ -885,7 +956,10 @@
     "noRepoSelected": "No repository selected",
     "previewUnavailable": "プレビューを利用できません",
     "selectRepositoryFromWorkspace": "ワークスペースのリポジトリを選択",
-    "noData": "データなし"
+    "noData": "データなし",
+    "noResults": "結果なし",
+    "noSessionHistoryForFile": "{{file}} のセッションアクティビティは見つかりません",
+    "noSessionHistory": "セッション履歴はありません"
   },
   "inbox": {
     "scrollToBottom": "一番下へ",
@@ -982,9 +1056,26 @@
       "tlsDevNote": "注: GitHub など一部の HTTPS サイトは開発モードで証明書検証により TLS エラーが出ることがあります。HTTP や example.com などのシンプルな HTTPS を試してください。",
       "siteUnreachableTitle": "このサイトにアクセスできません",
       "webviewHiddenTitle": "Web ビューを一時的に非表示",
-      "webviewHiddenBody": "メニューまたはダイアログを閉じると再表示されます。"
+      "webviewHiddenBody": "メニューまたはダイアログを閉じると再表示されます。",
+      "embeddedFallbackTitle": "このサイトは埋め込みブラウザでは動作しない可能性があります",
+      "embeddedFallbackBody": "一部のサイトはアプリの WebView 内での表示をブロックしたり、正しく描画できなかったりします。ページが空白のままの場合はシステムブラウザで開いてください。",
+      "currentUrl": "現在の URL"
     },
-    "unsavedChangesTitle": "Unsaved Changes"
+    "unsavedChangesTitle": "Unsaved Changes",
+    "ci": {
+      "openPullRequest": "GitHub で pull request を開く",
+      "viewDetails": "チェックの詳細を表示",
+      "refresh": "チェックを更新",
+      "refreshing": "更新中…",
+      "lastFetchedAt": "最終取得 {{time}}",
+      "unavailable": "チェックを読み取れませんでした",
+      "sections": {
+        "failed": "失敗",
+        "running": "実行中",
+        "skipped": "スキップ",
+        "passed": "成功"
+      }
+    }
   },
   "git": {
     "loading": "Git ステータスを読み込み中...",
@@ -1078,7 +1169,8 @@
         "approved": "変更を承認しました",
         "changesRequested": "変更をリクエストしました",
         "reviewDismissed": "レビューを却下しました",
-        "reviewed": "レビューしました"
+        "reviewed": "レビューしました",
+        "appendedSession": "セッションを追加しました"
       },
       "summary": {
         "label": "pull request の概要"
@@ -1204,7 +1296,9 @@
           "mergeBlocked": "GitHub から未達成のマージ要件が報告されています"
         },
         "convertToDraft": "下書きに戻す",
-        "convertedToDraft": "pull request を下書きに変換しました"
+        "convertedToDraft": "pull request を下書きに変換しました",
+        "markReady": "レビュー可能にする",
+        "markedReady": "pull request をレビュー可能にしました"
       },
       "flow": {
         "wantsToMergeCommitsInto_one": "が {{count}} 件のコミットをマージしようとしています:",
@@ -1235,7 +1329,23 @@
         "noLabelCandidates": "利用可能なラベルがありません",
         "labelsLoadFailed": "ラベルを読み込めませんでした",
         "labelsUpdated": "ラベルを更新しました"
-      }
+      },
+      "creating": "pull request を作成中…",
+      "createError": "pull request の作成に失敗しました",
+      "readyHint": "ブランチはプッシュ済みで、pull request を作成できます",
+      "neutralHint": "ブランチをプッシュして pull request を作成してください",
+      "noBranch": "ブランチが選択されていません",
+      "noRepoPath": "リポジトリのパスがありません",
+      "notAuthenticated": "ログインして pull request を作成してください",
+      "noOriginRemote": "origin リモートが設定されていません",
+      "cannotParseRepoName": "origin リモートからリポジトリ名を解析できませんでした",
+      "authRequired": {
+        "title": "GitHub を接続",
+        "description": "設定 → 接続で GitHub アカウントを接続してください。"
+      },
+      "navigationTrail": "pull request ナビゲーション",
+      "failedToLoad": "pull request を読み込めませんでした",
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Successfully pushed changes to remote",
@@ -1348,7 +1458,8 @@
         "reviewRequestRemoved": "がレビューリクエストを削除しました",
         "reviewed": "がこれらの変更をレビューしました",
         "reviewDismissed": "がレビューを却下しました",
-        "userBlocked": "がこのユーザーをブロックしました"
+        "userBlocked": "がこのユーザーをブロックしました",
+        "appendedSession": "がセッションを追加しました"
       },
       "composer": {
         "addComment": "コメントを追加",
@@ -1380,8 +1491,35 @@
         "count_other": "{{count}} 件の関連項目",
         "unavailable": "詳細を取得できません",
         "unavailableCount_one": "{{count}} 件の関連項目を解決できませんでした",
-        "unavailableCount_other": "{{count}} 件の関連項目を解決できませんでした"
-      }
+        "unavailableCount_other": "{{count}} 件の関連項目を解決できませんでした",
+        "reference": "GitHub 参照"
+      },
+      "title": "Issues",
+      "loading": "issue を読み込み中…",
+      "empty": "{{state}} の issue はありません",
+      "failedToLoad": "issue を読み込めませんでした",
+      "failedToCreate": "issue を作成できませんでした",
+      "failedToUpdate": "issue を更新できませんでした",
+      "failedToComment": "コメントを追加できませんでした",
+      "filterAll": "すべて",
+      "filterOpen": "オープン",
+      "filterClosed": "クローズ",
+      "noGitHubRepo": "GitHub リポジトリを接続して issue を管理してください",
+      "commentPlaceholder": "コメントを残す…",
+      "submitComment": "コメント",
+      "newIssueTitlePlaceholder": "Issue のタイトル",
+      "newIssueBodyPlaceholder": "Issue の説明（任意）…",
+      "authRequired": {
+        "title": "GitHub を接続",
+        "description": "設定 → 接続で GitHub アカウントを接続してください。"
+      },
+      "reAuthRequired": "GitHub の認証が必要です",
+      "reAuthDescription": "GitHub トークンの有効期限が切れました。設定 → 接続で再接続してください。",
+      "goToSettings": "設定へ移動",
+      "loadingTimeline": "アクティビティを読み込み中…",
+      "label": "Issue",
+      "linkedLoading": "リンクされた項目を読み込み中",
+      "detailNavigation": "issue ナビゲーション"
     }
   },
   "selectors": {
@@ -1405,7 +1543,15 @@
     },
     "modelProperties": {
       "effort": "Effort",
-      "default": "デフォルト"
+      "default": "デフォルト",
+      "settings": "モデル設定",
+      "model": "モデル",
+      "speed": "速度",
+      "standard": "標準",
+      "fast": "高速",
+      "thinking": "Thinking",
+      "on": "オン",
+      "off": "オフ"
     },
     "repo": {
       "addEntry": "その他のインポートオプション",
@@ -1418,7 +1564,8 @@
         "workspace": "作業ディレクトリ",
         "thisOrg": "この組織",
         "outsideOrg": "この組織の外",
-        "outsideNamedOrg": "{{org}} の外"
+        "outsideNamedOrg": "{{org}} の外",
+        "recent": "最近"
       },
       "tabs": {},
       "addOptions": {
@@ -1512,7 +1659,8 @@
         "noGithubRemote": "GitHub リモートが設定されていません",
         "prSearchScope": "読み込んだ {{count}} 件の Pull requests を検索",
         "prLimit": "最大 {{count}} 件のオープン PR を表示",
-        "noPullRequests": "一致する Pull requests はありません"
+        "noPullRequests": "一致する Pull requests はありません",
+        "mainWorktree": "メイン"
       },
       "placeholders": {
         "add": "新しいブランチ名...",
@@ -1541,7 +1689,8 @@
           "label": "Documents",
           "description": "Documents フォルダ"
         }
-      }
+      },
+      "selectWorktreeSource": "Worktree のブランチまたは pull request を選択"
     },
     "spotlightFooter": {
       "navigate": "移動",
@@ -1822,6 +1971,12 @@
     "pill": {
       "focus": "フォーカス",
       "allChanges": "すべての変更"
+    },
+    "scope": {
+      "main": "メインチェックアウト",
+      "worktrees": "Worktrees",
+      "searchPlaceholder": "Worktree を検索…",
+      "switchScopeActive": "ソース管理のスコープを切り替え: {{repo}}、{{branch}}"
     }
   },
   "contextInfo": {
@@ -1842,7 +1997,19 @@
     "manualCompactNoRuntime": "圧縮する前にメッセージを送信してください",
     "manualCompactFailed": "圧縮に失敗しました: {{message}}",
     "manualCompactChannelAttached": "このセッションはチャンネル管理です — そちらで /compact を使ってください",
-    "manualCompactInstructionsPlaceholder": "任意: 要約で重視するポイント"
+    "manualCompactInstructionsPlaceholder": "任意: 要約で重視するポイント",
+    "categories": {
+      "unattributed": "未分類"
+    },
+    "cacheSaved": "キャッシュ節約: 読み取り {{read}}、書き込み {{write}}",
+    "cacheHero": "{{pct}}% をキャッシュから提供 · このターンで約 {{tokens}} を再利用",
+    "cacheHeroSub": "プロンプトキャッシュでコストを最大 90% 削減できます",
+    "compactBoundarySubtitle_one": "{{count}}件の過去メッセージを要約",
+    "manualCompactSectionTitle": "手動圧縮",
+    "miniCpmCompactTitle": "MiniCPM サイレント自動圧縮",
+    "miniCpmCompactDescription": "古いコンテキストを非同期で処理します",
+    "miniCpmCompactToggleAria": "MiniCPM サイレント自動圧縮を有効にする",
+    "manualCompactNativeProvider": "ここでの手動圧縮は組み込み Agent セッションのみ対応しています。ネイティブ CLI の履歴はプロバイダーのアプリで圧縮してください。"
   },
   "relativeDate": {
     "justNow": "たった今",
@@ -1896,7 +2063,8 @@
     "statusReadyToCreate": "作業ディレクトリを作成する準備ができました",
     "defaultName": "作業ディレクトリ",
     "defaultNameWithRepo": "{{repo}} 作業ディレクトリ",
-    "windowTitle": "作業ディレクトリ"
+    "windowTitle": "作業ディレクトリ",
+    "statusMaxRepos": "選択できる Repo は最大 5 件です"
   },
   "database": {
     "databaseFile": "Database File",
@@ -2063,11 +2231,51 @@
   },
   "notifications": {
     "taskCancelledToast": "「{{name}}」はキャンセルされました",
-    "taskCompletedToast": "「{{name}}」が完了しました。セッションを開いて結果を確認してください。"
+    "taskCompletedToast": "「{{name}}」が完了しました。セッションを開いて結果を確認してください。",
+    "backgroundSession": "バックグラウンドセッション",
+    "taskCompletedTitle": "タスクが完了しました",
+    "taskCompletedBody": "「{{name}}」が完了しました — レビューできます",
+    "openSessionAction": "セッションを開く",
+    "taskFailedTitle": "タスクが失敗しました",
+    "taskFailedBody": "「{{name}}」が失敗しました{{detail}}"
   },
   "documentOpen": {
     "openInDefault": "{{name}} で開く",
     "openDefaultApp": "デフォルトのアプリで開く",
-    "openExternally": "外部アプリで開く"
+    "openExternally": "外部アプリで開く",
+    "label": "アプリで開く…",
+    "defaultApp": "デフォルトのアプリ",
+    "appDefault": "{{name}}（デフォルト）",
+    "loading": "アプリを読み込み中…",
+    "loadFailed": "アプリを取得できません — 再度開いて再試行してください",
+    "openFailed": "ドキュメントを開けませんでした",
+    "saveFirst": "別のアプリで開く前に変更を保存または破棄してください"
+  },
+  "sqlEditor": {
+    "placeholder": "SQL クエリを入力...",
+    "format": "整形",
+    "runQueryToSeeResults": "クエリを実行すると結果が表示されます",
+    "executingQuery": "クエリを実行中...",
+    "queryFailed": "クエリが失敗しました",
+    "queryCompleted": "クエリが完了しました",
+    "noResults": "クエリの結果はありません",
+    "rowCount_one": "{{count}} 行",
+    "rowCount_other": "{{count}} 行",
+    "press": "実行するには",
+    "toRun": "を押します",
+    "nullValue": "NULL",
+    "booleanTrue": "true",
+    "booleanFalse": "false"
+  },
+  "chatImage": {
+    "maxReached": "画像は最大 {{max}} 枚までです",
+    "remainingWarning": "追加できる画像はあと {{remaining}} 枚です（最大 {{max}} 枚）",
+    "processFailed": "画像を処理できませんでした",
+    "loadFailed": "画像を読み込めませんでした: {{fileName}}"
+  },
+  "navigation": {
+    "goToSection": "{{label}} へ移動、セクション {{current}} / {{total}}",
+    "section": "セクション {{current}}",
+    "sectionPosition": "セクション {{current}} / {{total}}"
   }
 }

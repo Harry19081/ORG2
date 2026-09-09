@@ -20,7 +20,8 @@
     "storage": "Pamięć masowa",
     "agentMemory": "Pamięć Agent",
     "agentOrg": "Zespół Agent",
-    "harnessConnections": "Routing CLI"
+    "harnessConnections": "Routing CLI",
+    "mobileRemote": "Mobile Remote"
   },
   "coreSidebar": {
     "groups": {
@@ -164,7 +165,8 @@
       "gold": "Złoty",
       "red": "Czerwony",
       "rose": "Różany",
-      "mono": "Mono"
+      "mono": "Mono",
+      "matchSkin": "Dopasuj do skórki"
     },
     "security": "Bezpieczeństwo",
     "voiceInput": "Wprowadzanie głosowe",
@@ -189,7 +191,28 @@
     "presenceGuidanceOnlineDefault": "Jestem przy klawiaturze. Możesz w każdej chwili zadawać pytania doprecyzowujące i potwierdzać ze mną działania destrukcyjne przed ich uruchomieniem",
     "presenceGuidanceInvisibleDefault": "Jestem w pobliżu, ale widoczny jako offline. Domyślnie działaj autonomicznie i powiadamiaj mnie tylko o działaniach wysokiego ryzyka lub dużych refaktoryzacjach; pozostałe pytania zbierz w jednym podsumowaniu zamiast zadawać je pojedynczo",
     "presenceGuidanceAwayDefault": "Jestem z dala od klawiatury. Nie blokuj się, czekając na mnie; podejmij najlepszą decyzję na podstawie dostępnych informacji, dokończ co się da i zostaw krótkie podsumowanie oraz otwarte pytania na mój powrót",
-    "followSystem": "Zgodnie z systemem"
+    "followSystem": "Zgodnie z systemem",
+    "skins": "Skórki",
+    "skinsDesc": "Tryb jasny i ciemny używają osobnych palet. Każda z nich obowiązuje, gdy aplikacja rysuje w danym trybie",
+    "lightSkin": "Jasna skórka",
+    "darkSkin": "Ciemna skórka",
+    "lightAccent": "Jasny akcent",
+    "darkAccent": "Ciemny akcent",
+    "skinGroups": {
+      "orgii": "ORGII",
+      "codex": "Codex"
+    },
+    "iconStyle": "Styl ikon",
+    "iconStyleDesc": "Monochromatyczny odbarwia ikony typów plików i modeli, aby wyglądały jak elementy interfejsu, a nie logotypy",
+    "iconStyleOptions": {
+      "colorful": "Kolorowe",
+      "monochrome": "Monochromatyczne"
+    },
+    "translucentSidebar": "Półprzezroczysty pasek boczny",
+    "skin": "Skórka",
+    "accent": "Akcent",
+    "linkSkinVariants": "Powiąż jasny i ciemny",
+    "linkSkinVariantsDesc": "Używaj jednej skórki i akcentu w obu trybach. Powiązać można tylko skórki, które mają wariant jasny i ciemny"
   },
   "background": {
     "title": "Tło",
@@ -463,7 +486,8 @@
       "permissionWarning": "Nie udało się wysłać testowego powiadomienia. Sprawdź uprawnienia.",
       "sendFailed": "Nie można wysłać testowego powiadomienia. Sprawdź uprawnienia do powiadomień i spróbuj ponownie.",
       "soundFailed": "Nie można odtworzyć dźwięku powiadomienia. Sprawdź głośność systemu."
-    }
+    },
+    "teamInboxDesc": "Przypisania, wzmianki i przekazania od członków zespołu"
   },
   "editor": {
     "tabEditor": "Edytor",
@@ -558,7 +582,19 @@
   },
   "update": {
     "detectUpdate": "Wykryj aktualizację",
-    "currentVersion": "Aktualna wersja"
+    "currentVersion": "Aktualna wersja",
+    "channel": "Kanał aktualizacji",
+    "channelDesc": "Beta otrzymuje kompilacje przedpremierowe przed wydaniem stabilnym. Powrót do Stabilnego nigdy nie obniża wersji — zacznie obowiązywać od następnego wydania stabilnego",
+    "channelStable": "Stabilny",
+    "channelBeta": "Beta",
+    "installConfirmTitle": "Aktualizacja gotowa do instalacji",
+    "installConfirmDesc": "Pobrano wersję {{version}}. Zapisz bieżącą pracę przed instalacją i ponownym uruchomieniem ORGII",
+    "installAndRestart": "Zainstaluj i uruchom ponownie",
+    "installOfficialConfirmTitle": "Oficjalna aplikacja gotowa do instalacji",
+    "installOfficialConfirmDesc": "Zainstaluj oficjalną wersję {{version}} w /Applications/ORG2.app. Ta lokalna kompilacja pozostanie otwarta i bez zmian",
+    "installOfficial": "Zainstaluj oficjalną aplikację",
+    "localBuild": "Lokalna",
+    "skipVersion": "Pomiń tę wersję"
   },
   "monitor": {
     "appMemory": "App memory",
@@ -633,7 +669,19 @@
     "diskCategory_sessionImages": "Obrazy czatu",
     "diskCategory_screenshots": "Zrzuty ekranu przeglądarki",
     "diskCategory_agentWorktrees": "Worktree sesji Agent",
-    "diskCategory_lspBin": "Pliki binarne LSP Server"
+    "diskCategory_lspBin": "Pliki binarne LSP Server",
+    "cacheRegistry": "Rejestr pamięci podręcznych",
+    "loadedScriptSources": "Wczytane źródła JS ({{modules}} modułów / {{chunks}} chunków)",
+    "cacheRegistryEmpty": "Brak zarejestrowanych pamięci podręcznych",
+    "cacheRegistryEntries": "{{count}} wpisów",
+    "diskCategory_toolResults": "Zbyt duże wyniki narzędzi",
+    "diskCategory_diagnostics": "Kolejka diagnostyki",
+    "diskCategory_models": "Pobrane modele",
+    "diskCategory_semanticIndex": "Indeks wyszukiwania semantycznego",
+    "diskCategory_cursorCliProfiles": "Profile Cursor CLI",
+    "diskCategory_kiroCliProfiles": "Profile Kiro CLI",
+    "diskCategory_opencodeCliProfiles": "Profile OpenCode CLI",
+    "diskCategory_sidecarBin": "Pobrane binaria sidecarów"
   },
   "dependencies": {
     "systemDependencies": "Zależności systemowe",
@@ -852,5 +900,81 @@
     "conflict": "Konfiguracja została zmieniona poza ORGII. Sprawdź zmiany przed zastosowaniem lub przywróceniem; nie zostaną nadpisane",
     "credentialsNote": "Tryb bezpośredni zapisuje dane uwierzytelniające w konfiguracji CLI z ograniczonym dostępem; usunięcie klucza ze skarbca nie unieważnia wyeksportowanych danych",
     "notInstalled": "Zainstaluj to narzędzie przed testowaniem lub zastosowaniem połączenia"
+  },
+  "mobileRemote": {
+    "enabled": "Mobile Remote",
+    "enabledDesc": "Pozwól sparowanemu telefonowi sterować sesjami Agenta na tym komputerze przez tę samą sieć Wi‑Fi LAN lub przez publiczny relay",
+    "securityNotice": "Gdy udostępnianie w LAN jest włączone, każdy w Twojej sieci, kto ma URL połączenia i token, może sterować sesjami. Wygeneruj token ponownie, jeśli podejrzewasz wyciek",
+    "outdoorTitle": "Połączenie zewnętrzne",
+    "outdoorDesc": "Połącz komputer wychodząco z publicznym relayem, aby telefon działał przez 4G, 5G lub inną sieć",
+    "relayEnabled": "Połącz z publicznym relayem",
+    "relayEnabledDesc": "Komputer otwiera wychodzące połączenie WSS; przekierowanie portów na routerze nie jest potrzebne",
+    "relayUrl": "Adres relaya",
+    "relayUrlDesc": "Wpisz wdrożony adres ws:// lub wss://, np. wss://relay.example.com/v1/mobile/ws",
+    "relayPresetAria": "Wybierz ustawienie środowiska relaya",
+    "relayPresetLocal": "Lokalne",
+    "relayPresetProduction": "Produkcyjne",
+    "cloudLoginTitle": "Logowanie ORG2 Cloud",
+    "cloudLoginDescSignedIn": "Zalogowano jako {{identity}} — relay używa tego konta do parowania zewnętrznego",
+    "cloudLoginDescSignedOut": "Zaloguj się do ORG2 Cloud przed parowaniem przez publiczny relay",
+    "relayStatusCloudLoginRequired": "Zaloguj się do ORG2 Cloud w Ustawienia → Ogólne, a następnie odśwież status relaya",
+    "relayStatusAuthFailedSignedIn": "Relay odrzucił połączenie — wyloguj się i zaloguj ponownie w Ustawienia → Ogólne",
+    "relayStatus": "Status relaya",
+    "relayStatus_online": "Połączono",
+    "relayStatus_connecting": "Łączenie",
+    "relayStatus_backoff": "Oczekiwanie na ponowne połączenie",
+    "relayStatus_disabled": "Wyłączony",
+    "relayStatus_config_error": "Błąd konfiguracji",
+    "relayStatus_stopped": "Zatrzymany",
+    "startOutdoorPairing": "Wygeneruj kod parowania zewnętrznego",
+    "phoneLabel": "Nazwa telefonu",
+    "phoneLabelDesc": "Ta nazwa pojawia się na liście sparowanych urządzeń",
+    "fullAccess": "Zezwalaj na akcje",
+    "fullAccessDesc": "Po włączeniu telefon może wysyłać wiadomości, zatrzymywać sesje i odpowiadać na prośby o uprawnienia; po wyłączeniu ma tylko podgląd",
+    "pairingExpires": "Kod parowania wygasa za {{seconds}} s",
+    "sasPhrase": "Fraza bezpieczeństwa",
+    "sasDesktopHint": "Telefon pokazuje tę samą frazę po zeskanowaniu; potwierdź tylko wtedy, gdy obie są zgodne",
+    "pairingPayload": "Dane parowania",
+    "pairingPayloadHint": "Skopiuj i wklej to na ekranie parowania Mobile Remote podczas testowania na tym komputerze",
+    "copyPairingPayload": "Kopiuj dane parowania",
+    "pairingPayloadCopied": "Skopiowano dane parowania",
+    "pairingPayloadCopyFailed": "Nie udało się skopiować danych parowania",
+    "regeneratePairing": "Wygeneruj nowy kod",
+    "confirmPairing": "Frazy są zgodne, potwierdź parowanie",
+    "pairingConfirmed": "Telefon sparowany",
+    "pairingFailed": "Nie udało się utworzyć parowania",
+    "revokeDevice": "Odwołaj",
+    "lanAdvanced": "Połączenie zapasowe LAN",
+    "lanAdvancedDesc": "Łącz się bezpośrednio w tej samej sieci Wi-Fi bez użycia publicznego relaya",
+    "allowLanExposure": "Zezwalaj na połączenia LAN",
+    "allowLanExposureDesc": "Po wyłączeniu mostek przyjmuje połączenia tylko z tego komputera (127.0.0.1). Po włączeniu mogą się łączyć inne urządzenia w Twojej sieci Wi-Fi",
+    "lanToken": "Token połączenia",
+    "lanTokenDesc": "Dołączany do adresu WebSocket jako współdzielony sekret. Wyświetlany tutaj do kopiowania/wklejania lub zakodowania w QR",
+    "regenerateToken": "Wygeneruj ponownie",
+    "pairing": "Sparuj na telefonie",
+    "pairingDesc": "Zeskanuj kod QR lub skopiuj adres WebSocket do przeglądarki telefonu, aby połączyć się w tej samej sieci Wi-Fi",
+    "connectionUrl": "Adres WebSocket",
+    "connectionUrlDesc": "Otwórz ten adres w przeglądarce telefonu lub zakoduj go w kodzie QR do parowania",
+    "copyConnectionUrl": "Kopiuj adres WebSocket",
+    "connectionUrlCopied": "Skopiowano adres WebSocket",
+    "qrAriaLabel": "Kod QR z adresem WebSocket Mobile Remote",
+    "qrScanHint": "Zeskanuj aparatem telefonu lub aplikacją do czytania QR, będąc w tej samej sieci",
+    "lanIpUnresolved": "Nie udało się wykryć adresu LAN tego komputera. Skopiuj adres i zastąp <local-ip> swoim IP Wi-Fi albo dotknij Odśwież IP LAN",
+    "refreshLanIp": "Odśwież IP LAN",
+    "pairedDevices": "Sparowane urządzenia",
+    "pairedDevicesDesc": "Telefony autoryzowane przez relay; dostęp można odwołać w dowolnym momencie",
+    "devicesLoadFailed": "Nie udało się wczytać sparowanych urządzeń",
+    "noDevices": "Brak sparowanych urządzeń",
+    "noDevicesDesc": "Wygeneruj kod parowania zewnętrznego, a następnie zeskanuj go lub wklej w PWA Mobile Remote",
+    "deviceLabel": "Urządzenie",
+    "deviceTier": "Poziom",
+    "deviceTierFull": "Pełny dostęp",
+    "deviceTierReadOnly": "Tylko do odczytu",
+    "deviceLastSeen": "Ostatnio widziano",
+    "devicePairedAt": "Sparowano {{time}}",
+    "deviceLastSeenValue": "Ostatnio widziano {{time}}",
+    "deviceNeverSeen": "Nigdy nie połączono",
+    "deviceOnline": "Online",
+    "deviceOffline": "Offline"
   }
 }

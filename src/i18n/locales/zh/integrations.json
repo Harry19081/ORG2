@@ -323,7 +323,8 @@
       "button": "刷新模型",
       "failed": "刷新模型失败：{{error}}"
     },
-    "revalidate": "重新验证"
+    "revalidate": "重新验证",
+    "confirmRemoveActiveSessions_one": "仍有 {{count}} 个活跃会话在使用此账号，移除后它的下一轮将失败："
   },
   "integrations": {
     "searchPlaceholder": "搜索连接...",
@@ -572,7 +573,8 @@
       "modelPlaceholder": "选择模型",
       "groupPerUser": "按用户隔离群聊会话",
       "groupPerUserDesc": "群聊中每位参与者都有独立的会话上下文。"
-    }
+    },
+    "emailProtocol": "协议"
   },
   "modelsTabs": {
     "myAccounts": "我的 Keys",
@@ -764,7 +766,22 @@
   "gitConnections": {
     "github": "GitHub",
     "methodScan": "自动检测",
-    "methodOAuth": "使用 GitHub 登录"
+    "methodOAuth": "使用 GitHub 登录",
+    "methodPickerDesc": "选择向 GitHub 进行身份验证的方式。",
+    "oauthDeviceDesc": "打开验证 URL 并输入此代码以授权 GitHub。",
+    "scanCredHelper": "Git 凭据助手（{{name}}）",
+    "scanEmpty": "未检测到任何凭据",
+    "scanEmptyDesc": "未找到 gh CLI token、凭据助手或 SSH 密钥。请在上方选择其他方式。",
+    "scanGhCli": "GitHub CLI（gh）",
+    "scanResults": "检测到的凭据",
+    "scanResultsDesc": "选择一项导入。保存前我们会向 GitHub 验证 token。",
+    "scanSshKey": "SSH 密钥 — {{name}}",
+    "scanning": "正在扫描…",
+    "scanningDesc": "正在本机查找 gh CLI token、凭据助手和 SSH 密钥。",
+    "sshKeyPath": "SSH 密钥路径",
+    "sshKeyPathDesc": "私钥的绝对路径（例如 ~/.ssh/id_ed25519）。对应的公钥必须已在 GitHub 上注册。",
+    "scanSelectRequired": "请选择一个检测到的凭据进行导入。",
+    "sshKeyPathRequired": "SSH 密钥路径为必填项。"
   },
   "builtInTools": {
     "tabTools": "内置工具",
@@ -1440,7 +1457,8 @@
     "chatExtras": "聊天附加组件",
     "queuedMessages": "消息队列",
     "fileReview": "文件审查",
-    "terminalProcesses": "终端进程"
+    "terminalProcesses": "终端进程",
+    "modeSessionLink": "会话链接"
   },
   "rulesTabs": {
     "rules": "规则",
@@ -1519,7 +1537,11 @@
     "eventKindPlaceholder": "pull_request",
     "fireError": "无法启动例程：{{detail}}",
     "provider": "提供方",
-    "eventKind": "事件"
+    "eventKind": "事件",
+    "fireAccepted": "运行{{status}}",
+    "openSessionError": "无法打开该会话",
+    "openWorkItemError": "无法打开该工作项",
+    "fireStarted": "Routine 运行已开始"
   },
   "housekeeper": {
     "title": "常驻管家",

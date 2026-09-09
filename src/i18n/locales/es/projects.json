@@ -183,7 +183,8 @@
       "kanban": "Kanban",
       "gantt": "Gantt",
       "calendar": "Calendario",
-      "settings": "Configuración"
+      "settings": "Configuración",
+      "table": "Tabla"
     },
     "statusFilters": {
       "all": "Todos",
@@ -252,7 +253,23 @@
       "hoursAgo": "hace {{count}} horas",
       "inDays": "en {{count}} días",
       "inHours": "en {{count}} horas",
-      "membersGroup": "Miembros"
+      "membersGroup": "Miembros",
+      "filter": "Filtro de propiedad",
+      "filterValue": "Valor del filtro de propiedad",
+      "noValue": "Sin valor",
+      "archiveNamed": "Archivar {{name}}",
+      "add": "Agregar propiedad",
+      "archive": "Archivar propiedad",
+      "datePlaceholder": "AAAA-MM-DD",
+      "empty": "Aún no hay propiedades personalizadas.",
+      "loading": "Cargando propiedades…",
+      "namePlaceholder": "Nombre de la propiedad",
+      "no": "No",
+      "optionsPlaceholder": "Opciones, separadas por comas",
+      "optionsRequired": "Las propiedades de selección requieren opciones separadas por comas.",
+      "type": "Tipo de propiedad",
+      "updateFailed": "No se pudo actualizar la propiedad",
+      "yes": "Sí"
     },
     "activity": {
       "discussionTitle": "Discusión",
@@ -305,7 +322,27 @@
         "schedule": "programación",
         "orchestratorConfig": "configuración de Orchestrator",
         "handoff": "transferencia"
-      }
+      },
+      "mentionPeople": "Mencionar personas",
+      "mentionAll": "@all — todos en este elemento",
+      "mentionAgentOption": "{{name}} (agent)",
+      "mentionAgentOrgOption": "{{name}} (org de agents)",
+      "appendedSession": "añadió una sesión",
+      "edited": "(editado)",
+      "commentDeleted": "Este comentario se eliminó.",
+      "deleteComment": "Eliminar comentario",
+      "deleteCommentConfirm": "¿Eliminar este comentario? Las respuestas se conservan; se elimina el cuerpo del comentario.",
+      "messageCount_one": "{{count}} mensaje",
+      "messageCount_other": "{{count}} mensajes",
+      "cancelReply": "Cancelar respuesta",
+      "conclusion": "Conclusión",
+      "reopen": "Reabrir",
+      "reply": "Responder",
+      "replyingInThread": "Respondiendo en el hilo",
+      "resolve": "Resolver",
+      "resolved": "Resuelto",
+      "submitComment": "Enviar comentario",
+      "openedWorkItem": "abrió este elemento de trabajo"
     },
     "contextMenu": {
       "status": "Estado",
@@ -347,7 +384,10 @@
       "cannotParseRepoName": "No se puede analizar el nombre del repositorio de: {{url}}"
     },
     "sessions": {
-      "emptyOverview": "Aún no hay sessions"
+      "emptyOverview": "Aún no hay sessions",
+      "originTitle": "Sesión de creación",
+      "originStatus": "Creó este elemento",
+      "runsCount": "{{count}} ejecuciones"
     },
     "outputTab": {
       "prSection": "Pull Request",
@@ -366,7 +406,9 @@
       "fileDiffCleanHint": "No se detectaron cambios.",
       "costSummary": "Resumen de costos",
       "totalCost": "Total",
-      "tokens": "Token"
+      "tokens": "Token",
+      "prBlocked": "La finalización está bloqueada",
+      "prReady": "Listo para completar"
     },
     "viewWorkItems": "Ver Work Items",
     "fromRoutine": "From routine: {{name}}",
@@ -381,7 +423,98 @@
     },
     "batchAssignee": {
       "title": "Establecer responsable"
-    }
+    },
+    "discussion": {
+      "previewWillWake": "Despertará al agent para que responda",
+      "previewNoteOnly": "Solo nota — no se activará el agent",
+      "previewNoSession": "No hay ninguna sesión de agent vinculada — no se activará nada",
+      "previewMentionResume": "Despertará al agent mencionado",
+      "previewMentionStart": "Iniciará el agent mencionado",
+      "previewMentionUnroutable": "El agent mencionado no está configurado en este elemento — no se activará nada",
+      "previewThread": "Despertará al agent desde este hilo",
+      "previewAssignee": "Despertará al agent asignado",
+      "previewAssigneeStart": "Iniciará el agent asignado",
+      "previewCoalesce": "se une al despertar pendiente",
+      "previewMemberThread": "Hilo de miembro — no se despertará a ningún agent"
+    },
+    "subItems": {
+      "title": "Subelementos",
+      "parent": "Padre",
+      "progress": "{{completed}} de {{total}} completados",
+      "add": "Agregar subelemento",
+      "addFirst": "Agregar el primer subelemento",
+      "titlePlaceholder": "Añade un título para el subelemento",
+      "stagePicker": "Etapa del subelemento",
+      "noStage": "Sin etapa",
+      "stage": "Etapa {{stage}}",
+      "openStatus": "Abierto",
+      "completedStatus": "Completado",
+      "cancelledStatus": "Cancelado",
+      "createError": "No se pudo crear el subelemento. Inténtalo de nuevo."
+    },
+    "savedViews": {
+      "placeholder": "Vistas",
+      "save": "Guardar vista actual",
+      "saveTitle": "Guardar vista",
+      "namePlaceholder": "Nombre de la vista",
+      "saveHint": "Captura los filtros actuales; el diseño se aplica al abrirla por primera vez.",
+      "delete": "Eliminar vista"
+    },
+    "table": {
+      "columnsPicker": "Columnas",
+      "groupByProperty": "Agrupar por propiedad",
+      "columns": {
+        "shortId": "ID",
+        "title": "Título",
+        "status": "Estado",
+        "priority": "Prioridad",
+        "assignee": "Asignado",
+        "targetDate": "Vencimiento",
+        "labels": "Etiquetas"
+      }
+    },
+    "batchProperty": {
+      "title": "Establecer propiedad",
+      "hint": "Aplica un valor de propiedad a {{count}} elementos seleccionados. Deja el valor vacío para borrarlo.",
+      "propertyPlaceholder": "Propiedad",
+      "valuePlaceholder": "Valor",
+      "applied": "{{count}} elementos actualizados"
+    },
+    "revisionConflict": {
+      "title": "Resolver conflicto de edición",
+      "description": "{{field}} cambió después de la revisión {{expected}}. Compara tu edición con la revisión {{actual}} y elige qué versión conservar.",
+      "mine": "Mi versión",
+      "latest": "Última versión",
+      "useLatest": "Usar la última",
+      "keepMine": "Conservar la mía",
+      "titleField": "Título",
+      "descriptionField": "Descripción",
+      "commentField": "Comentario",
+      "reloadNotice": "Este elemento de trabajo cambió en otro lugar. Se volvió a cargar la última versión.",
+      "retryFailed": "La última versión volvió a cambiar. Revisa ambas versiones antes de reintentar."
+    },
+    "quickActions": {
+      "title": "Acciones rápidas",
+      "empty": "Aún no hay acciones rápidas. Guarda un prompt reutilizable para un agent.",
+      "emptyManage": "Todavía no hay nada guardado.",
+      "manageTitle": "Gestionar acciones rápidas",
+      "namePlaceholder": "Nombre de la acción (p. ej. Arreglar CI)",
+      "targetPlaceholder": "Agent de destino",
+      "promptPlaceholder": "¿Qué debe hacer el agent?",
+      "archive": "Archivar acción",
+      "scopeChanged": "La acción rápida ya no está en el ámbito de este elemento de trabajo",
+      "started": "Acción rápida «{{name}}» iniciada"
+    },
+    "detailNavigation": "Navegación de elementos de trabajo",
+    "linkedSessions": {
+      "title": "Sesiones"
+    },
+    "detail": {
+      "conversation": "Conversación",
+      "linked": "Vinculados"
+    },
+    "detailSummary": "Resumen del elemento de trabajo",
+    "navigationTrail": "Navegación de elementos de trabajo"
   },
   "settings": {
     "sidebarGeneral": "General",
@@ -446,7 +579,12 @@
         "notAttached": "No conectado",
         "attach": "Conectar",
         "detach": "Desconectar",
-        "changeWarning": "Desconecta el adaptador actual antes de conectar uno nuevo."
+        "changeWarning": "Desconecta el adaptador actual antes de conectar uno nuevo.",
+        "detachProjectMenuLabel": "Desvincular GitHub",
+        "detachProjectTitle": "¿Desvincular GitHub de {{project}}?",
+        "detachProjectDescription": "La sincronización con GitHub Issues se detendrá. El proyecto local y los elementos de trabajo importados permanecerán en ORGII.",
+        "detachProjectAction": "Desvincular GitHub de {{project}}",
+        "detachProjectSuccess": "GitHub desvinculado de {{project}}"
       },
       "accountPicker": {
         "title": "Cuenta",
@@ -596,7 +734,16 @@
           "dismissFailed": "Error al descartar el conflicto: {{error}}"
         }
       }
-    }
+    },
+    "sidebarStatuses": "Estados",
+    "statusesBuiltin": "Estados integrados",
+    "statusesBuiltinDescription": "Las categorías estándar del flujo de trabajo. Siempre disponibles.",
+    "statusesCustom": "Estados personalizados",
+    "statusesCustomDescription": "Alias con nombre sobre una categoría integrada. Los filtros, recuentos y tableros los tratan como su categoría.",
+    "statusNamePlaceholder": "Nombre del estado",
+    "noCustomStatuses": "Aún no hay estados personalizados.",
+    "statusArchive": "Archivar estado",
+    "statusRestore": "Restaurar estado"
   },
   "statusBar": {
     "workItemCount": "{{count}} elementos",
