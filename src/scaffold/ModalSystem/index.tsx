@@ -229,7 +229,9 @@ const Modal: React.FC<ModalProps> = ({
       const isLoading = okButtonProps?.loading ?? okLoading;
       const isDisabled = okButtonProps?.disabled;
       const primaryVariant =
-        okButtonProps?.status === "danger" ? "danger" : "primary";
+        !okButtonProps?.status || okButtonProps.status === "default"
+          ? "primary"
+          : okButtonProps.status;
 
       return (
         <PanelFooter
