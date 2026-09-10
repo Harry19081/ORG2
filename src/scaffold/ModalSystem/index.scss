@@ -91,6 +91,16 @@
   }
 }
 
+// Optional artwork stays bounded so the header and actions remain visible.
+.liquid-modal-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: 32vh;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 // Modal Header
 .liquid-modal-header {
   position: relative;

@@ -1,4 +1,4 @@
-import { useAtomValue, useStore } from "jotai";
+import { useAtomValue } from "jotai";
 import React, {
   useCallback,
   useEffect,
@@ -28,8 +28,8 @@ import {
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import type { AppearanceMode } from "@src/config/appearance/globalThemes";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { SignOutConfirmationModal } from "@src/features/Org2Cloud/SignOutConfirmationModal";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
-import { resetOrgEntitlementCoordinator } from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
 import {
   type DropdownEnginePosition,
   useDropdownEngine,
@@ -100,7 +100,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
   const { t } = useTranslation("navigation");
   const { t: tSettings } = useTranslation("settings");
   const { goToSettings } = useAppNavigation();
-  const store = useStore();
+  const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
   const signedIn = useAtomValue(org2CloudAuthAtom) !== null;
   const devModeEnabled = useAtomValue(devModeEnabledAtom);
   const utilityPanelRef = useRef<HTMLDivElement | null>(null);
@@ -251,9 +251,8 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
 
   const handleSignOut = useCallback(() => {
     closeAll();
-    resetOrgEntitlementCoordinator(store);
-    store.set(org2CloudAuthAtom, null);
-  }, [closeAll, store]);
+    setShowSignOutConfirmation(true);
+  }, [closeAll]);
 
   const handleSelectAppearanceMode = useCallback(
     async (mode: AppearanceMode) => {
@@ -504,6 +503,11 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
           </div>,
           document.body
         )}
+      {showSignOutConfirmation && (
+        <SignOutConfirmationModal
+          onClose={() => setShowSignOutConfirmation(false)}
+        />
+      )}
       <SidebarSettingsMenuSubmenus
         activeSubmenu={activeSubmenu}
         appearanceMode={appearanceMode}

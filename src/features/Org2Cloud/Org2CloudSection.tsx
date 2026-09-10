@@ -41,11 +41,14 @@ import {
   Tick01Icon,
 } from "@src/icons";
 
+import { SignOutConfirmationModal } from "./SignOutConfirmationModal";
+
 const log = createLogger("Org2CloudSection");
 
 export const Org2CloudLoginRows: React.FC = () => {
   const { t } = useTranslation(["navigation", "common"]);
   const [auth, setAuth] = useAtom(org2CloudAuthAtom);
+  const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
   const [isRefreshingDevAuth, setIsRefreshingDevAuth] = useState(false);
   const [renameDraft, setRenameDraft] = useState<string | null>(null);
   const [isSavingRename, setIsSavingRename] = useState(false);
@@ -91,11 +94,6 @@ export const Org2CloudLoginRows: React.FC = () => {
       setIsSavingRename(false);
     }
   }, [auth, isSavingRename, renameDraft, setAuth, t]);
-
-  const handleSignOut = useCallback(() => {
-    resetOrgEntitlementCoordinator(store);
-    setAuth(null);
-  }, [setAuth, store]);
 
   const handleRefreshDevAuth = useCallback(async () => {
     if (isRefreshingDevAuth) return;
@@ -146,6 +144,11 @@ export const Org2CloudLoginRows: React.FC = () => {
 
   return (
     <>
+      {showSignOutConfirmation && (
+        <SignOutConfirmationModal
+          onClose={() => setShowSignOutConfirmation(false)}
+        />
+      )}
       <SectionRow
         label={
           auth
@@ -159,7 +162,7 @@ export const Org2CloudLoginRows: React.FC = () => {
               {refreshDevAuthButton}
               <Button
                 size="default"
-                onClick={handleSignOut}
+                onClick={() => setShowSignOutConfirmation(true)}
                 data-testid="org2-cloud-sign-out"
               >
                 {t("cloud.signOut")}

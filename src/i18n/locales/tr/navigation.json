@@ -378,6 +378,8 @@
   "cloud": {
     "signIn": "Giriş yap",
     "signOut": "Çıkış yap",
+    "signOutConfirmTitle": "Çıkış yapılsın mı?",
+    "signOutConfirmBody": "Hesabınıza erişmek için yeniden giriş yapmanız gerekecek.",
     "signedInAs": "{{name}} olarak giriş yapıldı",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "ORG2 Cloud oturumunuzun süresi doldu. Devam etmek için yeniden giriş yapın.",

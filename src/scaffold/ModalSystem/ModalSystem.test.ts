@@ -55,6 +55,66 @@ describe("Modal opening focus", () => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
+  it("renders optional artwork before the title without changing confirmation actions", async () => {
+    const onOk = vi.fn();
+    const onCancel = vi.fn();
+    act(() => {
+      root.render(
+        createElement(Modal, {
+          visible: true,
+          title: "Sign out?",
+          image: { src: "/sign-out.png", alt: "A person waving goodbye" },
+          onOk,
+          onCancel,
+          okText: "Sign out",
+          cancelText: "Stay signed in",
+        })
+      );
+    });
+    const image = document.querySelector<HTMLImageElement>(
+      ".liquid-modal-image"
+    )!;
+    expect(image.getAttribute("src")).toBe("/sign-out.png");
+    expect(image.alt).toBe("A person waving goodbye");
+    expect(image.parentElement!.firstElementChild).toBe(image);
+    expect(
+      document.querySelector('[role="dialog"]')?.getAttribute("aria-label")
+    ).toBe("Sign out?");
+    const buttons = Array.from(document.querySelectorAll("button"));
+    act(() =>
+      buttons.find((button) => button.textContent === "Stay signed in")!.click()
+    );
+    expect(onCancel).toHaveBeenCalledOnce();
+    expect(onOk).not.toHaveBeenCalled();
+    await act(async () => {
+      buttons.find((button) => button.textContent === "Sign out")!.click();
+    });
+    expect(onOk).toHaveBeenCalledOnce();
+
+    act(() =>
+      root.render(createElement(Modal, { visible: true, title: "Plain modal" }))
+    );
+    expect(document.querySelector(".liquid-modal-image")).toBeNull();
+    expect(
+      document.querySelector('[role="dialog"]')?.getAttribute("aria-label")
+    ).toBe("Plain modal");
+  });
+
+  it("allows decorative artwork without an accessible image name", () => {
+    act(() =>
+      root.render(
+        createElement(Modal, {
+          visible: true,
+          title: "Sign out?",
+          image: { src: "/sign-out.png", alt: "" },
+        })
+      )
+    );
+    expect(
+      document.querySelector(".liquid-modal-image")?.getAttribute("alt")
+    ).toBe("");
+  });
+
   function openModal(children: React.ReactNode) {
     act(() => {
       root.render(

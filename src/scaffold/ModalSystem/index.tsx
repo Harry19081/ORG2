@@ -74,6 +74,8 @@ interface ModalProps {
   title?: React.ReactNode;
   /** Accessible name for dialogs without a visible title; overrides title. */
   "aria-label"?: string;
+  /** Optional artwork above the header. Use an empty alt for decorative images. */
+  image?: { src: string; alt: string };
   /** Modal content */
   children?: React.ReactNode;
   /** Footer content (buttons, etc) */
@@ -138,6 +140,7 @@ const Modal: React.FC<ModalProps> = ({
   onCancel,
   onOk,
   title,
+  image,
   "aria-label": ariaLabel,
   children,
   footer,
@@ -419,6 +422,14 @@ const Modal: React.FC<ModalProps> = ({
           style={{ ...mergedStyle, borderRadius: radius }}
           onClick={(e) => e.stopPropagation()}
         >
+          {image && (
+            <img
+              className="liquid-modal-image"
+              src={image.src}
+              alt={image.alt}
+              draggable={false}
+            />
+          )}
           {/* Header */}
           {title && (
             <PanelHeader

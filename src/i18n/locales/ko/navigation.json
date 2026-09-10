@@ -378,6 +378,8 @@
   "cloud": {
     "signIn": "로그인",
     "signOut": "로그아웃",
+    "signOutConfirmTitle": "로그아웃할까요?",
+    "signOutConfirmBody": "계정에 접근하려면 다시 로그인해야 합니다.",
     "signedInAs": "로그인 계정: {{name}}",
     "signedInToast": "ORG2 클라우드에 로그인했습니다",
     "sessionExpired": "ORG2 Cloud 세션이 만료되었습니다. 계속하려면 다시 로그인하세요.",
