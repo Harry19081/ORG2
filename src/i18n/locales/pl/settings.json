@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "Kolejka diagnostyki",
     "diskCategory_models": "Pobrane modele",
     "diskCategory_semanticIndex": "Indeks wyszukiwania semantycznego",
-    "diskCategory_cursorCliProfiles": "Profile Cursor CLI",
+    "diskCategory_cursorCliProfiles": "Profile Cursor",
     "diskCategory_kiroCliProfiles": "Profile Kiro CLI",
     "diskCategory_opencodeCliProfiles": "Profile OpenCode CLI",
     "diskCategory_sidecarBin": "Pobrane binaria sidecarów"

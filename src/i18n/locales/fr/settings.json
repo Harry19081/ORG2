@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "File d’attente des diagnostics",
     "diskCategory_models": "Modèles téléchargés",
     "diskCategory_semanticIndex": "Index de recherche sémantique",
-    "diskCategory_cursorCliProfiles": "Profils Cursor CLI",
+    "diskCategory_cursorCliProfiles": "Profils Cursor",
     "diskCategory_kiroCliProfiles": "Profils Kiro CLI",
     "diskCategory_opencodeCliProfiles": "Profils OpenCode CLI",
     "diskCategory_sidecarBin": "Binaires sidecar téléchargés"

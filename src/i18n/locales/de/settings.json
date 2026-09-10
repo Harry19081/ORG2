@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "Diagnose-Warteschlange",
     "diskCategory_models": "Heruntergeladene Modelle",
     "diskCategory_semanticIndex": "Semantischer Suchindex",
-    "diskCategory_cursorCliProfiles": "Cursor-CLI-Profile",
+    "diskCategory_cursorCliProfiles": "Cursor-Profile",
     "diskCategory_kiroCliProfiles": "Kiro-CLI-Profile",
     "diskCategory_opencodeCliProfiles": "OpenCode-CLI-Profile",
     "diskCategory_sidecarBin": "Heruntergeladene Sidecar-Binaries"

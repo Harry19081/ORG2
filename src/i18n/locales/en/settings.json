@@ -758,7 +758,7 @@
     "diskCategory_diagnostics": "Diagnostics Queue",
     "diskCategory_models": "Downloaded Models",
     "diskCategory_semanticIndex": "Semantic Search Index",
-    "diskCategory_cursorCliProfiles": "Cursor CLI Profiles",
+    "diskCategory_cursorCliProfiles": "Cursor Profiles",
     "diskCategory_kiroCliProfiles": "Kiro CLI Profiles",
     "diskCategory_opencodeCliProfiles": "OpenCode CLI Profiles",
     "diskCategory_agentWorktrees": "Agent Session Worktrees",

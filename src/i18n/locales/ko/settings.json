@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "진단 대기열",
     "diskCategory_models": "다운로드된 모델",
     "diskCategory_semanticIndex": "시맨틱 검색 인덱스",
-    "diskCategory_cursorCliProfiles": "Cursor CLI 프로필",
+    "diskCategory_cursorCliProfiles": "Cursor 프로필",
     "diskCategory_kiroCliProfiles": "Kiro CLI 프로필",
     "diskCategory_opencodeCliProfiles": "OpenCode CLI 프로필",
     "diskCategory_sidecarBin": "다운로드된 Sidecar 바이너리"

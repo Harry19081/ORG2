@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "Fila de diagnósticos",
     "diskCategory_models": "Modelos baixados",
     "diskCategory_semanticIndex": "Índice de busca semântica",
-    "diskCategory_cursorCliProfiles": "Perfis do Cursor CLI",
+    "diskCategory_cursorCliProfiles": "Perfis do Cursor",
     "diskCategory_kiroCliProfiles": "Perfis do Kiro CLI",
     "diskCategory_opencodeCliProfiles": "Perfis do OpenCode CLI",
     "diskCategory_sidecarBin": "Binários de sidecar baixados"

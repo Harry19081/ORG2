@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "診断キュー",
     "diskCategory_models": "ダウンロード済みモデル",
     "diskCategory_semanticIndex": "セマンティック検索インデックス",
-    "diskCategory_cursorCliProfiles": "Cursor CLI プロファイル",
+    "diskCategory_cursorCliProfiles": "Cursor プロファイル",
     "diskCategory_kiroCliProfiles": "Kiro CLI プロファイル",
     "diskCategory_opencodeCliProfiles": "OpenCode CLI プロファイル",
     "diskCategory_sidecarBin": "ダウンロード済み Sidecar バイナリ"

@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "診斷佇列",
     "diskCategory_models": "已下載的模型",
     "diskCategory_semanticIndex": "語意搜尋索引",
-    "diskCategory_cursorCliProfiles": "Cursor CLI 配置",
+    "diskCategory_cursorCliProfiles": "Cursor 配置",
     "diskCategory_kiroCliProfiles": "Kiro CLI 配置",
     "diskCategory_opencodeCliProfiles": "OpenCode CLI 配置",
     "diskCategory_sidecarBin": "已下載的 Sidecar 二進位檔"
