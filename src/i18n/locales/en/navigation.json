@@ -711,7 +711,6 @@
       "incomingError": "This share link is invalid, expired, or has been revoked.",
       "incomingRetryHint": "Import didn't finish. The shared session may still be uploading — try again.",
       "importEntry": "Import Session",
-      "importDialogTitle": "Import a shared session",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Import",
       "importInvalidInput": "This doesn't look like a valid share link or token.",

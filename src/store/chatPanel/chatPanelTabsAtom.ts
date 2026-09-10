@@ -116,3 +116,5 @@ export {
   openRecentChatPanelTabAtom,
   recentChatPanelTabsAtom,
 } from "./chatPanelRecentTabs";
+
+export { openChatPanelCreateTargetAtom } from "./openChatPanelCreateTargetAtom";

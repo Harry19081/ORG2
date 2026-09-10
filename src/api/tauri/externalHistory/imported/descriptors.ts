@@ -84,14 +84,14 @@ export const IMPORTED_HISTORY_SOURCE_DESCRIPTORS: readonly ImportedHistorySource
       listCategory: "external_history:cursor_cli",
       prefix: "cursorcliapp-",
       iconId: "cursor",
-      displayName: "Cursor CLI",
-      groupLabel: "Cursor CLI",
+      displayName: "Cursor",
+      groupLabel: "Cursor",
       listable: true,
       replayable: true,
       supportsWindowedReplay: true,
       cliResume: {
         agentType: "cursor_cli",
-        displayName: "Cursor CLI",
+        displayName: "Cursor",
       },
     },
     {

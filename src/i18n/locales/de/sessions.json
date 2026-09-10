@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Nachricht bearbeiten...",
     "defaultPlaceholder": "Mit Agent chatten",
+    "commentPlaceholder": "Kommentar schreiben…",
     "editingQueuedMessage": "Warteschlangennachricht bearbeiten",
     "editingSentMessage": "Gesendete Nachricht bearbeiten",
     "voiceErrorPermission": "Mikrofonzugriff verweigert. Aktivieren Sie ihn in den Systemeinstellungen.",
@@ -1957,6 +1958,7 @@
     "shortInputTitle": "Kurze Eingabe",
     "shortInputMessage": "Ihre Eingabe scheint sehr kurz zu sein. Möchten Sie wirklich eine Sitzung damit starten?",
     "selectModel": "Modell auswählen",
+    "selectAgentFirst": "Zuerst einen Agenten auswählen",
     "switchModel": "Modell wechseln",
     "switchMode": "Modus wechseln",
     "switchAgent": "Agent wechseln",

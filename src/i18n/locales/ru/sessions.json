@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Редактировать сообщение...",
     "defaultPlaceholder": "Чат с Agent",
+    "commentPlaceholder": "Оставьте комментарий…",
     "editingQueuedMessage": "Редактирование сообщения в очереди",
     "editingSentMessage": "Редактирование отправленного сообщения",
     "voiceErrorPermission": "Доступ к микрофону запрещён. Включите его в настройках системы.",
@@ -1957,6 +1958,7 @@
     "shortInputTitle": "Короткий ввод",
     "shortInputMessage": "Ваш ввод кажется очень коротким. Вы уверены, что хотите начать сессию с этим?",
     "selectModel": "Выбрать модель",
+    "selectAgentFirst": "Сначала выберите агента",
     "switchModel": "Сменить модель",
     "switchMode": "Сменить режим",
     "switchAgent": "Сменить Agent",

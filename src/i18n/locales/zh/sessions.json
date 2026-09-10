@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "编辑消息...",
     "defaultPlaceholder": "与 Agent 对话",
+    "commentPlaceholder": "留下评论…",
     "editingQueuedMessage": "编辑排队消息",
     "editingSentMessage": "编辑已发送消息",
     "voiceErrorPermission": "麦克风权限被拒绝。请在系统设置中启用。",
@@ -1963,6 +1964,7 @@
     "shortInputTitle": "输入内容较短",
     "shortInputMessage": "您的输入似乎非常简短。确定要使用此内容启动会话吗？",
     "selectModel": "选择模型",
+    "selectAgentFirst": "请先选择 Agent",
     "switchModel": "切换模型",
     "switchMode": "切换模式",
     "switchAgent": "切换 Agent",
@@ -1983,7 +1985,7 @@
     "regionNoticeBodyProvider": "您所在位置：{{location}}。某些模型在您所在地区可能不可用。",
     "regionNoticeBodySanctions": "您所在位置：{{location}}。GitHub、npm、Docker Hub 等服务可能不可用。",
     "regionNoticeBodyBoth": "您所在位置：{{location}}。因地区政策与贸易规则，某些模型以及 GitHub、npm、Docker Hub 等服务可能不可用。",
-    "selectAgent": "选择一个 Agent",
+    "selectAgent": "选择 Agent",
     "placeholderDefault": "输入消息，使用 @ 添加文件，使用 / 调用 skills",
     "wingmanPlaceholder": "描述你的任务 — Wingman 应该关注什么？",
     "screenPicker": {

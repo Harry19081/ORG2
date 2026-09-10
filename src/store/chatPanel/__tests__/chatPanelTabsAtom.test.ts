@@ -1298,11 +1298,16 @@ describe("ChatPanel navigation tabs", () => {
   it("opens org management in its own singleton tab and restores the selected org", async () => {
     const {
       activateChatPanelTabAtom,
+      activeChatPanelTabAtom,
       activeChatPanelSurfaceAtom,
       CHAT_PANEL_SURFACE_KIND,
+      chatPanelMaximizedAtom,
       chatPanelTabsAtom,
+      isChatPanelTabStationAvailable,
       openOrganizationInChatPanelTabAtom,
+      resolveChatPanelMaximizedForLayout,
       store,
+      toggleActiveChatPanelMaximizedAtom,
     } = await loadChatPanelTabAtoms();
     const consumedLaunchpadTabId = store.get(chatPanelTabsAtom).activeTabId;
 
@@ -1317,6 +1322,16 @@ describe("ChatPanel navigation tabs", () => {
       },
       title: "Manage ORG",
     });
+
+    const expectStationUnavailable = () => {
+      const tab = store.get(activeChatPanelTabAtom);
+      expect(isChatPanelTabStationAvailable(tab)).toBe(false);
+      expect(resolveChatPanelMaximizedForLayout(false, tab)).toBe(true);
+      const savedMaximized = store.get(chatPanelMaximizedAtom);
+      expect(store.set(toggleActiveChatPanelMaximizedAtom)).toBe(false);
+      expect(store.get(chatPanelMaximizedAtom)).toBe(savedMaximized);
+    };
+    expectStationUnavailable();
 
     expect(store.get(chatPanelTabsAtom)).toMatchObject({
       activeTabId: managementTabId,
@@ -1378,6 +1393,7 @@ describe("ChatPanel navigation tabs", () => {
       title: "Manage ORG",
     });
     expect(switchedTabId).toBe(managementTabId);
+    expectStationUnavailable();
     expect(
       store
         .get(chatPanelTabsAtom)

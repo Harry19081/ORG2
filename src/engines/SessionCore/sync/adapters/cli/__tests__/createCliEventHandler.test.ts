@@ -4,17 +4,21 @@
  * `createCliEventHandler` is where raw CLI/ACP wire frames first become ORGII
  * domain state. Everything below asserts on the state that survives the
  * boundary — the event-store contents, the plan-approval atom, the runtime
- * status atom, the dispatched permission CustomEvent — not on whether a
+ * status atom, the pending permission queue — not on whether a
  * collaborator happened to be called.
  *
  * Only true I/O edges are mocked: the Rust event store (Tauri RPC + `es:changed`
  * listener) and the Rust normalization RPC. `cliLifecycle`, the Jotai atoms,
  * the streaming accumulator and the tool-arg parsers all run for real.
  */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
+import {
+  getPendingPermissionRequests,
+  pendingPermissionRequestsAtom,
+} from "@src/store/session/permissionRequestAtom";
 import { pendingPlanApprovalsAtom } from "@src/store/session/planApprovalAtom";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { ActivityChunk } from "@src/types/session/session";
@@ -2236,23 +2240,16 @@ describe("createCliEventHandler ingestion boundary", () => {
   // -------------------------------------------------------------------------
 
   describe("permission requests", () => {
-    let dispatched: CustomEvent[];
-    let originalDispatch: typeof window.dispatchEvent;
+    beforeEach(() =>
+      getInstrumentedStore().set(pendingPermissionRequestsAtom, new Map())
+    );
+    const requests = () =>
+      getPendingPermissionRequests(
+        getInstrumentedStore().get(pendingPermissionRequestsAtom),
+        SESSION_ID
+      );
 
-    beforeEach(() => {
-      dispatched = [];
-      originalDispatch = window.dispatchEvent;
-      window.dispatchEvent = ((event: Event) => {
-        dispatched.push(event as CustomEvent);
-        return true;
-      }) as typeof window.dispatchEvent;
-    });
-
-    afterEach(() => {
-      window.dispatchEvent = originalDispatch;
-    });
-
-    it("dispatches a fully formed permission request for cli_hook origin", () => {
+    it("stores a fully formed permission request for cli_hook origin", () => {
       handler.handleEvent({
         type: "permission:request",
         session_id: SESSION_ID,
@@ -2263,9 +2260,8 @@ describe("createCliEventHandler ingestion boundary", () => {
         toolArgs: { command: "ls" },
       });
 
-      expect(dispatched).toHaveLength(1);
-      expect(dispatched[0].type).toBe("agent-permission-request");
-      expect(dispatched[0].detail).toEqual({
+      expect(requests()).toHaveLength(1);
+      expect(requests()[0]).toEqual({
         requestId: "req-1",
         sessionId: SESSION_ID,
         tool: "bash",
@@ -2284,11 +2280,38 @@ describe("createCliEventHandler ingestion boundary", () => {
         toolArgs: "not-an-object",
       });
 
-      expect(dispatched[0].detail).toMatchObject({
+      expect(requests()[0]).toMatchObject({
         tool: "unknown",
         args: {},
         origin: "acp",
       });
+    });
+
+    it("clears resolved requests without removing the next prompt", () => {
+      for (const requestId of ["expired", "next"])
+        handler.handleEvent({
+          type: "permission:request",
+          session_id: SESSION_ID,
+          origin: "cli_hook",
+          requestId,
+        });
+      handler.handleEvent({
+        type: "permission:resolved",
+        session_id: "other",
+        requestId: "expired",
+      });
+      expect(requests()).toHaveLength(2);
+      handler.handleEvent({
+        type: "permission:resolved",
+        session_id: SESSION_ID,
+        requestId: "expired",
+      });
+      handler.handleEvent({
+        type: "permission:resolved",
+        session_id: SESSION_ID,
+        requestId: "expired",
+      });
+      expect(requests().map((request) => request.requestId)).toEqual(["next"]);
     });
 
     it("rejects permission frames from an unknown origin or without a requestId", () => {
@@ -2310,7 +2333,7 @@ describe("createCliEventHandler ingestion boundary", () => {
         requestId: "",
       });
 
-      expect(dispatched).toEqual([]);
+      expect(requests()).toEqual([]);
     });
   });
 

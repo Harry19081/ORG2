@@ -28,6 +28,7 @@
       "deleteError": "{{name}} 刪除失敗"
     },
     "providerGroups": {
+      "mostUsed": "最常用",
       "cloud": "Cloud",
       "local": "Local"
     },
@@ -54,8 +55,8 @@
       "cursorSessionAccess": "Cursor 工作階段",
       "cursorSessionReady": "已連接，可刷新 Cursor 模型和配額",
       "cursorApiKeyAccess": "Cursor API Key",
-      "cursorApiKeyReady": "已提供，可用於 Cursor CLI/API 呼叫",
-      "cursorApiKeyNotProvided": "未提供 — Cursor CLI/API 呼叫不可用",
+      "cursorApiKeyReady": "已提供，可用於 Cursor API 呼叫",
+      "cursorApiKeyNotProvided": "未提供 — Cursor API 呼叫不可用",
       "baseUrl": "Base URL",
       "connectedAt": "連接時間",
       "availableModels": "可用模型",
@@ -298,11 +299,11 @@
     "cursorLoginBrowserTitle": "Cursor 登錄",
     "modelCount": "{{count}} 個模型",
     "cursorLoginReadyTitle": "Cursor 帳號已連接",
-    "cursorLoginReadyDesc": "請在下方產生並貼上 Cursor API Key。沒有這個 API Key，Cursor CLI agent 無法使用。",
+    "cursorLoginReadyDesc": "請在下方產生並貼上 Cursor API Key。沒有這個 API Key，Cursor agent 無法使用。",
     "cursorApiKeyBrowserHint": "登入後，ORGII 會開啟 Cursor dashboard。請在那裡產生 User API Key，然後貼到下方",
     "cursorApiKeyRecommendedTitle": "建議提供 Cursor API Key",
     "cursorApiKeyRecommendedDesc": "如果你只想把 Cursor 用於 ORGII 的 Rust agents，可以不提供 Cursor API Key；只需透過內建瀏覽器登入，或提供 session token",
-    "cursorApiKeyRecommendedAction": "如果你還想在 ORGII 中使用 Cursor CLI，請提供 Cursor API Key",
+    "cursorApiKeyRecommendedAction": "如果你還想在 ORGII 中使用 Cursor，請提供 Cursor API Key",
     "openCursorApiKeys": "開啟 Cursor API Keys",
     "codexSetupMethodDesc": "透過 ChatGPT 登入、本機偵測或 OpenAI API key 連接 Codex",
     "codexSignInTitle": "Codex 登入",

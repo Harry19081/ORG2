@@ -657,7 +657,6 @@
       "incomingError": "Bu paylaşım bağlantısı geçersiz, süresi dolmuş veya iptal edilmiş.",
       "incomingRetryHint": "İçe aktarma tamamlanmadı. Paylaşılan oturum hâlâ yükleniyor olabilir — tekrar deneyin.",
       "importEntry": "Oturumu içe aktar",
-      "importDialogTitle": "Paylaşılan oturumu içe aktar",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "İçe aktar",
       "importInvalidInput": "Bu, geçerli bir paylaşım bağlantısı veya belirteç gibi görünmüyor.",

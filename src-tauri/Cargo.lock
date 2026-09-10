@@ -5039,6 +5039,7 @@ dependencies = [
  "settings",
  "sha2",
  "shared_state",
+ "sysinfo",
  "system_services",
  "tar",
  "tauri",

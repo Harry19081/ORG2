@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Edite sua mensagem...",
     "defaultPlaceholder": "Conversar com o Agent",
+    "commentPlaceholder": "Deixe um comentário…",
     "editingQueuedMessage": "Editando mensagem na fila",
     "editingSentMessage": "Editando mensagem enviada",
     "voiceErrorPermission": "Permissão do microfone negada. Ative nas configurações do sistema.",
@@ -1976,6 +1977,7 @@
     "shortInputTitle": "Entrada curta",
     "shortInputMessage": "Sua entrada parece muito curta. Tem certeza de que quer iniciar uma sessão com isso?",
     "selectModel": "Selecionar modelo",
+    "selectAgentFirst": "Selecione primeiro um agente",
     "switchModel": "Alternar modelo",
     "switchMode": "Alternar modo",
     "switchAgent": "Alternar Agent",

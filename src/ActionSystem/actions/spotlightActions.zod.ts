@@ -23,6 +23,7 @@ import {
   openCollabOrgSpotlight,
   openEditorSpotlight,
   openSessionCreatorSpotlight,
+  openSessionImportSpotlight,
   openWorkingDirectorySpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { spotlightOpenAtom } from "@src/store/ui/uiAtom";
@@ -258,6 +259,21 @@ const spotlightOpenAgentControl = defineZodAction(
   }
 );
 
+const spotlightImportSession = defineZodAction(
+  {
+    id: ACTION_ID.SPOTLIGHT_IMPORT_SESSION,
+    category: "spotlight",
+    description: "Open Spotlight's shared session import form",
+    params: z.object({}),
+    layer: "gui",
+    examples: ["import session", "import shared session"],
+  },
+  async () => {
+    openSessionImportSpotlight();
+    return { success: true, message: "Opened session import" };
+  }
+);
+
 const spotlightOpenSessionCreator = defineZodAction(
   {
     id: ACTION_ID.SPOTLIGHT_OPEN_SESSION_CREATOR,
@@ -319,6 +335,7 @@ export const spotlightZodActions: ZodAction<ZodTypeAny>[] = [
   spotlightOpenAllSessionsSearch,
   spotlightOpenAgentControl,
   spotlightOpenSessionCreator,
+  spotlightImportSession,
   spotlightOpenCollabOrg,
 ];
 
