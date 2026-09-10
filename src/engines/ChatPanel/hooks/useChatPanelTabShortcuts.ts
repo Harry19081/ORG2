@@ -13,7 +13,6 @@ import {
 } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
-import { isMacOS } from "@src/util/platform/tauri";
 
 import { resolveChatPanelShortcutOwnership } from "./chatPanelShortcutOwnership";
 
@@ -22,30 +21,6 @@ export interface UseChatPanelTabShortcutsOptions {
   onNewTerminal: () => void;
   /** Ref to the outermost chat panel container for focus-scoped keyboard handling */
   containerRef?: RefObject<HTMLElement | null>;
-}
-
-type ModifierState = Pick<KeyboardEvent, "ctrlKey" | "metaKey">;
-
-export function isChatPanelPrimaryModifierPressed(
-  event: ModifierState,
-  macOS = isMacOS()
-): boolean {
-  return macOS ? event.metaKey : event.ctrlKey;
-}
-
-/**
- * The bracket a shortcut targets, independent of the shifted glyph the
- * keyboard layout reports (`{` / `}` on US layouts) — `code` names the physical
- * key, `key` is the fallback for synthetic events.
- */
-export function resolveChatPanelBracketKey(
-  event: Pick<KeyboardEvent, "code" | "key">
-): "[" | "]" | null {
-  if (event.code === "BracketLeft") return "[";
-  if (event.code === "BracketRight") return "]";
-  if (event.key === "[" || event.key === "{") return "[";
-  if (event.key === "]" || event.key === "}") return "]";
-  return null;
 }
 
 /**
