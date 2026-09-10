@@ -755,7 +755,6 @@
   "filters": {
     "all": "すべて",
     "source": "ソース",
-    "local": "ローカル",
     "member": "メンバー",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Agent または Agent チームを選択...",

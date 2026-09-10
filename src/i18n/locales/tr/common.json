@@ -755,7 +755,6 @@
   "filters": {
     "all": "Tümü",
     "source": "Kaynak",
-    "local": "Yerel",
     "member": "Üye",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Agent veya Agent ekibi seç...",
