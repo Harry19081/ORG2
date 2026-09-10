@@ -44,6 +44,7 @@ import { executeComposerCommand } from "./executeComposerCommand";
 import { executeNativeCliCommand } from "./executeNativeCliCommand";
 import { resolveMcpSlashCommand } from "./mcpSlashCommand";
 import {
+  isTerminalNativeSlashCommand,
   nativeSlashNames,
   parseNativeSlashCommand,
 } from "./nativeSlashCommands";
@@ -281,6 +282,20 @@ export function useSubmitMessage({
               rename,
               dispatch: (action) => zodActionRegistry.execute(action, {}),
             });
+            if (
+              remaining === undefined &&
+              isCliSession(draftSessionId) &&
+              isTerminalNativeSlashCommand(
+                provider,
+                draftSessionId,
+                store.get(eventsAtom),
+                command.name
+              )
+            ) {
+              throw new Error(
+                `/${command.name} requires the native terminal and is unavailable through the provider SDK. Your draft has been kept.`
+              );
+            }
             if (
               remaining === undefined &&
               isCliSession(draftSessionId) &&

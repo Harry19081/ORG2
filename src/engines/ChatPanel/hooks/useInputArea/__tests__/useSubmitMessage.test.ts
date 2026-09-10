@@ -7,6 +7,7 @@ import type {
   ComposerInputRef,
   ComposerSnapshot,
 } from "@src/components/ComposerInput";
+import { type SessionEvent, eventsAtom } from "@src/engines/SessionCore";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
 import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
 import { modelSelectorAtom } from "@src/store/ui/modelSelectorAtom";
@@ -290,6 +291,36 @@ describe("useSubmitMessage composer boundary", () => {
       "/compact"
     );
     expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+  });
+
+  it("keeps a terminal-only native command out of both transports and preserves the draft", async () => {
+    mocks.isCliSession.mockReturnValue(true);
+    mocks.provider = "claude_code";
+    const editor = createEditor("/doctor");
+    const options = optionsFor(editor);
+    await mount(options, (nextStore) =>
+      nextStore.set(eventsAtom, [
+        {
+          sessionId: options.draftSessionId,
+          actionType: "native_command_catalog",
+          args: {
+            native_provider: "claude_code",
+            slash_commands: ["doctor"],
+            terminal_slash_commands: ["doctor"],
+          },
+        } as unknown as SessionEvent,
+      ])
+    );
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(mocks.nativeCommand).not.toHaveBeenCalled();
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    expect(mocks.messageError).toHaveBeenCalledWith(
+      expect.stringContaining("requires the native terminal")
+    );
+    expect(editor.editor.clear).not.toHaveBeenCalled();
+    expect(editor.readText()).toBe("/doctor");
   });
 
   it("retains native command text when the secret scan declines sending", async () => {

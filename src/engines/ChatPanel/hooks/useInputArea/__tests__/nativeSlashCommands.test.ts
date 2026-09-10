@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { SessionEvent } from "@src/engines/SessionCore";
 
 import {
+  isTerminalNativeSlashCommand,
   nativeSlashNames,
   parseNativeSlashCommand,
 } from "../nativeSlashCommands";
@@ -44,6 +45,30 @@ describe("native slash catalog", () => {
       "compact",
       "plugin:review",
     ]);
+  });
+  it("rejects only terminal controls declared by the current provider and newest catalog", () => {
+    const init = event("a", ["context", "doctor"]);
+    init.args.terminal_slash_commands = ["doctor"];
+    expect(
+      isTerminalNativeSlashCommand("claude_code", "a", [init], "doctor")
+    ).toBe(true);
+    expect(
+      isTerminalNativeSlashCommand("claude_code", "a", [init], "context")
+    ).toBe(false);
+    expect(isTerminalNativeSlashCommand("codex", "a", [init], "doctor")).toBe(
+      false
+    );
+    expect(
+      isTerminalNativeSlashCommand("claude_code", "b", [init], "doctor")
+    ).toBe(false);
+    expect(
+      isTerminalNativeSlashCommand(
+        "claude_code",
+        "a",
+        [init, event("a", ["doctor"])],
+        "doctor"
+      )
+    ).toBe(false);
   });
   it("bounds provider-controlled names and count", () => {
     expect(

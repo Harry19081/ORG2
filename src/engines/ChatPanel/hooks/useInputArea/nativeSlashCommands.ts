@@ -66,6 +66,32 @@ export function nativeSlashNames(
   return provider === "codex" ? builtin : ["compact", "context", "init"];
 }
 
+/** The provider's declared terminal-only controls cannot enter a normal
+ * conversation queue: they may never emit an ordinary user-message echo. */
+export function isTerminalNativeSlashCommand(
+  provider: string | undefined,
+  sessionId: string,
+  events: readonly SessionEvent[],
+  name: string
+): boolean {
+  if (provider !== "codex" && provider !== "claude_code") return false;
+  for (let index = events.length - 1; index >= 0; index--) {
+    const event = events[index];
+    if (
+      event.sessionId !== sessionId ||
+      !["session_start", "native_command_catalog"].includes(event.actionType) ||
+      event.args.native_provider !== provider ||
+      !Array.isArray(event.args.slash_commands)
+    )
+      continue;
+    return (
+      Array.isArray(event.args.terminal_slash_commands) &&
+      event.args.terminal_slash_commands.includes(name)
+    );
+  }
+  return false;
+}
+
 export function buildNativeSlashItems(
   names: readonly string[],
   description: (name: string) => string,
