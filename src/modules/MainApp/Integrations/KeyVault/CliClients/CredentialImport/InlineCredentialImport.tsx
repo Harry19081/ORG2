@@ -5,8 +5,7 @@
  * skills / rules / MCP / agents auto-import rows): a collapsed section row
  * with an Expand toggle, and when expanded a SettingsTable of importable
  * rows with select-all, search, per-item failures, and an "Import (n)"
- * button. The header shows how many credentials the offline probe found
- * so the suggestion is visible without expanding.
+ * button. The header uses the same concise import wording as its siblings.
  */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -64,11 +63,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
     onRefresh: onAfterImport,
   });
 
-  const foundCount = allImportableItems.length;
-  const title =
-    foundCount > 0
-      ? t("credentialImport.titleWithCount", { count: foundCount })
-      : t("credentialImport.title");
+  const title = t("credentialImport.title");
 
   return (
     <SectionContainer>

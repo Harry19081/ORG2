@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "Règles chargeables",
-    "empty": "Aucune règle chargeable trouvée.",
+    "title": "Importer des règles depuis d’autres apps",
+    "empty": "Aucune règle à importer trouvée.",
     "allImported": "Toutes les règles détectées ont déjà été importées"
   },
   "skillsImport": {
@@ -1648,7 +1648,6 @@
   },
   "credentialImport": {
     "title": "Importer des identifiants depuis d’autres apps",
-    "titleWithCount": "Importer des identifiants depuis d’autres apps ({{count}} trouvés)",
     "itemColumn": "Identifiant",
     "sourceColumn": "Trouvé dans",
     "empty": "Aucun identifiant à importer. Ont été examinés : les variables d’environnement, les profils shell, les paramètres de Claude Code, les profils cc-switch et les stores de connexion de Claude Code, Codex, Cursor, GitHub CLI, Kiro et OpenCode.",

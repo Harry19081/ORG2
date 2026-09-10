@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "Reguły do załadowania",
-    "empty": "Nie znaleziono reguł do załadowania.",
+    "title": "Importuj reguły z innych aplikacji",
+    "empty": "Nie znaleziono reguł do zaimportowania.",
     "allImported": "Wszystkie wykryte reguły zostały już zaimportowane"
   },
   "skillsImport": {
@@ -1648,7 +1648,6 @@
   },
   "credentialImport": {
     "title": "Importuj poświadczenia z innych aplikacji",
-    "titleWithCount": "Importuj poświadczenia z innych aplikacji (znaleziono: {{count}})",
     "itemColumn": "Poświadczenie",
     "sourceColumn": "Znaleziono w",
     "empty": "Nie znaleziono poświadczeń do zaimportowania. Sprawdzono zmienne środowiskowe, profile powłoki, ustawienia Claude Code, profile cc-switch oraz magazyny logowania Claude Code, Codex, Cursor, GitHub CLI, Kiro i OpenCode.",
