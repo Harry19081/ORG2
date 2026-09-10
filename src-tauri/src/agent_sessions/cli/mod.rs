@@ -21,6 +21,7 @@ mod native_store;
 pub mod native_transcript;
 pub mod parsers;
 pub mod persistence;
+mod permission_lifecycle;
 pub mod platform_adapters;
 pub mod session_runner;
 pub mod skill_sync;

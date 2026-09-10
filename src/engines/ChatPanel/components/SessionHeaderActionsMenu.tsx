@@ -22,6 +22,7 @@ import { useCopySessionReference } from "@src/features/Org2Cloud/useCopySessionR
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
 import {
   AppWindowMacIcon,
+  ArrowBigRightDashIcon,
   Copy01Icon,
   CursorInWindowIcon,
   DeliveryBox01Icon,
@@ -31,8 +32,6 @@ import {
   Link01Icon,
   Link02Icon,
   MoreHorizontalIcon,
-  PanelLeftIcon,
-  PanelRightIcon,
   Refresh04Icon,
   Search01Icon,
   Share02Icon,
@@ -296,21 +295,12 @@ export const SessionHeaderActionsMenu: React.FC<
                         : "move-session-to-chat-panel"
                     }
                     icon={
-                      moveToWorkstation ? (
-                        <HugeiconsIcon
-                          icon={PanelLeftIcon}
-                          data-icon="panel-left"
-                          size={DROPDOWN_ITEM.iconSize}
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <HugeiconsIcon
-                          icon={PanelRightIcon}
-                          data-icon="panel-right"
-                          size={DROPDOWN_ITEM.iconSize}
-                          strokeWidth={1.75}
-                        />
-                      )
+                      <HugeiconsIcon
+                        icon={ArrowBigRightDashIcon}
+                        data-icon="arrow-big-right-dash"
+                        size={DROPDOWN_ITEM.iconSize}
+                        strokeWidth={1.75}
+                      />
                     }
                   >
                     {moveToWorkstation

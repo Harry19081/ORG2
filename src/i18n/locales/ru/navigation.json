@@ -657,7 +657,6 @@
       "incomingError": "Эта ссылка недействительна, истекла или была отозвана.",
       "incomingRetryHint": "Импорт не завершился. Возможно, сессия ещё загружается — попробуйте ещё раз.",
       "importEntry": "Импортировать сессию",
-      "importDialogTitle": "Импортировать общую сессию",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Импортировать",
       "importInvalidInput": "Это не похоже на действительную ссылку для доступа или токен.",

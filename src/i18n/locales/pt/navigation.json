@@ -657,7 +657,6 @@
       "incomingError": "Este link é inválido, expirou ou foi revogado.",
       "incomingRetryHint": "A importação não foi concluída. A sessão compartilhada pode ainda estar sendo enviada — tente novamente.",
       "importEntry": "Importar sessão",
-      "importDialogTitle": "Importar uma sessão compartilhada",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Importar",
       "importInvalidInput": "Isto não parece um link de compartilhamento ou token válido.",

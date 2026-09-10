@@ -14,13 +14,13 @@ import { useTranslation } from "react-i18next";
 
 import type { ProjectOrg } from "@src/api/http/project";
 import type { QuickAction } from "@src/modules/WorkStation/shared";
-import { openCreateTargetInChatPanelStartPageAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { openChatPanelCreateTargetAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { openOrFocusSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
-import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
-import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import {
+  MANUAL_PROJECT_CREATOR_DRAFT_ID,
+  MANUAL_WORK_ITEM_CREATOR_DRAFT_ID,
   PROJECT_CREATOR_DRAFT_ID,
   WORK_ITEM_CREATOR_DRAFT_ID,
   projectDraftsAtom,
@@ -75,9 +75,11 @@ export function useProjectTabActions({
   useEffect(() => {
     const liveProjectDraftIds = new Set(tabs.map((tab) => tab.id));
     liveProjectDraftIds.add(PROJECT_CREATOR_DRAFT_ID);
+    liveProjectDraftIds.add(MANUAL_PROJECT_CREATOR_DRAFT_ID);
 
     const liveWorkItemDraftIds = new Set(tabs.map((tab) => tab.id));
     liveWorkItemDraftIds.add(WORK_ITEM_CREATOR_DRAFT_ID);
+    liveWorkItemDraftIds.add(MANUAL_WORK_ITEM_CREATOR_DRAFT_ID);
 
     for (const draftTabId of projectDrafts.keys()) {
       if (!liveProjectDraftIds.has(draftTabId)) {
@@ -98,11 +100,7 @@ export function useProjectTabActions({
     removeWorkItemDraft,
   ]);
 
-  const stationMode = useAtomValue(stationModeAtom);
-  const setStationChatVisible = useSetAtom(activeStationChatVisibleAtom);
-  const openCreateTargetInStartPage = useSetAtom(
-    openCreateTargetInChatPanelStartPageAtom
-  );
+  const openCreateTarget = useSetAtom(openChatPanelCreateTargetAtom);
   const setLayout = useSetAtom(workstationLayoutAtom);
 
   /**
@@ -206,7 +204,7 @@ export function useProjectTabActions({
   );
 
   const handleCreateProject = useCallback(() => {
-    openCreateTargetInStartPage({
+    openCreateTarget({
       target: CHAT_PANEL_CREATE_TARGET.PROJECT,
       createProjectContext: {
         orgId: activeProjectOrg?.orgId ?? STORY_PERSONAL_ORG_FILTER_ID,
@@ -214,27 +212,15 @@ export function useProjectTabActions({
           activeProjectOrg?.orgName ?? t("projects:orgs.personalOrg"),
       },
     });
-    if (stationMode === "my-station" || stationMode === "agent-station") {
-      setStationChatVisible(stationMode, true);
-    }
-  }, [
-    activeProjectOrg,
-    openCreateTargetInStartPage,
-    setStationChatVisible,
-    stationMode,
-    t,
-  ]);
+  }, [activeProjectOrg, openCreateTarget, t]);
 
   const handleCreateWorkItem = useCallback(
     (_projectId?: string, _projectName?: string, _projectSlug?: string) => {
-      openCreateTargetInStartPage({
+      openCreateTarget({
         target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
       });
-      if (stationMode === "my-station" || stationMode === "agent-station") {
-        setStationChatVisible(stationMode, true);
-      }
     },
-    [openCreateTargetInStartPage, setStationChatVisible, stationMode]
+    [openCreateTarget]
   );
 
   const handleOpenProjects = useCallback(() => {

@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -32,6 +32,7 @@ import { SidebarBottomBar } from "../../blocks";
 import SidebarSettingsMenuButton from "../../blocks/SidebarSettingsMenuButton";
 import NavigationSidebar from "../../variants/NavigationSidebar";
 import SidebarAccountButton from "../SidebarAccountButton";
+import { NEW_SESSION_MENU_ITEM_ID } from "../sidebarConnectorUtils";
 import type { SidebarTabDisposition } from "../sidebarTabNavigation";
 import { useSessionMenuItems } from "../useSessionMenuItems/index";
 import { DEFAULT_COLLAPSED_SECTION_IDS } from "../workstationSidebarData";
@@ -51,6 +52,7 @@ import { useWorkstationSidebarSelectionAndCollapse } from "./sidebarConnector.se
 import { useWorkstationSidebarSessionInteractionHandlers } from "./sidebarConnector.sessionInteractionHandlers";
 import { useSidebarSessionRefreshAction } from "./sidebarSessionRefresh";
 import type { SessionSidebarView } from "./types";
+import { useMobileSidebarSessions } from "./useMobileSidebarSessions";
 import { useSessionSidebarOrdering } from "./useSessionSidebarOrdering";
 import { useSessionSidebarRowActions } from "./useSessionSidebarRowActions";
 import { useSidebarStationNavigation } from "./useSidebarStationNavigation";
@@ -462,6 +464,14 @@ export const WorkstationSidebarConnector: React.FC = () => {
     cloudMySessionsVisibleCount,
   });
 
+  useMobileSidebarSessions({
+    scope: activeOrgId,
+    loading: sessionsLoading || orgSelectorLoading,
+    items: sessionMenuItems,
+    sessionMap,
+    repoPathToName,
+  });
+
   const workItems = useWorkItemsSidebarSurface({
     enabled: workItemsContentVisible,
     activeProjectOrgId,
@@ -496,6 +506,22 @@ export const WorkstationSidebarConnector: React.FC = () => {
     : channelSidebarVisible
       ? channelMenuItems
       : sessionMenuItems;
+  const sidebarScrollLayout = useMemo(() => {
+    if (activeViewKey !== "sessions") {
+      return { pinnedMenuItems, menuItems: sidebarMenuItems };
+    }
+    return {
+      pinnedMenuItems: pinnedMenuItems.filter(
+        (item) => item.id === NEW_SESSION_MENU_ITEM_ID
+      ),
+      menuItems: [
+        ...pinnedMenuItems.filter(
+          (item) => item.id !== NEW_SESSION_MENU_ITEM_ID
+        ),
+        ...sidebarMenuItems,
+      ],
+    };
+  }, [activeViewKey, pinnedMenuItems, sidebarMenuItems]);
   const resolvedCollapsedSectionIds = workItemsContentVisible
     ? workItems.collapsedSectionIds
     : collapsedSectionIds;
@@ -606,8 +632,8 @@ export const WorkstationSidebarConnector: React.FC = () => {
   return (
     <>
       <NavigationSidebar
-        menuItems={sidebarMenuItems}
-        pinnedMenuItems={pinnedMenuItems}
+        menuItems={sidebarScrollLayout.menuItems}
+        pinnedMenuItems={sidebarScrollLayout.pinnedMenuItems}
         selectedKey={resolvedSelectedMenuItemId}
         onMenuItemClick={resolvedMenuItemClick}
         onMenuItemContextMenu={resolvedMenuItemContextMenu}
@@ -621,7 +647,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
             onChange={setActiveViewKey}
           />
         }
-        listTopPadding
+        listTopPadding={activeViewKey === "sessions" ? "row" : true}
         bottomContent={
           <>
             {ordering.unpinDropZone}

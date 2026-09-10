@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
 import { ROUTES } from "@src/config/routes";
+import ImportSharedSessionDialog from "@src/features/Org2Cloud/ImportSharedSessionDialog";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { currentBranchAtom } from "@src/store/repo";
@@ -92,6 +93,7 @@ const GlobalSpotlightInner: React.FC<
     allSessionsSearchOpen,
     agentControlOpen,
     sessionCreatorOpen,
+    sessionImportOpen,
     embeddedEditorPalette,
     lastActivatedItemIdRef,
     pendingRestoreItemId,
@@ -106,6 +108,7 @@ const GlobalSpotlightInner: React.FC<
     handleOpenAllSessionsSearch,
     handleOpenAgentControl,
     handleOpenSessionCreator,
+    handleOpenSessionImport,
     handleOpenEditorPalette,
     handleCloseWorkingDirectoryPicker,
     handleCloseCollabOrg,
@@ -116,6 +119,7 @@ const GlobalSpotlightInner: React.FC<
     handleCloseAllSessionsSearch,
     handleCloseAgentControl,
     handleCloseSessionCreator,
+    handleCloseSessionImport,
     handleCloseEditorPalette,
   } = useSpotlightOverlayLayers(isOpen);
 
@@ -185,6 +189,7 @@ const GlobalSpotlightInner: React.FC<
       !agentSessionSearchOpen &&
       !allSessionsSearchOpen &&
       !agentControlOpen &&
+      !sessionImportOpen &&
       !sessionCreatorOpen,
     dispatch: spotlightDispatch,
     closeModal,
@@ -198,6 +203,7 @@ const GlobalSpotlightInner: React.FC<
     onOpenAllSessionsSearchLayer: handleOpenAllSessionsSearch,
     onOpenAgentControlLayer: handleOpenAgentControl,
     onOpenSessionCreatorLayer: handleOpenSessionCreator,
+    onOpenSessionImportLayer: handleOpenSessionImport,
   });
 
   // Default view kernel — same hook every palette uses. Owns the input
@@ -248,6 +254,7 @@ const GlobalSpotlightInner: React.FC<
       !agentSessionSearchOpen &&
       !allSessionsSearchOpen &&
       !agentControlOpen &&
+      !sessionImportOpen &&
       !sessionCreatorOpen &&
       !activeEditorPalette,
     onClose: closeModal,
@@ -276,6 +283,7 @@ const GlobalSpotlightInner: React.FC<
       agentSessionSearchOpen ||
       allSessionsSearchOpen ||
       agentControlOpen ||
+      sessionImportOpen ||
       sessionCreatorOpen ||
       !pendingRestoreItemId
     ) {
@@ -311,6 +319,7 @@ const GlobalSpotlightInner: React.FC<
     allSessionsSearchOpen,
     agentControlOpen,
     sessionCreatorOpen,
+    sessionImportOpen,
   ]);
 
   // ============ NORMAL MODE ============
@@ -359,6 +368,7 @@ const GlobalSpotlightInner: React.FC<
     agentSessionSearchOpen ||
     allSessionsSearchOpen ||
     agentControlOpen ||
+    sessionImportOpen ||
     sessionCreatorOpen ||
     !!activeEditorPalette ||
     spotlight.state.path.length > 0;
@@ -466,6 +476,13 @@ const GlobalSpotlightInner: React.FC<
       onGoBackToParent={handleCloseAgentControl}
       asBody
     />
+  ) : sessionImportOpen ? (
+    <ImportSharedSessionDialog
+      visible={isOpen}
+      onClose={closeModal}
+      onGoBack={handleCloseSessionImport}
+      asBody
+    />
   ) : sessionCreatorOpen ? (
     <SessionCreatorPalette
       isOpen={isOpen}
@@ -509,7 +526,12 @@ const GlobalSpotlightInner: React.FC<
       onClose={closeModal}
       hasActiveAction={hasActiveAction}
       activeActionChip={activeActionChip}
-      hideFooter={!!showConfirmation || agentControlOpen || sessionCreatorOpen}
+      hideFooter={
+        !!showConfirmation ||
+        agentControlOpen ||
+        sessionCreatorOpen ||
+        sessionImportOpen
+      }
     >
       {body}
     </SpotlightShell>

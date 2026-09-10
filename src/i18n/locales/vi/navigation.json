@@ -657,7 +657,6 @@
       "incomingError": "Liên kết chia sẻ này không hợp lệ, đã hết hạn hoặc đã bị thu hồi.",
       "incomingRetryHint": "Nhập chưa hoàn tất. Phiên được chia sẻ có thể vẫn đang tải lên — hãy thử lại.",
       "importEntry": "Nhập phiên",
-      "importDialogTitle": "Nhập phiên được chia sẻ",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Nhập",
       "importInvalidInput": "Đây có vẻ không phải là liên kết chia sẻ hoặc mã token hợp lệ.",

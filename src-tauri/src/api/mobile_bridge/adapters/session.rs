@@ -12,7 +12,9 @@ use crate::agent_sessions::event_pipeline::types::{
     EventDisplayVariant, EventSource, SessionEvent,
 };
 use crate::agent_sessions::session_directory::aggregation::list_all_sessions;
-use crate::agent_sessions::session_directory::types::{SessionCategory, SessionFilter};
+use crate::agent_sessions::session_directory::types::{
+    SessionAggregateRecord, SessionCategory, SessionFilter,
+};
 use crate::api::mobile_bridge::commands::{
     current_mobile_sidebar_sessions, MobileSidebarSessionSnapshotRow,
 };
@@ -166,6 +168,22 @@ fn is_mobile_list_category(category: SessionCategory) -> bool {
         category,
         SessionCategory::Agent | SessionCategory::Os | SessionCategory::Cli
     )
+}
+
+/// Keep directory metadata on the wire; do not reconstruct it from a title.
+fn mobile_directory_session_row(record: &SessionAggregateRecord, send_capability: &str) -> Value {
+    let updated_at_ms = chrono::DateTime::parse_from_rfc3339(&record.updated_at)
+        .ok()
+        .map(|date| date.timestamp_millis());
+    json!({
+        "id": record.session_id,
+        "name": mobile_session_name(&record.name, record.display_label.as_deref()),
+        "status": map_session_status_to_mobile(&record.status),
+        "repoPath": record.repo_path,
+        "repoName": record.repo_name,
+        "updatedAtMs": updated_at_ms,
+        "sendCapability": send_capability,
+    })
 }
 
 fn session_list_from_sidebar_snapshot(
@@ -405,23 +423,8 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
         .sessions
         .into_iter()
         .filter(|record| is_mobile_list_category(record.category))
-        .filter_map(|record| {
-            let mobile_status = map_session_status_to_mobile(&record.status);
-            if status_filter == "running" && mobile_status != "running" {
-                return None;
-            }
-            let mobile_name = mobile_session_name(&record.name, record.display_label.as_deref());
-            let updated_at_ms = chrono::DateTime::parse_from_rfc3339(&record.updated_at)
-                .ok()
-                .map(|date| date.timestamp_millis());
-            Some((
-                record.session_id,
-                mobile_name,
-                mobile_status,
-                record.repo_path,
-                record.repo_name,
-                updated_at_ms,
-            ))
+        .filter(|record| {
+            status_filter != "running" || map_session_status_to_mobile(&record.status) == "running"
         })
         .take(limit)
         .collect::<Vec<_>>();
@@ -430,29 +433,25 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
         crate::orgtrack::history_commands::external_history_mobile_writable_codex_session_ids(
             session_rows
                 .iter()
-                .filter(|(id, ..)| id.starts_with(orgtrack_core::sources::codex::SESSION_PREFIX))
-                .map(|(id, ..)| id.clone())
+                .filter(|record| {
+                    record
+                        .session_id
+                        .starts_with(orgtrack_core::sources::codex::SESSION_PREFIX)
+                })
+                .map(|record| record.session_id.clone())
                 .collect(),
         )
         .await
         .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?;
     let sessions = session_rows
         .into_iter()
-        .map(
-            |(session_id, mobile_name, mobile_status, repo_path, repo_name, updated_at_ms)| {
-                let send_capability =
-                    external_send::mobile_send_capability(&session_id, &writable_codex_session_ids);
-                json!({
-                    "id": session_id,
-                    "name": mobile_name,
-                    "repoPath": repo_path,
-                    "repoName": repo_name,
-                    "updatedAtMs": updated_at_ms,
-                    "status": mobile_status,
-                    "sendCapability": send_capability,
-                })
-            },
-        )
+        .map(|record| {
+            let send_capability = external_send::mobile_send_capability(
+                &record.session_id,
+                &writable_codex_session_ids,
+            );
+            mobile_directory_session_row(&record, send_capability)
+        })
         .collect::<Vec<_>>();
 
     Ok(
@@ -2149,6 +2148,32 @@ mod tests {
     }
 
     #[test]
+    fn directory_mobile_payload_retains_authoritative_workspace_and_timestamp() {
+        let mut record: SessionAggregateRecord = serde_json::from_value(json!({
+            "sessionId": "session-a", "name": "Raw name", "displayLabel": "Display name",
+            "status": "completed", "category": "cli", "keySource": "own_key",
+            "createdAt": "2026-09-09T00:00:00Z", "updatedAt": "2026-09-09T00:00:00Z",
+            "isActive": false, "repoPath": "/workspace/project", "repoName": "project"
+        }))
+        .unwrap();
+        let row = mobile_directory_session_row(&record, "read_only");
+        assert_eq!(row["repoPath"], "/workspace/project");
+        assert_eq!(row["repoName"], "project");
+        assert_eq!(row["updatedAtMs"], 1_788_912_000_000_i64);
+        assert_eq!(row["name"], "Display name");
+        assert_eq!(row["status"], "idle");
+        assert_eq!(row["sendCapability"], "read_only");
+
+        record.repo_name = None;
+        record.repo_path = None;
+        record.updated_at = "invalid".into();
+        let missing = mobile_directory_session_row(&record, "read_only");
+        assert!(missing["repoName"].is_null());
+        assert!(missing["repoPath"].is_null());
+        assert!(missing["updatedAtMs"].is_null());
+    }
+
+    #[test]
     fn sidebar_snapshot_list_preserves_desktop_order_and_running_filter() {
         let snapshot = vec![
             MobileSidebarSessionSnapshotRow {
@@ -2192,7 +2217,9 @@ mod tests {
             all.pointer("/sessions/0/repoPath"),
             Some(&json!("/projects/repo"))
         );
+        assert_eq!(all.pointer("/sessions/0/repoName"), Some(&json!("repo")));
         assert_eq!(all.pointer("/sessions/0/updatedAtMs"), Some(&json!(123)));
+        assert!(all["sessions"][1]["repoName"].is_null());
         let running = session_list_from_sidebar_snapshot(
             snapshot,
             "running",

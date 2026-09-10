@@ -12,8 +12,8 @@ import { useAtomValue } from "jotai";
 import { useLocation } from "react-router-dom";
 
 import { ROUTES, isWorkbenchPath } from "@src/config/routes";
+import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
@@ -145,7 +145,7 @@ export function useWorkbenchRightEdgeReservation(): WorkbenchRightEdgeReservatio
   const pinned = usePinnedWorkbenchChromeVisible();
   const chatVisible = useCurrentStationChatVisible();
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
-  const chatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
+  const chatPanelMaximized = useAtomValue(effectiveChatPanelMaximizedAtom);
   if (!pinned) return { owner: null, reservedRight: 0 };
   const owner: WorkbenchRightEdgeOwner =
     chatPanelMaximized || (chatVisible && chatPanelPosition === "right")
