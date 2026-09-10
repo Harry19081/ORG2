@@ -821,15 +821,6 @@
     "devtools": "Oyun Alanı"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "Sağlayıcı anahtarı ekle",
-    "addMcpServer": "MCP sunucusu ekle",
-    "createSkill": "Skills oluştur",
-    "addDatabaseConnection": "Veritabanı bağlantısı ekle",
-    "addChannelOrService": "Kanal veya servis ekle",
-    "addGitConnection": "Git bağlantısı ekle",
-    "addRoutine": "Routine ekle",
-    "createRule": "Politika oluştur",
-    "importSkill": "Diğer Apps'ten Skills içe aktar",
     "addAgent": "Agent Ekle"
   },
   "toolbarEllipsis": {},

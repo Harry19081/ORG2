@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "正在加载 Repo...",
-    "noRepositories": "暂无仓库",
-    "getStartedHint": "创建或克隆 Repo 以开始",
-    "noPath": "无路径",
-    "searchPlaceholder": "搜索 Repo...",
-    "loadMore": "加载更多"
-  },
   "market": {
     "auth": {
       "noAuthCode": "未收到授权码",

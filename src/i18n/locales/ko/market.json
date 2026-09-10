@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "Repo 로딩 중...",
-    "noRepositories": "저장소가 없습니다",
-    "getStartedHint": "Repo를 생성하거나 클론하여 시작하세요",
-    "noPath": "경로 없음",
-    "searchPlaceholder": "Repo 검색...",
-    "loadMore": "더 보기"
-  },
   "market": {
     "auth": {
       "noAuthCode": "인증 코드를 받지 못했습니다",

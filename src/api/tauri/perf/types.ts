@@ -5,27 +5,6 @@ export interface BinaryCheckResult {
   processing_time_us: number;
 }
 
-/** JSON parse result */
-export interface JsonParseResult {
-  value: unknown;
-  processing_time_ms: number;
-  input_size: number;
-}
-
-/** JSON stringify result */
-export interface JsonStringifyResult {
-  json: string;
-  processing_time_ms: number;
-  output_size: number;
-}
-
-/** JSON validation result */
-export interface JsonValidationResult {
-  valid: boolean;
-  error: string | null;
-  processing_time_ms: number;
-}
-
 /** Hash result */
 export interface HashResult {
   hash: string;

@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "Загрузка Repos...",
-    "noRepositories": "Репо пока нет",
-    "getStartedHint": "Создайте или клонируйте Repo для начала",
-    "noPath": "Нет пути",
-    "searchPlaceholder": "Поиск репо...",
-    "loadMore": "Загрузить ещё"
-  },
   "market": {
     "auth": {
       "noAuthCode": "Код авторизации не получен",

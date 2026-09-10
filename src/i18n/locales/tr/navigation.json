@@ -62,7 +62,6 @@
     "models": "Modeller",
     "signingIn": "Giriş yapılıyor...",
     "launchpad": "Başlangıç Merkezi",
-    "ideaArea": "Fikir Alanı",
     "changelog": "Changelog"
   },
   "sidebar": {
@@ -368,14 +367,6 @@
       "parentOpenUnavailable": "The source session could not be opened from this fork.",
       "replayError": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
       "openParentButton": "{{name}} kaynak oturumunu aç"
-    },
-    "continueCli": {
-      "headerButton": "{{agent}} içinde devam et",
-      "headerTooltip": "Bu oturumu bir terminal sekmesinde {{agent}} ile yeniden aç ({{command}})",
-      "notInstalled": "{{agent}} bu makinede yüklü değil",
-      "missingWorkspace": "Oturumun özgün klasörü artık yok — {{agent}} oturumu yalnızca oradan sürdürebilir",
-      "sourceMissing": "Özgün oturum verileri artık diskte değil",
-      "launchFailed": "{{agent}} terminali açılamadı"
     },
     "openInApp": {
       "headerButton": "{{app}} içinde aç",

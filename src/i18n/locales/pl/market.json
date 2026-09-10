@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "Ładowanie Repo...",
-    "noRepositories": "Brak Repo",
-    "getStartedHint": "Utwórz lub sklonuj Repo, aby zacząć",
-    "noPath": "Brak ścieżki",
-    "searchPlaceholder": "Szukaj Repo...",
-    "loadMore": "Załaduj więcej"
-  },
   "market": {
     "auth": {
       "noAuthCode": "Nie otrzymano kodu autoryzacji",

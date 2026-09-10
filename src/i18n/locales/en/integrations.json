@@ -833,15 +833,6 @@
     "devtools": "Playground"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "Add provider key",
-    "addMcpServer": "Add MCP server",
-    "createSkill": "Create skills",
-    "addDatabaseConnection": "Add database connection",
-    "addChannelOrService": "Add channel or service",
-    "addGitConnection": "Add Git connection",
-    "createRule": "Create Policy",
-    "addRoutine": "Add Routine",
-    "importSkill": "Import skills from other apps",
     "addAgent": "Add Agent"
   },
   "toolbarEllipsis": {},

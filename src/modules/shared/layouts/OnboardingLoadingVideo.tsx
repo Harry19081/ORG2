@@ -34,7 +34,6 @@ export const ONBOARDING_LOADING_VIDEO_FRAME_PX = 350;
  * (literal strings so JIT picks them up — update both when changing size).
  */
 export const ONBOARDING_LOADING_VIDEO_WIDTH_CLASS = "w-[350px]";
-export const ONBOARDING_LOADING_VIDEO_MAX_WIDTH_CLASS = "max-w-[350px]";
 
 export const OnboardingLoadingVideo: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);

@@ -821,15 +821,6 @@
     "devtools": "플레이그라운드"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "제공자 키 추가",
-    "addMcpServer": "MCP 서버 추가",
-    "createSkill": "Skills 만들기",
-    "addDatabaseConnection": "데이터베이스 연결 추가",
-    "addChannelOrService": "채널 또는 서비스 추가",
-    "addGitConnection": "Git 연결 추가",
-    "addRoutine": "Routine 추가",
-    "createRule": "규칙 만들기",
-    "importSkill": "다른 Apps에서 Skills 가져오기",
     "addAgent": "Agent 추가"
   },
   "toolbarEllipsis": {},

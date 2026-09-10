@@ -821,15 +821,6 @@
     "devtools": "プレイグラウンド"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "プロバイダーキーを追加",
-    "addMcpServer": "MCP サーバーを追加",
-    "createSkill": "Skills を作成",
-    "addDatabaseConnection": "データベース接続を追加",
-    "addChannelOrService": "チャネルまたはサービスを追加",
-    "addGitConnection": "Git 接続を追加",
-    "addRoutine": "Routine を追加",
-    "createRule": "ルールを作成",
-    "importSkill": "他の Apps から Skills をインポート",
     "addAgent": "Agent を追加"
   },
   "toolbarEllipsis": {},
