@@ -11,6 +11,7 @@ import {
 
 const mocks = vi.hoisted(() => ({
   loadAuthoritative: vi.fn(),
+  loadPreview: vi.fn(),
   getPersisted: vi.fn(),
   set: vi.fn(),
   setStreaming: vi.fn(),
@@ -35,6 +36,13 @@ vi.mock("../adapters/cli/cliLifecycle", () => ({
     ].includes(status ?? ""),
 }));
 
+vi.mock("../adapters/cli/cliHistory", () => ({
+  loadCliPreviewHistory: mocks.loadPreview,
+}));
+vi.mock("../../turns/loadedTurnRegistry", () => ({
+  clearLoadedTurnRegistry: vi.fn(),
+}));
+
 vi.mock("../authoritativeSessionEvents", () => ({
   loadAuthoritativeSessionEvents: mocks.loadAuthoritative,
 }));
@@ -42,6 +50,7 @@ vi.mock("../authoritativeSessionEvents", () => ({
 vi.mock("@src/engines/SessionCore/core/store/EventStoreProxy", () => ({
   eventStoreProxy: {
     getPersistedEvents: mocks.getPersisted,
+    getLatestSessionSnapshot: () => ({ version: 10 }),
     set: mocks.set,
     setStreaming: mocks.setStreaming,
   },
@@ -68,6 +77,9 @@ function makeEvent(id: string, sessionId: string): SessionEvent {
 
 function historySequence(sequence: SessionEvent[][]): void {
   let call = 0;
+  mocks.loadPreview.mockImplementation(
+    async () => sequence[Math.min(call++, sequence.length - 1)] ?? []
+  );
   mocks.loadAuthoritative.mockImplementation(async () => ({
     events: sequence[Math.min(call++, sequence.length - 1)] ?? [],
     source: "cli_history",
@@ -86,6 +98,91 @@ describe("single-owner native transcript reconcile", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it("does not publish an idle read superseded by a new turn", async () => {
+    let current = true;
+    mocks.getPersisted.mockImplementationOnce(async () => {
+      current = false;
+      return [];
+    });
+    historySequence([[makeEvent("old", "idle-refresh")]]);
+    await expect(
+      reconcileNativeTranscript("idle-refresh", {
+        refreshGuard: () => current,
+      })
+    ).rejects.toMatchObject({ name: "AbortError" });
+    expect(mocks.set).not.toHaveBeenCalled();
+    expect(mocks.setStreaming).not.toHaveBeenCalled();
+  });
+
+  it("a terminal caller rereads after a cancelled idle job", async () => {
+    const controller = new AbortController();
+    let finish!: () => void;
+    mocks.loadPreview.mockImplementationOnce(async () => {
+      await new Promise<void>((resolve) => {
+        finish = resolve;
+      });
+      return [makeEvent("old", "shared-refresh")];
+    });
+    mocks.loadAuthoritative.mockResolvedValueOnce({
+      events: [makeEvent("new", "shared-refresh")],
+    });
+    const idle = reconcileNativeTranscript("shared-refresh", {
+      signal: controller.signal,
+      refreshGuard: () => true,
+    });
+    const terminal = reconcileNativeTranscript("shared-refresh");
+    await vi.waitFor(() => expect(finish).toBeDefined());
+    controller.abort();
+    const rejected = expect(idle).rejects.toMatchObject({ name: "AbortError" });
+    finish();
+    await rejected;
+    expect((await terminal).map((event) => event.id)).toEqual(["new"]);
+    expect(mocks.set).toHaveBeenCalledOnce();
+  });
+
+  it.each(["running", "waiting_for_user", "installing"])(
+    "does not read or replace a native session that is %s",
+    async (status) => {
+      mocks.cliStatus.mockResolvedValue({ transcriptSource: "native", status });
+      await expect(
+        reconcileNativeTranscript("busy-refresh", {
+          refreshGuard: () => true,
+        })
+      ).rejects.toMatchObject({ name: "AbortError" });
+      expect(mocks.loadAuthoritative).not.toHaveBeenCalled();
+      expect(mocks.set).not.toHaveBeenCalled();
+    }
+  );
+
+  it("does not close streaming when a new turn starts during the projection write", async () => {
+    let current = true;
+    historySequence([[makeEvent("old", "stream-refresh")]]);
+    mocks.set.mockImplementationOnce(async () => {
+      current = false;
+    });
+    await expect(
+      reconcileNativeTranscript("stream-refresh", {
+        refreshGuard: () => current,
+      })
+    ).rejects.toMatchObject({ name: "AbortError" });
+    expect(mocks.setStreaming).not.toHaveBeenCalled();
+  });
+
+  it("uses a conditional write for idle refresh without closing streaming", async () => {
+    historySequence([[makeEvent("native", "conditional-refresh")]]);
+    await reconcileNativeTranscript("conditional-refresh", {
+      refreshGuard: () => true,
+    });
+    expect(mocks.loadAuthoritative).not.toHaveBeenCalled();
+    expect(mocks.loadPreview).toHaveBeenCalledOnce();
+    expect(mocks.set).toHaveBeenCalledWith(
+      expect.any(Array),
+      "conditional-refresh",
+      10
+    );
+    expect(mocks.setStreaming).not.toHaveBeenCalled();
   });
 
   it("does not schedule a non-native Session", async () => {
