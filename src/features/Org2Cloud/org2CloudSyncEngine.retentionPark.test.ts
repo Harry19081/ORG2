@@ -143,13 +143,15 @@ describe("Org2CloudSyncEngine retention parking", () => {
     expect(fixture.client.upsertSessionMetadata).toHaveBeenCalledTimes(2);
   });
 
-  it("revalidates after an explicit auth lifecycle restart", async () => {
+  it("revalidates after sign-out and sign-in", async () => {
     fixture.client.upsertSessionMetadata.mockRejectedValue(
       new Org2CloudSyncError("ORG2_RETENTION_EXPIRED", 400)
     );
     await engine.runSyncPass();
+    fixture.store.set(org2CloudAuthAtom, null);
     engine.stop();
     expect(fixture.store.get(org2CloudRetentionParkedAtom)).toEqual({});
+    fixture.store.set(org2CloudAuthAtom, AUTH);
     engine.start(fixture.store);
     await engine.runSyncPass();
     expect(fixture.client.upsertSessionMetadata).toHaveBeenCalledTimes(2);
@@ -232,5 +234,34 @@ describe("Org2CloudSyncEngine retention parking", () => {
     } finally {
       localStorage.removeItem(ORG2_CLOUD_ENDPOINT_OVERRIDE_STORAGE_KEY);
     }
+  });
+  it("preserves durable parks when startup remount restarts the same identity", async () => {
+    fixture.client.upsertSessionMetadata.mockRejectedValue(
+      new Org2CloudSyncError("ORG2_RETENTION_EXPIRED", 400)
+    );
+    await engine.runSyncPass();
+    const persisted = fixture.store.get(org2CloudRetentionParkedAtom);
+    for (let cycle = 0; cycle < 3; cycle++) {
+      engine.stop();
+      expect(fixture.store.get(org2CloudRetentionParkedAtom)).toEqual(
+        persisted
+      );
+      engine.start(fixture.store);
+      await engine.runSyncPass();
+    }
+    expect(fixture.client.upsertSessionMetadata).toHaveBeenCalledTimes(1);
+  });
+
+  it("clears parks when the engine stops after an account switch", async () => {
+    fixture.client.upsertSessionMetadata.mockRejectedValue(
+      new Org2CloudSyncError("ORG2_RETENTION_EXPIRED", 400)
+    );
+    await engine.runSyncPass();
+    fixture.store.set(org2CloudAuthAtom, { ...AUTH, userId: "second-account" });
+    engine.stop();
+    expect(fixture.store.get(org2CloudRetentionParkedAtom)).toEqual({});
+    engine.start(fixture.store);
+    await engine.runSyncPass();
+    expect(fixture.client.upsertSessionMetadata).toHaveBeenCalledTimes(2);
   });
 });

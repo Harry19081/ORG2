@@ -182,6 +182,7 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
   /** Last roster version for each locally owned external-history session. */
   private readonly externalHistoryRosterVersions = new Map<string, string>();
   private externalHistoryRosterInitialized = false;
+  private retentionIdentityKey: string | null = null;
   private sessionRosterUnsubscribe: (() => void) | null = null;
   private scopeResolutionUnsubscribe: (() => void) | null = null;
   private scopeResolutionTimer: ReturnType<typeof setTimeout> | null = null;
@@ -260,6 +261,8 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
 
   override start(store: CloudStore): void {
     if (this.sessionRosterUnsubscribe) return;
+    const auth = store.get(org2CloudAuthAtom);
+    this.retentionIdentityKey = auth ? org2CloudAuthIdentityKey(auth) : null;
     super.start(store);
     this.captureExternalHistoryRosterActivity(store);
     this.sessionRosterUnsubscribe = store.sub(sessionsAtom, () => {
@@ -359,9 +362,15 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
   }
 
   protected override resetSyncState(): void {
-    // An explicit auth lifecycle stop revalidates entitlement on the next run.
-    // A fresh engine has not started, so its initial stop preserves cold-boot parks.
-    this.store?.set(org2CloudRetentionParkedAtom, {});
+    // Startup/router remount can restart this singleton under the SAME auth
+    // identity. Only a real sign-out/account/endpoint transition invalidates
+    // durable parks; treating every stop as sign-out defeats cold-boot parking.
+    const auth = this.store?.get(org2CloudAuthAtom);
+    const currentIdentity = auth ? org2CloudAuthIdentityKey(auth) : null;
+    if (!currentIdentity || currentIdentity !== this.retentionIdentityKey) {
+      this.store?.set(org2CloudRetentionParkedAtom, {});
+    }
+    this.retentionIdentityKey = null;
     this.orgBackoff.reset();
     this.sessionSync.reset();
     this.repoScopeSync.reset();
