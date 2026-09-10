@@ -35,7 +35,6 @@ const EXPECTED_OWNERSHIP: Record<WorkStationTabType, WorkstationTabOwnership> =
     explorer: "workspace-local",
     "git-diff": "workspace-local",
     "source-control": "workspace-local",
-    "timeline-diff": "workspace-local",
     "git-log": "workspace-local",
     "git-commit-detail": "workspace-local",
     "git-stash-detail": "workspace-local",
@@ -114,7 +113,7 @@ describe("WorkStation tab ownership policy", () => {
       })
     );
 
-    expect(results).toHaveLength(34);
+    expect(results).toHaveLength(33);
     expect(results.every(({ actual, expected }) => actual === expected)).toBe(
       true
     );
