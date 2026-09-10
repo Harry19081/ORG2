@@ -187,7 +187,6 @@ export {
   editorCacheAtom,
   activeEditorRepoAtom,
   // Derived atoms
-  getRepoCacheAtom,
   activeRepoCacheAtom,
   editorCacheSizeAtom,
   // Action atoms
