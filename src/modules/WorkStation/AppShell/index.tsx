@@ -83,7 +83,10 @@ const AppShell = React.memo(
     useTerminalTabTeardown();
 
     const workStationPanels = useWorkStationPanels();
-    useAppShellSimulatorPanelSync({ isAgentStation, workStationPanels });
+    useAppShellSimulatorPanelSync({
+      isAgentStation,
+      layoutMode: workStationPanels.layoutMode,
+    });
 
     const { handleSelectRepo, handleOpenSettings } = useAppShellActions();
 
