@@ -208,6 +208,12 @@
       "colorful": "Kolorowe",
       "monochrome": "Monochromatyczne"
     },
+    "appIcon": "Ikona aplikacji",
+    "appIconDesc": "Ikona uruchomionej aplikacji w Docku lub na pasku zadań. Zainstalowana aplikacja zachowuje własną ikonę w Finderze",
+    "appIconOptions": {
+      "dark": "Ciemny kafelek",
+      "light": "Jasny kafelek"
+    },
     "translucentSidebar": "Półprzezroczysty pasek boczny",
     "skin": "Skórka",
     "accent": "Akcent",
