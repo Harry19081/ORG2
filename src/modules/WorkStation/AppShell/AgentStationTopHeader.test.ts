@@ -15,6 +15,7 @@ import {
 } from "vitest";
 
 import { ROUTES } from "@src/config/routes";
+import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
@@ -127,6 +128,24 @@ describe("AgentStationTopHeader", () => {
     expect(
       container.querySelector('button[title="chat.hideWorkstation"]')
     ).not.toBeNull();
+  });
+
+  it("preserves both restore affordances and their single dispatch", () => {
+    renderHeader();
+    act(() => {
+      store.set(stationModeAtom, "agent-station");
+      store.set(workstationActiveSessionIdAtom, "session-a");
+      store.set(activeStationChatVisibleAtom, "agent-station", false);
+    });
+    const buttons = container.querySelectorAll<HTMLButtonElement>(
+      'button[title="chat.restoreChatPanel"]'
+    );
+    expect(buttons).toHaveLength(2);
+    vi.mocked(WorkStationViewService.showWorkStation).mockClear();
+    act(() => buttons[0].click());
+    expect(WorkStationViewService.showWorkStation).toHaveBeenCalledTimes(1);
+    act(() => buttons[1].click());
+    expect(WorkStationViewService.showWorkStation).toHaveBeenCalledTimes(2);
   });
 
   it("leaves the controls to pinned chrome while Agent Station is empty", () => {
