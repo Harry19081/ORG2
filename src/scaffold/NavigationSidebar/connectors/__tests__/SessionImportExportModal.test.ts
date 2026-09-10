@@ -222,4 +222,27 @@ describe("SessionImportExportModal", () => {
     });
     expect(props.onClose).not.toHaveBeenCalled();
   });
+  it("keeps the export dialog open during a pending file write", async () => {
+    let resolveWrite!: () => void;
+    mocks.writeTextFile.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveWrite = resolve;
+      })
+    );
+    await render();
+    await act(async () => button("chat.importExport.exportAction").click());
+    expect(document.querySelector('button[title="Close"]')).toBeNull();
+    expect(button("common:actions.cancel").disabled).toBe(true);
+    act(() => {
+      button("common:actions.cancel").click();
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+      );
+      document.querySelector<HTMLElement>(".liquid-modal-mask")!.click();
+    });
+    expect(props.onClose).not.toHaveBeenCalled();
+    await act(async () => resolveWrite());
+    expect(props.onClose).toHaveBeenCalledOnce();
+    expect(document.querySelector('button[title="Close"]')).not.toBeNull();
+  });
 });
