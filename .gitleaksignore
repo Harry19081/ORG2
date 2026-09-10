@@ -20,3 +20,9 @@ ba03bb3e7af65c6e927169e8db506fe475757107:src/features/Org2Cloud/org2CloudOrgMana
 3b1f59fce6d7b7f875f7c9b8c7cbcf9ab8e6cf0c:src/config/keyboard/shortcuts/globalShortcuts.ts:generic-api-key:127
 3b1f59fce6d7b7f875f7c9b8c7cbcf9ab8e6cf0c:src/config/keyboard/shortcuts/globalShortcuts.ts:generic-api-key:128
 3b1f59fce6d7b7f875f7c9b8c7cbcf9ab8e6cf0c:src/engines/SessionCore/sync/utils/activityIds.ts:generic-api-key:9
+
+# Reviewed mobile history: two public Supabase publishable client keys,
+# then the synthetic sequential UUID used in token comparison tests.
+8304c2a1957cf318db95c5de2af87de6088bf6a0:src-tauri/crates/mobile-relay-server/tests/relay_lifecycle.rs:generic-api-key:29
+81e6c0da7caddd3d04bfc8cbc183dd3e2e7421eb:src/modules/MobileRemote/auth/MobileAuthGate.test.ts:generic-api-key:44
+099bd068673a9ffed77499d55eaed138027596af:src-tauri/src/api/mobile_bridge/auth.rs:generic-api-key:158
