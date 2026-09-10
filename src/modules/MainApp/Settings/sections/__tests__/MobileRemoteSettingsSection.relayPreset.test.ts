@@ -13,6 +13,10 @@ import {
 } from "vitest";
 
 import {
+  type PairingInitOutput,
+  mobileRemoteApi,
+} from "@src/api/tauri/mobileRemote";
+import {
   MOBILE_REMOTE_RELAY_LOCAL_URL,
   MOBILE_REMOTE_RELAY_PRODUCTION_URL,
 } from "@src/config/mobileRemoteRelay";
@@ -130,6 +134,8 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
     mocks.settings.set("mobileRemote.lanToken", "lan-token");
     mocks.settings.set("mobileRemote.lanPort", 13847);
     mocks.setRelayUrl.mockReset();
+    vi.mocked(mobileRemoteApi.pairInit).mockReset();
+    vi.mocked(mobileRemoteApi.pairComplete).mockReset();
   });
 
   afterEach(() => {
@@ -287,4 +293,80 @@ describe("MobileRemoteSettingsSection relay preset switcher", () => {
       "mobileRemote.cloudLoginDescSignedIn:Junyu"
     );
   });
+
+  it.each(["full", "read_only"] as const)(
+    "pairs with an automatic phone name and %s access after retrying a failure",
+    async (tier) => {
+      mocks.cloudAuth = { userId: "user-1" };
+      // A previously enabled LAN setting must not restore the removed UI.
+      mocks.settings.set("mobileRemote.allowLanExposure", true);
+      await renderSection();
+
+      expect(container.textContent).not.toContain("mobileRemote.phoneLabel");
+      expect(container.textContent).not.toContain("mobileRemote.lanAdvanced");
+      expect(container.textContent).not.toContain("mobileRemote.refreshLanIp");
+
+      if (tier === "read_only") {
+        const switches =
+          container.querySelectorAll<HTMLButtonElement>('[role="switch"]');
+        act(() => switches[switches.length - 1].click());
+      }
+
+      const findButton = (label: string): HTMLButtonElement => {
+        const button = Array.from(container.querySelectorAll("button")).find(
+          (candidate) => candidate.textContent?.trim() === label
+        );
+        if (!button) throw new Error(`Missing button: ${label}`);
+        return button;
+      };
+
+      vi.mocked(mobileRemoteApi.pairInit).mockRejectedValueOnce(
+        new Error("offline")
+      );
+      await act(async () => {
+        findButton("mobileRemote.startOutdoorPairing").click();
+      });
+      expect(findButton("mobileRemote.startOutdoorPairing").disabled).toBe(
+        false
+      );
+
+      const pairing: PairingInitOutput = {
+        pairingCode: "PAIR-1234",
+        confirmationPhrase: "ember-delta-coral",
+        qrPayload: "https://relay.example.test/orgii/mobile#pair=payload",
+        expiresInSeconds: 120,
+      };
+      let resolvePairing!: (value: PairingInitOutput) => void;
+      vi.mocked(mobileRemoteApi.pairInit).mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolvePairing = resolve;
+          })
+      );
+      await act(async () => {
+        findButton("mobileRemote.startOutdoorPairing").click();
+      });
+      expect(findButton("mobileRemote.startOutdoorPairing").disabled).toBe(
+        true
+      );
+      expect(mobileRemoteApi.pairInit).toHaveBeenLastCalledWith({
+        label: expect.stringMatching(/^Phone · .+ \d{2}:\d{2}$/),
+        tier,
+        isPrimary: true,
+      });
+
+      await act(async () => resolvePairing(pairing));
+      expect(container.textContent).toContain(pairing.confirmationPhrase);
+      await act(async () => {
+        findButton("mobileRemote.confirmPairing").click();
+      });
+      expect(mobileRemoteApi.pairComplete).toHaveBeenLastCalledWith({
+        pairingCode: pairing.pairingCode,
+        tier,
+      });
+      expect(findButton("mobileRemote.startOutdoorPairing").disabled).toBe(
+        false
+      );
+    }
+  );
 });
