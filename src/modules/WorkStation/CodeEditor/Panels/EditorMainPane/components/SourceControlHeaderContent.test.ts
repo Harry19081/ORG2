@@ -69,14 +69,14 @@ describe("SourceControlHeaderContent diff view controls", () => {
   it("shows the shared unified/split control in All Changes", () => {
     const markup = renderHeader("all-changes");
 
-    expect(markup).toContain('data-active-tab="split"');
-    expect(markup).toContain('data-tabs="unified,split"');
+    expect(markup).toContain('data-title="workstation.switchToUnifiedDiff"');
+    expect(markup).not.toContain('data-tabs="unified,split"');
   });
 
   it("keeps the aggregate diff control out of Focus mode", () => {
     const markup = renderHeader("focus");
 
-    expect(markup).not.toContain('data-tabs="unified,split"');
+    expect(markup).not.toContain("workstation.switchToUnifiedDiff");
     expect(markup).toContain('data-tabs="focus,all-changes"');
   });
 });

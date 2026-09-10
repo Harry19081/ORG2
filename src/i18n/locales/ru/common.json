@@ -981,6 +981,8 @@
     "chromeWindowOpen": "Окно Chrome открыто — взаимодействуйте напрямую, затем вернитесь к Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "Переключить на единый diff",
+    "switchToSplitDiff": "Переключить на разделённый diff",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git не инициализирован",

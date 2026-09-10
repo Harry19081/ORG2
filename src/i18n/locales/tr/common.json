@@ -981,6 +981,8 @@
     "chromeWindowOpen": "Chrome penceresi açık — doğrudan etkileşime geçin, ardından Agent'a dönün",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "Birleşik fark görünümüne geç",
+    "switchToSplitDiff": "Bölünmüş fark görünümüne geç",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git başlatılmadı",

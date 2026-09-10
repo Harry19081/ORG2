@@ -981,6 +981,8 @@
     "chromeWindowOpen": "La fenêtre Chrome est ouverte — interagissez directement, puis revenez à l'Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "Passer au diff unifié",
+    "switchToSplitDiff": "Passer au diff côte à côte",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git non initialisé",

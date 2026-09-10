@@ -981,6 +981,8 @@
     "chromeWindowOpen": "Chrome 창이 열려 있습니다 — 직접 조작한 후 Agent로 돌아가세요",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "통합 diff로 전환",
+    "switchToSplitDiff": "분할 diff로 전환",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git 초기화 안 됨",

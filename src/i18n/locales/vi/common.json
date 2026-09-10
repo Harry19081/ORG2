@@ -981,6 +981,8 @@
     "chromeWindowOpen": "Cửa sổ Chrome đang mở — tương tác trực tiếp, sau đó quay lại Agent",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "Chuyển sang diff hợp nhất",
+    "switchToSplitDiff": "Chuyển sang diff chia đôi",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git chưa được khởi tạo",

@@ -26,6 +26,7 @@ import {
 } from "@src/icons";
 import { ExternalBrowserButton } from "@src/modules/WorkStation/shared/ExternalBrowserButton";
 import type { SourceControlFilterMode } from "@src/modules/WorkStation/shared/SidebarModules";
+import { DiffViewModeToggle } from "@src/modules/shared/components/DiffViewModeToggle";
 import type {
   SourceControlHistorySelection,
   WorkStationTab,
@@ -228,17 +229,10 @@ export const SourceControlHeaderContent: React.FC<
 
         {showCollapseAll && (
           <>
-            <TabPill
-              activeTab={diffViewMode}
-              tabs={[
-                { key: "unified", label: t("workstation.unified") },
-                { key: "split", label: t("workstation.split") },
-              ]}
-              onChange={(key) => onDiffViewModeChange(key as DiffViewMode)}
-              variant="pill"
-              color="fill"
-              fillWidth={false}
-              size="small"
+            <DiffViewModeToggle
+              viewMode={diffViewMode}
+              onChange={onDiffViewModeChange}
+              t={t}
             />
             <span
               className="mx-1.5 h-4 w-px shrink-0 bg-border-2"

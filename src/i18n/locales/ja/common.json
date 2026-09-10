@@ -981,6 +981,8 @@
     "chromeWindowOpen": "Chrome ウィンドウが開いています — 直接操作してから Agent に戻ってください",
     "waitingForScreenshot": "Waiting for browser screenshot...",
     "unified": "Unified",
+    "switchToUnifiedDiff": "統合差分に切り替え",
+    "switchToSplitDiff": "分割差分に切り替え",
     "split": "Split",
     "publishingBranch": "Publishing...",
     "notGitInitialized": "Git 未初期化",
