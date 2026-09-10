@@ -11,11 +11,13 @@ import {
 } from "./org2CloudAuthAtom";
 import * as entitlementCoordinator from "./org2CloudEntitlementCoordinator";
 
+const mocks = vi.hoisted(() => ({ signIn: vi.fn() }));
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock("@src/features/Org2Cloud/useOrg2CloudSignIn", () => ({
-  useOrg2CloudSignIn: () => vi.fn(),
+  useOrg2CloudSignIn: () => mocks.signIn,
 }));
 
 it("settings preserves auth on cancel and clears it only after confirmation", async () => {
@@ -75,6 +77,21 @@ it("settings preserves auth on cancel and clears it only after confirmation", as
     expect(store.get(org2CloudAuthAtom)).toBeNull();
     expect(localStorage.getItem(ORG2_CLOUD_AUTH_STORAGE_KEY)).toBe("null");
     expect(dialog()).toBeNull();
+    const login = () =>
+      container
+        .querySelector<HTMLButtonElement>('[data-testid="org2-cloud-sign-in"]')!
+        .click();
+    await act(async () => login());
+    expect(dialog()?.textContent).toContain("cloud.signInModalBody");
+    expect(dialog()?.querySelector('[title="Close"]')).toBeNull();
+    expect(mocks.signIn).not.toHaveBeenCalled();
+    await act(async () => clickAction("common:actions.cancel"));
+    expect(dialog()).toBeNull();
+    expect(mocks.signIn).not.toHaveBeenCalled();
+    await act(async () => login());
+    await act(async () => clickAction("cloud.signIn"));
+    expect(dialog()).toBeNull();
+    expect(mocks.signIn).toHaveBeenCalledOnce();
   } finally {
     act(() => root.unmount());
     container.remove();

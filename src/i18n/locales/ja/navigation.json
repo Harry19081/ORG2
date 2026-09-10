@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "チームメンバーとセッションを共有",
+    "featureMobileRemoteBody": "スマートフォンからエージェントの作業を進めよう",
+    "featureMarketBody": "ORG2 Marketでツールやリソースを探す",
+    "signInModalTitle": "おかえりなさい",
+    "signInModalBody": "ブラウザーで続行してアカウントにログインしてください",
     "signIn": "ログイン",
     "signOut": "ログアウト",
     "signOutConfirmTitle": "ログアウトしますか？",

@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "Oturumlarınızı ekip arkadaşlarınızla paylaşın",
+    "featureMobileRemoteBody": "Ajanlarınızın işlerini telefonunuzdan ilerletin",
+    "featureMarketBody": "ORG2 Market’te araçları ve kaynakları keşfedin",
+    "signInModalTitle": "Tekrar hoş geldiniz",
+    "signInModalBody": "Hesabınıza giriş yapmak için tarayıcınızda devam edin",
     "signIn": "Giriş yap",
     "signOut": "Çıkış yap",
     "signOutConfirmTitle": "Çıkış yapılsın mı?",

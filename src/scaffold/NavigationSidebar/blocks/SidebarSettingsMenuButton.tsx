@@ -28,6 +28,7 @@ import {
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import type { AppearanceMode } from "@src/config/appearance/globalThemes";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { SignInModal } from "@src/features/Org2Cloud/SignInModal";
 import { SignOutConfirmationModal } from "@src/features/Org2Cloud/SignOutConfirmationModal";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import {
@@ -103,6 +104,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
   const { t: tSettings } = useTranslation("settings");
   const { t: tOnboarding } = useTranslation("onboarding");
   const { goToSettings } = useAppNavigation();
+  const [showSignInModal, setShowSignInModal] = useState(false);
   const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
   const signedIn = useAtomValue(org2CloudAuthAtom) !== null;
   const devModeEnabled = useAtomValue(devModeEnabledAtom);
@@ -254,8 +256,8 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
 
   const handleSignIn = useCallback(() => {
     closeAll();
-    onSignIn?.();
-  }, [closeAll, onSignIn]);
+    setShowSignInModal(true);
+  }, [closeAll]);
 
   const handleSignOut = useCallback(() => {
     closeAll();
@@ -531,6 +533,12 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
           </div>,
           document.body
         )}
+      {showSignInModal && onSignIn && (
+        <SignInModal
+          onClose={() => setShowSignInModal(false)}
+          onSignIn={onSignIn}
+        />
+      )}
       {showSignOutConfirmation && (
         <SignOutConfirmationModal
           onClose={() => setShowSignOutConfirmation(false)}

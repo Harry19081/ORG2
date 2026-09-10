@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "Compartilhe suas sessões com a equipe",
+    "featureMobileRemoteBody": "Mantenha seus agentes trabalhando pelo celular",
+    "featureMarketBody": "Explore ferramentas e recursos no ORG2 Market",
+    "signInModalTitle": "Boas-vindas de volta",
+    "signInModalBody": "Continue no navegador para entrar na sua conta",
     "signIn": "Entrar",
     "signOut": "Sair",
     "signOutConfirmTitle": "Sair da conta?",

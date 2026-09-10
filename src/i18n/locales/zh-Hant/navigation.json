@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "與團隊成員分享你的工作階段",
+    "featureMobileRemoteBody": "用手機隨時推進智慧代理的工作",
+    "featureMarketBody": "探索 ORG2 Market 中的工具和資源",
+    "signInModalTitle": "歡迎回來",
+    "signInModalBody": "繼續前往瀏覽器登入你的帳戶",
     "signIn": "登入",
     "signOut": "登出",
     "signOutConfirmTitle": "確認登出？",

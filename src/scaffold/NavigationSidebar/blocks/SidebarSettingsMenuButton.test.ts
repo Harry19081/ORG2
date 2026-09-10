@@ -241,6 +241,22 @@ describe("SidebarSettingsMenuButton", () => {
 
     act(() => signIn?.click());
     expect(mocks.closeDropdown).toHaveBeenCalledOnce();
+    expect(onSignIn).not.toHaveBeenCalled();
+    const dialog = () => document.querySelector('[role="dialog"]');
+    expect(dialog()?.textContent).toContain("cloud.signInModalBody");
+    act(() => {
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+      );
+    });
+    expect(dialog()).toBeNull();
+    expect(onSignIn).not.toHaveBeenCalled();
+    act(() => signIn?.click());
+    const confirm = Array.from(dialog()!.querySelectorAll("button")).find(
+      (button) => button.textContent === "cloud.signIn"
+    )!;
+    await act(async () => confirm.click());
+    expect(dialog()).toBeNull();
     expect(onSignIn).toHaveBeenCalledOnce();
   });
 

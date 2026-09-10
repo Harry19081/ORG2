@@ -418,6 +418,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "Share your sessions with teammates",
+    "featureMobileRemoteBody": "Keep your agents moving—from your phone",
+    "featureMarketBody": "Explore tools and resources in ORG2 Market",
+    "signInModalTitle": "Welcome back",
+    "signInModalBody": "Continue to your browser to sign in to your account",
     "signIn": "Login",
     "signOut": "Logout",
     "signOutConfirmTitle": "Sign out?",

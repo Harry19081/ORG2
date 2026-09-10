@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "Делитесь сессиями с командой",
+    "featureMobileRemoteBody": "Продолжайте работу агентов со своего телефона",
+    "featureMarketBody": "Откройте для себя инструменты и ресурсы в ORG2 Market",
+    "signInModalTitle": "С возвращением",
+    "signInModalBody": "Продолжите в браузере, чтобы войти в свой аккаунт",
     "signIn": "Войти",
     "signOut": "Выйти",
     "signOutConfirmTitle": "Выйти из аккаунта?",

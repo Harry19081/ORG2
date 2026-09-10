@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "팀원들과 세션을 공유하세요",
+    "featureMobileRemoteBody": "휴대폰으로 에이전트의 작업을 이어가세요",
+    "featureMarketBody": "ORG2 Market에서 도구와 리소스를 살펴보세요",
+    "signInModalTitle": "다시 오신 것을 환영합니다",
+    "signInModalBody": "브라우저에서 계속하여 계정에 로그인하세요",
     "signIn": "로그인",
     "signOut": "로그아웃",
     "signOutConfirmTitle": "로그아웃할까요?",
