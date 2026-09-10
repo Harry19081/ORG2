@@ -30,7 +30,10 @@ import {
 } from "@src/icons";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { toggleActiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { isChatPanelTabStationAvailable } from "@src/store/chatPanel/chatPanelTabsModel";
+import {
+  isChatPanelTabStationAvailable,
+  resolveChatPanelMaximizedForLayout,
+} from "@src/store/chatPanel/chatPanelTabsModel";
 import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   chatPanelMaximizedAtom,
@@ -45,8 +48,12 @@ const PinnedWorkbenchChromeComponent: React.FC = () => {
   const visible = usePinnedWorkbenchChromeVisible();
   const isChatPanelVisible = useCurrentStationChatVisible();
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
-  const chatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
+  const userMaximized = useAtomValue(chatPanelMaximizedAtom);
   const activeTab = useAtomValue(activeChatPanelTabAtom);
+  const chatPanelMaximized = resolveChatPanelMaximizedForLayout(
+    userMaximized,
+    activeTab
+  );
   const toggleChatPanelMaximized = useSetAtom(toggleChatPanelMaximizedAtom);
   const toggleActiveChatMaximized = useSetAtom(
     toggleActiveChatPanelMaximizedAtom
