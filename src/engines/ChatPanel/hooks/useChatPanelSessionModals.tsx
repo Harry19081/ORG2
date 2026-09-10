@@ -2,7 +2,7 @@ import type { TFunction } from "i18next";
 import { useSetAtom } from "jotai";
 import { type ComponentProps, useCallback } from "react";
 
-import { SessionImportExportModal } from "@src/scaffold/NavigationSidebar/connectors/SessionImportExportModal";
+import { SessionExportModal } from "@src/scaffold/NavigationSidebar/connectors/SessionExportModal";
 import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import type { Session } from "@src/store/session/sessionAtom/types";
 import { moveSessionTabAtom } from "@src/store/session/sessionTabPlacementAtom";
@@ -10,7 +10,7 @@ import { moveSessionTabAtom } from "@src/store/session/sessionTabPlacementAtom";
 import { useSessionActionModals } from "./useSessionActionModals";
 
 type ExportActiveSession = ComponentProps<
-  typeof SessionImportExportModal
+  typeof SessionExportModal
 >["activeSession"];
 
 interface UseChatPanelSessionModalsOptions {
