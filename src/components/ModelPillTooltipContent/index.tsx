@@ -37,16 +37,20 @@ export const ModelPillTooltipContent: React.FC<ModelPillTooltipContentProps> =
     }) => (
       <KeyboardShortcutTooltipContent
         label={
-          <ModelSelectionBreadcrumb
-            accountName={accountName}
-            modelLabel={modelLabel}
-            modelId={modelId}
-            modelType={modelType}
-            variantInfo={variantInfo}
-            thinking={thinking}
-            rawValue={rawValue}
-            wide
-          />
+          modelId ? (
+            <ModelSelectionBreadcrumb
+              accountName={accountName}
+              modelLabel={modelLabel}
+              modelId={modelId}
+              modelType={modelType}
+              variantInfo={variantInfo}
+              thinking={thinking}
+              rawValue={rawValue}
+              wide
+            />
+          ) : (
+            modelLabel
+          )
         }
         shortcut={shortcut}
         shortcutId={shortcutId}
