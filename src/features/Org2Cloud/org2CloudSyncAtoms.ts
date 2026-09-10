@@ -210,7 +210,7 @@ const RetentionParkedSchema = tolerantRecordSchema(
 
 /**
  * Sessions whose push failed with ORG2_RETENTION_EXPIRED, keyed
- * `${orgId}|${sessionId}` and stamped with the local `updated_at` that was
+ * org, endpoint/account identity and session, and stamped with the local `updated_at` that was
  * rejected. Retention is a server-side window over last activity, so the
  * same local state is refused on every later boot; persisting the park stops
  * each cold start from re-walking the upload chain (and re-raising the same
@@ -226,6 +226,16 @@ export const org2CloudRetentionParkedAtom = atomWithStorage<
   { getOnInit: true }
 );
 org2CloudRetentionParkedAtom.debugLabel = "org2CloudRetentionParkedAtom";
+
+/** Org prefix is shared with roster reconciliation; the tuple avoids identity collisions.
+ * Legacy unscoped keys never match and are evicted by roster reconciliation or the cap. */
+export function retentionParkKey(
+  identity: string,
+  orgId: string,
+  sessionId: string
+): string {
+  return `${orgId}:${JSON.stringify([identity, sessionId])}`;
+}
 
 export const RETENTION_PARKED_MAX_ENTRIES = 512;
 

@@ -84,6 +84,7 @@ import {
   type Org2CloudAuthState,
   commitRefreshedAuth,
   org2CloudAuthAtom,
+  org2CloudAuthIdentityKey,
 } from "./org2CloudAuthAtom";
 import { ensureFreshSession, schemaVersion } from "./org2CloudClient";
 import { resolveOrgEndpoint } from "./org2CloudEndpointDirectory";
@@ -112,6 +113,7 @@ import {
   org2CloudRetentionParkedAtom,
   org2CloudSyncEnabledAtom,
   pruneRetentionParked,
+  retentionParkKey,
 } from "./org2CloudSyncAtoms";
 import * as org2CloudSyncClient from "./org2CloudSyncClient";
 import {
@@ -190,14 +192,6 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
   private readonly orgBackoff: Org2CloudOrgBackoffTracker;
   /** Generation whose background-org retract reconcile already ran (P2). */
   private reconciledGeneration = -1;
-  /** "orgId|sessionId" keys whose push failed with ORG2_RETENTION_EXPIRED.
-   * Retention only recedes further within a signed-in run, so the push is
-   * doomed until the org's entitlement changes — parked until the next
-   * resetSyncState() (sign-in cycle / endpoint switch / app restart)
-   * instead of re-walking the full upload chain every pass. The durable
-   * twin (`org2CloudRetentionParkedAtom`) carries the park across restarts
-   * until the session's local `updated_at` changes. */
-  private readonly retentionParked = new Set<string>();
   /** TTL-gated `org2CloudRepoScopesAtom` mirror hydration, split out to
    * `Org2CloudRepoScopeSync`. */
   private readonly repoScopeSync: Org2CloudRepoScopeSync;
@@ -335,23 +329,39 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
   }
 
   private isRetentionParked(orgId: string, session: Session): boolean {
-    const key = `${orgId}|${session.session_id}`;
-    if (this.retentionParked.has(key)) return true;
     const store = this.store;
-    if (!store) return false;
+    const auth = store?.get(org2CloudAuthAtom);
+    if (!store || !auth) return false;
+    const key = retentionParkKey(
+      org2CloudAuthIdentityKey(auth),
+      orgId,
+      session.session_id
+    );
     return store.get(org2CloudRetentionParkedAtom)[key] === session.updated_at;
   }
 
-  private parkRetentionExpired(orgId: string, session: Session): void {
-    const key = `${orgId}|${session.session_id}`;
-    this.retentionParked.add(key);
-    this.store?.set(org2CloudRetentionParkedAtom, (current) =>
-      pruneRetentionParked({ ...current, [key]: session.updated_at })
+  private parkRetentionExpired(
+    auth: Org2CloudAuthState,
+    orgId: string,
+    session: Session
+  ): void {
+    const key = retentionParkKey(
+      org2CloudAuthIdentityKey(auth),
+      orgId,
+      session.session_id
     );
+    this.store?.set(org2CloudRetentionParkedAtom, (current) => {
+      // Reinsert renewed entries at the end of the bounded insertion-order cache.
+      const next = { ...current };
+      delete next[key];
+      return pruneRetentionParked({ ...next, [key]: session.updated_at });
+    });
   }
 
   protected override resetSyncState(): void {
-    this.retentionParked.clear();
+    // An explicit auth lifecycle stop revalidates entitlement on the next run.
+    // A fresh engine has not started, so its initial stop preserves cold-boot parks.
+    this.store?.set(org2CloudRetentionParkedAtom, {});
     this.orgBackoff.reset();
     this.sessionSync.reset();
     this.repoScopeSync.reset();
@@ -786,7 +796,15 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
               "ORG2_RETENTION_EXPIRED"
             )
           ) {
-            this.parkRetentionExpired(org.orgId, session);
+            const currentAuth = store.get(org2CloudAuthAtom);
+            if (
+              !currentAuth ||
+              org2CloudAuthIdentityKey(currentAuth) !==
+                org2CloudAuthIdentityKey(auth) ||
+              getCloudEndpoint().supabaseUrl !== passSupabaseUrl
+            )
+              return;
+            this.parkRetentionExpired(auth, org.orgId, session);
             recordSyncEvent({
               level: "warn",
               kind: "session_retention_parked",
