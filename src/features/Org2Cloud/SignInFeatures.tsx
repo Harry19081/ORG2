@@ -90,7 +90,7 @@ export function SignInFeatures() {
               size={20}
             />
           }
-          className={`absolute top-1/2 -translate-y-1/2 bg-black/30! text-white! opacity-0 group-hover/features:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-white enabled:hover:bg-black/50! ${direction === -1 ? "left-3" : "right-3"}`}
+          className={`absolute inset-y-0 my-auto bg-black/60! text-white! opacity-0 transition-none! group-hover/features:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-white enabled:hover:bg-black/75! ${direction === -1 ? "left-3" : "right-3"}`}
           onClick={() =>
             setIndex(
               (current) => (current + direction + slideCount) % slideCount
