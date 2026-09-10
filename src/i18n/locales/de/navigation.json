@@ -657,7 +657,6 @@
       "incomingError": "Dieser Freigabelink ist ungültig, abgelaufen oder wurde widerrufen.",
       "incomingRetryHint": "Der Import wurde nicht abgeschlossen. Die geteilte Session wird möglicherweise noch hochgeladen — versuchen Sie es erneut.",
       "importEntry": "Session importieren",
-      "importDialogTitle": "Geteilte Session importieren",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Importieren",
       "importInvalidInput": "Das sieht nicht nach einem gültigen Freigabelink oder Token aus.",

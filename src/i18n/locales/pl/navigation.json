@@ -657,7 +657,6 @@
       "incomingError": "Ten link jest nieprawidłowy, wygasł lub został cofnięty.",
       "incomingRetryHint": "Import nie został ukończony. Udostępniona sesja może wciąż być przesyłana — spróbuj ponownie.",
       "importEntry": "Importuj sesję",
-      "importDialogTitle": "Importuj udostępnioną sesję",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Importuj",
       "importInvalidInput": "To nie wygląda na prawidłowy link udostępniania ani token.",
