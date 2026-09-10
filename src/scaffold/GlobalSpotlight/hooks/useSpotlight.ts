@@ -33,6 +33,7 @@ import {
   openAgentControlSpotlight,
   openCollabOrgSpotlight,
   openSessionCreatorSpotlight,
+  openSessionImportSpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { AppViewService } from "@src/services/app";
 import { PanelService } from "@src/services/panel";
@@ -187,6 +188,7 @@ export function useSpotlight(
         () => void
       > = {
         "open-session-creator": openSessionCreatorSpotlight,
+        "import-session": openSessionImportSpotlight,
         "create-project": () => {
           getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
             target: "project",

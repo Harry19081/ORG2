@@ -657,7 +657,6 @@
       "incomingError": "Ce lien de partage est invalide, expiré ou a été révoqué.",
       "incomingRetryHint": "L'import n'a pas abouti. La session partagée est peut-être encore en cours d'envoi — réessayez.",
       "importEntry": "Importer une session",
-      "importDialogTitle": "Importer une session partagée",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Importer",
       "importInvalidInput": "Ceci ne ressemble pas à un lien de partage ou à un jeton valide.",

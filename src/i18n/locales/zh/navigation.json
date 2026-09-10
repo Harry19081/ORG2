@@ -656,7 +656,6 @@
       "incomingError": "此分享链接无效、已过期或已被撤销。",
       "incomingRetryHint": "导入未完成。分享的 session 可能仍在上传——请重试。",
       "importEntry": "导入 Session",
-      "importDialogTitle": "导入分享的 session",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "导入",
       "importInvalidInput": "这不是有效的分享链接或令牌。",

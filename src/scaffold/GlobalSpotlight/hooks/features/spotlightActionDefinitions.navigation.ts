@@ -27,6 +27,7 @@ import {
   FolderLibraryIcon,
   GitPullRequestIcon,
   type IconSvgElement,
+  ImportIcon,
   KanbanIcon,
   Login01Icon,
   MessageAdd02Icon,
@@ -89,6 +90,22 @@ export const ALL_SESSIONS_SEARCH_ICON: IconSvgElement = [
 ];
 
 export const AGENT_SESSION_ACTIONS = [
+  {
+    id: "import-session",
+    labelKey: "navigation:cloud.share.importEntry",
+    icon: ImportIcon,
+    keywords: [
+      "import session",
+      "import shared session",
+      "share link",
+      "导入会话",
+    ],
+    actionId: ACTION_ID.SPOTLIGHT_IMPORT_SESSION,
+    payload: {},
+    fallback: "import-session",
+    opensSecondLevel: true,
+    closeOnSuccess: false,
+  },
   {
     id: "open-agent-control",
     labelKey: "common:adeManager.menuToggle",

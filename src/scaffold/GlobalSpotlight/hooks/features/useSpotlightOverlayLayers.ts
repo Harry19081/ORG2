@@ -55,6 +55,7 @@ interface UseSpotlightOverlayLayersResult {
   allSessionsSearchOpen: boolean;
   agentControlOpen: boolean;
   sessionCreatorOpen: boolean;
+  sessionImportOpen: boolean;
   embeddedEditorPalette: EmbeddedEditorPaletteState | null;
   lastActivatedItemIdRef: RefObject<string | null>;
   pendingRestoreItemId: string | null;
@@ -71,6 +72,7 @@ interface UseSpotlightOverlayLayersResult {
   handleOpenAllSessionsSearch: () => void;
   handleOpenAgentControl: () => void;
   handleOpenSessionCreator: () => void;
+  handleOpenSessionImport: () => void;
   handleOpenEditorPalette: (query: string, mode?: EditorPaletteMode) => void;
   handleCloseWorkingDirectoryPicker: () => void;
   handleCloseCollabOrg: () => void;
@@ -81,6 +83,7 @@ interface UseSpotlightOverlayLayersResult {
   handleCloseAllSessionsSearch: () => void;
   handleCloseAgentControl: () => void;
   handleCloseSessionCreator: () => void;
+  handleCloseSessionImport: () => void;
   handleCloseEditorPalette: () => void;
 }
 
@@ -107,6 +110,7 @@ export function useSpotlightOverlayLayers(
   const [allSessionsSearchOpen, setAllSessionsSearchOpen] = useState(false);
   const [agentControlOpen, setAgentControlOpen] = useState(false);
   const [sessionCreatorOpen, setSessionCreatorOpen] = useState(false);
+  const [sessionImportOpen, setSessionImportOpen] = useState(false);
   const [embeddedEditorPalette, setEmbeddedEditorPalette] =
     useState<EmbeddedEditorPaletteState | null>(null);
   const lastActivatedItemIdRef = useRef<string | null>(null);
@@ -155,6 +159,11 @@ export function useSpotlightOverlayLayers(
   const handleOpenAgentControl = useCallback(() => {
     setAgentControlOpen(true);
   }, []);
+
+  const handleOpenSessionImport = useCallback(
+    () => setSessionImportOpen(true),
+    []
+  );
 
   const handleOpenSessionCreator = useCallback(() => {
     setSessionCreatorOpen(true);
@@ -214,6 +223,11 @@ export function useSpotlightOverlayLayers(
     restoreLastActivatedItem();
   }, [restoreLastActivatedItem]);
 
+  const handleCloseSessionImport = useCallback(() => {
+    setSessionImportOpen(false);
+    restoreLastActivatedItem();
+  }, [restoreLastActivatedItem]);
+
   const handleCloseSessionCreator = useCallback(() => {
     setSessionCreatorOpen(false);
     restoreLastActivatedItem();
@@ -239,6 +253,7 @@ export function useSpotlightOverlayLayers(
       setAllSessionsSearchOpen(false);
       setAgentControlOpen(false);
       setSessionCreatorOpen(false);
+      setSessionImportOpen(false);
       setEmbeddedEditorPalette(null);
       lastActivatedItemIdRef.current = null;
       setPendingRestoreItemId(null);
@@ -266,6 +281,7 @@ export function useSpotlightOverlayLayers(
     allSessionsSearchOpen,
     agentControlOpen,
     sessionCreatorOpen,
+    sessionImportOpen,
     embeddedEditorPalette,
     lastActivatedItemIdRef,
     pendingRestoreItemId,
@@ -280,6 +296,7 @@ export function useSpotlightOverlayLayers(
     handleOpenAllSessionsSearch,
     handleOpenAgentControl,
     handleOpenSessionCreator,
+    handleOpenSessionImport,
     handleOpenEditorPalette,
     handleCloseWorkingDirectoryPicker,
     handleCloseCollabOrg,
@@ -290,6 +307,7 @@ export function useSpotlightOverlayLayers(
     handleCloseAllSessionsSearch,
     handleCloseAgentControl,
     handleCloseSessionCreator,
+    handleCloseSessionImport,
     handleCloseEditorPalette,
   };
 }

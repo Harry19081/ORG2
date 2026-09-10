@@ -432,7 +432,8 @@ export type SpotlightInitialLayer =
   | { kind: "agentSessionSearch" }
   | { kind: "allSessionsSearch" }
   | { kind: "agentControl" }
-  | { kind: "sessionCreator" };
+  | { kind: "sessionCreator" }
+  | { kind: "sessionImport" };
 
 export interface SpotlightInitialQuery {
   query: string;

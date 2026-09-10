@@ -15,6 +15,7 @@ import type { SpotlightItem } from "../../types";
 // ============================================
 
 export type SpotlightStaticActionId =
+  | "import-session"
   | "open-session-creator"
   | "create-project"
   | "create-work-item"
@@ -55,6 +56,7 @@ export type SpotlightStaticActionId =
   | "detect-update";
 
 export type SpotlightStaticActionFallback =
+  | "import-session"
   | "open-session-creator"
   | "create-project"
   | "create-work-item"

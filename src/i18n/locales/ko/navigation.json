@@ -657,7 +657,6 @@
       "incomingError": "이 공유 링크는 유효하지 않거나 만료되었거나 철회되었습니다.",
       "incomingRetryHint": "가져오기가 완료되지 않았습니다. 공유된 세션이 아직 업로드 중일 수 있습니다 — 다시 시도하세요.",
       "importEntry": "세션 가져오기",
-      "importDialogTitle": "공유된 세션 가져오기",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "가져오기",
       "importInvalidInput": "유효한 공유 링크나 토큰이 아닌 것 같습니다.",

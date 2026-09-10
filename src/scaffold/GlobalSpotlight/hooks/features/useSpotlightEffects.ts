@@ -47,6 +47,7 @@ export interface UseSpotlightEffectsOptions {
   onOpenAllSessionsSearchLayer?: () => void;
   onOpenAgentControlLayer?: () => void;
   onOpenSessionCreatorLayer?: () => void;
+  onOpenSessionImportLayer?: () => void;
 }
 
 // ============================================
@@ -67,6 +68,7 @@ export function useSpotlightEffects(options: UseSpotlightEffectsOptions): void {
     onOpenAllSessionsSearchLayer,
     onOpenAgentControlLayer,
     onOpenSessionCreatorLayer,
+    onOpenSessionImportLayer,
   } = options;
 
   // Reset state on close
@@ -131,6 +133,8 @@ export function useSpotlightEffects(options: UseSpotlightEffectsOptions): void {
       onOpenAgentControlLayer?.();
     } else if (initialQuery.layer?.kind === "sessionCreator") {
       onOpenSessionCreatorLayer?.();
+    } else if (initialQuery.layer?.kind === "sessionImport") {
+      onOpenSessionImportLayer?.();
     } else if (initialQuery.query) {
       dispatch({
         type: "SET_SEARCH_QUERY",
@@ -152,6 +156,7 @@ export function useSpotlightEffects(options: UseSpotlightEffectsOptions): void {
     onOpenGitHubIssuesImportLayer,
     onOpenWorkingDirectoryLayer,
     onOpenSessionCreatorLayer,
+    onOpenSessionImportLayer,
     setInitialQuery,
     dispatch,
   ]);

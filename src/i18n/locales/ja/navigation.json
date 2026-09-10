@@ -657,7 +657,6 @@
       "incomingError": "この共有リンクは無効か、期限切れ、または取り消されています。",
       "incomingRetryHint": "インポートが完了しませんでした。共有セッションはまだアップロード中の可能性があります——もう一度お試しください。",
       "importEntry": "セッションをインポート",
-      "importDialogTitle": "共有セッションをインポート",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "インポート",
       "importInvalidInput": "有効な共有リンクまたはトークンではないようです。",
