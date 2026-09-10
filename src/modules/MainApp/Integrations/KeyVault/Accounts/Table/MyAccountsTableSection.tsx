@@ -13,7 +13,14 @@ import SettingsTable, {
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { Add01Icon, Delete02Icon, HugeiconsIcon, Pen01Icon } from "@src/icons";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import {
+  Add01Icon,
+  Delete02Icon,
+  HugeiconsIcon,
+  Pen01Icon,
+  Refresh04Icon,
+} from "@src/icons";
 import { KEY_VAULT_STATUS_DOT } from "@src/modules/shared/keyVault/statusColors";
 import { groupModels } from "@src/util/modelGrouping";
 
@@ -132,6 +139,13 @@ export default function MyAccountsTableSection({
   const [editRequestedAccountId, setEditRequestedAccountId] = useState<
     string | null
   >(null);
+
+  const {
+    spinClass: refreshSpinClass,
+    handleClick: handleRefreshAccountsClick,
+  } = useRefreshSpin(() => {
+    void onRefreshAccounts?.();
+  }, loading);
 
   const handleEditAccountInline = useCallback(
     (accountId: string) => {
@@ -373,6 +387,27 @@ export default function MyAccountsTableSection({
     [expandedAccountKeys, renderExpandedAccountCard]
   );
 
+  const refreshAccountsButton = onRefreshAccounts ? (
+    <Button
+      variant="secondary"
+      size="default"
+      icon={
+        <HugeiconsIcon
+          icon={Refresh04Icon}
+          data-icon="refresh-cw"
+          size={14}
+          className={refreshSpinClass}
+        />
+      }
+      iconOnly
+      onClick={handleRefreshAccountsClick}
+      disabled={loading}
+      aria-label={t("common:actions.refresh")}
+      title={t("common:actions.refresh")}
+      data-testid="key-vault-accounts-refresh-button"
+    />
+  ) : null;
+
   const addKeyButton = (
     <Button
       variant="secondary"
@@ -403,7 +438,12 @@ export default function MyAccountsTableSection({
         onSearchChange,
         searchPlaceholder: t("keyVault.searchPlaceholder"),
         allowSearchClear: true,
-        rightContent: addKeyButton,
+        rightContent: (
+          <>
+            {refreshAccountsButton}
+            {addKeyButton}
+          </>
+        ),
       }}
       emptyTitle={t("keyVault.noAccountsFound")}
       emptyAction={{

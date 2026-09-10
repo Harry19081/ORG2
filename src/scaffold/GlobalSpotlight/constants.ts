@@ -42,4 +42,7 @@ export const SPOTLIGHT_CLASSES = {
   /** Primary contextual pill used by palette navigation and active state badges. */
   primaryPill:
     "flex items-center gap-1 rounded-full bg-primary-1 px-2.5 py-1 text-primary-6",
+  /** Hover and press feedback only for pills that navigate back. */
+  interactivePill:
+    "cursor-pointer transition-colors duration-150 hover:bg-primary-2 hover:text-primary-7 active:bg-primary-3 motion-reduce:transition-none",
 } as const;

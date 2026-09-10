@@ -7,20 +7,22 @@
     "allRead": "已全部閱讀",
     "loadMore": "載入更多",
     "filters": {
-      "all": "全部",
       "mentions": "提及",
       "assigned": "已指派給我"
     },
     "sections": {
       "reviewRequested": "已請求審查",
-      "authoredByMe": "由我建立"
+      "authoredByMe": "由我建立",
+      "updates": "動態"
     },
     "status": {
       "read": "已讀",
       "unread": "未讀"
     },
     "row": {
-      "ariaLabel": "{{title}}，{{status}}"
+      "ariaLabel": "{{title}}，{{status}}",
+      "issueSource": "{{repository}} issue",
+      "issueSourceFallback": "Issue"
     },
     "empty": {
       "title": "目前尚無項目",
@@ -38,6 +40,10 @@
       "noResults": {
         "title": "沒有相符結果",
         "subtitle": "沒有與「{{query}}」相符的項目。"
+      },
+      "archived": {
+        "title": "尚無已封存項目",
+        "subtitle": "你封存的項目會顯示在這裡。"
       }
     },
     "loading": "正在載入團隊收件匣…",
@@ -87,7 +93,18 @@
       "identityUnavailable": "無法驗證你的團隊身分，請先檢查專案個人資料再回應。",
       "rowPending": "來自 {{name}} · 等待回應",
       "rowAccepted": "已接受交接 · {{status}} · {{priority}}",
-      "rowReturned": "{{name}} 已退回 · {{status}} · {{priority}}"
+      "rowReturned": "{{name}} 已退回 · {{status}} · {{priority}}",
+      "destination": "交接目的地",
+      "chooseDestination": "選擇交接目的地",
+      "cloudDestination": "{{name}} · 團隊收件匣",
+      "todoCount_one": "{{count}} 項待辦",
+      "validation": {
+        "title_required": "請輸入工作項目標題。",
+        "project_required": "請選擇交接目的地。",
+        "project_unavailable": "此交接目的地已不可用，請選擇其他目的地。",
+        "recipient_required": "請選擇接收人。",
+        "recipient_unavailable": "此接收人已不可用，請選擇其他接收人。"
+      }
     },
     "errors": {
       "loadTitle": "無法載入團隊收件匣",
@@ -104,19 +121,25 @@
       "workItemContext": "部分專案內容暫時無法使用，工作項目仍可繼續操作。",
       "workItemLoad": "無法載入此工作項目，請再試一次。",
       "githubIssueLoad": "無法載入該工作項的 GitHub issue，仍顯示本機工作項資訊。",
-      "workItemUpdate": "無法儲存工作項目的最新變更，請再試一次。"
+      "workItemUpdate": "無法儲存工作項目的最新變更，請再試一次。",
+      "archive": "無法封存此項目，請再試一次。",
+      "unarchive": "無法恢復此項目，請再試一次。",
+      "mutePreferences": "無法更新通知分類，請再試一次。"
     },
     "detail": {
       "assignedSubtitle": "已指派的工作項目",
       "standaloneProject": "獨立項目",
       "mentionSubtitle": "在留言中被提及",
       "mentionedYou": "提及了你",
-      "threadComments_other": "此討論串中有 {{count}} 則留言"
+      "threadComments_other": "此討論串中有 {{count}} 則留言",
+      "threadComments_one": "此討論串中有 {{count}} 則留言"
     },
     "actions": {
       "markRead": "標記為已讀",
       "markUnread": "標記為未讀",
-      "openWorkItem": "開啟工作項目"
+      "openWorkItem": "開啟工作項目",
+      "archive": "封存",
+      "unarchive": "恢復至收件匣"
     },
     "workItemStatus": {
       "backlog": "待辦清單",
@@ -133,6 +156,26 @@
       "medium": "中",
       "high": "高",
       "urgent": "緊急"
+    },
+    "notifications": {
+      "assignmentTitle": "有新的工作項目指派給你",
+      "mentionTitle": "{{name}} 提及了你",
+      "handoffTitle": "來自 {{name}} 的交接",
+      "multipleTitle": "團隊收件匣有 {{count}} 則新動態",
+      "multipleBody": "開啟團隊收件匣查看新的指派和提及。"
+    },
+    "mute": {
+      "title": "靜音動態分類"
+    },
+    "events": {
+      "mention": "在留言中被提及",
+      "discussion_updated": "討論已更新",
+      "run_failed": "執行失敗",
+      "status_changed": "狀態已變更",
+      "assignee_changed": "負責人已變更",
+      "priority_changed": "優先順序已變更",
+      "dates_changed": "日期已變更",
+      "child_completed": "子工作項目已完成"
     }
   },
   "windowChrome": {
@@ -252,12 +295,10 @@
     "save": "保存",
     "cancel": "取消",
     "delete": "刪除",
-    "deleteCount": "刪除 ({{count}})",
     "removeFromOrgii": "從 ORGII 移除",
     "removeFromOrgiiCount": "從 ORGII 移除 ({{count}})",
     "edit": "編輯",
     "write": "寫入",
-    "reply": "回覆",
     "close": "關閉",
     "expand": "展開",
     "confirm": "確認",
@@ -267,16 +308,13 @@
     "add": "添加",
     "remove": "移除",
     "create": "創建",
-    "update": "更新",
     "submit": "提交",
     "loadMore": "加載更多",
-    "load": "載入",
     "back": "返回",
     "next": "下一步",
     "previous": "上一步",
     "done": "完成",
     "retry": "重試",
-    "regenerate": "重新生成",
     "refresh": "刷新",
     "rescan": "重新掃描",
     "reload": "重新加載",
@@ -284,35 +322,20 @@
     "reviewPreviousFile": "審查上一個文件",
     "copy": "複製",
     "paste": "粘貼",
-    "cut": "剪切",
     "undo": "撤銷",
-    "redo": "重做",
-    "keep": "保留",
-    "reject": "拒絕",
-    "accept": "接受",
     "review": "審查",
     "undoAll": "全部撤銷",
-    "redoAll": "全部重做",
-    "keepAll": "全部保留",
-    "select": "選擇",
     "selectAll": "全選",
     "unselectAll": "取消全選",
     "clear": "清除",
     "open": "打開",
     "view": "查看",
-    "openInApp": "在 App 中開啟",
     "openToRight": "在右側打開",
-    "new": "新建",
     "rename": "重命名",
     "duplicate": "複製",
-    "export": "導出",
-    "import": "導入",
     "download": "下載",
     "upload": "上傳",
-    "insertImage": "插入圖片",
     "browse": "瀏覽",
-    "discover": "發現",
-    "discoverTests": "發現測試",
     "newFile": "新建文件",
     "newFolder": "新建文件夾",
     "copyPath": "複製路徑",
@@ -334,16 +357,9 @@
     "configure": "配置",
     "manage": "管理",
     "uninstall": "卸載",
-    "connect": "連接",
-    "customize": "自定義",
-    "goToSettings": "前往設置",
     "restart": "重新啓動",
     "switchToStation": "切換到{{station}}",
-    "rate": "評分",
-    "openInTab": "在標籤頁中打開",
-    "insert": "插入",
     "discard": "丟棄",
-    "disable": "禁用",
     "run": "運行",
     "clone": "克隆",
     "send": "發送",
@@ -355,20 +371,12 @@
     "filter": "篩選",
     "loading": "加載中...",
     "replace": "替換",
-    "publish": "Publish",
-    "acceptAll": "全部接受",
-    "rejectAll": "全部拒絕",
-    "install": "安裝",
-    "expandAll": "全部展開",
     "collapseAll": "全部摺疊",
     "viewOnGitHub": "在 GitHub 上查看",
     "selectRepository": "選擇倉庫",
     "all": "全部",
     "collapse": "收起",
     "toggle": "展開/收合",
-    "addRepo": "添加倉庫",
-    "addFolder": "添加文件夾",
-    "resume": "繼續",
     "yes": "是",
     "more": "更多操作",
     "advanced": "高級選項",
@@ -377,9 +385,7 @@
     "sort": "排序",
     "openFolder": "開啟資料夾",
     "addWorkspace": "新增工作目錄",
-    "openSpotlight": "開啟 Spotlight",
     "openWorkspace": "開啟工作目錄",
-    "skipThisVersion": "跳過此版本",
     "later": "稍後",
     "link": "連結",
     "copyName": "複製名稱",
@@ -388,10 +394,9 @@
     "comingSoon": "即將推出",
     "clearSelection": "清除選擇",
     "uiSettings": "介面設定",
-    "clearAll": "全部清除"
-  },
-  "refreshToast": {
-    "successName": "{{name}} 已刷新"
+    "clearAll": "全部清除",
+    "expandView": "展開檢視",
+    "restoreSplitView": "恢復分割檢視"
   },
   "status": {
     "yes": "是",
@@ -467,18 +472,13 @@
     "lastPage": "最後一頁",
     "selectPage": "選擇頁碼",
     "title": "分頁",
-    "roundOf": "第 {{current}} / {{total}} 輪",
     "round": "第 {{current}} 輪",
     "previousRound": "上一輪",
     "nextRound": "下一輪",
-    "latestRound": "最新輪次",
-    "searchRounds": "搜尋輪次"
+    "latestRound": "最新輪次"
   },
   "optional": "可選",
   "common": {
-    "yes": "是",
-    "no": "否",
-    "ok": "確定",
     "on": "開",
     "off": "關",
     "default": "默認",
@@ -487,32 +487,20 @@
     "s": "s",
     "multiplier": "倍",
     "spaces": "個空格",
-    "font": "字體",
     "name": "名稱",
     "description": "描述",
     "type": "類型",
     "date": "日期",
     "time": "時間",
-    "size": "大小",
-    "path": "路徑",
     "status": "狀態",
     "actions": "操作",
-    "options": "選項",
     "details": "詳情",
     "more": "更多",
-    "less": "收起",
-    "all": "全部",
     "none": "無",
-    "selected": "已選擇",
-    "items": "項",
-    "item": "項",
-    "empty": "空",
     "noResults": "未找到結果",
     "searchPlaceholder": "搜索...",
     "properties": "屬性",
     "overview": "概覽",
-    "appearance": "外觀",
-    "theme": "主題",
     "timezone": "時區",
     "language": "語言",
     "preview": "預覽",
@@ -520,17 +508,11 @@
     "sourceCode": "源代碼",
     "raw": "原始",
     "table": "表格",
-    "filter": "篩選",
-    "filters": "篩選條件",
     "selectDate": "選擇日期",
-    "files": "個文件",
-    "required": "必填",
-    "pending": "待處理",
     "error": "錯誤",
     "pid": "PID",
     "shell": "Shell",
-    "source": "來源",
-    "filterByLanguage": "按語言篩選"
+    "source": "來源"
   },
   "labels": {
     "accounts": "賬戶",
@@ -659,19 +641,25 @@
     "noAppliedCommit": "No linked commit yet",
     "noSessionsForFile": "No sessions found for this file",
     "committedRate": "已提交",
-    "email": "郵箱"
+    "email": "郵箱",
+    "sendingNow": "正在傳送…",
+    "issues": "Issues",
+    "noIssues": "尚無 issue",
+    "openIssues": "開放",
+    "closedIssues": "已關閉",
+    "issueComments": "{{count}} 則留言",
+    "issueComments_one": "1 則留言",
+    "issueComments_other": "{{count}} 則留言",
+    "tokens": "Token",
+    "actions": "操作",
+    "all": "全部"
   },
   "searchModes": {},
   "tabs": {
     "terminal": "終端",
-    "problems": "問題",
-    "output": "輸出",
-    "testResults": "測試結果",
     "explorer": "資源管理器",
     "search": "搜索",
     "sourceControl": "源代碼管理",
-    "testing": "測試",
-    "extensions": "擴展",
     "sessions": "Session",
     "myTabs": "我的分頁（{{count}}）",
     "design": "設計",
@@ -680,24 +668,13 @@
     "console": "控制台",
     "network": "網絡",
     "css": "CSS",
-    "source": "源碼",
-    "connections": "連接",
-    "queryHistory": "查詢歷史",
-    "table": "表格",
-    "sql": "SQL",
-    "tools": "工具",
-    "overview": "概覽"
+    "source": "源碼"
   },
   "errors": {
     "generic": "出了點問題",
     "failedToLoad": "加載失敗",
-    "networkError": "網絡錯誤，請檢查您的連接。",
     "notFound": "未找到",
-    "unauthorized": "未授權，請登錄。",
     "forbidden": "訪問被拒絕",
-    "serverError": "服務器錯誤，請稍後再試。",
-    "timeout": "請求超時",
-    "validation": "驗證錯誤",
     "pageNotFound": "頁面未找到",
     "failedToLoadComponent": "組件加載失敗",
     "networkErrorShort": "網絡錯誤",
@@ -706,13 +683,11 @@
     "couldntConnect": "無法連接到服務器。請檢查您的網絡連接。",
     "failedToLoadProperly": "組件未能正確加載。",
     "requiredFileCouldntLoad": "無法加載所需文件。通常重新啓動即可解決。",
-    "failedToRenderActivity": "渲染活動失敗",
-    "failedToRenderEvent": "渲染事件失敗",
     "unknown": "未知錯誤",
     "agentRequestFailed": "Agent 請求失敗",
     "codexLoginExpired": "Codex 登入已過期",
     "codexLoginExpiredDescription": "重新連接 Codex 以修復此帳戶。儲存新的登入資訊後，你將返回此工作階段",
-    "reconnectCodex": "重新連接 Codex",
+    "reconnectCodex": "重新連接",
     "technicalDetails": "技術詳細資訊",
     "failedToCopy": "複製失敗",
     "api": {
@@ -753,13 +728,13 @@
       },
       "workflow": "工作流服務暫時不可用，請稍後重試。"
     },
-    "imageUploadFailed": "上傳圖片失敗",
-    "imageTooLarge": "圖片太大",
-    "unknownError": "發生未知錯誤"
+    "unknownError": "發生未知錯誤",
+    "componentLoadingFailed": "元件載入失敗",
+    "noLocalPath": "沒有可用的本機路徑",
+    "openInFinderFailed": "無法在 Finder 中開啟"
   },
   "confirmation": {
     "delete": "確定要刪除嗎？",
-    "discard": "放棄更改？",
     "removeTitle": "從 ORGII 中移除「{{name}}」？",
     "removeMessage": "這只會移除它與 ORGII 的關聯，不會從磁盤中移除任何內容。",
     "deleteWorkspaceTitle": "刪除工作區「{{name}}」？",
@@ -777,32 +752,15 @@
     "unsavedCloseMultipleMessage": "{{count}} 個文件有未保存的更改。仍然關閉？",
     "undoAllChanges": "這將撤銷 Agent 所做的全部 {{count}} 個文件更改。此操作不可恢復，確定繼續嗎？"
   },
-  "dateRange": {
-    "1d": "1天",
-    "7d": "7天",
-    "1w": "1周",
-    "30d": "30天",
-    "1m": "1個月",
-    "3m": "3個月",
-    "1y": "1年"
-  },
   "filters": {
     "all": "全部",
     "source": "來源",
     "local": "本地",
     "member": "成員",
-    "model": "模型",
-    "custom": "自定義",
     "tokenMarket": "Token Market",
-    "market": "市場",
-    "agentOrAgentOrg": "Session agent",
     "searchAgentOrOrg": "選擇 Agent 或 Agent 團隊...",
-    "tplSelectAgentOrOrg": "選擇 {agent}",
-    "cliAgent": "CLI Agent",
     "searchModel": "搜尋模型...",
-    "searchModelFor": "為 {{target}} 選擇一個模型...",
-    "tplSelectModel": "選擇 {model}",
-    "tplSelectModelFor": "爲 {{target}} 選擇 {model}"
+    "searchModelFor": "為 {{target}} 選擇一個模型..."
   },
   "prerequisite": {
     "missingTitle": "缺少前置依賴",
@@ -812,29 +770,14 @@
     "agent": "Agent",
     "you": "你",
     "session": "Session",
-    "agentSession": "Agent Session",
     "workStation": "工作站",
-    "osAgent": "OS Agent",
-    "coding": "Coding",
     "agentTerminal": "Agent 終端",
     "myStation": "我的工作站",
     "agentStation": "Agent的工作站",
-    "projectManager": "專案管理器",
-    "myTerminal": "我的終端",
-    "myTerminalInfo": "我的終端信息"
-  },
-  "pageSearch": {
-    "placeholder": "搜索頁面...",
-    "tooltip": "搜索頁面",
-    "categories": {
-      "workspace": "工作區",
-      "tools": "工具",
-      "market": "市場"
-    }
+    "myTerminal": "我的終端"
   },
   "tooltips": {
     "closeEsc": "關閉 (Esc)",
-    "hidePanel": "隱藏面板 (⌘J)",
     "refreshTree": "刷新樹",
     "copy": "複製",
     "previous": "上一個",
@@ -872,8 +815,6 @@
     "searchInOpenEditors": "僅在已打開的編輯器中搜索",
     "replace": "替換 (Ctrl+Shift+1)",
     "replaceAll": "全部替換 (Ctrl+Alt+Enter)",
-    "uninstall": "卸載",
-    "dismiss": "忽略",
     "moreActions": "更多操作...",
     "formatSql": "格式化 SQL",
     "queryHistory": "查詢歷史",
@@ -883,13 +824,11 @@
     "stopAndTranscribe": "停止並轉錄",
     "htmlPreview": "HTML 預覽",
     "manual": "手動",
-    "scrollLeft": "向左滾動標籤",
     "toggleFileFilters": "切換文件過濾器",
     "closeDevTools": "關閉開發者工具",
     "movePanelToRight": "面板移至右側",
     "movePanelToBottom": "面板移至底部",
     "domTree": "DOM 樹",
-    "clearUiIndex": "清除組件索引",
     "closeSession": "關閉 Session",
     "clearNetworkLogs": "清除網絡日誌",
     "clearConsole": "清除控制台",
@@ -924,7 +863,6 @@
     "failedToParseSymbols": "解析符號失敗",
     "outlineParseError": "此文件無法生成大綱",
     "runQueryToSeeResults": "運行查詢以查看結果",
-    "noProjectsFound": "未找到專案",
     "failedToLoad": "加載失敗",
     "noItems": "暫無項目",
     "nothingHereYet": "暫無內容",
@@ -992,14 +930,7 @@
     "noStyles": "無樣式",
     "noDomTree": "無 DOM 樹",
     "noSourceDetected": "未檢測到源代碼",
-    "notIndexed": "暫未 Index",
-    "indexedInspectElement": "已索引，請檢查元素",
-    "buildIndexToStart": "構建索引以開始",
     "noMatchingFilesFound": "未找到匹配文件",
-    "scanning": "掃描中...",
-    "retryToScanAgain": "重試以重新掃描",
-    "noTokensFound": "未找到 Token",
-    "addCssVariables": "向項目添加 CSS 變量",
     "noWorkspaceExplorerTitle": "未開啟工作目錄",
     "noWorkspaceExplorerSubtitle": "開啟工作目錄以查看檔案",
     "cannotFindRepo": "找不到 {{repoName}}",
@@ -1026,57 +957,37 @@
     "noRepoSelected": "No repository selected",
     "previewUnavailable": "預覽不可用",
     "selectRepositoryFromWorkspace": "選擇工作區儲存庫",
-    "noData": "無資料"
+    "noData": "無資料",
+    "noResults": "沒有結果",
+    "noSessionHistoryForFile": "找不到 {{file}} 的工作階段活動",
+    "noSessionHistory": "尚無工作階段歷史"
   },
   "inbox": {
-    "searchPlaceholder": "搜索消息...",
-    "channels": {
-      "title": "頻道",
-      "git": "Git",
-      "workItems": "工作項",
-      "promotions": "推廣"
-    },
-    "selectChannel": "選擇一個頻道",
-    "noMessages": "暫無消息",
-    "noMessagesSubtitle": "事件發生時消息將顯示在這裏",
-    "composerPlaceholder": "寫一條備註…",
     "scrollToBottom": "滾動到底部",
-    "markAllAsRead": "全部標記爲已讀",
-    "scrollToUnread": "跳轉到未讀"
+    "markAllAsRead": "全部標記爲已讀"
   },
   "placeholderTypes": {
     "mcpServer": "MCP 服務器",
-    "connection": "連接",
-    "policy": "政策",
-    "skill": "skill",
-    "message": "消息"
+    "connection": "連接"
   },
   "workstation": {
     "expandReplace": "展開替換",
     "collapseReplace": "收起替換",
     "tooltipRefreshExplorer": "刷新資源管理器",
-    "refreshFiles": "刷新文件",
-    "deleteSelectedRows": "刪除 {{count}} 個選中的行",
     "agentBrowser": "Agent 瀏覽器",
     "userInControl": "用戶控制中",
     "agentControlling": "Agent 控制中",
     "returnToAgent": "交還給 Agent",
     "takeOver": "接管",
-    "chromeInForeground": "Chrome 窗口在前臺 — 可直接交互",
     "chromeWindowOpen": "Chrome 窗口已打開 — 請直接操作，完成後返回 Agent",
     "waitingForScreenshot": "等待瀏覽器截圖...",
     "unified": "統一",
     "split": "分屏",
-    "reloadFromDiskConfirm": "從磁盤重新加載（將提示確認）",
-    "reloadFromDisk": "從磁盤重新加載",
     "publishingBranch": "正在 Publish...",
-    "refreshGitStatus": "刷新 Git 狀態",
     "notGitInitialized": "尚未初始化 Git",
     "notGitInitializedTooltip": "此工作目錄尚未有 .git 目錄。",
     "publishBranchToOrigin": "Publish 分支 \"{{branch}}\" 到 origin",
-    "syncWithRemote": "與遠程同步（{{behind}} 待拉取，{{ahead}} 待推送）",
     "scanningFiles": "正在掃描文件...",
-    "branchTooltip": "分支：{{branch}}",
     "branchTooltipSwitching": "分支：{{branch}}（切換中…）",
     "switchWorkspaceTooltip": "切換工作目錄",
     "switchWorktreeTooltip": "切換 Worktree",
@@ -1093,14 +1004,11 @@
     "embeddingLabel": "嵌入",
     "indexingProgress": "索引：{{processed}}/{{total}} 個文件（{{percent}}%）",
     "indexingProgressWithFile": "索引：{{processed}}/{{total}} 個文件（{{percent}}%）\n當前：{{file}}",
-    "languageServices": "Language Services",
     "ports": {
       "workspaceSection": "目前工作區",
       "externalSection": "外部",
-      "tooltip": "連接埠：{{workspace}} 個 Workspace，{{external}} 個外部",
       "viewPortsTooltip": "查看使用中的連接埠",
       "noWorkspacePorts": "未偵測到 Workspace 連接埠",
-      "externalLabel": "外部",
       "unknownProcess": "未知程序",
       "pidLabel": "PID {{pid}}",
       "openInBrowser": "在瀏覽器中開啟",
@@ -1114,62 +1022,28 @@
       "rescanTooltip": "重新掃描正在監聽的連接埠",
       "lastScannedAt": "上次掃描於 {{time}}"
     },
-    "noLanguageServicesActive": "沒有活躍的 Language Service",
     "linesSelected": "已選擇 {{count}} 行",
     "charsSelected": "已選擇 {{count}} 個字符",
     "nLines": "{{count}} 行",
-    "blameOn": "Blame: 開",
-    "blameOff": "Blame: 關",
     "hideFilter": "隱藏篩選",
     "filterFilesAction": "篩選文件",
     "switchToTreeView": "切換到樹形視圖",
     "switchToListView": "切換到列表視圖",
     "discardChanges": "丟棄更改",
-    "stagedChangesCount": "{{count}} 個已暫存更改",
-    "changesCount": "{{count}} 個更改",
     "acceptAllMergeChanges": "接受所有合併更改（暫存已解決的文件）",
     "toOrigin": "到 origin",
     "discardChangesConfirm": "丟棄對 {{files}} 的更改？此操作不可撤銷。",
     "discardAllUnstagedConfirm": "丟棄所有未暫存的更改？此操作不可撤銷。",
     "addedToAgent": "{{fileName}} 已添加到 Agent",
-    "privateBrowsing": "隱私",
-    "standardBrowsing": "標準",
-    "openNativeDevTools": "打開原生瀏覽器 DevTools（Safari Inspector / Edge DevTools）",
-    "extractingProps": "正在提取屬性...",
-    "initializingPreview": "正在初始化預覽...",
-    "buildUiIndex": "構建組件索引",
     "componentLabel": "組件",
     "definitionLabel": "定義",
     "findSource": "查找源",
     "preserveConsole": "保留",
     "consoleShowStackTrace": "顯示堆棧跟蹤",
     "consoleHideStackTrace": "隱藏堆棧跟蹤",
-    "loadingData": "正在加載數據...",
-    "noData": "暫無數據",
-    "tokenName": "token-name",
-    "manualMode": "手動",
-    "position": "位置",
-    "flow": "流式",
-    "size": "大小",
-    "paddingLabel": "內邊距",
-    "marginLabel": "外邊距",
-    "boxModel": "盒模型",
-    "opacityLabel": "不透明度",
-    "cornersLabel": "圓角",
-    "textLabel": "文本",
-    "weightLabel": "字重",
-    "lineLabel": "行",
-    "borderLabel": "邊框",
-    "widthLabel": "寬度",
-    "heightLabel": "高度",
-    "colorLabel": "顏色",
-    "shadowAndBlur": "陰影和模糊",
-    "blurLabel": "模糊",
-    "spreadLabel": "擴散",
     "styleEditsCount_one": "{{count}} 處修改",
     "styleEditsCount_other": "{{count}} 處修改",
     "sendStyleEdits": "發送",
-    "addToChat": "添加到對話",
     "browserCore": {
       "desktopOnlyTitle": "瀏覽器僅在桌面應用可用",
       "desktopOnlyBody": "嵌入式瀏覽器僅在 Tauri 桌面應用中使用。",
@@ -1177,28 +1051,32 @@
       "debugTauriInternals": "__TAURI_INTERNALS__: {{value}}",
       "debugTauriIpc": "__TAURI_IPC__: {{value}}",
       "debugTauri": "__TAURI__: {{value}}",
-      "privateBrowsingLabel": "隱私瀏覽：",
       "enterUrlToStart": "輸入網址以開始",
       "privateBrowsingEmptyTitle": "隱私瀏覽：輸入網址以開始",
       "simulatorBrowserNotice": "此瀏覽器僅用於會話回放。持久瀏覽請使用主應用中的瀏覽器（工具 → 瀏覽器）。",
       "tlsDevNote": "說明：部分 HTTPS 網站（如 GitHub）在開發模式下可能因證書校驗出現 TLS 錯誤。請嘗試 HTTP 或 example.com 等簡單 HTTPS 站點。",
       "siteUnreachableTitle": "無法訪問此網站",
-      "errorTls": "與此站點的連接不安全。HTTPS 站點在開發模式下常會出現此情況。",
-      "errorTimeout": "連接超時，服務器響應時間過長。",
-      "errorDns": "無法解析服務器 DNS。請檢查網址是否拼寫正確。",
-      "errorRefused": "服務器拒絕了連接。",
-      "errorGeneric": "無法連接到服務器。站點可能已關閉或存在網絡問題。",
-      "technicalDetails": "技術詳情",
-      "tryHeading": "可嘗試：",
-      "tryCheckConnection": "檢查網絡連接",
-      "tryVerifyUrl": "確認網址是否正確",
-      "tryAgainLater": "稍後再試",
       "webviewHiddenTitle": "網頁檢視已暫時隱藏",
-      "webviewHiddenBody": "關閉選單或對話框即可重新顯示。"
+      "webviewHiddenBody": "關閉選單或對話框即可重新顯示。",
+      "embeddedFallbackTitle": "此網站可能無法在內嵌瀏覽器中運作",
+      "embeddedFallbackBody": "部分網站會封鎖或無法在應用程式 WebView 中呈現。如果頁面持續空白，請改用系統瀏覽器開啟。",
+      "currentUrl": "目前 URL"
     },
     "unsavedChangesTitle": "未保存的更改",
-    "prkPlaceholder": "PRJ",
-    "gitSyncMenuTitle": "Git 同步操作"
+    "ci": {
+      "openPullRequest": "在 GitHub 上開啟 pull request",
+      "viewDetails": "檢視檢查詳細資訊",
+      "refresh": "重新整理檢查",
+      "refreshing": "重新整理中…",
+      "lastFetchedAt": "上次擷取於 {{time}}",
+      "unavailable": "無法讀取檢查狀態",
+      "sections": {
+        "failed": "失敗",
+        "running": "執行中",
+        "skipped": "已跳過",
+        "passed": "已通過"
+      }
+    }
   },
   "git": {
     "loading": "正在加載 Git 狀態...",
@@ -1292,7 +1170,8 @@
         "approved": "核准了這些變更",
         "changesRequested": "要求了變更",
         "reviewDismissed": "駁回了審查",
-        "reviewed": "進行了審查"
+        "reviewed": "進行了審查",
+        "appendedSession": "附加了一個工作階段"
       },
       "summary": {
         "label": "pull request 摘要"
@@ -1451,7 +1330,23 @@
         "noLabelCandidates": "尚無可用標籤",
         "labelsLoadFailed": "無法載入標籤",
         "labelsUpdated": "已更新標籤"
-      }
+      },
+      "creating": "正在建立 pull request…",
+      "createError": "建立 pull request 失敗",
+      "readyHint": "分支已推送，可以建立 pull request",
+      "neutralHint": "推送分支後即可建立 pull request",
+      "noBranch": "未選擇分支",
+      "noRepoPath": "沒有可用的倉庫路徑",
+      "notAuthenticated": "登入後即可建立 pull request",
+      "noOriginRemote": "未設定 origin 遠端倉庫",
+      "cannotParseRepoName": "無法從 origin 遠端倉庫解析倉庫名稱",
+      "authRequired": {
+        "title": "連接 GitHub",
+        "description": "前往「設定 → 連接」以連接你的 GitHub 帳號。"
+      },
+      "navigationTrail": "Pull request 導覽",
+      "failedToLoad": "載入 pull request 失敗",
+      "label": "Pull request"
     },
     "messages": {
       "pushSuccess": "Successfully pushed changes to remote",
@@ -1564,7 +1459,8 @@
         "reviewRequestRemoved": "移除了審查請求",
         "reviewed": "審查了這些變更",
         "reviewDismissed": "駁回了審查",
-        "userBlocked": "封鎖了此使用者"
+        "userBlocked": "封鎖了此使用者",
+        "appendedSession": "附加了一個工作階段"
       },
       "composer": {
         "addComment": "新增評論",
@@ -1596,18 +1492,40 @@
         "count_other": "{{count}} 個相關項目",
         "unavailable": "無法取得詳細資料",
         "unavailableCount_one": "無法解析 {{count}} 個相關項目",
-        "unavailableCount_other": "無法解析 {{count}} 個相關項目"
-      }
+        "unavailableCount_other": "無法解析 {{count}} 個相關項目",
+        "reference": "GitHub 參照"
+      },
+      "title": "Issues",
+      "loading": "正在載入 issues…",
+      "empty": "沒有{{state}}的 issue",
+      "failedToLoad": "載入 issues 失敗",
+      "failedToCreate": "建立 issue 失敗",
+      "failedToUpdate": "更新 issue 失敗",
+      "failedToComment": "新增留言失敗",
+      "filterAll": "全部",
+      "filterOpen": "開放",
+      "filterClosed": "已關閉",
+      "noGitHubRepo": "連接 GitHub 倉庫以管理 issues",
+      "commentPlaceholder": "發表留言…",
+      "submitComment": "留言",
+      "newIssueTitlePlaceholder": "Issue 標題",
+      "newIssueBodyPlaceholder": "描述此 issue（選填）…",
+      "authRequired": {
+        "title": "連接 GitHub",
+        "description": "前往「設定 → 連接」以連接你的 GitHub 帳號。"
+      },
+      "reAuthRequired": "需要 GitHub 授權",
+      "reAuthDescription": "你的 GitHub token 已過期。請前往「設定 → 連接」重新連接。",
+      "goToSettings": "前往設定",
+      "loadingTimeline": "正在載入活動…",
+      "label": "Issue",
+      "linkedLoading": "正在載入關聯項目",
+      "detailNavigation": "Issue 導覽"
     }
   },
   "selectors": {
     "shared": {
-      "repo": "倉庫",
-      "workspace": "工作區",
-      "folder": "文件夾",
-      "source": "來源",
-      "branch": "分支",
-      "name": "名稱"
+      "workspace": "工作區"
     },
     "labels": {
       "recent": "最近"
@@ -1626,13 +1544,19 @@
     },
     "modelProperties": {
       "effort": "Effort",
-      "default": "預設"
+      "default": "預設",
+      "settings": "模型設定",
+      "model": "模型",
+      "speed": "速度",
+      "standard": "標準",
+      "fast": "快速",
+      "thinking": "思考",
+      "on": "開啟",
+      "off": "關閉"
     },
     "repo": {
-      "workspaceFolders": "工作區文件夾",
       "addEntry": "更多匯入選項",
       "sections": {
-        "coding": "工作區",
         "pinned": "固定",
         "current": "當前",
         "repo": "倉庫",
@@ -1641,7 +1565,8 @@
         "workspace": "工作目錄",
         "thisOrg": "此組織",
         "outsideOrg": "此組織之外",
-        "outsideNamedOrg": "{{org}}之外"
+        "outsideNamedOrg": "{{org}}之外",
+        "recent": "最近"
       },
       "tabs": {},
       "addOptions": {
@@ -1657,7 +1582,6 @@
         "creatingMultiRepoWorkspace": "正在組合多倉庫工作目錄"
       },
       "forms": {
-        "repoName": "倉庫名稱",
         "localPath": "本地路徑",
         "chooseDestinationPath": "選擇目標路徑",
         "choose": "選擇",
@@ -1671,7 +1595,6 @@
       "path": {
         "switchTo": "切換到",
         "switchToTemplate": "切換到 {workspace}",
-        "search": "搜索",
         "manageWorkspace": "管理工作目錄",
         "addBy": "透過以下方式新增工作目錄",
         "addByTemplate": "透過 {source} 新增工作目錄"
@@ -1689,14 +1612,8 @@
       }
     },
     "folder": {
-      "path": {
-        "switchTo": "切換到"
-      },
       "addOptions": {},
-      "sources": {},
-      "forms": {
-        "choose": "選擇"
-      }
+      "sources": {}
     },
     "branch": {
       "path": {
@@ -1743,12 +1660,11 @@
         "noGithubRemote": "未設定 GitHub 遠端倉庫",
         "prSearchScope": "搜尋範圍為已載入的 {{count}} 個 Pull requests",
         "prLimit": "最多顯示 {{count}} 個未關閉的 PR",
-        "noPullRequests": "沒有符合的 Pull requests"
+        "noPullRequests": "沒有符合的 Pull requests",
+        "mainWorktree": "主要"
       },
       "placeholders": {
-        "checkout": "分支",
         "add": "新分支名稱...",
-        "remove": "分支",
         "pullRequests": "搜尋 Pull requests..."
       },
       "tabs": {
@@ -1758,9 +1674,7 @@
     },
     "sessionInfo": {
       "sourcePlaceholder": "選擇來源",
-      "start": "開始",
       "sourceAria": "選擇工作區來源",
-      "on": "在",
       "branchAria": "選擇分支",
       "switchWorkspace": "切換工作目錄",
       "switchBranch": "切換分支",
@@ -1776,7 +1690,8 @@
           "label": "Documents",
           "description": "Documents 文件夾"
         }
-      }
+      },
+      "selectWorktreeSource": "選擇 Worktree 分支或 pull request"
     },
     "spotlightFooter": {
       "navigate": "導航",
@@ -1844,7 +1759,7 @@
     "spotlight": {
       "placeholder": "搜索或輸入命令…",
       "placeholders": {
-        "workspace": "搜尋或輸入資料夾路徑",
+        "workspace": "搜尋或輸入資料夾路徑...",
         "branch": "搜索分支...",
         "source": "搜索來源...",
         "actions": "搜索操作...",
@@ -1871,9 +1786,6 @@
         "showInFinder": {
           "label": "在 Finder 中定位倉庫",
           "pillLabel": "定位"
-        },
-        "createSession": {
-          "label": "建立新會話"
         },
         "searchAgentSessions": {
           "label": "搜尋 Agent 會話",
@@ -1970,18 +1882,11 @@
     "chatPanelLocation": "聊天面板",
     "chatLeft": "左側聊天",
     "chatRight": "右側聊天",
-    "full": "全屏",
-    "theme": "主題",
     "sidebarPosition": "工作站側邊欄",
     "modelPickerStyle": "選擇器樣式",
     "paginateChatHistory": "將聊天記錄分頁",
     "modelPickerSpotlight": "Spotlight",
     "modelPickerMenu": "選單",
-    "replaySession": "Replay 會話",
-    "captionBar": "Agent 訊息浮窗",
-    "location": "位置",
-    "floating": "浮動",
-    "pinned": "固定",
     "left": "左側",
     "right": "右側",
     "ramFps": "FPS",
@@ -2007,9 +1912,6 @@
     "ramCodeMirrors": "檔案渲染"
   },
   "spotlightActions": {
-    "switchToLightTheme": "切換到淺色主題",
-    "switchToDarkTheme": "切換到深色主題",
-    "switchToHighContrastTheme": "切換到高對比度主題",
     "enableChatPagination": "開啟聊天分頁",
     "disableChatPagination": "關閉聊天分頁",
     "useModelPickerSpotlight": "使用 Spotlight 模型選擇器",
@@ -2024,7 +1926,6 @@
     "changeSkin": "變更外觀",
     "searchThemes": "搜尋主題...",
     "searchSkins": "搜尋外觀...",
-    "switchToSystemTheme": "跟隨系統主題",
     "detectUpdate": "檢查更新",
     "recentlyUsed": "最近使用"
   },
@@ -2034,88 +1935,18 @@
     "showPrimarySidebar": "顯示側邊欄",
     "hidePrimarySidebar": "隱藏側邊欄",
     "searchFiles": "搜索文件",
-    "openBrowser": "打開瀏覽器",
     "switchWorkspace": "切換 / 新增工作目錄",
-    "openEditor": "打開編輯器",
-    "hideTerminal": "隱藏終端",
-    "hideFiles": "隱藏文件",
-    "maximizeChat": "聚焦聊天面板",
-    "toggleSidebar": "切換側邊欄",
-    "openDevTools": "打開 DevTools",
-    "showDevTools": "顯示 DevTools",
-    "hideDevTools": "隱藏 DevTools",
-    "connections": "連接",
-    "newTab": "新建標籤頁",
-    "newPrivateTab": "新建隱私標籤頁",
-    "openDashboard": "打開 Dashboard",
-    "runQuery": "運行查詢",
-    "newProject": "新建專案"
-  },
-  "lsp": {
-    "installPrompt": "\"{{language}}\" 的 Language Server 未安裝，是否要安裝？",
-    "installing": "正在安裝 Language Server..."
+    "newTab": "新建標籤頁"
   },
   "gitDashboard": {
-    "title": "Git 儀表盤",
     "author": "作者",
-    "commits": "提交",
-    "additions": "新增",
-    "deletions": "刪除",
-    "filesChanged": "變更文件",
-    "files": "文件",
-    "other": "其他",
-    "showMore": "顯示更多",
-    "showLess": "收起"
+    "commits": "提交"
   },
   "aiImpact": {
     "lines": "代碼行"
   },
   "sessions": {
-    "title": "會話",
-    "myUsage": "我的用量",
-    "teamUsage": "團隊用量"
-  },
-  "otherUsage": {
-    "title": "其他使用",
-    "sessions": "會話",
-    "completed": "已完成",
-    "incomplete": "未完成",
-    "tabs": {
-      "overview": "概覽",
-      "cursor": "Cursor",
-      "cli": "CLI"
-    }
-  },
-  "devActivity": {
-    "title": "編程檔案",
-    "sessions": "會話",
-    "source": "來源",
-    "commits": "Commit 次數",
-    "active": "活躍"
-  },
-  "devRecord": {
-    "loading": "加載中…",
-    "custom": "自定義",
-    "startDate": "開始日期",
-    "endDate": "結束日期",
-    "statCards": {
-      "commits": "提交",
-      "filesChanged": "變更文件",
-      "sessions": "會話",
-      "projects": "熱力圖"
-    },
-    "team": {
-      "title": "團隊活動",
-      "member": "成員",
-      "email": "郵箱",
-      "model": "模型",
-      "sessions": "會話",
-      "tokens": "Token",
-      "days": "天"
-    }
-  },
-  "actionSummary": {
-    "read": "讀取"
+    "title": "會話"
   },
   "sourceControl": {
     "notGitInitialized": "尚未初始化 Git",
@@ -2123,11 +1954,9 @@
     "initializeGit": "初始化 Git",
     "initializingGit": "正在初始化 Git...",
     "noRemoteForPublish": "此工作目錄現在是 Git 倉庫，但還沒有 remote。請先新增 origin 等 remote，然後再發布此分支。",
-    "generateCommitMessage": "使用 AI 生成 commit message",
     "pull": "Pull",
     "push": "Push",
     "fetch": "Fetch",
-    "sync": "Sync",
     "worktreeActions": "Worktree 操作",
     "removeWorktree": "移除 Worktree",
     "removeWorktreeTitle": "移除 Worktree {{name}}？",
@@ -2143,24 +1972,20 @@
     "pill": {
       "focus": "聚焦",
       "allChanges": "全部更改"
+    },
+    "scope": {
+      "main": "主要檢出",
+      "worktrees": "Worktree",
+      "searchPlaceholder": "篩選 worktree…",
+      "switchScopeActive": "切換原始檔控制範圍：{{repo}}，{{branch}}"
     }
   },
   "contextInfo": {
     "contextUsed": "上下文已使用",
     "title": "Context",
-    "full": "已用",
     "ariaLabel": "Context 用量",
-    "categories": {
-      "rules": "Rules",
-      "conversation": "對話內容",
-      "tools": "工具",
-      "skills": "技能",
-      "mcp": "MCP",
-      "subagents": "Subagents"
-    },
     "autoCompactNote": "即將自動摘要上下文",
     "compactBoundaryTitle": "上下文已壓縮",
-    "compactBoundarySubtitle": "已總結 {{count}} 則較早的訊息",
     "compactBoundaryTokens": "{{before}} → {{after}} tokens",
     "manualCompactAction": "手動壓縮",
     "manualCompactRunning": "壓縮中",
@@ -2175,15 +2000,23 @@
     "manualCompactInstructionsPlaceholder": "可選：本次壓縮的總結重點",
     "miniCpmCompactTitle": "MiniCPM 靜默自動壓縮",
     "miniCpmCompactDescription": "自動非同步處理舊上下文",
-    "miniCpmCompactToggleAria": "開啟 MiniCPM 靜默自動壓縮"
+    "miniCpmCompactToggleAria": "開啟 MiniCPM 靜默自動壓縮",
+    "categories": {
+      "unattributed": "未歸類"
+    },
+    "cacheSaved": "快取節省：讀取 {{read}}，寫入 {{write}}",
+    "cacheHero": "{{pct}}% 來自快取 · 本輪重複使用約 {{tokens}}",
+    "cacheHeroSub": "Prompt 快取最多可降低 90% 的費用",
+    "compactBoundarySubtitle_one": "已摘要 {{count}} 則較早的訊息",
+    "compactBoundarySubtitle_other": "已摘要 {{count}} 則較早的訊息",
+    "manualCompactSectionTitle": "手動壓縮",
+    "manualCompactNativeProvider": "此處的手動壓縮僅支援內建 Agent 工作階段。原生 CLI 的歷史請在其提供方應用程式中壓縮。"
   },
   "relativeDate": {
     "justNow": "剛剛",
     "today": "今天",
     "yesterday": "昨天",
-    "tomorrow": "明天",
-    "last7Days": "最近7天",
-    "last30Days": "最近30天"
+    "tomorrow": "明天"
   },
   "cloneForm": {
     "titleCloneFromGitHub": "從 GitHub 克隆",
@@ -2231,37 +2064,15 @@
     "statusReadyToCreate": "可以建立工作目錄",
     "defaultName": "工作目錄",
     "defaultNameWithRepo": "{{repo}} 工作目錄",
-    "windowTitle": "工作目錄"
+    "windowTitle": "工作目錄",
+    "statusMaxRepos": "最多選擇 5 個倉庫"
   },
   "database": {
-    "addConnection": "添加數據庫連接",
-    "databaseType": "數據庫類型",
-    "connectionName": "連接名稱",
     "databaseFile": "數據庫文件",
     "projectUrl": "項目 URL",
     "accessToken": "Access Token",
     "databaseUrl": "數據庫 URL",
     "authToken": "Auth Token",
-    "testingConnection": "正在測試連接...",
-    "addingConnection": "正在添加連接...",
-    "connectionSuccessful": "連接成功！",
-    "testConnection": "測試連接",
-    "addConnectionAction": "添加",
-    "testing": "測試中...",
-    "adding": "添加中...",
-    "notValidSqlite": "不是有效的 SQLite 數據庫文件",
-    "connectionFailed": "連接失敗",
-    "failedToAddConnection": "添加連接失敗",
-    "supabaseHint": "在 Supabase Dashboard → Project Settings → API 中找到",
-    "supabaseTokenHint": "Personal Access Token (PAT)，在以下位置生成",
-    "tursoTokenHint": "通過 Turso CLI 生成：turso db tokens create",
-    "neonHint": "從 Neon 控制台 → 連接詳情獲取連接字符串",
-    "sqliteDescription": "本地 .sqlite 文件",
-    "supabaseDescription": "雲端 PostgreSQL",
-    "tursoDescription": "邊緣 SQLite",
-    "neonDescription": "Serverless PostgreSQL",
-    "postgresDescription": "直連 PostgreSQL",
-    "mysqlDescription": "MySQL / MariaDB",
     "connectionString": "連接字符串",
     "host": "主機",
     "port": "端口",
@@ -2269,10 +2080,6 @@
     "user": "用戶名",
     "password": "密碼",
     "ssl": "要求 SSL",
-    "requireSsl": "要求 SSL 連接",
-    "newConnection": "新建 {{type}} 連接",
-    "changePending": "個更改",
-    "changesPending": "個更改",
     "spotlight": {
       "scanFolder": "掃描文件夾",
       "scanFolderDesc": "在文件夾中查找所有 .sqlite、.db 文件",
@@ -2292,25 +2099,13 @@
   "dragDrop": {
     "couldNotExtractPathFromItem": "無法從拖放項中提取文件路徑"
   },
-  "contextList": {
-    "task": "任務",
-    "repo": "倉庫",
-    "ref": "引用",
-    "key": "Key",
-    "image": "圖片",
-    "group": "分組",
-    "unknown": "未知"
-  },
   "showMore": "展開更多",
   "showLess": "收起",
   "schedule": {
     "recurring": "週期性",
     "oneShot": "一次性",
     "noSchedule": "無排程",
-    "active": "啓用",
-    "inactive": "停用",
     "scheduleType": "調度類型",
-    "dateAndTime": "日期和時間",
     "frequency": "頻率",
     "time": "時間",
     "dayOfWeek": "星期幾",
@@ -2319,7 +2114,6 @@
     "hideCustomCron": "隱藏自定義 cron",
     "cronHelp": "例如 0 9 * * 1 = 每週一 9:00",
     "lastRun": "上次運行",
-    "enableSchedule": "啓用調度",
     "freq": {
       "daily": "每天",
       "weekday": "工作日 (週一至週五)",
@@ -2334,16 +2128,9 @@
       "thu": "週四",
       "fri": "週五",
       "sat": "週六"
-    },
-    "humanReadable": {
-      "daily": "每天 {{time}}",
-      "weekday": "工作日 {{time}}",
-      "weekly": "每{{day}} {{time}}",
-      "monthly": "每月{{day}}號 {{time}}"
     }
   },
   "selectionMenu": {
-    "title": "添加到對話",
     "addToChat": "添加到對話",
     "addThisFile": "添加此文件",
     "addLines": "添加第 {{from}} – {{to}} 行"
@@ -2361,27 +2148,8 @@
     "openedInBrowser": "已在瀏覽器中開啟",
     "goToBrowser": "前往瀏覽器"
   },
-  "ideaArea": {
-    "menu": {
-      "shared": "社區分享"
-    },
-    "trending": {
-      "title": "熱門想法"
-    },
-    "shared": {
-      "title": "社區分享",
-      "searchPlaceholder": "搜索想法..."
-    },
-    "myIdeas": {
-      "title": "我的想法",
-      "empty": "你還沒有分享任何想法"
-    }
-  },
   "controlTower": {
     "sidebar": {
-      "terminal": "終端",
-      "browser": "瀏覽器",
-      "settings": "設置",
       "newTab": "新標籤頁",
       "newPrivateTab": "新隱私標籤頁",
       "newTerminal": "新建終端",
@@ -2396,18 +2164,6 @@
     "cancel": "取消",
     "confirm": "結束"
   },
-  "projects": {
-    "title": "熱力圖",
-    "workspace": "工作區",
-    "duration": "時長",
-    "codingTime": "編碼時間",
-    "noData": "暫無項目數據",
-    "topLanguage": "主要語言",
-    "editCount": "編輯次數"
-  },
-  "dashboard": {
-    "other": "其他"
-  },
   "imagePreview": {
     "dialogLabel": "圖片預覽",
     "copyImage": "複製圖片",
@@ -2415,14 +2171,6 @@
     "closePreview": "關閉預覽",
     "copiedToClipboard": "圖片已複製到剪貼簿",
     "previewAlt": "預覽"
-  },
-  "update": {
-    "downloading": "正在下載更新",
-    "installing": "正在安裝更新",
-    "progressPercent": "{{percent}}%",
-    "downloadedOfTotal": "{{downloaded}} / {{total}}",
-    "preparingDownload": "正在準備下載…",
-    "downloadingAndInstalling": "正在下載並安裝更新 (v{{version}})…"
   },
   "workManagementTable": {
     "columns": {
@@ -2484,7 +2232,13 @@
   },
   "notifications": {
     "taskCancelledToast": "「{{name}}」已取消",
-    "taskCompletedToast": "「{{name}}」已完成。開啟工作階段以檢視結果。"
+    "taskCompletedToast": "「{{name}}」已完成。開啟工作階段以檢視結果。",
+    "backgroundSession": "背景工作階段",
+    "taskCompletedTitle": "任務已完成",
+    "taskCompletedBody": "「{{name}}」已完成，可以檢視結果",
+    "openSessionAction": "開啟工作階段",
+    "taskFailedTitle": "任務失敗",
+    "taskFailedBody": "「{{name}}」失敗{{detail}}"
   },
   "documentOpen": {
     "openInDefault": "在 {{name}} 中開啟",
@@ -2497,5 +2251,32 @@
     "loadFailed": "無法載入應用程式，請重新展開重試",
     "openFailed": "無法開啟文件",
     "saveFirst": "請先儲存或捨棄修改，再使用其他應用程式開啟"
+  },
+  "sqlEditor": {
+    "placeholder": "輸入 SQL 查詢...",
+    "format": "格式化",
+    "runQueryToSeeResults": "執行查詢以查看結果",
+    "executingQuery": "正在執行查詢...",
+    "queryFailed": "查詢失敗",
+    "queryCompleted": "查詢完成",
+    "noResults": "查詢未傳回結果",
+    "rowCount_one": "{{count}} 列",
+    "rowCount_other": "{{count}} 列",
+    "press": "按",
+    "toRun": "執行",
+    "nullValue": "NULL",
+    "booleanTrue": "true",
+    "booleanFalse": "false"
+  },
+  "chatImage": {
+    "maxReached": "最多允許 {{max}} 張圖片",
+    "remainingWarning": "只能再新增 {{remaining}} 張圖片（最多 {{max}} 張）",
+    "processFailed": "處理圖片失敗",
+    "loadFailed": "載入圖片失敗：{{fileName}}"
+  },
+  "navigation": {
+    "goToSection": "前往 {{label}}，第 {{current}} 節，共 {{total}} 節",
+    "section": "第 {{current}} 節",
+    "sectionPosition": "第 {{current}} 節，共 {{total}} 節"
   }
 }

@@ -13,12 +13,14 @@ export interface MobileAuthScreenProps {
   state: MobileAuthState;
   onSignIn: () => void;
   onRetry: () => void;
+  onCancel: () => void;
 }
 
 export function MobileAuthScreen({
   state,
   onSignIn,
   onRetry,
+  onCancel,
 }: MobileAuthScreenProps) {
   const { t } = useTranslation("mobileRemote");
   const loading =
@@ -48,8 +50,23 @@ export function MobileAuthScreen({
                 variant="loading"
                 placement="sidebar"
                 title={loadingTitle}
-                subtitle={t("auth.wait")}
+                subtitle={t(
+                  state.phase === "redirecting"
+                    ? "auth.browserWait"
+                    : "auth.wait"
+                )}
               />
+              {state.phase === "redirecting" ? (
+                <MobileActionButton
+                  htmlType="button"
+                  variant="tertiary"
+                  long
+                  centerLabel
+                  onClick={onCancel}
+                >
+                  {t("auth.cancel")}
+                </MobileActionButton>
+              ) : null}
             </div>
           ) : (
             <>

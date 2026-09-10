@@ -55,6 +55,7 @@ import {
   isImportedHistorySession,
 } from "@src/util/session/sessionDispatch";
 
+import AgentOrgArchivedComposer from "./AgentOrgArchivedComposer";
 import { ChatSessionContext } from "./ChatSessionContext";
 import { ChatViewComposerSection } from "./ChatViewComposerSection";
 import type { ChatViewComposerSectionProps } from "./ChatViewComposerSection.types";
@@ -292,10 +293,16 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
       queueSessionId,
       groupChatViewActive,
       groupChatViewAvailable,
-      groupChatMergedEvents,
-      groupChatAgents,
-      handleGroupChatTapEvents,
-      retryFailedGroupChatMessage,
+      groupProjectionItems,
+      groupProjectionHasMore,
+      groupProjectionLoading,
+      groupProjectionError,
+      groupProjectionActionError,
+      actionPendingTurns,
+      loadOlderGroupProjection,
+      retryGroupProjection,
+      handleStopGroupDelivery,
+      handleRetryGroupDelivery,
       groupChatMentionOptions,
       groupChatPendingMessage,
       handleGroupChatViewToggle,
@@ -311,7 +318,6 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
       groupChatPausedBottomContent,
       shouldShowCurrentPlanSurface,
       agentOrgInterventionSlot,
-      groupChatHistoryAction,
     } = useChatViewAgentOrgSurface({
       sessionId,
       showCurrentPlanSurface,
@@ -453,6 +459,12 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         disableStopWhenEmpty: groupChatViewActive,
         followUpSuggestions,
         onFollowUpSuggestionSent: clearFollowUpSuggestions,
+        submitDisabled:
+          !groupChatViewActive &&
+          currentAgentOrgMember !== null &&
+          !currentAgentOrgMember.isCoordinator &&
+          (agentOrgRunView?.runStatus === "starting" ||
+            agentOrgRunView?.runStatus === "failed"),
       }),
       [
         sessionId,
@@ -483,6 +495,8 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
         initialFileChanges,
         groupChatPendingMessage,
         groupChatViewActive,
+        currentAgentOrgMember,
+        agentOrgRunView?.runStatus,
         hasAny,
         scrollNav,
         inlineSections,
@@ -521,9 +535,7 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
           rootRef={rootRef}
           dataSessionId={chatHistorySessionId}
           conversationSessionId={sessionId}
-          conversationOverrideEvents={
-            groupChatViewActive ? groupChatMergedEvents : undefined
-          }
+          conversationOverrideEvents={undefined}
         >
           {(activeRunnerSessionId) => {
             const runnerBindings = resolveConversationRunnerBindings(
@@ -550,12 +562,23 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
                 />
                 <div className="min-h-0 max-w-full min-w-0 flex-1 overflow-hidden">
                   <ChatViewHistorySurface
-                    sessionId={runnerBindings.sourceSessionId}
+                    sessionId={
+                      groupChatViewActive
+                        ? sessionId
+                        : runnerBindings.sourceSessionId
+                    }
                     groupChatViewActive={groupChatViewActive}
-                    groupChatAgents={groupChatAgents}
+                    groupProjectionItems={groupProjectionItems}
+                    groupProjectionHasMore={groupProjectionHasMore}
+                    groupProjectionLoading={groupProjectionLoading}
+                    groupProjectionError={groupProjectionError}
+                    groupProjectionActionError={groupProjectionActionError}
+                    actionPendingTurns={actionPendingTurns}
                     pipelineSessionId={pipelineSessionId}
-                    handleGroupChatTapEvents={handleGroupChatTapEvents}
-                    retryFailedGroupChatMessage={retryFailedGroupChatMessage}
+                    loadOlderGroupProjection={loadOlderGroupProjection}
+                    retryGroupProjection={retryGroupProjection}
+                    handleStopGroupDelivery={handleStopGroupDelivery}
+                    handleRetryGroupDelivery={handleRetryGroupDelivery}
                     agentMessageClampEligible={agentMessageClampEligible}
                     surfaceBgClass={surfaceBgClass}
                     position={position}
@@ -571,7 +594,7 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
                     browserAddToConversationNav={browserAddToConversationNav}
                     displayMode={displayMode}
                     turnPaginationEnabled={turnPaginationEnabled}
-                    paginationTrailingSlot={groupChatHistoryAction}
+                    paginationTrailingSlot={null}
                     pinnedHeaderHost={pinnedHeaderHost}
                     chromeTopInset={chromeTopInset}
                     historyBottomInset={historyBottomInset}
@@ -592,14 +615,21 @@ const ResolvedChatView: React.FC<ResolvedChatViewProps> = memo(
                   externalScrollToBottomButton={externalScrollToBottomButton}
                   isImportedHistory={isImportedHistory}
                 />
-                <ConversationExecutionBindingContext.Provider
-                  value={conversationTargetBinding}
-                >
-                  <ChatViewComposerSection
-                    {...composerSectionProps}
-                    controlSessionId={runnerBindings.controlSessionId}
+                {showMainComposer &&
+                agentOrgRunView?.runStatus === "archived" ? (
+                  <AgentOrgArchivedComposer
+                    composerRef={setMeasuredFloatingComposerRef}
                   />
-                </ConversationExecutionBindingContext.Provider>
+                ) : (
+                  <ConversationExecutionBindingContext.Provider
+                    value={conversationTargetBinding}
+                  >
+                    <ChatViewComposerSection
+                      {...composerSectionProps}
+                      controlSessionId={runnerBindings.controlSessionId}
+                    />
+                  </ConversationExecutionBindingContext.Provider>
+                )}
               </>
             );
           }}

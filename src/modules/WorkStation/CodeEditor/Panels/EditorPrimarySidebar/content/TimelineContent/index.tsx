@@ -218,7 +218,7 @@ export const TimelineContent: React.FC<TimelineContentProps> = memo(
             isGitTimeline
               ? `${getBasename(filePath)} is not tracked by Git`
               : t("placeholders.noSessionHistoryForFile", {
-                  defaultValue: `No session activity found for ${getBasename(filePath)}`,
+                  file: getBasename(filePath),
                 })
           }
           action={

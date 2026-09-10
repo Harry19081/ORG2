@@ -21,14 +21,22 @@ interface AgentOrgInterventionView {
   intervention:
     | import("@src/api/tauri/agent").AgentOrgMemberIntervention
     | null;
-  memberName?: string | null;
+  member: import("@src/api/tauri/agent").AgentOrgRunMemberView;
+  runStatus: import("@src/api/tauri/agent").AgentOrgRunStatus | null;
   error: string | null;
   returning: boolean;
-  onReturnToWork: () => Promise<boolean>;
+  stopping: boolean;
+  onReturnToWork: () => Promise<
+    import("@src/api/tauri/agent").ReturnToWorkResult | null
+  >;
+  onStopUserDirectedWork: () => Promise<boolean>;
 }
 
 interface GroupChatPendingMessageView {
   targetMemberName: string;
+  retryError: string | null;
+  retrying: boolean;
+  onRetry: () => Promise<void>;
 }
 
 export interface ChatViewComposerSectionProps {
@@ -79,4 +87,5 @@ export interface ChatViewComposerSectionProps {
   disableStopWhenEmpty?: boolean;
   followUpSuggestions: ReadonlyArray<SessionFollowUpSuggestion>;
   onFollowUpSuggestionSent: () => void;
+  submitDisabled?: boolean;
 }

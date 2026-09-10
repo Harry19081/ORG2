@@ -5,7 +5,9 @@ use crate::agent_sessions::event_pipeline::types::{
     ActivityStatus, EventDisplayStatus, EventDisplayVariant, EventSource, SessionEvent,
 };
 use core_types::cli_alias::get_ui_canonical;
-use core_types::extracted::{ExtractedData, OrgTaskOperationOutcome};
+use core_types::extracted::{
+    ExtractedData, OrgTaskListObservation, OrgTaskOperationOutcome,
+};
 
 fn make_event(
     function_name: &str,
@@ -506,6 +508,10 @@ fn test_extract_org_task_create() {
         ExtractedData::OrgTask(org_task) => {
             assert_eq!(org_task.action, "create");
             assert_eq!(org_task.outcome, OrgTaskOperationOutcome::Succeeded);
+            assert_eq!(
+                org_task.task_list_observation,
+                OrgTaskListObservation::Results
+            );
             assert_eq!(org_task.total, Some(1));
             assert_eq!(org_task.owner_changed, Some(true));
             assert_eq!(org_task.task_assigned_dispatched, Some(true));
@@ -517,6 +523,63 @@ fn test_extract_org_task_create() {
             assert_eq!(task.blocks, vec!["task-0".to_string()]);
         }
         _ => panic!("Expected OrgTask variant"),
+    }
+}
+
+#[test]
+fn test_extract_org_task_list_no_new_facts_is_not_an_empty_board() {
+    let event = make_event(
+        "task_list",
+        EventDisplayVariant::ToolCall,
+        serde_json::json!({}),
+        serde_json::json!({"content": serde_json::json!({
+            "code": "coordinator_no_new_work_facts",
+            "terminal_reason": "waiting_for_org_event",
+            "guidance": "End this Turn now"
+        }).to_string()}),
+    );
+
+    let data = extract_event_data(&event).unwrap();
+    match data {
+        ExtractedData::OrgTask(org_task) => {
+            assert_eq!(org_task.action, "list");
+            assert_eq!(org_task.outcome, OrgTaskOperationOutcome::Succeeded);
+            assert_eq!(
+                org_task.task_list_observation,
+                OrgTaskListObservation::NoNewWorkFacts
+            );
+            assert!(org_task.tasks.is_empty());
+            assert_eq!(org_task.total, None);
+            assert_eq!(org_task.guidance.as_deref(), Some("End this Turn now"));
+        }
+        _ => panic!("Expected OrgTask variant"),
+    }
+}
+
+#[test]
+fn test_extract_org_task_list_control_observations_are_exhaustive() {
+    for (code, expected) in [
+        (
+            "coordinator_new_trigger_pending",
+            OrgTaskListObservation::NewTriggerPending,
+        ),
+        ("future_control_result", OrgTaskListObservation::Unknown),
+    ] {
+        let event = make_event(
+            "task_list",
+            EventDisplayVariant::ToolCall,
+            serde_json::json!({}),
+            serde_json::json!({"content": serde_json::json!({
+                "code": code,
+                "guidance": "bounded control result"
+            }).to_string()}),
+        );
+        let data = extract_event_data(&event).unwrap();
+        let ExtractedData::OrgTask(org_task) = data else {
+            panic!("Expected OrgTask variant");
+        };
+        assert_eq!(org_task.task_list_observation, expected);
+        assert_eq!(org_task.total, None);
     }
 }
 
@@ -668,6 +731,51 @@ fn test_extract_org_task_structured_non_mutations_are_rejected() {
 }
 
 #[test]
+fn test_extract_org_task_background_finality_deferral_keeps_live_task_status() {
+    let event = make_event(
+        "task_update",
+        EventDisplayVariant::ToolCall,
+        serde_json::json!({
+            "operation": "complete",
+            "id": "task-background"
+        }),
+        serde_json::json!({
+            "rejected": true,
+            "completion_deferred": true,
+            "reason_code": "turn_owned_background_work_active",
+            "task_status_unchanged": true,
+            "guidance": "Stop and consume the background server, then retry.",
+            "task": {
+                "id": "task-background",
+                "subject": "Verify avatars",
+                "owner_member_id": "implementer",
+                "status": "in_progress",
+                "blocks": [],
+                "blocked_by": []
+            }
+        }),
+    );
+
+    let data = extract_event_data(&event).unwrap();
+    match data {
+        ExtractedData::OrgTask(org_task) => {
+            assert_eq!(org_task.outcome, OrgTaskOperationOutcome::Rejected);
+            assert_eq!(org_task.completion_deferred, Some(true));
+            assert!(org_task.error_message.is_none());
+            assert_eq!(
+                org_task
+                    .task
+                    .expect("authoritative task snapshot")
+                    .status
+                    .as_deref(),
+                Some("in_progress")
+            );
+        }
+        _ => panic!("Expected OrgTask variant"),
+    }
+}
+
+#[test]
 fn test_extract_org_task_legacy_invalid_params_is_recoverable_rejection() {
     let message = "Error executing task_update: Invalid parameters: parameter validation failed: missing field `summary`";
     let mut event = make_event(
@@ -754,6 +862,10 @@ fn test_extract_org_task_list() {
         ExtractedData::OrgTask(org_task) => {
             assert_eq!(org_task.action, "list");
             assert_eq!(org_task.outcome, OrgTaskOperationOutcome::Succeeded);
+            assert_eq!(
+                org_task.task_list_observation,
+                OrgTaskListObservation::Results
+            );
             assert_eq!(org_task.total, Some(2));
             assert_eq!(org_task.org_run_id.as_deref(), Some("run-1"));
             assert_eq!(org_task.tasks.len(), 2);

@@ -186,8 +186,7 @@ const SettingsSidebar: React.FC = () => {
 
   return (
     <SidebarBase
-      hostTopBarLeadingContent={settingsReturnItem}
-      macTopBarFollowingContent={
+      topBarFollowingContent={
         <div className="shrink-0 px-3">{settingsReturnItem}</div>
       }
     >
@@ -425,8 +424,8 @@ export const SettingsRootBody: React.FC<SettingsRootBodyProps> = ({
           onMenuItemClick={handleItemClick}
         />
         {namedSections.map((section) => (
-          <div key={section.id} className="mt-4">
-            <div className="mb-2 px-2 text-[11px] font-medium tracking-wider text-text-1 uppercase">
+          <div key={section.id} className="mt-1">
+            <div className="mb-1 px-2 text-[11px] font-medium tracking-wider text-text-1 uppercase">
               {section.label}
             </div>
             <NavigationMenu

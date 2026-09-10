@@ -29,9 +29,6 @@ describe("NavigationSidebar", () => {
   it("renders separators in pinned items as standard section headers", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [],
         pinnedMenuItems: [
           { id: "create", key: "create", label: "Create" },
@@ -46,10 +43,10 @@ describe("NavigationSidebar", () => {
     );
 
     expect(markup).toContain(
-      'class="mb-2 flex items-center gap-1.5 px-2 text-[11px] font-medium tracking-wider text-text-2 uppercase"'
+      'class="mb-1 flex items-center gap-1.5 px-2 text-[11px] font-medium tracking-wider text-text-2 uppercase"'
     );
     expect(markup).toContain('<span class="min-w-0 truncate">Browse</span>');
-    expect(markup).toContain('class="flex flex-col gap-3 px-3 pt-1"');
+    expect(markup).toContain('class="flex flex-col gap-2 px-3 pt-1"');
     expect(markup).toContain('data-sidebar-section-id="work-items-browse"');
     expect(markup).not.toContain(
       'data-test-menu-item="separator-work-items-browse"'
@@ -59,9 +56,6 @@ describe("NavigationSidebar", () => {
   it("allows titled pinned sections to be collapsed", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [],
         pinnedMenuItems: [
           { id: "create", key: "create", label: "Create" },
@@ -87,9 +81,6 @@ describe("NavigationSidebar", () => {
   it("renders actions on an existing session section header", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [
           {
             id: "separator-today",
@@ -142,9 +133,6 @@ describe("NavigationSidebar", () => {
   it("keeps every header action visible when the filter is active outside sidebar hover", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [
           {
             id: "separator-team",
@@ -172,9 +160,6 @@ describe("NavigationSidebar", () => {
   it("renders the standard loading state without dummy rows", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [],
         isLoading: true,
       })

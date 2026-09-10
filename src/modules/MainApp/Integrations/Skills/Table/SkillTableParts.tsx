@@ -1,5 +1,8 @@
 import type { TFunction } from "i18next";
 
+import AgentSourceIcon, {
+  getAgentSourceProvider,
+} from "@src/components/AgentSourceIcon";
 import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable/tokens";
 import type { CursorRepo } from "@src/hooks/policies";
 import { CodeXmlIcon, Home01Icon, HugeiconsIcon, UserIcon } from "@src/icons";
@@ -45,6 +48,11 @@ function renderSourceIcon<TSkill extends SkillTableRow>(
         className={className}
         aria-hidden
       />
+    );
+  }
+  if (getAgentSourceProvider(skill.path)) {
+    return (
+      <AgentSourceIcon path={skill.path} size={14} className={className} />
     );
   }
   if (isRepoSkill(skill, cursorRepos)) {

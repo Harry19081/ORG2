@@ -286,6 +286,10 @@ export const NullableSessionIdInput = z.object({
   sessionId: z.string().nullable(),
 });
 
+export const ExportMarkdownInput = NullableSessionIdInput.extend({
+  outputPath: z.string().min(1).optional(),
+});
+
 export const RemoveSyntheticUserInputsInput = z.object({
   sessionId: z.string().nullable(),
   matchingContents: z.array(z.string()).optional(),
@@ -300,6 +304,10 @@ export const SessionIdInput = z.object({
 export const EventsInput = z.object({
   events: SessionEventArraySchema,
   sessionId: z.string().nullable(),
+});
+
+export const SetEventsInput = EventsInput.extend({
+  expectedVersion: z.number().int().nonnegative().optional(),
 });
 
 export const EventInput = z.object({

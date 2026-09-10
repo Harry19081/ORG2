@@ -8,6 +8,7 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
 import TabPill, { type TabPillItem } from "@src/components/TabPill";
+import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { CursorRepo } from "@src/hooks/policies";
 import { getInstalledSkillIdentity } from "@src/hooks/skills/installedSkillsMerge";
 import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
@@ -243,7 +244,7 @@ export const SkillsTable: React.FC<SkillsTableProps> = ({
                   onClick={(event) => event.stopPropagation()}
                 >
                   <Switch
-                    size="small"
+                    size={MODEL_TABLE_SWITCH_SIZE}
                     checked={skill.enabled}
                     onCheckedChange={(checked) =>
                       onToggleSkill(skill.name, checked)

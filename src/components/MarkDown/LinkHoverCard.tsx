@@ -72,7 +72,7 @@ const LinkHoverCardContent: React.FC<LinkHoverCardContentProps> = ({
       await copyText(preview.url);
       Message.success(t("cards.url.copied"));
     } catch {
-      Message.error(t("failedToCopyContent"));
+      Message.error(t("chat.failedToCopyContent"));
     }
   }, [preview.url, t]);
 

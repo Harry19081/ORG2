@@ -2,7 +2,12 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { SessionFollowUpSuggestion } from "@src/api/services/sessionFollowUpSuggestions";
-import type { AgentOrgMemberIntervention } from "@src/api/tauri/agent";
+import type {
+  AgentOrgMemberIntervention,
+  AgentOrgRunMemberView,
+  AgentOrgRunStatus,
+  ReturnToWorkResult,
+} from "@src/api/tauri/agent";
 import Button from "@src/components/Button";
 import { PILL_CONTROL_IDLE_SURFACE_CLASS } from "@src/components/CompoundPill/config";
 import {
@@ -49,14 +54,20 @@ interface StreamRetryInfo {
 
 interface AgentOrgInterventionView {
   intervention: AgentOrgMemberIntervention | null;
-  memberName?: string | null;
+  member: AgentOrgRunMemberView;
+  runStatus: AgentOrgRunStatus | null;
   error: string | null;
   returning: boolean;
-  onReturnToWork: () => Promise<boolean>;
+  stopping: boolean;
+  onReturnToWork: () => Promise<ReturnToWorkResult | null>;
+  onStopUserDirectedWork: () => Promise<boolean>;
 }
 
 interface GroupChatPendingMessageView {
   targetMemberName: string;
+  retryError: string | null;
+  retrying: boolean;
+  onRetry: () => Promise<void>;
 }
 
 interface CanvasPreviewPillView {
@@ -116,6 +127,7 @@ interface ChatFloatingComposerProps {
   disableStopWhenEmpty?: boolean;
   followUpSuggestions: ReadonlyArray<SessionFollowUpSuggestion>;
   onFollowUpSuggestionSent: () => void;
+  submitDisabled?: boolean;
 }
 
 const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
@@ -170,6 +182,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     disableStopWhenEmpty = false,
     followUpSuggestions,
     onFollowUpSuggestionSent,
+    submitDisabled = false,
   }) => {
     const { t } = useTranslation("sessions");
     const [fileChangeStats, setFileChangeStatsState] =
@@ -320,15 +333,45 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             <div
               data-testid="agent-org-group-chat-pending"
               data-target-name={groupChatPendingMessage.targetMemberName}
+              data-delivery-state={
+                groupChatPendingMessage.retryError ? "unknown" : "pending"
+              }
               className="bg-background-2 mx-auto flex items-center gap-2 rounded-full border border-solid border-border-2 px-3 py-1 text-[12px] text-text-2 shadow-xs"
             >
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-6" />
-              <span>
-                {t("groupChat.userMessagePending", {
-                  member: groupChatPendingMessage.targetMemberName,
-                  defaultValue: "{{member}} is picking up your message",
-                })}
-              </span>
+              {groupChatPendingMessage.retryError ? (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-warning-6" />
+                  <span>
+                    {t("groupChat.userMessageOutcomeUnknown", {
+                      defaultValue:
+                        "Delivery outcome unknown. Retry with the same IDs.",
+                    })}
+                  </span>
+                  <Button
+                    data-testid="agent-org-group-chat-retry"
+                    variant="secondary"
+                    appearance="outline"
+                    size="mini"
+                    shape="round"
+                    htmlType="button"
+                    loading={groupChatPendingMessage.retrying}
+                    disabled={groupChatPendingMessage.retrying}
+                    onClick={() => void groupChatPendingMessage.onRetry()}
+                  >
+                    {t("common:actions.retry", { defaultValue: "Retry" })}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-6" />
+                  <span>
+                    {t("groupChat.userMessagePending", {
+                      member: groupChatPendingMessage.targetMemberName,
+                      defaultValue: "{{member}} is picking up your message",
+                    })}
+                  </span>
+                </>
+              )}
             </div>
           )}
 
@@ -339,6 +382,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             controlSessionId={controlSessionId}
             onSubmitOverride={onSubmitOverride}
             customMentionOptions={customMentionOptions}
+            submitDisabled={submitDisabled}
             topRowPills={
               showTopRowPills ? (
                 <CollapsedInlineRow
@@ -361,10 +405,15 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
                 {agentOrgIntervention && (
                   <AgentOrgInterventionPinBar
                     intervention={agentOrgIntervention.intervention}
-                    memberName={agentOrgIntervention.memberName}
+                    member={agentOrgIntervention.member}
+                    runStatus={agentOrgIntervention.runStatus}
                     error={agentOrgIntervention.error}
                     returning={agentOrgIntervention.returning}
+                    stopping={agentOrgIntervention.stopping}
                     onReturnToWork={agentOrgIntervention.onReturnToWork}
+                    onStopUserDirectedWork={
+                      agentOrgIntervention.onStopUserDirectedWork
+                    }
                   />
                 )}
                 {streamRetry && (

@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Message from "@src/components/Message";
-import SessionHistoryNav from "@src/components/SessionHistoryNav";
 import { ROUTES } from "@src/config/routes";
 import { useAppNavigation } from "@src/hooks/navigation/useAppNavigation";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
@@ -28,7 +27,6 @@ import {
   sidebarCollapsedAtom,
 } from "@src/store/ui/sidebarAtom";
 import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
-import { isMacOS } from "@src/util/platform/tauri";
 
 import { SidebarBottomBar } from "../../blocks";
 import SidebarSettingsMenuButton from "../../blocks/SidebarSettingsMenuButton";
@@ -38,11 +36,8 @@ import SidebarGuideButton from "../SidebarGuideButton";
 import type { SidebarTabDisposition } from "../sidebarTabNavigation";
 import { useSessionMenuItems } from "../useSessionMenuItems/index";
 import { DEFAULT_COLLAPSED_SECTION_IDS } from "../workstationSidebarData";
+import { SessionSidebarViewSwitcher } from "./SessionSidebarViewSwitcher";
 import { SidebarDialogs } from "./SidebarDialogs";
-import {
-  type WorkstationSidebarViewKey,
-  WorkstationSidebarViewSwitcher,
-} from "./WorkstationSidebarViewSwitcher";
 import { openNewChatFromSidebar } from "./sessionEntryActions";
 import { useWorkstationSidebarBottomActions } from "./sidebarConnector.bottomActions";
 import { useWorkstationSidebarChatPanelAtoms } from "./sidebarConnector.chatPanelAtoms";
@@ -56,7 +51,7 @@ import { useWorkstationSidebarScopeAndPagination } from "./sidebarConnector.scop
 import { useWorkstationSidebarSelectionAndCollapse } from "./sidebarConnector.selectionAndCollapse";
 import { useWorkstationSidebarSessionInteractionHandlers } from "./sidebarConnector.sessionInteractionHandlers";
 import { useSidebarSessionRefreshAction } from "./sidebarSessionRefresh";
-import type { WorkstationSidebarKey } from "./types";
+import type { SessionSidebarView } from "./types";
 import { useSessionSidebarOrdering } from "./useSessionSidebarOrdering";
 import { useSessionSidebarRowActions } from "./useSessionSidebarRowActions";
 import { useSidebarGuide } from "./useSidebarGuide";
@@ -132,25 +127,10 @@ export const WorkstationSidebarConnector: React.FC = () => {
   const { openSession } = useSessionView();
   const activeSessionId = useAtomValue(workstationActiveSessionIdAtom) ?? "";
   const { goToNewSession, navigateTo } = useAppNavigation();
-  const [activeSidebarKey, setActiveSidebarKey] =
-    useState<WorkstationSidebarKey>("workstation");
-  const [channelsOpen, setChannelsOpen] = useState(false);
-  const [workItemsOpen, setWorkItemsOpen] = useState(false);
-  const workItemsContentVisible =
-    activeSidebarKey === "workstation" && workItemsOpen;
-  const channelSidebarVisible =
-    activeSidebarKey === "workstation" && channelsOpen;
-  const handleViewChange = useCallback((key: WorkstationSidebarViewKey) => {
-    setActiveSidebarKey("workstation");
-    setChannelsOpen(key === "channels");
-    setWorkItemsOpen(key === "work-items");
-  }, []);
-  const activeViewKey: WorkstationSidebarViewKey =
-    activeSidebarKey === "projects" || workItemsContentVisible
-      ? "work-items"
-      : channelSidebarVisible
-        ? "channels"
-        : "sessions";
+  const [activeViewKey, setActiveViewKey] =
+    useState<SessionSidebarView>("sessions");
+  const workItemsContentVisible = activeViewKey === "work-items";
+  const channelSidebarVisible = activeViewKey === "channels";
 
   const {
     sortedSessions,
@@ -485,7 +465,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
   });
 
   const workItems = useWorkItemsSidebarSurface({
-    enabled: activeSidebarKey === "projects" || workItemsContentVisible,
+    enabled: workItemsContentVisible,
     activeProjectOrgId,
     activateMyStationRouteForProjectTabContent,
     resetWorkManagementStateForProjectsContent,
@@ -495,7 +475,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     useWorkstationSidebarSelectionAndCollapse({
       activeSessionCreatorDraftId,
       highlightedSessionId,
-      activeSidebarKey,
+      activeViewKey,
       activeChatPanelTabType: activeChatPanelTab?.type ?? null,
       chatPanelContentMode,
       chatPanelCreateTarget,
@@ -503,7 +483,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
       chatPanelSelectedWorkItem,
       projectsSelectedMenuItemId: workItems.selectedMenuItemId,
       sessionCreatorDrafts,
-      workItemsContentVisible,
       activeWorkManagementSection,
       workManagementProjectsView,
       setGroupVisibleCounts,
@@ -514,26 +493,22 @@ export const WorkstationSidebarConnector: React.FC = () => {
       setCollapsedSectionIds,
     });
 
-  const projectsVisible =
-    activeSidebarKey === "projects" || workItemsContentVisible;
-  const sidebarMenuItems = projectsVisible
+  const sidebarMenuItems = workItemsContentVisible
     ? workItems.menuItems
     : channelSidebarVisible
       ? channelMenuItems
       : sessionMenuItems;
-  const resolvedCollapsedSectionIds = projectsVisible
+  const resolvedCollapsedSectionIds = workItemsContentVisible
     ? workItems.collapsedSectionIds
     : collapsedSectionIds;
-  const resolvedOnCollapsedSectionIdsChange = projectsVisible
+  const resolvedOnCollapsedSectionIdsChange = workItemsContentVisible
     ? workItems.onCollapsedSectionIdsChange
     : handleSessionCollapsedSectionIdsChange;
 
   useWorkstationSidebarRevealNavigationEffects({
     sessionSidebarRevealRequest,
     setSidebarCollapsed,
-    setActiveSidebarKey,
-    setWorkItemsOpen,
-    setChannelsOpen,
+    setActiveViewKey,
     setSelectedOrgId,
     setExpandedSubagentParentIds,
     activeSessionSidebarRevealRequest,
@@ -554,8 +529,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     cloudSignedIn: cloudSignedInIdentity !== null,
     manageOrgLabel,
     handleCloudSignIn,
-    activeSidebarKey,
-    workItemsContentVisible,
+    activeViewKey,
     handleMenuItemContextMenu,
     activateMyStationRouteForProjectTabContent,
     t,
@@ -587,9 +561,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
       sidebarMenuItems,
       resolvedOnCollapsedSectionIdsChange,
       sessions,
-      workItemsContentVisible,
-      channelSidebarVisible,
-      activeSidebarKey,
+      activeViewKey,
       projectsWorkItemsLoading: workItems.loading,
       projectsSidebarMenuItems: workItems.menuItems,
       sessionsLoading,
@@ -613,7 +585,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
     });
 
   const ordering = useSessionSidebarOrdering({
-    enabled: !projectsVisible && !channelSidebarVisible,
+    enabled: activeViewKey === "sessions",
     items: sidebarMenuItems,
     sessionMap,
     onTogglePin: handleTogglePin,
@@ -645,27 +617,20 @@ export const WorkstationSidebarConnector: React.FC = () => {
   return (
     <>
       <NavigationSidebar
-        items={[]}
-        activeKey={activeSidebarKey}
-        onChange={() => undefined}
         menuItems={sidebarMenuItems}
         pinnedMenuItems={pinnedMenuItems}
         selectedKey={resolvedSelectedMenuItemId}
         onMenuItemClick={resolvedMenuItemClick}
         onMenuItemContextMenu={resolvedMenuItemContextMenu}
         renderMenuItemWrapper={renderOrderedMenuItem}
-        hostTopBarLeadingContent={sidebarOrgSelector}
-        macTopBarFollowingContent={
+        topBarFollowingContent={
           <div className="shrink-0 px-3 pt-1">{sidebarOrgSelector}</div>
         }
         preListContent={
-          <WorkstationSidebarViewSwitcher
+          <SessionSidebarViewSwitcher
             activeKey={activeViewKey}
-            onChange={handleViewChange}
+            onChange={setActiveViewKey}
           />
-        }
-        headerActions={
-          isMacOS() ? undefined : <SessionHistoryNav variant="sidebar" />
         }
         listTopPadding
         bottomContent={

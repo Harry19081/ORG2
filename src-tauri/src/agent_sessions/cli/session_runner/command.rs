@@ -70,6 +70,16 @@ pub(super) fn build_command_with_launch_profile(
                 cmd.push(config);
             }
         }
+        let writable_roots: Vec<_> = additional_dirs.iter().filter(|dir| !dir.is_empty()).collect();
+        if !writable_roots.is_empty() {
+            // app-server has no --add-dir flag. Preserve the session's explicit
+            // extra workspace roots through the equivalent native config.
+            cmd.push("-c".into());
+            cmd.push(format!(
+                "sandbox_workspace_write.writable_roots={}",
+                serde_json::to_string(&writable_roots).expect("directory strings serialize")
+            ));
+        }
         return cmd;
     }
 
@@ -281,7 +291,8 @@ pub(super) fn codex_app_server_thread_model(model: Option<&str>) -> Option<Strin
 }
 
 fn map_codex_model_variant(model: &str) -> CodexModelLaunchConfig {
-    const CODEX_VARIANT_BASES: [&str; 8] = [
+    const CODEX_VARIANT_BASES: [&str; 9] = [
+        "gpt-6-astra",
         "gpt-5.6-sol",
         "gpt-5.6-terra",
         "gpt-5.6-luna",
@@ -304,11 +315,14 @@ fn map_codex_model_variant(model: &str) -> CodexModelLaunchConfig {
         let Some(reasoning) = suffix_parts.first().copied() else {
             continue;
         };
-        // GPT-5.6 adds Max above xhigh; do not reinterpret unsupported Max
+        // Astra and GPT-5.6 support Max above xhigh; do not reinterpret unsupported Max
         // suffixes for older families as a launch override.
-        let supports_gpt_5_6_max = reasoning == "max"
-            && matches!(base_model, "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna");
-        if !CODEX_REASONING_LEVELS.contains(&reasoning) && !supports_gpt_5_6_max {
+        let supports_max = reasoning == "max"
+            && matches!(
+                base_model,
+                "gpt-6-astra" | "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"
+            );
+        if !CODEX_REASONING_LEVELS.contains(&reasoning) && !supports_max {
             continue;
         }
 

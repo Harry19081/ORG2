@@ -6,7 +6,6 @@
     "today": "Hôm nay",
     "everyone": "Mọi người",
     "activeMembers": "Thành viên hoạt động",
-    "systemsCurrent": "{{current}}/{{total}} hệ thống đang cập nhật",
     "usageByAgent": "Mức sử dụng theo tác tử",
     "recentSessions": "Phiên được chia sẻ gần đây",
     "recentLoading": "Đang tải các phiên được chia sẻ…",
@@ -71,10 +70,6 @@
     "appVersion": "Phiên bản ORGII",
     "totalSessions": "Tổng số phiên",
     "lastSynced": "Đồng bộ lần cuối"
-  },
-  "selfService": {
-    "hint": "Khi chia sẻ đang bật, runtime của chính bạn được chia sẻ với không gian làm việc này.",
-    "action": "Ngừng chia sẻ và xóa dữ liệu của tôi"
   },
   "orgSettings": {
     "label": "Chia sẻ runtime của nhóm",

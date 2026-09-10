@@ -44,7 +44,7 @@ import { NoDragRegion } from "@src/components/WindowChrome";
 import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
 import SessionRawTranscriptDialog from "@src/engines/ChatPanel/components/SessionRawTranscriptDialog";
 import {
-  getCollapsedSidebarChromeOffset,
+  useCollapsedSidebarChromeOffset,
   useShouldOffsetWorkStationTopBar,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
@@ -224,6 +224,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
     const actionSystem = useActionSystemOptional();
     const dispatch = actionSystem?.dispatch;
     const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
+    const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
     // macOS pins the right-edge collapse toggles in window space; make room
     // whenever the workstation is the pane touching that edge.
     const rightEdge = useWorkbenchRightEdgeReservation();
@@ -390,7 +391,7 @@ export const TabBar: React.FC<TabBarProps> = memo(
           {
             height: `${TAB_BAR_HEIGHT + 8}px`,
             paddingLeft: shouldOffsetLeftChrome
-              ? getCollapsedSidebarChromeOffset()
+              ? collapsedSidebarChromeOffset
               : undefined,
             // The controls row keeps its own `pr-2`; only the remainder of
             // the pinned-chrome reservation goes here.

@@ -329,12 +329,92 @@ fn inspect_suffix_application(
     }
 }
 
+/// Resolve the Desktop project before creating a managed native thread.
+/// Called on a blocking worker: project discovery is bounded and per-creation,
+/// never an idle watcher. Existing names/metadata remain owned by Desktop.
+pub(crate) fn ensure_project(codex_home: &Path, project_root: &Path) -> Result<String, String> {
+    use sha2::{Digest, Sha256};
+
+    let root = project_root
+        .canonicalize()
+        .map_err(|error| format!("resolve Codex project root: {error}"))?;
+    with_rpc(codex_home, &root, |runtime, client| {
+        let mut cursor = Value::Null;
+        let deadline = std::time::Instant::now() + REQUEST_TIMEOUT;
+        for _ in 0..100 {
+            if std::time::Instant::now() >= deadline {
+                return Err("Codex project discovery timed out".to_string());
+            }
+            let page = request(
+                runtime,
+                client,
+                "project/list",
+                json!({
+                    "cursor": cursor, "limit": 100
+                }),
+            )?;
+            let projects = page["data"]
+                .as_array()
+                .ok_or_else(|| "Codex project/list returned no project array".to_string())?;
+            for project in projects {
+                let roots = project["roots"]
+                    .as_array()
+                    .ok_or_else(|| "Codex project has no roots".to_string())?;
+                if roots
+                    .iter()
+                    .filter_map(|entry| entry["path"].as_str())
+                    .any(|path| paths_have_same_identity(Path::new(path), &root))
+                {
+                    return project["id"]
+                        .as_str()
+                        .filter(|id| !id.is_empty())
+                        .map(str::to_string)
+                        .ok_or_else(|| "Codex project has no id".to_string());
+                }
+            }
+            let next = page.get("nextCursor").cloned().unwrap_or(Value::Null);
+            if next.is_null() {
+                let name = root
+                    .file_name()
+                    .and_then(|name| name.to_str())
+                    .unwrap_or("ORGII workspace");
+                let key = format!(
+                    "orgii-project-{:x}",
+                    Sha256::digest(root.to_string_lossy().as_bytes())
+                );
+                let created = request(
+                    runtime,
+                    client,
+                    "project/create",
+                    json!({
+                        "idempotencyKey": key, "name": name, "roots": [{"path": root}]
+                    }),
+                )?;
+                return created["project"]["id"]
+                    .as_str()
+                    .filter(|id| !id.is_empty())
+                    .map(str::to_string)
+                    .ok_or_else(|| "Codex project/create returned no project id".to_string());
+            }
+            if next == cursor {
+                return Err("Codex project/list repeated its cursor".to_string());
+            }
+            cursor = next;
+        }
+        Err("Codex project discovery exceeded 100 pages".to_string())
+    })
+}
+
 pub(crate) fn register_thread(
     codex_home: &Path,
     cwd: &Path,
     title: &str,
     items: &[Value],
+    project_root: &Path,
 ) -> Result<CodexCatalogEntry, String> {
+    // Converted histories start a new provider thread here, then resume it in
+    // the runner. Assign membership at creation, exactly like fresh runs.
+    let project_id = ensure_project(codex_home, project_root)?;
     with_rpc(codex_home, cwd, |runtime, client| {
         let model_provider = effective_model_provider(runtime, client, cwd)?;
         let result = request(
@@ -344,6 +424,7 @@ pub(crate) fn register_thread(
             json!({
                 "cwd": cwd,
                 "modelProvider": model_provider,
+                "projectId": project_id,
                 "ephemeral": false,
                 "historyMode": "legacy",
                 "experimentalRawEvents": false
@@ -462,6 +543,50 @@ pub(crate) fn archive_thread(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    #[ignore = "requires installed Codex app-server; isolated storage, no model requests"]
+    fn converted_thread_preserves_repository_project_across_resume() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path().canonicalize().unwrap();
+        let home = root.join("codex-home");
+        let project = root.join("repository");
+        let worktree = root.join("execution-worktree");
+        for path in [&home, &project, &worktree] {
+            std::fs::create_dir(path).unwrap();
+        }
+        let project_id = ensure_project(&home, &project).unwrap();
+        let items = vec![
+            json!({"type":"message", "role":"user", "content":[{"type":"input_text","text":"conversion project fixture"}]}),
+        ];
+        let entry =
+            register_thread(&home, &worktree, "Converted fixture", &items, &project).unwrap();
+        for _ in 0..2 {
+            synchronize_thread(
+                &home,
+                &entry.path,
+                &entry.id,
+                &worktree,
+                "Converted fixture",
+                &[],
+            )
+            .unwrap();
+            // No model turn is sent by this isolated test. The app-server has
+            // not set has_user_event yet, so its default sidebar query hides
+            // the pending thread. Check the authoritative membership instead.
+            let db = rusqlite::Connection::open(home.join("state_5.sqlite")).unwrap();
+            let (saved_project, saved_cwd): (Option<String>, String) = db
+                .query_row(
+                    "SELECT project_id, cwd FROM threads WHERE id=?1",
+                    [&entry.id],
+                    |r| Ok((r.get(0)?, r.get(1)?)),
+                )
+                .unwrap();
+            assert_eq!(saved_project.as_deref(), Some(project_id.as_str()));
+            assert_eq!(Path::new(&saved_cwd), worktree);
+            assert_eq!(ensure_project(&home, &project).unwrap(), project_id);
+        }
+    }
 
     #[test]
     fn parses_supported_thread_catalog_shape() {

@@ -24,13 +24,13 @@ use sha2::{Digest, Sha256};
 use tokio::sync::oneshot;
 use uuid::Uuid;
 
-#[cfg(test)]
-use super::native_ir::native_item_semantically_equal;
 pub use super::native_ir::NativeConversationItem;
 use super::native_ir::{
-    native_items_from_agent_history, native_items_from_chunks, provider_portable_append_suffix,
-    validate_items, MAX_ITEMS,
+    append_native_items_from_chunks, native_items_from_agent_history,
+    provider_portable_append_suffix, validate_items, MAX_ITEMS,
 };
+#[cfg(test)]
+use super::native_ir::{native_item_semantically_equal, native_items_from_chunks};
 use super::native_store::{
     append_suffix_atomically, copy_file_atomically, lock_claude_transcript,
     native_transcript_revision, replace_file_link_atomically, write_file_atomically,
@@ -217,9 +217,9 @@ fn authoritative_native_items(session_id: &str) -> Result<Vec<NativeConversation
         let native_id = persistence::get_cli_session_id_for_account(session_id, account_id)
             .map_err(|error| format!("read native binding for {session_id}: {error}"))?
             .ok_or_else(|| format!("CLI session {session_id} has no native resume binding"))?;
-        let chunks = load_materialized_cli_transcript(&session, &native_id)?
+        let (provider, path) = materialized_cli_transcript_path(&session, &native_id)?
             .ok_or_else(|| format!("provider-native transcript {native_id} was not found"))?;
-        Ok(native_items_from_chunks(&chunks))
+        native_items_from_provider_path(session_id, &provider, &path)
     } else {
         let history = agent_core::session::persistence::load_llm_history(session_id)
             .map_err(|error| format!("load native Agent transcript {session_id}: {error}"))?;
@@ -734,7 +734,7 @@ fn materialized_cli_transcript_paths(
     Ok(Some((agent.to_string(), paths)))
 }
 
-fn materialized_cli_transcript_path(
+pub(super) fn materialized_cli_transcript_path(
     session: &persistence::CodeSession,
     native_id: &str,
 ) -> Result<Option<(String, PathBuf)>, String> {
@@ -762,6 +762,38 @@ pub(crate) fn native_app_transcript_path(
     Ok(paths.native_path.is_file().then_some(paths.native_path))
 }
 
+fn native_items_from_provider_path(
+    session_id: &str,
+    provider: &str,
+    path: &Path,
+) -> Result<Vec<NativeConversationItem>, String> {
+    let before = native_transcript_revision(path)?;
+    let mut items = Vec::new();
+    let mut append = |chunks: Vec<ActivityChunk>| {
+        append_native_items_from_chunks(&mut items, &chunks);
+        Ok(())
+    };
+    match provider {
+        "claude_code" => {
+            orgtrack_core::sources::claude_code::history::visit_claude_code_history_from_path(
+                session_id,
+                path,
+                &mut append,
+            )?
+        }
+        "codex" => orgtrack_core::sources::codex::app::visit_codex_app_from_path(
+            session_id,
+            path,
+            &mut append,
+        )?,
+        _ => return Err(format!("Unsupported native provider: {provider}")),
+    }
+    if native_transcript_revision(path)? != before {
+        return Err("Native transcript changed while reading; retry the operation".into());
+    }
+    Ok(items)
+}
+
 pub(super) fn load_materialized_cli_transcript(
     session: &persistence::CodeSession,
     native_id: &str,
@@ -785,16 +817,31 @@ pub(super) fn load_materialized_cli_transcript(
     Ok(Some(chunks))
 }
 
-/// Current revision of the exact provider transcript selected by the same
-/// resolver as [`load_materialized_cli_transcript`].
+/// Cheap invalidation token for both possible native transcript copies.
+/// Selecting the authoritative copy can compare entire files. Do that only
+/// when replaying a changed transcript, never during an idle revision probe.
 pub(super) fn materialized_cli_transcript_revision(
     session: &persistence::CodeSession,
     native_id: &str,
 ) -> Result<Option<String>, String> {
-    let Some((_agent, path)) = materialized_cli_transcript_path(session, native_id)? else {
+    let Some((_agent, paths)) = materialized_cli_transcript_paths(session, native_id)? else {
         return Ok(None);
     };
-    native_transcript_revision(&path).map(Some)
+    native_candidate_revision(&paths, native_id)
+}
+
+fn native_candidate_revision(
+    paths: &NativeTranscriptPaths,
+    native_id: &str,
+) -> Result<Option<String>, String> {
+    let native = native_transcript_revision(&paths.native_path).ok();
+    let runner = native_transcript_revision(&paths.runner_path).ok();
+    if native.is_none() && runner.is_none() {
+        return Ok(None);
+    }
+    serde_json::to_string(&("native-candidates-v1", native_id, native, runner))
+        .map(Some)
+        .map_err(|error| format!("serialize native candidate revision: {error}"))
 }
 
 /// Resolve the authoritative copy without guessing from timestamps. Two
@@ -2148,6 +2195,12 @@ fn materialize_cli(
                 &cwd,
                 &title,
                 &codex_response_items(items),
+                session
+                    .repo_path
+                    .as_deref()
+                    .filter(|path| !path.trim().is_empty())
+                    .map(Path::new)
+                    .unwrap_or(&cwd),
             )?;
             let staged = persistence::stage_cli_session_id_for_account(
                 session_id,
@@ -2551,11 +2604,8 @@ fn refresh_bound_native_catalog(refresh: BoundNativeCatalogRefresh) -> Result<()
                 // Old Claude versions and profile repairs may not publish an
                 // index entry. This fallback stays outside the turn/identity
                 // boundary so a large JSONL cannot delay the footer.
-                let chunks = orgtrack_core::sources::claude_code::history::load_claude_code_history_from_path(
-                    &session_id,
-                    &native_path,
-                )?;
-                let items = native_items_from_chunks(&chunks);
+                let items =
+                    native_items_from_provider_path(&session_id, "claude_code", &native_path)?;
                 publish_claude_project_index(&cwd, &native_id, &items, branch.as_deref())?;
                 parsed_items = Some(items);
             }
@@ -2573,11 +2623,7 @@ fn refresh_bound_native_catalog(refresh: BoundNativeCatalogRefresh) -> Result<()
                 let items = match parsed_items {
                     Some(items) => items,
                     None => {
-                        let chunks = orgtrack_core::sources::claude_code::history::load_claude_code_history_from_path(
-                            &session_id,
-                            &native_path,
-                        )?;
-                        native_items_from_chunks(&chunks)
+                        native_items_from_provider_path(&session_id, "claude_code", &native_path)?
                     }
                 };
                 let session = persistence::get_session(&session_id)
@@ -2889,7 +2935,7 @@ fn synchronize_native_conversation_blocking(
             return materialize_cli(session_id, complete_items);
         }
         if let Some(native_id) = native_id.as_deref() {
-            if load_materialized_cli_transcript(&session, native_id)?.is_none() {
+            if materialized_cli_transcript_path(&session, native_id)?.is_none() {
                 // The resume row doubles as the materialization intent. A
                 // missing artifact means the process died before publication;
                 // clear that incomplete intent and replay through the ordinary
@@ -2974,6 +3020,42 @@ pub async fn discard_native_conversation_materialization(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn native_candidate_revision_tracks_both_copies_without_selecting_a_winner() {
+        let root = std::env::temp_dir().join(format!("native-revision-{}", uuid::Uuid::new_v4()));
+        std::fs::create_dir_all(&root).unwrap();
+        let paths = super::NativeTranscriptPaths {
+            native_path: root.join("native.jsonl"),
+            runner_path: root.join("runner.jsonl"),
+        };
+        assert_eq!(
+            super::native_candidate_revision(&paths, "one").unwrap(),
+            None
+        );
+        std::fs::write(&paths.native_path, "native content").unwrap();
+        std::fs::write(&paths.runner_path, "conflicting runner content").unwrap();
+        // Divergent files are intentionally not prefix-compatible: replay
+        // rejects that conflict, but a cheap revision probe must still work.
+        let before = super::native_candidate_revision(&paths, "one").unwrap();
+        assert!(super::preferred_materialized_transcript_path(&paths).is_err());
+        std::fs::write(&paths.runner_path, "runner append with more content").unwrap();
+        let appended = super::native_candidate_revision(&paths, "one").unwrap();
+        assert_ne!(before, appended);
+        std::fs::write(&paths.native_path, "rewrite").unwrap();
+        let rewritten = super::native_candidate_revision(&paths, "one").unwrap();
+        assert_ne!(appended, rewritten);
+        assert_ne!(
+            rewritten,
+            super::native_candidate_revision(&paths, "two").unwrap()
+        );
+        std::fs::remove_file(&paths.runner_path).unwrap();
+        assert_ne!(
+            rewritten,
+            super::native_candidate_revision(&paths, "one").unwrap()
+        );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
     use super::*;
     use crate::test_utils::test_env;
     use std::ffi::OsString;
@@ -3223,7 +3305,9 @@ mod tests {
         assert!(projected[1]["id"].as_str().unwrap().starts_with("msg_"));
         let call_id = projected[2]["id"].as_str().unwrap();
         assert!(call_id.starts_with("fc_"));
-        assert!(call_id.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '_'));
+        assert!(call_id
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || ch == '_'));
         assert_eq!(projected[2]["call_id"], "call_read");
         assert!(projected[3]["id"].as_str().unwrap().starts_with("msg_"));
     }
@@ -3305,7 +3389,16 @@ mod tests {
         after.chunk_id = "after".to_string();
         after.result = json!({"content": "continue"});
 
-        let items = native_items_from_chunks(&[before, compact, after]);
+        let chunks = [before, compact, after];
+        let items = native_items_from_chunks(&chunks);
+        let mut incremental = Vec::new();
+        for chunk in &chunks {
+            append_native_items_from_chunks(&mut incremental, std::slice::from_ref(chunk));
+        }
+        assert_eq!(
+            serde_json::to_value(&items).unwrap(),
+            serde_json::to_value(incremental).unwrap()
+        );
         assert_eq!(items.len(), 2);
         assert!(matches!(
             &items[0],

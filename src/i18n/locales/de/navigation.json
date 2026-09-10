@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "Entwicklungsprotokoll",
     "workItems": "Arbeitsaufgaben",
     "codeSearch": "Code-Suche",
     "dbManager": "DB-Manager",
@@ -45,10 +44,8 @@
     "projectManager": "Project Manager",
     "diff": "Diff",
     "colleagues": "Kolleg:innen",
-    "terminals": "Terminals"
-  },
-  "trajectoryPanel": {
-    "title": "Trajektorie"
+    "terminals": "Terminals",
+    "openSourceRepo": "Quell-Repo öffnen"
   },
   "routes": {
     "session": "Chat",
@@ -167,7 +164,8 @@
       "duration30m": "30 Minuten",
       "duration1h": "1 Stunde",
       "duration2h": "2 Stunden",
-      "durationTomorrow": "Morgen"
+      "durationTomorrow": "Morgen",
+      "unknownRole": "Unbekannte Rolle"
     },
     "guide": {
       "trigger": "Anleitung öffnen",
@@ -187,30 +185,8 @@
       "dismiss": "Anleitung ausblenden"
     }
   },
-  "myRole": {
-    "tabs": {
-      "status": "Mein Status"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "Sonstiges"
-    },
-    "searchPlaceholder": "Arbeitsbereiche suchen...",
-    "emptyTitle": "Keine Arbeitsbereiche",
-    "emptyDescription": "Fügen Sie ein Repo hinzu, um zu starten",
-    "emptyWorkspaces": "Keine passenden Arbeitsbereiche",
-    "myRepos": "Meine Repos",
-    "myMultiRepoWorkspaces": "Meine Multi-Repo Workspaces",
-    "dashboard": "Dashboard",
     "myWorkspaces": "Meine Arbeitsbereiche",
-    "workspaces": "Arbeitsbereiche",
-    "dashboardTitle": "Arbeitsbereiche",
-    "dashboardSubtitle": "Wählen Sie einen Arbeitsbereich zum Starten oder Prüfen",
-    "addRepo": "Arbeitsbereich hinzufügen",
-    "activeBadge": "Aktiv",
-    "exploreTitle": "Entdecken",
-    "exploreDescription": "Vorlagen und öffentliche Repos entdecken (demnächst)",
     "preview": {
       "repoType": "Project-Typ",
       "tools": "Werkzeuge",
@@ -219,11 +195,7 @@
       "statusNotAnalyzed": "Nicht analysiert",
       "statusReady": "Bereit",
       "statusParamsMissing": "Parameter fehlen",
-      "statusNoEnvConfig": "Keine Env-Konfiguration nötig",
-      "setupWithAI": "In App umwandeln",
-      "trustRepo": "Diesem Repository vertrauen",
-      "launchpadPlaceholder": "Zusätzliche Anweisungen für diesen Lauf...",
-      "launchpadLaunch": "Starten"
+      "statusNoEnvConfig": "Keine Env-Konfiguration nötig"
     },
     "containers": {
       "title": "Containers",
@@ -232,8 +204,6 @@
       "emptySubtitle": "Starten Sie Docker Desktop, Colima oder Rancher Desktop und aktualisieren Sie, um lokale Container zu sehen.",
       "repoEmptyTitle": "Keine Container für dieses Repo",
       "repoEmptySubtitle": "Container werden über Docker-Compose-Arbeitsverzeichnis-Labels oder Bind-Mounts in diesem Repo zugeordnet.",
-      "repoNoDockerTitle": "Keine Docker-Konfiguration erkannt",
-      "repoNoDockerSubtitle": "Fügen Sie ein Dockerfile oder eine docker-compose-Datei hinzu, um Container diesem Repo zuzuordnen.",
       "dockerUnavailable": "Docker ist nicht verfügbar",
       "name": "Name",
       "image": "Image",
@@ -269,15 +239,9 @@
       "categoryBuild": "Build",
       "categoryTest": "Test",
       "categoryLint": "Lint & Formatierung",
-      "categoryOther": "Sonstige",
-      "noScripts": "Keine Skripte gefunden",
-      "noScriptsHint": "Fügen Sie eine package.json, Makefile oder ähnliche Konfiguration hinzu",
-      "run": "Ausführen",
-      "launched": "{{name}} wird ausgeführt",
-      "launchFailed": "Skript konnte nicht gestartet werden"
+      "categoryOther": "Sonstige"
     },
     "detail": {
-      "title": "Repo-Details",
       "path": "Pfad",
       "envVarsTitle": "Umgebungsvariablen",
       "envKey": "Schlüssel",
@@ -294,16 +258,10 @@
       "scriptName": "Name",
       "scriptCommand": "Befehl",
       "scriptCategory": "Kategorie",
-      "scriptSource": "Quelle",
       "scriptNamePlaceholder": "Skriptname",
       "searchScripts": "Skripte suchen…",
       "noScripts": "Keine Skripte gefunden",
       "addScript": "Skript hinzufügen",
-      "sourceCustom": "Benutzerdefiniert",
-      "sourceDiscovered": "Entdeckt",
-      "analysisTitle": "Analyse",
-      "clearAnalysis": "Analyse löschen",
-      "clearAnalysisHint": "Analyse-Cache zurücksetzen und beim nächsten Besuch erneut scannen",
       "analysisCleared": "Analyse gelöscht"
     },
     "containerEngines": {
@@ -328,15 +286,11 @@
       "switchToRepo": "Öffnen",
       "startSession": "Sitzung starten",
       "openDetails": "Details anzeigen",
-      "locateInFinder": "Im Finder anzeigen",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Workspace hinzufügen"
-  },
-  "explore": {
-    "title": "Entdecken"
   },
   "workstation": {
     "agentComputer": {
@@ -354,7 +308,6 @@
       "title": "Neuer Tab",
       "searchFile": "Datei suchen",
       "searchSessions": "Kanban-Board",
-      "newBrowserTab": "Neuer Browser-Tab",
       "newPrivateBrowserTab": "Neuer privater Browser-Tab",
       "workItems": "Arbeitsaufgaben",
       "projects": "Projekte",
@@ -372,8 +325,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Einladungslink oder -code",
     "inviteCodePlaceholder": "orgii:// Einladungslink oder Einladungscode einfügen",
-    "copyInvite": "Einladung kopieren",
-    "copiedInvite": "Kopiert",
     "setupMode": "Einrichtungsmodus",
     "manageOrg": "Arbeitsbereich verwalten",
     "session": {
@@ -392,11 +343,11 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
-      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry."
+      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
+      "forkSetupReused": "Fortsetzung mit deiner letzten Einrichtung · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -407,16 +358,10 @@
     "forkImported": {
       "headerButton": "Forken",
       "headerTooltip": "Diese importierte Session als eigene beschreibbare Session forken",
-      "confirmTitle": "Forken & fortfahren?",
-      "confirmBody": "Dies ist die Session von {{name}} — deine Kopie ist ein schreibgeschützter Import. Beim Fortfahren wird sie als deine eigene Session geforkt und deine Nachricht dort gesendet.",
-      "confirm": "Forken & fortfahren",
-      "cancel": "Abbrechen",
       "retentionError": "Diese Session liegt außerhalb des Replay-Zeitfensters deines Plans — für einen Fork bitte upgraden",
       "goneError": "Diese geteilte Session ist nicht mehr verfügbar (gelöscht oder abgelaufen)",
       "error": "Session konnte nicht geforkt werden",
-      "sendFailed": "Geforkt, aber die Nachricht konnte nicht gesendet werden — sie wurde im Eingabefeld wiederhergestellt",
       "forkedChipTooltip": "Geforkt von {{name}}",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -430,8 +375,7 @@
       "notInstalled": "{{agent}} ist auf diesem Rechner nicht installiert",
       "missingWorkspace": "Der ursprüngliche Ordner der Sitzung fehlt — {{agent}} kann sie nur von dort fortsetzen",
       "sourceMissing": "Die ursprünglichen Sitzungsdaten sind nicht mehr auf der Festplatte",
-      "launchFailed": "{{agent}}-Terminal konnte nicht geöffnet werden",
-      "composerPlaceholder": "Nachricht senden und in einer neuen Sitzung fortfahren…"
+      "launchFailed": "{{agent}}-Terminal konnte nicht geöffnet werden"
     },
     "openInApp": {
       "headerButton": "In {{app}} öffnen",
@@ -441,13 +385,11 @@
     }
   },
   "cloud": {
-    "title": "ORG2 Cloud",
     "signIn": "Anmelden",
     "signOut": "Abmelden",
     "signedInAs": "Angemeldet als {{name}}",
     "signedInToast": "Bei ORG2 Cloud angemeldet",
     "sessionExpired": "Deine ORG2-Cloud-Sitzung ist abgelaufen. Melde dich erneut an, um fortzufahren.",
-    "recommendedDesc": "Verwaltetes Session-Sharing, Replay-Speicher, Team-Berechtigungen und sichere Share-Links. Kein Supabase-Setup nötig. ORG2 übernimmt Auth, Datenbank-Migrationen, RLS-Richtlinien, Abrechnung, Aufbewahrung, Kontingente und Backend-Upgrades für dich",
     "customEndpoint": {
       "title": "Eigenes ORG2 Cloud-Backend",
       "toggleDesc": "Eigenes ORG2 Cloud-Deployment verwenden",
@@ -544,7 +486,6 @@
     "sidebar": {
       "teamSessions": "Team-Sessions",
       "mySessions": "Meine Sessions",
-      "memberFilter": "Nach Mitglied filtern",
       "sessionFilter": "Sitzungen filtern",
       "copyUrl": "URL kopieren",
       "directlySharedWithMe": "Direkt mit mir geteilt",
@@ -670,14 +611,11 @@
         "confirm": "Beitreten",
         "cancel": "Später",
         "signInFirst": "Melde dich bei ORG2 Cloud an, um diese Einladung anzunehmen — sie bleibt ausstehend.",
-        "openSettings": "Anmeldeeinstellungen öffnen",
-        "joinedToast": "{{org}} beigetreten",
-        "joinedFallbackToast": "Der Cloud-Arbeitsbereich beigetreten"
+        "joinedToast": "{{org}} beigetreten"
       },
       "create": {
         "sourceCloud": "Cloud",
         "signInFirst": "Melde dich bei ORG2 Cloud an, um einen verwalteten Arbeitsbereich zu erstellen oder ihm beizutreten.",
-        "openSettings": "Anmeldeeinstellungen öffnen",
         "createdToast": "Cloud-Arbeitsbereich erstellt"
       },
       "errors": {
@@ -736,7 +674,6 @@
       "importEntry": "Session importieren",
       "importDialogTitle": "Geteilte Session importieren",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "Aus Zwischenablage einfügen",
       "importSubmit": "Importieren",
       "importInvalidInput": "Das sieht nicht nach einem gültigen Freigabelink oder Token aus.",
       "selectAll": "Alle ({{count}})",
@@ -749,53 +686,11 @@
       "incomingRetry": "Erneut versuchen"
     },
     "comments": {
-      "task": {
-        "assignFailed": "Kommentar gepostet, aber die Zuweisung des Agents ist fehlgeschlagen — im Thread erneut versuchen",
-        "assignUnavailableHere": "Kommentar gepostet — die Agent-Zuweisung ist in dieser Ansicht nicht verfügbar",
-        "addressingChip": "Bearbeitet Kommentar: „{{excerpt}}“",
-        "addressingChipGeneric": "Bearbeitet einen Kommentar",
-        "addressingChipTooltip": "Geforkt, um einen Kommentar-Thread der Quell-Session zu bearbeiten",
-        "mentionSuggestion": "Diesen Kommentar einem Agent zuweisen"
-      },
-      "toggleLabel": "Kommentare",
-      "notesButton": "Session-Notizen",
-      "notesTitle": "Session-Notizen",
-      "empty": "Noch keine Kommentare",
-      "loadError": "Kommentare konnten nicht geladen werden",
-      "addPlaceholder": "Kommentar hinzufügen…",
-      "replyPlaceholder": "Antworten…",
-      "send": "Kommentieren",
-      "reply": "Antworten",
-      "edit": "Bearbeiten",
-      "save": "Speichern",
-      "cancel": "Abbrechen",
-      "delete": "Löschen",
-      "resolve": "Als gelöst markieren",
-      "unresolve": "Wieder öffnen",
-      "resolved": "Gelöst",
-      "statusActive": "Aktiv",
-      "wontFix": "Wird nicht behoben",
-      "agentAddressing": "Agent arbeitet daran…",
-      "resolvedToggle": "Gelöst ({{count}})",
-      "deletedComment": "Kommentar gelöscht",
-      "editedMarker": "bearbeitet",
-      "earlierVersion": "Aus einer früheren Version dieser Session",
-      "replayRequired": "Turn-Kommentare erfordern vollen Replay-Zugriff",
-      "addError": "Senden fehlgeschlagen — Entwurf wurde behalten",
       "actionError": "Aktion fehlgeschlagen — bitte erneut versuchen",
       "unresolvedBadge_one": "{{count}} ungelöster Kommentar",
       "unresolvedBadge": "{{count}} ungelöste Kommentare",
-      "addressButton": "Kommentare bearbeiten",
-      "addressPill_one": "{{count}} Kommentar bearbeiten",
-      "addressPill_other": "{{count}} Kommentare bearbeiten",
-      "addressSelectAll": "Alle auswählen",
-      "addressConfirm_one": "{{count}} Kommentar bearbeiten",
-      "addressConfirm_other": "{{count}} Kommentare bearbeiten",
-      "agentAuthor": "Agent @{{name}}",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "mentionMembers": "Erwähnen",
-      "searchMembers": "Mitglieder suchen"
+      "unreadBadge_one": "{{count}} ungelesene Nachricht",
+      "unreadBadge": "{{count}} ungelesene Nachrichten"
     },
     "sharingFloor": {
       "label": "Minimale Freigabestufe",
@@ -851,7 +746,6 @@
         "nameLabel": "Name",
         "namePlaceholder": "z. B. code-review",
         "topicLabel": "Thema",
-        "topicOptional": "(optional)",
         "topicPlaceholder": "Worum geht es hier?",
         "visibilityLabel": "Sichtbarkeit",
         "publicTitle": "Öffentlich",
@@ -913,7 +807,6 @@
         "today": "Heute",
         "yesterday": "Gestern",
         "you": "Du",
-        "memberCount": "{{memberCount}} Mitglieder",
         "emptyTitle": "Das ist der Anfang von #{{name}}",
         "emptySubtitle": "Sende die erste Nachricht, um das Gespräch zu starten",
         "missingTitle": "Kanal nicht mehr verfügbar",
@@ -926,15 +819,7 @@
         "errorQuota": "Dieser Kanal hat sein Nachrichtenlimit auf diesem Gerät erreicht",
         "errorGeneric": "Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.",
         "dropSessionHint": "Ablegen, um diese Sitzung als Referenz hinzuzufügen",
-        "messageBodyLabel": "Kanalnachricht",
-        "sessionCardMissing": "Auf diesem Gerät nicht verfügbar",
         "sessionCardOpen": "Sitzung {{name}} öffnen",
-        "workItemCardMissing": "Auf diesem Gerät nicht verfügbar",
-        "workItemCardLoading": "Wird geladen…",
-        "workItemCardOpen": "Arbeitselement {{name}} öffnen",
-        "githubCardOpen": "{{name}} auf GitHub öffnen",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull Request",
         "archivedComposerDisabled": "Dieser Kanal ist archiviert. Zum Posten die Archivierung aufheben.",
         "errorPostForbidden": "Nur Channel-Manager können in diesem Channel posten",
         "errorArchived": "Dieser Channel ist archiviert, Senden ist deaktiviert",
@@ -955,5 +840,60 @@
       "memberNote": "Von einem Admin aktiviert — geeignete Sitzungen werden im Hintergrund hochgeladen, ohne dass du diesen Arbeitsbereich öffnen musst."
     },
     "userName": "Benutzername"
+  },
+  "myRole": {
+    "deleteRoleMessage": "\"{{name}}\" wird entfernt. Dies kann nicht rückgängig gemacht werden.",
+    "activeBadge": "Aktiv",
+    "addRole": "Eigene Rolle hinzufügen",
+    "builtInTitle": "Integrierte Rollen",
+    "customEmpty": "Noch keine eigenen Rollen. Füge eine hinzu, um eine Haltung abzubilden, die die drei integrierten nicht abdecken — z. B. \"Deep Work\", \"Pairing\" oder \"Bereitschaft\".",
+    "customTitle": "Eigene Rollen",
+    "deleteRoleCancel": "Abbrechen",
+    "deleteRoleOk": "Löschen",
+    "deleteRoleTitle": "Rolle löschen?",
+    "followUpSuggestionsDesc": "Schlägt nach einer abgeschlossenen Arbeitselement-Runde mögliche nächste Schritte vor. Dies verwendet eine zusätzliche Modellanfrage.",
+    "followUpSuggestionsLabel": "Folgevorschläge des Agents",
+    "goalMaxTurnsDesc": "Arbeitet nach dem normalen Stopp des Agents bis zu N zusätzliche Runden an meiner letzten Anfrage weiter (0 = aus).",
+    "goalMaxTurnsLabel": "Budget für Zielfortsetzung",
+    "guidanceLabel": "Agent-Anleitung",
+    "guidancePlaceholder": "Wie soll der Agent sein Verhalten anpassen, wenn diese Rolle aktiv ist?",
+    "modeSwitchAutoPlanDesc": "Wechselt ausstehende Vorschläge für den Plan-Modus automatisch, wenn ihr Bestätigungs-Timer abläuft.",
+    "modeSwitchAutoPlanLabel": "Automatischer Wechsel in den Plan-Modus",
+    "newRoleDefaultLabel": "Eigene Rolle",
+    "pageDescription": "Lege fest, welche Rolle du gerade spielst. Der Agent liest die Anleitung der aktiven Rolle und passt sein Verhalten entsprechend an — zum Beispiel stellt er weniger Rückfragen, wenn du konzentriert arbeitest, oder bündelt Zusammenfassungen, wenn du abwesend bist.",
+    "pageTitle": "Meine Rollen",
+    "planAutoApproveDesc": "Genehmigt ausstehende Pläne automatisch nach N Sekunden (0 = auf mich warten).",
+    "planAutoApproveLabel": "Automatische Plan-Genehmigung",
+    "questionAutoSkipDesc": "Überspringt ausstehende Agent-Fragen automatisch nach N Sekunden (0 = auf mich warten).",
+    "questionAutoSkipLabel": "Fragen automatisch überspringen",
+    "roleNameLabel": "Name",
+    "roleNamePlaceholder": "Rollenname",
+    "stanceAutonomous": "Autonom — nie auf mich warten",
+    "stanceDeferAndBatch": "Aufschieben & bündeln — erst arbeiten, später fragen",
+    "stanceDesc": "Wie der Agent mit blockierenden Entscheidungen umgeht, während diese Rolle aktiv ist.",
+    "stanceInteractive": "Interaktiv — jederzeit nachfragen",
+    "stanceLabel": "Verhaltenshaltung"
+  },
+  "explore": {
+    "search": "Suchen",
+    "searching": "Wird gesucht...",
+    "searchPlaceholder": "GitHub-Repositories durchsuchen (z. B. language:rust tauri)",
+    "clone": "Klonen",
+    "cloning": "Wird geklont...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "{{name}} geklont",
+    "cloneFailed": "Klonen fehlgeschlagen",
+    "cloneNoTarget": "Kein Standard-Workspace-Ordner konfiguriert. Lege einen in den Einstellungen fest.",
+    "errorTitle": "Suche fehlgeschlagen",
+    "noResultsTitle": "Keine passenden Repositories",
+    "noResultsSubtitle": "Versuche eine andere Suchanfrage oder Sortierung.",
+    "resultsCount": "{{shown}} von {{total}} Repositories",
+    "partial": "(unvollständig — Zeitüberschreitung bei der Suche)",
+    "sort": {
+      "bestMatch": "Beste Übereinstimmung",
+      "stars": "Sterne",
+      "updated": "Zuletzt aktualisiert",
+      "forks": "Forks"
+    }
   }
 }

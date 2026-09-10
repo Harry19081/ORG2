@@ -1,6 +1,5 @@
 {
   "labels": {
-    "devRecord": "Geliştirme Kaydı",
     "workItems": "İş Öğeleri",
     "codeSearch": "Kod Arama",
     "dbManager": "DB Yöneticisi",
@@ -45,10 +44,8 @@
     "projectManager": "Project Manager",
     "diff": "Diff",
     "colleagues": "Ekip arkadaşları",
-    "terminals": "Terminaller"
-  },
-  "trajectoryPanel": {
-    "title": "Yörünge"
+    "terminals": "Terminaller",
+    "openSourceRepo": "Açık Kaynak Depo"
   },
   "routes": {
     "session": "Sohbet",
@@ -130,7 +127,9 @@
     },
     "folderCounts": {
       "repo": "{{count}} Repo",
-      "multiRepoWorkspace": "{{count}} çoklu repo Workspace"
+      "multiRepoWorkspace": "{{count}} çoklu repo Workspace",
+      "repo_plural": "{{count}} repo",
+      "multiRepoWorkspace_plural": "{{count}} çoklu repo Workspace"
     },
     "bottomBar": {
       "settings": "Ayarlar",
@@ -165,7 +164,8 @@
       "duration30m": "30 dakika",
       "duration1h": "1 saat",
       "duration2h": "2 saat",
-      "durationTomorrow": "Yarın"
+      "durationTomorrow": "Yarın",
+      "unknownRole": "Bilinmeyen rol"
     },
     "guide": {
       "trigger": "Kılavuzu aç",
@@ -185,30 +185,8 @@
       "dismiss": "Rehberi kapat"
     }
   },
-  "myRole": {
-    "tabs": {
-      "status": "Durumum"
-    }
-  },
   "launchpad": {
-    "sections": {
-      "other": "Diğer"
-    },
-    "searchPlaceholder": "Çalışma alanı ara...",
-    "emptyTitle": "Henüz çalışma alanı yok",
-    "emptyDescription": "Başlamak için bir repo ekleyin",
-    "emptyWorkspaces": "Eşleşen çalışma alanı yok",
-    "myRepos": "Repolarım",
-    "myMultiRepoWorkspaces": "Çoklu Repo Workspaces",
-    "dashboard": "Kontrol Paneli",
     "myWorkspaces": "Workspaces’im",
-    "workspaces": "Çalışma alanları",
-    "dashboardTitle": "Çalışma alanları",
-    "dashboardSubtitle": "Başlatmak veya incelemek için bir çalışma alanı seçin",
-    "addRepo": "Çalışma alanı ekle",
-    "activeBadge": "Aktif",
-    "exploreTitle": "Keşfet",
-    "exploreDescription": "Şablon ve herkese açık repoları keşfedin (yakında)",
     "preview": {
       "repoType": "Project türü",
       "tools": "Araçlar",
@@ -217,11 +195,7 @@
       "statusNotAnalyzed": "Analiz edilmedi",
       "statusReady": "Hazır",
       "statusParamsMissing": "Parametreler eksik",
-      "statusNoEnvConfig": "Env yapılandırması gerekmiyor",
-      "setupWithAI": "Uygulamaya dönüştür",
-      "trustRepo": "Bu depoya güven",
-      "launchpadPlaceholder": "Bu çalıştırma için ek talimatlar...",
-      "launchpadLaunch": "Başlat"
+      "statusNoEnvConfig": "Env yapılandırması gerekmiyor"
     },
     "containers": {
       "title": "Containers",
@@ -230,8 +204,6 @@
       "emptySubtitle": "Yerel containerları görmek için Docker Desktop, Colima veya Rancher Desktop'ı başlatıp yenileyin.",
       "repoEmptyTitle": "Bu repo için container yok",
       "repoEmptySubtitle": "Containerlar Docker Compose çalışma dizini labelları veya bu repo içindeki bind mountlar ile eşleştirilir.",
-      "repoNoDockerTitle": "Docker ayarı algılanmadı",
-      "repoNoDockerSubtitle": "Containerları bu repo ile ilişkilendirmek için Dockerfile veya docker-compose dosyası ekleyin.",
       "dockerUnavailable": "Docker kullanılamıyor",
       "name": "Ad",
       "image": "Image",
@@ -267,15 +239,9 @@
       "categoryBuild": "Derleme",
       "categoryTest": "Test",
       "categoryLint": "Lint ve Biçimlendirme",
-      "categoryOther": "Diğer",
-      "noScripts": "Betik bulunamadı",
-      "noScriptsHint": "package.json, Makefile veya benzer bir yapılandırma ekleyin",
-      "run": "Çalıştır",
-      "launched": "{{name}} çalıştırılıyor",
-      "launchFailed": "Betik başlatılamadı"
+      "categoryOther": "Diğer"
     },
     "detail": {
-      "title": "Repo Detayları",
       "path": "Yol",
       "envVarsTitle": "Ortam Değişkenleri",
       "envKey": "Anahtar",
@@ -292,16 +258,10 @@
       "scriptName": "İsim",
       "scriptCommand": "Komut",
       "scriptCategory": "Kategori",
-      "scriptSource": "Kaynak",
       "scriptNamePlaceholder": "Script adı",
       "searchScripts": "Script ara…",
       "noScripts": "Script bulunamadı",
       "addScript": "Script Ekle",
-      "sourceCustom": "Özel",
-      "sourceDiscovered": "Keşfedildi",
-      "analysisTitle": "Analiz",
-      "clearAnalysis": "Analizi Temizle",
-      "clearAnalysisHint": "Analiz önbelleğini sıfırla ve bir sonraki ziyarette yeniden tara",
       "analysisCleared": "Analiz temizlendi"
     },
     "containerEngines": {
@@ -326,15 +286,11 @@
       "switchToRepo": "Aç",
       "startSession": "Oturum başlat",
       "openDetails": "Detayları göster",
-      "locateInFinder": "Finder'da göster",
       "remove": "Remove from ORGII",
       "removeSuccess": "Linkage to ORGII removed",
       "removeFailed": "Failed to remove linkage to ORGII"
     },
     "addWorkspace": "Workspace ekle"
-  },
-  "explore": {
-    "title": "Keşfet"
   },
   "workstation": {
     "agentComputer": {
@@ -352,7 +308,6 @@
       "title": "Yeni sekme",
       "searchFile": "Dosya ara",
       "searchSessions": "Kanban panosu",
-      "newBrowserTab": "Yeni tarayıcı sekmesi",
       "newPrivateBrowserTab": "Yeni gizli tarayıcı sekmesi",
       "workItems": "İş öğeleri",
       "projects": "Projeler",
@@ -370,8 +325,6 @@
     "orgNamePlaceholder": "Team Alpha",
     "inviteCode": "Davet bağlantısı veya kodu",
     "inviteCodePlaceholder": "orgii:// davet bağlantısı veya davet kodu yapıştırın",
-    "copyInvite": "Daveti kopyala",
-    "copiedInvite": "Kopyalandı",
     "setupMode": "Kurulum modu",
     "manageOrg": "Çalışma alanını yönet",
     "session": {
@@ -390,11 +343,11 @@
       "forkSetupNoWorkspace": "Continue without a workspace",
       "forkSetupAccount": "Account",
       "forkSetupModel": "Model",
-      "forkSetupContinue": "Fork & continue",
       "forkSnapshotIncomplete": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "forkAgentUnavailable": "Choose a local agent before forking.",
       "forkBackendRegistrationFailed": "The session history was copied, but the runnable fork could not be registered. Retry.",
-      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry."
+      "forkReplayUnavailable": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
+      "forkSetupReused": "Son kurulumunuzla devam ediliyor · {{model}}"
     },
     "repoPicker": {
       "loading": "Loading repos…",
@@ -405,16 +358,10 @@
     "forkImported": {
       "headerButton": "Çatalla",
       "headerTooltip": "Bu içe aktarılmış oturumu kendi yazılabilir oturumunuz olarak çatallayın",
-      "confirmTitle": "Çatallayıp devam edilsin mi?",
-      "confirmBody": "Bu, {{name}} kullanıcısının oturumu — kopyanız salt okunur bir içe aktarma. Devam ederseniz kendi oturumunuz olarak çatallanacak ve mesajınız oraya gönderilecek.",
-      "confirm": "Çatalla ve devam et",
-      "cancel": "İptal",
       "retentionError": "Bu oturum planınızın yeniden oynatma penceresinin dışında — çatallamak için yükseltin",
       "goneError": "Bu paylaşılan oturum artık kullanılamıyor (silinmiş veya süresi dolmuş)",
       "error": "Oturum çatallanamadı",
-      "sendFailed": "Çatallandı ancak mesaj gönderilemedi — içerik giriş alanına geri yüklendi",
       "forkedChipTooltip": "{{name}} kullanıcısından çatallandı",
-      "continuePlaceholder": "Message to fork and continue in ORGII…",
       "snapshotError": "The cloud snapshot is incomplete. Ask the owner to finish syncing, then retry.",
       "agentError": "Choose a local agent before forking.",
       "backendError": "The session history was copied, but the runnable fork could not be registered. Retry.",
@@ -428,8 +375,7 @@
       "notInstalled": "{{agent}} bu makinede yüklü değil",
       "missingWorkspace": "Oturumun özgün klasörü artık yok — {{agent}} oturumu yalnızca oradan sürdürebilir",
       "sourceMissing": "Özgün oturum verileri artık diskte değil",
-      "launchFailed": "{{agent}} terminali açılamadı",
-      "composerPlaceholder": "Yeni bir oturumda devam etmek için yazın…"
+      "launchFailed": "{{agent}} terminali açılamadı"
     },
     "openInApp": {
       "headerButton": "{{app}} içinde aç",
@@ -439,13 +385,11 @@
     }
   },
   "cloud": {
-    "title": "ORG2 Cloud",
     "signIn": "Giriş yap",
     "signOut": "Çıkış yap",
     "signedInAs": "{{name}} olarak giriş yapıldı",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "ORG2 Cloud oturumunuzun süresi doldu. Devam etmek için yeniden giriş yapın.",
-    "recommendedDesc": "Managed session sharing, replay storage, team permissions, and secure share links. No Supabase setup required. ORG2 manages Auth, database migrations, RLS policies, billing, retention, quota, and backend upgrades for you",
     "customEndpoint": {
       "title": "Özel ORG2 Cloud arka ucu",
       "toggleDesc": "Kendi ORG2 Cloud dağıtımınızı kullanın",
@@ -542,7 +486,6 @@
     "sidebar": {
       "teamSessions": "Ekip oturumları",
       "mySessions": "Oturumlarım",
-      "memberFilter": "Üyeye göre filtrele",
       "sessionFilter": "Oturumları filtrele",
       "copyUrl": "URL'yi kopyala",
       "directlySharedWithMe": "Doğrudan benimle paylaşılanlar",
@@ -668,14 +611,11 @@
         "confirm": "Katıl",
         "cancel": "Şimdi değil",
         "signInFirst": "Bu daveti kabul etmek için ORG2 Cloud'da oturum aç — davet beklemede kalır.",
-        "openSettings": "Oturum açma ayarlarını aç",
-        "joinedToast": "{{org}} çalışma alanınına katıldın",
-        "joinedFallbackToast": "Bulut çalışma alanınına katıldın"
+        "joinedToast": "{{org}} çalışma alanınına katıldın"
       },
       "create": {
         "sourceCloud": "Bulut",
         "signInFirst": "Yönetilen bir çalışma alanı oluşturmak veya katılmak için ORG2 Cloud'da oturum aç.",
-        "openSettings": "Oturum açma ayarlarını aç",
         "createdToast": "Bulut çalışma alanını oluşturuldu"
       },
       "errors": {
@@ -734,7 +674,6 @@
       "importEntry": "Oturumu içe aktar",
       "importDialogTitle": "Paylaşılan oturumu içe aktar",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
-      "importPasteClipboard": "Panodan yapıştır",
       "importSubmit": "İçe aktar",
       "importInvalidInput": "Bu, geçerli bir paylaşım bağlantısı veya belirteç gibi görünmüyor.",
       "selectAll": "Herkes ({{count}})",
@@ -747,53 +686,11 @@
       "incomingRetry": "Yeniden dene"
     },
     "comments": {
-      "task": {
-        "assignFailed": "Yorum gönderildi ancak agent ataması başarısız oldu — diziden yeniden deneyin",
-        "assignUnavailableHere": "Yorum gönderildi — bu görünümde agent ataması kullanılamıyor",
-        "addressingChip": "Ele alınan yorum: “{{excerpt}}”",
-        "addressingChipGeneric": "Bir yorum ele alınıyor",
-        "addressingChipTooltip": "Kaynak oturumdaki bir yorum dizisini ele almak için çatallandı",
-        "mentionSuggestion": "Bu yorumu bir agent'a ata"
-      },
-      "toggleLabel": "Yorumlar",
-      "notesButton": "Oturum notları",
-      "notesTitle": "Oturum notları",
-      "empty": "Henüz yorum yok",
-      "loadError": "Yorumlar yüklenemedi",
-      "addPlaceholder": "Yorum ekle…",
-      "replyPlaceholder": "Yanıtla…",
-      "send": "Yorum yap",
-      "reply": "Yanıtla",
-      "edit": "Düzenle",
-      "save": "Kaydet",
-      "cancel": "İptal",
-      "delete": "Sil",
-      "resolve": "Çözüldü olarak işaretle",
-      "unresolve": "Yeniden aç",
-      "resolved": "Çözüldü",
-      "statusActive": "Etkin",
-      "wontFix": "Düzeltilmeyecek",
-      "agentAddressing": "Ajan ilgileniyor…",
-      "resolvedToggle": "Çözülenler ({{count}})",
-      "deletedComment": "Yorum silindi",
-      "editedMarker": "düzenlendi",
-      "earlierVersion": "Bu oturumun daha eski bir sürümünden",
-      "replayRequired": "Tur yorumları tam tekrar erişimi gerektirir",
-      "addError": "Gönderilemedi — taslağınız korundu",
       "actionError": "İşlem başarısız — lütfen tekrar deneyin",
       "unresolvedBadge_one": "{{count}} çözülmemiş yorum",
       "unresolvedBadge": "{{count}} çözülmemiş yorum",
-      "addressButton": "Yorumları ele al",
-      "addressPill_one": "{{count}} yorumu ele al",
-      "addressPill_other": "{{count}} yorumu ele al",
-      "addressSelectAll": "Tümünü seç",
-      "addressConfirm_one": "{{count}} yorumu ele al",
-      "addressConfirm_other": "{{count}} yorumu ele al",
-      "agentAuthor": "Ajan @{{name}}",
-      "addressSessionScope": "Session notes",
-      "addressRoundScope": "Round comments",
-      "mentionMembers": "Bahset",
-      "searchMembers": "Üye ara"
+      "unreadBadge_one": "{{count}} okunmamış mesaj",
+      "unreadBadge": "{{count}} okunmamış mesaj"
     },
     "sharingFloor": {
       "label": "En düşük paylaşım düzeyi",
@@ -849,7 +746,6 @@
         "nameLabel": "Ad",
         "namePlaceholder": "örn. kod-incelemesi",
         "topicLabel": "Konu",
-        "topicOptional": "(isteğe bağlı)",
         "topicPlaceholder": "Bu kanal ne hakkında?",
         "visibilityLabel": "Görünürlük",
         "publicTitle": "Herkese açık",
@@ -911,7 +807,6 @@
         "today": "Bugün",
         "yesterday": "Dün",
         "you": "Sen",
-        "memberCount": "{{memberCount}} üye",
         "emptyTitle": "Burası #{{name}} kanalının başlangıcı",
         "emptySubtitle": "Sohbeti başlatmak için ilk mesajı gönder",
         "missingTitle": "Kanal artık kullanılamıyor",
@@ -924,15 +819,7 @@
         "errorQuota": "Bu kanal bu cihazdaki mesaj sınırına ulaştı",
         "errorGeneric": "Mesaj gönderilemedi. Lütfen tekrar dene.",
         "dropSessionHint": "Bu oturumu referans olarak eklemek için bırakın",
-        "messageBodyLabel": "Kanal mesajı",
-        "sessionCardMissing": "Bu cihazda kullanılamıyor",
         "sessionCardOpen": "{{name}} oturumunu aç",
-        "workItemCardMissing": "Bu cihazda kullanılamıyor",
-        "workItemCardLoading": "Yükleniyor…",
-        "workItemCardOpen": "{{name}} iş öğesini aç",
-        "githubCardOpen": "{{name}} ögesini GitHub'da aç",
-        "githubIssue": "Issue",
-        "githubPullRequest": "Pull request",
         "archivedComposerDisabled": "Bu kanal arşivlendi. Göndermek için arşivden çıkarın.",
         "errorPostForbidden": "Bu kanala yalnızca kanal yöneticileri gönderebilir",
         "errorArchived": "Bu kanal arşivlendi, bu yüzden gönderim kapalı",
@@ -953,5 +840,60 @@
       "memberNote": "Bir yönetici etkinleştirdi — bu çalışma alanını açmanız gerekmeden uygun oturumlar arka planda yüklenir."
     },
     "userName": "Kullanıcı adı"
+  },
+  "myRole": {
+    "deleteRoleMessage": "\"{{name}}\" kaldırılacak. Bu işlem geri alınamaz.",
+    "activeBadge": "Etkin",
+    "addRole": "Özel rol ekle",
+    "builtInTitle": "Yerleşik roller",
+    "customEmpty": "Henüz özel rol yok. Yerleşik üç rolün kapsamadığı bir duruşu yakalamak için bir tane ekleyin — örn. \"Derin çalışma\", \"Eşli çalışma\" veya \"Nöbette\".",
+    "customTitle": "Özel roller",
+    "deleteRoleCancel": "İptal",
+    "deleteRoleOk": "Sil",
+    "deleteRoleTitle": "Rol silinsin mi?",
+    "followUpSuggestionsDesc": "Tamamlanan bir iş öğesi turundan sonra olası sonraki adımları öner. Bu, ek bir model isteği kullanır.",
+    "followUpSuggestionsLabel": "Agent takip önerileri",
+    "goalMaxTurnsDesc": "Agent normalde duracağı noktadan sonra son isteğim için en fazla N ek tur daha çalışmaya devam et (0 = kapalı).",
+    "goalMaxTurnsLabel": "Hedef sürdürme bütçesi",
+    "guidanceLabel": "Agent yönlendirmesi",
+    "guidancePlaceholder": "Bu rol etkinken agent davranışını nasıl uyarlamalı?",
+    "modeSwitchAutoPlanDesc": "Bekleyen Plan modu önerilerini onay süresi dolduğunda otomatik olarak değiştir.",
+    "modeSwitchAutoPlanLabel": "Mod değişimi otomatik plan",
+    "newRoleDefaultLabel": "Özel rol",
+    "pageDescription": "Şu anda üstlendiğiniz rolü tanımlayın. Agent, etkin rolün yönlendirmesini okur ve davranışını buna göre uyarlar — örneğin siz odaklanmışken daha az açıklayıcı soru sorar veya siz uzaktayken özetleri toplu halde sunar.",
+    "pageTitle": "Rollerim",
+    "planAutoApproveDesc": "Bekleyen planları N saniye sonra otomatik onayla (0 = beni bekle).",
+    "planAutoApproveLabel": "Plan otomatik onayı",
+    "questionAutoSkipDesc": "Bekleyen agent sorularını N saniye sonra otomatik atla (0 = beni bekle).",
+    "questionAutoSkipLabel": "Soru otomatik atlama",
+    "roleNameLabel": "Ad",
+    "roleNamePlaceholder": "Rol adı",
+    "stanceAutonomous": "Özerk — beni asla bekleme",
+    "stanceDeferAndBatch": "Ertele ve topla — önce çalış, sonra sor",
+    "stanceDesc": "Bu rol etkinken agent'ın engelleyici kararları nasıl ele alacağı.",
+    "stanceInteractive": "Etkileşimli — bana serbestçe sor",
+    "stanceLabel": "Davranış duruşu"
+  },
+  "explore": {
+    "search": "Ara",
+    "searching": "Aranıyor...",
+    "searchPlaceholder": "GitHub depolarında ara (örn. language:rust tauri)",
+    "clone": "Klonla",
+    "cloning": "Klonlanıyor...",
+    "openOnGithub": "GitHub",
+    "cloneSuccess": "{{name}} klonlandı",
+    "cloneFailed": "Klonlama başarısız",
+    "cloneNoTarget": "Varsayılan çalışma alanı klasörü yapılandırılmamış. Ayarlar'dan bir tane belirleyin.",
+    "errorTitle": "Arama başarısız",
+    "noResultsTitle": "Eşleşen depo yok",
+    "noResultsSubtitle": "Farklı bir sorgu veya sıralama deneyin.",
+    "resultsCount": "{{total}} depodan {{shown}} tanesi",
+    "partial": "(kısmi — arama zaman aşımına uğradı)",
+    "sort": {
+      "bestMatch": "En iyi eşleşme",
+      "stars": "Yıldızlar",
+      "updated": "Son güncellenen",
+      "forks": "Fork'lar"
+    }
   }
 }

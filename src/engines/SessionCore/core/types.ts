@@ -474,6 +474,11 @@ export interface RustExtractedOrgTaskData {
   action: "create" | "update" | "delete" | "get" | "list";
   /** Missing only on persisted events produced before operation outcomes existed. */
   outcome?: "pending" | "succeeded" | "rejected" | "failed" | "unknown";
+  taskListObservation?:
+    | "results"
+    | "no_new_work_facts"
+    | "new_trigger_pending"
+    | "unknown";
   task?: RustOrgTaskItem;
   tasks?: RustOrgTaskItem[];
   total?: number;
@@ -481,6 +486,8 @@ export interface RustExtractedOrgTaskData {
   ownerChanged?: boolean;
   statusChanged?: boolean;
   taskAssignedDispatched?: boolean;
+  /** Terminal update was postponed; the durable task lifecycle did not fail. */
+  completionDeferred?: boolean;
   guidance?: string;
   errorMessage?: string;
 }

@@ -277,6 +277,57 @@ fn build_codex_basic() {
 }
 
 #[test]
+fn build_codex_astra_variants_split_model_and_overrides_for_both_transports() {
+    for effort in ["low", "medium", "high", "xhigh", "max", "ultra"] {
+        for fast in [false, true] {
+            let model = format!("gpt-6-astra-{effort}{}", if fast { "-fast" } else { "" });
+            let reasoning = format!("model_reasoning_effort=\"{effort}\"");
+            let priority = "service_tier=\"priority\"";
+
+            // Both fresh and resumed exec turns must send a real model slug.
+            for resume_id in [None, Some("thread-123")] {
+                let cmd = build_command!(
+                    ModelType::Codex,
+                    task = "write tests",
+                    model = Some(&model),
+                    resume_id = resume_id,
+                );
+                let model_idx = cmd.iter().position(|arg| arg == "-m").unwrap();
+                assert_eq!(cmd[model_idx + 1], "gpt-6-astra", "{model}");
+                assert!(cmd.windows(2).any(|args| args == ["-c", &reasoning]));
+                assert_eq!(cmd.windows(2).any(|args| args == ["-c", priority]), fast);
+                assert!(!cmd.contains(&model));
+            }
+
+            let profile = app_server_profile(&ModelType::Codex, Some("app-server"));
+            let turn = CliTurnEnvelope::new("write tests");
+            let cmd = build_command_with_launch_profile(CliCommandBuildRequest {
+                agent: &ModelType::Codex,
+                launch_profile: &profile,
+                model: Some(&model),
+                turn: &turn,
+                resume_id: None,
+                api_key: None,
+                endpoint: None,
+                mode: None,
+                repo_path: None,
+                additional_dirs: &[],
+                mcp_config_path: None,
+                codex_mcp_profile: None,
+            });
+            assert_eq!(cmd[1], "app-server");
+            assert!(cmd.windows(2).any(|args| args == ["-c", &reasoning]));
+            assert_eq!(cmd.windows(2).any(|args| args == ["-c", priority]), fast);
+            assert!(!cmd.iter().any(|arg| arg == "-m" || arg == &model));
+            assert_eq!(
+                codex_app_server_thread_model(Some(&model)).as_deref(),
+                Some("gpt-6-astra")
+            );
+        }
+    }
+}
+
+#[test]
 fn build_codex_reasoning_variant_maps_to_config_override() {
     let cmd = build_command!(
         ModelType::Codex,
@@ -677,6 +728,33 @@ fn build_codex_app_server_argv_keeps_gpt_5_6_max_overrides() {
         codex_app_server_thread_model(Some("gpt-5.6-sol-max-fast")),
         Some("gpt-5.6-sol".to_string())
     );
+}
+
+#[test]
+fn build_codex_app_server_preserves_additional_workspace_roots() {
+    let profile = app_server_profile(&ModelType::Codex, Some("app-server"));
+    let turn = CliTurnEnvelope::new("write tests");
+    let directories = vec!["/extra workspace".to_string(), String::new()];
+    let cmd = build_command_with_launch_profile(CliCommandBuildRequest {
+        agent: &ModelType::Codex,
+        launch_profile: &profile,
+        model: None,
+        turn: &turn,
+        resume_id: None,
+        api_key: None,
+        endpoint: None,
+        mode: None,
+        repo_path: None,
+        additional_dirs: &directories,
+        mcp_config_path: None,
+        codex_mcp_profile: None,
+    });
+    assert!(cmd.windows(2).any(|args| args
+        == [
+            "-c",
+            "sandbox_workspace_write.writable_roots=[\"/extra workspace\"]"
+        ]));
+    assert!(!cmd.iter().any(|arg| arg == "--add-dir"));
 }
 
 #[test]

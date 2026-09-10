@@ -161,9 +161,7 @@ export function useRoutinesState(
         result.fire.status === "skipped"
       ) {
         Message.info(
-          t("routineFields.fireAccepted", {
-            defaultValue: `Run ${result.fire.status}`,
-          })
+          t("routineFields.fireAccepted", { status: result.fire.status })
         );
       } else {
         Message.success(
