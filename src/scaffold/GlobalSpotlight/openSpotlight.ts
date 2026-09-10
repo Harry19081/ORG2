@@ -192,3 +192,13 @@ export function openSessionCreatorSpotlight(): void {
   store.set(spotlightInitialQueryAtom, createSessionCreatorSpotlightRequest());
   store.set(spotlightOpenAtom, true);
 }
+
+export function openSessionImportSpotlight(): void {
+  if (!isStoreInitialized()) return;
+  const store = getInstrumentedStore();
+  store.set(spotlightInitialQueryAtom, {
+    query: "",
+    layer: { kind: "sessionImport" },
+  });
+  store.set(spotlightOpenAtom, true);
+}

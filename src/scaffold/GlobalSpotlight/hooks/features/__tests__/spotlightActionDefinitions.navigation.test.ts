@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   Add01Icon,
   FolderGitTwoIcon,
+  ImportIcon,
   Login01Icon,
   MessageAdd02Icon,
   Search01Icon,
@@ -76,5 +77,17 @@ describe("Spotlight action icons", () => {
         closeOnSuccess: false,
       }),
     ]);
+  });
+});
+
+it("offers session import using the same label and icon as the start-page card", () => {
+  expect(
+    AGENT_SESSION_ACTIONS.find((action) => action.id === "import-session")
+  ).toMatchObject({
+    labelKey: "navigation:cloud.share.importEntry",
+    icon: ImportIcon,
+    actionId: "spotlight.importSession",
+    opensSecondLevel: true,
+    closeOnSuccess: false,
   });
 });
