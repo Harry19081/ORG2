@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import test from "node:test";
 
 import { collectFindings, newFindings } from "./findings.mjs";
@@ -51,5 +52,54 @@ test("parser/configuration failures cannot be baselined", () => {
       ],
       "/repo"
     )
+  );
+});
+
+function switchFindings(cases) {
+  const results = result("tab.type");
+  results[0].messages[0].ruleId =
+    "@typescript-eslint/switch-exhaustiveness-check";
+  results[0].messages[0].message =
+    "Switch is not exhaustive. Cases not matched: " + cases;
+  return collectFindings(results, "/repo");
+}
+
+test("reordered literal cases match an unchanged legacy baseline", () => {
+  const baseline = switchFindings('"project" | "browser" | "code"');
+  const entry = baseline[0];
+  entry.key = createHash("sha256")
+    .update(
+      JSON.stringify([entry.file, entry.rule, entry.message, entry.source])
+    )
+    .digest("hex");
+  assert.deepEqual(
+    newFindings(switchFindings('"code" | "project" | "browser"'), baseline),
+    []
+  );
+  assert.equal(
+    newFindings(
+      switchFindings('"code" | "project" | "browser" | "new"'),
+      baseline
+    ).length,
+    1
+  );
+  const doubled = switchFindings('"code" | "project" | "browser"');
+  doubled[0].count = 2;
+  assert.equal(newFindings(doubled, baseline).length, 1);
+});
+
+test("literal contents and unfamiliar diagnostics retain their identity", () => {
+  const baseline = switchFindings('"a | b" | "c"');
+  assert.deepEqual(newFindings(switchFindings('"c" | "a | b"'), baseline), []);
+  assert.equal(
+    newFindings(switchFindings('"a" | "b" | "c"'), baseline).length,
+    1
+  );
+  assert.equal(
+    newFindings(
+      switchFindings('Some.Type | "c"'),
+      switchFindings('"c" | Some.Type')
+    ).length,
+    1
   );
 });
