@@ -467,6 +467,7 @@ export const ImportCookiesModal: React.FC<ImportCookiesModalProps> = ({
       backLabel={t("actions.back")}
       title={t("browserCookieImport.title")}
       width={520}
+      closable={!importing}
       maskClosable={!importing}
       escToExit={!importing}
       footer={

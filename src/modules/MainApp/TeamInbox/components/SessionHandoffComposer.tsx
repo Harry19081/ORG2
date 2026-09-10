@@ -113,6 +113,7 @@ const SessionHandoffComposer: React.FC<SessionHandoffComposerProps> = ({
         loading: submitting,
         disabled: Boolean(validationError),
       }}
+      closable={!submitting}
       cancelButtonProps={{ disabled: submitting }}
       maskClosable={!submitting}
       escToExit={!submitting}

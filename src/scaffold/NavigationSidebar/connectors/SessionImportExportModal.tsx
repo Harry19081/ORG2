@@ -209,6 +209,7 @@ export function SessionImportExportModal({
       okText={okText}
       cancelText={t("common:actions.cancel")}
       okButtonProps={{ loading, disabled: okDisabled }}
+      closable={!loading}
       cancelButtonProps={{ disabled: loading }}
       width={mode === "export" ? 640 : 440}
       maskClosable={!loading}
