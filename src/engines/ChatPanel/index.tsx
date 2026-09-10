@@ -13,15 +13,13 @@ import SessionViewersIndicator from "@src/features/Org2Cloud/SessionViewersIndic
 import SessionForkHeaderExtras from "@src/features/TeamCollaboration/components/SessionForkHeaderExtras";
 import { useShouldOffsetChatPanelHeader } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
+import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import {
   openRuntimeInChatPanelTabAtom,
   syncActiveChatPanelTabStateAtom,
   toggleActiveChatPanelMaximizedAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import {
-  isChatPanelTabStationAvailable,
-  resolveChatPanelMaximizedForLayout,
-} from "@src/store/chatPanel/chatPanelTabsModel";
+import { isChatPanelTabStationAvailable } from "@src/store/chatPanel/chatPanelTabsModel";
 import { chatPanelTabCountAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
   type SessionContinuation,
@@ -34,10 +32,7 @@ import {
   chatPanelSelectedCloudOrgAtom,
   chatPanelStartPageOpenAtom,
 } from "@src/store/ui/chatPanel/selectionAtoms";
-import {
-  activeChatPanelSurfaceAtom,
-  chatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeChatPanelSurfaceAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { openSideChatAtom } from "@src/store/ui/sideChatAtom";
 import { isHumanSession } from "@src/util/session/sessionDispatch";
@@ -60,11 +55,7 @@ import {
   SessionRawToolbarActions,
 } from "./components/SessionViewSwitcher";
 import SessionWorkstationRail from "./components/SessionWorkstationRail";
-import {
-  resolveFocusedChatWorkstationRailTrackClass,
-  shouldMountFocusedChatWorkstationControls,
-  shouldReserveFocusedChatWorkstationPlaceholder,
-} from "./focusedChatWorkstationLayout";
+import { shouldMountFocusedChatWorkstationControls } from "./focusedChatWorkstationLayout";
 import { FocusedChatWorkstationMinimapPortalContext } from "./focusedChatWorkstationMinimapPortal";
 import {
   resolveChatPanelChromeTopInsetPx,
@@ -123,8 +114,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const startPageOpen = useAtomValue(chatPanelStartPageOpenAtom);
     const selectedCloudOrg = useAtomValue(chatPanelSelectedCloudOrgAtom);
     const surface = useAtomValue(activeChatPanelSurfaceAtom);
-
-    const userChatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
     const syncActiveTabState = useSetAtom(syncActiveChatPanelTabStateAtom);
     const toggleChatFocus = useSetAtom(toggleActiveChatPanelMaximizedAtom);
     const rawChatWidth = useAtomValue(chatWidthAtom);
@@ -186,10 +175,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
     const isStandaloneToolTabActive =
       activeTab?.type === "work-management" || activeTab?.type === "runtime";
     const stationAvailable = isChatPanelTabStationAvailable(activeTab);
-    const isChatFocus = resolveChatPanelMaximizedForLayout(
-      userChatPanelMaximized,
-      activeTab
-    );
+    const isChatFocus = useAtomValue(effectiveChatPanelMaximizedAtom);
     const [focusedWorkstationMenuHost, setFocusedWorkstationMenuHost] =
       useState<HTMLSpanElement | null>(null);
     const focusedWorkstationMenuHostRef = useCallback(
@@ -278,12 +264,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         activeTabType: activeTab?.type ?? null,
         isChatFocus,
         showSessionContent: contentState.showSessionContent,
-      });
-    const reserveFocusedWorkstationPlaceholder =
-      shouldReserveFocusedChatWorkstationPlaceholder({
-        activeTabType: activeTab?.type ?? null,
-        isChatFocus,
-        startPageOpen,
       });
 
     const {
@@ -486,13 +466,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
                 session={currentSession}
                 sessionId={currentSessionId}
                 topInset={chromeTopInsetPx}
-              />
-            ) : reserveFocusedWorkstationPlaceholder ? (
-              <div
-                aria-hidden
-                data-testid="launchpad-workstation-rail-placeholder"
-                data-workstation-trail-track
-                className={`h-full shrink-0 ${resolveFocusedChatWorkstationRailTrackClass(true)}`}
               />
             ) : null
           }
