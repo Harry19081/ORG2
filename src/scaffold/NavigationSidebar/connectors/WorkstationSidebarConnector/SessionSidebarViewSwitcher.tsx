@@ -11,15 +11,15 @@ import {
 } from "@src/icons";
 import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "@src/scaffold/NavigationSidebar/config";
 
-export type WorkstationSidebarViewKey = "channels" | "work-items" | "sessions";
+import type { SessionSidebarView } from "./types";
 
-interface WorkstationSidebarViewSwitcherProps {
-  activeKey: WorkstationSidebarViewKey;
-  onChange: (key: WorkstationSidebarViewKey) => void;
+interface SessionSidebarViewSwitcherProps {
+  activeKey: SessionSidebarView;
+  onChange: (key: SessionSidebarView) => void;
 }
 
 interface ViewItem {
-  key: WorkstationSidebarViewKey;
+  key: SessionSidebarView;
   label: string;
   icon: IconSvgElement;
 }
@@ -29,7 +29,7 @@ const SELECTED_VIEW_STYLE: React.CSSProperties = {
   boxShadow: "var(--sidebar-tab-pill-selected-shadow)",
 };
 const SELECTED_VIEW_TRANSFORM: Record<
-  WorkstationSidebarViewKey,
+  SessionSidebarView,
   React.CSSProperties["transform"]
 > = {
   "work-items": "translateX(0)",
@@ -38,7 +38,7 @@ const SELECTED_VIEW_TRANSFORM: Record<
 };
 
 /** Icon-only primary view switcher rendered below the organization selector. */
-export const WorkstationSidebarViewSwitcher: React.FC<WorkstationSidebarViewSwitcherProps> =
+export const SessionSidebarViewSwitcher: React.FC<SessionSidebarViewSwitcherProps> =
   React.memo(({ activeKey, onChange }) => {
     const { t } = useTranslation("navigation");
     const items: ViewItem[] = [
@@ -116,4 +116,4 @@ export const WorkstationSidebarViewSwitcher: React.FC<WorkstationSidebarViewSwit
     );
   });
 
-WorkstationSidebarViewSwitcher.displayName = "WorkstationSidebarViewSwitcher";
+SessionSidebarViewSwitcher.displayName = "SessionSidebarViewSwitcher";

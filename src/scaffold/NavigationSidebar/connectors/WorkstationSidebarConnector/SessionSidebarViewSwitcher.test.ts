@@ -12,7 +12,7 @@ import {
   vi,
 } from "vitest";
 
-import { WorkstationSidebarViewSwitcher } from "./WorkstationSidebarViewSwitcher";
+import { SessionSidebarViewSwitcher } from "./SessionSidebarViewSwitcher";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -45,7 +45,7 @@ const actEnvironment = globalThis as typeof globalThis & {
   IS_REACT_ACT_ENVIRONMENT?: boolean;
 };
 
-describe("WorkstationSidebarViewSwitcher", () => {
+describe("SessionSidebarViewSwitcher", () => {
   let container: HTMLDivElement;
   let root: Root;
 
@@ -71,7 +71,7 @@ describe("WorkstationSidebarViewSwitcher", () => {
   it("exposes three labeled destinations and marks the active view", () => {
     act(() => {
       root.render(
-        createElement(WorkstationSidebarViewSwitcher, {
+        createElement(SessionSidebarViewSwitcher, {
           activeKey: "sessions",
           onChange: () => undefined,
         })
@@ -137,7 +137,7 @@ describe("WorkstationSidebarViewSwitcher", () => {
 
     act(() => {
       root.render(
-        createElement(WorkstationSidebarViewSwitcher, {
+        createElement(SessionSidebarViewSwitcher, {
           activeKey: "channels",
           onChange: () => undefined,
         })
@@ -156,7 +156,7 @@ describe("WorkstationSidebarViewSwitcher", () => {
     const onChange = vi.fn();
     act(() => {
       root.render(
-        createElement(WorkstationSidebarViewSwitcher, {
+        createElement(SessionSidebarViewSwitcher, {
           activeKey: "sessions",
           onChange,
         })
