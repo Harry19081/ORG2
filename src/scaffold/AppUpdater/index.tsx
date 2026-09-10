@@ -11,6 +11,7 @@ import { DownloadProgressOrb } from "./DownloadProgress";
 import {
   expandDownloadProgressNotice,
   installAvailableAppUpdate,
+  postponeAppUpdate,
   skipAppUpdateVersion,
   startAutomaticAppUpdates,
   usesSeparateApplicationInstall,
@@ -33,8 +34,8 @@ export const AppUpdater: React.FC = () => {
   const settingsLoaded = useAtomValue(settingsLoadedAtom);
 
   const handleInstallLater = useCallback(() => {
-    setInstallPromptVisible(false);
-  }, [setInstallPromptVisible]);
+    postponeAppUpdate(availableUpdate?.version);
+  }, [availableUpdate]);
 
   const handleSkipVersion = useCallback(() => {
     skipAppUpdateVersion(availableUpdate?.version);
