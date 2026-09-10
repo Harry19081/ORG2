@@ -11,6 +11,7 @@
 import { atom } from "jotai";
 
 import { activeWorkStationTabAtom, mainPaneTabsAtom } from "./tabs";
+import { DEFAULT_CATEGORY_BY_TYPE } from "./tabs/tabFactory";
 import type {
   WorkStationTab,
   WorkStationTabCategory,
@@ -42,28 +43,11 @@ export function categoryToTabHost(
 
 /**
  * Map a tab type onto its host. Convenience for callers that have the raw
- * `tab.type` literal rather than the category. Mirrors `categoryToTabHost` via
+ * `tab.type` literal rather than the category. Uses `categoryToTabHost` with
  * the tab-type → category default mapping in `tabFactory.ts`.
  */
 export function tabTypeToTabHost(type: WorkStationTabType): WorkstationTabHost {
-  switch (type) {
-    case "browser-session":
-    case "devtools":
-      return "browser";
-    case "project-dashboard":
-    case "project-work-items":
-    case "project-linear-projects":
-    case "project-linear-work-items":
-    case "project-settings":
-    case "project-org":
-    case "project-org-settings":
-    case "project-git-sync-review":
-    case "project-workitems":
-    case "workItem-detail":
-      return "project";
-    default:
-      return "code";
-  }
+  return categoryToTabHost(DEFAULT_CATEGORY_BY_TYPE[type]);
 }
 
 /** Convenience: derive host from a tab. */

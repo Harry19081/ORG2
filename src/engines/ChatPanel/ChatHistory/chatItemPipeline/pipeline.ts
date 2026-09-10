@@ -30,6 +30,7 @@ import {
   isManageTodoEvent,
   isMcpToolEvent,
   isReadFileEvent,
+  isTerminalActivityEvent,
   isTerminalCommandEvent,
 } from "./classifiers";
 import { buildDedupMaps } from "./dedup";
@@ -555,12 +556,12 @@ export function processChatItems(
     }
 
     // Buffer: consecutive shell commands, MCP calls, and terminal
-    // wait/monitor/inspect follow-ups. Explicit infrastructure failures remain
-    // standalone error cards, matching the exploration-group failure policy.
+    // wait/monitor/inspect follow-ups, including failures. Keep terminal error
+    // details inside the stack; non-terminal MCP failures remain standalone.
     if (
       opts.groupTerminalActivities &&
       isCommandGroupActivityEvent(event) &&
-      !isFailedToolCall(event)
+      (isTerminalActivityEvent(event) || !isFailedToolCall(event))
     ) {
       flushBrowserBuffer();
       flushPartialBuffer();

@@ -421,7 +421,7 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
             </SectionRow>
           </SectionContainer>
 
-          {!IS_MACOS_HOST && <BackgroundSettings embedded showHeader={false} />}
+          {!IS_MACOS_HOST && <BackgroundSettings />}
         </>
       )}
 

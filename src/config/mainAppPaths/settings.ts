@@ -15,8 +15,6 @@ export type SettingsSectionSegment =
   | "update"
   | "harness-connections";
 
-export type SettingsSubpageSegment = "editor-appearance";
-
 export const SETTINGS_SECTIONS: readonly SettingsSectionSegment[] = [
   "general",
   "appearance",
@@ -51,7 +49,6 @@ export type CoreSettingsItemSegment =
 export interface SettingsPathOptions {
   section?: SettingsSectionSegment;
   tab?: string;
-  subpage?: SettingsSubpageSegment;
 }
 
 /**
@@ -62,11 +59,7 @@ export interface SettingsPathOptions {
 const LEGACY_COLLABORATION_SECTION = "collaboration";
 
 export function buildSettingsPath(options: SettingsPathOptions = {}): string {
-  const { section, tab, subpage } = options;
-
-  if (subpage) {
-    return `${SETTINGS_BASE}/subpage/${subpage}`;
-  }
+  const { section, tab } = options;
 
   if (section) {
     const tabSegment = tab ? `/${tab}` : "";

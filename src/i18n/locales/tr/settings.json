@@ -15,10 +15,7 @@
     "editorAndWorkspace": "Editör & Workspace",
     "appUpdate": "Uygulama Güncellemesi",
     "security": "Güvenlik",
-    "osAgentConfig": "OS Agent Yapılandırması",
-    "sdeAgentConfig": "SDE Agent Yapılandırması",
     "storage": "Depolama",
-    "agentMemory": "Agent Belleği",
     "agentOrg": "Agent Ekibi",
     "harnessConnections": "CLI Yönlendirmesi",
     "mobileRemote": "Mobil Uzaktan Erişim"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Learnings Tarayıcısı",
     "searchPlaceholder": "Takeaway, içerik, scope ara…",
     "tabs": {
       "all": "Tümü",
@@ -841,12 +837,6 @@
       "title": "Henüz Learnings yok",
       "subtitle": "Oturumlar tamamlandıkça ve yansıtma çalıştıkça kalıcı bulgular burada görünecek",
       "searchSubtitle": "Filtreyle eşleşen giriş yok. Farklı bir anahtar kelime dene veya aramayı temizle"
-    },
-    "statusCard": {
-      "title": "Konsolidasyon Durumu",
-      "lastRun": "Son çalıştırma",
-      "nextTrigger": "Sonraki tetikleme",
-      "never": "Hiç"
     },
     "toast": {
       "promoted": "Etkin olarak yükseltildi",

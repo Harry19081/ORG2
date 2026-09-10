@@ -15,10 +15,7 @@
     "editorAndWorkspace": "에디터 & Workspace",
     "appUpdate": "앱 업데이트",
     "security": "보안",
-    "osAgentConfig": "OS Agent 설정",
-    "sdeAgentConfig": "SDE Agent 설정",
     "storage": "스토리지",
-    "agentMemory": "Agent 메모리",
     "agentOrg": "Agent 팀",
     "harnessConnections": "CLI 라우팅",
     "mobileRemote": "Mobile Remote"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Learnings 브라우저",
     "searchPlaceholder": "Takeaway, 내용, scope 검색…",
     "tabs": {
       "all": "전체",
@@ -841,12 +837,6 @@
       "title": "아직 Learnings가 없습니다",
       "subtitle": "세션이 완료되고 반영이 실행되면 지속적인 인사이트가 여기에 표시됩니다",
       "searchSubtitle": "필터와 일치하는 항목이 없습니다. 다른 키워드를 시도하거나 검색을 지워 보세요"
-    },
-    "statusCard": {
-      "title": "통합 상태",
-      "lastRun": "마지막 실행",
-      "nextTrigger": "다음 트리거",
-      "never": "없음"
     },
     "toast": {
       "promoted": "활성으로 승격됨",

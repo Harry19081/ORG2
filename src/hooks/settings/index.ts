@@ -11,7 +11,7 @@ export {
   useEditorAppearanceStyles,
 } from "./useEditorAppearance";
 
-export { useSetting, useSettingValue } from "./useSettings";
+export { useSettingValue } from "./useSettings";
 
 export { useDevModeGuard } from "./useDevModeGuard";
 

@@ -15,10 +15,7 @@
     "editorAndWorkspace": "Редактор & Workspace",
     "appUpdate": "Обновление",
     "security": "Безопасность",
-    "osAgentConfig": "Настройки OS Agent",
-    "sdeAgentConfig": "Настройки SDE Agent",
     "storage": "Хранилище",
-    "agentMemory": "Память Agent",
     "agentOrg": "Команда Agent",
     "harnessConnections": "Маршрутизация CLI",
     "mobileRemote": "Mobile Remote"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Браузер Learnings",
     "searchPlaceholder": "Поиск по takeaway, содержимому, scope…",
     "tabs": {
       "all": "Все",
@@ -841,12 +837,6 @@
       "title": "Пока нет Learnings",
       "subtitle": "После завершения сессий и выполнения рефлексии устойчивые выводы появятся здесь",
       "searchSubtitle": "Нет записей, удовлетворяющих фильтру. Попробуйте другое ключевое слово или очистите поиск"
-    },
-    "statusCard": {
-      "title": "Статус консолидации",
-      "lastRun": "Последний запуск",
-      "nextTrigger": "Следующий триггер",
-      "never": "Никогда"
     },
     "toast": {
       "promoted": "Повышено до активного",
