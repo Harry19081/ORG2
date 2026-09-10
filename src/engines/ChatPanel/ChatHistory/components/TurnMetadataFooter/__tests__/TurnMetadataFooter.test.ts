@@ -86,7 +86,7 @@ describe("TurnMetadataFooter tabs", () => {
     );
   });
 
-  it("keeps the larger expansion control pinned outside the hidden-scroll list", () => {
+  it("keeps the larger expansion control pinned outside the visible-scrollbar list", () => {
     const summary: TurnSummary = {
       ...BASE_SUMMARY,
       resourceInteractions: Array.from({ length: 6 }, (_, index) => ({
@@ -110,7 +110,10 @@ describe("TurnMetadataFooter tabs", () => {
       'data-testid="turn-metadata-pinned-controls"'
     );
 
-    expect(markup).toContain("scrollbar-hide min-h-0 flex-1 overflow-y-auto");
+    expect(markup).toContain(
+      "turn-metadata-scroll-area min-h-0 flex-1 overflow-y-auto pr-2"
+    );
+    expect(markup).not.toContain("scrollbar-hide");
     expect(
       markup.match(/data-testid="turn-metadata-read"/g) ?? []
     ).toHaveLength(4);
