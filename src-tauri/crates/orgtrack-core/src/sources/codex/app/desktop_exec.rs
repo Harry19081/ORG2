@@ -46,7 +46,8 @@ fn split_multiline_shell_script(command: &str) -> Vec<String> {
     let mut current = String::new();
     let mut quote = None;
     let mut escaped = false;
-    for ch in command.chars() {
+    let mut chars = command.chars().peekable();
+    while let Some(ch) = chars.next() {
         if escaped {
             current.push(ch);
             escaped = false;
@@ -63,6 +64,13 @@ fn split_multiline_shell_script(command: &str) -> Vec<String> {
                 quote = None;
             }
             continue;
+        }
+        // A here-document body is input to one shell invocation, not a list
+        // of shell commands. Keep the whole script (including any surrounding
+        // statements) together so its single process result has one owner.
+        // This also safely retains here-strings and tab-stripped heredocs.
+        if ch == '<' && chars.peek() == Some(&'<') {
+            return vec![command.to_string()];
         }
         if matches!(ch, '\'' | '"' | '`') {
             quote = Some(ch);

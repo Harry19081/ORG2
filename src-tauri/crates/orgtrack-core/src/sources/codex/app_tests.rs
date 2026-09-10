@@ -1511,6 +1511,109 @@ fn codex_write_stdin_cell_wait_still_merges_into_originating_command() {
 }
 
 #[test]
+fn codex_desktop_exec_keeps_heredoc_bodies_in_one_invocation() {
+    for command in [
+        "python3 - <<'PY'\nfrom pathlib import Path\nprint('done')\nPY",
+        "cat <<EOF\nhello\nEOF",
+        "cat <<-\"EOF\"\n\thello\n\tEOF\nprintf done",
+        "cat <<< 'hello'\nprintf done",
+    ] {
+        let payload = json!({
+            "name": "exec",
+            "call_id": "heredoc",
+            "input": format!("text(await tools.exec_command({{cmd:{}}}));", serde_json::to_string(command).unwrap()),
+        });
+        let (_, calls) =
+            pending_custom_tool_calls_from_payload(&payload, "2026-09-10T16:50:00Z").unwrap();
+        assert_eq!(calls.len(), 1, "{command}");
+        assert_eq!(
+            calls[0].canonical_name,
+            imported_history::FUNCTION_RUN_COMMAND_LINE
+        );
+        assert_eq!(calls[0].args["command"], command);
+    }
+}
+
+#[test]
+fn codex_desktop_background_heredoc_completion_pairs_with_batched_next_command() {
+    let temp_dir = std::env::temp_dir().join(format!("orgii-codex-heredoc-{}", std::process::id()));
+    std::fs::create_dir_all(&temp_dir).unwrap();
+    let path = temp_dir.join("rollout.jsonl");
+    let command = "python3 - <<'PY'\nfrom pathlib import Path\nprint('created')\nPY";
+    let next_command = "python3 - <<'PY'\nimport json\nprint('verified')\nPY";
+    let call = |id: &str, input: String| {
+        json!({
+            "timestamp": "2026-09-10T16:50:00Z", "type": "response_item",
+            "payload": {"type": "custom_tool_call", "name": "exec", "call_id": id, "input": input},
+        })
+    };
+    let output = |id: &str, results: Vec<Value>| {
+        json!({
+            "timestamp": "2026-09-10T16:50:01Z", "type": "response_item",
+            "payload": {"type": "custom_tool_call_output", "call_id": id, "output":
+                std::iter::once(json!({"type": "input_text", "text": "Script completed\nOutput:\n"}))
+                    .chain(results.into_iter().map(|result| json!({"type": "input_text", "text": result.to_string()})))
+                    .collect::<Vec<_>>()},
+        })
+    };
+    let start = [
+        call(
+            "start",
+            format!(
+                "text(await tools.exec_command({{cmd:{}}}));",
+                serde_json::to_string(command).unwrap()
+            ),
+        ),
+        output("start", vec![json!({"session_id": 65005, "output": ""})]),
+        call(
+            "poll",
+            "text(await tools.write_stdin({session_id:65005,chars:\"\"}));".to_string(),
+        ),
+        output(
+            "poll",
+            vec![json!({"session_id": 65005, "output": "created\n"})],
+        ),
+    ];
+    let completion = [
+        call("finish", format!("text(await tools.write_stdin({{session_id:65005,chars:\"\"}}));\ntext(await tools.exec_command({{cmd:{}}}));", serde_json::to_string(next_command).unwrap())),
+        output("finish", vec![json!({"exit_code": 0, "output": "finished\n"}), json!({"exit_code": 0, "output": "verified\n"})]),
+    ];
+    let encode = |rows: &[Value]| {
+        rows.iter()
+            .map(Value::to_string)
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    std::fs::write(&path, encode(&start)).unwrap();
+    let pending = load_codex_app_from_path("codexapp-heredoc", &path).unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].args["command"], command);
+    std::fs::write(
+        &path,
+        format!("{}\n{}", encode(&start), encode(&completion)),
+    )
+    .unwrap();
+    for _ in 0..2 {
+        let chunks = load_codex_app_from_path("codexapp-heredoc", &path).unwrap();
+        assert_eq!(chunks.len(), 2);
+        for (expected_command, expected_output) in [
+            (command, "created\nfinished\n"),
+            (next_command, "verified\n"),
+        ] {
+            let chunk = chunks
+                .iter()
+                .find(|chunk| chunk.args["command"] == expected_command)
+                .unwrap();
+            assert_eq!(chunk.result["exit_code"], 0);
+            assert_ne!(chunk.result["success"], false);
+            assert_ne!(chunk.result["status"], "interrupted");
+            assert_eq!(chunk.result["output"], expected_output);
+        }
+    }
+    std::fs::remove_dir_all(temp_dir).unwrap();
+}
+
+#[test]
 fn codex_desktop_exec_preserves_multiline_shell_script() {
     let command = "sed -n '1,180p' src/scaffold/NavigationSidebar/connectors/useSessionMenuItems/menuItemBuilders.tsx\nsed -n '250,370p' src/scaffold/NavigationSidebar/connectors/useSessionMenuItems/index.tsx\nsed -n '1,180p' src/config/agentIcons.tsx\nrg -n \"interface.*MenuItem|type.*MenuItem|renderStatusDot|agentIconId\" src/scaffold/NavigationSidebar src/scaffold -g '*.tsx' -g '*.ts' | head -200";
     let script = format!(
