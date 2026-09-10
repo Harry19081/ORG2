@@ -214,4 +214,62 @@ describe("Modal opening focus", () => {
     const icon = back.querySelector('[data-icon="arrow-left"]');
     expect(icon).not.toBeNull();
   });
+  it("names JSX-title dialogs without including header actions", () => {
+    act(() =>
+      root.render(
+        createElement(Modal, {
+          visible: true,
+          title: createElement("span", null, "Move session to organization"),
+          headerActions: createElement("button", null, "Help"),
+        })
+      )
+    );
+    const dialog = document.querySelector('[role="dialog"]')!;
+    const labelId = dialog.getAttribute("aria-labelledby");
+    expect(labelId).toBeTruthy();
+    expect(document.getElementById(labelId!)?.textContent).toBe(
+      "Move session to organization"
+    );
+  });
+
+  it("supports an explicit name without a header", () => {
+    act(() =>
+      root.render(
+        createElement(Modal, { visible: true, "aria-label": "Sign in" })
+      )
+    );
+    const dialog = document.querySelector('[role="dialog"]')!;
+    expect(dialog.getAttribute("aria-label")).toBe("Sign in");
+    expect(dialog.hasAttribute("aria-labelledby")).toBe(false);
+  });
+
+  it("keeps string names and gives simultaneous JSX titles unique ids", () => {
+    act(() =>
+      root.render(
+        createElement(
+          "div",
+          null,
+          createElement(Modal, { visible: true, title: "Plain title" }),
+          createElement(Modal, {
+            visible: true,
+            title: createElement("span", null, "First"),
+          }),
+          createElement(Modal, {
+            visible: true,
+            title: createElement("span", null, "Second"),
+          })
+        )
+      )
+    );
+    const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+    expect(dialogs[0].getAttribute("aria-label")).toBe("Plain title");
+    const ids = dialogs
+      .slice(1)
+      .map((dialog) => dialog.getAttribute("aria-labelledby"));
+    expect(new Set(ids).size).toBe(2);
+    expect(ids.map((id) => document.getElementById(id!)?.textContent)).toEqual([
+      "First",
+      "Second",
+    ]);
+  });
 });
