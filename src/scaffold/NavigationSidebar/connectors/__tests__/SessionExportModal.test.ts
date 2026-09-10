@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Session } from "@src/store/session";
 
-import { SessionImportExportModal } from "../SessionImportExportModal";
+import { SessionExportModal } from "../SessionExportModal";
 import type { SessionExportDraft } from "../sessionImportExport";
 
 const mocks = vi.hoisted(() => ({
@@ -39,8 +39,6 @@ vi.mock("../sessionImportExport", () => ({
   formatCategoryLabel: () => "Rust Agent",
   formatEventCount: (count: number) => `${count} events`,
   stringifySessionExportFile: JSON.stringify,
-  importSessionExportFile: vi.fn(),
-  parseSessionImportFile: vi.fn(),
 }));
 
 const session: Session = {
@@ -78,14 +76,14 @@ const draft: SessionExportDraft = {
 
 let container: HTMLDivElement;
 let root: Root;
-let props: ComponentProps<typeof SessionImportExportModal>;
+let props: ComponentProps<typeof SessionExportModal>;
 
 async function render(
-  overrides: Partial<ComponentProps<typeof SessionImportExportModal>> = {}
+  overrides: Partial<ComponentProps<typeof SessionExportModal>> = {}
 ) {
   props = { ...props, ...overrides };
   await act(async () => {
-    root.render(createElement(SessionImportExportModal, props));
+    root.render(createElement(SessionExportModal, props));
   });
 }
 
@@ -116,11 +114,9 @@ beforeEach(() => {
   root = createRoot(container);
   props = {
     visible: true,
-    mode: "export",
     activeSession: session,
     sessionFallbackName: "Session",
     onClose: vi.fn(),
-    onImported: vi.fn(),
   };
 });
 
@@ -132,7 +128,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("SessionImportExportModal", () => {
+describe("SessionExportModal", () => {
   it("widens export and shows its details without the introductory card", async () => {
     await render();
 
@@ -171,7 +167,6 @@ describe("SessionImportExportModal", () => {
       JSON.stringify(draft.file)
     );
     expect(props.onClose).toHaveBeenCalledOnce();
-    expect(props.onImported).not.toHaveBeenCalled();
   });
 
   it("still cancels without exporting", async () => {
@@ -205,22 +200,6 @@ describe("SessionImportExportModal", () => {
     expect(modalContent().textContent).toContain("noActiveSession");
     expect(button("chat.importExport.exportAction").disabled).toBe(true);
     expect(mocks.buildDraft).not.toHaveBeenCalled();
-  });
-
-  it("preserves the import width, guidance, and file picker", async () => {
-    await render({ mode: "import" });
-
-    expect(modalContent().style.width).toBe("440px");
-    expect(modalContent().textContent).toContain("importDescription");
-    expect(modalContent().textContent).toContain("jsonSnapshotNote");
-    expect(modalContent().textContent).toContain("chooseJsonHint");
-    expect(mocks.buildDraft).not.toHaveBeenCalled();
-    await act(async () => button("chat.importExport.chooseJson").click());
-    expect(mocks.openDialog).toHaveBeenCalledWith({
-      multiple: false,
-      filters: [{ name: "Session JSON", extensions: ["json"] }],
-    });
-    expect(props.onClose).not.toHaveBeenCalled();
   });
   it("keeps the export dialog open during a pending file write", async () => {
     let resolveWrite!: () => void;
