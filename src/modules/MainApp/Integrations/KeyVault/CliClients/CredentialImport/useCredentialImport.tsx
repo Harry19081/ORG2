@@ -165,14 +165,21 @@ export function useCredentialImport({
     importableItems.length > 0 &&
     importableItems.every((row) => selected.has(credentialImportRowKey(row)));
 
-  const handleToggle = useCallback((key: string, checked: boolean) => {
+  const handleToggle = useCallback((key: string, checked?: boolean) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (checked) next.add(key);
+      if (checked ?? !prev.has(key)) next.add(key);
       else next.delete(key);
       return next;
     });
   }, []);
+
+  const handleRowClick = useCallback(
+    (row: CredentialImportRow) => {
+      handleToggle(credentialImportRowKey(row));
+    },
+    [handleToggle]
+  );
 
   const handleSelectAll = useCallback(() => {
     if (allSelected) {
@@ -262,8 +269,9 @@ export function useCredentialImport({
         ),
         width: SETTINGS_TABLE_COL.fill,
         renderCell: (row) => (
-          <label className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <Checkbox
+              ariaLabel={row.displayName}
               checked={selected.has(credentialImportRowKey(row))}
               onCheckedChange={(checked) =>
                 handleToggle(credentialImportRowKey(row), checked as boolean)
@@ -277,7 +285,7 @@ export function useCredentialImport({
             <span className={`${SETTINGS_TABLE_CELL.primary} font-bold`}>
               {row.displayName}
             </span>
-          </label>
+          </div>
         ),
       },
       {
@@ -353,6 +361,7 @@ export function useCredentialImport({
     importError,
     importErrors,
     importColumns,
+    handleRowClick,
     handleImport,
     refreshDetection,
   };

@@ -86,6 +86,7 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
     importError,
     importErrors,
     importColumns,
+    handleRowClick,
     handleImport,
   } = useExternalImport({
     kind,
@@ -148,6 +149,7 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
             ) : (
               <SettingsTable
                 columns={importColumns}
+                onRowClick={handleRowClick}
                 rows={importableItems}
                 getRowKey={inlineExternalImportRowKey}
                 headerHeight="tall"

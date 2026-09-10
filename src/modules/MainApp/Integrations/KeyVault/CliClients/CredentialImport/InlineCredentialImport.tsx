@@ -56,6 +56,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
     importError,
     importErrors,
     importColumns,
+    handleRowClick,
     handleImport,
   } = useCredentialImport({
     sourceKind,
@@ -111,6 +112,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
             ) : (
               <SettingsTable
                 columns={importColumns}
+                onRowClick={handleRowClick}
                 rows={importableItems}
                 getRowKey={credentialImportRowKey}
                 headerHeight="tall"
