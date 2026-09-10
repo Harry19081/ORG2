@@ -15,10 +15,7 @@
     "editorAndWorkspace": "Editor & Workspace",
     "appUpdate": "App Update",
     "security": "Security",
-    "osAgentConfig": "OS Agent Config",
-    "sdeAgentConfig": "SDE Agent Config",
     "storage": "Storage",
-    "agentMemory": "Agent Memory",
     "agentOrg": "Agent Team",
     "mobileRemote": "Mobile Remote",
     "harnessConnections": "CLI Routing"
@@ -877,7 +874,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Learnings Browser",
     "searchPlaceholder": "Search takeaways, contents, scope…",
     "tabs": {
       "all": "All",
@@ -919,12 +915,6 @@
       "title": "No learnings yet",
       "subtitle": "Once sessions complete and reflection runs, durable insights will appear here",
       "searchSubtitle": "No entries match your filter. Try a different keyword or clear the search"
-    },
-    "statusCard": {
-      "title": "Consolidation Status",
-      "lastRun": "Last run",
-      "nextTrigger": "Next trigger",
-      "never": "Never"
     },
     "toast": {
       "promoted": "Promoted to active",

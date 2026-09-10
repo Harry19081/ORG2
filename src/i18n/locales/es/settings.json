@@ -15,10 +15,7 @@
     "editorAndWorkspace": "Editor & Workspace",
     "appUpdate": "Actualización",
     "security": "Seguridad",
-    "osAgentConfig": "Config de OS Agent",
-    "sdeAgentConfig": "Config de SDE Agent",
     "storage": "Almacenamiento",
-    "agentMemory": "Memoria del Agent",
     "agentOrg": "Equipo Agent",
     "harnessConnections": "Enrutamiento de CLI",
     "mobileRemote": "Mobile Remote"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Explorador de Learnings",
     "searchPlaceholder": "Buscar takeaways, contenido, scope…",
     "tabs": {
       "all": "Todos",
@@ -841,12 +837,6 @@
       "title": "Aún no hay Learnings",
       "subtitle": "Cuando las sesiones finalicen y la reflexión se ejecute, las ideas persistentes aparecerán aquí",
       "searchSubtitle": "Ninguna entrada coincide con el filtro. Prueba otra palabra clave o borra la búsqueda"
-    },
-    "statusCard": {
-      "title": "Estado de consolidación",
-      "lastRun": "Última ejecución",
-      "nextTrigger": "Próximo disparo",
-      "never": "Nunca"
     },
     "toast": {
       "promoted": "Promovido a activo",
