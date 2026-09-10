@@ -68,7 +68,6 @@ export const AppUpdater: React.FC = () => {
         onCancel={handleInstallLater}
         onClose={handleInstallLater}
         bodyClassName="px-6 py-5"
-        footerTopBorder={false}
         footer={
           <div className="flex items-center justify-between gap-3 px-5 py-4">
             <Button
