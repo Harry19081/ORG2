@@ -11,7 +11,10 @@ import { useAtomValue, useSetAtom } from "jotai";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { respondPlanApproval } from "@src/api/tauri/agent";
+import {
+  updatePendingPlanContent as persistPendingPlanContent,
+  respondPlanApproval,
+} from "@src/api/tauri/agent";
 import Button from "@src/components/Button";
 import Markdown from "@src/components/MarkDown";
 import Message from "@src/components/Message";
@@ -36,7 +39,6 @@ import {
 import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
 import { usePendingPlanApproval } from "@src/hooks/session/usePendingPlanApproval";
 import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
-import { FileService } from "@src/services/file";
 import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 import { sessionRuntimeStatusAtom } from "@src/store/session/cliSessionStatusAtom";
 import { creatorDefaultModelSelectionAtom } from "@src/store/session/creatorDefaultModelAtom";
@@ -340,11 +342,11 @@ const CreatePlanCard: React.FC<CreatePlanCardProps> = memo(
       try {
         await persistEditedPlanContent({
           sessionId,
-          planPath: pendingSnapshot?.planPath ?? null,
+          planRevisionId: pendingSnapshot?.planRevisionId,
           pendingAliases: getPendingPlanAliases(pendingSnapshot),
           content: editedContent,
           io: {
-            saveFile: (path, content) => FileService.save(path, content),
+            persistPendingContent: persistPendingPlanContent,
             getEvents: (id) => eventStoreProxy.getEvents(id),
             patchEvent: (id, args, sid) =>
               eventStoreProxy.updateById(id, { args }, sid),
