@@ -173,6 +173,9 @@ function sameChatItem(
     left.consolidatedParts === right.consolidatedParts &&
     left.actionSummaryClosedByBoundary ===
       right.actionSummaryClosedByBoundary &&
+    left.activityStackGroup?.category === right.activityStackGroup?.category &&
+    left.activityStackGroup?.closedByBoundary ===
+      right.activityStackGroup?.closedByBoundary &&
     sameEventSummary(left.event, right.event) &&
     sameEventList(left.readFileEvents, right.readFileEvents) &&
     sameEventList(
