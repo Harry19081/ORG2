@@ -1,5 +1,5 @@
 /**
- * Two-tile picker for the running app's Dock / taskbar icon.
+ * Three-tile picker for the running app's Dock / taskbar icon.
  *
  * A radio group rather than a Select: the choice is visual, and the tile
  * itself is the only honest label — "Dark tile" says less than showing it.
@@ -10,11 +10,13 @@ import React, { useCallback } from "react";
 
 import darkIcon from "@src/assets/appIcons/dark.png";
 import lightIcon from "@src/assets/appIcons/light.png";
+import rainbowIcon from "@src/assets/appIcons/rainbow.png";
 import type { DockIconVariant } from "@src/hooks/settings";
 
 const APP_ICON_PREVIEWS: Record<DockIconVariant, string> = {
   dark: darkIcon,
   light: lightIcon,
+  rainbow: rainbowIcon,
 };
 
 export interface AppIconPickerOption {
@@ -31,8 +33,9 @@ interface AppIconPickerProps {
 }
 
 const TILE_BASE_CLASSES =
-  "flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center rounded-xl border bg-fill-1 p-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30";
-const TILE_SELECTED_CLASSES = "border-text-1";
+  "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border bg-fill-1 p-0 transition-[border-color,box-shadow] duration-150 focus-visible:outline-none focus-visible:border-primary-6 focus-visible:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
+const TILE_SELECTED_CLASSES =
+  "border-primary-6 shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
 const TILE_IDLE_CLASSES = "border-border-2 hover:border-border-3";
 
 export const AppIconPicker: React.FC<AppIconPickerProps> = ({
@@ -88,7 +91,7 @@ export const AppIconPicker: React.FC<AppIconPickerProps> = ({
               src={APP_ICON_PREVIEWS[option.value]}
               alt=""
               draggable={false}
-              className="h-10 w-10 select-none"
+              className="h-7 w-7 select-none"
             />
           </button>
         );

@@ -241,7 +241,7 @@ const dockIconLog = createLogger("DockIcon");
 
 export const dockIconAtom = atom(
   (get) => get(settingsAtom)["general.dockIcon"],
-  (_get, set, value: "dark" | "light") => {
+  (_get, set, value: "dark" | "light" | "rainbow") => {
     set(updateSettingAtom, { key: "general.dockIcon", value }).catch(
       (error: unknown) => {
         dockIconLog.warn("Failed to persist general.dockIcon:", error);

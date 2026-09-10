@@ -285,7 +285,7 @@ export function useAppearanceState() {
 
   const dockIconOptions = useMemo(
     () =>
-      (["dark", "light"] as const).map((variant) => ({
+      (["dark", "light", "rainbow"] as const).map((variant) => ({
         label: t(`general.appIconOptions.${variant}`),
         value: variant,
       })),

@@ -285,8 +285,8 @@
       "monochrome": "Monochrome"
     },
     "appIcon": "App icon",
-    "appIconDesc": "Icon the running app shows in the Dock or taskbar. The installed app keeps its own icon in Finder",
     "appIconOptions": {
+      "rainbow": "Rainbow",
       "dark": "Dark tile",
       "light": "Light tile"
     },

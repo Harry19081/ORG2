@@ -209,8 +209,8 @@
       "monochrome": "Đơn sắc"
     },
     "appIcon": "Biểu tượng ứng dụng",
-    "appIconDesc": "Biểu tượng ứng dụng đang chạy hiển thị trên Dock hoặc thanh tác vụ. Ứng dụng đã cài đặt vẫn giữ biểu tượng riêng trong Finder",
     "appIconOptions": {
+      "rainbow": "Cầu vồng",
       "dark": "Ô tối",
       "light": "Ô sáng"
     },

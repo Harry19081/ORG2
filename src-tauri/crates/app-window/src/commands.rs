@@ -97,7 +97,7 @@ pub async fn set_window_root_tint(
 
 /// Switch the icon the running app shows in the Dock / taskbar.
 ///
-/// `variant` is the `general.dockIcon` setting value (`"dark"` | `"light"`).
+/// `variant` is the `general.dockIcon` setting value (`"dark"` | `"light"` | `"rainbow"`).
 /// Unknown values are rejected rather than coerced so a schema drift between
 /// TS and Rust surfaces as an error instead of silently resetting the icon.
 /// The stored value is re-applied at launch by

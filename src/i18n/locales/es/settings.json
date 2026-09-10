@@ -209,8 +209,8 @@
       "monochrome": "Monocromo"
     },
     "appIcon": "Icono de la aplicación",
-    "appIconDesc": "Icono que muestra la aplicación en ejecución en el Dock o la barra de tareas. La aplicación instalada conserva su propio icono en Finder",
     "appIconOptions": {
+      "rainbow": "Arcoíris",
       "dark": "Mosaico oscuro",
       "light": "Mosaico claro"
     },
