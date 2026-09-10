@@ -366,7 +366,7 @@
     "signIn": "Entrar",
     "signOut": "Sair",
     "signOutConfirmTitle": "Sair da conta?",
-    "signOutConfirmBody": "Você precisará entrar novamente para acessar sua conta.",
+    "signOutConfirmBody": "Você precisará entrar novamente para acessar sua conta",
     "signedInAs": "Sessão iniciada como {{name}}",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "Sua sessão do ORG2 Cloud expirou. Entre novamente para continuar.",

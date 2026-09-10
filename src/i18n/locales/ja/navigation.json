@@ -366,7 +366,7 @@
     "signIn": "ログイン",
     "signOut": "ログアウト",
     "signOutConfirmTitle": "ログアウトしますか？",
-    "signOutConfirmBody": "アカウントにアクセスするには、再度ログインする必要があります。",
+    "signOutConfirmBody": "アカウントにアクセスするには、再度ログインする必要があります",
     "signedInAs": "{{name}} としてログイン中",
     "signedInToast": "ORG2 クラウドにサインインしました",
     "sessionExpired": "ORG2 Cloud のセッションが期限切れです。続行するには再度サインインしてください。",

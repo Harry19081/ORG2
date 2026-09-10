@@ -366,7 +366,7 @@
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",
     "signOutConfirmTitle": "¿Cerrar sesión?",
-    "signOutConfirmBody": "Tendrás que volver a iniciar sesión para acceder a tu cuenta.",
+    "signOutConfirmBody": "Tendrás que volver a iniciar sesión para acceder a tu cuenta",
     "signedInAs": "Sesión iniciada como {{name}}",
     "signedInToast": "Sesión iniciada en ORG2 Cloud",
     "sessionExpired": "Tu sesión de ORG2 Cloud ha caducado. Inicia sesión de nuevo para continuar.",

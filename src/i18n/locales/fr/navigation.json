@@ -366,7 +366,7 @@
     "signIn": "Connexion",
     "signOut": "Déconnexion",
     "signOutConfirmTitle": "Se déconnecter ?",
-    "signOutConfirmBody": "Vous devrez vous reconnecter pour accéder à votre compte.",
+    "signOutConfirmBody": "Vous devrez vous reconnecter pour accéder à votre compte",
     "signedInAs": "Connecté en tant que {{name}}",
     "signedInToast": "Connecté à ORG2 Cloud",
     "sessionExpired": "Votre session ORG2 Cloud a expiré. Reconnectez-vous pour continuer.",
