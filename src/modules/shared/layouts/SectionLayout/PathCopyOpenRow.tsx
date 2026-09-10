@@ -50,11 +50,10 @@ const PathCopyOpenRow: React.FC<PathCopyOpenRowProps> = memo(
   }) => {
     return (
       <SectionRow label={label} description={description}>
-        <div className={`group ${SECTION_ACTION_GAP_CLASSES}`}>
+        <div className={SECTION_ACTION_GAP_CLASSES}>
           <span className={SECTION_PATH_TEXT_CLASSES}>{path}</span>
           <Button
             onClick={onCopy}
-            className="opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
             icon={
               <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={14} />
             }
@@ -64,7 +63,6 @@ const PathCopyOpenRow: React.FC<PathCopyOpenRowProps> = memo(
           />
           <Button
             onClick={onOpen}
-            className="opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
             icon={
               <HugeiconsIcon
                 icon={FolderOpenIcon}
