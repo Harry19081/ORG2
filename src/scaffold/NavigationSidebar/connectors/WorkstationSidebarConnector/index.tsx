@@ -52,6 +52,7 @@ import { useWorkstationSidebarSelectionAndCollapse } from "./sidebarConnector.se
 import { useWorkstationSidebarSessionInteractionHandlers } from "./sidebarConnector.sessionInteractionHandlers";
 import { useSidebarSessionRefreshAction } from "./sidebarSessionRefresh";
 import type { SessionSidebarView } from "./types";
+import { useMobileSidebarSessions } from "./useMobileSidebarSessions";
 import { useSessionSidebarOrdering } from "./useSessionSidebarOrdering";
 import { useSessionSidebarRowActions } from "./useSessionSidebarRowActions";
 import { useSidebarStationNavigation } from "./useSidebarStationNavigation";
@@ -461,6 +462,14 @@ export const WorkstationSidebarConnector: React.FC = () => {
     cloudSessionMenuItems,
     sessionSidebarMenuItems,
     cloudMySessionsVisibleCount,
+  });
+
+  useMobileSidebarSessions({
+    scope: activeOrgId,
+    loading: sessionsLoading || orgSelectorLoading,
+    items: sessionMenuItems,
+    sessionMap,
+    repoPathToName,
   });
 
   const workItems = useWorkItemsSidebarSurface({
