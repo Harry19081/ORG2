@@ -706,8 +706,8 @@
     }
   },
   "rulesImport": {
-    "title": "読み込み可能なルール",
-    "empty": "読み込み可能なルールは見つかりませんでした。",
+    "title": "他のアプリからルールをインポート",
+    "empty": "インポートできるルールが見つかりません。",
     "allImported": "検出されたすべてのルールはすでにインポート済みです"
   },
   "skillsImport": {
@@ -1648,7 +1648,6 @@
   },
   "credentialImport": {
     "title": "他のアプリから認証情報をインポート",
-    "titleWithCount": "他のアプリから認証情報をインポート（{{count}} 件検出）",
     "itemColumn": "認証情報",
     "sourceColumn": "検出元",
     "empty": "インポートできる認証情報が見つかりませんでした。環境変数、シェルプロファイル、Claude Code の設定、cc-switch プロファイル、および Claude Code、Codex、Cursor、GitHub CLI、Kiro、OpenCode のログインストアを確認しました。",
