@@ -66,7 +66,7 @@ export interface TabFactoryConfig<TData> {
  * `category` field when a tab type wants its own mount slot (e.g. a
  * read-only viewer that should not share state with the editor).
  */
-const DEFAULT_CATEGORY_BY_TYPE: Record<
+export const DEFAULT_CATEGORY_BY_TYPE: Record<
   WorkStationTabType,
   WorkStationTabCategory
 > = {
