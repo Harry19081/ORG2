@@ -1674,6 +1674,13 @@ fn codex_desktop_exec_preserves_multiline_shell_script() {
     assert_eq!(parts[1].lines().count(), 121);
     assert_eq!(parts[2].lines().count(), 180);
     assert_eq!(parts[3].lines().count(), 2);
+
+    for output in ["", "你好\r\n\nlast line", "first\n", "\n\n"] {
+        let parts = output_parts_for_tool_calls(&calls, output);
+        assert_eq!(parts.concat(), output);
+        assert_eq!(parts[0], output);
+        assert!(parts[1..].iter().all(String::is_empty));
+    }
 }
 
 #[test]
