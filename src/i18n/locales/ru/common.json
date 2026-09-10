@@ -1802,6 +1802,7 @@
           "label": "Сменить рабочий каталог"
         },
         "switchBranch": {
+          "repoLabel": "Переключить ветку {{repoName}}",
           "label": "Переключить ветку"
         },
         "addWorkspace": {

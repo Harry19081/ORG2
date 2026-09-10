@@ -1633,6 +1633,7 @@
           "label": "Switch working directory"
         },
         "switchBranch": {
+          "repoLabel": "Switch the branch of {{repoName}}",
           "label": "Switch branch"
         },
         "addWorkspace": {

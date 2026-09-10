@@ -419,7 +419,7 @@ export type SpotlightInitialLayer =
       kind: "githubIssuesImport";
       context?: SpotlightGitHubIssuesImportContext;
     }
-  | { kind: "branch" }
+  | { kind: "branch"; repoId?: string }
   | { kind: "worktree" }
   | { kind: "editor"; mode?: SpotlightInitialEditorMode }
   | { kind: "agentSessionSearch" }

@@ -1802,6 +1802,7 @@
           "label": "切換工作目錄"
         },
         "switchBranch": {
+          "repoLabel": "切換 {{repoName}} 的分支",
           "label": "切換分支"
         },
         "addWorkspace": {

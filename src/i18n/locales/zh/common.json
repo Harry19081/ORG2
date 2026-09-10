@@ -1633,6 +1633,7 @@
           "label": "切换工作目录"
         },
         "switchBranch": {
+          "repoLabel": "切换 {{repoName}} 的分支",
           "label": "切换分支"
         },
         "addWorkspace": {

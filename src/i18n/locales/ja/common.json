@@ -1802,6 +1802,7 @@
           "label": "作業ディレクトリを切り替え"
         },
         "switchBranch": {
+          "repoLabel": "{{repoName}} のブランチを切り替え",
           "label": "ブランチを切り替え"
         },
         "addWorkspace": {

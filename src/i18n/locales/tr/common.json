@@ -1802,6 +1802,7 @@
           "label": "Çalışma dizinini değiştir"
         },
         "switchBranch": {
+          "repoLabel": "{{repoName}} dalını değiştir",
           "label": "Dal değiştir"
         },
         "addWorkspace": {
