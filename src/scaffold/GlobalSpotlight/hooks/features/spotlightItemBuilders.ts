@@ -40,7 +40,10 @@ import type {
 } from "./spotlightActionDefinitions";
 import { EDITOR_ACTIONS } from "./spotlightActionDefinitions";
 
-export type Translator = (key: string) => string;
+export type Translator = (
+  key: string,
+  values?: Record<string, string>
+) => string;
 
 // ============================================
 // Header & label helpers
@@ -126,7 +129,7 @@ export function buildStaticActionItems(
 ): SpotlightItem[] {
   return actions.map((action) => ({
     id: action.id,
-    label: translate(action.labelKey),
+    label: translate(action.labelKey, action.labelValues),
     icon: action.icon,
     type: "action" as const,
     shortcut: action.shortcut,

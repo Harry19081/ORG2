@@ -90,7 +90,7 @@ export function useSpotlight(
     onOpenWorkingDirectoryPicker?: (
       mode: "switch" | "open" | "add" | "create"
     ) => void;
-    onOpenBranchPicker?: () => void;
+    onOpenBranchPicker?: (repoId?: string) => void;
     onOpenEditorPalette?: (prefix: string, mode?: EditorPaletteMode) => void;
     onOpenAgentSessionSearch?: () => void;
     onOpenAllSessionsSearch?: () => void;
@@ -177,7 +177,10 @@ export function useSpotlight(
   );
 
   const runStaticActionFallback = useCallback(
-    (fallback: SpotlightStaticActionFallback) => {
+    (
+      fallback: SpotlightStaticActionFallback,
+      payload: Record<string, unknown>
+    ) => {
       const fallbackHandlers: Record<
         SpotlightStaticActionFallback,
         () => void
@@ -227,7 +230,10 @@ export function useSpotlight(
         "organization-join": () => {
           openCollabOrgSpotlight({ source: "cloud", mode: "join" });
         },
-        "branch-picker": () => onOpenBranchPicker?.(),
+        "branch-picker": () =>
+          onOpenBranchPicker?.(
+            typeof payload.repoId === "string" ? payload.repoId : undefined
+          ),
         "toggle-sidebar": () => {
           void AppViewService.toggleSidebar();
         },
@@ -305,7 +311,7 @@ export function useSpotlight(
         action.payload,
         fallback
           ? () => {
-              runStaticActionFallback(fallback);
+              runStaticActionFallback(fallback, action.payload);
             }
           : undefined
       );
@@ -485,6 +491,7 @@ export function useSpotlight(
     onSelectSession: handleSelectSession,
     onSelectCloudSessionReference: handleSelectCloudSessionReference,
     onSelectPath: handleSelectPath,
+    currentRepoId: activeRepoId,
     isEditorRoute,
     isWorkStationRoute,
   });

@@ -1799,6 +1799,7 @@
           "label": "Chuyển thư mục làm việc"
         },
         "switchBranch": {
+          "repoLabel": "Chuyển nhánh của {{repoName}}",
           "label": "Chuyển nhánh"
         },
         "addWorkspace": {

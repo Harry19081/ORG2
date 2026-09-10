@@ -139,12 +139,12 @@ const spotlightOpenBranchPicker = defineZodAction(
     id: ACTION_ID.SPOTLIGHT_OPEN_BRANCH_PICKER,
     category: "spotlight",
     description: "Open Spotlight's branch picker flow",
-    params: z.object({}),
+    params: z.object({ repoId: z.string().optional() }),
     layer: "gui",
     examples: ["switch branch", "open branch picker", "checkout branch"],
   },
-  async () => {
-    openBranchSpotlight();
+  async ({ repoId }) => {
+    openBranchSpotlight(repoId);
     return { success: true, message: "Opened branch picker" };
   }
 );

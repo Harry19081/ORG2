@@ -24,6 +24,7 @@ import { org2CloudRemoteSessionsAtom } from "@src/features/Org2Cloud/org2CloudRe
 import { useFilteredItems } from "@src/hooks/search";
 import type { LanguagePreference } from "@src/i18n";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
+import { reposAtom } from "@src/store/repo";
 import {
   type Session,
   sessionsAtom,
@@ -49,6 +50,10 @@ import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPosit
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
+import {
+  workspaceActiveAtom,
+  workspaceFoldersAtom,
+} from "@src/store/workspace";
 import { getSessionSearchText } from "@src/util/session/sessionSearch";
 
 import { NAV_DESTINATIONS } from "../../config";
@@ -74,7 +79,6 @@ import {
   STATION_MODE_ACTIONS,
   type SpotlightEditorActionId,
   type SpotlightStaticActionDefinition,
-  WORKING_DIRECTORY_ACTIONS,
   buildChatPanelSettingsActions,
   buildViewActions,
 } from "./spotlightActionDefinitions";
@@ -97,6 +101,7 @@ import {
   resolveAgentSessionSearchInput,
   resolveSpotlightCloudSessionPresentation,
 } from "./spotlightSessionSearch";
+import { buildWorkingDirectoryActions } from "./spotlightWorkingDirectoryActions";
 
 const GENERAL_SPOTLIGHT_SESSION_RESULT_LIMIT = 8;
 
@@ -135,7 +140,7 @@ interface SpotlightItemsHandlers {
     label: string,
     icon: SpotlightItem["icon"]
   ) => void;
-  currentRepoId?: string;
+  currentRepoId: string | undefined;
   isEditorRoute: boolean;
   isWorkStationRoute: boolean;
 }
@@ -146,6 +151,9 @@ export function useSpotlightItems(
   handlers: SpotlightItemsHandlers
 ): UseSpotlightItemsReturn {
   const state = useSpotlightState();
+  const repos = useAtomValue(reposAtom);
+  const workspaceFolders = useAtomValue(workspaceFoldersAtom);
+  const workspaceActive = useAtomValue(workspaceActiveAtom);
   const isSidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
   const fallbackWorkstationSidebarCollapsed = useAtomValue(
     workStationPrimarySidebarCollapsedAtom
@@ -234,6 +242,17 @@ export function useSpotlightItems(
     getSearchText: getSessionText,
   });
 
+  const workingDirectoryActions = useMemo(
+    () =>
+      buildWorkingDirectoryActions(
+        repos,
+        currentRepoId,
+        workspaceFolders,
+        workspaceActive
+      ),
+    [repos, currentRepoId, workspaceFolders, workspaceActive]
+  );
+
   const items = useMemo((): SpotlightItem[] => {
     const viewActions = buildViewActions(
       isSidebarCollapsed,
@@ -291,7 +310,7 @@ export function useSpotlightItems(
         isEditorRoute,
         staticCommandActions: [
           ...AGENT_SESSION_ACTIONS,
-          ...WORKING_DIRECTORY_ACTIONS,
+          ...workingDirectoryActions,
           ...ORGANIZATION_ACTIONS,
           ...chatPanelSettingsActions,
           ...quickNavigationActions,
@@ -372,7 +391,7 @@ export function useSpotlightItems(
     );
     const workspaceItems = [
       ...buildStaticActionItems(
-        WORKING_DIRECTORY_ACTIONS,
+        workingDirectoryActions,
         onSelectStaticAction,
         translate
       ),
@@ -414,7 +433,7 @@ export function useSpotlightItems(
     const recentItems = buildStaticActionItems(
       resolveRecentDefinitions(recentActionIds, [
         ...AGENT_SESSION_ACTIONS,
-        ...WORKING_DIRECTORY_ACTIONS,
+        ...workingDirectoryActions,
         ...ORGANIZATION_ACTIONS,
         ...chatPanelSettingsActions,
         ...quickNavigationActions,
@@ -473,6 +492,7 @@ export function useSpotlightItems(
     filteredRepos,
     filteredBranches,
     currentRepoId,
+    workingDirectoryActions,
     onSelectAction,
     onSelectStaticAction,
     onSelectEditorAction,

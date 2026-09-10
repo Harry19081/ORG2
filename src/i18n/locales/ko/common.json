@@ -1799,6 +1799,7 @@
           "label": "작업 디렉터리 전환"
         },
         "switchBranch": {
+          "repoLabel": "{{repoName}}의 브랜치 전환",
           "label": "브랜치 전환"
         },
         "addWorkspace": {
