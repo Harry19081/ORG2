@@ -62,6 +62,12 @@ fn validate_mobile_sidebar_sessions(
         {
             return Err("mobile sidebar workspace metadata is too long".to_string());
         }
+        if session
+            .updated_at_ms
+            .is_some_and(|ms| !(-8_640_000_000_000_000..=8_640_000_000_000_000).contains(&ms))
+        {
+            return Err("mobile sidebar timestamp is outside the supported date range".to_string());
+        }
         if session.id.trim().is_empty() {
             return Err("mobile sidebar session id cannot be empty".to_string());
         }
@@ -404,5 +410,37 @@ mod tests {
             }])
             .is_err()
         );
+    }
+
+    #[test]
+    fn sidebar_metadata_is_optional_bounded_and_part_of_snapshot_identity() {
+        let legacy: MobileSidebarSessionSnapshotRow = serde_json::from_value(serde_json::json!({
+            "id": "a", "name": "Session A", "status": "idle"
+        }))
+        .unwrap();
+        assert_eq!(
+            validate_mobile_sidebar_sessions(std::slice::from_ref(&legacy)),
+            Ok(())
+        );
+        let mut enriched = legacy.clone();
+        enriched.repo_name = Some("project".into());
+        enriched.repo_path = Some("/workspace/project".into());
+        enriched.updated_at_ms = Some(1_788_912_000_000);
+        assert_ne!(legacy, enriched);
+        assert_eq!(
+            validate_mobile_sidebar_sessions(std::slice::from_ref(&enriched)),
+            Ok(())
+        );
+        let wire = serde_json::to_value(&enriched).unwrap();
+        assert_eq!(wire["repoName"], "project");
+        assert_eq!(
+            serde_json::from_value::<MobileSidebarSessionSnapshotRow>(wire).unwrap(),
+            enriched
+        );
+        enriched.updated_at_ms = Some(i64::MAX);
+        assert!(validate_mobile_sidebar_sessions(std::slice::from_ref(&enriched)).is_err());
+        enriched.updated_at_ms = None;
+        enriched.repo_path = Some("x".repeat(4097));
+        assert!(validate_mobile_sidebar_sessions(&[enriched]).is_err());
     }
 }
