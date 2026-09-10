@@ -421,7 +421,7 @@
     "signIn": "Login",
     "signOut": "Logout",
     "signOutConfirmTitle": "Sign out?",
-    "signOutConfirmBody": "You will need to sign in again to access your account.",
+    "signOutConfirmBody": "You will need to sign in again to access your account",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "Your ORG2 Cloud session expired. Sign in again to continue.",
     "customEndpoint": {

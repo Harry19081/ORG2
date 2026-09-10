@@ -366,7 +366,7 @@
     "signIn": "Войти",
     "signOut": "Выйти",
     "signOutConfirmTitle": "Выйти из аккаунта?",
-    "signOutConfirmBody": "Для доступа к аккаунту потребуется войти снова.",
+    "signOutConfirmBody": "Для доступа к аккаунту потребуется войти снова",
     "signedInAs": "Выполнен вход как {{name}}",
     "signedInToast": "Выполнен вход в ORG2 Cloud",
     "sessionExpired": "Сеанс ORG2 Cloud истёк. Войдите снова, чтобы продолжить.",

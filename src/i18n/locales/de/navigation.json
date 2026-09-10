@@ -366,7 +366,7 @@
     "signIn": "Anmelden",
     "signOut": "Abmelden",
     "signOutConfirmTitle": "Abmelden?",
-    "signOutConfirmBody": "Du musst dich erneut anmelden, um auf dein Konto zuzugreifen.",
+    "signOutConfirmBody": "Du musst dich erneut anmelden, um auf dein Konto zuzugreifen",
     "signedInAs": "Angemeldet als {{name}}",
     "signedInToast": "Bei ORG2 Cloud angemeldet",
     "sessionExpired": "Deine ORG2-Cloud-Sitzung ist abgelaufen. Melde dich erneut an, um fortzufahren.",

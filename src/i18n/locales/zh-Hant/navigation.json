@@ -366,7 +366,7 @@
     "signIn": "登入",
     "signOut": "登出",
     "signOutConfirmTitle": "確認登出？",
-    "signOutConfirmBody": "登出後，你需要重新登入才能存取你的帳戶。",
+    "signOutConfirmBody": "登出後，你需要重新登入才能存取你的帳戶",
     "signedInToast": "已登入 ORG2 雲端",
     "sessionExpired": "ORG2 雲端登入已過期，請重新登入後繼續。",
     "customEndpoint": {
