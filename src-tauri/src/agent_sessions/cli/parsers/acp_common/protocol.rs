@@ -431,7 +431,7 @@ async fn process_notification<A: AcpAgentAdapter>(
 
                 // Register the oneshot BEFORE broadcasting so a fast
                 // frontend response always finds the entry.
-                let (request_id, rx) = register_acp_approval(session_id).await;
+                let (request_id, rx, permission_lifetime) = register_acp_approval(session_id).await;
 
                 // Emit an ask_user_permissions chunk (transcript record)
                 let mut chunk =
@@ -465,6 +465,7 @@ async fn process_notification<A: AcpAgentAdapter>(
 
                 // 5-minute timeout for user response; auto-approve on timeout
                 let response = await_acp_approval(&request_id, rx, ACP_APPROVAL_TIMEOUT).await;
+                drop(permission_lifetime);
 
                 let option_id =
                     select_acp_option_id(&params, response.approved, response.always_allow);
