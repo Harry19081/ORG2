@@ -842,6 +842,8 @@
     "copyValueRightClickForPath": "Kliknij, aby skopiować wartość, prawy przycisk dla ścieżki"
   },
   "placeholders": {
+    "enterFileName": "Wpisz nazwę pliku",
+    "enterFolderName": "Wpisz nazwę folderu",
     "loading": "Ładowanie...",
     "selectToViewConfig": "Wybierz {{type}}, aby wyświetlić lub skonfigurować",
     "selectToViewConfigSubtitle": "Wybierz element z listy po lewej",

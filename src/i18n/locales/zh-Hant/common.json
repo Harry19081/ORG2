@@ -842,6 +842,8 @@
     "copyValueRightClickForPath": "單擊複製值，右鍵複製路徑"
   },
   "placeholders": {
+    "enterFileName": "輸入檔案名稱",
+    "enterFolderName": "輸入資料夾名稱",
     "loading": "加載中...",
     "selectToViewConfig": "選擇 {{type}} 以查看或配置",
     "selectToViewConfigSubtitle": "從左側列表中選擇一項",

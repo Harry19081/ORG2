@@ -842,6 +842,8 @@
     "copyValueRightClickForPath": "Cliquez pour copier la valeur, clic droit pour copier le chemin"
   },
   "placeholders": {
+    "enterFileName": "Saisissez le nom du fichier",
+    "enterFolderName": "Saisissez le nom du dossier",
     "loading": "Chargement...",
     "selectToViewConfig": "Sélectionnez un {{type}} pour voir ou configurer",
     "selectToViewConfigSubtitle": "Choisissez un élément dans la liste à gauche",

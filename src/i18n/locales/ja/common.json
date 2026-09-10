@@ -842,6 +842,8 @@
     "copyValueRightClickForPath": "クリックで値をコピー、右クリックでパスをコピー"
   },
   "placeholders": {
+    "enterFileName": "ファイル名を入力",
+    "enterFolderName": "フォルダー名を入力",
     "loading": "読み込み中...",
     "selectToViewConfig": "{{type}} を選択して表示または設定",
     "selectToViewConfigSubtitle": "左のリストから項目を選んでください",

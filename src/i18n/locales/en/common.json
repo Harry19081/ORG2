@@ -673,6 +673,8 @@
     "copyValueRightClickForPath": "Click to copy value, right-click for path"
   },
   "placeholders": {
+    "enterFileName": "Enter file name",
+    "enterFolderName": "Enter folder name",
     "loading": "Loading...",
     "selectToViewConfig": "Select a {{type}} to view or config",
     "selectToViewConfigSubtitle": "Choose an item from the list on the left",

@@ -842,6 +842,8 @@
     "copyValueRightClickForPath": "Нажмите, чтобы скопировать значение, правый клик — путь"
   },
   "placeholders": {
+    "enterFileName": "Введите имя файла",
+    "enterFolderName": "Введите имя папки",
     "loading": "Загрузка...",
     "selectToViewConfig": "Выберите {{type}} для просмотра или настройки",
     "selectToViewConfigSubtitle": "Выберите элемент из списка слева",

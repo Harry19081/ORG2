@@ -842,6 +842,8 @@
     "copyValueRightClickForPath": "Değeri kopyalamak için tıklayın, yol için sağ tıklayın"
   },
   "placeholders": {
+    "enterFileName": "Dosya adını girin",
+    "enterFolderName": "Klasör adını girin",
     "loading": "Yükleniyor...",
     "selectToViewConfig": "Görüntülemek veya yapılandırmak için bir {{type}} seçin",
     "selectToViewConfigSubtitle": "Soldaki listeden bir öğe seçin",

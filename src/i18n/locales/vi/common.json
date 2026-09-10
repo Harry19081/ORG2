@@ -842,6 +842,8 @@
     "copyValueRightClickForPath": "Nhấp để sao chép giá trị, nhấp chuột phải để sao chép đường dẫn"
   },
   "placeholders": {
+    "enterFileName": "Nhập tên tệp",
+    "enterFolderName": "Nhập tên thư mục",
     "loading": "Đang tải...",
     "selectToViewConfig": "Chọn {{type}} để xem hoặc cấu hình",
     "selectToViewConfigSubtitle": "Chọn một mục từ danh sách bên trái",

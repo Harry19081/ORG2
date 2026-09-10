@@ -673,6 +673,8 @@
     "copyValueRightClickForPath": "单击复制值，右键复制路径"
   },
   "placeholders": {
+    "enterFileName": "输入文件名",
+    "enterFolderName": "输入文件夹名称",
     "loading": "加载中...",
     "selectToViewConfig": "选择 {{type}} 以查看或配置",
     "selectToViewConfigSubtitle": "从左侧列表中选择一项",
