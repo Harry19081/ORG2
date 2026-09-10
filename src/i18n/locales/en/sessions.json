@@ -441,7 +441,8 @@
             "sentTo": "{{subject}} sent a message to {{recipient}}",
             "sentBroadcast": "{{subject}} sent a message to multiple agents",
             "sentMessage": "{{subject}} sent a message",
-            "turnLoading": "{{subject}}'s message is loading…"
+            "turnLoading": "{{subject}}'s message is loading…",
+            "taskOperationDeferred": "{{subject}} deferred task completion until cleanup"
           }
         },
         "unloadedTurn": {
@@ -2060,64 +2061,174 @@
       }
     },
     "agentOrgTasks": {
-      "title": "Team tasks",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
       "statusPending": "Pending",
       "statusInProgress": "In progress",
+      "statusAwaitingApproval": "Awaiting approval",
       "statusCompleted": "Done",
-      "statusBlocked": "Blocked"
+      "statusBlocked": "Blocked",
+      "statusFailed": "Failed",
+      "statusCancelled": "Cancelled",
+      "currentWork": "Current work",
+      "currentEmpty": "No current work",
+      "history": "History",
+      "historyFilter": "Filter task history",
+      "historyEmpty": "No tasks in this history filter",
+      "loadingHistory": "Loading history…",
+      "historyLoadFailed": "History failed to load",
+      "previousPage": "Previous",
+      "nextPage": "Next",
+      "details": "Details",
+      "loadingDetails": "Loading details…",
+      "detailLoadFailed": "Task details failed to load",
+      "output": "Output",
+      "annotations": "Progress and audit notes",
+      "loadMoreAnnotations": "Load more",
+      "reassign": "Reassign",
+      "cancelTask": "Cancel Task",
+      "reassignTitle": "Reassign this Task?",
+      "cancelTitle": "Cancel this Task?",
+      "reassignWarning": "The current execution must stop before the replacement can start.",
+      "cancelWarning": "This removes the Task from this delivery scope. Any current execution will stop; dependent Tasks require an explicit follow-up decision.",
+      "replacementOwner": "Replacement owner",
+      "handoffFailed": "Could not safely update this Task",
+      "handoffNeedsDecision": "Task handoff needs your decision",
+      "handoffStopping": "Stopping the previous execution",
+      "handoffApplyingDecision": "Applying {{decision}}",
+      "handoffDecisionFailed": "The accepted decision needs another cleanup attempt",
+      "retryHandoffDecision": "Retry decision",
+      "handoffEvidence": "Previous owner: {{owner}} · {{state}} · local writers: {{count}}",
+      "continueReplacement": "Continue replacement",
+      "keepStopped": "Keep stopped",
+      "abandonEpisode": "Abandon episode",
+      "resolveHandoffTitle": "Resolve Task handoff?",
+      "continueWarning": "Continue only after local execution and processes are stopped. Any unknown external result is accepted by this decision.",
+      "keepStoppedWarning": "The replacement will be cancelled. The old Task will not restart, and sibling Tasks continue.",
+      "abandonWarning": "Every open Task in this episode will stop and the Team outcome will be Cancelled.",
+      "handoffResolutionFailed": "Could not resolve this handoff"
     },
     "agentOrgOverview": {
+      "needsAttention": "Needs attention",
+      "coordinatorWorkState": {
+        "active": "Coordinator active",
+        "waiting_for_org_event": "Coordinator waiting for an event",
+        "inactive": "Coordinator inactive"
+      },
+      "outcome": {
+        "delivered": "Delivered",
+        "cancelled": "Cancelled",
+        "failed": "Failed"
+      },
       "title": "Agent Team overview",
-      "summary": "{{active}} active · {{unread}} unread",
+      "summary": "{{active}} active · {{pending}} pending",
       "loadFailed": "Team overview failed to load",
       "tasks": "Tasks",
       "doneOf": "{{done}} / {{total}} done",
       "taskWindowTruncated": "Showing the first {{visible}} of {{total}} tasks. Open task detail for full results.",
       "members": "Members",
+      "directActivity": "Direct member activity",
       "activeOf": "{{active}} / {{total}} active",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} unread",
       "pauseRun": "Pause run",
       "resumeRun": "Resume run",
+      "archiveRun": "Archive Team",
+      "archiveTitle": "Archive this Team?",
+      "archiveWorkingWarning": "Archive is permanent. Tasks currently being executed will be cancelled, and the Team will become read-only.",
+      "archiveWarning": "Archive is permanent. The Team will become read-only and cannot be resumed.",
+      "archivedReadOnly": "Archived — history is read-only",
+      "archiveFailed": "Failed to Archive Team",
+      "archiveTeardownPending": "Archived. Runtime shutdown is still finishing in the background.",
+      "archiveTeardownRetained": "Archived, but {{count}} runtime could not be released. Delete remains blocked.",
+      "archiveTeardownQuiesced": "Archived and fully stopped. Permanent deletion is now available.",
+      "dangerZone": "Danger Zone",
+      "deleteDescription": "Permanently delete this Team and all of its sessions and history.",
+      "deleteTeam": "Delete Team",
+      "deleteTitle": "Permanently delete this Team?",
+      "deleteWarning": "This permanently deletes every Team session and its history. This action cannot be undone.",
+      "deleteAcknowledge": "I understand this deletion is permanent.",
+      "deleteFailed": "Failed to delete Team",
       "viewCoordinatorHistory": "View coordinator chat history",
       "planApproval": {
-        "title": "Plan ready for approval",
+        "historyTitle": "Plan history",
         "from": "Submitted by {{member}}",
+        "open": "Open plan",
         "approve": "Approve plan",
-        "approveEdits": "Approve edits",
         "requestChanges": "Request changes",
         "sendFeedback": "Send feedback",
-        "editLabel": "Edit submitted plan",
         "feedbackLabel": "Plan revision feedback",
         "feedbackPlaceholder": "Tell the Planner exactly what must change…",
+        "taskOutput": "Planning Task output saved",
+        "status": {
+          "pending": "Pending",
+          "approved": "Approved",
+          "changes_requested": "Changes requested",
+          "superseded": "Superseded",
+          "cancelled": "Cancelled"
+        },
         "paused": "Resume the run before responding to this plan.",
         "staleError": "This plan was already resolved or replaced. Refresh to see the latest revision",
         "submitFailed": "The plan response could not be saved. Please try again"
       },
+      "finalSummary": {
+        "failedTitle": "Final report was not saved",
+        "evidencePreserved": "The completion evidence and Task outputs are preserved.",
+        "retry": "Retry final report",
+        "retryFailed": "The final report retry could not be started."
+      },
       "phase": {
+        "starting": "Starting",
         "coordinating": "Coordinating",
         "dispatching": "Dispatching",
         "members_working": "Members working",
         "waiting": "Waiting for work",
         "awaiting_plan_approval": "Awaiting plan approval",
         "finalizing": "Finalizing",
+        "draining": "Paused · draining",
         "paused": "Paused",
-        "completed": "Completed",
+        "idle": "Idle",
         "failed": "Failed",
-        "cancelled": "Cancelled",
-        "abandoned": "Abandoned"
-      }
+        "archived": "Archived"
+      },
+      "idleWithLatestOutcome": "{{phase}} · Latest episode: {{outcome}}",
+      "pendingInboxCount": "{{count}} pending",
+      "activeMembers": "Active members",
+      "inFlightTurns": "In-flight turns",
+      "openTasks": "Open tasks",
+      "blockingInbox": "Blocking inbox",
+      "blockersTitle": "What is still blocking completion",
+      "unknownBlocker": "Unknown system blocker"
     },
     "agentOrgIntervention": {
-      "title": "Chatting with {{member}}",
-      "description": "Inbox messages and new work are paused until work resumes",
+      "directTitle": "Direct work with {{member}}",
+      "writerBadge": "Writer",
+      "directNotice": "Direct work stays outside the Task board unless this Member uses an allowed graph tool",
+      "directPaused": "Direct side work is available; formal Team work remains paused",
+      "directUnknown": "Direct work ended unexpectedly; review possible side effects before returning",
+      "unavailableStarting": "Direct work becomes available after the Team finishes starting",
+      "unavailableFailed": "Direct work is unavailable while the Team is failed",
       "returnToWork": "Resume work",
       "returning": "Resuming…",
-      "loadFailed": "Intervention state failed to load",
+      "endDirectWork": "End direct work",
+      "endingDirectWork": "Ending…",
+      "directReady": "Direct work is complete; send a follow-up or end this direct-work thread",
+      "stopping": "Stopping…",
+      "actionFailed": "The direct-work action failed. Please try again.",
       "busyShort": "User chat",
-      "teammateBusy": "This teammate is in direct user chat"
+      "teammateBusy": "This teammate is in direct user chat",
+      "activity": {
+        "yielding": "Yielding formal work…",
+        "user_intervention": "Waiting for you to resume formal work",
+        "side_quest": "{{count}} direct turn in progress or queued",
+        "yield_timeout": "Still waiting for a safe handoff"
+      },
+      "outcome": {
+        "restoredTask": "The original Task resumed",
+        "clearedPaused": "Direct work ended; formal Team work is still paused",
+        "clearedIdle": "Direct work ended; the Team remains idle",
+        "directEnded": "Direct work ended",
+        "noLongerNeeded": "Direct work ended; the original work ended or was reassigned"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Idle",
@@ -2193,8 +2304,55 @@
     }
   },
   "groupChat": {
-    "loadOlder": "Load older messages",
-    "historyLoadFailed": "History unavailable",
+    "triggerLabel": "Group chat",
+    "coordinatorLabel": "Coordinator",
+    "youLabel": "You",
+    "retry": "Retry",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "memberFallback": "Member",
+    "retryPossibleDuplicateConfirm": "This delivery has an unknown outcome. Retrying may duplicate side effects. Create a new turn anyway?",
+    "userMessageOutcomeUnknown": "Delivery outcome unknown. Retry the original delivery.",
+    "mixedTargetError": "Send Coordinator and Member messages separately.",
+    "submitError": "Your Group message couldn't be sent. Please try again.",
+    "projection": {
+      "title": "Team group conversation",
+      "queueGuidance": "Messages are queued by default. For an immediate correction, open the Member's individual page.",
+      "archived": "This Team is archived. Its Group history is read-only.",
+      "loadOlder": "Load older messages",
+      "loadError": "Group messages could not be loaded.",
+      "actionError": "That Group action could not be completed. Please try again.",
+      "loading": "Loading Group messages…",
+      "empty": "No Group messages yet.",
+      "unavailable": "This message is unavailable.",
+      "stop": "Stop",
+      "retryDelivery": "Retry delivery",
+      "retryNewTurn": "Retry as new turn",
+      "activity": {
+        "taskFallback": "Untitled task",
+        "task_created": "Task created: {{task}} · {{member}}",
+        "task_started": "{{member}} started: {{task}}",
+        "task_completed": "{{member}} completed: {{task}}",
+        "task_failed": "{{member}} could not complete: {{task}}",
+        "task_cancelled": "Task cancelled: {{task}}",
+        "task_reassigned": "Task reassigned from {{previousMember}} to {{member}}: {{task}}",
+        "task_replacement_created": "Replacement task created for {{replacedTask}}: {{task}} · {{member}}",
+        "team_paused": "Team paused",
+        "team_resumed": "Team resumed",
+        "member_returned": "{{member}} returned to Team work",
+        "completion_certified": "Team completion certified: {{outcome}}",
+        "final_report_failed": "Final report could not be saved",
+        "team_archived": "Team archived"
+      },
+      "state": {
+        "queued": "Queued",
+        "running": "Running",
+        "answered": "Answered",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "unknown": "Outcome unknown"
+      }
+    },
     "taskHeader": {
       "createWithOwner": "{{sender}} assigned task to {{ownerName}}",
       "create": "{{sender}} assigned task",
@@ -2207,15 +2365,16 @@
       "updateRejected": "{{sender}}'s task update needs correction",
       "updateFailed": "{{sender}} couldn't update task",
       "get": "{{sender}} viewed task details",
-      "list": "{{sender}} viewed task list"
+      "list": "{{sender}} viewed task list",
+      "updateDeferred": "{{sender}} deferred task completion until cleanup"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator read messages sent by other agents"
     },
     "userMessagePending": "{{member}} is picking up your message",
     "pausedBanner": {
-      "title": "New work is paused",
-      "body": "Pause stops active replies, send a message or press Resume to continue",
+      "title": "Formal work is paused",
+      "body": "Resume for Coordinator work. You can still @Member for a side quest.",
       "resume": "Resume"
     },
     "toolUseSummary": {
@@ -2230,8 +2389,7 @@
       "explorations_other": "{{count}} explorations",
       "otherTools_one": "{{count}} other tool call",
       "otherTools_other": "{{count}} other tool calls"
-    },
-    "triggerLabel": "Group chat"
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2406,8 @@
       "runningTitle": "Updating task",
       "rejectedTitle": "Task update needs correction",
       "failedTitle": "Task update failed",
-      "title": "Updated task"
+      "title": "Updated task",
+      "deferredTitle": "Task completion deferred until cleanup"
     },
     "get": {
       "title": "View task details"
@@ -2266,13 +2425,19 @@
     "outcome": {
       "pending": "In progress",
       "rejected": "Needs correction",
-      "failed": "Failed"
+      "failed": "Failed",
+      "deferred": "Completion deferred · waiting for cleanup"
     },
     "status": {
       "pending": "Pending",
       "in_progress": "In Progress",
       "completed": "Completed"
-    }
+    },
+    "unassignedOwner": "Unassigned",
+    "currentRecordUnavailable": "Current state unavailable",
+    "currentStatusLabel": "Current status",
+    "currentOwnerLabel": "Current owner",
+    "replacementLabel": "Replacement"
   },
   "manageAgentDef": {
     "action": {

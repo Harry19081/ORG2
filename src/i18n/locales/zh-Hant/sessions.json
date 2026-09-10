@@ -431,7 +431,8 @@
             "taskOperationRunning": "{{subject}} 正在執行任務操作",
             "taskOperationRejected": "{{subject}} 的任務操作需要修正",
             "taskOperationFailed": "{{subject}} 的任務操作失敗",
-            "turnLoading": "{{subject}} 的訊息正在載入…"
+            "turnLoading": "{{subject}} 的訊息正在載入…",
+            "taskOperationDeferred": "{{subject}} 已暫緩完成任務，等待清理結束"
           }
         },
         "divider": {
@@ -2041,64 +2042,174 @@
       }
     },
     "agentOrgTasks": {
-      "title": "團隊任務",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
       "statusPending": "待處理",
       "statusInProgress": "進行中",
       "statusCompleted": "已完成",
-      "statusBlocked": "被阻塞"
+      "statusBlocked": "被阻塞",
+      "statusFailed": "失敗",
+      "statusCancelled": "已取消",
+      "currentWork": "目前工作",
+      "currentEmpty": "暫無目前工作",
+      "history": "歷史",
+      "historyFilter": "篩選任務歷史",
+      "historyEmpty": "此篩選下暫無任務",
+      "loadingHistory": "正在載入歷史…",
+      "historyLoadFailed": "歷史載入失敗",
+      "previousPage": "上一頁",
+      "nextPage": "下一頁",
+      "details": "詳情",
+      "loadingDetails": "正在載入詳情…",
+      "detailLoadFailed": "任務詳情載入失敗",
+      "output": "結果",
+      "annotations": "進度與稽核記錄",
+      "loadMoreAnnotations": "載入更多",
+      "reassign": "改派",
+      "cancelTask": "取消任務",
+      "reassignTitle": "改派這個任務？",
+      "cancelTitle": "取消這個任務？",
+      "reassignWarning": "目前執行必須先停止，替代任務才能開始。",
+      "cancelWarning": "這會把該任務移出本輪交付範圍。正在執行的工作會停止；依賴它的任務需要另行明確處理。",
+      "replacementOwner": "新的負責人",
+      "handoffFailed": "無法安全更新任務",
+      "handoffNeedsDecision": "任務交接需要你的決定",
+      "handoffStopping": "正在停止先前的執行",
+      "handoffApplyingDecision": "正在套用：{{decision}}",
+      "handoffDecisionFailed": "決定已接受，但背景清理需要重試",
+      "retryHandoffDecision": "重試此決定",
+      "handoffEvidence": "先前負責人：{{owner}} · {{state}} · 本機寫入者：{{count}}",
+      "continueReplacement": "繼續替代任務",
+      "keepStopped": "保持停止",
+      "abandonEpisode": "放棄本輪任務",
+      "resolveHandoffTitle": "處理任務交接？",
+      "continueWarning": "僅在本機執行與程序停止後繼續；此決定表示接受未知的外部結果。",
+      "keepStoppedWarning": "替代任務會被取消，舊任務不會恢復，其他任務繼續。",
+      "abandonWarning": "本輪所有開放任務都會停止，團隊結果會標記為已取消。",
+      "handoffResolutionFailed": "無法處理任務交接",
+      "statusAwaitingApproval": "等待審批"
     },
     "agentOrgOverview": {
+      "needsAttention": "需要處理",
+      "coordinatorWorkState": {
+        "active": "協調器正在處理",
+        "waiting_for_org_event": "協調器正在等待新事件",
+        "inactive": "協調器未執行"
+      },
+      "outcome": {
+        "delivered": "已驗證交付",
+        "cancelled": "已取消",
+        "failed": "失敗"
+      },
       "title": "Agent 團隊概覽",
-      "summary": "{{active}} active · {{unread}} unread",
+      "summary": "{{active}} 個活躍 · {{pending}} 則待處理",
       "loadFailed": "團隊概覽載入失敗",
       "tasks": "任務",
       "doneOf": "{{done}} / {{total}} 已完成",
       "members": "成員",
+      "directActivity": "成員的直接工作",
       "activeOf": "{{active}} / {{total}} active",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} unread",
       "pauseRun": "暫停執行",
       "resumeRun": "恢復執行",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "封存團隊",
+      "archiveTitle": "封存這個團隊？",
+      "archiveWorkingWarning": "封存無法復原。正在執行的任務會被取消，團隊之後將變為唯讀。",
+      "archiveWarning": "封存無法復原。團隊將變為唯讀，且無法恢復執行。",
+      "archivedReadOnly": "已封存——歷史記錄為唯讀",
+      "archiveFailed": "團隊封存失敗",
+      "archiveTeardownPending": "已封存，背景仍在關閉執行環境。",
+      "archiveTeardownRetained": "已封存，但有 {{count}} 個執行環境未能釋放，仍無法刪除。",
+      "archiveTeardownQuiesced": "已封存並完全停止，現在可以永久刪除。",
+      "dangerZone": "危險區域",
+      "deleteDescription": "永久刪除這個團隊及其所有工作階段與歷史記錄。",
+      "deleteTeam": "刪除團隊",
+      "deleteTitle": "永久刪除這個團隊？",
+      "deleteWarning": "這會永久刪除團隊的所有工作階段與歷史記錄，且無法復原。",
+      "deleteAcknowledge": "我明白此次刪除是永久的。",
+      "deleteFailed": "團隊刪除失敗",
+      "viewCoordinatorHistory": "查看 Coordinator 對話記錄",
       "taskWindowTruncated": "目前顯示前 {{visible}} 個，共 {{total}} 個任務。完整結果請開啟任務詳情。",
       "planApproval": {
-        "title": "計畫等待核准",
         "from": "由 {{member}} 提交",
-        "approve": "核准計畫",
-        "approveEdits": "核准編輯版",
+        "approve": "批准計畫",
         "requestChanges": "要求修改",
-        "sendFeedback": "送出修改意見",
-        "editLabel": "編輯已提交的計畫",
+        "sendFeedback": "傳送修改意見",
         "feedbackLabel": "計畫修改意見",
-        "feedbackPlaceholder": "明確告訴 Planner 哪些地方必須修改…",
-        "paused": "請先恢復本次執行，再回應此計畫。",
-        "staleError": "此計畫已處理或已被新版本取代。請重新整理以查看最新版本",
-        "submitFailed": "計畫回應未能儲存，請再試一次"
+        "feedbackPlaceholder": "清楚告訴 Planner 哪些地方需要修改……",
+        "paused": "請先恢復本次執行，再處理這個計畫。",
+        "staleError": "這份計畫已經處理或被新版本取代。請重新整理後查看最新版本。",
+        "submitFailed": "計畫審批結果未能儲存。",
+        "historyTitle": "計畫版本記錄",
+        "open": "開啟計畫",
+        "taskOutput": "規劃任務結果已儲存",
+        "status": {
+          "pending": "等待審批",
+          "approved": "已批准",
+          "changes_requested": "已要求修改",
+          "superseded": "已被新版本取代",
+          "cancelled": "已取消"
+        }
       },
       "phase": {
         "coordinating": "正在協調",
-        "dispatching": "正在派發",
+        "dispatching": "正在分派",
         "members_working": "成員工作中",
-        "waiting": "等待工作",
-        "awaiting_plan_approval": "等待計畫核准",
+        "waiting": "等待下一步",
+        "awaiting_plan_approval": "等待計畫審批",
         "finalizing": "正在收尾",
         "paused": "已暫停",
-        "completed": "已完成",
         "failed": "失敗",
-        "cancelled": "已取消",
-        "abandoned": "已放棄"
-      }
+        "starting": "正在啟動",
+        "idle": "待命",
+        "archived": "已封存",
+        "draining": "已暫停 · 正在收尾"
+      },
+      "finalSummary": {
+        "failedTitle": "最終報告未能儲存",
+        "evidencePreserved": "完成憑證、任務結果和產物均已保留。",
+        "retry": "重試最終報告",
+        "retryFailed": "無法啟動最終報告重試。"
+      },
+      "idleWithLatestOutcome": "{{phase}} · 上一個工作輪次：{{outcome}}",
+      "pendingInboxCount": "{{count}} 則待處理",
+      "activeMembers": "活躍成員",
+      "inFlightTurns": "進行中的回合",
+      "openTasks": "未完成任務",
+      "blockingInbox": "阻塞中的收件匣",
+      "blockersTitle": "仍在阻礙完成的項目",
+      "unknownBlocker": "未知系統阻塞項"
     },
     "agentOrgIntervention": {
-      "title": "正在與 {{member}} 對話",
-      "description": "Inbox 訊息和新工作已暫停，直到恢復工作",
+      "directTitle": "直接交給 {{member}} 工作",
+      "writerBadge": "可改任務圖",
+      "directNotice": "直接工作預設不會進入任務看板；只有獲准的任務圖工具會改動看板",
+      "directPaused": "可以處理直接支線工作；團隊的正式工作仍保持暫停",
+      "directUnknown": "直接工作意外結束；返回前請先檢查可能已發生的副作用",
+      "unavailableStarting": "團隊啟動完成後才能直接交付工作",
+      "unavailableFailed": "團隊處於失敗狀態，暫時不能直接交付工作",
       "returnToWork": "恢復工作",
       "returning": "正在恢復…",
-      "loadFailed": "干預狀態載入失敗",
+      "endDirectWork": "結束直接工作",
+      "endingDirectWork": "正在結束…",
+      "directReady": "直接工作已完成；你可以繼續追問，或結束這次直接工作",
+      "stopping": "正在停止…",
+      "actionFailed": "直接工作操作失敗，請重試。",
       "busyShort": "使用者聊天",
-      "teammateBusy": "此 teammate 正在直接使用者聊天"
+      "teammateBusy": "此 teammate 正在直接使用者聊天",
+      "activity": {
+        "yielding": "正在安全讓出正式工作…",
+        "user_intervention": "等待你恢復正式工作",
+        "side_quest": "{{count}} 個直接回合正在執行或排隊",
+        "yield_timeout": "仍在等待安全交接"
+      },
+      "outcome": {
+        "restoredTask": "原任務已恢復",
+        "clearedPaused": "直接工作已結束；團隊正式工作仍暫停",
+        "clearedIdle": "直接工作已結束；團隊保持閒置",
+        "directEnded": "直接工作已結束",
+        "noLongerNeeded": "直接工作已結束；原工作已結束或改派"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "閒置",
@@ -2109,7 +2220,8 @@
       "cancelled": "已取消",
       "userIntervention": "使用者聊天",
       "noTasks": "無任務"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "未命名計劃",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}} 無法建立任務",
       "updateRunning": "{{sender}} 正在更新任務",
       "updateRejected": "{{sender}} 的任務更新需要修正",
-      "updateFailed": "{{sender}} 無法更新任務"
+      "updateFailed": "{{sender}} 無法更新任務",
+      "updateDeferred": "{{sender}} 已暫緩完成任務，等待清理結束"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator 讀取了其他 Agent 傳送的訊息"
     },
     "userMessagePending": "{{member}} 正在接收你的訊息",
     "pausedBanner": {
-      "title": "新的工作已暫停",
-      "body": "暫停會停止目前回覆，傳送訊息或點擊恢復即可繼續",
+      "title": "正式工作已暫停",
+      "body": "要交給 Coordinator 的工作請先恢復；仍可用 @Member 傳送支線工作。",
       "resume": "恢復"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}} 次其他工具呼叫",
       "otherTools_other": "{{count}} 次其他工具呼叫"
     },
-    "loadOlder": "載入更早的訊息",
-    "historyLoadFailed": "歷史訊息暫不可用",
-    "triggerLabel": "群組聊天"
+    "triggerLabel": "群聊",
+    "userMessageOutcomeUnknown": "訊息提交結果未知，請使用原請求重試。",
+    "coordinatorLabel": "協調者",
+    "youLabel": "你",
+    "retry": "重試",
+    "memberCount_one": "{{count}} 位成員",
+    "memberCount_other": "{{count}} 位成員",
+    "memberFallback": "成員",
+    "retryPossibleDuplicateConfirm": "這則訊息的提交結果未知。重試可能造成重複操作，仍要建立新的 Turn 嗎？",
+    "mixedTargetError": "請將傳給 Coordinator 和 Member 的訊息分開傳送。",
+    "submitError": "群聊訊息傳送失敗，請重試。",
+    "projection": {
+      "title": "Team 群聊",
+      "queueGuidance": "訊息預設排隊處理。如需立即修正，請開啟對應 Member 的個別頁面。",
+      "archived": "這個 Team 已封存，群聊記錄只能查看。",
+      "loadOlder": "載入更早訊息",
+      "loadError": "無法載入群聊訊息。",
+      "actionError": "無法完成這次群聊操作，請重試。",
+      "loading": "正在載入群聊訊息…",
+      "empty": "尚無群聊訊息。",
+      "unavailable": "這則訊息目前無法使用。",
+      "stop": "停止",
+      "retryDelivery": "重新投遞",
+      "retryNewTurn": "建立新 Turn 重試",
+      "activity": {
+        "taskFallback": "未命名任務",
+        "task_created": "已建立任務：{{task}} · {{member}}",
+        "task_started": "{{member}} 開始處理：{{task}}",
+        "task_completed": "{{member}} 已完成：{{task}}",
+        "task_failed": "{{member}} 未能完成：{{task}}",
+        "task_cancelled": "已取消任務：{{task}}",
+        "task_reassigned": "任務已從 {{previousMember}} 轉交給 {{member}}：{{task}}",
+        "task_replacement_created": "已為 {{replacedTask}} 建立替代任務：{{task}} · {{member}}",
+        "team_paused": "Team 已暫停",
+        "team_resumed": "Team 已恢復",
+        "member_returned": "{{member}} 已返回 Team 工作",
+        "completion_certified": "Team 完成狀態已確認：{{outcome}}",
+        "final_report_failed": "最終報告儲存失敗",
+        "team_archived": "Team 已封存"
+      },
+      "state": {
+        "queued": "排隊中",
+        "running": "執行中",
+        "answered": "已回答",
+        "failed": "失敗",
+        "cancelled": "已取消",
+        "unknown": "結果未知"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "已更新任務",
       "runningTitle": "正在更新任務",
       "rejectedTitle": "任務更新需要修正",
-      "failedTitle": "任務更新失敗"
+      "failedTitle": "任務更新失敗",
+      "deferredTitle": "暫緩完成任務，等待清理"
     },
     "get": {
       "title": "查看任務詳情"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "進行中",
       "rejected": "需要修正",
-      "failed": "失敗"
-    }
+      "failed": "失敗",
+      "deferred": "暫緩完成 · 等待清理"
+    },
+    "unassignedOwner": "未指派",
+    "currentRecordUnavailable": "目前狀態無法使用",
+    "currentStatusLabel": "目前狀態",
+    "currentOwnerLabel": "目前負責人",
+    "replacementLabel": "替代任務"
   },
   "manageAgentDef": {
     "action": {

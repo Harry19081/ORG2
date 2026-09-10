@@ -428,7 +428,8 @@
             "taskOperationRunning": "{{subject}} がタスク操作を実行しています",
             "taskOperationRejected": "{{subject}} のタスク操作には修正が必要です",
             "taskOperationFailed": "{{subject}} のタスク操作が失敗しました",
-            "turnLoading": "{{subject}} のメッセージを読み込み中…"
+            "turnLoading": "{{subject}} のメッセージを読み込み中…",
+            "taskOperationDeferred": "{{subject}} はクリーンアップ完了までタスクの完了を延期しました"
           }
         },
         "divider": {
@@ -2041,64 +2042,174 @@
       }
     },
     "agentOrgTasks": {
-      "title": "チームタスク",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
       "statusPending": "保留中",
       "statusInProgress": "進行中",
       "statusCompleted": "完了",
-      "statusBlocked": "ブロック中"
+      "statusBlocked": "ブロック中",
+      "statusFailed": "失敗",
+      "statusCancelled": "キャンセル済み",
+      "currentWork": "現在の作業",
+      "currentEmpty": "現在の作業はありません",
+      "history": "履歴",
+      "historyFilter": "タスク履歴を絞り込む",
+      "historyEmpty": "この条件のタスクはありません",
+      "loadingHistory": "履歴を読み込み中…",
+      "historyLoadFailed": "履歴の読み込みに失敗しました",
+      "previousPage": "前へ",
+      "nextPage": "次へ",
+      "details": "詳細",
+      "loadingDetails": "詳細を読み込み中…",
+      "detailLoadFailed": "詳細の読み込みに失敗しました",
+      "output": "結果",
+      "annotations": "進捗と監査メモ",
+      "loadMoreAnnotations": "さらに読み込む",
+      "reassign": "再割り当て",
+      "cancelTask": "タスクをキャンセル",
+      "reassignTitle": "このタスクを再割り当てしますか？",
+      "cancelTitle": "このタスクをキャンセルしますか？",
+      "reassignWarning": "代替タスクを開始する前に現在の実行を停止する必要があります。",
+      "cancelWarning": "このタスクを今回の納品範囲から除外します。実行中の処理は停止し、依存タスクには明示的な対応が必要です。",
+      "replacementOwner": "新しい担当者",
+      "handoffFailed": "このタスクを安全に更新できませんでした",
+      "handoffNeedsDecision": "タスクの引き継ぎに判断が必要です",
+      "handoffStopping": "以前の実行を停止しています",
+      "handoffApplyingDecision": "{{decision}} を適用しています",
+      "handoffDecisionFailed": "受け付けた判断のクリーンアップを再試行する必要があります",
+      "retryHandoffDecision": "判断を再試行",
+      "handoffEvidence": "以前の担当者: {{owner}} · {{state}} · ローカル書き込み: {{count}}",
+      "continueReplacement": "代替タスクを続行",
+      "keepStopped": "停止を維持",
+      "abandonEpisode": "今回のタスクを放棄",
+      "resolveHandoffTitle": "引き継ぎを解決しますか？",
+      "continueWarning": "ローカル実行とプロセスの停止後にのみ続行してください。この判断は不明な外部結果を受け入れます。",
+      "keepStoppedWarning": "代替タスクはキャンセルされ、元のタスクは再開せず、他のタスクは続行します。",
+      "abandonWarning": "今回のすべての未完了タスクを停止し、チーム結果をキャンセル済みにします。",
+      "handoffResolutionFailed": "引き継ぎを解決できませんでした",
+      "statusAwaitingApproval": "承認待ち"
     },
     "agentOrgOverview": {
+      "needsAttention": "対応が必要",
+      "coordinatorWorkState": {
+        "active": "コーディネーター稼働中",
+        "waiting_for_org_event": "コーディネーターはイベント待機中",
+        "inactive": "コーディネーター停止中"
+      },
+      "outcome": {
+        "delivered": "配信済み",
+        "cancelled": "キャンセル済み",
+        "failed": "失敗"
+      },
       "title": "Agent チーム概要",
-      "summary": "{{active}} active · {{unread}} unread",
+      "summary": "稼働中 {{active}} · 要対応 {{pending}}",
       "loadFailed": "チーム概要を読み込めませんでした",
       "tasks": "タスク",
       "doneOf": "{{done}} / {{total}} 完了",
       "members": "メンバー",
+      "directActivity": "メンバーへの直接作業",
       "activeOf": "{{active}} / {{total}} active",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} unread",
       "pauseRun": "実行を一時停止",
       "resumeRun": "実行を再開",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "チームをアーカイブ",
+      "archiveTitle": "このチームをアーカイブしますか？",
+      "archiveWorkingWarning": "アーカイブは元に戻せません。実行中のタスクはキャンセルされ、チームは読み取り専用になります。",
+      "archiveWarning": "アーカイブは元に戻せません。チームは読み取り専用になり、再開できません。",
+      "archivedReadOnly": "アーカイブ済み — 履歴は読み取り専用です",
+      "archiveFailed": "チームをアーカイブできませんでした",
+      "archiveTeardownPending": "アーカイブ済みです。バックグラウンドでランタイムを終了しています。",
+      "archiveTeardownRetained": "アーカイブ済みですが、{{count}} 個のランタイムを解放できませんでした。削除は引き続きブロックされます。",
+      "archiveTeardownQuiesced": "アーカイブ済みで完全に停止しました。完全削除が可能です。",
+      "dangerZone": "危険な操作",
+      "deleteDescription": "このチームとすべてのセッションおよび履歴を完全に削除します。",
+      "deleteTeam": "チームを削除",
+      "deleteTitle": "このチームを完全に削除しますか？",
+      "deleteWarning": "チームのすべてのセッションと履歴が完全に削除されます。元に戻せません。",
+      "deleteAcknowledge": "この削除が永続的であることを理解しました。",
+      "deleteFailed": "チームを削除できませんでした",
+      "viewCoordinatorHistory": "Coordinator のチャット履歴を表示",
       "taskWindowTruncated": "{{total}} 件中最初の {{visible}} 件のタスクを表示しています。完全な結果はタスクの詳細を開いてください。",
       "planApproval": {
-        "title": "計画の承認待ち",
         "from": "{{member}} が提出",
-        "approve": "計画を承認",
-        "approveEdits": "編集を承認",
-        "requestChanges": "変更をリクエスト",
+        "approve": "プランを承認",
+        "requestChanges": "変更を依頼",
         "sendFeedback": "フィードバックを送信",
-        "editLabel": "提出された計画を編集",
-        "feedbackLabel": "計画修正のフィードバック",
-        "feedbackPlaceholder": "Planner に何を変更すべきか具体的に伝えてください…",
-        "paused": "この計画に応答する前に実行を再開してください。",
-        "staleError": "この計画はすでに解決済みか置き換えられています。更新して最新のリビジョンを確認してください",
-        "submitFailed": "計画への応答を保存できませんでした。もう一度お試しください"
+        "feedbackLabel": "プラン改訂へのフィードバック",
+        "feedbackPlaceholder": "Planner に変更点を具体的に伝えてください…",
+        "paused": "このプランに応答する前に実行を再開してください。",
+        "staleError": "このプランは処理済みか置き換えられています。更新して最新版を確認してください。",
+        "submitFailed": "プランへの応答を保存できませんでした。",
+        "historyTitle": "プラン履歴",
+        "open": "プランを開く",
+        "taskOutput": "計画タスクの結果を保存しました",
+        "status": {
+          "pending": "保留中",
+          "approved": "承認済み",
+          "changes_requested": "変更依頼済み",
+          "superseded": "新しい版に置換",
+          "cancelled": "キャンセル済み"
+        }
       },
       "phase": {
         "coordinating": "調整中",
         "dispatching": "割り当て中",
-        "members_working": "メンバー作業中",
+        "members_working": "メンバーが作業中",
         "waiting": "作業待ち",
-        "awaiting_plan_approval": "計画の承認待ち",
-        "finalizing": "最終処理中",
+        "awaiting_plan_approval": "プラン承認待ち",
+        "finalizing": "終了処理中",
         "paused": "一時停止中",
-        "completed": "完了",
         "failed": "失敗",
-        "cancelled": "キャンセル済み",
-        "abandoned": "放棄"
-      }
+        "starting": "開始中",
+        "idle": "待機中",
+        "archived": "アーカイブ済み",
+        "draining": "一時停止中・終了処理中"
+      },
+      "finalSummary": {
+        "failedTitle": "最終レポートを保存できませんでした",
+        "evidencePreserved": "完了証拠とタスク結果は保持されています。",
+        "retry": "最終レポートを再試行",
+        "retryFailed": "最終レポートの再試行を開始できませんでした。"
+      },
+      "idleWithLatestOutcome": "{{phase}} · 最新エピソード: {{outcome}}",
+      "pendingInboxCount": "要対応 {{count}} 件",
+      "activeMembers": "アクティブなメンバー",
+      "inFlightTurns": "実行中のターン",
+      "openTasks": "未完了のタスク",
+      "blockingInbox": "ブロック中の受信メッセージ",
+      "blockersTitle": "完了を妨げている項目",
+      "unknownBlocker": "不明なシステムブロッカー"
     },
     "agentOrgIntervention": {
-      "title": "{{member}} とチャット中",
-      "description": "Inbox メッセージと新しい作業は、作業が再開されるまで一時停止されます",
+      "directTitle": "{{member}} への直接作業",
+      "writerBadge": "Writer",
+      "directNotice": "許可されたグラフツールを使わない限り、直接作業はタスクボードに入りません",
+      "directPaused": "直接のサイド作業は可能です。チームの正式作業は一時停止のままです",
+      "directUnknown": "直接作業が予期せず終了しました。戻る前に副作用を確認してください",
+      "unavailableStarting": "チームの起動完了後に直接作業を依頼できます",
+      "unavailableFailed": "チームが失敗状態の間は直接作業を依頼できません",
       "returnToWork": "作業を再開",
       "returning": "再開しています…",
-      "loadFailed": "介入状態を読み込めませんでした",
+      "endDirectWork": "直接作業を終了",
+      "endingDirectWork": "終了しています…",
+      "directReady": "直接作業は完了しました。続けて依頼するか、この直接作業を終了してください",
+      "stopping": "停止しています…",
+      "actionFailed": "直接作業の操作に失敗しました。もう一度お試しください。",
       "busyShort": "ユーザーチャット",
-      "teammateBusy": "この teammate は直接ユーザーチャット中です"
+      "teammateBusy": "この teammate は直接ユーザーチャット中です",
+      "activity": {
+        "yielding": "正式作業を安全に引き渡しています…",
+        "user_intervention": "正式作業の再開待ち",
+        "side_quest": "{{count}} 件の直接ターンが実行中または待機中",
+        "yield_timeout": "安全な引き渡しを引き続き待っています"
+      },
+      "outcome": {
+        "restoredTask": "元のタスクを再開しました",
+        "clearedPaused": "直接作業は終了しました。チームの正式作業は一時停止中です",
+        "clearedIdle": "直接作業は終了しました。チームはアイドルのままです",
+        "directEnded": "直接作業は終了しました",
+        "noLongerNeeded": "直接作業は終了しました。元の作業は終了したか再割り当てされました"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "待機中",
@@ -2109,7 +2220,8 @@
       "cancelled": "キャンセル済み",
       "userIntervention": "ユーザーチャット",
       "noTasks": "タスクなし"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "無題のプラン",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}} はタスクを作成できませんでした",
       "updateRunning": "{{sender}} がタスクを更新しています",
       "updateRejected": "{{sender}} のタスク更新には修正が必要です",
-      "updateFailed": "{{sender}} はタスクを更新できませんでした"
+      "updateFailed": "{{sender}} はタスクを更新できませんでした",
+      "updateDeferred": "{{sender}} はクリーンアップ完了までタスクの完了を延期しました"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator が他の Agent から送信されたメッセージを読みました"
     },
     "userMessagePending": "{{member}} があなたのメッセージを処理しています",
     "pausedBanner": {
-      "title": "新しい作業は一時停止中です",
-      "body": "一時停止すると進行中の返信が停止します、メッセージを送信するか、再開を押すと続行します",
+      "title": "正式な作業は一時停止中です",
+      "body": "Coordinator の作業には再開してください。@Member のサイドクエストは引き続き送信できます。",
       "resume": "再開"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}} 件のその他ツール呼び出し",
       "otherTools_other": "{{count}} 件のその他ツール呼び出し"
     },
-    "loadOlder": "古いメッセージを読み込む",
-    "historyLoadFailed": "履歴を取得できません",
-    "triggerLabel": "グループチャット"
+    "triggerLabel": "グループチャット",
+    "userMessageOutcomeUnknown": "配信結果は不明です。元の配信を再試行してください。",
+    "coordinatorLabel": "コーディネーター",
+    "youLabel": "あなた",
+    "retry": "再試行",
+    "memberCount_one": "{{count}} 人のメンバー",
+    "memberCount_other": "{{count}} 人のメンバー",
+    "memberFallback": "メンバー",
+    "retryPossibleDuplicateConfirm": "この配信の結果は不明です。再試行すると操作が重複する可能性があります。それでも新しい Turn を作成しますか？",
+    "mixedTargetError": "Coordinator と Member へのメッセージは分けて送信してください。",
+    "submitError": "グループメッセージを送信できませんでした。もう一度お試しください。",
+    "projection": {
+      "title": "Team グループ会話",
+      "queueGuidance": "メッセージは既定でキューに入ります。すぐに修正する場合は、対象 Member の個別ページを開いてください。",
+      "archived": "この Team はアーカイブされています。グループ履歴は読み取り専用です。",
+      "loadOlder": "以前のメッセージを読み込む",
+      "loadError": "グループメッセージを読み込めませんでした。",
+      "actionError": "グループ操作を完了できませんでした。もう一度お試しください。",
+      "loading": "グループメッセージを読み込み中…",
+      "empty": "グループメッセージはまだありません。",
+      "unavailable": "このメッセージは利用できません。",
+      "stop": "停止",
+      "retryDelivery": "配信を再試行",
+      "retryNewTurn": "新しい Turn として再試行",
+      "activity": {
+        "taskFallback": "無題のタスク",
+        "task_created": "タスクを作成：{{task}} · {{member}}",
+        "task_started": "{{member}} が開始：{{task}}",
+        "task_completed": "{{member}} が完了：{{task}}",
+        "task_failed": "{{member}} が完了できませんでした：{{task}}",
+        "task_cancelled": "タスクをキャンセル：{{task}}",
+        "task_reassigned": "タスクを {{previousMember}} から {{member}} に再割り当て：{{task}}",
+        "task_replacement_created": "{{replacedTask}} の代替タスクを作成：{{task}} · {{member}}",
+        "team_paused": "Team を一時停止しました",
+        "team_resumed": "Team を再開しました",
+        "member_returned": "{{member}} が Team 作業に戻りました",
+        "completion_certified": "Team の完了を認定：{{outcome}}",
+        "final_report_failed": "最終レポートを保存できませんでした",
+        "team_archived": "Team をアーカイブしました"
+      },
+      "state": {
+        "queued": "キュー待ち",
+        "running": "実行中",
+        "answered": "回答済み",
+        "failed": "失敗",
+        "cancelled": "キャンセル済み",
+        "unknown": "結果不明"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "タスクを更新しました",
       "runningTitle": "タスクを更新中",
       "rejectedTitle": "タスク更新には修正が必要です",
-      "failedTitle": "タスクの更新に失敗しました"
+      "failedTitle": "タスクの更新に失敗しました",
+      "deferredTitle": "クリーンアップ完了までタスク完了を延期"
     },
     "get": {
       "title": "タスク詳細を表示"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "進行中",
       "rejected": "要修正",
-      "failed": "失敗"
-    }
+      "failed": "失敗",
+      "deferred": "完了を延期 · クリーンアップ待ち"
+    },
+    "unassignedOwner": "未割り当て",
+    "currentRecordUnavailable": "現在の状態を取得できません",
+    "currentStatusLabel": "現在のステータス",
+    "currentOwnerLabel": "現在の担当者",
+    "replacementLabel": "代替タスク"
   },
   "manageAgentDef": {
     "action": {

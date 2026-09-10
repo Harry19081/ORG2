@@ -428,7 +428,8 @@
             "taskOperationRunning": "{{subject}} выполняет операцию с задачей",
             "taskOperationRejected": "Операция с задачей от {{subject}} требует исправления",
             "taskOperationFailed": "Операция с задачей от {{subject}} не выполнена",
-            "turnLoading": "Сообщение от {{subject}} загружается…"
+            "turnLoading": "Сообщение от {{subject}} загружается…",
+            "taskOperationDeferred": "{{subject}} отложил завершение задачи до окончания очистки"
           }
         },
         "divider": {
@@ -2041,41 +2042,114 @@
       }
     },
     "agentOrgTasks": {
-      "title": "Задачи команды",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
       "statusPending": "В ожидании",
       "statusInProgress": "В работе",
       "statusCompleted": "Готово",
-      "statusBlocked": "Заблокировано"
+      "statusBlocked": "Заблокировано",
+      "statusFailed": "Ошибка",
+      "statusCancelled": "Отменено",
+      "currentWork": "Текущая работа",
+      "currentEmpty": "Нет текущей работы",
+      "history": "История",
+      "historyFilter": "Фильтр истории задач",
+      "historyEmpty": "Нет задач для этого фильтра",
+      "loadingHistory": "Загрузка истории…",
+      "historyLoadFailed": "Не удалось загрузить историю",
+      "previousPage": "Назад",
+      "nextPage": "Далее",
+      "details": "Подробности",
+      "loadingDetails": "Загрузка подробностей…",
+      "detailLoadFailed": "Не удалось загрузить подробности",
+      "output": "Результат",
+      "annotations": "Ход работы и аудит",
+      "loadMoreAnnotations": "Загрузить ещё",
+      "reassign": "Переназначить",
+      "cancelTask": "Отменить задачу",
+      "reassignTitle": "Переназначить эту задачу?",
+      "cancelTitle": "Отменить эту задачу?",
+      "reassignWarning": "Текущее выполнение должно остановиться до запуска замены.",
+      "cancelWarning": "Задача будет удалена из объёма этой поставки. Текущее выполнение остановится, а для зависимых задач потребуется отдельное явное решение.",
+      "replacementOwner": "Новый исполнитель",
+      "handoffFailed": "Не удалось безопасно обновить задачу",
+      "handoffNeedsDecision": "Передача задачи требует решения",
+      "handoffStopping": "Остановка предыдущего выполнения",
+      "handoffApplyingDecision": "Применяется: {{decision}}",
+      "handoffDecisionFailed": "Для принятого решения требуется повторная очистка",
+      "retryHandoffDecision": "Повторить решение",
+      "handoffEvidence": "Предыдущий исполнитель: {{owner}} · {{state}} · локальные записи: {{count}}",
+      "continueReplacement": "Продолжить замену",
+      "keepStopped": "Оставить остановленным",
+      "abandonEpisode": "Отказаться от этапа",
+      "resolveHandoffTitle": "Разрешить передачу?",
+      "continueWarning": "Продолжайте только после остановки локального выполнения и процессов. Это решение принимает неизвестный внешний результат.",
+      "keepStoppedWarning": "Замена будет отменена. Старая задача не возобновится, остальные продолжатся.",
+      "abandonWarning": "Все открытые задачи будут остановлены, результат команды — Отменено.",
+      "handoffResolutionFailed": "Не удалось разрешить передачу",
+      "statusAwaitingApproval": "Ожидает утверждения"
     },
     "agentOrgOverview": {
+      "needsAttention": "Требует внимания",
+      "coordinatorWorkState": {
+        "active": "Координатор активен",
+        "waiting_for_org_event": "Координатор ожидает событие",
+        "inactive": "Координатор неактивен"
+      },
+      "outcome": {
+        "delivered": "Доставлено",
+        "cancelled": "Отменено",
+        "failed": "Ошибка"
+      },
       "title": "Обзор Команды Agent",
-      "summary": "{{active}} активны · {{unread}} непрочитано",
+      "summary": "{{active}} активны · {{pending}} требуют обработки",
       "loadFailed": "Не удалось загрузить обзор команды",
       "tasks": "Задачи",
       "doneOf": "{{done}} / {{total}} выполнено",
       "members": "Участники",
+      "directActivity": "Прямая работа участников",
       "activeOf": "{{active}} / {{total}} активны",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} непрочитано",
       "pauseRun": "Приостановить выполнение",
       "resumeRun": "Возобновить выполнение",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "Архивировать команду",
+      "archiveTitle": "Архивировать эту команду?",
+      "archiveWorkingWarning": "Архивирование необратимо. Выполняемые задачи будут отменены, а команда перейдет в режим только для чтения.",
+      "archiveWarning": "Архивирование необратимо. Команда перейдет в режим только для чтения, возобновить ее будет нельзя.",
+      "archivedReadOnly": "В архиве — история только для чтения",
+      "archiveFailed": "Не удалось архивировать команду",
+      "archiveTeardownPending": "Команда архивирована. Среды выполнения еще завершаются в фоне.",
+      "archiveTeardownRetained": "Команда архивирована, но не удалось освободить {{count}} среду. Удаление по-прежнему заблокировано.",
+      "archiveTeardownQuiesced": "Команда архивирована и полностью остановлена. Теперь доступно окончательное удаление.",
+      "dangerZone": "Опасная зона",
+      "deleteDescription": "Окончательно удалить эту команду, все ее сеансы и историю.",
+      "deleteTeam": "Удалить команду",
+      "deleteTitle": "Окончательно удалить эту команду?",
+      "deleteWarning": "Все сеансы и история команды будут удалены навсегда. Это действие нельзя отменить.",
+      "deleteAcknowledge": "Я понимаю, что удаление необратимо.",
+      "deleteFailed": "Не удалось удалить команду",
+      "viewCoordinatorHistory": "Показать историю чата координатора",
       "taskWindowTruncated": "Показаны первые {{visible}} из {{total}} задач. Откройте детали задачи для полных результатов.",
       "planApproval": {
-        "title": "План готов к утверждению",
-        "from": "Представлен: {{member}}",
+        "from": "Отправил {{member}}",
         "approve": "Утвердить план",
-        "approveEdits": "Утвердить правки",
         "requestChanges": "Запросить изменения",
         "sendFeedback": "Отправить отзыв",
-        "editLabel": "Редактировать представленный план",
-        "feedbackLabel": "Отзыв о доработке плана",
-        "feedbackPlaceholder": "Сообщите Planner, что именно нужно изменить…",
-        "paused": "Возобновите выполнение, прежде чем отвечать на этот план.",
-        "staleError": "Этот план уже обработан или заменён. Обновите, чтобы увидеть последнюю ревизию",
-        "submitFailed": "Не удалось сохранить ответ на план. Попробуйте ещё раз"
+        "feedbackLabel": "Отзыв о редакции плана",
+        "feedbackPlaceholder": "Точно укажите Planner, что нужно изменить…",
+        "paused": "Возобновите выполнение перед ответом на этот план.",
+        "staleError": "Этот план уже обработан или заменён. Обновите данные.",
+        "submitFailed": "Не удалось сохранить ответ по плану.",
+        "historyTitle": "История плана",
+        "open": "Открыть план",
+        "taskOutput": "Результат задачи планирования сохранён",
+        "status": {
+          "pending": "Ожидает",
+          "approved": "Утверждён",
+          "changes_requested": "Запрошены изменения",
+          "superseded": "Заменён",
+          "cancelled": "Отменён"
+        }
       },
       "phase": {
         "coordinating": "Координация",
@@ -2085,20 +2159,57 @@
         "awaiting_plan_approval": "Ожидание утверждения плана",
         "finalizing": "Завершение",
         "paused": "Приостановлено",
-        "completed": "Завершено",
         "failed": "Ошибка",
-        "cancelled": "Отменено",
-        "abandoned": "Прервано"
-      }
+        "starting": "Запуск",
+        "idle": "Ожидание",
+        "archived": "В архиве",
+        "draining": "Приостановлено · завершение"
+      },
+      "finalSummary": {
+        "failedTitle": "Итоговый отчёт не сохранён",
+        "evidencePreserved": "Доказательства завершения и результаты задач сохранены.",
+        "retry": "Повторить итоговый отчёт",
+        "retryFailed": "Не удалось запустить повтор итогового отчёта."
+      },
+      "idleWithLatestOutcome": "{{phase}} · Последний эпизод: {{outcome}}",
+      "pendingInboxCount": "{{count}} требуют обработки",
+      "activeMembers": "Активные участники",
+      "inFlightTurns": "Выполняемые ходы",
+      "openTasks": "Открытые задачи",
+      "blockingInbox": "Блокирующие входящие сообщения",
+      "blockersTitle": "Что ещё мешает завершению",
+      "unknownBlocker": "Неизвестная системная блокировка"
     },
     "agentOrgIntervention": {
-      "title": "Чат с {{member}}",
-      "description": "Сообщения Inbox и новые задачи приостановлены до возобновления работы",
+      "directTitle": "Прямая работа с {{member}}",
+      "writerBadge": "Writer",
+      "directNotice": "Прямая работа не попадает на доску задач, кроме изменений разрешённым инструментом графа",
+      "directPaused": "Прямая побочная работа доступна; формальная работа команды остаётся на паузе",
+      "directUnknown": "Прямая работа неожиданно завершилась; перед возвратом проверьте возможные побочные эффекты",
+      "unavailableStarting": "Прямая работа станет доступна после запуска команды",
+      "unavailableFailed": "Прямая работа недоступна, пока команда в состоянии ошибки",
       "returnToWork": "Возобновить работу",
       "returning": "Возобновление…",
-      "loadFailed": "Не удалось загрузить состояние вмешательства",
+      "endDirectWork": "Завершить прямую работу",
+      "endingDirectWork": "Завершение…",
+      "directReady": "Прямая работа завершена; отправьте уточнение или завершите эту ветку прямой работы",
+      "stopping": "Остановка…",
+      "actionFailed": "Не удалось выполнить действие прямой работы. Повторите попытку.",
       "busyShort": "Чат пользователя",
-      "teammateBusy": "Этот teammate находится в прямом чате с пользователем"
+      "teammateBusy": "Этот teammate находится в прямом чате с пользователем",
+      "activity": {
+        "yielding": "Безопасная передача формальной работы…",
+        "user_intervention": "Ожидание возобновления формальной работы",
+        "side_quest": "Прямых ходов в работе или очереди: {{count}}",
+        "yield_timeout": "Всё ещё ожидается безопасная передача"
+      },
+      "outcome": {
+        "restoredTask": "Исходная задача возобновлена",
+        "clearedPaused": "Прямая работа завершена; команда остаётся на паузе",
+        "clearedIdle": "Прямая работа завершена; команда остаётся бездействующей",
+        "directEnded": "Прямая работа завершена",
+        "noLongerNeeded": "Прямая работа завершена; исходная работа завершена или переназначена"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Ожидает",
@@ -2109,7 +2220,8 @@
       "cancelled": "Отменено",
       "userIntervention": "Чат с пользователем",
       "noTasks": "Нет задач"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "План без названия",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}} не удалось создать задачу",
       "updateRunning": "{{sender}} обновляет задачу",
       "updateRejected": "Обновление задачи от {{sender}} требует исправления",
-      "updateFailed": "{{sender}} не удалось обновить задачу"
+      "updateFailed": "{{sender}} не удалось обновить задачу",
+      "updateDeferred": "{{sender}} отложил завершение задачи до окончания очистки"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator прочитал сообщения, отправленные другими agents"
     },
     "userMessagePending": "{{member}} принимает ваше сообщение",
     "pausedBanner": {
-      "title": "Новая работа приостановлена",
-      "body": "Пауза останавливает активные ответы, отправьте сообщение или нажмите Возобновить, чтобы продолжить",
+      "title": "Формальная работа приостановлена",
+      "body": "Возобновите работу с Координатором. Для побочной задачи по-прежнему можно указать @Member.",
       "resume": "Возобновить"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}} другой вызов инструмента",
       "otherTools_other": "{{count}} других вызовов инструментов"
     },
-    "loadOlder": "Загрузить более ранние сообщения",
-    "historyLoadFailed": "История недоступна",
-    "triggerLabel": "Групповой чат"
+    "triggerLabel": "Групповой чат",
+    "userMessageOutcomeUnknown": "Результат доставки неизвестен. Повторите исходную доставку.",
+    "coordinatorLabel": "Координатор",
+    "youLabel": "Вы",
+    "retry": "Повторить",
+    "memberCount_one": "{{count}} участник",
+    "memberCount_other": "{{count}} участников",
+    "memberFallback": "Участник",
+    "retryPossibleDuplicateConfirm": "Результат этой доставки неизвестен. Повтор может продублировать действия. Всё равно создать новый Turn?",
+    "mixedTargetError": "Отправляйте сообщения Coordinator и Member отдельно.",
+    "submitError": "Не удалось отправить групповое сообщение. Повторите попытку.",
+    "projection": {
+      "title": "Групповой разговор Team",
+      "queueGuidance": "По умолчанию сообщения ставятся в очередь. Для немедленного исправления откройте отдельную страницу Member.",
+      "archived": "Этот Team архивирован. История группы доступна только для чтения.",
+      "loadOlder": "Загрузить более ранние сообщения",
+      "loadError": "Не удалось загрузить сообщения группы.",
+      "actionError": "Не удалось выполнить это действие в группе. Повторите попытку.",
+      "loading": "Загрузка сообщений группы…",
+      "empty": "В группе пока нет сообщений.",
+      "unavailable": "Это сообщение недоступно.",
+      "stop": "Остановить",
+      "retryDelivery": "Повторить доставку",
+      "retryNewTurn": "Повторить как новый Turn",
+      "activity": {
+        "taskFallback": "Задача без названия",
+        "task_created": "Задача создана: {{task}} · {{member}}",
+        "task_started": "{{member}} начал: {{task}}",
+        "task_completed": "{{member}} завершил: {{task}}",
+        "task_failed": "{{member}} не смог завершить: {{task}}",
+        "task_cancelled": "Задача отменена: {{task}}",
+        "task_reassigned": "Задача передана от {{previousMember}} к {{member}}: {{task}}",
+        "task_replacement_created": "Создана замещающая задача для {{replacedTask}}: {{task}} · {{member}}",
+        "team_paused": "Команда приостановлена",
+        "team_resumed": "Работа команды возобновлена",
+        "member_returned": "{{member}} вернулся к работе команды",
+        "completion_certified": "Завершение команды подтверждено: {{outcome}}",
+        "final_report_failed": "Не удалось сохранить итоговый отчет",
+        "team_archived": "Команда архивирована"
+      },
+      "state": {
+        "queued": "В очереди",
+        "running": "Выполняется",
+        "answered": "Отвечено",
+        "failed": "Ошибка",
+        "cancelled": "Отменено",
+        "unknown": "Результат неизвестен"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "Задача обновлена",
       "runningTitle": "Обновление задачи",
       "rejectedTitle": "Обновление задачи требует исправления",
-      "failedTitle": "Не удалось обновить задачу"
+      "failedTitle": "Не удалось обновить задачу",
+      "deferredTitle": "Завершение задачи отложено до окончания очистки"
     },
     "get": {
       "title": "Просмотр деталей задачи"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "В работе",
       "rejected": "Требует исправления",
-      "failed": "Ошибка"
-    }
+      "failed": "Ошибка",
+      "deferred": "Завершение отложено · ожидание очистки"
+    },
+    "unassignedOwner": "Не назначено",
+    "currentRecordUnavailable": "Текущее состояние недоступно",
+    "currentStatusLabel": "Текущий статус",
+    "currentOwnerLabel": "Текущий исполнитель",
+    "replacementLabel": "Замена"
   },
   "manageAgentDef": {
     "action": {

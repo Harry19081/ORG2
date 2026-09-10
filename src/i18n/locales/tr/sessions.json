@@ -428,7 +428,8 @@
             "taskOperationRunning": "{{subject}} bir görev işlemi çalıştırıyor",
             "taskOperationRejected": "{{subject}} tarafından yapılan görev işleminin düzeltilmesi gerekiyor",
             "taskOperationFailed": "{{subject}} tarafından yapılan görev işlemi başarısız oldu",
-            "turnLoading": "{{subject}} mesajı yükleniyor…"
+            "turnLoading": "{{subject}} mesajı yükleniyor…",
+            "taskOperationDeferred": "{{subject}}, temizleme tamamlanana kadar görev tamamlamayı erteledi"
           }
         },
         "divider": {
@@ -2041,41 +2042,114 @@
       }
     },
     "agentOrgTasks": {
-      "title": "Ekip görevleri",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
       "statusPending": "Beklemede",
       "statusInProgress": "Devam ediyor",
       "statusCompleted": "Tamamlandı",
-      "statusBlocked": "Engelli"
+      "statusBlocked": "Engelli",
+      "statusFailed": "Başarısız",
+      "statusCancelled": "İptal edildi",
+      "currentWork": "Mevcut çalışma",
+      "currentEmpty": "Mevcut çalışma yok",
+      "history": "Geçmiş",
+      "historyFilter": "Görev geçmişini filtrele",
+      "historyEmpty": "Bu filtrede görev yok",
+      "loadingHistory": "Geçmiş yükleniyor…",
+      "historyLoadFailed": "Geçmiş yüklenemedi",
+      "previousPage": "Önceki",
+      "nextPage": "Sonraki",
+      "details": "Ayrıntılar",
+      "loadingDetails": "Ayrıntılar yükleniyor…",
+      "detailLoadFailed": "Ayrıntılar yüklenemedi",
+      "output": "Çıktı",
+      "annotations": "İlerleme ve denetim notları",
+      "loadMoreAnnotations": "Daha fazla yükle",
+      "reassign": "Yeniden ata",
+      "cancelTask": "Görevi iptal et",
+      "reassignTitle": "Bu görev yeniden atansın mı?",
+      "cancelTitle": "Bu görev iptal edilsin mi?",
+      "reassignWarning": "Yeni görev başlamadan önce mevcut yürütme durmalıdır.",
+      "cancelWarning": "Bu işlem görevi bu teslimatın kapsamından çıkarır. Devam eden yürütme durdurulur; bağımlı görevler için ayrıca açık bir karar gerekir.",
+      "replacementOwner": "Yeni sorumlu",
+      "handoffFailed": "Bu görev güvenli biçimde güncellenemedi",
+      "handoffNeedsDecision": "Görev devri kararınızı bekliyor",
+      "handoffStopping": "Önceki yürütme durduruluyor",
+      "handoffApplyingDecision": "{{decision}} uygulanıyor",
+      "handoffDecisionFailed": "Kabul edilen karar için temizleme yeniden denenmeli",
+      "retryHandoffDecision": "Kararı yeniden dene",
+      "handoffEvidence": "Önceki sorumlu: {{owner}} · {{state}} · yerel yazıcılar: {{count}}",
+      "continueReplacement": "Yeni göreve devam et",
+      "keepStopped": "Durdurulmuş tut",
+      "abandonEpisode": "Çalışmayı bırak",
+      "resolveHandoffTitle": "Görev devri çözülsün mü?",
+      "continueWarning": "Yalnızca yerel yürütme ve süreçler durduktan sonra devam edin. Bu karar bilinmeyen dış sonuçları kabul eder.",
+      "keepStoppedWarning": "Yeni görev iptal edilir. Eski görev yeniden başlamaz, diğerleri devam eder.",
+      "abandonWarning": "Tüm açık görevler durur ve ekip sonucu İptal edildi olur.",
+      "handoffResolutionFailed": "Görev devri çözülemedi",
+      "statusAwaitingApproval": "Onay bekliyor"
     },
     "agentOrgOverview": {
+      "needsAttention": "İşlem gerekli",
+      "coordinatorWorkState": {
+        "active": "Koordinatör etkin",
+        "waiting_for_org_event": "Koordinatör olay bekliyor",
+        "inactive": "Koordinatör etkin değil"
+      },
+      "outcome": {
+        "delivered": "Teslim edildi",
+        "cancelled": "İptal edildi",
+        "failed": "Başarısız"
+      },
       "title": "Agent Ekibi genel görünümü",
-      "summary": "{{active}} aktif · {{unread}} okunmadı",
+      "summary": "{{active}} aktif · {{pending}} bekleyen",
       "loadFailed": "Ekip genel görünümü yüklenemedi",
       "tasks": "Görevler",
       "doneOf": "{{done}} / {{total}} tamamlandı",
       "members": "Üyeler",
+      "directActivity": "Doğrudan üye çalışması",
       "activeOf": "{{active}} / {{total}} aktif",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} okunmadı",
       "pauseRun": "Çalıştırmayı duraklat",
       "resumeRun": "Çalıştırmayı devam ettir",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "Ekibi arşivle",
+      "archiveTitle": "Bu ekip arşivlensin mi?",
+      "archiveWorkingWarning": "Arşivleme kalıcıdır. Çalışan görevler iptal edilir ve ekip salt okunur olur.",
+      "archiveWarning": "Arşivleme kalıcıdır. Ekip salt okunur olur ve yeniden başlatılamaz.",
+      "archivedReadOnly": "Arşivlendi — geçmiş salt okunur",
+      "archiveFailed": "Ekip arşivlenemedi",
+      "archiveTeardownPending": "Arşivlendi. Çalışma ortamları arka planda durduruluyor.",
+      "archiveTeardownRetained": "Arşivlendi ancak {{count}} çalışma ortamı serbest bırakılamadı. Silme engelli kalır.",
+      "archiveTeardownQuiesced": "Arşivlendi ve tamamen durduruldu. Kalıcı silme artık kullanılabilir.",
+      "dangerZone": "Tehlikeli Bölge",
+      "deleteDescription": "Bu ekibi, tüm oturumlarını ve geçmişini kalıcı olarak sil.",
+      "deleteTeam": "Ekibi sil",
+      "deleteTitle": "Bu ekip kalıcı olarak silinsin mi?",
+      "deleteWarning": "Ekibin tüm oturumları ve geçmişi kalıcı olarak silinir. Bu işlem geri alınamaz.",
+      "deleteAcknowledge": "Bu silme işleminin kalıcı olduğunu anlıyorum.",
+      "deleteFailed": "Ekip silinemedi",
+      "viewCoordinatorHistory": "Koordinatör sohbet geçmişini görüntüle",
       "taskWindowTruncated": "{{total}} görevden ilk {{visible}} tanesi gösteriliyor. Tüm sonuçlar için görev ayrıntısını açın.",
       "planApproval": {
-        "title": "Plan onaya hazır",
         "from": "{{member}} tarafından gönderildi",
         "approve": "Planı onayla",
-        "approveEdits": "Düzenlemeleri onayla",
         "requestChanges": "Değişiklik iste",
         "sendFeedback": "Geri bildirim gönder",
-        "editLabel": "Gönderilen planı düzenle",
         "feedbackLabel": "Plan revizyonu geri bildirimi",
-        "feedbackPlaceholder": "Planner'a tam olarak neyin değişmesi gerektiğini söyleyin…",
-        "paused": "Bu plana yanıt vermeden önce çalıştırmayı devam ettirin.",
-        "staleError": "Bu plan zaten çözüldü veya değiştirildi. En son revizyonu görmek için yenileyin",
-        "submitFailed": "Plan yanıtı kaydedilemedi. Lütfen tekrar deneyin"
+        "feedbackPlaceholder": "Planner’a tam olarak neyin değişmesi gerektiğini söyleyin…",
+        "paused": "Bu plana yanıt vermeden önce çalışmayı sürdürün.",
+        "staleError": "Bu plan zaten çözüldü veya değiştirildi. En son sürüm için yenileyin.",
+        "submitFailed": "Plan yanıtı kaydedilemedi.",
+        "historyTitle": "Plan geçmişi",
+        "open": "Planı aç",
+        "taskOutput": "Planlama görevi çıktısı kaydedildi",
+        "status": {
+          "pending": "Bekliyor",
+          "approved": "Onaylandı",
+          "changes_requested": "Değişiklik istendi",
+          "superseded": "Yeni sürümle değiştirildi",
+          "cancelled": "İptal edildi"
+        }
       },
       "phase": {
         "coordinating": "Koordine ediliyor",
@@ -2083,22 +2157,59 @@
         "members_working": "Üyeler çalışıyor",
         "waiting": "İş bekleniyor",
         "awaiting_plan_approval": "Plan onayı bekleniyor",
-        "finalizing": "Sonlandırılıyor",
+        "finalizing": "Tamamlanıyor",
         "paused": "Duraklatıldı",
-        "completed": "Tamamlandı",
         "failed": "Başarısız",
-        "cancelled": "İptal edildi",
-        "abandoned": "Vazgeçildi"
-      }
+        "starting": "Başlatılıyor",
+        "idle": "Boşta",
+        "archived": "Arşivlendi",
+        "draining": "Duraklatıldı · sonlandırılıyor"
+      },
+      "finalSummary": {
+        "failedTitle": "Nihai rapor kaydedilmedi",
+        "evidencePreserved": "Tamamlama kanıtları ve görev çıktıları korundu.",
+        "retry": "Nihai raporu yeniden dene",
+        "retryFailed": "Nihai rapor yeniden denemesi başlatılamadı."
+      },
+      "idleWithLatestOutcome": "{{phase}} · Son bölüm: {{outcome}}",
+      "pendingInboxCount": "{{count}} bekleyen",
+      "activeMembers": "Aktif üyeler",
+      "inFlightTurns": "Devam eden turlar",
+      "openTasks": "Açık görevler",
+      "blockingInbox": "Engelleyen gelen kutusu",
+      "blockersTitle": "Tamamlanmayı hâlâ engelleyenler",
+      "unknownBlocker": "Bilinmeyen sistem engeli"
     },
     "agentOrgIntervention": {
-      "title": "{{member}} ile sohbet ediliyor",
-      "description": "Inbox mesajları ve yeni görevler iş devam edene kadar duraklatılır",
+      "directTitle": "{{member}} ile doğrudan çalışma",
+      "writerBadge": "Writer",
+      "directNotice": "İzin verilen bir grafik aracı kullanılmadıkça doğrudan çalışma görev panosuna girmez",
+      "directPaused": "Doğrudan yan çalışma kullanılabilir; resmi ekip işi duraklatılmış kalır",
+      "directUnknown": "Doğrudan çalışma beklenmedik şekilde sona erdi; dönmeden önce olası yan etkileri kontrol edin",
+      "unavailableStarting": "Doğrudan çalışma ekip başlatıldıktan sonra kullanılabilir",
+      "unavailableFailed": "Ekip hata durumundayken doğrudan çalışma kullanılamaz",
       "returnToWork": "İşe devam et",
       "returning": "Devam ediliyor…",
-      "loadFailed": "Müdahale durumu yüklenemedi",
+      "endDirectWork": "Doğrudan işi bitir",
+      "endingDirectWork": "Bitiriliyor…",
+      "directReady": "Doğrudan iş tamamlandı; takip mesajı gönderin veya bu doğrudan iş akışını sonlandırın",
+      "stopping": "Durduruluyor…",
+      "actionFailed": "Doğrudan çalışma işlemi başarısız oldu. Yeniden deneyin.",
       "busyShort": "Kullanıcı sohbeti",
-      "teammateBusy": "Bu teammate doğrudan kullanıcı sohbetinde"
+      "teammateBusy": "Bu teammate doğrudan kullanıcı sohbetinde",
+      "activity": {
+        "yielding": "Resmi iş güvenle devrediliyor…",
+        "user_intervention": "Resmi işe dönmenizi bekliyor",
+        "side_quest": "{{count}} doğrudan tur çalışıyor veya sırada",
+        "yield_timeout": "Güvenli devir hâlâ bekleniyor"
+      },
+      "outcome": {
+        "restoredTask": "Özgün görev devam etti",
+        "clearedPaused": "Doğrudan iş bitti; resmi ekip işi hâlâ duraklatılmış",
+        "clearedIdle": "Doğrudan iş bitti; ekip boşta kalıyor",
+        "directEnded": "Doğrudan iş bitti",
+        "noLongerNeeded": "Doğrudan iş bitti; özgün iş bitti veya yeniden atandı"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Boşta",
@@ -2109,7 +2220,8 @@
       "cancelled": "İptal edildi",
       "userIntervention": "Kullanıcı sohbeti",
       "noTasks": "Görev yok"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "Başlıksız plan",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}} görev oluşturamadı",
       "updateRunning": "{{sender}} bir görevi güncelliyor",
       "updateRejected": "{{sender}} tarafından yapılan görev güncellemesinin düzeltilmesi gerekiyor",
-      "updateFailed": "{{sender}} görevi güncelleyemedi"
+      "updateFailed": "{{sender}} görevi güncelleyemedi",
+      "updateDeferred": "{{sender}}, temizleme tamamlanana kadar görev tamamlamayı erteledi"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator diğer agents tarafından gönderilen mesajları okudu"
     },
     "userMessagePending": "{{member}} mesajınızı üstleniyor",
     "pausedBanner": {
-      "title": "Yeni çalışma duraklatıldı",
-      "body": "Duraklatma aktif yanıtları durdurur, devam etmek için mesaj gönderin veya Devam et'e basın",
+      "title": "Resmî çalışma duraklatıldı",
+      "body": "Coordinator çalışması için devam ettirin. Yan görev için hâlâ @Member kullanabilirsiniz.",
       "resume": "Devam et"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}} diğer araç çağrısı",
       "otherTools_other": "{{count}} diğer araç çağrısı"
     },
-    "loadOlder": "Eski mesajları yükle",
-    "historyLoadFailed": "Geçmiş kullanılamıyor",
-    "triggerLabel": "Grup sohbeti"
+    "triggerLabel": "Grup sohbeti",
+    "userMessageOutcomeUnknown": "Teslimat sonucu bilinmiyor. Özgün teslimatı yeniden deneyin.",
+    "coordinatorLabel": "Koordinatör",
+    "youLabel": "Siz",
+    "retry": "Yeniden dene",
+    "memberCount_one": "{{count}} üye",
+    "memberCount_other": "{{count}} üye",
+    "memberFallback": "Üye",
+    "retryPossibleDuplicateConfirm": "Bu teslimatın sonucu bilinmiyor. Yeniden denemek işlemleri çoğaltabilir. Yine de yeni bir Turn oluşturulsun mu?",
+    "mixedTargetError": "Coordinator ve Member mesajlarını ayrı gönderin.",
+    "submitError": "Grup mesajınız gönderilemedi. Lütfen yeniden deneyin.",
+    "projection": {
+      "title": "Team grup konuşması",
+      "queueGuidance": "Mesajlar varsayılan olarak sıraya alınır. Hemen düzeltmek için Member'ın ayrı sayfasını açın.",
+      "archived": "Bu Team arşivlendi. Grup geçmişi salt okunur.",
+      "loadOlder": "Eski mesajları yükle",
+      "loadError": "Grup mesajları yüklenemedi.",
+      "actionError": "Bu grup işlemi tamamlanamadı. Lütfen yeniden deneyin.",
+      "loading": "Grup mesajları yükleniyor…",
+      "empty": "Henüz grup mesajı yok.",
+      "unavailable": "Bu mesaj kullanılamıyor.",
+      "stop": "Durdur",
+      "retryDelivery": "Teslimatı yeniden dene",
+      "retryNewTurn": "Yeni Turn olarak yeniden dene",
+      "activity": {
+        "taskFallback": "Adsız görev",
+        "task_created": "Görev oluşturuldu: {{task}} · {{member}}",
+        "task_started": "{{member}} başlattı: {{task}}",
+        "task_completed": "{{member}} tamamladı: {{task}}",
+        "task_failed": "{{member}} tamamlayamadı: {{task}}",
+        "task_cancelled": "Görev iptal edildi: {{task}}",
+        "task_reassigned": "Görev {{previousMember}} kişisinden {{member}} kişisine aktarıldı: {{task}}",
+        "task_replacement_created": "{{replacedTask}} için yedek görev oluşturuldu: {{task}} · {{member}}",
+        "team_paused": "Ekip duraklatıldı",
+        "team_resumed": "Ekip devam ettirildi",
+        "member_returned": "{{member}} ekip çalışmasına döndü",
+        "completion_certified": "Ekip tamamlanması onaylandı: {{outcome}}",
+        "final_report_failed": "Son rapor kaydedilemedi",
+        "team_archived": "Ekip arşivlendi"
+      },
+      "state": {
+        "queued": "Sırada",
+        "running": "Çalışıyor",
+        "answered": "Yanıtlandı",
+        "failed": "Başarısız",
+        "cancelled": "İptal edildi",
+        "unknown": "Sonuç bilinmiyor"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "Görev güncellendi",
       "runningTitle": "Görev güncelleniyor",
       "rejectedTitle": "Görev güncellemesinin düzeltilmesi gerekiyor",
-      "failedTitle": "Görev güncellenemedi"
+      "failedTitle": "Görev güncellenemedi",
+      "deferredTitle": "Görev tamamlama, temizleme bitene kadar ertelendi"
     },
     "get": {
       "title": "Görev ayrıntılarını görüntüle"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "Devam ediyor",
       "rejected": "Düzeltme gerekiyor",
-      "failed": "Başarısız"
-    }
+      "failed": "Başarısız",
+      "deferred": "Tamamlama ertelendi · temizleme bekleniyor"
+    },
+    "unassignedOwner": "Atanmamış",
+    "currentRecordUnavailable": "Geçerli durum kullanılamıyor",
+    "currentStatusLabel": "Geçerli durum",
+    "currentOwnerLabel": "Geçerli sorumlu",
+    "replacementLabel": "Değiştirme"
   },
   "manageAgentDef": {
     "action": {

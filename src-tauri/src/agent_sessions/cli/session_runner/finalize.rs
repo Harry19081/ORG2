@@ -370,8 +370,8 @@ pub(super) async fn finalize_session_run(
     };
     // CLI member sessions inside an Agent Org run must land on `Idle` after each
     // successful turn so they remain available for the next coordinator dispatch.
-    // `Completed` is terminal (is_terminal() == true) and would cause
-    // `reconcile_run_finality` to prematurely end the run.
+    // `Completed` is terminal (is_terminal() == true) and would make the
+    // member unavailable to the canonical Team Quiescence projection.
     let is_org_member = session.org_member_id.is_some();
     let mut final_status = if raw_final_status == SessionStatus::Completed && is_org_member {
         SessionStatus::Idle
@@ -541,9 +541,9 @@ pub(super) async fn finalize_session_run(
         clear_live_status(agent, session_id, cli_session_id_out.as_deref());
     }
 
-    // For CLI sessions that are Agent Org members, requeue any in-progress work
-    // and notify the coordinator that this member is idle/available. This mirrors
-    // the Rust-native member path in `agent_core::lifecycle::finalize_session`.
+    // For CLI sessions that are Agent Org members, recover only the Task bound
+    // to this exact failed Turn and notify the coordinator that this member is
+    // idle/available. This mirrors the Rust-native member finalization path.
     // app_handle is unavailable in the CLI runner, so inbox-wake via AppHandle is
     // skipped (fire-and-forget; the coordinator will drain on its next turn boundary).
     if is_org_member {
@@ -555,7 +555,12 @@ pub(super) async fn finalize_session_run(
                 .unwrap_or("unknown error")
                 .to_string())
         };
-        agent_core::lifecycle::finalize_agent_org_member_turn(None, session_id, &outcome);
+        agent_core::lifecycle::finalize_agent_org_member_turn(
+            None,
+            session_id,
+            turn_intent_id,
+            &outcome,
+        );
     }
 
     let mut status_msg = serde_json::json!({

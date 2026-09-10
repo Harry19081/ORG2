@@ -431,7 +431,8 @@
             "taskOperationRunning": "{{subject}} está executando uma operação de tarefa",
             "taskOperationRejected": "A operação de tarefa de {{subject}} precisa de correção",
             "taskOperationFailed": "A operação de tarefa de {{subject}} falhou",
-            "turnLoading": "A mensagem de {{subject}} está carregando…"
+            "turnLoading": "A mensagem de {{subject}} está carregando…",
+            "taskOperationDeferred": "{{subject}} adiou a conclusão da tarefa até a limpeza"
           }
         },
         "divider": {
@@ -2060,41 +2061,114 @@
       }
     },
     "agentOrgTasks": {
-      "title": "Tarefas da equipe",
       "owner": "Responsável: {{owner}}",
       "ownerNoSession": "{{owner}} ainda não tem sessão de membro visível",
       "statusPending": "Pendente",
       "statusInProgress": "Em andamento",
       "statusCompleted": "Concluído",
-      "statusBlocked": "Bloqueado"
+      "statusBlocked": "Bloqueado",
+      "statusFailed": "Falhou",
+      "statusCancelled": "Cancelado",
+      "currentWork": "Trabalho atual",
+      "currentEmpty": "Nenhum trabalho atual",
+      "history": "Histórico",
+      "historyFilter": "Filtrar histórico de tarefas",
+      "historyEmpty": "Nenhuma tarefa neste filtro",
+      "loadingHistory": "Carregando histórico…",
+      "historyLoadFailed": "Falha ao carregar o histórico",
+      "previousPage": "Anterior",
+      "nextPage": "Próxima",
+      "details": "Detalhes",
+      "loadingDetails": "Carregando detalhes…",
+      "detailLoadFailed": "Falha ao carregar os detalhes",
+      "output": "Resultado",
+      "annotations": "Progresso e notas de auditoria",
+      "loadMoreAnnotations": "Carregar mais",
+      "reassign": "Reatribuir",
+      "cancelTask": "Cancelar tarefa",
+      "reassignTitle": "Reatribuir esta tarefa?",
+      "cancelTitle": "Cancelar esta tarefa?",
+      "reassignWarning": "A execução atual deve parar antes de iniciar a substituição.",
+      "cancelWarning": "Isso remove a tarefa do escopo desta entrega. Qualquer execução atual será interrompida; tarefas dependentes exigem uma decisão explícita.",
+      "replacementOwner": "Novo responsável",
+      "handoffFailed": "Não foi possível atualizar esta tarefa com segurança",
+      "handoffNeedsDecision": "A transferência precisa da sua decisão",
+      "handoffStopping": "Parando a execução anterior",
+      "handoffApplyingDecision": "Aplicando {{decision}}",
+      "handoffDecisionFailed": "A decisão aceita precisa de outra tentativa de limpeza",
+      "retryHandoffDecision": "Tentar decisão novamente",
+      "handoffEvidence": "Responsável anterior: {{owner}} · {{state}} · escritores locais: {{count}}",
+      "continueReplacement": "Continuar substituição",
+      "keepStopped": "Manter parado",
+      "abandonEpisode": "Abandonar episódio",
+      "resolveHandoffTitle": "Resolver a transferência?",
+      "continueWarning": "Continue apenas após parar a execução e os processos locais. Esta decisão aceita resultados externos desconhecidos.",
+      "keepStoppedWarning": "A substituição será cancelada. A tarefa antiga não reiniciará e as demais continuarão.",
+      "abandonWarning": "Todas as tarefas abertas serão interrompidas e o resultado da equipe será Cancelado.",
+      "handoffResolutionFailed": "Não foi possível resolver a transferência",
+      "statusAwaitingApproval": "Aguardando aprovação"
     },
     "agentOrgOverview": {
+      "needsAttention": "Requer atenção",
+      "coordinatorWorkState": {
+        "active": "Coordenador ativo",
+        "waiting_for_org_event": "Coordenador aguardando um evento",
+        "inactive": "Coordenador inativo"
+      },
+      "outcome": {
+        "delivered": "Entregue",
+        "cancelled": "Cancelado",
+        "failed": "Falhou"
+      },
       "title": "Visão geral da Equipe Agent",
-      "summary": "{{active}} ativos · {{unread}} não lidos",
+      "summary": "{{active}} ativos · {{pending}} pendentes",
       "loadFailed": "Falha ao carregar a visão geral da equipe",
       "tasks": "Tarefas",
       "doneOf": "{{done}} / {{total}} concluídas",
       "members": "Membros",
+      "directActivity": "Atividade direta dos membros",
       "activeOf": "{{active}} / {{total}} ativos",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} não lidos",
       "pauseRun": "Pausar execução",
       "resumeRun": "Retomar execução",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "Arquivar equipe",
+      "archiveTitle": "Arquivar esta equipe?",
+      "archiveWorkingWarning": "O arquivamento é permanente. As tarefas em execução serão canceladas e a equipe ficará somente leitura.",
+      "archiveWarning": "O arquivamento é permanente. A equipe ficará somente leitura e não poderá ser retomada.",
+      "archivedReadOnly": "Arquivada — histórico somente leitura",
+      "archiveFailed": "Falha ao arquivar a equipe",
+      "archiveTeardownPending": "Arquivada. Os processos ainda estão sendo encerrados em segundo plano.",
+      "archiveTeardownRetained": "Arquivada, mas {{count}} processo não pôde ser liberado. A exclusão continua bloqueada.",
+      "archiveTeardownQuiesced": "Arquivada e totalmente encerrada. A exclusão permanente já está disponível.",
+      "dangerZone": "Zona de perigo",
+      "deleteDescription": "Excluir permanentemente esta equipe, todas as sessões e o histórico.",
+      "deleteTeam": "Excluir equipe",
+      "deleteTitle": "Excluir esta equipe permanentemente?",
+      "deleteWarning": "Isso exclui permanentemente todas as sessões e o histórico da equipe. A ação não pode ser desfeita.",
+      "deleteAcknowledge": "Entendo que esta exclusão é permanente.",
+      "deleteFailed": "Falha ao excluir a equipe",
+      "viewCoordinatorHistory": "Ver histórico do chat do coordenador",
       "taskWindowTruncated": "Mostrando as primeiras {{visible}} de {{total}} tarefas. Abra os detalhes da tarefa para ver os resultados completos.",
       "planApproval": {
-        "title": "Plano pronto para aprovação",
         "from": "Enviado por {{member}}",
         "approve": "Aprovar plano",
-        "approveEdits": "Aprovar edições",
         "requestChanges": "Solicitar alterações",
-        "sendFeedback": "Enviar feedback",
-        "editLabel": "Editar plano enviado",
-        "feedbackLabel": "Feedback de revisão do plano",
-        "feedbackPlaceholder": "Diga ao Planner exatamente o que precisa mudar…",
+        "sendFeedback": "Enviar comentários",
+        "feedbackLabel": "Comentários da revisão do plano",
+        "feedbackPlaceholder": "Diga exatamente ao Planner o que deve mudar…",
         "paused": "Retome a execução antes de responder a este plano.",
-        "staleError": "Este plano já foi resolvido ou substituído. Atualize para ver a revisão mais recente",
-        "submitFailed": "Não foi possível salvar a resposta ao plano. Tente novamente"
+        "staleError": "Este plano já foi resolvido ou substituído. Atualize para ver a revisão mais recente.",
+        "submitFailed": "Não foi possível salvar a resposta do plano.",
+        "historyTitle": "Histórico do plano",
+        "open": "Abrir plano",
+        "taskOutput": "Resultado da tarefa de planejamento salvo",
+        "status": {
+          "pending": "Pendente",
+          "approved": "Aprovado",
+          "changes_requested": "Alterações solicitadas",
+          "superseded": "Substituído",
+          "cancelled": "Cancelado"
+        }
       },
       "phase": {
         "coordinating": "Coordenando",
@@ -2104,20 +2178,57 @@
         "awaiting_plan_approval": "Aguardando aprovação do plano",
         "finalizing": "Finalizando",
         "paused": "Pausado",
-        "completed": "Concluído",
         "failed": "Falhou",
-        "cancelled": "Cancelado",
-        "abandoned": "Abandonado"
-      }
+        "starting": "Iniciando",
+        "idle": "Inativo",
+        "archived": "Arquivado",
+        "draining": "Pausado · finalizando"
+      },
+      "finalSummary": {
+        "failedTitle": "O relatório final não foi salvo",
+        "evidencePreserved": "As evidências de conclusão e os resultados das tarefas foram preservados.",
+        "retry": "Tentar relatório final novamente",
+        "retryFailed": "Não foi possível iniciar a nova tentativa do relatório final."
+      },
+      "idleWithLatestOutcome": "{{phase}} · Episódio mais recente: {{outcome}}",
+      "pendingInboxCount": "{{count}} pendentes",
+      "activeMembers": "Membros ativos",
+      "inFlightTurns": "Turnos em andamento",
+      "openTasks": "Tarefas abertas",
+      "blockingInbox": "Caixa de entrada bloqueante",
+      "blockersTitle": "O que ainda impede a conclusão",
+      "unknownBlocker": "Bloqueio de sistema desconhecido"
     },
     "agentOrgIntervention": {
-      "title": "Conversando com {{member}}",
-      "description": "Mensagens do Inbox e novo trabalho estão pausados até o trabalho ser retomado",
+      "directTitle": "Trabalho direto com {{member}}",
+      "writerBadge": "Writer",
+      "directNotice": "O trabalho direto fica fora do quadro de tarefas, exceto quando uma ferramenta de grafo permitida é usada",
+      "directPaused": "O trabalho direto paralelo está disponível; o trabalho formal da equipe continua pausado",
+      "directUnknown": "O trabalho direto terminou inesperadamente; revise possíveis efeitos antes de retornar",
+      "unavailableStarting": "O trabalho direto estará disponível após a equipe iniciar",
+      "unavailableFailed": "O trabalho direto não está disponível enquanto a equipe está com falha",
       "returnToWork": "Retomar trabalho",
       "returning": "Retomando…",
-      "loadFailed": "Falha ao carregar estado de intervenção",
+      "endDirectWork": "Encerrar trabalho direto",
+      "endingDirectWork": "Encerrando…",
+      "directReady": "O trabalho direto terminou; envie um acompanhamento ou encerre esta sequência de trabalho direto",
+      "stopping": "Parando…",
+      "actionFailed": "A ação de trabalho direto falhou. Tente novamente.",
       "busyShort": "Chat usuário",
-      "teammateBusy": "Este teammate está em chat direto com usuário"
+      "teammateBusy": "Este teammate está em chat direto com usuário",
+      "activity": {
+        "yielding": "Cedendo o trabalho formal com segurança…",
+        "user_intervention": "Aguardando você retomar o trabalho formal",
+        "side_quest": "{{count}} turno direto em andamento ou na fila",
+        "yield_timeout": "Ainda aguardando uma transição segura"
+      },
+      "outcome": {
+        "restoredTask": "A tarefa original foi retomada",
+        "clearedPaused": "O trabalho direto terminou; a equipe continua pausada",
+        "clearedIdle": "O trabalho direto terminou; a equipe continua ociosa",
+        "directEnded": "O trabalho direto terminou",
+        "noLongerNeeded": "O trabalho direto terminou; o trabalho original terminou ou foi reatribuído"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Inativo",
@@ -2128,7 +2239,8 @@
       "cancelled": "Cancelado",
       "userIntervention": "Chat usuário",
       "noTasks": "Sem tarefas"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "Plano sem título",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}} não conseguiu criar a tarefa",
       "updateRunning": "{{sender}} está atualizando uma tarefa",
       "updateRejected": "A atualização de tarefa de {{sender}} precisa de correção",
-      "updateFailed": "{{sender}} não conseguiu atualizar a tarefa"
+      "updateFailed": "{{sender}} não conseguiu atualizar a tarefa",
+      "updateDeferred": "{{sender}} adiou a conclusão da tarefa até a limpeza"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator leu as mensagens enviadas por outros agents"
     },
     "userMessagePending": "{{member}} está assumindo sua mensagem",
     "pausedBanner": {
-      "title": "Novo trabalho está pausado",
-      "body": "Pausar interrompe as respostas ativas, envie uma mensagem ou clique em Retomar para continuar",
+      "title": "O trabalho formal está pausado",
+      "body": "Retome para trabalhar com o Coordenador. Você ainda pode usar @Member para uma tarefa paralela.",
       "resume": "Retomar"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}} chamada de outra ferramenta",
       "otherTools_other": "{{count}} chamadas de outras ferramentas"
     },
-    "loadOlder": "Carregar mensagens anteriores",
-    "historyLoadFailed": "Histórico indisponível",
-    "triggerLabel": "Chat de grupo"
+    "triggerLabel": "Chat em grupo",
+    "userMessageOutcomeUnknown": "O resultado da entrega é desconhecido. Tente novamente a entrega original.",
+    "coordinatorLabel": "Coordenador",
+    "youLabel": "Você",
+    "retry": "Tentar novamente",
+    "memberCount_one": "{{count}} membro",
+    "memberCount_other": "{{count}} membros",
+    "memberFallback": "Membro",
+    "retryPossibleDuplicateConfirm": "O resultado desta entrega é desconhecido. Tentar novamente pode duplicar ações. Criar um novo Turn mesmo assim?",
+    "mixedTargetError": "Envie separadamente as mensagens para Coordinator e Member.",
+    "submitError": "Não foi possível enviar sua mensagem de grupo. Tente novamente.",
+    "projection": {
+      "title": "Conversa em grupo do Team",
+      "queueGuidance": "As mensagens entram na fila por padrão. Para uma correção imediata, abra a página individual do Member.",
+      "archived": "Este Team está arquivado. O histórico do grupo é somente leitura.",
+      "loadOlder": "Carregar mensagens anteriores",
+      "loadError": "Não foi possível carregar as mensagens do grupo.",
+      "actionError": "Não foi possível concluir essa ação de grupo. Tente novamente.",
+      "loading": "Carregando mensagens do grupo…",
+      "empty": "Ainda não há mensagens no grupo.",
+      "unavailable": "Esta mensagem não está disponível.",
+      "stop": "Parar",
+      "retryDelivery": "Tentar entrega novamente",
+      "retryNewTurn": "Tentar como novo Turn",
+      "activity": {
+        "taskFallback": "Tarefa sem título",
+        "task_created": "Tarefa criada: {{task}} · {{member}}",
+        "task_started": "{{member}} iniciou: {{task}}",
+        "task_completed": "{{member}} concluiu: {{task}}",
+        "task_failed": "{{member}} não conseguiu concluir: {{task}}",
+        "task_cancelled": "Tarefa cancelada: {{task}}",
+        "task_reassigned": "Tarefa transferida de {{previousMember}} para {{member}}: {{task}}",
+        "task_replacement_created": "Tarefa substituta criada para {{replacedTask}}: {{task}} · {{member}}",
+        "team_paused": "Equipe pausada",
+        "team_resumed": "Equipe retomada",
+        "member_returned": "{{member}} voltou ao trabalho da equipe",
+        "completion_certified": "Conclusão da equipe certificada: {{outcome}}",
+        "final_report_failed": "Não foi possível salvar o relatório final",
+        "team_archived": "Equipe arquivada"
+      },
+      "state": {
+        "queued": "Na fila",
+        "running": "Em execução",
+        "answered": "Respondido",
+        "failed": "Falhou",
+        "cancelled": "Cancelado",
+        "unknown": "Resultado desconhecido"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "Tarefa atualizada",
       "runningTitle": "Atualizando tarefa",
       "rejectedTitle": "A atualização da tarefa precisa de correção",
-      "failedTitle": "Falha ao atualizar tarefa"
+      "failedTitle": "Falha ao atualizar tarefa",
+      "deferredTitle": "Conclusão da tarefa adiada até a limpeza"
     },
     "get": {
       "title": "Ver detalhes da tarefa"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "Em andamento",
       "rejected": "Precisa de correção",
-      "failed": "Falhou"
-    }
+      "failed": "Falhou",
+      "deferred": "Conclusão adiada · aguardando limpeza"
+    },
+    "unassignedOwner": "Não atribuído",
+    "currentRecordUnavailable": "Estado atual indisponível",
+    "currentStatusLabel": "Status atual",
+    "currentOwnerLabel": "Responsável atual",
+    "replacementLabel": "Substituição"
   },
   "manageAgentDef": {
     "action": {

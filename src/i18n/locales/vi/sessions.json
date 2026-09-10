@@ -428,7 +428,8 @@
             "taskOperationRunning": "{{subject}} đang thực hiện thao tác nhiệm vụ",
             "taskOperationRejected": "Thao tác nhiệm vụ của {{subject}} cần chỉnh sửa",
             "taskOperationFailed": "Thao tác nhiệm vụ của {{subject}} thất bại",
-            "turnLoading": "Tin nhắn của {{subject}} đang tải…"
+            "turnLoading": "Tin nhắn của {{subject}} đang tải…",
+            "taskOperationDeferred": "{{subject}} đã hoãn hoàn thành tác vụ cho đến khi dọn dẹp xong"
           }
         },
         "divider": {
@@ -2041,64 +2042,174 @@
       }
     },
     "agentOrgTasks": {
-      "title": "Nhiệm vụ nhóm",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
       "statusPending": "Đang chờ",
       "statusInProgress": "Đang làm",
       "statusCompleted": "Hoàn tất",
-      "statusBlocked": "Bị chặn"
+      "statusBlocked": "Bị chặn",
+      "statusFailed": "Thất bại",
+      "statusCancelled": "Đã hủy",
+      "currentWork": "Công việc hiện tại",
+      "currentEmpty": "Không có công việc hiện tại",
+      "history": "Lịch sử",
+      "historyFilter": "Lọc lịch sử tác vụ",
+      "historyEmpty": "Không có tác vụ trong bộ lọc này",
+      "loadingHistory": "Đang tải lịch sử…",
+      "historyLoadFailed": "Không thể tải lịch sử",
+      "previousPage": "Trước",
+      "nextPage": "Tiếp",
+      "details": "Chi tiết",
+      "loadingDetails": "Đang tải chi tiết…",
+      "detailLoadFailed": "Không thể tải chi tiết",
+      "output": "Kết quả",
+      "annotations": "Tiến độ và ghi chú kiểm tra",
+      "loadMoreAnnotations": "Tải thêm",
+      "reassign": "Phân công lại",
+      "cancelTask": "Hủy nhiệm vụ",
+      "reassignTitle": "Phân công lại nhiệm vụ này?",
+      "cancelTitle": "Hủy nhiệm vụ này?",
+      "reassignWarning": "Lần thực thi hiện tại phải dừng trước khi nhiệm vụ thay thế bắt đầu.",
+      "cancelWarning": "Thao tác này loại nhiệm vụ khỏi phạm vi bàn giao hiện tại. Mọi lần thực thi đang chạy sẽ dừng; các nhiệm vụ phụ thuộc cần một quyết định riêng, rõ ràng.",
+      "replacementOwner": "Người phụ trách mới",
+      "handoffFailed": "Không thể cập nhật nhiệm vụ này một cách an toàn",
+      "handoffNeedsDecision": "Việc bàn giao cần quyết định của bạn",
+      "handoffStopping": "Đang dừng lần thực thi trước",
+      "handoffApplyingDecision": "Đang áp dụng {{decision}}",
+      "handoffDecisionFailed": "Quyết định đã được chấp nhận nhưng cần thử dọn dẹp lại",
+      "retryHandoffDecision": "Thử lại quyết định",
+      "handoffEvidence": "Người phụ trách trước: {{owner}} · {{state}} · tiến trình ghi cục bộ: {{count}}",
+      "continueReplacement": "Tiếp tục nhiệm vụ thay thế",
+      "keepStopped": "Giữ trạng thái dừng",
+      "abandonEpisode": "Từ bỏ lượt này",
+      "resolveHandoffTitle": "Xử lý bàn giao nhiệm vụ?",
+      "continueWarning": "Chỉ tiếp tục sau khi thực thi và tiến trình cục bộ đã dừng. Quyết định này chấp nhận kết quả bên ngoài chưa biết.",
+      "keepStoppedWarning": "Nhiệm vụ thay thế sẽ bị hủy. Nhiệm vụ cũ không khởi động lại; các nhiệm vụ khác tiếp tục.",
+      "abandonWarning": "Mọi nhiệm vụ đang mở sẽ dừng và kết quả của nhóm là Đã hủy.",
+      "handoffResolutionFailed": "Không thể xử lý bàn giao",
+      "statusAwaitingApproval": "Đang chờ phê duyệt"
     },
     "agentOrgOverview": {
+      "needsAttention": "Cần xử lý",
+      "coordinatorWorkState": {
+        "active": "Điều phối viên đang hoạt động",
+        "waiting_for_org_event": "Điều phối viên đang chờ sự kiện",
+        "inactive": "Điều phối viên không hoạt động"
+      },
+      "outcome": {
+        "delivered": "Đã giao",
+        "cancelled": "Đã hủy",
+        "failed": "Thất bại"
+      },
       "title": "Tổng quan Nhóm Agent",
-      "summary": "{{active}} đang hoạt động · {{unread}} chưa đọc",
+      "summary": "{{active}} đang hoạt động · {{pending}} chờ xử lý",
       "loadFailed": "Không tải được tổng quan nhóm",
       "tasks": "Nhiệm vụ",
       "doneOf": "{{done}} / {{total}} hoàn thành",
       "members": "Thành viên",
+      "directActivity": "Công việc trực tiếp của thành viên",
       "activeOf": "{{active}} / {{total}} đang hoạt động",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} chưa đọc",
       "pauseRun": "Tạm dừng thực thi",
       "resumeRun": "Tiếp tục thực thi",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "Lưu trữ nhóm",
+      "archiveTitle": "Lưu trữ nhóm này?",
+      "archiveWorkingWarning": "Lưu trữ là vĩnh viễn. Các tác vụ đang chạy sẽ bị hủy và nhóm sẽ chuyển sang chỉ đọc.",
+      "archiveWarning": "Lưu trữ là vĩnh viễn. Nhóm sẽ chuyển sang chỉ đọc và không thể tiếp tục.",
+      "archivedReadOnly": "Đã lưu trữ — lịch sử chỉ đọc",
+      "archiveFailed": "Không thể lưu trữ nhóm",
+      "archiveTeardownPending": "Đã lưu trữ. Môi trường chạy vẫn đang được dừng trong nền.",
+      "archiveTeardownRetained": "Đã lưu trữ nhưng không thể giải phóng {{count}} môi trường chạy. Việc xóa vẫn bị chặn.",
+      "archiveTeardownQuiesced": "Đã lưu trữ và dừng hoàn toàn. Giờ có thể xóa vĩnh viễn.",
+      "dangerZone": "Vùng nguy hiểm",
+      "deleteDescription": "Xóa vĩnh viễn nhóm này cùng mọi phiên và lịch sử.",
+      "deleteTeam": "Xóa nhóm",
+      "deleteTitle": "Xóa vĩnh viễn nhóm này?",
+      "deleteWarning": "Thao tác này xóa vĩnh viễn mọi phiên và lịch sử của nhóm. Không thể hoàn tác.",
+      "deleteAcknowledge": "Tôi hiểu việc xóa này là vĩnh viễn.",
+      "deleteFailed": "Không thể xóa nhóm",
+      "viewCoordinatorHistory": "Xem lịch sử trò chuyện của điều phối viên",
       "taskWindowTruncated": "Đang hiển thị {{visible}} nhiệm vụ đầu tiên trên {{total}}. Mở chi tiết nhiệm vụ để xem đầy đủ kết quả.",
       "planApproval": {
-        "title": "Kế hoạch sẵn sàng để phê duyệt",
         "from": "Do {{member}} gửi",
         "approve": "Phê duyệt kế hoạch",
-        "approveEdits": "Phê duyệt bản chỉnh sửa",
-        "requestChanges": "Yêu cầu thay đổi",
+        "requestChanges": "Yêu cầu chỉnh sửa",
         "sendFeedback": "Gửi phản hồi",
-        "editLabel": "Chỉnh sửa kế hoạch đã gửi",
-        "feedbackLabel": "Phản hồi sửa đổi kế hoạch",
-        "feedbackPlaceholder": "Cho Planner biết chính xác điều gì cần thay đổi…",
-        "paused": "Hãy tiếp tục thực thi trước khi phản hồi kế hoạch này.",
-        "staleError": "Kế hoạch này đã được giải quyết hoặc thay thế. Hãy làm mới để xem bản sửa đổi mới nhất",
-        "submitFailed": "Không thể lưu phản hồi kế hoạch. Vui lòng thử lại"
+        "feedbackLabel": "Phản hồi cho bản sửa kế hoạch",
+        "feedbackPlaceholder": "Cho Planner biết chính xác nội dung cần thay đổi…",
+        "paused": "Hãy tiếp tục lượt chạy trước khi phản hồi kế hoạch này.",
+        "staleError": "Kế hoạch này đã được xử lý hoặc thay thế. Hãy làm mới để xem bản mới nhất.",
+        "submitFailed": "Không thể lưu phản hồi kế hoạch.",
+        "historyTitle": "Lịch sử kế hoạch",
+        "open": "Mở kế hoạch",
+        "taskOutput": "Đã lưu kết quả tác vụ lập kế hoạch",
+        "status": {
+          "pending": "Đang chờ",
+          "approved": "Đã phê duyệt",
+          "changes_requested": "Đã yêu cầu chỉnh sửa",
+          "superseded": "Đã được thay thế",
+          "cancelled": "Đã hủy"
+        }
       },
       "phase": {
         "coordinating": "Đang điều phối",
-        "dispatching": "Đang phân phối",
+        "dispatching": "Đang phân công",
         "members_working": "Thành viên đang làm việc",
-        "waiting": "Đang chờ việc",
+        "waiting": "Đang chờ công việc",
         "awaiting_plan_approval": "Đang chờ phê duyệt kế hoạch",
-        "finalizing": "Đang hoàn thiện",
+        "finalizing": "Đang hoàn tất",
         "paused": "Đã tạm dừng",
-        "completed": "Đã hoàn thành",
         "failed": "Thất bại",
-        "cancelled": "Đã hủy",
-        "abandoned": "Đã bỏ dở"
-      }
+        "starting": "Đang bắt đầu",
+        "idle": "Không hoạt động",
+        "archived": "Đã lưu trữ",
+        "draining": "Đã tạm dừng · đang kết thúc"
+      },
+      "finalSummary": {
+        "failedTitle": "Báo cáo cuối chưa được lưu",
+        "evidencePreserved": "Bằng chứng hoàn thành và kết quả tác vụ vẫn được giữ nguyên.",
+        "retry": "Thử lại báo cáo cuối",
+        "retryFailed": "Không thể bắt đầu thử lại báo cáo cuối."
+      },
+      "idleWithLatestOutcome": "{{phase}} · Episode gần nhất: {{outcome}}",
+      "pendingInboxCount": "{{count}} chờ xử lý",
+      "activeMembers": "Thành viên đang hoạt động",
+      "inFlightTurns": "Lượt đang chạy",
+      "openTasks": "Nhiệm vụ đang mở",
+      "blockingInbox": "Hộp thư đến đang chặn",
+      "blockersTitle": "Những gì vẫn đang cản trở hoàn tất",
+      "unknownBlocker": "Trở ngại hệ thống không xác định"
     },
     "agentOrgIntervention": {
-      "title": "Đang chat với {{member}}",
-      "description": "Tin nhắn Inbox và công việc mới tạm dừng cho đến khi công việc tiếp tục",
+      "directTitle": "Làm việc trực tiếp với {{member}}",
+      "writerBadge": "Writer",
+      "directNotice": "Công việc trực tiếp không vào bảng nhiệm vụ trừ khi dùng công cụ đồ thị được phép",
+      "directPaused": "Có thể làm việc phụ trực tiếp; công việc chính thức của nhóm vẫn tạm dừng",
+      "directUnknown": "Công việc trực tiếp đã kết thúc ngoài dự kiến; hãy kiểm tra tác động có thể có trước khi quay lại",
+      "unavailableStarting": "Có thể giao việc trực tiếp sau khi nhóm khởi động xong",
+      "unavailableFailed": "Không thể giao việc trực tiếp khi nhóm đang lỗi",
       "returnToWork": "Tiếp tục làm việc",
       "returning": "Đang tiếp tục…",
-      "loadFailed": "Không tải được trạng thái can thiệp",
+      "endDirectWork": "Kết thúc việc trực tiếp",
+      "endingDirectWork": "Đang kết thúc…",
+      "directReady": "Việc trực tiếp đã hoàn tất; hãy gửi yêu cầu tiếp theo hoặc kết thúc luồng việc trực tiếp này",
+      "stopping": "Đang dừng…",
+      "actionFailed": "Thao tác công việc trực tiếp thất bại. Vui lòng thử lại.",
       "busyShort": "Chat người dùng",
-      "teammateBusy": "Teammate này đang chat trực tiếp với người dùng"
+      "teammateBusy": "Teammate này đang chat trực tiếp với người dùng",
+      "activity": {
+        "yielding": "Đang bàn giao an toàn công việc chính thức…",
+        "user_intervention": "Đang chờ bạn tiếp tục công việc chính thức",
+        "side_quest": "{{count}} lượt trực tiếp đang chạy hoặc xếp hàng",
+        "yield_timeout": "Vẫn đang chờ bàn giao an toàn"
+      },
+      "outcome": {
+        "restoredTask": "Nhiệm vụ ban đầu đã tiếp tục",
+        "clearedPaused": "Việc trực tiếp đã xong; việc chính thức của nhóm vẫn tạm dừng",
+        "clearedIdle": "Việc trực tiếp đã xong; nhóm vẫn ở trạng thái rảnh",
+        "directEnded": "Việc trực tiếp đã xong",
+        "noLongerNeeded": "Việc trực tiếp đã xong; công việc ban đầu đã kết thúc hoặc được giao lại"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Rảnh",
@@ -2109,7 +2220,8 @@
       "cancelled": "Đã hủy",
       "userIntervention": "Chat người dùng",
       "noTasks": "Không có nhiệm vụ"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "Kế hoạch chưa đặt tên",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}} không thể tạo tác vụ",
       "updateRunning": "{{sender}} đang cập nhật tác vụ",
       "updateRejected": "Việc cập nhật tác vụ của {{sender}} cần chỉnh sửa",
-      "updateFailed": "{{sender}} không thể cập nhật tác vụ"
+      "updateFailed": "{{sender}} không thể cập nhật tác vụ",
+      "updateDeferred": "{{sender}} đã hoãn hoàn thành tác vụ cho đến khi dọn dẹp xong"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator đã đọc tin nhắn do agents khác gửi"
     },
     "userMessagePending": "{{member}} đang tiếp nhận tin nhắn của bạn",
     "pausedBanner": {
-      "title": "Công việc mới đang tạm dừng",
-      "body": "Tạm dừng sẽ dừng các phản hồi đang chạy, gửi tin nhắn hoặc nhấn Tiếp tục để tiếp tục",
+      "title": "Công việc chính thức đang tạm dừng",
+      "body": "Tiếp tục để làm việc với Coordinator. Bạn vẫn có thể dùng @Member cho việc phụ.",
       "resume": "Tiếp tục"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}} lần gọi công cụ khác",
       "otherTools_other": "{{count}} lần gọi công cụ khác"
     },
-    "loadOlder": "Tải tin nhắn cũ hơn",
-    "historyLoadFailed": "Lịch sử không khả dụng",
-    "triggerLabel": "Trò chuyện nhóm"
+    "triggerLabel": "Trò chuyện nhóm",
+    "userMessageOutcomeUnknown": "Không xác định được kết quả gửi. Hãy thử lại lần gửi ban đầu.",
+    "coordinatorLabel": "Điều phối viên",
+    "youLabel": "Bạn",
+    "retry": "Thử lại",
+    "memberCount_one": "{{count}} thành viên",
+    "memberCount_other": "{{count}} thành viên",
+    "memberFallback": "Thành viên",
+    "retryPossibleDuplicateConfirm": "Không xác định được kết quả gửi này. Thử lại có thể lặp lại thao tác. Vẫn tạo một Turn mới?",
+    "mixedTargetError": "Hãy gửi riêng tin nhắn cho Coordinator và Member.",
+    "submitError": "Không thể gửi tin nhắn nhóm. Vui lòng thử lại.",
+    "projection": {
+      "title": "Cuộc trò chuyện nhóm của Team",
+      "queueGuidance": "Tin nhắn được xếp hàng theo mặc định. Để sửa ngay, hãy mở trang riêng của Member.",
+      "archived": "Team này đã được lưu trữ. Lịch sử nhóm chỉ có thể đọc.",
+      "loadOlder": "Tải tin nhắn cũ hơn",
+      "loadError": "Không thể tải tin nhắn nhóm.",
+      "actionError": "Không thể hoàn tất thao tác nhóm này. Vui lòng thử lại.",
+      "loading": "Đang tải tin nhắn nhóm…",
+      "empty": "Chưa có tin nhắn nhóm.",
+      "unavailable": "Tin nhắn này không khả dụng.",
+      "stop": "Dừng",
+      "retryDelivery": "Thử gửi lại",
+      "retryNewTurn": "Thử lại bằng Turn mới",
+      "activity": {
+        "taskFallback": "Tác vụ chưa đặt tên",
+        "task_created": "Đã tạo tác vụ: {{task}} · {{member}}",
+        "task_started": "{{member}} đã bắt đầu: {{task}}",
+        "task_completed": "{{member}} đã hoàn tất: {{task}}",
+        "task_failed": "{{member}} không thể hoàn tất: {{task}}",
+        "task_cancelled": "Đã hủy tác vụ: {{task}}",
+        "task_reassigned": "Đã chuyển tác vụ từ {{previousMember}} sang {{member}}: {{task}}",
+        "task_replacement_created": "Đã tạo tác vụ thay thế cho {{replacedTask}}: {{task}} · {{member}}",
+        "team_paused": "Team đã tạm dừng",
+        "team_resumed": "Team đã tiếp tục",
+        "member_returned": "{{member}} đã quay lại công việc của Team",
+        "completion_certified": "Đã xác nhận Team hoàn tất: {{outcome}}",
+        "final_report_failed": "Không thể lưu báo cáo cuối cùng",
+        "team_archived": "Team đã được lưu trữ"
+      },
+      "state": {
+        "queued": "Đang chờ",
+        "running": "Đang chạy",
+        "answered": "Đã trả lời",
+        "failed": "Thất bại",
+        "cancelled": "Đã hủy",
+        "unknown": "Không rõ kết quả"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "Đã cập nhật nhiệm vụ",
       "runningTitle": "Đang cập nhật nhiệm vụ",
       "rejectedTitle": "Việc cập nhật nhiệm vụ cần chỉnh sửa",
-      "failedTitle": "Cập nhật nhiệm vụ thất bại"
+      "failedTitle": "Cập nhật nhiệm vụ thất bại",
+      "deferredTitle": "Tạm hoãn hoàn thành tác vụ cho đến khi dọn dẹp xong"
     },
     "get": {
       "title": "Xem chi tiết nhiệm vụ"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "Đang thực hiện",
       "rejected": "Cần chỉnh sửa",
-      "failed": "Thất bại"
-    }
+      "failed": "Thất bại",
+      "deferred": "Đã tạm hoãn hoàn thành · đang chờ dọn dẹp"
+    },
+    "unassignedOwner": "Chưa được giao",
+    "currentRecordUnavailable": "Không có trạng thái hiện tại",
+    "currentStatusLabel": "Trạng thái hiện tại",
+    "currentOwnerLabel": "Người phụ trách hiện tại",
+    "replacementLabel": "Nhiệm vụ thay thế"
   },
   "manageAgentDef": {
     "action": {

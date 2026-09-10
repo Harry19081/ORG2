@@ -428,7 +428,8 @@
             "taskOperationRunning": "{{subject}}이(가) 작업 조작을 실행하는 중",
             "taskOperationRejected": "{{subject}}의 작업 조작에 수정이 필요합니다",
             "taskOperationFailed": "{{subject}}의 작업 조작이 실패했습니다",
-            "turnLoading": "{{subject}}의 메시지를 불러오는 중…"
+            "turnLoading": "{{subject}}의 메시지를 불러오는 중…",
+            "taskOperationDeferred": "{{subject}}이(가) 정리 완료까지 작업 완료를 보류했습니다"
           }
         },
         "divider": {
@@ -2041,64 +2042,174 @@
       }
     },
     "agentOrgTasks": {
-      "title": "팀 작업",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
       "statusPending": "대기 중",
       "statusInProgress": "진행 중",
       "statusCompleted": "완료됨",
-      "statusBlocked": "차단됨"
+      "statusBlocked": "차단됨",
+      "statusFailed": "실패",
+      "statusCancelled": "취소됨",
+      "currentWork": "현재 작업",
+      "currentEmpty": "현재 작업이 없습니다",
+      "history": "기록",
+      "historyFilter": "작업 기록 필터",
+      "historyEmpty": "이 필터에 해당하는 작업이 없습니다",
+      "loadingHistory": "기록 불러오는 중…",
+      "historyLoadFailed": "기록을 불러오지 못했습니다",
+      "previousPage": "이전",
+      "nextPage": "다음",
+      "details": "세부 정보",
+      "loadingDetails": "세부 정보 불러오는 중…",
+      "detailLoadFailed": "세부 정보를 불러오지 못했습니다",
+      "output": "결과",
+      "annotations": "진행 및 감사 메모",
+      "loadMoreAnnotations": "더 보기",
+      "reassign": "재할당",
+      "cancelTask": "작업 취소",
+      "reassignTitle": "이 작업을 재할당할까요?",
+      "cancelTitle": "이 작업을 취소할까요?",
+      "reassignWarning": "대체 작업을 시작하기 전에 현재 실행을 중지해야 합니다.",
+      "cancelWarning": "이 작업을 이번 제공 범위에서 제거합니다. 현재 실행은 중지되며, 종속 작업은 별도의 명시적 결정이 필요합니다.",
+      "replacementOwner": "새 담당자",
+      "handoffFailed": "이 작업을 안전하게 업데이트하지 못했습니다",
+      "handoffNeedsDecision": "작업 인계에 결정이 필요합니다",
+      "handoffStopping": "이전 실행을 중지하는 중",
+      "handoffApplyingDecision": "{{decision}} 적용 중",
+      "handoffDecisionFailed": "수락된 결정에 정리 재시도가 필요합니다",
+      "retryHandoffDecision": "결정 다시 시도",
+      "handoffEvidence": "이전 담당자: {{owner}} · {{state}} · 로컬 작성자: {{count}}",
+      "continueReplacement": "대체 작업 계속",
+      "keepStopped": "중지 상태 유지",
+      "abandonEpisode": "이번 작업 포기",
+      "resolveHandoffTitle": "작업 인계를 해결할까요?",
+      "continueWarning": "로컬 실행과 프로세스가 중지된 뒤에만 계속하세요. 이 결정은 알 수 없는 외부 결과를 수락합니다.",
+      "keepStoppedWarning": "대체 작업이 취소되고 이전 작업은 재시작되지 않으며 다른 작업은 계속됩니다.",
+      "abandonWarning": "이번 실행의 모든 열린 작업이 중지되고 팀 결과는 취소됨으로 표시됩니다.",
+      "handoffResolutionFailed": "작업 인계를 해결하지 못했습니다",
+      "statusAwaitingApproval": "승인 대기 중"
     },
     "agentOrgOverview": {
+      "needsAttention": "확인 필요",
+      "coordinatorWorkState": {
+        "active": "코디네이터 활성",
+        "waiting_for_org_event": "코디네이터가 이벤트 대기 중",
+        "inactive": "코디네이터 비활성"
+      },
+      "outcome": {
+        "delivered": "전달됨",
+        "cancelled": "취소됨",
+        "failed": "실패"
+      },
       "title": "Agent 팀 개요",
-      "summary": "{{active}} active · {{unread}} unread",
+      "summary": "활성 {{active}}개 · 처리 대기 {{pending}}개",
       "loadFailed": "팀 개요 로드 실패",
       "tasks": "작업",
       "doneOf": "{{done}} / {{total}} 완료",
       "members": "멤버",
+      "directActivity": "멤버 직접 작업",
       "activeOf": "{{active}} / {{total}} active",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} unread",
       "pauseRun": "실행 일시 중지",
       "resumeRun": "실행 재개",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "팀 보관",
+      "archiveTitle": "이 팀을 보관할까요?",
+      "archiveWorkingWarning": "보관은 되돌릴 수 없습니다. 실행 중인 작업이 취소되고 팀은 읽기 전용이 됩니다.",
+      "archiveWarning": "보관은 되돌릴 수 없습니다. 팀은 읽기 전용이 되며 다시 시작할 수 없습니다.",
+      "archivedReadOnly": "보관됨 — 기록은 읽기 전용입니다",
+      "archiveFailed": "팀을 보관하지 못했습니다",
+      "archiveTeardownPending": "보관되었습니다. 백그라운드에서 런타임을 종료하고 있습니다.",
+      "archiveTeardownRetained": "보관되었지만 런타임 {{count}}개를 해제하지 못했습니다. 삭제는 계속 차단됩니다.",
+      "archiveTeardownQuiesced": "보관 및 완전 종료되었습니다. 이제 영구 삭제할 수 있습니다.",
+      "dangerZone": "위험 영역",
+      "deleteDescription": "이 팀과 모든 세션 및 기록을 영구 삭제합니다.",
+      "deleteTeam": "팀 삭제",
+      "deleteTitle": "이 팀을 영구 삭제할까요?",
+      "deleteWarning": "팀의 모든 세션과 기록이 영구 삭제됩니다. 이 작업은 취소할 수 없습니다.",
+      "deleteAcknowledge": "이 삭제가 영구적임을 이해합니다.",
+      "deleteFailed": "팀을 삭제하지 못했습니다",
+      "viewCoordinatorHistory": "Coordinator 채팅 기록 보기",
       "taskWindowTruncated": "전체 {{total}}개 작업 중 처음 {{visible}}개를 표시합니다. 전체 결과는 작업 세부 정보를 여세요.",
       "planApproval": {
-        "title": "승인 대기 중인 계획",
         "from": "{{member}} 제출",
         "approve": "계획 승인",
-        "approveEdits": "편집 승인",
         "requestChanges": "변경 요청",
-        "sendFeedback": "피드백 보내기",
-        "editLabel": "제출된 계획 편집",
-        "feedbackLabel": "계획 수정 피드백",
-        "feedbackPlaceholder": "Planner에게 정확히 무엇을 바꿔야 하는지 알려주세요…",
+        "sendFeedback": "의견 보내기",
+        "feedbackLabel": "계획 개정 의견",
+        "feedbackPlaceholder": "Planner가 변경해야 할 내용을 정확히 알려 주세요…",
         "paused": "이 계획에 응답하기 전에 실행을 재개하세요.",
-        "staleError": "이 계획은 이미 처리되었거나 교체되었습니다. 새로 고쳐 최신 리비전을 확인하세요",
-        "submitFailed": "계획 응답을 저장할 수 없습니다. 다시 시도해 주세요"
+        "staleError": "이 계획은 이미 처리되었거나 대체되었습니다. 새로 고쳐 최신 버전을 확인하세요.",
+        "submitFailed": "계획 응답을 저장하지 못했습니다.",
+        "historyTitle": "계획 기록",
+        "open": "계획 열기",
+        "taskOutput": "계획 작업 결과가 저장됨",
+        "status": {
+          "pending": "대기 중",
+          "approved": "승인됨",
+          "changes_requested": "변경 요청됨",
+          "superseded": "새 버전으로 대체됨",
+          "cancelled": "취소됨"
+        }
       },
       "phase": {
-        "coordinating": "조율 중",
-        "dispatching": "배분 중",
+        "coordinating": "조정 중",
+        "dispatching": "배정 중",
         "members_working": "멤버 작업 중",
         "waiting": "작업 대기 중",
         "awaiting_plan_approval": "계획 승인 대기 중",
         "finalizing": "마무리 중",
         "paused": "일시 중지됨",
-        "completed": "완료됨",
         "failed": "실패",
-        "cancelled": "취소됨",
-        "abandoned": "중단됨"
-      }
+        "starting": "시작 중",
+        "idle": "대기 중",
+        "archived": "보관됨",
+        "draining": "일시 중지됨 · 종료 중"
+      },
+      "finalSummary": {
+        "failedTitle": "최종 보고서가 저장되지 않았습니다",
+        "evidencePreserved": "완료 증거와 작업 결과는 보존됩니다.",
+        "retry": "최종 보고서 다시 시도",
+        "retryFailed": "최종 보고서 재시도를 시작하지 못했습니다."
+      },
+      "idleWithLatestOutcome": "{{phase}} · 최근 에피소드: {{outcome}}",
+      "pendingInboxCount": "처리 대기 {{count}}개",
+      "activeMembers": "활성 구성원",
+      "inFlightTurns": "진행 중인 턴",
+      "openTasks": "열린 작업",
+      "blockingInbox": "차단 중인 받은 편지함",
+      "blockersTitle": "완료를 계속 차단하는 항목",
+      "unknownBlocker": "알 수 없는 시스템 차단 요소"
     },
     "agentOrgIntervention": {
-      "title": "{{member}}와 채팅 중",
-      "description": "Inbox 메시지와 새 작업은 작업이 재개될 때까지 일시 중지됩니다",
+      "directTitle": "{{member}}에게 직접 작업",
+      "writerBadge": "Writer",
+      "directNotice": "허용된 그래프 도구를 사용하지 않는 한 직접 작업은 작업 보드에 들어가지 않습니다",
+      "directPaused": "직접 부가 작업은 가능하며 팀의 공식 작업은 계속 일시 중지됩니다",
+      "directUnknown": "직접 작업이 예기치 않게 종료되었습니다. 돌아가기 전에 가능한 부작용을 확인하세요",
+      "unavailableStarting": "팀 시작이 끝나면 직접 작업을 요청할 수 있습니다",
+      "unavailableFailed": "팀이 실패 상태인 동안 직접 작업을 요청할 수 없습니다",
       "returnToWork": "작업 재개",
       "returning": "재개 중…",
-      "loadFailed": "개입 상태를 불러오지 못했습니다",
+      "endDirectWork": "직접 작업 종료",
+      "endingDirectWork": "종료 중…",
+      "directReady": "직접 작업이 완료되었습니다. 후속 요청을 보내거나 이 직접 작업을 종료하세요",
+      "stopping": "중지 중…",
+      "actionFailed": "직접 작업 동작에 실패했습니다. 다시 시도하세요.",
       "busyShort": "사용자 채팅",
-      "teammateBusy": "이 teammate는 직접 사용자 채팅 중입니다"
+      "teammateBusy": "이 teammate는 직접 사용자 채팅 중입니다",
+      "activity": {
+        "yielding": "공식 작업을 안전하게 넘기는 중…",
+        "user_intervention": "공식 작업 재개를 기다리는 중",
+        "side_quest": "직접 턴 {{count}}개 실행 또는 대기 중",
+        "yield_timeout": "안전한 인계를 계속 기다리는 중"
+      },
+      "outcome": {
+        "restoredTask": "원래 작업이 재개되었습니다",
+        "clearedPaused": "직접 작업 종료; 팀 공식 작업은 계속 일시 중지됨",
+        "clearedIdle": "직접 작업 종료; 팀은 계속 유휴 상태",
+        "directEnded": "직접 작업 종료",
+        "noLongerNeeded": "직접 작업 종료; 원래 작업이 끝났거나 재할당됨"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Idle",
@@ -2109,7 +2220,8 @@
       "cancelled": "Cancelled",
       "userIntervention": "User chat",
       "noTasks": "No tasks"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "제목 없는 계획",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}}이(가) 작업을 만들지 못했습니다",
       "updateRunning": "{{sender}}이(가) 작업을 업데이트하는 중",
       "updateRejected": "{{sender}}의 작업 업데이트에 수정이 필요합니다",
-      "updateFailed": "{{sender}}이(가) 작업을 업데이트하지 못했습니다"
+      "updateFailed": "{{sender}}이(가) 작업을 업데이트하지 못했습니다",
+      "updateDeferred": "{{sender}}이(가) 정리 완료까지 작업 완료를 보류했습니다"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator read messages sent by other agents"
     },
     "userMessagePending": "{{member}} is picking up your message",
     "pausedBanner": {
-      "title": "New work is paused",
-      "body": "Pause stops active replies, send a message or press Resume to continue",
+      "title": "공식 작업이 일시 중지되었습니다",
+      "body": "Coordinator 작업을 계속하려면 재개하세요. @Member 사이드 퀘스트는 계속 보낼 수 있습니다.",
       "resume": "Resume"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}}회 기타 도구 호출",
       "otherTools_other": "{{count}}회 기타 도구 호출"
     },
-    "loadOlder": "이전 메시지 불러오기",
-    "historyLoadFailed": "기록을 사용할 수 없습니다",
-    "triggerLabel": "그룹 채팅"
+    "triggerLabel": "그룹 채팅",
+    "userMessageOutcomeUnknown": "전달 결과를 알 수 없습니다. 원래 전달을 다시 시도하세요.",
+    "coordinatorLabel": "코디네이터",
+    "youLabel": "나",
+    "retry": "다시 시도",
+    "memberCount_one": "멤버 {{count}}명",
+    "memberCount_other": "멤버 {{count}}명",
+    "memberFallback": "멤버",
+    "retryPossibleDuplicateConfirm": "이 전달의 결과를 알 수 없습니다. 다시 시도하면 작업이 중복될 수 있습니다. 그래도 새 Turn을 만들까요?",
+    "mixedTargetError": "Coordinator와 Member에게 보내는 메시지를 따로 전송하세요.",
+    "submitError": "그룹 메시지를 보내지 못했습니다. 다시 시도하세요.",
+    "projection": {
+      "title": "Team 그룹 대화",
+      "queueGuidance": "메시지는 기본적으로 대기열에 들어갑니다. 즉시 수정하려면 해당 Member의 개별 페이지를 여세요.",
+      "archived": "이 Team은 보관되었습니다. 그룹 기록은 읽기 전용입니다.",
+      "loadOlder": "이전 메시지 불러오기",
+      "loadError": "그룹 메시지를 불러오지 못했습니다.",
+      "actionError": "그룹 작업을 완료하지 못했습니다. 다시 시도하세요.",
+      "loading": "그룹 메시지 불러오는 중…",
+      "empty": "아직 그룹 메시지가 없습니다.",
+      "unavailable": "이 메시지를 사용할 수 없습니다.",
+      "stop": "중지",
+      "retryDelivery": "전달 다시 시도",
+      "retryNewTurn": "새 Turn으로 다시 시도",
+      "activity": {
+        "taskFallback": "제목 없는 작업",
+        "task_created": "작업 생성: {{task}} · {{member}}",
+        "task_started": "{{member}} 님이 시작함: {{task}}",
+        "task_completed": "{{member}} 님이 완료함: {{task}}",
+        "task_failed": "{{member}} 님이 완료하지 못함: {{task}}",
+        "task_cancelled": "작업 취소: {{task}}",
+        "task_reassigned": "작업을 {{previousMember}} 님에서 {{member}} 님으로 재할당: {{task}}",
+        "task_replacement_created": "{{replacedTask}}의 대체 작업 생성: {{task}} · {{member}}",
+        "team_paused": "Team 일시 중지",
+        "team_resumed": "Team 재개",
+        "member_returned": "{{member}} 님이 Team 작업으로 복귀함",
+        "completion_certified": "Team 완료 인증: {{outcome}}",
+        "final_report_failed": "최종 보고서를 저장하지 못함",
+        "team_archived": "Team 보관됨"
+      },
+      "state": {
+        "queued": "대기 중",
+        "running": "실행 중",
+        "answered": "응답 완료",
+        "failed": "실패",
+        "cancelled": "취소됨",
+        "unknown": "결과 알 수 없음"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "작업 업데이트됨",
       "runningTitle": "작업 업데이트 중",
       "rejectedTitle": "작업 업데이트에 수정 필요",
-      "failedTitle": "작업 업데이트 실패"
+      "failedTitle": "작업 업데이트 실패",
+      "deferredTitle": "정리 완료까지 작업 완료 보류"
     },
     "get": {
       "title": "작업 상세 보기"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "진행 중",
       "rejected": "수정 필요",
-      "failed": "실패"
-    }
+      "failed": "실패",
+      "deferred": "완료 보류 · 정리 대기 중"
+    },
+    "unassignedOwner": "할당되지 않음",
+    "currentRecordUnavailable": "현재 상태를 사용할 수 없음",
+    "currentStatusLabel": "현재 상태",
+    "currentOwnerLabel": "현재 담당자",
+    "replacementLabel": "대체 작업"
   },
   "manageAgentDef": {
     "action": {

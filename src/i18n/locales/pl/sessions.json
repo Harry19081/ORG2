@@ -431,7 +431,8 @@
             "taskOperationRunning": "{{subject}} wykonuje operację na zadaniu",
             "taskOperationRejected": "Operacja na zadaniu {{subject}} wymaga poprawki",
             "taskOperationFailed": "Operacja na zadaniu {{subject}} nie powiodła się",
-            "turnLoading": "Wiadomość {{subject}} jest wczytywana…"
+            "turnLoading": "Wiadomość {{subject}} jest wczytywana…",
+            "taskOperationDeferred": "{{subject}} odroczył(a) ukończenie zadania do czasu zakończenia porządkowania"
           }
         },
         "divider": {
@@ -2060,64 +2061,174 @@
       }
     },
     "agentOrgTasks": {
-      "title": "Zadania zespołu",
       "owner": "Właściciel: {{owner}}",
       "ownerNoSession": "{{owner}} nie ma jeszcze widocznej sesji członka",
       "statusPending": "Oczekuje",
       "statusInProgress": "W toku",
       "statusCompleted": "Ukończone",
-      "statusBlocked": "Zablokowane"
+      "statusBlocked": "Zablokowane",
+      "statusFailed": "Niepowodzenie",
+      "statusCancelled": "Anulowane",
+      "currentWork": "Bieżąca praca",
+      "currentEmpty": "Brak bieżącej pracy",
+      "history": "Historia",
+      "historyFilter": "Filtruj historię zadań",
+      "historyEmpty": "Brak zadań dla tego filtra",
+      "loadingHistory": "Ładowanie historii…",
+      "historyLoadFailed": "Nie udało się załadować historii",
+      "previousPage": "Poprzednia",
+      "nextPage": "Następna",
+      "details": "Szczegóły",
+      "loadingDetails": "Ładowanie szczegółów…",
+      "detailLoadFailed": "Nie udało się załadować szczegółów",
+      "output": "Wynik",
+      "annotations": "Postęp i notatki audytu",
+      "loadMoreAnnotations": "Wczytaj więcej",
+      "reassign": "Przypisz ponownie",
+      "cancelTask": "Anuluj zadanie",
+      "reassignTitle": "Przypisać to zadanie ponownie?",
+      "cancelTitle": "Anulować to zadanie?",
+      "reassignWarning": "Bieżące wykonanie musi się zatrzymać przed uruchomieniem zastępstwa.",
+      "cancelWarning": "Spowoduje to usunięcie zadania z zakresu tej dostawy. Bieżące wykonanie zostanie zatrzymane, a zadania zależne wymagają osobnej decyzji.",
+      "replacementOwner": "Nowy wykonawca",
+      "handoffFailed": "Nie udało się bezpiecznie zaktualizować zadania",
+      "handoffNeedsDecision": "Przekazanie zadania wymaga decyzji",
+      "handoffStopping": "Zatrzymywanie poprzedniego wykonania",
+      "handoffApplyingDecision": "Stosowanie: {{decision}}",
+      "handoffDecisionFailed": "Zaakceptowana decyzja wymaga ponownej próby czyszczenia",
+      "retryHandoffDecision": "Ponów decyzję",
+      "handoffEvidence": "Poprzedni wykonawca: {{owner}} · {{state}} · lokalni zapisujący: {{count}}",
+      "continueReplacement": "Kontynuuj zastępstwo",
+      "keepStopped": "Pozostaw zatrzymane",
+      "abandonEpisode": "Porzuć przebieg",
+      "resolveHandoffTitle": "Rozwiązać przekazanie?",
+      "continueWarning": "Kontynuuj dopiero po zatrzymaniu lokalnego wykonania i procesów. Ta decyzja akceptuje nieznany wynik zewnętrzny.",
+      "keepStoppedWarning": "Zastępstwo zostanie anulowane. Stare zadanie nie wróci, a inne będą kontynuowane.",
+      "abandonWarning": "Wszystkie otwarte zadania zostaną zatrzymane, a wynik zespołu będzie Anulowany.",
+      "handoffResolutionFailed": "Nie udało się rozwiązać przekazania",
+      "statusAwaitingApproval": "Oczekuje na zatwierdzenie"
     },
     "agentOrgOverview": {
+      "needsAttention": "Wymaga uwagi",
+      "coordinatorWorkState": {
+        "active": "Koordynator aktywny",
+        "waiting_for_org_event": "Koordynator czeka na zdarzenie",
+        "inactive": "Koordynator nieaktywny"
+      },
+      "outcome": {
+        "delivered": "Dostarczono",
+        "cancelled": "Anulowano",
+        "failed": "Niepowodzenie"
+      },
       "title": "Przegląd Zespołu Agent",
-      "summary": "{{active}} aktywnych · {{unread}} nieprzeczytanych",
+      "summary": "{{active}} aktywnych · {{pending}} oczekujących",
       "loadFailed": "Nie udało się załadować przeglądu zespołu",
       "tasks": "Zadania",
       "doneOf": "{{done}} / {{total}} ukończono",
       "members": "Członkowie",
+      "directActivity": "Bezpośrednia praca członków",
       "activeOf": "{{active}} / {{total}} aktywnych",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} nieprzeczytanych",
       "pauseRun": "Wstrzymaj wykonanie",
       "resumeRun": "Wznów wykonanie",
-      "viewCoordinatorHistory": "View coordinator chat history",
+      "archiveRun": "Archiwizuj zespół",
+      "archiveTitle": "Zarchiwizować ten zespół?",
+      "archiveWorkingWarning": "Archiwizacja jest nieodwracalna. Trwające zadania zostaną anulowane, a zespół będzie tylko do odczytu.",
+      "archiveWarning": "Archiwizacja jest nieodwracalna. Zespół będzie tylko do odczytu i nie będzie można go wznowić.",
+      "archivedReadOnly": "Zarchiwizowano — historia tylko do odczytu",
+      "archiveFailed": "Nie udało się zarchiwizować zespołu",
+      "archiveTeardownPending": "Zarchiwizowano. Środowiska są nadal zatrzymywane w tle.",
+      "archiveTeardownRetained": "Zarchiwizowano, ale nie zwolniono {{count}} środowiska. Usuwanie pozostaje zablokowane.",
+      "archiveTeardownQuiesced": "Zarchiwizowano i całkowicie zatrzymano. Można już trwale usunąć.",
+      "dangerZone": "Strefa niebezpieczna",
+      "deleteDescription": "Trwale usuń ten zespół, wszystkie sesje i historię.",
+      "deleteTeam": "Usuń zespół",
+      "deleteTitle": "Trwale usunąć ten zespół?",
+      "deleteWarning": "Wszystkie sesje i historia zespołu zostaną trwale usunięte. Tej operacji nie można cofnąć.",
+      "deleteAcknowledge": "Rozumiem, że to usunięcie jest trwałe.",
+      "deleteFailed": "Nie udało się usunąć zespołu",
+      "viewCoordinatorHistory": "Pokaż historię czatu koordynatora",
       "taskWindowTruncated": "Wyświetlono pierwsze {{visible}} z {{total}} zadań. Otwórz szczegóły zadania, aby zobaczyć pełne wyniki.",
       "planApproval": {
-        "title": "Plan gotowy do zatwierdzenia",
-        "from": "Przesłany przez {{member}}",
+        "from": "Przesłane przez {{member}}",
         "approve": "Zatwierdź plan",
-        "approveEdits": "Zatwierdź zmiany",
         "requestChanges": "Poproś o zmiany",
-        "sendFeedback": "Wyślij uwagi",
-        "editLabel": "Edytuj przesłany plan",
-        "feedbackLabel": "Uwagi do rewizji planu",
-        "feedbackPlaceholder": "Powiedz Plannerowi dokładnie, co musi się zmienić…",
-        "paused": "Wznów wykonanie, zanim odpowiesz na ten plan.",
-        "staleError": "Ten plan został już rozstrzygnięty lub zastąpiony. Odśwież, aby zobaczyć najnowszą rewizję",
-        "submitFailed": "Nie udało się zapisać odpowiedzi na plan. Spróbuj ponownie"
+        "sendFeedback": "Wyślij opinię",
+        "feedbackLabel": "Uwagi do wersji planu",
+        "feedbackPlaceholder": "Opisz dokładnie, co Planner ma zmienić…",
+        "paused": "Wznów wykonanie przed odpowiedzią na ten plan.",
+        "staleError": "Ten plan został już rozstrzygnięty lub zastąpiony. Odśwież widok.",
+        "submitFailed": "Nie udało się zapisać odpowiedzi na plan.",
+        "historyTitle": "Historia planu",
+        "open": "Otwórz plan",
+        "taskOutput": "Wynik zadania planowania zapisany",
+        "status": {
+          "pending": "Oczekuje",
+          "approved": "Zatwierdzony",
+          "changes_requested": "Poproszono o zmiany",
+          "superseded": "Zastąpiony",
+          "cancelled": "Anulowany"
+        }
       },
       "phase": {
         "coordinating": "Koordynowanie",
-        "dispatching": "Rozdzielanie",
+        "dispatching": "Przydzielanie",
         "members_working": "Członkowie pracują",
         "waiting": "Oczekiwanie na pracę",
         "awaiting_plan_approval": "Oczekiwanie na zatwierdzenie planu",
         "finalizing": "Finalizowanie",
         "paused": "Wstrzymano",
-        "completed": "Ukończono",
         "failed": "Niepowodzenie",
-        "cancelled": "Anulowano",
-        "abandoned": "Porzucono"
-      }
+        "starting": "Uruchamianie",
+        "idle": "Bezczynny",
+        "archived": "Zarchiwizowano",
+        "draining": "Wstrzymano · kończenie"
+      },
+      "finalSummary": {
+        "failedTitle": "Raport końcowy nie został zapisany",
+        "evidencePreserved": "Dowody ukończenia i wyniki zadań zostały zachowane.",
+        "retry": "Ponów raport końcowy",
+        "retryFailed": "Nie udało się rozpocząć ponownej próby raportu."
+      },
+      "idleWithLatestOutcome": "{{phase}} · Ostatni epizod: {{outcome}}",
+      "pendingInboxCount": "{{count}} oczekujących",
+      "activeMembers": "Aktywni członkowie",
+      "inFlightTurns": "Trwające tury",
+      "openTasks": "Otwarte zadania",
+      "blockingInbox": "Blokująca skrzynka odbiorcza",
+      "blockersTitle": "Co nadal blokuje ukończenie",
+      "unknownBlocker": "Nieznana blokada systemowa"
     },
     "agentOrgIntervention": {
-      "title": "Rozmowa z {{member}}",
-      "description": "Wiadomości Inbox i nowa praca są wstrzymane do wznowienia pracy",
+      "directTitle": "Bezpośrednia praca z {{member}}",
+      "writerBadge": "Writer",
+      "directNotice": "Bezpośrednia praca pozostaje poza tablicą zadań, chyba że użyto dozwolonego narzędzia grafu",
+      "directPaused": "Bezpośrednia praca poboczna jest dostępna; formalna praca zespołu pozostaje wstrzymana",
+      "directUnknown": "Bezpośrednia praca zakończyła się nieoczekiwanie; przed powrotem sprawdź możliwe skutki uboczne",
+      "unavailableStarting": "Bezpośrednia praca będzie dostępna po uruchomieniu zespołu",
+      "unavailableFailed": "Bezpośrednia praca jest niedostępna, gdy zespół jest w stanie błędu",
       "returnToWork": "Wznów pracę",
       "returning": "Wznawianie…",
-      "loadFailed": "Nie udało się wczytać stanu interwencji",
+      "endDirectWork": "Zakończ bezpośrednią pracę",
+      "endingDirectWork": "Kończenie…",
+      "directReady": "Bezpośrednia praca jest zakończona; wyślij kolejną wiadomość albo zakończ ten wątek",
+      "stopping": "Zatrzymywanie…",
+      "actionFailed": "Działanie bezpośredniej pracy nie powiodło się. Spróbuj ponownie.",
       "busyShort": "Chat użytkownika",
-      "teammateBusy": "Ten teammate jest w bezpośrednim chacie z użytkownikiem"
+      "teammateBusy": "Ten teammate jest w bezpośrednim chacie z użytkownikiem",
+      "activity": {
+        "yielding": "Bezpieczne przekazywanie formalnej pracy…",
+        "user_intervention": "Oczekiwanie na wznowienie formalnej pracy",
+        "side_quest": "{{count}} bezpośredni turn trwa lub czeka",
+        "yield_timeout": "Nadal oczekuje na bezpieczne przekazanie"
+      },
+      "outcome": {
+        "restoredTask": "Pierwotne zadanie zostało wznowione",
+        "clearedPaused": "Bezpośrednia praca zakończona; zespół nadal wstrzymany",
+        "clearedIdle": "Bezpośrednia praca zakończona; zespół pozostaje bezczynny",
+        "directEnded": "Bezpośrednia praca zakończona",
+        "noLongerNeeded": "Bezpośrednia praca zakończona; pierwotna praca zakończyła się lub została przydzielona ponownie"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Bezczynny",
@@ -2128,7 +2239,8 @@
       "cancelled": "Anulowano",
       "userIntervention": "Czat użytkownika",
       "noTasks": "Brak zadań"
-    }
+    },
+    "agentOrgInbox": {}
   },
   "planDoc": {
     "untitled": "Plan bez tytułu",
@@ -2205,15 +2317,16 @@
       "createFailed": "{{sender}} nie zdołał utworzyć zadania",
       "updateRunning": "{{sender}} aktualizuje zadanie",
       "updateRejected": "Aktualizacja zadania przez {{sender}} wymaga poprawki",
-      "updateFailed": "{{sender}} nie zdołał zaktualizować zadania"
+      "updateFailed": "{{sender}} nie zdołał zaktualizować zadania",
+      "updateDeferred": "{{sender}} odroczył(a) ukończenie zadania do czasu zakończenia porządkowania"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator przeczytał wiadomości wysłane przez innych agents"
     },
     "userMessagePending": "{{member}} przejmuje Twoją wiadomość",
     "pausedBanner": {
-      "title": "Nowa praca jest wstrzymana",
-      "body": "Pauza zatrzymuje aktywne odpowiedzi, wyślij wiadomość albo kliknij Wznów, aby kontynuować",
+      "title": "Formalna praca jest wstrzymana",
+      "body": "Wznów pracę z Coordinatorem. Nadal możesz użyć @Member do zadania pobocznego.",
       "resume": "Wznów"
     },
     "toolUseSummary": {
@@ -2229,9 +2342,55 @@
       "otherTools_one": "{{count}} inne wywołanie narzędzia",
       "otherTools_other": "{{count}} innych wywołań narzędzi"
     },
-    "loadOlder": "Wczytaj starsze wiadomości",
-    "historyLoadFailed": "Historia niedostępna",
-    "triggerLabel": "Czat grupowy"
+    "triggerLabel": "Czat grupowy",
+    "userMessageOutcomeUnknown": "Wynik dostarczenia jest nieznany. Ponów pierwotne dostarczenie.",
+    "coordinatorLabel": "Koordynator",
+    "youLabel": "Ty",
+    "retry": "Ponów",
+    "memberCount_one": "{{count}} członek",
+    "memberCount_other": "{{count}} członków",
+    "memberFallback": "Członek",
+    "retryPossibleDuplicateConfirm": "Wynik tego dostarczenia jest nieznany. Ponowienie może zduplikować działania. Mimo to utworzyć nowy Turn?",
+    "mixedTargetError": "Wysyłaj wiadomości do Coordinatora i Memberów osobno.",
+    "submitError": "Nie udało się wysłać wiadomości grupowej. Spróbuj ponownie.",
+    "projection": {
+      "title": "Rozmowa grupowa Teamu",
+      "queueGuidance": "Wiadomości są domyślnie kolejkowane. Aby wprowadzić natychmiastową korektę, otwórz osobną stronę Membera.",
+      "archived": "Ten Team jest zarchiwizowany. Historia grupy jest tylko do odczytu.",
+      "loadOlder": "Wczytaj starsze wiadomości",
+      "loadError": "Nie udało się wczytać wiadomości grupowych.",
+      "actionError": "Nie udało się wykonać tej akcji grupowej. Spróbuj ponownie.",
+      "loading": "Wczytywanie wiadomości grupowych…",
+      "empty": "Nie ma jeszcze wiadomości grupowych.",
+      "unavailable": "Ta wiadomość jest niedostępna.",
+      "stop": "Zatrzymaj",
+      "retryDelivery": "Ponów dostarczenie",
+      "retryNewTurn": "Ponów jako nowy Turn",
+      "activity": {
+        "taskFallback": "Zadanie bez nazwy",
+        "task_created": "Utworzono zadanie: {{task}} · {{member}}",
+        "task_started": "{{member}} rozpoczął: {{task}}",
+        "task_completed": "{{member}} ukończył: {{task}}",
+        "task_failed": "{{member}} nie ukończył: {{task}}",
+        "task_cancelled": "Anulowano zadanie: {{task}}",
+        "task_reassigned": "Zadanie przekazano od {{previousMember}} do {{member}}: {{task}}",
+        "task_replacement_created": "Utworzono zadanie zastępcze dla {{replacedTask}}: {{task}} · {{member}}",
+        "team_paused": "Zespół wstrzymany",
+        "team_resumed": "Zespół wznowiony",
+        "member_returned": "{{member}} wrócił do pracy zespołu",
+        "completion_certified": "Zakończenie zespołu potwierdzone: {{outcome}}",
+        "final_report_failed": "Nie udało się zapisać raportu końcowego",
+        "team_archived": "Zespół zarchiwizowany"
+      },
+      "state": {
+        "queued": "W kolejce",
+        "running": "W toku",
+        "answered": "Odpowiedziano",
+        "failed": "Niepowodzenie",
+        "cancelled": "Anulowano",
+        "unknown": "Wynik nieznany"
+      }
+    }
   },
   "orgTask": {
     "create": {
@@ -2248,7 +2407,8 @@
       "title": "Zaktualizowano zadanie",
       "runningTitle": "Aktualizowanie zadania",
       "rejectedTitle": "Aktualizacja zadania wymaga poprawki",
-      "failedTitle": "Aktualizacja zadania nie powiodła się"
+      "failedTitle": "Aktualizacja zadania nie powiodła się",
+      "deferredTitle": "Ukończenie zadania odroczone do czasu porządkowania"
     },
     "get": {
       "title": "Wyświetl szczegóły zadania"
@@ -2271,8 +2431,14 @@
     "outcome": {
       "pending": "W toku",
       "rejected": "Wymaga poprawki",
-      "failed": "Niepowodzenie"
-    }
+      "failed": "Niepowodzenie",
+      "deferred": "Ukończenie odroczone · oczekiwanie na porządkowanie"
+    },
+    "unassignedOwner": "Nieprzypisane",
+    "currentRecordUnavailable": "Bieżący stan niedostępny",
+    "currentStatusLabel": "Bieżący status",
+    "currentOwnerLabel": "Bieżący właściciel",
+    "replacementLabel": "Zastępstwo"
   },
   "manageAgentDef": {
     "action": {
