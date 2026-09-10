@@ -104,6 +104,10 @@ async fn dispatch_method(
 ) -> Result<Value, RpcError> {
     match method {
         "initialize" => handle_initialize(ctx, params),
+        "session/resolve" => {
+            require_initialized(ctx)?;
+            super::adapters::session_identity::resolve(params).await
+        }
         "session/list" => {
             require_initialized(ctx)?;
             session::session_list(params).await
@@ -227,6 +231,7 @@ fn handle_initialize(ctx: &mut RpcContext, params: &Value) -> Result<Value, RpcE
             "roundHistory": true,
             "openSessionFile": true,
             "modelSelection": true,
+            "sessionIdentity": true,
         }
     }))
 }
