@@ -67,7 +67,8 @@ interface AccountInlineExpandedCardProps {
   ) => void;
   onRefresh?: () => Promise<void>;
   onRevalidateAccount?: (accountId: string) => Promise<void>;
-  refreshing?: boolean;
+  refreshingUsage?: boolean;
+  refreshingModels?: boolean;
   onEditSave?: (
     accountId: string,
     name: string,
@@ -92,7 +93,8 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
   onUpdateAccountDefaultVariant,
   onRefresh,
   onRevalidateAccount,
-  refreshing = false,
+  refreshingUsage = false,
+  refreshingModels = false,
   onEditSave,
   editRequested = false,
   onEditCancel,
@@ -401,15 +403,15 @@ const AccountInlineExpandedCard: React.FC<AccountInlineExpandedCardProps> = ({
           account={account}
           refreshLabel={t("keyVault.quota.refreshUsage")}
           onRefresh={showQuotaRefresh ? handleRefreshUsage : undefined}
-          refreshing={refreshing}
+          refreshing={refreshingUsage}
           onRefreshModels={showModelRefresh ? handleRefreshModels : undefined}
-          refreshingModels={refreshing}
+          refreshingModels={refreshingModels}
         />
       ) : onRevalidateAccount && showModels ? (
         <AccountInlineActionsBar
           account={account}
           onRefreshModels={handleRefreshModels}
-          refreshingModels={refreshing}
+          refreshingModels={refreshingModels}
         />
       ) : null}
     </InlineCardShell>

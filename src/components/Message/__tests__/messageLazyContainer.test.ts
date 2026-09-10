@@ -87,6 +87,31 @@ describe("Message (lazy toast container)", () => {
     expect(root?.textContent).toContain("saved ok");
   });
 
+  it("replaces a fixed refresh slot instead of stacking opposite results", async () => {
+    await act(async () => {
+      Message.success({
+        id: "account-usage-refresh",
+        content: "usage refreshed",
+        duration: 0,
+      });
+    });
+    await waitForToastText("usage refreshed");
+
+    await act(async () => {
+      Message.error({
+        id: "account-usage-refresh",
+        content: "sign-in expired",
+        duration: 0,
+      });
+    });
+    await waitForToastText("sign-in expired");
+
+    const root = document.querySelector("[data-message-root]");
+    expect(root?.textContent).not.toContain("usage refreshed");
+    expect(root?.textContent).toContain("sign-in expired");
+    expect(root?.children).toHaveLength(1);
+  });
+
   it("removes toasts and the container on destroy", async () => {
     await act(async () => {
       Message.info("temporary", { duration: 0 });

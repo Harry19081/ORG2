@@ -150,7 +150,8 @@ describe("integration category table contracts", () => {
       handleRefreshAllModels: vi.fn(),
       handleRefreshAccountUsage: vi.fn(),
       refresh: vi.fn(),
-      refreshingAccountId: "account",
+      refreshingUsageAccountIds: new Set(["account"]),
+      refreshingModelsAccountIds: new Set(),
       refreshingAllModels: true,
     });
     const cliAgents = fixture<
