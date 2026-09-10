@@ -35,6 +35,7 @@ import {
   applicationUiFontAtom,
   darkAccentPresetAtom,
   darkSkinIdAtom,
+  dockIconAtom,
   globalThemeIdAtom,
   iconStyleAtom,
   lightAccentPresetAtom,
@@ -83,6 +84,7 @@ export function useAppearanceState() {
   const [lightAccent, setLightAccent] = useAtom(lightAccentPresetAtom);
   const [darkAccent, setDarkAccent] = useAtom(darkAccentPresetAtom);
   const [iconStyle, setIconStyle] = useAtom(iconStyleAtom);
+  const [dockIcon, setDockIcon] = useAtom(dockIconAtom);
   const [translucentSidebar, setTranslucentSidebar] = useAtom(
     translucentSidebarAtom
   );
@@ -281,6 +283,15 @@ export function useAppearanceState() {
     [t]
   );
 
+  const dockIconOptions = useMemo(
+    () =>
+      (["dark", "light"] as const).map((variant) => ({
+        label: t(`general.appIconOptions.${variant}`),
+        value: variant,
+      })),
+    [t]
+  );
+
   return {
     uiScale,
     applicationUiFont,
@@ -324,5 +335,8 @@ export function useAppearanceState() {
     iconStyle,
     setIconStyle,
     iconStyleOptions,
+    dockIcon,
+    setDockIcon,
+    dockIconOptions,
   };
 }
