@@ -317,7 +317,7 @@ export const GENERAL_SETTINGS_REGISTRY = {
     schema: SidebarGuideProgressSchema,
     default: DEFAULT_SIDEBAR_GUIDE_PROGRESS,
     description:
-      "Completed milestones for the optional sidebar guide. The legacy setting key is retained so existing progress survives upgrades",
+      "Retired sidebar-guide progress, retained only to read existing settings. The onboarding discovery modal does not read or write this value",
     category: "general",
   },
   "general.githubStarPromptCompleted": {

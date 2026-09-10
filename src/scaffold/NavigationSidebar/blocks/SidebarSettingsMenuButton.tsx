@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -44,10 +44,12 @@ import {
   Layout01Icon,
   Login02Icon,
   Logout02Icon,
+  RocketIcon,
   Settings01Icon,
 } from "@src/icons";
 import { useAppearanceState } from "@src/modules/MainApp/Settings/sections/useAppearanceState";
 import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "@src/scaffold/NavigationSidebar/config";
+import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
@@ -99,6 +101,7 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
 }) => {
   const { t } = useTranslation("navigation");
   const { t: tSettings } = useTranslation("settings");
+  const { t: tOnboarding } = useTranslation("onboarding");
   const { goToSettings } = useAppNavigation();
   const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
   const signedIn = useAtomValue(org2CloudAuthAtom) !== null;
@@ -217,6 +220,11 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
     },
     [panelPosition.bottom, panelRef]
   );
+
+  const handleOpenOnboarding = useCallback(() => {
+    flushSync(closeAll);
+    window.dispatchEvent(new CustomEvent(TUTORIALS_OPEN_EVENT));
+  }, [closeAll]);
 
   const handleOpenSettings = useCallback(() => {
     closeAll();
@@ -455,6 +463,26 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
                 />
               </button>
               <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
+              {devModeEnabled && (
+                <button
+                  type="button"
+                  className={`${DROPDOWN_CLASSES.menuActionItem} gap-2`}
+                  onMouseEnter={() => setActiveSubmenu(null)}
+                  onFocus={() => setActiveSubmenu(null)}
+                  onClick={handleOpenOnboarding}
+                  aria-haspopup="dialog"
+                  data-testid="sidebar-menu-onboarding"
+                >
+                  <HugeiconsIcon
+                    icon={RocketIcon}
+                    size={DROPDOWN_ITEM.iconSize}
+                    className={MENU_ICON_CLASS_NAME}
+                  />
+                  <span className="truncate">
+                    {tOnboarding("discovery.title")}
+                  </span>
+                </button>
+              )}
               <button
                 type="button"
                 className={`${DROPDOWN_CLASSES.menuActionItem} justify-between`}

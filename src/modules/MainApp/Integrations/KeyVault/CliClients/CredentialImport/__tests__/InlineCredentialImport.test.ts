@@ -1,5 +1,6 @@
-import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+// @vitest-environment jsdom
+import { act, createElement } from "react";
+import { createRoot } from "react-dom/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import InlineCredentialImport from "../InlineCredentialImport";
@@ -57,9 +58,7 @@ describe("InlineCredentialImport notices", () => {
         error: "Permission denied",
       },
     ];
-    const markup = renderToStaticMarkup(
-      createElement(InlineCredentialImport, { forceExpanded: true })
-    );
+    const markup = renderExpandedImport();
     expect(markup.match(/role="alert"/g)).toHaveLength(2);
     expect(markup).toContain("Keychain unavailable");
     expect(markup).toContain("credentialImport.partialFailure");
@@ -74,9 +73,28 @@ describe("InlineCredentialImport notices", () => {
   });
 
   it("does not announce an error before an import fails", () => {
-    const markup = renderToStaticMarkup(
-      createElement(InlineCredentialImport, { forceExpanded: true })
-    );
+    const markup = renderExpandedImport();
     expect(markup).not.toContain('role="alert"');
   });
 });
+
+function renderExpandedImport() {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  try {
+    act(() => root.render(createElement(InlineCredentialImport)));
+    const toggle = container.querySelector("button");
+    expect(toggle).not.toBeNull();
+    act(() => toggle!.click());
+    const markup = container.innerHTML;
+    act(() => toggle!.click());
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+    return markup;
+  } finally {
+    act(() => root.unmount());
+    container.remove();
+    Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
+  }
+}

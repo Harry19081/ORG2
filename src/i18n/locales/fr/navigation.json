@@ -167,21 +167,8 @@
       "unknownRole": "Rôle inconnu"
     },
     "guide": {
-      "trigger": "Ouvrir le guide",
-      "title": "Bien démarrer avec ORGII",
       "startSession": "Démarrer une session",
-      "close": "Fermer le guide",
-      "localWorkspace": "Espace de travail local",
-      "connectOrganization": "Connecter ou créer un espace de travail",
-      "createOrganizationHint": "Saisissez un nom d’espace de travail, puis sélectionnez Créer. Le guide continuera après la création de l’espace de travail cloud.",
-      "inviteTeammate": "Inviter un membre de l’équipe",
-      "inviteTeammateHint": "Créez ici un lien d’invitation, puis envoyez-le à votre coéquipier.",
-      "invitePermissionHint": "Vous pouvez consulter la liste des membres ici. Un administrateur ou propriétaire de l’espace de travail doit créer l’invitation.",
-      "viewTeamActivity": "Voir l’utilisation de l’équipe",
-      "viewTeamActivityHint": "Runtime est ouvert sur Membres. Choisissez un membre pour voir son utilisation de Codex, Claude et Cursor ; si aucune donnée n’apparaît, activez d’abord la synchronisation Runtime de l’équipe.",
-      "exploreProduct": "Découvrir les pages principales",
-      "nextStep": "Étape suivante",
-      "dismiss": "Masquer le guide"
+      "connectOrganization": "Connecter ou créer un espace de travail"
     }
   },
   "launchpad": {

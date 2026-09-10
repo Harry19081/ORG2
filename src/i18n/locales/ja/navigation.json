@@ -167,21 +167,8 @@
       "unknownRole": "不明なロール"
     },
     "guide": {
-      "trigger": "ガイドを開く",
-      "title": "ORGII を使い始める",
       "startSession": "セッションを開始",
-      "close": "ガイドを閉じる",
-      "localWorkspace": "ローカルワークスペース",
-      "connectOrganization": "ワークスペースを接続または作成",
-      "createOrganizationHint": "ワークスペース名を入力して「作成」を選択してください。クラウドワークスペースの作成が完了すると次の手順に進みます。",
-      "inviteTeammate": "チームメンバーを招待",
-      "inviteTeammateHint": "ここで招待リンクを作成し、チームメンバーに送信します。",
-      "invitePermissionHint": "ここでメンバー一覧を確認できます。招待はワークスペースの管理者またはオーナーが作成する必要があります。",
-      "viewTeamActivity": "チームの使用状況を表示",
-      "viewTeamActivityHint": "「ランタイム > メンバー」を開きました。メンバーを選ぶと Codex、Claude、Cursor の使用状況を確認できます。データがない場合は、先にチームランタイム同期を有効にしてください。",
-      "exploreProduct": "主要画面を見る",
-      "nextStep": "次のステップ",
-      "dismiss": "ガイドを閉じる"
+      "connectOrganization": "ワークスペースを接続または作成"
     }
   },
   "launchpad": {

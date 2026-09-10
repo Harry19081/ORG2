@@ -32,7 +32,6 @@ import { SidebarBottomBar } from "../../blocks";
 import SidebarSettingsMenuButton from "../../blocks/SidebarSettingsMenuButton";
 import NavigationSidebar from "../../variants/NavigationSidebar";
 import SidebarAccountButton from "../SidebarAccountButton";
-import SidebarGuideButton from "../SidebarGuideButton";
 import type { SidebarTabDisposition } from "../sidebarTabNavigation";
 import { useSessionMenuItems } from "../useSessionMenuItems/index";
 import { DEFAULT_COLLAPSED_SECTION_IDS } from "../workstationSidebarData";
@@ -54,7 +53,6 @@ import { useSidebarSessionRefreshAction } from "./sidebarSessionRefresh";
 import type { SessionSidebarView } from "./types";
 import { useSessionSidebarOrdering } from "./useSessionSidebarOrdering";
 import { useSessionSidebarRowActions } from "./useSessionSidebarRowActions";
-import { useSidebarGuide } from "./useSidebarGuide";
 import { useSidebarStationNavigation } from "./useSidebarStationNavigation";
 import { useWorkItemsSidebarSurface } from "./useWorkItemsSidebarSurface";
 import { useWorkspaceGroupActions } from "./useWorkspaceGroupActions";
@@ -62,7 +60,7 @@ import { useWorkspaceGroupActions } from "./useWorkspaceGroupActions";
 /**
  * Owns organization scope, cross-surface reveal/selection, and shared sidebar chrome.
  * Work-item state/actions, channel scope composition, session row actions/dialogs,
- * and guide workflows have dedicated owners. Every controller remains mounted
+ * workflows have dedicated owners. Every controller remains mounted
  * with this connector; switching views only changes the existing visibility gates.
  */
 export const WorkstationSidebarConnector: React.FC = () => {
@@ -605,15 +603,6 @@ export const WorkstationSidebarConnector: React.FC = () => {
     [wrapOrderedRow, resolvedRenderMenuItemWrapper]
   );
 
-  const guide = useSidebarGuide({
-    t,
-    guideCloudOrg: manageableCloudOrg,
-    activeOrgId,
-    orgSelectorOptions,
-    sessionCount: sessions.length,
-    runtimeLabel,
-  });
-
   return (
     <>
       <NavigationSidebar
@@ -654,15 +643,7 @@ export const WorkstationSidebarConnector: React.FC = () => {
                   )}
                 />
               }
-              rightActions={
-                <>
-                  <SidebarGuideButton
-                    {...guide}
-                    onStartSession={handleGoToNewSession}
-                  />
-                  {sidebarBottomRightActions}
-                </>
-              }
+              rightActions={sidebarBottomRightActions}
             />
           </>
         }
