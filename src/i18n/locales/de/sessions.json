@@ -592,6 +592,7 @@
       "insert": "Einfügen"
     },
     "compactArgHint": "<optionaler Fokus für die Zusammenfassung>",
+    "nativeCommandDescription": "{{command}} in {{provider}} ausführen",
     "compactCommandDescription": "Älteren Kontext zusammenfassen, um Platz freizugeben. Optional: /compact <Fokus für die Zusammenfassung>",
     "canvasCommandDescription": "Eine neue interaktive Canvas erstellen. Optional: /canvas <was erstellt werden soll>",
     "canvasArgHint": "was erstellt werden soll",
@@ -1921,6 +1922,7 @@
       "session": "Session"
     },
     "slashMenu": {
+      "commands": "Befehle",
       "mode": "Modus",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

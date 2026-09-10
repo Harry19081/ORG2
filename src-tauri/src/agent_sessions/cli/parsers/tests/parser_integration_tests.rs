@@ -7,6 +7,19 @@ mod tests {
     use crate::agent_sessions::cli::parsers::cursor::CursorParser;
     use crate::agent_sessions::cli::parsers::CliAgentParser;
 
+    #[test]
+    fn claude_local_command_result_is_visible_and_terminal_without_model_turns() {
+        let mut parser = ClaudeCodeParser::new("local-command");
+        let chunks = parser.parse_line(r#"{"type":"result","subtype":"success","is_error":false,"num_turns":0,"result":"Context Usage","usage":{"input_tokens":0}}"#);
+        assert_eq!(chunks.len(), 2);
+        assert_eq!(chunks[0].function, "native_command");
+        assert_eq!(chunks[0].result["output"], "Context Usage");
+        assert_eq!(chunks[1].action_type, "session_end");
+        assert!(parser.on_exit(0).is_empty());
+        let chunks = parser.parse_line(r#"{"type":"result","subtype":"success","num_turns":1,"result":"Already streamed answer"}"#);
+        assert_eq!(chunks.len(), 1);
+    }
+
     // ── Codex Parser Tests ──────────────────────────────────────
 
     #[test]
@@ -312,6 +325,23 @@ mod tests {
 
         assert_eq!(chunks.len(), 1);
         assert_eq!(chunks[0].action_type, "session_start");
+    }
+
+    #[test]
+    fn claude_init_preserves_bounded_native_command_catalog() {
+        let mut parser = ClaudeCodeParser::new("test-session");
+        let event = serde_json::json!({"type":"system", "subtype":"init", "slash_commands":["compact", "project:review", 3, "x".repeat(257)]});
+        let chunks = parser.parse_line(&event.to_string());
+        assert_eq!(
+            chunks[0].args["slash_commands"],
+            serde_json::json!(["compact", "project:review"])
+        );
+        let event = serde_json::json!({"type":"system", "slash_commands":vec!["valid";600]});
+        let chunks = parser.parse_line(&event.to_string());
+        assert_eq!(
+            chunks[0].args["slash_commands"].as_array().unwrap().len(),
+            512
+        );
     }
 
     #[test]

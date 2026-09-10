@@ -1909,3 +1909,79 @@ fn raw_new_uuid_continuation_preserves_ancestry_after_first_user_rewrite() {
     }
     std::fs::remove_dir_all(directory).unwrap();
 }
+
+#[test]
+fn local_command_stdout_survives_native_replay_as_a_completed_command() {
+    let dir =
+        std::env::temp_dir().join(format!("orgii-claude-local-command-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("local-command.jsonl");
+    std::fs::write(&path, r#"{"type":"user","uuid":"u","timestamp":"2026-09-10T07:00:00Z","message":{"role":"user","content":"<command-name>/context</command-name>\n <command-message>context</command-message>\n <command-args></command-args>"}}
+{"type":"system","subtype":"local_command","uuid":"out","timestamp":"2026-09-10T07:00:01Z","content":"<local-command-stdout>## Context Usage</local-command-stdout>"}
+"#).unwrap();
+    let chunks = load_claude_code_history_from_path("claudecodeapp-test", &path).unwrap();
+    assert_eq!(chunks.len(), 3);
+    assert_eq!(chunks[0].result["message"]["content"], "/context");
+    assert_eq!(chunks[1].function, "native_command");
+    assert_eq!(chunks[1].result["output"], "## Context Usage");
+    assert_eq!(chunks[2].action_type, "task_completed");
+    let again = load_claude_code_history_from_path("claudecodeapp-test", &path).unwrap();
+    assert_eq!(chunks[1].chunk_id, again[1].chunk_id);
+    std::fs::remove_file(path).unwrap();
+    std::fs::remove_dir(dir).unwrap();
+}
+
+#[test]
+fn custom_command_envelope_replays_as_the_original_user_prompt() {
+    let dir = std::env::temp_dir().join(format!(
+        "orgii-claude-custom-command-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("custom-command.jsonl");
+    std::fs::write(&path, r#"{"type":"user","uuid":"u","timestamp":"2026-09-10T07:00:00Z","message":{"role":"user","content":"<command-message>fixture</command-message>\n<command-name>/fixture</command-name>\n<command-args>APP_OK</command-args>"}}
+{"type":"assistant","uuid":"a","parentUuid":"u","timestamp":"2026-09-10T07:00:01Z","message":{"role":"assistant","content":[{"type":"text","text":"CC_COMMAND_APP_OK"}]}}
+"#).unwrap();
+    let chunks = load_claude_code_history_from_path("claudecodeapp-custom", &path).unwrap();
+    assert_eq!(chunks.len(), 2);
+    assert_eq!(chunks[0].result["message"]["content"], "/fixture APP_OK");
+    assert_eq!(chunks[1].result["content"], "CC_COMMAND_APP_OK");
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn sdk_compact_user_stdout_is_a_command_result_but_unrelated_user_text_is_preserved() {
+    let dir = std::env::temp_dir().join(format!("orgii-claude-sdk-stdout-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("compact.jsonl");
+    std::fs::write(&path, r#"{"type":"user","uuid":"cmd","message":{"role":"user","content":"<command-name>/compact</command-name><command-message>compact</command-message><command-args>preserve marker</command-args>"}}
+{"type":"user","uuid":"stdout","entrypoint":"sdk-cli","message":{"role":"user","content":"<local-command-stdout>Compacted </local-command-stdout>"}}
+{"type":"user","uuid":"ordinary","message":{"role":"user","content":"<local-command-stdout>my example</local-command-stdout>"}}
+"#).unwrap();
+    let chunks = load_claude_code_history_from_path("claudecodeapp-compact", &path).unwrap();
+    let indexed = index_claude_user_turns("claudecodeapp-compact", &path).unwrap();
+    assert_eq!(indexed.len(), 2);
+    assert_eq!(
+        indexed[0].user_chunk.result["message"]["content"],
+        "/compact preserve marker"
+    );
+    let window =
+        load_claude_code_initial_window_from_path("claudecodeapp-compact", &path, 1).unwrap();
+    assert!(window
+        .chunks
+        .iter()
+        .any(|chunk| chunk.result["message"]["content"] == "/compact preserve marker"));
+    assert_eq!(chunks.len(), 4);
+    assert_eq!(
+        chunks[0].result["message"]["content"],
+        "/compact preserve marker"
+    );
+    assert_eq!(chunks[1].function, "native_command");
+    assert_eq!(chunks[1].result["output"], "Compacted ");
+    assert_eq!(chunks[2].action_type, "task_completed");
+    assert_eq!(
+        chunks[3].result["message"]["content"],
+        "<local-command-stdout>my example</local-command-stdout>"
+    );
+    std::fs::remove_dir_all(dir).unwrap();
+}

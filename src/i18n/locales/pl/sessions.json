@@ -592,6 +592,7 @@
       "insert": "Wstaw"
     },
     "compactArgHint": "<opcjonalny nacisk podsumowania>",
+    "nativeCommandDescription": "Uruchom {{command}} w {{provider}}",
     "compactCommandDescription": "Podsumuj starszy kontekst, aby zwolnić miejsce. Opcjonalnie: /compact <nacisk podsumowania>",
     "canvasCommandDescription": "Utwórz nowy interaktywny Canvas. Opcjonalnie: /canvas <co utworzyć>",
     "canvasArgHint": "co utworzyć",
@@ -1940,6 +1941,7 @@
       "session": "Sesja"
     },
     "slashMenu": {
+      "commands": "Polecenia",
       "mode": "Tryb",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

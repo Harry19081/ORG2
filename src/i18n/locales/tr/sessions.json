@@ -592,6 +592,7 @@
       "insert": "Ekle"
     },
     "compactArgHint": "<özet için isteğe bağlı odak>",
+    "nativeCommandDescription": "{{provider}} içinde {{command}} çalıştır",
     "compactCommandDescription": "Eski bağlamı özetleyerek yer açar. İsteğe bağlı: /compact <özet odağı>",
     "canvasCommandDescription": "Yeni bir etkileşimli Canvas oluşturur. İsteğe bağlı: /canvas <oluşturulacak içerik>",
     "canvasArgHint": "oluşturulacak içerik",
@@ -1921,6 +1922,7 @@
       "session": "Oturum"
     },
     "slashMenu": {
+      "commands": "Komutlar",
       "mode": "Mod",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

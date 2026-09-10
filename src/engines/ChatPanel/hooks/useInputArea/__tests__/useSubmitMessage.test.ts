@@ -7,8 +7,10 @@ import type {
   ComposerInputRef,
   ComposerSnapshot,
 } from "@src/components/ComposerInput";
+import { type SessionEvent, eventsAtom } from "@src/engines/SessionCore";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
 import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
+import { modelSelectorAtom } from "@src/store/ui/modelSelectorAtom";
 import { type SmokeRoot, createSmokeRoot } from "@src/test/reactSmokeHarness";
 
 import type { InputAreaRefs } from "../types";
@@ -19,7 +21,12 @@ import {
 } from "../useSubmitMessage";
 
 const mocks = vi.hoisted(() => ({
+  nativeCommand: vi.fn(),
   clearImageDraft: vi.fn(),
+  setPlan: vi.fn(),
+  rename: vi.fn(),
+  isCliSession: vi.fn(),
+  provider: undefined as string | undefined,
   guardAgainstSecrets: vi.fn(),
   interceptPendingQuestionBatches: vi.fn(),
   messageError: vi.fn(),
@@ -30,6 +37,17 @@ const mocks = vi.hoisted(() => ({
   resolveMcpSlashCommand: vi.fn(),
   runManualCompact: vi.fn(),
   waitForPendingPills: vi.fn(),
+}));
+
+vi.mock("../executeNativeCliCommand", () => ({
+  executeNativeCliCommand: mocks.nativeCommand,
+}));
+
+vi.mock("@src/hooks/session/useSessionPatch", () => ({
+  useSessionCommandActions: () => ({
+    setPlan: mocks.setPlan,
+    rename: mocks.rename,
+  }),
 }));
 
 vi.mock("@src/components/Message", () => ({
@@ -54,12 +72,15 @@ vi.mock("@src/hooks/security/useSecretScanGuard", () => ({
 
 vi.mock("@src/engines/SessionCore", async () => {
   const { atom } = await import("jotai/vanilla");
-  return { chatEventsAtom: atom([]) };
+  return { chatEventsAtom: atom([]), eventsAtom: atom([]) };
 });
 
 vi.mock("@src/store/session", async () => {
   const { atom } = await import("jotai/vanilla");
-  return { sessionByIdAtom: () => atom(null) };
+  return {
+    sessionByIdAtom: () =>
+      atom(mocks.provider ? { cliAgentType: mocks.provider } : null),
+  };
 });
 
 vi.mock("@src/store/ui/chatPanel/miscAtoms", async () => {
@@ -72,7 +93,7 @@ vi.mock("@src/util/contextPillContent", () => ({
 }));
 
 vi.mock("@src/util/session/sessionDispatch", () => ({
-  isCliSession: () => false,
+  isCliSession: mocks.isCliSession,
 }));
 
 vi.mock("@src/engines/ChatPanel/InputArea/utils/imageDraftCache", () => ({
@@ -175,6 +196,8 @@ describe("useSubmitMessage composer boundary", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.isCliSession.mockReturnValue(false);
+    mocks.provider = undefined;
     latestSubmit = null;
     root = createSmokeRoot();
     mocks.guardAgainstSecrets.mockResolvedValue(true);
@@ -231,6 +254,114 @@ describe("useSubmitMessage composer boundary", () => {
       ...overrides,
     };
   }
+
+  it.each(["codex", "claude_code"])(
+    "dispatches %s compaction as a native operation without conversation echo recovery",
+    async (provider) => {
+      mocks.isCliSession.mockReturnValue(true);
+      mocks.provider = provider;
+      mocks.parseCompactSlashCommand.mockReturnValue({});
+      const editor = createEditor("/compact");
+      const options = optionsFor(editor);
+      await mount(options);
+      await act(async () => {
+        await latestSubmit!();
+      });
+      expect(mocks.runManualCompact).not.toHaveBeenCalled();
+      expect(mocks.nativeCommand).toHaveBeenCalledWith(
+        options.draftSessionId,
+        "/compact"
+      );
+      expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    }
+  );
+
+  it("routes a legacy pinned Compact pill through the native command owner", async () => {
+    mocks.isCliSession.mockReturnValue(true);
+    mocks.provider = "codex";
+    mocks.parseCompactSlashCommand.mockReturnValue({});
+    const editor = createEditor("compact [skill:/compact]");
+    const options = optionsFor(editor);
+    await mount(options);
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(mocks.nativeCommand).toHaveBeenCalledWith(
+      options.draftSessionId,
+      "/compact"
+    );
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+  });
+
+  it("keeps a terminal-only native command out of both transports and preserves the draft", async () => {
+    mocks.isCliSession.mockReturnValue(true);
+    mocks.provider = "claude_code";
+    const editor = createEditor("/doctor");
+    const options = optionsFor(editor);
+    await mount(options, (nextStore) =>
+      nextStore.set(eventsAtom, [
+        {
+          sessionId: options.draftSessionId,
+          actionType: "native_command_catalog",
+          args: {
+            native_provider: "claude_code",
+            slash_commands: ["doctor"],
+            terminal_slash_commands: ["doctor"],
+          },
+        } as unknown as SessionEvent,
+      ])
+    );
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(mocks.nativeCommand).not.toHaveBeenCalled();
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    expect(mocks.messageError).toHaveBeenCalledWith(
+      expect.stringContaining("requires the native terminal")
+    );
+    expect(editor.editor.clear).not.toHaveBeenCalled();
+    expect(editor.readText()).toBe("/doctor");
+  });
+
+  it("retains native command text when the secret scan declines sending", async () => {
+    mocks.isCliSession.mockReturnValue(true);
+    mocks.provider = "codex";
+    mocks.guardAgainstSecrets.mockResolvedValue(false);
+    const editor = createEditor("/review private text");
+    await mount(optionsFor(editor));
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(mocks.nativeCommand).not.toHaveBeenCalled();
+  });
+
+  it("opens the real model-selector atom and does not admit a model prompt", async () => {
+    mocks.provider = "codex";
+    const editor = createEditor("/model");
+    const options = optionsFor(editor);
+    await mount(options);
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(store.get(modelSelectorAtom).isOpen).toBe(true);
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    expect(editor.readText()).toBe("");
+    expect(options.flushDraft).toHaveBeenCalledWith("");
+  });
+
+  it("keeps the plan draft when the owning mode patch fails", async () => {
+    mocks.provider = "claude_code";
+    mocks.setPlan.mockRejectedValueOnce(new Error("offline"));
+    const editor = createEditor("/plan inspect auth");
+    const options = optionsFor(editor);
+    await mount(options);
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(editor.readText()).toBe("/plan inspect auth");
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    expect(mocks.messageError).toHaveBeenCalledWith("offline");
+  });
 
   it.each(["live", "captured", "override"])(
     "sends the normalized display copy through the %s path",

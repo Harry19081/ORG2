@@ -595,6 +595,7 @@
       "insert": "Insert"
     },
     "compactArgHint": "<optional focus for the summary>",
+    "nativeCommandDescription": "Run {{command}} in {{provider}}",
     "compactCommandDescription": "Summarize older context to free space. Optional: /compact <focus for the summary>",
     "canvasCommandDescription": "Create a new interactive Canvas. Optional: /canvas <what to build>",
     "canvasArgHint": "what to build",
@@ -1946,6 +1947,7 @@
       "showMore": "Show {{remaining}} more"
     },
     "slashMenu": {
+      "commands": "Commands",
       "commands": "Commands",
       "mode": "Mode",
       "workspaceSkills": "Workspace Skills",

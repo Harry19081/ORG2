@@ -564,9 +564,7 @@ const EditorArea: React.FC<EditorAreaProps> = ({
           <SlashCommandPortal
             visible={showSlashMenu}
             {...menuPortalFrame}
-            items={filteredSlashItems.filter(
-              (item) => item.category === "skill"
-            )}
+            items={filteredSlashItems}
             loading={slashLoading}
             searchQuery={slashQuery}
             onClose={() => onSlashCommandClose?.()}

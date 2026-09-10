@@ -204,8 +204,10 @@ fn infer_display_variant(
     }
 
     // Session events
-    if matches!(action_type, "session_start" | "session_end")
-        || matches!(function_name, "session_start" | "session_end")
+    if matches!(
+        action_type,
+        "session_start" | "session_end" | "native_command_catalog"
+    ) || matches!(function_name, "session_start" | "session_end")
     {
         return EventDisplayVariant::Session;
     }
@@ -279,7 +281,10 @@ fn infer_display_status(
     }
 
     // Session events are completed by nature
-    if action_type == "session_start" || action_type == "session_end" {
+    if matches!(
+        action_type,
+        "session_start" | "session_end" | "native_command_catalog"
+    ) {
         return EventDisplayStatus::Completed;
     }
 

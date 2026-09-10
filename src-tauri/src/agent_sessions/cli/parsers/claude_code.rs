@@ -180,6 +180,9 @@ impl CliAgentParser for ClaudeCodeParser {
                 chunk.args = serde_json::json!({
                     "model": data.get("model").and_then(|v| v.as_str()),
                     "cwd": data.get("cwd").and_then(|v| v.as_str()),
+                    "native_provider": "claude_code",
+                    "terminal_slash_commands": data.get("terminal_slash_commands").and_then(Value::as_array).map(|items| items.iter().filter_map(Value::as_str).filter(|name| name.len() <= 256).take(512).collect::<Vec<_>>()),
+                    "slash_commands": data.get("slash_commands").and_then(Value::as_array).map(|items| items.iter().filter_map(Value::as_str).filter(|name| name.len() <= 256).take(512).collect::<Vec<_>>()),
                 });
                 chunk.result = serde_json::json!({"success": true});
                 vec![chunk]
@@ -626,6 +629,18 @@ impl CliAgentParser for ClaudeCodeParser {
                             .flatten()
                     })
                     .or_else(|| is_error.then(|| stop_reason.map(str::to_string)).flatten());
+                let mut chunks = Vec::new();
+                if data.get("num_turns").and_then(|value| value.as_u64()) == Some(0) {
+                    if let Some(output) = result_error {
+                        chunks.push(
+                            orgtrack_core::sources::imported_history::native_command_output_chunk(
+                                &self.session_id,
+                                output,
+                                !is_error,
+                            ),
+                        );
+                    }
+                }
                 let mut chunk = ActivityChunk::new(&self.session_id, "session_end", "session_end");
                 chunk.result = serde_json::json!({
                     "success": !is_error && !context_exhausted,
@@ -633,7 +648,8 @@ impl CliAgentParser for ClaudeCodeParser {
                     "stop_reason": stop_reason,
                     "terminal_reason": terminal_reason,
                 });
-                vec![chunk]
+                chunks.push(chunk);
+                chunks
             }
 
             _ => vec![],

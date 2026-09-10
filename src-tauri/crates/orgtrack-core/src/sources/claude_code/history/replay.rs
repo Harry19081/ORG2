@@ -75,6 +75,7 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
     let mut sequence = start_sequence;
     let mut forced_first_user_id = forced_first_user_id;
     let mut pending_compact_boundary: Option<(String, String)> = None;
+    let mut awaiting_local_command_output = false;
 
     for line in reader.lines() {
         let line = line.map_err(|err| format!("Failed to read Claude history line: {err}"))?;
@@ -91,6 +92,51 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
             .as_deref()
             .map(imported_history::normalize_created_at)
             .unwrap_or_else(|| chrono::Utc::now().to_rfc3339());
+        // SDK compaction writes stdout as a user row, while other local
+        // controls use system/local_command. Only claim the user envelope
+        // immediately following a recognized provider command, never arbitrary
+        // user prose that happens to contain these tags.
+        let user_command_output = if awaiting_local_command_output && parsed.r#type == "user" {
+            parsed
+                .message
+                .as_ref()
+                .and_then(|message| claude_content_text(&message.content))
+                .and_then(|text| {
+                    claude_local_command_output(&text)
+                        .map(|(output, success)| (output.to_string(), success))
+                })
+        } else {
+            None
+        };
+        if (parsed.r#type == "system" && parsed.subtype == "local_command")
+            || user_command_output.is_some()
+        {
+            if let Some((output, success)) = user_command_output.or_else(|| {
+                parsed.content.as_deref().map(|content| {
+                    let (output, success) =
+                        claude_local_command_output(content).unwrap_or((content, true));
+                    (output.to_string(), success && parsed.level != "error")
+                })
+            }) {
+                awaiting_local_command_output = false;
+                let mut chunk =
+                    imported_history::native_command_output_chunk(session_id, &output, success);
+                chunk.chunk_id = format!("claudecode-command-{}-{sequence}", parsed.uuid);
+                chunk.created_at = created_at.clone();
+                chunks.push(chunk);
+                sequence += 1;
+                chunks.push(imported_history::task_lifecycle_chunk(
+                    session_id,
+                    CLAUDE_CODE_PROVIDER_SLUG,
+                    sequence,
+                    &created_at,
+                    "task_completed",
+                    &parsed.uuid,
+                ));
+                sequence += 1;
+            }
+            continue;
+        }
         if parsed.r#type == "system" && parsed.subtype == "compact_boundary" {
             if let Some((boundary_id, boundary_created_at)) = pending_compact_boundary.take() {
                 chunks.push(claude_context_compacted_chunk(
@@ -151,6 +197,9 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
             continue;
         };
 
+        if parsed.r#type == "assistant" {
+            awaiting_local_command_output = false;
+        }
         match parsed.r#type.as_str() {
             "user" => {
                 if let Some(tool_result_output) = claude_tool_result_text(&message.content) {
@@ -181,7 +230,15 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
                     // carries no user-authored text, so emit no bubble.
                     let text = claude_content_text(&message.content)
                         .map(|text| {
-                            imported_history::strip_orgii_exec_mode_bridge(&text).to_string()
+                            let command = claude_local_command_input(
+                                imported_history::strip_orgii_exec_mode_bridge(&text),
+                            );
+                            if !harness_injected {
+                                awaiting_local_command_output = command.is_some();
+                            }
+                            command.unwrap_or_else(|| {
+                                imported_history::strip_orgii_exec_mode_bridge(&text).to_string()
+                            })
                         })
                         .unwrap_or_default();
                     let images = claude_content_image_data_urls(&message.content);
@@ -272,6 +329,62 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
         visit(chunks)?;
     }
     Ok(())
+}
+
+// SDK local commands serialize their input as an exact three-tag envelope.
+// Normalize only that envelope so queue reconciliation sees the literal command
+// the user submitted; arbitrary prose containing tags remains unchanged.
+pub(super) fn claude_local_command_output(text: &str) -> Option<(&str, bool)> {
+    for (tag, success) in [
+        ("local-command-stdout", true),
+        ("local-command-stderr", false),
+    ] {
+        if let Some(output) = text
+            .strip_prefix(&format!("<{tag}>"))
+            .and_then(|text| text.strip_suffix(&format!("</{tag}>")))
+        {
+            return Some((output, success));
+        }
+    }
+    None
+}
+
+pub(super) fn claude_local_command_input(text: &str) -> Option<String> {
+    fn field<'a>(text: &'a str, tag: &str) -> Option<(&'a str, &'a str)> {
+        text.trim()
+            .strip_prefix(&format!("<{tag}>"))?
+            .split_once(&format!("</{tag}>"))
+    }
+    // Built-ins and custom skills use opposite field order in native history.
+    let (name, message, rest) = if let Some((name, rest)) = field(text, "command-name") {
+        let (message, rest) = field(rest, "command-message")?;
+        (name, message, rest)
+    } else {
+        let (message, rest) = field(text, "command-message")?;
+        let (name, rest) = field(rest, "command-name")?;
+        (name, message, rest)
+    };
+    let token = name.strip_prefix('/')?;
+    if token.is_empty()
+        || !token
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '-' | ':'))
+    {
+        return None;
+    }
+    if message != token {
+        return None;
+    }
+    let args = rest
+        .trim()
+        .strip_prefix("<command-args>")?
+        .strip_suffix("</command-args>")?
+        .trim();
+    Some(if args.is_empty() {
+        name.to_string()
+    } else {
+        format!("{name} {args}")
+    })
 }
 
 fn claude_context_compacted_chunk(
@@ -369,4 +482,17 @@ pub(super) fn claude_tool_result_text(content: &Value) -> Option<Option<(String,
         .and_then(Value::as_bool)
         .unwrap_or(false);
     Some(Some((call_id, output, is_error)))
+}
+
+#[cfg(test)]
+mod local_command_tests {
+    use super::claude_local_command_input;
+    #[test]
+    fn only_exact_provider_envelopes_become_commands() {
+        assert_eq!(claude_local_command_input("<command-name>/compact</command-name> <command-message>compact</command-message> <command-args>keep APIs\nverbatim</command-args>"), Some("/compact keep APIs\nverbatim".into()));
+        assert_eq!(claude_local_command_input("<command-message>org2-native-fixture</command-message>\n<command-name>/org2-native-fixture</command-name>\n<command-args>APP_OK</command-args>"), Some("/org2-native-fixture APP_OK".into()));
+        for text in ["explain <command-name>/compact</command-name>", "<command-name>/a</command-name><command-message>b</command-message><command-args></command-args>", "<command-name>/tmp/a</command-name><command-message>tmp/a</command-message><command-args></command-args>"] {
+            assert!(claude_local_command_input(text).is_none());
+        }
+    }
 }

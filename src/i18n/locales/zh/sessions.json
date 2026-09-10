@@ -595,6 +595,7 @@
       "insert": "插入"
     },
     "compactArgHint": "<可选：本次总结的重点>",
+    "nativeCommandDescription": "在 {{provider}} 中执行 {{command}}",
     "compactCommandDescription": "总结较早的上下文以释放空间。可选：/compact <本次总结的重点>",
     "canvasCommandDescription": "创建一个新的交互式 Canvas。可选：/canvas <要创建的内容>",
     "canvasArgHint": "要创建的内容",
@@ -1927,6 +1928,7 @@
       "showMore": "再显示 {{remaining}} 项"
     },
     "slashMenu": {
+      "commands": "指令",
       "commands": "命令",
       "mode": "模式",
       "workspaceSkills": "工作区技能",

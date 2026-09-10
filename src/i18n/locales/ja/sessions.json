@@ -592,6 +592,7 @@
       "insert": "挿入"
     },
     "compactArgHint": "<任意: 要約の重点>",
+    "nativeCommandDescription": "{{provider}} で {{command}} を実行",
     "compactCommandDescription": "古いコンテキストを要約して空きを作ります。任意: /compact <要約の重点>",
     "canvasCommandDescription": "新しいインタラクティブ Canvas を作成します。任意: /canvas <作成する内容>",
     "canvasArgHint": "作成する内容",
@@ -1921,6 +1922,7 @@
       "session": "セッション"
     },
     "slashMenu": {
+      "commands": "コマンド",
       "mode": "モード",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

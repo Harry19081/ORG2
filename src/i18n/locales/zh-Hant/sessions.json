@@ -595,6 +595,7 @@
       "insert": "插入"
     },
     "compactArgHint": "<可選：本次總結的重點>",
+    "nativeCommandDescription": "在 {{provider}} 中執行 {{command}}",
     "compactCommandDescription": "總結較早的上下文以釋放空間。可選：/compact <本次總結的重點>",
     "canvasCommandDescription": "建立一個新的互動式 Canvas。可選：/canvas <要建立的內容>",
     "canvasArgHint": "要建立的內容",
@@ -1921,6 +1922,7 @@
       "showMore": "再顯示 {{remaining}} 項"
     },
     "slashMenu": {
+      "commands": "指令",
       "commands": "指令",
       "mode": "模式",
       "workspaceSkills": "工作區技能",

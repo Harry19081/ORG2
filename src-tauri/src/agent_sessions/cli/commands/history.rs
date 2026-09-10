@@ -60,7 +60,7 @@ fn native_window_chunks(
     let Some((provider, path)) = native_history_path(session_id)? else {
         return Ok(None);
     };
-    let chunks = match (provider.as_str(), read) {
+    let mut chunks = match (provider.as_str(), read) {
         ("claude_code", CliHistoryRead::Preview) => {
             claude::load_claude_code_initial_window_from_path(session_id, &path, 1)?.chunks
         }
@@ -82,6 +82,11 @@ fn native_window_chunks(
         }
         _ => return Ok(None),
     };
+    if let Some(catalog) =
+        super::super::persistence::load_native_commands_for_provider(session_id, &provider)?
+    {
+        chunks.insert(0, catalog);
+    }
     Ok(Some(chunks))
 }
 
@@ -145,6 +150,11 @@ pub(crate) fn visit_cli_history(
     if let Ok(Some((provider, path))) = native_history_path(session_id) {
         let mut normalize = |chunks| visit(normalize_history(chunks, session_id));
         let before = super::super::native_store::native_transcript_revision(&path)?;
+        if let Some(catalog) =
+            super::super::persistence::load_native_commands_for_provider(session_id, &provider)?
+        {
+            normalize(vec![catalog])?;
+        }
         match provider.as_str() {
             "codex" => codex::visit_codex_app_from_path(session_id, &path, &mut normalize)?,
             "claude_code" => {
@@ -335,10 +345,33 @@ mod tests {
                 assert_eq!(assistants, turn_count);
                 continue;
             }
+            let mut catalog = core_types::activity::ActivityChunk::new(
+                &sid,
+                "native_command_catalog",
+                "native_command_catalog",
+            );
+            catalog.args =
+                json!({"native_provider": provider, "slash_commands": ["fixture-command"]});
+            persistence::record_native_commands(&catalog).unwrap();
             // Exercise the production managed binding, path resolver and IPC
             // result producer, without discovery/cache rows for the raw file.
             let preview = read_history(&sid, &CliHistoryRead::Preview).unwrap();
             let full = read_history(&sid, &CliHistoryRead::Full).unwrap();
+            for events in [&preview, &full] {
+                let catalogs: Vec<_> = events
+                    .iter()
+                    .filter(|event| event.action_type == "native_command_catalog")
+                    .collect();
+                assert_eq!(
+                    catalogs.len(),
+                    1,
+                    "{provider}: native catalog survives each read path exactly once"
+                );
+                assert_eq!(
+                    catalogs[0].args["slash_commands"],
+                    json!(["fixture-command"])
+                );
+            }
             let baseline = normalize_history(
                 super::super::transcript::load_session_chunks(&sid).unwrap(),
                 &sid,
