@@ -395,7 +395,6 @@ const ShellReplayOutputComponent: React.FC<ShellReplayOutputProps> = ({
           <TerminalCommand
             command={displayCommand}
             prefix="$"
-            highlighted={false}
             style={{ color: foreground, padding: 0, margin: 0 }}
           />
         </div>
