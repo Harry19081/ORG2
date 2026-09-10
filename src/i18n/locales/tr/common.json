@@ -1764,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Agent oturumu",
-        "workspace": "Workspace",
+        "workspace": "Çalışma dizinleri",
+        "organization": "ORG / Çalışma alanı",
         "quickNavigation": "Hızlı gezinme",
         "editor": "Düzenleyici",
         "view": "Görünüm",

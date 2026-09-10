@@ -1764,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Sessão de Agent",
-        "workspace": "Workspace",
+        "workspace": "Diretórios de trabalho",
+        "organization": "ORG / Espaço de trabalho",
         "quickNavigation": "Navegação rápida",
         "editor": "Editor",
         "view": "Visualização",

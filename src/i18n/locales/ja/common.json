@@ -1764,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Agent セッション",
-        "workspace": "Workspace",
+        "workspace": "作業ディレクトリ",
+        "organization": "組織 / ワークスペース",
         "quickNavigation": "クイックナビゲーション",
         "editor": "エディター",
         "view": "表示",

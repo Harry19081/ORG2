@@ -376,13 +376,13 @@ export function useSpotlightItems(
         onSelectStaticAction,
         translate
       ),
-      ...buildStaticActionItems(
-        ORGANIZATION_ACTIONS,
-        onSelectStaticAction,
-        translate
-      ),
-      ...buildActionItems(onSelectAction, translate),
+      ...buildActionItems(onSelectAction, translate, "workspace"),
     ];
+    const organizationItems = buildStaticActionItems(
+      ORGANIZATION_ACTIONS,
+      onSelectStaticAction,
+      translate
+    );
     const quickNavigationItems = buildStaticActionItems(
       quickNavigationActions,
       onSelectStaticAction,
@@ -391,11 +391,14 @@ export function useSpotlightItems(
     const editorItems = isEditorRoute
       ? buildEditorActionItems(onSelectEditorAction, translate)
       : [];
-    const viewItems = buildStaticActionItems(
-      [...chatPanelSettingsActions, ...viewActions, ...APP_ACTIONS],
-      onSelectStaticAction,
-      translate
-    );
+    const viewItems = [
+      ...buildActionItems(onSelectAction, translate, "view"),
+      ...buildStaticActionItems(
+        [...chatPanelSettingsActions, ...viewActions, ...APP_ACTIONS],
+        onSelectStaticAction,
+        translate
+      ),
+    ];
     const navActionItems = NAV_DESTINATIONS.filter(
       (destination) =>
         destination.group === "actions" &&
@@ -426,6 +429,7 @@ export function useSpotlightItems(
       recentItems,
       agentSessionItems,
       workspaceItems,
+      organizationItems,
       quickNavigationItems,
       editorItems,
       viewItems,

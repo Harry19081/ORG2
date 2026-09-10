@@ -1595,7 +1595,8 @@
       },
       "groups": {
         "agentSession": "Agent 会话",
-        "workspace": "工作区",
+        "workspace": "工作目录",
+        "organization": "组织 / 工作区",
         "quickNavigation": "快速导航",
         "editor": "编辑器",
         "view": "视图",
