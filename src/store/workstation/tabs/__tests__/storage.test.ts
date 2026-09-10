@@ -72,6 +72,35 @@ beforeEach(() => {
 });
 
 describe("sanitizeWorkspaceState", () => {
+  it("restores a retired timeline type without losing its references or commit data", () => {
+    const ref = { partition: "workspace", tabId: "timeline-diff:abc:/a.ts" };
+    const input = {
+      tabs: [
+        {
+          id: ref.tabId,
+          type: "timeline-diff",
+          title: "a.ts",
+          data: { filePath: "/a.ts", commitSha: "abc", shortSha: "abc^" },
+        },
+      ],
+      activeTabRef: ref,
+      tabOrder: [ref],
+    };
+    const restored = sanitizeWorkspaceState(input);
+    expect(restored.tabs).toEqual([
+      {
+        ...input.tabs[0],
+        type: "git-diff",
+        hasUnsavedChanges: false,
+        data: { ...input.tabs[0].data, isTimeline: true },
+      },
+    ]);
+    expect(restored.activeTabRef).toEqual(ref);
+    expect(restored.tabOrder).toEqual([ref]);
+    expect(sanitizeWorkspaceState(restored)).toEqual(restored);
+    expect(input.tabs[0].type).toBe("timeline-diff");
+  });
+
   it("keeps the first duplicate tab, drops shared tabs, and repairs dirty state", () => {
     const result = sanitizeWorkspaceState({
       tabs: [

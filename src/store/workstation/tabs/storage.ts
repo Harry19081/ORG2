@@ -34,7 +34,6 @@ const VALID_WORKSTATION_TAB_TYPES = new Set<WorkStationTabType>([
   "explorer",
   "git-diff",
   "source-control",
-  "timeline-diff",
   "git-log",
   "git-commit-detail",
   "git-stash-detail",
@@ -119,7 +118,19 @@ function sanitizeTabs(value: unknown): WorkStationTab[] {
   if (!Array.isArray(value)) return [];
   const seen = new Set<string>();
   const result: WorkStationTab[] = [];
-  for (const candidate of value) {
+  for (const rawCandidate of value) {
+    // Retired timeline records use the existing git-diff renderer. Keep IDs,
+    // references and commit data so restoring a workspace never drops a tab.
+    const candidate =
+      isPlainObject(rawCandidate) &&
+      rawCandidate.type === "timeline-diff" &&
+      isPlainObject(rawCandidate.data)
+        ? {
+            ...rawCandidate,
+            type: "git-diff",
+            data: { ...rawCandidate.data, isTimeline: true },
+          }
+        : rawCandidate;
     if (!isValidTab(candidate) || seen.has(candidate.id)) continue;
     seen.add(candidate.id);
     // A dirty marker without a restored buffer is misleading after restart.

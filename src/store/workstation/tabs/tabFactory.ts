@@ -75,7 +75,6 @@ const DEFAULT_CATEGORY_BY_TYPE: Record<
   explorer: "explorer",
   "git-diff": "git",
   "source-control": "git",
-  "timeline-diff": "git",
   "git-log": "git",
   "git-commit-detail": "git",
   "git-stash-detail": "git",

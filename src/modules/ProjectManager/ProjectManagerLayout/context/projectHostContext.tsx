@@ -3,10 +3,7 @@
  *
  * Publishes the Project host's action surface ABOVE the tab dispatcher so that
  * `UnifiedTabContent` renderers for project tab types can consume it directly,
- * instead of receiving it as props threaded through
- * `ProjectManagerContentRouter`. This is the "host context hoist" the staged
- * renderers (`TabContent/renderers/project*.tsx`) wait on before they can drop
- * their `HostCoupledPlaceholder` stubs.
+ * instead of receiving it as props threaded through the content router.
  *
  * The value is exactly the prop bundle the content router receives today, minus
  * `tabs`/`activeTab` (a renderer only handles its own tab, passed via

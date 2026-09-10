@@ -21,7 +21,6 @@ export type WorkStationTabType =
   | "explorer" // Default pinned "home" tab — sidebar shows file tree, main pane shows placeholder
   | "git-diff"
   | "source-control"
-  | "timeline-diff"
   | "git-log" // Git error log viewer (CodeMirror-based)
   | "git-commit-detail" // Git commit detail (split: file list + diff)
   | "git-stash-detail" // Git stash detail (split: file list + diff)
@@ -70,7 +69,7 @@ export type WorkStationTabType =
  * Unified tab type - single flat interface for all tab types
  *
  * This is used across all Workstation apps:
- * - Code Editor: file, git-diff, source-control, timeline-diff, terminal
+ * - Code Editor: file, git-diff, source-control, terminal
  * - Database Explorer: table, query, schema
  * - Browser: browser-session
  */
@@ -222,7 +221,6 @@ export function getWorkstationTabOwnership(
     case "explorer":
     case "git-diff":
     case "source-control":
-    case "timeline-diff":
     case "git-log":
     case "git-commit-detail":
     case "git-stash-detail":
@@ -359,7 +357,7 @@ export interface AgentConfigTabData {
 export interface EditorRepoCache {
   /** Repo path (key) */
   repoPath: string;
-  /** File tabs only (type: "file", "git-diff", "source-control", "timeline-diff") */
+  /** File tabs only (type: "file", "git-diff", "source-control") */
   fileTabs: WorkStationTab[];
   /** Active file tab ID (null if no file tab was active) */
   activeFileTabId: string | null;
@@ -381,7 +379,6 @@ export const FILE_TAB_TYPES = [
   "file",
   "git-diff",
   "source-control",
-  "timeline-diff",
   "git-log",
   "git-commit-detail",
   "git-stash-detail",

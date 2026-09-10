@@ -39,10 +39,6 @@ const SourceControlEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/sourceControl")),
 };
 
-const TimelineDiffEntry: RendererEntry = {
-  Component: lazy(() => import("./renderers/timelineDiff")),
-};
-
 const GitLogEntry: RendererEntry = {
   Component: lazy(() => import("./renderers/gitLog")),
 };
@@ -182,7 +178,6 @@ export const REGISTRY: TabContentRegistry = {
   explorer: ExplorerEntry,
   "git-diff": GitDiffEntry,
   "source-control": SourceControlEntry,
-  "timeline-diff": TimelineDiffEntry,
   "git-log": GitLogEntry,
   "git-commit-detail": GitCommitDetailEntry,
   "git-stash-detail": GitStashDetailEntry,
