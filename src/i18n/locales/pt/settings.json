@@ -208,6 +208,12 @@
       "colorful": "Colorido",
       "monochrome": "Monocromático"
     },
+    "appIcon": "Ícone do aplicativo",
+    "appIconDesc": "Ícone exibido pelo aplicativo em execução no Dock ou na barra de tarefas. O aplicativo instalado mantém seu próprio ícone no Finder",
+    "appIconOptions": {
+      "dark": "Bloco escuro",
+      "light": "Bloco claro"
+    },
     "translucentSidebar": "Barra lateral translúcida",
     "skin": "Skin",
     "accent": "Destaque",
