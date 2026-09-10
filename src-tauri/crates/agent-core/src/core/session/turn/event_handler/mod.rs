@@ -1654,7 +1654,9 @@ mod tests {
         let error = handler
             .take_assistant_persistence_error()
             .expect("unregistered durable EventStore bridge must fail closed");
-        assert!(error.contains("event pipeline persistence is not registered"));
+        assert!(error.contains(
+            "persist_events (agent-org-assistant-final) called before register for agent-org-session"
+        ));
         assert!(handler.take_assistant_persistence_error().is_none());
     }
 
