@@ -45,7 +45,7 @@ const SpotlightModalHeader: React.FC<SpotlightModalHeaderProps> = ({
   if (hideHeader) return null;
 
   return (
-    <div className="flex items-center justify-between px-4 py-3">
+    <div className="flex items-center justify-between px-3 py-3">
       <div className="flex items-center gap-4">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border-2 bg-bg-2">
           <AnyIcon icon={icon} size={18} className="text-text-1" />

@@ -39,7 +39,7 @@ export function StopConfirmModal({
       onClose={handleCancel}
       bodyClassName="px-5 py-4"
       footer={
-        <div className="flex items-center justify-end gap-2 px-4 py-3">
+        <div className="flex items-center justify-end gap-2 px-3 py-3">
           <Button
             variant="tertiary"
             onClick={handleCancel}
