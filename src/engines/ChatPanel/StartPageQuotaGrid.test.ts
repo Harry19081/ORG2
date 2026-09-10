@@ -119,21 +119,27 @@ describe("StartPageQuotaGrid", () => {
     expect(markup).toContain("flex min-h-9 items-center justify-between gap-3");
     expect(markup).toContain("border-0 bg-transparent text-text-2");
     expect(markup).toContain(
-      "truncate text-xs leading-4 font-semibold text-text-1"
+      "truncate text-sm leading-5 font-semibold text-text-1"
     );
-    expect(markup).toContain("truncate text-[11px] leading-4 text-text-3");
-    expect(markup).toContain("min-w-0 p-3 rounded-lg");
-    expect(markup).toContain("mb-2 flex min-w-0 items-center gap-2");
-    expect(markup).toContain("space-y-2.5");
+    expect(markup).toContain("truncate text-xs leading-5 text-text-3");
+    expect(markup).toContain("min-w-0 p-4 rounded-lg");
+    expect(markup).toContain("mb-3 flex min-w-0 items-center gap-2");
+    expect(markup).toContain("space-y-3");
     expect(markup).toContain("Balance");
     expect(markup).toContain("$12.34");
+    expect(markup).toContain('class="flex min-w-0 flex-col gap-1"');
+    expect(markup).toContain(
+      "text-2xl leading-8 font-semibold break-words text-text-1 tabular-nums"
+    );
+    expect(markup).toContain(">75%</span>");
+    expect(markup).not.toContain("keyVault.quota.percentLeft");
     expect(markup).toContain('class="space-y-1"');
     expect(markup).toContain(
       "grid grid-cols-1 gap-3 @[640px]/quota:grid-cols-2"
     );
     expect(markup).not.toContain("grid gap-2");
     expect(markup).toContain(
-      "flex items-center justify-between gap-2 text-[11px] leading-4"
+      "flex items-center justify-between gap-2 text-xs leading-4"
     );
   });
 
