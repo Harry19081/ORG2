@@ -3,7 +3,7 @@
  *
  * Derives per-route header action configuration synchronously from:
  * - Current pathname (via useLocation)
- * - Settings and integrations toolbar registrations for supplementary actions
+ * - Region notices and integrations toolbar registrations for supplementary actions
  * Integration add and refresh actions live in the corresponding table headers.
  */
 import { useAtomValue } from "jotai";
@@ -19,18 +19,12 @@ import {
   parseSettingsTopTab,
 } from "@src/config/mainAppPaths";
 import { ROUTES } from "@src/config/routes";
-import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
-import {
-  HierarchyCircle01Icon,
-  Refresh04Icon,
-  UserAdd01Icon,
-} from "@src/icons";
+import { HierarchyCircle01Icon, UserAdd01Icon } from "@src/icons";
 import { integrationsToolbarAtom } from "@src/store/ui/integrationsToolbarAtom";
 import type {
   RouteToolbarButton,
   RouteToolbarConfig,
 } from "@src/store/ui/routeToolbarAtom";
-import { settingsToolbarAtom } from "@src/store/ui/settingsToolbarAtom";
 
 import { useSettingsRegionNoticeButton } from "./useSettingsRegionNoticeButton";
 
@@ -41,15 +35,7 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
   const navigate = useNavigate();
   const { t } = useTranslation("integrations");
 
-  const noop = useMemo(() => () => {}, []);
-
-  const settingsToolbar = useAtomValue(settingsToolbarAtom);
   const settingsRegionNoticeButton = useSettingsRegionNoticeButton();
-  const { spinClass: settingsSpinClass, handleClick: settingsRefreshClick } =
-    useRefreshSpin(
-      settingsToolbar.onRefresh ?? noop,
-      settingsToolbar.loading ?? false
-    );
 
   const openAgentAdd = useCallback(() => {
     const agentsPath = buildAgentOrgsPath({ tab: "agents" });
@@ -112,19 +98,6 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
         extraButtons.push(settingsRegionNoticeButton);
       }
 
-      extraButtons.push(...(settingsToolbar.extraButtons ?? []));
-
-      if (settingsToolbar.onRefresh) {
-        extraButtons.push({
-          id: "settings-refresh",
-          icon: Refresh04Icon,
-          onClick: settingsRefreshClick,
-          title: t("common:actions.refresh"),
-          iconClassName: settingsSpinClass,
-          disabled: !!settingsSpinClass,
-        });
-      }
-
       return {
         extraButtons: extraButtons.length > 0 ? extraButtons : undefined,
       };
@@ -133,10 +106,7 @@ export function useRouteToolbarConfig(): RouteToolbarConfig | null {
     return null;
   }, [
     pathname,
-    settingsToolbar,
     settingsRegionNoticeButton,
-    settingsRefreshClick,
-    settingsSpinClass,
     openAgentAdd,
     openOrgAdd,
     coreSettingsItem,

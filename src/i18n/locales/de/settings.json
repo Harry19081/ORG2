@@ -15,10 +15,7 @@
     "editorAndWorkspace": "Editor & Workspace",
     "appUpdate": "App-Update",
     "security": "Sicherheit",
-    "osAgentConfig": "OS Agent Config",
-    "sdeAgentConfig": "SDE Agent Config",
     "storage": "Speicher",
-    "agentMemory": "Agent-Speicher",
     "agentOrg": "Agent-Team",
     "harnessConnections": "CLI-Routing",
     "mobileRemote": "Mobile Remote"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Learnings-Browser",
     "searchPlaceholder": "Takeaways, Inhalte, Scope durchsuchen…",
     "tabs": {
       "all": "Alle",
@@ -841,12 +837,6 @@
       "title": "Noch keine Learnings",
       "subtitle": "Sobald Sitzungen abgeschlossen sind und die Reflexion läuft, erscheinen persistente Erkenntnisse hier",
       "searchSubtitle": "Keine Einträge entsprechen dem Filter. Probiere ein anderes Schlüsselwort oder leere die Suche"
-    },
-    "statusCard": {
-      "title": "Konsolidierungsstatus",
-      "lastRun": "Letzter Lauf",
-      "nextTrigger": "Nächster Auslöser",
-      "never": "Nie"
     },
     "toast": {
       "promoted": "Auf aktiv befördert",

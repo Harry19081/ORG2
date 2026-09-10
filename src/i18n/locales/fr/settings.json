@@ -15,10 +15,7 @@
     "editorAndWorkspace": "Éditeur & Workspace",
     "appUpdate": "Mise à jour",
     "security": "Sécurité",
-    "osAgentConfig": "Configuration OS Agent",
-    "sdeAgentConfig": "Configuration SDE Agent",
     "storage": "Stockage",
-    "agentMemory": "Mémoire de l'Agent",
     "agentOrg": "Équipe Agent",
     "harnessConnections": "Routage CLI",
     "mobileRemote": "Mobile Remote"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Explorateur de Learnings",
     "searchPlaceholder": "Rechercher takeaways, contenus, scope…",
     "tabs": {
       "all": "Tout",
@@ -841,12 +837,6 @@
       "title": "Aucun Learning pour le moment",
       "subtitle": "Une fois les sessions terminées et la réflexion exécutée, les insights durables apparaîtront ici",
       "searchSubtitle": "Aucune entrée ne correspond à votre filtre. Essayez un autre mot-clé ou effacez la recherche"
-    },
-    "statusCard": {
-      "title": "État de la consolidation",
-      "lastRun": "Dernière exécution",
-      "nextTrigger": "Prochain déclenchement",
-      "never": "Jamais"
     },
     "toast": {
       "promoted": "Promu en actif",

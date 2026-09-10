@@ -29,12 +29,6 @@ export const SECTION_CONTROL_STYLE: CSSProperties = {
   maxWidth: "100%",
 };
 
-/**
- * Right column in SectionRow (horizontal layout): aligns controls to the trailing edge
- * and caps width at SECTION_CONTROL_WIDTH (via min(100%, …) inside the container).
- */
-export const SECTION_ROW_CONTROL_CELL_CLASSES = `flex w-full min-w-0 items-stretch @[480px]:shrink-0 @[480px]:justify-end @[480px]:[width:min(100%,${SECTION_CONTROL_WIDTH}px)]`;
-
 // ============================================
 // Section-Level Tokens
 // ============================================

@@ -49,7 +49,7 @@ function slugifyKey(name: string): string {
     .slice(0, 32);
 }
 
-export const StatusesSection: React.FC<StatusesSectionProps> = ({
+const StatusesSection: React.FC<StatusesSectionProps> = ({
   orgId,
   showTitle = true,
 }) => {

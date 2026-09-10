@@ -15,10 +15,7 @@
     "editorAndWorkspace": "Editor & Workspace",
     "appUpdate": "Cập nhật ứng dụng",
     "security": "Bảo mật",
-    "osAgentConfig": "Cấu hình OS Agent",
-    "sdeAgentConfig": "Cấu hình SDE Agent",
     "storage": "Lưu trữ",
-    "agentMemory": "Bộ nhớ Agent",
     "agentOrg": "Nhóm Agent",
     "harnessConnections": "Định tuyến CLI",
     "mobileRemote": "Điều khiển từ điện thoại"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Trình duyệt Learnings",
     "searchPlaceholder": "Tìm takeaway, nội dung, scope…",
     "tabs": {
       "all": "Tất cả",
@@ -841,12 +837,6 @@
       "title": "Chưa có Learnings nào",
       "subtitle": "Khi các phiên kết thúc và phản chiếu chạy, các hiểu biết lâu dài sẽ xuất hiện ở đây",
       "searchSubtitle": "Không có mục nào khớp bộ lọc. Thử từ khóa khác hoặc xóa tìm kiếm"
-    },
-    "statusCard": {
-      "title": "Trạng thái hợp nhất",
-      "lastRun": "Lần chạy cuối",
-      "nextTrigger": "Lần kích hoạt tiếp theo",
-      "never": "Chưa bao giờ"
     },
     "toast": {
       "promoted": "Đã đề bạt thành đang hoạt động",
