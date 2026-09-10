@@ -50,7 +50,6 @@ export * from "./kanbanViewStateAtom";
 export * from "./workManagementCreatorAtom";
 export * from "./sideChatAtom";
 export * from "./modelSelectorAtom";
-export * from "./settingsToolbarAtom";
 export * from "./globalTabsTypes";
 export * from "./guideHighlightAtom";
 
