@@ -185,11 +185,6 @@ const browserWorkstationTabHeaderAtom = atom<WorkstationTabHeaderSlots | null>(
 );
 browserWorkstationTabHeaderAtom.debugLabel = "browserWorkstationTabHeaderAtom";
 
-const dataWorkstationTabHeaderAtom = atom<WorkstationTabHeaderSlots | null>(
-  null
-);
-dataWorkstationTabHeaderAtom.debugLabel = "dataWorkstationTabHeaderAtom";
-
 const projectWorkstationTabHeaderAtom = atom<WorkstationTabHeaderSlots | null>(
   null
 );
@@ -217,7 +212,6 @@ simulatorWorkstationTabHeaderAtom.debugLabel =
 export const workstationTabHeaderAtomByHost = {
   code: codeWorkstationTabHeaderAtom,
   browser: browserWorkstationTabHeaderAtom,
-  data: dataWorkstationTabHeaderAtom,
   project: projectWorkstationTabHeaderAtom,
   workManagement: workManagementWorkstationTabHeaderAtom,
   simulator: simulatorWorkstationTabHeaderAtom,
