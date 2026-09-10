@@ -20,6 +20,7 @@ import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import { REFRESH_ICON_TOKENS } from "@src/components/RefreshIcon/tokens";
+import { SignInModal } from "@src/features/Org2Cloud/SignInModal";
 import { importBundledOrg2CloudAuthForDev } from "@src/features/Org2Cloud/devBundledAuthImport";
 import {
   commitRefreshedAuth,
@@ -48,6 +49,7 @@ const log = createLogger("Org2CloudSection");
 export const Org2CloudLoginRows: React.FC = () => {
   const { t } = useTranslation(["navigation", "common"]);
   const [auth, setAuth] = useAtom(org2CloudAuthAtom);
+  const [showSignInModal, setShowSignInModal] = useState(false);
   const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
   const [isRefreshingDevAuth, setIsRefreshingDevAuth] = useState(false);
   const [renameDraft, setRenameDraft] = useState<string | null>(null);
@@ -144,6 +146,12 @@ export const Org2CloudLoginRows: React.FC = () => {
 
   return (
     <>
+      {showSignInModal && (
+        <SignInModal
+          onClose={() => setShowSignInModal(false)}
+          onSignIn={handleSignIn}
+        />
+      )}
       {showSignOutConfirmation && (
         <SignOutConfirmationModal
           onClose={() => setShowSignOutConfirmation(false)}
@@ -172,7 +180,7 @@ export const Org2CloudLoginRows: React.FC = () => {
             <>
               <Button
                 size="default"
-                onClick={handleSignIn}
+                onClick={() => setShowSignInModal(true)}
                 data-testid="org2-cloud-sign-in"
               >
                 {t("cloud.signIn")}

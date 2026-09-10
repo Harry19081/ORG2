@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "Chia sẻ phiên làm việc với đồng đội",
+    "featureMobileRemoteBody": "Tiếp tục công việc của tác nhân ngay từ điện thoại",
+    "featureMarketBody": "Khám phá công cụ và tài nguyên trong ORG2 Market",
+    "signInModalTitle": "Chào mừng bạn trở lại",
+    "signInModalBody": "Tiếp tục trong trình duyệt để đăng nhập vào tài khoản của bạn",
     "signIn": "Đăng nhập",
     "signOut": "Đăng xuất",
     "signOutConfirmTitle": "Đăng xuất?",

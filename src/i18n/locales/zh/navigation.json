@@ -363,6 +363,11 @@
     }
   },
   "cloud": {
+    "featureSharingBody": "与团队成员分享你的会话",
+    "featureMobileRemoteBody": "用手机随时推进智能体的工作",
+    "featureMarketBody": "探索 ORG2 Market 中的工具和资源",
+    "signInModalTitle": "欢迎回来",
+    "signInModalBody": "继续前往浏览器登录你的账户",
     "signIn": "登录",
     "signOut": "退出登录",
     "signOutConfirmTitle": "确认退出登录？",

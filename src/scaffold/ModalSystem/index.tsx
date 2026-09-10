@@ -76,6 +76,8 @@ interface ModalProps {
   "aria-label"?: string;
   /** Optional artwork above the header. Use an empty alt for decorative images. */
   image?: { src: string; alt: string };
+  /** Custom media above the header; takes precedence over image when provided. */
+  headerMedia?: React.ReactNode;
   /** Modal content */
   children?: React.ReactNode;
   /** Footer content (buttons, etc) */
@@ -141,6 +143,7 @@ const Modal: React.FC<ModalProps> = ({
   onOk,
   title,
   image,
+  headerMedia,
   "aria-label": ariaLabel,
   children,
   footer,
@@ -422,14 +425,15 @@ const Modal: React.FC<ModalProps> = ({
           style={{ ...mergedStyle, borderRadius: radius }}
           onClick={(e) => e.stopPropagation()}
         >
-          {image && (
-            <img
-              className="liquid-modal-image"
-              src={image.src}
-              alt={image.alt}
-              draggable={false}
-            />
-          )}
+          {headerMedia ??
+            (image && (
+              <img
+                className="liquid-modal-image"
+                src={image.src}
+                alt={image.alt}
+                draggable={false}
+              />
+            ))}
           {/* Header */}
           {title && (
             <PanelHeader
