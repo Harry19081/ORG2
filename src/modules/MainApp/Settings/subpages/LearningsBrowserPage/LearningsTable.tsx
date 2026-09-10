@@ -9,10 +9,8 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 
 import { LEARNINGS_PAGE_SIZE } from "./constants";
-import type { LearningsBrowserVariant } from "./types";
 
 interface LearningsTableProps {
-  variant: LearningsBrowserVariant;
   loading?: boolean;
   filtersSearch?: string;
   columns: SettingsTableColumn<LearningRecord>[];

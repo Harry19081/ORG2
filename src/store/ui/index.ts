@@ -8,8 +8,6 @@
  * Logical grouping:
  * - Sidebar: sidebarAtom, hoverSidebarAtom, collapseStateAtom
  * - Editor: editorSettingsAtom, fileTreeSelectionAtom, searchResultSelectionAtom
- * - Settings: settingsPanelAtoms (panel-internal side-channel state),
- *   settingsSyncAtom
  * - Tabs: navigationSidebarTabsAtom
  */
 
@@ -26,8 +24,6 @@ export * from "./fileTreeSelectionAtom";
 export * from "./searchResultSelectionAtom";
 
 // Settings
-export * from "./settingsPanelAtoms";
-export * from "./settingsSyncAtom";
 export * from "./languageAtom";
 
 // Tabs
