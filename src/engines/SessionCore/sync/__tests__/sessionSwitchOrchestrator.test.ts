@@ -5,6 +5,8 @@ import type { SessionAdapter } from "../types";
 
 const mocks = vi.hoisted(() => ({
   revision: vi.fn(),
+  turnActive: vi.fn(() => false),
+  generation: vi.fn(() => 0),
   applyPostLoadResult: vi.fn(),
   capturePostLoadLifecycleSnapshot: vi.fn(() => ({
     lastTerminal: null,
@@ -20,6 +22,11 @@ const mocks = vi.hoisted(() => ({
   reconcileInFlightHistory: vi.fn(),
   rehydratePendingPlanApproval: vi.fn(),
   switchSession: vi.fn(),
+}));
+
+vi.mock("../../control/turnLifecycle", () => ({
+  isTurnActive: mocks.turnActive,
+  getTurnGeneration: mocks.generation,
 }));
 
 vi.mock("../nativeConversationRevision", () => ({
@@ -92,6 +99,8 @@ function createActions() {
 describe("runSessionSwitchOrchestrator reconciliation", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.turnActive.mockReturnValue(false);
+    mocks.generation.mockReturnValue(0);
     mocks.revision.mockReset().mockResolvedValue("v1");
     mocks.isCollaborationImportedSession.mockReturnValue(false);
     mocks.switchSession.mockResolvedValue(true);
@@ -144,6 +153,101 @@ describe("runSessionSwitchOrchestrator reconciliation", () => {
       expect(actions.failSessionLoad).not.toHaveBeenCalled();
     }
   );
+
+  it.each(["stable", "new-turn", "finished-turn", "aborted"])(
+    "reloads a native cache hit containing only assistant answers (%s)",
+    async (state) => {
+      const sessionId = "cli-native-cached";
+      const cached = [{ id: "assistant-only" }];
+      const authoritative = [
+        { id: "catalog" },
+        { id: "native-user" },
+        { id: "answer" },
+      ];
+      mocks.getEvents.mockResolvedValue(cached);
+      const controller = new AbortController();
+      mocks.loadPersistedHistory.mockImplementationOnce(async () => {
+        if (state === "new-turn" || state === "finished-turn") {
+          mocks.generation.mockReturnValue(1);
+          mocks.turnActive.mockReturnValue(state === "new-turn");
+          mocks.getEvents.mockResolvedValue([{ id: "new-live-answer" }]);
+        }
+        if (state === "aborted") controller.abort();
+        return authoritative;
+      });
+      const adapter = {
+        category: "cli",
+        postLoad: vi.fn().mockResolvedValue({
+          runStatus: "completed",
+          transcriptSource: "native",
+        }),
+      } as unknown as SessionAdapter;
+      runSessionSwitchOrchestrator({
+        sessionId,
+        adapter,
+        abortController: controller,
+        refs: { liveSessionIdRef: { current: sessionId } },
+        actions: createActions(),
+        setPendingPlanApprovals: vi.fn(),
+        logger: { error: vi.fn() } as never,
+      });
+      await vi.waitFor(() =>
+        expect(mocks.loadPersistedHistory).toHaveBeenCalledOnce()
+      );
+      if (state === "stable") {
+        await vi.waitFor(() =>
+          expect(mocks.dispatchLoadSession).toHaveBeenCalledWith(
+            expect.objectContaining({
+              events: authoritative,
+              storeHydrated: true,
+              nativeHistoryRevision: { revision: "v1", generation: 0 },
+            })
+          )
+        );
+        expect(mocks.hydrateSessionStoreBeforeDisplay).toHaveBeenCalledWith(
+          sessionId,
+          authoritative
+        );
+      } else if (state === "new-turn" || state === "finished-turn") {
+        await vi.waitFor(() =>
+          expect(mocks.dispatchLoadSession).toHaveBeenCalledWith(
+            expect.objectContaining({ events: [{ id: "new-live-answer" }] })
+          )
+        );
+        expect(mocks.hydrateSessionStoreBeforeDisplay).not.toHaveBeenCalled();
+        expect(mocks.reconcileInFlightHistory).toHaveBeenCalledTimes(
+          state === "new-turn" ? 1 : 0
+        );
+      } else {
+        expect(mocks.hydrateSessionStoreBeforeDisplay).not.toHaveBeenCalled();
+        expect(mocks.dispatchLoadSession).not.toHaveBeenCalled();
+      }
+    }
+  );
+
+  it("preserves an active native cache without starting a replacement read", async () => {
+    mocks.turnActive.mockReturnValue(true);
+    runSessionSwitchOrchestrator({
+      sessionId: "cli-native-active",
+      adapter: {
+        category: "cli",
+        postLoad: vi.fn().mockResolvedValue({
+          runStatus: "running",
+          transcriptSource: "native",
+        }),
+      } as unknown as SessionAdapter,
+      abortController: new AbortController(),
+      refs: { liveSessionIdRef: { current: "cli-native-active" } },
+      actions: createActions(),
+      setPendingPlanApprovals: vi.fn(),
+      logger: { error: vi.fn() } as never,
+    });
+    await vi.waitFor(() =>
+      expect(mocks.dispatchLoadSession).toHaveBeenCalledOnce()
+    );
+    expect(mocks.loadPersistedHistory).not.toHaveBeenCalled();
+    expect(mocks.reconcileInFlightHistory).toHaveBeenCalledOnce();
+  });
 
   it("uses the complete persisted projection on an imported-session cache hit", async () => {
     const sessionId = "imported-session-retry";

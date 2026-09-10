@@ -9,9 +9,12 @@ import {
   isImportedHistorySession,
 } from "@src/util/session/sessionDispatch";
 
-import { isTurnActive } from "../control/turnLifecycle";
+import { getTurnGeneration, isTurnActive } from "../control/turnLifecycle";
 import { getCursorIdeSnapshotLastUpdatedAt } from "./adapters/cursorIdeAdapter";
-import { loadWithNativeHistoryRevision } from "./nativeHistoryLoadRevision";
+import {
+  type NativeHistoryLoadRevision,
+  loadWithNativeHistoryRevision,
+} from "./nativeHistoryLoadRevision";
 import { isCursorIdeSessionId } from "./sessionSyncDerivedState";
 import { rehydratePendingPlanApproval } from "./sessionSyncPlanApproval";
 import { reconcileInFlightHistory } from "./sessionSyncReconcile";
@@ -136,7 +139,7 @@ async function handleCacheHit(
   // terminal ("cancelled") while the frontend FSM is already dispatching the
   // follow-up turn — treating that window as not-in-flight lets a stale
   // history replace wipe the just-sent message.
-  const cacheHitInFlight =
+  let cacheHitInFlight =
     (!isPostLoadRunStatusSuperseded(
       sessionId,
       postResult?.runStatus,
@@ -147,8 +150,35 @@ async function handleCacheHit(
   let displayEvents = await eventStoreProxy.getEvents(sessionId);
   if (abortController.signal.aborted) return;
 
+  let nativeHistoryRevision: NativeHistoryLoadRevision | undefined;
+  let storeHydrated = false;
   if (!cacheHitInFlight) {
     if (
+      adapter.category === "cli" &&
+      postResult?.transcriptSource === "native"
+    ) {
+      // SQLite can contain only streamed assistant answers. A visible cache
+      // is not an authoritative native transcript or command catalog. Read
+      // the bounded native window once on activation, even on a cache hit.
+      const generation = getTurnGeneration(sessionId);
+      const loaded = await loadWithNativeHistoryRevision(
+        sessionId,
+        abortController.signal,
+        () => loadPersistedHistory(adapter, sessionId, abortController.signal)
+      );
+      if (abortController.signal.aborted) return;
+      cacheHitInFlight = isTurnActive(sessionId);
+      if (!cacheHitInFlight && generation === getTurnGeneration(sessionId)) {
+        displayEvents = loaded.value;
+        await hydrateSessionStoreBeforeDisplay(sessionId, displayEvents);
+        storeHydrated = true;
+        nativeHistoryRevision = loaded.nativeHistoryRevision;
+      } else {
+        // A turn started (or finished) while the disk read was pending.
+        // Preserve its live projection instead of replacing it with old data.
+        displayEvents = await eventStoreProxy.getEvents(sessionId);
+      }
+    } else if (
       adapter.category === "agent" &&
       isCollaborationImportedSession(sessionId)
     ) {
@@ -207,7 +237,8 @@ async function handleCacheHit(
   actions.dispatchLoadSession({
     sessionId,
     events: displayEvents,
-    isFromCache: true,
+    isFromCache: !storeHydrated,
+    ...(storeHydrated ? { storeHydrated, nativeHistoryRevision } : {}),
   });
   rehydratePendingPlanApproval(
     sessionId,
