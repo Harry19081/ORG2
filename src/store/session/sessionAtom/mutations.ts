@@ -37,6 +37,11 @@ import { disposeSessionStreamingState } from "@src/engines/SessionCore/sync/adap
 import { conversationComposerModeAtomFamily } from "@src/features/Org2Cloud/SessionConversation/conversationComposerMode";
 import { disposeCanvasRevisionDraftState } from "@src/store/session/canvasRevisionDraftAtom";
 import { cursorIdeTurnSummariesAtomFamily } from "@src/store/session/cursorIdeTurnSummariesAtom";
+import {
+  clearSessionPermissionRequests,
+  pendingPermissionRequestsAtom,
+  permissionRequestsForSessionAtomFamily,
+} from "@src/store/session/permissionRequestAtom";
 import { pendingPlanApprovalForSessionAtomFamily } from "@src/store/session/planApprovalAtom";
 import { tuiModeAtom } from "@src/store/session/tuiModeAtom";
 import {
@@ -197,6 +202,10 @@ export const removeSession = (sessionId: string) => {
   // A removed session has no live viewers, so free its per-session caches.
   // Without this they accumulate one entry per session for the app lifetime —
   // and tuiMode additionally leaves a `orgii:tuiMode:<id>` localStorage key.
+  store.set(pendingPermissionRequestsAtom, (prev) =>
+    clearSessionPermissionRequests(prev, sessionId)
+  );
+  permissionRequestsForSessionAtomFamily.remove(sessionId);
   cursorIdeTurnSummariesAtomFamily.remove(sessionId);
   tuiModeAtom.remove(sessionId);
   // jotai-family pins every key it has ever been called with, so a family that

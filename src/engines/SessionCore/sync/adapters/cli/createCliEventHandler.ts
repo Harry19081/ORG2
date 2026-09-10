@@ -10,6 +10,11 @@ import {
 } from "@src/engines/SessionCore/sync/utils/activityIds";
 import { createLogger } from "@src/hooks/logger";
 import {
+  clearPendingPermissionRequest,
+  pendingPermissionRequestsAtom,
+  upsertPendingPermissionRequest,
+} from "@src/store/session/permissionRequestAtom";
+import {
   clearPendingPlanApproval,
   pendingPlanApprovalsAtom,
   upsertPendingPlanApproval,
@@ -592,8 +597,8 @@ export function createCliEventHandler(
           : {},
       origin,
     };
-    window.dispatchEvent(
-      new CustomEvent("agent-permission-request", { detail: permissionEvent })
+    getStore()?.set(pendingPermissionRequestsAtom, (prev) =>
+      upsertPendingPermissionRequest(prev, permissionEvent)
     );
   }
 
@@ -606,6 +611,16 @@ export function createCliEventHandler(
 
       if (raw.type === "agent:interaction_finalized") {
         handleInteractionFinalized(raw as unknown as AgentWSEvent, sessionId);
+      } else if (raw.type === "permission:resolved") {
+        if (typeof raw.requestId === "string" && raw.requestId) {
+          getStore()?.set(pendingPermissionRequestsAtom, (prev) =>
+            clearPendingPermissionRequest(
+              prev,
+              sessionId,
+              raw.requestId as string
+            )
+          );
+        }
       } else if (raw.type === "permission:request") {
         handleCliPermissionRequest(raw);
       } else if (raw.type === "agent:plan_ready_for_approval") {

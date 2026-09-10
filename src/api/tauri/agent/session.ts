@@ -238,8 +238,8 @@ export async function respondPermission(
 /**
  * Resolve a permission request parked on the CLI side: a managed
  * session's PermissionRequest hook (`origin: "cli_hook"`) or an ACP
- * agent's `session/request_permission` (`origin: "acp"`) on the
- * `agent-permission-request` event. Routes to
+ * agent's `session/request_permission` (`origin: "acp"`) from the
+ * session-scoped permission request store. Routes to
  * `cli_agent_approval_response`, which checks the hook registry first
  * and falls back to the ACP registry by `requestId`. For hooks,
  * `always_allow` is treated as a plain allow — persistent rules stay
