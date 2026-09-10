@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Edytuj wiadomość...",
     "defaultPlaceholder": "Czat z Agentem",
+    "commentPlaceholder": "Napisz komentarz…",
     "editingQueuedMessage": "Edycja wiadomości w kolejce",
     "editingSentMessage": "Edycja wysłanej wiadomości",
     "voiceErrorPermission": "Brak uprawnień do mikrofonu. Włącz je w ustawieniach systemu.",
