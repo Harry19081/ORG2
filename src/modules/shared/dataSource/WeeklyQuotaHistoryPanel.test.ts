@@ -36,6 +36,8 @@ vi.mock("./RuntimeSectionHeader", () => ({
 }));
 vi.mock("@src/components/Chart", () => ({
   CHART_AXIS_TICK: {},
+  CHART_GRID_STROKE: "currentColor",
+  CHART_MARGIN: {},
   CHART_TOOLTIP: {},
 }));
 vi.mock("@src/components/Select", () => ({
@@ -59,9 +61,11 @@ vi.mock("@src/components/Select", () => ({
 }));
 vi.mock("recharts", () => ({
   ResponsiveContainer: ({ children }: { children: unknown }) => children,
-  LineChart: ({ children }: { children: unknown }) =>
+  BarChart: ({ children }: { children: unknown }) =>
     createElement("div", { "data-testid": "quota-chart" }, children as never),
-  Line: () => null,
+  Bar: () => null,
+  CartesianGrid: () => null,
+  Cell: () => null,
   XAxis: () => null,
   YAxis: () => null,
   Tooltip: () => null,
