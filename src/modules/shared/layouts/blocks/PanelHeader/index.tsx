@@ -228,7 +228,9 @@ const PanelHeader: React.FC<PanelHeaderProps> = memo(
     const displayIcon = searchQuery ? Search01Icon : icon;
     const displayIconElement = searchQuery ? undefined : iconElement;
     const isListVariant = variant === "list";
-    const paddingClass = isListVariant ? "px-3" : "px-4";
+    const paddingClass = isListVariant
+      ? "px-3"
+      : "px-[var(--modal-chrome-padding,1rem)]";
     const heightClass =
       height === "detail" ? DETAIL_PANEL_TOKENS.headerHeight : "h-10";
     const baseClasses = `relative z-30 flex ${heightClass} shrink-0 items-center gap-2 ${paddingClass}`;

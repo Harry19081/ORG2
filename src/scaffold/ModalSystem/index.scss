@@ -66,6 +66,9 @@
 
 // Modal Content Container - Solid Background
 .liquid-modal-content {
+  // Shared panel chrome uses px-3 inside modals, including custom footers.
+  --modal-chrome-padding: calc(var(--spacing) * 3);
+
   position: relative;
   display: flex;
   flex-direction: column;
