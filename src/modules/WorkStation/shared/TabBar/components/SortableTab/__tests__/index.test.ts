@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
+import { CODE_EDITOR_MAIN_TERMINAL_TAB_ID } from "@src/store/workstation/tabs";
 import type { WorkStationTab } from "@src/store/workstation/tabs/types";
 
 import { SortableTab, resolveWorkstationTabIntegrationIcon } from "..";
@@ -92,6 +93,26 @@ describe("resolveWorkstationTabIntegrationIcon", () => {
 });
 
 describe("Workstation tab drag content", () => {
+  it.each([
+    ["file", "test:file", "custom-name"],
+    ["terminal", "custom-terminal", "custom-name"],
+    ["terminal", CODE_EDITOR_MAIN_TERMINAL_TAB_ID, "common:tabs.terminal"],
+  ] as const)(
+    "preserves the title policy for %s / %s",
+    (type, id, expected) => {
+      const markup = renderToStaticMarkup(
+        createElement(WorkstationTabContent, {
+          tab: { ...tab(type), id, title: "custom-name" },
+          isActive: true,
+        })
+      );
+      expect(markup).toContain(expected);
+      if (id === CODE_EDITOR_MAIN_TERMINAL_TAB_ID) {
+        expect(markup).not.toContain("custom-name");
+      }
+    }
+  );
+
   it("renders a tool glyph and localized label instead of the stored title", () => {
     const markup = renderToStaticMarkup(
       createElement(WorkstationTabContent, {
