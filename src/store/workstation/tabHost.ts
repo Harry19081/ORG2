@@ -10,7 +10,7 @@
  */
 import { atom } from "jotai";
 
-import { activeWorkStationTabAtom, mainPaneTabsAtom } from "./tabs";
+import { activeWorkStationTabAtom, mainPaneTabsAtom } from "./tabs/atoms";
 import { DEFAULT_CATEGORY_BY_TYPE } from "./tabs/tabFactory";
 import type {
   WorkStationTab,

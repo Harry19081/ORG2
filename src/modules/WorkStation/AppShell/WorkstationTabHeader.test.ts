@@ -3,7 +3,6 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import { activeStatusBarAppAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { workstationTabHeaderAtomByHost } from "@src/store/workstation";
 import {
   type WorkStationTab,
@@ -76,7 +75,6 @@ function activateBrowserTab(store: ReturnType<typeof createStore>) {
 describe("WorkstationTabHeader", () => {
   it("does not reserve the empty 36px row on the Launchpad", () => {
     const store = createStore();
-    store.set(activeStatusBarAppAtom, "code");
     activateLaunchpadTab(store);
 
     const markup = renderToStaticMarkup(
@@ -92,7 +90,6 @@ describe("WorkstationTabHeader", () => {
 
   it("does not reserve the shell-wide row when an active split owns its header", () => {
     const store = createStore();
-    store.set(activeStatusBarAppAtom, "code");
     store.set(workstationTabHeaderAtomByHost.code, { hidden: true });
 
     const markup = renderToStaticMarkup(
@@ -108,7 +105,6 @@ describe("WorkstationTabHeader", () => {
 
   it("removes the unused shell-leading gutter for self-contained surfaces", () => {
     const store = createStore();
-    store.set(activeStatusBarAppAtom, "code");
     store.set(workstationTabHeaderAtomByHost.code, {
       content: React.createElement("span", null, "Work Items"),
       shellLeadingChromeHidden: true,
@@ -129,7 +125,6 @@ describe("WorkstationTabHeader", () => {
 
   it("removes the published-header gutter for Source Control", () => {
     const store = createStore();
-    store.set(activeStatusBarAppAtom, "code");
     store.set(workstationTabHeaderAtomByHost.code, {
       content: React.createElement("span", null, "develop"),
     });
@@ -151,7 +146,6 @@ describe("WorkstationTabHeader", () => {
 
   it("uses a compact My Station gutter without changing the shared default", () => {
     const store = createStore();
-    store.set(activeStatusBarAppAtom, "code");
     store.set(workstationTabHeaderAtomByHost.code, {
       content: React.createElement("span", null, "My Station content"),
     });
@@ -171,7 +165,6 @@ describe("WorkstationTabHeader", () => {
 
   it("omits the sidebar toggle from the Browser header", () => {
     const store = createStore();
-    store.set(activeStatusBarAppAtom, "browser");
     activateBrowserTab(store);
 
     const markup = renderToStaticMarkup(

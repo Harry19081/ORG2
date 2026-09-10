@@ -87,22 +87,14 @@ const AppShell = React.memo(
 
     const { handleSelectRepo, handleOpenSettings } = useAppShellActions();
 
-    const {
-      activeHost,
-      isCodeMode,
-      isBrowserMode,
-      isProjectMode,
-      codeContentVisible,
-      browserContentVisible,
-      projectContentVisible,
-    } = useAppShellDerivedState();
+    const { activeHost, isCodeMode, isBrowserMode, isProjectMode } =
+      useAppShellDerivedState();
 
     const hasVisitedCode = visitedModes.has("code");
     const hasVisitedBrowser = visitedModes.has("browser");
     const hasVisitedProject = visitedModes.has("project");
 
-    const showSettingsButton =
-      (codeContentVisible || projectContentVisible) && !isAgentStation;
+    const showSettingsButton = (isCodeMode || isProjectMode) && !isAgentStation;
 
     useAppShellStatusBar({
       primaryPanelCollapsed,
@@ -175,9 +167,6 @@ const AppShell = React.memo(
                 isCodeMode={isCodeMode}
                 isBrowserMode={isBrowserMode}
                 isProjectMode={isProjectMode}
-                codeContentVisible={codeContentVisible}
-                browserContentVisible={browserContentVisible}
-                projectContentVisible={projectContentVisible}
                 handleSelectRepo={handleSelectRepo}
               />
             </div>

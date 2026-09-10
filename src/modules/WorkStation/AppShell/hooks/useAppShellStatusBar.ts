@@ -61,10 +61,6 @@ export function useAppShellStatusBar({
         onOpenSettings: showSettingsButton ? handleOpenSettings : undefined,
         ...sharedPanelCallbacks,
       },
-      data: {
-        ...prev.data,
-        ...sharedPanelCallbacks,
-      },
     }));
   }, [
     handleOpenSettings,
