@@ -323,7 +323,7 @@ pub const EXTERNAL_CLI_SOURCES: &[ExternalCliSourceSpec] = &[
     ),
     source(
         "kimi",
-        "Kimi",
+        "Kimi Code CLI",
         "kimi",
         "kimi",
         &[],
