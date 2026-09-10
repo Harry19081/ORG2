@@ -464,7 +464,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                   />
                 ) : activeTab ? (
                   activeTabHasRetainedLayer ? null : (
-                    <UnifiedTabContent tab={activeTab} paneId="main" isActive />
+                    <UnifiedTabContent tab={activeTab} isActive />
                   )
                 ) : (
                   // Preserve TabContentRenderer's `!activeTab` branch: an empty
@@ -505,11 +505,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                   }`}
                   aria-hidden={!visible}
                 >
-                  <UnifiedTabContent
-                    tab={tab}
-                    paneId="main"
-                    isActive={visible}
-                  />
+                  <UnifiedTabContent tab={tab} isActive={visible} />
                 </div>
               );
             })}

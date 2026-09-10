@@ -8,21 +8,20 @@
  * renderers (`TabContent/renderers/project*.tsx`) wait on before they can drop
  * their `HostCoupledPlaceholder` stubs.
  *
- * The value is exactly the prop bundle the content router receives today, minus
- * `tabs`/`activeTab` (a renderer only handles its own tab, passed via
- * `UnifiedTabContentProps`), plus `repoName`. Sourcing it from
- * `ProjectManagerContentRouterProps` keeps the two in lockstep by construction.
+ * Actions belong to the host context; the content router only receives the
+ * inputs it renders.
  *
  * See docs/workstation-unification/phase-2-host-hoist-plan.md (Phase 2.1).
  */
 import { type ReactNode, createContext, useContext } from "react";
 
-import type { ProjectManagerContentRouterProps } from "../types";
+import type { QuickAction } from "@src/modules/WorkStation/shared";
 
-export type ProjectHostContextValue = Omit<
-  ProjectManagerContentRouterProps,
-  "tabs" | "activeTab"
-> & {
+import type { ProjectHostActions } from "../types";
+
+export type ProjectHostContextValue = ProjectHostActions & {
+  repoPath: string;
+  projectQuickActions: QuickAction[];
   /** Repository name for display (sidebar/detail surfaces). */
   repoName: string;
 };

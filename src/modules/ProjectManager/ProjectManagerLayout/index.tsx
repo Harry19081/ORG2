@@ -303,22 +303,6 @@ export const ProjectManagerLayout: React.FC<ProjectManagerLayoutProps> = memo(
         tabs={tabs}
         activeTab={activeTab}
         projectQuickActions={projectQuickActions}
-        onSelectProject={handleSelectProject}
-        onOpenProjects={handleOpenProjects}
-        onCreateProject={handleCreateProject}
-        onCreateWorkItem={handleCreateWorkItem}
-        onOpenLinearProjects={handleOpenLinearProjects}
-        onOpenRepoSettings={handleOpenRepoSettings}
-        onExpandWorkItemToTab={handleExpandWorkItemToTab}
-        onOpenChatSession={handleOpenChatSession}
-        onCloseTab={closeTab}
-        onUpdateTabData={updateTabData}
-        onUpdateTabMeta={updateTabMeta}
-        onSetTabUnsaved={setTabUnsaved}
-        onEmbeddedWorkItemDetailStateChange={
-          handleEmbeddedWorkItemDetailStateChange
-        }
-        onProjectListRefreshRequested={handleProjectListRefreshRequested}
       />
     );
 

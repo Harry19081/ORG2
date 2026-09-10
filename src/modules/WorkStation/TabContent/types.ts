@@ -24,7 +24,6 @@ export interface UnifiedTabContentProps<
   /** The tab whose content this renderer is responsible for. */
   tab: TTab;
   /** ID of the pane that owns this tab (for split-pane awareness). */
-  paneId: string;
   /** Whether this tab is the active tab in its pane. */
   isActive: boolean;
 }
