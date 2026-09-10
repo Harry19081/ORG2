@@ -359,7 +359,22 @@ pub fn parse_session_round_params(params: &Value) -> Result<SessionRoundParams, 
 
 /// List sessions from the cross-backend directory, mapped to the mobile wire shape.
 pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
-    let offset = params.get("offset").and_then(Value::as_u64).unwrap_or(0) as usize;
+    let query = parse_session_search_query(params)?;
+    let offset = if query.is_some() {
+        // Leave room for one page while keeping the response cursor exactly
+        // representable by JavaScript clients.
+        match params.get("offset") {
+            None => 0,
+            Some(value) => value
+                .as_u64()
+                .filter(|offset| *offset <= 9_007_199_254_740_991 - 200)
+                .ok_or_else(|| {
+                    RpcError::invalid_params("offset must be a non-negative safe page cursor")
+                })? as usize,
+        }
+    } else {
+        params.get("offset").and_then(Value::as_u64).unwrap_or(0) as usize
+    };
     let limit = params
         .get("limit")
         .and_then(|value| value.as_u64())
@@ -377,9 +392,31 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
         ));
     }
 
-    if let Some(snapshot) = current_mobile_sidebar_sessions()
-        .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?
-    {
+    let search_page = if let Some(query) = query {
+        Some(
+            tokio::task::spawn_blocking(move || {
+                crate::agent_sessions::session_directory::aggregation::search_session_names(
+                    &query, limit, offset,
+                )
+            })
+            .await
+            .map_err(|err| {
+                RpcError::new(RpcErrorCode::InvalidRequest, format!("task join: {err}"))
+            })?
+            .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?,
+        )
+    } else {
+        None
+    };
+
+    // The sidebar only contains loaded rows. Search must use the indexed
+    // directory even when a sidebar snapshot is available.
+    if let Some(snapshot) = if search_page.is_none() {
+        current_mobile_sidebar_sessions()
+            .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?
+    } else {
+        None
+    } {
         let candidate_ids = snapshot
             .iter()
             .filter(|session| status_filter != "running" || session.status == "running")
@@ -413,14 +450,20 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
         ..Default::default()
     };
 
-    let response = tokio::task::spawn_blocking(move || list_all_sessions(Some(&filter)))
-        .await
-        .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, format!("task join: {err}")))?
-        .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?;
+    let (source_sessions, cursor) = if let Some(page) = search_page {
+        (page.sessions, Some((page.next_offset, page.has_more)))
+    } else {
+        let response = tokio::task::spawn_blocking(move || list_all_sessions(Some(&filter)))
+            .await
+            .map_err(|err| {
+                RpcError::new(RpcErrorCode::InvalidRequest, format!("task join: {err}"))
+            })?
+            .map_err(|err| RpcError::new(RpcErrorCode::InvalidRequest, err))?;
+        (response.sessions, None)
+    };
 
-    let consumed = response.sessions.len();
-    let session_rows = response
-        .sessions
+    let consumed = source_sessions.len();
+    let session_rows = source_sessions
         .into_iter()
         .filter(|record| is_mobile_list_category(record.category))
         .filter(|record| {
@@ -454,9 +497,31 @@ pub async fn session_list(params: &Value) -> Result<Value, RpcError> {
         })
         .collect::<Vec<_>>();
 
-    Ok(
-        json!({ "sessions": sessions, "nextOffset": offset.saturating_add(consumed), "hasMore": consumed == limit }),
-    )
+    let mut result = json!({ "sessions": sessions });
+    if let Some((next_offset, has_more)) = cursor {
+        result["nextOffset"] = json!(next_offset);
+        result["hasMore"] = json!(has_more);
+    } else {
+        result["nextOffset"] = json!(offset.saturating_add(consumed));
+        result["hasMore"] = json!(consumed == limit);
+    }
+    Ok(result)
+}
+
+fn parse_session_search_query(params: &Value) -> Result<Option<String>, RpcError> {
+    let Some(query) = params.get("query") else {
+        return Ok(None);
+    };
+    let query = query
+        .as_str()
+        .ok_or_else(|| RpcError::invalid_params("query must be a string"))?
+        .trim();
+    if query.is_empty() || query.chars().count() > 200 {
+        return Err(RpcError::invalid_params(
+            "query must contain 1 to 200 characters",
+        ));
+    }
+    Ok(Some(query.to_owned()))
 }
 
 /// Submit a user message from mobile — enqueues a turn and returns immediately.
