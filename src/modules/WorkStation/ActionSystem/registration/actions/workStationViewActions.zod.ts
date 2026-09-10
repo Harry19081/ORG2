@@ -263,21 +263,19 @@ export const workstationCreateProject = defineZodAction(
   {
     id: ACTION_ID.WORKSTATION_CREATE_PROJECT,
     category: "navigation",
-    description: "Navigate to My Station and open the Create Project form",
+    description: "Open the Create Project form",
     params: z.object({}),
     tags: ["workstation", "project", "create", "navigation"],
     examples: ["create project", "new project", "add project"],
   },
   async () => {
-    const workStationViewService = await getWorkStationViewService();
-    await workStationViewService.openStationMode("my-station");
-    const { openCreateTargetInChatPanelStartPageAtom } =
+    const { openChatPanelCreateTargetAtom } =
       await import("@src/store/chatPanel/chatPanelTabsAtom");
     const { CHAT_PANEL_CREATE_TARGET } =
       await import("@src/store/ui/chatPanel/selectionAtoms");
     const { getInstrumentedStore } =
       await import("@src/util/core/state/instrumentedStore");
-    getInstrumentedStore().set(openCreateTargetInChatPanelStartPageAtom, {
+    getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
       target: CHAT_PANEL_CREATE_TARGET.PROJECT,
     });
     return { success: true, message: "Opened Create Project" };
@@ -288,7 +286,7 @@ export const workstationCreateWorkItem = defineZodAction(
   {
     id: ACTION_ID.WORKSTATION_CREATE_WORK_ITEM,
     category: "navigation",
-    description: "Navigate to My Station and open the Create Work Item form",
+    description: "Open the Create Work Item form",
     params: z.object({}),
     tags: ["workstation", "work-item", "create", "navigation"],
     examples: [
@@ -299,15 +297,13 @@ export const workstationCreateWorkItem = defineZodAction(
     ],
   },
   async () => {
-    const workStationViewService = await getWorkStationViewService();
-    await workStationViewService.openStationMode("my-station");
-    const { openCreateTargetInChatPanelStartPageAtom } =
+    const { openChatPanelCreateTargetAtom } =
       await import("@src/store/chatPanel/chatPanelTabsAtom");
     const { CHAT_PANEL_CREATE_TARGET } =
       await import("@src/store/ui/chatPanel/selectionAtoms");
     const { getInstrumentedStore } =
       await import("@src/util/core/state/instrumentedStore");
-    getInstrumentedStore().set(openCreateTargetInChatPanelStartPageAtom, {
+    getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
       target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
     });
     return { success: true, message: "Opened Create Work Item" };

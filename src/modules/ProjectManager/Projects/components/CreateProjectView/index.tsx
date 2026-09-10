@@ -27,6 +27,7 @@ import {
   projectApi,
   projectDataToUI,
 } from "@src/api/http/project";
+import Button from "@src/components/Button";
 import Message from "@src/components/Message";
 import type { SelectOption } from "@src/components/Select";
 import { INPUT_AREA_EDITOR_HEIGHT } from "@src/config/inputAreaTokens";
@@ -56,6 +57,7 @@ import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTex
 import { CreatorContentLayout } from "@src/modules/shared/layouts/blocks";
 import { reposAtom } from "@src/store/repo";
 import { DEFAULT_SESSION_ORG_ID } from "@src/store/session";
+import { manualCreatorAtom } from "@src/store/ui/manualCreatorAtom";
 import {
   type ProjectDraft,
   createDefaultProjectDraft,
@@ -83,6 +85,8 @@ export interface CreatedProjectResult {
 }
 
 interface CreateProjectViewProps {
+  layout?: "page" | "spotlight";
+  onCancel?: () => void;
   /** Tab ID used to key the draft cache */
   tabId: string;
   /**
@@ -101,7 +105,7 @@ interface CreateProjectViewProps {
   /** Mark this tab as having unsaved changes */
   onSetUnsaved: (hasUnsaved: boolean) => void;
   /** Called after project is successfully created */
-  onProjectCreated: (result: CreatedProjectResult) => void;
+  onProjectCreated?: (result: CreatedProjectResult) => void;
   /** Show the Agent composer instead of the manual Project composer. */
   aiGenerateMode?: boolean;
   /** Optional content centered in the page above the bottom-docked manual composer. */
@@ -138,12 +142,15 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   onSetUnsaved,
   onProjectCreated,
   aiGenerateMode = false,
+  layout = "page",
+  onCancel,
   middleContent,
   creatorModeControl,
   renderAgentComposer,
   publishHeaderToWorkstation = false,
 }) => {
   const { t } = useTranslation("projects");
+  const manualCreator = useAtomValue(manualCreatorAtom);
   const [saving, setSaving] = useState(false);
   const [editorMode, setEditorMode] = useState<MarkdownEditorMode>("write");
   const [availableOrgs, setAvailableOrgs] = useState<ProjectOrg[]>([]);
@@ -201,7 +208,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
   const propertiesRef = useRef<HTMLDivElement>(null);
 
   const undoStack = useUndoStackWithRestore<ProjectDraft>({
-    keyboardShortcut: true,
+    keyboardShortcut: layout === "spotlight" || !manualCreator,
     currentValue: draft,
     onRestore: (prev) => setDraft({ tabId, draft: prev }),
   });
@@ -322,7 +329,7 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
 
       await emit("orgii-data-changed");
       removeDraft(tabId);
-      onProjectCreated({
+      onProjectCreated?.({
         project: projectDataToUI(
           { meta, description, slug },
           { labelMap: new Map(), memberMap: new Map() }
@@ -353,7 +360,10 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
 
   useKeyboardSave(
     handleCreate,
-    !aiGenerateMode && !saving && !!draft.name.trim()
+    (layout === "spotlight" || !manualCreator) &&
+      !aiGenerateMode &&
+      !saving &&
+      !!draft.name.trim()
   );
 
   const selectableOrgs = useMemo(
@@ -510,6 +520,44 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
     />
   );
 
+  const manualComposer = (
+    <ManualCreateComposer
+      spotlight={layout === "spotlight"}
+      dataTestId="create-project-manual-composer"
+      editorRef={editorRef}
+      headerContent={composerHeaderContent}
+      editorContent={projectEditor}
+      pinnedActionsContent={projectPinnedActions}
+      pills={
+        <MarkdownEditorModeSwitch
+          mode={editorMode}
+          onModeChange={setEditorMode}
+          disabled={saving}
+          dataTestId="create-project-description-mode-switch"
+        />
+      }
+      submitButton={
+        <>
+          {layout === "spotlight" && onCancel && (
+            <Button variant="secondary" size="small" onClick={onCancel}>
+              {t("common:actions.cancel")}
+            </Button>
+          )}
+          <LaunchButton
+            ariaLabel={t("projects.createProject")}
+            dataTestId="create-project-submit"
+            disabled={!draft.name.trim() || saving}
+            loading={saving}
+            onClick={() => {
+              void handleCreate();
+            }}
+          />
+        </>
+      }
+    />
+  );
+  if (layout === "spotlight") return manualComposer;
+
   return (
     <DetailSplitLayout
       title={t("projects.newProject")}
@@ -522,36 +570,9 @@ const CreateProjectView: React.FC<CreateProjectViewProps> = ({
           contentDataTestId="create-project-creator-content"
           middleContent={middleContent}
         >
-          {aiGenerateMode && renderAgentComposer ? (
-            renderAgentComposer(composerHeaderContent, projectPinnedActions)
-          ) : (
-            <ManualCreateComposer
-              dataTestId="create-project-manual-composer"
-              editorRef={editorRef}
-              headerContent={composerHeaderContent}
-              editorContent={projectEditor}
-              pinnedActionsContent={projectPinnedActions}
-              pills={
-                <MarkdownEditorModeSwitch
-                  mode={editorMode}
-                  onModeChange={setEditorMode}
-                  disabled={saving}
-                  dataTestId="create-project-description-mode-switch"
-                />
-              }
-              submitButton={
-                <LaunchButton
-                  ariaLabel={t("projects.createProject")}
-                  dataTestId="create-project-submit"
-                  disabled={!draft.name.trim() || saving}
-                  loading={saving}
-                  onClick={() => {
-                    void handleCreate();
-                  }}
-                />
-              }
-            />
-          )}
+          {aiGenerateMode && renderAgentComposer
+            ? renderAgentComposer(composerHeaderContent, projectPinnedActions)
+            : manualComposer}
         </CreatorContentLayout>
       }
     />

@@ -187,34 +187,20 @@ export function useSpotlight(
       > = {
         "open-session-creator": openSessionCreatorSpotlight,
         "create-project": () => {
-          void WorkStationViewService.openStationMode("my-station").then(
-            async () => {
-              const { openCreateTargetInChatPanelStartPageAtom } =
-                await import("@src/store/chatPanel/chatPanelTabsAtom");
-              const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanel/selectionAtoms");
-              getInstrumentedStore().set(
-                openCreateTargetInChatPanelStartPageAtom,
-                {
-                  target: CHAT_PANEL_CREATE_TARGET.PROJECT,
-                }
-              );
+          void import("@src/store/chatPanel/chatPanelTabsAtom").then(
+            ({ openChatPanelCreateTargetAtom }) => {
+              getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+                target: "project",
+              });
             }
           );
         },
         "create-work-item": () => {
-          void WorkStationViewService.openStationMode("my-station").then(
-            async () => {
-              const { openCreateTargetInChatPanelStartPageAtom } =
-                await import("@src/store/chatPanel/chatPanelTabsAtom");
-              const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanel/selectionAtoms");
-              getInstrumentedStore().set(
-                openCreateTargetInChatPanelStartPageAtom,
-                {
-                  target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
-                }
-              );
+          void import("@src/store/chatPanel/chatPanelTabsAtom").then(
+            ({ openChatPanelCreateTargetAtom }) => {
+              getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+                target: "workItem",
+              });
             }
           );
         },
