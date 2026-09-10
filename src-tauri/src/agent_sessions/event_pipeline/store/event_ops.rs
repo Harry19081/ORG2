@@ -410,37 +410,6 @@ impl EventStore {
         preferred_id.or(found_id)
     }
 
-    /// Update args on the last event matching a predicate (scanning from end).
-    /// `merge_args` are shallow-merged into the event's existing `args` object.
-    /// Returns the ID of the updated event, if found.
-    pub fn update_last_matching_args<F>(
-        &mut self,
-        predicate: F,
-        merge_args: serde_json::Value,
-    ) -> Option<String>
-    where
-        F: Fn(&SessionEvent) -> bool,
-    {
-        for idx in (0..self.events.len()).rev() {
-            if predicate(&self.events[idx]) {
-                if let (
-                    serde_json::Value::Object(ref mut existing),
-                    serde_json::Value::Object(new),
-                ) = (&mut self.events[idx].args, merge_args)
-                {
-                    for (key, value) in new {
-                        existing.insert(key, value);
-                    }
-                }
-                let event_id = self.events[idx].id.clone();
-                self.mark_changed(event_id.clone());
-                self.version += 1;
-                return Some(event_id);
-            }
-        }
-        None
-    }
-
     /// Clear all events (e.g., session switch to empty).
     pub fn clear(&mut self) {
         let removed_ids: Vec<String> = self.events.iter().map(|event| event.id.clone()).collect();

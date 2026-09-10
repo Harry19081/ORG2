@@ -5,7 +5,6 @@
 mod quota_history;
 mod quota_history_identity;
 pub use quota_history::*;
-mod batch;
 mod cli_version;
 mod crud;
 mod install;
@@ -13,7 +12,6 @@ mod prompt_polish;
 pub mod registry;
 mod validate;
 
-pub use batch::*;
 pub use cli_version::*;
 pub use crud::*;
 pub use install::*;
