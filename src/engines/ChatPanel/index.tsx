@@ -60,11 +60,7 @@ import {
   SessionRawToolbarActions,
 } from "./components/SessionViewSwitcher";
 import SessionWorkstationRail from "./components/SessionWorkstationRail";
-import {
-  resolveFocusedChatWorkstationRailTrackClass,
-  shouldMountFocusedChatWorkstationControls,
-  shouldReserveFocusedChatWorkstationPlaceholder,
-} from "./focusedChatWorkstationLayout";
+import { shouldMountFocusedChatWorkstationControls } from "./focusedChatWorkstationLayout";
 import { FocusedChatWorkstationMinimapPortalContext } from "./focusedChatWorkstationMinimapPortal";
 import {
   resolveChatPanelChromeTopInsetPx,
@@ -279,12 +275,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         isChatFocus,
         showSessionContent: contentState.showSessionContent,
       });
-    const reserveFocusedWorkstationPlaceholder =
-      shouldReserveFocusedChatWorkstationPlaceholder({
-        activeTabType: activeTab?.type ?? null,
-        isChatFocus,
-        startPageOpen,
-      });
 
     const {
       handleMoveToWorkstation,
@@ -486,13 +476,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
                 session={currentSession}
                 sessionId={currentSessionId}
                 topInset={chromeTopInsetPx}
-              />
-            ) : reserveFocusedWorkstationPlaceholder ? (
-              <div
-                aria-hidden
-                data-testid="launchpad-workstation-rail-placeholder"
-                data-workstation-trail-track
-                className={`h-full shrink-0 ${resolveFocusedChatWorkstationRailTrackClass(true)}`}
               />
             ) : null
           }
