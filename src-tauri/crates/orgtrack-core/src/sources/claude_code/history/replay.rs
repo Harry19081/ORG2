@@ -75,6 +75,7 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
     let mut sequence = start_sequence;
     let mut forced_first_user_id = forced_first_user_id;
     let mut pending_compact_boundary: Option<(String, String)> = None;
+    let mut awaiting_local_command_output = false;
 
     for line in reader.lines() {
         let line = line.map_err(|err| format!("Failed to read Claude history line: {err}"))?;
@@ -91,21 +92,35 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
             .as_deref()
             .map(imported_history::normalize_created_at)
             .unwrap_or_else(|| chrono::Utc::now().to_rfc3339());
-        if parsed.r#type == "system" && parsed.subtype == "local_command" {
-            if let Some(content) = parsed.content.as_deref() {
-                let success =
-                    parsed.level != "error" && !content.starts_with("<local-command-stderr>");
-                let output = content
-                    .strip_prefix("<local-command-stdout>")
-                    .and_then(|text| text.strip_suffix("</local-command-stdout>"))
-                    .or_else(|| {
-                        content
-                            .strip_prefix("<local-command-stderr>")
-                            .and_then(|text| text.strip_suffix("</local-command-stderr>"))
-                    })
-                    .unwrap_or(content);
+        // SDK compaction writes stdout as a user row, while other local
+        // controls use system/local_command. Only claim the user envelope
+        // immediately following a recognized provider command, never arbitrary
+        // user prose that happens to contain these tags.
+        let user_command_output = if awaiting_local_command_output && parsed.r#type == "user" {
+            parsed
+                .message
+                .as_ref()
+                .and_then(|message| claude_content_text(&message.content))
+                .and_then(|text| {
+                    claude_local_command_output(&text)
+                        .map(|(output, success)| (output.to_string(), success))
+                })
+        } else {
+            None
+        };
+        if (parsed.r#type == "system" && parsed.subtype == "local_command")
+            || user_command_output.is_some()
+        {
+            if let Some((output, success)) = user_command_output.or_else(|| {
+                parsed.content.as_deref().map(|content| {
+                    let (output, success) =
+                        claude_local_command_output(content).unwrap_or((content, true));
+                    (output.to_string(), success && parsed.level != "error")
+                })
+            }) {
+                awaiting_local_command_output = false;
                 let mut chunk =
-                    imported_history::native_command_output_chunk(session_id, output, success);
+                    imported_history::native_command_output_chunk(session_id, &output, success);
                 chunk.chunk_id = format!("claudecode-command-{}-{sequence}", parsed.uuid);
                 chunk.created_at = created_at.clone();
                 chunks.push(chunk);
@@ -182,6 +197,9 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
             continue;
         };
 
+        if parsed.r#type == "assistant" {
+            awaiting_local_command_output = false;
+        }
         match parsed.r#type.as_str() {
             "user" => {
                 if let Some(tool_result_output) = claude_tool_result_text(&message.content) {
@@ -212,10 +230,13 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
                     // carries no user-authored text, so emit no bubble.
                     let text = claude_content_text(&message.content)
                         .map(|text| {
-                            claude_local_command_input(
+                            let command = claude_local_command_input(
                                 imported_history::strip_orgii_exec_mode_bridge(&text),
-                            )
-                            .unwrap_or_else(|| {
+                            );
+                            if !harness_injected {
+                                awaiting_local_command_output = command.is_some();
+                            }
+                            command.unwrap_or_else(|| {
                                 imported_history::strip_orgii_exec_mode_bridge(&text).to_string()
                             })
                         })
@@ -313,7 +334,22 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
 // SDK local commands serialize their input as an exact three-tag envelope.
 // Normalize only that envelope so queue reconciliation sees the literal command
 // the user submitted; arbitrary prose containing tags remains unchanged.
-fn claude_local_command_input(text: &str) -> Option<String> {
+pub(super) fn claude_local_command_output(text: &str) -> Option<(&str, bool)> {
+    for (tag, success) in [
+        ("local-command-stdout", true),
+        ("local-command-stderr", false),
+    ] {
+        if let Some(output) = text
+            .strip_prefix(&format!("<{tag}>"))
+            .and_then(|text| text.strip_suffix(&format!("</{tag}>")))
+        {
+            return Some((output, success));
+        }
+    }
+    None
+}
+
+pub(super) fn claude_local_command_input(text: &str) -> Option<String> {
     fn field<'a>(text: &'a str, tag: &str) -> Option<(&'a str, &'a str)> {
         text.trim()
             .strip_prefix(&format!("<{tag}>"))?

@@ -451,6 +451,9 @@ export function createKeyDownHandler(ctx: KeyDownHandlerContext) {
       if (DROPDOWN_NAV_KEYS.includes(event.key)) {
         const handled = onAtKeys(event);
         if (handled) {
+          if (event.key === "Escape") {
+            ctx.setAtMention({ active: false, startOffset: 0 });
+          }
           event.preventDefault();
           return;
         }
@@ -467,6 +470,9 @@ export function createKeyDownHandler(ctx: KeyDownHandlerContext) {
     if (onSlashKeys && DROPDOWN_NAV_KEYS.includes(event.key)) {
       const handled = onSlashKeys(event);
       if (handled) {
+        if (event.key === "Escape") {
+          ctx.setSlashCommand({ active: false, startOffset: 0 });
+        }
         event.preventDefault();
         return;
       }

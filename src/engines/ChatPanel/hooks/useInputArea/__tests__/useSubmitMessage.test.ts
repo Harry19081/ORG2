@@ -275,6 +275,23 @@ describe("useSubmitMessage composer boundary", () => {
     }
   );
 
+  it("routes a legacy pinned Compact pill through the native command owner", async () => {
+    mocks.isCliSession.mockReturnValue(true);
+    mocks.provider = "codex";
+    mocks.parseCompactSlashCommand.mockReturnValue({});
+    const editor = createEditor("compact [skill:/compact]");
+    const options = optionsFor(editor);
+    await mount(options);
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(mocks.nativeCommand).toHaveBeenCalledWith(
+      options.draftSessionId,
+      "/compact"
+    );
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+  });
+
   it("retains native command text when the secret scan declines sending", async () => {
     mocks.isCliSession.mockReturnValue(true);
     mocks.provider = "codex";

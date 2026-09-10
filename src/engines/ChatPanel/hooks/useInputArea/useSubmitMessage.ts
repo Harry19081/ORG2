@@ -243,7 +243,16 @@ export function useSubmitMessage({
 
       const provider = store.get(sessionByIdAtom(draftSessionId))?.cliAgentType;
       if (enableAgentInterceptors && !hasAttachedImages) {
-        const command = parseNativeSlashCommand(displayText);
+        // Older pinned Compact actions serialize as an ORG2 skill pill.
+        // Normalize that explicit command before choosing the native path.
+        const compact =
+          provider === "codex" || provider === "claude_code"
+            ? parseCompactSlashCommand(displayText)
+            : null;
+        const nativeCommandText = compact
+          ? `/compact${compact.instructions ? ` ${compact.instructions}` : ""}`
+          : displayText;
+        const command = parseNativeSlashCommand(nativeCommandText);
         if (command) {
           if (command.name === "plan" && submitDisabled) return;
           try {
@@ -283,7 +292,7 @@ export function useSubmitMessage({
             ) {
               if (submitDisabled || !(await guardAgainstSecrets(displayText)))
                 return;
-              await executeNativeCliCommand(draftSessionId, displayText);
+              await executeNativeCliCommand(draftSessionId, nativeCommandText);
               if (!isExplicitAction) {
                 refs.composerInputRef.current?.clear();
                 await flushDraft("");

@@ -1948,3 +1948,40 @@ fn custom_command_envelope_replays_as_the_original_user_prompt() {
     assert_eq!(chunks[1].result["content"], "CC_COMMAND_APP_OK");
     std::fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn sdk_compact_user_stdout_is_a_command_result_but_unrelated_user_text_is_preserved() {
+    let dir = std::env::temp_dir().join(format!("orgii-claude-sdk-stdout-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("compact.jsonl");
+    std::fs::write(&path, r#"{"type":"user","uuid":"cmd","message":{"role":"user","content":"<command-name>/compact</command-name><command-message>compact</command-message><command-args>preserve marker</command-args>"}}
+{"type":"user","uuid":"stdout","entrypoint":"sdk-cli","message":{"role":"user","content":"<local-command-stdout>Compacted </local-command-stdout>"}}
+{"type":"user","uuid":"ordinary","message":{"role":"user","content":"<local-command-stdout>my example</local-command-stdout>"}}
+"#).unwrap();
+    let chunks = load_claude_code_history_from_path("claudecodeapp-compact", &path).unwrap();
+    let indexed = index_claude_user_turns("claudecodeapp-compact", &path).unwrap();
+    assert_eq!(indexed.len(), 2);
+    assert_eq!(
+        indexed[0].user_chunk.result["message"]["content"],
+        "/compact preserve marker"
+    );
+    let window =
+        load_claude_code_initial_window_from_path("claudecodeapp-compact", &path, 1).unwrap();
+    assert!(window
+        .chunks
+        .iter()
+        .any(|chunk| chunk.result["message"]["content"] == "/compact preserve marker"));
+    assert_eq!(chunks.len(), 4);
+    assert_eq!(
+        chunks[0].result["message"]["content"],
+        "/compact preserve marker"
+    );
+    assert_eq!(chunks[1].function, "native_command");
+    assert_eq!(chunks[1].result["output"], "Compacted ");
+    assert_eq!(chunks[2].action_type, "task_completed");
+    assert_eq!(
+        chunks[3].result["message"]["content"],
+        "<local-command-stdout>my example</local-command-stdout>"
+    );
+    std::fs::remove_dir_all(dir).unwrap();
+}

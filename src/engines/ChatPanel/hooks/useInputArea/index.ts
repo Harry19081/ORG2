@@ -687,7 +687,8 @@ export function useInputArea(
     setIsInputFocused: state.setIsInputFocused,
     handleInputBlur,
     handleContentChange,
-    compactHintVisible,
+    compactHintVisible:
+      compactHintVisible && activeSession?.cliAgentType !== "codex",
     canvasHintVisible,
     handleAtMention: atMention.handleAtMention,
     handleAtMentionClose: atMention.handleAtMentionClose,

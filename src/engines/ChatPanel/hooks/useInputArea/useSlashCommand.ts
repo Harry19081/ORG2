@@ -325,6 +325,8 @@ export function useSlashCommand(
 
       if (
         item.category === "action" &&
+        item.source !== "codex" &&
+        item.source !== "claude_code" &&
         insertAtomicSlashActionPill(composerInputRef.current, item.name)
       ) {
         setShowSlashMenu(false);
