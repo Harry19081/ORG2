@@ -906,6 +906,12 @@
     "notInstalled": "연결을 테스트하거나 적용하기 전에 이 도구를 설치하세요"
   },
   "mobileRemote": {
+    "advancedSettings": "고급 설정",
+    "showAdvanced": "고급 설정 표시",
+    "hideAdvanced": "고급 설정 숨기기",
+    "restoreDefaultRelay": "기본 릴레이 복원",
+    "developerOptions": "개발자 옵션",
+    "retryConnection": "연결 재시도",
     "enabled": "Mobile Remote",
     "enabledDesc": "페어링된 휴대폰이 같은 Wi‑Fi LAN 또는 공개 릴레이를 통해 이 데스크톱의 Agent 세션을 조작할 수 있게 합니다",
     "securityNotice": "LAN 노출이 켜져 있으면 연결 URL과 토큰을 가진 네트워크상의 누구나 세션을 제어할 수 있습니다. 유출이 의심되면 토큰을 다시 생성하세요",

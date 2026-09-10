@@ -906,6 +906,12 @@
     "notInstalled": "Zainstaluj to narzędzie przed testowaniem lub zastosowaniem połączenia"
   },
   "mobileRemote": {
+    "advancedSettings": "Ustawienia zaawansowane",
+    "showAdvanced": "Pokaż ustawienia zaawansowane",
+    "hideAdvanced": "Ukryj ustawienia zaawansowane",
+    "restoreDefaultRelay": "Przywróć domyślny przekaźnik",
+    "developerOptions": "Opcje programistyczne",
+    "retryConnection": "Ponów połączenie",
     "enabled": "Mobile Remote",
     "enabledDesc": "Pozwól sparowanemu telefonowi sterować sesjami Agenta na tym komputerze przez tę samą sieć Wi‑Fi LAN lub przez publiczny relay",
     "securityNotice": "Gdy udostępnianie w LAN jest włączone, każdy w Twojej sieci, kto ma URL połączenia i token, może sterować sesjami. Wygeneruj token ponownie, jeśli podejrzewasz wyciek",

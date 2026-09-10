@@ -64,7 +64,7 @@
     "outdoorTitle": "Outdoor connection",
     "outdoorDesc": "Connect the desktop outbound to a relay so your phone works over 4G, 5G, or another network",
     "relayEnabled": "Connect to relay",
-    "relayEnabledDesc": "The desktop opens an outbound WebSocket connection; no router port forwarding is needed",
+    "relayEnabledDesc": "No router configuration needed",
     "relayUrl": "Relay address",
     "relayUrlDesc": "Enter the deployed ws:// or wss:// URL, such as wss://relay.example.com/v1/mobile/ws",
     "relayPresetAria": "Select relay environment preset",
@@ -75,7 +75,7 @@
     "cloudLoginDescSignedOut": "Sign in to ORG2 Cloud before pairing through a relay",
     "relayStatusCloudLoginRequired": "Sign in to ORG2 Cloud in Settings → General, then refresh relay status",
     "relayStatusAuthFailedSignedIn": "Relay rejected the connection — sign out and sign in again under Settings → General",
-    "relayStatus": "Relay status",
+    "relayStatus": "Remote connection",
     "relayStatus_online": "Connected",
     "relayStatus_connecting": "Connecting",
     "relayStatus_backoff": "Waiting to reconnect",
@@ -127,7 +127,13 @@
     "deviceLastSeenValue": "Last seen {{time}}",
     "deviceNeverSeen": "Never connected",
     "deviceOnline": "Online",
-    "deviceOffline": "Offline"
+    "deviceOffline": "Offline",
+    "advancedSettings": "Advanced settings",
+    "showAdvanced": "Show",
+    "hideAdvanced": "Hide",
+    "restoreDefaultRelay": "Restore default address",
+    "developerOptions": "Developer options",
+    "retryConnection": "Retry"
   },
   "myRoles": {
     "currentStatus": "My current status",

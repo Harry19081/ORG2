@@ -22,6 +22,7 @@ import { Placeholder } from "@src/components/Placeholder";
 import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Switch from "@src/components/Switch";
 import {
+  MOBILE_REMOTE_RELAY_PRODUCTION_URL,
   type MobileRemoteRelayPreset,
   mobileRemoteRelayPresetUrl,
   resolveMobileRemoteRelayPreset,
@@ -61,6 +62,10 @@ const MobileRemoteSettingsSection: React.FC = () => {
   const [relayUrl, setRelayUrl] = useSetting("mobileRemote.relayUrl");
   const [lanToken, setLanToken] = useSetting("mobileRemote.lanToken");
 
+  const [advanced, setAdvanced] = useState(false);
+  const [developerOptions, setDeveloperOptions] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
+  const reconnectingRef = useRef(false);
   const [fullAccess, setFullAccess] = useState(true);
   const [pairing, setPairing] = useState<PairingInitOutput | null>(null);
   const [pairingLoading, setPairingLoading] = useState(false);
@@ -76,6 +81,13 @@ const MobileRemoteSettingsSection: React.FC = () => {
     },
     [lanToken, setEnabled, setLanToken]
   );
+
+  const handleRelayEnabledChange = (next: boolean) => {
+    if (next && !relayUrl.trim()) {
+      setRelayUrl(MOBILE_REMOTE_RELAY_PRODUCTION_URL);
+    }
+    setRelayEnabled(next);
+  };
 
   const activeRelayPreset = useMemo(
     () => resolveMobileRemoteRelayPreset(relayUrl),
@@ -96,6 +108,7 @@ const MobileRemoteSettingsSection: React.FC = () => {
   const {
     data: relayStatus,
     loading: relayStatusLoading,
+    error: relayStatusError,
     refresh: refreshRelayStatus,
   } = useAsyncData<RelayStatus | null, string>({
     key: relayQueryKey,
@@ -103,6 +116,24 @@ const MobileRemoteSettingsSection: React.FC = () => {
     enabled,
     query: async () => mobileRemoteApi.getRelayStatus(),
   });
+
+  const handleReconnect = async () => {
+    if (reconnectingRef.current) return;
+    reconnectingRef.current = true;
+    setReconnecting(true);
+    try {
+      await mobileRemoteApi.notifyCloudAuthChanged();
+      refreshRelayStatus();
+    } catch (error) {
+      Message.error({ content: String(error) });
+    } finally {
+      reconnectingRef.current = false;
+      setReconnecting(false);
+    }
+  };
+  const relayNeedsRetry =
+    !relayStatus ||
+    ["backoff", "config_error", "stopped"].includes(relayStatus.phase);
 
   const handleStartPairing = useCallback(async () => {
     const requestId = ++pairingRequestIdRef.current;
@@ -246,47 +277,17 @@ const MobileRemoteSettingsSection: React.FC = () => {
             description={t("mobileRemote.outdoorDesc")}
             indent
           >
-            <Switch checked={relayEnabled} onCheckedChange={setRelayEnabled} />
+            <Switch
+              checked={relayEnabled}
+              onCheckedChange={handleRelayEnabledChange}
+            />
           </SectionRow>
 
           {relayEnabled ? (
             <>
               <SectionRow
-                label={t("mobileRemote.relayUrl")}
-                description={t("mobileRemote.relayUrlDesc")}
-                layout="vertical"
-                indent
-              >
-                <div className="flex w-full flex-col items-start gap-2">
-                  <SegmentedTextPill
-                    ariaLabel={t("mobileRemote.relayPresetAria")}
-                    dataTestId="mobile-remote-relay-preset"
-                    size="small"
-                    value={activeRelayPreset}
-                    options={[
-                      {
-                        value: "local",
-                        label: t("mobileRemote.relayPresetLocal"),
-                      },
-                      {
-                        value: "production",
-                        label: t("mobileRemote.relayPresetProduction"),
-                      },
-                    ]}
-                    onChange={handleRelayPresetChange}
-                  />
-                  <Input
-                    value={relayUrl}
-                    onChange={setRelayUrl}
-                    placeholder="wss://relay.example.com/v1/mobile/ws"
-                    spellCheck={false}
-                  />
-                </div>
-              </SectionRow>
-
-              <SectionRow
                 label={t("mobileRemote.relayStatus")}
-                description={relayStatusDescription}
+                description={relayStatusError ?? relayStatusDescription}
                 indent
               >
                 <div className="flex items-center gap-2">
@@ -301,12 +302,98 @@ const MobileRemoteSettingsSection: React.FC = () => {
                     variant="tertiary"
                     appearance="ghost"
                     size="small"
-                    onClick={refreshRelayStatus}
+                    disabled={relayStatusLoading || reconnecting}
+                    loading={reconnecting}
+                    onClick={
+                      relayNeedsRetry
+                        ? () => void handleReconnect()
+                        : refreshRelayStatus
+                    }
                   >
-                    {t("common:actions.refresh")}
+                    {t(
+                      relayNeedsRetry
+                        ? "mobileRemote.retryConnection"
+                        : "common:actions.refresh"
+                    )}
                   </Button>
                 </div>
               </SectionRow>
+
+              <SectionRow label={t("mobileRemote.advancedSettings")} indent>
+                <Button
+                  variant="tertiary"
+                  appearance="ghost"
+                  size="small"
+                  aria-expanded={advanced}
+                  aria-controls="mobile-remote-advanced"
+                  data-testid="mobile-remote-advanced-toggle"
+                  onClick={() => setAdvanced(!advanced)}
+                >
+                  {t(
+                    advanced
+                      ? "mobileRemote.hideAdvanced"
+                      : "mobileRemote.showAdvanced"
+                  )}
+                </Button>
+              </SectionRow>
+              {advanced ? (
+                <div id="mobile-remote-advanced">
+                  <SectionRow
+                    label={t("mobileRemote.relayUrl")}
+                    description={t("mobileRemote.relayUrlDesc")}
+                    layout="vertical"
+                    indent
+                  >
+                    <div className="flex w-full flex-col items-start gap-2">
+                      <Input
+                        aria-label={t("mobileRemote.relayUrl")}
+                        value={relayUrl}
+                        onChange={setRelayUrl}
+                        placeholder="wss://relay.example.com/v1/mobile/ws"
+                        spellCheck={false}
+                      />
+                      <Button
+                        variant="tertiary"
+                        appearance="ghost"
+                        size="small"
+                        onClick={() =>
+                          setRelayUrl(MOBILE_REMOTE_RELAY_PRODUCTION_URL)
+                        }
+                      >
+                        {t("mobileRemote.restoreDefaultRelay")}
+                      </Button>
+                      <Button
+                        variant="tertiary"
+                        appearance="ghost"
+                        size="small"
+                        aria-expanded={developerOptions}
+                        onClick={() => setDeveloperOptions(!developerOptions)}
+                      >
+                        {t("mobileRemote.developerOptions")}
+                      </Button>
+                      {developerOptions ? (
+                        <SegmentedTextPill
+                          ariaLabel={t("mobileRemote.relayPresetAria")}
+                          dataTestId="mobile-remote-relay-preset"
+                          size="small"
+                          value={activeRelayPreset}
+                          options={[
+                            {
+                              value: "local",
+                              label: t("mobileRemote.relayPresetLocal"),
+                            },
+                            {
+                              value: "production",
+                              label: t("mobileRemote.relayPresetProduction"),
+                            },
+                          ]}
+                          onChange={handleRelayPresetChange}
+                        />
+                      ) : null}
+                    </div>
+                  </SectionRow>
+                </div>
+              ) : null}
 
               <SectionRow
                 label={t("mobileRemote.fullAccess")}

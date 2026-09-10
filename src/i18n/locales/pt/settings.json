@@ -906,6 +906,12 @@
     "notInstalled": "Instale esta ferramenta antes de testar ou aplicar uma conexão"
   },
   "mobileRemote": {
+    "advancedSettings": "Configurações avançadas",
+    "showAdvanced": "Mostrar configurações avançadas",
+    "hideAdvanced": "Ocultar configurações avançadas",
+    "restoreDefaultRelay": "Restaurar relay padrão",
+    "developerOptions": "Opções do desenvolvedor",
+    "retryConnection": "Tentar conexão novamente",
     "enabled": "Mobile Remote",
     "enabledDesc": "Permite que um celular pareado controle sessões de agent neste desktop pela mesma rede Wi‑Fi ou pelo relay público",
     "securityNotice": "Qualquer pessoa na sua rede com a URL de conexão e o token pode controlar sessões quando a exposição na LAN está ativada. Regenere o token se achar que ele vazou",

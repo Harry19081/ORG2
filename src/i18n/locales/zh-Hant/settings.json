@@ -906,6 +906,12 @@
     "notInstalled": "請先安裝此工具，再測試或套用連線"
   },
   "mobileRemote": {
+    "advancedSettings": "進階設定",
+    "showAdvanced": "顯示進階設定",
+    "hideAdvanced": "隱藏進階設定",
+    "restoreDefaultRelay": "恢復預設中繼",
+    "developerOptions": "開發者選項",
+    "retryConnection": "重試連線",
     "enabled": "行動遙控",
     "enabledDesc": "讓已配對的手機透過同一個 Wi‑Fi 區域網路或公開 Relay 操控此桌面上的 Agent 工作階段",
     "securityNotice": "開啟區域網路曝露後，同一網路內持有連線 URL 和 token 的任何人都可以控制工作階段。若懷疑外洩，請重新產生 token",
