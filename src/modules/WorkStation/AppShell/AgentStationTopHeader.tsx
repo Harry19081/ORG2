@@ -16,7 +16,7 @@ import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
 import CaptionBar from "@src/engines/Simulator/components/CaptionBar";
-import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
+import type { CurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import {
   useCollapsedSidebarChromeOffset,
@@ -49,7 +49,15 @@ import {
   useStationPaneActions,
 } from "../shared/StationPaneControls";
 
-const AgentStationTopHeader: React.FC = memo(() => {
+interface AgentStationTopHeaderProps {
+  captionMessage: CurrentTurnLastAgentMessage | null;
+  captionVisible: boolean;
+}
+
+const AgentStationTopHeaderComponent = ({
+  captionMessage,
+  captionVisible,
+}: AgentStationTopHeaderProps) => {
   const { t } = useTranslation("sessions");
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
   const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
@@ -70,7 +78,6 @@ const AgentStationTopHeader: React.FC = memo(() => {
   const [captionEnabled, setCaptionEnabled] = useAtom(
     simulatorCaptionBarEnabledAtom
   );
-  const captionMessage = useCurrentTurnLastAgentMessage();
   const workstationActiveSessionId = useAtomValue(
     workstationActiveSessionIdAtom
   );
@@ -94,8 +101,6 @@ const AgentStationTopHeader: React.FC = memo(() => {
         )
     : captionMessage?.text;
   const captionToggleLabel = t("simulator.captionBarToggleTooltip");
-  const showCaptionBar =
-    captionEnabled && !!captionMessage && !!workstationActiveSessionId;
 
   const handleToggleCaption = useCallback(() => {
     setCaptionEnabled((prev) => !prev);
@@ -193,7 +198,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
           )}
         </NoDragRegion>
       </div>
-      {showCaptionBar && captionMessage ? (
+      {captionVisible && captionMessage ? (
         <NoDragRegion className="flex h-10 min-h-10 shrink-0 items-center justify-start px-3">
           <div className="w-full min-w-0">
             <CaptionBar
@@ -206,7 +211,9 @@ const AgentStationTopHeader: React.FC = memo(() => {
       ) : null}
     </div>
   );
-});
+};
+
+const AgentStationTopHeader = memo(AgentStationTopHeaderComponent);
 
 AgentStationTopHeader.displayName = "AgentStationTopHeader";
 
