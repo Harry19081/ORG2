@@ -29,6 +29,7 @@
       "deleteError": "{{name}} 删除失败"
     },
     "providerGroups": {
+      "mostUsed": "最常用",
       "cloud": "Cloud",
       "local": "Local"
     },

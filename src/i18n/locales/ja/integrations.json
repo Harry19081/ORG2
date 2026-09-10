@@ -28,6 +28,7 @@
       "deleteError": "{{name}} の削除に失敗しました"
     },
     "providerGroups": {
+      "mostUsed": "よく使う",
       "cloud": "Cloud",
       "local": "Local"
     },

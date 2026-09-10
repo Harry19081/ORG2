@@ -28,6 +28,7 @@
       "deleteError": "Échec de la suppression de {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Les plus utilisés",
       "cloud": "Cloud",
       "local": "Local"
     },

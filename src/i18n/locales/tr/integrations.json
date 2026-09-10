@@ -28,6 +28,7 @@
       "deleteError": "{{name}} silinemedi"
     },
     "providerGroups": {
+      "mostUsed": "En çok kullanılanlar",
       "cloud": "Cloud",
       "local": "Local"
     },

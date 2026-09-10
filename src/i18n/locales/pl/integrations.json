@@ -29,6 +29,7 @@
       "deleteError": "Nie udało się usunąć {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Najczęściej używane",
       "cloud": "Cloud",
       "local": "Local"
     },
