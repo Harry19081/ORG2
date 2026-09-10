@@ -92,9 +92,19 @@ describe("login feature rotation", () => {
     expect(vi.getTimerCount()).toBe(1);
   });
 
-  it("autoplays without carousel controls, including while hovered", () => {
+  it("supports previous and next with wrapping and keeps autoplay while hovered", () => {
     mount();
-    expect(container.querySelector("button")).toBeNull();
+    const previous = container.querySelector<HTMLButtonElement>(
+      '[aria-label="common:tooltips.previous"]'
+    )!;
+    const next = container.querySelector<HTMLButtonElement>(
+      '[aria-label="common:tooltips.next"]'
+    )!;
+    act(() => previous.click());
+    expect(title()).toBe("mobileRemote:welcome.title");
+    act(() => next.click());
+    expect(title()).toBe("cloud.share.dialogTitle");
+    expect(vi.getTimerCount()).toBe(1);
     const section = container.querySelector("section")!;
     act(() =>
       section.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }))

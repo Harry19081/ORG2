@@ -4,11 +4,13 @@ import { useTranslation } from "react-i18next";
 import marketImage from "@src/assets/illustrations/login-market.png";
 import mobileRemoteImage from "@src/assets/illustrations/login-mobile-remote.png";
 import sharingImage from "@src/assets/illustrations/login-sharing.png";
+import Button from "@src/components/Button";
+import { ArrowLeft01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 
 const ROTATION_MS = 6000;
 
 export function SignInFeatures() {
-  const { t } = useTranslation(["navigation", "mobileRemote"]);
+  const { t } = useTranslation(["navigation", "mobileRemote", "common"]);
   const [index, setIndex] = useState(0);
   const slides = [
     {
@@ -58,7 +60,7 @@ export function SignInFeatures() {
   return (
     <section
       aria-label={t("cloud.signInModalTitle")}
-      className="relative shrink-0 overflow-hidden"
+      className="group/features relative shrink-0 overflow-hidden"
       aria-live="off"
     >
       <img
@@ -71,6 +73,31 @@ export function SignInFeatures() {
         <h3 className="text-base font-semibold text-white">{slide.title}</h3>
         <p className="text-sm text-white/90">{slide.body}</p>
       </div>
+      {([-1, 1] as const).map((direction) => (
+        <Button
+          key={direction}
+          appearance="ghost"
+          shape="circle"
+          iconOnly
+          aria-label={t(
+            direction === -1
+              ? "common:tooltips.previous"
+              : "common:tooltips.next"
+          )}
+          icon={
+            <HugeiconsIcon
+              icon={direction === -1 ? ArrowLeft01Icon : ArrowRight01Icon}
+              size={20}
+            />
+          }
+          className={`absolute top-1/2 -translate-y-1/2 bg-black/30! text-white! opacity-0 group-hover/features:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-white enabled:hover:bg-black/50! ${direction === -1 ? "left-3" : "right-3"}`}
+          onClick={() =>
+            setIndex(
+              (current) => (current + direction + slideCount) % slideCount
+            )
+          }
+        />
+      ))}
     </section>
   );
 }
