@@ -206,6 +206,8 @@ flate2 = "1"
 tar = "0.4"
 plist = "1"
 tempfile = "3.13"
+# Authenticated mobile bridge host/model labels; reuse the workspace-pinned native queries.
+sysinfo = { workspace = true }
 
 # Shared cross-crate type definitions (Phase 1 of workspace migration).
 # See `docs/rust-backend/modularization-plan--0504.md`.

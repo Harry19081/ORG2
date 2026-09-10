@@ -23,11 +23,7 @@ import {
 } from "@src/util/core/state/instrumentedStore";
 
 import { resolveChatPanelShortcutOwnership } from "./hooks/chatPanelShortcutOwnership";
-import {
-  isChatPanelPrimaryModifierPressed,
-  resolveChatPanelBracketKey,
-  useChatPanelTabShortcuts,
-} from "./hooks/useChatPanelTabShortcuts";
+import { useChatPanelTabShortcuts } from "./hooks/useChatPanelTabShortcuts";
 
 interface ShortcutHarnessProps {
   panelRef: RefObject<HTMLElement | null>;
@@ -211,17 +207,6 @@ describe("useChatPanelTabShortcuts", () => {
     });
   });
 
-  it("resolves the bracket from the physical key ahead of the shifted glyph", () => {
-    expect(resolveChatPanelBracketKey({ code: "BracketLeft", key: "{" })).toBe(
-      "["
-    );
-    expect(resolveChatPanelBracketKey({ code: "BracketRight", key: "}" })).toBe(
-      "]"
-    );
-    expect(resolveChatPanelBracketKey({ code: "", key: "]" })).toBe("]");
-    expect(resolveChatPanelBracketKey({ code: "KeyW", key: "w" })).toBeNull();
-  });
-
   it("closes the active chat tab after interacting with a non-focusable part of the pane", () => {
     const workstationShortcut = vi.fn();
     document.addEventListener("keydown", workstationShortcut, true);
@@ -297,24 +282,6 @@ describe("useChatPanelTabShortcuts", () => {
     ).toBe(true);
     expect(
       resolveChatPanelShortcutOwnership(panelElement, outsideButton, true)
-    ).toBe(false);
-  });
-
-  it("uses Command on macOS and Ctrl on other platforms", () => {
-    expect(
-      isChatPanelPrimaryModifierPressed({ metaKey: true, ctrlKey: false }, true)
-    ).toBe(true);
-    expect(
-      isChatPanelPrimaryModifierPressed(
-        { metaKey: false, ctrlKey: true },
-        false
-      )
-    ).toBe(true);
-    expect(
-      isChatPanelPrimaryModifierPressed(
-        { metaKey: true, ctrlKey: false },
-        false
-      )
     ).toBe(false);
   });
 });

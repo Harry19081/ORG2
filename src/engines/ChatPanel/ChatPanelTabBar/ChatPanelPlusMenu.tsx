@@ -41,13 +41,16 @@ import { CHAT_PANEL_HEADER_NO_DRAG_STYLE } from "../header";
 
 // ─── Plus-menu dropdown ───────────────────────────────────────────────────────
 
-interface PlusMenuContentProps {
+export interface ChatPanelPlusMenuProps {
   onOpenLaunchpad: () => void;
   onOpenKanban: () => void;
   onOpenRuntime: () => void;
   onNewProject: () => void;
   onNewWorkItem: () => void;
   onOpenSideChat: () => void;
+}
+
+interface PlusMenuContentProps extends ChatPanelPlusMenuProps {
   recentTabs: readonly ChatPanelTab[];
   onOpenRecentTab: (tabId: string) => void;
   onClose: () => void;
@@ -205,23 +208,9 @@ export function PlusMenuContent({
 
 // ─── Exported + menu button (placed in header toolbar, left of ...) ───────────
 
-export interface ChatPanelPlusMenuProps {
-  onOpenLaunchpad: () => void;
-  onOpenKanban: () => void;
-  onOpenRuntime: () => void;
-  onNewProject: () => void;
-  onNewWorkItem: () => void;
-  onOpenSideChat: () => void;
-}
-
-export function ChatPanelPlusMenu({
-  onOpenLaunchpad,
-  onOpenKanban,
-  onOpenRuntime,
-  onNewProject,
-  onNewWorkItem,
-  onOpenSideChat,
-}: ChatPanelPlusMenuProps): React.ReactNode {
+export function ChatPanelPlusMenu(
+  actions: ChatPanelPlusMenuProps
+): React.ReactNode {
   const { t } = useTranslation("sessions");
   const [menuOpen, setMenuOpen] = useState(false);
   const recentTabs = useAtomValue(recentChatPanelTabsAtom);
@@ -233,12 +222,7 @@ export function ChatPanelPlusMenu({
     <Dropdown
       droplist={
         <PlusMenuContent
-          onOpenLaunchpad={onOpenLaunchpad}
-          onOpenKanban={onOpenKanban}
-          onOpenRuntime={onOpenRuntime}
-          onNewProject={onNewProject}
-          onNewWorkItem={onNewWorkItem}
-          onOpenSideChat={onOpenSideChat}
+          {...actions}
           recentTabs={recentTabs}
           onOpenRecentTab={openRecentTab}
           onClose={closeMenu}

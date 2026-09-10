@@ -33,10 +33,12 @@ import {
   openAgentControlSpotlight,
   openCollabOrgSpotlight,
   openSessionCreatorSpotlight,
+  openSessionImportSpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import { AppViewService } from "@src/services/app";
 import { PanelService } from "@src/services/panel";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
+import { openChatPanelCreateTargetAtom } from "@src/store/chatPanel/openChatPanelCreateTargetAtom";
 import { selectedRepoAtom } from "@src/store/repo";
 import { REPO_KIND } from "@src/store/repo/types";
 import type { Session } from "@src/store/session";
@@ -186,37 +188,16 @@ export function useSpotlight(
         () => void
       > = {
         "open-session-creator": openSessionCreatorSpotlight,
+        "import-session": openSessionImportSpotlight,
         "create-project": () => {
-          void WorkStationViewService.openStationMode("my-station").then(
-            async () => {
-              const { openCreateTargetInChatPanelStartPageAtom } =
-                await import("@src/store/chatPanel/chatPanelTabsAtom");
-              const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanel/selectionAtoms");
-              getInstrumentedStore().set(
-                openCreateTargetInChatPanelStartPageAtom,
-                {
-                  target: CHAT_PANEL_CREATE_TARGET.PROJECT,
-                }
-              );
-            }
-          );
+          getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+            target: "project",
+          });
         },
         "create-work-item": () => {
-          void WorkStationViewService.openStationMode("my-station").then(
-            async () => {
-              const { openCreateTargetInChatPanelStartPageAtom } =
-                await import("@src/store/chatPanel/chatPanelTabsAtom");
-              const { CHAT_PANEL_CREATE_TARGET } =
-                await import("@src/store/ui/chatPanel/selectionAtoms");
-              getInstrumentedStore().set(
-                openCreateTargetInChatPanelStartPageAtom,
-                {
-                  target: CHAT_PANEL_CREATE_TARGET.WORK_ITEM,
-                }
-              );
-            }
-          );
+          getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+            target: "workItem",
+          });
         },
         "search-agent-sessions": () => onOpenAgentSessionSearch?.(),
         "search-all-sessions": () => onOpenAllSessionsSearch?.(),

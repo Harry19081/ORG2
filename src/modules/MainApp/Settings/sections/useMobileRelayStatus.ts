@@ -47,11 +47,15 @@ export function useMobileRelayStatus(key: string, enabled: boolean) {
         inFlight = false;
       }
     };
-    requestRef.current = () => {
-      void request();
+    const requestStatus = () => {
+      void request().catch((error: unknown) => {
+        if (!cancelled)
+          setSnapshot({ key, data, loading: false, error: String(error) });
+      });
     };
+    requestRef.current = requestStatus;
     void listen("mobile-relay-status-changed", () => {
-      void request();
+      requestStatus();
     })
       .then((dispose) => {
         if (cancelled) {
@@ -59,11 +63,11 @@ export function useMobileRelayStatus(key: string, enabled: boolean) {
           return;
         }
         unlisten = dispose;
-        void request();
+        requestStatus();
       })
       .catch(() => {
         // Older/non-native hosts still support the visible manual refresh action.
-        if (!cancelled) void request();
+        if (!cancelled) requestStatus();
       });
     return () => {
       cancelled = true;

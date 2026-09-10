@@ -28,6 +28,7 @@
       "deleteError": "Error al eliminar {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Más usados",
       "cloud": "Cloud",
       "local": "Local"
     },
@@ -54,8 +55,8 @@
       "cursorSessionAccess": "Sesión de Cursor",
       "cursorSessionReady": "Conectada para refrescar modelos y cuota de Cursor",
       "cursorApiKeyAccess": "Cursor API Key",
-      "cursorApiKeyReady": "Proporcionada para llamadas de Cursor CLI/API",
-      "cursorApiKeyNotProvided": "No proporcionada — llamadas Cursor CLI/API no disponibles",
+      "cursorApiKeyReady": "Proporcionada para llamadas de Cursor API",
+      "cursorApiKeyNotProvided": "No proporcionada — llamadas Cursor API no disponibles",
       "baseUrl": "Base URL",
       "connectedAt": "Conectado",
       "availableModels": "Modelos disponibles",
@@ -298,11 +299,11 @@
     "cursorLoginBrowserTitle": "Inicio de sesión de Cursor",
     "modelCount": "{{count}} modelos",
     "cursorLoginReadyTitle": "Cuenta de Cursor conectada",
-    "cursorLoginReadyDesc": "Genera y pega una API key de Cursor abajo. Cursor CLI agent no funcionará sin esta API key.",
+    "cursorLoginReadyDesc": "Genera y pega una API key de Cursor abajo. Cursor agent no funcionará sin esta API key.",
     "cursorApiKeyBrowserHint": "Después de iniciar sesión, ORGII abre el dashboard de Cursor. Genera allí una User API Key y pégala abajo",
     "cursorApiKeyRecommendedTitle": "Se recomienda una API key de Cursor",
     "cursorApiKeyRecommendedDesc": "Puedes continuar sin una API key de Cursor si solo quieres usar Cursor con los Rust agents de ORGII; solo inicia sesión con el navegador interno o proporciona un token de sesión",
-    "cursorApiKeyRecommendedAction": "Proporciona una API key de Cursor si también quieres usar Cursor CLI dentro de ORGII",
+    "cursorApiKeyRecommendedAction": "Proporciona una API key de Cursor si también quieres usar Cursor dentro de ORGII",
     "openCursorApiKeys": "Abrir Cursor API Keys",
     "codexSetupMethodDesc": "Conecta Codex con inicio de sesión de ChatGPT, detección local o una API key de OpenAI",
     "codexSignInTitle": "Inicio de sesión de Codex",

@@ -83,7 +83,8 @@ type ElementProps = {
   ref?: React.Ref<HTMLElement>;
   onMouseEnter?: (event: React.MouseEvent) => void;
   onMouseLeave?: (event: React.MouseEvent) => void;
-  onClick?: (event: React.MouseEvent) => void;
+  onClickCapture?: (event: React.MouseEvent) => void;
+  onContextMenuCapture?: (event: React.MouseEvent) => void;
   onFocus?: (event: React.FocusEvent) => void;
   onBlur?: (event: React.FocusEvent) => void;
   [key: string]: unknown;
@@ -247,10 +248,17 @@ const HoverCardTrigger: React.FC<HoverCardTriggerProps> = ({
       if (position === "right-or-bottom") handleLeave();
       originalProps.onBlur?.(event);
     },
-    onClick: (event: React.MouseEvent) => {
+    // Row actions stop bubbling so they do not select the row. Dismiss in
+    // capture, including pending opens, before an action opens its menu.
+    onClickCapture: (event: React.MouseEvent) => {
       clearEnterTimer();
       dismissHoverCard();
-      originalProps.onClick?.(event);
+      originalProps.onClickCapture?.(event);
+    },
+    onContextMenuCapture: (event: React.MouseEvent) => {
+      clearEnterTimer();
+      dismissHoverCard();
+      originalProps.onContextMenuCapture?.(event);
     },
   } as ElementProps);
 };

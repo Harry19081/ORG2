@@ -51,7 +51,6 @@ import { requestTeamInboxSessionHandoffAtom } from "@src/modules/MainApp/TeamInb
 import {
   SESSION_TAB_DROP_TARGET_HIGHLIGHT_CLASS,
   type SessionReferenceOpen,
-  type SessionTabTransfer,
   dispatchSessionTabDragCancel,
   dispatchSessionTabDragEnd,
   dispatchSessionTabDragStart,
@@ -106,14 +105,10 @@ export function ChatPanelTabBar(): React.ReactNode {
   const draggingTab = state.tabs.find((tab) => tab.id === draggingTabId);
   const contextMenuTab = state.tabs.find((tab) => tab.id === contextMenuTabId);
 
-  const handleSessionTabDrop = useCallback(
-    (transfer: SessionTabTransfer) => moveSessionTab(transfer),
-    [moveSessionTab]
-  );
   const isSessionDragOver = useSessionTabDropTarget({
     target: "chat-panel",
     containerRef: barRef,
-    onDrop: handleSessionTabDrop,
+    onDrop: moveSessionTab,
   });
 
   const removePointerTracker = useCallback(() => {

@@ -98,6 +98,7 @@ export interface InlineCreateWorkItemFieldsState {
 }
 
 export interface UseInlineCreateWorkItemFieldsOptions {
+  draftId?: string;
   aiGenerateMode?: boolean;
   availableLabels?: WorkItemLabel[];
   availableMembers?: Person[];
@@ -123,6 +124,7 @@ export interface UseInlineCreateWorkItemFieldsOptions {
 }
 
 export function useInlineCreateWorkItemFields({
+  draftId,
   aiGenerateMode = false,
   availableLabels = [],
   availableMembers = [],
@@ -156,6 +158,7 @@ export function useInlineCreateWorkItemFields({
 
   const { draft, updateDraft, setDraft, resetDraft, clearDraft } =
     useWorkItemCreatorDraft({
+      draftId,
       seedProjectId: projectId,
       defaultProjectId,
       onSetUnsaved,

@@ -444,3 +444,5 @@ export { default as WorkflowCircle05Icon } from "@hugeicons/core-free-icons/Work
 export { default as Wrench01Icon } from "@hugeicons/core-free-icons/Wrench01Icon";
 export { default as ZoomInAreaIcon } from "@hugeicons/core-free-icons/ZoomInAreaIcon";
 export { default as ZoomOutAreaIcon } from "@hugeicons/core-free-icons/ZoomOutAreaIcon";
+
+export { default as SendIcon } from "@hugeicons/core-free-icons/SendIcon";

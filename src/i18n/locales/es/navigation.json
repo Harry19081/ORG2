@@ -657,7 +657,6 @@
       "incomingError": "Este enlace es inválido, ha caducado o fue revocado.",
       "incomingRetryHint": "La importación no terminó. Puede que la sesión compartida aún se esté subiendo — inténtalo de nuevo.",
       "importEntry": "Importar sesión",
-      "importDialogTitle": "Importar una sesión compartida",
       "importInputPlaceholder": "orgii://cloud/session?share=…",
       "importSubmit": "Importar",
       "importInvalidInput": "Esto no parece un enlace para compartir ni un token válido.",

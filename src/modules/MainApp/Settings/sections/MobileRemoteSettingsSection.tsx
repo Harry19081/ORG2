@@ -264,7 +264,11 @@ const MobileRemoteSettingsSection: React.FC = () => {
         <Switch
           checked={enabled}
           disabled={savingEnabled}
-          onCheckedChange={handleEnabledChange}
+          onCheckedChange={(next) => {
+            void handleEnabledChange(next).catch((error: unknown) => {
+              Message.error({ content: String(error) });
+            });
+          }}
         />
       </SectionRow>
 

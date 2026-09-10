@@ -28,6 +28,7 @@
       "deleteError": "Не удалось удалить {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Часто используемые",
       "cloud": "Cloud",
       "local": "Local"
     },
@@ -54,8 +55,8 @@
       "cursorSessionAccess": "Сессия Cursor",
       "cursorSessionReady": "Подключено для обновления моделей и квоты Cursor",
       "cursorApiKeyAccess": "Cursor API Key",
-      "cursorApiKeyReady": "Предоставлен для вызовов Cursor CLI/API",
-      "cursorApiKeyNotProvided": "Не предоставлен — вызовы Cursor CLI/API недоступны",
+      "cursorApiKeyReady": "Предоставлен для вызовов Cursor API",
+      "cursorApiKeyNotProvided": "Не предоставлен — вызовы Cursor API недоступны",
       "baseUrl": "Base URL",
       "connectedAt": "Подключено",
       "availableModels": "Доступные модели",
@@ -298,11 +299,11 @@
     "cursorLoginBrowserTitle": "Вход в Cursor",
     "modelCount": "{{count}} моделей",
     "cursorLoginReadyTitle": "Аккаунт Cursor подключён",
-    "cursorLoginReadyDesc": "Создайте и вставьте Cursor API Key ниже. Cursor CLI agent не будет работать без этого API Key.",
+    "cursorLoginReadyDesc": "Создайте и вставьте Cursor API Key ниже. Cursor agent не будет работать без этого API Key.",
     "cursorApiKeyBrowserHint": "После входа ORGII откроет Cursor dashboard. Создайте там User API Key и вставьте его ниже",
     "cursorApiKeyRecommendedTitle": "Рекомендуется Cursor API Key",
     "cursorApiKeyRecommendedDesc": "Вы можете продолжить без Cursor API Key, если хотите использовать Cursor только с Rust agents ORGII; просто войдите через внутренний браузер или укажите session token",
-    "cursorApiKeyRecommendedAction": "Укажите Cursor API Key, если также хотите использовать Cursor CLI внутри ORGII",
+    "cursorApiKeyRecommendedAction": "Укажите Cursor API Key, если также хотите использовать Cursor внутри ORGII",
     "openCursorApiKeys": "Открыть Cursor API Keys",
     "codexSetupMethodDesc": "Подключите Codex через вход ChatGPT, локальное обнаружение или API key OpenAI",
     "codexSignInTitle": "Вход в Codex",

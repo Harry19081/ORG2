@@ -63,8 +63,8 @@ export interface NavigationSidebarProps {
   headerActions?: React.ReactNode;
   /** Content rendered in its own row directly below the chrome row. */
   topBarFollowingContent?: React.ReactNode;
-  /** Preserve top padding for the scrollable menu list. */
-  listTopPadding?: boolean;
+  /** Use "row" to match menu row spacing; true preserves section padding. */
+  listTopPadding?: boolean | "row";
   /** Optional control row rendered before pinned/list content. */
   preListContent?: React.ReactNode;
   /** Show loading placeholder instead of menu items */
@@ -433,8 +433,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                                 )
                                   ? "inline-flex"
                                   : action.showOnSidebarHover
-                                    ? "hidden group-focus-within/section-title:inline-flex group-hover/sidebar:inline-flex"
-                                    : "hidden group-focus-within/section-title:inline-flex group-hover/section-title:inline-flex"
+                                    ? "hidden group-hover/sidebar:inline-flex group-focus-visible/section-title:inline-flex group-has-[:focus-visible]/section-title:inline-flex"
+                                    : "hidden group-hover/section-title:inline-flex group-focus-visible/section-title:inline-flex group-has-[:focus-visible]/section-title:inline-flex"
                               }
                             >
                               <NavigationMenuRowActionButton

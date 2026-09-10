@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Chỉnh sửa tin nhắn...",
     "defaultPlaceholder": "Trò chuyện với Agent",
+    "commentPlaceholder": "Để lại bình luận…",
     "editingQueuedMessage": "Đang chỉnh sửa tin nhắn trong hàng đợi",
     "editingSentMessage": "Đang chỉnh sửa tin nhắn đã gửi",
     "voiceErrorPermission": "Quyền truy cập micrô bị từ chối. Bật trong cài đặt hệ thống.",
@@ -1957,6 +1958,7 @@
     "shortInputTitle": "Nội dung ngắn",
     "shortInputMessage": "Nội dung nhập vào có vẻ rất ngắn. Bạn có chắc chắn muốn bắt đầu phiên với nội dung này không?",
     "selectModel": "Chọn mô hình",
+    "selectAgentFirst": "Chọn agent trước",
     "switchModel": "Chuyển mô hình",
     "switchMode": "Chuyển chế độ",
     "switchAgent": "Chuyển Agent",

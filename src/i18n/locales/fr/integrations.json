@@ -28,6 +28,7 @@
       "deleteError": "Échec de la suppression de {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Les plus utilisés",
       "cloud": "Cloud",
       "local": "Local"
     },
@@ -54,8 +55,8 @@
       "cursorSessionAccess": "Session Cursor",
       "cursorSessionReady": "Connectée pour actualiser les modèles et quotas Cursor",
       "cursorApiKeyAccess": "Cursor API Key",
-      "cursorApiKeyReady": "Fourni pour les appels Cursor CLI/API",
-      "cursorApiKeyNotProvided": "Non fourni — appels Cursor CLI/API indisponibles",
+      "cursorApiKeyReady": "Fourni pour les appels Cursor API",
+      "cursorApiKeyNotProvided": "Non fourni — appels Cursor API indisponibles",
       "baseUrl": "Base URL",
       "connectedAt": "Connecté",
       "availableModels": "Modèles disponibles",
@@ -298,11 +299,11 @@
     "cursorLoginBrowserTitle": "Connexion Cursor",
     "modelCount": "{{count}} modèles",
     "cursorLoginReadyTitle": "Compte Cursor connecté",
-    "cursorLoginReadyDesc": "Générez et collez une clé API Cursor ci-dessous. Cursor CLI agent ne fonctionnera pas sans cette clé API.",
+    "cursorLoginReadyDesc": "Générez et collez une clé API Cursor ci-dessous. Cursor agent ne fonctionnera pas sans cette clé API.",
     "cursorApiKeyBrowserHint": "Après la connexion, ORGII ouvre le dashboard Cursor. Générez-y une User API Key, puis collez-la ci-dessous",
     "cursorApiKeyRecommendedTitle": "Clé API Cursor recommandée",
     "cursorApiKeyRecommendedDesc": "Vous pouvez continuer sans clé API Cursor si vous voulez seulement utiliser Cursor avec les Rust agents d’ORGII ; connectez-vous simplement avec le navigateur interne ou fournissez un token de session",
-    "cursorApiKeyRecommendedAction": "Fournissez une clé API Cursor si vous voulez aussi utiliser Cursor CLI dans ORGII",
+    "cursorApiKeyRecommendedAction": "Fournissez une clé API Cursor si vous voulez aussi utiliser Cursor dans ORGII",
     "openCursorApiKeys": "Ouvrir les Cursor API Keys",
     "codexSetupMethodDesc": "Connectez Codex avec la connexion ChatGPT, la détection locale ou une clé API OpenAI",
     "codexSignInTitle": "Connexion Codex",

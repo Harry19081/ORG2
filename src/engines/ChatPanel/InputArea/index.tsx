@@ -621,7 +621,10 @@ const InputAreaInteractive: React.FC<InputAreaProps> = memo(
                 currentRepoPath={currentRepoPath}
                 contextualPanel={isContextualPanel}
                 inlineLeadingContent={isContextual ? topRowPills : undefined}
-                placeholder={placeholder}
+                placeholder={
+                  teamChatActive ? t("input.commentPlaceholder") : placeholder
+                }
+                commentMode={teamChatActive}
                 trailingHint={
                   compactHintVisible
                     ? t("input.compactArgHint")

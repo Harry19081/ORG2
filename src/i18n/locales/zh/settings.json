@@ -760,7 +760,7 @@
     "diskCategory_diagnostics": "诊断队列",
     "diskCategory_models": "下载的模型",
     "diskCategory_semanticIndex": "语义搜索索引",
-    "diskCategory_cursorCliProfiles": "Cursor CLI 配置",
+    "diskCategory_cursorCliProfiles": "Cursor 配置",
     "diskCategory_kiroCliProfiles": "Kiro CLI 配置",
     "diskCategory_opencodeCliProfiles": "OpenCode CLI 配置",
     "diskCategory_agentWorktrees": "Agent Session Worktrees",

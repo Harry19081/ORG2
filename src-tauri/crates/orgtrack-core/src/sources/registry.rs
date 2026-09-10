@@ -99,7 +99,7 @@ static REGISTERED: &[RegisteredSource] = &[
     },
     RegisteredSource {
         id: metadata::SOURCE_CURSOR_CLI,
-        label: "Cursor CLI",
+        label: "Cursor",
         scan: cursor_cli::history::list_cursor_cli_history_sessions_paginated,
         continuation: None,
     },
