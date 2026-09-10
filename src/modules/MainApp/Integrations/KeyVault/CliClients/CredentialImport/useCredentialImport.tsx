@@ -22,7 +22,6 @@ import {
   listCredentialSuggestions,
 } from "@src/api/services/keyValidation";
 import { rpc } from "@src/api/tauri/rpc";
-import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import ModelIcon from "@src/components/ModelIcon";
 import type { SettingsTableColumn } from "@src/components/SettingsTable";
@@ -319,33 +318,31 @@ export function useCredentialImport({
             >
               <span className="shrink-0">{authLabel}</span>
               <span className="shrink-0 text-text-4">·</span>
-              <span className="min-w-0 truncate">{detail}</span>
+              {row.sourcePath ? (
+                <button
+                  type="button"
+                  className="flex min-w-0 cursor-pointer items-center gap-1.5 text-left underline-offset-2 hover:underline focus-visible:underline focus-visible:ring-1 focus-visible:ring-primary-6 focus-visible:outline-none [&:focus-visible>svg]:opacity-100 [&:hover>svg]:opacity-100"
+                  aria-label={`${t(getFileManagerRevealLabelKey())}: ${row.sourcePath}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleReveal(row);
+                  }}
+                >
+                  <span className="min-w-0 truncate">{detail}</span>
+                  <HugeiconsIcon
+                    icon={FolderOpenIcon}
+                    data-icon="folder-open"
+                    size={14}
+                    className="shrink-0 opacity-0"
+                    aria-hidden
+                  />
+                </button>
+              ) : (
+                <span className="min-w-0 truncate">{detail}</span>
+              )}
             </span>
           );
         },
-      },
-      {
-        key: "actions",
-        label: "",
-        width: SETTINGS_TABLE_COL.hug,
-        renderCell: (row) =>
-          row.sourcePath ? (
-            <Button
-              variant="secondary"
-              size="small"
-              iconOnly
-              icon={
-                <HugeiconsIcon
-                  icon={FolderOpenIcon}
-                  data-icon="folder-open"
-                  size={14}
-                />
-              }
-              title={t(getFileManagerRevealLabelKey())}
-              aria-label={t(getFileManagerRevealLabelKey())}
-              onClick={() => handleReveal(row)}
-            />
-          ) : null,
       },
     ],
     [t, selected, allSelected, handleToggle, handleSelectAll, handleReveal]
