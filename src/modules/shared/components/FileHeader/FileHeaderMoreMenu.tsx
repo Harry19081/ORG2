@@ -445,7 +445,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
               showGitBlameToggle ||
               showMoreSettingsAction) && (
               <ActionSubmenu
-                label={t("common:actions.uiSettings")}
+                label={t("sessions:chat.pageSettings")}
                 icon={
                   <HugeiconsIcon
                     icon={Layers01Icon}
