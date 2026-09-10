@@ -237,6 +237,7 @@ async fn handle_initialize(ctx: &mut RpcContext, params: &Value) -> Result<Value
             "openSessionFile": true,
             "modelSelection": true,
             "sessionIdentity": true,
+            "sessionSearch": true,
         }
     }))
 }
@@ -286,6 +287,8 @@ mod tests {
         });
         let response = dispatch(&mut ctx, &request).await.expect("response");
         assert!(response.get("result").is_some());
+        assert_eq!(response["result"]["capabilities"]["sessionIdentity"], true);
+        assert_eq!(response["result"]["capabilities"]["sessionSearch"], true);
         let expected_identity = super::super::desktop_identity::collect();
         assert_eq!(
             response["result"]["desktopIdentity"],
@@ -307,7 +310,40 @@ mod tests {
                 .and_then(Value::as_bool),
             Some(true)
         );
+        assert_eq!(response["result"]["capabilities"]["sessionSearch"], true);
         assert!(ctx.initialized);
+    }
+
+    #[tokio::test]
+    async fn session_search_validates_query_for_read_only_clients() {
+        let mut ctx = test_context(true);
+        ctx.initialized = true;
+        ctx.tier = MobileTier::ReadOnly;
+        for query in [json!(null), json!(123), json!(" "), json!("x".repeat(201))] {
+            let response = dispatch(
+                &mut ctx,
+                &json!({
+                    "jsonrpc": "2.0", "id": 30, "method": "session/list",
+                    "params": {"query": query}
+                }),
+            )
+            .await
+            .unwrap();
+            // Read-only search reaches input validation, not write-tier denial.
+            assert_eq!(response["error"]["code"], -32602);
+        }
+        for offset in [json!(-1), json!(1.5), json!("50"), json!(u64::MAX)] {
+            let response = dispatch(
+                &mut ctx,
+                &json!({
+                    "jsonrpc": "2.0", "id": 31, "method": "session/list",
+                    "params": {"query": "history", "offset": offset}
+                }),
+            )
+            .await
+            .unwrap();
+            assert_eq!(response["error"]["code"], -32602);
+        }
     }
 
     #[tokio::test]

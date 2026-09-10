@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "编辑消息...",
     "defaultPlaceholder": "与 Agent 对话",
+    "commentPlaceholder": "留下评论…",
     "editingQueuedMessage": "编辑排队消息",
     "editingSentMessage": "编辑已发送消息",
     "voiceErrorPermission": "麦克风权限被拒绝。请在系统设置中启用。",

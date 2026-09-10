@@ -28,6 +28,7 @@ import {
   ArrowUp02Icon,
   HugeiconsIcon,
   RotateLeft01Icon,
+  SendIcon,
   SquareIcon,
 } from "@src/icons";
 import { chatAppearanceAtom } from "@src/store/config/configAtom";
@@ -60,6 +61,7 @@ interface InputActionsProps {
   onResume: () => Promise<void>;
   tone?: "primary" | "warning";
   submitDisabled?: boolean;
+  commentMode?: boolean;
 }
 
 const InputActions: React.FC<InputActionsProps> = memo(
@@ -76,6 +78,7 @@ const InputActions: React.FC<InputActionsProps> = memo(
     onResume,
     tone = "primary",
     submitDisabled = false,
+    commentMode = false,
   }) => {
     const { t } = useTranslation();
     const { sendOnEnter } = useAtomValue(chatAppearanceAtom);
@@ -153,12 +156,14 @@ const InputActions: React.FC<InputActionsProps> = memo(
     // layer-promotion shake explanation. `transition-colors` keeps the
     // 200ms animation limited to the background swap.
     const baseClass = `flex ${INPUT_AREA_BUTTONS.iconButtonSizeClass} shrink-0 items-center justify-center rounded-full transition-colors duration-200 focus:outline-none`;
-    const activeButtonClass =
-      tone === "warning"
+    const activeButtonClass = commentMode
+      ? "cursor-pointer border-none bg-purple-6 text-white hover:bg-purple-5"
+      : tone === "warning"
         ? "cursor-pointer border-none bg-warning-6 text-white hover:bg-warning-5"
         : INPUT_AREA_BUTTONS.iconButtonActive;
-    const inactiveButtonClass =
-      tone === "warning"
+    const inactiveButtonClass = commentMode
+      ? "border-none bg-purple-6 text-white opacity-50"
+      : tone === "warning"
         ? "border-none bg-warning-6 text-white opacity-50"
         : INPUT_AREA_BUTTONS.iconButtonInactive;
 
@@ -233,8 +238,8 @@ const InputActions: React.FC<InputActionsProps> = memo(
           />
         ) : (
           <HugeiconsIcon
-            icon={ArrowUp02Icon}
-            data-icon="arrow-up"
+            icon={commentMode ? SendIcon : ArrowUp02Icon}
+            data-icon={commentMode ? "send" : "arrow-up"}
             size={INPUT_AREA_BUTTONS.iconSize}
             strokeWidth={2}
             className="block text-[#fff]"

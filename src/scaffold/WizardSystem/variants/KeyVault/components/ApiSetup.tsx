@@ -297,9 +297,14 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
                       {providerGridOptionGroups.map((group) => (
                         <div key={group.group} className="space-y-2">
                           <div className="text-[12px] font-medium text-text-2">
-                            {group.group === "cloud"
-                              ? t("keyVault.providerGroups.cloud", "Cloud")
-                              : t("keyVault.providerGroups.local", "Local")}
+                            {group.group === "mostUsed"
+                              ? t(
+                                  "keyVault.providerGroups.mostUsed",
+                                  "Most used"
+                                )
+                              : group.group === "cloud"
+                                ? t("keyVault.providerGroups.cloud", "Cloud")
+                                : t("keyVault.providerGroups.local", "Local")}
                           </div>
                           <SelectionGrid
                             options={group.options}

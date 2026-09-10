@@ -28,6 +28,7 @@
       "deleteError": "{{name}} silinemedi"
     },
     "providerGroups": {
+      "mostUsed": "En çok kullanılanlar",
       "cloud": "Cloud",
       "local": "Local"
     },
@@ -54,8 +55,8 @@
       "cursorSessionAccess": "Cursor oturumu",
       "cursorSessionReady": "Cursor modelleri ve kota yenileme için bağlı",
       "cursorApiKeyAccess": "Cursor API Key",
-      "cursorApiKeyReady": "Cursor CLI/API çağrıları için sağlandı",
-      "cursorApiKeyNotProvided": "Sağlanmadı — Cursor CLI/API çağrıları kullanılamaz",
+      "cursorApiKeyReady": "Cursor API çağrıları için sağlandı",
+      "cursorApiKeyNotProvided": "Sağlanmadı — Cursor API çağrıları kullanılamaz",
       "baseUrl": "Base URL",
       "connectedAt": "Bağlandı",
       "availableModels": "Kullanılabilir Modeller",
@@ -298,11 +299,11 @@
     "cursorLoginBrowserTitle": "Cursor girişi",
     "modelCount": "{{count}} model",
     "cursorLoginReadyTitle": "Cursor hesabı bağlandı",
-    "cursorLoginReadyDesc": "Aşağıda bir Cursor API Key oluşturup yapıştırın. Cursor CLI agent bu API Key olmadan çalışmaz.",
+    "cursorLoginReadyDesc": "Aşağıda bir Cursor API Key oluşturup yapıştırın. Cursor agent bu API Key olmadan çalışmaz.",
     "cursorApiKeyBrowserHint": "Giriş yaptıktan sonra ORGII Cursor dashboard'u açar. Orada bir User API Key oluşturun ve aşağıya yapıştırın",
     "cursorApiKeyRecommendedTitle": "Cursor API Key önerilir",
     "cursorApiKeyRecommendedDesc": "Cursor'u yalnızca ORGII'nin Rust agents ile kullanmak istiyorsanız Cursor API Key olmadan devam edebilirsiniz; sadece dahili tarayıcıyla oturum açın veya bir session token sağlayın",
-    "cursorApiKeyRecommendedAction": "ORGII içinde Cursor CLI de kullanmak istiyorsanız bir Cursor API Key sağlayın",
+    "cursorApiKeyRecommendedAction": "ORGII içinde Cursor de kullanmak istiyorsanız bir Cursor API Key sağlayın",
     "openCursorApiKeys": "Cursor API Keys'i aç",
     "codexSetupMethodDesc": "Codex'i ChatGPT oturumu, yerel algılama veya OpenAI API key ile bağlayın",
     "codexSignInTitle": "Codex oturum açma",

@@ -684,7 +684,7 @@
     "diskCategory_diagnostics": "Hàng đợi chẩn đoán",
     "diskCategory_models": "Mô hình đã tải xuống",
     "diskCategory_semanticIndex": "Chỉ mục tìm kiếm ngữ nghĩa",
-    "diskCategory_cursorCliProfiles": "Hồ sơ Cursor CLI",
+    "diskCategory_cursorCliProfiles": "Hồ sơ Cursor",
     "diskCategory_kiroCliProfiles": "Hồ sơ Kiro CLI",
     "diskCategory_opencodeCliProfiles": "Hồ sơ OpenCode CLI",
     "diskCategory_sidecarBin": "Tệp nhị phân Sidecar đã tải xuống"

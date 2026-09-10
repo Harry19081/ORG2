@@ -86,7 +86,7 @@ const CURSOR_IDE_FILTER_ITEM: KanbanFilterItem<KanbanAgentTypeFilter> = {
 function formatCliFilterLabel(cliAgentType: CliAgentType): string {
   switch (cliAgentType) {
     case CLI_AGENT.CURSOR:
-      return "Cursor CLI";
+      return "Cursor";
     case CLI_AGENT.CLAUDE_CODE:
       return "Claude CLI";
     case CLI_AGENT.CODEX:

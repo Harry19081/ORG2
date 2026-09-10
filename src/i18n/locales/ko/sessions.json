@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "메시지 편집...",
     "defaultPlaceholder": "Agent와 채팅",
+    "commentPlaceholder": "댓글을 남겨 보세요…",
     "editingQueuedMessage": "대기 메시지 편집 중",
     "editingSentMessage": "보낸 메시지 편집 중",
     "voiceErrorPermission": "마이크 권한이 거부되었습니다. OS 설정에서 활성화하세요.",

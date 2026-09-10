@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "メッセージを編集...",
     "defaultPlaceholder": "Agent とチャット",
+    "commentPlaceholder": "コメントを入力…",
     "editingQueuedMessage": "キューメッセージを編集中",
     "editingSentMessage": "送信済みメッセージを編集中",
     "voiceErrorPermission": "マイクの権限が拒否されました。OS の設定で有効にしてください。",

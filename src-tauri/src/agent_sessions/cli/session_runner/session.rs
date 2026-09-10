@@ -546,9 +546,9 @@ pub(crate) async fn run_session_with_ide_context(
             .is_some_and(|session_token| !session_token.trim().is_empty());
         if !has_api_key {
             let reason = if has_session_token {
-                "Cursor CLI agent requires a Cursor API key or Cursor Agent CLI login state. The saved native session token only works for the native/Rust Cursor provider and cannot authenticate cursor-agent directly."
+                "Cursor agent requires a Cursor API key or Cursor login state. The saved native session token only works for the native/Rust Cursor provider and cannot authenticate cursor-agent directly."
             } else {
-                "Cursor CLI agent requires a Cursor API key or Cursor Agent CLI login state before launching cursor-agent."
+                "Cursor agent requires a Cursor API key or Cursor login state before launching cursor-agent."
             };
             return Err(reason.to_string());
         }

@@ -19,6 +19,7 @@ export { ORGII_ORCHESTRATOR } from "./types";
  */
 export function formatAgentType(agentType: string): string {
   if (!agentType) return "";
+  if (agentType === CLI_AGENT.CURSOR) return "Cursor";
   return agentType
     .replace(/_api$/, "")
     .replace(/_cli$/, " CLI")

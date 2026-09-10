@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Modifier votre message...",
     "defaultPlaceholder": "Discuter avec l'Agent",
+    "commentPlaceholder": "Laissez un commentaire…",
     "editingQueuedMessage": "Modification du message en file",
     "editingSentMessage": "Modification du message envoyé",
     "voiceErrorPermission": "Permission micro refusée. Activez-la dans les paramètres système.",
