@@ -12,6 +12,21 @@ export type {
 } from "@src/api/types/keys";
 export { ORGII_ORCHESTRATOR } from "./types";
 
+/** Registry spellings that cannot be recovered by title-casing an agent ID. */
+const AGENT_TYPE_LABEL_OVERRIDES: Readonly<Record<string, string>> = {
+  [CLI_AGENT.CURSOR]: "Cursor",
+  [CLI_AGENT.KIRO]: "Kiro CLI",
+  [CLI_AGENT.COPILOT]: "GitHub Copilot",
+  [CLI_AGENT.KIMI]: "Kimi Code CLI",
+  [CLI_AGENT.OPENCODE]: "OpenCode",
+  [CLI_AGENT.KILO]: "Kilo Code",
+  [CLI_AGENT.OPENCLAW]: "OpenClaw",
+  [CLI_AGENT.CONTINUE]: "Continue",
+  [CLI_AGENT.OMP]: "OMP",
+  [CLI_AGENT.TRAE_CLI]: "Trae Agent",
+  [CLI_AGENT.DEEPSEEK_HARNESS]: "DeepSeek Harness",
+};
+
 /**
  * Format an agent type string into a human-readable display name.
  * Converts snake_case to Title Case and strips common suffixes.
@@ -19,7 +34,8 @@ export { ORGII_ORCHESTRATOR } from "./types";
  */
 export function formatAgentType(agentType: string): string {
   if (!agentType) return "";
-  if (agentType === CLI_AGENT.CURSOR) return "Cursor";
+  const override = AGENT_TYPE_LABEL_OVERRIDES[agentType];
+  if (override) return override;
   return agentType
     .replace(/_api$/, "")
     .replace(/_cli$/, " CLI")
@@ -28,14 +44,8 @@ export function formatAgentType(agentType: string): string {
     .join(" ");
 }
 
-const MODEL_AGENT_TYPE_LABEL_OVERRIDES: Readonly<Record<string, string>> = {
-  [CLI_AGENT.CURSOR]: "Cursor",
-};
-
 /** Agent type label for model catalog / model table surfaces. */
 export function formatModelAgentType(agentType: string): string {
-  const override = MODEL_AGENT_TYPE_LABEL_OVERRIDES[agentType];
-  if (override) return override;
   return formatAgentType(agentType);
 }
 
