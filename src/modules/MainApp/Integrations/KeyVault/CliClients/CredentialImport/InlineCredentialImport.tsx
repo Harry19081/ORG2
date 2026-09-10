@@ -29,22 +29,16 @@ import { useCredentialImport } from "./useCredentialImport";
 
 interface InlineCredentialImportProps {
   sourceKind?: "cc_switch";
-  /** Start expanded and route the toggle to `onCompleted` (wizard flows). */
-  forceExpanded?: boolean;
-  onCompleted?: () => void;
   /** Reload agents / accounts after a successful import. */
   onAfterImport?: () => void | Promise<void>;
 }
 
 const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
-  forceExpanded = false,
   sourceKind,
-  onCompleted,
   onAfterImport,
 }) => {
   const { t } = useTranslation("integrations");
-  const [manuallyExpanded, setManuallyExpanded] = useState(false);
-  const expanded = forceExpanded || manuallyExpanded;
+  const [expanded, setExpanded] = useState(false);
 
   const {
     items,
@@ -60,7 +54,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
     handleImport,
   } = useCredentialImport({
     sourceKind,
-    onCompleted: onCompleted ?? (() => undefined),
+    onCompleted: () => undefined,
     onRefresh: onAfterImport,
   });
 
@@ -86,13 +80,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
               />
             )
           }
-          onClick={() => {
-            if (forceExpanded) {
-              onCompleted?.();
-              return;
-            }
-            setManuallyExpanded((current) => !current);
-          }}
+          onClick={() => setExpanded((current) => !current)}
         >
           {t("common:actions.expand")}
         </Button>

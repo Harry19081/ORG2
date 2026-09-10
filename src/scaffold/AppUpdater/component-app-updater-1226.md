@@ -34,8 +34,8 @@ relaunch remain explicit user actions.
   without showing progress toasts or forcing a restart, then show one
   confirmation dialog. Installation only starts after the user confirms.
 - **Dialog actions:** users can skip the detected version, postpone the
-  decision while keeping the package ready, or install and restart. Skipped
-  versions remain suppressed across app launches.
+  decision for 24 hours while keeping the package ready, or install and restart.
+  Skipped versions remain suppressed across app launches.
 
 Installing is never automatic because the Tauri updater installer can
 terminate the running process on Windows. Users can postpone installation and
@@ -87,3 +87,15 @@ read-only UI projections and are not independent sources of truth.
 - `@tauri-apps/plugin-updater` for check/download/install
 - `@tauri-apps/plugin-process` for relaunch
 - central settings registry for update-channel selection
+
+## Later reminder policy
+
+`service.tsx` owns the durable reminder decision. Choosing Later stores one
+version and an absolute 24-hour deadline in localStorage, then hides the prompt.
+Startup, interval, foreground, online recovery, and retry preparation all respect
+that deadline for both in-place and separate-application installation. Explicit
+install actions may reopen the prompt during the cooldown. A different release
+is never suppressed by an older reminder. Expired or malformed records are
+removed when read; skipping or confirming installation clears the current
+version's reminder. No reminder timer or subscription is added: the next eligible
+automatic check after expiry can show the prompt again.

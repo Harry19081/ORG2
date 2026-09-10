@@ -34,7 +34,6 @@ import {
   GENERAL_LAYOUT_TOUR_TARGETS,
 } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
-import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { resolveChatPanelMaximizedForLayout } from "@src/store/chatPanel/chatPanelTabsModel";
 import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { useSyncStatusBridge } from "@src/store/sync";
@@ -81,10 +80,10 @@ const GuideHighlightOverlay = React.lazy(
     )
 );
 
-const TutorialsModal = React.lazy(
+const OnboardingHost = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "tutorials" */ "@src/scaffold/Tutorials/TutorialsModal"
+      /* webpackChunkName: "tutorials" */ "@src/features/Onboarding/OnboardingHost"
     )
 );
 
@@ -177,7 +176,6 @@ const AppShell = () => {
   const setSidebarCollapsed = useSetAtom(sidebarCollapsedAtom);
   const setStationChatVisibility = useSetAtom(stationChatVisibilityAtom);
   const setSettingsReturnPath = useSetAtom(settingsReturnPathAtom);
-  const [tutorialsModalOpen, setTutorialsModalOpen] = useState(false);
   const [generalLayoutTourOpen, setGeneralLayoutTourOpen] = useState(false);
   const [generalLayoutTourRunId, setGeneralLayoutTourRunId] = useState(0);
   const [codeEditorTourOpen, setCodeEditorTourOpen] = useState(false);
@@ -197,10 +195,6 @@ const AppShell = () => {
     if (!location.pathname.startsWith(ROUTES.workStation.base.path)) return;
     setSettingsReturnPath(`${location.pathname}${location.search}`);
   }, [location.pathname, location.search, setSettingsReturnPath]);
-
-  const handleOpenTutorials = useCallback(() => {
-    setTutorialsModalOpen(true);
-  }, []);
 
   const handleStartGeneralLayoutTour = useCallback(() => {
     if (!location.pathname.startsWith(ROUTES.workStation.base.path)) {
@@ -253,14 +247,12 @@ const AppShell = () => {
   ]);
 
   useEffect(() => {
-    window.addEventListener(TUTORIALS_OPEN_EVENT, handleOpenTutorials);
     window.addEventListener(
       GENERAL_LAYOUT_TOUR_EVENT,
       handleStartGeneralLayoutTour
     );
     window.addEventListener(CODE_EDITOR_TOUR_EVENT, handleStartCodeEditorTour);
     return () => {
-      window.removeEventListener(TUTORIALS_OPEN_EVENT, handleOpenTutorials);
       window.removeEventListener(
         GENERAL_LAYOUT_TOUR_EVENT,
         handleStartGeneralLayoutTour
@@ -270,11 +262,7 @@ const AppShell = () => {
         handleStartCodeEditorTour
       );
     };
-  }, [
-    handleOpenTutorials,
-    handleStartCodeEditorTour,
-    handleStartGeneralLayoutTour,
-  ]);
+  }, [handleStartCodeEditorTour, handleStartGeneralLayoutTour]);
 
   useEffect(() => {
     if (chatPanelMaximized) return;
@@ -397,10 +385,7 @@ const AppShell = () => {
         </AppLayout>
         <React.Suspense fallback={null}>
           <GuideHighlightOverlay />
-          <TutorialsModal
-            open={tutorialsModalOpen}
-            onClose={() => setTutorialsModalOpen(false)}
-          />
+          <OnboardingHost />
           <GeneralLayoutTour
             key={`general-layout-tour-${generalLayoutTourRunId}`}
             open={generalLayoutTourOpen}

@@ -167,21 +167,8 @@
       "unknownRole": "Vai trò không xác định"
     },
     "guide": {
-      "trigger": "Mở hướng dẫn",
-      "title": "Bắt đầu với ORGII",
       "startSession": "Bắt đầu phiên",
-      "close": "Đóng hướng dẫn",
-      "localWorkspace": "Không gian làm việc cục bộ",
-      "connectOrganization": "Kết nối hoặc tạo không gian làm việc",
-      "createOrganizationHint": "Nhập tên không gian làm việc rồi chọn Tạo. Hướng dẫn sẽ chuyển sang bước tiếp theo sau khi không gian làm việc đám mây được tạo.",
-      "inviteTeammate": "Mời một thành viên nhóm",
-      "inviteTeammateHint": "Tạo liên kết mời tại đây rồi gửi cho thành viên nhóm của bạn.",
-      "invitePermissionHint": "Bạn có thể xem danh sách thành viên tại đây. Quản trị viên hoặc chủ sở hữu không gian làm việc phải tạo lời mời.",
-      "viewTeamActivity": "Xem mức sử dụng của nhóm",
-      "viewTeamActivityHint": "Runtime đã mở ở mục Thành viên. Chọn một thành viên để xem mức sử dụng Codex, Claude và Cursor; nếu chưa có dữ liệu, hãy bật đồng bộ Runtime của nhóm trước.",
-      "exploreProduct": "Khám phá các trang chính",
-      "nextStep": "Bước tiếp theo",
-      "dismiss": "Ẩn hướng dẫn"
+      "connectOrganization": "Kết nối hoặc tạo không gian làm việc"
     }
   },
   "launchpad": {

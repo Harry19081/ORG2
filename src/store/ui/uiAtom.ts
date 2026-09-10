@@ -35,6 +35,7 @@ import {
   supportsBothVariants,
 } from "@src/config/appearance/skins/registry";
 import type { SkinVariant } from "@src/config/appearance/skins/types";
+import { createLogger } from "@src/hooks/logger";
 import {
   settingsAtom,
   updateSettingAtom,
@@ -235,6 +236,20 @@ export const iconStyleAtom = atom(
   }
 );
 iconStyleAtom.debugLabel = "iconStyleAtom";
+
+const dockIconLog = createLogger("DockIcon");
+
+export const dockIconAtom = atom(
+  (get) => get(settingsAtom)["general.dockIcon"],
+  (_get, set, value: "dark" | "light") => {
+    set(updateSettingAtom, { key: "general.dockIcon", value }).catch(
+      (error: unknown) => {
+        dockIconLog.warn("Failed to persist general.dockIcon:", error);
+      }
+    );
+  }
+);
+dockIconAtom.debugLabel = "dockIconAtom";
 
 // ============================================
 // UI Scale

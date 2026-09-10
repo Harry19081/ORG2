@@ -167,21 +167,8 @@
       "unknownRole": "Nieznana rola"
     },
     "guide": {
-      "trigger": "Otwórz przewodnik",
-      "title": "Rozpocznij pracę z ORGII",
       "startSession": "Rozpocznij sesję",
-      "close": "Zamknij przewodnik",
-      "localWorkspace": "Lokalny obszar roboczy",
-      "connectOrganization": "Połącz lub utwórz obszar roboczy",
-      "createOrganizationHint": "Wpisz nazwę obszaru roboczego i wybierz Utwórz. Po utworzeniu obszaru roboczego w chmurze przewodnik przejdzie dalej.",
-      "inviteTeammate": "Zaproś członka zespołu",
-      "inviteTeammateHint": "Utwórz tutaj link z zaproszeniem i wyślij go członkowi zespołu.",
-      "invitePermissionHint": "Tutaj możesz wyświetlić listę członków. Zaproszenie musi utworzyć administrator lub właściciel obszaru roboczego.",
-      "viewTeamActivity": "Wyświetl użycie zespołu",
-      "viewTeamActivityHint": "Runtime jest otwarty na karcie Członkowie. Wybierz członka zespołu, aby zobaczyć użycie Codex, Claude i Cursor. Jeśli nie ma danych, najpierw włącz synchronizację środowiska zespołu.",
-      "exploreProduct": "Poznaj główne strony",
-      "nextStep": "Następny krok",
-      "dismiss": "Odrzuć przewodnik"
+      "connectOrganization": "Połącz lub utwórz obszar roboczy"
     }
   },
   "launchpad": {

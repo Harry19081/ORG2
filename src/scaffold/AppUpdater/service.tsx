@@ -52,6 +52,15 @@ const SKIPPED_UPDATE_VERSION_STORAGE_KEY =
 const SEPARATELY_INSTALLED_RELEASE_VERSION_STORAGE_KEY =
   "orgii:updater:separately-installed-release-version";
 
+const DEFERRED_UPDATE_REMINDER_STORAGE_KEY =
+  "orgii:updater:deferred-update-reminder";
+const UPDATE_REMINDER_DEFER_DURATION_MS = 24 * 60 * 60_000;
+
+interface DeferredUpdateReminder {
+  version: string;
+  remindAfter: number;
+}
+
 export interface CheckForAppUpdatesOptions {
   notify?: boolean;
   force?: boolean;
@@ -119,6 +128,57 @@ function clearSkippedUpdateVersion(version: string): void {
   if (typeof window !== "undefined" && getSkippedUpdateVersion() === version) {
     window.localStorage.removeItem(SKIPPED_UPDATE_VERSION_STORAGE_KEY);
   }
+}
+
+function getDeferredUpdateReminder(): DeferredUpdateReminder | null {
+  if (typeof window === "undefined") return null;
+
+  const stored = window.localStorage.getItem(
+    DEFERRED_UPDATE_REMINDER_STORAGE_KEY
+  );
+  if (!stored) return null;
+
+  try {
+    const parsed = JSON.parse(stored) as Partial<DeferredUpdateReminder>;
+    if (
+      typeof parsed.version === "string" &&
+      typeof parsed.remindAfter === "number" &&
+      Number.isFinite(parsed.remindAfter) &&
+      parsed.remindAfter > Date.now()
+    ) {
+      return { version: parsed.version, remindAfter: parsed.remindAfter };
+    }
+  } catch {
+    // Invalid persisted state should never suppress an update reminder.
+  }
+
+  window.localStorage.removeItem(DEFERRED_UPDATE_REMINDER_STORAGE_KEY);
+  return null;
+}
+
+function deferUpdateReminder(version: string): void {
+  if (typeof window === "undefined") return;
+  const reminder: DeferredUpdateReminder = {
+    version,
+    remindAfter: Date.now() + UPDATE_REMINDER_DEFER_DURATION_MS,
+  };
+  window.localStorage.setItem(
+    DEFERRED_UPDATE_REMINDER_STORAGE_KEY,
+    JSON.stringify(reminder)
+  );
+}
+
+function clearDeferredUpdateReminder(version: string): void {
+  if (typeof window === "undefined") return;
+  const reminder = getDeferredUpdateReminder();
+  if (reminder?.version === version) {
+    window.localStorage.removeItem(DEFERRED_UPDATE_REMINDER_STORAGE_KEY);
+  }
+}
+
+function isUpdateReminderDeferred(version: string): boolean {
+  const reminder = getDeferredUpdateReminder();
+  return reminder?.version === version;
 }
 
 function getSeparatelyInstalledReleaseVersion(): string | null {
@@ -325,16 +385,24 @@ export interface InstallAvailableAppUpdateOptions {
 
 async function prepareAvailableAppUpdate(
   update: Update,
-  silentDownload: boolean
+  options: {
+    silentDownload: boolean;
+    promptPolicy: "always" | "respect-reminder";
+  }
 ): Promise<void> {
   const provenance = await resolveAppBuildProvenance();
-  const progressReporter = silentDownload
+  const progressReporter = options.silentDownload
     ? undefined
     : createProgressReporter();
   clearSkippedUpdateVersion(update.version);
 
   if (usesSeparateApplicationInstall(provenance)) {
-    store().set(appUpdateInstallPromptAtom, true);
+    if (
+      options.promptPolicy === "always" ||
+      !isUpdateReminderDeferred(update.version)
+    ) {
+      store().set(appUpdateInstallPromptAtom, true);
+    }
     return;
   }
 
@@ -343,7 +411,12 @@ async function prepareAvailableAppUpdate(
   try {
     await coordinator.downloadAvailableUpdate(progressReporter);
     endDownloadProgress();
-    store().set(appUpdateInstallPromptAtom, true);
+    if (
+      options.promptPolicy === "always" ||
+      !isUpdateReminderDeferred(update.version)
+    ) {
+      store().set(appUpdateInstallPromptAtom, true);
+    }
   } catch (error) {
     if (progressReporter) endDownloadProgress();
     throw error;
@@ -423,9 +496,14 @@ export async function installAvailableAppUpdate(
     coordinator.getAvailableUpdate() ?? (await checkForUpdatesManually());
   if (!update) return;
 
+  if (confirmed) clearDeferredUpdateReminder(update.version);
+
   if (!confirmed) {
     try {
-      await prepareAvailableAppUpdate(update, silentDownload);
+      await prepareAvailableAppUpdate(update, {
+        silentDownload,
+        promptPolicy: "always",
+      });
       activeAutomaticScheduler?.resetRetry();
     } catch (error) {
       showDownloadFailure(error, {
@@ -520,7 +598,10 @@ async function executeAutomaticUpdate(
   try {
     // Installing can terminate the app on Windows. Every automatic path only
     // prepares the package and asks the user before installing or relaunching.
-    await prepareAvailableAppUpdate(update, true);
+    await prepareAvailableAppUpdate(update, {
+      silentDownload: true,
+      promptPolicy: "respect-reminder",
+    });
   } catch (error) {
     showDownloadFailure(error, {
       automatic: true,
@@ -567,8 +648,16 @@ export function startAutomaticAppUpdates(): () => void {
   };
 }
 
+export function postponeAppUpdate(version: string | undefined): void {
+  if (version) deferUpdateReminder(version);
+  store().set(appUpdateInstallPromptAtom, false);
+}
+
 export function skipAppUpdateVersion(version: string | undefined): void {
-  if (version) setSkippedUpdateVersion(version);
+  if (version) {
+    setSkippedUpdateVersion(version);
+    clearDeferredUpdateReminder(version);
+  }
   coordinator.clearAvailableUpdate();
 }
 

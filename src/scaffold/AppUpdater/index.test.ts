@@ -382,7 +382,7 @@ describe("AppUpdater", () => {
 
     capturedButton("Later").onClick?.();
 
-    expect(mocks.setInstallPromptVisible).toHaveBeenCalledWith(false);
+    expect(mocks.storeSet).toHaveBeenCalledWith(expect.anything(), false);
     expect(update.install).not.toHaveBeenCalled();
     expect(mocks.relaunch).not.toHaveBeenCalled();
   });
