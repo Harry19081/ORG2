@@ -434,7 +434,7 @@ export const PortsStatusMenu: React.FC = memo(() => {
               )}
             </div>
 
-            <div className={STATUS_BAR_TOKENS.menuFooterClass}>
+            <div className={DROPDOWN_CLASSES.footerContainer}>
               <button
                 type="button"
                 className={classNames(
@@ -458,17 +458,20 @@ export const PortsStatusMenu: React.FC = memo(() => {
                     ? t("workstation.ports.rescanning")
                     : t("workstation.ports.rescan")}
                 </span>
+                {lastScanLabel && (
+                  <span
+                    className={classNames(
+                      "ml-auto",
+                      STATUS_BAR_TOKENS.menuTimestampClass
+                    )}
+                    title={t("workstation.ports.lastScannedAt", {
+                      time: lastScanLabel,
+                    })}
+                  >
+                    {lastScanLabel}
+                  </span>
+                )}
               </button>
-              {lastScanLabel && (
-                <span
-                  className={STATUS_BAR_TOKENS.menuTimestampClass}
-                  title={t("workstation.ports.lastScannedAt", {
-                    time: lastScanLabel,
-                  })}
-                >
-                  {lastScanLabel}
-                </span>
-              )}
             </div>
           </div>,
           document.body
