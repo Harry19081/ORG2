@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "Repo を読み込み中...",
-    "noRepositories": "リポジトリがありません",
-    "getStartedHint": "Repo を作成またはクローンして開始",
-    "noPath": "パスなし",
-    "searchPlaceholder": "Repo を検索...",
-    "loadMore": "もっと読み込む"
-  },
   "market": {
     "auth": {
       "noAuthCode": "認証コードを受信できませんでした",

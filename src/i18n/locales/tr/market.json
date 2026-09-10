@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "Repos yükleniyor...",
-    "noRepositories": "Henüz depo yok",
-    "getStartedHint": "Başlamak için bir Repo oluşturun veya klonlayın",
-    "noPath": "Yol yok",
-    "searchPlaceholder": "Depolarda ara...",
-    "loadMore": "Daha fazla yükle"
-  },
   "market": {
     "auth": {
       "noAuthCode": "Yetkilendirme kodu alınamadı",

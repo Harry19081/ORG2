@@ -821,15 +821,6 @@
     "devtools": "Playground"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "Ajouter une clé fournisseur",
-    "addMcpServer": "Ajouter un serveur MCP",
-    "createSkill": "Créer des skills",
-    "addDatabaseConnection": "Connexion base de données",
-    "addChannelOrService": "Ajouter un canal ou un service",
-    "addGitConnection": "Ajouter une connexion Git",
-    "addRoutine": "Ajouter un Routine",
-    "createRule": "Créer une politique",
-    "importSkill": "Importer des skills depuis d'autres apps",
     "addAgent": "Ajouter un Agent"
   },
   "toolbarEllipsis": {},

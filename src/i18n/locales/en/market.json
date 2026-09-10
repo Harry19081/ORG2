@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "Loading repos...",
-    "noRepositories": "No repos yet",
-    "getStartedHint": "Create or clone a repo to get started",
-    "noPath": "No path",
-    "searchPlaceholder": "Search repos...",
-    "loadMore": "Load more"
-  },
   "market": {
     "auth": {
       "noAuthCode": "No authorization code received",

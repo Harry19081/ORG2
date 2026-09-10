@@ -821,15 +821,6 @@
     "devtools": "Песочница"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "Добавить ключ провайдера",
-    "addMcpServer": "Добавить MCP-сервер",
-    "createSkill": "Создать Skills",
-    "addDatabaseConnection": "Добавить подключение к базе данных",
-    "addChannelOrService": "Добавить канал или сервис",
-    "addGitConnection": "Добавить подключение Git",
-    "addRoutine": "Добавить Routine",
-    "createRule": "Создать политику",
-    "importSkill": "Импортировать Skills из других Apps",
     "addAgent": "Добавить Agent"
   },
   "toolbarEllipsis": {},

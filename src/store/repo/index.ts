@@ -103,7 +103,6 @@ export {
   isValidUUID,
   resetRepoStore,
   // Window tracking
-  getWindowIdsForRepo,
   registerOpenedRepo,
   unregisterWindow,
   clearAllOpenedRepos,

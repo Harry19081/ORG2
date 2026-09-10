@@ -833,15 +833,6 @@
     "devtools": "试玩区"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "添加提供商密钥",
-    "addMcpServer": "添加 MCP 服务器",
-    "createSkill": "创建 Skills",
-    "addDatabaseConnection": "添加数据库连接",
-    "addChannelOrService": "添加频道或服务",
-    "addGitConnection": "添加 Git 连接",
-    "addRoutine": "添加 Routine",
-    "createRule": "创建规则",
-    "importSkill": "从其他 Apps 导入 Skills",
     "addAgent": "添加 Agent"
   },
   "toolbarEllipsis": {},

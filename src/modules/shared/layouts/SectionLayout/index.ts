@@ -34,8 +34,6 @@ export { default as SectionContainer } from "./Container";
 
 export { default as SectionRow } from "./Row";
 
-export { default as CategoryRow } from "./CategoryRow";
-
 export { default as SectionTabSwitch } from "./TabSwitch";
 
 export { default as ExpandableTableRow } from "./ExpandableTableRow";

@@ -146,23 +146,6 @@ export const SECTION_VALUE_SMALL_MUTED_CLASSES = "text-[12px] text-text-3";
 export const SECTION_INDENT_CLASSES = "pl-6";
 
 // ============================================
-// Table Tokens
-// ============================================
-
-/** Table column header typography */
-export const SECTION_TABLE_HEADER_CLASSES =
-  "text-[12px] font-medium text-text-2";
-
-/** Table row label typography */
-export const SECTION_TABLE_LABEL_CLASSES = "text-[13px] text-text-2";
-
-/** Empty/null cell placeholder */
-export const SECTION_TABLE_EMPTY_CLASSES = "text-[12px] text-text-3";
-
-/** Default column grid template (flexible up to control width) */
-export const SECTION_TABLE_DEFAULT_COL = `minmax(140px, ${SECTION_CONTROL_WIDTH}px)`;
-
-// ============================================
 // Action / Button Group Tokens
 // ============================================
 

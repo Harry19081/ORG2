@@ -821,15 +821,6 @@
     "devtools": "Spielwiese"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "Anbieterschlüssel hinzufügen",
-    "addMcpServer": "MCP-Server hinzufügen",
-    "createSkill": "Skills erstellen",
-    "addDatabaseConnection": "Datenbankverbindung hinzufügen",
-    "addChannelOrService": "Kanal oder Dienst hinzufügen",
-    "addGitConnection": "Git-Verbindung hinzufügen",
-    "addRoutine": "Routine hinzufügen",
-    "createRule": "Richtlinie erstellen",
-    "importSkill": "Skills aus anderen Apps importieren",
     "addAgent": "Agent hinzufügen"
   },
   "toolbarEllipsis": {},
