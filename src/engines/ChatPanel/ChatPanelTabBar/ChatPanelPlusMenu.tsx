@@ -214,14 +214,9 @@ export interface ChatPanelPlusMenuProps {
   onOpenSideChat: () => void;
 }
 
-export function ChatPanelPlusMenu({
-  onOpenLaunchpad,
-  onOpenKanban,
-  onOpenRuntime,
-  onNewProject,
-  onNewWorkItem,
-  onOpenSideChat,
-}: ChatPanelPlusMenuProps): React.ReactNode {
+export function ChatPanelPlusMenu(
+  actions: ChatPanelPlusMenuProps
+): React.ReactNode {
   const { t } = useTranslation("sessions");
   const [menuOpen, setMenuOpen] = useState(false);
   const recentTabs = useAtomValue(recentChatPanelTabsAtom);
@@ -233,12 +228,7 @@ export function ChatPanelPlusMenu({
     <Dropdown
       droplist={
         <PlusMenuContent
-          onOpenLaunchpad={onOpenLaunchpad}
-          onOpenKanban={onOpenKanban}
-          onOpenRuntime={onOpenRuntime}
-          onNewProject={onNewProject}
-          onNewWorkItem={onNewWorkItem}
-          onOpenSideChat={onOpenSideChat}
+          {...actions}
           recentTabs={recentTabs}
           onOpenRecentTab={openRecentTab}
           onClose={closeMenu}
