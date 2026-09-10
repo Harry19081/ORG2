@@ -592,6 +592,7 @@
       "insert": "Insertar"
     },
     "compactArgHint": "<enfoque opcional para el resumen>",
+    "nativeCommandDescription": "Ejecutar {{command}} en {{provider}}",
     "compactCommandDescription": "Resume el contexto anterior para liberar espacio. Opcional: /compact <enfoque del resumen>",
     "canvasCommandDescription": "Crea un nuevo Canvas interactivo. Opcional: /canvas <qué crear>",
     "canvasArgHint": "qué crear",
@@ -1921,6 +1922,7 @@
       "session": "Sesión"
     },
     "slashMenu": {
+      "commands": "Comandos",
       "mode": "Modo",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

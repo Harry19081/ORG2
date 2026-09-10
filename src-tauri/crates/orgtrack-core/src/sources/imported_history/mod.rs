@@ -789,6 +789,15 @@ pub fn task_lifecycle_chunk(
     chunk
 }
 
+/// Native CLI controls can finish without a model turn. Keep their stdout as
+/// a command result, never invent an assistant reply or drop the result.
+pub fn native_command_output_chunk(session_id: &str, output: &str, success: bool) -> ActivityChunk {
+    let mut chunk = ActivityChunk::new(session_id, ACTION_TYPE_TOOL_CALL, "native_command");
+    chunk.args = json!({"native_command": true});
+    chunk.result = json!({"success":success,"status":if success { "completed" } else { "failed" },"output":output,"observation":output,"raw_tool_name":"Claude Code command"});
+    chunk
+}
+
 pub fn tool_call_chunk(
     session_id: &str,
     provider_slug: &str,

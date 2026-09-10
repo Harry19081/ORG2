@@ -387,7 +387,19 @@ pub async fn cli_agent_chunks(session_id: String) -> Result<Vec<ActivityChunk>, 
 pub(super) fn load_session_chunks(session_id: &str) -> Result<Vec<ActivityChunk>, String> {
     let session = persistence::get_session(session_id).map_err(|e| format!("DB error: {}", e))?;
     if let Some(session) = session.as_ref() {
-        if let Some(chunks) = load_native_transcript_chunks(session)? {
+        if let Some(mut chunks) = load_native_transcript_chunks(session)? {
+            if let Some(catalog) = persistence::load_native_commands(session_id)
+                .map_err(|error| format!("Native command catalog: {error}"))?
+            {
+                if catalog
+                    .args
+                    .get("native_provider")
+                    .and_then(serde_json::Value::as_str)
+                    == session.cli_agent_type.as_deref()
+                {
+                    chunks.insert(0, catalog);
+                }
+            }
             return Ok(chunks);
         }
     }

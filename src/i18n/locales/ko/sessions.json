@@ -592,6 +592,7 @@
       "insert": "삽입"
     },
     "compactArgHint": "<선택: 요약의 초점>",
+    "nativeCommandDescription": "{{provider}}에서 {{command}} 실행",
     "compactCommandDescription": "이전 컨텍스트를 요약해 공간을 확보합니다. 선택: /compact <요약의 초점>",
     "canvasCommandDescription": "새로운 대화형 Canvas를 만듭니다. 선택: /canvas <만들 내용>",
     "canvasArgHint": "만들 내용",
@@ -1921,6 +1922,7 @@
       "session": "세션"
     },
     "slashMenu": {
+      "commands": "명령",
       "mode": "모드",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

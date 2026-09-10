@@ -32,7 +32,8 @@ const CLAUDE_CODE_PROVIDER_SLUG: &str = "claudecode";
 // the shared beginning of each child prompt.
 // v15: compact summaries are provider context metadata, not human turns or
 // first-prompt title candidates.
-const CLAUDE_CODE_METADATA_PARSER_VERSION: i64 = 15;
+// v16: replay local-command inputs/results and their completed lifecycle.
+const CLAUDE_CODE_METADATA_PARSER_VERSION: i64 = 16;
 const MAX_COMPACT_BOUNDARY_MARKERS: usize =
     crate::sources::imported_history::cache::MAX_CONTINUATION_MARKERS - 1;
 

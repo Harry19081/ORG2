@@ -18,15 +18,20 @@ import { useAtomValue, useStore } from "jotai";
 import React, { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
 import type { ComposerSnapshot } from "@src/components/ComposerInput";
 import { serializePillNode } from "@src/components/ComposerInput/utils";
 import Message from "@src/components/Message";
 import { chatEventsAtom } from "@src/engines/SessionCore";
 import { createLogger } from "@src/hooks/logger";
 import { useSecretScanGuard } from "@src/hooks/security/useSecretScanGuard";
+import { useSessionCommandActions } from "@src/hooks/session/useSessionPatch";
 import { sessionByIdAtom } from "@src/store/session";
+import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
+import { creatorDefaultProductModeAtom } from "@src/store/session/creatorDefaultProductModeAtom";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
 import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
+import { modelSelectorAtom } from "@src/store/ui/modelSelectorAtom";
 import { isCliSession } from "@src/util/session/sessionDispatch";
 
 import { clearImageDraft } from "../../InputArea/utils/imageDraftCache";
@@ -35,7 +40,9 @@ import {
   parseCompactSlashCommand,
   useManualCompact,
 } from "../useManualCompact";
+import { executeComposerCommand } from "./executeComposerCommand";
 import { resolveMcpSlashCommand } from "./mcpSlashCommand";
+import { parseNativeSlashCommand } from "./nativeSlashCommands";
 import { expandSkillPills } from "./outgoingTextTransforms";
 import { projectOutgoingUserMessage } from "./projectOutgoingUserMessage";
 import { interceptPendingQuestionBatches } from "./questionIntercept";
@@ -178,6 +185,7 @@ export function useSubmitMessage({
   const submitAttemptsInFlightRef = useRef(new Set<string>());
   const submitInFlightKeyRef = useRef<string | null>(null);
   const { runManualCompact } = useManualCompact();
+  const { setPlan, rename } = useSessionCommandActions(draftSessionId);
   const guardAgainstSecrets = useSecretScanGuard();
   const submitMessage = useCallback(
     async (options: SubmitMessageOptions = {}) => {
@@ -229,12 +237,71 @@ export function useSubmitMessage({
         return;
       }
 
+      const provider = store.get(sessionByIdAtom(draftSessionId))?.cliAgentType;
+      if (enableAgentInterceptors && !hasAttachedImages) {
+        const command = parseNativeSlashCommand(displayText);
+        if (command) {
+          if (command.name === "plan" && submitDisabled) return;
+          try {
+            const remaining = await executeComposerCommand(command, {
+              showStatus: () => {
+                const session = store.get(sessionByIdAtom(draftSessionId));
+                Message.info(
+                  [
+                    session?.name,
+                    session?.model,
+                    session?.agentExecMode,
+                    session?.repoPath,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
+                );
+              },
+              openModel: () => store.set(modelSelectorAtom, { isOpen: true }),
+              setPlan: () =>
+                draftSessionId
+                  ? setPlan()
+                  : Promise.resolve().then(() => {
+                      store.set(creatorDefaultExecModeAtom, "plan");
+                      store.set(creatorDefaultProductModeAtom, null);
+                    }),
+              rename,
+              dispatch: (action) => zodActionRegistry.execute(action, {}),
+            });
+            if (remaining !== undefined) {
+              if (!remaining) {
+                if (!isExplicitAction) {
+                  refs.composerInputRef.current?.clear();
+                  await flushDraft("");
+                }
+                options.onSubmitted?.();
+                return;
+              }
+              displayText = remaining;
+            }
+          } catch (error) {
+            Message.error(
+              error instanceof Error ? error.message : String(error)
+            );
+            return;
+          }
+        }
+      }
+
       // ── /compact slash command ───────────────────────────────────────────
       // `/compact [instructions]` runs a manual context compaction instead
       // of dispatching a message (Claude Code parity). Only a pure text
       // command qualifies — attached images mean the user is sending real
       // content that happens to start with "/compact".
-      if (enableAgentInterceptors && hasText && !hasAttachedImages) {
+      if (
+        enableAgentInterceptors &&
+        hasText &&
+        !hasAttachedImages &&
+        !(
+          isCliSession(draftSessionId) &&
+          (provider === "codex" || provider === "claude_code")
+        )
+      ) {
         const compactCommand = parseCompactSlashCommand(displayText);
         if (compactCommand) {
           if (!isExplicitAction) {
@@ -606,6 +673,8 @@ export function useSubmitMessage({
       submitDisabled,
       enableAgentInterceptors,
       runManualCompact,
+      setPlan,
+      rename,
     ]
   );
 

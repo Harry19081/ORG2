@@ -1135,3 +1135,99 @@ async fn live_native_fresh_and_resumed_turns_are_in_default_desktop_list() {
         assert!(!last_user.to_string().contains("ORGII_PROVIDER_CONTEXT"));
     }
 }
+
+#[cfg(unix)]
+#[tokio::test]
+async fn native_slash_commands_drive_protocol_operations() {
+    use std::process::Stdio;
+    for (prompt, expected_method) in [
+        ("/compact", "thread/compact/start"),
+        ("/review auth", "review/start"),
+        ("/fixture-skill hello", "turn/start"),
+        ("/not-installed", ""),
+    ] {
+        let dir = tempfile::tempdir().unwrap();
+        let log = dir.path().join("requests.jsonl");
+        let script = r#"
+while IFS= read -r line; do
+  printf '%s\n' "$line" >> "$ORGII_SLASH_REQUESTS"
+  case "$line" in
+    *'"method":"initialize"'*) printf '%s\n' '{"id":1,"result":{}}' ;;
+    *'"method":"thread/start"'*) printf '%s\n' '{"id":2,"result":{"thread":{"id":"fixture-thread"},"model":"fixture-model"}}' ;;
+    *'"method":"skills/list"'*) printf '%s\n' '{"id":3,"result":{"data":[{"skills":[{"name":"fixture-skill","path":"/fixture/SKILL.md","enabled":true}]}]}}' ;;
+    *'"method":"thread/compact/start"'*|*'"method":"review/start"'*|*'"method":"turn/start"'*)
+      printf '%s\n' '{"id":4,"result":{"turn":{"id":"fixture-turn","status":"inProgress"}}}' '{"method":"turn/started","params":{"turn":{"id":"fixture-turn"}}}' '{"method":"item/completed","params":{"item":{"id":"compact-marker","type":"contextCompaction"}}}' '{"method":"turn/completed","params":{"turn":{"id":"fixture-turn","status":"completed"}}}'
+      ;;
+  esac
+done
+"#;
+        let mut child = tokio::process::Command::new("sh")
+            .args(["-c", script])
+            .env("ORGII_SLASH_REQUESTS", &log)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .kill_on_drop(true)
+            .spawn()
+            .unwrap();
+        let (tx, mut rx) = tokio::sync::mpsc::channel(256);
+        let turn = CodexAppServerTurn {
+            session_id: format!("slash-{expected_method}"),
+            user_input: prompt.into(),
+            developer_instructions: None,
+            working_dir: dir.path().to_string_lossy().into_owned(),
+            project_id: None,
+            resume_thread_id: None,
+            model: None,
+            permission_mode: CliPermissionMode::Plan,
+            config: None,
+            image_paths: vec![],
+            allow_native_context_recovery: false,
+        };
+        let result = tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            super::run_app_server_turn(
+                child.stdin.take().unwrap(),
+                child.stdout.take().unwrap(),
+                turn,
+                tx,
+            ),
+        )
+        .await
+        .unwrap();
+        if expected_method.is_empty() {
+            assert!(result
+                .err()
+                .unwrap()
+                .contains("does not expose /not-installed"));
+        } else {
+            let result = result.unwrap();
+            assert_eq!(result.turn_status, "completed");
+            assert_eq!(result.thread_id, "fixture-thread");
+        }
+        child.kill().await.unwrap();
+        child.wait().await.unwrap();
+        let requests = std::fs::read_to_string(&log).unwrap();
+        if !expected_method.is_empty() {
+            assert!(
+                requests.contains(&format!("\"method\":\"{expected_method}\"")),
+                "{requests}"
+            );
+        }
+        if expected_method != "turn/start" {
+            assert!(!requests.contains("\"method\":\"turn/start\""));
+        }
+        if prompt.starts_with("/fixture-skill") {
+            assert!(requests.contains("\"type\":\"skill\""));
+        }
+        let mut saw_catalog = false;
+        while let Ok(chunk) = rx.try_recv() {
+            saw_catalog |= chunk
+                .args
+                .get("native_provider")
+                .and_then(serde_json::Value::as_str)
+                == Some("codex");
+        }
+        assert!(saw_catalog);
+    }
+}

@@ -131,6 +131,9 @@ fn emit_chunk_blocking(
     sequence: &mut i64,
     turn_intent_id: Option<&str>,
 ) {
+    if let Err(error) = super::super::persistence::record_native_commands(chunk) {
+        tracing::warn!(%error, "Could not save native command catalog");
+    }
     let action_type = chunk.action_type.as_str();
 
     let is_delta = action_type.contains("delta")

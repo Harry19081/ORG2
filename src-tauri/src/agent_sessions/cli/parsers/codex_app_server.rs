@@ -73,6 +73,7 @@ use super::types::{CliAgentType, TokenUsage};
 use crate::agent_sessions::cli::session_runner::launch_profiles::CliPermissionMode;
 
 mod catalog;
+mod slash;
 pub(crate) use catalog::{
     archive_thread, ensure_project, native_codex_app_server_command, register_thread,
     synchronize_thread,
@@ -1302,6 +1303,7 @@ pub async fn run_app_server_turn(
     turn: CodexAppServerTurn,
     chunk_tx: mpsc::Sender<ActivityChunk>,
 ) -> Result<CodexAppServerResult, String> {
+    let native_command = slash::parse(&turn.user_input, !turn.image_paths.is_empty())?;
     let (_registration, mut interrupt_rx) = InterruptRegistration::register(&turn.session_id);
     let mut reader = BufReader::new(stdout);
     let mut parser = CodexAppServerEventParser::new(&turn.session_id);
@@ -1386,9 +1388,81 @@ pub async fn run_app_server_turn(
         turn.resume_thread_id.is_some()
     );
 
-    // ── Step 3: turn/start ──
-    let input = build_turn_input(&turn);
-    let mut turn_req_id = start_turn(&mut stdin, &mut request_id, &thread_id, &input).await?;
+    // Read the native catalog on active turn setup, never from a background
+    // menu poll. It includes project, user and installed plugin skills.
+    request_id += 1;
+    rpc_send(
+        &mut stdin,
+        request_id,
+        "skills/list",
+        serde_json::json!({"cwds": [&turn.working_dir]}),
+    )
+    .await?;
+    let catalog = tokio::time::timeout(
+        tokio::time::Duration::from_secs(15),
+        await_response(
+            &mut reader,
+            &mut stdin,
+            &mut buf,
+            request_id,
+            &mut parser,
+            &chunk_tx,
+            mode,
+        ),
+    )
+    .await;
+    let skills = match catalog {
+        Ok(Ok(Ok(value))) => slash::skills(&value),
+        _ => {
+            if native_command.is_none() && slash::skill_name(&turn.user_input).is_some() {
+                return Err("Could not discover Codex native skills; the command was not sent as a model prompt.".into());
+            }
+            tracing::warn!("Codex skill catalog unavailable");
+            Vec::new()
+        }
+    };
+    let mut catalog_chunk = ActivityChunk::new(&turn.session_id, "session_start", "session_start");
+    catalog_chunk.args = serde_json::json!({"native_provider": "codex", "slash_commands": skills.iter().map(|(name, _)| name).collect::<Vec<_>>()});
+    catalog_chunk.result = serde_json::json!({"success": true});
+    let _ = chunk_tx.send(catalog_chunk).await;
+
+    // ── Step 3: native command or turn/start ──
+    let mut input = build_turn_input(&turn);
+    if let Some(slash::NativeCommand::Init(instructions)) = &native_command {
+        input[0] = serde_json::json!({"type": "text", "text": slash::init_prompt(instructions)});
+    }
+    if native_command.is_none() {
+        if let Some(skill) = slash::skill_input(&turn.user_input, &skills) {
+            input.push(skill);
+        } else if let Some(name) = slash::skill_name(&turn.user_input) {
+            if turn.image_paths.is_empty() {
+                return Err(format!("Codex does not expose /{name} through this runtime. Use an ORG2 control or the embedded native terminal for terminal-only commands."));
+            }
+        }
+    }
+    let mut turn_req_id = if native_command == Some(slash::NativeCommand::Compact) {
+        request_id += 1;
+        rpc_send(
+            &mut stdin,
+            request_id,
+            "thread/compact/start",
+            serde_json::json!({"threadId": &thread_id}),
+        )
+        .await?;
+        request_id
+    } else if let Some(slash::NativeCommand::Review(instructions)) = &native_command {
+        request_id += 1;
+        rpc_send(
+            &mut stdin,
+            request_id,
+            "review/start",
+            slash::review_params(&thread_id, instructions),
+        )
+        .await?;
+        request_id
+    } else {
+        start_turn(&mut stdin, &mut request_id, &thread_id, &input).await?
+    };
 
     // ── Step 4: notification loop until turn/completed ──
     let mut turn_started = false;
@@ -1455,7 +1529,8 @@ pub async fn run_app_server_turn(
         if msg.get("method").and_then(Value::as_str) == Some("turn/completed") {
             let params = msg.get("params").cloned().unwrap_or(Value::Null);
             let original_terminal_error = parser.completed_turn_error(&params).map(str::to_string);
-            let should_recover = turn.allow_native_context_recovery
+            let should_recover = native_command.is_none()
+                && turn.allow_native_context_recovery
                 && !context_recovery_attempted
                 && parser.should_recover_context_exhaustion(&params);
             if should_recover {

@@ -592,6 +592,7 @@
       "insert": "Вставить"
     },
     "compactArgHint": "<необязательный фокус резюме>",
+    "nativeCommandDescription": "Выполнить {{command}} в {{provider}}",
     "compactCommandDescription": "Обобщить старый контекст, чтобы освободить место. Необязательно: /compact <фокус резюме>",
     "canvasCommandDescription": "Создать новый интерактивный Canvas. Необязательно: /canvas <что создать>",
     "canvasArgHint": "что создать",
@@ -1921,6 +1922,7 @@
       "session": "Сессия"
     },
     "slashMenu": {
+      "commands": "Команды",
       "mode": "Режим",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

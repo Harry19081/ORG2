@@ -53,6 +53,11 @@ pub(super) struct ClaudeJsonlLine {
     pub(super) r#type: String,
     #[serde(default)]
     pub(super) subtype: String,
+    /// Provider-owned local command output (not an assistant message).
+    #[serde(default)]
+    pub(super) content: Option<String>,
+    #[serde(default)]
+    pub(super) level: String,
     #[serde(default)]
     pub(super) summary: String,
     /// `ai-title` records: the auto-generated title shown in the Claude Code app.

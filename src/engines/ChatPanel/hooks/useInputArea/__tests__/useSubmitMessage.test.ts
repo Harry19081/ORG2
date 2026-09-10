@@ -9,6 +9,7 @@ import type {
 } from "@src/components/ComposerInput";
 import type { ChatImageAttachment } from "@src/store/ui/chatImageAtom";
 import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
+import { modelSelectorAtom } from "@src/store/ui/modelSelectorAtom";
 import { type SmokeRoot, createSmokeRoot } from "@src/test/reactSmokeHarness";
 
 import type { InputAreaRefs } from "../types";
@@ -20,6 +21,10 @@ import {
 
 const mocks = vi.hoisted(() => ({
   clearImageDraft: vi.fn(),
+  setPlan: vi.fn(),
+  rename: vi.fn(),
+  isCliSession: vi.fn(),
+  provider: undefined as string | undefined,
   guardAgainstSecrets: vi.fn(),
   interceptPendingQuestionBatches: vi.fn(),
   messageError: vi.fn(),
@@ -30,6 +35,13 @@ const mocks = vi.hoisted(() => ({
   resolveMcpSlashCommand: vi.fn(),
   runManualCompact: vi.fn(),
   waitForPendingPills: vi.fn(),
+}));
+
+vi.mock("@src/hooks/session/useSessionPatch", () => ({
+  useSessionCommandActions: () => ({
+    setPlan: mocks.setPlan,
+    rename: mocks.rename,
+  }),
 }));
 
 vi.mock("@src/components/Message", () => ({
@@ -59,7 +71,10 @@ vi.mock("@src/engines/SessionCore", async () => {
 
 vi.mock("@src/store/session", async () => {
   const { atom } = await import("jotai/vanilla");
-  return { sessionByIdAtom: () => atom(null) };
+  return {
+    sessionByIdAtom: () =>
+      atom(mocks.provider ? { cliAgentType: mocks.provider } : null),
+  };
 });
 
 vi.mock("@src/store/ui/chatPanel/miscAtoms", async () => {
@@ -72,7 +87,7 @@ vi.mock("@src/util/contextPillContent", () => ({
 }));
 
 vi.mock("@src/util/session/sessionDispatch", () => ({
-  isCliSession: () => false,
+  isCliSession: mocks.isCliSession,
 }));
 
 vi.mock("@src/engines/ChatPanel/InputArea/utils/imageDraftCache", () => ({
@@ -175,6 +190,8 @@ describe("useSubmitMessage composer boundary", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.isCliSession.mockReturnValue(false);
+    mocks.provider = undefined;
     latestSubmit = null;
     root = createSmokeRoot();
     mocks.guardAgainstSecrets.mockResolvedValue(true);
@@ -231,6 +248,53 @@ describe("useSubmitMessage composer boundary", () => {
       ...overrides,
     };
   }
+
+  it("dispatches CLI compaction through the provider instead of clearing it at the Agent-only interceptor", async () => {
+    mocks.isCliSession.mockReturnValue(true);
+    mocks.provider = "claude_code";
+    mocks.parseCompactSlashCommand.mockReturnValue({});
+    const editor = createEditor("/compact");
+    const options = optionsFor(editor);
+    await mount(options);
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(mocks.runManualCompact).not.toHaveBeenCalled();
+    expect(options.handleSessChatSubmit).toHaveBeenCalledWith(
+      undefined,
+      "/compact",
+      "agent:/compact",
+      undefined
+    );
+  });
+
+  it("opens the real model-selector atom and does not admit a model prompt", async () => {
+    mocks.provider = "codex";
+    const editor = createEditor("/model");
+    const options = optionsFor(editor);
+    await mount(options);
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(store.get(modelSelectorAtom).isOpen).toBe(true);
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    expect(editor.readText()).toBe("");
+    expect(options.flushDraft).toHaveBeenCalledWith("");
+  });
+
+  it("keeps the plan draft when the owning mode patch fails", async () => {
+    mocks.provider = "claude_code";
+    mocks.setPlan.mockRejectedValueOnce(new Error("offline"));
+    const editor = createEditor("/plan inspect auth");
+    const options = optionsFor(editor);
+    await mount(options);
+    await act(async () => {
+      await latestSubmit!();
+    });
+    expect(editor.readText()).toBe("/plan inspect auth");
+    expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    expect(mocks.messageError).toHaveBeenCalledWith("offline");
+  });
 
   it.each(["live", "captured", "override"])(
     "sends the normalized display copy through the %s path",

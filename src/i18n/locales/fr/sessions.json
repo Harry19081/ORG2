@@ -592,6 +592,7 @@
       "insert": "Insérer"
     },
     "compactArgHint": "<focus facultatif pour le résumé>",
+    "nativeCommandDescription": "Exécuter {{command}} dans {{provider}}",
     "compactCommandDescription": "Résume le contexte ancien pour libérer de l'espace. Facultatif : /compact <focus du résumé>",
     "canvasCommandDescription": "Crée un nouveau Canvas interactif. Facultatif : /canvas <contenu à créer>",
     "canvasArgHint": "contenu à créer",
@@ -1921,6 +1922,7 @@
       "session": "Session"
     },
     "slashMenu": {
+      "commands": "Commandes",
       "mode": "Mode",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills",

@@ -134,6 +134,66 @@ describe("Composer skills menu", () => {
     }
   });
 
+  it("offers commands in the slash menu and consumes the query on selection", async () => {
+    await browser.waitUntil(
+      async () =>
+        execJS(
+          `return !!document.querySelector(${JSON.stringify(INPUT_SELECTOR)});`
+        ),
+      { timeout: 60_000 }
+    );
+    expect(await execJS(js.clear(INPUT_SELECTOR))).toBe("");
+    expect(await execJS(js.type(INPUT_SELECTOR, "/model"))).toBe("typed");
+    await browser.waitUntil(
+      async () => (await execJS(js.text(INPUT_SELECTOR))) === "/model",
+      { timeout: 5000 }
+    );
+    const selector =
+      '[data-testid="slash-command-item"][data-slash-category="action"][data-slash-name="model"]';
+    await browser.waitUntil(
+      async () =>
+        execJS(`return !!document.querySelector(${JSON.stringify(selector)});`),
+      { timeout: 10_000 }
+    );
+    expect(
+      await execJS(
+        `const row = document.querySelector(${JSON.stringify(selector)}); if (!row) return "missing"; (row.firstElementChild || row).click(); return "clicked";`
+      )
+    ).toBe("clicked");
+    await browser.waitUntil(
+      async () => (await execJS(js.text(INPUT_SELECTOR)))?.trim() === "/model",
+      { timeout: 5000 }
+    );
+    expect(
+      await execJS(
+        `return document.querySelectorAll(${JSON.stringify(selector)}).length;`
+      )
+    ).toBe(0);
+    expect(
+      await execJS(
+        `return document.querySelector('[data-testid="chat-send-button"]').disabled;`
+      )
+    ).toBe(false);
+    expect(await execJS(js.click('[data-testid="chat-send-button"]'))).toBe(
+      "clicked"
+    );
+    await browser.waitUntil(
+      async () =>
+        execJS(
+          `return !!document.querySelector('[data-testid="model-spotlight-refresh-button"]');`
+        ),
+      {
+        timeout: 10_000,
+        timeoutMsg: "/model did not open the actual model selector",
+      }
+    );
+    await browser.keys("Escape");
+    await browser.waitUntil(
+      async () => (await execJS(js.text(INPUT_SELECTOR))) === "",
+      { timeout: 5000 }
+    );
+  });
+
   it("gives + and @ the same searchable, keyboard-navigable mode menu", async () => {
     await browser.waitUntil(
       async () =>
