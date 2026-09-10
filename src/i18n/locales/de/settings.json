@@ -906,6 +906,12 @@
     "notInstalled": "Dieses Werkzeug vor dem Testen oder Anwenden einer Verbindung installieren"
   },
   "mobileRemote": {
+    "advancedSettings": "Erweiterte Einstellungen",
+    "showAdvanced": "Erweiterte Einstellungen anzeigen",
+    "hideAdvanced": "Erweiterte Einstellungen ausblenden",
+    "restoreDefaultRelay": "Standard-Relay wiederherstellen",
+    "developerOptions": "Entwickleroptionen",
+    "retryConnection": "Verbindung erneut versuchen",
     "enabled": "Mobile Remote",
     "enabledDesc": "Erlaubt einem gekoppelten Telefon, Agent-Sessions auf diesem Desktop über dasselbe WLAN oder über das öffentliche Relay zu steuern",
     "securityNotice": "Bei aktivierter LAN-Freigabe kann jeder in deinem Netzwerk mit Verbindungs-URL und Token Sessions steuern. Erzeuge das Token neu, wenn du vermutest, dass es durchgesickert ist",

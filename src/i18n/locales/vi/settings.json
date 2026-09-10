@@ -906,6 +906,12 @@
     "notInstalled": "Cài đặt công cụ này trước khi kiểm tra hoặc áp dụng kết nối"
   },
   "mobileRemote": {
+    "advancedSettings": "Cài đặt nâng cao",
+    "showAdvanced": "Hiện cài đặt nâng cao",
+    "hideAdvanced": "Ẩn cài đặt nâng cao",
+    "restoreDefaultRelay": "Khôi phục relay mặc định",
+    "developerOptions": "Tùy chọn nhà phát triển",
+    "retryConnection": "Thử kết nối lại",
     "enabled": "Điều khiển từ điện thoại",
     "enabledDesc": "Cho phép điện thoại đã ghép nối điều khiển các phiên agent trên máy tính này qua cùng mạng Wi‑Fi LAN hoặc qua relay công cộng",
     "securityNotice": "Khi bật phơi bày LAN, bất kỳ ai trong mạng của bạn có URL kết nối và token đều có thể điều khiển phiên. Hãy tạo lại token nếu bạn nghi ngờ nó bị lộ",

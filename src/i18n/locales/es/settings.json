@@ -906,6 +906,12 @@
     "notInstalled": "Instala esta herramienta antes de probar o aplicar una conexión"
   },
   "mobileRemote": {
+    "advancedSettings": "Configuración avanzada",
+    "showAdvanced": "Mostrar configuración avanzada",
+    "hideAdvanced": "Ocultar configuración avanzada",
+    "restoreDefaultRelay": "Restaurar relay predeterminado",
+    "developerOptions": "Opciones de desarrollador",
+    "retryConnection": "Reintentar conexión",
     "enabled": "Mobile Remote",
     "enabledDesc": "Permite que un teléfono emparejado controle las sesiones de agent de este escritorio a través de la misma red Wi‑Fi o del relay público",
     "securityNotice": "Cualquiera en tu red que tenga la URL de conexión y el token puede controlar las sesiones cuando la exposición LAN está activada. Regenera el token si crees que se ha filtrado",
