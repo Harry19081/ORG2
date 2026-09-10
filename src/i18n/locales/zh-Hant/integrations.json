@@ -821,15 +821,6 @@
     "devtools": "試玩區"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "添加提供商密鑰",
-    "addMcpServer": "添加 MCP 服務器",
-    "createSkill": "創建 Skills",
-    "addDatabaseConnection": "添加數據庫連接",
-    "addChannelOrService": "添加頻道或服務",
-    "addGitConnection": "添加 Git 連接",
-    "addRoutine": "添加 Routine",
-    "createRule": "建立規則",
-    "importSkill": "從其他 Apps 導入 Skills",
     "addAgent": "添加 Agent"
   },
   "toolbarEllipsis": {},

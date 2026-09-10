@@ -192,8 +192,7 @@ export function getOpenedReposMap(): OpenedReposMap {
  * selection: they live alongside main-app windows but the user never
  * "opens a repo" into them. They still mount React and run
  * `useRepoSelection`, so without filtering they would pollute the
- * cross-window registry and `getWindowIdsForRepo` would return them
- * as candidates for "focus existing window".
+ * cross-window registry with specialty windows.
  *
  * Main-app windows are `"main"` and any timestamp-suffixed clones
  * (e.g. `main-1715648400000`). Anything else listed here is a
@@ -209,23 +208,6 @@ export function isMainAppWindowLabel(windowId: string): boolean {
   if (windowId === "tab") return false;
   if (windowId === "welcome") return false;
   return true;
-}
-
-/**
- * Get all main-app window IDs that have a specific repo open.
- *
- * Specialty windows (wingman, etc.) are filtered out — see
- * `isMainAppWindowLabel`.
- */
-export function getWindowIdsForRepo(repoId: string): string[] {
-  const map = getOpenedReposMap();
-  const windowIds: string[] = [];
-  for (const [windowId, openRepoId] of Object.entries(map)) {
-    if (openRepoId === repoId && isMainAppWindowLabel(windowId)) {
-      windowIds.push(windowId);
-    }
-  }
-  return windowIds;
 }
 
 /**

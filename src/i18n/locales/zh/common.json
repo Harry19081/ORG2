@@ -212,7 +212,6 @@
     "link": "链接",
     "copyName": "复制名称",
     "dismiss": "忽略",
-    "comingSoon": "即将推出",
     "clearSelection": "清除选择",
     "uiSettings": "界面设置",
     "clearAll": "全部清除",
@@ -586,7 +585,6 @@
   "filters": {
     "all": "全部",
     "source": "来源",
-    "local": "本地",
     "member": "成员",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "选择 Agent 或 Agent 团队...",
@@ -875,7 +873,6 @@
     "switchToTreeView": "切换到树形视图",
     "switchToListView": "切换到列表视图",
     "discardChanges": "丢弃更改",
-    "acceptAllMergeChanges": "接受所有合并更改（暂存已解决的文件）",
     "toOrigin": "到 origin",
     "discardChangesConfirm": "丢弃对 {{files}} 的更改？此操作不可撤销。",
     "discardAllUnstagedConfirm": "丢弃所有未暂存的更改？此操作不可撤销。",
@@ -1598,7 +1595,8 @@
       },
       "groups": {
         "agentSession": "Agent 会话",
-        "workspace": "工作区",
+        "workspace": "工作目录",
+        "organization": "组织 / 工作区",
         "quickNavigation": "快速导航",
         "editor": "编辑器",
         "view": "视图",
@@ -1632,6 +1630,7 @@
           "label": "切换工作目录"
         },
         "switchBranch": {
+          "repoLabel": "切换 {{repoName}} 的分支",
           "label": "切换分支"
         },
         "addWorkspace": {

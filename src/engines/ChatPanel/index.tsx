@@ -54,7 +54,6 @@ import {
 import { NewChatHeaderActionsMenu } from "./components/NewChatHeaderActionsMenu";
 import { SessionSwipeIndicator } from "./components/SessionSwipeIndicator";
 // Parked with its header button below.
-// import SessionContinueCliHeaderExtras from "./SessionContinueCliHeaderExtras";
 import {
   SessionAlternateSurface,
   SessionHeaderViewControls,
@@ -415,15 +414,6 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
             <ConversationParticipantsChip
               sessionId={currentSessionId ?? null}
             />
-            {/* "Continue in <agent>" is parked: it hands the session to a
-                CLI in a Workstation terminal tab, which leaves the focused
-                chat — the same reason the trail's Workstation-navigating
-                rows were parked. */}
-            {/* <SessionContinueCliHeaderExtras
-              session={currentSession ?? null}
-              sessionId={currentSessionId ?? null}
-              onOpenCliTerminal={handleOpenCliTerminal}
-            /> */}
             <SessionForkHeaderExtras session={currentSession ?? null} />
             <SessionRawToolbarActions
               view={sessionView}

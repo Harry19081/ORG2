@@ -12,7 +12,7 @@
  *   - `size="inline"` — `text-[12px]` and `text-text-1`, used inside inline
  *     expanded cards and detail-panel rows that have no ambient cell typography.
  *   - `size="sm"` — alias of `inline` with a slightly tighter gap, for dense
- *     lists (used by CategoryRow-style breakdowns).
+ *     lists (used by category breakdowns).
  *
  * The dot can be made to pulse (used by MCP / Channel "connecting" states)
  * via `pulse`. A trailing `count` renders a "· N" suffix used by CliClients.

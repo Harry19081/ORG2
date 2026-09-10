@@ -62,7 +62,6 @@
     "models": "Mô hình",
     "signingIn": "Đang đăng nhập...",
     "launchpad": "Trung tâm khởi động",
-    "ideaArea": "Khu vực ý tưởng",
     "changelog": "Changelog"
   },
   "sidebar": {
@@ -168,21 +167,8 @@
       "unknownRole": "Vai trò không xác định"
     },
     "guide": {
-      "trigger": "Mở hướng dẫn",
-      "title": "Bắt đầu với ORGII",
       "startSession": "Bắt đầu phiên",
-      "close": "Đóng hướng dẫn",
-      "localWorkspace": "Không gian làm việc cục bộ",
-      "connectOrganization": "Kết nối hoặc tạo không gian làm việc",
-      "createOrganizationHint": "Nhập tên không gian làm việc rồi chọn Tạo. Hướng dẫn sẽ chuyển sang bước tiếp theo sau khi không gian làm việc đám mây được tạo.",
-      "inviteTeammate": "Mời một thành viên nhóm",
-      "inviteTeammateHint": "Tạo liên kết mời tại đây rồi gửi cho thành viên nhóm của bạn.",
-      "invitePermissionHint": "Bạn có thể xem danh sách thành viên tại đây. Quản trị viên hoặc chủ sở hữu không gian làm việc phải tạo lời mời.",
-      "viewTeamActivity": "Xem mức sử dụng của nhóm",
-      "viewTeamActivityHint": "Runtime đã mở ở mục Thành viên. Chọn một thành viên để xem mức sử dụng Codex, Claude và Cursor; nếu chưa có dữ liệu, hãy bật đồng bộ Runtime của nhóm trước.",
-      "exploreProduct": "Khám phá các trang chính",
-      "nextStep": "Bước tiếp theo",
-      "dismiss": "Ẩn hướng dẫn"
+      "connectOrganization": "Kết nối hoặc tạo không gian làm việc"
     }
   },
   "launchpad": {
@@ -369,14 +355,6 @@
       "replayError": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
       "openParentButton": "Mở phiên gốc từ {{name}}"
     },
-    "continueCli": {
-      "headerButton": "Tiếp tục trong {{agent}}",
-      "headerTooltip": "Mở lại phiên này bằng {{agent}} trong một thẻ terminal ({{command}})",
-      "notInstalled": "{{agent}} chưa được cài đặt trên máy này",
-      "missingWorkspace": "Thư mục gốc của phiên không còn tồn tại — {{agent}} chỉ có thể tiếp tục phiên từ thư mục đó",
-      "sourceMissing": "Dữ liệu gốc của phiên không còn trên ổ đĩa",
-      "launchFailed": "Không thể mở terminal {{agent}}"
-    },
     "openInApp": {
       "headerButton": "Mở trong {{app}}",
       "headerTooltip": "Xem cuộc trò chuyện này trong ứng dụng {{app}} ({{link}})",
@@ -387,6 +365,8 @@
   "cloud": {
     "signIn": "Đăng nhập",
     "signOut": "Đăng xuất",
+    "signOutConfirmTitle": "Đăng xuất?",
+    "signOutConfirmBody": "Bạn sẽ cần đăng nhập lại để truy cập tài khoản của mình.",
     "signedInAs": "Đã đăng nhập: {{name}}",
     "signedInToast": "Đã đăng nhập ORG2 Cloud",
     "sessionExpired": "Phiên ORG2 Cloud đã hết hạn. Hãy đăng nhập lại để tiếp tục.",

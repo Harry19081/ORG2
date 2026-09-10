@@ -1566,7 +1566,6 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
           closable={!isMutatingTask}
           onCancel={() => !isMutatingTask && setTaskActionDialog(null)}
           bodyClassName="space-y-3 px-5 py-4"
-          footerTopBorder={false}
           footer={
             <div className="flex h-12 items-center justify-end gap-2 px-3">
               <Button
@@ -1651,7 +1650,6 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
           closable={!isMutatingTask}
           onCancel={() => !isMutatingTask && setHandoffResolutionDialog(null)}
           bodyClassName="space-y-3 px-5 py-4"
-          footerTopBorder={false}
           footer={
             <div className="flex h-12 items-center justify-end gap-2 px-3">
               <Button
@@ -1726,7 +1724,6 @@ const AgentOrgOverviewPanel: React.FC<AgentOrgOverviewPanelProps> = memo(
           closable={!isDeleting}
           onCancel={closeDeleteModal}
           bodyClassName="space-y-3 px-5 py-4"
-          footerTopBorder={false}
           footer={
             <div className="flex h-12 items-center justify-end gap-2 px-3">
               <Button

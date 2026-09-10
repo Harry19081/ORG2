@@ -389,7 +389,6 @@
     "copyName": "名前をコピー",
     "switchMethod": "方法を切り替える",
     "dismiss": "閉じる",
-    "comingSoon": "近日公開",
     "clearSelection": "選択をクリア",
     "uiSettings": "UI 設定",
     "clearAll": "すべてクリア",
@@ -755,7 +754,6 @@
   "filters": {
     "all": "すべて",
     "source": "ソース",
-    "local": "ローカル",
     "member": "メンバー",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Agent または Agent チームを選択...",
@@ -1030,7 +1028,6 @@
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
-    "acceptAllMergeChanges": "Accept All Merge Changes (Stage resolved files)",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
     "discardAllUnstagedConfirm": "Discard all unstaged changes? This cannot be undone.",
@@ -1767,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Agent セッション",
-        "workspace": "Workspace",
+        "workspace": "作業ディレクトリ",
+        "organization": "組織 / ワークスペース",
         "quickNavigation": "クイックナビゲーション",
         "editor": "エディター",
         "view": "表示",
@@ -1801,6 +1799,7 @@
           "label": "作業ディレクトリを切り替え"
         },
         "switchBranch": {
+          "repoLabel": "{{repoName}} のブランチを切り替え",
           "label": "ブランチを切り替え"
         },
         "addWorkspace": {

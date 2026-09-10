@@ -19,6 +19,7 @@ import {
   org2CloudAuthAtom,
 } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import * as entitlementCoordinator from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
+import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 
 import SidebarSettingsMenuButton from "./SidebarSettingsMenuButton";
@@ -153,6 +154,31 @@ describe("SidebarSettingsMenuButton", () => {
     expect(adeManagerButton).toBeUndefined();
   });
 
+  it("hides onboarding when dev mode is disabled", () => {
+    act(() => store.set(devModeEnabledAtom, false));
+    expect(
+      document.querySelector('[data-testid="sidebar-menu-onboarding"]')
+    ).toBeNull();
+  });
+
+  it("opens onboarding from the account menu after closing the dropdown", () => {
+    const onOpen = vi.fn(() =>
+      expect(mocks.closeDropdown).toHaveBeenCalledOnce()
+    );
+    window.addEventListener(TUTORIALS_OPEN_EVENT, onOpen);
+    try {
+      const button = document.querySelector<HTMLButtonElement>(
+        '[data-testid="sidebar-menu-onboarding"]'
+      );
+      expect(button?.textContent).toBe("discovery.title");
+      expect(button?.getAttribute("aria-haspopup")).toBe("dialog");
+      act(() => button!.click());
+      expect(onOpen).toHaveBeenCalledOnce();
+    } finally {
+      window.removeEventListener(TUTORIALS_OPEN_EVENT, onOpen);
+    }
+  });
+
   it("uses the standard square button radius for its footer trigger", () => {
     const trigger = document.querySelector<HTMLButtonElement>(
       '[aria-label="sidebar.bottomBar.settings"]'
@@ -218,7 +244,7 @@ describe("SidebarSettingsMenuButton", () => {
     expect(onSignIn).toHaveBeenCalledOnce();
   });
 
-  it("puts logout first and clears the persisted account before showing login", async () => {
+  it("confirms logout before clearing the persisted account and showing login", async () => {
     const onSignIn = vi.fn();
     const resetEntitlements = vi.spyOn(
       entitlementCoordinator,
@@ -259,6 +285,32 @@ describe("SidebarSettingsMenuButton", () => {
     await act(async () => signOut!.click());
 
     expect(mocks.closeDropdown).toHaveBeenCalledOnce();
+    expect(resetEntitlements).not.toHaveBeenCalled();
+    expect(store.get(org2CloudAuthAtom)?.userId).toBe("user-1");
+    const dialog = () => document.querySelector('[role="dialog"]')!;
+    expect(dialog().textContent).toContain("cloud.signOutConfirmBody");
+    const cancel = Array.from(dialog().querySelectorAll("button")).find(
+      (button) => button.textContent === "common:actions.cancel"
+    )!;
+    await act(async () => cancel.click());
+    expect(dialog()).toBeNull();
+    expect(resetEntitlements).not.toHaveBeenCalled();
+    expect(store.get(org2CloudAuthAtom)?.userId).toBe("user-1");
+
+    await act(async () => signOut!.click());
+    await act(async () => {
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+      );
+    });
+    expect(dialog()).toBeNull();
+    expect(store.get(org2CloudAuthAtom)?.userId).toBe("user-1");
+
+    await act(async () => signOut!.click());
+    const confirm = Array.from(dialog().querySelectorAll("button")).find(
+      (button) => button.textContent === "cloud.signOut"
+    )!;
+    await act(async () => confirm.click());
     expect(resetEntitlements).toHaveBeenCalledOnce();
     expect(resetEntitlements).toHaveBeenCalledWith(store);
     expect(store.get(org2CloudAuthAtom)).toBeNull();

@@ -821,15 +821,6 @@
     "devtools": "Zona de pruebas"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "Añadir clave de proveedor",
-    "addMcpServer": "Añadir servidor MCP",
-    "createSkill": "Crear skills",
-    "addDatabaseConnection": "Añadir conexión a base de datos",
-    "addChannelOrService": "Añadir canal o servicio",
-    "addGitConnection": "Añadir conexión Git",
-    "addRoutine": "Agregar Routine",
-    "createRule": "Crear política",
-    "importSkill": "Importar skills desde otras apps",
     "addAgent": "Agregar Agent"
   },
   "toolbarEllipsis": {},

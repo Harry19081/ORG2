@@ -13,7 +13,6 @@
  *   ProtectedBranchDialog,
  *   LargePushConfirmDialog,
  *   RebaseConflictDialog,
- *   RemoteBranchDeletedDialog,
  * } from "@src/components/GitDialogs";
  *
  * // All dialogs use the same imperative API pattern:

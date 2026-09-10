@@ -11,6 +11,7 @@ import { DownloadProgressOrb } from "./DownloadProgress";
 import {
   expandDownloadProgressNotice,
   installAvailableAppUpdate,
+  postponeAppUpdate,
   skipAppUpdateVersion,
   startAutomaticAppUpdates,
   usesSeparateApplicationInstall,
@@ -33,8 +34,8 @@ export const AppUpdater: React.FC = () => {
   const settingsLoaded = useAtomValue(settingsLoadedAtom);
 
   const handleInstallLater = useCallback(() => {
-    setInstallPromptVisible(false);
-  }, [setInstallPromptVisible]);
+    postponeAppUpdate(availableUpdate?.version);
+  }, [availableUpdate]);
 
   const handleSkipVersion = useCallback(() => {
     skipAppUpdateVersion(availableUpdate?.version);
@@ -68,7 +69,6 @@ export const AppUpdater: React.FC = () => {
         onCancel={handleInstallLater}
         onClose={handleInstallLater}
         bodyClassName="px-6 py-5"
-        footerTopBorder={false}
         footer={
           <div className="flex items-center justify-between gap-3 px-5 py-4">
             <Button

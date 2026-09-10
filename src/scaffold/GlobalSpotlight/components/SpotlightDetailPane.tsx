@@ -1,8 +1,11 @@
+import { openPath } from "@tauri-apps/plugin-opener";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
 import HoverCardBase from "@src/components/SessionHoverCard/HoverCardBase";
+import { createLogger } from "@src/hooks/logger";
+import { FolderClosedIcon, FolderOpenIcon } from "@src/icons";
 
 import { ICONS } from "../config";
 import { SPOTLIGHT_CONFIG, SPOTLIGHT_TOKENS } from "../constants";
@@ -13,12 +16,53 @@ interface Props {
   children: React.ReactElement;
 }
 
+const log = createLogger("SpotlightDetailPane");
+
+function DetailLine({
+  icon,
+  text,
+  localPath = false,
+}: {
+  icon?: React.ComponentProps<typeof AnyIcon>["icon"];
+  text: string;
+  localPath?: boolean;
+}) {
+  const canOpen = localPath && /^(?:\/(?!\/)|[A-Za-z]:[\\/]|\\\\)/.test(text);
+  return (
+    <div className="mt-2 flex items-center gap-2 text-text-2">
+      {icon && <AnyIcon icon={icon} size={14} className="shrink-0" />}
+      {canOpen ? (
+        <button
+          type="button"
+          className="group/path flex min-w-0 cursor-pointer items-center gap-1.5 text-left underline-offset-2 hover:underline focus-visible:underline focus-visible:ring-1 focus-visible:ring-primary-6 focus-visible:outline-none"
+          onClick={(event) => {
+            event.stopPropagation();
+            void openPath(text).catch((error: unknown) => {
+              log.error("Failed to open local path:", error);
+            });
+          }}
+        >
+          <span className="min-w-0 truncate">{text}</span>
+          <AnyIcon
+            icon={FolderOpenIcon}
+            size={14}
+            className="shrink-0 opacity-0 group-hover/path:opacity-100 group-focus-visible/path:opacity-100"
+          />
+        </button>
+      ) : (
+        <span className="min-w-0 truncate">{text}</span>
+      )}
+    </div>
+  );
+}
+
 /** Shared across palettes. Details use already-loaded row metadata only. */
 export function SpotlightDetailPane({ item, children }: Props) {
   const { t } = useTranslation();
   const data = item.data;
   if (data?.isHeader || data?.disabled) return children;
   const isBranch = item.type === "branch" || data?.isRef === true;
+  if (isBranch) return children;
   const isCurrent =
     data?.isCurrentSelection === true || data?.isCurrent === true;
   const path = [
@@ -31,30 +75,23 @@ export function SpotlightDetailPane({ item, children }: Props) {
   ].find(
     (value): value is string => typeof value === "string" && !!value.trim()
   );
-  // Branch descriptions and right labels contain commit times, so the pane
-  // derives its summary from explicit branch metadata instead.
-  const description =
-    !isBranch && !path
-      ? [data?.description, data?.descTitle, item.description, item.desc].find(
-          (value): value is string =>
-            typeof value === "string" && !!value.trim()
-        )
-      : undefined;
+  const description = !path
+    ? [data?.description, data?.descTitle, item.description, item.desc].find(
+        (value): value is string => typeof value === "string" && !!value.trim()
+      )
+    : undefined;
   const summary = [
-    isBranch
-      ? data?.isRemote
-        ? t("git.remote")
-        : t("filters.local")
-      : undefined,
     isCurrent ? t("selectors.branch.labels.current") : undefined,
-    path,
-    typeof data?.branch === "string" ? data.branch : undefined,
     description,
   ]
     .filter(Boolean)
     .join(" · ");
   const folders = data?.detailFolders;
-  if (!summary && !folders?.length) return children;
+  const worktreePath =
+    typeof data?.worktreePath === "string" ? data.worktreePath : undefined;
+  const branch = typeof data?.branch === "string" ? data.branch : undefined;
+  const folderName = worktreePath?.split("/").filter(Boolean).pop();
+  if (!summary && !path && !branch && !folders?.length) return children;
 
   return (
     <HoverCardBase
@@ -66,7 +103,6 @@ export function SpotlightDetailPane({ item, children }: Props) {
       zIndex={SPOTLIGHT_CONFIG.containerZIndex + 1}
       renderContent={() => (
         <section
-          aria-label={item.label}
           data-spotlight-detail-pane
           className={`w-80 max-w-[calc(100vw-16px)] p-4 text-text-1 select-text ${SPOTLIGHT_TOKENS.subFontSize}`}
         >
@@ -74,38 +110,25 @@ export function SpotlightDetailPane({ item, children }: Props) {
             <div className="flex flex-col gap-4" data-spotlight-repo-details>
               {folders.map((folder, index) => (
                 <div key={index}>
-                  <div className="flex items-start gap-2 font-medium">
-                    <AnyIcon
-                      icon={ICONS.repo}
-                      size={SPOTLIGHT_TOKENS.iconSize}
-                      className="shrink-0 text-text-2"
-                    />
-                    <span className="min-w-0 truncate">{folder.name}</span>
-                  </div>
-                  <div
-                    className="mt-2 truncate text-text-2"
-                    title={folder.path}
-                  >
-                    {folder.path}
-                  </div>
+                  <div className="truncate font-medium">{folder.name}</div>
+                  <DetailLine
+                    icon={FolderClosedIcon}
+                    text={folder.path}
+                    localPath
+                  />
                 </div>
               ))}
             </div>
           ) : (
             <>
-              <div className="flex items-start gap-2 font-medium">
-                {item.icon && (
-                  <AnyIcon
-                    icon={item.icon}
-                    size={SPOTLIGHT_TOKENS.iconSize}
-                    className="shrink-0 text-text-2"
-                  />
-                )}
-                <span className="min-w-0 truncate">{item.label}</span>
+              <div className="truncate font-medium">
+                {folderName || item.label}
               </div>
-              <div className="mt-2 truncate text-text-2" title={summary}>
-                {summary}
-              </div>
+              {branch && <DetailLine icon={ICONS.branch} text={branch} />}
+              {summary && <DetailLine text={summary} />}
+              {path && (
+                <DetailLine icon={FolderClosedIcon} text={path} localPath />
+              )}
             </>
           )}
         </section>

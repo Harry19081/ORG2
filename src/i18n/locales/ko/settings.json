@@ -208,6 +208,12 @@
       "colorful": "컬러",
       "monochrome": "단색"
     },
+    "appIcon": "앱 아이콘",
+    "appIconDesc": "실행 중인 앱이 Dock 또는 작업 표시줄에 표시하는 아이콘입니다. 설치된 앱은 Finder에서 기존 아이콘을 유지합니다",
+    "appIconOptions": {
+      "dark": "어두운 타일",
+      "light": "밝은 타일"
+    },
     "translucentSidebar": "반투명 사이드바",
     "skin": "스킨",
     "accent": "강조색",

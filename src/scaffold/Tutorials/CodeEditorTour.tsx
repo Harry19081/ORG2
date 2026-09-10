@@ -34,7 +34,6 @@ interface TourStep {
   target: CodeEditorTourTarget;
   fallbackTarget?: CodeEditorTourTarget;
   openSourceControl?: boolean;
-  openDashboard?: boolean;
   sourceControlFilterMode?: SourceControlFilterMode;
 }
 
@@ -56,15 +55,6 @@ const TOUR_STEPS: TourStep[] = [
     target: CODE_EDITOR_TOUR_TARGETS.tabBar,
   },
   {
-    id: "repo-selector",
-    target: CODE_EDITOR_TOUR_TARGETS.repoSelector,
-  },
-  {
-    id: "branch-selector",
-    target: CODE_EDITOR_TOUR_TARGETS.branchSelector,
-    fallbackTarget: CODE_EDITOR_TOUR_TARGETS.repoSelector,
-  },
-  {
     id: "editor-surface",
     target: CODE_EDITOR_TOUR_TARGETS.editorSurface,
   },
@@ -84,11 +74,6 @@ const TOUR_STEPS: TourStep[] = [
     fallbackTarget: CODE_EDITOR_TOUR_TARGETS.sourceControl,
     openSourceControl: true,
     sourceControlFilterMode: "history",
-  },
-  {
-    id: "dashboard",
-    target: CODE_EDITOR_TOUR_TARGETS.dashboard,
-    openDashboard: true,
   },
 ];
 
@@ -226,11 +211,7 @@ const CodeEditorTour: React.FC<CodeEditorTourProps> = ({ open, onClose }) => {
     if (currentStep.openSourceControl) {
       void WorkStationViewService.openSourceControlTab();
     }
-    if (currentStep.openDashboard) {
-      void WorkStationViewService.openFileFolderTab();
-    }
   }, [
-    currentStep.openDashboard,
     currentStep.openSourceControl,
     currentStep.sourceControlFilterMode,
     open,

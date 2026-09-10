@@ -62,7 +62,6 @@
     "models": "Модели",
     "signingIn": "Выполняется вход...",
     "launchpad": "Панель запуска",
-    "ideaArea": "Пространство идей",
     "changelog": "Журнал изменений"
   },
   "sidebar": {
@@ -168,21 +167,8 @@
       "unknownRole": "Неизвестная роль"
     },
     "guide": {
-      "trigger": "Открыть руководство",
-      "title": "Начало работы с ORGII",
       "startSession": "Начать сессию",
-      "close": "Закрыть руководство",
-      "localWorkspace": "Локальное рабочее пространство",
-      "connectOrganization": "Подключить или создать рабочее пространство",
-      "createOrganizationHint": "Введите название рабочего пространства и нажмите «Создать». После создания облачного рабочего пространства руководство перейдёт к следующему шагу.",
-      "inviteTeammate": "Пригласить участника команды",
-      "inviteTeammateHint": "Создайте здесь ссылку-приглашение и отправьте её участнику команды.",
-      "invitePermissionHint": "Здесь можно просмотреть список участников. Приглашение должен создать администратор или владелец рабочего пространства.",
-      "viewTeamActivity": "Просмотреть использование команды",
-      "viewTeamActivityHint": "Runtime открыт на вкладке «Участники». Выберите участника, чтобы посмотреть использование Codex, Claude и Cursor. Если данных нет, сначала включите синхронизацию командного Runtime.",
-      "exploreProduct": "Обзор основных страниц",
-      "nextStep": "Следующий шаг",
-      "dismiss": "Скрыть руководство"
+      "connectOrganization": "Подключить или создать рабочее пространство"
     }
   },
   "launchpad": {
@@ -369,14 +355,6 @@
       "replayError": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
       "openParentButton": "Открыть исходную сессию от {{name}}"
     },
-    "continueCli": {
-      "headerButton": "Продолжить в {{agent}}",
-      "headerTooltip": "Снова открыть эту сессию в {{agent}} во вкладке терминала ({{command}})",
-      "notInstalled": "{{agent}} не установлен на этом компьютере",
-      "missingWorkspace": "Исходная папка сессии не найдена — {{agent}} может возобновить её только из этой папки",
-      "sourceMissing": "Исходные данные сессии больше не находятся на диске",
-      "launchFailed": "Не удалось открыть терминал {{agent}}"
-    },
     "openInApp": {
       "headerButton": "Открыть в {{app}}",
       "headerTooltip": "Показать этот разговор в приложении {{app}} ({{link}})",
@@ -387,6 +365,8 @@
   "cloud": {
     "signIn": "Войти",
     "signOut": "Выйти",
+    "signOutConfirmTitle": "Выйти из аккаунта?",
+    "signOutConfirmBody": "Для доступа к аккаунту потребуется войти снова.",
     "signedInAs": "Выполнен вход как {{name}}",
     "signedInToast": "Выполнен вход в ORG2 Cloud",
     "sessionExpired": "Сеанс ORG2 Cloud истёк. Войдите снова, чтобы продолжить.",

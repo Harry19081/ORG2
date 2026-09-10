@@ -58,6 +58,11 @@ pub(crate) fn init_runtime_profile_and_window(
             // screen.
             app_window::apply_host_desktop_window_chrome(&main_window);
 
+            // Per-process: the stored `general.dockIcon` must be re-applied
+            // every launch, and before the window shows so the Dock tile
+            // never flashes the bundle icon first.
+            app_window::dock_icon::apply_stored_dock_icon(app.handle());
+
             // Same contract as `open_session_window`: reposition the traffic
             // lights, mount the vibrancy material, then clear the config's
             // opaque backdrop and pin the webview to transparent so it

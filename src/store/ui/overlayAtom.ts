@@ -28,7 +28,7 @@ quitConfirmationModalOpenAtom.debugLabel = "quitConfirmationModalOpenAtom";
 export const componentIssueModalOpenAtom = atom<boolean>(false);
 componentIssueModalOpenAtom.debugLabel = "componentIssueModalOpenAtom";
 
-// Track the initial add-working-directory mode so SelectRepoPage can open a
+// Track the initial add-working-directory mode so callers can open a
 // specific form. String values remain stable because they are route-stage IDs.
 export type WorkingDirectoryInitialStage =
   | "add-workspace-new"

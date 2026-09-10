@@ -389,7 +389,6 @@
     "copyName": "이름 복사",
     "switchMethod": "방법 전환",
     "dismiss": "무시",
-    "comingSoon": "출시 예정",
     "clearSelection": "선택 지우기",
     "uiSettings": "UI 설정",
     "clearAll": "모두 지우기",
@@ -755,7 +754,6 @@
   "filters": {
     "all": "전체",
     "source": "소스",
-    "local": "로컬",
     "member": "멤버",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Agent 또는 Agent 팀 선택...",
@@ -1030,7 +1028,6 @@
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
-    "acceptAllMergeChanges": "Accept All Merge Changes (Stage resolved files)",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
     "discardAllUnstagedConfirm": "Discard all unstaged changes? This cannot be undone.",
@@ -1767,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Agent 세션",
-        "workspace": "Workspace",
+        "workspace": "작업 디렉터리",
+        "organization": "조직 / 워크스페이스",
         "quickNavigation": "빠른 탐색",
         "editor": "에디터",
         "view": "보기",
@@ -1801,6 +1799,7 @@
           "label": "작업 디렉터리 전환"
         },
         "switchBranch": {
+          "repoLabel": "{{repoName}}의 브랜치 전환",
           "label": "브랜치 전환"
         },
         "addWorkspace": {

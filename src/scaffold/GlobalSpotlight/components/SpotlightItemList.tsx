@@ -219,6 +219,7 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
         className="spotlight-scrollable overflow-y-auto"
         style={{
           maxHeight: containerHeight,
+          paddingBottom: SPOTLIGHT_TOKENS.listInset - SPOTLIGHT_TOKENS.itemGap,
           scrollPaddingTop: stickyIndices.length
             ? SPOTLIGHT_TOKENS.itemHeight
             : 0,
@@ -279,7 +280,10 @@ export const SpotlightItemList: React.FC<SpotlightItemListProps> = ({
     <div
       ref={containerRef}
       className="spotlight-scrollable overflow-y-auto"
-      style={{ height: containerHeight }}
+      style={{
+        height: containerHeight,
+        paddingBottom: SPOTLIGHT_TOKENS.listInset - SPOTLIGHT_TOKENS.itemGap,
+      }}
       onScroll={handleScroll}
       onMouseMove={handleMouseMove}
       data-keyboard-mode={dataKeyboardMode}

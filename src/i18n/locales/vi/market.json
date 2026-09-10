@@ -1,12 +1,4 @@
 {
-  "selectRepo": {
-    "loadingProjects": "Đang tải Repo...",
-    "noRepositories": "Chưa có kho lưu trữ",
-    "getStartedHint": "Tạo hoặc clone Repo để bắt đầu",
-    "noPath": "Không có đường dẫn",
-    "searchPlaceholder": "Tìm kiếm Repo...",
-    "loadMore": "Tải thêm"
-  },
   "market": {
     "auth": {
       "noAuthCode": "Không nhận được mã xác thực",

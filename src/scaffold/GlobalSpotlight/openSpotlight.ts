@@ -57,8 +57,13 @@ export function createGitHubIssuesImportSpotlightRequest(
   };
 }
 
-function createBranchSpotlightRequest(): SpotlightInitialQuery {
-  return { query: "", layer: { kind: "branch" } };
+export function createBranchSpotlightRequest(
+  repoId?: string
+): SpotlightInitialQuery {
+  return {
+    query: "",
+    layer: { kind: "branch", ...(repoId ? { repoId } : {}) },
+  };
 }
 
 function createWorktreeSpotlightRequest(): SpotlightInitialQuery {
@@ -140,10 +145,10 @@ export function openGitHubIssuesImportSpotlight(
   store.set(spotlightOpenAtom, true);
 }
 
-export function openBranchSpotlight(): void {
+export function openBranchSpotlight(repoId?: string): void {
   if (!isStoreInitialized()) return;
   const store = getInstrumentedStore();
-  store.set(spotlightInitialQueryAtom, createBranchSpotlightRequest());
+  store.set(spotlightInitialQueryAtom, createBranchSpotlightRequest(repoId));
   store.set(spotlightOpenAtom, true);
 }
 

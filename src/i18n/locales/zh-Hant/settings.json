@@ -208,6 +208,12 @@
       "colorful": "彩色",
       "monochrome": "單色"
     },
+    "appIcon": "應用程式圖示",
+    "appIconDesc": "執行中的應用程式在 Dock 或工作列顯示的圖示。已安裝的應用程式在 Finder 中保留原有圖示",
+    "appIconOptions": {
+      "dark": "深色方塊",
+      "light": "淺色方塊"
+    },
     "translucentSidebar": "半透明側邊欄",
     "skin": "外觀主題",
     "accent": "強調色",

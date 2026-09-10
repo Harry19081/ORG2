@@ -49,9 +49,6 @@ function GitAuthenticationDialog({ onResolve }: GitAuthenticationDialogProps) {
       title={t("git.authDialog.title")}
       width={460}
       topDragZoneHeight={APP_TOP_DRAG_ZONE_HEIGHT}
-      okText={t("git.authDialog.openGitSettingsButton")}
-      cancelText={t("actions.cancel")}
-      onOk={handleOpenConnections}
       onCancel={handleCancel}
       onClose={handleCancel}
       maskClosable={false}

@@ -1,4 +1,4 @@
-import { useAtomValue, useStore } from "jotai";
+import { useAtomValue } from "jotai";
 import React, {
   useCallback,
   useEffect,
@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -28,8 +28,8 @@ import {
 import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import type { AppearanceMode } from "@src/config/appearance/globalThemes";
 import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { SignOutConfirmationModal } from "@src/features/Org2Cloud/SignOutConfirmationModal";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
-import { resetOrgEntitlementCoordinator } from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
 import {
   type DropdownEnginePosition,
   useDropdownEngine,
@@ -44,10 +44,12 @@ import {
   Layout01Icon,
   Login02Icon,
   Logout02Icon,
+  RocketIcon,
   Settings01Icon,
 } from "@src/icons";
 import { useAppearanceState } from "@src/modules/MainApp/Settings/sections/useAppearanceState";
 import { SIDEBAR_TOOLTIP_HOVER_DELAY } from "@src/scaffold/NavigationSidebar/config";
+import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
@@ -99,8 +101,9 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
 }) => {
   const { t } = useTranslation("navigation");
   const { t: tSettings } = useTranslation("settings");
+  const { t: tOnboarding } = useTranslation("onboarding");
   const { goToSettings } = useAppNavigation();
-  const store = useStore();
+  const [showSignOutConfirmation, setShowSignOutConfirmation] = useState(false);
   const signedIn = useAtomValue(org2CloudAuthAtom) !== null;
   const devModeEnabled = useAtomValue(devModeEnabledAtom);
   const utilityPanelRef = useRef<HTMLDivElement | null>(null);
@@ -218,6 +221,11 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
     [panelPosition.bottom, panelRef]
   );
 
+  const handleOpenOnboarding = useCallback(() => {
+    flushSync(closeAll);
+    window.dispatchEvent(new CustomEvent(TUTORIALS_OPEN_EVENT));
+  }, [closeAll]);
+
   const handleOpenSettings = useCallback(() => {
     closeAll();
     goToSettings();
@@ -251,9 +259,8 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
 
   const handleSignOut = useCallback(() => {
     closeAll();
-    resetOrgEntitlementCoordinator(store);
-    store.set(org2CloudAuthAtom, null);
-  }, [closeAll, store]);
+    setShowSignOutConfirmation(true);
+  }, [closeAll]);
 
   const handleSelectAppearanceMode = useCallback(
     async (mode: AppearanceMode) => {
@@ -456,6 +463,26 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
                 />
               </button>
               <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
+              {devModeEnabled && (
+                <button
+                  type="button"
+                  className={`${DROPDOWN_CLASSES.menuActionItem} gap-2`}
+                  onMouseEnter={() => setActiveSubmenu(null)}
+                  onFocus={() => setActiveSubmenu(null)}
+                  onClick={handleOpenOnboarding}
+                  aria-haspopup="dialog"
+                  data-testid="sidebar-menu-onboarding"
+                >
+                  <HugeiconsIcon
+                    icon={RocketIcon}
+                    size={DROPDOWN_ITEM.iconSize}
+                    className={MENU_ICON_CLASS_NAME}
+                  />
+                  <span className="truncate">
+                    {tOnboarding("discovery.title")}
+                  </span>
+                </button>
+              )}
               <button
                 type="button"
                 className={`${DROPDOWN_CLASSES.menuActionItem} justify-between`}
@@ -504,6 +531,11 @@ const SidebarSettingsMenuButton: React.FC<SidebarSettingsMenuButtonProps> = ({
           </div>,
           document.body
         )}
+      {showSignOutConfirmation && (
+        <SignOutConfirmationModal
+          onClose={() => setShowSignOutConfirmation(false)}
+        />
+      )}
       <SidebarSettingsMenuSubmenus
         activeSubmenu={activeSubmenu}
         appearanceMode={appearanceMode}

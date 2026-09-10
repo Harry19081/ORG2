@@ -821,15 +821,6 @@
     "devtools": "Sân chơi"
   },
   "toolbarPlusMenu": {
-    "addProviderKey": "Thêm khóa nhà cung cấp",
-    "addMcpServer": "Thêm máy chủ MCP",
-    "createSkill": "Tạo Skills",
-    "addDatabaseConnection": "Thêm kết nối cơ sở dữ liệu",
-    "addChannelOrService": "Thêm kênh hoặc dịch vụ",
-    "addGitConnection": "Thêm kết nối Git",
-    "addRoutine": "Thêm Routine",
-    "createRule": "Tạo quy tắc",
-    "importSkill": "Nhập Skills từ Apps khác",
     "addAgent": "Thêm Agent"
   },
   "toolbarEllipsis": {},

@@ -62,7 +62,6 @@
     "models": "Modele",
     "signingIn": "Logowanie...",
     "launchpad": "Panel startowy",
-    "ideaArea": "Strefa pomysłów",
     "changelog": "Changelog"
   },
   "sidebar": {
@@ -168,21 +167,8 @@
       "unknownRole": "Nieznana rola"
     },
     "guide": {
-      "trigger": "Otwórz przewodnik",
-      "title": "Rozpocznij pracę z ORGII",
       "startSession": "Rozpocznij sesję",
-      "close": "Zamknij przewodnik",
-      "localWorkspace": "Lokalny obszar roboczy",
-      "connectOrganization": "Połącz lub utwórz obszar roboczy",
-      "createOrganizationHint": "Wpisz nazwę obszaru roboczego i wybierz Utwórz. Po utworzeniu obszaru roboczego w chmurze przewodnik przejdzie dalej.",
-      "inviteTeammate": "Zaproś członka zespołu",
-      "inviteTeammateHint": "Utwórz tutaj link z zaproszeniem i wyślij go członkowi zespołu.",
-      "invitePermissionHint": "Tutaj możesz wyświetlić listę członków. Zaproszenie musi utworzyć administrator lub właściciel obszaru roboczego.",
-      "viewTeamActivity": "Wyświetl użycie zespołu",
-      "viewTeamActivityHint": "Runtime jest otwarty na karcie Członkowie. Wybierz członka zespołu, aby zobaczyć użycie Codex, Claude i Cursor. Jeśli nie ma danych, najpierw włącz synchronizację środowiska zespołu.",
-      "exploreProduct": "Poznaj główne strony",
-      "nextStep": "Następny krok",
-      "dismiss": "Odrzuć przewodnik"
+      "connectOrganization": "Połącz lub utwórz obszar roboczy"
     }
   },
   "launchpad": {
@@ -369,14 +355,6 @@
       "replayError": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
       "openParentButton": "Otwórz sesję źródłową od {{name}}"
     },
-    "continueCli": {
-      "headerButton": "Kontynuuj w {{agent}}",
-      "headerTooltip": "Otwórz ponownie tę sesję w {{agent}} w karcie terminala ({{command}})",
-      "notInstalled": "{{agent}} nie jest zainstalowany na tym komputerze",
-      "missingWorkspace": "Oryginalny folder sesji nie istnieje — {{agent}} może ją wznowić tylko z tego folderu",
-      "sourceMissing": "Oryginalne dane sesji nie znajdują się już na dysku",
-      "launchFailed": "Nie udało się otworzyć terminala {{agent}}"
-    },
     "openInApp": {
       "headerButton": "Otwórz w {{app}}",
       "headerTooltip": "Pokaż tę rozmowę w aplikacji {{app}} ({{link}})",
@@ -387,6 +365,8 @@
   "cloud": {
     "signIn": "Zaloguj się",
     "signOut": "Wyloguj się",
+    "signOutConfirmTitle": "Wylogować się?",
+    "signOutConfirmBody": "Aby uzyskać dostęp do konta, musisz zalogować się ponownie.",
     "signedInAs": "Zalogowano jako {{name}}",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "Sesja ORG2 Cloud wygasła. Zaloguj się ponownie, aby kontynuować.",

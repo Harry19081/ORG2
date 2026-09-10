@@ -62,7 +62,6 @@
     "models": "Modeller",
     "signingIn": "Giriş yapılıyor...",
     "launchpad": "Başlangıç Merkezi",
-    "ideaArea": "Fikir Alanı",
     "changelog": "Changelog"
   },
   "sidebar": {
@@ -168,21 +167,8 @@
       "unknownRole": "Bilinmeyen rol"
     },
     "guide": {
-      "trigger": "Kılavuzu aç",
-      "title": "ORGII'yi kullanmaya başlayın",
       "startSession": "Oturum başlat",
-      "close": "Kılavuzu kapat",
-      "localWorkspace": "Yerel çalışma alanı",
-      "connectOrganization": "Bir çalışma alanı bağlayın veya oluşturun",
-      "createOrganizationHint": "Bir çalışma alanı adı girin ve Oluştur’u seçin. Bulut çalışma alanı oluşturulduktan sonra rehber sonraki adıma geçer.",
-      "inviteTeammate": "Bir ekip arkadaşı davet edin",
-      "inviteTeammateHint": "Burada bir davet bağlantısı oluşturup ekip arkadaşınıza gönderin.",
-      "invitePermissionHint": "Üye listesini burada görüntüleyebilirsiniz. Daveti bir çalışma alanı yöneticisi veya sahibi oluşturmalıdır.",
-      "viewTeamActivity": "Ekip kullanımını görüntüle",
-      "viewTeamActivityHint": "Runtime Üyeler görünümünde açıldı. Codex, Claude ve Cursor kullanımını görmek için bir ekip üyesi seçin; veri yoksa önce ekip Runtime eşitlemesini etkinleştirin.",
-      "exploreProduct": "Ana sayfaları keşfedin",
-      "nextStep": "Sonraki adım",
-      "dismiss": "Rehberi kapat"
+      "connectOrganization": "Bir çalışma alanı bağlayın veya oluşturun"
     }
   },
   "launchpad": {
@@ -369,14 +355,6 @@
       "replayError": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
       "openParentButton": "{{name}} kaynak oturumunu aç"
     },
-    "continueCli": {
-      "headerButton": "{{agent}} içinde devam et",
-      "headerTooltip": "Bu oturumu bir terminal sekmesinde {{agent}} ile yeniden aç ({{command}})",
-      "notInstalled": "{{agent}} bu makinede yüklü değil",
-      "missingWorkspace": "Oturumun özgün klasörü artık yok — {{agent}} oturumu yalnızca oradan sürdürebilir",
-      "sourceMissing": "Özgün oturum verileri artık diskte değil",
-      "launchFailed": "{{agent}} terminali açılamadı"
-    },
     "openInApp": {
       "headerButton": "{{app}} içinde aç",
       "headerTooltip": "Bu konuşmayı {{app}} uygulamasında görüntüle ({{link}})",
@@ -387,6 +365,8 @@
   "cloud": {
     "signIn": "Giriş yap",
     "signOut": "Çıkış yap",
+    "signOutConfirmTitle": "Çıkış yapılsın mı?",
+    "signOutConfirmBody": "Hesabınıza erişmek için yeniden giriş yapmanız gerekecek.",
     "signedInAs": "{{name}} olarak giriş yapıldı",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "ORG2 Cloud oturumunuzun süresi doldu. Devam etmek için yeniden giriş yapın.",

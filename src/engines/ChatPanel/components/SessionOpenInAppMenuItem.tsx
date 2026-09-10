@@ -37,8 +37,7 @@ interface SessionOpenInAppMenuItemProps {
 /**
  * "Open in <App>" menu action for imported and managed native sessions.
  *
- * Where `SessionContinueCliHeaderExtras` hands the session to its CLI inside
- * an ORGII terminal, this hands it to the vendor's own app through a
+ * Opens the session in the vendor's own app through a
  * per-session deep link (`claude://resume?session=…`,
  * `codex://threads/…`) so the user can read or continue the very same
  * conversation in its native UI.

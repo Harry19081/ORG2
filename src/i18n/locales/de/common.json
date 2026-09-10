@@ -389,7 +389,6 @@
     "copyName": "Namen kopieren",
     "switchMethod": "Methode wechseln",
     "dismiss": "Ignorieren",
-    "comingSoon": "Demnächst",
     "clearSelection": "Auswahl löschen",
     "uiSettings": "Oberflächeneinstellungen",
     "clearAll": "Alles löschen",
@@ -755,7 +754,6 @@
   "filters": {
     "all": "Alle",
     "source": "Quelle",
-    "local": "Lokal",
     "member": "Mitglied",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Agent oder Agent-Team auswählen...",
@@ -1030,7 +1028,6 @@
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
-    "acceptAllMergeChanges": "Accept All Merge Changes (Stage resolved files)",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
     "discardAllUnstagedConfirm": "Discard all unstaged changes? This cannot be undone.",
@@ -1767,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Agent Session",
-        "workspace": "Workspace",
+        "workspace": "Arbeitsverzeichnisse",
+        "organization": "ORG / Arbeitsbereich",
         "quickNavigation": "Schnellnavigation",
         "editor": "Editor",
         "view": "Ansicht",
@@ -1801,6 +1799,7 @@
           "label": "Arbeitsverzeichnis wechseln"
         },
         "switchBranch": {
+          "repoLabel": "Branch von {{repoName}} wechseln",
           "label": "Zweig wechseln"
         },
         "addWorkspace": {

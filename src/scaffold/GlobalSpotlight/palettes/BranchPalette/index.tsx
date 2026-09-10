@@ -150,11 +150,9 @@ export const WorktreePalette: React.FC<WorktreePaletteProps> = ({
         })
         .map((worktree) => {
           const path = normalizeWorktreePath(worktree.path);
-          const label =
-            worktree.branch ||
-            (worktree.is_main
-              ? t("selectors.branch.labels.mainWorktree", "Main")
-              : path.split("/").pop() || path);
+          const label = worktree.is_main
+            ? "main"
+            : path.split("/").pop() || path;
           const isSelected = path === normalizedActivePath;
           const isRemoving = removingPaths.has(path);
           const displayPath = compactRepoPathForDisplay({ path });
@@ -171,7 +169,10 @@ export const WorktreePalette: React.FC<WorktreePaletteProps> = ({
               isCurrentSelection: mode === "switch" && isSelected,
               disabled: isRemoving,
               contextMenuCopy: { name: label, path },
-              searchText: `${label} ${displayPath}`,
+              worktreePath: path,
+              branch: worktree.branch || undefined,
+              searchText: `${label} ${worktree.branch ?? ""} ${displayPath}`,
+              rightLabel: worktree.branch || undefined,
               rightContent:
                 mode === "remove"
                   ? renderWorktreeTrashAction(worktree.path, isRemoving)
@@ -195,7 +196,6 @@ export const WorktreePalette: React.FC<WorktreePaletteProps> = ({
       removingPaths,
       renderWorktreeTrashAction,
       showPath,
-      t,
       worktrees,
     ]
   );

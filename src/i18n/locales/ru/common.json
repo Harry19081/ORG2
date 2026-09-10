@@ -389,7 +389,6 @@
     "copyName": "Копировать имя",
     "switchMethod": "Сменить способ",
     "dismiss": "Отклонить",
-    "comingSoon": "Скоро",
     "clearSelection": "Очистить выбор",
     "uiSettings": "Настройки интерфейса",
     "clearAll": "Очистить всё",
@@ -755,7 +754,6 @@
   "filters": {
     "all": "Все",
     "source": "Источник",
-    "local": "Локальные",
     "member": "Участник",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Выбрать Agent или Команду Agent...",
@@ -1030,7 +1028,6 @@
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
-    "acceptAllMergeChanges": "Accept All Merge Changes (Stage resolved files)",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
     "discardAllUnstagedConfirm": "Discard all unstaged changes? This cannot be undone.",
@@ -1767,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Сессия Agent",
-        "workspace": "Workspace",
+        "workspace": "Рабочие каталоги",
+        "organization": "Организация / Рабочее пространство",
         "quickNavigation": "Быстрая навигация",
         "editor": "Редактор",
         "view": "Вид",
@@ -1801,6 +1799,7 @@
           "label": "Сменить рабочий каталог"
         },
         "switchBranch": {
+          "repoLabel": "Переключить ветку {{repoName}}",
           "label": "Переключить ветку"
         },
         "addWorkspace": {

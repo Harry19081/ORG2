@@ -58,6 +58,7 @@ const GlobalSpotlightInner: React.FC<
   const {
     selectedRepoId,
     currentRepo,
+    repos,
     currentBranch: selectedBranchName,
     selectRepo,
     selectBranch,
@@ -143,6 +144,18 @@ const GlobalSpotlightInner: React.FC<
     setWorktreePickerOpen,
   });
 
+  const handleOpenRepoBranchPicker = useCallback(
+    (repoId?: string) => {
+      if (repoId) {
+        if (!repos.some((repo) => repo.id === repoId && repo.kind === "git"))
+          return;
+        if (repoId !== selectedRepoId) selectRepo(repoId);
+      }
+      handleOpenBranchPicker();
+    },
+    [handleOpenBranchPicker, repos, selectRepo, selectedRepoId]
+  );
+
   // ============ ALL HOOKS MUST BE CALLED UNCONDITIONALLY ============
   // These hooks are needed for normal mode, but must always be called
   // to satisfy React's rules of hooks (same order every render)
@@ -150,7 +163,7 @@ const GlobalSpotlightInner: React.FC<
     ...props,
     closeModal,
     onOpenWorkingDirectoryPicker: handleOpenWorkingDirectoryPicker,
-    onOpenBranchPicker: handleOpenBranchPicker,
+    onOpenBranchPicker: handleOpenRepoBranchPicker,
     onOpenEditorPalette: handleOpenEditorPalette,
     onOpenAgentSessionSearch: handleOpenAgentSessionSearch,
     onOpenAllSessionsSearch: handleOpenAllSessionsSearch,
@@ -178,7 +191,7 @@ const GlobalSpotlightInner: React.FC<
     onOpenWorkingDirectoryLayer: handleOpenWorkingDirectoryPicker,
     onOpenCollabOrgLayer: handleOpenCollabOrg,
     onOpenGitHubIssuesImportLayer: handleOpenGitHubIssuesImport,
-    onOpenBranchLayer: handleOpenBranchPicker,
+    onOpenBranchLayer: handleOpenRepoBranchPicker,
     onOpenWorktreeLayer: handleOpenWorktreePicker,
     onOpenEditorLayer: handleOpenEditorPalette,
     onOpenAgentSessionSearchLayer: handleOpenAgentSessionSearch,
@@ -408,7 +421,12 @@ const GlobalSpotlightInner: React.FC<
       onDeleteBranch={handleDeleteBranch}
       onCheckoutDetached={handleCheckoutDetached}
       repoId={effectiveCurrentRepoId ?? ""}
-      repoPath={activeWorktree?.path ?? currentRepoPath}
+      repoPath={
+        activeWorktree && activeWorktree.repoId === effectiveCurrentRepoId
+          ? activeWorktree.path
+          : currentRepoPath
+      }
+      repoName={currentRepo?.name}
       currentBranchName={selectedBranchName}
       asBody
       onModeChange={setEmbeddedBranchMode}

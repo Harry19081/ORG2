@@ -389,7 +389,6 @@
     "copyName": "Sao chép tên",
     "switchMethod": "Đổi phương thức",
     "dismiss": "Bỏ qua",
-    "comingSoon": "Sắp ra mắt",
     "clearSelection": "Xóa lựa chọn",
     "uiSettings": "Cài đặt giao diện",
     "clearAll": "Xóa tất cả",
@@ -755,7 +754,6 @@
   "filters": {
     "all": "Tất cả",
     "source": "Nguồn",
-    "local": "Cục bộ",
     "member": "Thành viên",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Chọn Agent hoặc Nhóm Agent...",
@@ -1030,7 +1028,6 @@
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
-    "acceptAllMergeChanges": "Accept All Merge Changes (Stage resolved files)",
     "toOrigin": "to origin",
     "discardChangesConfirm": "Discard changes to {{files}}? This cannot be undone.",
     "discardAllUnstagedConfirm": "Discard all unstaged changes? This cannot be undone.",
@@ -1767,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Phiên Agent",
-        "workspace": "Workspace",
+        "workspace": "Thư mục làm việc",
+        "organization": "Tổ chức / Không gian làm việc",
         "quickNavigation": "Điều hướng nhanh",
         "editor": "Trình chỉnh sửa",
         "view": "Chế độ xem",
@@ -1801,6 +1799,7 @@
           "label": "Chuyển thư mục làm việc"
         },
         "switchBranch": {
+          "repoLabel": "Chuyển nhánh của {{repoName}}",
           "label": "Chuyển nhánh"
         },
         "addWorkspace": {

@@ -62,7 +62,6 @@
     "models": "モデル",
     "signingIn": "サインイン中...",
     "launchpad": "ランチパッド",
-    "ideaArea": "アイデアエリア",
     "changelog": "Changelog"
   },
   "sidebar": {
@@ -168,21 +167,8 @@
       "unknownRole": "不明なロール"
     },
     "guide": {
-      "trigger": "ガイドを開く",
-      "title": "ORGII を使い始める",
       "startSession": "セッションを開始",
-      "close": "ガイドを閉じる",
-      "localWorkspace": "ローカルワークスペース",
-      "connectOrganization": "ワークスペースを接続または作成",
-      "createOrganizationHint": "ワークスペース名を入力して「作成」を選択してください。クラウドワークスペースの作成が完了すると次の手順に進みます。",
-      "inviteTeammate": "チームメンバーを招待",
-      "inviteTeammateHint": "ここで招待リンクを作成し、チームメンバーに送信します。",
-      "invitePermissionHint": "ここでメンバー一覧を確認できます。招待はワークスペースの管理者またはオーナーが作成する必要があります。",
-      "viewTeamActivity": "チームの使用状況を表示",
-      "viewTeamActivityHint": "「ランタイム > メンバー」を開きました。メンバーを選ぶと Codex、Claude、Cursor の使用状況を確認できます。データがない場合は、先にチームランタイム同期を有効にしてください。",
-      "exploreProduct": "主要画面を見る",
-      "nextStep": "次のステップ",
-      "dismiss": "ガイドを閉じる"
+      "connectOrganization": "ワークスペースを接続または作成"
     }
   },
   "launchpad": {
@@ -369,14 +355,6 @@
       "replayError": "Full replay is not available for this session. Ask the owner to share the replay, then retry.",
       "openParentButton": "{{name}} の元セッションを開く"
     },
-    "continueCli": {
-      "headerButton": "{{agent}} で続行",
-      "headerTooltip": "ターミナルタブで {{agent}} を使ってこのセッションを再開します（{{command}}）",
-      "notInstalled": "{{agent}} はこのマシンにインストールされていません",
-      "missingWorkspace": "セッションの元のフォルダが存在しません — {{agent}} は元のフォルダからのみ再開できます",
-      "sourceMissing": "元のセッションデータがディスク上に見つかりません",
-      "launchFailed": "{{agent}} ターミナルの起動に失敗しました"
-    },
     "openInApp": {
       "headerButton": "{{app}} で開く",
       "headerTooltip": "この会話を {{app}} アプリで表示します（{{link}}）",
@@ -387,6 +365,8 @@
   "cloud": {
     "signIn": "ログイン",
     "signOut": "ログアウト",
+    "signOutConfirmTitle": "ログアウトしますか？",
+    "signOutConfirmBody": "アカウントにアクセスするには、再度ログインする必要があります。",
     "signedInAs": "{{name}} としてログイン中",
     "signedInToast": "ORG2 クラウドにサインインしました",
     "sessionExpired": "ORG2 Cloud のセッションが期限切れです。続行するには再度サインインしてください。",

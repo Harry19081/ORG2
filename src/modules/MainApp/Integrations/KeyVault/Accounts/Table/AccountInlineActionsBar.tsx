@@ -10,7 +10,10 @@ import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import { AccountStatusIndicator } from "@src/modules/shared/keyVault/AccountStatusIndicator";
 
 import { InlineCardFooter } from "../../shared/InlineCardPrimitives";
-import { shouldShowCodexReconnect } from "./accountInlineActions";
+import {
+  areAccountRefreshActionsDisabled,
+  shouldShowCodexReconnect,
+} from "./accountInlineActions";
 
 interface AccountInlineActionsBarProps {
   account: KeyVaultAccount;
@@ -48,6 +51,10 @@ export const AccountInlineActionsBar: React.FC<
 
   const showEdit = !account.listingId && account.hasLocalKey && onEdit;
   const showCodexReconnect = shouldShowCodexReconnect(account);
+  const anyRefreshing = areAccountRefreshActionsDisabled(
+    refreshing,
+    refreshingModels
+  );
   const resolvedRefreshLabel = refreshLabel ?? tCommon("actions.refresh");
   return (
     <InlineCardFooter>
@@ -69,7 +76,7 @@ export const AccountInlineActionsBar: React.FC<
           variant="secondary"
           size="small"
           onClick={handleRefreshClick}
-          disabled={refreshing}
+          disabled={anyRefreshing}
           icon={
             <HugeiconsIcon
               icon={Refresh04Icon}
@@ -88,7 +95,7 @@ export const AccountInlineActionsBar: React.FC<
           variant="secondary"
           size="small"
           onClick={handleRefreshModelsClick}
-          disabled={refreshingModels}
+          disabled={anyRefreshing}
           icon={
             <HugeiconsIcon
               icon={Refresh04Icon}

@@ -20,7 +20,7 @@ import { perAppStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/st
  */
 const SPOTLIGHT_CALLBACKS = {
   onRepoClick: () => openWorkingDirectorySpotlight("switch"),
-  onBranchClick: openBranchSpotlight,
+  onBranchClick: () => openBranchSpotlight(),
   onWorktreeClick: openWorktreeSpotlight,
 } as const;
 

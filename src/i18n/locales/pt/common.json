@@ -389,7 +389,6 @@
     "copyName": "Copiar nome",
     "switchMethod": "Alterar método",
     "dismiss": "Dispensar",
-    "comingSoon": "Em breve",
     "clearSelection": "Limpar seleção",
     "uiSettings": "Configurações da interface",
     "clearAll": "Limpar tudo",
@@ -755,7 +754,6 @@
   "filters": {
     "all": "Todos",
     "source": "Origem",
-    "local": "Local",
     "member": "Membro",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Selecionar um Agent ou Equipe Agent...",
@@ -1030,7 +1028,6 @@
     "switchToTreeView": "Alternar para visualização em árvore",
     "switchToListView": "Alternar para visualização em lista",
     "discardChanges": "Descartar alterações",
-    "acceptAllMergeChanges": "Aceitar todas as alterações de merge (adicionar ao stage os arquivos resolvidos)",
     "toOrigin": "para origin",
     "discardChangesConfirm": "Descartar alterações em {{files}}? Esta ação não pode ser desfeita.",
     "discardAllUnstagedConfirm": "Descartar todas as alterações fora do stage? Esta ação não pode ser desfeita.",
@@ -1767,7 +1764,8 @@
       },
       "groups": {
         "agentSession": "Sessão de Agent",
-        "workspace": "Workspace",
+        "workspace": "Diretórios de trabalho",
+        "organization": "ORG / Espaço de trabalho",
         "quickNavigation": "Navegação rápida",
         "editor": "Editor",
         "view": "Visualização",
@@ -1801,6 +1799,7 @@
           "label": "Mudar diretório de trabalho"
         },
         "switchBranch": {
+          "repoLabel": "Alternar a branch de {{repoName}}",
           "label": "Alternar ramificação"
         },
         "addWorkspace": {

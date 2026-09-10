@@ -37,7 +37,7 @@ export interface UseSpotlightEffectsOptions {
   onOpenGitHubIssuesImportLayer?: (
     context?: SpotlightGitHubIssuesImportContext
   ) => void;
-  onOpenBranchLayer?: () => void;
+  onOpenBranchLayer?: (repoId?: string) => void;
   onOpenWorktreeLayer?: () => void;
   onOpenEditorLayer?: (
     query: string,
@@ -118,7 +118,7 @@ export function useSpotlightEffects(options: UseSpotlightEffectsOptions): void {
     } else if (initialQuery.layer?.kind === "githubIssuesImport") {
       onOpenGitHubIssuesImportLayer?.(initialQuery.layer.context);
     } else if (initialQuery.layer?.kind === "branch") {
-      onOpenBranchLayer?.();
+      onOpenBranchLayer?.(initialQuery.layer.repoId);
     } else if (initialQuery.layer?.kind === "worktree") {
       onOpenWorktreeLayer?.();
     } else if (initialQuery.layer?.kind === "editor") {
