@@ -10,6 +10,7 @@ import {
   ListTodoIcon,
   MessageAdd02Icon,
   PencilEdit02Icon,
+  Settings02Icon,
 } from "@src/icons";
 import { type ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
@@ -39,7 +40,9 @@ const CollapsedTabHeadingLabel: React.FC<{ tab: ChatPanelTab }> = ({ tab }) => {
             ? tab.managementSection === WORK_MANAGEMENT_SECTION.KANBAN
               ? KanbanIcon
               : ListTodoIcon
-            : undefined;
+            : tab.type === "organization"
+              ? Settings02Icon
+              : undefined;
 
   return (
     <span className="flex min-w-0 items-center gap-2 px-1 text-[13px] font-medium text-text-1">
