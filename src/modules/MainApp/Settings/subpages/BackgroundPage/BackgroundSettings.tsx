@@ -7,7 +7,7 @@ import {
   PanelHeader,
   ScrollFadeContainer,
 } from "@/src/modules/shared/layouts/blocks";
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 import Select from "@src/components/Select";
@@ -26,13 +26,9 @@ import {
   MIN_SIDEBAR_OPACITY,
 } from "@src/store/ui/backgroundConfigAtom";
 
-import { ColorSection, ImageSection } from "./components";
-import { useBackgroundSettings } from "./hooks";
-import {
-  BACKGROUND_CONTENT_SOURCE,
-  type BackgroundContentSource,
-  type BackgroundSettingsProps,
-} from "./types";
+import { ColorSection } from "./components/ColorSection";
+import { useBackgroundSettings } from "./hooks/useBackgroundSettings";
+import type { BackgroundSettingsProps } from "./types";
 
 export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({
   showHeader = true,
@@ -46,45 +42,19 @@ export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({
     config,
     appearanceMode,
     appearanceModeOptions,
-    globalThemeId,
-    themeOptions,
-    isOptimizing,
-    images,
-    storageInfo,
-
+    skinOptions,
+    activeSkinId,
+    handleSkinChange,
     // Handlers
     handleBack,
-    handleImageSelect,
     handleColorSelect,
     handleSelectCustomPaletteHex,
     handleAddCustomPaletteHex,
     handleRemoveCustomPaletteHex,
-    handleBlurChange,
     handlePageOpacityChange,
     handleSidebarOpacityChange,
-    handleUpload,
-    handleDeleteCustomImage,
     handleAppearanceModeChange,
-    handleThemePresetChange,
   } = useBackgroundSettings();
-
-  const initialBackgroundSource: BackgroundContentSource =
-    !config.backgroundColorId &&
-    !config.backgroundColor &&
-    !config.glass &&
-    !!config.imageUrl
-      ? BACKGROUND_CONTENT_SOURCE.IMAGES
-      : BACKGROUND_CONTENT_SOURCE.COLORS;
-  const [backgroundContentSource, setBackgroundContentSource] =
-    useState<BackgroundContentSource>(initialBackgroundSource);
-
-  const handleBackgroundSourceChange = useCallback(
-    (value: string | number | (string | number)[]) => {
-      const next = String(value) as BackgroundContentSource;
-      setBackgroundContentSource(next);
-    },
-    []
-  );
 
   const showAppearanceChrome = !embedded;
 
@@ -101,11 +71,11 @@ export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({
               style={SECTION_CONTROL_STYLE}
             />
           </SectionRow>
-          <SectionRow compact label={t("general.themePreset")}>
+          <SectionRow compact label={t("general.skins")}>
             <Select
-              value={globalThemeId}
-              onChange={handleThemePresetChange}
-              options={themeOptions}
+              value={activeSkinId}
+              onChange={handleSkinChange}
+              options={skinOptions}
               showSearch
               size="default"
               style={SECTION_CONTROL_STYLE}
@@ -115,49 +85,14 @@ export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({
       )}
 
       <SectionContainer title={t("background.title")}>
-        <SectionRow label={t("background.source")}>
-          <Select
-            value={backgroundContentSource}
-            onChange={handleBackgroundSourceChange}
-            options={[
-              {
-                label: t("background.colors"),
-                value: BACKGROUND_CONTENT_SOURCE.COLORS,
-              },
-              {
-                label: t("background.images"),
-                value: BACKGROUND_CONTENT_SOURCE.IMAGES,
-              },
-            ]}
-            size="default"
-            style={SECTION_CONTROL_STYLE}
-          />
-        </SectionRow>
-
-        {backgroundContentSource === BACKGROUND_CONTENT_SOURCE.COLORS && (
-          <ColorSection
-            config={config}
-            translationNamespace={translationNamespace}
-            onColorSelect={handleColorSelect}
-            onSelectCustomHex={handleSelectCustomPaletteHex}
-            onAddCustomHex={handleAddCustomPaletteHex}
-            onRemoveCustomHex={handleRemoveCustomPaletteHex}
-          />
-        )}
-
-        {backgroundContentSource === BACKGROUND_CONTENT_SOURCE.IMAGES && (
-          <ImageSection
-            config={config}
-            images={images}
-            storagePath={storageInfo.path}
-            isOptimizing={isOptimizing}
-            translationNamespace={translationNamespace}
-            onBlurChange={handleBlurChange}
-            onImageSelect={handleImageSelect}
-            onUpload={handleUpload}
-            onDeleteCustomImage={handleDeleteCustomImage}
-          />
-        )}
+        <ColorSection
+          config={config}
+          translationNamespace={translationNamespace}
+          onColorSelect={handleColorSelect}
+          onSelectCustomHex={handleSelectCustomPaletteHex}
+          onAddCustomHex={handleAddCustomPaletteHex}
+          onRemoveCustomHex={handleRemoveCustomPaletteHex}
+        />
 
         <SectionRow label={t("background.pageOpacity")}>
           <div className="min-w-0" style={SECTION_CONTROL_STYLE}>
@@ -165,7 +100,7 @@ export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({
               min={MIN_PAGE_OPACITY}
               max={MAX_PAGE_OPACITY}
               value={config.pageOpacity ?? DEFAULT_PAGE_OPACITY}
-              onChange={handlePageOpacityChange}
+              onValueChange={handlePageOpacityChange}
               noPadding
             />
           </div>
@@ -177,7 +112,7 @@ export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({
               min={MIN_SIDEBAR_OPACITY}
               max={MAX_SIDEBAR_OPACITY}
               value={config.sidebarOpacity ?? DEFAULT_SIDEBAR_OPACITY}
-              onChange={handleSidebarOpacityChange}
+              onValueChange={handleSidebarOpacityChange}
               noPadding
             />
           </div>
@@ -202,7 +137,7 @@ export const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({
         />
       )}
 
-      <ScrollFadeContainer className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide">
+      <ScrollFadeContainer className="scrollbar-hide min-h-0 flex-1 overflow-y-auto px-6 pb-6">
         <div
           className={`${DETAIL_PANEL_TOKENS.contentWidth} flex flex-col gap-3`}
         >

@@ -8,7 +8,6 @@ import { useUnifiedModelPaletteItems } from "./useUnifiedModelPaletteItems";
 import { useUnifiedModelPaletteSelection } from "./useUnifiedModelPaletteSelection";
 
 export { MODEL_SECTION } from "./modelSection";
-export type { ModelSection } from "./modelSection";
 
 export function useUnifiedModelPalette({
   isOpen,
@@ -17,6 +16,7 @@ export function useUnifiedModelPalette({
   onConfigChange,
   dispatchCategoryOverride,
   cliAgentTypeOverride,
+  keyFirst = false,
 }: Pick<
   UnifiedModelPaletteProps,
   | "isOpen"
@@ -25,7 +25,14 @@ export function useUnifiedModelPalette({
   | "onConfigChange"
   | "dispatchCategoryOverride"
   | "cliAgentTypeOverride"
->) {
+> & {
+  /**
+   * Run the two-column flow key → model instead of model → key. Only the
+   * spotlight palette exposes the toggle; the dropdown variant stays
+   * model-first.
+   */
+  keyFirst?: boolean;
+}) {
   const { t: tCommon } = useTranslation();
   const modelAliasVersion = useModelAliasRegistryVersion();
 
@@ -66,9 +73,14 @@ export function useUnifiedModelPalette({
     handleRecentSelect,
     reselectVariant,
     handleBack,
+    selectedKeyAccountId,
+    previewKey,
+    handleKeySelect,
+    handleKeyModelSelect,
   } = useUnifiedModelPaletteSelection({
     isOpen,
     isCliAgent,
+    keyFirst,
     accountLookupSize: accountLookup.size,
     accounts,
     advancedConfig,
@@ -86,6 +98,8 @@ export function useUnifiedModelPalette({
     recentHeader,
     allHeader,
     sourceItems,
+    keyItems,
+    keyModelItems,
   } = useUnifiedModelPaletteItems({
     advancedConfig,
     accounts,
@@ -93,6 +107,7 @@ export function useUnifiedModelPalette({
     orgiiModelSet,
     orgiiCategoryIds,
     orgiiPoolEnabled,
+    isCliAgent,
     recentEntries,
     sourceOptions,
     selectedModelId,
@@ -102,6 +117,9 @@ export function useUnifiedModelPalette({
     handleSourceSelect,
     handleRecentSelect,
     reselectVariant,
+    selectedKeyAccountId,
+    handleKeySelect,
+    handleKeyModelSelect,
     saveKey,
     modelAliasVersion,
     tCommon,
@@ -121,6 +139,10 @@ export function useUnifiedModelPalette({
     recentHeader,
     allHeader,
     sourceItems,
+    keyItems,
+    keyModelItems,
+    selectedKeyAccountId,
+    previewKey,
     previewModel,
     handleModelPreview,
     handleBack,

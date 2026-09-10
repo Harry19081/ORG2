@@ -1,0 +1,159 @@
+// Terminal View Component Styles
+// Uses unique class names to avoid conflicts with other terminal components
+//
+// CSS Rendering Fixes for XTerm.js WebGL/Canvas:
+// - Position: relative creates new stacking context for WebGL
+// - No transforms on container - let XTerm handle GPU acceleration
+// - Explicit dimensions ensure proper canvas initialization
+
+.xterm-terminal-view {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  // Create stacking context without transforms (transforms break canvas measurement)
+  isolation: isolate;
+  z-index: 0;
+
+  .xterm-terminal-container {
+    position: absolute;
+    // Use inset values to create padding OUTSIDE the FitAddon measurement area
+    // This ensures FitAddon measures the actual usable space, not space + padding
+    top: 8px;
+    left: 12px;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    // Ensure container participates in layout
+    display: flex;
+    flex-direction: column;
+
+    // XTerm.js container
+    .xterm {
+      flex: 1;
+      height: 100%;
+      padding: 0;
+      background: var(--cm-editor-background) !important;
+    }
+
+    .xterm-screen,
+    .xterm-viewport {
+      background: var(--cm-editor-background) !important;
+    }
+
+    // XTerm viewport - the scrollable area
+    .xterm-viewport {
+      overflow-y: auto !important;
+    }
+
+    // XTerm screen - the canvas/WebGL container
+    .xterm-screen {
+      padding: 0;
+    }
+
+    // WebGL canvas needs explicit sizing
+    canvas {
+      display: block;
+    }
+
+    // XTerm helper spans
+    .xterm-helper-textarea {
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+    }
+
+    // Character measurement - critical for proper rendering
+    // Note: letter-spacing is now controlled by XTerm.js options (terminalLetterSpacing atom)
+    .xterm-char-measure-element {
+      display: inline-block !important;
+      visibility: visible !important;
+    }
+
+    // Text rendering for canvas fallback
+    .xterm-text-layer {
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    // Cursor visibility
+    .xterm-cursor-layer {
+      z-index: 10;
+    }
+
+    .xterm-cursor-bar {
+      background-color: var(
+        --terminal-caret,
+        var(--color-primary-6)
+      ) !important;
+      border-left: 2px solid var(--terminal-caret, var(--color-primary-6)) !important;
+      box-shadow: none !important;
+    }
+
+    .xterm-cursor-outline {
+      border-color: var(--terminal-caret, var(--color-primary-6)) !important;
+    }
+
+    .xterm-selection div {
+      background: var(--terminal-selection, var(--color-fill-2)) !important;
+      opacity: 1 !important;
+    }
+  }
+}
+
+.chat-panel-terminal-core {
+  // Match the *visible* chat-pane color (possibly tinted by the app backdrop
+  // via `color-mix()` when page opacity < 100%). The xterm WebGL fill is
+  // driven at runtime from the same computed background so the sub-cell
+  // remainder and the painted cells stay seam-free.
+  .terminal-content-area,
+  .terminal-session-wrapper,
+  .xterm-terminal-view,
+  .xterm-terminal-container,
+  .xterm,
+  .xterm-screen,
+  .xterm-viewport {
+    background: var(--color-chat-pane) !important;
+  }
+
+  // Push all padding to the outer wrapper so the WebGL canvas fills its
+  // container exactly and FitAddon measures the true text area.
+  .terminal-session-wrapper {
+    border-radius: 0;
+    padding: 8px 12px;
+    box-sizing: border-box;
+  }
+
+  .xterm-terminal-view {
+    padding: 0;
+  }
+
+  .xterm-terminal-container {
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .xterm,
+  .xterm-viewport,
+  .xterm-screen {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  // macOS reserves a scrollbar gutter on `overflow-y: auto`, which shows as a
+  // dead strip on the right of the WebGL canvas. Suppress the DOM scrollbar so
+  // FitAddon can measure the full width.
+  .xterm-viewport {
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+  }
+}

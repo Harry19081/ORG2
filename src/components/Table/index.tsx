@@ -55,19 +55,32 @@ import { TableBody } from "./TableBody";
 import { TableColGroup } from "./TableColGroup";
 import { TableHeader } from "./TableHeader";
 import "./index.scss";
-import type { TableProps } from "./types";
+import type { TableProps, TableSorting } from "./types";
 import { useTableColumns } from "./useTableColumns";
 
-export type { TableColumn, TablePagination, TableProps } from "./types";
+export type { TableColumn } from "./types";
+
+function fromPublicSorting(value: TableSorting | null): SortingState {
+  return value ? [{ id: value.column, desc: value.order === "descend" }] : [];
+}
+
+function toPublicSorting(value: SortingState): TableSorting | null {
+  const first = value[0];
+  return first
+    ? { column: first.id, order: first.desc ? "descend" : "ascend" }
+    : null;
+}
 
 function TableComponent<T = unknown>(
   {
     columns,
     data = [],
     rowKey: _rowKey = "id",
-    loading: _loading = false,
+    loading = false,
     showHeader = true,
     pagination,
+    sorting: controlledSorting,
+    onSortingChange,
     onChange,
     rowSelection,
     hover = true,
@@ -89,7 +102,21 @@ function TableComponent<T = unknown>(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const { isDark } = useCurrentTheme();
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [internalSorting, setInternalSorting] = useState<SortingState>([]);
+  const sorting =
+    controlledSorting === undefined
+      ? internalSorting
+      : fromPublicSorting(controlledSorting);
+  const handleSortingChange = useCallback(
+    (updater: SortingState | ((previous: SortingState) => SortingState)) => {
+      const next = typeof updater === "function" ? updater(sorting) : updater;
+      if (controlledSorting === undefined) {
+        setInternalSorting(next);
+      }
+      onSortingChange?.(toPublicSorting(next));
+    },
+    [controlledSorting, onSortingChange, sorting]
+  );
   const [internalExpandedRows, setInternalExpandedRows] = useState<Set<string>>(
     new Set()
   );
@@ -178,7 +205,7 @@ function TableComponent<T = unknown>(
 
   const tanstackColumns = useTableColumns(columns, rowSelection);
 
-  // eslint-disable-next-line react-hooks/incompatible-library
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table returns imperative helpers that React Compiler cannot memoize safely; keep this component outside compiler memoization
   const table = useReactTable({
     data,
     columns: tanstackColumns,
@@ -190,7 +217,7 @@ function TableComponent<T = unknown>(
       rowSelection: rowSelectionState,
       pagination: paginationState,
     },
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelectionState,
@@ -435,6 +462,7 @@ function TableComponent<T = unknown>(
               />
             )}
             <TableBody
+              loading={loading}
               rows={tableRows}
               columns={columns}
               hasRowSelection={!!rowSelection}

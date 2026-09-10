@@ -1,237 +1,157 @@
 /**
- * useAsyncData Hook
+ * Typed keyed async query with latest-generation-wins semantics.
  *
- * Generic hook for async data fetching with loading/error state management.
- * Consolidates the common pattern found across 60+ hooks in the codebase.
- *
- * Features:
- * - Unified loading/error/data state management
- * - Auto-load on mount with dependency tracking
- * - Success/error callbacks
- * - Manual refresh capability
- * - Type-safe with generics
+ * A stable key controls automatic querying, while refresh starts a new
+ * generation for that same key. Disabled queries stay at initial data.
  *
  * @example
  * const { data, loading, error, refresh } = useAsyncData({
- *   fetcher: () => api.fetchItems(),
- *   initialData: [],
- *   errorPrefix: "Failed to load items",
+ *   key: repoPath,
+ *   query: detectRepo,
+ *   initialData: EMPTY_RESULT,
+ *   enabled: Boolean(repoPath),
  * });
  */
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useMounted } from "@src/hooks/lifecycle/useMounted";
 
-// ============================================
-// Type Definitions
-// ============================================
+export type AsyncDataErrorMapper = (error: unknown) => string | null;
 
-export interface UseAsyncDataOptions<T> {
-  /** Async function to fetch data */
-  fetcher: () => Promise<T>;
-  /** Auto-load on mount (default: true) */
-  autoLoad?: boolean;
-  /** Dependencies that trigger refetch when changed */
-  deps?: unknown[];
-  /** Success callback */
-  onSuccess?: (data: T) => void;
-  /** Error callback */
-  onError?: (error: Error) => void;
-  /** Initial data value */
-  initialData?: T;
-  /** Error message prefix for generic errors */
-  errorPrefix?: string;
-  /** Skip fetch if condition is false */
+export interface UseAsyncDataOptions<TData, TKey> {
+  key: TKey;
+  query: (key: TKey) => Promise<TData>;
+  initialData: TData;
   enabled?: boolean;
+  fallbackData?: TData | ((error: unknown) => TData);
+  mapError?: AsyncDataErrorMapper;
+  /** Fires once per query that commits successfully (latest generation only). */
+  onSuccess?: (data: TData, key: TKey) => void;
+  /**
+   * Fires once per query failure that commits, with the mapped message.
+   * Skipped when `mapError` returns null (the failure is suppressed).
+   */
+  onError?: (message: string, error: unknown, key: TKey) => void;
 }
 
-export interface UseAsyncDataReturn<T> {
-  /** The fetched data */
-  data: T;
-  /** Loading state */
+export interface UseAsyncDataReturn<TData> {
+  data: TData;
   loading: boolean;
-  /** Error message (null if no error) */
   error: string | null;
-  /** Manually trigger a refresh */
-  refresh: () => Promise<void>;
-  /** Directly update the data state */
-  setData: Dispatch<SetStateAction<T>>;
-  /** Clear the error state */
-  clearError: () => void;
+  refresh: () => void;
 }
 
-// ============================================
-// Hook Implementation
-// ============================================
+interface AsyncDataSnapshot<TData, TKey> {
+  key: TKey;
+  generation: number;
+  data: TData;
+  error: string | null;
+}
 
-export function useAsyncData<T>(
-  options: UseAsyncDataOptions<T>
-): UseAsyncDataReturn<T> {
-  const {
-    fetcher,
-    autoLoad = true,
-    deps = [],
-    onSuccess,
-    onError,
-    initialData,
-    errorPrefix = "Failed to load data",
-    enabled = true,
-  } = options;
+function defaultMapError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
-  // State
-  const [data, setData] = useState<T>(initialData as T);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+/**
+ * Runs one async query per stable key/generation. A refresh starts a new
+ * generation for the same key, and only the latest generation may commit.
+ */
+export function useAsyncData<TData, TKey>({
+  key,
+  query,
+  initialData,
+  enabled = true,
+  fallbackData = initialData,
+  mapError = defaultMapError,
+  onSuccess,
+  onError,
+}: UseAsyncDataOptions<TData, TKey>): UseAsyncDataReturn<TData> {
+  const [generation, setGeneration] = useState(0);
+  const [snapshot, setSnapshot] = useState<AsyncDataSnapshot<
+    TData,
+    TKey
+  > | null>(null);
+  const latestGenerationRef = useRef(0);
+  const queryRef = useRef(query);
+  const fallbackDataRef = useRef(fallbackData);
+  const mapErrorRef = useRef(mapError);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
   const mountedRef = useMounted();
 
-  // Refresh function
-  const refresh = useCallback(async () => {
-    if (!enabled) {
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetcher();
-
-      if (mountedRef.current) {
-        setData(result);
-        onSuccess?.(result);
-      }
-    } catch (err) {
-      if (mountedRef.current) {
-        const message =
-          err instanceof Error ? err.message : `${errorPrefix}: ${String(err)}`;
-        setError(message);
-        onError?.(err instanceof Error ? err : new Error(message));
-      }
-    } finally {
-      if (mountedRef.current) {
-        setLoading(false);
-      }
-    }
-  }, [fetcher, enabled, errorPrefix, onSuccess, onError, mountedRef]);
-
-  // Clear error helper
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  // Auto-load on mount and when deps change
   useEffect(() => {
-    if (autoLoad && enabled) {
-      refresh();
+    queryRef.current = query;
+    fallbackDataRef.current = fallbackData;
+    mapErrorRef.current = mapError;
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+  }, [fallbackData, mapError, onError, onSuccess, query]);
+
+  const refresh = useCallback(() => {
+    if (mountedRef.current) {
+      setGeneration((current) => current + 1);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLoad, enabled, ...deps]);
+  }, [mountedRef]);
+
+  useEffect(() => {
+    const requestGeneration = ++latestGenerationRef.current;
+
+    if (!enabled) return;
+
+    // Two-argument `then` keeps a throwing `onSuccess` out of the error branch.
+    void queryRef.current(key).then(
+      (data) => {
+        if (
+          mountedRef.current &&
+          latestGenerationRef.current === requestGeneration
+        ) {
+          setSnapshot({ key, generation, data, error: null });
+          onSuccessRef.current?.(data, key);
+        }
+      },
+      (error: unknown) => {
+        if (
+          !mountedRef.current ||
+          latestGenerationRef.current !== requestGeneration
+        ) {
+          return;
+        }
+
+        const fallback = fallbackDataRef.current;
+        const data =
+          typeof fallback === "function"
+            ? (fallback as (failure: unknown) => TData)(error)
+            : fallback;
+        const message = mapErrorRef.current(error);
+        setSnapshot({ key, generation, data, error: message });
+        if (message !== null) onErrorRef.current?.(message, error, key);
+      }
+    );
+
+    return () => {
+      if (latestGenerationRef.current === requestGeneration) {
+        latestGenerationRef.current += 1;
+      }
+    };
+  }, [enabled, generation, key, mountedRef]);
+
+  const current =
+    enabled &&
+    snapshot?.generation === generation &&
+    Object.is(snapshot.key, key)
+      ? snapshot
+      : null;
 
   return {
-    data,
-    loading,
-    error,
+    data: current?.data ?? initialData,
+    loading: enabled && current === null,
+    error: current?.error ?? null,
     refresh,
-    setData,
-    clearError,
   };
 }
 
 // ============================================
 // Utility: useAsyncAction (for mutations)
 // ============================================
-
-export interface UseAsyncActionOptions {
-  /** Success callback */
-  onSuccess?: () => void;
-  /** Error callback */
-  onError?: (error: Error) => void;
-  /** Error message prefix */
-  errorPrefix?: string;
-}
-
-export interface UseAsyncActionReturn<TArgs extends unknown[], TResult> {
-  /** Execute the action */
-  execute: (...args: TArgs) => Promise<TResult | null>;
-  /** Loading state */
-  loading: boolean;
-  /** Error message */
-  error: string | null;
-  /** Clear error */
-  clearError: () => void;
-}
-
-/**
- * Hook for async actions/mutations (create, update, delete operations)
- *
- * @example
- * const { execute: createItem, loading } = useAsyncAction(
- *   async (name: string) => {
- *     return await api.createItem({ name });
- *   },
- *   { onSuccess: refresh }
- * );
- */
-export function useAsyncAction<TArgs extends unknown[], TResult>(
-  action: (...args: TArgs) => Promise<TResult>,
-  options: UseAsyncActionOptions = {}
-): UseAsyncActionReturn<TArgs, TResult> {
-  const { onSuccess, onError, errorPrefix = "Action failed" } = options;
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const mountedRef = useMounted();
-
-  const execute = useCallback(
-    async (...args: TArgs): Promise<TResult | null> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const result = await action(...args);
-
-        if (mountedRef.current) {
-          onSuccess?.();
-        }
-
-        return result;
-      } catch (err) {
-        if (mountedRef.current) {
-          const message =
-            err instanceof Error
-              ? err.message
-              : `${errorPrefix}: ${String(err)}`;
-          setError(message);
-          onError?.(err instanceof Error ? err : new Error(message));
-        }
-        return null;
-      } finally {
-        if (mountedRef.current) {
-          setLoading(false);
-        }
-      }
-    },
-    [action, errorPrefix, onSuccess, onError, mountedRef]
-  );
-
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  return {
-    execute,
-    loading,
-    error,
-    clearError,
-  };
-}
 
 export default useAsyncData;

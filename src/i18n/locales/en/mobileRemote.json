@@ -1,0 +1,180 @@
+{
+  "auth": {
+    "title": "Sign in to use Mobile Remote",
+    "subtitle": "Your ORG2 Cloud identity protects pairing, sessions, and desktop controls",
+    "checking": "Checking your account",
+    "redirecting": "Opening secure sign-in",
+    "exchanging": "Finishing sign-in",
+    "wait": "This should only take a moment",
+    "signIn": "Sign in to ORG2 Cloud",
+    "cancel": "Cancel and return to sign-in",
+    "browserWait": "Complete sign-in in your browser, or cancel to try again",
+    "errorTitle": "Sign-in could not be completed",
+    "retry": "Try again"
+  },
+  "welcome": {
+    "title": "Mobile Remote",
+    "subtitle": "Control Agents on your desktop",
+    "scanQr": "Scan or paste pairing code"
+  },
+  "pairing": {
+    "scanCamera": "Scan QR code",
+    "cameraPreview": "Camera preview",
+    "scanning": "Point the camera at the pairing QR code on your desktop",
+    "cancelScan": "Cancel scan",
+    "cameraDenied": "Camera access was denied. Allow camera access for ORG2 Remote in Settings, or paste the pairing code",
+    "cameraUnavailable": "Camera unavailable. In the simulator, paste the pairing code instead",
+    "scanTimeout": "Scan timed out and the camera was closed. Scan again or paste the pairing code",
+    "scanFailed": "Scan failed. Try again or paste the pairing code",
+    "scanTitle": "Pair with desktop",
+    "scanHint": "Scan the QR code in desktop Settings or paste its payload. The public relay works over 4G and 5G",
+    "urlPlaceholder": "Paste the desktop pairing payload, or a ws:// / wss:// URL",
+    "connect": "Connect",
+    "sasTitle": "Confirm pairing",
+    "sasHint": "Verify the phrase on your desktop screen:",
+    "confirm": "Confirm",
+    "connectingTitle": "Connecting",
+    "connectingSubtitle": "Waiting for desktop phrase confirmation and a secure channel…",
+    "errors": {
+      "empty": "Enter a WebSocket URL or QR payload",
+      "invalid": "Invalid QR or URL — scan the code from desktop Settings",
+      "unsupportedVersion": "Unsupported pairing payload version"
+    }
+  },
+  "tabs": {
+    "sessions": "Sessions",
+    "devices": "Devices",
+    "settings": "Settings"
+  },
+  "devices": {
+    "title": "Devices",
+    "thisDevice": "This device",
+    "thisDeviceLabel": "ORGII Mobile",
+    "thisDeviceSubtitle": "Full remote · Active now",
+    "pairedDesktops": "Paired desktops",
+    "primary": "Primary",
+    "online": "Online",
+    "offline": "Offline",
+    "unknown": "Connecting",
+    "switchTo": "Switch to {{name}}",
+    "switchFailed": "Could not switch desktops",
+    "emptyDesktops": "No paired desktops"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "signedInAs": "Signed in as",
+    "signOutConfirmTitle": "Sign out?",
+    "signOutConfirmBody": "You will need to sign in again to access your remote computers. Sessions running on your computer will not be stopped",
+    "cancel": "Cancel",
+    "manageAccount": "Manage Cloud account",
+    "deleteAccount": "Delete account on Cloud…",
+    "privacyPolicy": "Privacy policy",
+    "accountWebHint": "Opens the shared Cloud account page, which may require sign-in — check that the email matches the account above before confirming deletion",
+    "openFailed": "Could not open the page — please try again",
+    "signOut": "Sign out",
+    "connection": "Connection",
+    "desktop": "Desktop",
+    "relay": "Relay",
+    "permissionTier": "Permission tier",
+    "permissionFull": "Full access",
+    "permissionReadOnly": "Read only",
+    "mode": "Mode",
+    "modeDemo": "Demo",
+    "modeLive": "Live",
+    "demoBanner": "Demo mode — using local fixtures, not a live desktop",
+    "help": "Help",
+    "pairingGuide": "Pairing guide",
+    "revokePairing": "Revoke pairing",
+    "online": "Online",
+    "offline": "Offline",
+    "unknownRelay": "Not connected",
+    "notAvailable": "—"
+  },
+  "stopConfirm": {
+    "failed": "Could not stop the turn. It may still be running. Try again or check the desktop.",
+    "title": "Stop current Agent turn?",
+    "body": "Sends a cancel command to the desktop. Whether running shell processes terminate depends on Agent policy.",
+    "cancel": "Cancel",
+    "confirm": "Stop"
+  },
+  "offlineBanner": "Desktop is offline — messages cannot be sent",
+  "offlineBannerNamed": "{{desktopName}} is offline — messages cannot be sent",
+  "composerOffline": "Desktop offline — composer disabled",
+  "composerReadOnly": "This imported conversation is read-only on mobile",
+  "composerSending": "Sending…",
+  "composerAccepted": "Sent — waiting for the Agent…",
+  "composerUncertain": "Connection changed — checking delivery…",
+  "composerCompleted": "Reply updated",
+  "composerSendFailed": "Message could not be sent",
+  "composer": {
+    "attachments": {
+      "addPhotos": "Add photos",
+      "maxReached": "You can attach up to {{max}} images",
+      "remainingWarning": "Only {{remaining}} of {{max}} image slots remain",
+      "unsupportedType": "Only image files are supported",
+      "processFailed": "Could not process the selected image"
+    }
+  },
+  "modelPicker": {
+    "selectModel": "Select model",
+    "loading": "Loading models…",
+    "empty": "No models available on desktop"
+  },
+  "transcript": {
+    "loading": "Loading conversation history",
+    "emptyTitle": "No messages in this conversation",
+    "emptySubtitle": "Send a message from mobile to get started",
+    "errorTitle": "Conversation history could not be loaded",
+    "errorSubtitle": "Check the desktop connection and try again",
+    "errorDetail": "Try again ({{message}})",
+    "retry": "Retry",
+    "scrollToBottom": "Scroll to bottom",
+    "tools": {
+      "status": {
+        "running": "Running",
+        "done": "Completed",
+        "failed": "Failed"
+      },
+      "labels": {
+        "readFile": "Read file",
+        "editFile": "Edit file",
+        "deleteFile": "Delete file",
+        "runCommand": "Run command",
+        "searchCode": "Search code",
+        "findFiles": "Find files",
+        "listDirectory": "List directory",
+        "searchWeb": "Search web",
+        "updateTodos": "Update todos",
+        "delegateTask": "Delegate task",
+        "manageTask": "Manage task",
+        "waitForOutput": "Wait for output"
+      },
+      "openDetails": "View {{tool}} details",
+      "closeDetails": "Close tool details",
+      "files": "Files",
+      "openFile": "Open",
+      "fileOpenRequested": "Sent",
+      "openFileNamed": "Open {{file}} in Desktop",
+      "openFileUnavailable": "Connect with full access to open this file in Desktop",
+      "openFileFailed": "Could not open the file ({{message}})",
+      "changes": "Changes",
+      "preview": "Preview",
+      "loadingPreview": "Loading highlighted preview",
+      "details": "Details",
+      "output": "Output",
+      "truncated": "Long content is summarized on mobile"
+    }
+  },
+  "connectionFailed": "Connection failed",
+  "sessions": {
+    "limit": "Showing up to 1,000 recent sessions",
+    "loadMore": "Load more",
+    "retry": "Retry loading"
+  },
+  "rounds": {
+    "incomplete": "Earlier rounds are not loaded",
+    "truncated": "Transcript is truncated",
+    "navigationLabel": "Round navigation"
+  }
+}

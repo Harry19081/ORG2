@@ -1,11 +1,8 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import {
-  CHAT_ITEM_GAP,
-  CHAT_ITEM_PADDING_X,
-} from "@src/engines/ChatPanel/blocks/primitives/config";
-import { DETAIL_PANEL_TOKENS } from "@src/modules/shared/layouts/blocks";
+import "@src/engines/ChatPanel/blocks/primitives/config";
+import "@src/modules/shared/layouts/blocks";
 import {
   chatCodeFontSizeAtom,
   chatFontSizeAtom,
@@ -20,7 +17,7 @@ function ChatTypographyScope({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className="wp__chat__history w-full min-w-0 max-w-full overflow-x-hidden"
+      className="wp__chat__history w-full max-w-full min-w-0 overflow-x-hidden"
       style={
         {
           fontSize: `${chatFontSize}px`,
@@ -30,16 +27,6 @@ function ChatTypographyScope({ children }: { children: React.ReactNode }) {
           "--chat-line-height": lineHeightResolved,
         } as React.CSSProperties
       }
-    >
-      {children}
-    </div>
-  );
-}
-
-function ChatPanelPaddedRow({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className={`chat-font-size-wrapper allow-select-deep ${CHAT_ITEM_GAP} ${CHAT_ITEM_PADDING_X} ${DETAIL_PANEL_TOKENS.contentWidth} w-full min-w-0`}
     >
       {children}
     </div>
@@ -67,5 +54,3 @@ export function ChatPreviewShell({ children }: { children: React.ReactNode }) {
     </PlaygroundPreviewShell>
   );
 }
-
-export { ChatPanelPaddedRow };

@@ -7,6 +7,7 @@
  * Re-exported here for convenience in store consumers.
  */
 import type { AgentRole } from "@src/api/http/project";
+import type { ImportedClientOrigin } from "@src/api/tauri/externalHistory/imported/descriptors";
 import type {
   CliAgentType,
   MergeStatus,
@@ -169,6 +170,19 @@ export interface Session {
   storagePath?: string;
   /** Imported-history continuation family used to suppress duplicate sidebar siblings. */
   continuationLineageId?: string;
+  /**
+   * Which client produced an imported session (official app, vendor CLI,
+   * third-party embedder, or ORGII itself). Absent on native sessions and on
+   * sources that record no provenance. Presentation is resolved centrally by
+   * `sessionDisplayMetadata`, not read directly by render sites.
+   */
+  clientOrigin?: ImportedClientOrigin;
+  /**
+   * Raw vendor provenance string behind {@link Session.clientOrigin}
+   * (`claude-desktop`, `multica-agent-sdk`). Display-only: it names the actual
+   * embedder behind a coarse "Third party" badge.
+   */
+  clientOriginRaw?: string;
   /** Worktree path for isolated parallel sessions */
   worktreePath?: string;
   /** Branch name inside the worktree (e.g. `agent/abc123`) */
@@ -269,46 +283,4 @@ export interface Session {
   touchedFiles?: string[];
   /** Total token usage (input + output) reported by the source, when known. */
   totalTokens?: number;
-}
-
-// ============================================
-// Session Record Types (from Tauri backend)
-// ============================================
-
-/**
- * Base session record - shared fields across all session types
- */
-export interface BaseSessionRecord {
-  sessionId: string;
-  name: string;
-  status: string;
-  model: string | null;
-  userInput: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-/**
- * CLI session record from Tauri backend (`code_sessions` table / `cli_sessions` module)
- */
-export interface CliSessionRecord extends BaseSessionRecord {
-  keySource: KeySource;
-  cliAgentType: CliAgentType | null;
-  tier: PriceTier | null;
-  accountId: string | null;
-  repoPath: string | null;
-  branch: string | null;
-  pid: number | null;
-  worktreePath: string | null;
-  worktreeBranch: string | null;
-  baseBranch: string | null;
-  mergeStatus: MergeStatus | null;
-  background: boolean;
-  totalTokens: number;
-}
-
-export interface SessionGroups {
-  active: Session[];
-  completed: Session[];
-  failed: Session[];
 }

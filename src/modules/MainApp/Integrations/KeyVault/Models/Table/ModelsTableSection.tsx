@@ -1,18 +1,24 @@
-import { ChevronDown, ChevronUp, Plus, RefreshCw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import { ORGII_ORCHESTRATOR } from "@src/assets/providers/types";
 import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
-import GroupRowEraTag from "@src/components/ModelTable/GroupRowEraTag";
-import { MODEL_TABLE_SWITCH_SIZE } from "@src/components/ModelTable/types";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import Switch from "@src/components/Switch";
+import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import {
+  Add01Icon,
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+  HugeiconsIcon,
+  Refresh04Icon,
+} from "@src/icons";
+import GroupRowEraTag from "@src/modules/MainApp/Integrations/KeyVault/shared/ModelTable/GroupRowEraTag";
 
 import { EnabledFractionText } from "../../../shared/EnabledFractionText";
 import ModelInlineExpandedCard from "./ModelInlineExpandedCard";
@@ -27,14 +33,8 @@ import {
   sortIntegrationsModelGroups,
 } from "./integrationsModelGroups";
 import { INTEGRATIONS_MODELS_TABLE_COL_WIDTH } from "./integrationsModelsTableWidths";
-import {
-  MAX_SOURCE_ICONS,
-  dedupeSourceTypes,
-  getModelRowKey,
-} from "./modelsTableUtils";
+import { MAX_SOURCE_ICONS, dedupeSourceTypes } from "./modelsTableUtils";
 import { useModelsTableData } from "./useModelsTableData";
-
-export { getModelRowKey };
 
 function renderGroupSourcesCell(group: IntegrationsModelGroupRow) {
   if (group.isOrgiiGroup) return null;
@@ -176,16 +176,6 @@ export default function ModelsTableSection({
     [accounts, onUpdateAccountEnabledModels]
   );
 
-  const setSingleExpandedGroup = useCallback(
-    (group: IntegrationsModelGroupRow) => {
-      const rowKey = getIntegrationsGroupRowKey(group);
-      setExpandedGroupKeys((currentKeys) =>
-        currentKeys.includes(rowKey) ? [] : [rowKey]
-      );
-    },
-    []
-  );
-
   const isSearching = modelsSearchQuery.trim().length > 0;
   const expandControl =
     olderCount > 0 && !isSearching ? (
@@ -195,7 +185,19 @@ export default function ModelsTableSection({
           onClick={() => setHideOlder((prev) => !prev)}
           className="flex items-center gap-1.5 text-[13px] text-primary-6 hover:text-primary-5"
         >
-          {hideOlder ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+          {hideOlder ? (
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
+              data-icon="chevron-down"
+              size={14}
+            />
+          ) : (
+            <HugeiconsIcon
+              icon={ArrowUp01Icon}
+              data-icon="chevron-up"
+              size={14}
+            />
+          )}
           {hideOlder
             ? t("modelsTable.showMoreOlder")
             : t("modelsTable.showLessOlder")}
@@ -282,7 +284,7 @@ export default function ModelsTableSection({
               <Switch
                 size={MODEL_TABLE_SWITCH_SIZE}
                 checked={groupSomeEnabled(group)}
-                onChange={(checked) => handleToggleGroup(group, checked)}
+                onCheckedChange={(checked) => handleToggleGroup(group, checked)}
               />
             </div>
           );
@@ -339,7 +341,14 @@ export default function ModelsTableSection({
     <Button
       variant="secondary"
       size="default"
-      icon={<RefreshCw size={14} className={refreshSpinClass} />}
+      icon={
+        <HugeiconsIcon
+          icon={Refresh04Icon}
+          data-icon="refresh-cw"
+          size={14}
+          className={refreshSpinClass}
+        />
+      }
       iconOnly
       onClick={handleRefreshModelsClick}
       disabled={refreshingAllModels}
@@ -353,7 +362,7 @@ export default function ModelsTableSection({
     <Button
       variant="secondary"
       size="default"
-      icon={<Plus size={14} />}
+      icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
       iconOnly
       onClick={onAdd}
       aria-label={t("keyVault.addAccount")}
@@ -371,7 +380,6 @@ export default function ModelsTableSection({
       rows={groupRows}
       getRowKey={getIntegrationsGroupRowKey}
       expandable={expandable}
-      onRowClick={setSingleExpandedGroup}
       headerHeight="tall"
       className="table-expanded-no-hover table-settings-expanded-compact"
       searchBar={{

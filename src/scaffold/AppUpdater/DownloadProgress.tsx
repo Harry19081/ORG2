@@ -1,25 +1,10 @@
-import { Download } from "lucide-react";
 import type { CSSProperties, FC } from "react";
 
 import ProgressBar from "@src/components/ProgressBar";
+import { Download01Icon, HugeiconsIcon } from "@src/icons";
 
 import "./DownloadProgress.scss";
-
-export interface AppUpdateDownloadProgress {
-  active: boolean;
-  collapsed: boolean;
-  downloadedBytes: number;
-  totalBytes: number | null;
-  percent: number | null;
-}
-
-export const EMPTY_APP_UPDATE_DOWNLOAD_PROGRESS: AppUpdateDownloadProgress = {
-  active: false,
-  collapsed: false,
-  downloadedBytes: 0,
-  totalBytes: null,
-  percent: null,
-};
+import type { AppUpdateDownloadProgress } from "./state";
 
 function formatBytes(bytes: number): string {
   const mb = bytes / (1024 * 1024);
@@ -110,7 +95,12 @@ export const DownloadProgressOrb: FC<DownloadProgressOrbProps> = ({
         <span className="app-update-download-orb__wave" />
       </span>
       <span className="app-update-download-orb__icon" aria-hidden>
-        <Download size={18} strokeWidth={2.2} />
+        <HugeiconsIcon
+          icon={Download01Icon}
+          data-icon="download"
+          size={18}
+          strokeWidth={2.2}
+        />
       </span>
     </button>
   );

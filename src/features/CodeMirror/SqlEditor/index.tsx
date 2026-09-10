@@ -10,15 +10,22 @@
  * - Query history dropdown
  */
 import { SQLite, sql } from "@codemirror/lang-sql";
-import { EditorView, keymap } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 import CodeMirror from "@uiw/react-codemirror";
-import { AlignLeft, History, Play } from "lucide-react";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { format as formatSql } from "sql-formatter";
 
+import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import type { TableInfo } from "@src/engines/DatabaseCore";
 import { createLogger } from "@src/hooks/logger";
+import {
+  HugeiconsIcon,
+  PlayIcon,
+  TextAlignLeftIcon,
+  WorkHistoryIcon,
+} from "@src/icons";
 
 import {
   BASIC_SETUP_SQL_CONFIG,
@@ -35,7 +42,7 @@ const log = createLogger("SqlEditor");
 // Types
 // ============================================
 
-export interface SqlQueryEditorProps {
+interface SqlQueryEditorProps {
   /** Default SQL query */
   defaultValue?: string;
   /** Callback when query is executed */
@@ -86,20 +93,29 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
       }
     }, [value, loading, onExecute]);
 
-    // Handle format
+    // Handle format. `sql-formatter` (~280 KB) is loaded on first use so the
+    // SQL editor chunk does not carry it for users who never press Format.
     const handleFormat = useCallback(() => {
-      try {
-        const formatted = formatSql(value, {
-          language: "sqlite",
-          tabWidth: 2,
-          keywordCase: "upper",
+      const source = value;
+      void import(/* webpackChunkName: "sql-formatter" */ "sql-formatter")
+        .then(({ format }) =>
+          format(source, {
+            language: "sqlite",
+            tabWidth: 2,
+            keywordCase: "upper",
+          })
+        )
+        .then((formatted) => {
+          // Formatting is lazy-loaded on first use. Only apply its result if
+          // the editor still contains the source captured for this request;
+          // edits and history selections made while the chunk loads win.
+          setValue((current) => (current === source ? formatted : current));
+        })
+        .catch(() => {
+          // If formatting fails, keep original
+          log.warn("SQL formatting failed");
         });
-        setValue(formatted);
-      } catch {
-        // If formatting fails, keep original
-        log.warn("SQL formatting failed");
-      }
-    }, [value, setValue]);
+    }, [value]);
 
     // Handle history selection
     const handleHistoryClick = useCallback(
@@ -110,6 +126,8 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
       },
       [setValue, onHistorySelect]
     );
+
+    const executeShortcut = useShortcutKeys("db_run_query");
 
     // Build extensions
     const extensions = useMemo(() => {
@@ -125,16 +143,14 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
         // Custom theme
         createCodeMirrorTheme(),
         // Execute on Ctrl+Enter
-        keymap.of([
-          {
-            key: "Ctrl-Enter",
-            mac: "Cmd-Enter",
-            run: () => {
-              handleExecute();
-              return true;
-            },
+        EditorView.domEventHandlers({
+          keydown: (event) => {
+            if (!matchesShortcut(event, "db_run_query")) return false;
+            event.preventDefault();
+            handleExecute();
+            return true;
           },
-        ]),
+        }),
         // Line wrapping for long queries
         EditorView.lineWrapping,
       ];
@@ -154,7 +170,12 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
               title={t("tooltips.formatSql")}
               className="sql-query-editor__btn"
             >
-              <AlignLeft size={14} strokeWidth={1.75} />
+              <HugeiconsIcon
+                icon={TextAlignLeftIcon}
+                data-icon="align-left"
+                size={14}
+                strokeWidth={1.75}
+              />
               <span>{t("sqlEditor.format")}</span>
             </button>
 
@@ -166,7 +187,12 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
                   title={t("tooltips.queryHistory")}
                   className="sql-query-editor__btn"
                 >
-                  <History size={14} strokeWidth={1.75} />
+                  <HugeiconsIcon
+                    icon={WorkHistoryIcon}
+                    data-icon="history"
+                    size={14}
+                    strokeWidth={1.75}
+                  />
                   <span>{t("labels.history")}</span>
                 </button>
 
@@ -201,10 +227,15 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
             <button
               onClick={handleExecute}
               disabled={loading || !value.trim()}
-              title={t("tooltips.executeQuery")}
+              title={t("tooltips.executeQuery", { shortcut: executeShortcut })}
               className="sql-query-editor__btn sql-query-editor__btn--primary"
             >
-              <Play size={14} strokeWidth={1.75} />
+              <HugeiconsIcon
+                icon={PlayIcon}
+                data-icon="play"
+                size={14}
+                strokeWidth={1.75}
+              />
               <span>{loading ? t("status.running") : t("actions.run")}</span>
             </button>
           </div>
@@ -224,10 +255,9 @@ export const SqlQueryEditor: React.FC<SqlQueryEditorProps> = memo(
         </div>
 
         {/* Keyboard hint */}
-        <div className="absolute bottom-2 right-3 flex items-center gap-1 text-xs text-text-4">
+        <div className="absolute right-3 bottom-2 flex items-center gap-1 text-xs text-text-4">
           <span>{t("sqlEditor.press")}</span>
-          <kbd className="rounded bg-fill-2 px-1.5 py-0.5">⌘</kbd>
-          <kbd className="rounded bg-fill-2 px-1.5 py-0.5">↵</kbd>
+          <KeyboardShortcut shortcutId={"db_run_query"} />
           <span>{t("sqlEditor.toRun")}</span>
         </div>
       </div>
@@ -239,6 +269,5 @@ SqlQueryEditor.displayName = "SqlQueryEditor";
 
 // Re-export QueryResults for consumers who import from SqlEditor
 export { QueryResults } from "./QueryResults";
-export type { QueryResultsProps } from "./QueryResults";
 
 export default SqlQueryEditor;

@@ -1,8 +1,11 @@
 import React, { Suspense, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
-import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
+import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import DetailPaneLayout, {
+  DetailPanePlaceholder,
+} from "@src/modules/shared/layouts/DetailPaneLayout";
 import type { Person } from "@src/types/core/shared";
 import type {
   WorkItem as WorkItemExtended,
@@ -14,13 +17,14 @@ import type {
 import {
   WORK_ITEM_DETAIL_SURFACE,
   type WorkItemDetailActions,
-} from "../WorkItemDetail";
+} from "../WorkItemDetail/types";
 
 const WorkItemDetail = React.lazy(() => import("../WorkItemDetail"));
 
 interface EmbeddedWorkItemDetailProps {
   workItem: WorkItemExtended | null;
   onClose: () => void;
+  onOpenInNewTab?: () => void;
   onNavigate: (direction: "prev" | "next") => void;
   hasPrev: boolean;
   hasNext: boolean;
@@ -37,10 +41,10 @@ interface EmbeddedWorkItemDetailProps {
   onRegisterActions?: (actions: WorkItemDetailActions) => void;
   repoPath: string | null;
   projectSlug: string | null;
+  orgId: string;
   shortId: string | null;
   onRefreshWorkItem: () => Promise<void>;
   onOpenSession?: (sessionId: string, title?: string) => void;
-  onWorkItemNameUpdated?: (workItemName: string) => void;
   breadcrumbSegments?: readonly ProjectManagerBreadcrumbSegment[];
   breadcrumbProjectName: string;
   breadcrumbIcon?: React.ReactNode;
@@ -54,6 +58,7 @@ interface EmbeddedWorkItemDetailProps {
 const EmbeddedWorkItemDetail: React.FC<EmbeddedWorkItemDetailProps> = ({
   workItem,
   onClose,
+  onOpenInNewTab,
   onNavigate,
   hasPrev,
   hasNext,
@@ -67,10 +72,10 @@ const EmbeddedWorkItemDetail: React.FC<EmbeddedWorkItemDetailProps> = ({
   onRegisterActions,
   repoPath,
   projectSlug,
+  orgId,
   shortId,
   onRefreshWorkItem,
   onOpenSession,
-  onWorkItemNameUpdated,
   breadcrumbSegments,
   breadcrumbProjectName,
   breadcrumbIcon,
@@ -80,24 +85,42 @@ const EmbeddedWorkItemDetail: React.FC<EmbeddedWorkItemDetailProps> = ({
   publishHeaderToWorkstation,
   workstationHeaderHost,
 }) => {
+  const { t } = useTranslation("common");
   const handleUpdateWorkItem = useCallback(
     (updates: Partial<WorkItemExtended>) => {
       if (!workItem) return;
-      if (updates.name !== undefined) {
-        onWorkItemNameUpdated?.(updates.name);
-      }
       onUpdateWorkItem(workItem.session_id, updates);
     },
-    [onUpdateWorkItem, onWorkItemNameUpdated, workItem]
+    [onUpdateWorkItem, workItem]
   );
 
-  if (!workItem) return null;
+  if (!workItem) {
+    return (
+      <DetailPaneLayout testId="work-item-detail-placeholder">
+        <DetailPanePlaceholder
+          variant="empty"
+          title={t("teamInbox.empty.selectTitle")}
+          subtitle={t("teamInbox.empty.selectSubtitle")}
+        />
+      </DetailPaneLayout>
+    );
+  }
 
   return (
-    <Suspense fallback={<Placeholder variant="loading" />}>
+    <Suspense
+      fallback={
+        <DetailPaneLayout
+          onClose={onClose}
+          closeTestId="work-item-close-detail"
+        >
+          <DetailPanePlaceholder variant="loading" />
+        </DetailPaneLayout>
+      }
+    >
       <WorkItemDetail
         workItem={workItem}
         onClose={onClose}
+        onOpenInNewTab={onOpenInNewTab}
         onNavigate={onNavigate}
         hasPrev={hasPrev}
         hasNext={hasNext}
@@ -113,6 +136,7 @@ const EmbeddedWorkItemDetail: React.FC<EmbeddedWorkItemDetailProps> = ({
         onRegisterActions={onRegisterActions}
         repoPath={repoPath}
         projectSlug={projectSlug}
+        orgId={orgId}
         shortId={shortId}
         onRefreshWorkItem={onRefreshWorkItem}
         onOpenSession={onOpenSession}

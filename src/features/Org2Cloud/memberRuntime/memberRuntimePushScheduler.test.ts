@@ -104,6 +104,9 @@ const CONFIRMED_MEMBER_RUNTIME_TRUE: CloudCapabilitiesProbeResult = {
     orgChannels: false,
     orgChannelMessages: false,
     orgChannelMessagesIdempotency: false,
+    conversationEvents: false,
+    conversationEventsIdempotency: false,
+    conversationTurnCoordination: false,
   },
   confirmed: true,
 };
@@ -362,6 +365,9 @@ describe("capability blackout: confirmed vs. unconfirmed", () => {
         orgChannels: false,
         orgChannelMessages: false,
         orgChannelMessagesIdempotency: false,
+        conversationEvents: false,
+        conversationEventsIdempotency: false,
+        conversationTurnCoordination: false,
       },
       confirmed: true,
     } satisfies CloudCapabilitiesProbeResult);
@@ -396,6 +402,9 @@ describe("capability blackout: confirmed vs. unconfirmed", () => {
         orgChannels: false,
         orgChannelMessages: false,
         orgChannelMessagesIdempotency: false,
+        conversationEvents: false,
+        conversationEventsIdempotency: false,
+        conversationTurnCoordination: false,
       },
       confirmed: false,
     } satisfies CloudCapabilitiesProbeResult);
@@ -443,6 +452,9 @@ describe("capability blackout: confirmed vs. unconfirmed", () => {
           orgChannels: false,
           orgChannelMessages: false,
           orgChannelMessagesIdempotency: false,
+          conversationEvents: false,
+          conversationEventsIdempotency: false,
+          conversationTurnCoordination: false,
         },
         confirmed: false,
       } satisfies CloudCapabilitiesProbeResult)

@@ -11,22 +11,25 @@
  * `PrimarySidebarLayoutWithSections`.
  */
 import { useAtomValue } from "jotai";
-import { ArrowLeft, CircleDot, RefreshCw, RotateCcw } from "lucide-react";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitWorktreeEntry } from "@src/api/http/git/types";
+import AnyIcon from "@src/components/AnyIcon";
+import { Placeholder } from "@src/components/Placeholder";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { sessionIdAtom } from "@src/engines/SessionCore";
 import { useFileReviewBatchActions } from "@src/hooks/fileReview";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import {
+  ArrowLeft02Icon,
+  CircleDotIcon,
+  HugeiconsIcon,
+  Refresh04Icon,
+  RotateLeft01Icon,
+} from "@src/icons";
 import {
   SectionFilterInput,
   makeSectionFilterAction,
@@ -42,7 +45,6 @@ import {
   useSourceControlTabConfig,
 } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/tabs/SourceControlTab";
 import type { PrimarySidebarTab } from "@src/modules/WorkStation/shared/PrimarySidebarLayout";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { workstationIssueCallbackAtomFamily } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import {
   workstationPrCallbackAtomFamily,
@@ -130,11 +132,7 @@ export function useSourceControlSidebarModule({
   const sourceControlRef = useRef<SourceControlTabHandle>(null);
   const historyRefreshRef = useRef<(() => void) | null>(null);
   const mountedRef = useRef(true);
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
+  useMountedCleanup(mountedRef);
 
   const [showFilter, setShowFilter] = useState(false);
   const [viewMode, setViewMode] = useState<"list-tree" | "list">("list-tree");
@@ -206,7 +204,8 @@ export function useSourceControlSidebarModule({
       {
         key: "refresh-git-history",
         icon: (
-          <HistoryRefreshIcon
+          <AnyIcon
+            icon={HistoryRefreshIcon}
             size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
             strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
             className={historyRefreshSpinClass}
@@ -255,7 +254,9 @@ export function useSourceControlSidebarModule({
     () => ({
       key: "undo-all-changes",
       icon: (
-        <RotateCcw
+        <HugeiconsIcon
+          icon={RotateLeft01Icon}
+          data-icon="rotate-ccw"
           size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
           strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
         />
@@ -306,7 +307,9 @@ export function useSourceControlSidebarModule({
       {
         key: "refresh-issues",
         icon: (
-          <RefreshCw
+          <HugeiconsIcon
+            icon={Refresh04Icon}
+            data-icon="refresh-cw"
             size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
             strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
             className={issuesRefreshSpinClass}
@@ -318,7 +321,9 @@ export function useSourceControlSidebarModule({
       {
         key: "new-issue",
         icon: (
-          <CircleDot
+          <HugeiconsIcon
+            icon={CircleDotIcon}
+            data-icon="circle-dot"
             size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
             strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
           />
@@ -358,7 +363,9 @@ export function useSourceControlSidebarModule({
       {
         key: "refresh-prs",
         icon: (
-          <RefreshCw
+          <HugeiconsIcon
+            icon={Refresh04Icon}
+            data-icon="refresh-cw"
             size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
             strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
             className={prRefreshSpinClass}
@@ -402,7 +409,12 @@ export function useSourceControlSidebarModule({
       title={t("tabs.sourceControl")}
     >
       <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-        <ArrowLeft size={14} className="text-text-3" />
+        <HugeiconsIcon
+          icon={ArrowLeft02Icon}
+          data-icon="arrow-left"
+          size={14}
+          className="text-text-3"
+        />
       </span>
       <span className="truncate uppercase">{sectionLabel}</span>
     </button>

@@ -25,11 +25,12 @@ use super::meta::{
 };
 use super::transcript::{
     load_codex_app_cloud_turn_from_path, load_codex_app_from_path,
-    load_codex_app_initial_window_from_path, load_codex_app_turn_from_path,
-    load_codex_app_turn_ids_from_path, CodexAppInitialWindow, CodexAppTurnWindow,
+    load_codex_app_initial_window_from_path, load_codex_app_mobile_tail_window_from_path,
+    load_codex_app_turn_from_path, load_codex_app_turn_ids_from_path, user_message_text_from_line,
+    CodexAppInitialWindow, CodexAppTurnWindow,
 };
 use super::{
-    CodexAppRecentPath, CodexAppSessionPage, CodexAppSourceMetadata,
+    CodexAppRecentPath, CodexAppSessionPage, CodexAppSourceMetadata, CodexJsonlLine,
     CODEX_APP_METADATA_PARSER_VERSION,
 };
 
@@ -101,6 +102,17 @@ pub fn load_codex_app_initial_window_for_session(
     let file_stem = codex_file_stem_from_session_id(session_id)?;
     let path = resolve_codex_session_path(conn, file_stem)?;
     let mut window = load_codex_app_initial_window_from_path(session_id, &path, recent_turn_count)?;
+    link_codex_subagent_chunks(conn, session_id, &mut window.chunks)?;
+    Ok(window)
+}
+
+pub fn load_codex_app_mobile_tail_window_for_session(
+    conn: &Connection,
+    session_id: &str,
+) -> Result<CodexAppInitialWindow, String> {
+    let file_stem = codex_file_stem_from_session_id(session_id)?;
+    let path = resolve_codex_session_path(conn, file_stem)?;
+    let mut window = load_codex_app_mobile_tail_window_from_path(session_id, &path)?;
     link_codex_subagent_chunks(conn, session_id, &mut window.chunks)?;
     Ok(window)
 }
@@ -306,7 +318,7 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
             SOURCE_CODEX_APP,
         )?;
     for record in &mut discovered {
-        crate::sources::imported_history::managed_mirror::append_managed_fingerprint(
+        crate::sources::imported_history::managed_mirror::append_managed_origin_fingerprint(
             &mut record.source_fingerprint,
             // Suffix match: the imported key is the rollout stem while the
             // runner binds the bare thread uuid.
@@ -316,14 +328,17 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
             ),
         );
     }
+    repair_cached_generated_codex_names(conn, &discovered)?;
     let signatures = discovered
         .iter()
         .map(ImportedHistoryDiscoveredRecord::signature)
         .collect::<Vec<_>>();
-    let changed =
-        imported_cache::changed_records_from_conn(conn, SOURCE_CODEX_APP, &discovered, |record| {
-            record.signature()
-        })?;
+    let changed = imported_cache::changed_records_with_generated_name_repairs_from_conn(
+        conn,
+        SOURCE_CODEX_APP,
+        &discovered,
+        |record| record.signature(),
+    )?;
     let mut inputs = Vec::new();
     let mut rounds = Vec::new();
     let mut reparsed_ids = Vec::new();
@@ -353,15 +368,13 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
             &parse.watermark,
         )?;
         if let Some(mut meta) = parse.meta {
-            let is_managed_history_mirror =
-                crate::sources::imported_history::managed_mirror::is_managed_source_session_id(
-                    &managed_ids,
-                    &meta.source_session_id,
-                );
             reparsed_ids.push(meta.session_id.clone());
             rounds.append(&mut meta.rounds);
             let mut input = session_meta_to_cache_input(meta);
-            input.listable = input.listable && !is_managed_history_mirror;
+            crate::sources::imported_history::managed_mirror::apply_managed_history_mirror(
+                &mut input,
+                &managed_ids,
+            );
             inputs.push(input);
         }
     }
@@ -371,7 +384,65 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
         imported_cache::live_ids_from_signatures(&signatures),
         inputs,
     )?;
+    crate::sources::imported_history::managed_mirror::demote_org2_origin_mirrors_from_conn(
+        conn,
+        SOURCE_CODEX_APP,
+    )?;
     imported_cache::write_session_rounds_from_conn(conn, &reparsed_ids, &rounds)
+}
+
+pub(super) fn first_codex_user_prompt_from_path(path: &Path) -> Result<Option<String>, String> {
+    let file = fs::File::open(path)
+        .map_err(|err| format!("Failed to open Codex transcript {}: {err}", path.display()))?;
+    for line in BufReader::new(file).lines() {
+        let line = line
+            .map_err(|err| format!("Failed to read Codex transcript {}: {err}", path.display()))?;
+        let Ok(parsed) = serde_json::from_str::<CodexJsonlLine>(line.trim()) else {
+            continue;
+        };
+        if let Some(prompt) = user_message_text_from_line(&parsed) {
+            return Ok(Some(prompt));
+        }
+    }
+    Ok(None)
+}
+
+fn repair_cached_generated_codex_names(
+    conn: &Connection,
+    discovered: &[ImportedHistoryDiscoveredRecord],
+) -> Result<(), String> {
+    let repair_ids =
+        imported_cache::generated_name_repair_source_session_ids_from_conn(conn, SOURCE_CODEX_APP)?;
+    if repair_ids.is_empty() {
+        return Ok(());
+    }
+
+    for record in discovered
+        .iter()
+        .filter(|record| repair_ids.contains(&record.source_session_id))
+    {
+        let Some(prompt) = imported_history::skip_unparsable_record(
+            SOURCE_CODEX_APP,
+            &record.source_session_id,
+            first_codex_user_prompt_from_path(&record.source_path),
+        )
+        .flatten() else {
+            continue;
+        };
+        let name = imported_history::resolve_imported_session_name(
+            "",
+            &prompt,
+            &record.source_record_key,
+            200,
+        );
+        imported_cache::update_cached_session_name_from_conn(
+            conn,
+            SOURCE_CODEX_APP,
+            &record.source_session_id,
+            &name,
+        )?;
+    }
+    Ok(())
 }
 
 fn unix_epoch_now_ns() -> i64 {
@@ -620,7 +691,7 @@ fn codex_file_stem_from_session_id(session_id: &str) -> Result<&str, String> {
     Ok(file_stem)
 }
 
-fn resolve_codex_session_path(conn: &Connection, file_stem: &str) -> Result<PathBuf, String> {
+pub fn resolve_codex_session_path(conn: &Connection, file_stem: &str) -> Result<PathBuf, String> {
     let transcript_session_id = canonical_session_id(file_stem);
     let store = SqliteRecordStore::new(conn);
     if let Some(path) = store
@@ -760,6 +831,34 @@ pub(crate) fn codex_sessions_dir_candidates(home: &Path) -> Vec<PathBuf> {
         .filter(|root| seen.insert(root.clone()))
         .map(|root| root.join("sessions"))
         .collect()
+}
+
+/// Context refresh only follows indexed source paths. Unlike transcript recovery,
+/// missing telemetry must not initiate a recursive history-directory scan.
+pub fn load_codex_context_usage_for_session(
+    conn: &Connection,
+    session_id: &str,
+) -> Result<Option<crate::sources::imported_history::context_usage::ImportedContextUsage>, String> {
+    let file_stem = codex_file_stem_from_session_id(session_id)?;
+    let store = SqliteRecordStore::new(conn);
+    let actor_path = store
+        .get_session_actor_by_transcript_session_id(
+            SOURCE_CODEX_APP,
+            &canonical_session_id(file_stem),
+        )?
+        .and_then(|actor| actor.transcript_path);
+    let path = match actor_path {
+        Some(path) => Some(path),
+        None => imported_cache::get_cached_source_path_by_suffix_from_conn(
+            conn,
+            SOURCE_CODEX_APP,
+            file_stem,
+        )?,
+    };
+    match path {
+        Some(path) => super::context_usage::read_context_usage(Path::new(&path)),
+        None => Ok(None),
+    }
 }
 
 #[cfg(test)]

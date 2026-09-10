@@ -8,13 +8,20 @@ import {
   chatPanelSelectedProjectAtom,
   chatPanelSelectedProjectOrgAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkManagementSection } from "@src/store/workstation";
 
 import {
+  recordChatPanelTabTransitionAtom,
+  recordRecentChatPanelTabAtom,
+  removeRecentChatPanelTabAtom,
+} from "./chatPanelRecentTabsState";
+import {
+  DEFAULT_LAUNCHPAD_TAB_ID,
   buildDefaultLaunchpadTab,
   getChatPanelWorkItemTabKey,
 } from "./chatPanelTabFactories";
+import { dropChatPanelTabHistoryAtom } from "./chatPanelTabNavigationAtoms";
 import { activateChatPanelTabAtom } from "./chatPanelTabPresentationAtoms";
 import {
   type ChatPanelSelectedChannel,
@@ -50,12 +57,22 @@ export const setActiveWorkManagementSectionAtom = atom(
   ) => {
     const state = get(chatPanelTabsAtom);
     const activeTab = state.tabs.find((tab) => tab.id === state.activeTabId);
-    if (activeTab?.type !== "work-management") return;
+    if (
+      activeTab?.type !== "work-management" &&
+      activeTab?.type !== "team-inbox"
+    ) {
+      return;
+    }
     set(chatPanelTabsAtom, {
       ...state,
       tabs: state.tabs.map((tab) =>
         tab.id === activeTab.id
-          ? { ...tab, managementSection: section, title }
+          ? {
+              ...tab,
+              type: "work-management" as const,
+              managementSection: section,
+              title,
+            }
           : tab
       ),
     });
@@ -71,6 +88,7 @@ export const closeChatPanelTabAtom = atom(null, (get, set, tabId: string) => {
   if (idx === -1) return;
   const tab = state.tabs[idx];
   const nextTabs = state.tabs.filter((candidate) => candidate.id !== tabId);
+  set(dropChatPanelTabHistoryAtom, tabId);
   if (
     tab.type === "session" &&
     tab.sessionId &&
@@ -86,8 +104,11 @@ export const closeChatPanelTabAtom = atom(null, (get, set, tabId: string) => {
     set(workstationActiveSessionIdAtom, null);
   }
   if (
-    tab.type === "work-management" &&
-    !nextTabs.some((candidate) => candidate.type === "work-management")
+    (tab.type === "work-management" || tab.type === "team-inbox") &&
+    !nextTabs.some(
+      (candidate) =>
+        candidate.type === "work-management" || candidate.type === "team-inbox"
+    )
   ) {
     set(disposeWorkManagementStateAtom);
   }
@@ -95,6 +116,13 @@ export const closeChatPanelTabAtom = atom(null, (get, set, tabId: string) => {
 
   if (nextTabs.length === 0) {
     const launchpad = buildDefaultLaunchpadTab();
+    if (state.activeTabId === tabId) {
+      set(recordChatPanelTabTransitionAtom, {
+        previousTab: tab,
+        nextTab: launchpad,
+      });
+    }
+    set(removeRecentChatPanelTabAtom, tabId);
     set(chatPanelTabsAtom, {
       tabs: [launchpad],
       activeTabId: launchpad.id,
@@ -105,15 +133,80 @@ export const closeChatPanelTabAtom = atom(null, (get, set, tabId: string) => {
 
   if (state.activeTabId === tabId) {
     const nextIdx = Math.max(0, idx - 1);
-    nextActiveId = nextTabs[Math.min(nextIdx, nextTabs.length - 1)].id;
+    const nextActiveTab = nextTabs[Math.min(nextIdx, nextTabs.length - 1)];
+    nextActiveId = nextActiveTab.id;
+    set(recordChatPanelTabTransitionAtom, {
+      previousTab: tab,
+      nextTab: nextActiveTab,
+    });
   }
 
+  set(removeRecentChatPanelTabAtom, tabId);
   set(chatPanelTabsAtom, { tabs: nextTabs, activeTabId: nextActiveId });
   if (state.activeTabId === tabId) {
     set(activateChatPanelTabAtom, nextActiveId);
   }
 });
 closeChatPanelTabAtom.debugLabel = "closeChatPanelTab";
+
+/**
+ * Close every Chat Panel tab owned by sessions that were durably deleted.
+ *
+ * A Team deletion receipt can contain the Root and several Members, and more
+ * than one of them may be open. Remove the whole set in one state transition
+ * so activating a fallback can never briefly re-select another deleted
+ * session between per-tab closes.
+ */
+export const closeSessionChatPanelTabsAtom = atom(
+  null,
+  (get, set, sessionIds: readonly string[]): boolean => {
+    if (sessionIds.length === 0) return false;
+    const deletedSessionIds = new Set(sessionIds);
+    const state = get(chatPanelTabsAtom);
+    const tabsToClose = new Set(
+      state.tabs
+        .filter(
+          (tab) =>
+            tab.type === "session" &&
+            Boolean(tab.sessionId && deletedSessionIds.has(tab.sessionId))
+        )
+        .map((tab) => tab.id)
+    );
+    if (tabsToClose.size === 0) return false;
+
+    const activeIndex = state.tabs.findIndex(
+      (tab) => tab.id === state.activeTabId
+    );
+    const activeTabClosed = tabsToClose.has(state.activeTabId);
+    const remainingTabs = state.tabs.filter((tab) => !tabsToClose.has(tab.id));
+
+    const rememberedSessionId = get(workstationActiveSessionIdAtom);
+    if (rememberedSessionId && deletedSessionIds.has(rememberedSessionId)) {
+      set(workstationActiveSessionIdAtom, null);
+    }
+
+    if (!activeTabClosed) {
+      set(chatPanelTabsAtom, { ...state, tabs: remainingTabs });
+      return false;
+    }
+
+    const fallbackTab =
+      state.tabs
+        .slice(0, Math.max(0, activeIndex))
+        .reverse()
+        .find((tab) => !tabsToClose.has(tab.id)) ??
+      remainingTabs.find((tab) => tab.id === DEFAULT_LAUNCHPAD_TAB_ID);
+    const nextTab = fallbackTab ?? buildDefaultLaunchpadTab();
+    const nextTabs = fallbackTab ? remainingTabs : [nextTab, ...remainingTabs];
+    set(chatPanelTabsAtom, {
+      tabs: nextTabs,
+      activeTabId: nextTab.id,
+    });
+    set(activateChatPanelTabAtom, nextTab.id);
+    return true;
+  }
+);
+closeSessionChatPanelTabsAtom.debugLabel = "closeSessionChatPanelTabs";
 
 /** Close the singleton organization tab, or clear its legacy surface mirrors. */
 export const closeOrganizationChatPanelTabAtom = atom(null, (get, set) => {
@@ -361,40 +454,6 @@ export const setChatPanelTabTitleAtom = atom(
   }
 );
 
-/**
- * Keep a work-item tab's stored payload in sync with in-place edits made
- * through `chatPanelSelectedWorkItemAtom` (rename / status change / refresh).
- * Without this, switching away and back would replay the stale payload and
- * revert the edit. Matched by organization, project, and short ID; a no-op
- * (returns the previous state) when the payload reference is unchanged — e.g.
- * the seed written on tab activation — so it never churns tab state or
- * persistence.
- */
-export const patchChatPanelWorkItemTabAtom = atom(
-  null,
-  (_get, set, workItem: ChatPanelSelectedWorkItem) => {
-    const workItemKey = getChatPanelWorkItemTabKey(workItem);
-    set(chatPanelTabsAtom, (prev) => {
-      const target = prev.tabs.find(
-        (tab) =>
-          tab.type === "work-item" &&
-          tab.workItem !== undefined &&
-          getChatPanelWorkItemTabKey(tab.workItem) === workItemKey
-      );
-      if (!target || target.workItem === workItem) return prev;
-      return {
-        ...prev,
-        tabs: prev.tabs.map((tab) =>
-          tab.id === target.id
-            ? { ...tab, workItem, title: workItem.workItem.name || tab.title }
-            : tab
-        ),
-      };
-    });
-  }
-);
-patchChatPanelWorkItemTabAtom.debugLabel = "patchChatPanelWorkItemTab";
-
 /** Toggle TUI mode on the given tab */
 export const toggleChatPanelTabTuiModeAtom = atom(
   null,
@@ -418,12 +477,20 @@ export const closeAndDestroyChatPanelTabAtom = atom(
   async (get, set, tabId: string): Promise<void> => {
     const state = get(chatPanelTabsAtom);
     const tab = state.tabs.find((candidate) => candidate.id === tabId);
+    const closesSoleStartPage =
+      state.tabs.length === 1 && tab?.type === "start-page";
     // Destroy PTY before removing the tab so the terminal session ID is still
     // reachable during cleanup.
     if (tab?.type === "terminal" && tab.terminalSessionId) {
       await set(destroyChatPanelTerminalAtom, tab.terminalSessionId);
     }
+    const tabStillOpen = get(chatPanelTabsAtom).tabs.some(
+      (candidate) => candidate.id === tab?.id
+    );
     set(closeChatPanelTabAtom, tabId);
+    if (tab && tabStillOpen && !closesSoleStartPage) {
+      set(recordRecentChatPanelTabAtom, tab);
+    }
   }
 );
 closeAndDestroyChatPanelTabAtom.debugLabel = "closeAndDestroyChatPanelTab";
@@ -447,8 +514,13 @@ export const closeOtherChatPanelTabsAtom = atom(
       )
     );
 
-    for (const tab of tabsToClose) {
+    const openIds = new Set(get(chatPanelTabsAtom).tabs.map((tab) => tab.id));
+    const tabsStillOpen = tabsToClose.filter((tab) => openIds.has(tab.id));
+    for (const tab of tabsStillOpen) {
       set(closeChatPanelTabAtom, tab.id);
+    }
+    for (const tab of tabsStillOpen) {
+      set(recordRecentChatPanelTabAtom, tab);
     }
 
     if (
@@ -461,3 +533,20 @@ export const closeOtherChatPanelTabsAtom = atom(
   }
 );
 closeOtherChatPanelTabsAtom.debugLabel = "closeOtherChatPanelTabs";
+
+/**
+ * Keep whichever chat-panel tab is active and close every sibling.
+ *
+ * Reserved for explicit replace-all navigation. Plain sidebar clicks preserve
+ * the tab strip and let the destination opener decide whether the active
+ * Launchpad placeholder should be consumed.
+ */
+export const closeOtherThanActiveChatPanelTabsAtom = atom(
+  null,
+  (get, set): Promise<void> => {
+    const activeTabId = get(chatPanelTabsAtom).activeTabId;
+    return set(closeOtherChatPanelTabsAtom, activeTabId);
+  }
+);
+closeOtherThanActiveChatPanelTabsAtom.debugLabel =
+  "closeOtherThanActiveChatPanelTabs";

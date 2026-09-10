@@ -9,13 +9,17 @@ import {
   isImportedHistorySession,
 } from "@src/util/session/sessionDispatch";
 
+import { isTurnActive } from "../control/turnLifecycle";
 import { getCursorIdeSnapshotLastUpdatedAt } from "./adapters/cursorIdeAdapter";
+import { loadWithNativeHistoryRevision } from "./nativeHistoryLoadRevision";
 import { isCursorIdeSessionId } from "./sessionSyncDerivedState";
 import { rehydratePendingPlanApproval } from "./sessionSyncPlanApproval";
 import { reconcileInFlightHistory } from "./sessionSyncReconcile";
 import {
   type SessionLoadStateActions,
   applyPostLoadResult,
+  capturePostLoadLifecycleSnapshot,
+  isPostLoadRunStatusSuperseded,
 } from "./sessionSyncStateHelpers";
 import type { SessionSyncRefs } from "./sessionSyncTypes";
 import {
@@ -122,17 +126,43 @@ async function handleCacheHit(
 
   actions.setLoadStatus("loading");
 
+  const postLoadLifecycle = capturePostLoadLifecycleSnapshot(sessionId);
   const postResult = adapter.postLoad
     ? await adapter.postLoad(sessionId, abortController.signal)
     : null;
   if (abortController.signal.aborted) return;
 
-  const cacheHitInFlight = isInFlightRunStatus(postResult?.runStatus);
+  // The DB status alone is not enough: right after an abort the row is
+  // terminal ("cancelled") while the frontend FSM is already dispatching the
+  // follow-up turn — treating that window as not-in-flight lets a stale
+  // history replace wipe the just-sent message.
+  const cacheHitInFlight =
+    (!isPostLoadRunStatusSuperseded(
+      sessionId,
+      postResult?.runStatus,
+      postLoadLifecycle
+    ) &&
+      isInFlightRunStatus(postResult?.runStatus)) ||
+    isTurnActive(sessionId);
   let displayEvents = await eventStoreProxy.getEvents(sessionId);
   if (abortController.signal.aborted) return;
 
   if (!cacheHitInFlight) {
-    if (adapter.category === "agent") {
+    if (
+      adapter.category === "agent" &&
+      isCollaborationImportedSession(sessionId)
+    ) {
+      // The round window excludes local failed-delivery sidecars. Reuse the
+      // same persisted projection as a cold load so a cache hit cannot erase
+      // Retry/Edit after that cold load restored it.
+      displayEvents = await loadPersistedHistory(
+        adapter,
+        sessionId,
+        abortController.signal
+      );
+      if (abortController.signal.aborted) return;
+      await hydrateSessionStoreBeforeDisplay(sessionId, displayEvents);
+    } else if (adapter.category === "agent") {
       await eventStoreProxy.loadInitialTurnWindow(
         sessionId,
         isCollaborationImportedSession(sessionId) ? 0 : undefined
@@ -191,7 +221,9 @@ async function handleCacheHit(
   ) {
     reconcileInFlightHistory(sessionId, adapter, refs, actions);
   }
-  applyPostLoadResult(sessionId, postResult, actions);
+  applyPostLoadResult(sessionId, postResult, actions, {
+    lifecycleSnapshot: postLoadLifecycle,
+  });
 }
 
 async function handleCursorIdeCacheHit(
@@ -247,15 +279,32 @@ async function handleCacheMiss(
 
   actions.setLoadStatus("loading");
 
+  const postLoadLifecycle = capturePostLoadLifecycleSnapshot(sessionId);
   const missPostResult = adapter.postLoad
     ? await adapter.postLoad(sessionId, abortController.signal)
     : null;
   if (abortController.signal.aborted) return;
 
-  const missInFlight = isInFlightRunStatus(missPostResult?.runStatus);
-  const events = !missInFlight
-    ? await loadPersistedHistory(adapter, sessionId, abortController.signal)
-    : await adapter.loadHistory(sessionId, abortController.signal);
+  const missInFlight =
+    (!isPostLoadRunStatusSuperseded(
+      sessionId,
+      missPostResult?.runStatus,
+      postLoadLifecycle
+    ) &&
+      isInFlightRunStatus(missPostResult?.runStatus)) ||
+    isTurnActive(sessionId);
+  const load = () =>
+    !missInFlight
+      ? loadPersistedHistory(adapter, sessionId, abortController.signal)
+      : adapter.loadHistory(sessionId, abortController.signal);
+  const { value: events, nativeHistoryRevision } =
+    adapter.category === "cli" && !missInFlight
+      ? await loadWithNativeHistoryRevision(
+          sessionId,
+          abortController.signal,
+          load
+        )
+      : { value: await load(), nativeHistoryRevision: undefined };
   if (abortController.signal.aborted) return;
   await hydrateSessionStoreBeforeDisplay(
     sessionId,
@@ -264,7 +313,12 @@ async function handleCacheMiss(
   );
   if (abortController.signal.aborted) return;
 
-  actions.dispatchLoadSession({ sessionId, events });
+  actions.dispatchLoadSession({
+    sessionId,
+    events,
+    nativeHistoryRevision,
+    storeHydrated: adapter.category === "cli" && !missInFlight,
+  });
   if (
     missInFlight &&
     !isImportedHistorySession(sessionId) &&
@@ -273,7 +327,9 @@ async function handleCacheMiss(
     reconcileInFlightHistory(sessionId, adapter, refs, actions);
   }
 
-  applyPostLoadResult(sessionId, missPostResult, actions);
+  applyPostLoadResult(sessionId, missPostResult, actions, {
+    lifecycleSnapshot: postLoadLifecycle,
+  });
 
   rehydratePendingPlanApproval(
     sessionId,

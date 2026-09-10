@@ -34,8 +34,8 @@ import React, {
 } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
+import { Placeholder } from "@src/components/Placeholder";
 import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { editorShowTreeIndentGuidesAtom } from "@src/store/ui/editorSettingsAtom";
 
 import { StickyHeadersContainer } from "./StickyHeadersContainer";
@@ -53,7 +53,6 @@ export type {
   FlattenedTreeNode,
   StickyScrollNode,
   TreeNodeBase,
-  VirtualizedStickyTreeProps,
 } from "./types";
 export { useStickyScroll, useScrollPreservation } from "./hooks";
 export { STICKY_ROW, CHEVRON_SIZE, stickyRowPadding } from "./tokens";
@@ -203,7 +202,7 @@ function VirtualizedStickyTreeInner<TNode extends TreeNodeBase>(
   // Stable Scroller component - passing ref objects (not .current) is safe
   // as they're only accessed in event handlers, not during render
   const virtuosoComponents = useMemo(
-    /* eslint-disable react-hooks/refs */
+    /* eslint-disable react-hooks/refs -- the factory captures ref objects for later scroll callbacks and never reads ref.current during render */
     () => ({
       Scroller: createScrollerComponent(scrollHandlerRef, scrollerDomRef),
     }),
@@ -344,7 +343,7 @@ function VirtualizedStickyTreeInner<TNode extends TreeNodeBase>(
             computeItemKey={handleComputeItemKey}
             overscan={overscan}
             increaseViewportBy={increaseViewportBy}
-            className="h-full scrollbar-hide"
+            className="scrollbar-hide h-full"
             followOutput={false}
             defaultItemHeight={rowHeight}
             components={virtuosoComponents}

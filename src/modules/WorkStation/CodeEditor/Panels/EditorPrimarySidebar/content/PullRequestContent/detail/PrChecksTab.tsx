@@ -4,48 +4,20 @@
  * CI status for a PR's head commit: modern check-runs + legacy commit statuses
  * from `github_get_checks`, grouped by outcome with a rolled-up summary line.
  */
-import {
-  CheckCircle2,
-  CircleSlash,
-  Loader,
-  SquareArrowOutUpRight,
-  XCircle,
-} from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitHubChecksSummary } from "@src/api/tauri/github";
+import { Placeholder } from "@src/components/Placeholder";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
 import { formatTimeAgo } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/hooks/workstationIssueHelpers";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import CiCheckStateIcon from "@src/modules/shared/components/CiCheckStateIcon";
 import {
   type CiCheckState,
   checkRunState,
   statusContextState,
 } from "@src/services/git/ciCheckState";
-
-function StateIcon({ state }: { state: CiCheckState }): React.ReactNode {
-  switch (state) {
-    case "success":
-      return (
-        <CheckCircle2 size={15} strokeWidth={1.9} className="text-success-6" />
-      );
-    case "failure":
-      return <XCircle size={15} strokeWidth={1.9} className="text-danger-6" />;
-    case "pending":
-      return (
-        <Loader
-          size={15}
-          strokeWidth={1.9}
-          className="animate-spin text-warning-6"
-        />
-      );
-    default:
-      return (
-        <CircleSlash size={15} strokeWidth={1.9} className="text-text-3" />
-      );
-  }
-}
 
 interface CheckRowProps {
   state: CiCheckState;
@@ -66,7 +38,7 @@ function CheckRow({
   return (
     <div className="flex min-w-0 items-center gap-2.5 border-b border-border-1 px-3 py-2 last:border-b-0">
       <span className="shrink-0">
-        <StateIcon state={state} />
+        <CiCheckStateIcon state={state} />
       </span>
       <div className="min-w-0 flex-1">
         <div className="truncate text-[12px] text-text-1" title={name}>
@@ -89,7 +61,12 @@ function CheckRow({
           className="shrink-0 text-text-3 hover:text-text-1"
           title={t("git.pr.details", "Details")}
         >
-          <SquareArrowOutUpRight size={13} strokeWidth={1.9} />
+          <HugeiconsIcon
+            icon={SquareArrowUpRight02Icon}
+            data-icon="square-arrow-out-up-right"
+            size={13}
+            strokeWidth={1.9}
+          />
         </a>
       ) : null}
     </div>
@@ -140,10 +117,10 @@ export const PrChecksTab: React.FC<PrChecksTabProps> = ({
         : t("git.pr.checks.pending", "Checks in progress");
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+    <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto">
       <div className={`${DETAIL_PANEL_TOKENS.headerWidth} px-4 py-4`}>
         <div className="mb-3 flex items-center gap-2">
-          <StateIcon state={overall} />
+          <CiCheckStateIcon state={overall} />
           <span className="text-[13px] font-medium text-text-1">
             {summaryLabel}
           </span>

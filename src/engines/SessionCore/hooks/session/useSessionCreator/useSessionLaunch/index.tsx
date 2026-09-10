@@ -61,8 +61,6 @@ import { injectSyntheticUserEventIfNeeded } from "./syntheticEvents";
 import type { UseSessionLaunchOptions, UseSessionLaunchReturn } from "./types";
 import { useWalletModalState } from "./walletModalState";
 
-export type { UseSessionLaunchOptions, UseSessionLaunchReturn } from "./types";
-
 const log = createLogger("useSessionLaunch");
 
 export function useSessionLaunch(
@@ -256,6 +254,7 @@ export function useSessionLaunch(
           agentExecMode,
           effectiveSource,
           isBackgroundLaunch,
+          launchAgentDefinitionId: launchParams.agentDefinitionId,
           launchCliAgentType: launchParams.platform,
           launchOrgContext: resolvedWorkItemContext ?? undefined,
           result,

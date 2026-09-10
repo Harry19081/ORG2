@@ -7,9 +7,6 @@
  * - `useSetting(key)` — Read/write a single setting
  * - `useSettingValue(key)` — Read-only access to a setting
  * - `useAllSettings()` — Read the full settings object
- * - `useSettingsLoaded()` — Check if settings have been loaded
- * - `useUpdateSettingsBatch(updates)` — Update multiple settings
- * - `useResetAllSettings()` — Reset all settings to defaults
  * - `useSettingsSync()` — Initialize and listen for file changes (call once)
  * - `settingAtom(key)` — Create a read-only Jotai atom for a setting
  */
@@ -18,7 +15,6 @@
 export {
   settingsAtom,
   settingsLoadedAtom,
-  settingAtom,
   updateSettingAtom,
   saveSettingAtom,
   updateSettingsBatchAtom,
@@ -29,15 +25,7 @@ export {
 } from "./settingsAtom";
 
 // Hooks (canonical location: @src/hooks/settings/useSettings)
-export {
-  useSetting,
-  useSettingValue,
-  useAllSettings,
-  useSettingsLoaded,
-  useUpdateSettingsBatch,
-  useResetAllSettings,
-  useSettingsJson,
-} from "@src/hooks/settings/useSettings";
+export { useSetting, useAllSettings } from "@src/hooks/settings/useSettings";
 
 // Sync (file watcher listener)
 export { useSettingsSync } from "./settingsSync";

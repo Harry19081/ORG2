@@ -10,21 +10,33 @@
  *   - Categories with no live data are hidden, no mock/placeholder values.
  */
 import { useAtomValue } from "jotai";
-import { Archive, ChevronsDownUp, ChevronsUpDown, X } from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { pillControlStateClass } from "@src/components/CompoundPill/config";
+import {
+  PILL_CONTROL_ACTIVE_SURFACE_CLASS,
+  PILL_CONTROL_HOVER_CLASS,
+} from "@src/components/CompoundPill/config";
 import Textarea from "@src/components/Textarea";
+import { useConversationExecutionBinding } from "@src/engines/ChatPanel/ConversationExecutionBindingContext";
 import {
   manualCompactInFlightSessionAtom,
+  resolveManualCompactSessionId,
   useManualCompact,
 } from "@src/engines/ChatPanel/hooks/useManualCompact";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
 import { useHousekeeperConfig } from "@src/hooks/housekeeper";
 import { useSetting } from "@src/hooks/settings/useSettings";
+import {
+  ArchiveIcon,
+  Cancel01Icon,
+  ChevronsDownUpIcon,
+  HugeiconsIcon,
+  Refresh04Icon,
+  UnfoldMoreIcon,
+} from "@src/icons";
 
 import ContextBreakdownBar from "./ContextBreakdownBar";
 import ContextCategoryRow from "./ContextCategoryRow";
@@ -33,6 +45,7 @@ import ProgressRing from "./ProgressRing";
 import { type PanelCategory, ringToneForPercentage } from "./contextInfoTypes";
 import { useContextPanel } from "./useContextPanel";
 import { formatTokenCount, useContextUsageInfo } from "./useContextUsageInfo";
+import { useRefreshContextUsage } from "./useRefreshContextUsage";
 
 export interface ContextInfoButtonProps {
   repoPath?: string;
@@ -152,7 +165,13 @@ function applyCategoryPercents(
 const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
   ({ variant = "toolbar", compact = false }) => {
     const { t } = useTranslation();
+    const {
+      refresh,
+      refreshing,
+      error: refreshError,
+    } = useRefreshContextUsage();
     const { sessionId } = useSessionId();
+    const executionBinding = useConversationExecutionBinding();
     const [housekeeperEnabled] = useSetting("housekeeper.enabled");
     const [contextCompactEnabled] = useSetting(
       "housekeeper.features.contextCompact"
@@ -296,7 +315,14 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
       [runManualCompact]
     );
 
-    const compactDisabled = manualCompacting;
+    const manualCompactSupported =
+      resolveManualCompactSessionId(sessionId, executionBinding) !== null;
+    const manualCompactExpanded = manualCompactSupported && manualCompactOpen;
+    const compactDisabled = manualCompacting || !manualCompactSupported;
+    const triggerSurfaceClass =
+      panelPos !== null
+        ? PILL_CONTROL_ACTIVE_SURFACE_CLASS
+        : PILL_CONTROL_HOVER_CLASS;
 
     return (
       <>
@@ -304,7 +330,7 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
           <button
             ref={triggerRef}
             data-testid="context-info-button"
-            className={`flex h-[28px] shrink-0 items-center gap-1.5 rounded-full text-text-3 transition-colors duration-200 ${pillControlStateClass(panelPos !== null)} ${compact ? "w-[28px] justify-center px-0" : "px-2"}`}
+            className={`flex h-[28px] shrink-0 items-center gap-1.5 rounded-full text-text-3 transition-colors duration-200 ${triggerSurfaceClass} ${compact ? "w-[28px] justify-center px-0" : "px-2"}`}
             onClick={toggle}
             aria-label={t("contextInfo.ariaLabel")}
             aria-expanded={panelPos !== null}
@@ -312,7 +338,7 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
             <ProgressRing percentage={displayPct} tone={ringTone} />
             {!compact && showCornerPercent && (
               <span
-                className={`text-[12px] tabular-nums leading-none ${cornerLabelClass}`}
+                className={`text-[12px] leading-none tabular-nums ${cornerLabelClass}`}
               >
                 {percentage.toFixed(0)}%
               </span>
@@ -322,7 +348,7 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
           <button
             ref={triggerRef}
             data-testid="context-info-button"
-            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-3 transition-colors duration-150 hover:text-text-2 ${pillControlStateClass(panelPos !== null)}`}
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-3 transition-colors duration-150 hover:text-text-2 ${triggerSurfaceClass}`}
             onClick={toggle}
             aria-label={t("contextInfo.ariaLabel")}
             aria-expanded={panelPos !== null}
@@ -336,27 +362,54 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
             <div
               ref={panelRef}
               data-testid="context-info-panel"
-              className="fixed z-[99999] w-[320px] overflow-hidden rounded-xl border border-border-2 bg-bg-2 shadow-2xl"
+              className="fixed z-99999 w-[320px] overflow-hidden rounded-xl border border-border-2 bg-bg-2 shadow-2xl"
               style={{ bottom: panelPos.bottom, right: panelPos.right }}
             >
-              <div className="px-4 pb-3 pt-3.5">
+              <div className="px-4 pt-3.5 pb-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[13px] font-semibold text-text-1">
                     {t("contextInfo.title")}
                   </span>
-                  <button
-                    type="button"
-                    onClick={close}
-                    className="flex h-5 w-5 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-text-2"
-                    aria-label={t("common:actions.close")}
-                  >
-                    <X size={12} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      shape="square"
+                      iconOnly
+                      aria-label={t("common:actions.refresh")}
+                      title={t("common:actions.refresh")}
+                      loading={refreshing}
+                      disabled={!sessionId || refreshing}
+                      onClick={refresh}
+                      icon={<HugeiconsIcon icon={Refresh04Icon} size={14} />}
+                    />
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      shape="square"
+                      iconOnly
+                      onClick={close}
+                      aria-label={t("common:actions.close")}
+                      title={t("common:actions.close")}
+                      icon={
+                        <HugeiconsIcon
+                          icon={Cancel01Icon}
+                          data-icon="x"
+                          size={14}
+                        />
+                      }
+                    />
+                  </div>
                 </div>
+                {refreshError && (
+                  <p role="alert" className="mt-1 text-xs text-text-3">
+                    {refreshError}
+                  </p>
+                )}
 
                 <p className="mt-0.5 text-[13px] text-text-3">{tokenLabel}</p>
 
-                {!manualCompactOpen &&
+                {!manualCompactExpanded &&
                   (showCacheHero ? (
                     <div className="mt-2 rounded-lg bg-green-500/10 px-2.5 py-1.5">
                       <p className="text-[12px] font-semibold text-green-600">
@@ -396,7 +449,7 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                 </div>
               </div>
 
-              {!manualCompactOpen && categories.length > 0 && (
+              {!manualCompactExpanded && categories.length > 0 && (
                 <div className="px-4 py-2">
                   <div className="flex flex-col">
                     {categories.map((cat) => (
@@ -416,63 +469,92 @@ const ContextInfoButton: React.FC<ContextInfoButtonProps> = memo(
                 </div>
               )}
 
-              <div className="border-t border-border-2 bg-fill-1/30 px-3.5 py-2">
-                <button
-                  type="button"
-                  data-testid="context-info-manual-compact-toggle"
-                  onClick={() => setManualCompactOpen((open) => !open)}
-                  aria-expanded={manualCompactOpen}
-                  className="group flex w-full items-center justify-between rounded px-1 py-1 text-left"
-                >
-                  <span className="text-[13px] font-semibold text-text-1">
-                    {t("contextInfo.manualCompactSectionTitle")}
-                  </span>
-                  <span className="flex h-5 w-5 items-center justify-center rounded text-text-3 transition-colors group-hover:bg-fill-2 group-hover:text-text-2">
-                    {manualCompactOpen ? (
-                      <ChevronsDownUp size={12} />
-                    ) : (
-                      <ChevronsUpDown size={12} />
-                    )}
-                  </span>
-                </button>
-
-                {manualCompactOpen && (
-                  <div className="mt-2">
-                    <Textarea
-                      size="small"
-                      autoSize={{ minRows: 2, maxRows: 5 }}
-                      data-testid="context-info-compact-instructions-input"
-                      value={compactInstructions}
-                      onChange={(value) => setCompactInstructions(value)}
-                      onKeyDown={handleInstructionsKeyDown}
-                      placeholder={t(
-                        "contextInfo.manualCompactInstructionsPlaceholder"
-                      )}
-                    />
-                    <Button
-                      long
-                      variant="secondary"
-                      size="small"
-                      className="mt-2"
-                      data-testid="context-info-manual-compact-button"
-                      icon={<Archive size={14} />}
-                      loading={manualCompacting}
-                      disabled={compactDisabled}
-                      onClick={runManualCompact}
+              {manualCompactSupported && (
+                <div className="border-t border-border-2 bg-fill-1/30 px-3.5 py-2">
+                  <div className="flex items-center justify-between px-1 py-1">
+                    <button
+                      type="button"
+                      onClick={() => setManualCompactOpen((open) => !open)}
+                      aria-expanded={manualCompactOpen}
+                      className="flex-1 self-stretch text-left text-[13px] font-semibold text-text-1"
                     >
-                      {manualCompacting
-                        ? t("contextInfo.manualCompactRunning")
-                        : t("contextInfo.manualCompactAction")}
-                    </Button>
-
-                    {housekeeperEnabled &&
-                      contextCompactEnabled &&
-                      sessionId && (
-                        <ConfiguredMiniCpmCompactCard sessionId={sessionId} />
+                      {t("contextInfo.manualCompactSectionTitle")}
+                    </button>
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      shape="square"
+                      iconOnly
+                      data-testid="context-info-manual-compact-toggle"
+                      onClick={() => setManualCompactOpen((open) => !open)}
+                      aria-expanded={manualCompactOpen}
+                      aria-label={t(
+                        manualCompactOpen
+                          ? "common:actions.collapse"
+                          : "common:actions.expand"
                       )}
+                      icon={
+                        <HugeiconsIcon
+                          icon={
+                            manualCompactOpen
+                              ? ChevronsDownUpIcon
+                              : UnfoldMoreIcon
+                          }
+                          data-icon={
+                            manualCompactOpen
+                              ? "chevrons-down-up"
+                              : "chevrons-up-down"
+                          }
+                          size={14}
+                        />
+                      }
+                    />
                   </div>
-                )}
-              </div>
+
+                  {manualCompactOpen && (
+                    <div className="mt-2">
+                      <Textarea
+                        size="small"
+                        autoSize={{ minRows: 2, maxRows: 5 }}
+                        data-testid="context-info-compact-instructions-input"
+                        value={compactInstructions}
+                        onChange={(value) => setCompactInstructions(value)}
+                        onKeyDown={handleInstructionsKeyDown}
+                        placeholder={t(
+                          "contextInfo.manualCompactInstructionsPlaceholder"
+                        )}
+                      />
+                      <Button
+                        long
+                        variant="secondary"
+                        size="small"
+                        className="mt-2"
+                        data-testid="context-info-manual-compact-button"
+                        icon={
+                          <HugeiconsIcon
+                            icon={ArchiveIcon}
+                            data-icon="archive"
+                            size={14}
+                          />
+                        }
+                        loading={manualCompacting}
+                        disabled={compactDisabled}
+                        onClick={runManualCompact}
+                      >
+                        {manualCompacting
+                          ? t("contextInfo.manualCompactRunning")
+                          : t("contextInfo.manualCompactAction")}
+                      </Button>
+
+                      {housekeeperEnabled &&
+                        contextCompactEnabled &&
+                        sessionId && (
+                          <ConfiguredMiniCpmCompactCard sessionId={sessionId} />
+                        )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>,
             document.body
           )}

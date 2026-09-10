@@ -18,20 +18,12 @@ export interface GlobalCommitInfo {
   shortSha: string;
 }
 
-export interface GlobalLspStatus {
-  connected: boolean;
-  language?: string;
-}
-
 export interface GlobalStatusBarState {
   appType: StatusBarAppType;
   cursor: GlobalCursorPosition | null;
   filePath: string | null;
   totalLines: number | undefined;
-  repoName: string | undefined;
-  branchName: string | undefined;
   commitInfo: GlobalCommitInfo | null;
-  lspStatus: GlobalLspStatus | undefined;
   browserUrl: string | undefined;
   browserIsLoading: boolean | undefined;
   browserErrorCount: number | undefined;
@@ -64,10 +56,7 @@ const defaultStatusBarState: GlobalStatusBarState = {
   cursor: null,
   filePath: null,
   totalLines: undefined,
-  repoName: undefined,
-  branchName: undefined,
   commitInfo: null,
-  lspStatus: undefined,
   browserUrl: undefined,
   browserIsLoading: undefined,
   browserErrorCount: undefined,
@@ -151,30 +140,7 @@ export function makeStatusBarStateAtom(app: StatusBarAppType) {
 /** Pre-built per-app state atoms — import the one matching your module. */
 export const codeStatusBarStateAtom = makeStatusBarStateAtom("code");
 export const browserStatusBarStateAtom = makeStatusBarStateAtom("browser");
-export const dataStatusBarStateAtom = makeStatusBarStateAtom("data");
 export const projectStatusBarStateAtom = makeStatusBarStateAtom("project");
-
-/**
- * @deprecated Use the per-app atom (codeStatusBarStateAtom, etc.) so writes
- * always target the correct slot regardless of which app is currently active.
- */
-export const globalStatusBarStateAtom = atom(
-  (get) => get(activeStatusBarStateAtom),
-  (
-    get,
-    set,
-    update:
-      | GlobalStatusBarState
-      | ((prev: GlobalStatusBarState) => GlobalStatusBarState)
-  ) => {
-    const perApp = get(perAppStatusBarStateAtom);
-    const activeApp = get(activeStatusBarAppAtom);
-    const prev = perApp[activeApp];
-    const newState = typeof update === "function" ? update(prev) : update;
-    set(perAppStatusBarStateAtom, { ...perApp, [newState.appType]: newState });
-  }
-);
-globalStatusBarStateAtom.debugLabel = "globalStatusBarState";
 
 // ============================================
 // Per-App Callbacks
@@ -258,9 +224,7 @@ export function makeStatusBarCallbacksAtom(app: StatusBarAppType) {
 }
 
 /** Pre-built per-app callback atoms — import the one matching your module. */
-export const codeStatusBarCallbacksAtom = makeStatusBarCallbacksAtom("code");
 export const browserStatusBarCallbacksAtom =
   makeStatusBarCallbacksAtom("browser");
-export const dataStatusBarCallbacksAtom = makeStatusBarCallbacksAtom("data");
 export const projectStatusBarCallbacksAtom =
   makeStatusBarCallbacksAtom("project");

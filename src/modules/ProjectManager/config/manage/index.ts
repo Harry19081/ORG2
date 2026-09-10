@@ -7,11 +7,9 @@
 // Colors
 export {
   STATUS_COLORS,
-  STATUS_BG_COLORS,
   PRIORITY_COLORS,
-  HEALTH_COLORS,
-  ENTITY_COLORS,
   LABEL_COLORS,
+  ENTITY_COLORS,
   DEFAULT_LABELS,
   MILESTONE_COLORS,
 } from "./colors";
@@ -24,17 +22,13 @@ export {
   getWorkItemStatusConfig,
   getProjectStatusConfig,
 } from "./statusOptions";
-export type { ProjectStatusOption } from "./statusOptions";
 
 // Priority options
 export {
   WORK_ITEM_PRIORITY_OPTIONS,
-  STORY_PRIORITY_OPTIONS,
   getWorkItemPriorityConfig,
   getProjectPriorityConfig,
 } from "./priorityOptions";
-export type { ProjectPriorityOption } from "./priorityOptions";
 
 // Health options
-export { HEALTH_OPTIONS, getHealthConfig } from "./healthOptions";
-export type { HealthOption } from "./healthOptions";
+export { getHealthConfig } from "./healthOptions";

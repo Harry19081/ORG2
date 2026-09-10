@@ -40,10 +40,6 @@
  *   <Pane id="left"><Left /></Pane>
  *   <Pane id="right"><Right /></Pane>
  * </SplitGroup>
- *
- * // 5. Use layout atoms for state
- * import { leftPanelWidthAtom } from "@src/scaffold/Resize";
- * const [width, setWidth] = useAtom(leftPanelWidthAtom);
  * ```
  */
 
@@ -51,19 +47,13 @@
 // Context & Provider
 // ============================================
 
-export {
-  ResizeManagerContext,
-  ResizeProvider,
-  useResizeManager,
-} from "./ResizeManager";
-export type { ResizeProviderProps } from "./ResizeManager";
+export { ResizeProvider } from "./ResizeManager";
 
 // ============================================
 // Hooks
 // ============================================
 
 export { useResizeController, useColumnResize } from "./hooks";
-export type { UseResizeControllerReturn } from "./hooks";
 
 // ============================================
 // Components
@@ -86,58 +76,5 @@ export {
   Pane,
   SplitGroup,
 } from "./components";
-export type { PaneProps } from "./components";
 
-// ============================================
-// Store (Jotai Atoms)
-// ============================================
-
-export {
-  // Main layout atom
-  layoutAtom,
-  // Panel size atoms
-  bottomPanelHeightAtom,
-  leftPanelWidthAtom,
-  rightPanelWidthAtom,
-  // Split atoms
-  createSplitAtom,
-  editorSplitAtom,
-  simulatorSplitAtom,
-  // Defaults
-  DEFAULT_LAYOUT_STATE,
-  DEFAULT_PANEL_SIZES,
-  DEFAULT_PANEL_VISIBILITY,
-  DEFAULT_SPLIT_SIZES,
-  // Reset
-  resetLayoutAtom,
-  // Visibility
-  panelVisibilityAtom,
-  toggleBottomPanelAtom,
-  toggleLeftPanelAtom,
-  toggleRightPanelAtom,
-  // Constraints
-  getPanelConstraints,
-  PANEL_CONSTRAINTS,
-} from "./store/layoutAtom";
-export type { PanelId } from "./store/layoutAtom";
-
-// ============================================
-// Types
-// ============================================
-
-export type {
-  GhostLayerProps,
-  LayoutState,
-  PanelSizes,
-  ResizableShellProps,
-  ResizeAxis,
-  ResizeControllerOptions,
-  ResizeDirection,
-  ResizeHandleProps,
-  ResizeHandleVariant,
-  ResizeManagerContextType,
-  ResizeSession,
-  SplitGroupProps,
-  SplitPaneConfig,
-  SplitSizes,
-} from "./types";
+export { default as ResizableSplitPanel } from "./components/ResizableSplitPanel";

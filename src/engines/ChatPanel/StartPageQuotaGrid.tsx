@@ -1,4 +1,3 @@
-import { RefreshCw } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -6,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -22,11 +22,12 @@ import {
   formatQuotaResetHint,
 } from "@src/hooks/keyVault/accountQuotaDisplay";
 import { createLogger } from "@src/hooks/logger";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { ArrowLeft01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import {
-  SECTION_GAP_CLASSES,
-  SECTION_SUBHEADING_CLASSES,
-} from "@src/modules/shared/layouts/SectionLayout";
+  RuntimeRefreshButton,
+  RuntimeSectionHeader,
+} from "@src/modules/shared/dataSource/RuntimeSectionHeader";
+import { SECTION_GAP_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
 
 const logger = createLogger("StartPageQuotaGrid");
 
@@ -57,11 +58,12 @@ function StartPageQuotaCard({
               : entry.accountName
           }
         >
-          <div className="truncate text-xs font-semibold leading-4 text-text-1">
+          <div className="truncate text-xs leading-4 font-semibold text-text-1">
             {entry.accountName}
           </div>
           <div className="truncate text-[11px] leading-4 text-text-3">
             {entry.accountPlan ?? "-"}
+            {entry.quotaMessage ? ` · ${entry.quotaMessage}` : ""}
           </div>
         </div>
       </div>
@@ -76,7 +78,7 @@ function StartPageQuotaCard({
                 <span className="min-w-0 truncate text-text-3">
                   {metric.label}
                 </span>
-                <span className="shrink-0 font-semibold tabular-nums text-text-1">
+                <span className="shrink-0 font-semibold text-text-1 tabular-nums">
                   {metric.value}
                 </span>
               </div>
@@ -125,12 +127,28 @@ function StartPageQuotaCard({
 
 interface StartPageQuotaGridProps {
   className?: string;
+  showHeader?: boolean;
+  paginate?: boolean;
+  paginationContainer?: HTMLElement | null;
+  onRefreshControlChange?: (control: QuotaRefreshControl | null) => void;
+}
+
+export interface QuotaRefreshControl {
+  disabled: boolean;
+  onRefresh: () => void;
+  refreshing: boolean;
 }
 
 export function StartPageQuotaGrid({
   className,
+  showHeader = true,
+  paginate = false,
+  paginationContainer,
+  onRefreshControlChange,
 }: StartPageQuotaGridProps): React.ReactNode {
   const { t } = useTranslation("sessions");
+  const { t: tCommon } = useTranslation("common");
+  const [page, setPage] = useState(0);
   const { t: tIntegrations } = useTranslation("integrations");
   const { accounts, getAccount, refreshAccount } = useKeyVault({
     autoLoad: true,
@@ -151,6 +169,15 @@ export function StartPageQuotaGrid({
     () => collectAccountQuotaCards(accounts, t, tIntegrations),
     [accounts, t, tIntegrations]
   );
+
+  const pageCount = Math.max(1, Math.ceil(entries.length / 4));
+  const currentPage = Math.min(page, pageCount - 1);
+  useEffect(() => {
+    setPage((previous) => Math.min(previous, pageCount - 1));
+  }, [pageCount]);
+  const visibleEntries = paginate
+    ? entries.slice(currentPage * 4, (currentPage + 1) * 4)
+    : entries;
 
   const refreshCandidates = useMemo(() => {
     const candidates = new Map(
@@ -297,49 +324,81 @@ export function StartPageQuotaGrid({
     };
   }, [entries, refreshAllAccounts, refreshCandidates.length]);
 
-  const { spinClass, handleClick: handleRefreshClick } = useRefreshSpin(
+  useEffect(() => {
+    onRefreshControlChange?.({
+      disabled: refreshCandidates.length === 0,
+      onRefresh: handleRefreshAll,
+      refreshing,
+    });
+    return () => onRefreshControlChange?.(null);
+  }, [
     handleRefreshAll,
-    refreshing
-  );
+    onRefreshControlChange,
+    refreshCandidates.length,
+    refreshing,
+  ]);
+
+  const paginationControls = paginate ? (
+    <div
+      className="flex items-center justify-end gap-1"
+      data-testid="quota-pagination"
+    >
+      <Button
+        variant="tertiary"
+        size="small"
+        iconOnly
+        aria-label={tCommon("actions.previous")}
+        title={tCommon("actions.previous")}
+        disabled={currentPage === 0}
+        onClick={() => setPage(Math.max(0, currentPage - 1))}
+        icon={<HugeiconsIcon icon={ArrowLeft01Icon} size={16} />}
+      />
+      <Button
+        variant="tertiary"
+        size="small"
+        iconOnly
+        aria-label={tCommon("actions.next")}
+        title={tCommon("actions.next")}
+        disabled={currentPage >= pageCount - 1}
+        onClick={() => setPage(Math.min(pageCount - 1, currentPage + 1))}
+        icon={<HugeiconsIcon icon={ArrowRight01Icon} size={16} />}
+      />
+    </div>
+  ) : null;
 
   return (
     <div
       className={`${SECTION_GAP_CLASSES} @container/quota ${className ?? ""}`}
     >
-      <div
-        className="sticky top-0 z-20 -mx-4 bg-chat-pane px-4 pb-1"
-        data-testid="quota-refresh-controls"
-      >
-        <div className="flex min-h-9 items-center justify-between gap-3">
-          <h3 className={SECTION_SUBHEADING_CLASSES}>
-            {t("kanban.dataSource.views.quota")}
-          </h3>
-          <Button
-            htmlType="button"
-            variant="tertiary"
-            appearance="ghost"
-            size="small"
-            disabled={refreshing || refreshCandidates.length === 0}
-            aria-label={t("chat.startPage.quota.refresh")}
-            title={t("chat.startPage.quota.refresh")}
-            onClick={handleRefreshClick}
-            icon={<RefreshCw size={14} className={spinClass} />}
-          >
-            {t("chat.startPage.quota.refresh")}
-          </Button>
-        </div>
-      </div>
+      {showHeader ? (
+        <RuntimeSectionHeader
+          title={t("kanban.dataSource.views.quota")}
+          className="-mx-4 bg-chat-pane px-4 pt-2 pb-1"
+          dataTestId="quota-refresh-controls"
+          headingLevel="h3"
+        >
+          <RuntimeRefreshButton
+            label={t("chat.startPage.quota.refresh")}
+            onRefresh={handleRefreshAll}
+            refreshing={refreshing}
+            disabled={refreshCandidates.length === 0}
+          />
+        </RuntimeSectionHeader>
+      ) : null}
       {entries.length === 0 ? (
         <p className="px-1 text-center text-[13px] text-text-3">
           {t("chat.startPage.quota.empty")}
         </p>
       ) : (
         <div className={gridClassName}>
-          {entries.map((entry) => (
+          {visibleEntries.map((entry) => (
             <StartPageQuotaCard key={entry.id} entry={entry} />
           ))}
         </div>
       )}
+      {paginationContainer
+        ? createPortal(paginationControls, paginationContainer)
+        : paginationControls}
     </div>
   );
 }

@@ -8,8 +8,10 @@ import {
 export const WORK_MANAGEMENT_DATASET = {
   PROJECTS: "projects",
   WORK_ITEMS: "work-items",
+  INBOX: "inbox",
   GITHUB_ISSUES: "github-issues",
   REVIEWS: "reviews",
+  RUNS: "runs",
 } as const;
 
 export type WorkManagementDataset =
@@ -26,11 +28,17 @@ export function resolveWorkManagementDataset({
   section: WorkManagementSection;
   projectsView: WorkManagementProjectsView;
 }): WorkManagementDataset | null {
+  if (section === WORK_MANAGEMENT_SECTION.INBOX) {
+    return WORK_MANAGEMENT_DATASET.INBOX;
+  }
   if (section === WORK_MANAGEMENT_SECTION.GITHUB_ISSUES) {
     return WORK_MANAGEMENT_DATASET.GITHUB_ISSUES;
   }
   if (section === WORK_MANAGEMENT_SECTION.GITHUB_PRS) {
     return WORK_MANAGEMENT_DATASET.REVIEWS;
+  }
+  if (section === WORK_MANAGEMENT_SECTION.RUNS) {
+    return WORK_MANAGEMENT_DATASET.RUNS;
   }
   if (
     section === WORK_MANAGEMENT_SECTION.PROJECTS &&

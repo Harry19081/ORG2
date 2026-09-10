@@ -26,7 +26,6 @@ import RuntimeDataSourcePanel from ".";
 
 const lifecycle = vi.hoisted(() => ({
   usageUnmounted: vi.fn(),
-  quotaUnmounted: vi.fn(),
   scanningUnmounted: vi.fn(),
   hooksUnmounted: vi.fn(),
 }));
@@ -114,19 +113,6 @@ vi.mock("./SessionUsagePanel", async () => {
   }
   return {
     default: UsageSectionMock,
-  };
-});
-
-vi.mock("@src/engines/ChatPanel/StartPageQuotaGrid", async () => {
-  const React = await vi.importActual<typeof import("react")>("react");
-  function QuotaSectionMock() {
-    React.useEffect(() => lifecycle.quotaUnmounted, []);
-    return React.createElement("div", {
-      "data-testid": "runtime-section-quota",
-    });
-  }
-  return {
-    StartPageQuotaGrid: QuotaSectionMock,
   };
 });
 
@@ -238,17 +224,11 @@ describe("RuntimeDataSourcePanel", () => {
       container.querySelector('[data-testid="runtime-section-usage"]')
     ).not.toBeNull();
 
-    await selectSection("data-source-view-quota");
+    await selectSection("data-source-view-scanning");
     expect(lifecycle.usageUnmounted).toHaveBeenCalledTimes(1);
     expect(
       container.querySelector('[data-testid="runtime-section-usage"]')
     ).toBeNull();
-    expect(
-      container.querySelector('[data-testid="runtime-section-quota"]')
-    ).not.toBeNull();
-
-    await selectSection("data-source-view-scanning");
-    expect(lifecycle.quotaUnmounted).toHaveBeenCalledTimes(1);
     expect(
       container.querySelector('[data-testid="runtime-section-scanning"]')
     ).not.toBeNull();
@@ -273,7 +253,6 @@ describe("RuntimeDataSourcePanel", () => {
     const picker = container.innerHTML.indexOf("runtime-scope-picker");
     const usage = container.innerHTML.indexOf("data-source-view-usage");
     const profile = container.innerHTML.indexOf("data-source-view-profile");
-    const quota = container.innerHTML.indexOf("data-source-view-quota");
     const scanning = container.innerHTML.indexOf("data-source-view-scanning");
     const hooks = container.innerHTML.indexOf("data-source-view-hooks");
     const assets = container.innerHTML.indexOf("data-source-view-assets");
@@ -281,8 +260,7 @@ describe("RuntimeDataSourcePanel", () => {
     expect(picker).toBeGreaterThanOrEqual(0);
     expect(usage).toBeGreaterThan(picker);
     expect(profile).toBeGreaterThan(usage);
-    expect(quota).toBeGreaterThan(profile);
-    expect(scanning).toBeGreaterThan(quota);
+    expect(scanning).toBeGreaterThan(profile);
     expect(hooks).toBeGreaterThan(scanning);
     expect(assets).toBeGreaterThan(hooks);
     expect(
@@ -294,6 +272,12 @@ describe("RuntimeDataSourcePanel", () => {
   it("keeps type categories out of the Runtime tab bar", () => {
     expect(
       container.querySelector('[data-testid="data-source-view-types"]')
+    ).toBeNull();
+  });
+
+  it("consolidates Quota into Usage instead of rendering a separate tab", () => {
+    expect(
+      container.querySelector('[data-testid="data-source-view-quota"]')
     ).toBeNull();
   });
 
@@ -377,6 +361,7 @@ describe("RuntimeDataSourcePanel", () => {
       ]);
       store.set(runtimeNavigationIntentAtom, {
         requestId: 42,
+        scope: "organization",
         orgId: "org-1",
         view: "members",
       });
@@ -413,6 +398,7 @@ describe("RuntimeDataSourcePanel", () => {
     await act(async () => {
       store.set(runtimeNavigationIntentAtom, {
         requestId: 43,
+        scope: "organization",
         orgId: "removed-org",
         view: "members",
       });
@@ -429,6 +415,83 @@ describe("RuntimeDataSourcePanel", () => {
         `[data-guide-target="${GUIDE_TARGETS.TEAM_RUNTIME_TABS}"]`
       )
     ).toBeNull();
+    expect(store.get(runtimeNavigationIntentAtom)).toBeNull();
+  });
+
+  it("consumes a scanning intent and returns from an organization scope to the personal Scanning tab", async () => {
+    await act(async () => {
+      store.set(org2CloudAuthAtom, {
+        kind: "org2_cloud",
+        supabaseUrl: "https://cloud.example",
+        supabaseAnonKey: "anon",
+        userId: "me",
+        accessToken: "token",
+        refreshToken: "refresh",
+        expiresAt: Math.floor(Date.now() / 1000) + 3600,
+      });
+      store.set(org2CloudOrgsAtom, [
+        { orgId: "org-1", name: "Example Team", role: "member" },
+      ]);
+    });
+    const scopePicker = container.querySelector<HTMLSelectElement>(
+      '[data-testid="runtime-scope-picker"]'
+    );
+    await act(async () => {
+      if (!scopePicker) return;
+      scopePicker.value = "cloud:org-1";
+      scopePicker.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    await act(async () => {
+      await vi.dynamicImportSettled();
+      await Promise.resolve();
+    });
+    expect(
+      container.querySelector('[data-testid="runtime-section-organization"]')
+    ).not.toBeNull();
+
+    await act(async () => {
+      store.set(runtimeNavigationIntentAtom, {
+        requestId: 44,
+        scope: "personal",
+        view: "scanning",
+      });
+    });
+    await act(async () => {
+      await vi.dynamicImportSettled();
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(
+      container.querySelector('[data-testid="runtime-section-scanning"]')
+    ).not.toBeNull();
+    expect(
+      container
+        .querySelector('[data-testid="data-source-view-scanning"]')
+        ?.getAttribute("data-active")
+    ).toBe("true");
+    expect(
+      container.querySelector('[data-testid="runtime-section-organization"]')
+    ).toBeNull();
+    expect(store.get(runtimeNavigationIntentAtom)).toBeNull();
+  });
+
+  it("opens Scanning without waiting for cloud organizations to load", async () => {
+    await act(async () => {
+      store.set(org2CloudOrgsLoadedAtom, false);
+      store.set(runtimeNavigationIntentAtom, {
+        requestId: 45,
+        scope: "personal",
+        view: "scanning",
+      });
+    });
+    await act(async () => {
+      await vi.dynamicImportSettled();
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    expect(
+      container.querySelector('[data-testid="runtime-section-scanning"]')
+    ).not.toBeNull();
     expect(store.get(runtimeNavigationIntentAtom)).toBeNull();
   });
 });

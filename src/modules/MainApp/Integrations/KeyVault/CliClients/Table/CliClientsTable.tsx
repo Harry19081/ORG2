@@ -1,12 +1,11 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { Plus, RefreshCw } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { ModelType } from "@src/api/types/keys";
 import Button from "@src/components/Button";
 import ModelIcon from "@src/components/ModelIcon";
-import { MODEL_TABLE_SWITCH_SIZE } from "@src/components/ModelTable/types";
+import { Placeholder } from "@src/components/Placeholder";
 import type { SelectOption } from "@src/components/Select";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -18,9 +17,10 @@ import StatusDot from "@src/components/StatusDot";
 import Switch from "@src/components/Switch";
 import Tag from "@src/components/Tag";
 import type { AvailableAgent } from "@src/config/cliAgents";
+import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import { Add01Icon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   cliAgentVisibilityOverridesAtom,
   isCliAgentEnabled,
@@ -141,12 +141,6 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
     ],
     [tIntegrations]
   );
-
-  const setSingleExpandedAgent = useCallback((agent: AvailableAgent) => {
-    setExpandedAgentKeys((currentKeys) =>
-      currentKeys.includes(agent.name) ? [] : [agent.name]
-    );
-  }, []);
 
   const handleViewAgent = useCallback((agent: AvailableAgent) => {
     openAgentConfigInWorkStation({
@@ -289,7 +283,7 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
                 size={MODEL_TABLE_SWITCH_SIZE}
                 checked={switchChecked}
                 disabled={!agent.installed}
-                onChange={(nextEnabled) =>
+                onCheckedChange={(nextEnabled) =>
                   handleEnabledChange(agent, nextEnabled)
                 }
                 ariaLabel={tIntegrations("common:labels.enabled", {
@@ -389,7 +383,14 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
       <Button
         variant="secondary"
         size="default"
-        icon={<RefreshCw size={14} className={spinClass} />}
+        icon={
+          <HugeiconsIcon
+            icon={Refresh04Icon}
+            data-icon="refresh-cw"
+            size={14}
+            className={spinClass}
+          />
+        }
         iconOnly
         aria-label={refreshButtonLabel}
         title={refreshButtonLabel}
@@ -399,7 +400,7 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
         <Button
           variant="secondary"
           size="default"
-          icon={<Plus size={14} />}
+          icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
           iconOnly
           aria-label={addButtonLabel}
           title={addButtonLabel}
@@ -425,7 +426,6 @@ const CliClientsTable: React.FC<CliClientsTableProps> = ({
       rows={filtered}
       columns={columns}
       getRowKey={(agent) => agent.name}
-      onRowClick={setSingleExpandedAgent}
       expandable={expandable}
       headerHeight="tall"
       className="table-expanded-no-hover table-settings-expanded-compact"

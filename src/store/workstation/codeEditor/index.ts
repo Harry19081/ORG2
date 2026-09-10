@@ -2,7 +2,7 @@
  * Code Editor App Store
  *
  * State management for the Code Editor app in Workstation.
- * Includes editor state, terminal, file explorer, search, and test runner.
+ * Includes editor state, terminal, file explorer, and search.
  */
 
 // Editor UI state (chat, themes, code citation)
@@ -16,12 +16,6 @@ export * from "./file";
 
 // Code search
 export * from "./search";
-
-// Test runner
-export * from "./testRunner";
-
-// Diagnostics health
-export * from "./diagnostics";
 
 // Workspace listening ports (status bar)
 export * from "./workspacePortsAtom";
@@ -47,8 +41,11 @@ export * from "./sourceControlTypes";
 // Pinned Terminal tab target selection
 export * from "./terminalTargetAtom";
 
-// Git / task output hook refs (set by EditorIntegrations)
+// Git operation hook ref (set by EditorIntegrations)
 export * from "./outputIntegration";
 
 // GitHub Issues list, detail, and callback atoms
 export * from "./workstationIssueAtom";
+
+// Git diff editor drafts (survive tab switches, keyed by file path)
+export * from "./gitDiffEditDrafts";

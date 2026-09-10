@@ -6,6 +6,7 @@
  * matching a synthetic user-input event against a still-parked frontend
  * message-queue entry. Extracted from actions.ts.
  */
+import { turnIntentIdOf } from "../../sync/utils/activityIds";
 import type { SessionEvent } from "../types";
 
 function normalizeUserText(value: string | undefined): string {
@@ -45,26 +46,38 @@ export function withUserMessageImages(
   };
 }
 
-export function syntheticMatchesQueuedMessage(
+/**
+ * Whether a synthetic user placeholder is settled by a batch of real backend
+ * user messages (summarized as a SyntheticEvictionScope): its echo is present
+ * (content match on either its display text or wire content), or it predates
+ * the newest real user turn so its echo can no longer arrive. Unsettled
+ * placeholders are messages still awaiting their echo and must be preserved.
+ */
+export function syntheticSettledByScope(
   event: SessionEvent,
-  queued: { sessionId: string; content: string; displayContent: string }
+  scope: {
+    matchingContents: string[];
+    matchingTurnIntentIds: string[];
+    olderThan?: string;
+  } | null
 ): boolean {
-  if (event.sessionId !== queued.sessionId) return false;
-  const eventText = normalizeUserText(event.displayText);
-  const resultMessage = event.result?.message;
-  const eventContent = normalizeUserText(
-    typeof resultMessage === "object" &&
-      resultMessage !== null &&
-      "content" in resultMessage
-      ? String(resultMessage.content ?? "")
-      : event.displayText
-  );
-  const queuedDisplay = normalizeUserText(queued.displayContent);
-  const queuedContent = normalizeUserText(queued.content);
-  return (
-    eventText === queuedDisplay ||
-    eventText === queuedContent ||
-    eventContent === queuedDisplay ||
-    eventContent === queuedContent
+  if (!scope) return false;
+  const turnIntentId = turnIntentIdOf(event);
+  // A submit-boundary placeholder has a durable logical identity. Timestamp
+  // order is not evidence for these rows: native replay/materialization can
+  // legitimately re-stamp an older turn after the new optimistic row was
+  // created. Only the matching backend intent may settle it. Content and
+  // timestamp remain the compatibility path for legacy placeholders.
+  if (turnIntentId) {
+    return scope.matchingTurnIntentIds.includes(turnIntentId);
+  }
+  const targets = new Set(scope.matchingContents.map(normalizeUserText));
+  const eventTexts = [
+    normalizeUserText(event.displayText),
+    normalizeUserText(getUserMessageContent(event)),
+  ].filter((text) => text.length > 0);
+  if (eventTexts.some((text) => targets.has(text))) return true;
+  return Boolean(
+    scope.olderThan && event.createdAt && event.createdAt < scope.olderThan
   );
 }

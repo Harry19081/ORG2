@@ -44,6 +44,7 @@ pub enum CliBinaryId {
     Pi,
     QoderCli,
     TraeCli,
+    DeepseekHarness,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -310,6 +311,13 @@ const CLI_BINARY_METADATA: &[CliBinaryMetadata] = &[
         command: "trae-cli",
         launchable: true,
     },
+    CliBinaryMetadata {
+        id: CliBinaryId::DeepseekHarness,
+        row_id: "deepseek-harness",
+        display_name: "DeepSeek Harness",
+        command: "dsh",
+        launchable: true,
+    },
 ];
 
 pub fn all_cli_binary_metadata() -> &'static [CliBinaryMetadata] {
@@ -361,6 +369,7 @@ pub fn id_for_registry_name(name: &str) -> Option<CliBinaryId> {
         "pi" => Some(CliBinaryId::Pi),
         "qoder_cli" => Some(CliBinaryId::QoderCli),
         "trae_cli" => Some(CliBinaryId::TraeCli),
+        "deepseek_harness" => Some(CliBinaryId::DeepseekHarness),
         _ => None,
     }
 }
@@ -395,6 +404,23 @@ pub fn resolve_cli_binary(id: CliBinaryId) -> CliBinaryResolution {
 
 pub fn resolve_cli_binary_command(id: CliBinaryId) -> String {
     resolve_cli_binary(id).command
+}
+
+/// Resolve a CLI command after checking caller-owned, higher-priority paths.
+///
+/// Product-specific callers own which paths are preferred (for example an
+/// executable bundled inside a native desktop App). This shared resolver
+/// remains the single owner of executable validation and of the ordinary
+/// PATH/login-shell/known-location fallback chain.
+pub fn resolve_cli_binary_command_preferring(
+    id: CliBinaryId,
+    preferred_paths: impl IntoIterator<Item = PathBuf>,
+) -> String {
+    preferred_paths
+        .into_iter()
+        .find(|path| is_executable_file(path))
+        .map(|path| path.to_string_lossy().to_string())
+        .unwrap_or_else(|| resolve_cli_binary_command(id))
 }
 
 /// Best-effort `<resolved CLI> --version` probe.
@@ -796,6 +822,27 @@ mod tests {
     }
 
     #[test]
+    fn preferred_paths_reuse_executable_validation_before_normal_resolution() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let non_executable = temp_dir.path().join("old-codex");
+        let executable = temp_dir.path().join("app-bundled-codex");
+        fs::write(&non_executable, "not executable").unwrap();
+        make_executable(&executable);
+
+        assert_eq!(
+            resolve_cli_binary_command_preferring(
+                CliBinaryId::Codex,
+                [
+                    temp_dir.path().join("missing"),
+                    non_executable,
+                    executable.clone(),
+                ],
+            ),
+            executable.to_string_lossy()
+        );
+    }
+
+    #[test]
     fn cursor_known_location_fallback_is_preserved() {
         let temp_dir = tempfile::tempdir().unwrap();
         let bin_dir = temp_dir.path().join(".local/bin");
@@ -900,9 +947,10 @@ mod tests {
     }
 
     #[test]
-    fn qoder_and_trae_use_their_published_executable_names() {
+    fn recent_cli_agents_use_their_published_executable_names() {
         assert_eq!(metadata_for_id(CliBinaryId::QoderCli).command, "qodercli");
         assert_eq!(metadata_for_id(CliBinaryId::TraeCli).command, "trae-cli");
+        assert_eq!(metadata_for_id(CliBinaryId::DeepseekHarness).command, "dsh");
     }
 
     #[test]

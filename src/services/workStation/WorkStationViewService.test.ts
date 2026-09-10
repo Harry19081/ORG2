@@ -2,17 +2,17 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { ROUTES } from "@src/config/routes";
-import {
-  CHAT_PANEL_STATION_WIDE_VIEWPORT_MIN_PX,
-  buildInitialChatPanelTabsState,
-  chatPanelTabsAtom,
-  openRuntimeInChatPanelTabAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
-import {
-  chatPanelMaximizedAtom,
-  stationChatVisibilityAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { buildInitialChatPanelTabsState } from "@src/store/chatPanel/chatPanelTabFactories";
+import { openRuntimeInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import {
+  createSourceControlTab,
+  openTab,
+  workstationLayoutAtom,
+} from "@src/store/workstation/tabs";
 import {
   createInstrumentedStore,
   getInstrumentedStore,
@@ -36,6 +36,7 @@ describe("WorkStationViewService work-management tabs", () => {
     });
     createInstrumentedStore();
     const store = getInstrumentedStore();
+    store.set(chatPanelMaximizedAtom, false);
     store.set(stationModeAtom, "agent-station");
     store.set(stationChatVisibilityAtom, {
       "my-station": true,
@@ -59,7 +60,31 @@ describe("WorkStationViewService work-management tabs", () => {
     expect(navigationEvents).toEqual([{ path: ROUTES.workStation.base.path }]);
   });
 
-  it("rejects Station-opening actions for wide-only tabs below the threshold", async () => {
+  it.each([
+    ROUTES.workStation.base.path,
+    ROUTES.workStation.code.path,
+    ROUTES.workStation.browser.path,
+  ])("toggles the active editor tab independently of URL %s", async (path) => {
+    const store = getInstrumentedStore();
+    store.set(stationModeAtom, "my-station");
+    const layout = store.get(workstationLayoutAtom);
+    store.set(workstationLayoutAtom, {
+      ...layout,
+      mainPane: openTab(
+        layout.mainPane,
+        createSourceControlTab(0, { mode: "all-changes" })
+      ),
+    });
+    store.set(chatPanelMaximizedAtom, false);
+    window.history.replaceState({}, "", path);
+    await WorkStationViewService.openSourceControlTab({
+      toggleChatPanelMaximizedWhenActive: true,
+    });
+    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+    expect(navigationEvents).toEqual([]);
+  });
+
+  it("rejects Station-opening actions for Station-excluded tabs", async () => {
     const store = getInstrumentedStore();
     store.set(openRuntimeInChatPanelTabAtom, "Runtime");
 
@@ -73,18 +98,17 @@ describe("WorkStationViewService work-management tabs", () => {
     expect(store.get(stationModeAtom)).toBe("agent-station");
   });
 
-  it("allows Station-opening actions for wide-only tabs at the threshold", async () => {
+  it("keeps Station-opening actions disabled on a wide viewport", async () => {
     const store = getInstrumentedStore();
     store.set(openRuntimeInChatPanelTabAtom, "Runtime");
-    window.innerWidth = CHAT_PANEL_STATION_WIDE_VIEWPORT_MIN_PX;
+    window.innerWidth = 2560;
 
-    expect(await WorkStationViewService.toggleChatPanelMaximized()).toBe(true);
-    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
-    expect(await WorkStationViewService.showWorkStation()).toBe(true);
+    expect(await WorkStationViewService.toggleChatPanelMaximized()).toBe(false);
     expect(store.get(chatPanelMaximizedAtom)).toBe(false);
+    expect(await WorkStationViewService.showWorkStation()).toBe(false);
     expect(await WorkStationViewService.openStationMode("my-station")).toBe(
-      true
+      false
     );
-    expect(store.get(stationModeAtom)).toBe("my-station");
+    expect(store.get(stationModeAtom)).toBe("agent-station");
   });
 });

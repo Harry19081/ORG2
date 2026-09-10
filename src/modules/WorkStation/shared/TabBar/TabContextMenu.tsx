@@ -11,14 +11,13 @@ import i18next from "i18next";
 import { useEffect, useRef } from "react";
 
 import { createLogger } from "@src/hooks/logger";
+import type { WorkStationTab } from "@src/store/workstation/tabs";
 import { copyText } from "@src/util/data/clipboard";
 import { getFileManagerRevealLabelKey } from "@src/util/platform/fileManagerLabels";
 import {
   type NativeMenuItemOptions,
   popupNativeMenu,
 } from "@src/util/platform/tauri/nativeMenuPopup";
-
-import type { WorkStationTab } from "./types";
 
 const logger = createLogger("TabContextMenu");
 
@@ -48,8 +47,8 @@ export interface TabContextMenuProps {
   onCloseOtherTabs: (tabId: string) => void;
   /** Callback to close all saved tabs */
   onCloseSavedTabs: () => void;
-  /** Move a chat-session tab back to the Chat Panel tab strip. */
-  onMoveSessionToChatPanel?: (tab: WorkStationTab) => void;
+  /** Move a losslessly representable tab to the Chat Panel tab strip. */
+  onMoveToChatPanel?: (tab: WorkStationTab) => void;
   /** Open the full raw transcript for a chat-session tab. */
   onViewRawTranscript?: (sessionId: string) => void;
   /** Review a chat-session as a Team Inbox Work Item handoff. */
@@ -196,6 +195,16 @@ export function TabContextMenu(props: TabContextMenuProps) {
                 },
               },
             ];
+            const moveToChatPanelItem: NativeMenuItemOptions = {
+              text: t("sessions:chat.moveToChatPanel", {
+                defaultValue: "Move to Chat Panel",
+              }),
+              action: () => {
+                const context = contextMenuRef.current;
+                if (context) context.onMoveToChatPanel?.(context.tab);
+                context?.onClose();
+              },
+            };
 
             if (tab.type === "chat-session") {
               const sessionId = tab.data.sessionId;
@@ -214,17 +223,7 @@ export function TabContextMenu(props: TabContextMenuProps) {
                       context?.onClose();
                     },
                   },
-                  {
-                    text: t("sessions:chat.moveToChatPanel", {
-                      defaultValue: "Move to Chat Panel",
-                    }),
-                    action: () => {
-                      const context = contextMenuRef.current;
-                      if (context)
-                        context.onMoveSessionToChatPanel?.(context.tab);
-                      context?.onClose();
-                    },
-                  },
+                  moveToChatPanelItem,
                   {
                     text: t("sessions:chat.rawTranscript.menuItem", {
                       defaultValue: "View raw transcript",
@@ -240,6 +239,8 @@ export function TabContextMenu(props: TabContextMenuProps) {
                   }
                 );
               }
+            } else if (contextMenuRef.current?.onMoveToChatPanel) {
+              items.push({ item: "Separator" }, moveToChatPanelItem);
             }
 
             if (filePath) {

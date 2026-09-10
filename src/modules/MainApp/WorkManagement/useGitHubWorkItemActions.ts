@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import type { GitHubIssue } from "@src/api/tauri/github";
 import Message from "@src/components/Message";
-import { useWorkStationTabs } from "@src/hooks/workStation/tabs";
+import { useWorkStationTabs } from "@src/hooks/tabHost/useWorkStationTabs";
 import {
   githubIssueResourceKey,
   loadGitHubIssueTimeline,
@@ -74,7 +74,11 @@ export function useGitHubWorkItemActions({
         issue: issue.rawIssue,
         timeline: [],
         loading: false,
-        timelineLoading: true,
+        // Only claim to be loading a timeline that this click will actually
+        // fetch. Without a resource key the request below is skipped, and
+        // seeding `true` here left the detail spinning on a timeline nothing
+        // would ever resolve.
+        timelineLoading: Boolean(resourceKey),
         error: null,
         submittingComment: false,
       });

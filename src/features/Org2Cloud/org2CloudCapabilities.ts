@@ -27,6 +27,9 @@ const CloudCapabilitiesWireSchema = z.object({
   orgChannels: z.boolean().nullish().catch(undefined),
   orgChannelMessages: z.boolean().nullish().catch(undefined),
   orgChannelMessagesIdempotency: z.boolean().nullish().catch(undefined),
+  conversationEvents: z.boolean().nullish().catch(undefined),
+  conversationEventsIdempotency: z.boolean().nullish().catch(undefined),
+  conversationTurnCoordination: z.boolean().nullish().catch(undefined),
 });
 
 export interface CloudCapabilities {
@@ -46,6 +49,12 @@ export interface CloudCapabilities {
   orgChannelMessages: boolean;
   /** 0016 `p_client_key` on post — a WIRE change, so posts key only when set. */
   orgChannelMessagesIdempotency: boolean;
+  /** 0024 multi-writer conversation-events plane (push/list RPCs). */
+  conversationEvents: boolean;
+  /** 0026 source-event receipts make ambiguous publication retry-safe. */
+  conversationEventsIdempotency: boolean;
+  /** 0028 per-root FIFO admission and renewable device leases. */
+  conversationTurnCoordination: boolean;
 }
 
 const LEGACY_CAPABILITIES: CloudCapabilities = {
@@ -59,6 +68,9 @@ const LEGACY_CAPABILITIES: CloudCapabilities = {
   orgChannels: false,
   orgChannelMessages: false,
   orgChannelMessagesIdempotency: false,
+  conversationEvents: false,
+  conversationEventsIdempotency: false,
+  conversationTurnCoordination: false,
 };
 
 export interface CloudCapabilitiesProbeResult {
@@ -111,6 +123,11 @@ async function probeCloudCapabilities(
       orgChannelMessages: parsed.data.orgChannelMessages ?? false,
       orgChannelMessagesIdempotency:
         parsed.data.orgChannelMessagesIdempotency ?? false,
+      conversationEvents: parsed.data.conversationEvents ?? false,
+      conversationEventsIdempotency:
+        parsed.data.conversationEventsIdempotency ?? false,
+      conversationTurnCoordination:
+        parsed.data.conversationTurnCoordination ?? false,
     };
     capabilitiesByEndpoint.set(endpointKey, capabilities);
     return { capabilities, confirmed: true };

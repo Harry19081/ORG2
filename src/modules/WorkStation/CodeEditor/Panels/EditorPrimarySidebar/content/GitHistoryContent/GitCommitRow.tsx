@@ -2,8 +2,8 @@ import React, { memo, useCallback } from "react";
 
 import type { GitCommitInfo, GitCommitPerson } from "@src/api/http/git/types";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
+import { PRIMARY_SIDEBAR_HOVER } from "@src/config/workstation/tokens";
 import { useImmediateCursorReset } from "@src/hooks/ui/useImmediateCursorReset";
-import { PRIMARY_SIDEBAR_HOVER } from "@src/modules/WorkStation/shared/tokens";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 import type { CommitGraphNode } from "./graphLayout";
@@ -113,7 +113,7 @@ function GitCommitRowComponent<TCommit extends GitCommitRowBaseCommit>({
   return (
     <button
       type="button"
-      className={`group flex w-full items-center gap-1 pl-2 pr-3 text-left transition-colors ${
+      className={`group flex w-full items-center gap-1 pr-3 pl-2 text-left transition-colors ${
         cursorReset || isSelected ? "cursor-default" : "cursor-pointer"
       } ${isSelected ? SURFACE_TOKENS.selected : PRIMARY_SIDEBAR_HOVER.row}`}
       style={{ height: `${GIT_COMMIT_ROW_HEIGHT}px` }}

@@ -1,4 +1,3 @@
-import { GitPullRequest, Loader2, SquareArrowOutUpRight } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -8,8 +7,14 @@ import {
   projectApi,
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import PrStatusBadge from "@src/components/PrStatusBadge";
+import {
+  GitPullRequestIcon,
+  HugeiconsIcon,
+  Loading03Icon,
+  SquareArrowUpRight02Icon,
+} from "@src/icons";
 
 import type { PrCreationState, PrSectionProps } from "./types";
 
@@ -75,7 +80,7 @@ const PrSection: React.FC<PrSectionProps> = ({
   const displayPrStatus = prStatus ?? readiness?.prStatus ?? undefined;
   const readinessAlert =
     readiness && readiness.prUrl ? (
-      <InlineAlert
+      <PageNotice
         type={readiness.canComplete ? "success" : "warning"}
         title={
           readiness.canComplete
@@ -99,7 +104,7 @@ const PrSection: React.FC<PrSectionProps> = ({
             verified.
           </p>
         )}
-      </InlineAlert>
+      </PageNotice>
     ) : null;
 
   const handleCreate = useCallback(async () => {
@@ -146,7 +151,11 @@ const PrSection: React.FC<PrSectionProps> = ({
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-6 hover:underline"
               >
-                <SquareArrowOutUpRight size={13} />
+                <HugeiconsIcon
+                  icon={SquareArrowUpRight02Icon}
+                  data-icon="square-arrow-out-up-right"
+                  size={13}
+                />
                 {displayPrUrl.replace(/^https?:\/\/[^/]+\//, "")}
               </a>
               <div className="mt-1 flex items-center gap-2">
@@ -177,7 +186,12 @@ const PrSection: React.FC<PrSectionProps> = ({
     return (
       <div className="rounded-lg bg-fill-2 px-4 py-3">
         <div className="flex items-center gap-2">
-          <Loader2 size={14} className="animate-spin text-primary-6" />
+          <HugeiconsIcon
+            icon={Loading03Icon}
+            data-icon="loader-2"
+            size={14}
+            className="animate-spin text-primary-6"
+          />
           <p className="text-sm text-text-2">
             {t("workItems.outputTab.prCreatingHint")}
           </p>
@@ -193,7 +207,7 @@ const PrSection: React.FC<PrSectionProps> = ({
 
   if (prState === "error") {
     return (
-      <InlineAlert
+      <PageNotice
         type="danger"
         title={t("workItems.outputTab.prCreateError")}
         action={{
@@ -205,7 +219,7 @@ const PrSection: React.FC<PrSectionProps> = ({
         {branch && (
           <code className="mt-1 block text-[11px] text-text-3">{branch}</code>
         )}
-      </InlineAlert>
+      </PageNotice>
     );
   }
 
@@ -240,7 +254,13 @@ const PrSection: React.FC<PrSectionProps> = ({
             variant="primary"
             appearance="outline"
             size="small"
-            icon={<GitPullRequest size={13} />}
+            icon={
+              <HugeiconsIcon
+                icon={GitPullRequestIcon}
+                data-icon="git-pull-request"
+                size={13}
+              />
+            }
             onClick={handleCreate}
             disabled={!onCreatePr}
           >

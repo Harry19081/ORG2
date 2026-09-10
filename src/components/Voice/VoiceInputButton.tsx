@@ -7,15 +7,14 @@
  * recording UI is owned by `VoiceRecordingBar` which replaces the entire
  * toolbar row while capture is active.
  */
-import { Mic } from "lucide-react";
 import React, { memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import { PILL_CONTROL_IDLE_SURFACE_CLASS } from "@src/components/CompoundPill/config";
+import { PILL_CONTROL_HOVER_CLASS } from "@src/components/CompoundPill/config";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import Tooltip from "@src/components/Tooltip";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { HugeiconsIcon, Mic01Icon } from "@src/icons";
 
 interface VoiceInputButtonProps {
   onPressStart: () => void;
@@ -25,10 +24,12 @@ interface VoiceInputButtonProps {
    * tooltip explains the unavailable recognizer state.
    */
   disabled?: boolean;
+  /** Filled treatment for compact contextual composers. */
+  appearance?: "default" | "solid";
 }
 
 const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
-  ({ onPressStart, onPressEnd, disabled = false }) => {
+  ({ onPressStart, onPressEnd, disabled = false, appearance = "default" }) => {
     const { t } = useTranslation();
     const activePointerIdRef = useRef<number | null>(null);
     const isPressingRef = useRef(false);
@@ -97,11 +98,16 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
           }
         }}
         className={[
-          "flex items-center justify-center rounded-full bg-transparent text-text-1 transition-colors duration-200 focus:outline-none",
+          "flex items-center justify-center rounded-full transition-colors duration-200 focus:outline-none",
           INPUT_AREA_BUTTONS.iconButtonSizeClass,
-          disabled
-            ? "cursor-not-allowed opacity-50"
-            : `cursor-pointer ${PILL_CONTROL_IDLE_SURFACE_CLASS}`,
+          appearance === "solid"
+            ? "bg-text-1 text-bg-1 hover:bg-text-2"
+            : disabled
+              ? // Disabled buttons must not paint the interactive idle/hover
+                // surface — restore the plain transparent treatment.
+                "text-text-1"
+              : `text-text-1 ${PILL_CONTROL_HOVER_CLASS}`,
+          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
           "leading-none",
         ].join(" ")}
         style={{ lineHeight: 0 }}
@@ -109,7 +115,9 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
         aria-label={t("common:tooltips.startVoiceInput")}
         aria-disabled={disabled}
       >
-        <Mic
+        <HugeiconsIcon
+          icon={Mic01Icon}
+          data-icon="mic"
           size={INPUT_AREA_BUTTONS.iconSize}
           strokeWidth={1.75}
           className="block"
@@ -122,7 +130,7 @@ const VoiceInputButton: React.FC<VoiceInputButtonProps> = memo(
         content={
           <KeyboardShortcutTooltipContent
             label={t("common:tooltips.startVoiceInput")}
-            shortcut={getShortcutKeys("voice_input")}
+            shortcutId={"voice_input"}
           />
         }
         position="top"

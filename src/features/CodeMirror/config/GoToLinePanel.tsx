@@ -1,14 +1,15 @@
 import { EditorView, Panel } from "@codemirror/view";
-import { Hash, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { useTranslation } from "react-i18next";
 
 import { SearchInput } from "@src/components/SearchInput";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
 } from "@src/config/workstation/tokens";
+import { Cancel01Icon, HashtagIcon, HugeiconsIcon } from "@src/icons";
 
 interface GoToLinePanelProps {
   view: EditorView;
@@ -44,7 +45,7 @@ const GoToLinePanel: React.FC<GoToLinePanelProps> = ({ view, onClose }) => {
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.ctrlKey && !event.metaKey && event.key.toLowerCase() === "g") {
+      if (matchesShortcut(event.nativeEvent, "go_to_line")) {
         event.preventDefault();
         event.stopPropagation();
         onClose();
@@ -61,11 +62,15 @@ const GoToLinePanel: React.FC<GoToLinePanelProps> = ({ view, onClose }) => {
 
   return (
     <div
-      className="flex w-full border-b border-border-2 shadow-sm"
+      className="flex w-full border-b border-border-2 shadow-xs"
       onKeyDown={handleKeyDown}
     >
       <div className="flex items-center justify-center self-center px-3 text-text-3">
-        <Hash size={HEADER_ICON_SIZE.sm} />
+        <HugeiconsIcon
+          icon={HashtagIcon}
+          data-icon="hash"
+          size={HEADER_ICON_SIZE.sm}
+        />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 py-1.5">
@@ -83,7 +88,7 @@ const GoToLinePanel: React.FC<GoToLinePanelProps> = ({ view, onClose }) => {
             showClearButton
             hideChevron
           />
-          <span className="shrink-0 whitespace-nowrap text-[12px] text-text-3">
+          <span className="shrink-0 text-[12px] whitespace-nowrap text-text-3">
             1 - {lineCount}
           </span>
         </div>
@@ -97,7 +102,11 @@ const GoToLinePanel: React.FC<GoToLinePanelProps> = ({ view, onClose }) => {
             className={HEADER_BUTTON.action}
             title={t("tooltips.closeEsc")}
           >
-            <X size={HEADER_ICON_SIZE.sm} />
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
+              size={HEADER_ICON_SIZE.sm}
+            />
           </button>
         </div>
       </div>

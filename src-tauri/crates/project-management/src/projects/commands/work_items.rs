@@ -280,47 +280,6 @@ pub async fn work_item_create_standalone(
     .map_err(|err| format!("Task join error: {}", err))?
 }
 
-/// Strict, audited status transition through the work application
-/// service (`work.transition`, design §9.3/§13.2): portable-FSM
-/// validation is a hard reject here, `expected_revision` enables
-/// optimistic concurrency against `local_version`, and the reason is
-/// recorded in the audit stream. Non-lifecycle fields stay on the
-/// partial-update path.
-#[tauri::command]
-pub async fn project_transition_work_item(
-    project_slug: String,
-    short_id: String,
-    to_status: String,
-    reason: Option<String>,
-    expected_revision: Option<i64>,
-) -> Result<WorkItemData, String> {
-    tokio::task::spawn_blocking(move || {
-        if matches!(to_status.as_str(), "completed" | "closed") {
-            crate::work_item_features::readiness::guard_completion(
-                &crate::work_item_features::WorkItemScope {
-                    project_slug: Some(project_slug.clone()),
-                    org_id: "personal-org".to_string(),
-                    work_item_id: short_id.clone(),
-                },
-            )?;
-        }
-        let actor = crate::projects::types::WorkItemMutationActor {
-            id: "human:desktop".to_string(),
-            name: "Desktop".to_string(),
-        };
-        crate::work_service::transition_project_work_item(
-            &project_slug,
-            &short_id,
-            &to_status,
-            reason.as_deref(),
-            Some(&actor),
-            expected_revision,
-        )
-    })
-    .await
-    .map_err(|err| format!("Task join error: {}", err))?
-}
-
 /// Atomic read-modify-write for a single field-set patch. Runs
 /// inside a `BEGIN IMMEDIATE` transaction so concurrent partial
 /// updates serialize at the SQLite level. Returns the *enriched*
@@ -331,9 +290,20 @@ pub async fn project_update_work_item_partial(
     project_slug: String,
     short_id: String,
     updates: WorkItemPartialUpdate,
+    expected_revision: Option<i64>,
 ) -> Result<EnrichedWorkItem, String> {
     tokio::task::spawn_blocking(move || {
-        io::update_work_item_partial_enriched(&project_slug, &short_id, &updates)
+        if let Some(expected_revision) = expected_revision {
+            io::update_work_item_partial_at_revision(
+                &project_slug,
+                &short_id,
+                &updates,
+                expected_revision,
+            )?;
+            io::read_work_item_enriched(&project_slug, &short_id)
+        } else {
+            io::update_work_item_partial_enriched(&project_slug, &short_id, &updates)
+        }
     })
     .await
     .map_err(|err| format!("Task join error: {}", err))?
@@ -409,9 +379,16 @@ pub async fn work_item_update_standalone_partial(
     org_id: Option<String>,
     short_id: String,
     updates: WorkItemPartialUpdate,
+    expected_revision: Option<i64>,
 ) -> Result<WorkItemData, String> {
-    tokio::task::spawn_blocking(move || {
-        io::update_standalone_work_item_partial(org_id.as_deref(), &short_id, &updates)
+    tokio::task::spawn_blocking(move || match expected_revision {
+        Some(expected_revision) => io::update_standalone_work_item_partial_at_revision(
+            org_id.as_deref(),
+            &short_id,
+            &updates,
+            expected_revision,
+        ),
+        None => io::update_standalone_work_item_partial(org_id.as_deref(), &short_id, &updates),
     })
     .await
     .map_err(|err| format!("Task join error: {}", err))?

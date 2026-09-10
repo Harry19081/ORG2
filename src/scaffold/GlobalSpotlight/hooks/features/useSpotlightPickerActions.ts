@@ -18,7 +18,7 @@ import type { ActiveWorktreeSelection } from "@src/store/workspace";
 import { showGitActionDialogSafely } from "@src/util/dialogs/gitActionDialog";
 
 import {
-  type WorkspacePickerMode,
+  type WorkingDirectoryPickerMode,
   getWorktreeBaseRef,
   getWorktreeCreateName,
 } from "../../globalSpotlight.helpers";
@@ -35,7 +35,7 @@ import type { RepoItem } from "../../types";
 // Types
 // ============================================
 
-export interface UseSpotlightPickerActionsOptions {
+interface UseSpotlightPickerActionsOptions {
   selectedRepoId: string;
   currentRepo: Repo | undefined;
   currentRepoPath: string;
@@ -46,12 +46,14 @@ export interface UseSpotlightPickerActionsOptions {
   t: TFunction;
   setActiveWorktree: (selection: ActiveWorktreeSelection | null) => void;
   setCurrentBranch: (branch: string) => void;
-  setWorkspacePickerMode: Dispatch<SetStateAction<WorkspacePickerMode | null>>;
+  setWorkingDirectoryPickerMode: Dispatch<
+    SetStateAction<WorkingDirectoryPickerMode | null>
+  >;
   setBranchPickerOpen: Dispatch<SetStateAction<boolean>>;
   setWorktreePickerOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export interface UseSpotlightPickerActionsResult {
+interface UseSpotlightPickerActionsResult {
   handleWorkspaceSelect: (repoId: string, repo: RepoItem) => void;
   handleWorktreePickerSelect: (worktree: GitWorktreeEntry) => void;
   handleWorktreePickerCreate: (source: WorktreeLaunchSource) => Promise<void>;
@@ -89,7 +91,7 @@ export function useSpotlightPickerActions(
     t,
     setActiveWorktree,
     setCurrentBranch,
-    setWorkspacePickerMode,
+    setWorkingDirectoryPickerMode,
     setBranchPickerOpen,
     setWorktreePickerOpen,
   } = deps;
@@ -97,10 +99,10 @@ export function useSpotlightPickerActions(
   const handleWorkspaceSelect = useCallback(
     (repoId: string, _repo: RepoItem) => {
       selectRepo(repoId);
-      setWorkspacePickerMode(null);
+      setWorkingDirectoryPickerMode(null);
       closeModal();
     },
-    [closeModal, selectRepo, setWorkspacePickerMode]
+    [closeModal, selectRepo, setWorkingDirectoryPickerMode]
   );
 
   const handleWorktreePickerSelect = useCallback(

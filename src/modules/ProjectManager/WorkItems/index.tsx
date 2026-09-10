@@ -10,20 +10,25 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { STORY_SYNC_ADAPTER } from "@src/api/http/integrations/syncConnections";
+import type { SavedView, SavedViewDisplay } from "@src/api/http/project";
 import { projectSyncApi } from "@src/api/http/project/sync";
-import IntegrationIcon from "@src/components/IntegrationIcon";
+import Message from "@src/components/Message";
+import { Placeholder } from "@src/components/Placeholder";
+import Select from "@src/components/Select";
 import TabPill from "@src/components/TabPill";
 import type { TabPillItem } from "@src/components/TabPill";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useProjectOrgCloudPermissions } from "@src/features/Org2Cloud/useProjectOrgCloudPermissions";
 import { useCurrentUserMemberIds } from "@src/hooks/project/useCurrentUserMemberId";
-import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
+import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
+import { DeliveryBox01Icon, HugeiconsIcon } from "@src/icons";
 import type { LinkedRepoOption } from "@src/modules/ProjectManager/shared";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
-import { ContentSearchPalette } from "@src/scaffold/GlobalSpotlight/palettes";
+import { WorkManagementSearchInput } from "@src/modules/shared/components/WorkManagementSearchInput";
+import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
 import { reposAtom } from "@src/store/repo";
 import { syncDeepLinkAtom } from "@src/store/sync";
+import { userAtom } from "@src/store/user/userAtom";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import {
   PROJECT_DETAIL_SURFACE_VIEW,
@@ -41,10 +46,17 @@ import {
   WorkItemsPageHeader,
   WorkItemsTabContent,
 } from "./components";
-import type { SettingsSectionId } from "./components/WorkItemsSettings";
+import BatchPropertyDialog from "./components/BatchPropertyDialog";
+import BatchQuickFieldDialog from "./components/BatchQuickFieldDialog";
+import PropertyFilterControl from "./components/PropertyFilterControl";
+import RevisionConflictModal from "./components/RevisionConflictModal";
+import SavedViewsControl from "./components/SavedViewsControl";
+import type { WorkItemsTableSort } from "./components/WorkItemsTableView";
 import { getEffectiveWorkItemPrefix } from "./config";
 import { useBufferedProjectProperties } from "./hooks/useBufferedProjectProperties";
 import { useMultiSelect } from "./hooks/useMultiSelect";
+import { useEnsureStatusDefinitions } from "./hooks/useStatusDefinitions";
+import { useWorkItemPropertyView } from "./hooks/useWorkItemPropertyView";
 import { useWorkItems } from "./hooks/useWorkItems";
 import { useWorkItemsHeaderState } from "./hooks/useWorkItemsHeaderState";
 import { useWorkItemsSync } from "./hooks/useWorkItemsSync";
@@ -52,7 +64,17 @@ import {
   type EmbeddedWorkItemDetailState,
   useWorkItemsTabBarState,
 } from "./hooks/useWorkItemsTabBarState";
-import { WORK_ITEMS_DEFAULT_STATUS, type WorkItemsViewTab } from "./types";
+import {
+  type WorkItemPropertyFilter,
+  filterWorkItemsByProperty,
+  indexScopePropertyValues,
+} from "./propertyViewModel";
+import {
+  type StatusFilterType,
+  WORK_ITEMS_DEFAULT_STATUS,
+  type WorkItemsViewTab,
+} from "./types";
+import type { BatchQuickField } from "./workItemPartialUpdate";
 import {
   WORK_ITEMS_KANBAN_GROUP,
   type WorkItemsKanbanGroup,
@@ -63,7 +85,13 @@ const WorkItemsSettings = React.lazy(
   () => import("./components/WorkItemsSettings")
 );
 
-const WORK_ITEMS_VIEW_TABS: readonly WorkItemsViewTab[] = ["List", "Kanban"];
+const WORK_ITEMS_VIEW_TABS: readonly WorkItemsViewTab[] = [
+  "List",
+  "Table",
+  "Kanban",
+  "Gantt",
+  "Calendar",
+];
 
 // ============================================
 // Types
@@ -71,7 +99,7 @@ const WORK_ITEMS_VIEW_TABS: readonly WorkItemsViewTab[] = ["List", "Kanban"];
 
 export type { EmbeddedWorkItemDetailState } from "./hooks/useWorkItemsTabBarState";
 
-export interface WorkItemsPageProps {
+interface WorkItemsPageProps {
   breadcrumbSegments?: readonly ProjectManagerBreadcrumbSegment[];
   /** Project ID from the active tab */
   projectId: string;
@@ -115,8 +143,6 @@ export interface WorkItemsPageProps {
     workItemStatus?: string,
     workItem?: WorkItem
   ) => void;
-  /** Notify parent tab system when the embedded work item title changes */
-  onEmbeddedWorkItemNameUpdated?: (workItemName: string) => void;
   /** Open an agent session in a chat tab */
   onOpenChatSession?: (sessionId: string, title?: string) => void;
   /** Report whether this project tab is showing its list or an embedded work item detail. */
@@ -131,8 +157,10 @@ export interface WorkItemsPageProps {
    * the Workstation tab bar instead of the page header.
    */
   workStationTabId?: string;
-  /** Target workstation host slot for the published 40px header. */
+  /** Target workstation host slot for the published 36px header. */
   workstationHeaderHost?: WorkstationTabHeaderHost;
+  /** Parent-owned context control shown before split-list header content. */
+  splitHeaderLeading?: React.ReactNode;
 }
 
 // ============================================
@@ -157,12 +185,12 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
   onProjectNameUpdated,
   onOpenRepoSettings,
   onExpandWorkItemToTab,
-  onEmbeddedWorkItemNameUpdated,
   onOpenChatSession,
   onEmbeddedWorkItemDetailStateChange,
   isActive = true,
   workStationTabId,
   workstationHeaderHost = "project",
+  splitHeaderLeading,
 }) => {
   const { t } = useTranslation("projects");
   const interactiveBreadcrumbSegments = useMemo(
@@ -177,6 +205,9 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
   const { canAdminister: canAdministerProjectOrg } =
     useProjectOrgCloudPermissions(isActive);
   const activeWorkspaceRootPath = useAtomValue(activeWorkspaceRootPathAtom);
+  const currentUser = useAtomValue(userAtom);
+  const savedViewPreferenceOwnerId =
+    currentUser.uuid?.trim() || currentUser.authing_id?.trim() || "local";
   const allRepos = useAtomValue(reposAtom);
   const availableRepos = useMemo<LinkedRepoOption[]>(
     () =>
@@ -227,40 +258,41 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
       onProjectSlugResolved?.(resolvedSlug);
     }
   }, [resolvedSlug, onProjectSlugResolved]);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [collapseAllSignal, setCollapseAllSignal] = useState(0);
+  const [listFullscreen, setListFullscreen] = useState(false);
   const [kanbanGroupBy, setKanbanGroupBy] = useState<WorkItemsKanbanGroup>(
     WORK_ITEMS_KANBAN_GROUP.STATUS
   );
+  const handleWorkItemsTabChange = useCallback(
+    (tab: WorkItemsViewTab) => {
+      if (tab !== "List" || state.activeTab !== "List") {
+        setListFullscreen(false);
+      }
+      handleTabChange(tab);
+    },
+    [handleTabChange, state.activeTab]
+  );
 
-  // Pending Settings section forwarded to `WorkItemsSettings` once the
-  // user clicks the status-bar sync widget. Cleared on consumption so
-  // the same value never re-fires when the user later picks a
-  // different section in the sidebar.
-  const [pendingSettingsSection, setPendingSettingsSection] = useState<
-    SettingsSectionId | undefined
-  >(undefined);
-
-  // Deep-link consumer (Phase 4.8 Track D) — when the widget writes a
-  // request whose slug matches this project, switch to the Settings
-  // view, store the section to focus, and clear the atom in the same
-  // tick so a stale request never opens the wrong project's section.
-  // The setState calls below are guarded so they fire at most once per
-  // request value: the atom is cleared in the same effect run, so the
-  // next render exits early at the `!deepLinkRequest` check.
+  // Deep-link consumer (Phase 4.8 Track D) — keep the request available until
+  // the Settings view has rendered it once. Clearing it in the same effect as
+  // the tab switch would remove the request before WorkItemsSettings mounts.
+  const settingsSectionRequest =
+    deepLinkRequest && resolvedSlug && deepLinkRequest.slug === resolvedSlug
+      ? deepLinkRequest
+      : undefined;
   useEffect(() => {
-    if (!deepLinkRequest) return;
-    if (!resolvedSlug || deepLinkRequest.slug !== resolvedSlug) return;
-
-    handlers.handleTabChange("Settings");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPendingSettingsSection(deepLinkRequest.section);
+    if (!settingsSectionRequest) return;
+    if (state.activeTab !== "Settings") {
+      handleTabChange("Settings");
+      return;
+    }
     setDeepLinkRequest(null);
-  }, [deepLinkRequest, resolvedSlug, handlers, setDeepLinkRequest]);
-
-  const handleSettingsSectionConsumed = useCallback(() => {
-    setPendingSettingsSection(undefined);
-  }, []);
+  }, [
+    handleTabChange,
+    setDeepLinkRequest,
+    settingsSectionRequest,
+    state.activeTab,
+  ]);
 
   const confirmWorkItemDelete = useCallback(
     async (name?: string) =>
@@ -284,24 +316,149 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
     },
     [confirmWorkItemDelete, data.workItems, handlers]
   );
+
+  const propertyOrgId = projectData.project?.orgId ?? "personal-org";
+  const propertyProjectSlug =
+    projectData.project?.slug ?? cachedProjectSlug ?? null;
+  const propertyScopeKey = JSON.stringify([propertyOrgId, propertyProjectSlug]);
+  const [propertyViewSettings, setPropertyViewSettings] = useState<{
+    scopeKey: string;
+    selectedPropertyId: string | null;
+    filter: WorkItemPropertyFilter | null;
+    groupBy: string | null;
+  }>(() => ({
+    scopeKey: propertyScopeKey,
+    selectedPropertyId: null,
+    filter: null,
+    groupBy: null,
+  }));
+  const propertySettingsMatchScope =
+    propertyViewSettings.scopeKey === propertyScopeKey;
+  const propertyFilterPropertyId = propertySettingsMatchScope
+    ? propertyViewSettings.selectedPropertyId
+    : null;
+  const propertyFilter = propertySettingsMatchScope
+    ? propertyViewSettings.filter
+    : null;
+  const propertyGroupBy = propertySettingsMatchScope
+    ? propertyViewSettings.groupBy
+    : null;
+  const handlePropertyFilterPropertyChange = useCallback(
+    (selectedPropertyId: string | null) => {
+      setPropertyViewSettings((current) => {
+        const currentFilter =
+          current.scopeKey === propertyScopeKey ? current.filter : null;
+        return {
+          scopeKey: propertyScopeKey,
+          selectedPropertyId,
+          filter:
+            currentFilter?.propertyId === selectedPropertyId
+              ? currentFilter
+              : null,
+          groupBy:
+            current.scopeKey === propertyScopeKey ? current.groupBy : null,
+        };
+      });
+    },
+    [propertyScopeKey]
+  );
+  const handlePropertyFilterChange = useCallback(
+    (filter: WorkItemPropertyFilter | null) => {
+      setPropertyViewSettings((current) => ({
+        scopeKey: propertyScopeKey,
+        selectedPropertyId:
+          filter?.propertyId ??
+          (current.scopeKey === propertyScopeKey
+            ? current.selectedPropertyId
+            : null),
+        filter,
+        groupBy: current.scopeKey === propertyScopeKey ? current.groupBy : null,
+      }));
+    },
+    [propertyScopeKey]
+  );
+  const handlePropertyGroupByChange = useCallback(
+    (groupBy: string | null) => {
+      setPropertyViewSettings((current) => ({
+        scopeKey: propertyScopeKey,
+        selectedPropertyId:
+          current.scopeKey === propertyScopeKey
+            ? current.selectedPropertyId
+            : null,
+        filter: current.scopeKey === propertyScopeKey ? current.filter : null,
+        groupBy,
+      }));
+    },
+    [propertyScopeKey]
+  );
+  const propertyView = useWorkItemPropertyView({
+    orgId: propertyOrgId,
+    projectSlug: propertyProjectSlug,
+    isActive,
+  });
+  const availablePropertyIds = useMemo(
+    () => new Set(propertyView.definitions.map((definition) => definition.id)),
+    [propertyView.definitions]
+  );
+  const applicablePropertyFilter =
+    propertyView.ready &&
+    propertyFilter &&
+    availablePropertyIds.has(propertyFilter.propertyId)
+      ? propertyFilter
+      : null;
+  const applicablePropertyGroupBy =
+    propertyView.ready &&
+    propertyGroupBy &&
+    availablePropertyIds.has(propertyGroupBy)
+      ? propertyGroupBy
+      : null;
+  const propertyValuesByItem = useMemo(
+    () => indexScopePropertyValues(propertyView.values),
+    [propertyView.values]
+  );
+  const propertyFilteredWorkItems = useMemo(
+    () =>
+      filterWorkItemsByProperty(
+        data.filteredWorkItems,
+        applicablePropertyFilter,
+        propertyValuesByItem
+      ),
+    [applicablePropertyFilter, data.filteredWorkItems, propertyValuesByItem]
+  );
+  const propertyFilteredIds = useMemo(
+    () => new Set(propertyFilteredWorkItems.map((item) => item.session_id)),
+    [propertyFilteredWorkItems]
+  );
+  const propertyGroupedWorkItems = useMemo(
+    () =>
+      data.groupedWorkItems.map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          propertyFilteredIds.has(item.session_id)
+        ),
+      })),
+    [data.groupedWorkItems, propertyFilteredIds]
+  );
+  const propertyKanbanTasks = useMemo(
+    () => data.kanbanTasks.filter((task) => propertyFilteredIds.has(task.id)),
+    [data.kanbanTasks, propertyFilteredIds]
+  );
+  const propertyGanttTasks = useMemo(
+    () => data.ganttTasks.filter((task) => propertyFilteredIds.has(task.id)),
+    [data.ganttTasks, propertyFilteredIds]
+  );
+  const propertyCalendarEvents = useMemo(
+    () =>
+      data.calendarEvents.filter((event) => propertyFilteredIds.has(event.id)),
+    [data.calendarEvents, propertyFilteredIds]
+  );
   const handleOpenWorkItem = useCallback(
     (workItemId: string) => {
-      const workItem = data.workItems.find(
-        (candidate) => candidate.session_id === workItemId
-      );
-      if (!workItem || !onExpandWorkItemToTab) {
-        handlers.handleSelect(workItemId);
-        return;
-      }
-      onExpandWorkItemToTab(
-        workItem.session_id,
-        workItem.name || t("workItems.untitled"),
-        undefined,
-        workItem.workItemStatus ?? workItem.status,
-        workItem
-      );
+      // A selection from the full-width List view must reveal its detail.
+      setListFullscreen(false);
+      handlers.handleSelect(workItemId);
     },
-    [data.workItems, handlers, onExpandWorkItemToTab, t]
+    [handlers]
   );
 
   const {
@@ -312,7 +469,7 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
     handleUnselectAll,
     handleBulkDelete,
   } = useMultiSelect({
-    filteredWorkItems: data.filteredWorkItems,
+    filteredWorkItems: propertyFilteredWorkItems,
     onDelete: handlers.handleDelete,
     projectSlug: projectData.project?.slug,
     getShortId: data.getShortId,
@@ -320,14 +477,13 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
     onBeforeDelete: () => confirmWorkItemDelete(),
   });
 
-  const handleOpenSearch = useCallback(() => {
-    setIsSearchOpen(true);
-  }, []);
-
-  const handleCloseSearch = useCallback(() => {
-    setIsSearchOpen(false);
-  }, []);
-
+  const selectedShortIds = useMemo(
+    () =>
+      Array.from(selectedIds)
+        .map((id) => data.getShortId(id))
+        .filter((shortId): shortId is string => Boolean(shortId)),
+    [data, selectedIds]
+  );
   const handleCollapseAll = useCallback(() => {
     setCollapseAllSignal((currentSignal) => currentSignal + 1);
   }, []);
@@ -369,14 +525,15 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
       ? projectSyncAdapter.adapterId
       : undefined;
   const projectIdentityIcon = useMemo(
-    () =>
-      projectSyncAdapterId === STORY_SYNC_ADAPTER.GITHUB ? (
-        <IntegrationIcon
-          type={STORY_SYNC_ADAPTER.GITHUB}
-          size={HEADER_ICON_SIZE.sm}
-        />
-      ) : undefined,
-    [projectSyncAdapterId]
+    () => (
+      <HugeiconsIcon
+        icon={DeliveryBox01Icon}
+        data-icon="box"
+        size={HEADER_ICON_SIZE.sm}
+        strokeWidth={1.75}
+      />
+    ),
+    []
   );
   const selectedShortId = data.selectedWorkItem
     ? (data.getShortId(data.selectedWorkItem.session_id) ?? null)
@@ -412,7 +569,6 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
 
   const {
     actionsInStationTabBar: tabBarActionsInStationTabBar,
-    isDetailOpen,
     propertiesActionAvailable,
   } = useWorkItemsTabBarState({
     activeTab: state.activeTab,
@@ -423,17 +579,33 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
     projectName,
     resolvedProjectSlug,
     selectedWorkItem: data.selectedWorkItem,
-    onOpenSearch: handleOpenSearch,
     onToggleProperties: handlers.handleToggleProperties,
     onCreateWorkItem,
     onAddListItem: handlers.handleAddListItem,
     onEmbeddedWorkItemDetailStateChange,
   });
+  const useSplitListHeader =
+    isActive && state.activeTab === "List" && !listFullscreen;
+
+  const handleOpenSelectedWorkItemInNewTab = useCallback(() => {
+    const workItem = data.selectedWorkItem;
+    if (!workItem || !onExpandWorkItemToTab) return;
+    onExpandWorkItemToTab(
+      workItem.session_id,
+      workItem.name || t("common:placeholders.untitled"),
+      undefined,
+      workItem.workItemStatus ?? workItem.status,
+      workItem
+    );
+  }, [data.selectedWorkItem, onExpandWorkItemToTab, t]);
 
   const detailContent = (
     <EmbeddedWorkItemDetail
       workItem={data.selectedWorkItem ?? null}
       onClose={handleCloseDetail}
+      onOpenInNewTab={
+        onExpandWorkItemToTab ? handleOpenSelectedWorkItemInNewTab : undefined
+      }
       onNavigate={handlers.handleNavigate}
       hasPrev={data.navigation.hasPrev}
       hasNext={data.navigation.hasNext}
@@ -446,10 +618,10 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
       onPendingChangesChange={setHasWorkItemPendingChanges}
       repoPath={resolvedRepoPath}
       projectSlug={resolvedProjectSlug}
+      orgId={propertyOrgId}
       shortId={selectedShortId}
       onRefreshWorkItem={data.refresh}
       onOpenSession={onOpenChatSession}
-      onWorkItemNameUpdated={onEmbeddedWorkItemNameUpdated}
       breadcrumbSegments={interactiveBreadcrumbSegments}
       breadcrumbProjectName={headerTitle}
       breadcrumbIcon={projectIdentityIcon}
@@ -459,7 +631,7 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
       }
       propertiesOpen={workItemPropertiesOpen}
       onToggleProperties={() => setWorkItemPropertiesOpen((prev) => !prev)}
-      publishHeaderToWorkstation={tabBarActionsInStationTabBar && isActive}
+      publishHeaderToWorkstation={false}
       workstationHeaderHost={workstationHeaderHost}
     />
   );
@@ -479,6 +651,14 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
     onSetUnsaved,
     onProjectNameUpdated,
   });
+
+  useEnsureStatusDefinitions(displayProject.orgId ?? "personal-org");
+
+  const [tableColumns, setTableColumns] = useState<string[] | null>(null);
+  const [tableSort, setTableSort] = useState<WorkItemsTableSort | null>(null);
+  const [batchPropertyOpen, setBatchPropertyOpen] = useState(false);
+  const [batchQuickField, setBatchQuickField] =
+    useState<BatchQuickField | null>(null);
 
   const overviewPropertiesPanel = (
     <OverviewPropertiesPanel
@@ -503,13 +683,13 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
   const handleProjectViewChange = useCallback(
     (nextProjectView: ProjectDetailSurfaceView) => {
       onProjectViewChange?.(nextProjectView);
-      handleTabChange(
+      handleWorkItemsTabChange(
         nextProjectView === PROJECT_DETAIL_SURFACE_VIEW.OVERVIEW
           ? "Overview"
           : "List"
       );
     },
-    [handleTabChange, onProjectViewChange]
+    [handleWorkItemsTabChange, onProjectViewChange]
   );
 
   const handleHeaderTabChange = useCallback(
@@ -519,16 +699,17 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
           ? PROJECT_DETAIL_SURFACE_VIEW.OVERVIEW
           : PROJECT_DETAIL_SURFACE_VIEW.WORK_ITEMS
       );
-      handleTabChange(nextTab);
+      handleWorkItemsTabChange(nextTab);
     },
-    [handleTabChange, onProjectViewChange]
+    [handleWorkItemsTabChange, onProjectViewChange]
   );
 
   const workItemsViewTabs = useMemo<TabPillItem[]>(
     () =>
       WORK_ITEMS_VIEW_TABS.map((tab) => ({
         key: tab,
-        label: t(`workItems.tabs.${tab === "List" ? "list" : "kanban"}`),
+        label: t(`workItems.tabs.${tab.toLowerCase()}`),
+        dataTestId: `work-items-view-tab-${tab.toLowerCase()}`,
       })),
     [t]
   );
@@ -546,8 +727,108 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
         key: WORK_ITEMS_KANBAN_GROUP.CREATED_BY,
         label: t("projects.groupBy.createdBy"),
       },
+      {
+        key: WORK_ITEMS_KANBAN_GROUP.PROJECT,
+        label: t("projects.groupBy.project"),
+      },
+      {
+        key: WORK_ITEMS_KANBAN_GROUP.PROPERTY,
+        label: t("projects.groupBy.property"),
+      },
     ],
     [t]
+  );
+
+  const handleApplySavedView = useCallback(
+    (view: SavedView, display: SavedViewDisplay) => {
+      const query = view.query ?? {};
+      if (typeof query.statusFilter === "string") {
+        state.setStatusFilter(query.statusFilter as StatusFilterType);
+      }
+      state.setSearchQuery(
+        typeof query.searchQuery === "string" ? query.searchQuery : ""
+      );
+      const nextPropertyFilter = query.propertyFilter;
+      const validPropertyFilter =
+        nextPropertyFilter &&
+        typeof nextPropertyFilter.propertyId === "string" &&
+        typeof nextPropertyFilter.valueToken === "string"
+          ? nextPropertyFilter
+          : null;
+      setPropertyViewSettings({
+        scopeKey: propertyScopeKey,
+        selectedPropertyId: validPropertyFilter?.propertyId ?? null,
+        filter: validPropertyFilter,
+        groupBy:
+          typeof display.propertyGroupBy === "string"
+            ? display.propertyGroupBy
+            : null,
+      });
+      handleHeaderTabChange(
+        typeof display.viewTab === "string" &&
+          (WORK_ITEMS_VIEW_TABS as readonly string[]).includes(display.viewTab)
+          ? (display.viewTab as WorkItemsViewTab)
+          : "List"
+      );
+      setKanbanGroupBy(
+        typeof display.kanbanGroupBy === "string"
+          ? (display.kanbanGroupBy as WorkItemsKanbanGroup)
+          : WORK_ITEMS_KANBAN_GROUP.STATUS
+      );
+      setTableColumns(
+        Array.isArray(display.tableColumns) ? display.tableColumns : null
+      );
+      setTableSort(
+        typeof display.sortBy === "string" &&
+          (display.sortDirection === "asc" || display.sortDirection === "desc")
+          ? {
+              sortBy: display.sortBy,
+              sortDirection: display.sortDirection,
+            }
+          : null
+      );
+    },
+    [handleHeaderTabChange, propertyScopeKey, state]
+  );
+
+  const savedViewsControl = useMemo(
+    () =>
+      isWorkItemsSurface ? (
+        <SavedViewsControl
+          orgId={displayProject.orgId ?? "personal-org"}
+          projectSlug={resolvedProjectSlug ?? null}
+          preferenceOwnerId={savedViewPreferenceOwnerId}
+          currentQuery={{
+            statusFilter: state.statusFilter,
+            searchQuery: state.searchQuery,
+            propertyFilter: applicablePropertyFilter ?? undefined,
+          }}
+          currentDisplay={{
+            viewTab: state.activeTab,
+            kanbanGroupBy,
+            tableColumns: tableColumns ?? undefined,
+            propertyGroupBy: applicablePropertyGroupBy ?? undefined,
+            sortBy: tableSort?.sortBy,
+            sortDirection: tableSort?.sortDirection,
+          }}
+          onApply={handleApplySavedView}
+        />
+      ) : null,
+    [
+      displayProject.orgId,
+      handleApplySavedView,
+      isWorkItemsSurface,
+      kanbanGroupBy,
+      applicablePropertyFilter,
+      applicablePropertyGroupBy,
+      resolvedProjectSlug,
+      savedViewPreferenceOwnerId,
+      state.activeTab,
+      state.searchQuery,
+      state.statusFilter,
+      tableColumns,
+      tableSort,
+    ]
   );
 
   const projectSurfaceControls = useMemo(
@@ -583,8 +864,48 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
                   fillWidth={false}
                   size="small"
                 />
+                {kanbanGroupBy === WORK_ITEMS_KANBAN_GROUP.PROPERTY && (
+                  <Select
+                    value={applicablePropertyGroupBy ?? undefined}
+                    options={propertyView.definitions.map((definition) => ({
+                      value: definition.id,
+                      label: definition.name,
+                    }))}
+                    onChange={(value) =>
+                      handlePropertyGroupByChange(String(value))
+                    }
+                    onClear={() => handlePropertyGroupByChange(null)}
+                    allowClear
+                    showSearch
+                    appearance="ghost"
+                    size="small"
+                    placeholder={t("workItems.table.groupByProperty", {
+                      defaultValue: "Group by property",
+                    })}
+                    ariaLabel={t("workItems.table.groupByProperty", {
+                      defaultValue: "Group by property",
+                    })}
+                    dataTestId="work-items-kanban-property-group"
+                  />
+                )}
               </>
             )}
+            {savedViewsControl}
+            <PropertyFilterControl
+              definitions={propertyView.definitions}
+              values={propertyView.values}
+              members={projectData.availableMembers}
+              selectedPropertyId={
+                propertyView.ready &&
+                propertyFilterPropertyId &&
+                availablePropertyIds.has(propertyFilterPropertyId)
+                  ? propertyFilterPropertyId
+                  : null
+              }
+              filter={applicablePropertyFilter}
+              onSelectedPropertyIdChange={handlePropertyFilterPropertyChange}
+              onFilterChange={handlePropertyFilterChange}
+            />
           </>
         )}
       </div>
@@ -596,14 +917,85 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
       isWorkItemsSurface,
       kanbanGroupBy,
       kanbanGroupTabs,
+      projectData.availableMembers,
+      applicablePropertyFilter,
+      applicablePropertyGroupBy,
+      availablePropertyIds,
+      handlePropertyFilterChange,
+      handlePropertyFilterPropertyChange,
+      handlePropertyGroupByChange,
+      propertyFilterPropertyId,
+      propertyView.definitions,
+      propertyView.ready,
+      propertyView.values,
+      savedViewsControl,
       state.activeTab,
+      t,
       workItemsViewTabs,
     ]
   );
-
+  const workItemsSearchControl = useMemo(
+    () =>
+      isWorkItemsSurface && state.activeTab !== "Settings" ? (
+        <div
+          className={`flex min-w-0 items-center gap-px ${
+            useSplitListHeader ? "flex-1" : ""
+          }`.trim()}
+        >
+          <WorkManagementSearchInput
+            value={state.searchQuery}
+            onChange={state.setSearchQuery}
+            fillWidth={useSplitListHeader}
+            dataTestId="project-work-items-search"
+          />
+        </div>
+      ) : null,
+    [
+      isWorkItemsSurface,
+      state.activeTab,
+      state.searchQuery,
+      state.setSearchQuery,
+      useSplitListHeader,
+    ]
+  );
+  const workItemsEndControl = useMemo(
+    () =>
+      isWorkItemsSurface && state.activeTab === "List" ? (
+        <SplitListFullscreenButton
+          isFullscreen={listFullscreen}
+          onToggle={() => setListFullscreen((current) => !current)}
+        />
+      ) : null,
+    [isWorkItemsSurface, listFullscreen, state.activeTab]
+  );
+  const addListItem = handlers.handleAddListItem;
+  const handleStatusFilterChange = useCallback(
+    (value: string) => setStatusFilter(value as StatusFilterType),
+    [setStatusFilter]
+  );
+  const handleCreateWorkItem = useCallback(() => {
+    if (onCreateWorkItem) {
+      onCreateWorkItem(
+        projectId,
+        projectName,
+        resolvedProjectSlug ?? projectId
+      );
+      return;
+    }
+    void addListItem(WORK_ITEMS_DEFAULT_STATUS);
+  }, [
+    addListItem,
+    onCreateWorkItem,
+    projectId,
+    projectName,
+    resolvedProjectSlug,
+  ]);
+  const addWorkItemAction =
+    state.activeTab !== "Settings" ? handleCreateWorkItem : undefined;
   const settingsContent = (
     <Suspense fallback={<Placeholder variant="loading" />}>
       <WorkItemsSettings
+        orgId={displayProject.orgId ?? "personal-org"}
         members={projectData.rawMembers}
         onUpdateMembers={projectData.updateMembers}
         labels={projectData.rawLabels}
@@ -621,89 +1013,72 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
         projectMembers={displayProject.members ?? []}
         onUpdateProjectMembers={handleUpdateProjectMembers}
         onOpenRepoSettings={onOpenRepoSettings}
-        initialSection={pendingSettingsSection}
-        onSectionConsumed={handleSettingsSectionConsumed}
+        sectionRequest={settingsSectionRequest}
       />
     </Suspense>
   );
 
   const resolvedProjectDescription =
     displayProject.description ?? projectData.project?.description;
+  const workItemsHeader = (
+    <WorkItemsPageHeader
+      projectName={headerTitle}
+      breadcrumbSegments={interactiveBreadcrumbSegments}
+      identityIcon={projectIdentityIcon}
+      onOpenProjects={onOpenProjects}
+      activeTab={state.activeTab}
+      leadingControls={projectSurfaceControls}
+      trailingControls={workItemsSearchControl}
+      statusFilter={isWorkItemsSurface ? state.statusFilter : undefined}
+      onStatusFilterChange={
+        isWorkItemsSurface ? handleStatusFilterChange : undefined
+      }
+      statusCounts={data.statusCounts}
+      statusFilterKeys={statusFilterKeys}
+      onCollapseAll={isWorkItemsSurface ? handleCollapseAll : undefined}
+      showProperties={
+        propertiesActionAvailable ? state.showProperties : undefined
+      }
+      onToggleProperties={
+        propertiesActionAvailable ? handlers.handleToggleProperties : undefined
+      }
+      onAddProject={
+        isWorkItemsSurface && state.activeTab !== "Settings"
+          ? onCreateProject
+          : undefined
+      }
+      onAddWorkItem={addWorkItemAction}
+      onRefresh={isWorkItemsSurface ? data.refresh : undefined}
+      refreshLoading={data.loading}
+      endControls={workItemsEndControl}
+      splitListHeader={useSplitListHeader}
+      splitHeaderLeading={splitHeaderLeading}
+      publishToWorkstationHeader={tabBarActionsInStationTabBar && isActive}
+      workstationHeaderHost={workstationHeaderHost}
+    />
+  );
 
-  // When a work item is selected, the detail keeps the page's full parent
-  // hierarchy and appends the item. Otherwise the page header is shown.
+  // The project header stays mounted while the selected work item opens in the
+  // reusable right-hand detail pane.
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      {!isDetailOpen && (
-        <WorkItemsPageHeader
-          projectName={headerTitle}
-          breadcrumbSegments={interactiveBreadcrumbSegments}
-          identityIcon={projectIdentityIcon}
-          onOpenProjects={onOpenProjects}
-          activeTab={state.activeTab}
-          leadingControls={projectSurfaceControls}
-          statusFilter={isWorkItemsSurface ? state.statusFilter : undefined}
-          onStatusFilterChange={
-            isWorkItemsSurface
-              ? (value) =>
-                  state.setStatusFilter(value as typeof state.statusFilter)
-              : undefined
-          }
-          statusCounts={data.statusCounts}
-          statusFilterKeys={statusFilterKeys}
-          onCollapseAll={isWorkItemsSurface ? handleCollapseAll : undefined}
-          showProperties={
-            propertiesActionAvailable ? state.showProperties : undefined
-          }
-          onToggleProperties={
-            propertiesActionAvailable
-              ? handlers.handleToggleProperties
-              : undefined
-          }
-          onAddProject={
-            isWorkItemsSurface && state.activeTab !== "Settings"
-              ? onCreateProject
-              : undefined
-          }
-          onAddWorkItem={
-            state.activeTab !== "Settings"
-              ? onCreateWorkItem
-                ? () =>
-                    onCreateWorkItem(
-                      projectId,
-                      projectName,
-                      resolvedProjectSlug ?? projectId
-                    )
-                : () => handlers.handleAddListItem(WORK_ITEMS_DEFAULT_STATUS)
-              : undefined
-          }
-          onRefresh={isWorkItemsSurface ? data.refresh : undefined}
-          refreshLoading={data.loading}
-          onSearch={
-            isWorkItemsSurface && !tabBarActionsInStationTabBar
-              ? handleOpenSearch
-              : undefined
-          }
-          publishToWorkstationHeader={tabBarActionsInStationTabBar && isActive}
-          workstationHeaderHost={workstationHeaderHost}
-        />
-      )}
-
-      {/* Content search spotlight */}
-      <ContentSearchPalette
-        isOpen={isSearchOpen}
-        onClose={handleCloseSearch}
-        query={state.searchQuery}
-        onQueryChange={(value) => state.setSearchQuery(value)}
-        placeholder={t("workItems.searchPlaceholder")}
-      />
+      {!useSplitListHeader && workItemsHeader}
 
       {/* Content Area */}
       <div className="min-h-0 flex-1 overflow-hidden">
         <WorkItemsTabContent
+          statusOrgId={propertyOrgId}
           activeTab={state.activeTab}
-          groupedWorkItems={data.groupedWorkItems}
-          filteredWorkItems={data.filteredWorkItems}
+          tableColumns={tableColumns}
+          onTableColumnsChange={setTableColumns}
+          tableSort={tableSort}
+          onTableSortChange={setTableSort}
+          tablePropertyDefinitions={propertyView.definitions}
+          tablePropertyValues={propertyView.values}
+          tablePropertyGroupBy={applicablePropertyGroupBy}
+          onTablePropertyGroupByChange={handlePropertyGroupByChange}
+          groupedWorkItems={propertyGroupedWorkItems}
+          filteredWorkItems={propertyFilteredWorkItems}
           selectedWorkItem={data.selectedWorkItem ?? null}
           selectedWorkItemId={state.selectedWorkItemId}
           workItems={data.workItems}
@@ -742,9 +1117,11 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
           onCalendarEventClick={(event) => handleOpenWorkItem(event.id)}
           kanbanGroupBy={kanbanGroupBy}
           pinnedKanbanColumnIds={pinnedKanbanColumnIds}
-          kanbanTasks={data.kanbanTasks}
-          ganttTasks={data.ganttTasks}
-          calendarEvents={data.calendarEvents}
+          kanbanTasks={propertyKanbanTasks}
+          ganttTasks={propertyGanttTasks}
+          calendarEvents={propertyCalendarEvents}
+          listFullscreen={listFullscreen}
+          listHeader={useSplitListHeader ? workItemsHeader : undefined}
           detailContent={detailContent}
           propertiesPanel={propertiesPanel}
           settingsContent={settingsContent}
@@ -759,11 +1136,69 @@ const WorkItemsPage: React.FC<WorkItemsPageProps> = ({
 
       <MultiSelectBar
         selectedCount={selectedIds.size}
-        visibleItemCount={data.filteredWorkItems.length}
+        visibleItemCount={propertyFilteredWorkItems.length}
         deleting={bulkDeleting}
         onSelectAll={handleSelectAll}
         onUnselectAll={handleUnselectAll}
         onDelete={handleBulkDelete}
+        onSetProperty={() => setBatchPropertyOpen(true)}
+        onSetStatus={() => setBatchQuickField("status")}
+        onSetPriority={() => setBatchQuickField("priority")}
+        onSetAssignee={() => setBatchQuickField("assignee")}
+      />
+      <BatchPropertyDialog
+        open={batchPropertyOpen}
+        orgId={displayProject.orgId ?? "personal-org"}
+        projectSlug={resolvedProjectSlug ?? null}
+        shortIds={selectedShortIds}
+        members={projectData.availableMembers}
+        onClose={() => setBatchPropertyOpen(false)}
+        onApplied={() => {
+          handleUnselectAll();
+          void data
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
+          void propertyView
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
+        }}
+      />
+      <BatchQuickFieldDialog
+        open={batchQuickField !== null}
+        field={batchQuickField ?? "status"}
+        orgId={displayProject.orgId ?? "personal-org"}
+        projectSlug={resolvedProjectSlug}
+        shortIds={selectedShortIds}
+        members={projectData.availableMembers}
+        onClose={() => setBatchQuickField(null)}
+        onApplied={() => {
+          handleUnselectAll();
+          void data
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
+          void propertyView
+            .refresh()
+            .catch((error: unknown) => Message.error(String(error)));
+        }}
+      />
+      <RevisionConflictModal
+        conflict={
+          data.revisionConflict
+            ? {
+                fieldLabel: t(
+                  data.revisionConflict.field === "title"
+                    ? "workItems.revisionConflict.titleField"
+                    : "workItems.revisionConflict.descriptionField"
+                ),
+                mine: data.revisionConflict.mine,
+                latest: data.revisionConflict.latest,
+                expectedRevision: data.revisionConflict.expectedRevision,
+                actualRevision: data.revisionConflict.actualRevision,
+              }
+            : null
+        }
+        onUseLatest={data.useLatestRevisionConflict}
+        onKeepMine={data.keepMineRevisionConflict}
       />
     </div>
   );

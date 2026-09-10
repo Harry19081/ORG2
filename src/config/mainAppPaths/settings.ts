@@ -8,41 +8,32 @@ import { SETTINGS_BASE, settingsPathParts } from "./shared";
 
 export type SettingsSectionSegment =
   | "general"
-  | "collaboration"
   | "appearance"
   | "editor"
   | "security"
+  | "mobile-remote"
   | "update"
-  | "monitor";
+  | "harness-connections";
 
 export type SettingsSubpageSegment = "editor-appearance";
 
 export const SETTINGS_SECTIONS: readonly SettingsSectionSegment[] = [
   "general",
-  "collaboration",
   "appearance",
   "editor",
   "security",
+  "mobile-remote",
   "update",
-  "monitor",
-] as const;
-
-export const SETTINGS_SUBPAGES: readonly SettingsSubpageSegment[] = [
-  "editor-appearance",
+  "harness-connections",
 ] as const;
 
 export const SETTINGS_SECTION_TABS = {
-  general: ["general", "notifications", "shortcuts"],
-  collaboration: ["cloud", "self-hosted"],
+  general: ["general", "notifications", "shortcuts", "storage", "self-hosted"],
   appearance: ["app", "code-editor", "chat-panel"],
-  editor: ["editor", "index"],
-  monitor: ["resources", "network", "storage"],
+  editor: ["editor"],
 } as const satisfies Partial<Record<SettingsSectionSegment, readonly string[]>>;
 
 export type SettingsSectionWithTabs = keyof typeof SETTINGS_SECTION_TABS;
-
-export type SettingsSectionTab<S extends SettingsSectionWithTabs> =
-  (typeof SETTINGS_SECTION_TABS)[S][number];
 
 export type SettingsTopTabSegment =
   | "core-settings"
@@ -53,13 +44,6 @@ export type SettingsTopTabSegment =
   | "clis"
   | "my-role";
 
-export const SETTINGS_TOP_TABS: readonly SettingsTopTabSegment[] = [
-  "core-settings",
-  "integrations",
-  "agent-orgs",
-  "my-role",
-] as const;
-
 export type CoreSettingsItemSegment =
   | SettingsSectionSegment
   | IntegrationsCategorySegment;
@@ -69,6 +53,13 @@ export interface SettingsPathOptions {
   tab?: string;
   subpage?: SettingsSubpageSegment;
 }
+
+/**
+ * Retired settings section kept only to resolve existing bookmarked URLs.
+ * New navigation exposes the managed login and self-hosted endpoint under
+ * General instead.
+ */
+const LEGACY_COLLABORATION_SECTION = "collaboration";
 
 export function buildSettingsPath(options: SettingsPathOptions = {}): string {
   const { section, tab, subpage } = options;
@@ -100,6 +91,14 @@ export function parseCoreSettingsItem(pathname: string): {
       : parts[0];
 
   if (!itemPart) return { section: null, category: null };
+
+  if (itemPart === "monitor") {
+    return { section: "general", category: null };
+  }
+
+  if (itemPart === LEGACY_COLLABORATION_SECTION) {
+    return { section: "general", category: null };
+  }
 
   let normalized = fromCategoryUrlSegment(itemPart);
   if (normalized === "notifications" || normalized === "shortcuts") {
@@ -141,8 +140,22 @@ export function parseSettingsSectionTab(pathname: string): {
     return { section: "general", tab: itemPart };
   }
 
+  if (itemPart === "monitor") {
+    return {
+      section: "general",
+      tab: tabPart === "storage" ? "storage" : "general",
+    };
+  }
+
+  if (itemPart === LEGACY_COLLABORATION_SECTION) {
+    return {
+      section: "general",
+      tab: tabPart === "self-hosted" ? "self-hosted" : "general",
+    };
+  }
+
   if (itemPart === "code-search-indexing" || itemPart === "workspace") {
-    return { section: "editor", tab: "index" };
+    return { section: "editor", tab: "editor" };
   }
 
   const { section } = parseCoreSettingsItem(pathname);
@@ -168,25 +181,6 @@ export function getDefaultSettingsSectionTab(
   return SETTINGS_SECTION_TABS[section as SettingsSectionWithTabs][0];
 }
 
-export function parseSettingsPath(pathname: string): {
-  section: SettingsSectionSegment | null;
-  subpage: SettingsSubpageSegment | null;
-} {
-  const parts = settingsPathParts(pathname);
-
-  if (parts[0] === "subpage") {
-    const rawSubpage = parts[1];
-    const subpage: SettingsSubpageSegment | null = (
-      SETTINGS_SUBPAGES as readonly string[]
-    ).includes(rawSubpage ?? "")
-      ? (rawSubpage as SettingsSubpageSegment)
-      : null;
-    return { section: null, subpage };
-  }
-
-  return { section: parseCoreSettingsItem(pathname).section, subpage: null };
-}
-
 export function parseSettingsTopTab(pathname: string): SettingsTopTabSegment {
   const head = settingsPathParts(pathname)[0];
   if (head === "subpage") return "core-settings";
@@ -197,17 +191,6 @@ export function parseSettingsTopTab(pathname: string): SettingsTopTabSegment {
   }
   if (head === "my-role") return "my-role";
   return "core-settings";
-}
-
-export function buildSettingsTabPath(tab: SettingsTopTabSegment): string {
-  if (tab === "core-settings") return SETTINGS_BASE;
-  if (tab === "integrations") return buildIntegrationsPath();
-  if (tab === "agent-orgs" || tab === "agents") {
-    return `${SETTINGS_BASE}/agent-orgs/agents`;
-  }
-  if (tab === "org") return `${SETTINGS_BASE}/agent-orgs/orgs`;
-  if (tab === "clis") return `${SETTINGS_BASE}/agent-orgs/clis`;
-  return `${SETTINGS_BASE}/${tab}`;
 }
 
 export function buildCoreSettingsItemPath(

@@ -10,7 +10,6 @@
  *
  * [Replace icon] [input] [replace] [replace all]
  */
-import { Replace, ReplaceAll } from "lucide-react";
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,13 +18,16 @@ import type {
   SearchInputVariant,
 } from "@src/components/SearchInput";
 import {
+  SEARCH_ROW_TOP_OFFSET_PX,
   SEARCH_WRAPPER_PANEL,
   SEARCH_WRAPPER_PANE_INPUT,
   SEARCH_WRAPPER_SIDEBAR,
+  searchControlMultilineInputStyle,
   searchControlSingleLineInputStyle,
   searchWrapperMultiline,
 } from "@src/components/SearchInput/searchControlInputStyles";
-import { HEADER_BUTTON } from "@src/modules/WorkStation/shared/tokens";
+import { HEADER_BUTTON } from "@src/config/workstation/tokens";
+import { HugeiconsIcon, ReplaceAllIcon, ReplaceIcon } from "@src/icons";
 
 // ============================================
 // Types
@@ -119,9 +121,16 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
 
     const isSidebar = variant === "sidebar";
 
+    // In multiline mode, top-align the row (spacer / input box / action buttons)
+    // instead of centering it — otherwise the action buttons re-center into the
+    // middle of the box as the textarea grows past one line. The matching
+    // top-offset margin below keeps them at the single-line centered position.
     const containerClass = isSidebar
-      ? "flex items-center gap-2.5"
-      : "flex items-center gap-3";
+      ? `flex ${multiline ? "items-start" : "items-center"} gap-2.5`
+      : `flex ${multiline ? "items-start" : "items-center"} gap-3`;
+    const actionButtonStyle = multiline
+      ? { marginTop: SEARCH_ROW_TOP_OFFSET_PX }
+      : undefined;
 
     const inputWrapperClass = isSidebar
       ? SEARCH_WRAPPER_SIDEBAR
@@ -143,9 +152,7 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
       <div className={`${containerClass} ${className}`}>
         {!hideSpacer && <div className={spacerWidth} />}
 
-        <div
-          className={`${inputWrapperMultilineClass} ${multiline ? "items-start" : ""} ${inputBoxClassName}`}
-        >
+        <div className={`${inputWrapperMultilineClass} ${inputBoxClassName}`}>
           {multiline ? (
             <textarea
               ref={inputRef as React.RefObject<HTMLTextAreaElement>}
@@ -153,12 +160,7 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
-              style={{
-                ...searchControlSingleLineInputStyle(14),
-                height: "auto",
-                lineHeight: 1.4,
-                resize: "none",
-              }}
+              style={searchControlMultilineInputStyle(14)}
               className="min-w-0 flex-1 text-text-1 placeholder:text-text-3"
               autoComplete="off"
               autoCorrect="off"
@@ -192,9 +194,14 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
             onClick={onReplace}
             disabled={disabled}
             className={actionButtonClass}
+            style={actionButtonStyle}
             title={t("tooltips.replace")}
           >
-            <Replace size={iconSize} />
+            <HugeiconsIcon
+              icon={ReplaceIcon}
+              data-icon="replace"
+              size={iconSize}
+            />
           </button>
         )}
         {onReplaceAll && (
@@ -202,9 +209,14 @@ export const ReplaceInput: React.FC<ReplaceInputProps> = memo(
             onClick={onReplaceAll}
             disabled={disabled}
             className={actionButtonClass}
+            style={actionButtonStyle}
             title={t("tooltips.replaceAll")}
           >
-            <ReplaceAll size={iconSize} />
+            <HugeiconsIcon
+              icon={ReplaceAllIcon}
+              data-icon="replace-all"
+              size={iconSize}
+            />
           </button>
         )}
       </div>

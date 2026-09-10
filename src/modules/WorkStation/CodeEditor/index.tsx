@@ -2,27 +2,22 @@
  * CodeEditor Component
  *
  * Full-featured code editor with file tree, git integration, terminal,
- * diagnostics, and more. Extracted from AppContainer for clean separation.
+ * and more. Extracted from AppContainer for clean separation.
  */
 import { useTerminalState } from "@/src/engines/TerminalCore/hooks/useTerminalState";
-import { useCodeEditorHandlers } from "@/src/hooks/workStation/editor/useCodeEditorHandlers";
-import { useGitDiffState } from "@/src/hooks/workStation/git/useGitDiffState";
-import { useCodeEditor } from "@/src/hooks/workStation/useCodeEditor";
 import { invoke } from "@tauri-apps/api/core";
 import { useAtomValue, useSetAtom } from "jotai";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo } from "react";
 
 import { ActionSystemProvider } from "@src/ActionSystem";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
-import { useEditorRepoCacheSync } from "@src/hooks/ui/tabs";
-import { useWorkStationPanels } from "@src/hooks/workStation";
-import { useDiagnostics } from "@src/hooks/workStation/diagnostics/useDiagnostics";
-import { useCodeEditorEvents } from "@src/hooks/workStation/editor/useCodeEditorEvents";
-import { useOutputChannels } from "@src/hooks/workStation/output/useOutputChannels";
-import { useWorkStationTabs } from "@src/hooks/workStation/tabs";
-import { usePinnedTabs } from "@src/hooks/workStation/tabs/usePinnedTabs";
+import { usePinnedTabs } from "@src/hooks/tabHost/usePinnedTabs";
+import { useRetainedTabPool } from "@src/hooks/tabHost/useRetainedTabPool";
+import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
+import { useWorkStationTabs } from "@src/hooks/tabHost/useWorkStationTabs";
+import { useEditorRepoCacheSync } from "@src/hooks/ui/tabs/useEditorRepoCacheSync";
 import { CODE_EDITOR_CONFIG } from "@src/modules/WorkStation/CodeEditor/config";
-import { type PrimarySidebarTabKey } from "@src/store/ui/workStationAtom";
+import { type PrimarySidebarTabKey } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import {
   CODE_EDITOR_MAIN_TERMINAL_SESSION_ID,
@@ -32,22 +27,22 @@ import {
   workstationLayoutAtom,
 } from "@src/store/workstation/tabs";
 
-import {
-  SidebarSlot,
-  WorkStationShell,
-  buildPrimarySidebarConfig,
-  buildSecondaryPanelConfig,
-} from "../shared";
-// Side-effect import: registers SourceControlTabSidebar into
-// TAB_SIDEBAR_REGISTRY.
-import "../shared/SidebarModules";
+import { WorkStationShell, buildPrimarySidebarConfig } from "../shared";
+// Imported from the SidebarModules entry (not the shared barrel): this
+// module evaluation is also what registers the SourceControl / Terminal /
+// Benchmark tab sidebars into TAB_SIDEBAR_REGISTRY.
+import { SidebarSlot } from "../shared/SidebarModules";
 import { EditorIntegrations } from "./EditorLayout/components/EditorIntegrations";
 // Static imports — lazy loading added ~200-500ms of blank screen on first open
 // because Suspense fallback={null} shows nothing while the chunk loads.
 import FileSearchPanel from "./EditorLayout/overlays/FileSearchPanel";
-import EditorBottomPanel from "./Panels/EditorBottomPanel";
 import EditorContent from "./Panels/EditorMainPane";
 import { EditorPrimarySidebar } from "./Panels/EditorPrimarySidebar";
+import { trackGitPollingVisibility } from "./gitPollingVisibility";
+import { useCodeEditor } from "./hooks/useCodeEditor";
+import { useCodeEditorEvents } from "./hooks/useCodeEditorEvents";
+import { useCodeEditorHandlers } from "./hooks/useCodeEditorHandlers";
+import { useGitDiffState } from "./hooks/useGitDiffState";
 import { useCodeEditorLocalState } from "./useCodeEditorLocalState";
 import { useSourceControlSetup } from "./useSourceControlSetup";
 
@@ -57,7 +52,7 @@ const SET_ACTIVE_GIT_POLLING_REPO_COMMAND = "set_active_git_polling_repo";
 // Types
 // ============================================
 
-export interface CodeEditorProps {
+interface CodeEditorProps {
   /** Repository path to browse */
   repoPath: string;
   /** Repository name for display */
@@ -92,8 +87,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
         workspaceFolders.length > 1 ? workspaceFolders : undefined,
     });
     const panels = useWorkStationPanels();
-    const diagnosticsState = useDiagnostics();
-    const outputState = useOutputChannels({ defaultMaxChars: 100000 });
 
     // === Terminal state (unified via Jotai atoms) ===
     const terminalState = useTerminalState();
@@ -112,6 +105,21 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
     // file-row clicks can be wired to `handleGitFileSelect`.
     const { activeTab, tabs } = useWorkStationTabs();
     const setLayout = useSetAtom(workstationLayoutAtom);
+    // Tabs the retention policy keeps mounted-but-hidden after you leave
+    // them (`tabRetention.ts`). Computed once here so the main pane and the
+    // sidebar slot hide/show the same instances in lockstep.
+    const retainedTabIds = useRetainedTabPool(
+      "source-control",
+      tabs,
+      activeTab?.id ?? null
+    );
+    const retainedTabs = useMemo(
+      () => tabs.filter((tab) => retainedTabIds.has(tab.id)),
+      [retainedTabIds, tabs]
+    );
+    const sourceControlSurfaceMounted =
+      activeTab?.type === "source-control" ||
+      retainedTabs.some((tab) => tab.type === "source-control");
 
     // === Local state, status-bar sync, and misc handlers ===
     const {
@@ -119,22 +127,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       setSearchPanelVisible,
       setPrimaryPanel,
       activeCommitSha,
-      editorPanelPosition,
       handleCursorPositionChange,
-      handleToggleEditorPanelPosition,
-      handleDiagnosticsChange,
-      handleDiagnosticClick,
       handleSymbolClick,
       handleAllChangesClick,
-      handleKillTerminal,
-      handleAddTerminal,
     } = useCodeEditorLocalState({
-      repoName,
       isActive,
-      currentBranch,
       codeEditorState,
-      terminalState,
-      diagnosticsState,
     });
 
     // === Extracted handlers (performance optimized) ===
@@ -218,6 +216,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       currentBranch,
       gitDiffState,
       activeTab,
+      sourceControlSurfaceMounted,
       setPrimaryPanel,
       handleGitFileSelect,
     });
@@ -336,6 +335,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       () => (
         <SidebarSlot
           activeTab={activeTab}
+          retainedTabs={retainedTabs}
           repoPath={repoPath}
           repoId={selectedRepoId}
           isMultiRoot={workspaceFolders.length > 1}
@@ -355,6 +355,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
         handleGitFilesChange,
         handleSourceControlHistorySelectionChange,
         repoPath,
+        retainedTabs,
         selectedRepoId,
         tabSidebarExtraContext,
         workspaceFolders.length,
@@ -384,25 +385,15 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       ]
     );
 
-    const handleTerminalFileLinkOpen = useCallback(
-      (filePath: string, line?: number) => {
-        if (line) {
-          handleFileSelectWithLine(filePath, line);
-          return;
-        }
-        handleFileSelect(filePath);
-      },
-      [handleFileSelect, handleFileSelectWithLine]
-    );
-
     const isSourceControlActive = activeTab?.type === "source-control";
     useEffect(() => {
-      const repoId = isActive && isSourceControlActive ? selectedRepoId : null;
-      void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId });
-
-      return () => {
-        void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId: null });
-      };
+      return trackGitPollingVisibility(
+        document,
+        isActive && isSourceControlActive ? selectedRepoId : null,
+        (repoId) => {
+          void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId });
+        }
+      );
     }, [isActive, isSourceControlActive, selectedRepoId]);
 
     const editorSourceControlScopePicker = isSourceControlActive
@@ -440,13 +431,13 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
             onContentChange={handleContentChange}
             onSave={handleSave}
             onDiscard={handleDiscard}
-            onDiagnosticsChange={handleDiagnosticsChange}
             onAllChangesClick={handleAllChangesClick}
             hasUnsavedChanges={codeEditorState.hasUnsavedChanges}
             saving={codeEditorState.saving}
             isBinary={codeEditorState.isBinary}
             onCursorPositionChange={handleCursorPositionChange}
             terminalState={terminalState}
+            retainedTabIds={retainedTabIds}
             sourceControlHeaderLeadingSlot={editorSourceControlScopePicker}
             sourceControlHeaderTrailingSlot={editorSourceControlHeaderSlot}
             sourceControlFilterMode={editorSourceControlFilterMode}
@@ -474,10 +465,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
         handleContentChange,
         handleSave,
         handleDiscard,
-        handleDiagnosticsChange,
         handleAllChangesClick,
         handleCursorPositionChange,
         terminalState,
+        retainedTabIds,
         editorSourceControlScopePicker,
         editorSourceControlHeaderSlot,
         editorSourceControlFilterMode,
@@ -486,102 +477,15 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
       ]
     );
 
-    const editorPanelContent = useMemo(
-      () => (
-        <EditorBottomPanel
-          diagnostics={diagnosticsState.diagnostics}
-          onDiagnosticClick={handleDiagnosticClick}
-          onClearAllDiagnostics={diagnosticsState.clearAllDiagnostics}
-          onSetDiagnosticsForFile={diagnosticsState.setDiagnosticsForFile}
-          outputChannels={outputState.channels}
-          activeChannelId={outputState.activeChannelId}
-          onSetActiveChannel={outputState.setActiveChannel}
-          onClearChannel={outputState.clearChannel}
-          terminalState={terminalState}
-          onTerminalFileLinkOpen={handleTerminalFileLinkOpen}
-          onKillTerminal={handleKillTerminal}
-          onAddTerminal={handleAddTerminal}
-          terminalSidebarWidth={panels.terminalSidebarWidth}
-          onTerminalSidebarWidthChange={panels.setTerminalSidebarWidth}
-          repoPath={repoPath}
-          position={editorPanelPosition}
-          onTogglePosition={handleToggleEditorPanelPosition}
-        />
-      ),
-      [
-        diagnosticsState.diagnostics,
-        diagnosticsState.clearAllDiagnostics,
-        diagnosticsState.setDiagnosticsForFile,
-        handleDiagnosticClick,
-        outputState.channels,
-        outputState.activeChannelId,
-        outputState.setActiveChannel,
-        outputState.clearChannel,
-        terminalState,
-        handleTerminalFileLinkOpen,
-        handleKillTerminal,
-        handleAddTerminal,
-        panels.terminalSidebarWidth,
-        panels.setTerminalSidebarWidth,
-        repoPath,
-        editorPanelPosition,
-        handleToggleEditorPanelPosition,
-      ]
-    );
-
-    // Editor panel size: bottom uses persisted bottomPanelHeight; right uses local width.
-    // Single mount while visible — CSS grid swaps axis without unmounting EditorBottomPanel.
-    const [editorRightPanelWidth, setEditorRightPanelWidth] = useState(400);
-    const shouldHideSecondaryPanel =
-      activeTab?.type === "terminal" ||
-      activeTab?.type === "source-control" ||
-      activeTab?.type === "chat-session";
-    const secondaryPanelConfig = useMemo(() => {
-      if (shouldHideSecondaryPanel) return undefined;
-
-      return buildSecondaryPanelConfig({
-        content: editorPanelContent,
-        position: editorPanelPosition,
-        collapsed: panels.bottomPanelCollapsed,
-        size:
-          editorPanelPosition === "bottom"
-            ? panels.bottomPanelHeight
-            : editorRightPanelWidth,
-        onSizeChange:
-          editorPanelPosition === "bottom"
-            ? panels.setBottomPanelHeight
-            : setEditorRightPanelWidth,
-        onClose: panels.toggleBottomPanel,
-        minSize: editorPanelPosition === "bottom" ? 160 : 240,
-        maxSize: 800,
-        resetSize: editorPanelPosition === "bottom" ? 250 : 400,
-      });
-    }, [
-      editorPanelContent,
-      editorPanelPosition,
-      panels.bottomPanelCollapsed,
-      panels.bottomPanelHeight,
-      panels.setBottomPanelHeight,
-      editorRightPanelWidth,
-      panels.toggleBottomPanel,
-      shouldHideSecondaryPanel,
-    ]);
-
     return (
       <ActionSystemProvider repoPath={repoPath} repoId={selectedRepoId}>
         <EditorIntegrations
           repoPath={repoPath}
           repoId={selectedRepoId || repoPath}
-          primarySidebarTab={panels.primarySidebarTab}
-          outputState={outputState}
-          setBottomPanelTab={panels.setBottomPanelTab}
-          bottomPanelCollapsed={panels.bottomPanelCollapsed}
-          toggleBottomPanel={panels.toggleBottomPanel}
         />
 
         <WorkStationShell
           primarySidebarConfig={primarySidebarConfig}
-          secondaryPanelConfig={secondaryPanelConfig}
           content={mainContent}
           statusBar={null}
           layoutMode={panels.layoutMode}

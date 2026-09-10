@@ -4,25 +4,26 @@
  * Displays diagnostic counts with icons (errors, warnings, passed, etc.)
  * Used in Problems panel, Test Results, and other summary displays.
  *
- * Note: Different from src/components/StatusBadge which shows activity
- * status with pulsing dots (running, completed, failed).
+ * Compact numeric count badge for workstation surfaces.
  */
-import {
-  AlertCircle,
-  AlertTriangle,
-  Check,
-  Info,
-  type LucideIcon,
-} from "lucide-react";
 import React, { memo } from "react";
+
+import AnyIcon from "@src/components/AnyIcon";
+import {
+  Alert01Icon,
+  AlertCircleIcon,
+  type IconSvgElement,
+  InformationCircleIcon,
+  Tick01Icon,
+} from "@src/icons";
 
 // ============================================
 // Types
 // ============================================
 
-export type CountVariant = "error" | "warning" | "success" | "info" | "neutral";
+type CountVariant = "error" | "warning" | "success" | "info" | "neutral";
 
-export interface CountBadgeProps {
+interface CountBadgeProps {
   /** Variant determines icon and color */
   variant: CountVariant;
   /** Count to display */
@@ -42,34 +43,34 @@ export interface CountBadgeProps {
 // ============================================
 
 interface VariantConfig {
-  icon: LucideIcon;
+  icon: IconSvgElement;
   colorClass: string;
   defaultLabel: string;
 }
 
 const VARIANT_CONFIG: Record<CountVariant, VariantConfig> = {
   error: {
-    icon: AlertCircle,
+    icon: AlertCircleIcon,
     colorClass: "text-danger-6",
     defaultLabel: "error",
   },
   warning: {
-    icon: AlertTriangle,
+    icon: Alert01Icon,
     colorClass: "text-warning-6",
     defaultLabel: "warning",
   },
   success: {
-    icon: Check,
+    icon: Tick01Icon,
     colorClass: "text-success-6",
     defaultLabel: "passed",
   },
   info: {
-    icon: Info,
+    icon: InformationCircleIcon,
     colorClass: "text-primary-6",
     defaultLabel: "info",
   },
   neutral: {
-    icon: Info,
+    icon: InformationCircleIcon,
     colorClass: "text-text-3",
     defaultLabel: "",
   },
@@ -94,7 +95,6 @@ export const CountBadge: React.FC<CountBadgeProps> = memo(
     }
 
     const config = VARIANT_CONFIG[variant];
-    const Icon = config.icon;
     const displayLabel = label ?? config.defaultLabel;
 
     // Pluralize label if count !== 1
@@ -107,7 +107,7 @@ export const CountBadge: React.FC<CountBadgeProps> = memo(
       <span
         className={`flex items-center gap-1 text-[12px] ${config.colorClass} ${className}`}
       >
-        <Icon size={iconSize} className="shrink-0" />
+        <AnyIcon icon={config.icon} size={iconSize} className="shrink-0" />
         <span>
           {count}
           {pluralizedLabel && ` ${pluralizedLabel}`}

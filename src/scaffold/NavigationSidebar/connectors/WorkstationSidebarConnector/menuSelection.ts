@@ -1,4 +1,4 @@
-import type { ChatPanelTabType } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTabType } from "@src/store/chatPanel/chatPanelTabsModel";
 import type { SessionCreatorDraft } from "@src/store/session";
 import {
   CHAT_PANEL_CONTENT_MODE,
@@ -7,10 +7,9 @@ import {
   type ChatPanelCreateTarget,
   type ChatPanelSelectedProject,
   type ChatPanelSelectedWorkItem,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import {
-  COLLAB_ADD_ORG_MENU_ITEM_ID,
   KANBAN_MENU_ITEM_ID,
   RUNTIME_MENU_ITEM_ID,
   TEAM_INBOX_MENU_ITEM_ID,
@@ -19,38 +18,28 @@ import {
   getSelectedDraftMenuItemId,
   getSelectedMenuItemId,
 } from "../workstationSidebarData";
-import type { WorkstationSidebarKey } from "./types";
 
 interface ResolveSelectedMenuItemIdParams {
   activeSessionCreatorDraftId: string | null | undefined;
   activeSessionId: string;
-  activeSidebarKey: WorkstationSidebarKey;
   activeChatPanelTabType: ChatPanelTabType | null;
   chatPanelContentMode: ChatPanelContentMode;
   chatPanelCreateTarget: ChatPanelCreateTarget;
   chatPanelSelectedProject: ChatPanelSelectedProject | null;
   chatPanelSelectedWorkItem: ChatPanelSelectedWorkItem | null;
-  projectsSelectedMenuItemId: string;
   sessionCreatorDrafts: readonly SessionCreatorDraft[];
 }
 
-interface ResolvedSelectedMenuItemIds {
-  selectedMenuItemId: string;
-  sessionSelectedMenuItemId: string;
-}
-
-export function resolveSelectedMenuItemIds({
+export function resolveSessionSidebarMenuItemId({
   activeSessionCreatorDraftId,
   activeSessionId,
-  activeSidebarKey,
   activeChatPanelTabType,
   chatPanelContentMode,
   chatPanelCreateTarget,
   chatPanelSelectedProject,
   chatPanelSelectedWorkItem,
-  projectsSelectedMenuItemId,
   sessionCreatorDrafts,
-}: ResolveSelectedMenuItemIdParams): ResolvedSelectedMenuItemIds {
+}: ResolveSelectedMenuItemIdParams): string {
   const selectedDraftMenuItemId = getSelectedDraftMenuItemId(
     activeSessionCreatorDraftId ?? null,
     sessionCreatorDrafts
@@ -70,7 +59,6 @@ export function resolveSelectedMenuItemIds({
   const sessionSelectedMenuItemId =
     chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.PROJECT ||
     chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM ||
-    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG ||
     isChatPanelProjectsContentSelected
       ? ""
       : getSelectedMenuItemId({
@@ -78,21 +66,7 @@ export function resolveSelectedMenuItemIds({
           activeSessionId,
           selectedDraftMenuItemId,
         });
-  const resolvedProjectsSelectedMenuItemId =
-    chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.COLLAB_ORG
-      ? COLLAB_ADD_ORG_MENU_ITEM_ID
-      : chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.PROJECT ||
-          chatPanelCreateTarget === CHAT_PANEL_CREATE_TARGET.WORK_ITEM ||
-          chatPanelSelectedWorkItem ||
-          chatPanelSelectedProject
-        ? projectsSelectedMenuItemId
-        : "";
-  const selectedMenuItemId =
-    activeChatPanelTabType === "team-inbox"
-      ? TEAM_INBOX_MENU_ITEM_ID
-      : activeSidebarKey === "projects"
-        ? resolvedProjectsSelectedMenuItemId || projectsSelectedMenuItemId
-        : sessionSelectedMenuItemId;
-
-  return { selectedMenuItemId, sessionSelectedMenuItemId };
+  return activeChatPanelTabType === "team-inbox"
+    ? TEAM_INBOX_MENU_ITEM_ID
+    : sessionSelectedMenuItemId;
 }

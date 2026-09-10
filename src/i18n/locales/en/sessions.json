@@ -1,37 +1,33 @@
 {
+  "tray": {
+    "markAllRead": "Mark all as read",
+    "showKanban": "Show Kanban",
+    "showRuntime": "Show Runtime",
+    "pinned": "Pinned",
+    "unread": "Unread",
+    "running": "Running",
+    "recent": "Recent",
+    "empty": "No sessions — Open App",
+    "quit": "Quit ORG2"
+  },
   "toolUsage": {
-    "estimatedContext": "{{tokenCount}} Token context",
-    "followup": "{{tokenCount}} Token follow-up",
-    "decision": "{{tokenCount}} Token decision",
     "tooltip": "Estimated tool attribution. Method: {{method}}. Input: {{inputBytes}} bytes. Output: {{outputBytes}} bytes. Decision: {{decisionTokens}} Token. Context: {{contextTokens}} Token. Follow-up: {{followupTokens}} Token. Related LLM cache read: {{cacheReadTokens}} Token. Related LLM cache write: {{cacheWriteTokens}} Token."
   },
   "humanSession": {
     "titlePlaceholder": "Title (optional)",
     "createPlaceholder": "Add the first note… Type / for skills or @ to mention a session.",
     "createAction": "Create work log",
-    "appendLabel": "New note",
     "entryLabel": "Work log entry",
     "appendPlaceholder": "Append a note… Type / for skills, @ to mention a session, or drag one here.",
-    "appendAction": "Append note",
     "loading": "Loading work log",
-    "updated": "Updated {{date}}",
     "createFailed": "Could not create the work log",
     "loadFailed": "Could not load the work log",
     "appendFailed": "Could not append the note"
   },
   "history": {
     "untitledSession": "Untitled Session",
-    "prStatus": {
-      "merged": "Merged",
-      "open": "Open",
-      "draft": "Draft"
-    },
     "detail": {
-      "sessionInfo": "Session Information",
-      "repository": "Repo",
-      "branch": "Branch",
       "created": "Created",
-      "updated": "Updated",
       "lastUpdated": "Last updated",
       "external": "External",
       "internal": "Internal",
@@ -40,77 +36,16 @@
       "roundCount_other": "{{count}} rounds",
       "agentWorked": "Agent worked",
       "cliNativeStore": "CLI native store",
-      "sessionId": "Session ID",
-      "reasoningModel": "Reasoning Model",
-      "codingModel": "Coding Model",
-      "sessionMode": "Session Mode",
-      "fileChanges": "File Changes",
-      "filesChanged": "Files Changed",
-      "files": "files",
-      "summary": "Summary",
-      "workflow": "Workflow",
-      "agent": "Agent:",
-      "pilotSession": "Pilot Session",
-      "openSession": "Open Session",
-      "viewPR": "View PR",
-      "rawData": "Raw Data",
-      "analytics": {
-        "title": "Event Analytics",
-        "toolUsage": "Tool Usage",
-        "filesTouched": "Files Touched",
-        "conversation": "Conversation",
-        "tokenUsage": "Token Usage",
-        "errors": "Errors",
-        "duration": "Duration",
-        "events": "Events",
-        "toolCalls": "Tool Calls",
-        "files": "Files",
-        "tool": "Tool",
-        "calls": "Calls",
-        "done": "Done",
-        "userMessages": "User Messages",
-        "assistantMessages": "Agent Messages",
-        "userChars": "User Characters",
-        "assistantChars": "Agent Characters",
-        "avgResponseTime": "Avg Response Time",
-        "thinkingEvents": "Thinking Events",
-        "inputTokens": "Input Tokens",
-        "outputTokens": "Output Tokens",
-        "totalTokens": "Total Tokens",
-        "model": "Model",
-        "input": "Input",
-        "output": "Output",
-        "totalErrors": "Errors",
-        "totalFailures": "Failures",
-        "errorRate": "Error Rate"
-      },
-      "impact": {
-        "title": "Impact Graph",
-        "files": "Files",
-        "functions": "Functions",
-        "commits": "Commits",
-        "lines": "Lines",
-        "filesTouched": "Files Touched",
-        "functionsCreated": "Functions Created",
-        "commitsInfluenced": "Commits Influenced"
-      }
+      "sessionId": "Session ID"
     }
   },
   "kanban": {
     "card": {
       "openAsFloatingPane": "Open as Floating Pane"
     },
-    "sessions": "Sessions",
-    "fileSearch": {
-      "placeholder": "Search sessions by file path",
-      "noResults": "No sessions touched a matching file"
-    },
-    "replayBarAriaLabel": "Kanban replay timeline",
-    "followLabel": "Current Kanban",
     "view": {
       "list": "List",
       "diary": "Diary",
-      "kanban": "Kanban",
       "dataSource": "Data Sources"
     },
     "dataSource": {
@@ -180,7 +115,16 @@
           "24h": "24h",
           "7d": "7 days",
           "30d": "30 days",
-          "all": "All time"
+          "all": "All time",
+          "custom": "Custom range…"
+        },
+        "customRange": {
+          "start": "Start",
+          "end": "End",
+          "hint": "Local time · {{zone}} · Second precision, inclusive end",
+          "invalid": "End time cannot be before start time",
+          "apply": "Apply range",
+          "cancel": "Cancel"
         },
         "bucket": {
           "claude": "Claude",
@@ -281,12 +225,8 @@
       }
     },
     "list": {
-      "updated": "Updated",
-      "timeRange": "Time Range",
       "started": "Started",
       "lastUpdated": "Last Updated",
-      "agentModel": "Agent · Model",
-      "searchPlaceholder": "Search sessions...",
       "emptyTitle": "No sessions match these filters",
       "emptyDescription": "Try a different status, agent type, or time window."
     },
@@ -302,7 +242,6 @@
     },
     "autoArchive": {
       "label": "Auto archive",
-      "shortLabel": "Archive",
       "never": "Never",
       "12h": "12h",
       "24h": "24h",
@@ -311,18 +250,14 @@
     },
     "detail": {
       "title": "Title",
-      "description": "Description",
-      "tags": "Tags",
-      "status": "Status"
+      "tags": "Tags"
     },
     "columns": {
       "todo": "Todo",
       "inProgress": "In Progress",
       "blocking": "Blocking",
       "turnFinished": "Turn Finished",
-      "archived": "Archived",
-      "yourTurn": "Your Turn",
-      "finished": "Finished"
+      "archived": "Archived"
     },
     "boardColumns": {
       "todo": "Todo",
@@ -334,50 +269,16 @@
       "cancelled": "Failed"
     },
     "sidebar": {
-      "agentTypes": "Agent Types",
-      "manageItems": "Manage items",
-      "sessionsView": "Sessions View",
-      "workitemView": "Workitem View",
       "githubIssues": "GitHub Issues",
       "githubPrs": "GitHub PRs",
       "runs": "Runs",
-      "views": "Views",
-      "cliAgent": "CLI Agent",
-      "rustAgent": "Rust Agent",
       "removeDraft": "Remove draft",
       "showSubagents": "Show subagents",
       "hideSubagents": "Hide subagents"
     },
-    "resultStatus": {
-      "completed": "Completed",
-      "failed": "Failed",
-      "archived": "Archived"
-    },
-    "orgtrack": {
-      "filesChanged_one": "{{count}} file",
-      "filesChanged_other": "{{count}} files",
-      "commits_one": "{{count}} commit",
-      "commits_other": "{{count}} commits",
-      "committedRateShort": "{{percent}}% committed"
-    },
-    "addContent": "Add Content",
     "merge": {
       "conflictsIn": "Conflicts in: {{files}}",
       "failed": "Merge failed",
-      "failedToLoadDiff": "Failed to load diff",
-      "noChanges": "No changes",
-      "worktree": "Worktree",
-      "branch": "Branch:",
-      "base": "Base:",
-      "mergeLabel": "Merge:",
-      "merge": "Merge",
-      "merging": "Merging…",
-      "merged": "Merged",
-      "statusPending": "Pending",
-      "statusMerged": "Merged",
-      "statusConflict": "Conflict",
-      "statusSkipped": "Skipped",
-      "statusFailed": "Failed",
       "retryMerge": "Retry Merge",
       "dirtyRepo": "Cannot merge: uncommitted changes exist in the repository. Commit or stash them first.",
       "strategyLabel": "Merge strategy",
@@ -387,125 +288,40 @@
       "discardConfirmTitle": "Discard worktree?",
       "discardConfirmMessage": "This will permanently delete the branch and all changes. This cannot be undone."
     },
-    "discard": {
-      "discard": "Discard",
-      "discarding": "Discarding…",
-      "confirmMessage": "Discard all changes in this worktree? This cannot be undone."
-    },
-    "replay": {
-      "replaySession": "Replay"
-    },
     "detailView": {
       "trajectory": "Trajectory",
       "touchedFiles": "Touched files",
       "noTouchedFiles": "No files touched"
     },
     "diary": {
-      "title": "Diary",
       "previousDay": "Previous day",
       "nextDay": "Next day",
-      "subtitle": "Daily Agent activity",
-      "engineeringHours": "Engineering hours",
-      "engineeringHoursHint": "Accumulated Agent time",
-      "onlineHours": "Online hours",
-      "onlineHoursHint": "Deduped parallel time",
-      "activeSessions": "Active sessions",
-      "completedSessions": "Completed",
-      "timeline": "Timeline of events",
       "commits": "Commits",
       "commitsTo": "Commits to {{repo}}",
       "commitsToMultiple": "Commits to {{repos}}",
       "emptyTitle": "No diary events",
-      "emptySubtitle": "Agent activity for this day will appear here.",
-      "event": {
-        "started": "Started session",
-        "completed": "Completed session",
-        "stillWorking": "Still working"
-      }
-    }
-  },
-  "changes": {
-    "scope": {
-      "thisSession": "This session",
-      "allUncommitted": "All uncommitted"
+      "emptySubtitle": "Agent activity for this day will appear here."
     },
-    "empty": {
-      "workingTreeClean": "Working tree clean",
-      "noChangesYet": "No changes yet",
-      "noUncommittedChanges": "No uncommitted changes in repo",
-      "changesWillAppear": "Changes made by AI will appear here"
-    },
-    "noChangesToReview": "No changes to review"
-  },
-  "sync": {
-    "preparing": "Preparing files...",
-    "uploading": "Syncing your files...",
-    "processing": "Processing on market...",
-    "complete": "Files synced successfully!",
-    "error": "Sync failed",
-    "default": "Syncing...",
-    "files": "{{count}} files"
+    "openRoutineWorkItemError": "Could not open the Work Item",
+    "runsEmpty": "No routine runs yet"
   },
   "simulator": {
     "captionBarToggleTooltip": "Show agent message bar",
-    "parentSession": "Main Agent",
-    "backgroundTasks": "Background Tasks",
-    "backgroundTasksEmpty": "No background tasks",
     "noActiveSession": "No active session",
     "tabs": {
-      "desktop": "Desktop",
-      "tasks": "Tasks",
-      "kanban": "Kanban",
-      "changes": "Changes",
-      "conflicts": "Conflicts",
-      "plan": "Plan"
-    },
-    "settings": {
-      "title": "Simulator View",
-      "showDock": "Show Dock",
-      "playback": "Playback",
-      "speed": "Speed",
-      "autoScroll": "Auto Scroll"
-    },
-    "tasks": {
-      "noTasksFound": "No tasks found",
-      "tasksWillAppear": "Tasks will appear here when they start executing",
-      "selectTask": "Select a task to view its activities"
-    },
-    "kanban": {
-      "noTasksYet": "No tasks yet",
-      "tasksWillAppear": "Tasks will appear here when work begins on this session"
+      "kanban": "Kanban"
     },
     "replay": {
-      "following": "Following",
-      "followingApp": "Following: {{appName}}",
       "followingAgent": "Following Agent",
       "trajectoryAgent": "Follow Agent trajectory",
       "trajectoryThisApp": "Follow this app",
-      "followAgent": "Follow Agent",
-      "followApp": "Follow {{appName}}",
-      "freeBrowsing": "Free browsing",
-      "replaying": "Replaying",
       "freeBrowse": "Free browse",
       "follow": "Follow",
       "dockShowChatInput": "Show chat input",
-      "dockHideChatInput": "Hide chat input",
-      "bottomPanel": {
-        "tabTrajectory": "Trajectory",
-        "tabTodo": "Todo",
-        "collapsePanel": "Hide panel",
-        "expandPanel": "Show trajectory and todo panel",
-        "placeholderTrajectoryTitle": "No events yet",
-        "placeholderTrajectorySubtitle": "Session activity will appear here once the agent runs",
-        "placeholderTodoTitle": "No todo lists",
-        "placeholderTodoSubtitle": "Todo updates appear here when the agent writes tasks"
-      },
       "previousEvent": "Previous event",
       "nextEvent": "Next event",
       "play": "Play",
       "pause": "Pause",
-      "playbackSpeed": "Playback speed",
-      "noEvents": "No events",
       "filters": {
         "tooltip": "Filter events",
         "allEvents": "All events",
@@ -516,12 +332,8 @@
         "other": "Other",
         "selectedCount": "{{count}} filters"
       },
-      "agentHasNotUsedTool": "The Agent has not yet used this tool",
       "browser": {
         "tabs": {
-          "browser": "Browser",
-          "search": "Search",
-          "fetch": "Fetch",
           "agentBrowser": "Agent Browser",
           "searchFetch": "Search & Fetch"
         },
@@ -535,8 +347,7 @@
           "noBrowserActivity": "No browser activity",
           "noBrowserInteractions": "No browser interactions",
           "noWebSearches": "No web searches",
-          "noPagesFetched": "No pages fetched",
-          "noBrowserActivityYet": "No browser activity yet"
+          "noPagesFetched": "No pages fetched"
         },
         "header": {
           "categoryBrowser": "Browser",
@@ -554,13 +365,10 @@
           "exitCode": "[exit code: {{code}}]"
         },
         "codePanel": {
-          "hiddenLines": "{{count}} hidden lines",
           "editHeader": "Edit {{index}}",
           "startingAtLine": "(starting at line {{line}})",
           "fileEditedSuccess": "✓ File edited successfully",
           "truncatedSuffix": "\n... (truncated)",
-          "headerDirectory": "Directory",
-          "headerSearchPrefix": "Search: {{query}}",
           "searchResultLinePrefix": "L{{line}}",
           "resultCount_one": "{{count}} result",
           "resultCount_other": "{{count}} results",
@@ -580,23 +388,12 @@
           "emptyNoFilesEdited": "No files edited",
           "emptyNoExploreOperations": "No explorations yet",
           "emptyNoCommands": "No commands",
-          "emptyNoToolCalls": "No tool calls yet",
-          "searchDisplayListDir": "list_dir",
-          "searchDisplaySearch": "Search",
-          "searchSecondaryResults": "{{count}} results"
-        },
-        "terminal": {
-          "tabTerminal": "Terminal",
-          "viewStructured": "Structured",
-          "viewRaw": "Raw",
-          "emptySelectCommand": "Select a command to view"
+          "emptyNoToolCalls": "No tool calls yet"
         }
       },
       "diffApp": {
-        "allTabLabel": "All",
         "tabLabel": "Diff",
         "emptyForFilter": "No diffs yet",
-        "emptyDetail": "Select a change to view the diff.",
         "submissions": {
           "tabLabel": "Submissions",
           "commits": "Commits",
@@ -618,53 +415,11 @@
         }
       },
       "channelsSidebar": {
-        "chatHistoryTab": "Chat History",
         "messages": "Messages",
         "interactions": "Interactions",
-        "todoList": "Todo List",
-        "kanban": "Kanban",
-        "todoUpdate": "Todo update",
-        "noMessages": "No messages yet",
-        "noInteractions": "No interactions yet",
-        "noTodos": "No todo events yet",
-        "interactionAskQuestion": "Question",
-        "interactionAskPermission": "Permission request",
-        "interactionModeSwitch": "Mode switch",
-        "interactionPlanDoc": "Plan document",
-        "interactionGeneric": "Interaction"
+        "kanban": "Kanban"
       },
       "messages": {
-        "viewer": {
-          "think": {
-            "title": "Internal dialogue",
-            "subtitle_one": "Showing {{count}} thought",
-            "subtitle_other": "Showing {{count}} thoughts"
-          },
-          "todo": {
-            "title": "To-do List",
-            "subtitle": "Latest task list"
-          },
-          "chat": {
-            "title": "Chat with user",
-            "subtitle_one": "{{count}} message",
-            "subtitle_other": "{{count}} messages"
-          },
-          "interaction": {
-            "title": "Interactions",
-            "subtitle_one": "{{count}} interaction",
-            "subtitle_other": "{{count}} interactions"
-          }
-        },
-        "empty": {
-          "think": {
-            "title": "No Thoughts Yet",
-            "subtitle": "Agent thoughts will appear here"
-          },
-          "todo": {
-            "title": "No To-do Lists Yet",
-            "subtitle": "Task lists will appear here"
-          }
-        },
         "bubble": {
           "smartDateYesterday": "Yesterday",
           "senderTitle": {
@@ -686,7 +441,8 @@
             "sentTo": "{{subject}} sent a message to {{recipient}}",
             "sentBroadcast": "{{subject}} sent a message to multiple agents",
             "sentMessage": "{{subject}} sent a message",
-            "turnLoading": "{{subject}}'s message is loading…"
+            "turnLoading": "{{subject}}'s message is loading…",
+            "taskOperationDeferred": "{{subject}} deferred task completion until cleanup"
           }
         },
         "unloadedTurn": {
@@ -710,21 +466,8 @@
             "No output to show. Sometimes it's just… quiet. [No thinking preview available]",
             "No message found. If there was a preview, it didn't make it out. [No thinking preview available]"
           ],
-          "labelLatest": "Latest thought",
           "labelThought": "Thought"
         }
-      },
-      "database": {
-        "operation": {
-          "explore": "Explore",
-          "runSql": "Run SQL"
-        },
-        "row": {
-          "tablePrefix": "Table: {{name}}",
-          "resultErrorPrefix": "Error: ",
-          "resultArrowPrefix": "→ "
-        },
-        "headerTitle": "Database Operations"
       },
       "project": {
         "operation": {
@@ -749,12 +492,6 @@
           "list_contributors": "List Contributors",
           "add_delegation": "Add Delegation"
         },
-        "row": {
-          "projectPrefix": "Project: {{name}}",
-          "workItemPrefix": "Work Item: {{title}}",
-          "resultErrorPrefix": "Error: ",
-          "resultArrowPrefix": "→ "
-        },
         "headerTitle": "Project Operations"
       },
       "canvas": {
@@ -765,27 +502,9 @@
         "tooltipCloseCanvas": "Close canvas",
         "iframeTitle": "Agent Canvas"
       },
-      "trajectory": {
-        "closeSidebar": "Close sidebar",
-        "toggleSidebar": "Toggle trajectory sidebar",
-        "fallbackUnknownStep": "Unknown Step",
-        "stepHeader": {
-          "actionsCount": "{{count}} Actions"
-        },
-        "event": {
-          "unknownFile": "Unknown file",
-          "noCommand": "No command",
-          "todoMoreSuffix": "{{first}} (+{{count}} more)",
-          "todosCount": "{{count}} todos",
-          "todosUpdated": "{{count}} todos updated",
-          "noQuery": "No query",
-          "activityFallback": "Activity",
-          "processing": "Processing...",
-          "messageEllipsis": "Message...",
-          "readUserMessage": "Read User Message",
-          "sessionFallback": "Session"
-        }
-      }
+      "next": "Next event",
+      "previous": "Previous event",
+      "scrub": "Replay scrub bar"
     },
     "codeEditor": {
       "switchToListView": "Switch to list view",
@@ -799,44 +518,17 @@
       "title": "Booting System",
       "subtitle": "Initializing workspace environment..."
     },
-    "awaitingActivity": "Awaiting activity...",
-    "askUser": {
-      "agentQuestion": "Agent Question",
-      "submitResponse": "Submit Response",
-      "responseReceived": "Response Received",
-      "optional": "Optional",
-      "defaultQuestion": "The agent has a question for you",
-      "enterField": "Enter {{field}}..."
-    },
-    "askUserPending": {
-      "incomingRequest": "You have incoming request",
-      "respondInChat": "Please respond to agent's request(s) in chat"
-    },
     "titleBar": {
-      "switchToRight": "Switch to right mode",
-      "switchToLeft": "Switch to left mode",
       "showSidebar": "Show sidebar",
       "hideSidebar": "Hide sidebar",
-      "showBottomPanel": "Show bottom panel",
-      "hideBottomPanel": "Hide bottom panel",
-      "showDevTools": "Show DevTools",
-      "hideDevTools": "Hide DevTools"
+      "showBottomPanel": "Show bottom panel"
     },
     "multiTask": {
       "monitoringProgress": "Monitoring the progress of {{count}} subagents",
-      "expandView": "Expand view",
-      "compactView": "Compact view",
       "closePanel": "Close subagent panel",
-      "minimizePanel": "Minimize to picture-in-picture",
-      "expandPanel": "Expand panel",
-      "moreTasks": "+{{count}} more"
+      "minimizePanel": "Minimize to picture-in-picture"
     },
     "gridCell": {
-      "copyEventsJson": "Copy Events JSON",
-      "detachedTooltip": "Detached from main cursor — click to re-sync",
-      "syncedTooltip": "Synced to main cursor",
-      "detached": "Detached",
-      "live": "Live",
       "expand": "Expand",
       "collapse": "Collapse"
     },
@@ -844,14 +536,17 @@
       "waitingForActivity": "Waiting for activity…",
       "viewTaskPrompt": "View task prompt",
       "taskPromptTitle": "Task prompt",
-      "newEventDivider": "New event"
+      "newEventDivider": "New event",
+      "loadingHistory": "Loading history…",
+      "retryHistory": "Couldn’t load history — Retry"
     },
     "dock": {
       "switchTo": "Switch to",
       "current": "Current"
     },
     "agentSentMessageCaption": "{{subject}} sent you a message",
-    "userSentMessageCaption": "You sent Agent a message"
+    "userSentMessageCaption": "You sent Agent a message",
+    "thoughtSentMessageCaption": "{{subject}} is thinking"
   },
   "terminal": {
     "findInTerminal": "Find in terminal",
@@ -882,7 +577,6 @@
   "input": {
     "editPlaceholder": "Edit your message...",
     "defaultPlaceholder": "Chat with Agent",
-    "finishNextStep": "Finish. Next Step!",
     "editingQueuedMessage": "Editing queued message",
     "editingSentMessage": "Editing sent message",
     "voiceErrorPermission": "Microphone permission denied. Enable it in your OS settings.",
@@ -890,8 +584,7 @@
     "voiceErrorAudio": "No microphone detected.",
     "voiceErrorGeneric": "Voice input failed. Please try again.",
     "pr": {
-      "open": "Open PR",
-      "creating": "Creating PR…"
+      "open": "Open PR"
     },
     "pinnedActions": {
       "manage": "Manage pinned actions",
@@ -902,11 +595,16 @@
       "insert": "Insert"
     },
     "compactArgHint": "<optional focus for the summary>",
-    "compactCommandDescription": "Summarize older context to free space. Optional: /compact <focus for the summary>"
-  },
-  "listPanel": {
-    "showingOf": "Showing {{filtered}} of {{total}}",
-    "selectedOf": "{{selected}} of {{total}} selected"
+    "nativeCommandDescription": "Run {{command}} in {{provider}}",
+    "compactCommandDescription": "Summarize older context to free space. Optional: /compact <focus for the summary>",
+    "canvasCommandDescription": "Create a new interactive Canvas. Optional: /canvas <what to build>",
+    "canvasArgHint": "what to build",
+    "newCanvasAction": "New Canvas",
+    "followUpSuggestions": {
+      "label": "Suggested next steps"
+    },
+    "voicePermissionSheetRetry": "Try again",
+    "voicePermissionSheetTitle": "Microphone access needed"
   },
   "chat": {
     "planApprovedLabel": "Implementing approved plan",
@@ -933,8 +631,17 @@
     "multipleChoice": "Multiple Choice",
     "typeYourAnswer": "Type your answer…",
     "newSession": "New Session",
-    "muteNotifications": "Mute notifications",
     "startPage": {
+      "inputPosition": "Input",
+      "positionBottom": "Bottom",
+      "positionMiddle": "Middle",
+      "trailPosition": "Trail",
+      "positionUp": "Up",
+      "positionDown": "Down",
+      "uiControls": "UI controls",
+      "showQuickActions": "Show quick actions",
+      "showSkills": "Show Skills",
+      "showCliUpdate": "Show CLI update",
       "title": "What would you like to do?",
       "back": "Back to start page",
       "newSession": {
@@ -949,8 +656,8 @@
       "addApiKey": {
         "title": "Add API key"
       },
-      "showRuntime": {
-        "title": "Show runtime"
+      "showQuota": {
+        "title": "View quota"
       },
       "installLatestUpdate": {
         "title": "Install latest update"
@@ -1045,6 +752,7 @@
     "fullScreenChat": "Focus Chat Panel (Hide Workstation)",
     "maximizeChatPanel": "Maximize Chat Panel",
     "showWorkstation": "Show Workstation",
+    "workstationUnavailableForPage": "Workstation is not available on this page",
     "hideWorkstation": "Hide Workstation",
     "restoreSplitView": "Show Workstation",
     "shrinkToWorkstation": "Shrink Chat Panel (Show Workstation)",
@@ -1053,13 +761,22 @@
     "tabs": {
       "newTerminal": "New Terminal",
       "newTab": "New tab",
-      "terminals": "Terminals"
+      "terminals": "Terminals",
+      "goBack": "Back",
+      "goForward": "Forward"
+    },
+    "sideChat": {
+      "title": "Side Chat",
+      "openInSideChat": "Open in Side Chat"
     },
     "collapseAll": "Collapse all",
+    "copyAndExport": "Copy & Export",
     "copyEventJson": "Copy event JSON",
     "copyEventJsonCopied": "Copied!",
     "copyEventJsonFailed": "Copy failed",
-    "moveToWorkstation": "Move to My Workstation",
+    "moveTo": "Move page to…",
+    "projectLinks": "Project links",
+    "moveToWorkstation": "Move to My Station",
     "moveToChatPanel": "Move to Chat Panel",
     "rawTranscript": {
       "title": "Raw session transcript",
@@ -1071,12 +788,17 @@
       "copySuccess": "Raw transcript copied",
       "copyFailed": "Could not copy the raw transcript"
     },
+    "rawPrompt": {
+      "title": "Raw prompt sent to AI",
+      "view": "View raw prompt",
+      "length": "{{length}} chars"
+    },
     "trackAsProject": {
-      "menuItem": "Track as Project",
+      "menuItem": "Track as project",
       "success": "Session is now tracked as a Project"
     },
     "linkWorkItem": {
-      "menuItem": "Link to Work Item…",
+      "menuItem": "Link to work item…",
       "title": "Link session to Work Item",
       "description": "Select the Work Item that should show this session.",
       "searchPlaceholder": "Search by Work Item ID, title, status, or project",
@@ -1097,6 +819,13 @@
     "historyThisWeek": "This week",
     "historyOlder": "Older",
     "historyPinned": "Pinned",
+    "historyNoWorkspace": "No Workspace",
+    "pinWorkspaceGroup": "Pin workspace",
+    "unpinWorkspaceGroup": "Unpin workspace",
+    "hideWorkspaceGroup": "Hide workspace",
+    "unhideWorkspaceGroup": "Unhide workspace",
+    "workspaceUnavailableTitle": "Workspace no longer available",
+    "workspaceUnavailableMessage": "This Workspace may have been moved or deleted.",
     "historyRefresh": "Refresh",
     "historyLastUsedModel": "Last used model",
     "historyUntitled": "Untitled session",
@@ -1147,7 +876,7 @@
     "hudThroughput": "~{{rate}} tok/s",
     "hudEta": "~{{eta}} left",
     "rateLimitHintTitle": "API Rate Limited",
-    "rateLimitHintBody": "The current model is being rate-limited. You can switch to another window to continue working while waiting.",
+    "rateLimitHintBody": "The current model is being rate-limited. You can switch to another window to continue working while waiting",
     "feedbackPending": "Feedback Pending",
     "executionThreads": "Execution Threads",
     "allThreads": "All",
@@ -1179,6 +908,7 @@
       "exportTitle": "Export Session JSON",
       "importTitle": "Import Session JSON",
       "exportAction": "Export",
+      "exportJson": "Export JSON",
       "importAction": "Import Session",
       "exportDescription": "Export the active Session as a portable JSON snapshot",
       "importDescription": "Import a Session JSON snapshot into the sidebar.",
@@ -1194,7 +924,8 @@
         "cli": "CLI Agent",
         "rust": "Rust Agent",
         "cursorIde": "Cursor IDE",
-        "externalHistory": "External History"
+        "externalHistory": "External History",
+        "human": "Work log"
       },
       "fields": {
         "session": "Session",
@@ -1273,7 +1004,12 @@
           "otherTodos": "Other todos"
         },
         "filters": "Filters",
-        "openInGitHub": "Open in GitHub"
+        "openInGitHub": "Open in GitHub",
+        "assigneeUpdateNotApplied": "GitHub did not apply the assignee change",
+        "assigneeUpdateSuccess": "Assignees updated on GitHub",
+        "updateIssueFailed": "Failed to update GitHub issue",
+        "refreshIssues": "Refresh issues",
+        "refreshPullRequests": "Refresh pull requests"
       }
     },
     "sessionViews": {
@@ -1288,33 +1024,20 @@
       "fileCount_one": "{{count}} file",
       "fileCount_other": "{{count}} files",
       "turnCount_one": "{{count}} turn",
-      "turnCount_other": "{{count}} turns"
-    }
-  },
-  "chatStatus": {
-    "approved": "Approved",
-    "skipped": "Skipped",
-    "responded": "Responded",
-    "ignored": "Ignored",
-    "pending": "Pending",
-    "denied": "Denied"
-  },
-  "conflicts": {
-    "title": "Conflicts",
-    "noConflicts": "No conflicts",
-    "noMergeConflicts": "No Merge Conflicts",
-    "cleanState": "Your repo is in a clean state with no conflicts to resolve.",
-    "detecting": "Detecting conflicts...",
-    "allResolved": "All conflicts resolved in this file",
-    "saveAndMark": "Save and mark as resolved to continue",
-    "keepCurrent": "Keep Current",
-    "keepIncoming": "Keep Incoming",
-    "keepBoth": "Keep Both",
-    "aiResolve": "AI resolve",
-    "previousConflict": "Previous conflict (⌘↑)",
-    "nextConflict": "Next conflict (⌘↓)",
-    "abort": "Abort",
-    "complete": "Complete"
+      "turnCount_other": "{{count}} turns",
+      "inferredTiming": "End inferred from the next turn"
+    },
+    "parentAgentSender": "Parent agent",
+    "permissionDismiss": "Dismiss on this device",
+    "remoteExecutionNotice": "This action will run on {{desktopName}}.",
+    "conversationNavigator": "Conversation navigator",
+    "goToConversationTurn": "Go to turn {{current}} of {{total}}: {{preview}}",
+    "send": "Send",
+    "sendFailed": "Message could not be sent",
+    "sending": "Sending…",
+    "typeMessage": "Type a message…",
+    "session": "Session",
+    "history": "Sessions"
   },
   "planning": {
     "agentTyping": "Agent is typing...",
@@ -1324,13 +1047,16 @@
       "Working on it...",
       "Figuring out what to do next..."
     ],
-    "nextStepSlowVariants": [
-      "Planning next step, taking longer than usual...",
-      "Still thinking, taking longer than usual...",
-      "Working on it, taking longer than usual...",
-      "Thinking it through, taking longer than usual..."
-    ],
-    "compacting": "Compacting context..."
+    "compacting": "Compacting context...",
+    "statusTrail": {
+      "agentWorking": "Agent working",
+      "agentWorkingFor": "Agent working for {{value}}",
+      "runningTask_one": "{{count}} running task",
+      "runningTask_other": "{{count}} running tasks",
+      "idle": "Agent is idle",
+      "lastRefreshed": "Last refreshed {{value}}",
+      "asking": "Waiting for your reply"
+    }
   },
   "tools": {
     "noResultsFound": "No results found",
@@ -1366,6 +1092,10 @@
       "title": "Replay turn",
       "play": "Play replay",
       "duration": "{{value}}",
+      "segmentAria": "Replay turn {{number}}",
+      "turnBreakpointsAria": "Replay turn breakpoints",
+      "segmentTooltip": "Turn {{number}} · {{duration}} · {{start}}–{{end}}",
+      "segmentTooltipNoRange": "Turn {{number}} · {{duration}}",
       "toolCalls": "{{count}} tool calls",
       "toolCalls_one": "{{count}} tool call",
       "filesChanged": "{{count}} files changed",
@@ -1420,9 +1150,7 @@
     },
     "editFileFailedNoName": "Attempted to edit",
     "file": "file",
-    "runShellRunning": "Running command",
     "terminalWaitRunning": "Waiting for terminal to finish",
-    "runShellDone": "Ran command",
     "runShellFailed": "Command failed",
     "runCommands": "Run commands",
     "terminalSummary": {
@@ -1567,8 +1295,6 @@
     "killProcessFailed": "Failed to kill process",
     "listDirCount_one": "{{count}} dir",
     "listDirCount_other": "{{count}} dirs",
-    "listFileCount_one": "{{count}} file",
-    "listFileCount_other": "{{count}} files",
     "taskAgentLine": "Agent {{name}}",
     "outputTruncatedForDisplay": "\n\n... (truncated for display)",
     "repeatedErrorNotice": "Same error occurred {{count}} times, agent retrying",
@@ -2088,6 +1814,18 @@
     "renderInlineCanvasUrlDone": "Rendered URL canvas",
     "renderInlineCanvasUrlFailed": "Failed to render URL canvas",
     "renderInlineCanvasUrlRunning": "Rendering URL canvas",
+    "reviseInlineCanvasRunning": "Revising canvas",
+    "reviseInlineCanvasDone": "Canvas revised",
+    "reviseInlineCanvasFailed": "Canvas revision failed",
+    "reviseInlineCanvasHtmlRunning": "Revising HTML canvas",
+    "reviseInlineCanvasHtmlDone": "Revised HTML canvas",
+    "reviseInlineCanvasHtmlFailed": "Failed to revise HTML canvas",
+    "reviseInlineCanvasUrlRunning": "Revising URL canvas",
+    "reviseInlineCanvasUrlDone": "Revised URL canvas",
+    "reviseInlineCanvasUrlFailed": "Failed to revise URL canvas",
+    "reviseInlineCanvasA2uiRunning": "Revising A2UI canvas",
+    "reviseInlineCanvasA2uiDone": "Revised A2UI canvas",
+    "reviseInlineCanvasA2uiFailed": "Failed to revise A2UI canvas",
     "runShellRunDone": "Ran command",
     "runShellRunFailed": "Failed to run command",
     "runShellRunRunning": "Running command",
@@ -2130,70 +1868,88 @@
     "orgSendMessageRunning": "Sending message to {{recipient}}",
     "orgSendMessageDone": "Sent message to {{recipient}}",
     "orgSendMessageFailed": "Failed to send message to {{recipient}}",
-    "noMatch": "No match"
-  },
-  "hoverCard": {
-    "commits": "Commits",
-    "filesChanged_one": "{{count}} file changed",
-    "filesChanged_other": "{{count}} files changed",
-    "branchesTouched": "Branches"
+    "noMatch": "No match",
+    "runCommandRunning": "Running command",
+    "runCommandDone": "Ran command",
+    "nFiles_one": "{{count}} file",
+    "nFiles_other": "{{count}} files"
   },
   "modelPill": {
     "immutableInSession": "Key source, agent type, and price tier are fixed at session start. Start a new session to change them.",
     "appliesNextTurn": "Account switched. The current reply still runs on the previous account; the new account takes effect from the next turn."
   },
   "creator": {
-    "createTarget": {
-      "agentSession": "Agent session",
-      "manageAgents": "Manage agents / skills",
-      "project": "Create project",
-      "workItem": "Create work item",
-      "benchmark": "Benchmark (Beta)"
+    "repoChromeMenu": {
+      "moveToTop": "Move to top",
+      "moveToBottom": "Move to bottom",
+      "showPinnedActions": "Show pinned actions",
+      "hidePinnedActions": "Hide pinned actions"
     },
-    "searchModels": "Search models...",
-    "newItem": "New Item",
+    "createTarget": {
+      "project": "Create project",
+      "parallelRun": "Parallel run",
+      "workItem": "Create work item"
+    },
+    "worktreeSource": {
+      "title": "Create worktree",
+      "resolving": "Resolving PR…",
+      "selectRepository": "Select a repository before choosing a worktree source.",
+      "sourceTabs": "Worktree source",
+      "sourceTypeAria": "Select branch or pull request",
+      "tabs": {
+        "github": "GitHub",
+        "branch": "Branch",
+        "pr": "PR"
+      },
+      "refreshGithub": "Refresh GitHub list",
+      "githubSearch": "Search GitHub PRs and issues",
+      "githubSearchAria": "Search GitHub pull requests and issues",
+      "githubError": "GitHub items could not be loaded.",
+      "githubEmpty": "No open GitHub PRs or issues.",
+      "githubNoMatches": "No matches.",
+      "prSearch": "Search pull requests",
+      "prSearchAria": "Search pull requests",
+      "prNoMatches": "No matching pull requests.",
+      "refreshBranches": "Refresh branch list",
+      "branchSearch": "Search branches or enter a ref",
+      "branchSearchAria": "Search branches or enter a base ref",
+      "branchError": "Branches could not be loaded.",
+      "branchEmpty": "No branches found in this repository.",
+      "branchNoMatches": "No matching branches.",
+      "branchUseAsRef": "Use \"{{value}}\" as ref",
+      "branchCustomRefHint": "Tag, commit, or any git ref"
+    },
     "solveWorkItem": "Solve Work Item",
     "launchpadQuestion": "What do you want to build with",
     "launchpadQuestionSuffix": "?",
     "manualLaunchpadQuestion": "What do you want to build?",
+    "planLaunchpadQuestion": "What do you want to plan with",
+    "planLaunchpadQuestionSuffix": "?",
+    "manualPlanLaunchpadQuestion": "What do you want to plan?",
     "start": "Start",
-    "assign": "Assign",
-    "send": "Send",
     "missingGit": {
       "title": "Git is missing",
       "body": "Git is not installed or could not be found. Ask ADE Manager or SDE Agent to install Git for this machine, then restart ORGII."
     },
     "cliVersionOutdated": {
-      "title": "{{cli}} CLI needs an upgrade",
-      "body": "Installed version: {{installed}}. Latest version: {{latest}}. Upgrade the CLI, then scan it again before using newer models",
+      "title": "{{cli}} needs an upgrade ({{installed}} > {{latest}})",
+      "muteUntilNextVersion": "No alert until next version",
+      "refresh": "Recheck {{cli}} CLI version",
       "unknownVersion": "unknown"
     },
-    "noProvidersAvailable": "No providers available",
-    "enterPublicRepoUrl": "Enter a public repo URL",
-    "repoUrlPlaceholder": "https://github.com/owner/repo",
-    "noModelsMatchSearch": "No models match your search",
-    "noModelsAvailable": "No models available",
-    "noTiersAvailable": "No tiers available",
     "model": "Model",
-    "source": "Account",
-    "addContext": "Add Context",
     "contextMenu": {
       "filesAndFolders": "Files & Folders",
-      "agentSession": "Agent Session",
       "session": "Session",
       "workItems": "Work Items",
       "back": "Back",
       "recent": "Recent",
       "showMore": "Show {{remaining}} more"
     },
-    "slashSearchPlaceholder": "Search commands…",
     "slashMenu": {
-      "image": "Image",
-      "uploadImage": "Upload image",
+      "commands": "Commands",
       "commands": "Commands",
       "mode": "Mode",
-      "models": "Models",
-      "skills": "Skills",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills"
     },
@@ -2208,13 +1964,6 @@
     },
     "osAgent": "OS Agent",
     "agent": "SDE Agent",
-    "cliAgent": "CLI Agent",
-    "cliAgentDesc": "Connect to CLI-based coding agents",
-    "agentDesc": "Start a coding agent session",
-    "osAgentDesc": "Computer-use automation agent",
-    "categoryLabel": "Session category",
-    "categoryTemplate": "Select {category}",
-    "categoryPlaceholder": "Agent",
     "builtIns": "Built-ins",
     "humanSession": {
       "name": "Work log"
@@ -2224,86 +1973,30 @@
     "agentOrgs": "Agent Teams",
     "orgMembers": {
       "configButton": "Manage members",
-      "count": "{{count}} members",
-      "defaultColumn": "Model",
       "empty": "No members in this team yet",
       "selectAgent": "Select agent",
       "applyForFutureLabel": "Apply for future usages",
       "selectBaseAgentForRole": "Select the base agent for {{role}}"
     },
     "externalIdes": "External Agent",
-    "cursorIde": {
-      "label": "Cursor IDE"
-    },
-    "addModel": "Add Model",
-    "myAgents": "My Agents",
-    "session": "Session",
-    "cloneFromGitHub": "Clone from GitHub",
-    "repoUrl": "Repo URL",
-    "pleaseEnterGitHubUrl": "Please enter a GitHub URL",
-    "pleaseEnterValidGitHubUrl": "Please enter a valid GitHub repo URL",
-    "cloning": "Cloning...",
-    "cloneRepo": "Clone Repo",
-    "repoCloneHelperText": "The repo will be cloned to a temporary workspace for your session.",
-    "yourPrice": "Your Price",
-    "inputPerM": "Input /M",
-    "outputPerM": "Output /M",
-    "continueWithTier": "Continue with {{tier}}",
-    "quota": "Quota: {{value}}",
-    "officialApiPrice": "Official API Price",
-    "input": "Input",
-    "output": "Output",
-    "marketPrice": "Market Price",
-    "yourPriceType": "Your Price ({{type}})",
-    "cacheRead": "Cache Read",
-    "cacheWrite": "Cache Write",
-    "saveDiscount": "Save {{discount}}",
-    "standard": "Standard",
-    "global": "Global",
-    "goldUnlocksGlobal": "Gold+ unlocks Global prices",
-    "limitReached": "Limit reached",
-    "remainingLimit": "{{remaining}}/{{limit}} left",
-    "busy": "Busy",
-    "ofOfficialPrice": "of official price",
     "shortInputTitle": "Short Input",
     "shortInputMessage": "Your input seems very short. Are you sure you want to start a session with this?",
     "selectModel": "Select model",
     "switchModel": "Switch model",
-    "switchSource": "Switch account",
-    "switchRunner": "Switch runner",
-    "runnerLockedToWorktree": "Locked to Worktree — runner can't change after launch",
-    "contextBar": {
-      "thisMac": "This Mac",
-      "worktree": "Worktree",
-      "lockedHint": "Worktree is locked for this session"
-    },
     "switchMode": "Switch mode",
     "switchAgent": "Switch Agent",
-    "manageKeys": "Manage Keys",
-    "manageModels": "Manage Models",
-    "changeSource": "Change account",
-    "clearSelection": "Clear selection",
     "toolbar": {
       "bold": "Bold (⌘B)",
       "italic": "Italic (⌘I)",
       "strikethrough": "Strikethrough",
-      "underline": "Underline (⌘U)",
       "link": "Link",
-      "enterUrl": "Enter URL...",
       "quote": "Quote",
-      "clearFormatting": "Clear formatting",
       "inlineCode": "Inline code",
-      "highlight": "Highlight",
-      "insertImage": "Insert image",
-      "lists": "Lists",
-      "normalText": "Normal text",
-      "heading1": "Heading 1",
       "heading2": "Heading 2",
-      "heading3": "Heading 3",
       "bulletList": "Bullet list",
       "numberedList": "Numbered list",
       "taskList": "Task list",
-      "divider": "Divider"
+      "formatting": "Text formatting"
     },
     "regionNoticeTitle": "Possible regional limitations",
     "regionNoticeBodyProvider": "You are in {{location}}. Certain models may be unavailable in your region.",
@@ -2311,270 +2004,233 @@
     "regionNoticeBodyBoth": "You are in {{location}}. Certain models and services like GitHub, npm, and Docker Hub may be unavailable due to regional policy and trade rules.",
     "selectAgent": "Select an agent",
     "placeholderDefault": "Type a message, @ to add files, / to use skills",
-    "agentHeaderPromptVariants": [
-      {
-        "before": "What are we working on with",
-        "after": "?"
-      },
-      {
-        "before": "What should",
-        "after": "help with today?"
-      },
-      {
-        "before": "What should",
-        "after": "tackle first?"
-      }
-    ],
     "wingmanPlaceholder": "Describe your mission — what should Wingman watch for?",
     "screenPicker": {
       "title": "Pick a screen",
-      "screen": "Screen {{index}}",
-      "primary": "(primary)",
-      "cancel": "Cancel"
+      "primary": "(primary)"
     },
-    "viewDiff": "View diff",
-    "benchmark": {
-      "title": "Benchmark",
-      "description": "Browse SWE-bench Pro tasks, choose what to run, and check the local benchmark environment before evaluation.",
-      "phaseLabel": "Task browser",
-      "sourcePath": "Benchmark folder",
-      "evaluationMode": "Evaluation mode",
-      "evaluationModes": {
-        "patchOnly": "Patch only",
-        "localDocker": "Local Docker",
-        "modal": "Modal"
+    "multiRunner": {
+      "exit": "Back to a single agent",
+      "addRunner": "Add runner",
+      "removeRunner": "Remove runner",
+      "selectHarness": "Select a harness",
+      "pickHarness": "Pick a harness",
+      "parallelCount": "runs in parallel · {{count}} of {{max}}",
+      "launchpadQuestion": "What do you want to build with {{count}} runners?",
+      "worktreePerRunner": "Worktree per runner",
+      "worktreeForced": "A parallel run always gives each runner its own worktree.",
+      "blocker": {
+        "noHarness": "Pick a harness",
+        "noModel": "Pick a model",
+        "cliNotInstalled": "{{cli}} is not installed",
+        "cliNoGui": "{{cli}} has no GUI mode"
       },
-      "loadTasks": "Load tasks",
-      "runPreflight": "Run preflight",
-      "loading": "Loading...",
-      "checking": "Checking...",
-      "searchPlaceholder": "Search task ID, title, or repo",
-      "loadedTasks": "{{count}} tasks loaded",
-      "emptyTasks": "No tasks found.",
-      "words": "{{count}} words",
-      "noTaskSelected": "No task selected",
-      "taskStats": "{{words}} words · {{chars}} chars",
-      "preflightTitle": "Preflight checks",
-      "ready": "Ready",
-      "needsSetup": "Needs setup",
-      "selectTaskHint": "Select a task to preview the benchmark question.",
-      "taskSelectionTitle": "Benchmark tasks",
-      "taskSelectionDescription": "Choose a benchmark task, then open the WorkStation tab to preview details before running.",
-      "taskSelectStubOption": "Select a benchmark task",
-      "openWorkstationTab": "View Benchmark",
-      "unknownRepo": "Unknown repo",
-      "runPanelTitle": "Docker run",
-      "runPanelDescription": "Evaluate patch output against {{taskId}} with local Docker.",
-      "patchInputTitle": "Patch content",
-      "patchInputPlaceholder": "Paste a unified diff patch to evaluate with SWE-bench Pro Docker.",
-      "localDocker": "Local Docker",
-      "preflightSummary": "{{ready}}/{{total}} checks ready",
-      "createRunPlan": "Create run plan",
-      "runWithDocker": "Run with Docker",
-      "runPlanTitle": "Run plan",
-      "runStatusTitle": "Run status",
-      "noRunLogs": "No logs yet",
-      "runIdLabel": "Run",
-      "processIdLabel": "PID",
-      "resultLabel": "Result",
-      "resultPassed": "Passed",
-      "resultFailed": "Failed",
-      "noParsedResult": "No parsed result yet",
-      "evaluationModeTitle": "Run mode",
-      "patchOnlyWorktree": "Patch-only Worktree",
-      "patchOnlyWorktreeDescription": "Creates an isolated git Worktree at the task base commit and applies the patch. This does not run the official tests.",
-      "localDockerDescription": "Runs the official SWE-bench Pro evaluator through local Docker.",
-      "targetRepoPathTitle": "Target repo path",
-      "targetRepoPathPlaceholder": "/Users/you/Documents/GitHub/project-repo",
-      "applyInWorktree": "Apply in Worktree",
-      "worktreePathLabel": "Worktree",
-      "singleRun": "Single run",
-      "batchRun": "Batch run",
-      "sourcePathPlaceholder": "Path to benchmark folder",
-      "workingDirectory": "Working directory",
-      "workingDirectoryPlaceholder": "Path where agents should clone or modify repos",
-      "localPath": "local path",
-      "runType": "Run type",
-      "kindTitle": "Benchmark",
-      "kinds": {
-        "sweBenchPro": "SWE-bench Pro",
-        "terminalBench": "Terminal-Bench"
-      },
-      "selectedTasks": "{{selected}}/{{total}} selected",
-      "concurrency": "Parallel",
-      "taskLoadingUnsupported": "Task loading is not available for this benchmark yet; use preflight to check the local source.",
-      "attemptTitle": "Attempt",
-      "batchProgress": "{{total}} total · {{queued}} queued · {{running}} running · {{launched}} launched · {{failed}} failed · {{cancelled}} cancelled",
-      "sessionGroupTitle": "Benchmark sessions",
-      "sessionGroupProgress": "{{total}} total · {{queued}} queued · {{running}} running · {{launched}} launched · {{failed}} failed · {{cancelled}} cancelled",
-      "evaluateSubmitted": "Evaluate",
-      "evaluatingSubmitted": "Evaluating patches...",
-      "taskActionPlaceholder": "Task IDs for add/remove/stop/restart",
-      "sessionLabel": "Session: {{sessionId}}",
-      "noSessionYet": "No session yet",
-      "testResultPending": "Test result pending",
-      "taskBreadcrumb": "{{attempt}} > {{task}}"
+      "launchError": {
+        "noPrompt": "Describe what you want the runners to build",
+        "promptTooLong": "Task description must be under 10,000 characters",
+        "noRepo": "Select a repo — each runner needs its own worktree",
+        "notEnoughRunners": "Set up at least two runnable runners"
+      }
     },
-    "skillsAndTools": "Skills & Tools",
-    "agentSpotlightViewMode": "Agent view mode",
-    "agentSpotlightListView": "List view",
-    "agentSpotlightCardView": "Card view",
-    "agentSpotlightCardHint": "Use ←/→ or ↑/↓ to shuffle agents. Press Enter to select."
+    "mode": "Editor mode"
   },
   "planner": {
-    "tabs": {
-      "plan": "Plan",
-      "timeline": "Timeline"
-    },
     "modes": {
       "build": "Build",
       "ask": "Ask",
       "plan": "Plan",
-      "debug": "Debug",
-      "review": "Review",
-      "wingman": "Wingman",
       "project": "Project"
     },
     "runningLocation": {
       "local": "This Mac",
-      "worktree": "New Worktree",
-      "cloud": "Cloud"
+      "worktree": "New Worktree"
     },
     "plan": {
-      "stepsCompleted": "{{completed}} of {{total}} steps completed",
-      "noStepsYet": "No plan steps yet",
       "executePlan": "Execute Plan",
-      "noActiveSession": "No active coding agent session",
-      "replan": "Re-plan",
-      "viewPlan": "View Plan",
-      "saveToWorkspace": "Save to workspace",
-      "savedToWorkspace": "Plan saved to workspace",
-      "noRepoOpen": "No repository open",
-      "collapse": "Collapse",
-      "expand": "Expand"
+      "noActiveSession": "No active coding agent session"
     },
     "todoList": {
       "title": "To-do",
       "completedCount": "{{completed}}/{{total}} To-dos",
       "countOnly": "{{total}} To-dos",
-      "doneOf": "{{done}} of {{total}} Done",
-      "createdAt": "Created at {{time}}",
-      "updatedAt": "Updated at {{time}}",
       "justNow": "just now",
       "minutesAgo": "{{count}}m ago",
       "yesterday": "Yesterday",
       "columnOpen": "Open",
       "status": {
-        "pending": "Pending",
-        "in_progress": "In Progress",
         "completed": "Completed",
         "cancelled": "Cancelled"
       }
     },
     "agentOrgTasks": {
-      "title": "Team tasks",
-      "doneOf": "{{done}} of {{total}} Done",
       "owner": "Owner: {{owner}}",
       "ownerNoSession": "{{owner}} has no visible member session yet",
-      "loadFailed": "Tasks failed to load",
       "statusPending": "Pending",
       "statusInProgress": "In progress",
+      "statusAwaitingApproval": "Awaiting approval",
       "statusCompleted": "Done",
-      "statusBlocked": "Blocked"
+      "statusBlocked": "Blocked",
+      "statusFailed": "Failed",
+      "statusCancelled": "Cancelled",
+      "currentWork": "Current work",
+      "currentEmpty": "No current work",
+      "history": "History",
+      "historyFilter": "Filter task history",
+      "historyEmpty": "No tasks in this history filter",
+      "loadingHistory": "Loading history…",
+      "historyLoadFailed": "History failed to load",
+      "previousPage": "Previous",
+      "nextPage": "Next",
+      "details": "Details",
+      "loadingDetails": "Loading details…",
+      "detailLoadFailed": "Task details failed to load",
+      "output": "Output",
+      "annotations": "Progress and audit notes",
+      "loadMoreAnnotations": "Load more",
+      "reassign": "Reassign",
+      "cancelTask": "Cancel Task",
+      "reassignTitle": "Reassign this Task?",
+      "cancelTitle": "Cancel this Task?",
+      "reassignWarning": "The current execution must stop before the replacement can start.",
+      "cancelWarning": "This removes the Task from this delivery scope. Any current execution will stop; dependent Tasks require an explicit follow-up decision.",
+      "replacementOwner": "Replacement owner",
+      "handoffFailed": "Could not safely update this Task",
+      "handoffNeedsDecision": "Task handoff needs your decision",
+      "handoffStopping": "Stopping the previous execution",
+      "handoffApplyingDecision": "Applying {{decision}}",
+      "handoffDecisionFailed": "The accepted decision needs another cleanup attempt",
+      "retryHandoffDecision": "Retry decision",
+      "handoffEvidence": "Previous owner: {{owner}} · {{state}} · local writers: {{count}}",
+      "continueReplacement": "Continue replacement",
+      "keepStopped": "Keep stopped",
+      "abandonEpisode": "Abandon episode",
+      "resolveHandoffTitle": "Resolve Task handoff?",
+      "continueWarning": "Continue only after local execution and processes are stopped. Any unknown external result is accepted by this decision.",
+      "keepStoppedWarning": "The replacement will be cancelled. The old Task will not restart, and sibling Tasks continue.",
+      "abandonWarning": "Every open Task in this episode will stop and the Team outcome will be Cancelled.",
+      "handoffResolutionFailed": "Could not resolve this handoff"
     },
     "agentOrgOverview": {
+      "needsAttention": "Needs attention",
+      "coordinatorWorkState": {
+        "active": "Coordinator active",
+        "waiting_for_org_event": "Coordinator waiting for an event",
+        "inactive": "Coordinator inactive"
+      },
+      "outcome": {
+        "delivered": "Delivered",
+        "cancelled": "Cancelled",
+        "failed": "Failed"
+      },
       "title": "Agent Team overview",
-      "summary": "{{active}} active · {{unread}} unread",
+      "summary": "{{active}} active · {{pending}} pending",
       "loadFailed": "Team overview failed to load",
       "tasks": "Tasks",
       "doneOf": "{{done}} / {{total}} done",
       "taskWindowTruncated": "Showing the first {{visible}} of {{total}} tasks. Open task detail for full results.",
       "members": "Members",
+      "directActivity": "Direct member activity",
       "activeOf": "{{active}} / {{total}} active",
       "inbox": "Inbox",
-      "unreadCount": "{{count}} unread",
-      "coordinator": "Coordinator",
-      "currentSession": "Current",
-      "inProgressTasks": "{{count}} tasks in progress",
-      "pendingTasks": "{{count}} pending tasks",
-      "unreadMessages": "{{count}} unread messages",
-      "taskBoard": "Task board",
-      "memberSessions": "Member sessions",
       "pauseRun": "Pause run",
       "resumeRun": "Resume run",
+      "archiveRun": "Archive Team",
+      "archiveTitle": "Archive this Team?",
+      "archiveWorkingWarning": "Archive is permanent. Tasks currently being executed will be cancelled, and the Team will become read-only.",
+      "archiveWarning": "Archive is permanent. The Team will become read-only and cannot be resumed.",
+      "archivedReadOnly": "Archived — history is read-only",
+      "archiveFailed": "Failed to Archive Team",
+      "archiveTeardownPending": "Archived. Runtime shutdown is still finishing in the background.",
+      "archiveTeardownRetained": "Archived, but {{count}} runtime could not be released. Delete remains blocked.",
+      "archiveTeardownQuiesced": "Archived and fully stopped. Permanent deletion is now available.",
+      "dangerZone": "Danger Zone",
+      "deleteDescription": "Permanently delete this Team and all of its sessions and history.",
+      "deleteTeam": "Delete Team",
+      "deleteTitle": "Permanently delete this Team?",
+      "deleteWarning": "This permanently deletes every Team session and its history. This action cannot be undone.",
+      "deleteAcknowledge": "I understand this deletion is permanent.",
+      "deleteFailed": "Failed to delete Team",
       "viewCoordinatorHistory": "View coordinator chat history",
       "planApproval": {
-        "title": "Plan ready for approval",
+        "historyTitle": "Plan history",
         "from": "Submitted by {{member}}",
+        "open": "Open plan",
         "approve": "Approve plan",
-        "approveEdits": "Approve edits",
         "requestChanges": "Request changes",
         "sendFeedback": "Send feedback",
-        "editLabel": "Edit submitted plan",
         "feedbackLabel": "Plan revision feedback",
         "feedbackPlaceholder": "Tell the Planner exactly what must change…",
+        "taskOutput": "Planning Task output saved",
+        "status": {
+          "pending": "Pending",
+          "approved": "Approved",
+          "changes_requested": "Changes requested",
+          "superseded": "Superseded",
+          "cancelled": "Cancelled"
+        },
         "paused": "Resume the run before responding to this plan.",
-        "staleError": "This plan was already resolved or replaced. Refresh to see the latest revision.",
-        "submitFailed": "The plan response could not be saved. Please try again."
+        "staleError": "This plan was already resolved or replaced. Refresh to see the latest revision",
+        "submitFailed": "The plan response could not be saved. Please try again"
+      },
+      "finalSummary": {
+        "failedTitle": "Final report was not saved",
+        "evidencePreserved": "The completion evidence and Task outputs are preserved.",
+        "retry": "Retry final report",
+        "retryFailed": "The final report retry could not be started."
       },
       "phase": {
+        "starting": "Starting",
         "coordinating": "Coordinating",
         "dispatching": "Dispatching",
         "members_working": "Members working",
         "waiting": "Waiting for work",
         "awaiting_plan_approval": "Awaiting plan approval",
         "finalizing": "Finalizing",
+        "draining": "Paused · draining",
         "paused": "Paused",
-        "completed": "Completed",
+        "idle": "Idle",
         "failed": "Failed",
-        "cancelled": "Cancelled",
-        "abandoned": "Abandoned"
-      }
-    },
-    "agentOrgInbox": {
-      "title": "Agent messages",
-      "unreadCount": "{{count}} unread",
-      "from": "From {{sender}}",
-      "kindFallback": "{{kind}} message",
-      "loadFailed": "Messages failed to load",
-      "overviewOnly": "{{count}} unread teammate messages. Detailed history is available in the run replay."
+        "archived": "Archived"
+      },
+      "idleWithLatestOutcome": "{{phase}} · Latest episode: {{outcome}}",
+      "pendingInboxCount": "{{count}} pending",
+      "activeMembers": "Active members",
+      "inFlightTurns": "In-flight turns",
+      "openTasks": "Open tasks",
+      "blockingInbox": "Blocking inbox",
+      "blockersTitle": "What is still blocking completion",
+      "unknownBlocker": "Unknown system blocker"
     },
     "agentOrgIntervention": {
-      "title": "Chatting with {{member}}",
-      "description": "Inbox messages and new work are paused until work resumes",
+      "directTitle": "Direct work with {{member}}",
+      "writerBadge": "Writer",
+      "directNotice": "Direct work stays outside the Task board unless this Member uses an allowed graph tool",
+      "directPaused": "Direct side work is available; formal Team work remains paused",
+      "directUnknown": "Direct work ended unexpectedly; review possible side effects before returning",
+      "unavailableStarting": "Direct work becomes available after the Team finishes starting",
+      "unavailableFailed": "Direct work is unavailable while the Team is failed",
       "returnToWork": "Resume work",
       "returning": "Resuming…",
-      "loadFailed": "Intervention state failed to load",
+      "endDirectWork": "End direct work",
+      "endingDirectWork": "Ending…",
+      "directReady": "Direct work is complete; send a follow-up or end this direct-work thread",
+      "stopping": "Stopping…",
+      "actionFailed": "The direct-work action failed. Please try again.",
       "busyShort": "User chat",
-      "teammateBusy": "This teammate is in direct user chat"
-    },
-    "timeline": {
-      "askUser": "Ask User",
-      "noQuestionProvided": "No question provided.",
-      "action": "Action",
-      "thought": "Thought:",
-      "arguments": "Arguments:",
-      "content": "Content:",
-      "resultLabel": "Result:",
-      "createFile": "Create File",
-      "fileDiff": "File Diff",
-      "planHint": "Plan Hint",
-      "readFile": "Read File",
-      "runCommandLine": "Run Command Line",
-      "searchInFile": "Search In File",
-      "searchCodebase": "Search Codebase",
-      "searchDirectory": "Search Directory",
-      "searchLabel": "Search:",
-      "inDirectory": "in {{directory}}",
-      "foundResults": "Found {{count}} results in {{files}} files",
-      "lineRange": "Line {{start}}-{{end}}",
-      "clickToViewContent": "Click to view content",
-      "noResult": "no result",
-      "event": "Event",
-      "functionLabel": "Function:",
-      "noTimelineEvents": "No timeline events available",
-      "file": "File",
-      "atlas": "Atlas"
+      "teammateBusy": "This teammate is in direct user chat",
+      "activity": {
+        "yielding": "Yielding formal work…",
+        "user_intervention": "Waiting for you to resume formal work",
+        "side_quest": "{{count}} direct turn in progress or queued",
+        "yield_timeout": "Still waiting for a safe handoff"
+      },
+      "outcome": {
+        "restoredTask": "The original Task resumed",
+        "clearedPaused": "Direct work ended; formal Team work is still paused",
+        "clearedIdle": "Direct work ended; the Team remains idle",
+        "directEnded": "Direct work ended",
+        "noLongerNeeded": "Direct work ended; the original work ended or was reassigned"
+      }
     },
     "agentOrgMemberStatus": {
       "idle": "Idle",
@@ -2588,7 +2244,6 @@
     }
   },
   "planDoc": {
-    "plan": "Plan",
     "untitled": "Untitled plan",
     "drafting": "Drafting plan…",
     "readyForReview": "Ready for review",
@@ -2603,9 +2258,6 @@
     "emptyPlan": "(plan is empty)",
     "edit": "Edit",
     "cancelEdit": "Cancel",
-    "editAndBuild": "Edit & Build",
-    "openInSimulator": "Open in Simulator",
-    "close": "Close",
     "collapse": "Collapse"
   },
   "workspace": {
@@ -2616,12 +2268,10 @@
     "errorOccurred": "An error occurred",
     "failedToSendMessage": "Failed to send message",
     "noSessionIdFound": "No session ID found",
-    "failedToContinue": "Failed to continue session",
     "failedToResume": "Failed to resume session",
-    "failedToInterrupt": "Failed to interrupt session",
-    "failedToStop": "Failed to stop agent",
     "failedToCheckChanges": "Could not check file changes. Proceeding with revert.",
-    "insufficientBalance": "Insufficient balance for the hosted ORGII service. Top up at orgii.ai/wallet."
+    "insufficientBalance": "Insufficient balance for the hosted ORGII service. Top up at orgii.ai/wallet.",
+    "runQueuedBehindCheckout": "Queued: another run is using this checkout. It will start as soon as that run finishes."
   },
   "revertConfirm": {
     "title": "Unsaved file changes",
@@ -2630,41 +2280,14 @@
     "keepChanges": "Keep changes"
   },
   "controlTower": {
-    "welcomeMessages": [
-      "What are you building today?",
-      "What will you ship today?",
-      "What are we solving today?",
-      "What's the next thing to build?",
-      "What's the next move?"
-    ],
-    "quickActions": "Quick Actions",
-    "recentSessions": "Recent sessions",
-    "viewAllSessions": "View all sessions",
-    "noSessionsYet": "No sessions yet",
     "myAgents": "My {{count}} Agents",
-    "myAgentOrgs": "My {{count}} Agent Teams",
     "noAgentsAvailable": "No agents available",
     "newAgentSession": "New {{agent}} session",
     "addAgent": "Add agent",
     "myApiKeys": "My {{count}} Keys",
     "addApiKey": "Add API key",
-    "noRepoSelected": "No repository selected",
     "diff": {
-      "untitledSession": "Untitled session",
-      "singleFile": "Single file",
-      "unified": "Unified",
-      "allChanges": "All changes",
-      "failedToLoadDiffFor": "Failed to load diff for {{path}}",
-      "failedToLoadFileContent": "Failed to load file content",
-      "binaryFile": "Binary file",
-      "selectFileToView": "Select a file to view its diff",
-      "openProjectToViewDiff": "Open a project to view its diff",
-      "failedToLoadDiff": "Failed to load diff",
-      "changes": "Changes",
-      "refresh": "Refresh",
-      "noUncommittedChanges": "No uncommitted changes",
-      "noSessionChanges": "No uncommitted changes for this session",
-      "fileCount": "{{count}} files"
+      "refresh": "Refresh"
     },
     "git": {
       "filterUncommitted": "Uncommitted",
@@ -2672,55 +2295,65 @@
       "filterStaged": "Staged",
       "filterStashed": "Stashed",
       "filterCountLabel_one": "{{count}} {{label}}",
-      "filterCountLabel_other": "{{count}} {{label}}",
-      "failedToLoad": "Failed to load git status",
-      "noBranchChanges": "No unpushed commits",
-      "unknownAuthor": "Unknown"
-    },
-    "groups": {
-      "home": "Home",
-      "sessions": "Sessions",
-      "git": "Git",
-      "terminal": "Terminal"
+      "filterCountLabel_other": "{{count}} {{label}}"
     },
     "history": {
-      "wingmanAgent": "Wingman Agent",
       "agentFallback": "Agent"
     },
     "sidebar": {
       "stopAgentProcess": "Stop agent process",
-      "closeSession": "Close session",
-      "openInBrowser": "Open in browser",
-      "closeTab": "Close tab",
-      "private": "private",
-      "newTab": "New Tab",
-      "overview": "Overview",
-      "homeBrowsers": "Browser tabs",
-      "homeTerminals": "Terminal sessions",
-      "openInMyStation": "Open in My Station",
-      "openInTerminalTab": "Open in Terminal tab"
-    },
-    "workspaceTools": {
-      "title": "Workspace Tools",
-      "description": "Checks recommended LSP servers and lint tools for this workspace.",
-      "summary": "{{ready}}/{{total}} ready",
-      "noRecommendations": "No recommended tools",
-      "refresh": "Refresh",
-      "lsp": "LSP servers",
-      "lint": "Lint tools",
-      "ready": "All {{total}} recommended tools are ready",
-      "needsSetup": "{{ready}} of {{total}} recommended tools are ready",
-      "notApplicable": "No workspace-specific recommendations",
-      "missing": "Missing",
-      "disabled": "Disabled"
+      "openInMyStation": "Open in My Station"
     }
   },
   "groupChat": {
-    "loadOlder": "Load older messages",
-    "historyLoadFailed": "History unavailable",
-    "senderTitle": {
-      "message": "{{sender}} sent a message",
-      "said": "{{sender}} said"
+    "triggerLabel": "Group chat",
+    "coordinatorLabel": "Coordinator",
+    "youLabel": "You",
+    "retry": "Retry",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "memberFallback": "Member",
+    "retryPossibleDuplicateConfirm": "This delivery has an unknown outcome. Retrying may duplicate side effects. Create a new turn anyway?",
+    "userMessageOutcomeUnknown": "Delivery outcome unknown. Retry the original delivery.",
+    "mixedTargetError": "Send Coordinator and Member messages separately.",
+    "submitError": "Your Group message couldn't be sent. Please try again.",
+    "projection": {
+      "title": "Team group conversation",
+      "queueGuidance": "Messages are queued by default. For an immediate correction, open the Member's individual page.",
+      "archived": "This Team is archived. Its Group history is read-only.",
+      "loadOlder": "Load older messages",
+      "loadError": "Group messages could not be loaded.",
+      "actionError": "That Group action could not be completed. Please try again.",
+      "loading": "Loading Group messages…",
+      "empty": "No Group messages yet.",
+      "unavailable": "This message is unavailable.",
+      "stop": "Stop",
+      "retryDelivery": "Retry delivery",
+      "retryNewTurn": "Retry as new turn",
+      "activity": {
+        "taskFallback": "Untitled task",
+        "task_created": "Task created: {{task}} · {{member}}",
+        "task_started": "{{member}} started: {{task}}",
+        "task_completed": "{{member}} completed: {{task}}",
+        "task_failed": "{{member}} could not complete: {{task}}",
+        "task_cancelled": "Task cancelled: {{task}}",
+        "task_reassigned": "Task reassigned from {{previousMember}} to {{member}}: {{task}}",
+        "task_replacement_created": "Replacement task created for {{replacedTask}}: {{task}} · {{member}}",
+        "team_paused": "Team paused",
+        "team_resumed": "Team resumed",
+        "member_returned": "{{member}} returned to Team work",
+        "completion_certified": "Team completion certified: {{outcome}}",
+        "final_report_failed": "Final report could not be saved",
+        "team_archived": "Team archived"
+      },
+      "state": {
+        "queued": "Queued",
+        "running": "Running",
+        "answered": "Answered",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "unknown": "Outcome unknown"
+      }
     },
     "taskHeader": {
       "createWithOwner": "{{sender}} assigned task to {{ownerName}}",
@@ -2734,23 +2367,16 @@
       "updateRejected": "{{sender}}'s task update needs correction",
       "updateFailed": "{{sender}} couldn't update task",
       "get": "{{sender}} viewed task details",
-      "list": "{{sender}} viewed task list"
-    },
-    "messageHeader": {
-      "running": "{{sender}} messaging {{recipient}}",
-      "done": "{{sender}} messaged {{recipient}}",
-      "failed": "{{sender}} couldn't message {{recipient}}",
-      "broadcastRunning": "{{sender}} messaging multiple agents",
-      "broadcastDone": "{{sender}} messaged multiple agents",
-      "broadcastFailed": "{{sender}} couldn't message multiple agents"
+      "list": "{{sender}} viewed task list",
+      "updateDeferred": "{{sender}} deferred task completion until cleanup"
     },
     "inboxTranscript": {
       "readMessages": "Coordinator read messages sent by other agents"
     },
     "userMessagePending": "{{member}} is picking up your message",
     "pausedBanner": {
-      "title": "New work is paused",
-      "body": "Pause stops active replies, send a message or press Resume to continue",
+      "title": "Formal work is paused",
+      "body": "Resume for Coordinator work. You can still @Member for a side quest.",
       "resume": "Resume"
     },
     "toolUseSummary": {
@@ -2781,7 +2407,9 @@
       "markedAs": "Marked as {{status}}",
       "runningTitle": "Updating task",
       "rejectedTitle": "Task update needs correction",
-      "failedTitle": "Task update failed"
+      "failedTitle": "Task update failed",
+      "title": "Updated task",
+      "deferredTitle": "Task completion deferred until cleanup"
     },
     "get": {
       "title": "View task details"
@@ -2799,16 +2427,19 @@
     "outcome": {
       "pending": "In progress",
       "rejected": "Needs correction",
-      "failed": "Failed"
+      "failed": "Failed",
+      "deferred": "Completion deferred · waiting for cleanup"
     },
     "status": {
       "pending": "Pending",
       "in_progress": "In Progress",
       "completed": "Completed"
-    }
-  },
-  "manageProject": {
-    "inProject": "in {{project}}"
+    },
+    "unassignedOwner": "Unassigned",
+    "currentRecordUnavailable": "Current state unavailable",
+    "currentStatusLabel": "Current status",
+    "currentOwnerLabel": "Current owner",
+    "replacementLabel": "Replacement"
   },
   "manageAgentDef": {
     "action": {
@@ -2824,23 +2455,11 @@
       "get_org": "Fetched org"
     }
   },
-  "cursorIde": {
-    "restart": {
-      "title": "Restart Cursor for ORGII control?",
-      "message": "ORGII needs to restart Cursor with remote control enabled so follow-ups land in the same Cursor conversation. This will quit Cursor and reopen it hidden with --remote-debugging-port=9230.",
-      "okLabel": "Restart Cursor",
-      "success": "Cursor restarted hidden with remote control enabled. Retrying…",
-      "failed": "Failed to restart Cursor: {{reason}}"
-    }
-  },
   "cards": {
     "openFile": "Open in editor",
     "openLink": "Open link",
-    "broadcast": "→ All agents",
     "agentMessage": {
       "fallbackTitle": "Message",
-      "accepted": "Accepted",
-      "rejected": "Rejected",
       "empty": "(no message body)",
       "status": {
         "sending": "Sending…",
@@ -2853,7 +2472,8 @@
       "meta": {
         "sender": "From",
         "recipient": "To",
-        "subject": "Subject"
+        "subject": "Subject",
+        "status": "Status"
       },
       "broadcastTitle": {
         "running": "Sending message to multiple agents",
@@ -2862,44 +2482,28 @@
       },
       "emailBubble": {
         "noSubject": "(no subject)",
-        "expand": "Show full message",
-        "collapse": "Hide message",
         "userInbox": "User inbox",
         "currentChannel": "Current channel",
-        "subagentMessages": "Subagent messages",
-        "readMessagesFromSubagents": "{{agent}} read messages from subagents"
+        "subagentMessages": "Subagent messages"
       }
     },
     "actions": {
       "moreOpenOptions": "More open options",
-      "openInApp": "Open in app",
-      "openWithDefaultBrowser": "Open with default browser",
-      "revealInFinder": "Reveal in Finder",
-      "revealInExplorer": "Reveal in Explorer",
-      "revealInFileManager": "Reveal in file manager"
+      "openAsPullRequest": "PR tab",
+      "openAsWebPage": "Web page",
+      "openWithDefaultBrowser": "Open with default browser"
     },
     "url": {
-      "open": "Open",
+      "changesCount_one": "{{count}} change",
+      "changesCount_other": "{{count}} changes",
       "copyUrl": "Copy URL",
       "copied": "URL copied",
       "openExternalFailed": "Failed to open URL in default browser",
-      "groupTitle": "Web pages"
+      "openPullRequestFailed": "Failed to open pull request tab"
     },
     "path": {
-      "open": "Open",
-      "copyPath": "Copy path",
-      "copied": "Path copied",
-      "copyFailed": "Failed to copy path",
       "openFailed": "Failed to open path",
-      "revealFailed": "Failed to reveal path in file manager",
-      "name": "Name",
-      "type": "Type",
-      "directory": "Directory",
-      "file": "File",
       "emptyDirectory": "Empty directory"
-    },
-    "session": {
-      "open": "Open session"
     }
   },
   "codePreview": {
@@ -2919,19 +2523,147 @@
     "titleA2ui": "Agent Preview",
     "reload": "Reload",
     "openExternal": "Open in browser",
-    "expand": "Expand",
-    "shrink": "Shrink",
-    "close": "Close",
-    "summarize": "Summarize with Agent",
     "waiting": "Waiting for content…",
     "empty": "No content",
-    "reactDisabledTitle": "React preview runs in Simulator",
-    "reactDisabledDescription": "Agent JavaScript is not executed inside chat. Open it in Simulator to run the sandboxed React preview.",
-    "viewInSimulator": "View in Simulator"
+    "openUrlDescription": "External URLs are not embedded to avoid iframe memory overhead.",
+    "openUrlTitle": "Preview not embedded",
+    "streaming": "streaming",
+    "titleReact": "React Preview"
   },
   "canvasApp": {
     "empty": "No canvas rendered yet",
     "sidebarTitle": "Canvases",
-    "noCanvases": "No canvases yet"
+    "noCanvases": "No canvases yet",
+    "revisionCanvas": "Canvas",
+    "revisionTitle": "Updating {{title}}",
+    "revisionReceiving": "Generating the change · {{amount}} characters",
+    "revisionApplying": "Applying the validated change…",
+    "revisionDoneTitle": "Updated {{title}}",
+    "revisionFailedTitle": "Couldn’t update {{title}}",
+    "revisionTargetedSummary": "Targeted changes: {{amount}} · same Canvas",
+    "revisionTargetedSummary_one": "{{count}} targeted change · same Canvas",
+    "revisionTargetedSummary_other": "{{count}} targeted changes · same Canvas",
+    "revisionReplacementSummary": "Full replacement · {{amount}} characters · same Canvas",
+    "revisionUrlSummary": "URL updated · same Canvas",
+    "revisionGenericSummary": "Existing Canvas updated in place",
+    "revisionStepsLabel": "Canvas update progress",
+    "compareToggle": "Compare",
+    "compareMark": "vs",
+    "compareHint": "2 selected — showing diff",
+    "design": "Design",
+    "designHint": "Select an element to change",
+    "designUnavailable": "Design is unavailable",
+    "designPromptLabel": "Describe a Canvas change",
+    "designPromptPlaceholder": "Describe what to change…",
+    "clearDesignSelection": "Clear Canvas selection",
+    "compareTooLarge": "These versions are too large to compare",
+    "revisionReceivingLabel": "Generating the change…",
+    "designHoverHint": "Click to select, drag to draw",
+    "share": "Share",
+    "shareHint": "Share this Canvas snapshot",
+    "shareWaitForRevision": "Wait for the Canvas update to finish",
+    "shareLocalUrlUnavailable": "Local URLs cannot be opened by other people",
+    "shareTooLarge": "This Canvas is too large for a share link",
+    "shareEmpty": "This Canvas has no shareable content",
+    "shareDialogTitle": "Share Canvas",
+    "shareDialogScope": "Only this Canvas snapshot is included. The conversation, repository, session, and later revisions are not shared.",
+    "shareDialogPreparing": "Creating link…",
+    "shareDialogLink": "Canvas share link",
+    "shareDialogCopyFailed": "Copy failed. Select the link and copy it manually.",
+    "shareDialogPublic": "Anyone with this link can view the snapshot.",
+    "shareDialogShortExpiry": "Short link · valid until {{date}}",
+    "shareDialogFallback": "The short-link service is unavailable, so a full link was created instead.",
+    "shareDialogOpen": "Open",
+    "shareDialogCopied": "Copied",
+    "shareDialogCopy": "Copy link",
+    "shareDialogTooLarge": "This Canvas is too large for a reliable self-contained link.",
+    "shareDialogShortUnavailable": "The share service is temporarily unreachable and this Canvas is too large for a self-contained link. Try again in a moment.",
+    "shareDialogUnsupported": "This app version cannot create compressed Canvas links.",
+    "shareDialogInvalid": "This Canvas does not contain a publishable snapshot.",
+    "shareDialogError": "The Canvas link could not be created.",
+    "shareDialogRetryShort": "Retry short link",
+    "shareDialogRetryingShort": "Retrying…",
+    "retry": "Retry",
+    "reactArtifactFrame": "React canvas preview"
+  },
+  "domSelection": {
+    "previewTitle": "Canvas selection preview",
+    "elementsCount_one": "{{count}} element",
+    "elementsCount_other": "{{count}} elements",
+    "regionLabel": "Region · {{label}}"
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "empty": "No routines yet — apply one from the CLI first",
+    "notInstalled": "Not installed",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "paused": "Paused after {{count}} failures",
+    "install": "Install webhook",
+    "rotate": "Rotate secret",
+    "enable": "Enable",
+    "disable": "Disable",
+    "secretHint": "Secret",
+    "secretShownOnce": "The secret is shown once — store it in your provider now.",
+    "noDeliveries": "No deliveries yet",
+    "replay": "Replay",
+    "replayQueued": "Delivery replayed",
+    "copied": "Copied",
+    "copyFailed": "Copy failed"
+  },
+  "runGroup": {
+    "open": "Open",
+    "stop": "Stop",
+    "stopAll": "Stop all",
+    "runAgain": "Run again",
+    "stopFailed": "Could not stop this run",
+    "subtitle": "{{count}} of {{total}} runners started",
+    "missingTitle": "Run group unavailable",
+    "missingBody": "This run group is no longer stored on this machine.",
+    "state": {
+      "running": "Running",
+      "done": "Done",
+      "failed": "Failed",
+      "stopped": "Stopped",
+      "skipped": "Skipped",
+      "pending": "Starting"
+    }
+  },
+  "conversation": {
+    "promptMode": "Agent",
+    "teamChatMode": "Team chat",
+    "promptTooltip": "Send to the agent",
+    "teamChatTooltip": "Message teammates — does not prompt the agent",
+    "imagesUnsupported": "Team chat messages cannot include images",
+    "participantsTooltip": "Conversation participants and discussion messages",
+    "mentionGroup": "Teammates"
+  },
+  "sessionBadge": {
+    "subagent": "Subagent"
+  },
+  "tooltips": {
+    "hidePanel": "Hide panel"
+  },
+  "titleBar": {
+    "showDevTools": "Show DevTools",
+    "hideDevTools": "Hide DevTools"
+  },
+  "weeklyQuotaHistory": {
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "emptyWeek": "No readings for this week",
+    "title": "Weekly quota history",
+    "error": "Quota history is unavailable. It will retry when you return to this window",
+    "empty": "Connect a Claude Code, Codex, or OpenCode Go account in Key Vault to start tracking",
+    "loading": "Loading quota history…",
+    "unsupported": "This account does not report a weekly quota",
+    "unavailable": "Latest reading unavailable; check the account connection in Key Vault",
+    "pending": "Waiting for the next hourly sample",
+    "remaining": "Remaining %",
+    "refresh": "Refresh",
+    "account": "Account",
+    "stale": "Last observation is over two hours old",
+    "disabled": "Sampling paused for this disabled account",
+    "limit": "Showing up to 128 accounts"
   }
 }

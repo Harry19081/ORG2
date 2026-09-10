@@ -144,6 +144,21 @@ describe("TaskKanban ListView", () => {
     expect(row?.textContent).toContain("46·+927-606");
   });
 
+  it("omits the table search because the Kanban header owns session search", async () => {
+    await act(async () => {
+      root.render(
+        createElement(ListView, {
+          tasks: [task],
+          selectedTaskId: null,
+          detailPanelVisible: false,
+          onTaskClick: vi.fn(),
+        })
+      );
+    });
+
+    expect(container.querySelector('input[type="search"]')).toBeNull();
+  });
+
   it("defaults to 25 rows and offers only 25 or 50 per page", async () => {
     await act(async () => {
       root.render(
@@ -164,9 +179,13 @@ describe("TaskKanban ListView", () => {
       container.querySelectorAll('[data-testid="kanban-list-session-row"]')
     ).toHaveLength(25);
 
-    const pageSizeSelect =
-      container.querySelector<HTMLElement>(".select-wrapper");
+    const selectWrappers =
+      container.querySelectorAll<HTMLElement>(".select-wrapper");
+    // The shared pagination footer places page size first and the page picker
+    // in the centered navigation controls.
+    const pageSizeSelect = selectWrappers[0];
     expect(pageSizeSelect?.textContent).toContain("25 pagination.perPage");
+    expect(selectWrappers[1]?.textContent).toContain("pagination.pageOf");
     await act(async () => pageSizeSelect?.click());
 
     const optionsContainer = document.body.querySelector(

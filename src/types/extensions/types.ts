@@ -1,5 +1,5 @@
 /** Stats block from a remote skill directory detail response. */
-export interface HubSkillStats {
+interface HubSkillStats {
   comments: number;
   downloads: number;
   installsAllTime: number;
@@ -9,7 +9,7 @@ export interface HubSkillStats {
 }
 
 /** Owner info from a remote skill directory detail response. */
-export interface HubSkillOwner {
+interface HubSkillOwner {
   handle: string;
   displayName?: string;
   image?: string;
@@ -57,6 +57,13 @@ export interface SkillUpdateInfo {
   installedVersion: string;
   latestVersion: string;
   changelog?: string;
+  workspacePath?: string;
+}
+
+/** Stable, credential-free source locator for an imported skill. */
+export interface SkillOrigin {
+  provider: string;
+  locator: string;
 }
 
 /** Quality rating for a skill's description.
@@ -80,7 +87,8 @@ export type DescriptionQuality =
  * - `EXTERNAL_SOURCE`  — auto-scanned repo/user `.<tool>/skills` and root `skills` directories
  * - `AGENT_SOURCE`     — agent definition read-only skill source dirs
  * - `SKILLS_SH`        — skills installed from skills.sh snapshots
- * - `GITHUB`           — skills installed from GitHub-backed directory entries */
+ * - `GITHUB`           — skills installed from GitHub-backed directory entries
+ * - `ORG_SHARED`       — materialized from an organization's shared-skill store */
 export const SKILL_SOURCE = {
   WORKSPACE: "workspace",
   BUILTIN: "builtin",
@@ -89,8 +97,8 @@ export const SKILL_SOURCE = {
   AGENT_SOURCE: "agent-source",
   SKILLS_SH: "skills_sh",
   GITHUB: "github",
+  ORG_SHARED: "org-shared",
 } as const;
-export type SkillSource = (typeof SKILL_SOURCE)[keyof typeof SKILL_SOURCE];
 
 /** Where a skill is saved when authored from the editor. */
 export const SKILL_SCOPE = {
@@ -99,14 +107,19 @@ export const SKILL_SCOPE = {
 } as const;
 export type SkillScope = (typeof SKILL_SCOPE)[keyof typeof SKILL_SCOPE];
 
-/** Default token budget for the skills section (must match Rust DEFAULT_SKILLS_TOKEN_BUDGET). */
-export const SKILLS_TOKEN_BUDGET = 4000;
-
 /** A locally installed skill (from skills_list Tauri command). */
 export interface InstalledSkill {
+  /** Stable identity preserved across workspace moves and remote refreshes. */
+  id: string;
   name: string;
   path: string;
   source: string;
+  origin?: SkillOrigin;
+  identityDigest: string;
+  contentDigest: string;
+  schemaDigest: string;
+  /** False when managed content drifted from the last explicit consent. */
+  consentValid: boolean;
   always: boolean;
   /** Whether all required binaries/env vars are present. */
   available: boolean;
@@ -138,6 +151,14 @@ export interface InstalledSkill {
 /** Category for a unified slash menu item. */
 export type SlashItemCategory = "skill" | "action" | "tool";
 
+/** Typed non-editor side effect performed when a slash row is selected. */
+export type SlashItemSelection = {
+  kind: "work_item_quick_action";
+  actionId: string;
+  orgId: string;
+  scopeKey: string;
+};
+
 /** Unified slash menu item shown in the `/` dropdown. */
 export interface SlashItem {
   name: string;
@@ -157,6 +178,8 @@ export interface SlashItem {
   skillPath?: string;
   /** Slash-menu grouping for skill rows. */
   skillScope?: "workspace" | "user";
+  /** Optional typed side effect; ordinary rows keep the editor insertion path. */
+  selection?: SlashItemSelection;
 }
 
 /** Built-in slash action names. */
@@ -169,4 +192,6 @@ export const SLASH_ACTIONS = {
    * (`parseCompactSlashCommand`) matches the `/compact` token.
    */
   COMPACT: "compact",
+  /** Creates a new interactive inline Canvas from the following request. */
+  CANVAS: "canvas",
 } as const;

@@ -4,15 +4,15 @@
  */
 import Button from "@/src/components/Button";
 import { SectionRow } from "@/src/modules/shared/layouts/SectionLayout";
-import { Plus, X } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { BACKGROUND_COLOR_PRESETS } from "@src/config/appearance/backgroundColors";
+import { normalizeHexColor } from "@src/config/appearance/backgroundConfig";
+import { Add01Icon, Cancel01Icon, HugeiconsIcon } from "@src/icons";
+import type { BackgroundConfig } from "@src/store/ui/backgroundConfigAtom";
 
 import { MAX_CUSTOM_BACKGROUND_COLORS } from "../config";
-import type { BackgroundConfig } from "../types";
-import { normalizeHexColor } from "../utils";
 
 const COLOR_SWATCH_SIZE = "h-8 w-8";
 
@@ -43,9 +43,7 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
   const { t } = useTranslation(translationNamespace);
 
   const activeCustomHex =
-    !config.glass &&
-    !config.backgroundColorId &&
-    typeof config.backgroundColor === "string"
+    !config.backgroundColorId && typeof config.backgroundColor === "string"
       ? normalizeHexColor(config.backgroundColor)
       : null;
 
@@ -55,7 +53,7 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
 
   const atCustomLimit = customPalette.length >= MAX_CUSTOM_BACKGROUND_COLORS;
 
-  /** Seed for native color input (controlled), matching legacy picker behavior */
+  /** Seed for the controlled native color input */
   const nativePickerValue =
     activeCustomHex ?? customPalette[customPalette.length - 1] ?? "#808080";
 
@@ -91,13 +89,20 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
                 onClick={() => onSelectCustomHex(hex)}
               />
               <Button
-                className="absolute -right-0.5 -top-0.5 z-10 opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
+                className="absolute -top-0.5 -right-0.5 z-10 opacity-0 shadow-xs transition-opacity group-hover:opacity-100"
                 style={{ width: 18, height: 18, minWidth: 18 }}
                 variant="secondary"
                 appearance="solid"
                 size="mini"
                 shape="circle"
-                icon={<X size={9} strokeWidth={2.25} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={Cancel01Icon}
+                    data-icon="x"
+                    size={9}
+                    strokeWidth={2.25}
+                  />
+                }
                 iconOnly
                 title={t("common:actions.delete")}
                 onClick={(event) => onRemoveCustomHex(hex, event)}
@@ -130,7 +135,13 @@ export const ColorSection: React.FC<ColorSectionProps> = ({
             disabled={atCustomLimit}
             className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
           />
-          <Plus size={14} strokeWidth={2.25} className="pointer-events-none" />
+          <HugeiconsIcon
+            icon={Add01Icon}
+            data-icon="plus"
+            size={14}
+            strokeWidth={2.25}
+            className="pointer-events-none"
+          />
         </label>
       </div>
     </SectionRow>

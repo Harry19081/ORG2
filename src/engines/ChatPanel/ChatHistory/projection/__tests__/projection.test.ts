@@ -78,7 +78,16 @@ describe("chat projection core", () => {
       },
     };
     expect(() => structuredClone(options)).not.toThrow();
-    expect(CHAT_PROJECTION_PROTOCOL_VERSION).toBe(2);
+    expect(() =>
+      structuredClone({
+        ...options,
+        groups: {
+          ...options.groups,
+          turnGrouping: { mode: "agent-org-member" as const },
+        },
+      })
+    ).not.toThrow();
+    expect(CHAT_PROJECTION_PROTOCOL_VERSION).toBe(4);
   });
 
   it("keeps errors pinned when a completed turn is collapsed", () => {

@@ -24,20 +24,30 @@ import {
 } from "@codemirror/search";
 import { Extension, StateEffect, StateField } from "@codemirror/state";
 import { EditorView, Panel } from "@codemirror/view";
-import { ChevronDown, ChevronRight, X } from "lucide-react";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { useTranslation } from "react-i18next";
 
+import {
+  getOverride,
+  matchesDefaultShortcut,
+  matchesShortcut,
+} from "@src/config/keyboard/shortcutBindings";
+import {
+  HEADER_BUTTON,
+  HEADER_ICON_SIZE,
+} from "@src/config/workstation/tokens";
 import { createLogger } from "@src/hooks/logger";
 import {
   DEBOUNCE_DELAYS,
   useDebouncedCallback,
 } from "@src/hooks/perf/useDebouncedCallback";
 import {
-  HEADER_BUTTON,
-  HEADER_ICON_SIZE,
-} from "@src/modules/WorkStation/shared/tokens";
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  Cancel01Icon,
+  HugeiconsIcon,
+} from "@src/icons";
 
 import { ReplaceInput, SearchInput } from "../../../shared";
 
@@ -211,13 +221,13 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
 
   React.useEffect(() => {
     debouncedApplySearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     localQuery,
     localReplace,
     localCaseSensitive,
     localWholeWord,
     localUseRegex,
+    debouncedApplySearch,
   ]);
 
   // Update replace mode in state (no debounce needed)
@@ -225,8 +235,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
     view.dispatch({
       effects: toggleReplaceEffect.of(localReplaceMode),
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localReplaceMode]);
+  }, [localReplaceMode, view]);
 
   const handleClose = () => {
     // Close the search panel using CodeMirror's close function
@@ -277,8 +286,8 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
   // Handle Cmd+F/Cmd+H to close panel when focused inside it
   const handlePanelKeyDown = (event: React.KeyboardEvent) => {
     if (
-      (event.metaKey || event.ctrlKey) &&
-      (event.key === "f" || event.key === "h")
+      matchesShortcut(event.nativeEvent, "find") ||
+      matchesShortcut(event.nativeEvent, "find_replace")
     ) {
       event.preventDefault();
       handleClose();
@@ -287,7 +296,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
 
   return (
     <div
-      className="flex w-full border-b border-border-2 shadow-sm"
+      className="flex w-full border-b border-border-2 shadow-xs"
       onKeyDown={handlePanelKeyDown}
     >
       {/* Left column - Chevron toggle (centered vertically) */}
@@ -297,9 +306,17 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
         title={localReplaceMode ? "Collapse replace" : "Expand replace"}
       >
         {localReplaceMode ? (
-          <ChevronDown size={14} />
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
+            data-icon="chevron-down"
+            size={14}
+          />
         ) : (
-          <ChevronRight size={14} />
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            data-icon="chevron-right"
+            size={14}
+          />
         )}
       </button>
 
@@ -327,7 +344,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
             hideChevron
           />
           {localQuery && (
-            <span className="shrink-0 whitespace-nowrap text-[12px] text-text-3">
+            <span className="shrink-0 text-[12px] whitespace-nowrap text-text-3">
               {matchCount.total > 0
                 ? `${matchCount.current > 0 ? matchCount.current : "?"} of ${matchCount.total}`
                 : t("common:common.noResults")}
@@ -359,7 +376,11 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
             className={HEADER_BUTTON.action}
             title={t("tooltips.closeEsc")}
           >
-            <X size={HEADER_ICON_SIZE.sm} />
+            <HugeiconsIcon
+              icon={Cancel01Icon}
+              data-icon="x"
+              size={HEADER_ICON_SIZE.sm}
+            />
           </button>
         </div>
       </div>
@@ -412,7 +433,7 @@ function isSearchPanelOpen(view: EditorView): boolean {
 const searchKeymap = EditorView.domEventHandlers({
   keydown(event, view) {
     // Cmd+F - Toggle find (without replace)
-    if ((event.metaKey || event.ctrlKey) && event.key === "f") {
+    if (matchesShortcut(event, "find")) {
       event.preventDefault();
       if (isSearchPanelOpen(view)) {
         closeSearchPanel(view);
@@ -427,7 +448,7 @@ const searchKeymap = EditorView.domEventHandlers({
     }
 
     // Cmd+H - Toggle find & replace
-    if ((event.metaKey || event.ctrlKey) && event.key === "h") {
+    if (matchesShortcut(event, "find_replace")) {
       event.preventDefault();
       if (isSearchPanelOpen(view)) {
         closeSearchPanel(view);
@@ -441,6 +462,14 @@ const searchKeymap = EditorView.domEventHandlers({
       return true;
     }
 
+    if (
+      ["find", "find_replace"].some(
+        (id) => getOverride(id) && matchesDefaultShortcut(event, id)
+      )
+    ) {
+      event.preventDefault();
+      return true;
+    }
     return false;
   },
 });

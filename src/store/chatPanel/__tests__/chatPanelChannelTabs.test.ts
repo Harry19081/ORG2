@@ -1,17 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
-async function loadChannelTabAtoms() {
-  const { createInstrumentedStore } =
-    await import("@src/util/core/state/instrumentedStore");
-  const store = createInstrumentedStore();
-  const {
-    buildChannelTabKey,
-    chatPanelTabsAtom,
-    closeChatPanelTabAtom,
-    normalizePersistedChatPanelTabsState,
-    openChannelInChatPanelTabAtom,
-    reconcileDiscussionChannelTabsAtom,
-  } = await import("../chatPanelTabsAtom");
+import { buildChannelTabKey } from "@src/store/chatPanel/chatPanelTabFactories";
+import {
+  closeChatPanelTabAtom,
+  openChannelInChatPanelTabAtom,
+  reconcileDiscussionChannelTabsAtom,
+} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { normalizePersistedChatPanelTabsState } from "@src/store/chatPanel/chatPanelTabsModel";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import {
+  createInstrumentedStore,
+  resetInstrumentedStore,
+} from "@src/util/core/state/instrumentedStore";
+
+function loadChannelTabAtoms() {
   return {
     buildChannelTabKey,
     chatPanelTabsAtom,
@@ -19,11 +21,11 @@ async function loadChannelTabAtoms() {
     normalizePersistedChatPanelTabsState,
     openChannelInChatPanelTabAtom,
     reconcileDiscussionChannelTabsAtom,
-    store,
+    store: createInstrumentedStore(),
   };
 }
 
-type ChannelTabAtoms = Awaited<ReturnType<typeof loadChannelTabAtoms>>;
+type ChannelTabAtoms = ReturnType<typeof loadChannelTabAtoms>;
 
 const LOCAL_CHANNEL = {
   scope: "local" as const,
@@ -42,12 +44,12 @@ const CLOUD_CHANNEL = {
 describe("openChannelInChatPanelTabAtom", () => {
   let atoms: ChannelTabAtoms;
 
-  beforeEach(async () => {
-    // Atom identities are module-level, so each case needs a fresh registry
-    // (and a clean persisted state) to start from an empty tab strip.
-    vi.resetModules();
+  beforeEach(() => {
+    // Atom values live in the store, so a fresh store (plus clean persisted
+    // state) is all an empty tab strip needs -- no module-registry teardown.
+    resetInstrumentedStore();
     localStorage.clear();
-    atoms = await loadChannelTabAtoms();
+    atoms = loadChannelTabAtoms();
   });
 
   function channelTabs() {

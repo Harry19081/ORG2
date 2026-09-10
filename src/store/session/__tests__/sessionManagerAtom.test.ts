@@ -1,9 +1,9 @@
 /**
  * Session atom derived values and helpers — pure logic tests.
  *
- * Tests the pure helpers (`isValidSessionUUID`, `sessionByIdAtom` LRU cache),
- * and derived atoms (`sessionsAtom`, `sessionMapAtom`, `validSessionIdsAtom`,
- * session count atoms) using a raw Jotai store to avoid React/hook machinery.
+ * Tests the pure helpers (`isValidSessionUUID`, `sessionByIdAtom` cache),
+ * and derived atoms (`sessionsAtom`, `sessionMapAtom`, `validSessionIdsAtom`)
+ * using a raw Jotai store to avoid React/hook machinery.
  */
 import { createStore } from "jotai";
 import { describe, expect, it, vi } from "vitest";
@@ -11,11 +11,8 @@ import { describe, expect, it, vi } from "vitest";
 import {
   anySessionWorkingAtom,
   recentSessionsAtom,
-  sessionActiveCountAtom,
   sessionByIdAtom,
-  sessionCompletedCountAtom,
   sessionMapAtom,
-  sessionTotalCountAtom,
   sessionsAtom,
   validSessionIdsAtom,
 } from "../sessionAtom/atoms";
@@ -111,34 +108,6 @@ describe("validSessionIdsAtom", () => {
   });
 });
 
-describe("count atoms", () => {
-  it("sessionTotalCountAtom reflects array length", () => {
-    const store = makeStore([
-      makeSession({ session_id: "a" }),
-      makeSession({ session_id: "b" }),
-    ]);
-    expect(store.get(sessionTotalCountAtom)).toBe(2);
-  });
-
-  it("sessionActiveCountAtom counts running sessions", () => {
-    const store = makeStore([
-      makeSession({ session_id: "r1", status: "running" }),
-      makeSession({ session_id: "r2", status: "idle" }),
-      makeSession({ session_id: "r3", status: "completed" }),
-    ]);
-    expect(store.get(sessionActiveCountAtom)).toBe(2);
-  });
-
-  it("sessionCompletedCountAtom counts only completed", () => {
-    const store = makeStore([
-      makeSession({ session_id: "c1", status: "completed" }),
-      makeSession({ session_id: "c2", status: "completed" }),
-      makeSession({ session_id: "r1", status: "running" }),
-    ]);
-    expect(store.get(sessionCompletedCountAtom)).toBe(2);
-  });
-});
-
 describe("anySessionWorkingAtom", () => {
   it("is false when all sessions are completed", () => {
     const store = makeStore([
@@ -195,5 +164,15 @@ describe("sessionByIdAtom", () => {
 
   it("returns stable atom instances for the same ID", () => {
     expect(sessionByIdAtom("foo")).toBe(sessionByIdAtom("foo"));
+  });
+
+  it("preserves a live atom identity beyond the strong-cache limit", () => {
+    const retained = sessionByIdAtom("retained-session");
+
+    for (let index = 0; index < 600; index += 1) {
+      sessionByIdAtom(`cache-pressure-${index}`);
+    }
+
+    expect(sessionByIdAtom("retained-session")).toBe(retained);
   });
 });

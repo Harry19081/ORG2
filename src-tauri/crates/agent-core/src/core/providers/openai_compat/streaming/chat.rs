@@ -9,13 +9,13 @@ use super::think_split::ThinkTagSplitter;
 use super::translate_tool_choice_for_openai;
 use crate::providers::openai_policy::ChatTokenLimitField;
 use crate::providers::registry::provider_id;
-use crate::providers::safe_truncate::safe_truncate_utf8;
 use crate::providers::traits::{finish_reason as finish, LLMResponse, ProviderError};
 use crate::providers::wire_sanitize::{
     coalesce_system_messages_to_front, sanitize_deepseek_messages, sanitize_openai_compat_messages,
     strip_tool_schema_cache_scopes,
 };
 use crate::utils::http_retry::extract_retry_after_secs;
+use crate::utils::safe_truncate_utf8;
 
 pub(super) async fn run_chat(
     this: &OpenAICompatClient,
@@ -268,6 +268,79 @@ mod tests {
     use std::collections::HashMap;
     use wiremock::matchers::{method, path};
     use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    #[tokio::test]
+    async fn gpt_upper_efforts_reach_both_chat_transports() {
+        crate::test_support::install_crypto_provider_for_tests();
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/chat/completions"))
+            .respond_with(|request: &wiremock::Request| {
+                let body: Value = request.body_json().unwrap();
+                if body["stream"] == true {
+                    ResponseTemplate::new(200)
+                        .insert_header("content-type", "text/event-stream")
+                        .set_body_string(concat!(
+                            "data: {\"choices\":[{\"delta\":{\"content\":\"ok\"},\"finish_reason\":\"stop\"}]}\n\n",
+                            "data: [DONE]\n\n"
+                        ))
+                } else {
+                    ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                        "choices": [{"message": {"content": "ok"}, "finish_reason": "stop"}]
+                    }))
+                }
+            })
+            .expect(16)
+            .mount(&server)
+            .await;
+
+        let client = OpenAICompatClient::new(
+            ProviderConfig {
+                api_key: "test-key".to_string(),
+                api_base: Some(server.uri()),
+                extra_headers: HashMap::new(),
+                is_azure: false,
+            },
+            find_by_name(provider_id::OPENAI).unwrap(),
+            "gpt-5.6-sol".to_string(),
+        );
+        let messages = [serde_json::json!({"role": "user", "content": "hello"})];
+        for base in [
+            "gpt-6-astra",
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "gpt-5.6-luna",
+        ] {
+            for effort in ["xhigh", "max"] {
+                for stream in [false, true] {
+                    let model = format!("{base}-{effort}");
+                    if stream {
+                        client
+                            .chat_streaming(&messages, None, &model, 1024, 0.0, &|_| {}, None)
+                            .await
+                            .unwrap();
+                    } else {
+                        client
+                            .chat(&messages, None, &model, 1024, 0.0)
+                            .await
+                            .unwrap();
+                    }
+                    let requests = server.received_requests().await.unwrap();
+                    let body: Value = requests.last().unwrap().body_json().unwrap();
+                    assert_eq!(body["model"], base);
+                    assert_eq!(body["reasoning_effort"], effort);
+                    assert_eq!(
+                        body.get("stream").and_then(Value::as_bool).unwrap_or(false),
+                        stream
+                    );
+                    assert!(body.get("thinking").is_none());
+                    assert!(body.get("temperature").is_none());
+                    assert!(body.get("max_tokens").is_none());
+                    assert_eq!(body["max_completion_tokens"], 1024);
+                }
+            }
+        }
+    }
 
     #[tokio::test]
     async fn non_streaming_standard_usage_normalizes_cached_tokens() {

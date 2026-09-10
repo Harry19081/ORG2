@@ -43,6 +43,8 @@ fn input(
         listable: true,
         source_metadata_json: None,
         parent_session_id: None,
+        client_origin: None,
+        client_origin_raw: None,
     }
 }
 
@@ -148,6 +150,77 @@ fn sidebar_query_is_date_bounded_and_carries_impact_metadata() {
 }
 
 #[test]
+fn upsert_stores_provider_scratch_dirs_as_no_workspace() {
+    // The producing-boundary guard for the sidebar's "No Workspace" group: the
+    // Codex desktop app reports its own per-conversation folder as the session
+    // cwd, and persisting that as a workspace grew one group header per
+    // conversation labelled with a bare date slug.
+    let home = app_paths::external_history_home_dir();
+    let scratch = home
+        .join("Documents")
+        .join("Codex")
+        .join("2026-08-23")
+        .join("do-a-quick-evaluation-of-users");
+    let real = home.join("Documents").join("GitHub").join("ORGII");
+
+    let mut conn = fixture_conn();
+    let mut scratch_session = input(SOURCE_CODEX_APP, "scratch", 250);
+    scratch_session.repo_path = Some(scratch.to_string_lossy().to_string());
+    let mut real_session = input(SOURCE_CODEX_APP, "real", 260);
+    real_session.repo_path = Some(real.to_string_lossy().to_string());
+    upsert_imported_session_cache_from_conn(&mut conn, &[scratch_session, real_session])
+        .expect("upsert");
+
+    let cached = query_cached_session_from_conn(&conn, SOURCE_CODEX_APP, "scratch")
+        .expect("query scratch")
+        .expect("scratch row");
+    assert_eq!(cached.repo_path, None);
+    let cached_real = query_cached_session_from_conn(&conn, SOURCE_CODEX_APP, "real")
+        .expect("query real")
+        .expect("real row");
+    assert_eq!(
+        cached_real.repo_path.as_deref(),
+        Some(real.to_string_lossy().as_ref())
+    );
+
+    // The canonical `sessions` row is written from the same input, so it must
+    // agree — a divergence would re-introduce the phantom workspace in the
+    // Data/Usage rollups that read the canonical table.
+    let workspace_path: Option<String> = conn
+        .query_row(
+            "SELECT workspace_path FROM orgtrack_core_sessions WHERE session_id = ?1",
+            rusqlite::params!["codex_app-scratch"],
+            |row| row.get(0),
+        )
+        .expect("canonical session row");
+    assert_eq!(workspace_path.as_deref().unwrap_or_default(), "");
+}
+
+#[test]
+fn upsert_keeps_a_scratch_shaped_path_recorded_by_another_source() {
+    // Same path, different app: the user really opened that directory in
+    // OpenCode, so it stays a workspace.
+    let path = app_paths::external_history_home_dir()
+        .join("Documents")
+        .join("Codex")
+        .join("2026-08-23")
+        .join("do-a-quick-evaluation-of-users");
+
+    let mut conn = fixture_conn();
+    let mut session = input(SOURCE_OPENCODE, "elsewhere", 250);
+    session.repo_path = Some(path.to_string_lossy().to_string());
+    upsert_imported_session_cache_from_conn(&mut conn, &[session]).expect("upsert");
+
+    let cached = query_cached_session_from_conn(&conn, SOURCE_OPENCODE, "elsewhere")
+        .expect("query")
+        .expect("row");
+    assert_eq!(
+        cached.repo_path.as_deref(),
+        Some(path.to_string_lossy().as_ref())
+    );
+}
+
+#[test]
 fn sidebar_query_reports_no_branch_for_sources_that_record_none() {
     let mut conn = fixture_conn();
     let mut branchless = input(SOURCE_CODEX_APP, "branchless", 250);
@@ -231,6 +304,39 @@ fn cache_signature_comparison_detects_changed_records() {
 
     assert!(record_matches_cached_signature(&cached, &cached));
     assert!(!record_matches_cached_signature(&cached, &changed));
+}
+
+#[test]
+fn generated_cached_names_are_selected_for_repair_without_signature_changes() {
+    let mut conn = fixture_conn();
+    let mut polluted = input(SOURCE_CODEX_APP, "polluted", 100);
+    polluted.name = "<ide_context>generated prompt envelope</ide_context>".to_string();
+    upsert_imported_session_cache_from_conn(&mut conn, &[polluted.clone()]).expect("upsert");
+
+    let discovered = vec![polluted.clone()];
+    let changed = changed_records_with_generated_name_repairs_from_conn(
+        &conn,
+        SOURCE_CODEX_APP,
+        &discovered,
+        |record| ImportedHistoryRecordSignature {
+            source_session_id: record.source_session_id.clone(),
+            source_path: record.source_path.clone(),
+            source_mtime_ms: record.source_mtime_ms,
+            source_size_bytes: record.source_size_bytes,
+            source_fingerprint: record.source_fingerprint.clone(),
+            parser_version: record.parser_version,
+        },
+    )
+    .expect("select repair");
+
+    assert_eq!(changed.len(), 1);
+    assert_eq!(changed[0].source_session_id, "polluted");
+
+    update_cached_session_name_from_conn(&conn, SOURCE_CODEX_APP, "polluted", "Real user prompt")
+        .expect("repair name");
+    let repair_ids = generated_name_repair_source_session_ids_from_conn(&conn, SOURCE_CODEX_APP)
+        .expect("query repairs");
+    assert!(repair_ids.is_empty());
 }
 
 #[test]
@@ -994,4 +1100,36 @@ fn a_source_wide_prune_does_not_erase_pins() {
         pins.contains("codexapp-s1"),
         "a prune of the rebuildable projection must not take user pin state with it"
     );
+}
+
+#[test]
+fn managed_native_origin_survives_exact_id_cache_hydration() {
+    use crate::sources::imported_history::client_origin::ImportedClientOrigin;
+    use crate::sources::imported_history::managed_mirror::apply_managed_history_mirror;
+    use std::collections::HashSet;
+
+    let mut conn = fixture_conn();
+    let mut managed = input(SOURCE_CODEX_APP, "rollout-date-native-uuid", 300);
+    managed.client_origin = Some(ImportedClientOrigin::OfficialApp);
+    managed.client_origin_raw = Some("Codex Desktop".to_string());
+    let mut ordinary = input(SOURCE_CODEX_APP, "ordinary-native-app", 200);
+    ordinary.client_origin = Some(ImportedClientOrigin::OfficialApp);
+    let ids = HashSet::from(["native-uuid".to_string()]);
+    apply_managed_history_mirror(&mut managed, &ids);
+    apply_managed_history_mirror(&mut ordinary, &ids);
+    let managed_id = managed.session_id.clone();
+    let ordinary_id = ordinary.session_id.clone();
+    upsert_imported_session_cache_from_conn(&mut conn, &[managed, ordinary]).expect("persist");
+    let (_, hydrated) = query_cached_session_by_session_id_from_conn(&conn, &managed_id)
+        .expect("exact id read").expect("mirror remains readable");
+    assert_eq!(hydrated.client_origin, Some(ImportedClientOrigin::Org2));
+    let raw: String = conn.query_row(
+        "SELECT client_origin_raw FROM imported_history_session_cache WHERE session_id = ?1",
+        [&managed_id], |row| row.get(0),
+    ).expect("retain native header provenance");
+    assert_eq!(raw, "Codex Desktop");
+    let page = query_imported_session_page_from_conn(&conn, SOURCE_CODEX_APP, 10, 0).expect("list");
+    assert_eq!(page.sessions.len(), 1);
+    assert_eq!(page.sessions[0].session_id, ordinary_id);
+    assert_eq!(page.sessions[0].client_origin, Some(ImportedClientOrigin::OfficialApp));
 }

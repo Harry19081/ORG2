@@ -52,12 +52,50 @@ const reactActEnvironment = globalThis as typeof globalThis & {
   IS_REACT_ACT_ENVIRONMENT?: boolean;
 };
 
+// jsdom has no object URLs; install deterministic ones so the tests can
+// assert that local images are served as Blob URLs and released again.
+const objectUrls = {
+  created: 0,
+  createObjectURL: vi.fn((_blob: Blob) => {
+    objectUrls.created += 1;
+    return `blob:mock-${objectUrls.created}`;
+  }),
+  revokeObjectURL: vi.fn(),
+};
+
+function installObjectUrls(): void {
+  Object.defineProperty(URL, "createObjectURL", {
+    value: objectUrls.createObjectURL,
+    configurable: true,
+    writable: true,
+  });
+  Object.defineProperty(URL, "revokeObjectURL", {
+    value: objectUrls.revokeObjectURL,
+    configurable: true,
+    writable: true,
+  });
+}
+
+function uninstallObjectUrls(): void {
+  Reflect.deleteProperty(URL, "createObjectURL");
+  Reflect.deleteProperty(URL, "revokeObjectURL");
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((next) => {
+    resolve = next;
+  });
+  return { promise, resolve };
+}
+
 describe("MarkdownLocalImage", () => {
   let container: HTMLDivElement;
   let root: Root;
 
   beforeAll(() => {
     reactActEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
+    installObjectUrls();
   });
 
   beforeEach(() => {
@@ -73,6 +111,7 @@ describe("MarkdownLocalImage", () => {
   });
 
   afterAll(() => {
+    uninstallObjectUrls();
     Reflect.deleteProperty(reactActEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
@@ -175,6 +214,21 @@ describe("MarkdownLocalImage", () => {
     expect(mocks.openFileInWorkStation).not.toHaveBeenCalled();
   });
 
+  it("opens markdown file references at their line without including the suffix in the path", async () => {
+    await openLocalMarkdownRef(
+      "/Users/me/project/SessionCreatorChatPanelView.tsx:220",
+      false
+    );
+
+    expect(mocks.stat).toHaveBeenCalledWith(
+      "/Users/me/project/SessionCreatorChatPanelView.tsx"
+    );
+    expect(mocks.openFileInWorkStation).toHaveBeenCalledWith(
+      "/Users/me/project/SessionCreatorChatPanelView.tsx",
+      { line: 220 }
+    );
+  });
+
   it("falls back to the file tab when the path cannot be stat'ed", async () => {
     mocks.stat.mockRejectedValueOnce(new Error("gone"));
     await openLocalMarkdownRef("/Users/me/missing.png", false);
@@ -206,5 +260,70 @@ describe("MarkdownLocalImage", () => {
     expect(
       container.querySelector('[data-testid="image-preview-overlay"]')
     ).toBeNull();
+  });
+
+  it("does not show a stale image after the local source changes", async () => {
+    const first = deferred<Uint8Array>();
+    const second = deferred<Uint8Array>();
+    mocks.readFile
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise);
+
+    act(() => {
+      root.render(
+        createElement(MarkdownLocalImage, { src: "/repo/first.png" })
+      );
+    });
+    act(() => {
+      root.render(
+        createElement(MarkdownLocalImage, { src: "/repo/second.png" })
+      );
+    });
+
+    await act(async () => {
+      first.resolve(new Uint8Array([1]));
+      await first.promise;
+    });
+    expect(container.querySelector("img")).toBeNull();
+
+    await act(async () => {
+      second.resolve(new Uint8Array([2]));
+      await second.promise;
+    });
+    const shownSrc = container.querySelector("img")?.getAttribute("src");
+    expect(shownSrc).toMatch(/^blob:mock-\d+$/);
+    // The superseded first load resolved after teardown: its Blob is released
+    // instead of being leaked behind an image nobody shows.
+    const firstUrl = objectUrls.createObjectURL.mock.results[0]?.value;
+    expect(firstUrl).not.toBe(shownSrc);
+    expect(objectUrls.revokeObjectURL).toHaveBeenCalledWith(firstUrl);
+  });
+
+  it("serves local images as Blob URLs and releases them when the source changes", async () => {
+    mocks.readFile.mockResolvedValueOnce(new Uint8Array([1, 2, 3]));
+    objectUrls.revokeObjectURL.mockClear();
+
+    await act(async () => {
+      root.render(
+        createElement(MarkdownLocalImage, { src: "/repo/photo.png" })
+      );
+    });
+
+    const src = container.querySelector("img")?.getAttribute("src");
+    expect(src).toMatch(/^blob:mock-\d+$/);
+    const blob = objectUrls.createObjectURL.mock.calls.at(-1)?.[0];
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob?.type).toBe("image/png");
+    expect(objectUrls.revokeObjectURL).not.toHaveBeenCalled();
+
+    await act(async () => {
+      root.render(
+        createElement(MarkdownLocalImage, {
+          src: "https://example.com/remote.png",
+        })
+      );
+    });
+
+    expect(objectUrls.revokeObjectURL).toHaveBeenCalledWith(src);
   });
 });

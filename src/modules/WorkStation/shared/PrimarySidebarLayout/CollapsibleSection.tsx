@@ -3,11 +3,10 @@
  *
  * A resizable, collapsible section for panel layouts.
  * Used to create multiple stacked sections (Files, Outline, etc.)
- * Uses flex-grow for proportional space distribution.
+ * Uses grow for proportional space distribution.
  *
  * Shared by: CodeEditor, DatabaseManager, Browser
  */
-import { ChevronDown, ChevronRight } from "lucide-react";
 import React, { memo, useCallback } from "react";
 
 import {
@@ -17,10 +16,10 @@ import {
 import {
   BUTTON_SIZE,
   SECTION_ACTION_BUTTON,
-} from "@src/modules/WorkStation/shared/tokens";
+} from "@src/config/workstation/tokens";
+import { HEADER_CLASSES } from "@src/config/workstation/tokens";
+import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { HorizontalResizeHandle } from "@src/scaffold/Resize";
-
-import { HEADER_CLASSES } from "../tokens";
 
 // ============================================
 // Types
@@ -47,7 +46,7 @@ export interface CollapsibleSectionProps {
   actions?: SectionHeaderAction[];
   /** Callback when resize starts */
   onResizeStart?: (event: React.MouseEvent) => void;
-  /** Whether this section should use auto height instead of flex-grow */
+  /** Whether this section should use auto height instead of grow */
   autoHeight?: boolean;
   /** Whether to show top border instead of bottom border (for global sections) */
   showTopBorder?: boolean;
@@ -129,7 +128,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
       >
         {showSeparator && (
           <div
-            className={`pointer-events-none absolute left-2 right-2 ${separatorPositionClass} h-px bg-border-1`}
+            className={`pointer-events-none absolute right-2 left-2 ${separatorPositionClass} h-px bg-border-1`}
             aria-hidden
           />
         )}
@@ -144,23 +143,33 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = memo(
             {/* Chevron */}
             {collapsible && (
               <span
-                className={`${BUTTON_SIZE.sm} flex flex-shrink-0 items-center justify-center`}
+                className={`${BUTTON_SIZE.sm} flex shrink-0 items-center justify-center`}
               >
                 {effectiveCollapsed ? (
-                  <ChevronRight size={14} className="text-text-3" />
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    data-icon="chevron-right"
+                    size={14}
+                    className="text-text-3"
+                  />
                 ) : (
-                  <ChevronDown size={14} className="text-text-3" />
+                  <HugeiconsIcon
+                    icon={ArrowDown01Icon}
+                    data-icon="chevron-down"
+                    size={14}
+                    className="text-text-3"
+                  />
                 )}
               </span>
             )}
 
             {/* Title */}
             {typeof title === "string" ? (
-              <span className="truncate text-[12px] font-medium uppercase text-text-2">
+              <span className="truncate text-[12px] font-medium text-text-2 uppercase">
                 {title}
               </span>
             ) : (
-              <div className="truncate text-[12px] font-medium uppercase text-text-2">
+              <div className="truncate text-[12px] font-medium text-text-2 uppercase">
                 {title}
               </div>
             )}

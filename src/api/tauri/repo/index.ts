@@ -99,18 +99,6 @@ export async function updateRepoVisibility(
   await invokeTauri("server_update_repo_visibility", { path, visibility });
 }
 
-/** Check GitHub repo visibility via backend (no CORS issues). Returns "public", "private", or null. */
-export async function checkGithubVisibility(
-  ownerRepo: string
-): Promise<"public" | "private" | null> {
-  const result = await invokeTauri<string | null>(
-    "server_check_github_visibility",
-    { ownerRepo }
-  );
-  if (result === "public" || result === "private") return result;
-  return null;
-}
-
 // ============================================
 // Repository Creation (via Tauri commands)
 // ============================================
@@ -258,6 +246,10 @@ export async function detectIDEs() {
 /**
  * Check if a directory is a git repository (has .git subdirectory).
  */
+export async function validateWorkspacePath(path: string): Promise<string> {
+  return invokeTauri<string>("server_validate_workspace_path", { path });
+}
+
 export async function checkIsGitRepo(path: string): Promise<boolean> {
   return invokeTauri<boolean>("server_check_is_git_repo", { path });
 }
@@ -281,6 +273,7 @@ export const repoApi = {
   createWorkFolder,
 
   // Detection
+  validateWorkspacePath,
   checkIsGitRepo,
 
   // Delete Repository

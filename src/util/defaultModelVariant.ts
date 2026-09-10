@@ -1,4 +1,4 @@
-import type { ModelTableVariantInfo } from "@src/components/ModelTable/types";
+import type { ModelTableVariantInfo } from "@src/types/modelTable";
 import {
   MODEL_REASONING_LEVEL,
   type ModelReasoningLevel,
@@ -38,6 +38,7 @@ const REASONING_RANK: ModelReasoningLevel[] = [
   MODEL_REASONING_LEVEL.HIGH,
   MODEL_REASONING_LEVEL.EXTRA_HIGH,
   MODEL_REASONING_LEVEL.MAX,
+  MODEL_REASONING_LEVEL.ULTRA,
   MODEL_REASONING_LEVEL.ULTRACODE,
 ];
 

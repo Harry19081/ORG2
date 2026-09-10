@@ -1,11 +1,14 @@
 /**
- * Shared progress-bar styling for replay surfaces (Simulator dock,
- * Kanban canvas border). The rail (unfilled) is 1px and the track
- * (filled) is 2px, both anchored at top:0 so the bar's TOP edge is
- * pixel-stable when neighboring chrome (status pill, dock border)
- * sits flush against it.
+ * Shared progress-bar styling for Simulator replay surfaces. The rail
+ * (unfilled) is 1px and the track (filled) is 2px, both anchored at
+ * top:0 so the bar's TOP edge is pixel-stable when neighboring chrome
+ * (status pill, dock border) sits flush against it.
  */
 .replay-progress-bar {
+  &__slider {
+    position: relative;
+  }
+
   .slider-rail {
     height: 1px;
     border-radius: 0.5px;
@@ -23,5 +26,84 @@
   &[data-follow-mode="true"] .slider-handle {
     opacity: 0;
     pointer-events: none;
+  }
+
+  &:hover .replay-turn-breakpoints,
+  &:focus-within .replay-turn-breakpoints {
+    opacity: 1;
+  }
+}
+
+.replay-turn-breakpoints {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+
+  &__marker {
+    position: absolute;
+    top: 1px;
+    display: flex;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 999px;
+    color: var(--color-primary-6);
+    cursor: var(--interactive-cursor, default);
+    pointer-events: auto;
+    transform: translate(-50%, -50%);
+    transition:
+      color 120ms ease,
+      transform 120ms ease;
+
+    &:hover {
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary-6);
+      outline-offset: 1px;
+    }
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    box-sizing: border-box;
+    border: 1px solid currentColor;
+    background: var(--color-bg-1);
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px var(--color-bg-1);
+    transition:
+      width 120ms ease,
+      height 120ms ease,
+      background 120ms ease;
+  }
+
+  &__marker[data-active="true"] &__dot {
+    width: 7px;
+    height: 7px;
+    border-color: var(--color-bg-1);
+    background: currentColor;
+    box-shadow:
+      0 0 0 1px currentColor,
+      0 0 0 2px var(--color-bg-1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &__marker,
+    &__dot {
+      transition: none;
+    }
   }
 }

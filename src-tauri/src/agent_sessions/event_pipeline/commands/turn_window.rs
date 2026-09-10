@@ -21,6 +21,21 @@ use super::{
 
 const DEFAULT_RECENT_TURN_BODY_COUNT: usize = 1;
 
+/// Tool events that must stay resident in the initial turn window even when
+/// the turn that produced them collapsed into a `turn_placeholder`: the
+/// Simulator canvas projection renders from the latest canvas event in the
+/// store, and `revise_inline_canvas` resolves `target_event_id` against
+/// loaded events — both dangle after a restart without this pin.
+const PINNED_ARTIFACT_FUNCTION_NAMES: &[&str] = &[
+    core_types::tool_names::RENDER_INLINE_CANVAS,
+    core_types::tool_names::REVISE_INLINE_CANVAS,
+];
+
+/// Bound on pinned canvas events merged into the initial window (most
+/// recent by `created_at`); keeps pathological canvas-heavy sessions from
+/// defeating turn-window pagination.
+const MAX_PINNED_ARTIFACT_EVENTS: usize = 64;
+
 // ============================================================================
 // Turn Window Types
 // ============================================================================
@@ -178,6 +193,11 @@ pub async fn cache_load_session_turn_body(
     session_id: String,
     turn_id: String,
 ) -> Result<SessionTurnBodyWindow, String> {
+    let group_root_source_ids =
+        super::agent_org_group_visibility::group_root_source_event_ids(&session_id)?;
+    if group_root_source_ids.contains(&turn_id) {
+        return Err("group_projection_turn_not_available_on_session_surface".to_string());
+    }
     let sid = session_id.clone();
     let tid = turn_id.clone();
     let window =
@@ -186,11 +206,15 @@ pub async fn cache_load_session_turn_body(
             .map_err(|e| e.to_string())?
             .map_err(|e| e.to_string())?;
 
-    let events: Vec<SessionEvent> = window
+    let mut events: Vec<SessionEvent> = window
         .events
         .iter()
         .map(cached_event_to_session_event)
         .collect();
+    super::agent_org_group_visibility::retain_ordinary_session_events(
+        &mut events,
+        &group_root_source_ids,
+    );
     let events = prepare_loaded_events(&session_id, events);
 
     Ok(SessionTurnBodyWindow {
@@ -199,18 +223,30 @@ pub async fn cache_load_session_turn_body(
     })
 }
 
-pub(super) async fn load_initial_turn_window_events(
+pub(crate) async fn load_initial_turn_window_events(
     session_id: &str,
     recent_turn_count: Option<usize>,
 ) -> Result<SessionInitialTurnWindow, String> {
     let sid = session_id.to_string();
     let recent_count = recent_turn_count.unwrap_or(DEFAULT_RECENT_TURN_BODY_COUNT);
-    let window = tokio::task::spawn_blocking(move || {
-        sqlite_cache::load_initial_turn_window(&sid, recent_count)
+    let (mut window, pinned_artifact_events) = tokio::task::spawn_blocking(move || {
+        let window = sqlite_cache::load_initial_turn_window(&sid, recent_count)?;
+        let pinned = sqlite_cache::load_session_pinned_artifact_events(
+            &sid,
+            PINNED_ARTIFACT_FUNCTION_NAMES,
+            MAX_PINNED_ARTIFACT_EVENTS,
+        )?;
+        Ok::<_, rusqlite::Error>((window, pinned))
     })
     .await
     .map_err(|e| e.to_string())?
     .map_err(|e| e.to_string())?;
+
+    let group_root_source_ids =
+        super::agent_org_group_visibility::group_root_source_event_ids(session_id)?;
+    window
+        .turns
+        .retain(|turn| !group_root_source_ids.contains(&turn.turn_id));
 
     let recent_start = window.turns.len().saturating_sub(recent_count);
     let recent_turn_ids = window.turns[recent_start..]
@@ -224,6 +260,14 @@ pub(super) async fn load_initial_turn_window_events(
         .map(cached_event_to_session_event)
         .collect();
     let present_event_ids: HashSet<String> = events.iter().map(|event| event.id.clone()).collect();
+    // Merge pinned canvas events from collapsed turns before the sort +
+    // prepare pass; ids already present in the window are skipped.
+    events.extend(
+        pinned_artifact_events
+            .iter()
+            .filter(|event| !present_event_ids.contains(&event.id))
+            .map(cached_event_to_session_event),
+    );
     events.extend(
         window
             .turns
@@ -243,6 +287,10 @@ pub(super) async fn load_initial_turn_window_events(
             .cmp(&right.created_at)
             .then_with(|| left.id.cmp(&right.id))
     });
+    super::agent_org_group_visibility::retain_ordinary_session_events(
+        &mut events,
+        &group_root_source_ids,
+    );
     let events = prepare_loaded_events(session_id, events);
 
     Ok(SessionInitialTurnWindow {

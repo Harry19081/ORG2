@@ -10,11 +10,9 @@ import type {
   PrReviewEvent,
   PullRequestMergeMethod,
 } from "@src/api/tauri/github";
+import { BoundedMap } from "@src/util/collections/BoundedMap";
 
-import {
-  DEFAULT_WORKSTATION_REPO_SCOPE,
-  workstationRepoScopeKey,
-} from "./workstationPrAtom";
+import { workstationRepoScopeKey } from "./workstationPrAtom";
 
 /**
  * Scope key for the per-PR detail atoms. Unlike the issue side (keyed by repo
@@ -123,34 +121,6 @@ export const workstationSelectedPrAtomFamily = atomFamily(
   }
 );
 
-/** Back-compat default-scope singleton (repo-agnostic, no PR). */
-export const workstationSelectedPrAtom = workstationSelectedPrAtomFamily(
-  `${DEFAULT_WORKSTATION_REPO_SCOPE}:pr:none`
-);
-
-/** Active PR-detail sub-tab (Conversation / Commits / Checks / Changes). */
-export const workstationPrDetailTabAtomFamily = atomFamily(
-  (scopeKey: string) => {
-    const selectedPrAtom = workstationSelectedPrAtomFamily(scopeKey);
-    const scopedAtom = atom(
-      (get) => get(selectedPrAtom).viewState.activeTab,
-      (get, set, activeTab: PrDetailTab) => {
-        const current = get(selectedPrAtom);
-        set(selectedPrAtom, {
-          ...current,
-          viewState: { ...current.viewState, activeTab },
-        });
-      }
-    );
-    scopedAtom.debugLabel = `workstationPrDetailTabAtom(${scopeKey})`;
-    return scopedAtom;
-  }
-);
-
-export const workstationPrDetailTabAtom = workstationPrDetailTabAtomFamily(
-  `${DEFAULT_WORKSTATION_REPO_SCOPE}:pr:none`
-);
-
 export interface WorkstationPrDetailCallbacks {
   addComment: ((body: string) => Promise<void>) | null;
   submitReview: ((event: PrReviewEvent, body: string) => Promise<void>) | null;
@@ -174,6 +144,8 @@ export interface WorkstationPrDetailCallbacks {
   updatePullRequestDraft: ((draft: boolean) => Promise<void>) | null;
   updatePullRequestState: ((state: "open" | "closed") => Promise<void>) | null;
   updateRequestedReviewers: ((reviewers: string[]) => Promise<void>) | null;
+  updateAssignees: ((logins: string[]) => Promise<void>) | null;
+  updateLabels: ((names: string[]) => Promise<void>) | null;
   refresh: (() => void) | null;
 }
 
@@ -187,6 +159,8 @@ const initialPrDetailCallbacks: WorkstationPrDetailCallbacks = {
   updatePullRequestDraft: null,
   updatePullRequestState: null,
   updateRequestedReviewers: null,
+  updateAssignees: null,
+  updateLabels: null,
   refresh: null,
 };
 
@@ -204,7 +178,44 @@ export const workstationPrDetailCallbackAtomFamily = atomFamily(
   }
 );
 
-export const workstationPrDetailCallbackAtom =
-  workstationPrDetailCallbackAtomFamily(
-    `${DEFAULT_WORKSTATION_REPO_SCOPE}:pr:none`
-  );
+/**
+ * How many PR detail scopes keep their atoms.
+ *
+ * These three families are keyed per repo **and PR number**, so unlike the
+ * repo-scoped PR atoms they grow with every pull request the user has ever
+ * opened. `jotai-family` pins each key forever, so nothing was ever released.
+ *
+ * Releasing on panel unmount would be wrong: the main pane renders only the
+ * active tab, so switching tabs unmounts the panel, and dropping the scope
+ * there would reset the active detail sub-tab every time the user came back.
+ * An LRU keeps recently visited PRs intact and only forgets the ones the user
+ * has moved well past.
+ *
+ * Nothing here holds unsaved user input — the PR commit-message draft lives in
+ * `workstationPrCommitMessageAtomFamily`, which is repo-scoped and therefore
+ * already bounded, and is deliberately not touched by this eviction.
+ */
+export const MAX_RETAINED_PR_DETAIL_SCOPES = 16;
+
+const retainedPrDetailScopes = new BoundedMap<string, true>({
+  maxSize: MAX_RETAINED_PR_DETAIL_SCOPES,
+  name: "workstationPrDetailScopes",
+  onEvict: (scopeKey) => {
+    workstationSelectedPrAtomFamily.remove(scopeKey);
+    workstationPrDetailCallbackAtomFamily.remove(scopeKey);
+  },
+});
+
+/**
+ * Mark a PR detail scope as in use, evicting the least recently used scope's
+ * atoms once the cap is exceeded. Called by `useWorkstationPrDetail` whenever
+ * it binds to a scope.
+ */
+export function retainWorkstationPrDetailScope(scopeKey: string): void {
+  retainedPrDetailScopes.set(scopeKey, true);
+}
+
+/** Test seam: forget every retained scope without firing eviction. */
+export function __resetRetainedPrDetailScopes(): void {
+  retainedPrDetailScopes.clear();
+}

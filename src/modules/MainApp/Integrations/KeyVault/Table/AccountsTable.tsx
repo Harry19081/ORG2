@@ -28,12 +28,11 @@ import { useProviderRegistry } from "@src/scaffold/WizardSystem/variants/KeyVaul
 
 import {
   KeyPrivacyDisclaimer,
-  ModelWikiDisclaimer,
   TrademarkDisclaimer,
 } from "../../Tables/TrademarkDisclaimer";
 import type { DetailMode } from "../../types";
 import MyAccountsTableSection from "../Accounts/Table/MyAccountsTableSection";
-import ModelWikiTableSection from "../ModelWiki/ModelWikiTableSection";
+import InlineCredentialImport from "../CliClients/CredentialImport/InlineCredentialImport";
 import ModelsTableSection from "../Models/Table/ModelsTableSection";
 
 const ALL_FILTER = "all";
@@ -74,7 +73,8 @@ interface AccountsTableProps {
     deleteType?: "local" | "cloud"
   ) => void;
   onRevalidateAccount?: (accountId: string) => Promise<void>;
-  refreshingAccountId?: string | null;
+  refreshingUsageAccountIds?: ReadonlySet<string>;
+  refreshingModelsAccountIds?: ReadonlySet<string>;
   onRefreshModels?: () => Promise<void>;
   refreshingAllModels?: boolean;
   selectedRowId?: string | null;
@@ -112,7 +112,8 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
   onEditAccountSave,
   onDisconnectAccount,
   onRevalidateAccount,
-  refreshingAccountId,
+  refreshingUsageAccountIds,
+  refreshingModelsAccountIds,
   onRefreshModels,
   refreshingAllModels,
   modelsActiveTab: modelsActiveTabProp,
@@ -473,7 +474,6 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
     return [
       { key: "models", label: t("modelsTabs.models", "Models") },
       { key: "my-accounts", label: t("modelsTabs.myAccounts", "My Keys") },
-      { key: "model-wiki", label: t("modelsTabs.modelWiki", "Model Wiki") },
     ];
   }, [t]);
 
@@ -547,6 +547,9 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
       <ScrollPreservation className={DETAIL_PANEL_TOKENS.scrollContentNoTop}>
         <div className={DETAIL_PANEL_TOKENS.contentWidthWithPaddingNoTop}>
           <div className="flex flex-col gap-3">
+            {activeTab === "my-accounts" && (
+              <InlineCredentialImport onAfterImport={onRefresh} />
+            )}
             {activeTab === "models" ? (
               <ModelsTableSection
                 accounts={modelAdjustedAccounts}
@@ -563,8 +566,6 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
                 isAccountEnabled={isAccountEnabled}
                 t={t}
               />
-            ) : activeTab === "model-wiki" ? (
-              <ModelWikiTableSection />
             ) : (
               <MyAccountsTableSection
                 accounts={filteredAdjustedAccounts}
@@ -578,7 +579,8 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
                 onRefreshAccounts={onRefresh}
                 onRefreshAccountUsage={onRefreshAccountUsage}
                 onRevalidateAccount={onRevalidateAccount}
-                refreshingAccountId={refreshingAccountId}
+                refreshingUsageAccountIds={refreshingUsageAccountIds}
+                refreshingModelsAccountIds={refreshingModelsAccountIds}
                 onToggleAccount={handleToggleAccount}
                 isAccountEnabled={isAccountEnabled}
                 onToggleModel={handleToggleModel}
@@ -594,8 +596,6 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
               <KeyPrivacyDisclaimer />
             ) : activeTab === "models" ? (
               <TrademarkDisclaimer />
-            ) : activeTab === "model-wiki" ? (
-              <ModelWikiDisclaimer />
             ) : null}
           </div>
         </div>

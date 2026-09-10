@@ -1,5 +1,10 @@
-import { Archive, Plus, X } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -11,20 +16,42 @@ import {
 } from "@src/api/http/project";
 import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import Select, { type SelectOption } from "@src/components/Select";
+import {
+  Add01Icon,
+  ArchiveIcon,
+  Cancel01Icon,
+  HugeiconsIcon,
+  ListChevronsDownUpIcon,
+} from "@src/icons";
+import { ActivityHeaderActionButton } from "@src/modules/shared/components/ActivityTimeline";
+import type { Person } from "@src/types/core/shared";
+
+import { usePropertyDefinitions } from "../../hooks/usePropertyDefinitions";
+import {
+  WORK_ITEM_THREAD_TOKENS,
+  WorkItemThreadSection,
+} from "../WorkItemThread";
+import {
+  type PropertyMemberSnapshot,
+  activeMemberEntriesToPeople,
+  resolvePropertyMembers,
+} from "./customPropertiesModel";
 
 interface CustomPropertiesSectionProps {
   projectSlug?: string | null;
   orgId?: string | null;
   shortId?: string | null;
+  members: Person[];
   editable: boolean;
 }
 
 interface PropertyValueEditorProps {
   property: PropertyDefinition;
   value: unknown;
+  members: Person[];
   disabled: boolean;
   onSave: (value: unknown | null) => Promise<void>;
 }
@@ -37,11 +64,14 @@ const PROPERTY_TYPES: PropertyType[] = [
   "date",
   "checkbox",
   "url",
+  "actor",
+  "multi_actor",
 ];
 
 function PropertyValueEditor({
   property,
   value,
+  members,
   disabled,
   onSave,
 }: PropertyValueEditorProps) {
@@ -57,7 +87,7 @@ function PropertyValueEditor({
           checked={value === true}
           disabled={disabled}
           size="small"
-          onChange={(checked) => void onSave(checked)}
+          onCheckedChange={(checked) => void onSave(checked)}
         >
           {value === true
             ? t("workItems.properties.yes", { defaultValue: "Yes" })
@@ -69,24 +99,36 @@ function PropertyValueEditor({
 
   if (
     property.propertyType === "select" ||
-    property.propertyType === "multi_select"
+    property.propertyType === "multi_select" ||
+    property.propertyType === "actor" ||
+    property.propertyType === "multi_actor"
   ) {
-    const options: SelectOption[] = property.config.options.map((option) => ({
-      value: option.id,
-      label: option.name,
-    }));
-    const selectValue =
-      property.propertyType === "multi_select"
-        ? Array.isArray(value)
-          ? value.filter((entry): entry is string => typeof entry === "string")
-          : []
-        : typeof value === "string"
-          ? value
-          : undefined;
+    const isActor =
+      property.propertyType === "actor" ||
+      property.propertyType === "multi_actor";
+    const isMultiple =
+      property.propertyType === "multi_select" ||
+      property.propertyType === "multi_actor";
+    const options: SelectOption[] = isActor
+      ? members.map((member) => ({
+          value: `member:${member.id}`,
+          label: member.name,
+        }))
+      : property.config.options.map((option) => ({
+          value: option.id,
+          label: option.name,
+        }));
+    const selectValue = isMultiple
+      ? Array.isArray(value)
+        ? value.filter((entry): entry is string => typeof entry === "string")
+        : []
+      : typeof value === "string"
+        ? value
+        : "";
     return (
       <Select
         value={selectValue}
-        mode={property.propertyType === "multi_select" ? "multiple" : "single"}
+        mode={isMultiple ? "multiple" : "single"}
         options={options}
         allowClear
         disabled={disabled}
@@ -144,6 +186,7 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
   projectSlug,
   orgId,
   shortId,
+  members,
   editable,
 }) => {
   const { t } = useTranslation("projects");
@@ -159,7 +202,8 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
         : null,
     [projectSlug, resolvedOrgId, shortId]
   );
-  const [definitions, setDefinitions] = useState<PropertyDefinition[]>([]);
+  const { data: definitions, refresh: refreshDefinitions } =
+    usePropertyDefinitions(resolvedOrgId, Boolean(scope));
   const [values, setValues] = useState<WorkItemPropertyValue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [busyPropertyId, setBusyPropertyId] = useState<string | null>(null);
@@ -168,32 +212,57 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
   const [draftName, setDraftName] = useState("");
   const [draftType, setDraftType] = useState<PropertyType>("text");
   const [draftOptions, setDraftOptions] = useState("");
+  const [memberSnapshot, setMemberSnapshot] =
+    useState<PropertyMemberSnapshot | null>(null);
+  const loadGenerationRef = useRef(0);
+  const memberScopeKey = `${resolvedOrgId}:${projectSlug ?? "-"}`;
+  const propertyMembers = useMemo(
+    () =>
+      resolvePropertyMembers(
+        projectSlug,
+        memberScopeKey,
+        memberSnapshot,
+        members
+      ),
+    [memberScopeKey, memberSnapshot, members, projectSlug]
+  );
 
   const reload = useCallback(async () => {
+    const generation = loadGenerationRef.current + 1;
+    loadGenerationRef.current = generation;
     if (!scope) {
-      setDefinitions([]);
       setValues([]);
+      setMemberSnapshot(null);
       setIsLoading(false);
       return;
     }
     setIsLoading(true);
     try {
-      const [nextDefinitions, nextValues] = await Promise.all([
-        projectApi.listPropertyDefinitions(scope.orgId),
+      const [nextValues, nextMembers] = await Promise.all([
         projectApi.listWorkItemPropertyValues(scope),
+        projectSlug
+          ? projectApi
+              .readMembers(projectSlug)
+              .then((result) => activeMemberEntriesToPeople(result.members))
+          : Promise.resolve(members),
       ]);
-      setDefinitions(nextDefinitions);
+      if (loadGenerationRef.current !== generation) return;
       setValues(nextValues);
+      setMemberSnapshot({ scopeKey: memberScopeKey, members: nextMembers });
       setError(null);
     } catch (cause) {
+      if (loadGenerationRef.current !== generation) return;
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
-      setIsLoading(false);
+      if (loadGenerationRef.current === generation) setIsLoading(false);
     }
-  }, [scope]);
+  }, [memberScopeKey, members, projectSlug, scope]);
 
   useEffect(() => {
     void reload();
+    return () => {
+      loadGenerationRef.current += 1;
+    };
   }, [reload]);
 
   const valuesByPropertyId = useMemo(
@@ -261,7 +330,7 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
       setDraftOptions("");
       setDraftType("text");
       setShowCreate(false);
-      await reload();
+      await Promise.all([refreshDefinitions(), reload()]);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -272,6 +341,7 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
     draftName,
     draftOptions,
     draftType,
+    refreshDefinitions,
     reload,
     resolvedOrgId,
     t,
@@ -281,171 +351,193 @@ const CustomPropertiesSection: React.FC<CustomPropertiesSectionProps> = ({
     async (propertyId: string) => {
       setBusyPropertyId(propertyId);
       try {
-        await projectApi.archivePropertyDefinition(propertyId);
-        await reload();
+        await projectApi.archivePropertyDefinition(propertyId, resolvedOrgId);
+        await Promise.all([refreshDefinitions(), reload()]);
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : String(cause));
       } finally {
         setBusyPropertyId(null);
       }
     },
-    [reload]
+    [refreshDefinitions, reload, resolvedOrgId]
   );
 
   if (!scope) return null;
 
   return (
-    <section
-      className="flex flex-col gap-3 rounded-xl border border-border-1 bg-bg-2 p-3"
-      data-testid="work-item-custom-properties"
-      aria-label={t("workItems.properties.title", {
-        defaultValue: "Custom properties",
-      })}
-    >
-      <div className="flex min-h-7 items-center justify-between gap-3">
-        <h3 className="text-sm font-medium text-text-1">
+    <WorkItemThreadSection
+      testId="work-item-custom-properties"
+      icon={
+        <HugeiconsIcon
+          icon={ListChevronsDownUpIcon}
+          data-icon="list-chevrons-up-down"
+          size={14}
+          strokeWidth={1.8}
+          className="shrink-0 text-text-3"
+          aria-hidden
+        />
+      }
+      title={
+        <span className="font-normal">
           {t("workItems.properties.title", {
             defaultValue: "Custom properties",
           })}
-        </h3>
-        {editable ? (
-          <Button
-            variant="tertiary"
-            appearance="ghost"
-            size="mini"
-            icon={showCreate ? <X size={13} /> : <Plus size={13} />}
+        </span>
+      }
+      action={
+        editable ? (
+          <ActivityHeaderActionButton
+            icon={
+              showCreate ? (
+                <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />
+              ) : (
+                <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={12} />
+              )
+            }
+            label={
+              showCreate
+                ? t("common:actions.cancel", { defaultValue: "Cancel" })
+                : t("workItems.properties.add", {
+                    defaultValue: "Add property",
+                  })
+            }
             onClick={() => setShowCreate((current) => !current)}
             data-testid="work-item-property-add-toggle"
+          />
+        ) : null
+      }
+    >
+      <div className="flex flex-col gap-2">
+        {error ? (
+          <PageNotice
+            type="danger"
+            title={t("workItems.properties.updateFailed", {
+              defaultValue: "Property update failed",
+            })}
           >
-            {showCreate
-              ? t("common:actions.cancel", { defaultValue: "Cancel" })
-              : t("workItems.properties.add", { defaultValue: "Add property" })}
-          </Button>
+            {error}
+          </PageNotice>
         ) : null}
-      </div>
 
-      {error ? (
-        <InlineAlert
-          type="danger"
-          title={t("workItems.properties.updateFailed", {
-            defaultValue: "Property update failed",
-          })}
-        >
-          {error}
-        </InlineAlert>
-      ) : null}
-
-      {showCreate ? (
-        <div
-          className="grid grid-cols-1 gap-2 rounded-lg bg-fill-1 p-3 md:grid-cols-2"
-          data-testid="work-item-property-create-form"
-        >
-          <Input
-            value={draftName}
-            onChange={setDraftName}
-            size="small"
-            placeholder={t("workItems.properties.namePlaceholder", {
-              defaultValue: "Property name",
-            })}
-            data-testid="work-item-property-name"
-          />
-          <Select
-            value={draftType}
-            options={typeOptions}
-            size="small"
-            ariaLabel={t("workItems.properties.type", {
-              defaultValue: "Property type",
-            })}
-            dataTestId="work-item-property-type"
-            onChange={(value) => setDraftType(value as PropertyType)}
-          />
-          {draftType === "select" || draftType === "multi_select" ? (
+        {showCreate ? (
+          <div
+            className="grid grid-cols-1 gap-2 rounded-lg bg-fill-1 p-2 md:grid-cols-2"
+            data-testid="work-item-property-create-form"
+          >
             <Input
-              value={draftOptions}
-              onChange={setDraftOptions}
+              value={draftName}
+              onChange={setDraftName}
               size="small"
-              placeholder={t("workItems.properties.optionsPlaceholder", {
-                defaultValue: "Options, comma separated",
+              placeholder={t("workItems.properties.namePlaceholder", {
+                defaultValue: "Property name",
               })}
-              className="md:col-span-2"
-              data-testid="work-item-property-options"
+              data-testid="work-item-property-name"
             />
-          ) : null}
-          <div className="flex justify-end md:col-span-2">
-            <Button
-              variant="primary"
+            <Select
+              value={draftType}
+              options={typeOptions}
               size="small"
-              onClick={() => void handleCreate()}
-              loading={busyPropertyId === "new"}
-              disabled={!draftName.trim()}
-              data-testid="work-item-property-create"
-            >
-              {t("common:actions.create", { defaultValue: "Create" })}
-            </Button>
-          </div>
-        </div>
-      ) : null}
-
-      {isLoading ? (
-        <p className="text-sm text-text-3">
-          {t("workItems.properties.loading", {
-            defaultValue: "Loading properties…",
-          })}
-        </p>
-      ) : definitions.length === 0 ? (
-        <p className="text-sm text-text-3">
-          {t("workItems.properties.empty", {
-            defaultValue: "No custom properties yet.",
-          })}
-        </p>
-      ) : (
-        <div className="flex flex-col divide-y divide-border-1">
-          {definitions.map((property) => (
-            <div
-              key={property.id}
-              className="flex items-center gap-3 py-2 first:pt-0 last:pb-0"
-            >
-              <div className="w-36 shrink-0">
-                <p className="truncate text-sm font-medium text-text-2">
-                  {property.name}
-                </p>
-                <p className="text-xs capitalize text-text-4">
-                  {property.propertyType.replace("_", " ")}
-                </p>
-              </div>
-              <div className="min-w-0 flex-1">
-                <PropertyValueEditor
-                  key={`${property.id}:${JSON.stringify(valuesByPropertyId.get(property.id))}`}
-                  property={property}
-                  value={valuesByPropertyId.get(property.id)}
-                  disabled={!editable || busyPropertyId === property.id}
-                  onSave={(value) => handleSaveValue(property.id, value)}
-                />
-              </div>
-              {editable ? (
-                <Button
-                  variant="tertiary"
-                  appearance="ghost"
-                  size="mini"
-                  shape="circle"
-                  iconOnly
-                  icon={<Archive size={13} />}
-                  title={t("workItems.properties.archive", {
-                    defaultValue: "Archive property",
-                  })}
-                  aria-label={t("workItems.properties.archiveNamed", {
-                    defaultValue: `Archive ${property.name}`,
-                    name: property.name,
-                  })}
-                  onClick={() => void handleArchive(property.id)}
-                  disabled={busyPropertyId === property.id}
-                />
-              ) : null}
+              ariaLabel={t("workItems.properties.type", {
+                defaultValue: "Property type",
+              })}
+              dataTestId="work-item-property-type"
+              onChange={(value) => setDraftType(value as PropertyType)}
+            />
+            {draftType === "select" || draftType === "multi_select" ? (
+              <Input
+                value={draftOptions}
+                onChange={setDraftOptions}
+                size="small"
+                placeholder={t("workItems.properties.optionsPlaceholder", {
+                  defaultValue: "Options, comma separated",
+                })}
+                className="md:col-span-2"
+                data-testid="work-item-property-options"
+              />
+            ) : null}
+            <div className="flex justify-end md:col-span-2">
+              <Button
+                variant="primary"
+                size="small"
+                onClick={() => void handleCreate()}
+                loading={busyPropertyId === "new"}
+                disabled={!draftName.trim()}
+                data-testid="work-item-property-create"
+              >
+                {t("common:actions.create", { defaultValue: "Create" })}
+              </Button>
             </div>
-          ))}
-        </div>
-      )}
-    </section>
+          </div>
+        ) : null}
+
+        {isLoading ? (
+          <p className="px-0 py-2 text-[12px] text-text-3">
+            {t("workItems.properties.loading", {
+              defaultValue: "Loading properties…",
+            })}
+          </p>
+        ) : definitions.length === 0 ? (
+          <p className="px-0 py-2 text-[12px] text-text-3">
+            {t("workItems.properties.empty", {
+              defaultValue: "No custom properties yet.",
+            })}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-0.5">
+            {definitions.map((property) => (
+              <div
+                key={property.id}
+                className={`flex min-h-8 items-center gap-3 rounded-lg ${WORK_ITEM_THREAD_TOKENS.alignedRowPadding}`}
+              >
+                <div className="w-36 shrink-0">
+                  <p className="truncate text-[13px] leading-5 font-medium text-text-2">
+                    {property.name}
+                  </p>
+                  <p className="text-[11px] leading-4 text-text-4 capitalize">
+                    {property.propertyType.replace("_", " ")}
+                  </p>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <PropertyValueEditor
+                    key={`${property.id}:${JSON.stringify(valuesByPropertyId.get(property.id))}`}
+                    property={property}
+                    value={valuesByPropertyId.get(property.id)}
+                    members={propertyMembers}
+                    disabled={!editable || busyPropertyId === property.id}
+                    onSave={(value) => handleSaveValue(property.id, value)}
+                  />
+                </div>
+                {editable ? (
+                  <Button
+                    variant="tertiary"
+                    appearance="ghost"
+                    size="mini"
+                    shape="circle"
+                    iconOnly
+                    icon={
+                      <HugeiconsIcon
+                        icon={ArchiveIcon}
+                        data-icon="archive"
+                        size={13}
+                      />
+                    }
+                    title={t("workItems.properties.archive", {
+                      defaultValue: "Archive property",
+                    })}
+                    aria-label={t("workItems.properties.archiveNamed", {
+                      defaultValue: `Archive ${property.name}`,
+                      name: property.name,
+                    })}
+                    onClick={() => void handleArchive(property.id)}
+                    disabled={busyPropertyId === property.id}
+                  />
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </WorkItemThreadSection>
   );
 };
 

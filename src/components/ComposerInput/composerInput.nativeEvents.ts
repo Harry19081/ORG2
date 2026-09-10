@@ -2,15 +2,16 @@
  * Native DOM event wiring for ComposerInput.
  *
  * Attaches the contenteditable host's non-React-synthesized event listeners
- * (composition, `beforeinput`, paste, drop, dragover, cut, copy, keydown)
- * plus the document-level `selectionchange` listener that keeps pill
- * "covered by selection" styling in sync, and tears them all down on
- * cleanup. Kept as one effect so the listener wiring/teardown pairing stays
+ * (composition, `beforeinput`, paste, drop, dragover, cut, copy, keydown,
+ * the app-level Edit → Undo/Redo commands) plus the document-level
+ * `selectionchange` listener that keeps pill "covered by selection" styling
+ * in sync, and tears them all down on cleanup. Kept as one effect so the listener wiring/teardown pairing stays
  * easy to audit.
  */
 import { useEffect } from "react";
 
 import { hasReferenceDragData } from "@src/shared/dnd/referenceDragData";
+import { EDIT_HISTORY_EVENT } from "@src/util/dom/editHistoryCommand";
 
 import { removePillForDeleteDirection } from "./keyboard";
 import type { UseEditorOperationsResult } from "./useEditorOperations";
@@ -49,6 +50,14 @@ export function useComposerNativeEvents({
   redoAndNotify,
   updateCoveredPillSelection,
 }: UseComposerNativeEventsParams): void {
+  const {
+    markHistoryBoundary,
+    commitHistoryBoundary,
+    reconcilePillsFromDom,
+    insertTextAtCaret,
+    insertNewline,
+  } = ops;
+
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
@@ -60,7 +69,22 @@ export function useComposerNativeEvents({
       compositionEndedAtRef.current = performance.now();
     };
     const handleBeforeInput = (event: InputEvent) => {
-      if (isComposingRef.current) return;
+      if (isComposingRef.current || event.isComposing) return;
+
+      // Soft keyboards and native editing commands can insert line breaks
+      // without keydown. Use the same guarded operation as Enter/Shift+Enter.
+      if (
+        event.inputType === "insertParagraph" ||
+        event.inputType === "insertLineBreak"
+      ) {
+        if (!event.cancelable) return;
+        event.preventDefault();
+        markHistoryBoundary();
+        const inserted = insertNewline();
+        commitHistoryBoundary();
+        if (inserted) handleInput();
+        return;
+      }
 
       // WebKit may express Edit → Undo/Redo (including Cmd+Z) solely as a
       // beforeinput history event. Browser-native history cannot restore
@@ -77,15 +101,15 @@ export function useComposerNativeEvents({
         return;
       }
 
-      ops.markHistoryBoundary();
+      markHistoryBoundary();
       if (event.inputType.startsWith("deleteContent")) {
         const direction = event.inputType.endsWith("Forward")
           ? "forward"
           : "backward";
         if (removePillForDeleteDirection(host, direction, false)) {
           event.preventDefault();
-          ops.reconcilePillsFromDom();
-          ops.commitHistoryBoundary();
+          reconcilePillsFromDom();
+          commitHistoryBoundary();
           handleInput();
           return;
         }
@@ -94,16 +118,16 @@ export function useComposerNativeEvents({
         const sanitized = sanitizeText(event.data);
         if (sanitized !== event.data) {
           event.preventDefault();
-          if (sanitized) ops.insertTextAtCaret(sanitized);
-          ops.commitHistoryBoundary();
+          if (sanitized) insertTextAtCaret(sanitized);
+          commitHistoryBoundary();
           handleInput();
         }
       }
     };
     const handlePasteEvent = (event: ClipboardEvent) => {
-      ops.markHistoryBoundary();
+      markHistoryBoundary();
       if (handlePaste(event)) {
-        ops.commitHistoryBoundary();
+        commitHistoryBoundary();
         handleInput();
       }
     };
@@ -114,9 +138,9 @@ export function useComposerNativeEvents({
       // also insert the file name/path as raw text would corrupt the editor
       // and, in certain timing windows, produce an empty conversation round.
       event.preventDefault();
-      ops.markHistoryBoundary();
+      markHistoryBoundary();
       if (handleDrop(event)) {
-        ops.commitHistoryBoundary();
+        commitHistoryBoundary();
         handleInput();
       }
     };
@@ -131,6 +155,21 @@ export function useComposerNativeEvents({
     };
     const handleCutEvent = (event: ClipboardEvent) => {
       handleCut(event);
+    };
+    // Edit → Undo/Redo arriving from the native app menu (macOS) or the
+    // Windows top bar. Those surfaces cannot reach the composer through
+    // keydown, and WebKit's own `historyUndo` only fires when the browser's
+    // undo manager holds an entry, which a programmatic paste or pill insert
+    // never creates. Always consume the command here: browser-native history
+    // cannot restore React-backed pills, so falling back to it would corrupt
+    // the document rather than help.
+    const handleUndoCommand = (event: Event) => {
+      event.preventDefault();
+      undoAndNotify();
+    };
+    const handleRedoCommand = (event: Event) => {
+      event.preventDefault();
+      redoAndNotify();
     };
     const handleCopyEvent = (event: ClipboardEvent) => {
       const selection = window.getSelection();
@@ -151,6 +190,8 @@ export function useComposerNativeEvents({
     host.addEventListener("cut", handleCutEvent);
     host.addEventListener("copy", handleCopyEvent);
     host.addEventListener("keydown", handleKeyDown);
+    host.addEventListener(EDIT_HISTORY_EVENT.undo, handleUndoCommand);
+    host.addEventListener(EDIT_HISTORY_EVENT.redo, handleRedoCommand);
     document.addEventListener("selectionchange", updateCoveredPillSelection);
     return () => {
       host.removeEventListener("compositionstart", handleCompositionStart);
@@ -162,16 +203,22 @@ export function useComposerNativeEvents({
       host.removeEventListener("cut", handleCutEvent);
       host.removeEventListener("copy", handleCopyEvent);
       host.removeEventListener("keydown", handleKeyDown);
+      host.removeEventListener(EDIT_HISTORY_EVENT.undo, handleUndoCommand);
+      host.removeEventListener(EDIT_HISTORY_EVENT.redo, handleRedoCommand);
       document.removeEventListener(
         "selectionchange",
         updateCoveredPillSelection
       );
     };
-    // ops is stable (object from useEditorOperations never changes identity).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     hostRef,
-    ops.insertTextAtCaret,
+    isComposingRef,
+    compositionEndedAtRef,
+    markHistoryBoundary,
+    commitHistoryBoundary,
+    reconcilePillsFromDom,
+    insertTextAtCaret,
+    insertNewline,
     handlePaste,
     handleDrop,
     handleCut,

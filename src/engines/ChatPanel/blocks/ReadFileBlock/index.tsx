@@ -6,17 +6,17 @@
  * compact row shape as attempted edits instead of rendering a separate red
  * error row.
  */
-import { Briefcase } from "lucide-react";
 import React, { useMemo } from "react";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { getToolIcon } from "@src/config/toolIcons";
-import { extractFileData } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
+import { extractFileData } from "@src/engines/SessionCore/rendering/props/fileExtractors";
 import {
   statusToLifecycle,
   useToolLabelText,
 } from "@src/engines/SessionCore/rendering/registry";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
+import { Briefcase01Icon, HugeiconsIcon } from "@src/icons";
 import { getFileName } from "@src/util/file/pathUtils";
 import { extractSkillNameFromPath } from "@src/util/skills/skillPath";
 
@@ -33,7 +33,7 @@ import {
 } from "../primitives";
 import { useBlockHeader } from "../useBlockLocate";
 
-export type ReadFileBlockProps = UniversalEventProps & {
+type ReadFileBlockProps = UniversalEventProps & {
   title?: string;
 };
 
@@ -80,7 +80,9 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
   const toolIcon = useMemo(
     () =>
       isSkill ? (
-        <Briefcase
+        <HugeiconsIcon
+          icon={Briefcase01Icon}
+          data-icon="briefcase"
           size={SESSION_UI_TOKENS.ICON.SIZE_SM}
           className="text-text-2"
         />
@@ -98,7 +100,6 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
       <EventBlockHeader
         isCollapsed
         withHover={false}
-        onClick={handleLocate}
         onNavigate={handleLocate}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}
@@ -113,7 +114,6 @@ export const ReadFileBlock: React.FC<ReadFileBlockProps> = (props) => {
           isCollapsed
           isHeaderHovered={isHeaderHovered}
           hasContent={false}
-          revealChevronOnIconHoverOnly={Boolean(eventId)}
           isLoading={isLoading}
           isFailed={isFailed}
         />

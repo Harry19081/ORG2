@@ -1,31 +1,26 @@
-import { Globe, SquareArrowOutUpRight } from "lucide-react";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import InlineAlert from "@src/components/InlineAlert";
+import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
+import PageNotice from "@src/components/PageNotice";
+import { Placeholder } from "@src/components/Placeholder";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
+import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
   type ManagedPrItem,
   getManagedPullRequestKey,
 } from "@src/modules/MainApp/WorkManagement/githubManagedItemModel";
-import SplitViewLayout from "@src/modules/shared/layouts/SplitViewLayout";
-import { LoadingBar, Placeholder } from "@src/modules/shared/layouts/blocks";
+import InboxListDetailLayout from "@src/modules/shared/layouts/InboxListDetailLayout";
+import SplitListFullscreenButton from "@src/modules/shared/layouts/SplitListFullscreenButton";
+import SplitListHeader from "@src/modules/shared/layouts/SplitListHeader";
 import { normalizePrStatus } from "@src/shared/pr/prStatus";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { WorkItem } from "@src/types/core/workItem";
-import { openExternalLink } from "@src/util/platform/ipcRenderer";
 
-import {
-  AssignedWorkItemDetail,
-  CommentMentionDetail,
-  TeamInboxList,
-} from "./components";
-import TeamInboxHeaderIconAction from "./components/TeamInboxHeaderIconAction";
+import { useWorkManagementSplitHeader } from "../WorkManagement/workManagementSplitHeaderContext";
+import { TeamInboxList } from "./components";
+import { TeamInboxDetailPane } from "./components/TeamInboxDetailPane";
+import { TeamInboxListControls } from "./components/TeamInboxList";
 import TeamInboxSessionDropSurface from "./components/TeamInboxSessionDropSurface";
 import {
   type TeamInboxDataSource,
@@ -33,20 +28,20 @@ import {
   type TeamInboxIssue,
   type TeamInboxItem,
   type TeamInboxNavigationIntent,
-  type TeamInboxPage,
-  type TeamInboxUnreadCounts,
   countUnreadTeamInboxItemsByFilter,
   getTeamInboxItemKey,
+  reconcileWorkItemUpdate,
   searchTeamInboxItems,
   selectTeamInboxItems,
-  toTeamInboxNavigationIntent,
 } from "./domain";
 import {
   INITIAL_TEAM_INBOX_VIEW_STATE,
   type TeamInboxItemFocusRequest,
   type TeamInboxViewState,
 } from "./store";
-import { performTeamInboxReadTransition } from "./teamInboxReadTransitions";
+import { useTeamInboxMutePreferences } from "./useTeamInboxMutePreferences";
+import { useTeamInboxPagination } from "./useTeamInboxPagination";
+import { useTeamInboxReadActions } from "./useTeamInboxReadActions";
 
 export interface TeamInboxViewProps {
   dataSource?: TeamInboxDataSource;
@@ -60,45 +55,18 @@ export interface TeamInboxViewProps {
   viewerMemberIds?: readonly string[];
   pullRequests?: readonly ManagedPrItem[];
   pullRequestsLoading?: boolean;
+  pullRequestsInitialLoading?: boolean;
   pullRequestsError?: string | null;
   onRefreshPullRequests?: () => void;
   /** Explicit header action; row selection always stays in the right pane. */
   onOpenPullRequestTab?: (pullRequest: ManagedPrItem) => void;
 }
 
-const PullRequestDetailPanel = React.lazy(() =>
-  import("@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/PullRequestContent/detail/PrDetailPanel").then(
-    (module) => ({ default: module.PrDetailPanel })
-  )
-);
-
 const EMPTY_TEAM_INBOX_DATA_SOURCE: TeamInboxDataSource = {
   async listPage() {
     return { items: [], nextCursor: null };
   },
 };
-
-interface LoadState {
-  status: "loading" | "ready" | "warning" | "error";
-  message: string | null;
-}
-
-function loadStateForPage(
-  page: TeamInboxPage,
-  issueMessage: (issue: TeamInboxIssue) => string
-): LoadState {
-  if (page.issue) {
-    return {
-      status: page.issue.code === "partial_load" ? "warning" : "error",
-      message: issueMessage(page.issue),
-    };
-  }
-  // A retained snapshot remains usable while it revalidates. Only an empty
-  // scope needs a blocking loading state.
-  return page.loading && page.items.length === 0
-    ? { status: "loading", message: null }
-    : { status: "ready", message: null };
-}
 
 const TeamInboxView: React.FC<TeamInboxViewProps> = ({
   dataSource = EMPTY_TEAM_INBOX_DATA_SOURCE,
@@ -111,11 +79,14 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
   viewerMemberIds = [],
   pullRequests = [],
   pullRequestsLoading = false,
+  pullRequestsInitialLoading = pullRequestsLoading,
   pullRequestsError = null,
   onRefreshPullRequests,
   onOpenPullRequestTab,
 }) => {
   const { t } = useTranslation();
+  const { splitDatasetControl, surfaceDatasetControl } =
+    useWorkManagementSplitHeader();
   const issueMessage = useCallback(
     (issue: TeamInboxIssue): string => {
       if (issue.code === "identity_unresolved") {
@@ -128,15 +99,19 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
     },
     [t]
   );
-  const [initialPage] = useState<TeamInboxPage | null>(
-    () => dataSource.getSnapshot?.() ?? null
-  );
   const [internalViewState, setInternalViewState] =
     useState<TeamInboxViewState>(() => ({
       ...INITIAL_TEAM_INBOX_VIEW_STATE,
       filter: initialFilter,
     }));
   const viewState = controlledViewState ?? internalViewState;
+  const focusRequestActive =
+    focusRequest !== null &&
+    focusRequest.requestId !== viewState.supersededFocusRequestId;
+  const listMode =
+    !focusRequestActive && viewState.filter === "archived"
+      ? "archived"
+      : "active";
   const updateViewState = useCallback(
     (update: React.SetStateAction<TeamInboxViewState>) => {
       if (controlledViewState) {
@@ -149,69 +124,63 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
     },
     [controlledViewState, onViewStateChange]
   );
-  const [items, setItems] = useState<TeamInboxItem[]>(
-    () => initialPage?.items ?? []
-  );
-  const [authoritativeUnreadCounts, setAuthoritativeUnreadCounts] =
-    useState<TeamInboxUnreadCounts | null>(
-      () => initialPage?.unreadCounts ?? null
-    );
-  const [loadState, setLoadState] = useState<LoadState>(() =>
-    initialPage
-      ? loadStateForPage(initialPage, issueMessage)
-      : { status: "loading", message: null }
-  );
-  const [reloadRevision, setReloadRevision] = useState(0);
+  const {
+    items,
+    setItems,
+    itemsMode,
+    authoritativeUnreadCounts,
+    loadState,
+    setLoadState,
+    initialLoading: inboxInitialLoading,
+    reloadRevision,
+    hasMore,
+    loadingMore,
+    handleLoadMore,
+    handleRefresh,
+  } = useTeamInboxPagination({
+    dataSource,
+    listMode,
+    pageSize,
+    issueMessage,
+    t,
+    onRefreshPullRequests,
+  });
+  const {
+    mutedKinds,
+    mutePreferencesLoading,
+    handleLoadMutePreferences,
+    handleSetKindMuted,
+  } = useTeamInboxMutePreferences({ dataSource, t, setLoadState });
+  const [dispositionPendingKey, setDispositionPendingKey] = useState<
+    string | null
+  >(null);
   const [dismissedLoadNoticeKey, setDismissedLoadNoticeKey] = useState<
     string | null
   >(null);
-  const [hasMore, setHasMore] = useState(() => initialPage?.nextCursor != null);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const focusRequestId = focusRequest?.requestId ?? null;
+  // Full-list presentation belongs to the current explicit selection. A new
+  // notification reveals its detail; users can still expand the list afterward.
+  const [fullscreenSelection, setFullscreenSelection] = useState<{
+    focusRequestId: number | null;
+  } | null>(null);
+  const listFullscreen = fullscreenSelection?.focusRequestId === focusRequestId;
+  const setListFullscreen = useCallback(
+    (enabled: boolean) =>
+      setFullscreenSelection(enabled ? { focusRequestId } : null),
+    [focusRequestId]
+  );
+  const initialCombinedLoadPending =
+    inboxInitialLoading || pullRequestsInitialLoading;
+  const presentedItems = useMemo(
+    () => (initialCombinedLoadPending || itemsMode !== listMode ? [] : items),
+    [initialCombinedLoadPending, items, itemsMode, listMode]
+  );
+  const presentedPullRequests = useMemo(
+    () => (initialCombinedLoadPending ? [] : pullRequests),
+    [initialCombinedLoadPending, pullRequests]
+  );
   const mountedRef = useRef(true);
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    void dataSource
-      .listPage({ limit: pageSize, signal: abortController.signal })
-      .then((page) => {
-        if (abortController.signal.aborted) return;
-        setItems(page.items);
-        setAuthoritativeUnreadCounts(page.unreadCounts ?? null);
-        setHasMore(page.nextCursor != null);
-        const nextLoadState = loadStateForPage(page, issueMessage);
-        setLoadState((current) =>
-          current.status === nextLoadState.status &&
-          current.message === nextLoadState.message
-            ? current
-            : nextLoadState
-        );
-      })
-      .catch((reason: unknown) => {
-        if (abortController.signal.aborted) return;
-        setLoadState({
-          status: "error",
-          message:
-            reason instanceof Error
-              ? "issue" in reason &&
-                reason.issue &&
-                typeof reason.issue === "object" &&
-                "code" in reason.issue
-                ? issueMessage(reason.issue as TeamInboxIssue)
-                : reason.message
-              : t("teamInbox.errors.load"),
-        });
-      });
-
-    return () => abortController.abort();
-  }, [dataSource, issueMessage, pageSize, reloadRevision, t]);
+  useMountedCleanup(mountedRef);
 
   const loadNoticeKey =
     (loadState.status === "error" || loadState.status === "warning") &&
@@ -223,16 +192,6 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
     setDismissedLoadNoticeKey(loadNoticeKey);
   }, [loadNoticeKey]);
 
-  useEffect(() => {
-    if (!dataSource.subscribe) return;
-    return dataSource.subscribe(() => {
-      setReloadRevision((value) => value + 1);
-    });
-  }, [dataSource]);
-
-  const focusRequestActive =
-    focusRequest !== null &&
-    focusRequest.requestId !== viewState.supersededFocusRequestId;
   const visibleFilter = focusRequestActive ? "all" : viewState.filter;
   const visibleQuery = focusRequestActive ? "" : viewState.query;
   const requestedItemId = focusRequestActive
@@ -241,25 +200,32 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
   const visibleItems = useMemo(
     () =>
       searchTeamInboxItems(
-        selectTeamInboxItems(items, visibleFilter),
+        selectTeamInboxItems(presentedItems, visibleFilter),
         visibleQuery
       ),
-    [items, visibleFilter, visibleQuery]
+    [presentedItems, visibleFilter, visibleQuery]
   );
   const loadedUnreadCounts = useMemo(
-    () => countUnreadTeamInboxItemsByFilter(items),
-    [items]
+    () => countUnreadTeamInboxItemsByFilter(presentedItems),
+    [presentedItems]
   );
-  const unreadCounts = authoritativeUnreadCounts ?? loadedUnreadCounts;
-  const totalUnread = unreadCounts.all;
+  const unreadCounts = initialCombinedLoadPending
+    ? loadedUnreadCounts
+    : (authoritativeUnreadCounts ?? loadedUnreadCounts);
   const selectedPullRequest = useMemo(
     () =>
-      pullRequests.find(
-        (pullRequest) =>
-          getManagedPullRequestKey(pullRequest) ===
-          viewState.selectedPullRequestKey
-      ) ?? null,
-    [pullRequests, viewState.selectedPullRequestKey]
+      focusRequestActive
+        ? null
+        : (presentedPullRequests.find(
+            (pullRequest) =>
+              getManagedPullRequestKey(pullRequest) ===
+              viewState.selectedPullRequestKey
+          ) ?? null),
+    [
+      focusRequestActive,
+      presentedPullRequests,
+      viewState.selectedPullRequestKey,
+    ]
   );
   const selectedPullRequestIdentity = useMemo<PrIdentity | null>(
     () =>
@@ -292,172 +258,149 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
       ? getTeamInboxItemKey(selectedItem)
       : null;
 
-  const markItemRead = useCallback(
+  const { handleMarkRead, handleMarkUnread, handleMarkAllRead } =
+    useTeamInboxReadActions({
+      dataSource,
+      t,
+      setLoadState,
+      selectedItem,
+      selectedPullRequest,
+      visibleFilter,
+      unreadCounts,
+    });
+
+  const handleSelect = useCallback(
     (item: TeamInboxItem) => {
-      if (item.readAt !== null) return;
-      void performTeamInboxReadTransition("read", item, dataSource).then(
-        (result) => {
-          if (!result.ok) {
-            setLoadState({
-              status: "error",
-              message: t("teamInbox.errors.markRead"),
-            });
-          }
-        }
-      );
+      // A selected item must reveal its detail even if the user had expanded
+      // the list into its full-width presentation.
+      setListFullscreen(false);
+      updateViewState((current) => ({
+        ...current,
+        filter: focusRequestActive ? "all" : current.filter,
+        query: focusRequestActive ? "" : current.query,
+        detailPaneOpen: true,
+        selectedItemId: getTeamInboxItemKey(item),
+        selectedPullRequestKey: null,
+        supersededFocusRequestId: focusRequest?.requestId ?? null,
+      }));
     },
-    [dataSource, t]
+    [
+      focusRequest?.requestId,
+      focusRequestActive,
+      setListFullscreen,
+      updateViewState,
+    ]
   );
 
-  useEffect(() => {
-    if (!selectedPullRequest && selectedItem) markItemRead(selectedItem);
-  }, [markItemRead, selectedItem, selectedPullRequest]);
+  const handleQueryChange = useCallback(
+    (nextQuery: string) => {
+      updateViewState((current) => ({
+        ...current,
+        filter: focusRequestActive ? "all" : current.filter,
+        query: nextQuery,
+        supersededFocusRequestId: focusRequest?.requestId ?? null,
+      }));
+    },
+    [focusRequest?.requestId, focusRequestActive, updateViewState]
+  );
 
-  const handleLoadMore = () => {
-    if (!dataSource.loadMore || loadingMore) return;
-    setLoadingMore(true);
-    void dataSource
-      .loadMore()
-      .then(() => {
-        if (mountedRef.current) {
-          setReloadRevision((value) => value + 1);
-        }
-      })
-      .catch(() => {
-        setLoadState({
-          status: "error",
-          message: t("teamInbox.errors.loadMore"),
-        });
-      })
-      .finally(() => {
-        if (mountedRef.current) setLoadingMore(false);
-      });
-  };
-
-  const handleRefresh = () => {
-    onRefreshPullRequests?.();
-    setLoadState({ status: "loading", message: null });
-    if (!dataSource.refresh) {
-      setReloadRevision((value) => value + 1);
+  const handleSelectPullRequest = useCallback(
+    (pullRequest: ManagedPrItem) => {
+      // PR rows share the same full-list presentation as Inbox items.
+      setListFullscreen(false);
+      updateViewState((current) => ({
+        ...current,
+        detailPaneOpen: true,
+        selectedPullRequestKey: getManagedPullRequestKey(pullRequest),
+        supersededFocusRequestId: focusRequest?.requestId ?? null,
+      }));
+    },
+    [focusRequest?.requestId, setListFullscreen, updateViewState]
+  );
+  const handleCloseDetail = useCallback(() => {
+    setListFullscreen(false);
+    updateViewState((current) => ({
+      ...current,
+      detailPaneOpen: false,
+      supersededFocusRequestId:
+        focusRequest?.requestId ?? current.supersededFocusRequestId,
+    }));
+  }, [focusRequest?.requestId, setListFullscreen, updateViewState]);
+  const detailPaneOpen =
+    focusRequestActive || viewState.detailPaneOpen !== false;
+  const isListOnly = !detailPaneOpen || listFullscreen;
+  const handleToggleListPresentation = useCallback(() => {
+    if (!detailPaneOpen) {
+      setListFullscreen(false);
+      updateViewState((current) => ({
+        ...current,
+        detailPaneOpen: true,
+      }));
       return;
     }
-    void dataSource
-      .refresh()
-      .then(() => {
-        if (mountedRef.current) {
-          setReloadRevision((value) => value + 1);
-        }
-      })
-      .catch(() => {
-        setLoadState({
-          status: "error",
-          message: t("teamInbox.errors.refresh"),
-        });
-      });
-  };
+    setListFullscreen(!listFullscreen);
+  }, [detailPaneOpen, listFullscreen, setListFullscreen, updateViewState]);
+  // Every split presentation owns its controls in the left-column header.
+  const useSplitListHeader = detailPaneOpen && !listFullscreen;
 
-  const handleSelect = (item: TeamInboxItem) => {
-    updateViewState((current) => ({
-      ...current,
-      filter: focusRequestActive ? "all" : current.filter,
-      query: focusRequestActive ? "" : current.query,
-      selectedItemId: getTeamInboxItemKey(item),
-      selectedPullRequestKey: null,
-      supersededFocusRequestId: focusRequest?.requestId ?? null,
-    }));
-  };
-
-  const handleFilterChange = (nextFilter: TeamInboxFilter) => {
-    updateViewState((current) => ({
-      ...current,
-      filter: nextFilter,
-      query: focusRequestActive ? "" : current.query,
-      supersededFocusRequestId: focusRequest?.requestId ?? null,
-    }));
-  };
-
-  const handleQueryChange = (nextQuery: string) => {
-    updateViewState((current) => ({
-      ...current,
-      filter: focusRequestActive ? "all" : current.filter,
-      query: nextQuery,
-      supersededFocusRequestId: focusRequest?.requestId ?? null,
-    }));
-  };
-
-  const handleSelectPullRequest = (pullRequest: ManagedPrItem) => {
-    updateViewState((current) => ({
-      ...current,
-      selectedPullRequestKey: getManagedPullRequestKey(pullRequest),
-      supersededFocusRequestId: focusRequest?.requestId ?? null,
-    }));
-  };
-
-  const handleMarkRead = (item: TeamInboxItem) => {
-    markItemRead(item);
-  };
-
-  const handleMarkUnread = (item: TeamInboxItem) => {
-    if (item.readAt === null) return;
-    void performTeamInboxReadTransition("unread", item, dataSource).then(
-      (result) => {
-        if (!result.ok) {
+  const handleDisposition = useCallback(
+    (item: TeamInboxItem, archived: boolean) => {
+      const mutate = archived
+        ? dataSource.archiveItem
+        : dataSource.unarchiveItem;
+      if (!mutate || dispositionPendingKey) return;
+      const itemKey = getTeamInboxItemKey(item);
+      setDispositionPendingKey(itemKey);
+      void mutate(item)
+        .then(() => {
+          if (!mountedRef.current) return;
+          setItems((current) =>
+            current.filter(
+              (candidate) => getTeamInboxItemKey(candidate) !== itemKey
+            )
+          );
+          updateViewState((current) => ({
+            ...current,
+            selectedItemId:
+              current.selectedItemId === itemKey
+                ? null
+                : current.selectedItemId,
+          }));
+        })
+        .catch(() => {
+          if (!mountedRef.current) return;
           setLoadState({
             status: "error",
-            message: t("teamInbox.errors.markUnread"),
+            message: t(
+              archived
+                ? "teamInbox.errors.archive"
+                : "teamInbox.errors.unarchive"
+            ),
           });
-        }
-      }
-    );
-  };
-
-  const handleMarkAllRead = () => {
-    const filterUnreadCount =
-      visibleFilter === "all"
-        ? unreadCounts.all
-        : visibleFilter === "mentions"
-          ? unreadCounts.mentions
-          : unreadCounts.assigned;
-    if (filterUnreadCount === 0) return;
-    void dataSource.markAllRead?.([], visibleFilter).catch(() => {
-      setLoadState({
-        status: "error",
-        message: t("teamInbox.errors.markAllRead"),
-      });
-    });
-  };
+        })
+        .finally(() => {
+          if (mountedRef.current) setDispositionPendingKey(null);
+        });
+    },
+    [
+      dataSource,
+      dispositionPendingKey,
+      setItems,
+      setLoadState,
+      t,
+      updateViewState,
+    ]
+  );
 
   const handleWorkItemUpdated = useCallback(
     (sourceItem: TeamInboxItem, workItem: WorkItem) => {
       if (sourceItem.kind !== "assigned_work_item") return;
       const sourceKey = getTeamInboxItemKey(sourceItem);
-      const assignee = workItem.assignee;
-      const belongsToViewer = assignee
-        ? viewerMemberIds.length > 0
-          ? viewerMemberIds.includes(assignee.id)
-          : assignee.id === sourceItem.payload.assigneeMemberId
-        : false;
-      const status =
-        workItem.workItemStatus ?? workItem.status ?? sourceItem.payload.status;
-      const updatedAt = workItem.updated_time || sourceItem.payload.updatedAt;
-      const nextItem: TeamInboxItem | null =
-        assignee && belongsToViewer
-          ? {
-              ...sourceItem,
-              occurredAt: updatedAt,
-              payload: {
-                ...sourceItem.payload,
-                title: workItem.name || sourceItem.payload.title,
-                status,
-                priority: workItem.priority ?? sourceItem.payload.priority,
-                assigneeMemberId: assignee.id,
-                assigneeName: assignee.name,
-                summary: workItem.spec?.trim() || undefined,
-                handoff: workItem.handoff,
-                updatedAt,
-              },
-            }
-          : null;
+      const nextItem = reconcileWorkItemUpdate(
+        sourceItem,
+        workItem,
+        viewerMemberIds
+      );
       if (dataSource.reconcileItem) {
         dataSource.reconcileItem(sourceKey, nextItem);
         return;
@@ -472,111 +415,40 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
         )
       );
     },
-    [dataSource, viewerMemberIds]
+    [dataSource, setItems, viewerMemberIds]
   );
 
-  const detail = (() => {
-    if (selectedPullRequest && selectedPullRequestIdentity) {
-      return (
-        <React.Suspense fallback={<LoadingBar />}>
-          <PullRequestDetailPanel
-            identity={selectedPullRequestIdentity}
-            repoPath={selectedPullRequest.repoPath}
-            repoId={selectedPullRequest.repoId}
-            headerActions={
-              <div
-                className="flex items-center gap-px"
-                data-testid="team-inbox-pr-detail-actions"
-              >
-                <TeamInboxHeaderIconAction
-                  label={t("previews.openInBrowser")}
-                  icon={<Globe size={14} strokeWidth={1.75} aria-hidden />}
-                  onClick={() =>
-                    void openExternalLink(selectedPullRequestIdentity.url)
-                  }
-                  testId="team-inbox-open-github-pr"
-                />
-                {onOpenPullRequestTab ? (
-                  <TeamInboxHeaderIconAction
-                    label={t(
-                      "teamInbox.actions.openPullRequest",
-                      "Open pull request"
-                    )}
-                    icon={
-                      <SquareArrowOutUpRight
-                        size={14}
-                        strokeWidth={1.75}
-                        aria-hidden
-                      />
-                    }
-                    onClick={() => onOpenPullRequestTab(selectedPullRequest)}
-                    testId="team-inbox-open-pr-tab"
-                  />
-                ) : null}
-              </div>
-            }
-          />
-        </React.Suspense>
-      );
-    }
-    if (loadState.status === "loading") {
-      return <LoadingBar />;
-    }
-    if (loadState.status === "error" && items.length === 0) {
-      return (
-        <Placeholder
-          variant="error"
-          placement="detail-panel"
-          title={t("teamInbox.errors.loadTitle")}
-          subtitle={loadState.message ?? undefined}
-          action={{ label: t("common:actions.retry"), onClick: handleRefresh }}
-          fillParentHeight
-        />
-      );
-    }
-    if (!selectedItem) {
-      return (
-        <Placeholder
-          variant="empty"
-          placement="detail-panel"
-          title={t("teamInbox.empty.selectTitle")}
-          subtitle={t("teamInbox.empty.selectSubtitle")}
-          fillParentHeight
-        />
-      );
-    }
-    if (selectedItem.kind === "comment_mention") {
-      return (
-        <CommentMentionDetail
-          item={selectedItem}
-          onMarkRead={dataSource.markRead ? handleMarkRead : undefined}
-          onMarkUnread={dataSource.markUnread ? handleMarkUnread : undefined}
-          onNavigate={
-            onNavigate
-              ? () => onNavigate(toTeamInboxNavigationIntent(selectedItem))
-              : undefined
-          }
-        />
-      );
-    }
-    return (
-      <AssignedWorkItemDetail
-        item={selectedItem}
-        onMarkRead={dataSource.markRead ? handleMarkRead : undefined}
-        onMarkUnread={dataSource.markUnread ? handleMarkUnread : undefined}
-        onNavigate={onNavigate}
-        onWorkItemUpdated={(workItem) =>
-          handleWorkItemUpdated(selectedItem, workItem)
-        }
-      />
-    );
-  })();
+  const detailLoadState = initialCombinedLoadPending
+    ? { status: "loading" as const, message: null }
+    : loadState;
+  const detail = (
+    <TeamInboxDetailPane
+      t={t}
+      dataSource={dataSource}
+      loadState={detailLoadState}
+      itemCount={presentedItems.length}
+      selectedItem={selectedItem}
+      selectedPullRequest={selectedPullRequest}
+      selectedPullRequestIdentity={selectedPullRequestIdentity}
+      onOpenPullRequestTab={onOpenPullRequestTab}
+      onNavigate={onNavigate}
+      onMarkRead={handleMarkRead}
+      onMarkUnread={handleMarkUnread}
+      onRefresh={handleRefresh}
+      onClose={handleCloseDetail}
+      onWorkItemUpdated={handleWorkItemUpdated}
+      archived={listMode === "archived"}
+      dispositionPendingKey={dispositionPendingKey}
+      onDisposition={handleDisposition}
+    />
+  );
 
   const loadNotice =
+    !initialCombinedLoadPending &&
     loadNoticeKey &&
     dismissedLoadNoticeKey !== loadNoticeKey &&
-    (items.length > 0 || pullRequests.length > 0) ? (
-      <InlineAlert
+    (presentedItems.length > 0 || presentedPullRequests.length > 0) ? (
+      <PageNotice
         type={loadState.status === "warning" ? "warning" : "danger"}
         hideIcon
         onClose={dismissLoadNotice}
@@ -584,13 +456,186 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
         role="status"
         dataTestId="team-inbox-load-notice"
         closeAriaLabel={t("common:actions.close")}
-        className={`shrink-0 !rounded-none !border-x-0 !border-b-0 !px-3 !py-2 ${
+        className={`shrink-0 rounded-none! border-x-0! border-b-0! px-3! py-2! ${
           loadState.status === "warning" ? "bg-warning-6/10" : "bg-danger-1"
         }`}
       >
         {loadState.message}
-      </InlineAlert>
+      </PageNotice>
     ) : null;
+
+  const listHeaderControls = useMemo(
+    () => (
+      <TeamInboxListControls
+        filter={visibleFilter}
+        unreadCounts={unreadCounts}
+        query={visibleQuery}
+        loading={
+          initialCombinedLoadPending ||
+          loadState.status === "loading" ||
+          pullRequestsLoading ||
+          loadingMore
+        }
+        placement="header"
+        fillSearch={useSplitListHeader}
+        trailingActions={
+          <SplitListFullscreenButton
+            isFullscreen={isListOnly}
+            onToggle={handleToggleListPresentation}
+          />
+        }
+        onQueryChange={handleQueryChange}
+        onRefresh={handleRefresh}
+        onMarkAllRead={
+          visibleFilter !== "archived" && dataSource.markAllRead
+            ? handleMarkAllRead
+            : undefined
+        }
+        mutedKinds={mutedKinds}
+        mutePreferencesLoading={mutePreferencesLoading}
+        onLoadMutePreferences={
+          dataSource.listMutedKinds ? handleLoadMutePreferences : undefined
+        }
+        onSetKindMuted={
+          dataSource.setKindMuted ? handleSetKindMuted : undefined
+        }
+      />
+    ),
+    [
+      dataSource.markAllRead,
+      dataSource.listMutedKinds,
+      dataSource.setKindMuted,
+      handleLoadMutePreferences,
+      handleMarkAllRead,
+      handleQueryChange,
+      handleRefresh,
+      handleSetKindMuted,
+      handleToggleListPresentation,
+      initialCombinedLoadPending,
+      isListOnly,
+      loadState.status,
+      loadingMore,
+      mutePreferencesLoading,
+      mutedKinds,
+      pullRequestsLoading,
+      unreadCounts,
+      useSplitListHeader,
+      visibleFilter,
+      visibleQuery,
+    ]
+  );
+  const splitListHeader = useMemo(
+    () =>
+      useSplitListHeader ? (
+        <SplitListHeader
+          primary={
+            <div className="flex min-w-0 flex-1 items-center gap-px">
+              {splitDatasetControl}
+              {listHeaderControls}
+            </div>
+          }
+        />
+      ) : null,
+    [listHeaderControls, splitDatasetControl, useSplitListHeader]
+  );
+  const fullListHeader = useMemo(
+    () =>
+      !useSplitListHeader ? (
+        <SplitListHeader
+          fullWidth
+          primary={
+            <div className="flex min-w-0 flex-1 items-center gap-px">
+              {surfaceDatasetControl}
+              {surfaceDatasetControl ? (
+                <HeaderSectionSeparator className="mx-0.5" />
+              ) : null}
+              <div className="ml-auto flex min-w-0 items-center gap-px">
+                {listHeaderControls}
+              </div>
+            </div>
+          }
+        />
+      ) : null,
+    [listHeaderControls, surfaceDatasetControl, useSplitListHeader]
+  );
+  // Keep chat/workstation tab titles in the host row. Inbox controls always
+  // render in their own local 36px surface header.
+  const publishedHeader = useMemo(() => ({ hidden: true }), []);
+  usePublishWorkstationTabHeader({
+    host: "workManagement",
+    content: publishedHeader,
+  });
+
+  const listSurface =
+    loadState.status === "error" &&
+    !initialCombinedLoadPending &&
+    presentedItems.length === 0 &&
+    presentedPullRequests.length === 0 ? (
+      <Placeholder
+        variant="error"
+        placement="sidebar"
+        title={t("teamInbox.errors.loadTitle")}
+        subtitle={loadState.message ?? undefined}
+        action={{
+          label: t("common:actions.retry"),
+          onClick: handleRefresh,
+        }}
+        fillParentHeight
+      />
+    ) : (
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="min-h-0 flex-1">
+          <TeamInboxList
+            filter={visibleFilter}
+            items={visibleItems}
+            selectedItemId={selectedItemId}
+            unreadCounts={unreadCounts}
+            query={visibleQuery}
+            loading={
+              initialCombinedLoadPending ||
+              loadState.status === "loading" ||
+              (listMode === "active" && pullRequestsLoading)
+            }
+            pullRequests={presentedPullRequests}
+            pullRequestsLoading={pullRequestsLoading}
+            pullRequestsError={pullRequestsError}
+            selectedPullRequestKey={
+              focusRequestActive ? null : viewState.selectedPullRequestKey
+            }
+            onQueryChange={handleQueryChange}
+            onSelectItem={handleSelect}
+            onSelectPullRequest={handleSelectPullRequest}
+            onRefresh={handleRefresh}
+            onMarkAllRead={
+              visibleFilter !== "archived" && dataSource.markAllRead
+                ? handleMarkAllRead
+                : undefined
+            }
+            mutedKinds={mutedKinds}
+            mutePreferencesLoading={mutePreferencesLoading}
+            onLoadMutePreferences={
+              dataSource.listMutedKinds ? handleLoadMutePreferences : undefined
+            }
+            onSetKindMuted={
+              dataSource.setKindMuted ? handleSetKindMuted : undefined
+            }
+            hasMore={hasMore}
+            loadingMore={loadingMore}
+            onLoadMore={
+              listMode === "archived"
+                ? dataSource.listArchivedPage
+                  ? handleLoadMore
+                  : undefined
+                : dataSource.loadMore
+                  ? handleLoadMore
+                  : undefined
+            }
+            showControls={false}
+          />
+        </div>
+        {loadNotice}
+      </div>
+    );
 
   return (
     <TeamInboxSessionDropSurface
@@ -598,68 +643,16 @@ const TeamInboxView: React.FC<TeamInboxViewProps> = ({
       onNavigate={onNavigate}
     >
       <div className="flex h-full min-h-0 flex-col">
-        <SplitViewLayout
-          className="min-h-0 flex-1 rounded-page"
-          listWidth={360}
-          minListWidth={280}
-          maxListWidth={480}
-          resizable
-          collapsible
-          hideBreadcrumbWhenSidebarCollapsed
-          listPanelBackgroundClassName="bg-chat-pane"
-          mainContentClassName="bg-chat-pane"
-          listContent={
-            loadState.status === "error" &&
-            items.length === 0 &&
-            pullRequests.length === 0 ? (
-              <Placeholder
-                variant="error"
-                placement="sidebar"
-                title={t("teamInbox.errors.loadTitle")}
-                subtitle={loadState.message ?? undefined}
-                action={{
-                  label: t("common:actions.retry"),
-                  onClick: handleRefresh,
-                }}
-                fillParentHeight
-              />
-            ) : (
-              <div className="flex h-full min-h-0 flex-col">
-                <div className="min-h-0 flex-1">
-                  <TeamInboxList
-                    filter={visibleFilter}
-                    items={visibleItems}
-                    selectedItemId={selectedItemId}
-                    totalUnread={totalUnread}
-                    unreadCounts={unreadCounts}
-                    query={visibleQuery}
-                    loading={
-                      loadState.status === "loading" || pullRequestsLoading
-                    }
-                    pullRequests={pullRequests}
-                    pullRequestsLoading={pullRequestsLoading}
-                    pullRequestsError={pullRequestsError}
-                    selectedPullRequestKey={viewState.selectedPullRequestKey}
-                    onQueryChange={handleQueryChange}
-                    onFilterChange={handleFilterChange}
-                    onSelectItem={handleSelect}
-                    onSelectPullRequest={handleSelectPullRequest}
-                    onRefresh={handleRefresh}
-                    onMarkAllRead={
-                      dataSource.markAllRead ? handleMarkAllRead : undefined
-                    }
-                    hasMore={hasMore}
-                    loadingMore={loadingMore}
-                    onLoadMore={
-                      dataSource.loadMore ? handleLoadMore : undefined
-                    }
-                  />
-                </div>
-                {loadNotice}
-              </div>
-            )
-          }
-          mainContent={detail}
+        <InboxListDetailLayout
+          className="min-h-0 flex-1"
+          testId="team-inbox-list-detail-layout"
+          detailOpen={detailPaneOpen}
+          listFullscreen={detailPaneOpen && listFullscreen}
+          listHeader={splitListHeader}
+          fullHeader={fullListHeader}
+          fullContent={listSurface}
+          listContent={listSurface}
+          detailContent={detail}
         />
       </div>
     </TeamInboxSessionDropSurface>

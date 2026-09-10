@@ -16,35 +16,44 @@ import { useAtomValue } from "jotai";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import type { GlobalThemePreference } from "@src/config/appearance/globalThemes";
+import type { SkinVariant } from "@src/config/appearance/skins/types";
 import type { CloudSessionReference } from "@src/features/Org2Cloud/cloudSessionReference";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import { org2CloudRemoteSessionsAtom } from "@src/features/Org2Cloud/org2CloudRemoteSessionsAtom";
 import { useFilteredItems } from "@src/hooks/search";
 import type { LanguagePreference } from "@src/i18n";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
+import { reposAtom } from "@src/store/repo";
 import {
   type Session,
   sessionsAtom,
   visitedSessionsAtom,
 } from "@src/store/session";
 import {
-  chatPanelMaximizedAtom,
   chatTurnPaginationEnabledAtom,
-  chatVisibleAtom,
   modelPickerStyleAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { chatVisibleAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { languageAtom } from "@src/store/ui/languageAtom";
 import { sidebarCollapsedAtom } from "@src/store/ui/sidebarAtom";
 import { spotlightRecentActionsAtom } from "@src/store/ui/spotlightRecentActionsAtom";
-import { globalThemeIdAtom } from "@src/store/ui/uiAtom";
 import {
-  sessionChatPositionAtom,
-  workStationChatPositionAtom,
-  workStationEditorSecondaryCollapsedAtom,
-  workStationLayoutModeAtom,
-  workStationPrimarySidebarCollapsedAtom,
-} from "@src/store/ui/workStationAtom";
+  activeSkinIdAtom,
+  globalThemeIdAtom,
+  skinVariantAtom,
+  systemColorSchemeAtom,
+} from "@src/store/ui/uiAtom";
+import { workStationEditorSecondaryCollapsedAtom } from "@src/store/ui/workStationLayout/bottomPanelAtoms";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
+import { workStationLayoutModeAtom } from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
+import {
+  workspaceActiveAtom,
+  workspaceFoldersAtom,
+} from "@src/store/workspace";
 import { getSessionSearchText } from "@src/util/session/sessionSearch";
 
 import { NAV_DESTINATIONS } from "../../config";
@@ -65,13 +74,12 @@ import { resolveRecentDefinitions } from "./recentSpotlightActions";
 import {
   AGENT_SESSION_ACTIONS,
   APP_ACTIONS,
+  ORGANIZATION_ACTIONS,
   QUICK_NAVIGATION_ACTIONS,
   STATION_MODE_ACTIONS,
   type SpotlightEditorActionId,
   type SpotlightStaticActionDefinition,
-  WORKSPACE_ACTIONS,
   buildChatPanelSettingsActions,
-  buildThemeActions,
   buildViewActions,
 } from "./spotlightActionDefinitions";
 import {
@@ -82,7 +90,9 @@ import {
   buildLanguageItems,
   buildNavDestinationItem,
   buildRepoActionItems,
+  buildSkinItems,
   buildStaticActionItems,
+  buildThemeItems,
 } from "./spotlightItemBuilders";
 import { buildSearchModeItems } from "./spotlightSearchBuilder";
 import {
@@ -91,6 +101,7 @@ import {
   resolveAgentSessionSearchInput,
   resolveSpotlightCloudSessionPresentation,
 } from "./spotlightSessionSearch";
+import { buildWorkingDirectoryActions } from "./spotlightWorkingDirectoryActions";
 
 const GENERAL_SPOTLIGHT_SESSION_RESULT_LIMIT = 8;
 
@@ -120,6 +131,8 @@ interface SpotlightItemsHandlers {
   onSelectRepo: (repo: RepoItem) => void;
   onSelectBranch: (branch: BranchItem) => void;
   onSelectLanguage: (language: LanguagePreference, label: string) => void;
+  onSelectTheme: (theme: GlobalThemePreference) => void;
+  onSelectSkin: (skinId: string, variant: SkinVariant) => void;
   onSelectSession: (session: Session, sessionName: string) => void;
   onSelectCloudSessionReference: (reference: CloudSessionReference) => void;
   onSelectPath: (
@@ -127,7 +140,7 @@ interface SpotlightItemsHandlers {
     label: string,
     icon: SpotlightItem["icon"]
   ) => void;
-  currentRepoId?: string;
+  currentRepoId: string | undefined;
   isEditorRoute: boolean;
   isWorkStationRoute: boolean;
 }
@@ -138,6 +151,9 @@ export function useSpotlightItems(
   handlers: SpotlightItemsHandlers
 ): UseSpotlightItemsReturn {
   const state = useSpotlightState();
+  const repos = useAtomValue(reposAtom);
+  const workspaceFolders = useAtomValue(workspaceFoldersAtom);
+  const workspaceActive = useAtomValue(workspaceActiveAtom);
   const isSidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
   const fallbackWorkstationSidebarCollapsed = useAtomValue(
     workStationPrimarySidebarCollapsedAtom
@@ -152,8 +168,10 @@ export function useSpotlightItems(
   const isChatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
   const isChatPanelVisible = useAtomValue(chatVisibleAtom);
   const globalThemeId = useAtomValue(globalThemeIdAtom);
-  const myStationChatPosition = useAtomValue(workStationChatPositionAtom);
-  const agentStationChatPosition = useAtomValue(sessionChatPositionAtom);
+  const systemColorScheme = useAtomValue(systemColorSchemeAtom);
+  const activeSkinId = useAtomValue(activeSkinIdAtom);
+  const skinVariant = useAtomValue(skinVariantAtom);
+  const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
   const chatTurnPaginationEnabled = useAtomValue(chatTurnPaginationEnabledAtom);
   const modelPickerStyle = useAtomValue(modelPickerStyleAtom);
   const devModeEnabled = useAtomValue(devModeEnabledAtom);
@@ -174,6 +192,8 @@ export function useSpotlightItems(
     onSelectRepo,
     onSelectBranch,
     onSelectLanguage,
+    onSelectTheme,
+    onSelectSkin,
     onSelectSession,
     onSelectCloudSessionReference,
     onSelectPath,
@@ -222,6 +242,17 @@ export function useSpotlightItems(
     getSearchText: getSessionText,
   });
 
+  const workingDirectoryActions = useMemo(
+    () =>
+      buildWorkingDirectoryActions(
+        repos,
+        currentRepoId,
+        workspaceFolders,
+        workspaceActive
+      ),
+    [repos, currentRepoId, workspaceFolders, workspaceActive]
+  );
+
   const items = useMemo((): SpotlightItem[] => {
     const viewActions = buildViewActions(
       isSidebarCollapsed,
@@ -236,10 +267,8 @@ export function useSpotlightItems(
     const quickNavigationActions = isWorkStationRoute
       ? [...STATION_MODE_ACTIONS, ...QUICK_NAVIGATION_ACTIONS]
       : [];
-    const themeActions = buildThemeActions(globalThemeId);
     const chatPanelSettingsActions = buildChatPanelSettingsActions({
-      myStationChatPosition,
-      agentStationChatPosition,
+      chatPanelPosition,
       chatTurnPaginationEnabled,
       modelPickerStyle,
       workstationSidebarPosition,
@@ -281,8 +310,8 @@ export function useSpotlightItems(
         isEditorRoute,
         staticCommandActions: [
           ...AGENT_SESSION_ACTIONS,
-          ...WORKSPACE_ACTIONS,
-          ...themeActions,
+          ...workingDirectoryActions,
+          ...ORGANIZATION_ACTIONS,
           ...chatPanelSettingsActions,
           ...quickNavigationActions,
           ...viewActions,
@@ -328,6 +357,24 @@ export function useSpotlightItems(
           translate
         );
       }
+      if (missingParam === "theme") {
+        return buildThemeItems(
+          globalThemeId,
+          systemColorScheme,
+          searchQuery,
+          onSelectTheme,
+          translate
+        );
+      }
+      if (missingParam === "skin") {
+        return buildSkinItems(
+          activeSkinId,
+          skinVariant,
+          searchQuery,
+          onSelectSkin,
+          translate
+        );
+      }
       return [];
     }
 
@@ -344,12 +391,17 @@ export function useSpotlightItems(
     );
     const workspaceItems = [
       ...buildStaticActionItems(
-        WORKSPACE_ACTIONS,
+        workingDirectoryActions,
         onSelectStaticAction,
         translate
       ),
-      ...buildActionItems(onSelectAction, translate),
+      ...buildActionItems(onSelectAction, translate, "workspace"),
     ];
+    const organizationItems = buildStaticActionItems(
+      ORGANIZATION_ACTIONS,
+      onSelectStaticAction,
+      translate
+    );
     const quickNavigationItems = buildStaticActionItems(
       quickNavigationActions,
       onSelectStaticAction,
@@ -358,16 +410,14 @@ export function useSpotlightItems(
     const editorItems = isEditorRoute
       ? buildEditorActionItems(onSelectEditorAction, translate)
       : [];
-    const viewItems = buildStaticActionItems(
-      [
-        ...themeActions,
-        ...chatPanelSettingsActions,
-        ...viewActions,
-        ...APP_ACTIONS,
-      ],
-      onSelectStaticAction,
-      translate
-    );
+    const viewItems = [
+      ...buildActionItems(onSelectAction, translate, "view"),
+      ...buildStaticActionItems(
+        [...chatPanelSettingsActions, ...viewActions, ...APP_ACTIONS],
+        onSelectStaticAction,
+        translate
+      ),
+    ];
     const navActionItems = NAV_DESTINATIONS.filter(
       (destination) =>
         destination.group === "actions" &&
@@ -377,14 +427,14 @@ export function useSpotlightItems(
     );
 
     // Recently used: resolve persisted ids back to whichever static command
-    // definitions are currently available (state-dependent toggles like theme
-    // or chat-panel actions only exist when applicable). Unknown ids are
-    // dropped so stale entries never render.
+    // definitions are currently available (state-dependent chat-panel actions
+    // only exist when applicable). Unknown ids are dropped so stale entries
+    // never render.
     const recentItems = buildStaticActionItems(
       resolveRecentDefinitions(recentActionIds, [
         ...AGENT_SESSION_ACTIONS,
-        ...WORKSPACE_ACTIONS,
-        ...themeActions,
+        ...workingDirectoryActions,
+        ...ORGANIZATION_ACTIONS,
         ...chatPanelSettingsActions,
         ...quickNavigationActions,
         ...viewActions,
@@ -398,6 +448,7 @@ export function useSpotlightItems(
       recentItems,
       agentSessionItems,
       workspaceItems,
+      organizationItems,
       quickNavigationItems,
       editorItems,
       viewItems,
@@ -418,8 +469,10 @@ export function useSpotlightItems(
     isChatPanelMaximized,
     isChatPanelVisible,
     globalThemeId,
-    myStationChatPosition,
-    agentStationChatPosition,
+    systemColorScheme,
+    activeSkinId,
+    skinVariant,
+    chatPanelPosition,
     chatTurnPaginationEnabled,
     modelPickerStyle,
     workstationSidebarPosition,
@@ -439,12 +492,15 @@ export function useSpotlightItems(
     filteredRepos,
     filteredBranches,
     currentRepoId,
+    workingDirectoryActions,
     onSelectAction,
     onSelectStaticAction,
     onSelectEditorAction,
     onSelectRepo,
     onSelectBranch,
     onSelectLanguage,
+    onSelectTheme,
+    onSelectSkin,
     onSelectSession,
     onSelectCloudSessionReference,
     onSelectPath,

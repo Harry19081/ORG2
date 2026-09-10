@@ -5,22 +5,10 @@
  */
 import { type Atom, atom } from "jotai";
 
-import { isActiveStatus, isTerminalStatus } from "@src/types/session/session";
+import { createStableWeakLruCache } from "@src/util/core/state/stableWeakLruCache";
 
 import { loadPersistedSessions } from "./persistence";
-import type { Session, SessionGroups } from "./types";
-
-// ============================================
-// Storage Keys
-// ============================================
-
-export const SESSION_STORAGE_KEYS = {
-  lastRefresh: "orgii_sessions_last_refresh",
-} as const;
-
-export const SESSION_CACHE_INVALIDATION_KEY =
-  "orgii_session_cache_invalidated_at";
-export const SESSION_CACHE_INVALIDATED_EVENT = "session-cache-invalidated";
+import type { Session } from "./types";
 
 // ============================================
 // Core Atoms
@@ -110,20 +98,15 @@ getSessionByIdAtom.debugLabel = "getSessionByIdAtom";
  * session object reference is unchanged (which `sessionMapAtom`
  * guarantees via its reference-stability cache).
  */
-// LRU cap: evict the oldest entry when the cache exceeds this size.
-// Without a cap the Map grows by one Jotai atom per unique sessionId ever
-// seen — an unbounded leak for long-running sessions over multiple days.
-const SESSION_BY_ID_CACHE_MAX = 500;
-const _sessionByIdCache = new Map<string, Atom<Session | undefined>>();
+// Evicting an atom object that still has a mounted React subscriber makes
+// Jotai re-subscribe on every cache-pressure render. The strong tier remains
+// bounded while the weak tier preserves the identity of live atoms.
+const sessionByIdAtomCache =
+  createStableWeakLruCache<Atom<Session | undefined>>(500);
 
 export function sessionByIdAtom(sessionId: string): Atom<Session | undefined> {
-  const cached = _sessionByIdCache.get(sessionId);
-  if (cached) {
-    // Move to end (most-recently-used) by re-inserting.
-    _sessionByIdCache.delete(sessionId);
-    _sessionByIdCache.set(sessionId, cached);
-    return cached;
-  }
+  const cached = sessionByIdAtomCache.get(sessionId);
+  if (cached) return cached;
 
   const derived = atom<Session | undefined>((get) => {
     const sessionMap = get(sessionMapAtom);
@@ -131,70 +114,9 @@ export function sessionByIdAtom(sessionId: string): Atom<Session | undefined> {
   });
   derived.debugLabel = `session:${sessionId}`;
 
-  if (_sessionByIdCache.size >= SESSION_BY_ID_CACHE_MAX) {
-    // Evict least-recently-used (first inserted) entry.
-    const lruKey = _sessionByIdCache.keys().next().value;
-    if (lruKey !== undefined) _sessionByIdCache.delete(lruKey);
-  }
-
-  _sessionByIdCache.set(sessionId, derived);
+  sessionByIdAtomCache.set(sessionId, derived);
   return derived;
 }
-
-// ============================================
-// Single-pass session grouping
-// ============================================
-
-const sessionGroupsAtom = (() => {
-  let prevSessions: Session[] = [];
-  let prevGroups: SessionGroups | null = null;
-  return atom<SessionGroups>((get) => {
-    const sessions = get(sessionsAtom);
-    if (sessions === prevSessions && prevGroups) return prevGroups;
-    prevSessions = sessions;
-    const active: Session[] = [];
-    const completed: Session[] = [];
-    const failed: Session[] = [];
-    for (const session of sessions) {
-      const status = session.status;
-      if (isActiveStatus(status)) {
-        active.push(session);
-      } else if (status === "completed") {
-        completed.push(session);
-      } else if (isTerminalStatus(status)) {
-        failed.push(session);
-      }
-    }
-    prevGroups = { active, completed, failed };
-    return prevGroups;
-  });
-})();
-sessionGroupsAtom.debugLabel = "sessionGroupsAtom";
-
-export const activeSessionsAtom = atom((get) => get(sessionGroupsAtom).active);
-activeSessionsAtom.debugLabel = "activeSessionsAtom";
-
-// ============================================
-// Session Counts (derived from session groups)
-// ============================================
-
-export const sessionTotalCountAtom = atom((get) => get(sessionsAtom).length);
-sessionTotalCountAtom.debugLabel = "sessionTotalCountAtom";
-
-export const sessionActiveCountAtom = atom(
-  (get) => get(activeSessionsAtom).length
-);
-sessionActiveCountAtom.debugLabel = "sessionActiveCountAtom";
-
-export const sessionCompletedCountAtom = atom(
-  (get) => get(sessionGroupsAtom).completed.length
-);
-sessionCompletedCountAtom.debugLabel = "sessionCompletedCountAtom";
-
-export const sessionFailedCountAtom = atom(
-  (get) => get(sessionGroupsAtom).failed.length
-);
-sessionFailedCountAtom.debugLabel = "sessionFailedCountAtom";
 
 // ============================================
 // Working sessions (strict subset of active)

@@ -13,6 +13,7 @@ use crate::sources::imported_history::{
     ImportedHistoryRecentPath, ImportedHistorySessionPage, ImportedHistorySessionRow,
 };
 
+mod context_usage;
 mod desktop_exec;
 mod impact;
 mod index;
@@ -20,19 +21,24 @@ mod meta;
 mod normalize;
 mod transcript;
 
+pub use index::load_codex_context_usage_for_session;
+
 // Public API — preserved at `...::sources::codex::app::*`.
 pub use index::{
     codex_thread_id_from_file_stem, list_codex_app_recent_paths,
     list_codex_app_reconciliation_sessions, list_codex_app_sessions_paginated,
     load_codex_app_cloud_turn_for_session, load_codex_app_for_session,
-    load_codex_app_initial_window_for_session, load_codex_app_turn_for_session,
-    load_codex_app_turn_ids_for_session,
+    load_codex_app_initial_window_for_session, load_codex_app_mobile_tail_window_for_session,
+    load_codex_app_turn_for_session, load_codex_app_turn_ids_for_session,
+    resolve_codex_session_path,
 };
 pub use meta::{resolve_codex_transcript_for_thread_id_near_path, CodexTranscriptLocator};
 pub(crate) use normalize::normalize_codex_tool_calls;
 pub use transcript::{
     load_codex_app_from_path, load_codex_app_initial_window_from_path,
-    load_codex_app_turn_from_path, CodexAppInitialWindow, CodexAppTurnWindow,
+    load_codex_app_mobile_tail_window_from_path, load_codex_app_turn_from_path,
+    load_codex_app_window_turn_from_path, visit_codex_app_from_path, CodexAppInitialWindow,
+    CodexAppTurnWindow,
 };
 
 // Internal re-exports so the sibling `app_tests.rs` (`use super::*`) resolves.
@@ -49,8 +55,8 @@ pub(crate) use meta::{parse_codex_session_meta, parse_codex_session_meta_increme
 pub(crate) use serde_json::json;
 #[cfg(test)]
 pub(crate) use transcript::{
-    output_parts_for_tool_calls, pending_custom_tool_calls_from_payload,
-    strip_ignored_embedded_images, user_message_from_payload,
+    legacy_user_message_text_from_payload, output_parts_for_tool_calls,
+    pending_custom_tool_calls_from_payload, strip_ignored_embedded_images,
 };
 
 // v9: derive impact from authoritative `patch_apply_end` events (structured
@@ -60,7 +66,12 @@ pub(crate) use transcript::{
 // per-round deltas.
 // v11: retain Codex subagent spawn metadata and the child rollout's plaintext
 // first prompt so encrypted collaboration arguments can be reconstructed.
-const CODEX_APP_METADATA_PARSER_VERSION: i64 = 11;
+// v12: recognize paginated item_completed/UserMessage records as the canonical
+// user-turn boundary while retaining legacy event_msg/user_message support.
+// v14: re-derive `repo_path` so the desktop app's own
+// `~/Documents/Codex/<date>/<slug>` (and ChatGPT app) scratch dirs are stored
+// as no workspace.
+const CODEX_APP_METADATA_PARSER_VERSION: i64 = 14;
 
 pub type CodexAppSessionRow = ImportedHistorySessionRow;
 pub type CodexAppSessionPage = ImportedHistorySessionPage;
@@ -98,6 +109,9 @@ pub(crate) struct CodexAppSessionMeta {
     impact: ImportedHistoryImpactStats,
     rounds: Vec<RoundUsage>,
     source_metadata: CodexAppSourceMetadata,
+    /// Raw `session_meta.payload.originator`, naming the client that wrote
+    /// this rollout. Empty when the rollout predates the field.
+    originator: String,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]

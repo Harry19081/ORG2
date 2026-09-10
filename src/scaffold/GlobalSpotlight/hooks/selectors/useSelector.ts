@@ -54,6 +54,8 @@ export interface UseSelectorOptions {
   isItemSelectable?: (item: SpotlightItem) => boolean;
   /** Initial selected index (default: 0, first item pre-selected) */
   initialSelectedIndex?: number;
+  /** Disable when the caller owns selection across paginated list updates. */
+  resetSelectionOnItemsChange?: boolean;
   /** Additional state to reset on open (will be called in effect) */
   onReset?: () => void;
   /**
@@ -68,7 +70,7 @@ export interface UseSelectorOptions {
    * `kernel.setSearchQuery` forwards to this setter instead of writing to
    * the kernel's internal state, and additionally resets `selectedIndex`
    * to the first selectable item. Use this when the palette owns its own
-   * `useState` for the query (e.g. WorkspacePalette, DatabasePalette) so they
+   * `useState` for the query (e.g. WorkingDirectoryPalette, DatabasePalette) so they
    * don't need to wrap the kernel in a `useMemo` shim.
    *
    * Typically paired with `externalSearchQuery` so the kernel's Backspace
@@ -150,6 +152,7 @@ export function useSelector(options: UseSelectorOptions): UseSelectorReturn {
     onGoBack,
     isItemSelectable,
     initialSelectedIndex = 0,
+    resetSelectionOnItemsChange = true,
     onReset,
     externalSearchQuery,
     externalSetSearchQuery,
@@ -248,11 +251,13 @@ export function useSelector(options: UseSelectorOptions): UseSelectorReturn {
   useEffect(() => {
     if (prevItemsIdentityRef.current !== itemsIdentityKey) {
       prevItemsIdentityRef.current = itemsIdentityKey;
-      Promise.resolve().then(() => {
-        setSelectedIndex(findFirstSelectable());
-      });
+      if (resetSelectionOnItemsChange) {
+        Promise.resolve().then(() => {
+          setSelectedIndex(findFirstSelectable());
+        });
+      }
     }
-  }, [itemsIdentityKey, findFirstSelectable]);
+  }, [itemsIdentityKey, findFirstSelectable, resetSelectionOnItemsChange]);
 
   // Refocus input after DOM commits when the view changes. Two guards keep
   // this from becoming a focus-steal loop (it once pegged the webview at
@@ -288,7 +293,7 @@ export function useSelector(options: UseSelectorOptions): UseSelectorReturn {
       isItemSelectable &&
       ((item, _index) => isItemSelectable(item as unknown as SpotlightItem)),
     searchQuery: effectiveSearchQuery,
-    enableGlobalListener: true,
+    enableGlobalListener: isOpen,
     inputRef,
     hasModalState,
   });

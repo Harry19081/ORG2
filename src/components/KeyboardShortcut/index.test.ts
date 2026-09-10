@@ -22,4 +22,127 @@ describe("KeyboardShortcut", () => {
 
     expect(markup).toContain("Ctrl");
   });
+
+  it("renders every key in a chord inside one rounded pill", async () => {
+    setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)");
+    const { KeyboardShortcut } = await import("./index");
+
+    const markup = renderToStaticMarkup(
+      createElement(KeyboardShortcut, {
+        shortcut: "Cmd+Shift+Option+Ctrl+Up+Down+Enter+Backspace+Esc+Tab+2",
+        className: "external-spacing",
+      })
+    );
+
+    expect(markup.match(/<kbd/g)).toHaveLength(1);
+    expect(markup).toContain(
+      '<div class="flex items-center external-spacing"><kbd'
+    );
+    expect(markup).toContain("rounded-full");
+    expect(markup).toContain("font-normal");
+    expect(markup).not.toContain("font-semibold");
+    for (const character of [
+      "⌘",
+      "⇧",
+      "⌥",
+      "⌃",
+      "↑",
+      "↓",
+      "↩",
+      "⌫",
+      "esc",
+      "⇥",
+    ]) {
+      expect(markup).toContain(character);
+    }
+    expect(markup).toContain("↑");
+    expect(markup).toContain("↓");
+    expect(markup).not.toContain("<svg");
+    expect(markup).toContain("font-family:system-ui");
+    expect(markup).not.toContain("text-[12px]");
+    expect(markup).not.toContain("↵");
+    expect(markup).toContain(">2</span>");
+  });
+
+  it.each(["spotlightFooter", "default"] as const)(
+    "preserves original rendering for Spotlight %s shortcuts",
+    async (variant) => {
+      const { KeyboardShortcut } = await import("./index");
+      const markup = renderToStaticMarkup(
+        createElement(KeyboardShortcut, {
+          shortcut: "Up+Down+Enter+Esc",
+          variant,
+          ...(variant === "default" ? { rendering: "original" as const } : {}),
+        })
+      );
+      expect(markup).toContain('data-icon="arrow-up"');
+      expect(markup).toContain('data-icon="arrow-down"');
+      expect(markup).toContain('data-icon="corner-down-left"');
+      expect(markup).toContain("text-[12px]");
+      expect(markup).not.toContain("font-family:system-ui");
+    }
+  );
+
+  it("sets the native font on Shift itself despite the global span reset", async () => {
+    const { KeyboardShortcut } = await import("./index");
+    const markup = renderToStaticMarkup(
+      createElement(KeyboardShortcut, { shortcut: "Shift+M" })
+    );
+    expect(markup).toMatch(/<span style="font-family:system-ui[^>]+>⇧<\/span>/);
+  });
+
+  it("supports a compact size for dense menus", async () => {
+    setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)");
+    const { KeyboardShortcut } = await import("./index");
+
+    const markup = renderToStaticMarkup(
+      createElement(KeyboardShortcut, {
+        shortcut: "Cmd+Shift+G",
+        size: "sm",
+      })
+    );
+
+    expect(markup).toContain("h-4");
+    expect(markup).toContain(
+      "inline-flex h-full items-center justify-center align-middle"
+    );
+    expect(markup).toContain("text-[11px]");
+    expect(markup).toContain("⌘");
+    expect(markup).toContain("⇧");
+    expect(markup).not.toContain("data-icon=");
+  });
+
+  it("keeps the up and down text symbols close together", async () => {
+    const { KeyboardShortcut } = await import("./index");
+
+    const markup = renderToStaticMarkup(
+      createElement(KeyboardShortcut, { shortcut: "↑ ↓" })
+    );
+
+    expect(markup).toContain("gap-0");
+    expect(markup).toContain("↑");
+    expect(markup).toContain("↓");
+  });
+});
+
+describe("KeyboardShortcutTooltipContent", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it("lets long labels wrap while shortcut keys stay in the shared row", async () => {
+    const { KeyboardShortcutTooltipContent } = await import("./index");
+    const markup = renderToStaticMarkup(
+      createElement(KeyboardShortcutTooltipContent, {
+        label:
+          "A translated tooltip label that can become wider than the viewport",
+        shortcut: "Cmd+Enter",
+      })
+    );
+
+    expect(markup).toContain("max-w-full min-w-0");
+    expect(markup).toContain("min-w-0 wrap-break-word");
+    expect(markup).not.toContain("whitespace-nowrap");
+  });
 });

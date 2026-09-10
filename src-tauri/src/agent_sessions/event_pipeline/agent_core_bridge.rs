@@ -24,6 +24,7 @@ use super::types::{
 
 use agent_core::bus::event_pipeline_bridge as bridge;
 use core_types::session_event::ShellReplayState;
+use core_types::tool_names::tool_call_event_id;
 
 fn push_events_adapter(handle: &AppHandle, session_id: &str, events: Vec<SessionEvent>) {
     let state = handle.state::<EventStoreState>();
@@ -120,7 +121,7 @@ fn update_shell_replay_by_call_id_adapter(
         // tool-call id. Never guess "last shell". Hydrate a temporary store
         // so the same monotonic/bookmark rules apply, then repopulate the live
         // cache and synchronously write the row back.
-        let event_id = format!("tool-call-{call_id}");
+        let event_id = tool_call_event_id(call_id);
         let cold =
             session_persistence::get_event(session_id, &event_id).map_err(|err| err.to_string())?;
         let cold = match cold {
@@ -225,7 +226,7 @@ fn complete_tool_call_by_call_id_adapter(
     // es_load_from_cache hydrates a terminal event instead of a stuck spinner.
     // The Rust-authoritative tool_call row id is `tool-call-{call_id}`.
     let sid = session_id.to_string();
-    let event_id = format!("tool-call-{call_id}");
+    let event_id = tool_call_event_id(call_id);
     tokio::task::spawn_blocking(move || {
         if let Ok(Some(cached)) = session_persistence::get_event(&sid, &event_id) {
             let mut event = cached_event_to_session_event(&cached);
@@ -365,7 +366,7 @@ fn finalize_plan_revision_events_adapter(
 ) {
     let target_ids = [
         plan_revision_id.to_string(),
-        format!("tool-call-{plan_revision_id}"),
+        tool_call_event_id(plan_revision_id),
     ];
     let state = handle.state::<EventStoreState>();
 
@@ -443,9 +444,19 @@ fn persist_events_adapter(
     session_id: &str,
     events: &[SessionEvent],
     max_retries: u32,
-) {
+) -> Result<(), String> {
+    #[cfg(debug_assertions)]
+    if events
+        .iter()
+        .any(|event| event.id.starts_with("agent-org-final-summary-"))
+        && super::fault_injection::take_final_summary_persist_failure(label, session_id)?
+    {
+        return Err(format!(
+            "debug_injected_final_summary_event_store_failure:{session_id}"
+        ));
+    }
     let cached: Vec<_> = events.iter().map(session_event_to_cached_event).collect();
-    let _ = save_events_retry(label, session_id, &cached, max_retries);
+    save_events_retry(label, session_id, &cached, max_retries)
 }
 
 fn persist_events_async_adapter(
@@ -572,6 +583,13 @@ fn persist_user_message_event_adapter(
         &[cached],
         BULK_WRITE_MAX_RETRIES,
     )?;
+    // GroupRoot is durable provider/history authority, but its only visible
+    // product projection is the bounded Team Group feed. Publishing it into
+    // the generic Session store would leak the same user fact onto the
+    // ordinary Coordinator page before the typed context can be consulted.
+    if source.is_agent_org_group_root() {
+        return Ok(());
+    }
     let state = handle.state::<EventStoreState>();
     state.with_store_mut(session_id, |store| store.merge_events(vec![event]));
     schedule_notify(handle, &state, session_id);
@@ -691,4 +709,36 @@ pub fn register() {
         persist_events_async_adapter,
         persist_user_message_event_adapter,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn persist_events_adapter_returns_only_after_the_error_is_readable() {
+        let _sandbox = test_helpers::test_env::sandbox();
+        let conn = database::db::get_connection().expect("test database");
+        session_persistence::init_session_tables(&conn).expect("session event schema");
+
+        let session_id = "terminal-error-durability";
+        let event = agent_core::lifecycle::build_session_error_event(
+            session_id,
+            "provider rejected the first turn",
+        );
+        persist_events_adapter(
+            "terminal-error-test",
+            session_id,
+            std::slice::from_ref(&event),
+            1,
+        )
+        .expect("persistence barrier succeeds");
+
+        let stored = session_persistence::get_event(session_id, &event.id)
+            .expect("read persisted event")
+            .expect("event is durable before the adapter returns");
+        assert_eq!(stored.session_id, session_id);
+        assert_eq!(stored.id, event.id);
+        assert!(stored.content.contains("provider rejected the first turn"));
+    }
 }

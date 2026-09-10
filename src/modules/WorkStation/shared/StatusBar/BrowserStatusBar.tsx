@@ -8,10 +8,18 @@
  *
  * Uses BaseStatusBar for consistent layout.
  */
-import { AlertTriangle, BrushCleaning, Plus, XCircle } from "lucide-react";
 import React, { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import {
+  Add01Icon,
+  Alert01Icon,
+  BrushCleaningIcon,
+  CancelCircleIcon,
+  HugeiconsIcon,
+} from "@src/icons";
+
+import { PortsStatusMenu } from "./PortsStatusMenu";
 import {
   BaseStatusBar,
   StatusBarButton,
@@ -73,7 +81,7 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
     // Left content: console issue counts (opens in-app DevTools on click)
     const leftContent = useMemo(
       () => (
-        <div className="flex h-full flex-shrink-0 items-center gap-1">
+        <div className="flex h-full shrink-0 items-center gap-1">
           {/* Combined issues button (warnings + errors) */}
           {(warningCount > 0 || errorCount > 0) && (
             <StatusBarButton
@@ -83,7 +91,11 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
             >
               {errorCount > 0 && (
                 <span className={`flex items-center gap-1 ${itemTextClass}`}>
-                  <XCircle size={13} />
+                  <HugeiconsIcon
+                    icon={CancelCircleIcon}
+                    data-icon="xcircle"
+                    size={13}
+                  />
                   <StatusBarLabel emphasis numeric>
                     {errorCount}
                   </StatusBarLabel>
@@ -91,7 +103,11 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
               )}
               {warningCount > 0 && (
                 <span className={`flex items-center gap-1 ${itemTextClass}`}>
-                  <AlertTriangle size={13} />
+                  <HugeiconsIcon
+                    icon={Alert01Icon}
+                    data-icon="alert-triangle"
+                    size={13}
+                  />
                   <StatusBarLabel emphasis numeric>
                     {warningCount}
                   </StatusBarLabel>
@@ -99,6 +115,7 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
               )}
             </StatusBarButton>
           )}
+          <PortsStatusMenu />
         </div>
       ),
       [itemTextClass, warningCount, errorCount, onToggleDevTools]
@@ -127,7 +144,11 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
               title={clearLabel}
               className="text-text-2"
             >
-              <BrushCleaning size={13} />
+              <HugeiconsIcon
+                icon={BrushCleaningIcon}
+                data-icon="brush-cleaning"
+                size={13}
+              />
             </StatusBarButton>
           )}
           <StatusBarButton
@@ -135,7 +156,7 @@ const BrowserStatusBar: React.FC<BrowserStatusBarProps> = memo(
             onClick={onSendSelectedElementToChat}
             title={sendLabel}
           >
-            <Plus size={13} />
+            <HugeiconsIcon icon={Add01Icon} data-icon="plus" size={13} />
             <span>{sendLabel}</span>
           </StatusBarButton>
         </div>

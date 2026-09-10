@@ -25,6 +25,10 @@ export * from "./creatorDefaultModelAtom";
 export * from "./recentModelEntriesAtom";
 export * from "./recentAgentSelectionsAtom";
 export * from "./creatorDefaultExecModeAtom";
+export * from "./pinnedActionsVisibleAtom";
+export * from "./creatorLaunchpadActionsVisibleAtom";
+export * from "./creatorRepoChromePositionAtom";
+export * from "./cliUpdateAlertsAtom";
 
 // Session runtime (engine lifecycle, file review, shell processes)
 export * from "./cliSessionStatusAtom"; // Contains sessionRuntimeStatusAtom, etc.
@@ -33,6 +37,7 @@ export * from "./shellProcessAtom";
 
 export * from "./agentRegistryAtom";
 export * from "./canvasPreviewAtom";
+export * from "./canvasRevisionDraftAtom";
 export * from "./cursorIdeTurnSummariesAtom";
 export * from "./mcpProgressAtom";
 export * from "./planApprovalAtom";

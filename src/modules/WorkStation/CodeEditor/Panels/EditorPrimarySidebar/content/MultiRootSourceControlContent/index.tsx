@@ -21,9 +21,9 @@ import { useTranslation } from "react-i18next";
 
 import { removeGitWorktree } from "@src/api/http/git";
 import type { GitWorktreeEntry } from "@src/api/http/git/types";
+import { Placeholder } from "@src/components/Placeholder";
+import { FOLDER_HEADER } from "@src/config/workstation/tokens";
 import { FolderHeaderRow } from "@src/modules/WorkStation/shared/FolderHeaderRow";
-import { FOLDER_HEADER } from "@src/modules/WorkStation/shared/tokens";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { reposAtom } from "@src/store/repo";
 import { activeFolderAtom } from "@src/store/workspace/derived";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
@@ -47,7 +47,7 @@ import { WorktreeSourceControlSection } from "../WorktreeSourceControlSection";
 // Types
 // ============================================
 
-export interface MultiRootSourceControlContentProps {
+interface MultiRootSourceControlContentProps {
   workspaceFolders: WorkspaceFolder[];
   repoId: string;
   repoPath: string;
@@ -73,7 +73,7 @@ export interface MultiRootSourceControlContentHandle {
 // Per-folder section header + lazy content
 // ============================================
 
-export interface FolderSectionHandle {
+interface FolderSectionHandle {
   refresh: () => Promise<void>;
 }
 
@@ -191,7 +191,7 @@ const FolderSection = React.forwardRef<FolderSectionHandle, FolderSectionProps>(
     return (
       <div
         className={`${FOLDER_HEADER.section} flex flex-col ${
-          expanded ? "min-h-0 flex-1 overflow-hidden" : "flex-shrink-0"
+          expanded ? "min-h-0 flex-1 overflow-hidden" : "shrink-0"
         }`}
       >
         <FolderHeaderRow
@@ -228,7 +228,7 @@ FolderSection.displayName = "FolderSection";
 // Content wrapper (lazy mounts per-repo hook)
 // ============================================
 
-export interface FolderSectionContentHandle {
+interface FolderSectionContentHandle {
   refresh: () => Promise<void>;
 }
 

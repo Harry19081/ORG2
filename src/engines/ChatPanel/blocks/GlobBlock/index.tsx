@@ -21,7 +21,7 @@ import {
 } from "../primitives";
 import { useBlockHeader } from "../useBlockLocate";
 
-export interface GlobBlockProps {
+interface GlobBlockProps {
   /** Glob pattern */
   pattern: string;
   /** Whether currently loading */
@@ -70,7 +70,6 @@ const GlobBlock: React.FC<GlobBlockProps> = React.memo(
             isCollapsed
             isHeaderHovered={isHeaderHovered}
             hasContent={false}
-            revealChevronOnIconHoverOnly={Boolean(eventId)}
             isLoading={isLoading}
           />
           <EventBlockHeaderTitle isLoading={isLoading}>

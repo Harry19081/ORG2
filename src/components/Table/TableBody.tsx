@@ -1,10 +1,20 @@
 import { Cell, Row, flexRender } from "@tanstack/react-table";
-import { ChevronsDownUp, ChevronsUpDown, Inbox } from "lucide-react";
 import React, { useState } from "react";
+
+import { Placeholder } from "@src/components/Placeholder";
+import {
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  ChevronsDownUpIcon,
+  HugeiconsIcon,
+  InboxIcon,
+  UnfoldMoreIcon,
+} from "@src/icons";
 
 import type { ColumnMeta, TableColumn, TableProps } from "./types";
 
 interface TableBodyProps<T> {
+  loading?: boolean;
   rows: Row<T>[];
   columns: TableColumn<T>[];
   hasRowSelection: boolean;
@@ -116,7 +126,7 @@ function renderExpandedContent<T>(
         .join(" ")}
     >
       <td colSpan={totalColSpan} className="p-0">
-        <div className="w-0 min-w-full max-w-full overflow-hidden [contain:inline-size]">
+        <div className="w-0 max-w-full min-w-full overflow-hidden contain-[inline-size]">
           {content}
         </div>
       </td>
@@ -125,6 +135,7 @@ function renderExpandedContent<T>(
 }
 
 export function TableBody<T>({
+  loading = false,
   rows,
   columns,
   hasRowSelection,
@@ -145,6 +156,20 @@ export function TableBody<T>({
     string | null
   >(null);
 
+  if (loading) {
+    return (
+      <tbody className="table-tbody" aria-busy="true">
+        <tr>
+          <td colSpan={totalColSpan}>
+            <div className="table-empty" role="status">
+              <Placeholder variant="loading" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    );
+  }
+
   if (rows.length === 0) {
     return (
       <tbody className="table-tbody">
@@ -153,7 +178,12 @@ export function TableBody<T>({
             <div className="table-empty">
               {noDataElement || (
                 <>
-                  <Inbox size={48} className="opacity-40" />
+                  <HugeiconsIcon
+                    icon={InboxIcon}
+                    data-icon="inbox"
+                    size={48}
+                    className="opacity-40"
+                  />
                   <span>No Data</span>
                 </>
               )}
@@ -178,6 +208,20 @@ export function TableBody<T>({
         const canExpand =
           expandable?.rowExpandable?.(row.original) ?? !!expandable;
         const isExpanded = expandedRows.has(rowKey);
+        const expandIcon = settings
+          ? isExpanded
+            ? ArrowDown01Icon
+            : ArrowRight01Icon
+          : isExpanded
+            ? ChevronsDownUpIcon
+            : UnfoldMoreIcon;
+        const expandIconName = settings
+          ? isExpanded
+            ? "chevron-down"
+            : "chevron-right"
+          : isExpanded
+            ? "chevrons-down-up"
+            : "chevrons-up-down";
 
         return (
           <React.Fragment key={rowKey}>
@@ -202,7 +246,8 @@ export function TableBody<T>({
                 if (isInteractiveTableTarget(event.target)) return;
                 if (onRowClick) {
                   onRowClick(row.original, index);
-                } else if (canExpand) {
+                }
+                if (canExpand && (settings || !onRowClick)) {
                   setHoverSuppressedRowKey(rowKey);
                   toggleRowExpand(rowKey);
                 }
@@ -224,11 +269,12 @@ export function TableBody<T>({
                         aria-label={isExpanded ? "Collapse row" : "Expand row"}
                         aria-expanded={isExpanded}
                       >
-                        {isExpanded ? (
-                          <ChevronsDownUp size={14} className="shrink-0" />
-                        ) : (
-                          <ChevronsUpDown size={14} className="shrink-0" />
-                        )}
+                        <HugeiconsIcon
+                          icon={expandIcon}
+                          data-icon={expandIconName}
+                          size={14}
+                          className="shrink-0"
+                        />
                       </button>
                     ) : (
                       <span

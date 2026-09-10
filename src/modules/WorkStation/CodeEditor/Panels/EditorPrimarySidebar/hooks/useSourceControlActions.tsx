@@ -8,8 +8,9 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import AnyIcon from "@src/components/AnyIcon";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 
 import { ICON_CONFIG, PANEL_CONSTANTS } from "../config";
 
@@ -47,7 +48,8 @@ export function useSourceControlActions({
       {
         key: "filter-git",
         icon: (
-          <FilterIcon
+          <AnyIcon
+            icon={FilterIcon}
             size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
             strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
             className={showFilter ? "text-primary-6" : ""}
@@ -60,12 +62,14 @@ export function useSourceControlActions({
         key: "view-mode-toggle",
         icon:
           viewMode === "list" ? (
-            <ListTreeIcon
+            <AnyIcon
+              icon={ListTreeIcon}
               size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
               strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
             />
           ) : (
-            <ListIcon
+            <AnyIcon
+              icon={ListIcon}
               size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
               strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
             />
@@ -79,7 +83,8 @@ export function useSourceControlActions({
       {
         key: "refresh-git",
         icon: (
-          <RefreshIcon
+          <AnyIcon
+            icon={RefreshIcon}
             size={PANEL_CONSTANTS.ACTION_ICON_SIZE}
             strokeWidth={PANEL_CONSTANTS.ACTION_ICON_STROKE}
             className={refreshSpinClass}

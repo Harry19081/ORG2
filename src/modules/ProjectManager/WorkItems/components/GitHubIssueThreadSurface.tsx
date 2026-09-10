@@ -7,6 +7,7 @@ import type {
 } from "@src/api/tauri/github";
 import type { WorkItem } from "@src/types/core/workItem";
 
+import { GitHubIssueFlowHeader } from "./GitHubIssueFlowHeader";
 import type { GitHubIssueInteractionConfig } from "./WorkItemContent/types";
 import type { WorkItemExternalAssigneeConfig } from "./WorkItemProperties/types";
 import WorkItemThreadSurface from "./WorkItemThreadSurface";
@@ -25,7 +26,13 @@ export function mapGitHubIssueToThreadWorkItem(issue: GitHubIssue): WorkItem {
 
   return {
     session_id: issue.html_url,
-    shortId: `#${issue.number}`,
+    // `shortId` is a LOCAL Work Item identity, and a remote GitHub issue has
+    // none. Synthesizing the display label `#<number>` here sent every local
+    // discussion read at an id the store can never resolve — the logged
+    // "Work item '#890' not found". Leaving it unset keeps those local paths
+    // inert, and normalizing it instead would be worse: a bare "890" would
+    // silently bind this thread to an unrelated local Work Item. The issue
+    // number still reaches the UI from `issue` itself.
     user_id: issue.user.login,
     name: issue.title,
     status: issue.state,
@@ -95,8 +102,11 @@ const GitHubIssueThreadSurface: React.FC<GitHubIssueThreadSurfaceProps> = ({
   return (
     <WorkItemThreadSurface
       workItem={workItem}
-      propertyFields={["status", "assignee"]}
+      flowHeader={<GitHubIssueFlowHeader issue={issue} />}
+      propertyFields={["status", "assignee", "labels"]}
+      propertiesPlacement="rail"
       propertyProps={{
+        statusOrgId: null,
         onUpdate: handleUpdate,
         externalStatusConfig: {
           currentStatusId: issue.state,
@@ -122,6 +132,11 @@ const GitHubIssueThreadSurface: React.FC<GitHubIssueThreadSurfaceProps> = ({
         assigneeReadonly: !assigneeConfig,
         externalAssigneeConfig: assigneeConfig,
         showMoreMenu: false,
+        // GitHub owns the labels and cannot persist a local Work Item
+        // schedule, so both stay out of the local editing surface.
+        labelsReadonly: true,
+        availableLabels: workItem.labels ?? [],
+        showSchedule: false,
       }}
       githubIssueTimeline={{
         items: timeline,

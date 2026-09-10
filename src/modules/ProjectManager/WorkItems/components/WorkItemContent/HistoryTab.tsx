@@ -1,21 +1,25 @@
-import {
-  ArrowUp,
-  Bell,
-  BellOff,
-  CheckCircle2,
-  ChevronRight,
-  CornerUpLeft,
-  RotateCcw,
-  X,
-} from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Avatar from "@src/components/Avatar";
 import Button from "@src/components/Button";
 import ComposerShell from "@src/components/ComposerShell";
+import PersonAvatar from "@src/components/PersonAvatar";
+import Textarea from "@src/components/Textarea";
 import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import {
+  ArrowRight01Icon,
+  ArrowUp02Icon,
+  Cancel01Icon,
+  CheckmarkCircle01Icon,
+  CornerUpLeftIcon,
+  Delete02Icon,
+  Edit02Icon,
+  HugeiconsIcon,
+  Notification01Icon,
+  NotificationOff01Icon,
+  RotateLeft01Icon,
+} from "@src/icons";
 import { MarkdownContent } from "@src/modules/shared/components/ActivityTimeline";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
@@ -24,6 +28,7 @@ import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTex
 import { ScrollTrailTarget } from "@src/modules/shared/layouts/blocks";
 import type { Person } from "@src/types/core/shared";
 import type { WorkItemComment } from "@src/types/core/workItem";
+import { confirmDestructiveAction } from "@src/util/dialogs/confirmDestructiveAction";
 
 import { WorkItemActivityTimeline } from "./WorkItemActivityTimeline";
 import WorkItemMentionPicker from "./WorkItemMentionPicker";
@@ -37,6 +42,15 @@ interface DiscussionThreadsProps {
   onReply?: (commentId: string | null) => void;
   onResolve?: (threadId: string, conclusionCommentId?: string) => void;
   onReopen?: (threadId: string) => void;
+  onEdit?: (
+    commentId: string,
+    content: string,
+    expectedRevision: number
+  ) => Promise<"saved" | "conflict" | "error">;
+  onDelete?: (
+    commentId: string,
+    expectedRevision: number
+  ) => void | Promise<void>;
 }
 
 function commentAuthor(
@@ -59,9 +73,30 @@ const DiscussionThreads: React.FC<DiscussionThreadsProps> = ({
   onReply,
   onResolve,
   onReopen,
+  onEdit,
+  onDelete,
 }) => {
   const { t } = useTranslation("projects");
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
   const roots = comments.filter((comment) => !comment.parent_id);
+
+  const handleDelete = async (comment: WorkItemComment) => {
+    const confirmed = await confirmDestructiveAction({
+      title: t("workItems.activity.deleteComment", {
+        defaultValue: "Delete comment",
+      }),
+      message: t("workItems.activity.deleteCommentConfirm", {
+        defaultValue:
+          "Delete this comment? Replies stay, the comment body is removed.",
+      }),
+      okLabel: t("common:actions.delete", { defaultValue: "Delete" }),
+      cancelLabel: t("common:actions.cancel", { defaultValue: "Cancel" }),
+    });
+    if (confirmed) {
+      await onDelete?.(comment.id, comment.revision ?? 0);
+    }
+  };
 
   return (
     <div
@@ -91,7 +126,12 @@ const DiscussionThreads: React.FC<DiscussionThreadsProps> = ({
                 </span>
                 {root.resolved_at ? (
                   <span className="inline-flex items-center gap-1 text-success-6">
-                    <CheckCircle2 size={12} aria-hidden />
+                    <HugeiconsIcon
+                      icon={CheckmarkCircle01Icon}
+                      data-icon="check-circle-2"
+                      size={12}
+                      aria-hidden
+                    />
                     {t("workItems.activity.resolved", {
                       defaultValue: "Resolved",
                     })}
@@ -106,9 +146,19 @@ const DiscussionThreads: React.FC<DiscussionThreadsProps> = ({
                   size="mini"
                   icon={
                     root.resolved_at ? (
-                      <RotateCcw size={13} aria-hidden />
+                      <HugeiconsIcon
+                        icon={RotateLeft01Icon}
+                        data-icon="rotate-ccw"
+                        size={13}
+                        aria-hidden
+                      />
                     ) : (
-                      <CheckCircle2 size={13} aria-hidden />
+                      <HugeiconsIcon
+                        icon={CheckmarkCircle01Icon}
+                        data-icon="check-circle-2"
+                        size={13}
+                        aria-hidden
+                      />
                     )
                   }
                   onClick={() =>
@@ -131,6 +181,11 @@ const DiscussionThreads: React.FC<DiscussionThreadsProps> = ({
             <div className="flex flex-col divide-y divide-border-1">
               {threadComments.map((comment, index) => {
                 const author = commentAuthor(comment, currentUser, teamMembers);
+                const isDeleted = Boolean(comment.deleted_at);
+                const isOwn =
+                  comment.author === currentUser.id &&
+                  !comment.agent_session_id;
+                const isEditing = editingCommentId === comment.id;
                 return (
                   <div
                     key={comment.id}
@@ -138,17 +193,12 @@ const DiscussionThreads: React.FC<DiscussionThreadsProps> = ({
                     data-testid={`work-item-discussion-comment-${comment.id}`}
                   >
                     <div className="mb-2 flex items-center gap-2">
-                      <Avatar
+                      <PersonAvatar
                         size={22}
+                        name={author.name}
                         src={author.avatar}
-                        style={{
-                          backgroundColor:
-                            author.color || "var(--color-fill-3)",
-                          color: "var(--color-text-white)",
-                        }}
-                      >
-                        {author.name.charAt(0).toUpperCase()}
-                      </Avatar>
+                        color={author.color}
+                      />
                       <span className="min-w-0 flex-1 truncate text-sm font-medium text-text-1">
                         {author.name}
                       </span>
@@ -159,25 +209,137 @@ const DiscussionThreads: React.FC<DiscussionThreadsProps> = ({
                           })}
                         </span>
                       ) : null}
+                      {comment.edited_at && !isDeleted ? (
+                        <span className="text-xs text-text-4">
+                          {t("workItems.activity.edited", {
+                            defaultValue: "(edited)",
+                          })}
+                        </span>
+                      ) : null}
                       <time className="text-xs text-text-4">
                         {new Date(comment.created_at).toLocaleString()}
                       </time>
                     </div>
-                    <MarkdownContent body={comment.content} clamped={false} />
-                    {onReply ? (
-                      <div className="mt-2 flex justify-end">
-                        <Button
-                          variant="tertiary"
-                          appearance="ghost"
-                          size="mini"
-                          icon={<CornerUpLeft size={13} aria-hidden />}
-                          onClick={() => onReply(comment.id)}
-                          data-testid={`work-item-discussion-reply-${comment.id}`}
-                        >
-                          {t("workItems.activity.reply", {
-                            defaultValue: "Reply",
-                          })}
-                        </Button>
+                    {isDeleted ? (
+                      <p className="text-sm text-text-4 italic">
+                        {t("workItems.activity.commentDeleted", {
+                          defaultValue: "This comment was deleted.",
+                        })}
+                      </p>
+                    ) : isEditing ? (
+                      <div className="flex flex-col gap-2">
+                        <Textarea
+                          value={editDraft}
+                          onChange={(value) => setEditDraft(value)}
+                          size="small"
+                          autoFocus
+                          data-testid={`work-item-discussion-edit-input-${comment.id}`}
+                        />
+                        <div className="flex justify-end gap-1.5">
+                          <Button
+                            variant="tertiary"
+                            appearance="ghost"
+                            size="mini"
+                            onClick={() => setEditingCommentId(null)}
+                          >
+                            {t("common:actions.cancel", {
+                              defaultValue: "Cancel",
+                            })}
+                          </Button>
+                          <Button
+                            variant="primary"
+                            size="mini"
+                            disabled={!editDraft.trim()}
+                            onClick={() => {
+                              void onEdit?.(
+                                comment.id,
+                                editDraft,
+                                comment.revision ?? 0
+                              ).then((outcome) => {
+                                if (outcome !== "error") {
+                                  setEditingCommentId(null);
+                                }
+                              });
+                            }}
+                            data-testid={`work-item-discussion-edit-save-${comment.id}`}
+                          >
+                            {t("common:actions.save", {
+                              defaultValue: "Save",
+                            })}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <MarkdownContent body={comment.content} clamped={false} />
+                    )}
+                    {!isDeleted && !isEditing ? (
+                      <div className="mt-2 flex justify-end gap-1">
+                        {isOwn && onEdit ? (
+                          <Button
+                            variant="tertiary"
+                            appearance="ghost"
+                            size="mini"
+                            icon={
+                              <HugeiconsIcon
+                                icon={Edit02Icon}
+                                data-icon="pencil"
+                                size={13}
+                                aria-hidden
+                              />
+                            }
+                            onClick={() => {
+                              setEditingCommentId(comment.id);
+                              setEditDraft(comment.content);
+                            }}
+                            data-testid={`work-item-discussion-edit-${comment.id}`}
+                          >
+                            {t("common:actions.edit", {
+                              defaultValue: "Edit",
+                            })}
+                          </Button>
+                        ) : null}
+                        {isOwn && onDelete ? (
+                          <Button
+                            variant="tertiary"
+                            appearance="ghost"
+                            size="mini"
+                            icon={
+                              <HugeiconsIcon
+                                icon={Delete02Icon}
+                                data-icon="trash-2"
+                                size={13}
+                                aria-hidden
+                              />
+                            }
+                            onClick={() => void handleDelete(comment)}
+                            data-testid={`work-item-discussion-delete-${comment.id}`}
+                          >
+                            {t("common:actions.delete", {
+                              defaultValue: "Delete",
+                            })}
+                          </Button>
+                        ) : null}
+                        {onReply ? (
+                          <Button
+                            variant="tertiary"
+                            appearance="ghost"
+                            size="mini"
+                            icon={
+                              <HugeiconsIcon
+                                icon={CornerUpLeftIcon}
+                                data-icon="corner-up-left"
+                                size={13}
+                                aria-hidden
+                              />
+                            }
+                            onClick={() => onReply(comment.id)}
+                            data-testid={`work-item-discussion-reply-${comment.id}`}
+                          >
+                            {t("workItems.activity.reply", {
+                              defaultValue: "Reply",
+                            })}
+                          </Button>
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
@@ -198,9 +360,11 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
   onToggleSubscribe,
   commentText,
   onCommentTextChange,
-  mentionedUserIds = [],
-  onMentionedUserIdsChange = () => undefined,
+  mentionRefs = [],
+  onMentionRefsChange = () => undefined,
   teamMembers = [],
+  agents = [],
+  agentOrgs = [],
   onCommentSubmit,
   isSubmittingComment,
   comments = [],
@@ -208,9 +372,12 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
   onReplyToComment,
   onResolveThread,
   onReopenThread,
+  onEditComment,
+  onDeleteComment,
   presentation = "default",
   canComment = true,
   threadNavigation,
+  triggerPreview,
 }) => {
   const { t } = useTranslation("projects");
   const [editorMode, setEditorMode] = useState<MarkdownEditorMode>("write");
@@ -227,9 +394,19 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
       size="mini"
       icon={
         isSubscribed ? (
-          <BellOff size={13} aria-hidden />
+          <HugeiconsIcon
+            icon={NotificationOff01Icon}
+            data-icon="bell-off"
+            size={13}
+            aria-hidden
+          />
         ) : (
-          <Bell size={13} aria-hidden />
+          <HugeiconsIcon
+            icon={Notification01Icon}
+            data-icon="bell"
+            size={13}
+            aria-hidden
+          />
         )
       }
       onClick={onToggleSubscribe}
@@ -266,6 +443,8 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
         onReply={onReplyToComment}
         onResolve={onResolveThread}
         onReopen={onReopenThread}
+        onEdit={onEditComment}
+        onDelete={onDeleteComment}
       />
     ) : null;
   const activityTimeline = (
@@ -277,6 +456,44 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
   );
 
   const hasComment = commentText.trim().length > 0;
+  const PREVIEW_REASON_KEYS: Record<string, string> = {
+    mention: "previewMentionResume",
+    mention_start: "previewMentionStart",
+    mention_unroutable: "previewMentionUnroutable",
+    thread_owner: "previewThread",
+    thread_continuation: "previewThread",
+    assignee: "previewAssignee",
+    assignee_start: "previewAssigneeStart",
+    note_only: "previewNoteOnly",
+    member_thread: "previewMemberThread",
+    no_linked_session: "previewNoSession",
+  };
+  const triggerPreviewChip =
+    hasComment && triggerPreview ? (
+      <div
+        className="flex items-center gap-1.5 self-start rounded-full bg-fill-2 px-2 py-0.5 text-[11px] text-text-3"
+        title={triggerPreview.targetSessionId ?? undefined}
+        data-testid="work-item-discussion-trigger-preview"
+      >
+        <span
+          className={`inline-block h-1.5 w-1.5 rounded-full ${
+            triggerPreview.willWake ? "bg-primary-6" : "bg-fill-4"
+          }`}
+          aria-hidden
+        />
+        {t(
+          `workItems.discussion.${
+            PREVIEW_REASON_KEYS[triggerPreview.reason] ??
+            (triggerPreview.willWake ? "previewWillWake" : "previewNoSession")
+          }`
+        )}
+        {triggerPreview.willCoalesce ? (
+          <span className="text-text-4">
+            · {t("workItems.discussion.previewCoalesce")}
+          </span>
+        ) : null}
+      </div>
+    ) : null;
   const submitButton = (
     <Button
       variant={hasComment ? "primary" : isThread ? "tertiary" : "secondary"}
@@ -284,7 +501,14 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
       shape="circle"
       size="small"
       iconOnly
-      icon={<ArrowUp size={16} aria-hidden />}
+      icon={
+        <HugeiconsIcon
+          icon={ArrowUp02Icon}
+          data-icon="arrow-up"
+          size={16}
+          aria-hidden
+        />
+      }
       title={t("workItems.activity.submitComment", "Submit comment")}
       aria-label={t("workItems.activity.submitComment", "Submit comment")}
       onClick={onCommentSubmit}
@@ -295,16 +519,12 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
 
   const composer = isThread ? (
     <div className="flex items-start gap-2.5">
-      <Avatar
+      <PersonAvatar
         size={28}
+        name={currentUser.name}
         src={currentUser.avatar}
-        style={{
-          backgroundColor: currentUser.color || "var(--color-fill-3)",
-          color: "var(--color-text-white)",
-        }}
-      >
-        {currentUser.name.charAt(0).toUpperCase()}
-      </Avatar>
+        color={currentUser.color}
+      />
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         {replyToCommentId ? (
           <div
@@ -322,7 +542,14 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
               size="mini"
               shape="circle"
               iconOnly
-              icon={<X size={12} aria-hidden />}
+              icon={
+                <HugeiconsIcon
+                  icon={Cancel01Icon}
+                  data-icon="x"
+                  size={12}
+                  aria-hidden
+                />
+              }
               aria-label={t("workItems.activity.cancelReply", {
                 defaultValue: "Cancel reply",
               })}
@@ -333,9 +560,10 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
             />
           </div>
         ) : null}
+        {triggerPreviewChip}
         <ComposerShell
           variant="comment"
-          className="!flex-col !items-stretch"
+          className="flex-col! items-stretch!"
           data-testid="work-item-comment-composer"
         >
           <MarkdownTextareaEditor
@@ -361,10 +589,12 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
             <div className="flex min-w-0 items-center justify-end gap-1.5">
               <WorkItemMentionPicker
                 members={teamMembers}
+                agents={agents}
+                agentOrgs={agentOrgs}
                 currentUserId={currentUser.id}
-                value={mentionedUserIds}
+                value={mentionRefs}
                 disabled={isSubmittingComment}
-                onChange={onMentionedUserIdsChange}
+                onChange={onMentionRefsChange}
               />
               {submitButton}
             </div>
@@ -378,6 +608,9 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
       data-testid="work-item-default-comment-dock"
     >
       <div className="min-w-0 flex-1">
+        {triggerPreviewChip ? (
+          <div className="mb-2">{triggerPreviewChip}</div>
+        ) : null}
         <MarkdownTextareaEditor
           placeholder={t("workItems.activity.commentPlaceholder")}
           value={commentText}
@@ -400,10 +633,12 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
           <div className="flex min-w-0 items-center justify-end gap-1.5">
             <WorkItemMentionPicker
               members={teamMembers}
+              agents={agents}
+              agentOrgs={agentOrgs}
               currentUserId={currentUser.id}
-              value={mentionedUserIds}
+              value={mentionRefs}
               disabled={isSubmittingComment}
-              onChange={onMentionedUserIdsChange}
+              onChange={onMentionRefsChange}
             />
             {submitButton}
           </div>
@@ -445,12 +680,14 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
                 <span className="min-w-0 flex-1">
                   {t("workItems.activity.activityHistory")}
                 </span>
-                <span className="shrink-0 font-normal tabular-nums text-text-4">
+                <span className="shrink-0 font-normal text-text-4 tabular-nums">
                   {t("workItems.activity.activityHistoryCount", {
                     count: activityEntries.length,
                   })}
                 </span>
-                <ChevronRight
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  data-icon="chevron-right"
                   size={14}
                   aria-hidden
                   className="shrink-0 text-text-4 transition-transform group-open:rotate-90"
@@ -483,16 +720,12 @@ const HistoryTab: React.FC<HistoryTabProps> = ({
       >
         <div className="flex items-center gap-3">
           {subscriptionControl}
-          <Avatar
+          <PersonAvatar
             size={24}
+            name={currentUser.name}
             src={currentUser.avatar}
-            style={{
-              backgroundColor: currentUser.color || "var(--color-fill-3)",
-              color: "var(--color-text-white)",
-            }}
-          >
-            {currentUser.name.charAt(0).toUpperCase()}
-          </Avatar>
+            color={currentUser.color}
+          />
         </div>
       </div>
 

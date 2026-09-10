@@ -10,7 +10,6 @@
  * Design: uses shared secondary buttons so pinned actions match other composer controls.
  */
 import { useAtom, useAtomValue } from "jotai";
-import { Layout, MoreHorizontal } from "lucide-react";
 import React, {
   memo,
   useCallback,
@@ -30,10 +29,13 @@ import {
 import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import UserActionButton from "@src/engines/ChatPanel/InputArea/components/UserActionButton";
 import { useCanvasForTurn } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/useCanvasForTurn";
+import { buildBuiltinSlashItems } from "@src/engines/ChatPanel/hooks/useInputArea/builtinSlashItems";
 import { useSlashItemsCache } from "@src/engines/ChatPanel/hooks/useInputArea/useSlashItemsCache";
+import { HugeiconsIcon, Layout01Icon, MoreHorizontalIcon } from "@src/icons";
 import { EditorTabService } from "@src/services/workStation/EditorTabService";
 import {
   type PinnedAction,
+  getPinnedActionKey,
   pinnedActionsAtom,
 } from "@src/store/session/pinnedActionsAtom";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
@@ -44,42 +46,51 @@ import {
 } from "@src/store/workstation/tabs/factories/canvasPreview";
 import type { SlashItem } from "@src/types/extensions";
 import { SLASH_ACTIONS } from "@src/types/extensions";
+import { isCliSession } from "@src/util/session/sessionDispatch";
 
-import { buildMcpToolCommand } from "../SlashCommandPortal/slashItemUtils";
-import PinActionsPanel, { actionKey } from "./PinActionsPanel";
+import {
+  buildMcpToolCommand,
+  insertAtomicSlashActionPill,
+} from "../SlashCommandPortal/slashItemUtils";
+import PinActionsPanel from "./PinActionsPanel";
 
-const BUILTIN_SLASH_ITEMS: SlashItem[] = [
-  {
-    name: SLASH_ACTIONS.SETUP_REPO,
-    description: "Auto-detect the repo and launch a one-click setup session",
-    category: "action",
-    source: "builtin",
-    acceptsArgs: false,
-  },
-];
+const SETUP_REPO_SLASH_ITEM: SlashItem = {
+  name: SLASH_ACTIONS.SETUP_REPO,
+  description: "Auto-detect the repo and launch a one-click setup session",
+  category: "action",
+  source: "builtin",
+  acceptsArgs: false,
+};
 
 // ── sub-components ────────────────────────────────────────────────────────────
 
 interface ActionPillProps {
   action: PinnedAction;
   onClick: (action: PinnedAction, e?: React.MouseEvent) => void;
+  /**
+   * Display label override. Built-ins whose raw name would read ambiguously
+   * next to sibling controls pass a localized label ("canvas" pinned next to
+   * the "Canvas" preview-reopen button → "New Canvas").
+   */
+  label?: string;
   /** Forward a ref onto the underlying button. */
   buttonRef?: React.Ref<HTMLButtonElement>;
 }
 
 const ActionPill: React.FC<ActionPillProps> = memo(
-  ({ action, onClick, buttonRef }) => {
+  ({ action, onClick, label, buttonRef }) => {
+    const displayLabel = label ?? action.name;
     const button = (
       <Button
         ref={buttonRef}
         variant="secondary"
         size="small"
         shape="round"
-        title={action.name}
+        title={displayLabel}
         onClick={(event) => onClick(action, event)}
         className={`max-w-180 shrink-0 select-none ${PILL_CONTROL_IDLE_SURFACE_CLASS}`}
       >
-        {action.name}
+        {displayLabel}
       </Button>
     );
 
@@ -116,6 +127,22 @@ export interface PinnedActionsBarProps {
   trailingContent?: React.ReactNode;
   manageButtonPlacement?: "after-actions" | "after-leading" | "before-actions";
   managePanelAlign?: "left" | "right";
+  /** Show the divider before controls when `manageButtonPlacement` is `before-actions`. */
+  showBeforeActionsSeparator?: boolean;
+  /** Show the pinned quick-action pills and their management controls. */
+  showPinnedActions?: boolean;
+}
+
+export function getUnresolvedPinnedSkillsKey(
+  pinnedActions: PinnedAction[],
+  showPinnedActions: boolean
+): string {
+  if (!showPinnedActions) return "";
+  return pinnedActions
+    .filter((action) => action.category === "skill" && !action.skillPath)
+    .map((action) => action.skillName ?? action.name)
+    .sort()
+    .join("\0");
 }
 
 const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
@@ -127,6 +154,8 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     trailingContent,
     manageButtonPlacement = "after-actions",
     managePanelAlign = "right",
+    showBeforeActionsSeparator = true,
+    showPinnedActions = true,
   }) => {
     const { t } = useTranslation("sessions");
     const [pinnedActions, setPinnedActions] = useAtom(pinnedActionsAtom);
@@ -137,6 +166,19 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
         .map((folder) => folder.path.replace(/\/+$/, ""))
         .filter(Boolean);
     }, [workspaceFolders, workspacePaths]);
+    const builtinSlashItems = useMemo(
+      () => [
+        ...buildBuiltinSlashItems({
+          canvasDescription: t("input.canvasCommandDescription"),
+          compactDescription: t("input.compactCommandDescription"),
+          // CLI agents have no render_inline_canvas tool — don't offer
+          // pinning an action whose projection would have to no-op there.
+          includeCanvas: !(sessionId && isCliSession(sessionId)),
+        }),
+        SETUP_REPO_SLASH_ITEM,
+      ],
+      [t, sessionId]
+    );
 
     // ── Canvas pill ───────────────────────────────────────────────────────────
 
@@ -181,7 +223,7 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
       loading: loadingItems,
       fetchFresh,
     } = useSlashItemsCache({
-      builtinItems: BUILTIN_SLASH_ITEMS,
+      builtinItems: builtinSlashItems,
       workspacePaths: effectiveWorkspacePaths,
     });
 
@@ -202,13 +244,8 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     // mounting the input stays free. The scan itself is bounded/coalesced by
     // the shared scanner, and the full "…" panel list still loads on open.
     const unresolvedPinnedSkillsKey = useMemo(
-      () =>
-        pinnedActions
-          .filter((action) => action.category === "skill" && !action.skillPath)
-          .map((action) => action.skillName ?? action.name)
-          .sort()
-          .join("\0"),
-      [pinnedActions]
+      () => getUnresolvedPinnedSkillsKey(pinnedActions, showPinnedActions),
+      [pinnedActions, showPinnedActions]
     );
 
     useEffect(() => {
@@ -231,19 +268,17 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
       setPanelOpen(false);
     }, []);
 
-    const hasPinnedActions = pinnedActions.length > 0;
-    const resolvedPinnedActions = useMemo(
-      () =>
-        pinnedActions.map((action) => {
-          if (action.category !== "skill" || action.skillPath) return action;
-          const skillPath = skillPathByName.get(
-            action.skillName ?? action.name
-          );
-          return skillPath ? { ...action, skillPath } : action;
-        }),
-      [pinnedActions, skillPathByName]
-    );
-    const showCanvasAction = showCanvasPill && !isCanvasTabOpen;
+    const hasPinnedActions = showPinnedActions && pinnedActions.length > 0;
+    const resolvedPinnedActions = useMemo(() => {
+      if (!showPinnedActions) return [];
+      return pinnedActions.map((action) => {
+        if (action.category !== "skill" || action.skillPath) return action;
+        const skillPath = skillPathByName.get(action.skillName ?? action.name);
+        return skillPath ? { ...action, skillPath } : action;
+      });
+    }, [pinnedActions, showPinnedActions, skillPathByName]);
+    const showCanvasAction =
+      showPinnedActions && showCanvasPill && !isCanvasTabOpen;
     const hasActionPills = showCanvasAction || hasPinnedActions;
     const hasTrailingContent = Boolean(trailingContent);
     const showTrailingSeparator = hasActionPills || hasTrailingContent;
@@ -253,10 +288,10 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     const handleTogglePin = useCallback(
       (action: PinnedAction) => {
         setPinnedActions((prev) => {
-          const key = actionKey(action);
-          const exists = prev.some((a) => actionKey(a) === key);
+          const key = getPinnedActionKey(action);
+          const exists = prev.some((a) => getPinnedActionKey(a) === key);
           return exists
-            ? prev.filter((a) => actionKey(a) !== key)
+            ? prev.filter((a) => getPinnedActionKey(a) !== key)
             : [...prev, action];
         });
       },
@@ -276,6 +311,10 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
             handleSetupRepo();
             return;
           }
+          if (!composerInputRef.current) return;
+          // Every remaining built-in action (canvas, compact) is an atomic
+          // composer token; a stale pin with an unknown name is a no-op.
+          insertAtomicSlashActionPill(composerInputRef.current, action.name);
           return;
         }
 
@@ -320,7 +359,14 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
         appearance="outline"
         size="small"
         shape="round"
-        icon={<MoreHorizontal size={14} strokeWidth={1.75} />}
+        icon={
+          <HugeiconsIcon
+            icon={MoreHorizontalIcon}
+            data-icon="ellipsis"
+            size={14}
+            strokeWidth={1.75}
+          />
+        }
         iconOnly
         title={t("input.pinnedActions.manage")}
         aria-label={t("input.pinnedActions.manage")}
@@ -334,7 +380,14 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
         {showCanvasAction && (
           <div className="shrink-0">
             <UserActionButton
-              leftIcon={<Layout size={12} strokeWidth={1.75} />}
+              leftIcon={
+                <HugeiconsIcon
+                  icon={Layout01Icon}
+                  data-icon="panels-top-left"
+                  size={12}
+                  strokeWidth={1.75}
+                />
+              }
               title="Canvas"
               onClick={handleOpenCanvas}
               onClose={handleClearCanvas}
@@ -344,8 +397,16 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
 
         {resolvedPinnedActions.map((action) => (
           <ActionPill
-            key={actionKey(action)}
+            key={getPinnedActionKey(action)}
             action={action}
+            // The canvas CREATION action would otherwise render "canvas"
+            // right next to the pre-existing "Canvas" preview-reopen button.
+            label={
+              action.category === "action" &&
+              action.name === SLASH_ACTIONS.CANVAS
+                ? t("input.newCanvasAction", "New Canvas")
+                : undefined
+            }
             onClick={handlePillClick}
           />
         ))}
@@ -355,34 +416,44 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
     return (
       <div className="relative flex min-w-0 flex-1 items-center gap-1">
         {manageButtonPlacement === "before-actions" ? (
-          <>
+          // Creator controls and pinned actions share one bounded scroll row.
+          <div className="scrollbar-hide flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5">
             <div className="flex shrink-0 items-center gap-1">
               {leadingContent}
               {trailingContent}
             </div>
-            <div aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border-2" />
-            <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 scrollbar-hide">
-              {manageButton}
-              {actionPills}
-            </div>
-          </>
+            {showPinnedActions && (
+              <>
+                {showBeforeActionsSeparator && (
+                  <div
+                    aria-hidden
+                    className="mx-1 h-4 w-px shrink-0 bg-border-2"
+                  />
+                )}
+                <div className="flex shrink-0 items-center gap-1">
+                  {manageButton}
+                  {actionPills}
+                </div>
+              </>
+            )}
+          </div>
         ) : manageButtonPlacement === "after-leading" ? (
           <>
             <div className="flex shrink-0 items-center gap-1">
               {leadingContent}
-              {manageButton}
+              {showPinnedActions && manageButton}
             </div>
             {showTrailingSeparator && (
               <div aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border-2" />
             )}
-            <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 scrollbar-hide">
+            <div className="scrollbar-hide flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5">
               {trailingContent}
               {actionPills}
             </div>
           </>
         ) : (
           <>
-            <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 scrollbar-hide">
+            <div className="scrollbar-hide flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5">
               {leadingContent}
               {actionPills}
             </div>
@@ -390,12 +461,12 @@ const PinnedActionsBar: React.FC<PinnedActionsBarProps> = memo(
               <div aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border-2" />
             )}
             {trailingContent}
-            {manageButton}
+            {showPinnedActions && manageButton}
           </>
         )}
 
         <PinActionsPanel
-          visible={panelOpen}
+          visible={showPinnedActions && panelOpen}
           availableItems={availableItems}
           pinnedActions={pinnedActions}
           onTogglePin={handleTogglePin}

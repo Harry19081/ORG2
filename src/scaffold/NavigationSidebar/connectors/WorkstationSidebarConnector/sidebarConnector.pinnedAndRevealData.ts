@@ -1,6 +1,6 @@
 /**
  * Pinned menu items, the rename modal, the currently-highlighted session id
- * (chat-panel terminal tab / benchmark master row / active session), and
+ * (chat-panel terminal tab / active session), and
  * the merged reveal-candidate list for `WorkstationSidebarConnector`
  * (`index.tsx`).
  */
@@ -9,18 +9,17 @@ import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
-import { benchmarkAgentBatchStatusAtom } from "@src/store/benchmark";
-import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import type { SessionCreatorDraft } from "@src/store/session";
 import { toChatPanelTuiSessionId } from "@src/util/ui/terminal/chatPanelTuiSessionId";
 
 import { useRenameSessionModal } from "../useRenameSessionModal";
-import type { WorkstationSidebarViewKey } from "./WorkstationSidebarViewSwitcher";
 import { isCloudScopedLocalRow } from "./cloudScopedMenuItems";
 import {
   usePinnedMenuItems,
   useSessionSidebarMenuItems,
 } from "./sidebarMenuCollections";
+import type { SessionSidebarView } from "./types";
 import { buildWorkItemsSidebarMenuItems } from "./workItemsSidebarMenuItems";
 
 interface UseWorkstationSidebarPinnedAndRevealDataParams {
@@ -28,7 +27,12 @@ interface UseWorkstationSidebarPinnedAndRevealDataParams {
   cloudMenuItems: NavigationMenuItem[];
   menuItems: readonly NavigationMenuItem[];
   sessionCreatorDrafts: readonly SessionCreatorDraft[];
-  activeViewKey: WorkstationSidebarViewKey;
+  activeViewKey: SessionSidebarView;
+  sessionSearchLabel: string;
+  sessionRefreshLabel: string;
+  sessionRefreshIconClassName?: string;
+  onSessionSearch: () => void;
+  onSessionRefresh: () => void;
   createProjectLabel: string;
   createWorkItemLabel: string;
   importGithubIssuesLabel: string;
@@ -46,6 +50,11 @@ export function useWorkstationSidebarPinnedAndRevealData({
   menuItems,
   sessionCreatorDrafts,
   activeViewKey,
+  sessionSearchLabel,
+  sessionRefreshLabel,
+  sessionRefreshIconClassName,
+  onSessionSearch,
+  onSessionRefresh,
   createProjectLabel,
   createWorkItemLabel,
   importGithubIssuesLabel,
@@ -58,18 +67,13 @@ export function useWorkstationSidebarPinnedAndRevealData({
 }: UseWorkstationSidebarPinnedAndRevealDataParams) {
   const rename = useRenameSessionModal();
   const activeChatPanelTab = useAtomValue(activeChatPanelTabAtom);
-  const benchmarkBatchStatus = useAtomValue(benchmarkAgentBatchStatusAtom);
   const activeChatPanelTuiSessionId =
     activeChatPanelTab?.type === "terminal"
       ? toChatPanelTuiSessionId(activeChatPanelTab.id)
       : "";
   const highlightedSessionId = activeChatPanelTuiSessionId
     ? activeChatPanelTuiSessionId
-    : benchmarkBatchStatus?.items.some(
-          (item) => item.sessionId === activeSessionId
-        )
-      ? benchmarkBatchStatus.masterSessionId
-      : activeSessionId;
+    : activeSessionId;
 
   const workItemsSidebarMenuItems = useMemo(
     () =>
@@ -99,6 +103,11 @@ export function useWorkstationSidebarPinnedAndRevealData({
   const sessionSidebarMenuItems = useSessionSidebarMenuItems({
     menuItems,
     sessionCreatorDrafts,
+    searchLabel: sessionSearchLabel,
+    refreshLabel: sessionRefreshLabel,
+    refreshIconClassName: sessionRefreshIconClassName,
+    onSearch: onSessionSearch,
+    onRefresh: onSessionRefresh,
     t,
   });
   const loadedCloudMySessionRowCount = useMemo(

@@ -57,7 +57,7 @@ import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { createLogger } from "@src/hooks/logger";
 import { sessionsAtom } from "@src/store/session/sessionAtom/atoms";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 
 import type { ProjectSyncBridge } from "../TeamCollaboration/engine/projectSyncBridge";
@@ -147,6 +147,7 @@ import {
   resolveContinuationStatusesViaCache,
   resolveLocalSessionIdsViaAggregateList,
 } from "./org2CloudSyncEngine.vanishedSessions";
+import { recordSyncEvent } from "./org2CloudSyncJournal";
 import {
   type CloudStore,
   Org2CloudSyncLifecycle,
@@ -187,6 +188,12 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
   private readonly orgBackoff: Org2CloudOrgBackoffTracker;
   /** Generation whose background-org retract reconcile already ran (P2). */
   private reconciledGeneration = -1;
+  /** "orgId|sessionId" keys whose push failed with ORG2_RETENTION_EXPIRED.
+   * Retention only recedes further within a signed-in run, so the push is
+   * doomed until the org's entitlement changes — parked until the next
+   * resetSyncState() (sign-in cycle / endpoint switch / app restart)
+   * instead of re-walking the full upload chain every pass. */
+  private readonly retentionParked = new Set<string>();
   /** TTL-gated `org2CloudRepoScopesAtom` mirror hydration, split out to
    * `Org2CloudRepoScopeSync`. */
   private readonly repoScopeSync: Org2CloudRepoScopeSync;
@@ -324,6 +331,7 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
   }
 
   protected override resetSyncState(): void {
+    this.retentionParked.clear();
     this.orgBackoff.reset();
     this.sessionSync.reset();
     this.repoScopeSync.reset();
@@ -439,8 +447,16 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
         resolveOrgEndpoint(org, getCloudEndpoint()),
       ])
     );
+    // Explicitly tagged sessions must publish (and keep publishing
+    // updates) no matter which org the user is looking at — otherwise
+    // Move to Org completes its awaited pass without ever visiting the
+    // target org, reports success, and the session stays invisible to
+    // every other member until the owner happens to activate that org.
     const sessionPushOrgs = orgs.filter(
-      (org) => this.isActiveOrg(org.orgId) || isOrgBackgroundUploadEnabled(org)
+      (org) =>
+        this.isActiveOrg(org.orgId) ||
+        isOrgBackgroundUploadEnabled(org) ||
+        orgsWithTaggedSessions.has(org.orgId)
     );
     await this.repoScopeSync.hydrateRepoScopes(
       fresh,
@@ -483,6 +499,9 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
       for (const session of store.get(sessionsAtom)) {
         if (this.generation !== generation) return;
         if (!isCloudPushCandidate(session)) continue;
+        if (this.retentionParked.has(`${org.orgId}|${session.session_id}`)) {
+          continue;
+        }
         // A fork is a continuation inside the source collaboration boundary,
         // not a new ordinary repo session. Repo scopes may overlap across a
         // team org and the forker's personal org, so scope matching alone
@@ -601,10 +620,9 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
         if (matchedScope === undefined) {
           // A pending or failed network-identity lookup cannot prove
           // out-of-scope. Skip until the resolver's completion event runs one
-          // coalesced follow-up pass.
-          log.rateLimited(
-            `scope-check-deferred-${session.session_id}-${org.orgId}`,
-            60_000,
+          // coalesced follow-up pass. Expected steady-state on every poll
+          // while resolution is in flight — trace-level, not console noise.
+          log.trace(
             `scope check deferred for session ${session.session_id} org ` +
               `${org.orgId}: network identity unresolved this pass`
           );
@@ -617,7 +635,9 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
           // the first passes after launch. Skip the session until this run
           // has read the org's scopes from the server.
           if (!this.repoScopeSync.hasServerConfirmedScopes(org.orgId)) {
-            log.info(
+            // Same expected steady-state as the network-identity wait above:
+            // fires on every poll until the org's scopes land — trace-level.
+            log.trace(
               `scope check deferred for session ${session.session_id} org ` +
                 `${org.orgId}: repo scopes not yet confirmed this run`
             );
@@ -739,6 +759,25 @@ export class Org2CloudSyncEngine extends Org2CloudSyncLifecycle {
           if (isCloudSyncBackoffError(error)) {
             this.orgBackoff.backOffOrg(org.orgId, error);
             break; // Stop touching this org for the rest of the run.
+          }
+          if (
+            org2CloudSyncClient.isOrg2SyncErrorCode(
+              error,
+              "ORG2_RETENTION_EXPIRED"
+            )
+          ) {
+            this.retentionParked.add(`${org.orgId}|${session.session_id}`);
+            recordSyncEvent({
+              level: "warn",
+              kind: "session_retention_parked",
+              orgId: org.orgId,
+              message: `Push parked for session ${session.session_id}: past the org's retention window`,
+              code: "ORG2_RETENTION_EXPIRED",
+            });
+            log.warn(
+              `cloud push parked for retention-expired session ${session.session_id}`
+            );
+            continue;
           }
           log.warn(
             `cloud push failed for session ${session.session_id}:`,

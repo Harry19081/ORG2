@@ -1,4 +1,3 @@
-import { RefreshCw } from "lucide-react";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,16 +6,18 @@ import {
   type ContainerEngineCandidate,
 } from "@src/api/tauri/container";
 import Button from "@src/components/Button";
+import { TEXT_HOVER_REFRESH_BUTTON_PROPS } from "@src/components/Button/refreshActionProps";
+import { Placeholder } from "@src/components/Placeholder";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import {
   CollapsibleSection,
   DETAIL_PANEL_TOKENS,
-  Placeholder,
 } from "@src/modules/shared/layouts/blocks";
 
 interface ContainerEnginesSectionProps {
@@ -129,9 +130,16 @@ const ContainerEnginesSection: React.FC<ContainerEnginesSectionProps> = ({
       compact={compact}
       actions={
         <Button
-          variant="tertiary"
+          {...TEXT_HOVER_REFRESH_BUTTON_PROPS}
           size="mini"
-          icon={<RefreshCw size={13} className={spinClass} />}
+          icon={
+            <HugeiconsIcon
+              icon={Refresh04Icon}
+              data-icon="refresh-cw"
+              size={13}
+              className={spinClass}
+            />
+          }
           onClick={handleRefreshClick}
           aria-label={t("common:actions.refresh")}
         />

@@ -7,18 +7,20 @@
  * Sessions cache, so this component owns no network request, timer,
  * subscription, or cache.
  */
-import { MessageSquareText } from "lucide-react";
 import { type ReactNode, Suspense, lazy, memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import Avatar from "@src/components/Avatar";
+import PersonAvatar from "@src/components/PersonAvatar";
 import Select from "@src/components/Select";
+import Tag from "@src/components/Tag";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import type {
   MemberRuntimeListEntry,
   OrgRuntimeTelemetry,
 } from "@src/features/Org2Cloud/memberRuntime/types";
 import { MEMBER_RECENT_USAGE_WINDOW_MS } from "@src/features/Org2Cloud/memberRuntime/types";
 import type { CloudRemoteSessionsFetchState } from "@src/features/Org2Cloud/org2CloudRemoteSessionsAtom";
+import { HugeiconsIcon, Message02Icon } from "@src/icons";
 import {
   SECTION_SUBHEADING_CLASSES,
   SectionContainer,
@@ -29,6 +31,7 @@ import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import {
   aggregateMemberRecentUsageTrends,
   buildOrgRuntimeTodaySnapshot,
+  isRuntimeStale,
   recentSharedSessions,
 } from "./teamRuntimeData";
 import { BucketIcon, bucketLabelKey } from "./usageBuckets";
@@ -53,7 +56,7 @@ interface TodayMetricProps {
 function TodayMetric({ label, value, secondary, testId }: TodayMetricProps) {
   return (
     <div
-      className="flex min-w-0 flex-col gap-1.5 rounded-xl border border-border-1 bg-primary-container p-4"
+      className={`flex min-w-0 flex-col gap-1.5 ${DETAIL_PANEL_TOKENS.primaryContainer}`}
       data-testid={testId}
     >
       <span className="truncate text-xs text-text-2">{label}</span>
@@ -163,21 +166,10 @@ function TeamRuntimeToday({
     [members]
   );
 
-  const systemSecondary = [
-    snapshot.averageCpuPercent == null
-      ? null
-      : `${t("card.cpu")} ${Math.round(snapshot.averageCpuPercent)}%`,
-    snapshot.averageRamPercent == null
-      ? null
-      : `${t("card.ram")} ${Math.round(snapshot.averageRamPercent)}%`,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-
   return (
     <div className="flex flex-col gap-5" data-testid="team-runtime-today">
       <div
-        className="flex min-h-9 flex-wrap items-center justify-between gap-3"
+        className="sticky top-0 z-20 flex min-h-9 flex-wrap items-center justify-between gap-3 bg-chat-pane"
         data-testid="team-runtime-title-row"
       >
         <h3 className={SECTION_SUBHEADING_CLASSES}>{t("overview.today")}</h3>
@@ -194,6 +186,10 @@ function TeamRuntimeToday({
                 }
                 appearance="ghost"
                 size="small"
+                showSearch
+                dropdownMinWidth={240}
+                dropdownWidthMode="min-match"
+                className="w-48"
                 dataTestId="team-runtime-person-select"
               />
             ) : null}
@@ -242,19 +238,6 @@ function TeamRuntimeToday({
         />
       </div>
 
-      <div
-        className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-border-1 bg-fill-1 px-3 py-2 text-xs text-text-3"
-        data-testid="team-runtime-system-pulse"
-      >
-        <span className="font-medium text-text-2">
-          {t("overview.systemsCurrent", {
-            current: snapshot.currentSystems,
-            total: snapshot.memberCount,
-          })}
-        </span>
-        {systemSecondary ? <span>{systemSecondary}</span> : null}
-      </div>
-
       <section
         className="flex min-w-0 flex-col gap-3"
         data-testid="team-runtime-usage-trend"
@@ -289,9 +272,6 @@ function TeamRuntimeToday({
           <h3 className={SECTION_SUBHEADING_CLASSES}>
             {t("overview.members")}
           </h3>
-          <span className="shrink-0 text-xs text-text-3">
-            {tUsage("usage.range.24h")}
-          </span>
         </div>
         <SectionContainer>
           {memberUsage.length === 0 ? (
@@ -315,12 +295,25 @@ function TeamRuntimeToday({
                   }`}
                   data-testid={`team-runtime-member-usage-${member.userId}`}
                 >
-                  <Avatar size={28} src={member.avatarUrl ?? undefined}>
-                    {displayName.slice(0, 1).toUpperCase()}
-                  </Avatar>
+                  <PersonAvatar
+                    size={20}
+                    boxSize={24}
+                    name={displayName}
+                    src={member.avatarUrl ?? undefined}
+                  />
                   <span className="min-w-0 flex-1 truncate text-sm text-text-2">
                     {displayName}
                   </span>
+                  {!isRuntimeStale(member.reportedAt, telemetry, nowMs) ? (
+                    <span
+                      className="shrink-0"
+                      data-testid={`team-runtime-member-online-${member.userId}`}
+                    >
+                      <Tag size="mini" color="success" pill>
+                        {t("common:status.online")}
+                      </Tag>
+                    </span>
+                  ) : null}
                   <span className="shrink-0 text-right text-xs text-text-3">
                     {summary ? (
                       <>
@@ -357,12 +350,8 @@ function TeamRuntimeToday({
                   className="flex items-center justify-between gap-3 border-b border-border-1 px-4 py-3 last:border-b-0"
                   data-testid={`team-runtime-source-${source.bucket}`}
                 >
-                  <span className="flex min-w-0 items-center gap-2 text-sm text-text-2">
-                    <BucketIcon
-                      bucket={source.bucket}
-                      size={16}
-                      className="shrink-0"
-                    />
+                  <span className="flex min-w-0 items-center gap-3 text-sm text-text-2">
+                    <BucketIcon bucket={source.bucket} size={16} boxSize={24} />
                     <span className="truncate">
                       {tUsage(bucketLabelKey(source.bucket))}
                     </span>
@@ -393,11 +382,12 @@ function TeamRuntimeToday({
                   className="flex w-full items-center gap-3 border-b border-border-1 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-fill-1"
                   data-testid={`team-runtime-recent-session-${session.id}`}
                 >
-                  <Avatar size={28} src={session.ownerAvatarUrl}>
-                    {(session.ownerDisplayName || "?")
-                      .slice(0, 1)
-                      .toUpperCase()}
-                  </Avatar>
+                  <PersonAvatar
+                    size={20}
+                    boxSize={24}
+                    name={session.ownerDisplayName ?? ""}
+                    src={session.ownerAvatarUrl}
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium text-text-1">
                       {session.title || session.sourceSessionId}
@@ -410,7 +400,12 @@ function TeamRuntimeToday({
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5 text-[11px] text-text-3">
-                    <MessageSquareText className="h-3.5 w-3.5" aria-hidden />
+                    <HugeiconsIcon
+                      icon={Message02Icon}
+                      data-icon="message-square-text"
+                      className="h-3.5 w-3.5"
+                      aria-hidden
+                    />
                     {session.lastActivityAt
                       ? formatRelativeTime(session.lastActivityAt, "nano")
                       : "—"}

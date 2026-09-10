@@ -4,13 +4,13 @@ import ComposerSurface from "@src/components/ComposerSurface";
 import Input from "@src/components/Input";
 import Select from "@src/components/Select";
 import type { SelectOption } from "@src/components/Select";
-import { CloudSessionReferencePreview } from "@src/features/Org2Cloud/CloudSessionReferencePreview";
 import { useSessionReferenceDropTarget } from "@src/features/Org2Cloud/useSessionReferenceDropTarget";
 import MarkdownTextareaEditor, {
   type MarkdownEditorMode,
   type MarkdownTextareaEditorRef,
 } from "@src/modules/shared/components/MarkdownTextareaEditor";
 import MarkdownEditorModeSwitch from "@src/modules/shared/components/MarkdownTextareaEditor/ModeSwitch";
+import { compactRepositoryLabel } from "@src/modules/shared/githubRepositoryLabel";
 import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import Modal from "@src/scaffold/ModalSystem";
 
@@ -78,7 +78,7 @@ export function CreateIssueModal({
   const repoOptions = useMemo<SelectOption[]>(
     () =>
       repoSources.map((item) => ({
-        label: item.repoFullName,
+        label: compactRepositoryLabel(item.repoFullName),
         value: item.repoFullName,
       })),
     [repoSources]
@@ -105,10 +105,6 @@ export function CreateIssueModal({
       visible={open}
       title={labels.title}
       onCancel={handleCancel}
-      onOk={handleCreate}
-      okText={creating ? labels.creating : labels.create}
-      cancelText={labels.cancel}
-      okButtonProps={{ loading: creating, disabled: !source || !title.trim() }}
       footer={
         <PanelFooter
           left={
@@ -157,8 +153,8 @@ export function CreateIssueModal({
         <ComposerSurface
           ref={bodyDropTargetRef}
           variant="default"
-          className={`overflow-visible !pt-1.5 ${
-            bodyDragOver ? "!ring-2 !ring-primary-6" : ""
+          className={`overflow-visible pt-1.5! ${
+            bodyDragOver ? "ring-2! ring-primary-6!" : ""
           }`.trim()}
           data-testid="create-github-issue-description"
         >
@@ -175,7 +171,6 @@ export function CreateIssueModal({
             onModeChange={setEditorMode}
             dataTestId="create-github-issue-description-editor"
           />
-          <CloudSessionReferencePreview text={body} className="px-1.5" />
         </ComposerSurface>
       </div>
     </Modal>

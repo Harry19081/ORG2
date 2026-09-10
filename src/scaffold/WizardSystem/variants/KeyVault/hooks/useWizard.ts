@@ -13,8 +13,8 @@ import {
   type SaveKeyRequest,
 } from "@src/api/tauri/rpc/schemas/validation";
 import { LOCAL_MODEL_PROVIDER, type ModelType } from "@src/api/types/keys";
-import { isPlaceholderModelName } from "@src/components/ModelTable/unifiedCustomFlatExtras";
-import { useUndoableState } from "@src/hooks/ui";
+import { useUndoableState } from "@src/hooks/ui/useUndoableState";
+import { isPlaceholderModelName } from "@src/util/customModelIdentity";
 
 import { DEFAULT_WIZARD_DATA } from "../config";
 import type { WizardData } from "../types";
@@ -51,7 +51,7 @@ const OAUTH_ENV_VARS_BY_AGENT: Record<
 // Hook Options
 // ============================================
 
-export interface UseWizardOptions {
+interface UseWizardOptions {
   onSubmit: (data: SaveKeyRequest) => void;
   /** Initial data to pre-populate */
   initialData?: Partial<WizardData>;
@@ -63,7 +63,7 @@ export interface UseWizardOptions {
 // Hook Return Type
 // ============================================
 
-export interface UseWizardReturn {
+interface UseWizardReturn {
   /** Wizard data */
   data: WizardData;
   /** Update wizard data */

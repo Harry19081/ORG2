@@ -108,6 +108,7 @@ pub enum ModelType {
     Pi,
     QoderCli,
     TraeCli,
+    DeepseekHarness,
     // Direct API key providers
     AnthropicApi,
     OpenaiApi,
@@ -176,6 +177,7 @@ impl ModelType {
             ModelType::Pi => "pi",
             ModelType::QoderCli => "qoder_cli",
             ModelType::TraeCli => "trae_cli",
+            ModelType::DeepseekHarness => "deepseek_harness",
             // API key providers
             ModelType::AnthropicApi => "anthropic_api",
             ModelType::OpenaiApi => "openai_api",
@@ -238,6 +240,7 @@ impl ModelType {
             "pi" => Some(ModelType::Pi),
             "qoder_cli" | "qodercli" => Some(ModelType::QoderCli),
             "trae_cli" | "trae-agent" => Some(ModelType::TraeCli),
+            "deepseek_harness" | "dsh" => Some(ModelType::DeepseekHarness),
             // API key providers
             "anthropic_api" | "anthropic" => Some(ModelType::AnthropicApi),
             "openai_api" | "openai" => Some(ModelType::OpenaiApi),
@@ -306,6 +309,7 @@ impl ModelType {
                 | ModelType::Pi
                 | ModelType::QoderCli
                 | ModelType::TraeCli
+                | ModelType::DeepseekHarness
         )
     }
 
@@ -541,6 +545,16 @@ impl ModelKey {
             last_upstream_error_type: None,
             rate_limit_reset_at: None,
             enabled: true,
+        }
+    }
+
+    /// Restore catalog invariants owned by this account type.
+    pub(crate) fn normalize_model_catalog(&mut self) {
+        if self.is_native_oauth_for(&ModelType::Codex) {
+            crate::model_catalog::complete_codex_oauth_model_catalog(
+                &mut self.available_models,
+                &self.enabled_models,
+            );
         }
     }
 

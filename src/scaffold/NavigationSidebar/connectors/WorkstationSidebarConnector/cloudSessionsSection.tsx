@@ -40,6 +40,7 @@ import {
   writeHiddenRemoteSessionIds,
 } from "@src/features/Org2Cloud/cloudHiddenRemoteSessions";
 import {
+  isRemoteSessionPinned,
   readPinnedRemoteSessionIds,
   togglePinnedRemoteSession,
   writePinnedRemoteSessionIds,
@@ -52,9 +53,11 @@ import {
 } from "@src/features/Org2Cloud/cloudRemoteItemId";
 import { cloudDownloadStartRequestAtom } from "@src/features/Org2Cloud/cloudSessionDownloadControlAtoms";
 import { filterCloudSessionRows } from "@src/features/Org2Cloud/cloudSessionFilter";
+import { buildCloudSessionReference } from "@src/features/Org2Cloud/cloudSessionReference";
 import {
   buildCloudSessionThreads,
   collectCloudFlatListExcludedSessionIds,
+  collectTeamConversationSessionIds,
 } from "@src/features/Org2Cloud/cloudSessionThreads";
 import { org2CloudAuthAtom } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import { org2CloudPresenceAtom } from "@src/features/Org2Cloud/org2CloudPresenceAtom";
@@ -64,22 +67,25 @@ import {
   org2CloudPushedMetadataAtom,
 } from "@src/features/Org2Cloud/org2CloudSyncAtoms";
 import { REFUSAL_MESSAGE_DURATION_MS } from "@src/features/Org2Cloud/referenceRefusalMessage";
-import { useCloudSessionActions } from "@src/features/Org2Cloud/useCloudSessionActions";
+import {
+  type CloudSessionReplayOptions,
+  useCloudSessionActions,
+} from "@src/features/Org2Cloud/useCloudSessionActions";
 import {
   useCloudSessionDownloadProgressEntry,
   useCloudSessionPendingPlayEntry,
 } from "@src/features/Org2Cloud/useCloudSessionDownloadSurface";
-import { useRefreshSpin } from "@src/hooks/ui";
 import { useSessionView } from "@src/hooks/ui/tabs/useSessionView";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
-import { openOrReplaceSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpenAtoms";
+import { openOrReplaceSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabOpen/session";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { loadSidebarSessionById, removeSession } from "@src/store/session";
+import { copyText } from "@src/util/data/clipboard";
 
-import {
-  CLOUD_SESSION_SECTION_PAGE_SIZE,
-  CLOUD_TEAM_SESSIONS_LOAD_MORE_ID,
-} from "./cloudScopedMenuItems";
+import type { SidebarTabDisposition } from "../sidebarTabNavigation";
+import { CLOUD_TEAM_SESSIONS_LOAD_MORE_ID } from "./cloudScopedMenuItems";
+import { buildCloudSessionNativeMenuItems } from "./cloudSessionNativeMenuItems";
 import { useCloudMemberFilterDropdown } from "./cloudSessionsSection.MemberFilterDropdown";
 import {
   type CloudAutoReplaySkipReason,
@@ -104,11 +110,14 @@ export function useCloudSessionsSection({
   filter,
   activeSessionId,
   localSessionHydrationLimit,
+  groupVisibleCount,
   revealedMenuItemId,
+  openSessionAtDestination,
   onFilterChange,
 }: UseCloudSessionsSectionParams): UseCloudSessionsSectionResult {
   const { t } = useTranslation("navigation");
   const { t: tCommon } = useTranslation("common");
+  const { t: tSessions } = useTranslation("sessions");
   const store = useStore();
   const { rows, state, fetchedAt, documentVisible, refresh } =
     useCloudOrgRemoteSessions(orgId);
@@ -192,14 +201,17 @@ export function useCloudSessionsSection({
     const memberKey = filter.kind === "member" ? filter.ownerUserId : "";
     return `${orgId}\u001f${filter.kind}\u001f${memberKey}`;
   }, [filter, orgId]);
-  const [teamPagination, setTeamPagination] = useState({
+  const [teamPagination, setTeamPagination] = useState<{
+    scopeKey: string;
+    visibleCount: number;
+  }>({
     scopeKey: "",
-    visibleCount: CLOUD_SESSION_SECTION_PAGE_SIZE,
+    visibleCount: groupVisibleCount,
   });
   const requestedTeamVisibleCount =
     teamPagination.scopeKey === teamPaginationScopeKey
       ? teamPagination.visibleCount
-      : CLOUD_SESSION_SECTION_PAGE_SIZE;
+      : groupVisibleCount;
   const revealedThreadIndex = useMemo(() => {
     if (!revealedMenuItemId) return -1;
     return threads.findIndex((thread) =>
@@ -222,17 +234,25 @@ export function useCloudSessionsSection({
   );
   const resetCloudTeamPagination = useCallback(() => {
     setTeamPagination((current) =>
-      resetScopedSectionPagination(current, CLOUD_SESSION_SECTION_PAGE_SIZE)
+      resetScopedSectionPagination(current, groupVisibleCount)
     );
-  }, []);
+  }, [groupVisibleCount]);
 
-  // Imported teammate replays materialize a local read-only cache row. Hide
-  // only those caches from My Sessions; writable local sessions never move
-  // into Team Conversations.
+  // Imported teammate replays materialize a local read-only cache row: hide
+  // those caches from My Sessions. Own sessions that belong to a MULTI-owner
+  // conversation family hide too — the family's Team Sessions thread is the
+  // conversation's single sidebar entry (badge and thread included).
   const cloudFlatListExcludedSessionIds = useMemo(() => {
     if (!orgId) return new Set<string>();
-    return collectCloudFlatListExcludedSessionIds(sessions, orgId);
-  }, [orgId, sessions]);
+    const excluded = collectCloudFlatListExcludedSessionIds(sessions, orgId);
+    for (const sessionId of collectTeamConversationSessionIds(
+      rows,
+      selfUserId
+    )) {
+      excluded.add(sessionId);
+    }
+    return excluded;
+  }, [orgId, sessions, rows, selfUserId]);
 
   const pendingPlay = useCloudSessionPendingPlayEntry(activeSessionId);
   const downloadProgress =
@@ -290,15 +310,15 @@ export function useCloudSessionsSection({
   );
 
   const runReplay = useCallback(
-    (row: RemoteTeammateSessionMetadata, options?: { skipGate?: boolean }) => {
+    (
+      row: RemoteTeammateSessionMetadata,
+      options?: CloudSessionReplayOptions
+    ) => {
       // The replay is starting: the pre-phase toast has served its purpose
       // (a no-op for sidebar-origin clicks that never showed one).
       dismissCloudReferenceOpeningToast();
       resubscribeRemoteRow(row);
-      void replaySession(
-        row,
-        options?.skipGate ? { skipDownloadGate: true } : undefined
-      );
+      void replaySession(row, options);
     },
     [replaySession, resubscribeRemoteRow]
   );
@@ -324,7 +344,7 @@ export function useCloudSessionsSection({
       if (startKind === "fork") {
         void forkSession(row, { skipDownloadGate: true });
       } else {
-        runReplay(row, { skipGate: true });
+        runReplay(row, { skipDownloadGate: true });
       }
     });
   }, [downloadStartRequest, findRow, forkSession, orgId, runReplay, store]);
@@ -334,6 +354,52 @@ export function useCloudSessionsSection({
       void forkSession(row);
     },
     [forkSession]
+  );
+
+  const openTeamSessionAtDestination = useCallback(
+    (
+      row: RemoteTeammateSessionMetadata,
+      destination: SidebarTabDisposition | "my-station" | "new-window"
+    ) => {
+      const openLocalSession = (sessionId: string) => {
+        openSessionAtDestination(destination, {
+          sessionId,
+          title: row.title,
+        });
+      };
+
+      // A viewer's own row in a multi-owner conversation remains the writable
+      // local original. Never mint a read-only imported copy for it.
+      if (
+        row.ownerUserId === selfUserId &&
+        localOwnSessionIds.has(row.sourceSessionId)
+      ) {
+        openLocalSession(row.sourceSessionId);
+        return;
+      }
+
+      // A replay already in flight has already chosen its deterministic local
+      // id. The destination action should still work instead of becoming a
+      // dead menu item while the transcript downloads.
+      const busy = busySessionRows.get(row.id);
+      if (busy) {
+        if (busy.kind === "replay" && busy.localSessionId) {
+          openLocalSession(busy.localSessionId);
+        }
+        return;
+      }
+
+      runReplay(row, {
+        openSurface: ({ localSessionId }) => openLocalSession(localSessionId),
+      });
+    },
+    [
+      busySessionRows,
+      localOwnSessionIds,
+      openSessionAtDestination,
+      runReplay,
+      selfUserId,
+    ]
   );
 
   const { openSession } = useSessionView();
@@ -417,15 +483,14 @@ export function useCloudSessionsSection({
   });
 
   const handleCloudSessionItemClick = useCallback(
-    (item: NavigationMenuItem): boolean => {
+    (item: NavigationMenuItem, disposition: SidebarTabDisposition): boolean => {
       if (item.id === CLOUD_TEAM_SESSIONS_LOAD_MORE_ID) {
         setTeamPagination((current) => ({
           scopeKey: teamPaginationScopeKey,
           visibleCount:
             (current.scopeKey === teamPaginationScopeKey
               ? current.visibleCount
-              : CLOUD_SESSION_SECTION_PAGE_SIZE) +
-            CLOUD_SESSION_SECTION_PAGE_SIZE,
+              : groupVisibleCount) + groupVisibleCount,
         }));
         return true;
       }
@@ -436,26 +501,35 @@ export function useCloudSessionsSection({
       if (!row || row.eventsEpoch === undefined) {
         return true;
       }
+      // The viewer's own member row of a team conversation (multi-owner
+      // families surface own rows in this section): open the LOCAL session
+      // directly — replaying a copy of one's own transcript is never right.
+      if (
+        row.ownerUserId === selfUserId &&
+        localOwnSessionIds.has(row.sourceSessionId)
+      ) {
+        openTeamSessionAtDestination(row, disposition);
+        return true;
+      }
       // A row already downloading refocuses its tab instead of a dead click;
       // other rows are NOT blocked by someone else's in-flight action.
       const busy = busySessionRows.get(row.id);
       if (busy) {
         if (busy.kind === "replay" && busy.localSessionId) {
-          openOrReplaceSessionTab({
-            sessionId: busy.localSessionId,
-            sessionName: row.title,
-          });
+          openTeamSessionAtDestination(row, disposition);
         }
         return true;
       }
-      runReplay(row);
+      openTeamSessionAtDestination(row, disposition);
       return true;
     },
     [
       busySessionRows,
       findRow,
-      openOrReplaceSessionTab,
-      runReplay,
+      localOwnSessionIds,
+      openTeamSessionAtDestination,
+      selfUserId,
+      groupVisibleCount,
       teamPaginationScopeKey,
     ]
   );
@@ -504,24 +578,80 @@ export function useCloudSessionsSection({
     });
   }, []);
 
-  const handleCloudRemoteItemRemove = useCallback(
-    (item: NavigationMenuItem): boolean => {
-      const parsed = parseCloudRemoteItemId(item.id);
-      if (!parsed) return false;
-      const row = findRow(parsed.rowId);
-      if (row) hideRemoteSession(row);
-      return true;
+  const buildRemoteSessionMenuItems = useCallback(
+    (row: RemoteTeammateSessionMetadata) => {
+      const isPinned = isRemoteSessionPinned(
+        pinnedRemoteSessionIds,
+        row.orgId,
+        row.id
+      );
+      return buildCloudSessionNativeMenuItems({
+        labels: {
+          openInNewTab: tCommon("actions.openInNewTab", "Open in New Tab"),
+          openInNewWindow: tCommon(
+            "actions.openInNewWindow",
+            "Open in New Window"
+          ),
+          openInMyStation: tSessions(
+            "controlTower.sidebar.openInMyStation",
+            "Open in My Station"
+          ),
+          copyUrl: t("cloud.sidebar.copyUrl"),
+          togglePin: isPinned
+            ? tCommon("sessions:chat.unpinSession", "Unpin")
+            : tCommon("sessions:chat.pinSession", "Pin"),
+          remove: tCommon("actions.remove", "Remove"),
+        },
+        onOpenInNewTab: () => openTeamSessionAtDestination(row, "new-tab"),
+        onOpenInNewWindow: () =>
+          openTeamSessionAtDestination(row, "new-window"),
+        onOpenInMyStation: () =>
+          openTeamSessionAtDestination(row, "my-station"),
+        onCopyUrl: () => {
+          void copyText(buildCloudSessionReference(row))
+            .then(() => {
+              Message.success(tCommon("status.copied"));
+            })
+            .catch(() => {
+              Message.error(tCommon("status.copyFailed"));
+            });
+        },
+        onTogglePin: () => toggleRemoteSessionPin(row.orgId, row.id),
+        onRemove: () => hideRemoteSession(row),
+      });
     },
-    [findRow, hideRemoteSession]
+    [
+      hideRemoteSession,
+      openTeamSessionAtDestination,
+      pinnedRemoteSessionIds,
+      t,
+      tCommon,
+      tSessions,
+      toggleRemoteSessionPin,
+    ]
+  );
+
+  const buildCloudRemoteItemMenuItems = useCallback(
+    (item: NavigationMenuItem) => {
+      const parsed = parseCloudRemoteItemId(item.id);
+      if (!parsed) return [];
+      const row = findRow(parsed.rowId);
+      if (!row || row.eventsEpoch === undefined) return [];
+      return buildRemoteSessionMenuItems(row);
+    },
+    [buildRemoteSessionMenuItems, findRow]
   );
 
   const buildRowItem = useCloudSessionRowItemBuilder({
     presenceMap,
     selfUserId,
+    sessions,
+    localOwnSessionIds,
+    sourceEndpointUrl: auth?.supabaseUrl,
     t,
     tCommon,
     runFork,
-    hideRemoteSession,
+    buildNativeMenuItems: buildRemoteSessionMenuItems,
     busySessionRows,
     pinnedRemoteSessionIds,
     toggleRemoteSessionPin,
@@ -569,7 +699,7 @@ export function useCloudSessionsSection({
     selectedCloudMenuItemId,
     handleCloudSessionItemClick,
     resetCloudTeamPagination,
-    handleCloudRemoteItemRemove,
+    buildCloudRemoteItemMenuItems,
     cloudMemberFilterDropdown,
     cloudRemoteRowMap,
     cloudRemoteViewerMap,

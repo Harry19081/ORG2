@@ -34,10 +34,6 @@ import { useDataContext } from "@src/contexts/workspace/DataContext";
 import { parseCompactSlashCommand } from "@src/engines/ChatPanel/hooks/useManualCompact";
 import useWorkspaceChat from "@src/engines/ChatPanel/hooks/useWorkspaceChat";
 import { useRepositoryInfo } from "@src/engines/SessionCore";
-import { sortedEventsAtom } from "@src/engines/SessionCore/core/atoms/events";
-import { sessionHasComposerStopBlockingWork } from "@src/engines/SessionCore/core/runningEventGate";
-import type { SessionEvent } from "@src/engines/SessionCore/core/types";
-import { isPlanDisplayEvent } from "@src/engines/SessionCore/derived/planDisplayEvents";
 import { useSessionId } from "@src/engines/SessionCore/hooks/session";
 import { createLogger } from "@src/hooks/logger";
 import { usePendingPlanApproval } from "@src/hooks/session/usePendingPlanApproval";
@@ -45,31 +41,37 @@ import {
   useSessionDraftField,
   useSessionReplyField,
 } from "@src/hooks/session/useSessionPatch";
-import { getPlanDocViewModel } from "@src/modules/WorkStation/Chat/Communication/MessageViewer/planDocViewModel";
 import {
   isPendingCancelAtom,
   isSessionActiveAtom,
   sessionRuntimeStatusAtom,
 } from "@src/store/session/cliSessionStatusAtom";
 import { sessionByIdAtom } from "@src/store/session/sessionAtom/atoms";
-import { wpReadOnlyAtom } from "@src/store/ui/chatPanelAtom";
+import { wpReadOnlyAtom } from "@src/store/ui/chatPanel/miscAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { getCompactPathLabel } from "@src/util/file/pathUtils";
 import { formatRepoPathForDisplay } from "@src/util/file/repoPathDisplay";
+import { isCliSession } from "@src/util/session/sessionDispatch";
 import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
-import {
-  buildCompactFilesReloadKey,
-  countChatRounds,
-} from "../../InputArea/components/compactFileChangesHelpers";
+import { buildCompactFilesReloadKey } from "../../InputArea/components/compactFileChangesHelpers";
 import { useCompactFileData } from "../../InputArea/components/useCompactFileData";
 import {
   readImageDraft,
   writeImageDraft,
 } from "../../InputArea/utils/imageDraftCache";
 import { applyParsedContent } from "../../InputArea/utils/pillContentParser";
+import { canvasSlashCommandNeedsInstruction } from "./canvasSlashCommand";
 import { resolveDraftRestoreAction } from "./draftRestore";
+import {
+  type PlanMentionSourceItem,
+  resolveInputAreaWorkingState,
+  useInputAreaChatRoundCount,
+  useInputAreaComposerStopBlockingWork,
+  useInputAreaPlanMentionSource,
+  useInputAreaRunnerTurnActive,
+} from "./inputAreaEventSelectors";
 import type {
   CustomMentionOption,
   UseInputAreaOptions,
@@ -87,9 +89,6 @@ import { usePromptPolish } from "./usePromptPolish";
 import { useSlashCommand } from "./useSlashCommand";
 import { useSubmitMessage } from "./useSubmitMessage";
 import { useUploadContext } from "./useUploadContext";
-
-// Re-export types
-export type { UseInputAreaOptions, UseInputAreaReturn } from "./types";
 
 const logger = createLogger("useInputArea");
 const MAX_DRAFT_RESTORE_CHARS = 20_000;
@@ -117,13 +116,8 @@ function getDraftRestoreSkipReason(draftText: string): string | null {
   return null;
 }
 
-function getPlanMentionPath(event: SessionEvent): string | null {
-  const planPath = getPlanDocViewModel(event).planPath;
-  return planPath && planPath.trim() ? planPath : null;
-}
-
 function buildPlanMentionOptions(
-  events: ReadonlyArray<SessionEvent>,
+  planSources: ReadonlyArray<PlanMentionSourceItem>,
   pendingPlan: { planPath: string; planTitle: string } | null | undefined
 ): CustomMentionOption[] {
   const options: CustomMentionOption[] = [];
@@ -142,14 +136,12 @@ function buildPlanMentionOptions(
     });
   }
 
-  for (let index = events.length - 1; index >= 0; index -= 1) {
-    const event = events[index];
-    if (!isPlanDisplayEvent(event)) continue;
-    const planPath = getPlanMentionPath(event);
+  for (const source of planSources) {
+    const planPath = source.planPath;
     if (!planPath || seenPaths.has(planPath)) continue;
 
     seenPaths.add(planPath);
-    const title = getPlanDocViewModel(event).title;
+    const title = source.title;
     options.push({
       id: `plan-file:${planPath}`,
       label: title || getCompactPathLabel(planPath),
@@ -173,10 +165,11 @@ export function useInputArea(
     customMentionOptions,
     onSubmitOverride,
     sessionId: propSessionId,
-    addressSessionId: propAddressSessionId,
+    controlSessionId,
     sessionScope = "active",
     submitDisabled = false,
     enableAgentInterceptors = true,
+    executionControlsEnabled = true,
   } = options;
 
   // ============================================
@@ -197,6 +190,10 @@ export function useInputArea(
   // Workspace Chat
   // ============================================
 
+  const conversationRunnerTurnActive = useInputAreaRunnerTurnActive(
+    controlSessionId ?? null
+  );
+
   const {
     handleSessInputChange,
     handleSessChatSubmit,
@@ -205,7 +202,11 @@ export function useInputArea(
     isHosted,
     canStopAgent,
     canResume,
-  } = useWorkspaceChat({ sessionId: propSessionId, sessionScope });
+  } = useWorkspaceChat({
+    sessionId: propSessionId,
+    sessionScope,
+    controlSessionId,
+  });
 
   // ============================================
   // Atoms (Global State)
@@ -219,7 +220,8 @@ export function useInputArea(
   const isSessionActive = isSessionless ? false : rawIsSessionActive;
   const isPendingCancel = isSessionless ? false : rawIsPendingCancel;
 
-  const sessionEvents = useAtomValue(sortedEventsAtom);
+  const chatRoundCount = useInputAreaChatRoundCount();
+  const planMentionSource = useInputAreaPlanMentionSource();
   // Retry is only meaningful for `failed` runs. A user-initiated cancel should
   // never surface the orange retry button — the user stopped on purpose.
   const isSessionTerminal = !isSessionless && runtimeStatus === "failed";
@@ -265,24 +267,27 @@ export function useInputArea(
       ? undefined
       : (propSessionId ?? resolvedActiveSessionId);
   const draftSessionId = activeSessionId ?? "";
-  const hasComposerStopBlockingWork = activeSessionId
-    ? sessionHasComposerStopBlockingWork(
-        sessionEvents,
-        activeSessionId,
-        runtimeStatus
-      )
-    : false;
+  const hasComposerStopBlockingWork = useInputAreaComposerStopBlockingWork(
+    activeSessionId,
+    runtimeStatus
+  );
 
   // Visual "agent is working" flag — drives the Stop vs. Send icon.
   // This uses the composer-specific gate: foreground tools remain stoppable,
   // while background processes and hidden status sentinels stay in footer/replay
   // surfaces without keeping the main button stuck in Stop.
-  const isWpGeneWorking =
-    (isSessionActive || hasComposerStopBlockingWork) && !isPendingCancel;
+  const isWpGeneWorking = resolveInputAreaWorkingState({
+    runnerSessionId: controlSessionId ?? null,
+    runnerTurnActive: conversationRunnerTurnActive,
+    sourceSessionActive: isSessionActive,
+    hasComposerStopBlockingWork,
+    pendingCancel: isPendingCancel,
+    executionControlsEnabled,
+  });
 
   const sessionFileReloadKey = buildCompactFilesReloadKey(
     activeSessionId ?? null,
-    countChatRounds(sessionEvents),
+    chatRoundCount,
     isWpGeneWorking
   );
   const { allFiles: sessionFiles } = useCompactFileData({
@@ -325,8 +330,8 @@ export function useInputArea(
     [currentRepoPath, sessionFiles]
   );
   const planMentionOptions = useMemo<ReadonlyArray<CustomMentionOption>>(
-    () => buildPlanMentionOptions(sessionEvents, pendingPlan),
-    [pendingPlan, sessionEvents]
+    () => buildPlanMentionOptions(planMentionSource, pendingPlan),
+    [pendingPlan, planMentionSource]
   );
   const mergedCustomMentionOptions = useMemo(
     () => [
@@ -387,8 +392,6 @@ export function useInputArea(
     setSlashQuery: state.setSlashQuery,
     workspacePaths: skillWorkspacePaths,
     sessionId: activeSessionId,
-    addressSessionId:
-      propAddressSessionId ?? propSessionId ?? resolvedActiveSessionId ?? null,
   });
 
   const imageAttachment = useImageAttachment(dropTargetId);
@@ -492,6 +495,7 @@ export function useInputArea(
   }, [state]);
 
   const [compactHintVisible, setCompactHintVisible] = useState(false);
+  const [canvasHintVisible, setCanvasHintVisible] = useState(false);
 
   const handleContentChange = useCallback(
     (text: string) => {
@@ -508,6 +512,16 @@ export function useInputArea(
           compactDraft !== null && !compactDraft.instructions
         );
       }
+
+      // Argument ghost hint for `/canvas` (same shape as compact). Gated the
+      // way the submit projection is: composers that opt out of interceptors
+      // and CLI sessions send the command through as ordinary text, so no
+      // hint there.
+      setCanvasHintVisible(
+        enableAgentInterceptors &&
+          !isCliSession(activeSessionId ?? null) &&
+          canvasSlashCommandNeedsInstruction(cleanedText)
+      );
 
       // Pass to workspace chat handler
       handleSessInputChange(draftText);
@@ -528,7 +542,9 @@ export function useInputArea(
       }
     },
     [
+      activeSessionId,
       draftSessionId,
+      enableAgentInterceptors,
       handlePromptPolishContentChange,
       handleSessInputChange,
       refs,
@@ -600,8 +616,6 @@ export function useInputArea(
   const handleDivSubmit = useSubmitMessage({
     refs,
     draftSessionId,
-    addressSessionId:
-      propAddressSessionId ?? propSessionId ?? resolvedActiveSessionId ?? null,
     replyTargetEventId,
     flushDraft,
     clearReplyTarget,
@@ -666,7 +680,6 @@ export function useInputArea(
     containerRef: refs.containerRef,
     contextMenuKeyboardHandlerRef: refs.contextMenuKeyboardHandlerRef,
     slashCommandKeyboardHandlerRef: refs.slashCommandKeyboardHandlerRef,
-    plusSlashCommandKeyboardHandlerRef: refs.plusSlashCommandKeyboardHandlerRef,
     hasContentRef: refs.hasContentRef,
 
     // Input state
@@ -674,7 +687,9 @@ export function useInputArea(
     setIsInputFocused: state.setIsInputFocused,
     handleInputBlur,
     handleContentChange,
-    compactHintVisible,
+    compactHintVisible:
+      compactHintVisible && activeSession?.cliAgentType !== "codex",
+    canvasHintVisible,
     handleAtMention: atMention.handleAtMention,
     handleAtMentionClose: atMention.handleAtMentionClose,
     isInputEmpty,
@@ -695,14 +710,11 @@ export function useInputArea(
     handleSlashCommand: slashCommand.handleSlashCommand,
     handleSlashCommandClose: slashCommand.handleSlashCommandClose,
     handleSlashSelect: slashCommand.handleSlashSelect,
-    handleSlashAppendSelect: slashCommand.handleSlashAppendSelect,
     handleModeSelect: slashCommand.handleModeSelect,
     currentMode: slashCommand.currentMode,
     includeProjectMode: slashCommand.includeProjectMode,
     filteredSlashItems: slashCommand.filteredItems,
     slashLoading: slashCommand.slashLoading,
-    prefetchSlashItems: slashCommand.prefetchItems,
-    addressCommentsFlyout: slashCommand.addressCommentsFlyout,
 
     // File selection
     handleSelectFile: fileSelection.handleSelectFile,

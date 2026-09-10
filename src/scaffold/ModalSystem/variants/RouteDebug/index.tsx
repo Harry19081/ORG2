@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import { useLocation, useMatches, useParams } from "react-router-dom";
 
 import Message from "@src/components/Message";
-import { routeDebugModalOpenAtom } from "@src/store";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
+import { routeDebugModalOpenAtom } from "@src/store/ui/uiAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 function buildRouteText(
@@ -64,7 +64,7 @@ export const RouteDebugModal: React.FC = () => {
 
     // Reset the atom so the next Cmd+0 re-triggers
     getInstrumentedStore().set(routeDebugModalOpenAtom, false);
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, devMode, location.pathname, location.search, params, matches]);
 
   return null;
 };

@@ -18,6 +18,8 @@
  */
 import { atom } from "jotai";
 
+import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
+
 export interface CloudPausedDownloadCursor {
   epoch: number;
   seq: number;
@@ -64,12 +66,18 @@ export const clearCloudPausedDownloadAtom = atom(
 clearCloudPausedDownloadAtom.debugLabel = "org2cloud/clearPausedDownload";
 
 export interface CloudPendingPlay {
+  /** Endpoint + account that authorized the source row. */
+  authIdentityKey: string;
   rowId: string;
   orgId: string;
+  /** Authoritative source identity before the local replay row exists. */
+  sourceSession: RemoteTeammateSessionMetadata;
   /** Canonical source icon shown before a local replay row exists. */
   iconId: string;
   /** Safe remote workspace/branch labels retained until a local row exists. */
   sessionEnvironment?: CloudSessionEnvironmentIdentity;
+  /** Source owner retained for the rail before a local replay row exists. */
+  sessionOwner?: CloudSessionOwnerIdentity;
   /** Events the download would actually fetch (listing count minus covered). */
   pendingEvents: number;
   etaMs: number;
@@ -86,6 +94,13 @@ export interface CloudSessionEnvironmentIdentity {
   branchName?: string;
   baseBranchName?: string;
   worktreeBranchName?: string;
+}
+
+export interface CloudSessionOwnerIdentity {
+  /** Stable source identifier; display surfaces prefer displayName. */
+  identityId: string;
+  displayName?: string;
+  avatarUrl?: string;
 }
 
 /** Keyed by the LOCAL imported-session id (the Chat Pane tab's key). */

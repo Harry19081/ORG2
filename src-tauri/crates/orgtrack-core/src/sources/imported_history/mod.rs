@@ -1,4 +1,6 @@
 pub mod cache;
+pub mod context_usage;
+pub mod client_origin;
 pub mod managed_mirror;
 pub mod managed_roots;
 pub mod metadata;
@@ -6,6 +8,7 @@ pub mod paths;
 #[cfg(feature = "git")]
 pub mod repo_identity;
 pub mod scan_snapshot;
+pub mod scratch_workspace;
 pub mod watermark;
 pub mod window;
 
@@ -17,6 +20,7 @@ use core_types::activity::ActivityChunk;
 use serde::Serialize;
 use serde_json::{json, Value};
 
+use self::client_origin::ImportedClientOrigin;
 use self::metadata::ImportedHistoryImpactStats;
 
 pub const IMPORTED_HISTORY_CATEGORY: &str = "external_history";
@@ -38,6 +42,111 @@ pub const FUNCTION_CODE_SEARCH: &str = "grep";
 pub const FUNCTION_GLOB_FILE_SEARCH: &str = "glob_file_search";
 pub const FUNCTION_AWAIT_OUTPUT: &str = "await_output";
 pub const DEFAULT_LIST_LIMIT: usize = 200;
+
+const REQUEST_HEADINGS: [&str; 2] = ["## My request for Codex:", "## My request:"];
+const GENERATED_CONTEXT_TAGS: [(&str, &str); 4] = [
+    ("<timestamp", "</timestamp>"),
+    ("<in-app-browser-context", "</in-app-browser-context>"),
+    ("<orgii_provider_context", "</orgii_provider_context>"),
+    (
+        "<orgii_cli_exec_mode_bridge",
+        "</orgii_cli_exec_mode_bridge>",
+    ),
+];
+const GENERATED_TITLE_PREFIXES: [&str; 5] = [
+    "# Files mentioned by the user:",
+    "<in-app-browser-context",
+    "<orgii_provider_context",
+    "<orgii_cli_exec_mode_bridge",
+    "<ide_context",
+];
+const ATTACHED_IMAGE_INSTRUCTION: &str = "IMPORTANT: The user attached ";
+
+/// Whether a provider title is actually a generated prompt envelope rather
+/// than a user-authored session name.
+pub fn is_generated_prompt_envelope(text: &str) -> bool {
+    let trimmed = text.trim_start();
+    GENERATED_TITLE_PREFIXES
+        .iter()
+        .any(|prefix| trimmed.starts_with(prefix))
+}
+
+pub fn needs_prompt_title_repair(text: &str) -> bool {
+    is_generated_prompt_envelope(text) || text.contains(ATTACHED_IMAGE_INSTRUCTION)
+}
+
+/// Strip transport-generated prompt wrappers and return the user-authored
+/// request body **with its original formatting intact**.
+///
+/// Replayed message bodies are rendered as markdown, so line breaks,
+/// indentation, and fenced code blocks the user typed are load-bearing and
+/// must survive. Callers that need a one-line label want
+/// [`project_user_request_text`] instead.
+pub fn extract_user_request_body(text: &str) -> String {
+    let mut projected = strip_internal_context_blocks(text).to_string();
+    for (open_prefix, close_tag) in GENERATED_CONTEXT_TAGS {
+        while let Some(start) = projected.find(open_prefix) {
+            let Some(open_end_relative) = projected[start..].find('>') else {
+                break;
+            };
+            let content_start = start + open_end_relative + 1;
+            let Some(close_relative) = projected[content_start..].find(close_tag) else {
+                break;
+            };
+            let end = content_start + close_relative + close_tag.len();
+            projected.replace_range(start..end, " ");
+        }
+    }
+    projected = strip_internal_context_blocks(&projected).to_string();
+
+    let request_start = REQUEST_HEADINGS
+        .iter()
+        .filter_map(|heading| projected.rfind(heading).map(|index| (index, heading.len())))
+        .max_by_key(|(index, _)| *index);
+    let body = request_start
+        .map(|(index, heading_len)| &projected[index + heading_len..])
+        .unwrap_or(&projected);
+    let body = body
+        .find(ATTACHED_IMAGE_INSTRUCTION)
+        .map(|index| &body[..index])
+        .unwrap_or(body);
+    body.trim().to_string()
+}
+
+/// Project transport-generated prompt wrappers to a single-line title.
+///
+/// Titles render on one line, so every whitespace run — including the user's
+/// own newlines — is collapsed to a single space. This is correct for session
+/// names and wrong for message bodies; use [`extract_user_request_body`] for
+/// anything the user reads back as their own prompt.
+pub fn project_user_request_text(text: &str) -> String {
+    extract_user_request_body(text)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// Resolve a provider sidebar name while preserving real user-set titles.
+pub fn resolve_imported_session_name(
+    preferred_title: &str,
+    first_prompt: &str,
+    fallback: &str,
+    max_len: usize,
+) -> String {
+    if !preferred_title.trim().is_empty() {
+        let projected_title = project_user_request_text(preferred_title);
+        if !projected_title.is_empty() && !is_generated_prompt_envelope(&projected_title) {
+            return truncate_name(&projected_title, max_len);
+        }
+    }
+
+    let prompt_title = project_user_request_text(first_prompt);
+    if !prompt_title.is_empty() && !is_generated_prompt_envelope(&prompt_title) {
+        return truncate_name(&prompt_title, max_len);
+    }
+
+    truncate_name(fallback, max_len)
+}
 
 /// Drop one unparsable record from a source sync instead of failing the sync.
 ///
@@ -132,6 +241,13 @@ fn imported_history_loader(session_id: &str) -> Option<ImportedHistoryLoader> {
     } else {
         None
     }
+}
+
+/// Whether `session_id` is owned by one of the canonical imported-history
+/// readers. Cross-surface consumers use this instead of duplicating the
+/// provider prefix table and silently drifting as providers are added.
+pub fn is_imported_history_session_id(session_id: &str) -> bool {
+    imported_history_loader(session_id).is_some()
 }
 
 /// Load one imported provider session through its existing canonical history
@@ -235,6 +351,12 @@ pub struct ImportedHistorySessionRow {
     pub lines_removed: i64,
     pub touched_files: Vec<String>,
     pub parent_session_id: Option<String>,
+    /// Which client produced this session. Omitted when the source records no
+    /// provenance, so the UI renders no badge rather than guessing.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_origin: Option<ImportedClientOrigin>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_origin_raw: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -297,6 +419,12 @@ pub struct ImportedHistorySidebarRow {
     pub lines_added: i64,
     pub lines_removed: i64,
     pub touched_files: Vec<String>,
+    /// Which client produced this session. Absent when the source records no
+    /// provenance, and for rows cached before the parser captured it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_origin: Option<ImportedClientOrigin>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_origin_raw: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -333,6 +461,8 @@ pub struct ImportedHistoryRowInput {
     pub lines_removed: i64,
     pub touched_files: Vec<String>,
     pub parent_session_id: Option<String>,
+    pub client_origin: Option<ImportedClientOrigin>,
+    pub client_origin_raw: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -451,6 +581,8 @@ pub fn row_from_input(input: ImportedHistoryRowInput) -> ImportedHistorySessionR
         lines_removed: input.lines_removed,
         touched_files: input.touched_files,
         parent_session_id: input.parent_session_id,
+        client_origin: input.client_origin,
+        client_origin_raw: input.client_origin_raw,
     }
 }
 
@@ -517,12 +649,11 @@ pub fn recent_paths_from_paths(
     recent_paths
 }
 
-/// Internal wrapper blocks ORGII prepends to the prompt it hands the CLI:
-/// the GUI exec-mode briefing and the IDE-context injection
-/// (`inject_ide_context_into_prompt`). The CLI's native transcript stores
-/// the full prompt verbatim, so replay readers must strip these to recover
-/// what the user actually typed.
+/// Internal wrapper blocks ORGII prepends to the prompt it hands the CLI.
+/// The CLI's native transcript stores the full prompt verbatim, so replay
+/// readers must strip these to recover what the user actually typed.
 const INTERNAL_CONTEXT_BLOCKS: &[(&str, &str)] = &[
+    ("<orgii_provider_context>", "</orgii_provider_context>"),
     (
         "<orgii_cli_exec_mode_bridge>",
         "</orgii_cli_exec_mode_bridge>",
@@ -562,8 +693,8 @@ pub fn strip_internal_context_blocks(text: &str) -> &str {
     }
 }
 
-/// GUI-launched runs prefix the task with an internal exec-mode briefing;
-/// strip it so titles/replay show only what the user typed.
+/// GUI-launched runs prefix the task with internal provider, exec-mode, and
+/// IDE context; strip them so titles/replay show only what the user typed.
 ///
 /// Back-compat name: now also strips the `<ide_context>` injection via
 /// [`strip_internal_context_blocks`].
@@ -658,6 +789,15 @@ pub fn task_lifecycle_chunk(
     chunk
 }
 
+/// Native CLI controls can finish without a model turn. Keep their stdout as
+/// a command result, never invent an assistant reply or drop the result.
+pub fn native_command_output_chunk(session_id: &str, output: &str, success: bool) -> ActivityChunk {
+    let mut chunk = ActivityChunk::new(session_id, ACTION_TYPE_TOOL_CALL, "native_command");
+    chunk.args = json!({"native_command": true});
+    chunk.result = json!({"success":success,"status":if success { "completed" } else { "failed" },"output":output,"observation":output,"raw_tool_name":"Claude Code command"});
+    chunk
+}
+
 pub fn tool_call_chunk(
     session_id: &str,
     provider_slug: &str,
@@ -676,6 +816,28 @@ pub fn tool_call_chunk(
         "output": output,
         "observation": output,
         "raw_tool_name": call.raw_name,
+    });
+    chunk
+}
+
+/// A provider-native transcript ended with a tool call but no matching result.
+/// Keep it visible as interrupted diagnostics, while making the missing result
+/// machine-readable so cross-provider projection can exclude the invalid tail.
+pub fn unresolved_tool_call_chunk(
+    session_id: &str,
+    provider_slug: &str,
+    sequence: usize,
+    call: &ImportedToolCall,
+) -> ActivityChunk {
+    let mut chunk = tool_call_chunk(session_id, provider_slug, sequence, call, "");
+    chunk.result = json!({
+        "success": false,
+        "status": "pending",
+        "call_id": call.call_id,
+        "output": "",
+        "observation": "",
+        "raw_tool_name": call.raw_name,
+        "interrupted": true,
     });
     chunk
 }
@@ -945,9 +1107,11 @@ mod impact_tests {
 
         for (session_id, expected) in cases {
             assert_eq!(imported_history_loader(session_id), Some(expected));
+            assert!(is_imported_history_session_id(session_id));
         }
         assert_eq!(imported_history_loader("kimiapp-hook-id"), None);
         assert_eq!(imported_history_loader("org2-native-id"), None);
+        assert!(!is_imported_history_session_id("org2-native-id"));
     }
 
     #[test]
@@ -983,5 +1147,41 @@ mod impact_tests {
             .with_result(json!({"success": true, "status": "failed"}));
 
         assert_eq!(impact_from_edit_chunks(&[failed]).files_changed, 0);
+    }
+}
+
+#[cfg(test)]
+mod user_request_projection_tests {
+    use super::*;
+
+    const MULTI_LINE_PROMPT: &str =
+        "Update the loader.\n\n```rust\nfn load() {\n    todo!();\n}\n```\n\n  keep this indented";
+
+    #[test]
+    fn body_extraction_keeps_user_formatting_while_dropping_the_envelope() {
+        let wrapped = format!(
+            "<orgii_cli_exec_mode_bridge>\nbriefing\n</orgii_cli_exec_mode_bridge>\n## My request:\n{MULTI_LINE_PROMPT}"
+        );
+
+        assert_eq!(extract_user_request_body(&wrapped), MULTI_LINE_PROMPT);
+        // An unwrapped prompt is returned untouched apart from edge trimming.
+        assert_eq!(
+            extract_user_request_body(MULTI_LINE_PROMPT),
+            MULTI_LINE_PROMPT
+        );
+    }
+
+    #[test]
+    fn title_projection_still_collapses_the_request_to_one_line() {
+        let wrapped = "<orgii_cli_exec_mode_bridge>\nbriefing\n</orgii_cli_exec_mode_bridge>\n## My request:\nUpdate the loader.\n\n```rust\nfn load() {}\n```";
+
+        assert_eq!(
+            project_user_request_text(wrapped),
+            "Update the loader. ```rust fn load() {} ```"
+        );
+        assert_eq!(
+            resolve_imported_session_name(wrapped, "", "fallback", 80),
+            "Update the loader. ```rust fn load() {} ```"
+        );
     }
 }

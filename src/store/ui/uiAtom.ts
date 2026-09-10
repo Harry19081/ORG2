@@ -25,7 +25,17 @@ import {
   normalizeGlobalThemePreference,
   resolveGlobalThemePreference,
 } from "@src/config/appearance/globalThemes";
-import type { PrimaryColorPreset } from "@src/config/appearance/primaryColors";
+import {
+  type AccentPreset,
+  normalizeAccentPreset,
+} from "@src/config/appearance/skins/accent";
+import {
+  DEFAULT_SKIN_ID,
+  resolveSkinId,
+  supportsBothVariants,
+} from "@src/config/appearance/skins/registry";
+import type { SkinVariant } from "@src/config/appearance/skins/types";
+import { createLogger } from "@src/hooks/logger";
 import {
   settingsAtom,
   updateSettingAtom,
@@ -58,8 +68,8 @@ export const resolvedGlobalThemeIdAtom = atom((get) => {
   const themePreference = get(globalThemeIdAtom);
   if (themePreference === THEME_PREFERENCE.SYSTEM) {
     return get(systemColorSchemeAtom) === APPEARANCE_MODE.DARK
-      ? "github-dark"
-      : "github-light";
+      ? "dark"
+      : "light";
   }
   return resolveGlobalThemePreference(themePreference);
 });
@@ -85,13 +95,161 @@ export const isDarkThemeAtom = atom<boolean>((get) => {
 });
 isDarkThemeAtom.debugLabel = "isDarkThemeAtom";
 
+// ============================================
+// Skins
+// ============================================
+
+/** Which half of the skin configuration is currently in effect. */
+export const skinVariantAtom = atom<SkinVariant>((get) =>
+  get(isDarkThemeAtom) ? "dark" : "light"
+);
+skinVariantAtom.debugLabel = "skinVariantAtom";
+
+/**
+ * Whether one skin and accent serve both variants.
+ *
+ * Linking is enforced on write rather than on read: the two settings keep
+ * storing their own value, and the writers mirror across. That way unlinking
+ * restores whatever each side last held instead of leaving both stuck on the
+ * linked choice, and a settings file edited by hand is never misreported.
+ */
+export const linkSkinVariantsAtom = atom(
+  (get) => get(settingsAtom)["general.linkSkinVariants"],
+  (get, set, value: boolean) => {
+    set(updateSettingAtom, { key: "general.linkSkinVariants", value });
+    if (!value) return;
+    // Adopt the live variant's selection for both sides — but only if that skin
+    // can actually serve both, rather than pinning a dark-only skin to light.
+    const activeSkin = get(activeSkinIdAtom);
+    set(
+      lightSkinIdAtom,
+      supportsBothVariants(activeSkin) ? activeSkin : DEFAULT_SKIN_ID.light
+    );
+    set(lightAccentPresetAtom, get(primaryColorPresetAtom));
+  }
+);
+linkSkinVariantsAtom.debugLabel = "linkSkinVariantsAtom";
+
+export const lightSkinIdAtom = atom(
+  (get) => resolveSkinId(get(settingsAtom)["general.lightSkin"], "light"),
+  (get, set, value: string) => {
+    set(updateSettingAtom, {
+      key: "general.lightSkin",
+      value: resolveSkinId(value, "light"),
+    });
+    if (get(linkSkinVariantsAtom) && supportsBothVariants(value)) {
+      set(updateSettingAtom, {
+        key: "general.darkSkin",
+        value: resolveSkinId(value, "dark"),
+      });
+    }
+  }
+);
+lightSkinIdAtom.debugLabel = "lightSkinIdAtom";
+
+export const darkSkinIdAtom = atom(
+  (get) => resolveSkinId(get(settingsAtom)["general.darkSkin"], "dark"),
+  (get, set, value: string) => {
+    set(updateSettingAtom, {
+      key: "general.darkSkin",
+      value: resolveSkinId(value, "dark"),
+    });
+    if (get(linkSkinVariantsAtom) && supportsBothVariants(value)) {
+      set(updateSettingAtom, {
+        key: "general.lightSkin",
+        value: resolveSkinId(value, "light"),
+      });
+    }
+  }
+);
+darkSkinIdAtom.debugLabel = "darkSkinIdAtom";
+
+/** The skin backing the current variant. */
+export const activeSkinIdAtom = atom<string>((get) =>
+  get(skinVariantAtom) === "dark" ? get(darkSkinIdAtom) : get(lightSkinIdAtom)
+);
+activeSkinIdAtom.debugLabel = "activeSkinIdAtom";
+
+// ============================================
+// Accent
+// ============================================
+
+export const lightAccentPresetAtom = atom(
+  (get) =>
+    normalizeAccentPreset(get(settingsAtom)["general.primaryColorLight"]),
+  (get, set, value: AccentPreset) => {
+    set(updateSettingAtom, { key: "general.primaryColorLight", value });
+    if (get(linkSkinVariantsAtom)) {
+      set(updateSettingAtom, { key: "general.primaryColorDark", value });
+    }
+  }
+);
+lightAccentPresetAtom.debugLabel = "lightAccentPresetAtom";
+
+export const darkAccentPresetAtom = atom(
+  (get) => normalizeAccentPreset(get(settingsAtom)["general.primaryColorDark"]),
+  (get, set, value: AccentPreset) => {
+    set(updateSettingAtom, { key: "general.primaryColorDark", value });
+    if (get(linkSkinVariantsAtom)) {
+      set(updateSettingAtom, { key: "general.primaryColorLight", value });
+    }
+  }
+);
+darkAccentPresetAtom.debugLabel = "darkAccentPresetAtom";
+
+/**
+ * Accent for the current variant. Writing routes to whichever of the two
+ * per-variant settings is live, so callers never have to branch on the mode.
+ */
 export const primaryColorPresetAtom = atom(
-  (get) => get(settingsAtom)["general.primaryColor"] as PrimaryColorPreset,
-  (_get, set, value: PrimaryColorPreset) => {
-    set(updateSettingAtom, { key: "general.primaryColor", value });
+  (get) =>
+    get(skinVariantAtom) === "dark"
+      ? get(darkAccentPresetAtom)
+      : get(lightAccentPresetAtom),
+  (get, set, value: AccentPreset) => {
+    set(
+      get(skinVariantAtom) === "dark"
+        ? darkAccentPresetAtom
+        : lightAccentPresetAtom,
+      value
+    );
   }
 );
 primaryColorPresetAtom.debugLabel = "primaryColorPresetAtom";
+
+// ============================================
+// Surface + icon treatment
+// ============================================
+
+export const translucentSidebarAtom = atom(
+  (get) => get(settingsAtom)["general.translucentSidebar"],
+  (_get, set, value: boolean) => {
+    set(updateSettingAtom, { key: "general.translucentSidebar", value });
+  }
+);
+translucentSidebarAtom.debugLabel = "translucentSidebarAtom";
+
+export const iconStyleAtom = atom(
+  (get) => get(settingsAtom)["general.iconStyle"],
+  (_get, set, value: "colorful" | "monochrome") => {
+    set(updateSettingAtom, { key: "general.iconStyle", value });
+  }
+);
+iconStyleAtom.debugLabel = "iconStyleAtom";
+
+const dockIconLog = createLogger("DockIcon");
+
+export const dockIconAtom = atom(
+  (get) => get(settingsAtom)["general.dockIcon"],
+  (_get, set, value: "dark" | "light" | "rainbow") => {
+    set(updateSettingAtom, { key: "general.dockIcon", value }).catch(
+      (error: unknown) => {
+        dockIconLog.warn("Failed to persist general.dockIcon:", error);
+      }
+    );
+  }
+);
+dockIconAtom.debugLabel = "dockIconAtom";
 
 // ============================================
 // UI Scale
@@ -186,17 +344,9 @@ userDisplayNameAtom.debugLabel = "userDisplayNameAtom";
 // Modal & Dialog State
 // ============================================
 
-/** Login modal visibility */
-export const loginModalVisibleAtom = atom<boolean>(false);
-loginModalVisibleAtom.debugLabel = "loginModalVisibleAtom";
-
 /** Route debug trigger — set to true by Cmd+0; resets to false after toast fires */
 export const routeDebugModalOpenAtom = atom<boolean>(false);
 routeDebugModalOpenAtom.debugLabel = "routeDebugModalOpenAtom";
-
-/** Login modal fixed position */
-export const loginModalFixAtom = atom<boolean>(false);
-loginModalFixAtom.debugLabel = "loginModalFixAtom";
 
 /**
  * Session expired state
@@ -253,10 +403,30 @@ spotlightInitialActionAtom.debugLabel = "spotlightInitialActionAtom";
  */
 export type SpotlightInitialEditorMode = "file" | "command" | "symbol";
 
+export interface SpotlightGitHubIssuesImportContext {
+  orgId?: string;
+  repoName?: string;
+  repoPath?: string;
+  repoUrl?: string;
+}
+
+export type SpotlightCollabOrgSource = "local" | "cloud";
+export type SpotlightCollabOrgMode = "create" | "join";
+
+export interface SpotlightCollabOrgContext {
+  source?: SpotlightCollabOrgSource;
+  mode?: SpotlightCollabOrgMode;
+}
+
 export type SpotlightInitialLayer =
   | { kind: "default" }
   | { kind: "workspace"; mode: "switch" | "open" | "add" | "create" }
-  | { kind: "branch" }
+  | { kind: "collabOrg"; context?: SpotlightCollabOrgContext }
+  | {
+      kind: "githubIssuesImport";
+      context?: SpotlightGitHubIssuesImportContext;
+    }
+  | { kind: "branch"; repoId?: string }
   | { kind: "worktree" }
   | { kind: "editor"; mode?: SpotlightInitialEditorMode }
   | { kind: "agentSessionSearch" }
@@ -285,17 +455,6 @@ inspectModeEnabledAtom.debugLabel = "inspectModeEnabledAtom";
 /** ADE Manager active state. When enabled, agent-originated GUI actions may dispatch through the Zod ActionSystem. */
 export const adeManagerEnabledAtom = atom<boolean>(false);
 adeManagerEnabledAtom.debugLabel = "adeManagerEnabledAtom";
-
-// ============================================
-// Loading & Status
-// ============================================
-
-/** Online status. Guarded against environments where `navigator` is not
- *  defined (e.g. Vitest `node` runs that import this atom transitively). */
-export const isOnlineAtom = atom<boolean>(
-  typeof navigator === "undefined" ? true : navigator.onLine
-);
-isOnlineAtom.debugLabel = "isOnlineAtom";
 
 export type SpotlightPlacement = "top" | "center";
 

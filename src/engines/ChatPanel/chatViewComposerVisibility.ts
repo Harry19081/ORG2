@@ -1,27 +1,28 @@
 export function shouldShowMainChatComposer({
   showInteractArea,
   isReadOnlySurface,
-  hasCloudDownloadSurface,
+  hasBlockingDownloadSurface,
 }: {
   showInteractArea: boolean;
   isReadOnlySurface: boolean;
-  hasCloudDownloadSurface: boolean;
+  /**
+   * True only for a download with NO local transcript behind it (first
+   * fetch of a fresh share). Incremental refreshes of an existing copy
+   * must not hide the composer — see ChatView's gate derivation.
+   */
+  hasBlockingDownloadSurface: boolean;
 }): boolean {
-  return showInteractArea && !isReadOnlySurface && !hasCloudDownloadSurface;
+  return showInteractArea && !isReadOnlySurface && !hasBlockingDownloadSurface;
 }
 
-export function shouldShowExternalHistoryForkComposer({
+export function shouldShowExternalHistoryContinuationComposer({
   isImportedHistory,
   readOnly,
-  canResume,
-  hasCloudDownloadSurface,
+  hasBlockingDownloadSurface,
 }: {
   isImportedHistory: boolean;
   readOnly: boolean;
-  canResume: boolean;
-  hasCloudDownloadSurface: boolean;
+  hasBlockingDownloadSurface: boolean;
 }): boolean {
-  return (
-    !hasCloudDownloadSurface && isImportedHistory && !readOnly && canResume
-  );
+  return !hasBlockingDownloadSurface && isImportedHistory && !readOnly;
 }

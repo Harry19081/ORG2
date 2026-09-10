@@ -5,8 +5,8 @@
  * When the user types "/" at position 0 in an empty input, shows available
  * built-in slash actions in a filterable dropdown.
  */
-import { useAtomValue, useSetAtom } from "jotai";
-import { type RefObject, useCallback, useMemo, useRef } from "react";
+import { useAtomValue, useSetAtom, useStore } from "jotai";
+import { type RefObject, useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { ComposerInputRef } from "@src/components/ComposerInput";
@@ -17,26 +17,34 @@ import {
   execModeForComposerSelection,
   resolveSessionAgentExecMode,
 } from "@src/config/sessionCreatorConfig";
-import { buildMcpToolCommand } from "@src/engines/ChatPanel/InputArea/components/SlashCommandPortal/slashItemUtils";
-import { buildAddressCommentsPillPath } from "@src/features/Org2Cloud/addressCommentsSlashToken";
 import {
-  ADDRESS_COMMENTS_SLASH_SOURCE,
-  type AddressCommentsThreadOption,
-  useAddressCommentsSlashCommand,
-} from "@src/features/Org2Cloud/useAddressCommentsSlashCommand";
+  buildMcpToolCommand,
+  buildSlashActionCommand,
+  insertAtomicSlashActionPill,
+} from "@src/engines/ChatPanel/InputArea/components/SlashCommandPortal/slashItemUtils";
+import { eventsAtom } from "@src/engines/SessionCore";
 import {
   useSessionComposerModeFields,
   useSessionExecModeField,
 } from "@src/hooks/session/useSessionPatch";
 import { creatorDefaultExecModeAtom } from "@src/store/session/creatorDefaultExecModeAtom";
 import { creatorDefaultProductModeAtom } from "@src/store/session/creatorDefaultProductModeAtom";
-import { SLASH_ACTIONS, type SlashItem } from "@src/types/extensions";
+import { sessionByIdAtom } from "@src/store/session/sessionAtom/atoms";
+import type { SlashItem } from "@src/types/extensions";
 import {
   isAgentSession,
   isCliSession,
 } from "@src/util/session/sessionDispatch";
 
+import { buildBuiltinSlashItems } from "./builtinSlashItems";
+import {
+  COMPOSER_COMMAND_ACTIONS,
+  buildNativeSlashItems,
+  composerActionFor,
+  nativeSlashNames,
+} from "./nativeSlashCommands";
 import { useSlashItemsCache } from "./useSlashItemsCache";
+import { useWorkItemQuickActions } from "./workItemQuickActions";
 
 interface UseSlashCommandOptions {
   composerInputRef: RefObject<ComposerInputRef | null>;
@@ -52,7 +60,6 @@ interface UseSlashCommandOptions {
    * blanks `sessionId` — but Address Comments must still target the
    * viewed history's threads; its run path forks first by design.
    */
-  addressSessionId?: string | null;
   /**
    * When `true`, `/mode` always reads + writes `creatorDefaultExecModeAtom`
    * even if there is an active session in the route. Set by callers that
@@ -64,29 +71,16 @@ interface UseSlashCommandOptions {
   creatorDefaultMode?: boolean;
 }
 
-export interface AddressCommentsFlyoutData {
-  threads: AddressCommentsThreadOption[];
-  onConfirm: (selectedHeadIds: string[]) => void;
-}
-
 export interface SlashCommandHandlers {
   handleSlashCommand: (query: string) => void;
   handleSlashCommandClose: () => void;
   handleSlashSelect: (item: SlashItem) => void;
-  handleSlashAppendSelect: (item: SlashItem) => void;
   handleModeSelect: (mode: ComposerModeEntry["id"]) => void;
   currentMode: ComposerModeEntry["id"];
   /** Whether the `/` mode picker should offer the Project product mode. */
   includeProjectMode: boolean;
   filteredItems: SlashItem[];
   slashLoading: boolean;
-  /**
-   * Fetch and filter items without opening the inline slash menu.
-   * Use this when the + button portal needs fresh data but the inline
-   * "/" menu must stay closed.
-   */
-  prefetchItems: (query: string) => void;
-  addressCommentsFlyout?: AddressCommentsFlyoutData;
 }
 
 export function useSlashCommand(
@@ -98,7 +92,6 @@ export function useSlashCommand(
     setSlashQuery,
     workspacePaths,
     sessionId,
-    addressSessionId,
     creatorDefaultMode: forceCreatorDefault = false,
   } = options;
 
@@ -167,98 +160,142 @@ export function useSlashCommand(
   );
 
   const queryRef = useRef("");
+  const store = useStore();
+  const [nativeCatalog, setNativeCatalog] = useState<{
+    sessionId: string;
+    names: string[];
+    provider?: string;
+  } | null>(null);
 
   const { t } = useTranslation("sessions");
-  const { t: tNav } = useTranslation("navigation");
-  const addressComments = useAddressCommentsSlashCommand(
-    isInSession ? sessionId : (addressSessionId ?? null)
-  );
-  const addressCommentsItem = addressComments.item;
+  const scopedSession = useAtomValue(sessionByIdAtom(sessionId ?? ""));
   const builtinSlashItems = useMemo<SlashItem[]>(
-    () => [
-      {
-        name: SLASH_ACTIONS.COMPACT,
-        description: t("input.compactCommandDescription"),
-        category: "action",
-        source: "builtin",
-        acceptsArgs: true,
-      },
-      ...(addressCommentsItem ? [addressCommentsItem] : []),
-    ],
-    [t, addressCommentsItem]
+    () =>
+      buildBuiltinSlashItems({
+        canvasDescription: t("input.canvasCommandDescription"),
+        compactDescription: t("input.compactCommandDescription"),
+        // CLI agents have no render_inline_canvas tool — hide the builtin
+        // (the submit projection is a matching no-op for CLI sessions).
+        includeCanvas: !(sessionId && isCliSession(sessionId)),
+      }),
+    [t, sessionId]
   );
 
   const {
-    filteredItems,
-    loading: slashLoading,
+    filteredItems: discoveredItems,
+    loading: discoveredItemsLoading,
     prefetch,
   } = useSlashItemsCache({
     builtinItems: builtinSlashItems,
     workspacePaths,
   });
 
-  const prefetchItems = useCallback(
-    (query: string) => {
-      queryRef.current = query;
-      prefetch(query);
-    },
-    [prefetch]
-  );
-
-  const handleSlashCommand = useCallback(
-    (query: string) => {
-      queryRef.current = query;
-      setSlashQuery(query);
-      setShowSlashMenu(true);
-      prefetch(query);
-    },
-    [setShowSlashMenu, setSlashQuery, prefetch]
-  );
-
-  const handleSlashCommandClose = useCallback(() => {
+  const closeSlashMenu = useCallback(() => {
     setShowSlashMenu(false);
     setSlashQuery("");
     queryRef.current = "";
   }, [setShowSlashMenu, setSlashQuery]);
-
-  const addressThreads = addressComments.threads;
-  const insertAddressCommentsPill = useCallback(
-    (selectedHeadIds: string[]) => {
-      if (!composerInputRef.current) return;
-      const count =
-        selectedHeadIds.length > 0
-          ? selectedHeadIds.length
-          : addressThreads.length;
-      composerInputRef.current.insertFilePill(
-        buildAddressCommentsPillPath(selectedHeadIds),
-        false,
-        "skill",
-        tNav("cloud.comments.addressPill", { count })
-      );
-      composerInputRef.current.focus();
-      setShowSlashMenu(false);
-      setSlashQuery("");
-      queryRef.current = "";
+  const {
+    items: workItemQuickActionItems,
+    loading: workItemQuickActionsLoading,
+    prefetch: prefetchWorkItemQuickActions,
+    handleSelect: handleWorkItemQuickActionSelect,
+  } = useWorkItemQuickActions(
+    isInSession ? (scopedSession ?? null) : null,
+    closeSlashMenu
+  );
+  const filteredItems = useMemo(() => {
+    // Creator variants opt in through their existing extraSlashItems seam.
+    // Other editors (human notes, Inbox and batch launch) do not own these controls.
+    if (!sessionId) return [...workItemQuickActionItems, ...discoveredItems];
+    const provider = scopedSession?.cliAgentType;
+    const names = [
+      ...new Set([
+        ...Object.keys(COMPOSER_COMMAND_ACTIONS),
+        "model",
+        "effort",
+        "fast",
+        "plan",
+        ...(sessionId ? ["rename", "status"] : []),
+        ...(nativeCatalog &&
+        nativeCatalog.sessionId === sessionId &&
+        nativeCatalog?.provider === provider
+          ? nativeCatalog.names
+          : nativeSlashNames(provider, sessionId ?? "", [])),
+      ]),
+    ];
+    const nativeItems = buildNativeSlashItems(
+      names,
+      (name) =>
+        t("input.nativeCommandDescription", {
+          command: `/${name}`,
+          provider:
+            composerActionFor(name) ||
+            ["model", "effort", "fast", "plan", "rename", "status"].includes(
+              name
+            )
+              ? "ORG2"
+              : provider === "codex"
+                ? "Codex"
+                : "Claude Code",
+        }),
+      provider ?? "builtin"
+    );
+    const reserved = new Set(names);
+    return [
+      ...workItemQuickActionItems,
+      ...nativeItems,
+      ...discoveredItems.filter((item) => !reserved.has(item.name)),
+    ];
+  }, [
+    discoveredItems,
+    workItemQuickActionItems,
+    scopedSession?.cliAgentType,
+    sessionId,
+    nativeCatalog,
+    t,
+  ]);
+  const slashLoading = discoveredItemsLoading || workItemQuickActionsLoading;
+  const handleSlashCommand = useCallback(
+    (query: string) => {
+      if (!query || queryRef.current === "") {
+        if (sessionId)
+          setNativeCatalog({
+            sessionId,
+            provider: scopedSession?.cliAgentType,
+            names: nativeSlashNames(
+              scopedSession?.cliAgentType,
+              sessionId,
+              store.get(eventsAtom)
+            ),
+          });
+      }
+      queryRef.current = query;
+      setSlashQuery(query);
+      setShowSlashMenu(true);
+      prefetch(query);
+      prefetchWorkItemQuickActions();
     },
-    [composerInputRef, addressThreads, tNav, setShowSlashMenu, setSlashQuery]
+    [
+      setShowSlashMenu,
+      setSlashQuery,
+      prefetch,
+      prefetchWorkItemQuickActions,
+      sessionId,
+      scopedSession?.cliAgentType,
+      store,
+    ]
   );
 
-  const addressCommentsFlyout = useMemo<AddressCommentsFlyoutData | undefined>(
-    () =>
-      addressComments.available && addressThreads.length > 0
-        ? { threads: addressThreads, onConfirm: insertAddressCommentsPill }
-        : undefined,
-    [addressComments.available, addressThreads, insertAddressCommentsPill]
-  );
+  const handleSlashCommandClose = useCallback(() => {
+    closeSlashMenu();
+  }, [closeSlashMenu]);
 
   const handleSlashSelect = useCallback(
     (item: SlashItem) => {
       if (!composerInputRef.current) return;
 
-      if (item.source === ADDRESS_COMMENTS_SLASH_SOURCE) {
-        insertAddressCommentsPill([]);
-        return;
-      }
+      if (handleWorkItemQuickActionSelect(item)) return;
 
       if (item.category === "skill") {
         const skillToken = `/${item.skillName ?? item.name}`;
@@ -286,25 +323,19 @@ export function useSlashCommand(
         return;
       }
 
-      // The compact command renders as a pill (like skills) so the token
-      // reads as one unit with the focus text typed after it. The submit
-      // interceptor recognizes both the pill serialization and plain
-      // "/compact" text (parseCompactSlashCommand).
-      if (item.category === "action" && item.name === SLASH_ACTIONS.COMPACT) {
-        composerInputRef.current.insertFilePill(
-          `/${SLASH_ACTIONS.COMPACT}`,
-          false,
-          "skill",
-          SLASH_ACTIONS.COMPACT
-        );
-        composerInputRef.current.focus();
+      if (
+        item.category === "action" &&
+        item.source !== "codex" &&
+        item.source !== "claude_code" &&
+        insertAtomicSlashActionPill(composerInputRef.current, item.name)
+      ) {
         setShowSlashMenu(false);
         setSlashQuery("");
         queryRef.current = "";
         return;
       }
 
-      composerInputRef.current.setContent(`/${item.name} `);
+      composerInputRef.current.setContent(buildSlashActionCommand(item.name));
       composerInputRef.current.focus();
 
       setShowSlashMenu(false);
@@ -315,32 +346,8 @@ export function useSlashCommand(
       composerInputRef,
       setShowSlashMenu,
       setSlashQuery,
-      insertAddressCommentsPill,
+      handleWorkItemQuickActionSelect,
     ]
-  );
-
-  const handleSlashAppendSelect = useCallback(
-    (item: SlashItem) => {
-      if (!composerInputRef.current) return;
-
-      if (item.category === "skill") {
-        const skillToken = `/${item.skillName ?? item.name}`;
-        composerInputRef.current.appendFilePill(
-          skillToken,
-          false,
-          "skill",
-          item.name
-        );
-        composerInputRef.current.focus();
-        setShowSlashMenu(false);
-        setSlashQuery("");
-        queryRef.current = "";
-        return;
-      }
-
-      handleSlashSelect(item);
-    },
-    [composerInputRef, handleSlashSelect, setShowSlashMenu, setSlashQuery]
   );
 
   const handleModeSelect = useCallback(
@@ -360,13 +367,10 @@ export function useSlashCommand(
     handleSlashCommand,
     handleSlashCommandClose,
     handleSlashSelect,
-    handleSlashAppendSelect,
     handleModeSelect,
     currentMode,
     includeProjectMode: carriesProductMode,
     filteredItems,
     slashLoading,
-    prefetchItems,
-    addressCommentsFlyout,
   };
 }

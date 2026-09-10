@@ -33,7 +33,14 @@ vi.mock("@src/api/http/project", () => ({
     transitionWorkItemHandoff: mocks.transitionWorkItemHandoff,
     readWorkItems: () => Promise.resolve([]),
     readStandaloneWorkItems: () => Promise.resolve([]),
+    listStatusDefinitions: () => Promise.resolve([]),
+    listQuickActions: () => Promise.resolve([]),
   },
+  statusDefinitionsCacheKey: (orgId: string, includeArchived = false) =>
+    `${orgId}:status-definitions:${includeArchived ? "all" : "active"}`,
+  propertyDefinitionsCacheKey: (orgId: string, includeArchived = false) =>
+    `${orgId}:property-definitions:${includeArchived ? "all" : "active"}`,
+  quickActionsCacheKey: (orgId: string) => `${orgId}:quick-actions`,
 }));
 
 vi.mock("react-i18next", () => ({
@@ -47,11 +54,21 @@ vi.mock("react-i18next", () => ({
 vi.mock("@src/hooks/project", () => ({
   useWorkItemImageInsert: () => ({ handleImageInsert: vi.fn() }),
   useProjectDataChanged: () => undefined,
+  useProjectCachedResource: ({ empty }: { empty: unknown }) => ({
+    data: empty,
+    loading: false,
+    refresh: () => Promise.resolve(empty),
+  }),
 }));
 
 vi.mock("@src/components/Avatar", () => ({
   default: ({ children }: { children?: React.ReactNode }) =>
     createElement("span", null, children),
+}));
+
+vi.mock("@src/assets/modelIcons/org2-session.svg", () => ({
+  default: (props: React.SVGProps<SVGSVGElement>) =>
+    createElement("svg", props),
 }));
 
 vi.mock("@src/components/TabPill", () => ({
@@ -164,6 +181,8 @@ vi.mock("../GitHubIssueComposer", () => ({
 }));
 
 vi.mock("@src/modules/shared/components/ActivityTimeline", () => ({
+  ActivityTimestamp: ({ timestamp }: { timestamp: string }) =>
+    createElement("time", { dateTime: timestamp }, timestamp),
   ActivityHeaderActionButton: ({
     icon,
     label,
@@ -216,19 +235,32 @@ vi.mock("@src/modules/shared/layouts/blocks", () => ({
   SessionTable: ({
     items,
     onSelect,
+    surfaceVariant,
+    bodySurface,
+    headerBorder,
   }: {
     items: Array<{
       id: string;
       title: string;
       description?: string;
+      agentIcon?: React.ReactNode;
+      agentLabel?: React.ReactNode;
       disabled?: boolean;
       testId?: string;
     }>;
     onSelect?: (item: { id: string }) => void;
+    surfaceVariant?: string;
+    bodySurface?: string;
+    headerBorder?: boolean;
   }) =>
     createElement(
       "div",
-      { "data-testid": "mock-session-table" },
+      {
+        "data-testid": "mock-session-table",
+        "data-surface-variant": surfaceVariant,
+        "data-body-surface": bodySurface,
+        "data-header-border": String(headerBorder),
+      },
       ...items.map((item) =>
         createElement(
           "button",
@@ -240,7 +272,9 @@ vi.mock("@src/modules/shared/layouts/blocks", () => ({
             onClick: () => onSelect?.(item),
           },
           item.title,
-          item.description
+          item.description,
+          item.agentIcon,
+          item.agentLabel
         )
       )
     ),
@@ -290,10 +324,6 @@ vi.mock("@src/modules/shared/layouts/blocks", () => ({
     ),
 }));
 
-vi.mock("../../TodoChecklist", () => ({ default: () => null }));
-vi.mock("../ThreadTodoChecklist", () => ({
-  default: () => createElement("div", { "data-testid": "mock-thread-todos" }),
-}));
 vi.mock("../../WorkItemContentStack", () => ({
   default: ({
     descriptionContent,
@@ -349,7 +379,6 @@ vi.mock("../hooks/useWorkItemContentState", () => ({
     ],
     handleTitleChange: vi.fn(),
     handleDescriptionChange: mocks.handleDescriptionChange,
-    handleTodosChange: vi.fn(),
     handleCommentSubmit: vi.fn(),
     handleStartAgentAndOpenChat: vi.fn(),
   }),
@@ -478,6 +507,42 @@ describe("WorkItemContent description editing", () => {
     expect(onOpenSession).toHaveBeenCalledWith("sdeagent-origin-1");
   });
 
+  it("uses the bordered session surface and stable English ORG2 agent presentation", () => {
+    act(() => {
+      root.render(
+        createElement(WorkItemContent, {
+          workItem: {
+            ...baseWorkItem,
+            linkedSessions: [
+              {
+                session_id: "native-session-1",
+                session_type: "native",
+                agent_role: "coding",
+                started_at: "2026-08-20T12:00:00.000Z",
+                completed_at: "2026-08-20T12:01:00.000Z",
+                status: "completed",
+                cost_usd: 0,
+                total_tokens: 0,
+              },
+            ],
+          },
+        })
+      );
+    });
+
+    const table = container.querySelector("[data-testid='mock-session-table']");
+    const row = container.querySelector(
+      "[data-testid='work-item-linked-session-native-session-1']"
+    );
+
+    expect(table?.getAttribute("data-surface-variant")).toBe("default");
+    expect(table?.getAttribute("data-body-surface")).toBe("pane");
+    expect(table?.getAttribute("data-header-border")).toBe("false");
+    expect(row?.textContent).toContain("Coding");
+    expect(row?.textContent).not.toContain("workItems.agentWorkflow");
+    expect(row?.querySelector("[data-agent-provider='org2']")).not.toBeNull();
+  });
+
   it("is editable by default and only shows Cancel/Save after a change", () => {
     act(() => {
       root.render(
@@ -593,6 +658,11 @@ describe("WorkItemContent description editing", () => {
       container.querySelector("[data-testid='github-read-only-description']")
         ?.textContent
     ).toBe(baseWorkItem.spec);
+    const flowTitle = container.querySelector(
+      "[data-testid='work-item-flow-title']"
+    );
+    expect(flowTitle?.textContent).toContain(baseWorkItem.name);
+    expect(flowTitle?.className).not.toContain("truncate");
   });
 
   it("edits a GitHub issue body with the shared Markdown editor when permitted", async () => {
@@ -920,6 +990,87 @@ describe("WorkItemContent description editing", () => {
     ).toBeNull();
   });
 
+  it("does not render persisted To-Do data in either Work Item presentation", () => {
+    const workItemWithTodo: WorkItem = {
+      ...baseWorkItem,
+      todos: [
+        {
+          id: "hidden-todo",
+          content: "This To-Do must stay hidden",
+          status: "pending",
+        },
+      ],
+    };
+
+    act(() => {
+      root.render(
+        createElement(WorkItemContent, {
+          workItem: workItemWithTodo,
+          presentation: "thread",
+          onUpdateWorkItem: vi.fn(),
+        })
+      );
+    });
+    expect(container.textContent).not.toContain("This To-Do must stay hidden");
+
+    act(() => {
+      root.render(
+        createElement(WorkItemContent, {
+          workItem: workItemWithTodo,
+          onUpdateWorkItem: vi.fn(),
+        })
+      );
+    });
+    expect(container.textContent).not.toContain("This To-Do must stay hidden");
+  });
+
+  it("hides sub-items for open and closed GitHub work items", () => {
+    act(() => {
+      root.render(
+        createElement(WorkItemContent, {
+          workItem: baseWorkItem,
+          shortId: "WI-0001",
+        })
+      );
+    });
+    expect(
+      container.querySelector("[data-testid='work-item-sub-items']")
+    ).not.toBeNull();
+
+    act(() => {
+      root.render(
+        createElement(WorkItemContent, {
+          workItem: {
+            ...baseWorkItem,
+            status: "open",
+            workItemStatus: "open",
+          },
+          shortId: "WI-0001",
+        })
+      );
+    });
+    expect(
+      container.querySelector("[data-testid='work-item-sub-items']")
+    ).toBeNull();
+
+    act(() => {
+      root.render(
+        createElement(WorkItemContent, {
+          workItem: {
+            ...baseWorkItem,
+            status: "closed",
+            workItemStatus: "closed",
+          },
+          presentation: "thread",
+          shortId: "WI-0001",
+        })
+      );
+    });
+    expect(
+      container.querySelector("[data-testid='work-item-sub-items']")
+    ).toBeNull();
+  });
+
   it("drills into Discussion and returns without mixing view content", () => {
     act(() => {
       root.render(
@@ -947,9 +1098,6 @@ describe("WorkItemContent description editing", () => {
     expect(
       container.querySelector("[data-testid='github-read-only-description']")
     ).not.toBeNull();
-    expect(
-      container.querySelector("[data-testid='mock-thread-todos']")
-    ).not.toBeNull();
     expect(container.querySelector("[data-testid='mock-activity']")).toBeNull();
 
     act(() => discussionAction?.click());
@@ -969,10 +1117,6 @@ describe("WorkItemContent description editing", () => {
     expect(
       container.querySelector("[data-testid='github-read-only-description']")
     ).toBeNull();
-    expect(
-      container.querySelector("[data-testid='mock-thread-todos']")
-    ).toBeNull();
-
     act(() => backAction?.click());
 
     expect(

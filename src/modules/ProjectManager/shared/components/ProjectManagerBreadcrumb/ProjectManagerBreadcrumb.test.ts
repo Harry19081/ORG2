@@ -31,7 +31,8 @@ describe("ProjectManagerBreadcrumb", () => {
     expect(markup).toContain(`${"p".repeat(23)}…`);
     expect(markup).toContain(`${"w".repeat(35)}…`);
     expect(markup).toContain('role="button"');
-    expect(markup).toContain("mx-0.5 flex-shrink-0 text-fill-4");
+    expect(markup).toContain("hover:underline hover:decoration-text-1");
+    expect(markup).toContain("mx-0 shrink-0 text-fill-4");
   });
 
   it("keeps a fill-width segment untruncated", () => {
@@ -115,7 +116,22 @@ describe("ProjectManagerBreadcrumb", () => {
     );
 
     expect(markup).toContain(
-      'class="inline-flex h-6 flex-shrink-0 items-center gap-2"'
+      'class="inline-flex h-6 shrink-0 items-center gap-2"'
     );
+  });
+
+  it("sizes compact breadcrumbs to their controls instead of filling the row", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(ProjectManagerBreadcrumb, {
+        segments: [{ label: "Workspace" }, { label: "Projects" }],
+        trailingNode: React.createElement("button", null, "Filter"),
+        compact: true,
+      })
+    );
+
+    expect(markup).toContain(
+      'class="flex min-w-0 items-center gap-1.5 shrink-0"'
+    );
+    expect(markup).toContain("flex-none!");
   });
 });

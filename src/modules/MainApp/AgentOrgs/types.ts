@@ -15,15 +15,13 @@ import type { KeySource } from "@src/api/tauri/session/dispatchTypes";
 
 export type { AvailableAgent as AvailableCliAgent } from "@src/config/cliAgents";
 
-export type AgentOrgsTab = "org" | "agents" | "integrations";
-
 // ── Sub-agent references ──
 
 export const SUB_AGENT_ISOLATION = {
   WORKTREE: "worktree",
 } as const;
 
-export type SubAgentIsolation =
+type SubAgentIsolation =
   (typeof SUB_AGENT_ISOLATION)[keyof typeof SUB_AGENT_ISOLATION];
 
 /** Reference to another agent that can be spawned as a sub-agent */
@@ -35,7 +33,7 @@ export interface SubAgentRef {
 
 // ── Skills configuration ──
 
-export interface AgentSkillsConfig {
+interface AgentSkillsConfig {
   enabled?: boolean;
   /**
    * Optional whitelist of skill IDs. When present and non-empty, the
@@ -76,7 +74,7 @@ export interface AgentToolSelection {
 
 // ── Security configuration ──
 
-export type AutonomyLevel = "readonly" | "full";
+type AutonomyLevel = "readonly" | "full";
 
 export interface CommandRiskRules {
   medium?: string[];
@@ -106,8 +104,8 @@ export interface AgentPolicy {
 
 // ── Agent tier ──
 
-export const AGENT_TIERS = ["primary", "secondary"] as const;
-export type AgentTier = (typeof AGENT_TIERS)[number];
+const AGENT_TIERS = ["primary", "secondary"] as const;
+type AgentTier = (typeof AGENT_TIERS)[number];
 
 // ── Agent definitions ──
 
@@ -159,7 +157,7 @@ export interface SessionModel {
  * delegation purely toggles whether this agent can be spawned as a
  * sub-agent and which context builders run for it.
  */
-export interface DelegationConfig {
+interface DelegationConfig {
   delegatable: boolean;
   contextBuilders: string[];
 }
@@ -239,7 +237,7 @@ export interface AgentLearningsConfig {
 }
 
 /** Provider reliability config. Mirrors Rust `ReliabilityConfig`. */
-export interface ReliabilityConfig {
+interface ReliabilityConfig {
   maxRetries?: number;
   baseBackoffMs?: number;
   fallbackModels?: string[];
@@ -250,29 +248,7 @@ export interface ReliabilityConfig {
 /** Prefix used in selectedAgentId to distinguish CLI agents from built-in/custom */
 export const CLI_AGENT_PREFIX = "cli:";
 
-// ── Team (agent hierarchy) ──
-
-/**
- * How the `OrgMember.children` hierarchy is interpreted at runtime.
- *
- * - `flat`: hierarchy is dropped entirely. Every member can message every
- *   other member; the LLM system prompt does not surface reports-to.
- * - `soft` (default): hierarchy is shown to agents as an organizational
- *   hint. Routing is unrestricted; the LLM is encouraged to coordinate
- *   through managers but may message peers directly when sensible.
- * - `strict`: hierarchy is enforced at the routing layer. A member may
- *   only `org_send_message` to its manager, its direct reports, or the
- *   coordinator (always reachable as escape hatch). Sibling-to-sibling
- *   sends are rejected.
- *
- * Default for new teams is `soft`. Old teams without this field migrate
- * to `soft` because that matches the previous prompt-with-tree /
- * unrestricted-routing behaviour the closest.
- */
-export const HIERARCHY_MODES = ["flat", "soft", "strict"] as const;
-export type HierarchyMode = (typeof HIERARCHY_MODES)[number];
-
-export const DEFAULT_HIERARCHY_MODE: HierarchyMode = "soft";
+// ── Flat Team definitions ──
 
 /** Who decides whether a plan produced by an Agent Org planning task is ready. */
 export const PLAN_APPROVAL_POLICIES = [
@@ -301,31 +277,27 @@ export interface OrgMemberLaunchOverride {
   runtimeConfig?: OrgMemberRuntimeConfig;
 }
 
-export interface OrgMember {
-  id: string;
+export interface FlatOrgMember {
+  memberId: string;
   name: string;
   role: string;
   agentId: string;
   runtimeConfig?: OrgMemberRuntimeConfig;
-  /**
-   * Free-form description of the organization (root) or member. Persisted by
-   * the Rust `OrgDefinition.description` field for root nodes. Optional —
-   * existing orgs without a description load as `undefined` and round-trip
-   * unchanged unless edited in the wizard.
-   */
+}
+
+export interface MemberCommunicationLink {
+  memberAId: string;
+  memberBId: string;
+}
+
+export interface OrgDefinition {
+  id: string;
+  name: string;
+  role: string;
+  agentId: string;
   description?: string;
-  /**
-   * Communication-routing and task-authority hierarchy semantics. Only
-   * meaningful on the root node — the
-   * runtime treats `OrgDefinition.hierarchy_mode` as authoritative and
-   * ignores the value on descendants. Carried on the shared `OrgMember`
-   * shape because the wizard uses the same object as both root and
-   * subtree, and we don't want a separate "root payload" type. Messaging
-   * reachability and task authority remain distinct: Soft can permit peer
-   * discussion while task assignment remains self/direct-report scoped.
-   */
-  hierarchyMode?: HierarchyMode;
-  /** Root-only policy for plans submitted by execution_mode=plan tasks. */
-  planApprovalPolicy?: PlanApprovalPolicy;
-  children: OrgMember[];
+  planApprovalPolicy: PlanApprovalPolicy;
+  members: FlatOrgMember[];
+  additionalTaskGraphWriterMemberIds: string[];
+  memberCommunicationLinks: MemberCommunicationLink[];
 }

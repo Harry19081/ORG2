@@ -14,8 +14,10 @@ export interface ChatPanelTabContextMenuProps {
   tabId: string;
   onCloseTab: (tabId: string) => void | Promise<void>;
   onCloseOtherTabs: (tabId: string) => void | Promise<void>;
+  onMoveToWorkstation?: (tabId: string) => void | Promise<void>;
   sessionReference?: SessionReferenceOpen;
   onCreateWorkItem?: (reference: SessionReferenceOpen) => void;
+  onOpenInSideChat?: (reference: SessionReferenceOpen) => void;
   onDismiss: () => void;
 }
 
@@ -42,8 +44,32 @@ export function ChatPanelTabContextMenu(
           buildItems: () => {
             const translate = i18next.t.bind(i18next);
             const items: NativeMenuItemOptions[] = [];
+            if (propsRef.current.onMoveToWorkstation) {
+              items.push({
+                text: translate("sessions:chat.moveToWorkstation", {
+                  defaultValue: "Move to My Station",
+                }),
+                action: () => {
+                  const current = propsRef.current;
+                  void current.onMoveToWorkstation?.(current.tabId);
+                  current.onDismiss();
+                },
+              });
+            }
             const sessionReference = propsRef.current.sessionReference;
             if (sessionReference) {
+              items.push({
+                text: translate("sessions:chat.sideChat.openInSideChat", {
+                  defaultValue: "Open in Side Chat",
+                }),
+                action: () => {
+                  const current = propsRef.current;
+                  if (current.sessionReference) {
+                    current.onOpenInSideChat?.(current.sessionReference);
+                  }
+                  current.onDismiss();
+                },
+              });
               items.push({
                 text: translate("teamInbox.handoff.createFromSession", {
                   defaultValue: "Create team Work Item…",

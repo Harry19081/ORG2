@@ -4,7 +4,6 @@
  * VSCode-style search filters for include/exclude patterns.
  * Uses searchControlSingleLineInputStyle so line-height matches row height.
  */
-import { BookOpen } from "lucide-react";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -12,7 +11,8 @@ import {
   SEARCH_WRAPPER_SIDEBAR,
   searchControlSingleLineInputStyle,
 } from "@src/components/SearchInput/searchControlInputStyles";
-import { HEADER_BUTTON } from "@src/modules/WorkStation/shared/tokens";
+import { HEADER_BUTTON } from "@src/config/workstation/tokens";
+import { BookOpen01Icon, HugeiconsIcon } from "@src/icons";
 
 // ============================================
 // Types
@@ -99,7 +99,11 @@ export const SearchFilters: React.FC<SearchFiltersProps> = memo(
                 className={`${HEADER_BUTTON.action} shrink-0 self-center ${onlyOpenFiles ? "text-primary-6" : ""}`}
                 title={t("tooltips.searchInOpenEditors")}
               >
-                <BookOpen size={14} />
+                <HugeiconsIcon
+                  icon={BookOpen01Icon}
+                  data-icon="book-open"
+                  size={14}
+                />
               </button>
             )}
           </div>

@@ -12,24 +12,21 @@
  * - gitBranch: current git branch name
  * - gitStatus: summary string ("3 modified, 1 staged, 2 untracked")
  * - gitChangedFiles: list of changed file paths
- * - linterErrors: top error/warning messages from LSP diagnostics
  *
  * Repo-scoped invariant: every atom this collector reads is global to the
- * toolbar repo (the editor opens one workspace, gitStatus is per-toolbar,
- * LSP diagnostics live in a single map keyed by the active workspace).
+ * toolbar repo (the editor opens one workspace, gitStatus is per-toolbar).
  * That means when a session running on repo A asks for ADE context while
  * the toolbar is pointed at repo B, the collector would otherwise leak
- * repo B's editor / git / LSP state into repo A's agent. Callers therefore
+ * repo B's editor / git state into repo A's agent. Callers therefore
  * pass the session's persisted `repo_path` as `expectedRepoPath`; when it
  * doesn't match the toolbar repo (or no session repo is known and the
  * caller is multi-session-aware) we return `undefined` rather than ship a
  * cross-repo payload. The fallback is "no context", which is strictly
  * better than "wrong context".
  */
-import { getPRLocal, listPRCommitsLocal } from "@src/api/tauri/github";
+import "@src/api/tauri/github";
 import { collectAppUiSnapshot } from "@src/services/context/appUiSnapshot";
 import type {
-  CurrentPullRequestSnapshot,
   UserProfileWire,
   WorkspaceSnapshot,
 } from "@src/services/context/workspaceSnapshot";
@@ -37,16 +34,11 @@ import { currentGitStatusAtom } from "@src/store/git";
 import { currentBranchAtom } from "@src/store/repo/atoms";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import { settingsAtom } from "@src/store/settings";
-import { globalStatusBarStateAtom } from "@src/store/ui/workStationAtom";
+import { activeStatusBarStateAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { userPresenceWireAtom } from "@src/store/user/userPresenceAtom";
 import { activeWorkspaceRootAtom } from "@src/store/workspace";
-import { globalLspDiagnosticsAtom } from "@src/store/workstation/codeEditor/diagnostics/globalLspDiagnosticsAtom";
-import {
-  workstationAllOpenPrsAtomFamily,
-  workstationPrAtomFamily,
-  workstationRepoScopeKey,
-} from "@src/store/workstation/codeEditor/workstationPrAtom";
+import "@src/store/workstation/codeEditor/workstationPrAtom";
 import {
   selectWorkstationPanel,
   sessionWorkstationWorkspaceKey,
@@ -56,25 +48,15 @@ import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
 export type { WorkspaceSnapshot };
 
-function parsePrUrlForRepo(
-  prUrl: string | undefined
-): { repoFullName: string; number: number } | null {
-  if (!prUrl) return null;
-  const m = prUrl.match(/github\.com\/([^/]+\/[^/]+)\/pull\/(\d+)/);
-  if (!m) return null;
-  return { repoFullName: m[1], number: Number(m[2]) };
-}
-
 const MAX_OPEN_FILES = 30;
 const MAX_CHANGED_FILES = 50;
-const MAX_LINTER_ERRORS = 20;
 
 export interface CollectAdeContextOptions {
   /**
    * The session's persisted repo path. When supplied, the collector verifies
    * the global repo selection points at the same path before returning data;
    * otherwise it returns `undefined` to avoid leaking a different repo's
-   * editor / git / LSP state into this session's agent payload.
+   * editor / git state into this session's agent payload.
    *
    * Pass `null` only when the call has no associated session (e.g. the
    * session creator is launching a brand-new session and the global repo
@@ -92,46 +74,17 @@ function normalizeRepoPath(value: string | undefined | null): string | null {
   return value.replace(/\/+$/, "");
 }
 
-function resolveActiveProfileSettings(
-  settings: Record<string, unknown>
-): Record<string, unknown> {
-  const activeProfileId = settings["general.activeProfileId"];
-  const presets = settings["general.profilePresets"];
-  if (typeof activeProfileId !== "string" || !Array.isArray(presets)) {
-    return settings;
-  }
-  const preset = presets.find(
-    (item): item is Record<string, unknown> =>
-      typeof item === "object" && item !== null && item.id === activeProfileId
-  );
-  if (!preset) return settings;
-  return {
-    ...settings,
-    "general.profileTechSavvy": preset.techSavvy,
-    "general.profileJobRoles": preset.jobRoles,
-    "general.profileFamiliarTechStacks": preset.familiarTechStacks,
-    "general.profileDescription": preset.description,
-    "general.activeProfileName": preset.name,
-  };
-}
-
 export function buildUserProfileWire(
   settings: Record<string, unknown>
 ): UserProfileWire | undefined {
-  const resolvedSettings = resolveActiveProfileSettings(settings);
   const profile: UserProfileWire = {};
 
-  const profileName = resolvedSettings["general.activeProfileName"];
-  if (typeof profileName === "string" && profileName.trim().length > 0) {
-    profile.name = profileName.trim();
-  }
-
-  const techSavvy = resolvedSettings["general.profileTechSavvy"];
+  const techSavvy = settings["general.profileTechSavvy"];
   if (typeof techSavvy === "string" && techSavvy.trim().length > 0) {
     profile.techSavvy = techSavvy as UserProfileWire["techSavvy"];
   }
 
-  const jobRoles = resolvedSettings["general.profileJobRoles"];
+  const jobRoles = settings["general.profileJobRoles"];
   if (Array.isArray(jobRoles) && jobRoles.length > 0) {
     const filteredJobRoles = jobRoles.filter(
       (role): role is string => typeof role === "string" && role.length > 0
@@ -141,8 +94,7 @@ export function buildUserProfileWire(
     }
   }
 
-  const familiarTechStacks =
-    resolvedSettings["general.profileFamiliarTechStacks"];
+  const familiarTechStacks = settings["general.profileFamiliarTechStacks"];
   if (Array.isArray(familiarTechStacks) && familiarTechStacks.length > 0) {
     const filteredTechStacks = familiarTechStacks.filter(
       (stack): stack is string => typeof stack === "string" && stack.length > 0
@@ -152,7 +104,7 @@ export function buildUserProfileWire(
     }
   }
 
-  const description = resolvedSettings["general.profileDescription"];
+  const description = settings["general.profileDescription"];
   if (typeof description === "string" && description.trim().length > 0) {
     profile.description = description.trim();
   }
@@ -258,7 +210,7 @@ export function collectAdeContext(
       const canAttachCursor =
         workspaceSessionId !== null &&
         workspaceSessionId === presentedSessionId;
-      const statusBar = store.get(globalStatusBarStateAtom);
+      const statusBar = store.get(activeStatusBarStateAtom);
       if (canAttachCursor && statusBar.cursor && payload.activeFile) {
         payload.cursorPosition = `${payload.activeFile}:${statusBar.cursor.line}:${statusBar.cursor.column}`;
         hasData = true;
@@ -312,31 +264,6 @@ export function collectAdeContext(
       /* git status not available */
     }
 
-    // Linter errors (top errors from LSP diagnostics)
-    try {
-      const diagnosticsMap = store.get(globalLspDiagnosticsAtom);
-      if (diagnosticsMap.size > 0) {
-        const errors: string[] = [];
-        for (const [filePath, diagnostics] of diagnosticsMap) {
-          for (const diag of diagnostics) {
-            if (diag.severity === "error" || diag.severity === "warning") {
-              errors.push(
-                `${filePath}:${diag.line}:${diag.column}: ${diag.severity}: ${diag.message}`
-              );
-              if (errors.length >= MAX_LINTER_ERRORS) break;
-            }
-          }
-          if (errors.length >= MAX_LINTER_ERRORS) break;
-        }
-        if (errors.length > 0) {
-          payload.linterErrors = errors;
-          hasData = true;
-        }
-      }
-    } catch {
-      /* diagnostics not available */
-    }
-
     // Workspace folders (multi-root)
     try {
       const folders = store.get(workspaceFoldersAtom);
@@ -379,112 +306,4 @@ export function collectAdeContext(
   } catch {
     return undefined;
   }
-}
-
-/**
- * Async variant of `collectAdeContext` that additionally fetches full PR
- * details (diff stats, commits, body) for the current branch's PR via the
- * GitHub API. Safe to call from async agent dispatch paths.
- */
-export async function collectAdeContextAsync(
-  options: CollectAdeContextOptions = {}
-): Promise<WorkspaceSnapshot | undefined> {
-  const base = collectAdeContext(options);
-
-  let currentPr: CurrentPullRequestSnapshot | undefined;
-  try {
-    const store = getInstrumentedStore();
-    const activeWorkspaceRoot = store.get(activeWorkspaceRootAtom);
-    const scopeKey = workstationRepoScopeKey(
-      undefined,
-      options.expectedRepoPath ?? activeWorkspaceRoot?.path
-    );
-    const prSnapshot = store.get(workstationPrAtomFamily(scopeKey));
-    const allOpenPrs = store.get(workstationAllOpenPrsAtomFamily(scopeKey));
-    const branch = store.get(currentBranchAtom);
-
-    // Prefer the PR URL from the atom, fall back to matching by branch
-    const parsedAtomPr = parsePrUrlForRepo(prSnapshot.prUrl);
-    const branchPrFromList = branch
-      ? allOpenPrs.find((p) => p.head_branch === branch)
-      : undefined;
-
-    const prRef =
-      parsedAtomPr ??
-      (branchPrFromList
-        ? {
-            repoFullName:
-              parsePrUrlForRepo(branchPrFromList.url)?.repoFullName ?? "",
-            number: branchPrFromList.number,
-          }
-        : null);
-
-    if (prRef?.repoFullName) {
-      const [prDetails, commits] = await Promise.all([
-        getPRLocal(prRef.repoFullName, prRef.number).catch(() => null),
-        listPRCommitsLocal(prRef.repoFullName, prRef.number).catch(() => []),
-      ]);
-
-      if (prDetails) {
-        const state = String(prDetails["state"] ?? "open");
-        const isDraft = Boolean(prDetails["draft"]);
-        const prStatus: CurrentPullRequestSnapshot["prStatus"] = isDraft
-          ? "draft"
-          : state === "closed"
-            ? prDetails["merged"]
-              ? "merged"
-              : "closed"
-            : "open";
-
-        const headRef = prDetails["head"] as
-          | Record<string, unknown>
-          | undefined;
-        const baseRef = prDetails["base"] as
-          | Record<string, unknown>
-          | undefined;
-        currentPr = {
-          prNumber: Number(prDetails["number"] ?? prRef.number),
-          prTitle: String(prDetails["title"] ?? ""),
-          prUrl: String(prDetails["html_url"] ?? prSnapshot.prUrl ?? ""),
-          prStatus,
-          sourceBranch: String(headRef?.["ref"] ?? branch ?? ""),
-          targetBranch: String(baseRef?.["ref"] ?? ""),
-          additions:
-            prDetails["additions"] != null
-              ? Number(prDetails["additions"])
-              : undefined,
-          deletions:
-            prDetails["deletions"] != null
-              ? Number(prDetails["deletions"])
-              : undefined,
-          filesChanged:
-            prDetails["changed_files"] != null
-              ? Number(prDetails["changed_files"])
-              : undefined,
-          body: prDetails["body"] ? String(prDetails["body"]) : undefined,
-          commits: Array.isArray(commits)
-            ? commits.map((c) => {
-                const commitObj = c["commit"] as
-                  | Record<string, unknown>
-                  | undefined;
-                return {
-                  sha: String(c["sha"] ?? ""),
-                  message:
-                    String(commitObj?.["message"] ?? "").split("\n")[0] ?? "",
-                };
-              })
-            : undefined,
-        };
-      }
-    }
-  } catch {
-    /* PR enrichment is best-effort; failures must not break the agent */
-  }
-
-  if (!currentPr) return base;
-
-  if (base) {
-    return { ...base, currentPullRequest: currentPr };
-  }
-  return { currentPullRequest: currentPr };
 }

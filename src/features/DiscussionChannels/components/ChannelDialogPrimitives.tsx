@@ -4,13 +4,13 @@
  * confirmation body, and action footer without importing either storage or
  * network state.
  */
-import { TriangleAlert } from "lucide-react";
 import React, { useId } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { ButtonVariant } from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 
 import {
@@ -75,7 +75,7 @@ export const ChannelNameField: React.FC<ChannelNameFieldProps> = ({
         autoFocus={autoFocus}
         prefix={<span className="text-[13px] text-text-3">#</span>}
         suffix={
-          <span className="text-[11px] tabular-nums text-text-4">
+          <span className="text-[11px] text-text-4 tabular-nums">
             {value.length}/{CHANNEL_NAME_MAX_LENGTH}
           </span>
         }
@@ -143,7 +143,7 @@ export interface ChannelDialogErrorNoticeProps {
 }
 
 /**
- * The channels-dialog inline error box (danger-1 background pattern).
+ * The channels-dialog error notice uses the shared PageNotice surface.
  * `role="alert"` because it appears dynamically after a failed submit —
  * without live-region semantics screen readers never hear the failure.
  */
@@ -152,13 +152,9 @@ export const ChannelDialogErrorNotice: React.FC<
 > = ({ message, testId }) => {
   if (!message) return null;
   return (
-    <div
-      role="alert"
-      className="rounded-lg bg-danger-1 px-3 py-2 text-[12px] text-danger-6"
-      data-testid={testId}
-    >
+    <PageNotice type="danger" role="alert" dataTestId={testId}>
       {message}
-    </div>
+    </PageNotice>
   );
 };
 
@@ -166,21 +162,28 @@ export interface ChannelDeleteConfirmationProps {
   warning: string;
   acknowledgement: string;
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onCheckedChange: (checked: boolean) => void;
   acknowledgeTestId: string;
 }
 
 /** Shared destructive warning + explicit acknowledgement control. */
 export const ChannelDeleteConfirmation: React.FC<
   ChannelDeleteConfirmationProps
-> = ({ warning, acknowledgement, checked, onChange, acknowledgeTestId }) => (
+> = ({
+  warning,
+  acknowledgement,
+  checked,
+  onCheckedChange,
+  acknowledgeTestId,
+}) => (
   <>
-    <div className="flex items-start gap-2 rounded-lg bg-danger-1 px-3 py-2 text-[12px] text-danger-6">
-      <TriangleAlert size={14} aria-hidden className="mt-0.5 shrink-0" />
-      <span>{warning}</span>
-    </div>
+    <PageNotice type="warning">{warning}</PageNotice>
     <div data-testid={acknowledgeTestId}>
-      <Checkbox size="small" checked={checked} onChange={onChange}>
+      <Checkbox
+        size="small"
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+      >
         {acknowledgement}
       </Checkbox>
     </div>

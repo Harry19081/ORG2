@@ -1,5 +1,4 @@
 import { useAtomValue } from "jotai";
-import { AlertTriangle, RefreshCw, Terminal } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -16,6 +15,7 @@ import type {
 } from "@src/api/tauri/rpc/schemas/agentOrgs";
 import Button from "@src/components/Button";
 import type { IconProvider } from "@src/components/ModelIcon";
+import PageNotice from "@src/components/PageNotice";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
@@ -24,6 +24,8 @@ import SettingsTable, {
 import Switch from "@src/components/Switch";
 import Tag, { type TagProps } from "@src/components/Tag";
 import { INFO_CARD_TOKENS } from "@src/config/detailPanelTokens";
+import { useMountedCleanup } from "@src/hooks/lifecycle/useMounted";
+import { ComputerTerminal01Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SectionContainer,
@@ -39,6 +41,7 @@ import { copyText } from "@src/util/data/clipboard";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
 import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";
 
+import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
 import SessionProvenanceSourceIcon from "./SessionProvenanceSourceIcon";
 import { tildePath } from "./sourcePath";
 import { startVisibilityAwarePolling } from "./visibilityPolling";
@@ -105,6 +108,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
     new Set()
   );
   const mountedRef = useRef(true);
+  useMountedCleanup(mountedRef);
   const statusRequestRef = useRef(0);
 
   const [masterEnabled, setMasterEnabled] = useState(true);
@@ -194,10 +198,8 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    mountedRef.current = true;
     void loadStatuses();
     return () => {
-      mountedRef.current = false;
       statusRequestRef.current += 1;
     };
   }, [loadStatuses]);
@@ -383,7 +385,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
               { defaultValue: "Capture file interactions" }
             )}`}
             dataTestId={`session-provenance-hook-switch-${row.id}`}
-            onChange={(enabled) => void handleChange(row.id, enabled)}
+            onCheckedChange={(enabled) => void handleChange(row.id, enabled)}
           />
         </div>
       ),
@@ -436,7 +438,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
           <Switch
             checked={masterEnabled}
             loading={masterPending}
-            onChange={(enabled) => void handleMasterChange(enabled)}
+            onCheckedChange={(enabled) => void handleMasterChange(enabled)}
             ariaLabel={t("agentOrgs.sessionProvenance.masterToggle", {
               defaultValue: "Provenance hooks",
             })}
@@ -455,7 +457,7 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
             checked={liveStatusEnabled}
             loading={liveStatusPending}
             disabled={!masterEnabled}
-            onChange={(enabled) => void handleLiveStatusChange(enabled)}
+            onCheckedChange={(enabled) => void handleLiveStatusChange(enabled)}
             ariaLabel={t("agentOrgs.sessionProvenance.liveStatusToggle", {
               defaultValue: "Live agent status",
             })}
@@ -479,15 +481,12 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
           onSearchClear: () => setSearchQuery(""),
           searchInputSize: "default",
           rightContent: (
-            <Button
-              variant="secondary"
-              size="default"
-              loading={refreshing}
-              icon={<RefreshCw size={14} />}
-              onClick={() => void loadStatuses()}
-            >
-              {tCommon("actions.refresh")}
-            </Button>
+            <RuntimeRefreshButton
+              label={tCommon("actions.refresh")}
+              onRefresh={() => void loadStatuses()}
+              refreshing={refreshing}
+              dataTestId="session-provenance-hooks-refresh"
+            />
           ),
         }}
         expandable={{
@@ -538,50 +537,46 @@ const SessionProvenanceHookPlatformsTable: React.FC = () => {
                 </p>
                 {row.id === "codex" &&
                   row.status?.activationState === "awaiting_verification" && (
-                    <div
-                      className="flex items-start justify-between gap-4 rounded-md border border-warning-3 bg-warning-1 px-3 py-2.5"
-                      data-testid="session-provenance-codex-approval"
-                    >
-                      <div className="flex min-w-0 items-start gap-2.5">
-                        <AlertTriangle
-                          size={16}
-                          className="mt-0.5 shrink-0 text-warning-6"
-                        />
-                        <div className="min-w-0">
-                          <p className="text-[12px] font-medium text-text-1">
+                    <PageNotice
+                      type="warning"
+                      dataTestId="session-provenance-codex-approval"
+                      title={t(
+                        "agentOrgs.sessionProvenance.codexApproval.title",
+                        { defaultValue: "Verify ORG2 hooks in Codex" }
+                      )}
+                      action={
+                        <span data-testid="session-provenance-review-codex-hooks">
+                          <Button
+                            variant="primary"
+                            size="small"
+                            icon={
+                              <HugeiconsIcon
+                                icon={ComputerTerminal01Icon}
+                                data-icon="terminal"
+                                size={14}
+                              />
+                            }
+                            loading={launchingCodexApproval}
+                            onClick={() => void handleReviewCodexHooks()}
+                          >
                             {t(
-                              "agentOrgs.sessionProvenance.codexApproval.title",
-                              { defaultValue: "Verify ORG2 hooks in Codex" }
-                            )}
-                          </p>
-                          <p className="mt-0.5 text-[12px] leading-relaxed text-text-2">
-                            {t(
-                              "agentOrgs.sessionProvenance.codexApproval.instructions",
+                              "agentOrgs.sessionProvenance.codexApproval.review",
                               {
-                                defaultValue:
-                                  "Open Codex, review the ORG2 hooks, then choose Trust all and continue. The SessionStart hook verifies activation automatically when the session starts.",
+                                defaultValue: "Review in Codex",
                               }
                             )}
-                          </p>
-                        </div>
-                      </div>
-                      <span data-testid="session-provenance-review-codex-hooks">
-                        <Button
-                          variant="primary"
-                          size="small"
-                          icon={<Terminal size={14} />}
-                          loading={launchingCodexApproval}
-                          onClick={() => void handleReviewCodexHooks()}
-                        >
-                          {t(
-                            "agentOrgs.sessionProvenance.codexApproval.review",
-                            {
-                              defaultValue: "Review in Codex",
-                            }
-                          )}
-                        </Button>
-                      </span>
-                    </div>
+                          </Button>
+                        </span>
+                      }
+                    >
+                      {t(
+                        "agentOrgs.sessionProvenance.codexApproval.instructions",
+                        {
+                          defaultValue:
+                            "Open Codex, review the ORG2 hooks, then choose Trust all and continue. The SessionStart hook verifies activation automatically when the session starts.",
+                        }
+                      )}
+                    </PageNotice>
                   )}
               </div>
             </InlineInfoCard>

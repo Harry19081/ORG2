@@ -1,20 +1,23 @@
-import {
-  Check,
-  Clock,
-  Eye,
-  Fingerprint,
-  GitBranch,
-  GitFork,
-  MessageSquare,
-  Pin,
-  Users,
-} from "lucide-react";
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+import AnyIcon from "@src/components/AnyIcon";
 import ModelIcon from "@src/components/ModelIcon";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { createLogger } from "@src/hooks/logger";
+import { useKeyedCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import {
+  Clock01Icon,
+  FingerPrintIcon,
+  GitForkIcon,
+  HugeiconsIcon,
+  Message01Icon,
+  PinIcon,
+  Tick01Icon,
+  UserMultipleIcon,
+  ViewIcon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { copyText } from "@src/util/data/clipboard";
 import {
@@ -33,17 +36,11 @@ import HoverCardBase, {
   type HoverCardPosition,
   HoverCardRow,
 } from "./HoverCardBase";
+import { COPIED_FLASH_MS, formatCompactSessionId } from "./sessionIdFormat";
 
 const logger = createLogger("CloudSessionHoverCard");
-const COPIED_FLASH_MS = 1500;
-const COMPACT_ID_EDGE_CHARS = 8;
 const SESSION_ID_BUTTON_CLASS_NAME =
   "block max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-left text-text-2 underline-offset-2 transition-colors hover:text-accent-9 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-8";
-
-function formatCompactSessionId(id: string): string {
-  if (id.length <= COMPACT_ID_EDGE_CHARS * 2 + 2) return id;
-  return `${id.slice(0, COMPACT_ID_EDGE_CHARS)}…${id.slice(-COMPACT_ID_EDGE_CHARS)}`;
-}
 
 /**
  * Hover metadata card for "Team sessions" rows (cloudremote-* sidebar ids).
@@ -57,15 +54,13 @@ interface CloudSessionHoverCardContentProps {
 }
 
 function renderAgentIcon(display: SessionDisplayMetadata) {
-  const AgentIcon = resolveAgentIcon(display.agentIconId);
-  return <AgentIcon size={13} strokeWidth={1.75} />;
+  const agentIcon = resolveAgentIcon(display.agentIconId);
+  return <AnyIcon icon={agentIcon} size={13} strokeWidth={1.75} />;
 }
 
 export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContentProps> =
   memo(({ row, viewers = [] }) => {
     const { t, i18n } = useTranslation(["navigation", "sessions", "common"]);
-    const [copiedSessionId, setCopiedSessionId] = useState<string | null>(null);
-    const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const display = resolveSessionDisplayMetadata({
       kind: "remote",
       session: row,
@@ -96,40 +91,33 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
       .filter(Boolean)
       .join(", ");
 
-    useEffect(
-      () => () => {
-        if (copiedTimerRef.current !== null) {
-          clearTimeout(copiedTimerRef.current);
-        }
-      },
-      []
-    );
-
-    const handleCopySessionId = useCallback(() => {
-      void copyText(row.sourceSessionId)
-        .then(() => {
-          setCopiedSessionId(row.sourceSessionId);
-          if (copiedTimerRef.current !== null) {
-            clearTimeout(copiedTimerRef.current);
-          }
-          copiedTimerRef.current = setTimeout(() => {
-            copiedTimerRef.current = null;
-            setCopiedSessionId(null);
-          }, COPIED_FLASH_MS);
-        })
-        .catch((error: unknown) => {
-          logger.warn("failed to copy shared session id", {
-            error,
-            sessionId: row.sourceSessionId,
-          });
-        });
-    }, [row.sourceSessionId]);
+    const copySessionId = useCallback(async (sessionId: string) => {
+      try {
+        await copyText(sessionId);
+      } catch (error) {
+        logger.warn("failed to copy shared session id", { error, sessionId });
+        throw error;
+      }
+    }, []);
+    // Keyed on the session id so a card re-rendered for another row never
+    // shows a stale check.
+    const { copiedKey: copiedSessionId, handleCopy: handleCopySessionId } =
+      useKeyedCopyCheck(copySessionId, { durationMs: COPIED_FLASH_MS });
 
     return (
       // Fork provenance renders as the lineage row below — drop the fork
       // glyph(s) baked into pushed titles rather than doubling them here.
       <HoverCardPanel title={row.title.replace(/^(?:⑂\s*)+/u, "")}>
-        <HoverCardRow icon={<Users size={13} strokeWidth={1.75} />}>
+        <HoverCardRow
+          icon={
+            <HugeiconsIcon
+              icon={UserMultipleIcon}
+              data-icon="users"
+              size={13}
+              strokeWidth={1.75}
+            />
+          }
+        >
           <div
             className="truncate text-text-2"
             title={`${t("navigation:cloud.sidebar.teamSessions")} · @${row.ownerDisplayName}`}
@@ -141,7 +129,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
             <span>@{row.ownerDisplayName}</span>
           </div>
         </HoverCardRow>
-        <HoverCardRow icon={<Pin size={13} strokeWidth={1.75} />}>
+        <HoverCardRow
+          icon={
+            <HugeiconsIcon
+              icon={PinIcon}
+              data-icon="pin"
+              size={13}
+              strokeWidth={1.75}
+            />
+          }
+        >
           <div className="truncate text-text-2">
             <span className="text-text-3">
               {isExternal
@@ -179,7 +176,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </HoverCardRow>
         )}
         {row.forkedFrom?.ownerDisplayName && (
-          <HoverCardRow icon={<GitFork size={13} strokeWidth={1.75} />}>
+          <HoverCardRow
+            icon={
+              <HugeiconsIcon
+                icon={GitForkIcon}
+                data-icon="git-fork"
+                size={13}
+                strokeWidth={1.75}
+              />
+            }
+          >
             <div className="truncate text-text-2">
               {t("navigation:cloud.sidebar.forkedFrom", {
                 name: row.forkedFrom.ownerDisplayName,
@@ -189,7 +195,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </HoverCardRow>
         )}
         {viewerNames && (
-          <HoverCardRow icon={<Eye size={13} strokeWidth={1.75} />}>
+          <HoverCardRow
+            icon={
+              <HugeiconsIcon
+                icon={ViewIcon}
+                data-icon="eye"
+                size={13}
+                strokeWidth={1.75}
+              />
+            }
+          >
             <div
               data-testid="cloud-session-watchers"
               className="truncate text-text-2"
@@ -200,7 +215,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </HoverCardRow>
         )}
         {(repoName || branchLabel) && (
-          <HoverCardRow icon={<GitBranch size={13} strokeWidth={1.75} />}>
+          <HoverCardRow
+            icon={
+              <HugeiconsIcon
+                icon={WorkflowCircle05Icon}
+                data-icon="git-branch"
+                size={13}
+                strokeWidth={1.75}
+              />
+            }
+          >
             <div
               className="flex min-w-0 items-center text-text-2"
               data-testid="session-hover-repo-branch"
@@ -210,7 +234,7 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
                 <span
                   className={
                     branchLabel
-                      ? "min-w-0 max-w-[calc(50%-6px)] truncate"
+                      ? "max-w-[calc(50%-6px)] min-w-0 truncate"
                       : "min-w-0 flex-1 truncate"
                   }
                   data-testid="session-hover-workspace"
@@ -226,7 +250,7 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
                 <span
                   className={
                     repoName
-                      ? "min-w-0 max-w-[calc(50%-6px)] truncate"
+                      ? "max-w-[calc(50%-6px)] min-w-0 truncate"
                       : "min-w-0 flex-1 truncate"
                   }
                   data-testid="session-hover-branch"
@@ -239,7 +263,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </HoverCardRow>
         )}
         {worktreeBranchLabel && worktreeBranchLabel !== branchLabel && (
-          <HoverCardRow icon={<GitFork size={13} strokeWidth={1.75} />}>
+          <HoverCardRow
+            icon={
+              <HugeiconsIcon
+                icon={GitForkIcon}
+                data-icon="git-fork"
+                size={13}
+                strokeWidth={1.75}
+              />
+            }
+          >
             <div
               className="truncate text-text-2"
               data-testid="session-hover-worktree-branch"
@@ -249,7 +282,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
             </div>
           </HoverCardRow>
         )}
-        <HoverCardRow icon={<Fingerprint size={13} strokeWidth={1.75} />}>
+        <HoverCardRow
+          icon={
+            <HugeiconsIcon
+              icon={FingerPrintIcon}
+              data-icon="fingerprint"
+              size={13}
+              strokeWidth={1.75}
+            />
+          }
+        >
           <button
             type="button"
             className={SESSION_ID_BUTTON_CLASS_NAME}
@@ -257,7 +299,7 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
             aria-label={`${t("common:actions.copy")} ${t(
               "sessions:history.detail.sessionId"
             )}`}
-            onClick={handleCopySessionId}
+            onClick={() => handleCopySessionId(row.sourceSessionId)}
           >
             <span className="text-text-3">
               {t("sessions:history.detail.sessionId")}
@@ -265,7 +307,9 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
             <span className="mx-1 text-text-4">·</span>
             <span>{formatCompactSessionId(row.sourceSessionId)}</span>
             {copiedSessionId === row.sourceSessionId && (
-              <Check
+              <HugeiconsIcon
+                icon={Tick01Icon}
+                data-icon="check"
                 size={12}
                 strokeWidth={2}
                 className="ml-1 inline-block align-[-1px] text-success-6"
@@ -275,7 +319,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </button>
         </HoverCardRow>
         {unresolvedComments > 0 && (
-          <HoverCardRow icon={<MessageSquare size={13} strokeWidth={1.75} />}>
+          <HoverCardRow
+            icon={
+              <HugeiconsIcon
+                icon={Message01Icon}
+                data-icon="message-square"
+                size={13}
+                strokeWidth={1.75}
+              />
+            }
+          >
             <div className="truncate text-text-2">
               {t("navigation:cloud.comments.unresolvedBadge", {
                 count: unresolvedComments,
@@ -284,7 +337,16 @@ export const CloudSessionHoverCardContent: React.FC<CloudSessionHoverCardContent
           </HoverCardRow>
         )}
         {lastActivityLabel && (
-          <HoverCardRow icon={<Clock size={13} strokeWidth={1.75} />}>
+          <HoverCardRow
+            icon={
+              <HugeiconsIcon
+                icon={Clock01Icon}
+                data-icon="clock"
+                size={13}
+                strokeWidth={1.75}
+              />
+            }
+          >
             <div className="truncate text-text-2" title={lastActivityLabel}>
               <span className="text-text-3">
                 {t("sessions:history.detail.lastUpdated")}

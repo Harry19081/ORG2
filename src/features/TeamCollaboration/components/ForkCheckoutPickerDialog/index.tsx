@@ -9,7 +9,7 @@
  * reason. Closing = cancel (fork aborts quietly via ForkCancelledError).
  */
 import Modal from "@/src/scaffold/ModalSystem";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,6 +17,7 @@ import useSharedRepoList from "@src/scaffold/GlobalSpotlight/hooks/data/useShare
 import type { RepoItem } from "@src/scaffold/GlobalSpotlight/types";
 
 import { normalizeRepoScopeKey } from "../../collabSyncUtils";
+import { forkCheckoutRequestAtom } from "../../forkDialogState";
 import {
   getShareableScopeKeyVersion,
   peekMatchingOrgRepoScope,
@@ -24,19 +25,6 @@ import {
   primeShareableScopeKey,
   subscribeShareableScopeKeys,
 } from "../../repoScopeResolver";
-
-export interface ForkCheckoutRequest {
-  /** Normalized scope key of the SOURCE repo the fork must land in. */
-  sourceScopeKey: string;
-  /** Source session title (dialog context line). */
-  sourceTitle: string;
-  /** Resolves with the picked local path, or null on cancel. */
-  resolve: (localPath: string | null) => void;
-}
-
-/** One-shot handoff: fork flow parks a request; the dialog consumes it. */
-export const forkCheckoutRequestAtom = atom<ForkCheckoutRequest | null>(null);
-forkCheckoutRequestAtom.debugLabel = "forkCheckoutRequestAtom";
 
 function repoScopeKeys(repo: RepoItem): string[] | null | undefined {
   // A workspace row's repo_url is only its primary/display remote and may be
@@ -53,10 +41,7 @@ function repoScopeKeys(repo: RepoItem): string[] | null | undefined {
 const ForkCheckoutPickerDialog: React.FC = () => {
   const { t } = useTranslation("navigation");
   const [request, setRequest] = useAtom(forkCheckoutRequestAtom);
-  const { repos, repoLoading, loadRepos } = useSharedRepoList({
-    enabled: false,
-    searchQuery: "",
-  });
+  const { repos, repoLoading, loadRepos } = useSharedRepoList("");
   // Re-render when async remote resolutions land in the shared cache.
   React.useSyncExternalStore(
     subscribeShareableScopeKeys,
@@ -125,7 +110,7 @@ const ForkCheckoutPickerDialog: React.FC = () => {
                     request.resolve(localPath);
                     setRequest(null);
                   }}
-                  className={`flex flex-col px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-6/30 ${
+                  className={`flex flex-col px-3 py-2 text-left focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset ${
                     selectable
                       ? "cursor-pointer hover:bg-fill-2"
                       : "cursor-not-allowed opacity-50"

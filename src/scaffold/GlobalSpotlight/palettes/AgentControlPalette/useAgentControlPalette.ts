@@ -1,13 +1,4 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsRight,
-  DraftingCompass,
-  Loader2,
-  XCircle,
-} from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -23,6 +14,16 @@ import type { PendingSessionProposal } from "@src/engines/SessionCore/hooks/useA
 import type { AdvancedConfig } from "@src/features/SessionCreator/types";
 import { useHousekeeperUiControl } from "@src/hooks/housekeeper";
 import { useValidatedLastPair } from "@src/hooks/models/useValidatedLastPair";
+import {
+  AiGenerativeIcon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  ArrowRightDoubleIcon,
+  CancelCircleIcon,
+  CheckmarkCircle01Icon,
+  Loading03Icon,
+} from "@src/icons";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import type { SpotlightItem } from "@src/scaffold/GlobalSpotlight/types";
 import { collectAdeContext } from "@src/services/context/collectors";
 import { adeManagerPaletteAtom } from "@src/store/session/adeManagerPaletteAtom";
@@ -35,7 +36,6 @@ import { adeManagerEnabledAtom } from "@src/store/ui/uiAtom";
 import { invokeTauri } from "@src/util/platform/tauri";
 import { BUILTIN_ADE_MANAGER_DEF_ID } from "@src/util/session/sessionDispatch";
 
-import { useSelectorKernel } from "../core";
 import {
   ADE_MANAGER_SESSION_NAME,
   ADE_MANAGER_SUBMIT_EVENT,
@@ -337,7 +337,7 @@ export function useAgentControlPalette({
         type: "action" as const,
         id: "agent-control",
         label: "ADE Manager",
-        icon: DraftingCompass,
+        icon: AiGenerativeIcon,
         color: "",
       },
     ],
@@ -355,10 +355,10 @@ export function useAgentControlPalette({
   const statusIcon =
     latestActivity?.status === "running" ||
     (!latestActivity && runStatus === "sending")
-      ? Loader2
+      ? Loading03Icon
       : latestActivity?.status === "failed" || runStatus === "error"
-        ? XCircle
-        : CheckCircle2;
+        ? CancelCircleIcon
+        : CheckmarkCircle01Icon;
 
   return {
     activityItems,
@@ -377,6 +377,7 @@ export function useAgentControlPalette({
     isModelOpen: false,
     items,
     kernel,
+    modelLabel: t("sessions:creator.model"),
     modePath,
     pendingProposal,
     placeholder: t("adeManager.inputPlaceholder"),
@@ -396,9 +397,9 @@ export function useAgentControlPalette({
     showStatusLine: runStatus !== "idle" || Boolean(controlSessionId),
     submitDisabled: !draftText.trim(),
     toolbarActions: {
-      previousIcon: ChevronLeft,
-      nextIcon: ChevronRight,
-      latestIcon: ChevronsRight,
+      previousIcon: ArrowLeft01Icon,
+      nextIcon: ArrowRight01Icon,
+      latestIcon: ArrowRightDoubleIcon,
     },
   };
 }

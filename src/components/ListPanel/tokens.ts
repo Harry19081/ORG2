@@ -113,10 +113,10 @@ export const LIST_CLASSES = {
   ].join(" "),
 
   /** Icon classes (default/not selected) */
-  icon: ["flex-shrink-0", LIST_ITEM.iconClass].join(" "),
+  icon: ["shrink-0", LIST_ITEM.iconClass].join(" "),
 
   /** Icon classes (selected) */
-  iconSelected: ["flex-shrink-0", LIST_ITEM.iconSelectedClass].join(" "),
+  iconSelected: ["shrink-0", LIST_ITEM.iconSelectedClass].join(" "),
 } as const;
 
 // ==============================================
@@ -202,9 +202,3 @@ export const LIST_PANEL_SECTIONS = {
   /** Padding-top before a section stacked below another (replaces outer gap-4) */
   sectionGroupTopSpacing: "pt-5",
 } as const;
-
-// ==============================================
-// Type Exports
-// ==============================================
-
-export type ListItemTokens = typeof LIST_ITEM;

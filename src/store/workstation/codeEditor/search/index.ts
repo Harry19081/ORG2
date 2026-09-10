@@ -5,14 +5,14 @@
  * Shared by both UI (useRepoSearchPanel) and AI (SearchService).
  *
  * Related submodules (also re-exported below):
- * - cacheAtom: Search result caching with TTL and stats
- * - fileTrackingAtom: Incremental indexing file tracking
- * - ignoreAtom: .gitignore / custom ignore pattern management
  * - indexingProgressAtom: Indexing progress UI state
  */
 import { atom } from "jotai";
 
+import { shareSearchLineContext } from "./lineContext";
 import type { SearchOptions, SearchResultFile } from "./types";
+
+export { shareSearchLineContext } from "./lineContext";
 
 export type { SearchMatch, SearchResultFile, SearchOptions } from "./types";
 
@@ -90,15 +90,6 @@ export const searchTotalFilesAtom = atom((get) => {
 });
 searchTotalFilesAtom.debugLabel = "searchTotalFilesAtom";
 
-// ============================================
-// Action Atoms
-// ============================================
-
-/** Set search query */
-export const searchSetQueryAtom = atom(null, (_get, set, query: string) => {
-  set(searchQueryAtom, query);
-});
-
 /** Update search options */
 export const searchSetOptionsAtom = atom(
   null,
@@ -117,12 +108,36 @@ export const searchClearAtom = atom(null, (_get, set) => {
   set(searchActualTotalFilesAtom, 0);
 });
 
-/** Append more results */
+/**
+ * Hard ceiling on matches retained in `searchResultsAtom` across "load more"
+ * rounds. Mirrors `SEARCH_CONSTANTS.MAX_TOTAL_RESULTS` in the search sidebar
+ * (which already renders "20,000+" past this point) — without it, repeated
+ * load-more on a broad regex accumulated result rows without bound.
+ */
+export const SEARCH_MAX_RETAINED_MATCHES = 20_000;
+
+/** Append more results (bounded by `SEARCH_MAX_RETAINED_MATCHES`). */
 export const searchAppendResultsAtom = atom(
   null,
   (get, set, newResults: SearchResultFile[]) => {
     const current = get(searchResultsAtom);
-    set(searchResultsAtom, [...current, ...newResults]);
+    let retained = current.reduce((sum, file) => sum + file.matches.length, 0);
+    const accepted: SearchResultFile[] = [];
+    let truncated = false;
+    for (const file of newResults) {
+      if (retained >= SEARCH_MAX_RETAINED_MATCHES) {
+        truncated = true;
+        break;
+      }
+      accepted.push(file);
+      retained += file.matches.length;
+    }
+    if (accepted.length > 0) {
+      set(searchResultsAtom, [...current, ...shareSearchLineContext(accepted)]);
+    }
+    if (truncated || retained >= SEARCH_MAX_RETAINED_MATCHES) {
+      set(searchHasMoreAtom, false);
+    }
   }
 );
 
@@ -130,10 +145,6 @@ export const searchAppendResultsAtom = atom(
 // Re-exports from submodules
 // ============================================
 
-export * from "./cacheAtom";
-export * from "./fileTrackingAtom";
-export * from "./ignoreAtom";
-export type { IndexingProgress } from "./indexingProgressAtom";
 export {
   indexingProgressAtom,
   isIndexingAtom,

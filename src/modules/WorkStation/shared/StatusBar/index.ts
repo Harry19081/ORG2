@@ -23,23 +23,10 @@ export {
   StatusBarSegment,
   StatusBarText,
 } from "./StatusBarBase";
-export type {
-  BaseStatusBarProps,
-  StatusBarButtonProps,
-  StatusBarDividerProps,
-  StatusBarLabelProps,
-  StatusBarSegmentProps,
-  StatusBarTextProps,
-} from "./StatusBarBase";
 
 // Editor status bar (CodeEditor)
 export { EditorStatusBar } from "./EditorStatusBar";
-export type {
-  CommitInfo,
-  CursorPosition,
-  EditorStatusBarProps,
-  LspStatus,
-} from "./EditorStatusBar";
+export type { CommitInfo, CursorPosition } from "./EditorStatusBar";
 
 export { CiStatusMenu } from "./CiStatusMenu";
 export { PortsStatusMenu } from "./PortsStatusMenu";
@@ -49,11 +36,9 @@ export { WorkspacePortScanner } from "./WorkspacePortScanner";
 
 // Browser status bar (Browser)
 export { default as BrowserStatusBar } from "./BrowserStatusBar";
-export type { BrowserStatusBarProps } from "./BrowserStatusBar";
 
 // Project status bar (Project Manager)
 export { default as ProjectStatusBar } from "./ProjectStatusBar";
-export type { ProjectStatusBarProps } from "./ProjectStatusBar";
 
 // Unified renderer (reads global atom, renders appropriate variant)
 export { StatusBarRenderer } from "./StatusBarRenderer";

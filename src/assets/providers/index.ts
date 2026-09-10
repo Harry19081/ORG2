@@ -2,11 +2,14 @@
 // Agent Type Configuration
 // ============================================
 import { CLI_AGENT } from "@src/api/tauri/rpc/schemas/validation";
+import type { ApiProviderType } from "@src/api/types/keys";
 
-import type { ApiProviderType, CliAgentType } from "./types";
-
-// Re-export model types from types to maintain API
-export type { CliAgentType, ApiProviderType, ModelType } from "./types";
+// Preserve the provider API while exporting types from their owner
+export type {
+  CliAgentType,
+  ApiProviderType,
+  ModelType,
+} from "@src/api/types/keys";
 export { ORGII_ORCHESTRATOR } from "./types";
 
 /**
@@ -35,18 +38,8 @@ export function formatModelAgentType(agentType: string): string {
   return formatAgentType(agentType);
 }
 
-/** CLI agent types in alphabetical order by label */
-export const AGENT_TYPE_LIST: CliAgentType[] = [
-  CLI_AGENT.KIRO, // Kiro CLI
-  CLI_AGENT.CLAUDE_CODE, // Claude Code
-  CLI_AGENT.CODEX, // Codex
-  CLI_AGENT.CURSOR, // Cursor
-  CLI_AGENT.COPILOT, // GitHub Copilot
-  CLI_AGENT.OPENCODE, // OpenCode
-];
-
 /** API key provider types in alphabetical order by label */
-export const API_KEY_PROVIDER_LIST: ApiProviderType[] = [
+const API_KEY_PROVIDER_LIST: ApiProviderType[] = [
   "anthropic_api", // Anthropic
   "atlascloud_api", // Atlas Cloud
   "azure_anthropic_api", // Azure Anthropic

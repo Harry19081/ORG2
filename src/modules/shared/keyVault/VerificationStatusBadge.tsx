@@ -8,13 +8,6 @@
  * - Provider's own listing view (shows verification progress)
  * - Admin views
  */
-import {
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Loader2,
-  XCircle,
-} from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -23,9 +16,17 @@ import type {
   VerificationData,
   VerificationState,
 } from "@src/api/types/keyVault";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import Tag from "@src/components/Tag";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
+import {
+  Alert01Icon,
+  CancelCircleIcon,
+  CheckmarkCircle01Icon,
+  Clock01Icon,
+  HugeiconsIcon,
+  Loading03Icon,
+} from "@src/icons";
 
 export interface VerificationStatusBadgeProps {
   /** Listing status (pending, approved, rejected, etc.) */
@@ -82,7 +83,13 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
     switch (effectiveState) {
       case "pending":
         return (
-          <Tag color="warning" size="small" icon={<Clock size={12} />}>
+          <Tag
+            color="warning"
+            size="small"
+            icon={
+              <HugeiconsIcon icon={Clock01Icon} data-icon="clock" size={12} />
+            }
+          >
             {t("keyVault.verification.pendingVerification")}
           </Tag>
         );
@@ -92,7 +99,12 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
             color="info"
             size="small"
             icon={
-              <Loader2 size={SPINNER_TOKENS.small} className="animate-spin" />
+              <HugeiconsIcon
+                icon={Loading03Icon}
+                data-icon="loader-2"
+                size={SPINNER_TOKENS.small}
+                className="animate-spin"
+              />
             }
           >
             {t("keyVault.verification.verifying")}
@@ -101,19 +113,49 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
       case "passed":
       case "approved":
         return (
-          <Tag color="success" size="small" icon={<CheckCircle size={12} />}>
+          <Tag
+            color="success"
+            size="small"
+            icon={
+              <HugeiconsIcon
+                icon={CheckmarkCircle01Icon}
+                data-icon="check-circle"
+                size={12}
+              />
+            }
+          >
             {t("keyVault.verification.verified")}
           </Tag>
         );
       case "failed":
         return (
-          <Tag color="danger" size="small" icon={<XCircle size={12} />}>
+          <Tag
+            color="danger"
+            size="small"
+            icon={
+              <HugeiconsIcon
+                icon={CancelCircleIcon}
+                data-icon="xcircle"
+                size={12}
+              />
+            }
+          >
             {t("keyVault.verification.verificationFailed")}
           </Tag>
         );
       case "rejected_other":
         return (
-          <Tag color="danger" size="small" icon={<XCircle size={12} />}>
+          <Tag
+            color="danger"
+            size="small"
+            icon={
+              <HugeiconsIcon
+                icon={CancelCircleIcon}
+                data-icon="xcircle"
+                size={12}
+              />
+            }
+          >
             {t("keyVault.verification.rejected")}
           </Tag>
         );
@@ -126,9 +168,16 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
   switch (effectiveState) {
     case "pending":
       return (
-        <InlineAlert
+        <PageNotice
           type="warning"
-          icon={<Clock size={16} className="flex-shrink-0" />}
+          icon={
+            <HugeiconsIcon
+              icon={Clock01Icon}
+              data-icon="clock"
+              size={16}
+              className="shrink-0"
+            />
+          }
           title={t("keyVault.verification.pendingVerification")}
         >
           <p className="text-[13px]">
@@ -137,17 +186,19 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
           <p className="mt-1 text-xs opacity-70">
             {t("keyVault.verification.pendingTime")}
           </p>
-        </InlineAlert>
+        </PageNotice>
       );
 
     case "in_progress":
       return (
-        <InlineAlert
+        <PageNotice
           type="info"
           icon={
-            <Loader2
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              data-icon="loader-2"
               size={SPINNER_TOKENS.default}
-              className="flex-shrink-0 animate-spin"
+              className="shrink-0 animate-spin"
             />
           }
           title={t("keyVault.verification.verifyingKeys")}
@@ -162,25 +213,39 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
               })}
             </p>
           )}
-        </InlineAlert>
+        </PageNotice>
       );
 
     case "passed":
     case "approved":
       return (
-        <InlineAlert
+        <PageNotice
           type="success"
-          icon={<CheckCircle size={16} className="flex-shrink-0" />}
+          icon={
+            <HugeiconsIcon
+              icon={CheckmarkCircle01Icon}
+              data-icon="check-circle"
+              size={16}
+              className="shrink-0"
+            />
+          }
         >
           {t("keyVault.verification.keysVerified")}
-        </InlineAlert>
+        </PageNotice>
       );
 
     case "failed":
       return (
-        <InlineAlert
+        <PageNotice
           type="danger"
-          icon={<XCircle size={16} className="flex-shrink-0" />}
+          icon={
+            <HugeiconsIcon
+              icon={CancelCircleIcon}
+              data-icon="xcircle"
+              size={16}
+              className="shrink-0"
+            />
+          }
           title={t("keyVault.verification.verificationFailed")}
         >
           <p className="text-[13px]">
@@ -196,14 +261,21 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
           <p className="mt-1 text-xs opacity-70">
             {t("keyVault.verification.failedHint")}
           </p>
-        </InlineAlert>
+        </PageNotice>
       );
 
     case "rejected_other":
       return (
-        <InlineAlert
+        <PageNotice
           type="danger"
-          icon={<AlertTriangle size={16} className="flex-shrink-0" />}
+          icon={
+            <HugeiconsIcon
+              icon={Alert01Icon}
+              data-icon="alert-triangle"
+              size={16}
+              className="shrink-0"
+            />
+          }
           title={t("keyVault.verification.listingRejected")}
         >
           {rejectionReason ? (
@@ -213,7 +285,7 @@ const VerificationStatusBadge: React.FC<VerificationStatusBadgeProps> = ({
               {t("keyVault.verification.rejectedByAdmin")}
             </p>
           )}
-        </InlineAlert>
+        </PageNotice>
       );
 
     default:

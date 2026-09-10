@@ -30,8 +30,11 @@ const SCENARIO_FILTER = (process.env.E2E_CHAT_RENDERING_SCENARIOS ?? "")
   .map((value) => value.trim())
   .filter(Boolean);
 
-function shouldRunScenario(name) {
-  return SCENARIO_FILTER.length === 0 || SCENARIO_FILTER.includes(name);
+function shouldRunScenario(name, aliases = []) {
+  return (
+    SCENARIO_FILTER.length === 0 ||
+    [name, ...aliases].some((candidate) => SCENARIO_FILTER.includes(candidate))
+  );
 }
 
 const SKIP_CHAT_TOOLS = new Set([
@@ -2343,10 +2346,13 @@ async function assertImportedClaudeHistoryLazyReplayAndAutoRefresh() {
   `);
   await browser.waitUntil(
     async () =>
-      execJS(`return !!document.querySelector('[data-testid="turn-page-list"]');`),
+      execJS(
+        `return !!document.querySelector('[data-testid="turn-page-list"]');`
+      ),
     {
       timeout: RENDER_TIMEOUT_MS,
-      timeoutMsg: "round selector list did not open for the Claude Code import fixture",
+      timeoutMsg:
+        "round selector list did not open for the Claude Code import fixture",
     }
   );
   await browser.waitUntil(
@@ -2361,7 +2367,8 @@ async function assertImportedClaudeHistoryLazyReplayAndAutoRefresh() {
       `),
     {
       timeout: RENDER_TIMEOUT_MS,
-      timeoutMsg: "round selector never exposed round 2 for the Claude Code import fixture",
+      timeoutMsg:
+        "round selector never exposed round 2 for the Claude Code import fixture",
     }
   );
   await browser.waitUntil(
@@ -2372,7 +2379,8 @@ async function assertImportedClaudeHistoryLazyReplayAndAutoRefresh() {
       `),
     {
       timeout: RENDER_TIMEOUT_MS,
-      timeoutMsg: "round 2 was not selectable from the imported Claude Code round selector",
+      timeoutMsg:
+        "round 2 was not selectable from the imported Claude Code round selector",
     }
   );
 
@@ -2419,9 +2427,7 @@ async function assertImportedClaudeHistoryLazyReplayAndAutoRefresh() {
       message: {
         role: "assistant",
         model: "claude-sonnet-4",
-        content: [
-          { type: "text", text: `round-${appendedRound} answer body` },
-        ],
+        content: [{ type: "text", text: `round-${appendedRound} answer body` }],
         usage: { input_tokens: 10, output_tokens: 20 },
       },
     }),
@@ -2961,7 +2967,7 @@ async function assertTurnMetadataFooterRendered() {
   );
 }
 
-async function assertKanbanFileSearchRendered() {
+async function assertKanbanSessionSearchRendered() {
   const opened = await invokeE2E("openWorkManagementTab");
   if (!opened || opened.ok !== true) {
     throw new Error(
@@ -2971,11 +2977,11 @@ async function assertKanbanFileSearchRendered() {
   await browser.waitUntil(
     async () =>
       execJS(
-        `return !!document.querySelector('[data-testid="kanban-file-search-input"] input');`
+        `return !!document.querySelector('[data-testid="kanban-search-input"] input');`
       ),
     {
       timeout: RENDER_TIMEOUT_MS,
-      timeoutMsg: "Kanban file search input did not render",
+      timeoutMsg: "Kanban session search input did not render",
     }
   );
 
@@ -2983,12 +2989,12 @@ async function assertKanbanFileSearchRendered() {
   const betaTitle = `Metadata beta ${RUN_ID}`;
   for (const fixture of [
     {
-      sessionId: `sdeagent-e2e-file-search-alpha-${RUN_ID}`,
+      sessionId: `sdeagent-e2e-session-search-alpha-${RUN_ID}`,
       name: alphaTitle,
       touchedFiles: ["src/features/metadata/SessionRoundMetadata.tsx"],
     },
     {
-      sessionId: `sdeagent-e2e-file-search-beta-${RUN_ID}`,
+      sessionId: `sdeagent-e2e-session-search-beta-${RUN_ID}`,
       name: betaTitle,
       touchedFiles: ["src/engines/kanban/searchIndex.rs"],
     },
@@ -3004,24 +3010,35 @@ async function assertKanbanFileSearchRendered() {
       return Array.from(document.querySelectorAll('.kanban-task-card'))
         .map((card) => card.innerText || '');
     `);
-  const setFileSearch = async (value) => {
-    const nextValue = await execJS(`
-      const input = document.querySelector('[data-testid="kanban-file-search-input"] input');
-      if (!(input instanceof HTMLInputElement)) return null;
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
-      if (!setter) return null;
-      setter.call(input, ${JSON.stringify(value)});
-      input.dispatchEvent(new InputEvent('input', {
-        bubbles: true,
-        data: ${JSON.stringify(value)},
-        inputType: 'insertText',
-      }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-      return input.value;
+  const listTitles = () =>
+    execJS(`
+      return Array.from(document.querySelectorAll('[data-testid="kanban-list-session-row"]'))
+        .map((row) => row.innerText || '');
     `);
-    if (nextValue !== value) {
-      throw new Error(`failed to set Kanban file search to ${value}`);
+  const setSessionSearch = async (value) => {
+    const focused = await execJS(`
+      const input = document.querySelector('[data-testid="kanban-search-input"] input');
+      if (!(input instanceof HTMLInputElement)) return false;
+      input.focus();
+      input.select();
+      return document.activeElement === input;
+    `);
+    if (!focused) {
+      throw new Error("failed to focus the rendered Kanban session search");
     }
+
+    await browser.keys("Backspace");
+    if (value) await browser.keys(value);
+    await browser.waitUntil(
+      async () =>
+        execJS(
+          `return document.querySelector('[data-testid="kanban-search-input"] input')?.value === ${JSON.stringify(value)};`
+        ),
+      {
+        timeout: RENDER_TIMEOUT_MS,
+        timeoutMsg: `Kanban session search did not accept ${value}`,
+      }
+    );
   };
   await browser.waitUntil(
     async () => {
@@ -3037,7 +3054,7 @@ async function assertKanbanFileSearchRendered() {
     }
   );
 
-  await setFileSearch("roundmetadata");
+  await setSessionSearch("METADATA ALPHA");
   try {
     await browser.waitUntil(
       async () => {
@@ -3049,14 +3066,14 @@ async function assertKanbanFileSearchRendered() {
       },
       {
         timeout: RENDER_TIMEOUT_MS,
-        timeoutMsg: "basename fragment did not filter Kanban sessions",
+        timeoutMsg: "session-name fragment did not filter Kanban cards",
       }
     );
   } catch (error) {
     throw new Error(
       `${error.message}: ${JSON.stringify({
         inputValue: await execJS(
-          `return document.querySelector('[data-testid="kanban-file-search-input"] input')?.value ?? null;`
+          `return document.querySelector('[data-testid="kanban-search-input"] input')?.value ?? null;`
         ),
         titles: await cardTitles(),
         body: await execJS(
@@ -3066,10 +3083,38 @@ async function assertKanbanFileSearchRendered() {
     );
   }
 
-  await setFileSearch("ENGINES\\KANBAN");
+  const listButton = await $('[data-testid="kanban-view-list"]');
+  await listButton.waitForDisplayed({
+    timeout: RENDER_TIMEOUT_MS,
+    timeoutMsg: "Kanban List view button did not render",
+  });
+  await listButton.click();
   await browser.waitUntil(
     async () => {
-      const titles = await cardTitles();
+      const titles = await listTitles();
+      return (
+        titles.some((title) => title.includes(alphaTitle)) &&
+        !titles.some((title) => title.includes(betaTitle))
+      );
+    },
+    {
+      timeout: RENDER_TIMEOUT_MS,
+      timeoutMsg: "header query did not carry from Kanban cards into List rows",
+    }
+  );
+  const duplicateListSearchCount = await execJS(
+    `return document.querySelectorAll('input[type="search"]').length;`
+  );
+  if (duplicateListSearchCount !== 0) {
+    throw new Error(
+      `Kanban List rendered ${duplicateListSearchCount} duplicate full-width search inputs`
+    );
+  }
+
+  await setSessionSearch("metadata beta");
+  await browser.waitUntil(
+    async () => {
+      const titles = await listTitles();
       return (
         !titles.some((title) => title.includes(alphaTitle)) &&
         titles.some((title) => title.includes(betaTitle))
@@ -3077,26 +3122,27 @@ async function assertKanbanFileSearchRendered() {
     },
     {
       timeout: RENDER_TIMEOUT_MS,
-      timeoutMsg: "normalized partial path did not filter Kanban sessions",
+      timeoutMsg: "shared session-name query did not filter Kanban List rows",
     }
   );
 
-  await setFileSearch("definitely-not-a-touched-file");
+  await setSessionSearch("searchIndex.rs");
   await browser.waitUntil(
     async () =>
       execJS(
-        `return !!document.querySelector('[data-testid="kanban-file-search-empty"]');`
+        `return !!document.querySelector('[data-testid="kanban-search-empty"]');`
       ),
     {
       timeout: RENDER_TIMEOUT_MS,
-      timeoutMsg: "Kanban file search empty state did not render",
+      timeoutMsg:
+        "touched-file metadata incorrectly matched session-name search",
     }
   );
 
-  await setFileSearch("");
+  await setSessionSearch("");
   await browser.waitUntil(
     async () => {
-      const titles = await cardTitles();
+      const titles = await listTitles();
       return (
         titles.some((title) => title.includes(alphaTitle)) &&
         titles.some((title) => title.includes(betaTitle))
@@ -3104,7 +3150,7 @@ async function assertKanbanFileSearchRendered() {
     },
     {
       timeout: RENDER_TIMEOUT_MS,
-      timeoutMsg: "clearing Kanban file search did not restore all sessions",
+      timeoutMsg: "clearing Kanban session search did not restore all sessions",
     }
   );
 }
@@ -3248,6 +3294,98 @@ describe("Core chat rendering UI", () => {
     await assertOneHundredRoundSkeletonRemainsNavigable();
   });
 
+  it("keeps manual scroll position while the active assistant event streams", async function () {
+    if (!shouldRunScenario("streaming-manual-scroll-pin")) {
+      this.skip();
+      return;
+    }
+
+    const sessionId = `sdeagent-e2e-stream-scroll-${RUN_ID}`;
+    const events = Array.from({ length: 48 }, (_, index) => [
+      makeUserEvent(sessionId, 10_000 + index),
+      makeAssistantEvent(sessionId, 10_000 + index),
+    ]).flat();
+    const last = events.at(-1);
+    last.displayStatus = "running";
+    last.result = { ...last.result, status: "running" };
+    const seeded = await invokeE2E("seedChatEvents", sessionId, events, {
+      runtimeStatus: "running",
+    });
+    if (!seeded?.ok) {
+      throw new Error(
+        `stream-scroll initial seed failed: ${seeded?.error ?? "unknown"}`
+      );
+    }
+
+    await browser.waitUntil(
+      async () =>
+        execJS(`
+          const scroller = document.querySelector('[data-testid="chat-history-scroll-container"]');
+          if (!scroller || scroller.scrollHeight <= scroller.clientHeight * 2) return false;
+          scroller.dispatchEvent(new WheelEvent('wheel', { deltaY: -120, bubbles: true }));
+          scroller.scrollTop = 0;
+          scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
+          return scroller.scrollTop === 0;
+        `),
+      {
+        timeout: RENDER_TIMEOUT_MS,
+        interval: 100,
+        timeoutMsg: "stream-scroll transcript never exposed a scrollable history",
+      }
+    );
+    await browser.pause(250);
+
+    const streamedText = `STREAM_SCROLL_DELTA_${RUN_ID}`;
+    const streamedEvents = events.map((event, index) =>
+      index === events.length - 1
+        ? {
+            ...event,
+            displayText: `${event.displayText}\n${streamedText}`,
+            result: {
+              ...event.result,
+              content: `${event.displayText}\n${streamedText}`,
+              status: "running",
+            },
+          }
+        : event
+    );
+    const updated = await invokeE2E(
+      "seedChatEvents",
+      sessionId,
+      streamedEvents,
+      { runtimeStatus: "running" }
+    );
+    if (!updated?.ok) {
+      throw new Error(
+        `stream-scroll delta seed failed: ${updated?.error ?? "unknown"}`
+      );
+    }
+
+    await browser.waitUntil(
+      async () =>
+        execJS(`
+          const scroller = document.querySelector('[data-testid="chat-history-scroll-container"]');
+          const scrollButton = Array.from(document.querySelectorAll('button'))
+            .find((button) => /scroll to bottom/i.test(button.getAttribute('aria-label') || ''));
+          return Boolean(
+            scroller &&
+            scroller.scrollTop <= 10 &&
+            scrollButton
+          );
+        `),
+      {
+        timeout: RENDER_TIMEOUT_MS,
+        interval: 100,
+        timeoutMsg:
+          "streaming output forced the manually-scrolled history back to the bottom",
+      }
+    );
+    const finalState = await invokeE2E("inspectChatState");
+    if (!finalState?.ok || !JSON.stringify(finalState).includes(streamedText)) {
+      throw new Error("stream-scroll delta never entered canonical chat state");
+    }
+  });
+
   it("lazily loads an imported Claude Code round body and auto-refetches it after a replace reload", async function () {
     if (!shouldRunScenario("claude-imported-lazy-replay")) {
       this.skip();
@@ -3329,12 +3467,12 @@ describe("Core chat rendering UI", () => {
     await assertTurnMetadataFooterRendered();
   });
 
-  it("filters rendered Kanban sessions by basename and partial file path", async function () {
-    if (!shouldRunScenario("kanban-file-search")) {
+  it("filters rendered Kanban and List sessions by session name", async function () {
+    if (!shouldRunScenario("kanban-session-search", ["kanban-file-search"])) {
       this.skip();
       return;
     }
 
-    await assertKanbanFileSearchRendered();
+    await assertKanbanSessionSearchRendered();
   });
 });

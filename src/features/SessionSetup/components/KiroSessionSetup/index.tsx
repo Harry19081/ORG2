@@ -16,32 +16,31 @@
  *   }}
  * />
  */
-import {
-  AlertCircle,
-  CheckCircle,
-  Copy,
-  Loader2,
-  RefreshCw,
-  X,
-} from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import IconButton from "@src/components/IconButton";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
+import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
-import { useKiroSessionCapture } from "@src/hooks/workStation/sessionCapture/useKiroSessionCapture";
-import { useWebviewPositionSync } from "@src/hooks/workStation/sessionCapture/useWebviewPositionSync";
+import { useKiroSessionCapture } from "@src/features/SessionSetup/hooks/useKiroSessionCapture";
+import { useWebviewPositionSync } from "@src/features/SessionSetup/hooks/useWebviewPositionSync";
+import {
+  Cancel01Icon,
+  Copy01Icon,
+  HugeiconsIcon,
+  Loading03Icon,
+  Refresh04Icon,
+} from "@src/icons";
 import {
   SECTION_CONTROL_STYLE,
   SECTION_GAP_CLASSES,
   SectionContainer,
   SectionRow,
 } from "@src/modules/shared/layouts/SectionLayout";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { copyText } from "@src/util/data/clipboard";
 
 // ============================================
@@ -58,7 +57,7 @@ export interface KiroSessionValues {
   expiresAt?: string;
 }
 
-export interface KiroSessionSetupProps {
+interface KiroSessionSetupProps {
   /** Callback when credentials are captured */
   onSessionCaptured?: (values: KiroSessionValues) => void;
   /** Initial Identity Center Start URL */
@@ -226,54 +225,29 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
     <div className="flex flex-col gap-4">
       {/* Success State */}
       {isLoggedIn && (
-        <div className="rounded-xl border border-success-6 bg-success-1 p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success-6">
-              <CheckCircle size={20} className="text-text-white" />
-            </div>
-            <div>
-              <div className="text-[14px] font-medium text-success-6">
-                {t("keyVault.kiroLoggedInSuccess")}
-              </div>
-              <div className="text-[12px] text-text-3">
-                {t("keyVault.kiroKeysCaptured")}
-              </div>
-            </div>
-          </div>
-          <Button
-            variant="tertiary"
-            appearance="ghost"
-            size="small"
-            onClick={handleReset}
-            className="mt-3 text-[12px]"
-          >
-            {t("keyVault.kiroLoginDifferentAccount")}
-          </Button>
-        </div>
+        <PageNotice
+          type="success"
+          role="status"
+          title={t("keyVault.kiroLoggedInSuccess")}
+          action={{
+            label: t("keyVault.kiroLoginDifferentAccount"),
+            onClick: handleReset,
+          }}
+        >
+          {t("keyVault.kiroKeysCaptured")}
+        </PageNotice>
       )}
 
       {/* Error State */}
       {error && !isLoggingIn && !isLoggedIn && (
-        <div className="rounded-xl border border-danger-6 bg-danger-1 p-4">
-          <div className="flex items-start gap-3">
-            <AlertCircle size={20} className="mt-0.5 text-danger-6" />
-            <div>
-              <div className="text-[13px] font-medium text-danger-6">
-                {t("keyVault.kiroAuthFailed")}
-              </div>
-              <div className="mt-1 text-[12px] text-text-3">{error}</div>
-              <Button
-                variant="tertiary"
-                appearance="ghost"
-                size="small"
-                onClick={handleReset}
-                className="mt-2 text-[12px]"
-              >
-                {t("keyVault.kiroTryAgain")}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <PageNotice
+          type="danger"
+          role="alert"
+          title={t("keyVault.kiroAuthFailed")}
+          action={{ label: t("keyVault.kiroTryAgain"), onClick: handleReset }}
+        >
+          {error}
+        </PageNotice>
       )}
 
       {/* Browser View - When logging in */}
@@ -281,7 +255,7 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
         <div className="flex flex-col overflow-hidden bg-fill-2">
           {/* Browser Header */}
           <div className="flex h-10 items-center border-b border-border-2 bg-fill-2 px-3">
-            <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-text-1">
+            <div className="flex-1 overflow-hidden text-[12px] text-ellipsis whitespace-nowrap text-text-1">
               {currentUrl || verificationUrl || "Loading..."}
             </div>
             <IconButton
@@ -290,7 +264,11 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
               size="sm"
               variant="default"
             >
-              <RefreshCw size={12} />
+              <HugeiconsIcon
+                icon={Refresh04Icon}
+                data-icon="refresh-cw"
+                size={12}
+              />
             </IconButton>
             <IconButton
               onClick={handleCloseBrowser}
@@ -298,7 +276,7 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
               size="sm"
               variant="default"
             >
-              <X size={14} />
+              <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
             </IconButton>
           </div>
 
@@ -318,7 +296,7 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
                   size="sm"
                   variant="default"
                 >
-                  <Copy size={14} />
+                  <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={14} />
                 </IconButton>
               </div>
             </div>
@@ -347,7 +325,9 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
           {isWebviewOpen && (
             <div className="flex items-center justify-center gap-2 border-t border-border-2 bg-fill-1 p-2">
               <span className="flex items-center gap-2 text-[13px] text-text-3">
-                <Loader2
+                <HugeiconsIcon
+                  icon={Loading03Icon}
+                  data-icon="loader-2"
                   size={SPINNER_TOKENS.default}
                   className="animate-spin"
                 />
@@ -403,12 +383,12 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
           </SectionContainer>
 
           {startUrl && !isStartUrlValid && (
-            <InlineAlert type="danger" title={t("common:status.error")}>
+            <PageNotice type="danger" title={t("common:status.error")}>
               {t("keyVault.kiroIdentityCenterUrlInvalid")}
-            </InlineAlert>
+            </PageNotice>
           )}
 
-          <InlineAlert
+          <PageNotice
             type="info"
             subtitle={t("keyVault.kiroRequiresCliHint", {
               models: t("categories.models"),
@@ -416,7 +396,7 @@ const KiroSessionSetup: React.FC<KiroSessionSetupProps> = ({
             })}
           >
             {t("keyVault.kiroRequiresCli")}
-          </InlineAlert>
+          </PageNotice>
         </div>
       )}
 

@@ -5,7 +5,8 @@
  *   html  — sanitized HTML rendered in Shadow DOM
  *   url   — external URL shown as an open action, not embedded
  *   a2ui  — incremental JSONL stream rendered as native React components
- *   react — generated React App source rendered through react-live
+ *   react — generated React App source compiled and executed in a sandboxed
+ *           canvas-artifact iframe (ReactArtifactRunner)
  *
  * For a2ui mode the previous iframe + postMessage approach has been replaced
  * with A2UIRenderer, which receives the parsed lines directly as props and
@@ -16,9 +17,11 @@
  *   - url: not embedded to avoid iframe memory overhead
  *   - a2ui: DOMPurify sanitizes type="html" elements in A2UIRenderer
  */
-import { Layout } from "lucide-react";
 import React, { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+import SkeletonBar from "@src/components/Skeleton";
+import { HugeiconsIcon, Layout01Icon } from "@src/icons";
 
 import {
   EventBlockHeader,
@@ -58,17 +61,17 @@ const CanvasLoadingSkeleton: React.FC = () => (
     aria-label="Loading canvas content"
   >
     {/* Heading bar — ~60% width */}
-    <div className="h-4 w-3/5 animate-pulse rounded bg-fill-3" />
+    <SkeletonBar className="h-4 w-3/5" />
 
     {/* Content lines — varying widths */}
     <div className="flex flex-col gap-2">
-      <div className="h-3 w-full animate-pulse rounded bg-fill-3" />
-      <div className="h-3 w-[85%] animate-pulse rounded bg-fill-3" />
-      <div className="h-3 w-[70%] animate-pulse rounded bg-fill-3" />
+      <SkeletonBar className="h-3 w-full" />
+      <SkeletonBar className="h-3 w-[85%]" />
+      <SkeletonBar className="h-3 w-[70%]" />
     </div>
 
     {/* Chart / table placeholder rectangle */}
-    <div className="mt-1 h-24 w-full animate-pulse rounded-md bg-fill-3" />
+    <SkeletonBar className="mt-1 h-24 w-full rounded-md" />
   </div>
 );
 
@@ -153,17 +156,23 @@ const CanvasInlineCard: React.FC<CanvasInlineCardProps> = ({
             ? "border-b border-solid border-transparent"
             : "border-b border-solid border-border-1"
         }
-        onClick={handleHeaderClick}
+        onToggleCollapse={handleHeaderClick}
         onNavigate={eventId ? handleLocate : undefined}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}
         withHover
       >
         <EventBlockHeaderIcon
-          icon={<Layout size={14} className="text-primary-6" />}
+          icon={
+            <HugeiconsIcon
+              icon={Layout01Icon}
+              data-icon="panels-top-left"
+              size={14}
+              className="text-primary-6"
+            />
+          }
           isCollapsed={isCollapsed}
           isHeaderHovered={isHeaderHovered}
-          onToggle={handleHeaderClick}
           hasContent
         />
         <EventBlockHeaderTitle>{cardTitle}</EventBlockHeaderTitle>
@@ -179,7 +188,7 @@ const CanvasInlineCard: React.FC<CanvasInlineCardProps> = ({
           className="relative w-full overflow-hidden transition-[height] duration-300 ease-in-out"
           style={{ height: currentHeight }}
         >
-          <div className="h-full min-w-0 max-w-full">{contentArea}</div>
+          <div className="h-full max-w-full min-w-0">{contentArea}</div>
 
           {/* Streaming progress bar — pulsing accent line at bottom edge */}
           {isStreaming && (
@@ -206,4 +215,3 @@ const CanvasInlineCardWithBoundary: React.FC<CanvasInlineCardProps> = (
 CanvasInlineCardWithBoundary.displayName = "CanvasInlineCardWithBoundary";
 
 export default CanvasInlineCardWithBoundary;
-export type { CanvasInlineCardProps } from "./types";

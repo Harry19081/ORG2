@@ -10,17 +10,19 @@
  */
 import React, { Suspense, memo, useMemo } from "react";
 
+import { Placeholder } from "@src/components/Placeholder";
 import {
   NoTabsPlaceholder,
   type QuickAction,
 } from "@src/modules/WorkStation/shared";
+import GitHubDetailSkeleton from "@src/modules/shared/components/GitHubDetailSkeleton";
 import { useGitHubIssueDetailState } from "@src/modules/shared/hooks/useGitHubIssueDetailState";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";
 import type { PrIdentity } from "@src/store/workstation/codeEditor/workstationSelectedPrAtom";
 import type { SourceControlHistorySelection } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
 
+import { useSourceControlIssueDetailTab } from "../useSourceControlIssueDetailTab";
 import AllChangesView from "./AllChangesView";
 import FocusView from "./FocusView";
 
@@ -38,13 +40,9 @@ const PrDetailPanel = React.lazy(() =>
   )
 );
 
-const DetailFallback = () => (
-  <Placeholder variant="loading" placement="detail-panel" fillParentHeight />
-);
-
 export type SourceControlPillMode = "focus" | "all-changes";
 
-export interface SourceControlMainContentProps {
+interface SourceControlMainContentProps {
   /** Current pill mode */
   mode: SourceControlPillMode;
   // Focus mode
@@ -72,6 +70,12 @@ export interface SourceControlMainContentProps {
   collapseAllSignal?: number;
   /** Source Control navigation shown when no detail is selected. */
   emptyFocusActions: QuickAction[];
+  /**
+   * Owning tab id. The pane is unmounted when the tab is not active; view
+   * state (All Changes expansion + scroll, issue sub-tab) is saved under this
+   * key so the next mount restores it.
+   */
+  viewStateKey?: string;
 }
 
 const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
@@ -90,6 +94,7 @@ const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
   repoPath,
   collapseAllSignal,
   emptyFocusActions,
+  viewStateKey,
 }) => {
   const scopeKey = workstationRepoScopeKey(repoId, repoPath);
   const {
@@ -101,6 +106,10 @@ const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
     repoId,
     stateScopeKey: scopeKey,
   });
+  const [issueDetailTab, setIssueDetailTab] = useSourceControlIssueDetailTab(
+    viewStateKey,
+    selectedIssueState.issue?.html_url
+  );
 
   // `historySelection` keeps a stable reference across renders (it comes from
   // the persisted tab payload), so memoizing on it directly gives a stable
@@ -122,7 +131,16 @@ const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
 
   if (prIdentity) {
     return (
-      <Suspense fallback={<DetailFallback />}>
+      <Suspense
+        fallback={
+          <GitHubDetailSkeleton
+            kind="pr"
+            showHeader={false}
+            title={prIdentity.title}
+            number={prIdentity.number}
+          />
+        }
+      >
         <PrDetailPanel
           identity={prIdentity}
           repoPath={repoPath ?? ""}
@@ -141,13 +159,24 @@ const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
     }
 
     return (
-      <Suspense fallback={<DetailFallback />}>
+      <Suspense
+        fallback={
+          <GitHubDetailSkeleton
+            kind="issue"
+            showHeader={false}
+            title={historySelection.issueTitle}
+            number={historySelection.issueNumber}
+          />
+        }
+      >
         <IssueDetailPanel
           issue={selectedIssueState.issue}
           timeline={selectedIssueState.timeline}
           timelineLoading={selectedIssueState.timelineLoading}
           interaction={interaction}
           assigneeConfig={assigneeConfig}
+          activeTab={issueDetailTab}
+          onTabChange={setIssueDetailTab}
         />
       </Suspense>
     );
@@ -216,6 +245,7 @@ const SourceControlMainContent: React.FC<SourceControlMainContentProps> = ({
           repoPath={repoPath}
           onFileSelect={onFileSelect}
           collapseAllSignal={collapseAllSignal}
+          viewStateKey={viewStateKey}
         />
       )}
     </div>
@@ -226,4 +256,3 @@ SourceControlMainContent.displayName = "SourceControlMainContent";
 
 export default memo(SourceControlMainContent);
 export { AllChangesView };
-export type { AllChangesViewProps } from "./AllChangesView";

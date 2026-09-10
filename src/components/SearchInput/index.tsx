@@ -11,17 +11,6 @@
  *
  * [chevron] [Search icon] [input] [Aa] [ab] [o*] [book] [↑] [↓]
  */
-import {
-  ArrowDown,
-  ArrowUp,
-  BookOpen,
-  CaseSensitive,
-  ChevronDown,
-  ChevronRight,
-  Regex,
-  WholeWord,
-  X,
-} from "lucide-react";
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -30,11 +19,27 @@ import {
   HEADER_ICON_SIZE,
 } from "@src/config/workstation/tokens";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
+import {
+  ArrowDown01Icon,
+  ArrowDown02Icon,
+  ArrowRight01Icon,
+  ArrowUp02Icon,
+  BookOpen01Icon,
+  Cancel01Icon,
+  CaseSensitiveIcon,
+  HugeiconsIcon,
+  RegexIcon,
+  Search01Icon,
+  WholeWordIcon,
+} from "@src/icons";
 
 import {
+  SEARCH_ROW_TOP_OFFSET_PX,
+  SEARCH_WRAPPER_GHOST,
   SEARCH_WRAPPER_PANEL,
   SEARCH_WRAPPER_PANE_INPUT,
   SEARCH_WRAPPER_SIDEBAR,
+  searchControlMultilineInputStyle,
   searchControlSingleLineInputStyle,
   searchWrapperMultiline,
 } from "./searchControlInputStyles";
@@ -44,8 +49,8 @@ import {
 // ============================================
 
 export type SearchInputVariant = "panel" | "sidebar";
-export type SearchInputSize = "sm" | "md";
-export type SearchInputSurface = "default" | "pane" | "transparent";
+type SearchInputSize = "sm" | "md";
+export type SearchInputSurface = "default" | "pane" | "transparent" | "ghost";
 
 export interface SearchInputProps {
   /** Current search query value */
@@ -92,6 +97,10 @@ export interface SearchInputProps {
   onSubmit?: () => void;
   /** Show clear button when input has value */
   showClearButton?: boolean;
+  /** Show a search glyph before the input text. */
+  showSearchIcon?: boolean;
+  /** Extra class name applied to the input element. */
+  inputClassName?: string;
   /** Optional clear handler (defaults to onChange("")) */
   onClear?: () => void;
   /** Extra class name applied to the input box itself (not the outer container) */
@@ -130,6 +139,8 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
     hideChevron = false,
     onSubmit,
     showClearButton = false,
+    showSearchIcon = false,
+    inputClassName = "",
     onClear,
     inputBoxClassName = "",
   }) => {
@@ -193,8 +204,10 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
       surface === "pane"
         ? `${inputWrapperClass} ${SEARCH_WRAPPER_PANE_INPUT}`
         : surface === "transparent"
-          ? `${inputWrapperClass} !bg-transparent`
-          : inputWrapperClass;
+          ? `${inputWrapperClass} bg-transparent!`
+          : surface === "ghost"
+            ? `${inputWrapperClass} ${SEARCH_WRAPPER_GHOST}`
+            : inputWrapperClass;
     const inputWrapperMultilineClass = multiline
       ? searchWrapperMultiline(inputWrapperSurfaceClass)
       : inputWrapperSurfaceClass;
@@ -206,24 +219,49 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
     const actionButtonClass = HEADER_BUTTON.action;
     const iconSize = HEADER_ICON_SIZE.sm;
 
+    // In multiline mode the wrapper is top-aligned (see searchWrapperMultiline) so
+    // the row doesn't re-center as the textarea grows past one line. Pin the inline
+    // option buttons to that same top edge, offset to match the textarea's own
+    // single-line centering — they stay at the "row one" position for one line or ten.
+    const inlineButtonAlignClass = multiline ? "self-start" : "self-center";
+    const inlineButtonStyle = multiline
+      ? { marginTop: SEARCH_ROW_TOP_OFFSET_PX }
+      : undefined;
+
     return (
       <div className={`${containerClass} ${className}`}>
         {/* Expand/collapse chevron */}
         {onExpandToggle && !hideChevron && (
           <div onClick={onExpandToggle} className={buttonClass}>
             {expanded ? (
-              <ChevronDown size={iconSize} />
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                data-icon="chevron-down"
+                size={iconSize}
+              />
             ) : (
-              <ChevronRight size={iconSize} />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                data-icon="chevron-right"
+                size={iconSize}
+              />
             )}
           </div>
         )}
 
         {/* Search input with inline options */}
         <div
-          className={`${inputWrapperMultilineClass} ${multiline ? "items-start" : ""} ${inputBoxClassName}`}
+          className={`${inputWrapperMultilineClass} ${inputBoxClassName}`}
           data-action="search.codebase"
         >
+          {showSearchIcon && (
+            <HugeiconsIcon
+              icon={Search01Icon}
+              data-icon="search"
+              size={iconSize}
+              className="shrink-0 text-text-2"
+            />
+          )}
           {multiline ? (
             <textarea
               ref={inputRef as React.RefObject<HTMLTextAreaElement>}
@@ -232,13 +270,8 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               aria-label={ariaLabel}
-              style={{
-                ...searchControlSingleLineInputStyle(14),
-                height: "auto",
-                lineHeight: 1.4,
-                resize: "none",
-              }}
-              className="min-w-0 flex-1 text-text-1 placeholder:text-text-3"
+              style={searchControlMultilineInputStyle(14)}
+              className={`min-w-0 flex-1 text-text-1 placeholder:text-text-3 ${inputClassName}`}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -258,7 +291,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
               placeholder={placeholder}
               aria-label={ariaLabel}
               style={searchControlSingleLineInputStyle(14)}
-              className="min-w-0 flex-1 text-text-1 placeholder:text-text-3"
+              className={`min-w-0 flex-1 text-text-1 placeholder:text-text-3 ${inputClassName}`}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -269,10 +302,15 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             <button
               type="button"
               onClick={handleClear}
-              className="flex shrink-0 items-center justify-center self-center rounded p-0.5 text-text-3 transition-colors hover:text-text-2"
+              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 text-text-3 transition-colors hover:text-text-2`}
+              style={inlineButtonStyle}
               title={t("tooltips.clearSearch")}
             >
-              <X size={iconSize} />
+              <HugeiconsIcon
+                icon={Cancel01Icon}
+                data-icon="x"
+                size={iconSize}
+              />
             </button>
           )}
 
@@ -280,56 +318,76 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             <button
               type="button"
               onClick={onCaseSensitiveToggle}
-              className={`flex shrink-0 items-center justify-center self-center rounded p-0.5 transition-colors ${
+              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
                 caseSensitive
                   ? "text-primary-6 hover:text-primary-5"
                   : "text-text-2 hover:text-text-1"
               }`}
+              style={inlineButtonStyle}
               title={t("tooltips.matchCase")}
             >
-              <CaseSensitive size={iconSize} />
+              <HugeiconsIcon
+                icon={CaseSensitiveIcon}
+                data-icon="case-sensitive"
+                size={iconSize}
+              />
             </button>
           )}
           {onWholeWordToggle && (
             <button
               type="button"
               onClick={onWholeWordToggle}
-              className={`flex shrink-0 items-center justify-center self-center rounded p-0.5 transition-colors ${
+              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
                 wholeWord
                   ? "text-primary-6 hover:text-primary-5"
                   : "text-text-2 hover:text-text-1"
               }`}
+              style={inlineButtonStyle}
               title={t("tooltips.matchWholeWord")}
             >
-              <WholeWord size={iconSize} />
+              <HugeiconsIcon
+                icon={WholeWordIcon}
+                data-icon="whole-word"
+                size={iconSize}
+              />
             </button>
           )}
           {onRegexToggle && (
             <button
               type="button"
               onClick={onRegexToggle}
-              className={`flex shrink-0 items-center justify-center self-center rounded p-0.5 transition-colors ${
+              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
                 useRegex
                   ? "text-primary-6 hover:text-primary-5"
                   : "text-text-2 hover:text-text-1"
               }`}
+              style={inlineButtonStyle}
               title={t("tooltips.useRegex")}
             >
-              <Regex size={iconSize} />
+              <HugeiconsIcon
+                icon={RegexIcon}
+                data-icon="regex"
+                size={iconSize}
+              />
             </button>
           )}
           {onOnlyOpenFilesToggle && (
             <button
               type="button"
               onClick={onOnlyOpenFilesToggle}
-              className={`flex shrink-0 items-center justify-center self-center rounded p-0.5 transition-colors ${
+              className={`flex shrink-0 items-center justify-center ${inlineButtonAlignClass} rounded p-0.5 transition-colors ${
                 onlyOpenFiles
                   ? "text-primary-6 hover:text-primary-5"
                   : "text-text-2 hover:text-text-1"
               }`}
+              style={inlineButtonStyle}
               title={t("tooltips.searchInOpenEditors")}
             >
-              <BookOpen size={iconSize} />
+              <HugeiconsIcon
+                icon={BookOpen01Icon}
+                data-icon="book-open"
+                size={iconSize}
+              />
             </button>
           )}
         </div>
@@ -344,7 +402,11 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                 className={actionButtonClass}
                 title={t("tooltips.previousMatch")}
               >
-                <ArrowUp size={iconSize} />
+                <HugeiconsIcon
+                  icon={ArrowUp02Icon}
+                  data-icon="arrow-up"
+                  size={iconSize}
+                />
               </button>
             )}
             {onNext && (
@@ -354,7 +416,11 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
                 className={actionButtonClass}
                 title={t("tooltips.nextMatch")}
               >
-                <ArrowDown size={iconSize} />
+                <HugeiconsIcon
+                  icon={ArrowDown02Icon}
+                  data-icon="arrow-down"
+                  size={iconSize}
+                />
               </button>
             )}
           </div>
@@ -366,7 +432,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
             className={actionButtonClass}
             title={t("tooltips.closeEsc")}
           >
-            <X size={iconSize} />
+            <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={iconSize} />
           </button>
         )}
       </div>

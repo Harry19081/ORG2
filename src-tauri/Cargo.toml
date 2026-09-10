@@ -3,7 +3,6 @@ members = [
     ".",
     "crates/agent-cli",
     "crates/agent-core",
-    "crates/advanced-search",
     "crates/api-search",
     "crates/app-paths",
     "crates/app-platform",
@@ -14,7 +13,6 @@ members = [
     "crates/bin-telegram-smoke",
     "crates/browser",
     "crates/container",
-    "crates/ui-indexer",
     "crates/database",
     "crates/db-browser",
     "crates/db-clients",
@@ -26,6 +24,8 @@ members = [
     "crates/integrations",
     "crates/key-vault",
     "crates/lsp",
+    "crates/mobile-relay-protocol",
+    "crates/mobile-relay-server",
     "crates/orgtrack-cli",
     "crates/orgtrack-core",
     "crates/orgtrack-pm-cli",
@@ -41,7 +41,6 @@ members = [
     "crates/system-services",
     "crates/terminal",
     "crates/test-helpers",
-    "crates/test-runner",
     "crates/transport",
     "crates/types",
 ]
@@ -151,7 +150,7 @@ authors = ["you"]
 license = "AGPL-3.0-or-later"
 repository = ""
 edition = "2021"
-rust-version = "1.85.0"
+rust-version = "1.89.0"
 default-run = "org2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -163,7 +162,6 @@ default-run = "org2"
 # Tauri commands at runtime.
 [package.metadata.cargo-machete]
 ignored = [
-    "advanced_search",
     "agent_cli",
     "container",
     "db_browser",
@@ -203,7 +201,7 @@ tauri-plugin-notification = "2"
 tauri-plugin-webdriver-automation = { version = "0.1", optional = true }
 portable-pty = "0.9"
 tokio = { workspace = true }
-uuid = { version = "1", features = ["v4"] }
+uuid = { version = "1", features = ["v4", "v5"] }
 flate2 = "1"
 tar = "0.4"
 plist = "1"
@@ -219,13 +217,11 @@ core_types = { path = "crates/types" }
 # disk-usage report composes these paths into a per-category summary.
 app_paths = { path = "crates/app-paths" }
 
-# Small JSON file I/O helpers (read, write, merge, atomic save). Used by
-# CLI agent config modules and sensitive-token stores (auth, github,
-# extension secrets). Depends only on `app_paths` for the
-# `set_sensitive_file_permissions` chmod.
+# Small JSON file I/O helpers (read, write, merge) used by CLI agent config
+# modules, plus shared Serde defaults. No workspace-crate dependencies.
 app_utils = { path = "crates/app-utils" }
 
-# Native window helpers (macOS traffic-light positioning + liquid-glass
+# Native window helpers (macOS traffic-light positioning + menu vibrancy
 # background,
 # Windows DWM rounded corners, "Open new window" /
 # "Recreate main window" flows). Used by `app::lib`, the macOS app menu,
@@ -263,14 +259,6 @@ agent_cli = { path = "crates/agent-cli" }
 # event_pipeline_bridge, db_bridge, session_bridge}`; the wire crate fills
 # them in once at startup from `app::run()`.
 agent_core = { path = "crates/agent-core" }
-
-# Frontend-source-aware component index: parses tsx/jsx/vue/svelte to
-# build a component-name → source-location map for the Browser inspector
-# (jump-to-source from a clicked DOM element), plus token-extraction
-# Tauri commands that power the design-token panel. Pure leaf — `app`
-# only registers the commands in `commands/handler_list.inc` and
-# `.manage()`s the `UiIndexState` in `run()`.
-ui_indexer = { path = "crates/ui-indexer" }
 
 # LLM provider key vault, validation, and auto-detection. Keeps its
 # `#[tauri::command]` macros in-crate (cursor-bridge pattern); the
@@ -334,7 +322,6 @@ lsp = { path = "crates/lsp" }
 # handlers in the `api_search` crate likewise wrap them. Pure leaf — no
 # back-edges into `app`.
 search = { path = "crates/search" }
-advanced_search = { path = "crates/advanced-search" }
 
 # External-service integration adapters: OAuth token store, computer-use
 # lock, external-IDE openers, GitHub REST/gh-cli detect, and the per-session
@@ -358,8 +345,8 @@ shared_state = { path = "crates/shared-state" }
 # preference changes into `agent_core` without `settings` knowing about it.
 settings = { path = "crates/settings" }
 
-# Performance-critical leaf utilities: image luminance (rayon-parallel),
-# binary detection (memchr + infer magic-byte sniffing), fast JSON parsing
+# Performance-critical leaf utilities: binary detection (memchr + infer
+# magic-byte sniffing), fast JSON parsing
 # (simd-json), hashing (sha2 + blake3), diff/patch (similar), process
 # metrics (sysinfo). Owns ~36 `#[tauri::command]`s — `app` re-registers them
 # in `commands/handler_list.inc` via bare `perf_utils::…` paths. Pure leaf —
@@ -377,12 +364,6 @@ file_ops = { path = "crates/file-ops" }
 # emitter once at startup, after which call sites reach it through the
 # `transport::emitter::global()` accessor without depending back into `app`.
 transport = { path = "crates/transport" }
-
-# Multi-framework test runner (Jest/Vitest/Mocha/Pytest/`cargo test`):
-# discovery, execution, and result streaming. Owns 5 `#[tauri::command]`s —
-# `app` re-registers them in `commands/handler_list.inc` via bare
-# `test_runner::…` paths. Pure leaf — no back-edges into `app`.
-test_runner = { path = "crates/test-runner" }
 
 # DB Browser — Tauri commands for opening/querying arbitrary SQLite files
 # from the WorkStation code editor panel (replaces the WASM sql.js
@@ -435,6 +416,7 @@ session_persistence = { path = "crates/session-persistence" }
 # Pure leaf — no back-edges into `app`. The `app` crate just re-registers
 # the Tauri commands in `commands/handler_list.inc`.
 terminal = { path = "crates/terminal" }
+mobile_relay_protocol = { package = "mobile-relay-protocol", path = "crates/mobile-relay-protocol" }
 
 
 parking_lot = "0.12"           # Fast RwLock for state store
@@ -464,13 +446,14 @@ axum = { workspace = true }                              # Fast, ergonomic web f
 utoipa = { version = "5", features = ["axum_extras"] }  # OpenAPI code-first documentation (v5: OpenAPI 3.1 only, schemas auto-collected)
 tower-http = { version = "0.6", features = ["cors", "timeout"] }  # CORS + response timeout
 futures-util = "0.3"                                     # Stream utilities for WebSocket
+tokio-tungstenite = { workspace = true }                 # Outdoor Mobile Remote outbound relay transport
 
 # ===========================================
 # Code Search & Parsing — extracted to other crates
 # ===========================================
 #
 # Search, LSP, and browser parsing dependencies live in their owning
-# workspace crates (`search`, `ui_indexer`, `browser`). Don't add them back
+# workspace crates (`search`, `browser`). Don't add them back
 # here unless `app/src` directly imports them.
 
 # Utilities for code search
@@ -503,8 +486,8 @@ time = { version = "0.3", features = ["formatting"] }
 # ===========================================
 # Performance Optimizations
 # ===========================================
-# Hot-path leaf utilities (image luminance, simd-json, sha2/blake3 batch
-# hashing, similar diff/patch, sysinfo memory breakdown, memchr binary
+# Hot-path leaf utilities (simd-json, sha2/blake3 batch hashing, similar
+# diff/patch, sysinfo memory breakdown, memchr binary
 # sniffing, infer magic-byte detection) moved to the `perf_utils` workspace
 # crate. `app/src` only needs SHA-256 for OAuth PKCE flows.
 sha2 = "0.10"            # SHA-256 for OAuth PKCE code challenges
@@ -534,8 +517,7 @@ libc = "0.2"
 [features]
 default = []
 # E2E WebDriver automation plugin (debug/test only). Enable with --features webdriver.
-webdriver = ["dep:tauri-plugin-webdriver-automation"]
-semantic-search = ["advanced_search/semantic-search"]
+webdriver = ["dep:tauri-plugin-webdriver-automation", "agent_core/webdriver"]
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
 tauri-plugin-single-instance = { version = "2.0.0", features = ["deep-link"] }
 
@@ -543,10 +525,10 @@ tauri-plugin-single-instance = { version = "2.0.0", features = ["deep-link"] }
 windows = { version = "0.61", features = [
   "Win32_Foundation",
   "Win32_Graphics_Dwm",
+  "Win32_Storage_FileSystem",
 ] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
-tauri-plugin-liquid-glass = "0.1.6"
 objc2 = { workspace = true }
 objc2-foundation = { workspace = true }
 objc2-app-kit = { workspace = true }
@@ -560,6 +542,9 @@ foreign-types = "0.5"   # ForeignType trait used by core-graphics types
 tauri-plugin-updater = "=2.9.0"
 
 [dev-dependencies]
+
+# Parse ephemeral Codex profile layers in runner security/compatibility tests.
+toml = "0.8"
 
 # `test-util` only for the test build: it is what lets a test drive Tokio's
 # clock (`#[tokio::test(start_paused = true)]`) rather than really sleeping out
@@ -631,7 +616,7 @@ strip = true
 # wall-clock on every fresh `target/`, and ballooned `target/` disk usage.
 # We now leave deps at the default `opt-level = 0` and only opt in the
 # specific crates whose inner loops the user actually feels (tree-sitter
-# parses, image luminance, hashing, diffing, compression, regex, ripgrep
+# parses, image processing, hashing, diffing, compression, regex, ripgrep
 # walkers). See per-package overrides below.
 [profile.dev]
 incremental = true

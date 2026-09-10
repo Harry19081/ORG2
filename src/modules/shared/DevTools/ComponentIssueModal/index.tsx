@@ -1,11 +1,11 @@
 import { useSetAtom } from "jotai";
-import { Copy, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
+import { Cancel01Icon, Copy01Icon, HugeiconsIcon } from "@src/icons";
 import { PanelFooter } from "@src/modules/shared/layouts/blocks";
 import { componentIssueModalOpenAtom } from "@src/store/ui/overlayAtom";
 import {
@@ -18,6 +18,7 @@ import {
   getPreviousElement,
   setLastHoveredElement,
 } from "@src/util/core/error/componentIssueTracker/";
+import { copyText } from "@src/util/data/clipboard";
 
 import { ComponentIssuePayloadView } from "./ComponentIssueModalContent";
 import "./index.scss";
@@ -38,8 +39,12 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
   onClose,
   onNavigate,
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const captureShortcut = useShortcutKeys("capture_component");
+  const [searchState, setSearchState] = useState({
+    query: "",
+    currentMatchIndex: 0,
+  });
+  const { query: searchQuery, currentMatchIndex } = searchState;
   const searchInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -67,8 +72,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
         viewport: payload.viewport,
       },
     };
-    navigator.clipboard
-      .writeText(JSON.stringify(copyData, null, 2))
+    copyText(JSON.stringify(copyData, null, 2))
       .then(() => Message.success("Component issue payload copied"))
       .catch(() => Message.error("Failed to copy payload"));
   }, [payload]);
@@ -78,8 +82,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
       Message.warning(`No ${label.toLowerCase()} to copy.`);
       return;
     }
-    navigator.clipboard
-      .writeText(value)
+    copyText(value)
       .then(() => Message.success(`${label} copied`))
       .catch(() => Message.error(`Failed to copy ${label.toLowerCase()}`));
   }, []);
@@ -121,7 +124,10 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
           : currentMatchIndex <= 0
             ? matches.length - 1
             : currentMatchIndex - 1;
-      setCurrentMatchIndex(newIndex);
+      setSearchState((current) => ({
+        ...current,
+        currentMatchIndex: newIndex,
+      }));
       scrollToMatch(newIndex);
     },
     [currentMatchIndex, getMatchingSections, scrollToMatch]
@@ -164,44 +170,45 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
   }, [visible, onClose, onNavigate, searchQuery, navigateMatch]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    setCurrentMatchIndex(0);
-    if (searchQuery.trim()) setTimeout(() => scrollToMatch(0), 50);
+    if (!searchQuery.trim()) return;
+    const timer = setTimeout(() => scrollToMatch(0), 50);
+    return () => clearTimeout(timer);
   }, [searchQuery, scrollToMatch]);
 
   useEffect(() => {
-    if (visible && searchInputRef.current) {
-      setTimeout(() => {
-        let inputElement: HTMLInputElement | null = null;
-        const ref = searchInputRef.current;
-        if (ref instanceof HTMLInputElement) {
-          inputElement = ref;
-        } else if (ref && typeof ref === "object" && "dom" in ref) {
-          inputElement = (ref as { dom?: HTMLInputElement }).dom || null;
-        } else if (ref && typeof ref === "object" && "querySelector" in ref) {
-          inputElement = (ref as HTMLElement).querySelector("input");
-        }
-        inputElement?.focus();
-      }, 50);
-    }
-    if (!visible) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      setSearchQuery("");
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      setCurrentMatchIndex(0);
-    }
+    if (!visible || !searchInputRef.current) return;
+    const timer = setTimeout(() => {
+      let inputElement: HTMLInputElement | null = null;
+      const ref = searchInputRef.current;
+      if (ref instanceof HTMLInputElement) {
+        inputElement = ref;
+      } else if (ref && typeof ref === "object" && "dom" in ref) {
+        inputElement = (ref as { dom?: HTMLInputElement }).dom || null;
+      } else if (ref && typeof ref === "object" && "querySelector" in ref) {
+        inputElement = (ref as HTMLElement).querySelector("input");
+      }
+      inputElement?.focus();
+    }, 50);
+    return () => clearTimeout(timer);
   }, [visible]);
 
-  const [matchCount, setMatchCount] = useState(0);
+  const [matchMeasurement, setMatchMeasurement] = useState({
+    query: "",
+    count: 0,
+  });
+  const matchCount =
+    visible && searchQuery.trim() && matchMeasurement.query === searchQuery
+      ? matchMeasurement.count
+      : 0;
   useEffect(() => {
-    if (!searchQuery.trim() || !visible) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      setMatchCount(0);
-      return;
-    }
-    setTimeout(() => {
-      setMatchCount(getMatchingSections().length);
+    if (!searchQuery.trim() || !visible) return;
+    const timer = setTimeout(() => {
+      setMatchMeasurement({
+        query: searchQuery,
+        count: getMatchingSections().length,
+      });
     }, 0);
+    return () => clearTimeout(timer);
   }, [searchQuery, getMatchingSections, visible]);
 
   if (!visible) return null;
@@ -216,7 +223,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
           <div className="component-issue-modal-header-top">
             <div className="component-issue-modal-title">Component Issue</div>
             <button className="component-issue-close-btn" onClick={onClose}>
-              <X size={16} />
+              <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={16} />
             </button>
           </div>
           <div className="component-issue-search-wrapper">
@@ -225,7 +232,9 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
               className="component-issue-search-input"
               placeholder="Search sections..."
               value={searchQuery}
-              onChange={(value) => setSearchQuery(value)}
+              onChange={(value) =>
+                setSearchState({ query: value, currentMatchIndex: 0 })
+              }
               allowClear
             />
             {searchQuery.trim() && (
@@ -260,9 +269,7 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
           <div className="component-issue-modal-content" ref={contentRef}>
             <div className="component-issue-empty">
               Hover over the UI element first, then press{" "}
-              <span className="component-issue-kbd">
-                {getShortcutKeys("capture_component")}
-              </span>
+              <span className="component-issue-kbd">{captureShortcut}</span>
             </div>
           </div>
         ) : (
@@ -281,7 +288,9 @@ const ModalComponentIssue: React.FC<ComponentIssueModalExtendedProps> = ({
           ]}
           primaryAction={{
             label: "Copy JSON",
-            icon: <Copy size={16} />,
+            icon: (
+              <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={16} />
+            ),
             onClick: handleCopy,
             disabled: !payload,
           }}
@@ -330,14 +339,14 @@ export const ComponentIssueModalProvider: React.FC = () => {
     };
   }, [updatePayloadFromElement]);
 
-  return (
+  return visible ? (
     <ModalComponentIssue
-      visible={visible}
+      visible
       payload={payload}
       onClose={() => setVisible(false)}
       onNavigate={handleNavigate}
     />
-  );
+  ) : null;
 };
 
 export default ModalComponentIssue;

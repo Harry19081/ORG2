@@ -1,8 +1,8 @@
 import type { FC } from "react";
 
-import type { UseBrowserStateReturn } from "@src/engines/BrowserCore/hooks/useBrowserState";
 import { BROWSER_WEBVIEW_FRAME_ANCHOR_SELECTOR } from "@src/engines/BrowserCore/nativeFrameAnchor";
-import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
+import type { BrowserState } from "@src/engines/BrowserCore/types";
+import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
   NoTabsPlaceholder,
   type QuickAction,
@@ -26,7 +26,7 @@ export interface SharedBrowserWorkspaceProps {
   hostId: SharedBrowserHostId;
   scope?: SharedBrowserHostScope;
   active: boolean;
-  browserState: UseBrowserStateReturn;
+  browserState: BrowserState;
   onOpenNativeDevTools?: () => void;
   onToggleDevToolsPane?: () => void;
   devToolsPaneCollapsed?: boolean;

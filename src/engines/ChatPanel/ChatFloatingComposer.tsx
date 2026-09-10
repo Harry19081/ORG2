@@ -1,16 +1,25 @@
-import { ArrowDown } from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { AgentOrgMemberIntervention } from "@src/api/tauri/agent";
+import type { SessionFollowUpSuggestion } from "@src/api/services/sessionFollowUpSuggestions";
+import type {
+  AgentOrgMemberIntervention,
+  AgentOrgRunMemberView,
+  AgentOrgRunStatus,
+  ReturnToWorkResult,
+} from "@src/api/tauri/agent";
 import Button from "@src/components/Button";
 import { PILL_CONTROL_IDLE_SURFACE_CLASS } from "@src/components/CompoundPill/config";
-import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import {
+  COMPOSER_BOTTOM_DOCK_PADDING_CLASS,
+  COMPOSER_HORIZONTAL_GUTTER_CLASS,
+} from "@src/config/composerStackTokens";
+import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 import {
   ChatRetryBanner,
   toChatRetryKind,
 } from "@src/engines/ChatPanel/components/ChatStatusBanners";
+import { ArrowDown02Icon, HugeiconsIcon } from "@src/icons";
 import type { PendingPlanApproval } from "@src/store/session/planApprovalAtom";
 
 import type { ScrollNavState } from "./ChatHistory";
@@ -45,14 +54,20 @@ interface StreamRetryInfo {
 
 interface AgentOrgInterventionView {
   intervention: AgentOrgMemberIntervention | null;
-  memberName?: string | null;
+  member: AgentOrgRunMemberView;
+  runStatus: AgentOrgRunStatus | null;
   error: string | null;
   returning: boolean;
-  onReturnToWork: () => Promise<boolean>;
+  stopping: boolean;
+  onReturnToWork: () => Promise<ReturnToWorkResult | null>;
+  onStopUserDirectedWork: () => Promise<boolean>;
 }
 
 interface GroupChatPendingMessageView {
   targetMemberName: string;
+  retryError: string | null;
+  retrying: boolean;
+  onRetry: () => Promise<void>;
 }
 
 interface CanvasPreviewPillView {
@@ -66,6 +81,7 @@ interface ChatFloatingComposerProps {
   chatPanelPosition: "left" | "right";
   sessionId: string;
   inputAreaSessionId: string;
+  controlSessionId?: string | null;
   currentPlanApproval: PendingPlanApproval | null | undefined;
   shouldShowCurrentPlanSurface: boolean;
   currentPlanSurfaceState: Parameters<typeof CreatePlanCard>[0]["surfaceState"];
@@ -84,6 +100,7 @@ interface ChatFloatingComposerProps {
   processExpanded: boolean;
   queuedMessages: Parameters<typeof QueuedMessages>[0]["messages"];
   onCancelQueuedMessage: Parameters<typeof QueuedMessages>[0]["onCancel"];
+  onClearQueuedMessages: Parameters<typeof QueuedMessages>[0]["onClear"];
   onSendQueuedMessageNow: Parameters<typeof QueuedMessages>[0]["onSendNow"];
   onReorderQueuedMessages: Parameters<typeof QueuedMessages>[0]["onReorder"];
   onToggleQueue: () => void;
@@ -108,6 +125,9 @@ interface ChatFloatingComposerProps {
   customMentionOptions: ReadonlyArray<CustomMentionOption>;
   queueEditProps: QueueEditInputAreaProps;
   disableStopWhenEmpty?: boolean;
+  followUpSuggestions: ReadonlyArray<SessionFollowUpSuggestion>;
+  onFollowUpSuggestionSent: () => void;
+  submitDisabled?: boolean;
 }
 
 const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
@@ -117,6 +137,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     chatPanelPosition,
     sessionId,
     inputAreaSessionId,
+    controlSessionId,
     currentPlanApproval,
     shouldShowCurrentPlanSurface,
     currentPlanSurfaceState,
@@ -135,6 +156,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     processExpanded,
     queuedMessages,
     onCancelQueuedMessage,
+    onClearQueuedMessages,
     onSendQueuedMessageNow,
     onReorderQueuedMessages,
     onToggleQueue,
@@ -158,6 +180,9 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     customMentionOptions,
     queueEditProps,
     disableStopWhenEmpty = false,
+    followUpSuggestions,
+    onFollowUpSuggestionSent,
+    submitDisabled = false,
   }) => {
     const { t } = useTranslation("sessions");
     const [fileChangeStats, setFileChangeStatsState] =
@@ -204,10 +229,16 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
         appearance="outline"
         size="small"
         shape="round"
-        icon={<ArrowDown size={14} />}
+        icon={
+          <HugeiconsIcon
+            icon={ArrowDown02Icon}
+            data-icon="arrow-down"
+            size={14}
+          />
+        }
         iconOnly
-        aria-label={t("common:chat.scrollToBottom")}
-        title={t("common:chat.scrollToBottom")}
+        aria-label={t("common:inbox.scrollToBottom")}
+        title={t("common:inbox.scrollToBottom")}
         onClick={scrollNav.onScrollToBottom}
         className={`shrink-0 ${PILL_CONTROL_IDLE_SURFACE_CLASS}`}
       />
@@ -216,14 +247,15 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
     return (
       <div
         ref={composerRef}
-        className={`absolute bottom-0 left-0 right-0 z-50 flex w-full flex-shrink-0 flex-col items-center px-2 pt-1 ${COMPOSER_BOTTOM_DOCK_PADDING_CLASS}`}
+        className={`pointer-events-none absolute right-0 bottom-0 left-0 z-50 flex w-full shrink-0 flex-col items-center pt-1 ${COMPOSER_HORIZONTAL_GUTTER_CLASS} ${COMPOSER_BOTTOM_DOCK_PADDING_CLASS}`}
       >
+        {/* Let wheel/trackpad input over the glow and gutters reach history. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 top-[-28px] bg-gradient-to-t from-chat-pane via-chat-pane/90 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-[-28px] bottom-0 bg-linear-to-t from-chat-pane via-chat-pane/90 to-transparent"
         />
         <div
-          className={`relative z-10 flex w-full flex-col gap-1.5 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+          className={`pointer-events-auto relative z-10 flex w-full flex-col gap-1.5 ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
         >
           {currentPlanApproval && shouldShowCurrentPlanSurface && (
             <CreatePlanCard
@@ -265,6 +297,7 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             <QueuedMessages
               messages={queuedMessages}
               onCancel={onCancelQueuedMessage}
+              onClear={onClearQueuedMessages}
               onSendNow={onSendQueuedMessageNow}
               onReorder={onReorderQueuedMessages}
               onToggle={onToggleQueue}
@@ -300,15 +333,45 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             <div
               data-testid="agent-org-group-chat-pending"
               data-target-name={groupChatPendingMessage.targetMemberName}
-              className="bg-background-2 mx-auto flex items-center gap-2 rounded-full border border-solid border-border-2 px-3 py-1 text-[12px] text-text-2 shadow-sm"
+              data-delivery-state={
+                groupChatPendingMessage.retryError ? "unknown" : "pending"
+              }
+              className="bg-background-2 mx-auto flex items-center gap-2 rounded-full border border-solid border-border-2 px-3 py-1 text-[12px] text-text-2 shadow-xs"
             >
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-6" />
-              <span>
-                {t("groupChat.userMessagePending", {
-                  member: groupChatPendingMessage.targetMemberName,
-                  defaultValue: "{{member}} is picking up your message",
-                })}
-              </span>
+              {groupChatPendingMessage.retryError ? (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-warning-6" />
+                  <span>
+                    {t("groupChat.userMessageOutcomeUnknown", {
+                      defaultValue:
+                        "Delivery outcome unknown. Retry with the same IDs.",
+                    })}
+                  </span>
+                  <Button
+                    data-testid="agent-org-group-chat-retry"
+                    variant="secondary"
+                    appearance="outline"
+                    size="mini"
+                    shape="round"
+                    htmlType="button"
+                    loading={groupChatPendingMessage.retrying}
+                    disabled={groupChatPendingMessage.retrying}
+                    onClick={() => void groupChatPendingMessage.onRetry()}
+                  >
+                    {t("common:actions.retry", { defaultValue: "Retry" })}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary-6" />
+                  <span>
+                    {t("groupChat.userMessagePending", {
+                      member: groupChatPendingMessage.targetMemberName,
+                      defaultValue: "{{member}} is picking up your message",
+                    })}
+                  </span>
+                </>
+              )}
             </div>
           )}
 
@@ -316,8 +379,10 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
             omitChatHeader
             chatPanelPosition={chatPanelPosition}
             sessionId={inputAreaSessionId}
+            controlSessionId={controlSessionId}
             onSubmitOverride={onSubmitOverride}
             customMentionOptions={customMentionOptions}
+            submitDisabled={submitDisabled}
             topRowPills={
               showTopRowPills ? (
                 <CollapsedInlineRow
@@ -340,10 +405,15 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
                 {agentOrgIntervention && (
                   <AgentOrgInterventionPinBar
                     intervention={agentOrgIntervention.intervention}
-                    memberName={agentOrgIntervention.memberName}
+                    member={agentOrgIntervention.member}
+                    runStatus={agentOrgIntervention.runStatus}
                     error={agentOrgIntervention.error}
                     returning={agentOrgIntervention.returning}
+                    stopping={agentOrgIntervention.stopping}
                     onReturnToWork={agentOrgIntervention.onReturnToWork}
+                    onStopUserDirectedWork={
+                      agentOrgIntervention.onStopUserDirectedWork
+                    }
                   />
                 )}
                 {streamRetry && (
@@ -356,9 +426,10 @@ const ChatFloatingComposer: React.FC<ChatFloatingComposerProps> = memo(
                 {groupChatPausedBottomContent}
               </>
             }
+            followUpSuggestions={followUpSuggestions}
+            onFollowUpSuggestionSent={onFollowUpSuggestionSent}
             composerShellRef={inputBoxRef}
             disableStopWhenEmpty={disableStopWhenEmpty}
-            bottomAnchored
             {...queueEditProps}
           />
         </div>

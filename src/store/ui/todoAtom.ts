@@ -5,8 +5,8 @@
  * sessionId so the parent session's todos never mix with a subagent's
  * (or any other sibling session's) todos.
  *
- * The legacy "current session" atoms (`todosAtom`, `todosVisibleAtom`,
- * `todoStateAtom`) are derived off `workstationActiveSessionIdAtom` —
+ * The legacy "current session" atoms (`todosAtom`, `todoStateAtom`) are
+ * derived off `workstationActiveSessionIdAtom` —
  * NOT the pipeline. They answer "what should the WorkStation chrome
  * (pin bar, todo UI) show?" and must stay anchored to the user's
  * persistent selection, not a transient pipeline claim from a kanban
@@ -112,11 +112,6 @@ todoStateAtom.debugLabel = "todoStateAtom";
 export const todosAtom = atom((get) => get(todoStateAtom).todos as TodoItem[]);
 todosAtom.debugLabel = "todosAtom";
 
-export const todosVisibleAtom = atom(
-  (get) => get(todoStateAtom).todos.length > 0
-);
-todosVisibleAtom.debugLabel = "todosVisibleAtom";
-
 /**
  * Read-only access to a specific session's todos. Returns a stable
  * empty array reference when the session has never had todos.
@@ -172,10 +167,29 @@ export const updateTodosForSessionAtom = atom(
     };
 
     const nextMap = new Map(current);
+    // Re-insert so Map order doubles as LRU order for the cap below.
+    nextMap.delete(sessionId);
     nextMap.set(sessionId, nextState);
+    if (nextMap.size > MAX_TODO_SESSION_SLOTS) {
+      const activeId = get(workstationActiveSessionIdAtom);
+      for (const key of nextMap.keys()) {
+        if (nextMap.size <= MAX_TODO_SESSION_SLOTS) break;
+        if (key === sessionId || key === activeId) continue;
+        nextMap.delete(key);
+      }
+    }
     set(sessionTodoMapAtom, nextMap);
   }
 );
+
+/**
+ * Soft cap on retained per-session todo slots. Slots are rebuilt from the
+ * event store by `useTodoSync` whenever a session becomes active again, so
+ * evicting the least-recently-updated inactive sessions loses nothing; it
+ * only stops the map growing with every subagent/session that ever emitted
+ * a todo update during the app lifetime.
+ */
+export const MAX_TODO_SESSION_SLOTS = 64;
 
 /**
  * Clear a specific session's todos slot.

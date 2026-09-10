@@ -3,10 +3,13 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { COMPOSER_BOTTOM_DOCK_PADDING_CLASS } from "@src/config/composerStackTokens";
+import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { useElementDimensions } from "@src/hooks/ui/layout/useElementDimensions";
 import {
   DetailPanelContainer,
   ScrollTrail,
+  WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
+  WORKSTATION_TRAIL_WIDTH,
 } from "@src/modules/shared/layouts/blocks";
 
 import { resolveWorkItemThreadHeaderPolicy } from "./presentation";
@@ -15,8 +18,18 @@ import { WORK_ITEM_THREAD_TOKENS } from "./tokens";
 interface WorkItemThreadLayoutProps {
   path?: React.ReactNode;
   properties?: React.ReactNode;
+  /** GitHub-style flow title rendered above the thread body. */
+  flowHeader?: React.ReactNode;
+  /** Alerts about this thread, rendered above the title they concern. */
+  alerts?: React.ReactNode;
   children: React.ReactNode;
   floatingFooter?: React.ReactNode;
+  /**
+   * Details rail rendered to the right of the thread, on the Workstation trail
+   * surface. Hosts that publish their own rail (and portal the navigation trail
+   * into it) keep owning that composition instead.
+   */
+  sidebar?: React.ReactNode;
 }
 
 /** Optional host beneath a floating properties trail for the section navigator. */
@@ -26,8 +39,11 @@ export const WorkItemThreadNavigationPortalContext =
 export const WorkItemThreadLayout: React.FC<WorkItemThreadLayoutProps> = ({
   path,
   properties,
+  flowHeader,
+  alerts,
   children,
   floatingFooter,
+  sidebar,
 }) => {
   const { t } = useTranslation(["projects", "common"]);
   const navigationTrailHost = useContext(WorkItemThreadNavigationPortalContext);
@@ -45,10 +61,17 @@ export const WorkItemThreadLayout: React.FC<WorkItemThreadLayoutProps> = ({
     Boolean(path),
     Boolean(properties)
   );
+  // The trail sits inside the details rail when this layout owns one, so the
+  // thread keeps a single right-hand column instead of stacking two rails.
+  const ownsDetailsRail = Boolean(sidebar) && !navigationTrailHost;
   const navigationRail = (
     <div
       className={
-        navigationTrailHost ? "relative h-full w-11" : "relative w-11 shrink-0"
+        navigationTrailHost
+          ? "relative h-full w-11"
+          : ownsDetailsRail
+            ? "relative ml-auto min-h-0 w-11 flex-1"
+            : "relative w-11 shrink-0"
       }
       data-testid="work-item-thread-navigation-rail"
     >
@@ -70,51 +93,89 @@ export const WorkItemThreadLayout: React.FC<WorkItemThreadLayoutProps> = ({
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         <div
           ref={scrollContainerRef}
-          className="min-h-0 min-w-0 flex-1 overflow-y-auto scrollbar-hide @container"
+          className="@container scrollbar-hide min-h-0 min-w-0 flex-1 overflow-y-auto"
           data-testid="work-item-thread-section"
         >
           <div
             ref={contentRef}
             className={WORK_ITEM_THREAD_TOKENS.contentColumn}
-            style={{ paddingBottom: footerBottomInset }}
           >
-            {headerPolicy.showHeader ? (
-              <div className={WORK_ITEM_THREAD_TOKENS.metadataBand}>
-                {path ? <div className="shrink-0">{path}</div> : null}
-                {headerPolicy.showSeparator ? (
-                  <div
-                    className="h-5 shrink-0 border-l border-border-2"
-                    aria-hidden
-                  />
-                ) : null}
-                {properties ? (
-                  <div className="min-w-0 flex-1">{properties}</div>
-                ) : null}
+            {alerts ? (
+              <div
+                className={WORK_ITEM_THREAD_TOKENS.alerts}
+                data-testid="work-item-thread-alerts"
+              >
+                {alerts}
               </div>
             ) : null}
-            {children}
+            {flowHeader ? (
+              <div
+                className={WORK_ITEM_THREAD_TOKENS.flowHeader}
+                data-testid="work-item-thread-flow-header"
+              >
+                {flowHeader}
+              </div>
+            ) : null}
+            <div
+              className={WORK_ITEM_THREAD_TOKENS.contentBody}
+              style={{ paddingBottom: footerBottomInset }}
+              data-testid="work-item-thread-content-body"
+            >
+              {headerPolicy.showHeader ? (
+                <div className={WORK_ITEM_THREAD_TOKENS.metadataBand}>
+                  {path ? <div className="shrink-0">{path}</div> : null}
+                  {headerPolicy.showSeparator ? (
+                    <div
+                      className="h-5 shrink-0 border-l border-border-2"
+                      aria-hidden
+                    />
+                  ) : null}
+                  {properties ? (
+                    <div className="min-w-0 flex-1">{properties}</div>
+                  ) : null}
+                </div>
+              ) : null}
+              {children}
+            </div>
           </div>
         </div>
         {floatingFooter ? (
           <div
             ref={floatingFooterRef}
             className={`absolute bottom-0 left-0 ${
-              navigationTrailHost ? "right-0" : "right-11"
+              navigationTrailHost
+                ? "right-0"
+                : ownsDetailsRail
+                  ? "right-64"
+                  : "right-11"
             } z-50 flex flex-col items-center px-2 pt-1 ${COMPOSER_BOTTOM_DOCK_PADDING_CLASS}`}
             data-testid="work-item-thread-floating-footer"
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 top-[-28px] bg-gradient-to-t from-chat-pane via-chat-pane/90 to-transparent"
+              className="pointer-events-none absolute inset-x-0 top-[-28px] bottom-0 bg-linear-to-t from-chat-pane via-chat-pane/90 to-transparent"
             />
-            <div className="relative z-10 w-full max-w-[920px] px-3">
+            <div
+              className={`${DETAIL_PANEL_TOKENS.headerWidth} relative z-10 w-full px-4`}
+            >
               {floatingFooter}
             </div>
           </div>
         ) : null}
-        {navigationTrailHost
-          ? createPortal(navigationRail, navigationTrailHost)
-          : navigationRail}
+        {navigationTrailHost ? (
+          createPortal(navigationRail, navigationTrailHost)
+        ) : ownsDetailsRail ? (
+          <div
+            className={`box-border flex h-full shrink-0 flex-col ${WORKSTATION_TRAIL_RAIL_PADDING_CLASS}`}
+            style={{ width: WORKSTATION_TRAIL_WIDTH.expandedPx }}
+            data-testid="work-item-thread-details-rail"
+          >
+            {sidebar}
+            {navigationRail}
+          </div>
+        ) : (
+          navigationRail
+        )}
       </div>
     </DetailPanelContainer>
   );
@@ -149,7 +210,11 @@ export const WorkItemThreadSection: React.FC<WorkItemThreadSectionProps> = ({
     >
       <div className={WORK_ITEM_THREAD_TOKENS.cardHeader}>
         <div className="flex min-w-0 items-center gap-2">
-          {icon}
+          {icon ? (
+            <span className={WORK_ITEM_THREAD_TOKENS.leadingIconSlot}>
+              {icon}
+            </span>
+          ) : null}
           <span id={titleId} className="text-[13px] font-semibold text-text-1">
             {title}
           </span>

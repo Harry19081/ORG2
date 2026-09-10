@@ -5,7 +5,8 @@
  *   html   — Agent-provided HTML sanitized and rendered in Shadow DOM
  *   url    — External URL shown as an open action, not embedded in chat
  *   a2ui   — Agent-to-UI JSONL stream, rendered incrementally as native React
- *   react  — Generated React App source rendered through react-live
+ *   react  — Generated React App source compiled and executed in a sandboxed
+ *            canvas-artifact iframe (ReactArtifactRunner)
  */
 
 export type CanvasInlineMode = "html" | "url" | "a2ui" | "react";
@@ -22,6 +23,8 @@ export interface CanvasInlinePayload {
   title?: string;
   streaming?: boolean;
   eventId?: string;
+  /** Event id of the prior Canvas version when this payload is a revision. */
+  revisesEventId?: string;
 }
 
 export interface CanvasInlineCardProps {
@@ -103,7 +106,7 @@ export interface A2UIButton extends A2UIBase {
   actionId?: string;
 }
 
-export interface A2UIDivider extends A2UIBase {
+interface A2UIDivider extends A2UIBase {
   type: "divider";
   content?: string;
 }
@@ -135,7 +138,7 @@ export interface A2UIChart extends A2UIBase {
   title?: string;
 }
 
-export interface A2UIFormField {
+interface A2UIFormField {
   name: string;
   label: string;
   inputType: "text" | "select" | "checkbox";

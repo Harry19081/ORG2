@@ -1,8 +1,8 @@
-import { Network } from "lucide-react";
 import type { FC, ReactNode } from "react";
 
 import Select from "@src/components/Select";
 import type { SelectOption, SelectProps } from "@src/components/Select";
+import { HierarchyCircle01Icon, HugeiconsIcon } from "@src/icons";
 
 export interface ProjectOrganizationSelectProps {
   value: SelectProps["value"];
@@ -28,7 +28,7 @@ const ProjectOrganizationSelect: FC<ProjectOrganizationSelectProps> = ({
   loading = false,
   placement = "auto",
   dataTestId,
-  ariaLabel = "Project organization",
+  ariaLabel = "Project workspace",
 }) => (
   <Select
     value={value}
@@ -39,7 +39,17 @@ const ProjectOrganizationSelect: FC<ProjectOrganizationSelectProps> = ({
     loading={loading}
     size="small"
     radius="pill"
-    prefix={<Network size={14} strokeWidth={1.75} />}
+    showTriggerIcon
+    prefix={
+      options.find((option) => option.value === value)?.icon ? undefined : (
+        <HugeiconsIcon
+          icon={HierarchyCircle01Icon}
+          data-icon="network"
+          size={14}
+          strokeWidth={1.75}
+        />
+      )
+    }
     showSearch
     dropdownWidthMode="min-match"
     dropdownMinWidth={220}
@@ -48,7 +58,7 @@ const ProjectOrganizationSelect: FC<ProjectOrganizationSelectProps> = ({
     dataTestId={dataTestId}
     ariaLabel={ariaLabel}
     className="w-auto max-w-[220px]"
-    selectorClassName="!h-7 !rounded-full !bg-bg-2 !px-3 !text-[13px] !font-medium !shadow-none [&_.select-prefix]:!text-text-2"
+    selectorClassName="h-7! rounded-full! bg-bg-2! px-3! text-[13px]! font-medium! shadow-none! [&_.select-prefix]:text-text-2!"
   />
 );
 

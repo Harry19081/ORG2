@@ -322,7 +322,6 @@ export const CODE_EDITOR_WEB_SOCKET_EVENT_TYPES = [
   "file:changed",
   "repo:git_operation",
   "repo:watcher_health",
-  "lsp:diagnostics",
   // Session lifecycle broadcasts from the CLI runner. Consumed globally by
   // useBackgroundSessionMonitor (background-session completion toasts); the
   // active session gets the same events over its own session channel.
@@ -357,20 +356,9 @@ export const CodeEditorWebSocketMessageSchema = z
   })
   .passthrough();
 
-export type ParsedWSMessage = z.output<typeof WSMessageSchema>;
 export type ParsedCodeEditorWebSocketMessage = z.output<
   typeof CodeEditorWebSocketMessageSchema
 >;
-
-export function parseWSMessage(raw: string): ParsedWSMessage {
-  return WSMessageSchema.parse(JSON.parse(raw));
-}
-
-export function parseCodeEditorWebSocketMessage(
-  raw: string
-): ParsedCodeEditorWebSocketMessage {
-  return CodeEditorWebSocketMessageSchema.parse(JSON.parse(raw));
-}
 
 export function maybeParseCodeEditorWebSocketMessage(
   raw: string

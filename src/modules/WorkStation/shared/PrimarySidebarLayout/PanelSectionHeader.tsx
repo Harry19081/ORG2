@@ -8,7 +8,7 @@
  */
 import React, { memo } from "react";
 
-import { HEADER_CLASSES } from "../tokens";
+import { HEADER_CLASSES } from "@src/config/workstation/tokens";
 
 // ============================================
 // Types
@@ -45,7 +45,7 @@ export const PanelSectionHeader: React.FC<PanelSectionHeaderProps> = memo(
         }`}
       >
         {/* Title */}
-        <span className="relative min-w-0 flex-1 truncate text-[12px] font-medium uppercase text-text-2">
+        <span className="relative min-w-0 flex-1 truncate text-[12px] font-medium text-text-2 uppercase">
           {title}
           {/* Loading progress indicator */}
           {loading && (

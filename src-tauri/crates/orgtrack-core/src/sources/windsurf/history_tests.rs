@@ -263,6 +263,8 @@ fn maps_windsurf_composer_metadata_to_cache_input() {
         listable: inputs[0].listable,
         source_metadata_json: inputs[0].source_metadata_json.clone(),
         parent_session_id: inputs[0].parent_session_id.clone(),
+        client_origin: None,
+        client_origin_raw: None,
     }
     .to_row();
     assert_eq!(row.session_id, "windsurfapp-composer-1");
@@ -367,4 +369,44 @@ fn maps_windsurf_subagent_parent_and_child_impact() {
     assert_eq!(child.impact.lines_added, 2);
     assert_eq!(child.impact.lines_removed, 1);
     assert!(!child.listable);
+}
+
+#[test]
+fn wal_composer_fingerprint_is_stable_across_read_only_reopens() {
+    let (writer_path, writer) = signature_fixture_db("wal-reader");
+    writer.execute_batch("PRAGMA journal_mode=WAL; PRAGMA wal_autocheckpoint=0; UPDATE cursorDiskKV SET value=value;").unwrap();
+    let path = writer_path.with_extension("reader.sqlite");
+    let sidecar = |path: &std::path::Path, suffix: &str| {
+        std::path::PathBuf::from(format!("{}{suffix}", path.display()))
+    };
+    std::fs::copy(&writer_path, &path).unwrap();
+    std::fs::copy(sidecar(&writer_path, "-wal"), sidecar(&path, "-wal")).unwrap();
+    let read = || {
+        let conn = Connection::open_with_flags(
+            &path,
+            OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_URI,
+        )
+        .unwrap();
+        let (mtime, size) = imported_paths::file_metadata_signature(&path, "Windsurf").unwrap();
+        let metas = list_windsurf_composer_meta_from_conn(&conn, &path, mtime, size).unwrap();
+        assert_eq!(metas.len(), 2);
+        metas
+            .into_iter()
+            .map(|meta| (meta.source_session_id, meta.source_fingerprint))
+            .collect::<Vec<_>>()
+    };
+    let before = read();
+    for _ in 0..4 {
+        assert_eq!(read(), before);
+    }
+    let provider = Connection::open(&path).unwrap();
+    provider.execute_batch(r#"PRAGMA wal_autocheckpoint=0; UPDATE cursorDiskKV SET value='{"type":1,"bubbleId":"u1","text":"new native message"}' WHERE key='bubbleId:a:u1';"#).unwrap();
+    assert_ne!(read(), before);
+    drop(provider);
+    drop(writer);
+    for path in [&writer_path, &path] {
+        std::fs::remove_file(path).ok();
+        std::fs::remove_file(sidecar(path, "-wal")).ok();
+        std::fs::remove_file(sidecar(path, "-shm")).ok();
+    }
 }

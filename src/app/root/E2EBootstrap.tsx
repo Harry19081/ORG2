@@ -39,13 +39,10 @@
 import { useStore } from "jotai";
 import { type FC, useEffect } from "react";
 
-import { INTERNAL_AGENT_IDS } from "@src/modules/MainApp/AgentOrgs/config/agentConstants";
 import {
   agentDefsLoadErrorAtom,
   agentDefsLoadedAtom,
   allAgentDefsAtom,
-  builtInAgentsAtom,
-  customAgentsAtom,
 } from "@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom";
 import type { AgentDefinition } from "@src/modules/MainApp/AgentOrgs/types";
 
@@ -61,7 +58,6 @@ import {
   removeAccount,
 } from "./e2e/helpers/accounts";
 import { createAgentOrgHelpers } from "./e2e/helpers/agentOrgs";
-import { createBenchmarkE2EHelpers } from "./e2e/helpers/benchmark";
 import { createCloudHelpers } from "./e2e/helpers/cloud";
 import { createConfigHelpers } from "./e2e/helpers/config";
 import { createDebugEndpointHelpers } from "./e2e/helpers/debugEndpoints";
@@ -85,10 +81,15 @@ export const E2EBootstrap: FC = () => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Defense-in-depth: callers should already gate this component behind
-    // `process.env.NODE_ENV !== "production"` in AppBootstrap, but refuse to
-    // install `window.__e2e` here too so a missed gate cannot leak the helper.
-    if (process.env.NODE_ENV === "production") return;
+    // Defense-in-depth: optimized WebDriver builds explicitly opt in through
+    // a compile-time constant. Ordinary production bundles still refuse to
+    // install the helper and tree-shake this component away.
+    if (
+      process.env.NODE_ENV === "production" &&
+      process.env.ORGII_E2E !== "1"
+    ) {
+      return;
+    }
 
     const {
       pinSession,
@@ -126,16 +127,6 @@ export const E2EBootstrap: FC = () => {
         if (!result.ok) return result;
         const defs = result.defs as unknown as AgentDefinition[];
         store.set(allAgentDefsAtom, defs);
-        store.set(
-          builtInAgentsAtom,
-          defs.filter(
-            (agent) => agent.builtIn && !INTERNAL_AGENT_IDS.has(agent.id)
-          )
-        );
-        store.set(
-          customAgentsAtom,
-          defs.filter((agent) => !agent.builtIn)
-        );
         store.set(agentDefsLoadedAtom, true);
         store.set(agentDefsLoadErrorAtom, null);
         return result;
@@ -210,10 +201,6 @@ export const E2EBootstrap: FC = () => {
       learningsTriggerReflection,
       learningsDeprecate,
       debugSeedLearning,
-      lspGetWorkspaceConfig,
-      lspSetServerEnabled,
-      lintGetWorkspaceConfig,
-      lintSetToolEnabled,
     } = createMemoryHelpers();
 
     const {
@@ -304,13 +291,6 @@ export const E2EBootstrap: FC = () => {
       inspectWorkstationSurface,
       openAgentStationDiff,
     } = createNavigationHelpers(store);
-
-    const {
-      seedBenchmarkRun,
-      inspectBenchmarkRun,
-      startLocalDockerBenchmarkRun,
-      getBenchmarkRunStatus,
-    } = createBenchmarkE2EHelpers(store);
 
     const {
       cloudSeedAuthState,
@@ -434,10 +414,6 @@ export const E2EBootstrap: FC = () => {
       learningsTriggerReflection,
       learningsDeprecate,
       debugSeedLearning,
-      lspGetWorkspaceConfig,
-      lspSetServerEnabled,
-      lintGetWorkspaceConfig,
-      lintSetToolEnabled,
       promptDump: promptDumpHelper,
       getActiveSessionId,
       openWorkstationFile,
@@ -512,10 +488,6 @@ export const E2EBootstrap: FC = () => {
       openAgentTab,
       openOrgTab,
       inspectWorkstationSurface,
-      seedBenchmarkRun,
-      inspectBenchmarkRun,
-      startLocalDockerBenchmarkRun,
-      getBenchmarkRunStatus,
       cloudSeedAuthState,
       cloudClearAuthState,
       cloudReadAuthState,

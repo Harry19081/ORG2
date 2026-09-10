@@ -1,10 +1,9 @@
 import { eventStoreProxy } from "@src/engines/SessionCore/core/store/EventStoreProxy";
-import { type SessionStatus, updateSessionStatus } from "@src/store/session";
 
-import { isNativeTranscriptSession } from "./nativeTranscriptReconcile";
 import {
   type SessionLoadStateActions,
   applyPostLoadResult,
+  capturePostLoadLifecycleSnapshot,
 } from "./sessionSyncStateHelpers";
 import type { SessionSyncRefs } from "./sessionSyncTypes";
 import {
@@ -12,7 +11,6 @@ import {
   hydrateSessionStoreBeforeDisplay,
   isTerminalRunStatus,
   loadPersistedHistory,
-  toCliSessionStatus,
   waitForReconcileDelay,
 } from "./sessionSyncUtils";
 import type { SessionAdapter } from "./types";
@@ -43,6 +41,7 @@ export function reconcileInFlightHistory(
       await waitForReconcileDelay(delayMs);
       if (refs.liveSessionIdRef.current !== sessionId) return;
 
+      const postLoadLifecycle = capturePostLoadLifecycleSnapshot(sessionId);
       const postResult = adapter.postLoad
         ? await adapter.postLoad(sessionId, reconcileController.signal)
         : null;
@@ -68,7 +67,7 @@ export function reconcileInFlightHistory(
       // EMPTY store (switched into a still-running session after a restart or
       // eviction) is hydrated, with replace semantics so a retry tick stays
       // idempotent; the terminal reconcile owns the final canonical replace.
-      if (isNativeTranscriptSession(sessionId)) {
+      if (postResult?.transcriptSource === "native") {
         const existingEvents = await eventStoreProxy.getEvents(sessionId);
         if (refs.liveSessionIdRef.current !== sessionId) return;
         if (existingEvents.length === 0) {
@@ -94,22 +93,11 @@ export function reconcileInFlightHistory(
         actions.dispatchLoadSession({ sessionId, events: persistedEvents });
       }
 
-      if (postResult?.contextTokens !== undefined) {
-        actions.setSessionContextTokens(postResult.contextTokens);
-      }
-      if (postResult?.contextUsage !== undefined) {
-        actions.setSessionContextUsage(postResult.contextUsage);
-      }
-      if (postResult?.runStatus !== undefined) {
-        actions.setSessionRuntimeStatus(
-          toCliSessionStatus(postResult.runStatus)
-        );
-        updateSessionStatus(sessionId, postResult.runStatus as SessionStatus);
-        if (isTerminalRunStatus(postResult.runStatus)) return;
-      }
-      if (postResult?.runError !== undefined) {
-        actions.setSessionRuntimeError(postResult.runError);
-      }
+      applyPostLoadResult(sessionId, postResult, actions, {
+        lifecycleSnapshot: postLoadLifecycle,
+        acceptTerminalForUnchangedGeneration: true,
+      });
+      if (isTerminalRunStatus(postResult?.runStatus)) return;
     }
   };
 

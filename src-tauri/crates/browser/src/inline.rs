@@ -275,7 +275,11 @@ pub async fn create_inline_webview(
     builder = builder
         .initialization_script(ELEMENT_INSPECTOR_SCRIPT)
         .initialization_script(PAGE_AGENT_SCRIPT)
+        .initialization_script(app_window::shortcut_preferences::initialization_script())
         .initialization_script(SHORTCUT_FORWARDING_SCRIPT)
+        .on_page_load(|webview, _| {
+            let _ = webview.eval(app_window::shortcut_preferences::initialization_script());
+        })
         .on_new_window(move |new_window_url, _cookies| {
             let url_str = new_window_url.to_string();
             debug!(url = %url_str, "browser::inline: new window requested");
@@ -436,49 +440,6 @@ pub fn set_inline_webview_visibility(
     } else {
         // Not an error — webview not yet created or already destroyed.
         Ok(())
-    }
-}
-
-/// Atomically reposition a webview and make it visible in a single command.
-///
-/// Combines `update_inline_webview_position` + `set_inline_webview_visibility`
-/// so the two operations are guaranteed to be applied in order on the same
-/// thread, preventing a race where the webview flashes at an old position
-/// before the separate reposition call arrives.
-///
-/// If the webview does not exist yet (still being created), returns `Ok(())`
-/// silently — the caller should retry when `isWebviewCreated` becomes true.
-#[tauri::command]
-#[allow(clippy::too_many_arguments)]
-pub fn reposition_and_show_webview(
-    app: AppHandle,
-    label: String,
-    x: f64,
-    y: f64,
-    a: Option<f64>,
-    b: Option<f64>,
-    width: f64,
-    height: f64,
-) -> Result<(), String> {
-    let (x, y, width, height) = frame_from_corners(x, y, a, b, width, height);
-    if let Some(webview) = app.get_webview(&label) {
-        let pos = tauri::Position::Logical(tauri::LogicalPosition::new(x, y));
-        let size = tauri::Size::Logical(tauri::LogicalSize::new(width, height));
-
-        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            webview.set_position(pos)?;
-            webview.set_size(size)?;
-            webview.show()?;
-            Ok::<(), tauri::Error>(())
-        }));
-
-        match result {
-            Ok(Ok(())) => Ok(()),
-            Ok(Err(e)) => Err(format!("Failed to reposition_and_show: {}", e)),
-            Err(_) => Ok(()), // wry panic — webview closing, ignore
-        }
-    } else {
-        Ok(()) // not yet created or already destroyed
     }
 }
 

@@ -23,17 +23,14 @@ export type SpotlightStaticActionId =
   | "open-agent-control"
   | "switch-workspace"
   | "switch-branch"
+  | `switch-branch:${string}`
   | "add-workspace"
   | "create-multi-repo-workspace"
+  | "create-organization"
+  | "join-organization"
   | "toggle-sidebar"
-  | "set-system-theme"
-  | "set-light-theme"
-  | "set-dark-theme"
-  | "set-high-contrast-theme"
-  | "set-my-station-chat-left"
-  | "set-my-station-chat-right"
-  | "set-agent-station-chat-left"
-  | "set-agent-station-chat-right"
+  | "set-chat-panel-left"
+  | "set-chat-panel-right"
   | "enable-chat-pagination"
   | "disable-chat-pagination"
   | "use-model-picker-spotlight"
@@ -67,6 +64,8 @@ export type SpotlightStaticActionFallback =
   | "workspace-switch"
   | "workspace-add"
   | "workspace-create"
+  | "organization-create"
+  | "organization-join"
   | "branch-picker"
   | "toggle-sidebar"
   | "zoom-in"
@@ -92,6 +91,7 @@ export type SpotlightEditorActionId =
 export interface SpotlightStaticActionDefinition {
   id: SpotlightStaticActionId;
   labelKey: string;
+  labelValues?: Record<string, string>;
   icon: SpotlightItem["icon"];
   keywords: string[];
   shortcut?: string;

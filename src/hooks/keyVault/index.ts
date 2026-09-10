@@ -5,14 +5,11 @@
  */
 export { useKeyVault, default } from "./useKeyVault";
 export { useLocalKeys } from "./useLocalKeys";
-export type { UseLocalKeysOptions, UseLocalKeysReturn } from "./useLocalKeys";
 
 export type {
-  AccountStatus,
   ModelType,
   KeyVaultAccount,
   KeyInfo,
   SaveKeyRequest,
-  UseKeyVaultOptions,
   UseKeyVaultReturn,
 } from "./types";

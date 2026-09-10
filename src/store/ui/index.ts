@@ -10,7 +10,7 @@
  * - Editor: editorSettingsAtom, fileTreeSelectionAtom, searchResultSelectionAtom
  * - Settings: settingsPanelAtoms (panel-internal side-channel state),
  *   settingsSyncAtom
- * - Tabs: navigationSidebarTabsAtom, globalSelectorAtom
+ * - Tabs: navigationSidebarTabsAtom
  */
 
 // Sidebar
@@ -33,7 +33,6 @@ export * from "./languageAtom";
 // Tabs
 export * from "./navigationSidebarTabsAtom";
 export * from "./globalTabsActions";
-export * from "./globalSelectorAtom";
 
 // Other UI state
 export * from "./uiAtom";
@@ -42,29 +41,33 @@ export * from "./overlayLayerAtom";
 export * from "./timezoneAtom";
 export * from "./notificationAtom";
 export * from "./inboxAtom";
-export * from "./workStationAtom";
 export * from "./routeToolbarAtom";
 export * from "./dragDropAtom";
 export * from "./todoAtom";
 export * from "./addToAgentAtom";
 export * from "./integrationsToolbarAtom";
 export * from "./kanbanViewStateAtom";
-export * from "./kanbanReplayAtom";
 export * from "./workManagementCreatorAtom";
+export * from "./sideChatAtom";
 export * from "./modelSelectorAtom";
 export * from "./settingsToolbarAtom";
 export * from "./globalTabsTypes";
 export * from "./guideHighlightAtom";
-export * from "./globalPreferencesPanelAtom";
 
 // WorkStation / Chat / Simulator / Workspace Folders (formerly workspaceAtom barrel)
 export * from "./simulatorAtom";
 export * from "./overlayAtom";
-export * from "./chatPanelAtom";
+export { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
+
+export * from "./chatPanel/widthAtoms";
+export * from "./chatPanel/visibilityAtoms";
+export * from "./chatPanel/displayPrefsAtoms";
+export * from "./chatPanel/selectionAtoms";
+export * from "./chatPanel/surfaceAtoms";
+export * from "./chatPanel/miscAtoms";
 export * from "./chatImageAtom";
 export * from "./messageQueueAtom";
 export * from "./sessionPaginationAtom";
-export * from "./uploadsAtom";
 export * from "./draftAtom";
 export * from "./workStationLayout";
 export * from "./workspace";

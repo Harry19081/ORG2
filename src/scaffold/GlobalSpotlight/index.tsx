@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 
 import { ROUTES } from "@src/config/routes";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
+import { useSelector as useSelectorKernel } from "@src/scaffold/GlobalSpotlight/hooks/selectors/useSelector";
 import { currentBranchAtom } from "@src/store/repo";
 import {
   activeWorktreeAtom,
@@ -18,9 +19,11 @@ import {
 } from "@src/store/workspace";
 
 import { SPOTLIGHT_FOOTER_ACTIVE_CHIP } from "./components";
+import CollabOrgForm from "./forms/CollabOrg/CollabOrgForm";
+import GitHubIssuesImportForm from "./forms/GitHubIssuesImport/GitHubIssuesImportForm";
 import { getEditorPaletteMode } from "./globalSpotlight.helpers";
 import {
-  type AddWorkspaceModalStage,
+  type AddWorkingDirectoryModalStage,
   SpotlightProvider,
   useSpotlight,
   useSpotlightEffects,
@@ -34,10 +37,9 @@ import {
   BranchPalette,
   EditorPalette,
   SessionCreatorPalette,
-  WorkspacePalette,
+  WorkingDirectoryPalette,
   WorktreePalette,
 } from "./palettes";
-import { useSelectorKernel } from "./palettes/core";
 import { PaletteBody, SpotlightShell } from "./shell";
 import type { GlobalSpotlightProps } from "./types";
 import { SpotlightConfirmationView } from "./views";
@@ -56,6 +58,7 @@ const GlobalSpotlightInner: React.FC<
   const {
     selectedRepoId,
     currentRepo,
+    repos,
     currentBranch: selectedBranchName,
     selectRepo,
     selectBranch,
@@ -74,11 +77,12 @@ const GlobalSpotlightInner: React.FC<
   const currentRepoPath = currentRepo?.path ?? currentRepo?.fs_uri ?? "";
 
   const {
-    workspacePickerMode,
-    setWorkspacePickerMode,
+    workingDirectoryPickerMode,
+    setWorkingDirectoryPickerMode,
+    collabOrgContext,
+    githubIssuesImportContext,
     embeddedBranchMode,
     setEmbeddedBranchMode,
-    embeddedWorktreeMode,
     setEmbeddedWorktreeMode,
     branchPickerOpen,
     setBranchPickerOpen,
@@ -93,7 +97,9 @@ const GlobalSpotlightInner: React.FC<
     pendingRestoreItemId,
     setPendingRestoreItemId,
     restoreLastActivatedItem,
-    handleOpenWorkspacePicker,
+    handleOpenWorkingDirectoryPicker,
+    handleOpenCollabOrg,
+    handleOpenGitHubIssuesImport,
     handleOpenBranchPicker,
     handleOpenWorktreePicker,
     handleOpenAgentSessionSearch,
@@ -101,7 +107,9 @@ const GlobalSpotlightInner: React.FC<
     handleOpenAgentControl,
     handleOpenSessionCreator,
     handleOpenEditorPalette,
-    handleCloseWorkspacePicker,
+    handleCloseWorkingDirectoryPicker,
+    handleCloseCollabOrg,
+    handleCloseGitHubIssuesImport,
     handleCloseBranchPicker,
     handleCloseWorktreePicker,
     handleCloseAgentSessionSearch,
@@ -131,10 +139,22 @@ const GlobalSpotlightInner: React.FC<
     t,
     setActiveWorktree,
     setCurrentBranch,
-    setWorkspacePickerMode,
+    setWorkingDirectoryPickerMode,
     setBranchPickerOpen,
     setWorktreePickerOpen,
   });
+
+  const handleOpenRepoBranchPicker = useCallback(
+    (repoId?: string) => {
+      if (repoId) {
+        if (!repos.some((repo) => repo.id === repoId && repo.kind === "git"))
+          return;
+        if (repoId !== selectedRepoId) selectRepo(repoId);
+      }
+      handleOpenBranchPicker();
+    },
+    [handleOpenBranchPicker, repos, selectRepo, selectedRepoId]
+  );
 
   // ============ ALL HOOKS MUST BE CALLED UNCONDITIONALLY ============
   // These hooks are needed for normal mode, but must always be called
@@ -142,8 +162,8 @@ const GlobalSpotlightInner: React.FC<
   const spotlight = useSpotlight({
     ...props,
     closeModal,
-    onOpenWorkspacePicker: handleOpenWorkspacePicker,
-    onOpenBranchPicker: handleOpenBranchPicker,
+    onOpenWorkingDirectoryPicker: handleOpenWorkingDirectoryPicker,
+    onOpenBranchPicker: handleOpenRepoBranchPicker,
     onOpenEditorPalette: handleOpenEditorPalette,
     onOpenAgentSessionSearch: handleOpenAgentSessionSearch,
     onOpenAllSessionsSearch: handleOpenAllSessionsSearch,
@@ -157,7 +177,9 @@ const GlobalSpotlightInner: React.FC<
   useSpotlightEffects({
     isOpen:
       isOpen &&
-      !workspacePickerMode &&
+      !workingDirectoryPickerMode &&
+      !collabOrgContext &&
+      !githubIssuesImportContext &&
       !branchPickerOpen &&
       !worktreePickerOpen &&
       !agentSessionSearchOpen &&
@@ -166,8 +188,10 @@ const GlobalSpotlightInner: React.FC<
       !sessionCreatorOpen,
     dispatch: spotlightDispatch,
     closeModal,
-    onOpenWorkspaceLayer: handleOpenWorkspacePicker,
-    onOpenBranchLayer: handleOpenBranchPicker,
+    onOpenWorkingDirectoryLayer: handleOpenWorkingDirectoryPicker,
+    onOpenCollabOrgLayer: handleOpenCollabOrg,
+    onOpenGitHubIssuesImportLayer: handleOpenGitHubIssuesImport,
+    onOpenBranchLayer: handleOpenRepoBranchPicker,
     onOpenWorktreeLayer: handleOpenWorktreePicker,
     onOpenEditorLayer: handleOpenEditorPalette,
     onOpenAgentSessionSearchLayer: handleOpenAgentSessionSearch,
@@ -244,7 +268,9 @@ const GlobalSpotlightInner: React.FC<
 
   useEffect(() => {
     if (
-      workspacePickerMode ||
+      workingDirectoryPickerMode ||
+      collabOrgContext ||
+      githubIssuesImportContext ||
       branchPickerOpen ||
       worktreePickerOpen ||
       agentSessionSearchOpen ||
@@ -276,7 +302,9 @@ const GlobalSpotlightInner: React.FC<
     setDefaultSelectedIndex,
     setPendingRestoreItemId,
     spotlight.items,
-    workspacePickerMode,
+    workingDirectoryPickerMode,
+    collabOrgContext,
+    githubIssuesImportContext,
     branchPickerOpen,
     worktreePickerOpen,
     agentSessionSearchOpen,
@@ -303,6 +331,10 @@ const GlobalSpotlightInner: React.FC<
         return t("selectors.spotlight.placeholders.source");
       case "language":
         return t("settings:general.languageSearchPlaceholder");
+      case "theme":
+        return t("common:spotlightActions.searchThemes");
+      case "skin":
+        return t("common:spotlightActions.searchSkins");
       default:
         return t("selectors.spotlight.placeholders.actions");
     }
@@ -319,7 +351,9 @@ const GlobalSpotlightInner: React.FC<
 
   // Single SpotlightShell wraps the whole normal-mode tree.
   const hasActiveAction =
-    !!workspacePickerMode ||
+    !!workingDirectoryPickerMode ||
+    !!collabOrgContext ||
+    !!githubIssuesImportContext ||
     branchPickerOpen ||
     worktreePickerOpen ||
     agentSessionSearchOpen ||
@@ -329,29 +363,52 @@ const GlobalSpotlightInner: React.FC<
     !!activeEditorPalette ||
     spotlight.state.path.length > 0;
   const effectiveCurrentRepoId = selectedRepoId || undefined;
-  const initialWorkspaceStage: AddWorkspaceModalStage =
-    workspacePickerMode === "create"
+  const initialWorkingDirectoryStage: AddWorkingDirectoryModalStage =
+    workingDirectoryPickerMode === "create"
       ? "create-workspace"
-      : workspacePickerMode === "open"
+      : workingDirectoryPickerMode === "open"
         ? "add-workspace-existing"
         : null;
+  // Tab keeps switching between the list and the pinned action section in
+  // every mode that still renders one, so the hint chip must not flip to
+  // "Back" the moment a palette drills into remove mode — the footer would
+  // resize under the user mid-interaction. The branch palette's create
+  // modes are the exception: they render no pinned section at all.
   const activeActionChip =
-    workspacePickerMode === "switch" ||
-    (worktreePickerOpen && embeddedWorktreeMode === "switch") ||
-    (branchPickerOpen && embeddedBranchMode === "checkout")
+    workingDirectoryPickerMode === "switch" ||
+    worktreePickerOpen ||
+    (branchPickerOpen &&
+      (embeddedBranchMode === "checkout" || embeddedBranchMode === "remove"))
       ? SPOTLIGHT_FOOTER_ACTIVE_CHIP.switchSection
       : undefined;
 
-  const body = workspacePickerMode ? (
-    <WorkspacePalette
-      key={workspacePickerMode}
+  const body = collabOrgContext ? (
+    <CollabOrgForm
+      key={`${collabOrgContext.source ?? "choose"}:${collabOrgContext.mode ?? "choose"}`}
+      initialSource={collabOrgContext.source}
+      initialMode={collabOrgContext.mode}
+      onCancel={handleCloseCollabOrg}
+      onCompleted={closeModal}
+    />
+  ) : githubIssuesImportContext ? (
+    <GitHubIssuesImportForm
+      orgId={githubIssuesImportContext.orgId}
+      repoName={githubIssuesImportContext.repoName ?? currentRepo?.name}
+      repoPath={githubIssuesImportContext.repoPath ?? currentRepoPath}
+      repoUrl={githubIssuesImportContext.repoUrl ?? currentRepo?.repo_url}
+      onCancel={handleCloseGitHubIssuesImport}
+      onImported={closeModal}
+    />
+  ) : workingDirectoryPickerMode ? (
+    <WorkingDirectoryPalette
+      key={workingDirectoryPickerMode}
       isOpen={isOpen}
       onClose={closeModal}
-      onGoBackToParent={handleCloseWorkspacePicker}
+      onGoBackToParent={handleCloseWorkingDirectoryPicker}
       onSelect={handleWorkspaceSelect}
       currentRepoId={effectiveCurrentRepoId}
-      initialAddMenu={workspacePickerMode === "add"}
-      initialAddStage={initialWorkspaceStage}
+      initialAddMenu={workingDirectoryPickerMode === "add"}
+      initialAddStage={initialWorkingDirectoryStage}
       asBody
     />
   ) : branchPickerOpen ? (
@@ -364,7 +421,12 @@ const GlobalSpotlightInner: React.FC<
       onDeleteBranch={handleDeleteBranch}
       onCheckoutDetached={handleCheckoutDetached}
       repoId={effectiveCurrentRepoId ?? ""}
-      repoPath={activeWorktree?.path ?? currentRepoPath}
+      repoPath={
+        activeWorktree && activeWorktree.repoId === effectiveCurrentRepoId
+          ? activeWorktree.path
+          : currentRepoPath
+      }
+      repoName={currentRepo?.name}
       currentBranchName={selectedBranchName}
       asBody
       onModeChange={setEmbeddedBranchMode}
@@ -491,4 +553,4 @@ export default GlobalSpotlight;
 // EXPORTS
 // ============================================
 
-export { WorkspacePalette, BranchPalette } from "./palettes";
+export { WorkingDirectoryPalette, BranchPalette } from "./palettes";

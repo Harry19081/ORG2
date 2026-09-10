@@ -6,57 +6,64 @@
  * layout settings dropdown, and a separate caption row below the top bar.
  */
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  Captions,
-  Maximize2,
-  MessageCircle,
-  Minimize2,
-  PanelRight,
-  X,
-} from "lucide-react";
 import React, { memo, startTransition, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
+import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { NoDragRegion } from "@src/components/WindowChrome";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
+import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
+import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import CaptionBar from "@src/engines/Simulator/components/CaptionBar";
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import {
-  getCollapsedSidebarChromeOffset,
+  useCollapsedSidebarChromeOffset,
   useShouldOffsetWorkStationTopBar,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
-import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
+import {
+  usePinnedWorkbenchChromeVisible,
+  useWorkbenchRightEdgeReservation,
+} from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
+import {
+  ArrowExpand01Icon,
+  ArrowShrink01Icon,
+  BubbleChatIcon,
+  Cancel01Icon,
+  CaptionsIcon,
+  HugeiconsIcon,
+  PanelRightIcon,
+} from "@src/icons";
+import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import {
   sessionMapAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import {
-  activeStationChatVisibleAtom,
-  chatWidthAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   simulatorCaptionBarEnabledAtom,
   simulatorEffectiveDockAppAtom,
 } from "@src/store/ui/simulatorAtom";
-import { sessionChatPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
-import {
-  SimulatorAgentChip,
-  StationModeChip,
-  TabBarTrailingIconButton,
-} from "../shared";
+import { SimulatorAgentChip, StationModeChip } from "../shared";
 
 const AgentStationTopHeader: React.FC = memo(() => {
   const { t } = useTranslation("sessions");
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
+  const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
+  const pinnedChrome = usePinnedWorkbenchChromeVisible();
+  const rightEdge = useWorkbenchRightEdgeReservation();
   const getStationChatVisible = useAtomValue(activeStationChatVisibleAtom);
   const chatWidth = useAtomValue(chatWidthAtom);
-  const sessionChatPosition = useAtomValue(sessionChatPositionAtom);
+  const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
   const toggleChatPanelMaximized = useSetAtom(toggleChatPanelMaximizedAtom);
   const isChatPanelVisible =
     getStationChatVisible("agent-station") && chatWidth > 0;
@@ -65,6 +72,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
   // maximize/restore button, so the workstation-side toggle is redundant
   // and visually conflicting (two buttons driving the same atom).
   const isSettingsRoute = location.pathname.startsWith("/orgii/app/settings");
+  const showPaneControls = !isSettingsRoute && !pinnedChrome;
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
   const [captionEnabled, setCaptionEnabled] = useAtom(
     simulatorCaptionBarEnabledAtom
@@ -82,7 +90,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
     captionMessage?.isCurrentEvent && effectiveDockApp === AppType.CHANNELS;
   const captionText = showMessageNotice
     ? captionMessage.eventKind === "thought"
-      ? t("workStation.chat.messages.bubble.senderTitle.thought", {
+      ? t("simulator.thoughtSentMessageCaption", {
           subject: captionAgentName,
         })
       : t(
@@ -107,12 +115,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.isComposing) return;
-      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-      const isCaptionsShortcut = isMac
-        ? event.metaKey && event.altKey && !event.ctrlKey && !event.shiftKey
-        : event.ctrlKey && event.altKey && !event.metaKey && !event.shiftKey;
-      if (!isCaptionsShortcut || event.code !== "KeyC") return;
+      if (!matchesShortcut(event, "toggle_captions")) return;
       event.preventDefault();
       event.stopPropagation();
       handleToggleCaption();
@@ -143,13 +146,20 @@ const AgentStationTopHeader: React.FC = memo(() => {
   return (
     <div className="flex shrink-0 flex-col">
       <div
-        className="relative flex h-11 min-h-11 shrink-0 items-center pt-2"
+        className={`relative flex h-11 min-h-11 shrink-0 items-center pt-2 ${CHROME_INSET_TRANSITION_CLASSES}`}
         data-tauri-drag-region
         style={
           {
             paddingLeft: shouldOffsetLeftChrome
-              ? getCollapsedSidebarChromeOffset()
+              ? collapsedSidebarChromeOffset
               : undefined,
+            // The trailing group keeps its own `pr-2`; only the remainder of
+            // the pinned-chrome reservation goes here.
+            paddingRight:
+              rightEdge.owner === "workstation"
+                ? rightEdge.reservedRight -
+                  TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX
+                : undefined,
             WebkitAppRegion: "drag",
           } as React.CSSProperties
         }
@@ -164,48 +174,85 @@ const AgentStationTopHeader: React.FC = memo(() => {
           <SimulatorAgentChip />
         </NoDragRegion>
         <div className="min-w-0 flex-1" />
-        <NoDragRegion className="ml-auto flex h-full shrink-0 items-center gap-px pl-1 pr-2">
+        <NoDragRegion className="ml-auto flex h-full shrink-0 items-center gap-px pr-2 pl-1">
           <TabBarTrailingIconButton
             title={captionToggleLabel}
             shortcutId="toggle_captions"
+            tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
             active={captionEnabled}
             aria-pressed={captionEnabled}
             onClick={handleToggleCaption}
           >
-            <Captions size={16} strokeWidth={2} />
+            <HugeiconsIcon
+              icon={CaptionsIcon}
+              data-icon="captions"
+              size={16}
+              strokeWidth={2}
+            />
           </TabBarTrailingIconButton>
-          {!isSettingsRoute && !isChatPanelVisible && (
+          {showPaneControls && !isChatPanelVisible && (
             <TabBarTrailingIconButton
               title={chatPanelLabel}
               shortcutId="maximize_work_station"
+              tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
               onClick={handleToggleChatPanel}
             >
-              <Minimize2 size={14} strokeWidth={2} />
+              <HugeiconsIcon
+                icon={ArrowShrink01Icon}
+                data-icon="minimize-2"
+                size={14}
+                strokeWidth={2}
+              />
             </TabBarTrailingIconButton>
           )}
-          {!isSettingsRoute && (
+          {/* Empty macOS stations leave these actions to the pinned window
+              chrome. Once a session populates Agent Station, this header
+              owns them so the controls do not disappear with that chrome. */}
+          {showPaneControls && (
             <TabBarTrailingIconButton
               title={chatPanelLabel}
               shortcutId="maximize_work_station"
+              tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
               onClick={handleToggleChatPanel}
             >
               {isChatPanelVisible ? (
-                <Maximize2 size={14} strokeWidth={2} />
+                <HugeiconsIcon
+                  icon={ArrowExpand01Icon}
+                  data-icon="maximize-2"
+                  size={14}
+                  strokeWidth={2}
+                />
               ) : (
-                <MessageCircle size={14} strokeWidth={2} />
+                <HugeiconsIcon
+                  icon={BubbleChatIcon}
+                  data-icon="message-circle"
+                  size={14}
+                  strokeWidth={2}
+                />
               )}
             </TabBarTrailingIconButton>
           )}
-          {!isSettingsRoute && isChatPanelVisible && (
+          {showPaneControls && isChatPanelVisible && (
             <TabBarTrailingIconButton
               title={hideWorkstationLabel}
               shortcutId="maximize_chat"
+              tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
               onClick={handleToggleChatPanelMaximized}
             >
-              {sessionChatPosition === "left" ? (
-                <PanelRight size={HEADER_ICON_SIZE.md} strokeWidth={2} />
+              {chatPanelPosition === "left" ? (
+                <HugeiconsIcon
+                  icon={PanelRightIcon}
+                  data-icon="panel-right"
+                  size={HEADER_ICON_SIZE.md}
+                  strokeWidth={2}
+                />
               ) : (
-                <X size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
+                <HugeiconsIcon
+                  icon={Cancel01Icon}
+                  data-icon="x"
+                  size={HEADER_ICON_SIZE.md}
+                  strokeWidth={1.75}
+                />
               )}
             </TabBarTrailingIconButton>
           )}

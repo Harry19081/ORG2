@@ -1,5 +1,5 @@
 import Modal from "@/src/scaffold/ModalSystem";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,7 +17,11 @@ import useSharedRepoList from "@src/scaffold/GlobalSpotlight/hooks/data/useShare
 import type { RepoItem } from "@src/scaffold/GlobalSpotlight/types";
 
 import { normalizeRepoScopeKey } from "../../collabSyncUtils";
-import type { ForkExecutionSelection } from "../../engine/collabSyncEngineHelpers";
+import {
+  type ForkSessionSetupRequest,
+  type ForkSessionSetupSelection,
+  forkSessionSetupRequestAtom,
+} from "../../forkDialogState";
 import {
   getShareableScopeKeyVersion,
   peekMatchingOrgRepoScope,
@@ -26,25 +30,6 @@ import {
   subscribeShareableScopeKeys,
 } from "../../repoScopeResolver";
 import { resolveForkModelPreselection } from "./modelPreselection";
-
-export interface ForkSessionSetupSelection {
-  workspaceRepoPath: string | null;
-  execution: ForkExecutionSelection;
-}
-
-export interface ForkSessionSetupRequest {
-  sourceTitle: string;
-  sourceScopeKey?: string;
-  sourceModel?: string;
-  sourceAgentDisplayName?: string;
-  sourceAgentDefinitionId?: string;
-  resolve: (selection: ForkSessionSetupSelection | null) => void;
-}
-
-export const forkSessionSetupRequestAtom = atom<ForkSessionSetupRequest | null>(
-  null
-);
-forkSessionSetupRequestAtom.debugLabel = "forkSessionSetupRequestAtom";
 
 function repoScopeKeys(repo: RepoItem): string[] | null | undefined {
   if (repo.fs_uri) return peekShareableScopeKeys(repo.fs_uri);
@@ -85,10 +70,7 @@ const ForkSessionSetupForm: React.FC<ForkSessionSetupFormProps> = ({
     () => [...builtInAgents, ...customAgents],
     [builtInAgents, customAgents]
   );
-  const { repos, repoLoading, loadRepos } = useSharedRepoList({
-    enabled: false,
-    searchQuery: "",
-  });
+  const { repos, repoLoading, loadRepos } = useSharedRepoList("");
   const [chosenAccountId, setChosenAccountId] = useState("");
   const [chosenModel, setChosenModel] = useState("");
   const [chosenAgentDefinitionId, setChosenAgentDefinitionId] = useState("");
@@ -289,7 +271,7 @@ const ForkSessionSetupForm: React.FC<ForkSessionSetupFormProps> = ({
                     key={repo.id}
                     type="button"
                     onClick={() => setWorkspaceRepoPath(repo.fs_uri ?? null)}
-                    className={`flex flex-col px-3 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-6/30 ${
+                    className={`flex flex-col px-3 py-2 text-left focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none focus-visible:ring-inset ${
                       selected ? "bg-fill-2" : "hover:bg-fill-2"
                     }`}
                     data-testid={`fork-setup-workspace-${repo.id}`}

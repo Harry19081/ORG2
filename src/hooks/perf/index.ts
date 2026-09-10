@@ -3,43 +3,24 @@
  *
  * Provides React hooks for:
  * - Debouncing callbacks (useDebouncedCallback)
- * - Network monitoring (useNetworkMonitor)
  */
 
 export { useDebouncedCallback, DEBOUNCE_DELAYS } from "./useDebouncedCallback";
-export { useNetworkMonitor } from "./useNetworkMonitor";
-export {
-  formatRuntimeBytes,
-  useRuntimeRamStats,
-  type RuntimeRamPartRow,
-  type UseRuntimeRamStatsResult,
-} from "./useRuntimeRamStats";
+export { formatRuntimeBytes, useRuntimeRamStats } from "./useRuntimeRamStats";
 export {
   SIDEBAR_MEMORY_KIND,
   collectWebViewRuntimeDiagnostics,
-  type SidebarMemoryKind,
+  getLoadedScriptSourceStats,
+  type LoadedScriptSourceStats,
   type WebViewRuntimeDiagnostics,
 } from "./runtimeMemoryStats";
 export { useSidebarMemoryEntry } from "./useSidebarMemoryEntry";
 export {
+  describeAppMemoryMeasurement,
   refreshAppMemorySnapshot,
+  getAppMemoryRoleLabelKey,
   getAppMemoryTotals,
   useAppMemorySnapshot,
-  type AppMemoryProcess,
-  type AppMemoryProcessRole,
   type AppMemorySnapshotState,
-  type AppMemoryTotals,
-  type AppMemorySnapshotV1,
-  type AttributionStatus,
-  type EffectiveMeasurement,
-  type MemoryMetricKind,
-  type ToolProcessCategory,
-  type ToolProcessMemoryDiagnostic,
+  type AppMemorySnapshot,
 } from "./appMemorySnapshot";
-export type {
-  ConnectionStatus,
-  GeoInfo,
-  ProviderRegion,
-  RequestStats,
-  UseNetworkMonitorResult,
-} from "./useNetworkMonitor";

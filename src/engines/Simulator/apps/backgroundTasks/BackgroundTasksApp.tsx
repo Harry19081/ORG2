@@ -49,7 +49,8 @@ const BackgroundTasksApp: React.FC<BackgroundTasksAppProps> = ({
   onClose,
   onMinimize,
 }) => {
-  const subagentEventsMap = useMultiSessionSimulatorEvents(activeSessions);
+  const { eventsMap: subagentEventsMap, loadState } =
+    useMultiSessionSimulatorEvents(activeSessions);
 
   const childEntries = useMemo(() => {
     return activeSessions.map((sub) => ({
@@ -81,8 +82,8 @@ const BackgroundTasksApp: React.FC<BackgroundTasksAppProps> = ({
   const lastRowCellCount = ((childCount - 1) % layoutConfig.cols) + 1;
   const lastRowStripClass =
     lastRowCellCount === 1
-      ? "[&>*:last-child]:!border-b-0"
-      : "[&>*:nth-last-child(-n+2)]:!border-b-0";
+      ? "[&>*:last-child]:border-b-0!"
+      : "[&>*:nth-last-child(-n+2)]:border-b-0!";
 
   if (childCount === 0) {
     return null;
@@ -108,6 +109,7 @@ const BackgroundTasksApp: React.FC<BackgroundTasksAppProps> = ({
               specs={[]}
               sessionType={entry.sessionType}
               threadId={entry.sessionId}
+              historyLoad={loadState(entry.sessionId)}
               independentReplay
               externalCursorMs={mainCursorMs}
               isSessionLive={entry.isSessionLive}

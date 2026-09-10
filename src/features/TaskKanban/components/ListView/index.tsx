@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Placeholder } from "@src/components/Placeholder";
 import type { KanbanTask } from "@src/features/KanbanBoard";
 import {
-  Placeholder,
   SessionTable,
   type SessionTableColumnKey,
   type SessionTableColumnOverrides,
@@ -51,7 +51,7 @@ function getTaskTimestamp(task: KanbanTask): number {
   return new Date(timestamp).getTime();
 }
 
-export interface ListViewProps {
+interface ListViewProps {
   tasks: KanbanTask[];
   selectedTaskId: string | null;
   detailPanelVisible: boolean;
@@ -149,7 +149,7 @@ const ListView: React.FC<ListViewProps> = ({
             }
           }}
           fillHeight
-          showSearch
+          showSearch={false}
           // Bound the rendered row count. The List view feeds the shared
           // semantic <table>, which can't be windowed without breaking table
           // layout, so we cap DOM/memory with the table's own pagination —

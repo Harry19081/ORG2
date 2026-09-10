@@ -1,10 +1,11 @@
-import { Settings } from "lucide-react";
 import React, { useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { useTranslation } from "react-i18next";
 
 import { buildIntegrationsPath } from "@src/config/mainAppPaths";
+import { HugeiconsIcon, Settings01Icon } from "@src/icons";
 import { PanelFooter } from "@src/modules/shared/layouts/blocks";
+import { navigateApp } from "@src/router/navigateApp";
 import Modal from "@src/scaffold/ModalSystem";
 
 export interface GitAuthenticationDialogOptions {
@@ -27,12 +28,7 @@ interface GitAuthenticationDialogProps extends GitAuthenticationDialogOptions {
 const APP_TOP_DRAG_ZONE_HEIGHT = 52;
 
 function openConnectionsPage() {
-  window.history.pushState(
-    {},
-    "",
-    buildIntegrationsPath({ category: "connections" })
-  );
-  window.dispatchEvent(new PopStateEvent("popstate"));
+  navigateApp(buildIntegrationsPath({ category: "connections" }));
 }
 
 function GitAuthenticationDialog({ onResolve }: GitAuthenticationDialogProps) {
@@ -53,9 +49,6 @@ function GitAuthenticationDialog({ onResolve }: GitAuthenticationDialogProps) {
       title={t("git.authDialog.title")}
       width={460}
       topDragZoneHeight={APP_TOP_DRAG_ZONE_HEIGHT}
-      okText={t("git.authDialog.openGitSettingsButton")}
-      cancelText={t("actions.cancel")}
-      onOk={handleOpenConnections}
       onCancel={handleCancel}
       onClose={handleCancel}
       maskClosable={false}
@@ -78,7 +71,7 @@ function GitAuthenticationDialog({ onResolve }: GitAuthenticationDialogProps) {
     >
       <div className="flex items-start gap-3">
         <div className="mt-0.5 rounded-md bg-fill-2 p-2 text-text-2">
-          <Settings size={16} />
+          <HugeiconsIcon icon={Settings01Icon} data-icon="settings" size={16} />
         </div>
         <div className="flex flex-col gap-1.5">
           <div className="text-[13px] font-medium text-text-1">

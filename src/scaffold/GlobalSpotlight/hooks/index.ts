@@ -15,35 +15,17 @@ export { useSpotlight } from "./useSpotlight";
 export { useSpotlightEffects } from "./features/useSpotlightEffects";
 
 // Form hooks (used by palettes)
-export { useAddWorkspaceFlow } from "./forms/useAddWorkspaceFlow";
-export type { AddWorkspaceModalStage } from "./forms/useAddWorkspaceFlow";
+export { useAddWorkingDirectoryFlow } from "./forms/useAddWorkingDirectoryFlow";
+export type { AddWorkingDirectoryModalStage } from "./forms/useAddWorkingDirectoryFlow";
 
 // Shared data hooks (used by palettes and main Spotlight)
-export {
-  EXTERNAL_RECENT_PATH_WORKSPACE_THRESHOLD,
-  useExternalRecentPaths,
-} from "./data/useExternalRecentPaths";
+export { useExternalRecentPaths } from "./data/useExternalRecentPaths";
 export { useSharedRepoList } from "./data/useSharedRepoList";
-export type {
-  UseSharedRepoListOptions,
-  UseSharedRepoListReturn,
-} from "./data/useSharedRepoList";
 export { useWorkspaceSwitch } from "./data/useWorkspaceSwitch";
-export type {
-  UseWorkspaceSwitchOptions,
-  UseWorkspaceSwitchReturn,
-  WorkspaceSwitchEntry,
-} from "./data/useWorkspaceSwitch";
+export type { WorkspaceSwitchEntry } from "./data/useWorkspaceSwitch";
 
 // Account-footer helper (used by palettes with per-hovered-item footers)
 export { useAccountFooterForHovered } from "./useAccountFooterForHovered";
-export type {
-  AccountFooterCliResolverResult,
-  AccountFooterApiResolverResult,
-  AccountFooterResolverResult,
-  UseAccountFooterForHoveredOptions,
-} from "./useAccountFooterForHovered";
 
 // Path segment hook (used by palettes to resolve i18n path labels/templates)
 export { usePathSegment } from "./usePathSegment";
-export type { UsePathSegmentOptions } from "./usePathSegment";

@@ -46,25 +46,11 @@ import {
 import { truncate } from "@src/util/string/truncate";
 
 import { useCommunicationAgentIdentity } from "./communicationAgentIdentity";
+import { isAgentOrgInboxTranscriptEvent } from "./emailBubbleEvent";
 import type { MessageEntry } from "./types";
-import { extractMessageContent, isAgentOrgInboxTranscriptEvent } from "./utils";
+import { extractMessageContent } from "./utils";
 
 const SUBJECT_MAX_CHARS = 80;
-
-export const EMAIL_BUBBLE_TOOLS = [
-  "org_send_message",
-  "send_message",
-  "send_to_inbox",
-] as const;
-
-export type EmailBubbleTool = (typeof EMAIL_BUBBLE_TOOLS)[number];
-
-export function isEmailBubbleEvent(event: SessionEvent): boolean {
-  return (
-    isAgentOrgInboxTranscriptEvent(event) ||
-    (EMAIL_BUBBLE_TOOLS as readonly string[]).includes(event.functionName)
-  );
-}
 
 /**
  * Normalized view model fed to the bubble UI. All fields except `body` are
@@ -294,7 +280,7 @@ export const EmailMessageBubble: React.FC<EmailMessageBubbleProps> = memo(
               value={
                 <span
                   className={
-                    view.subject ? "text-text-1" : "italic text-text-3"
+                    view.subject ? "text-text-1" : "text-text-3 italic"
                   }
                 >
                   {subjectLabel}
@@ -314,7 +300,7 @@ export const EmailMessageBubble: React.FC<EmailMessageBubbleProps> = memo(
               />
             </div>
           ) : (
-            <div className="border-t border-border-1 px-3 py-2 text-[13px] italic text-text-3">
+            <div className="border-t border-border-1 px-3 py-2 text-[13px] text-text-3 italic">
               {t("cards.agentMessage.empty")}
             </div>
           )}

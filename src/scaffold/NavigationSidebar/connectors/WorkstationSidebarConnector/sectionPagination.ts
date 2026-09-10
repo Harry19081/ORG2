@@ -1,6 +1,6 @@
 import type { GroupByMode } from "../types";
 
-export interface ScopedSectionPagination {
+interface ScopedSectionPagination {
   scopeKey: string;
   visibleCount: number;
 }
@@ -14,6 +14,8 @@ export function getSessionSectionVisibleCountKey(
   if (sectionId === "pinned") return sectionId;
 
   switch (groupByMode) {
+    case "none":
+      return "sessions";
     case "byAgent":
       return sectionId.startsWith("agent-org:")
         ? sectionId

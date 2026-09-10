@@ -10,24 +10,10 @@ import { getStoredValue, setStoredValue } from "./storage";
 export const PRIMARY_SIDEBAR_TABS = {
   FILES: "files",
   SEARCH: "search",
-  TESTING: "testing",
 } as const;
 
 export type PrimarySidebarTabKey =
   (typeof PRIMARY_SIDEBAR_TABS)[keyof typeof PRIMARY_SIDEBAR_TABS];
-
-export const PRIMARY_SIDEBAR_TAB_ORDER = [
-  PRIMARY_SIDEBAR_TABS.FILES,
-  PRIMARY_SIDEBAR_TABS.SEARCH,
-  PRIMARY_SIDEBAR_TABS.TESTING,
-] as const;
-
-export const PRIMARY_SIDEBAR_TAB_LABELS: Record<PrimarySidebarTabKey, string> =
-  {
-    [PRIMARY_SIDEBAR_TABS.FILES]: "Files",
-    [PRIMARY_SIDEBAR_TABS.SEARCH]: "Search",
-    [PRIMARY_SIDEBAR_TABS.TESTING]: "Testing",
-  };
 
 /**
  * Primary sidebar selected tab. Session-only — not persisted across
@@ -68,37 +54,6 @@ export const workStationPrimarySidebarCollapsedPersistAtom = atom(
       value === "toggle" ? !get(workStationPrimarySidebarCollapsedAtom) : value;
     set(workStationPrimarySidebarCollapsedAtom, next);
     setStoredValue("primary_sidebar_collapsed", String(next));
-  }
-);
-
-/**
- * Browser-specific primary sidebar collapsed state.
- *
- * Independent of the shared `workStationPrimarySidebarCollapsedAtom` so that
- * toggling the sidebar in the Browser tool does not affect Code Editor / Database
- * Manager, and vice versa. Defaults to `true` (hidden) because the browser
- * sidebar is an optional panel rather than a primary navigation surface.
- */
-function getStoredBrowserSidebarCollapsed(): boolean {
-  const stored = getStoredValue("browser_primary_sidebar_collapsed");
-  // Explicit stored value takes precedence; default to true (hidden).
-  if (stored !== null) return stored === "true";
-  return true;
-}
-
-export const workStationBrowserSidebarCollapsedAtom = atom<boolean>(
-  getStoredBrowserSidebarCollapsed()
-);
-workStationBrowserSidebarCollapsedAtom.debugLabel =
-  "workStationBrowserSidebarCollapsedAtom";
-
-export const workStationBrowserSidebarCollapsedPersistAtom = atom(
-  (get) => get(workStationBrowserSidebarCollapsedAtom),
-  (get, set, value: boolean | "toggle") => {
-    const next =
-      value === "toggle" ? !get(workStationBrowserSidebarCollapsedAtom) : value;
-    set(workStationBrowserSidebarCollapsedAtom, next);
-    setStoredValue("browser_primary_sidebar_collapsed", String(next));
   }
 );
 

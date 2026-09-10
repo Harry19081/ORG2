@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
+import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import type { ProjectManagerBreadcrumbSegment } from "@src/modules/ProjectManager/shared/components/ProjectManagerBreadcrumb";
 import type { Person } from "@src/types/core/shared";
 import type {
@@ -17,7 +17,7 @@ export const WORK_ITEM_DETAIL_SURFACE = {
   nested: "nested",
 } as const;
 
-export type WorkItemDetailSurface =
+type WorkItemDetailSurface =
   (typeof WORK_ITEM_DETAIL_SURFACE)[keyof typeof WORK_ITEM_DETAIL_SURFACE];
 
 export type WorkItemUpdateHandler = (
@@ -32,6 +32,8 @@ export interface WorkItemDetailActions {
 export interface WorkItemDetailProps {
   workItem: WorkItemExtended;
   onClose: () => void;
+  /** Preserve the list/detail split while offering an explicit dedicated tab. */
+  onOpenInNewTab?: () => void;
   onNavigate: (direction: "prev" | "next") => void;
   hasPrev: boolean;
   hasNext: boolean;

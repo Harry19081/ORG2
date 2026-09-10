@@ -2,7 +2,8 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { LinearProjectSummary } from "@src/api/http/integrations";
-import type { WorkstationTabHeaderHost } from "@src/hooks/workStation";
+import { Placeholder } from "@src/components/Placeholder";
+import type { WorkstationTabHeaderHost } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
   ProjectRow,
   ProjectsPageHeader,
@@ -17,7 +18,6 @@ import {
 } from "@src/modules/ProjectManager/WorkItems/workItemsViewModel";
 import { getProjectStatusConfig } from "@src/modules/ProjectManager/config/manage";
 import VirtualizedGroupedList from "@src/modules/ProjectManager/shared/components/VirtualizedGroupedList";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import type { DropdownOption } from "@src/types/core/shared";
 import type { WorkItem, WorkItemStatus } from "@src/types/core/workItem";
 
@@ -242,6 +242,7 @@ export function LinearProjectsIndexWorkItemsView({
           />
         ) : (
           <WorkItemsListSurface
+            statusOrgId={null}
             groupedWorkItems={indexGroupedWorkItems}
             filteredWorkItems={indexFilteredWorkItems}
             selectedWorkItem={null}
@@ -289,7 +290,7 @@ export function LinearProjectCreateView({
   const { t } = useTranslation(["projects", "common"]);
 
   return (
-    <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-5 scrollbar-hide">
+    <main className="scrollbar-hide min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-5">
       <section className="mx-auto max-w-3xl rounded-lg border border-border-1 bg-fill-1 p-5">
         <h2 className="text-base font-semibold">
           {t("linearProjects.forms.createProjectTitle")}
@@ -393,6 +394,7 @@ export function LinearProjectSelectedContent({
 
   return (
     <WorkItemsListSurface
+      statusOrgId={null}
       groupedWorkItems={groupedWorkItems}
       filteredWorkItems={filteredWorkItems}
       selectedWorkItem={selectedWorkItem}

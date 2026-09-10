@@ -69,6 +69,7 @@ import {
 import {
   buildCloudPendingPlayEntry,
   resolveCloudSessionEnvironmentIdentity,
+  resolveCloudSessionOwnerIdentity,
   resolveCloudSessionReplayIconId,
   runImmediateCloudSessionReplay,
 } from "./cloudSessionReplayLifecycle";
@@ -212,6 +213,12 @@ export function useCloudSessionActions(
       options?: CloudSessionReplayOptions
     ): Promise<CloudSessionActionOutcome> => {
       if (!orgId || remoteSession.eventsEpoch === undefined) return "noop";
+      const sessionEnvironment =
+        resolveCloudSessionEnvironmentIdentity(remoteSession);
+      const sessionOwner = resolveCloudSessionOwnerIdentity(remoteSession);
+      const requestAuth = authRef.current;
+      if (!requestAuth) return "noop";
+      const requestAuthIdentityKey = org2CloudAuthIdentityKey(requestAuth);
       // Store read at call time: the render-captured map can be stale, and
       // both sidebar connectors plus Kanban share this registry. Only the
       // clicked row's own in-flight action blocks it.
@@ -261,6 +268,7 @@ export function useCloudSessionActions(
             localSessionId: pendingLocalId,
             entry: buildCloudPendingPlayEntry({
               remoteSession,
+              authIdentityKey: requestAuthIdentityKey,
               orgId,
               pendingEvents,
               etaMs: decision.etaMs,
@@ -362,10 +370,12 @@ export function useCloudSessionActions(
           reporter.report({
             localSessionId: importSessionId,
             progress: {
+              authIdentityKey: requestAuthIdentityKey,
               rowId: remoteSession.id,
               orgId,
-              sessionEnvironment:
-                resolveCloudSessionEnvironmentIdentity(remoteSession),
+              sourceSession: remoteSession,
+              sessionEnvironment,
+              sessionOwner,
               loadedEvents: maxLoadedEvents,
               totalEvents,
               baseEvents,
@@ -545,10 +555,12 @@ export function useCloudSessionActions(
             upsertDownloadProgress({
               localSessionId,
               progress: {
+                authIdentityKey: requestAuthIdentityKey,
                 rowId: remoteSession.id,
                 orgId,
-                sessionEnvironment:
-                  resolveCloudSessionEnvironmentIdentity(remoteSession),
+                sourceSession: remoteSession,
+                sessionEnvironment,
+                sessionOwner,
                 loadedEvents: heldLoaded,
                 totalEvents: heldTotal,
                 startedAtMs: lastProgress?.startedAtMs ?? Date.now(),
@@ -625,6 +637,12 @@ export function useCloudSessionActions(
       options?: CloudSessionForkOptions
     ): Promise<CloudSessionActionOutcome> => {
       if (!orgId || remoteSession.eventsEpoch === undefined) return "noop";
+      const sessionEnvironment =
+        resolveCloudSessionEnvironmentIdentity(remoteSession);
+      const sessionOwner = resolveCloudSessionOwnerIdentity(remoteSession);
+      const requestAuth = authRef.current;
+      if (!requestAuth) return "noop";
+      const requestAuthIdentityKey = org2CloudAuthIdentityKey(requestAuth);
       if (store.get(cloudSessionBusyRowsAtom).has(remoteSession.id)) {
         return "noop";
       }
@@ -667,6 +685,7 @@ export function useCloudSessionActions(
               localSessionId: pendingLocalId,
               entry: buildCloudPendingPlayEntry({
                 remoteSession,
+                authIdentityKey: requestAuthIdentityKey,
                 orgId,
                 pendingEvents,
                 etaMs: decision.etaMs,
@@ -755,10 +774,12 @@ export function useCloudSessionActions(
               reporter.report({
                 localSessionId: importSessionId,
                 progress: {
+                  authIdentityKey: requestAuthIdentityKey,
                   rowId: remoteSession.id,
                   orgId,
-                  sessionEnvironment:
-                    resolveCloudSessionEnvironmentIdentity(remoteSession),
+                  sourceSession: remoteSession,
+                  sessionEnvironment,
+                  sessionOwner,
                   loadedEvents: maxLoadedEvents,
                   totalEvents,
                   baseEvents,
@@ -831,10 +852,12 @@ export function useCloudSessionActions(
                 upsertDownloadProgress({
                   localSessionId: importSessionId,
                   progress: {
+                    authIdentityKey: requestAuthIdentityKey,
                     rowId: remoteSession.id,
                     orgId,
-                    sessionEnvironment:
-                      resolveCloudSessionEnvironmentIdentity(remoteSession),
+                    sourceSession: remoteSession,
+                    sessionEnvironment,
+                    sessionOwner,
                     loadedEvents: heldLoaded,
                     totalEvents: heldTotal,
                     startedAtMs: lastProgress?.startedAtMs ?? Date.now(),

@@ -11,10 +11,8 @@ import { useSetAtom } from "jotai";
 import React, { Suspense, useCallback } from "react";
 
 import GitHubDetailSkeleton from "@src/modules/shared/components/GitHubDetailSkeleton";
-import {
-  type ChatPanelTab,
-  closeAndDestroyChatPanelTabAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { closeAndDestroyChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { type ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 
 const WorkItemPanelView = React.lazy(() =>
   import("../panels/WorkItemPanelView").then((m) => ({
@@ -41,9 +39,6 @@ const WorkspaceExplorePanelView = React.lazy(
   () => import("../panels/WorkspaceExplorePanelView")
 );
 const RuntimePanelView = React.lazy(() => import("../panels/RuntimePanelView"));
-const TeamInboxView = React.lazy(
-  () => import("@src/modules/MainApp/TeamInbox")
-);
 const DiscussionChannelPanelView = React.lazy(
   () => import("@src/features/DiscussionChannels/ChannelPanelView")
 );
@@ -55,6 +50,11 @@ const GitHubIssuePanelView = React.lazy(() =>
 const GitHubPrPanelView = React.lazy(() =>
   import("../panels/GitHubPrPanelView").then((m) => ({
     default: m.GitHubPrPanelView,
+  }))
+);
+const RunGroupPanelView = React.lazy(() =>
+  import("../panels/RunGroupPanelView").then((m) => ({
+    default: m.RunGroupPanelView,
   }))
 );
 
@@ -97,7 +97,16 @@ export function GitHubIssueSurfaceRenderer({
 }: ChatPanelSurfaceRendererProps): React.ReactNode {
   if (!tab.githubIssue) return null;
   return (
-    <Suspense fallback={<GitHubDetailSkeleton kind="issue" showHeader />}>
+    <Suspense
+      fallback={
+        <GitHubDetailSkeleton
+          kind="issue"
+          showHeader
+          title={tab.githubIssue.issueTitle}
+          number={tab.githubIssue.issueNumber}
+        />
+      }
+    >
       <GitHubIssuePanelView detail={tab.githubIssue} />
     </Suspense>
   );
@@ -157,14 +166,6 @@ export function ExploreSurfaceRenderer(): React.ReactNode {
   );
 }
 
-export function TeamInboxSurfaceRenderer(): React.ReactNode {
-  return (
-    <Suspense fallback={null}>
-      <TeamInboxView />
-    </Suspense>
-  );
-}
-
 export function ChannelSurfaceRenderer({
   tab,
 }: ChatPanelSurfaceRendererProps): React.ReactNode {
@@ -179,6 +180,17 @@ export function ChannelSurfaceRenderer({
   return (
     <Suspense fallback={null}>
       <DiscussionChannelPanelView key={surfaceKey} channel={tab.channel} />
+    </Suspense>
+  );
+}
+
+export function RunGroupSurfaceRenderer({
+  tab,
+}: ChatPanelSurfaceRendererProps): React.ReactNode {
+  if (!tab.runGroupId) return null;
+  return (
+    <Suspense fallback={null}>
+      <RunGroupPanelView key={tab.runGroupId} runGroupId={tab.runGroupId} />
     </Suspense>
   );
 }

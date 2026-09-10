@@ -16,10 +16,6 @@ vi.mock("@src/features/Org2Cloud/useSessionReferenceDropTarget", () => ({
   useSessionReferenceDropTarget: () => ({ isDragOver: false }),
 }));
 
-vi.mock("@src/features/Org2Cloud/CloudSessionReferencePreview", () => ({
-  CloudSessionReferencePreview: () => null,
-}));
-
 vi.mock("@src/hooks/ui/layout/useElementDimensions", () => ({
   useElementDimensions: () => 0,
 }));
@@ -33,6 +29,7 @@ vi.mock("@src/modules/shared/components/MarkdownTextareaEditor", async () => {
           ref,
           "data-testid": props.dataTestId,
           "data-min-height": props.minHeight,
+          "data-min-rows": props.minRows,
           "data-max-height": props.maxHeight,
           "data-appearance": props.appearance,
           "data-editor-kind": "write-preview",
@@ -56,7 +53,7 @@ describe("PrConversationTab", () => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  it("keeps the PR controls and composer floating below the scrolling timeline", () => {
+  it("lays out the flow header, timeline, and floating composer", () => {
     const markup = renderToStaticMarkup(
       createElement(PrConversationTab, {
         detail: null,
@@ -73,10 +70,10 @@ describe("PrConversationTab", () => {
         loading: false,
         submittingComment: false,
         submittingReview: false,
-        levelActions: createElement(
+        flowHeader: createElement(
           "div",
-          { "data-testid": "pr-level-actions" },
-          "Enable auto-merge Reviewers Close"
+          { "data-testid": "pr-flow-header" },
+          "Match the issue composer #42"
         ),
         onAddComment: vi.fn().mockResolvedValue(undefined),
         onSubmitReview: vi.fn().mockResolvedValue(undefined),
@@ -95,8 +92,8 @@ describe("PrConversationTab", () => {
       '[data-testid="pr-floating-composer"]'
     );
     const editor = composer?.querySelector('[data-testid="pr-comment-editor"]');
-    const levelActions = composer?.querySelector(
-      '[data-testid="pr-level-actions"]'
+    const flowHeader = container.querySelector(
+      '[data-testid="pr-flow-header"]'
     );
     const input = composer?.querySelector(
       '[data-testid="pr-comment-drop-target"]'
@@ -120,18 +117,24 @@ describe("PrConversationTab", () => {
     expect(floatingComposer?.className).toContain("bottom-0");
     expect(floatingComposer?.className).toContain("pb-3");
     expect(composer?.parentElement?.className).toContain("px-4");
+    expect(composer?.parentElement?.className).toContain("max-w-[932px]");
     expect(scrollRegion?.firstElementChild?.getAttribute("style")).toContain(
       "padding-bottom:240px"
     );
-    expect(editor?.getAttribute("data-min-height")).toBe("100");
+
+    // Flow header sits above the timeline inside the scrolling region; the
+    // operations sidebar renders at the panel level, not inside this tab.
+    expect(scrollRegion?.contains(flowHeader)).toBe(true);
+    expect(container.querySelector('[data-testid="pr-sidebar"]')).toBeNull();
+
+    expect(editor?.getAttribute("data-min-height")).toBe("64");
+    expect(editor?.getAttribute("data-min-rows")).toBe("2");
     expect(editor?.getAttribute("data-max-height")).toBe("500");
     expect(editor?.getAttribute("data-appearance")).toBe("plain");
     expect(editor?.getAttribute("data-editor-kind")).toBe("write-preview");
-    expect(composer?.querySelector(".flex-shrink-0")).toBeNull();
-    expect(levelActions?.compareDocumentPosition(input as Node)).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING
-    );
-    expect(input?.contains(levelActions as Node)).toBe(false);
+    // Guards against the pinned composer bar (a border-t wrapper) coming
+    // back; its old flex-shrink-0 spelling no longer exists post-Tailwind-v4.
+    expect(composer?.querySelector(".border-t")).toBeNull();
     expect(input?.textContent).toContain("Submit review");
     expect(input?.textContent).toContain("Comment");
     expect(modeSwitch).not.toBeNull();
@@ -145,10 +148,9 @@ describe("PrConversationTab", () => {
     expect(commentButton?.style.height).toBe("28px");
     expect(actionRow?.className).not.toContain("border-t");
     expect(input?.className).toContain("px-1.5");
-    expect(input?.className).toContain("!pt-1.5");
+    expect(input?.className).toContain("pt-1.5!");
     expect(input?.className).toContain("pb-1.5");
     expect(actionRow?.className).toContain("px-1");
-    expect(levelActions?.textContent).toContain("Enable auto-merge");
     expect(composer?.textContent).toContain("Submit review");
     expect(composer?.textContent).toContain("Comment");
   });
@@ -195,15 +197,36 @@ describe("PrConversationTab", () => {
       const dialog =
         document.body.querySelector<HTMLElement>('[role="dialog"]');
       expect(dialog?.textContent).toContain("Submit review");
-      expect(dialog?.textContent).toContain("Review decision");
+      expect(dialog?.querySelector("legend")?.className).toBe("sr-only");
       expect(dialog?.textContent).toContain("Comment");
       expect(dialog?.textContent).toContain("Approve");
       expect(dialog?.textContent).toContain("Request changes");
+
+      const modalBody =
+        dialog?.querySelector<HTMLElement>(".liquid-modal-body");
+      const reviewModalBody = dialog?.querySelector<HTMLElement>(
+        '[data-testid="pr-review-modal-body"]'
+      );
+      const decisionRow = dialog?.querySelector<HTMLElement>(
+        '[data-testid="pr-review-decision-row"]'
+      );
+      const commentRow = dialog?.querySelector<HTMLElement>(
+        '[data-testid="pr-review-comment-row"]'
+      );
+      expect(modalBody?.className).toContain("p-0");
+      expect(reviewModalBody?.className).toContain("px-5");
+      expect(reviewModalBody?.className).toContain("py-4");
+      expect(decisionRow?.className).not.toContain("grid-cols-");
+      expect(commentRow?.className).toContain("block");
+      expect(commentRow?.textContent).toContain("Review comment");
+      expect(commentRow?.querySelector("span")?.className).toBe("sr-only");
 
       const submitButton = Array.from(
         dialog?.querySelectorAll<HTMLButtonElement>("button") ?? []
       ).find((button) => button.textContent?.trim() === "Submit review");
       expect(submitButton?.disabled).toBe(true);
+      expect(submitButton?.style.height).toBe("28px");
+      expect(submitButton?.parentElement?.className).toContain("border-t");
 
       await act(async () => {
         dialog
@@ -214,6 +237,7 @@ describe("PrConversationTab", () => {
       const reviewComment = dialog?.querySelector<HTMLTextAreaElement>(
         '[data-testid="pr-review-comment"]'
       );
+      expect(reviewComment?.style.resize).toBe("none");
       await act(async () => {
         const valueSetter = Object.getOwnPropertyDescriptor(
           HTMLTextAreaElement.prototype,

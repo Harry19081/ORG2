@@ -3,11 +3,13 @@
  * (Zod actions, DOM event handlers, services, etc.).
  *
  * These go through the same jotai atoms as the React-side openers, so the
- * unified spotlight state stays single-source-of-truth. Callers wanting an
+ * unified spotlight state stays single-source-of-truth. Callers wanting a
  * second-layer sub-flow should use the typed open helpers below — they open
  * the main Spotlight and prime the matching URL-like route state.
  */
 import {
+  type SpotlightCollabOrgContext,
+  type SpotlightGitHubIssuesImportContext,
   type SpotlightInitialEditorMode,
   type SpotlightInitialQuery,
   spotlightInitialQueryAtom,
@@ -28,7 +30,7 @@ export function createEditorSpotlightRequest(
   };
 }
 
-export function createWorkspaceSpotlightRequest(
+function createWorkingDirectorySpotlightRequest(
   mode: "switch" | "open" | "add" | "create"
 ): SpotlightInitialQuery {
   return {
@@ -37,11 +39,34 @@ export function createWorkspaceSpotlightRequest(
   };
 }
 
-export function createBranchSpotlightRequest(): SpotlightInitialQuery {
-  return { query: "", layer: { kind: "branch" } };
+export function createCollabOrgSpotlightRequest(
+  context: SpotlightCollabOrgContext = {}
+): SpotlightInitialQuery {
+  return {
+    query: "",
+    layer: { kind: "collabOrg", context },
+  };
 }
 
-export function createWorktreeSpotlightRequest(): SpotlightInitialQuery {
+export function createGitHubIssuesImportSpotlightRequest(
+  context: SpotlightGitHubIssuesImportContext = {}
+): SpotlightInitialQuery {
+  return {
+    query: "",
+    layer: { kind: "githubIssuesImport", context },
+  };
+}
+
+export function createBranchSpotlightRequest(
+  repoId?: string
+): SpotlightInitialQuery {
+  return {
+    query: "",
+    layer: { kind: "branch", ...(repoId ? { repoId } : {}) },
+  };
+}
+
+function createWorktreeSpotlightRequest(): SpotlightInitialQuery {
   return { query: "", layer: { kind: "worktree" } };
 }
 
@@ -49,21 +74,16 @@ export function createAgentSessionSearchSpotlightRequest(): SpotlightInitialQuer
   return { query: "", layer: { kind: "agentSessionSearch" } };
 }
 
-export function createAllSessionsSearchSpotlightRequest(): SpotlightInitialQuery {
+function createAllSessionsSearchSpotlightRequest(): SpotlightInitialQuery {
   return { query: "", layer: { kind: "allSessionsSearch" } };
 }
 
-export function createAgentControlSpotlightRequest(): SpotlightInitialQuery {
+function createAgentControlSpotlightRequest(): SpotlightInitialQuery {
   return { query: "", layer: { kind: "agentControl" } };
 }
 
-export function createSessionCreatorSpotlightRequest(): SpotlightInitialQuery {
+function createSessionCreatorSpotlightRequest(): SpotlightInitialQuery {
   return { query: "", layer: { kind: "sessionCreator" } };
-}
-
-export function openGlobalSpotlight(): void {
-  if (!isStoreInitialized()) return;
-  getInstrumentedStore().set(spotlightOpenAtom, true);
 }
 
 export function closeGlobalSpotlight(): void {
@@ -89,19 +109,53 @@ export function openEditorSpotlight(
   store.set(spotlightOpenAtom, true);
 }
 
-export function openWorkspaceSpotlight(
+export function openWorkingDirectorySpotlight(
   mode: "switch" | "open" | "add" | "create"
 ): void {
   if (!isStoreInitialized()) return;
   const store = getInstrumentedStore();
-  store.set(spotlightInitialQueryAtom, createWorkspaceSpotlightRequest(mode));
+  store.set(
+    spotlightInitialQueryAtom,
+    createWorkingDirectorySpotlightRequest(mode)
+  );
   store.set(spotlightOpenAtom, true);
 }
 
-export function openBranchSpotlight(): void {
+export function openCollabOrgSpotlight(
+  context: SpotlightCollabOrgContext = {}
+): void {
   if (!isStoreInitialized()) return;
   const store = getInstrumentedStore();
-  store.set(spotlightInitialQueryAtom, createBranchSpotlightRequest());
+  store.set(
+    spotlightInitialQueryAtom,
+    createCollabOrgSpotlightRequest(context)
+  );
+  store.set(spotlightOpenAtom, true);
+}
+
+export function openGitHubIssuesImportSpotlight(
+  context: SpotlightGitHubIssuesImportContext = {}
+): void {
+  if (!isStoreInitialized()) return;
+  const store = getInstrumentedStore();
+  store.set(
+    spotlightInitialQueryAtom,
+    createGitHubIssuesImportSpotlightRequest(context)
+  );
+  store.set(spotlightOpenAtom, true);
+}
+
+export function openBranchSpotlight(repoId?: string): void {
+  if (!isStoreInitialized()) return;
+  const store = getInstrumentedStore();
+  store.set(spotlightInitialQueryAtom, createBranchSpotlightRequest(repoId));
+  store.set(spotlightOpenAtom, true);
+}
+
+export function openWorktreeSpotlight(): void {
+  if (!isStoreInitialized()) return;
+  const store = getInstrumentedStore();
+  store.set(spotlightInitialQueryAtom, createWorktreeSpotlightRequest());
   store.set(spotlightOpenAtom, true);
 }
 

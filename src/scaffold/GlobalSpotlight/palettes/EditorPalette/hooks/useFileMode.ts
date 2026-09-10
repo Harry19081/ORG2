@@ -12,7 +12,7 @@ import { createLogger } from "@src/hooks/logger";
 import {
   type ContextMenuSearchRoot,
   buildContextMenuSearchRoots,
-} from "@src/hooks/workStation/panels/contextMenuSearchRoots";
+} from "@src/scaffold/ContextMenu/contextMenuSearchRoots";
 import type { Repo } from "@src/store/repo/types";
 import type { WorkspaceFolder } from "@src/types/workspace";
 import {
@@ -30,7 +30,7 @@ import {
 
 const log = createLogger("EditorPalette");
 
-export interface UseFileModeOptions {
+interface UseFileModeOptions {
   repoPath: string;
   searchTerm: string;
   enabled: boolean;
@@ -39,7 +39,7 @@ export interface UseFileModeOptions {
   onFileOpen?: (path: string) => void;
 }
 
-export interface UseFileModeReturn {
+interface UseFileModeReturn {
   items: SpotlightItem[];
   isLoading: boolean;
   error: string | null;
@@ -88,10 +88,7 @@ export function useFileMode({
         // Non-fatal — search will still work if prewarm fails.
       });
     }
-    // searchRootsKey is the stable joined-path proxy for searchRoots; adding
-    // searchRoots itself would re-fire whenever the array identity changes
-    // without the actual paths changing.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- searchRootsKey encodes every root path used by prewarmFileIndex and avoids repeated IPC for equivalent root arrays
   }, [enabled, searchRootsKey]);
 
   // Search files

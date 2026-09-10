@@ -10,7 +10,10 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useAtomValue } from "jotai";
 import React, { Suspense, lazy, useCallback, useMemo, useState } from "react";
 
-import type { AgentOrgMemberIntervention } from "@src/api/tauri/agent";
+import type {
+  AgentOrgMemberIntervention,
+  AgentOrgRunMemberView,
+} from "@src/api/tauri/agent";
 import { ChatProvider } from "@src/contexts/workspace/ChatContext";
 import { processChatItems } from "@src/engines/ChatPanel/ChatHistory/chatItemPipeline";
 import type { OptimizedChatItem } from "@src/engines/ChatPanel/ChatHistory/chatItemPipeline/types";
@@ -55,17 +58,56 @@ const NOOP = () => {};
 const NOOP_MESSAGE_ACTION = (_messageId: string) => {};
 const NOOP_SUBMIT = (_eventId: string, _answers: Record<string, string>) => {};
 const MOCK_INTERVENTION: AgentOrgMemberIntervention = {
+  interventionReceiptId: "playground-intervention",
   orgRunId: "playground-org-run",
   memberId: "frontend-dev",
   agentId: "builtin:sde",
   sessionId: "agent-playground-member",
-  status: "user_intervention",
-  reason: "playground",
+  status: "active",
+  sourceEventId: "playground-source-event",
+  queuedUserDirectedCount: 0,
   enteredAt: "2026-05-31T00:00:00Z",
   lastUserActivityAt: "2026-05-31T00:00:00Z",
-  resumeAfter: "2026-05-31T00:05:00Z",
   clearedAt: null,
 };
+const MOCK_DIRECT_MEMBER: AgentOrgRunMemberView = {
+  memberId: "frontend-dev",
+  name: "Frontend Dev",
+  role: "Frontend",
+  agentId: "builtin:sde",
+  isCoordinator: false,
+  writerCapable: true,
+  sessionRuntime: {
+    sessionId: "agent-playground-member",
+    status: "idle",
+    updatedAt: "2026-05-31T00:00:00Z",
+  },
+  unreadInboxCount: 0,
+  inboxActivityCount: 0,
+  activeTaskCount: 0,
+  pendingTaskCount: 0,
+  inProgressTaskCount: 0,
+  completedTaskCount: 0,
+  queuedUserDirectedCount: 0,
+  intervention: MOCK_INTERVENTION,
+  activity: {
+    kind: "user_intervention",
+    source: "direct_member",
+    interventionReceiptId: MOCK_INTERVENTION.interventionReceiptId,
+  },
+};
+
+function isInteractivePending(
+  event: SessionEvent,
+  canonicalName: string
+): boolean {
+  return (
+    stripMcpPrefix(event.functionName ?? "") === canonicalName &&
+    (event.displayStatus === "awaiting_user" ||
+      event.displayStatus === "running" ||
+      event.displayStatus === "pending")
+  );
+}
 
 // ============================================
 // Public component
@@ -121,20 +163,10 @@ export function PlaygroundChatPanel({
     return items;
   }, [events]);
 
-  const isInteractivePending = (
-    evt: (typeof events)[number],
-    canonicalName: string
-  ) =>
-    stripMcpPrefix(evt.functionName ?? "") === canonicalName &&
-    (evt.displayStatus === "awaiting_user" ||
-      evt.displayStatus === "running" ||
-      evt.displayStatus === "pending");
-
   const pendingAskUser = useMemo(
     () =>
       events.find((evt) => isInteractivePending(evt, "ask_user_questions")) ??
       null,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [events]
   );
 
@@ -142,7 +174,6 @@ export function PlaygroundChatPanel({
     () =>
       events.find((evt) => isInteractivePending(evt, "suggest_mode_switch")) ??
       null,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [events]
   );
   const showModeSwitchPreview =
@@ -157,7 +188,6 @@ export function PlaygroundChatPanel({
     () =>
       events.find((evt) => isInteractivePending(evt, "ask_user_permissions")) ??
       null,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [events]
   );
 
@@ -204,10 +234,13 @@ export function PlaygroundChatPanel({
   const interventionBottomContent = chatExtras?.showInterventionBanner ? (
     <AgentOrgInterventionPinBar
       intervention={MOCK_INTERVENTION}
-      memberName="Frontend Dev"
+      member={MOCK_DIRECT_MEMBER}
+      runStatus="running"
       error={null}
       returning={false}
-      onReturnToWork={async () => true}
+      stopping={false}
+      onReturnToWork={async () => null}
+      onStopUserDirectedWork={async () => false}
     />
   ) : null;
 
@@ -232,7 +265,7 @@ export function PlaygroundChatPanel({
       <div className="tool-event-preview-shell__content tool-event-preview-shell__content--chat">
         {/* Events area — wp__chat__history class activates the scoped SCSS rules from ChatHistory/index.scss */}
         <div
-          className="wp__chat__history flex-1 overflow-auto px-3 py-4"
+          className="wp__chat__history scrollbar-hide flex-1 overflow-auto px-3 py-4"
           style={chatStyleVars}
         >
           {hasHistoryContent && !inputOnly ? (
@@ -259,7 +292,7 @@ export function PlaygroundChatPanel({
 
         {/* All stacked sections + InputArea (mirrors real ChatView layout) */}
         <ChatProvider>
-          <div className="flex w-full flex-shrink-0 flex-col items-center px-2 py-2">
+          <div className="flex w-full shrink-0 flex-col items-center px-2 py-2">
             <div className="flex w-full max-w-[800px] flex-col gap-1.5">
               {/* Primary cards — collapse to pill when chevron clicked */}
               {pendingAskUser && (
@@ -282,6 +315,7 @@ export function PlaygroundChatPanel({
                 <QueuedMessages
                   messages={demoQueue}
                   onCancel={NOOP_MESSAGE_ACTION}
+                  onClear={() => setDemoQueue([])}
                   onSendNow={NOOP_MESSAGE_ACTION}
                   onReorder={handleDemoReorder}
                   onToggle={toggleQueue}

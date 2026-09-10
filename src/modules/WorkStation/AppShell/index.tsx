@@ -2,16 +2,18 @@ import { useAtomValue } from "jotai";
 import React from "react";
 
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
-import { useWorkStationPanels } from "@src/hooks/workStation";
+import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
+import { getPrimaryPaneBackgroundStyle } from "@src/modules/shared/layouts/viewContainerTokens";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
 import { workstationActiveSessionIdAtom } from "@src/store/session";
+import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
 import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
 import {
   workStationFollowAgentHighlightEnabledAtom,
-  workStationPrimarySidebarCollapsedAtom,
   workStationStatusBarHiddenAtom,
   workStationTitleBarHiddenAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/chromeAtoms";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 
 import { StatusBarRenderer } from "../shared/StatusBar/StatusBarRenderer";
@@ -26,13 +28,14 @@ import { useAppShellActions } from "./hooks/useAppShellActions";
 import { useAppShellDerivedState } from "./hooks/useAppShellDerivedState";
 import { useAppShellDock } from "./hooks/useAppShellDock";
 import { useAppShellRepo } from "./hooks/useAppShellRepo";
-import { useAppShellRouteSync } from "./hooks/useAppShellRouteSync";
 import { useAppShellSimulatorPanelSync } from "./hooks/useAppShellSimulatorPanelSync";
 import { useAppShellStationMode } from "./hooks/useAppShellStationMode";
 import { useAppShellStatusBar } from "./hooks/useAppShellStatusBar";
 import { useLaunchpadTab } from "./hooks/useLaunchpadTab";
 import { useTerminalTabTeardown } from "./hooks/useTerminalTabTeardown";
+import { useWorkstationRouteEntry } from "./hooks/useWorkstationRouteEntry";
 import { shouldShowWorkStationStatusBar } from "./statusBarVisibility";
+import { shouldEnableWorkspacePortScan } from "./workspacePortScanVisibility";
 
 interface AppShellProps {
   /** Whether the routed WorkStation surface is currently visible */
@@ -57,17 +60,15 @@ const AppShell = React.memo(
       workstationActiveSessionIdAtom
     );
     const activeWorkStationTab = useAtomValue(activeWorkStationTabAtom);
+    const backgroundConfig = useAtomValue(resolvedBackgroundConfigAtom);
     const { repoPath, repoName, pathExists, lastSeenPath } = useAppShellRepo();
     const { visitedModes } = useAppShellDock();
     // Called for its side effects on the workstation base path (station mode /
     // chat visibility / chat width); the content host follows the active tab.
-    useAppShellRouteSync();
+    useWorkstationRouteEntry();
 
-    const {
-      isAgentStation,
-      hasVisitedAgentStation,
-      illuminateAgentStationChrome,
-    } = useAppShellStationMode({ followAgentHighlightEnabled });
+    const { isAgentStation, illuminateAgentStationChrome } =
+      useAppShellStationMode({ followAgentHighlightEnabled });
 
     const agentStationCaptionVisible =
       isAgentStation &&
@@ -102,41 +103,47 @@ const AppShell = React.memo(
     const hasVisitedBrowser = visitedModes.has("browser");
     const hasVisitedProject = visitedModes.has("project");
 
-    const showCodeEditorBottomPanelToggle =
-      codeContentVisible &&
-      !isAgentStation &&
-      activeWorkStationTab?.type !== "source-control" &&
-      activeWorkStationTab?.type !== "chat-session";
     const showSettingsButton =
       (codeContentVisible || projectContentVisible) && !isAgentStation;
 
     useAppShellStatusBar({
       primaryPanelCollapsed,
       showSettingsButton,
-      showCodeEditorBottomPanelToggle,
       handleOpenSettings,
       workStationPanels,
     });
 
-    // The WorkStation host stays mounted behind the Launchpad / maximized chat
-    // surface. Port discovery is useful only while an actual code-host tab is
-    // visible; keeping it alive behind those overlays causes an idle 60s scan.
-    const portsEnabled =
-      isCodeMode &&
-      isActive &&
-      !chatPanelFocused &&
-      activeWorkStationTab != null &&
-      activeWorkStationTab.type !== "start" &&
-      !isAgentStation;
-    useWorkspacePortAdvertisedUrls(portsEnabled);
+    // The Browser and Terminal status bars expose running servers. Keep the
+    // shared scanner off behind the Launchpad / chat takeover so its 60s
+    // safety scan is never active on an invisible surface.
+    const portsEnabled = shouldEnableWorkspacePortScan({
+      isCodeMode,
+      isBrowserMode,
+      isActive,
+      chatPanelFocused,
+      hasActiveTab: activeWorkStationTab != null,
+      isLaunchpad: activeWorkStationTab?.type === "start",
+      isAgentStation,
+    });
+    // PTY-output URL ingestion stays owned by the Code/Terminal host. Browser
+    // consumes the resulting shared scan state but does not add a second PTY
+    // subscription lifecycle.
+    useWorkspacePortAdvertisedUrls(isCodeMode && portsEnabled);
 
     const showStatusBar = shouldShowWorkStationStatusBar({
       statusBarHidden,
       isAgentStation,
       activeTabType: activeWorkStationTab?.type,
     });
+    const primaryPaneSurfaceStyle = React.useMemo(
+      () => getPrimaryPaneBackgroundStyle(backgroundConfig.pageOpacity),
+      [backgroundConfig.pageOpacity]
+    );
     return (
-      <div className="relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-workstation-bg">
+      <div
+        className="relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-workstation-bg"
+        style={isAgentStation ? undefined : primaryPaneSurfaceStyle}
+      >
         {isAgentStation && <AgentStationTopHeader />}
         <AgentStationChromeFrame
           enabled={followAgentHighlightEnabled && isAgentStation}
@@ -164,7 +171,6 @@ const AppShell = React.memo(
                 isActive={isActive}
                 chatPanelFocused={chatPanelFocused}
                 isAgentStation={isAgentStation}
-                hasVisitedAgentStation={hasVisitedAgentStation}
                 hasVisitedCode={hasVisitedCode}
                 hasVisitedBrowser={hasVisitedBrowser}
                 hasVisitedProject={hasVisitedProject}

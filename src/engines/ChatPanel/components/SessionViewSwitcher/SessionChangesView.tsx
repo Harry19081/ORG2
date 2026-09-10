@@ -11,12 +11,9 @@ import { useTranslation } from "react-i18next";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { VirtualizedListBase } from "@src/components/TreeRow";
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 
-import {
-  SESSION_DERIVED_SUMMARY_HEIGHT_PX,
-  SessionDerivedViewShell,
-} from "./SessionDerivedViewShell";
+import { SessionDerivedViewShell } from "./SessionDerivedViewShell";
 import type { ChangedFileRow } from "./sessionViewProjections";
 import { projectSessionChanges } from "./sessionViewProjections";
 import type { SessionDerivedViewProps } from "./types";
@@ -28,9 +25,9 @@ const ChangedFileRowView: React.FC<{ row: ChangedFileRow }> = memo(
     const { t } = useTranslation("sessions");
     return (
       <div
-        // Same 900px cap the transcript rows use, so switching views does not
+        // Same 800px cap the transcript rows use, so switching views does not
         // change how wide the session reads.
-        className={`flex h-[34px] items-center gap-2 px-3 text-xs ${DETAIL_PANEL_TOKENS.contentWidth}`}
+        className={`flex h-[34px] items-center gap-2 px-3 text-xs ${CHAT_PANEL_WIDTH_TOKENS.contentWidth}`}
         data-testid="session-changes-row"
         data-path={row.path}
       >
@@ -44,7 +41,7 @@ const ChangedFileRowView: React.FC<{ row: ChangedFileRow }> = memo(
           {row.path}
         </span>
         {row.turnCount > 1 && (
-          <span className="shrink-0 tabular-nums text-text-3">
+          <span className="shrink-0 text-text-3 tabular-nums">
             {t("chat.sessionViews.turnCount", {
               count: row.turnCount,
               defaultValue: "{{count}} turns",
@@ -119,9 +116,6 @@ const SessionChangesView: React.FC<SessionDerivedViewProps> = memo(
         <VirtualizedListBase<ChangedFileRow>
           items={changes.files}
           itemHeight={ROW_HEIGHT}
-          paddingTop={
-            topInset ? topInset + SESSION_DERIVED_SUMMARY_HEIGHT_PX : undefined
-          }
           computeItemKey={computeChangedFileKey}
           getItemPath={getChangedFilePath}
           renderItem={renderChangedFileRow}

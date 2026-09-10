@@ -8,15 +8,20 @@
  * When onTestModel is provided, each model is tested via a lightweight
  * completion request before being added to the list.
  */
-import { Plus, RefreshCw, X } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
+import {
+  Add01Icon,
+  Cancel01Icon,
+  HugeiconsIcon,
+  Refresh04Icon,
+} from "@src/icons";
 
-export interface DeploymentModelInputProps {
+interface DeploymentModelInputProps {
   models: string[];
   onModelsChange: (models: string[]) => void;
   onTestModel?: (
@@ -96,9 +101,9 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
       {!noticeDismissed && (
-        <InlineAlert type="info" onClose={() => setNoticeDismissed(true)}>
+        <PageNotice type="info" onClose={() => setNoticeDismissed(true)}>
           {t("keyVault.deploymentModels.description")}
-        </InlineAlert>
+        </PageNotice>
       )}
 
       <div className="rounded-lg border border-border-2 bg-bg-1">
@@ -115,9 +120,9 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
                 <button
                   type="button"
                   onClick={() => handleRemove(index)}
-                  className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-danger-6"
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-text-3 transition-colors hover:bg-fill-2 hover:text-danger-6"
                 >
-                  <X size={12} />
+                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={12} />
                 </button>
               </div>
             ))}
@@ -139,7 +144,7 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
             onClick={handleAdd}
             disabled={!draft.trim() || testing}
             loading={testing}
-            icon={<Plus size={14} />}
+            icon={<HugeiconsIcon icon={Add01Icon} data-icon="plus" size={14} />}
           >
             {t("keyVault.deploymentModels.addModel")}
           </Button>
@@ -147,9 +152,9 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
       </div>
 
       {testError && (
-        <InlineAlert type="danger" onClose={() => setTestError(null)}>
+        <PageNotice type="danger" onClose={() => setTestError(null)}>
           {testError}
-        </InlineAlert>
+        </PageNotice>
       )}
 
       {onRevalidate && models.length > 0 && (
@@ -160,7 +165,13 @@ const DeploymentModelInput: React.FC<DeploymentModelInputProps> = ({
           onClick={onRevalidate}
           loading={revalidating}
           disabled={revalidating}
-          icon={<RefreshCw size={14} />}
+          icon={
+            <HugeiconsIcon
+              icon={Refresh04Icon}
+              data-icon="refresh-cw"
+              size={14}
+            />
+          }
         >
           {t("keyVault.revalidate")}
         </Button>

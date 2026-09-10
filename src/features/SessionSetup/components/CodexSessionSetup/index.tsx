@@ -1,22 +1,23 @@
-import {
-  AlertCircle,
-  CheckCircle,
-  ChevronRight,
-  Loader2,
-  LogIn,
-  RefreshCw,
-  X,
-} from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
+import SessionSetupStepIndicator from "@src/features/SessionSetup/components/SessionSetupStepIndicator";
+import { useCodexOAuthCapture } from "@src/features/SessionSetup/hooks/useCodexOAuthCapture";
+import { useOAuthBrowserAutoStart } from "@src/features/SessionSetup/hooks/useOAuthBrowserAutoStart";
+import { useWebviewPositionSync } from "@src/features/SessionSetup/hooks/useWebviewPositionSync";
 import {
-  useCodexOAuthCapture,
-  useWebviewPositionSync,
-} from "@src/hooks/workStation/sessionCapture";
+  AlertCircleIcon,
+  ArrowRight01Icon,
+  Cancel01Icon,
+  CheckmarkCircle01Icon,
+  HugeiconsIcon,
+  Loading03Icon,
+  Login01Icon,
+  Refresh04Icon,
+} from "@src/icons";
 import {
   SectionContainer,
   SectionRow,
@@ -29,7 +30,7 @@ export interface CodexSessionValues {
   expiresIn?: number;
 }
 
-export interface CodexSessionSetupProps {
+interface CodexSessionSetupProps {
   onSessionCaptured?: (values: CodexSessionValues) => void;
   onBrowserStateChange?: (isOpen: boolean) => void;
   debug?: boolean;
@@ -93,15 +94,7 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
     }
   }, [isSignedIn, isWebviewOpen]);
 
-  useEffect(() => {
-    if (!showBrowser || isWebviewOpen || isSigningIn) return;
-
-    const timer = setTimeout(() => {
-      void startLogin();
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [isSigningIn, isWebviewOpen, showBrowser, startLogin]);
+  useOAuthBrowserAutoStart(showBrowser, startLogin);
 
   useWebviewPositionSync(containerRef, isWebviewOpen, updatePosition);
 
@@ -166,7 +159,7 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
         >
           <div className="flex h-10 items-center border-b border-border-2 bg-fill-2 px-3">
             <div
-              className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-text-1"
+              className="flex-1 overflow-hidden text-[12px] text-ellipsis whitespace-nowrap text-text-1"
               data-testid="codex-oauth-current-url"
             >
               {currentUrl || authUrl || t("keyVault.codexReadyToSignIn")}
@@ -174,14 +167,22 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
             <Button
               variant="tertiary"
               size="mini"
-              icon={<RefreshCw size={12} />}
+              icon={
+                <HugeiconsIcon
+                  icon={Refresh04Icon}
+                  data-icon="refresh-cw"
+                  size={12}
+                />
+              }
               iconOnly
               onClick={handleRetry}
             />
             <Button
               variant="tertiary"
               size="mini"
-              icon={<X size={14} />}
+              icon={
+                <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
+              }
               iconOnly
               onClick={handleCloseBrowser}
               data-testid="codex-oauth-browser-close"
@@ -190,14 +191,19 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
 
           <div className="flex h-9 items-center justify-between gap-2 border-b border-border-2 bg-fill-2 px-4">
             <div className="flex items-center gap-2">
-              <StepIndicator
+              <SessionSetupStepIndicator
                 step={1}
                 currentStep={currentStep}
                 label={t("keyVault.loginStep")}
                 completed={hasToken}
               />
-              <ChevronRight size={14} className="text-text-3" />
-              <StepIndicator
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                data-icon="chevron-right"
+                size={14}
+                className="text-text-3"
+              />
+              <SessionSetupStepIndicator
                 step={2}
                 currentStep={currentStep}
                 label={t("keyVault.signedIn")}
@@ -218,7 +224,9 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
           >
             {(isSigningIn || isWebviewLoading) && (
               <div className="absolute inset-0 flex items-center justify-center bg-bg-1">
-                <Loader2
+                <HugeiconsIcon
+                  icon={Loading03Icon}
+                  data-icon="loader-2"
                   size={SPINNER_TOKENS.default}
                   className="animate-spin text-primary-6"
                 />
@@ -229,7 +237,12 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
             )}
             {displayError && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-bg-1 p-6 text-center">
-                <AlertCircle size={32} className="mb-3 text-danger-6" />
+                <HugeiconsIcon
+                  icon={AlertCircleIcon}
+                  data-icon="alert-circle"
+                  size={32}
+                  className="mb-3 text-danger-6"
+                />
                 <div className="mb-2 text-[14px] text-text-2">
                   {t("keyVault.failedToLoadBrowser")}
                 </div>
@@ -244,9 +257,19 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
             {!isWebviewOpen && !isSigningIn && !displayError && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-bg-1 p-6 text-center">
                 {hasToken ? (
-                  <CheckCircle size={32} className="mb-3 text-success-6" />
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle01Icon}
+                    data-icon="check-circle"
+                    size={32}
+                    className="mb-3 text-success-6"
+                  />
                 ) : (
-                  <LogIn size={32} className="mb-3 text-text-3" />
+                  <HugeiconsIcon
+                    icon={Login01Icon}
+                    data-icon="log-in"
+                    size={32}
+                    className="mb-3 text-text-3"
+                  />
                 )}
                 <div className="mb-2 text-[14px] font-medium text-text-1">
                   {hasToken
@@ -263,17 +286,17 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
       )}
 
       {hasToken && !showBrowser && (
-        <InlineAlert type="success">{t("keyVault.codexSignedIn")}</InlineAlert>
+        <PageNotice type="success">{t("keyVault.codexSignedIn")}</PageNotice>
       )}
 
       {displayError && !showBrowser && (
-        <InlineAlert
+        <PageNotice
           type="danger"
           title={displayError}
           onClose={error ? reset : onClearTokenError}
         >
           {t("keyVault.codexSignInErrorHint")}
-        </InlineAlert>
+        </PageNotice>
       )}
 
       {debug && (
@@ -292,48 +315,6 @@ const CodexSessionSetup: React.FC<CodexSessionSetupProps> = ({
           <div>Current URL: {currentUrl || "null"}</div>
         </div>
       )}
-    </div>
-  );
-};
-
-interface StepIndicatorProps {
-  step: number;
-  currentStep: number;
-  label: string;
-  completed: boolean;
-}
-
-const StepIndicator: React.FC<StepIndicatorProps> = ({
-  step,
-  currentStep,
-  label,
-  completed,
-}) => {
-  const isActive = step === currentStep;
-  const isPast = step < currentStep || completed;
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <div
-        className={[
-          "flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold",
-          isPast
-            ? "bg-success-6 text-text-white"
-            : isActive
-              ? "bg-primary-6 text-text-white"
-              : "border border-border-2 bg-bg-2 text-text-3",
-        ].join(" ")}
-      >
-        {isPast ? <span className="text-[10px]">✓</span> : step}
-      </div>
-      <span
-        className={[
-          "text-[12px]",
-          isActive ? "font-medium text-text-1" : "font-normal text-text-3",
-        ].join(" ")}
-      >
-        {label}
-      </span>
     </div>
   );
 };

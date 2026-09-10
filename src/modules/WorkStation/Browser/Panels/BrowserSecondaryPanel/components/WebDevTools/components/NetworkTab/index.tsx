@@ -3,18 +3,18 @@
  *
  * Displays network request entries with filtering capabilities.
  */
-import { BrushCleaning } from "lucide-react";
 import React, { memo, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Input from "@src/components/Input";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
-import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
-} from "@src/modules/WorkStation/shared/tokens";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+} from "@src/config/workstation/tokens";
+import { BrushCleaningIcon, HugeiconsIcon } from "@src/icons";
 
 import type {
   NetworkEntry,
@@ -26,7 +26,7 @@ import type {
 // Types
 // ============================================
 
-export interface NetworkTabProps {
+interface NetworkTabProps {
   entries: NetworkEntry[];
   onClear: () => void;
 }
@@ -157,20 +157,24 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
           />
 
           {/* Clear button */}
-          <WorkstationToolbarTooltip label={t("tooltips.clearNetworkLogs")}>
+          <ToolbarTooltip label={t("tooltips.clearNetworkLogs")}>
             <button
               type="button"
               onClick={onClear}
               className={HEADER_BUTTON.actionTreeRow}
               aria-label={t("tooltips.clearNetworkLogs")}
             >
-              <BrushCleaning size={HEADER_ICON_SIZE.sm} />
+              <HugeiconsIcon
+                icon={BrushCleaningIcon}
+                data-icon="brush-cleaning"
+                size={HEADER_ICON_SIZE.sm}
+              />
             </button>
-          </WorkstationToolbarTooltip>
+          </ToolbarTooltip>
         </div>
 
         {/* Entries */}
-        <div className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
           {filteredEntries.length === 0 ? (
             <Placeholder
               variant="empty"
@@ -182,7 +186,7 @@ export const NetworkTab: React.FC<NetworkTabProps> = memo(
             filteredEntries.map((entry) => (
               <div
                 key={entry.id}
-                className="flex min-w-0 max-w-full cursor-default items-center gap-2 border-b border-border-1 px-3 py-1 text-[11px] hover:bg-fill-1"
+                className="flex max-w-full min-w-0 cursor-default items-center gap-2 border-b border-border-1 px-3 py-1 text-[11px] hover:bg-fill-1"
               >
                 <span className="w-10 shrink-0 font-medium text-text-2">
                   {entry.method}

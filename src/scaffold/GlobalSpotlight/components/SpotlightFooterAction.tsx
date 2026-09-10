@@ -3,10 +3,11 @@
  *
  * Small clickable pill rendered alongside the keyboard-shortcuts footer.
  */
-import { ArrowUpRight } from "lucide-react";
 import React from "react";
 
-export interface SpotlightFooterActionProps {
+import { ArrowUpRight01Icon, HugeiconsIcon } from "@src/icons";
+
+interface SpotlightFooterActionProps {
   label: string;
   onClick: () => void;
 }
@@ -16,14 +17,19 @@ export const SpotlightFooterAction: React.FC<SpotlightFooterActionProps> = ({
   onClick,
 }) => {
   return (
-    <div className="shrink-0 overflow-hidden rounded-full border border-border-2 bg-bg-2 shadow-lg">
+    <div className="h-9 shrink-0 overflow-hidden rounded-full border border-border-2 bg-bg-2 shadow-lg">
       <button
         type="button"
         onClick={onClick}
-        className="flex items-center gap-1.5 px-3 py-2 text-[11px] text-text-2 transition-colors hover:bg-fill-2 hover:text-text-1"
+        className="flex h-full items-center gap-1.5 px-3 text-[11px] text-text-2 transition-colors hover:bg-fill-2 hover:text-text-1"
       >
         <span>{label}</span>
-        <ArrowUpRight size={10} strokeWidth={2.5} />
+        <HugeiconsIcon
+          icon={ArrowUpRight01Icon}
+          data-icon="arrow-up-right"
+          size={10}
+          strokeWidth={2.5}
+        />
       </button>
     </div>
   );

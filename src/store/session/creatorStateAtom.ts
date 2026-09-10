@@ -13,7 +13,10 @@ import type { AgentRole } from "@src/api/http/project/types/agentWorkflow";
 import type { CliAgentType } from "@src/api/tauri/rpc/schemas/validation";
 import type { DispatchCategory } from "@src/api/tauri/session";
 import { createLogger } from "@src/hooks/logger";
-import { BUILTIN_SDE_DEF_ID } from "@src/util/session/sessionDispatch";
+import {
+  BUILTIN_SDE_DEF_ID,
+  SDE_AGENT_ICON_ID,
+} from "@src/util/session/sessionDispatch";
 
 const log = createLogger("SessionCreatorState");
 
@@ -57,7 +60,7 @@ export type SessionSourceType =
 export type SystemPathId = (typeof SYSTEM_PATH_ID)[keyof typeof SYSTEM_PATH_ID];
 
 export const DEFAULT_SESSION_ORG_ID = "personal-org";
-export const DEFAULT_SESSION_ORG_NAME = "Personal Org";
+export const DEFAULT_SESSION_ORG_NAME = "My workspace";
 
 export interface SessionLaunchOrgContext {
   orgId: string;
@@ -68,13 +71,6 @@ export interface SessionLaunchOrgContext {
   workItemId?: string;
   agentRole?: AgentRole | string;
   productMode?: string;
-}
-
-export function createDefaultSessionLaunchOrgContext(): SessionLaunchOrgContext {
-  return {
-    orgId: DEFAULT_SESSION_ORG_ID,
-    orgName: DEFAULT_SESSION_ORG_NAME,
-  };
 }
 
 /** Unified source selection for session creation */
@@ -132,7 +128,7 @@ export interface SessionCreatorState {
 
 const DEFAULT_AGENT_ORG_ID = "default:sde-feature-team";
 const DEFAULT_AGENT_NAME = "SDE Agent";
-const DEFAULT_AGENT_ICON_ID = "code";
+const DEFAULT_AGENT_ICON_ID = SDE_AGENT_ICON_ID;
 
 const DEFAULT_STATE: SessionCreatorState = {
   dispatchCategory: "rust_agent",

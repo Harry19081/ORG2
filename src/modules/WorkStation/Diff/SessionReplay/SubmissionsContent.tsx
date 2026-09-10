@@ -1,60 +1,23 @@
-import { GitBranch, SquareArrowOutUpRight } from "lucide-react";
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { GitCommitInfo } from "@src/api/http/git/types";
+import { Placeholder } from "@src/components/Placeholder";
 import PrStatusBadge from "@src/components/PrStatusBadge";
-import type { ExtractedGitArtifactData } from "@src/engines/SessionCore/core/types";
+import { HEADER_BUTTON, TYPOGRAPHY } from "@src/config/workstation/tokens";
+import {
+  HugeiconsIcon,
+  SquareArrowUpRight02Icon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 import GitCommitRow from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/GitHistoryContent/GitCommitRow";
 import { truncateBranchLabel } from "@src/modules/WorkStation/CodeEditor/Panels/EditorPrimarySidebar/content/PullRequestContent/prCardHelpers";
-import {
-  HEADER_BUTTON,
-  TYPOGRAPHY,
-} from "@src/modules/WorkStation/shared/tokens";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { PR_STATUS_UNKNOWN } from "@src/shared/pr/prStatus";
 
-export type SubmissionArtifactOrigin = "created" | "mentioned";
-
-export type SubmissionArtifact = ExtractedGitArtifactData & {
-  repoId?: string;
-  repoPath?: string;
-  origin?: SubmissionArtifactOrigin;
-  /** Event ID where this artifact was extracted from (for replay navigation). */
-  eventId?: string;
-};
-
-export type SubmissionCommit = Pick<
-  GitCommitInfo,
-  "sha" | "short_sha" | "summary"
-> & {
-  author?: GitCommitInfo["author"] | null;
-  repoId?: string;
-  repoPath?: string;
-  origin?: SubmissionArtifactOrigin;
-  /** Event ID where this commit was first mentioned (extracted from text/shell, not orgtrack-linked). */
-  mentionedEventId?: string;
-};
-
-export interface PullRequestSubmission {
-  key: string;
-  url?: string;
-  repoFullName?: string;
-  prNumber?: number;
-  prTitle?: string;
-  sourceBranch?: string;
-  targetBranch?: string;
-  origin?: SubmissionArtifactOrigin;
-  /** Normalized PR status (`open` / `merged` / `closed` / `draft`).
-   * Injected by the parent after a batch GitHub fetch; defaults to `open` for
-   * rows whose status hasn't been resolved (in flight / no creds / missing
-   * repoFullName-or-prNumber). */
-  statusKey?: string;
-}
-
-export interface SubmissionsData {
-  commits: SubmissionCommit[];
-  pullRequests: PullRequestSubmission[];
-}
+import type {
+  PullRequestSubmission,
+  SubmissionArtifactOrigin,
+  SubmissionCommit,
+} from "./submissionsData";
 
 interface SubmissionCommitsContentProps {
   commits: SubmissionCommit[];
@@ -66,79 +29,6 @@ interface SubmissionCommitsContentProps {
 interface SubmissionPullRequestsContentProps {
   pullRequests: PullRequestSubmission[];
   emptyLabel: string;
-}
-
-function extractCommitSha(artifact: SubmissionArtifact): string {
-  if (artifact.sha) return artifact.sha.trim();
-  const match = artifact.url?.match(
-    /github\.com\/[^/]+\/[^/]+\/commit\/([a-f0-9]{7,40})/i
-  );
-  return match?.[1] ?? "";
-}
-
-function commitFromArtifact(
-  artifact: SubmissionArtifact
-): SubmissionCommit | null {
-  const sha = extractCommitSha(artifact);
-  const shortSha = artifact.shortSha ?? sha.slice(0, 7);
-  if (!sha && !shortSha) return null;
-  return {
-    sha: sha || shortSha,
-    short_sha: shortSha || sha.slice(0, 7),
-    summary: artifact.subject ?? shortSha ?? sha,
-    author: null,
-    repoId: artifact.repoId,
-    repoPath: artifact.repoPath,
-    origin: artifact.origin,
-    mentionedEventId: artifact.eventId,
-  };
-}
-
-function getSubmissionDedupeKey(artifact: SubmissionArtifact): string | null {
-  if (artifact.url) return `${artifact.kind}:url:${artifact.url}`;
-  if (artifact.kind === "commit" && artifact.sha)
-    return `commit:sha:${artifact.sha}`;
-  if (
-    artifact.kind === "pullRequest" &&
-    artifact.repoFullName &&
-    artifact.prNumber
-  ) {
-    return `pullRequest:${artifact.repoFullName}#${artifact.prNumber}`;
-  }
-  return null;
-}
-
-export function deriveSubmissionsData(
-  artifacts: readonly SubmissionArtifact[]
-): SubmissionsData {
-  const seenKeys = new Set<string>();
-  const commits: SubmissionCommit[] = [];
-  const pullRequests: PullRequestSubmission[] = [];
-
-  for (const artifact of artifacts) {
-    const key = getSubmissionDedupeKey(artifact);
-    if (!key || seenKeys.has(key)) continue;
-    seenKeys.add(key);
-
-    if (artifact.kind === "commit") {
-      const commit = commitFromArtifact(artifact);
-      if (commit) commits.push(commit);
-      continue;
-    }
-
-    pullRequests.push({
-      key,
-      url: artifact.url,
-      repoFullName: artifact.repoFullName,
-      prNumber: artifact.prNumber,
-      prTitle: artifact.prTitle,
-      sourceBranch: artifact.sourceBranch,
-      targetBranch: artifact.targetBranch,
-      origin: artifact.origin,
-    });
-  }
-
-  return { commits, pullRequests };
 }
 
 function SubmissionArtifactLabel({
@@ -161,7 +51,7 @@ function SubmissionArtifactLabel({
   );
 
   return (
-    <span className="shrink-0 rounded-full border border-border-2 bg-fill-1 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-3">
+    <span className="shrink-0 rounded-full border border-border-2 bg-fill-1 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-text-3 uppercase">
       {label}
     </span>
   );
@@ -178,7 +68,7 @@ const PullRequestSubmissionRow: React.FC<{
       ? `${pullRequest.sourceBranch} → ${pullRequest.targetBranch}`
       : pullRequest.sourceBranch
     : null;
-  const statusKey = pullRequest.statusKey ?? "open";
+  const statusKey = pullRequest.statusKey ?? PR_STATUS_UNKNOWN;
 
   return (
     <div className="border-b border-fill-2 px-3 py-2">
@@ -190,7 +80,7 @@ const PullRequestSubmissionRow: React.FC<{
         />
         {numberLabel && (
           <span
-            className={`${TYPOGRAPHY.secondary} font-medium tabular-nums text-text-3`}
+            className={`${TYPOGRAPHY.secondary} font-medium text-text-3 tabular-nums`}
           >
             {numberLabel}
           </span>
@@ -204,19 +94,28 @@ const PullRequestSubmissionRow: React.FC<{
             aria-label={t("actions.openOnGitHub", "Open on GitHub")}
             title={t("actions.openOnGitHub", "Open on GitHub")}
           >
-            <SquareArrowOutUpRight size={14} />
+            <HugeiconsIcon
+              icon={SquareArrowUpRight02Icon}
+              data-icon="square-arrow-out-up-right"
+              size={14}
+            />
           </a>
         )}
       </div>
       <div
-        className="mt-1 line-clamp-2 text-[12px] font-medium leading-snug text-text-1"
+        className="mt-1 line-clamp-2 text-[12px] leading-snug font-medium text-text-1"
         title={title}
       >
         {title}
       </div>
       {(branchLabel || pullRequest.repoFullName) && (
         <div className="mt-1 flex min-w-0 items-center gap-1 text-[11px] text-text-3">
-          <GitBranch size={12} className="shrink-0" />
+          <HugeiconsIcon
+            icon={WorkflowCircle05Icon}
+            data-icon="git-branch"
+            size={12}
+            className="shrink-0"
+          />
           <span className="truncate">
             {branchLabel
               ? truncateBranchLabel(branchLabel)
@@ -253,7 +152,7 @@ export const SubmissionCommitsContent: React.FC<SubmissionCommitsContentProps> =
           rendered.push(
             <div
               key={`origin-${commit.sha}`}
-              className="flex items-center px-3 pb-1 pt-2"
+              className="flex items-center px-3 pt-2 pb-1"
             >
               <SubmissionArtifactLabel kind="commit" origin={originKey} />
             </div>
@@ -287,7 +186,7 @@ export const SubmissionCommitsContent: React.FC<SubmissionCommitsContentProps> =
       );
     }
 
-    return <div className="overflow-auto scrollbar-hide">{commitRows}</div>;
+    return <div className="scrollbar-hide overflow-auto">{commitRows}</div>;
   });
 
 SubmissionCommitsContent.displayName = "SubmissionCommitsContent";
@@ -306,7 +205,7 @@ export const SubmissionPullRequestsContent: React.FC<SubmissionPullRequestsConte
     }
 
     return (
-      <div className="overflow-auto scrollbar-hide">
+      <div className="scrollbar-hide overflow-auto">
         {pullRequests.map((pullRequest) => (
           <PullRequestSubmissionRow
             key={pullRequest.key}

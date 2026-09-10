@@ -16,7 +16,10 @@
  */
 import React from "react";
 
+import PageNotice from "@src/components/PageNotice";
 import CanvasInlineCard from "@src/engines/ChatPanel/blocks/CanvasInlineCard";
+import CanvasRevisionActivity from "@src/engines/ChatPanel/blocks/CanvasInlineCard/CanvasRevisionActivity";
+import { isCanvasRevisionToolName } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/canvasRevision";
 import type { CanvasInlineMode } from "@src/engines/ChatPanel/blocks/CanvasInlineCard/types";
 import {
   statusToLifecycle,
@@ -80,13 +83,35 @@ export const CanvasInlineAdapter: React.FC<UniversalEventProps> = (props) => {
           ? props.result.observation
           : labels[state] || "Canvas render failed";
 
+    if (isCanvasRevisionToolName(props.functionName)) {
+      return (
+        <CanvasRevisionActivity
+          args={props.args}
+          status={props.status}
+          eventId={props.eventId}
+          errorDetail={errorText}
+        />
+      );
+    }
+
     return (
-      <div
-        data-tool-call-event-id={props.eventId}
-        className="my-2 rounded-lg border border-border-1 bg-bg-2 px-3 py-2"
-      >
-        <p className="text-status-error text-xs">{errorText}</p>
+      <div data-tool-call-event-id={props.eventId}>
+        <PageNotice type="danger" role="alert" className="my-2">
+          {errorText}
+        </PageNotice>
       </div>
+    );
+  }
+
+  // A revision updates the existing logical Canvas in Simulator. Keep its
+  // factual work record in chat without rendering a duplicate preview card.
+  if (isCanvasRevisionToolName(props.functionName)) {
+    return (
+      <CanvasRevisionActivity
+        args={props.args}
+        status={props.status}
+        eventId={props.eventId}
+      />
     );
   }
 

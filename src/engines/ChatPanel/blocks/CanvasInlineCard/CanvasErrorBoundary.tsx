@@ -8,8 +8,8 @@
  */
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
+import PageNotice from "@src/components/PageNotice";
 import { createLogger } from "@src/hooks/logger";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 const log = createLogger("CanvasInlineCard");
 
@@ -38,12 +38,9 @@ export class CanvasErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.error) {
       return (
-        <Placeholder
-          variant="error"
-          placement="detail-panel"
-          title="Preview failed"
-          subtitle={this.state.error.message}
-        />
+        <PageNotice type="danger" title="Preview failed" role="alert">
+          {this.state.error.message}
+        </PageNotice>
       );
     }
     return this.props.children;

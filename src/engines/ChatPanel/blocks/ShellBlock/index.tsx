@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 
 import { getEventIcon, getToolIcon } from "@src/config/toolIcons";
 import type { ToolUsageMetadata } from "@src/engines/SessionCore/core/types";
-import { extractShellData } from "@src/engines/SessionCore/rendering/props/propsDataExtractors";
+import { extractShellData } from "@src/engines/SessionCore/rendering/props/shellExtractors";
 import type { UniversalEventProps } from "@src/engines/SessionCore/rendering/types/universalProps";
 import { createLogger } from "@src/hooks/logger";
 import { killAgentShellProcess } from "@src/services/terminal";
@@ -72,7 +72,7 @@ function extractResultMessage(result: unknown): string | undefined {
   return typeof message === "string" ? message : undefined;
 }
 
-export type ShellBlockProps = UniversalEventProps & {
+type ShellBlockProps = UniversalEventProps & {
   /**
    * Pre-translated header title for the `run` action. Adapter resolves
    * via `useLifecycleLabels("run_shell", "run")` (falling back to the

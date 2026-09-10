@@ -1,5 +1,4 @@
 import type { TFunction } from "i18next";
-import { Trash2 } from "lucide-react";
 import { useMemo } from "react";
 
 import type {
@@ -10,13 +9,16 @@ import type {
 } from "@src/api/tauri/rpc/schemas/learning";
 import Button from "@src/components/Button";
 import type { SelectOption } from "@src/components/Select";
+import type {
+  SettingsTableColumn,
+  SettingsTableSelectFilter,
+} from "@src/components/SettingsTable";
 import {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
-  type SettingsTableColumn,
-  type SettingsTableSelectFilter,
-} from "@src/components/SettingsTable";
+} from "@src/components/SettingsTable/tokens";
 import type { LearningsBrowserFilters } from "@src/hooks/settings/useLearningsBrowser";
+import { Delete02Icon, HugeiconsIcon } from "@src/icons";
 
 import {
   CATEGORY_SELECT_ORDER,
@@ -72,7 +74,7 @@ export function useLearningsTableConfig({
         width: SETTINGS_TABLE_COL.fill,
         renderCell: (row) => (
           <span
-            className={`${SETTINGS_TABLE_CELL.primary} block min-w-0 max-w-full truncate`}
+            className={`${SETTINGS_TABLE_CELL.primary} block max-w-full min-w-0 truncate`}
           >
             {row.takeaway ?? truncate(row.content, 80)}
           </span>
@@ -190,7 +192,13 @@ export function useLearningsTableConfig({
                   size="small"
                   disabled={busy}
                   onClick={() => handleDelete(row)}
-                  icon={<Trash2 size={14} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={Delete02Icon}
+                      data-icon="trash-2"
+                      size={14}
+                    />
+                  }
                   iconOnly
                   title={t("learningsBrowser.actions.delete")}
                 />

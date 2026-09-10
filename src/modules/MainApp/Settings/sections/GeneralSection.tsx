@@ -1,10 +1,13 @@
 /**
  * General Settings Section
  *
- * Hosts three tabs:
- *   - `general` — language/date, input, app behavior, update, settings file
+ * Hosts five tabs:
+ *   - `general` — ORG2 login, language/date, input, app behavior, update,
+ *     settings file
  *   - `notifications` — master toggle + advanced blocks (lazy)
  *   - `shortcuts` — keyboard shortcuts viewer (lazy)
+ *   - `storage` — disk usage and cleanup
+ *   - `self-hosted` — custom ORG2 Cloud backend endpoint
  *
  * The General tab is rendered eagerly; the heavier Notifications and
  * Shortcuts tabs are code-split so they only load when the user clicks
@@ -12,16 +15,15 @@
  */
 import {
   PathCopyOpenRow,
+  SECTION_ACTION_GAP_CLASSES,
   SECTION_CONTROL_STYLE,
-  SECTION_VALUE_TEXT_CLASSES,
+  SECTION_PATH_TEXT_CLASSES,
   SectionContainer,
   SectionRow,
 } from "@/src/modules/shared/layouts/SectionLayout";
-import { Placeholder } from "@/src/modules/shared/layouts/blocks";
 import { getVersion } from "@tauri-apps/api/app";
 import { invoke } from "@tauri-apps/api/core";
 import { useAtom } from "jotai";
-import { RefreshCw } from "lucide-react";
 import React, {
   Suspense,
   lazy,
@@ -41,26 +43,31 @@ import {
 } from "@src/api/services/microphone";
 import Button from "@src/components/Button";
 import Message from "@src/components/Message";
+import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
 import Switch from "@src/components/Switch";
-import { useTimezoneSelect } from "@src/hooks/geo";
+import type { TimezoneOption } from "@src/config/timezone";
+import CloudEndpointCard from "@src/features/Org2Cloud/CloudEndpointCard";
+import { Org2CloudLoginRows } from "@src/features/Org2Cloud/Org2CloudSection";
+import { useTimezoneSelect } from "@src/hooks/geo/useTimezoneSelect";
 import {
   LANGUAGE_NAMES,
   LANGUAGE_PREFERENCE,
   type LanguagePreference,
   SUPPORTED_LANGUAGES,
   type SupportedLanguage,
+  formatLanguageDisplayLabel,
   getFollowSystemLanguageLabel,
   resolveLanguagePreference,
 } from "@src/i18n";
+import { HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import { NAV_BUTTON_PROPS } from "@src/modules/MainApp/Settings/config";
+import { HintWithInfo } from "@src/modules/shared/layouts/blocks/HintWithInfo";
 import {
   checkForAppUpdates,
   checkForUpdatesManually,
-  useAppBuildProvenance,
-} from "@src/scaffold/AppUpdater";
-import { formatAppBuildRevision } from "@src/scaffold/AppUpdater/buildProvenance";
-import { type TimezoneOption, timezoneAtom } from "@src/store";
+} from "@src/scaffold/AppUpdater/actions";
+import { useAppBuildProvenance } from "@src/scaffold/AppUpdater/state";
 import { chatAppearancePersistAtom } from "@src/store/config/configAtom";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 import { preventSleepWhileRunningAtom } from "@src/store/platform/preventSleepAtom";
@@ -71,17 +78,20 @@ import {
 } from "@src/store/platform/updateChannelAtom";
 import { voiceInputEnabledAtom } from "@src/store/platform/voiceInputAtom";
 import { languageAtom } from "@src/store/ui/languageAtom";
+import { timezoneAtom } from "@src/store/ui/timezoneAtom";
 import { copyText } from "@src/util/data/clipboard";
+
+import HttpVersionSettingsBlock from "./HttpVersionSettingsBlock";
 
 export const GENERAL_TAB_KEYS = {
   GENERAL: "general",
   NOTIFICATIONS: "notifications",
   SHORTCUTS: "shortcuts",
+  STORAGE: "storage",
+  SELF_HOSTED: "self-hosted",
 } as const;
 
-export type GeneralTabKey =
-  (typeof GENERAL_TAB_KEYS)[keyof typeof GENERAL_TAB_KEYS];
-
+const StorageTab = lazy(() => import("./StorageSection"));
 const NotificationsTab = lazy(() => import("./NotificationsTab"));
 const ShortcutsTab = lazy(() => import("./ShortcutsSection"));
 
@@ -110,6 +120,20 @@ const GeneralSection: React.FC<GeneralSectionProps> = ({
         <ShortcutsTab />
       </Suspense>
     );
+  }
+
+  if (activeTab === GENERAL_TAB_KEYS.STORAGE) {
+    return (
+      <Suspense
+        fallback={<Placeholder variant="loading" placement="detail-panel" />}
+      >
+        <StorageTab />
+      </Suspense>
+    );
+  }
+
+  if (activeTab === GENERAL_TAB_KEYS.SELF_HOSTED) {
+    return <CloudEndpointCard />;
   }
 
   return <GeneralTabBody />;
@@ -227,6 +251,8 @@ const GeneralTabBody: React.FC = () => {
   }, [micPermissionStatus, t]);
 
   useEffect(() => {
+    if (!devModeEnabled) return;
+
     let cancelled = false;
     invoke<string>("settings_get_path").then((path) => {
       if (!cancelled && path) {
@@ -236,7 +262,7 @@ const GeneralTabBody: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [devModeEnabled]);
 
   const handleLanguageChange = useCallback(
     (value: string | number | (string | number)[]) => {
@@ -248,7 +274,7 @@ const GeneralTabBody: React.FC = () => {
   );
 
   // Language options for the selector
-  // Format: "Translated Name · Native Name" (e.g., in French: "Anglais · English")
+  // Format: "Translated Name · Native Name" when those names differ.
   const languageOptions = useMemo(
     () => [
       {
@@ -257,15 +283,10 @@ const GeneralTabBody: React.FC = () => {
       },
       ...SUPPORTED_LANGUAGES.map((lang) => {
         const translatedName = t(`general.languageNames.${lang}`);
-        const nativeName = LANGUAGE_NAMES[lang];
-        const displayLabel =
-          translatedName === nativeName
-            ? nativeName
-            : `${translatedName} · ${nativeName}`;
 
         return {
           value: lang,
-          label: displayLabel,
+          label: formatLanguageDisplayLabel(lang, translatedName),
         };
       }),
     ],
@@ -321,6 +342,9 @@ const GeneralTabBody: React.FC = () => {
   return (
     <>
       <SectionContainer>
+        <Org2CloudLoginRows />
+      </SectionContainer>
+      <SectionContainer>
         <SectionRow label={t("common:common.language")}>
           <Select
             value={languagePreference}
@@ -336,6 +360,7 @@ const GeneralTabBody: React.FC = () => {
         <SectionRow label={t("common:common.timezone")}>
           <Select {...timezoneSelectProps} />
         </SectionRow>
+        <HttpVersionSettingsBlock />
       </SectionContainer>
       <SectionContainer>
         <SectionRow
@@ -344,7 +369,7 @@ const GeneralTabBody: React.FC = () => {
         >
           <Switch
             checked={chatAppearance.sendOnEnter}
-            onChange={(checked) => {
+            onCheckedChange={(checked) => {
               updateChatAppearance({ sendOnEnter: checked });
             }}
           />
@@ -352,12 +377,15 @@ const GeneralTabBody: React.FC = () => {
       </SectionContainer>
       <SectionContainer>
         <SectionRow label={t("general.voiceInput")}>
-          <Switch checked={voiceInputEnabled} onChange={setVoiceInputEnabled} />
+          <Switch
+            checked={voiceInputEnabled}
+            onCheckedChange={setVoiceInputEnabled}
+          />
         </SectionRow>
         {voiceInputEnabled && (
           <SectionRow label={t("general.voiceInputPermission")} indent>
             <div className="flex items-center gap-2">
-              <span className="whitespace-nowrap text-xs text-text-1">
+              <span className="text-xs whitespace-nowrap text-text-1">
                 {micStatusBadge}
               </span>
               {micPermissionStatus !== "granted" &&
@@ -382,26 +410,34 @@ const GeneralTabBody: React.FC = () => {
 
       <SectionContainer>
         <SectionRow
-          label={t("general.preventSleep")}
-          description={t("general.preventSleepDesc")}
+          label={
+            <span className="inline-flex items-center gap-1">
+              {t("general.preventSleep")}
+              <HintWithInfo
+                content={t("general.preventSleepDesc")}
+                position="right"
+              />
+            </span>
+          }
         >
           <Switch
             checked={preventSleepWhileRunning}
-            onChange={setPreventSleepWhileRunning}
+            onCheckedChange={setPreventSleepWhileRunning}
           />
-        </SectionRow>
-        <SectionRow
-          label={t("general.devMode")}
-          description={t("general.devModeDesc")}
-        >
-          <Switch checked={devModeEnabled} onChange={setDevModeEnabled} />
         </SectionRow>
       </SectionContainer>
 
       <SectionContainer>
         <SectionRow
-          label={t("update.channel")}
-          description={t("update.channelDesc")}
+          label={
+            <span className="inline-flex items-center gap-1">
+              {t("update.channel")}
+              <HintWithInfo
+                content={t("update.channelDesc")}
+                position="right"
+              />
+            </span>
+          }
         >
           <Select
             value={resolveUpdateChannel(
@@ -414,40 +450,67 @@ const GeneralTabBody: React.FC = () => {
             style={SECTION_CONTROL_STYLE}
           />
         </SectionRow>
-        <SectionRow label={t("update.detectUpdate")}>
-          <Button
-            size="default"
-            onClick={checkForUpdatesManually}
-            icon={<RefreshCw size={14} />}
-          >
-            {t("update.detectUpdate")}
-          </Button>
-        </SectionRow>
         <SectionRow label={t("update.currentVersion")}>
-          <span className={SECTION_VALUE_TEXT_CLASSES}>
-            {appVersion
-              ? buildProvenance?.kind === "local"
-                ? `v${appVersion} · ${t("update.localBuild")} · ${formatAppBuildRevision(buildProvenance)}`
-                : `v${appVersion}`
-              : "—"}
-          </span>
+          <div className={SECTION_ACTION_GAP_CLASSES}>
+            <span className={SECTION_PATH_TEXT_CLASSES}>
+              {appVersion
+                ? buildProvenance?.kind === "local"
+                  ? `v${appVersion} · ${t("update.localBuild")}`
+                  : `v${appVersion}`
+                : "—"}
+            </span>
+            <Button
+              size="default"
+              onClick={checkForUpdatesManually}
+              icon={
+                <HugeiconsIcon
+                  icon={Refresh04Icon}
+                  data-icon="refresh-cw"
+                  size={14}
+                />
+              }
+            >
+              {t("update.detectUpdate")}
+            </Button>
+          </div>
         </SectionRow>
       </SectionContainer>
 
       <SectionContainer>
-        <PathCopyOpenRow
-          label={t("general.settingsFile")}
-          path={settingsFilePath}
-          onCopy={() => {
-            void copyText(settingsFilePath).then(() => {
-              Message.success(t("storage.copiedPath"));
-            });
-          }}
-          onOpen={() => invoke("show_in_folder", { path: settingsFilePath })}
-          copyTitle={t("common:actions.copy")}
-          openTitle={t("storage.openFolder")}
-        />
+        <SectionRow
+          label={
+            <span className="inline-flex items-center gap-1">
+              {t("general.devMode")}
+              <HintWithInfo
+                content={t("general.devModeDesc")}
+                position="right"
+              />
+            </span>
+          }
+        >
+          <Switch
+            checked={devModeEnabled}
+            onCheckedChange={setDevModeEnabled}
+          />
+        </SectionRow>
       </SectionContainer>
+
+      {devModeEnabled && (
+        <SectionContainer>
+          <PathCopyOpenRow
+            label={t("general.settingsFile")}
+            path={settingsFilePath}
+            onCopy={() => {
+              void copyText(settingsFilePath).then(() => {
+                Message.success(t("storage.copiedPath"));
+              });
+            }}
+            onOpen={() => invoke("show_in_folder", { path: settingsFilePath })}
+            copyTitle={t("common:actions.copy")}
+            openTitle={t("storage.openFolder")}
+          />
+        </SectionContainer>
+      )}
     </>
   );
 };

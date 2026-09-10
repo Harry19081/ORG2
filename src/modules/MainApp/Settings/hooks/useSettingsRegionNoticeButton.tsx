@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import RegionNoticeButton from "@src/components/RegionNoticeButton";
 import { isRegionSanctioned } from "@src/config/providerRegions";
-import { useRegionCheck } from "@src/hooks/config";
+import { useRegionCheck } from "@src/hooks/config/useRegionCheck";
 import type { RouteToolbarButton } from "@src/store/ui/routeToolbarAtom";
 
 const SETTINGS_REGION_NOTICE_BUTTON_ID = "settings-region-notice";
@@ -38,7 +38,7 @@ export function useSettingsRegionNoticeButton(): RouteToolbarButton | null {
         <RegionNoticeButton
           title={title}
           body={<p className="m-0">{body}</p>}
-          alertClassName="!border-border-2 !bg-chat-container !text-text-1 shadow-lg"
+          alertClassName="border-border-2! bg-chat-container! text-text-1! shadow-lg"
         />
       ),
       onClick: () => {},

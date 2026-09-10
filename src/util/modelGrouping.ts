@@ -8,6 +8,11 @@
  * - "current" = latest generation
  * - "older"   = previous generation
  */
+import {
+  extractGptModelTier,
+  isModelVariantSuffixToken,
+  stripCursorHostedModelPrefix,
+} from "./modelNameGrammar";
 
 export interface ModelGroup {
   label: string;
@@ -36,11 +41,14 @@ function groupHasAnyEnabled(
 
 /** Minimum sortVersion to be considered "current" per family */
 const CURRENT_THRESHOLDS: Record<string, number> = {
-  claude: 406, // Claude 4.6+
-  gpt: 540, // GPT 5.4+
+  claude: 408, // Claude 4.8+
+  gpt: 550, // GPT 5.5+
   gemini: 200, // Gemini 2+
-  sonnet: 406, // Sonnet 4.6+
-  opus: 406, // Opus 4.6+
+  sonnet: 408, // Sonnet 4.8+
+  opus: 408, // Opus 4.8+
+  haiku: 408, // Haiku 4.8+
+  fable: 500, // Fable 5 / 5.1+
+  mythos: 500, // Mythos 5+
   composer: 150, // Composer 1.5+
   o: 540, // O-series: o5.4+ current; o5 / o4 / o3 / o1 older
   glm: 510, // Zhipu GLM 5.1+ current; GLM 5.0 / 4.x older
@@ -50,31 +58,6 @@ const CURRENT_THRESHOLDS: Record<string, number> = {
 interface ParsedGroup {
   label: string;
   sortVersion: number;
-}
-
-/** Longest-first so codex-max wins over codex. */
-const GPT_TIER_PREFIXES = [
-  "codex-max",
-  "codex-mini",
-  "nano",
-  "mini",
-  "codex",
-  "sol",
-  "terra",
-  "luna",
-] as const;
-
-function extractGptTier(rest: string): string | undefined {
-  for (const tier of GPT_TIER_PREFIXES) {
-    if (rest === tier || rest.startsWith(`${tier}-`)) {
-      return tier;
-    }
-  }
-  return undefined;
-}
-
-export function extractGptModelTier(rest: string): string | undefined {
-  return extractGptTier(rest);
 }
 
 function formatGptTierLabel(tier: string): string {
@@ -191,7 +174,8 @@ function parseClaude(rest: string): ParsedGroup {
 
 /** Parse a model name and extract a group label + sortable version number. */
 function parseModelGroup(modelName: string): ParsedGroup {
-  const lower = modelName.toLowerCase();
+  const { coreModelName } = stripCursorHostedModelPrefix(modelName);
+  const lower = coreModelName.toLowerCase();
   const cleaned = lower.replace(/-\d{8}$/, "").replace(/-latest$/, "");
 
   if (CURSOR_TIER_MODELS.has(cleaned)) {
@@ -216,8 +200,18 @@ function parseModelGroup(modelName: string): ParsedGroup {
             sortVersion: versionStringToSortVersion(versionMatch[1]),
           };
         }
-        const tier = extractGptTier(rest);
-        const subLabel = tier ? ` ${formatGptTierLabel(tier)}` : "";
+        const tier = extractGptModelTier(rest);
+        const distinctTokens = tier
+          ? rest
+              .slice(tier.length)
+              .split("-")
+              .filter(
+                (token) => token.length > 0 && !isModelVariantSuffixToken(token)
+              )
+          : [];
+        const subLabel = tier
+          ? ` ${formatGptTierLabel([tier, ...distinctTokens].join("-"))}`
+          : "";
         return {
           label: `${label} ${versionMatch[1]}${subLabel}`,
           sortVersion: versionStringToSortVersion(versionMatch[1]),
@@ -351,7 +345,8 @@ const FAMILY_TO_PROVIDER: Record<string, string> = {
  * Returns e.g. "Claude", "OpenAI", "Gemini", "Cursor", or "Other".
  */
 export function getModelFamily(modelName: string): string {
-  const lower = modelName.toLowerCase();
+  const { coreModelName } = stripCursorHostedModelPrefix(modelName);
+  const lower = coreModelName.toLowerCase();
   const cleaned = lower.replace(/-\d{8}$/, "").replace(/-latest$/, "");
 
   if (CURSOR_TIER_MODELS.has(cleaned)) {

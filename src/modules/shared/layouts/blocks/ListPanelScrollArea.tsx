@@ -2,7 +2,7 @@
  * ListPanelScrollArea — Reusable scroll container for left list panels.
  *
  * Wraps list content with standard scroll behavior and configurable top padding.
- * Place below ListPanelTabPillRow or ListPanelSearch.
+ * Place below ListPanelTabPillRow or a panel search control.
  *
  * Used by: MenuPanel, InboxListPanel, and similar panels.
  */
@@ -23,7 +23,7 @@ const ListPanelScrollArea: React.FC<ListPanelScrollAreaProps> = ({
   className = "",
 }) => (
   <div
-    className={`min-h-0 flex-1 overflow-y-auto px-2 scrollbar-hide ${listPaddingTop === "none" ? LIST_PANEL_SCROLL_AREA.paddingTopNone : LIST_PANEL_SCROLL_AREA.paddingTopDefault} ${className}`.trim()}
+    className={`scrollbar-hide min-h-0 flex-1 overflow-y-auto px-2 ${listPaddingTop === "none" ? LIST_PANEL_SCROLL_AREA.paddingTopNone : LIST_PANEL_SCROLL_AREA.paddingTopDefault} ${className}`.trim()}
   >
     {children}
   </div>

@@ -8,7 +8,6 @@
  *
  * Repo-agnostic: all state is owned by the caller (`useSourceControlSidebarModule`).
  */
-import { Ellipsis, RefreshCw } from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -16,10 +15,11 @@ import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import type { DropdownOption } from "@src/components/Dropdown/types";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import Select from "@src/components/Select";
-import { useRefreshSpin } from "@src/hooks/ui";
-import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared/WorkstationToolbarTooltip";
-import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
+import { EllipsisIcon, HugeiconsIcon, Refresh04Icon } from "@src/icons";
 import type { SourceControlFilterMode } from "@src/store/workstation/codeEditor/sourceControlTypes";
 
 export type { SourceControlFilterMode } from "@src/store/workstation/codeEditor/sourceControlTypes";
@@ -189,7 +189,9 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                     onClick={handleRefreshMenuClick}
                     className={DROPDOWN_CLASSES.menuActionItem}
                   >
-                    <RefreshCw
+                    <HugeiconsIcon
+                      icon={Refresh04Icon}
+                      data-icon="refresh-cw"
                       size={HEADER_ICON_SIZE.sm}
                       className={refreshSpinClass}
                     />
@@ -204,7 +206,7 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
               popupVisible={moreMenuVisible}
               onVisibleChange={setMoreMenuVisible}
             >
-              <WorkstationToolbarTooltip
+              <ToolbarTooltip
                 label={t("common:actions.more")}
                 disabled={moreMenuVisible}
               >
@@ -214,13 +216,18 @@ const SourceControlFilterHeader: React.FC<SourceControlFilterHeaderProps> =
                   size="small"
                   iconOnly
                   className={
-                    moreMenuVisible ? "!bg-fill-2 !text-primary-6" : ""
+                    moreMenuVisible ? "bg-fill-2! text-primary-6!" : ""
                   }
                   icon={
-                    <Ellipsis size={HEADER_ICON_SIZE.sm} strokeWidth={1.75} />
+                    <HugeiconsIcon
+                      icon={EllipsisIcon}
+                      data-icon="ellipsis"
+                      size={HEADER_ICON_SIZE.sm}
+                      strokeWidth={1.75}
+                    />
                   }
                 />
-              </WorkstationToolbarTooltip>
+              </ToolbarTooltip>
             </Dropdown>
           )}
         </div>

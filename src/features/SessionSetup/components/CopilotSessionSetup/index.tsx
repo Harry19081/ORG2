@@ -11,27 +11,34 @@
  */
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { AlertCircle, ChevronRight, RefreshCw, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
 
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
-import { useWebviewPositionSync } from "@src/hooks/workStation/sessionCapture/useWebviewPositionSync";
+import PageNotice from "@src/components/PageNotice";
+import { Placeholder } from "@src/components/Placeholder";
+import SessionSetupStepIndicator from "@src/features/SessionSetup/components/SessionSetupStepIndicator";
+import { useWebviewPositionSync } from "@src/features/SessionSetup/hooks/useWebviewPositionSync";
+import {
+  AlertCircleIcon,
+  ArrowRight01Icon,
+  Cancel01Icon,
+  HugeiconsIcon,
+  Refresh04Icon,
+} from "@src/icons";
 import {
   SectionContainer,
   SectionRow,
 } from "@src/modules/shared/layouts/SectionLayout";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import { toNativeFrame } from "@src/util/platform/tauri/nativeFrame";
 
 // ============================================
 // Type Definitions
 // ============================================
 
-export interface CopilotSessionSetupProps {
+interface CopilotSessionSetupProps {
   /** Callback when token is entered */
   onTokenCaptured?: (token: string) => void;
   /** Initial token value */
@@ -299,20 +306,28 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-fill-2">
             {/* Minimal Browser Header */}
             <div className="flex h-10 items-center border-b border-border-2 bg-fill-2 px-3">
-              <div className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[12px] text-text-1">
+              <div className="flex-1 overflow-hidden text-[12px] text-ellipsis whitespace-nowrap text-text-1">
                 {currentUrl}
               </div>
               <Button
                 variant="tertiary"
                 size="mini"
-                icon={<RefreshCw size={12} />}
+                icon={
+                  <HugeiconsIcon
+                    icon={Refresh04Icon}
+                    data-icon="refresh-cw"
+                    size={12}
+                  />
+                }
                 iconOnly
                 onClick={() => navigate(GITHUB_PAT_URL)}
               />
               <Button
                 variant="tertiary"
                 size="mini"
-                icon={<X size={14} />}
+                icon={
+                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
+                }
                 iconOnly
                 onClick={handleCloseBrowser}
               />
@@ -321,14 +336,19 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
             {/* Progress Steps */}
             <div className="flex h-9 items-center justify-between gap-2 border-b border-border-2 bg-fill-2 px-4">
               <div className="flex items-center gap-2">
-                <StepIndicator
+                <SessionSetupStepIndicator
                   step={1}
                   currentStep={currentStep}
                   label={t("keyVault.copilotStepCreate")}
                   completed={isTokenValid}
                 />
-                <ChevronRight size={14} className="text-text-3" />
-                <StepIndicator
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  data-icon="chevron-right"
+                  size={14}
+                  className="text-text-3"
+                />
+                <SessionSetupStepIndicator
                   step={2}
                   currentStep={currentStep}
                   label={t("keyVault.copilotStepPaste")}
@@ -360,7 +380,12 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
               )}
               {error && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-bg-1 p-6 text-center">
-                  <AlertCircle size={32} className="mb-3 text-danger-6" />
+                  <HugeiconsIcon
+                    icon={AlertCircleIcon}
+                    data-icon="alert-circle"
+                    size={32}
+                    className="mb-3 text-danger-6"
+                  />
                   <div className="mb-2 text-[14px] text-text-2">
                     {t("keyVault.failedToLoadBrowser")}
                   </div>
@@ -393,14 +418,14 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
             </SectionRow>
           </SectionContainer>
           {token && !isTokenValid && (
-            <InlineAlert type="danger">
+            <PageNotice type="danger">
               {t("keyVault.copilotInvalidTokenFormat")}
-            </InlineAlert>
+            </PageNotice>
           )}
           {isTokenValid && (
-            <InlineAlert type="success">
+            <PageNotice type="success">
               {t("keyVault.copilotValidTokenFormat")}
-            </InlineAlert>
+            </PageNotice>
           )}
         </>
       )}
@@ -415,52 +440,6 @@ const CopilotSessionSetup: React.FC<CopilotSessionSetupProps> = ({
           <div>Current URL: {currentUrl}</div>
         </div>
       )}
-    </div>
-  );
-};
-
-// ============================================
-// Helper Components
-// ============================================
-
-interface StepIndicatorProps {
-  step: number;
-  currentStep: number;
-  label: string;
-  completed: boolean;
-}
-
-const StepIndicator: React.FC<StepIndicatorProps> = ({
-  step,
-  currentStep,
-  label,
-  completed,
-}) => {
-  const isActive = step === currentStep;
-  const isPast = step < currentStep || completed;
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <div
-        className={[
-          "flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold",
-          isPast
-            ? "bg-success-6 text-text-white"
-            : isActive
-              ? "bg-primary-6 text-text-white"
-              : "border border-border-2 bg-bg-2 text-text-3",
-        ].join(" ")}
-      >
-        {isPast ? <span className="text-[10px]">✓</span> : step}
-      </div>
-      <span
-        className={[
-          "text-[12px]",
-          isActive ? "font-medium text-text-1" : "font-normal text-text-3",
-        ].join(" ")}
-      >
-        {label}
-      </span>
     </div>
   );
 };

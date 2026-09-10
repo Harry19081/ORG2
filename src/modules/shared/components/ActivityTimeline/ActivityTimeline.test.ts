@@ -127,6 +127,21 @@ describe("activity timeline", () => {
     expect(body?.className).not.toContain("leading-5");
   });
 
+  it("keeps the complete rendered Markdown tree selectable", () => {
+    contentHeight = 120;
+
+    act(() => {
+      root.render(
+        createElement(MarkdownContent, {
+          body: "Paragraph with **nested emphasis**.",
+        })
+      );
+    });
+
+    const body = container.querySelector<HTMLElement>(".chat-text");
+    expect(body?.className).toContain("allow-select-deep");
+  });
+
   it("collapses long Markdown with an always-visible shared control", () => {
     contentHeight = 600;
 
@@ -176,7 +191,7 @@ describe("activity timeline", () => {
     ).toContain("from-chat-pane");
   });
 
-  it("renders timeline loading as a text-free accessible skeleton", () => {
+  it("renders timeline loading as a text-free, static accessible skeleton", () => {
     act(() => {
       root.render(
         createElement(TimelineLoadingSkeleton, {
@@ -192,7 +207,7 @@ describe("activity timeline", () => {
     expect(skeleton?.getAttribute("aria-label")).toBe("Loading activity…");
     expect(skeleton?.getAttribute("aria-busy")).toBe("true");
     expect(skeleton?.textContent).toBe("");
-    expect(skeleton?.className).toContain("animate-pulse");
+    expect(skeleton?.className).not.toContain("animate-pulse");
     expect(skeleton?.querySelectorAll("[aria-hidden='true']")).toHaveLength(6);
   });
 
@@ -220,10 +235,12 @@ describe("activity timeline", () => {
     expect(card?.className).toContain("bg-chat-pane");
     expect(card?.className).not.toContain("bg-primary-container");
     expect(card?.className).toContain("overflow-hidden");
-    expect(card?.className).not.toContain("shadow-sm");
+    expect(card?.className).not.toContain("shadow-xs");
     expect(card?.firstElementChild?.className).toContain(
       "bg-primary-container"
     );
+    expect(card?.firstElementChild?.className).toContain("allow-select-deep");
+    expect(card?.children.item(1)?.className).toContain("allow-select-deep");
     expect(card?.lastElementChild?.getAttribute("data-testid")).toBe(
       "timeline-footer"
     );
@@ -355,8 +372,8 @@ describe("activity timeline", () => {
     );
     expect(button?.getAttribute("aria-label")).toBe("actions.copy");
     expect(button?.className).toContain("hover:bg-fill-2");
-    expect(button?.querySelector(".lucide-copy")).not.toBeNull();
-    expect(button?.querySelector(".lucide-clipboard")).toBeNull();
+    expect(button?.querySelector('[data-icon="copy"]')).not.toBeNull();
+    expect(button?.querySelector('[data-icon="clipboard"]')).toBeNull();
   });
 
   it("uses a smaller compact row with vertically centered content", () => {

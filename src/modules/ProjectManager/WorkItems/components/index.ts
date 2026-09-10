@@ -1,11 +1,10 @@
 export { default as CreateWorkItemView } from "./CreateWorkItemView";
-export { default as TodoChecklist } from "./TodoChecklist";
 export { default as EmbeddedWorkItemDetail } from "./EmbeddedWorkItemDetail";
 export { default as OverviewPropertiesPanel } from "./OverviewPropertiesPanel";
 export { default as WorkItemContent } from "./WorkItemContent";
 export { default as WorkItemContextMenu } from "./WorkItemContextMenu";
 export { default as WorkItemDetail } from "./WorkItemDetail";
-export type { WorkItemDetailActions } from "./WorkItemDetail";
+
 export { default as WorkItemDetailPage } from "./WorkItemDetailPage";
 export {
   default as WorkItemProperties,
@@ -20,6 +19,9 @@ export { default as WorkItemsListSurface } from "./WorkItemsListSurface";
 export { default as WorkItemsOverview } from "./WorkItemsOverview";
 export { MultiSelectBar } from "./WorkItemsFooterBars";
 export { default as WorkItemsPageHeader } from "./WorkItemsPageHeader";
+export {
+  WorkItemsHeaderActions,
+  type WorkItemsHeaderActionsProps,
+} from "./WorkItemsPageHeader/WorkItemsHeaderContent";
 export { default as WorkItemsSettings } from "./WorkItemsSettings";
 export { default as WorkItemsTabContent } from "./WorkItemsTabContent";
-export type { WorkItemsViewTab } from "../types";

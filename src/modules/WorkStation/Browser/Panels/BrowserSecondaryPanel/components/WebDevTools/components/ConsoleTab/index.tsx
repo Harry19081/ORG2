@@ -3,28 +3,27 @@
  *
  * Displays console log entries with filtering and search capabilities.
  */
-import { BrushCleaning, Check, Copy } from "lucide-react";
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
 
 import Button from "@src/components/Button";
 import Checkbox from "@src/components/Checkbox";
 import Input from "@src/components/Input";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { Placeholder } from "@src/components/Placeholder";
 import Select from "@src/components/Select";
-import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
 import {
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
-} from "@src/modules/WorkStation/shared/tokens";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+} from "@src/config/workstation/tokens";
+import { useKeyedCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import {
+  BrushCleaningIcon,
+  Copy01Icon,
+  HugeiconsIcon,
+  Tick01Icon,
+} from "@src/icons";
 import { copyText } from "@src/util/data/clipboard";
 
 import type { ConsoleEntry, FilterLevel, LogLevel } from "../../types";
@@ -33,7 +32,7 @@ import type { ConsoleEntry, FilterLevel, LogLevel } from "../../types";
 // Types
 // ============================================
 
-export interface ConsoleTabProps {
+interface ConsoleTabProps {
   entries: ConsoleEntry[];
   onClear: () => void;
   preserveLogs?: boolean;
@@ -119,7 +118,7 @@ function ConsoleLogEntryRow({
 
   return (
     <div
-      className={`group min-w-0 max-w-full select-text border-b border-border-1 px-3 py-1.5 text-[11px] leading-relaxed hover:bg-fill-3 ${levelStyles}`}
+      className={`group max-w-full min-w-0 border-b border-border-1 px-3 py-1.5 text-[11px] leading-relaxed select-text hover:bg-fill-3 ${levelStyles}`}
     >
       <div className="flex w-full min-w-0 items-start justify-between gap-2">
         <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
@@ -130,34 +129,39 @@ function ConsoleLogEntryRow({
             [{entry.level}]
           </span>
         </div>
-        <WorkstationToolbarTooltip label={t("tooltips.copyToClipboard")}>
+        <ToolbarTooltip label={t("tooltips.copyToClipboard")}>
           <Button
             variant="tertiary"
             size="mini"
             icon={
               copiedId === entry.id ? (
-                <Check size={12} className="text-success-6" />
+                <HugeiconsIcon
+                  icon={Tick01Icon}
+                  data-icon="check"
+                  size={12}
+                  className="text-success-6"
+                />
               ) : (
-                <Copy size={12} />
+                <HugeiconsIcon icon={Copy01Icon} data-icon="copy" size={12} />
               )
             }
             iconOnly
             onClick={onCopy}
             aria-label={t("tooltips.copyToClipboard")}
-            className="shrink-0 select-none opacity-0 group-hover:opacity-100"
+            className="shrink-0 opacity-0 select-none group-hover:opacity-100"
           />
-        </WorkstationToolbarTooltip>
+        </ToolbarTooltip>
       </div>
 
-      <div className="mt-0.5 min-w-0 max-w-full">
+      <div className="mt-0.5 max-w-full min-w-0">
         <div
           role={truncated ? "button" : undefined}
           tabIndex={truncated ? 0 : undefined}
           aria-expanded={truncated ? messageExpanded : undefined}
           className={
             truncated
-              ? "cursor-pointer select-text whitespace-pre-wrap break-words text-left outline-none [overflow-wrap:anywhere] focus-visible:ring-1 focus-visible:ring-primary-6"
-              : "select-text whitespace-pre-wrap break-words [overflow-wrap:anywhere]"
+              ? "cursor-pointer text-left wrap-anywhere wrap-break-word whitespace-pre-wrap outline-none select-text focus-visible:ring-1 focus-visible:ring-primary-6"
+              : "wrap-anywhere wrap-break-word whitespace-pre-wrap select-text"
           }
           onClick={() => {
             if (!truncated) return;
@@ -179,7 +183,7 @@ function ConsoleLogEntryRow({
         {truncated && (
           <button
             type="button"
-            className="mt-0.5 select-none text-[10px] text-primary-6 underline decoration-primary-6/50 underline-offset-2 hover:text-primary-5"
+            className="mt-0.5 text-[10px] text-primary-6 underline decoration-primary-6/50 underline-offset-2 select-none hover:text-primary-5"
             onClick={(event) => {
               event.stopPropagation();
               onToggleMessage();
@@ -193,7 +197,7 @@ function ConsoleLogEntryRow({
           <div className="mt-1">
             <button
               type="button"
-              className="select-none text-[10px] text-primary-6 underline decoration-primary-6/50 underline-offset-2 hover:text-primary-5"
+              className="text-[10px] text-primary-6 underline decoration-primary-6/50 underline-offset-2 select-none hover:text-primary-5"
               onClick={(event) => {
                 event.stopPropagation();
                 onToggleStack();
@@ -204,7 +208,7 @@ function ConsoleLogEntryRow({
                 : t("workstation.consoleShowStackTrace")}
             </button>
             {stackExpanded && (
-              <pre className="mt-1 w-full select-text overflow-x-auto whitespace-pre-wrap break-all rounded bg-bg-3 px-3 py-1.5 text-[10px] leading-relaxed text-text-2">
+              <pre className="mt-1 w-full overflow-x-auto rounded bg-bg-3 px-3 py-1.5 text-[10px] leading-relaxed break-all whitespace-pre-wrap text-text-2 select-text">
                 {entry.stack}
               </pre>
             )}
@@ -230,17 +234,16 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
     const [expandedStackIds, setExpandedStackIds] = useState<Set<string>>(
       new Set()
     );
-    const [copiedId, setCopiedId] = useState<string | null>(null);
-    const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const mountedRef = useRef(true);
-
-    useEffect(() => {
-      mountedRef.current = true;
-      return () => {
-        mountedRef.current = false;
-        if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
-      };
+    const copyEntry = useCallback((entry: ConsoleEntry) => {
+      const text = `[${entry.level.toUpperCase()}] ${formatTimestamp(entry.timestamp)}\n${entry.message}${entry.stack ? `\n\nStack:\n${entry.stack}` : ""}`;
+      return copyText(text);
     }, []);
+    const {
+      copiedKey: copiedEntry,
+      handleCopy: flashCopiedEntry,
+      reset: resetCopiedEntry,
+    } = useKeyedCopyCheck(copyEntry, { durationMs: 1500 });
+    const copiedId = copiedEntry?.id ?? null;
 
     // Filter entries by level and search query
     const filteredEntries = useMemo(() => {
@@ -307,18 +310,9 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
     const handleCopyEntry = useCallback(
       (entry: ConsoleEntry, event: React.MouseEvent) => {
         event.stopPropagation();
-        const text = `[${entry.level.toUpperCase()}] ${formatTimestamp(entry.timestamp)}\n${entry.message}${entry.stack ? `\n\nStack:\n${entry.stack}` : ""}`;
-        void copyText(text).then(() => {
-          if (!mountedRef.current) return;
-          setCopiedId(entry.id);
-          if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
-          copiedTimerRef.current = setTimeout(() => {
-            copiedTimerRef.current = null;
-            if (mountedRef.current) setCopiedId(null);
-          }, 1500);
-        });
+        flashCopiedEntry(entry);
       },
-      []
+      [flashCopiedEntry]
     );
 
     const renderEntry = useCallback(
@@ -346,13 +340,9 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
     const handleClear = useCallback(() => {
       setExpandedMessageIds(new Set());
       setExpandedStackIds(new Set());
-      setCopiedId(null);
-      if (copiedTimerRef.current) {
-        clearTimeout(copiedTimerRef.current);
-        copiedTimerRef.current = null;
-      }
+      resetCopiedEntry();
       onClear();
-    }, [onClear]);
+    }, [onClear, resetCopiedEntry]);
 
     return (
       <div className="flex h-full min-w-0 flex-col">
@@ -391,7 +381,7 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
           {onTogglePreserveLogs && (
             <Checkbox
               checked={preserveLogs}
-              onChange={onTogglePreserveLogs}
+              onCheckedChange={onTogglePreserveLogs}
               size="mini"
               className="shrink-0"
             >
@@ -402,20 +392,24 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
           )}
 
           {/* Clear button */}
-          <WorkstationToolbarTooltip label={t("tooltips.clearConsole")}>
+          <ToolbarTooltip label={t("tooltips.clearConsole")}>
             <button
               type="button"
               onClick={handleClear}
               className={HEADER_BUTTON.actionTreeRow}
               aria-label={t("tooltips.clearConsole")}
             >
-              <BrushCleaning size={HEADER_ICON_SIZE.sm} />
+              <HugeiconsIcon
+                icon={BrushCleaningIcon}
+                data-icon="brush-cleaning"
+                size={HEADER_ICON_SIZE.sm}
+              />
             </button>
-          </WorkstationToolbarTooltip>
+          </ToolbarTooltip>
         </div>
 
         {/* Entries */}
-        <div className="min-w-0 flex-1 select-text overflow-hidden py-1">
+        <div className="min-w-0 flex-1 overflow-hidden py-1 select-text">
           {filteredEntries.length === 0 ? (
             <Placeholder
               variant="empty"
@@ -432,7 +426,7 @@ export const ConsoleTab: React.FC<ConsoleTabProps> = memo(
               itemContent={(_index, entry) => renderEntry(entry)}
             />
           ) : (
-            <div className="h-full overflow-y-auto overflow-x-hidden">
+            <div className="h-full overflow-x-hidden overflow-y-auto">
               {filteredEntries.map((entry) => (
                 <React.Fragment key={entry.id}>
                   {renderEntry(entry)}

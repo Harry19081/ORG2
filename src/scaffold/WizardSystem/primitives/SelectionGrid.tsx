@@ -32,7 +32,6 @@
  * />
  * ```
  */
-import type { LucideIcon } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -43,6 +42,7 @@ import type {
 } from "@src/components/ActionCard/types";
 import Button from "@src/components/Button";
 import { TYPOGRAPHY } from "@src/config/workstation/tokens";
+import type { IconSvgElement } from "@src/icons";
 
 // ============================================
 // Types
@@ -53,8 +53,8 @@ export interface SelectionGridOption<T extends string = string> {
   key: T;
   /** Display label */
   label: string;
-  /** Lucide icon component */
-  icon?: LucideIcon;
+  /** Hugeicons glyph data */
+  icon?: IconSvgElement;
   /** Custom icon element (takes precedence over icon) */
   iconElement?: React.ReactNode;
   /** Keep icon color unchanged when selected (e.g. brand icons like GitHub) */
@@ -91,7 +91,7 @@ interface SharedGridProps<T extends string = string> {
   cardClassName?: string;
   /** When using showSelect on cards, show the trailing checkmark (default true). */
   showSelectionCheck?: boolean;
-  /** Render inline choice cards as compact 36px segmented controls. */
+  /** Use 36px inline pills; defaults on for grids without descriptions. */
   compactCards?: boolean;
   /** Optional class name for the grid wrapper. */
   className?: string;
@@ -121,7 +121,7 @@ interface MultiSelectGridProps<
   onSelect?: never;
 }
 
-export type SelectionGridProps<T extends string = string> =
+type SelectionGridProps<T extends string = string> =
   | SingleSelectGridProps<T>
   | MultiSelectGridProps<T>;
 
@@ -144,7 +144,7 @@ function SelectionGrid<T extends string = string>(
     cardLayout = "inline",
     cardClassName = "",
     showSelectionCheck = true,
-    compactCards = false,
+    compactCards = !options.some((option) => option.description),
     className = "",
   } = props;
 

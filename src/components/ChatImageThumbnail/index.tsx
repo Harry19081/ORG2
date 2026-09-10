@@ -13,11 +13,14 @@
  *   3. absolute path  — read directly via `readFile`
  */
 import { readFile } from "@tauri-apps/plugin-fs";
-import { ImageIcon, ImageOff } from "lucide-react";
 import React, { memo, useCallback, useEffect, useState } from "react";
 
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
-import { uint8ArrayToDataUrl } from "@src/util/file/binaryUtils";
+import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
+import {
+  releaseImageUrl,
+  uint8ArrayToImageUrl,
+} from "@src/util/file/binaryUtils";
 import { imageRefToRustPath } from "@src/util/file/imageRefs";
 import { getImageMimeType } from "@src/util/file/previewTypes";
 
@@ -28,7 +31,7 @@ async function resolveImageSrc(ref: string): Promise<string> {
 
   const mimeType = getImageMimeType(filePath) ?? "image/png";
   const data = await readFile(filePath);
-  return uint8ArrayToDataUrl(data, mimeType);
+  return uint8ArrayToImageUrl(data, mimeType);
 }
 
 interface ChatImageThumbnailProps {
@@ -55,15 +58,23 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
     useEffect(() => {
       if (isDataUrl) return;
       let cancelled = false;
+      // Object URL owned by this effect run; released on teardown.
+      let objectUrl: string | null = null;
       resolveImageSrc(imageRef)
         .then((src) => {
-          if (!cancelled) setAsyncSrc(src);
+          if (cancelled) {
+            releaseImageUrl(src);
+            return;
+          }
+          objectUrl = src;
+          setAsyncSrc(src);
         })
         .catch(() => {
           if (!cancelled) setLoadFailed(true);
         });
       return () => {
         cancelled = true;
+        releaseImageUrl(objectUrl);
       };
     }, [imageRef, isDataUrl]);
 
@@ -86,7 +97,7 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
     return (
       <>
         <div
-          className={`group relative inline-flex flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
+          className={`group relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border-2 bg-fill-1 text-text-3 ${resolvedSrc ? "cursor-pointer" : "cursor-default"} ${sizeClassName}`}
           onClick={handleClick}
           data-image-state={
             resolvedSrc ? "ready" : loadFailed ? "unavailable" : "loading"
@@ -102,9 +113,17 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
               decoding="async"
             />
           ) : loadFailed ? (
-            <ImageOff size={16} strokeWidth={1.5} aria-label={alt} />
+            <HugeiconsIcon
+              icon={ImageNotFound01Icon}
+              data-icon="image-off"
+              size={16}
+              strokeWidth={1.5}
+              aria-label={alt}
+            />
           ) : (
-            <ImageIcon
+            <HugeiconsIcon
+              icon={Image01Icon}
+              data-icon="image-icon"
               size={16}
               strokeWidth={1.5}
               className="animate-pulse motion-reduce:animate-none"
@@ -113,11 +132,7 @@ export const ChatImageThumbnail: React.FC<ChatImageThumbnailProps> = memo(
           )}
         </div>
         {showOverlay && resolvedSrc && (
-          <ImagePreviewOverlay
-            dataUrl={resolvedSrc}
-            onClose={handleClose}
-            showCopyButton={false}
-          />
+          <ImagePreviewOverlay dataUrl={resolvedSrc} onClose={handleClose} />
         )}
       </>
     );

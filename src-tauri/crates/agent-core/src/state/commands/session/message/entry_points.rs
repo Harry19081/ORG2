@@ -8,9 +8,11 @@
 
 use crate::foundation::session_bridge::TurnIntentBridgeSource;
 use crate::persistence::AgentResponse;
+use crate::session::persistence as session_persistence;
 use crate::state::commands::session::identity::IdentityOverrides;
 use crate::state::AgentAppState;
 
+use super::exec_mode::mobile_remote_wire_mode;
 use super::send::send_message_impl;
 
 /// Wake-only entry point for the **background-job** completion hook
@@ -45,7 +47,10 @@ pub async fn send_message_impl_for_job_wake(
         None,
         None,
         true,
+        None,
+        None,
         false,
+        None,
         None,
         None,
         None,
@@ -55,15 +60,20 @@ pub async fn send_message_impl_for_job_wake(
     .await
 }
 
-/// Agent Org wake entry point with a stable scheduler idempotency key.
+/// Agent Org wake entry point with a scheduler idempotency key scoped to the
+/// durable work that requested the wake.
 ///
-/// The scheduler holds this key while the turn is queued or running, so
-/// concurrent watchdog, inbox, and task wake sources coalesce into one turn.
+/// Ordinary Member wakes keep one stable key while the turn is queued or
+/// running. Coordinator wakes for an exact formal-receipt batch add that
+/// batch's stable identity: concurrent delivery of the same facts still
+/// coalesces, while a later fact that arrived after the active Turn drained
+/// its input queues one trailing Turn instead of being mistaken for a retry.
 pub async fn send_message_impl_for_org_wake(
     state: &AgentAppState,
     session_id: String,
     org_run_id: &str,
     member_id: &str,
+    formal_receipt_batch_id: Option<&str>,
 ) -> Result<AgentResponse, String> {
     send_message_impl(
         state,
@@ -75,12 +85,176 @@ pub async fn send_message_impl_for_org_wake(
         None,
         None,
         true,
+        None,
+        None,
         false,
-        Some(format!("agent-org-wake:{org_run_id}:{member_id}")),
+        Some(agent_org_wake_client_message_id(
+            org_run_id,
+            member_id,
+            formal_receipt_batch_id,
+        )),
         None,
         Some(org_run_id.to_string()),
+        Some(member_id.to_string()),
         Some(org_run_id.to_string()),
         TurnIntentBridgeSource::Resume,
+    )
+    .await
+}
+
+/// Mobile remote entry point — records `TurnIntentBridgeSource::MobileRemote`
+/// and accepts an optional client-minted turn intent id from the phone.
+///
+/// The phone carries no mode selector and the `session.send` wire payload has
+/// no `mode` field, so this wrapper supplies the mode the desktop composer
+/// would have sent: the session's persisted `agent_exec_mode`. See
+/// `mobile_remote_wire_mode` for why passing `None` through is unsafe.
+pub async fn send_message_impl_for_mobile_remote(
+    state: &AgentAppState,
+    session_id: String,
+    content: String,
+    turn_intent_id: Option<String>,
+    model: Option<String>,
+    images: Option<Vec<String>>,
+) -> Result<AgentResponse, String> {
+    let mode_session_id = session_id.clone();
+    let persisted_mode =
+        tokio::task::spawn_blocking(move || session_persistence::get_session(&mode_session_id))
+            .await
+            .map_err(|error| format!("Mobile remote exec-mode resolver failed: {error}"))?
+            .map_err(|error| format!("Failed to read persisted agent exec mode: {error}"))?
+            .and_then(|record| record.agent_exec_mode);
+
+    send_message_impl(
+        state,
+        session_id,
+        content,
+        None,
+        IdentityOverrides {
+            model,
+            account_id: None,
+            workspace_root: None,
+            native_harness_type: None,
+        },
+        mobile_remote_wire_mode(persisted_mode.as_deref()),
+        images,
+        None,
+        false,
+        None,
+        None,
+        false,
+        None,
+        turn_intent_id,
+        None,
+        None,
+        None,
+        TurnIntentBridgeSource::MobileRemote,
+    )
+    .await
+}
+
+pub(crate) fn agent_org_wake_client_message_id(
+    org_run_id: &str,
+    member_id: &str,
+    formal_receipt_batch_id: Option<&str>,
+) -> String {
+    match formal_receipt_batch_id {
+        Some(batch_id) => format!("agent-org-wake:{org_run_id}:{member_id}:{batch_id}"),
+        None => format!("agent-org-wake:{org_run_id}:{member_id}"),
+    }
+}
+
+/// Re-enqueue one already-admitted DirectMember Turn after restart. The
+/// original EventStore source, Turn id, and client id are reused; admission
+/// returns the existing receipt and never mints a second user fact.
+pub(crate) async fn send_message_impl_for_direct_recovery(
+    state: &AgentAppState,
+    work: crate::coordination::agent_member_interventions::RecoverableUserDirectedWork,
+) -> Result<AgentResponse, String> {
+    send_message_impl(
+        state,
+        work.session_id,
+        work.dispatch_content,
+        Some(work.display_content),
+        IdentityOverrides::default(),
+        None,
+        work.images,
+        None,
+        false,
+        Some(work.source_event_id),
+        None,
+        true,
+        work.client_message_id,
+        Some(work.turn_intent_id),
+        None,
+        None,
+        Some(work.org_run_id),
+        TurnIntentBridgeSource::UserSubmit,
+    )
+    .await
+}
+
+pub(crate) async fn send_message_impl_for_user_directed_wake(
+    state: &AgentAppState,
+    wake: crate::tools::impls::orchestration::org_send_message::UserDirectedWake,
+) -> Result<AgentResponse, String> {
+    send_message_impl(
+        state,
+        wake.recipient_session_id,
+        wake.content,
+        Some(wake.display_text),
+        IdentityOverrides::default(),
+        None,
+        wake.images,
+        None,
+        false,
+        None,
+        None,
+        false,
+        Some(wake.turn_intent_id.clone()),
+        Some(wake.turn_intent_id),
+        None,
+        None,
+        Some(wake.org_run_id),
+        TurnIntentBridgeSource::AgentOrg,
+    )
+    .await
+}
+
+/// Submit a Coordinator message that originated on the Team Group surface.
+/// The exact user EventStore row is already durable; the common dispatcher
+/// reuses it instead of appending a second Root message.
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn send_message_impl_for_group_root(
+    state: &AgentAppState,
+    session_id: String,
+    org_run_id: String,
+    turn_intent_id: String,
+    client_message_id: String,
+    source_event_id: String,
+    content: String,
+    display_text: Option<String>,
+    images: Option<Vec<String>>,
+) -> Result<AgentResponse, String> {
+    send_message_impl(
+        state,
+        session_id,
+        content,
+        display_text,
+        IdentityOverrides::default(),
+        None,
+        images,
+        None,
+        false,
+        None,
+        Some(source_event_id),
+        false,
+        Some(client_message_id),
+        Some(turn_intent_id),
+        None,
+        None,
+        Some(org_run_id),
+        TurnIntentBridgeSource::UserSubmit,
     )
     .await
 }
@@ -117,7 +291,10 @@ pub async fn send_message_impl_for_test(
         None,
         None,
         false,
+        None,
+        None,
         false,
+        None,
         None,
         None,
         None,

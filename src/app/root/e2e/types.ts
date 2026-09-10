@@ -98,7 +98,7 @@ export interface ConfigureExistingOptions {
   repoPath?: string;
 }
 
-export type Ok<T> = { ok: true } & T;
+type Ok<T> = { ok: true } & T;
 export type Err = { ok: false; error: string };
 export type Result<T> = Ok<T> | Err;
 export type Json = Record<string, unknown>;
@@ -311,31 +311,22 @@ export interface E2EHelpers {
   agentOrgSessionRunView: (
     sessionId: string
   ) => Promise<Result<{ view: Json | null }>>;
-  agentOrgGroupChatHistoryPage: (
+  agentOrgGroupProjectionPage: (
     sessionId: string,
-    beforeId?: number | null,
+    cursor?: string | null,
     limit?: number
   ) => Promise<Result<{ page: Json }>>;
   agentOrgSessionInterventionState: (
     sessionId: string
   ) => Promise<Result<{ state: Json }>>;
-  agentOrgSessionEnterIntervention: (
-    sessionId: string
-  ) => Promise<Result<{ entered: boolean }>>;
-  agentOrgSessionReturnToWork: (
-    sessionId: string
-  ) => Promise<Result<{ returned: boolean }>>;
-  agentOrgSendGroupChatMessage: (
-    sessionId: string,
-    targetMemberId: string | null,
-    content: string
-  ) => Promise<Result<{ result: Json }>>;
   agentOrgPauseRun: (
-    sessionId: string
-  ) => Promise<Result<{ transitioned: boolean }>>;
+    sessionId: string,
+    requestId?: string
+  ) => Promise<Result<{ outcome: Json }>>;
   agentOrgResumeRun: (
-    sessionId: string
-  ) => Promise<Result<{ transitioned: boolean }>>;
+    sessionId: string,
+    requestId?: string
+  ) => Promise<Result<{ outcome: Json }>>;
   agentOrgSimulateAppRestart: () => Promise<
     Result<{
       intentsReconciled: number;
@@ -450,22 +441,6 @@ export interface E2EHelpers {
     source?: string | null;
     category?: string | null;
   }) => Promise<Result<{ learningId: string }>>;
-  lspGetWorkspaceConfig: (
-    workspacePath: string
-  ) => Promise<Result<{ config: Json }>>;
-  lspSetServerEnabled: (
-    workspacePath: string,
-    language: string,
-    enabled: boolean
-  ) => Promise<{ ok: true } | Err>;
-  lintGetWorkspaceConfig: (
-    workspacePath: string
-  ) => Promise<Result<{ config: Json }>>;
-  lintSetToolEnabled: (
-    workspacePath: string,
-    toolId: string,
-    enabled: boolean
-  ) => Promise<{ ok: true } | Err>;
   promptDump: (
     sessionId: string
   ) => Promise<Result<{ dump: PromptDumpResult }>>;
@@ -511,6 +486,7 @@ export interface E2EHelpers {
   debugSessionOrgRuntimeSnapshot: (
     sessionId: string
   ) => Promise<Result<{ snapshot: Json }>>;
+  debugAgentOrgEnableRedesign: () => Promise<Result<{ enabled: true }>>;
   debugSessionExecuteTool: (
     sessionId: string,
     toolName: string,
@@ -520,11 +496,6 @@ export interface E2EHelpers {
     sessionId: string,
     toolName: string,
     params: Json
-  ) => Promise<Result<{ result: Json }>>;
-  agentOrgSendUserMessageToMember: (
-    sessionId: string,
-    memberId: string,
-    content: string
   ) => Promise<Result<{ result: Json }>>;
   launchSession: (params: Json) => Promise<Result<{ result: Json }>>;
   reloadSessionList: () => Promise<
@@ -678,7 +649,6 @@ export interface E2EHelpers {
       isPendingCancel: boolean;
       isQueueEditing: boolean;
       userInitiatedCancel: boolean;
-      queueFlushRequest: number;
       queuedMessages: Array<{ id: string; sessionId: string; content: string }>;
       runtimeError: string | null;
       rawEvents: Array<{
@@ -820,25 +790,6 @@ export interface E2EHelpers {
       agentConfigRootCount: number;
     }>
   >;
-  seedBenchmarkRun: (opts: {
-    batchId?: string;
-    sourcePath: string;
-    taskIds: string[];
-    activeTaskId?: string;
-  }) => Promise<Result<{ batchId: string; activeTaskId: string | null }>>;
-  inspectBenchmarkRun: () => Promise<
-    Result<{
-      batchStatus: Json | null;
-      activeBatchId: string | null;
-      activeTaskId: string | null;
-    }>
-  >;
-  startLocalDockerBenchmarkRun: (opts: {
-    sourcePath: string;
-    taskId: string;
-    patch: string;
-  }) => Promise<Result<{ status: Json }>>;
-  getBenchmarkRunStatus: (runId: string) => Promise<Result<{ status: Json }>>;
   seedUserPresence: (opts: {
     roles: CustomRoleDefinition[];
     presence: UserPresenceState;

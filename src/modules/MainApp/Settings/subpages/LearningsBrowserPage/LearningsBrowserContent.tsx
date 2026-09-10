@@ -1,7 +1,6 @@
 import {
   PanelHeader,
   PanelRefreshButton,
-  Placeholder,
   ScrollFadeContainer,
 } from "@/src/modules/shared/layouts/blocks";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 import type { LearningRecord } from "@src/api/tauri/rpc/schemas/learning";
 import Message from "@src/components/Message";
+import { Placeholder } from "@src/components/Placeholder";
 import { buildSettingsPath } from "@src/config/mainAppPaths";
 import { useLearningsBrowser } from "@src/hooks/settings";
 
@@ -171,12 +171,6 @@ export const LearningsBrowserContent: React.FC<
     [t]
   );
 
-  const setSingleExpandedLearning = useCallback((row: LearningRecord) => {
-    setExpandedLearningKeys((current) =>
-      current.includes(row.id) ? [] : [row.id]
-    );
-  }, []);
-
   const { columns, selectFilters } = useLearningsTableConfig({
     variant,
     filters,
@@ -218,7 +212,6 @@ export const LearningsBrowserContent: React.FC<
       expandedLearningKeys={expandedLearningKeys}
       t={t}
       onSearchChange={handleSearchChange}
-      onExpandedLearningClick={setSingleExpandedLearning}
       onExpandedRowsChange={(keys) => setExpandedLearningKeys(keys.slice(-1))}
       onLoadMore={() => setVisibleLimit(getNextLearningsLimit)}
       renderExpandedLearningCard={(row) => (
@@ -262,7 +255,7 @@ export const LearningsBrowserContent: React.FC<
       />
 
       <ScrollFadeContainer className="scrollbar-overlay min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-4 px-6 pb-6 pt-3">
+        <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-4 px-6 pt-3 pb-6">
           {status && <LearningsStatusCard status={status} t={t} />}
 
           {error ? (

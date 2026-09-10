@@ -1,17 +1,20 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { CircleDot, GitPullRequest, History } from "lucide-react";
 import React, { memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useRepoGitInitialization } from "@src/hooks/git";
 import {
-  WorkstationHeaderSectionSeparator,
-  WorkstationToolbarTooltip,
-} from "@src/modules/WorkStation/shared";
+  CircleDotIcon,
+  GitCommitIcon,
+  GitPullRequestIcon,
+  HugeiconsIcon,
+} from "@src/icons";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
-import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationAtom";
+import { workStationPrimarySidebarCollapsedPersistAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeStatusBarAppAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import {
@@ -71,44 +74,65 @@ const SourceControlHeaderActionsComponent: React.FC = () => {
         className="flex shrink-0 items-center gap-px"
         data-tour-target={CODE_EDITOR_TOUR_TARGETS.gitHistory}
       >
-        <WorkstationToolbarTooltip label={historyLabel}>
+        <ToolbarTooltip label={historyLabel}>
           <Button
             htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
-            className={historyActive ? "!bg-fill-2 !text-primary-6" : ""}
+            className={historyActive ? "bg-fill-2! text-primary-6!" : ""}
             onClick={handleToggleHistory}
             aria-label={historyLabel}
-            icon={<History size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+            icon={
+              <HugeiconsIcon
+                icon={GitCommitIcon}
+                data-icon="git-commit"
+                size={HEADER_ICON_SIZE.sm}
+                strokeWidth={2}
+              />
+            }
           />
-        </WorkstationToolbarTooltip>
-        <WorkstationToolbarTooltip label={prLabel}>
+        </ToolbarTooltip>
+        <ToolbarTooltip label={prLabel}>
           <Button
             htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
-            className={prActive ? "!bg-fill-2 !text-primary-6" : ""}
+            className={prActive ? "bg-fill-2! text-primary-6!" : ""}
             onClick={handleTogglePr}
             aria-label={prLabel}
-            icon={<GitPullRequest size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+            icon={
+              <HugeiconsIcon
+                icon={GitPullRequestIcon}
+                data-icon="git-pull-request"
+                size={HEADER_ICON_SIZE.sm}
+                strokeWidth={2}
+              />
+            }
           />
-        </WorkstationToolbarTooltip>
-        <WorkstationToolbarTooltip label={issuesLabel}>
+        </ToolbarTooltip>
+        <ToolbarTooltip label={issuesLabel}>
           <Button
             htmlType="button"
             variant="tertiary"
             size="small"
             iconOnly
-            className={issuesActive ? "!bg-fill-2 !text-primary-6" : ""}
+            className={issuesActive ? "bg-fill-2! text-primary-6!" : ""}
             onClick={handleToggleIssues}
             aria-label={issuesLabel}
-            icon={<CircleDot size={HEADER_ICON_SIZE.sm} strokeWidth={2} />}
+            icon={
+              <HugeiconsIcon
+                icon={CircleDotIcon}
+                data-icon="circle-dot"
+                size={HEADER_ICON_SIZE.sm}
+                strokeWidth={2}
+              />
+            }
           />
-        </WorkstationToolbarTooltip>
+        </ToolbarTooltip>
       </div>
-      <WorkstationHeaderSectionSeparator className="mx-1" />
+      <HeaderSectionSeparator className="mx-1" />
     </>
   );
 };

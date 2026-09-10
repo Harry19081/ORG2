@@ -9,20 +9,23 @@
  * - Click outside to close
  * - ESC key to close
  * - Focus trap for accessibility
+ * - Opening focus lands in the first fillable field, else the primary action
  * - Smooth animations
  * - Keyboard navigation support
  * - Support for okButtonProps and cancelButtonProps for button styling
  */
-import { X } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import Button from "@src/components/Button";
-import {
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
+// Deep imports on purpose: the `layouts/blocks` barrel re-exports
+// SessionTable → SettingsTable → @tanstack/react-table, and Modal sits in the
+// startup graph (QuitConfirmationModal is mounted at boot).
+import PanelFooter from "@src/modules/shared/layouts/blocks/PanelFooter";
+import PanelHeader, {
   PANEL_HEADER_TOKENS,
-  PanelFooter,
-  PanelHeader,
-} from "@src/modules/shared/layouts/blocks";
+} from "@src/modules/shared/layouts/blocks/PanelHeader";
 import { useOverlayLayer } from "@src/store/ui/overlayLayerAtom";
 
 import "./index.scss";
@@ -34,7 +37,31 @@ import "./index.scss";
  */
 export const MODAL_SELECT_Z_INDEX = 10_000;
 
-export interface ModalProps {
+/**
+ * Controls a dialog expects the user to TYPE INTO. Checkboxes, radios, and the
+ * button-shaped `input` types are actions rather than text entry, so they are
+ * excluded — a dialog whose only "input" is a checkbox still focuses its
+ * primary action.
+ */
+const MODAL_FIELD_SELECTOR = [
+  'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"])',
+  "textarea",
+  "select",
+  '[contenteditable="true"]',
+  '[contenteditable="plaintext-only"]',
+].join(", ");
+
+const isFillableField = (element: HTMLElement) => {
+  if (element.matches(":disabled") || element.hasAttribute("readonly")) {
+    return false;
+  }
+  // jsdom (and older engines) report tabIndex -1 for contenteditable hosts
+  // even though they are focusable, so the attribute is the check there.
+  if (element.hasAttribute("contenteditable")) return true;
+  return element.tabIndex >= 0;
+};
+
+interface ModalProps {
   /** Controls modal visibility */
   visible: boolean;
   /** Callback when modal is closed */
@@ -45,6 +72,12 @@ export interface ModalProps {
   onOk?: () => void | Promise<void>;
   /** Modal title */
   title?: React.ReactNode;
+  /** Accessible name for dialogs without a visible title; overrides title. */
+  "aria-label"?: string;
+  /** Optional artwork above the header. Use an empty alt for decorative images. */
+  image?: { src: string; alt: string };
+  /** Custom media above the header; takes precedence over image when provided. */
+  headerMedia?: React.ReactNode;
   /** Modal content */
   children?: React.ReactNode;
   /** Footer content (buttons, etc) */
@@ -71,6 +104,12 @@ export interface ModalProps {
   };
   /** Custom close icon */
   closeIcon?: React.ReactNode;
+  /** Optional back action rendered at the left edge of the header, before the title. */
+  onBack?: () => void;
+  /** Accessible label and tooltip for the optional back action. */
+  backLabel?: string;
+  /** Additional icon-only actions displayed before the close button. */
+  headerActions?: React.ReactNode;
   /** Additional className for the modal container */
   className?: string;
   /** Additional className for the modal body */
@@ -81,6 +120,8 @@ export interface ModalProps {
   maskClosable?: boolean;
   /** Allow ESC key to close modal */
   escToExit?: boolean;
+  /** Optional field to focus after opening, instead of the default action. */
+  initialFocusRef?: React.RefObject<HTMLElement | null>;
   /** Border radius in pixels - defaults to 16 for modern look */
   radius?: number;
   /** Modal width */
@@ -101,6 +142,9 @@ const Modal: React.FC<ModalProps> = ({
   onCancel,
   onOk,
   title,
+  image,
+  headerMedia,
+  "aria-label": ariaLabel,
   children,
   footer,
   footerTopBorder = true,
@@ -111,11 +155,15 @@ const Modal: React.FC<ModalProps> = ({
   okButtonProps,
   cancelButtonProps,
   closeIcon,
+  onBack,
+  backLabel,
+  headerActions,
   className = "",
   bodyClassName = "p-3",
   closable = true,
   maskClosable = true,
   escToExit = true,
+  initialFocusRef,
   radius = 16,
   width,
   size,
@@ -123,6 +171,7 @@ const Modal: React.FC<ModalProps> = ({
   topDragZoneHeight = 0,
   style,
 }) => {
+  const titleId = useId();
   const handleClose = onClose || onCancel;
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
@@ -190,7 +239,9 @@ const Modal: React.FC<ModalProps> = ({
       const isLoading = okButtonProps?.loading ?? okLoading;
       const isDisabled = okButtonProps?.disabled;
       const primaryVariant =
-        okButtonProps?.status === "danger" ? "danger" : "primary";
+        !okButtonProps?.status || okButtonProps.status === "default"
+          ? "primary"
+          : okButtonProps.status;
 
       return (
         <PanelFooter
@@ -252,21 +303,50 @@ const Modal: React.FC<ModalProps> = ({
     if (!visible || !modalRef.current) return;
 
     const modal = modalRef.current;
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const primaryElement = modal.querySelector(
-      "[data-modal-primary-action]"
-    ) as HTMLElement | null;
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[
-      focusableElements.length - 1
-    ] as HTMLElement;
-    const initialFocusElement = primaryElement ?? firstElement;
+    const getFocusableElements = () =>
+      Array.from(
+        modal.querySelectorAll<HTMLElement>(
+          'button, [href], input:not([type="hidden"]), select, textarea, [tabindex]'
+        )
+      ).filter(
+        (element) => element.tabIndex >= 0 && !element.matches(":disabled")
+      );
+
+    /**
+     * Focus targets in priority order: an explicitly requested field, then
+     * the first control the dialog asks the user to FILL IN, then the primary
+     * action, then whatever is focusable at all.
+     *
+     * The field comes before the primary action on purpose. Every dialog here
+     * renders its close button in the header, i.e. first in DOM order, so the
+     * old "primary action, else first focusable" rule parked the caret on the
+     * X for any dialog without a `data-modal-primary-action` — and the timeout
+     * below stole focus back from fields that had set `autoFocus` themselves.
+     */
+    const getFocusCandidates = () => {
+      const primaryElement = modal.querySelector<HTMLElement>(
+        "[data-modal-primary-action]"
+      );
+      const firstField =
+        Array.from(
+          modal.querySelectorAll<HTMLElement>(MODAL_FIELD_SELECTOR)
+        ).find(isFillableField) ?? null;
+
+      return [
+        initialFocusRef?.current ?? null,
+        firstField,
+        primaryElement?.matches(":disabled") ? null : primaryElement,
+        getFocusableElements()[0] ?? null,
+      ].filter((element): element is HTMLElement => element !== null);
+    };
 
     const handleTab = (event: KeyboardEvent) => {
       if (event.key !== "Tab") return;
 
+      // Results and enabled actions can change after the dialog opens.
+      const focusableElements = getFocusableElements();
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
       if (event.shiftKey) {
         if (document.activeElement === firstElement) {
           event.preventDefault();
@@ -282,15 +362,27 @@ const Modal: React.FC<ModalProps> = ({
 
     modal.addEventListener("keydown", handleTab as EventListener);
 
-    // Auto-focus the primary action when provided, otherwise the first focusable element.
-    setTimeout(() => {
-      initialFocusElement?.focus();
+    // Focus the first field, the primary action, or the first control. The
+    // candidates are resolved on the tick, not when the effect ran, so a body
+    // that fills in asynchronously is still covered.
+    const focusTimeout = setTimeout(() => {
+      // Something inside already owns focus — a field with `autoFocus`, or a
+      // control the user reached first. Never take it away from them.
+      if (modal.contains(document.activeElement)) return;
+
+      for (const candidate of getFocusCandidates()) {
+        candidate.focus();
+        // focus() is a no-op on an element that is not actually focusable
+        // (hidden subtree, inert ancestor); fall through to the next one.
+        if (document.activeElement === candidate) return;
+      }
     }, 100);
 
     return () => {
+      clearTimeout(focusTimeout);
       modal.removeEventListener("keydown", handleTab as EventListener);
     };
-  }, [visible]);
+  }, [initialFocusRef, visible]);
 
   if (!visible) return null;
 
@@ -304,10 +396,17 @@ const Modal: React.FC<ModalProps> = ({
       onClick={handleMaskClick}
       role="dialog"
       aria-modal="true"
-      aria-label={typeof title === "string" ? title : undefined}
+      aria-label={ariaLabel ?? (typeof title === "string" ? title : undefined)}
+      aria-labelledby={
+        !ariaLabel && title && typeof title !== "string" ? titleId : undefined
+      }
     >
       {/* Backdrop/Mask */}
-      <div className="liquid-modal-mask" />
+      <div
+        className="liquid-modal-mask"
+        onClick={handleMaskClick}
+        aria-hidden
+      />
 
       {topDragZoneHeight > 0 && (
         <div
@@ -326,30 +425,50 @@ const Modal: React.FC<ModalProps> = ({
           style={{ ...mergedStyle, borderRadius: radius }}
           onClick={(e) => e.stopPropagation()}
         >
+          {headerMedia ??
+            (image && (
+              <img
+                className="liquid-modal-image"
+                src={image.src}
+                alt={image.alt}
+                draggable={false}
+              />
+            ))}
           {/* Header */}
           {title && (
             <PanelHeader
               title={typeof title === "string" ? title : undefined}
+              onBack={onBack}
+              backLabel={backLabel}
               actions={
-                closable ? (
-                  <Button
-                    {...PANEL_HEADER_TOKENS.actionButton}
-                    icon={
-                      closeIcon || (
-                        <X
-                          size={PANEL_HEADER_TOKENS.buttonIconSize}
-                          strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
-                        />
-                      )
-                    }
-                    onClick={handleClose}
-                    title="Close"
-                    htmlType="button"
-                  />
+                headerActions || closable ? (
+                  <div className="flex items-center gap-1">
+                    {headerActions}
+                    {closable ? (
+                      <Button
+                        {...PANEL_HEADER_TOKENS.actionButton}
+                        icon={
+                          closeIcon || (
+                            <HugeiconsIcon
+                              icon={Cancel01Icon}
+                              data-icon="x"
+                              size={PANEL_HEADER_TOKENS.buttonIconSize}
+                              strokeWidth={PANEL_HEADER_TOKENS.iconStrokeWidth}
+                            />
+                          )
+                        }
+                        onClick={handleClose}
+                        title="Close"
+                        htmlType="button"
+                      />
+                    ) : null}
+                  </div>
                 ) : undefined
               }
             >
-              {typeof title === "string" ? undefined : title}
+              {typeof title === "string" ? undefined : (
+                <div id={titleId}>{title}</div>
+              )}
             </PanelHeader>
           )}
 

@@ -1,16 +1,12 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Placeholder } from "@src/components/Placeholder";
 import Select, { type SelectOption } from "@src/components/Select";
 import { TableSurface } from "@src/modules/WorkStation/shared/TableSurface";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 
 import "./index.scss";
-import type {
-  SpreadsheetData,
-  SpreadsheetEditorProps,
-  SpreadsheetSheet,
-} from "./types";
+import type { SpreadsheetEditorProps, SpreadsheetSheet } from "./types";
 import { useSpreadsheetTableAdapter } from "./useSpreadsheetTableAdapter";
 
 export const SpreadsheetEditor: React.FC<SpreadsheetEditorProps> = memo(
@@ -113,5 +109,5 @@ export const SpreadsheetEditor: React.FC<SpreadsheetEditorProps> = memo(
 
 SpreadsheetEditor.displayName = "SpreadsheetEditor";
 
-export type { SpreadsheetData, SpreadsheetEditorProps, SpreadsheetSheet };
+export type { SpreadsheetEditorProps, SpreadsheetSheet };
 export default SpreadsheetEditor;

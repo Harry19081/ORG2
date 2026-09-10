@@ -10,9 +10,9 @@ import { useTranslation } from "react-i18next";
 import { Virtuoso } from "react-virtuoso";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
+import { Placeholder } from "@src/components/Placeholder";
 import { ComposerStackListRow } from "@src/engines/ChatPanel/blocks/primitives";
 import { FileHeader } from "@src/modules/WorkStation/shared";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
 import {
   type DirectoryEntryGitMeta,
   type DirectoryEntryRow,
@@ -314,7 +314,7 @@ const DirectoryExplorerContent: React.FC<DirectoryExplorerContentProps> = memo(
           />
         ) : (
           <Virtuoso
-            className="min-h-0 flex-1 pt-1 scrollbar-hide"
+            className="scrollbar-hide min-h-0 flex-1 pt-1"
             data={listItems}
             computeItemKey={(_index, item) => `${item.type}:${item.path}`}
             fixedItemHeight={DIRECTORY_ROW_HEIGHT}

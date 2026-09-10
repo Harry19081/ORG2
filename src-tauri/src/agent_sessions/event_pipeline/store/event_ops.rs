@@ -7,8 +7,10 @@ use std::collections::HashSet;
 
 use super::helpers::{
     is_authoritative_transcript_message, is_completed_authoritative_stream_transcript,
-    is_synthetic_transcript_placeholder, normalized_event_text,
-    stream_placeholder_prefix_for_authoritative, transcript_message_key,
+    is_synthetic_transcript_placeholder, logical_user_turn_key, normalize_user_text,
+    normalized_event_text, preserve_synthetic_turn_intent,
+    stream_placeholder_prefix_for_authoritative, transcript_message_key, transcript_text,
+    user_turn_projection_authority,
 };
 use super::{
     active_shell_replays_for_session, bound_shell_replay_state, capture_shell_replay_bookmarks,
@@ -55,6 +57,12 @@ impl EventStore {
             self.version += 1;
             return;
         }
+        if let Some(changed) = self.reconcile_duplicate_user_turn(&mut event) {
+            if changed {
+                self.version += 1;
+            }
+            return;
+        }
 
         if let Some(&idx) = self.id_index.get(&event.id) {
             if Self::would_downgrade_terminal_tool_call(&self.events[idx], &event) {
@@ -72,7 +80,7 @@ impl EventStore {
             self.mark_changed(event_id);
         } else {
             if is_authoritative_transcript_message(&event) {
-                self.remove_matching_synthetic_transcript_placeholders(&event);
+                self.remove_matching_synthetic_transcript_placeholder(&mut event);
             }
             let event_id = event.id.clone();
             let idx = self.events.len();
@@ -219,20 +227,56 @@ impl EventStore {
         self.remove_events_by_ids(existing_ids)
     }
 
-    pub fn remove_synthetic_user_inputs(&mut self) -> usize {
+    /// With no scope, removes every synthetic placeholder (legacy behavior).
+    /// Intent-bearing placeholders are removed only by the same durable turn
+    /// id. Native history replay may re-stamp an older turn with a timestamp
+    /// later than a new optimistic row, so `older_than` is not valid evidence
+    /// for modern rows. Legacy placeholders retain content/time reconciliation.
+    pub fn remove_synthetic_user_inputs(
+        &mut self,
+        scope: Option<(&[String], &[String], Option<&str>)>,
+    ) -> usize {
+        let scope = scope.map(|(contents, turn_intent_ids, older_than)| {
+            let targets: std::collections::HashSet<String> = contents
+                .iter()
+                .map(|content| normalize_user_text(content))
+                .collect();
+            let intent_targets: std::collections::HashSet<String> =
+                turn_intent_ids.iter().cloned().collect();
+            (targets, intent_targets, older_than.map(str::to_string))
+        });
+        let should_remove = |event: &SessionEvent| -> bool {
+            if event.source != EventSource::User || !is_synthetic_transcript_placeholder(event) {
+                return false;
+            }
+            let Some((targets, intent_targets, older_than)) = &scope else {
+                return true;
+            };
+            if let Some(turn_intent_id) = event
+                .result
+                .get("turnIntentId")
+                .and_then(|value| value.as_str())
+                .filter(|value| !value.is_empty())
+            {
+                return intent_targets.contains(turn_intent_id);
+            }
+            let content_matched = transcript_text(event)
+                .map(|text| targets.contains(&normalize_user_text(&text)))
+                .unwrap_or(false);
+            let predates_newest_real = older_than.as_deref().is_some_and(|bound| {
+                !event.created_at.is_empty() && event.created_at.as_str() < bound
+            });
+            content_matched || predates_newest_real
+        };
         let removed_ids: Vec<String> = self
             .events
             .iter()
-            .filter(|event| {
-                event.source == EventSource::User && is_synthetic_transcript_placeholder(event)
-            })
+            .filter(|event| should_remove(event))
             .map(|event| event.id.clone())
             .collect();
         let removed = removed_ids.len();
         if removed > 0 {
-            self.events.retain(|event| {
-                !(event.source == EventSource::User && is_synthetic_transcript_placeholder(event))
-            });
+            self.events.retain(|event| !should_remove(event));
             for event_id in removed_ids {
                 self.mark_removed(event_id);
             }
@@ -421,30 +465,76 @@ impl EventStore {
     /// marker, while backend parser/runtime events do not. Matching is scoped to
     /// transcript source and normalized message text so legitimate repeated
     /// authoritative messages are preserved.
-    pub(super) fn remove_matching_synthetic_transcript_placeholders(
+    pub(super) fn remove_matching_synthetic_transcript_placeholder(
         &mut self,
-        authoritative: &SessionEvent,
+        authoritative: &mut SessionEvent,
     ) -> usize {
         let Some(authoritative_key) = transcript_message_key(authoritative) else {
             return 0;
         };
 
-        let removed_ids = self.matching_synthetic_transcript_placeholder_ids(&authoritative_key);
-        self.remove_events_by_ids(removed_ids)
+        let Some((removed_id, turn_intent_id)) =
+            self.matching_synthetic_transcript_placeholder(&authoritative_key)
+        else {
+            return 0;
+        };
+        preserve_synthetic_turn_intent(authoritative, turn_intent_id.as_deref());
+        self.remove_events_by_ids(vec![removed_id])
     }
 
-    fn matching_synthetic_transcript_placeholder_ids(
+    /// Reconcile two transport projections of the same accepted user turn.
+    ///
+    /// SDE first emits a low-level `user_input` activity and then persists the
+    /// canonical `user_message`. Both are useful producer-side signals, but
+    /// EventStore is the transcript boundary and must expose exactly one row.
+    /// Return `Some(changed)` when the incoming event was consumed here.
+    pub(super) fn reconcile_duplicate_user_turn(
+        &mut self,
+        incoming: &mut SessionEvent,
+    ) -> Option<bool> {
+        let incoming_key = logical_user_turn_key(incoming)?;
+        let existing_idx = self.events.iter().position(|existing| {
+            existing.id != incoming.id
+                && logical_user_turn_key(existing).as_deref() == Some(incoming_key.as_str())
+        })?;
+
+        if user_turn_projection_authority(incoming)
+            <= user_turn_projection_authority(&self.events[existing_idx])
+        {
+            return Some(false);
+        }
+
+        incoming.created_at = self.events[existing_idx].created_at.clone();
+        preserve_first_insert_replay(&self.events[existing_idx], incoming);
+        let removed_id = self.events[existing_idx].id.clone();
+        let incoming_id = incoming.id.clone();
+        self.events[existing_idx] = incoming.clone();
+        self.mark_removed(removed_id);
+        self.mark_changed(incoming_id);
+        self.rebuild_indexes();
+        Some(true)
+    }
+
+    fn matching_synthetic_transcript_placeholder(
         &self,
         authoritative_key: &(EventSource, String),
-    ) -> Vec<String> {
+    ) -> Option<(String, Option<String>)> {
         self.events
             .iter()
-            .filter(|event| {
+            .find(|event| {
                 is_synthetic_transcript_placeholder(event)
                     && transcript_message_key(event).as_ref() == Some(authoritative_key)
             })
-            .map(|event| event.id.clone())
-            .collect()
+            .map(|event| {
+                (
+                    event.id.clone(),
+                    event
+                        .result
+                        .get("turnIntentId")
+                        .and_then(|value| value.as_str())
+                        .map(str::to_string),
+                )
+            })
     }
 
     pub(super) fn remove_events_by_ids(&mut self, removed_ids: Vec<String>) -> usize {

@@ -15,16 +15,16 @@
  * Uses SectionContainer + SectionRow + SECTION_GAP_CLASSES.
  */
 import { useAtomValue } from "jotai";
-import { ClipboardCopy, Keyboard, ScanSearch } from "lucide-react";
 import type { FC } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import Select from "@src/components/Select";
 import Textarea from "@src/components/Textarea";
+import { ClipboardCopyIcon, KeyboardIcon, SearchAreaIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SectionContainer,
@@ -102,17 +102,17 @@ const GenericSetup: FC<AgentSetupProps> = ({
       [GENERIC_SETUP_METHOD.AUTODETECT]: {
         key: GENERIC_SETUP_METHOD.AUTODETECT,
         label: t("keyVault.autodetect"),
-        icon: ScanSearch,
+        icon: SearchAreaIcon,
       },
       [GENERIC_SETUP_METHOD.ENTER_KEY]: {
         key: GENERIC_SETUP_METHOD.ENTER_KEY,
         label: t("keyVault.enterKey"),
-        icon: Keyboard,
+        icon: KeyboardIcon,
       },
       [GENERIC_SETUP_METHOD.EXTRACT]: {
         key: GENERIC_SETUP_METHOD.EXTRACT,
         label: t("keyVault.extractConfig"),
-        icon: ClipboardCopy,
+        icon: ClipboardCopyIcon,
       },
     };
 
@@ -310,13 +310,13 @@ const GenericSetup: FC<AgentSetupProps> = ({
             </SectionRow>
           </SectionContainer>
           {autoDetectError && (
-            <InlineAlert
+            <PageNotice
               type="danger"
               title={autoDetectError}
               onClose={onClearAutoDetectError}
             >
               {t("keyVault.genericDetectErrorHint")}
-            </InlineAlert>
+            </PageNotice>
           )}
         </>
       )}
@@ -466,7 +466,7 @@ const GenericSetup: FC<AgentSetupProps> = ({
             </SectionRow>
           </SectionContainer>
           {extractError && (
-            <InlineAlert
+            <PageNotice
               type="danger"
               title={extractError}
               onClose={onClearExtractError}

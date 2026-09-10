@@ -14,13 +14,6 @@
  */
 import { open as openExternal } from "@tauri-apps/plugin-shell";
 import { useAtomValue } from "jotai";
-import {
-  Download,
-  GitFork,
-  Search,
-  SquareArrowOutUpRight,
-  Star,
-} from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -32,18 +25,27 @@ import {
   searchReposLocal,
 } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
+import PageNotice from "@src/components/PageNotice";
 import TabPill from "@src/components/TabPill";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
 import { createLogger } from "@src/hooks/logger";
 import {
+  Download01Icon,
+  GitForkIcon,
+  HugeiconsIcon,
+  Search01Icon,
+  SquareArrowUpRight02Icon,
+  StarIcon,
+} from "@src/icons";
+import {
   effectiveWorkspaceDefaultRepoLocationAtom,
   workspaceCustomDefaultRepoPathAtom,
 } from "@src/store/config/configAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { resolveDefaultRepoParentPath } from "@src/util/workspace/defaultRepoPath";
 
 const logger = createLogger("WorkspaceExplorePanelView");
@@ -59,24 +61,6 @@ function formatStarCount(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}k`;
   return value.toString();
-}
-
-function formatRelativeTime(iso: string): string {
-  if (!iso) return "";
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return "";
-  const elapsed = Date.now() - then;
-  const minute = 60_000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-  const month = 30 * day;
-  const year = 365 * day;
-  if (elapsed < hour)
-    return `${Math.max(1, Math.round(elapsed / minute))}m ago`;
-  if (elapsed < day) return `${Math.round(elapsed / hour)}h ago`;
-  if (elapsed < month) return `${Math.round(elapsed / day)}d ago`;
-  if (elapsed < year) return `${Math.round(elapsed / month)}mo ago`;
-  return `${Math.round(elapsed / year)}y ago`;
 }
 
 interface SearchRepoCardProps {
@@ -109,7 +93,7 @@ const SearchRepoCard: React.FC<SearchRepoCardProps> = ({
               {repo.full_name}
             </span>
             {repo.archived ? (
-              <span className="rounded bg-warning-2 px-1 py-px text-[10px] uppercase text-warning-6">
+              <span className="rounded bg-warning-2 px-1 py-px text-[10px] text-warning-6 uppercase">
                 archived
               </span>
             ) : null}
@@ -125,16 +109,26 @@ const SearchRepoCard: React.FC<SearchRepoCardProps> = ({
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-text-3">
             {repo.language ? <span>{repo.language}</span> : null}
             <span className="inline-flex items-center gap-1">
-              <Star size={11} strokeWidth={1.75} />
+              <HugeiconsIcon
+                icon={StarIcon}
+                data-icon="star"
+                size={11}
+                strokeWidth={1.75}
+              />
               {formatStarCount(repo.stargazers_count)}
             </span>
             <span className="inline-flex items-center gap-1">
-              <GitFork size={11} strokeWidth={1.75} />
+              <HugeiconsIcon
+                icon={GitForkIcon}
+                data-icon="git-fork"
+                size={11}
+                strokeWidth={1.75}
+              />
               {formatStarCount(repo.forks_count)}
             </span>
             {repo.license ? <span>{repo.license}</span> : null}
             {repo.updated_at ? (
-              <span>{formatRelativeTime(repo.updated_at)}</span>
+              <span>{formatRelativeTime(repo.updated_at, "nano")}</span>
             ) : null}
           </div>
           {repo.topics.length > 0 ? (
@@ -156,7 +150,13 @@ const SearchRepoCard: React.FC<SearchRepoCardProps> = ({
             size="small"
             shape="circle"
             iconOnly
-            icon={<SquareArrowOutUpRight size={13} />}
+            icon={
+              <HugeiconsIcon
+                icon={SquareArrowUpRight02Icon}
+                data-icon="square-arrow-out-up-right"
+                size={13}
+              />
+            }
             onClick={() => onOpen(repo)}
             aria-label={t("explore.openOnGithub", { defaultValue: "GitHub" })}
           />
@@ -165,7 +165,13 @@ const SearchRepoCard: React.FC<SearchRepoCardProps> = ({
             size="small"
             shape="circle"
             iconOnly
-            icon={<Download size={13} />}
+            icon={
+              <HugeiconsIcon
+                icon={Download01Icon}
+                data-icon="download"
+                size={13}
+              />
+            }
             onClick={() => onClone(repo)}
             disabled={cloning}
             aria-label={
@@ -325,7 +331,9 @@ const WorkspaceExplorePanelView: React.FC = () => {
       }`}
       style={{ lineHeight: 0 }}
     >
-      <Search
+      <HugeiconsIcon
+        icon={Search01Icon}
+        data-icon="search"
         size={INPUT_AREA_BUTTONS.iconSize}
         strokeWidth={2}
         className="block text-[#fff]"
@@ -338,7 +346,7 @@ const WorkspaceExplorePanelView: React.FC = () => {
       className={`flex w-full flex-col items-center gap-4 ${showHero ? "text-center" : ""}`}
     >
       <h1
-        className={`${titleSizeClass} font-semibold leading-tight text-text-1`}
+        className={`${titleSizeClass} leading-tight font-semibold text-text-1`}
       >
         Find a repo and turn it into your next app
       </h1>
@@ -359,7 +367,7 @@ const WorkspaceExplorePanelView: React.FC = () => {
           allowClear
           size="large"
           autoFocus
-          className="!h-auto [&_.input-inner]:!h-auto [&_.input-inner]:!rounded-full [&_.input-inner]:!pb-1 [&_.input-inner]:!pl-5 [&_.input-inner]:!pr-2 [&_.input-inner]:!pt-1"
+          className="h-auto! [&_.input-inner]:h-auto! [&_.input-inner]:rounded-full! [&_.input-inner]:pt-1! [&_.input-inner]:pr-2! [&_.input-inner]:pb-1! [&_.input-inner]:pl-5!"
         />
         <div className="flex items-center justify-center">
           <TabPill
@@ -383,7 +391,7 @@ const WorkspaceExplorePanelView: React.FC = () => {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 scrollbar-hide">
+      <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto px-4">
         <div
           className={`flex min-h-full flex-col gap-4 ${showHero ? "py-5" : "pb-5"} ${DETAIL_PANEL_TOKENS.contentWidth}`}
         >
@@ -393,14 +401,14 @@ const WorkspaceExplorePanelView: React.FC = () => {
 
               {error ? (
                 <div className="w-full max-w-[640px] text-left">
-                  <InlineAlert
+                  <PageNotice
                     type="danger"
                     title={t("explore.errorTitle", {
                       defaultValue: "Search failed",
                     })}
                   >
                     {error}
-                  </InlineAlert>
+                  </PageNotice>
                 </div>
               ) : null}
 
@@ -427,19 +435,19 @@ const WorkspaceExplorePanelView: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="sticky top-0 z-10 -mx-4 bg-chat-pane px-4 pb-3 pt-5">
+              <div className="sticky top-0 z-10 -mx-4 bg-chat-pane px-4 pt-5 pb-3">
                 {heroSection}
               </div>
 
               {error ? (
-                <InlineAlert
+                <PageNotice
                   type="danger"
                   title={t("explore.errorTitle", {
                     defaultValue: "Search failed",
                   })}
                 >
                   {error}
-                </InlineAlert>
+                </PageNotice>
               ) : null}
 
               {response ? (

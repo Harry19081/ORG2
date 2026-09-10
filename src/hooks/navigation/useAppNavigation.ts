@@ -47,10 +47,8 @@ import {
   startNewSessionCreatorDraftAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import {
-  CHAT_PANEL_SURFACE_KIND,
-  chatPanelNavigateAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 
 // ============================================
 // Types
@@ -85,7 +83,6 @@ export interface UseAppNavigationReturn {
   goToIntegrations: (options?: {
     category?: IntegrationsCategorySegment;
     modelsTab?: string;
-    devToolsTab?: string;
     skillsetTab?: ExternalSkillsetsTab;
   }) => void;
   goToNewSession: (options?: GoToNewSessionOptions) => void;
@@ -142,7 +139,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
     (options?: {
       category?: IntegrationsCategorySegment;
       modelsTab?: string;
-      devToolsTab?: string;
       skillsetTab?: ExternalSkillsetsTab;
     }) => {
       const category = options?.category ?? "externalSkillsets";
@@ -152,9 +148,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
         const [pathname, existingSearch = ""] = built.split("?");
         const search = new URLSearchParams(existingSearch);
         if (options?.modelsTab) search.set("modelsTab", options.modelsTab);
-        if (options?.devToolsTab) {
-          search.set("devToolsTab", options.devToolsTab);
-        }
         const query = search.toString();
         navigateTo(query ? `${pathname}?${query}` : pathname);
         return;
@@ -163,7 +156,6 @@ export function useAppNavigation(): UseAppNavigationReturn {
       const basePath = buildIntegrationsPath({ category });
       const search = new URLSearchParams();
       if (options?.modelsTab) search.set("modelsTab", options.modelsTab);
-      if (options?.devToolsTab) search.set("devToolsTab", options.devToolsTab);
       const query = search.toString();
       const path = query ? `${basePath}?${query}` : basePath;
       navigateTo(path);

@@ -11,17 +11,19 @@
  *
  * Shared between ChatView and PlaygroundChatPanel.
  */
-import {
-  ArrowLeftRight,
-  BellRing,
-  CircleHelp,
-  ClipboardList,
-  Diff,
-  GitCommitHorizontal,
-  MessageCircleMore,
-  Terminal,
-} from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
+
+import {
+  ArrowLeftRightIcon,
+  ClipboardListIcon,
+  ComputerTerminal01Icon,
+  FileDiffIcon,
+  GitCommitHorizontalIcon,
+  HelpCircleIcon,
+  HugeiconsIcon,
+  MessageCircleMoreIcon,
+  NotificationBubbleIcon,
+} from "@src/icons";
 
 import type { InlineSection } from "../components/CollapsedInlineRow";
 import {
@@ -43,7 +45,8 @@ export interface GitArtifactStats {
 export interface UseComposerSectionsOptions {
   sessionId?: string | null;
   queueCount: number;
-  enqueueCount?: number;
+  /** Current session's newest durable queue identity. */
+  queueTailKey?: string | null;
   /** Whether the AskQuestionCard currently has pending data (controls pill visibility). */
   hasQuestion?: boolean;
   /** Whether the PermissionCard currently has pending data. */
@@ -102,7 +105,7 @@ export function createFileInlineSection({
 
   return {
     key: "files",
-    icon: React.createElement(Diff, { size: 13 }),
+    icon: React.createElement(HugeiconsIcon, { icon: FileDiffIcon, size: 13 }),
     count: fileChangeStats.count,
     content: React.createElement(
       "span",
@@ -127,7 +130,7 @@ export function createFileInlineSection({
 export function useComposerSections({
   sessionId,
   queueCount,
-  enqueueCount = 0,
+  queueTailKey = null,
   hasQuestion = false,
   hasPermission = false,
   hasModeSwitch = false,
@@ -195,20 +198,18 @@ export function useComposerSections({
     setFileChangeStats({ count: 0, additions: 0, deletions: 0 });
   }
 
-  // Auto-expand queue when messages arrive. Prefer the monotonic enqueue
-  // counter when it is available, but also react to count growth so the queue
-  // stays visible if the counter update and queue filter land in different
-  // render passes or a session switch restores a non-empty queue.
-  const [prevEnqueueCount, setPrevEnqueueCount] = useState(enqueueCount);
+  // Auto-expand only for a new durable row in this session. A global enqueue
+  // counter made traffic in session B open the queue card in session A.
+  const [prevQueueTailKey, setPrevQueueTailKey] = useState(queueTailKey);
   const [prevQueueCount, setPrevQueueCount] = useState(queueCount);
   const [queueAutoOpenedForCount, setQueueAutoOpenedForCount] = useState(
     queueCount > 0 ? queueCount : 0
   );
-  if (prevEnqueueCount !== enqueueCount || prevQueueCount !== queueCount) {
+  if (prevQueueTailKey !== queueTailKey || prevQueueCount !== queueCount) {
     const hasNewQueueWork =
       queueCount > 0 &&
-      (enqueueCount > prevEnqueueCount || queueCount > prevQueueCount);
-    setPrevEnqueueCount(enqueueCount);
+      (queueTailKey !== prevQueueTailKey || queueCount > prevQueueCount);
+    setPrevQueueTailKey(queueTailKey);
     setPrevQueueCount(queueCount);
     setQueueAutoOpenedForCount(hasNewQueueWork ? queueCount : 0);
     if (hasNewQueueWork) {
@@ -297,7 +298,10 @@ export function useComposerSections({
     if (hasQuestion && questionCollapsed) {
       sections.push({
         key: "question",
-        icon: React.createElement(CircleHelp, { size: 13 }),
+        icon: React.createElement(HugeiconsIcon, {
+          icon: HelpCircleIcon,
+          size: 13,
+        }),
         count: 0,
         label: "Question",
         active: false,
@@ -308,7 +312,10 @@ export function useComposerSections({
     if (hasPermission && permissionCollapsed) {
       sections.push({
         key: "permission",
-        icon: React.createElement(BellRing, { size: 13 }),
+        icon: React.createElement(HugeiconsIcon, {
+          icon: NotificationBubbleIcon,
+          size: 13,
+        }),
         count: 0,
         label: "Permission",
         active: false,
@@ -319,7 +326,10 @@ export function useComposerSections({
     if (hasModeSwitch && modeSwitchCollapsed) {
       sections.push({
         key: "modeswitch",
-        icon: React.createElement(ArrowLeftRight, { size: 13 }),
+        icon: React.createElement(HugeiconsIcon, {
+          icon: ArrowLeftRightIcon,
+          size: 13,
+        }),
         count: 0,
         label: "Mode Switch",
         active: false,
@@ -330,7 +340,10 @@ export function useComposerSections({
     if (hasPlan && planCollapsed) {
       sections.push({
         key: "plan",
-        icon: React.createElement(ClipboardList, { size: 13 }),
+        icon: React.createElement(HugeiconsIcon, {
+          icon: ClipboardListIcon,
+          size: 13,
+        }),
         count: 0,
         label: planPillLabel,
         active: false,
@@ -344,7 +357,10 @@ export function useComposerSections({
     if (hasQueue) {
       sections.push({
         key: "queue",
-        icon: React.createElement(MessageCircleMore, { size: 13 }),
+        icon: React.createElement(HugeiconsIcon, {
+          icon: MessageCircleMoreIcon,
+          size: 13,
+        }),
         count: queueCount,
         active: queueExpanded,
         onExpand: toggleQueue,
@@ -354,7 +370,10 @@ export function useComposerSections({
     if (hasProcess) {
       sections.push({
         key: "process",
-        icon: React.createElement(Terminal, { size: 13 }),
+        icon: React.createElement(HugeiconsIcon, {
+          icon: ComputerTerminal01Icon,
+          size: 13,
+        }),
         count: processVisibleCount,
         active: processExpanded,
         onExpand: toggleProcess,
@@ -374,7 +393,10 @@ export function useComposerSections({
     if (hasGitArtifacts) {
       sections.push({
         key: "git-artifacts",
-        icon: React.createElement(GitCommitHorizontal, { size: 13 }),
+        icon: React.createElement(HugeiconsIcon, {
+          icon: GitCommitHorizontalIcon,
+          size: 13,
+        }),
         count: gitArtifactCount,
         active: false,
         onExpand: filesMenu ? NOOP : onFilesExpand,

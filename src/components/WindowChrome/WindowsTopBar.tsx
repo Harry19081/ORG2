@@ -1,11 +1,17 @@
 import { LogicalPosition } from "@tauri-apps/api/dpi";
 import { open } from "@tauri-apps/plugin-shell";
 import type { TFunction } from "i18next";
-import { Minus, Square, X } from "lucide-react";
 import React, { memo, useCallback, useMemo, useSyncExternalStore } from "react";
 
-import { SETUP_WALKTHROUGH_TEST_MENU_EVENT } from "@src/config/keyboard/setupWalkthroughShortcut";
+import { getShortcutAccelerator } from "@src/config/keyboard/shortcutDisplay";
 import i18n from "@src/i18n";
+import {
+  Cancel01Icon,
+  HugeiconsIcon,
+  MinusSignIcon,
+  SquareIcon,
+} from "@src/icons";
+import { dispatchEditHistoryCommand } from "@src/util/dom/editHistoryCommand";
 import {
   closeWindow,
   maxWindow,
@@ -68,14 +74,14 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
         {
           type: "item",
           text: t("windowChrome.items.newSession"),
-          accelerator: "Ctrl+N",
+          accelerator: getShortcutAccelerator("new_session"),
           action: () => emitMenuEvent("menu-new-session"),
         },
         { type: "separator" },
         {
           type: "item",
           text: t("windowChrome.items.openFolder"),
-          accelerator: "Ctrl+O",
+          accelerator: getShortcutAccelerator("window_open_folder"),
           action: () => emitMenuEvent("menu-file-open-folder"),
         },
         {
@@ -93,14 +99,14 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
         {
           type: "item",
           text: t("windowChrome.items.closeWindow"),
-          accelerator: "Ctrl+Shift+W",
+          accelerator: getShortcutAccelerator("window_close"),
           action: closeWindow,
         },
         { type: "separator" },
         {
           type: "item",
           text: t("windowChrome.items.quitOrg2"),
-          accelerator: "Ctrl+Q",
+          accelerator: getShortcutAccelerator("quit_app"),
           action: () => emitMenuEvent("native-quit-confirmation-open"),
         },
       ];
@@ -109,12 +115,12 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
         {
           type: "item",
           text: t("windowChrome.items.undo"),
-          action: () => document.execCommand("undo"),
+          action: () => void dispatchEditHistoryCommand("undo"),
         },
         {
           type: "item",
           text: t("windowChrome.items.redo"),
-          action: () => document.execCommand("redo"),
+          action: () => void dispatchEditHistoryCommand("redo"),
         },
         { type: "separator" },
         {
@@ -153,32 +159,32 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
         {
           type: "item",
           text: t("windowChrome.items.selectModel"),
-          accelerator: "Ctrl+/",
+          accelerator: getShortcutAccelerator("open_model_selector"),
           action: () => emitMenuEvent("menu-open-model-selector"),
         },
         {
           type: "item",
           text: t("windowChrome.items.switchWorkspace"),
-          accelerator: "Ctrl+.",
+          accelerator: getShortcutAccelerator("open_workspace_selector"),
           action: () => emitMenuEvent("menu-open-workspace-selector"),
         },
         {
           type: "item",
           text: t("windowChrome.items.switchBranch"),
-          accelerator: "Ctrl+Alt+.",
+          accelerator: getShortcutAccelerator("open_branch_selector"),
           action: () => emitMenuEvent("menu-open-branch-selector"),
         },
         {
           type: "item",
           text: t("windowChrome.items.switchRunningLocation"),
-          accelerator: "Ctrl+Shift+.",
+          accelerator: getShortcutAccelerator("open_location_selector"),
           action: () => emitMenuEvent("menu-open-location-selector"),
         },
         { type: "separator" },
         {
           type: "item",
           text: t("windowChrome.items.settings"),
-          accelerator: "Ctrl+,",
+          accelerator: getShortcutAccelerator("open_settings"),
           action: () => emitMenuEvent("menu-open-settings"),
         },
         { type: "separator" },
@@ -213,7 +219,7 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
         {
           type: "item",
           text: t("windowChrome.items.maximizeWorkstation"),
-          accelerator: "Ctrl+Shift+M",
+          accelerator: getShortcutAccelerator("maximize_work_station"),
           action: () => emitMenuEvent("menu-maximize-work-station"),
         },
         { type: "separator" },
@@ -225,13 +231,6 @@ function getMenuItems(menu: NativeMenuKey, t: TFunction): NativeMenuItem[] {
       ];
     case "help":
       return [
-        {
-          type: "item",
-          text: "Restart Setup Guide",
-          accelerator: "Ctrl+Alt+O",
-          action: () => emitMenuEvent(SETUP_WALKTHROUGH_TEST_MENU_EVENT),
-        },
-        { type: "separator" },
         {
           type: "item",
           text: t("windowChrome.items.documentation"),
@@ -342,7 +341,12 @@ const WindowsTopBarComponent: React.FC = () => {
           aria-label={t("windowChrome.controls.minimizeWindow")}
           title={t("windowChrome.items.minimize")}
         >
-          <Minus size={ICON_SIZE} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={MinusSignIcon}
+            data-icon="minus"
+            size={ICON_SIZE}
+            strokeWidth={2}
+          />
         </button>
         <button
           type="button"
@@ -351,7 +355,12 @@ const WindowsTopBarComponent: React.FC = () => {
           aria-label={t("windowChrome.controls.maximizeRestoreWindow")}
           title={t("windowChrome.items.maximizeRestore")}
         >
-          <Square size={12} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={SquareIcon}
+            data-icon="square"
+            size={12}
+            strokeWidth={2}
+          />
         </button>
         <button
           type="button"
@@ -360,7 +369,12 @@ const WindowsTopBarComponent: React.FC = () => {
           aria-label={t("windowChrome.controls.closeWindow")}
           title={t("windowChrome.items.closeWindow")}
         >
-          <X size={ICON_SIZE} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={Cancel01Icon}
+            data-icon="x"
+            size={ICON_SIZE}
+            strokeWidth={2}
+          />
         </button>
       </div>
     </div>

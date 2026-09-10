@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ChatBubbleBody } from "@src/components/ChatBubble";
 import ClampedContent from "@src/components/ClampedContent";
 import Markdown from "@src/components/MarkDown";
+import PersonAvatar from "@src/components/PersonAvatar";
 import {
   formatSmartDateTime,
   toIntlLocaleTag,
@@ -18,29 +19,9 @@ interface GroupChatMessageBubbleProps {
   timestamp: string;
   showSenderChrome: boolean;
   toolUseSummary?: GroupChatToolUseSummary | null;
-}
-
-const AVATAR_COLORS = [
-  "bg-primary-1 text-primary-6",
-  "bg-success-1 text-success-6",
-  "bg-warning-1 text-warning-6",
-  "bg-purple-1 text-purple-6",
-  "bg-danger-1 text-danger-6",
-  "bg-fill-2 text-text-2",
-] as const;
-
-function avatarColorForName(name: string): string {
-  let hash = 0;
-  for (const char of name) {
-    hash = (hash * 31 + char.charCodeAt(0)) % AVATAR_COLORS.length;
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
-
-function avatarLetterForName(name: string): string {
-  const trimmed = name.trim();
-  if (!trimmed) return "A";
-  return trimmed[0].toLocaleUpperCase();
+  footer?: React.ReactNode;
+  /** Disable per-message overflow measurement for already-bounded timelines. */
+  clampContent?: boolean;
 }
 
 function formatSummaryPart(
@@ -59,6 +40,8 @@ const GroupChatMessageBubble: React.FC<GroupChatMessageBubbleProps> = ({
   timestamp,
   showSenderChrome,
   toolUseSummary = null,
+  footer = null,
+  clampContent = true,
 }) => {
   const { t, i18n } = useTranslation(["common", "sessions"]);
   const trimmedRecipient = recipientName?.trim() ?? null;
@@ -120,14 +103,9 @@ const GroupChatMessageBubble: React.FC<GroupChatMessageBubbleProps> = ({
       aria-hidden={!showSenderChrome}
     >
       {showSenderChrome && (
-        <div
-          className={`flex aspect-square h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-medium ${avatarColorForName(
-            senderName
-          )}`}
-          title={senderName}
-        >
-          {avatarLetterForName(senderName)}
-        </div>
+        <span className="inline-flex" title={senderName}>
+          <PersonAvatar name={senderName} size={24} />
+        </span>
       )}
     </div>
   );
@@ -140,11 +118,11 @@ const GroupChatMessageBubble: React.FC<GroupChatMessageBubbleProps> = ({
       className="flex gap-1"
     >
       {avatar}
-      <div className="min-w-0 max-w-[min(750px,100%)] flex-1 overflow-hidden">
+      <div className="max-w-[min(750px,100%)] min-w-0 flex-1 overflow-hidden">
         {showSenderChrome && (
           <div className="flex h-9 items-center">
             <div className="flex h-4 items-center gap-2 leading-none">
-              <span className="text-[13px] font-medium leading-none text-text-1">
+              <span className="text-[13px] leading-none font-medium text-text-1">
                 {senderName}
               </span>
               <span className="text-[11px] leading-none text-text-3">
@@ -153,13 +131,13 @@ const GroupChatMessageBubble: React.FC<GroupChatMessageBubbleProps> = ({
             </div>
           </div>
         )}
-        <ChatBubbleBody variant="neutral" className="!rounded-2xl !px-3 !py-2">
+        <ChatBubbleBody variant="neutral" className="rounded-2xl! px-3! py-2!">
           {/* Clamp long agent messages to a ~20-line preview (ClampedContent's
               default); the expand/collapse pill fades into the neutral bubble. */}
-          <ClampedContent fadeFrom="from-fill-2">
+          <ClampedContent fadeFrom="from-fill-2" enabled={clampContent}>
             {trimmedRecipient ? (
               <>
-                <div className="break-words">
+                <div className="wrap-break-word">
                   <span className="text-primary-6">@{trimmedRecipient}</span>
                   {"  "}
                   {firstLine}
@@ -170,6 +148,7 @@ const GroupChatMessageBubble: React.FC<GroupChatMessageBubbleProps> = ({
                     useChatCodeBlock={true}
                     enableFileNavigation={true}
                     skipPreprocess={false}
+                    sessionReferencesAsCards
                   />
                 )}
               </>
@@ -179,6 +158,7 @@ const GroupChatMessageBubble: React.FC<GroupChatMessageBubbleProps> = ({
                 useChatCodeBlock={true}
                 enableFileNavigation={true}
                 skipPreprocess={false}
+                sessionReferencesAsCards
               />
             )}
           </ClampedContent>
@@ -186,6 +166,11 @@ const GroupChatMessageBubble: React.FC<GroupChatMessageBubbleProps> = ({
         {toolUseSummaryLabel && (
           <div className="mt-1 px-2 text-[13px] leading-5 text-text-3">
             {toolUseSummaryLabel}
+          </div>
+        )}
+        {footer && (
+          <div className="mt-1 flex min-h-6 flex-wrap items-center gap-1.5 px-2 text-[11px] text-text-3">
+            {footer}
           </div>
         )}
       </div>

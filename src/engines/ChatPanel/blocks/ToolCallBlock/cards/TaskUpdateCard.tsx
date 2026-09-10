@@ -6,17 +6,18 @@
  * for collapse state. Body padding follows `EVENT_SNIPPET_INNER_PADDING_CLASS`
  * (`px-3 py-1.5`) to match every other tool block.
  */
-import {
-  CheckCircle2,
-  CircleDot,
-  GitBranch,
-  ListChecks,
-  PlayCircle,
-} from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { getToolIcon } from "@src/config/toolIcons";
+import {
+  CheckmarkCircle01Icon,
+  CircleDotIcon,
+  HugeiconsIcon,
+  ListChecksIcon,
+  PlayCircleIcon,
+  WorkflowCircle05Icon,
+} from "@src/icons";
 
 import {
   OrgTaskDependencyBadge,
@@ -73,7 +74,9 @@ function TaskDetailRows({ card }: { card: TaskUpdateCardData }) {
         className="chat-block-content flex min-w-0 items-center gap-2"
         data-testid="org-task-card-id"
       >
-        <CircleDot
+        <HugeiconsIcon
+          icon={CircleDotIcon}
+          data-icon="circle-dot"
           size={11}
           strokeWidth={1.75}
           className="shrink-0 text-text-3"
@@ -87,7 +90,9 @@ function TaskDetailRows({ card }: { card: TaskUpdateCardData }) {
           className="chat-block-content flex min-w-0 items-center gap-2"
           data-testid="org-task-card-owner"
         >
-          <CircleDot
+          <HugeiconsIcon
+            icon={CircleDotIcon}
+            data-icon="circle-dot"
             size={11}
             strokeWidth={1.75}
             className="shrink-0 text-text-3"
@@ -102,7 +107,9 @@ function TaskDetailRows({ card }: { card: TaskUpdateCardData }) {
           className="chat-block-content flex min-w-0 items-center gap-2"
           data-testid="org-task-card-active"
         >
-          <ListChecks
+          <HugeiconsIcon
+            icon={ListChecksIcon}
+            data-icon="list-checks"
             size={11}
             strokeWidth={1.75}
             className="shrink-0 text-text-3"
@@ -117,7 +124,9 @@ function TaskDetailRows({ card }: { card: TaskUpdateCardData }) {
           className="chat-block-content flex min-w-0 items-center gap-2"
           data-testid="org-task-card-blocks"
         >
-          <GitBranch
+          <HugeiconsIcon
+            icon={WorkflowCircle05Icon}
+            data-icon="git-branch"
             size={11}
             strokeWidth={1.75}
             className="shrink-0 text-text-3"
@@ -132,7 +141,9 @@ function TaskDetailRows({ card }: { card: TaskUpdateCardData }) {
           className="chat-block-content flex min-w-0 items-center gap-2"
           data-testid="org-task-card-blocked-by"
         >
-          <GitBranch
+          <HugeiconsIcon
+            icon={WorkflowCircle05Icon}
+            data-icon="git-branch"
             size={11}
             strokeWidth={1.75}
             className="shrink-0 text-text-3"
@@ -171,7 +182,12 @@ function TaskStatusBadges({ card }: { card: TaskUpdateCardData }) {
           className="inline-flex shrink-0 items-center gap-1 text-[10px] text-success-6"
           data-testid="org-task-card-assigned"
         >
-          <CheckCircle2 size={10} /> assigned
+          <HugeiconsIcon
+            icon={CheckmarkCircle01Icon}
+            data-icon="check-circle-2"
+            size={10}
+          />{" "}
+          assigned
         </span>
       )}
     </span>
@@ -202,7 +218,7 @@ const TaskUpdateCard: React.FC<TaskUpdateCardProps> = ({ card }) => {
       <EventBlockHeader
         isCollapsed={isCollapsed}
         withHover
-        onClick={handleHeaderClick}
+        onToggleCollapse={handleHeaderClick}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}
         rightContent={<TaskStatusBadges card={card} />}
@@ -214,7 +230,6 @@ const TaskUpdateCard: React.FC<TaskUpdateCardProps> = ({ card }) => {
           )}
           isCollapsed={isCollapsed}
           isHeaderHovered={isHeaderHovered}
-          onToggle={handleHeaderClick}
           hasContent
         />
         <EventBlockHeaderTitle>{headerTitle}</EventBlockHeaderTitle>
@@ -235,7 +250,9 @@ function getListRowStatusIcon(status?: string): React.ReactNode {
   if (!status) return null;
   if (status === "completed") {
     return (
-      <CheckCircle2
+      <HugeiconsIcon
+        icon={CheckmarkCircle01Icon}
+        data-icon="check-circle-2"
         size={13}
         strokeWidth={2}
         className="shrink-0 text-success-6"
@@ -244,7 +261,9 @@ function getListRowStatusIcon(status?: string): React.ReactNode {
   }
   if (status === "in_progress") {
     return (
-      <PlayCircle
+      <HugeiconsIcon
+        icon={PlayCircleIcon}
+        data-icon="play-circle"
         size={13}
         strokeWidth={2}
         className="shrink-0 text-primary-6"
@@ -253,7 +272,13 @@ function getListRowStatusIcon(status?: string): React.ReactNode {
   }
   if (status === "pending") {
     return (
-      <CircleDot size={13} strokeWidth={2} className="shrink-0 text-text-3" />
+      <HugeiconsIcon
+        icon={CircleDotIcon}
+        data-icon="circle-dot"
+        size={13}
+        strokeWidth={2}
+        className="shrink-0 text-text-3"
+      />
     );
   }
   return null;
@@ -329,6 +354,7 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({
   groupSenderName = null,
 }) => {
   const { t } = useTranslation("sessions");
+  const observation = card.observation ?? "results";
   const count = card.total ?? card.tasks.length;
   const title =
     groupSenderName != null
@@ -351,7 +377,14 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({
         : card.kind === "graph"
           ? t("orgTask.create.title")
           : t("orgTask.list.title");
-  const subtitle = t("orgTask.list.count", { taskCount: count });
+  const observationLabel =
+    observation === "no_new_work_facts"
+      ? t("planner.agentOrgOverview.coordinatorWorkState.waiting_for_org_event")
+      : observation === "new_trigger_pending"
+        ? t("planner.agentOrgOverview.coordinatorWorkState.active")
+        : null;
+  const subtitle =
+    observationLabel ?? t("orgTask.list.count", { taskCount: count });
   const taskListIcon = getToolIcon(
     card.kind === "get"
       ? "task_get"
@@ -372,7 +405,15 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({
   } = useBlockHeader({ defaultCollapsed: true });
 
   const listBody =
-    card.tasks.length === 0 ? (
+    observationLabel != null ? (
+      <div
+        className={`text-xs text-text-3 ${EVENT_SNIPPET_INNER_PADDING_CLASS}`}
+        data-testid="org-task-list-observation"
+        data-task-list-observation={observation}
+      >
+        {observationLabel}
+      </div>
+    ) : card.tasks.length === 0 ? (
       <div
         className={`text-xs text-text-3 ${EVENT_SNIPPET_INNER_PADDING_CLASS}`}
       >
@@ -402,17 +443,20 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({
         className={`${getEventBlockContainerClasses(true)} animate-fade-in overflow-hidden`}
         data-testid="org-task-list-card"
         data-task-card-kind={card.kind}
+        data-task-list-observation={observation}
       >
         <div className="border-b border-border-1 px-3 py-1.5 text-[13px] leading-normal">
           <div className="flex min-w-0 items-baseline gap-2">
             <span className="shrink-0 text-text-3">
-              {t("orgTask.list.countLabel", { defaultValue: "Tasks" })}
+              {observationLabel == null
+                ? t("orgTask.list.countLabel", { defaultValue: "Tasks" })
+                : t("orgTask.statusLabel", { defaultValue: "Status" })}
             </span>
             <span
               className="min-w-0 flex-1 truncate text-text-1"
               title={subtitle}
             >
-              {count}
+              {observationLabel ?? count}
             </span>
           </div>
         </div>
@@ -426,11 +470,12 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({
       className={`${getEventBlockContainerClasses(false)} animate-fade-in`}
       data-testid="org-task-list-card"
       data-task-card-kind={card.kind}
+      data-task-list-observation={observation}
     >
       <EventBlockHeader
         isCollapsed={isCollapsed}
         withHover={false}
-        onClick={handleHeaderClick}
+        onToggleCollapse={handleHeaderClick}
         onNavigate={onNavigate}
         onMouseEnter={handleHeaderMouseEnter}
         onMouseLeave={handleHeaderMouseLeave}
@@ -439,7 +484,6 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({
           icon={taskListIcon}
           isCollapsed={isCollapsed}
           isHeaderHovered={isHeaderHovered}
-          onToggle={handleHeaderClick}
           hasContent
         />
         <EventBlockHeaderTitle>{title}</EventBlockHeaderTitle>

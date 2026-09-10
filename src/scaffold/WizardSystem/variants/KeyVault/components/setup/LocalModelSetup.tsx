@@ -1,13 +1,13 @@
-import { Check } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 
 import { LOCAL_MODEL_PROVIDER } from "@src/api/types/keys";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
+import PageNotice from "@src/components/PageNotice";
 import Select from "@src/components/Select";
+import { HugeiconsIcon, Tick01Icon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SectionContainer,
@@ -173,13 +173,13 @@ const LocalModelSetup: React.FC<AgentSetupProps> = ({
   return (
     <div className={SECTION_GAP_CLASSES}>
       {!cookbookDismissed && (
-        <InlineAlert
+        <PageNotice
           type="info"
           title={t("keyVault.localModel.title")}
           onClose={() => setCookbookDismissed(true)}
         >
           {t("keyVault.localModel.description")}
-        </InlineAlert>
+        </PageNotice>
       )}
 
       <SectionContainer>
@@ -236,7 +236,9 @@ const LocalModelSetup: React.FC<AgentSetupProps> = ({
               variant="secondary"
               appearance="outline"
               size="default"
-              icon={<Check size={14} />}
+              icon={
+                <HugeiconsIcon icon={Tick01Icon} data-icon="check" size={14} />
+              }
               onClick={() => addModel(selectedPreset.models[0])}
             >
               {t("keyVault.localModel.addSuggestedModel")}

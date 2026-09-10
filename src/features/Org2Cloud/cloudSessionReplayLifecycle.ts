@@ -5,12 +5,14 @@ import { resolveSessionDisplayMetadata } from "@src/util/session/sessionDisplayM
 import type {
   CloudPendingPlay,
   CloudSessionEnvironmentIdentity,
+  CloudSessionOwnerIdentity,
 } from "./cloudSessionDownloadControlAtoms";
 
-type CloudSessionReplayIconInput = Partial<
+type CloudSessionPresentationInput = Partial<
   Pick<
     RemoteTeammateSessionMetadata,
     | "sourceSessionId"
+    | "forkedFrom"
     | "cliAgentType"
     | "agentDisplayName"
     | "agentDefinitionId"
@@ -21,11 +23,14 @@ type CloudSessionReplayIconInput = Partial<
     | "branch"
     | "baseBranch"
     | "worktreeBranch"
+    | "ownerUserId"
+    | "ownerDisplayName"
+    | "ownerAvatarUrl"
   >
 >;
 
 export function resolveCloudSessionEnvironmentIdentity(
-  session: CloudSessionReplayIconInput
+  session: CloudSessionPresentationInput
 ): CloudSessionEnvironmentIdentity {
   const repoIdentity = session.repoScopeKey || session.repoPath;
   const rawRepoName = repoIdentity ? basename(repoIdentity) : undefined;
@@ -37,6 +42,20 @@ export function resolveCloudSessionEnvironmentIdentity(
   };
 }
 
+export function resolveCloudSessionOwnerIdentity(
+  session: CloudSessionPresentationInput
+): CloudSessionOwnerIdentity | undefined {
+  const userId = session.ownerUserId?.trim();
+  if (!userId) return undefined;
+  const displayName = session.ownerDisplayName?.trim();
+  const avatarUrl = session.ownerAvatarUrl?.trim();
+  return {
+    identityId: userId,
+    ...(displayName ? { displayName } : {}),
+    ...(avatarUrl ? { avatarUrl } : {}),
+  };
+}
+
 /**
  * Icon identity already visible on the source row before local hydration.
  * Delegates to the canonical row projection so the placeholder shown while a
@@ -45,7 +64,7 @@ export function resolveCloudSessionEnvironmentIdentity(
  * their own.
  */
 export function resolveCloudSessionReplayIconId(
-  session: CloudSessionReplayIconInput
+  session: CloudSessionPresentationInput
 ): string {
   return resolveSessionDisplayMetadata({
     kind: "remote",
@@ -60,22 +79,28 @@ export function resolveCloudSessionReplayIconId(
  */
 export function buildCloudPendingPlayEntry({
   remoteSession,
+  authIdentityKey,
   orgId,
   pendingEvents,
   etaMs,
   kind,
 }: {
-  remoteSession: CloudSessionReplayIconInput & { id: string };
+  remoteSession: RemoteTeammateSessionMetadata;
+  authIdentityKey: string;
   orgId: string;
   pendingEvents: number;
   etaMs: number;
   kind: CloudPendingPlay["kind"];
 }): CloudPendingPlay {
+  const sessionOwner = resolveCloudSessionOwnerIdentity(remoteSession);
   return {
+    authIdentityKey,
     rowId: remoteSession.id,
     orgId,
+    sourceSession: remoteSession,
     iconId: resolveCloudSessionReplayIconId(remoteSession),
     sessionEnvironment: resolveCloudSessionEnvironmentIdentity(remoteSession),
+    ...(sessionOwner ? { sessionOwner } : {}),
     pendingEvents,
     etaMs,
     kind,

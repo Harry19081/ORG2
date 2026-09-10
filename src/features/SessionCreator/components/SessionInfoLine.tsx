@@ -2,7 +2,7 @@
  * SessionInfoLine Component
  *
  * Displays session configuration summary as a shared `PillGroup`:
- *   "[repo] | [branch]"  (resting, no border)
+ *   "[repo] | [location] | [branch]"  (resting, no border)
  * Hovering a segment promotes it to an independent pill and hides the
  * adjacent divider; the other segment stays transparent.
  *
@@ -27,7 +27,6 @@ import { useTranslation } from "react-i18next";
 import { gitApi } from "@src/api/http/git";
 import { CheckoutBlockedDialog } from "@src/components/GitDialogs/CheckoutBlockedDialog";
 import { CheckoutConflictDialog } from "@src/components/GitDialogs/CheckoutConflictDialog";
-import PillGroup from "@src/components/PillGroup";
 import RunningLocationDropdownPanel from "@src/components/RunningLocationDropdownPanel";
 import {
   RUNNING_LOCATIONS,
@@ -37,17 +36,22 @@ import {
   isSystemHomeRepoItem,
   isSystemPathRepoItem,
 } from "@src/features/SessionCreator/utils/systemPathSource";
-import { useActiveCloudOrgRepoFilter } from "@src/features/TeamCollaboration/useActiveCloudOrgRepoFilter";
+import {
+  useActiveCloudOrgName,
+  useActiveCloudOrgRepoFilter,
+} from "@src/features/TeamCollaboration/useActiveCloudOrgRepoFilter";
 import { useDropdownEngine } from "@src/hooks/dropdown";
 import { BranchPalette } from "@src/scaffold/GlobalSpotlight/palettes/BranchPalette";
 import { BranchDropdown } from "@src/scaffold/GlobalSpotlight/palettes/BranchPalette/BranchDropdown";
-import { WorkspacePalette } from "@src/scaffold/GlobalSpotlight/palettes/WorkspacePalette";
-import { WorkspaceDropdown } from "@src/scaffold/GlobalSpotlight/palettes/WorkspacePalette/WorkspaceDropdown";
+import { WorkingDirectoryPalette } from "@src/scaffold/GlobalSpotlight/palettes/WorkingDirectoryPalette";
+import { WorkingDirectoryDropdown } from "@src/scaffold/GlobalSpotlight/palettes/WorkingDirectoryPalette/WorkingDirectoryDropdown";
 import { runGuardedCheckout } from "@src/services/git/operations/guardedCheckout";
-import { reposAtom } from "@src/store/repo";
 import { REPO_KIND, type RepoKind } from "@src/store/repo/types";
-import type { WorktreeLaunchSelection } from "@src/store/session/worktreeLaunchSourceAtom";
-import { modelPickerStyleAtom } from "@src/store/ui/chatPanelAtom";
+import type {
+  WorktreeLaunchSelection,
+  WorktreeLaunchSource,
+} from "@src/store/session/worktreeLaunchSourceAtom";
+import { modelPickerStyleAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import {
   branchSelectorOpenAtom,
   locationSelectorOpenAtom,
@@ -57,13 +61,14 @@ import { isMultiRootWorkspaceAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { workspaceNameAtom } from "@src/store/workspace/derived";
 import { showGitActionDialogSafely } from "@src/util/dialogs/gitActionDialog";
 
+import { SessionInfoPillGroup } from "./SessionInfoLine/SessionInfoPillGroup";
 import {
   buildSessionInfoSegments,
   getSessionInfoDisplayState,
 } from "./SessionInfoLine/buildSessionInfoSegments";
 import { type LocationRow } from "./SessionInfoLine/locationConfig";
 import { useSystemPathRepoItems } from "./SessionInfoLine/useSystemPathRepoItems";
-import WorktreeSourceModal from "./WorktreeSourceModal";
+import WorktreeSourceSelector from "./WorktreeSourceSelector";
 
 // ============================================
 // Type Definitions
@@ -124,9 +129,13 @@ export interface SessionInfoLineProps {
    */
   worktreeLocation?: RunningLocation;
   selectedWorktreePath?: string | null;
+  worktreeLocationLabel?: string;
   worktreeSourceLabel?: string;
+  worktreeSource?: WorktreeLaunchSource | null;
   onWorktreeLocationChange?: (location: RunningLocation) => void;
   onWorktreeSourceSelect?: (selection: WorktreeLaunchSelection) => void;
+  /** Optional control rendered before the repository, location, and branch pills. */
+  leadingContent?: React.ReactNode;
 }
 
 const LOCATION_ROWS: LocationRow[] = RUNNING_LOCATIONS.map((entry) => ({
@@ -149,7 +158,7 @@ interface SelectorShortcutBridgeState {
   repoId?: string;
   worktreeLocation?: RunningLocation;
   isLocationDropdownOpen: boolean;
-  toggleLocation: () => void;
+  openLocationSelector: () => void;
 }
 
 interface SelectorShortcutBridgeParams extends SelectorShortcutBridgeState {
@@ -163,7 +172,7 @@ function useSelectorShortcutBridge({
   repoId,
   worktreeLocation,
   isLocationDropdownOpen,
-  toggleLocation,
+  openLocationSelector,
   openBranchSelector,
   openRepoSelector,
 }: SelectorShortcutBridgeParams): void {
@@ -183,7 +192,7 @@ function useSelectorShortcutBridge({
     repoId,
     worktreeLocation,
     isLocationDropdownOpen,
-    toggleLocation,
+    openLocationSelector,
   });
 
   useEffect(() => {
@@ -193,7 +202,7 @@ function useSelectorShortcutBridge({
       repoId,
       worktreeLocation,
       isLocationDropdownOpen,
-      toggleLocation,
+      openLocationSelector,
     };
   });
 
@@ -229,7 +238,7 @@ function useSelectorShortcutBridge({
       const s = bridgeStateRef.current;
       if (s.disabled || s.worktreeLocation === undefined) return;
       if (s.isLocationDropdownOpen) return;
-      s.toggleLocation();
+      s.openLocationSelector();
     });
     return () => {
       unsubBranch();
@@ -265,9 +274,12 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
   dropdownDirection = "down",
   worktreeLocation,
   selectedWorktreePath,
+  worktreeLocationLabel,
   worktreeSourceLabel,
+  worktreeSource,
   onWorktreeLocationChange,
   onWorktreeSourceSelect,
+  leadingContent,
   disabled = false,
   hideBranch = false,
 }) => {
@@ -279,8 +291,6 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
 
   const [isRepoSelectorOpen, setIsRepoSelectorOpen] = useState(false);
   const [isBranchSelectorOpen, setIsBranchSelectorOpen] = useState(false);
-  const [isWorktreeSourceModalOpen, setIsWorktreeSourceModalOpen] =
-    useState(false);
 
   // Forward declaration: the actual `close` comes back from
   // `useDropdownEngine` below, but `handleLocationRowSelect` needs to
@@ -290,13 +300,12 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
 
   const handleLocationRowSelect = useCallback(
     (row: LocationRow) => {
-      if (row.id === "worktree" && onWorktreeSourceSelect) {
-        closeLocationRef.current();
-        setIsWorktreeSourceModalOpen(true);
-        return;
-      }
       onWorktreeLocationChange?.(row.id);
       closeLocationRef.current();
+      setIsBranchSelectorOpen(false);
+      if (row.id === "worktree" && onWorktreeSourceSelect) {
+        queueMicrotask(() => setIsBranchSelectorOpen(true));
+      }
     },
     [onWorktreeLocationChange, onWorktreeSourceSelect]
   );
@@ -339,13 +348,17 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
 
   const handleRepoTriggerClick = useCallback(() => {
     if (disabled) return;
+    closeLocation();
+    setIsBranchSelectorOpen(false);
     setIsRepoSelectorOpen((isOpen) => !isOpen);
-  }, [disabled]);
+  }, [closeLocation, disabled]);
 
   const handleBranchTriggerClick = useCallback(() => {
     if (disabled) return;
+    closeLocation();
+    setIsRepoSelectorOpen(false);
     setIsBranchSelectorOpen((isOpen) => !isOpen);
-  }, [disabled]);
+  }, [closeLocation, disabled]);
 
   const handleRepoSelected = useCallback(
     (selectedRepoId: string, repo: RepoItem) => {
@@ -366,18 +379,12 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
   const systemPathSourceItems = useSystemPathRepoItems(includeSystemPaths, t);
   const branchRepoPath = selectedWorktreePath ?? repoPath ?? "";
 
+  // The org scope predicate no longer hides or reassigns the selection:
+  // the pickers group rows into "This org" / "Outside this org" instead,
+  // and out-of-scope repos are legitimate picks (they simply launch
+  // without the org tag — autoTagLaunchedSessionToActiveCloudOrg guards).
+  const activeCloudOrgName = useActiveCloudOrgName();
   const orgScopeRepoFilter = useActiveCloudOrgRepoFilter();
-  const centralRepos = useAtomValue(reposAtom);
-  useEffect(() => {
-    // onRepoSelect only — onRepoChange would persist a global default repo.
-    if (!orgScopeRepoFilter || disabled || !onRepoSelect) return;
-    if (!repoId || centralRepos.length === 0) return;
-    const current = centralRepos.find((repo) => repo.id === repoId);
-    if (!current || orgScopeRepoFilter(current)) return;
-    const fallback = centralRepos.find((repo) => orgScopeRepoFilter(repo));
-    if (!fallback) return;
-    queueMicrotask(() => onRepoSelect(fallback.id, fallback));
-  }, [orgScopeRepoFilter, disabled, repoId, centralRepos, onRepoSelect]);
 
   const handleBranchSelect = useCallback(
     async (branch: string) => {
@@ -422,7 +429,7 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
 
   const handleBranchPaletteSelect = useCallback(
     async (branch: string) => {
-      await handleBranchSelect(branch);
+      return handleBranchSelect(branch);
     },
     [handleBranchSelect]
   );
@@ -499,18 +506,6 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
     [handleLocationRowSelect]
   );
 
-  const handleWorktreeSourceModalClose = useCallback(() => {
-    setIsWorktreeSourceModalOpen(false);
-  }, []);
-
-  const handleWorktreeSourceSelect = useCallback(
-    (selection: WorktreeLaunchSelection) => {
-      onWorktreeSourceSelect?.(selection);
-      setIsWorktreeSourceModalOpen(false);
-    },
-    [onWorktreeSourceSelect]
-  );
-
   // ============================================
   // Display
   // ============================================
@@ -555,18 +550,28 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
     ]
   );
 
+  const openLocationSelector = useCallback(() => {
+    setIsRepoSelectorOpen(false);
+    setIsBranchSelectorOpen(false);
+    toggleLocation();
+  }, [toggleLocation]);
+
   const handleLocationTriggerClick = useCallback(() => {
     if (disabled) return;
-    toggleLocation();
-  }, [disabled, toggleLocation]);
+    openLocationSelector();
+  }, [disabled, openLocationSelector]);
 
   const openRepoSelector = useCallback(() => {
+    closeLocation();
+    setIsBranchSelectorOpen(false);
     setIsRepoSelectorOpen(true);
-  }, []);
+  }, [closeLocation]);
 
   const openBranchSelector = useCallback(() => {
+    closeLocation();
+    setIsRepoSelectorOpen(false);
     setIsBranchSelectorOpen(true);
-  }, []);
+  }, [closeLocation]);
 
   useSelectorShortcutBridge({
     disabled,
@@ -574,7 +579,7 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
     repoId,
     worktreeLocation,
     isLocationDropdownOpen,
-    toggleLocation,
+    openLocationSelector,
     openBranchSelector,
     openRepoSelector,
   });
@@ -591,6 +596,7 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
     isBranchSelectorOpen,
     handleBranchTriggerClick,
     worktreeLocation,
+    worktreeLocationLabel,
     worktreeSourceLabel,
     isLocationDropdownOpen,
     handleLocationTriggerClick,
@@ -608,13 +614,26 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
     return segment;
   });
 
+  const sessionInfoPills = <SessionInfoPillGroup segments={segments} />;
+
   return (
     <>
-      <PillGroup segments={segments} className="flex-wrap" strongSurface />
+      {leadingContent ? (
+        <div className="inline-flex flex-wrap items-center gap-0">
+          {leadingContent}
+          <span
+            aria-hidden
+            className="inline-flex h-3 w-px shrink-0 bg-border-2"
+          />
+          {sessionInfoPills}
+        </div>
+      ) : (
+        sessionInfoPills
+      )}
 
       {/* Repo Selector */}
       {useDropdownPicker ? (
-        <WorkspaceDropdown
+        <WorkingDirectoryDropdown
           isOpen={isRepoSelectorOpen}
           onClose={handleRepoClose}
           onSelect={handleRepoSelected}
@@ -623,9 +642,10 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
           placement={dropdownDirection === "up" ? "top" : "bottom"}
           leadingRepos={systemPathSourceItems}
           repoFilter={orgScopeRepoFilter ?? undefined}
+          orgScopeName={activeCloudOrgName ?? undefined}
         />
       ) : (
-        <WorkspacePalette
+        <WorkingDirectoryPalette
           isOpen={isRepoSelectorOpen}
           onClose={handleRepoClose}
           onSelect={handleRepoSelected}
@@ -634,13 +654,30 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
           hideActionClose
           leadingRepos={systemPathSourceItems}
           repoFilter={orgScopeRepoFilter ?? undefined}
+          orgScopeName={activeCloudOrgName ?? undefined}
         />
       )}
 
       {/* Branch Selector */}
       {showBranchRow &&
         repoId &&
-        (useDropdownPicker ? (
+        (worktreeLocation === "worktree" && onWorktreeSourceSelect ? (
+          isBranchSelectorOpen ? (
+            <WorktreeSourceSelector
+              key={repoId || repoPath}
+              isOpen
+              presentation={useDropdownPicker ? "dropdown" : "spotlight"}
+              onClose={handleBranchClose}
+              onSelect={onWorktreeSourceSelect}
+              repoId={repoId}
+              repoPath={repoPath}
+              currentBranchName={branchName}
+              selectedSource={worktreeSource}
+              anchorRef={branchTriggerRef}
+              placement={dropdownDirection === "up" ? "top" : "bottom"}
+            />
+          ) : null
+        ) : useDropdownPicker ? (
           <BranchDropdown
             isOpen={isBranchSelectorOpen}
             onClose={handleBranchClose}
@@ -688,18 +725,6 @@ const SessionInfoLine: React.FC<SessionInfoLineProps> = ({
           />,
           document.body
         )}
-
-      {worktreeLocation !== undefined && isWorktreeSourceModalOpen && (
-        <WorktreeSourceModal
-          open
-          repoId={repoId}
-          repoName={repoName}
-          repoPath={repoPath}
-          branchName={branchName}
-          onClose={handleWorktreeSourceModalClose}
-          onSelect={handleWorktreeSourceSelect}
-        />
-      )}
     </>
   );
 };

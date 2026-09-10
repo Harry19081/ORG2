@@ -1,0 +1,156 @@
+use rusqlite::{params, OptionalExtension};
+
+use crate::coordination::agent_org_tasks::{AgentOrgTaskStore, Task};
+use database::db::{get_connection, with_sessions_writer};
+
+use super::super::progress::{
+    load_progress_with_conn, mark_coordinator_observed_revision_with_conn,
+    record_completion_request_in_tx, stage_coordinator_presented_for_turn_with_conn,
+    stage_coordinator_presented_with_conn,
+};
+use super::super::{AgentOrgCompletionRequestOutcome, AgentOrgRunProgress, AgentOrgRunStatus};
+use super::AgentOrgRunStore;
+
+impl AgentOrgRunStore {
+    pub fn progress(run_id: &str) -> Result<Option<AgentOrgRunProgress>, String> {
+        let conn = get_connection().map_err(|err| err.to_string())?;
+        load_progress_with_conn(&conn, run_id)
+    }
+
+    /// Record which durable work revision is embedded in the coordinator's
+    /// next prompt. A later successful coordinator turn promotes this staged
+    /// revision to `observed`; newer concurrent task mutations remain newer.
+    pub fn stage_coordinator_work_revision(run_id: &str) -> Result<Option<i64>, String> {
+        let revision = with_sessions_writer(|| {
+            let conn = get_connection().map_err(|err| err.to_string())?;
+            stage_coordinator_presented_with_conn(&conn, run_id)
+        })?;
+        if revision.is_some() {
+            crate::coordination::agent_org_run_events::notify_agent_org_run_changed(run_id);
+        }
+        Ok(revision)
+    }
+
+    /// Stage the coordinator's presented work revision and read the task
+    /// board from the same SQLite snapshot. Prompt construction uses this so
+    /// the revision certificate can never describe a newer board than the
+    /// task snapshot actually rendered to the provider.
+    pub fn stage_coordinator_work_revision_and_load_tasks(
+        run_id: &str,
+        session_id: &str,
+        turn_intent_id: &str,
+        projected_inbox_ids: &[i64],
+    ) -> Result<
+        (
+            Option<i64>,
+            Vec<Task>,
+            crate::coordination::agent_org_run_completion::RunCompletionCandidateAssessment,
+        ),
+        String,
+    > {
+        let (revision, tasks, completion_candidate) = with_sessions_writer(|| {
+            let mut conn = get_connection().map_err(|err| err.to_string())?;
+            let tx = conn
+                .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+                .map_err(|err| err.to_string())?;
+            let revision = stage_coordinator_presented_for_turn_with_conn(
+                &tx,
+                run_id,
+                session_id,
+                turn_intent_id,
+            )?;
+            let tasks = AgentOrgTaskStore::list_operational_with_connection(&tx, run_id)?;
+            let completion_candidate = crate::coordination::agent_org_run_completion::assess_delivered_candidate_with_connection(
+                    &tx,
+                    run_id,
+                    session_id,
+                    turn_intent_id,
+                    projected_inbox_ids,
+                );
+            tx.commit().map_err(|err| err.to_string())?;
+            Ok::<_, String>((revision, tasks, completion_candidate))
+        })?;
+        if revision.is_some() {
+            crate::coordination::agent_org_run_events::notify_agent_org_run_changed(run_id);
+        }
+        Ok((revision, tasks, completion_candidate))
+    }
+
+    pub fn mark_coordinator_observed_work_revision(
+        run_id: &str,
+        presented_work_revision: i64,
+    ) -> Result<Option<i64>, String> {
+        let observed_revision = with_sessions_writer(|| {
+            let conn = get_connection().map_err(|err| err.to_string())?;
+            mark_coordinator_observed_revision_with_conn(&conn, run_id, presented_work_revision)
+        })?;
+        if observed_revision.is_some() {
+            crate::coordination::agent_org_run_events::notify_agent_org_run_changed(run_id);
+        }
+        Ok(observed_revision)
+    }
+
+    /// Persist a coordinator-only completion request without forcing the run
+    /// terminal. Quiescence still waits for delivery, approvals, interventions,
+    /// sessions, and work-observation invariants to become safe.
+    pub fn request_completion(
+        run_id: &str,
+        summary: &str,
+    ) -> Result<AgentOrgCompletionRequestOutcome, String> {
+        let outcome = with_sessions_writer(|| {
+            let conn = get_connection().map_err(|err| err.to_string())?;
+            let tx = database::db::begin_immediate(&conn).map_err(|err| err.to_string())?;
+            let outcome = Self::request_completion_in_tx(&tx, run_id, summary)?;
+            tx.commit().map_err(|err| err.to_string())?;
+            Ok::<_, String>(outcome)
+        })?;
+        if matches!(&outcome, AgentOrgCompletionRequestOutcome::Recorded { .. }) {
+            crate::coordination::agent_org_run_events::notify_agent_org_run_changed(run_id);
+        }
+        Ok(outcome)
+    }
+
+    pub(crate) fn request_completion_in_tx(
+        conn: &rusqlite::Connection,
+        run_id: &str,
+        summary: &str,
+    ) -> Result<AgentOrgCompletionRequestOutcome, String> {
+        let status: Option<String> = conn
+            .query_row(
+                "SELECT status FROM agent_org_runtime_runs WHERE id=?1",
+                params![run_id],
+                |row| row.get(0),
+            )
+            .optional()
+            .map_err(|err| err.to_string())?;
+        let Some(status) = status else {
+            return Err(format!("agent_org_run_not_found: {run_id}"));
+        };
+        if status != AgentOrgRunStatus::Running.as_str() {
+            return Err(super::super::mutation_blocked_error(run_id, &status));
+        }
+        let unresolved_task_ids = {
+            let mut stmt = conn
+                .prepare(
+                    "SELECT id FROM agent_org_runtime_tasks
+                     WHERE org_run_id=?1 AND status IN ('pending','in_progress')
+                     ORDER BY created_at ASC, id ASC",
+                )
+                .map_err(|err| err.to_string())?;
+            let rows = stmt
+                .query_map(params![run_id], |row| row.get::<_, String>(0))
+                .map_err(|err| err.to_string())?;
+            rows.collect::<Result<Vec<_>, _>>()
+                .map_err(|err| err.to_string())?
+        };
+        if !unresolved_task_ids.is_empty() {
+            return Ok(AgentOrgCompletionRequestOutcome::OpenTasks {
+                unresolved_task_ids,
+            });
+        }
+        let progress = record_completion_request_in_tx(conn, run_id, summary)?;
+        Ok(AgentOrgCompletionRequestOutcome::Recorded {
+            progress: Box::new(progress),
+        })
+    }
+}

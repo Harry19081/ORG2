@@ -1,14 +1,14 @@
-import { MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { MoreHorizontalIcon } from "@src/icons";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
 
+import { DEFAULT_SESSION_GROUP_VISIBLE_COUNT } from "../types";
 import { separator } from "../useSessionMenuItems/menuItemBuilders";
 
 export const CLOUD_MY_SESSIONS_SECTION_ID = "cloud-my-sessions";
 export const CLOUD_PINNED_SECTION_ID = "cloud-pinned";
 export const CLOUD_TEAM_SESSIONS_SECTION_ID = "cloud-team-sessions";
-export const CLOUD_SESSION_SECTION_PAGE_SIZE = 10;
 export const CLOUD_TEAM_SESSIONS_LOAD_MORE_ID = "cloud-team-sessions-next-page";
 export const CLOUD_MY_SESSIONS_LOAD_MORE_ID = "cloud-my-sessions-next-page";
 
@@ -23,7 +23,7 @@ interface BuildCloudScopedMenuItemsParams {
 
 const LOCAL_GROUP_PAGER_PREFIX = "load-more-group-";
 
-export function isSessionPaginationMenuItem(item: NavigationMenuItem): boolean {
+function isSessionPaginationMenuItem(item: NavigationMenuItem): boolean {
   return item.id.startsWith("load-more-");
 }
 
@@ -61,7 +61,7 @@ export function buildCloudSectionLoadMoreItem({
     id,
     key: id,
     label,
-    icon: MoreHorizontal,
+    icon: MoreHorizontalIcon,
     iconName: "more-horizontal",
     visualTone: "secondary",
     disabled,
@@ -83,7 +83,7 @@ export function buildCloudScopedMenuItems({
   sessionMenuItems,
   mySessionsLabel,
   pinnedLabel = "Pinned",
-  mySessionsVisibleCount = CLOUD_SESSION_SECTION_PAGE_SIZE,
+  mySessionsVisibleCount = DEFAULT_SESSION_GROUP_VISIBLE_COUNT,
   loadMoreLabel = "Load more",
 }: BuildCloudScopedMenuItemsParams): NavigationMenuItem[] {
   if (cloudMenuItems.length === 0) return [...sessionMenuItems];

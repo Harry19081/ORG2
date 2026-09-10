@@ -10,7 +10,7 @@ import type { ModelType } from "@src/api/tauri/rpc/schemas/validation";
 import { KeyboardShortcutTooltipContent } from "@src/components/KeyboardShortcut";
 import ModelSelectionBreadcrumb from "@src/components/ModelSelectionBreadcrumb";
 
-export interface ModelPillTooltipContentProps {
+interface ModelPillTooltipContentProps {
   accountName?: string;
   modelLabel: string;
   modelId?: string;
@@ -18,7 +18,8 @@ export interface ModelPillTooltipContentProps {
   variantInfo?: string;
   thinking?: boolean;
   rawValue?: string;
-  shortcut: string;
+  shortcut?: string;
+  shortcutId?: string;
 }
 
 export const ModelPillTooltipContent: React.FC<ModelPillTooltipContentProps> =
@@ -32,6 +33,7 @@ export const ModelPillTooltipContent: React.FC<ModelPillTooltipContentProps> =
       thinking,
       rawValue,
       shortcut,
+      shortcutId,
     }) => (
       <KeyboardShortcutTooltipContent
         label={
@@ -47,6 +49,7 @@ export const ModelPillTooltipContent: React.FC<ModelPillTooltipContentProps> =
           />
         }
         shortcut={shortcut}
+        shortcutId={shortcutId}
       />
     )
   );

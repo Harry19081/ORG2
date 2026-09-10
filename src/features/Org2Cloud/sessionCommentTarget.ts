@@ -8,6 +8,7 @@
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 
+import type { ConversationRootLocator } from "@src/engines/SessionCore/conversations/conversationTypes";
 import { getSessionForkedFrom } from "@src/features/TeamCollaboration/forkSession";
 import { collectScopeMatchedImportedSessionIds } from "@src/features/TeamCollaboration/importedSessionScopeMatch";
 import {
@@ -15,14 +16,20 @@ import {
   cloudOrgIdsForSession,
   sessionOrgTagsAtom,
 } from "@src/features/TeamCollaboration/sessionOrgTagsAtom";
+import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import type { Session } from "@src/store/session/sessionAtom/types";
-import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelSelectedCloudOrgAtom } from "@src/store/ui/chatPanel/selectionAtoms";
 
+import { cloudConversationAuthorityIsLive } from "./SessionConversation/cloudConversationAuthority";
 import type { Org2CloudOrg } from "./org2CloudOrgsAtom";
 import {
   org2CloudOrgsAtom,
   parseCloudOrgSelectorValue,
 } from "./org2CloudOrgsAtom";
+import {
+  type CloudOrgRemoteSessionsEntry,
+  org2CloudRemoteSessionsAtom,
+} from "./org2CloudRemoteSessionsAtom";
 import {
   org2CloudPushCursorsAtom,
   org2CloudPushedMetadataAtom,
@@ -33,6 +40,77 @@ export interface SessionCommentTarget {
   orgId: string;
   /** Cloud session id (the OWNER-side bare session id). */
   sessionId: string;
+}
+
+export function pushedCloudOrgIdsForSession(
+  sessionId: string,
+  pushCursors: Readonly<Record<string, unknown>>,
+  pushedMetadata: Readonly<Record<string, unknown>>
+): string[] {
+  const suffix = `:${sessionId}`;
+  return [...Object.keys(pushCursors), ...Object.keys(pushedMetadata)].flatMap(
+    (key) => (key.endsWith(suffix) ? [key.slice(0, -suffix.length)] : [])
+  );
+}
+
+/**
+ * Preserve a durable Cloud authority while the membership roster hydrates.
+ * This does not grant access or enable Team Chat; it only prevents an Agent
+ * send from being misclassified as a local continuation during cold start.
+ */
+export function resolvePendingCloudConversationTarget(params: {
+  session: CommentTargetSession | null | undefined;
+  tags: SessionOrgTags;
+  preferredOrgId: string | null;
+  pushedOrgIds?: readonly string[];
+}): SessionCommentTarget | null {
+  const { session, tags, preferredOrgId, pushedOrgIds = [] } = params;
+  if (!session) return null;
+  if (session.importedFrom) {
+    return {
+      orgId: session.importedFrom.orgId,
+      sessionId: session.importedFrom.sourceSessionId,
+    };
+  }
+  if (session.forkedFrom) {
+    return {
+      orgId: session.forkedFrom.orgId,
+      sessionId: session.forkedFrom.sourceSessionId,
+    };
+  }
+  const ownedCloudOrgId = session.orgId
+    ? parseCloudOrgSelectorValue(session.orgId)
+    : null;
+  const candidates = [
+    ...(ownedCloudOrgId ? [ownedCloudOrgId] : []),
+    ...cloudOrgIdsForSession(tags, session.session_id),
+    ...pushedOrgIds,
+  ].filter(
+    (orgId, index, all) => Boolean(orgId) && all.indexOf(orgId) === index
+  );
+  const orgId =
+    preferredOrgId && candidates.includes(preferredOrgId)
+      ? preferredOrgId
+      : candidates[0];
+  return orgId ? { orgId, sessionId: session.session_id } : null;
+}
+
+/** Bridge a canonical Cloud root into the existing Team Chat target. */
+export function sessionCommentTargetForConversationRoot(
+  root: ConversationRootLocator | null | undefined
+): SessionCommentTarget | null {
+  if (
+    root?.authority !== "org2-cloud" ||
+    (root.authorityScope.length !== 1 && root.authorityScope.length !== 2)
+  ) {
+    return null;
+  }
+  const orgId = root.authorityScope.at(-1);
+  if (!orgId) return null;
+  return {
+    orgId,
+    sessionId: root.conversationId,
+  };
 }
 
 type CommentTargetSession = {
@@ -131,10 +209,16 @@ export function resolveSessionCommentTarget(params: {
     session,
     orgRepoScopes
   );
+  // Push markers are a FOURTH admission route, not just a priority filter:
+  // a live server row this device pushed is the strongest evidence a comment
+  // surface exists. External-history sessions shared purely by repo scope
+  // reach the provider as a session_id-only stub (no repoPath/remotes), so
+  // without this route they produce zero candidates and lose their surface.
   const allCandidateOrgIds = [
     ...(ownedCloudOrgId ? [ownedCloudOrgId] : []),
     ...cloudOrgIdsForSession(tags, session.session_id),
     ...scopeMatchedOrgIds,
+    ...pushedOrgIds,
   ].filter(
     (orgId, index, all) =>
       memberOrgIds.has(orgId) && all.indexOf(orgId) === index
@@ -162,7 +246,8 @@ export function resolveSessionCommentTarget(params: {
  * non-cloud session — consumers render nothing in that case.
  */
 export function useSessionCommentTarget(
-  session: Session | null | undefined
+  session: Session | null | undefined,
+  canonicalTarget?: SessionCommentTarget | null
 ): SessionCommentTarget | null {
   const cloudOrgs = useAtomValue(org2CloudOrgsAtom);
   const tags = useAtomValue(sessionOrgTagsAtom);
@@ -173,27 +258,113 @@ export function useSessionCommentTarget(
 
   const pushedOrgIds = useMemo(() => {
     if (!session) return [];
-    const suffix = `:${session.session_id}`;
-    return [
-      ...Object.keys(pushCursors),
-      ...Object.keys(pushedMetadata),
-    ].flatMap((key) =>
-      key.endsWith(suffix) ? [key.slice(0, -suffix.length)] : []
+    return pushedCloudOrgIdsForSession(
+      session.session_id,
+      pushCursors,
+      pushedMetadata
     );
   }, [session, pushCursors, pushedMetadata]);
 
-  return useMemo(
-    () =>
+  const remoteEntries = useAtomValue(org2CloudRemoteSessionsAtom);
+
+  return useMemo(() => {
+    const lineage = session ? getSessionForkedFrom(session) : undefined;
+    const target =
+      canonicalTarget ??
       resolveSessionCommentTarget({
-        session: session
-          ? { ...session, forkedFrom: getSessionForkedFrom(session) }
-          : null,
+        session: session ? { ...session, forkedFrom: lineage } : null,
         cloudOrgs,
         tags,
         preferredOrgId: selectedCloudOrg?.orgId ?? null,
         orgRepoScopes,
         pushedOrgIds,
-      }),
-    [session, cloudOrgs, tags, selectedCloudOrg, orgRepoScopes, pushedOrgIds]
+      });
+    const rows = target ? remoteEntries[target.orgId]?.rows : undefined;
+    const rerooted = rerootSessionCommentTarget(target, rows);
+    return retireExpiredOwnerCommentTarget(
+      rerooted,
+      session,
+      rerooted ? remoteEntries[rerooted.orgId] : undefined
+    );
+  }, [
+    session,
+    cloudOrgs,
+    tags,
+    selectedCloudOrg,
+    orgRepoScopes,
+    pushedOrgIds,
+    remoteEntries,
+    canonicalTarget,
+  ]);
+}
+
+/**
+ * An owner-local session whose Cloud row (and every live family member) has
+ * left a ready listing has no Cloud plane left to read or write: comments,
+ * mentions, and canonical turns would all fail with retention errors. Retire
+ * the target so every surface treats the session as local again. Replay
+ * viewers keep their target; their rows are the import input itself.
+ */
+export function retireExpiredOwnerCommentTarget(
+  target: SessionCommentTarget | null,
+  session: Pick<Session, "importedFrom"> | null | undefined,
+  entry: Pick<CloudOrgRemoteSessionsEntry, "state" | "rows"> | undefined
+): SessionCommentTarget | null {
+  if (!target) return null;
+  return cloudConversationAuthorityIsLive({
+    session: session ?? undefined,
+    target,
+    entry,
+    loadingSource: undefined,
+  })
+    ? target
+    : null;
+}
+
+/**
+ * One conversation, one discussion plane: comments on any fork-family member
+ * belong to the family ROOT session, so every viewpoint — root owner, fork
+ * owner, teammate replay of either — reads and writes the same thread.
+ * Without this, a writable fork posts to its parent while a replay of that
+ * fork reads the fork's own plane, and the discussion silently splits.
+ *
+ * When the root ROW is gone from the listing (replay retention expires the
+ * oldest segment first — live-observed 2026-08-21), targeting it anyway
+ * means every comment call fails ORG2_RETENTION_EXPIRED and the whole
+ * conversation goes mute while its forks are still alive. Fall back to the
+ * oldest live family member: forkedAt order (id tiebreak) is identical on
+ * every client reading the same listing, so all viewpoints converge on the
+ * same surviving plane.
+ */
+export function rerootSessionCommentTarget(
+  target: SessionCommentTarget | null,
+  rows: readonly RemoteTeammateSessionMetadata[] | undefined
+): SessionCommentTarget | null {
+  if (!target || !rows?.length) return target;
+  const selfRow = rows.find(
+    (candidate) => candidate.sourceSessionId === target.sessionId
   );
+  const rootSessionId = selfRow?.forkedFrom?.rootSessionId ?? target.sessionId;
+  const rootRow = rows.find(
+    (candidate) => candidate.sourceSessionId === rootSessionId
+  );
+  if (rootRow) {
+    return rootSessionId === target.sessionId
+      ? target
+      : { orgId: target.orgId, sessionId: rootSessionId };
+  }
+  const liveMembers = rows
+    .filter(
+      (candidate) => candidate.forkedFrom?.rootSessionId === rootSessionId
+    )
+    .sort(
+      (left, right) =>
+        (left.forkedFrom?.forkedAt ?? "").localeCompare(
+          right.forkedFrom?.forkedAt ?? ""
+        ) || left.sourceSessionId.localeCompare(right.sourceSessionId)
+    );
+  const anchor = liveMembers[0];
+  return anchor
+    ? { orgId: target.orgId, sessionId: anchor.sourceSessionId }
+    : target;
 }

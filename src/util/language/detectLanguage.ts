@@ -4,9 +4,8 @@
  * Extracted from ChatCodeBlock/config.ts for reuse across components.
  * Detects programming language from file paths and extensions.
  */
+import { SPECIAL_FILENAMES } from "@src/config/languageMap";
 import { getFileExtensionLower, getFileName } from "@src/util/file/pathUtils";
-
-import { SPECIAL_FILENAMES } from "./languageMap";
 
 /**
  * Detect language from file path
@@ -21,7 +20,7 @@ import { SPECIAL_FILENAMES } from "./languageMap";
  * detectLanguageFromPath("src/App.tsx") // "tsx"
  * detectLanguageFromPath("Dockerfile") // "dockerfile"
  * detectLanguageFromPath("script.py") // "py"
- * detectLanguageFromPath("unknown.xyz") // "text"
+ * detectLanguageFromPath("unknown.xyz") // "xyz"
  */
 export function detectLanguageFromPath(filePath: string): string {
   if (!filePath) return "text";

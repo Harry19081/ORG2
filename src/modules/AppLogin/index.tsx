@@ -1,28 +1,41 @@
-import { LogIn, RefreshCw } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  type Location,
+  createPath,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
-import { ROUTES } from "@src/config/routes";
+import PageNotice from "@src/components/PageNotice";
+import { MOBILE_REMOTE_ROUTE, ROUTES } from "@src/config/routes";
 import { HOSTED_LOGIN_ENABLED, setAuthSkipped } from "@src/config/serviceAuth";
 import {
   clearAuthStateCompletely,
   useServiceAuth,
 } from "@src/hooks/auth/useServiceAuth";
 import { createLogger } from "@src/hooks/logger";
-import {
-  ONBOARDING_LOADING_VIDEO_WIDTH_CLASS,
-  OnboardingLayout,
-  OnboardingLoadingVideo,
-} from "@src/modules/shared/layouts";
+import { HugeiconsIcon, Login01Icon, Refresh04Icon } from "@src/icons";
+import { captureOpaquePairingReturnLocation } from "@src/modules/MobileRemote/auth/mobileAuthIntent";
 
-const LOGIN_COLUMN_WIDTH_CLASS = ONBOARDING_LOADING_VIDEO_WIDTH_CLASS;
+import { LOGIN_ARTWORK_WIDTH_CLASS, LoginArtwork } from "./LoginArtwork";
+import LoginCard from "./LoginCard";
+
+const LOGIN_COLUMN_WIDTH_CLASS = LOGIN_ARTWORK_WIDTH_CLASS;
 const log = createLogger("LoginPage");
 
 /** Primary CTAs — taller than default `Button` large for login prominence */
 const LOGIN_ACTION_BUTTON_CLASS = `pointer-events-auto relative z-10 h-14 ${LOGIN_COLUMN_WIDTH_CLASS} text-base font-medium`;
+
+type LoginReturnLocation = Pick<Location, "pathname" | "search" | "hash">;
+
+/** Preserve the complete in-app target across the external OAuth round-trip. */
+export function resolveLoginRedirectPath(
+  from: LoginReturnLocation | undefined
+): string {
+  return from ? createPath(from) : ROUTES.workStation.base.path;
+}
 
 // ============================================
 // Exported Loading State Component
@@ -48,7 +61,7 @@ export const LoginLoadingState: React.FC<LoginLoadingStateProps> = ({
     >
       {error ? (
         <>
-          <OnboardingLoadingVideo />
+          <LoginArtwork />
           <div className="flex flex-col items-center gap-2 text-center">
             <div className="text-lg font-medium text-red-500">
               {t("loading.failed")}
@@ -60,12 +73,12 @@ export const LoginLoadingState: React.FC<LoginLoadingStateProps> = ({
           </div>
         </>
       ) : (
-        <OnboardingLoadingVideo />
+        <LoginArtwork />
       )}
     </div>
   );
 
-  return <OnboardingLayout variant="contained" leftContent={leftContent} />;
+  return <LoginCard content={leftContent} />;
 };
 
 // ============================================
@@ -75,6 +88,7 @@ interface LoginFormProps {
   isLoading: boolean;
   sessionExpired: boolean;
   callbackError: string | null;
+  allowSkip: boolean;
   onLogin: () => void;
   onSkip: () => void;
 }
@@ -83,6 +97,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   isLoading,
   sessionExpired,
   callbackError,
+  allowSkip,
   onLogin,
   onSkip,
 }) => {
@@ -93,25 +108,25 @@ const LoginForm: React.FC<LoginFormProps> = ({
       <div
         className={`flex flex-col items-center gap-6 ${LOGIN_COLUMN_WIDTH_CLASS}`}
       >
-        <OnboardingLoadingVideo />
+        <LoginArtwork />
 
         <div
           className={`flex flex-col items-center gap-2 ${LOGIN_COLUMN_WIDTH_CLASS}`}
         >
           {sessionExpired && (
-            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            <PageNotice type="warning" role="alert" className="mb-4">
               {t("login.sessionExpired")}
-            </div>
+            </PageNotice>
           )}
 
           {callbackError && (
-            <InlineAlert
+            <PageNotice
               type="danger"
               title={t("common:status.error")}
               className="mb-4"
             >
               {callbackError}
-            </InlineAlert>
+            </PageNotice>
           )}
 
           <Button
@@ -124,15 +139,17 @@ const LoginForm: React.FC<LoginFormProps> = ({
             {isLoading ? t("login.signingIn") : t("login.button")}
           </Button>
 
-          <Button
-            variant="tertiary"
-            size="large"
-            onClick={onSkip}
-            className={LOGIN_ACTION_BUTTON_CLASS}
-            loading={false}
-          >
-            {t("login.startButton")}
-          </Button>
+          {allowSkip && (
+            <Button
+              variant="tertiary"
+              size="large"
+              onClick={onSkip}
+              className={LOGIN_ACTION_BUTTON_CLASS}
+              loading={false}
+            >
+              {t("login.startButton")}
+            </Button>
+          )}
 
           <p className="m-0 text-center text-xs leading-normal text-text-3">
             <Trans
@@ -178,7 +195,7 @@ const AuthenticatedForm: React.FC<AuthenticatedFormProps> = ({
       <div
         className={`flex flex-col items-center gap-6 ${LOGIN_COLUMN_WIDTH_CLASS}`}
       >
-        <OnboardingLoadingVideo />
+        <LoginArtwork />
 
         <div
           className={`flex flex-col items-center gap-2 ${LOGIN_COLUMN_WIDTH_CLASS}`}
@@ -189,7 +206,13 @@ const AuthenticatedForm: React.FC<AuthenticatedFormProps> = ({
             loading={isLoading}
             onClick={onContinue}
             className={LOGIN_ACTION_BUTTON_CLASS}
-            icon={<LogIn className="h-5 w-5" />}
+            icon={
+              <HugeiconsIcon
+                icon={Login01Icon}
+                data-icon="log-in"
+                className="h-5 w-5"
+              />
+            }
           >
             {t("common:actions.continue")}
           </Button>
@@ -199,7 +222,13 @@ const AuthenticatedForm: React.FC<AuthenticatedFormProps> = ({
             size="large"
             onClick={onSwitchAccount}
             className={LOGIN_ACTION_BUTTON_CLASS}
-            icon={<RefreshCw className="h-5 w-5" />}
+            icon={
+              <HugeiconsIcon
+                icon={Refresh04Icon}
+                data-icon="refresh-cw"
+                className="h-5 w-5"
+              />
+            }
             loading={false}
             loadingSpinIcon
           >
@@ -218,7 +247,7 @@ const AuthenticatedForm: React.FC<AuthenticatedFormProps> = ({
 /**
  * Login Page Component
  *
- * Single-column card via OnboardingLayout (no right pane).
+ * Single-column card via LoginCard (no right pane).
  *
  * When already authenticated, shows options to:
  * - Continue with current account
@@ -237,11 +266,22 @@ const LoginPage: React.FC = () => {
 
   // Get the redirect location (where user was trying to go before login)
   const locationState = location.state as {
-    from?: { pathname: string };
+    from?: LoginReturnLocation;
     sessionExpired?: boolean;
   } | null;
-  const from = locationState?.from?.pathname;
-  const redirectPath = from || ROUTES.workStation.base.path;
+  const [returnLocation] = useState<LoginReturnLocation | undefined>(() => {
+    const from = locationState?.from;
+    return from?.pathname === MOBILE_REMOTE_ROUTE.path
+      ? captureOpaquePairingReturnLocation(
+          from,
+          window.location.href,
+          sessionStorage
+        )
+      : from;
+  });
+  const redirectPath = resolveLoginRedirectPath(returnLocation);
+  const isMobileRemoteReturn =
+    locationState?.from?.pathname === MOBILE_REMOTE_ROUTE.path;
 
   // Check if user was redirected due to session expiration
   const sessionExpired = locationState?.sessionExpired === true;
@@ -292,6 +332,7 @@ const LoginPage: React.FC = () => {
   // localStorage and is honored by AuthGuard / AuthRedirect; it is cleared
   // on successful sign-in or sign-out so the user can change their mind.
   const handleSkip = () => {
+    if (isMobileRemoteReturn) return;
     setAuthSkipped(true);
     navigate(redirectPath, { replace: true });
   };
@@ -320,9 +361,8 @@ const LoginPage: React.FC = () => {
   // Show authenticated options if user has a valid session
   if (showAccountOptions && isAuthenticated) {
     return (
-      <OnboardingLayout
-        variant="contained"
-        leftContent={
+      <LoginCard
+        content={
           <AuthenticatedForm
             isLoading={isLoading}
             onContinue={handleContinue}
@@ -334,13 +374,13 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <OnboardingLayout
-      variant="contained"
-      leftContent={
+    <LoginCard
+      content={
         <LoginForm
           isLoading={isLoading}
           sessionExpired={sessionExpired}
           callbackError={callbackError}
+          allowSkip={!isMobileRemoteReturn}
           onLogin={handleLogin}
           onSkip={handleSkip}
         />

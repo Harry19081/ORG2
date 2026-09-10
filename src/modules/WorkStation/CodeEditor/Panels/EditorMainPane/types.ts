@@ -3,37 +3,13 @@
  *
  * Type definitions for the main content area.
  */
-import type { UseTerminalStateReturn } from "@/src/engines/TerminalCore/exports";
+import type { UseTerminalStateReturn } from "@/src/engines/TerminalCore/types";
 import type { ReactNode } from "react";
 
 import type { SourceControlFilterMode } from "@src/modules/WorkStation/shared/SidebarModules";
 import type { CursorPosition } from "@src/modules/WorkStation/shared/StatusBar/EditorStatusBar";
 import type { PanelState, WorkStationTab } from "@src/store/workstation/tabs";
 import type { GitFile } from "@src/types/git/types";
-
-import type { Diagnostic } from "../EditorBottomPanel/content/ProblemsContent/types";
-
-// ============================================
-// Tab Types
-// ============================================
-
-/**
- * All supported tab types in the editor content area
- */
-export type EditorTabType =
-  | "file"
-  | "directory"
-  | "explorer"
-  | "git-diff"
-  | "source-control"
-  | "git-log"
-  | "terminal-content"
-  | "dom-component-preview"
-  | "terminal"
-  | "output"
-  | "settings"
-  | "search"
-  | "lint-scan";
 
 // ============================================
 // Component Props
@@ -60,7 +36,6 @@ export interface EditorContentProps {
   onContentChange: (content: string) => void;
   onSave: () => Promise<void>;
   onDiscard: () => void;
-  onDiagnosticsChange: (diagnostics: Diagnostic[]) => void;
   onAllChangesClick: () => void;
 
   // Flags (fallback from parent)
@@ -73,6 +48,13 @@ export interface EditorContentProps {
 
   // Terminal tab
   terminalState: UseTerminalStateReturn;
+
+  /**
+   * Tabs the retention policy keeps mounted-but-hidden while inactive
+   * (`useRetainedTabPool`); the host renders them in hidden layers instead
+   * of rebuilding them on the next visit. Omit for active-only behaviour.
+   */
+  retainedTabIds?: ReadonlySet<string>;
 
   // Source Control header controls
   sourceControlHeaderLeadingSlot?: ReactNode;
@@ -143,7 +125,6 @@ export interface UseTabContentSyncOptions {
 // Re-exports
 // ============================================
 
-export type { Diagnostic };
 export type { CursorPosition };
 export type { PanelState, WorkStationTab };
 export type { GitFile };

@@ -1,11 +1,17 @@
-import { ChevronsDownUp, ChevronsUpDown, Download } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { ItemKind } from "@src/api/types/externalImport";
 import Button from "@src/components/Button";
+import PageNotice from "@src/components/PageNotice";
 import SettingsTable from "@src/components/SettingsTable";
 import type { CursorRepo } from "@src/hooks/policies";
+import {
+  ChevronsDownUpIcon,
+  HugeiconsIcon,
+  ImportIcon,
+  UnfoldMoreIcon,
+} from "@src/icons";
 import {
   SectionContainer,
   SectionRow,
@@ -17,7 +23,7 @@ import {
 } from "./inlineExternalImportUtils";
 import { useExternalImport } from "./useExternalImport";
 
-export interface InlineExternalImportLabels {
+interface InlineExternalImportLabels {
   /** Section row label (title). */
   title: string;
   /** Message shown when no items were detected at all. */
@@ -30,7 +36,7 @@ export interface InlineExternalImportLabels {
   searchPlaceholder?: string;
 }
 
-export interface InlineExternalImportProps {
+interface InlineExternalImportProps {
   kind: ItemKind;
   labels: InlineExternalImportLabels;
   cursorRepos?: CursorRepo[];
@@ -80,6 +86,7 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
     importError,
     importErrors,
     importColumns,
+    handleRowClick,
     handleImport,
   } = useExternalImport({
     kind,
@@ -103,9 +110,17 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
           variant="secondary"
           icon={
             expanded ? (
-              <ChevronsDownUp size={14} />
+              <HugeiconsIcon
+                icon={ChevronsDownUpIcon}
+                data-icon="chevrons-down-up"
+                size={14}
+              />
             ) : (
-              <ChevronsUpDown size={14} />
+              <HugeiconsIcon
+                icon={UnfoldMoreIcon}
+                data-icon="chevrons-up-down"
+                size={14}
+              />
             )
           }
           onClick={() => {
@@ -134,6 +149,7 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
             ) : (
               <SettingsTable
                 columns={importColumns}
+                onRowClick={handleRowClick}
                 rows={importableItems}
                 getRowKey={inlineExternalImportRowKey}
                 headerHeight="tall"
@@ -146,7 +162,7 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
                       `${t("common:actions.search")} ${labels.itemColumn.toLowerCase()}...`,
                     allowSearchClear: true,
                   },
-                  emptyTitle: t("common:actions.noResults"),
+                  emptyTitle: t("common:status.noResults"),
                   searchHeaderClassName: "-mx-4 w-[calc(100%+2rem)]",
                 })}
                 noPx
@@ -155,17 +171,18 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
             )}
 
             {importError && (
-              <div className="rounded border border-solid border-danger-3 bg-danger-1 px-3 py-2 text-[12px] text-danger-6">
+              <PageNotice type="danger" role="alert">
                 {t("agentOrgs.externalImport.applyFailed", {
                   message: importError,
                 })}
-              </div>
+              </PageNotice>
             )}
             {importErrors.length > 0 && (
-              <div className="rounded border border-solid border-warning-3 bg-warning-1 px-3 py-2 text-[12px] text-warning-6">
-                <div className="mb-1 font-bold">
-                  {t("agentOrgs.externalImport.partialFailure")}
-                </div>
+              <PageNotice
+                type="warning"
+                role="alert"
+                title={t("agentOrgs.externalImport.partialFailure")}
+              >
                 <ul className="list-inside list-disc">
                   {importErrors.map((entry) => (
                     <li key={`${entry.sourcePath}:${entry.targetName}`}>
@@ -174,7 +191,7 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </PageNotice>
             )}
 
             {hasImportable && (
@@ -182,7 +199,13 @@ const InlineExternalImport: React.FC<InlineExternalImportProps> = ({
                 <Button
                   variant="primary"
                   size="small"
-                  icon={<Download size={14} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={ImportIcon}
+                      data-icon="import"
+                      size={14}
+                    />
+                  }
                   disabled={selected.size === 0}
                   loading={importing}
                   onClick={handleImport}

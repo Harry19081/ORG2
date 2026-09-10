@@ -1,14 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue, useSetAtom } from "jotai";
-import { X } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import Button from "@src/components/Button";
-import { getMaterialConfig } from "@src/components/Glass/config";
+import { Cancel01Icon, HugeiconsIcon } from "@src/icons";
 import {
   POPUP_ANIMATION,
-  POPUP_SHADOW,
+  getPopupSurfaceStyle,
 } from "@src/scaffold/shared/popupTokens";
 import {
   clearGuideHighlightAtom,
@@ -121,10 +120,7 @@ const GuideHighlightOverlay: React.FC = () => {
   const highlight = useAtomValue(guideHighlightAtom);
   const clearHighlight = useSetAtom(clearGuideHighlightAtom);
   const { isDark } = useCurrentTheme();
-  const material = getMaterialConfig(isDark, "thick");
-  const borderColor = isDark
-    ? "rgba(255, 255, 255, 0.10)"
-    : "rgba(255, 255, 255, 0.24)";
+  const popupSurfaceStyle = getPopupSurfaceStyle(isDark);
   const [targetRect, setTargetRect] = useState<{
     targetId: string;
     rect: TargetRect | null;
@@ -215,7 +211,7 @@ const GuideHighlightOverlay: React.FC = () => {
   return createPortal(
     <AnimatePresence>
       {highlight && rect && highlightStyle && popoverStyle && (
-        <div className="pointer-events-none fixed inset-0 z-[10060]">
+        <div className="pointer-events-none fixed inset-0 z-10060">
           <motion.div
             aria-hidden="true"
             className="fixed rounded-2xl border border-primary-5/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.42),0_0_26px_rgba(99,102,241,0.55)]"
@@ -226,13 +222,10 @@ const GuideHighlightOverlay: React.FC = () => {
             transition={{ duration: 0.18, ease: "easeOut" }}
           />
           <motion.div
-            className={`pointer-events-auto fixed rounded-2xl border p-4 text-text-1 ${POPUP_SHADOW}`}
+            className="pointer-events-auto fixed rounded-2xl border p-4 text-text-1"
             style={{
               ...popoverStyle,
-              backdropFilter: `blur(${material.blur}px)`,
-              WebkitBackdropFilter: `blur(${material.blur}px)`,
-              background: material.background,
-              borderColor,
+              ...popupSurfaceStyle,
             }}
             initial={POPUP_ANIMATION.initial}
             animate={POPUP_ANIMATION.animate}
@@ -254,7 +247,9 @@ const GuideHighlightOverlay: React.FC = () => {
                 size="mini"
                 variant="tertiary"
                 appearance="ghost"
-                icon={<X size={14} />}
+                icon={
+                  <HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={14} />
+                }
                 aria-label="Dismiss guide highlight"
                 onClick={clearHighlight}
               />

@@ -10,15 +10,15 @@ import { useTranslation } from "react-i18next";
 
 import { PushRejectedDialog } from "@src/components/GitDialogs";
 import Message from "@src/components/Message";
-import { useGitStatus } from "@src/contexts/git";
-import { showGitErrorAndHandle } from "@src/hooks/git/useGitErrorDialog";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
+import { showGitErrorAndHandle } from "@src/hooks/git/gitErrorDialog";
 import {
   type GitOperationResult,
   useGitOperations,
 } from "@src/hooks/git/useGitOperations";
 import { useRepoSelection } from "@src/hooks/git/useRepoSelection";
 import { useWorkingTreeDiffTotals } from "@src/hooks/git/useWorkingTreeDiffTotals";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import { workspaceGitStatusMapAtom } from "@src/store/git";
 import type { GitPullStrategy } from "@src/store/ui/editorSettingsAtom";
 import {
@@ -173,9 +173,16 @@ export function useEditorStatusBarGit({
   }, [canSyncDisplayedRepo, pull]);
 
   const showSyncErrorDialog = useCallback(
-    async (result: GitOperationResult, fallbackMessage: string) => {
+    async (
+      result: GitOperationResult,
+      fallbackMessage: string,
+      // The operation that actually failed. Both call sites are failed
+      // PULLS inside a sync flow; labeling them "sync" made the dialog's
+      // stash-and-retry re-run a pull AND a push the user never asked for.
+      operation: "pull" | "sync" = "pull"
+    ) => {
       await showGitErrorAndHandle({
-        operation: "sync",
+        operation,
         repoId: operationRepoId,
         repoPath: operationRepoPath,
         errorType: result.errorType,

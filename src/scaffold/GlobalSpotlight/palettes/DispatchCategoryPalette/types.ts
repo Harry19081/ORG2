@@ -1,5 +1,7 @@
 import type { CliAgentType } from "@src/api/tauri/rpc/schemas/validation";
 import type { DispatchCategory } from "@src/api/tauri/session";
+import type { KeyVaultAccount } from "@src/hooks/keyVault";
+import type { IconSvgElement } from "@src/icons";
 import type { CliLaunchMode } from "@src/store/session";
 import type { SessionTargetKind } from "@src/store/session/creatorStateAtom";
 
@@ -29,6 +31,11 @@ export interface AgentOption {
   isBuiltIn: boolean;
   isCli: boolean;
   isOrg: boolean;
+  /** Credential accounts represented by the selector's availability count. */
+  availableKeys?: KeyVaultAccount[];
+  /** Keep capability-gated runtimes visible without allowing a lossy launch. */
+  disabled?: boolean;
+  disabledLabel?: string;
   rightContent?: React.ReactNode;
 }
 
@@ -46,6 +53,11 @@ export interface DispatchCategoryPaletteProps extends BasePaletteProps {
   /** Omit CLI agents from contexts that only support Rust-native sessions. */
   hideCliAgents?: boolean;
   /**
+   * Capability gate for contextual execution paths. Installed CLI rows remain
+   * visible, but runtimes outside this set are disabled instead of disappearing.
+   */
+  allowedCliAgentTypes?: readonly CliAgentType[];
+  /**
    * When true only CLI agent entries are shown. Used by CLI-only picker surfaces.
    */
   cliOnly?: boolean;
@@ -57,8 +69,8 @@ export interface DispatchCategoryPaletteProps extends BasePaletteProps {
    * so the palette title reflects what is being chosen for.
    */
   titleLabel?: string;
-  /** Icon paired with `titleLabel`. Defaults to no icon when omitted. */
-  titleIcon?: React.ComponentType<Record<string, unknown>>;
+  /** Static glyph paired with `titleLabel`. Defaults to no icon when omitted. */
+  titleIcon?: IconSvgElement;
   /** Optional placeholder override for contextual picker copy. */
   placeholderLabel?: string;
 }

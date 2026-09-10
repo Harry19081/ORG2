@@ -16,8 +16,10 @@
  *   React subtree is mounted once; only the grid placement changes on
  *   toggle, so terminal/devtools state survives position flips.
  */
+import i18next from "i18next";
 import React, { memo } from "react";
 
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { useResizeContextMenu } from "@src/hooks/ui/useResizeContextMenu";
 import { useResizeHandle } from "@src/hooks/ui/useResizeHandle";
 import {
@@ -37,7 +39,7 @@ import "./index.scss";
 // Types
 // ============================================
 
-export interface WorkStationShellProps {
+interface WorkStationShellProps {
   /** Primary sidebar configuration. */
   primarySidebarConfig?: PrimarySidebarConfig;
   /**
@@ -131,6 +133,7 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     className,
     appClassName,
   }) => {
+    const sidebarShortcut = useShortcutKeys("toggle_workstation_sidebar");
     const resolvedPrimarySidebar = {
       content: primarySidebarConfig?.content,
       collapsed:
@@ -155,7 +158,10 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     // ------------------------------------------------------------------
     // Primary sidebar resize
     // ------------------------------------------------------------------
-    const { handleMouseDown: handlePrimarySidebarResize } = useResizeHandle(
+    const {
+      handleMouseDown: handlePrimarySidebarResize,
+      isResizing: isPrimarySidebarResizing,
+    } = useResizeHandle(
       resolvedPrimarySidebar.size,
       resolvedPrimarySidebar.onSizeChange ?? noop,
       {
@@ -251,9 +257,13 @@ export const WorkStationShell: React.FC<WorkStationShellProps> = memo(
     const primarySidebarResizeHandle = !resolvedPrimarySidebar.collapsed &&
       resolvedPrimarySidebar.onSizeChange && (
         <VerticalResizeHandle
+          indicatorPlacement="center"
+          isResizing={isPrimarySidebarResizing}
           variant="border"
           onMouseDown={handlePrimarySidebarResize}
           onContextMenu={handlePrimarySidebarContextMenu}
+          tooltipLabel={i18next.t("common:commands.hidePrimarySidebar")}
+          tooltipShortcut={sidebarShortcut}
         />
       );
 

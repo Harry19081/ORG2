@@ -12,26 +12,31 @@ import {
   parseExternalSkillsetsTab,
   parseIntegrationsPath,
 } from "@src/config/mainAppPaths";
-import type { DependencyStatus } from "@src/hooks/dependencies";
 import {
   integrationsAddSignalAtom,
   integrationsToolbarAtom,
 } from "@src/store/ui/integrationsToolbarAtom";
 
 import { useOSAgentGateway } from "../AgentOrgs/config/osAgent/useOSAgentGateway";
-import type { DevToolsTab } from "./DevTools/DevToolsCategoryView";
+import { getConnectionsCategoryTableProps } from "./Connections/categoryTableProps";
+import { getDatabasesCategoryTableProps } from "./Databases/categoryTableProps";
 import { useCliAgents } from "./KeyVault/CliClients/hooks/useCliAgents";
+import { getAccountsCategoryTableProps } from "./KeyVault/categoryTableProps";
 import { useKeyVaultPage } from "./KeyVault/hooks/useKeyVaultPage";
+import { getMcpCategoryTableProps } from "./Mcp/categoryTableProps";
+import { getRoutinesCategoryTableProps } from "./Routines/categoryTableProps";
+import { getRulesMemoryEvolutionCategoryTableProps } from "./RulesMemoryEvolution/categoryTableProps";
+import { getSkillsCategoryTableProps } from "./Skills/categoryTableProps";
 import { useChannelState } from "./hooks/useChannelState";
 import { useConnectionsState } from "./hooks/useConnectionsState";
 import { useDatabasesState } from "./hooks/useDatabasesState";
 import { useExtensionsState } from "./hooks/useExtensionsState";
 import { useRoutinesState } from "./hooks/useRoutinesState";
 import { useRulesMemoryEvolutionState } from "./hooks/useRulesMemoryEvolutionState";
+import type { DependencyStatus } from "./hooks/useSystemDependencies";
 import { getHasIntegrationsFullPageDetail } from "./integrationsFullPageDetail";
 import { VALID_MODELS_TABS } from "./integrationsPageConstants";
 import type { AddAction, DetailMode, IntegrationCategory } from "./types";
-import { useIntegrationsCategoryTableProps } from "./useIntegrationsCategoryTableProps";
 import { useIntegrationsPageDrillDown } from "./useIntegrationsPageDrillDown";
 
 function resolveExternalSkillsetsTab(search: string): ExternalSkillsetsTab {
@@ -73,9 +78,6 @@ export function useIntegrationsPage() {
       : undefined;
   }, [modelsTabParam]);
 
-  const devToolsTabParam = searchParams.get("devToolsTab");
-  const initialDevToolsTab = devToolsTabParam as DevToolsTab | undefined;
-
   const navigateToCategory = useCallback(
     (next: IntegrationCategory) => {
       navigate(buildIntegrationsPath({ category: next }));
@@ -84,9 +86,6 @@ export function useIntegrationsPage() {
   );
 
   const [detailMode, setDetailMode] = useState<DetailMode>("preview");
-  const [devToolsTab, setDevToolsTab] = useState<DevToolsTab | undefined>(
-    initialDevToolsTab
-  );
   const [databasesActiveTab, setDatabasesActiveTab] = useState("databases");
   const [selectedDbClient, setSelectedDbClient] =
     useState<DependencyStatus | null>(null);
@@ -122,7 +121,6 @@ export function useIntegrationsPage() {
     [extensions, navigate]
   );
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- intentional: deps include hook objects whose methods are called
   const handleCategoryChange = useCallback(
     (cat: IntegrationCategory) => {
       if (cat !== category) {
@@ -134,7 +132,6 @@ export function useIntegrationsPage() {
       accountsHook.handleAccountSelect(null);
       routines.clearRoutinesState();
       setSelectedDbClient(null);
-      setDevToolsTab(undefined);
       setDetailMode("preview");
     },
     [
@@ -156,7 +153,6 @@ export function useIntegrationsPage() {
     [accountsHook]
   );
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- intentional: deps include hook objects whose methods are called
   const handleAddAction = useCallback(
     (action: AddAction) => {
       switch (action) {
@@ -397,26 +393,6 @@ export function useIntegrationsPage() {
     [extensions, setSearchParams]
   );
 
-  const { tableProps } = useIntegrationsCategoryTableProps({
-    category,
-    accountsHook,
-    handleAccountSelect,
-    extensions,
-    channelState,
-    connections,
-    databasesState,
-    databasesActiveTab,
-    handleDatabasesTabChange,
-    selectedDbClient,
-    setSelectedDbClient,
-    policies,
-    routines,
-    cliAgents,
-    handleAddAction,
-    modelsActiveTab: initialModelsTab,
-    handleModelsTabChange,
-  });
-
   const { t: tIntegrations } = useTranslation("integrations");
 
   const hasFullPageDetail = getHasIntegrationsFullPageDetail({
@@ -485,7 +461,6 @@ export function useIntegrationsPage() {
     detailPanelProps: {
       category,
       detailMode,
-      devToolsTab,
       selectedIntegrationKind: connections.selectedIntegrationKind,
       selectedGitProvider: connections.selectedGitProvider,
       onExitFullPage: handleExitFullPage,
@@ -495,7 +470,41 @@ export function useIntegrationsPage() {
       channel: channelState,
       accounts: accountsHook,
       extensionSelectedId: extensions.extensionSelectedId,
-      tableProps,
+      accountsTableProps: getAccountsCategoryTableProps({
+        accounts: accountsHook,
+        onSelect: handleAccountSelect,
+        models: extensions,
+        modelsActiveTab: initialModelsTab,
+        onModelsTabChange: handleModelsTabChange,
+        cliAgents,
+        onAddAction: handleAddAction,
+      }),
+      databasesTableProps: getDatabasesCategoryTableProps({
+        databases: databasesState,
+        activeTab: databasesActiveTab,
+        onActiveTabChange: handleDatabasesTabChange,
+        selectedDbClient,
+        onSelectDbClient: setSelectedDbClient,
+      }),
+      connectionsTableProps: getConnectionsCategoryTableProps({
+        channels: channelState,
+        onSelectChannel: connections.handleChannelClick,
+        onAddAction: handleAddAction,
+      }),
+      mcpTableProps: getMcpCategoryTableProps({ extensions }),
+      skillsTableProps: getSkillsCategoryTableProps({
+        extensions,
+        onAddAction: handleAddAction,
+      }),
+      rulesTableProps: getRulesMemoryEvolutionCategoryTableProps({
+        policies,
+        onAddAction: handleAddAction,
+      }),
+      routinesTableProps: getRoutinesCategoryTableProps({
+        routines,
+        onAddAction: handleAddAction,
+      }),
+      onSelectGitProvider: connections.handleGitProviderSelect,
       skillsHub: extensions.skillsHub,
       skillEditor: extensions.skillEditor,
       mcp: extensions.mcp,

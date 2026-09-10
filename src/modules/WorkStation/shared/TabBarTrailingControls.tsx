@@ -9,18 +9,15 @@
  * active app (Code Editor → bottom panel, Browser → DevTools).
  */
 import { useAtomValue } from "jotai";
-import { PanelBottom, PencilRuler } from "lucide-react";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  workStationDevToolsCollapsedAtom,
-  workStationEditorSecondaryCollapsedAtom,
-} from "@src/store/ui/workStationAtom";
+import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { HugeiconsIcon, PencilRulerIcon, SidebarBottomIcon } from "@src/icons";
+import { workStationEditorSecondaryCollapsedAtom } from "@src/store/ui/workStationLayout/bottomPanelAtoms";
+import { workStationDevToolsCollapsedAtom } from "@src/store/ui/workStationLayout/devToolsCollapsedAtoms";
 import { activeStatusBarCallbacksAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
-
-import { TabBarTrailingIconButton } from "./TabBar/components/TabBarTrailingIconButton";
-import { HEADER_ICON_SIZE } from "./tokens";
 
 export const TabBarBottomPanelToggle: React.FC = memo(() => {
   const { t } = useTranslation("sessions");
@@ -33,10 +30,15 @@ export const TabBarBottomPanelToggle: React.FC = memo(() => {
 
   return (
     <TabBarTrailingIconButton
-      title={t("titleBar.showBottomPanel")}
+      title={t("simulator.titleBar.showBottomPanel")}
       onClick={() => callbacks.onToggleBottomPanel?.()}
     >
-      <PanelBottom size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
+      <HugeiconsIcon
+        icon={SidebarBottomIcon}
+        data-icon="panel-bottom"
+        size={HEADER_ICON_SIZE.md}
+        strokeWidth={1.75}
+      />
     </TabBarTrailingIconButton>
   );
 });
@@ -56,7 +58,12 @@ export const TabBarDevToolsToggle: React.FC = memo(() => {
       shortcutId="browser_devtools"
       onClick={() => callbacks.onToggleDevTools?.()}
     >
-      <PencilRuler size={HEADER_ICON_SIZE.sm} strokeWidth={1.75} />
+      <HugeiconsIcon
+        icon={PencilRulerIcon}
+        data-icon="pencil-ruler"
+        size={HEADER_ICON_SIZE.sm}
+        strokeWidth={1.75}
+      />
     </TabBarTrailingIconButton>
   );
 });

@@ -16,7 +16,7 @@
  * import Checkbox from "@src/components/Checkbox";
  *
  * // Single checkbox
- * <Checkbox onChange={(checked) => {}}>
+ * <Checkbox onCheckedChange={(checked) => {}}>
  *   Accept terms
  * </Checkbox>
  *
@@ -31,7 +31,6 @@
  * </Checkbox.Group>
  * ```
  */
-import { Check, Minus } from "lucide-react";
 import React, {
   createContext,
   useCallback,
@@ -42,6 +41,7 @@ import React, {
   useState,
 } from "react";
 
+import { HugeiconsIcon, MinusSignIcon, Tick01Icon } from "@src/icons";
 import { useCurrentTheme } from "@src/util/ui/theme/themeUtils";
 
 type CheckboxSize = "mini" | "small" | "default" | "large";
@@ -89,10 +89,10 @@ function getCheckboxIconClassName(options: {
       isDark ? "bg-fill-3 border-border-2" : "bg-fill-2 border-border-2",
     ].join(" ");
   }
-  if (isDark) {
-    return [...base, "bg-bg-2 border-border-2 hover:border-border-3"].join(" ");
-  }
-  return [...base, "bg-bg-1 border-border-2 hover:border-border-3"].join(" ");
+  // Same surface as regular inputs (`bg-bg-2`, see Input's `.input-inner`)
+  // in both themes. `bg-bg-1` is the recessed page background, which reads
+  // as a grey, disabled-looking box on light surfaces.
+  return [...base, "bg-bg-2 border-border-2 hover:border-border-3"].join(" ");
 }
 
 function getCheckboxSvgClassName(isOn: boolean): string {
@@ -113,7 +113,7 @@ const CheckboxGroupContext = createContext<
   CheckboxGroupContextValue | undefined
 >(undefined);
 
-export interface CheckboxProps {
+interface CheckboxProps {
   /**
    * Checked state (controlled)
    */
@@ -140,9 +140,9 @@ export interface CheckboxProps {
   value?: unknown;
 
   /**
-   * Change callback
+   * Checked-state change callback
    */
-  onChange?: (
+  onCheckedChange?: (
     checked: boolean,
     event: React.ChangeEvent<HTMLInputElement>
   ) => void;
@@ -187,7 +187,7 @@ const Checkbox: React.FC<CheckboxProps> & {
   indeterminate = false,
   disabled: propDisabled = false,
   value,
-  onChange,
+  onCheckedChange,
   onClick,
   size = "default",
   className = "",
@@ -234,10 +234,17 @@ const Checkbox: React.FC<CheckboxProps> & {
         if (controlledChecked === undefined) {
           setInternalChecked(newChecked);
         }
-        onChange?.(newChecked, event);
+        onCheckedChange?.(newChecked, event);
       }
     },
-    [disabled, isInGroup, controlledChecked, onChange, groupContext, value]
+    [
+      disabled,
+      isInGroup,
+      controlledChecked,
+      onCheckedChange,
+      groupContext,
+      value,
+    ]
   );
 
   const handleClick = useCallback(
@@ -295,13 +302,17 @@ const Checkbox: React.FC<CheckboxProps> & {
       />
       <span className={iconClassName} data-checkbox-icon>
         {indeterminate ? (
-          <Minus
+          <HugeiconsIcon
+            icon={MinusSignIcon}
+            data-icon="minus"
             size={iconPixelSize}
             strokeWidth={3}
             className={svgClassName}
           />
         ) : (
-          <Check
+          <HugeiconsIcon
+            icon={Tick01Icon}
+            data-icon="check"
             size={iconPixelSize}
             strokeWidth={3}
             className={svgClassName}
@@ -324,7 +335,7 @@ const Checkbox: React.FC<CheckboxProps> & {
 };
 
 // Checkbox Group Component
-export interface CheckboxGroupProps {
+interface CheckboxGroupProps {
   /**
    * Selected values (controlled)
    */

@@ -8,14 +8,17 @@ import {
   workstationActiveSessionIdAtom,
 } from "@src/store/session/viewAtom";
 import {
-  CHAT_PANEL_SURFACE_KIND,
   DEFAULT_CHAT_PANEL_CREATE_TARGET,
   chatPanelCreateTargetAtom,
-  chatPanelNavigateAtom,
   chatPanelStartPageOpenAtom,
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import {
+  chatPanelNavigateAtom,
   toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/surfaceAtoms";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 
+import { recordChatPanelTabTransitionAtom } from "./chatPanelRecentTabsState";
 import {
   type ChatPanelTab,
   isChatPanelTabStationAvailable,
@@ -25,22 +28,14 @@ import {
   chatPanelTabsAtom,
 } from "./chatPanelTabsState";
 
-/** User toggle guarded by the active tab and current viewport policy. */
-export const toggleActiveChatPanelMaximizedAtom = atom(
-  null,
-  (get, set, viewportWidth: number | undefined) => {
-    if (
-      !isChatPanelTabStationAvailable(
-        get(activeChatPanelTabAtom),
-        viewportWidth
-      )
-    ) {
-      return false;
-    }
-    set(toggleChatPanelMaximizedAtom);
-    return true;
+/** User toggle guarded by the active tab's Station-access policy. */
+export const toggleActiveChatPanelMaximizedAtom = atom(null, (get, set) => {
+  if (!isChatPanelTabStationAvailable(get(activeChatPanelTabAtom))) {
+    return false;
   }
-);
+  set(toggleChatPanelMaximizedAtom);
+  return true;
+});
 toggleActiveChatPanelMaximizedAtom.debugLabel =
   "toggleActiveChatPanelMaximized";
 
@@ -127,8 +122,8 @@ const syncChatPanelTabNavigationAtom = atom(
 
 /**
  * Reconcile legacy surface state after hydration or layout changes.
- * Maximize behavior is derived at the layout boundary from the active tab and
- * viewport, so reconciliation never mutates the user's persisted preference.
+ * Maximize behavior is derived at the layout boundary from the active tab, so
+ * reconciliation never mutates the user's persisted preference.
  */
 export const syncActiveChatPanelTabStateAtom = atom(null, (get, set) => {
   const state = get(chatPanelTabsAtom);
@@ -173,6 +168,12 @@ export const activateChatPanelTabAtom = atom(
     const tab = state.tabs.find((candidate) => candidate.id === tabId);
     if (!tab) return;
     if (state.activeTabId !== tabId) {
+      set(recordChatPanelTabTransitionAtom, {
+        previousTab: state.tabs.find(
+          (candidate) => candidate.id === state.activeTabId
+        ),
+        nextTab: tab,
+      });
       set(chatPanelTabsAtom, { ...state, activeTabId: tabId });
     }
 
@@ -226,7 +227,13 @@ interface AppendAndActivateChatPanelTabOptions {
   repoPath?: string;
 }
 
-/** Append a tab and run the same navigation activation chain. */
+/**
+ * Open a tab and run the shared navigation activation chain.
+ *
+ * The active Launchpad is a disposable "create new session" placeholder, so
+ * any substantive destination consumes it in place. Real session and content
+ * tabs are always preserved and the new destination is appended beside them.
+ */
 export const appendAndActivateChatPanelTabAtom = atom(
   null,
   (
@@ -235,8 +242,21 @@ export const appendAndActivateChatPanelTabAtom = atom(
     { tab, sessionName, repoPath }: AppendAndActivateChatPanelTabOptions
   ) => {
     const state = get(chatPanelTabsAtom);
+    const activeTab = state.tabs.find(
+      (candidate) => candidate.id === state.activeTabId
+    );
+    const tabs =
+      tab.type !== "start-page" && activeTab?.type === "start-page"
+        ? state.tabs.map((candidate) =>
+            candidate.id === activeTab.id ? tab : candidate
+          )
+        : [...state.tabs, tab];
+    set(recordChatPanelTabTransitionAtom, {
+      previousTab: activeTab,
+      nextTab: tab,
+    });
     set(chatPanelTabsAtom, {
-      tabs: [...state.tabs, tab],
+      tabs,
       activeTabId: tab.id,
     });
     set(activateChatPanelTabAtom, {

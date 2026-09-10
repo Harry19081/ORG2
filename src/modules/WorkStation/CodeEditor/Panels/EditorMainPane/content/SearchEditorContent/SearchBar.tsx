@@ -4,12 +4,12 @@
  * Shared-styled search controls for the search editor tab.
  * Uses the same reusable input/select components as other tabs.
  */
-import { Loader2 } from "lucide-react";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { SPINNER_TOKENS } from "@src/config/spinnerTokens";
-import { SEARCH_TAB_ROW_CLASSES } from "@src/modules/WorkStation/shared/tokens";
+import { SEARCH_TAB_ROW_CLASSES } from "@src/config/workstation/tokens";
+import { HugeiconsIcon, Loading03Icon } from "@src/icons";
 
 import { SearchInput, SearchModeSelect } from "../../../shared";
 import type { SearchBarProps } from "./types";
@@ -20,7 +20,6 @@ export const SearchBar: React.FC<SearchBarProps> = memo(
     onQueryChange,
     mode,
     onModeChange,
-    advancedAvailable = false,
     isLoading = false,
     caseSensitive,
     wholeWord,
@@ -38,7 +37,6 @@ export const SearchBar: React.FC<SearchBarProps> = memo(
         <SearchModeSelect
           value={mode}
           onChange={onModeChange}
-          advancedAvailable={advancedAvailable}
           disabled={isLoading}
           size="small"
           appearance="default"
@@ -64,7 +62,9 @@ export const SearchBar: React.FC<SearchBarProps> = memo(
         {rightAction}
 
         {isLoading && (
-          <Loader2
+          <HugeiconsIcon
+            icon={Loading03Icon}
+            data-icon="loader-2"
             size={SPINNER_TOKENS.default}
             className="animate-spin text-text-3"
           />

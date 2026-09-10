@@ -144,6 +144,7 @@ pub fn cli_binary_id_for_agent(agent: &ModelType) -> Option<CliBinaryId> {
         ModelType::Pi => Some(CliBinaryId::Pi),
         ModelType::QoderCli => Some(CliBinaryId::QoderCli),
         ModelType::TraeCli => Some(CliBinaryId::TraeCli),
+        ModelType::DeepseekHarness => Some(CliBinaryId::DeepseekHarness),
         _ => None,
     }
 }
@@ -385,6 +386,20 @@ pub const CLI_LAUNCH_PROFILE_DEFAULTS: &[CliLaunchProfileDefaults] = &[
         command_args: &["interactive"],
         mode_defaults: mode_defaults![Manual => (&[], &[])],
     },
+    // `dsh --profile acp` is the only DSH profile that reports tool calls:
+    // the headless profile prints just the final assistant message on stdout.
+    // DSH_PERMISSION_MODE drives both the sandbox mode and the approval
+    // policy of the shipped profile; `workspace-write` keeps the harness's
+    // own default and routes out-of-sandbox requests to ORGII's permission
+    // card over ACP. `danger-full-access` (never asks) is deliberately not
+    // offered here — it would silently become the default mode.
+    CliLaunchProfileDefaults {
+        agent_type: ModelType::DeepseekHarness,
+        command_args: &["--profile", "acp"],
+        mode_defaults: mode_defaults![
+            Manual => (&[], &[("DSH_PERMISSION_MODE", "workspace-write")]),
+        ],
+    },
 ];
 
 pub fn defaults_for_agent(agent_type: &ModelType) -> Option<&'static CliLaunchProfileDefaults> {
@@ -502,5 +517,22 @@ mod tests {
             supported_permission_modes(defaults),
             vec![CliPermissionMode::Manual]
         );
+    }
+
+    #[test]
+    fn deepseek_harness_uses_the_acp_profile_for_gui_runs() {
+        let defaults =
+            defaults_for_agent(&ModelType::DeepseekHarness).expect("DeepSeek Harness defaults");
+        assert_eq!(defaults.command_args, &["--profile", "acp"]);
+        assert_eq!(
+            supported_permission_modes(defaults),
+            vec![CliPermissionMode::Manual]
+        );
+
+        // The sandbox preset stays pinned to the harness default so enabling
+        // ACP does not quietly widen what a DSH session may touch.
+        let manual = default_profile_for_mode(defaults, CliPermissionMode::Manual)
+            .expect("manual mode defaults");
+        assert_eq!(manual.env, &[("DSH_PERMISSION_MODE", "workspace-write")]);
     }
 }

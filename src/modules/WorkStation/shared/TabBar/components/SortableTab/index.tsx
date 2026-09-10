@@ -5,161 +5,34 @@
  * and close button with unsaved indicator.
  */
 import { useSortable } from "@dnd-kit/sortable";
-import { useAtomValue } from "jotai";
-import {
-  Infinity,
-  BookLock,
-  Box,
-  Building2,
-  CircleDot,
-  Code,
-  Code2,
-  FileDiff,
-  Folder,
-  GitBranch,
-  GitCommitHorizontal,
-  GitMerge,
-  GitPullRequest,
-  Globe,
-  Layout,
-  LayoutGrid,
-  LayoutList,
-  ListChecks,
-  Lock,
-  type LucideIcon,
-  MessageCircle,
-  MessageSquare,
-  MoveHorizontal,
-  Package,
-  Palette,
-  Plus,
-  Radar,
-  ScanSearch,
-  Search,
-  Settings,
-  Sparkles,
-  SquareTerminal,
-  Terminal,
-} from "lucide-react";
 import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  type ProjectSyncAdapterType,
-  STORY_SYNC_ADAPTER,
-} from "@src/api/http/integrations/syncConnections";
-import { FaviconIcon } from "@src/components/FaviconIcon";
-import FileTypeIcon from "@src/components/FileTypeIcon";
-import IntegrationIcon from "@src/components/IntegrationIcon";
-import {
-  getStatusColor,
-  getStatusColorForFile,
-  getStatusLetterForFile,
-} from "@src/config/gitStatus";
-import { getShortcutKeys } from "@src/config/keyboard/shortcutDisplay";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { TabPillCloseButton } from "@src/components/TabPill/TabPillCloseButton";
+import { TabPillSurface } from "@src/components/TabPill/TabPillSurface";
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
-import SessionIdentityIcon from "@src/engines/ChatPanel/components/SessionIdentityIcon";
-import { isGitHubIssueStatus } from "@src/modules/ProjectManager/WorkItems/workItemIdentity";
 import { CODE_EDITOR_TOUR_TARGETS } from "@src/scaffold/Tutorials/codeEditorTourConfig";
 import type { GitFileInfo } from "@src/store/git";
-import { sessionByIdAtom } from "@src/store/session";
-import {
-  isPlaceholderBrowserSessionTitle,
-  translatePlaceholderBrowserSessionTitle,
-} from "@src/store/workstation/browser/tabs";
-import {
-  CODE_EDITOR_MAIN_TERMINAL_TAB_ID,
-  resolveProjectManagerTabTitle,
-} from "@src/store/workstation/tabs";
+import type { WorkStationTab } from "@src/store/workstation/tabs";
 
-import { WorkstationToolbarTooltip } from "../../../WorkstationToolbarTooltip";
-import type { WorkStationTab } from "../../types";
-import { TabLabelRowScrim } from "../TabLabelRowScrim";
-import { TabPillCloseButton } from "../TabPillCloseButton";
-import { WorkStationTabPillSurface } from "../WorkStationTabPillSurface";
+import {
+  WorkstationTabContent,
+  getWorkstationTabDisplayTitle,
+} from "../WorkstationTabContent";
+import {
+  WORKSTATION_TAB_ICONS,
+  resolveWorkstationTabIntegrationIcon,
+} from "../WorkstationTabIcon";
 
 // ============================================
 // Types
 // ============================================
 
-const WORKSTATION_TAB_ICONS = {
-  BookLock,
-  Box,
-  Building2,
-  CircleDot,
-  Code,
-  Code2,
-  FileDiff,
-  GitBranch,
-  GitCommitHorizontal,
-  GitMerge,
-  GitPullRequest,
-  Globe,
-  Infinity,
-  Layout,
-  LayoutGrid,
-  LayoutList,
-  ListChecks,
-  MessageCircle,
-  MessageSquare,
-  Package,
-  Palette,
-  Plus,
-  Radar,
-  ScanSearch,
-  Search,
-  Settings,
-  Sparkles,
-  SquareTerminal,
-  Terminal,
-} as const satisfies Record<string, LucideIcon>;
+export { resolveWorkstationTabIntegrationIcon, WORKSTATION_TAB_ICONS };
 
-type WorkstationTabIconName = keyof typeof WORKSTATION_TAB_ICONS;
-
-function resolveWorkstationTabIcon(name: string): LucideIcon | null {
-  return WORKSTATION_TAB_ICONS[name as WorkstationTabIconName] ?? null;
-}
-
-export function resolveWorkstationTabIntegrationIcon(
-  tab: WorkStationTab
-): ProjectSyncAdapterType | null {
-  if (
-    tab.type === "project-linear-projects" ||
-    tab.type === "project-linear-work-items"
-  ) {
-    return STORY_SYNC_ADAPTER.LINEAR;
-  }
-  if (
-    tab.type === "github-issue-detail" ||
-    (tab.type === "workItem-detail" &&
-      isGitHubIssueStatus(tab.data.workItemStatus as string | undefined))
-  ) {
-    return STORY_SYNC_ADAPTER.GITHUB;
-  }
-  return null;
-}
-
-interface ChatSessionTabIconProps {
-  isActive: boolean;
-  sessionId: string;
-}
-
-const ChatSessionTabIcon: React.FC<ChatSessionTabIconProps> = memo(
-  ({ isActive, sessionId }) => {
-    const session = useAtomValue(sessionByIdAtom(sessionId));
-    return (
-      <SessionIdentityIcon
-        session={session}
-        sessionId={sessionId}
-        isSelected={isActive}
-      />
-    );
-  }
-);
-
-ChatSessionTabIcon.displayName = "ChatSessionTabIcon";
-
-export interface SortableTabProps {
+interface SortableTabProps {
   tab: WorkStationTab;
   isActive: boolean;
   isDraggable: boolean;
@@ -169,17 +42,6 @@ export interface SortableTabProps {
   gitInfo?: GitFileInfo | null;
   /** Icon only (e.g. narrow tab strip); title still in native tooltip via getTabTitle(). */
   hideLabel?: boolean;
-}
-
-// ============================================
-// Helper Functions
-// ============================================
-
-/**
- * Get color class for git status letter - uses centralized VSCode styling
- */
-function getGitStatusColor(statusLetter: string): string {
-  return getStatusColor(statusLetter);
 }
 
 // ============================================
@@ -217,135 +79,9 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
       zIndex: isDragging ? 100 : undefined,
     };
 
-    // Get tab-specific display info - render icon based on type
-    const renderTabIcon = (): JSX.Element => {
-      const integrationIcon = resolveWorkstationTabIntegrationIcon(tab);
-      if (integrationIcon) {
-        return (
-          <IntegrationIcon
-            type={integrationIcon}
-            size={16}
-            className={
-              integrationIcon === STORY_SYNC_ADAPTER.GITHUB
-                ? isActive
-                  ? "text-primary-6"
-                  : "text-text-2"
-                : undefined
-            }
-          />
-        );
-      }
-
-      if (tab.type === "benchmark") {
-        return (
-          <BookLock
-            size={16}
-            strokeWidth={1.75}
-            className={isActive ? "text-primary-6" : "text-text-2"}
-          />
-        );
-      }
-
-      if (tab.type === "chat-session") {
-        return (
-          <ChatSessionTabIcon
-            isActive={isActive}
-            sessionId={String(tab.data.sessionId ?? "")}
-          />
-        );
-      }
-
-      // Custom Lucide override — tint active tab only (FileTypeIcon / favicons keep their own colors).
-      if (tab.icon) {
-        const IconComponent = resolveWorkstationTabIcon(tab.icon);
-        if (IconComponent) {
-          return (
-            <IconComponent
-              size={16}
-              strokeWidth={1.75}
-              className={isActive ? "text-primary-6" : "text-text-2"}
-            />
-          );
-        }
-      }
-
-      switch (tab.type) {
-        case "file":
-        case "git-diff":
-          return (
-            <FileTypeIcon
-              fileName={(tab.data.filePath as string) || tab.title}
-              size="small"
-            />
-          );
-        case "directory":
-          return <FileTypeIcon fileName="folder" type="folder" size="small" />;
-        case "explorer":
-          return (
-            <Folder
-              size={16}
-              strokeWidth={1.75}
-              className={isActive ? "text-primary-6" : "text-text-2"}
-            />
-          );
-        case "terminal":
-          return <FileTypeIcon fileName="terminal.sh" size="small" />;
-        case "output":
-          return <FileTypeIcon fileName="output.log" size="small" />;
-        case "settings":
-          return <FileTypeIcon fileName="settings.json" size="small" />;
-        case "browser-session":
-          return (
-            <FaviconIcon
-              url={tab.data.url as string | undefined}
-              isIncognito={tab.data.incognito as boolean | undefined}
-              isLoading={tab.data.isLoading as boolean | undefined}
-              isSelected={isActive}
-            />
-          );
-        default:
-          return <FileTypeIcon fileName="file.txt" size="small" />;
-      }
-    };
-
-    const getDisplayTitle = () => {
-      if (
-        tab.type === "browser-session" &&
-        isPlaceholderBrowserSessionTitle(tab.title)
-      ) {
-        return translatePlaceholderBrowserSessionTitle(tab.title, t);
-      }
-      if (
-        tab.type === "project-dashboard" ||
-        tab.type === "project-work-items" ||
-        tab.type === "project-linear-projects" ||
-        tab.type === "project-linear-work-items"
-      ) {
-        return resolveProjectManagerTabTitle(tab, t);
-      }
-      // Localized titles for the singleton tool tabs.
-      switch (tab.type) {
-        case "start":
-          return t("navigation:routes.launchpad");
-        case "search-sessions":
-          return t("navigation:workstation.plusMenu.searchSessions");
-        case "explorer":
-          return t("common:labels.files");
-        case "source-control":
-          return t("common:actions.review");
-        case "terminal":
-          if (tab.id === CODE_EDITOR_MAIN_TERMINAL_TAB_ID) {
-            return t("common:tabs.terminal");
-          }
-          break;
-      }
-      return tab.title;
-    };
-
     const getTabTitle = () => {
       const filePath = tab.data.filePath as string | undefined;
       const sessionName = tab.data.sessionName as string | undefined;
-      const channelName = tab.data.channelName as string | undefined;
 
       switch (tab.type) {
         case "file":
@@ -360,14 +96,12 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
           return `${filePath || tab.title} (Working Tree)`;
         case "terminal":
           return `Terminal: ${sessionName || tab.title}`;
-        case "output":
-          return `Output: ${channelName || tab.title}`;
         case "github-pr-detail": {
           const prTitle = tab.data.prTitle as string | undefined;
           return prTitle ? `#${tab.data.prNumber} ${prTitle}` : tab.title;
         }
         default:
-          return getDisplayTitle();
+          return getWorkstationTabDisplayTitle(tab, t);
       }
     };
 
@@ -379,8 +113,8 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
           : tab.type === "source-control"
             ? "open_source_control_tab"
             : null;
-    const shortcut = shortcutId ? getShortcutKeys(shortcutId) : "";
-    const shortcutTooltipLabel = getDisplayTitle();
+    const shortcut = useShortcutKeys(shortcutId ?? "");
+    const shortcutTooltipLabel = getWorkstationTabDisplayTitle(tab, t);
 
     const hasUnsaved = !!tab.hasUnsavedChanges;
     const showCloseSlot = isTabHovered || hasUnsaved;
@@ -389,19 +123,8 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
     const closeButtonLayoutClass =
       "-translate-y-1/2 absolute right-1 top-1/2 z-10 h-5 w-5";
 
-    const titleTextClass = (base: string) =>
-      `${base} ${
-        tab.type === "git-diff" && tab.data.gitStatusLetter === "D"
-          ? "text-danger-6 line-through"
-          : tab.type === "file" && gitInfo
-            ? getStatusColorForFile(gitInfo.status, gitInfo.staged)
-            : isActive
-              ? "text-primary-6"
-              : "text-text-2"
-      }`;
-
     const tabPill = (
-      <WorkStationTabPillSurface
+      <TabPillSurface
         ref={setNodeRef}
         style={style}
         {...attributes}
@@ -428,55 +151,13 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
         onMouseLeave={() => setIsTabHovered(false)}
         title={shortcut ? undefined : getTabTitle()}
       >
-        {/* Keep icon in-flow so width only comes from the label column; close stays overlay-only. */}
-        <div className="flex shrink-0 items-center justify-center">
-          {renderTabIcon()}
-        </div>
-
-        {!hideLabel && tab.type === "git-diff" && tab.data.isTimeline ? (
-          <div
-            className={`relative flex min-w-0 flex-1 items-center gap-1 overflow-hidden text-[13px] ${
-              isActive ? "text-primary-6" : "text-text-2"
-            }`}
-          >
-            <span className="min-w-0 flex-1 truncate">
-              {tab.title} ({String(tab.data.shortSha)})
-            </span>
-            <MoveHorizontal size={12} className="shrink-0" />
-            <span className="shrink-0">
-              ({String(tab.data.headShortSha || "HEAD")})
-            </span>
-            <Lock size={11} className="shrink-0" />
-            <TabLabelRowScrim visible={showLabelRightScrim} />
-          </div>
-        ) : !hideLabel ? (
-          <div className="relative flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
-            <span
-              className={titleTextClass(
-                "min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[13px]"
-              )}
-            >
-              {tab.type === "git-diff"
-                ? `${tab.title} (Working Tree)`
-                : getDisplayTitle()}
-            </span>
-            {tab.type === "git-diff" && !!tab.data.gitStatusLetter && (
-              <span
-                className={`shrink-0 text-[11px] font-bold ${getGitStatusColor(tab.data.gitStatusLetter as string)}`}
-              >
-                {String(tab.data.gitStatusLetter)}
-              </span>
-            )}
-            {tab.type === "file" && gitInfo && (
-              <span
-                className={`shrink-0 text-[11px] font-bold ${getStatusColorForFile(gitInfo.status, gitInfo.staged)}`}
-              >
-                {getStatusLetterForFile(gitInfo.status, gitInfo.staged)}
-              </span>
-            )}
-            <TabLabelRowScrim visible={showLabelRightScrim} />
-          </div>
-        ) : null}
+        <WorkstationTabContent
+          tab={tab}
+          isActive={isActive}
+          gitInfo={gitInfo}
+          hideLabel={hideLabel}
+          showLabelRightScrim={showLabelRightScrim}
+        />
 
         <TabPillCloseButton
           data-action="editor.tab.close"
@@ -498,19 +179,19 @@ export const SortableTab: React.FC<SortableTabProps> = memo(
               : "pointer-events-none opacity-0"
           }`}
         />
-      </WorkStationTabPillSurface>
+      </TabPillSurface>
     );
 
     if (!shortcut) return tabPill;
 
     return (
-      <WorkstationToolbarTooltip
+      <ToolbarTooltip
         label={shortcutTooltipLabel}
         shortcut={shortcut}
         position="bottom"
       >
         {tabPill}
-      </WorkstationToolbarTooltip>
+      </ToolbarTooltip>
     );
   }
 );

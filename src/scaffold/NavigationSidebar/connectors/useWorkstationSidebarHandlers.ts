@@ -1,10 +1,8 @@
 import { save as saveDialog } from "@tauri-apps/plugin-dialog";
-import { writeTextFile } from "@tauri-apps/plugin-fs";
 import { useAtomValue, useSetAtom } from "jotai";
 import { type Dispatch, type SetStateAction, useCallback } from "react";
 
 import { deleteSession } from "@src/api/tauri/agent";
-import { benchmarkApi } from "@src/api/tauri/benchmark";
 import { deleteHumanSession } from "@src/api/tauri/humanSession";
 import { rpc } from "@src/api/tauri/rpc";
 import Message from "@src/components/Message";
@@ -35,13 +33,8 @@ import { clearCliTurnLifecycleSession } from "@src/hooks/cliSession/cliTurnLifec
 import { createLogger } from "@src/hooks/logger";
 import type { GoToNewSessionOptions } from "@src/hooks/navigation/useAppNavigation";
 import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/components/NavigationMenu/config";
+import { closeSessionChatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import {
-  benchmarkActiveBatchIdAtom,
-  benchmarkActiveBatchTaskIdAtom,
-  benchmarkAgentBatchStatusAtom,
-} from "@src/store/benchmark";
-import {
-  SESSION_SIDEBAR_PAGE_SIZE,
   type Session,
   type SessionListCategory,
   loadMoreCategory,
@@ -50,15 +43,14 @@ import {
   syncSidebarSessionRoster,
   upsertSession,
 } from "@src/store/session";
-import {
-  CHAT_PANEL_SURFACE_KIND,
-  chatPanelNavigateAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   clearPendingFileOpensForSession,
+  disposeEditorCacheForSessionAtom,
   disposeWorkstationWorkspaceAtom,
 } from "@src/store/workstation/tabs";
 import { clearPendingCodeEditorTabForSession } from "@src/store/workstation/tabs/pendingCodeEditorTab";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 import { invokeTauri } from "@src/util/platform/tauri/init";
 import {
   isCliSession,
@@ -76,7 +68,8 @@ import {
   NEW_SESSION_MENU_ITEM_ID,
   getDraftIdFromMenuItemId,
 } from "./sidebarConnectorUtils";
-import type { GroupByMode } from "./types";
+import type { SidebarTabDisposition } from "./sidebarTabNavigation";
+import type { GroupByMode, SessionGroupVisibleCount } from "./types";
 import {
   isUnifiedLoadMoreId,
   loadUnifiedReadyCategories,
@@ -99,6 +92,7 @@ interface UseWorkstationSidebarHandlersParams {
   ) => void;
   promoteActiveSessionCreatorDraft: () => void;
   groupByMode: GroupByMode;
+  defaultGroupVisibleCount: SessionGroupVisibleCount;
   setGroupVisibleCounts: Dispatch<SetStateAction<Map<string, number>>>;
   tCommon: (key: string, defaultValue?: string) => string;
   onOpenChatPanelTab: (tabId: string) => void;
@@ -112,13 +106,20 @@ interface UseWorkstationSidebarHandlersParams {
    * Cloud-org sidebar rows that are not ordinary local session rows (remote
    * sessions and top-level section pagers). Consulted before sessionMap.
    */
-  onCloudSidebarItemClick?: (item: NavigationMenuItem) => boolean;
+  onCloudSidebarItemClick?: (
+    item: NavigationMenuItem,
+    disposition: SidebarTabDisposition
+  ) => boolean;
 }
 
 interface UseWorkstationSidebarHandlersResult {
   handleDeleteSession: (sessionId: string) => Promise<void>;
   handleExportMarkdown: (sessionId: string) => Promise<void>;
-  handleMenuItemClick: (_key: string, item: NavigationMenuItem) => void;
+  handleMenuItemClick: (
+    _key: string,
+    item: NavigationMenuItem,
+    disposition?: SidebarTabDisposition
+  ) => void;
   handleTogglePin: (sessionId: string) => Promise<void>;
 }
 
@@ -133,6 +134,7 @@ export function useWorkstationSidebarHandlers({
   openSession,
   promoteActiveSessionCreatorDraft,
   groupByMode,
+  defaultGroupVisibleCount,
   setGroupVisibleCounts,
   tCommon,
   onOpenChatPanelTab,
@@ -141,16 +143,23 @@ export function useWorkstationSidebarHandlers({
   onCloudSidebarItemClick,
 }: UseWorkstationSidebarHandlersParams): UseWorkstationSidebarHandlersResult {
   const navigateChatPanel = useSetAtom(chatPanelNavigateAtom);
-  const setBenchmarkAgentBatchStatus = useSetAtom(
-    benchmarkAgentBatchStatusAtom
-  );
-  const setBenchmarkActiveBatchId = useSetAtom(benchmarkActiveBatchIdAtom);
-  const setBenchmarkActiveBatchTaskId = useSetAtom(
-    benchmarkActiveBatchTaskIdAtom
-  );
-  const disposeWorkstationWorkspace = useSetAtom(
+  const disposeWorkstationTabsWorkspace = useSetAtom(
     disposeWorkstationWorkspaceAtom
   );
+  const disposeEditorCacheForSession = useSetAtom(
+    disposeEditorCacheForSessionAtom
+  );
+  // Both session-delete paths (direct + Rust delete receipt) go through this
+  // one callback so the tab registry and the editor cache are released
+  // together.
+  const disposeWorkstationWorkspace = useCallback(
+    (sessionId: string) => {
+      disposeWorkstationTabsWorkspace(sessionId);
+      disposeEditorCacheForSession(sessionId);
+    },
+    [disposeWorkstationTabsWorkspace, disposeEditorCacheForSession]
+  );
+  const closeSessionChatPanelTabs = useSetAtom(closeSessionChatPanelTabsAtom);
   const pagination = useAtomValue(sessionPaginationAtom);
   const cloudAuth = useAtomValue(org2CloudAuthAtom);
   const setCloudAuth = useSetAtom(org2CloudAuthAtom);
@@ -160,10 +169,15 @@ export function useWorkstationSidebarHandlers({
     (sessions: readonly Session[]) => {
       if (sessions.length === 0) return;
       setGroupVisibleCounts((previousCounts) =>
-        expandVisibleGroupsForSessions(previousCounts, sessions, groupByMode)
+        expandVisibleGroupsForSessions(
+          previousCounts,
+          sessions,
+          groupByMode,
+          defaultGroupVisibleCount
+        )
       );
     },
-    [groupByMode, setGroupVisibleCounts]
+    [defaultGroupVisibleCount, groupByMode, setGroupVisibleCounts]
   );
   const handleDeleteSession = useCallback(
     async (sessionId: string) => {
@@ -174,7 +188,7 @@ export function useWorkstationSidebarHandlers({
           return;
         }
         const session = sessionMap.get(sessionId);
-        let deletedActiveRustSession = false;
+        let requiresNavigationReset = false;
         const forkedFrom = session ? getSessionForkedFrom(session) : undefined;
         // Cloud retraction targets, mirroring the engine's publish targets:
         // a fork publishes only to its source org; an ordinary session
@@ -217,11 +231,13 @@ export function useWorkstationSidebarHandlers({
         if (isCliSession(sessionId)) {
           await invokeTauri("cli_agent_delete", { sessionId });
           clearCliTurnLifecycleSession(sessionId);
+          requiresNavigationReset = sessionId === activeSessionId;
         } else if (isHumanSession(sessionId)) {
           await deleteHumanSession(sessionId);
+          requiresNavigationReset = sessionId === activeSessionId;
         } else {
           const receipt = await deleteSession(sessionId);
-          deletedActiveRustSession = await applyRustSessionDeleteReceipt({
+          requiresNavigationReset = await applyRustSessionDeleteReceipt({
             requestedSessionId: sessionId,
             activeSessionId,
             isAgentOrgRoot: Boolean(session?.agentOrgId),
@@ -241,6 +257,7 @@ export function useWorkstationSidebarHandlers({
                       { deletedSessionId, error }
                     )
                   ),
+              closeSessionTabs: closeSessionChatPanelTabs,
             },
           });
         }
@@ -250,9 +267,7 @@ export function useWorkstationSidebarHandlers({
         clearPendingFileOpensForSession(sessionId);
         clearPendingCodeEditorTabForSession(sessionId);
 
-        if (sessionId === activeSessionId || deletedActiveRustSession) {
-          goToNewSession();
-        }
+        if (requiresNavigationReset) goToNewSession();
       } catch (error) {
         log.error("[WorkstationSidebar] Failed to delete session:", error);
         Message.error(tCommon("sessions:chat.failedToDeleteSession"));
@@ -263,6 +278,7 @@ export function useWorkstationSidebarHandlers({
       cloudAuth,
       setCloudAuth,
       cloudOrgs,
+      closeSessionChatPanelTabs,
       disposeWorkstationWorkspace,
       goToNewSession,
       onCloseChatPanelTab,
@@ -289,10 +305,10 @@ export function useWorkstationSidebarHandlers({
         });
         if (!filePath) return;
 
-        const markdown = await rpc.sessionCore.eventStore.exportMarkdown({
+        await rpc.sessionCore.eventStore.exportMarkdown({
           sessionId,
+          outputPath: filePath,
         });
-        await writeTextFile(filePath, markdown);
         Message.success(tCommon("sessions:chat.exportSuccess", "Exported!"));
       } catch (error) {
         log.error("[WorkstationSidebar] Export markdown failed:", error);
@@ -303,7 +319,11 @@ export function useWorkstationSidebarHandlers({
   );
 
   const handleMenuItemClick = useCallback(
-    (_key: string, item: NavigationMenuItem) => {
+    (
+      _key: string,
+      item: NavigationMenuItem,
+      disposition: SidebarTabDisposition = "default"
+    ) => {
       if (item.id === NEW_SESSION_MENU_ITEM_ID) {
         goToNewSession();
         return;
@@ -337,8 +357,8 @@ export function useWorkstationSidebarHandlers({
         setGroupVisibleCounts((previousCounts) => {
           const nextCounts = new Map(previousCounts);
           const current =
-            nextCounts.get(loadMoreGroupId) ?? SESSION_SIDEBAR_PAGE_SIZE;
-          nextCounts.set(loadMoreGroupId, current + SESSION_SIDEBAR_PAGE_SIZE);
+            nextCounts.get(loadMoreGroupId) ?? defaultGroupVisibleCount;
+          nextCounts.set(loadMoreGroupId, current + defaultGroupVisibleCount);
           return nextCounts;
         });
         return;
@@ -363,7 +383,7 @@ export function useWorkstationSidebarHandlers({
 
       // Cloud remote rows and top-level section pagers do not resolve through
       // the local sessionMap, so give their owner the first chance to handle.
-      if (onCloudSidebarItemClick?.(item)) return;
+      if (onCloudSidebarItemClick?.(item, disposition)) return;
 
       const originalSession = sessionMap.get(item.id);
       if (!originalSession) return;
@@ -372,26 +392,6 @@ export function useWorkstationSidebarHandlers({
         originalSession,
         sessionRouteLabel
       );
-
-      if (isBenchmarkCoordinatorSession(originalSession)) {
-        navigateChatPanel({
-          kind: CHAT_PANEL_SURFACE_KIND.BENCHMARK_SESSION_GROUP,
-        });
-        promoteActiveSessionCreatorDraft();
-        void benchmarkApi
-          .listAgentBatchHistories({ limit: 100 })
-          .then((histories) =>
-            histories.find((history) => history.masterSessionId === item.id)
-          )
-          .then((history) => {
-            if (!history) return;
-            setBenchmarkAgentBatchStatus(history);
-            setBenchmarkActiveBatchId(history.batchId);
-            setBenchmarkActiveBatchTaskId(null);
-          });
-        openSession(item.id, sessionName, originalSession.repoPath);
-        return;
-      }
 
       navigateChatPanel({ kind: CHAT_PANEL_SURFACE_KIND.SESSION });
       promoteActiveSessionCreatorDraft();
@@ -404,6 +404,7 @@ export function useWorkstationSidebarHandlers({
     },
     [
       getLoadMoreGroupId,
+      defaultGroupVisibleCount,
       isLoadMoreId,
       pagination,
       revealLoadedSessions,
@@ -417,9 +418,6 @@ export function useWorkstationSidebarHandlers({
       onOpenSessionChatPanelTab,
       promoteActiveSessionCreatorDraft,
       sessionRouteLabel,
-      setBenchmarkActiveBatchId,
-      setBenchmarkActiveBatchTaskId,
-      setBenchmarkAgentBatchStatus,
       setGroupVisibleCounts,
     ]
   );
@@ -463,8 +461,4 @@ function loadMoreCategoryAction(
   sessionListCategory: SessionListCategory
 ): ReturnType<typeof loadMoreCategory> {
   return loadMoreCategory(sessionListCategory);
-}
-
-function isBenchmarkCoordinatorSession(session: Session): boolean {
-  return session.user_input?.startsWith("Benchmark run coordinator\n") ?? false;
 }

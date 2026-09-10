@@ -27,9 +27,15 @@ export const DROPDOWN_PANEL = {
   /** Box shadow - dark mode */
   shadowDark: "0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)",
 
+  /**
+   * Half-strength shadow for in-flow cards (e.g. PageNotice) that want the
+   * same lift as a floating panel at half the intensity.
+   */
+  shadowSoftClass: "shadow-dropdown-soft",
+
   /** z-index for dropdown panels — must exceed Spotlight's containerZIndex (9999) */
   zIndex: 10000,
-  zIndexClass: "z-[10000]",
+  zIndexClass: "z-10000",
   /** Nested portals rendered above the slash-command panel and its bridge. */
   portalSubmenuZIndex: 99999,
 
@@ -69,8 +75,11 @@ export const DROPDOWN_PANEL = {
 
   /** Gap between trigger and dropdown (px). Default for useDropdownEngine. */
   triggerGap: 4,
-  /** Gap between primary dropdown and second-level submenu/flyout panels. */
-  submenuGap: 8,
+  /**
+   * Visible border-to-border gap between nested dropdown/flyout panels (px).
+   * Matches the sidebar Appearance menu; measure from panels, not inset rows.
+   */
+  submenuGap: 3,
   /** Tight gap for sidebar tab lists and inline menus */
   triggerGapTight: 4,
 
@@ -83,6 +92,8 @@ export const DROPDOWN_PANEL = {
 
   /** Background and border (use Tailwind classes) */
   bgClass: "bg-bg-2",
+  /** Matches `borderClass`; used when offsetting from a panel's padding box. */
+  borderWidth: 1,
   borderClass: "border border-solid border-border-2",
 } as const;
 
@@ -135,7 +146,7 @@ export const DROPDOWN_ITEM = {
   selectedBgClass: "bg-transparent",
 
   /** Selected text color */
-  selectedTextClass: "!text-primary-6",
+  selectedTextClass: "text-primary-6!",
 
   /** Disabled opacity */
   disabledOpacity: 0.5,
@@ -174,21 +185,17 @@ export const DROPDOWN_SEARCH = {
 // Composite Class Strings (for easy use)
 // ==============================================
 
-/**
- * Sticky bordered header row above a panel's scrollable list. Shared by the
- * search header and by header rows that carry a title plus actions instead.
- */
-const PANEL_HEADER_ROW = [
+/** Shared layout for search rows and titled panel headers. */
+const PANEL_ROW = [
   "flex",
   "shrink-0",
   "items-center",
   DROPDOWN_ITEM.gapClass,
   "px-3",
   "py-1.5",
-  "border-b",
-  "border-solid",
-  "border-border-2",
 ].join(" ");
+
+const PANEL_HEADER_ROW = `${PANEL_ROW} border-b border-solid border-border-2`;
 
 /**
  * Complete class string for dropdown panel container
@@ -240,7 +247,7 @@ export const DROPDOWN_CLASSES = {
     "scrollbar-hide",
   ].join(" "),
 
-  /** Scrollable options container (visible scrollbar, e.g. table selector, timezone) */
+  /** Scrollable options container (transient overlay, e.g. table selector, timezone). */
   optionsContainerScrollbar: [
     "flex flex-col",
     "min-h-0",
@@ -249,6 +256,7 @@ export const DROPDOWN_CLASSES = {
     DROPDOWN_PANEL.paddingClass,
     DROPDOWN_PANEL.maxHeightClass,
     "overflow-y-auto",
+    "scrollbar-overlay",
     "dropdown-options-scrollbar",
   ].join(" "),
 
@@ -263,7 +271,7 @@ export const DROPDOWN_CLASSES = {
     DROPDOWN_PANEL.itemsGapClass,
   ].join(" "),
 
-  /** Scrollable options container (visible scrollbar) when a header sits above. */
+  /** Scrollable options container (transient overlay) below a header. */
   optionsContainerScrollbarBelowHeader: [
     "flex flex-col",
     "min-h-0",
@@ -272,6 +280,7 @@ export const DROPDOWN_CLASSES = {
     DROPDOWN_PANEL.paddingBelowHeaderClass,
     DROPDOWN_PANEL.maxHeightClass,
     "overflow-y-auto",
+    "scrollbar-overlay",
     "dropdown-options-scrollbar",
   ].join(" "),
 
@@ -302,7 +311,7 @@ export const DROPDOWN_CLASSES = {
     DROPDOWN_ITEM.selectedBgClass,
     DROPDOWN_ITEM.selectedTextClass,
     "hover:bg-surface-hover",
-    "hover:!text-primary-6",
+    "hover:text-primary-6!",
   ].join(" "),
 
   /** Item disabled state */
@@ -373,7 +382,10 @@ export const DROPDOWN_CLASSES = {
     DROPDOWN_ITEM.hoverBgClass,
   ].join(" "),
 
-  /** 32px menu row for label + right-side control such as Switch. */
+  /**
+   * 32px menu row for a label + right-side control such as a Switch or pill.
+   * The embedded control owns its hover state; the containing row stays clear.
+   */
   menuControlItem: [
     "flex",
     "w-full",
@@ -390,23 +402,20 @@ export const DROPDOWN_CLASSES = {
     DROPDOWN_ITEM.fontSizeClass,
     DROPDOWN_ITEM.transitionClass,
     "text-text-1",
-    DROPDOWN_ITEM.hoverBgClass,
   ].join(" "),
 
-  /** Separator between menu groups. */
-  menuSeparator: ["border-t", "border-solid", "border-border-2"].join(" "),
-
-  /** Inset separator between dropdown list groups. */
-  menuSeparatorInset: [
+  /** Inset rule between menu-item groups with a tight 2px local offset. */
+  menuGroupSeparator: [
     "mx-1.5",
-    "my-1",
+    "my-0.5",
+    "shrink-0",
     "border-t",
     "border-solid",
     "border-border-2",
   ].join(" "),
 
   /** Search input container */
-  searchContainer: PANEL_HEADER_ROW,
+  searchContainer: PANEL_ROW,
 
   /** Panel header row carrying a title and actions instead of a search input. */
   panelHeaderRow: PANEL_HEADER_ROW,
@@ -450,9 +459,18 @@ export const DROPDOWN_CLASSES = {
     DROPDOWN_PANEL.paddingClass,
   ].join(" "),
 
-  /** Section / group label inside a dropdown (non-interactive). */
-  sectionLabel:
+  /**
+   * Section / group label inside a dropdown (non-interactive). Labels pin to
+   * the top of their nearest scrolling menu until the next section replaces
+   * them, so the current group stays identifiable in long lists.
+   */
+  sectionLabel: [
+    "sticky",
+    "-top-1",
+    "z-10",
+    DROPDOWN_PANEL.bgClass,
     "px-1.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-text-3",
+  ].join(" "),
 
   /** Bordered dropdown section wrapper for grouped controls above/between lists. */
   sectionContainer: [
@@ -492,6 +510,8 @@ export const DROPDOWN_WIDTHS = {
   wideMenuClass: "min-w-[200px]",
   /** Panel dropdown — info popover, tooltip panel */
   panelWidthClass: "min-w-[220px]",
+  /** Numeric twin of `panelWidthClass`, for panels positioned in script. */
+  panelWidth: 220,
   /** Fixed-width status-bar panel (ports menu) */
   fixedStatusPanelClass: "w-[250px]",
   /** File tree dropdown, multi-select panels */
@@ -535,11 +555,3 @@ export const DROPDOWN_STYLES = {
     },
   },
 } as const;
-
-// ==============================================
-// Type Exports
-// ==============================================
-
-export type DropdownPanelTokens = typeof DROPDOWN_PANEL;
-export type DropdownItemTokens = typeof DROPDOWN_ITEM;
-export type DropdownSearchTokens = typeof DROPDOWN_SEARCH;

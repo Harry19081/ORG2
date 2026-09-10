@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type {
+  DiscussionTriggerPreview,
   OrchestratorPhase,
   PrStatus,
   WorkItemData as WorkItemDataPayload,
@@ -17,6 +18,7 @@ import type { WorkItem as WorkItemExtended } from "@src/types/core/workItem";
 import type { WorkItemComment } from "@src/types/core/workItem";
 
 import type { WorkItemContentPresentation } from "./presentation";
+import type { MentionCandidate } from "./workItemMentions";
 
 export const SESSION_TAB_KEYS = ["session", "output", "history"] as const;
 export type SessionTab = (typeof SESSION_TAB_KEYS)[number];
@@ -33,8 +35,14 @@ export interface WorkItemContentProps {
   onUpdateWorkItemImmediate?: (updates: Partial<WorkItemExtended>) => void;
   currentUser?: Person;
   teamMembers?: Person[];
+  availableAgents?: MentionCandidate[];
+  availableOrgs?: MentionCandidate[];
   headerPath?: ReactNode;
   headerProperties?: ReactNode;
+  /** Thread-only GitHub-style flow title rendered above the body. */
+  flowHeader?: ReactNode;
+  /** Thread-only details rail rendered beside the content on the trail surface. */
+  propertiesRail?: ReactNode;
   /** Render the editable title inside the content surface. */
   titleVisible?: boolean;
   repoPath?: string | null;
@@ -51,18 +59,15 @@ export interface WorkItemContentProps {
   githubIssueTimeline?: {
     items: GitHubIssueTimelineItem[];
     loading: boolean;
+    /** Surfaced inline so a failed activity load is never a blank thread. */
+    error?: string | null;
   };
   /** Inline GitHub-native body, comment, and status actions for thread surfaces. */
   githubIssueInteraction?: GitHubIssueInteractionConfig;
-  onCancelAgent?: () => void;
-  onRetry?: () => void;
-  onAcceptAsIs?: () => void;
-  onCreateFollowUp?: () => void;
   onOpenSession?: (sessionId: string, title?: string) => void;
   onOpenFileDiff?: (filePath: string) => void;
-  onOpenFileAtLine?: (filePath: string, line?: number) => void;
   onReviewAllFiles?: (filePaths: string[]) => void;
-  onRefreshWorkflow?: () => void;
+  onRefreshWorkflow?: () => void | Promise<void>;
   /**
    * Optional scope-aware handoff command. Embedded Team Inbox threads use
    * this for org-scoped Work Items that intentionally have no project slug.
@@ -74,7 +79,7 @@ export interface WorkItemContentProps {
   onCreatePr?: () => Promise<{ url?: string; error?: string }>;
 }
 
-export type GitHubIssueCloseReason = "completed" | "not_planned" | "duplicate";
+type GitHubIssueCloseReason = "completed" | "not_planned" | "duplicate";
 
 export interface GitHubIssueStatusChangeOptions {
   stateReason?: GitHubIssueCloseReason;
@@ -112,13 +117,7 @@ export interface OutputTabContentProps {
   shortId?: string | null;
   orgId?: string | null;
   onOpenFileDiff?: (filePath: string) => void;
-  onOpenFileAtLine?: (filePath: string, line?: number) => void;
   onReviewAllFiles?: (filePaths: string[]) => void;
-  onOpenSession?: (sessionId: string, title?: string) => void;
-  onRetry?: () => void;
-  onAcceptAsIs?: () => void;
-  onCreateFollowUp?: () => void;
-  onCancel?: () => void;
   onCreatePr?: () => Promise<{ url?: string; error?: string }>;
 }
 
@@ -143,9 +142,11 @@ export interface HistoryTabProps {
   onToggleSubscribe: () => void;
   commentText: string;
   onCommentTextChange: (text: string) => void;
-  mentionedUserIds?: string[];
-  onMentionedUserIdsChange?: (memberIds: string[]) => void;
+  mentionRefs?: string[];
+  onMentionRefsChange?: (mentionRefs: string[]) => void;
   teamMembers?: Person[];
+  agents?: MentionCandidate[];
+  agentOrgs?: MentionCandidate[];
   onCommentSubmit: () => void;
   isSubmittingComment: boolean;
   comments?: WorkItemComment[];
@@ -153,9 +154,19 @@ export interface HistoryTabProps {
   onReplyToComment?: (commentId: string | null) => void;
   onResolveThread?: (threadId: string, conclusionCommentId?: string) => void;
   onReopenThread?: (threadId: string) => void;
+  onEditComment?: (
+    commentId: string,
+    content: string,
+    expectedRevision: number
+  ) => Promise<"saved" | "conflict" | "error">;
+  onDeleteComment?: (
+    commentId: string,
+    expectedRevision: number
+  ) => void | Promise<void>;
   presentation?: WorkItemContentPresentation;
   canComment?: boolean;
   threadNavigation?: ReactNode;
+  triggerPreview?: DiscussionTriggerPreview | null;
 }
 
 export interface TimelineEntry {

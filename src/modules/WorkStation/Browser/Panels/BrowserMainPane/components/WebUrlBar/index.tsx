@@ -8,40 +8,41 @@
  * - Reload button
  * - Loading indicator
  */
-import {
-  ArrowLeft,
-  ArrowRight,
-  Camera,
-  Code,
-  Loader2,
-  PenTool,
-  PencilRuler,
-  RefreshCw,
-  Search,
-  X,
-} from "lucide-react";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
-import { FaviconIcon } from "@src/components/FaviconIcon";
+import { HeaderSectionSeparator } from "@src/components/HeaderSectionSeparator";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import {
+  FILE_BAR_ROW_CLASSES,
+  HEADER_ICON_SIZE,
+} from "@src/config/workstation/tokens";
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import {
   type WorkstationTabHeaderHost,
   usePublishWorkstationTabHeader,
-} from "@src/hooks/workStation";
-import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
+} from "@src/hooks/tabHost/useWorkstationTabHeader";
 import {
-  FILE_BAR_ROW_CLASSES,
-  HEADER_ICON_SIZE,
-} from "@src/modules/WorkStation/shared/tokens";
+  ArrowLeft02Icon,
+  ArrowRight02Icon,
+  Camera01Icon,
+  Cancel01Icon,
+  CodeXmlIcon,
+  HugeiconsIcon,
+  Loading03Icon,
+  PenTool01Icon,
+  PencilRulerIcon,
+  Refresh04Icon,
+} from "@src/icons";
+import { BROWSER_URL_BAR_FOCUS_EVENT } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
 import { normalizeBrowserInput } from "@src/util/url/browserUrl";
 
 // ============================================
 // Types
 // ============================================
 
-export interface WebUrlBarProps {
+interface WebUrlBarProps {
   /** Current URL */
   url: string;
   /** Whether the page is loading */
@@ -62,6 +63,8 @@ export interface WebUrlBarProps {
   canGoBack?: boolean;
   /** Whether forward navigation is available */
   canGoForward?: boolean;
+  /** Whether the active browser session owns a native webview. */
+  hasActiveWebview?: boolean;
   /** Open native browser DevTools (Safari Inspector / Edge DevTools) */
   onOpenNativeDevTools?: () => void;
   /** Toggle the WorkStation Browser secondary DevTools pane. */
@@ -90,7 +93,6 @@ export interface WebUrlBarProps {
 
 /** After pointer leaves the URL toolbar, blur the input if still focused (inline webview does not take focus from the address field). */
 const AUTO_BLUR_MS_AFTER_LEAVE = 2000;
-const BROWSER_URL_BAR_FOCUS_EVENT = "browser-url-bar-focus";
 const NO_DRAG_STYLE = { WebkitAppRegion: "no-drag" } as React.CSSProperties;
 const TEXT_DRAG_THRESHOLD_PX = 4;
 
@@ -99,14 +101,6 @@ interface UrlInputPointerState {
   startY: number;
   moved: boolean;
   wasFocused: boolean;
-}
-
-export function focusBrowserUrlBar(): void {
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      window.dispatchEvent(new Event(BROWSER_URL_BAR_FOCUS_EVENT));
-    });
-  });
 }
 
 // ============================================
@@ -125,6 +119,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
     onStop,
     canGoBack = false,
     canGoForward = false,
+    hasActiveWebview = true,
     onOpenNativeDevTools,
     onToggleDevToolsPane,
     devToolsPaneCollapsed = false,
@@ -314,7 +309,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
     );
 
     const inputContainerClass =
-      "relative flex h-7 min-w-0 flex-1 cursor-text items-center rounded-lg border border-transparent bg-transparent transition-[border-color,box-shadow,background-color] duration-150 hover:border-border-3 hover:bg-fill-2 focus-within:border-primary-6 focus-within:bg-fill-2 focus-within:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_15%,transparent)]";
+      "relative flex h-7 min-w-0 flex-1 cursor-text items-center rounded-lg border border-transparent bg-transparent transition-[border-color,box-shadow,background-color] duration-150 focus-within:border-primary-6 focus-within:bg-fill-2 focus-within:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary-6)_30%,transparent)] [&:not(:focus-within):hover]:border-border-3 [&:not(:focus-within):hover]:bg-fill-2";
     const reloadControlLabel = isLoading
       ? t("common:actions.stop")
       : t("common:actions.reload");
@@ -330,7 +325,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
       >
         {/* Navigation Buttons (Back / Forward / Refresh) */}
         <div className="flex items-center gap-px">
-          <WorkstationToolbarTooltip label={t("tooltips.goBack")}>
+          <ToolbarTooltip label={t("tooltips.goBack")}>
             <Button
               htmlType="button"
               variant="tertiary"
@@ -339,10 +334,16 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
               onClick={onBack}
               disabled={!canGoBack}
               aria-label={t("tooltips.goBack")}
-              icon={<ArrowLeft size={HEADER_ICON_SIZE.md} />}
+              icon={
+                <HugeiconsIcon
+                  icon={ArrowLeft02Icon}
+                  data-icon="arrow-left"
+                  size={HEADER_ICON_SIZE.md}
+                />
+              }
             />
-          </WorkstationToolbarTooltip>
-          <WorkstationToolbarTooltip label={t("tooltips.goForward")}>
+          </ToolbarTooltip>
+          <ToolbarTooltip label={t("tooltips.goForward")}>
             <Button
               htmlType="button"
               variant="tertiary"
@@ -351,27 +352,44 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
               onClick={onForward}
               disabled={!canGoForward}
               aria-label={t("tooltips.goForward")}
-              icon={<ArrowRight size={HEADER_ICON_SIZE.md} />}
+              icon={
+                <HugeiconsIcon
+                  icon={ArrowRight02Icon}
+                  data-icon="arrow-right"
+                  size={HEADER_ICON_SIZE.md}
+                />
+              }
             />
-          </WorkstationToolbarTooltip>
-          <WorkstationToolbarTooltip label={reloadControlLabel}>
+          </ToolbarTooltip>
+          <ToolbarTooltip label={reloadControlLabel}>
             <Button
               htmlType="button"
               variant="tertiary"
               size="small"
               iconOnly
               onClick={isLoading ? onStop : onReload}
+              disabled={!hasActiveWebview}
               aria-label={reloadControlLabel}
               icon={
                 isLoading ? (
-                  <X size={HEADER_ICON_SIZE.sm} />
+                  <HugeiconsIcon
+                    icon={Cancel01Icon}
+                    data-icon="x"
+                    size={HEADER_ICON_SIZE.sm}
+                  />
                 ) : (
-                  <RefreshCw size={HEADER_ICON_SIZE.sm} />
+                  <HugeiconsIcon
+                    icon={Refresh04Icon}
+                    data-icon="refresh-cw"
+                    size={HEADER_ICON_SIZE.sm}
+                  />
                 )
               }
             />
-          </WorkstationToolbarTooltip>
+          </ToolbarTooltip>
         </div>
+
+        <HeaderSectionSeparator />
 
         {/* URL Input Container */}
         <div
@@ -384,26 +402,6 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
             }
           }}
         >
-          {/* Icon on left */}
-          <div className="pointer-events-none absolute left-3 flex items-center">
-            {inputValue ? (
-              <FaviconIcon
-                url={inputValue}
-                isIncognito={false}
-                isLoading={isLoading}
-                size={16}
-                fallbackColor="text-text-3"
-              />
-            ) : isLoading ? (
-              <Loader2
-                size={14}
-                className="shrink-0 animate-spin text-text-3"
-              />
-            ) : (
-              <Search size={14} className="shrink-0 text-text-3" />
-            )}
-          </div>
-
           {/* Input - keep real text selectable in both focused and unfocused states. */}
           <input
             ref={inputRef}
@@ -422,7 +420,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
             onMouseMove={handleInputMouseMove}
             onMouseUp={handleInputMouseUp}
             placeholder={t("placeholders.enterUrlOrSearch")}
-            className="relative z-10 h-7 min-w-0 flex-1 select-text border-none bg-transparent pl-9 pr-3 text-[14px] text-text-1 outline-none placeholder:text-text-3"
+            className="relative z-10 h-7 min-w-0 flex-1 border-none bg-transparent px-3 text-[14px] text-text-1 outline-none select-text placeholder:text-text-3"
             style={NO_DRAG_STYLE}
             autoComplete="off"
             autoCorrect="off"
@@ -437,7 +435,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
           onToggleDevToolsPane) && (
           <div className="flex items-center gap-px">
             {onToggleInspectMode && (
-              <WorkstationToolbarTooltip
+              <ToolbarTooltip
                 label={t(
                   isInspectMode
                     ? "tooltips.disableInspectMode"
@@ -450,21 +448,26 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
                   size="small"
                   iconOnly
                   onClick={onToggleInspectMode}
+                  disabled={!hasActiveWebview}
                   aria-label={t(
                     isInspectMode
                       ? "tooltips.disableInspectMode"
                       : "tooltips.enableInspectMode"
                   )}
-                  className={isInspectMode ? "!bg-fill-2 !text-primary-6" : ""}
-                  icon={<PenTool size={HEADER_ICON_SIZE.sm} />}
+                  className={isInspectMode ? "bg-fill-2! text-primary-6!" : ""}
+                  icon={
+                    <HugeiconsIcon
+                      icon={PenTool01Icon}
+                      data-icon="pen-tool"
+                      size={HEADER_ICON_SIZE.sm}
+                    />
+                  }
                 />
-              </WorkstationToolbarTooltip>
+              </ToolbarTooltip>
             )}
 
             {onScreenshot && (
-              <WorkstationToolbarTooltip
-                label={t("tooltips.captureScreenshot")}
-              >
+              <ToolbarTooltip label={t("tooltips.captureScreenshot")}>
                 <Button
                   htmlType="button"
                   variant="tertiary"
@@ -475,36 +478,47 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
                   aria-label={t("tooltips.captureScreenshot")}
                   icon={
                     isCapturingScreenshot ? (
-                      <Loader2
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        data-icon="loader-2"
                         size={HEADER_ICON_SIZE.md}
                         className="animate-spin"
                       />
                     ) : (
-                      <Camera size={HEADER_ICON_SIZE.md} />
+                      <HugeiconsIcon
+                        icon={Camera01Icon}
+                        data-icon="camera"
+                        size={HEADER_ICON_SIZE.md}
+                      />
                     )
                   }
                 />
-              </WorkstationToolbarTooltip>
+              </ToolbarTooltip>
             )}
 
             {onOpenNativeDevTools && (
-              <WorkstationToolbarTooltip
-                label={t("tooltips.openNativeDevTools")}
-              >
+              <ToolbarTooltip label={t("tooltips.openNativeDevTools")}>
                 <Button
                   htmlType="button"
                   variant="tertiary"
                   size="small"
                   iconOnly
                   onClick={onOpenNativeDevTools}
+                  disabled={!hasActiveWebview}
                   aria-label={t("tooltips.openNativeDevTools")}
-                  icon={<Code size={HEADER_ICON_SIZE.md} />}
+                  icon={
+                    <HugeiconsIcon
+                      icon={CodeXmlIcon}
+                      data-icon="code"
+                      size={HEADER_ICON_SIZE.md}
+                    />
+                  }
                 />
-              </WorkstationToolbarTooltip>
+              </ToolbarTooltip>
             )}
 
             {onToggleDevToolsPane && (
-              <WorkstationToolbarTooltip
+              <ToolbarTooltip
                 label={
                   devToolsPaneCollapsed
                     ? t("sessions:titleBar.showDevTools")
@@ -517,7 +531,7 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
                   size="small"
                   iconOnly
                   className={
-                    devToolsPaneCollapsed ? "" : "!bg-fill-2 !text-primary-6"
+                    devToolsPaneCollapsed ? "" : "bg-fill-2! text-primary-6!"
                   }
                   onClick={onToggleDevToolsPane}
                   aria-pressed={!devToolsPaneCollapsed}
@@ -527,13 +541,15 @@ export const WebUrlBar: React.FC<WebUrlBarProps> = memo(
                       : t("sessions:titleBar.hideDevTools")
                   }
                   icon={
-                    <PencilRuler
+                    <HugeiconsIcon
+                      icon={PencilRulerIcon}
+                      data-icon="pencil-ruler"
                       size={HEADER_ICON_SIZE.sm}
                       strokeWidth={1.75}
                     />
                   }
                 />
-              </WorkstationToolbarTooltip>
+              </ToolbarTooltip>
             )}
           </div>
         )}

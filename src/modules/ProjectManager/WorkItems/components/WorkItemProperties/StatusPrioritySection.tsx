@@ -1,14 +1,26 @@
-import { CheckCircle2, Circle, CircleDot } from "lucide-react";
 import { useState } from "react";
 
 import type { FieldRowVariant } from "@src/components/PropertyField/PropertyFieldEditable";
+import {
+  CheckmarkCircle01Icon,
+  CircleDotIcon,
+  CircleIcon,
+  HugeiconsIcon,
+} from "@src/icons";
 import {
   GITHUB_ISSUE_STATUS_OPTIONS,
   WORK_ITEM_PRIORITY_OPTIONS,
   WORK_ITEM_STATUS_OPTIONS,
 } from "@src/modules/ProjectManager/config/manage";
-import type { WorkItem as WorkItemExtended } from "@src/types/core/workItem";
+import type {
+  WorkItem as WorkItemExtended,
+  WorkItemStatus,
+} from "@src/types/core/workItem";
 
+import {
+  useAllCustomStatusOptions,
+  useCustomStatusOptions,
+} from "../../hooks/useStatusDefinitions";
 import { EnumPropertyField } from "./EnumPropertyField";
 import type {
   WorkItemExternalStatusConfig,
@@ -19,6 +31,7 @@ import type {
 } from "./types";
 
 interface StatusPrioritySectionProps {
+  statusOrgId: string | null;
   workItem: WorkItemExtended;
   openPicker: WorkItemPropertyPicker;
   togglePicker: (picker: WorkItemPropertyPicker) => void;
@@ -30,6 +43,7 @@ interface StatusPrioritySectionProps {
 }
 
 export function StatusPrioritySection({
+  statusOrgId,
   workItem,
   openPicker,
   togglePicker,
@@ -47,15 +61,23 @@ export function StatusPrioritySection({
     !!externalStatusConfig?.loading ||
     savingExternalStatus;
 
+  const customStatusOptions = useCustomStatusOptions(statusOrgId);
+  const allCustomStatusOptions = useAllCustomStatusOptions(statusOrgId);
   const isGitHubIssueStatus = GITHUB_ISSUE_STATUS_OPTIONS.some(
     (option) => option.value === workItem.workItemStatus
   );
   const statusOptions = isGitHubIssueStatus
     ? GITHUB_ISSUE_STATUS_OPTIONS
-    : WORK_ITEM_STATUS_OPTIONS;
-  const currentStatus = statusOptions.find(
-    (option) => option.value === (workItem.workItemStatus || "planned")
-  );
+    : [
+        ...WORK_ITEM_STATUS_OPTIONS,
+        ...(customStatusOptions as unknown as typeof WORK_ITEM_STATUS_OPTIONS),
+      ];
+  const currentStatusValue = workItem.workItemStatus || "planned";
+  const currentStatus =
+    statusOptions.find((option) => option.value === currentStatusValue) ??
+    allCustomStatusOptions.find(
+      (option) => option.value === currentStatusValue
+    );
   const currentPriority = WORK_ITEM_PRIORITY_OPTIONS.find(
     (option) => option.value === (workItem.priority || "none")
   );
@@ -66,11 +88,29 @@ export function StatusPrioritySection({
       disabled: option.id === externalStatusConfig.currentStatusId,
       icon:
         option.id === "open" ? (
-          <CircleDot size={13} strokeWidth={1.8} aria-hidden />
+          <HugeiconsIcon
+            icon={CircleDotIcon}
+            data-icon="circle-dot"
+            size={13}
+            strokeWidth={1.8}
+            aria-hidden
+          />
         ) : option.id === "closed" ? (
-          <CheckCircle2 size={13} strokeWidth={1.8} aria-hidden />
+          <HugeiconsIcon
+            icon={CheckmarkCircle01Icon}
+            data-icon="check-circle-2"
+            size={13}
+            strokeWidth={1.8}
+            aria-hidden
+          />
         ) : (
-          <Circle size={13} strokeWidth={1.8} aria-hidden />
+          <HugeiconsIcon
+            icon={CircleIcon}
+            data-icon="circle"
+            size={13}
+            strokeWidth={1.8}
+            aria-hidden
+          />
         ),
     })) ?? [];
   const currentExternalStatusOption = externalStatusConfig
@@ -124,24 +164,35 @@ export function StatusPrioritySection({
             dataTestId={`work-item-property-status-${workItem.session_id}`}
           />
         ) : (
-          <EnumPropertyField
+          <EnumPropertyField<string>
             options={statusOptions}
             currentOption={currentStatus}
             currentValue={workItem.workItemStatus}
             displayValue={
               currentStatus
-                ? t(`workItems.statusLabels.${currentStatus.value}`)
+                ? t(`workItems.statusLabels.${currentStatus.value}`, {
+                    defaultValue: currentStatus.label,
+                  })
                 : t("workItems.statusFilters.todo")
             }
             isSelected
             isActive={openPicker === "status"}
             searchPlaceholder={t("common:actions.search")}
-            getLabel={(value) => t(`workItems.statusLabels.${value}`)}
+            getLabel={(value) => {
+              const option = statusOptions.find(
+                (candidate) => candidate.value === value
+              );
+              return t(`workItems.statusLabels.${value}`, {
+                defaultValue: option?.label ?? value,
+              });
+            }}
             fieldVariant={fieldVariant}
             onPickerActiveChange={(active) =>
               togglePicker(active ? "status" : null)
             }
-            onChange={handlers.handleStatusChange}
+            onChange={(value) =>
+              handlers.handleStatusChange(value as WorkItemStatus)
+            }
             dataTestId={`work-item-property-status-${workItem.session_id}`}
           />
         ))}

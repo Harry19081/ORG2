@@ -1,51 +1,8 @@
-/** Sample region definition (normalized 0.0-1.0) */
-export interface SampleRegion {
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-/** Luminance result for a region */
-export interface LuminanceResult {
-  name: string;
-  luminance: number;
-  is_light: boolean;
-}
-
-/** Full luminance analysis result */
-export interface LuminanceAnalysis {
-  regions: LuminanceResult[];
-  processing_time_ms: number;
-}
-
 /** Binary check result */
 export interface BinaryCheckResult {
   is_binary: boolean;
   reason: string;
   processing_time_us: number;
-}
-
-/** JSON parse result */
-export interface JsonParseResult {
-  value: unknown;
-  processing_time_ms: number;
-  input_size: number;
-}
-
-/** JSON stringify result */
-export interface JsonStringifyResult {
-  json: string;
-  processing_time_ms: number;
-  output_size: number;
-}
-
-/** JSON validation result */
-export interface JsonValidationResult {
-  valid: boolean;
-  error: string | null;
-  processing_time_ms: number;
 }
 
 /** Hash result */
@@ -105,24 +62,23 @@ export interface SystemRuntimeSnapshot {
   sampledOverMs: number;
 }
 
-export const GPU_DETECTION_STATUS = {
+const GPU_DETECTION_STATUS = {
   DETECTED: "detected",
   NOT_AVAILABLE: "not_available",
   PROBE_FAILED: "probe_failed",
   UNSUPPORTED: "unsupported",
 } as const;
 
-export type GpuDetectionStatus =
+type GpuDetectionStatus =
   (typeof GPU_DETECTION_STATUS)[keyof typeof GPU_DETECTION_STATUS];
 
-export const GPU_PROBE_SOURCE = {
+const GPU_PROBE_SOURCE = {
   NONE: "none",
   NVIDIA_SMI: "nvidia-smi",
   SYSTEM_PROFILER: "system_profiler",
 } as const;
 
-export type GpuProbeSource =
-  (typeof GPU_PROBE_SOURCE)[keyof typeof GPU_PROBE_SOURCE];
+type GpuProbeSource = (typeof GPU_PROBE_SOURCE)[keyof typeof GPU_PROBE_SOURCE];
 
 /** Hardware summary used for local model recommendations */
 export interface LocalModelHardwareSummary {

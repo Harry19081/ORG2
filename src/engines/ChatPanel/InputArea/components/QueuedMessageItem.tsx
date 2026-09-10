@@ -8,7 +8,6 @@
  */
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ArrowUp, Clock, Loader2, Pencil, Trash2 } from "lucide-react";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +18,14 @@ import {
   COMPOSER_STACK_ROW_HOVER,
   COMPOSER_STACK_ROW_LABEL,
 } from "@src/config/composerStackTokens";
+import {
+  ArrowUp02Icon,
+  Clock01Icon,
+  Delete02Icon,
+  HugeiconsIcon,
+  Loading03Icon,
+  Pen01Icon,
+} from "@src/icons";
 import type { QueuedMessage } from "@src/store/ui/messageQueueAtom";
 
 const MAX_PREVIEW_LENGTH = 80;
@@ -28,6 +35,7 @@ interface QueuedMessageItemProps {
   draggable: boolean;
   isDragging: boolean;
   isEditing: boolean;
+  isHandoff: boolean;
   onStartEdit: (msg: QueuedMessage) => void;
   onSendNow: (messageId: string) => void;
   onCancel: (messageId: string) => void;
@@ -39,6 +47,7 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
     draggable,
     isDragging,
     isEditing,
+    isHandoff,
     onStartEdit,
     onSendNow,
     onCancel,
@@ -47,11 +56,12 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
     // "now" priority = Send Now clicked; the dispatcher delivers the moment
     // the interrupted turn's terminal lands. Render as "sending now…" so the
     // user sees their click took effect during the interrupt window.
-    const isSendingNow = msg.priority === "now";
+    const isSending =
+      isHandoff || msg.status !== "queued" || msg.priority === "now";
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({
         id: msg.id,
-        disabled: isEditing || isSendingNow || !draggable,
+        disabled: isEditing || isSending || !draggable,
       });
 
     const style: React.CSSProperties = {
@@ -71,44 +81,53 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
         style={style}
         className={`${COMPOSER_STACK_ROW_BASE} ${
           isEditing ? "bg-primary-1" : COMPOSER_STACK_ROW_HOVER
-        } ${draggable && !isEditing && !isSendingNow ? "cursor-grab active:cursor-grabbing" : ""}`}
+        } ${draggable && !isEditing && !isSending ? "cursor-grab active:cursor-grabbing" : ""}`}
         data-testid="queued-message-item"
         data-queued-message-id={msg.id}
         data-queued-message-content={msg.displayContent}
-        data-queued-message-sending={isSendingNow || undefined}
+        data-queued-message-sending={isSending || undefined}
         title={msg.displayContent}
         aria-label={msg.displayContent}
-        {...(draggable && !isEditing && !isSendingNow
+        {...(draggable && !isEditing && !isSending
           ? { ...attributes, ...listeners }
           : {})}
       >
         <div className="flex h-[14px] w-[14px] shrink-0 items-center justify-center">
-          {isSendingNow ? (
-            <Loader2 size={14} className="animate-spin text-primary-6" />
+          {isSending ? (
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              data-icon="loader-2"
+              size={14}
+              className="animate-spin text-primary-6"
+            />
           ) : (
-            <Clock
+            <HugeiconsIcon
+              icon={Clock01Icon}
+              data-icon="clock"
               size={14}
               className={isEditing ? "text-primary-6" : "text-text-2"}
             />
           )}
         </div>
         <span
-          className={`${COMPOSER_STACK_ROW_LABEL} ${isEditing ? "!text-primary-6" : ""}`}
+          className={`${COMPOSER_STACK_ROW_LABEL} ${isEditing ? "text-primary-6!" : ""}`}
         >
           {preview}
         </span>
-        {isSendingNow && (
+        {isSending && (
           <span className="shrink-0 text-[10px] text-primary-6">
             {t("common:labels.sendingNow")}
           </span>
         )}
-        {!isEditing && !isSendingNow && (
+        {!isEditing && !isSending && (
           <span className={COMPOSER_STACK_ROW_ACTIONS}>
             <Button
               htmlType="button"
               variant="tertiary"
               size="mini"
-              icon={<Pencil size={12} />}
+              icon={
+                <HugeiconsIcon icon={Pen01Icon} data-icon="pencil" size={12} />
+              }
               iconOnly
               className="enabled:hover:bg-fill-3 enabled:hover:text-text-1"
               onClick={() => onStartEdit(msg)}
@@ -118,7 +137,13 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
               htmlType="button"
               variant="tertiary"
               size="mini"
-              icon={<Trash2 size={12} />}
+              icon={
+                <HugeiconsIcon
+                  icon={Delete02Icon}
+                  data-icon="trash-2"
+                  size={12}
+                />
+              }
               iconOnly
               className="enabled:hover:bg-fill-3 enabled:hover:text-danger-6"
               onClick={() => onCancel(msg.id)}
@@ -128,7 +153,13 @@ const QueuedMessageItem: React.FC<QueuedMessageItemProps> = memo(
               htmlType="button"
               variant="tertiary"
               size="mini"
-              icon={<ArrowUp size={12} />}
+              icon={
+                <HugeiconsIcon
+                  icon={ArrowUp02Icon}
+                  data-icon="arrow-up"
+                  size={12}
+                />
+              }
               iconOnly
               className="enabled:hover:bg-fill-3 enabled:hover:text-primary-6"
               onClick={() => onSendNow(msg.id)}

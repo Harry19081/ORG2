@@ -109,7 +109,7 @@ export class SnapshotCacheManager {
    * (ordered, lossless), while materialize + notify runs at most once per
    * animation frame per session. Pure-render consumers may therefore see
    * state up to one frame stale; every synchronous read path
-   * (getLatestSessionSnapshot, latestSnapshot, getMemoryStats) and lifecycle
+   * (getLatestSessionSnapshot, latestSnapshot) and lifecycle
    * transition (switch / release / evict, streaming end) force-flushes
    * first, so no correctness-sensitive path observes the window.
    */
@@ -345,9 +345,15 @@ export class SnapshotCacheManager {
       this._sessionListeners.set(sessionId, listeners);
     }
     listeners.add(listener);
+    const subscribedSet = listeners;
     return () => {
-      listeners!.delete(listener);
-      if (listeners!.size === 0) {
+      subscribedSet.delete(listener);
+      // Only drop the registry entry if it is still *our* Set. After
+      // `evictSessionCache` (which deletes the entry) a later subscriber may
+      // have installed a fresh Set for the same session; a stale disposer
+      // must not unregister that live Set.
+      const current = this._sessionListeners.get(sessionId);
+      if (current === subscribedSet && current.size === 0) {
         this._sessionListeners.delete(sessionId);
       }
     };
@@ -432,8 +438,8 @@ export class SnapshotCacheManager {
   }
 
   getMemoryStats(): EventStoreMemoryStats {
-    // Materialize pending state first so the reported sizes are current.
-    this._flushAllPendingSnapshots();
+    // Diagnostics must not materialize/notify pending streaming deltas. Count
+    // the objects retained right now; a sample may straddle a coalescing frame.
     let cachedEvents = 0;
     let bytes = 0;
     for (const snapshot of this._latestSnapshots.values()) {

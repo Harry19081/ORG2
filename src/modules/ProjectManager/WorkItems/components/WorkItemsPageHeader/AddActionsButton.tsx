@@ -1,4 +1,3 @@
-import { Box, ListChecks, Plus } from "lucide-react";
 import { useCallback } from "react";
 import { createPortal } from "react-dom";
 
@@ -9,9 +8,10 @@ import {
   DROPDOWN_PANEL,
   DROPDOWN_WIDTHS,
 } from "@src/components/Dropdown/tokens";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { useDropdownEngine } from "@src/hooks/dropdown";
-import { WorkstationToolbarTooltip } from "@src/modules/WorkStation/shared";
+import { HugeiconsIcon, PencilEdit02Icon } from "@src/icons";
 
 interface AddActionsButtonProps {
   onAddProject?: () => void;
@@ -53,7 +53,7 @@ export function AddActionsButton({
   if (!onAddProject || !onAddWorkItem) {
     const label = onAddWorkItem ? addWorkItemLabel : addProjectLabel;
     return (
-      <WorkstationToolbarTooltip label={label}>
+      <ToolbarTooltip label={label}>
         <Button
           htmlType="button"
           variant="tertiary"
@@ -66,28 +66,42 @@ export function AddActionsButton({
               ? "work-items-create-work-item"
               : "work-items-create-project"
           }
-          icon={<Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />}
+          icon={
+            <HugeiconsIcon
+              icon={PencilEdit02Icon}
+              data-icon="square-pen"
+              size={HEADER_ICON_SIZE.md}
+              strokeWidth={2}
+            />
+          }
         />
-      </WorkstationToolbarTooltip>
+      </ToolbarTooltip>
     );
   }
 
   return (
     <>
-      <WorkstationToolbarTooltip label={addWorkItemLabel} disabled={isOpen}>
+      <ToolbarTooltip label={addWorkItemLabel} disabled={isOpen}>
         <Button
           ref={triggerRef}
           htmlType="button"
           variant="tertiary"
           size="small"
           iconOnly
-          className={isOpen ? "!bg-surface-selected !text-primary-6" : ""}
+          className={isOpen ? "bg-surface-selected! text-primary-6!" : ""}
           onClick={toggle}
           aria-label={addWorkItemLabel}
           data-testid="work-items-create-menu"
-          icon={<Plus size={HEADER_ICON_SIZE.md} strokeWidth={2} />}
+          icon={
+            <HugeiconsIcon
+              icon={PencilEdit02Icon}
+              data-icon="square-pen"
+              size={HEADER_ICON_SIZE.md}
+              strokeWidth={2}
+            />
+          }
         />
-      </WorkstationToolbarTooltip>
+      </ToolbarTooltip>
       {isOpen &&
         isPositioned &&
         createPortal(
@@ -112,7 +126,9 @@ export function AddActionsButton({
               role="menuitem"
               data-testid="work-items-create-work-item"
             >
-              <ListChecks
+              <HugeiconsIcon
+                icon={PencilEdit02Icon}
+                data-icon="square-pen"
                 size={DROPDOWN_ITEM.iconSize}
                 strokeWidth={1.75}
                 className="text-text-2"
@@ -128,7 +144,9 @@ export function AddActionsButton({
               role="menuitem"
               data-testid="work-items-create-project"
             >
-              <Box
+              <HugeiconsIcon
+                icon={PencilEdit02Icon}
+                data-icon="square-pen"
                 size={DROPDOWN_ITEM.iconSize}
                 strokeWidth={1.75}
                 className="text-text-2"

@@ -13,8 +13,7 @@ import SettingsTable, {
   SETTINGS_TABLE_COL,
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
-import type { DependencyStatus } from "@src/hooks/dependencies";
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import type { DependencyStatus } from "@src/modules/MainApp/Integrations/hooks/useSystemDependencies";
 
 import { StatusDot, selectedRowClassName } from "../../../Tables/shared";
 
@@ -110,16 +109,9 @@ const DbClientsTable: React.FC<DbClientsTableProps> = ({
     [t]
   );
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[200px] items-center justify-center rounded-lg bg-fill-2">
-        <Placeholder variant="loading" />
-      </div>
-    );
-  }
-
   return (
     <SettingsTable<DependencyStatus>
+      loading={loading}
       hover
       columns={columns}
       rows={filteredClients}

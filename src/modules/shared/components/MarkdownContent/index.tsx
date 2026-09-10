@@ -9,9 +9,7 @@ const IMAGE_ATTR_RE = /([\w:-]+)\s*=\s*(["'])(.*?)\2/g;
 /** Fifteen lines at the GitHub timeline body's 20px line height. */
 export const MARKDOWN_CONTENT_PREVIEW_MAX_HEIGHT = 300;
 
-export type MarkdownContentFadeFrom =
-  | "from-primary-container"
-  | "from-chat-pane";
+type MarkdownContentFadeFrom = "from-primary-container" | "from-chat-pane";
 
 function sanitizeMarkdownImageAlt(value: string): string {
   return value.split("[").join("").split("]").join("");
@@ -34,7 +32,7 @@ export function normalizeMarkdownContent(body: string): string {
   });
 }
 
-export interface MarkdownContentProps {
+interface MarkdownContentProps {
   body: string;
   emptyText?: string;
   clamped?: boolean;
@@ -56,7 +54,7 @@ export const MarkdownContent = memo(function MarkdownContent({
   if (!body.trim()) {
     return (
       <div
-        className={`chat-text select-text italic text-text-3 ${className}`.trim()}
+        className={`chat-text allow-select-deep text-text-3 italic ${className}`.trim()}
       >
         {emptyText}
       </div>
@@ -65,9 +63,13 @@ export const MarkdownContent = memo(function MarkdownContent({
 
   const content = (
     <div
-      className={`chat-text w-full min-w-0 select-text text-text-1 [&_.chat-markdown-body]:select-text ${className}`.trim()}
+      className={`chat-text allow-select-deep w-full min-w-0 text-text-1 ${className}`.trim()}
     >
-      <Markdown textContent={normalizeMarkdownContent(body)} skipPreprocess />
+      <Markdown
+        textContent={normalizeMarkdownContent(body)}
+        skipPreprocess
+        sessionReferencesAsCards
+      />
     </div>
   );
 

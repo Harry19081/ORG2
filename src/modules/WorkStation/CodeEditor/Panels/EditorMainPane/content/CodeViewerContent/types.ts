@@ -5,9 +5,7 @@ import type {
   ConflictResolutionChoice,
   CursorPosition,
 } from "@src/features/CodeMirror";
-import type { FileError } from "@src/hooks/workStation/editor/useFileContent";
-
-import type { Diagnostic } from "../../../EditorBottomPanel/content/ProblemsContent/types";
+import type { FileError } from "@src/modules/WorkStation/CodeEditor/hooks/fileContent/useFileContent";
 
 // ============================================
 // Main Component Props
@@ -39,7 +37,6 @@ export interface CodeViewerContentProps {
   /** Saving state */
   saving?: boolean;
   /** Callback when diagnostics change */
-  onDiagnosticsChange?: (diagnostics: Diagnostic[]) => void;
   /** Callback when cursor position changes */
   onCursorPositionChange?: (position: CursorPosition | null) => void;
   /** Whether the file should route through a dedicated preview instead of CodeMirror */
@@ -72,7 +69,6 @@ export interface CallbackRefs {
   onSave?: () => Promise<void>;
   onDiscard?: () => void;
   onReload?: () => Promise<void>;
-  onDiagnosticsChange?: (diagnostics: Diagnostic[]) => void;
   onCursorPositionChange?: (position: CursorPosition | null) => void;
 }
 
@@ -177,7 +173,6 @@ export interface ContentViewProps {
       toLine: number;
     } | null
   ) => void;
-  onDiagnosticsChange: (diagnostics: Diagnostic[]) => void;
   onResolveConflict: (
     conflictId: string,
     choice: ConflictResolutionChoice

@@ -12,16 +12,16 @@
  * Date dividers are ordinary rows in the same index space (see
  * `channelFeedRows.ts`) — the virtualizer needs one flat list.
  *
- * Width comes from `DETAIL_PANEL_TOKENS.contentMaxWidth` on an inner column
+ * Width comes from `CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth` on an inner column
  * inside a `px-2` scroller — the exact shape `HumanSessionView` and
- * `ChatHistoryList` use — so a channel row lands on the same 900px centred
+ * `ChatHistoryList` use — so a channel row lands on the same 800px centred
  * column as a session transcript row. Rows measure INSIDE that column, so
  * `measureElement` reports the constrained height, not the pane-wide one.
  */
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useEffect, useMemo, useRef } from "react";
 
-import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
+import { CHAT_PANEL_WIDTH_TOKENS } from "@src/config/detailPanelTokens";
 
 import ChannelMessageRow, { ChannelDateDivider } from "./ChannelMessageRow";
 import {
@@ -125,11 +125,11 @@ const ChannelMessageList: React.FC<ChannelMessageListProps> = ({
   return (
     <div
       ref={scrollContainerRef}
-      className="scrollbar-overlay min-h-0 flex-1 overflow-y-auto px-2"
+      className="scrollbar-overlay allow-select-deep min-h-0 flex-1 overflow-y-auto px-2"
       data-testid="channel-message-list"
     >
       <div
-        className={`mx-auto min-h-full w-full px-2 pb-36 pt-6 ${DETAIL_PANEL_TOKENS.contentMaxWidth}`}
+        className={`mx-auto min-h-full w-full px-2 pt-6 pb-36 ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
       >
         {header}
         {shouldVirtualize ? (
@@ -142,7 +142,7 @@ const ChannelMessageList: React.FC<ChannelMessageListProps> = ({
                 key={rows[virtualRow.index].id}
                 ref={rowVirtualizer.measureElement}
                 data-index={virtualRow.index}
-                className="absolute left-0 top-0 w-full"
+                className="absolute top-0 left-0 w-full"
                 style={{ transform: `translateY(${virtualRow.start}px)` }}
               >
                 {renderRow(virtualRow.index)}

@@ -5,6 +5,8 @@
  */
 import React from "react";
 
+import type { IconSvgElement } from "@src/icons";
+
 // ============ BASE PALETTE PROPS ============
 
 /**
@@ -26,6 +28,8 @@ export type StatusType = "ongoing" | "completed" | "failed";
 
 /** Data object attached to SpotlightItem */
 export interface SpotlightItemData {
+  /** Structured members for multi-folder hover previews. */
+  detailFolders?: { name: string; path: string }[];
   /** Whether this is an open tab */
   isOpenTab?: boolean;
   /** Parent action ID for child items */
@@ -36,12 +40,6 @@ export interface SpotlightItemData {
   isCurrentSelection?: boolean;
   /** Whether this is a header item (non-clickable) */
   isHeader?: boolean;
-  /** Git status for repos */
-  gitStatus?: {
-    uncommittedFiles: number;
-    ahead: number;
-    behind: number;
-  };
   /** Right-side label (e.g., branch date, file path) */
   rightLabel?: string;
   /** Right-side React content (e.g., provider icons with count) — takes precedence over rightLabel */
@@ -70,9 +68,14 @@ export interface SpotlightItemData {
    *  select. The checkbox calls `onToggle`; clicking the rest of the row
    *  is the responsibility of the item's own `action`. */
   selectionState?: {
+    ariaLabel?: string;
     checked: boolean;
-    onToggle: (e?: React.MouseEvent) => void;
+    onToggle: () => void;
   };
+  /** Overrides the text a palette's fuzzy filter matches against. Lets a
+   *  row stay searchable by a value it does not render (e.g. a worktree
+   *  path hidden behind the footer's "Show path" toggle). */
+  searchText?: string;
   /** Allow any additional properties */
   [key: string]: unknown;
 }
@@ -82,7 +85,7 @@ export interface SpotlightItem {
   label: string;
   desc?: string;
   description?: string;
-  icon?: string | React.ComponentType<Record<string, unknown>>;
+  icon?: string | React.ComponentType<Record<string, unknown>> | IconSvgElement;
   data?: SpotlightItemData;
   statusType?: StatusType;
   /** Item type for categorization */

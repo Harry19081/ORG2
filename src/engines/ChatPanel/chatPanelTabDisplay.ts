@@ -1,5 +1,5 @@
 import { SESSION_CONFIG } from "@src/config/sessionCreatorConfig";
-import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelTab } from "@src/store/chatPanel/chatPanelTabsModel";
 import type { Session } from "@src/store/session";
 import { WORK_MANAGEMENT_SECTION } from "@src/store/workstation";
 import { stripPillReferences } from "@src/util/session/stripPillReferences";
@@ -11,6 +11,7 @@ export interface ChatPanelTabDisplayLabels {
   teamInbox: string;
   workManagement: {
     kanban: string;
+    inbox: string;
     work: string;
   };
   sessionFallback: string;
@@ -22,13 +23,20 @@ function resolveWorkManagementTabTitle(
   labels: ChatPanelTabDisplayLabels["workManagement"]
 ): string {
   switch (tab.managementSection) {
+    case WORK_MANAGEMENT_SECTION.INBOX:
+      return labels.inbox;
     case WORK_MANAGEMENT_SECTION.PROJECTS:
     case WORK_MANAGEMENT_SECTION.GITHUB_ISSUES:
     case WORK_MANAGEMENT_SECTION.GITHUB_PRS:
       return labels.work;
     case WORK_MANAGEMENT_SECTION.KANBAN:
-    default:
       return labels.kanban;
+    default:
+      // During initial atom hydration a Work tab can render before its
+      // management section is available. Its stored title was set by the
+      // opening action and is already localized, so preserve that identity
+      // instead of briefly presenting the unrelated Kanban fallback.
+      return tab.title;
   }
 }
 
@@ -75,8 +83,10 @@ export function resolveChatPanelTabDisplayTitle(
     case "github-pr":
     case "project":
     case "explore":
+    case "run-group":
       // Each of these tabs stamps its entity / surface name onto `tab.title`
-      // at open time, so the stored title is the correct pill label.
+      // at open time, so the stored title is the correct pill label. A run
+      // group's title is the opening words of its shared prompt.
       return tab.title;
   }
 }

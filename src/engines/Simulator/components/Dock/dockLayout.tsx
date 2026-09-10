@@ -1,7 +1,7 @@
 /**
- * Station dock layout primitives — glass pill, icon columns, segment divider, row wrapper.
- * Consumed by Dock and DockReplayControl; kept out of index.ts to avoid circular imports
- * (those components cannot import from the barrel that re-exports them).
+ * Station dock layout primitives — icon strip, icon columns, segment divider, row wrapper.
+ * Consumed by DockReplayControl; kept out of index.ts so the barrel only exposes
+ * complete dock surfaces rather than their internal layout pieces.
  */
 import React, { memo } from "react";
 
@@ -22,8 +22,8 @@ const DOCK_SEGMENT_DIVIDER_PADDING_TOP_PX =
 
 const DOCK_SEGMENT_LINE_CLASS = "w-px shrink-0 bg-border-2";
 
-/** Passed to Lucide icons inside dock slots */
-export const DOCK_LUCIDE_ICON_PROPS = {
+/** Passed to glyph icons inside dock slots */
+export const DOCK_ICON_PROPS = {
   size: 20,
   strokeWidth: 1.75,
 } as const;
@@ -49,7 +49,7 @@ export type DockIconTrailerMode =
   | "overflow-marker";
 
 /** Nudge Agent focus dots slightly closer to the icon; layout box unchanged (transform only). */
-const DOCK_TRAILER_DOT_NUDGE_UP_CLASS = "-translate-y-[2.5px]";
+const DOCK_TRAILER_DOT_NUDGE_UP_CLASS = "translate-y-[-2.5px]";
 
 export const DockSegmentDivider: React.FC = memo(() => (
   <div
@@ -69,11 +69,11 @@ export const DockSegmentDivider: React.FC = memo(() => (
 
 DockSegmentDivider.displayName = "DockSegmentDivider";
 
-export interface StationDockGlassPillProps {
+export interface StationDockIconStripProps {
   children: React.ReactNode;
 }
 
-export const StationDockGlassPill: React.FC<StationDockGlassPillProps> = memo(
+export const StationDockIconStrip: React.FC<StationDockIconStripProps> = memo(
   ({ children }) => (
     <div className="relative flex h-12 flex-row items-center gap-1 overflow-visible px-1.5 py-0">
       {children}
@@ -81,19 +81,17 @@ export const StationDockGlassPill: React.FC<StationDockGlassPillProps> = memo(
   )
 );
 
-StationDockGlassPill.displayName = "StationDockGlassPill";
+StationDockIconStrip.displayName = "StationDockIconStrip";
 
 export interface StationDockRowProps {
-  /** Centered under chrome (My Station); left + room for trailing (Agent) */
-  layout: "centered" | "withTrailingSlot";
   children: React.ReactNode;
-  /** Rendered immediately to the right of the glass pill (e.g. keyboard) */
+  /** Rendered immediately to the right of the icon strip (e.g. keyboard) */
   trailing?: React.ReactNode;
 }
 
 export const StationDockRow: React.FC<StationDockRowProps> = memo(
   ({ children, trailing }) => (
-    <div className="relative flex w-full min-w-0 max-w-full items-center justify-center gap-2">
+    <div className="relative flex w-full max-w-full min-w-0 items-center justify-center gap-2">
       {children}
       {trailing ?? null}
     </div>
@@ -105,10 +103,6 @@ StationDockRow.displayName = "StationDockRow";
 export interface DockIconColumnProps {
   children: React.ReactNode;
   trailer: DockIconTrailerMode;
-}
-
-export interface CompactDockIconColumnProps {
-  children: React.ReactNode;
 }
 
 /**
@@ -133,7 +127,7 @@ export const DockIconColumn: React.FC<DockIconColumnProps> = memo(
     );
 
     return (
-      <div className="group relative flex flex-col items-center gap-[1px] overflow-visible">
+      <div className="group relative flex flex-col items-center gap-px overflow-visible">
         {children}
         <div className={bottomWrapperClass}>{bottomContent}</div>
       </div>
@@ -142,13 +136,3 @@ export const DockIconColumn: React.FC<DockIconColumnProps> = memo(
 );
 
 DockIconColumn.displayName = "DockIconColumn";
-
-export const CompactDockIconColumn: React.FC<CompactDockIconColumnProps> = memo(
-  ({ children }) => (
-    <div className="group relative flex h-[36px] items-center justify-center overflow-visible">
-      {children}
-    </div>
-  )
-);
-
-CompactDockIconColumn.displayName = "CompactDockIconColumn";

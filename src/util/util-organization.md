@@ -18,7 +18,6 @@ This document describes the organization of the `src/util/` folder — structure
 src/util/
 ├── core/                        # Core framework utilities
 │   ├── init/
-│   │   ├── backgroundInit.ts   # Background initialization
 │   │   ├── deferredInit.ts     # Deferred initialization
 │   │   ├── menuInit.ts         # Menu initialization
 │   │   └── themeInit.ts        # Theme initialization
@@ -27,10 +26,7 @@ src/util/
 │   │   ├── instrumentedStore.ts # Instrumented Jotai store
 │   │   └── windowId.ts         # Storage-safe per-window identity
 │   ├── storage/
-│   │   ├── backgroundImage.ts   # Background image storage
 │   │   ├── cleanup.ts           # Storage cleanup utilities
-│   │   ├── devIndexedDBProtection.ts # Dev IndexedDB protection
-│   │   ├── diagnosis.ts         # Storage diagnosis tools
 │   │   ├── indexedDB.ts         # IndexedDB wrapper
 │   │   └── localStorage.ts      # LocalStorage cache
 │   ├── error/
@@ -83,9 +79,7 @@ src/util/
 │
 ├── ui/                          # UI utilities
 │   ├── theme/
-│   │   ├── glassMaterial.ts    # Glass material theme resolver
-│   │   ├── themeUtils.ts       # Theme utility functions
-│   │   └── toolbarTheme.ts     # Toolbar theme resolver
+│   │   └── themeUtils.ts       # Theme utility functions
 │   ├── tabs/
 │   │   └── tabHelpers.ts       # Tab helper functions
 │   ├── terminal/
@@ -346,7 +340,6 @@ import {
   - **`breadcrumb.tsx`** - Breadcrumb rendering
   - **`chatDetail.ts`** - Chat detail creation
 
-- **`ui/theme/glassMaterial.ts`** - Glass material theme resolution
 - **`ui/window/windowManager.ts`** - Window management operations
 
 ### Platform Utilities
@@ -668,7 +661,21 @@ formatDate.ts; // Related to formatSteps?
 
 ## Related documentation
 
-- **Hooks:** `src/hooks/hooks-organization.md`
+- **Hooks:** `src/hooks/` has no organization doc. Placement rules (2026-08-15,
+  after `hooks/workStation` was dissolved):
+  1. A hook with one consuming area lives next to that consumer — in the module's
+     own `hooks/` dir (`modules/WorkStation/CodeEditor/hooks/`,
+     `modules/WorkStation/Browser/hooks/`, `features/SessionSetup/hooks/`, …),
+     or beside the single file that uses it.
+  2. `src/hooks/<group>/` is only for hooks consumed from several areas
+     (e.g. `hooks/tabHost/` — the workstation tab-host contract used by
+     WorkStation, ProjectManager, MainApp, features and engines). Never name a
+     global group after a module.
+  3. No barrels: import the file, not an `index.ts` (barrels hide who really
+     depends on what — that is how `hooks/workStation` drifted).
+  4. Shared _contracts_ a hook implements go in `src/types/`, so `store/` and
+     `services/` never import from `src/hooks/`.
+     `.eslintrc.js` `no-restricted-imports` blocks the dissolved paths.
 - **Store:** `src/store/store-organization.md`
 - **API:** `src/api/api_organization.md`
 
@@ -701,3 +708,4 @@ formatDate.ts; // Related to formatSteps?
 | 2026-01-17 | —      | Original V1 document                                            |
 | 2026-03-12 | script | Migrated to Documentation V2 format                             |
 | 2026-03-25 | —      | Moved to `src/util/util-organization.md`; related links updated |
+| 2026-08-15 | —      | Hooks placement rules added; `hooks/workStation` dissolved      |

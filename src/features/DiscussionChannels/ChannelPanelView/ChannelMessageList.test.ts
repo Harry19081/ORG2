@@ -115,7 +115,7 @@ describe("ChannelMessageList", () => {
   }
 
   function column(): HTMLElement | null {
-    return container.querySelector<HTMLElement>(".max-w-\\[900px\\]");
+    return container.querySelector<HTMLElement>(".max-w-\\[800px\\]");
   }
 
   it("puts the transcript column inside the scroller, centred at the shared width", () => {
@@ -127,6 +127,7 @@ describe("ChannelMessageList", () => {
     const inner = column();
     expect(inner).not.toBeNull();
     expect(inner?.parentElement).toBe(scroller);
+    expect(scroller?.className).toContain("allow-select-deep");
     expect(inner?.className).toContain("mx-auto");
     // Bottom inset clears the absolutely positioned composer footer.
     expect(inner?.className).toContain("pb-36");

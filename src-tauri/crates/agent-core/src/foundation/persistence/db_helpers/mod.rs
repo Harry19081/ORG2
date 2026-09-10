@@ -93,54 +93,44 @@ mod tests {
     }
 }
 
-/// Collect all image file paths referenced by messages in a session.
-fn collect_session_image_paths(prefix: &str, session_id: &str) -> SqliteResult<Vec<String>> {
+/// Validate every serialized image-reference array in a session.
+fn validate_session_image_refs(prefix: &str, session_id: &str) -> SqliteResult<()> {
     let conn = get_connection()?;
-    collect_session_image_paths_with_connection(&conn, prefix, session_id)
+    validate_session_image_refs_with_connection(&conn, prefix, session_id)
 }
 
-fn collect_session_image_paths_with_connection(
+fn validate_session_image_refs_with_connection(
     conn: &rusqlite::Connection,
     prefix: &str,
     session_id: &str,
-) -> SqliteResult<Vec<String>> {
+) -> SqliteResult<()> {
     let sql = format!(
         "SELECT images FROM {prefix}_messages WHERE session_id = ?1 AND images IS NOT NULL"
     );
     let mut stmt = conn.prepare(&sql)?;
     let rows = stmt.query_map([session_id], |row| row.get::<_, String>(0))?;
-    let mut paths = Vec::new();
-
     for row in rows {
         let json_str = row?;
-        let image_paths: Vec<String> = serde_json::from_str(&json_str).map_err(|err| {
+        let _: Vec<String> = serde_json::from_str(&json_str).map_err(|err| {
             rusqlite::Error::FromSqlConversionFailure(0, Type::Text, Box::new(err))
         })?;
-        paths.extend(
-            image_paths
-                .into_iter()
-                .filter(|path| !path.starts_with("data:")),
-        );
     }
 
-    Ok(paths)
+    Ok(())
 }
 
 /// Delete all rows referencing `session_id` from each table in `tables`.
-/// Also deletes any image files on disk referenced by the session's messages.
+/// Shared image files are reclaimed later by global housekeeping.
 pub fn delete_session_cascade(session_id: &str, tables: &[&str]) -> SqliteResult<()> {
-    // Collect image file paths before deleting the rows. Infer the
-    // prefix from the first table that ends with "_messages".
+    // Validate image refs before deleting the rows. Infer the prefix from the
+    // first table that ends with "_messages".
     let prefix = tables
         .iter()
         .find(|t| t.ends_with("_messages"))
         .and_then(|t| t.strip_suffix("_messages"));
 
     if let Some(prefix) = prefix {
-        let image_paths = collect_session_image_paths(prefix, session_id)?;
-        if !image_paths.is_empty() {
-            super::images::delete_image_files(&image_paths);
-        }
+        validate_session_image_refs(prefix, session_id)?;
     }
 
     with_sessions_writer(|| {
@@ -164,18 +154,15 @@ pub(crate) fn delete_session_cascade_with_connection(
     session_id: &str,
     tables: &[&str],
 ) -> SqliteResult<()> {
-    // Collect image file paths before deleting the rows. Infer the
-    // prefix from the first table that ends with "_messages".
+    // Validate image refs before deleting the rows. Infer the prefix from the
+    // first table that ends with "_messages".
     let prefix = tables
         .iter()
         .find(|t| t.ends_with("_messages"))
         .and_then(|t| t.strip_suffix("_messages"));
 
     if let Some(prefix) = prefix {
-        let image_paths = collect_session_image_paths_with_connection(conn, prefix, session_id)?;
-        if !image_paths.is_empty() {
-            super::images::delete_image_files(&image_paths);
-        }
+        validate_session_image_refs_with_connection(conn, prefix, session_id)?;
     }
 
     delete_session_rows_with_connection(conn, session_id, tables)
@@ -190,7 +177,7 @@ fn delete_session_rows_with_connection(
         let receipts_exist: bool = conn.query_row(
             "SELECT EXISTS(
                  SELECT 1 FROM sqlite_master
-                 WHERE type='table' AND name='agent_inbox_materializations'
+                 WHERE type='table' AND name='agent_org_runtime_inbox_materializations'
              )",
             [],
             |row| row.get(0),
@@ -199,7 +186,7 @@ fn delete_session_rows_with_connection(
             // Keep the source Inbox rows unread while atomically removing
             // receipts for transcript rows deleted by this cascade.
             conn.execute(
-                "DELETE FROM agent_inbox_materializations WHERE session_id=?1",
+                "DELETE FROM agent_org_runtime_inbox_materializations WHERE session_id=?1",
                 [session_id],
             )?;
         }
@@ -349,6 +336,67 @@ enum MessageConflictPolicy {
     PreserveExisting,
 }
 
+/// Insert one message through a caller-owned SQLite transaction. Keeping the
+/// sequence allocation and Session timestamp touch in this shared primitive
+/// lets lifecycle-aware writers add their authoritative gate in the same
+/// transaction without duplicating the message schema.
+fn insert_message_with_connection(
+    conn: &rusqlite::Connection,
+    prefix: &str,
+    msg: &AgentMessageRow,
+    conflict_policy: MessageConflictPolicy,
+) -> SqliteResult<(String, bool)> {
+    let seq_sql = format!("SELECT MAX(sequence) FROM {prefix}_messages WHERE session_id = ?1");
+    let insert_sql = match conflict_policy {
+        MessageConflictPolicy::Replace => format!(
+            "INSERT OR REPLACE INTO {prefix}_messages
+             (id, session_id, role, content, tool_name, tool_call_id, tool_input, tool_output, model, sequence, created_at, images, compact_from_sequence, compact_tokens_before, compact_tokens_after)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)"
+        ),
+        MessageConflictPolicy::PreserveExisting => format!(
+            "INSERT INTO {prefix}_messages
+             (id, session_id, role, content, tool_name, tool_call_id, tool_input, tool_output, model, sequence, created_at, images, compact_from_sequence, compact_tokens_before, compact_tokens_after)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)"
+        ),
+    };
+    let exists_sql = format!("SELECT EXISTS(SELECT 1 FROM {prefix}_messages WHERE id = ?1)");
+    let touch_sql = format!("UPDATE {prefix}_sessions SET updated_at = ?2 WHERE session_id = ?1");
+
+    if matches!(conflict_policy, MessageConflictPolicy::PreserveExisting)
+        && conn.query_row(&exists_sql, [&msg.id], |row| row.get::<_, bool>(0))?
+    {
+        return Ok((msg.id.clone(), false));
+    }
+
+    let max_seq: Option<i64> = conn
+        .query_row(&seq_sql, [&msg.session_id], |row| row.get(0))
+        .unwrap_or(None);
+    let sequence = max_seq.unwrap_or(-1) + 1;
+    let now = Utc::now().to_rfc3339();
+    conn.execute(
+        &insert_sql,
+        params![
+            msg.id,
+            msg.session_id,
+            msg.role,
+            msg.content,
+            msg.tool_name,
+            msg.tool_call_id,
+            msg.tool_input,
+            msg.tool_output,
+            msg.model,
+            sequence,
+            msg.created_at,
+            msg.images,
+            msg.compact_from_sequence,
+            msg.compact_tokens_before,
+            msg.compact_tokens_after,
+        ],
+    )?;
+    conn.execute(&touch_sql, params![msg.session_id, now])?;
+    Ok((msg.id.clone(), true))
+}
+
 fn insert_message_with_policy(
     prefix: &str,
     msg: &AgentMessageRow,
@@ -356,80 +404,17 @@ fn insert_message_with_policy(
 ) -> SqliteResult<(String, bool)> {
     with_sessions_writer(|| {
         let conn = get_connection()?;
-
-        let seq_sql = format!("SELECT MAX(sequence) FROM {prefix}_messages WHERE session_id = ?1");
-        let insert_sql = match conflict_policy {
-            MessageConflictPolicy::Replace => format!(
-                "INSERT OR REPLACE INTO {prefix}_messages
-                 (id, session_id, role, content, tool_name, tool_call_id, tool_input, tool_output, model, sequence, created_at, images, compact_from_sequence, compact_tokens_before, compact_tokens_after)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)"
-            ),
-            MessageConflictPolicy::PreserveExisting => format!(
-                "INSERT INTO {prefix}_messages
-             (id, session_id, role, content, tool_name, tool_call_id, tool_input, tool_output, model, sequence, created_at, images, compact_from_sequence, compact_tokens_before, compact_tokens_after)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)"
-            ),
-        };
-        let exists_sql = format!("SELECT EXISTS(SELECT 1 FROM {prefix}_messages WHERE id = ?1)");
-        let touch_sql =
-            format!("UPDATE {prefix}_sessions SET updated_at = ?2 WHERE session_id = ?1");
-
         conn.execute_batch("BEGIN IMMEDIATE")?;
-
-        if matches!(conflict_policy, MessageConflictPolicy::PreserveExisting) {
-            let already_exists =
-                match conn.query_row(&exists_sql, [&msg.id], |row| row.get::<_, bool>(0)) {
-                    Ok(exists) => exists,
-                    Err(err) => {
-                        let _ = conn.execute_batch("ROLLBACK");
-                        return Err(err);
-                    }
-                };
-            if already_exists {
+        match insert_message_with_connection(&conn, prefix, msg, conflict_policy) {
+            Ok(outcome) => {
                 conn.execute_batch("COMMIT")?;
-                return Ok((msg.id.clone(), false));
+                Ok(outcome)
+            }
+            Err(error) => {
+                let _ = conn.execute_batch("ROLLBACK");
+                Err(error)
             }
         }
-
-        let max_seq: Option<i64> = conn
-            .query_row(&seq_sql, [&msg.session_id], |row| row.get(0))
-            .unwrap_or(None);
-        let sequence = max_seq.unwrap_or(-1) + 1;
-        let now = Utc::now().to_rfc3339();
-
-        let result = conn.execute(
-            &insert_sql,
-            params![
-                msg.id,
-                msg.session_id,
-                msg.role,
-                msg.content,
-                msg.tool_name,
-                msg.tool_call_id,
-                msg.tool_input,
-                msg.tool_output,
-                msg.model,
-                sequence,
-                msg.created_at,
-                msg.images,
-                msg.compact_from_sequence,
-                msg.compact_tokens_before,
-                msg.compact_tokens_after,
-            ],
-        );
-
-        if let Err(err) = result {
-            let _ = conn.execute_batch("ROLLBACK");
-            return Err(err);
-        }
-
-        if let Err(err) = conn.execute(&touch_sql, params![msg.session_id, now]) {
-            let _ = conn.execute_batch("ROLLBACK");
-            return Err(err);
-        }
-
-        conn.execute_batch("COMMIT")?;
-        Ok((msg.id.clone(), true))
     })
 }
 

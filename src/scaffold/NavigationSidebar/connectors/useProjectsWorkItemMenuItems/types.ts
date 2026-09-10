@@ -8,7 +8,7 @@ import type { NavigationMenuItem } from "@src/scaffold/NavigationSidebar/compone
 import type {
   ChatPanelSelectedProject,
   ChatPanelSelectedWorkItem,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type {
   WorkItemPriority,
   WorkItemStatus,
@@ -47,8 +47,6 @@ export interface SidebarLinearWorkItem {
   orgName: string;
   source: "linear";
 }
-
-export type SidebarAnyWorkItem = SidebarWorkItem | SidebarLinearWorkItem;
 
 export interface LinearOrgRecord {
   id: string;

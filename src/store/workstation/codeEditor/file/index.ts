@@ -23,6 +23,12 @@ export interface FileNode {
   isSymlink?: boolean;
   /** Whether this file is ignored by .gitignore */
   isIgnored?: boolean;
+  /**
+   * Descendant directories that were expanded when this collapsed directory's
+   * loaded children were dropped by the pruner. Consumed (and cleared) the
+   * next time the directory is expanded, so the user gets the same view back.
+   */
+  retainedExpandedPaths?: string[];
 }
 
 export interface FileSearchResult {
@@ -84,42 +90,10 @@ export const fileHasUnsavedChangesAtom = atom((get) => {
 });
 fileHasUnsavedChangesAtom.debugLabel = "fileHasUnsavedChangesAtom";
 
-/** Combined loading state */
-export const fileLoadingAtom = atom((get) => {
-  return (
-    get(fileLoadingTreeAtom) ||
-    get(fileLoadingContentAtom) ||
-    get(fileSavingAtom)
-  );
-});
-
-// ============================================
-// Action Atoms
-// ============================================
-
-/** Select a file */
-export const fileSelectAtom = atom(null, (_get, set, path: string | null) => {
-  set(fileSelectedPathAtom, path);
-});
-
-/** Update file content (editor typing) */
-export const fileUpdateContentAtom = atom(
-  null,
-  (_get, set, content: string) => {
-    set(fileContentAtom, content);
-  }
-);
-
 /** Mark file as saved */
 export const fileMarkSavedAtom = atom(null, (get, set) => {
   const content = get(fileContentAtom);
   set(fileSavedContentAtom, content);
-});
-
-/** Discard changes */
-export const fileDiscardChangesAtom = atom(null, (get, set) => {
-  const saved = get(fileSavedContentAtom);
-  set(fileContentAtom, saved);
 });
 
 // ============================================
@@ -165,4 +139,4 @@ export const fileClearSearchAtom = atom(null, (_get, set) => {
 // Re-exports
 // ============================================
 
-export { fileClipboardAtom, type FileClipboard } from "./clipboardAtom";
+export { fileClipboardAtom } from "./clipboardAtom";

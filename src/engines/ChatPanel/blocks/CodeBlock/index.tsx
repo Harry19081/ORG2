@@ -11,17 +11,22 @@
  * - Intersection observer for lazy syntax highlighting
  * - Virtual scrolling for large code blocks (>100 lines)
  */
-import { Check, Copy, Eye, EyeOff, SquareArrowOutUpRight } from "lucide-react";
-import React, { memo, useCallback } from "react";
+import React, { Suspense, lazy, memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import ExpandOverlay from "@src/components/ExpandOverlay";
 import { FileTreeHoverPreview } from "@src/components/FileTreePreview/exports";
 import FileTypeIcon from "@src/components/FileTypeIcon";
-import ModernCodeViewer from "@src/features/CodeViewer/ModernCodeViewer";
-import { VirtualizedModernDiff } from "@src/features/CodeViewer/VirtualizedModernDiff";
-import { useCopyCheck } from "@src/hooks/ui";
+import { useCopyCheck } from "@src/hooks/ui/useCopyCheck";
+import {
+  Copy01Icon,
+  HugeiconsIcon,
+  SquareArrowUpRight02Icon,
+  Tick01Icon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@src/icons";
 import { copyText } from "@src/util/data/clipboard";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 
@@ -42,6 +47,17 @@ import type { ParsedDiff } from "./diffParser";
 import "./index.scss";
 import { useCodeBlockState } from "./useCodeBlockState";
 
+// Lazy so the highlight engine (react-syntax-highlighter / Prism) loads
+// with the first rendered code block, not with the ChatPanel startup graph.
+const ModernCodeViewer = lazy(
+  () => import("@src/features/CodeViewer/ModernCodeViewer")
+);
+const VirtualizedModernDiff = lazy(() =>
+  import("@src/features/CodeViewer/VirtualizedModernDiff").then((module) => ({
+    default: module.VirtualizedModernDiff,
+  }))
+);
+
 // ============================================
 // Constants
 // ============================================
@@ -57,7 +73,7 @@ const TRAILING_TAG_TONE_CLASS = {
 // Types
 // ============================================
 
-export interface ChatCodeBlockProps {
+interface ChatCodeBlockProps {
   code: string;
   language?: string;
   filePath?: string;
@@ -177,8 +193,6 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
       contentHeight,
       useVirtualScroll,
       virtualListHeight,
-      isScrolling,
-      containerRefCb,
       streamingWrapperRef,
     } = useCodeBlockState({
       code,
@@ -210,7 +224,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                 ? "border-b border-solid border-transparent"
                 : "border-b border-solid border-border-1"
             }
-            onClick={hasContent ? handleLocate : undefined}
+            onToggleCollapse={hasContent ? handleHeaderClick : undefined}
             onNavigate={
               eventId && !shouldShowCopyButton ? handleLocate : undefined
             }
@@ -231,9 +245,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
               isCollapsed={isCollapsed}
               isHeaderHovered={isHeaderHovered}
               iconSize={16}
-              onToggle={handleHeaderClick}
               hasContent={hasContent}
-              revealChevronOnIconHoverOnly={Boolean(eventId)}
               isLoading={isLoading}
               isFailed={isFailed}
             />
@@ -339,10 +351,15 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                     type="button"
                     title={t("common:actions.open")}
                     aria-label={t("common:actions.open")}
-                    className="ml-auto inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30"
+                    className="ml-auto inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                     onClick={handleOpenFile}
                   >
-                    <SquareArrowOutUpRight size={14} strokeWidth={1.75} />
+                    <HugeiconsIcon
+                      icon={SquareArrowUpRight02Icon}
+                      data-icon="square-arrow-out-up-right"
+                      size={14}
+                      strokeWidth={1.75}
+                    />
                   </button>
                 )}
 
@@ -359,15 +376,25 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                         ? t("common:status.copied")
                         : t("common:actions.copy")
                     }
-                    className={`inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30 ${
+                    className={`inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none ${
                       shouldShowOpenButton ? "" : "ml-auto"
                     }`}
                     onClick={handleCopyContent}
                   >
                     {copied ? (
-                      <Check size={14} strokeWidth={1.75} />
+                      <HugeiconsIcon
+                        icon={Tick01Icon}
+                        data-icon="check"
+                        size={14}
+                        strokeWidth={1.75}
+                      />
                     ) : (
-                      <Copy size={14} strokeWidth={1.75} />
+                      <HugeiconsIcon
+                        icon={Copy01Icon}
+                        data-icon="copy"
+                        size={14}
+                        strokeWidth={1.75}
+                      />
                     )}
                   </button>
                 )}
@@ -394,7 +421,19 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                         : t("codePreview.showPreview")
                     }
                   >
-                    {isPreviewOpen ? <EyeOff size={11} /> : <Eye size={11} />}
+                    {isPreviewOpen ? (
+                      <HugeiconsIcon
+                        icon={ViewOffIcon}
+                        data-icon="eye-off"
+                        size={11}
+                      />
+                    ) : (
+                      <HugeiconsIcon
+                        icon={ViewIcon}
+                        data-icon="eye"
+                        size={11}
+                      />
+                    )}
                     {t("codePreview.preview")}
                   </button>
                 )}
@@ -404,17 +443,22 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
         )}
 
         {shouldShowFloatingToolbar && (
-          <div className="absolute right-1.5 top-[16px] z-10 -translate-y-1/2 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+          <div className="absolute top-[16px] right-1.5 z-10 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
             <div className="flex items-center gap-1">
               {shouldShowOpenButton && (
                 <button
                   type="button"
                   title={t("common:actions.open")}
                   aria-label={t("common:actions.open")}
-                  className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30"
+                  className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                   onClick={handleOpenFile}
                 >
-                  <SquareArrowOutUpRight size={14} strokeWidth={1.75} />
+                  <HugeiconsIcon
+                    icon={SquareArrowUpRight02Icon}
+                    data-icon="square-arrow-out-up-right"
+                    size={14}
+                    strokeWidth={1.75}
+                  />
                 </button>
               )}
               {shouldShowCopyButton && (
@@ -430,13 +474,23 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                       ? t("common:status.copied")
                       : t("common:actions.copy")
                   }
-                  className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6/30"
+                  className="inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border-0 bg-event-block p-0 text-text-3 transition-colors hover:bg-fill-3 hover:text-text-1 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none"
                   onClick={handleCopyContent}
                 >
                   {copied ? (
-                    <Check size={14} strokeWidth={1.75} />
+                    <HugeiconsIcon
+                      icon={Tick01Icon}
+                      data-icon="check"
+                      size={14}
+                      strokeWidth={1.75}
+                    />
                   ) : (
-                    <Copy size={14} strokeWidth={1.75} />
+                    <HugeiconsIcon
+                      icon={Copy01Icon}
+                      data-icon="copy"
+                      size={14}
+                      strokeWidth={1.75}
+                    />
                   )}
                 </button>
               )}
@@ -488,7 +542,7 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                 <FileTypeIcon
                   fileName={filePath}
                   size="small"
-                  className="flex-shrink-0 text-text-2"
+                  className="shrink-0 text-text-2"
                 />
                 <span
                   className="min-w-0 flex-1 cursor-pointer truncate text-text-1 hover:underline"
@@ -509,44 +563,54 @@ const ChatCodeBlock: React.FC<ChatCodeBlockProps> = memo(
                   : "py-1"
               }
             >
-              <div
-                ref={containerRefCb}
-                className="chat-code-block__code-container chat-code-block__scroll-hover w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden"
-                data-scrolling={isScrolling || undefined}
-              >
-                {isDiff && displayedDiff ? (
-                  <VirtualizedModernDiff
-                    oldValue={displayedDiff.oldValue}
-                    newValue={displayedDiff.newValue}
-                    filePath={filePath}
-                    height={contentHeight}
-                    width={containerWidth}
-                    collapseUnchanged={true}
-                    contextLines={2}
-                    showFilePath={false}
-                    showStatsBar={false}
-                    showLineNumbers={false}
-                    internalScroll={false}
-                    noWrapper={true}
-                    allowExpand={false}
-                    indicatorStyle="border"
-                    className="chat-event-diff"
-                    oldStartLine={displayedDiff.oldStartLine}
-                    newStartLine={displayedDiff.newStartLine}
-                  />
-                ) : (
-                  <ModernCodeViewer
-                    content={useVirtualScroll ? code : displayedCode}
-                    language={detectedLanguage}
-                    showLineNumbers={false}
-                    internalScroll={useVirtualScroll}
-                    height={
-                      useVirtualScroll ? virtualListHeight : contentHeight
-                    }
-                    width={containerWidth}
-                    noWrapper={true}
-                  />
-                )}
+              <div className="chat-code-block__code-container scrollbar-overlay w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden">
+                <Suspense
+                  fallback={
+                    <div
+                      aria-hidden
+                      style={{
+                        height:
+                          isDiff || !useVirtualScroll
+                            ? contentHeight
+                            : virtualListHeight,
+                      }}
+                    />
+                  }
+                >
+                  {isDiff && displayedDiff ? (
+                    <VirtualizedModernDiff
+                      oldValue={displayedDiff.oldValue}
+                      newValue={displayedDiff.newValue}
+                      filePath={filePath}
+                      height={contentHeight}
+                      width={containerWidth}
+                      collapseUnchanged={true}
+                      contextLines={2}
+                      showFilePath={false}
+                      showStatsBar={false}
+                      showLineNumbers={false}
+                      internalScroll={false}
+                      noWrapper={true}
+                      allowExpand={false}
+                      indicatorStyle="border"
+                      className="chat-event-diff"
+                      oldStartLine={displayedDiff.oldStartLine}
+                      newStartLine={displayedDiff.newStartLine}
+                    />
+                  ) : (
+                    <ModernCodeViewer
+                      content={useVirtualScroll ? code : displayedCode}
+                      language={detectedLanguage}
+                      showLineNumbers={false}
+                      internalScroll={useVirtualScroll}
+                      height={
+                        useVirtualScroll ? virtualListHeight : contentHeight
+                      }
+                      width={containerWidth}
+                      noWrapper={true}
+                    />
+                  )}
+                </Suspense>
               </div>
 
               {needsExpand && !isLoading && (

@@ -32,14 +32,16 @@ pub mod spreadsheet_csv;
 // Spreadsheet XLSX page reading and patch-based saving for large files.
 pub mod spreadsheet_xlsx;
 
+// Agent-generated React canvas artifacts: bounded in-memory publish store +
+// the response builder for the `canvas-artifact` custom URI scheme.
+pub mod canvas_artifacts;
+
 // Folder archive creation (ZIP for cloud upload)
 pub mod archive;
 
 // Centralized code search index management
-pub mod index_manager;
 
 // Shared JSON-RPC 2.0 protocol types
-pub mod jsonrpc;
 
 // Deferred disk cleanup orchestrator (file-history TTL, log rotation, cap enforcement)
 pub mod housekeeping;

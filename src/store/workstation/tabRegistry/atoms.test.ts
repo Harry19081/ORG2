@@ -2,16 +2,21 @@ import { createStore } from "jotai/vanilla";
 import { describe, expect, it } from "vitest";
 
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { createBrowserSessionTab } from "@src/store/workstation/browser/tabs";
 import {
   type WorkStationTab,
+  createStartTab,
+  recentWorkstationTabsAtom,
   workstationLayoutAtom,
   workstationTabsStateAtom,
 } from "@src/store/workstation/tabs";
 import {
-  WORKSTATION_V3_SHARED_KEY,
+  WORKSTATION_V4_SHARED_KEY,
   emptyWorkstationTabsState,
 } from "@src/store/workstation/tabs/storage";
+import { workstationNewBrowserSessionRequestAtom } from "@src/store/workstation/workstationTabBarAtoms";
 
 import {
   closeActiveWorkStationTabAtom,
@@ -19,6 +24,8 @@ import {
   closeProjectOrgWorkStationTabsAtom,
   closeSavedTabsAtom,
   closeTabAtom,
+  focusTabAtom,
+  openRecentWorkstationTabAtom,
 } from "./atoms";
 
 function tab(id: string, orgId?: string): WorkStationTab {
@@ -29,6 +36,106 @@ function tab(id: string, orgId?: string): WorkStationTab {
     data: orgId ? { orgId } : {},
   };
 }
+
+describe("closeTabAtom", () => {
+  it("maximizes chat when the sole My Station Launchpad closes", () => {
+    const store = createStore();
+    const launchpad = createStartTab();
+    store.set(stationModeAtom, "my-station");
+    store.set(chatPanelMaximizedAtom, false);
+    store.set(workstationLayoutAtom, {
+      mainPane: { tabs: [launchpad], activeTabId: launchpad.id },
+    });
+
+    store.set(closeTabAtom, { tabId: launchpad.id });
+
+    expect(store.get(workstationLayoutAtom).mainPane).toEqual({
+      tabs: [],
+      activeTabId: null,
+    });
+    expect(store.get(chatPanelMaximizedAtom)).toBe(true);
+  });
+
+  it("does not maximize chat when a non-Launchpad last tab closes", () => {
+    const store = createStore();
+    const file = tab("file:/a.ts");
+    store.set(stationModeAtom, "my-station");
+    store.set(chatPanelMaximizedAtom, false);
+    store.set(workstationLayoutAtom, {
+      mainPane: { tabs: [file], activeTabId: file.id },
+    });
+
+    store.set(closeTabAtom, { tabId: file.id });
+
+    expect(store.get(chatPanelMaximizedAtom)).toBe(false);
+  });
+
+  it("does not maximize chat from Agent Station", () => {
+    const store = createStore();
+    const launchpad = createStartTab();
+    store.set(stationModeAtom, "agent-station");
+    store.set(chatPanelMaximizedAtom, false);
+    store.set(workstationLayoutAtom, {
+      mainPane: { tabs: [launchpad], activeTabId: launchpad.id },
+    });
+
+    store.set(closeTabAtom, { tabId: launchpad.id });
+
+    expect(store.get(chatPanelMaximizedAtom)).toBe(false);
+  });
+
+  it("keeps an explicitly closed tab available in recent history", () => {
+    const store = createStore();
+    const closedTab = tab("project-org:recent");
+    const retainedTab = tab("project-org:retained");
+    store.set(workstationLayoutAtom, {
+      mainPane: {
+        tabs: [retainedTab, closedTab],
+        activeTabId: closedTab.id,
+      },
+    });
+
+    store.set(closeTabAtom, { tabId: closedTab.id });
+
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([closedTab]);
+    expect(store.set(openRecentWorkstationTabAtom, closedTab.id)).toBe(
+      closedTab.id
+    );
+    expect(store.get(workstationLayoutAtom).mainPane).toEqual({
+      tabs: [retainedTab, closedTab],
+      activeTabId: closedTab.id,
+    });
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([retainedTab]);
+  });
+
+  it("records visited tabs and makes an older tab easy to reopen", () => {
+    const store = createStore();
+    const launchpad = createStartTab();
+    const tabA = tab("project-org:a");
+    const tabB = tab("project-org:b");
+    store.set(workstationActiveSessionIdAtom, "session-a");
+    store.set(workstationLayoutAtom, {
+      mainPane: {
+        tabs: [launchpad, tabA, tabB],
+        activeTabId: launchpad.id,
+      },
+    });
+
+    store.set(focusTabAtom, { tabId: tabA.id });
+    store.set(focusTabAtom, { tabId: tabB.id });
+    store.set(focusTabAtom, { tabId: launchpad.id });
+
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([tabB, tabA]);
+    expect(store.set(openRecentWorkstationTabAtom, tabA.id)).toBe(tabA.id);
+    expect(store.get(workstationLayoutAtom).mainPane.activeTabId).toBe(tabA.id);
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([tabB]);
+
+    store.set(workstationActiveSessionIdAtom, "session-b");
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([]);
+    store.set(workstationActiveSessionIdAtom, "session-a");
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([tabB]);
+  });
+});
 
 describe("closeProjectOrgWorkStationTabsAtom", () => {
   it("closes every surface for the deleted org and keeps other tabs", () => {
@@ -69,7 +176,7 @@ describe("live shared-resource close semantics", () => {
 
   function sharedTab(
     id: string,
-    type: "settings" | "terminal"
+    type: "project-settings" | "terminal"
   ): WorkStationTab {
     return { id, type, title: id, data: {} };
   }
@@ -77,7 +184,10 @@ describe("live shared-resource close semantics", () => {
   it("tears down a browser resource through the unified TabBar close path", () => {
     const store = createStore();
     const state = emptyWorkstationTabsState();
-    const browser = createBrowserSessionTab("browser-1", "Example");
+    const browser = createBrowserSessionTab("browser-1", "Example", {
+      url: "https://example.com/docs",
+      incognito: true,
+    });
     const local = fileTab("file:/a.ts");
     state.shared.tabs = [browser];
     state.sessionWorkspaces.A = {
@@ -105,8 +215,17 @@ describe("live shared-resource close semantics", () => {
     ]);
     expect(next.sessionWorkspaces.B.tabOrder).toEqual([]);
     expect(
-      JSON.parse(localStorage.getItem(WORKSTATION_V3_SHARED_KEY) ?? "null")
+      JSON.parse(localStorage.getItem(WORKSTATION_V4_SHARED_KEY) ?? "null")
     ).toEqual({ tabs: [] });
+
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([browser]);
+    store.set(openRecentWorkstationTabAtom, browser.id);
+    expect(store.get(workstationNewBrowserSessionRequestAtom)).toEqual({
+      tick: 1,
+      url: "https://example.com/docs",
+      isPrivate: true,
+    });
+    expect(store.get(recentWorkstationTabsAtom)).toEqual([]);
 
     store.set(workstationActiveSessionIdAtom, "B");
     expect(store.get(workstationLayoutAtom).mainPane.tabs).toEqual([]);
@@ -129,7 +248,7 @@ describe("live shared-resource close semantics", () => {
     const browserA = createBrowserSessionTab("browser-1", "One");
     const browserB = createBrowserSessionTab("browser-2", "Two");
     const terminal = sharedTab("terminal:main", "terminal");
-    const settings = sharedTab("settings:main", "settings");
+    const settings = sharedTab("project-settings:main", "project-settings");
     const dirtyFile = fileTab("file:/dirty.ts", true);
     store.set(workstationLayoutAtom, {
       mainPane: {
@@ -153,7 +272,7 @@ describe("live shared-resource close semantics", () => {
     const browserA = createBrowserSessionTab("browser-1", "One");
     const browserB = createBrowserSessionTab("browser-2", "Two");
     const terminal = sharedTab("terminal:main", "terminal");
-    const settings = sharedTab("settings:main", "settings");
+    const settings = sharedTab("project-settings:main", "project-settings");
     store.set(workstationLayoutAtom, {
       mainPane: {
         tabs: [browserA, browserB, terminal, settings],

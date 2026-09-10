@@ -10,9 +10,9 @@ import type {
   CapabilitySet,
   SubAgentRef,
 } from "@src/modules/MainApp/AgentOrgs/types";
-import { useMarkdownEditorTabs } from "@src/modules/shared/components/MarkdownEditor";
+import { useMarkdownEditorTabs } from "@src/modules/shared/components/MarkdownEditor/useMarkdownEditorTabs";
 
-export interface UseAgentWizardReturn {
+interface UseAgentWizardReturn {
   // Navigation
   activeTab: string;
   setActiveTab: (tab: string) => void;

@@ -1,4 +1,3 @@
-import { ArrowRight, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -11,6 +10,7 @@ import {
   builderProfileOverview,
 } from "@src/api/tauri/builderProfile";
 import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import ProgressBar from "@src/components/ProgressBar";
 import SettingsTable, {
   SETTINGS_TABLE_CELL,
@@ -18,22 +18,23 @@ import SettingsTable, {
   type SettingsTableColumn,
 } from "@src/components/SettingsTable";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { ArrowRight02Icon, HugeiconsIcon } from "@src/icons";
 import {
   SECTION_GAP_CLASSES,
   SECTION_SUBHEADING_CLASSES,
   SectionContainer,
   SectionRow,
 } from "@src/modules/shared/layouts/SectionLayout";
-import {
-  CollapsibleSection,
-  Placeholder,
-} from "@src/modules/shared/layouts/blocks";
+import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 
 import AxisMeter from "./AxisMeter";
 import { BuilderTypeDetailContent } from "./BuilderTypeDetailPanel";
 import BuilderTypesPanel from "./BuilderTypesPanel";
 import HighlightCards from "./HighlightCards";
+import {
+  RuntimeRefreshButton,
+  RuntimeSectionHeader,
+} from "./RuntimeSectionHeader";
 import { getBuilderType } from "./builderTypes";
 
 /** Delay between background extraction batches while the panel is open. */
@@ -276,10 +277,6 @@ export default function BuilderProfilePanel() {
     setLoading(true);
     void load();
   }, [load]);
-  const { spinClass, handleClick: onRefreshClick } = useRefreshSpin(
-    onRefresh,
-    loading
-  );
 
   const profile = data?.profile;
   const builderType = getBuilderType(profile?.code);
@@ -362,34 +359,37 @@ export default function BuilderProfilePanel() {
   }, [t]);
 
   const profileHeader = (
-    <div
-      className={`${DETAIL_PANEL_TOKENS.headerWidth} flex shrink-0 items-center justify-between gap-2 px-4 pt-2`}
+    <RuntimeSectionHeader
+      title={t("title")}
+      className={`${DETAIL_PANEL_TOKENS.headerWidth} shrink-0 px-4 pt-2`}
+      dataTestId="builder-profile-title-controls"
+      headingLevel="h2"
     >
-      <h2 className={SECTION_SUBHEADING_CLASSES}>{t("title")}</h2>
-      <div className="flex items-center gap-1">
+      <RuntimeRefreshButton
+        label={t("refresh")}
+        onRefresh={onRefresh}
+        refreshing={loading}
+        dataTestId="builder-profile-refresh"
+      />
+      {builderType && (
         <Button
           variant="tertiary"
           size="small"
-          onClick={onRefreshClick}
-          data-testid="builder-profile-refresh"
-          icon={<RefreshCw className={`h-3.5 w-3.5 ${spinClass ?? ""}`} />}
+          onClick={() => setShowTypesGallery(true)}
+          data-testid="builder-profile-know-more"
+          icon={
+            <HugeiconsIcon
+              icon={ArrowRight02Icon}
+              data-icon="arrow-right"
+              className="h-3.5 w-3.5"
+            />
+          }
+          iconPosition="right"
         >
-          {t("refresh")}
+          {t("types.knowMore")}
         </Button>
-        {builderType && (
-          <Button
-            variant="tertiary"
-            size="small"
-            onClick={() => setShowTypesGallery(true)}
-            data-testid="builder-profile-know-more"
-            icon={<ArrowRight className="h-3.5 w-3.5" />}
-            iconPosition="right"
-          >
-            {t("types.knowMore")}
-          </Button>
-        )}
-      </div>
-    </div>
+      )}
+    </RuntimeSectionHeader>
   );
 
   const shell = (children: React.ReactNode, showHeader = true) => (
@@ -440,14 +440,14 @@ export default function BuilderProfilePanel() {
 
   return shell(
     <div
-      className="min-h-0 flex-1 overflow-y-auto scrollbar-hide @container"
+      className="@container scrollbar-hide min-h-0 flex-1 overflow-y-auto"
       data-testid="builder-profile-scroll-region"
     >
       {profileHeader}
       <div
         // Same 932px track as the tab header above, so nothing steps in or
         // out of alignment as you scroll.
-        className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} px-4 pb-[50vh] pt-2`}
+        className={`${DETAIL_PANEL_TOKENS.headerWidth} ${SECTION_GAP_CLASSES} px-4 pt-2 pb-[50vh]`}
       >
         {profile.sessions === 0 || !builderType ? (
           <div

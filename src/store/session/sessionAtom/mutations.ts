@@ -32,18 +32,23 @@
  * intentional escape hatch for "the user just did something, bump
  * the row".
  */
+import { clearImageDraft } from "@src/engines/ChatPanel/InputArea/utils/imageDraftCache";
 import { disposeSessionStreamingState } from "@src/engines/SessionCore/sync/adapters/rustAgent/eventHandlers/streamHelpers";
+import { conversationComposerModeAtomFamily } from "@src/features/Org2Cloud/SessionConversation/conversationComposerMode";
+import { disposeCanvasRevisionDraftState } from "@src/store/session/canvasRevisionDraftAtom";
 import { cursorIdeTurnSummariesAtomFamily } from "@src/store/session/cursorIdeTurnSummariesAtom";
+import { pendingPlanApprovalForSessionAtomFamily } from "@src/store/session/planApprovalAtom";
 import { tuiModeAtom } from "@src/store/session/tuiModeAtom";
+import {
+  chatFindInChatOpenAtomFamily,
+  chatSearchSyncAtomFamily,
+} from "@src/store/ui/chatPanel/miscAtoms";
 import { clearTodosForSessionAtom } from "@src/store/ui/todoAtom";
 import { getInstrumentedStore } from "@src/util/core/state/instrumentedStore";
 
-import {
-  sessionFlatListLastLoadedBySignatureAtom,
-  sessionLastLoadedAtom,
-  sessionsAtom,
-} from "./atoms";
+import { sessionsAtom } from "./atoms";
 import { removeGuestImportedSession } from "./guestImportRegistry";
+import { registerNewNativeSidebarSession } from "./loaders";
 import type { Session, SessionStatus } from "./types";
 
 const getStore = () => getInstrumentedStore();
@@ -60,6 +65,7 @@ const getStore = () => getInstrumentedStore();
  */
 export const upsertSession = (session: Session) => {
   const store = getStore();
+  let inserted = false;
   store.set(sessionsAtom, (prev) => {
     const existingIndex = prev.findIndex(
       (existingSession) => existingSession.session_id === session.session_id
@@ -90,10 +96,20 @@ export const upsertSession = (session: Session) => {
       };
       return updated;
     } else {
+      inserted = true;
       const newList = [session, ...prev];
       return newList;
     }
   });
+
+  // A native session created locally has authoritative launch data before the
+  // next paginated roster read completes.  Register its ID with the current
+  // native window at the same write boundary; otherwise a fully loaded
+  // sidebar filters out the new entity until a later safety refresh happens.
+  // Child and imported sessions remain owned by their respective loaders.
+  if (inserted) {
+    registerNewNativeSidebarSession(session);
+  }
 };
 
 /**
@@ -183,15 +199,27 @@ export const removeSession = (sessionId: string) => {
   // and tuiMode additionally leaves a `orgii:tuiMode:<id>` localStorage key.
   cursorIdeTurnSummariesAtomFamily.remove(sessionId);
   tuiModeAtom.remove(sessionId);
+  // jotai-family pins every key it has ever been called with, so a family that
+  // is never removed keeps one atom per session for the lifetime of the app.
+  pendingPlanApprovalForSessionAtomFamily.remove(sessionId);
+  chatFindInChatOpenAtomFamily.remove(sessionId);
+  chatSearchSyncAtomFamily.remove(sessionId);
+  conversationComposerModeAtomFamily.remove(sessionId);
   if (typeof localStorage !== "undefined") {
     localStorage.removeItem(`orgii:tuiMode:${sessionId}`);
   }
+  // Unsent image drafts are base64 payloads and are deliberately excluded from
+  // quota recovery, so a deleted session's draft would otherwise never be
+  // reclaimed. Submitting a message already clears it; this covers the
+  // abandoned-draft path.
+  clearImageDraft(sessionId);
   store.set(clearTodosForSessionAtom, sessionId);
   removeGuestImportedSession(sessionId);
   // Rust-agent streaming-stop state (per-turn stop markers etc.). This single
   // chokepoint covers every removal path — sidebar delete, cloud remove, fork
   // rollback, guest-share remove — so callers need not dispose it themselves.
   disposeSessionStreamingState(sessionId);
+  disposeCanvasRevisionDraftState(store, sessionId);
 };
 
 /**
@@ -229,23 +257,4 @@ export const updateSessionStatus = (
     });
     return changed ? next : prev;
   });
-};
-
-/**
- * Invalidate cache and force refresh
- */
-export const resetSessionStore = () => {
-  const store = getStore();
-  store.set(sessionLastLoadedAtom, null);
-  store.set(sessionFlatListLastLoadedBySignatureAtom, {});
-};
-
-/**
- * Clear all sessions (use with caution)
- */
-export const clearSessions = () => {
-  const store = getStore();
-  store.set(sessionsAtom, []);
-  store.set(sessionLastLoadedAtom, null);
-  store.set(sessionFlatListLastLoadedBySignatureAtom, {});
 };

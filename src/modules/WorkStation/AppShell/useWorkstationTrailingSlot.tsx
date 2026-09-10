@@ -8,28 +8,31 @@
  * main tab-bar component.
  */
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-  Maximize2,
-  MessageCircle,
-  Minimize2,
-  PanelRight,
-  X,
-} from "lucide-react";
-import { type ReactNode, startTransition, useMemo } from "react";
+import { type ReactNode, startTransition, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
+import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
+import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { usePinnedWorkbenchChromeVisible } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
+import {
+  ArrowExpand01Icon,
+  ArrowShrink01Icon,
+  BubbleChatIcon,
+  Cancel01Icon,
+  HugeiconsIcon,
+  LayoutAlignRightIcon,
+  PanelRightIcon,
+} from "@src/icons";
 import ProjectManagerWorkItemsTabBarTrailing from "@src/modules/ProjectManager/ProjectManagerLayout/components/ProjectManagerWorkItemsTabBarTrailing";
 import { TabBarPlusMenu } from "@src/modules/WorkStation/AppShell/TabBarPlusMenu";
-import { TabBarTrailingIconButton } from "@src/modules/WorkStation/shared";
-import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import {
-  activeStationChatVisibleAtom,
-  chatWidthAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
-import { workStationChatPositionAtom } from "@src/store/ui/workStationAtom";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
+import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { workstationProjectTabBarAtom } from "@src/store/workstation";
 import type { WorkstationTabHost } from "@src/store/workstation/tabHost";
 
@@ -45,6 +48,42 @@ export interface UseWorkstationTrailingSlotReturn {
   handleToggleChatPanel: () => void;
 }
 
+export function WorkstationMaximizeChatIcon({
+  chatPanelPosition,
+}: {
+  chatPanelPosition: ChatPanelPosition;
+}): ReactNode {
+  if (chatPanelPosition === "right") {
+    return (
+      <HugeiconsIcon
+        icon={Cancel01Icon}
+        data-icon="x"
+        size={HEADER_ICON_SIZE.md}
+        strokeWidth={1.75}
+      />
+    );
+  }
+
+  return (
+    <span className="flex h-4 w-4 items-center justify-center">
+      <HugeiconsIcon
+        icon={PanelRightIcon}
+        data-icon="panel-right"
+        size={HEADER_ICON_SIZE.md}
+        strokeWidth={2}
+        className="group-hover:hidden"
+      />
+      <HugeiconsIcon
+        icon={LayoutAlignRightIcon}
+        data-icon="layout-align-right"
+        size={HEADER_ICON_SIZE.md}
+        strokeWidth={2}
+        className="hidden group-hover:block"
+      />
+    </span>
+  );
+}
+
 export function useWorkstationTrailingSlot({
   host,
   visible,
@@ -53,9 +92,10 @@ export function useWorkstationTrailingSlot({
   const location = useLocation();
   const getStationChatVisible = useAtomValue(activeStationChatVisibleAtom);
   const chatWidth = useAtomValue(chatWidthAtom);
-  const workStationChatPosition = useAtomValue(workStationChatPositionAtom);
+  const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
   const projectTabBar = useAtomValue(workstationProjectTabBarAtom);
   const toggleChatPanelMaximized = useSetAtom(toggleChatPanelMaximizedAtom);
+  const pinnedChrome = usePinnedWorkbenchChromeVisible();
 
   const isChatPanelVisible =
     getStationChatVisible("my-station") && chatWidth > 0;
@@ -63,22 +103,17 @@ export function useWorkstationTrailingSlot({
   // maximize/restore button, so the workstation-side toggle is redundant
   // and visually conflicting (two buttons driving the same atom).
   const isSettingsRoute = location.pathname.startsWith("/orgii/app/settings");
+  const showPaneControls = !isSettingsRoute && !pinnedChrome;
 
-  const handleToggleChatPanel = useMemo(
-    () => () => {
-      startTransition(() => {
-        void WorkStationViewService.showWorkStation();
-      });
-    },
-    []
-  );
+  const handleToggleChatPanel = useCallback(() => {
+    startTransition(() => {
+      void WorkStationViewService.showWorkStation();
+    });
+  }, []);
 
-  const handleToggleChatPanelMaximized = useMemo(
-    () => () => {
-      toggleChatPanelMaximized();
-    },
-    [toggleChatPanelMaximized]
-  );
+  const handleToggleChatPanelMaximized = useCallback(() => {
+    toggleChatPanelMaximized();
+  }, [toggleChatPanelMaximized]);
 
   const trailingSlot = useMemo((): ReactNode => {
     // Unified surface: the "+" (new-tab) menu always renders. There are no
@@ -89,44 +124,59 @@ export function useWorkstationTrailingSlot({
     const chatPanelLabel = isChatPanelVisible
       ? t("sessions:chat.maximizeWorkStation")
       : t("sessions:chat.restoreChatPanel");
-    const chatPanelControl = isSettingsRoute ? null : (
+    const chatPanelControl = showPaneControls ? (
       <TabBarTrailingIconButton
         title={chatPanelLabel}
         shortcutId="maximize_work_station"
+        tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
         onClick={handleToggleChatPanel}
       >
         {isChatPanelVisible ? (
-          <Maximize2 size={14} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={ArrowExpand01Icon}
+            data-icon="maximize-2"
+            size={14}
+            strokeWidth={2}
+          />
         ) : (
-          <MessageCircle size={14} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={BubbleChatIcon}
+            data-icon="message-circle"
+            size={14}
+            strokeWidth={2}
+          />
         )}
       </TabBarTrailingIconButton>
-    );
+    ) : null;
 
     const hideWorkstationLabel = t("sessions:chat.hideWorkstation");
     const maximizeChatControl =
-      !isSettingsRoute && isChatPanelVisible ? (
+      showPaneControls && isChatPanelVisible ? (
         <TabBarTrailingIconButton
           title={hideWorkstationLabel}
           shortcutId="maximize_chat"
+          tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
           onClick={handleToggleChatPanelMaximized}
+          className={chatPanelPosition === "left" ? "group" : undefined}
         >
-          {workStationChatPosition === "left" ? (
-            <PanelRight size={HEADER_ICON_SIZE.md} strokeWidth={2} />
-          ) : (
-            <X size={HEADER_ICON_SIZE.md} strokeWidth={1.75} />
-          )}
+          <WorkstationMaximizeChatIcon chatPanelPosition={chatPanelPosition} />
         </TabBarTrailingIconButton>
       ) : null;
 
-    const shrinkWorkstationControl = !isSettingsRoute &&
+    const shrinkWorkstationControl = showPaneControls &&
       !isChatPanelVisible && (
         <TabBarTrailingIconButton
           title={chatPanelLabel}
           shortcutId="maximize_work_station"
+          tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
           onClick={handleToggleChatPanel}
         >
-          <Minimize2 size={14} strokeWidth={2} />
+          <HugeiconsIcon
+            icon={ArrowShrink01Icon}
+            data-icon="minimize-2"
+            size={14}
+            strokeWidth={2}
+          />
         </TabBarTrailingIconButton>
       );
 
@@ -140,47 +190,36 @@ export function useWorkstationTrailingSlot({
       <TabBarTrailingIconButton
         title={maximizeSettingsLabel}
         shortcutId="maximize_chat"
+        tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
         onClick={handleToggleChatPanelMaximized}
       >
-        <X size={14} strokeWidth={2} />
+        <HugeiconsIcon
+          icon={Cancel01Icon}
+          data-icon="x"
+          size={14}
+          strokeWidth={2}
+        />
       </TabBarTrailingIconButton>
     ) : null;
 
-    if (host === "code") {
-      return (
-        <>
-          {plusMenuControl}
-          {shrinkWorkstationControl}
-          {chatPanelControl}
-          {maximizeChatControl}
-          {closeWorkstationControl}
-        </>
-      );
-    }
-
+    let projectTrailingControl: ReactNode = null;
     if (host === "project" && projectTabBar) {
       const activeRawId =
         visible.find((entry) => entry.isActive)?.tab.id ??
         visible[0]?.tab.id ??
         null;
-      return (
-        <>
-          {plusMenuControl}
-          <ProjectManagerWorkItemsTabBarTrailing
-            activeTabId={activeRawId}
-            onAddProject={projectTabBar.onAddProject}
-          />
-          {shrinkWorkstationControl}
-          {chatPanelControl}
-          {maximizeChatControl}
-          {closeWorkstationControl}
-        </>
+      projectTrailingControl = (
+        <ProjectManagerWorkItemsTabBarTrailing
+          activeTabId={activeRawId}
+          onAddProject={projectTabBar.onAddProject}
+        />
       );
     }
 
     return (
       <>
         {plusMenuControl}
+        {projectTrailingControl}
         {shrinkWorkstationControl}
         {chatPanelControl}
         {maximizeChatControl}
@@ -193,10 +232,11 @@ export function useWorkstationTrailingSlot({
     handleToggleChatPanelMaximized,
     isChatPanelVisible,
     isSettingsRoute,
+    showPaneControls,
     projectTabBar,
     t,
     visible,
-    workStationChatPosition,
+    chatPanelPosition,
   ]);
 
   return { trailingSlot, handleToggleChatPanel };

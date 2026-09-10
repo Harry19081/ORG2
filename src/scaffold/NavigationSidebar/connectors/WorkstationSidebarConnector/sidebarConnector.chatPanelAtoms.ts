@@ -10,9 +10,8 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 
 import {
   activateChatPanelTabAtom,
-  activeWorkManagementSectionAtom,
   closeAndDestroyChatPanelTabAtom,
-  openCreateTargetInChatPanelStartPageAtom,
+  closeOtherThanActiveChatPanelTabsAtom,
   openOrFocusChatPanelStartPageTabAtom,
   openOrReplaceSessionInChatPanelTabAtom,
   openOrganizationInChatPanelTabAtom,
@@ -21,15 +20,19 @@ import {
   openTeamInboxInChatPanelTabAtom,
   openWorkManagementChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { openSessionInWorkstationAtom } from "@src/store/session/sessionTabPlacementAtom";
+import { activeWorkManagementSectionAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import {
-  activeStationChatVisibleAtom,
+  openSessionInNewWindowAtom,
+  openSessionInWorkstationAtom,
+} from "@src/store/session/sessionTabPlacementAtom";
+import {
   chatPanelContentModeAtom,
   chatPanelCreateTargetAtom,
-  chatPanelNavigateAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import { chatPanelNavigateAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { workManagementProjectsViewAtom } from "@src/store/workstation";
 
@@ -52,18 +55,19 @@ export function useWorkstationSidebarChatPanelAtoms() {
   const openOrganizationTab = useSetAtom(openOrganizationInChatPanelTabAtom);
   const openSessionInNewChatTab = useSetAtom(openSessionInNewChatTabAtom);
   const openSessionInWorkstation = useSetAtom(openSessionInWorkstationAtom);
+  const openSessionInNewWindow = useSetAtom(openSessionInNewWindowAtom);
   const openOrReplaceSessionInChatPanelTab = useSetAtom(
     openOrReplaceSessionInChatPanelTabAtom
   );
   const activateChatPanelTab = useSetAtom(activateChatPanelTabAtom);
   const openStartPageTab = useSetAtom(openOrFocusChatPanelStartPageTabAtom);
-  const openCreateTargetInStartPage = useSetAtom(
-    openCreateTargetInChatPanelStartPageAtom
-  );
   const openRuntimeTab = useSetAtom(openRuntimeInChatPanelTabAtom);
   const openTeamInboxTab = useSetAtom(openTeamInboxInChatPanelTabAtom);
   const closeAndDestroyChatPanelTab = useSetAtom(
     closeAndDestroyChatPanelTabAtom
+  );
+  const closeOtherThanActiveChatPanelTabs = useSetAtom(
+    closeOtherThanActiveChatPanelTabsAtom
   );
 
   return {
@@ -82,12 +86,13 @@ export function useWorkstationSidebarChatPanelAtoms() {
     openOrganizationTab,
     openSessionInNewChatTab,
     openSessionInWorkstation,
+    openSessionInNewWindow,
     openOrReplaceSessionInChatPanelTab,
     activateChatPanelTab,
     openStartPageTab,
-    openCreateTargetInStartPage,
     openRuntimeTab,
     openTeamInboxTab,
     closeAndDestroyChatPanelTab,
+    closeOtherThanActiveChatPanelTabs,
   };
 }

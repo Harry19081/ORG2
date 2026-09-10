@@ -10,10 +10,10 @@
  */
 import React, { memo } from "react";
 
-import { Placeholder } from "@src/modules/shared/layouts/blocks";
+import { Placeholder } from "@src/components/Placeholder";
 import { getPreviewType } from "@src/util/file/previewTypes";
 
-import { useCodeViewerHandlers } from "./hooks";
+import { useCodeViewerHandlers } from "./hooks/useCodeViewerHandlers";
 import type { CodeViewerContentProps } from "./types";
 import { arePropsEqual, getRelativePath } from "./utils";
 import { BinaryView, ContentView, ErrorView, LoadingView } from "./views";
@@ -60,7 +60,6 @@ const CodeViewerContentInner: React.FC<CodeViewerContentWithFileProps> = (
     handleDiscard,
     handleReload,
     handleFileSelect,
-    handleDiagnosticsChange,
     handleTogglePreview,
     handleResolveConflict,
     handleAskAgent,
@@ -149,7 +148,6 @@ const CodeViewerContentInner: React.FC<CodeViewerContentWithFileProps> = (
       onContentChange={handleContentChange}
       onCursorChange={handleCursorChange}
       onTextSelection={handleTextSelection}
-      onDiagnosticsChange={handleDiagnosticsChange}
       onResolveConflict={
         handleResolveConflict as (conflictId: string, choice: unknown) => void
       }

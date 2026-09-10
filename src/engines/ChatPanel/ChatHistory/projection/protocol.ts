@@ -6,7 +6,7 @@ import type {
   ChatHistoryProjectionResult,
 } from "./core";
 
-export const CHAT_PROJECTION_PROTOCOL_VERSION = 2 as const;
+export const CHAT_PROJECTION_PROTOCOL_VERSION = 4 as const;
 
 export interface ProjectionEnvelope {
   protocolVersion: typeof CHAT_PROJECTION_PROTOCOL_VERSION;
@@ -84,12 +84,3 @@ export type ChatProjectionResponse =
   | ReadyResponse
   | ResyncRequiredResponse
   | WorkerErrorResponse;
-
-export function createEnvelope(
-  values: Omit<ProjectionEnvelope, "protocolVersion">
-): ProjectionEnvelope {
-  return {
-    protocolVersion: CHAT_PROJECTION_PROTOCOL_VERSION,
-    ...values,
-  };
-}

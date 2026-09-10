@@ -1,9 +1,7 @@
 /**
  * AgentErrorChatItem — Displays LLM/agent errors inline in the chat panel.
  *
- * Rendered as a single InlineAlert (danger variant), so the error reads as
- * one bordered card instead of the split header / body / footer layout the
- * previous block-style render produced.
+ * Rendered as a full-width PageNotice in the session body.
  *
  * IMPORTANT: This component must NOT subscribe to chatEventsAtom. It is
  * rendered inside the chat list which is itself driven by chatEventsAtom.
@@ -11,16 +9,17 @@
  * call stack when the session snapshot changes (e.g. on tab switch).
  */
 import { useAtomValue } from "jotai";
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import InlineAlert from "@src/components/InlineAlert";
+import PageNotice from "@src/components/PageNotice";
 import {
   CODEX_REAUTH_RETURN_TO_STATE_KEY,
   buildCodexReauthPath,
 } from "@src/config/mainAppPaths";
 import { sessionIdAtom } from "@src/engines/SessionCore/core/atoms";
+import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { sessionByIdAtom } from "@src/store/session";
 
 import {
@@ -39,6 +38,7 @@ const AgentErrorChatItem: React.FC<AgentErrorChatItemProps> = memo(
     const location = useLocation();
     const sessionId = useAtomValue(sessionIdAtom);
     const session = useAtomValue(sessionByIdAtom(sessionId ?? ""));
+    const [detailsExpanded, setDetailsExpanded] = useState(false);
 
     const cleanMessage = sanitizeAgentErrorMessage(errorMessage);
     const needsCodexReauthentication =
@@ -60,25 +60,45 @@ const AgentErrorChatItem: React.FC<AgentErrorChatItemProps> = memo(
 
     return (
       <div className="animate-fade-in">
-        <InlineAlert type="danger" title={title} action={action}>
+        <PageNotice title={title} action={action}>
           {needsCodexReauthentication ? (
             <>
               <div>{t("errors.codexLoginExpiredDescription")}</div>
-              <details className="mt-2 opacity-70">
-                <summary className="cursor-pointer select-none">
-                  {t("errors.technicalDetails")}
-                </summary>
-                <div className="mt-1 whitespace-pre-wrap break-words">
+              <button
+                type="button"
+                onClick={() => setDetailsExpanded((expanded) => !expanded)}
+                aria-expanded={detailsExpanded}
+                className="mt-2 flex items-center gap-1 text-text-3 transition-colors select-none hover:text-text-1"
+              >
+                {detailsExpanded ? (
+                  <HugeiconsIcon
+                    icon={ArrowDown01Icon}
+                    data-icon="chevron-down"
+                    size={12}
+                    className="shrink-0"
+                  />
+                ) : (
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    data-icon="chevron-right"
+                    size={12}
+                    className="shrink-0"
+                  />
+                )}
+                <span>{t("errors.technicalDetails")}</span>
+              </button>
+              {detailsExpanded && (
+                <div className="mt-1 wrap-break-word whitespace-pre-wrap text-text-2">
                   {cleanMessage}
                 </div>
-              </details>
+              )}
             </>
           ) : (
-            <div className="whitespace-pre-wrap break-words">
+            <div className="wrap-break-word whitespace-pre-wrap">
               {cleanMessage}
             </div>
           )}
-        </InlineAlert>
+        </PageNotice>
       </div>
     );
   }

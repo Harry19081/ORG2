@@ -1,4 +1,3 @@
-import { Link2, Search, X } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +8,13 @@ import { linkSessionToWorkItem } from "@src/api/tauri/agent/session";
 import Button from "@src/components/Button";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
+import PageNotice from "@src/components/PageNotice";
+import {
+  Cancel01Icon,
+  HugeiconsIcon,
+  Link02Icon,
+  Search01Icon,
+} from "@src/icons";
 
 import {
   type WorkItemLinkOption,
@@ -136,16 +142,16 @@ const LinkSessionToWorkItemModal: React.FC<LinkSessionToWorkItemModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 px-4"
+      className="fixed inset-0 z-10000 flex items-center justify-center bg-black/40 px-4"
       role="dialog"
       aria-modal="true"
       data-testid="session-link-work-item-modal"
     >
       <div className="flex max-h-[78vh] w-full max-w-[560px] flex-col overflow-hidden rounded-2xl border border-solid border-border-1 bg-bg-1 shadow-2xl">
-        <div className="flex items-center justify-between gap-3 border-b border-solid border-border-1 px-4 py-3">
+        <div className="flex items-center justify-between gap-3 border-b border-solid border-border-1 px-3 py-3">
           <div className="flex min-w-0 items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-fill-2 text-text-2">
-              <Link2 size={16} />
+              <HugeiconsIcon icon={Link02Icon} data-icon="link-2" size={16} />
             </div>
             <div className="min-w-0">
               <h3 className="m-0 truncate text-[14px] font-semibold text-text-1">
@@ -161,7 +167,7 @@ const LinkSessionToWorkItemModal: React.FC<LinkSessionToWorkItemModalProps> = ({
             appearance="ghost"
             size="small"
             htmlType="button"
-            icon={<X size={15} />}
+            icon={<HugeiconsIcon icon={Cancel01Icon} data-icon="x" size={15} />}
             onClick={onClose}
             aria-label={t("common:actions.close")}
             data-testid="session-link-work-item-close"
@@ -170,10 +176,15 @@ const LinkSessionToWorkItemModal: React.FC<LinkSessionToWorkItemModalProps> = ({
 
         <div className="border-b border-solid border-border-1 p-3">
           <Input
+            // This dialog renders its own overlay instead of the shared
+            // `ModalSystem`, so its opening focus is not handled centrally.
+            autoFocus
             value={query}
             onChange={(value) => setQuery(value)}
             placeholder={t("chat.linkWorkItem.searchPlaceholder")}
-            prefix={<Search size={14} />}
+            prefix={
+              <HugeiconsIcon icon={Search01Icon} data-icon="search" size={14} />
+            }
             data-testid="session-link-work-item-search"
           />
         </div>
@@ -187,9 +198,9 @@ const LinkSessionToWorkItemModal: React.FC<LinkSessionToWorkItemModalProps> = ({
               {t("chat.linkWorkItem.loading")}
             </div>
           ) : error ? (
-            <div className="border-danger/30 bg-danger/10 text-danger rounded-xl border border-solid px-4 py-3 text-[12px]">
+            <PageNotice type="danger" role="alert">
               {error}
-            </div>
+            </PageNotice>
           ) : filteredItems.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border-2 bg-fill-1 px-4 py-8 text-center text-[12px] text-text-3">
               {t("chat.linkWorkItem.empty")}

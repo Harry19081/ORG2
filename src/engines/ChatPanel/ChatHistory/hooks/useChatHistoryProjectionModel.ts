@@ -2,18 +2,14 @@ import { useAtomValue } from "jotai";
 import { useEffect, useMemo, useRef } from "react";
 
 import type { CursorIdeTurnSummary } from "@src/api/tauri/externalHistory";
+import { useChatCollapseState } from "@src/engines/ChatPanel/ChatCollapseScope";
 import type { SessionLoadStatus } from "@src/engines/SessionCore";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { addressRunActiveAtom } from "@src/features/Org2Cloud/addressCommentsRun";
 import {
   estimateRuntimeValueBytes,
-  removeChatRenderedTreeMemoryEntry,
-  updateChatRenderedTreeMemoryEntry,
+  registerChatRenderedTreeMemoryEntry,
 } from "@src/hooks/perf/runtimeMemoryStats";
-import {
-  collapseAllCommandAtom,
-  turnCollapseOverrideAtom,
-} from "@src/store/ui/collapseStateAtom";
 import { selectedExecutionThreadAtom } from "@src/store/ui/sessionPaginationAtom";
 import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 
@@ -22,7 +18,7 @@ import { resolveChatHistoryProjectionSource } from "../projection/source";
 import { useChatProjection } from "../projection/useChatProjection";
 import type { ChatGroupsProjectionOptions } from "./useChatGroupsProjection";
 import { useChatTurnPagination } from "./useChatTurnPagination";
-import { useTailTurnCollapse } from "./useTailTurnCollapse";
+import { useTailTurnPhase } from "./useTailTurnCollapse";
 import {
   useTurnPageNavigation,
   useTurnPageSelectionState,
@@ -41,8 +37,8 @@ interface UseChatHistoryProjectionModelOptions {
   forceCollapseAllTurns: boolean;
   groupChat: GroupChatContextValue | null;
   hideGroupUserMessage: boolean;
+  isAgentOrgMemberSession: boolean;
   isAgentWorking: boolean;
-  isCursorIde: boolean;
   planningIndicatorCount: 0 | 1;
   sessionStatus: string | undefined;
   sessionLoadStatus: SessionLoadStatus;
@@ -64,24 +60,35 @@ export function useChatHistoryProjectionModel({
   forceCollapseAllTurns,
   groupChat,
   hideGroupUserMessage,
+  isAgentOrgMemberSession,
   isAgentWorking,
-  isCursorIde,
   planningIndicatorCount,
   sessionStatus,
   sessionLoadStatus,
   turnPaginationEnabled,
 }: UseChatHistoryProjectionModelOptions) {
+  const { collapseAllCommandAtom, turnCollapseOverrideAtom } =
+    useChatCollapseState();
   const memoryStatsKeyRef = useRef(Symbol("chat-rendered-tree-memory"));
+  const memoryStatsSourceRef = useRef<{
+    activeId: string | null;
+    activeProjectionHistory: unknown[];
+    flatItems: unknown[];
+    groupMeta: unknown[];
+    groupCount: number;
+    totalFlatItems: number;
+  } | null>(null);
   const turnCollapseOverrides = useAtomValue(turnCollapseOverrideAtom);
   const collapseAllCommand = useAtomValue(collapseAllCommandAtom);
   const selectedThreadId = useAtomValue(selectedExecutionThreadAtom);
-  const collapseTailWhenIdle = useTailTurnCollapse({
+  // Drives bar visibility ("complete") and the stale default-collapse;
+  // see useTailTurnPhase for the rules and the anti-flicker latch.
+  const tailTurnPhase = useTailTurnPhase({
     activeId,
     chatHistory,
     disableTailCollapse,
     groupChat,
     isAgentWorking,
-    isCursorIde,
     sessionStatus,
   });
 
@@ -95,8 +102,7 @@ export function useChatHistoryProjectionModel({
   const groupOptions = useMemo<ChatGroupsProjectionOptions>(
     () => ({
       collapseOverrides: turnCollapseOverrides,
-      isAgentWorking,
-      collapseTailWhenIdle,
+      tailTurnPhase,
       forceCollapseAllTurns,
       defaultTurnCollapsed: DEFAULT_TURN_COLLAPSED,
       allTurnsCollapsed:
@@ -108,14 +114,16 @@ export function useChatHistoryProjectionModel({
             mode: "agent-org",
             coordinatorSessionId: groupChat.coordinatorSessionId,
           }
-        : { mode: "standard" },
+        : isAgentOrgMemberSession
+          ? { mode: "agent-org-member" }
+          : { mode: "standard" },
     }),
     [
       collapseAllCommand,
-      collapseTailWhenIdle,
+      tailTurnPhase,
       forceCollapseAllTurns,
       groupChat,
-      isAgentWorking,
+      isAgentOrgMemberSession,
       turnCollapseOverrides,
     ]
   );
@@ -142,7 +150,6 @@ export function useChatHistoryProjectionModel({
     flatItems,
     totalFlatItems,
     originalToFlatIndex,
-    lastAssistantFlatIndexPerItem,
   } = projection.groups ?? {
     groupCounts: [],
     groupHeaders: [],
@@ -150,28 +157,35 @@ export function useChatHistoryProjectionModel({
     flatItems: [],
     totalFlatItems: 0,
     originalToFlatIndex: new Map<number, number>(),
-    lastAssistantFlatIndexPerItem: [],
+  };
+
+  memoryStatsSourceRef.current = {
+    activeId,
+    activeProjectionHistory,
+    flatItems,
+    groupMeta,
+    groupCount: groupCounts.length,
+    totalFlatItems,
   };
 
   useEffect(() => {
     const key = memoryStatsKeyRef.current;
-    updateChatRenderedTreeMemoryEntry(key, {
-      bytes:
-        estimateRuntimeValueBytes(activeProjectionHistory) +
-        estimateRuntimeValueBytes(flatItems) +
-        groupCounts.length * 8,
-      items: totalFlatItems,
-      label: activeId ?? "unknown",
+    return registerChatRenderedTreeMemoryEntry(key, () => {
+      const source = memoryStatsSourceRef.current;
+      if (!source) {
+        return { bytes: 0, items: 0, label: "unknown" };
+      }
+      return {
+        bytes:
+          estimateRuntimeValueBytes(source.activeProjectionHistory) +
+          estimateRuntimeValueBytes(source.flatItems) +
+          estimateRuntimeValueBytes(source.groupMeta) +
+          source.groupCount * 8,
+        items: source.totalFlatItems,
+        label: source.activeId ?? "unknown",
+      };
     });
-
-    return () => removeChatRenderedTreeMemoryEntry(key);
-  }, [
-    activeId,
-    activeProjectionHistory,
-    flatItems,
-    groupCounts,
-    totalFlatItems,
-  ]);
+  }, []);
 
   const {
     selectedTurnPageIndex,
@@ -188,7 +202,6 @@ export function useChatHistoryProjectionModel({
     groupHeaders,
     groupMeta,
     flatItems,
-    lastAssistantFlatIndexPerItem,
     cursorIdeTurnSummaries,
     mergeUserOnlyPages: hideGroupUserMessage,
   });
@@ -271,7 +284,7 @@ export function useChatHistoryProjectionModel({
 
   return {
     activeProjectionHistory,
-    collapseTailWhenIdle,
+    tailTurnPhase,
     defaultTurnCollapsed: DEFAULT_TURN_COLLAPSED,
     displayTurnIds,
     flatItems,
@@ -286,6 +299,7 @@ export function useChatHistoryProjectionModel({
     turnMetadataReloadKey,
     turnPageListOpen,
     setTurnPageListOpen,
+    setTurnPageSelection,
     turnPageSortAscending,
     setTurnPageSortAscending,
     virtualListDataKey,

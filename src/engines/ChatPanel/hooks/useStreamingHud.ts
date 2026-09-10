@@ -19,7 +19,8 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 
-import { streamingDeltaContentAtom } from "@src/engines/SessionCore/core/atoms";
+import { useStreamingDeltaForSession } from "@src/engines/SessionCore";
+import { startVisibilityAwareInterval } from "@src/shared/scheduling/visibilityAwareInterval";
 import { isSessionEngineActiveAtom } from "@src/store/session/cliSessionStatusAtom";
 
 import {
@@ -40,9 +41,7 @@ export function useStreamingHud(
   sessionId: string | undefined
 ): StreamingHudState {
   const engineActive = useAtomValue(isSessionEngineActiveAtom);
-  const deltaMap = useAtomValue(streamingDeltaContentAtom);
-
-  const liveDelta = sessionId ? deltaMap.get(sessionId) : undefined;
+  const liveDelta = useStreamingDeltaForSession(sessionId);
   const deltaContent = liveDelta?.content ?? "";
   const producing = engineActive && !!sessionId;
 
@@ -69,15 +68,19 @@ export function useStreamingHud(
       setTimingWindow({ startedAt, now: startedAt });
     }, 0);
 
-    const interval = setInterval(() => {
-      setTimingWindow((prev) =>
-        prev ? { startedAt: prev.startedAt, now: Date.now() } : prev
-      );
-    }, HUD_TICK_MS);
+    const interval = startVisibilityAwareInterval(
+      document,
+      () => {
+        setTimingWindow((prev) =>
+          prev ? { startedAt: prev.startedAt, now: Date.now() } : prev
+        );
+      },
+      HUD_TICK_MS
+    );
 
     return () => {
       clearTimeout(startTimer);
-      clearInterval(interval);
+      interval();
     };
   }, [producing]);
 

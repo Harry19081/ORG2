@@ -39,7 +39,7 @@ import {
   type SessionTabDragStartDetail,
   type SessionTabTransfer,
 } from "@src/shared/dnd/sessionTabDrag";
-import type { ChatPanelSelectedChannel } from "@src/store/chatPanel/chatPanelTabsAtom";
+import type { ChatPanelSelectedChannel } from "@src/store/chatPanel/chatPanelTabsModel";
 import {
   LOCAL_CHANNEL_MESSAGES_STORAGE_KEY,
   type LocalChannelMessage,
@@ -467,7 +467,7 @@ describe("DiscussionChannelPanelView", () => {
       "[data-testid='channel-message-list']"
     );
     expect(scroller?.className).toContain("px-2");
-    expect(scroller?.firstElementChild?.className).toContain("max-w-[900px]");
+    expect(scroller?.firstElementChild?.className).toContain("max-w-[800px]");
     expect(scroller?.firstElementChild?.className).toContain("mx-auto");
   });
 

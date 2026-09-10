@@ -24,7 +24,7 @@
  *   // State
  *   eventsAtom, currentEventAtom,
  *   // Workspace state
- *   useWorkspaceSession, sessionShowAtom,
+ *   useRepositoryInfo,
  *   // UI components
  *   ShellEvent, TerminalBlock,
  *   // Adapters
@@ -54,12 +54,8 @@ export async function initSessionCore(): Promise<void> {
 // ============================================
 
 export type {
-  ActivityStatus,
-  CachedSession,
-  EventDisplayStatus,
   EventDisplayVariant,
   ReplayMode,
-  ReplayTimeRange,
   SessionEvent,
   SessionLoadStatus,
   SessionSpec,
@@ -85,7 +81,6 @@ export { eventStore, eventStoreProxy } from "./core/store";
 export type {
   DerivedSnapshot,
   StreamingSnapshot,
-  Snapshot,
   EventStoreProxy,
 } from "./core/store";
 export { useEventStoreSelector } from "./core/store";
@@ -94,46 +89,31 @@ export { useEventStoreSelector } from "./core/store";
 export {
   currentEventAtom,
   currentEventIdAtom,
-  currentEventIndexAtom,
   replayBarValueAtom,
   replayModeAtom,
   replayTimeRangeAtom,
-  replayTimeRangeValidAtom,
 } from "./core/atoms";
 
 // Metadata Atoms
 export {
-  hasMoreEventsAtom,
-  isFromCacheAtom,
-  isLoadingMoreAtom,
-  lastFetchedAtom,
   loadErrorAtom,
   loadStatusAtom,
   sessionIdAtom,
   sessionReloadEpochMapAtom,
   triggerSessionReloadAtom,
-  sessionHydrationCountMapAtom,
   sessionHydrationByIdAtom,
   beginSessionHydrationAtom,
   endSessionHydrationAtom,
   specsAtom,
 } from "./core/atoms";
-export type { SessionHydrationState } from "./core/atoms";
 
 // Action Atoms
 export {
-  appendEventsAtom,
   clearSessionAtom,
   clearSessionLoadErrorAtom,
   failSessionLoadAtom,
-  goLiveAtom,
   loadSessionAtom,
-  navigateNextAtom,
-  navigatePrevAtom,
-  navigateToEventAtom,
-  updateEventAtom,
   updateEventByIdAtom,
-  updateEventByPredicateAtom,
 } from "./core/atoms";
 
 // Note: Context-aware atoms (effectiveEventsAtom, threadFilteredEventsAtom, etc.)
@@ -152,26 +132,17 @@ export { chatEventsAtom } from "./derived/chatEvents";
 export {
   createdAtByIdAtom,
   currentSimulatorEventIndexAtom,
-  currentSimulatorPreviewAtom,
   effectiveSimulatorEventIdsAtom,
-  effectiveSimulatorEventsAtom,
   getAppTypeForSimulatorPreview,
   mainReplayCursorMsAtom,
   messagesEventsAtom,
   navigateNextSimulatorEventAtom,
   navigatePrevSimulatorEventAtom,
   navigateToFirstSimulatorEventAtom,
-  navigateToLastSimulatorEventAtom,
-  navigateToSimulatorEventAtom,
   navigateToSimulatorEventByIndexAtom,
   simulatorEventCountAtom,
   simulatorEventPreviewByIdAtom,
-  simulatorEventsAtom,
-  simulatorThreadFilteredEventIdsAtom,
-  simulatorThreadFilteredEventsAtom,
   sortedSimulatorEventIdsAtom,
-  sortedSimulatorEventsAtom,
-  threadIdByIdAtom,
 } from "./derived/simulatorEvents";
 
 // ============================================
@@ -180,22 +151,13 @@ export {
 
 // Visibility filters — chat visibility only; simulator/messages visibility
 // is computed exclusively in Rust (derived.rs) and consumed via snapshots
-export {
-  isVisibleInChat,
-  stripTerminalCodeBlocks,
-} from "./ingestion/visibilityFilters";
+export { isVisibleInChat } from "./ingestion/visibilityFilters";
 
 // NOTE: normalizeChunk/normalizeChunks are ARCHIVED — use processChunksRust/normalizeChunkRust instead
 
-export {
-  normalizeChunkRust,
-  processChunksRust,
-  setEventStoreRepoContext,
-} from "./ingestion/rustBridge";
+export { processChunksRust } from "./ingestion/rustBridge";
 
 export {
-  type AgentMessageBase,
-  type PersistedMessage,
   mergeToolResults,
   parseActivityImages,
   persistedMessageToSessionEvent,
@@ -206,44 +168,18 @@ export {
 // ============================================
 
 // Store hooks (main entry point)
-export {
-  useCurrentEvent,
-  useEventNavigation,
-  useReplayBar,
-  useSessionStore,
-  useSimulatorEvents,
-} from "./hooks/useSessionStore";
-
-export type { UseSessionStoreReturn } from "./hooks/useSessionStore";
+export { useEventNavigation } from "./hooks/useEventNavigation";
 
 // Per-session live streaming delta selector (avoids whole-Map subscriptions)
 export { useStreamingDeltaForSession } from "./hooks/useStreamingDeltaForSession";
+export { useCanvasRevisionDraftForSession } from "./hooks/useCanvasRevisionDraftForSession";
 
 // Session management (hooks/session/) — imported per-file to avoid barrel circularity
-export { useSessionManager } from "./hooks/session/useSessionManager";
 export { useSessionDiscovery } from "./hooks/session/useSessionDiscovery";
 export { useSessionCreator } from "./hooks/session/useSessionCreator";
 
-export type { UseSessionCreatorReturn } from "./hooks/session/useSessionCreator/types";
-
 // Replay & navigation (hooks/replay/)
-export {
-  useReplayBarState,
-  useReplayState,
-  useReplayTime,
-  useStepState,
-  useRecentFiles,
-  useRecentFilesForEvent,
-  usePlanningIndicator,
-} from "./hooks/replay";
-
-export type {
-  UseReplayStateReturn,
-  WpTimeRange,
-  UseStepStateReturn,
-  UseRecentFilesReturn,
-  PlanningIndicatorState,
-} from "./hooks/replay";
+export { useStepState, usePlanningIndicator } from "./hooks/replay";
 
 // ============================================
 // Rendering (tool registry + React-coupled accessors)
@@ -252,25 +188,11 @@ export type {
 // Registry — pure logic only
 export { resolveToolName } from "./rendering/registry";
 
-export type {
-  ComponentLoader,
-  RenderContext,
-  RenderMode,
-  ChatContextConfig,
-  SimulatorContextConfig,
-  UnifiedRenderOptions,
-} from "./rendering/registry/types";
-
 // Pure data extractors
 export { extractTodoData } from "./rendering/props";
 
 // Universal props types
-export type {
-  UniversalEventProps,
-  EventStatus,
-  EventVariant,
-  AnimationConfig,
-} from "./rendering/types/universalProps";
+export type { EventStatus } from "./rendering/types/universalProps";
 
 // ============================================
 // Storage
@@ -278,7 +200,6 @@ export type {
 
 // Unified cache adapter
 export { cacheAdapter } from "./storage/cacheAdapter";
-export type { CacheStats, SearchResult } from "./storage/cacheAdapter";
 
 // Individual backends
 export { sqliteCache } from "./storage/sqliteCache";
@@ -293,36 +214,12 @@ export { sqliteCache } from "./storage/sqliteCache";
 // ============================================
 
 // Workspace atoms - Only externally-used atoms are exported
-// Use hooks for others: useWorkspaceSession(), useWorkspaceUI(), etc.
-export { repoPathAtom, isExploringAtom } from "./workspace/atoms";
+// Use focused workspace hooks for other state.
+export { isExploringAtom } from "./workspace/atoms";
 
 // Workspace hooks (replace useSessionContext, useUIContext)
 // Note: For chat UI state, use useChatContext from contexts/workspace/ChatContext
-export {
-  // Session state (replaces useSessionContext)
-  useWorkspaceSession,
-  useSessionShow,
-  useTaskStatus,
-  useRepositoryInfo,
-  // UI state (replaces useUIContext)
-  useWorkspaceUI,
-  useCenterTab,
-  usePageLoading,
-  useActiveView,
-} from "./workspace/hooks";
-
-// ============================================
-// UI Components — moved to @src/engines/ChatPanel and @src/engines/Simulator
-// ============================================
-// Shared React UI (blocks, adapters, shared utils, events) lives in
-// engines/ChatPanel. Event components are loaded dynamically via
-// COMPONENT_LOADERS in SessionCore/rendering/registry/events.
-
-// ============================================
-// Registry Types (from EventSystem/registry/)
-// ============================================
-
-export type { ComponentOption as RegistryComponentOption } from "./rendering/registry/types";
+export { useRepositoryInfo } from "./workspace/hooks/useRepositoryInfo";
 
 // ============================================
 // Session Service (singleton operations API)

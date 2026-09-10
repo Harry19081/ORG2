@@ -1,4 +1,3 @@
-import { RefreshCw } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -6,7 +5,7 @@ import type {
   UsageRoundRow,
   UsageSessionSort,
 } from "@src/api/tauri/usageDashboard";
-import Button from "@src/components/Button";
+import { Placeholder } from "@src/components/Placeholder";
 import SettingsTable, {
   type SettingsTableColumn,
   SettingsTablePagination,
@@ -14,12 +13,10 @@ import SettingsTable, {
 } from "@src/components/SettingsTable";
 import Tooltip from "@src/components/Tooltip";
 import { SECTION_SUBHEADING_CLASSES } from "@src/modules/shared/layouts/SectionLayout";
-import {
-  CollapsibleSection,
-  Placeholder,
-} from "@src/modules/shared/layouts/blocks";
+import { CollapsibleSection } from "@src/modules/shared/layouts/blocks";
 import { formatRelativeElapsedShort } from "@src/util/data/formatters/date";
 
+import { RuntimeRefreshButton } from "./RuntimeSectionHeader";
 import UsagePricingHint from "./UsagePricingHint";
 import { BucketIcon } from "./usageBuckets";
 import { formatCacheRW, formatTokensShort, formatUsd } from "./usageFormat";
@@ -138,11 +135,11 @@ export default function UsageRoundsTable({
           );
           return (
             <div className="flex flex-col items-end">
-              <span className="tabular-nums text-text-2">
+              <span className="text-text-2 tabular-nums">
                 {formatTokensShort(record.inputTokens)}
               </span>
               {cache && (
-                <span className="text-[10px] tabular-nums text-text-3">
+                <span className="text-[10px] text-text-3 tabular-nums">
                   {cache}
                 </span>
               )}
@@ -156,7 +153,7 @@ export default function UsageRoundsTable({
         align: "right",
         width: 80,
         renderCell: (record) => (
-          <span className="tabular-nums text-text-2">
+          <span className="text-text-2 tabular-nums">
             {formatTokensShort(record.outputTokens)}
           </span>
         ),
@@ -182,7 +179,7 @@ export default function UsageRoundsTable({
               />
             }
           >
-            <span className="cursor-help tabular-nums text-text-1 underline decoration-text-3 decoration-dotted underline-offset-2">
+            <span className="cursor-help text-text-1 tabular-nums underline decoration-text-3 decoration-dotted underline-offset-2">
               {costLabel(record.costUsd)}
             </span>
           </Tooltip>
@@ -311,18 +308,11 @@ export default function UsageRoundsTable({
           onSearchClear: () => onSearchQueryChange(""),
           searchInputSize: "default",
           rightContent: (
-            <Button
-              variant="secondary"
-              size="default"
-              iconOnly
-              loading={loading}
-              loadingSpinIcon
-              disabled={loading}
-              icon={<RefreshCw size={14} />}
-              aria-label={t("usage.refresh")}
-              title={t("usage.refresh")}
-              data-testid="usage-rounds-refresh"
-              onClick={onRefresh}
+            <RuntimeRefreshButton
+              label={t("usage.refresh")}
+              onRefresh={onRefresh}
+              refreshing={loading}
+              dataTestId="usage-rounds-refresh"
             />
           ),
         }}

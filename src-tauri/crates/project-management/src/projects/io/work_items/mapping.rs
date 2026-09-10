@@ -31,6 +31,7 @@ pub(super) struct WorkItemCore {
     pub created_at_ms: i64,
     pub updated_at_ms: i64,
     pub deleted_at_ms: Option<i64>,
+    pub local_version: i64,
 }
 
 /// Map a `workitems` row (in the canonical hot-column order) into a
@@ -54,6 +55,7 @@ pub(super) fn row_to_core(row: &rusqlite::Row<'_>) -> rusqlite::Result<WorkItemC
         created_at_ms: row.get(13)?,
         updated_at_ms: row.get(14)?,
         deleted_at_ms: row.get(15)?,
+        local_version: row.get(16)?,
     })
 }
 
@@ -105,6 +107,7 @@ pub(super) fn assemble_work_item(
         frontmatter,
         body: core.body,
         filename: core.short_id,
+        revision: Some(core.local_version),
     }
 }
 
@@ -202,6 +205,28 @@ impl ConnectionLike for rusqlite::Connection {
             out.push(map_db(entry)?);
         }
         Ok(out)
+    }
+}
+
+impl ConnectionLike for database::db::PooledConnection {
+    fn query_row_optional<T, F>(
+        &self,
+        sql: &str,
+        params: &[&dyn rusqlite::ToSql],
+        mapper: F,
+    ) -> Result<Option<T>, String>
+    where
+        F: FnOnce(&rusqlite::Row<'_>) -> rusqlite::Result<T>,
+    {
+        rusqlite::Connection::query_row_optional(self, sql, params, mapper)
+    }
+
+    fn query_string_rows(
+        &self,
+        sql: &str,
+        params: &[&dyn rusqlite::ToSql],
+    ) -> Result<Vec<String>, String> {
+        rusqlite::Connection::query_string_rows(self, sql, params)
     }
 }
 

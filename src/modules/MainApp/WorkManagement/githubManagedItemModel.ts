@@ -1,4 +1,5 @@
 import type { GitHubIssue, OpenPRItem } from "@src/api/tauri/github";
+import { formatCompactAge } from "@src/util/time/formatRelativeTime";
 
 import {
   GITHUB_QUERY_SCOPE,
@@ -13,7 +14,6 @@ export const GITHUB_ITEM_KIND = {
   PR: "pr",
 } as const;
 
-export type IssueState = GitHubIssue["state"];
 export type ManagedIssueLabel = GitHubIssue["labels"][number];
 
 export interface ManagedIssueItem {
@@ -58,6 +58,10 @@ export interface ManagedPrItem {
 
 export type ManagedGitHubItem = ManagedIssueItem | ManagedPrItem;
 
+export function getManagedGitHubItemKey(item: ManagedGitHubItem): string {
+  return `${item.kind}-${item.repo}-${item.id}`;
+}
+
 export function getManagedPullRequestKey(pullRequest: ManagedPrItem): string {
   return `${pullRequest.repo}#${pullRequest.id}`;
 }
@@ -75,16 +79,7 @@ export function formatGitHubItemTimeAgo(
 ): string {
   const timestamp = Date.parse(value);
   if (Number.isNaN(timestamp)) return "";
-  const elapsedMinutes = Math.max(0, Math.floor((now - timestamp) / 60_000));
-  if (elapsedMinutes < 1) return "Now";
-  if (elapsedMinutes < 60) return `${elapsedMinutes}m`;
-  const elapsedHours = Math.floor(elapsedMinutes / 60);
-  if (elapsedHours < 24) return `${elapsedHours}h`;
-  const elapsedDays = Math.floor(elapsedHours / 24);
-  if (elapsedDays < 30) return `${elapsedDays}d`;
-  const elapsedMonths = Math.floor(elapsedDays / 30);
-  if (elapsedMonths < 12) return `${elapsedMonths}mo`;
-  return `${Math.floor(elapsedMonths / 12)}y`;
+  return formatCompactAge(timestamp, now);
 }
 
 export function mapIssueToManagedItem(
@@ -146,10 +141,9 @@ export function mapPrToManagedItem(
 
 export function managedItemMatchesRepo(
   item: ManagedGitHubItem,
-  repoFilter: string,
-  allReposValue: string
+  repoFullName: string
 ): boolean {
-  return repoFilter === allReposValue || item.repo === repoFilter;
+  return item.repo === repoFullName;
 }
 
 function getSearchableParts(item: ManagedGitHubItem): string[] {

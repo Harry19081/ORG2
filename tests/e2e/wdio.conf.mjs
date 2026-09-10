@@ -9,13 +9,21 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { createRequire } from "node:module";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..");
-const appBinary = resolve(repoRoot, "src-tauri/target/debug/org2");
+const packagedAppBinary = process.env.E2E_APP_BINARY?.trim();
+const appBinary = packagedAppBinary
+  ? resolve(packagedAppBinary)
+  : resolve(repoRoot, "src-tauri/target/debug/org2");
+const require = createRequire(import.meta.url);
+const { createInstanceProfileFromIdeServerPort } = require(
+  resolve(repoRoot, "scripts/tauri/instance-profile.cjs")
+);
 
 // Load tests/e2e/.env so specs can read OPENAI_API_KEY etc. via process.env.
 // Quiet failure is fine — the .env is optional; without it, tests fall back to
@@ -76,6 +84,20 @@ const ideServerPort = Number.parseInt(
   process.env.E2E_IDE_SERVER_PORT ?? "13847",
   10
 );
+const isolatedInstanceProfile = isolatedRun
+  ? createInstanceProfileFromIdeServerPort(ideServerPort)
+  : null;
+const isolatedCliProxyPort = isolatedInstanceProfile?.cliProxyPort ?? null;
+if (
+  isolatedRun &&
+  process.env.ORGII_CLI_PROXY_PORT &&
+  Number.parseInt(process.env.ORGII_CLI_PROXY_PORT, 10) !== isolatedCliProxyPort
+) {
+  throw new Error(
+    `ORGII_CLI_PROXY_PORT=${process.env.ORGII_CLI_PROXY_PORT} does not match the isolated ` +
+      `instance${isolatedInstanceProfile.id} profile (${isolatedCliProxyPort}).`
+  );
+}
 const TAURI_DEV_URL_PORT = 1998;
 const frontendPort = Number.parseInt(
   process.env.E2E_FRONTEND_PORT ?? String(TAURI_DEV_URL_PORT),
@@ -287,12 +309,36 @@ const externalHistoryHome =
   mkdtempSync(join(tmpdir(), "orgii-e2e-external-history-"));
 process.env.ORGII_EXTERNAL_HISTORY_HOME = externalHistoryHome;
 
+// A native-App visibility run is allowed to publish into the real provider
+// profile, but it must opt in explicitly. Without this guard the materializer
+// inherits the isolated discovery root; Claude Desktop can still retain a
+// catalog row for that UUID after the temp root is deleted, leaving a visible
+// session that opens as "Session not found on disk".
+if (process.env.E2E_NATIVE_PROVIDER_SWITCH_LIVE === "1") {
+  const configuredNativeHome = process.env.ORGII_NATIVE_TRANSCRIPT_HOME?.trim();
+  const officialNativeHome = resolve(
+    process.env.E2E_NATIVE_PROVIDER_SWITCH_OFFICIAL_HOME?.trim() ?? homedir()
+  );
+  if (!configuredNativeHome) {
+    throw new Error(
+      "E2E_NATIVE_PROVIDER_SWITCH_LIVE=1 requires ORGII_NATIVE_TRANSCRIPT_HOME " +
+        `to point at the official provider home (${officialNativeHome}).`
+    );
+  }
+  if (resolve(configuredNativeHome) !== officialNativeHome) {
+    throw new Error(
+      "Native provider App proof cannot use an isolated publication root: " +
+        `expected ${officialNativeHome}, got ${resolve(configuredNativeHome)}.`
+    );
+  }
+}
+
 // Claude Code imported-history fixture consumed by the
 // "claude-imported-lazy-replay" scenario in chat-rendering-ui.spec.mjs. It
 // must exist on disk before the app process launches so the app's own
 // startup external-history auto-scan (`useDataSourceAutoScan`) discovers it
 // without the spec needing a debug seed/mutation endpoint. Written here
-// (mirroring `ensureE2EWorkspaceRepo`/`ensureBenchmarkDockerFixtureRepo`)
+// (mirroring `ensureE2EWorkspaceRepo`)
 // rather than in the spec so it is guaranteed to land before
 // `startTauriWebDriver()` runs below.
 const CLAUDE_IMPORT_FIXTURE_UUID = "e2ec0de0-c0de-4000-8000-000000000001";
@@ -355,7 +401,8 @@ function claudeCodeImportFixtureRoundLines(startRound, roundCount, baseMs) {
 }
 
 function ensureClaudeCodeImportFixtureTranscript() {
-  const fixturePath = claudeCodeImportFixtureTranscriptPath(externalHistoryHome);
+  const fixturePath =
+    claudeCodeImportFixtureTranscriptPath(externalHistoryHome);
   mkdirSync(dirname(fixturePath), { recursive: true });
   // A few minutes in the past so every seeded round timestamp is safely
   // before "now" once the app actually reads this file.
@@ -376,67 +423,21 @@ function ensureClaudeCodeImportFixtureTranscript() {
   return fixturePath;
 }
 
-function ensureBenchmarkDockerFixtureRepo() {
-  if (process.env.ORGII_SWE_BENCH_PRO_REPO_PATH) return;
-  const fixtureRoot = join(tmpdir(), "orgii-e2e-swe-bench-pro-fixture");
-  const runScriptsDir = join(fixtureRoot, "run_scripts", "e2e_docker_task");
-  mkdirSync(runScriptsDir, { recursive: true });
-  writeFileSync(
-    join(fixtureRoot, "swe_bench_pro_eval.py"),
-    `#!/usr/bin/env python3
-import argparse
-import json
-import os
-import subprocess
-import sys
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--raw_sample_path", required=True)
-parser.add_argument("--patch_path", required=True)
-parser.add_argument("--output_dir", required=True)
-parser.add_argument("--scripts_dir", required=True)
-parser.add_argument("--dockerhub_username")
-parser.add_argument("--use_local_docker", action="store_true")
-parser.add_argument("--num_workers", default="1")
-args = parser.parse_args()
-
-with open(args.patch_path, "r", encoding="utf-8") as handle:
-    patch_rows = json.load(handle)
-task_id = patch_rows[0]["instance_id"]
-command = ["docker", "run", "--rm", "alpine:3.20", "sh", "-lc", "echo orgii-docker-benchmark-e2e"]
-print("running docker command:", " ".join(command), flush=True)
-completed = subprocess.run(command, text=True, capture_output=True)
-print(completed.stdout, end="", flush=True)
-if completed.stderr:
-    print(completed.stderr, end="", file=sys.stderr, flush=True)
-os.makedirs(args.output_dir, exist_ok=True)
-with open(os.path.join(args.output_dir, "eval_results.json"), "w", encoding="utf-8") as handle:
-    json.dump({task_id: completed.returncode == 0 and "orgii-docker-benchmark-e2e" in completed.stdout}, handle)
-sys.exit(completed.returncode)
-`,
-    "utf8"
-  );
-  writeFileSync(
-    join(runScriptsDir, "run_script.sh"),
-    "#!/usr/bin/env bash\necho e2e run script\n",
-    "utf8"
-  );
-  writeFileSync(
-    join(runScriptsDir, "parser.py"),
-    "print('e2e parser')\n",
-    "utf8"
-  );
-  process.env.ORGII_SWE_BENCH_PRO_REPO_PATH = fixtureRoot;
-}
-
 process.env.ORGII_IDE_SERVER_PORT = String(ideServerPort);
+if (isolatedCliProxyPort !== null) {
+  process.env.ORGII_CLI_PROXY_PORT = String(isolatedCliProxyPort);
+}
 process.env.E2E_BASE_URL =
   process.env.E2E_BASE_URL ?? `http://127.0.0.1:${ideServerPort}`;
 ensureE2EWorkspaceRepo();
-ensureBenchmarkDockerFixtureRepo();
 ensureClaudeCodeImportFixtureTranscript();
 
-const WDIO_PRE_FLIGHT_PORTS = [webDriverPort, frontendPort, ideServerPort];
+const WDIO_PRE_FLIGHT_PORTS = [
+  webDriverPort,
+  frontendPort,
+  ideServerPort,
+  ...(isolatedCliProxyPort === null ? [] : [isolatedCliProxyPort]),
+];
 const WDIO_PRE_FLIGHT_PROCESS_PATTERNS = [
   "tauri-wd",
   "src-tauri/target/debug/org2",
@@ -737,17 +738,36 @@ function startFrontendServer() {
   waitForPort(frontendPort, 60_000);
 }
 
-function withTauriDevUrlForFrontendPort(callback) {
-  if (frontendPort === TAURI_DEV_URL_PORT) return callback();
+function withManagedTauriConfig(callback) {
+  if (frontendPort === TAURI_DEV_URL_PORT && !isolatedRun) return callback();
   const originalConfig = readFileSync(tauriConfigPath, "utf8");
   const config = JSON.parse(originalConfig);
   const patchedConfig = JSON.stringify(
     {
       ...config,
+      ...(isolatedRun
+        ? {
+            productName: isolatedInstanceProfile.productName,
+            identifier: isolatedInstanceProfile.identifier,
+          }
+        : {}),
       build: {
         ...config.build,
         devUrl: `http://localhost:${frontendPort}`,
       },
+      ...(isolatedRun
+        ? {
+            plugins: {
+              ...config.plugins,
+              "deep-link": {
+                desktop: {
+                  schemes: [...isolatedInstanceProfile.deepLinkSchemes],
+                },
+              },
+              updater: { ...config.plugins?.updater, active: false },
+            },
+          }
+        : {}),
     },
     null,
     2
@@ -761,7 +781,7 @@ function withTauriDevUrlForFrontendPort(callback) {
 }
 
 function buildWebDriverApp() {
-  withTauriDevUrlForFrontendPort(() => {
+  withManagedTauriConfig(() => {
     execFileSync(
       "cargo",
       [
@@ -836,8 +856,14 @@ export const config = {
     if (reuseServices) return;
     assertManagedPortsAvailable();
     cleanWebDriverEnvironment();
-    startFrontendServer();
-    buildWebDriverApp();
+    if (packagedAppBinary) {
+      if (!existsSync(appBinary)) {
+        throw new Error(`E2E_APP_BINARY does not exist: ${appBinary}`);
+      }
+    } else {
+      startFrontendServer();
+      buildWebDriverApp();
+    }
     startTauriWebDriver();
   },
   before: async function () {

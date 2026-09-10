@@ -75,7 +75,7 @@ pub fn is_visible_in_chat(event: &SessionEvent) -> bool {
     // Hide task lifecycle and stage errors from chat (no UI components)
     if matches!(
         event.action_type.as_str(),
-        "task_start" | "task_completed" | "task_failed" | "stage_error"
+        "native_command_catalog" | "task_start" | "task_completed" | "task_failed" | "stage_error"
     ) {
         return false;
     }
@@ -85,11 +85,19 @@ pub fn is_visible_in_chat(event: &SessionEvent) -> bool {
         return false;
     }
 
-    // Hide user messages from failed turns. When an `agent:error` arrives the
-    // frontend marks the preceding user message as `Failed`; the original text
-    // stays in the store for audit / replay but should not appear in chat so
-    // retries don't produce a wall of duplicate inputs.
-    if event.source == EventSource::User && event.display_status == EventDisplayStatus::Failed {
+    // Legacy runtime failures mark the accepted user turn `Failed`; keep those
+    // hidden to avoid duplicating the provider's error card. A frontend
+    // delivery failure is different: the provider never accepted it, and the
+    // failed bubble is the user's only retry/edit surface.
+    let is_delivery_failure = event
+        .result
+        .get("deliveryStatus")
+        .and_then(|value| value.as_str())
+        == Some("failed");
+    if event.source == EventSource::User
+        && event.display_status == EventDisplayStatus::Failed
+        && !is_delivery_failure
+    {
         return false;
     }
 
@@ -195,8 +203,13 @@ fn display_variant_wire(variant: &EventDisplayVariant) -> &'static str {
 }
 
 pub fn latest_canvas_preview(events: &[SessionEvent]) -> Option<LatestCanvasPreview> {
+    use core_types::tool_names::{RENDER_INLINE_CANVAS, REVISE_INLINE_CANVAS};
+
     events.iter().rev().find_map(|event| {
-        if event.ui_canonical != "canvas_inline" && event.function_name != "render_inline_canvas" {
+        let is_canvas_event = event.ui_canonical == "canvas_inline"
+            || event.function_name == RENDER_INLINE_CANVAS
+            || event.function_name == REVISE_INLINE_CANVAS;
+        if !is_canvas_event {
             return None;
         }
         let args = event.args.as_object()?;

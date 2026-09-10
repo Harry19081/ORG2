@@ -1,5 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-
+import { type RenderableIcon } from "@src/components/AnyIcon";
 import { getSegmentIcon } from "@src/config/mainAppPaths";
 import { type SettingsKey, getSettingsKeys } from "@src/config/settingsSchema";
 import { SETTINGS_SECTION_SLOT_IDS } from "@src/config/settingsUiManifest/slotIds";
@@ -12,7 +11,7 @@ import type { SettingsSectionDefinition } from "@src/config/settingsUiManifest/t
  * This guarantees the sidebar glyph matches the breadcrumb and the
  * Global Spotlight destination entry.
  */
-function iconForSegment(segment: string): LucideIcon {
+function iconForSegment(segment: string): RenderableIcon {
   const icon = getSegmentIcon(segment);
   if (!icon) {
     throw new Error(
@@ -67,7 +66,7 @@ const EDITOR_SECTION_KEYS = keysByPrefixes([
   "workspace.",
   "git.",
 ]);
-const MONITOR_SECTION_KEYS = keysByPrefixes(["network."]);
+const MOBILE_REMOTE_SECTION_KEYS = keysByPrefixes(["mobileRemote."]);
 export const APP_SETTINGS_UI_SECTIONS: SettingsSectionDefinition[] = [
   {
     id: "general",
@@ -77,15 +76,6 @@ export const APP_SETTINGS_UI_SECTIONS: SettingsSectionDefinition[] = [
     icon: iconForSegment("general"),
     customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_GENERAL,
     coveredKeys: GENERAL_SECTION_KEYS,
-  },
-  {
-    id: "collaboration",
-    tab: "app",
-    labelKey: "collaboration",
-    headingTitleKey: "sections.collaboration",
-    icon: iconForSegment("collaboration"),
-    customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_COLLABORATION,
-    coveredKeys: [],
   },
   {
     id: "appearance",
@@ -104,9 +94,7 @@ export const APP_SETTINGS_UI_SECTIONS: SettingsSectionDefinition[] = [
     icon: iconForSegment("editor"),
     customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_EDITOR,
     // `coveredKeys` only describes the Editor-tab settings
-    // (terminal / git / lsp). The Index tab body is
-    // rendered by `EditorSection` itself (lazy-loaded `IndexingSection`)
-    // and has no schema-driven rows.
+    // (terminal / git / lsp).
     coveredKeys: EDITOR_SECTION_KEYS,
   },
   {
@@ -119,12 +107,21 @@ export const APP_SETTINGS_UI_SECTIONS: SettingsSectionDefinition[] = [
     coveredKeys: [...SECURITY_SECTION_KEYS],
   },
   {
-    id: "monitor",
+    id: "mobile-remote",
     tab: "app",
-    labelKey: "monitor",
-    headingTitleKey: "sections.monitor",
-    icon: iconForSegment("monitor"),
-    customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_MONITOR,
-    coveredKeys: MONITOR_SECTION_KEYS,
+    labelKey: "mobileRemote",
+    headingTitleKey: "sections.mobileRemote",
+    icon: iconForSegment("mobile-remote"),
+    customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_MOBILE_REMOTE,
+    coveredKeys: MOBILE_REMOTE_SECTION_KEYS,
+  },
+  {
+    id: "harness-connections",
+    tab: "app",
+    labelKey: "sections.harnessConnections",
+    headingTitleKey: "sections.harnessConnections",
+    icon: iconForSegment("harness-connections"),
+    customSectionSlotId: SETTINGS_SECTION_SLOT_IDS.APP_HARNESS_CONNECTIONS,
+    coveredKeys: [],
   },
 ];

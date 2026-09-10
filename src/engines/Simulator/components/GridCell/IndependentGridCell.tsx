@@ -5,8 +5,7 @@
  * Renders events using SubagentEventPane — which routes to the same pane
  * components as the main simulator (CodePanel for file/shell/explore,
  * CompactEventView for messages, etc.) via pure deriveState functions.
- * No global session atom dependencies. No SimulatorTitleBar — the cell
- * uses a fixed top header (task + dock app on the right) and a bottom replay
+ * No global session atom dependencies. The cell uses a fixed top header (task + dock app on the right) and a bottom replay
  * bar that appears only while the pointer is over this cell’s pane/footer
  * region (not the header). Visibility uses local state per cell — not Tailwind
  * `group-hover`, so ancestor `group` classes cannot keep the bar stuck open.
@@ -15,20 +14,22 @@
  * default, unless the user manually interacts with its controls.
  */
 import { useAtomValue } from "jotai";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Maximize2,
-  Minimize2,
-  Pause,
-  Play,
-} from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Button from "@src/components/Button";
 import ReplayProgressBar from "@src/components/ReplayProgressBar";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { REPLAY_CONFIG } from "@src/config/workspace/replayConfig";
+import {
+  ArrowExpand01Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  ArrowShrink01Icon,
+  HugeiconsIcon,
+  PauseIcon,
+  PlayIcon,
+} from "@src/icons";
 import { focusedSubagentCellAtom } from "@src/store/ui/simulatorAtom";
 
 import { useCellReplayState } from "../../hooks/useCellReplayState";
@@ -39,6 +40,7 @@ import { SubagentChatPane } from "./SubagentChatPane";
 import { SubagentPinnedPreviewPopover } from "./SubagentPinnedPreviewPopover";
 
 const IndependentGridCellComponent: React.FC<GridCellProps> = ({
+  historyLoad,
   index,
   color: _color,
   title,
@@ -55,7 +57,6 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
   const { t } = useTranslation("sessions");
   const focusedCellId = useAtomValue(focusedSubagentCellAtom);
   const isFocused = Boolean(threadId && focusedCellId === threadId);
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
 
   // Merge tool call/result pairs once per events-array change, not per cursor
   // tick. SubagentEventPane now expects pre-merged events.
@@ -100,10 +101,10 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
     [eventCount]
   );
 
-  // Scrub session — opened on first onChange, closed on onAfterChange. The
+  // Scrub session — opened on first value change, closed on value commit. The
   // engine owns the transient cursor and the commit, so the cell holds no
   // index state of its own and there is no debounce timer to leak.
-  const handleSliderChange = useCallback(
+  const handleSliderValueChange = useCallback(
     (value: number | number[]) => {
       const numVal = Array.isArray(value) ? value[0] : value;
       const idx = sliderValueToIndex(numVal);
@@ -116,7 +117,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
     [controls, sliderValueToIndex, isScrubbing]
   );
 
-  const handleSliderAfterChange = useCallback(
+  const handleSliderValueCommit = useCallback(
     (value: number | number[]) => {
       const numVal = Array.isArray(value) ? value[0] : value;
       const idx = sliderValueToIndex(numVal);
@@ -158,11 +159,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
     >
       <div className="flex h-full w-full flex-col overflow-hidden">
         {/* ── Header ── */}
-        <div
-          className="group/header relative flex h-9 shrink-0 cursor-default items-center gap-1.5 bg-fill-2 pl-3 pr-1.5 transition-all duration-200"
-          onMouseEnter={() => setIsHeaderHovered(true)}
-          onMouseLeave={() => setIsHeaderHovered(false)}
-        >
+        <div className="group/header relative flex h-9 shrink-0 cursor-default items-center gap-1.5 bg-fill-2 pr-1.5 pl-3 transition-all duration-200">
           {/* Task title (bold) · subtitle (regular) · current app icon. */}
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
             <span
@@ -189,24 +186,21 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
             )}
           </div>
 
-          {/* Right-side action buttons — fade in on header hover.
-              `will-change: opacity` keeps the compositor layer pinned across
-              the transition so icons don't snap to integer pixels when the
-              layer is destroyed at opacity:1. `invisible` + `pointer-events-none`
-              ensure the buttons are truly inert while hidden. */}
-          <div
-            className={`flex items-center gap-1 transition-opacity duration-150 [will-change:opacity] ${
-              isHeaderHovered
-                ? "opacity-100"
-                : "pointer-events-none invisible opacity-0"
-            }`}
-          >
+          {/* Controls remain discoverable for pointer and keyboard users. */}
+          <div className="flex items-center gap-1">
             {/* Expand / collapse */}
             {onExpand && (
-              <button
-                type="button"
+              <Button
+                htmlType="button"
+                variant="tertiary"
+                size="small"
+                iconOnly
                 onClick={onExpand}
-                className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.iconButtonHover} hover:text-text-1`}
+                aria-label={
+                  isExpanded
+                    ? t("simulator.gridCell.collapse")
+                    : t("simulator.gridCell.expand")
+                }
                 title={
                   isExpanded
                     ? t("simulator.gridCell.collapse")
@@ -214,23 +208,26 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                 }
               >
                 {isExpanded ? (
-                  <Minimize2 size={12} strokeWidth={2} />
+                  <HugeiconsIcon
+                    icon={ArrowShrink01Icon}
+                    data-icon="minimize-2"
+                    size={12}
+                    strokeWidth={2}
+                  />
                 ) : (
-                  <Maximize2 size={12} strokeWidth={2} />
+                  <HugeiconsIcon
+                    icon={ArrowExpand01Icon}
+                    data-icon="maximize-2"
+                    size={12}
+                    strokeWidth={2}
+                  />
                 )}
-              </button>
+              </Button>
             )}
           </div>
 
-          {/* Pinned-content hover popover. Renders the subagent's plan-todo
-              summary (we suppress the in-history pinned bar so the cell's
-              chat viewport stays clean). Anchored to the header so it
-              floats above the chat surface on hover. */}
           {threadId && (
-            <SubagentPinnedPreviewPopover
-              sessionId={threadId}
-              open={isHeaderHovered}
-            />
+            <SubagentPinnedPreviewPopover key={threadId} sessionId={threadId} />
           )}
         </div>
 
@@ -244,6 +241,7 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
             {threadId ? (
               <SubagentChatPane
                 sessionId={threadId}
+                historyLoad={historyLoad}
                 cursorMs={cursorMsForPane}
                 isSessionLive={isSessionLive}
               />
@@ -266,12 +264,24 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
                   ? t("simulator.replay.pause", { defaultValue: "Pause" })
                   : t("simulator.replay.play", { defaultValue: "Play" })
               }
-              className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1`}
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1`}
             >
               {state.isPlaying ? (
-                <Pause size={11} fill="currentColor" strokeWidth={0} />
+                <HugeiconsIcon
+                  icon={PauseIcon}
+                  data-icon="pause"
+                  size={11}
+                  fill="currentColor"
+                  strokeWidth={0}
+                />
               ) : (
-                <Play size={11} fill="currentColor" strokeWidth={0} />
+                <HugeiconsIcon
+                  icon={PlayIcon}
+                  data-icon="play"
+                  size={11}
+                  fill="currentColor"
+                  strokeWidth={0}
+                />
               )}
             </button>
             {/* Prev / next event — moves the cell's replay cursor by one
@@ -284,9 +294,14 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
               aria-label={t("simulator.replay.previous", {
                 defaultValue: "Previous event",
               })}
-              className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
             >
-              <ChevronLeft size={12} strokeWidth={2} />
+              <HugeiconsIcon
+                icon={ArrowLeft01Icon}
+                data-icon="chevron-left"
+                size={12}
+                strokeWidth={2}
+              />
             </button>
             <button
               type="button"
@@ -295,16 +310,21 @@ const IndependentGridCellComponent: React.FC<GridCellProps> = ({
               aria-label={t("simulator.replay.next", {
                 defaultValue: "Next event",
               })}
-              className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-2 ${SURFACE_TOKENS.hover} hover:text-text-1 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-2`}
             >
-              <ChevronRight size={12} strokeWidth={2} />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                data-icon="chevron-right"
+                size={12}
+                strokeWidth={2}
+              />
             </button>
             <div className="min-w-0 flex-1 px-1">
               <ReplayProgressBar
                 value={sliderValue}
                 max={REPLAY_CONFIG.MAX_VALUE}
-                onChange={handleSliderChange}
-                onAfterChange={handleSliderAfterChange}
+                onValueChange={handleSliderValueChange}
+                onValueCommit={handleSliderValueCommit}
                 isFollowMode={state.mode === "follow" && !isScrubbing}
                 disabled={replaySliderDisabled}
                 ariaLabel={t("simulator.replay.scrub", {

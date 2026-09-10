@@ -1,4 +1,3 @@
-import { Grip, Users } from "lucide-react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,6 +6,7 @@ import {
   DISPATCH_CATEGORY,
   type DispatchCategory,
 } from "@src/api/tauri/session";
+import AnyIcon from "@src/components/AnyIcon";
 import { PILL_SM_ICON_SIZE } from "@src/components/CompoundPill/config";
 import ModelIcon from "@src/components/ModelIcon";
 import ModelSelectionBreadcrumb from "@src/components/ModelSelectionBreadcrumb";
@@ -15,23 +15,31 @@ import Switch from "@src/components/Switch";
 import { resolveAgentIcon } from "@src/config/agentIcons";
 import { SURFACE_TOKENS } from "@src/config/surfaceTokens";
 import { useModelPillLabel } from "@src/hooks/models";
+import { AiSettingIcon, HugeiconsIcon, UserMultipleIcon } from "@src/icons";
 import {
   type AgentDefinition,
   type AvailableCliAgent,
   CLI_AGENT_PREFIX,
-  type OrgMember,
+  type OrgDefinition,
   type OrgMemberLaunchOverride,
   type OrgMemberRuntimeConfig,
 } from "@src/modules/MainApp/AgentOrgs/types";
 import { DispatchCategoryPalette } from "@src/scaffold/GlobalSpotlight/palettes/DispatchCategoryPalette";
 import type { AgentSelection } from "@src/scaffold/GlobalSpotlight/palettes/DispatchCategoryPalette";
 import { UnifiedModelPalette } from "@src/scaffold/GlobalSpotlight/palettes/UnifiedModelPalette";
-import { flattenOrgToMembers } from "@src/scaffold/WizardSystem/variants/AgentOrg/orgTree";
+import {
+  BUILTIN_SDE_DEF_ID,
+  SDE_AGENT_ICON_ID,
+} from "@src/util/session/sessionDispatch";
 
+import {
+  applyAgentRuntimeConfig,
+  toAgentRuntimeConfig,
+} from "../../agentRuntimeConfig";
 import type { AdvancedConfig } from "../../types";
 
 interface SessionCreatorOrgMembersPanelProps {
-  org: OrgMember;
+  org: OrgDefinition;
   advancedConfig: AdvancedConfig;
   onAdvancedConfigChange: (config: AdvancedConfig) => void;
   allAgents: AgentDefinition[];
@@ -44,50 +52,6 @@ interface MemberView {
   name: string;
   agentId: string;
   runtimeConfig?: OrgMemberRuntimeConfig;
-}
-
-function cleanValue(value: string | undefined): string | undefined {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed : undefined;
-}
-
-function toMemberRuntimeConfig(config: AdvancedConfig): OrgMemberRuntimeConfig {
-  return {
-    keySource: config.keySource,
-    accountId: cleanValue(config.selectedAccountId),
-    model: cleanValue(config.model),
-    nativeHarnessType: config.nativeHarnessType,
-    tier: cleanValue(config.tier),
-    listingModel: cleanValue(config.listingModel),
-    listingModelDisplay: cleanValue(config.listingModelDisplay),
-    listingModelType: config.listingModelType,
-    selectedSourceLabel: cleanValue(config.selectedSourceLabel),
-    selectedSourceModelType: config.selectedSourceModelType,
-  };
-}
-
-function applyRuntimeConfigToAdvancedConfig(
-  base: AdvancedConfig,
-  runtimeConfig: OrgMemberRuntimeConfig | undefined
-): AdvancedConfig {
-  if (!runtimeConfig) return base;
-  return {
-    ...base,
-    keySource: runtimeConfig.keySource ?? base.keySource,
-    selectedAccountId: runtimeConfig.accountId ?? base.selectedAccountId,
-    model: runtimeConfig.model ?? base.model,
-    nativeHarnessType:
-      runtimeConfig.nativeHarnessType ?? base.nativeHarnessType,
-    tier: runtimeConfig.tier ?? base.tier,
-    listingModel: runtimeConfig.listingModel ?? base.listingModel,
-    listingModelDisplay:
-      runtimeConfig.listingModelDisplay ?? base.listingModelDisplay,
-    listingModelType: runtimeConfig.listingModelType ?? base.listingModelType,
-    selectedSourceLabel:
-      runtimeConfig.selectedSourceLabel ?? base.selectedSourceLabel,
-    selectedSourceModelType:
-      runtimeConfig.selectedSourceModelType ?? base.selectedSourceModelType,
-  };
 }
 
 function resolveAgentIdFromSelection(
@@ -132,7 +96,9 @@ function resolveMemberAgent(
   const definition = allAgents.find((agent) => agent.id === agentId);
   return {
     label: definition?.name ?? agentId,
-    iconId: definition?.iconId ?? "code",
+    iconId:
+      definition?.iconId ??
+      (agentId === BUILTIN_SDE_DEF_ID ? SDE_AGENT_ICON_ID : "code"),
     cliAgentType: null,
   };
 }
@@ -151,17 +117,17 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
 
       const members: MemberView[] = useMemo(
         () =>
-          flattenOrgToMembers(org.children).map((member) => {
+          org.members.map((member) => {
             const override =
-              advancedConfig.agentOrgMemberOverrides?.[member.id] ?? {};
+              advancedConfig.agentOrgMemberOverrides?.[member.memberId] ?? {};
             return {
-              id: member.id,
+              id: member.memberId,
               name: member.name,
               agentId: override.agentId ?? member.agentId,
               runtimeConfig: override.runtimeConfig ?? member.runtimeConfig,
             };
           }),
-        [advancedConfig.agentOrgMemberOverrides, org.children]
+        [advancedConfig.agentOrgMemberOverrides, org.members]
       );
 
       const defaultModelLabel = t("creator.model");
@@ -199,7 +165,7 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
       const modelPickerConfig = useMemo(
         () =>
           modelPickerMember
-            ? applyRuntimeConfigToAdvancedConfig(
+            ? applyAgentRuntimeConfig(
                 advancedConfig,
                 modelPickerMember.runtimeConfig
               )
@@ -215,7 +181,7 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
           if (!modelPickerMemberId) return;
           updateMemberOverride(modelPickerMemberId, (current) => ({
             ...current,
-            runtimeConfig: toMemberRuntimeConfig(config),
+            runtimeConfig: toAgentRuntimeConfig(config),
           }));
         },
         [modelPickerMemberId, updateMemberOverride]
@@ -280,9 +246,9 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
                   ? resolveAgentIcon(resolvedAgent.iconId)
                   : null;
                 const agentPillIcon = IconComponent ? (
-                  <IconComponent
+                  <AnyIcon
+                    icon={IconComponent}
                     size={PILL_SM_ICON_SIZE}
-                    strokeWidth={1.85}
                     className="text-text-1"
                   />
                 ) : resolvedAgent.cliAgentType ? (
@@ -296,7 +262,7 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
                   />
                 ) : null;
 
-                const memberConfig = applyRuntimeConfigToAdvancedConfig(
+                const memberConfig = applyAgentRuntimeConfig(
                   advancedConfig,
                   member.runtimeConfig
                 );
@@ -349,7 +315,9 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
                               size={PILL_SM_ICON_SIZE}
                             />
                           ) : (
-                            <Grip
+                            <HugeiconsIcon
+                              icon={AiSettingIcon}
+                              data-icon="ai-setting"
                               size={PILL_SM_ICON_SIZE}
                               strokeWidth={1.75}
                               className="text-primary-6"
@@ -381,7 +349,7 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
           )}
 
           <div
-            className="mt-1 flex items-center justify-end gap-2 border-t border-border-2 px-2 pb-1 pt-2"
+            className="mt-1 flex items-center justify-end gap-2 border-t border-border-2 px-2 pt-2 pb-1"
             data-testid="session-creator-org-members-apply-future-row"
           >
             <span className="text-[12px] text-text-3">
@@ -389,7 +357,7 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
             </span>
             <Switch
               checked={applyForFuture}
-              onChange={handleApplyForFutureChange}
+              onCheckedChange={handleApplyForFutureChange}
               size="small"
               ariaLabel={t("creator.orgMembers.applyForFutureLabel")}
               dataTestId="session-creator-org-members-apply-future-switch"
@@ -402,7 +370,7 @@ const SessionCreatorOrgMembersPanel: React.FC<SessionCreatorOrgMembersPanelProps
             hideOrgs
             hideCliAgents
             titleLabel={agentPickerMember?.name}
-            titleIcon={Users}
+            titleIcon={UserMultipleIcon}
             placeholderLabel={
               agentPickerMember
                 ? t("creator.orgMembers.selectBaseAgentForRole", {
