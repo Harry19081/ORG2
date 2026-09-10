@@ -162,7 +162,13 @@ describe("buildSectionedWorkingDirectoryItems org scope grouping", () => {
       })
     );
 
-    expect(sections.current).toEqual(["repo-current"]);
+    expect(sections.current).toBeUndefined();
+    expect(sections.recent).toEqual([
+      "repo-current",
+      "recent-1",
+      "recent-2",
+      "recent-3",
+    ]);
     expect(sections.thisOrg).toEqual(["repo-in", "workspace-ws-in"]);
     expect(sections.outsideOrg).toEqual([
       "repo-out",

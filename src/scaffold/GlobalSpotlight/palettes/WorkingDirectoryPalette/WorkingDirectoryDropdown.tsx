@@ -73,7 +73,6 @@ type DropdownWorkspaceRowItem = Extract<
 
 type WorkingDirectoryDropdownSectionKey =
   | "openPath"
-  | "current"
   | "recent"
   | "multiRepoWorkspace"
   | "system"
@@ -425,9 +424,7 @@ export const WorkingDirectoryDropdown: React.FC<
           (recentRepoRanks.get(itemB.repo.id) ?? Number.MAX_SAFE_INTEGER)
       );
 
-    // Active multi-repo workspace is the "current" selection; sits with the
-    // current repo. Inactive workspaces get their own section above repos so
-    // they are easy to spot.
+    // Active selections lead Recent, followed by other recent entries.
     const activeWorkspaceItems: DropdownWorkspaceRowItem[] = [];
     const inactiveWorkspaceItems: DropdownWorkspaceRowItem[] = [];
     for (const entry of filteredWorkspaces) {
@@ -471,22 +468,16 @@ export const WorkingDirectoryDropdown: React.FC<
         items: [{ kind: "openPath", item: openPathItem }],
       });
     }
-    if (activeWorkspaceItems.length > 0 || currentItems.length > 0) {
-      nextSections.push({
-        key: "current",
-        label: t("selectors.repo.sections.current"),
-        items: [...activeWorkspaceItems, ...currentItems],
-      });
-    }
-    const nonCurrentRecentItems = recentItems.filter((item) => {
-      if (item.kind === "repo") return item.repo.id !== currentRepoId;
-      return !item.entry.isActive;
-    });
-    if (nonCurrentRecentItems.length > 0) {
+    const displayedRecentItems = [
+      ...activeWorkspaceItems,
+      ...currentItems,
+      ...recentItems,
+    ];
+    if (displayedRecentItems.length > 0) {
       nextSections.push({
         key: "recent",
         label: t("selectors.repo.sections.recent", "Recent"),
-        items: nonCurrentRecentItems,
+        items: displayedRecentItems,
       });
     }
     const regularRepoItems = repoItems.filter(

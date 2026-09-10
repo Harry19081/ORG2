@@ -221,15 +221,9 @@ export function buildSectionedWorkingDirectoryItems({
 
   appendSection(
     sectionedItems,
-    WORKING_DIRECTORY_PALETTE_SECTION_KEY.CURRENT,
-    paletteText.sectionCurrentLabel,
-    currentItems
-  );
-  appendSection(
-    sectionedItems,
     WORKING_DIRECTORY_PALETTE_SECTION_KEY.RECENT,
     paletteText.sectionRecentLabel,
-    recentItems.filter((item) => !currentIds.has(item.id))
+    [...currentItems, ...recentItems.filter((item) => !currentIds.has(item.id))]
   );
   if (outsideOrgRepoIds) {
     const inThisOrg = (items: SpotlightItem[]) =>
