@@ -26,7 +26,7 @@ export function createMobileSidebarPublisher(
     if (timer !== undefined || inFlight) return;
     timer = setTimeout(() => {
       timer = undefined;
-      void flush();
+      void flush().catch(onError);
     }, delay);
   };
   const flush = async () => {
