@@ -433,8 +433,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                                 )
                                   ? "inline-flex"
                                   : action.showOnSidebarHover
-                                    ? "hidden group-focus-within/section-title:inline-flex group-hover/sidebar:inline-flex"
-                                    : "hidden group-focus-within/section-title:inline-flex group-hover/section-title:inline-flex"
+                                    ? "hidden group-hover/sidebar:inline-flex group-focus-visible/section-title:inline-flex group-has-[:focus-visible]/section-title:inline-flex"
+                                    : "hidden group-hover/section-title:inline-flex group-focus-visible/section-title:inline-flex group-has-[:focus-visible]/section-title:inline-flex"
                               }
                             >
                               <NavigationMenuRowActionButton

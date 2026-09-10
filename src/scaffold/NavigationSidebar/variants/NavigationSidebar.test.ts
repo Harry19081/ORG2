@@ -119,7 +119,7 @@ describe("NavigationSidebar", () => {
     expect(markup).toContain('data-testid="sidebar-sessions-refresh"');
     expect(markup).toContain('title="Refresh"');
     expect(markup).toContain(
-      '<span class="hidden group-focus-within/section-title:inline-flex group-hover/section-title:inline-flex"><button type="button" aria-label="More"'
+      '<span class="hidden group-hover/section-title:inline-flex group-focus-visible/section-title:inline-flex group-has-[:focus-visible]/section-title:inline-flex"><button type="button" aria-label="More"'
     );
     expect(markup.indexOf('data-testid="section-more"')).toBeLessThan(
       markup.indexOf('data-testid="sidebar-sessions-search"')
