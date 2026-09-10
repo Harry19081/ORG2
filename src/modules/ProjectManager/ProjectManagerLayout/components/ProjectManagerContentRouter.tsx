@@ -91,7 +91,7 @@ export function ProjectManagerContentRouter({
             className="flex h-full min-h-0 flex-1 flex-col overflow-hidden"
             style={{ display: isActiveTab ? undefined : "none" }}
           >
-            <UnifiedTabContent tab={tab} paneId="main" isActive={isActiveTab} />
+            <UnifiedTabContent tab={tab} isActive={isActiveTab} />
           </div>
         );
       })}
@@ -173,7 +173,7 @@ function renderActiveContent({
     case "project-org-settings":
     case "project-settings":
     case "workItem-detail":
-      return <UnifiedTabContent tab={activeTab} paneId="main" isActive />;
+      return <UnifiedTabContent tab={activeTab} isActive />;
 
     default:
       return <NoTabsPlaceholder icon="project" actions={projectQuickActions} />;
