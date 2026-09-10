@@ -378,6 +378,8 @@
   "cloud": {
     "signIn": "Đăng nhập",
     "signOut": "Đăng xuất",
+    "signOutConfirmTitle": "Đăng xuất?",
+    "signOutConfirmBody": "Bạn sẽ cần đăng nhập lại để truy cập tài khoản của mình.",
     "signedInAs": "Đã đăng nhập: {{name}}",
     "signedInToast": "Đã đăng nhập ORG2 Cloud",
     "sessionExpired": "Phiên ORG2 Cloud đã hết hạn. Hãy đăng nhập lại để tiếp tục.",

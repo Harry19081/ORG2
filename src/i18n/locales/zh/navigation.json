@@ -378,6 +378,8 @@
   "cloud": {
     "signIn": "登录",
     "signOut": "退出登录",
+    "signOutConfirmTitle": "确认退出登录？",
+    "signOutConfirmBody": "退出后，你需要重新登录才能访问你的账户。",
     "signedInToast": "已登录 ORG2 云",
     "sessionExpired": "ORG2 云登录已过期，请重新登录后继续。",
     "customEndpoint": {
