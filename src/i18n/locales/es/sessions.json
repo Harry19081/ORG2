@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Editar tu mensaje...",
     "defaultPlaceholder": "Chatear con el Agent",
+    "commentPlaceholder": "Escribe un comentario…",
     "editingQueuedMessage": "Editando mensaje en cola",
     "editingSentMessage": "Editando mensaje enviado",
     "voiceErrorPermission": "Permiso de micrófono denegado. Actívalo en la configuración del sistema.",

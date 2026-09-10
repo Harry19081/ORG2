@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Mesajınızı düzenleyin...",
     "defaultPlaceholder": "Agent ile sohbet edin",
+    "commentPlaceholder": "Bir yorum yazın…",
     "editingQueuedMessage": "Sıradaki mesaj düzenleniyor",
     "editingSentMessage": "Gönderilmiş mesaj düzenleniyor",
     "voiceErrorPermission": "Mikrofon izni reddedildi. İşletim sistemi ayarlarından etkinleştirin.",

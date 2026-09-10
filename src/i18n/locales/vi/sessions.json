@@ -577,6 +577,7 @@
   "input": {
     "editPlaceholder": "Chỉnh sửa tin nhắn...",
     "defaultPlaceholder": "Trò chuyện với Agent",
+    "commentPlaceholder": "Để lại bình luận…",
     "editingQueuedMessage": "Đang chỉnh sửa tin nhắn trong hàng đợi",
     "editingSentMessage": "Đang chỉnh sửa tin nhắn đã gửi",
     "voiceErrorPermission": "Quyền truy cập micrô bị từ chối. Bật trong cài đặt hệ thống.",
