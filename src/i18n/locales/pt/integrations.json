@@ -29,6 +29,7 @@
       "deleteError": "Falha ao excluir {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Mais usados",
       "cloud": "Cloud",
       "local": "Local"
     },

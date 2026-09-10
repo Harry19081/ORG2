@@ -28,6 +28,7 @@
       "deleteError": "Không thể xóa {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Dùng nhiều nhất",
       "cloud": "Cloud",
       "local": "Local"
     },

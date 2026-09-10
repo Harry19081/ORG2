@@ -28,6 +28,7 @@
       "deleteError": "{{name}} konnte nicht gelöscht werden"
     },
     "providerGroups": {
+      "mostUsed": "Am häufigsten verwendet",
       "cloud": "Cloud",
       "local": "Local"
     },

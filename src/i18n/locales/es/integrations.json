@@ -28,6 +28,7 @@
       "deleteError": "Error al eliminar {{name}}"
     },
     "providerGroups": {
+      "mostUsed": "Más usados",
       "cloud": "Cloud",
       "local": "Local"
     },
