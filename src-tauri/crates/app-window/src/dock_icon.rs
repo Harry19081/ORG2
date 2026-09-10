@@ -14,11 +14,12 @@ use tauri::AppHandle;
 /// `src/config/settingsSchema/registry/general.ts`.
 pub const DOCK_ICON_SETTING_KEY: &str = "general.dockIcon";
 
-/// Bundled 512×512 PNGs. `dark` is a byte-for-byte copy of `icons/icon.png`
-/// (dark tile, light mark); `light` is its inverse with a soft inset edge so
-/// the white tile still reads on a light Dock.
+/// Bundled 512×512 PNGs rendered from `src/assets/appIcons/*.svg`.
+/// All variants omit the circle behind the mark; light keeps a soft inset
+/// edge so the white tile still reads on a light Dock.
 const DARK_ICON_PNG: &[u8] = include_bytes!("../../../icons/dock/dark.png");
 const LIGHT_ICON_PNG: &[u8] = include_bytes!("../../../icons/dock/light.png");
+const RAINBOW_ICON_PNG: &[u8] = include_bytes!("../../../icons/dock/rainbow.png");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum DockIconVariant {
@@ -27,15 +28,18 @@ pub enum DockIconVariant {
     Dark,
     /// Inverted: light tile, dark `II`.
     Light,
+    /// Rainbow tile with the light `II` mark.
+    Rainbow,
 }
 
 impl DockIconVariant {
     /// Parse the wire / settings value. Unknown values are `None` rather than
-    /// the default so callers can tell "reset to bundle icon" from "garbage".
+    /// the default so callers can tell "select dark icon" from "garbage".
     pub fn parse(value: &str) -> Option<Self> {
         match value.trim() {
             "dark" => Some(Self::Dark),
             "light" => Some(Self::Light),
+            "rainbow" => Some(Self::Rainbow),
             _ => None,
         }
     }
@@ -44,6 +48,7 @@ impl DockIconVariant {
         match self {
             Self::Dark => "dark",
             Self::Light => "light",
+            Self::Rainbow => "rainbow",
         }
     }
 
@@ -51,6 +56,7 @@ impl DockIconVariant {
         match self {
             Self::Dark => DARK_ICON_PNG,
             Self::Light => LIGHT_ICON_PNG,
+            Self::Rainbow => RAINBOW_ICON_PNG,
         }
     }
 }
@@ -70,11 +76,11 @@ pub fn stored_dock_icon_variant() -> DockIconVariant {
         .unwrap_or_default()
 }
 
-/// Re-apply the stored preference for this launch. Skips the work entirely
-/// when the stored variant is the default, since the bundle icon is what the
-/// process already shows.
+/// Re-apply the stored preference for this launch, including dark on macOS:
+/// a directly launched executable may not have a bundle icon to fall back to.
 pub fn apply_stored_dock_icon(app: &AppHandle) {
     let variant = stored_dock_icon_variant();
+    #[cfg(not(target_os = "macos"))]
     if variant == DockIconVariant::default() {
         return;
     }
@@ -86,10 +92,9 @@ pub fn apply_stored_dock_icon(app: &AppHandle) {
 /// Switch the live process's icon.
 ///
 /// macOS: `NSApplication.applicationIconImage`, which drives the Dock tile
-/// and the ⌘-Tab switcher. `Dark` passes `nil`, which is AppKit's documented
-/// way to fall back to the bundle icon — so the default is exactly the icon
-/// the OS would have drawn, not a re-encoded copy of it. AppKit requires the
-/// main thread; the command runs off it, so the call is hopped over
+/// and the ⌘-Tab switcher. All variants use the embedded PNG so development
+/// and directly launched executables do not fall back to a generic icon.
+/// AppKit requires the main thread; the command runs off it, so the call is hopped over
 /// synchronously the same way the window-material helpers do.
 ///
 /// Windows / Linux: each webview window's icon, which is what the taskbar
@@ -119,10 +124,21 @@ pub fn apply_dock_icon(app: &AppHandle, variant: DockIconVariant) -> Result<(), 
 }
 
 #[cfg(target_os = "macos")]
-fn set_macos_application_icon(variant: DockIconVariant) {
+fn macos_application_icon(
+    variant: DockIconVariant,
+) -> Option<objc2::rc::Retained<objc2_app_kit::NSImage>> {
     use objc2::AllocAnyThread;
-    use objc2_app_kit::{NSApplication, NSImage};
-    use objc2_foundation::{MainThreadMarker, NSData};
+    use objc2_app_kit::NSImage;
+    use objc2_foundation::NSData;
+
+    let data = NSData::with_bytes(variant.png());
+    NSImage::initWithData(NSImage::alloc(), &data)
+}
+
+#[cfg(target_os = "macos")]
+fn set_macos_application_icon(variant: DockIconVariant) {
+    use objc2_app_kit::NSApplication;
+    use objc2_foundation::MainThreadMarker;
 
     let run = move || {
         // Only reachable on the main thread (directly, or via the sync hop
@@ -132,23 +148,16 @@ fn set_macos_application_icon(variant: DockIconVariant) {
             return;
         };
         let app = NSApplication::sharedApplication(mtm);
-        let image = match variant {
-            DockIconVariant::Dark => None,
-            DockIconVariant::Light => {
-                let data = NSData::with_bytes(variant.png());
-                NSImage::initWithData(NSImage::alloc(), &data)
-            }
-        };
-        if variant != DockIconVariant::Dark && image.is_none() {
+        let Some(image) = macos_application_icon(variant) else {
             tracing::warn!(
                 variant = variant.as_str(),
                 "Bundled dock icon failed to decode; keeping the current icon"
             );
             return;
-        }
+        };
         // SAFETY: called on the main thread with an image AppKit owns a
-        // retained reference to (or nil, the documented reset).
-        unsafe { app.setApplicationIconImage(image.as_deref()) };
+        // retained reference to. Never reset to the executable's fallback icon.
+        unsafe { app.setApplicationIconImage(Some(&image)) };
     };
 
     if crate::is_main_thread() {
@@ -169,6 +178,10 @@ mod tests {
             DockIconVariant::parse(" light "),
             Some(DockIconVariant::Light)
         );
+        assert_eq!(
+            DockIconVariant::parse("rainbow"),
+            Some(DockIconVariant::Rainbow)
+        );
     }
 
     #[test]
@@ -186,7 +199,11 @@ mod tests {
 
     #[test]
     fn round_trips_through_as_str() {
-        for variant in [DockIconVariant::Dark, DockIconVariant::Light] {
+        for variant in [
+            DockIconVariant::Dark,
+            DockIconVariant::Light,
+            DockIconVariant::Rainbow,
+        ] {
             assert_eq!(DockIconVariant::parse(variant.as_str()), Some(variant));
         }
     }
@@ -196,5 +213,26 @@ mod tests {
         const PNG_MAGIC: &[u8] = b"\x89PNG\r\n\x1a\n";
         assert!(super::DARK_ICON_PNG.starts_with(PNG_MAGIC));
         assert!(super::LIGHT_ICON_PNG.starts_with(PNG_MAGIC));
+        assert!(super::RAINBOW_ICON_PNG.starts_with(PNG_MAGIC));
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn macos_variants_decode_without_an_app_bundle() {
+        // The test executable has no app bundle. In particular, switching
+        // light -> dark must supply an image instead of resetting to nil.
+        objc2::rc::autoreleasepool(|_| {
+            for variant in [
+                DockIconVariant::Light,
+                DockIconVariant::Dark,
+                DockIconVariant::Rainbow,
+            ] {
+                let image = super::macos_application_icon(variant)
+                    .expect("each variant must supply a native image without bundle metadata");
+                let size = image.size();
+                assert_eq!(size.width, 512.0);
+                assert_eq!(size.height, 512.0);
+            }
+        });
     }
 }

@@ -209,8 +209,8 @@
       "monochrome": "Tek renkli"
     },
     "appIcon": "Uygulama simgesi",
-    "appIconDesc": "Çalışan uygulamanın Dock veya görev çubuğunda gösterdiği simge. Yüklü uygulama Finder’da kendi simgesini korur",
     "appIconOptions": {
+      "rainbow": "Gökkuşağı",
       "dark": "Koyu kutucuk",
       "light": "Açık kutucuk"
     },

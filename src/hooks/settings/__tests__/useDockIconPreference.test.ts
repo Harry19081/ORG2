@@ -21,7 +21,13 @@ describe("dock icon preference", () => {
     ).toBe("dark");
   });
 
-  it.each(["dark", "light"] as const)(
+  it("preserves the rainbow variant through settings validation", () => {
+    expect(
+      validateSettings({ "general.dockIcon": "rainbow" })["general.dockIcon"]
+    ).toBe("rainbow");
+  });
+
+  it.each(["dark", "light", "rainbow"] as const)(
     "hands %s to the set_dock_icon command",
     async (variant) => {
       const invoke = vi.fn().mockResolvedValue(undefined);

@@ -160,7 +160,6 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({
             <SectionRow
               settingsSearchKeys="general.dockIcon"
               label={t("general.appIcon")}
-              description={t("general.appIconDesc")}
             >
               <AppIconPicker
                 value={dockIcon}

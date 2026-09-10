@@ -285,8 +285,8 @@
       "monochrome": "单色"
     },
     "appIcon": "应用图标",
-    "appIconDesc": "运行中的应用在程序坞或任务栏中显示的图标；访达中的安装图标保持不变",
     "appIconOptions": {
+      "rainbow": "彩虹",
       "dark": "深色",
       "light": "浅色"
     },

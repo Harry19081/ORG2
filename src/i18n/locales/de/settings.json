@@ -209,8 +209,8 @@
       "monochrome": "Monochrom"
     },
     "appIcon": "App-Symbol",
-    "appIconDesc": "Symbol der laufenden App im Dock oder in der Taskleiste. Die installierte App behält ihr eigenes Symbol im Finder",
     "appIconOptions": {
+      "rainbow": "Regenbogen",
       "dark": "Dunkle Kachel",
       "light": "Helle Kachel"
     },

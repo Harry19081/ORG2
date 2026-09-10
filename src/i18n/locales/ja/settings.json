@@ -209,8 +209,8 @@
       "monochrome": "モノクロ"
     },
     "appIcon": "アプリアイコン",
-    "appIconDesc": "実行中のアプリがDockまたはタスクバーに表示するアイコン。インストール済みアプリのFinderアイコンは変わりません",
     "appIconOptions": {
+      "rainbow": "レインボー",
       "dark": "ダークタイル",
       "light": "ライトタイル"
     },

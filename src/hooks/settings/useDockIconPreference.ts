@@ -9,7 +9,7 @@ import { useSettingValue } from "./useSettings";
 const log = createLogger("DockIcon");
 
 /** Mirrors the `general.dockIcon` enum and Rust's `DockIconVariant`. */
-export type DockIconVariant = "dark" | "light";
+export type DockIconVariant = "dark" | "light" | "rainbow";
 
 type InvokeDockIcon = (
   command: "set_dock_icon",
