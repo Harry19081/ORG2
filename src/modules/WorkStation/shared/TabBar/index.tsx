@@ -544,4 +544,4 @@ export default TabBar;
 
 // Re-export types and config
 export type { WorkStationTab } from "@src/store/workstation/tabs";
-export { TAB_BAR_HEIGHT, MAX_VISIBLE_TABS, STATUS_LABELS } from "./config";
+export { TAB_BAR_HEIGHT } from "./config";
