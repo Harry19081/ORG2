@@ -75,7 +75,7 @@ pub(crate) fn cli_agent_registry() -> Vec<CliAgentEntry> {
     vec![
         CliAgentEntry {
             name: "cursor_cli",
-            display_name: "Cursor CLI",
+            display_name: "Cursor",
             binary: "cursor",
             description: "Cursor's command-line agent for AI-assisted coding",
             brand_color: "#00A67E",
