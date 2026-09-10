@@ -18,12 +18,12 @@ import {
   buildPinnedMenuItems,
   buildProjectsPinnedMenuItems,
 } from "../workstationSidebarMenuItems";
-import type { WorkstationSidebarViewKey } from "./WorkstationSidebarViewSwitcher";
+import type { SessionSidebarView } from "./types";
 
 const PINNED_SESSION_SEPARATOR_ID = "separator-pinned";
 
 interface UsePinnedMenuItemsParams {
-  activeViewKey: WorkstationSidebarViewKey;
+  activeViewKey: SessionSidebarView;
   createProjectLabel: string;
   createWorkItemLabel: string;
   importGithubIssuesLabel: string;

@@ -29,9 +29,6 @@ describe("NavigationSidebar", () => {
   it("renders separators in pinned items as standard section headers", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [],
         pinnedMenuItems: [
           { id: "create", key: "create", label: "Create" },
@@ -59,9 +56,6 @@ describe("NavigationSidebar", () => {
   it("allows titled pinned sections to be collapsed", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [],
         pinnedMenuItems: [
           { id: "create", key: "create", label: "Create" },
@@ -87,9 +81,6 @@ describe("NavigationSidebar", () => {
   it("renders actions on an existing session section header", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [
           {
             id: "separator-today",
@@ -142,9 +133,6 @@ describe("NavigationSidebar", () => {
   it("keeps every header action visible when the filter is active outside sidebar hover", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [
           {
             id: "separator-team",
@@ -172,9 +160,6 @@ describe("NavigationSidebar", () => {
   it("renders the standard loading state without dummy rows", () => {
     const markup = renderToStaticMarkup(
       createElement(NavigationSidebar, {
-        items: [],
-        activeKey: "",
-        onChange: vi.fn(),
         menuItems: [],
         isLoading: true,
       })

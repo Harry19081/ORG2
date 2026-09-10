@@ -20,18 +20,18 @@ import {
   CLOUD_MY_SESSIONS_SECTION_ID,
   CLOUD_TEAM_SESSIONS_SECTION_ID,
 } from "./cloudScopedMenuItems";
-import { resolveSelectedMenuItemIds } from "./menuSelection";
+import { resolveSessionSidebarMenuItemId } from "./menuSelection";
 import {
   getSessionSectionVisibleCountKey,
   resetNewlyCollapsedSectionVisibleCounts,
 } from "./sectionPagination";
-import type { WorkstationSidebarKey } from "./types";
+import type { SessionSidebarView } from "./types";
 import { resolveWorkItemsSidebarMenuItemId } from "./workItemsSidebarMenuItems";
 
 interface UseWorkstationSidebarSelectionAndCollapseParams {
   activeSessionCreatorDraftId: string | null | undefined;
   highlightedSessionId: string;
-  activeSidebarKey: WorkstationSidebarKey;
+  activeViewKey: SessionSidebarView;
   activeChatPanelTabType: ChatPanelTabType | null;
   chatPanelContentMode: ChatPanelContentMode;
   chatPanelCreateTarget: ChatPanelCreateTarget;
@@ -39,7 +39,6 @@ interface UseWorkstationSidebarSelectionAndCollapseParams {
   chatPanelSelectedWorkItem: ChatPanelSelectedWorkItem | null;
   projectsSelectedMenuItemId: string;
   sessionCreatorDrafts: readonly SessionCreatorDraft[];
-  workItemsContentVisible: boolean;
   activeWorkManagementSection: WorkManagementSection;
   workManagementProjectsView: WorkManagementProjectsView;
   setGroupVisibleCounts: (
@@ -55,7 +54,7 @@ interface UseWorkstationSidebarSelectionAndCollapseParams {
 export function useWorkstationSidebarSelectionAndCollapse({
   activeSessionCreatorDraftId,
   highlightedSessionId,
-  activeSidebarKey,
+  activeViewKey,
   activeChatPanelTabType,
   chatPanelContentMode,
   chatPanelCreateTarget,
@@ -63,7 +62,6 @@ export function useWorkstationSidebarSelectionAndCollapse({
   chatPanelSelectedWorkItem,
   projectsSelectedMenuItemId,
   sessionCreatorDrafts,
-  workItemsContentVisible,
   activeWorkManagementSection,
   workManagementProjectsView,
   setGroupVisibleCounts,
@@ -73,26 +71,22 @@ export function useWorkstationSidebarSelectionAndCollapse({
   resetCloudMyPagination,
   setCollapsedSectionIds,
 }: UseWorkstationSidebarSelectionAndCollapseParams) {
-  const { selectedMenuItemId: baseSelectedMenuItemId } =
-    resolveSelectedMenuItemIds({
-      activeSessionCreatorDraftId,
-      activeSessionId: highlightedSessionId,
-      activeSidebarKey,
-      activeChatPanelTabType,
-      chatPanelContentMode,
-      chatPanelCreateTarget,
-      chatPanelSelectedProject,
-      chatPanelSelectedWorkItem,
-      projectsSelectedMenuItemId,
-      sessionCreatorDrafts,
-    });
+  const baseSelectedMenuItemId = resolveSessionSidebarMenuItemId({
+    activeSessionCreatorDraftId,
+    activeSessionId: highlightedSessionId,
+    activeChatPanelTabType,
+    chatPanelContentMode,
+    chatPanelCreateTarget,
+    chatPanelSelectedProject,
+    chatPanelSelectedWorkItem,
+    sessionCreatorDrafts,
+  });
   const selectedMenuItemId =
     activeChatPanelTabType === "team-inbox"
       ? TEAM_INBOX_MENU_ITEM_ID
-      : workItemsContentVisible && projectsSelectedMenuItemId
+      : activeViewKey === "work-items" && projectsSelectedMenuItemId
         ? projectsSelectedMenuItemId
-        : activeSidebarKey === "workstation" &&
-            activeChatPanelTabType === "work-management"
+        : activeChatPanelTabType === "work-management"
           ? resolveWorkItemsSidebarMenuItemId({
               homeTab: activeWorkManagementSection,
               projectsView: workManagementProjectsView,
