@@ -519,3 +519,26 @@ fn mobile_tail_window_fails_when_no_user_turn_is_inside_the_bound() {
     std::fs::remove_file(&path).expect("remove fixture");
     std::fs::remove_dir(&temp_dir).expect("remove temp dir");
 }
+
+#[test]
+fn selected_skill_context_keeps_reply_in_native_command_turn() {
+    let dir = std::env::temp_dir().join(format!("orgii-codex-skill-context-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("rollout.jsonl");
+    let rows = serde_json::json!([
+        {"type":"turn_context","payload":{}},
+        {"type":"event_msg","payload":{"type":"item_completed","item":{"type":"UserMessage","id":"user-skill","content":[{"type":"text","text":"/fixture"},{"type":"skill","name":"fixture","path":"/repo/SKILL.md"}]}}},
+        {"type":"response_item","payload":{"type":"message","id":"msg_skill","role":"user","content":[{"type":"input_text","text":"<skill>provider instructions</skill>"}],"internal_chat_message_metadata_passthrough":{"content_item_kinds":["skills.selected_skill_instructions"]}}},
+        {"type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"SKILL_OK"}]}}
+    ]);
+    std::fs::write(&path, rows.as_array().unwrap().iter().map(|row| serde_json::to_string(row).unwrap()).collect::<Vec<_>>().join("\n") + "\n").unwrap();
+    let full = load_codex_app_from_path("skill", &path).unwrap();
+    let window = super::load_codex_app_initial_window_from_path("skill", &path, 1).unwrap();
+    let mut visited = Vec::new();
+    super::visit_codex_app_from_path("skill", &path, &mut |turn| { visited.extend(turn); Ok(()) }).unwrap();
+    for chunks in [&full, &window.chunks, &visited] {
+        assert_eq!(chunks.iter().filter(|c| c.function == "user_message").count(), 1);
+        assert!(chunks.iter().any(|c| c.function == "assistant" && c.result["content"] == "SKILL_OK"));
+    }
+    std::fs::remove_dir_all(dir).unwrap();
+}
