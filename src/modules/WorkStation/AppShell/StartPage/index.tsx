@@ -34,7 +34,6 @@ import {
 interface StartActionRowProps {
   icon: IconSvgElement;
   label: string;
-  shortcut?: string;
   shortcutId?: string;
   /** Working-tree diff totals shown beside the label (Review row only). */
   additions?: number;
@@ -43,7 +42,7 @@ interface StartActionRowProps {
 }
 
 const StartActionRow = memo<StartActionRowProps>(
-  ({ icon, label, shortcut, shortcutId, additions, deletions, onClick }) => {
+  ({ icon, label, shortcutId, additions, deletions, onClick }) => {
     const showDiff =
       additions !== undefined &&
       deletions !== undefined &&
@@ -75,9 +74,8 @@ const StartActionRow = memo<StartActionRowProps>(
             />
           ) : null}
         </span>
-        {shortcut || shortcutId ? (
+        {shortcutId ? (
           <KeyboardShortcut
-            shortcut={shortcut}
             shortcutId={shortcutId}
             variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
           />
