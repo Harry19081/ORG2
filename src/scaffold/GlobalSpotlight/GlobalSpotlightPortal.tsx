@@ -8,6 +8,7 @@
 import { useAtom } from "jotai";
 import React, { Suspense } from "react";
 
+import { ManualSpotlightCreatorHost } from "@src/modules/ProjectManager/shared/components/ManualSpotlightCreatorHost";
 import { spotlightOpenAtom } from "@src/store/ui/uiAtom";
 
 const GlobalSpotlight = React.lazy(() =>
@@ -19,11 +20,17 @@ const GlobalSpotlight = React.lazy(() =>
 export const GlobalSpotlightPortal: React.FC = () => {
   const [spotlightOpen, setSpotlightOpen] = useAtom(spotlightOpenAtom);
 
-  if (!spotlightOpen) return null;
-
   return (
-    <Suspense fallback={null}>
-      <GlobalSpotlight isOpen={true} onClose={() => setSpotlightOpen(false)} />
-    </Suspense>
+    <>
+      <ManualSpotlightCreatorHost />
+      {spotlightOpen && (
+        <Suspense fallback={null}>
+          <GlobalSpotlight
+            isOpen={true}
+            onClose={() => setSpotlightOpen(false)}
+          />
+        </Suspense>
+      )}
+    </>
   );
 };
