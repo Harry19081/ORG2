@@ -119,6 +119,15 @@ impl CodexSessionMetaState {
             );
         }
         if parsed.line_type == "session_meta" {
+            if self.source_metadata.continuation_group_key.is_none() {
+                self.source_metadata.continuation_group_key = parsed
+                    .payload
+                    .get("id")
+                    .and_then(Value::as_str)
+                    .map(str::trim)
+                    .filter(|id| !id.is_empty())
+                    .map(str::to_string);
+            }
             capture_subagent_source_metadata(&parsed.payload, &mut self.source_metadata);
             if self.originator.is_empty() {
                 // `originator` names the client; the sibling `source` field
@@ -408,10 +417,14 @@ pub(crate) fn parse_codex_session_meta(
 }
 
 pub(super) fn session_meta_to_cache_input(meta: CodexAppSessionMeta) -> ImportedHistoryCacheInput {
-    let source_metadata_json = meta
-        .parent_session_id
-        .as_ref()
-        .and_then(|_| serde_json::to_string(&meta.source_metadata).ok());
+    let source_metadata_json = if meta.parent_session_id.is_some() {
+        serde_json::to_string(&meta.source_metadata).ok()
+    } else {
+        imported_history::cache::continuation_metadata_json(
+            meta.source_metadata.continuation_group_key.as_deref(),
+            &[],
+        )
+    };
     ImportedHistoryCacheInput {
         source: SOURCE_CODEX_APP,
         source_session_id: meta.source_session_id,

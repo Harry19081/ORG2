@@ -294,9 +294,16 @@ fn best_codex_child_match(
 }
 
 fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
+    sync_codex_app_cache_from_dirs(conn, &codex_sessions_dirs()?)
+}
+
+pub(super) fn sync_codex_app_cache_from_dirs(
+    conn: &mut Connection,
+    session_dirs: &[PathBuf],
+) -> Result<(), String> {
     let previous_snapshots = scan_snapshot::read_dir_snapshots_from_conn(conn, SOURCE_CODEX_APP);
     let mut walker = scan_snapshot::SnapshotDirWalker::new(&previous_snapshots, "jsonl", "Codex");
-    let discovery = discover_codex_app_records(&codex_sessions_dirs()?, &mut walker)?;
+    let discovery = discover_codex_app_records(session_dirs, &mut walker)?;
     let next_snapshots = walker.into_snapshots();
     scan_snapshot::persist_dir_snapshots_if_changed(
         conn,
@@ -311,13 +318,20 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
     // Managed (GUI-launched) Codex sessions surface through their
     // code_sessions row (`cli_agent_type = 'codex'`); the imported twin goes
     // unlistable. Same pattern as the OpenCode/Claude readers.
-    let managed_ids =
+    let mut managed_ids =
         crate::sources::imported_history::managed_mirror::managed_source_session_ids_from_conn(
             conn,
             "codex",
             SOURCE_CODEX_APP,
         )?;
     for record in &mut discovered {
+        // A resend rollout ends in <thread UUID>_<rollout UUID>. The ledger
+        // owns the thread, not the final UUID. Expand only discovered keys.
+        if codex_thread_id_from_file_stem(&record.source_session_id)
+            .is_some_and(|id| managed_ids.contains(id))
+        {
+            managed_ids.insert(record.source_session_id.clone());
+        }
         crate::sources::imported_history::managed_mirror::append_managed_origin_fingerprint(
             &mut record.source_fingerprint,
             // Suffix match: the imported key is the rollout stem while the
@@ -388,7 +402,51 @@ fn sync_codex_app_cache(conn: &mut Connection) -> Result<(), String> {
         conn,
         SOURCE_CODEX_APP,
     )?;
-    imported_cache::write_session_rounds_from_conn(conn, &reparsed_ids, &rounds)
+    imported_cache::write_session_rounds_from_conn(conn, &reparsed_ids, &rounds)?;
+    repair_cached_codex_thread_identity(conn)?;
+    imported_cache::demote_superseded_continuations_from_conn(conn, SOURCE_CODEX_APP)?;
+    Ok(())
+}
+
+/// Older watermarks predate native thread identity. Repair their projection
+/// from Codex's filename contract without invalidating a multi-GB transcript's
+/// incremental watermark. Fresh parses use session_meta.id instead. This also
+/// covers large active files deliberately deferred by the metadata budget.
+fn repair_cached_codex_thread_identity(conn: &Connection) -> Result<(), String> {
+    let mut statement = conn
+        .prepare(
+            "SELECT source_session_id, source_metadata_json FROM imported_history_session_cache
+         WHERE source = ?1 AND COALESCE(parent_session_id, '') = ''
+           AND CASE WHEN json_valid(source_metadata_json)
+               THEN json_extract(source_metadata_json, '$.continuationGroupKey') IS NULL
+               ELSE 1 END",
+        )
+        .map_err(|err| format!("Failed to prepare Codex thread identity repair: {err}"))?;
+    let rows = statement
+        .query_map([SOURCE_CODEX_APP], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, Option<String>>(1)?))
+        })
+        .map_err(|err| format!("Failed to query Codex thread identity repair: {err}"))?;
+    for row in rows {
+        let (source_id, metadata) =
+            row.map_err(|err| format!("Failed to read Codex identity: {err}"))?;
+        let Some(thread_id) = codex_thread_id_from_file_stem(&source_id) else {
+            continue;
+        };
+        let mut value = metadata
+            .as_deref()
+            .and_then(|raw| serde_json::from_str::<Value>(raw).ok())
+            .filter(Value::is_object)
+            .unwrap_or_else(|| serde_json::json!({}));
+        value[imported_cache::CONTINUATION_GROUP_KEY_FIELD] = Value::String(thread_id.to_string());
+        conn.execute(
+            "UPDATE imported_history_session_cache SET source_metadata_json = ?3
+             WHERE source = ?1 AND source_session_id = ?2",
+            rusqlite::params![SOURCE_CODEX_APP, source_id, value.to_string()],
+        )
+        .map_err(|err| format!("Failed to repair Codex thread identity: {err}"))?;
+    }
+    Ok(())
 }
 
 pub(super) fn first_codex_user_prompt_from_path(path: &Path) -> Result<Option<String>, String> {
@@ -657,28 +715,7 @@ fn codex_title_entry_for_file_stem<'a>(
 }
 
 pub fn codex_thread_id_from_file_stem(file_stem: &str) -> Option<&str> {
-    if is_uuid_like(file_stem) {
-        return Some(file_stem);
-    }
-    if file_stem.len() < 36 {
-        return None;
-    }
-    let candidate = &file_stem[file_stem.len() - 36..];
-    is_uuid_like(candidate).then_some(candidate)
-}
-
-fn is_uuid_like(value: &str) -> bool {
-    let bytes = value.as_bytes();
-    if bytes.len() != 36 {
-        return false;
-    }
-    bytes.iter().enumerate().all(|(index, byte)| {
-        if matches!(index, 8 | 13 | 18 | 23) {
-            *byte == b'-'
-        } else {
-            byte.is_ascii_hexdigit()
-        }
-    })
+    crate::sources::cli_resume::codex_thread_uuid_from_stem(file_stem)
 }
 
 fn codex_file_stem_from_session_id(session_id: &str) -> Result<&str, String> {
@@ -1028,6 +1065,7 @@ mod tests {
                     first_prompt: Some("wrong prompt".to_string()),
                     agent_path: Some("/root/other_task".to_string()),
                     agent_nickname: Some("Wrong".to_string()),
+                    ..Default::default()
                 },
             },
             CodexChildSessionLink {
@@ -1038,6 +1076,7 @@ mod tests {
                     first_prompt: Some("audit today's commit history".to_string()),
                     agent_path: Some("/root/audit_todays_commits".to_string()),
                     agent_nickname: Some("Peirce".to_string()),
+                    ..Default::default()
                 },
             },
         ];
