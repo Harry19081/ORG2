@@ -7,11 +7,7 @@ import { createElement } from "react";
 
 import { type RenderableIcon } from "@src/components/AnyIcon";
 import { getSettingsSectionsByTab } from "@src/config/settingsUiManifest";
-import {
-  ArrowRight01Icon,
-  HugeiconsIcon,
-  SquareArrowUpRight02Icon,
-} from "@src/icons";
+import { HugeiconsIcon, SquareArrowUpRight02Icon } from "@src/icons";
 
 export interface SettingsSectionConfig {
   id: string;
@@ -73,14 +69,6 @@ export const SECTION_TAB_META: Partial<
     { key: "chat-panel", labelKey: "appearance.tabChatPanel" },
   ],
   [SECTION_IDS.EDITOR]: [{ key: "editor", labelKey: "editor.tabEditor" }],
-};
-
-/** Shared props for buttons that navigate to a settings subpage */
-export const SUBPAGE_BUTTON_PROPS = {
-  variant: "secondary" as const,
-  size: "default" as const,
-  icon: createElement(HugeiconsIcon, { icon: ArrowRight01Icon, size: 14 }),
-  iconPosition: "right" as const,
 };
 
 /** Shared props for buttons that navigate to another page (outside settings) */

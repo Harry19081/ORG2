@@ -295,5 +295,3 @@ export const ProjectOrgSettingsPane: React.FC<ProjectOrgSettingsPaneProps> = ({
     </div>
   );
 };
-
-export default ProjectOrgSettingsPane;

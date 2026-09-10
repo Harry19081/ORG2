@@ -26,6 +26,16 @@ import type { WorkStationTab } from "@src/store/workstation/tabs";
 
 import { WorkstationTabIcon } from "./WorkstationTabIcon";
 
+// Only these singleton tools override their stored titles unconditionally.
+const LOCALIZED_TOOL_TITLE_KEYS: Partial<
+  Record<WorkStationTab["type"], string>
+> = {
+  start: "navigation:routes.launchpad",
+  "search-sessions": "navigation:workstation.plusMenu.searchSessions",
+  explorer: "common:labels.files",
+  "source-control": "common:actions.review",
+};
+
 export function getWorkstationTabDisplayTitle(
   tab: WorkStationTab,
   t: TFunction
@@ -44,23 +54,11 @@ export function getWorkstationTabDisplayTitle(
   ) {
     return resolveProjectManagerTabTitle(tab, t);
   }
-  // Localized titles for the singleton tool tabs.
-  switch (tab.type) {
-    case "start":
-      return t("navigation:routes.launchpad");
-    case "search-sessions":
-      return t("navigation:workstation.plusMenu.searchSessions");
-    case "explorer":
-      return t("common:labels.files");
-    case "source-control":
-      return t("common:actions.review");
-    case "terminal":
-      if (tab.id === CODE_EDITOR_MAIN_TERMINAL_TAB_ID) {
-        return t("common:tabs.terminal");
-      }
-      break;
+  if (tab.type === "terminal" && tab.id === CODE_EDITOR_MAIN_TERMINAL_TAB_ID) {
+    return t("common:tabs.terminal");
   }
-  return tab.title;
+  const titleKey = LOCALIZED_TOOL_TITLE_KEYS[tab.type];
+  return titleKey ? t(titleKey) : tab.title;
 }
 
 /** Shared visible content for the tab strip and its drag preview. */

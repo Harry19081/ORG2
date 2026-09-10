@@ -11,7 +11,6 @@ import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
 import {
   workStationFollowAgentHighlightEnabledAtom,
   workStationStatusBarHiddenAtom,
-  workStationTitleBarHiddenAtom,
 } from "@src/store/ui/workStationLayout/chromeAtoms";
 import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
@@ -46,7 +45,6 @@ interface AppShellProps {
 
 const AppShell = React.memo(
   ({ isActive = true, chatPanelFocused = false }: AppShellProps) => {
-    const _titleBarHidden = useAtomValue(workStationTitleBarHiddenAtom);
     const statusBarHidden = useAtomValue(workStationStatusBarHiddenAtom);
     const followAgentHighlightEnabled = useAtomValue(
       workStationFollowAgentHighlightEnabledAtom

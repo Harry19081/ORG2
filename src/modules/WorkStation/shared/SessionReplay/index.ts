@@ -15,10 +15,6 @@ export {
   type TimestampedReplayTab,
 } from "./replayTabHelpers";
 
-export {
-  buildSimulatorReplayPrimarySidebarConfig,
-  resolveReplayShellLayoutMode,
-  type ReplayShellLayoutMode,
-} from "./replayShellHelpers";
+export type { ReplayShellLayoutMode } from "./replayShellHelpers";
 
 export { ReplayShellLayout, ReplayShellPlaceholder } from "./ReplayShellLayout";

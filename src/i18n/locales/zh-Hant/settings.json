@@ -15,10 +15,7 @@
     "editorAndWorkspace": "編輯器 & 工作區",
     "appUpdate": "應用更新",
     "security": "安全",
-    "osAgentConfig": "OS Agent 配置",
-    "sdeAgentConfig": "SDE Agent 配置",
     "storage": "存儲",
-    "agentMemory": "Agent 記憶",
     "agentOrg": "Agent 團隊",
     "harnessConnections": "CLI 路由",
     "mobileRemote": "行動遙控"
@@ -799,7 +796,6 @@
   },
   "org": {},
   "learningsBrowser": {
-    "title": "Learnings 瀏覽器",
     "searchPlaceholder": "搜索要點、正文、scope…",
     "tabs": {
       "all": "全部",
@@ -841,12 +837,6 @@
       "title": "暫無 Learnings",
       "subtitle": "當會話結束並完成反思後，持久化的洞察會出現在這裏",
       "searchSubtitle": "沒有匹配當前篩選的條目。換個關鍵字或清空搜索再試"
-    },
-    "statusCard": {
-      "title": "整理狀態",
-      "lastRun": "上次運行",
-      "nextTrigger": "下次觸發",
-      "never": "從未運行"
     },
     "toast": {
       "promoted": "已晉升爲啓用",

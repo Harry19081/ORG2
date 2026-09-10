@@ -99,5 +99,3 @@ export const AppIconPicker: React.FC<AppIconPickerProps> = ({
     </div>
   );
 };
-
-export default AppIconPicker;
