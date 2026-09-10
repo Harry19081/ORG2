@@ -123,11 +123,9 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     chatFontSize,
     chatCodeFontSize,
     chatLineHeight,
-    codeBlockContainerWidth,
     sessionLoadStatus,
     sessionLoadError,
     isWpGeneWorkingRef,
-    isExploringRef,
   } = historyState;
   const {
     activeProjectionHistory,
@@ -193,19 +191,13 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
   const {
     handleEditUserMessage,
     handleHeaderRestoreCheckpoint,
-    handleIgnoreQuestion,
     handlePinnedEditSubmit,
     handleRegenerateGroup,
-    handleSubmitAnswers,
   } = actions;
 
   const getIsWpGeneWorking = useCallback(
     () => isWpGeneWorkingRef.current ?? false,
     [isWpGeneWorkingRef]
-  );
-  const getIsExploring = useCallback(
-    () => isExploringRef.current ?? false,
-    [isExploringRef]
   );
   const hasCloudDownloadProgress = useCloudSessionHasDownloadSurface(activeId);
   // Anchor for the live status trail's elapsed readout. Read from the FULL
@@ -500,14 +492,12 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                       groupCounts={displayGroupCounts}
                       turnIds={displayTurnIds}
                       totalFlatItems={displayTotalFlatItems}
-                      codeBlockContainerWidth={codeBlockContainerWidth ?? 0}
                       footerSpacerHeight={footerSpacerHeight}
                       bottomInset={bottomInset}
                       topPaddingPx={transcriptTopPaddingPx}
                       virtualListRef={virtualListRef}
                       virtualListDataKey={virtualListDataKey}
                       getIsWpGeneWorking={getIsWpGeneWorking}
-                      getIsExploring={getIsExploring}
                       renderGroupHeader={
                         turnPaginationEnabled
                           ? renderNoGroupHeader
@@ -523,8 +513,6 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                           ? undefined
                           : handleRegenerateGroup
                       }
-                      onSubmit={handleSubmitAnswers}
-                      onSkip={handleIgnoreQuestion}
                       onEditUserMessage={
                         mutationActionsDisabled
                           ? undefined
