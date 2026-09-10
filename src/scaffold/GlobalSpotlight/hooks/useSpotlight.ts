@@ -37,6 +37,7 @@ import {
 import { AppViewService } from "@src/services/app";
 import { PanelService } from "@src/services/panel";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
+import { openChatPanelCreateTargetAtom } from "@src/store/chatPanel/openChatPanelCreateTargetAtom";
 import { selectedRepoAtom } from "@src/store/repo";
 import { REPO_KIND } from "@src/store/repo/types";
 import type { Session } from "@src/store/session";
@@ -187,22 +188,14 @@ export function useSpotlight(
       > = {
         "open-session-creator": openSessionCreatorSpotlight,
         "create-project": () => {
-          void import("@src/store/chatPanel/chatPanelTabsAtom").then(
-            ({ openChatPanelCreateTargetAtom }) => {
-              getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
-                target: "project",
-              });
-            }
-          );
+          getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+            target: "project",
+          });
         },
         "create-work-item": () => {
-          void import("@src/store/chatPanel/chatPanelTabsAtom").then(
-            ({ openChatPanelCreateTargetAtom }) => {
-              getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
-                target: "workItem",
-              });
-            }
-          );
+          getInstrumentedStore().set(openChatPanelCreateTargetAtom, {
+            target: "workItem",
+          });
         },
         "search-agent-sessions": () => onOpenAgentSessionSearch?.(),
         "search-all-sessions": () => onOpenAllSessionsSearch?.(),
