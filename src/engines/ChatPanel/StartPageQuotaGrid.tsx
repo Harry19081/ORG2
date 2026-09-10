@@ -47,8 +47,8 @@ function StartPageQuotaCard({
   const { t: tIntegrations } = useTranslation("integrations");
 
   return (
-    <div className={`min-w-0 p-3 ${START_PAGE_QUOTA_SURFACE_CLASS}`}>
-      <div className="mb-2 flex min-w-0 items-center gap-2">
+    <div className={`min-w-0 p-4 ${START_PAGE_QUOTA_SURFACE_CLASS}`}>
+      <div className="mb-3 flex min-w-0 items-center gap-2">
         <ModelIcon agentType={entry.modelType} size="small" />
         <div
           className="min-w-0 flex-1"
@@ -58,27 +58,24 @@ function StartPageQuotaCard({
               : entry.accountName
           }
         >
-          <div className="truncate text-xs leading-4 font-semibold text-text-1">
+          <div className="truncate text-sm leading-5 font-semibold text-text-1">
             {entry.accountName}
           </div>
-          <div className="truncate text-[11px] leading-4 text-text-3">
+          <div className="truncate text-xs leading-5 text-text-3">
             {entry.accountPlan ?? "-"}
             {entry.quotaMessage ? ` · ${entry.quotaMessage}` : ""}
           </div>
         </div>
       </div>
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {entry.metrics.map((metric) => {
           if (metric.kind === "value") {
             return (
-              <div
-                key={metric.key}
-                className="flex items-center justify-between gap-2 text-[11px] leading-4"
-              >
-                <span className="min-w-0 truncate text-text-3">
+              <div key={metric.key} className="flex min-w-0 flex-col gap-1">
+                <span className="truncate text-xs leading-4 text-text-3">
                   {metric.label}
                 </span>
-                <span className="shrink-0 font-semibold text-text-1 tabular-nums">
+                <span className="text-2xl leading-8 font-semibold break-words text-text-1 tabular-nums">
                   {metric.value}
                 </span>
               </div>
@@ -96,7 +93,7 @@ function StartPageQuotaCard({
           );
           return (
             <div key={metric.key} className="space-y-1">
-              <div className="flex items-center justify-between gap-2 text-[11px] leading-4">
+              <div className="flex items-center justify-between gap-2 text-xs leading-4">
                 <span className="min-w-0 truncate text-text-3">
                   {metric.label}
                   {resetHint ? (
@@ -106,9 +103,7 @@ function StartPageQuotaCard({
                 <span
                   className={`shrink-0 font-semibold tabular-nums ${textColorClass}`}
                 >
-                  {tIntegrations("keyVault.quota.percentLeft", {
-                    percent: Math.round(metric.remainingPercent),
-                  })}
+                  {Math.round(metric.remainingPercent)}%
                 </span>
               </div>
               <div className="h-1 w-full overflow-hidden rounded-full bg-fill-3">
