@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { openPath } from "@tauri-apps/plugin-opener";
 import { act, createElement } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -6,6 +7,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { dismissHoverCard } from "@src/components/SessionHoverCard/singletonStore";
 
 import { SpotlightItemRow } from "./SpotlightItemRow";
+
+vi.mock("@tauri-apps/plugin-opener", () => ({
+  openPath: vi.fn().mockResolvedValue(undefined),
+  revealItemInDir: vi.fn().mockResolvedValue(undefined),
+}));
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -26,6 +32,7 @@ describe("Spotlight row detail panes", () => {
     });
   };
   beforeEach(() => {
+    vi.mocked(openPath).mockResolvedValue(undefined);
     vi.useFakeTimers();
     vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
     vi.stubGlobal(
@@ -53,6 +60,12 @@ describe("Spotlight row detail panes", () => {
               data: { fs_uri: "/work/repo", branch: "main" },
             },
             {
+              id: "remote-repo",
+              label: "Remote repository",
+              type: "repo" as const,
+              data: { repo_url: "https://example.com/repo" },
+            },
+            {
               id: "folders",
               label: "Workspace",
               type: "repo" as const,
@@ -62,6 +75,15 @@ describe("Spotlight row detail panes", () => {
                   { name: "server", path: "/work/server" },
                 ],
                 contextMenuCopy: { path: "/work/client" },
+              },
+            },
+            {
+              id: "worktree",
+              label: "tree",
+              type: "option" as const,
+              data: {
+                worktreePath: "/work/tree",
+                branch: "dev/feature",
               },
             },
             {
@@ -107,16 +129,23 @@ describe("Spotlight row detail panes", () => {
     hover("repo");
     expect(pane()?.textContent).toContain("/work/repo");
     expect(pane()?.textContent).toContain("main");
-    hover("branch");
+    hover("worktree");
     expect(
       document.querySelectorAll("[data-spotlight-detail-pane]")
     ).toHaveLength(1);
     expect(pane()?.textContent).toContain("/work/tree");
-    expect(pane()?.textContent).toContain("git.remote");
-    expect(pane()?.children).toHaveLength(2);
+    expect(pane()?.children).toHaveLength(3);
+    expect(pane()!.children[0].querySelector("svg")).toBeNull();
+    expect(pane()!.children[1].querySelector("svg")).not.toBeNull();
+    expect(pane()!.children[2].querySelector("svg")).not.toBeNull();
     expect(pane()?.textContent).not.toContain("19m");
     expect(pane()?.textContent).not.toContain("2026-09-07");
     expect(select).not.toHaveBeenCalled();
+  });
+  it("does not show a detail card for branch rows", () => {
+    hover("branch");
+    expect(pane()).toBeNull();
+    expect(vi.getTimerCount()).toBe(0);
   });
   it("stacks each repository name and visible path without a workspace heading", () => {
     hover("folders");
@@ -125,12 +154,51 @@ describe("Spotlight row detail panes", () => {
     for (const [index, name] of ["client", "server"].entries()) {
       const detail = repos!.children[index];
       expect(detail.children[0].textContent).toBe(name);
-      expect(detail.children[0].querySelector("svg")).not.toBeNull();
+      expect(detail.children[0].querySelector("svg")).toBeNull();
+      expect(detail.children[1].querySelector("svg")).not.toBeNull();
       expect(detail.children[1].textContent).toBe(`/work/${name}`);
-      expect(detail.children[1].getAttribute("title")).toBe(`/work/${name}`);
+      expect(detail.querySelector("[title], [aria-label]")).toBeNull();
     }
     expect(pane()?.textContent).not.toContain("Workspace");
     expect(pane()?.querySelector("[data-spotlight-folder-chips]")).toBeNull();
+  });
+  it("shows a plain folder title and equally styled branch and path icon rows", () => {
+    hover("worktree");
+    const heading = pane()!.children[0];
+    expect(heading.textContent).toBe("tree");
+    expect(heading.querySelector("svg")).toBeNull();
+    expect(pane()!.children[1].textContent).toBe("dev/feature");
+    expect(pane()!.children[1].querySelectorAll("svg")).toHaveLength(1);
+    expect(pane()!.children[2].textContent).toBe("/work/tree");
+    expect(pane()!.querySelector("[title], [aria-label]")).toBeNull();
+    expect(pane()!.children[2].querySelectorAll("svg")).toHaveLength(2);
+    expect(pane()!.children[1].className).toBe(pane()!.children[2].className);
+  });
+  it("uses a plain repository title with secondary branch and path icons", () => {
+    hover("repo");
+    expect(pane()!.children[0].textContent).toBe("Repository");
+    expect(pane()!.children[0].querySelector("svg")).toBeNull();
+    expect(pane()!.children[1].textContent).toBe("main");
+    expect(pane()!.children[2].textContent).toBe("/work/repo");
+    expect(pane()!.children[1].querySelector("svg")).not.toBeNull();
+    expect(pane()!.children[2].querySelector("svg")).not.toBeNull();
+  });
+  it("opens local paths without selecting the picker row", () => {
+    hover("worktree");
+    const link = pane()!.querySelector("button")!;
+    expect(link.textContent).toBe("/work/tree");
+    expect(link.className).toContain("hover:underline");
+    expect(link.querySelector("svg")?.getAttribute("class")).toContain(
+      "group-hover/path:opacity-100"
+    );
+    act(() => link.click());
+    expect(openPath).toHaveBeenCalledWith("/work/tree");
+    expect(select).not.toHaveBeenCalled();
+  });
+  it("keeps remote repository URLs out of the local path opener", () => {
+    hover("remote-repo");
+    expect(pane()!.textContent).toContain("https://example.com/repo");
+    expect(pane()!.querySelector("button")).toBeNull();
   });
   it("lets the pointer enter the pane without dismissing or selecting the row", () => {
     hover("repo");
