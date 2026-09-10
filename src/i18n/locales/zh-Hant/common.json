@@ -1767,7 +1767,8 @@
       },
       "groups": {
         "agentSession": "Agent 會話",
-        "workspace": "工作區",
+        "workspace": "工作目錄",
+        "organization": "組織 / 工作區",
         "quickNavigation": "快速導覽",
         "editor": "編輯器",
         "view": "檢視",

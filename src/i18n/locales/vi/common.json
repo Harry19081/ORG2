@@ -1767,7 +1767,8 @@
       },
       "groups": {
         "agentSession": "Phiên Agent",
-        "workspace": "Workspace",
+        "workspace": "Thư mục làm việc",
+        "organization": "Tổ chức / Không gian làm việc",
         "quickNavigation": "Điều hướng nhanh",
         "editor": "Trình chỉnh sửa",
         "view": "Chế độ xem",

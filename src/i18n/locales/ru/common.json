@@ -1767,7 +1767,8 @@
       },
       "groups": {
         "agentSession": "Сессия Agent",
-        "workspace": "Workspace",
+        "workspace": "Рабочие каталоги",
+        "organization": "Организация / Рабочее пространство",
         "quickNavigation": "Быстрая навигация",
         "editor": "Редактор",
         "view": "Вид",

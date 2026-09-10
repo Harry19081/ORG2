@@ -1598,7 +1598,8 @@
       },
       "groups": {
         "agentSession": "Agent Session",
-        "workspace": "Workspace",
+        "workspace": "Working Directories",
+        "organization": "ORG / Workspace",
         "quickNavigation": "Quick Navigation",
         "editor": "Editor",
         "view": "View",

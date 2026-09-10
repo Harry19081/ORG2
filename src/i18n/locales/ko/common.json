@@ -1767,7 +1767,8 @@
       },
       "groups": {
         "agentSession": "Agent 세션",
-        "workspace": "Workspace",
+        "workspace": "작업 디렉터리",
+        "organization": "조직 / 워크스페이스",
         "quickNavigation": "빠른 탐색",
         "editor": "에디터",
         "view": "보기",
