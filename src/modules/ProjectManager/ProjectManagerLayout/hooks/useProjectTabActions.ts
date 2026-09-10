@@ -53,7 +53,6 @@ interface UseProjectTabActionsOptions {
   tabs: WorkStationTab[];
   activeTab: WorkStationTab | null;
   openTab: (tab: WorkStationTab) => void;
-  closeTab: (tabId: string) => void;
   primarySidebarCollapsed: boolean;
 }
 
@@ -61,7 +60,6 @@ export function useProjectTabActions({
   tabs,
   activeTab,
   openTab,
-  closeTab: _closeTab,
   primarySidebarCollapsed,
 }: UseProjectTabActionsOptions) {
   const { t } = useTranslation();
