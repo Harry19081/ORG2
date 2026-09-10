@@ -16,7 +16,6 @@ import {
   mobileRemoteApi,
 } from "@src/api/tauri/mobileRemote";
 import Button from "@src/components/Button";
-import { InlineBanner } from "@src/components/InlineBanner";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
@@ -38,16 +37,11 @@ import {
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 
 import MobileRemoteOutdoorPairingDetails from "./MobileRemoteOutdoorPairingDetails";
-import MobileRemoteQrCodeDisplay from "./MobileRemoteQrCodeDisplay";
 import PairedDeviceList from "./PairedDeviceList";
 import {
-  buildMobileRemoteWsUrl,
-  fetchMobileRemoteLanIp,
   formatMobileRemoteRelayStatusMessage,
   generateMobileRemoteLanToken,
-  isMobileRemoteLanHostPlaceholder,
   isMobileRemoteRelayReady,
-  resolveMobileRemoteLanHostWithIp,
 } from "./mobileRemoteSettingsHelpers";
 import { suggestOutdoorPairingPhoneLabel } from "./pairedDeviceDisplay";
 
@@ -65,15 +59,8 @@ const MobileRemoteSettingsSection: React.FC = () => {
     "mobileRemote.relayEnabled"
   );
   const [relayUrl, setRelayUrl] = useSetting("mobileRemote.relayUrl");
-  const [allowLanExposure, setAllowLanExposure] = useSetting(
-    "mobileRemote.allowLanExposure"
-  );
   const [lanToken, setLanToken] = useSetting("mobileRemote.lanToken");
-  const [lanPort] = useSetting("mobileRemote.lanPort");
 
-  const [phoneLabel, setPhoneLabel] = useState(() =>
-    suggestOutdoorPairingPhoneLabel()
-  );
   const [fullAccess, setFullAccess] = useState(true);
   const [pairing, setPairing] = useState<PairingInitOutput | null>(null);
   const [pairingLoading, setPairingLoading] = useState(false);
@@ -123,7 +110,7 @@ const MobileRemoteSettingsSection: React.FC = () => {
     try {
       const next = await mobileRemoteApi.pairInit({
         tier: fullAccess ? PERMISSION_TIER.FULL : PERMISSION_TIER.READ_ONLY,
-        label: phoneLabel.trim() || suggestOutdoorPairingPhoneLabel(),
+        label: suggestOutdoorPairingPhoneLabel(),
         isPrimary: true,
       });
       if (requestId !== pairingRequestIdRef.current) return;
@@ -138,7 +125,7 @@ const MobileRemoteSettingsSection: React.FC = () => {
         setPairingLoading(false);
       }
     }
-  }, [fullAccess, phoneLabel, t]);
+  }, [fullAccess, t]);
 
   const handleRelayPresetChange = useCallback(
     (preset: MobileRemoteRelayPreset) => {
@@ -215,26 +202,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
       }
     },
     [refreshDevices]
-  );
-
-  const {
-    data: resolvedLanIp,
-    loading: lanIpLoading,
-    refresh: refreshLanIp,
-  } = useAsyncData<string | null, boolean>({
-    key: enabled && allowLanExposure,
-    initialData: null,
-    enabled: enabled && allowLanExposure,
-    query: async () => fetchMobileRemoteLanIp(),
-  });
-  const wsHost = useMemo(
-    () => resolveMobileRemoteLanHostWithIp(allowLanExposure, resolvedLanIp),
-    [allowLanExposure, resolvedLanIp]
-  );
-  const lanWsUrl = useMemo(
-    () =>
-      buildMobileRemoteWsUrl({ host: wsHost, port: lanPort, token: lanToken }),
-    [lanPort, lanToken, wsHost]
   );
 
   return (
@@ -342,19 +309,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
               </SectionRow>
 
               <SectionRow
-                label={t("mobileRemote.phoneLabel")}
-                description={t("mobileRemote.phoneLabelDesc")}
-                layout="vertical"
-                indent
-              >
-                <Input
-                  value={phoneLabel}
-                  onChange={setPhoneLabel}
-                  maxLength={80}
-                />
-              </SectionRow>
-
-              <SectionRow
                 label={t("mobileRemote.fullAccess")}
                 description={t("mobileRemote.fullAccessDesc")}
                 indent
@@ -420,51 +374,6 @@ const MobileRemoteSettingsSection: React.FC = () => {
                 )}
               </SectionRow>
             </>
-          ) : null}
-
-          <SectionRow
-            label={t("mobileRemote.lanAdvanced")}
-            description={t("mobileRemote.lanAdvancedDesc")}
-            indent
-          >
-            <Switch
-              checked={allowLanExposure}
-              onCheckedChange={setAllowLanExposure}
-            />
-          </SectionRow>
-
-          {allowLanExposure ? (
-            <SectionRow
-              label={t("mobileRemote.pairing")}
-              description={t("mobileRemote.pairingDesc")}
-              layout="vertical"
-              indent
-            >
-              <InlineBanner tone="warning">
-                {t("mobileRemote.securityNotice")}
-              </InlineBanner>
-              <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-start">
-                <MobileRemoteQrCodeDisplay
-                  value={lanWsUrl}
-                  unresolved={isMobileRemoteLanHostPlaceholder(wsHost)}
-                  ariaLabel={t("mobileRemote.qrAriaLabel")}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="font-mono text-sm break-all text-text-1">
-                    {lanWsUrl}
-                  </p>
-                  <Button
-                    variant="tertiary"
-                    appearance="ghost"
-                    size="small"
-                    disabled={lanIpLoading}
-                    onClick={refreshLanIp}
-                  >
-                    {t("mobileRemote.refreshLanIp")}
-                  </Button>
-                </div>
-              </div>
-            </SectionRow>
           ) : null}
         </>
       ) : null}
