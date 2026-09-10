@@ -167,21 +167,8 @@
       "unknownRole": "未知角色"
     },
     "guide": {
-      "trigger": "開啟使用引導",
-      "title": "開始使用 ORGII",
       "startSession": "建立第一個工作階段",
-      "close": "關閉引導",
-      "localWorkspace": "本機工作區",
-      "connectOrganization": "連接或建立工作空間",
-      "createOrganizationHint": "輸入工作空間名稱，然後點選「建立」。雲端工作空間建立成功後，引導會進入下一步。",
-      "inviteTeammate": "邀請一位團隊成員",
-      "inviteTeammateHint": "在這裡建立邀請連結，然後傳送給你的團隊成員。",
-      "invitePermissionHint": "你可以在這裡查看成員列表；邀請需要由工作空間管理員或 Owner 建立。",
-      "viewTeamActivity": "查看團隊用量",
-      "viewTeamActivityHint": "已開啟「執行階段 > 成員」。選擇一位團隊成員即可查看 Codex、Claude 和 Cursor 用量；若無資料，請先啟用團隊執行階段同步。",
-      "exploreProduct": "瞭解主要頁面",
-      "nextStep": "下一步",
-      "dismiss": "關閉指南"
+      "connectOrganization": "連接或建立工作空間"
     }
   },
   "launchpad": {

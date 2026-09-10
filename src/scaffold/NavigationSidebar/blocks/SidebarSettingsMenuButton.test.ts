@@ -19,6 +19,7 @@ import {
   org2CloudAuthAtom,
 } from "@src/features/Org2Cloud/org2CloudAuthAtom";
 import * as entitlementCoordinator from "@src/features/Org2Cloud/org2CloudEntitlementCoordinator";
+import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
 import { devModeEnabledAtom } from "@src/store/platform/devModeAtom";
 
 import SidebarSettingsMenuButton from "./SidebarSettingsMenuButton";
@@ -151,6 +152,31 @@ describe("SidebarSettingsMenuButton", () => {
     expect(changelogButton).toBeUndefined();
     expect(tutorialButton).toBeUndefined();
     expect(adeManagerButton).toBeUndefined();
+  });
+
+  it("hides onboarding when dev mode is disabled", () => {
+    act(() => store.set(devModeEnabledAtom, false));
+    expect(
+      document.querySelector('[data-testid="sidebar-menu-onboarding"]')
+    ).toBeNull();
+  });
+
+  it("opens onboarding from the account menu after closing the dropdown", () => {
+    const onOpen = vi.fn(() =>
+      expect(mocks.closeDropdown).toHaveBeenCalledOnce()
+    );
+    window.addEventListener(TUTORIALS_OPEN_EVENT, onOpen);
+    try {
+      const button = document.querySelector<HTMLButtonElement>(
+        '[data-testid="sidebar-menu-onboarding"]'
+      );
+      expect(button?.textContent).toBe("discovery.title");
+      expect(button?.getAttribute("aria-haspopup")).toBe("dialog");
+      act(() => button!.click());
+      expect(onOpen).toHaveBeenCalledOnce();
+    } finally {
+      window.removeEventListener(TUTORIALS_OPEN_EVENT, onOpen);
+    }
   });
 
   it("uses the standard square button radius for its footer trigger", () => {

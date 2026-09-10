@@ -167,21 +167,8 @@
       "unknownRole": "Unbekannte Rolle"
     },
     "guide": {
-      "trigger": "Anleitung öffnen",
-      "title": "Erste Schritte mit ORGII",
       "startSession": "Sitzung starten",
-      "close": "Anleitung schließen",
-      "localWorkspace": "Lokaler Arbeitsbereich",
-      "connectOrganization": "Arbeitsbereich verbinden oder erstellen",
-      "createOrganizationHint": "Gib einen Arbeitsbereichsnamen ein und wähle dann „Erstellen“. Nach der Erstellung des Cloud-Arbeitsbereichs geht die Anleitung weiter.",
-      "inviteTeammate": "Teammitglied einladen",
-      "inviteTeammateHint": "Erstelle hier einen Einladungslink und sende ihn an dein Teammitglied.",
-      "invitePermissionHint": "Du kannst hier die Mitgliederliste ansehen. Die Einladung muss von einem Arbeitsbereichsadministrator oder Eigentümer erstellt werden.",
-      "viewTeamActivity": "Team-Nutzung anzeigen",
-      "viewTeamActivityHint": "Runtime ist bei „Mitglieder“ geöffnet. Wähle ein Teammitglied aus, um die Codex-, Claude- und Cursor-Nutzung zu sehen. Aktiviere zuerst die Team-Runtime-Synchronisierung, falls keine Daten erscheinen.",
-      "exploreProduct": "Produkttour starten",
-      "nextStep": "Nächster Schritt",
-      "dismiss": "Anleitung ausblenden"
+      "connectOrganization": "Arbeitsbereich verbinden oder erstellen"
     }
   },
   "launchpad": {

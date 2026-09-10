@@ -167,21 +167,8 @@
       "unknownRole": "Bilinmeyen rol"
     },
     "guide": {
-      "trigger": "Kılavuzu aç",
-      "title": "ORGII'yi kullanmaya başlayın",
       "startSession": "Oturum başlat",
-      "close": "Kılavuzu kapat",
-      "localWorkspace": "Yerel çalışma alanı",
-      "connectOrganization": "Bir çalışma alanı bağlayın veya oluşturun",
-      "createOrganizationHint": "Bir çalışma alanı adı girin ve Oluştur’u seçin. Bulut çalışma alanı oluşturulduktan sonra rehber sonraki adıma geçer.",
-      "inviteTeammate": "Bir ekip arkadaşı davet edin",
-      "inviteTeammateHint": "Burada bir davet bağlantısı oluşturup ekip arkadaşınıza gönderin.",
-      "invitePermissionHint": "Üye listesini burada görüntüleyebilirsiniz. Daveti bir çalışma alanı yöneticisi veya sahibi oluşturmalıdır.",
-      "viewTeamActivity": "Ekip kullanımını görüntüle",
-      "viewTeamActivityHint": "Runtime Üyeler görünümünde açıldı. Codex, Claude ve Cursor kullanımını görmek için bir ekip üyesi seçin; veri yoksa önce ekip Runtime eşitlemesini etkinleştirin.",
-      "exploreProduct": "Ana sayfaları keşfedin",
-      "nextStep": "Sonraki adım",
-      "dismiss": "Rehberi kapat"
+      "connectOrganization": "Bir çalışma alanı bağlayın veya oluşturun"
     }
   },
   "launchpad": {

@@ -1,6 +1,6 @@
 /**
- * Cycling art-video clips with ORG II overlay — shared by onboarding flows
- * (select repo, login loading states).
+ * Cycling art-video clips with ORG II overlay — used by the login card
+ * and its loading states.
  */
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
@@ -26,16 +26,16 @@ const LOADING_VIDEOS = [
   VermeerGeographer,
 ];
 
-/** Square frame for the art clips (login, select-repo hero). */
-export const ONBOARDING_LOADING_VIDEO_FRAME_PX = 350;
+/** Square frame for the art clips (login artwork). */
+const LOGIN_ARTWORK_FRAME_PX = 350;
 
 /**
- * Tailwind width utilities matching {@link ONBOARDING_LOADING_VIDEO_FRAME_PX}
+ * Tailwind width utilities matching {@link LOGIN_ARTWORK_FRAME_PX}
  * (literal strings so JIT picks them up — update both when changing size).
  */
-export const ONBOARDING_LOADING_VIDEO_WIDTH_CLASS = "w-[350px]";
+export const LOGIN_ARTWORK_WIDTH_CLASS = "w-[350px]";
 
-export const OnboardingLoadingVideo: React.FC = () => {
+export const LoginArtwork: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentIndex, setCurrentIndex] = useState(() =>
     Math.floor(Math.random() * LOADING_VIDEOS.length)
@@ -56,8 +56,8 @@ export const OnboardingLoadingVideo: React.FC = () => {
     <div
       className="relative overflow-hidden rounded-lg bg-black"
       style={{
-        width: ONBOARDING_LOADING_VIDEO_FRAME_PX,
-        height: ONBOARDING_LOADING_VIDEO_FRAME_PX,
+        width: LOGIN_ARTWORK_FRAME_PX,
+        height: LOGIN_ARTWORK_FRAME_PX,
       }}
     >
       <video

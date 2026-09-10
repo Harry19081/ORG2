@@ -167,21 +167,8 @@
       "unknownRole": "Papel desconhecido"
     },
     "guide": {
-      "trigger": "Abrir guia",
-      "title": "Comece a usar o ORGII",
       "startSession": "Iniciar uma sessão",
-      "close": "Fechar guia",
-      "localWorkspace": "Espaço de trabalho local",
-      "connectOrganization": "Conecte ou crie um espaço de trabalho",
-      "createOrganizationHint": "Insira um nome para o espaço de trabalho e selecione Criar. O guia continuará após a criação do espaço de trabalho na nuvem.",
-      "inviteTeammate": "Convide um membro da equipe",
-      "inviteTeammateHint": "Crie um link de convite aqui e envie-o ao membro da equipe.",
-      "invitePermissionHint": "Você pode ver a lista de membros aqui. Um administrador ou proprietário do espaço de trabalho deve criar o convite.",
-      "viewTeamActivity": "Ver o uso da equipe",
-      "viewTeamActivityHint": "O Runtime está aberto em Membros. Escolha um membro para ver o uso de Codex, Claude e Cursor; se não houver dados, ative primeiro a sincronização do Runtime da equipe.",
-      "exploreProduct": "Conhecer as páginas principais",
-      "nextStep": "Próxima etapa",
-      "dismiss": "Dispensar guia"
+      "connectOrganization": "Conecte ou crie um espaço de trabalho"
     }
   },
   "launchpad": {

@@ -189,21 +189,8 @@
       "unknownRole": "Unknown role"
     },
     "guide": {
-      "trigger": "Open guide",
-      "title": "Get started with ORGII",
       "startSession": "Start a session",
-      "close": "Close guide",
-      "localWorkspace": "Local workspace",
-      "connectOrganization": "Connect or create a workspace",
-      "createOrganizationHint": "Enter a workspace name, then select Create. The guide continues after the cloud workspace is created.",
-      "inviteTeammate": "Invite a teammate",
-      "inviteTeammateHint": "Create an invite link here, then send it to your teammate.",
-      "invitePermissionHint": "You can view the member list here. A workspace admin or owner must create the invite.",
-      "viewTeamActivity": "View team usage",
-      "viewTeamActivityHint": "Runtime is open on Members. Choose a teammate to view their Codex, Claude, and Cursor usage; if no data appears, enable team runtime sync first.",
-      "exploreProduct": "Take the product tour",
-      "nextStep": "Next step",
-      "dismiss": "Dismiss guide"
+      "connectOrganization": "Connect or create a workspace"
     }
   },
   "collaboration": {
