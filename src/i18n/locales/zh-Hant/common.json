@@ -754,7 +754,6 @@
   "filters": {
     "all": "全部",
     "source": "來源",
-    "local": "本地",
     "member": "成員",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "選擇 Agent 或 Agent 團隊...",

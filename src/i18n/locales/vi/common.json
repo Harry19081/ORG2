@@ -754,7 +754,6 @@
   "filters": {
     "all": "Tất cả",
     "source": "Nguồn",
-    "local": "Cục bộ",
     "member": "Thành viên",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Chọn Agent hoặc Nhóm Agent...",

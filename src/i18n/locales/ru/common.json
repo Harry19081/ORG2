@@ -754,7 +754,6 @@
   "filters": {
     "all": "Все",
     "source": "Источник",
-    "local": "Локальные",
     "member": "Участник",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Выбрать Agent или Команду Agent...",

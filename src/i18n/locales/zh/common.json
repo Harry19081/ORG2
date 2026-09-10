@@ -585,7 +585,6 @@
   "filters": {
     "all": "全部",
     "source": "来源",
-    "local": "本地",
     "member": "成员",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "选择 Agent 或 Agent 团队...",

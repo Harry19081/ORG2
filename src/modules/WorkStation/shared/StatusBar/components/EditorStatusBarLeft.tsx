@@ -202,7 +202,7 @@ export const EditorStatusBarLeft: React.FC<EditorStatusBarLeftProps> = ({
               ? activeWorktree.path.split("/").pop() ||
                 activeWorktree.branch ||
                 activeWorktree.path
-              : t("selectors.branch.labels.mainWorktree", "Main")}
+              : "main"}
           </StatusBarLabel>
         </StatusBarButton>
       </StatusBarTooltip>

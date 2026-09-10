@@ -585,7 +585,6 @@
   "filters": {
     "all": "All",
     "source": "Source",
-    "local": "Local",
     "member": "Member",
     "tokenMarket": "Token Market",
     "searchAgentOrOrg": "Select an agent or Agent team...",
