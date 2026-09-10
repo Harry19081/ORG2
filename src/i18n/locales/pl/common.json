@@ -894,6 +894,7 @@
     "noSessionsFound": "Nie znaleziono sesji",
     "typeToSearchFiles": "Wpisz, aby wyszukać pliki...",
     "selectFileToViewChanges": "Wybierz plik, aby zobaczyć zmiany",
+    "selectSidebarFileToViewChanges": "Wybierz plik na pasku bocznym, aby zobaczyć zmiany",
     "failedToLoadHistory": "Nie udało się załadować historii",
     "noGitHistory": "Brak dostępnej historii Git",
     "noCommitHistory": "Nie znaleziono commitów",

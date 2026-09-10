@@ -726,6 +726,7 @@
     "noSessionsFound": "No sessions found",
     "typeToSearchFiles": "Type to search files...",
     "selectFileToViewChanges": "Select a file to view changes",
+    "selectSidebarFileToViewChanges": "Select a file in the sidebar to view changes",
     "failedToLoadHistory": "Failed to load history",
     "noGitHistory": "No Git history available",
     "noCommitHistory": "No commits found",

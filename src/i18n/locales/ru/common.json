@@ -894,6 +894,7 @@
     "noSessionsFound": "Session не найдены",
     "typeToSearchFiles": "Введите для поиска файлов...",
     "selectFileToViewChanges": "Выберите файл для просмотра изменений",
+    "selectSidebarFileToViewChanges": "Выберите файл на боковой панели для просмотра изменений",
     "failedToLoadHistory": "Не удалось загрузить историю",
     "noGitHistory": "История Git недоступна",
     "noCommitHistory": "Коммиты не найдены",
