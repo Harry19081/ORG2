@@ -378,6 +378,8 @@
   "cloud": {
     "signIn": "Zaloguj się",
     "signOut": "Wyloguj się",
+    "signOutConfirmTitle": "Wylogować się?",
+    "signOutConfirmBody": "Aby uzyskać dostęp do konta, musisz zalogować się ponownie.",
     "signedInAs": "Zalogowano jako {{name}}",
     "signedInToast": "Signed in to ORG2 Cloud",
     "sessionExpired": "Sesja ORG2 Cloud wygasła. Zaloguj się ponownie, aby kontynuować.",
