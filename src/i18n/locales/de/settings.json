@@ -208,6 +208,12 @@
       "colorful": "Farbig",
       "monochrome": "Monochrom"
     },
+    "appIcon": "App-Symbol",
+    "appIconDesc": "Symbol der laufenden App im Dock oder in der Taskleiste. Die installierte App behält ihr eigenes Symbol im Finder",
+    "appIconOptions": {
+      "dark": "Dunkle Kachel",
+      "light": "Helle Kachel"
+    },
     "translucentSidebar": "Transluzente Seitenleiste",
     "skin": "Skin",
     "accent": "Akzent",
