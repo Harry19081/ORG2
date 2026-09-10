@@ -1421,7 +1421,11 @@ pub async fn run_app_server_turn(
             Vec::new()
         }
     };
-    let mut catalog_chunk = ActivityChunk::new(&turn.session_id, "session_start", "session_start");
+    let mut catalog_chunk = ActivityChunk::new(
+        &turn.session_id,
+        "native_command_catalog",
+        "native_command_catalog",
+    );
     catalog_chunk.args = serde_json::json!({"native_provider": "codex", "slash_commands": skills.iter().map(|(name, _)| name).collect::<Vec<_>>()});
     catalog_chunk.result = serde_json::json!({"success": true});
     let _ = chunk_tx.send(catalog_chunk).await;

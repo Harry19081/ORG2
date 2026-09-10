@@ -314,8 +314,20 @@ fn visit_claude_code_history_from_reader<R: BufRead>(
 // Normalize only that envelope so queue reconciliation sees the literal command
 // the user submitted; arbitrary prose containing tags remains unchanged.
 fn claude_local_command_input(text: &str) -> Option<String> {
-    let rest = text.trim().strip_prefix("<command-name>")?;
-    let (name, rest) = rest.split_once("</command-name>")?;
+    fn field<'a>(text: &'a str, tag: &str) -> Option<(&'a str, &'a str)> {
+        text.trim()
+            .strip_prefix(&format!("<{tag}>"))?
+            .split_once(&format!("</{tag}>"))
+    }
+    // Built-ins and custom skills use opposite field order in native history.
+    let (name, message, rest) = if let Some((name, rest)) = field(text, "command-name") {
+        let (message, rest) = field(rest, "command-message")?;
+        (name, message, rest)
+    } else {
+        let (message, rest) = field(text, "command-message")?;
+        let (name, rest) = field(rest, "command-name")?;
+        (name, message, rest)
+    };
     let token = name.strip_prefix('/')?;
     if token.is_empty()
         || !token
@@ -324,8 +336,6 @@ fn claude_local_command_input(text: &str) -> Option<String> {
     {
         return None;
     }
-    let rest = rest.trim().strip_prefix("<command-message>")?;
-    let (message, rest) = rest.split_once("</command-message>")?;
     if message != token {
         return None;
     }
@@ -444,6 +454,7 @@ mod local_command_tests {
     #[test]
     fn only_exact_provider_envelopes_become_commands() {
         assert_eq!(claude_local_command_input("<command-name>/compact</command-name> <command-message>compact</command-message> <command-args>keep APIs\nverbatim</command-args>"), Some("/compact keep APIs\nverbatim".into()));
+        assert_eq!(claude_local_command_input("<command-message>org2-native-fixture</command-message>\n<command-name>/org2-native-fixture</command-name>\n<command-args>APP_OK</command-args>"), Some("/org2-native-fixture APP_OK".into()));
         for text in ["explain <command-name>/compact</command-name>", "<command-name>/a</command-name><command-message>b</command-message><command-args></command-args>", "<command-name>/tmp/a</command-name><command-message>tmp/a</command-message><command-args></command-args>"] {
             assert!(claude_local_command_input(text).is_none());
         }

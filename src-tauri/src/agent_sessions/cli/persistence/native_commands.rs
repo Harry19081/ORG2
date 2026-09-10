@@ -10,17 +10,19 @@ fn catalog_id(session_id: &str) -> String {
 }
 
 fn save(conn: &Connection, chunk: &ActivityChunk) -> rusqlite::Result<()> {
-    conn.execute("INSERT INTO code_session_chunks (chunk_id, session_id, action_type, function, args_json, result_json, sequence, created_at) VALUES (?1, ?2, 'session_start', 'session_start', ?3, '{\"success\":true}', -1, ?4) ON CONFLICT(chunk_id) DO UPDATE SET args_json=excluded.args_json, created_at=excluded.created_at",
+    conn.execute("INSERT INTO code_session_chunks (chunk_id, session_id, action_type, function, args_json, result_json, sequence, created_at) VALUES (?1, ?2, 'native_command_catalog', 'native_command_catalog', ?3, '{\"success\":true}', -1, ?4) ON CONFLICT(chunk_id) DO UPDATE SET args_json=excluded.args_json, created_at=excluded.created_at",
         params![catalog_id(&chunk.session_id), chunk.session_id, chunk.args.to_string(), chunk.created_at])?;
     Ok(())
 }
 
 pub fn record_native_commands(chunk: &ActivityChunk) -> rusqlite::Result<()> {
-    if chunk.action_type != "session_start"
-        || !chunk
-            .args
-            .get("slash_commands")
-            .is_some_and(serde_json::Value::is_array)
+    if !matches!(
+        chunk.action_type.as_str(),
+        "session_start" | "native_command_catalog"
+    ) || !chunk
+        .args
+        .get("slash_commands")
+        .is_some_and(serde_json::Value::is_array)
     {
         return Ok(());
     }
@@ -33,13 +35,32 @@ pub fn load_native_commands(session_id: &str) -> rusqlite::Result<Option<Activit
     load(&conn, session_id)
 }
 
+pub fn load_native_commands_for_provider(
+    session_id: &str,
+    provider: &str,
+) -> Result<Option<ActivityChunk>, String> {
+    let catalog = load_native_commands(session_id)
+        .map_err(|error| format!("Native command catalog: {error}"))?;
+    Ok(catalog.filter(|chunk| {
+        chunk
+            .args
+            .get("native_provider")
+            .and_then(serde_json::Value::as_str)
+            == Some(provider)
+    }))
+}
+
 fn load(conn: &Connection, session_id: &str) -> rusqlite::Result<Option<ActivityChunk>> {
     conn.query_row(
         "SELECT args_json, created_at FROM code_session_chunks WHERE chunk_id=?1 AND session_id=?2",
         params![catalog_id(session_id), session_id],
         |row| {
             let args: String = row.get(0)?;
-            let mut chunk = ActivityChunk::new(session_id, "session_start", "session_start");
+            let mut chunk = ActivityChunk::new(
+                session_id,
+                "native_command_catalog",
+                "native_command_catalog",
+            );
             chunk.chunk_id = catalog_id(session_id);
             chunk.created_at = row.get(1)?;
             chunk.args = serde_json::from_str(&args).map_err(|error| {
@@ -82,6 +103,7 @@ mod tests {
         );
         let loaded = load(&db, "a").unwrap().unwrap();
         assert_eq!(loaded.args, chunk.args);
+        assert_eq!(loaded.action_type, "native_command_catalog");
         assert_eq!(loaded.created_at, chunk.created_at);
         assert!(load(&db, "b").unwrap().is_none());
         db.execute("DELETE FROM code_sessions WHERE session_id='a'", [])

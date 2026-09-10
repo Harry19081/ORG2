@@ -37,7 +37,10 @@ export function nativeSlashNames(
     provider === "codex" ? ["compact", "review", "init", "status"] : [];
   for (let index = events.length - 1; index >= 0; index--) {
     const event = events[index];
-    if (event.sessionId !== sessionId || event.actionType !== "session_start")
+    if (
+      event.sessionId !== sessionId ||
+      !["session_start", "native_command_catalog"].includes(event.actionType)
+    )
       continue;
     if (event.args.native_provider !== provider) continue;
     const commands = event.args.slash_commands;

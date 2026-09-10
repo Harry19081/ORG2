@@ -539,3 +539,13 @@ fn ingest_backfills_opencode_subagent_prompt_from_child_session() {
         Some("Count all Rust files and return a report")
     );
 }
+
+#[test]
+fn native_command_catalog_is_completed_metadata_not_a_new_run() {
+    let mut chunk = make_chunk("native_command_catalog", "native_command_catalog");
+    chunk.args = Some(serde_json::json!({"slash_commands":["context"]}));
+    let event = normalize_chunk(&chunk, "sess-1");
+    assert_eq!(event.action_type, "native_command_catalog");
+    assert_eq!(event.display_variant, EventDisplayVariant::Session);
+    assert_eq!(event.display_status, EventDisplayStatus::Completed);
+}

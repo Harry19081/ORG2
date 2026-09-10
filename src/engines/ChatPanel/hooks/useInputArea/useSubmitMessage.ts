@@ -22,7 +22,7 @@ import { zodActionRegistry } from "@src/ActionSystem/schema/zodRegistry";
 import type { ComposerSnapshot } from "@src/components/ComposerInput";
 import { serializePillNode } from "@src/components/ComposerInput/utils";
 import Message from "@src/components/Message";
-import { chatEventsAtom } from "@src/engines/SessionCore";
+import { chatEventsAtom, eventsAtom } from "@src/engines/SessionCore";
 import { createLogger } from "@src/hooks/logger";
 import { useSecretScanGuard } from "@src/hooks/security/useSecretScanGuard";
 import { useSessionCommandActions } from "@src/hooks/session/useSessionPatch";
@@ -41,8 +41,12 @@ import {
   useManualCompact,
 } from "../useManualCompact";
 import { executeComposerCommand } from "./executeComposerCommand";
+import { executeNativeCliCommand } from "./executeNativeCliCommand";
 import { resolveMcpSlashCommand } from "./mcpSlashCommand";
-import { parseNativeSlashCommand } from "./nativeSlashCommands";
+import {
+  nativeSlashNames,
+  parseNativeSlashCommand,
+} from "./nativeSlashCommands";
 import { expandSkillPills } from "./outgoingTextTransforms";
 import { projectOutgoingUserMessage } from "./projectOutgoingUserMessage";
 import { interceptPendingQuestionBatches } from "./questionIntercept";
@@ -268,6 +272,25 @@ export function useSubmitMessage({
               rename,
               dispatch: (action) => zodActionRegistry.execute(action, {}),
             });
+            if (
+              remaining === undefined &&
+              isCliSession(draftSessionId) &&
+              nativeSlashNames(
+                provider,
+                draftSessionId,
+                store.get(eventsAtom)
+              ).includes(command.name)
+            ) {
+              if (submitDisabled || !(await guardAgainstSecrets(displayText)))
+                return;
+              await executeNativeCliCommand(draftSessionId, displayText);
+              if (!isExplicitAction) {
+                refs.composerInputRef.current?.clear();
+                await flushDraft("");
+              }
+              options.onSubmitted?.();
+              return;
+            }
             if (remaining !== undefined) {
               if (!remaining) {
                 if (!isExplicitAction) {

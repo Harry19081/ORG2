@@ -14,6 +14,7 @@
 import type { SessionEvent } from "../core/types";
 
 const INTERNAL_LIFECYCLE_ACTION_TYPES = new Set([
+  "native_command_catalog",
   "task_start",
   "task_completed",
   "task_failed",

@@ -10,7 +10,7 @@ import {
 function event(sessionId: string, commands: unknown): SessionEvent {
   return {
     sessionId,
-    actionType: "session_start",
+    actionType: "native_command_catalog",
     args: { native_provider: "claude_code", slash_commands: commands },
   } as unknown as SessionEvent;
 }

@@ -35,39 +35,6 @@ pub(super) fn review_params(thread_id: &str, instructions: &str) -> Value {
     json!({"threadId": thread_id, "delivery": "inline", "target": target})
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn commands_are_exact_and_attachments_remain_messages() {
-        assert_eq!(
-            parse(" /compact \n", false).unwrap(),
-            Some(NativeCommand::Compact)
-        );
-        assert!(parse("/compact preserve APIs", false).is_err());
-        for text in ["explain /compact", "/compactly", "/reviewer", "/my-skill"] {
-            assert_eq!(parse(text, false).unwrap(), None);
-        }
-        assert_eq!(parse("/compact", true).unwrap(), None);
-    }
-    #[test]
-    fn review_uses_native_operation_and_preserves_literal_instructions() {
-        assert_eq!(
-            parse("/review security\nfocus", false).unwrap(),
-            Some(NativeCommand::Review("security\nfocus".into()))
-        );
-        assert_eq!(
-            review_params("t", "")["target"],
-            json!({"type":"uncommittedChanges"})
-        );
-        assert_eq!(
-            review_params("t", "$(echo literal)")["target"],
-            json!({"type":"custom", "instructions":"$(echo literal)"})
-        );
-        assert_eq!(review_params("t", "")["delivery"], "inline");
-    }
-}
-
 /// Take only enabled skills reported for this request's working directory.
 /// Paths are supplied by the provider; never resolve an arbitrary user path.
 pub(super) fn skills(response: &Value) -> Vec<(String, String)> {
@@ -107,7 +74,7 @@ pub(super) fn init_prompt(instructions: &str) -> String {
 }
 
 pub(super) fn skill_name(text: &str) -> Option<&str> {
-    let token = text.trim().split_whitespace().next()?.strip_prefix('/')?;
+    let token = text.split_whitespace().next()?.strip_prefix('/')?;
     if token.is_empty()
         || !token
             .chars()
@@ -116,4 +83,37 @@ pub(super) fn skill_name(text: &str) -> Option<&str> {
         return None;
     }
     Some(token)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn commands_are_exact_and_attachments_remain_messages() {
+        assert_eq!(
+            parse(" /compact \n", false).unwrap(),
+            Some(NativeCommand::Compact)
+        );
+        assert!(parse("/compact preserve APIs", false).is_err());
+        for text in ["explain /compact", "/compactly", "/reviewer", "/my-skill"] {
+            assert_eq!(parse(text, false).unwrap(), None);
+        }
+        assert_eq!(parse("/compact", true).unwrap(), None);
+    }
+    #[test]
+    fn review_uses_native_operation_and_preserves_literal_instructions() {
+        assert_eq!(
+            parse("/review security\nfocus", false).unwrap(),
+            Some(NativeCommand::Review("security\nfocus".into()))
+        );
+        assert_eq!(
+            review_params("t", "")["target"],
+            json!({"type":"uncommittedChanges"})
+        );
+        assert_eq!(
+            review_params("t", "$(echo literal)")["target"],
+            json!({"type":"custom", "instructions":"$(echo literal)"})
+        );
+        assert_eq!(review_params("t", "")["delivery"], "inline");
+    }
 }

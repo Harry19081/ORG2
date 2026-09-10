@@ -164,11 +164,13 @@ describe("Composer skills menu", () => {
       async () => (await execJS(js.text(INPUT_SELECTOR)))?.trim() === "/model",
       { timeout: 5000 }
     );
-    expect(
-      await execJS(
-        `return document.querySelectorAll(${JSON.stringify(selector)}).length;`
-      )
-    ).toBe(0);
+    await browser.waitUntil(
+      async () =>
+        (await execJS(
+          `return document.querySelectorAll(${JSON.stringify(selector)}).length;`
+        )) === 0,
+      { timeout: 5000, timeoutMsg: "command selection did not close the menu" }
+    );
     expect(
       await execJS(
         `return document.querySelector('[data-testid="chat-send-button"]').disabled;`

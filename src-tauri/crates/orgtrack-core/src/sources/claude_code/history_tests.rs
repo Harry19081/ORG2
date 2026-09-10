@@ -1930,3 +1930,21 @@ fn local_command_stdout_survives_native_replay_as_a_completed_command() {
     std::fs::remove_file(path).unwrap();
     std::fs::remove_dir(dir).unwrap();
 }
+
+#[test]
+fn custom_command_envelope_replays_as_the_original_user_prompt() {
+    let dir = std::env::temp_dir().join(format!(
+        "orgii-claude-custom-command-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("custom-command.jsonl");
+    std::fs::write(&path, r#"{"type":"user","uuid":"u","timestamp":"2026-09-10T07:00:00Z","message":{"role":"user","content":"<command-message>fixture</command-message>\n<command-name>/fixture</command-name>\n<command-args>APP_OK</command-args>"}}
+{"type":"assistant","uuid":"a","parentUuid":"u","timestamp":"2026-09-10T07:00:01Z","message":{"role":"assistant","content":[{"type":"text","text":"CC_COMMAND_APP_OK"}]}}
+"#).unwrap();
+    let chunks = load_claude_code_history_from_path("claudecodeapp-custom", &path).unwrap();
+    assert_eq!(chunks.len(), 2);
+    assert_eq!(chunks[0].result["message"]["content"], "/fixture APP_OK");
+    assert_eq!(chunks[1].result["content"], "CC_COMMAND_APP_OK");
+    std::fs::remove_dir_all(dir).unwrap();
+}

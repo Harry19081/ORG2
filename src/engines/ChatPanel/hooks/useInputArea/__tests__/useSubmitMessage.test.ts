@@ -20,6 +20,7 @@ import {
 } from "../useSubmitMessage";
 
 const mocks = vi.hoisted(() => ({
+  nativeCommand: vi.fn(),
   clearImageDraft: vi.fn(),
   setPlan: vi.fn(),
   rename: vi.fn(),
@@ -35,6 +36,10 @@ const mocks = vi.hoisted(() => ({
   resolveMcpSlashCommand: vi.fn(),
   runManualCompact: vi.fn(),
   waitForPendingPills: vi.fn(),
+}));
+
+vi.mock("../executeNativeCliCommand", () => ({
+  executeNativeCliCommand: mocks.nativeCommand,
 }));
 
 vi.mock("@src/hooks/session/useSessionPatch", () => ({
@@ -66,7 +71,7 @@ vi.mock("@src/hooks/security/useSecretScanGuard", () => ({
 
 vi.mock("@src/engines/SessionCore", async () => {
   const { atom } = await import("jotai/vanilla");
-  return { chatEventsAtom: atom([]) };
+  return { chatEventsAtom: atom([]), eventsAtom: atom([]) };
 });
 
 vi.mock("@src/store/session", async () => {
@@ -249,23 +254,37 @@ describe("useSubmitMessage composer boundary", () => {
     };
   }
 
-  it("dispatches CLI compaction through the provider instead of clearing it at the Agent-only interceptor", async () => {
+  it.each(["codex", "claude_code"])(
+    "dispatches %s compaction as a native operation without conversation echo recovery",
+    async (provider) => {
+      mocks.isCliSession.mockReturnValue(true);
+      mocks.provider = provider;
+      mocks.parseCompactSlashCommand.mockReturnValue({});
+      const editor = createEditor("/compact");
+      const options = optionsFor(editor);
+      await mount(options);
+      await act(async () => {
+        await latestSubmit!();
+      });
+      expect(mocks.runManualCompact).not.toHaveBeenCalled();
+      expect(mocks.nativeCommand).toHaveBeenCalledWith(
+        options.draftSessionId,
+        "/compact"
+      );
+      expect(options.handleSessChatSubmit).not.toHaveBeenCalled();
+    }
+  );
+
+  it("retains native command text when the secret scan declines sending", async () => {
     mocks.isCliSession.mockReturnValue(true);
-    mocks.provider = "claude_code";
-    mocks.parseCompactSlashCommand.mockReturnValue({});
-    const editor = createEditor("/compact");
-    const options = optionsFor(editor);
-    await mount(options);
+    mocks.provider = "codex";
+    mocks.guardAgainstSecrets.mockResolvedValue(false);
+    const editor = createEditor("/review private text");
+    await mount(optionsFor(editor));
     await act(async () => {
       await latestSubmit!();
     });
-    expect(mocks.runManualCompact).not.toHaveBeenCalled();
-    expect(options.handleSessChatSubmit).toHaveBeenCalledWith(
-      undefined,
-      "/compact",
-      "agent:/compact",
-      undefined
-    );
+    expect(mocks.nativeCommand).not.toHaveBeenCalled();
   });
 
   it("opens the real model-selector atom and does not admit a model prompt", async () => {
