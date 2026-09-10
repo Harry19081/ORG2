@@ -129,6 +129,30 @@ describe("ModelPropertiesDropdown immediate changes", () => {
     expect(document.querySelector('[role="dialog"]')).toBeNull();
   }
 
+  it("shows only concrete efforts for a bare family selection", () => {
+    render("gpt-5.6-sol", ["gpt-5.6-sol", ...MODELS]);
+    open();
+    expect(range().max).toBe("5");
+    expect(range().getAttribute("aria-valuetext")).toBe("Medium");
+    expect(document.querySelector('[role="dialog"]')?.textContent).not.toMatch(
+      /Baseline|Default/
+    );
+    expect(save).not.toHaveBeenCalled();
+    changeRange("0");
+    expect(save).toHaveBeenLastCalledWith("gpt-5.6-sol-low");
+  });
+
+  it("shows Fast without a Default effort row for speed-only models", () => {
+    render("composer-2.5", ["composer-2.5", "composer-2.5-fast"]);
+    open();
+    expect(document.querySelector('input[type="range"]')).toBeNull();
+    expect(document.querySelector('[role="dialog"]')?.textContent).not.toMatch(
+      /Effort|Baseline|Default/
+    );
+    toggle("Fast");
+    expect(save).toHaveBeenLastCalledWith("composer-2.5-fast");
+  });
+
   it("saves valid effort and Fast changes without a footer, and stays open", () => {
     render("gpt-5.6-sol-high-fast");
     open();

@@ -43,12 +43,14 @@ export const VariantPill: React.FC<VariantPillProps> = ({
   groupModelIds,
   onApply,
 }) => {
-  const variant = parseModelVariant(modelId);
-
   const variantOptions = React.useMemo(
     () => buildVariantEditOptions(groupModelIds ?? [modelId]),
     [groupModelIds, modelId]
   );
+  const effectiveModelId =
+    variantOptions.resolveVariantId(variantOptions.parseSelection(modelId)) ??
+    modelId;
+  const variant = parseModelVariant(effectiveModelId);
 
   const pillClasses =
     "relative z-10 inline-flex h-[24px] shrink-0 items-center gap-0.5 rounded-full border border-transparent bg-transparent px-2 text-[11px] font-semibold text-text-2 transition-colors group-hover/model-row:border-border-3 group-hover/model-row:bg-bg-1 group-focus-within/model-row:border-border-3 group-focus-within/model-row:bg-bg-1";
