@@ -159,6 +159,3 @@ export function createSearchZodActions(repoPath: string) {
 
   return [searchCodebase, searchFiles];
 }
-
-// Default export for static registration (when repoPath not needed)
-export const searchZodActions = createSearchZodActions("");
