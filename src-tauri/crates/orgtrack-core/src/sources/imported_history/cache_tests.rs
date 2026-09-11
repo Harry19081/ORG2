@@ -707,6 +707,73 @@ fn continuation_election_never_promotes_and_skips_subagents() {
 }
 
 #[test]
+fn continuation_election_repromotes_a_superseded_winner_once_the_newer_generation_is_gone() {
+    let mut conn = fixture_conn();
+    let group = continuation_group_metadata_json(Some("family-b"));
+    let mut older = input(SOURCE_CODEX_APP, "gen1", 100);
+    older.source_metadata_json = group.clone();
+    let mut newer = input(SOURCE_CODEX_APP, "gen2", 200);
+    newer.source_metadata_json = group;
+    upsert_imported_session_cache_from_conn(&mut conn, &[older, newer]).expect("upsert");
+    demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP).expect("election");
+    assert!(!listable_of(&conn, SOURCE_CODEX_APP, "gen1"));
+    assert!(listable_of(&conn, SOURCE_CODEX_APP, "gen2"));
+    let stamped: String = conn
+        .query_row(
+            "SELECT source_metadata_json FROM imported_history_session_cache
+             WHERE source = ?1 AND source_session_id = 'gen1'",
+            [SOURCE_CODEX_APP],
+            |row| row.get(0),
+        )
+        .expect("gen1 metadata");
+    assert!(stamped.contains(CONTINUATION_SUPERSEDED_FIELD));
+
+    // The newer rollout's file is gone: the sync prunes its row while gen1's
+    // unchanged file is never re-parsed. The election must bring gen1 back.
+    prune_missing_records_from_conn(&conn, SOURCE_CODEX_APP, &["gen1".to_string()])
+        .expect("prune gen2");
+    demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP).expect("re-election");
+    assert!(listable_of(&conn, SOURCE_CODEX_APP, "gen1"));
+    let restored: String = conn
+        .query_row(
+            "SELECT source_metadata_json FROM imported_history_session_cache
+             WHERE source = ?1 AND source_session_id = 'gen1'",
+            [SOURCE_CODEX_APP],
+            |row| row.get(0),
+        )
+        .expect("gen1 metadata");
+    assert!(!restored.contains(CONTINUATION_SUPERSEDED_FIELD));
+
+    // A steady-state election must not rewrite anything.
+    let before = conn.total_changes();
+    demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP).expect("steady");
+    assert_eq!(conn.total_changes(), before);
+}
+
+#[test]
+fn continuation_election_keeps_a_winner_hidden_for_reasons_other_than_supersession() {
+    let mut conn = fixture_conn();
+    let group = continuation_group_metadata_json(Some("family-c"));
+    let mut older = input(SOURCE_CODEX_APP, "gen1", 100);
+    older.source_metadata_json = group.clone();
+    let mut newer = input(SOURCE_CODEX_APP, "gen2", 200);
+    newer.source_metadata_json = group.clone();
+    upsert_imported_session_cache_from_conn(&mut conn, &[older, newer]).expect("upsert");
+    demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP).expect("election");
+
+    // gen1 is re-parsed as a managed mirror: the upsert rewrites its metadata
+    // without the supersession stamp and hides it for ownership reasons.
+    let mut managed = input(SOURCE_CODEX_APP, "gen1", 100);
+    managed.source_metadata_json = group;
+    managed.listable = false;
+    upsert_imported_session_cache_from_conn(&mut conn, &[managed]).expect("managed upsert");
+    prune_missing_records_from_conn(&conn, SOURCE_CODEX_APP, &["gen1".to_string()])
+        .expect("prune gen2");
+    demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP).expect("re-election");
+    assert!(!listable_of(&conn, SOURCE_CODEX_APP, "gen1"));
+}
+
+#[test]
 fn canonical_lookup_skips_continuation_superseded_siblings() {
     let mut conn = fixture_conn();
     let group = continuation_group_metadata_json(Some("family-uuid"));
