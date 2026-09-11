@@ -22,6 +22,7 @@ import {
   Refresh04Icon,
   Tick01Icon,
 } from "@src/icons";
+import Modal from "@src/scaffold/ModalSystem";
 
 import { SHORTCUTS } from "../../../hooks/useSourceControlShortcuts";
 import { GIT_LABELS, formatCommitCount } from "../config";
@@ -77,8 +78,11 @@ export interface CommitSectionProps {
   behind: number;
 }
 
-export const CommitSection: React.FC<CommitSectionProps> = memo(
+type CommitControlsProps = CommitSectionProps & { showMessage?: boolean };
+
+const CommitControls: React.FC<CommitControlsProps> = memo(
   ({
+    showMessage = true,
     commitMessage,
     onCommitMessageChange,
     branchName,
@@ -246,16 +250,18 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     if (showPublishButton) {
       return (
         <div className={wrapperClass}>
-          <div className={innerGap}>
-            <Textarea
-              placeholder={commitMessagePlaceholder}
-              value={commitMessage}
-              onChange={onCommitMessageChange}
-              rows={2}
-              className={textareaClassName}
-            />
-            {sparkleButton}
-          </div>
+          {showMessage && (
+            <div className={innerGap}>
+              <Textarea
+                placeholder={commitMessagePlaceholder}
+                value={commitMessage}
+                onChange={onCommitMessageChange}
+                rows={2}
+                className={textareaClassName}
+              />
+              {sparkleButton}
+            </div>
+          )}
           <Button
             variant="primary"
             size="small"
@@ -301,16 +307,18 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     if (showCommitAndPublishButton) {
       return (
         <div className={wrapperClass}>
-          <div className={innerGap}>
-            <Textarea
-              placeholder={commitMessagePlaceholder}
-              value={commitMessage}
-              onChange={onCommitMessageChange}
-              rows={2}
-              className={textareaClassName}
-            />
-            {sparkleButton}
-          </div>
+          {showMessage && (
+            <div className={innerGap}>
+              <Textarea
+                placeholder={commitMessagePlaceholder}
+                value={commitMessage}
+                onChange={onCommitMessageChange}
+                rows={2}
+                className={textareaClassName}
+              />
+              {sparkleButton}
+            </div>
+          )}
           <Button
             variant="primary"
             size="small"
@@ -342,16 +350,18 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     if (showSyncButton) {
       return (
         <div className={wrapperClass}>
-          <div className={innerGap}>
-            <Textarea
-              placeholder={commitMessagePlaceholder}
-              value={commitMessage}
-              onChange={onCommitMessageChange}
-              rows={2}
-              className={textareaClassName}
-            />
-            {sparkleButton}
-          </div>
+          {showMessage && (
+            <div className={innerGap}>
+              <Textarea
+                placeholder={commitMessagePlaceholder}
+                value={commitMessage}
+                onChange={onCommitMessageChange}
+                rows={2}
+                className={textareaClassName}
+              />
+              {sparkleButton}
+            </div>
+          )}
           {hasSyncActions ? (
             <SplitButton
               variant="primary"
@@ -472,20 +482,22 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     // Commit section (default)
     return (
       <div className={wrapperClass}>
-        <div className={innerGap}>
-          <Textarea
-            placeholder={
-              isMerging && mergingBranch
-                ? `Merge branch '${mergingBranch}' into ${branchName || "current"}`
-                : commitMessagePlaceholder
-            }
-            value={commitMessage}
-            onChange={onCommitMessageChange}
-            rows={2}
-            className={textareaClassName}
-          />
-          {sparkleButton}
-        </div>
+        {showMessage && (
+          <div className={innerGap}>
+            <Textarea
+              placeholder={
+                isMerging && mergingBranch
+                  ? `Merge branch '${mergingBranch}' into ${branchName || "current"}`
+                  : commitMessagePlaceholder
+              }
+              value={commitMessage}
+              onChange={onCommitMessageChange}
+              rows={2}
+              className={textareaClassName}
+            />
+            {sparkleButton}
+          </div>
+        )}
 
         {/* Merge Continue Button */}
         {isMerging ? (
@@ -608,6 +620,42 @@ export const CommitSection: React.FC<CommitSectionProps> = memo(
     );
   }
 );
+
+CommitControls.displayName = "CommitControls";
+
+export const CommitSection: React.FC<CommitSectionProps> = memo((props) => {
+  const [open, setOpen] = useState(false);
+  const openModal = () => setOpen(true);
+  return (
+    <>
+      <CommitControls
+        {...props}
+        showMessage={false}
+        canCommit={!props.commitLoading}
+        onCommit={openModal}
+        onContinueMerge={props.onContinueMerge ? openModal : undefined}
+        onCommitAndPush={props.onCommitAndPush ? openModal : undefined}
+        onCommitAndPublish={props.onCommitAndPublish ? openModal : undefined}
+        onCommitAndSync={props.onCommitAndSync ? openModal : undefined}
+        onAmend={props.onAmend ? openModal : undefined}
+      />
+      <Modal
+        visible={open}
+        title={
+          props.branchName
+            ? `${GIT_LABELS.commit} · ${props.branchName}`
+            : GIT_LABELS.commit
+        }
+        onCancel={() => setOpen(false)}
+        footer={null}
+        size="medium"
+        width={600}
+      >
+        <CommitControls {...props} showCommitAndPublishButton={false} />
+      </Modal>
+    </>
+  );
+});
 
 CommitSection.displayName = "CommitSection";
 
