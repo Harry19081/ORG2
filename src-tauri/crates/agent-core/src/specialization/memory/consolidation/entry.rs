@@ -90,6 +90,31 @@ pub async fn consolidate(
     for (account_id, batch) in groups {
         let started_at = Utc::now().to_rfc3339();
         let pending_input = batch.len() as u32;
+        // A batch billed to an account that left the key vault can never
+        // resolve a consolidation model; it would fail on every trigger
+        // and keep the scope pending forever. Drain it instead.
+        if let Some(acct) = account_id.as_deref().filter(|acct| !account_exists(acct)) {
+            let abandoned = learnings::abandon_pending_for_account(&conn, scope, acct).unwrap_or(0);
+            let finished_at = Utc::now().to_rfc3339();
+            let _ = learnings::record_consolidation_run(
+                &conn,
+                &ConsolidationRunRecord {
+                    agent_scope: scope.to_string(),
+                    account_id: account_id.clone(),
+                    trigger: trigger.as_str().to_string(),
+                    mode: mode.as_str().to_string(),
+                    pending_input,
+                    abandoned: abandoned as u32,
+                    error: Some(format!(
+                        "account '{acct}' no longer exists; abandoned {abandoned} pending learning(s)"
+                    )),
+                    started_at,
+                    finished_at,
+                    ..Default::default()
+                },
+            );
+            continue;
+        }
         let info = match resolve_batch_provider_info(&conn, scope, &batch, account_id.as_deref()) {
             Ok(info) => info,
             Err(err) => {
@@ -183,6 +208,15 @@ pub async fn consolidate(
         scope, totals.added, totals.updated, totals.deleted, totals.none, totals.abandoned
     );
     Ok(totals)
+}
+
+/// Whether the key vault still holds `account_id`. Consolidation bills the
+/// model call to the learning's account, so a missing account is terminal
+/// for that batch, unlike a transient auth failure of an existing one.
+fn account_exists(account_id: &str) -> bool {
+    key_vault::key_store::KEY_SERVICE
+        .get_key_by_id(account_id)
+        .is_some()
 }
 
 #[cfg(test)]
