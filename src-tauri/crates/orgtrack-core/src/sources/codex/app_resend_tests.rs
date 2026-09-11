@@ -218,3 +218,71 @@ fn resend_filename_resolves_thread_and_preserves_managed_ownership() {
         CODEX_APP_METADATA_PARSER_VERSION
     );
 }
+
+#[test]
+fn resend_pin_follows_native_thread_and_unpins_legacy_generations() {
+    let fixture = Fixture::new("pins");
+    let original = format!("rollout-2026-08-23T12-40-07-{THREAD}");
+    let resend = format!("rollout-2026-08-25T06-19-04-{THREAD}_{ROLLOUT}");
+    let fork = format!("rollout-2026-08-25T06-20-00-{FORK}");
+    fixture.write(&original, THREAD, "2026-08-23T19:40:07Z", false);
+    let mut conn = fixture.conn();
+    fixture.sync(&mut conn);
+    let old_id = format!("codexapp-{original}");
+    let new_id = format!("codexapp-{resend}");
+    // Existing builds persisted the physical ID. Read repair must preserve it
+    // without writes, while the sidebar joins it to the new representative.
+    conn.execute(
+        "INSERT INTO imported_history_session_pin VALUES (?1, '2026-08-23')",
+        [&old_id],
+    )
+    .unwrap();
+    fixture.write(&resend, THREAD, "2026-08-24T22:19:04Z", false);
+    fixture.write(&fork, FORK, "2026-08-24T22:20:00Z", true);
+    fixture.sync(&mut conn);
+    let before = conn.total_changes();
+    let pins = cache::pinned_imported_session_ids_from_conn(&conn).unwrap();
+    let pinned_visible: Vec<_> = visible(&conn)
+        .into_iter()
+        .filter(|stem| {
+            pins.contains(&cache::imported_session_pin_identity(&format!(
+                "codexapp-{stem}"
+            )))
+        })
+        .collect();
+    assert_eq!(pinned_visible, [resend]);
+    assert_eq!(conn.total_changes(), before);
+    cache::set_imported_session_pinned_from_conn(&conn, &new_id, false, "").unwrap();
+    assert!(cache::pinned_imported_session_ids_from_conn(&conn)
+        .unwrap()
+        .is_empty());
+    cache::set_imported_session_pinned_from_conn(&conn, &new_id, true, "2026-08-25").unwrap();
+    assert_eq!(
+        conn.query_row(
+            "SELECT session_id FROM imported_history_session_pin",
+            [],
+            |r| r.get::<_, String>(0)
+        )
+        .unwrap(),
+        new_id
+    );
+    drop(conn);
+    let mut conn = fixture.conn();
+    fixture.sync(&mut conn);
+    assert!(cache::pinned_imported_session_ids_from_conn(&conn)
+        .unwrap()
+        .contains(&cache::imported_session_pin_identity(&new_id)));
+    // Intent survives a missing/rebuilt cache and can be cleared through an old tab.
+    conn.execute("DELETE FROM imported_history_session_cache", [])
+        .unwrap();
+    assert_eq!(
+        cache::pinned_imported_session_ids_from_conn(&conn)
+            .unwrap()
+            .len(),
+        1
+    );
+    cache::set_imported_session_pinned_from_conn(&conn, &old_id, false, "").unwrap();
+    assert!(cache::pinned_imported_session_ids_from_conn(&conn)
+        .unwrap()
+        .is_empty());
+}

@@ -135,7 +135,9 @@ pub async fn session_external_history_sidebar_list(
                     }
                 }
                 for session in &mut page.sessions {
-                    session.pinned = pinned_ids.contains(&session.session_id);
+                    session.pinned = pinned_ids.contains(
+                        &imported_cache::imported_session_pin_identity(&session.session_id),
+                    );
                 }
                 // Live status decoration happens at this desktop boundary
                 // (not in the core query): hook-derived state first, then
