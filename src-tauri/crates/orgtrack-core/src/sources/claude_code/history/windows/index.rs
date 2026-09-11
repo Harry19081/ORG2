@@ -8,8 +8,8 @@ use crate::projectors::turn_metadata::ProjectedTurnMetadata;
 use crate::sources::imported_history;
 
 use super::super::replay::{
-    claude_content_text, claude_local_command_input, claude_local_command_output,
-    claude_tool_result_text,
+    claude_content_text, claude_image_sources, claude_local_command_input,
+    claude_local_command_output, claude_tool_result_text,
 };
 use super::super::types::{
     is_claude_compact_summary, is_harness_injected_user_line, ClaudeJsonlLine,
@@ -182,10 +182,14 @@ pub(in crate::sources::claude_code::history) fn index_claude_user_turns(
             count_toward_previous_turn(&mut turns);
             continue;
         }
-        let Some(text) = claude_content_text(&message.content) else {
-            count_toward_previous_turn(&mut turns);
-            continue;
-        };
+        let has_images = claude_image_sources(&message.content).next().is_some();
+        // Keep URL metadata only. Base64 image-only turns still need an index
+        // entry so expansion can retrieve their bytes from the source row.
+        let image_refs = imported_history::images::bounded_image_refs(
+            claude_image_sources(&message.content)
+                .filter_map(|source| source.get("url").and_then(serde_json::Value::as_str)),
+        );
+        let text = claude_content_text(&message.content).unwrap_or_default();
         let text = imported_history::strip_orgii_exec_mode_bridge(&text);
         if awaiting_local_command_output && claude_local_command_output(text).is_some() {
             awaiting_local_command_output = false;
@@ -195,7 +199,7 @@ pub(in crate::sources::claude_code::history) fn index_claude_user_turns(
         let command = claude_local_command_input(text);
         awaiting_local_command_output = command.is_some();
         let text = command.as_deref().unwrap_or(text);
-        if text.trim().is_empty() {
+        if text.trim().is_empty() && !has_images {
             count_toward_previous_turn(&mut turns);
             continue;
         }
@@ -205,8 +209,15 @@ pub(in crate::sources::claude_code::history) fn index_claude_user_turns(
             CLAUDE_CODE_PROVIDER_SLUG,
             sequence,
             &created_at,
-            text,
+            if text.trim().is_empty() {
+                "(image)"
+            } else {
+                text
+            },
         );
+        if !image_refs.is_empty() {
+            user_chunk.result["images"] = serde_json::json!(image_refs);
+        }
         user_chunk.chunk_id = claude_window_turn_id(current_offset);
         turns.push(ClaudeIndexedTurn {
             start_offset: current_offset,

@@ -8,9 +8,13 @@
  * covered. The counterpart of `PinnedSidebarChrome` on the left.
  */
 import { useAtomValue, useSetAtom } from "jotai";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 
+import {
+  getFindOpen,
+  subscribeFind,
+} from "@src/components/FindCard/findCoordinator";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
@@ -41,6 +45,7 @@ import {
 const PinnedWorkbenchChromeComponent: React.FC = () => {
   const { t } = useTranslation("sessions");
   const visible = usePinnedWorkbenchChromeVisible();
+  const findOpen = useSyncExternalStore(subscribeFind, getFindOpen);
   const isChatPanelVisible = useCurrentStationChatVisible();
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
   const activeTab = useAtomValue(activeChatPanelTabAtom);
@@ -55,7 +60,9 @@ const PinnedWorkbenchChromeComponent: React.FC = () => {
     toggleActiveChatMaximized();
   }, [toggleActiveChatMaximized]);
 
-  if (!visible) return null;
+  // This window-level layer sits above pane-local overlays. Yield while Find
+  // is open, without changing the header's reserved width or pane ownership.
+  if (!visible || findOpen) return null;
 
   const stationAvailable = isChatPanelTabStationAvailable(activeTab);
 

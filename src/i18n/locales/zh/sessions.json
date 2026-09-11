@@ -555,22 +555,6 @@
     "creatingWithContext": "正在使用上下文创建新 Session",
     "creationCooldown": "请稍后再创建新终端。"
   },
-  "scope": {
-    "applicableScope": "适用范围",
-    "for": "的",
-    "selectCategory": "选择类别",
-    "selectScope": "选择范围",
-    "allRepos": "所有仓库",
-    "allSessions": "所有 Session",
-    "allProjects": "所有项目",
-    "allWorkItems": "所有工作项",
-    "categories": {
-      "repo": "仓库",
-      "session": "Session",
-      "projects": "项目",
-      "workItems": "工作项"
-    }
-  },
   "editor": {
     "loading": "正在加载编辑器..."
   },
@@ -1941,7 +1925,6 @@
       "showMore": "再显示 {{remaining}} 项"
     },
     "slashMenu": {
-      "commands": "指令",
       "commands": "命令",
       "mode": "模式",
       "workspaceSkills": "工作区技能",
@@ -2315,7 +2298,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "停止 Agent 进程",
       "openInMyStation": "在 My Station 打开"
     }
   },

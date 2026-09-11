@@ -555,22 +555,6 @@
     "creatingWithContext": "正在使用上下文創建新 Session",
     "creationCooldown": "請稍後再創建新終端。"
   },
-  "scope": {
-    "applicableScope": "適用範圍",
-    "for": "的",
-    "selectCategory": "選擇類別",
-    "selectScope": "選擇範圍",
-    "allRepos": "所有倉庫",
-    "allSessions": "所有 Session",
-    "allProjects": "所有專案",
-    "allWorkItems": "所有工作項",
-    "categories": {
-      "repo": "倉庫",
-      "session": "Session",
-      "projects": "專案",
-      "workItems": "工作項"
-    }
-  },
   "editor": {
     "loading": "正在加載編輯器..."
   },
@@ -1936,7 +1920,6 @@
     },
     "slashMenu": {
       "commands": "指令",
-      "commands": "指令",
       "mode": "模式",
       "workspaceSkills": "工作區技能",
       "userSkills": "使用者技能"
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "停止 Agent 進程",
       "openInMyStation": "在 My Station 打開"
     }
   },

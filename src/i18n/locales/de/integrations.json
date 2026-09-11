@@ -349,7 +349,6 @@
     "connecting": "Verbindung wird hergestellt",
     "reconnecting": "Erneut verbinden",
     "connectionError": "Verbindungsfehler",
-    "reconnect": "Erneut verbinden",
     "accountNameDuplicate": "Ein Konto mit diesem Namen existiert bereits",
     "probeSuccess": "Verbindung erfolgreich",
     "probeFailed": "Verbindung fehlgeschlagen",
@@ -1421,10 +1420,6 @@
     "preview": "Vorschau",
     "jsonParseError": "JSON-Analysefehler",
     "noPreview": "Keine Daten zur Vorschau",
-    "chatExtras": "Chat-Extras",
-    "queuedMessages": "Warteschlange-Nachrichten",
-    "fileReview": "Dateiüberprüfung",
-    "terminalProcesses": "Terminalprozesse",
     "modeSessionLink": "Session-Link"
   },
   "rulesTabs": {

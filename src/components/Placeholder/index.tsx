@@ -71,6 +71,8 @@ interface PlaceholderProps {
   placement?: PlaceholderPlacement;
   /** Primary message */
   title?: string;
+  /** Hide visible loading copy while preserving its accessible label. */
+  loadingIconOnly?: boolean;
   /** Secondary message */
   subtitle?: string;
   /** Optional action button */
@@ -104,6 +106,7 @@ export const Placeholder: React.FC<PlaceholderProps> = memo(
     placement,
     title,
     subtitle,
+    loadingIconOnly = false,
     action,
     onRetry,
     icon,
@@ -203,7 +206,10 @@ export const Placeholder: React.FC<PlaceholderProps> = memo(
           subtitle={resolvedSubtitle}
           titleClass={titleClass}
           subtitleClass={subtitleClass}
-          showLabel={isDetailPanel ? Boolean(title ?? subtitle) : true}
+          showLabel={
+            !loadingIconOnly &&
+            (isDetailPanel ? Boolean(title ?? subtitle) : true)
+          }
         />
       );
     }
@@ -290,7 +296,12 @@ const DebouncedLoadingSpinner: React.FC<DebouncedLoadingSpinnerProps> = memo(
     }, []);
 
     return (
-      <div className={containerClass} aria-busy="true">
+      <div
+        className={containerClass}
+        aria-busy="true"
+        role={!showLabel ? "status" : undefined}
+        aria-label={!showLabel ? title : undefined}
+      >
         {showSpinner && (
           <>
             <HugeiconsIcon

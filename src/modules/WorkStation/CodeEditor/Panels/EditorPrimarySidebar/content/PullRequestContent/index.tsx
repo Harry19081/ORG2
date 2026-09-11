@@ -436,6 +436,7 @@ const PullRequestContent: React.FC<PullRequestContentProps> = ({
           onToggle={() => setOpenCollapsed((prev) => !prev)}
         />
         <Placeholder
+          loadingIconOnly
           variant={openStatus?.kind === "loading" ? "loading" : "empty"}
           placement="sidebar"
           title={

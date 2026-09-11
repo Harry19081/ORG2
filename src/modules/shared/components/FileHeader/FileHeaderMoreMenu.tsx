@@ -254,6 +254,7 @@ export const FileHeaderMoreMenu: React.FC<FileHeaderMoreMenuProps> = ({
             aria-haspopup="menu"
             aria-expanded={menuVisible}
             nativeTitle={false}
+            tooltipDisabled
             className="shrink-0"
           >
             <HugeiconsIcon

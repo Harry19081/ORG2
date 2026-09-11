@@ -483,7 +483,12 @@ const GitHistoryContentInner: React.FC<GitHistoryContentInnerProps> = ({
   // Loading state
   if (loading && commits.length === 0) {
     return (
-      <Placeholder variant="loading" placement="sidebar" fillParentHeight />
+      <Placeholder
+        loadingIconOnly
+        variant="loading"
+        placement="sidebar"
+        fillParentHeight
+      />
     );
   }
 

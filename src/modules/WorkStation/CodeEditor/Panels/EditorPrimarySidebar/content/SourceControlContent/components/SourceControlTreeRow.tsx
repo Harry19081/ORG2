@@ -32,7 +32,7 @@ import {
 } from "@src/hooks/files/useNativeDrag";
 import {
   Add01Icon,
-  ArchiveIcon,
+  Archive03Icon,
   ArrowDown01Icon,
   ArrowRight01Icon,
   FileDiffIcon,
@@ -47,7 +47,7 @@ import type { GitFile } from "@src/types/git/types";
 import { SHORTCUTS } from "../../../hooks/useSourceControlShortcuts";
 import { GIT_LABELS } from "../config";
 import type { SourceControlNode } from "../utils/virtualizedTreeUtils";
-import type { GitFileTreeNode } from "./GitFileTreeItem";
+import type { GitFileTreeNode } from "./GitFileTreeNode";
 import SourceControlContextMenu from "./SourceControlContextMenu";
 
 // ============================================
@@ -179,8 +179,8 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
               iconOnly
               icon={
                 <HugeiconsIcon
-                  icon={ArchiveIcon}
-                  data-icon="archive"
+                  icon={Archive03Icon}
+                  data-icon="archive-03"
                   size={14}
                   strokeWidth={1.75}
                 />

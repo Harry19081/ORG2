@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "Chứa tệp: {{status}}",
+    "staged": "{{status}} (đã đưa vào vùng chờ)",
+    "additions": "Dòng đã thêm",
+    "deletions": "Dòng đã xóa",
+    "M": "Đã sửa đổi",
+    "U": "Chưa được theo dõi",
+    "A": "Đã thêm",
+    "D": "Đã xóa",
+    "R": "Đã đổi tên",
+    "C": "Xung đột",
+    "I": "Đã bỏ qua",
+    "?": "Trạng thái không xác định"
+  },
+  "findScope": {
+    "session": "Tìm trong phiên",
+    "file": "Tìm trong tệp",
+    "named": "Tìm trong {{name}}"
+  },
   "teamInbox": {
     "title": "Hộp thư nhóm",
     "listLabel": "Danh sách hộp thư nhóm",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "Câu trả lời không được để trống",
-    "sessionNotFound": "Không tìm thấy phiên",
-    "answerSubmitted": "Đã gửi câu trả lời thành công",
-    "answerFailed": "Không thể gửi câu trả lời. Vui lòng thử lại.",
-    "replyError": "Đã xảy ra lỗi khi gửi câu trả lời",
-    "questionIgnored": "Đã bỏ qua câu hỏi",
     "addedAsContext": "Đã thêm {{name}} làm ngữ cảnh",
     "addedFilesAsContext": "Đã thêm {{count}} tệp làm ngữ cảnh",
     "chooseExecutionAgentAi": "Hãy chọn một agent phụ trách trước khi tạo bằng AI.",
@@ -688,42 +701,9 @@
     "technicalDetails": "Chi tiết kỹ thuật",
     "failedToCopy": "Sao chép thất bại",
     "api": {
-      "titles": {
-        "githubConnections": "Không thể tải kết nối GitHub",
-        "githubConnect": "Không thể kết nối GitHub",
-        "workflows": "Không thể tải quy trình làm việc",
-        "config": "Không thể tải cài đặt",
-        "agent": "Không thể kết nối Agent",
-        "repository": "Không thể tải kho lưu trữ",
-        "file": "Không thể tải tệp",
-        "mcp": "Lỗi máy chủ MCP",
-        "extension": "Lỗi tiện ích mở rộng trình chỉnh sửa",
-        "workspace": "Không thể tải không gian làm việc",
-        "slackConnections": "Không thể tải kết nối Slack",
-        "wallet": "Không thể tải ví",
-        "billing": "Không thể hoàn thành thao tác thanh toán",
-        "default": "Không thể tải dữ liệu",
-        "timeout": "Yêu cầu quá thời gian",
-        "external": "Không thể tải dữ liệu bên ngoài"
-      },
       "messages": {
-        "network": "Kiểm tra kết nối và thử lại.",
-        "timeout": "Yêu cầu quá thời gian. Thử lại.",
-        "server": "Đã xảy ra lỗi. Thử lại sau vài phút.",
-        "notFound": "Không tìm thấy mục này.",
-        "signIn": "Vui lòng đăng nhập lại.",
-        "forbidden": "Bạn không có quyền thực hiện hành động này.",
-        "tooManyRequests": "Quá nhiều yêu cầu. Đợi một chút rồi thử lại.",
-        "validation": "Dữ liệu không hợp lệ. Kiểm tra đầu vào.",
-        "conflict": "Phát hiện xung đột. Tài nguyên có thể đã bị sửa đổi.",
-        "badGateway": "Không thể kết nối máy chủ. Thử lại sau.",
-        "serviceUnavailable": "Dịch vụ tạm thời không khả dụng. Thử lại sau.",
-        "gatewayTimeout": "Máy chủ không phản hồi. Thử lại sau.",
-        "invalidRequest": "Yêu cầu không hợp lệ. Thử lại.",
-        "default": "Vui lòng thử lại.",
-        "externalHint": "Kiểm tra URL và cài đặt, sau đó thử lại."
-      },
-      "workflow": "Dịch vụ quy trình làm việc tạm thời không khả dụng. Thử lại sau."
+        "signIn": "Vui lòng đăng nhập lại."
+      }
     },
     "failedToLoad": "Tải thất bại",
     "unknownError": "Đã xảy ra lỗi không xác định",
@@ -780,7 +760,9 @@
     "previous": "Trước",
     "next": "Tiếp theo",
     "previousMatch": "Kết quả trước (Shift+Enter)",
+    "previousMatchLabel": "Kết quả trước",
     "nextMatch": "Kết quả tiếp theo (Enter)",
+    "nextMatchLabel": "Kết quả tiếp theo",
     "clearSearch": "Xóa tìm kiếm",
     "openInEditorTab": "Mở trong tab trình soạn thảo",
     "openFile": "Mở tệp",
@@ -807,11 +789,16 @@
     "goForward": "Tiến tới",
     "goToToday": "Đi đến hôm nay",
     "matchCase": "Phân biệt chữ hoa/thường (Alt+C)",
+    "matchCaseLabel": "Phân biệt chữ hoa/thường",
     "matchWholeWord": "Khớp toàn bộ từ (Alt+W)",
+    "matchWholeWordLabel": "Khớp toàn bộ từ",
     "useRegex": "Sử dụng biểu thức chính quy (Alt+R)",
+    "useRegexLabel": "Sử dụng biểu thức chính quy",
     "searchInOpenEditors": "Chỉ tìm trong trình soạn thảo đang mở",
     "replace": "Thay thế (Ctrl+Shift+1)",
+    "replaceLabel": "Thay thế",
     "replaceAll": "Thay thế tất cả (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Thay thế tất cả",
     "moreActions": "Thao tác khác...",
     "formatSql": "Định dạng SQL",
     "queryHistory": "Lịch sử truy vấn",
@@ -902,8 +889,6 @@
     "failedToLoadCommitDiff": "Không thể tải diff commit",
     "loadingHistory": "Đang tải lịch sử...",
     "commitMessage": "Thông điệp commit",
-    "filterChanges": "Lọc thay đổi...",
-    "searchFiles": "Tìm kiếm tệp...",
     "searchInRepository": "Tìm trong kho lưu trữ...",
     "enterUrlOrSearch": "Nhập URL hoặc tìm kiếm...",
     "filterByUrl": "Lọc theo URL...",
@@ -915,7 +900,6 @@
     "connectionError": "Lỗi kết nối",
     "noConnections": "Thêm kết nối để bắt đầu",
     "selectRowsToDelete": "Chọn hàng cần xóa",
-    "filterFiles": "Lọc tệp...",
     "filterSearch": "Lọc tìm kiếm...",
     "noChanges": "Không thay đổi",
     "noMatchingFiles": "Không có tệp phù hợp",
@@ -1027,8 +1011,6 @@
     "linesSelected": "{{count}} lines selected",
     "charsSelected": "{{count}} selected",
     "nLines": "{{count}} lines",
-    "hideFilter": "Hide filter",
-    "filterFilesAction": "Filter files",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
@@ -1979,7 +1961,6 @@
     "scope": {
       "main": "Checkout chính",
       "worktrees": "Worktrees",
-      "searchPlaceholder": "Lọc Worktree…",
       "switchScopeActive": "Chuyển phạm vi quản lý mã nguồn: {{repo}}, {{branch}}"
     }
   },
@@ -2082,22 +2063,7 @@
     "database": "Cơ sở dữ liệu",
     "user": "Người dùng",
     "password": "Mật khẩu",
-    "ssl": "Yêu cầu SSL",
-    "spotlight": {
-      "scanFolder": "Quét thư mục",
-      "scanFolderDesc": "Tìm tất cả tệp .sqlite, .db trong một thư mục",
-      "openFile": "Mở tệp",
-      "openFileDesc": "Chọn một tệp cơ sở dữ liệu cụ thể",
-      "enterPath": "Nhập đường dẫn",
-      "enterPathDesc": "Nhập trực tiếp đường dẫn tệp hoặc thư mục",
-      "placeholderSelect": "Thêm cơ sở dữ liệu bằng…",
-      "placeholderPath": "~/data hoặc /duong/dan/database.db",
-      "pickerFolderTitle": "Chọn thư mục cần quét",
-      "pickerFileTitle": "Chọn tệp cơ sở dữ liệu",
-      "pickerSqliteName": "Cơ sở dữ liệu SQLite",
-      "pickerAllFiles": "Tất cả tệp",
-      "pickerError": "Không mở được trình chọn"
-    }
+    "ssl": "Yêu cầu SSL"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
@@ -2155,8 +2121,7 @@
     "sidebar": {
       "newTab": "Tab mới",
       "newPrivateTab": "Tab riêng tư mới",
-      "newTerminal": "Terminal mới",
-      "untitled": "Chưa đặt tên"
+      "newTerminal": "Terminal mới"
     },
     "statusBar": {}
   },

@@ -32,6 +32,7 @@ import {
 // ============================================
 
 export interface UseEditorExtensionsOptions {
+  filePath?: string;
   /** Original value ref for dirty diff */
   originalValueRef: RefObject<string>;
   /** Whether dirty diff is enabled */
@@ -79,6 +80,7 @@ export function useEditorExtensions(
   options: UseEditorExtensionsOptions
 ): Extension[] {
   const {
+    filePath,
     originalValueRef,
     enableDirtyDiff,
     originalValue,
@@ -235,7 +237,7 @@ export function useEditorExtensions(
     }
 
     if (enableFindReplace) {
-      exts.push(findReplaceExtension());
+      exts.push(findReplaceExtension(filePath));
     }
 
     // Dirty diff gutter
@@ -250,6 +252,7 @@ export function useEditorExtensions(
 
     return exts;
   }, [
+    filePath,
     themeExtension,
     copyExtension,
     lazyLangExtension,

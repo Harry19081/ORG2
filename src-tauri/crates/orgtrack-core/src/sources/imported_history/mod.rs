@@ -1,3 +1,4 @@
+pub(crate) mod images;
 pub mod cache;
 pub mod context_usage;
 pub mod client_origin;

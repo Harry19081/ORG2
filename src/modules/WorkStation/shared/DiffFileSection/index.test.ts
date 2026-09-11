@@ -190,3 +190,74 @@ describe("DiffFileSection open-file action", () => {
     act(() => root.unmount());
   });
 });
+
+describe("DiffFileSection badge hover hit target", () => {
+  it.each(["modified", "deleted"] as const)(
+    "lets %s badges receive hover above the header overlay",
+    (status) => {
+      vi.useFakeTimers();
+      const container = document.createElement("div");
+      document.body.appendChild(container);
+      const root = createRoot(container);
+      const onExpansionChange = vi.fn();
+      try {
+        act(() => {
+          root.render(
+            React.createElement(
+              Provider,
+              null,
+              React.createElement(DiffFileSection, {
+                file: { ...FILE, status, additions: 2, deletions: 1 },
+                viewMode: "unified",
+                defaultExpanded: false,
+                onExpansionChange,
+              })
+            )
+          );
+        });
+        const button = container.querySelector<HTMLButtonElement>(
+          "button.pointer-events-auto"
+        )!;
+        expect(button).not.toBeNull();
+        expect(button.disabled).toBe(false);
+        expect(button.closest(".pointer-events-none")).not.toBeNull();
+        for (const [text, label] of [
+          ["+2", "common:gitLabels.additions"],
+          ["-1", "common:gitLabels.deletions"],
+          [
+            status === "modified" ? "M" : "D",
+            `common:gitLabels.${status === "modified" ? "M" : "D"}`,
+          ],
+        ]) {
+          const target = Array.from(button.querySelectorAll("span")).find(
+            (span) => span.textContent === text
+          )!;
+          expect(target).toBeDefined();
+          act(() =>
+            target.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }))
+          );
+          act(() => vi.advanceTimersByTime(499));
+          expect(document.querySelector(".native-tooltip")).toBeNull();
+          act(() => vi.advanceTimersByTime(1));
+          act(() => vi.advanceTimersByTime(32));
+          const tooltip = document.querySelector(".native-tooltip-visible");
+          expect(tooltip?.textContent).toBe(label);
+          act(() =>
+            target.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }))
+          );
+          act(() => vi.advanceTimersByTime(100));
+        }
+        act(() => button.click());
+        if (status === "deleted") {
+          expect(onExpansionChange).not.toHaveBeenCalled();
+        } else {
+          expect(onExpansionChange).toHaveBeenCalledWith(true);
+        }
+      } finally {
+        act(() => root.unmount());
+        container.remove();
+        vi.useRealTimers();
+      }
+    }
+  );
+});
