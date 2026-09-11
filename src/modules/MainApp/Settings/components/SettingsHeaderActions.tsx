@@ -42,6 +42,7 @@ const HeaderIconButton: React.FC<HeaderIconButtonProps> = ({ item }) => {
     <TabBarTrailingIconButton
       title={title}
       nativeTitle={!item.tooltipContent}
+      tooltipDisabled={Boolean(item.tooltipContent)}
       onClick={item.onClick}
       disabled={item.disabled}
       aria-label={title}

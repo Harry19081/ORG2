@@ -28,7 +28,6 @@ export {
   WorkstationTrailHeader,
   WorkstationTrailIconButton,
   WorkstationTrailSection,
-  WORKSTATION_TRAIL_ICON_BUTTON_CLASS,
   WORKSTATION_TRAIL_RAIL_PADDING_CLASS,
   WORKSTATION_TRAIL_WIDTH,
 } from "./WorkstationTrailSurface";
@@ -71,11 +70,9 @@ export {
   PANEL_HEADER_TOKENS,
   PanelRefreshButton,
 } from "./PanelHeader";
-export type { PanelHeaderBreadcrumb, PanelHeaderProps } from "./PanelHeader";
+export type { PanelHeaderProps } from "./PanelHeader";
 
 export { default as PanelFooter, PANEL_FOOTER_TOKENS } from "./PanelFooter";
-
-export { default as ListPanelTabPillRow } from "./ListPanelTabPillRow";
 
 export { default as ListPanelScrollArea } from "./ListPanelScrollArea";
 

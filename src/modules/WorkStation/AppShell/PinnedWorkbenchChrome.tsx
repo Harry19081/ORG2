@@ -8,9 +8,13 @@
  * covered. The counterpart of `PinnedSidebarChrome` on the left.
  */
 import { useAtomValue, useSetAtom } from "jotai";
-import React, { memo, startTransition, useCallback } from "react";
+import React, { memo, useCallback, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 
+import {
+  getFindOpen,
+  subscribeFind,
+} from "@src/components/FindCard/findCoordinator";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
@@ -21,81 +25,55 @@ import {
   usePinnedWorkbenchChromeVisible,
 } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import {
-  ArrowExpand01Icon,
-  BubbleChatIcon,
   HugeiconsIcon,
   LayoutAlignRightIcon,
   PanelRightIcon,
   PanelRightOpenIcon,
 } from "@src/icons";
-import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
 import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
 import { toggleActiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { isChatPanelTabStationAvailable } from "@src/store/chatPanel/chatPanelTabsModel";
 import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
-import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
-import { WorkstationMaximizeChatIcon } from "./useWorkstationTrailingSlot";
+import {
+  StationChatVisibilityButton,
+  StationMaximizeChatButton,
+  useStationPaneActions,
+} from "../shared/StationPaneControls";
 
 const PinnedWorkbenchChromeComponent: React.FC = () => {
   const { t } = useTranslation("sessions");
   const visible = usePinnedWorkbenchChromeVisible();
+  const findOpen = useSyncExternalStore(subscribeFind, getFindOpen);
   const isChatPanelVisible = useCurrentStationChatVisible();
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
   const activeTab = useAtomValue(activeChatPanelTabAtom);
   const chatPanelMaximized = useAtomValue(effectiveChatPanelMaximizedAtom);
-  const toggleChatPanelMaximized = useSetAtom(toggleChatPanelMaximizedAtom);
   const toggleActiveChatMaximized = useSetAtom(
     toggleActiveChatPanelMaximizedAtom
   );
 
-  const handleToggleChatPanel = useCallback(() => {
-    startTransition(() => {
-      void WorkStationViewService.showWorkStation();
-    });
-  }, []);
-  const handleMaximizeChat = useCallback(() => {
-    toggleChatPanelMaximized();
-  }, [toggleChatPanelMaximized]);
+  const { handleToggleChatPanel, handleToggleChatPanelMaximized } =
+    useStationPaneActions();
   const handleShowWorkstation = useCallback(() => {
     toggleActiveChatMaximized();
   }, [toggleActiveChatMaximized]);
 
-  if (!visible) return null;
+  // This window-level layer sits above pane-local overlays. Yield while Find
+  // is open, without changing the header's reserved width or pane ownership.
+  if (!visible || findOpen) return null;
 
   const stationAvailable = isChatPanelTabStationAvailable(activeTab);
 
   // Slot A: hide / restore the chat pane. Meaningless while the chat is
   // maximized (there is no workstation to grow), so it is dropped outright.
   const chatVisibilityControl = chatPanelMaximized ? null : (
-    <TabBarTrailingIconButton
-      title={
-        isChatPanelVisible
-          ? t("chat.maximizeWorkStation")
-          : t("chat.restoreChatPanel")
-      }
-      shortcutId="maximize_work_station"
-      tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
+    <StationChatVisibilityButton
+      visible={isChatPanelVisible}
       onClick={handleToggleChatPanel}
-      data-testid="pinned-workbench-chrome-chat-visibility"
-    >
-      {isChatPanelVisible ? (
-        <HugeiconsIcon
-          icon={ArrowExpand01Icon}
-          data-icon="maximize-2"
-          size={14}
-          strokeWidth={2}
-        />
-      ) : (
-        <HugeiconsIcon
-          icon={BubbleChatIcon}
-          data-icon="message-circle"
-          size={14}
-          strokeWidth={2}
-        />
-      )}
-    </TabBarTrailingIconButton>
+      testId="pinned-workbench-chrome-chat-visibility"
+    />
   );
 
   // Slot B: maximize chat while the workstation shows; show the workstation
@@ -153,16 +131,11 @@ const PinnedWorkbenchChromeComponent: React.FC = () => {
     );
   } else {
     maximizeControl = (
-      <TabBarTrailingIconButton
-        title={t("chat.hideWorkstation")}
-        shortcutId="maximize_chat"
-        tooltipMouseEnterDelay={CHROME_TOOLTIP_HOVER_DELAY}
-        onClick={handleMaximizeChat}
-        className={chatPanelPosition === "left" ? "group" : undefined}
-        data-testid="pinned-workbench-chrome-maximize-chat"
-      >
-        <WorkstationMaximizeChatIcon chatPanelPosition={chatPanelPosition} />
-      </TabBarTrailingIconButton>
+      <StationMaximizeChatButton
+        chatPanelPosition={chatPanelPosition}
+        onClick={handleToggleChatPanelMaximized}
+        testId="pinned-workbench-chrome-maximize-chat"
+      />
     );
   }
 

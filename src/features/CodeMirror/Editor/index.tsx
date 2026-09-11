@@ -264,6 +264,7 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   // EXTENSIONS: Build complete extensions array
   // ============================================
   const extensions = useEditorExtensions({
+    filePath,
     originalValueRef,
     enableDirtyDiff,
     originalValue,

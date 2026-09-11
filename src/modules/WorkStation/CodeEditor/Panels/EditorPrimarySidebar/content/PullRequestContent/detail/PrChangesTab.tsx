@@ -196,7 +196,12 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
 
   if (loading && files.length === 0) {
     return (
-      <Placeholder variant="loading" placement="sidebar" fillParentHeight />
+      <Placeholder
+        loadingIconOnly
+        variant="loading"
+        placement="sidebar"
+        fillParentHeight
+      />
     );
   }
 
@@ -271,6 +276,7 @@ export const PrChangesTab: React.FC<PrChangesTabProps> = ({
               <div className="relative min-h-0 flex-1">
                 {loadState === "loading" ? (
                   <Placeholder
+                    loadingIconOnly
                     variant="loading"
                     placement="sidebar"
                     fillParentHeight

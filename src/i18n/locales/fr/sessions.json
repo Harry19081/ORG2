@@ -555,22 +555,6 @@
     "creatingWithContext": "Création d'une nouvelle Session avec contexte",
     "creationCooldown": "Veuillez patienter un instant avant de créer un autre terminal."
   },
-  "scope": {
-    "applicableScope": "Portée applicable",
-    "for": "pour",
-    "selectCategory": "Sélectionner la catégorie",
-    "selectScope": "Sélectionner la portée",
-    "allRepos": "Tous les dépôts",
-    "allSessions": "Toutes les Sessions",
-    "allProjects": "Tous les Projects",
-    "allWorkItems": "Tous les éléments de travail",
-    "categories": {
-      "repo": "Dépôt",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Éléments de travail"
-    }
-  },
   "editor": {
     "loading": "Chargement de l'éditeur..."
   },
@@ -1938,8 +1922,7 @@
       "commands": "Commandes",
       "mode": "Mode",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Commandes"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Actions GIT",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Arrêter le processus Agent",
       "openInMyStation": "Ouvrir dans My Station"
     }
   },
@@ -2680,5 +2662,14 @@
     "stale": "La dernière observation date de plus de deux heures",
     "disabled": "Échantillonnage en pause pour ce compte désactivé",
     "limit": "Affichage de 128 comptes au maximum"
+  },
+  "sharedFile": {
+    "downloaded": "Enregistré dans Téléchargements",
+    "downloadError": "Impossible d’enregistrer dans Téléchargements",
+    "title": "Fichier partagé",
+    "error": "Impossible d’ouvrir ce fichier. Vérifiez votre compte, le serveur et l’accès à la session, puis rouvrez le lien.",
+    "downloadPreview": "Téléchargez ce fichier pour voir son contenu",
+    "download": "Télécharger",
+    "loading": "Chargement du fichier partagé…"
   }
 }

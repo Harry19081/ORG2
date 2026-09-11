@@ -423,7 +423,12 @@ export const PrCommitsTab: React.FC<PrCommitsTabProps> = ({
 
   if (loading && rows.length === 0) {
     return (
-      <Placeholder variant="loading" placement="sidebar" fillParentHeight />
+      <Placeholder
+        loadingIconOnly
+        variant="loading"
+        placement="sidebar"
+        fillParentHeight
+      />
     );
   }
 

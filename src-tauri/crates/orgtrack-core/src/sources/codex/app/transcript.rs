@@ -3,6 +3,7 @@
 mod cache;
 mod catalog;
 mod collector;
+mod image_prefix;
 mod messages;
 mod parser;
 mod reader;
@@ -28,3 +29,8 @@ pub(crate) use tool_calls::{output_parts_for_tool_calls, pending_custom_tool_cal
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod image_tests;
+
+pub use image_prefix::load_codex_image_from_path;

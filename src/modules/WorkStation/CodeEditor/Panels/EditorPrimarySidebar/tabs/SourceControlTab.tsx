@@ -146,6 +146,7 @@ export function useSourceControlTabConfig({
       return (
         <div className="flex h-full min-h-0 flex-col">
           <Placeholder
+            loadingIconOnly
             variant="loading"
             placement="sidebar"
             title={t("placeholders.loading")}

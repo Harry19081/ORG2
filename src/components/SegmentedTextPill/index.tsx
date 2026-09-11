@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import Tooltip from "@src/components/Tooltip";
+import Tooltip, { type TooltipProps } from "@src/components/Tooltip";
 
 interface SegmentedTextPillOption<T extends string> {
   ariaLabel?: string;
@@ -19,6 +19,7 @@ export interface SegmentedTextPillProps<T extends string> {
   onChange: (value: T) => void;
   options: SegmentedTextPillOption<T>[];
   size?: SegmentedTextPillSize;
+  tooltipPosition?: TooltipProps["position"];
   /** When null, no segment is shown as selected (e.g. custom value outside presets). */
   value: T | null;
 }
@@ -41,6 +42,7 @@ export default function SegmentedTextPill<T extends string>({
   onChange,
   options,
   size = "default",
+  tooltipPosition = "top",
   value,
 }: SegmentedTextPillProps<T>) {
   return (
@@ -75,7 +77,7 @@ export default function SegmentedTextPill<T extends string>({
           <Tooltip
             key={option.value}
             content={option.tooltip}
-            position="top"
+            position={tooltipPosition}
             mouseEnterDelay={200}
             framedPanel
             smartPlacement

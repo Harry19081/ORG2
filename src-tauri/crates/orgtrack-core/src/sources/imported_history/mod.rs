@@ -1,3 +1,4 @@
+pub(crate) mod images;
 pub mod cache;
 pub mod context_usage;
 pub mod client_origin;
@@ -9,6 +10,7 @@ pub mod paths;
 pub mod repo_identity;
 pub mod scan_snapshot;
 pub mod scratch_workspace;
+pub mod turn_correlation;
 pub mod watermark;
 pub mod window;
 

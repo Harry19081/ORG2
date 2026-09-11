@@ -50,9 +50,6 @@ export { default as DropdownFooter } from "./DropdownFooter";
 
 export { default as DropdownCollapsibleSectionHeader } from "./DropdownCollapsibleSectionHeader";
 
-// Multi-select footer (for Select dropdownRender or custom dropdowns)
-export { default as MultiSelectFooter } from "./MultiSelectFooter";
-
 // Design tokens
 export {
   DROPDOWN_PANEL,

@@ -555,22 +555,6 @@
     "creatingWithContext": "Đang tạo Session mới với ngữ cảnh",
     "creationCooldown": "Vui lòng đợi một chút trước khi tạo terminal khác."
   },
-  "scope": {
-    "applicableScope": "Phạm vi áp dụng",
-    "for": "cho",
-    "selectCategory": "Chọn danh mục",
-    "selectScope": "Chọn phạm vi",
-    "allRepos": "Tất cả kho lưu trữ",
-    "allSessions": "Tất cả Session",
-    "allProjects": "Tất cả Project",
-    "allWorkItems": "Tất cả mục công việc",
-    "categories": {
-      "repo": "Kho lưu trữ",
-      "session": "Session",
-      "projects": "Project",
-      "workItems": "Mục công việc"
-    }
-  },
   "editor": {
     "loading": "Đang tải trình soạn thảo..."
   },
@@ -1938,8 +1922,7 @@
       "commands": "Lệnh",
       "mode": "Chế độ",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Lệnh"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Hành động GIT",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Dừng tiến trình Agent",
       "openInMyStation": "Mở trong My Station"
     }
   },
@@ -2680,5 +2662,14 @@
     "stale": "Lần quan sát gần nhất đã hơn hai giờ",
     "disabled": "Đã tạm dừng lấy mẫu cho tài khoản bị tắt này",
     "limit": "Hiển thị tối đa 128 tài khoản"
+  },
+  "sharedFile": {
+    "downloaded": "Đã lưu vào thư mục Tải xuống",
+    "downloadError": "Không thể lưu vào thư mục Tải xuống",
+    "title": "Tệp được chia sẻ",
+    "error": "Không thể mở tệp này. Hãy kiểm tra tài khoản, máy chủ và quyền truy cập phiên rồi mở lại liên kết.",
+    "downloadPreview": "Tải tệp này xuống để xem nội dung",
+    "download": "Tải xuống",
+    "loading": "Đang tải tệp được chia sẻ…"
   }
 }

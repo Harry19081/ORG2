@@ -555,22 +555,6 @@
     "creatingWithContext": "Neue Session mit Kontext wird erstellt",
     "creationCooldown": "Bitte warten Sie einen Moment, bevor Sie ein weiteres Terminal erstellen."
   },
-  "scope": {
-    "applicableScope": "Anwendbarer Bereich",
-    "for": "für",
-    "selectCategory": "Kategorie wählen",
-    "selectScope": "Bereich wählen",
-    "allRepos": "Alle Repos",
-    "allSessions": "Alle Sessions",
-    "allProjects": "Alle Projects",
-    "allWorkItems": "Alle Arbeitselemente",
-    "categories": {
-      "repo": "Repo",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Arbeitselemente"
-    }
-  },
   "editor": {
     "loading": "Editor wird geladen..."
   },
@@ -1938,8 +1922,7 @@
       "commands": "Befehle",
       "mode": "Modus",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Befehle"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "GIT-Aktionen",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Agent-Prozess stoppen",
       "openInMyStation": "In My Station öffnen"
     }
   },
@@ -2680,5 +2662,14 @@
     "stale": "Letzte Beobachtung ist über zwei Stunden alt",
     "disabled": "Erfassung für dieses deaktivierte Konto pausiert",
     "limit": "Es werden bis zu 128 Konten angezeigt"
+  },
+  "sharedFile": {
+    "downloaded": "Im Download-Ordner gespeichert",
+    "downloadError": "Speichern im Download-Ordner nicht möglich",
+    "title": "Geteilte Datei",
+    "error": "Diese Datei kann nicht geöffnet werden. Prüfe dein Konto, den Server und den Sitzungszugriff und öffne den Link erneut.",
+    "downloadPreview": "Lade diese Datei herunter, um ihren Inhalt anzuzeigen",
+    "download": "Herunterladen",
+    "loading": "Geteilte Datei wird geladen…"
   }
 }

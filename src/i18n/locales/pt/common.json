@@ -1,4 +1,23 @@
 {
+  "gitLabels": {
+    "contains": "Contém arquivos: {{status}}",
+    "staged": "{{status}} (preparado)",
+    "additions": "Linhas adicionadas",
+    "deletions": "Linhas removidas",
+    "M": "Modificado",
+    "U": "Não rastreado",
+    "A": "Adicionado",
+    "D": "Removido",
+    "R": "Renomeado",
+    "C": "Conflito",
+    "I": "Ignorado",
+    "?": "Estado desconhecido"
+  },
+  "findScope": {
+    "session": "Pesquisar na sessão",
+    "file": "Pesquisar no arquivo",
+    "named": "Pesquisar em {{name}}"
+  },
   "teamInbox": {
     "title": "Caixa de entrada da equipe",
     "listLabel": "Lista da caixa de entrada da equipe",
@@ -223,12 +242,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "A resposta não pode estar vazia",
-    "sessionNotFound": "Sessão não encontrada",
-    "answerSubmitted": "Resposta enviada com sucesso",
-    "answerFailed": "Falha ao enviar a resposta. Tente novamente.",
-    "replyError": "Ocorreu um erro ao enviar a resposta",
-    "questionIgnored": "Pergunta ignorada",
     "addedAsContext": "{{name}} adicionado como contexto",
     "addedFilesAsContext": "{{count}} arquivo(s) adicionado(s) como contexto",
     "chooseExecutionAgentAi": "Escolha um agente responsável antes de criar com IA.",
@@ -689,42 +702,9 @@
     "technicalDetails": "Detalhes técnicos",
     "failedToCopy": "Falha ao copiar",
     "api": {
-      "titles": {
-        "githubConnections": "Não foi possível carregar conexões do GitHub",
-        "githubConnect": "Não foi possível conectar ao GitHub",
-        "workflows": "Não foi possível carregar workflows",
-        "config": "Não foi possível carregar as configurações",
-        "agent": "Não foi possível contatar o Agent",
-        "repository": "Não foi possível carregar o Repo",
-        "file": "Não foi possível carregar o arquivo",
-        "mcp": "Erro do servidor MCP",
-        "extension": "Erro da extensão do editor de código",
-        "workspace": "Não foi possível carregar o Workspace",
-        "slackConnections": "Não foi possível carregar conexões do Slack",
-        "wallet": "Não foi possível carregar a carteira",
-        "billing": "Não foi possível concluir a operação de cobrança",
-        "default": "Não foi possível carregar os dados",
-        "timeout": "A requisição demorou demais",
-        "external": "Não foi possível carregar dados externos"
-      },
       "messages": {
-        "network": "Verifique sua conexão e tente novamente.",
-        "timeout": "A requisição demorou demais. Tente novamente.",
-        "server": "Algo deu errado do nosso lado. Tente novamente em alguns minutos.",
-        "notFound": "Este item não foi encontrado.",
-        "signIn": "Faça login novamente.",
-        "forbidden": "Você não tem permissão para esta ação.",
-        "tooManyRequests": "Muitas requisições. Aguarde um momento e tente novamente.",
-        "validation": "Dados inválidos. Verifique sua entrada.",
-        "conflict": "Conflito detectado. O recurso pode ter sido modificado.",
-        "badGateway": "O servidor está inacessível. Tente novamente mais tarde.",
-        "serviceUnavailable": "Serviço temporariamente indisponível. Tente novamente mais tarde.",
-        "gatewayTimeout": "O servidor não está respondendo. Tente novamente mais tarde.",
-        "invalidRequest": "Requisição inválida. Tente novamente.",
-        "default": "Tente novamente.",
-        "externalHint": "Verifique a URL e as configurações e tente novamente."
-      },
-      "workflow": "O serviço de workflow está temporariamente indisponível. Tente novamente mais tarde."
+        "signIn": "Faça login novamente."
+      }
     },
     "unknownError": "Ocorreu um erro desconhecido",
     "componentLoadingFailed": "Falha ao carregar o componente",
@@ -780,7 +760,9 @@
     "previous": "Anterior",
     "next": "Próximo",
     "previousMatch": "Correspondência anterior (Shift+Enter)",
+    "previousMatchLabel": "Correspondência anterior",
     "nextMatch": "Próxima correspondência (Enter)",
+    "nextMatchLabel": "Próxima correspondência",
     "clearSearch": "Limpar pesquisa",
     "openInEditorTab": "Abrir em aba do editor",
     "openFile": "Abrir arquivo",
@@ -807,11 +789,16 @@
     "goForward": "Avançar",
     "goToToday": "Ir para hoje",
     "matchCase": "Diferenciar maiúsculas/minúsculas (Alt+C)",
+    "matchCaseLabel": "Diferenciar maiúsculas/minúsculas",
     "matchWholeWord": "Palavra inteira (Alt+W)",
+    "matchWholeWordLabel": "Palavra inteira",
     "useRegex": "Usar expressão regular (Alt+R)",
+    "useRegexLabel": "Usar expressão regular",
     "searchInOpenEditors": "Pesquisar somente nos editores abertos",
     "replace": "Substituir (Ctrl+Shift+1)",
+    "replaceLabel": "Substituir",
     "replaceAll": "Substituir tudo (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Substituir tudo",
     "moreActions": "Mais ações...",
     "formatSql": "Formatar SQL (prettify)",
     "queryHistory": "Histórico de consultas",
@@ -894,6 +881,7 @@
     "noSessionsFound": "Nenhuma sessão encontrada",
     "typeToSearchFiles": "Digite para pesquisar arquivos...",
     "selectFileToViewChanges": "Selecione um arquivo para ver as alterações",
+    "selectSidebarFileToViewChanges": "Selecione um arquivo na barra lateral",
     "failedToLoadHistory": "Falha ao carregar histórico",
     "noGitHistory": "Nenhum histórico do Git disponível",
     "noCommitHistory": "Nenhum commit encontrado",
@@ -901,8 +889,6 @@
     "failedToLoadCommitDiff": "Falha ao carregar diff do commit",
     "loadingHistory": "Carregando histórico...",
     "commitMessage": "Mensagem de commit",
-    "filterChanges": "Filtrar alterações...",
-    "searchFiles": "Pesquisar arquivos...",
     "searchInRepository": "Pesquisar no Repo...",
     "enterUrlOrSearch": "Insira a URL ou pesquise...",
     "filterByUrl": "Filtrar por URL...",
@@ -914,7 +900,6 @@
     "connectionError": "Erro de conexão",
     "noConnections": "Adicione uma conexão para começar",
     "selectRowsToDelete": "Selecione linhas para excluir",
-    "filterFiles": "Filtrar arquivos...",
     "filterSearch": "Filtrar pesquisa...",
     "noChanges": "Sem alterações",
     "noMatchingFiles": "Nenhum arquivo correspondente",
@@ -981,6 +966,8 @@
     "chromeWindowOpen": "A janela do Chrome está aberta — interaja diretamente e depois devolva ao Agent",
     "waitingForScreenshot": "Aguardando captura de tela do navegador...",
     "unified": "Unificado",
+    "switchToUnifiedDiff": "Alternar para diff unificado",
+    "switchToSplitDiff": "Alternar para diff dividido",
     "split": "Dividido",
     "publishingBranch": "Publicando...",
     "notGitInitialized": "Git não inicializado",
@@ -1024,8 +1011,6 @@
     "linesSelected": "{{count}} linhas selecionadas",
     "charsSelected": "{{count}} selecionados",
     "nLines": "{{count}} linhas",
-    "hideFilter": "Ocultar filtro",
-    "filterFilesAction": "Filtrar arquivos",
     "switchToTreeView": "Alternar para visualização em árvore",
     "switchToListView": "Alternar para visualização em lista",
     "discardChanges": "Descartar alterações",
@@ -1976,7 +1961,6 @@
     "scope": {
       "main": "Checkout principal",
       "worktrees": "Worktrees",
-      "searchPlaceholder": "Filtrar worktrees…",
       "switchScopeActive": "Alternar escopo do source control: {{repo}}, {{branch}}"
     }
   },
@@ -2079,22 +2063,7 @@
     "database": "Banco de dados",
     "user": "Usuário",
     "password": "Senha",
-    "ssl": "Exigir SSL",
-    "spotlight": {
-      "scanFolder": "Varrer pasta",
-      "scanFolderDesc": "Encontrar todos os arquivos .sqlite e .db em uma pasta",
-      "openFile": "Abrir arquivo",
-      "openFileDesc": "Selecionar um arquivo de banco de dados específico",
-      "enterPath": "Inserir caminho",
-      "enterPathDesc": "Digite um caminho de arquivo ou pasta diretamente",
-      "placeholderSelect": "Adicionar banco de dados por...",
-      "placeholderPath": "~/data ou /caminho/para/banco.db",
-      "pickerFolderTitle": "Selecione a pasta para varrer",
-      "pickerFileTitle": "Selecione o arquivo de banco de dados",
-      "pickerSqliteName": "Banco de dados SQLite",
-      "pickerAllFiles": "Todos os arquivos",
-      "pickerError": "Falha ao abrir o seletor"
-    }
+    "ssl": "Exigir SSL"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Não foi possível extrair o caminho do arquivo do item solto"
@@ -2152,8 +2121,7 @@
     "sidebar": {
       "newTab": "Nova aba",
       "newPrivateTab": "Nova aba privada",
-      "newTerminal": "Novo terminal",
-      "untitled": "Sem título"
+      "newTerminal": "Novo terminal"
     },
     "statusBar": {}
   },

@@ -555,22 +555,6 @@
     "creatingWithContext": "コンテキスト付きの新しい Session を作成中",
     "creationCooldown": "しばらく待ってから新しいターミナルを作成してください。"
   },
-  "scope": {
-    "applicableScope": "適用範囲",
-    "for": "の",
-    "selectCategory": "カテゴリを選択",
-    "selectScope": "範囲を選択",
-    "allRepos": "すべてのリポジトリ",
-    "allSessions": "すべての Session",
-    "allProjects": "すべてのProject",
-    "allWorkItems": "すべての作業項目",
-    "categories": {
-      "repo": "リポジトリ",
-      "session": "Session",
-      "projects": "Project",
-      "workItems": "作業項目"
-    }
-  },
   "editor": {
     "loading": "エディタを読み込み中..."
   },
@@ -1938,8 +1922,7 @@
       "commands": "コマンド",
       "mode": "モード",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "コマンド"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "GIT アクション",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Agent プロセスを停止",
       "openInMyStation": "My Station で開く"
     }
   },
@@ -2680,5 +2662,14 @@
     "stale": "最後の計測から 2 時間以上経過しています",
     "disabled": "この無効化されたアカウントのサンプリングは一時停止中です",
     "limit": "最大 128 アカウントまで表示"
+  },
+  "sharedFile": {
+    "downloaded": "ダウンロードフォルダーに保存しました",
+    "downloadError": "ダウンロードフォルダーに保存できません",
+    "title": "共有ファイル",
+    "error": "このファイルを開けません。アカウント、サーバー、セッションへのアクセス権を確認してから、リンクを開き直してください。",
+    "downloadPreview": "内容を表示するには、このファイルをダウンロードしてください",
+    "download": "ダウンロード",
+    "loading": "共有ファイルを読み込み中…"
   }
 }

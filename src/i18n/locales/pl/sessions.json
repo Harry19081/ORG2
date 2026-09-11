@@ -555,22 +555,6 @@
     "creatingWithContext": "Tworzenie nowej sesji z kontekstem",
     "creationCooldown": "Poczekaj chwilę przed utworzeniem kolejnego terminala."
   },
-  "scope": {
-    "applicableScope": "Zakres stosowania",
-    "for": "dla",
-    "selectCategory": "Wybierz kategorię",
-    "selectScope": "Wybierz zakres",
-    "allRepos": "Wszystkie repo",
-    "allSessions": "Wszystkie sesje",
-    "allProjects": "Wszystkie historie",
-    "allWorkItems": "Wszystkie elementy pracy",
-    "categories": {
-      "repo": "Repo",
-      "session": "Sesja",
-      "projects": "Historie",
-      "workItems": "Elementy pracy"
-    }
-  },
   "editor": {
     "loading": "Wczytywanie edytora..."
   },
@@ -1957,8 +1941,7 @@
       "commands": "Polecenia",
       "mode": "Tryb",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Polecenia"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Akcje GIT",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Zatrzymaj proces Agenta",
       "openInMyStation": "Otwórz w My Station"
     }
   },
@@ -2680,5 +2662,14 @@
     "stale": "Ostatnia obserwacja ma ponad dwie godziny",
     "disabled": "Próbkowanie wstrzymane dla tego wyłączonego konta",
     "limit": "Wyświetlanie do 128 kont"
+  },
+  "sharedFile": {
+    "downloaded": "Zapisano w folderze Pobrane",
+    "downloadError": "Nie można zapisać w folderze Pobrane",
+    "title": "Udostępniony plik",
+    "error": "Nie można otworzyć tego pliku. Sprawdź konto, serwer i dostęp do sesji, a następnie ponownie otwórz link.",
+    "downloadPreview": "Pobierz ten plik, aby wyświetlić jego zawartość",
+    "download": "Pobierz",
+    "loading": "Ładowanie udostępnionego pliku…"
   }
 }

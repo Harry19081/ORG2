@@ -26,7 +26,7 @@ import type {
   StickyScrollNode,
 } from "@src/components/VirtualizedStickyTree";
 import { VirtualizedStickyTree } from "@src/components/VirtualizedStickyTree";
-import { FilterIcon, HugeiconsIcon } from "@src/icons";
+import { HugeiconsIcon, Search01Icon } from "@src/icons";
 import { usePrimarySidebarSurface } from "@src/modules/WorkStation/shared/hooks/usePrimarySidebarSurface";
 
 import { useFileSelection } from "../../hooks/useFileSelection";
@@ -424,6 +424,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
             <React.Suspense
               fallback={
                 <Placeholder
+                  loadingIconOnly
                   variant="loading"
                   placement="sidebar"
                   fillParentHeight
@@ -492,13 +493,13 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
             <Input
               prefix={
                 <HugeiconsIcon
-                  icon={FilterIcon}
-                  data-icon="filter-icon"
+                  icon={Search01Icon}
+                  data-icon="search-icon"
                   size={14}
                   strokeWidth={1.75}
                 />
               }
-              placeholder={t("placeholders.filterChanges")}
+              placeholder={t("common.searchPlaceholder")}
               value={searchQuery}
               onChange={onSearchChange}
               size="small"
@@ -521,6 +522,7 @@ export const SourceControlContent: React.FC<SourceControlContentProps> = memo(
           {/* Loading State - only show on initial load when no files exist */}
           {loading && files.length === 0 && !suppressLoadingPlaceholder && (
             <Placeholder
+              loadingIconOnly
               variant="loading"
               placement="sidebar"
               title={t("placeholders.loadingChanges")}

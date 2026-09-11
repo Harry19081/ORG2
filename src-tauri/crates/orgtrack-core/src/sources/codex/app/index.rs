@@ -602,6 +602,7 @@ fn discover_codex_app_records(
 ) -> Result<CodexAppDiscovery, String> {
     let mut records = Vec::new();
     let mut external_titles = HashMap::new();
+    let mut discovered_files: HashSet<String> = HashSet::new();
     for sessions_dir in sessions_dirs {
         if !sessions_dir.is_dir() {
             continue;
@@ -618,7 +619,36 @@ fn discover_codex_app_records(
                 continue;
             };
             let (source_mtime_ms, source_size_bytes) =
-                imported_paths::file_metadata_signature(&path, "Codex")?;
+                match imported_paths::file_metadata_signature(&path, "Codex") {
+                    Ok(signature) => signature,
+                    // Files can disappear between directory enumeration and
+                    // metadata lookup, and managed profiles keep rollout
+                    // symlinks whose target Codex has since archived. Neither
+                    // makes the other Codex rollouts unreadable.
+                    Err(_) if !path.exists() => continue,
+                    Err(error) => return Err(error),
+                };
+            // Managed profiles expose native rollouts through symlinks, so one
+            // rollout can be enumerated from CODEX_HOME and from a profile.
+            // Both share the file stem that keys the cache row; resolve the
+            // symlink and keep the first discovery so unchanged files do not
+            // alternate writers on every scan.
+            let canonical = match fs::canonicalize(&path) {
+                Ok(target) => target,
+                Err(_) if !path.exists() => continue,
+                Err(error) => return Err(format!("Failed to resolve Codex rollout: {error}")),
+            };
+            let is_symlink =
+                fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.file_type().is_symlink());
+            let path = if is_symlink { canonical } else { path };
+            // The stem keys the cache row. A native rollout and a managed
+            // profile copy of the same session are two files with one stem;
+            // emitting both makes them alternate as the row's writer on
+            // every scan. Native roots enumerate first, so the first file
+            // per stem wins deterministically.
+            if !discovered_files.insert(file_stem.clone()) {
+                continue;
+            }
             if let Some(entry) = codex_title_entry_for_file_stem(&file_stem, &title_index) {
                 external_titles.insert(
                     file_stem.clone(),

@@ -11,7 +11,8 @@ pub use continuation::{
     cached_session_continuation_status_from_conn, continuation_group_metadata_json,
     continuation_lineage_id_from_metadata_json, continuation_metadata_json,
     demote_superseded_continuations_from_conn, CONTINUATION_GROUP_KEY_FIELD,
-    CONTINUATION_LINEAGE_ID_FIELD, CONTINUATION_MARKERS_FIELD, MAX_CONTINUATION_MARKERS,
+    CONTINUATION_LINEAGE_ID_FIELD, CONTINUATION_MARKERS_FIELD, CONTINUATION_SUPERSEDED_FIELD,
+    MAX_CONTINUATION_MARKERS,
 };
 pub use lookup::{
     get_cached_source_path_by_suffix_from_conn, get_cached_source_path_from_conn,

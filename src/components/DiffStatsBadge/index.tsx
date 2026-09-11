@@ -1,5 +1,7 @@
 import { type ReactNode, memo } from "react";
+import { useTranslation } from "react-i18next";
 
+import Tooltip from "@src/components/Tooltip";
 import { DIFF_STATS } from "@src/config/workstation/tokens";
 
 import {
@@ -69,6 +71,7 @@ const DiffStatsBadge = memo(function DiffStatsBadge({
   showAdditions = true,
   showDeletions = true,
 }: DiffStatsBadgeProps) {
+  const { t } = useTranslation();
   const hasAdditions = showAdditions && additions > 0;
   const hasDeletions = showDeletions && deletions > 0;
 
@@ -87,28 +90,38 @@ const DiffStatsBadge = memo(function DiffStatsBadge({
       )}
     >
       {hasAdditions && (
-        <span
-          className={joinClasses(
-            VALUE_BASE_CLASSES,
-            reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
-            DIFF_STATS.additions,
-            valueClassName
-          )}
+        <Tooltip
+          content={t("common:gitLabels.additions")}
+          mouseEnterDelay={500}
         >
-          +{formatValue(additions)}
-        </span>
+          <span
+            className={joinClasses(
+              VALUE_BASE_CLASSES,
+              reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
+              DIFF_STATS.additions,
+              valueClassName
+            )}
+          >
+            +{formatValue(additions)}
+          </span>
+        </Tooltip>
       )}
       {hasDeletions && (
-        <span
-          className={joinClasses(
-            VALUE_BASE_CLASSES,
-            reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
-            DIFF_STATS.deletions,
-            valueClassName
-          )}
+        <Tooltip
+          content={t("common:gitLabels.deletions")}
+          mouseEnterDelay={500}
         >
-          -{formatValue(deletions)}
-        </span>
+          <span
+            className={joinClasses(
+              VALUE_BASE_CLASSES,
+              reserveValueWidth ? VALUE_ALIGNED_CLASSES : undefined,
+              DIFF_STATS.deletions,
+              valueClassName
+            )}
+          >
+            -{formatValue(deletions)}
+          </span>
+        </Tooltip>
       )}
     </span>
   );

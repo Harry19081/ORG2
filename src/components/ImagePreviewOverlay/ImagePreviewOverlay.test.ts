@@ -23,6 +23,10 @@ vi.mock("@src/store/ui/overlayLayerAtom", () => ({
 }));
 vi.mock("@src/icons", () => ({
   Copy01Icon: mocks.copyIcon,
+  Add01Icon: "Add01Icon",
+  MinusSignIcon: "MinusSignIcon",
+  ArrowLeft01Icon: "ArrowLeft01Icon",
+  ArrowRight01Icon: "ArrowRight01Icon",
   Download01Icon: "Download01Icon",
   Cancel01Icon: "Cancel01Icon",
   HugeiconsIcon: ({ icon }: { icon: string }) =>
@@ -76,7 +80,9 @@ describe("ImagePreviewOverlay", () => {
     vi.unstubAllGlobals();
   });
 
-  function render(props: { fileName?: string; showCopyButton?: boolean } = {}) {
+  function render(
+    props: Partial<React.ComponentProps<typeof ImagePreviewOverlay>> = {}
+  ) {
     act(() => {
       root.render(
         createElement(ImagePreviewOverlay, { dataUrl, onClose, ...props })
@@ -121,7 +127,8 @@ describe("ImagePreviewOverlay", () => {
     expect(
       document.body.querySelector('[aria-label="imagePreview.copyImage"]')
     ).toBeNull();
-    expect(document.body.querySelectorAll("button")).toHaveLength(2);
+    expect(button("imagePreview.downloadImage")).not.toBeNull();
+    expect(button("tooltips.zoomIn")).not.toBeNull();
   });
 
   it("writes the PNG promise synchronously during the click, before conversion finishes", async () => {
@@ -272,16 +279,284 @@ describe("ImagePreviewOverlay", () => {
   it("closes only on Escape and removes the keyboard handler on unmount", () => {
     render();
     act(() =>
-      window.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }))
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }))
     );
     expect(onClose).not.toHaveBeenCalled();
     act(() =>
-      window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
     );
     expect(onClose).toHaveBeenCalledTimes(1);
     act(() => root.render(null));
     expect(document.body.querySelector('[role="dialog"]')).toBeNull();
-    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+  function navigation(label: string) {
+    return Array.from(document.body.querySelectorAll("button")).find(
+      (item) => item.getAttribute("aria-label") === label
+    )!;
+  }
+
+  const images = [
+    { src: "/one.png", fileName: "one.png" },
+    { src: "/two.png", fileName: "two.png" },
+    { src: "/three.png", fileName: "three.png" },
+  ];
+
+  it("uses modal header and footer outside the image body", () => {
+    render({ images, resolveImage: vi.fn() });
+    const body = document.body.querySelector(".liquid-modal-body")!;
+    expect(body.querySelector("img")).not.toBeNull();
+    expect(body.querySelector("button")).toBeNull();
+    expect(navigation("actions.previous").disabled).toBe(true);
+    expect(navigation("actions.next").disabled).toBe(false);
+    expect(document.body.textContent).toContain("1 / 3");
+  });
+
+  it("loads only the selected image, supports arrow keys and bounds navigation", async () => {
+    const resolveImage = vi.fn(async (src: string) => `data:image/png,${src}`);
+    render({ images, resolveImage });
+    expect(resolveImage).not.toHaveBeenCalled();
+    await act(async () => navigation("actions.next").click());
+    expect(resolveImage.mock.calls).toEqual([["/two.png"]]);
+    expect(document.body.querySelector("img")!.src).toContain("/two.png");
+    await act(async () =>
+      navigation("actions.next").dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })
+      )
+    );
+    expect(navigation("actions.next").disabled).toBe(true);
+    expect(document.body.textContent).toContain("3 / 3");
+    await act(async () =>
+      navigation("actions.previous").dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true })
+      )
+    );
+    expect(document.body.textContent).toContain("2 / 3");
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(function (this: HTMLAnchorElement) {
+        expect(this.download).toBe("two.png");
+        expect(this.href).toContain("/two.png");
+      });
+    act(() => button("imagePreview.downloadImage").click());
+    expect(click).toHaveBeenCalledOnce();
+  });
+
+  it("discards late results and releases only owned image URLs", async () => {
+    const revoke = vi.fn();
+    vi.stubGlobal("URL", { revokeObjectURL: revoke });
+    let finish!: (src: string) => void;
+    const resolveImage = vi.fn(
+      () =>
+        new Promise<string>((resolve) => {
+          finish = resolve;
+        })
+    );
+    render({ images, resolveImage });
+    act(() => navigation("actions.next").click());
+    expect(button("imagePreview.downloadImage").disabled).toBe(true);
+    act(() => navigation("actions.previous").click());
+    await act(async () => finish("blob:late"));
+    expect(document.body.querySelector("img")!.getAttribute("src")).toBe(
+      dataUrl
+    );
+    expect(revoke).toHaveBeenCalledWith("blob:late");
+    act(() => navigation("actions.next").click());
+    await act(async () => finish("blob:owned"));
+    act(() => root.render(null));
+    expect(revoke).toHaveBeenCalledWith("blob:owned");
+  });
+
+  it("does not revoke caller-owned blob URLs when navigating away", async () => {
+    const revoke = vi.fn();
+    vi.stubGlobal("URL", { revokeObjectURL: revoke });
+    render({
+      images: [images[0], { src: "blob:borrowed" }],
+      resolveImage: async (src) => src,
+    });
+    await act(async () => navigation("actions.next").click());
+    act(() => root.render(null));
+    expect(revoke).not.toHaveBeenCalled();
+  });
+
+  it("keeps navigation available after a failed read or image decode", async () => {
+    render({
+      images,
+      resolveImage: vi.fn().mockRejectedValue(new Error("missing")),
+    });
+    await act(async () => navigation("actions.next").click());
+    expect(document.body.textContent).toContain("errors.failedToLoad");
+    expect(button("imagePreview.copyImage").disabled).toBe(true);
+    act(() => navigation("actions.previous").click());
+    expect(document.body.querySelector("img")).not.toBeNull();
+    act(() =>
+      document.body.querySelector("img")!.dispatchEvent(new Event("error"))
+    );
+    expect(document.body.textContent).toContain("errors.failedToLoad");
+    expect(button("imagePreview.downloadImage").disabled).toBe(true);
+  });
+  it("zooms with the drag slider without reloading images and resets on navigation", async () => {
+    const resolveImage = vi.fn(async () => "data:image/png,next");
+    render({ images, resolveImage });
+    const slider = document.body.querySelector<HTMLElement>('[role="slider"]')!;
+    const rail = document.body.querySelector<HTMLElement>(".slider-rail")!;
+    vi.spyOn(rail, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      width: 375,
+      height: 20,
+    } as DOMRect);
+    act(() =>
+      slider.dispatchEvent(
+        new MouseEvent("mousedown", { bubbles: true, button: 0 })
+      )
+    );
+    act(() =>
+      document.dispatchEvent(
+        new MouseEvent("mousemove", { clientX: 175, bubbles: true })
+      )
+    );
+    act(() =>
+      document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }))
+    );
+    expect(slider.getAttribute("aria-valuenow")).toBe("200");
+    expect(slider.getAttribute("aria-label")).toBe("tooltips.zoomIn");
+    expect(slider.getAttribute("aria-valuetext")).toBe("200%");
+    expect(button("tooltips.resetZoom").style.borderRadius).toBe("100px");
+    expect(
+      document.body.querySelector<HTMLElement>("[data-image-viewport] > div")!
+        .style.width
+    ).toBe("200%");
+    expect(resolveImage).not.toHaveBeenCalled();
+    act(() =>
+      slider.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })
+      )
+    );
+    expect(document.body.textContent).toContain("1 / 3");
+    act(() => button("tooltips.resetZoom").click());
+    expect(slider.getAttribute("aria-valuenow")).toBe("100");
+    act(() => button("tooltips.zoomIn").click());
+    expect(slider.getAttribute("aria-valuenow")).toBe("125");
+    await act(async () => navigation("actions.next").click());
+    expect(slider.getAttribute("aria-valuenow")).toBe("100");
+  });
+
+  it("bounds zoom and keeps the floating controls outside the scroll area", () => {
+    render();
+    act(() => {
+      for (let i = 0; i < 20; i++) button("tooltips.zoomIn").click();
+    });
+    expect(button("tooltips.zoomIn").disabled).toBe(true);
+    expect(
+      document.body
+        .querySelector<HTMLElement>('[role="slider"]')!
+        .getAttribute("aria-valuenow")
+    ).toBe("400");
+    act(() => {
+      for (let i = 0; i < 20; i++) button("tooltips.zoomOut").click();
+    });
+    expect(button("tooltips.zoomOut").disabled).toBe(true);
+    expect(
+      document.body
+        .querySelector<HTMLElement>('[role="slider"]')!
+        .getAttribute("aria-valuenow")
+    ).toBe("25");
+    expect(
+      document.body.querySelector('[data-image-viewport] [role="slider"]')
+    ).toBeNull();
+  });
+  it("pinches with ctrl-wheel, coalesces frames and leaves ordinary scrolling alone", () => {
+    let flush!: FrameRequestCallback;
+    const raf = vi.fn((callback: FrameRequestCallback) => {
+      flush = callback;
+      return 1;
+    });
+    vi.stubGlobal("requestAnimationFrame", raf);
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+    render();
+    const viewport = document.body.querySelector("[data-image-viewport]")!;
+    const scroll = new WheelEvent("wheel", { deltaY: 20, cancelable: true });
+    act(() => viewport.dispatchEvent(scroll));
+    expect(scroll.defaultPrevented).toBe(false);
+    expect(raf).not.toHaveBeenCalled();
+    const pinch = new WheelEvent("wheel", {
+      deltaY: -20,
+      ctrlKey: true,
+      cancelable: true,
+    });
+    act(() => {
+      viewport.dispatchEvent(pinch);
+      viewport.dispatchEvent(
+        new WheelEvent("wheel", {
+          deltaY: -20,
+          ctrlKey: true,
+          cancelable: true,
+        })
+      );
+    });
+    expect(pinch.defaultPrevented).toBe(true);
+    expect(raf).toHaveBeenCalledTimes(1);
+    act(() => flush(0));
+    expect(button("tooltips.resetZoom").textContent).toBe("149%");
+  });
+
+  it("handles WebKit scale gestures without applying duplicate wheel zoom", () => {
+    let flush!: FrameRequestCallback;
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      flush = callback;
+      return 1;
+    });
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+    render();
+    const viewport = document.body.querySelector("[data-image-viewport]")!;
+    const change = new Event("gesturechange", { cancelable: true });
+    Object.defineProperty(change, "scale", { value: 2 });
+    act(() => {
+      viewport.dispatchEvent(new Event("gesturestart", { cancelable: true }));
+      viewport.dispatchEvent(change);
+      viewport.dispatchEvent(
+        new WheelEvent("wheel", {
+          deltaY: -100,
+          ctrlKey: true,
+          cancelable: true,
+        })
+      );
+      flush(0);
+    });
+    expect(change.defaultPrevented).toBe(true);
+    expect(button("tooltips.resetZoom").textContent).toBe("200%");
+    act(() =>
+      viewport.dispatchEvent(new Event("gestureend", { cancelable: true }))
+    );
+  });
+
+  it("cancels pending pinch work and detaches listeners on close", () => {
+    const raf = vi.fn(() => 7);
+    const cancel = vi.fn();
+    vi.stubGlobal("requestAnimationFrame", raf);
+    vi.stubGlobal("cancelAnimationFrame", cancel);
+    render();
+    const viewport = document.body.querySelector("[data-image-viewport]")!;
+    act(() =>
+      viewport.dispatchEvent(
+        new WheelEvent("wheel", {
+          deltaY: -20,
+          ctrlKey: true,
+          cancelable: true,
+        })
+      )
+    );
+    act(() => root.render(null));
+    expect(cancel).toHaveBeenCalledWith(7);
+    const afterClose = new WheelEvent("wheel", {
+      deltaY: -20,
+      ctrlKey: true,
+      cancelable: true,
+    });
+    viewport.dispatchEvent(afterClose);
+    expect(afterClose.defaultPrevented).toBe(false);
+    expect(raf).toHaveBeenCalledTimes(1);
   });
 });

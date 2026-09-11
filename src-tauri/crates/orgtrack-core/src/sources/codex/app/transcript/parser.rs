@@ -146,7 +146,8 @@ pub(super) fn parse_codex_app_from_path_with_mode<'a>(
     // The model-context response item carries portable image data, while the
     // following UI projection may carry only a source-machine local path.
     // Pair them without emitting the response item as a duplicate user turn.
-    let mut pending_user_image_data_urls: Vec<String> = Vec::new();
+    let mut pending_user_image_data_urls =
+        super::image_prefix::preceding_user_images(path, start_offset)?;
     // `thread/start` may persist user-role provider bootstrap (for example
     // plugin/runtime context) before the first native `turn_context`. It is
     // model setup, not a conversational user turn. ORG2 app-server injection
