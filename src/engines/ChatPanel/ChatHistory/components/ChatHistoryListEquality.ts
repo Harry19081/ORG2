@@ -57,6 +57,13 @@ const RESULT_RENDER_KEYS = [
   "linesAdded",
   "linesRemoved",
   "status",
+  // These fields also determine the payload captured by Retry/Edit handlers.
+  "queueMessageId",
+  "deliveryOwnerRetired",
+  "deliveryStatus",
+  "deliveryError",
+  "turnIntentId",
+  "syntheticUserInput",
 ] as const;
 
 const ARG_RENDER_KEYS = [
@@ -169,10 +176,6 @@ export function sameChatHistoryListProps(
     ["groupCounts", sameNumberArray(previous.groupCounts, next.groupCounts)],
     ["turnIds", sameNullableStringArray(previous.turnIds, next.turnIds)],
     ["totalFlatItems", previous.totalFlatItems === next.totalFlatItems],
-    [
-      "codeBlockContainerWidth",
-      previous.codeBlockContainerWidth === next.codeBlockContainerWidth,
-    ],
     ["footerSpacerHeight", sameFooterSpacer],
     ["bottomInset", previous.bottomInset === next.bottomInset],
     ["topPaddingPx", previous.topPaddingPx === next.topPaddingPx],
@@ -197,7 +200,6 @@ export function sameChatHistoryListProps(
       "getIsWpGeneWorking",
       previous.getIsWpGeneWorking === next.getIsWpGeneWorking,
     ],
-    ["getIsExploring", previous.getIsExploring === next.getIsExploring],
     [
       "renderGroupHeader",
       previous.renderGroupHeader === next.renderGroupHeader,
@@ -217,8 +219,6 @@ export function sameChatHistoryListProps(
     ],
     ["onEndReached", previous.onEndReached === next.onEndReached],
     ["onRegenerate", previous.onRegenerate === next.onRegenerate],
-    ["onSubmit", previous.onSubmit === next.onSubmit],
-    ["onSkip", previous.onSkip === next.onSkip],
     [
       "onEditUserMessage",
       previous.onEditUserMessage === next.onEditUserMessage,

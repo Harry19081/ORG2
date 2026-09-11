@@ -129,7 +129,6 @@ const AgentEvolutionPanel: React.FC = () => {
       </SectionContainer>
 
       <LearningsBrowserContent
-        variant="integrationsPanel"
         agentScopes={agentScopes}
         agentScopeLabels={agentScopeLabels}
       />

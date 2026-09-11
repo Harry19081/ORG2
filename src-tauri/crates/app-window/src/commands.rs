@@ -95,6 +95,21 @@ pub async fn set_window_root_tint(
     Ok(())
 }
 
+/// Switch the icon the running app shows in the Dock / taskbar.
+///
+/// `variant` is the `general.dockIcon` setting value (`"dark"` | `"light"` | `"rainbow"`).
+/// Unknown values are rejected rather than coerced so a schema drift between
+/// TS and Rust surfaces as an error instead of silently resetting the icon.
+/// The stored value is re-applied at launch by
+/// [`super::dock_icon::apply_stored_dock_icon`]; this command covers live
+/// changes from the Appearance settings.
+#[tauri::command]
+pub async fn set_dock_icon(app: AppHandle, variant: String) -> Result<(), String> {
+    let variant = super::dock_icon::DockIconVariant::parse(&variant)
+        .ok_or_else(|| format!("Unknown dock icon variant: {variant:?}"))?;
+    super::dock_icon::apply_dock_icon(&app, variant)
+}
+
 // ============================================
 // Detached session windows
 // ============================================

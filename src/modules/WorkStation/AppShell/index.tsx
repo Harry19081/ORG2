@@ -10,10 +10,9 @@ import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom
 import { simulatorCaptionBarEnabledAtom } from "@src/store/ui/simulatorAtom";
 import {
   workStationFollowAgentHighlightEnabledAtom,
-  workStationPrimarySidebarCollapsedAtom,
   workStationStatusBarHiddenAtom,
-  workStationTitleBarHiddenAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/chromeAtoms";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { activeWorkStationTabAtom } from "@src/store/workstation/tabs";
 
 import { StatusBarRenderer } from "../shared/StatusBar/StatusBarRenderer";
@@ -28,12 +27,12 @@ import { useAppShellActions } from "./hooks/useAppShellActions";
 import { useAppShellDerivedState } from "./hooks/useAppShellDerivedState";
 import { useAppShellDock } from "./hooks/useAppShellDock";
 import { useAppShellRepo } from "./hooks/useAppShellRepo";
-import { useAppShellRouteSync } from "./hooks/useAppShellRouteSync";
 import { useAppShellSimulatorPanelSync } from "./hooks/useAppShellSimulatorPanelSync";
 import { useAppShellStationMode } from "./hooks/useAppShellStationMode";
 import { useAppShellStatusBar } from "./hooks/useAppShellStatusBar";
 import { useLaunchpadTab } from "./hooks/useLaunchpadTab";
 import { useTerminalTabTeardown } from "./hooks/useTerminalTabTeardown";
+import { useWorkstationRouteEntry } from "./hooks/useWorkstationRouteEntry";
 import { shouldShowWorkStationStatusBar } from "./statusBarVisibility";
 import { shouldEnableWorkspacePortScan } from "./workspacePortScanVisibility";
 
@@ -46,7 +45,6 @@ interface AppShellProps {
 
 const AppShell = React.memo(
   ({ isActive = true, chatPanelFocused = false }: AppShellProps) => {
-    const _titleBarHidden = useAtomValue(workStationTitleBarHiddenAtom);
     const statusBarHidden = useAtomValue(workStationStatusBarHiddenAtom);
     const followAgentHighlightEnabled = useAtomValue(
       workStationFollowAgentHighlightEnabledAtom
@@ -65,7 +63,7 @@ const AppShell = React.memo(
     const { visitedModes } = useAppShellDock();
     // Called for its side effects on the workstation base path (station mode /
     // chat visibility / chat width); the content host follows the active tab.
-    useAppShellRouteSync();
+    useWorkstationRouteEntry();
 
     const { isAgentStation, illuminateAgentStationChrome } =
       useAppShellStationMode({ followAgentHighlightEnabled });
@@ -89,22 +87,14 @@ const AppShell = React.memo(
 
     const { handleSelectRepo, handleOpenSettings } = useAppShellActions();
 
-    const {
-      activeHost,
-      isCodeMode,
-      isBrowserMode,
-      isProjectMode,
-      codeContentVisible,
-      browserContentVisible,
-      projectContentVisible,
-    } = useAppShellDerivedState();
+    const { activeHost, isCodeMode, isBrowserMode, isProjectMode } =
+      useAppShellDerivedState();
 
     const hasVisitedCode = visitedModes.has("code");
     const hasVisitedBrowser = visitedModes.has("browser");
     const hasVisitedProject = visitedModes.has("project");
 
-    const showSettingsButton =
-      (codeContentVisible || projectContentVisible) && !isAgentStation;
+    const showSettingsButton = (isCodeMode || isProjectMode) && !isAgentStation;
 
     useAppShellStatusBar({
       primaryPanelCollapsed,
@@ -177,9 +167,6 @@ const AppShell = React.memo(
                 isCodeMode={isCodeMode}
                 isBrowserMode={isBrowserMode}
                 isProjectMode={isProjectMode}
-                codeContentVisible={codeContentVisible}
-                browserContentVisible={browserContentVisible}
-                projectContentVisible={projectContentVisible}
                 handleSelectRepo={handleSelectRepo}
               />
             </div>

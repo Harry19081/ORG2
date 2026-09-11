@@ -21,7 +21,6 @@ export type WorkStationTabType =
   | "explorer" // Default pinned "home" tab — sidebar shows file tree, main pane shows placeholder
   | "git-diff"
   | "source-control"
-  | "timeline-diff"
   | "git-log" // Git error log viewer (CodeMirror-based)
   | "git-commit-detail" // Git commit detail (split: file list + diff)
   | "git-stash-detail" // Git stash detail (split: file list + diff)
@@ -29,7 +28,6 @@ export type WorkStationTabType =
   | "dom-component-preview" // Pasted DOM-component JSON viewer (Raw / Preview iframe)
   | "terminal"
   | "search" // Repository-wide search tab
-  | "ai-impact" // AI session impact dashboard
   | "search-sessions" // Session search + table (reuses SessionTable; launchpad tab)
   | "url-preview" // URL preview (agent-triggered webview in editor)
   // Browser tabs
@@ -71,7 +69,7 @@ export type WorkStationTabType =
  * Unified tab type - single flat interface for all tab types
  *
  * This is used across all Workstation apps:
- * - Code Editor: file, git-diff, source-control, timeline-diff, terminal
+ * - Code Editor: file, git-diff, source-control, terminal
  * - Database Explorer: table, query, schema
  * - Browser: browser-session
  */
@@ -89,7 +87,6 @@ export type WorkStationTabCategory =
   | "git" // git-diff, source-control, git-commit-detail, git-stash-detail, git-log
   | "search"
   | "terminal"
-  | "ai-impact"
   | "search-sessions"
   | "preview"
   | "subagent"
@@ -185,9 +182,9 @@ export interface WorkstationSharedState {
   tabs: WorkStationTab[];
 }
 
-/** Persisted v3 state. Runtime storage splits this document into per-scope keys. */
-export interface WorkstationTabsStateV3 {
-  version: 3;
+/** Persisted v4 state. Runtime storage splits this document into per-scope keys. */
+export interface WorkstationTabsStateV4 {
+  version: 4;
   shared: WorkstationSharedState;
   globalWorkspace: WorkstationWorkspaceState;
   sessionWorkspaces: Record<string, WorkstationWorkspaceState>;
@@ -224,14 +221,12 @@ export function getWorkstationTabOwnership(
     case "explorer":
     case "git-diff":
     case "source-control":
-    case "timeline-diff":
     case "git-log":
     case "git-commit-detail":
     case "git-stash-detail":
     case "terminal-content":
     case "dom-component-preview":
     case "search":
-    case "ai-impact":
     case "search-sessions":
     case "url-preview":
     case "subagent-detail":
@@ -283,80 +278,6 @@ export interface TimelineDiffCommitInfo {
   message: string;
   author: string;
   timestamp: string;
-}
-
-// ============================================
-// Browser Tab Data Types
-// ============================================
-
-/**
- * Data stored in browser session tabs
- */
-export interface BrowserSessionTabData {
-  sessionId: string;
-  url: string;
-  incognito?: boolean;
-  isLoading?: boolean;
-}
-
-// ============================================
-// Project Manager Tab Data Types
-// ============================================
-
-/**
- * Data stored in project work items tabs
- */
-export interface ProjectWorkItemsTabData {
-  projectId: string;
-  projectName: string;
-  projectSlug?: string;
-  dataPath?: string;
-}
-
-/**
- * Data stored in a single work item detail tab (expanded from inline panel)
- */
-export interface WorkItemDetailTabData {
-  projectId?: string;
-  projectName?: string;
-  projectSlug?: string;
-  orgId?: string;
-  dataPath?: string;
-  workItemId: string;
-  workItemName: string;
-  workItemStatus?: string;
-  /** Unsaved changes transferred from the inline detail panel */
-  pendingUpdates?: Record<string, unknown>;
-}
-
-// ============================================
-// URL Preview Tab Data Types
-// ============================================
-
-/**
- * Data stored in URL preview tabs (agent-opened webview in editor)
- */
-export interface UrlPreviewTabData {
-  /** URL to display */
-  url: string;
-  /** Optional title (extracted from page or provided) */
-  title?: string;
-}
-
-// ============================================
-// Chat Session Tab Data Types
-// ============================================
-
-/**
- * Data stored in chat session tabs (opened from work items, session history, etc.)
- */
-export interface ChatSessionTabData {
-  /** The agent/coding session ID to display in the chat view */
-  sessionId: string;
-  /** Optional work item ID this session is linked to */
-  workItemId?: string;
-  /** Optional work item short ID for display (e.g. "PROJ-0042") */
-  workItemShortId?: string;
 }
 
 // ============================================
@@ -436,7 +357,7 @@ export interface AgentConfigTabData {
 export interface EditorRepoCache {
   /** Repo path (key) */
   repoPath: string;
-  /** File tabs only (type: "file", "git-diff", "source-control", "timeline-diff") */
+  /** File tabs only (type: "file", "git-diff", "source-control") */
   fileTabs: WorkStationTab[];
   /** Active file tab ID (null if no file tab was active) */
   activeFileTabId: string | null;
@@ -458,7 +379,6 @@ export const FILE_TAB_TYPES = [
   "file",
   "git-diff",
   "source-control",
-  "timeline-diff",
   "git-log",
   "git-commit-detail",
   "git-stash-detail",

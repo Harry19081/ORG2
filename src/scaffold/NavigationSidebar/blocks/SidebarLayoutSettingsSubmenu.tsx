@@ -10,16 +10,16 @@ import SegmentedTextPill from "@src/components/SegmentedTextPill";
 import Switch from "@src/components/Switch";
 import {
   type ModelPickerStyle,
-  activeStationChatVisibleAtom,
   chatTurnPaginationEnabledAtom,
   modelPickerStyleAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import {
-  chatPanelPositionAtom,
   workStationLayoutModeAtom,
   workStationLayoutModePersistAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/splitLayoutAtoms";
 
 interface SidebarLayoutSettingsSubmenuProps {
   panelRef: React.Ref<HTMLDivElement>;

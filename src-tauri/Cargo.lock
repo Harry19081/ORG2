@@ -852,7 +852,6 @@ dependencies = [
  "objc2-foundation",
  "pbkdf2",
  "perf_utils",
- "regex",
  "rusqlite",
  "security-framework",
  "serde",
@@ -2161,7 +2160,6 @@ dependencies = [
 name = "file_ops"
 version = "0.1.0"
 dependencies = [
- "base64 0.22.1",
  "regex",
  "serde",
  "tauri",
@@ -4289,6 +4287,7 @@ dependencies = [
 name = "mobile-relay-protocol"
 version = "0.1.0"
 dependencies = [
+ "schemars 1.2.1",
  "serde",
  "serde_json",
 ]
@@ -5040,6 +5039,7 @@ dependencies = [
  "settings",
  "sha2",
  "shared_state",
+ "sysinfo",
  "system_services",
  "tar",
  "tauri",
@@ -5066,6 +5066,7 @@ dependencies = [
  "tokio-rustls",
  "tokio-tungstenite",
  "tokio-util",
+ "toml 0.8.2",
  "tower-http",
  "tracing",
  "tracing-appender",
@@ -5885,7 +5886,9 @@ dependencies = [
  "git",
  "hex",
  "hmac",
+ "kqueue",
  "log",
+ "notify",
  "orgtrack_sync",
  "rand 0.9.4",
  "reqwest 0.13.4",
@@ -7189,6 +7192,12 @@ dependencies = [
  "cpufeatures 0.2.17",
  "digest",
 ]
+
+[[package]]
+name = "sha1_smol"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbfa15b3dddfee50a0fff136974b3e1bde555604ba463834a7eb7deb6417705d"
 
 [[package]]
 name = "sha2"
@@ -9291,6 +9300,7 @@ dependencies = [
  "getrandom 0.4.2",
  "js-sys",
  "serde_core",
+ "sha1_smol",
  "wasm-bindgen",
 ]
 

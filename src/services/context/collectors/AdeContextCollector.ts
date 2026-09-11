@@ -34,7 +34,7 @@ import { currentGitStatusAtom } from "@src/store/git";
 import { currentBranchAtom } from "@src/store/repo/atoms";
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
 import { settingsAtom } from "@src/store/settings";
-import { globalStatusBarStateAtom } from "@src/store/ui/workStationAtom";
+import { activeStatusBarStateAtom } from "@src/store/ui/workStationLayout/statusBarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import { userPresenceWireAtom } from "@src/store/user/userPresenceAtom";
 import { activeWorkspaceRootAtom } from "@src/store/workspace";
@@ -210,7 +210,7 @@ export function collectAdeContext(
       const canAttachCursor =
         workspaceSessionId !== null &&
         workspaceSessionId === presentedSessionId;
-      const statusBar = store.get(globalStatusBarStateAtom);
+      const statusBar = store.get(activeStatusBarStateAtom);
       if (canAttachCursor && statusBar.cursor && payload.activeFile) {
         payload.cursorPosition = `${payload.activeFile}:${statusBar.cursor.line}:${statusBar.cursor.column}`;
         hasData = true;

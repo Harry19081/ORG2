@@ -75,10 +75,6 @@ export type { PanelHeaderBreadcrumb, PanelHeaderProps } from "./PanelHeader";
 
 export { default as PanelFooter, PANEL_FOOTER_TOKENS } from "./PanelFooter";
 
-export { default as PanelFooterAction } from "./PanelFooterAction";
-
-export { default as ListPanelSearch } from "./ListPanelSearch";
-
 export { default as ListPanelTabPillRow } from "./ListPanelTabPillRow";
 
 export { default as ListPanelScrollArea } from "./ListPanelScrollArea";

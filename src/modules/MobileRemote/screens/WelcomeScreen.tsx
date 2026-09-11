@@ -7,14 +7,10 @@ import { MobileActionButton } from "../components/MobileActionButton";
 
 export interface WelcomeScreenProps {
   onOpenPairing?: () => void;
-  onScanDemo?: () => void;
 }
 
 /** M-01 Welcome / Unpaired */
-export function WelcomeScreen({
-  onOpenPairing,
-  onScanDemo,
-}: WelcomeScreenProps) {
+export function WelcomeScreen({ onOpenPairing }: WelcomeScreenProps) {
   const { t } = useTranslation("mobileRemote");
 
   return (
@@ -40,11 +36,6 @@ export function WelcomeScreen({
         >
           {t("welcome.scanQr")}
         </MobileActionButton>
-        {onScanDemo ? (
-          <MobileActionButton variant="tertiary" onClick={onScanDemo}>
-            {t("welcome.tryDemo")}
-          </MobileActionButton>
-        ) : null}
       </div>
     </div>
   );

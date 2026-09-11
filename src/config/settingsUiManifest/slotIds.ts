@@ -6,10 +6,6 @@ export const SETTINGS_SECTION_SLOT_IDS = {
   APP_MOBILE_REMOTE: "app.mobileRemote",
 
   APP_HARNESS_CONNECTIONS: "app.harnessConnections",
-  APP_MONITOR: "app.monitor",
-
-  AGENT_OS_CONFIG: "agent.osAgentConfig",
-  AGENT_SDE_CONFIG: "agent.sdeAgentConfig",
 } as const;
 
 export type SettingsSectionSlotId =

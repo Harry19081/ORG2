@@ -20,6 +20,8 @@ describe("WorkManagementSearchInput", () => {
     expect(markup).toContain('type="text"');
     expect(markup).toContain('value="open issue"');
     expect(markup).toContain('aria-label="Search work"');
+    expect(markup).toContain('data-icon="search"');
+    expect(markup).toContain("placeholder:text-text-2");
     expect(markup).toContain("w-180");
     expect(markup).toContain('data-icon="x"');
     expect(markup).toContain('title="tooltips.closeEsc"');

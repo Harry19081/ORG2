@@ -13,7 +13,7 @@ import {
   type SaveKeyRequest,
 } from "@src/api/tauri/rpc/schemas/validation";
 import { LOCAL_MODEL_PROVIDER, type ModelType } from "@src/api/types/keys";
-import { useUndoableState } from "@src/hooks/ui";
+import { useUndoableState } from "@src/hooks/ui/useUndoableState";
 
 import { DEFAULT_WIZARD_DATA } from "../config";
 import type { WizardData } from "../types";

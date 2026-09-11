@@ -1,19 +1,23 @@
 import type { TFunction } from "i18next";
 import { Provider, createStore } from "jotai";
-import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { type ReactNode, createElement } from "react";
+import { renderToStaticMarkup as renderMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 
 import { creatorLaunchpadActionsVisibleAtom } from "@src/store/session/creatorLaunchpadActionsVisibleAtom";
-import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanelAtom";
+import { CHAT_PANEL_CREATE_TARGET } from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { ChatPanelStartPage } from "./ChatPanelStartPage";
+
+const renderToStaticMarkup = (children: ReactNode) =>
+  renderMarkup(createElement(MemoryRouter, null, children));
 
 const mocks = vi.hoisted(() => ({
   useAvailableAppUpdate: vi.fn(),
 }));
 
-vi.mock("@src/scaffold/AppUpdater", () => ({
+vi.mock("@src/scaffold/AppUpdater/state", () => ({
   useAvailableAppUpdate: mocks.useAvailableAppUpdate,
 }));
 

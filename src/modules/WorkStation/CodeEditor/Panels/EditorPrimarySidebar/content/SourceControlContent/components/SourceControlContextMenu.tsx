@@ -148,7 +148,7 @@ export default function SourceControlContextMenu(
 
               // --- Open File ---
               items.push({
-                text: t("common:actions.openFile"),
+                text: t("common:tooltips.openFile"),
                 action: () => {
                   const ref = contextMenuRef.current;
                   if (ref) {

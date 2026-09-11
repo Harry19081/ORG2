@@ -15,9 +15,9 @@ import { usePinnedTabs } from "@src/hooks/tabHost/usePinnedTabs";
 import { useRetainedTabPool } from "@src/hooks/tabHost/useRetainedTabPool";
 import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
 import { useWorkStationTabs } from "@src/hooks/tabHost/useWorkStationTabs";
-import { useEditorRepoCacheSync } from "@src/hooks/ui/tabs";
+import { useEditorRepoCacheSync } from "@src/hooks/ui/tabs/useEditorRepoCacheSync";
 import { CODE_EDITOR_CONFIG } from "@src/modules/WorkStation/CodeEditor/config";
-import { type PrimarySidebarTabKey } from "@src/store/ui/workStationAtom";
+import { type PrimarySidebarTabKey } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { workspaceFoldersAtom } from "@src/store/ui/workspaceFoldersAtom";
 import {
   CODE_EDITOR_MAIN_TERMINAL_SESSION_ID,
@@ -38,6 +38,7 @@ import { EditorIntegrations } from "./EditorLayout/components/EditorIntegrations
 import FileSearchPanel from "./EditorLayout/overlays/FileSearchPanel";
 import EditorContent from "./Panels/EditorMainPane";
 import { EditorPrimarySidebar } from "./Panels/EditorPrimarySidebar";
+import { trackGitPollingVisibility } from "./gitPollingVisibility";
 import { useCodeEditor } from "./hooks/useCodeEditor";
 import { useCodeEditorEvents } from "./hooks/useCodeEditorEvents";
 import { useCodeEditorHandlers } from "./hooks/useCodeEditorHandlers";
@@ -386,12 +387,13 @@ export const CodeEditor: React.FC<CodeEditorProps> = memo(
 
     const isSourceControlActive = activeTab?.type === "source-control";
     useEffect(() => {
-      const repoId = isActive && isSourceControlActive ? selectedRepoId : null;
-      void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId });
-
-      return () => {
-        void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId: null });
-      };
+      return trackGitPollingVisibility(
+        document,
+        isActive && isSourceControlActive ? selectedRepoId : null,
+        (repoId) => {
+          void invoke(SET_ACTIVE_GIT_POLLING_REPO_COMMAND, { repoId });
+        }
+      );
     }, [isActive, isSourceControlActive, selectedRepoId]);
 
     const editorSourceControlScopePicker = isSourceControlActive

@@ -27,7 +27,7 @@ import {
   Shield02Icon,
   SquareTerminalIcon,
 } from "@src/icons";
-import { focusBrowserUrlBar } from "@src/modules/WorkStation/Browser/Panels/BrowserMainPane/components/WebUrlBar";
+import { focusBrowserUrlBar } from "@src/modules/WorkStation/Browser/shared/urlBarFocus";
 import { openEditorSpotlight } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import {
   CODE_EDITOR_MAIN_TERMINAL_SESSION_ID,

@@ -9,6 +9,19 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("TerminalBlock shell replay", () => {
+  it("highlights commands only while the chat body is expanded", () => {
+    const command = "git status --short";
+    const expanded = renderToStaticMarkup(
+      createElement(TerminalBlock, { command, defaultCollapsed: false })
+    );
+    expect(expanded).toContain('class="token function">git</span>');
+    expect(expanded).toContain('class="token parameter">--short</span>');
+    const collapsed = renderToStaticMarkup(
+      createElement(TerminalBlock, { command, defaultCollapsed: true })
+    );
+    expect(collapsed).not.toContain('class="token');
+  });
+
   it("renders the bounded replay preview in the expanded chat body", () => {
     const markup = renderToStaticMarkup(
       createElement(TerminalBlock, {

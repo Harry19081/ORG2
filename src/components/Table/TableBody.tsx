@@ -1,6 +1,7 @@
 import { Cell, Row, flexRender } from "@tanstack/react-table";
 import React, { useState } from "react";
 
+import { Placeholder } from "@src/components/Placeholder";
 import {
   ArrowDown01Icon,
   ArrowRight01Icon,
@@ -13,6 +14,7 @@ import {
 import type { ColumnMeta, TableColumn, TableProps } from "./types";
 
 interface TableBodyProps<T> {
+  loading?: boolean;
   rows: Row<T>[];
   columns: TableColumn<T>[];
   hasRowSelection: boolean;
@@ -133,6 +135,7 @@ function renderExpandedContent<T>(
 }
 
 export function TableBody<T>({
+  loading = false,
   rows,
   columns,
   hasRowSelection,
@@ -152,6 +155,20 @@ export function TableBody<T>({
   const [hoverSuppressedRowKey, setHoverSuppressedRowKey] = useState<
     string | null
   >(null);
+
+  if (loading) {
+    return (
+      <tbody className="table-tbody" aria-busy="true">
+        <tr>
+          <td colSpan={totalColSpan}>
+            <div className="table-empty" role="status">
+              <Placeholder variant="loading" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    );
+  }
 
   if (rows.length === 0) {
     return (

@@ -22,17 +22,17 @@ import { useCopySessionReference } from "@src/features/Org2Cloud/useCopySessionR
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
 import {
   AppWindowMacIcon,
+  ArrowBigRightDashIcon,
   Copy01Icon,
   CursorInWindowIcon,
   DeliveryBox01Icon,
   FolderOutputIcon,
   HugeiconsIcon,
+  InputCursorTextIcon,
   Layers01Icon,
   Link01Icon,
   Link02Icon,
   MoreHorizontalIcon,
-  PanelLeftIcon,
-  PanelRightIcon,
   Refresh04Icon,
   Search01Icon,
   Share02Icon,
@@ -41,7 +41,8 @@ import {
 import { sessionByIdAtom, upsertSession } from "@src/store/session";
 import { pinnedActionsVisibleAtom } from "@src/store/session/pinnedActionsVisibleAtom";
 import { openSessionInNewWindowAtom } from "@src/store/session/sessionTabPlacementAtom";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import { collapseToolActivityAtom } from "@src/store/ui/chatPanel/displayPrefsAtoms";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import { isAgentSession } from "@src/util/session/sessionDispatch";
 
 import { SessionOpenInAppMenuItem } from "./SessionOpenInAppMenuItem";
@@ -52,6 +53,8 @@ export interface SessionHeaderActionsMenuProps {
   activeSessionExists: boolean;
   copyEventJsonLabel: "idle" | "copied" | "failed";
   currentSessionId: string | null;
+  /** Existing binding owner selected by the canonical conversation resolver. */
+  appOpenSessionId?: string | null;
   displayMode: ChatHistoryDisplayMode;
   eventsLength: number;
   handleCompactDisplayModeToggle: (checked: boolean) => void;
@@ -91,6 +94,7 @@ export const SessionHeaderActionsMenu: React.FC<
   activeSessionExists,
   copyEventJsonLabel,
   currentSessionId,
+  appOpenSessionId,
   displayMode,
   eventsLength,
   handleCompactDisplayModeToggle,
@@ -126,6 +130,9 @@ export const SessionHeaderActionsMenu: React.FC<
   const currentSession = useAtomValue(sessionByIdAtom(currentSessionId ?? ""));
   const [pinnedActionsVisible, setPinnedActionsVisible] = useAtom(
     pinnedActionsVisibleAtom
+  );
+  const [collapseToolActivity, setCollapseToolActivity] = useAtom(
+    collapseToolActivityAtom
   );
   const showSkillsLabel = t("chat.startPage.showSkills");
 
@@ -293,21 +300,12 @@ export const SessionHeaderActionsMenu: React.FC<
                         : "move-session-to-chat-panel"
                     }
                     icon={
-                      moveToWorkstation ? (
-                        <HugeiconsIcon
-                          icon={PanelLeftIcon}
-                          data-icon="panel-left"
-                          size={DROPDOWN_ITEM.iconSize}
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <HugeiconsIcon
-                          icon={PanelRightIcon}
-                          data-icon="panel-right"
-                          size={DROPDOWN_ITEM.iconSize}
-                          strokeWidth={1.75}
-                        />
-                      )
+                      <HugeiconsIcon
+                        icon={ArrowBigRightDashIcon}
+                        data-icon="arrow-big-right-dash"
+                        size={DROPDOWN_ITEM.iconSize}
+                        strokeWidth={1.75}
+                      />
                     }
                   >
                     {moveToWorkstation
@@ -488,15 +486,16 @@ export const SessionHeaderActionsMenu: React.FC<
               </DropdownItem>
             </ActionSubmenu>
             <SessionOpenInAppMenuItem
-              key={currentSessionId}
+              key={`${currentSessionId ?? ""}:${appOpenSessionId ?? ""}`}
               sessionId={currentSessionId}
+              appOpenSessionId={appOpenSessionId}
               onCloseMenu={toggleHeaderActionsMenu}
             />
             {showTranscriptActions && (
               <>
                 <div className={DROPDOWN_CLASSES.menuGroupSeparator} />
                 <ActionSubmenu
-                  label={t("common:actions.uiSettings")}
+                  label={t("chat.pageSettings")}
                   icon={
                     <HugeiconsIcon
                       icon={Layers01Icon}
@@ -506,48 +505,7 @@ export const SessionHeaderActionsMenu: React.FC<
                   }
                   dataTestId="session-ui-settings-submenu"
                 >
-                  <div
-                    className={`${DROPDOWN_CLASSES.item} w-full justify-between text-left`}
-                  >
-                    <span className="flex-1 truncate">{showSkillsLabel}</span>
-                    <Switch
-                      checked={pinnedActionsVisible}
-                      onCheckedChange={setPinnedActionsVisible}
-                      size="small"
-                      ariaLabel={showSkillsLabel}
-                      dataTestId="session-menu-show-skills-toggle"
-                    />
-                  </div>
-                  <div
-                    className={`${DROPDOWN_CLASSES.item} w-full justify-between text-left`}
-                  >
-                    <span className="flex-1 truncate">
-                      {t("chat.showTokenUsage")}
-                    </span>
-                    <Switch
-                      checked={tokenUsageVisible}
-                      onCheckedChange={handleTokenUsageVisibleToggle}
-                      size="small"
-                      ariaLabel={t("chat.showTokenUsage")}
-                    />
-                  </div>
-                  <div
-                    className={`${DROPDOWN_CLASSES.item} w-full justify-between text-left`}
-                  >
-                    <span className="flex-1 truncate">
-                      {t("chat.showTurnMetadata")}
-                    </span>
-                    <Switch
-                      checked={turnMetadataVisible}
-                      onCheckedChange={handleTurnMetadataVisibleToggle}
-                      size="small"
-                      ariaLabel={t("chat.showTurnMetadata")}
-                      dataTestId="session-menu-turn-metadata-toggle"
-                    />
-                  </div>
-                  <div
-                    className={`${DROPDOWN_CLASSES.item} w-full justify-between text-left`}
-                  >
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
                     <span className="flex-1 truncate">
                       {t("common:pagination.title")}
                     </span>
@@ -559,16 +517,77 @@ export const SessionHeaderActionsMenu: React.FC<
                     />
                   </div>
                   <div
-                    className={`${DROPDOWN_CLASSES.item} w-full justify-between text-left`}
-                  >
+                    role="separator"
+                    className={DROPDOWN_CLASSES.menuGroupSeparator}
+                  />
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
                     <span className="flex-1 truncate">
-                      {t("chat.compactDisplayMode")}
+                      {t("chat.showTokenUsage")}
                     </span>
                     <Switch
-                      checked={displayMode === "compact"}
-                      onCheckedChange={handleCompactDisplayModeToggle}
+                      checked={tokenUsageVisible}
+                      onCheckedChange={handleTokenUsageVisibleToggle}
                       size="small"
-                      ariaLabel={t("chat.compactDisplayMode")}
+                      ariaLabel={t("chat.showTokenUsage")}
+                    />
+                  </div>
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">
+                      {t("chat.showTurnMetadata")}
+                    </span>
+                    <Switch
+                      checked={turnMetadataVisible}
+                      onCheckedChange={handleTurnMetadataVisibleToggle}
+                      size="small"
+                      ariaLabel={t("chat.showTurnMetadata")}
+                      dataTestId="session-menu-turn-metadata-toggle"
+                    />
+                  </div>
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">
+                      {t("chat.showInlineDiffs")}
+                    </span>
+                    <Switch
+                      checked={displayMode === "full"}
+                      onCheckedChange={(checked) =>
+                        handleCompactDisplayModeToggle(!checked)
+                      }
+                      size="small"
+                      ariaLabel={t("chat.showInlineDiffs")}
+                    />
+                  </div>
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">
+                      {t("chat.collapseToolActivity")}
+                    </span>
+                    <Switch
+                      checked={collapseToolActivity}
+                      onCheckedChange={setCollapseToolActivity}
+                      size="small"
+                      ariaLabel={t("chat.collapseToolActivity")}
+                      dataTestId="session-menu-collapse-tool-activity-toggle"
+                    />
+                  </div>
+                </ActionSubmenu>
+                <ActionSubmenu
+                  label={t("chat.inputSettings")}
+                  icon={
+                    <HugeiconsIcon
+                      icon={InputCursorTextIcon}
+                      size={DROPDOWN_ITEM.iconSize}
+                      strokeWidth={1.75}
+                    />
+                  }
+                  dataTestId="session-input-settings-submenu"
+                >
+                  <div className={DROPDOWN_CLASSES.menuControlItem}>
+                    <span className="flex-1 truncate">{showSkillsLabel}</span>
+                    <Switch
+                      checked={pinnedActionsVisible}
+                      onCheckedChange={setPinnedActionsVisible}
+                      size="small"
+                      ariaLabel={showSkillsLabel}
+                      dataTestId="session-menu-show-skills-toggle"
                     />
                   </div>
                 </ActionSubmenu>

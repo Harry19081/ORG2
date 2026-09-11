@@ -33,13 +33,13 @@ import { useTranslation } from "react-i18next";
 
 import { useActionSystem } from "@src/ActionSystem";
 import { Placeholder } from "@src/components/Placeholder";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { useSourceControlAttention } from "@src/hooks/git/useSourceControlAttention";
 import { useWorkStationTabShortcutBridge } from "@src/hooks/tabHost/useWorkStationTabShortcutBridge";
 import { usePublishWorkstationTabHeader } from "@src/hooks/tabHost/useWorkstationTabHeader";
 import UnifiedTabContent from "@src/modules/WorkStation/TabContent/UnifiedTabContent";
 import { NoTabsPlaceholder } from "@src/modules/WorkStation/shared";
-import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationAtom";
+import { workStationPrimarySidebarCollapsedAtom } from "@src/store/ui/workStationLayout/primarySidebarAtoms";
 import { diffViewModeAtom } from "@src/store/workstation/codeEditor";
 import { workstationSelectedIssueAtomFamily } from "@src/store/workstation/codeEditor/workstationIssueAtom";
 import { workstationRepoScopeKey } from "@src/store/workstation/codeEditor/workstationPrAtom";
@@ -464,7 +464,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                   />
                 ) : activeTab ? (
                   activeTabHasRetainedLayer ? null : (
-                    <UnifiedTabContent tab={activeTab} paneId="main" isActive />
+                    <UnifiedTabContent tab={activeTab} isActive />
                   )
                 ) : (
                   // Preserve TabContentRenderer's `!activeTab` branch: an empty
@@ -505,11 +505,7 @@ const EditorContent: React.FC<EditorContentProps> = memo(
                   }`}
                   aria-hidden={!visible}
                 >
-                  <UnifiedTabContent
-                    tab={tab}
-                    paneId="main"
-                    isActive={visible}
-                  />
+                  <UnifiedTabContent tab={tab} isActive={visible} />
                 </div>
               );
             })}

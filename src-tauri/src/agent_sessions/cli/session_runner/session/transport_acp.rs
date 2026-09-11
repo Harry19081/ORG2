@@ -28,12 +28,14 @@ pub(super) async fn run_acp_branch(
     agent: ModelType,
     image_paths: Vec<String>,
     model: Option<String>,
+    mcp_servers: Vec<serde_json::Value>,
     session_timeout: tokio::time::Duration,
     pre_message_snapshot_id: Option<String>,
     snapshot_working_dir: String,
     mut cli_session_id_out: Option<String>,
     sequence: &mut i64,
     env_vars: &HashMap<String, String>,
+    turn_intent_id: Option<&str>,
 ) -> Result<AcpOutcome, String> {
     // ── ACP agents (Copilot, Kiro, OpenCode, DeepSeek Harness):
     //    bidirectional JSON-RPC ──
@@ -49,6 +51,7 @@ pub(super) async fn run_acp_branch(
     let acp_agent = agent.clone();
     let acp_image_paths = image_paths.clone();
     let acp_model = model.clone();
+    let acp_mcp_servers = mcp_servers;
 
     let acp_handle = tokio::spawn(async move {
         match acp_agent {
@@ -62,6 +65,7 @@ pub(super) async fn run_acp_branch(
                     acp_resume.as_deref(),
                     chunk_tx,
                     acp_image_paths,
+                    acp_mcp_servers,
                 )
                 .await
             }
@@ -75,6 +79,7 @@ pub(super) async fn run_acp_branch(
                     acp_resume.as_deref(),
                     chunk_tx,
                     acp_image_paths,
+                    acp_mcp_servers,
                 )
                 .await
             }
@@ -89,6 +94,7 @@ pub(super) async fn run_acp_branch(
                     chunk_tx,
                     acp_image_paths,
                     acp_model,
+                    acp_mcp_servers,
                 )
                 .await
             }
@@ -102,6 +108,7 @@ pub(super) async fn run_acp_branch(
                     acp_resume.as_deref(),
                     chunk_tx,
                     acp_image_paths,
+                    acp_mcp_servers,
                 )
                 .await
             }
@@ -113,7 +120,7 @@ pub(super) async fn run_acp_branch(
             if let Some(snap_id) = &pre_message_snapshot_id {
                 snapshot_cli_file_edit(&session_id, snap_id, &chunk, &snapshot_working_dir).await;
             }
-            emit_chunk(&chunk, &session_id, sequence).await;
+            emit_chunk(&chunk, &session_id, sequence, turn_intent_id).await;
         }
     })
     .await;

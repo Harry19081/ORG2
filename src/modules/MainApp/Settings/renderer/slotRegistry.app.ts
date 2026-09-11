@@ -8,7 +8,6 @@ import EditorSection from "@src/modules/MainApp/Settings/sections/EditorSection"
 import GeneralSection from "@src/modules/MainApp/Settings/sections/GeneralSection";
 import HarnessConnectionsSection from "@src/modules/MainApp/Settings/sections/HarnessConnections/HarnessConnectionsSection";
 import MobileRemoteSettingsSection from "@src/modules/MainApp/Settings/sections/MobileRemoteSettingsSection";
-import MonitorSection from "@src/modules/MainApp/Settings/sections/MonitorSection";
 import SecuritySection from "@src/modules/MainApp/Settings/sections/SecuritySection";
 
 export const appSettingsSectionSlotRegistry: Partial<
@@ -21,6 +20,4 @@ export const appSettingsSectionSlotRegistry: Partial<
   [SETTINGS_SECTION_SLOT_IDS.APP_EDITOR]: EditorSection,
   [SETTINGS_SECTION_SLOT_IDS.APP_SECURITY]: SecuritySection,
   [SETTINGS_SECTION_SLOT_IDS.APP_MOBILE_REMOTE]: MobileRemoteSettingsSection,
-
-  [SETTINGS_SECTION_SLOT_IDS.APP_MONITOR]: MonitorSection,
 };

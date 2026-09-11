@@ -8,8 +8,9 @@ import RegionNoticeButton from "@src/components/RegionNoticeButton";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import Tooltip from "@src/components/Tooltip";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import type { DropdownEnginePosition } from "@src/hooks/dropdown";
-import { getCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
+import { useCollapsedSidebarChromeOffset } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { useWorkbenchRightEdgeReservation } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
 import {
   ArrowExpand01Icon,
@@ -20,10 +21,9 @@ import {
   PanelRightOpenIcon,
   SquareTerminalIcon,
 } from "@src/icons";
-import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { isWindows } from "@src/util/platform/tauri";
 
@@ -53,6 +53,7 @@ interface ChatPanelHeaderProps {
   chatPanelPosition: ChatPanelPosition;
   copyEventJsonLabel: "idle" | "copied" | "failed";
   currentSessionId: string | null;
+  appOpenSessionId?: string | null;
   displayMode: ChatHistoryDisplayMode;
   eventsLength: number;
   handleChatFocusToggle: () => void;
@@ -112,6 +113,7 @@ export function ChatPanelHeader({
   chatPanelPosition,
   copyEventJsonLabel,
   currentSessionId,
+  appOpenSessionId,
   displayMode,
   eventsLength,
   handleChatFocusToggle,
@@ -164,6 +166,7 @@ export function ChatPanelHeader({
   // chat on the left the pinned group is over the workstation, so the
   // header keeps its own toggle right of "+" exactly as before.
   const rightEdge = useWorkbenchRightEdgeReservation();
+  const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const pinnedChromeInThisHeader = rightEdge.owner === "chat";
   const trailingInsetPx = pinnedChromeInThisHeader
     ? rightEdge.reservedRight
@@ -242,6 +245,7 @@ export function ChatPanelHeader({
             activeSessionExists={activeSessionExists}
             copyEventJsonLabel={copyEventJsonLabel}
             currentSessionId={currentSessionId}
+            appOpenSessionId={appOpenSessionId}
             displayMode={displayMode}
             eventsLength={eventsLength}
             handleCompactDisplayModeToggle={handleCompactDisplayModeToggle}
@@ -336,24 +340,11 @@ export function ChatPanelHeader({
     </span>
   );
 
-  const tabBarToolbar = (
+  const renderTabControls = (collapsed: boolean) => (
     <div
-      className="flex h-9 shrink-0 items-center gap-px"
+      className={`flex ${collapsed ? "h-7" : "h-9"} shrink-0 items-center gap-px`}
       style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
-    >
-      {tabStripPlus}
-      {chatFocusToggleButton}
-    </div>
-  );
-
-  // The folded tab row's controls, rehomed on the published row. No close
-  // control: closing the pane's last tab only reseeds another one, so it
-  // earned no place in the row it would have crowded.
-  const collapsedTabControls = (
-    <div
-      className="flex h-7 shrink-0 items-center gap-px"
-      style={CHAT_PANEL_HEADER_NO_DRAG_STYLE}
-      data-testid="chat-panel-collapsed-tab-controls"
+      data-testid={collapsed ? "chat-panel-collapsed-tab-controls" : undefined}
     >
       {tabStripPlus}
       {chatFocusToggleButton}
@@ -392,7 +383,7 @@ export function ChatPanelHeader({
               <div className="flex shrink-0 items-center gap-px">
                 {publishedHeaderSlots?.trailing}
                 {sessionPublishedActions}
-                {tabRowCollapsed ? collapsedTabControls : null}
+                {tabRowCollapsed ? renderTabControls(true) : null}
               </div>
             ) : null,
         }
@@ -452,7 +443,7 @@ export function ChatPanelHeader({
         trailingInsetPx={trailingInsetPx}
         leadingInsetPx={
           shouldOffsetHeaderForCollapsedSidebar
-            ? getCollapsedSidebarChromeOffset()
+            ? collapsedSidebarChromeOffset
             : undefined
         }
       />
@@ -462,7 +453,6 @@ export function ChatPanelHeader({
       slots={effectivePublishedHeaderSlots}
       windowsHost={windowsHost}
       hideBottomBorder={!tabRowCollapsed}
-      trailingInsetPx={trailingInsetPx}
     />
   );
 
@@ -495,7 +485,7 @@ export function ChatPanelHeader({
           style={
             {
               paddingLeft: shouldOffsetHeaderForCollapsedSidebar
-                ? getCollapsedSidebarChromeOffset()
+                ? collapsedSidebarChromeOffset
                 : undefined,
               paddingRight: trailingInsetPx,
               ...(windowsHost
@@ -506,7 +496,7 @@ export function ChatPanelHeader({
         >
           {collapsedSidebarChrome}
           {tabStrip}
-          {tabBarToolbar}
+          {renderTabControls(false)}
         </div>
       )}
       {overlayPublishedHeader && effectivePublishedHeaderSlots ? (

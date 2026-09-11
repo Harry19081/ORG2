@@ -58,15 +58,7 @@ export type { PrimarySidebarTab } from "./PrimarySidebarLayout";
 // CodeEditor/index.tsx, which also carries the side-effect import).
 
 // Property editor components
-export {
-  ColorInput,
-  EditableField,
-  LinkedInputPair,
-  SpacingBottom,
-  SpacingLeft,
-  SpacingRight,
-  SpacingTop,
-} from "./PropertyEditor";
+export { EditableField, LinkedInputPair } from "./PropertyEditor";
 
 // Tab bar
 export { TabBar } from "./TabBar";
@@ -149,7 +141,7 @@ export {
   WORK_STATION_PLACEHOLDER_PAGE_BG_CLASS,
   HEADER_BUTTON,
   HEADER_ICON_SIZE,
-} from "./tokens";
+} from "@src/config/workstation/tokens";
 
 // Text tokens (i18n keys for Workstation)
 export { HUMANTOOLS_TEXT_KEYS } from "./textTokens";

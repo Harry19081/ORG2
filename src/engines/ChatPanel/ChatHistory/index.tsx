@@ -7,17 +7,12 @@ import { useAtomValue } from "jotai";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { loadEventComponent } from "@src/engines/SessionCore/rendering/registry/events";
-import { usePinnedSession } from "@src/features/Org2Cloud/SessionConversation/usePinnedSession";
-import { org2CloudRemoteSessionsAtom } from "@src/features/Org2Cloud/org2CloudRemoteSessionsAtom";
-import { getSessionForkedFrom } from "@src/features/TeamCollaboration/forkSession";
-import type { RemoteTeammateSessionMetadata } from "@src/store/collaboration/types";
 import { isSessionActiveAtom } from "@src/store/session/cliSessionStatusAtom";
 import { cursorIdeTurnSummariesAtomFamily } from "@src/store/session/cursorIdeTurnSummariesAtom";
-import { type Session, sessionByIdAtom } from "@src/store/session/sessionAtom";
+import { sessionByIdAtom } from "@src/store/session/sessionAtom";
 import { isCursorIdeSession } from "@src/util/session/sessionDispatch";
 
 import { ParentAgentSenderProvider } from "../ChatItems/ParentAgentSenderContext";
-import { SharedConversationSenderProvider } from "../ChatItems/SharedConversationSenderContext";
 import { resolveParentAgentSenderSessionId } from "../ChatItems/parentAgentSender";
 import { useChatSessionId } from "../ChatSessionContext";
 import {
@@ -42,45 +37,6 @@ import "./index.scss";
 export type { ScrollNavState } from "./ChatHistory.types";
 
 const EMPTY_ORG_MEMBERS: ChatHistoryProps["agentOrgMembers"] = [];
-
-function resolveSharedConversationSender(
-  session: Session | undefined,
-  remoteEntries: Record<
-    string,
-    { rows?: readonly RemoteTeammateSessionMetadata[] } | undefined
-  >
-) {
-  // Pre-lineage imports recorded no owner name; the live listing row still
-  // knows it, so resolve through the cloud rows before giving up on the
-  // "Shared user" placeholder.
-  const rowOwnerName = (orgId: string, sourceSessionId: string) =>
-    remoteEntries[orgId]?.rows
-      ?.find((row) => row.sourceSessionId === sourceSessionId)
-      ?.ownerDisplayName?.trim();
-  if (session?.importedFrom) {
-    const lineage = session.importedFrom;
-    return {
-      displayName:
-        lineage.ownerDisplayName?.trim() ||
-        rowOwnerName(lineage.orgId, lineage.sourceSessionId) ||
-        "Shared user",
-      avatarUrl: lineage.ownerAvatarUrl,
-    };
-  }
-  // Row-field lineage is stripped on some reload paths; the registry
-  // fallback keeps the SOURCE owner's name resolvable so inherited rows
-  // never regress to the "Shared user" placeholder.
-  const forkedFrom = session ? getSessionForkedFrom(session) : undefined;
-  if (forkedFrom) {
-    return {
-      displayName:
-        forkedFrom.ownerDisplayName?.trim() ||
-        rowOwnerName(forkedFrom.orgId, forkedFrom.sourceSessionId) ||
-        "Shared user",
-    };
-  }
-  return null;
-}
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({
   surfaceBgClass = "bg-chat-pane",
@@ -108,25 +64,30 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   groupChatViewActive = false,
   onGroupChatViewToggle,
   mutationActionsDisabled = false,
+  onFailedUserIntentRetry,
+  resolveFailedUserIntentDispatch,
   planningIndicatorScope = null,
 }) => {
   const activeId = useChatSessionId() ?? null;
   const rawCursorIdeTurnSummaries = useAtomValue(
     cursorIdeTurnSummariesAtomFamily(activeId ?? "")
   );
-  const activeSession = usePinnedSession(activeId ?? "");
+  const activeSession = useAtomValue(sessionByIdAtom(activeId ?? ""));
   const isCursorIde = activeId ? isCursorIdeSession(activeId) : false;
   const cursorIdeTurnSummaries = isCursorIde ? rawCursorIdeTurnSummaries : [];
   const handleReloadSession = useReloadSession(activeId);
   const historyState = useChatHistoryState();
   const isAgentWorking = useAtomValue(isSessionActiveAtom);
   const groupChat = useGroupChatContext();
-  const remoteEntries = useAtomValue(org2CloudRemoteSessionsAtom);
-  const sharedConversationSender = useMemo(
-    () => resolveSharedConversationSender(activeSession, remoteEntries),
-    [activeSession, remoteEntries]
+  const isAgentOrgMemberSession = useMemo(
+    () =>
+      agentOrgCurrentMemberId !== null &&
+      agentOrgMembers.some(
+        (member) =>
+          member.memberId === agentOrgCurrentMemberId && !member.isCoordinator
+      ),
+    [agentOrgCurrentMemberId, agentOrgMembers]
   );
-
   useEffect(() => {
     // Canvas payloads can reach the WorkStation as soon as the tool call is
     // stored. Warm the chat renderer while the user is still waiting for the
@@ -155,6 +116,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     forceCollapseAllTurns,
     groupChat,
     hideGroupUserMessage,
+    isAgentOrgMemberSession,
     isAgentWorking,
     planningIndicatorCount,
     sessionStatus: activeSession?.status,
@@ -209,6 +171,12 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     displayTotalFlatItems: projection.displayTotalFlatItems,
     followAgentNav,
     isPendingCancelRef: emptyState.isPendingCancelRef,
+    latestLocalSubmitId: (() => {
+      const event = projection.displayGroupHeaders.at(-1)?.event;
+      return event?.source === "user" && event.displayStatus === "pending"
+        ? event.id
+        : null;
+    })(),
     onScrollNavChange,
     planningIndicatorCount,
     sessionLoadStatus: historyState.sessionLoadStatus,
@@ -253,49 +221,47 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const actions = useChatHistoryItemActions({
     displaySourceGroupIndices: projection.displaySourceGroupIndices,
     groupHeaders: projection.groupHeaders,
-    handleIgnoreQuestionRef: historyState.handleIgnoreQuestionRef,
-    handleReplyQuestionRef: historyState.handleReplyQuestionRef,
+    onFailedUserIntentRetry,
+    resolveFailedUserIntentDispatch,
   });
 
   return (
-    <SharedConversationSenderProvider value={sharedConversationSender}>
-      <ParentAgentSenderProvider value={parentAgentSender}>
-        <ChatHistoryView
-          actions={actions}
-          activeId={activeId}
-          agentOrgCurrentMemberId={agentOrgCurrentMemberId}
-          agentOrgCurrentMemberName={agentOrgCurrentMemberName}
-          agentOrgMembers={agentOrgMembers}
-          agentOrgOverviewPanel={agentOrgOverviewPanel}
-          bottomInset={bottomInset}
-          chatPanelPosition={chatPanelPosition}
-          displayMode={displayMode}
-          emptyState={emptyState}
-          groupChatEnabled={Boolean(groupChat?.enabled)}
-          groupChatViewActive={groupChatViewActive}
-          groupChatViewAvailable={groupChatViewAvailable}
-          handlePlanningIndicatorCount={handlePlanningIndicatorCount}
-          handleReloadSession={handleReloadSession}
-          hideGroupUserMessage={hideGroupUserMessage}
-          historyState={historyState}
-          mutationActionsDisabled={mutationActionsDisabled}
-          navigation={navigation}
-          newEventDividerLabel={newEventDividerLabel}
-          onAgentOrgMemberSelect={onAgentOrgMemberSelect}
-          onAgentOrgRunViewRefresh={onAgentOrgRunViewRefresh}
-          onGroupChatViewToggle={onGroupChatViewToggle}
-          paginationTrailingSlot={paginationTrailingSlot}
-          pinnedHeaderPortalHost={pinnedHeaderPortalHost}
-          chromeTopInset={chromeTopInset}
-          planningIndicatorScope={planningIndicatorScope}
-          projection={projection}
-          search={search}
-          surfaceBgClass={surfaceBgClass}
-          turnPaginationEnabled={turnPaginationEnabled}
-          viewport={viewport}
-        />
-      </ParentAgentSenderProvider>
-    </SharedConversationSenderProvider>
+    <ParentAgentSenderProvider value={parentAgentSender}>
+      <ChatHistoryView
+        actions={actions}
+        activeId={activeId}
+        agentOrgCurrentMemberId={agentOrgCurrentMemberId}
+        agentOrgCurrentMemberName={agentOrgCurrentMemberName}
+        agentOrgMembers={agentOrgMembers}
+        agentOrgOverviewPanel={agentOrgOverviewPanel}
+        bottomInset={bottomInset}
+        chatPanelPosition={chatPanelPosition}
+        displayMode={displayMode}
+        emptyState={emptyState}
+        groupChatEnabled={Boolean(groupChat?.enabled)}
+        groupChatViewActive={groupChatViewActive}
+        groupChatViewAvailable={groupChatViewAvailable}
+        handlePlanningIndicatorCount={handlePlanningIndicatorCount}
+        handleReloadSession={handleReloadSession}
+        hideGroupUserMessage={hideGroupUserMessage}
+        historyState={historyState}
+        mutationActionsDisabled={mutationActionsDisabled}
+        navigation={navigation}
+        newEventDividerLabel={newEventDividerLabel}
+        onAgentOrgMemberSelect={onAgentOrgMemberSelect}
+        onAgentOrgRunViewRefresh={onAgentOrgRunViewRefresh}
+        onGroupChatViewToggle={onGroupChatViewToggle}
+        paginationTrailingSlot={paginationTrailingSlot}
+        pinnedHeaderPortalHost={pinnedHeaderPortalHost}
+        chromeTopInset={chromeTopInset}
+        planningIndicatorScope={planningIndicatorScope}
+        projection={projection}
+        search={search}
+        surfaceBgClass={surfaceBgClass}
+        turnPaginationEnabled={turnPaginationEnabled}
+        viewport={viewport}
+      />
+    </ParentAgentSenderProvider>
   );
 };
 

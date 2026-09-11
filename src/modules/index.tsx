@@ -22,7 +22,7 @@ import React, {
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { ROUTES } from "@src/config/routes";
-import { BrowserProvider, TerminalProvider } from "@src/contexts/workstation";
+import { BrowserProvider } from "@src/contexts/workstation";
 import { useViewportWidth } from "@src/engines/ChatPanel/hooks/useViewportWidth";
 import { useAgentADEActions } from "@src/engines/SessionCore/hooks/useAgentADEActions";
 import { useProjectDataChangedListener } from "@src/hooks/project";
@@ -34,27 +34,25 @@ import {
   GENERAL_LAYOUT_TOUR_TARGETS,
 } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { GUIDE_TARGETS } from "@src/scaffold/Tutorials/guideTargets";
-import { TUTORIALS_OPEN_EVENT } from "@src/scaffold/Tutorials/tutorialRegistry";
-import {
-  activeChatPanelTabAtom,
-  resolveChatPanelMaximizedForLayout,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { useSyncStatusBridge } from "@src/store/sync";
+import { type ChatPanelMode } from "@src/store/ui/chatPanel/selectionAtoms";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { stationChatVisibilityAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
 import {
-  type ChatPanelMode,
-  chatPanelMaximizedAtom,
   chatWidthAtom,
   restoreChatWidthAtom,
-  stationChatVisibilityAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/widthAtoms";
 import { settingsReturnPathAtom } from "@src/store/ui/settingsNavigationAtom";
 import {
   DEFAULT_SIDEBAR_WIDTH,
   sidebarCollapsedAtom,
   sidebarWidthAtom,
+  updateSidebarViewportAtom,
 } from "@src/store/ui/sidebarAtom";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
 import { useRouteLayoutType, useWorkspaceEvents } from "./shared/hooks";
 import { AppLayout } from "./shared/layouts";
@@ -82,10 +80,10 @@ const GuideHighlightOverlay = React.lazy(
     )
 );
 
-const TutorialsModal = React.lazy(
+const OnboardingHost = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "tutorials" */ "@src/scaffold/Tutorials/TutorialsModal"
+      /* webpackChunkName: "tutorials" */ "@src/features/Onboarding/OnboardingHost"
     )
 );
 
@@ -159,6 +157,10 @@ const AppShell = () => {
   const stationMode = useAtomValue(stationModeAtom);
   const chatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
   const viewportWidth = useViewportWidth();
+  const updateSidebarViewport = useSetAtom(updateSidebarViewportAtom);
+  useEffect(() => {
+    if (viewportWidth !== undefined) updateSidebarViewport(viewportWidth);
+  }, [viewportWidth, updateSidebarViewport]);
   const stationChatVisibility = useAtomValue(stationChatVisibilityAtom);
   const sidebarCollapsed = useAtomValue(sidebarCollapsedAtom);
   const sidebarWidth = useAtomValue(sidebarWidthAtom);
@@ -174,7 +176,6 @@ const AppShell = () => {
   const setSidebarCollapsed = useSetAtom(sidebarCollapsedAtom);
   const setStationChatVisibility = useSetAtom(stationChatVisibilityAtom);
   const setSettingsReturnPath = useSetAtom(settingsReturnPathAtom);
-  const [tutorialsModalOpen, setTutorialsModalOpen] = useState(false);
   const [generalLayoutTourOpen, setGeneralLayoutTourOpen] = useState(false);
   const [generalLayoutTourRunId, setGeneralLayoutTourRunId] = useState(0);
   const [codeEditorTourOpen, setCodeEditorTourOpen] = useState(false);
@@ -194,10 +195,6 @@ const AppShell = () => {
     if (!location.pathname.startsWith(ROUTES.workStation.base.path)) return;
     setSettingsReturnPath(`${location.pathname}${location.search}`);
   }, [location.pathname, location.search, setSettingsReturnPath]);
-
-  const handleOpenTutorials = useCallback(() => {
-    setTutorialsModalOpen(true);
-  }, []);
 
   const handleStartGeneralLayoutTour = useCallback(() => {
     if (!location.pathname.startsWith(ROUTES.workStation.base.path)) {
@@ -250,14 +247,12 @@ const AppShell = () => {
   ]);
 
   useEffect(() => {
-    window.addEventListener(TUTORIALS_OPEN_EVENT, handleOpenTutorials);
     window.addEventListener(
       GENERAL_LAYOUT_TOUR_EVENT,
       handleStartGeneralLayoutTour
     );
     window.addEventListener(CODE_EDITOR_TOUR_EVENT, handleStartCodeEditorTour);
     return () => {
-      window.removeEventListener(TUTORIALS_OPEN_EVENT, handleOpenTutorials);
       window.removeEventListener(
         GENERAL_LAYOUT_TOUR_EVENT,
         handleStartGeneralLayoutTour
@@ -267,11 +262,7 @@ const AppShell = () => {
         handleStartCodeEditorTour
       );
     };
-  }, [
-    handleOpenTutorials,
-    handleStartCodeEditorTour,
-    handleStartGeneralLayoutTour,
-  ]);
+  }, [handleStartCodeEditorTour, handleStartGeneralLayoutTour]);
 
   useEffect(() => {
     if (chatPanelMaximized) return;
@@ -350,69 +341,61 @@ const AppShell = () => {
       ? sidebarWidth || DEFAULT_SIDEBAR_WIDTH
       : 0;
 
-  const effectiveChatFocus = resolveChatPanelMaximizedForLayout(
-    chatPanelMaximized,
-    activeChatPanelTab
-  );
+  const effectiveChatFocus = useAtomValue(effectiveChatPanelMaximizedAtom);
 
   return (
-    <TerminalProvider>
-      <BrowserProvider>
-        <BrowserEventBridge />
-        <Outlet />
-        <React.Suspense fallback={null}>
-          <SharedBrowserApp />
-        </React.Suspense>
-        <div
-          className="relative flex h-full"
-          data-guide-target={GUIDE_TARGETS.APP_ROOT}
+    <BrowserProvider>
+      <BrowserEventBridge />
+      <Outlet />
+      <React.Suspense fallback={null}>
+        <SharedBrowserApp />
+      </React.Suspense>
+      <div
+        className="relative flex h-full"
+        data-guide-target={GUIDE_TARGETS.APP_ROOT}
+      >
+        {/* Main layout with sidebar, toolbar, content, and chat panel */}
+        <AppLayout
+          viewportWidth={viewportWidth}
+          sidebar={<SidebarSelector />}
+          floatingSidebar={<FloatingSidebar />}
+          showChatPanel
+          chatPosition={chatPosition}
+          chatPanelMaximized={effectiveChatFocus}
+          chatPanelMode={chatPanelMode}
+          sessionSidebarWidth={sessionSidebarWidth}
         >
-          {/* Main layout with sidebar, toolbar, content, and chat panel */}
-          <AppLayout
-            viewportWidth={viewportWidth}
-            sidebar={<SidebarSelector />}
-            floatingSidebar={<FloatingSidebar />}
-            showChatPanel
-            chatPosition={chatPosition}
-            chatPanelMaximized={effectiveChatFocus}
-            chatPanelMode={chatPanelMode}
-            sessionSidebarWidth={sessionSidebarWidth}
-          >
-            <div className="relative h-full w-full min-w-0">
-              <div
-                className="absolute inset-0 bg-workstation-bg"
-                data-guide-target={GUIDE_TARGETS.WORKSTATION}
-                data-tour-target={GENERAL_LAYOUT_TOUR_TARGETS.workstation}
-              >
-                <React.Suspense fallback={<WorkStationLoadingFallback />}>
-                  <WorkStationPage
-                    isActive
-                    chatPanelFocused={effectiveChatFocus}
-                  />
-                </React.Suspense>
-              </div>
+          <div className="relative h-full w-full min-w-0">
+            <div
+              className="absolute inset-0 bg-workstation-bg"
+              data-guide-target={GUIDE_TARGETS.WORKSTATION}
+              data-tour-target={GENERAL_LAYOUT_TOUR_TARGETS.workstation}
+            >
+              <React.Suspense fallback={<WorkStationLoadingFallback />}>
+                <WorkStationPage
+                  isActive
+                  chatPanelFocused={effectiveChatFocus}
+                />
+              </React.Suspense>
             </div>
-          </AppLayout>
-          <React.Suspense fallback={null}>
-            <GuideHighlightOverlay />
-            <TutorialsModal
-              open={tutorialsModalOpen}
-              onClose={() => setTutorialsModalOpen(false)}
-            />
-            <GeneralLayoutTour
-              key={`general-layout-tour-${generalLayoutTourRunId}`}
-              open={generalLayoutTourOpen}
-              onClose={() => setGeneralLayoutTourOpen(false)}
-            />
-            <CodeEditorTour
-              key={`code-editor-tour-${codeEditorTourRunId}`}
-              open={codeEditorTourOpen}
-              onClose={() => setCodeEditorTourOpen(false)}
-            />
-          </React.Suspense>
-        </div>
-      </BrowserProvider>
-    </TerminalProvider>
+          </div>
+        </AppLayout>
+        <React.Suspense fallback={null}>
+          <GuideHighlightOverlay />
+          <OnboardingHost />
+          <GeneralLayoutTour
+            key={`general-layout-tour-${generalLayoutTourRunId}`}
+            open={generalLayoutTourOpen}
+            onClose={() => setGeneralLayoutTourOpen(false)}
+          />
+          <CodeEditorTour
+            key={`code-editor-tour-${codeEditorTourRunId}`}
+            open={codeEditorTourOpen}
+            onClose={() => setCodeEditorTourOpen(false)}
+          />
+        </React.Suspense>
+      </div>
+    </BrowserProvider>
   );
 };
 

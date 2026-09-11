@@ -1,7 +1,7 @@
 import React from "react";
 
 import {
-  getCollapsedSidebarChromeOffset,
+  useCollapsedSidebarChromeOffset,
   useShouldOffsetMainAppHeader,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import { PageBreadcrumb } from "@src/modules/shared/layouts/blocks";
@@ -27,6 +27,7 @@ const MainAppPageHeader: React.FC<MainAppPageHeaderProps> = ({
   offsetForCollapsedSidebar,
 }) => {
   const defaultOffsetForCollapsedSidebar = useShouldOffsetMainAppHeader();
+  const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const shouldOffsetHeaderForCollapsedSidebar =
     offsetForCollapsedSidebar ?? defaultOffsetForCollapsedSidebar;
 
@@ -38,7 +39,7 @@ const MainAppPageHeader: React.FC<MainAppPageHeaderProps> = ({
         {
           ...style,
           paddingLeft: shouldOffsetHeaderForCollapsedSidebar
-            ? getCollapsedSidebarChromeOffset()
+            ? collapsedSidebarChromeOffset
             : undefined,
           ...DRAG_STYLE,
         } as React.CSSProperties

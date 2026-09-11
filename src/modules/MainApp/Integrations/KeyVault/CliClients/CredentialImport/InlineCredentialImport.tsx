@@ -5,18 +5,18 @@
  * skills / rules / MCP / agents auto-import rows): a collapsed section row
  * with an Expand toggle, and when expanded a SettingsTable of importable
  * rows with select-all, search, per-item failures, and an "Import (n)"
- * button. The header shows how many credentials the offline probe found
- * so the suggestion is visible without expanding.
+ * button. The header uses the same concise import wording as its siblings.
  */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
+import PageNotice from "@src/components/PageNotice";
 import SettingsTable from "@src/components/SettingsTable";
 import {
   ChevronsDownUpIcon,
-  Download01Icon,
   HugeiconsIcon,
+  ImportIcon,
   UnfoldMoreIcon,
 } from "@src/icons";
 import {
@@ -29,22 +29,16 @@ import { useCredentialImport } from "./useCredentialImport";
 
 interface InlineCredentialImportProps {
   sourceKind?: "cc_switch";
-  /** Start expanded and route the toggle to `onCompleted` (wizard flows). */
-  forceExpanded?: boolean;
-  onCompleted?: () => void;
   /** Reload agents / accounts after a successful import. */
   onAfterImport?: () => void | Promise<void>;
 }
 
 const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
-  forceExpanded = false,
   sourceKind,
-  onCompleted,
   onAfterImport,
 }) => {
   const { t } = useTranslation("integrations");
-  const [manuallyExpanded, setManuallyExpanded] = useState(false);
-  const expanded = forceExpanded || manuallyExpanded;
+  const [expanded, setExpanded] = useState(false);
 
   const {
     items,
@@ -56,18 +50,15 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
     importError,
     importErrors,
     importColumns,
+    handleRowClick,
     handleImport,
   } = useCredentialImport({
     sourceKind,
-    onCompleted: onCompleted ?? (() => undefined),
+    onCompleted: () => undefined,
     onRefresh: onAfterImport,
   });
 
-  const foundCount = allImportableItems.length;
-  const title =
-    foundCount > 0
-      ? t("credentialImport.titleWithCount", { count: foundCount })
-      : t("credentialImport.title");
+  const title = t("credentialImport.title");
 
   return (
     <SectionContainer>
@@ -89,13 +80,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
               />
             )
           }
-          onClick={() => {
-            if (forceExpanded) {
-              onCompleted?.();
-              return;
-            }
-            setManuallyExpanded((current) => !current);
-          }}
+          onClick={() => setExpanded((current) => !current)}
         >
           {t("common:actions.expand")}
         </Button>
@@ -115,6 +100,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
             ) : (
               <SettingsTable
                 columns={importColumns}
+                onRowClick={handleRowClick}
                 rows={importableItems}
                 getRowKey={credentialImportRowKey}
                 headerHeight="tall"
@@ -124,15 +110,16 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
             )}
 
             {importError && (
-              <div className="rounded border border-solid border-danger-3 bg-danger-1 px-3 py-2 text-[12px] text-danger-6">
+              <PageNotice type="danger" role="alert">
                 {t("credentialImport.applyFailed", { message: importError })}
-              </div>
+              </PageNotice>
             )}
             {importErrors.length > 0 && (
-              <div className="rounded border border-solid border-warning-3 bg-warning-1 px-3 py-2 text-[12px] text-warning-6">
-                <div className="mb-1 font-bold">
-                  {t("credentialImport.partialFailure")}
-                </div>
+              <PageNotice
+                type="warning"
+                role="alert"
+                title={t("credentialImport.partialFailure")}
+              >
                 <ul className="list-inside list-disc">
                   {importErrors.map((entry) => (
                     <li key={entry.id}>
@@ -144,7 +131,7 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </PageNotice>
             )}
 
             {allImportableItems.length > 0 && (
@@ -154,8 +141,8 @@ const InlineCredentialImport: React.FC<InlineCredentialImportProps> = ({
                   size="small"
                   icon={
                     <HugeiconsIcon
-                      icon={Download01Icon}
-                      data-icon="download"
+                      icon={ImportIcon}
+                      data-icon="import"
                       size={14}
                     />
                   }

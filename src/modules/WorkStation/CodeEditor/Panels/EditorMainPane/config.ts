@@ -10,7 +10,7 @@ import type { QuickAction } from "@src/modules/WorkStation/shared";
 import type { SourceControlFilterMode } from "@src/modules/WorkStation/shared/SidebarModules";
 import {
   openEditorSpotlight,
-  openWorkspaceSpotlight,
+  openWorkingDirectorySpotlight,
 } from "@src/scaffold/GlobalSpotlight/openSpotlight";
 import type { PanelState } from "@src/store/workstation/tabs";
 
@@ -68,12 +68,14 @@ export function createEditorQuickActions(
     {
       id: "add-workspace",
       label: t("commands.switchWorkspace"),
-      onAction: () => openWorkspaceSpotlight("switch"),
+      onAction: () => openWorkingDirectorySpotlight("switch"),
     },
     {
       id: "search-files",
       label: t("commands.searchFiles"),
-      shortcut: getShortcutKeys("quick_open"),
+      get shortcut() {
+        return getShortcutKeys("quick_open");
+      },
       onAction: () => openEditorSpotlight(""),
     },
     {
@@ -81,7 +83,9 @@ export function createEditorQuickActions(
       label: sidebarCollapsed
         ? t("commands.showPrimarySidebar")
         : t("commands.hidePrimarySidebar"),
-      shortcut: getShortcutKeys("toggle_workstation_sidebar"),
+      get shortcut() {
+        return getShortcutKeys("toggle_workstation_sidebar");
+      },
       onAction: () => dispatch("panel.togglePrimary", {}, "user"),
     },
   ];

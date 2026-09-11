@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import {
   PINNED_WORKBENCH_CHROME_CENTER_TOP,
   PINNED_WORKBENCH_CHROME_RIGHT_INSET,
@@ -27,18 +28,13 @@ import {
   PanelRightIcon,
   PanelRightOpenIcon,
 } from "@src/icons";
-import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
-import {
-  activeChatPanelTabAtom,
-  isChatPanelTabStationAvailable,
-  toggleActiveChatPanelMaximizedAtom,
-} from "@src/store/chatPanel/chatPanelTabsAtom";
-import {
-  chatPanelMaximizedAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { effectiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelLayoutAtoms";
+import { toggleActiveChatPanelMaximizedAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
+import { isChatPanelTabStationAvailable } from "@src/store/chatPanel/chatPanelTabsModel";
+import { activeChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
 import { WorkstationMaximizeChatIcon } from "./useWorkstationTrailingSlot";
 
@@ -47,8 +43,8 @@ const PinnedWorkbenchChromeComponent: React.FC = () => {
   const visible = usePinnedWorkbenchChromeVisible();
   const isChatPanelVisible = useCurrentStationChatVisible();
   const chatPanelPosition = useAtomValue(chatPanelPositionAtom);
-  const chatPanelMaximized = useAtomValue(chatPanelMaximizedAtom);
   const activeTab = useAtomValue(activeChatPanelTabAtom);
+  const chatPanelMaximized = useAtomValue(effectiveChatPanelMaximizedAtom);
   const toggleChatPanelMaximized = useSetAtom(toggleChatPanelMaximizedAtom);
   const toggleActiveChatMaximized = useSetAtom(
     toggleActiveChatPanelMaximizedAtom

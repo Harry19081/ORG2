@@ -11,22 +11,18 @@ import { ASK_QUESTION_FUNCTIONS } from "@src/engines/ChatPanel/InputArea/AskQues
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import { getAppSubtool } from "@src/engines/SessionCore/rendering/registry/initToolRegistry";
 
+import { isAgentOrgInboxTranscriptEvent } from "./emailBubbleEvent";
 import type {
   CommunicationUnloadedTurnMeta,
   MessageEntry,
   MessageViewMode,
 } from "./types";
 
+export { isAgentOrgInboxTranscriptEvent } from "./emailBubbleEvent";
+
 // ============================================
 // Event Type Checking (all delegate to Rust)
 // ============================================
-
-export function isAgentOrgInboxTranscriptEvent(event: SessionEvent): boolean {
-  return Boolean(
-    event.args?.agentOrgInboxTranscript === true ||
-    event.result?.agentOrgInboxTranscript === true
-  );
-}
 
 /** Rust AppSubtool: subtool === "message" means chat/conversation */
 export function isChatEvent(eventFunction: string): boolean {

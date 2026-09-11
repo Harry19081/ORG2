@@ -67,6 +67,7 @@ const NavButton: React.FC<NavButtonProps> = ({
         shortcutId={shortcutId}
         tooltipMouseEnterDelay={tooltipMouseEnterDelay}
         disabled={disabled}
+        className="disabled:text-text-4! disabled:opacity-100"
         onClick={onClick}
         data-testid={testId}
       >
@@ -82,6 +83,7 @@ const NavButton: React.FC<NavButtonProps> = ({
       tooltipMouseEnterDelay={tooltipMouseEnterDelay}
       nativeTitle={false}
       disabled={disabled}
+      className="disabled:text-text-4! disabled:opacity-100"
       onClick={onClick}
       data-testid={testId}
     >

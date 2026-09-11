@@ -35,7 +35,6 @@ interface TourStep {
   id: string;
   target: GeneralLayoutTourTarget;
   /** Snap into My Station when this step becomes active (dock chrome steps). */
-  switchToMyStation?: boolean;
   stationMode?: StationMode;
   demoStationModeSwitch?: boolean;
 }
@@ -180,11 +179,6 @@ const GeneralLayoutTour: React.FC<GeneralLayoutTourProps> = ({
   const currentStep = TOUR_STEPS[stepIndex];
   const isFirstStep = stepIndex === 0;
   const isLastStep = stepIndex === TOUR_STEPS.length - 1;
-
-  useEffect(() => {
-    if (!open || !currentStep.switchToMyStation) return;
-    setStationMode("my-station");
-  }, [currentStep.switchToMyStation, open, setStationMode]);
 
   useEffect(() => {
     if (!open || !currentStep.stationMode) return;

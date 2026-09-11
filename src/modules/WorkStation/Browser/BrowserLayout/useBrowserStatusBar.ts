@@ -14,7 +14,7 @@ import type { AddToAgentRequest } from "@src/store/ui/addToAgentAtom";
 import {
   browserStatusBarCallbacksAtom,
   browserStatusBarStateAtom,
-} from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/statusBarAtoms";
 
 import { buildSelectedElementLabel } from "./browserLayoutUtils";
 import { buildDomComponentJsonFromElementInfo } from "./buildDomComponentJson";

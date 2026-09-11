@@ -14,11 +14,11 @@ import Button from "@src/components/Button";
 import Dropdown from "@src/components/Dropdown";
 import Menu from "@src/components/Menu";
 import Select from "@src/components/Select";
+import type { SettingsTableColumn } from "@src/components/SettingsTable";
 import {
   SETTINGS_TABLE_CELL,
   SETTINGS_TABLE_COL,
-  type SettingsTableColumn,
-} from "@src/components/SettingsTable";
+} from "@src/components/SettingsTable/tokens";
 import SplitButton from "@src/components/SplitButton";
 import Switch from "@src/components/Switch";
 import Tag from "@src/components/Tag";

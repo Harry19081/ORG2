@@ -10,7 +10,8 @@
  * - `--app-font-family`                                    (applicationUiFontAtom)
  * - `--app-solid-background`                       (resolvedBackgroundConfigAtom)
  * - Chat typography variables                              (chat appearance settings)
- * - `html.fullscreen` class                                (windowFullscreenAtom)
+ * - `html.fullscreen` class                                (windowFullscreenAtom,
+ *   kept in sync with the native window by `useWindowFullscreenSync`)
  *
  * This hook must run in AppBootstrap (before first render) so the styles are
  * applied before any child component paints, avoiding a flash of unstyled UI.
@@ -20,6 +21,7 @@ import { useEffect, useLayoutEffect } from "react";
 
 import { getApplicationUiFontStack } from "@src/config/appearance/applicationUiFonts";
 import { createLogger } from "@src/hooks/logger";
+import { useWindowFullscreenSync } from "@src/hooks/platform/useWindowFullscreenSync";
 import {
   chatCodeFontSizeAtom,
   chatFontSizeAtom,
@@ -38,6 +40,7 @@ import { resolveNativeFrameScale } from "@src/util/platform/tauri/nativeFrame";
 const logger = createLogger("AppShellEffects");
 
 export function useAppShellEffects(): void {
+  useWindowFullscreenSync();
   const uiScale = useAtomValue(uiScaleAtom);
   const applicationUiFont = useAtomValue(applicationUiFontAtom);
   const isFullscreen = useAtomValue(windowFullscreenAtom);

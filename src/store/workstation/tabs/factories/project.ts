@@ -28,7 +28,7 @@ export const STORY_ORG_SCOPE = {
 } as const;
 
 export const STORY_PERSONAL_ORG_FILTER_ID = "personal-org";
-export const STORY_PERSONAL_ORG_NAME = "Personal Org";
+export const STORY_PERSONAL_ORG_NAME = "My workspace";
 
 export type ProjectOrgScope =
   (typeof STORY_ORG_SCOPE)[keyof typeof STORY_ORG_SCOPE];

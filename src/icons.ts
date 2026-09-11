@@ -24,6 +24,7 @@ export { HugeiconsIcon } from "@hugeicons/react";
 export type { IconSvgElement } from "@hugeicons/react";
 
 export { default as Activity01Icon } from "@hugeicons/core-free-icons/Activity01Icon";
+export { default as ActivitySparkIcon } from "@hugeicons/core-free-icons/ActivitySparkIcon";
 export { default as Add01Icon } from "@hugeicons/core-free-icons/Add01Icon";
 export { default as AiGenerativeIcon } from "@hugeicons/core-free-icons/AiGenerativeIcon";
 export { default as AiNetworkIcon } from "@hugeicons/core-free-icons/AiNetworkIcon";
@@ -70,6 +71,7 @@ export { default as ArrowUpRight01Icon } from "@hugeicons/core-free-icons/ArrowU
 export { default as AtIcon } from "@hugeicons/core-free-icons/AtIcon";
 export { default as AttachmentIcon } from "@hugeicons/core-free-icons/AttachmentIcon";
 export { default as BadgeCentIcon } from "@hugeicons/core-free-icons/BadgeCentIcon";
+export { default as BanIcon } from "@hugeicons/core-free-icons/BanIcon";
 export { default as BarChartIcon } from "@hugeicons/core-free-icons/BarChartIcon";
 export { default as BlocksIcon } from "@hugeicons/core-free-icons/BlocksIcon";
 export { default as Book01Icon } from "@hugeicons/core-free-icons/Book01Icon";
@@ -175,6 +177,7 @@ export { default as Edit03Icon } from "@hugeicons/core-free-icons/Edit03Icon";
 export { default as Edit04Icon } from "@hugeicons/core-free-icons/Edit04Icon";
 export { default as EllipsisIcon } from "@hugeicons/core-free-icons/EllipsisIcon";
 export { default as ExpandIcon } from "@hugeicons/core-free-icons/ExpandIcon";
+export { default as ExternalLinkIcon } from "@hugeicons/core-free-icons/ExternalLinkIcon";
 export { default as FavouriteIcon } from "@hugeicons/core-free-icons/FavouriteIcon";
 export { default as FeatherIcon } from "@hugeicons/core-free-icons/FeatherIcon";
 export { default as File01Icon } from "@hugeicons/core-free-icons/File01Icon";
@@ -248,6 +251,7 @@ export { default as ImportIcon } from "@hugeicons/core-free-icons/ImportIcon";
 export { default as InboxIcon } from "@hugeicons/core-free-icons/InboxIcon";
 export { default as Infinity01Icon } from "@hugeicons/core-free-icons/Infinity01Icon";
 export { default as InformationCircleIcon } from "@hugeicons/core-free-icons/InformationCircleIcon";
+export { default as InputCursorTextIcon } from "@hugeicons/core-free-icons/InputCursorTextIcon";
 export { default as InternetIcon } from "@hugeicons/core-free-icons/InternetIcon";
 export { default as KanbanIcon } from "@hugeicons/core-free-icons/KanbanIcon";
 export { default as Key01Icon } from "@hugeicons/core-free-icons/Key01Icon";
@@ -261,6 +265,7 @@ export { default as Layout01Icon } from "@hugeicons/core-free-icons/Layout01Icon
 export { default as LayoutAlignLeftIcon } from "@hugeicons/core-free-icons/LayoutAlignLeftIcon";
 export { default as LayoutAlignRightIcon } from "@hugeicons/core-free-icons/LayoutAlignRightIcon";
 export { default as LayoutListIcon } from "@hugeicons/core-free-icons/LayoutListIcon";
+export { default as LayoutThreeColumnIcon } from "@hugeicons/core-free-icons/LayoutThreeColumnIcon";
 export { default as LayoutTopIcon } from "@hugeicons/core-free-icons/LayoutTopIcon";
 export { default as LayoutTwoRowIcon } from "@hugeicons/core-free-icons/LayoutTwoRowIcon";
 export { default as LeftToRightListNumberIcon } from "@hugeicons/core-free-icons/LeftToRightListNumberIcon";
@@ -325,6 +330,7 @@ export { default as PauseIcon } from "@hugeicons/core-free-icons/PauseIcon";
 export { default as Pen01Icon } from "@hugeicons/core-free-icons/Pen01Icon";
 export { default as PenLineIcon } from "@hugeicons/core-free-icons/PenLineIcon";
 export { default as PenTool01Icon } from "@hugeicons/core-free-icons/PenTool01Icon";
+export { default as PencilEdit01Icon } from "@hugeicons/core-free-icons/PencilEdit01Icon";
 export { default as PencilEdit02Icon } from "@hugeicons/core-free-icons/PencilEdit02Icon";
 export { default as PencilRulerIcon } from "@hugeicons/core-free-icons/PencilRulerIcon";
 export { default as PictureInPicture01Icon } from "@hugeicons/core-free-icons/PictureInPicture01Icon";
@@ -440,3 +446,5 @@ export { default as WorkflowCircle05Icon } from "@hugeicons/core-free-icons/Work
 export { default as Wrench01Icon } from "@hugeicons/core-free-icons/Wrench01Icon";
 export { default as ZoomInAreaIcon } from "@hugeicons/core-free-icons/ZoomInAreaIcon";
 export { default as ZoomOutAreaIcon } from "@hugeicons/core-free-icons/ZoomOutAreaIcon";
+
+export { default as SendIcon } from "@hugeicons/core-free-icons/SendIcon";

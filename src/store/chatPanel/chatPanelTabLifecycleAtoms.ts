@@ -8,7 +8,7 @@ import {
   chatPanelSelectedProjectAtom,
   chatPanelSelectedProjectOrgAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkManagementSection } from "@src/store/workstation";
 
 import {
@@ -17,6 +17,7 @@ import {
   removeRecentChatPanelTabAtom,
 } from "./chatPanelRecentTabsState";
 import {
+  DEFAULT_LAUNCHPAD_TAB_ID,
   buildDefaultLaunchpadTab,
   getChatPanelWorkItemTabKey,
 } from "./chatPanelTabFactories";
@@ -147,6 +148,65 @@ export const closeChatPanelTabAtom = atom(null, (get, set, tabId: string) => {
   }
 });
 closeChatPanelTabAtom.debugLabel = "closeChatPanelTab";
+
+/**
+ * Close every Chat Panel tab owned by sessions that were durably deleted.
+ *
+ * A Team deletion receipt can contain the Root and several Members, and more
+ * than one of them may be open. Remove the whole set in one state transition
+ * so activating a fallback can never briefly re-select another deleted
+ * session between per-tab closes.
+ */
+export const closeSessionChatPanelTabsAtom = atom(
+  null,
+  (get, set, sessionIds: readonly string[]): boolean => {
+    if (sessionIds.length === 0) return false;
+    const deletedSessionIds = new Set(sessionIds);
+    const state = get(chatPanelTabsAtom);
+    const tabsToClose = new Set(
+      state.tabs
+        .filter(
+          (tab) =>
+            tab.type === "session" &&
+            Boolean(tab.sessionId && deletedSessionIds.has(tab.sessionId))
+        )
+        .map((tab) => tab.id)
+    );
+    if (tabsToClose.size === 0) return false;
+
+    const activeIndex = state.tabs.findIndex(
+      (tab) => tab.id === state.activeTabId
+    );
+    const activeTabClosed = tabsToClose.has(state.activeTabId);
+    const remainingTabs = state.tabs.filter((tab) => !tabsToClose.has(tab.id));
+
+    const rememberedSessionId = get(workstationActiveSessionIdAtom);
+    if (rememberedSessionId && deletedSessionIds.has(rememberedSessionId)) {
+      set(workstationActiveSessionIdAtom, null);
+    }
+
+    if (!activeTabClosed) {
+      set(chatPanelTabsAtom, { ...state, tabs: remainingTabs });
+      return false;
+    }
+
+    const fallbackTab =
+      state.tabs
+        .slice(0, Math.max(0, activeIndex))
+        .reverse()
+        .find((tab) => !tabsToClose.has(tab.id)) ??
+      remainingTabs.find((tab) => tab.id === DEFAULT_LAUNCHPAD_TAB_ID);
+    const nextTab = fallbackTab ?? buildDefaultLaunchpadTab();
+    const nextTabs = fallbackTab ? remainingTabs : [nextTab, ...remainingTabs];
+    set(chatPanelTabsAtom, {
+      tabs: nextTabs,
+      activeTabId: nextTab.id,
+    });
+    set(activateChatPanelTabAtom, nextTab.id);
+    return true;
+  }
+);
+closeSessionChatPanelTabsAtom.debugLabel = "closeSessionChatPanelTabs";
 
 /** Close the singleton organization tab, or clear its legacy surface mirrors. */
 export const closeOrganizationChatPanelTabAtom = atom(null, (get, set) => {
@@ -393,40 +453,6 @@ export const setChatPanelTabTitleAtom = atom(
     });
   }
 );
-
-/**
- * Keep a work-item tab's stored payload in sync with in-place edits made
- * through `chatPanelSelectedWorkItemAtom` (rename / status change / refresh).
- * Without this, switching away and back would replay the stale payload and
- * revert the edit. Matched by organization, project, and short ID; a no-op
- * (returns the previous state) when the payload reference is unchanged — e.g.
- * the seed written on tab activation — so it never churns tab state or
- * persistence.
- */
-export const patchChatPanelWorkItemTabAtom = atom(
-  null,
-  (_get, set, workItem: ChatPanelSelectedWorkItem) => {
-    const workItemKey = getChatPanelWorkItemTabKey(workItem);
-    set(chatPanelTabsAtom, (prev) => {
-      const target = prev.tabs.find(
-        (tab) =>
-          tab.type === "work-item" &&
-          tab.workItem !== undefined &&
-          getChatPanelWorkItemTabKey(tab.workItem) === workItemKey
-      );
-      if (!target || target.workItem === workItem) return prev;
-      return {
-        ...prev,
-        tabs: prev.tabs.map((tab) =>
-          tab.id === target.id
-            ? { ...tab, workItem, title: workItem.workItem.name || tab.title }
-            : tab
-        ),
-      };
-    });
-  }
-);
-patchChatPanelWorkItemTabAtom.debugLabel = "patchChatPanelWorkItemTab";
 
 /** Toggle TUI mode on the given tab */
 export const toggleChatPanelTabTuiModeAtom = atom(

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GitWorktreeEntry } from "@src/api/http/git/types";
-import { useGitStatus } from "@src/contexts/git";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import { useRepoGitInitialization } from "@src/hooks/git";
 import {
   sourceControlFilterModeAtom,

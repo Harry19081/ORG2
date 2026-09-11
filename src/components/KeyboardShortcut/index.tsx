@@ -1,5 +1,6 @@
 import { type ReactNode, memo } from "react";
 
+import { useShortcutKeys } from "@src/config/keyboard/useShortcutBindings";
 import {
   ArrowDown02Icon,
   ArrowUp02Icon,
@@ -20,19 +21,24 @@ export type KeyboardShortcutVariant =
 export type KeyboardShortcutSize = "default" | "sm";
 
 export interface KeyboardShortcutProps {
-  shortcut: string;
+  shortcut?: string;
+  shortcutId?: string;
   className?: string;
   variant?: KeyboardShortcutVariant;
   size?: KeyboardShortcutSize;
+  rendering?: "native" | "original";
 }
 
 interface KeyboardShortcutTooltipRow {
   label: ReactNode;
-  shortcut: string;
+  shortcut?: string;
+  shortcutId?: string;
 }
 
 interface KeyboardShortcutTooltipContentProps {
+  rendering?: KeyboardShortcutProps["rendering"];
   label?: ReactNode;
+  shortcutId?: string;
   shortcut?: string;
   rows?: KeyboardShortcutTooltipRow[];
   noShortcut?: boolean;
@@ -150,7 +156,9 @@ function parseShortcut(shortcut: string): KeyToken[] {
   const whitespaceParts = trimmed.split(/\s+/).filter(Boolean);
   if (whitespaceParts.length > 1 || normalizeSpecial(trimmed)) {
     for (const part of whitespaceParts) {
-      tokens.push(tokenizePart(part));
+      if (/^[⌃⌥⇧⌘]/.test(part) && part.length > 1)
+        tokens.push(...parseShortcut(part));
+      else tokens.push(tokenizePart(part));
     }
     return tokens;
   }
@@ -167,16 +175,16 @@ function parseShortcut(shortcut: string): KeyToken[] {
 
 function ModifierKey({ modifier }: { modifier: ModifierType }) {
   const character = {
-    cmd: "⌘",
+    cmd: IS_MAC ? "⌘" : "Meta",
     shift: "⇧",
     option: "⌥",
     ctrl: IS_MAC ? "⌃" : "Ctrl",
   }[modifier];
 
-  return <span className="leading-none">{character}</span>;
+  return character;
 }
 
-function SpecialKey({
+function OriginalSpecialKey({
   special,
   iconSize,
 }: {
@@ -211,7 +219,20 @@ function SpecialKey({
     tab: "⇥",
   }[special];
 
-  return <span className="leading-none">{character}</span>;
+  return character;
+}
+
+function SpecialKey({ special }: { special: SpecialKeyType }) {
+  const character = {
+    arrowUp: "↑",
+    arrowDown: "↓",
+    enter: "↩",
+    backspace: "⌫",
+    esc: "esc",
+    tab: "⇥",
+  }[special];
+
+  return character;
 }
 
 // A shortcut chord is one joined pill, matching the compact presentation used
@@ -260,12 +281,17 @@ const KEY_CAP_STYLES: Record<KeyboardShortcutVariant, { kbd: string }> = {
 
 export const KeyboardShortcut = memo<KeyboardShortcutProps>(
   ({
-    shortcut,
+    shortcut = "",
+    shortcutId,
     className = "",
     variant = KEYBOARD_SHORTCUT_VARIANT.default,
     size = "default",
+    rendering = variant === KEYBOARD_SHORTCUT_VARIANT.spotlightFooter
+      ? "original"
+      : "native",
   }) => {
-    const tokens = parseShortcut(shortcut);
+    const resolvedShortcut = useShortcutKeys(shortcutId ?? "");
+    const tokens = parseShortcut(shortcutId ? resolvedShortcut : shortcut);
     const cap = KEY_CAP_STYLES[variant];
     const capSize = KEY_CAP_SIZES[size];
     const isArrowPair =
@@ -294,19 +320,28 @@ export const KeyboardShortcut = memo<KeyboardShortcutProps>(
             return (
               <span
                 key={index}
-                className={`${KEY_TOKEN_BASE} ${
-                  isTextToken ? capSize.text : capSize.glyph
-                }`}
+                style={
+                  rendering === "native"
+                    ? {
+                        fontFamily:
+                          "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+                      }
+                    : undefined
+                }
+                className={`${KEY_TOKEN_BASE} ${rendering === "original" && isTextToken ? capSize.text : capSize.glyph}`}
               >
                 {token.type === "modifier" && (
                   <ModifierKey modifier={token.modifier} />
                 )}
-                {token.type === "special" && (
-                  <SpecialKey
-                    special={token.special}
-                    iconSize={capSize.iconSize}
-                  />
-                )}
+                {token.type === "special" &&
+                  (rendering === "original" ? (
+                    <OriginalSpecialKey
+                      special={token.special}
+                      iconSize={capSize.iconSize}
+                    />
+                  ) : (
+                    <SpecialKey special={token.special} />
+                  ))}
                 {token.type === "key" && token.label}
               </span>
             );
@@ -321,7 +356,17 @@ KeyboardShortcut.displayName = "KeyboardShortcut";
 
 export const KeyboardShortcutTooltipContent =
   memo<KeyboardShortcutTooltipContentProps>(
-    ({ label, shortcut, rows, noShortcut = false, className = "" }) => {
+    ({
+      label,
+      shortcut,
+      shortcutId,
+      rows,
+      noShortcut = false,
+      rendering,
+      className = "",
+    }) => {
+      const resolvedShortcut = useShortcutKeys(shortcutId ?? "");
+      if (shortcutId) shortcut = resolvedShortcut;
       const resolvedRows =
         rows ?? (label && shortcut && !noShortcut ? [{ label, shortcut }] : []);
 
@@ -334,7 +379,9 @@ export const KeyboardShortcutTooltipContent =
             <span className="min-w-0 wrap-break-word">{row.label}</span>
             <KeyboardShortcut
               shortcut={row.shortcut}
+              shortcutId={row.shortcutId}
               variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
+              rendering={rendering}
             />
           </div>
         );
@@ -353,7 +400,9 @@ export const KeyboardShortcutTooltipContent =
                 <span className="min-w-0 wrap-break-word">{row.label}</span>
                 <KeyboardShortcut
                   shortcut={row.shortcut}
+                  shortcutId={row.shortcutId}
                   variant={KEYBOARD_SHORTCUT_VARIANT.dropdown}
+                  rendering={rendering}
                 />
               </div>
             ))}

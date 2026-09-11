@@ -11,10 +11,14 @@ export {
   useEditorAppearanceStyles,
 } from "./useEditorAppearance";
 
-export { useSetting, useSettingValue } from "./useSettings";
+export { useSettingValue } from "./useSettings";
 
 export { useDevModeGuard } from "./useDevModeGuard";
 
+export {
+  type DockIconVariant,
+  useDockIconPreference,
+} from "./useDockIconPreference";
 export { usePointerCursorPreference } from "./usePointerCursorPreference";
 
 export { useSleepInhibitor } from "./useSleepInhibitor";

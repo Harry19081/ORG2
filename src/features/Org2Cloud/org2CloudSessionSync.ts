@@ -22,8 +22,14 @@ import {
 } from "../TeamCollaboration/collabSyncUtils";
 import { splitFrozenIntoSegments } from "../TeamCollaboration/engine/collabSyncEngineHelpers";
 import type { CloudPushAccess } from "./org2CloudAccessSettings";
-import type { Org2CloudAuthState } from "./org2CloudAuthAtom";
+import {
+  type Org2CloudAuthState,
+  org2CloudAuthAtom,
+  org2CloudAuthIdentityKey,
+} from "./org2CloudAuthAtom";
+import { getCloudCapabilitiesConfirmed } from "./org2CloudCapabilities";
 import { broadcastOrgControlChangedToPeers } from "./org2CloudControlBus";
+import { endpointForOrg } from "./org2CloudOrgEndpointRouter";
 import {
   buildCloudSessionMetadata,
   metadataPayloadForHash,
@@ -184,6 +190,18 @@ export class Org2CloudSessionSync extends Org2CloudSessionSyncUpload {
     ) {
       return;
     }
+    const localExecutionRevision = await this.loadLocalExecutionRevision(
+      session.session_id
+    );
+    // The durable cursor predates continuation-child revision stamps. A root
+    // with children therefore needs one authoritative combined replay after
+    // every app start before it can be marked clean in memory.
+    if (
+      localExecutionRevision !== undefined &&
+      localExecutionRevision !== "[]"
+    ) {
+      return;
+    }
     let localContentRevision: number | undefined;
     if (!isImportedHistorySession(session.session_id)) {
       const durable = await eventStoreProxy.getPersistedEventRevision(
@@ -216,7 +234,8 @@ export class Org2CloudSessionSync extends Org2CloudSessionSyncUpload {
       session,
       this.eventActivityStamps.get(session.session_id) ?? 0,
       Date.now(),
-      localContentRevision
+      localContentRevision,
+      localExecutionRevision
     );
   }
 
@@ -311,7 +330,24 @@ export class Org2CloudSessionSync extends Org2CloudSessionSyncUpload {
     // event-store stamp, and defer metadata together with replay so a live CLI
     // turn does not produce one cloud upsert per scanner refresh.
     if (!this.isExternalHistorySettled(session)) return;
-    if (this.isEventPlaneClean(orgId, session)) {
+    const currentLocalExecutionRevision =
+      await this.loadLocalExecutionRevision(sessionId);
+    const cursor = this.getCursor(orgId, sessionId);
+    // Old transcript cursors do not prove the referenced files were uploaded.
+    // Probe is endpoint-cached; unsupported servers preserve the existing idle gate.
+    const needsFileBackfill =
+      cursor && cursor.sharedFilesVersion !== 1
+        ? (
+            await getCloudCapabilitiesConfirmed(
+              auth.accessToken,
+              endpointForOrg(orgId)
+            )
+          ).capabilities.sharedSessionFiles === true
+        : false;
+    if (
+      !needsFileBackfill &&
+      this.isEventPlaneClean(orgId, session, currentLocalExecutionRevision)
+    ) {
       await this.upsertMetadataIfChanged(
         auth,
         orgId,
@@ -321,18 +357,37 @@ export class Org2CloudSessionSync extends Org2CloudSessionSyncUpload {
       );
       return;
     }
-    const cursor = this.getCursor(orgId, sessionId);
-    const prepared = await this.preparePushEventsForPass(sessionId, cursor);
-    const { stampAtRead, mode, baseEventCount, localContentRevision, events } =
-      prepared;
-    const markPreparedClean = () =>
+    const prepared = await this.preparePushEventsForPass(
+      sessionId,
+      cursor,
+      needsFileBackfill
+    );
+    const {
+      stampAtRead,
+      mode,
+      baseEventCount,
+      localContentRevision,
+      localExecutionRevision,
+      events,
+    } = prepared;
+    let sharedFilesReady = false;
+    const markPreparedClean = () => {
       this.markEventPlaneClean(
         orgId,
         session,
         stampAtRead,
         Date.now(),
-        localContentRevision
+        localContentRevision,
+        localExecutionRevision
       );
+      const latestCursor = this.getCursor(orgId, sessionId);
+      if (
+        sharedFilesReady &&
+        latestCursor &&
+        latestCursor.sharedFilesVersion !== 1
+      )
+        this.setCursor({ ...latestCursor, sharedFilesVersion: 1 });
+    };
     if (!cursor && events.length === 0) {
       await this.upsertMetadataIfChanged(
         auth,
@@ -391,6 +446,29 @@ export class Org2CloudSessionSync extends Org2CloudSessionSyncUpload {
       this.sessionShrinkCandidates.delete(shrinkKey);
     }
 
+    // A replay exposes its referenced files as independent immutable snapshots.
+    // Register only after the source session exists; no transcript bytes/hashes
+    // are rewritten to add attachment data.
+    await this.upsertMetadataIfChanged(auth, orgId, session, scopeKey, access);
+    const { syncSessionSharedFiles } = await import("./syncSessionSharedFiles");
+    const endpoint = endpointForOrg(orgId);
+    sharedFilesReady = await syncSessionSharedFiles({
+      token: auth.accessToken,
+      endpoint,
+      orgId,
+      sessionId,
+      events,
+      repoPath: session.repoPath,
+      assertCurrentIdentity: () => {
+        const latest = this.getStore()?.get(org2CloudAuthAtom);
+        if (
+          !latest ||
+          org2CloudAuthIdentityKey(latest) !== org2CloudAuthIdentityKey(auth) ||
+          endpointForOrg(orgId).supabaseUrl !== endpoint.supabaseUrl
+        )
+          throw new Error("Cloud identity changed while sharing session files");
+      },
+    });
     const preparedPlan = await prepared.plan();
     const {
       perEventHashes,

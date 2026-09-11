@@ -2,7 +2,7 @@ import { createStore } from "jotai/vanilla";
 import { describe, expect, it } from "vitest";
 
 import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
 import { createBrowserSessionTab } from "@src/store/workstation/browser/tabs";
 import {
@@ -13,7 +13,7 @@ import {
   workstationTabsStateAtom,
 } from "@src/store/workstation/tabs";
 import {
-  WORKSTATION_V3_SHARED_KEY,
+  WORKSTATION_V4_SHARED_KEY,
   emptyWorkstationTabsState,
 } from "@src/store/workstation/tabs/storage";
 import { workstationNewBrowserSessionRequestAtom } from "@src/store/workstation/workstationTabBarAtoms";
@@ -215,7 +215,7 @@ describe("live shared-resource close semantics", () => {
     ]);
     expect(next.sessionWorkspaces.B.tabOrder).toEqual([]);
     expect(
-      JSON.parse(localStorage.getItem(WORKSTATION_V3_SHARED_KEY) ?? "null")
+      JSON.parse(localStorage.getItem(WORKSTATION_V4_SHARED_KEY) ?? "null")
     ).toEqual({ tabs: [] });
 
     expect(store.get(recentWorkstationTabsAtom)).toEqual([browser]);

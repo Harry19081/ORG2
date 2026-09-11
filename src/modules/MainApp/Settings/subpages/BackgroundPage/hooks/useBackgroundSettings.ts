@@ -2,10 +2,9 @@
  * useBackgroundSettings Hook
  * Handles solid background and appearance customization.
  */
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import React, { useCallback, useMemo } from "react";
+import { useAtom } from "jotai";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 
 import Message from "@src/components/Message";
 import {
@@ -14,104 +13,31 @@ import {
   resolveBackgroundColorPreset,
 } from "@src/config/appearance/backgroundColors";
 import { normalizeHexColor } from "@src/config/appearance/backgroundConfig";
-import {
-  APPEARANCE_MODE,
-  APPEARANCE_MODE_OPTIONS,
-  type AppearanceMode,
-  getAppearanceModeForTheme,
-  getDefaultThemePreferenceForAppearanceMode,
-  getFollowSystemThemeLabel,
-  getGlobalTheme,
-  normalizeAppearanceMode,
-  normalizeGlobalThemePreference,
-  resolveGlobalThemePreference,
-} from "@src/config/appearance/globalThemes";
-import { getSkinsForVariant } from "@src/config/appearance/skins/registry";
-import type { SkinVariant } from "@src/config/appearance/skins/types";
-import { buildSettingsPath } from "@src/config/mainAppPaths";
-import { useUndoStackWithRestore } from "@src/hooks/ui";
-import { updateSettingsBatchAtom } from "@src/store/settings/settingsAtom";
+import { useUndoStackWithRestore } from "@src/hooks/ui/useUndoableState";
 import {
   type BackgroundConfig,
   backgroundConfigPersistAtom,
   sanitizePageOpacity,
   sanitizeSidebarOpacity,
 } from "@src/store/ui/backgroundConfigAtom";
-import {
-  darkSkinIdAtom,
-  globalThemeIdAtom,
-  lightSkinIdAtom,
-  systemColorSchemeAtom,
-} from "@src/store/ui/uiAtom";
-import { swapThemeCss } from "@src/util/ui/theme/swapThemeCss";
-import { showThemeTransitionCover } from "@src/util/ui/theme/themeTransitionCover";
 
 import { MAX_CUSTOM_BACKGROUND_COLORS } from "../config";
 
 export interface UseBackgroundSettingsReturn {
   // State
   config: BackgroundConfig;
-  appearanceMode: AppearanceMode;
-  appearanceModeOptions: { label: string; value: AppearanceMode }[];
-  skinOptions: { label: string; value: string }[];
-  activeSkinId: string;
-  handleSkinChange: (value: string | number | (string | number)[]) => void;
-
   // Handlers
-  handleBack: () => void;
   handleColorSelect: (presetId: string) => void;
   handleSelectCustomPaletteHex: (hex: string) => void;
   handleAddCustomPaletteHex: (hex: string) => void;
   handleRemoveCustomPaletteHex: (hex: string, event: React.MouseEvent) => void;
   handlePageOpacityChange: (val: number | number[]) => void;
   handleSidebarOpacityChange: (val: number | number[]) => void;
-  handleAppearanceModeChange: (
-    value: string | number | (string | number)[]
-  ) => void;
 }
 
 export function useBackgroundSettings(): UseBackgroundSettingsReturn {
-  const navigate = useNavigate();
   const { t } = useTranslation("settings");
   const [config, setConfig] = useAtom(backgroundConfigPersistAtom);
-  const globalThemeId = useAtomValue(globalThemeIdAtom);
-  const [lightSkinId, setLightSkinId] = useAtom(lightSkinIdAtom);
-  const [darkSkinId, setDarkSkinId] = useAtom(darkSkinIdAtom);
-  const systemColorScheme = useAtomValue(systemColorSchemeAtom);
-  const followSystemThemeLabel = getFollowSystemThemeLabel(
-    systemColorScheme,
-    t("general.followSystem")
-  );
-  const updateSettingsBatch = useSetAtom(updateSettingsBatchAtom);
-  const isDarkTheme = getGlobalTheme(globalThemeId).isDark;
-  const appearanceMode = getAppearanceModeForTheme(globalThemeId);
-
-  const appearanceModeOptions = useMemo(
-    () =>
-      APPEARANCE_MODE_OPTIONS.map((mode) => ({
-        label:
-          mode === APPEARANCE_MODE.SYSTEM
-            ? followSystemThemeLabel
-            : t(`general.${mode}`),
-        value: mode,
-      })),
-    [followSystemThemeLabel, t]
-  );
-
-  // Each appearance mode now resolves to exactly one stylesheet, so the second
-  // dropdown offers skins for the live variant instead of restating the mode.
-  const skinVariant: SkinVariant = isDarkTheme ? "dark" : "light";
-  const activeSkinId = skinVariant === "dark" ? darkSkinId : lightSkinId;
-
-  const skinOptions = useMemo(
-    () =>
-      getSkinsForVariant(skinVariant).map((skin) => ({
-        label: skin.label,
-        value: skin.id,
-      })),
-    [skinVariant]
-  );
-
   // Undo/redo for config changes (Ctrl+Z / Cmd+Z)
   const undoStack = useUndoStackWithRestore<BackgroundConfig>({
     keyboardShortcut: true,
@@ -128,10 +54,6 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
   );
 
   // Handlers
-  const handleBack = useCallback(() => {
-    navigate(buildSettingsPath({ section: "appearance" }));
-  }, [navigate]);
-
   const handleColorSelect = useCallback(
     (presetId: string) => {
       const preset = getBackgroundColorPresetById(presetId);
@@ -243,61 +165,15 @@ export function useBackgroundSettings(): UseBackgroundSettingsReturn {
     [config, setConfigWithUndo]
   );
 
-  const applyThemeChange = useCallback(
-    async (themeIdValue: string) => {
-      const themePreference = normalizeGlobalThemePreference(themeIdValue);
-      const resolvedThemeId = resolveGlobalThemePreference(themePreference);
-      const selectedTheme = getGlobalTheme(resolvedThemeId);
-      const cover = showThemeTransitionCover();
-      try {
-        await swapThemeCss(selectedTheme.baseCssPath);
-        updateSettingsBatch({
-          "general.theme": themePreference,
-        });
-        localStorage.setItem("theme", themePreference);
-      } finally {
-        await cover.hide();
-      }
-    },
-    [updateSettingsBatch]
-  );
-
-  const handleSkinChange = useCallback(
-    (value: string | number | (string | number)[]) => {
-      const skinId = String(Array.isArray(value) ? value[0] : value);
-      if (skinVariant === "dark") setDarkSkinId(skinId);
-      else setLightSkinId(skinId);
-    },
-    [skinVariant, setDarkSkinId, setLightSkinId]
-  );
-
-  const handleAppearanceModeChange = useCallback(
-    (value: string | number | (string | number)[]) => {
-      const rawMode = String(Array.isArray(value) ? value[0] : value);
-      const selectedMode = normalizeAppearanceMode(rawMode);
-      applyThemeChange(
-        getDefaultThemePreferenceForAppearanceMode(selectedMode)
-      );
-    },
-    [applyThemeChange]
-  );
-
   return {
     // State
     config,
-    appearanceMode,
-    appearanceModeOptions,
-    skinOptions,
-    activeSkinId,
-    handleSkinChange,
     // Handlers
-    handleBack,
     handleColorSelect,
     handleSelectCustomPaletteHex,
     handleAddCustomPaletteHex,
     handleRemoveCustomPaletteHex,
     handlePageOpacityChange,
     handleSidebarOpacityChange,
-    handleAppearanceModeChange,
   };
 }

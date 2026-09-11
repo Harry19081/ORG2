@@ -21,8 +21,10 @@ pub mod e2e_guard;
 pub mod harness_connections;
 pub mod key_extractor;
 pub mod key_store;
+pub(crate) mod model_catalog;
 pub mod provider_config;
 pub mod providers;
+pub mod quota_history;
 pub mod quota_runtime;
 #[cfg(test)]
 pub(crate) mod test_support;

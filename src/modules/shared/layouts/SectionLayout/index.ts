@@ -28,13 +28,9 @@
 export { default as SectionHeading } from "./Heading";
 export type { SectionHeadingProps } from "./Heading";
 
-export { default as SectionDescription } from "./Description";
-
 export { default as SectionContainer } from "./Container";
 
 export { default as SectionRow } from "./Row";
-
-export { default as CategoryRow } from "./CategoryRow";
 
 export { default as SectionTabSwitch } from "./TabSwitch";
 

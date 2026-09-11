@@ -13,21 +13,17 @@ import {
   vi,
 } from "vitest";
 
+import { CURRENT_SHORTCUT_PLATFORM } from "@src/config/keyboard/shortcutBindings";
 import { chatPanelTabHistoriesAtom } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
-import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import {
   createInstrumentedStore,
   resetInstrumentedStore,
 } from "@src/util/core/state/instrumentedStore";
-import { isMacOS } from "@src/util/platform/tauri";
 
 import { resolveChatPanelShortcutOwnership } from "./hooks/chatPanelShortcutOwnership";
-import {
-  isChatPanelPrimaryModifierPressed,
-  resolveChatPanelBracketKey,
-  useChatPanelTabShortcuts,
-} from "./hooks/useChatPanelTabShortcuts";
+import { useChatPanelTabShortcuts } from "./hooks/useChatPanelTabShortcuts";
 
 interface ShortcutHarnessProps {
   panelRef: RefObject<HTMLElement | null>;
@@ -127,8 +123,8 @@ describe("useChatPanelTabShortcuts", () => {
     const event = new KeyboardEvent("keydown", {
       key: "w",
       code: "KeyW",
-      metaKey: isMacOS(),
-      ctrlKey: !isMacOS(),
+      metaKey: CURRENT_SHORTCUT_PLATFORM === "mac",
+      ctrlKey: CURRENT_SHORTCUT_PLATFORM !== "mac",
       bubbles: true,
       cancelable: true,
     });
@@ -153,8 +149,8 @@ describe("useChatPanelTabShortcuts", () => {
       key: shiftKey ? (bracket === "[" ? "{" : "}") : bracket,
       code: bracket === "[" ? "BracketLeft" : "BracketRight",
       shiftKey,
-      metaKey: isMacOS(),
-      ctrlKey: !isMacOS(),
+      metaKey: CURRENT_SHORTCUT_PLATFORM === "mac",
+      ctrlKey: CURRENT_SHORTCUT_PLATFORM !== "mac",
       bubbles: true,
       cancelable: true,
     });
@@ -209,17 +205,6 @@ describe("useChatPanelTabShortcuts", () => {
     expect(store.get(chatPanelTabsAtom).tabs[0]).toMatchObject({
       sessionId: "session-b",
     });
-  });
-
-  it("resolves the bracket from the physical key ahead of the shifted glyph", () => {
-    expect(resolveChatPanelBracketKey({ code: "BracketLeft", key: "{" })).toBe(
-      "["
-    );
-    expect(resolveChatPanelBracketKey({ code: "BracketRight", key: "}" })).toBe(
-      "]"
-    );
-    expect(resolveChatPanelBracketKey({ code: "", key: "]" })).toBe("]");
-    expect(resolveChatPanelBracketKey({ code: "KeyW", key: "w" })).toBeNull();
   });
 
   it("closes the active chat tab after interacting with a non-focusable part of the pane", () => {
@@ -297,24 +282,6 @@ describe("useChatPanelTabShortcuts", () => {
     ).toBe(true);
     expect(
       resolveChatPanelShortcutOwnership(panelElement, outsideButton, true)
-    ).toBe(false);
-  });
-
-  it("uses Command on macOS and Ctrl on other platforms", () => {
-    expect(
-      isChatPanelPrimaryModifierPressed({ metaKey: true, ctrlKey: false }, true)
-    ).toBe(true);
-    expect(
-      isChatPanelPrimaryModifierPressed(
-        { metaKey: false, ctrlKey: true },
-        false
-      )
-    ).toBe(true);
-    expect(
-      isChatPanelPrimaryModifierPressed(
-        { metaKey: true, ctrlKey: false },
-        false
-      )
     ).toBe(false);
   });
 });

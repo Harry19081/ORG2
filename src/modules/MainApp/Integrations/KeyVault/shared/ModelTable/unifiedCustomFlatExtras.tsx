@@ -20,6 +20,10 @@ import {
 import type { SelectOption } from "@src/components/Select";
 import { MODEL_TABLE_CONTROL_SIZE } from "@src/config/modelTable";
 import type { ModelTableModelAlias } from "@src/types/modelTable";
+import {
+  newCustomRowId,
+  newPlaceholderModelName,
+} from "@src/util/customModelIdentity";
 
 import type { FlatRow } from "./useModelTableData";
 
@@ -81,17 +85,6 @@ export function buildIconSelectOptions(
       value: provider,
     };
   });
-}
-
-const PLACEHOLDER_PREFIX = "new-";
-const CUSTOM_ROW_ID_PREFIX = "custom-row-";
-
-export function newCustomRowId(): string {
-  return `${CUSTOM_ROW_ID_PREFIX}${crypto.randomUUID().slice(0, 8)}`;
-}
-
-export function newPlaceholderModelName(rowId: string): string {
-  return `${PLACEHOLDER_PREFIX}${rowId.slice(CUSTOM_ROW_ID_PREFIX.length)}`;
 }
 
 interface CustomModelNameInputProps {

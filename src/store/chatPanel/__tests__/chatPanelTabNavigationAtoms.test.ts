@@ -1,5 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  closeChatPanelTabAtom,
+  openOrReplaceSessionInChatPanelTabAtom,
+  openRecentChatPanelTabAtom,
+  openRuntimeInChatPanelTabAtom,
+  openSessionInNewChatTabAtom,
+  recentChatPanelTabsAtom,
+} from "@src/store/chatPanel/chatPanelTabsAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
 import { activeSessionIdAtom } from "@src/store/session/viewAtom";
 import {
   createInstrumentedStore,
@@ -17,15 +26,6 @@ import {
   navigateChatPanelTabToSessionAtom,
   pushTabHistoryEntry,
 } from "../chatPanelTabNavigationAtoms";
-import {
-  chatPanelTabsAtom,
-  closeChatPanelTabAtom,
-  openOrReplaceSessionInChatPanelTabAtom,
-  openRecentChatPanelTabAtom,
-  openRuntimeInChatPanelTabAtom,
-  openSessionInNewChatTabAtom,
-  recentChatPanelTabsAtom,
-} from "../chatPanelTabsAtom";
 
 function makeStore() {
   const store = createInstrumentedStore();

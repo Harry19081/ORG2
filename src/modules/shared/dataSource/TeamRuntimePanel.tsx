@@ -326,25 +326,6 @@ export default function TeamRuntimePanel({
       } else {
         content = (
           <div className="flex flex-col gap-5">
-            <div
-              className="flex min-h-9 flex-wrap items-center justify-between gap-3"
-              data-testid="team-runtime-members-title-row"
-            >
-              <h3 className={SECTION_SUBHEADING_CLASSES}>
-                {t("overview.members")}
-              </h3>
-              <div
-                className="flex shrink-0 items-center"
-                data-testid="team-runtime-controls"
-              >
-                <RuntimeRefreshButton
-                  label={t("refresh")}
-                  onRefresh={roster.refresh}
-                  refreshing={roster.refreshing}
-                  dataTestId="team-runtime-refresh"
-                />
-              </div>
-            </div>
             {roster.members.length > 0 ? (
               <div
                 className="flex flex-col gap-5"
@@ -362,9 +343,25 @@ export default function TeamRuntimePanel({
                       className="flex flex-col gap-3"
                       data-testid={`team-runtime-${activity}-today`}
                     >
-                      <h4 className={SECTION_SUBHEADING_CLASSES}>
-                        {t(`overview.${activity}Today`)}
-                      </h4>
+                      <div className="flex min-h-9 items-center justify-between gap-3">
+                        <h4 className={SECTION_SUBHEADING_CLASSES}>
+                          {t(`overview.${activity}Today`)}
+                        </h4>
+                        {activity === "active" ||
+                        membersByActivity.active.length === 0 ? (
+                          <div
+                            className="flex shrink-0 items-center"
+                            data-testid="team-runtime-controls"
+                          >
+                            <RuntimeRefreshButton
+                              label={t("refresh")}
+                              onRefresh={roster.refresh}
+                              refreshing={roster.refreshing}
+                              dataTestId="team-runtime-refresh"
+                            />
+                          </div>
+                        ) : null}
+                      </div>
                       <div className="grid grid-cols-1 gap-3 @[640px]:grid-cols-2">
                         {members.map((member) => (
                           <TeamMemberCard

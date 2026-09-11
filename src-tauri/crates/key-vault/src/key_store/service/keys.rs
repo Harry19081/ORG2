@@ -84,7 +84,7 @@ impl KeyService {
         store.get_all(agent_type).into_iter().cloned().collect()
     }
 
-    /// Save or update a key
+    /// Save or update a key after enforcing persisted catalog invariants.
     pub fn save_key(&self, mut key: ModelKey) -> Result<ModelKey, String> {
         // Explicit aliases are user-owned request IDs, including IDs absent
         // from discovery. Validate before touching the persisted credential.
@@ -118,10 +118,13 @@ impl KeyService {
                 key.available_models.push(alias.alias.clone());
             }
         }
+        let key_id = key.id.clone();
         self.update_store(|store| {
-            let entry = key.clone();
             store.set(key);
-            entry
+            store
+                .get_by_id(&key_id)
+                .cloned()
+                .expect("KeyStore::set must retain the inserted key")
         })
     }
 
@@ -288,6 +291,7 @@ impl KeyService {
                     }
                     entry.enabled_models = merged;
                 }
+                entry.normalize_model_catalog();
                 if let Some(quota) = quota_info {
                     entry.quota_info = Some(quota);
                 }

@@ -16,7 +16,6 @@ src/api/
 │   │   ├── errorHandling.ts       # Error notifications
 │   │   ├── tokenRefresh.ts        # Marketplace token refresh
 │   │   ├── mainApi.ts             # getApi, postApi, etc.
-│   │   ├── agentApi.ts            # getAgentApi, postAgentApi
 │   │   └── marketplaceApi.ts      # getMarketplaceApi, postMarketplaceApi
 │   │
 │   ├── auth/                      # Auth endpoints (login, secure storage, token)

@@ -45,24 +45,29 @@ export function resolveTranscriptTopPaddingPx(
   return floatingChromePx + CHAT_PANEL_TRANSCRIPT_TOP_GAP_PX;
 }
 
+/** Minimum split-pane width for title and controls to share one row. */
+export const CHAT_PANEL_COMPACT_HEADER_MIN_WIDTH_PX = 640;
+
 interface ChatPanelTabRowCollapseState {
   tabCount: number;
+  splitPaneWidth?: number;
 }
 
 /**
- * Whether the 44px tab row folds into the 36px published header.
- *
- * A pane holding a single tab has nothing to switch between, maximized or not: the
- * lone pill only repeats the surface title published one row below it, so the
- * row costs 44px of chrome and buys nothing. Collapsing moves its controls
- * (new tab / maximize or restore) onto the published row, which is why that
- * row is force-rendered while collapsed even for surfaces that publish no
- * slots of their own.
+ * Fold a single tab into the published header only when there is room.
+ * Narrow split panes keep the tab controls above the session heading; the
+ * same decision also drives the shell and transcript's header reservations.
+ * Maximized and externally sized surfaces omit splitPaneWidth.
  */
 export function shouldCollapseChatPanelTabRow({
   tabCount,
+  splitPaneWidth,
 }: ChatPanelTabRowCollapseState): boolean {
-  return tabCount === 1;
+  return (
+    tabCount === 1 &&
+    (splitPaneWidth === undefined ||
+      splitPaneWidth >= CHAT_PANEL_COMPACT_HEADER_MIN_WIDTH_PX)
+  );
 }
 
 /**

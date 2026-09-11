@@ -4,6 +4,7 @@ import { act, createElement } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
 import { activeOverlayCountAtom } from "@src/store/ui/overlayLayerAtom";
 
 import {
@@ -123,6 +124,63 @@ afterEach(() => {
 });
 
 describe("FileHeaderMoreMenu", () => {
+  it("renders no divider when page display is the only section", () => {
+    render({
+      showSaveAction: false,
+      showDiscardAction: false,
+      showSearchAction: false,
+      showGoToLineAction: false,
+      showCopyRelativePathAction: false,
+      showRevealInFileManagerAction: false,
+      showReloadButton: false,
+    });
+    const menu = element("file-header-more-menu");
+    expect(menu.textContent).toContain("sessions:chat.pageSettings");
+    expect(
+      [...menu.children].filter(
+        (child) => child.className === DROPDOWN_CLASSES.menuGroupSeparator
+      )
+    ).toHaveLength(0);
+    expect(menu.children).toHaveLength(1);
+    render({ showSearchAction: true });
+    expect(
+      [...menu.children].filter(
+        (child) => child.className === DROPDOWN_CLASSES.menuGroupSeparator
+      )
+    ).toHaveLength(1);
+  });
+
+  it("does not surround an isolated save section or lone more-settings action with dividers", () => {
+    render({
+      showDiscardAction: false,
+      showSearchAction: false,
+      showGoToLineAction: false,
+      showCopyRelativePathAction: false,
+      showRevealInFileManagerAction: false,
+      showReloadButton: false,
+      showLineNumbersToggle: false,
+      showWordWrapToggle: false,
+      showMinimapToggle: false,
+      showHighlightActiveLineToggle: false,
+      showGitBlameToggle: false,
+      showMoreSettingsAction: false,
+    });
+    const menu = element("file-header-more-menu");
+    expect(menu.children).toHaveLength(1);
+    render({ showMoreSettingsAction: true });
+    expect(
+      [...menu.children].filter(
+        (child) => child.className === DROPDOWN_CLASSES.menuGroupSeparator
+      )
+    ).toHaveLength(1);
+    const panel = openSettings();
+    expect(
+      [...panel.children].filter(
+        (child) => child.className === DROPDOWN_CLASSES.menuGroupSeparator
+      )
+    ).toHaveLength(0);
+  });
+
   it("keeps file actions at the first level and moves display controls into UI settings", () => {
     render();
     const menu = element("file-header-more-menu");
@@ -140,7 +198,6 @@ describe("FileHeaderMoreMenu", () => {
       "settings:editor.wordWrap",
       "settings:editor.minimap",
       "settings:editor.highlightActiveLine",
-      "Git Blame",
     ]);
     expect(switches[0].getAttribute("aria-checked")).toBe("true");
     act(() => switches[0].click());
@@ -152,11 +209,6 @@ describe("FileHeaderMoreMenu", () => {
     );
     expect(props.onWordWrapChange).toHaveBeenCalledOnce();
     expect(props.onWordWrapChange).toHaveBeenCalledWith(true);
-    expect(switches[4].disabled).toBe(true);
-    act(() =>
-      switches[4].closest<HTMLElement>('[role="menuitemcheckbox"]')!.click()
-    );
-    expect(props.onGitBlameChange).not.toHaveBeenCalled();
     expect(props.setMenuVisible).not.toHaveBeenCalled();
     expect(element("file-header-ui-settings-submenu-panel")).toBe(panel);
 
@@ -192,7 +244,7 @@ describe("FileHeaderMoreMenu", () => {
     expect(document.querySelector('[role="menu"]')).toBeNull();
   });
 
-  it("preserves disabled actions while loading without disabling display settings", () => {
+  it("hides unavailable actions while keeping available display settings", () => {
     render({ loading: true, showSearchAction: false });
     const menu = element("file-header-more-menu");
     for (const label of [
@@ -204,8 +256,7 @@ describe("FileHeaderMoreMenu", () => {
       const row = [
         ...menu.querySelectorAll<HTMLElement>('[role="menuitem"]'),
       ].find((item) => item.textContent?.includes(label))!;
-      expect(row.getAttribute("aria-disabled")).toBe("true");
-      act(() => row.click());
+      expect(row).toBeUndefined();
     }
     expect(props.onSaveClick).not.toHaveBeenCalled();
     expect(props.onDiscardClick).not.toHaveBeenCalled();

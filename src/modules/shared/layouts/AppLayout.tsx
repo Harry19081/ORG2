@@ -47,12 +47,12 @@ import {
 import { GlobalSpotlightPortal } from "@src/scaffold/GlobalSpotlight/GlobalSpotlightPortal";
 import { GENERAL_LAYOUT_TOUR_TARGETS } from "@src/scaffold/Tutorials/generalLayoutTourConfig";
 import { resolvedBackgroundConfigAtom } from "@src/store/ui/backgroundConfigAtom";
+import { type ChatPanelMode } from "@src/store/ui/chatPanel/selectionAtoms";
 import {
-  type ChatPanelMode,
   DEFAULT_CHAT_WIDTH,
   chatPanelDraggingAtom,
   chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/widthAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import { isWindows } from "@src/util/platform/tauri";
@@ -347,9 +347,11 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({
               {/* Global floating side chat: hosted over the whole pane
                   surface (chat slot + workbench), so it stays usable when
                   the chat pane is hidden and a station fills the view. */}
-              <ChatPanelSideChat
-                SessionCreatorSlot={AdeAwareSessionCreatorSlot}
-              />
+              {!isSettingsSlot && (
+                <ChatPanelSideChat
+                  SessionCreatorSlot={AdeAwareSessionCreatorSlot}
+                />
+              )}
             </div>
           </div>
         </SessionSyncProvider>
