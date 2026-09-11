@@ -428,62 +428,6 @@ export interface PlaygroundChatExtras {
   showPausedBanner?: boolean;
 }
 
-interface PlaygroundChatExtrasSectionProps {
-  extras: PlaygroundChatExtras;
-  onToggle: (key: keyof PlaygroundChatExtras, value: boolean) => void;
-}
-
-export function PlaygroundChatExtrasSection({
-  extras,
-  onToggle,
-}: PlaygroundChatExtrasSectionProps) {
-  const { t } = useTranslation("integrations");
-  return (
-    <div
-      className={`${PLAYGROUND_SIDEBAR_SECTION} ${PLAYGROUND_SIDEBAR_SECTION_DIVIDER}`}
-    >
-      <label className={PLAYGROUND_SIDEBAR_FIELD_LABEL}>
-        {t("devTools.chatExtras")}
-      </label>
-      <div className={PLAYGROUND_SIDEBAR_SCROLL_COMPACT}>
-        <div className="flex flex-col gap-2">
-          <Checkbox
-            checked={extras.showQueuedMessages}
-            onCheckedChange={(checked) =>
-              onToggle("showQueuedMessages", checked)
-            }
-            size="small"
-          >
-            <span className="text-[13px] text-text-2">
-              {t("devTools.queuedMessages")}
-            </span>
-          </Checkbox>
-          <Checkbox
-            checked={extras.showTerminalProcesses}
-            onCheckedChange={(checked) =>
-              onToggle("showTerminalProcesses", checked)
-            }
-            size="small"
-          >
-            <span className="text-[13px] text-text-2">
-              {t("devTools.terminalProcesses")}
-            </span>
-          </Checkbox>
-          <Checkbox
-            checked={extras.showFileReview}
-            onCheckedChange={(checked) => onToggle("showFileReview", checked)}
-            size="small"
-          >
-            <span className="text-[13px] text-text-2">
-              {t("devTools.fileReview")}
-            </span>
-          </Checkbox>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ============================================
 // Preview main area
 // ============================================

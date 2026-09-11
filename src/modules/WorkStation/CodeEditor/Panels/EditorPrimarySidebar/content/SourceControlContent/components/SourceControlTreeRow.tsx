@@ -47,7 +47,7 @@ import type { GitFile } from "@src/types/git/types";
 import { SHORTCUTS } from "../../../hooks/useSourceControlShortcuts";
 import { GIT_LABELS } from "../config";
 import type { SourceControlNode } from "../utils/virtualizedTreeUtils";
-import type { GitFileTreeNode } from "./GitFileTreeItem";
+import type { GitFileTreeNode } from "./GitFileTreeNode";
 import SourceControlContextMenu from "./SourceControlContextMenu";
 
 // ============================================

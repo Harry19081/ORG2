@@ -2,7 +2,7 @@
  * TreeRow Component Exports
  *
  * Shared components for tree row rendering used by:
- * - Source Control panel (GitFileTreeItem)
+ * - Source Control panel (SourceControlTreeRow)
  * - Search results (VirtualizedSearchResults)
  * - Design tree lists
  */

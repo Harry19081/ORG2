@@ -555,22 +555,6 @@
     "creatingWithContext": "Creando nueva Session con contexto",
     "creationCooldown": "Espera un momento antes de crear otro terminal."
   },
-  "scope": {
-    "applicableScope": "Ámbito aplicable",
-    "for": "para",
-    "selectCategory": "Seleccionar categoría",
-    "selectScope": "Seleccionar ámbito",
-    "allRepos": "Todos los repos",
-    "allSessions": "Todas las Sessions",
-    "allProjects": "Todos los Projects",
-    "allWorkItems": "Todos los elementos de trabajo",
-    "categories": {
-      "repo": "Repo",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Elementos de trabajo"
-    }
-  },
   "editor": {
     "loading": "Cargando editor..."
   },
@@ -1938,8 +1922,7 @@
       "commands": "Comandos",
       "mode": "Modo",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Comandos"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Acciones GIT",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Detener proceso del Agent",
       "openInMyStation": "Abrir en My Station"
     }
   },

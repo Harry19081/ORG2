@@ -555,22 +555,6 @@
     "creatingWithContext": "컨텍스트로 새 Session 생성 중",
     "creationCooldown": "잠시 후에 새 터미널을 만드세요."
   },
-  "scope": {
-    "applicableScope": "적용 범위",
-    "for": "에 대해",
-    "selectCategory": "카테고리 선택",
-    "selectScope": "범위 선택",
-    "allRepos": "모든 저장소",
-    "allSessions": "모든 Session",
-    "allProjects": "모든 Project",
-    "allWorkItems": "모든 작업 항목",
-    "categories": {
-      "repo": "저장소",
-      "session": "Session",
-      "projects": "Project",
-      "workItems": "작업 항목"
-    }
-  },
   "editor": {
     "loading": "에디터 로딩 중..."
   },
@@ -1935,11 +1919,10 @@
       "session": "세션"
     },
     "slashMenu": {
-      "commands": "명령",
+      "commands": "명령어",
       "mode": "모드",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "명령어"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "GIT 작업",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Agent 프로세스 중지",
       "openInMyStation": "My Station 에서 열기"
     }
   },

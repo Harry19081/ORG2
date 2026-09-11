@@ -555,22 +555,6 @@
     "creatingWithContext": "Создание новой Session с контекстом",
     "creationCooldown": "Подождите немного перед созданием следующего терминала."
   },
-  "scope": {
-    "applicableScope": "Область применения",
-    "for": "для",
-    "selectCategory": "Выберите категорию",
-    "selectScope": "Выберите область",
-    "allRepos": "Все репо",
-    "allSessions": "Все Session",
-    "allProjects": "Все Projects",
-    "allWorkItems": "Все рабочие элементы",
-    "categories": {
-      "repo": "Репо",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Рабочие элементы"
-    }
-  },
   "editor": {
     "loading": "Загрузка редактора..."
   },
@@ -1938,8 +1922,7 @@
       "commands": "Команды",
       "mode": "Режим",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Команды"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Действия GIT",
@@ -2316,7 +2299,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Остановить процесс Agent",
       "openInMyStation": "Открыть в My Station"
     }
   },

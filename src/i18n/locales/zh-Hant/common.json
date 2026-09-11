@@ -228,12 +228,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "回覆不能為空",
-    "sessionNotFound": "找不到 Session",
-    "answerSubmitted": "回答提交成功",
-    "answerFailed": "提交回答失敗，請重試。",
-    "replyError": "傳送回覆時發生錯誤",
-    "questionIgnored": "已忽略該問題",
     "addedAsContext": "已將 {{name}} 加入為上下文",
     "addedFilesAsContext": "已加入 {{count}} 個檔案作為上下文",
     "chooseExecutionAgentAi": "使用 AI 建立前請先選擇一個 Agent 負責人。",
@@ -694,42 +688,9 @@
     "technicalDetails": "技術詳細資訊",
     "failedToCopy": "複製失敗",
     "api": {
-      "titles": {
-        "githubConnections": "無法加載 GitHub 連接",
-        "githubConnect": "無法連接 GitHub",
-        "workflows": "無法加載工作流",
-        "config": "無法加載設置",
-        "agent": "無法連接 Agent",
-        "repository": "無法加載倉庫",
-        "file": "無法加載文件",
-        "mcp": "MCP 服務器錯誤",
-        "extension": "代碼編輯器擴展錯誤",
-        "workspace": "無法加載工作區",
-        "slackConnections": "無法加載 Slack 連接",
-        "wallet": "無法加載錢包",
-        "billing": "無法完成計費操作",
-        "default": "無法加載數據",
-        "timeout": "請求超時",
-        "external": "無法加載外部數據"
-      },
       "messages": {
-        "network": "請檢查網絡連接後重試。",
-        "timeout": "請求超時，請重試。",
-        "server": "服務器出錯，請稍後再試。",
-        "notFound": "未找到該項目。",
-        "signIn": "請重新登錄。",
-        "forbidden": "您沒有執行此操作的權限。",
-        "tooManyRequests": "請求過多，請稍後再試。",
-        "validation": "數據無效，請檢查輸入。",
-        "conflict": "檢測到衝突，資源可能已被修改。",
-        "badGateway": "服務器不可達，請稍後重試。",
-        "serviceUnavailable": "服務暫時不可用，請稍後重試。",
-        "gatewayTimeout": "服務器無響應，請稍後重試。",
-        "invalidRequest": "請求無效，請重試。",
-        "default": "請重試。",
-        "externalHint": "請檢查 URL 和設置後重試。"
-      },
-      "workflow": "工作流服務暫時不可用，請稍後重試。"
+        "signIn": "請重新登錄。"
+      }
     },
     "unknownError": "發生未知錯誤",
     "componentLoadingFailed": "元件載入失敗",
@@ -2088,22 +2049,7 @@
     "database": "數據庫",
     "user": "用戶名",
     "password": "密碼",
-    "ssl": "要求 SSL",
-    "spotlight": {
-      "scanFolder": "掃描文件夾",
-      "scanFolderDesc": "在文件夾中查找所有 .sqlite、.db 文件",
-      "openFile": "打開文件",
-      "openFileDesc": "選擇一個數據庫文件",
-      "enterPath": "輸入路徑",
-      "enterPathDesc": "直接輸入文件或文件夾路徑",
-      "placeholderSelect": "添加數據庫的方式…",
-      "placeholderPath": "~/data 或 /path/to/database.db",
-      "pickerFolderTitle": "選擇要掃描的文件夾",
-      "pickerFileTitle": "選擇數據庫文件",
-      "pickerSqliteName": "SQLite 數據庫",
-      "pickerAllFiles": "所有文件",
-      "pickerError": "無法打開選擇器"
-    }
+    "ssl": "要求 SSL"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "無法從拖放項中提取文件路徑"
@@ -2161,8 +2107,7 @@
     "sidebar": {
       "newTab": "新標籤頁",
       "newPrivateTab": "新隱私標籤頁",
-      "newTerminal": "新建終端",
-      "untitled": "未命名"
+      "newTerminal": "新建終端"
     },
     "statusBar": {}
   },

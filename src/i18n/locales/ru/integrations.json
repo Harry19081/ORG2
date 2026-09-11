@@ -349,7 +349,6 @@
     "connecting": "Подключение",
     "reconnecting": "Переподключение",
     "connectionError": "Ошибка подключения",
-    "reconnect": "Переподключить",
     "accountNameDuplicate": "Аккаунт с таким именем уже существует",
     "probeSuccess": "Подключение успешно",
     "probeFailed": "Подключение не удалось",
@@ -1421,10 +1420,6 @@
     "preview": "Предпросмотр",
     "jsonParseError": "Ошибка парсинга JSON",
     "noPreview": "Нет данных для предпросмотра",
-    "chatExtras": "Дополнения чата",
-    "queuedMessages": "Сообщения в очереди",
-    "fileReview": "Обзор файлов",
-    "terminalProcesses": "Процессы терминала",
     "modeSessionLink": "Ссылка на сессию"
   },
   "rulesTabs": {

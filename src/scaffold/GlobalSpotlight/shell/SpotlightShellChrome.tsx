@@ -11,7 +11,7 @@
  * layer. Only consumed by SpotlightShell; palettes never see this component.
  */
 import { useAtomValue } from "jotai";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 
@@ -26,6 +26,7 @@ import { spotlightPlacementAtom } from "@src/store/ui/uiAtom";
 
 import { SPOTLIGHT_CLASSES, SPOTLIGHT_CONFIG } from "../constants";
 import { SPOTLIGHT_STYLES } from "../styles";
+import { SpotlightTransitionRefContext } from "../useLaunchpadTransition";
 
 // ============ TYPES ============
 
@@ -50,6 +51,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
   footer,
   children,
 }) => {
+  const transitionRef = useContext(SpotlightTransitionRefContext);
   const inputHostRef = useRef<HTMLDivElement | null>(null);
   const spotlightPlacement = useAtomValue(spotlightPlacementAtom);
   const location = useLocation();
@@ -176,6 +178,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
         }}
       />
       <div
+        ref={transitionRef}
         data-spotlight-container
         style={{
           position: "fixed",

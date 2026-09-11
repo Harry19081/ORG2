@@ -349,7 +349,6 @@
     "connecting": "Connecting",
     "reconnecting": "Reconnecting",
     "connectionError": "Connection Error",
-    "reconnect": "Reconnect",
     "accountNameDuplicate": "An account with this name already exists",
     "probeSuccess": "Connection successful",
     "probeFailed": "Connection failed",
@@ -1443,11 +1442,7 @@
     "activityDataPlaceholder": "Enter ActivityData JSON...",
     "preview": "Preview",
     "jsonParseError": "JSON Parse Error",
-    "noPreview": "No data to preview",
-    "chatExtras": "Chat Extras",
-    "queuedMessages": "Queued Messages",
-    "fileReview": "File Review",
-    "terminalProcesses": "Terminal Processes"
+    "noPreview": "No data to preview"
   },
   "agentTools": {
     "enabled": "Enabled"

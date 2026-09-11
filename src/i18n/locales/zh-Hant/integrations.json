@@ -349,7 +349,6 @@
     "connecting": "連接中",
     "reconnecting": "重新連接中",
     "connectionError": "連接錯誤",
-    "reconnect": "重新連接",
     "accountNameDuplicate": "已存在同名賬戶",
     "probeSuccess": "連接成功",
     "probeFailed": "連接失敗",
@@ -1421,10 +1420,6 @@
     "preview": "預覽",
     "jsonParseError": "JSON 解析錯誤",
     "noPreview": "無數據可預覽",
-    "chatExtras": "聊天附加組件",
-    "queuedMessages": "消息隊列",
-    "fileReview": "文件審查",
-    "terminalProcesses": "終端進程",
     "modeSessionLink": "工作階段連結"
   },
   "rulesTabs": {

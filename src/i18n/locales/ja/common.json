@@ -228,12 +228,6 @@
     }
   },
   "toasts": {
-    "replyEmpty": "返信を入力してください",
-    "sessionNotFound": "セッションが見つかりません",
-    "answerSubmitted": "回答を送信しました",
-    "answerFailed": "回答の送信に失敗しました。もう一度お試しください。",
-    "replyError": "返信の送信中にエラーが発生しました",
-    "questionIgnored": "質問を無視しました",
     "addedAsContext": "{{name}} をコンテキストに追加しました",
     "addedFilesAsContext": "{{count}} 個のファイルをコンテキストに追加しました",
     "chooseExecutionAgentAi": "AI で作成する前に担当エージェントを選択してください。",
@@ -693,42 +687,9 @@
     "technicalDetails": "技術的な詳細",
     "failedToCopy": "コピーに失敗しました",
     "api": {
-      "titles": {
-        "githubConnections": "GitHub 接続を読み込めませんでした",
-        "githubConnect": "GitHub に接続できませんでした",
-        "workflows": "ワークフローを読み込めませんでした",
-        "config": "設定を読み込めませんでした",
-        "agent": "Agent に接続できませんでした",
-        "repository": "リポジトリを読み込めませんでした",
-        "file": "ファイルを読み込めませんでした",
-        "mcp": "MCP サーバーエラー",
-        "extension": "コードエディター拡張エラー",
-        "workspace": "ワークスペースを読み込めませんでした",
-        "slackConnections": "Slack 接続を読み込めませんでした",
-        "wallet": "ウォレットを読み込めませんでした",
-        "billing": "請求操作を完了できませんでした",
-        "default": "データを読み込めませんでした",
-        "timeout": "リクエストがタイムアウトしました",
-        "external": "外部データを読み込めませんでした"
-      },
       "messages": {
-        "network": "接続を確認してから再試行してください。",
-        "timeout": "リクエストがタイムアウトしました。再試行してください。",
-        "server": "サーバーで問題が発生しました。しばらくしてから再試行してください。",
-        "notFound": "この項目が見つかりませんでした。",
-        "signIn": "再度ログインしてください。",
-        "forbidden": "この操作の権限がありません。",
-        "tooManyRequests": "リクエストが多すぎます。しばらくしてから再試行してください。",
-        "validation": "無効なデータです。入力を確認してください。",
-        "conflict": "競合が検出されました。リソースが変更されている可能性があります。",
-        "badGateway": "サーバーに到達できません。後で再試行してください。",
-        "serviceUnavailable": "サービスは一時的に利用できません。後で再試行してください。",
-        "gatewayTimeout": "サーバーが応答しません。後で再試行してください。",
-        "invalidRequest": "無効なリクエストです。再試行してください。",
-        "default": "再試行してください。",
-        "externalHint": "URL と設定を確認してから再試行してください。"
-      },
-      "workflow": "ワークフローサービスは一時的に利用できません。後で再試行してください。"
+        "signIn": "再度ログインしてください。"
+      }
     },
     "failedToLoad": "読み込みに失敗しました",
     "unknownError": "不明なエラーが発生しました",
@@ -2088,22 +2049,7 @@
     "database": "データベース",
     "user": "ユーザー",
     "password": "パスワード",
-    "ssl": "SSL を要求",
-    "spotlight": {
-      "scanFolder": "フォルダをスキャン",
-      "scanFolderDesc": "フォルダ内のすべての .sqlite、.db ファイルを検索",
-      "openFile": "ファイルを開く",
-      "openFileDesc": "特定のデータベースファイルを選択",
-      "enterPath": "パスを入力",
-      "enterPathDesc": "ファイルまたはフォルダのパスを直接入力",
-      "placeholderSelect": "データベースの追加方法…",
-      "placeholderPath": "~/data または /path/to/database.db",
-      "pickerFolderTitle": "スキャンするフォルダを選択",
-      "pickerFileTitle": "データベースファイルを選択",
-      "pickerSqliteName": "SQLite データベース",
-      "pickerAllFiles": "すべてのファイル",
-      "pickerError": "ピッカーを開けませんでした"
-    }
+    "ssl": "SSL を要求"
   },
   "dragDrop": {
     "couldNotExtractPathFromItem": "Could not extract file path from dropped item"
@@ -2161,8 +2107,7 @@
     "sidebar": {
       "newTab": "新しいタブ",
       "newPrivateTab": "新しいプライベートタブ",
-      "newTerminal": "新規 Terminal",
-      "untitled": "タイトルなし"
+      "newTerminal": "新規 Terminal"
     },
     "statusBar": {}
   },

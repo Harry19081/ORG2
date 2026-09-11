@@ -18,6 +18,7 @@ import {
   resolveModelVariantFields,
   toModelReasoningLevel,
 } from "@src/util/modelVariants";
+import { selectableModelVariants } from "@src/util/selectableModelVariants";
 import { buildVariantEditOptions } from "@src/util/variantEditOptions";
 
 import ModelTableTooltipContent from "./ModelTableTooltipContent";
@@ -83,7 +84,7 @@ function toTitleCaseSuffix(value: string): string {
 
 // ── GPT: group by reasoning level ─────────────────────────────────────────────
 
-const BASE_EFFORT_LABEL = "Baseline";
+const BASE_EFFORT_LABEL = formatReasoningLevel(MODEL_REASONING_LEVEL.BASELINE);
 
 function isUnsuffixedBaseVariant(variant: ModelTableVariantInfo): boolean {
   return variant.model.toLowerCase() === variant.base_model.toLowerCase();
@@ -266,7 +267,7 @@ export default function ModelVariantInlineCard({
 
   const sortedVariants = useMemo(
     () =>
-      [...variants]
+      (forceModelList ? [...variants] : selectableModelVariants(variants))
         .map((variant) => resolveModelVariantFields(variant.model, variant))
         .sort((variantA, variantB) => {
           const reasoningOrder =
@@ -274,7 +275,7 @@ export default function ModelVariantInlineCard({
           if (reasoningOrder !== 0) return reasoningOrder;
           return pillSortKey(variantA) - pillSortKey(variantB);
         }),
-    [variants]
+    [variants, forceModelList]
   );
 
   const gptGroup = isGptGroup(sortedVariants);
@@ -419,14 +420,19 @@ export default function ModelVariantInlineCard({
   // A ModelVariantInlineCard always renders variants for a single model
   // family (one group → one card), so the entire card collapses to a
   // single "Selected version" row. The dropdown enumerates every variant
-  // in the family, including the unsuffixed / Baseline one. We pick the
-  // shortest `base_model` string as the canonical key for persistence so
+  // in the family after excluding bare aliases of explicit efforts. We pick the
+  // shortest `base_model` string from the complete family as the persistence
+  // key. Filtering selectable efforts must not change that key (for example,
+  // the o4-mini bare record owns the existing o4 key). This also ensures
   // that "claude-opus-4-6" (unsuffixed fallback) and "claude-opus-4-6"
   // (parsed from "...-high") always resolve to the same entry.
   const canonicalBaseModel =
-    sortedVariants.length > 0
-      ? sortedVariants
-          .map((variant) => variant.base_model)
+    variants.length > 0
+      ? variants
+          .map(
+            (variant) =>
+              resolveModelVariantFields(variant.model, variant).base_model
+          )
           .reduce((shortest, candidate) =>
             candidate.length < shortest.length ? candidate : shortest
           )

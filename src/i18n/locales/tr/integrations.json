@@ -349,7 +349,6 @@
     "connecting": "Bağlanıyor",
     "reconnecting": "Yeniden bağlanıyor",
     "connectionError": "Bağlantı hatası",
-    "reconnect": "Yeniden bağlan",
     "accountNameDuplicate": "Bu isimde bir hesap zaten mevcut",
     "probeSuccess": "Bağlantı başarılı",
     "probeFailed": "Bağlantı başarısız",
@@ -1421,10 +1420,6 @@
     "preview": "Önizleme",
     "jsonParseError": "JSON Ayrıştırma Hatası",
     "noPreview": "Önizlenecek veri yok",
-    "chatExtras": "Sohbet Eklentileri",
-    "queuedMessages": "Kuyruktaki Mesajlar",
-    "fileReview": "Dosya İncelemesi",
-    "terminalProcesses": "Terminal İşlemleri",
     "modeSessionLink": "Oturum Bağlantısı"
   },
   "rulesTabs": {

@@ -90,6 +90,7 @@ const SessionCreatorChatPanelContent: React.FC<
   footerSlot,
   leadingActionSlot,
   headerLayout = "hero",
+  spotlight = false,
   hideRepoLine = false,
   hideWorkItemAttachmentControl = false,
   includeHumanSession = true,
@@ -610,6 +611,7 @@ const SessionCreatorChatPanelContent: React.FC<
       fileInputRef={fileInputRef}
       footerSlot={footerSlot}
       headerLayout={headerLayout}
+      spotlight={spotlight}
       heroContent={heroContent}
       heroIcon={heroIcon}
       hidePresenceButton={hidePresenceButton}

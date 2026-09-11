@@ -349,7 +349,6 @@
     "connecting": "연결 중",
     "reconnecting": "재연결 중",
     "connectionError": "연결 오류",
-    "reconnect": "재연결",
     "accountNameDuplicate": "같은 이름의 계정이 이미 존재합니다",
     "probeSuccess": "연결 성공",
     "probeFailed": "연결 실패",
@@ -1421,10 +1420,6 @@
     "preview": "미리보기",
     "jsonParseError": "JSON 파싱 오류",
     "noPreview": "미리볼 데이터 없음",
-    "chatExtras": "채팅 추가 기능",
-    "queuedMessages": "대기 메시지",
-    "fileReview": "파일 검토",
-    "terminalProcesses": "터미널 프로세스",
     "modeSessionLink": "세션 링크"
   },
   "rulesTabs": {

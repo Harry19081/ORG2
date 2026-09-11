@@ -349,7 +349,6 @@
     "connecting": "接続中",
     "reconnecting": "再接続中",
     "connectionError": "接続エラー",
-    "reconnect": "再接続",
     "accountNameDuplicate": "同じ名前のアカウントが既に存在します",
     "probeSuccess": "接続成功",
     "probeFailed": "接続失敗",
@@ -1421,10 +1420,6 @@
     "preview": "プレビュー",
     "jsonParseError": "JSON パースエラー",
     "noPreview": "プレビューするデータがありません",
-    "chatExtras": "チャット拡張",
-    "queuedMessages": "キューメッセージ",
-    "fileReview": "ファイルレビュー",
-    "terminalProcesses": "ターミナルプロセス",
     "modeSessionLink": "セッションリンク"
   },
   "rulesTabs": {

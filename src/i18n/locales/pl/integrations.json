@@ -349,7 +349,6 @@
     "connecting": "Łączenie",
     "reconnecting": "Ponowne łączenie",
     "connectionError": "Błąd połączenia",
-    "reconnect": "Połącz ponownie",
     "accountNameDuplicate": "Konto o tej nazwie już istnieje",
     "probeSuccess": "Połączenie udane",
     "probeFailed": "Połączenie nieudane",
@@ -1431,10 +1430,6 @@
     "preview": "Podgląd",
     "jsonParseError": "Błąd parsowania JSON",
     "noPreview": "Brak danych do podglądu",
-    "chatExtras": "Dodatki czatu",
-    "queuedMessages": "Wiadomości w kolejce",
-    "fileReview": "Przegląd plików",
-    "terminalProcesses": "Procesy terminala",
     "modeSessionLink": "Link do sesji"
   },
   "agentTools": {
