@@ -22,6 +22,7 @@ import {
   gitReviewNavigationAtom,
 } from "@src/store/workstation/codeEditor/gitReviewNavigationAtom";
 import { sourceControlFilterModeHandlerAtom } from "@src/store/workstation/codeEditor/sourceControlFilterModeAtom";
+import { sourceControlRefreshHandlerAtom } from "@src/store/workstation/codeEditor/sourceControlRefreshAtom";
 import {
   type PanelState,
   type SourceControlHistorySelection,
@@ -75,9 +76,12 @@ export function useSourceControlPaneActions({
   gitDiffLoading,
   sourceControlFilterMode,
 }: UseSourceControlPaneActionsOptions): UseSourceControlPaneActionsReturn {
+  const refreshSidebar = useAtomValue(sourceControlRefreshHandlerAtom);
   const refreshSourceControl = useCallback(() => {
-    void forceRefresh();
-  }, [forceRefresh]);
+    // A scoped sidebar refresh already updates shared status. Do not also scan
+    // the primary repository when a worktree or multi-root pane handled it.
+    void (refreshSidebar?.() ?? forceRefresh());
+  }, [forceRefresh, refreshSidebar]);
   const {
     spinClass: sourceControlRefreshSpinClass,
     handleClick: handleSourceControlRefresh,
