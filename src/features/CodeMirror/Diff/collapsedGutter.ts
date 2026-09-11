@@ -6,6 +6,12 @@ import {
 } from "@codemirror/view";
 import type { BlockInfo, WidgetType } from "@codemirror/view";
 
+import {
+  COLLAPSE_EXPAND_STEP,
+  expandCollapsedRange,
+  incrementalCollapse,
+} from "./incrementalCollapse";
+
 function isCollapsed(widget: WidgetType) {
   return "type" in widget && widget.type === "collapsed-unchanged-code";
 }
@@ -66,6 +72,7 @@ function highlightCollapsedRow(view: EditorView, target: EventTarget | null) {
 }
 
 export const collapsedGutterBackground = [
+  incrementalCollapse,
   gutterWidgetClass.of((view, widget, block) =>
     isCollapsed(widget)
       ? new CollapsedRow(
@@ -112,17 +119,12 @@ class CollapseControl extends GutterMarker {
   }
 
   toDOM(view: EditorView) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "cm-collapseControl";
+    const control = document.createElement("div");
+    control.className = "cm-collapseControl";
     const lines =
       view.state.doc.lineAt(this.to).number -
       view.state.doc.lineAt(this.from).number +
       1;
-    button.setAttribute(
-      "aria-label",
-      view.state.phrase("$ unchanged lines", lines)
-    );
     const directions =
       this.from === 0
         ? ["up"]
@@ -130,23 +132,25 @@ class CollapseControl extends GutterMarker {
           ? ["down"]
           : ["down", "up"];
     for (const direction of directions) {
-      const icon = button.appendChild(document.createElement("span"));
-      icon.className = `cm-collapseArrow cm-collapseArrow--${direction}`;
-      icon.setAttribute("aria-hidden", "true");
+      const button = control.appendChild(document.createElement("button"));
+      button.type = "button";
+      button.className = `cm-collapseArrow cm-collapseArrow--${direction}`;
+      button.setAttribute(
+        "aria-label",
+        view.state.phrase(
+          "$ unchanged lines",
+          Math.min(COLLAPSE_EXPAND_STEP, lines)
+        )
+      );
+      button.addEventListener("click", () => {
+        expandCollapsedRange(
+          view,
+          { from: this.from, to: this.to },
+          direction === "down" ? "start" : "end"
+        );
+      });
     }
-    button.addEventListener("click", () => {
-      // Delegate to the native widget so expansion remains synchronized in
-      // split view and continues to use CodeMirror's authoritative ranges.
-      for (const widget of view.contentDOM.querySelectorAll<HTMLElement>(
-        ".cm-collapsedLines"
-      )) {
-        if (view.posAtDOM(widget) === this.from) {
-          widget.click();
-          break;
-        }
-      }
-    });
-    return button;
+    return control;
   }
 }
 

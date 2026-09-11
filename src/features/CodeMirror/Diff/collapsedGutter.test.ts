@@ -110,12 +110,12 @@ describe("collapsed gutter controls", () => {
       controls[2].querySelectorAll(".cm-collapseArrow--down")
     ).toHaveLength(1);
     expect(controls[2].children).toHaveLength(1);
-    controls[1].click();
+    view.dom.querySelectorAll<HTMLElement>(".cm-collapsedLines")[1].click();
     expect(view.dom.querySelectorAll(".cm-collapsedLines")).toHaveLength(2);
     expect(view.dom.querySelectorAll(".cm-collapseControl")).toHaveLength(2);
   });
 
-  it("keeps native split expansion synchronized", () => {
+  it("keeps incremental split expansion synchronized", () => {
     const merge = new MergeView({
       parent: document.body,
       a: { doc: original, extensions },
@@ -127,8 +127,13 @@ describe("collapsed gutter controls", () => {
       ".cm-collapseControl"
     );
     expect(controls).toHaveLength(3);
-    controls[0].click();
-    expect(merge.a.dom.querySelectorAll(".cm-collapsedLines")).toHaveLength(2);
-    expect(merge.b.dom.querySelectorAll(".cm-collapsedLines")).toHaveLength(2);
+    controls[0].querySelector<HTMLButtonElement>(".cm-collapseArrow")!.click();
+    expect(merge.a.dom.querySelectorAll(".cm-collapsedLines")).toHaveLength(3);
+    expect(merge.a.dom.querySelector(".cm-collapsedLines")?.textContent).toBe(
+      "17 unchanged lines"
+    );
+    expect(merge.b.dom.querySelector(".cm-collapsedLines")?.textContent).toBe(
+      "17 unchanged lines"
+    );
   });
 });

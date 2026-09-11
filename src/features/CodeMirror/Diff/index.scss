@@ -462,11 +462,6 @@
   &:hover {
     color: var(--color-text-2);
   }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-primary-6);
-    outline-offset: -2px;
-  }
 }
 
 .codemirror-diff .cm-editor .cm-collapseArrow {
@@ -474,6 +469,17 @@
   align-items: center;
   justify-content: center;
   flex: 1;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-6);
+    outline-offset: -2px;
+  }
 
   &::before {
     content: "";
