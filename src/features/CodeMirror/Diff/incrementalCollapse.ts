@@ -7,7 +7,8 @@ import { StateEffect, StateField } from "@codemirror/state";
 import { Decoration, EditorView, WidgetType } from "@codemirror/view";
 import type { DecorationSet } from "@codemirror/view";
 
-export const COLLAPSE_EXPAND_STEP = 10;
+// Match GitHub Desktop’s DefaultDiffExpansionStep.
+export const COLLAPSE_EXPAND_STEP = 20;
 type ExpandSide = "start" | "end" | "all";
 interface HiddenRange {
   from: number;

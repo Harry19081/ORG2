@@ -7,10 +7,10 @@ import { collapsedGutterBackground } from "./collapsedGutter";
 import { diffLineNumbers } from "./diffLineNumbers";
 import { incrementalCollapse } from "./incrementalCollapse";
 
-const original = Array.from({ length: 100 }, (_, i) => `line ${i}`).join("\n");
+const original = Array.from({ length: 160 }, (_, i) => `line ${i}`).join("\n");
 const modified = original
-  .replace("line 30\n", "changed 30\n")
-  .replace("line 70\n", "changed 70\n");
+  .replace("line 50\n", "changed 50\n")
+  .replace("line 130\n", "changed 130\n");
 const extensions = [
   collapsedGutterBackground,
   diffLineNumbers({ formatNumber: String }),
@@ -48,34 +48,34 @@ afterEach(() => {
 });
 
 describe("incremental collapse", () => {
-  it("reveals ten lines from either end, then removes the final short remainder", () => {
+  it("reveals twenty lines from either end, then removes the final short remainder", () => {
     const view = editor();
     expect(labels(view)).toEqual([
-      "27 unchanged lines",
-      "33 unchanged lines",
+      "47 unchanged lines",
+      "73 unchanged lines",
       "26 unchanged lines",
     ]);
     click(view, 1, "down");
     let range = view.state.field(incrementalCollapse).iter();
-    expect(view.state.doc.lineAt(range.from).number).toBe(45);
-    expect(view.state.doc.lineAt(range.to).number).toBe(67);
+    expect(view.state.doc.lineAt(range.from).number).toBe(75);
+    expect(view.state.doc.lineAt(range.to).number).toBe(127);
     click(view, 1, "up");
     range = view.state.field(incrementalCollapse).iter();
-    expect(view.state.doc.lineAt(range.from).number).toBe(45);
-    expect(view.state.doc.lineAt(range.to).number).toBe(57);
-    expect(labels(view)[1]).toBe("13 unchanged lines");
+    expect(view.state.doc.lineAt(range.from).number).toBe(75);
+    expect(view.state.doc.lineAt(range.to).number).toBe(107);
+    expect(labels(view)[1]).toBe("33 unchanged lines");
     click(view, 1, "down");
-    expect(labels(view)[1]).toBe("3 unchanged lines");
+    expect(labels(view)[1]).toBe("13 unchanged lines");
     click(view, 1, "up");
-    expect(labels(view)).toEqual(["27 unchanged lines", "26 unchanged lines"]);
+    expect(labels(view)).toEqual(["47 unchanged lines", "26 unchanged lines"]);
   });
 
   it("keeps label clicks as expand-all after partial expansion", () => {
     const view = editor();
     click(view, 0, "up");
-    expect(labels(view)[0]).toBe("17 unchanged lines");
+    expect(labels(view)[0]).toBe("27 unchanged lines");
     view.dom.querySelector<HTMLElement>(".cm-collapsedLines")!.click();
-    expect(labels(view)).toEqual(["33 unchanged lines", "26 unchanged lines"]);
+    expect(labels(view)).toEqual(["73 unchanged lines", "26 unchanged lines"]);
   });
 
   it("synchronizes panes with different offsets before the hidden block", () => {
@@ -83,7 +83,7 @@ describe("incremental collapse", () => {
       parent: document.body,
       a: { doc: original, extensions },
       b: {
-        doc: modified.replace("changed 30", "extra\nchanged 30"),
+        doc: modified.replace("changed 50", "extra\nchanged 50"),
         extensions,
       },
       collapseUnchanged: { margin: 3, minSize: 10 },
@@ -109,7 +109,7 @@ describe("incremental collapse", () => {
     click(view, 1, "down");
     view.dispatch({ changes: { from: 0, insert: "prefix\n" } });
     const range = view.state.field(incrementalCollapse).iter();
-    expect(view.state.doc.lineAt(range.from).number).toBe(46);
+    expect(view.state.doc.lineAt(range.from).number).toBe(76);
     view.dispatch({ changes: { from: range.from + 1, insert: "edited" } });
     expect(view.state.field(incrementalCollapse).size).toBe(0);
   });

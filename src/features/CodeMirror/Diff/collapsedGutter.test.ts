@@ -130,10 +130,10 @@ describe("collapsed gutter controls", () => {
     controls[0].querySelector<HTMLButtonElement>(".cm-collapseArrow")!.click();
     expect(merge.a.dom.querySelectorAll(".cm-collapsedLines")).toHaveLength(3);
     expect(merge.a.dom.querySelector(".cm-collapsedLines")?.textContent).toBe(
-      "17 unchanged lines"
+      "7 unchanged lines"
     );
     expect(merge.b.dom.querySelector(".cm-collapsedLines")?.textContent).toBe(
-      "17 unchanged lines"
+      "7 unchanged lines"
     );
   });
 });
