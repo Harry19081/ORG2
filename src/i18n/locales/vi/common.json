@@ -1,4 +1,18 @@
 {
+  "gitLabels": {
+    "contains": "Chứa tệp: {{status}}",
+    "staged": "{{status}} (đã đưa vào vùng chờ)",
+    "additions": "Dòng đã thêm",
+    "deletions": "Dòng đã xóa",
+    "M": "Đã sửa đổi",
+    "U": "Chưa được theo dõi",
+    "A": "Đã thêm",
+    "D": "Đã xóa",
+    "R": "Đã đổi tên",
+    "C": "Xung đột",
+    "I": "Đã bỏ qua",
+    "?": "Trạng thái không xác định"
+  },
   "findScope": {
     "session": "Tìm trong phiên",
     "file": "Tìm trong tệp",

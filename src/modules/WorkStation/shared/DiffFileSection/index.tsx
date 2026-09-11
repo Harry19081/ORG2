@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import DiffStatsBadge from "@src/components/DiffStatsBadge";
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import { Placeholder } from "@src/components/Placeholder";
+import Tooltip from "@src/components/Tooltip";
 import {
   type GitFileStatus,
   getStatusColor,
@@ -446,14 +447,30 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
               </>
             ) : null}
           </div>
-          <DiffStatsBadge
-            additions={additions}
-            deletions={deletions}
-            variant="compact"
-          />
-          <span className={`shrink-0 text-[11px] font-medium ${statusColor}`}>
-            {statusLetter}
-          </span>
+          <button
+            type="button"
+            className="pointer-events-auto flex shrink-0 cursor-pointer items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-6/30 focus-visible:outline-none aria-disabled:cursor-default"
+            onClick={isDeleted ? undefined : toggleExpanded}
+            aria-disabled={isDeleted || undefined}
+            aria-label={`${t(expanded ? "actions.collapse" : "actions.expand")} ${displayPath}`}
+            aria-expanded={isDeleted ? undefined : expanded}
+          >
+            <DiffStatsBadge
+              additions={additions}
+              deletions={deletions}
+              variant="compact"
+            />
+            <Tooltip
+              content={t(`common:gitLabels.${statusLetter}`)}
+              mouseEnterDelay={500}
+            >
+              <span
+                className={`shrink-0 text-[11px] font-medium ${statusColor}`}
+              >
+                {statusLetter}
+              </span>
+            </Tooltip>
+          </button>
         </div>
       </div>
 
