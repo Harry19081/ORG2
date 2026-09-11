@@ -46,7 +46,7 @@ import type { GitFile } from "@src/types/git/types";
 import { getFileName } from "@src/util/file/pathUtils";
 
 import { SectionHeader } from "../../CodeEditor/Panels/EditorPrimarySidebar/content/SourceControlContent/components";
-import type { GitFileTreeNode } from "../../CodeEditor/Panels/EditorPrimarySidebar/content/SourceControlContent/components/GitFileTreeItem";
+import type { GitFileTreeNode } from "../../CodeEditor/Panels/EditorPrimarySidebar/content/SourceControlContent/components/GitFileTreeNode";
 import {
   buildVSCodeStyleTree,
   flattenGitFileTree,

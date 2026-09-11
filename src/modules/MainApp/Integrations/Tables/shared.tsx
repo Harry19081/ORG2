@@ -26,33 +26,3 @@ export function RowChevron({ onClick }: { onClick: () => void }) {
     </button>
   );
 }
-
-export function OverviewContent({
-  description,
-  items,
-  footer,
-}: {
-  description: string;
-  items: { label: string; text: string }[];
-  footer?: string;
-}) {
-  return (
-    <div className="rounded-lg bg-fill-2 p-5 text-[13px] leading-relaxed text-text-2">
-      <p className="mb-4">{description}</p>
-      <div className="space-y-2">
-        {items.map((item) => (
-          <p key={item.label}>
-            <span className="font-medium text-text-1">{item.label}</span>
-            {" — "}
-            {item.text}
-          </p>
-        ))}
-      </div>
-      {footer && (
-        <p className="mt-4 border-t border-border-2 pt-3 text-text-3">
-          {footer}
-        </p>
-      )}
-    </div>
-  );
-}
