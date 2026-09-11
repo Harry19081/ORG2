@@ -291,6 +291,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           <Suspense
             fallback={
               <Placeholder
+                loadingIconOnly
                 variant="loading"
                 placement="detail-panel"
                 fillParentHeight
@@ -310,6 +311,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         <Suspense
           fallback={
             <Placeholder
+              loadingIconOnly
               variant="loading"
               placement="detail-panel"
               title={t("placeholders.loadingChanges")}
@@ -340,6 +342,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
         />
       ) : (
         <Placeholder
+          loadingIconOnly
           variant="loading"
           placement="detail-panel"
           title={t("placeholders.loadingChanges")}

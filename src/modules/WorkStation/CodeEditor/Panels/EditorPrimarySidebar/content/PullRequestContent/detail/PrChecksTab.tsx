@@ -86,7 +86,12 @@ export const PrChecksTab: React.FC<PrChecksTabProps> = ({
 
   if (loading && !checks) {
     return (
-      <Placeholder variant="loading" placement="sidebar" fillParentHeight />
+      <Placeholder
+        loadingIconOnly
+        variant="loading"
+        placement="sidebar"
+        fillParentHeight
+      />
     );
   }
 
