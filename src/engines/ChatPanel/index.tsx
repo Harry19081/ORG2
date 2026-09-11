@@ -387,6 +387,9 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(
         handleTuiModeToggle={handleTuiModeToggle}
         tabStrip={tabStrip}
         tabStripPlus={tabStripPlus}
+        showLaunchpadSearch={
+          useFullScreenCreator && startPageOpen && !isStandaloneToolTabActive
+        }
         tabRowCollapsed={tabRowCollapsed}
         sessionHeaderExtras={
           <>
