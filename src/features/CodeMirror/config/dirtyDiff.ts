@@ -13,11 +13,13 @@ import {
   StateField,
 } from "@codemirror/state";
 import {
+  Decoration,
   EditorView,
   GutterMarker,
   ViewPlugin,
   ViewUpdate,
   gutter,
+  gutterLineClass,
 } from "@codemirror/view";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -120,6 +122,18 @@ class DiffGutterMarker extends GutterMarker {
 const addedMarker = new DiffGutterMarker("added");
 const modifiedMarker = new DiffGutterMarker("modified");
 const deletedMarker = new DiffGutterMarker("deleted");
+
+class DiffRowMarker extends GutterMarker {
+  constructor(type: DiffLineType) {
+    super();
+    this.elementClass = `cm-dirty-diff-row-${type}`;
+  }
+}
+const rowMarkers = {
+  added: new DiffRowMarker("added"),
+  modified: new DiffRowMarker("modified"),
+  deleted: new DiffRowMarker("deleted"),
+};
 
 // ============================================
 // Configuration
@@ -339,6 +353,8 @@ export function dirtyDiffGutter(
   // Theme for gutter styling
   const gutterTheme = EditorView.baseTheme({
     ".cm-dirty-diff-gutter": {
+      order: "-1",
+      overflow: "visible",
       width: "var(--diff-gutter-width, 4px)",
       minWidth: "var(--diff-gutter-width, 4px)",
       maxWidth: "var(--diff-gutter-width, 4px)",
@@ -349,5 +365,41 @@ export function dirtyDiffGutter(
     },
   });
 
-  return [dirtyDiffField, dirtyDiffPlugin, diffGutter, gutterTheme];
+  const rowClasses = gutterLineClass.from(dirtyDiffField, (markers) => {
+    const builder = new RangeSetBuilder<GutterMarker>();
+    for (const cursor = markers.iter(); cursor.value; cursor.next()) {
+      if (cursor.value instanceof DiffGutterMarker) {
+        builder.add(cursor.from, cursor.from, rowMarkers[cursor.value.type]);
+      }
+    }
+    return builder.finish();
+  });
+  const rowBackgrounds = EditorView.decorations.from(
+    dirtyDiffField,
+    (markers) => {
+      const decorations = [];
+      for (const cursor = markers.iter(); cursor.value; cursor.next()) {
+        if (
+          cursor.value instanceof DiffGutterMarker &&
+          (cursor.value.type !== "deleted" || isDeletedFile)
+        ) {
+          decorations.push(
+            Decoration.line({
+              class: `cm-dirty-diff-row-${cursor.value.type}`,
+            }).range(cursor.from)
+          );
+        }
+      }
+      return Decoration.set(decorations);
+    }
+  );
+
+  return [
+    dirtyDiffField,
+    dirtyDiffPlugin,
+    diffGutter,
+    gutterTheme,
+    rowClasses,
+    rowBackgrounds,
+  ];
 }
