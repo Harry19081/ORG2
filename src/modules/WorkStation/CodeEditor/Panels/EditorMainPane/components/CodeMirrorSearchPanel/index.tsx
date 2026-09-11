@@ -284,7 +284,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
           >
             <Button
               variant="tertiary"
-              appearance="soft"
+              className="aria-pressed:bg-surface-selected aria-pressed:text-primary-6"
               size="small"
               iconOnly
               aria-pressed={localReplaceMode}

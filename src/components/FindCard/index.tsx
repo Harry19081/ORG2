@@ -168,7 +168,7 @@ export function FindCard({
     <ToolbarTooltip key={label} label={label} mouseEnterDelay={1000}>
       <Button
         variant="tertiary"
-        appearance={pressed === undefined ? undefined : "soft"}
+        className="aria-pressed:bg-surface-selected aria-pressed:text-primary-6"
         size="small"
         iconOnly
         onClick={onClick}
@@ -233,6 +233,8 @@ export function FindCard({
           <SegmentedTextPill
             ariaLabel={t("common:actions.find")}
             className="gap-px"
+            size="small"
+            tooltipPosition="bottom"
             value={scope}
             onChange={selectFindScope}
             options={[
@@ -261,7 +263,7 @@ export function FindCard({
             {extraControls}
           </>
         )}
-        <span className="ml-auto text-xs text-text-3" role="status">
+        <span className="mr-0.5 ml-auto text-xs text-text-3" role="status">
           {!query
             ? ""
             : isSearching
