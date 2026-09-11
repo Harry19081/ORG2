@@ -215,7 +215,11 @@ const ImagePreviewOverlay: React.FC<ImagePreviewOverlayProps> = memo(
                 action(
                   t("imagePreview.copyImage"),
                   Copy01Icon,
-                  handleCopy,
+                  () => {
+                    handleCopy().catch(() => {
+                      Message.error(t("errors.failedToCopy"));
+                    });
+                  },
                   !currentSrc || failedSrc === currentSrc
                 )}
               {action(
