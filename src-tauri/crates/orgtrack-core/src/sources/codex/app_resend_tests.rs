@@ -440,3 +440,43 @@ fn native_path_lookup_breaks_activity_ties_like_the_election() {
         Some(winner_path.as_str())
     );
 }
+
+#[test]
+fn a_spawn_naming_an_absent_child_thread_stays_unlinked() {
+    let fixture = Fixture::new("named-child");
+    let original = format!("rollout-2026-08-23T12-40-07-{THREAD}");
+    let child = format!("rollout-2026-08-23T12-41-00-{CHILD}");
+    let resend = format!("rollout-2026-08-25T06-19-04-{THREAD}_{ROLLOUT}");
+    fixture.write_raw(&original, &parent_with_spawn("2026-08-23T19:40:07Z"));
+    fixture.write_raw(&child, &child_of_parent("2026-08-23T19:41:00Z"));
+    // The resent generation names a child thread that is not cached (never
+    // written, or its rollout removed). Same task name and close timestamps
+    // as the first generation's child.
+    let time = "2026-08-24T22:19:04Z";
+    let header = serde_json::json!({"timestamp":time,"type":"session_meta","payload":{
+        "id":THREAD,"originator":"Codex Desktop","source":"vscode","cwd":"/tmp/project"
+    }});
+    let spawn = serde_json::json!({"timestamp":time,"type":"response_item","payload":{
+        "type":"function_call","name":"spawn_agent","namespace":"collaboration",
+        "arguments":"{\"task_name\":\"audit_commits\",\"message\":\"audit\"}","call_id":"call_spawn2"
+    }});
+    let activity = serde_json::json!({"timestamp":time,"type":"event_msg","payload":{
+        "type":"sub_agent_activity","event_id":"call_spawn2",
+        "agent_thread_id":"55555555-5555-4555-8555-555555555555",
+        "agent_path":"/root/audit_commits","kind":"started"
+    }});
+    fixture.write_raw(&resend, &format!("{header}\n{spawn}\n{activity}\n"));
+    let mut conn = fixture.conn();
+    fixture.sync(&mut conn);
+    let resend_id = format!("codexapp-{resend}");
+    assert_eq!(visible(&conn), std::slice::from_ref(&resend));
+    assert_eq!(
+        linked_subagent_session_id(&conn, &resend_id),
+        None,
+        "an explicit child thread id must not fall back to another generation's child"
+    );
+    assert_eq!(
+        linked_subagent_session_id(&conn, &format!("codexapp-{original}")).as_deref(),
+        Some(format!("codexapp-{child}").as_str())
+    );
+}

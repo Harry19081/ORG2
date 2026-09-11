@@ -323,12 +323,18 @@ fn best_codex_child_match(
     task_name: Option<&str>,
     chunk_created_at_ms: Option<i64>,
 ) -> Option<usize> {
+    // A spawn that names its child thread links only that thread. Children
+    // are pooled across every generation of the parent, so a ranking penalty
+    // would attach another generation's child when the named one is absent.
+    if let Some(thread_id) = agent_thread_id {
+        return children
+            .iter()
+            .position(|child| child.thread_id.as_deref() == Some(thread_id));
+    }
     children
         .iter()
         .enumerate()
         .min_by_key(|(_, child)| {
-            let thread_mismatch = agent_thread_id
-                .is_some_and(|thread_id| child.thread_id.as_deref() != Some(thread_id));
             let task_mismatch = task_name.is_some_and(|task_name| {
                 child
                     .metadata
@@ -340,7 +346,7 @@ fn best_codex_child_match(
             let time_distance = chunk_created_at_ms
                 .map(|created_at_ms| created_at_ms.abs_diff(child.created_at_ms))
                 .unwrap_or_default();
-            (thread_mismatch, task_mismatch, time_distance)
+            (task_mismatch, time_distance)
         })
         .map(|(index, _)| index)
 }
