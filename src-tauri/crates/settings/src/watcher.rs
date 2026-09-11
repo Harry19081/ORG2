@@ -108,10 +108,10 @@ fn watch_changes(
 ) -> Result<(RecommendedWatcher, mpsc::Receiver<()>), String> {
     // One dirty marker is sufficient: read the file, not intermediate payloads.
     let (tx, rx) = mpsc::sync_channel(1);
-    let watched_path = settings_path.to_path_buf();
+    let watched_paths = watched_path_candidates(watch_dir, settings_path);
     let mut watcher = RecommendedWatcher::new(
         move |result: notify::Result<Event>| match result {
-            Ok(event) if affects_settings(&event, &watched_path) => {
+            Ok(event) if affects_settings(&event, &watched_paths) => {
                 let _ = tx.try_send(());
             }
             Err(err) => warn!(error = %err, "settings watcher event error"),
@@ -126,11 +126,36 @@ fn watch_changes(
     Ok((watcher, rx))
 }
 
-fn affects_settings(event: &Event, path: &std::path::Path) -> bool {
+/// Spellings under which the backend may report the settings file.
+///
+/// `notify` canonicalizes the watched directory and reports events with that
+/// canonical prefix, while `settings_path` keeps the configured spelling. The
+/// two differ whenever the settings home sits behind a symlink (`~/.orgii`
+/// managed by a dotfile tool, or `ORGII_HOME` under `/tmp` on macOS, which
+/// resolves to `/private/tmp`); an exact compare against the configured path
+/// alone would then silently drop every change.
+fn watched_path_candidates(
+    watch_dir: &std::path::Path,
+    settings_path: &std::path::Path,
+) -> Vec<PathBuf> {
+    let mut candidates = vec![settings_path.to_path_buf()];
+    if let (Ok(canonical_dir), Some(name)) = (watch_dir.canonicalize(), settings_path.file_name()) {
+        let canonical = canonical_dir.join(name);
+        if !candidates.contains(&canonical) {
+            candidates.push(canonical);
+        }
+    }
+    candidates
+}
+
+fn affects_settings(event: &Event, watched: &[PathBuf]) -> bool {
     matches!(
         event.kind,
         EventKind::Create(_) | EventKind::Modify(_) | EventKind::Remove(_)
-    ) && event.paths.iter().any(|candidate| candidate == path)
+    ) && event
+        .paths
+        .iter()
+        .any(|candidate| watched.iter().any(|path| path == candidate))
 }
 
 fn consume_changes(

@@ -11,7 +11,9 @@ fn native_watcher_delivers_burst_replacement_and_deletion() {
             .as_nanos()
     ));
     std::fs::create_dir(&dir).unwrap();
-    let dir = dir.canonicalize().unwrap();
+    // Deliberately not canonicalized: on macOS `temp_dir()` lives under the
+    // `/var -> /private/var` symlink, and `notify` reports canonical paths,
+    // so this reproduces a symlinked `~/.orgii` / `ORGII_HOME`.
     let path = dir.join("settings.jsonc");
     std::fs::write(&path, "false").unwrap();
     let (watcher, rx) = watch_changes(&dir, &path).unwrap();
