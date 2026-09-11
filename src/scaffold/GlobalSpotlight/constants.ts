@@ -41,6 +41,7 @@ export const SPOTLIGHT_TOKENS = {
 } as const;
 
 export const SPOTLIGHT_CLASSES = {
+  panel: "overflow-hidden rounded-2xl border border-border-2 bg-bg-2 shadow-xl",
   /** Primary contextual pill used by palette navigation and active state badges. */
   primaryPill:
     "flex items-center gap-1 rounded-full bg-primary-1 px-2.5 py-1 text-primary-6",

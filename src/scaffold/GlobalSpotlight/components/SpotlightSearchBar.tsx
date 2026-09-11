@@ -17,6 +17,8 @@ import type { PathSegment } from "../types";
 // ============ PROPS ============
 
 interface SpotlightSearchBarProps {
+  /** Compact spacing for embedded search cards. */
+  density?: "default" | "compact";
   /** Ref for the input element */
   inputRef: React.RefObject<HTMLInputElement | null>;
   /** Current search query */
@@ -50,6 +52,7 @@ interface SpotlightSearchBarProps {
 // ============ COMPONENT ============
 
 export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
+  density = "default",
   inputRef,
   searchQuery,
   onSearchQueryChange,
@@ -67,6 +70,8 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const compact = density === "compact";
+  const inputFontSize = compact ? "text-xs" : SPOTLIGHT_TOKENS.inputFontSize;
   const hasPills = path.length > 0;
   const hasLeadingSlot = Boolean(leadingSlot);
 
@@ -117,11 +122,15 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
 
   return (
     <div>
-      <div className="spotlight-search-bar flex h-[56px] min-h-[56px] items-center gap-2 px-4">
+      <div
+        className={`spotlight-search-bar flex items-center ${compact ? "h-10 min-h-10 gap-1.5 px-3" : "h-[56px] min-h-[56px] gap-2 px-4"}`}
+      >
         {hasLeadingSlot ? (
           <div className="flex shrink-0 items-center">{leadingSlot}</div>
         ) : !hasPills ? (
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center">
+          <div
+            className={`flex shrink-0 items-center justify-center ${compact ? "h-5 w-5" : "h-6 w-6"}`}
+          >
             <AnyIcon
               icon={ICONS.search}
               size={SPOTLIGHT_TOKENS.iconSize}
@@ -133,7 +142,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
 
         {!hasLeadingSlot && hasPills && (
           <div
-            className={`flex min-w-0 shrink-0 items-center gap-2 ${SPOTLIGHT_TOKENS.inputFontSize} text-text-1`}
+            className={`flex min-w-0 shrink-0 items-center gap-2 ${inputFontSize} text-text-1`}
           >
             {path.map((segment, index) => {
               const canRemove =
@@ -153,9 +162,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
                 >
                   {canRemove && !isCountingDown && renderBackChevron()}
                   {!canRemove && renderPillIcon(segment)}
-                  <span
-                    className={`max-w-[220px] truncate ${SPOTLIGHT_TOKENS.inputFontSize}`}
-                  >
+                  <span className={`max-w-[220px] truncate ${inputFontSize}`}>
                     {label}
                   </span>
                 </div>
@@ -173,7 +180,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
             onKeyDown={onKeyDown}
             placeholder={placeholder}
             aria-label={ariaLabel}
-            className={`min-w-0 flex-1 bg-transparent ${SPOTLIGHT_TOKENS.inputFontSize} text-text-1 placeholder:text-text-1 focus:outline-none`}
+            className={`min-w-0 flex-1 bg-transparent ${inputFontSize} text-text-1 placeholder:text-text-1 focus:outline-none`}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -185,7 +192,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
         {!hideInput && searchQuery && !isCountingDown && (
           <button
             type="button"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1"
+            className={`flex shrink-0 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1 ${compact ? "h-6 w-6" : "h-7 w-7"}`}
             aria-label={t("common:tooltips.clearSearch")}
             onClick={handleResetSearch}
           >

@@ -320,23 +320,22 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       }
     />
   );
-  const pinnedChromeLayer = (
-    <>
-      {search.isSearchVisible ? (
-        <div
-          className={`shrink-0 border-b border-border-2 ${surfaceBgClass}`}
-          data-chat-search-chrome
-        >
-          <div
-            className={`mx-auto w-full ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
-          >
-            <ChatSearchBar search={search} />
-          </div>
-        </div>
-      ) : null}
-      {pinnedHeaderLayer}
-    </>
-  );
+  // Include the header and workstation rail in the anchor so Find sits at
+  // the outer panel edge, not the narrower transcript column's edge.
+  const searchOverlayHost =
+    pinnedHeaderPortalHost?.closest<HTMLElement>("[data-chat-panel]") ??
+    pinnedHeaderPortalHost?.parentElement;
+  const searchOverlay = search.isSearchVisible ? (
+    <div
+      className="pointer-events-none absolute top-2 right-2 left-2 z-50"
+      style={chatHistoryContainerStyle}
+      data-chat-search-chrome
+    >
+      <div className="pointer-events-auto ml-auto w-full max-w-sm">
+        <ChatSearchBar search={search} />
+      </div>
+    </div>
+  ) : null;
 
   return (
     <ChatHistoryDisplayModeProvider value={displayMode}>
@@ -354,17 +353,21 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
           <SessionHeader sessionInfo={sessionInfo} />
         </div>
 
+        {searchOverlayHost
+          ? createPortal(searchOverlay, searchOverlayHost)
+          : searchOverlay}
+
         {pinnedHeaderPortalHost
           ? createPortal(
               <div
                 className="chat-history-portal"
                 style={chatHistoryContainerStyle}
               >
-                {pinnedChromeLayer}
+                {pinnedHeaderLayer}
               </div>,
               pinnedHeaderPortalHost
             )
-          : pinnedChromeLayer}
+          : pinnedHeaderLayer}
 
         {/* Anchor cloud-download progress to the chat-pane header edge instead
             of the virtualized body below SessionHeader. Transcript items and
