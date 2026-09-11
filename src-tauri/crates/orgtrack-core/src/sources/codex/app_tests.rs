@@ -3045,3 +3045,48 @@ fn codex_question_receipts_replay_with_ordered_answers() {
     }
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn native_function_calls_with_response_ids_still_normalize() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "orgii-codex-native-ids-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&temp_dir).unwrap();
+    let path = temp_dir.join("rollout-2026-09-10T22-20-46-01a08ee9-424a-7261-b262-5bb2b0cbbb35.jsonl");
+    // Shapes copied from a Codex Desktop 0.153.4 rollout: every native
+    // function call carries an `fc_…` response-item id.
+    let spawn_args = json!({"task_name":"resend_probe","fork_turns":"none","message":"Reply DONE"}).to_string();
+    let shell_args = json!({"command":["bash","-lc","ls"],"workdir":"/tmp"}).to_string();
+    let content = format!(
+        "{}\n{}\n{}\n{}\n{}\n",
+        json!({"timestamp":"2026-09-11T05:20:46Z","type":"session_meta","payload":{"id":"01a08ee9-424a-7261-b262-5bb2b0cbbb35","originator":"Codex Desktop","cwd":"/tmp/project"}}),
+        json!({"timestamp":"2026-09-11T05:20:47Z","type":"event_msg","payload":{"type":"user_message","message":"probe"}}),
+        json!({"timestamp":"2026-09-11T05:20:48Z","type":"response_item","payload":{"type":"function_call","id":"fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f5","name":"spawn_agent","namespace":"collaboration","arguments":spawn_args,"call_id":"call_spawn"}}),
+        json!({"timestamp":"2026-09-11T05:20:49Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call_spawn","output":"{\"task_name\":\"/root/resend_probe\"}"}}),
+        json!({"timestamp":"2026-09-11T05:20:50Z","type":"response_item","payload":{"type":"function_call","id":"fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f6","name":"shell","arguments":shell_args,"call_id":"call_shell"}}),
+    );
+    std::fs::write(&path, content).unwrap();
+    let chunks = load_codex_app_from_path("codexapp-native-ids", &path).unwrap();
+    let spawn = chunks
+        .iter()
+        .find(|chunk| chunk.function == "subagent")
+        .expect("native spawn_agent with a response id must normalize to subagent");
+    assert_eq!(spawn.args["task_name"], "resend_probe");
+    assert_eq!(
+        spawn.args["__orgiiSourceEventId"],
+        "fc_02379cfbb09f48d8016aa38fb67a0087d09dd4ec2a2341e9f5"
+    );
+    assert!(
+        chunks
+            .iter()
+            .any(|chunk| chunk.function == imported_history::FUNCTION_RUN_COMMAND_LINE),
+        "native shell with a response id must normalize to run_command_line"
+    );
+    assert!(chunks.iter().all(|chunk| chunk.function != "spawn_agent" && chunk.function != "shell"));
+    std::fs::remove_dir_all(&temp_dir).unwrap();
+}
