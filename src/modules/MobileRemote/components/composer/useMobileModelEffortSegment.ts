@@ -75,14 +75,9 @@ export function useMobileModelEffortSegment(
     [groupModelIds, modelId]
   );
 
-  const effectiveModelId = modelId
-    ? (variantOptions.resolveVariantId(
-        variantOptions.parseSelection(modelId)
-      ) ?? modelId)
-    : undefined;
-  const variant = effectiveModelId
-    ? parseModelVariant(effectiveModelId)
-    : undefined;
+  // The session/config model is authoritative until the user applies a
+  // selection through session/patch. A picker seed is not a runtime override.
+  const variant = modelId ? parseModelVariant(modelId) : undefined;
 
   const effortLabel = useMemo(() => {
     const parts: string[] = [];

@@ -421,13 +421,18 @@ export default function ModelVariantInlineCard({
   // family (one group → one card), so the entire card collapses to a
   // single "Selected version" row. The dropdown enumerates every variant
   // in the family after excluding bare aliases of explicit efforts. We pick the
-  // shortest `base_model` string as the canonical key for persistence so
+  // shortest `base_model` string from the complete family as the persistence
+  // key. Filtering selectable efforts must not change that key (for example,
+  // the o4-mini bare record owns the existing o4 key). This also ensures
   // that "claude-opus-4-6" (unsuffixed fallback) and "claude-opus-4-6"
   // (parsed from "...-high") always resolve to the same entry.
   const canonicalBaseModel =
-    sortedVariants.length > 0
-      ? sortedVariants
-          .map((variant) => variant.base_model)
+    variants.length > 0
+      ? variants
+          .map(
+            (variant) =>
+              resolveModelVariantFields(variant.model, variant).base_model
+          )
           .reduce((shortest, candidate) =>
             candidate.length < shortest.length ? candidate : shortest
           )
