@@ -19,6 +19,7 @@ import {
   getStatusLetterForFile,
 } from "@src/config/gitStatus";
 import { EDITOR_TAB_CANVAS_BG_CLASS } from "@src/config/workstation/tokens";
+import type { ReviewDiffSearch } from "@src/features/CodeMirror/Diff/reviewSearchNavigation";
 import { ArrowDown01Icon, ArrowRight01Icon, HugeiconsIcon } from "@src/icons";
 import { FileHeader } from "@src/modules/shared/components/FileHeader";
 import type { DiffViewMode } from "@src/types/git/types";
@@ -78,6 +79,7 @@ export interface DiffFileSectionData {
 
 interface DiffFileSectionProps {
   file: DiffFileSectionData;
+  reviewSearch?: ReviewDiffSearch;
   viewMode: DiffViewMode;
   defaultExpanded?: boolean;
   expansionSignal?: number;
@@ -125,6 +127,7 @@ function getFileNameAndDir(path: string): {
 
 const DiffFileSection: React.FC<DiffFileSectionProps> = ({
   file,
+  reviewSearch,
   viewMode,
   defaultExpanded = true,
   expansionSignal = 0,
@@ -146,8 +149,9 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
     signal: number;
     value: boolean;
   } | null>(null);
-  const expanded =
-    manualExpanded?.signal === expansionSignal
+  const expanded = reviewSearch?.match
+    ? true
+    : manualExpanded?.signal === expansionSignal
       ? manualExpanded.value
       : defaultExpanded;
   const previousExpandedRef = useRef(expanded);
@@ -320,6 +324,7 @@ const DiffFileSection: React.FC<DiffFileSectionProps> = ({
           }
         >
           <LazyCodeMirrorDiff
+            reviewSearch={reviewSearch}
             oldValue={resolvedDiff.oldContent || ""}
             newValue={resolvedDiff.newContent || ""}
             filePath={file.path}

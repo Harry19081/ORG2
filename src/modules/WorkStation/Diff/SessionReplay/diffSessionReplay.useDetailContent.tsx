@@ -125,6 +125,7 @@ export function useDiffDetailContent({
 
     return (
       <DiffSectionList
+        enableReviewSearch
         sections={consolidatedSections}
         viewMode={diffViewMode}
         loading={orgtrackFinalDiffsLoading}

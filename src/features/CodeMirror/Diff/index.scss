@@ -592,3 +592,13 @@
     transparent 1px 3px
   );
 }
+
+.cm-review-search-match {
+  outline: 2px solid var(--color-primary-6);
+  outline-offset: -2px;
+}
+
+::highlight(orgii-review-search) {
+  background-color: var(--color-warning-3);
+  color: var(--color-text-1);
+}

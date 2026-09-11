@@ -37,6 +37,7 @@ import {
 } from "@src/store/workstation/tabs/tabViewState";
 import type { GitFile } from "@src/types/git/types";
 
+import { loadReviewFile } from "./allChanges/loadReviewFile";
 import { useAllChangesFiles } from "./allChanges/useAllChangesFiles";
 
 /** Slot under the owning tab's view state that holds the list snapshot. */
@@ -175,6 +176,14 @@ const AllChangesView: React.FC<AllChangesViewProps> = ({
     [releaseContentForFile]
   );
 
+  const loadSearchFile = useCallback(
+    async (path: string) => {
+      const file = files.find((file) => file.path === path);
+      return file && repoPath ? loadReviewFile(file, repoPath, repoId) : null;
+    },
+    [files, repoPath, repoId]
+  );
+
   const sections = useMemo(
     () => sortedFiles.map((file) => ({ key: file.id, file })),
     [sortedFiles]
@@ -182,6 +191,9 @@ const AllChangesView: React.FC<AllChangesViewProps> = ({
 
   return (
     <DiffSectionList
+      enableReviewSearch
+      reviewSearchFiles={files}
+      loadReviewFile={loadSearchFile}
       sections={sections}
       viewMode={viewMode}
       loading={loading}
