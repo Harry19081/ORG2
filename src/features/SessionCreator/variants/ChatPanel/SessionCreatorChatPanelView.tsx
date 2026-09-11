@@ -92,6 +92,7 @@ interface SessionCreatorChatPanelViewProps {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   footerSlot?: React.ReactNode;
   headerLayout: SessionCreatorChatPanelHeaderLayout;
+  spotlight?: boolean;
   heroFooterSlot?: React.ReactNode;
   heroContent: SessionCreatorAgentHeroContent;
   heroIcon: React.ReactNode;
@@ -155,6 +156,7 @@ const SessionCreatorChatPanelView: React.FC<
   fileInputRef,
   footerSlot,
   headerLayout,
+  spotlight = false,
   heroFooterSlot,
   heroContent,
   heroIcon,
@@ -201,6 +203,7 @@ const SessionCreatorChatPanelView: React.FC<
   const sessionInfoLine = (
     <SessionInfoLine
       {...sessionInfoProps}
+      strongSurface={!spotlight}
       leadingContent={cliLaunchModeSwitch}
       dropdownDirection={
         isLaunchpadLayout ? "up" : sessionInfoProps.dropdownDirection
@@ -241,12 +244,12 @@ const SessionCreatorChatPanelView: React.FC<
         label={heroContent.name}
         active={isCategorySelectorOpen}
         danger={heroContent.danger}
-        size="md"
+        size={spotlight ? "sm" : "md"}
+        appearance={spotlight ? "default" : "bare"}
         tooltip={t("creator.switchAgent")}
         tooltipPosition="top"
         onClick={onCategoryPickerOpen}
         ariaLabel={heroContent.name}
-        appearance="bare"
       />
       <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-0.5">
         {sessionInfoLine}
@@ -267,7 +270,15 @@ const SessionCreatorChatPanelView: React.FC<
       ) : null,
     [browserElementScrollNav]
   );
-  const sessionSetupActions = !hideSessionSetupControls ? (
+  const showSessionSetupActions =
+    !hideSessionSetupControls &&
+    (!spotlight ||
+      showPinnedActionPills ||
+      browserElementRowContent ||
+      leadingActionSlot ||
+      orgMembersPanelProps ||
+      pinnedActionsContent);
+  const sessionSetupActions = showSessionSetupActions ? (
     <div
       className={`mx-auto flex w-full items-center ${CHAT_PANEL_WIDTH_TOKENS.contentMaxWidth}`}
       onContextMenu={handlePinnedActionsContextMenu}
@@ -512,7 +523,7 @@ const SessionCreatorChatPanelView: React.FC<
 
   return (
     <div
-      className={`session-creator-chat-panel-wrapper ${
+      className={`session-creator-chat-panel-wrapper ${spotlight ? "spotlight-session-creator" : ""} ${
         isLaunchpadLayout ? "h-full" : ""
       } ${
         isCenteredComposer ? "session-creator-chat-panel-centered-composer" : ""
