@@ -493,7 +493,7 @@ fn discover_codex_app_records(
 ) -> Result<CodexAppDiscovery, String> {
     let mut records = Vec::new();
     let mut external_titles = HashMap::new();
-    let mut discovered_files = HashSet::new();
+    let mut discovered_files: HashSet<String> = HashSet::new();
     for sessions_dir in sessions_dirs {
         if !sessions_dir.is_dir() {
             continue;
@@ -531,8 +531,13 @@ fn discover_codex_app_records(
             };
             let is_symlink =
                 fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.file_type().is_symlink());
-            let path = if is_symlink { canonical.clone() } else { path };
-            if !discovered_files.insert((file_stem.clone(), canonical)) {
+            let path = if is_symlink { canonical } else { path };
+            // The stem keys the cache row. A native rollout and a managed
+            // profile copy of the same session are two files with one stem;
+            // emitting both makes them alternate as the row's writer on
+            // every scan. Native roots enumerate first, so the first file
+            // per stem wins deterministically.
+            if !discovered_files.insert(file_stem.clone()) {
                 continue;
             }
             if let Some(entry) = codex_title_entry_for_file_stem(&file_stem, &title_index) {
