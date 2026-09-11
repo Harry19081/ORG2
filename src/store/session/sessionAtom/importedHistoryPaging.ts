@@ -29,24 +29,27 @@ import type { Session } from "./types";
 export function replaceImportedFirstPage(
   prev: readonly Session[],
   incoming: readonly Session[],
-  shouldReplace: (session: Session) => boolean
+  shouldReplace: (session: Session) => boolean,
+  keepSessionIds?: ReadonlySet<string>
 ): Session[] {
   const retained = prev.filter((session) => !shouldReplace(session));
-  return mergeSessions(retained, incoming);
+  return mergeSessions(retained, incoming, keepSessionIds);
 }
 
 export function replaceExternalHistorySourceFirstPage(
   prev: readonly Session[],
   incoming: readonly Session[],
   source: ImportedHistorySource,
-  preserveChildren = true
+  preserveChildren = true,
+  keepSessionIds?: ReadonlySet<string>
 ): Session[] {
   return replaceImportedFirstPage(
     prev,
     incoming,
     (session) =>
       (!preserveChildren || !session.parentSessionId) &&
-      isImportedHistorySourceSession(session.session_id, source)
+      isImportedHistorySourceSession(session.session_id, source),
+    keepSessionIds
   );
 }
 

@@ -19,8 +19,8 @@ import { isImportedHistorySession } from "@src/util/session/sessionDispatch";
 import { isPrimarySessionListSession } from "@src/util/session/sessionVisibility";
 
 import {
-  continuationLineagesForRevealedSessions,
-  isRosterSiblingOfRevealedContinuation,
+  continuationWinnerIds,
+  isHiddenContinuationSibling,
 } from "./continuationVisibility";
 import { type DateGroupKey } from "./dateGroupingHelpers";
 import { buildSessionMenuItem, separator } from "./menuItemBuilders";
@@ -190,12 +190,8 @@ export function useSessionMenuItems({
     () => createSidebarRosterMatcher(pagination),
     [pagination]
   );
-  const revealedContinuationLineages = useMemo(
-    () =>
-      continuationLineagesForRevealedSessions(
-        sortedSessions,
-        revealedSessionIds
-      ),
+  const continuationWinners = useMemo(
+    () => continuationWinnerIds(sortedSessions, revealedSessionIds),
     [revealedSessionIds, sortedSessions]
   );
 
@@ -203,10 +199,9 @@ export function useSessionMenuItems({
     () =>
       sortedSessions.filter((session) => {
         const explicitlyRevealed = revealedSessionIds.has(session.session_id);
-        const hiddenRosterSibling = isRosterSiblingOfRevealedContinuation(
+        const hiddenRosterSibling = isHiddenContinuationSibling(
           session,
-          revealedSessionIds,
-          revealedContinuationLineages
+          continuationWinners
         );
         return (
           !hiddenRosterSibling &&
@@ -224,7 +219,7 @@ export function useSessionMenuItems({
       includeExternal,
       isInSidebarRoster,
       revealedSessionIds,
-      revealedContinuationLineages,
+      continuationWinners,
       selectedOrgIds,
       sortedSessions,
     ]

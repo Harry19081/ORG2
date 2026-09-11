@@ -66,7 +66,8 @@ export function preserveImportedReplayRows(
 
 export function mergeSessions(
   prev: readonly Session[],
-  incoming: readonly Session[]
+  incoming: readonly Session[],
+  keepSessionIds: ReadonlySet<string> = EMPTY_IDS
 ): Session[] {
   if (incoming.length === 0) return prev.slice();
   const incomingMap = new Map(
@@ -85,7 +86,49 @@ export function mergeSessions(
   merged.sort((sessionA, sessionB) =>
     (sessionB.updated_at || "").localeCompare(sessionA.updated_at || "")
   );
-  return merged;
+  return pruneSupersededSiblings(merged, incoming, keepSessionIds);
+}
+
+const EMPTY_IDS: ReadonlySet<string> = new Set();
+
+/**
+ * The backend lists one row per continuation lineage: the elected winner.
+ * A row already held here that shares a lineage with a newer incoming row
+ * is a sibling the election demoted since it was loaded (a Codex resend or
+ * a Claude compact). Keeping it would list two rows for one thread until
+ * the next restart. Rows in `keepSessionIds` (the open session) survive so
+ * a deliberately opened older generation stays reachable.
+ */
+export function pruneSupersededSiblings(
+  sessions: readonly Session[],
+  incoming: readonly Session[],
+  keepSessionIds: ReadonlySet<string> = EMPTY_IDS
+): Session[] {
+  const newestIncomingByLineage = new Map<string, Session>();
+  for (const session of incoming) {
+    const lineageId = session.continuationLineageId;
+    if (!lineageId) continue;
+    const current = newestIncomingByLineage.get(lineageId);
+    if (
+      !current ||
+      (session.updated_at || "").localeCompare(current.updated_at || "") > 0
+    ) {
+      newestIncomingByLineage.set(lineageId, session);
+    }
+  }
+  if (newestIncomingByLineage.size === 0) return sessions.slice();
+  const incomingIds = new Set(incoming.map((session) => session.session_id));
+  return sessions.filter((session) => {
+    const lineageId = session.continuationLineageId;
+    if (!lineageId) return true;
+    if (incomingIds.has(session.session_id)) return true;
+    if (keepSessionIds.has(session.session_id)) return true;
+    const winner = newestIncomingByLineage.get(lineageId);
+    if (!winner) return true;
+    return (
+      (session.updated_at || "").localeCompare(winner.updated_at || "") >= 0
+    );
+  });
 }
 
 export function setPaginationFor(

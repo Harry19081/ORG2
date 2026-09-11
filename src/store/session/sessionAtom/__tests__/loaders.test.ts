@@ -86,6 +86,66 @@ describe("mergeSessions", () => {
   });
 });
 
+describe("mergeSessions superseded siblings", () => {
+  function lineageSession(
+    id: string,
+    updatedAt: string,
+    lineage: string
+  ): Session {
+    return {
+      ...makeSession(id, updatedAt),
+      continuationLineageId: lineage,
+    };
+  }
+
+  it("drops a held sibling once a newer row of its lineage arrives", () => {
+    // A Codex resend: gen1 was loaded and listed, the backend then elected
+    // gen2 and stopped listing gen1. Two rows for one thread must not stay.
+    const prev = [lineageSession("gen1", "2026-09-11T00:18:38", "thread-a")];
+    const incoming = [
+      lineageSession("gen2", "2026-09-11T00:29:51", "thread-a"),
+    ];
+    expect(
+      mergeSessions(prev, incoming).map((session) => session.session_id)
+    ).toEqual(["gen2"]);
+  });
+
+  it("keeps the open session even when it is the demoted generation", () => {
+    const prev = [lineageSession("gen1", "2026-09-11T00:18:38", "thread-a")];
+    const incoming = [
+      lineageSession("gen2", "2026-09-11T00:29:51", "thread-a"),
+    ];
+    expect(
+      mergeSessions(prev, incoming, new Set(["gen1"])).map(
+        (session) => session.session_id
+      )
+    ).toEqual(["gen2", "gen1"]);
+  });
+
+  it("keeps rows of other lineages and rows without a lineage", () => {
+    const prev = [
+      lineageSession("other", "2026-09-10T00:00:00", "thread-b"),
+      makeSession("plain", "2026-09-09T00:00:00"),
+    ];
+    const incoming = [
+      lineageSession("gen2", "2026-09-11T00:29:51", "thread-a"),
+    ];
+    expect(
+      mergeSessions(prev, incoming).map((session) => session.session_id)
+    ).toEqual(["gen2", "other", "plain"]);
+  });
+
+  it("never drops a held row that is newer than the incoming sibling", () => {
+    const prev = [lineageSession("gen2", "2026-09-11T00:29:51", "thread-a")];
+    const incoming = [
+      lineageSession("gen1", "2026-09-11T00:18:38", "thread-a"),
+    ];
+    expect(
+      mergeSessions(prev, incoming).map((session) => session.session_id)
+    ).toEqual(["gen2", "gen1"]);
+  });
+});
+
 describe("replaceExternalHistorySourceFirstPage", () => {
   const codexSource = {
     sourceId: "codex_app",
