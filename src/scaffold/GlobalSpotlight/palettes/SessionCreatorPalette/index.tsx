@@ -6,6 +6,7 @@
  * the palette (no navigation to Agent Station).
  */
 import React, { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import type { SessionLaunchSuccessInfo } from "@src/engines/SessionCore/hooks/session/useSessionCreator/useSessionLaunch/types";
 import { SessionCreatorChatPanel } from "@src/features/SessionCreator/variants";
@@ -26,6 +27,7 @@ export function SessionCreatorPalette({
   onGoBackToParent,
   asBody: _asBody,
 }: SessionCreatorPaletteProps) {
+  const { t } = useTranslation("navigation");
   const handleBack = onGoBackToParent ?? onClose;
 
   const handleSessionStart = useCallback(
@@ -40,12 +42,12 @@ export function SessionCreatorPalette({
       {
         type: "action",
         id: "new-session",
-        label: "New Session",
+        label: t("labels.newSession"),
         icon: Add01Icon,
         color: "primary",
       },
     ],
-    []
+    [t]
   );
 
   const body = (
