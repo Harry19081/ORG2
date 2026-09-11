@@ -19,7 +19,7 @@ export function refreshHarnessConnections() {
   reads.clear();
   listeners.forEach((listener) => listener());
 }
-export function readHarnessConnection(agentName: ConnectionHarness) {
+function readHarnessConnection(agentName: ConnectionHarness) {
   const pending = reads.get(agentName);
   if (pending) return pending;
   const request = rpc.agentOrgs.connections

@@ -867,7 +867,6 @@
     "original": "Configuration d’origine",
     "missingKey": "La clé sélectionnée est introuvable",
     "connection": "Connexion",
-    "choose": "Choisir une connexion enregistrée",
     "add": "Ajouter une connexion",
     "empty": "Ajoutez une clé API ou importez une connexion depuis un autre outil",
     "model": "Modèle",
@@ -898,13 +897,8 @@
     "endpoint": "Point de terminaison API",
     "authentication": "Authentification",
     "desktopScope": "Configure Claude Desktop séparément de Claude Code CLI ; quittez complètement Desktop puis rouvrez-le après application",
-    "desktopVersion": "Version installée : {{version}}",
-    "desktopCopy": "Copier depuis Claude Code CLI",
-    "desktopCopyMissing": "Configurez d’abord une connexion Claude Code CLI",
-    "desktopCopyReview": "Connexion copiée pour vérification ; testez-la et appliquez-la séparément à Desktop",
     "desktopApplied": "Configuration enregistrée — quittez complètement Claude Desktop puis rouvrez-le",
-    "desktopRestored": "Configuration précédente restaurée — quittez complètement Claude Desktop puis rouvrez-le",
-    "desktopCredentials": "Le mode direct écrit les identifiants dans un profil local à accès restreint ; supprimer la clé du coffre ne révoque pas cette copie"
+    "desktopRestored": "Configuration précédente restaurée — quittez complètement Claude Desktop puis rouvrez-le"
   },
   "claudeProfiles": {
     "new": "Nouveau profil",

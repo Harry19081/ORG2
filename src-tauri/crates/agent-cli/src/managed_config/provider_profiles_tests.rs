@@ -121,6 +121,48 @@ fn desktop_uses_native_family_tiers_exact_ids_and_default_order_even_when_ids_re
         .iter()
         .all(|m| m["name"] == "vendor/shared" && m["isFamilyDefault"] == true));
     assert_eq!(value["modelDiscoveryEnabled"], false);
+
+    // Default profiles start with empty display names; no empty label override may be written.
+    let mut unlabeled = profile("claude_desktop");
+    for entry in unlabeled.models.roles.values_mut() {
+        entry.display_name.clear();
+    }
+    let generated = desktop::generate(&BTreeMap::new(), &connection(unlabeled), None).unwrap();
+    let value: serde_json::Value = serde_json::from_str(&generated["profile"]).unwrap();
+    let models = value["inferenceModels"].as_array().unwrap();
+    assert_eq!(models.len(), 4);
+    assert!(models
+        .iter()
+        .all(|m| m.get("labelOverride").is_none() && m["anthropicFamilyTier"].is_string()));
+}
+#[test]
+fn catalog_tolerates_additive_unknown_fields_but_still_rejects_other_versions() {
+    let _lock = TEST_ENV_LOCK.get_or_init(|| Mutex::new(())).lock().unwrap();
+    let temp = tempfile::tempdir().unwrap();
+    let _home = OrgiiHomeGuard::set(&temp.path().join("orgii"));
+    let _external = ExternalHome::set(temp.path());
+    let saved = save(profile("claude_code")).unwrap();
+    let path = app_paths::cli_config_profile_manifest("claude_code")
+        .with_file_name("provider-profiles.json");
+    let mut catalog: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    catalog["futureCatalogField"] = serde_json::json!({ "nested": true });
+    catalog["profiles"][0]["futureProfileField"] = "kept by a newer ORGII".into();
+    std::fs::write(&path, serde_json::to_vec(&catalog).unwrap()).unwrap();
+    let listed = list("claude_code").unwrap();
+    assert_eq!(listed, vec![saved.clone()]);
+    // A tolerated field is dropped on the next write; known fields and revisions survive.
+    let mut renamed = saved;
+    renamed.name = "Renamed".into();
+    let renamed = save(renamed).unwrap();
+    assert_eq!(renamed.revision, 2);
+    let rewritten: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert!(rewritten.get("futureCatalogField").is_none());
+    assert_eq!(rewritten["version"], 1);
+    catalog["version"] = 2.into();
+    std::fs::write(&path, serde_json::to_vec(&catalog).unwrap()).unwrap();
+    assert!(list("claude_code").is_err());
 }
 #[test]
 fn invalid_profiles_are_rejected_before_persistence() {

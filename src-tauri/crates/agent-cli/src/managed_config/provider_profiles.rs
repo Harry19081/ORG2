@@ -2,8 +2,11 @@
 use super::{claude_models::ClaudeModels, file_io, manifest, target_lock};
 use serde::{Deserialize, Serialize};
 
+/// Persisted in the version-1 catalog and accepted from the RPC layer. Unknown
+/// fields are tolerated so an additive v1 field written by a newer ORGII does not
+/// hide every profile after a downgrade; `validate` still checks the known fields.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase")]
 pub struct ClaudeProviderProfile {
     pub id: String,
     pub revision: u32,
@@ -66,7 +69,6 @@ fn path(target: &str) -> std::path::PathBuf {
     app_paths::cli_config_profile_manifest(target).with_file_name("provider-profiles.json")
 }
 #[derive(Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 struct Catalog {
     version: u32,
     profiles: Vec<ClaudeProviderProfile>,

@@ -105,11 +105,16 @@ impl ClaudeModels {
         roles
             .into_iter()
             .map(|(role, entry)| {
-                serde_json::json!({
-                    "name": entry.model, "labelOverride": entry.display_name,
+                let mut value = serde_json::json!({
+                    "name": entry.model,
                     "supports1m": entry.context_1m, "prefer1m": entry.context_1m,
                     "anthropicFamilyTier": role.as_str(), "isFamilyDefault": true,
-                })
+                });
+                // Mirror the CLI writer: an empty display name means "no override".
+                if !entry.display_name.is_empty() {
+                    value["labelOverride"] = entry.display_name.clone().into();
+                }
+                value
             })
             .collect()
     }

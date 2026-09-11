@@ -14,3 +14,11 @@
 | 10 Resolver symmetry      | Endpoint/auth overrides are Desktop-scoped and included in receipt revision; CLI continues to resolve the vault defaults; key eligibility is separate from incomplete endpoint/model editing |
 
 All ten layers reviewed. No unrelated architecture cleanup was included. Existing manifest JSON requires no migration; rollback is restore-before-downgrade. Windows policy reads add only an existing locked dependency version. Native configuration-load and Windows runtime evidence remain unverified and are explicitly documented.
+
+Removed in review: the Desktop branch of the shared `HarnessConnectionEditor`
+(copy-from-CLI, manual model ID, `DesktopConnectionFields`) was unreachable once
+Settings routed Claude Desktop to `ClaudeProfileEditor`, and was deleted. Layers 2
+and 9 now read as: Desktop is configured only through the profile editor; the shared
+quick editor is mounted for Claude Code CLI and Codex only. The Windows 1P
+`claude_desktop_config.json` target was moved to the roaming application-data root
+(`%APPDATA%`) per Anthropic's documentation; Windows remains unexercised.

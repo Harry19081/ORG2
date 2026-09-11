@@ -945,7 +945,6 @@
     "original": "Original setup",
     "missingKey": "Selected key is missing",
     "connection": "Connection",
-    "choose": "Choose a saved connection",
     "add": "Add connection",
     "empty": "Add an API key or import a connection from another tool",
     "model": "Model",
@@ -976,13 +975,8 @@
     "endpoint": "API endpoint",
     "authentication": "Authentication",
     "desktopScope": "Configures Claude Desktop separately from Claude Code CLI; fully quit and reopen Desktop after applying",
-    "desktopVersion": "Installed version: {{version}}",
-    "desktopCopy": "Copy from Claude Code CLI",
-    "desktopCopyMissing": "Configure a Claude Code CLI connection first",
-    "desktopCopyReview": "Connection copied for review; test and apply it separately to Desktop",
     "desktopApplied": "Desktop configuration saved — fully quit and reopen Claude Desktop",
-    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop",
-    "desktopCredentials": "Direct mode exports the selected credential to a local Desktop profile with restricted file access; deleting the vault key does not revoke that export"
+    "desktopRestored": "Previous Desktop configuration restored — fully quit and reopen Claude Desktop"
   },
   "claudeProfiles": {
     "new": "New profile",

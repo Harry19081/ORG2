@@ -867,7 +867,6 @@
     "original": "Configuración original",
     "missingKey": "Falta la clave seleccionada",
     "connection": "Conexión",
-    "choose": "Elegir una conexión guardada",
     "add": "Añadir conexión",
     "empty": "Añade una clave API o importa una conexión desde otra herramienta",
     "model": "Modelo",
@@ -898,13 +897,8 @@
     "endpoint": "Endpoint de API",
     "authentication": "Autenticación",
     "desktopScope": "Configura Claude Desktop por separado de Claude Code CLI; cierra Desktop por completo y vuelve a abrirlo después de aplicar",
-    "desktopVersion": "Versión instalada: {{version}}",
-    "desktopCopy": "Copiar de Claude Code CLI",
-    "desktopCopyMissing": "Primero configura una conexión de Claude Code CLI",
-    "desktopCopyReview": "Conexión copiada para revisar; pruébala y aplícala por separado a Desktop",
     "desktopApplied": "Configuración guardada — cierra Claude Desktop por completo y vuelve a abrirlo",
-    "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo",
-    "desktopCredentials": "El modo directo guarda las credenciales en un perfil local con acceso restringido; eliminar la clave de la bóveda no revoca esa copia"
+    "desktopRestored": "Configuración anterior restaurada — cierra Claude Desktop por completo y vuelve a abrirlo"
   },
   "claudeProfiles": {
     "new": "Nuevo perfil",

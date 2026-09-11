@@ -15,18 +15,22 @@ pub(super) fn targets() -> Result<Vec<(&'static str, String, PathBuf)>, String> 
     if !supported() {
         return Err("Claude Desktop connections currently support macOS and Windows".into());
     }
-    let root = app_paths::external_history_data_local_dir();
-    let library = root.join("Claude-3p/configLibrary");
+    // Desktop's normal config lives in Electron `userData` (roaming on Windows,
+    // `%APPDATA%\Claude`), while the 3P library is documented under the local
+    // application-data root (`%LOCALAPPDATA%\Claude-3p`). Both roots coincide on macOS.
+    let roaming = app_paths::external_history_data_dir();
+    let local = app_paths::external_history_data_local_dir();
+    let library = local.join("Claude-3p/configLibrary");
     Ok(vec![
         (
             "desktop",
             "desktop.json".into(),
-            root.join("Claude/claude_desktop_config.json"),
+            roaming.join("Claude/claude_desktop_config.json"),
         ),
         (
             "third_party",
             "third-party.json".into(),
-            root.join("Claude-3p/claude_desktop_config.json"),
+            local.join("Claude-3p/claude_desktop_config.json"),
         ),
         (
             "profile",

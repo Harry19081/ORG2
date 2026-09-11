@@ -945,7 +945,6 @@
     "original": "原始配置",
     "missingKey": "所选密钥已不存在",
     "connection": "连接",
-    "choose": "选择已保存的连接",
     "add": "添加连接",
     "empty": "添加 API 密钥或从其他工具导入连接",
     "model": "模型",
@@ -976,13 +975,8 @@
     "endpoint": "API 端点",
     "authentication": "认证方式",
     "desktopScope": "单独配置 Claude Desktop，不影响 Claude Code CLI；应用后需完全退出并重新打开桌面应用",
-    "desktopVersion": "已安装版本：{{version}}",
-    "desktopCopy": "从 Claude Code CLI 复制",
-    "desktopCopyMissing": "请先配置 Claude Code CLI 连接",
-    "desktopCopyReview": "连接已复制，请检查并单独测试、应用到桌面应用",
     "desktopApplied": "桌面配置已保存，请完全退出并重新打开 Claude Desktop",
-    "desktopRestored": "已恢复之前的桌面配置，请完全退出并重新打开 Claude Desktop",
-    "desktopCredentials": "直连模式会将所选凭据写入限制文件访问权限的本地桌面配置；删除密钥库中的密钥不会撤销已导出的凭据"
+    "desktopRestored": "已恢复之前的桌面配置，请完全退出并重新打开 Claude Desktop"
   },
   "claudeProfiles": {
     "new": "新建配置",

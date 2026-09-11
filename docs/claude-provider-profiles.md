@@ -7,7 +7,8 @@ Changing a profile never changes the shared key's endpoint or model catalog.
 
 ## Set up and switch
 
-1. Choose the app and select **New profile**, or **Copy current connection**.
+1. Choose the app and select **New profile**, or **Copy current connection**,
+   which seeds a draft from the connection currently applied to that same app.
 2. Name the profile, select an API key, and enter the Anthropic Messages endpoint.
    Select either Bearer or x-api-key authentication explicitly.
 3. Set a request model ID for Sonnet, Opus, Fable, and Haiku. To use one model,
@@ -20,7 +21,11 @@ Changing a profile never changes the shared key's endpoint or model catalog.
 A CLI Subagent override is optional; leaving it empty lets Claude Code inherit
 its main model. Desktop does not expose a separate Subagent control. Model
 mapping uses native configuration and does not require ORGII to remain running.
-The existing Codex editor and CLI-detail quick/proxy routing remain available.
+Settings → App connections offers only profiles for Claude Code CLI and Claude
+Desktop; the Codex editor stays there. The Claude Code single-model quick editor,
+including its ORGII-managed proxy routing, remains in the agent detail view. An
+existing quick connection applied to Claude Code still shows its key name in
+Settings; editing it there means creating or copying a profile.
 
 The selected editing card and the **Active** badge are separate. Saving edits to
 an active profile shows **Saved changes pending** until those edits are tested
@@ -75,6 +80,9 @@ ORGII native-config manifest. It contains key references, never decrypted keys.
 There are at most 64 profiles per app. Saving uses an atomic replacement and a
 revision check; concurrent edits must reload. The applied profile snapshot is
 stored in the existing transaction's manifest alongside the native file hashes.
+Unknown fields in a version-1 catalog are tolerated on read (and dropped on the
+next write) so an additive field from a newer ORGII does not hide existing
+profiles after a downgrade; any other `version` is rejected.
 
 Existing manifests without a profile snapshot continue to work. No database
 migration is involved. **Restore original setup** uses the original transactional

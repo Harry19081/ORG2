@@ -867,7 +867,6 @@
     "original": "Özgün kurulum",
     "missingKey": "Seçilen anahtar bulunamadı",
     "connection": "Bağlantı",
-    "choose": "Kayıtlı bağlantı seçin",
     "add": "Bağlantı ekle",
     "empty": "API anahtarı ekleyin veya başka bir araçtan bağlantı içe aktarın",
     "model": "Model",
@@ -898,13 +897,8 @@
     "endpoint": "API uç noktası",
     "authentication": "Kimlik doğrulama",
     "desktopScope": "Claude Desktop, Claude Code CLI’den ayrı yapılandırılır; uyguladıktan sonra Desktop’ı tamamen kapatıp yeniden açın",
-    "desktopVersion": "Yüklü sürüm: {{version}}",
-    "desktopCopy": "Claude Code CLI’den kopyala",
-    "desktopCopyMissing": "Önce bir Claude Code CLI bağlantısı yapılandırın",
-    "desktopCopyReview": "Bağlantı inceleme için kopyalandı; Desktop için ayrıca test edip uygulayın",
     "desktopApplied": "Yapılandırma kaydedildi — Claude Desktop’ı tamamen kapatıp yeniden açın",
-    "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın",
-    "desktopCredentials": "Doğrudan mod, kimlik bilgilerini erişimi kısıtlı yerel profile yazar; kasadaki anahtarı silmek dışa aktarılan kopyayı iptal etmez"
+    "desktopRestored": "Önceki yapılandırma geri yüklendi — Claude Desktop’ı tamamen kapatıp yeniden açın"
   },
   "claudeProfiles": {
     "new": "Yeni profil",

@@ -867,7 +867,6 @@
     "original": "Thiết lập ban đầu",
     "missingKey": "Không tìm thấy khóa đã chọn",
     "connection": "Kết nối",
-    "choose": "Chọn kết nối đã lưu",
     "add": "Thêm kết nối",
     "empty": "Thêm khóa API hoặc nhập kết nối từ công cụ khác",
     "model": "Mô hình",
@@ -898,13 +897,8 @@
     "endpoint": "Điểm cuối API",
     "authentication": "Xác thực",
     "desktopScope": "Cấu hình Claude Desktop riêng với Claude Code CLI; thoát hoàn toàn rồi mở lại Desktop sau khi áp dụng",
-    "desktopVersion": "Phiên bản đã cài: {{version}}",
-    "desktopCopy": "Sao chép từ Claude Code CLI",
-    "desktopCopyMissing": "Hãy cấu hình kết nối Claude Code CLI trước",
-    "desktopCopyReview": "Đã sao chép kết nối để xem lại; kiểm tra và áp dụng riêng cho Desktop",
     "desktopApplied": "Đã lưu cấu hình — thoát hoàn toàn rồi mở lại Claude Desktop",
-    "desktopRestored": "Đã khôi phục cấu hình trước — thoát hoàn toàn rồi mở lại Claude Desktop",
-    "desktopCredentials": "Chế độ trực tiếp ghi thông tin xác thực vào hồ sơ cục bộ có quyền truy cập hạn chế; xóa khóa trong kho không thu hồi bản đã xuất"
+    "desktopRestored": "Đã khôi phục cấu hình trước — thoát hoàn toàn rồi mở lại Claude Desktop"
   },
   "claudeProfiles": {
     "new": "Hồ sơ mới",

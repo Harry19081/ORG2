@@ -867,7 +867,6 @@
     "original": "Pierwotna konfiguracja",
     "missingKey": "Brak wybranego klucza",
     "connection": "Połączenie",
-    "choose": "Wybierz zapisane połączenie",
     "add": "Dodaj połączenie",
     "empty": "Dodaj klucz API lub zaimportuj połączenie z innego narzędzia",
     "model": "Model",
@@ -898,13 +897,8 @@
     "endpoint": "Endpoint API",
     "authentication": "Uwierzytelnianie",
     "desktopScope": "Konfiguruje Claude Desktop niezależnie od Claude Code CLI; po zastosowaniu zamknij całkowicie aplikację i otwórz ją ponownie",
-    "desktopVersion": "Zainstalowana wersja: {{version}}",
-    "desktopCopy": "Kopiuj z Claude Code CLI",
-    "desktopCopyMissing": "Najpierw skonfiguruj połączenie Claude Code CLI",
-    "desktopCopyReview": "Skopiowano połączenie do sprawdzenia; przetestuj i zastosuj je osobno w Desktop",
     "desktopApplied": "Zapisano konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
-    "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie",
-    "desktopCredentials": "Tryb bezpośredni zapisuje dane uwierzytelniające w lokalnym profilu z ograniczonym dostępem; usunięcie klucza ze skarbca nie unieważnia tej kopii"
+    "desktopRestored": "Przywrócono poprzednią konfigurację — zamknij całkowicie Claude Desktop i otwórz ponownie"
   },
   "claudeProfiles": {
     "new": "Nowy profil",

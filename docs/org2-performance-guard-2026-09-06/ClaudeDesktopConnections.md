@@ -11,3 +11,8 @@
 Lifecycle coverage: active/idle has no newly recurring tasks; unmount discards late actions/cancels tests; hidden focus does not refresh; endpoint/auth changes invalidate receipts; direct profiles have no running proxy dependency. Offline test failures use the existing bounded request timeout. Cross-target restore/apply and missing-file restoration use isolated filesystem fixtures. Account/org sync and transcript ingestion are outside this feature.
 
 Performance verdict: blocked for native runtime measurements. Automated lifecycle invariants are covered, but visible/hidden CPU/RSS measurements, Windows subprocess behavior, and native Desktop Chat/Cowork/Code sessions were not exercised. No performance improvement is claimed. Computer control was not authorized and was not used.
+
+Removed in review: the Desktop quick-editor branch and its invalidation tests
+were deleted as unreachable; receipt invalidation for Desktop is now covered by
+the profile editor tests (`ClaudeProfileEditor.test.ts`). The Windows executable
+metadata probe additionally suppresses its console window via `hide_console`.

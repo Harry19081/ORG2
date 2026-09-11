@@ -30,10 +30,16 @@ pub(super) async fn installation() -> Result<Option<String>, String> {
     }
     #[cfg(windows)]
     {
-        let path = app_paths::external_history_data_local_dir().join("Claude/Claude.exe");
-        if !path.is_file() {
+        // Squirrel installs to `%LOCALAPPDATA%\AnthropicClaude\claude.exe`; keep the
+        // older `Claude\Claude.exe` layout as a fallback. First existing file wins.
+        let root = app_paths::external_history_data_local_dir();
+        let Some(path) = ["AnthropicClaude/claude.exe", "Claude/Claude.exe"]
+            .into_iter()
+            .map(|relative| root.join(relative))
+            .find(|candidate| candidate.is_file())
+        else {
             return Ok(None);
-        }
+        };
         let mut command = tokio::process::Command::new("powershell.exe");
         command
             .kill_on_drop(true)
@@ -44,6 +50,7 @@ pub(super) async fn installation() -> Result<Option<String>, String> {
                 "(Get-Item -LiteralPath $env:ORGII_DESKTOP_EXECUTABLE).VersionInfo.ProductVersion",
             ])
             .env("ORGII_DESKTOP_EXECUTABLE", path);
+        app_platform::hide_console(command.as_std_mut());
         let output = tokio::time::timeout(std::time::Duration::from_secs(5), command.output())
             .await
             .map_err(|_| "Desktop version lookup timed out")?
@@ -59,13 +66,33 @@ pub(super) async fn installation() -> Result<Option<String>, String> {
     Ok(None)
 }
 
+/// The local-profile schema was verified on Desktop 1.46388.x. Accept 1.x builds
+/// from that release onward; a different major line may change the schema, so it
+/// is reported rather than silently written. Each segment's leading digits are
+/// compared so a `-beta` style suffix does not fail as unparseable.
 pub(super) fn validate_version(version: &str) -> Result<(), String> {
     let numbers = version
+        .trim()
         .split('.')
-        .map(str::parse::<u32>)
+        .map(|segment| {
+            let digits = segment.trim_start_matches(|c: char| !c.is_ascii_digit());
+            let digits = &digits[..digits
+                .find(|c: char| !c.is_ascii_digit())
+                .unwrap_or(digits.len())];
+            digits.parse::<u32>()
+        })
         .collect::<Result<Vec<_>, _>>()
         .map_err(|_| "Cannot verify this Claude Desktop version")?;
-    if numbers.len() != 3 || numbers.as_slice() < [1, 46388, 1].as_slice() {
+    if numbers.len() != 3 {
+        return Err("Cannot verify this Claude Desktop version".into());
+    }
+    if numbers[0] != 1 {
+        return Err(format!(
+            "Claude Desktop {} uses an unverified configuration format; ORGII supports 1.46388.1 and newer 1.x releases",
+            version.trim()
+        ));
+    }
+    if numbers.as_slice() < [1, 46388, 1].as_slice() {
         return Err(
             "Update Claude Desktop to 1.46388.1 or newer for this configuration format".into(),
         );
@@ -117,11 +144,39 @@ mod tests {
     use super::*;
     #[test]
     fn only_verified_schema_versions_and_direct_model_ids_are_accepted() {
-        for version in ["1.46388.1", "1.46388.4"] {
+        for version in [
+            "1.46388.1",
+            "1.46388.4",
+            "1.46388.1-beta",
+            "1.99999.0",
+            " 1.46388.4\n",
+        ] {
             validate_version(version).unwrap();
         }
-        for version in ["1.0.0", "1.46388", "1.46388.1-beta"] {
-            assert!(validate_version(version).is_err());
+        for version in ["1.0.0", "1.46387.9", "1.46388.0-rc1"] {
+            assert_eq!(
+                validate_version(version).unwrap_err(),
+                "Update Claude Desktop to 1.46388.1 or newer for this configuration format"
+            );
+        }
+        for version in ["2.0.0", "0.46388.1", "2.46388.1-beta"] {
+            let error = validate_version(version).unwrap_err();
+            assert!(error.contains(version), "{error}");
+            assert!(error.contains("unverified"), "{error}");
+        }
+        for version in [
+            "",
+            "beta",
+            "1.x.1",
+            "1.46388",
+            "1.46388.1.2",
+            "1.46388.1-beta.2",
+            "1..1",
+        ] {
+            assert_eq!(
+                validate_version(version).unwrap_err(),
+                "Cannot verify this Claude Desktop version"
+            );
         }
         for model in [
             "claude-sonnet-5",
