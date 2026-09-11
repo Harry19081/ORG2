@@ -902,8 +902,6 @@
     "failedToLoadCommitDiff": "Не удалось загрузить diff коммита",
     "loadingHistory": "Загрузка истории...",
     "commitMessage": "Сообщение коммита",
-    "filterChanges": "Фильтровать изменения...",
-    "searchFiles": "Поиск файлов...",
     "searchInRepository": "Поиск в репо...",
     "enterUrlOrSearch": "Введите URL или поиск...",
     "filterByUrl": "Фильтровать по URL...",
@@ -915,7 +913,6 @@
     "connectionError": "Ошибка подключения",
     "noConnections": "Добавьте подключение, чтобы начать",
     "selectRowsToDelete": "Выберите строки для удаления",
-    "filterFiles": "Фильтр файлов...",
     "filterSearch": "Фильтр поиска...",
     "noChanges": "Нет изменений",
     "noMatchingFiles": "Нет совпадающих файлов",
@@ -1027,8 +1024,6 @@
     "linesSelected": "{{count}} lines selected",
     "charsSelected": "{{count}} selected",
     "nLines": "{{count}} lines",
-    "hideFilter": "Hide filter",
-    "filterFilesAction": "Filter files",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
@@ -1979,7 +1974,6 @@
     "scope": {
       "main": "Основной checkout",
       "worktrees": "Worktree",
-      "searchPlaceholder": "Фильтр worktree…",
       "switchScopeActive": "Сменить область Source Control: {{repo}}, {{branch}}"
     }
   },

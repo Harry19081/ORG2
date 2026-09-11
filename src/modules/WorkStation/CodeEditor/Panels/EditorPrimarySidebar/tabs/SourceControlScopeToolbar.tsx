@@ -287,8 +287,8 @@ export function SourceControlScopeToolbar({
           type="search"
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder={t("sourceControl.scope.searchPlaceholder")}
-          ariaLabel={t("sourceControl.scope.searchPlaceholder")}
+          placeholder={t("common.searchPlaceholder")}
+          ariaLabel={t("common.searchPlaceholder")}
         />
       ) : null}
       <div className={DROPDOWN_CLASSES.optionsContainerScrollbar}>

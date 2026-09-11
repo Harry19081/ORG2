@@ -902,8 +902,6 @@
     "failedToLoadCommitDiff": "Falha ao carregar diff do commit",
     "loadingHistory": "Carregando histórico...",
     "commitMessage": "Mensagem de commit",
-    "filterChanges": "Filtrar alterações...",
-    "searchFiles": "Pesquisar arquivos...",
     "searchInRepository": "Pesquisar no Repo...",
     "enterUrlOrSearch": "Insira a URL ou pesquise...",
     "filterByUrl": "Filtrar por URL...",
@@ -915,7 +913,6 @@
     "connectionError": "Erro de conexão",
     "noConnections": "Adicione uma conexão para começar",
     "selectRowsToDelete": "Selecione linhas para excluir",
-    "filterFiles": "Filtrar arquivos...",
     "filterSearch": "Filtrar pesquisa...",
     "noChanges": "Sem alterações",
     "noMatchingFiles": "Nenhum arquivo correspondente",
@@ -1027,8 +1024,6 @@
     "linesSelected": "{{count}} linhas selecionadas",
     "charsSelected": "{{count}} selecionados",
     "nLines": "{{count}} linhas",
-    "hideFilter": "Ocultar filtro",
-    "filterFilesAction": "Filtrar arquivos",
     "switchToTreeView": "Alternar para visualização em árvore",
     "switchToListView": "Alternar para visualização em lista",
     "discardChanges": "Descartar alterações",
@@ -1979,7 +1974,6 @@
     "scope": {
       "main": "Checkout principal",
       "worktrees": "Worktrees",
-      "searchPlaceholder": "Filtrar worktrees…",
       "switchScopeActive": "Alternar escopo do source control: {{repo}}, {{branch}}"
     }
   },

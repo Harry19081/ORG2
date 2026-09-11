@@ -902,8 +902,6 @@
     "failedToLoadCommitDiff": "加載提交差異失敗",
     "loadingHistory": "加載歷史記錄中...",
     "commitMessage": "提交消息",
-    "filterChanges": "篩選變更...",
-    "searchFiles": "搜索文件...",
     "searchInRepository": "在倉庫中搜索...",
     "enterUrlOrSearch": "輸入 URL 或搜索...",
     "filterByUrl": "按 URL 篩選...",
@@ -915,7 +913,6 @@
     "connectionError": "連接錯誤",
     "noConnections": "添加連接以開始",
     "selectRowsToDelete": "選擇要刪除的行",
-    "filterFiles": "篩選文件...",
     "filterSearch": "篩選搜索...",
     "noChanges": "無變更",
     "noMatchingFiles": "沒有匹配的文件",
@@ -1027,8 +1024,6 @@
     "linesSelected": "已選擇 {{count}} 行",
     "charsSelected": "已選擇 {{count}} 個字符",
     "nLines": "{{count}} 行",
-    "hideFilter": "隱藏篩選",
-    "filterFilesAction": "篩選文件",
     "switchToTreeView": "切換到樹形視圖",
     "switchToListView": "切換到列表視圖",
     "discardChanges": "丟棄更改",
@@ -1979,7 +1974,6 @@
     "scope": {
       "main": "主要檢出",
       "worktrees": "Worktree",
-      "searchPlaceholder": "篩選 worktree…",
       "switchScopeActive": "切換原始檔控制範圍：{{repo}}，{{branch}}"
     }
   },

@@ -902,8 +902,6 @@
     "failedToLoadCommitDiff": "Commit diff yüklenemedi",
     "loadingHistory": "Geçmiş yükleniyor...",
     "commitMessage": "Commit mesajı",
-    "filterChanges": "Değişiklikleri filtrele...",
-    "searchFiles": "Dosyaları ara...",
     "searchInRepository": "Depoda ara...",
     "enterUrlOrSearch": "URL girin veya arayın...",
     "filterByUrl": "URL'ye göre filtrele...",
@@ -915,7 +913,6 @@
     "connectionError": "Bağlantı hatası",
     "noConnections": "Başlamak için bir bağlantı ekleyin",
     "selectRowsToDelete": "Silinecek satırları seçin",
-    "filterFiles": "Dosyaları filtrele...",
     "filterSearch": "Aramayı filtrele...",
     "noChanges": "Değişiklik yok",
     "noMatchingFiles": "Eşleşen dosya yok",
@@ -1027,8 +1024,6 @@
     "linesSelected": "{{count}} lines selected",
     "charsSelected": "{{count}} selected",
     "nLines": "{{count}} lines",
-    "hideFilter": "Hide filter",
-    "filterFilesAction": "Filter files",
     "switchToTreeView": "Switch to tree view",
     "switchToListView": "Switch to list view",
     "discardChanges": "Discard Changes",
@@ -1979,7 +1974,6 @@
     "scope": {
       "main": "Ana checkout",
       "worktrees": "Worktree'ler",
-      "searchPlaceholder": "Worktree'leri filtrele…",
       "switchScopeActive": "Kaynak denetimi kapsamını değiştir: {{repo}}, {{branch}}"
     }
   },
