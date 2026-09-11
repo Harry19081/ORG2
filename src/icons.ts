@@ -39,6 +39,7 @@ export { default as AnalyticsDownIcon } from "@hugeicons/core-free-icons/Analyti
 export { default as AnalyticsUpIcon } from "@hugeicons/core-free-icons/AnalyticsUpIcon";
 export { default as AppWindowIcon } from "@hugeicons/core-free-icons/AppWindowIcon";
 export { default as AppWindowMacIcon } from "@hugeicons/core-free-icons/AppWindowMacIcon";
+export { default as Archive03Icon } from "@hugeicons/core-free-icons/Archive03Icon";
 export { default as ArchiveArrowUpIcon } from "@hugeicons/core-free-icons/ArchiveArrowUpIcon";
 export { default as ArchiveIcon } from "@hugeicons/core-free-icons/ArchiveIcon";
 export { default as ArrangeByLettersZAIcon } from "@hugeicons/core-free-icons/ArrangeByLettersZAIcon";

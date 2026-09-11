@@ -158,7 +158,7 @@ export interface FileHeaderProps {
    * strip for that host instead of rendering inline. Used by both My Station
    * panes (`code` / `data` / `browser` / `project`) and Agent Station's
    * simulator replay views (`simulator`) so the breadcrumb / toolbar always
-   * lives in the 40px shell header rather than as a duplicate strip below
+   * lives in the 36px shell header rather than as a duplicate strip below
    * the tab bar.
    */
   publishToHost?: WorkstationTabHeaderHost;
@@ -166,7 +166,7 @@ export interface FileHeaderProps {
    * Whether this header is the one that should claim the global slot.
    * Single-pane layouts pass `true`; reserved for cases where multiple
    * `FileHeader` instances render concurrently (e.g. a preview) and only
-   * one should publish to the global 40px strip.
+   * one should publish to the global 36px strip.
    */
   publishEnabled?: boolean;
 }
