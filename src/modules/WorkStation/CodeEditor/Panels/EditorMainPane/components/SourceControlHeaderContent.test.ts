@@ -8,8 +8,13 @@ import type { WorkStationTab } from "@src/store/workstation/tabs";
 import { SourceControlHeaderContent } from "./SourceControlHeaderContent";
 
 vi.mock("@src/components/Button", () => ({
-  default: ({ title }: { title?: string }) =>
-    createElement("button", { "data-title": title }),
+  default: ({
+    title,
+    "aria-label": label,
+  }: {
+    title?: string;
+    "aria-label"?: string;
+  }) => createElement("button", { "data-title": title, "aria-label": label }),
 }));
 
 vi.mock("@src/components/TabPill", () => ({
@@ -69,7 +74,7 @@ describe("SourceControlHeaderContent diff view controls", () => {
   it("shows the shared unified/split control in All Changes", () => {
     const markup = renderHeader("all-changes");
 
-    expect(markup).toContain('data-title="workstation.switchToUnifiedDiff"');
+    expect(markup).toContain('aria-label="workstation.switchToUnifiedDiff"');
     expect(markup).not.toContain('data-tabs="unified,split"');
   });
 

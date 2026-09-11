@@ -894,6 +894,7 @@
     "noSessionsFound": "未找到 Session",
     "typeToSearchFiles": "輸入以搜索文件...",
     "selectFileToViewChanges": "選擇文件以查看變更",
+    "selectSidebarFileToViewChanges": "在側邊欄選擇檔案",
     "failedToLoadHistory": "加載歷史記錄失敗",
     "noGitHistory": "暫無 Git 歷史記錄",
     "noCommitHistory": "未找到提交記錄",

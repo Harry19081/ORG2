@@ -726,6 +726,7 @@
     "noSessionsFound": "未找到 Session",
     "typeToSearchFiles": "输入以搜索文件...",
     "selectFileToViewChanges": "选择文件以查看变更",
+    "selectSidebarFileToViewChanges": "在侧边栏选择文件",
     "failedToLoadHistory": "加载历史记录失败",
     "noGitHistory": "暂无 Git 历史记录",
     "noCommitHistory": "未找到提交记录",

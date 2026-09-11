@@ -894,6 +894,7 @@
     "noSessionsFound": "Không tìm thấy Session nào",
     "typeToSearchFiles": "Nhập để tìm kiếm tệp...",
     "selectFileToViewChanges": "Chọn tệp để xem thay đổi",
+    "selectSidebarFileToViewChanges": "Chọn tệp trong thanh bên",
     "failedToLoadHistory": "Không thể tải lịch sử",
     "noGitHistory": "Không có lịch sử Git",
     "noCommitHistory": "Không tìm thấy commit",

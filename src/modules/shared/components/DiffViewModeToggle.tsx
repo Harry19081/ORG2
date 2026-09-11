@@ -2,11 +2,12 @@ import type { TFunction } from "i18next";
 import React from "react";
 
 import Button from "@src/components/Button";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import { DIFF_STATS, HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import { HugeiconsIcon, LayoutTwoColumnIcon } from "@src/icons";
 import type { DiffViewMode } from "@src/types/git/types";
 
-// Retain the Hugeicons outline and add theme-aware deletion/addition panels.
+// Keep the outline in the inherited toolbar color and tint the diff panels.
 const splitDiffIcon: typeof LayoutTwoColumnIcon = [
   ...LayoutTwoColumnIcon,
   [
@@ -93,23 +94,24 @@ export function DiffViewModeToggle({
       : t("workstation.switchToSplitDiff", "Switch to split diff");
 
   return (
-    <Button
-      htmlType="button"
-      variant="tertiary"
-      size="small"
-      iconOnly
-      className="shrink-0"
-      title={label}
-      aria-label={label}
-      onClick={() => onChange(nextMode)}
-      icon={
-        <HugeiconsIcon
-          icon={viewMode === "split" ? splitDiffIcon : unifiedDiffIcon}
-          size={HEADER_ICON_SIZE.md}
-          strokeWidth={1.75}
-          aria-hidden="true"
-        />
-      }
-    />
+    <ToolbarTooltip label={label}>
+      <Button
+        htmlType="button"
+        variant="tertiary"
+        size="small"
+        iconOnly
+        className="shrink-0"
+        aria-label={label}
+        onClick={() => onChange(nextMode)}
+        icon={
+          <HugeiconsIcon
+            icon={viewMode === "split" ? splitDiffIcon : unifiedDiffIcon}
+            size={HEADER_ICON_SIZE.md}
+            strokeWidth={1.5}
+            aria-hidden="true"
+          />
+        }
+      />
+    </ToolbarTooltip>
   );
 }

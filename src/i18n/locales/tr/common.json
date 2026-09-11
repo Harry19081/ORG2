@@ -894,6 +894,7 @@
     "noSessionsFound": "Session bulunamadı",
     "typeToSearchFiles": "Dosyaları aramak için yazın...",
     "selectFileToViewChanges": "Değişiklikleri görmek için bir dosya seçin",
+    "selectSidebarFileToViewChanges": "Kenar çubuğundan dosya seçin",
     "failedToLoadHistory": "Geçmiş yüklenemedi",
     "noGitHistory": "Git geçmişi mevcut değil",
     "noCommitHistory": "Commit bulunamadı",

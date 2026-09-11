@@ -894,6 +894,7 @@
     "noSessionsFound": "Sessionが見つかりません",
     "typeToSearchFiles": "ファイルを検索するには入力...",
     "selectFileToViewChanges": "ファイルを選択して変更を表示",
+    "selectSidebarFileToViewChanges": "サイドバーでファイルを選択",
     "failedToLoadHistory": "履歴の読み込みに失敗しました",
     "noGitHistory": "Git 履歴がありません",
     "noCommitHistory": "コミットが見つかりません",

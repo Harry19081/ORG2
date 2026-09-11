@@ -894,6 +894,7 @@
     "noSessionsFound": "Session을 찾을 수 없습니다",
     "typeToSearchFiles": "파일을 검색하려면 입력...",
     "selectFileToViewChanges": "변경사항을 보려면 파일을 선택하세요",
+    "selectSidebarFileToViewChanges": "사이드바에서 파일 선택",
     "failedToLoadHistory": "기록 로드 실패",
     "noGitHistory": "Git 기록이 없습니다",
     "noCommitHistory": "커밋을 찾을 수 없습니다",
