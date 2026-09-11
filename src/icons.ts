@@ -422,6 +422,7 @@ export { default as TriangleAlertIcon } from "@hugeicons/core-free-icons/Triangl
 export { default as TwentyFourHoursClockIcon } from "@hugeicons/core-free-icons/TwentyFourHoursClockIcon";
 export { default as TypeIcon } from "@hugeicons/core-free-icons/TypeIcon";
 export { default as Undo02Icon } from "@hugeicons/core-free-icons/Undo02Icon";
+export { default as Undo03Icon } from "@hugeicons/core-free-icons/Undo03Icon";
 export { default as UnfoldMoreIcon } from "@hugeicons/core-free-icons/UnfoldMoreIcon";
 export { default as Unlink02Icon } from "@hugeicons/core-free-icons/Unlink02Icon";
 export { default as UnplugIcon } from "@hugeicons/core-free-icons/UnplugIcon";

@@ -15,7 +15,7 @@ import {
   HugeiconsIcon,
   Loading03Icon,
   Tick01Icon,
-  Undo02Icon,
+  Undo03Icon,
 } from "@src/icons";
 import { HUMANTOOLS_TEXT_KEYS } from "@src/modules/WorkStation/shared/textTokens";
 
@@ -74,8 +74,8 @@ const FloatingBarUnsaved: React.FC<UnsavedChangesBarProps> = memo(
             iconOnly
             icon={
               <HugeiconsIcon
-                icon={Undo02Icon}
-                data-icon="undo-2"
+                icon={Undo03Icon}
+                data-icon="undo-3"
                 size={HEADER_ICON_SIZE.sm}
                 strokeWidth={1.75}
               />

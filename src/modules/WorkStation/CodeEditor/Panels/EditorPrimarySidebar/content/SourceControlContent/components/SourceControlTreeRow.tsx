@@ -39,7 +39,7 @@ import {
   HugeiconsIcon,
   MinusSignIcon,
   Tick01Icon,
-  Undo02Icon,
+  Undo03Icon,
 } from "@src/icons";
 import { activeWorkspaceRootPathAtom } from "@src/store/workspace";
 import type { GitFile } from "@src/types/git/types";
@@ -157,8 +157,8 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
             iconOnly
             icon={
               <HugeiconsIcon
-                icon={Undo02Icon}
-                data-icon="undo-2"
+                icon={Undo03Icon}
+                data-icon="undo-3"
                 size={14}
                 strokeWidth={1.75}
               />
@@ -516,7 +516,7 @@ const FileDirectoryRow: React.FC<FileDirectoryRowProps> = memo(
               {/* Discard action button */}
               {onDiscard && (
                 <TreeRowAction
-                  icon={Undo02Icon}
+                  icon={Undo03Icon}
                   variant="danger"
                   onClick={handleDiscard}
                   title={GIT_LABELS.discardChanges}
