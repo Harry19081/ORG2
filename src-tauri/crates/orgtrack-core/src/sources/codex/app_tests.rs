@@ -3046,6 +3046,7 @@ fn codex_question_receipts_replay_with_ordered_answers() {
     std::fs::remove_file(path).unwrap();
 }
 
+#[cfg(unix)]
 #[test]
 fn discovery_survives_dangling_profile_symlinks_and_dedupes_live_ones() {
     let temp = std::env::temp_dir().join(format!(
