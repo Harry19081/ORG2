@@ -119,6 +119,15 @@ impl CodexSessionMetaState {
             );
         }
         if parsed.line_type == "session_meta" {
+            if self.source_metadata.continuation_group_key.is_none() {
+                self.source_metadata.continuation_group_key = parsed
+                    .payload
+                    .get("id")
+                    .and_then(Value::as_str)
+                    .map(str::trim)
+                    .filter(|id| !id.is_empty())
+                    .map(str::to_string);
+            }
             capture_subagent_source_metadata(&parsed.payload, &mut self.source_metadata);
             if self.originator.is_empty() {
                 // `originator` names the client; the sibling `source` field
@@ -408,10 +417,14 @@ pub(crate) fn parse_codex_session_meta(
 }
 
 pub(super) fn session_meta_to_cache_input(meta: CodexAppSessionMeta) -> ImportedHistoryCacheInput {
-    let source_metadata_json = meta
-        .parent_session_id
-        .as_ref()
-        .and_then(|_| serde_json::to_string(&meta.source_metadata).ok());
+    let source_metadata_json = if meta.parent_session_id.is_some() {
+        serde_json::to_string(&meta.source_metadata).ok()
+    } else {
+        imported_history::cache::continuation_metadata_json(
+            meta.source_metadata.continuation_group_key.as_deref(),
+            &[],
+        )
+    };
     ImportedHistoryCacheInput {
         source: SOURCE_CODEX_APP,
         source_session_id: meta.source_session_id,
@@ -513,6 +526,7 @@ fn codex_parent_session_id_for_record(
 /// Resolve a Codex thread UUID to the concrete rollout file that ORGII can
 /// replay. Lifecycle hooks identify the parent with a stable thread UUID, but
 /// their common `transcript_path` may point at the active child rollout.
+/// When the thread was rotated by resend, the newest rollout wins.
 pub fn resolve_codex_transcript_for_thread_id_near_path(
     reference_path: &Path,
     thread_id: &str,
@@ -520,9 +534,12 @@ pub fn resolve_codex_transcript_for_thread_id_near_path(
     let Some(sessions_dir) = codex_sessions_dir_for_session_path(reference_path) else {
         return Ok(None);
     };
+    // Resend rotates the physical rollout while keeping the thread UUID, so
+    // one directory can hold several generations. Rollout stems sort by their
+    // timestamp prefix; the last match is the current generation.
     let find_locator = |mut files: Vec<PathBuf>| {
         files.sort();
-        files.into_iter().find_map(|path| {
+        files.into_iter().rev().find_map(|path| {
             let file_stem = path
                 .file_stem()
                 .and_then(|value| value.to_str())?

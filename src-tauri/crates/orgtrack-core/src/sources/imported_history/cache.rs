@@ -20,7 +20,10 @@ pub use lookup::{
     query_cached_session_by_session_id_including_superseded_from_conn,
     query_cached_session_from_conn, stat_imported_transcript_by_session_id_from_conn,
 };
-pub use pins::{pinned_imported_session_ids_from_conn, set_imported_session_pinned_from_conn};
+pub use pins::{
+    imported_session_pin_identity, pinned_imported_session_ids_from_conn,
+    set_imported_session_pinned_from_conn,
+};
 pub use session_row::ImportedHistoryCachedSession;
 pub use sidebar::{
     query_imported_recent_paths_from_conn, query_imported_session_page_from_conn,

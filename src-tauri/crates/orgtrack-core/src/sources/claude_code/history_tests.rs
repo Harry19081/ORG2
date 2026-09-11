@@ -2109,3 +2109,64 @@ fn claude_image_only_windows_remain_reachable_without_retaining_old_base64() {
     assert_eq!(user.result["images"][0], "data:image/png;base64,QUJD");
     std::fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn resending_first_claude_message_updates_the_same_cached_session() {
+    // Claude rewinds within <sessionId>.jsonl, unlike Codex's rotated rollout.
+    // Even replacing the first user UUID must not create a second identity.
+    let temp_dir = std::env::temp_dir().join(format!("orgii-claude-resend-{}", std::process::id()));
+    std::fs::create_dir_all(&temp_dir).unwrap();
+    let session = "d0641111-1111-4111-8111-111111111111";
+    let path = temp_dir.join(format!("{session}.jsonl"));
+    let mut conn = rusqlite::Connection::open_in_memory().unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_tables(&conn).unwrap();
+    crate::store::sqlite::SqliteRecordStore::init_source_cache_tables(&conn).unwrap();
+    for (uuid, text) in [
+        ("first-user-uuid", "original"),
+        ("replacement-user-uuid", "resent"),
+        ("replacement-user-uuid", "resent"),
+    ] {
+        let user = serde_json::json!({"type":"user","uuid":uuid,"sessionId":session,
+            "cwd":"/tmp/project","timestamp":"2026-08-25T06:19:04Z",
+            "message":{"role":"user","content":text}});
+        std::fs::write(&path, format!("{user}\n")).unwrap();
+        let (source_mtime_ms, source_size_bytes) =
+            imported_paths::file_metadata_signature(&path, "Claude").unwrap();
+        let record = ImportedHistoryDiscoveredRecord {
+            source_session_id: session.to_string(),
+            source_path: path.clone(),
+            source_record_key: session.to_string(),
+            source_mtime_ms,
+            source_size_bytes,
+            source_fingerprint: String::new(),
+            parser_version: CLAUDE_CODE_METADATA_PARSER_VERSION,
+        };
+        let meta = parse_claude_session_meta(&record).unwrap().unwrap();
+        let input = session_meta_to_cache_input(meta);
+        let canonical_id = input.session_id.clone();
+        imported_cache::sync_source_cache_from_conn(
+            &mut conn,
+            SOURCE_CLAUDE_CODE,
+            vec![session.to_string()],
+            vec![input],
+        )
+        .unwrap();
+        imported_cache::demote_superseded_continuations_from_conn(&conn, SOURCE_CLAUDE_CODE)
+            .unwrap();
+        assert_eq!(
+            conn.query_row(
+                "SELECT count(*) FROM imported_history_session_cache WHERE listable=1",
+                [],
+                |r| r.get::<_, i64>(0)
+            )
+            .unwrap(),
+            1
+        );
+        let (_, row) =
+            imported_cache::query_cached_session_by_session_id_from_conn(&conn, &canonical_id)
+                .unwrap()
+                .unwrap();
+        assert_eq!(row.name, text);
+    }
+    std::fs::remove_dir_all(temp_dir).unwrap();
+}
