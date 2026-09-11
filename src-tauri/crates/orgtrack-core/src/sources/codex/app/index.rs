@@ -171,27 +171,50 @@ fn codex_child_session_links(
     conn: &Connection,
     parent_session_id: &str,
 ) -> Result<Vec<CodexChildSessionLink>, String> {
+    // Children bind to the physical parent rollout they were parsed against.
+    // A resend rotates the parent rollout, so match every generation of the
+    // parent's native thread; the historical parent keeps resolving exactly.
+    let parent_thread_id = codex_parent_thread_id(conn, parent_session_id)?.unwrap_or_default();
     let mut statement = conn
         .prepare(
-            "SELECT session_id, source_session_id, created_at_ms, source_metadata_json
-             FROM imported_history_session_cache
-             WHERE source = ?1
-               AND parent_session_id = ?2
-               AND parent_session_id != ''
-             ORDER BY created_at_ms ASC, source_session_id ASC",
+            "SELECT child.session_id, child.source_session_id, child.created_at_ms,
+                    child.source_metadata_json
+             FROM imported_history_session_cache child
+             LEFT JOIN imported_history_session_cache parent
+               ON parent.source = child.source
+              AND parent.session_id = child.parent_session_id
+             WHERE child.source = ?1
+               AND COALESCE(child.parent_session_id, '') != ''
+               AND (child.parent_session_id = ?2
+                    OR (?3 != ''
+                        AND (CASE WHEN json_valid(parent.source_metadata_json)
+                                  THEN json_extract(parent.source_metadata_json,
+                                                    '$.continuationGroupKey')
+                             END = ?3
+                             OR parent.source_session_id LIKE '%-' || ?3
+                             OR parent.source_session_id LIKE '%-' || ?3 || '\\_%' ESCAPE '\\')))
+             ORDER BY child.created_at_ms ASC, child.source_session_id ASC",
         )
         .map_err(|err| format!("Failed to prepare Codex child-session query: {err}"))?;
     let rows = statement
-        .query_map([SOURCE_CODEX_APP, parent_session_id], |row| {
-            let source_session_id: String = row.get(1)?;
-            let metadata_json: String = row.get(3)?;
-            Ok(CodexChildSessionLink {
-                session_id: row.get(0)?,
-                thread_id: codex_thread_id_from_file_stem(&source_session_id).map(str::to_string),
-                created_at_ms: row.get(2)?,
-                metadata: serde_json::from_str(&metadata_json).unwrap_or_default(),
-            })
-        })
+        .query_map(
+            [
+                SOURCE_CODEX_APP,
+                parent_session_id,
+                parent_thread_id.as_str(),
+            ],
+            |row| {
+                let source_session_id: String = row.get(1)?;
+                let metadata_json: String = row.get(3)?;
+                Ok(CodexChildSessionLink {
+                    session_id: row.get(0)?,
+                    thread_id: codex_thread_id_from_file_stem(&source_session_id)
+                        .map(str::to_string),
+                    created_at_ms: row.get(2)?,
+                    metadata: serde_json::from_str(&metadata_json).unwrap_or_default(),
+                })
+            },
+        )
         .map_err(|err| format!("Failed to query Codex child sessions: {err}"))?;
 
     let mut children = Vec::new();
@@ -199,6 +222,33 @@ fn codex_child_session_links(
         children.push(row.map_err(|err| format!("Failed to read Codex child-session row: {err}"))?);
     }
     Ok(children)
+}
+
+fn codex_parent_thread_id(
+    conn: &Connection,
+    parent_session_id: &str,
+) -> Result<Option<String>, String> {
+    use rusqlite::OptionalExtension;
+    let cached = conn
+        .query_row(
+            "SELECT CASE WHEN json_valid(source_metadata_json)
+                    THEN json_extract(source_metadata_json, '$.continuationGroupKey') END
+             FROM imported_history_session_cache
+             WHERE source = ?1 AND session_id = ?2",
+            [SOURCE_CODEX_APP, parent_session_id],
+            |row| row.get::<_, Option<String>>(0),
+        )
+        .optional()
+        .map_err(|err| format!("Failed to query Codex parent thread id: {err}"))?
+        .flatten()
+        .filter(|value| !value.trim().is_empty());
+    if cached.is_some() {
+        return Ok(cached);
+    }
+    Ok(codex_file_stem_from_session_id(parent_session_id)
+        .ok()
+        .and_then(codex_thread_id_from_file_stem)
+        .map(str::to_string))
 }
 
 fn link_codex_subagent_chunks_from_children(

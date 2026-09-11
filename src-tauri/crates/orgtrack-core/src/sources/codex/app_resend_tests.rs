@@ -42,6 +42,13 @@ impl Fixture {
         )
         .unwrap();
     }
+    fn write_raw(&self, stem: &str, content: &str) {
+        std::fs::write(
+            self.0.join("sessions").join(format!("{stem}.jsonl")),
+            content,
+        )
+        .unwrap();
+    }
     fn sync(&self, conn: &mut Connection) {
         index::sync_codex_app_cache_from_dirs(conn, &[self.0.join("sessions")]).unwrap();
     }
@@ -52,7 +59,7 @@ impl Drop for Fixture {
     }
 }
 fn visible(conn: &Connection) -> Vec<String> {
-    let mut stmt = conn.prepare("SELECT source_session_id FROM imported_history_session_cache WHERE source='codex_app' AND listable=1 ORDER BY source_session_id").unwrap();
+    let mut stmt = conn.prepare("SELECT source_session_id FROM imported_history_session_cache WHERE source='codex_app' AND listable=1 AND COALESCE(parent_session_id,'')='' ORDER BY source_session_id").unwrap();
     stmt.query_map([], |row| row.get(0))
         .unwrap()
         .collect::<Result<_, _>>()
@@ -285,4 +292,135 @@ fn resend_pin_follows_native_thread_and_unpins_legacy_generations() {
     assert!(cache::pinned_imported_session_ids_from_conn(&conn)
         .unwrap()
         .is_empty());
+}
+
+const CHILD: &str = "44444444-4444-4444-8444-444444444444";
+
+fn parent_with_spawn(time: &str) -> String {
+    let header = serde_json::json!({"timestamp":time,"type":"session_meta","payload":{
+        "id":THREAD,"originator":"Codex Desktop","source":"vscode","cwd":"/tmp/project"
+    }});
+    let user = serde_json::json!({"timestamp":time,"type":"event_msg","payload":{
+        "type":"user_message","message":"audit commits"
+    }});
+    let spawn = serde_json::json!({"timestamp":time,"type":"response_item","payload":{
+        "type":"function_call","name":"spawn_agent","namespace":"collaboration",
+        "arguments":"{\"task_name\":\"audit_commits\",\"message\":\"audit\"}","call_id":"call_spawn"
+    }});
+    let activity = serde_json::json!({"timestamp":time,"type":"event_msg","payload":{
+        "type":"sub_agent_activity","event_id":"call_spawn","agent_thread_id":CHILD,
+        "agent_path":"/root/audit_commits","kind":"started"
+    }});
+    format!("{header}\n{user}\n{spawn}\n{activity}\n")
+}
+
+fn child_of_parent(time: &str) -> String {
+    let header = serde_json::json!({"timestamp":time,"type":"session_meta","payload":{
+        "id":CHILD,"originator":"Codex Desktop","source":{"subagent":{"thread_spawn":{
+            "parent_thread_id":THREAD,"depth":1,"agent_path":"/root/audit_commits",
+            "agent_nickname":"Auditor"}}},
+        "thread_source":"subagent","parent_thread_id":THREAD,"cwd":"/tmp/project"
+    }});
+    let user = serde_json::json!({"timestamp":time,"type":"event_msg","payload":{
+        "type":"user_message","message":"audit"
+    }});
+    format!("{header}\n{user}\n")
+}
+
+fn linked_subagent_session_id(conn: &Connection, session_id: &str) -> Option<String> {
+    index::load_codex_app_for_session(conn, session_id)
+        .unwrap()
+        .into_iter()
+        .find(|chunk| chunk.function == "subagent")
+        .and_then(|chunk| {
+            chunk
+                .args
+                .get("subagentSessionId")
+                .and_then(serde_json::Value::as_str)
+                .map(str::to_string)
+        })
+}
+
+#[test]
+fn resend_generation_keeps_subagent_links_and_resolves_newest_rollout() {
+    let fixture = Fixture::new("subagent");
+    let original = format!("rollout-2026-08-23T12-40-07-{THREAD}");
+    let child = format!("rollout-2026-08-23T12-41-00-{CHILD}");
+    let resend = format!("rollout-2026-08-25T06-19-04-{THREAD}_{ROLLOUT}");
+    fixture.write_raw(&original, &parent_with_spawn("2026-08-23T19:40:07Z"));
+    fixture.write_raw(&child, &child_of_parent("2026-08-23T19:41:00Z"));
+    let mut conn = fixture.conn();
+    fixture.sync(&mut conn);
+    let original_id = format!("codexapp-{original}");
+    let child_id = format!("codexapp-{child}");
+    assert_eq!(visible(&conn), std::slice::from_ref(&original));
+    assert_eq!(
+        linked_subagent_session_id(&conn, &original_id).as_deref(),
+        Some(child_id.as_str())
+    );
+
+    // The parent is resent: a rotated rollout replays the same spawn while the
+    // child stays bound to the physical rollout it was parsed against.
+    fixture.write_raw(&resend, &parent_with_spawn("2026-08-24T22:19:04Z"));
+    fixture.sync(&mut conn);
+    let resend_id = format!("codexapp-{resend}");
+    assert_eq!(visible(&conn), std::slice::from_ref(&resend));
+    assert_eq!(
+        conn.query_row(
+            "SELECT parent_session_id FROM imported_history_session_cache
+             WHERE source_session_id = ?1",
+            [&child],
+            |row| row.get::<_, String>(0)
+        )
+        .unwrap(),
+        original_id,
+        "an unchanged child must not be reparsed just because its parent rotated"
+    );
+    assert_eq!(
+        linked_subagent_session_id(&conn, &resend_id).as_deref(),
+        Some(child_id.as_str()),
+        "the current representative must link the child spawned by an older generation"
+    );
+    assert_eq!(
+        linked_subagent_session_id(&conn, &original_id).as_deref(),
+        Some(child_id.as_str()),
+        "historical replay of the superseded generation keeps its child"
+    );
+    assert_eq!(
+        meta::resolve_codex_transcript_for_thread_id_near_path(
+            &fixture.0.join("sessions").join(format!("{child}.jsonl")),
+            THREAD
+        )
+        .unwrap()
+        .unwrap()
+        .source_session_id,
+        resend,
+        "thread resolution near a child must pick the current generation"
+    );
+}
+
+#[test]
+fn native_path_lookup_breaks_activity_ties_like_the_election() {
+    let fixture = Fixture::new("tie");
+    let original = format!("rollout-2026-08-23T12-40-07-{THREAD}");
+    let resend = format!("rollout-2026-08-25T06-19-04-{THREAD}_{ROLLOUT}");
+    fixture.write(&original, THREAD, "2026-08-23T19:40:07Z", false);
+    fixture.write(&resend, THREAD, "2026-08-23T19:40:07Z", false);
+    let mut conn = fixture.conn();
+    fixture.sync(&mut conn);
+    let winner = visible(&conn);
+    assert_eq!(winner.len(), 1);
+    let winner_path: String = conn
+        .query_row(
+            "SELECT source_path FROM imported_history_session_cache WHERE source_session_id = ?1",
+            [&winner[0]],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_eq!(
+        cache::get_cached_source_path_by_suffix_from_conn(&conn, SOURCE_CODEX_APP, THREAD)
+            .unwrap()
+            .as_deref(),
+        Some(winner_path.as_str())
+    );
 }
