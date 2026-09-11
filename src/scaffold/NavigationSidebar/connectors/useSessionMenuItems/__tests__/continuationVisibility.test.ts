@@ -84,6 +84,16 @@ describe("continuationWinnerIds", () => {
     expect(isHiddenContinuationSibling(rows[2], winners)).toBe(false);
   });
 
+  it("breaks an updated_at tie by id, like the backend election", () => {
+    const rows = [
+      dated("codexapp-rollout-b", "lineage-a", "2026-09-11T00:18:38.000Z"),
+      dated("codexapp-rollout-a", "lineage-a", "2026-09-11T00:18:38.000Z"),
+    ];
+    expect(continuationWinnerIds(rows, new Set())).toEqual(
+      new Set(["codexapp-rollout-b"])
+    );
+  });
+
   it("lets a revealed older generation win its lineage", () => {
     const rows = [
       dated("gen1", "lineage-a", "2026-09-11T00:18:38.000Z"),

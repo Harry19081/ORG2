@@ -19,7 +19,10 @@ import {
 } from "@src/util/session/sessionDateBuckets";
 
 import type { FetchPageResult } from "./loaderShared";
-import { mergeDateBucketPagination, mergeSessions } from "./mergeSessions";
+import {
+  mergeAuthoritativeSessions,
+  mergeDateBucketPagination,
+} from "./mergeSessions";
 import {
   type DateBucketPaginationMap,
   emptyDateBucketPagination,
@@ -33,7 +36,7 @@ export function replaceImportedFirstPage(
   keepSessionIds?: ReadonlySet<string>
 ): Session[] {
   const retained = prev.filter((session) => !shouldReplace(session));
-  return mergeSessions(retained, incoming, keepSessionIds);
+  return mergeAuthoritativeSessions(retained, incoming, keepSessionIds);
 }
 
 export function replaceExternalHistorySourceFirstPage(

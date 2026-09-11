@@ -190,21 +190,11 @@ export function useSessionMenuItems({
     () => createSidebarRosterMatcher(pagination),
     [pagination]
   );
-  const continuationWinners = useMemo(
-    () => continuationWinnerIds(sortedSessions, revealedSessionIds),
-    [revealedSessionIds, sortedSessions]
-  );
-
-  const visibleSessions = useMemo(
+  const eligibleSessions = useMemo(
     () =>
       sortedSessions.filter((session) => {
         const explicitlyRevealed = revealedSessionIds.has(session.session_id);
-        const hiddenRosterSibling = isHiddenContinuationSibling(
-          session,
-          continuationWinners
-        );
         return (
-          !hiddenRosterSibling &&
           isPrimarySessionListSession(session) &&
           (explicitlyRevealed ||
             (isInSidebarRoster(session) &&
@@ -219,10 +209,20 @@ export function useSessionMenuItems({
       includeExternal,
       isInSidebarRoster,
       revealedSessionIds,
-      continuationWinners,
       selectedOrgIds,
       sortedSessions,
     ]
+  );
+  const continuationWinners = useMemo(
+    () => continuationWinnerIds(eligibleSessions, revealedSessionIds),
+    [eligibleSessions, revealedSessionIds]
+  );
+  const visibleSessions = useMemo(
+    () =>
+      eligibleSessions.filter(
+        (session) => !isHiddenContinuationSibling(session, continuationWinners)
+      ),
+    [continuationWinners, eligibleSessions]
   );
 
   useEffect(() => {

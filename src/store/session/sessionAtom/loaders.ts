@@ -52,6 +52,7 @@ import {
 import {
   type LoadSessionsOptions,
   loadSessionsCacheSignature,
+  mergeAuthoritativeSessions,
   mergeSessions,
   preserveImportedReplayRows,
   setPaginationFor,
@@ -212,7 +213,11 @@ export function refreshRecentNativeSessions(): Promise<void> {
     );
     let merged: Session[] = [];
     store.set(sessionsAtom, (previous) => {
-      merged = mergeSessions(previous, incoming, openSessionKeepIds());
+      merged = mergeAuthoritativeSessions(
+        previous,
+        incoming,
+        openSessionKeepIds()
+      );
       return merged;
     });
     const membershipChanges = incoming.filter((session) => {
@@ -279,9 +284,7 @@ export function loadSidebarSessionsByIds(
     );
     if (loaded.length === 0) return [];
 
-    store.set(sessionsAtom, (previous) =>
-      mergeSessions(previous, loaded, openSessionKeepIds())
-    );
+    store.set(sessionsAtom, (previous) => mergeSessions(previous, loaded));
     persistSessions(store.get(sessionsAtom));
     return loaded;
   })();
@@ -384,7 +387,7 @@ export const loadMoreCategory = async (
       ? returnedIds
       : [...current.sessionIds, ...newSessionIds];
     store.set(sessionsAtom, (prev) =>
-      mergeSessions(prev, primarySessions, openSessionKeepIds())
+      mergeAuthoritativeSessions(prev, primarySessions, openSessionKeepIds())
     );
     setPaginationFor(category, {
       sessionIds,
@@ -441,6 +444,7 @@ export function registerNewNativeSidebarSession(session: Session): void {
 
 export const __TESTS_ONLY = {
   createSidebarLoadCoordinator,
+  mergeAuthoritativeSessions,
   mergeSessions,
   replaceExternalHistorySourceFirstPage,
 };

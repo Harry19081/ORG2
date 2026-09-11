@@ -39,7 +39,7 @@ import {
   log,
   openSessionKeepIds,
 } from "./loaderShared";
-import { mergeSessions, setPaginationFor } from "./mergeSessions";
+import { mergeAuthoritativeSessions, setPaginationFor } from "./mergeSessions";
 import {
   BASE_SESSION_LIST_CATEGORIES,
   type DateBucketPaginationMap,
@@ -225,7 +225,7 @@ export const performSidebarSessionLoad = async (
     // authoritative page replaces only `sessionIds`; older cached entities
     // remain available for active/deep-link overlays.
     store.set(sessionsAtom, (prev) =>
-      mergeSessions(prev, primarySessions, openSessionKeepIds())
+      mergeAuthoritativeSessions(prev, primarySessions, openSessionKeepIds())
     );
     setPaginationFor(category, {
       sessionIds,

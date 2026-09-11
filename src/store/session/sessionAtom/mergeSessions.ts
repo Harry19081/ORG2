@@ -66,8 +66,7 @@ export function preserveImportedReplayRows(
 
 export function mergeSessions(
   prev: readonly Session[],
-  incoming: readonly Session[],
-  keepSessionIds: ReadonlySet<string> = EMPTY_IDS
+  incoming: readonly Session[]
 ): Session[] {
   if (incoming.length === 0) return prev.slice();
   const incomingMap = new Map(
@@ -86,48 +85,54 @@ export function mergeSessions(
   merged.sort((sessionA, sessionB) =>
     (sessionB.updated_at || "").localeCompare(sessionA.updated_at || "")
   );
-  return pruneSupersededSiblings(merged, incoming, keepSessionIds);
+  return merged;
 }
 
 const EMPTY_IDS: ReadonlySet<string> = new Set();
 
 /**
- * The backend lists one row per continuation lineage: the elected winner.
- * A row already held here that shares a lineage with a newer incoming row
- * is a sibling the election demoted since it was loaded (a Codex resend or
- * a Claude compact). Keeping it would list two rows for one thread until
- * the next restart. Rows in `keepSessionIds` (the open session) survive so
- * a deliberately opened older generation stays reachable.
+ * Merge an authoritative listing page: the backend lists exactly one row
+ * per continuation lineage (the elected winner), so any held row of a
+ * listed lineage that the page did not return is a sibling the election
+ * demoted, whatever its `updated_at` says — a re-promoted older generation
+ * must displace a newer one whose file is gone. Loads by explicit id are
+ * not authoritative and must use `mergeSessions`.
+ */
+export function mergeAuthoritativeSessions(
+  prev: readonly Session[],
+  incoming: readonly Session[],
+  keepSessionIds: ReadonlySet<string> = EMPTY_IDS
+): Session[] {
+  return mergeSessions(
+    pruneSupersededSiblings(prev, incoming, keepSessionIds),
+    incoming
+  );
+}
+
+/**
+ * Drop held rows that share a lineage with an incoming (authoritative) row
+ * but were not returned themselves. Rows in `keepSessionIds` (the open
+ * session) survive so a deliberately opened older generation stays
+ * reachable; rows without a lineage are untouched.
  */
 export function pruneSupersededSiblings(
   sessions: readonly Session[],
   incoming: readonly Session[],
   keepSessionIds: ReadonlySet<string> = EMPTY_IDS
 ): Session[] {
-  const newestIncomingByLineage = new Map<string, Session>();
+  const listedLineages = new Set<string>();
   for (const session of incoming) {
-    const lineageId = session.continuationLineageId;
-    if (!lineageId) continue;
-    const current = newestIncomingByLineage.get(lineageId);
-    if (
-      !current ||
-      (session.updated_at || "").localeCompare(current.updated_at || "") > 0
-    ) {
-      newestIncomingByLineage.set(lineageId, session);
+    if (session.continuationLineageId) {
+      listedLineages.add(session.continuationLineageId);
     }
   }
-  if (newestIncomingByLineage.size === 0) return sessions.slice();
+  if (listedLineages.size === 0) return sessions.slice();
   const incomingIds = new Set(incoming.map((session) => session.session_id));
   return sessions.filter((session) => {
     const lineageId = session.continuationLineageId;
-    if (!lineageId) return true;
+    if (!lineageId || !listedLineages.has(lineageId)) return true;
     if (incomingIds.has(session.session_id)) return true;
-    if (keepSessionIds.has(session.session_id)) return true;
-    const winner = newestIncomingByLineage.get(lineageId);
-    if (!winner) return true;
-    return (
-      (session.updated_at || "").localeCompare(winner.updated_at || "") >= 0
-    );
+    return keepSessionIds.has(session.session_id);
   });
 }
 
