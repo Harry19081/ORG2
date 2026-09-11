@@ -12,8 +12,17 @@ import {
   incrementalCollapse,
 } from "./incrementalCollapse";
 
+// Separate directions only when two expansion steps cannot reveal the whole gap.
+const COLLAPSE_SPLIT_THRESHOLD = COLLAPSE_EXPAND_STEP * 2;
+
 function isCollapsed(widget: WidgetType) {
   return "type" in widget && widget.type === "collapsed-unchanged-code";
+}
+
+function hiddenLineCount(view: EditorView, from: number, to: number) {
+  return (
+    view.state.doc.lineAt(to).number - view.state.doc.lineAt(from).number + 1
+  );
 }
 
 class CollapsedRow extends GutterMarker {
@@ -77,7 +86,10 @@ export const collapsedGutterBackground = [
     isCollapsed(widget)
       ? new CollapsedRow(
           block.from,
-          block.from > 0 && block.to < view.state.doc.length
+          block.from > 0 &&
+            block.to < view.state.doc.length &&
+            hiddenLineCount(view, block.from, block.to) >
+              COLLAPSE_SPLIT_THRESHOLD
         )
       : null
   ),
@@ -121,16 +133,15 @@ class CollapseControl extends GutterMarker {
   toDOM(view: EditorView) {
     const control = document.createElement("div");
     control.className = "cm-collapseControl";
-    const lines =
-      view.state.doc.lineAt(this.to).number -
-      view.state.doc.lineAt(this.from).number +
-      1;
+    const lines = hiddenLineCount(view, this.from, this.to);
     const directions =
       this.from === 0
         ? ["up"]
         : this.to === view.state.doc.length
           ? ["down"]
-          : ["down", "up"];
+          : lines <= COLLAPSE_SPLIT_THRESHOLD
+            ? ["all"]
+            : ["down", "up"];
     for (const direction of directions) {
       const button = control.appendChild(document.createElement("button"));
       button.type = "button";
@@ -139,14 +150,14 @@ class CollapseControl extends GutterMarker {
         "aria-label",
         view.state.phrase(
           "$ unchanged lines",
-          Math.min(COLLAPSE_EXPAND_STEP, lines)
+          direction === "all" ? lines : Math.min(COLLAPSE_EXPAND_STEP, lines)
         )
       );
       button.addEventListener("click", () => {
         expandCollapsedRange(
           view,
           { from: this.from, to: this.to },
-          direction === "down" ? "start" : "end"
+          direction === "all" ? "all" : direction === "down" ? "start" : "end"
         );
       });
     }

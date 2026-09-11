@@ -36,7 +36,11 @@ const labels = (view: EditorView) =>
     view.dom.querySelectorAll(".cm-collapsedLines"),
     (node) => node.textContent
   );
-function click(view: EditorView, index: number, direction: "up" | "down") {
+function click(
+  view: EditorView,
+  index: number,
+  direction: "up" | "down" | "all"
+) {
   view.dom
     .querySelectorAll(".cm-collapseControl")
     [index].querySelector<HTMLButtonElement>(`.cm-collapseArrow--${direction}`)!
@@ -64,9 +68,10 @@ describe("incremental collapse", () => {
     expect(view.state.doc.lineAt(range.from).number).toBe(75);
     expect(view.state.doc.lineAt(range.to).number).toBe(107);
     expect(labels(view)[1]).toBe("33 unchanged lines");
-    click(view, 1, "down");
-    expect(labels(view)[1]).toBe("13 unchanged lines");
-    click(view, 1, "up");
+    expect(
+      view.dom.querySelectorAll(".cm-collapseControl")[1].children
+    ).toHaveLength(1);
+    click(view, 1, "all");
     expect(labels(view)).toEqual(["47 unchanged lines", "26 unchanged lines"]);
   });
 
