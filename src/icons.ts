@@ -267,6 +267,7 @@ export { default as LayoutAlignRightIcon } from "@hugeicons/core-free-icons/Layo
 export { default as LayoutListIcon } from "@hugeicons/core-free-icons/LayoutListIcon";
 export { default as LayoutThreeColumnIcon } from "@hugeicons/core-free-icons/LayoutThreeColumnIcon";
 export { default as LayoutTopIcon } from "@hugeicons/core-free-icons/LayoutTopIcon";
+export { default as LayoutTwoColumnIcon } from "@hugeicons/core-free-icons/LayoutTwoColumnIcon";
 export { default as LayoutTwoRowIcon } from "@hugeicons/core-free-icons/LayoutTwoRowIcon";
 export { default as LeftToRightListNumberIcon } from "@hugeicons/core-free-icons/LeftToRightListNumberIcon";
 export { default as LegalHammerIcon } from "@hugeicons/core-free-icons/LegalHammerIcon";

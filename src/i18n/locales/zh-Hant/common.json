@@ -981,6 +981,8 @@
     "chromeWindowOpen": "Chrome 窗口已打開 — 請直接操作，完成後返回 Agent",
     "waitingForScreenshot": "等待瀏覽器截圖...",
     "unified": "統一",
+    "switchToUnifiedDiff": "切換為統一差異檢視",
+    "switchToSplitDiff": "切換為並排差異檢視",
     "split": "分屏",
     "publishingBranch": "正在 Publish...",
     "notGitInitialized": "尚未初始化 Git",

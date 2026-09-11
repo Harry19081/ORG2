@@ -981,6 +981,8 @@
     "chromeWindowOpen": "A janela do Chrome está aberta — interaja diretamente e depois devolva ao Agent",
     "waitingForScreenshot": "Aguardando captura de tela do navegador...",
     "unified": "Unificado",
+    "switchToUnifiedDiff": "Alternar para diff unificado",
+    "switchToSplitDiff": "Alternar para diff dividido",
     "split": "Dividido",
     "publishingBranch": "Publicando...",
     "notGitInitialized": "Git não inicializado",
