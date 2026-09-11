@@ -59,21 +59,16 @@ async function computeDirtyDiffRust(
   original: string,
   current: string
 ): Promise<Map<number, DiffLineType>> {
-  try {
-    const result = await invoke<DirtyDiffResult>("compute_dirty_diff_markers", {
-      original,
-      current,
-    });
+  const result = await invoke<DirtyDiffResult>("compute_dirty_diff_markers", {
+    original,
+    current,
+  });
 
-    const changes = new Map<number, DiffLineType>();
-    for (const marker of result.markers) {
-      changes.set(marker.line, marker.type);
-    }
-    return changes;
-  } catch (error) {
-    log.warn("[DirtyDiff] Rust computation failed, returning empty:", error);
-    return new Map();
+  const changes = new Map<number, DiffLineType>();
+  for (const marker of result.markers) {
+    changes.set(marker.line, marker.type);
   }
+  return changes;
 }
 
 // ============================================
@@ -266,7 +261,8 @@ export function dirtyDiffGutter(
           }
 
           const original = originalRef.current;
-          const current = this.view.state.doc.toString();
+          const document = this.view.state.doc;
+          const current = document.toString();
 
           let markers: RangeSet<GutterMarker>;
 
@@ -296,7 +292,17 @@ export function dirtyDiffGutter(
               return;
             }
 
-            markers = buildMarkerRangeSet(changes, this.view.state.doc);
+            // A result belongs to the exact document/baseline that produced
+            // it. Never apply old line numbers to a newer editor snapshot.
+            if (
+              this.view.state.doc !== document ||
+              originalRef.current !== original
+            ) {
+              this.pendingUpdate = true;
+              return;
+            }
+
+            markers = buildMarkerRangeSet(changes, document);
           }
 
           // Apply markers (check view still valid after async)
