@@ -1938,8 +1938,7 @@
       "commands": "Commandes",
       "mode": "Mode",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Commandes"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Actions GIT",
@@ -2316,7 +2315,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Arrêter le processus Agent",
       "openInMyStation": "Ouvrir dans My Station"
     }
   },

@@ -1941,7 +1941,6 @@
       "showMore": "再显示 {{remaining}} 项"
     },
     "slashMenu": {
-      "commands": "指令",
       "commands": "命令",
       "mode": "模式",
       "workspaceSkills": "工作区技能",
@@ -2315,7 +2314,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "停止 Agent 进程",
       "openInMyStation": "在 My Station 打开"
     }
   },

@@ -442,7 +442,6 @@ export { default as ViewOffIcon } from "@hugeicons/core-free-icons/ViewOffIcon";
 export { default as Wallet01Icon } from "@hugeicons/core-free-icons/Wallet01Icon";
 export { default as WaypointsIcon } from "@hugeicons/core-free-icons/WaypointsIcon";
 export { default as WholeWordIcon } from "@hugeicons/core-free-icons/WholeWordIcon";
-export { default as Wifi01Icon } from "@hugeicons/core-free-icons/Wifi01Icon";
 export { default as WorkHistoryIcon } from "@hugeicons/core-free-icons/WorkHistoryIcon";
 export { default as WorkflowCircle01Icon } from "@hugeicons/core-free-icons/WorkflowCircle01Icon";
 export { default as WorkflowCircle05Icon } from "@hugeicons/core-free-icons/WorkflowCircle05Icon";

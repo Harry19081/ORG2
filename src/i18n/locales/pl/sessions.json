@@ -1957,8 +1957,7 @@
       "commands": "Polecenia",
       "mode": "Tryb",
       "workspaceSkills": "Workspace Skills",
-      "userSkills": "User Skills",
-      "commands": "Polecenia"
+      "userSkills": "User Skills"
     },
     "diffMenu": {
       "gitActions": "Akcje GIT",
@@ -2316,7 +2315,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Zatrzymaj proces Agenta",
       "openInMyStation": "Otwórz w My Station"
     }
   },

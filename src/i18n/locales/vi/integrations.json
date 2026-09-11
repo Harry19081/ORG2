@@ -349,7 +349,6 @@
     "connecting": "Đang kết nối",
     "reconnecting": "Đang kết nối lại",
     "connectionError": "Lỗi kết nối",
-    "reconnect": "Kết nối lại",
     "accountNameDuplicate": "Tài khoản với tên này đã tồn tại",
     "probeSuccess": "Kết nối thành công",
     "probeFailed": "Kết nối thất bại",

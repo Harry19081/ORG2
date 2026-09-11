@@ -349,7 +349,6 @@
     "connecting": "Подключение",
     "reconnecting": "Переподключение",
     "connectionError": "Ошибка подключения",
-    "reconnect": "Переподключить",
     "accountNameDuplicate": "Аккаунт с таким именем уже существует",
     "probeSuccess": "Подключение успешно",
     "probeFailed": "Подключение не удалось",

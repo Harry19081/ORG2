@@ -1961,7 +1961,6 @@
     },
     "slashMenu": {
       "commands": "Commands",
-      "commands": "Commands",
       "mode": "Mode",
       "workspaceSkills": "Workspace Skills",
       "userSkills": "User Skills"
@@ -2315,7 +2314,6 @@
       "agentFallback": "Agent"
     },
     "sidebar": {
-      "stopAgentProcess": "Stop agent process",
       "openInMyStation": "Open in My Station"
     }
   },

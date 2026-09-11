@@ -349,7 +349,6 @@
     "connecting": "Bağlanıyor",
     "reconnecting": "Yeniden bağlanıyor",
     "connectionError": "Bağlantı hatası",
-    "reconnect": "Yeniden bağlan",
     "accountNameDuplicate": "Bu isimde bir hesap zaten mevcut",
     "probeSuccess": "Bağlantı başarılı",
     "probeFailed": "Bağlantı başarısız",
