@@ -3160,7 +3160,11 @@ fn discovery_keeps_the_first_file_when_two_roots_hold_the_same_stem() {
             |row| row.get(0),
         )
         .unwrap();
-    assert!(path.contains("/native/"), "the first enumerated root must win: {path}");
+    assert_eq!(
+        std::path::PathBuf::from(&path),
+        native.join(format!("{stem}.jsonl")),
+        "the first enumerated root must win"
+    );
     for _ in 0..3 {
         let before = conn.total_changes();
         index::sync_codex_app_cache_from_dirs(&mut conn, &dirs).unwrap();
