@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import type { SectionHeaderAction } from "@src/components/TreePanelSidebar/types";
 import { resolveToolName } from "@src/engines/SessionCore/rendering/registry/toolAliases";
 import {
-  CompassIcon,
+  AiSearch01Icon,
   ComputerTerminal01Icon,
   HierarchyFilesIcon,
   HugeiconsIcon,
@@ -324,8 +324,8 @@ const FileSidebarComponent: React.FC<FileSidebarProps> = ({
         label: t("simulator.replay.ide.fileSidebar.tabExplore"),
         icon: (
           <HugeiconsIcon
-            icon={CompassIcon}
-            data-icon="compass"
+            icon={AiSearch01Icon}
+            data-icon="ai-search-01"
             size={PANEL_CONSTANTS.TAB_ICON_SIZE}
           />
         ),
