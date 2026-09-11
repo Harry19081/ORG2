@@ -12,3 +12,7 @@ Lifecycle: idle has no animation/listener/snapshot. Opening while hidden or with
 Verification: `pnpm test src/scaffold/GlobalSpotlight/useLaunchpadTransition.test.ts` passed (5 tests). Native Tauri CPU/RSS and frame pacing were not measured because desktop control was not authorized. User reported opening looks good; this is visual feedback, not a performance measurement.
 
 Performance verdict: blocked for native frame-pacing and CPU/RSS measurement; automated lifecycle checks pass.
+
+## Hover decoration
+
+Two CSS transform animations exist only while the trigger has its hover attribute. Pointer exit, click and document hiding remove that attribute. One visibility listener is attached only during hover and disposed on exit or unmount. Reduced-motion CSS disables animation and leaves a static glow. No timers or animation-frame JavaScript were added. The trigger lifecycle test covers idle, hover, pointer exit, document hiding, click and listener disposal. Native hover frame pacing remains unmeasured.

@@ -1,0 +1,56 @@
+.launchpad-search-trigger {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  // Decorative layers stay beneath the label and within the pill silhouette.
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -65% -15%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      ellipse at 35% 65%,
+      color-mix(in srgb, var(--color-primary-6) 32%, transparent),
+      transparent 58%
+    );
+  }
+
+  &::after {
+    background: radial-gradient(
+      ellipse at 65% 40%,
+      color-mix(in srgb, var(--color-purple-6) 30%, transparent),
+      transparent 58%
+    );
+  }
+
+  &[data-wave-active="true"]::before,
+  &[data-wave-active="true"]::after {
+    opacity: 1;
+    animation: launchpad-search-wave 2.4s ease-in-out infinite alternate;
+  }
+
+  &[data-wave-active="true"]::after {
+    animation-direction: alternate-reverse;
+    animation-duration: 1.8s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-wave-active="true"]::before,
+    &[data-wave-active="true"]::after {
+      animation: none;
+    }
+  }
+}
+
+@keyframes launchpad-search-wave {
+  from {
+    transform: translate(-12%, 12%) rotate(-8deg) scaleY(0.7);
+  }
+  to {
+    transform: translate(12%, -12%) rotate(8deg) scaleY(1.3);
+  }
+}

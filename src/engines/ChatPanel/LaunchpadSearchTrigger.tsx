@@ -1,4 +1,5 @@
 import { useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
@@ -10,6 +11,7 @@ import {
   spotlightOpenAtom,
 } from "@src/store/ui/uiAtom";
 
+import "./LaunchpadSearchTrigger.scss";
 import { CHAT_PANEL_HEADER_NO_DRAG_STYLE } from "./header";
 
 /** A command-center entry; Spotlight owns input, results, and focus. */
@@ -18,6 +20,16 @@ export function LaunchpadSearchTrigger({
 }: {
   placement?: "center" | "trailing";
 }) {
+  const [hovered, setHovered] = useState(false);
+  useEffect(() => {
+    if (!hovered) return;
+    const stopWhenHidden = () => {
+      if (document.hidden) setHovered(false);
+    };
+    document.addEventListener("visibilitychange", stopWhenHidden);
+    return () =>
+      document.removeEventListener("visibilitychange", stopWhenHidden);
+  }, [hovered]);
   const { t } = useTranslation("common");
   const setInitialQuery = useSetAtom(spotlightInitialQueryAtom);
   const setTransitionSource = useSetAtom(launchpadTransitionSourceAtom);
@@ -38,11 +50,15 @@ export function LaunchpadSearchTrigger({
         appearance="outline"
         size="small"
         shape="round"
-        className="w-full bg-fill-1! text-text-3! hover:bg-fill-2! data-[spotlight-source-active]:opacity-0 [&>span]:w-full"
+        className="launchpad-search-trigger w-full bg-transparent! text-text-3! hover:bg-transparent! data-[spotlight-source-active]:opacity-0 [&>span]:w-full"
+        data-wave-active={hovered || undefined}
+        onMouseEnter={() => setHovered(!document.hidden)}
+        onMouseLeave={() => setHovered(false)}
         aria-label={t("actions.search")}
         aria-haspopup="dialog"
         data-testid="launchpad-spotlight-trigger"
         onClick={(event) => {
+          setHovered(false);
           setTransitionSource(event.currentTarget);
           setInitialQuery(null);
           setOpen(true);
