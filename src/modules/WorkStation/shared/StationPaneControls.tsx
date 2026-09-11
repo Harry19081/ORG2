@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
+import { createLogger } from "@src/hooks/logger";
 import {
   ArrowExpand01Icon,
   ArrowShrink01Icon,
@@ -18,11 +19,15 @@ import { WorkStationViewService } from "@src/services/workStation/WorkStationVie
 import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import type { ChatPanelPosition } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 
+const logger = createLogger("StationPaneControls");
+
 export function useStationPaneActions() {
   const toggleMaximized = useSetAtom(toggleChatPanelMaximizedAtom);
   const handleToggleChatPanel = useCallback(() => {
     startTransition(() => {
-      void WorkStationViewService.showWorkStation();
+      void WorkStationViewService.showWorkStation().catch((error: unknown) => {
+        logger.error("Failed to toggle station chat visibility:", error);
+      });
     });
   }, []);
   const handleToggleChatPanelMaximized = useCallback(() => {
