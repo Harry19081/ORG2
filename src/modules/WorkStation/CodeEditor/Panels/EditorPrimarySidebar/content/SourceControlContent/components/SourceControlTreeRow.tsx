@@ -32,7 +32,7 @@ import {
 } from "@src/hooks/files/useNativeDrag";
 import {
   Add01Icon,
-  ArchiveIcon,
+  Archive03Icon,
   ArrowDown01Icon,
   ArrowRight01Icon,
   FileDiffIcon,
@@ -179,8 +179,8 @@ const SectionHeaderRow: React.FC<SectionHeaderRowProps> = memo(
               iconOnly
               icon={
                 <HugeiconsIcon
-                  icon={ArchiveIcon}
-                  data-icon="archive"
+                  icon={Archive03Icon}
+                  data-icon="archive-03"
                   size={14}
                   strokeWidth={1.75}
                 />
