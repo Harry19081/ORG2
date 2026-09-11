@@ -110,7 +110,10 @@ describe("AgentStationTopHeader", () => {
           createElement(
             MemoryRouter,
             { initialEntries: [ROUTES.workStation.base.path] },
-            createElement(AgentStationTopHeader)
+            createElement(AgentStationTopHeader, {
+              captionMessage: null,
+              captionVisible: false,
+            })
           )
         )
       );

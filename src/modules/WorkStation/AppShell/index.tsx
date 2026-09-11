@@ -137,7 +137,12 @@ const AppShell = React.memo(
         className="relative flex h-full w-full min-w-0 flex-col overflow-hidden bg-workstation-bg"
         style={isAgentStation ? undefined : primaryPaneSurfaceStyle}
       >
-        {isAgentStation && <AgentStationTopHeader />}
+        {isAgentStation && (
+          <AgentStationTopHeader
+            captionMessage={captionMessage}
+            captionVisible={agentStationCaptionVisible}
+          />
+        )}
         <AgentStationChromeFrame
           enabled={followAgentHighlightEnabled && isAgentStation}
           illuminated={illuminateAgentStationChrome}
