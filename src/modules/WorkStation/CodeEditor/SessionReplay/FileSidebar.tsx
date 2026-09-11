@@ -422,6 +422,7 @@ const FileSidebarComponent: React.FC<FileSidebarProps> = ({
             content: (
               <SimulatorTreePanel
                 items={shellItems}
+                showFilePathPreview={false}
                 selectedId={shellSectionSelectedId}
                 agentSelectedIds={agentSelectedIds}
                 onSelectItem={onSelectShellOperation}
@@ -440,6 +441,7 @@ const FileSidebarComponent: React.FC<FileSidebarProps> = ({
             content: (
               <SimulatorTreePanel
                 items={toolItems}
+                showFilePathPreview={false}
                 selectedId={toolSectionSelectedId}
                 agentSelectedIds={agentSelectedIds}
                 onSelectItem={onSelectToolOperation}

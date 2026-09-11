@@ -34,6 +34,8 @@ interface SimulatorTreePanelProps {
   onSelectItem: (eventId: string) => void;
   emptyMessage: string;
   viewMode: "list-tree" | "list";
+  /** Disable for terminal entries whose tree paths are synthetic event IDs. */
+  showFilePathPreview?: boolean;
 }
 
 const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
@@ -43,6 +45,7 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
   onSelectItem,
   emptyMessage,
   viewMode,
+  showFilePathPreview = true,
 }) => {
   const [collapsedPaths, setCollapsedPaths] = useState<Set<string>>(new Set());
 
@@ -114,7 +117,7 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
 
       // The row itself only shows the file name — the full path lives in a
       // hover card so long paths never squeeze the name out of the sidebar.
-      if (!isFile) return row;
+      if (!isFile || !showFilePathPreview) return row;
 
       return (
         <Tooltip
@@ -129,7 +132,7 @@ const SimulatorTreePanel: React.FC<SimulatorTreePanelProps> = ({
         </Tooltip>
       );
     },
-    [selectedId, handleNodeClick, agentSelectedIds]
+    [selectedId, handleNodeClick, agentSelectedIds, showFilePathPreview]
   );
 
   const renderStickyItem = useCallback(

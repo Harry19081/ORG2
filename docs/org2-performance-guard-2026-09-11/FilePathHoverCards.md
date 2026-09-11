@@ -1,6 +1,6 @@
 # File-path hover cards performance guard
 
-Scope: Agent Station file rows reuse `FileTreePreview` inside their existing smart-positioned `Tooltip`. The Tooltip and `FileTreeHoverPreview` share a 500 ms opening delay; markdown and tool-event file links inherit the same default.
+Scope: Agent Station file rows reuse `FileTreePreview` inside their existing smart-positioned `Tooltip`. The Tooltip and `FileTreeHoverPreview` share a 500 ms opening delay; markdown and tool-event file links inherit the same default. Terminal Commands and Other Tools explicitly disable previews, so those rows mount no Tooltip and create no hover timers.
 
 | Area               | Verdict | Evidence                                                                                                                       | Change or reason kept                                                   | Verification                                                                                          |
 | ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
