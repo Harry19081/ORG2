@@ -8,10 +8,10 @@ import { useTranslation } from "react-i18next";
 
 import { useTauriSelectAllShortcut } from "@src/hooks/keyboard";
 import {
-  AiSearch02Icon,
   Cancel01Icon,
   HugeiconsIcon,
   type IconSvgElement,
+  Search01Icon,
 } from "@src/icons";
 
 import { SPOTLIGHT_TOKENS } from "../constants";
@@ -49,7 +49,7 @@ export const SpotlightInput: React.FC<SpotlightInputProps> = ({
   onKeyDown,
   placeholder = "Search...",
   isLoading: _isLoading = false,
-  icon: IconComponent = AiSearch02Icon,
+  icon: IconComponent = Search01Icon,
   iconElement,
   trailingSlot,
   autoFocus = true,
