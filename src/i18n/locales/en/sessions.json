@@ -555,22 +555,6 @@
     "creatingWithContext": "Creating new session with context",
     "creationCooldown": "Please wait a moment before creating another terminal."
   },
-  "scope": {
-    "applicableScope": "Applicable scope",
-    "for": "for",
-    "selectCategory": "Select category",
-    "selectScope": "Select scope",
-    "allRepos": "All repos",
-    "allSessions": "All sessions",
-    "allProjects": "All projects",
-    "allWorkItems": "All work items",
-    "categories": {
-      "repo": "Repo",
-      "session": "Session",
-      "projects": "Projects",
-      "workItems": "Work items"
-    }
-  },
   "editor": {
     "loading": "Loading editor..."
   },

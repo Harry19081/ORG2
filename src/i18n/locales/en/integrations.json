@@ -1442,11 +1442,7 @@
     "activityDataPlaceholder": "Enter ActivityData JSON...",
     "preview": "Preview",
     "jsonParseError": "JSON Parse Error",
-    "noPreview": "No data to preview",
-    "chatExtras": "Chat Extras",
-    "queuedMessages": "Queued Messages",
-    "fileReview": "File Review",
-    "terminalProcesses": "Terminal Processes"
+    "noPreview": "No data to preview"
   },
   "agentTools": {
     "enabled": "Enabled"

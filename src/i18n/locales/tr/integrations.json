@@ -1420,10 +1420,6 @@
     "preview": "Önizleme",
     "jsonParseError": "JSON Ayrıştırma Hatası",
     "noPreview": "Önizlenecek veri yok",
-    "chatExtras": "Sohbet Eklentileri",
-    "queuedMessages": "Kuyruktaki Mesajlar",
-    "fileReview": "Dosya İncelemesi",
-    "terminalProcesses": "Terminal İşlemleri",
     "modeSessionLink": "Oturum Bağlantısı"
   },
   "rulesTabs": {

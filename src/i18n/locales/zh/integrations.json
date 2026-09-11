@@ -1432,10 +1432,6 @@
     "preview": "预览",
     "jsonParseError": "JSON 解析错误",
     "noPreview": "无数据可预览",
-    "chatExtras": "聊天附加组件",
-    "queuedMessages": "消息队列",
-    "fileReview": "文件审查",
-    "terminalProcesses": "终端进程",
     "modeSessionLink": "会话链接"
   },
   "rulesTabs": {

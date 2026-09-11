@@ -1420,10 +1420,6 @@
     "preview": "Предпросмотр",
     "jsonParseError": "Ошибка парсинга JSON",
     "noPreview": "Нет данных для предпросмотра",
-    "chatExtras": "Дополнения чата",
-    "queuedMessages": "Сообщения в очереди",
-    "fileReview": "Обзор файлов",
-    "terminalProcesses": "Процессы терминала",
     "modeSessionLink": "Ссылка на сессию"
   },
   "rulesTabs": {

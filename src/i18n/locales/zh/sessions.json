@@ -555,22 +555,6 @@
     "creatingWithContext": "正在使用上下文创建新 Session",
     "creationCooldown": "请稍后再创建新终端。"
   },
-  "scope": {
-    "applicableScope": "适用范围",
-    "for": "的",
-    "selectCategory": "选择类别",
-    "selectScope": "选择范围",
-    "allRepos": "所有仓库",
-    "allSessions": "所有 Session",
-    "allProjects": "所有项目",
-    "allWorkItems": "所有工作项",
-    "categories": {
-      "repo": "仓库",
-      "session": "Session",
-      "projects": "项目",
-      "workItems": "工作项"
-    }
-  },
   "editor": {
     "loading": "正在加载编辑器..."
   },

@@ -1420,10 +1420,6 @@
     "preview": "Vista previa",
     "jsonParseError": "Error de análisis JSON",
     "noPreview": "Sin datos para previsualizar",
-    "chatExtras": "Extras del chat",
-    "queuedMessages": "Mensajes en cola",
-    "fileReview": "Revisión de archivos",
-    "terminalProcesses": "Procesos de terminal",
     "modeSessionLink": "Enlace de sesión"
   },
   "rulesTabs": {
