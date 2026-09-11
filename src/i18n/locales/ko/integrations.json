@@ -1420,10 +1420,6 @@
     "preview": "미리보기",
     "jsonParseError": "JSON 파싱 오류",
     "noPreview": "미리볼 데이터 없음",
-    "chatExtras": "채팅 추가 기능",
-    "queuedMessages": "대기 메시지",
-    "fileReview": "파일 검토",
-    "terminalProcesses": "터미널 프로세스",
     "modeSessionLink": "세션 링크"
   },
   "rulesTabs": {

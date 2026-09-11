@@ -379,38 +379,3 @@ export function WorkItemDetailHeaderActions({
     </div>
   );
 }
-
-export function WorkItemDetailHeader(props: WorkItemDetailHeaderProps) {
-  const {
-    breadcrumbSegments,
-    breadcrumbProjectName,
-    breadcrumbIcon,
-    shortId,
-    onClose,
-    onTitleChange,
-    workItem,
-    t,
-    ...actionProps
-  } = props;
-
-  return (
-    <>
-      <WorkItemDetailHeaderBreadcrumb
-        workItem={workItem}
-        breadcrumbSegments={breadcrumbSegments}
-        breadcrumbProjectName={breadcrumbProjectName}
-        breadcrumbIcon={breadcrumbIcon}
-        shortId={shortId}
-        onClose={onClose}
-        onTitleChange={onTitleChange}
-        t={t}
-      />
-      <WorkItemDetailHeaderActions
-        {...actionProps}
-        workItem={workItem}
-        onClose={onClose}
-        t={t}
-      />
-    </>
-  );
-}

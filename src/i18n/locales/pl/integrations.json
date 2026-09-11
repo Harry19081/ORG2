@@ -1430,10 +1430,6 @@
     "preview": "Podgląd",
     "jsonParseError": "Błąd parsowania JSON",
     "noPreview": "Brak danych do podglądu",
-    "chatExtras": "Dodatki czatu",
-    "queuedMessages": "Wiadomości w kolejce",
-    "fileReview": "Przegląd plików",
-    "terminalProcesses": "Procesy terminala",
     "modeSessionLink": "Link do sesji"
   },
   "agentTools": {

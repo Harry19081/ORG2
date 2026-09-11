@@ -1420,10 +1420,6 @@
     "preview": "Xem trước",
     "jsonParseError": "Lỗi phân tích JSON",
     "noPreview": "Không có dữ liệu để xem trước",
-    "chatExtras": "Tiện ích trò chuyện",
-    "queuedMessages": "Tin nhắn đang chờ",
-    "fileReview": "Xem lại tệp",
-    "terminalProcesses": "Tiến trình terminal",
     "modeSessionLink": "Liên kết phiên"
   },
   "rulesTabs": {

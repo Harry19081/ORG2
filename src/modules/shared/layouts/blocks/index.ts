@@ -74,8 +74,6 @@ export type { PanelHeaderProps } from "./PanelHeader";
 
 export { default as PanelFooter, PANEL_FOOTER_TOKENS } from "./PanelFooter";
 
-export { default as ListPanelTabPillRow } from "./ListPanelTabPillRow";
-
 export { default as ListPanelScrollArea } from "./ListPanelScrollArea";
 
 export { default as LoadingBar } from "./LoadingBar";

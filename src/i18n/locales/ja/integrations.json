@@ -1420,10 +1420,6 @@
     "preview": "プレビュー",
     "jsonParseError": "JSON パースエラー",
     "noPreview": "プレビューするデータがありません",
-    "chatExtras": "チャット拡張",
-    "queuedMessages": "キューメッセージ",
-    "fileReview": "ファイルレビュー",
-    "terminalProcesses": "ターミナルプロセス",
     "modeSessionLink": "セッションリンク"
   },
   "rulesTabs": {
