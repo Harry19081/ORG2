@@ -235,15 +235,15 @@ export const HEADER_CONTENT_RIGHT_PADDING_CLASS = "pr-2";
 /** Shared tab-aligned left and compact right insets for header bars. */
 export const HEADER_CONTENT_HORIZONTAL_PADDING_CLASS = `${HEADER_CONTENT_LEFT_PADDING_CLASS} ${HEADER_CONTENT_RIGHT_PADDING_CLASS}`;
 
-/** Shared 40px file-bar row geometry (used by FileHeader + search rows). */
-export const FILE_BAR_ROW_CLASSES = `work-station-file-bar flex h-[40px] shrink-0 items-center gap-1.5 ${HEADER_CONTENT_HORIZONTAL_PADDING_CLASS}`;
+/** Shared 36px file-bar row geometry (used by FileHeader + search rows). */
+export const FILE_BAR_ROW_CLASSES = `work-station-file-bar flex h-9 shrink-0 items-center gap-1.5 ${HEADER_CONTENT_HORIZONTAL_PADDING_CLASS}`;
 
 export const HEADER_CLASSES = {
   /**
    * File bar header (top bar showing file path / URL / preview info).
    * Used by: FileHeader, WebUrlBar
    *
-   * Height: 40px, horizontal layout, shrink-proof, tab-aligned left inset.
+   * Height: 36px, horizontal layout, shrink-proof, tab-aligned left inset.
    */
   fileBar: FILE_BAR_ROW_CLASSES,
 

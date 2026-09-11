@@ -516,7 +516,7 @@ const GitFileList: React.FC<GitFileListProps> = ({
         isCollapsed={isCollapsed}
         onToggle={() => setIsCollapsed((prev) => !prev)}
         actions={sectionActions}
-        heightClassName="h-[40px]"
+        heightClassName="h-9"
       />
 
       {!isCollapsed && (
