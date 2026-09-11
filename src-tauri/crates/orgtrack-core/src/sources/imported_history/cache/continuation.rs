@@ -418,8 +418,14 @@ pub fn demote_superseded_continuations_from_conn(
         }
     }
 
+    // Stamp, demote and re-promote together: a promotion whose stamp removal
+    // landed but whose listable flip did not would leave the winner hidden
+    // with no marker for the next election to recover from.
+    let tx = conn
+        .unchecked_transaction()
+        .map_err(|err| format!("Failed to begin continuation election: {err}"))?;
     for (source_session_id, metadata_json) in metadata_updates {
-        conn.execute(
+        tx.execute(
             "UPDATE imported_history_session_cache
              SET source_metadata_json = ?3
              WHERE source = ?1 AND source_session_id = ?2",
@@ -428,7 +434,7 @@ pub fn demote_superseded_continuations_from_conn(
         .map_err(|err| format!("Failed to stamp continuation lineage: {err}"))?;
     }
     for source_session_id in &losers {
-        conn.execute(
+        tx.execute(
             "UPDATE imported_history_session_cache
              SET listable = 0
              WHERE source = ?1 AND source_session_id = ?2",
@@ -437,7 +443,7 @@ pub fn demote_superseded_continuations_from_conn(
         .map_err(|err| format!("Failed to demote superseded continuation: {err}"))?;
     }
     for source_session_id in &promoted {
-        conn.execute(
+        tx.execute(
             "UPDATE imported_history_session_cache
              SET listable = 1
              WHERE source = ?1 AND source_session_id = ?2",
@@ -445,5 +451,7 @@ pub fn demote_superseded_continuations_from_conn(
         )
         .map_err(|err| format!("Failed to re-promote continuation winner: {err}"))?;
     }
+    tx.commit()
+        .map_err(|err| format!("Failed to commit continuation election: {err}"))?;
     Ok(losers.len())
 }

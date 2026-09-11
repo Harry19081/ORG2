@@ -751,6 +751,50 @@ fn continuation_election_repromotes_a_superseded_winner_once_the_newer_generatio
 }
 
 #[test]
+fn continuation_election_keeps_the_supersession_stamp_when_promotion_fails() {
+    let mut conn = fixture_conn();
+    let group = continuation_group_metadata_json(Some("family-d"));
+    let mut older = input(SOURCE_CODEX_APP, "gen1", 100);
+    older.source_metadata_json = group.clone();
+    let mut newer = input(SOURCE_CODEX_APP, "gen2", 200);
+    newer.source_metadata_json = group;
+    upsert_imported_session_cache_from_conn(&mut conn, &[older, newer]).expect("upsert");
+    demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP).expect("election");
+    prune_missing_records_from_conn(&conn, SOURCE_CODEX_APP, &["gen1".to_string()])
+        .expect("prune gen2");
+
+    // Inject a failure into the promotion statement only: the stamp removal
+    // that precedes it must roll back with it, or the winner is hidden with
+    // no marker left for any later election to recover from.
+    conn.execute_batch(
+        "CREATE TRIGGER fail_promotion BEFORE UPDATE OF listable ON imported_history_session_cache
+         WHEN NEW.listable = 1 AND OLD.listable = 0
+         BEGIN SELECT RAISE(ABORT, 'injected promotion failure'); END",
+    )
+    .expect("install trigger");
+    let err = demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP)
+        .expect_err("promotion must fail under the injected fault");
+    assert!(err.contains("injected promotion failure"), "{err}");
+    assert!(!listable_of(&conn, SOURCE_CODEX_APP, "gen1"));
+    let metadata: String = conn
+        .query_row(
+            "SELECT source_metadata_json FROM imported_history_session_cache
+             WHERE source = ?1 AND source_session_id = 'gen1'",
+            [SOURCE_CODEX_APP],
+            |row| row.get(0),
+        )
+        .expect("gen1 metadata");
+    assert!(
+        metadata.contains(CONTINUATION_SUPERSEDED_FIELD),
+        "the recovery marker must survive a failed promotion: {metadata}"
+    );
+
+    conn.execute_batch("DROP TRIGGER fail_promotion").expect("remove trigger");
+    demote_superseded_continuations_from_conn(&conn, SOURCE_CODEX_APP).expect("retry election");
+    assert!(listable_of(&conn, SOURCE_CODEX_APP, "gen1"));
+}
+
+#[test]
 fn continuation_election_keeps_a_winner_hidden_for_reasons_other_than_supersession() {
     let mut conn = fixture_conn();
     let group = continuation_group_metadata_json(Some("family-c"));
