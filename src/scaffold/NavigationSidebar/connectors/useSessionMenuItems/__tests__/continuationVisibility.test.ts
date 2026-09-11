@@ -85,9 +85,10 @@ describe("continuationWinnerIds", () => {
   });
 
   it("breaks an updated_at tie by id, like the backend election", () => {
+    // The lower id comes first so insertion order alone would pick it.
     const rows = [
-      dated("codexapp-rollout-b", "lineage-a", "2026-09-11T00:18:38.000Z"),
       dated("codexapp-rollout-a", "lineage-a", "2026-09-11T00:18:38.000Z"),
+      dated("codexapp-rollout-b", "lineage-a", "2026-09-11T00:18:38.000Z"),
     ];
     expect(continuationWinnerIds(rows, new Set())).toEqual(
       new Set(["codexapp-rollout-b"])
