@@ -21,10 +21,15 @@ vi.mock("@src/components/FindCard", () => ({
     return props.children ?? null;
   },
 }));
-vi.mock("../../../shared", () => ({
-  ReplaceInput: (props: unknown) => {
+vi.mock("@src/scaffold/GlobalSpotlight/components/SpotlightSearchBar", () => ({
+  SpotlightSearchBar: (props: { trailingSlot?: React.ReactNode }) => {
     mocks.replace(props);
-    return createElement("input");
+    return createElement(
+      "div",
+      null,
+      createElement("input"),
+      props.trailingSlot
+    );
   },
 }));
 vi.mock("react-i18next", () => ({
@@ -44,12 +49,13 @@ beforeEach(() => {
   vi.clearAllMocks();
   host = document.createElement("div");
   host.dataset.chatPanel = "";
+  host.dataset.findScopeSwitching = "true";
   document.body.append(host);
   view = new EditorView({
     parent: host,
     state: EditorState.create({
       doc: "alpha beta alpha",
-      extensions: [findReplaceExtension()],
+      extensions: [findReplaceExtension("/workspace/src/long-file-name.ts")],
     }),
   });
 });
@@ -79,6 +85,46 @@ async function advance(ms: number) {
 }
 
 describe("CodeMirror consolidated Find", () => {
+  it("anchors Find to the outer split view instead of the editor pane", async () => {
+    const split = document.createElement("div");
+    split.dataset.paneSurfaceUnderlay = "";
+    document.body.append(split);
+    split.append(host);
+    try {
+      await open();
+      expect(
+        split.querySelector(":scope > .pointer-events-none")
+      ).not.toBeNull();
+      expect(host.querySelector(":scope > .pointer-events-none")).toBeNull();
+      await act(async () => {
+        closeSearchPanel(view);
+      });
+      expect(split.querySelector(":scope > .pointer-events-none")).toBeNull();
+    } finally {
+      document.body.append(host);
+      split.remove();
+    }
+  });
+  it("selects modes before typing and uses them for the first query", async () => {
+    await open();
+    act(() => card().search.toggleCaseSensitive());
+    act(() => card().search.toggleWholeWord());
+    act(() => card().search.toggleRegex());
+    expect(card().search).toMatchObject({
+      query: "",
+      caseSensitive: true,
+      wholeWord: true,
+      useRegex: true,
+    });
+    act(() => card().search.setQuery("alpha"));
+    await advance(500);
+    expect(getSearchQuery(view.state)).toMatchObject({
+      search: "alpha",
+      caseSensitive: true,
+      wholeWord: true,
+      regexp: true,
+    });
+  });
   it("floats outside the editor panel and debounces query application", async () => {
     await open();
     expect(
@@ -102,10 +148,52 @@ describe("CodeMirror consolidated Find", () => {
         view.state.selection.main.to
       )
     ).toBe("beta");
-    act(() => card().extraControls.props.onClick());
-    act(() => mocks.replace.mock.calls.at(-1)![0].onChange("gamma"));
-    act(() => mocks.replace.mock.calls.at(-1)![0].onReplaceAll());
+    act(() => card().extraControls.props.children.props.onClick());
+    act(() => mocks.replace.mock.calls.at(-1)![0].onSearchQueryChange("gamma"));
+    act(() =>
+      host
+        .querySelector<HTMLElement>('[data-icon="replace-all"]')!
+        .closest("button")!
+        .click()
+    );
     expect(view.state.doc.toString()).toBe("alpha gamma alpha");
+  });
+  it("guards replacement Enter during composition and uses the compact input", async () => {
+    await open();
+    act(() => card().search.setQuery("alpha"));
+    act(() => card().extraControls.props.children.props.onClick());
+    act(() => mocks.replace.mock.calls.at(-1)![0].onSearchQueryChange("gamma"));
+    const input = mocks.replace.mock.calls.at(-1)![0];
+    expect(input.density).toBe("compact");
+    expect(card().targetName).toBe("long-file-name.ts");
+    const replaceButton = host
+      .querySelector<HTMLElement>('[data-icon="replace"]')!
+      .closest("button")!;
+    expect(replaceButton.hasAttribute("title")).toBe(false);
+    expect(replaceButton.hasAttribute("aria-label")).toBe(false);
+    const event = {
+      key: "Enter",
+      shiftKey: false,
+      nativeEvent: { isComposing: true },
+      preventDefault: vi.fn(),
+    };
+    act(() => input.onKeyDown(event));
+    expect(view.state.doc.toString()).toBe("alpha beta alpha");
+    expect(event.preventDefault).not.toHaveBeenCalled();
+    act(() =>
+      input.onKeyDown({ ...event, nativeEvent: { isComposing: false } })
+    );
+    // CodeMirror first selects a match, then replaces the selected match.
+    expect(
+      view.state.sliceDoc(
+        view.state.selection.main.from,
+        view.state.selection.main.to
+      )
+    ).toBe("alpha");
+    act(() =>
+      input.onKeyDown({ ...event, nativeEvent: { isComposing: false } })
+    );
+    expect(view.state.doc.toString()).toBe("gamma beta alpha");
   });
   it("removes floating chrome and cancels pending search when closed", async () => {
     await open();

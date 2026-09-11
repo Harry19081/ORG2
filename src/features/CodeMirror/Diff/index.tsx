@@ -334,7 +334,7 @@ export const CodeMirrorDiff: React.FC<CodeMirrorDiffProps> = ({
 
     if (filePath) exts.push(createCopyFileRefExtension(filePath));
 
-    exts.push(findReplaceExtension());
+    exts.push(findReplaceExtension(filePath));
     if (selectionExtension) {
       exts.push(selectionExtension);
     }

@@ -89,6 +89,7 @@ export { default as BoxesIcon } from "@hugeicons/core-free-icons/BoxesIcon";
 export { default as BrainIcon } from "@hugeicons/core-free-icons/BrainIcon";
 export { default as Briefcase01Icon } from "@hugeicons/core-free-icons/Briefcase01Icon";
 export { default as Briefcase02Icon } from "@hugeicons/core-free-icons/Briefcase02Icon";
+export { default as BlushBrush01Icon } from "@hugeicons/core-free-icons/BlushBrush01Icon";
 export { default as BrushCleaningIcon } from "@hugeicons/core-free-icons/BrushCleaningIcon";
 export { default as BubbleChatIcon } from "@hugeicons/core-free-icons/BubbleChatIcon";
 export { default as Bug01Icon } from "@hugeicons/core-free-icons/Bug01Icon";

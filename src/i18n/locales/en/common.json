@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "Search in session",
+    "file": "Search in file",
+    "named": "Search in {{name}}"
+  },
   "windowChrome": {
     "menus": {
       "file": "File",
@@ -611,7 +616,9 @@
     "previous": "Previous",
     "next": "Next",
     "previousMatch": "Previous Match (Shift+Enter)",
+    "previousMatchLabel": "Previous Match",
     "nextMatch": "Next Match (Enter)",
+    "nextMatchLabel": "Next Match",
     "clearSearch": "Clear search",
     "openInEditorTab": "Open in editor tab",
     "openFile": "Open File",
@@ -638,11 +645,16 @@
     "goForward": "Go forward",
     "goToToday": "Go to today",
     "matchCase": "Match Case (Alt+C)",
+    "matchCaseLabel": "Match Case",
     "matchWholeWord": "Match Whole Word (Alt+W)",
+    "matchWholeWordLabel": "Match Whole Word",
     "useRegex": "Use Regular Expression (Alt+R)",
+    "useRegexLabel": "Use Regular Expression",
     "searchInOpenEditors": "Search Only in Open Editors",
     "replace": "Replace (Ctrl+Shift+1)",
+    "replaceLabel": "Replace",
     "replaceAll": "Replace All (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Replace All",
     "moreActions": "More Actions...",
     "formatSql": "Format SQL (prettify)",
     "queryHistory": "Query history",

@@ -15,8 +15,6 @@ type SegmentedTextPillSize = "small" | "default";
 export interface SegmentedTextPillProps<T extends string> {
   ariaLabel: string;
   className?: string;
-  /** Use circular, icon-only segments; options should provide accessible labels. */
-  compact?: boolean;
   dataTestId?: string;
   onChange: (value: T) => void;
   options: SegmentedTextPillOption<T>[];
@@ -39,7 +37,6 @@ const BUTTON_SIZE_CLASSES: Record<SegmentedTextPillSize, string> = {
 export default function SegmentedTextPill<T extends string>({
   ariaLabel,
   className = "",
-  compact = false,
   dataTestId,
   onChange,
   options,
@@ -60,7 +57,7 @@ export default function SegmentedTextPill<T extends string>({
           <button
             key={option.value}
             type="button"
-            className={`rounded-full py-0 transition-colors ${compact ? `inline-flex shrink-0 items-center justify-center p-0 ${size === "small" ? "size-5" : "size-6"}` : BUTTON_SIZE_CLASSES[size]} ${
+            className={`rounded-full py-0 transition-colors ${BUTTON_SIZE_CLASSES[size]} ${
               selected
                 ? "bg-bg-2 font-medium text-text-1 shadow-dropdown-soft"
                 : "text-text-3 hover:text-text-1"

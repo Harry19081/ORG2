@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "セッション内を検索",
+    "file": "ファイル内を検索",
+    "named": "{{name}} 内を検索"
+  },
   "teamInbox": {
     "title": "チームの受信トレイ",
     "listLabel": "チーム受信トレイの一覧",
@@ -780,7 +785,9 @@
     "previous": "前へ",
     "next": "次へ",
     "previousMatch": "前の一致 (Shift+Enter)",
+    "previousMatchLabel": "前の一致",
     "nextMatch": "次の一致 (Enter)",
+    "nextMatchLabel": "次の一致",
     "clearSearch": "検索をクリア",
     "openInEditorTab": "エディタタブで開く",
     "openFile": "ファイルを開く",
@@ -807,11 +814,16 @@
     "goForward": "進む",
     "goToToday": "今日に移動",
     "matchCase": "大文字と小文字を区別 (Alt+C)",
+    "matchCaseLabel": "大文字と小文字を区別",
     "matchWholeWord": "単語単位で検索 (Alt+W)",
+    "matchWholeWordLabel": "単語単位で検索",
     "useRegex": "正規表現を使用 (Alt+R)",
+    "useRegexLabel": "正規表現を使用",
     "searchInOpenEditors": "開いているエディタのみで検索",
     "replace": "置換 (Ctrl+Shift+1)",
+    "replaceLabel": "置換",
     "replaceAll": "すべて置換 (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "すべて置換",
     "moreActions": "その他の操作...",
     "formatSql": "SQL をフォーマット",
     "queryHistory": "クエリ履歴",

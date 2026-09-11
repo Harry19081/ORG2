@@ -5,8 +5,10 @@ import { CURRENT_SHORTCUT_PLATFORM } from "@src/config/keyboard/shortcutBindings
 
 import {
   type FindScope,
+  canSelectFindScope,
   registerFindTarget,
   selectFindScope,
+  subscribeFind,
 } from "./findCoordinator";
 
 const cleanup: (() => void)[] = [];
@@ -16,7 +18,10 @@ afterEach(() => {
 });
 function target(scope: FindScope, visible = true) {
   const element = document.createElement("input");
-  document.body.append(element);
+  const pane = document.createElement("div");
+  if (scope === "file") pane.dataset.findScopeSwitching = "true";
+  pane.append(element);
+  document.body.append(pane);
   element.getClientRects = () =>
     (visible ? [{}] : []) as unknown as DOMRectList;
   const open = vi.fn(),
@@ -85,7 +90,94 @@ describe("consolidated Find cycle", () => {
     expect(file.open).toHaveBeenCalledOnce();
     expect(unrelated.open).not.toHaveBeenCalled();
   });
-  it("does not intercept outside focus and releases registration", () => {
+  it("removes the file scope when chat maximizes and restores it on return", async () => {
+    const session = target("session"),
+      file = target("file");
+    session.element.focus();
+    press(session.element);
+    expect(canSelectFindScope("file")).toBe(true);
+    file.element.parentElement!.setAttribute("aria-hidden", "true");
+    await Promise.resolve();
+    expect(canSelectFindScope("file")).toBe(false);
+    press(session.element);
+    expect(session.close).toHaveBeenCalledOnce();
+    expect(file.open).not.toHaveBeenCalled();
+    file.element.parentElement!.removeAttribute("aria-hidden");
+    await Promise.resolve();
+    expect(canSelectFindScope("file")).toBe(true);
+  });
+  it("requires the CodeMirror pane to be on the right in a split layout", async () => {
+    target("session");
+    const file = target("file");
+    file.element.parentElement!.dataset.findScopeSwitching = "false";
+    await Promise.resolve();
+    expect(canSelectFindScope("file")).toBe(false);
+    file.element.parentElement!.dataset.findScopeSwitching = "true";
+    await Promise.resolve();
+    expect(canSelectFindScope("file")).toBe(true);
+    cleanup.pop()!();
+    expect(canSelectFindScope("file")).toBe(false);
+  });
+  it("observes the layout for detached editor registration and disconnects on disposal", async () => {
+    const surface = document.createElement("div");
+    surface.dataset.workbenchSurface = "";
+    surface.dataset.findScopeSwitching = "true";
+    document.body.append(surface);
+    const editor = document.createElement("input");
+    editor.getClientRects = () => [{}] as unknown as DOMRectList;
+    const dispose = registerFindTarget({
+      scope: "file",
+      element: () => editor,
+      open: vi.fn(),
+      close: vi.fn(),
+    });
+    surface.append(editor);
+    surface.setAttribute("aria-hidden", "false");
+    await Promise.resolve();
+    expect(canSelectFindScope("file")).toBe(true);
+    surface.setAttribute("aria-hidden", "true");
+    await Promise.resolve();
+    expect(canSelectFindScope("file")).toBe(false);
+    dispose();
+    const listener = vi.fn();
+    cleanup.push(subscribeFind(listener));
+    surface.setAttribute("aria-hidden", "false");
+    await Promise.resolve();
+    expect(listener).not.toHaveBeenCalled();
+  });
+  it.each(["toolbar", "xterm"])(
+    "opens, switches and closes from %s focus",
+    (className) => {
+      const session = target("session"),
+        file = target("file");
+      const station = document.createElement("input");
+      station.className = className;
+      document.body.append(station);
+      station.focus();
+      expect(press(station).defaultPrevented).toBe(true);
+      expect(session.open).toHaveBeenCalledOnce();
+      press(station);
+      expect(file.open).toHaveBeenCalledOnce();
+      press(station);
+      expect(file.close).toHaveBeenCalledOnce();
+    }
+  );
+  it("opens a standalone editor from station chrome without a chat target", () => {
+    const file = target("file");
+    file.element.parentElement!.dataset.findScopeSwitching = "false";
+    expect(press(document.body).defaultPrevented).toBe(true);
+    expect(file.open).toHaveBeenCalledOnce();
+    press(document.body);
+    expect(file.close).toHaveBeenCalledOnce();
+  });
+  it("ignores hidden targets when resolving a global shortcut", () => {
+    const session = target("session", false),
+      file = target("file", false);
+    expect(press(document.body).defaultPrevented).toBe(false);
+    expect(session.open).not.toHaveBeenCalled();
+    expect(file.open).not.toHaveBeenCalled();
+  });
+  it("does not intercept after releasing registration", () => {
     const session = target("session");
     session.element.focus();
     cleanup.pop()!();

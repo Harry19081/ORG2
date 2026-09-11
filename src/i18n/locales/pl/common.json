@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "Szukaj w sesji",
+    "file": "Szukaj w pliku",
+    "named": "Szukaj w {{name}}"
+  },
   "teamInbox": {
     "title": "Skrzynka zespołu",
     "listLabel": "Lista skrzynki zespołu",
@@ -780,7 +785,9 @@
     "previous": "Poprzedni",
     "next": "Następny",
     "previousMatch": "Poprzednie dopasowanie (Shift+Enter)",
+    "previousMatchLabel": "Poprzednie dopasowanie",
     "nextMatch": "Następne dopasowanie (Enter)",
+    "nextMatchLabel": "Następne dopasowanie",
     "clearSearch": "Wyczyść wyszukiwanie",
     "openInEditorTab": "Otwórz w karcie edytora",
     "openFile": "Otwórz plik",
@@ -807,11 +814,16 @@
     "goForward": "Naprzód",
     "goToToday": "Przejdź do dzisiaj",
     "matchCase": "Rozróżniaj wielkość liter (Alt+C)",
+    "matchCaseLabel": "Rozróżniaj wielkość liter",
     "matchWholeWord": "Dopasuj całe słowo (Alt+W)",
+    "matchWholeWordLabel": "Dopasuj całe słowo",
     "useRegex": "Użyj wyrażenia regularnego (Alt+R)",
+    "useRegexLabel": "Użyj wyrażenia regularnego",
     "searchInOpenEditors": "Szukaj tylko w otwartych edytorach",
     "replace": "Zamień (Ctrl+Shift+1)",
+    "replaceLabel": "Zamień",
     "replaceAll": "Zamień wszystko (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Zamień wszystko",
     "moreActions": "Więcej akcji...",
     "formatSql": "Formatuj SQL (upiększ)",
     "queryHistory": "Historia zapytań",

@@ -8,7 +8,9 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import AnyIcon from "@src/components/AnyIcon";
-import { ArrowLeft01Icon, HugeiconsIcon } from "@src/icons";
+import Button from "@src/components/Button";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
+import { ArrowLeft01Icon, BlushBrush01Icon, HugeiconsIcon } from "@src/icons";
 
 import { ICONS } from "../config";
 import { SPOTLIGHT_CLASSES, SPOTLIGHT_TOKENS } from "../constants";
@@ -123,7 +125,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
   return (
     <div>
       <div
-        className={`spotlight-search-bar flex items-center ${compact ? "h-10 min-h-10 gap-1.5 px-3" : "h-[56px] min-h-[56px] gap-2 px-4"}`}
+        className={`spotlight-search-bar flex items-center ${compact ? "h-10 min-h-10 gap-1.5 pr-2 pl-3" : "h-[56px] min-h-[56px] gap-2 px-4"}`}
       >
         {hasLeadingSlot ? (
           <div className="flex shrink-0 items-center">{leadingSlot}</div>
@@ -180,7 +182,7 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
             onKeyDown={onKeyDown}
             placeholder={placeholder}
             aria-label={ariaLabel}
-            className={`min-w-0 flex-1 bg-transparent ${inputFontSize} text-text-1 placeholder:text-text-1 focus:outline-none`}
+            className={`min-w-0 flex-1 bg-transparent text-ellipsis ${inputFontSize} text-text-1 placeholder:text-text-1 focus:outline-none`}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -189,20 +191,35 @@ export const SpotlightSearchBar: React.FC<SpotlightSearchBarProps> = ({
           />
         )}
 
-        {!hideInput && searchQuery && !isCountingDown && (
-          <button
-            type="button"
-            className={`flex shrink-0 items-center justify-center rounded-full text-text-3 transition-colors hover:bg-fill-2 hover:text-text-1 ${compact ? "h-6 w-6" : "h-7 w-7"}`}
-            aria-label={t("common:tooltips.clearSearch")}
-            onClick={handleResetSearch}
-          >
-            <HugeiconsIcon icon={ICONS.close} size={14} />
-          </button>
-        )}
+        {(trailingSlot || (!hideInput && searchQuery && !isCountingDown)) && (
+          <div className="flex shrink-0 items-center gap-px">
+            {!hideInput && searchQuery && !isCountingDown && (
+              <ToolbarTooltip
+                label={t("common:actions.clear")}
+                mouseEnterDelay={1000}
+              >
+                <Button
+                  variant="tertiary"
+                  size="small"
+                  iconOnly
+                  onClick={handleResetSearch}
+                  icon={
+                    <>
+                      <HugeiconsIcon icon={BlushBrush01Icon} size={14} />
+                      <span className="sr-only">
+                        {t("common:actions.clear")}
+                      </span>
+                    </>
+                  }
+                />
+              </ToolbarTooltip>
+            )}
 
-        {trailingSlot ? (
-          <div className="flex shrink-0 items-center">{trailingSlot}</div>
-        ) : null}
+            {trailingSlot ? (
+              <div className="flex shrink-0 items-center">{trailingSlot}</div>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

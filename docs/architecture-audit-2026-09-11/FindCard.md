@@ -18,3 +18,7 @@ Acceptance criteria: one visual card; explicit Session/File scope; focused scope
 The UI registry is scoped to the current JavaScript document and retains only mounted targets. Cleanup drops targets, active/focused references and global listeners when empty. CodeMirror's search state remains authoritative for query/replace behavior. Its Panel lifecycle owns the floating React root, which is unmounted on close/destroy.
 
 Compatibility: ordinary search keeps the 500 ms debounce. Explicit navigation/replacement flushes the pending query. Read-only files expose no replace UI. No backend or persisted format changes.
+
+## Final refinements
+
+Window-wide Find resolves a visible target even outside chat/editor focus. The outer split-view surface anchors both cards. Session metadata comes from the matching session record; Editor and Diff pass an optional file path whose basename is held in a CodeMirror facet. Multi-file search documents retain the generic fallback. Scope pill visibility follows split layout and visible editor availability. Replacement remains bound to its EditorView. No persistence, RPC, backend, dependency or wire changes. The pill uses regular sizing; no new compact-pill API is needed. Final verification commands and results are recorded in the pull request.

@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "Pesquisar na sessão",
+    "file": "Pesquisar no arquivo",
+    "named": "Pesquisar em {{name}}"
+  },
   "teamInbox": {
     "title": "Caixa de entrada da equipe",
     "listLabel": "Lista da caixa de entrada da equipe",
@@ -780,7 +785,9 @@
     "previous": "Anterior",
     "next": "Próximo",
     "previousMatch": "Correspondência anterior (Shift+Enter)",
+    "previousMatchLabel": "Correspondência anterior",
     "nextMatch": "Próxima correspondência (Enter)",
+    "nextMatchLabel": "Próxima correspondência",
     "clearSearch": "Limpar pesquisa",
     "openInEditorTab": "Abrir em aba do editor",
     "openFile": "Abrir arquivo",
@@ -807,11 +814,16 @@
     "goForward": "Avançar",
     "goToToday": "Ir para hoje",
     "matchCase": "Diferenciar maiúsculas/minúsculas (Alt+C)",
+    "matchCaseLabel": "Diferenciar maiúsculas/minúsculas",
     "matchWholeWord": "Palavra inteira (Alt+W)",
+    "matchWholeWordLabel": "Palavra inteira",
     "useRegex": "Usar expressão regular (Alt+R)",
+    "useRegexLabel": "Usar expressão regular",
     "searchInOpenEditors": "Pesquisar somente nos editores abertos",
     "replace": "Substituir (Ctrl+Shift+1)",
+    "replaceLabel": "Substituir",
     "replaceAll": "Substituir tudo (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Substituir tudo",
     "moreActions": "Mais ações...",
     "formatSql": "Formatar SQL (prettify)",
     "queryHistory": "Histórico de consultas",

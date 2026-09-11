@@ -4,6 +4,7 @@ import { act, createElement, useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import FindCard from "@src/components/FindCard";
 import type { SessionEvent } from "@src/engines/SessionCore/core/types";
 import {
   chatFindInChatOpenAtomFamily,
@@ -50,12 +51,15 @@ let root: ReturnType<typeof createRoot>;
 let host: HTMLDivElement;
 let search: UseChatSearchReturn;
 let options: UseChatSearchOptions;
+let renderCard = false;
 function Harness() {
   const value = useChatSearch(options);
   useLayoutEffect(() => {
     search = value;
   }, [value]);
-  return null;
+  return renderCard
+    ? createElement(FindCard, { search: value, scope: "session" })
+    : null;
 }
 async function advance(ms: number) {
   await act(async () => {
@@ -73,6 +77,7 @@ beforeEach(() => {
   reactEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
   vi.useFakeTimers();
   vi.clearAllMocks();
+  renderCard = false;
   mocks.invoke.mockResolvedValue([]);
   store = createStore();
   store.set(chatFindInChatOpenAtomFamily("session-1"), true);
@@ -113,6 +118,42 @@ afterEach(() => {
 });
 
 describe("chat search highlight scheduling", () => {
+  it("lets empty-input mode buttons toggle visibly before the first search", async () => {
+    renderCard = true;
+    act(() =>
+      root.render(createElement(Provider, { store }, createElement(Harness)))
+    );
+    const buttons = Array.from(
+      host.querySelectorAll<HTMLButtonElement>("button[aria-pressed]")
+    );
+    expect(buttons).toHaveLength(3);
+    for (const button of buttons) {
+      expect(button.disabled).toBe(false);
+      expect(button.getAttribute("aria-pressed")).toBe("false");
+      act(() => button.click());
+      expect(button.getAttribute("aria-pressed")).toBe("true");
+      act(() => button.click());
+      expect(button.getAttribute("aria-pressed")).toBe("false");
+      act(() => button.click());
+    }
+    await advance(1000);
+    expect(search.query).toBe("");
+    expect(mocks.invoke).not.toHaveBeenCalled();
+    expect(mocks.highlight).not.toHaveBeenCalled();
+    query("alpha");
+    await advance(500);
+    expect(mocks.invoke).toHaveBeenCalledWith(
+      "es_search_chat_events",
+      expect.objectContaining({
+        options: expect.objectContaining({
+          query: "alpha",
+          caseSensitive: true,
+          wholeWord: true,
+          useRegex: true,
+        }),
+      })
+    );
+  });
   it("keeps typing immediate but commits one search/highlight per settled burst", async () => {
     query("z");
     await advance(200);

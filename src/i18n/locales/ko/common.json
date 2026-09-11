@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "세션에서 검색",
+    "file": "파일에서 검색",
+    "named": "{{name}}에서 검색"
+  },
   "teamInbox": {
     "title": "팀 수신함",
     "listLabel": "팀 수신함 목록",
@@ -780,7 +785,9 @@
     "previous": "이전",
     "next": "다음",
     "previousMatch": "이전 일치 (Shift+Enter)",
+    "previousMatchLabel": "이전 일치",
     "nextMatch": "다음 일치 (Enter)",
+    "nextMatchLabel": "다음 일치",
     "clearSearch": "검색 지우기",
     "openInEditorTab": "편집기 탭에서 열기",
     "openFile": "파일 열기",
@@ -807,11 +814,16 @@
     "goForward": "앞으로",
     "goToToday": "오늘로 이동",
     "matchCase": "대소문자 구분 (Alt+C)",
+    "matchCaseLabel": "대소문자 구분",
     "matchWholeWord": "전체 단어 일치 (Alt+W)",
+    "matchWholeWordLabel": "전체 단어 일치",
     "useRegex": "정규식 사용 (Alt+R)",
+    "useRegexLabel": "정규식 사용",
     "searchInOpenEditors": "열린 편집기에서만 검색",
     "replace": "바꾸기 (Ctrl+Shift+1)",
+    "replaceLabel": "바꾸기",
     "replaceAll": "모두 바꾸기 (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "모두 바꾸기",
     "moreActions": "추가 작업...",
     "formatSql": "SQL 포맷",
     "queryHistory": "쿼리 기록",

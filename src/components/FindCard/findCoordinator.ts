@@ -31,17 +31,30 @@ export const subscribeFind = (listener: () => void) => {
   };
 };
 export const getFindRevision = () => revision;
+/** Window chrome yields to either active Find scope without subscribing to draft input. */
+export const getFindOpen = () => active !== null;
 function available(target: FindTarget) {
   const element = target.element();
-  return Boolean(element?.isConnected && element.getClientRects().length);
+  return Boolean(
+    element?.isConnected &&
+    !element.closest('[aria-hidden="true"], [hidden]') &&
+    element.getClientRects().length
+  );
+}
+function selectable(target: FindTarget) {
+  return (
+    available(target) &&
+    (target.scope === "session" ||
+      Boolean(target.element()?.closest('[data-find-scope-switching="true"]')))
+  );
 }
 function otherTarget(scope: FindScope) {
   const preferred = lastFocused[scope];
-  if (preferred && targets.has(preferred) && available(preferred))
+  if (preferred && targets.has(preferred) && selectable(preferred))
     return preferred;
   return [...targets]
     .reverse()
-    .find((target) => target.scope === scope && available(target));
+    .find((target) => target.scope === scope && selectable(target));
 }
 export function canSelectFindScope(scope: FindScope) {
   return scopes[scope];
@@ -62,7 +75,13 @@ export function closeFindTarget(target: FindTarget) {
 }
 export function selectFindScope(scope: FindScope) {
   const next = otherTarget(scope);
-  if (!next || next === active) return;
+  if (
+    !next ||
+    next === active ||
+    !otherTarget("session") ||
+    !otherTarget("file")
+  )
+    return;
   const previous = active;
   active = next;
   switched = true;
@@ -90,18 +109,17 @@ function onInteraction(event: Event) {
 }
 function onKeyDown(event: KeyboardEvent) {
   if (event.defaultPrevented || !matchesShortcut(event, "find")) return;
-  if (event.target instanceof Element && event.target.closest(".xterm")) return;
-  const inCard =
-    event.target instanceof Element && event.target.closest("[data-find-card]");
-  const owner = inCard ? active : focused;
-  if (!owner || !available(owner)) return;
-  if (
-    !inCard &&
-    owner.scope === "session" &&
-    event.target instanceof Element &&
-    event.target.closest(".cm-editor")
-  )
-    return;
+  // Find is window-wide: toolbar, composer and station focus must not make
+  // the shortcut disappear. Prefer the focused engine, then the open card,
+  // then session search or a standalone visible editor.
+  const owner =
+    (focused && available(focused) ? focused : null) ??
+    (active && available(active) ? active : null) ??
+    otherTarget("session") ??
+    [...targets]
+      .reverse()
+      .find((target) => target.scope === "file" && available(target));
+  if (!owner) return;
   event.preventDefault();
   event.stopPropagation();
   if (event.repeat) return;
@@ -111,7 +129,7 @@ function onKeyDown(event: KeyboardEvent) {
     owner.open();
   } else {
     const next = otherTarget(active.scope === "session" ? "file" : "session");
-    if (!switched && next) {
+    if (!switched && next && otherTarget("session") && otherTarget("file")) {
       selectFindScope(next.scope);
       return;
     }
@@ -124,6 +142,33 @@ function onKeyDown(event: KeyboardEvent) {
 }
 export function registerFindTarget(target: FindTarget) {
   targets.add(target);
+  // Watch only layout attributes on this target's ancestors. No subtree scan,
+  // polling, or draft-input observation is needed to refresh scope availability.
+  const layoutObserver = new MutationObserver(notify);
+  for (
+    let ancestor = target.element()?.parentElement;
+    ancestor && ancestor !== document.body;
+    ancestor = ancestor.parentElement
+  ) {
+    layoutObserver.observe(ancestor, {
+      attributes: true,
+      attributeFilter: [
+        "aria-hidden",
+        "hidden",
+        "class",
+        "style",
+        "data-find-scope-switching",
+      ],
+    });
+  }
+  // CodeMirror registers while its DOM may still be detached. The layout is
+  // also observed directly so maximizing chat still invalidates that target.
+  document.querySelectorAll("[data-workbench-surface]").forEach((surface) => {
+    layoutObserver.observe(surface, {
+      attributes: true,
+      attributeFilter: ["aria-hidden", "data-find-scope-switching"],
+    });
+  });
   if (targets.size === 1) {
     window.addEventListener("pointerdown", onInteraction, true);
     window.addEventListener("focusin", onInteraction, true);
@@ -132,6 +177,7 @@ export function registerFindTarget(target: FindTarget) {
   if (target.element()?.contains(document.activeElement)) focused = target;
   notify();
   return () => {
+    layoutObserver.disconnect();
     targets.delete(target);
     if (focused === target) focused = null;
     if (lastFocused[target.scope] === target) delete lastFocused[target.scope];

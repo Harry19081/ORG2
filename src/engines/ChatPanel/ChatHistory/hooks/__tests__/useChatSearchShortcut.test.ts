@@ -154,16 +154,17 @@ describe("useChatSearchShortcut", () => {
     expect(first.open).not.toHaveBeenCalled();
     expect(second.open).toHaveBeenCalledOnce();
   });
-  it("leaves embedded editor and outside-pane Find alone", () => {
+  it("opens from an unregistered embedded editor and closes from outside the pane", () => {
     const { host, open } = mount();
     const editor = host.querySelector<HTMLElement>(".cm-editor input")!;
     editor.focus();
-    expect(find(editor).defaultPrevented).toBe(false);
+    expect(find(editor).defaultPrevented).toBe(true);
     const outside = document.createElement("input");
     document.body.append(outside);
     outside.focus();
-    expect(find(outside).defaultPrevented).toBe(false);
-    expect(open).not.toHaveBeenCalled();
+    expect(find(outside).defaultPrevented).toBe(true);
+    expect(open).toHaveBeenCalledTimes(2);
+    expect(host.querySelector("[data-find-card]")).toBeNull();
   });
   it("releases shortcut listeners on unmount", () => {
     const { host, open } = mount();

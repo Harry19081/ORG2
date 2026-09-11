@@ -320,9 +320,12 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       }
     />
   );
-  // Include the header and workstation rail in the anchor so Find sits at
-  // the outer panel edge, not the narrower transcript column's edge.
+  // Share the outer split-view anchor with file Find so switching scope
+  // never moves the card between pane headers.
   const searchOverlayHost =
+    pinnedHeaderPortalHost?.closest<HTMLElement>(
+      "[data-pane-surface-underlay]"
+    ) ??
     pinnedHeaderPortalHost?.closest<HTMLElement>("[data-chat-panel]") ??
     pinnedHeaderPortalHost?.parentElement;
   const searchOverlay = search.isSearchVisible ? (
@@ -332,7 +335,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       data-chat-search-chrome
     >
       <div className="pointer-events-auto ml-auto w-full max-w-sm">
-        <ChatSearchBar search={search} />
+        <ChatSearchBar search={search} sessionId={activeId} />
       </div>
     </div>
   ) : null;

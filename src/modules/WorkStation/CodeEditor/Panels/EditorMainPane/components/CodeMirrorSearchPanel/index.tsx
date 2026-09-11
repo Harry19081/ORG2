@@ -23,7 +23,7 @@ import {
   searchPanelOpen,
   setSearchQuery,
 } from "@codemirror/search";
-import { Extension, StateEffect, StateField } from "@codemirror/state";
+import { Extension, Facet, StateEffect, StateField } from "@codemirror/state";
 import { EditorView, Panel, ViewPlugin } from "@codemirror/view";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -37,6 +37,7 @@ import {
   closeFindTarget,
   registerFindTarget,
 } from "@src/components/FindCard/findCoordinator";
+import { ToolbarTooltip } from "@src/components/KeyboardShortcut/ToolbarTooltip";
 import {
   getOverride,
   matchesDefaultShortcut,
@@ -47,9 +48,14 @@ import {
   DEBOUNCE_DELAYS,
   useDebouncedCallback,
 } from "@src/hooks/perf/useDebouncedCallback";
-import { HugeiconsIcon, ReplaceIcon } from "@src/icons";
+import { HugeiconsIcon, ReplaceAllIcon, ReplaceIcon } from "@src/icons";
+import { SpotlightSearchBar } from "@src/scaffold/GlobalSpotlight/components/SpotlightSearchBar";
+import { SPOTLIGHT_TOKENS } from "@src/scaffold/GlobalSpotlight/constants";
+import { getFileName } from "@src/util/file/pathUtils";
 
-import { ReplaceInput } from "../../../shared";
+const findFileName = Facet.define<string, string>({
+  combine: (values) => values[0] ?? "",
+});
 
 const log = createLogger("CodeMirrorSearchPanel");
 
@@ -175,6 +181,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
   initialReplaceMode = false,
 }) => {
   const { t } = useTranslation();
+  const replaceInputRef = React.useRef<HTMLInputElement>(null);
   // Get current search query from CodeMirror
   const currentQuery = getSearchQuery(view.state);
 
@@ -250,6 +257,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
   return (
     <FindCard
       scope="file"
+      targetName={view.state.facet(findFileName)}
       onReplaceShortcut={readOnly ? undefined : handleToggleReplace}
       search={{
         query: localQuery,
@@ -270,34 +278,89 @@ const SearchPanel: React.FC<SearchPanelProps> = ({
       }}
       extraControls={
         !readOnly && (
-          <Button
-            variant="tertiary"
-            appearance="soft"
-            size="small"
-            iconOnly
-            aria-label={t("actions.replace")}
-            title={t("actions.replace")}
-            aria-pressed={localReplaceMode}
-            onClick={handleToggleReplace}
-            icon={<HugeiconsIcon icon={ReplaceIcon} size={14} />}
-          />
+          <ToolbarTooltip
+            label={t("tooltips.replaceLabel")}
+            mouseEnterDelay={1000}
+          >
+            <Button
+              variant="tertiary"
+              appearance="soft"
+              size="small"
+              iconOnly
+              aria-pressed={localReplaceMode}
+              onClick={handleToggleReplace}
+              icon={
+                <>
+                  <HugeiconsIcon icon={ReplaceIcon} size={14} />
+                  <span className="sr-only">{t("tooltips.replaceLabel")}</span>
+                </>
+              }
+            />
+          </ToolbarTooltip>
         )
       }
     >
       {localReplaceMode && !readOnly && (
-        <div className="border-t border-border-2 px-3 py-1">
-          <ReplaceInput
-            variant="sidebar"
-            value={localReplace}
-            onChange={setLocalReplace}
-            placeholder={t("actions.replace")}
-            onReplace={() => runAction(replaceNext)}
-            onReplaceAll={() => runAction(replaceAll)}
-            onSubmit={() => runAction(replaceNext)}
-            disabled={!localQuery}
-            hideSpacer
-          />
-        </div>
+        <SpotlightSearchBar
+          density="compact"
+          inputRef={replaceInputRef}
+          path={[]}
+          searchQuery={localReplace}
+          onSearchQueryChange={setLocalReplace}
+          placeholder={`${t("actions.replace")}...`}
+          leadingSlot={
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-text-2">
+              <HugeiconsIcon
+                icon={ReplaceIcon}
+                size={SPOTLIGHT_TOKENS.iconSize}
+              />
+            </span>
+          }
+          onKeyDown={(event) => {
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
+              event.preventDefault();
+              if (localQuery) runAction(replaceNext);
+            }
+          }}
+          trailingSlot={
+            <div className="flex items-center gap-px">
+              {[
+                {
+                  label: t("tooltips.replaceLabel"),
+                  icon: ReplaceIcon,
+                  action: replaceNext,
+                  name: "replace",
+                },
+                {
+                  label: t("tooltips.replaceAllLabel"),
+                  icon: ReplaceAllIcon,
+                  action: replaceAll,
+                  name: "replace-all",
+                },
+              ].map(({ label, icon, action, name }) => (
+                <ToolbarTooltip key={name} label={label} mouseEnterDelay={1000}>
+                  <Button
+                    variant="tertiary"
+                    size="small"
+                    iconOnly
+                    disabled={!localQuery}
+                    onClick={() => runAction(action)}
+                    icon={
+                      <>
+                        <HugeiconsIcon icon={icon} data-icon={name} size={14} />
+                        <span className="sr-only">{label}</span>
+                      </>
+                    }
+                  />
+                </ToolbarTooltip>
+              ))}
+            </div>
+          }
+        />
       )}
     </FindCard>
   );
@@ -350,9 +413,11 @@ function createSearchPanel(view: EditorView): Panel {
     top: true,
     mount() {
       const host =
+        view.dom.closest<HTMLElement>("[data-pane-surface-underlay]") ??
         view.dom.closest<HTMLElement>(
           "[data-chat-panel], [data-workbench-surface]"
-        ) ?? view.dom;
+        ) ??
+        view.dom;
       host.append(overlay);
       if (target) adoptFindTarget(target);
       root.render(
@@ -417,8 +482,9 @@ const searchKeymap = EditorView.domEventHandlers({
  * - Our custom panel (which replaces the default panel)
  * - Keyboard shortcuts
  */
-export function findReplaceExtension(): Extension {
+export function findReplaceExtension(filePath?: string): Extension {
   return [
+    findFileName.of(filePath ? getFileName(filePath) : ""),
     // Include CodeMirror's search extension with custom panel
     search({
       createPanel: createSearchPanel,
