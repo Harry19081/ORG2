@@ -72,7 +72,10 @@
       "modelNamePlaceholder": "Ingrese el id del modelo...",
       "displayNamePlaceholder": "Etiqueta opcional",
       "emptyHint": "No se han agregado modelos personalizados.",
-      "addModel": "Agregar modelo"
+      "addModel": "Agregar modelo",
+      "testRequiresEndpoint": "Introduce un endpoint y una clave de API para probar este modelo",
+      "invalidModelId": "Los ID de modelo deben tener entre 1 y 256 bytes, sin espacios ni caracteres de control.",
+      "duplicateModelId": "Ese ID de modelo ya está en esta lista."
     },
     "quickActions": {
       "multipleKeysFound": "Se encontraron múltiples credenciales",

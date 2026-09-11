@@ -72,7 +72,10 @@
       "modelNamePlaceholder": "Entrez l'id du modèle...",
       "displayNamePlaceholder": "Libellé optionnel",
       "emptyHint": "Aucun modèle personnalisé ajouté.",
-      "addModel": "Ajouter un modèle"
+      "addModel": "Ajouter un modèle",
+      "testRequiresEndpoint": "Saisissez un point de terminaison et une clé API pour tester ce modèle",
+      "invalidModelId": "Les ID de modèle doivent faire de 1 à 256 octets, sans espaces ni caractères de contrôle.",
+      "duplicateModelId": "Cet ID de modèle figure déjà dans cette liste."
     },
     "quickActions": {
       "multipleKeysFound": "Plusieurs identifiants trouvés",

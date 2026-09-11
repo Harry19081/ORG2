@@ -17,6 +17,25 @@ interface UseApiSetupValidationOptions {
   agentModelsRef: MutableRefObject<string[]>;
 }
 
+/**
+ * Keep the user's enabled choices across a re-validation, but only for models
+ * that still exist: manual rows always do, discovered ones only while the
+ * new catalog still lists them. Re-validating with a different key must not
+ * carry the previous key's defaults into a catalog that never had them.
+ */
+function retainEnabledModels(
+  current: WizardData,
+  effectiveModels: string[]
+): string[] {
+  const retained = current.enabled_models.filter(
+    (model) =>
+      current.custom_models.includes(model) || effectiveModels.includes(model)
+  );
+  return retained.length > 0
+    ? retained
+    : getDefaultEnabledModels(effectiveModels);
+}
+
 export function useApiSetupValidation({
   data,
   onChange,
@@ -87,10 +106,7 @@ export function useApiSetupValidation({
         enabled_models:
           isClaudeCode || isCodex
             ? oauthEnabledModels
-            : current.available_models.length > 0 ||
-                current.custom_models.length > 0
-              ? current.enabled_models
-              : getDefaultEnabledModels(effectiveModels),
+            : retainEnabledModels(current, effectiveModels),
         model_aliases:
           data.auth_method !== "oauth" ? current.model_aliases : [],
         custom_models:

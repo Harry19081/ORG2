@@ -72,7 +72,10 @@
       "modelNamePlaceholder": "輸入模型 id...",
       "displayNamePlaceholder": "可選標籤",
       "emptyHint": "尚未添加自定義模型。",
-      "addModel": "添加模型"
+      "addModel": "添加模型",
+      "testRequiresEndpoint": "輸入端點和 API 金鑰以測試此模型",
+      "invalidModelId": "模型 ID 必須為 1–256 位元組，且不能包含空白或控制字元。",
+      "duplicateModelId": "該模型 ID 已在此列表中。"
     },
     "quickActions": {
       "multipleKeysFound": "發現多個密鑰",

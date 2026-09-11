@@ -4,6 +4,7 @@ import {
 } from "@src/api/tauri/rpc/schemas/validation";
 import { LOCAL_MODEL_PROVIDER } from "@src/api/types/keys";
 import { getMyKeyFallbackNativeModels } from "@src/hooks/models/nativeHarnessAccountModels";
+import { isValidCustomModelId } from "@src/util/customModelIdentity";
 
 import type { WizardData } from "../types";
 
@@ -69,20 +70,36 @@ export function getApiSetupProceedState({
   } catch {
     /* Manual setup needs an absolute HTTP endpoint */
   }
+  // Local endpoints keep their pre-existing, looser gate: any non-empty base
+  // URL plus at least one known model.
+  const hasLocalModelEndpoint =
+    data.agent_type === LOCAL_MODEL_PROVIDER &&
+    Boolean(data.extracted_base_url?.trim()) &&
+    hasApiKeyInput &&
+    (data.enabled_models.length > 0 ||
+      data.custom_models.length > 0 ||
+      data.available_models.length > 0);
+  // Custom API saves carry literal request IDs, so every saved alias — not
+  // only the enabled ones — has to satisfy the backend's ID rule and be
+  // unique, or the save fails after the fact with a generic error.
+  const savedAliases = data.model_aliases.filter((alias) => !alias.isDraft);
+  const savedAliasIds = savedAliases.map((alias) => alias.alias);
+  const savedAliasesValid =
+    savedAliasIds.every(isValidCustomModelId) &&
+    new Set(savedAliasIds).size === savedAliasIds.length;
+  const draftIds = new Set(
+    data.model_aliases
+      .filter((alias) => alias.isDraft)
+      .map((alias) => alias.alias)
+  );
   const hasManualModelEndpoint =
-    (data.agent_type === LOCAL_MODEL_PROVIDER ||
-      data.agent_type === "custom_api") &&
+    data.agent_type === "custom_api" &&
     hasEndpoint &&
     data.auth_method !== "oauth" &&
     hasApiKeyInput &&
+    savedAliasesValid &&
     data.enabled_models.some(
-      (model) =>
-        model.length > 0 &&
-        new TextEncoder().encode(model).length <= 256 &&
-        !/\s|\p{Cc}/u.test(model) &&
-        !data.model_aliases.some(
-          (alias) => alias.alias === model && alias.isDraft
-        )
+      (model) => isValidCustomModelId(model) && !draftIds.has(model)
     );
   const canProceed = isClaudeCode
     ? hasClaudeCodeOAuthToken
@@ -94,7 +111,8 @@ export function getApiSetupProceedState({
         ? tokenDetected && data.validated
         : isCursor
           ? hasSessionToken
-          : hasManualModelEndpoint ||
+          : hasLocalModelEndpoint ||
+            hasManualModelEndpoint ||
             isOAuthConfigured ||
             (keyValidated && hasApiKeyInput) ||
             (data.validated && hasApiKeyInput);

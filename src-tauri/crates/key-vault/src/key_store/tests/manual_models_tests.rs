@@ -148,3 +148,98 @@ fn manual_models_removed_by_explicit_save_do_not_reappear_on_refresh() {
     assert!(updated.available_models.is_empty());
     assert!(updated.model_aliases.is_empty());
 }
+
+#[test]
+fn partial_saves_carry_legacy_aliases_without_revalidating_them() {
+    let dir = tempdir().unwrap();
+    let service = KeyService::new(Some(dir.path().into()));
+    // A record written before alias validation existed: inner whitespace and
+    // a duplicated id. Persist it through the raw store so no validator runs.
+    let mut legacy = custom_key();
+    legacy.model_aliases[0].alias = "legacy model".into();
+    legacy
+        .model_aliases
+        .push(legacy.model_aliases[0].clone());
+    service
+        .update_store(|store| {
+            store.set(legacy.clone());
+        })
+        .unwrap();
+    let stored = service.get_key_by_id(&legacy.id).unwrap();
+    assert_eq!(stored.model_aliases.len(), 3);
+
+    // Renaming the account carries the stored aliases along unchanged.
+    let mut renamed = stored.clone();
+    renamed.name = Some("Renamed".into());
+    let renamed = service.save_key(renamed).unwrap();
+    assert_eq!(renamed.name.as_deref(), Some("Renamed"));
+    assert_eq!(renamed.model_aliases.len(), 3);
+
+    // Writing a *new* invalid alias, or adding another copy of an id beyond
+    // what was stored, is still rejected.
+    let mut invalid = renamed.clone();
+    invalid.model_aliases.push(ModelAlias {
+        alias: "another bad id".into(),
+        display_name: String::new(),
+        icon: None,
+    });
+    assert!(service.save_key(invalid).is_err());
+    let mut extra_duplicate = renamed.clone();
+    extra_duplicate
+        .model_aliases
+        .push(renamed.model_aliases[0].clone());
+    assert!(service.save_key(extra_duplicate).is_err());
+    let mut new_duplicate = renamed;
+    new_duplicate.model_aliases.push(ModelAlias {
+        alias: "deployment-high".into(),
+        display_name: "Second label".into(),
+        icon: None,
+    });
+    assert!(service.save_key(new_duplicate).is_err());
+}
+
+#[test]
+fn legacy_placeholder_rows_are_repaired_on_load() {
+    let dir = tempdir().unwrap();
+    let service = KeyService::new(Some(dir.path().into()));
+    let mut legacy = custom_key();
+    legacy.model_aliases.push(ModelAlias {
+        alias: "new-1a2b3c4d".into(),
+        display_name: String::new(),
+        icon: None,
+    });
+    // A labelled or non-hex `new-` id is a real model and must survive.
+    legacy.model_aliases.push(ModelAlias {
+        alias: "new-provider".into(),
+        display_name: String::new(),
+        icon: None,
+    });
+    legacy.available_models = vec![
+        "new-1a2b3c4d".into(),
+        "new-provider".into(),
+        "deployment-high".into(),
+    ];
+    legacy.enabled_models = vec!["new-1a2b3c4d".into(), "deployment-high".into()];
+    service
+        .update_store(|store| {
+            store.set(legacy.clone());
+        })
+        .unwrap();
+
+    let reloaded = KeyService::new(Some(dir.path().into()))
+        .get_key_by_id(&legacy.id)
+        .unwrap();
+    assert!(reloaded
+        .model_aliases
+        .iter()
+        .all(|alias| alias.alias != "new-1a2b3c4d"));
+    assert!(reloaded
+        .model_aliases
+        .iter()
+        .any(|alias| alias.alias == "new-provider"));
+    assert_eq!(
+        reloaded.available_models,
+        vec!["new-provider", "deployment-high"]
+    );
+    assert_eq!(reloaded.enabled_models, vec!["deployment-high"]);
+}

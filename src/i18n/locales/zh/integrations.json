@@ -73,7 +73,10 @@
       "modelNamePlaceholder": "输入模型 id...",
       "displayNamePlaceholder": "可选标签",
       "emptyHint": "尚未添加自定义模型。",
-      "addModel": "添加模型"
+      "addModel": "添加模型",
+      "testRequiresEndpoint": "输入端点和 API 密钥以测试此模型",
+      "invalidModelId": "模型 ID 必须为 1–256 字节，且不能包含空白或控制字符。",
+      "duplicateModelId": "该模型 ID 已在此列表中。"
     },
     "quickActions": {
       "multipleKeysFound": "发现多个密钥",

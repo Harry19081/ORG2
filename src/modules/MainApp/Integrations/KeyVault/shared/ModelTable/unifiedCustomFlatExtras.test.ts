@@ -57,3 +57,41 @@ it("tracks unfinished rows explicitly and accepts IDs beginning with new-", asyn
   expect(state.modelAliases).toEqual([]);
   await act(async () => root.unmount());
 });
+
+it("refuses IDs the backend would reject and reports why", async () => {
+  let state!: { customModels: string[]; modelAliases: ModelTableModelAlias[] };
+  let handlers!: ReturnType<typeof useUnifiedCustomFlatHandlers>;
+  function Harness() {
+    const [customModels, onCustomModelsChange] = useState<string[]>([]);
+    const [modelAliases, onModelAliasesChange] = useState<
+      ModelTableModelAlias[]
+    >([{ alias: "shared", displayName: "", icon: "openai" }]);
+    const result = useUnifiedCustomFlatHandlers({
+      customModels,
+      modelAliases,
+      onCustomModelsChange,
+      onModelAliasesChange,
+      visibleFlatRows: [],
+      modelIdMessages: { invalid: "invalid-id", duplicate: "duplicate-id" },
+    });
+    useEffect(() => {
+      state = { customModels, modelAliases };
+      handlers = result;
+    });
+    return null;
+  }
+  const root = createRoot(document.createElement("div"));
+  await act(async () => root.render(createElement(Harness)));
+  act(() => handlers.handleAddModel());
+  const draft = state.modelAliases[1];
+  act(() => handlers.handleModelNameChange(draft.alias, "my model"));
+  expect(handlers.testError).toBe("invalid-id");
+  expect(state.modelAliases[1]).toMatchObject({ isDraft: true });
+  // Discovered models with an icon record count as taken IDs too.
+  act(() => handlers.handleModelNameChange(draft.alias, "shared"));
+  expect(handlers.testError).toBe("duplicate-id");
+  act(() => handlers.handleModelNameChange(draft.alias, "deployment-high"));
+  expect(handlers.testError).toBeNull();
+  expect(state.customModels).toEqual(["deployment-high"]);
+  await act(async () => root.unmount());
+});

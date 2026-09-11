@@ -9,7 +9,7 @@ import { useWizard } from "./useWizard";
   globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }
 ).IS_REACT_ACT_ENVIRONMENT = true;
 
-vi.mock("@src/hooks/ui", async () => {
+vi.mock("@src/hooks/ui/useUndoableState", async () => {
   const { useState } = await import("react");
   return {
     useUndoableState: (initial: unknown) => {

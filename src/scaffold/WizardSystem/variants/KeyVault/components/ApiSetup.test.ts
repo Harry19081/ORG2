@@ -91,7 +91,9 @@ describe("Custom API model setup", () => {
     const html = renderCustomSetup({});
     expect(html).toContain(en.keyVault.customModels.manualSetupHint);
     expect(html).toContain(en.keyVault.customModels.addModel);
-    expect(html).toContain("disabled");
+    expect(html).toMatch(
+      /<button[^>]*\bdisabled=""[^>]*>(?:(?!<\/button>).)*Save connection/s
+    );
   });
   it("shows an enabled named custom row without requiring discovery", () => {
     const html = renderCustomSetup({

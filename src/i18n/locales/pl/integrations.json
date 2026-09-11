@@ -73,7 +73,10 @@
       "modelNamePlaceholder": "Wprowadź id modelu...",
       "displayNamePlaceholder": "Opcjonalna etykieta",
       "emptyHint": "Nie dodano jeszcze niestandardowych modeli.",
-      "addModel": "Dodaj model"
+      "addModel": "Dodaj model",
+      "testRequiresEndpoint": "Wprowadź punkt końcowy i klucz API, aby przetestować ten model",
+      "invalidModelId": "Identyfikatory modeli muszą mieć od 1 do 256 bajtów, bez spacji i znaków sterujących.",
+      "duplicateModelId": "Ten identyfikator modelu jest już na tej liście."
     },
     "quickActions": {
       "multipleKeysFound": "Znaleziono wiele kluczy",

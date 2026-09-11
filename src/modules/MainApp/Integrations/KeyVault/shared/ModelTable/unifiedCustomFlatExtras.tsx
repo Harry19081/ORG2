@@ -21,6 +21,7 @@ import type { SelectOption } from "@src/components/Select";
 import { MODEL_TABLE_CONTROL_SIZE } from "@src/config/modelTable";
 import type { ModelTableModelAlias } from "@src/types/modelTable";
 import {
+  isValidCustomModelId,
   newCustomRowId,
   newPlaceholderModelName,
 } from "@src/util/customModelIdentity";
@@ -194,6 +195,8 @@ export interface UseUnifiedCustomFlatHandlersParams {
     model: string
   ) => Promise<{ available: boolean; message: string }>;
   visibleFlatRows: FlatRow[];
+  /** Row-level feedback when a typed ID cannot be saved. */
+  modelIdMessages?: { invalid: string; duplicate: string };
 }
 
 export function useUnifiedCustomFlatHandlers({
@@ -205,6 +208,7 @@ export function useUnifiedCustomFlatHandlers({
   onEnabledModelsChange,
   onTestModel,
   visibleFlatRows,
+  modelIdMessages,
 }: UseUnifiedCustomFlatHandlersParams) {
   const [testError, setTestError] = useState<string | null>(null);
 
@@ -306,8 +310,22 @@ export function useUnifiedCustomFlatHandlers({
   const handleModelNameChange = useCallback(
     (oldName: string, newName: string) => {
       const trimmed = newName.trim();
-      if (!trimmed || (trimmed !== oldName && customModels.includes(trimmed)))
+      if (!trimmed) return;
+      // Mirror the backend rule here so the table refuses what `save_key`
+      // would reject, instead of surfacing it later as a generic error.
+      if (!isValidCustomModelId(trimmed)) {
+        setTestError(modelIdMessages?.invalid ?? null);
         return;
+      }
+      if (
+        trimmed !== oldName &&
+        (customModels.includes(trimmed) ||
+          modelAliases.some((entry) => entry.alias === trimmed))
+      ) {
+        setTestError(modelIdMessages?.duplicate ?? null);
+        return;
+      }
+      setTestError(null);
 
       onCustomModelsChange(
         customModels.map((model) => (model === oldName ? trimmed : model))
@@ -334,6 +352,7 @@ export function useUnifiedCustomFlatHandlers({
       customModels,
       enabledModels,
       modelAliases,
+      modelIdMessages,
       onCustomModelsChange,
       onEnabledModelsChange,
       onModelAliasesChange,

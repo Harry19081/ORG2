@@ -43,6 +43,47 @@ describe("manual Custom API setup", () => {
   ])("requires complete manual configuration: %j", (overrides) =>
     expect(canProceed(overrides)).toBe(false)
   );
+  it.each([
+    // A disabled row with an invalid ID is still sent as an alias.
+    {
+      enabled_models: ["new-provider/model-2026-09-01"],
+      model_aliases: [
+        { alias: "new-provider/model-2026-09-01", displayName: "" },
+        { alias: "bad id", displayName: "" },
+      ],
+    },
+    // Two alias records for one ID would be rejected by the backend.
+    {
+      enabled_models: ["shared"],
+      model_aliases: [
+        { alias: "shared", displayName: "", icon: "openai" },
+        { alias: "shared", displayName: "Custom" },
+      ],
+    },
+  ])("blocks saves the backend alias validator would reject: %j", (overrides) =>
+    expect(canProceed(overrides)).toBe(false)
+  );
+  it("ignores draft rows when checking saved aliases", () =>
+    expect(
+      canProceed({
+        model_aliases: [
+          { alias: "new-provider/model-2026-09-01", displayName: "" },
+          { alias: "new-1a2b3c4d", displayName: "", isDraft: true },
+        ],
+      })
+    ).toBe(true));
   it("does not bypass another provider's authentication flow", () =>
     expect(canProceed({ agent_type: "codex" })).toBe(false));
+});
+
+describe("local model setup", () => {
+  it("keeps the pre-existing lenient endpoint gate", () =>
+    expect(
+      canProceed({
+        agent_type: "vllm_api",
+        extracted_base_url: "http://user:pass@localhost:8000/v1",
+        enabled_models: [],
+        available_models: ["local-model"],
+      })
+    ).toBe(true));
 });

@@ -72,7 +72,10 @@
       "modelNamePlaceholder": "Model id girin...",
       "displayNamePlaceholder": "İsteğe bağlı etiket",
       "emptyHint": "Henüz özel model eklenmedi.",
-      "addModel": "Model Ekle"
+      "addModel": "Model Ekle",
+      "testRequiresEndpoint": "Bu modeli test etmek için bir uç nokta ve API anahtarı girin",
+      "invalidModelId": "Model kimlikleri boşluk veya denetim karakteri içermeden 1–256 bayt olmalıdır.",
+      "duplicateModelId": "Bu model kimliği zaten bu listede."
     },
     "quickActions": {
       "multipleKeysFound": "Birden Fazla Kimlik Bilgisi Bulundu",

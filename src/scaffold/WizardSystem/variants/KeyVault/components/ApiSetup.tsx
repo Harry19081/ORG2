@@ -234,7 +234,7 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
       if (!apiKey || !baseUrl) {
         return {
           available: false,
-          message: "Enter an endpoint and API key to test this model",
+          message: t("keyVault.customModels.testRequiresEndpoint"),
         };
       }
       return testModelAvailability(apiKey, baseUrl, model, data.agent_type);
@@ -245,6 +245,7 @@ const ApiSetup: React.FC<ApiSetupProps> = ({
       data.extracted_base_url,
       data.agent_type,
       isLocalModelProvider,
+      t,
     ]
   );
 

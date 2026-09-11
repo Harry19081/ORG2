@@ -72,7 +72,10 @@
       "modelNamePlaceholder": "Nhập id mô hình...",
       "displayNamePlaceholder": "Nhãn tùy chọn",
       "emptyHint": "Chưa thêm mô hình tùy chỉnh nào.",
-      "addModel": "Thêm mô hình"
+      "addModel": "Thêm mô hình",
+      "testRequiresEndpoint": "Nhập điểm cuối và khóa API để kiểm tra mô hình này",
+      "invalidModelId": "ID mô hình phải dài 1–256 byte, không chứa khoảng trắng hoặc ký tự điều khiển.",
+      "duplicateModelId": "ID mô hình đó đã có trong danh sách này."
     },
     "quickActions": {
       "multipleKeysFound": "Tìm thấy nhiều thông tin xác thực",

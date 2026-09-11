@@ -75,7 +75,10 @@
       "modelNamePlaceholder": "Enter model id...",
       "displayNamePlaceholder": "Optional label",
       "emptyHint": "No custom models added yet.",
-      "addModel": "Add Model"
+      "addModel": "Add Model",
+      "testRequiresEndpoint": "Enter an endpoint and API key to test this model",
+      "invalidModelId": "Model IDs must be 1–256 bytes without spaces or control characters.",
+      "duplicateModelId": "That model ID is already in this list."
     },
     "quickActions": {
       "multipleKeysFound": "Multiple keys found",

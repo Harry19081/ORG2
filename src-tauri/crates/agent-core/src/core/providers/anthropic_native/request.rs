@@ -169,9 +169,14 @@ fn claude_output_config(effort: Option<&str>) -> Option<Value> {
 /// Anthropic-protocol gateways and non-effort models must not see it.
 fn model_uses_effort_beta(model: &str, provider_name: &str) -> bool {
     use crate::providers::thinking_mode::{
-        parse_model_variant, resolve_thinking_mode, ThinkingMode,
+        parse_model_variant, resolve_thinking_mode, ParsedVariant, ThinkingMode,
     };
-    let parsed = parse_model_variant(model);
+    // Custom API ids are literals: never peel a variant suffix off them.
+    let parsed = if provider_name == crate::providers::registry::provider_id::CUSTOM {
+        ParsedVariant::bare(model)
+    } else {
+        parse_model_variant(model)
+    };
     matches!(
         resolve_thinking_mode(&parsed.base_model, provider_name),
         ThinkingMode::AnthropicAdaptive | ThinkingMode::Anthropic46

@@ -72,7 +72,10 @@
       "modelNamePlaceholder": "Modell-id eingeben...",
       "displayNamePlaceholder": "Optionale Bezeichnung",
       "emptyHint": "Noch keine benutzerdefinierten Modelle hinzugefügt.",
-      "addModel": "Modell hinzufügen"
+      "addModel": "Modell hinzufügen",
+      "testRequiresEndpoint": "Gib einen Endpunkt und einen API-Schlüssel ein, um dieses Modell zu testen",
+      "invalidModelId": "Modell-IDs müssen 1–256 Byte lang sein und dürfen keine Leer- oder Steuerzeichen enthalten.",
+      "duplicateModelId": "Diese Modell-ID ist bereits in dieser Liste."
     },
     "quickActions": {
       "multipleKeysFound": "Mehrere Anmeldedaten gefunden",

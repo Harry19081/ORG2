@@ -117,7 +117,25 @@ async fn assert_request(anthropic: bool, stream: bool, model: &str) {
     }));
     assert_eq!(body["model"], model);
     assert_eq!(body["stream"].as_bool().unwrap_or(false), stream);
-    assert!(body.get("reasoning_effort").is_none());
+    if anthropic {
+        // Literal ids never carry ORGII reasoning controls or the effort
+        // beta: no variant suffix is peeled, so thinking stays disabled and
+        // no `output_config.effort` is emitted.
+        assert_ne!(body["thinking"]["type"], "enabled", "{body}");
+        assert!(body.get("output_config").is_none(), "{body}");
+        assert!(!headers.contains("effort-"), "{headers}");
+    } else {
+        assert!(body.get("reasoning_effort").is_none(), "{body}");
+    }
+    // Per-turn reasoning triggers must not rewrite a literal id either.
+    assert_eq!(
+        crate::providers::thinking_mode::escalate_model_reasoning(
+            &model,
+            crate::providers::thinking_mode::ReasoningLevel::Max,
+            provider_id::CUSTOM,
+        ),
+        model
+    );
 }
 
 #[tokio::test]

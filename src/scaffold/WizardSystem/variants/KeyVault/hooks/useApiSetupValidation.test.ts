@@ -77,3 +77,54 @@ it("validation preserves the latest manual edits, labels and enabled choices", a
   expect(onChange).not.toHaveBeenCalled();
   await act(async () => root.unmount());
 });
+
+it("drops enabled choices the new catalog no longer lists", async () => {
+  mock.validation.mockReturnValue({});
+  const onChange = vi.fn();
+  function Harness({ data }: { data: WizardData }) {
+    useApiSetupValidation({
+      data,
+      onChange,
+      isCursor: false,
+      isCodex: false,
+      isClaudeCode: false,
+      inputMode: "direct",
+      resolvedCursorSessionToken: undefined,
+      agentModelsRef: { current: [] },
+    });
+    return null;
+  }
+  const root = createRoot(document.createElement("div"));
+  // First key validated: its defaults are enabled.
+  const first: WizardData = {
+    ...DEFAULT_WIZARD_DATA,
+    agent_type: "openai",
+    raw_key_input: "key-a",
+    available_models: ["a-1", "a-2"],
+    enabled_models: ["a-1", "manual"],
+    custom_models: ["manual"],
+  };
+  await act(async () => root.render(createElement(Harness, { data: first })));
+  const started = mock.validation.mock.lastCall?.[0].onValidationSuccess;
+  act(() =>
+    started({ models: ["b-1", "b-2"], modelContextLengths: {}, envVars: [] })
+  );
+  // The manual row survives; the previous key's default does not.
+  expect(onChange).toHaveBeenCalledWith(
+    expect.objectContaining({
+      available_models: ["b-1", "b-2"],
+      enabled_models: ["manual"],
+    })
+  );
+  onChange.mockClear();
+  const second: WizardData = { ...first, custom_models: [] };
+  await act(async () => root.render(createElement(Harness, { data: second })));
+  act(() =>
+    started({ models: ["b-1", "b-2"], modelContextLengths: {}, envVars: [] })
+  );
+  // Nothing retained: fall back to the new catalog's defaults.
+  expect(onChange).toHaveBeenCalledWith(
+    expect.objectContaining({ enabled_models: ["b-1", "b-2"] })
+  );
+  await act(async () => root.unmount());
+});

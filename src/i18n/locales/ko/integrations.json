@@ -72,7 +72,10 @@
       "modelNamePlaceholder": "모델 id 입력...",
       "displayNamePlaceholder": "선택적 라벨",
       "emptyHint": "아직 사용자 정의 모델이 추가되지 않았습니다.",
-      "addModel": "모델 추가"
+      "addModel": "모델 추가",
+      "testRequiresEndpoint": "이 모델을 테스트하려면 엔드포인트와 API 키를 입력하세요",
+      "invalidModelId": "모델 ID는 공백이나 제어 문자 없이 1~256바이트여야 합니다.",
+      "duplicateModelId": "해당 모델 ID는 이미 이 목록에 있습니다."
     },
     "quickActions": {
       "multipleKeysFound": "여러 자격 증명 발견",
