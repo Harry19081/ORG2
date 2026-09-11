@@ -2216,22 +2216,6 @@
     "count": 1
   },
   {
-    "key": "1f10c61fe2a92d4553d3839cbade06f98c3b6fe8057682ba99b9a43ae4a4fe53",
-    "file": "src/features/SessionSetup/components/ClaudeCodeSessionSetup/index.tsx",
-    "rule": "@typescript-eslint/no-floating-promises",
-    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "void closeWebview();",
-    "count": 1
-  },
-  {
-    "key": "5ad0c0ae003217e218b1e53978e8be881a0eb344ae6654c9ad5da40a623c123b",
-    "file": "src/features/SessionSetup/components/ClaudeCodeSessionSetup/index.tsx",
-    "rule": "@typescript-eslint/no-floating-promises",
-    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "void startLogin();",
-    "count": 1
-  },
-  {
     "key": "8f189cf044eed664162709f8b7e89f7e65f709549eadc049856af9bd05d77612",
     "file": "src/features/SessionSetup/components/ClaudeCodeSessionSetup/index.tsx",
     "rule": "@typescript-eslint/no-misused-promises",
@@ -2240,27 +2224,11 @@
     "count": 1
   },
   {
-    "key": "3829b03e47d779d26f10f6ccc08541536bbbd06522fab8291030ed2cf0503b6a",
-    "file": "src/features/SessionSetup/components/CodexSessionSetup/index.tsx",
-    "rule": "@typescript-eslint/no-floating-promises",
-    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "void closeWebview();",
-    "count": 1
-  },
-  {
     "key": "864eb8d8ba130dfeea07c0801c2a15eafa3b856321555fa4acd41dde6671ab89",
     "file": "src/features/SessionSetup/components/CodexSessionSetup/index.tsx",
     "rule": "@typescript-eslint/no-misused-promises",
     "message": "Promise returned in function argument where a void return was expected.",
     "source": "updatePosition",
-    "count": 1
-  },
-  {
-    "key": "c3c82905521a9b53714ab2aee896a065f6e63588efd95d1322c0d3296ee1e8cb",
-    "file": "src/features/SessionSetup/components/CodexSessionSetup/index.tsx",
-    "rule": "@typescript-eslint/no-floating-promises",
-    "message": "Promises must be awaited, end with a call to .catch, or end with a call to .then with a rejection handler.",
-    "source": "void startLogin();",
     "count": 1
   },
   {
