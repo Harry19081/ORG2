@@ -12,3 +12,5 @@ Unified, split and regular editors use far-left change rails and continuous gutt
 An isolated headless Chromium fixture bundled the actual shared theme, collapse theme, gutter/number extensions and compiled diff stylesheet. Leading and trailing pills measured 26px on both sides; the middle stacked pill measured 40px on both sides. Their vertical origins matched exactly. The browser also verified a 2px control gap, one-half hover and label-hover behavior. The resulting screenshot was visually inspected: [browser fixture](DiffRows.png).
 
 This evidence covers the isolated light-theme browser fixture, not the live Tauri app, dark theme or narrow viewport. No runtime speed improvement is claimed. Performance verdict: blocked for desktop CPU/RSS and hidden/idle lifecycle measurements; source ownership and targeted lifecycle assertions pass.
+
+The label pseudo-element overrides the merge theme’s decorative margin. A headless browser measured the horizontal divider shrinking from 9px to 2px, matching the 2px gap between stacked arrow controls. The screenshot reflects this correction.

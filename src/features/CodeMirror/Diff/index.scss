@@ -501,6 +501,11 @@
   --cm-collapsed-fill: var(--color-fill-3);
 }
 
+.codemirror-diff .cm-editor .cm-collapsedLines::after {
+  // The merge theme adds a 7px decorative margin; the divider owns this gap.
+  margin: 0;
+}
+
 .codemirror-diff
   .cm-editor
   .cm-changeGutter
