@@ -25,9 +25,9 @@ import {
   searchReposLocal,
 } from "@src/api/tauri/github";
 import Button from "@src/components/Button";
-import InlineAlert from "@src/components/InlineAlert";
 import Input from "@src/components/Input";
 import Message from "@src/components/Message";
+import PageNotice from "@src/components/PageNotice";
 import TabPill from "@src/components/TabPill";
 import { DETAIL_PANEL_TOKENS } from "@src/config/detailPanelTokens";
 import { INPUT_AREA_BUTTONS } from "@src/config/inputAreaTokens";
@@ -44,7 +44,7 @@ import {
   effectiveWorkspaceDefaultRepoLocationAtom,
   workspaceCustomDefaultRepoPathAtom,
 } from "@src/store/config/configAtom";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
 import { resolveDefaultRepoParentPath } from "@src/util/workspace/defaultRepoPath";
 
@@ -401,14 +401,14 @@ const WorkspaceExplorePanelView: React.FC = () => {
 
               {error ? (
                 <div className="w-full max-w-[640px] text-left">
-                  <InlineAlert
+                  <PageNotice
                     type="danger"
                     title={t("explore.errorTitle", {
                       defaultValue: "Search failed",
                     })}
                   >
                     {error}
-                  </InlineAlert>
+                  </PageNotice>
                 </div>
               ) : null}
 
@@ -440,14 +440,14 @@ const WorkspaceExplorePanelView: React.FC = () => {
               </div>
 
               {error ? (
-                <InlineAlert
+                <PageNotice
                   type="danger"
                   title={t("explore.errorTitle", {
                     defaultValue: "Search failed",
                   })}
                 >
                   {error}
-                </InlineAlert>
+                </PageNotice>
               ) : null}
 
               {response ? (

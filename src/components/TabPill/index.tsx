@@ -2,14 +2,14 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { DROPDOWN_CLASSES } from "@src/components/Dropdown/tokens";
+import { classNames } from "@src/util/ui/classNames";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { SidebarTabButton } from "./SidebarTabButton";
-import { cn } from "./cn";
 import { renderTabContent } from "./tabContent";
 import type { TabPillItem, TabPillProps } from "./types";
 
-export type { TabPillItem, TabPillProps } from "./types";
+export type { TabPillItem } from "./types";
 
 const SIDEBAR_PILL_BACKGROUND_STYLE: React.CSSProperties = {
   backgroundColor:
@@ -161,7 +161,7 @@ const TabPill: React.FC<TabPillProps> = ({
 
   if (variant === "sidebar") {
     return (
-      <div className={cn("flex w-full items-center", className)}>
+      <div className={classNames("flex w-full items-center", className)}>
         <div
           className="flex flex-1 items-center gap-0.5 rounded-full p-1"
           style={SIDEBAR_PILL_BACKGROUND_STYLE}
@@ -218,7 +218,7 @@ const TabPill: React.FC<TabPillProps> = ({
           onMouseLeave={handleImmediateTabMouseLeave}
           disabled={tab.disabled}
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-          className={cn(
+          className={classNames(
             "group relative z-10 flex flex-col items-center justify-center select-none",
             cursorResetTabKey === tab.key || isActive
               ? "cursor-default"
@@ -250,7 +250,7 @@ const TabPill: React.FC<TabPillProps> = ({
           )}
           {showActiveIndicator && (
             <span
-              className={cn(
+              className={classNames(
                 "mt-1 h-1 w-1 rounded-full",
                 isActive ? "bg-primary-6" : "invisible"
               )}
@@ -274,7 +274,7 @@ const TabPill: React.FC<TabPillProps> = ({
         onMouseLeave={handleImmediateTabMouseLeave}
         disabled={tab.disabled}
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-        className={cn(
+        className={classNames(
           "relative z-2 flex items-center justify-center select-none",
           cursorResetTabKey === tab.key || isActive
             ? "cursor-default"
@@ -380,7 +380,7 @@ const TabPill: React.FC<TabPillProps> = ({
   return (
     <div
       style={height === undefined ? undefined : { height }}
-      className={cn(
+      className={classNames(
         "relative z-10 items-stretch",
         usePillWrapGrid
           ? "grid w-full min-w-0 grid-cols-[repeat(auto-fit,minmax(5rem,1fr))] gap-1"

@@ -8,13 +8,15 @@ import {
   workstationActiveSessionIdAtom,
 } from "@src/store/session/viewAtom";
 import {
-  CHAT_PANEL_SURFACE_KIND,
   DEFAULT_CHAT_PANEL_CREATE_TARGET,
   chatPanelCreateTargetAtom,
-  chatPanelNavigateAtom,
   chatPanelStartPageOpenAtom,
+} from "@src/store/ui/chatPanel/selectionAtoms";
+import {
+  chatPanelNavigateAtom,
   toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/surfaceAtoms";
+import { CHAT_PANEL_SURFACE_KIND } from "@src/types/ui/chatPanel";
 
 import { recordChatPanelTabTransitionAtom } from "./chatPanelRecentTabsState";
 import {

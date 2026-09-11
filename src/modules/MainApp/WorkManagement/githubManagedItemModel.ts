@@ -1,5 +1,5 @@
 import type { GitHubIssue, OpenPRItem } from "@src/api/tauri/github";
-import { formatRelativeTime } from "@src/util/time/formatRelativeTime";
+import { formatCompactAge } from "@src/util/time/formatRelativeTime";
 
 import {
   GITHUB_QUERY_SCOPE,
@@ -14,7 +14,6 @@ export const GITHUB_ITEM_KIND = {
   PR: "pr",
 } as const;
 
-export type IssueState = GitHubIssue["state"];
 export type ManagedIssueLabel = GitHubIssue["labels"][number];
 
 export interface ManagedIssueItem {
@@ -80,7 +79,7 @@ export function formatGitHubItemTimeAgo(
 ): string {
   const timestamp = Date.parse(value);
   if (Number.isNaN(timestamp)) return "";
-  return formatRelativeTime(timestamp, "nano", undefined, now);
+  return formatCompactAge(timestamp, now);
 }
 
 export function mapIssueToManagedItem(

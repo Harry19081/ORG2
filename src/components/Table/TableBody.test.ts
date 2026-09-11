@@ -44,6 +44,42 @@ describe("Table row interactions", () => {
     Reflect.deleteProperty(reactActEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
+  it("keeps headers visible and confines loading to the body across transitions", () => {
+    const render = (loading: boolean, data: { id: string }[]) => {
+      act(() =>
+        root.render(
+          createElement(Table<{ id: string }>, {
+            columns: [{ key: "id", title: "Name", dataIndex: "id" }],
+            data,
+            loading,
+            pagination: false,
+            noDataElement: createElement("span", null, "Empty records"),
+          })
+        )
+      );
+    };
+    render(true, []);
+    expect(container.querySelector("thead")?.textContent).toContain("Name");
+    expect(
+      container.querySelector("tbody[aria-busy='true'] [role='status']")
+    ).not.toBeNull();
+    expect(container.textContent).not.toContain("Empty records");
+    render(false, [{ id: "Loaded record" }]);
+    expect(container.querySelector("tbody")?.textContent).toContain(
+      "Loaded record"
+    );
+    expect(container.querySelector("tbody[aria-busy='true']")).toBeNull();
+    render(true, [{ id: "Loaded record" }]);
+    expect(container.querySelector("thead")?.textContent).toContain("Name");
+    expect(container.querySelector("tbody")?.textContent).not.toContain(
+      "Loaded record"
+    );
+    render(false, []);
+    expect(container.querySelector("tbody")?.textContent).toContain(
+      "Empty records"
+    );
+  });
+
   it("lets checkbox chrome toggle without invoking the row action", () => {
     const onCheckboxChange = vi.fn();
     const onRowClick = vi.fn();

@@ -51,7 +51,7 @@ describe("LaunchpadActionGrid", () => {
     Reflect.deleteProperty(actEnvironment, "IS_REACT_ACT_ENVIRONMENT");
   });
 
-  it("collapses and restores a card grid with tertiary controls", () => {
+  it("starts expanded and lets users collapse and restore cards with tertiary controls", () => {
     act(() => {
       root.render(
         createElement(
@@ -71,19 +71,29 @@ describe("LaunchpadActionGrid", () => {
       );
     });
 
+    expect(
+      container.querySelector('[data-testid="launchpad-action-grid-expand"]')
+    ).toBeNull();
+    expect(
+      container.querySelector<HTMLElement>(".launchpad-action-grid-content")
+        ?.hidden
+    ).toBe(false);
+
     const collapseButton = container.querySelector<HTMLButtonElement>(
       '[data-testid="launchpad-action-grid-collapse"]'
     );
     expect(collapseButton).not.toBeNull();
+    expect(collapseButton?.getAttribute("aria-expanded")).toBe("true");
     expect(collapseButton?.getAttribute("aria-label")).toBe("Hide suggestions");
     expect(collapseButton?.className).toContain("text-text-2");
     const collapseZone = container.querySelector<HTMLElement>(
       '[data-testid="launchpad-action-grid-collapse-zone"]'
     );
     expect(collapseZone?.className).toContain("top-full");
-    expect(collapseZone?.className).toContain("left-1/2");
-    expect(collapseZone?.className).toContain("-translate-x-1/2");
-    expect(collapseZone?.className).toContain("pt-1");
+    expect(collapseZone?.className).toContain("left-0");
+    expect(collapseZone?.className).toContain("flex w-full");
+    expect(collapseZone?.className).toContain("justify-center");
+    expect(collapseZone?.className).toContain("py-1");
     expect(collapseZone?.className).not.toContain("pointer-events-none");
     expect(container.textContent).toContain("Test action");
 
@@ -116,6 +126,30 @@ describe("LaunchpadActionGrid", () => {
     expect(
       container.querySelector('[data-testid="launchpad-action-grid-collapse"]')
     ).not.toBeNull();
+  });
+
+  it("allows four columns in wide panes and keeps narrow panes compact", () => {
+    act(() => {
+      root.render(
+        createElement(
+          LaunchpadActionGrid,
+          { layoutActionCount: 4, presentation: "card" },
+          createElement(LaunchpadActionCard, {
+            action,
+            presentation: "card",
+          })
+        )
+      );
+    });
+
+    const grid = container.querySelector<HTMLElement>(
+      ".launchpad-action-grid-content"
+    );
+    expect(grid?.parentElement?.className).toContain("max-w-[320px]");
+    expect(grid?.parentElement?.className).toContain(
+      "@[640px]/focusedchat:max-w-[640px]"
+    );
+    expect(grid?.className).toContain("@[560px]/startactions:grid-cols-4");
   });
 
   it("pins compositor layers so hover repaints cannot re-round icon pixels", () => {

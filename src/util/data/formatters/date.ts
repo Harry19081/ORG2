@@ -106,6 +106,75 @@ export function toIntlLocaleTag(language: string | undefined): string {
   return language;
 }
 
+// `Date#toLocale*` is specified in terms of a fresh Intl formatter. That is
+// convenient for one-off calls, but chat timelines format the same timestamp
+// shapes many times while their React trees mount and unmount. WebKit keeps
+// the ICU backing allocations alive until a later GC, so repeated
+// Group/Member navigation can grow the WebContent RSS even though no DOM node
+// is leaked. Keep a small LRU of the actual formatters instead: locale,
+// timezone, and options remain part of the key, so output semantics do not
+// change and the cache stays bounded across language switching.
+const DATE_TIME_FORMAT_CACHE_MAX = 64;
+const dateTimeFormatCache = new Map<string, Intl.DateTimeFormat>();
+
+function dateTimeFormatCacheKey(
+  locale: Intl.LocalesArgument | undefined,
+  options: Intl.DateTimeFormatOptions
+): string {
+  return JSON.stringify([
+    locale,
+    Object.entries(options).sort(([left], [right]) =>
+      left.localeCompare(right)
+    ),
+  ]);
+}
+
+function cachedDateTimeFormatter(
+  locale: Intl.LocalesArgument | undefined,
+  options: Intl.DateTimeFormatOptions
+): Intl.DateTimeFormat {
+  const key = dateTimeFormatCacheKey(locale, options);
+  const cached = dateTimeFormatCache.get(key);
+  if (cached) {
+    // Refresh insertion order so the cap behaves as a true LRU when users
+    // exercise many locale/timezone combinations in one long-lived app.
+    dateTimeFormatCache.delete(key);
+    dateTimeFormatCache.set(key, cached);
+    return cached;
+  }
+
+  const formatter = new Intl.DateTimeFormat(locale, options);
+  dateTimeFormatCache.set(key, formatter);
+  if (dateTimeFormatCache.size > DATE_TIME_FORMAT_CACHE_MAX) {
+    const oldestKey = dateTimeFormatCache.keys().next().value;
+    if (oldestKey !== undefined) dateTimeFormatCache.delete(oldestKey);
+  }
+  return formatter;
+}
+
+const SHORT_LOCAL_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
+  hour: "2-digit",
+  minute: "2-digit",
+};
+
+const SHORT_LOCAL_TIME_24_HOUR_OPTIONS: Intl.DateTimeFormatOptions = {
+  ...SHORT_LOCAL_TIME_OPTIONS,
+  hour12: false,
+};
+
+/** Format a local HH:MM label without recreating Intl formatters per render. */
+export function formatShortLocalTime(date: Date): string {
+  return cachedDateTimeFormatter([], SHORT_LOCAL_TIME_OPTIONS).format(date);
+}
+
+/** Format a local 24-hour HH:MM label through the shared bounded cache. */
+export function formatShortLocalTime24Hour(date: Date): string {
+  return cachedDateTimeFormatter(
+    undefined,
+    SHORT_LOCAL_TIME_24_HOUR_OPTIONS
+  ).format(date);
+}
+
 function dateKeyInTimezone(date: Date, timeZone: string | undefined): string {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -115,7 +184,7 @@ function dateKeyInTimezone(date: Date, timeZone: string | undefined): string {
   if (timeZone !== undefined) {
     options.timeZone = timeZone;
   }
-  return new Intl.DateTimeFormat("en-CA", options).format(date);
+  return cachedDateTimeFormatter("en-CA", options).format(date);
 }
 
 function ymdAddDays(
@@ -243,7 +312,7 @@ export function formatSmartDateTime(
     if (timeZone !== undefined) {
       timeOpts.timeZone = timeZone;
     }
-    const timePart = date.toLocaleTimeString(locale, timeOpts);
+    const timePart = cachedDateTimeFormatter(locale, timeOpts).format(date);
 
     if (eventKey === todayKey) {
       return timePart;
@@ -271,75 +340,15 @@ export function formatSmartDateTime(
     }
 
     if (eventYear === currentYear) {
-      return date.toLocaleString(locale, dateTimeOpts);
+      return cachedDateTimeFormatter(locale, dateTimeOpts).format(date);
     }
 
-    return date.toLocaleString(locale, {
+    return cachedDateTimeFormatter(locale, {
       ...dateTimeOpts,
       year: "numeric",
-    });
+    }).format(date);
   } catch {
     return "—";
-  }
-}
-
-export interface FormatCalendarDateLabelOptions {
-  /** Translated "Today" label (from i18n). Default: "Today" */
-  todayLabel?: string;
-  /** Translated "Yesterday" label (from i18n). Default: "Yesterday" */
-  yesterdayLabel?: string;
-  /** BCP-47 locale tag for month names. Default: "en-US" */
-  locale?: string;
-  /** Month display style for non-relative dates. Default: `short`. */
-  monthStyle?: "short" | "long";
-}
-
-export function formatCalendarDateLabel(
-  input: string | number | null | undefined,
-  options?: FormatCalendarDateLabelOptions
-): string {
-  if (input == null || input === "") return "";
-
-  try {
-    const date =
-      typeof input === "number" ? new Date(input) : parseApiDate(input);
-    if (!date || Number.isNaN(date.getTime())) return "";
-
-    const timeZone = resolveTimeZoneForIntl();
-    const locale = options?.locale ?? "en-US";
-    const todayLabel = options?.todayLabel ?? "Today";
-    const yesterdayLabel = options?.yesterdayLabel ?? "Yesterday";
-    const monthStyle = options?.monthStyle ?? "short";
-
-    const now = new Date();
-    const todayKey = dateKeyInTimezone(now, timeZone);
-    const eventKey = dateKeyInTimezone(date, timeZone);
-
-    if (eventKey === todayKey) {
-      return todayLabel;
-    }
-
-    const [todayYear, todayMonth, todayDay] = todayKey.split("-").map(Number);
-    const yesterdayKey = ymdAddDays(todayYear, todayMonth, todayDay, -1);
-    if (eventKey === yesterdayKey) {
-      return yesterdayLabel;
-    }
-
-    const [eventYear] = eventKey.split("-").map(Number);
-    const dateOpts: Intl.DateTimeFormatOptions = {
-      month: monthStyle,
-      day: "numeric",
-    };
-    if (timeZone !== undefined) {
-      dateOpts.timeZone = timeZone;
-    }
-    if (eventYear !== todayYear) {
-      dateOpts.year = "numeric";
-    }
-
-    return date.toLocaleDateString(locale, dateOpts);
-  } catch {
-    return "";
   }
 }
 
@@ -438,72 +447,6 @@ export function formatReplayDateLabel(
   }
 }
 
-/**
- * Format a time range from two timestamps
- *
- * @param startDateString - Start time from API
- * @param endDateString - End time from API
- * @returns A formatted range string like "14:30 - 16:45"
- */
-export const formatTimeRange = (
-  startDateString: string | null | undefined,
-  endDateString: string | null | undefined
-): string => {
-  const startTime = formatTime(startDateString);
-  const endTime = formatTime(endDateString);
-
-  if (startTime === "—" && endTime === "—") return "—";
-  if (startTime === "—") return endTime;
-  if (endTime === "—") return startTime;
-
-  return `${startTime} - ${endTime}`;
-};
-
-/**
- * Get the user's current timezone display name
- *
- * @returns The timezone name for display
- */
-export const getTimezoneDisplayName = (): string => {
-  const timezone = getCurrentTimezone();
-
-  if (timezone === "auto") {
-    // Try to get the browser's timezone name
-    try {
-      return Intl.DateTimeFormat().resolvedOptions().timeZone;
-    } catch {
-      return "Local";
-    }
-  }
-
-  if (timezone === "utc") {
-    return "UTC";
-  }
-
-  return timezone;
-};
-
-/**
- * Compare two API dates for sorting
- *
- * @param a - First date string
- * @param b - Second date string
- * @returns Negative if a < b, positive if a > b, 0 if equal
- */
-export const compareDates = (
-  a: string | null | undefined,
-  b: string | null | undefined
-): number => {
-  const dateA = parseApiDate(a);
-  const dateB = parseApiDate(b);
-
-  if (!dateA && !dateB) return 0;
-  if (!dateA) return 1;
-  if (!dateB) return -1;
-
-  return dateA.getTime() - dateB.getTime();
-};
-
 // ============================================
 // Legacy formatters (browser-local, no timezone setting)
 // ============================================
@@ -537,53 +480,4 @@ export const formatDateTime = (timestamp: number): string => {
   const minutes = date.getMinutes().toString().padStart(2, "0");
 
   return `${month} ${day}, ${year}, ${hours}:${minutes}`;
-};
-
-/**
- * Format a payment date string (MM-DD-YYYY) to readable format
- * @param dateString - Date string in MM-DD-YYYY format
- * @returns Formatted string like "January 5, 2025"
- */
-export function paymentFormatDate(dateString: string): string {
-  if (!dateString) return "";
-
-  const parts = dateString.split("-");
-  if (parts.length !== 3) return "";
-
-  const [month, day, year] = parts;
-  const date = new Date(`${year}-${month}-${day}`);
-
-  if (isNaN(date.getTime())) return "";
-
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(date);
-}
-
-/**
- * Format seconds as HH:MM:SS for dashboard display
- * @param seconds - Total seconds
- * @returns Formatted string like "02h 15m 30s"
- */
-export function formatDashBoardTime(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-
-  return [
-    String(hours).padStart(2, "0") + "h",
-    String(minutes).padStart(2, "0") + "m",
-    String(secs).padStart(2, "0") + "s",
-  ].join(" ");
-}
-
-/**
- * Get the user's timezone offset in minutes
- * @returns Timezone offset in minutes (positive for ahead of UTC)
- */
-export const getUserTimeZoneOffset = (): number => {
-  const now = new Date();
-  return -now.getTimezoneOffset();
 };

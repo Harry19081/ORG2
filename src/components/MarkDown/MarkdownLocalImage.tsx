@@ -15,8 +15,15 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import FileTypeIcon from "@src/components/FileTypeIcon";
 import ImagePreviewOverlay from "@src/components/ImagePreviewOverlay";
+import {
+  useIsSessionFileShared,
+  useOpenSessionSharedFile,
+} from "@src/features/Org2Cloud/SharedSessionFilesContext";
 import { HugeiconsIcon, Image01Icon, ImageNotFound01Icon } from "@src/icons";
-import { uint8ArrayToDataUrl } from "@src/util/file/binaryUtils";
+import {
+  releaseImageUrl,
+  uint8ArrayToImageUrl,
+} from "@src/util/file/binaryUtils";
 import { getImageMimeType } from "@src/util/file/previewTypes";
 import { openFileInEditor } from "@src/util/ui/openFileInEditor";
 import { openFileInWorkStation } from "@src/util/ui/openFileInWorkStation";
@@ -67,7 +74,7 @@ async function loadLocalImage(
   const absolutePath = await resolveLocalMarkdownPath(path, homeRelative);
   const mimeType = getImageMimeType(absolutePath) ?? "image/png";
   const data = await readFile(absolutePath);
-  return uint8ArrayToDataUrl(data, mimeType);
+  return uint8ArrayToImageUrl(data, mimeType);
 }
 
 function imageLabel(alt: string | undefined, path: string): string {
@@ -100,6 +107,8 @@ function createLocalImageState(sourceKey: string | null): LocalImageState {
 
 const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
   ({ src, alt, workspaceRootPath }) => {
+    const openSharedFile = useOpenSessionSharedFile();
+    const shared = useIsSessionFileShared();
     const source = useMemo(
       () => classifyMarkdownImageSrc(src, workspaceRootPath),
       [src, workspaceRootPath]
@@ -123,17 +132,23 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
     const { asyncSrc, failed, showOverlay } = nextImageState;
 
     useEffect(() => {
-      if (source.kind !== "local" || !localIsImage) return;
+      if (shared || source.kind !== "local" || !localIsImage) return;
       let cancelled = false;
+      // Object URL owned by this effect run; released on teardown so the
+      // Blob does not outlive the image it backs.
+      let objectUrl: string | null = null;
       loadLocalImage(source.path, source.homeRelative === true)
-        .then((dataUrl) => {
-          if (!cancelled) {
-            setImageState((current) =>
-              current.sourceKey === sourceKey
-                ? { ...current, asyncSrc: dataUrl, failed: false }
-                : current
-            );
+        .then((imageUrl) => {
+          if (cancelled) {
+            releaseImageUrl(imageUrl);
+            return;
           }
+          objectUrl = imageUrl;
+          setImageState((current) =>
+            current.sourceKey === sourceKey
+              ? { ...current, asyncSrc: imageUrl, failed: false }
+              : current
+          );
         })
         .catch(() => {
           if (!cancelled) {
@@ -146,8 +161,9 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
         });
       return () => {
         cancelled = true;
+        releaseImageUrl(objectUrl);
       };
-    }, [localIsImage, source, sourceKey]);
+    }, [localIsImage, source, sourceKey, shared]);
 
     const handleImageClick = useCallback((event: React.MouseEvent) => {
       containClick(event);
@@ -158,15 +174,27 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
       (event: React.MouseEvent) => {
         containClick(event);
         if (source.kind !== "local") return;
+        if (openSharedFile(source.path)) return;
         void openLocalMarkdownRef(source.path, source.homeRelative === true);
       },
-      [source]
+      [source, openSharedFile]
     );
 
     const handleClose = useCallback(() => {
       setImageState((current) => ({ ...current, showOverlay: false }));
     }, []);
 
+    if (shared && source.kind === "local") {
+      return (
+        <a
+          href={src}
+          onClick={handleFileChipClick}
+          className="text-primary-6 underline-offset-2 hover:underline"
+        >
+          {imageLabel(alt, source.path)}
+        </a>
+      );
+    }
     if (source.kind === "skip") {
       return alt?.trim() ? (
         <span className="text-text-3">[{alt.trim()}]</span>
@@ -237,7 +265,6 @@ const MarkdownLocalImage: React.FC<MarkdownLocalImageProps> = memo(
             dataUrl={asyncSrc}
             fileName={imageLabel(alt, source.path)}
             onClose={handleClose}
-            showCopyButton={false}
           />
         )}
       </>

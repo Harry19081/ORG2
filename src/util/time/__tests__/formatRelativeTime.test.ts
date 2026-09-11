@@ -76,6 +76,31 @@ describe("formatRelativeTime date fallback", () => {
     expect(formatRelativeTime(OLD_INSTANT, "short")).toBe("2 days ago");
   });
 
+  it("capitalizes standalone relative labels across styles", () => {
+    expect(formatRelativeTime(NOW, "long", "en", NOW)).toBe("Now");
+    expect(
+      formatRelativeTime(NOW - 24 * 60 * 60 * 1000, "short", "en", NOW)
+    ).toBe("Yesterday");
+  });
+
+  it("capitalizes the app-translated immediate label", async () => {
+    await i18nReady;
+    const previousLanguage = i18n.language;
+    try {
+      await i18n.changeLanguage("en");
+      i18n.addResourceBundle(
+        "en",
+        "common",
+        { relativeDate: { justNow: "just now" } },
+        true,
+        true
+      );
+      expect(formatRelativeTime(NOW, "long", undefined, NOW)).toBe("Just now");
+    } finally {
+      await i18n.changeLanguage(previousLanguage);
+    }
+  });
+
   it("uses Intl-relative phrasing when the caller provides a locale", () => {
     vi.useFakeTimers();
     vi.setSystemTime(NOW);

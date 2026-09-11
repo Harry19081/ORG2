@@ -26,6 +26,25 @@ describe("RuntimeSectionHeader", () => {
     expect(markup).toContain("Refresh");
   });
 
+  it("renders secondary refresh as a bordered icon-only toolbar button", () => {
+    const markup = renderToStaticMarkup(
+      createElement(RuntimeRefreshButton, {
+        label: "Rescan all",
+        variant: "secondary",
+        iconOnly: true,
+        onRefresh: vi.fn(),
+        refreshing: false,
+      })
+    );
+
+    expect(markup).toContain("border border-border-2 bg-bg-2 text-text-1");
+    expect(markup).toContain("height:32px");
+    expect(markup).toContain("width:32px");
+    expect(markup).toContain('aria-label="Rescan all"');
+    expect(markup).toContain('title="Rescan all"');
+    expect(markup.replace(/<[^>]*>/g, "")).not.toContain("Rescan all");
+  });
+
   it("keeps title and actions on the shared heading row", () => {
     const markup = renderToStaticMarkup(
       createElement(

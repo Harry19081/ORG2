@@ -1,6 +1,5 @@
 import React, { Suspense, useMemo } from "react";
 
-import { Placeholder } from "@src/components/Placeholder";
 import { useRetainedTabPool } from "@src/hooks/tabHost/useRetainedTabPool";
 import { UnifiedTabContent } from "@src/modules/WorkStation/TabContent/UnifiedTabContent";
 import { NoTabsPlaceholder } from "@src/modules/WorkStation/shared";
@@ -10,6 +9,7 @@ import {
 } from "@src/store/workstation/tabs/tabRetention";
 
 import type { ProjectManagerContentRouterProps } from "../types";
+import { STORY_MANAGER_SUSPENSE_LOADING_FALLBACK } from "./ProjectManagerLoadingFallback";
 
 const GitCommitDetailContent = React.lazy(
   () =>
@@ -17,10 +17,6 @@ const GitCommitDetailContent = React.lazy(
 );
 const SessionContentView = React.lazy(
   () => import("@src/engines/ChatPanel/SessionContentView")
-);
-
-export const STORY_MANAGER_SUSPENSE_LOADING_FALLBACK = (
-  <Placeholder variant="loading" placement="detail-panel" fillParentHeight />
 );
 
 /**
@@ -95,7 +91,7 @@ export function ProjectManagerContentRouter({
             className="flex h-full min-h-0 flex-1 flex-col overflow-hidden"
             style={{ display: isActiveTab ? undefined : "none" }}
           >
-            <UnifiedTabContent tab={tab} paneId="main" isActive={isActiveTab} />
+            <UnifiedTabContent tab={tab} isActive={isActiveTab} />
           </div>
         );
       })}
@@ -177,7 +173,7 @@ function renderActiveContent({
     case "project-org-settings":
     case "project-settings":
     case "workItem-detail":
-      return <UnifiedTabContent tab={activeTab} paneId="main" isActive />;
+      return <UnifiedTabContent tab={activeTab} isActive />;
 
     default:
       return <NoTabsPlaceholder icon="project" actions={projectQuickActions} />;

@@ -19,20 +19,13 @@ describe("settingsNavigation", () => {
     ).toEqual([
       {
         id: "app",
-        items: [
-          "general",
-          "appearance",
-          "myRoles",
-          "editor",
-          "mobile-remote",
-          "monitor",
-        ],
+        items: ["general", "appearance", "myRoles", "editor", "mobile-remote"],
       },
       {
         id: "core",
         items: [
-          "agent-orgs",
           "models",
+          "agent-orgs",
           "harness-connections",
           "rulesMemoryEvolution",
           "routines",
@@ -59,6 +52,7 @@ describe("settingsNavigation", () => {
     const items = groups.flatMap((group) => group.items);
 
     expect(items.some((item) => item.id === "tools")).toBe(false);
+    expect(items.map((item) => item.id)).not.toContain("monitor");
     expect(items.find((item) => item.id === "general")).toMatchObject({
       label: "settings:sections.general",
       path: "/orgii/app/settings/app/general",
@@ -90,6 +84,14 @@ describe("settingsNavigation", () => {
       groupId: "core",
     });
     expect(items.every((item) => item.icon)).toBe(true);
+  });
+
+  it("selects General for legacy Storage links", () => {
+    expect(
+      getActiveSettingsNavigationItemId(
+        "/orgii/app/settings/app/monitor/storage"
+      )
+    ).toBe("general");
   });
 
   it("resolves the active navigation item from every settings route family", () => {

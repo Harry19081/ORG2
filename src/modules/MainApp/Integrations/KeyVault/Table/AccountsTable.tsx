@@ -73,7 +73,8 @@ interface AccountsTableProps {
     deleteType?: "local" | "cloud"
   ) => void;
   onRevalidateAccount?: (accountId: string) => Promise<void>;
-  refreshingAccountId?: string | null;
+  refreshingUsageAccountIds?: ReadonlySet<string>;
+  refreshingModelsAccountIds?: ReadonlySet<string>;
   onRefreshModels?: () => Promise<void>;
   refreshingAllModels?: boolean;
   selectedRowId?: string | null;
@@ -111,7 +112,8 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
   onEditAccountSave,
   onDisconnectAccount,
   onRevalidateAccount,
-  refreshingAccountId,
+  refreshingUsageAccountIds,
+  refreshingModelsAccountIds,
   onRefreshModels,
   refreshingAllModels,
   modelsActiveTab: modelsActiveTabProp,
@@ -577,7 +579,8 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
                 onRefreshAccounts={onRefresh}
                 onRefreshAccountUsage={onRefreshAccountUsage}
                 onRevalidateAccount={onRevalidateAccount}
-                refreshingAccountId={refreshingAccountId}
+                refreshingUsageAccountIds={refreshingUsageAccountIds}
+                refreshingModelsAccountIds={refreshingModelsAccountIds}
                 onToggleAccount={handleToggleAccount}
                 isAccountEnabled={isAccountEnabled}
                 onToggleModel={handleToggleModel}

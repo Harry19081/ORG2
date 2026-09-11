@@ -28,7 +28,7 @@ export const DROPDOWN_PANEL = {
   shadowDark: "0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)",
 
   /**
-   * Half-strength shadow for in-flow cards (e.g. InlineAlert) that want the
+   * Half-strength shadow for in-flow cards (e.g. PageNotice) that want the
    * same lift as a floating panel at half the intensity.
    */
   shadowSoftClass: "shadow-dropdown-soft",
@@ -404,8 +404,10 @@ export const DROPDOWN_CLASSES = {
     "text-text-1",
   ].join(" "),
 
-  /** Inset rule between menu-item groups with a tight 2px local offset. */
+  /** Inset rule between populated groups; never draw at a menu edge. */
   menuGroupSeparator: [
+    "first:hidden",
+    "last:hidden",
     "mx-1.5",
     "my-0.5",
     "shrink-0",
@@ -555,11 +557,3 @@ export const DROPDOWN_STYLES = {
     },
   },
 } as const;
-
-// ==============================================
-// Type Exports
-// ==============================================
-
-export type DropdownPanelTokens = typeof DROPDOWN_PANEL;
-export type DropdownItemTokens = typeof DROPDOWN_ITEM;
-export type DropdownSearchTokens = typeof DROPDOWN_SEARCH;

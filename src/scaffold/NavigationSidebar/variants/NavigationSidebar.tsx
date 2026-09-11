@@ -1,8 +1,7 @@
 /**
  * NavigationSidebar
  *
- * Main navigation sidebar with tabs and menu items.
- * Used by Settings and Workstation navigation surfaces.
+ * Sectioned menu layout for the session sidebar.
  */
 import React, {
   type ReactNode,
@@ -13,8 +12,6 @@ import React, {
   useState,
 } from "react";
 
-import AnyIcon from "@src/components/AnyIcon";
-import TabPill from "@src/components/TabPill";
 import {
   ArrowDown01Icon,
   ArrowRight01Icon,
@@ -23,7 +20,6 @@ import {
 
 import SidebarBase from "../SidebarBase";
 import { SidebarList } from "../blocks";
-import HoverAnimatedIcon from "../components/HoverAnimatedIcon";
 import NavigationMenu from "../components/NavigationMenu";
 import { NavigationMenuRowActionButton } from "../components/NavigationMenu/NavigationMenu/RowActionButton";
 import type { NavigationMenuItemClickHandler } from "../components/NavigationMenu/NavigationMenu/types";
@@ -31,16 +27,12 @@ import type {
   NavigationMenuItem,
   NavigationMenuRowAction,
 } from "../components/NavigationMenu/config";
-import type { SidebarTab } from "../types";
 
 // ============================================
 // Types
 // ============================================
 
 export interface NavigationSidebarProps {
-  items: SidebarTab[];
-  activeKey: string;
-  onChange: (key: string) => void;
   menuItems: NavigationMenuItem[];
   pinnedMenuItems?: NavigationMenuItem[];
   selectedKey?: string;
@@ -57,7 +49,6 @@ export interface NavigationSidebarProps {
   ) => React.ReactElement;
   defaultOpenKeys?: string[];
   bottomContent?: React.ReactNode;
-  enableHoverIconAnimation?: boolean;
   /** Add-new button in the traffic lights area (passed to SidebarBase) */
   onAddNew?: () => void;
   /** Icon for the add-new button */
@@ -70,20 +61,16 @@ export interface NavigationSidebarProps {
   beforeAddNewActions?: React.ReactNode;
   /** Extra controls next to add-new (passed to SidebarBase) */
   headerActions?: React.ReactNode;
-  /** Leading content in the Windows/Linux sidebar chrome row. */
-  hostTopBarLeadingContent?: React.ReactNode;
-  /** Equivalent content rendered below the traffic-light row on macOS. */
-  macTopBarFollowingContent?: React.ReactNode;
-  /** Preserve top padding for the scrollable menu list. */
-  listTopPadding?: boolean;
+  /** Content rendered in its own row directly below the chrome row. */
+  topBarFollowingContent?: React.ReactNode;
+  /** Use "row" to match menu row spacing; true preserves section padding. */
+  listTopPadding?: boolean | "row";
   /** Optional control row rendered before pinned/list content. */
   preListContent?: React.ReactNode;
   /** Show loading placeholder instead of menu items */
   isLoading?: boolean;
   /** Optional loading UI that mirrors the current sidebar surface. */
   loadingContent?: React.ReactNode;
-  /** Paint an opaque sidebar surface instead of honoring sidebar transparency. */
-  solidSurface?: boolean;
   /** Enable collapse/expand on section headers (separator-based groups) */
   collapsibleSections?: boolean;
   /**
@@ -165,7 +152,7 @@ function NavigationSidebarSectionHeader({
   titleIcon?: ReactNode;
 }) {
   return (
-    <div className="mb-2 flex items-center gap-1.5 px-2 text-[11px] font-medium tracking-wider text-text-2 uppercase">
+    <div className="mb-1 flex items-center gap-1.5 px-2 text-[11px] font-medium tracking-wider text-text-2 uppercase">
       {titleIcon}
       <span className="min-w-0 truncate">{title}</span>
     </div>
@@ -178,9 +165,6 @@ function NavigationSidebarSectionHeader({
 
 const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
   ({
-    items,
-    activeKey,
-    onChange,
     menuItems,
     pinnedMenuItems = [],
     selectedKey,
@@ -190,20 +174,17 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
     renderMenuItemWrapper,
     defaultOpenKeys = [],
     bottomContent,
-    enableHoverIconAnimation = false,
     onAddNew,
     addIcon,
     addLabel,
     addTooltipContent,
     beforeAddNewActions,
     headerActions,
-    hostTopBarLeadingContent,
-    macTopBarFollowingContent,
+    topBarFollowingContent,
     listTopPadding = false,
     preListContent,
     isLoading = false,
     loadingContent,
-    solidSurface = false,
     collapsibleSections = false,
     collapsedSectionIds,
     onCollapsedSectionsChange,
@@ -303,32 +284,6 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
       [onMenuItemContextMenu]
     );
 
-    // Memoize TabPill tabs array
-    const tabPillTabs = useMemo(
-      () =>
-        items.map((tab) => ({
-          key: tab.key,
-          label: tab.label,
-          icon: tab.icon
-            ? enableHoverIconAnimation && tab.iconName
-              ? React.createElement(HoverAnimatedIcon, {
-                  icon: tab.icon,
-                  iconName: tab.iconName,
-                  className: "h-[14px] w-[14px]",
-                  strokeWidth: 2,
-                })
-              : React.createElement(AnyIcon, {
-                  icon: tab.icon,
-                  size: 14,
-                  strokeWidth: 2,
-                  className: "h-[14px] w-[14px]",
-                  "data-icon": tab.iconName ?? tab.key,
-                })
-            : undefined,
-        })),
-      [enableHoverIconAnimation, items]
-    );
-
     return (
       <SidebarBase
         onAddNew={onAddNew}
@@ -337,35 +292,12 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
         addTooltipContent={addTooltipContent}
         beforeAddNewActions={beforeAddNewActions}
         headerActions={headerActions}
-        hostTopBarLeadingContent={hostTopBarLeadingContent}
-        macTopBarFollowingContent={macTopBarFollowingContent}
-        solidSurface={solidSurface}
+        topBarFollowingContent={topBarFollowingContent}
       >
         {preListContent}
 
-        {/* Tab Header */}
-        {items.length > 0 && (
-          <div
-            className="flex h-9 items-center px-3"
-            data-tauri-drag-region
-            style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-          >
-            <div
-              className="flex w-full min-w-0"
-              style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-            >
-              <TabPill
-                activeTab={activeKey}
-                tabs={tabPillTabs}
-                onChange={onChange}
-                iconOnly
-              />
-            </div>
-          </div>
-        )}
-
         {pinnedSections.length > 0 && (
-          <div className="flex flex-col gap-3 px-3 pt-1">
+          <div className="flex flex-col gap-2 px-3 pt-1">
             {pinnedSections.map((section) => {
               const isSectionCollapsed =
                 collapsibleSections && collapsedSections.has(section.id);
@@ -491,19 +423,21 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                         </span>
                       </span>
                       {section.headerActions && (
-                        <span
-                          className={`ml-auto shrink-0 items-center gap-1 leading-none text-text-2 ${
-                            section.headerActions.some(
-                              (action) => action.active
-                            )
-                              ? "inline-flex"
-                              : "hidden group-hover/section-title:inline-flex"
-                          }`}
-                        >
-                          {section.headerActions.map((action) => {
-                            return (
+                        <span className="ml-auto inline-flex shrink-0 items-center gap-1 leading-none text-text-2">
+                          {section.headerActions.map((action) => (
+                            <span
+                              key={action.label}
+                              className={
+                                section.headerActions?.some(
+                                  (headerAction) => headerAction.active
+                                )
+                                  ? "inline-flex"
+                                  : action.showOnSidebarHover
+                                    ? "hidden group-hover/sidebar:inline-flex group-focus-visible/section-title:inline-flex group-has-[:focus-visible]/section-title:inline-flex"
+                                    : "hidden group-hover/section-title:inline-flex group-focus-visible/section-title:inline-flex group-has-[:focus-visible]/section-title:inline-flex"
+                              }
+                            >
                               <NavigationMenuRowActionButton
-                                key={action.label}
                                 icon={action.icon}
                                 iconClassName={action.iconClassName}
                                 label={action.label}
@@ -511,8 +445,8 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = React.memo(
                                 dataTestId={action.dataTestId}
                                 onClick={action.onClick}
                               />
-                            );
-                          })}
+                            </span>
+                          ))}
                         </span>
                       )}
                     </div>

@@ -20,13 +20,13 @@ import {
   Key02Icon,
 } from "@src/icons";
 import { CreatorContentLayout } from "@src/modules/shared/layouts/blocks";
-import { useAvailableAppUpdate } from "@src/scaffold/AppUpdater";
+import { useAvailableAppUpdate } from "@src/scaffold/AppUpdater/state";
 import { creatorComposerPositionAtom } from "@src/store/session/creatorComposerPositionAtom";
 import { creatorLaunchpadActionsVisibleAtom } from "@src/store/session/creatorLaunchpadActionsVisibleAtom";
 import {
   CHAT_PANEL_CREATE_TARGET,
   type ChatPanelCreateTarget,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 
 import { StartPageQuotaModal } from "./StartPageQuotaModal";
 

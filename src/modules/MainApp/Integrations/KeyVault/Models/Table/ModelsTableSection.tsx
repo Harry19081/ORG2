@@ -10,7 +10,7 @@ import SettingsTable, {
 import Switch from "@src/components/Switch";
 import { MODEL_TABLE_SWITCH_SIZE } from "@src/config/modelTable";
 import type { KeyVaultAccount } from "@src/hooks/keyVault";
-import { useRefreshSpin } from "@src/hooks/ui";
+import { useRefreshSpin } from "@src/hooks/ui/useRefreshSpin";
 import {
   Add01Icon,
   ArrowDown01Icon,
@@ -33,14 +33,8 @@ import {
   sortIntegrationsModelGroups,
 } from "./integrationsModelGroups";
 import { INTEGRATIONS_MODELS_TABLE_COL_WIDTH } from "./integrationsModelsTableWidths";
-import {
-  MAX_SOURCE_ICONS,
-  dedupeSourceTypes,
-  getModelRowKey,
-} from "./modelsTableUtils";
+import { MAX_SOURCE_ICONS, dedupeSourceTypes } from "./modelsTableUtils";
 import { useModelsTableData } from "./useModelsTableData";
-
-export { getModelRowKey };
 
 function renderGroupSourcesCell(group: IntegrationsModelGroupRow) {
   if (group.isOrgiiGroup) return null;

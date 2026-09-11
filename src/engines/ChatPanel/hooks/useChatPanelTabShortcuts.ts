@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { type RefObject, useCallback, useEffect, useRef } from "react";
 
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import {
   closeAndDestroyChatPanelTabAtom,
   nextChatPanelTabAtom,
@@ -11,8 +12,7 @@ import {
   goForwardChatPanelTabAtom,
 } from "@src/store/chatPanel/chatPanelTabNavigationAtoms";
 import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
-import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanelAtom";
-import { isMacOS } from "@src/util/platform/tauri";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
 
 import { resolveChatPanelShortcutOwnership } from "./chatPanelShortcutOwnership";
 
@@ -21,30 +21,6 @@ export interface UseChatPanelTabShortcutsOptions {
   onNewTerminal: () => void;
   /** Ref to the outermost chat panel container for focus-scoped keyboard handling */
   containerRef?: RefObject<HTMLElement | null>;
-}
-
-type ModifierState = Pick<KeyboardEvent, "ctrlKey" | "metaKey">;
-
-export function isChatPanelPrimaryModifierPressed(
-  event: ModifierState,
-  macOS = isMacOS()
-): boolean {
-  return macOS ? event.metaKey : event.ctrlKey;
-}
-
-/**
- * The bracket a shortcut targets, independent of the shifted glyph the
- * keyboard layout reports (`{` / `}` on US layouts) — `code` names the physical
- * key, `key` is the fallback for synthetic events.
- */
-export function resolveChatPanelBracketKey(
-  event: Pick<KeyboardEvent, "code" | "key">
-): "[" | "]" | null {
-  if (event.code === "BracketLeft") return "[";
-  if (event.code === "BracketRight") return "]";
-  if (event.key === "[" || event.key === "{") return "[";
-  if (event.key === "]" || event.key === "}") return "]";
-  return null;
 }
 
 /**
@@ -105,9 +81,8 @@ export function useChatPanelTabShortcuts({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (!isChatPanelMaximized && !paneOwnsShortcutsRef.current) return;
-      if (!isChatPanelPrimaryModifierPressed(event)) return;
 
-      if (event.key.toLowerCase() === "w" && !event.shiftKey) {
+      if (matchesShortcut(event, "close_tab")) {
         const active = tabsRef.current.tabs.find(
           (tab) => tab.id === tabsRef.current.activeTabId
         );
@@ -118,21 +93,20 @@ export function useChatPanelTabShortcuts({
         }
         return;
       }
-      const bracket = resolveChatPanelBracketKey(event);
-      if (bracket !== null) {
+      const navigation = [
+        ["chat_next_tab", nextTab],
+        ["chat_prev_tab", prevTab],
+        ["chat_go_forward", goForward],
+        ["chat_go_back", goBack],
+      ] as const;
+      const action = navigation.find(([id]) => matchesShortcut(event, id));
+      if (action) {
         event.preventDefault();
         event.stopPropagation();
-        if (bracket === "]") {
-          if (event.shiftKey) nextTab();
-          else goForward();
-        } else if (event.shiftKey) {
-          prevTab();
-        } else {
-          goBack();
-        }
+        action[1]();
         return;
       }
-      if (event.key.toLowerCase() === "n" && !event.shiftKey) {
+      if (matchesShortcut(event, "new_session")) {
         event.preventDefault();
         event.stopPropagation();
         onNewSession();

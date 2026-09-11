@@ -166,6 +166,7 @@ export function LaunchpadActionGrid({
   layoutActionCount,
   presentation = "pill",
 }: LaunchpadActionGridProps): React.ReactNode {
+  // Spacious layouts show cards immediately; CSS keeps compact layouts collapsed.
   const [isStandardCollapsed, setIsStandardCollapsed] = useState(false);
   const [isCompactExpanded, setIsCompactExpanded] = useState(false);
   const contentId = useId();
@@ -174,13 +175,11 @@ export function LaunchpadActionGrid({
   const isCardGridCollapsed = isCollapsibleCardGrid && isStandardCollapsed;
   const expandControlAlignmentClass =
     controlAlignment === "center" ? "justify-center" : "justify-start pl-2.5";
-  const collapseControlAlignmentClass =
-    controlAlignment === "center" ? "left-1/2 -translate-x-1/2" : "left-2.5";
   const actionCount = layoutActionCount ?? Children.count(children);
   const cardWidthClass =
     cardWidthClassName ??
     (actionCount >= 4
-      ? "max-w-[600px]"
+      ? "max-w-[320px] @[640px]/focusedchat:max-w-[640px]"
       : actionCount === 3
         ? "max-w-[480px]"
         : "max-w-[320px]");
@@ -271,12 +270,13 @@ export function LaunchpadActionGrid({
         ) : (
           <div
             // The fade is driven by hover on the whole group, so entering any
-            // card animates opacity here. Without `will-change: opacity` the
+            // card or the full-width disclosure area animates opacity here.
+            // Without `will-change: opacity` the
             // compositor layer is created and destroyed on every hover in and
             // out, which re-rounds the sibling cards' sub-pixel positions and
             // makes all of their icons twitch at once. Same treatment as the
             // Simulator grid-cell header actions.
-            className={`absolute top-full z-10 pt-1 opacity-0 transition-opacity will-change-[opacity] group-focus-within/launchpad-actions:opacity-100 group-hover/launchpad-actions:opacity-100 ${collapseControlAlignmentClass}`}
+            className={`absolute top-full left-0 z-10 flex w-full py-1 opacity-0 transition-opacity will-change-[opacity] group-focus-within/launchpad-actions:opacity-100 group-hover/launchpad-actions:opacity-100 ${expandControlAlignmentClass}`}
             data-launchpad-action-grid-standard-control
             data-testid="launchpad-action-grid-collapse-zone"
           >

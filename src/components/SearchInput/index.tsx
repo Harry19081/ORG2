@@ -29,6 +29,7 @@ import {
   CaseSensitiveIcon,
   HugeiconsIcon,
   RegexIcon,
+  Search01Icon,
   WholeWordIcon,
 } from "@src/icons";
 
@@ -96,6 +97,10 @@ export interface SearchInputProps {
   onSubmit?: () => void;
   /** Show clear button when input has value */
   showClearButton?: boolean;
+  /** Show a search glyph before the input text. */
+  showSearchIcon?: boolean;
+  /** Extra class name applied to the input element. */
+  inputClassName?: string;
   /** Optional clear handler (defaults to onChange("")) */
   onClear?: () => void;
   /** Extra class name applied to the input box itself (not the outer container) */
@@ -134,6 +139,8 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
     hideChevron = false,
     onSubmit,
     showClearButton = false,
+    showSearchIcon = false,
+    inputClassName = "",
     onClear,
     inputBoxClassName = "",
   }) => {
@@ -247,6 +254,14 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
           className={`${inputWrapperMultilineClass} ${inputBoxClassName}`}
           data-action="search.codebase"
         >
+          {showSearchIcon && (
+            <HugeiconsIcon
+              icon={Search01Icon}
+              data-icon="search"
+              size={iconSize}
+              className="shrink-0 text-text-2"
+            />
+          )}
           {multiline ? (
             <textarea
               ref={inputRef as React.RefObject<HTMLTextAreaElement>}
@@ -256,7 +271,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
               placeholder={placeholder}
               aria-label={ariaLabel}
               style={searchControlMultilineInputStyle(14)}
-              className="min-w-0 flex-1 text-text-1 placeholder:text-text-3"
+              className={`min-w-0 flex-1 text-text-1 placeholder:text-text-3 ${inputClassName}`}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -276,7 +291,7 @@ export const SearchInput: React.FC<SearchInputProps> = memo(
               placeholder={placeholder}
               aria-label={ariaLabel}
               style={searchControlSingleLineInputStyle(14)}
-              className="min-w-0 flex-1 text-text-1 placeholder:text-text-3"
+              className={`min-w-0 flex-1 text-text-1 placeholder:text-text-3 ${inputClassName}`}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"

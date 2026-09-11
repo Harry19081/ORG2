@@ -24,7 +24,8 @@ import { useTranslation } from "react-i18next";
 
 import { Message } from "@src/components/Message";
 import { Placeholder } from "@src/components/Placeholder";
-import { useGitStatus } from "@src/contexts/git";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
+import { useGitStatus } from "@src/contexts/git/GitStatusContext/useGitStatus";
 import {
   CodeMirrorConflictEditor,
   CodeMirrorDiff,
@@ -82,9 +83,6 @@ const LazyXlsxPreview = React.lazy(
 );
 const LazyPptxPreview = React.lazy(
   () => import("../FilePreviewContent/PptxPreview")
-);
-const LazyPagesPreview = React.lazy(
-  () => import("../FilePreviewContent/PagesPreview")
 );
 
 // ============================================
@@ -470,7 +468,7 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
   // Keyboard shortcut for save (Cmd/Ctrl+S)
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+      if (matchesShortcut(e, "save_file")) {
         e.preventDefault();
         handleSave();
       }
@@ -621,11 +619,6 @@ const GitDiffContentInner: React.FC<GitDiffContentProps> = ({
         case "pptx":
           PreviewEl = (
             <LazyPptxPreview filePath={absoluteFilePath} className="flex-1" />
-          );
-          break;
-        case "pages":
-          PreviewEl = (
-            <LazyPagesPreview filePath={absoluteFilePath} className="flex-1" />
           );
           break;
         default:

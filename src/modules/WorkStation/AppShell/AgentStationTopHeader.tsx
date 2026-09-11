@@ -12,13 +12,15 @@ import { useLocation } from "react-router-dom";
 
 import { TabBarTrailingIconButton } from "@src/components/TabPill/TabBarTrailingIconButton";
 import { NoDragRegion } from "@src/components/WindowChrome";
+import { matchesShortcut } from "@src/config/keyboard/shortcutBindings";
 import { CHROME_TOOLTIP_HOVER_DELAY } from "@src/config/tooltip";
 import { TAB_BAR_CONTROLS_ROW_TRAILING_PADDING_PX } from "@src/config/workstation/tokens";
+import { HEADER_ICON_SIZE } from "@src/config/workstation/tokens";
 import CaptionBar from "@src/engines/Simulator/components/CaptionBar";
 import { useCurrentTurnLastAgentMessage } from "@src/engines/Simulator/hooks/useCurrentTurnLastAgentMessage";
 import { AppType } from "@src/engines/Simulator/types/appTypes";
 import {
-  getCollapsedSidebarChromeOffset,
+  useCollapsedSidebarChromeOffset,
   useShouldOffsetWorkStationTopBar,
 } from "@src/hooks/ui/sidebar/useCollapsedSidebarChromeOffset";
 import {
@@ -34,7 +36,6 @@ import {
   HugeiconsIcon,
   PanelRightIcon,
 } from "@src/icons";
-import { HEADER_ICON_SIZE } from "@src/modules/WorkStation/shared/tokens";
 import { CHROME_INSET_TRANSITION_CLASSES } from "@src/modules/shared/layouts/viewContainerTokens";
 import { CollapsedSidebarButton } from "@src/scaffold/NavigationSidebar/CollapsedSidebarButton";
 import { WorkStationViewService } from "@src/services/workStation/WorkStationViewService";
@@ -42,16 +43,14 @@ import {
   sessionMapAtom,
   workstationActiveSessionIdAtom,
 } from "@src/store/session";
-import {
-  activeStationChatVisibleAtom,
-  chatWidthAtom,
-  toggleChatPanelMaximizedAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { toggleChatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import {
   simulatorCaptionBarEnabledAtom,
   simulatorEffectiveDockAppAtom,
 } from "@src/store/ui/simulatorAtom";
-import { chatPanelPositionAtom } from "@src/store/ui/workStationAtom";
+import { chatPanelPositionAtom } from "@src/store/ui/workStationLayout/chatPositionAtoms";
 import { getViewportSize } from "@src/util/ui/window/viewport";
 
 import { SimulatorAgentChip, StationModeChip } from "../shared";
@@ -59,6 +58,7 @@ import { SimulatorAgentChip, StationModeChip } from "../shared";
 const AgentStationTopHeader: React.FC = memo(() => {
   const { t } = useTranslation("sessions");
   const shouldOffsetLeftChrome = useShouldOffsetWorkStationTopBar();
+  const collapsedSidebarChromeOffset = useCollapsedSidebarChromeOffset();
   const pinnedChrome = usePinnedWorkbenchChromeVisible();
   const rightEdge = useWorkbenchRightEdgeReservation();
   const getStationChatVisible = useAtomValue(activeStationChatVisibleAtom);
@@ -72,6 +72,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
   // maximize/restore button, so the workstation-side toggle is redundant
   // and visually conflicting (two buttons driving the same atom).
   const isSettingsRoute = location.pathname.startsWith("/orgii/app/settings");
+  const showPaneControls = !isSettingsRoute && !pinnedChrome;
   const effectiveDockApp = useAtomValue(simulatorEffectiveDockAppAtom);
   const [captionEnabled, setCaptionEnabled] = useAtom(
     simulatorCaptionBarEnabledAtom
@@ -114,12 +115,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.isComposing) return;
-      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-      const isCaptionsShortcut = isMac
-        ? event.metaKey && event.altKey && !event.ctrlKey && !event.shiftKey
-        : event.ctrlKey && event.altKey && !event.metaKey && !event.shiftKey;
-      if (!isCaptionsShortcut || event.code !== "KeyC") return;
+      if (!matchesShortcut(event, "toggle_captions")) return;
       event.preventDefault();
       event.stopPropagation();
       handleToggleCaption();
@@ -155,7 +151,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
         style={
           {
             paddingLeft: shouldOffsetLeftChrome
-              ? getCollapsedSidebarChromeOffset()
+              ? collapsedSidebarChromeOffset
               : undefined,
             // The trailing group keeps its own `pr-2`; only the remainder of
             // the pinned-chrome reservation goes here.
@@ -194,7 +190,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
               strokeWidth={2}
             />
           </TabBarTrailingIconButton>
-          {!isSettingsRoute && !pinnedChrome && !isChatPanelVisible && (
+          {showPaneControls && !isChatPanelVisible && (
             <TabBarTrailingIconButton
               title={chatPanelLabel}
               shortcutId="maximize_work_station"
@@ -209,10 +205,10 @@ const AgentStationTopHeader: React.FC = memo(() => {
               />
             </TabBarTrailingIconButton>
           )}
-          {/* On macOS `PinnedWorkbenchChrome` draws hide/restore-chat and
-              maximize-chat fixed at the window's right edge, so this header
-              leaves them out — same as the My Station bar. */}
-          {!isSettingsRoute && !pinnedChrome && (
+          {/* Empty macOS stations leave these actions to the pinned window
+              chrome. Once a session populates Agent Station, this header
+              owns them so the controls do not disappear with that chrome. */}
+          {showPaneControls && (
             <TabBarTrailingIconButton
               title={chatPanelLabel}
               shortcutId="maximize_work_station"
@@ -236,7 +232,7 @@ const AgentStationTopHeader: React.FC = memo(() => {
               )}
             </TabBarTrailingIconButton>
           )}
-          {!isSettingsRoute && !pinnedChrome && isChatPanelVisible && (
+          {showPaneControls && isChatPanelVisible && (
             <TabBarTrailingIconButton
               title={hideWorkstationLabel}
               shortcutId="maximize_chat"

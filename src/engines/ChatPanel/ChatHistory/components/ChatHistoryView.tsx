@@ -8,7 +8,7 @@ import { ChatLoadingBlock } from "@src/engines/ChatPanel/blocks/primitives";
 import { resolveTranscriptTopPaddingPx } from "@src/engines/ChatPanel/header/chatPanelHeaderLayout";
 import CloudSessionDownloadProgressCard from "@src/features/Org2Cloud/CloudSessionDownloadProgressCard";
 import { useCloudSessionHasDownloadSurface } from "@src/features/Org2Cloud/useCloudSessionDownloadSurface";
-import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanelAtom";
+import type { ChatHistoryDisplayMode } from "@src/store/ui/chatPanel/displayPrefsAtoms";
 
 import SessionHeader from "../../ChatItems/SessionHeader";
 import { ChatHistoryDisplayModeProvider } from "../chatDisplayModeContext";
@@ -19,7 +19,10 @@ import type { UseChatHistoryStateReturn } from "../hooks/useChatHistoryState";
 import type { useChatNavigationController } from "../hooks/useChatNavigationController";
 import type { UseChatSearchReturn } from "../hooks/useChatSearch";
 import type { useChatViewportController } from "../hooks/useChatViewportController";
-import { useGroupHeaderRenderer } from "../hooks/useGroupHeaderRenderer";
+import {
+  isRetryableFailedUserIntentHeader,
+  useGroupHeaderRenderer,
+} from "../hooks/useGroupHeaderRenderer";
 import type { useReloadSession } from "../hooks/useReloadSession";
 import ChatHistoryEmptyState from "./ChatHistoryEmptyState";
 import ChatPinnedHeaderLayer from "./ChatPinnedHeaderLayer";
@@ -120,11 +123,9 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     chatFontSize,
     chatCodeFontSize,
     chatLineHeight,
-    codeBlockContainerWidth,
     sessionLoadStatus,
     sessionLoadError,
     isWpGeneWorkingRef,
-    isExploringRef,
   } = historyState;
   const {
     activeProjectionHistory,
@@ -190,19 +191,13 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
   const {
     handleEditUserMessage,
     handleHeaderRestoreCheckpoint,
-    handleIgnoreQuestion,
     handlePinnedEditSubmit,
     handleRegenerateGroup,
-    handleSubmitAnswers,
   } = actions;
 
   const getIsWpGeneWorking = useCallback(
     () => isWpGeneWorkingRef.current ?? false,
     [isWpGeneWorkingRef]
-  );
-  const getIsExploring = useCallback(
-    () => isExploringRef.current ?? false,
-    [isExploringRef]
   );
   const hasCloudDownloadProgress = useCloudSessionHasDownloadSurface(activeId);
   // Anchor for the live status trail's elapsed readout. Read from the FULL
@@ -233,6 +228,7 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
     defaultTurnCollapsed,
     turnCollapseInteractionAtRef,
     onEditSubmit: mutationActionsDisabled ? undefined : handleEditUserMessage,
+    onFailedUserIntentEdit: handleEditUserMessage,
     onRestoreCheckpoint: mutationActionsDisabled
       ? undefined
       : handleHeaderRestoreCheckpoint,
@@ -314,7 +310,10 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
       defaultTurnCollapsed={defaultTurnCollapsed}
       turnCollapseInteractionAtRef={turnCollapseInteractionAtRef}
       onEditSubmit={
-        mutationActionsDisabled ? undefined : handlePinnedEditSubmit
+        mutationActionsDisabled &&
+        !isRetryableFailedUserIntentHeader(activePinnedHeader)
+          ? undefined
+          : handlePinnedEditSubmit
       }
       onRestoreCheckpoint={
         mutationActionsDisabled ? undefined : handleHeaderRestoreCheckpoint
@@ -493,14 +492,12 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                       groupCounts={displayGroupCounts}
                       turnIds={displayTurnIds}
                       totalFlatItems={displayTotalFlatItems}
-                      codeBlockContainerWidth={codeBlockContainerWidth ?? 0}
                       footerSpacerHeight={footerSpacerHeight}
                       bottomInset={bottomInset}
                       topPaddingPx={transcriptTopPaddingPx}
                       virtualListRef={virtualListRef}
                       virtualListDataKey={virtualListDataKey}
                       getIsWpGeneWorking={getIsWpGeneWorking}
-                      getIsExploring={getIsExploring}
                       renderGroupHeader={
                         turnPaginationEnabled
                           ? renderNoGroupHeader
@@ -516,8 +513,6 @@ const ChatHistoryView: React.FC<ChatHistoryViewProps> = ({
                           ? undefined
                           : handleRegenerateGroup
                       }
-                      onSubmit={handleSubmitAnswers}
-                      onSkip={handleIgnoreQuestion}
                       onEditUserMessage={
                         mutationActionsDisabled
                           ? undefined

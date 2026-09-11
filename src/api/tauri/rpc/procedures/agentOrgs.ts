@@ -3,11 +3,7 @@ import { z } from "zod/v4";
 import { defineProcedure } from "../invoke";
 import * as schemas from "../schemas";
 
-export type {
-  CursorPluginHook,
-  CursorPluginInfo,
-  CursorPluginSkill,
-} from "../schemas/agentOrgs";
+export type { CursorPluginInfo } from "../schemas/agentOrgs";
 
 const cursor = {
   readConfig: defineProcedure("cursor_cli_config_read")
@@ -219,13 +215,11 @@ const memory = {
 
 const orgs = {
   list: defineProcedure("agent_orgs_list")
-    .output(z.array(schemas.agentOrgs.OrgMemberSchema))
+    .output(z.array(schemas.agentOrgs.OrgDefinitionSchema))
     .build(),
-  add: defineProcedure("agent_orgs_add")
+  saveTrustedSettings: defineProcedure("agent_orgs_save_trusted_settings")
     .input(schemas.agentOrgs.OrgJsonInput)
-    .build(),
-  update: defineProcedure("agent_orgs_update")
-    .input(schemas.agentOrgs.OrgJsonInput)
+    .output(schemas.agentOrgs.OrgDefinitionSchema)
     .build(),
   remove: defineProcedure("agent_orgs_remove")
     .input(schemas.agentOrgs.OrgIdInput)

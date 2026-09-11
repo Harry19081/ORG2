@@ -17,8 +17,8 @@ import { useWorkStationPanels } from "@src/hooks/tabHost/useWorkStationPanels";
 import {
   browserDevToolsPositionAtom,
   browserDevToolsPositionPersistAtom,
-} from "@src/store/ui/workStationAtom";
-import type { SecondaryPanelPosition } from "@src/store/ui/workStationAtom";
+} from "@src/store/ui/workStationLayout/secondaryPanelPositionAtoms";
+import type { SecondaryPanelPosition } from "@src/store/ui/workStationLayout/secondaryPanelPositionAtoms";
 
 import { shouldEnableBrowserLogPolling } from "./browserDiagnosticsPolicy";
 import { useBrowserConsole } from "./useBrowserConsole";

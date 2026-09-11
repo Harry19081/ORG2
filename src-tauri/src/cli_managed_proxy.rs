@@ -13,7 +13,7 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU32, Ordering},
     Mutex, OnceLock,
 };
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
 
 const MANAGED_CODEX_AGENT: &str = "codex";
 const MANAGED_CLAUDE_CODE_AGENT: &str = "claude_code";
@@ -913,15 +913,6 @@ fn json_error(status: StatusCode, message: String) -> Response<Body> {
         .header(CONTENT_TYPE, "application/json")
         .body(Body::from(body.to_string()))
         .unwrap_or_else(|_| Response::new(Body::from("proxy error")))
-}
-
-#[allow(dead_code)]
-fn response_id(prefix: &str) -> String {
-    let millis = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_millis())
-        .unwrap_or(0);
-    format!("{prefix}_{millis}")
 }
 
 #[cfg(test)]

@@ -9,7 +9,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable";
+import { SETTINGS_TABLE_CELL } from "@src/components/SettingsTable/tokens";
 import StatusDot from "@src/components/StatusDot";
 import Switch from "@src/components/Switch";
 import type {

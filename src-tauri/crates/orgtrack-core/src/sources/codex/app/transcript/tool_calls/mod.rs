@@ -368,6 +368,39 @@ pub(super) fn codex_tool_call_chunk(
             );
         }
     }
+    if call.canonical_name == "ask_user_questions" && !failed {
+        if let Ok(receipt) = serde_json::from_str::<Value>(output) {
+            if let (Some(questions), Some(answers)) = (
+                call.args.get("questions").and_then(Value::as_array),
+                receipt.get("answers").and_then(Value::as_object),
+            ) {
+                let ordered: Vec<Vec<String>> = questions
+                    .iter()
+                    .map(|question| {
+                        question
+                            .get("id")
+                            .and_then(Value::as_str)
+                            .and_then(|id| answers.get(id))
+                            .and_then(|answer| answer.get("answers"))
+                            .and_then(Value::as_array)
+                            .map(|values| {
+                                values
+                                    .iter()
+                                    .filter_map(Value::as_str)
+                                    .map(str::to_string)
+                                    .collect()
+                            })
+                            .unwrap_or_default()
+                    })
+                    .collect();
+                if ordered.iter().any(|answer| !answer.is_empty()) {
+                    chunk.result["status"] = json!("answered");
+                    chunk.result["answers"] = json!(ordered);
+                }
+            }
+        }
+    }
+
     chunk
 }
 
@@ -388,21 +421,23 @@ pub(crate) fn output_parts_for_tool_calls(calls: &[ImportedToolCall], output: &s
         return vec![output.to_string(); calls.len()];
     };
 
-    let lines = output.split_inclusive('\n').collect::<Vec<_>>();
+    let mut lines = output.split_inclusive('\n');
     let mut cursor = 0usize;
     calls
         .iter()
         .enumerate()
         .map(|(index, _)| {
-            let remaining = lines.len().saturating_sub(cursor);
-            let take = if index + 1 == calls.len() {
-                remaining
+            let start = cursor;
+            if index + 1 == calls.len() {
+                cursor = output.len();
             } else {
-                limits[index].min(remaining)
-            };
-            let part = lines[cursor..cursor.saturating_add(take)].concat();
-            cursor = cursor.saturating_add(take);
-            part
+                cursor += lines
+                    .by_ref()
+                    .take(limits[index])
+                    .map(str::len)
+                    .sum::<usize>();
+            }
+            output[start..cursor].to_string()
         })
         .collect()
 }

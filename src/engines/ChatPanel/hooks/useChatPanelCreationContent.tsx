@@ -9,7 +9,7 @@ import {
   buildWizardPath,
 } from "@src/config/mainAppPaths";
 import { allAgentDefsAtom } from "@src/modules/MainApp/AgentOrgs/store/builtInAgentsAtom";
-import { installAvailableAppUpdate } from "@src/scaffold/AppUpdater";
+import { installAvailableAppUpdate } from "@src/scaffold/AppUpdater/actions";
 import { openOrReplaceSessionInChatPanelTabAtom } from "@src/store/chatPanel/chatPanelTabsAtom";
 import { projectListRefreshAtom } from "@src/store/project/projectAtom";
 import { sessionCreatorStateAtom } from "@src/store/session";
@@ -19,7 +19,7 @@ import {
   chatPanelCreateTargetAtom,
   chatPanelSelectedProjectAtom,
   chatPanelSelectedWorkItemAtom,
-} from "@src/store/ui/chatPanelAtom";
+} from "@src/store/ui/chatPanel/selectionAtoms";
 import type { WorkItemDraft } from "@src/store/workstation/projectManager";
 
 import { ChatPanelEmptyContent } from "../ChatPanelEmptyContent";

@@ -16,6 +16,7 @@ const { rpcMock, listenState } = vi.hoisted(() => ({
     sessionCore: {
       eventStore: {
         getSnapshot: vi.fn(),
+        evictSession: vi.fn().mockResolvedValue(undefined),
         switchSession: vi.fn().mockResolvedValue(true),
         setStreaming: vi.fn().mockResolvedValue(undefined),
       },
@@ -59,8 +60,88 @@ describe("EventStoreProxy snapshot coalescing", () => {
 
   afterEach(() => {
     eventStoreProxy.destroy();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
     vi.clearAllMocks();
+  });
+
+  it("delivers pending questions when animation frames are suspended", async () => {
+    const frames: FrameRequestCallback[] = [];
+    const cancelFrame = vi.fn();
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    });
+    vi.stubGlobal("cancelAnimationFrame", cancelFrame);
+    const listener = vi.fn();
+    eventStoreProxy.subscribeSession("suspended-frame", listener);
+    const question = {
+      ...makeEvent("native-question", "suspended-frame"),
+      actionType: "ask_user_questions",
+      displayStatus: "pending" as const,
+      result: { status: "pending", native_request_id: "native-request" },
+    };
+    await deliver(makeDerivedEnvelope("suspended-frame", 1, [question]));
+    // A burst still owns one scheduled flush, even with no rendering frames.
+    await deliver(makeDerivedEnvelope("suspended-frame", 2, [question]));
+    expect(frames).toHaveLength(1);
+    expect(listener).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener.mock.lastCall?.[0].chatEvents).toEqual([question]);
+    expect(cancelFrame).toHaveBeenCalledWith(1);
+    // A delayed frame must not notify twice or leave recurring idle work.
+    frames[0](100);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("cancels the fallback when the frame wins or the cache is destroyed", async () => {
+    let frame: FrameRequestCallback | undefined;
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      frame = callback;
+      return 1;
+    });
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+    const listener = vi.fn();
+    eventStoreProxy.subscribeSession("frame-cleanup", listener);
+    await deliver(makeDerivedEnvelope("frame-cleanup", 1, []));
+    frame!(16);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+    await deliver(makeDerivedEnvelope("frame-cleanup", 2, []));
+    eventStoreProxy.destroy();
+    frame!(32);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("keeps mounted chat subscribers across native-history eviction and reload", async () => {
+    const sessionId = "native-reload";
+    const first = makeEvent("native-first-turn", sessionId);
+    const second = makeEvent("native-app-second-turn", sessionId);
+    const chat = vi.fn();
+    const dispose = eventStoreProxy.subscribeSession(sessionId, chat);
+    await deliver(makeDerivedEnvelope(sessionId, 10, [first]));
+    await advanceFrame();
+    expect(chat).toHaveBeenCalledTimes(1);
+
+    await eventStoreProxy.evictSession(sessionId);
+    expect(eventStoreProxy.getLatestSessionSnapshot(sessionId)).toBeNull();
+    // Rust starts a new cache generation after eviction. The mounted Chat
+    // must receive its reloaded history without having to remount.
+    await deliver(makeDerivedEnvelope(sessionId, 1, [first, second]));
+    await advanceFrame();
+    expect(chat).toHaveBeenCalledTimes(2);
+    expect(
+      chat.mock.lastCall?.[0].chatEvents.map((event: SessionEvent) => event.id)
+    ).toEqual([first.id, second.id]);
+    dispose();
+    await deliver(makeDerivedEnvelope(sessionId, 2, [first, second]));
+    await advanceFrame();
+    expect(chat).toHaveBeenCalledTimes(2);
   });
 
   it("reuses the previous eventIndex, unchanged arrays and preview objects on a single-event delta upsert", async () => {
@@ -248,6 +329,9 @@ describe("EventStoreProxy snapshot coalescing", () => {
     await deliver(
       makeDeltaEnvelope(sessionId, 3, 4, [{ ...e1, displayText: "abc" }], ids)
     );
+    expect(listener).not.toHaveBeenCalled();
+    // A diagnostic read must not defeat the pending frame's coalescing.
+    expect(eventStoreProxy.getMemoryStats().bytes).toBeGreaterThan(0);
     expect(listener).not.toHaveBeenCalled();
 
     await advanceFrame();

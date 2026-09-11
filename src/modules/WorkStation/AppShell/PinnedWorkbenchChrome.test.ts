@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { Provider } from "jotai";
-import { act, createElement } from "react";
+import { Fragment, act, createElement } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -19,13 +19,18 @@ import {
   getPinnedWorkbenchChromeReservedRight,
   isPinnedWorkbenchChromePath,
   resolvePinnedWorkbenchChromeSlots,
+  shouldShowPinnedWorkbenchChrome,
+  useWorkbenchRightEdgeReservation,
 } from "@src/hooks/ui/workbench/usePinnedWorkbenchChrome";
-import {
-  activeStationChatVisibleAtom,
-  chatPanelMaximizedAtom,
-  chatWidthAtom,
-} from "@src/store/ui/chatPanelAtom";
+import { chatPanelTabsAtom } from "@src/store/chatPanel/chatPanelTabsState";
+import { workstationActiveSessionIdAtom } from "@src/store/session/viewAtom";
+import { settingsAtom } from "@src/store/settings";
+import { chatPanelMaximizedAtom } from "@src/store/ui/chatPanel/surfaceAtoms";
+import { activeStationChatVisibleAtom } from "@src/store/ui/chatPanel/visibilityAtoms";
+import { chatWidthAtom } from "@src/store/ui/chatPanel/widthAtoms";
 import { stationModeAtom } from "@src/store/ui/simulatorAtom";
+import { workstationLayoutAtom } from "@src/store/workstation/tabs";
+import { createFileTab } from "@src/store/workstation/tabs/factories";
 import {
   createInstrumentedStore,
   resetInstrumentedStore,
@@ -49,6 +54,15 @@ vi.mock("@src/services/workStation/WorkStationViewService", () => ({
 const reactActEnvironment = globalThis as typeof globalThis & {
   IS_REACT_ACT_ENVIRONMENT?: boolean;
 };
+
+function RightEdgeReservationProbe() {
+  const reservation = useWorkbenchRightEdgeReservation();
+  return createElement("div", {
+    "data-testid": "right-edge-reservation",
+    "data-owner": reservation.owner,
+    "data-reserved-right": reservation.reservedRight,
+  });
+}
 
 describe("PinnedWorkbenchChrome", () => {
   let container: HTMLDivElement;
@@ -89,7 +103,12 @@ describe("PinnedWorkbenchChrome", () => {
           createElement(
             MemoryRouter,
             { initialEntries: [pathname] },
-            createElement(PinnedWorkbenchChrome)
+            createElement(
+              Fragment,
+              null,
+              createElement(PinnedWorkbenchChrome),
+              createElement(RightEdgeReservationProbe)
+            )
           )
         )
       );
@@ -120,6 +139,65 @@ describe("PinnedWorkbenchChrome", () => {
     expect(isPinnedWorkbenchChromePath(ROUTES.workStation.base.path)).toBe(
       true
     );
+  });
+
+  it("leaves populated station headers clear for their own trailing controls", () => {
+    expect(
+      shouldShowPinnedWorkbenchChrome({
+        baseVisible: true,
+        stationMode: "my-station",
+        myStationHasContent: true,
+        agentStationHasContent: false,
+      })
+    ).toBe(false);
+    expect(
+      shouldShowPinnedWorkbenchChrome({
+        baseVisible: true,
+        stationMode: "agent-station",
+        myStationHasContent: false,
+        agentStationHasContent: true,
+      })
+    ).toBe(false);
+
+    expect(
+      shouldShowPinnedWorkbenchChrome({
+        baseVisible: true,
+        stationMode: "my-station",
+        myStationHasContent: false,
+        agentStationHasContent: true,
+      })
+    ).toBe(true);
+    expect(
+      shouldShowPinnedWorkbenchChrome({
+        baseVisible: true,
+        stationMode: "agent-station",
+        myStationHasContent: true,
+        agentStationHasContent: false,
+      })
+    ).toBe(true);
+  });
+
+  it("removes the pinned group when the active station gains content", () => {
+    render();
+    expect(query("pinned-workbench-chrome")).not.toBeNull();
+
+    const fileTab = createFileTab("/repo/src/index.ts");
+    act(() => {
+      store.set(workstationLayoutAtom, {
+        mainPane: { tabs: [fileTab], activeTabId: fileTab.id },
+      });
+    });
+    expect(query("pinned-workbench-chrome")).toBeNull();
+
+    act(() => {
+      store.set(stationModeAtom, "agent-station");
+    });
+    expect(query("pinned-workbench-chrome")).not.toBeNull();
+
+    act(() => {
+      store.set(workstationActiveSessionIdAtom, "session-a");
+    });
+    expect(query("pinned-workbench-chrome")).toBeNull();
   });
 
   it("pins hide-chat and maximize-chat at the window's right edge, 1px apart", () => {
@@ -157,6 +235,39 @@ describe("PinnedWorkbenchChrome", () => {
     expect(query("pinned-workbench-chrome-maximize-chat")).toBeNull();
     expect(query("pinned-workbench-chrome")?.childElementCount).toBe(1);
   });
+
+  it.each(["organization", "team-inbox", "work-management"] as const)(
+    "reserves one disabled sidebar control for full-width %s tabs with a saved split layout",
+    (type) => {
+      render();
+      act(() => {
+        store.set(activeStationChatVisibleAtom, "my-station", true);
+        store.set(chatWidthAtom, 360);
+        store.set(settingsAtom, {
+          ...store.get(settingsAtom),
+          "general.chatPanelPosition": "left",
+        });
+        store.set(chatPanelMaximizedAtom, false);
+        store.set(chatPanelTabsAtom, {
+          activeTabId: "full-width-tab",
+          tabs: [{ id: "full-width-tab", type, title: "Full-width page" }],
+        });
+      });
+
+      expect(query("pinned-workbench-chrome-chat-visibility")).toBeNull();
+      expect(query("pinned-workbench-chrome-maximize-chat")).toBeNull();
+      const sidebarButton = query("pinned-workbench-chrome-show-workstation");
+      expect(sidebarButton).toBeInstanceOf(HTMLButtonElement);
+      expect((sidebarButton as HTMLButtonElement).disabled).toBe(true);
+      expect(query("pinned-workbench-chrome")?.childElementCount).toBe(1);
+      expect(query("right-edge-reservation")?.dataset.owner).toBe("chat");
+      expect(query("right-edge-reservation")?.dataset.reservedRight).toBe(
+        String(getPinnedWorkbenchChromeReservedRight(1))
+      );
+      click("pinned-workbench-chrome-show-workstation");
+      expect(store.get(chatPanelMaximizedAtom)).toBe(false);
+    }
+  );
 
   it("follows the station on screen: Agent Station keeps its maximize toggle", () => {
     render();
