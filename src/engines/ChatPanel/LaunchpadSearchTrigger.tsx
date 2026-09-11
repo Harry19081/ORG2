@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Button from "@src/components/Button";
 import { KeyboardShortcut } from "@src/components/KeyboardShortcut";
-import { HugeiconsIcon, Search01Icon } from "@src/icons";
+import { AiSearch02Icon, HugeiconsIcon } from "@src/icons";
 import { launchpadTransitionSourceAtom } from "@src/scaffold/GlobalSpotlight/useLaunchpadTransition";
 import {
   spotlightInitialQueryAtom,
@@ -50,7 +50,7 @@ export function LaunchpadSearchTrigger({
       >
         <span className="flex w-full items-center justify-between gap-2">
           <span className="flex min-w-0 items-center gap-2">
-            <HugeiconsIcon icon={Search01Icon} size={14} strokeWidth={1.75} />
+            <HugeiconsIcon icon={AiSearch02Icon} size={14} strokeWidth={1.75} />
             <span
               className={
                 placement === "trailing"

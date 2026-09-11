@@ -23,6 +23,7 @@
 export { HugeiconsIcon } from "@hugeicons/react";
 export type { IconSvgElement } from "@hugeicons/react";
 
+export { default as AiSearch02Icon } from "@hugeicons/core-free-icons/AiSearch02Icon";
 export { default as Activity01Icon } from "@hugeicons/core-free-icons/Activity01Icon";
 export { default as ActivitySparkIcon } from "@hugeicons/core-free-icons/ActivitySparkIcon";
 export { default as Add01Icon } from "@hugeicons/core-free-icons/Add01Icon";

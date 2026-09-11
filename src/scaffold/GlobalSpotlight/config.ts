@@ -1,6 +1,7 @@
 import { ACTION_ID } from "@src/ActionSystem";
 import { LANGUAGE_NAMES, SUPPORTED_LANGUAGES } from "@src/i18n";
 import {
+  AiSearch02Icon,
   ArrowLeft02Icon,
   ArrowRight02Icon,
   ArrowUp02Icon,
@@ -33,7 +34,6 @@ import {
   Pen01Icon,
   Refresh04Icon,
   RocketIcon,
-  Search01Icon,
   Settings01Icon,
   SparklesIcon,
   SquareArrowUpRight02Icon,
@@ -96,7 +96,7 @@ export const ICONS = {
 
   // Misc
   refresh: Refresh04Icon,
-  search: Search01Icon,
+  search: AiSearch02Icon,
   branch: WorkflowCircle05Icon,
   worktree: FolderClosedIcon,
   close: Cancel01Icon,
