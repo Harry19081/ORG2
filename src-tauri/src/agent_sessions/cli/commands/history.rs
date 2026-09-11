@@ -19,7 +19,9 @@ pub enum CliHistoryRead {
     },
 }
 
-fn native_history_path(session_id: &str) -> Result<Option<(String, std::path::PathBuf)>, String> {
+pub(crate) fn native_history_path(
+    session_id: &str,
+) -> Result<Option<(String, std::path::PathBuf)>, String> {
     use super::super::{native_materializer, native_transcript, persistence};
     use orgtrack_core::sources::{claude_code::history as claude, codex::app as codex};
 

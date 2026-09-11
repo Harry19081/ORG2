@@ -16,6 +16,11 @@ import { ChatImageThumbnail } from ".";
 
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
+  readTranscriptImage: vi.fn(),
+}));
+
+vi.mock("@src/api/tauri/externalHistory/sources/codexApp/images", () => ({
+  readTranscriptImage: mocks.readTranscriptImage,
 }));
 
 vi.mock("@tauri-apps/plugin-fs", () => ({
@@ -113,6 +118,71 @@ describe("ChatImageThumbnail", () => {
       "data:image/png;base64,c21hbGw="
     );
     expect(mocks.readFile).not.toHaveBeenCalled();
+  });
+
+  it.each(["https://example.com/screenshot.png", "blob:existing-image"])(
+    "loads %s through the browser without copying bytes into JS",
+    async (imageRef) => {
+      await act(async () => {
+        root.render(
+          createElement(ChatImageThumbnail, { imageRef, alt: "Image" })
+        );
+      });
+      expect(container.querySelector("img")?.getAttribute("src")).toBe(
+        imageRef
+      );
+      expect(container.querySelector("img")?.getAttribute("loading")).toBe(
+        "lazy"
+      );
+      expect(mocks.readFile).not.toHaveBeenCalled();
+      expect(objectUrls.createObjectURL).not.toHaveBeenCalled();
+    }
+  );
+
+  it("releases a local image that finishes after unmount", async () => {
+    let resolve!: (bytes: Uint8Array) => void;
+    mocks.readFile.mockReturnValueOnce(
+      new Promise<Uint8Array>((done) => {
+        resolve = done;
+      })
+    );
+    await act(async () => {
+      root.render(
+        createElement(ChatImageThumbnail, {
+          imageRef: "/tmp/late.png",
+          alt: "Image",
+        })
+      );
+    });
+    await act(async () => {
+      root.render(null);
+    });
+    await act(async () => {
+      resolve(new Uint8Array([1, 2, 3]));
+    });
+    expect(objectUrls.revokeObjectURL).toHaveBeenCalledTimes(1);
+  });
+
+  it("loads transcript-backed thumbnails without reading protected screenshot files", async () => {
+    mocks.readTranscriptImage.mockResolvedValueOnce(
+      "data:image/png;base64,QUJD"
+    );
+    const imageRef =
+      'orgii-transcript-image:["codexapp-one","codex-user-123","/protected/shot.png"]';
+    await act(async () => {
+      root.render(
+        createElement(ChatImageThumbnail, { imageRef, alt: "Image" })
+      );
+    });
+    expect(mocks.readTranscriptImage).toHaveBeenCalledWith({
+      sessionId: "codexapp-one",
+      turnId: "codex-user-123",
+      originalRef: "/protected/shot.png",
+    });
+    expect(mocks.readFile).not.toHaveBeenCalled();
+    expect(container.querySelector("img")?.getAttribute("src")).toBe(
+      "data:image/png;base64,QUJD"
+    );
   });
 
   it("serves local images as Blob URLs and releases them when the ref changes", async () => {
