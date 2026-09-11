@@ -197,32 +197,45 @@ async function findSupersededSessions(
  * continuation sibling the backend election already demoted can stay listed
  * next to its winner indefinitely. Absence from the roster is what makes a
  * push-marked id a suspect, so such a row would never be judged and its
- * cloud copy would never be retracted. Keep only the newest row per lineage
- * as live; the backend status lookup remains the authority on supersession.
+ * cloud copy would never be retracted. Within a lineage only a row that is
+ * strictly newest stays live; siblings tied on `updated_at` are all left
+ * to the backend status lookup, which breaks the tie the way the election
+ * did. Rows without a lineage are always live.
  */
 export function continuationLiveSessionIds(
   sessions: readonly Session[]
 ): Set<string> {
-  const newestByLineage = new Map<string, Session>();
+  const newestByLineage = new Map<
+    string,
+    { updatedAt: string; count: number; sessionId: string }
+  >();
   for (const session of sessions) {
     const lineageId = session.continuationLineageId;
     if (!lineageId) continue;
+    const updatedAt = session.updated_at || "";
     const current = newestByLineage.get(lineageId);
-    if (
-      !current ||
-      (session.updated_at || "").localeCompare(current.updated_at || "") > 0
-    ) {
-      newestByLineage.set(lineageId, session);
+    if (!current || updatedAt.localeCompare(current.updatedAt) > 0) {
+      newestByLineage.set(lineageId, {
+        updatedAt,
+        count: 1,
+        sessionId: session.session_id,
+      });
+    } else if (updatedAt === current.updatedAt) {
+      current.count += 1;
     }
   }
   const live = new Set<string>();
   for (const session of sessions) {
     const lineageId = session.continuationLineageId;
-    if (
-      lineageId &&
-      newestByLineage.get(lineageId)?.session_id !== session.session_id
-    ) {
-      continue;
+    if (lineageId) {
+      const newest = newestByLineage.get(lineageId);
+      if (
+        !newest ||
+        newest.count !== 1 ||
+        newest.sessionId !== session.session_id
+      ) {
+        continue;
+      }
     }
     live.add(session.session_id);
   }
