@@ -31,6 +31,7 @@ import {
 } from "@src/api/tauri/externalHistory/imported/cloudReplay";
 import { sessionAggregateList } from "@src/api/tauri/session";
 import { createLogger } from "@src/hooks/logger";
+import type { Session } from "@src/store/session";
 
 const log = createLogger("Org2CloudVanishedSessions");
 
@@ -188,4 +189,42 @@ async function findSupersededSessions(
       sessionId: status.sessionId,
       lineageId: status.lineageId as string,
     }));
+}
+
+/**
+ * The roster the superseded reconcile may treat as live. `sessionsAtom` is
+ * a union that is never pruned and is rehydrated from persistence, so a
+ * continuation sibling the backend election already demoted can stay listed
+ * next to its winner indefinitely. Absence from the roster is what makes a
+ * push-marked id a suspect, so such a row would never be judged and its
+ * cloud copy would never be retracted. Keep only the newest row per lineage
+ * as live; the backend status lookup remains the authority on supersession.
+ */
+export function continuationLiveSessionIds(
+  sessions: readonly Session[]
+): Set<string> {
+  const newestByLineage = new Map<string, Session>();
+  for (const session of sessions) {
+    const lineageId = session.continuationLineageId;
+    if (!lineageId) continue;
+    const current = newestByLineage.get(lineageId);
+    if (
+      !current ||
+      (session.updated_at || "").localeCompare(current.updated_at || "") > 0
+    ) {
+      newestByLineage.set(lineageId, session);
+    }
+  }
+  const live = new Set<string>();
+  for (const session of sessions) {
+    const lineageId = session.continuationLineageId;
+    if (
+      lineageId &&
+      newestByLineage.get(lineageId)?.session_id !== session.session_id
+    ) {
+      continue;
+    }
+    live.add(session.session_id);
+  }
+  return live;
 }
