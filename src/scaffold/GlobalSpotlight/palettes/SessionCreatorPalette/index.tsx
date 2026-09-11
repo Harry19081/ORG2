@@ -14,6 +14,7 @@ import { Add01Icon } from "@src/icons";
 import type { BasePaletteProps } from "@src/scaffold/GlobalSpotlight/shared";
 
 import { SpotlightPillBar } from "../../components";
+import { SpotlightFormBody } from "../../forms/shared/SpotlightFormShell";
 import { SpotlightShell } from "../../shell";
 import type { PathSegment } from "../../types";
 
@@ -25,7 +26,7 @@ export function SessionCreatorPalette({
   isOpen,
   onClose,
   onGoBackToParent,
-  asBody: _asBody,
+  asBody = false,
 }: SessionCreatorPaletteProps) {
   const { t } = useTranslation("navigation");
   const handleBack = onGoBackToParent ?? onClose;
@@ -53,13 +54,19 @@ export function SessionCreatorPalette({
   const body = (
     <div className="flex min-h-0 flex-col">
       <SpotlightPillBar path={path} onRemoveSegment={handleBack} />
-      <SessionCreatorChatPanel
-        hidePresenceButton
-        onSessionStart={handleSessionStart}
-        innerClassName="pb-4!"
-      />
+      <SpotlightFormBody>
+        <SessionCreatorChatPanel
+          spotlight
+          headerLayout="compact"
+          hidePresenceButton
+          onSessionStart={handleSessionStart}
+          innerClassName="p-0!"
+        />
+      </SpotlightFormBody>
     </div>
   );
+
+  if (asBody) return body;
 
   return (
     <SpotlightShell
