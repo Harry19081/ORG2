@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "In Sitzung suchen",
+    "file": "In Datei suchen",
+    "named": "In {{name}} suchen"
+  },
   "teamInbox": {
     "title": "Team-Posteingang",
     "listLabel": "Liste des Team-Posteingangs",
@@ -741,7 +746,9 @@
     "previous": "Vorherige",
     "next": "Nächste",
     "previousMatch": "Vorheriger Treffer (Shift+Enter)",
+    "previousMatchLabel": "Vorheriger Treffer",
     "nextMatch": "Nächster Treffer (Enter)",
+    "nextMatchLabel": "Nächster Treffer",
     "clearSearch": "Suche löschen",
     "openInEditorTab": "In Editor-Tab öffnen",
     "openFile": "Datei öffnen",
@@ -768,11 +775,16 @@
     "goForward": "Vorwärts",
     "goToToday": "Zu heute gehen",
     "matchCase": "Groß-/Kleinschreibung (Alt+C)",
+    "matchCaseLabel": "Groß-/Kleinschreibung",
     "matchWholeWord": "Ganzes Wort (Alt+W)",
+    "matchWholeWordLabel": "Ganzes Wort",
     "useRegex": "Regulären Ausdruck verwenden (Alt+R)",
+    "useRegexLabel": "Regulären Ausdruck verwenden",
     "searchInOpenEditors": "Nur in geöffneten Editoren suchen",
     "replace": "Ersetzen (Ctrl+Shift+1)",
+    "replaceLabel": "Ersetzen",
     "replaceAll": "Alle ersetzen (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Alle ersetzen",
     "moreActions": "Weitere Aktionen...",
     "formatSql": "SQL formatieren",
     "queryHistory": "Abfrageverlauf",

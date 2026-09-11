@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "Buscar en la sesión",
+    "file": "Buscar en el archivo",
+    "named": "Buscar en {{name}}"
+  },
   "teamInbox": {
     "title": "Bandeja del equipo",
     "listLabel": "Lista de la bandeja del equipo",
@@ -741,7 +746,9 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "previousMatch": "Coincidencia anterior (Shift+Enter)",
+    "previousMatchLabel": "Coincidencia anterior",
     "nextMatch": "Siguiente coincidencia (Enter)",
+    "nextMatchLabel": "Siguiente coincidencia",
     "clearSearch": "Limpiar búsqueda",
     "openInEditorTab": "Abrir en pestaña del editor",
     "openFile": "Abrir archivo",
@@ -768,11 +775,16 @@
     "goForward": "Adelante",
     "goToToday": "Ir a hoy",
     "matchCase": "Coincidir mayúsculas (Alt+C)",
+    "matchCaseLabel": "Coincidir mayúsculas",
     "matchWholeWord": "Palabra completa (Alt+W)",
+    "matchWholeWordLabel": "Palabra completa",
     "useRegex": "Usar expresión regular (Alt+R)",
+    "useRegexLabel": "Usar expresión regular",
     "searchInOpenEditors": "Buscar solo en editores abiertos",
     "replace": "Reemplazar (Ctrl+Shift+1)",
+    "replaceLabel": "Reemplazar",
     "replaceAll": "Reemplazar todo (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Reemplazar todo",
     "moreActions": "Más acciones...",
     "formatSql": "Formatear SQL (embellecer)",
     "queryHistory": "Historial de consultas",

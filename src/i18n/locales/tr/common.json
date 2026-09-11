@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "Oturumda ara",
+    "file": "Dosyada ara",
+    "named": "{{name}} içinde ara"
+  },
   "teamInbox": {
     "title": "Ekip Gelen Kutusu",
     "listLabel": "Ekip Gelen Kutusu listesi",
@@ -741,7 +746,9 @@
     "previous": "Önceki",
     "next": "Sonraki",
     "previousMatch": "Önceki eşleşme (Shift+Enter)",
+    "previousMatchLabel": "Önceki eşleşme",
     "nextMatch": "Sonraki eşleşme (Enter)",
+    "nextMatchLabel": "Sonraki eşleşme",
     "clearSearch": "Aramayı temizle",
     "openInEditorTab": "Düzenleyici sekmesinde aç",
     "openFile": "Dosyayı aç",
@@ -768,11 +775,16 @@
     "goForward": "İleri",
     "goToToday": "Bugüne git",
     "matchCase": "Büyük/küçük harf eşleştir (Alt+C)",
+    "matchCaseLabel": "Büyük/küçük harf eşleştir",
     "matchWholeWord": "Tam kelime eşleştir (Alt+W)",
+    "matchWholeWordLabel": "Tam kelime eşleştir",
     "useRegex": "Düzenli ifade kullan (Alt+R)",
+    "useRegexLabel": "Düzenli ifade kullan",
     "searchInOpenEditors": "Sadece açık düzenleyicilerde ara",
     "replace": "Değiştir (Ctrl+Shift+1)",
+    "replaceLabel": "Değiştir",
     "replaceAll": "Tümünü değiştir (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Tümünü değiştir",
     "moreActions": "Daha fazla işlem...",
     "formatSql": "SQL'i formatla",
     "queryHistory": "Sorgu geçmişi",

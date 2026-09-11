@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "Поиск в сеансе",
+    "file": "Поиск в файле",
+    "named": "Поиск в {{name}}"
+  },
   "teamInbox": {
     "title": "Общий почтовый ящик команды",
     "listLabel": "Список общего почтового ящика команды",
@@ -741,7 +746,9 @@
     "previous": "Предыдущий",
     "next": "Следующий",
     "previousMatch": "Предыдущее совпадение (Shift+Enter)",
+    "previousMatchLabel": "Предыдущее совпадение",
     "nextMatch": "Следующее совпадение (Enter)",
+    "nextMatchLabel": "Следующее совпадение",
     "clearSearch": "Очистить поиск",
     "openInEditorTab": "Открыть во вкладке редактора",
     "openFile": "Открыть файл",
@@ -768,11 +775,16 @@
     "goForward": "Вперёд",
     "goToToday": "Перейти к сегодня",
     "matchCase": "Учитывать регистр (Alt+C)",
+    "matchCaseLabel": "Учитывать регистр",
     "matchWholeWord": "Слово целиком (Alt+W)",
+    "matchWholeWordLabel": "Слово целиком",
     "useRegex": "Использовать регулярное выражение (Alt+R)",
+    "useRegexLabel": "Использовать регулярное выражение",
     "searchInOpenEditors": "Искать только в открытых редакторах",
     "replace": "Заменить (Ctrl+Shift+1)",
+    "replaceLabel": "Заменить",
     "replaceAll": "Заменить всё (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Заменить всё",
     "moreActions": "Дополнительные действия...",
     "formatSql": "Форматировать SQL",
     "queryHistory": "История запросов",

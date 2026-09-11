@@ -24,7 +24,7 @@ import {
 } from "@src/store/ui/sidebarAtom";
 import { spotlightPlacementAtom } from "@src/store/ui/uiAtom";
 
-import { SPOTLIGHT_CONFIG } from "../constants";
+import { SPOTLIGHT_CLASSES, SPOTLIGHT_CONFIG } from "../constants";
 import { SPOTLIGHT_STYLES } from "../styles";
 import { SpotlightTransitionRefContext } from "../useLaunchpadTransition";
 
@@ -128,7 +128,7 @@ export const SpotlightShellChrome: React.FC<SpotlightShellChromeProps> = ({
       {...(footer == null ? { "data-spotlight-detail-anchor": true } : {})}
     >
       <div
-        className="overflow-hidden rounded-2xl border border-border-2 bg-bg-2 shadow-xl"
+        className={SPOTLIGHT_CLASSES.panel}
         style={{
           width: "100%",
           maxWidth: `${width}px`,

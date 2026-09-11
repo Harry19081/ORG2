@@ -1,4 +1,9 @@
 {
+  "findScope": {
+    "session": "Tìm trong phiên",
+    "file": "Tìm trong tệp",
+    "named": "Tìm trong {{name}}"
+  },
   "teamInbox": {
     "title": "Hộp thư nhóm",
     "listLabel": "Danh sách hộp thư nhóm",
@@ -741,7 +746,9 @@
     "previous": "Trước",
     "next": "Tiếp theo",
     "previousMatch": "Kết quả trước (Shift+Enter)",
+    "previousMatchLabel": "Kết quả trước",
     "nextMatch": "Kết quả tiếp theo (Enter)",
+    "nextMatchLabel": "Kết quả tiếp theo",
     "clearSearch": "Xóa tìm kiếm",
     "openInEditorTab": "Mở trong tab trình soạn thảo",
     "openFile": "Mở tệp",
@@ -768,11 +775,16 @@
     "goForward": "Tiến tới",
     "goToToday": "Đi đến hôm nay",
     "matchCase": "Phân biệt chữ hoa/thường (Alt+C)",
+    "matchCaseLabel": "Phân biệt chữ hoa/thường",
     "matchWholeWord": "Khớp toàn bộ từ (Alt+W)",
+    "matchWholeWordLabel": "Khớp toàn bộ từ",
     "useRegex": "Sử dụng biểu thức chính quy (Alt+R)",
+    "useRegexLabel": "Sử dụng biểu thức chính quy",
     "searchInOpenEditors": "Chỉ tìm trong trình soạn thảo đang mở",
     "replace": "Thay thế (Ctrl+Shift+1)",
+    "replaceLabel": "Thay thế",
     "replaceAll": "Thay thế tất cả (Ctrl+Alt+Enter)",
+    "replaceAllLabel": "Thay thế tất cả",
     "moreActions": "Thao tác khác...",
     "formatSql": "Định dạng SQL",
     "queryHistory": "Lịch sử truy vấn",
