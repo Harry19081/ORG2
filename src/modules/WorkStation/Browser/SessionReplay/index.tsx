@@ -15,7 +15,6 @@ import {
   Shield01Icon,
 } from "@src/icons";
 import { buildSelectedElementLabel } from "@src/modules/WorkStation/Browser/BrowserLayout/browserLayoutUtils";
-import { buildDomComponentJsonFromElementInfo } from "@src/modules/WorkStation/Browser/BrowserLayout/buildDomComponentJson";
 import { useBrowserSessions } from "@src/modules/WorkStation/Browser/hooks/useBrowserSessions";
 import {
   NoTabsPlaceholder,
@@ -43,6 +42,7 @@ import {
   SharedBrowserDevToolsPanel,
   SharedBrowserWorkspace,
 } from "../shared";
+import { sendSelectedElementToChat } from "../shared/sendSelectedElementToChat";
 import BrowserSidebar from "./BrowserSidebar";
 import {
   TAB_ID_BY_ENTRY_CATEGORY,
@@ -368,20 +368,14 @@ const SessionReplayBrowserComponent: React.FC<SessionReplayBrowserProps> = ({
   const clearSelection = myTabsBrowser.clearSelection;
 
   const handleSendSelectedElementToChat = useCallback(() => {
-    if (!selectedElement) return;
-
-    const { jsonText, fileName } = buildDomComponentJsonFromElementInfo(
+    sendSelectedElementToChat({
       selectedElement,
-      currentUrl
-    );
-
-    setAddToAgent({
-      type: "dom-component",
-      fileName,
-      jsonText,
+      currentUrl,
+      setAddToAgent,
+      clearSelection,
+      onSent: () =>
+        Message.success(tCommon("browser.selectedElement.sentToChat")),
     });
-    clearSelection();
-    Message.success(tCommon("browser.selectedElement.sentToChat"));
   }, [selectedElement, currentUrl, clearSelection, setAddToAgent, tCommon]);
 
   const myTabsStatusBar = useMemo(() => {
